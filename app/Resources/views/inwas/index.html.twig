@@ -5,15 +5,30 @@
 {% endblock title %}
 
 {% block body %}
+
+    <nav class="top-bar" data-topbar role="navigation">
+        <section class="top-bar-section">
+            <!-- Left Nav Section -->
+            <ul class="left">
+                <li><a href="#">Home</a></li>
+                <li><a href="#">My Projects</a></li>
+                <li><a href="#">Applications</a></li>
+                <li><a href="#">Knowledge Bar</a></li>
+                <li><a href="#">About Us</a></li>
+            </ul>
+        </section>
+    </nav>
+
     <div id="wrapper">
         <div id="container">
-            Hello
+
         </div>
     </div>
 {% endblock %}
 
 {% block stylesheets %}
-    <link rel="stylesheet" href="{{ asset('vendor/foundation/css/foundation.min.css') }}">
+    <link href='http://fonts.googleapis.com/css?family=Open+Sans:300' rel='stylesheet' type='text/css'>
+    <link rel="stylesheet" href="{{ asset('vendor/foundation/css/foundation.css') }}">
 
     <!-- This is the link to the custom stylesheet -->
     <link rel="stylesheet" href="{{ asset('css/app.css') }}">
@@ -22,5 +37,5 @@
 {% block javascripts %}
     <script src="{{ asset('vendor/foundation/js/vendor/modernizr.js') }}"></script>
     <script src="{{ asset('vendor/foundation/js/vendor/jquery.js') }}"></script>
-    <script src="{{ asset('vendor/foundation/js/foundation.min.js') }}"></script>
+    <script src="{{ asset('vendor/foundation/js/foundation.js') }}"></script>
 {% endblock %}
