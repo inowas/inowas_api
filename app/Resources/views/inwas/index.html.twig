@@ -1,0 +1,26 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}
+    Welcome to InWas!
+{% endblock title %}
+
+{% block body %}
+    <div id="wrapper">
+        <div id="container">
+            Hello
+        </div>
+    </div>
+{% endblock %}
+
+{% block stylesheets %}
+    <link rel="stylesheet" href="{{ asset('vendor/foundation/css/foundation.min.css') }}">
+
+    <!-- This is the link to the custom stylesheet -->
+    <link rel="stylesheet" href="{{ asset('css/app.css') }}">
+{% endblock %}
+
+{% block javascripts %}
+    <script src="{{ asset('vendor/foundation/js/vendor/modernizr.js') }}"></script>
+    <script src="{{ asset('vendor/foundation/js/vendor/jquery.js') }}"></script>
+    <script src="{{ asset('vendor/foundation/js/foundation.min.js') }}"></script>
+{% endblock %}

@@ -9,9 +9,17 @@ use Symfony\Component\HttpFoundation\Request;
 class DefaultController extends Controller
 {
     /**
-     * @Route("/", name="homepage")
+     * @Route("/", name="home")
      */
-    public function indexAction(Request $request)
+    public function indexAction()
+    {
+        return $this->render('inwas/index.html.twig');
+    }
+
+    /**
+     * @Route("/home", name="homepage")
+     */
+    public function indexHomeAction(Request $request)
     {
         // replace this example code with whatever you need
         return $this->render('default/index.html.twig', array(
