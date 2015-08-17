@@ -1,0 +1,19 @@
+{
+  "name": "inowas",
+  "version": "0.0.0",
+  "authors": [
+    "Ralf Junghanns <ralf@rabbl.de>"
+  ],
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "web/vendor/",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "foundation": "~5.5.2"
+  }
+}
