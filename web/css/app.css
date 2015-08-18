@@ -2,8 +2,12 @@ body {
     background: #f6f6f6;
 }
 
+.contain-to-grid {
+    background: none;
+    margin: 5px 0;
+}
+
 .top-bar {
-    margin: 5px;
     padding: 0 10px;
     border-radius: 5px 5px 5px 5px;
     -moz-border-radius: 5px 5px 5px 5px;
@@ -32,6 +36,10 @@ body {
     -webkit-border-radius: 5px 5px 5px 5px;
 }
 
+.top-bar-section li.has-form {
+    background: none;
+}
+
 .top-bar-section li:not(.has-form) a:not(.button) {
     line-height: 1.8rem;
     padding: 0 0.9rem;
@@ -40,5 +48,27 @@ body {
 
 .top-bar-section li:not(.has-form):hover a:not(.button):hover {
     background-color: #44b5df;
+}
+
+.top-bar-section input, .top-bar-section input:focus {
+    font-family: 'Open Sans', sans-serif;
+    font-size: medium;
+    font-style: normal;
+    font-weight: normal;
+    border: none;
+    background-color: #44b5df;
+    color: white;
+    border-radius: 5px 5px 5px 5px;
+    -moz-border-radius: 5px 5px 5px 5px;
+    -webkit-border-radius: 5px 5px 5px 5px;
+}
+
+.top-bar .toggle-topbar.menu-icon a, {
+    font-family: 'Open Sans', sans-serif;
+    font-size: medium;
+    font-style: normal;
+    font-weight: normal;
+    color: #666666;
+
 }
 
