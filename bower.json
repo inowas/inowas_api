@@ -14,9 +14,9 @@
     "tests"
   ],
   "dependencies": {
-    "openlayers": "*",
     "bootstrap": "~3.3.5",
     "jquery-ui": "~1.11.4",
-    "jquery": "~2.1.4"
+    "jquery": "~2.1.4",
+    "openlayers3": "~3.0.0"
   }
 }

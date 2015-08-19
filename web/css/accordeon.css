@@ -1,0 +1,14 @@
+.panel-default > .panel-heading {
+    background: #44b5df;
+    color: white;
+}
+
+.panel-title>a:hover,
+.panel-title>small>a:hover {
+    text-decoration: none;
+}
+
+.inowas-panel-heading-active {
+    background: black !important;
+    color: white !important;
+}
