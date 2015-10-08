@@ -31,7 +31,7 @@ class Project
     private $owner;
 
     /**
-     * @var User
+     * @var ArrayCollection User
      *
      * @ORM\ManyToMany(targetEntity="User", inversedBy="participatedProjects")
      */
@@ -177,6 +177,7 @@ class Project
      */
     public function addParticipant(User $participants)
     {
+        $participants->addParticipatedProject($this);
         $this->participants[] = $participants;
 
         return $this;
@@ -189,6 +190,7 @@ class Project
      */
     public function removeParticipant(User $participants)
     {
+        $participants->removeParticipatedProject($this);
         $this->participants->removeElement($participants);
     }
 
@@ -200,6 +202,7 @@ class Project
      */
     public function addModelObject(ModelObject $modelObjects)
     {
+        $modelObjects->addProject($this);
         $this->modelObjects[] = $modelObjects;
 
         return $this;
@@ -212,6 +215,7 @@ class Project
      */
     public function removeModelObject(ModelObject $modelObjects)
     {
+        $modelObjects->removeProject($this);
         $this->modelObjects->removeElement($modelObjects);
     }
 

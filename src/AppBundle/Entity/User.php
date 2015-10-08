@@ -94,6 +94,7 @@ class User extends BaseUser
      */
     public function addOwnedProject(Project $ownedProjects)
     {
+        $ownedProjects->addParticipant($this);
         $this->ownedProjects[] = $ownedProjects;
 
         return $this;
@@ -106,6 +107,7 @@ class User extends BaseUser
      */
     public function removeOwnedProject(Project $ownedProjects)
     {
+        $ownedProjects->removeParticipant($this);
         $this->ownedProjects->removeElement($ownedProjects);
     }
 
@@ -127,8 +129,8 @@ class User extends BaseUser
      */
     public function addParticipatedProject(Project $participatedProjects)
     {
+        $participatedProjects->addParticipant($this);
         $this->participatedProjects[] = $participatedProjects;
-
         return $this;
     }
 
@@ -139,6 +141,7 @@ class User extends BaseUser
      */
     public function removeParticipatedProject(Project $participatedProjects)
     {
+        $participatedProjects->removeParticipant($this);
         $this->participatedProjects->removeElement($participatedProjects);
     }
 

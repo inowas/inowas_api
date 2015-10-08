@@ -6,7 +6,7 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
- * Feature
+ * ModelObject
  *
  * @ORM\Table()
  * @ORM\Entity(repositoryClass="AppBundle\Entity\ModelObjectRepository")
@@ -32,9 +32,9 @@ class ModelObject
     /**
      * @var string
      *
-     * @ORM\Column(name="featureType", type="string", length=255)
+     * @ORM\Column(name="ModelObjectType", type="string", length=255)
      */
-    private $featureType;
+    private $modelObjectType;
 
     /**
      * @var string
@@ -106,33 +106,33 @@ class ModelObject
     }
 
     /**
-     * Set featureType
+     * Set modelObjectType
      *
-     * @param string $featureType
-     * @return Feature
+     * @param string $modelObjectType
+     * @return ModelObject
      */
-    public function setFeatureType($featureType)
+    public function setModelObjectType($modelObjectType)
     {
-        $this->featureType = $featureType;
+        $this->modelObjectType = $modelObjectType;
 
         return $this;
     }
 
     /**
-     * Get featureType
+     * Get ModelObjectType
      *
      * @return string 
      */
-    public function getFeatureType()
+    public function getModelObjectType()
     {
-        return $this->featureType;
+        return $this->modelObjectType;
     }
 
     /**
      * Set owner
      *
      * @param string $owner
-     * @return Feature
+     * @return ModelObject
      */
     public function setOwner($owner)
     {
@@ -155,7 +155,7 @@ class ModelObject
      * Set property
      *
      * @param string $property
-     * @return Feature
+     * @return ModelObject
      */
     public function setProperty($property)
     {
@@ -178,7 +178,7 @@ class ModelObject
      * Set public
      *
      * @param boolean $public
-     * @return Feature
+     * @return ModelObject
      */
     public function setPublic($public)
     {
@@ -201,7 +201,7 @@ class ModelObject
      * Set dateCreated
      *
      * @param \DateTime $dateCreated
-     * @return Feature
+     * @return ModelObject
      */
     public function setDateCreated($dateCreated)
     {
@@ -224,7 +224,7 @@ class ModelObject
      * Set dateModified
      *
      * @param \DateTime $dateModified
-     * @return Feature
+     * @return ModelObject
      */
     public function setDateModified($dateModified)
     {
@@ -247,7 +247,7 @@ class ModelObject
      */
     public function __construct()
     {
-        $this->projects = new \Doctrine\Common\Collections\ArrayCollection();
+        $this->projects = new ArrayCollection();
     }
 
     /**
@@ -256,7 +256,7 @@ class ModelObject
      * @param \AppBundle\Entity\Project $projects
      * @return ModelObject
      */
-    public function addProject(\AppBundle\Entity\Project $projects)
+    public function addProject(Project $projects)
     {
         $this->projects[] = $projects;
 
@@ -268,7 +268,7 @@ class ModelObject
      *
      * @param \AppBundle\Entity\Project $projects
      */
-    public function removeProject(\AppBundle\Entity\Project $projects)
+    public function removeProject(Project $projects)
     {
         $this->projects->removeElement($projects);
     }
