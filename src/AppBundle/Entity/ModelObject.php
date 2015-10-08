@@ -8,9 +8,20 @@ use Doctrine\ORM\Mapping as ORM;
 /**
  * ModelObject
  *
- * @ORM\Table()
- * @ORM\Entity(repositoryClass="AppBundle\Entity\ModelObjectRepository")
+ * @ORM\Entity
+ * @ORM\InheritanceType("JOINED")
+ * @ORM\DiscriminatorColumn(name="discr", type="string")
+ * @ORM\DiscriminatorMap({  "soilprofile" = "SoilProfile",
+ *                          "soilprofilelayer" = "SoilProfileLayer",
+ *                          "layer" = "Layer",
+ *                          "area" = "Area",
+ *                          "observationpoint" = "ObservationPoint",
+ *                          "raster" = "Raster",
+ *                          "stream" = "Stream",
+ *                          "lake" = "Lake"
+ * })
  */
+
 class ModelObject
 {
     /**
