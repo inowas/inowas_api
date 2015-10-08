@@ -1,0 +1,154 @@
+<?php
+
+namespace AppBundle\Entity;
+
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\ORM\Mapping as ORM;
+use FOS\UserBundle\Model\User as BaseUser;
+
+/**
+ * Users
+ *
+ * @ORM\Table()
+ * @ORM\Entity()
+ */
+class User extends BaseUser
+{
+    /**
+     * @var integer
+     *
+     * @ORM\Column(name="id", type="integer")
+     * @ORM\Id
+     * @ORM\GeneratedValue(strategy="AUTO")
+     */
+    protected $id;
+
+    /**
+     * @var integer
+     *
+     * @ORM\OneToOne(targetEntity="UserProfile", mappedBy="user", cascade={"persist", "remove"})
+     */
+    protected $profile;
+
+    /**
+     * @var ArrayCollection Project $ownedProjects
+     *
+     * @ORM\OneToMany(targetEntity="Project", mappedBy="owner")
+     */
+    protected $ownedProjects;
+
+    /**
+     * @var ArrayCollection Project $participatedProjects
+     *
+     * @ORM\ManyToMany(targetEntity="Project", mappedBy="participants")
+     **/
+    protected $participatedProjects;
+
+
+    public function __construct()
+    {
+        parent::__construct();
+        $this->profile = new UserProfile();
+        $this->profile->setUser($this);
+        $this->ownedProjects = new ArrayCollection();
+    }
+
+    /**
+     * Get id
+     *
+     * @return integer 
+     */
+    public function getId()
+    {
+        return $this->id;
+    }
+
+    /**
+     * Set profile
+     *
+     * @param \AppBundle\Entity\UserProfile $profile
+     * @return User
+     */
+    public function setProfile(UserProfile $profile = null)
+    {
+        $this->profile = $profile;
+
+        return $this;
+    }
+
+    /**
+     * Get profile
+     *
+     * @return \AppBundle\Entity\UserProfile 
+     */
+    public function getProfile()
+    {
+        return $this->profile;
+    }
+
+    /**
+     * Add ownedProjects
+     *
+     * @param Project $ownedProjects
+     * @return User
+     */
+    public function addOwnedProject(Project $ownedProjects)
+    {
+        $this->ownedProjects[] = $ownedProjects;
+
+        return $this;
+    }
+
+    /**
+     * Remove ownedProjects
+     *
+     * @param Project $ownedProjects
+     */
+    public function removeOwnedProject(Project $ownedProjects)
+    {
+        $this->ownedProjects->removeElement($ownedProjects);
+    }
+
+    /**
+     * Get ownedProjects
+     *
+     * @return \Doctrine\Common\Collections\Collection 
+     */
+    public function getOwnedProjects()
+    {
+        return $this->ownedProjects;
+    }
+
+    /**
+     * Add participatedProjects
+     *
+     * @param Project $participatedProjects
+     * @return User
+     */
+    public function addParticipatedProject(Project $participatedProjects)
+    {
+        $this->participatedProjects[] = $participatedProjects;
+
+        return $this;
+    }
+
+    /**
+     * Remove participatedProjects
+     *
+     * @param Project $participatedProjects
+     */
+    public function removeParticipatedProject(Project $participatedProjects)
+    {
+        $this->participatedProjects->removeElement($participatedProjects);
+    }
+
+    /**
+     * Get participatedProjects
+     *
+     * @return \Doctrine\Common\Collections\Collection 
+     */
+    public function getParticipatedProjects()
+    {
+        return $this->participatedProjects;
+    }
+}
