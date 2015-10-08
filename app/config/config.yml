@@ -66,10 +66,24 @@ doctrine:
         #   3. Uncomment next line:
         #     path:     "%database_path%"
 
+        types:
+            geometry:   CrEOF\Spatial\DBAL\Types\GeometryType
+            point:      CrEOF\Spatial\DBAL\Types\Geometry\PointType
+            polygon:    CrEOF\Spatial\DBAL\Types\Geometry\PolygonType
+            linestring: CrEOF\Spatial\DBAL\Types\Geometry\LineStringType
+
     orm:
         auto_generate_proxy_classes: "%kernel.debug%"
         naming_strategy: doctrine.orm.naming_strategy.underscore
         auto_mapping: true
+
+        dql:
+            numeric_functions:
+                st_contains:     CrEOF\Spatial\ORM\Query\AST\Functions\PostgreSql\STContains
+                st_distance:     CrEOF\Spatial\ORM\Query\AST\Functions\PostgreSql\STDistance
+                st_area:         CrEOF\Spatial\ORM\Query\AST\Functions\PostgreSql\STArea
+                st_length:       CrEOF\Spatial\ORM\Query\AST\Functions\PostgreSql\STLength
+                st_geomfromtext: CrEOF\Spatial\ORM\Query\AST\Functions\PostgreSql\STGeomFromText
 
 # Swiftmailer Configuration
 swiftmailer:
