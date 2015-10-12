@@ -2,7 +2,6 @@
 
 namespace AppBundle\Entity;
 
-use CrEOF\Spatial\PHP\Types\Geometry\MultiPoint;
 use CrEOF\Spatial\PHP\Types\Geometry\Polygon;
 use Doctrine\ORM\Mapping as ORM;
 
@@ -12,7 +11,6 @@ use Doctrine\ORM\Mapping as ORM;
  */
 class Lake extends ModelObject
 {
-
     /**
      * @var Polygon
      *
@@ -21,34 +19,11 @@ class Lake extends ModelObject
     private $geometry;
 
     /**
-     * @var MultiPoint
+     * @var ObservationPoint
      *
-     * @ORM\Column(name="multipoint", type="polygon", nullable=true)
+     * @ORM\ManyToOne(targetEntity="ObservationPoint")
      */
-    private $multipoint;
-
-    /**
-     * @var $raster
-     *
-     * @ORM\ManyToOne(targetEntity="Raster")
-     */
-    private $raster;
-
-    /**
-     * @return MultiPoint
-     */
-    public function getMultipoint()
-    {
-        return $this->multipoint;
-    }
-
-    /**
-     * @param MultiPoint $multipoint
-     */
-    public function setMultipoint($multipoint)
-    {
-        $this->multipoint = $multipoint;
-    }
+    private $observationPoints;
 
     /**
      * @return Polygon
@@ -67,19 +42,25 @@ class Lake extends ModelObject
     }
 
     /**
-     * @return mixed
+     * Set observationPoints
+     *
+     * @param \AppBundle\Entity\ObservationPoint $observationPoints
+     * @return Lake
      */
-    public function getRaster()
+    public function setObservationPoints(ObservationPoint $observationPoints = null)
     {
-        return $this->raster;
+        $this->observationPoints = $observationPoints;
+
+        return $this;
     }
 
     /**
-     * @param mixed $raster
+     * Get observationPoints
+     *
+     * @return \AppBundle\Entity\ObservationPoint 
      */
-    public function setRaster($raster)
+    public function getObservationPoints()
     {
-        $this->raster = $raster;
+        return $this->observationPoints;
     }
-    
 }
