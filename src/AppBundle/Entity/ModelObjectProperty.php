@@ -51,12 +51,12 @@ class ModelObjectProperty
     private $timeSeries;
 
     /**
-     * @var string
+     * @var ArrayCollection Raster
      *
-     * @ORM\Column(name="raster", type="string", length=255, nullable=true)
+     * @ORM\ManyToMany(targetEntity="AppBundle\Entity\Raster", inversedBy="modelObjectProperty")
+     * @ORM\JoinTable(name="inowas_model_object_properties_raster")
      */
-    private $raster = null;
-
+    private $raster;
     /**
      * Constructor
      */
@@ -64,6 +64,7 @@ class ModelObjectProperty
     {
         $this->modelObjects = new \Doctrine\Common\Collections\ArrayCollection();
         $this->timeSeries = new \Doctrine\Common\Collections\ArrayCollection();
+        $this->raster = new \Doctrine\Common\Collections\ArrayCollection();
     }
 
     /**
@@ -123,35 +124,12 @@ class ModelObjectProperty
     }
 
     /**
-     * Set raster
-     *
-     * @param string $raster
-     * @return ModelObjectProperty
-     */
-    public function setRaster($raster)
-    {
-        $this->raster = $raster;
-
-        return $this;
-    }
-
-    /**
-     * Get raster
-     *
-     * @return string 
-     */
-    public function getRaster()
-    {
-        return $this->raster;
-    }
-
-    /**
      * Add modelObjects
      *
      * @param \AppBundle\Entity\ModelObject $modelObjects
      * @return ModelObjectProperty
      */
-    public function addModelObject(ModelObject $modelObjects)
+    public function addModelObject(\AppBundle\Entity\ModelObject $modelObjects)
     {
         $this->modelObjects[] = $modelObjects;
 
@@ -163,7 +141,7 @@ class ModelObjectProperty
      *
      * @param \AppBundle\Entity\ModelObject $modelObjects
      */
-    public function removeModelObject(ModelObject $modelObjects)
+    public function removeModelObject(\AppBundle\Entity\ModelObject $modelObjects)
     {
         $this->modelObjects->removeElement($modelObjects);
     }
@@ -184,10 +162,10 @@ class ModelObjectProperty
      * @param \AppBundle\Entity\TimeSeries $timeSeries
      * @return ModelObjectProperty
      */
-    public function addTimeSeries(TimeSeries $timeSeries)
+    public function addTimeSeries(\AppBundle\Entity\TimeSeries $timeSeries)
     {
         $this->timeSeries[] = $timeSeries;
-        $timeSeries->setModelObjectProperties($this);
+
         return $this;
     }
 
@@ -196,10 +174,9 @@ class ModelObjectProperty
      *
      * @param \AppBundle\Entity\TimeSeries $timeSeries
      */
-    public function removeTimeSeries(TimeSeries $timeSeries)
+    public function removeTimeSeries(\AppBundle\Entity\TimeSeries $timeSeries)
     {
         $this->timeSeries->removeElement($timeSeries);
-        $timeSeries->setModelObjectProperties(null);
     }
 
     /**
@@ -210,5 +187,38 @@ class ModelObjectProperty
     public function getTimeSeries()
     {
         return $this->timeSeries;
+    }
+
+    /**
+     * Add raster
+     *
+     * @param \AppBundle\Entity\Raster $raster
+     * @return ModelObjectProperty
+     */
+    public function addRaster(\AppBundle\Entity\Raster $raster)
+    {
+        $this->raster[] = $raster;
+
+        return $this;
+    }
+
+    /**
+     * Remove raster
+     *
+     * @param \AppBundle\Entity\Raster $raster
+     */
+    public function removeRaster(\AppBundle\Entity\Raster $raster)
+    {
+        $this->raster->removeElement($raster);
+    }
+
+    /**
+     * Get raster
+     *
+     * @return \Doctrine\Common\Collections\Collection 
+     */
+    public function getRaster()
+    {
+        return $this->raster;
     }
 }
