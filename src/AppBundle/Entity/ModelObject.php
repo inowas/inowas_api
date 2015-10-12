@@ -57,9 +57,9 @@ class ModelObject
     /**
      * @var string
      *
-     * @ORM\Column(name="property", type="string", length=255)
+     * @ORM\ManyToMany(targetEntity="AppBundle\Entity\ModelObjectProperty", inversedBy="modelObjects")
      */
-    private $property;
+    private $modelObjectProperties;
 
     /**
      * @var boolean
@@ -82,6 +82,14 @@ class ModelObject
      */
     private $dateModified;
 
+    /**
+     * Constructor
+     */
+    public function __construct()
+    {
+        $this->projects = new ArrayCollection();
+        $this->modelObjectProperties = new ArrayCollection();
+    }
 
     /**
      * Get id
@@ -94,32 +102,8 @@ class ModelObject
     }
 
     /**
-     * Set project
-     *
-     * @param string $projects
-     * @return ModelObject
-     */
-    public function setProject($projects)
-    {
-        $this->projects = $projects;
-
-        return $this;
-    }
-
-    /**
-     * Get projects
-     *
-     * @return string 
-     */
-    public function getProject()
-    {
-        return $this->projects;
-    }
-
-    /**
      * Set modelObjectType
      *
-     * @param string $modelObjectType
      * @param string $modelObjectType
      * @return ModelObject
      */
@@ -131,7 +115,7 @@ class ModelObject
     }
 
     /**
-     * Get ModelObjectType
+     * Get modelObjectType
      *
      * @return string 
      */
@@ -161,29 +145,6 @@ class ModelObject
     public function getOwner()
     {
         return $this->owner;
-    }
-
-    /**
-     * Set property
-     *
-     * @param string $property
-     * @return ModelObject
-     */
-    public function setProperty($property)
-    {
-        $this->property = $property;
-
-        return $this;
-    }
-
-    /**
-     * Get property
-     *
-     * @return string 
-     */
-    public function getProperty()
-    {
-        return $this->property;
     }
 
     /**
@@ -254,13 +215,6 @@ class ModelObject
     {
         return $this->dateModified;
     }
-    /**
-     * Constructor
-     */
-    public function __construct()
-    {
-        $this->projects = new ArrayCollection();
-    }
 
     /**
      * Add projects
@@ -268,7 +222,7 @@ class ModelObject
      * @param \AppBundle\Entity\Project $projects
      * @return ModelObject
      */
-    public function addProject(Project $projects)
+    public function addProject(\AppBundle\Entity\Project $projects)
     {
         $this->projects[] = $projects;
 
@@ -280,7 +234,7 @@ class ModelObject
      *
      * @param \AppBundle\Entity\Project $projects
      */
-    public function removeProject(Project $projects)
+    public function removeProject(\AppBundle\Entity\Project $projects)
     {
         $this->projects->removeElement($projects);
     }
@@ -293,5 +247,38 @@ class ModelObject
     public function getProjects()
     {
         return $this->projects;
+    }
+
+    /**
+     * Add modelObjectProperties
+     *
+     * @param \AppBundle\Entity\ModelObjectProperty $modelObjectProperties
+     * @return ModelObject
+     */
+    public function addModelObjectProperty(\AppBundle\Entity\ModelObjectProperty $modelObjectProperties)
+    {
+        $this->modelObjectProperties[] = $modelObjectProperties;
+
+        return $this;
+    }
+
+    /**
+     * Remove modelObjectProperties
+     *
+     * @param \AppBundle\Entity\ModelObjectProperty $modelObjectProperties
+     */
+    public function removeModelObjectProperty(\AppBundle\Entity\ModelObjectProperty $modelObjectProperties)
+    {
+        $this->modelObjectProperties->removeElement($modelObjectProperties);
+    }
+
+    /**
+     * Get modelObjectProperties
+     *
+     * @return \Doctrine\Common\Collections\Collection 
+     */
+    public function getModelObjectProperties()
+    {
+        return $this->modelObjectProperties;
     }
 }
