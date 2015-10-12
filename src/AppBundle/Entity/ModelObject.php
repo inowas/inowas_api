@@ -59,7 +59,7 @@ class ModelObject
      * @var string
      *
      * @ORM\ManyToMany(targetEntity="AppBundle\Entity\ModelObjectProperty", inversedBy="modelObjects")
-     * @ORM\JoinTable(name="inowas_m    odel_object_model_object_property")
+     * @ORM\JoinTable(name="inowas_model_object_model_object_property")
      */
     private $modelObjectProperties;
 
