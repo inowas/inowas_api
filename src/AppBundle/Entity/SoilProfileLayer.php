@@ -2,6 +2,7 @@
 
 namespace AppBundle\Entity;
 
+use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
@@ -23,6 +24,19 @@ class SoilProfileLayer extends ModelObject
      * @ORM\Column(name="bottom_elevation", type="float", nullable=true)
      */
     private $bottomElevation;
+
+    /**
+     * @var ArrayCollection
+     *
+     * @ORM\ManyToMany(targetEntity="AppBundle\Entity\Layer", mappedBy="soilProfileLayer")
+     */
+    private $layer;
+
+    public function __construct()
+    {
+        parent::__construct();
+        $this->layer = new ArrayCollection();
+    }
 
     /**
      * Set topElevation
@@ -68,5 +82,38 @@ class SoilProfileLayer extends ModelObject
     public function getBottomElevation()
     {
         return $this->bottomElevation;
+    }
+
+    /**
+     * Add layer
+     *
+     * @param \AppBundle\Entity\Layer $layer
+     * @return SoilProfileLayer
+     */
+    public function addLayer(Layer $layer)
+    {
+        $this->layer[] = $layer;
+
+        return $this;
+    }
+
+    /**
+     * Remove layer
+     *
+     * @param \AppBundle\Entity\Layer $layer
+     */
+    public function removeLayer(Layer $layer)
+    {
+        $this->layer->removeElement($layer);
+    }
+
+    /**
+     * Get layer
+     *
+     * @return \Doctrine\Common\Collections\Collection 
+     */
+    public function getLayer()
+    {
+        return $this->layer;
     }
 }
