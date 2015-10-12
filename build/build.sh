@@ -1,8 +1,9 @@
 #!/usr/bin/env bash
 
-SQL_DIR=/var/www/html/build/sql
+DIR=/var/www/html
+SQL_DIR=$DIR/build/sql
 
-cd /var/www/html/
+cd $DIR
 app/console doctrine:database:drop --force
 app/console doctrine:database:create
 
