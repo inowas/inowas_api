@@ -2,6 +2,7 @@
 
 namespace AppBundle\Entity;
 
+use CrEOF\Spatial\PHP\Types\Geometry\MultiPoint;
 use CrEOF\Spatial\PHP\Types\Geometry\Polygon;
 use Doctrine\ORM\Mapping as ORM;
 
@@ -20,6 +21,36 @@ class Lake extends ModelObject
     private $geometry;
 
     /**
+     * @var MultiPoint
+     *
+     * @ORM\Column(name="multipoint", type="polygon", nullable=true)
+     */
+    private $multipoint;
+
+    /**
+     * @var $raster
+     *
+     * @ORM\ManyToOne(targetEntity="Raster")
+     */
+    private $raster;
+
+    /**
+     * @return MultiPoint
+     */
+    public function getMultipoint()
+    {
+        return $this->multipoint;
+    }
+
+    /**
+     * @param MultiPoint $multipoint
+     */
+    public function setMultipoint($multipoint)
+    {
+        $this->multipoint = $multipoint;
+    }
+
+    /**
      * @return Polygon
      */
     public function getGeometry()
@@ -34,4 +65,21 @@ class Lake extends ModelObject
     {
         $this->geometry = $geometry;
     }
+
+    /**
+     * @return mixed
+     */
+    public function getRaster()
+    {
+        return $this->raster;
+    }
+
+    /**
+     * @param mixed $raster
+     */
+    public function setRaster($raster)
+    {
+        $this->raster = $raster;
+    }
+    
 }
