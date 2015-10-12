@@ -15,11 +15,10 @@ use Doctrine\ORM\Mapping as ORM;
  * @ORM\DiscriminatorMap({  "soilprofile" = "SoilProfile",
  *                          "soilprofilelayer" = "SoilProfileLayer",
  *                          "layer" = "Layer",
- *                          "area" = "Area",
  *                          "observationpoint" = "ObservationPoint",
  *                          "raster" = "Raster",
  *                          "stream" = "Stream",
- *                          "lake" = "Lake"
+ *                          "area" = "Area"
  * })
  */
 
@@ -121,6 +120,7 @@ class ModelObject
     /**
      * Set modelObjectType
      *
+     * @param string $modelObjectType
      * @param string $modelObjectType
      * @return ModelObject
      */

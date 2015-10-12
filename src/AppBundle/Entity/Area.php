@@ -7,9 +7,9 @@ use Doctrine\ORM\Mapping as ORM;
 
 /**
  * @ORM\Entity()
- * @ORM\Table(name="inowas_lake")
+ * @ORM\Table(name="inowas_area")
  */
-class Lake extends ModelObject
+class Area extends ModelObject
 {
     /**
      * @var Polygon
