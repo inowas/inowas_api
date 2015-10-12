@@ -24,7 +24,7 @@ class User extends BaseUser
     protected $id;
 
     /**
-     * @var integer
+     * @var UserProfile
      *
      * @ORM\OneToOne(targetEntity="UserProfile", mappedBy="user", cascade={"persist", "remove"})
      */
@@ -49,7 +49,6 @@ class User extends BaseUser
     {
         parent::__construct();
         $this->profile = new UserProfile();
-        $this->profile->setUser($this);
         $this->ownedProjects = new ArrayCollection();
     }
 
@@ -72,7 +71,7 @@ class User extends BaseUser
     public function setProfile(UserProfile $profile = null)
     {
         $this->profile = $profile;
-
+        $profile->setUser($this);
         return $this;
     }
 

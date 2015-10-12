@@ -22,6 +22,8 @@ class UserProfile
     protected $id;
 
     /**
+     * @var User
+     *
      * @ORM\OneToOne(targetEntity="User", inversedBy="profile", cascade={"persist", "remove"})
      * @ORM\JoinColumn(name="user_id", referencedColumnName="id", onDelete="CASCADE")
      */
@@ -60,6 +62,7 @@ class UserProfile
     public function setUser(User $user = null)
     {
         $this->user = $user;
+        $user->setProfile($this);
 
         return $this;
     }
