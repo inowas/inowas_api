@@ -44,11 +44,11 @@ class ModelObjectProperty
     private $value = null;
 
     /**
-     * @var string
+     * @var ArrayCollection TimeSeries
      *
-     * @ORM\ManyToOne(targetEntity="AppBundle\Entity\TimeSeries", inversedBy="modelObjectProperty")
+     * @ORM\OneToMany(targetEntity="AppBundle\Entity\TimeSeries", mappedBy="modelObjectProperty")
      */
-    private $timeSeries = null;
+    private $timeSeries;
 
     /**
      * @var string
@@ -62,7 +62,8 @@ class ModelObjectProperty
      */
     public function __construct()
     {
-        $this->modelObjects = new ArrayCollection();
+        $this->modelObjects = new \Doctrine\Common\Collections\ArrayCollection();
+        $this->timeSeries = new \Doctrine\Common\Collections\ArrayCollection();
     }
 
     /**
@@ -150,7 +151,7 @@ class ModelObjectProperty
      * @param \AppBundle\Entity\ModelObject $modelObjects
      * @return ModelObjectProperty
      */
-    public function addModelObject(\AppBundle\Entity\ModelObject $modelObjects)
+    public function addModelObject(ModelObject $modelObjects)
     {
         $this->modelObjects[] = $modelObjects;
 
@@ -162,7 +163,7 @@ class ModelObjectProperty
      *
      * @param \AppBundle\Entity\ModelObject $modelObjects
      */
-    public function removeModelObject(\AppBundle\Entity\ModelObject $modelObjects)
+    public function removeModelObject(ModelObject $modelObjects)
     {
         $this->modelObjects->removeElement($modelObjects);
     }
@@ -178,22 +179,33 @@ class ModelObjectProperty
     }
 
     /**
-     * Set timeSeries
+     * Add timeSeries
      *
      * @param \AppBundle\Entity\TimeSeries $timeSeries
      * @return ModelObjectProperty
      */
-    public function setTimeSeries(\AppBundle\Entity\TimeSeries $timeSeries = null)
+    public function addTimeSeries(TimeSeries $timeSeries)
     {
-        $this->timeSeries = $timeSeries;
-
+        $this->timeSeries[] = $timeSeries;
+        $timeSeries->setModelObjectProperties($this);
         return $this;
+    }
+
+    /**
+     * Remove timeSeries
+     *
+     * @param \AppBundle\Entity\TimeSeries $timeSeries
+     */
+    public function removeTimeSeries(TimeSeries $timeSeries)
+    {
+        $this->timeSeries->removeElement($timeSeries);
+        $timeSeries->setModelObjectProperties(null);
     }
 
     /**
      * Get timeSeries
      *
-     * @return \AppBundle\Entity\TimeSeries 
+     * @return \Doctrine\Common\Collections\Collection 
      */
     public function getTimeSeries()
     {

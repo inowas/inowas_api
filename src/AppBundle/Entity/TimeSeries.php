@@ -22,11 +22,10 @@ class TimeSeries
      */
     private $id;
 
-
     /**
      * @var ArrayCollection ModelObjectProperty
      *
-     * @ORM\OneToMany(targetEntity="AppBundle\Entity\ModelObjectProperty", mappedBy="timeSeries")
+     * @ORM\ManyToOne(targetEntity="AppBundle\Entity\ModelObjectProperty", inversedBy="timeSeries")
      */
     private $modelObjectProperties;
 
@@ -43,14 +42,6 @@ class TimeSeries
      * @ORM\Column(name="value", type="float")
      */
     private $value;
-
-    /**
-     * Constructor
-     */
-    public function __construct()
-    {
-        $this->modelObjectProperties = new ArrayCollection();
-    }
 
     /**
      * Get id
@@ -109,32 +100,21 @@ class TimeSeries
     }
 
     /**
-     * Add modelObjectProperties
+     * Set modelObjectProperties
      *
      * @param \AppBundle\Entity\ModelObjectProperty $modelObjectProperties
      * @return TimeSeries
      */
-    public function addModelObjectProperty(\AppBundle\Entity\ModelObjectProperty $modelObjectProperties)
+    public function setModelObjectProperties(ModelObjectProperty $modelObjectProperties = null)
     {
-        $this->modelObjectProperties[] = $modelObjectProperties;
-
+        $this->modelObjectProperties = $modelObjectProperties;
         return $this;
-    }
-
-    /**
-     * Remove modelObjectProperties
-     *
-     * @param \AppBundle\Entity\ModelObjectProperty $modelObjectProperties
-     */
-    public function removeModelObjectProperty(\AppBundle\Entity\ModelObjectProperty $modelObjectProperties)
-    {
-        $this->modelObjectProperties->removeElement($modelObjectProperties);
     }
 
     /**
      * Get modelObjectProperties
      *
-     * @return \Doctrine\Common\Collections\Collection 
+     * @return \AppBundle\Entity\ModelObjectProperty 
      */
     public function getModelObjectProperties()
     {
