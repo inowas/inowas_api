@@ -16,7 +16,6 @@ use Doctrine\ORM\Mapping as ORM;
  *                          "soilprofilelayer" = "SoilProfileLayer",
  *                          "layer" = "Layer",
  *                          "observationpoint" = "ObservationPoint",
- *                          "raster" = "Raster",
  *                          "stream" = "Stream",
  *                          "area" = "Area"
  * })
