@@ -48,9 +48,10 @@ class ModelObject
     private $modelObjectType;
 
     /**
-     * @var string
+     * @var User
      *
-     * @ORM\Column(name="owner", type="string", length=255)
+     * @ORM\ManyToOne(targetEntity="User", inversedBy="ownedModelObjects")
+     * @ORM\JoinColumn(name="owner_id", referencedColumnName="id")
      */
     private $owner;
 
@@ -58,7 +59,7 @@ class ModelObject
      * @var string
      *
      * @ORM\ManyToMany(targetEntity="AppBundle\Entity\ModelObjectProperty", inversedBy="modelObjects")
-     * @ORM\JoinTable(name="inowas_model_object_model_object_property")
+     * @ORM\JoinTable(name="inowas_m    odel_object_model_object_property")
      */
     private $modelObjectProperties;
 
@@ -82,6 +83,7 @@ class ModelObject
      * @ORM\Column(name="dateModified", type="datetime")
      */
     private $dateModified;
+    
 
     /**
      * Constructor
@@ -123,29 +125,6 @@ class ModelObject
     public function getModelObjectType()
     {
         return $this->modelObjectType;
-    }
-
-    /**
-     * Set owner
-     *
-     * @param string $owner
-     * @return ModelObject
-     */
-    public function setOwner($owner)
-    {
-        $this->owner = $owner;
-
-        return $this;
-    }
-
-    /**
-     * Get owner
-     *
-     * @return string 
-     */
-    public function getOwner()
-    {
-        return $this->owner;
     }
 
     /**
@@ -223,9 +202,10 @@ class ModelObject
      * @param \AppBundle\Entity\Project $projects
      * @return ModelObject
      */
-    public function addProject(\AppBundle\Entity\Project $projects)
+    public function addProject(Project $projects)
     {
         $this->projects[] = $projects;
+        $projects->addModelObject($this);
 
         return $this;
     }
@@ -235,9 +215,10 @@ class ModelObject
      *
      * @param \AppBundle\Entity\Project $projects
      */
-    public function removeProject(\AppBundle\Entity\Project $projects)
+    public function removeProject(Project $projects)
     {
         $this->projects->removeElement($projects);
+        $projects->removeModelObject($this);
     }
 
     /**
@@ -251,14 +232,38 @@ class ModelObject
     }
 
     /**
+     * Set owner
+     *
+     * @param \AppBundle\Entity\User $owner
+     * @return ModelObject
+     */
+    public function setOwner(User $owner = null)
+    {
+        $this->owner = $owner;
+
+        return $this;
+    }
+
+    /**
+     * Get owner
+     *
+     * @return \AppBundle\Entity\User 
+     */
+    public function getOwner()
+    {
+        return $this->owner;
+    }
+
+    /**
      * Add modelObjectProperties
      *
      * @param \AppBundle\Entity\ModelObjectProperty $modelObjectProperties
      * @return ModelObject
      */
-    public function addModelObjectProperty(\AppBundle\Entity\ModelObjectProperty $modelObjectProperties)
+    public function addModelObjectProperty(ModelObjectProperty $modelObjectProperties)
     {
         $this->modelObjectProperties[] = $modelObjectProperties;
+        $modelObjectProperties->addModelObject($this);
 
         return $this;
     }
@@ -268,9 +273,10 @@ class ModelObject
      *
      * @param \AppBundle\Entity\ModelObjectProperty $modelObjectProperties
      */
-    public function removeModelObjectProperty(\AppBundle\Entity\ModelObjectProperty $modelObjectProperties)
+    public function removeModelObjectProperty(ModelObjectProperty $modelObjectProperties)
     {
         $this->modelObjectProperties->removeElement($modelObjectProperties);
+        $modelObjectProperties->removeModelObject($this);
     }
 
     /**
