@@ -9,6 +9,7 @@ use Doctrine\ORM\Mapping as ORM;
  * ModelObject
  *
  * @ORM\Entity
+ * @ORM\Table(name="inowas_model_object")
  * @ORM\InheritanceType("JOINED")
  * @ORM\DiscriminatorColumn(name="discr", type="string")
  * @ORM\DiscriminatorMap({  "soilprofile" = "SoilProfile",
@@ -37,6 +38,7 @@ class ModelObject
      * @var ArrayCollection Project
      *
      * @ORM\ManyToMany(targetEntity="Project", inversedBy="modelObjects")
+     * @ORM\JoinTable(name="inowas_projects_model_objects")
      **/
     private $projects;
 

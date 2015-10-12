@@ -8,7 +8,7 @@ use Doctrine\ORM\Mapping as ORM;
 /**
  * Project
  *
- * @ORM\Table()
+ * @ORM\Table(name="inowas_project")
  * @ORM\Entity(repositoryClass="AppBundle\Entity\ProjectRepository")
  */
 class Project
@@ -34,6 +34,7 @@ class Project
      * @var ArrayCollection User
      *
      * @ORM\ManyToMany(targetEntity="User", inversedBy="participatedProjects")
+     * @ORM\JoinTable(name="inowas_users_participated_projects")
      */
     private $participants;
 
