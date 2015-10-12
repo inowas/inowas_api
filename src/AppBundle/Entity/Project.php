@@ -46,19 +46,12 @@ class Project
     protected $modelObjects;
 
     /**
-     * @var \stdClass
-     *
-     * @ORM\Column(name="features", type="object")
-     */
-    private $features;
-
-    /**
      * @var boolean
      *
      * @ORM\Column(name="public", type="boolean")
      */
     private $public;
-
+    
     /**
      * Constructor
      */
@@ -76,75 +69,6 @@ class Project
     public function getId()
     {
         return $this->id;
-    }
-
-    /**
-     * Set owner
-     *
-     * @param \stdClass $owner
-     * @return Project
-     */
-    public function setOwner($owner)
-    {
-        $this->owner = $owner;
-
-        return $this;
-    }
-
-    /**
-     * Get owner
-     *
-     * @return \stdClass 
-     */
-    public function getOwner()
-    {
-        return $this->owner;
-    }
-
-    /**
-     * Set participants
-     *
-     * @param \stdClass $participants
-     * @return Project
-     */
-    public function setParticipants($participants)
-    {
-        $this->participants = $participants;
-
-        return $this;
-    }
-
-    /**
-     * Get participants
-     *
-     * @return \stdClass 
-     */
-    public function getParticipants()
-    {
-        return $this->participants;
-    }
-
-    /**
-     * Set features
-     *
-     * @param \stdClass $features
-     * @return Project
-     */
-    public function setFeatures($features)
-    {
-        $this->features = $features;
-
-        return $this;
-    }
-
-    /**
-     * Get features
-     *
-     * @return \stdClass 
-     */
-    public function getFeatures()
-    {
-        return $this->features;
     }
 
     /**
@@ -171,6 +95,29 @@ class Project
     }
 
     /**
+     * Set owner
+     *
+     * @param \AppBundle\Entity\User $owner
+     * @return Project
+     */
+    public function setOwner(User $owner = null)
+    {
+        $this->owner = $owner;
+
+        return $this;
+    }
+
+    /**
+     * Get owner
+     *
+     * @return \AppBundle\Entity\User 
+     */
+    public function getOwner()
+    {
+        return $this->owner;
+    }
+
+    /**
      * Add participants
      *
      * @param \AppBundle\Entity\User $participants
@@ -178,8 +125,8 @@ class Project
      */
     public function addParticipant(User $participants)
     {
-        $participants->addParticipatedProject($this);
         $this->participants[] = $participants;
+        $participants->addParticipatedProject($this);
 
         return $this;
     }
@@ -191,8 +138,18 @@ class Project
      */
     public function removeParticipant(User $participants)
     {
-        $participants->removeParticipatedProject($this);
         $this->participants->removeElement($participants);
+        $participants->removeParticipatedProject($this);
+    }
+
+    /**
+     * Get participants
+     *
+     * @return \Doctrine\Common\Collections\Collection 
+     */
+    public function getParticipants()
+    {
+        return $this->participants;
     }
 
     /**
@@ -203,8 +160,8 @@ class Project
      */
     public function addModelObject(ModelObject $modelObjects)
     {
-        $modelObjects->addProject($this);
         $this->modelObjects[] = $modelObjects;
+        $modelObjects->addProject($this);
 
         return $this;
     }
@@ -216,8 +173,8 @@ class Project
      */
     public function removeModelObject(ModelObject $modelObjects)
     {
-        $modelObjects->removeProject($this);
         $this->modelObjects->removeElement($modelObjects);
+        $modelObjects->removeProject($this);
     }
 
     /**
