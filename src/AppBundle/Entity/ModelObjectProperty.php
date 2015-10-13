@@ -23,11 +23,11 @@ class ModelObjectProperty
     private $id;
 
     /**
-     * @var ArrayCollection ModelObject
+     * @var ModelObject
      *
-     * @ORM\ManyToMany(targetEntity="AppBundle\Entity\ModelObject", mappedBy="modelObjectProperties")
+     * @ORM\ManyToOne(targetEntity="AppBundle\Entity\ModelObject", inversedBy="modelObjectProperties")
      */
-    private $modelObjects;
+    private $modelObject;
 
     /**
      * @var string
@@ -62,9 +62,8 @@ class ModelObjectProperty
      */
     public function __construct()
     {
-        $this->modelObjects = new \Doctrine\Common\Collections\ArrayCollection();
-        $this->timeSeries = new \Doctrine\Common\Collections\ArrayCollection();
-        $this->raster = new \Doctrine\Common\Collections\ArrayCollection();
+        $this->timeSeries = new ArrayCollection();
+        $this->raster = new ArrayCollection();
     }
 
     /**
@@ -75,6 +74,30 @@ class ModelObjectProperty
     public function getId()
     {
         return $this->id;
+    }
+
+
+    /**
+     * Set modelObject
+     *
+     * @param \AppBundle\Entity\ModelObject $modelObject
+     * @return ModelObjectProperty
+     */
+    public function setModelObject(ModelObject $modelObject = null)
+    {
+        $this->modelObject = $modelObject;
+
+        return $this;
+    }
+
+    /**
+     * Get modelObject
+     *
+     * @return \AppBundle\Entity\ModelObject
+     */
+    public function getModelObject()
+    {
+        return $this->modelObject;
     }
 
     /**
@@ -124,45 +147,12 @@ class ModelObjectProperty
     }
 
     /**
-     * Add modelObjects
-     *
-     * @param \AppBundle\Entity\ModelObject $modelObjects
-     * @return ModelObjectProperty
-     */
-    public function addModelObject(\AppBundle\Entity\ModelObject $modelObjects)
-    {
-        $this->modelObjects[] = $modelObjects;
-
-        return $this;
-    }
-
-    /**
-     * Remove modelObjects
-     *
-     * @param \AppBundle\Entity\ModelObject $modelObjects
-     */
-    public function removeModelObject(\AppBundle\Entity\ModelObject $modelObjects)
-    {
-        $this->modelObjects->removeElement($modelObjects);
-    }
-
-    /**
-     * Get modelObjects
-     *
-     * @return \Doctrine\Common\Collections\Collection 
-     */
-    public function getModelObjects()
-    {
-        return $this->modelObjects;
-    }
-
-    /**
      * Add timeSeries
      *
      * @param \AppBundle\Entity\TimeSeries $timeSeries
      * @return ModelObjectProperty
      */
-    public function addTimeSeries(\AppBundle\Entity\TimeSeries $timeSeries)
+    public function addTimeSeries(TimeSeries $timeSeries)
     {
         $this->timeSeries[] = $timeSeries;
 
@@ -174,7 +164,7 @@ class ModelObjectProperty
      *
      * @param \AppBundle\Entity\TimeSeries $timeSeries
      */
-    public function removeTimeSeries(\AppBundle\Entity\TimeSeries $timeSeries)
+    public function removeTimeSeries(TimeSeries $timeSeries)
     {
         $this->timeSeries->removeElement($timeSeries);
     }
@@ -195,7 +185,7 @@ class ModelObjectProperty
      * @param \AppBundle\Entity\Raster $raster
      * @return ModelObjectProperty
      */
-    public function addRaster(\AppBundle\Entity\Raster $raster)
+    public function addRaster(Raster $raster)
     {
         $this->raster[] = $raster;
 
@@ -207,7 +197,7 @@ class ModelObjectProperty
      *
      * @param \AppBundle\Entity\Raster $raster
      */
-    public function removeRaster(\AppBundle\Entity\Raster $raster)
+    public function removeRaster(Raster $raster)
     {
         $this->raster->removeElement($raster);
     }

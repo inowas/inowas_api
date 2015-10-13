@@ -58,8 +58,7 @@ class ModelObject
     /**
      * @var ArrayCollection ModelObjectProperty
      *
-     * @ORM\ManyToMany(targetEntity="AppBundle\Entity\ModelObjectProperty", inversedBy="modelObjects")
-     * @ORM\JoinTable(name="inowas_model_object_model_object_property")
+     * @ORM\OneToMany(targetEntity="AppBundle\Entity\ModelObjectProperty", mappedBy="modelObjects")
      */
     private $modelObjectProperties;
 
@@ -272,7 +271,6 @@ class ModelObject
     public function addModelObjectProperty(ModelObjectProperty $modelObjectProperties)
     {
         $this->modelObjectProperties[] = $modelObjectProperties;
-        $modelObjectProperties->addModelObject($this);
 
         return $this;
     }
@@ -285,7 +283,6 @@ class ModelObject
     public function removeModelObjectProperty(ModelObjectProperty $modelObjectProperties)
     {
         $this->modelObjectProperties->removeElement($modelObjectProperties);
-        $modelObjectProperties->removeModelObject($this);
     }
 
     /**
