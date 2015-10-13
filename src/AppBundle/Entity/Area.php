@@ -19,11 +19,11 @@ class Area extends ModelObject
     private $geometry;
 
     /**
-     * @var ObservationPoint
+     * @var Boolean
      *
-     * @ORM\ManyToOne(targetEntity="ObservationPoint")
+     * @ORM\Column(name="is_lake", type="boolean")
      */
-    private $observationPoints;
+    private $lake = false;
 
     /**
      * @return Polygon
@@ -42,25 +42,25 @@ class Area extends ModelObject
     }
 
     /**
-     * Set observationPoints
+     * Set lake
      *
-     * @param \AppBundle\Entity\ObservationPoint $observationPoints
-     * @return Lake
+     * @param boolean $lake
+     * @return Area
      */
-    public function setObservationPoints(ObservationPoint $observationPoints = null)
+    public function setLake($lake)
     {
-        $this->observationPoints = $observationPoints;
+        $this->lake = $lake;
 
         return $this;
     }
 
     /**
-     * Get observationPoints
+     * Get lake
      *
-     * @return \AppBundle\Entity\ObservationPoint 
+     * @return boolean 
      */
-    public function getObservationPoints()
+    public function getLake()
     {
-        return $this->observationPoints;
+        return $this->lake;
     }
 }

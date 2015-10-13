@@ -56,12 +56,20 @@ class ModelObject
     private $owner;
 
     /**
-     * @var string
+     * @var ArrayCollection ModelObjectProperty
      *
      * @ORM\ManyToMany(targetEntity="AppBundle\Entity\ModelObjectProperty", inversedBy="modelObjects")
      * @ORM\JoinTable(name="inowas_model_object_model_object_property")
      */
     private $modelObjectProperties;
+
+    /**
+     * @var ArrayCollection ObservationPoint
+     *
+     * @ORM\ManyToMany(targetEntity="ObservationPoint", inversedBy="modelObjects")
+     * @ORM\JoinTable(name="inowas_model_object_observation_point")
+     */
+    private $observationPoints;
 
     /**
      * @var boolean
@@ -92,6 +100,7 @@ class ModelObject
     {
         $this->projects = new ArrayCollection();
         $this->modelObjectProperties = new ArrayCollection();
+        $this->observationPoints = new ArrayCollection();
     }
 
     /**
@@ -287,5 +296,40 @@ class ModelObject
     public function getModelObjectProperties()
     {
         return $this->modelObjectProperties;
+    }
+
+    /**
+     * Add observationPoints
+     *
+     * @param \AppBundle\Entity\ObservationPoint $observationPoints
+     * @return ModelObject
+     */
+    public function addObservationPoint(ObservationPoint $observationPoints)
+    {
+        $this->observationPoints[] = $observationPoints;
+        $observationPoints->addModelObject($this);
+
+        return $this;
+    }
+
+    /**
+     * Remove observationPoints
+     *
+     * @param \AppBundle\Entity\ObservationPoint $observationPoints
+     */
+    public function removeObservationPoint(ObservationPoint $observationPoints)
+    {
+        $this->observationPoints->removeElement($observationPoints);
+        $observationPoints->removeModelObject($this);
+    }
+
+    /**
+     * Get observationPoints
+     *
+     * @return \Doctrine\Common\Collections\Collection 
+     */
+    public function getObservationPoints()
+    {
+        return $this->observationPoints;
     }
 }

@@ -30,9 +30,9 @@ class ObservationPoint extends ModelObject
     /**
      * @var ArrayCollection ModelObject
      *
-     * @ORM\ManyToMany(targetEntity="AppBundle\Entity\Stream", mappedBy="observationPoints")
+     * @ORM\ManyToMany(targetEntity="AppBundle\Entity\ModelObject", mappedBy="observationPoints")
      */
-    private $streams;
+    private $modelObjects;
 
     /**
      * Constructor
@@ -40,7 +40,7 @@ class ObservationPoint extends ModelObject
     public function __construct()
     {
         parent::__construct();
-        $this->streams = new ArrayCollection();
+        $this->modelObjects = new ArrayCollection();
     }
 
     /**
@@ -90,35 +90,37 @@ class ObservationPoint extends ModelObject
     }
 
     /**
-     * Add streams
+     * Add modelObjects
      *
-     * @param \AppBundle\Entity\Stream $streams
+     * @param \AppBundle\Entity\ModelObject $modelObjects
      * @return ObservationPoint
      */
-    public function addStream(Stream $streams)
+    public function addModelObject(ModelObject $modelObjects)
     {
-        $this->streams[] = $streams;
+        $this->modelObjects[] = $modelObjects;
+        $modelObjects->addObservationPoint($this);
 
         return $this;
     }
 
     /**
-     * Remove streams
+     * Remove modelObjects
      *
-     * @param \AppBundle\Entity\Stream $streams
+     * @param \AppBundle\Entity\ModelObject $modelObjects
      */
-    public function removeStream(Stream $streams)
+    public function removeModelObject(ModelObject $modelObjects)
     {
-        $this->streams->removeElement($streams);
+        $this->modelObjects->removeElement($modelObjects);
+        $modelObjects->removeObservationPoint($this);
     }
 
     /**
-     * Get streams
+     * Get modelObjects
      *
      * @return \Doctrine\Common\Collections\Collection 
      */
-    public function getStreams()
+    public function getModelObjects()
     {
-        return $this->streams;
+        return $this->modelObjects;
     }
 }
