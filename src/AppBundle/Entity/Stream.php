@@ -4,6 +4,7 @@ namespace AppBundle\Entity;
 
 use CrEOF\Spatial\PHP\Types\Geometry\LineString;
 use CrEOF\Spatial\PHP\Types\Geometry\Point;
+use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
@@ -27,12 +28,21 @@ class Stream extends ModelObject
     private $line;
 
     /**
-     * @var ObservationPoint
+     * @var ArrayCollection ObservationPoint
      *
-     * @ORM\ManyToOne(targetEntity="ObservationPoint")
+     * @ORM\ManyToMany(targetEntity="ObservationPoint", inversedBy="streams")
+     * @ORM\JoinTable(name="inowas_stream_observation_point")
      */
     private $observationPoints;
 
+    /**
+     * Constructor
+     */
+    public function __construct()
+    {
+        parent::__construct();
+        $this->observationPoints = new ArrayCollection();
+    }
 
     /**
      * Set startingPoint
@@ -101,5 +111,28 @@ class Stream extends ModelObject
     public function getObservationPoints()
     {
         return $this->observationPoints;
+    }
+
+    /**
+     * Add observationPoints
+     *
+     * @param \AppBundle\Entity\ObservationPoint $observationPoints
+     * @return Stream
+     */
+    public function addObservationPoint(ObservationPoint $observationPoints)
+    {
+        $this->observationPoints[] = $observationPoints;
+
+        return $this;
+    }
+
+    /**
+     * Remove observationPoints
+     *
+     * @param \AppBundle\Entity\ObservationPoint $observationPoints
+     */
+    public function removeObservationPoint(ObservationPoint $observationPoints)
+    {
+        $this->observationPoints->removeElement($observationPoints);
     }
 }
