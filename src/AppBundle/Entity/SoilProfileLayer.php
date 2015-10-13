@@ -26,6 +26,13 @@ class SoilProfileLayer extends ModelObject
     private $bottomElevation;
 
     /**
+     * @var SoilProfile
+     *
+     * @ORM\ManyToOne(targetEntity="AppBundle\Entity\SoilProfile", inversedBy="soilProfileLayers")
+     */
+    private $soilProfile;
+
+    /**
      * @var ArrayCollection
      *
      * @ORM\ManyToMany(targetEntity="AppBundle\Entity\Layer", mappedBy="soilProfileLayer")
@@ -115,5 +122,28 @@ class SoilProfileLayer extends ModelObject
     public function getLayer()
     {
         return $this->layer;
+    }
+
+    /**
+     * Set soilProfile
+     *
+     * @param \AppBundle\Entity\SoilProfile $soilProfile
+     * @return SoilProfileLayer
+     */
+    public function setSoilProfile(SoilProfile $soilProfile = null)
+    {
+        $this->soilProfile = $soilProfile;
+
+        return $this;
+    }
+
+    /**
+     * Get soilProfile
+     *
+     * @return \AppBundle\Entity\SoilProfile 
+     */
+    public function getSoilProfile()
+    {
+        return $this->soilProfile;
     }
 }
