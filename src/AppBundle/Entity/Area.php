@@ -19,11 +19,11 @@ class Area extends ModelObject
     private $geometry;
 
     /**
-     * @var Boolean
+     * @var AreaType
      *
-     * @ORM\Column(name="is_lake", type="boolean")
+     * @ORM\ManyToOne(targetEntity="AppBundle\Entity\AreaType")
      */
-    private $lake = false;
+    private $areaType;
 
     /**
      * @return Polygon
@@ -42,25 +42,25 @@ class Area extends ModelObject
     }
 
     /**
-     * Set lake
+     * Set areaType
      *
-     * @param boolean $lake
+     * @param \AppBundle\Entity\AreaType $areaType
      * @return Area
      */
-    public function setLake($lake)
+    public function setAreaType(AreaType $areaType = null)
     {
-        $this->lake = $lake;
+        $this->areaType = $areaType;
 
         return $this;
     }
 
     /**
-     * Get lake
+     * Get areaType
      *
-     * @return boolean 
+     * @return \AppBundle\Entity\AreaType 
      */
-    public function getLake()
+    public function getAreaType()
     {
-        return $this->lake;
+        return $this->areaType;
     }
 }
