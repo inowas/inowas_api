@@ -37,26 +37,13 @@ class ModelObjectProperty
     private $name = "";
 
     /**
-     * @var float
-     *
-     * @ORM\Column(name="value", type="float", nullable=true)
-     */
-    private $value = null;
-
-    /**
      * @var ArrayCollection TimeSeries
      *
      * @ORM\OneToMany(targetEntity="AppBundle\Entity\TimeSeries", mappedBy="modelObjectProperty")
      */
     private $timeSeries;
 
-    /**
-     * @var ArrayCollection Raster
-     *
-     * @ORM\ManyToMany(targetEntity="AppBundle\Entity\Raster", inversedBy="modelObjectProperty")
-     * @ORM\JoinTable(name="inowas_model_object_properties_raster")
-     */
-    private $raster;
+
     /**
      * Constructor
      */
@@ -124,29 +111,6 @@ class ModelObjectProperty
     }
 
     /**
-     * Set value
-     *
-     * @param float $value
-     * @return ModelObjectProperty
-     */
-    public function setValue($value)
-    {
-        $this->value = $value;
-
-        return $this;
-    }
-
-    /**
-     * Get value
-     *
-     * @return float 
-     */
-    public function getValue()
-    {
-        return $this->value;
-    }
-
-    /**
      * Add timeSeries
      *
      * @param \AppBundle\Entity\TimeSeries $timeSeries
@@ -177,38 +141,5 @@ class ModelObjectProperty
     public function getTimeSeries()
     {
         return $this->timeSeries;
-    }
-
-    /**
-     * Add raster
-     *
-     * @param \AppBundle\Entity\Raster $raster
-     * @return ModelObjectProperty
-     */
-    public function addRaster(Raster $raster)
-    {
-        $this->raster[] = $raster;
-
-        return $this;
-    }
-
-    /**
-     * Remove raster
-     *
-     * @param \AppBundle\Entity\Raster $raster
-     */
-    public function removeRaster(Raster $raster)
-    {
-        $this->raster->removeElement($raster);
-    }
-
-    /**
-     * Get raster
-     *
-     * @return \Doctrine\Common\Collections\Collection 
-     */
-    public function getRaster()
-    {
-        return $this->raster;
     }
 }

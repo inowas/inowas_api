@@ -44,6 +44,13 @@ class TimeSeries
     private $value;
 
     /**
+     * @var float
+     *
+     * @ORM\Column(name="raster", type="string")
+     */
+    private $raster;
+
+    /**
      * Get id
      *
      * @return integer 
@@ -119,5 +126,28 @@ class TimeSeries
     public function getModelObjectProperties()
     {
         return $this->modelObjectProperties;
+    }
+
+    /**
+     * Set raster
+     *
+     * @param string $raster
+     * @return TimeSeries
+     */
+    public function setRaster($raster)
+    {
+        $this->raster = $raster;
+
+        return $this;
+    }
+
+    /**
+     * Get raster
+     *
+     * @return string 
+     */
+    public function getRaster()
+    {
+        return $this->raster;
     }
 }
