@@ -1,2 +1,2 @@
-ALTER TABLE inowas_time_series DROP raster;
-ALTER TABLE inowas_time_series ADD raster raster;
+ALTER TABLE inowas_raster DROP rast;
+ALTER TABLE inowas_raster ADD rast raster;

@@ -32,7 +32,7 @@ class TimeSeries
     /**
      * @var \DateTime
      *
-     * @ORM\Column(name="timeStamp", type="datetime", nullable=true)
+     * @ORM\Column(name="timeStamp", type="datetimetz", nullable=true)
      */
     private $timeStamp=null;
 
@@ -44,9 +44,10 @@ class TimeSeries
     private $value;
 
     /**
-     * @var float
+     * @var Raster
      *
-     * @ORM\Column(name="raster", type="string")
+     * @ORM\ManyToOne(targetEntity="AppBundle\Entity\Raster")
+     * @ORM\JoinColumn(name="raster_id", referencedColumnName="rid")
      */
     private $raster;
 
@@ -131,10 +132,10 @@ class TimeSeries
     /**
      * Set raster
      *
-     * @param string $raster
+     * @param \AppBundle\Entity\Raster $raster
      * @return TimeSeries
      */
-    public function setRaster($raster)
+    public function setRaster(\AppBundle\Entity\Raster $raster = null)
     {
         $this->raster = $raster;
 
@@ -144,7 +145,7 @@ class TimeSeries
     /**
      * Get raster
      *
-     * @return string
+     * @return \AppBundle\Entity\Raster 
      */
     public function getRaster()
     {
