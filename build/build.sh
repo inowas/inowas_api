@@ -10,3 +10,5 @@ app/console doctrine:database:create
 su - postgres -c "psql inowas_entities < "$SQL_DIR"/structure.sql"
 
 app/console doctrine:schema:create
+
+su - postgres -c "psql inowas_entities < "$SQL_DIR"/raster.sql"

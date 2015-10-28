@@ -8,7 +8,7 @@ use Doctrine\ORM\Mapping as ORM;
 /**
  * TimeSeries
  *
- * @ORM\Table()
+ * @ORM\Table(name="inowas_time_series")
  * @ORM\Entity
  */
 class TimeSeries
@@ -144,7 +144,7 @@ class TimeSeries
     /**
      * Get raster
      *
-     * @return string 
+     * @return string
      */
     public function getRaster()
     {
