@@ -26,6 +26,7 @@ class ModelObjectProperty
      * @var ModelObject
      *
      * @ORM\ManyToOne(targetEntity="AppBundle\Entity\ModelObject", inversedBy="modelObjectProperties")
+     * @ORM\JoinColumn(name="model_object_id", referencedColumnName="id", onDelete="CASCADE")
      */
     private $modelObject;
 
@@ -33,6 +34,7 @@ class ModelObjectProperty
      * @var ModelObjectPropertyType
      *
      * @ORM\ManyToOne(targetEntity="AppBundle\Entity\ModelObjectPropertyType")
+     * @ORM\JoinColumn(name="model_object_property_type_id", referencedColumnName="id")
      */
     private $type;
 
