@@ -43,5 +43,6 @@ class LoadUserData implements FixtureInterface, ContainerAwareInterface
         $project->setName('Scenario 1');
         $project->setOwner($user);
         $entityManager->persist($project);
+        $entityManager->flush();
     }
 }
