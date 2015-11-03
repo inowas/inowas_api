@@ -100,6 +100,7 @@ class ModelObject
         $this->projects = new ArrayCollection();
         $this->modelObjectProperties = new ArrayCollection();
         $this->observationPoints = new ArrayCollection();
+        $this->dateCreated = new \DateTime();
     }
 
     /**
