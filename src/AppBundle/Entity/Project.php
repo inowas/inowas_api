@@ -23,6 +23,13 @@ class Project
     private $id;
 
     /**
+     * @var string
+     *
+     * @ORM\Column(name="name", type="string",length=255)
+     */
+    private $name;
+
+    /**
      * @var User
      *
      * @ORM\ManyToOne(targetEntity="User", inversedBy="ownedProjects")
@@ -185,5 +192,28 @@ class Project
     public function getModelObjects()
     {
         return $this->modelObjects;
+    }
+
+    /**
+     * Set name
+     *
+     * @param string $name
+     * @return Project
+     */
+    public function setName($name)
+    {
+        $this->name = $name;
+
+        return $this;
+    }
+
+    /**
+     * Get name
+     *
+     * @return string 
+     */
+    public function getName()
+    {
+        return $this->name;
     }
 }
