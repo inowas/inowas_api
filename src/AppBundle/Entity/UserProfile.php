@@ -44,6 +44,15 @@ class UserProfile
     protected $lastName = "";
 
     /**
+     * UserProfile constructor.
+     * @param User $user
+     */
+    public function __construct(User $user)
+    {
+        $this->user = $user;
+    }
+
+    /**
      * Get id
      *
      * @return integer 

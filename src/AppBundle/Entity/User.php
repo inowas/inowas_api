@@ -54,7 +54,7 @@ class User extends BaseUser
     public function __construct()
     {
         parent::__construct();
-        $this->profile = new UserProfile();
+        $this->profile = new UserProfile($this);
         $this->ownedProjects = new ArrayCollection();
         $this->ownedModelObjects = new ArrayCollection();
     }
