@@ -26,7 +26,7 @@ class Project
      * @var User
      *
      * @ORM\ManyToOne(targetEntity="User", inversedBy="ownedProjects")
-     * @ORM\JoinColumn(name="owner_id", referencedColumnName="id")
+     * @ORM\JoinColumn(name="owner_id", referencedColumnName="id", onDelete="cascade")
      */
     private $owner;
 

@@ -30,11 +30,11 @@ class ModelObjectProperty
     private $modelObject;
 
     /**
-     * @var string
+     * @var ModelObjectPropertyType
      *
-     * @ORM\Column(name="name", type="string", length=255)
+     * @ORM\ManyToOne(targetEntity="AppBundle\Entity\ModelObjectPropertyType")
      */
-    private $name = "";
+    private $type;
 
     /**
      * @var ArrayCollection TimeSeries
@@ -50,7 +50,6 @@ class ModelObjectProperty
     public function __construct()
     {
         $this->timeSeries = new ArrayCollection();
-        $this->raster = new ArrayCollection();
     }
 
     /**
@@ -88,29 +87,6 @@ class ModelObjectProperty
     }
 
     /**
-     * Set name
-     *
-     * @param string $name
-     * @return ModelObjectProperty
-     */
-    public function setName($name)
-    {
-        $this->name = $name;
-
-        return $this;
-    }
-
-    /**
-     * Get name
-     *
-     * @return string 
-     */
-    public function getName()
-    {
-        return $this->name;
-    }
-
-    /**
      * Add timeSeries
      *
      * @param \AppBundle\Entity\TimeSeries $timeSeries
@@ -141,5 +117,28 @@ class ModelObjectProperty
     public function getTimeSeries()
     {
         return $this->timeSeries;
+    }
+
+    /**
+     * Set type
+     *
+     * @param \AppBundle\Entity\ModelObjectPropertyType $type
+     * @return ModelObjectProperty
+     */
+    public function setType(\AppBundle\Entity\ModelObjectPropertyType $type = null)
+    {
+        $this->type = $type;
+
+        return $this;
+    }
+
+    /**
+     * Get type
+     *
+     * @return \AppBundle\Entity\ModelObjectPropertyType 
+     */
+    public function getType()
+    {
+        return $this->type;
     }
 }

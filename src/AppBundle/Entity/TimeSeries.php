@@ -127,4 +127,27 @@ class TimeSeries
     {
         return $this->modelObjectProperties;
     }
+
+    /**
+     * Set raster
+     *
+     * @param string $raster
+     * @return TimeSeries
+     */
+    public function setRaster($raster)
+    {
+        $this->raster = $raster;
+
+        return $this;
+    }
+
+    /**
+     * Get raster
+     *
+     * @return string 
+     */
+    public function getRaster()
+    {
+        return $this->raster;
+    }
 }
