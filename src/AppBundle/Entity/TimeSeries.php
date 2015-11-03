@@ -26,6 +26,7 @@ class TimeSeries
      * @var ArrayCollection ModelObjectProperty
      *
      * @ORM\ManyToOne(targetEntity="AppBundle\Entity\ModelObjectProperty", inversedBy="timeSeries")
+     * @ORM\JoinColumn(name="model_object_properties_id", referencedColumnName="id", onDelete="CASCADE")
      */
     private $modelObjectProperties;
 
