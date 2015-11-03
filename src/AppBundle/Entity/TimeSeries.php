@@ -44,10 +44,9 @@ class TimeSeries
     private $value;
 
     /**
-     * @var Raster
+     * @var string
      *
-     * @ORM\ManyToOne(targetEntity="AppBundle\Entity\Raster")
-     * @ORM\JoinColumn(name="raster_id", referencedColumnName="rid")
+     * @ORM\Column(name="raster", type="string")
      */
     private $raster;
 
@@ -127,28 +126,5 @@ class TimeSeries
     public function getModelObjectProperties()
     {
         return $this->modelObjectProperties;
-    }
-
-    /**
-     * Set raster
-     *
-     * @param \AppBundle\Entity\Raster $raster
-     * @return TimeSeries
-     */
-    public function setRaster(\AppBundle\Entity\Raster $raster = null)
-    {
-        $this->raster = $raster;
-
-        return $this;
-    }
-
-    /**
-     * Get raster
-     *
-     * @return \AppBundle\Entity\Raster 
-     */
-    public function getRaster()
-    {
-        return $this->raster;
     }
 }
