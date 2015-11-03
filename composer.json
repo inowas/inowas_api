@@ -21,7 +21,8 @@
         "sensio/framework-extra-bundle": "~3.0,>=3.0.2",
         "incenteev/composer-parameter-handler": "~2.0",
         "friendsofsymfony/user-bundle": "~2.0@dev",
-        "creof/doctrine2-spatial": "dev-master"
+        "creof/doctrine2-spatial": "dev-master",
+        "phpunit/phpunit": "4.7.*"
     },
     "require-dev": {
         "sensio/generator-bundle": "~2.3"
