@@ -172,7 +172,10 @@ class Project
     public function addModelObject(ModelObject $modelObjects)
     {
         $this->modelObjects[] = $modelObjects;
-        $modelObjects->addProject($this);
+        if (!in_array($this, $modelObjects->getProjects()->toArray()))
+        {
+            $modelObjects->addProject($this);
+        }
 
         return $this;
     }
@@ -185,7 +188,10 @@ class Project
     public function removeModelObject(ModelObject $modelObjects)
     {
         $this->modelObjects->removeElement($modelObjects);
-        $modelObjects->removeProject($this);
+        if (in_array($this, $modelObjects->getProjects()->toArray()))
+        {
+            $modelObjects->removeProject($this);
+        }
     }
 
     /**

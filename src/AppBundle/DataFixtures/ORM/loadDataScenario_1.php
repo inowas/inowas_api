@@ -4,6 +4,7 @@ namespace AppBundle\DataFixtures\ORM;
 
 use AppBundle\Entity\Area;
 use AppBundle\Entity\AreaType;
+use AppBundle\Entity\Boundary;
 use AppBundle\Entity\Layer;
 use AppBundle\Entity\ObservationPoint;
 use AppBundle\Entity\Project;
@@ -54,16 +55,21 @@ class LoadUserData implements FixtureInterface, ContainerAwareInterface
 
         // Create layers
         $layer1 = new Layer($user);
+        $layer1->addProject($project);
         $layer2 = new Layer($user);
+        $layer2->addProject($project);
         $layer3 = new Layer($user);
+        $layer3->addProject($project);
 
         // Add Soilprofile 1 with soilprofilelayers
         $soilProfile = new SoilProfile($user);
+        $soilProfile->addProject($project);
         $point = new Point(11772891.9650673, 2397519.89608855, 3857);
         $soilProfile->setPoint($point);
         $entityManager->persist($soilProfile);
 
         $soilProfileLayer = new SoilProfileLayer($user);
+        $soilProfileLayer->addProject($project);
         $soilProfileLayer->setSoilProfile($soilProfile);
         $soilProfileLayer->setTopElevation(100);
         $soilProfileLayer->setBottomElevation(70);
@@ -71,6 +77,7 @@ class LoadUserData implements FixtureInterface, ContainerAwareInterface
         $entityManager->persist($soilProfileLayer);
 
         $soilProfileLayer = new SoilProfileLayer($user);
+        $soilProfileLayer->addProject($project);
         $soilProfileLayer->setSoilProfile($soilProfile);
         $soilProfileLayer->setTopElevation(70);
         $soilProfileLayer->setBottomElevation(40);
@@ -78,6 +85,7 @@ class LoadUserData implements FixtureInterface, ContainerAwareInterface
         $entityManager->persist($soilProfileLayer);
 
         $soilProfileLayer = new SoilProfileLayer($user);
+        $soilProfileLayer->addProject($project);
         $soilProfileLayer->setSoilProfile($soilProfile);
         $soilProfileLayer->setTopElevation(40);
         $soilProfileLayer->setBottomElevation(0);
@@ -86,11 +94,13 @@ class LoadUserData implements FixtureInterface, ContainerAwareInterface
 
         // Add Soilprofile 2 with soilprofilelayers
         $soilProfile = new SoilProfile($user);
+        $soilProfile->addProject($project);
         $point = new Point(11786103.1301754, 2397138.80478736, 3857);
         $soilProfile->setPoint($point);
         $entityManager->persist($soilProfile);
 
         $soilProfileLayer = new SoilProfileLayer($user);
+        $soilProfileLayer->addProject($project);
         $soilProfileLayer->setSoilProfile($soilProfile);
         $soilProfileLayer->setTopElevation(100);
         $soilProfileLayer->setBottomElevation(70);
@@ -98,6 +108,7 @@ class LoadUserData implements FixtureInterface, ContainerAwareInterface
         $entityManager->persist($soilProfileLayer);
 
         $soilProfileLayer = new SoilProfileLayer($user);
+        $soilProfileLayer->addProject($project);
         $soilProfileLayer->setSoilProfile($soilProfile);
         $soilProfileLayer->setTopElevation(70);
         $soilProfileLayer->setBottomElevation(40);
@@ -105,6 +116,7 @@ class LoadUserData implements FixtureInterface, ContainerAwareInterface
         $entityManager->persist($soilProfileLayer);
 
         $soilProfileLayer = new SoilProfileLayer($user);
+        $soilProfileLayer->addProject($project);
         $soilProfileLayer->setSoilProfile($soilProfile);
         $soilProfileLayer->setTopElevation(40);
         $soilProfileLayer->setBottomElevation(0);
@@ -113,11 +125,13 @@ class LoadUserData implements FixtureInterface, ContainerAwareInterface
 
         // Add Soilprofile 3 with soilprofilelayers
         $soilProfile = new SoilProfile($user);
+        $soilProfile->addProject($project);
         $point = new Point(11779836.2954446, 2387061.05704468, 3857);
         $soilProfile->setPoint($point);
         $entityManager->persist($soilProfile);
 
         $soilProfileLayer = new SoilProfileLayer($user);
+        $soilProfileLayer->addProject($project);
         $soilProfileLayer->setSoilProfile($soilProfile);
         $soilProfileLayer->setTopElevation(100);
         $soilProfileLayer->setBottomElevation(70);
@@ -125,6 +139,7 @@ class LoadUserData implements FixtureInterface, ContainerAwareInterface
         $entityManager->persist($soilProfileLayer);
 
         $soilProfileLayer = new SoilProfileLayer($user);
+        $soilProfileLayer->addProject($project);
         $soilProfileLayer->setSoilProfile($soilProfile);
         $soilProfileLayer->setTopElevation(70);
         $soilProfileLayer->setBottomElevation(40);
@@ -132,6 +147,7 @@ class LoadUserData implements FixtureInterface, ContainerAwareInterface
         $entityManager->persist($soilProfileLayer);
 
         $soilProfileLayer = new SoilProfileLayer($user);
+        $soilProfileLayer->addProject($project);
         $soilProfileLayer->setSoilProfile($soilProfile);
         $soilProfileLayer->setTopElevation(40);
         $soilProfileLayer->setBottomElevation(0);
@@ -144,6 +160,7 @@ class LoadUserData implements FixtureInterface, ContainerAwareInterface
 
         // Set stream
         $stream = new Stream($user);
+        $stream->addProject($project);
         $startingPoint = new Point(11777338.0302479, 2395656.78306049, 3857);
         $stream->setStartingPoint($startingPoint);
 
@@ -161,6 +178,7 @@ class LoadUserData implements FixtureInterface, ContainerAwareInterface
         $entityManager->persist($areaType);
 
         $area = new Area($user);
+        $area->addProject($project);
         $area->setAreaType($areaType);
 
         $coordinates = array(
@@ -177,6 +195,7 @@ class LoadUserData implements FixtureInterface, ContainerAwareInterface
 
         // Create ObservationPoints for area
         $observationPoint = new ObservationPoint($user);
+        $observationPoint->addProject($project);
         $point = new Point(11778481.3041515, 2393327.89177542, 3857);
         $observationPoint->setPoint($point);
         $observationPoint->setElevation(100);
@@ -184,6 +203,7 @@ class LoadUserData implements FixtureInterface, ContainerAwareInterface
         $area->addObservationPoint($observationPoint);
 
         $observationPoint = new ObservationPoint($user);
+        $observationPoint->addProject($project);
         $point = new Point(11772891.9650673, 2397519.89608855, 3857);
         $observationPoint->setPoint($point);
         $observationPoint->setElevation(100);
@@ -191,13 +211,26 @@ class LoadUserData implements FixtureInterface, ContainerAwareInterface
         $area->addObservationPoint($observationPoint);
 
         $observationPoint = new ObservationPoint($user);
+        $observationPoint->addProject($project);
         $point = new Point(11786103.1301754, 2397138.80478736, 3857);
         $observationPoint->setPoint($point);
         $observationPoint->setElevation(100);
         $entityManager->persist($observationPoint);
-        $area->addObservationPoint($observationPoint);
 
+        $area->addObservationPoint($observationPoint);
         $entityManager->persist($area);
+
+        $boundary = new Boundary($user);
+        $boundary->addProject($project);
+        $lineCoordinates = array(
+            array(11767778.4794313, 2403329.01798664),
+            array(11766937.6721201, 2380245.03544451),
+            array(11791168.2100865, 2379939.28733137)
+        );
+        $line = new LineString($lineCoordinates, 3857);
+        $boundary->setGeometry($line);
+        $entityManager->persist($boundary);
+
         $entityManager->flush();
     }
 }

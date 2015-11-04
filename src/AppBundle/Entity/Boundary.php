@@ -2,7 +2,7 @@
 
 namespace AppBundle\Entity;
 
-use CrEOF\Spatial\PHP\Types\Geometry\Polygon;
+use CrEOF\Spatial\PHP\Types\Geometry\LineString;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
@@ -12,14 +12,14 @@ use Doctrine\ORM\Mapping as ORM;
 class Boundary extends ModelObject
 {
     /**
-     * @var Polygon
+     * @var LineString
      *
      * @ORM\Column(name="geometry", type="linestring", nullable=true)
      */
     private $geometry;
 
     /**
-     * @return Polygon
+     * @return LineString
      */
     public function getGeometry()
     {
@@ -27,9 +27,9 @@ class Boundary extends ModelObject
     }
 
     /**
-     * @param Polygon $geometry
+     * @param LineString $geometry
      */
-    public function setGeometry(Polygon $geometry)
+    public function setGeometry(LineString $geometry)
     {
         $this->geometry = $geometry;
     }

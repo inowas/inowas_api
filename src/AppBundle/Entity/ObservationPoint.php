@@ -115,7 +115,11 @@ class ObservationPoint extends ModelObject
     public function removeModelObject(ModelObject $modelObjects)
     {
         $this->modelObjects->removeElement($modelObjects);
-        $modelObjects->removeObservationPoint($this);
+
+        if (in_array($this, $modelObjects->getObservationPoints()->toArray()))
+        {
+            $modelObjects->removeObservationPoint($this);
+        }
     }
 
     /**
