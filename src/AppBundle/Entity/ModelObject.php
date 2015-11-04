@@ -12,12 +12,13 @@ use Doctrine\ORM\Mapping as ORM;
  * @ORM\Table(name="inowas_model_object")
  * @ORM\InheritanceType("JOINED")
  * @ORM\DiscriminatorColumn(name="discr", type="string")
- * @ORM\DiscriminatorMap({  "soilprofile" = "SoilProfile",
- *                          "soilprofilelayer" = "SoilProfileLayer",
+ * @ORM\DiscriminatorMap({  "area" = "Area",
+ *                          "boundary" = "Boundary",
  *                          "layer" = "Layer",
  *                          "observationpoint" = "ObservationPoint",
- *                          "stream" = "Stream",
- *                          "area" = "Area"
+ *                          "soilprofile" = "SoilProfile",
+ *                          "soilprofilelayer" = "SoilProfileLayer",
+ *                          "stream" = "Stream"
  * })
  */
 
