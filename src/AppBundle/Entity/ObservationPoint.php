@@ -98,7 +98,11 @@ class ObservationPoint extends ModelObject
     public function addModelObject(ModelObject $modelObjects)
     {
         $this->modelObjects[] = $modelObjects;
-        $modelObjects->addObservationPoint($this);
+
+        if (!in_array($this, $modelObjects->getObservationPoints()->toArray()))
+        {
+            $modelObjects->addObservationPoint($this);
+        }
 
         return $this;
     }
