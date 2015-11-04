@@ -87,9 +87,13 @@ class ModelObject
 
     /**
      * Constructor
+     * @param User $owner
+     * @param $public
      */
-    public function __construct()
+    public function __construct(User $owner = null, $public = false)
     {
+        $this->owner = $owner;
+        $this->public = $public;
         $this->projects = new ArrayCollection();
         $this->modelObjectProperties = new ArrayCollection();
         $this->observationPoints = new ArrayCollection();

@@ -48,53 +48,36 @@ class LoadUserData implements FixtureInterface, ContainerAwareInterface
         $user->setPassword('inowas_scenario_1');
         $userManager->updateUser($user);
 
-        $project = new Project();
+        $project = new Project($user);
         $project->setName('Scenario 1');
-        $project->setOwner($user);
         $entityManager->persist($project);
 
         // Create layers
-        $layer1 = new Layer();
-        $layer1->setOwner($user);
-        $layer1->setPublic(false);
-
-        $layer2 = new Layer();
-        $layer2->setOwner($user);
-        $layer2->setPublic(false);
-
-        $layer3 = new Layer();
-        $layer3->setOwner($user);
-        $layer3->setPublic(false);
+        $layer1 = new Layer($user);
+        $layer2 = new Layer($user);
+        $layer3 = new Layer($user);
 
         // Add Soilprofile 1 with soilprofilelayers
-        $soilProfile = new SoilProfile();
-        $soilProfile->setOwner($user);
-        $soilProfile->setPublic(false);
+        $soilProfile = new SoilProfile($user);
         $point = new Point(11772891.9650673, 2397519.89608855, 3857);
         $soilProfile->setPoint($point);
         $entityManager->persist($soilProfile);
 
-        $soilProfileLayer = new SoilProfileLayer();
-        $soilProfileLayer->setOwner($user);
-        $soilProfileLayer->setPublic(false);
+        $soilProfileLayer = new SoilProfileLayer($user);
         $soilProfileLayer->setSoilProfile($soilProfile);
         $soilProfileLayer->setTopElevation(100);
         $soilProfileLayer->setBottomElevation(70);
         $layer1->addSoilProfileLayer($soilProfileLayer);
         $entityManager->persist($soilProfileLayer);
 
-        $soilProfileLayer = new SoilProfileLayer();
-        $soilProfileLayer->setOwner($user);
-        $soilProfileLayer->setPublic(false);
+        $soilProfileLayer = new SoilProfileLayer($user);
         $soilProfileLayer->setSoilProfile($soilProfile);
         $soilProfileLayer->setTopElevation(70);
         $soilProfileLayer->setBottomElevation(40);
         $layer2->addSoilProfileLayer($soilProfileLayer);
         $entityManager->persist($soilProfileLayer);
 
-        $soilProfileLayer = new SoilProfileLayer();
-        $soilProfileLayer->setOwner($user);
-        $soilProfileLayer->setPublic(false);
+        $soilProfileLayer = new SoilProfileLayer($user);
         $soilProfileLayer->setSoilProfile($soilProfile);
         $soilProfileLayer->setTopElevation(40);
         $soilProfileLayer->setBottomElevation(0);
@@ -102,34 +85,26 @@ class LoadUserData implements FixtureInterface, ContainerAwareInterface
         $entityManager->persist($soilProfileLayer);
 
         // Add Soilprofile 2 with soilprofilelayers
-        $soilProfile = new SoilProfile();
-        $soilProfile->setOwner($user);
-        $soilProfile->setPublic(false);
+        $soilProfile = new SoilProfile($user);
         $point = new Point(11786103.1301754, 2397138.80478736, 3857);
         $soilProfile->setPoint($point);
         $entityManager->persist($soilProfile);
 
-        $soilProfileLayer = new SoilProfileLayer();
-        $soilProfileLayer->setOwner($user);
-        $soilProfileLayer->setPublic(false);
+        $soilProfileLayer = new SoilProfileLayer($user);
         $soilProfileLayer->setSoilProfile($soilProfile);
         $soilProfileLayer->setTopElevation(100);
         $soilProfileLayer->setBottomElevation(70);
         $layer1->addSoilProfileLayer($soilProfileLayer);
         $entityManager->persist($soilProfileLayer);
 
-        $soilProfileLayer = new SoilProfileLayer();
-        $soilProfileLayer->setOwner($user);
-        $soilProfileLayer->setPublic(false);
+        $soilProfileLayer = new SoilProfileLayer($user);
         $soilProfileLayer->setSoilProfile($soilProfile);
         $soilProfileLayer->setTopElevation(70);
         $soilProfileLayer->setBottomElevation(40);
         $layer2->addSoilProfileLayer($soilProfileLayer);
         $entityManager->persist($soilProfileLayer);
 
-        $soilProfileLayer = new SoilProfileLayer();
-        $soilProfileLayer->setOwner($user);
-        $soilProfileLayer->setPublic(false);
+        $soilProfileLayer = new SoilProfileLayer($user);
         $soilProfileLayer->setSoilProfile($soilProfile);
         $soilProfileLayer->setTopElevation(40);
         $soilProfileLayer->setBottomElevation(0);
@@ -137,34 +112,26 @@ class LoadUserData implements FixtureInterface, ContainerAwareInterface
         $entityManager->persist($soilProfileLayer);
 
         // Add Soilprofile 3 with soilprofilelayers
-        $soilProfile = new SoilProfile();
-        $soilProfile->setOwner($user);
-        $soilProfile->setPublic(false);
+        $soilProfile = new SoilProfile($user);
         $point = new Point(11779836.2954446, 2387061.05704468, 3857);
         $soilProfile->setPoint($point);
         $entityManager->persist($soilProfile);
 
-        $soilProfileLayer = new SoilProfileLayer();
-        $soilProfileLayer->setOwner($user);
-        $soilProfileLayer->setPublic(false);
+        $soilProfileLayer = new SoilProfileLayer($user);
         $soilProfileLayer->setSoilProfile($soilProfile);
         $soilProfileLayer->setTopElevation(100);
         $soilProfileLayer->setBottomElevation(70);
         $layer1->addSoilProfileLayer($soilProfileLayer);
         $entityManager->persist($soilProfileLayer);
 
-        $soilProfileLayer = new SoilProfileLayer();
-        $soilProfileLayer->setOwner($user);
-        $soilProfileLayer->setPublic(false);
+        $soilProfileLayer = new SoilProfileLayer($user);
         $soilProfileLayer->setSoilProfile($soilProfile);
         $soilProfileLayer->setTopElevation(70);
         $soilProfileLayer->setBottomElevation(40);
         $layer2->addSoilProfileLayer($soilProfileLayer);
         $entityManager->persist($soilProfileLayer);
 
-        $soilProfileLayer = new SoilProfileLayer();
-        $soilProfileLayer->setOwner($user);
-        $soilProfileLayer->setPublic(false);
+        $soilProfileLayer = new SoilProfileLayer($user);
         $soilProfileLayer->setSoilProfile($soilProfile);
         $soilProfileLayer->setTopElevation(40);
         $soilProfileLayer->setBottomElevation(0);
@@ -176,9 +143,7 @@ class LoadUserData implements FixtureInterface, ContainerAwareInterface
         $entityManager->persist($layer3);
 
         // Set stream
-        $stream = new Stream();
-        $stream->setOwner($user);
-        $stream->setPublic(false);
+        $stream = new Stream($user);
         $startingPoint = new Point(11777338.0302479, 2395656.78306049, 3857);
         $stream->setStartingPoint($startingPoint);
 
@@ -195,10 +160,8 @@ class LoadUserData implements FixtureInterface, ContainerAwareInterface
         $areaType->setName('model_area');
         $entityManager->persist($areaType);
 
-        $area = new Area();
-        $area->setOwner($user);
+        $area = new Area($user);
         $area->setAreaType($areaType);
-        $area->setPublic(false);
 
         $coordinates = array(
             array(11767778.4794313, 2403329.01798664),
@@ -213,27 +176,21 @@ class LoadUserData implements FixtureInterface, ContainerAwareInterface
         $area->setGeometry($polygon);
 
         // Create ObservationPoints for area
-        $observationPoint = new ObservationPoint();
-        $observationPoint->setOwner($user);
-        $observationPoint->setPublic(false);
+        $observationPoint = new ObservationPoint($user);
         $point = new Point(11778481.3041515, 2393327.89177542, 3857);
         $observationPoint->setPoint($point);
         $observationPoint->setElevation(100);
         $entityManager->persist($observationPoint);
         $area->addObservationPoint($observationPoint);
 
-        $observationPoint = new ObservationPoint();
-        $observationPoint->setOwner($user);
-        $observationPoint->setPublic(false);
+        $observationPoint = new ObservationPoint($user);
         $point = new Point(11772891.9650673, 2397519.89608855, 3857);
         $observationPoint->setPoint($point);
         $observationPoint->setElevation(100);
         $entityManager->persist($observationPoint);
         $area->addObservationPoint($observationPoint);
 
-        $observationPoint = new ObservationPoint();
-        $observationPoint->setOwner($user);
-        $observationPoint->setPublic(false);
+        $observationPoint = new ObservationPoint($user);
         $point = new Point(11786103.1301754, 2397138.80478736, 3857);
         $observationPoint->setPoint($point);
         $observationPoint->setElevation(100);
