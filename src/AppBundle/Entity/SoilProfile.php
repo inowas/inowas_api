@@ -51,7 +51,7 @@ class SoilProfile extends ModelObject
     /**
      * Get point
      *
-     * @return point 
+     * @return point
      */
     public function getPoint()
     {
@@ -84,7 +84,7 @@ class SoilProfile extends ModelObject
     /**
      * Get soilProfileLayers
      *
-     * @return \Doctrine\Common\Collections\Collection 
+     * @return \Doctrine\Common\Collections\Collection
      */
     public function getSoilProfileLayers()
     {
