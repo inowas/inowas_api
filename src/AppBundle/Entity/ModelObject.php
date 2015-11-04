@@ -7,7 +7,7 @@ use Doctrine\ORM\Mapping as ORM;
 
 /**
  * ModelObject
- *
+ * @ORM\HasLifecycleCallbacks()
  * @ORM\Entity
  * @ORM\Table(name="inowas_model_object")
  * @ORM\InheritanceType("JOINED")
@@ -39,13 +39,6 @@ class ModelObject
      * @ORM\JoinTable(name="inowas_projects_model_objects")
      **/
     private $projects;
-
-    /**
-     * @var string
-     *
-     * @ORM\Column(name="ModelObjectType", type="string", length=255)
-     */
-    private $modelObjectType;
 
     /**
      * @var User
@@ -101,6 +94,7 @@ class ModelObject
         $this->modelObjectProperties = new ArrayCollection();
         $this->observationPoints = new ArrayCollection();
         $this->dateCreated = new \DateTime();
+        $this->dateModified = new \DateTime();
     }
 
     /**
@@ -111,29 +105,6 @@ class ModelObject
     public function getId()
     {
         return $this->id;
-    }
-
-    /**
-     * Set modelObjectType
-     *
-     * @param string $modelObjectType
-     * @return ModelObject
-     */
-    public function setModelObjectType($modelObjectType)
-    {
-        $this->modelObjectType = $modelObjectType;
-
-        return $this;
-    }
-
-    /**
-     * Get modelObjectType
-     *
-     * @return string 
-     */
-    public function getModelObjectType()
-    {
-        return $this->modelObjectType;
     }
 
     /**
@@ -329,5 +300,13 @@ class ModelObject
     public function getObservationPoints()
     {
         return $this->observationPoints;
+    }
+
+    /**
+     * @ORM\PreUpdate
+     */
+    public function updateDateModified()
+    {
+        $this->dateModified = new \DateTime();
     }
 }
