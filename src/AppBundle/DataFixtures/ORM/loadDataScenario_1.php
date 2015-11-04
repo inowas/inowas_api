@@ -6,12 +6,15 @@ use AppBundle\Entity\Area;
 use AppBundle\Entity\AreaType;
 use AppBundle\Entity\Boundary;
 use AppBundle\Entity\Layer;
+use AppBundle\Entity\ModelObjectProperty;
+use AppBundle\Entity\ModelObjectPropertyType;
 use AppBundle\Entity\ObservationPoint;
 use AppBundle\Entity\Project;
 
 use AppBundle\Entity\SoilProfile;
 use AppBundle\Entity\SoilProfileLayer;
 use AppBundle\Entity\Stream;
+use AppBundle\Entity\TimeSeries;
 use CrEOF\Spatial\PHP\Types\Geometry\LineString;
 use CrEOF\Spatial\PHP\Types\Geometry\Point;
 use CrEOF\Spatial\PHP\Types\Geometry\Polygon;
@@ -194,32 +197,33 @@ class LoadUserData implements FixtureInterface, ContainerAwareInterface
         $area->setGeometry($polygon);
 
         // Create ObservationPoints for area
-        $observationPoint = new ObservationPoint($user);
-        $observationPoint->addProject($project);
+        $observationPoint1 = new ObservationPoint($user);
+        $observationPoint1->addProject($project);
         $point = new Point(11778481.3041515, 2393327.89177542, 3857);
-        $observationPoint->setPoint($point);
-        $observationPoint->setElevation(100);
-        $entityManager->persist($observationPoint);
-        $area->addObservationPoint($observationPoint);
+        $observationPoint1->setPoint($point);
+        $observationPoint1->setElevation(100);
+        $entityManager->persist($observationPoint1);
+        $area->addObservationPoint($observationPoint1);
 
-        $observationPoint = new ObservationPoint($user);
-        $observationPoint->addProject($project);
+        $observationPoint2 = new ObservationPoint($user);
+        $observationPoint2->addProject($project);
         $point = new Point(11772891.9650673, 2397519.89608855, 3857);
-        $observationPoint->setPoint($point);
-        $observationPoint->setElevation(100);
-        $entityManager->persist($observationPoint);
-        $area->addObservationPoint($observationPoint);
+        $observationPoint2->setPoint($point);
+        $observationPoint2->setElevation(100);
+        $entityManager->persist($observationPoint2);
+        $area->addObservationPoint($observationPoint2);
 
-        $observationPoint = new ObservationPoint($user);
-        $observationPoint->addProject($project);
+        $observationPoint3 = new ObservationPoint($user);
+        $observationPoint3->addProject($project);
         $point = new Point(11786103.1301754, 2397138.80478736, 3857);
-        $observationPoint->setPoint($point);
-        $observationPoint->setElevation(100);
-        $entityManager->persist($observationPoint);
+        $observationPoint3->setPoint($point);
+        $observationPoint3->setElevation(100);
+        $entityManager->persist($observationPoint3);
 
-        $area->addObservationPoint($observationPoint);
+        $area->addObservationPoint($observationPoint3);
         $entityManager->persist($area);
 
+        // Load boundary
         $boundary = new Boundary($user);
         $boundary->addProject($project);
         $lineCoordinates = array(
@@ -230,6 +234,91 @@ class LoadUserData implements FixtureInterface, ContainerAwareInterface
         $line = new LineString($lineCoordinates, 3857);
         $boundary->setGeometry($line);
         $entityManager->persist($boundary);
+
+        // Add ModelObjectPropertyTypes
+        $propertyTypeGwHead = new ModelObjectPropertyType();
+        $propertyTypeGwHead->setName("gwhead");
+        $entityManager->persist($propertyTypeGwHead);
+
+        $propertyTypeElevation = new ModelObjectPropertyType();
+        $propertyTypeElevation->setName("elevation");
+        $entityManager->persist($propertyTypeElevation);
+
+        // Add ModelObjectProperties and TimeSeries
+        $modelObjectProperty = new ModelObjectProperty();
+        $modelObjectProperty->setType($propertyTypeGwHead);
+        $modelObjectProperty->setModelObject($observationPoint1);
+        $entityManager->persist($modelObjectProperty);
+
+        $timeSeries = new TimeSeries();
+        $timeSeries->setModelObjectProperties($modelObjectProperty);
+        $timeSeries->setTimeStamp(new \DateTime('2015-01-01 00:00:00'));
+        $timeSeries->setValue(50);
+        $entityManager->persist($timeSeries);
+
+        $timeSeries = new TimeSeries();
+        $timeSeries->setModelObjectProperties($modelObjectProperty);
+        $timeSeries->setTimeStamp(new \DateTime('2015-02-01 00:00:00'));
+        $timeSeries->setValue(51);
+        $entityManager->persist($timeSeries);
+
+        $timeSeries = new TimeSeries();
+        $timeSeries->setModelObjectProperties($modelObjectProperty);
+        $timeSeries->setTimeStamp(new \DateTime('2015-03-01 00:00:00'));
+        $timeSeries->setValue(52);
+        $entityManager->persist($timeSeries);
+
+        $timeSeries = new TimeSeries();
+        $timeSeries->setModelObjectProperties($modelObjectProperty);
+        $timeSeries->setTimeStamp(new \DateTime('2015-04-01 00:00:00'));
+        $timeSeries->setValue(53);
+        $entityManager->persist($timeSeries);
+
+        $timeSeries = new TimeSeries();
+        $timeSeries->setModelObjectProperties($modelObjectProperty);
+        $timeSeries->setTimeStamp(new \DateTime('2015-05-01 00:00:00'));
+        $timeSeries->setValue(54);
+        $entityManager->persist($timeSeries);
+
+        $modelObjectProperty = new ModelObjectProperty();
+        $modelObjectProperty->setType($propertyTypeGwHead);
+        $modelObjectProperty->setModelObject($boundary);
+        $entityManager->persist($modelObjectProperty);
+
+        $timeSeries = new TimeSeries();
+        $timeSeries->setModelObjectProperties($modelObjectProperty);
+        $timeSeries->setValue(60);
+        $entityManager->persist($timeSeries);
+
+        $modelObjectProperty = new ModelObjectProperty();
+        $modelObjectProperty->setType($propertyTypeElevation);
+        $modelObjectProperty->setModelObject($observationPoint1);
+        $entityManager->persist($modelObjectProperty);
+
+        $timeSeries = new TimeSeries();
+        $timeSeries->setModelObjectProperties($modelObjectProperty);
+        $timeSeries->setValue(100);
+        $entityManager->persist($timeSeries);
+
+        $modelObjectProperty = new ModelObjectProperty();
+        $modelObjectProperty->setType($propertyTypeElevation);
+        $modelObjectProperty->setModelObject($observationPoint1);
+        $entityManager->persist($modelObjectProperty);
+
+        $timeSeries = new TimeSeries();
+        $timeSeries->setModelObjectProperties($modelObjectProperty);
+        $timeSeries->setValue(100);
+        $entityManager->persist($timeSeries);
+
+        $modelObjectProperty = new ModelObjectProperty();
+        $modelObjectProperty->setType($propertyTypeElevation);
+        $modelObjectProperty->setModelObject($observationPoint1);
+        $entityManager->persist($modelObjectProperty);
+
+        $timeSeries = new TimeSeries();
+        $timeSeries->setModelObjectProperties($modelObjectProperty);
+        $timeSeries->setValue(100);
+        $entityManager->persist($timeSeries);
 
         $entityManager->flush();
     }
