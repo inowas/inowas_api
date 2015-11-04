@@ -16,7 +16,7 @@ class ObservationPoint extends ModelObject
     /**
      * @var Point
      *
-     * @ORM\Column(name="point", type="point", nullable=true)
+     * @ORM\Column(name="geometry", type="point", nullable=true)
      */
     private $point;
 
