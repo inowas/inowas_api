@@ -2,6 +2,9 @@
 
 namespace AppBundle\DataFixtures\ORM;
 
+use AppBundle\Entity\Area;
+use AppBundle\Entity\AreaType;
+use AppBundle\Entity\Boundary;
 use AppBundle\Entity\Layer;
 use AppBundle\Entity\ModelObject;
 use AppBundle\Entity\ModelObjectProperty;
@@ -10,12 +13,11 @@ use AppBundle\Entity\Project;
 use AppBundle\Entity\SoilProfile;
 use AppBundle\Entity\SoilProfileLayer;
 use AppBundle\Entity\TimeSeries;
+use CrEOF\Spatial\PHP\Types\Geometry\LineString;
 use CrEOF\Spatial\PHP\Types\Geometry\Point;
+use CrEOF\Spatial\PHP\Types\Geometry\Polygon;
 use Doctrine\Common\DataFixtures\FixtureInterface;
 use Doctrine\Common\Persistence\ObjectManager;
-use Doctrine\ORM\EntityManager;
-use Doctrine\ORM\EntityManagerInterface;
-use Symfony\Component\Config\Definition\Exception\Exception;
 use Symfony\Component\DependencyInjection\ContainerAwareInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
@@ -127,72 +129,178 @@ class LoadScenario_3 implements FixtureInterface, ContainerAwareInterface
 
         // Set ModelObjectProperties to layers
         // Layer 1 -> layers[0];
-        $timeSeries = new TimeSeries();
-        $timeSeries->setValue(40);
-        $modelObjectProperty = $this->addModelObjectProperty($entityManager, $layers[0], 'Hydraulic conductivity', $timeSeries);
-        $entityManager->persist($timeSeries);
+        $ts = new TimeSeries();
+        $ts->setValue(40);
+        $modelObjectProperty = $this->addModelObjectProperty($entityManager, $layers[0], 'Hydraulic conductivity', array($ts));
+        $entityManager->persist($ts);
         $entityManager->persist($modelObjectProperty);
 
-        $timeSeries = new TimeSeries();
-        $timeSeries->setValue(8);
-        $modelObjectProperty = $this->addModelObjectProperty($entityManager, $layers[0], 'Vertical anisotropy', $timeSeries);
-        $entityManager->persist($timeSeries);
+        $ts = new TimeSeries();
+        $ts->setValue(8);
+        $modelObjectProperty = $this->addModelObjectProperty($entityManager, $layers[0], 'Vertical anisotropy', array($ts));
+        $entityManager->persist($ts);
         $entityManager->persist($modelObjectProperty);
 
-        $timeSeries = new TimeSeries();
-        $timeSeries->setValue(0.00001);
-        $modelObjectProperty = $this->addModelObjectProperty($entityManager, $layers[0], 'Specific storage', $timeSeries);
-        $entityManager->persist($timeSeries);
+        $ts = new TimeSeries();
+        $ts->setValue(0.00001);
+        $modelObjectProperty = $this->addModelObjectProperty($entityManager, $layers[0], 'Specific storage', array($ts));
+        $entityManager->persist($ts);
         $entityManager->persist($modelObjectProperty);
 
-        $timeSeries = new TimeSeries();
-        $timeSeries->setValue(0.1);
-        $modelObjectProperty = $this->addModelObjectProperty($entityManager, $layers[0], 'Specific yield', $timeSeries);
-        $entityManager->persist($timeSeries);
+        $ts = new TimeSeries();
+        $ts->setValue(0.1);
+        $modelObjectProperty = $this->addModelObjectProperty($entityManager, $layers[0], 'Specific yield', array($ts));
+        $entityManager->persist($ts);
         $entityManager->persist($modelObjectProperty);
-
-        $entityManager->flush();
 
         // Set ModelObjectProperties to layers
         // Layer 2 -> layers[1];
-        $timeSeries = new TimeSeries();
-        $timeSeries->setValue(1);
-        $modelObjectProperty = $this->addModelObjectProperty($entityManager, $layers[0], 'Vertical conductance', $timeSeries);
-        $entityManager->persist($timeSeries);
+        $ts = new TimeSeries();
+        $ts->setValue(1);
+        $modelObjectProperty = $this->addModelObjectProperty($entityManager, $layers[0], 'Vertical conductance', array($ts));
+        $entityManager->persist($ts);
         $entityManager->persist($modelObjectProperty);
 
         $entityManager->flush();
 
         // Set ModelObjectProperties to layers
         // Layer 3 -> layers[2];
-        $timeSeries = new TimeSeries();
-        $timeSeries->setValue(42);
-        $modelObjectProperty = $this->addModelObjectProperty($entityManager, $layers[0], 'Hydraulic conductivity', $timeSeries);
-        $entityManager->persist($timeSeries);
+        $ts = new TimeSeries();
+        $ts->setValue(42);
+        $modelObjectProperty = $this->addModelObjectProperty($entityManager, $layers[0], 'Hydraulic conductivity', array($ts));
+        $entityManager->persist($ts);
         $entityManager->persist($modelObjectProperty);
 
-        $timeSeries = new TimeSeries();
-        $timeSeries->setValue(21);
-        $modelObjectProperty = $this->addModelObjectProperty($entityManager, $layers[0], 'Vertical anisotropy', $timeSeries);
-        $entityManager->persist($timeSeries);
+
+        $ts = new TimeSeries();
+        $ts->setValue(21);
+        $modelObjectProperty = $this->addModelObjectProperty($entityManager, $layers[0], 'Vertical anisotropy', array($ts));
+        $entityManager->persist($ts);
         $entityManager->persist($modelObjectProperty);
 
-        $timeSeries = new TimeSeries();
-        $timeSeries->setValue(0.00001);
-        $modelObjectProperty = $this->addModelObjectProperty($entityManager, $layers[0], 'Specific storage', $timeSeries);
-        $entityManager->persist($timeSeries);
+        $ts = new TimeSeries();
+        $ts->setValue(0.00001);
+        $modelObjectProperty = $this->addModelObjectProperty($entityManager, $layers[0], 'Specific storage', array($ts));
+        $entityManager->persist($ts);
         $entityManager->persist($modelObjectProperty);
 
-        $timeSeries = new TimeSeries();
-        $timeSeries->setValue(0.1);
-        $modelObjectProperty = $this->addModelObjectProperty($entityManager, $layers[0], 'Specific yield', $timeSeries);
-        $entityManager->persist($timeSeries);
+        $ts = new TimeSeries();
+        $ts->setValue(0.1);
+        $modelObjectProperty = $this->addModelObjectProperty($entityManager, $layers[0], 'Specific yield', array($ts));
+        $entityManager->persist($ts);
         $entityManager->persist($modelObjectProperty);
 
+        // Set Area
+        $polygonText = "POLYGON((11792952.16265026479959488 2396619.95378328999504447, 11789249.37860263884067535 2391542.94060458615422249, 11788791.30222561210393906 2391638.37318313354626298, 11788333.22584858722984791 2391810.1518245181068778, 11787417.07309453375637531 2392230.05517012532800436, 11786558.17988761141896248 2392459.09335863823071122, 11786367.31473051756620407 2392993.51579850167036057, 11786061.93047916702926159 2393279.81353414291515946, 11785794.7192592341452837 2393718.8033954594284296, 11785508.42152359336614609 2394291.39886674145236611, 11785412.98894504643976688 2394787.64827518630772829, 11785279.38333507999777794 2395512.93587214406579733, 11785050.34514656849205494 2395932.8392177508212626, 11784897.65302089229226112 2396448.17514190496876836, 11784802.22044234536588192 2397058.94364460650831461, 11784554.0957381222397089 2397803.31775727355852723, 11784515.92270670458674431 2398394.99974426534026861, 11784477.74967528507113457 2398853.07612129114568233, 11784248.71148677170276642 2399063.02779409429058433, 11784057.84632967785000801 2399387.49856115458533168, 11783771.5485940370708704 2399921.92100101802498102, 11783427.99131126701831818 2400360.91086233453825116, 11783504.33737410604953766 2400494.51647230051457882, 11783771.5485940370708704 2400418.1704094628803432, 11784038.75981396809220314 2400303.65131520619615912, 11784382.31709673814475536 2399979.18054814636707306, 11784725.87437950819730759 2399769.22887534275650978, 11785050.34514656849205494 2399769.22887534275650978, 11785527.50803930312395096 2399960.09403243707492948, 11785985.58441632799804211 2400189.13222094997763634, 11786462.74730906449258327 2400418.1704094628803432, 11786806.30459183268249035 2400685.38162939436733723, 11787321.64051598682999611 2400914.41981790727004409, 11788161.44720720127224922 2401277.06361638614907861, 11788848.56177274137735367 2401257.97710067685693502, 11789669.28194824606180191 2401067.11194358253851533, 11790509.08863945864140987 2400971.67936503561213613, 11791158.03017357923090458 2400666.29511368507519364, 11791558.84700347669422626 2400170.04570524021983147, 11791959.66383337415754795 2399502.01765541080385447, 11792207.78853759728372097 2398833.98960558138787746, 11792474.99975752830505371 2397822.40427298285067081, 11792761.29749316908419132 2396944.42455034982413054, 11792952.16265026479959488 2396619.95378328999504447))";
+        $area = $this->addArea($entityManager, new Area($user, $project), 'area', $polygonText);
+        $entityManager->persist($area);
+
+        // Set boundaries
+        $boundaries = array();
+        // Boundary 1
+        $boundaryText = "LineString (11792952.16265026479959488 2396619.95378328999504447, 11792761.29749316908419132 2396944.42455034982413054, 11792474.99975752830505371 2397822.40427298285067081, 11792207.78853759728372097 2398833.98960558138787746, 11791959.66383337415754795 2399502.01765541080385447, 11791558.84700347669422626 2400170.04570524021983147, 11791158.03017357923090458 2400666.29511368507519364, 11790509.08863945864140987 2400971.67936503561213613, 11789669.28194824606180191 2401067.11194358253851533, 11788848.56177274137735367 2401257.97710067685693502, 11788161.44720720127224922 2401277.06361638614907861, 11787321.64051598682999611 2400914.41981790727004409, 11786806.30459183268249035 2400685.38162939436733723, 11786462.74730906449258327 2400418.1704094628803432, 11785985.58441632799804211 2400189.13222094997763634, 11785527.50803930312395096 2399960.09403243707492948, 11785050.34514656849205494 2399769.22887534275650978, 11784725.87437950819730759 2399769.22887534275650978, 11784382.31709673814475536 2399979.18054814636707306, 11784038.75981396809220314 2400303.65131520619615912, 11783771.5485940370708704 2400418.1704094628803432, 11783504.33737410604953766 2400494.51647230051457882, 11783427.99131126701831818 2400360.91086233453825116, 11783771.5485940370708704 2399921.92100101802498102, 11784057.84632967785000801 2399387.49856115458533168, 11784248.71148677170276642 2399063.02779409429058433, 11784477.74967528507113457 2398853.07612129114568233, 11784515.92270670458674431 2398394.99974426534026861, 11784554.0957381222397089 2397803.31775727355852723, 11784802.22044234536588192 2397058.94364460650831461, 11784897.65302089229226112 2396448.17514190496876836, 11785050.34514656849205494 2395932.8392177508212626, 11785279.38333507999777794 2395512.93587214406579733, 11785412.98894504643976688 2394787.64827518630772829, 11785508.42152359336614609 2394291.39886674145236611, 11785794.7192592341452837 2393718.8033954594284296, 11786061.93047916702926159 2393279.81353414291515946, 11786367.31473051756620407 2392993.51579850167036057, 11786558.17988761141896248 2392459.09335863823071122, 11787417.07309453375637531 2392230.05517012532800436, 11788333.22584858722984791 2391810.1518245181068778, 11788791.30222561210393906 2391638.37318313354626298)";
+        $boundary = $this->addBoundary($boundaryText);
+        $timeSeries_b0 = $this->generateTimeSeriesB0();
+        $modelObjectProperty = $this->addModelObjectProperty($entityManager, $boundary, 'Water head', $timeSeries_b0);
+        $boundaries[] = $boundary;
+        $entityManager->persist($modelObjectProperty);
+
+        // Boundary 2
+        $boundaryText = "LineString (11792952.16265026479959488 2396619.95378328999504447, 11789249.37860263884067535 2391542.94060458615422249, 11788791.30222561210393906 2391638.37318313354626298)";
+        $boundaries[] = $this->addBoundary($boundaryText);
+        $timeSeries_b1 = $this->generateTimeSeriesB1();
+        $modelObjectProperty = $this->addModelObjectProperty($entityManager, $boundary, 'Water head', $timeSeries_b1);
+        $boundaries[] = $boundary;
+        $entityManager->persist($modelObjectProperty);
+
+        foreach ($boundaries as $boundary)
+        {
+            $entityManager->persist($boundary);
+        }
+
+        // Flush all Information to the database
         $entityManager->flush();
     }
 
-    public function addModelObjectProperty(EntityManagerInterface $entityManager, ModelObject $modelObject, $modelObjectPropertyTypeName , $timeSeries)
+    public function generateTimeSeriesB0()
+    {
+        $date = new \DateTime('2000-01-01T00:00:00+00:00');
+        $dateEnd = new \DateTime('2003-12-31');
+
+        $timeSeries = array();
+
+        while ($date <= $dateEnd)
+        {
+            $ts = new TimeSeries();
+            $ts->setTimeStamp(clone $date);
+            $ts->setValue(5);
+            $timeSeries[] = $ts;
+            $date->add(new \DateInterval('P1D'));
+        }
+
+        return $timeSeries;
+    }
+
+    public function generateTimeSeriesB1()
+    {
+        $date = new \DateTime('2000-01-01T00:00:00+00:00');
+        $dateEnd = new \DateTime('2003-12-31');
+
+        $timeSeries = array();
+
+        while ($date <= $dateEnd)
+        {
+            $ts = new TimeSeries();
+            $ts->setTimeStamp(clone $date);
+            $ts->setValue(5);
+            $timeSeries[] = $ts;
+            $date->add(new \DateInterval('P1D'));
+        }
+
+        return $timeSeries;
+    }
+
+    public function addBoundary($geometryText)
+    {
+        $converter = new \CrEOF\Spatial\DBAL\Types\Geometry\Platforms\PostgreSql();
+
+        /** @var LineString $lineString */
+        $lineString = $converter->convertStringToPHPValue($geometryText);
+        $lineString->setSrid(3857);
+
+        $boundary = new Boundary();
+        $boundary->setGeometry($lineString);
+
+        return $boundary;
+    }
+
+    public function addArea(ObjectManager $entityManager, Area $area, $areaTypeName, $geometryText)
+    {
+        $converter = new \CrEOF\Spatial\DBAL\Types\Geometry\Platforms\PostgreSql();
+        $areaType = $entityManager->getRepository('AppBundle:AreaType')
+            ->findOneBy(array(
+                'name' => $areaTypeName
+            ));
+
+        if (!$areaType)
+        {
+            $areaType = new AreaType();
+            $areaType->setName($areaTypeName);
+            $entityManager->persist($areaType);
+        }
+
+        $area->setAreaType($areaType);
+
+        /** @var Polygon $polygon */
+        $polygon = $converter->convertStringToPHPValue($geometryText);
+        $polygon->setSrid(3857);
+
+        $area->setGeometry($polygon);
+
+        return $area;
+    }
+
+    public function addModelObjectProperty(ObjectManager $entityManager, ModelObject $modelObject, $modelObjectPropertyTypeName , $timeSeries)
     {
         $modelObjectProperty = new ModelObjectProperty();
         $modelObjectPropertyType = $entityManager->getRepository('AppBundle:ModelObjectPropertyType')
@@ -205,6 +313,7 @@ class LoadScenario_3 implements FixtureInterface, ContainerAwareInterface
             $modelObjectPropertyType = new ModelObjectPropertyType();
             $modelObjectPropertyType->setName($modelObjectPropertyTypeName);
             $entityManager->persist($modelObjectPropertyType);
+            $entityManager->flush();
         }
 
         $modelObjectProperty->setType($modelObjectPropertyType);
@@ -212,9 +321,14 @@ class LoadScenario_3 implements FixtureInterface, ContainerAwareInterface
         /** @var TimeSeries $timeserie */
         foreach ($timeSeries as $timeserie)
         {
-            $timeserie->setModelObjectProperties($modelObjectProperty);
-            $modelObjectProperty->addTimeSeries($timeserie);
-
+            if ($timeserie instanceof TimeSeries)
+            {
+                $timeserie->setModelObjectProperties($modelObjectProperty);
+                $modelObjectProperty->addTimeSeries($timeserie);
+                $entityManager->persist($timeserie);
+                $entityManager->persist($modelObjectProperty);
+                $entityManager->flush();
+            }
         }
         $modelObjectProperty->setModelObject($modelObject);
         return $modelObject;
