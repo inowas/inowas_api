@@ -24,7 +24,7 @@ use Symfony\Component\DependencyInjection\ContainerAwareInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 
-class LoadUserData implements FixtureInterface, ContainerAwareInterface
+class LoadScenario_1 implements FixtureInterface, ContainerAwareInterface
 {
     /**
      * @var ContainerInterface

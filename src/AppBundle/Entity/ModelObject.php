@@ -89,9 +89,10 @@ class ModelObject
     /**
      * Constructor
      * @param User $owner
+     * @param Project $project
      * @param $public
      */
-    public function __construct(User $owner = null, $public = false)
+    public function __construct(User $owner = null, Project $project = null, $public = false)
     {
         $this->owner = $owner;
         $this->public = $public;
