@@ -29,6 +29,11 @@ class LoadScenario_3 implements FixtureInterface, ContainerAwareInterface
     private $container;
 
     /**
+     * @var ObjectManager
+     */
+    private $entityManager;
+
+    /**
      * {@inheritDoc}
      */
     public function setContainer(ContainerInterface $container = null)
@@ -41,6 +46,7 @@ class LoadScenario_3 implements FixtureInterface, ContainerAwareInterface
      */
     public function load(ObjectManager $entityManager)
     {
+        $this->entityManager = $entityManager;
         $userManager = $this->container->get('fos_user.user_manager');
 
         $user = $userManager->createUser();
@@ -195,6 +201,8 @@ class LoadScenario_3 implements FixtureInterface, ContainerAwareInterface
         $area = $this->addArea($entityManager, new Area($user, $project), 'area', $polygonText);
         $entityManager->persist($area);
 
+        $this->addModelObjectPropertiesFromCSVFile($area, __DIR__.'/scenario_3_area_mop.csv', ';');
+
         // Set boundaries
         $boundaries = array();
         // Boundary 1
@@ -218,8 +226,32 @@ class LoadScenario_3 implements FixtureInterface, ContainerAwareInterface
             $entityManager->persist($boundary);
         }
 
+
+
         // Flush all Information to the database
         $entityManager->flush();
+    }
+
+    public function addModelObjectPropertiesFromCSVFile(ModelObject $baseElement, $filename, $delimiter)
+    {
+        $data = $this->convert($filename, $delimiter);
+        $elementCount = count($data[0])-1;
+        $dataFields = array_keys($data[0]);
+
+        for ($i = 0; $i < $elementCount; $i++) {
+            $timeseries = array();
+            foreach ($data as $dataPoint)
+            {
+                $ts = new TimeSeries();
+                $ts->setTimeStamp(new \DateTime($dataPoint[$dataFields[0]]));
+                $ts->setValue((float)$dataPoint[$dataFields[$i+1]]);
+                $timeseries[] = $ts;
+            }
+            
+            $this->addModelObjectProperty($this->entityManager, $baseElement, $dataFields[$i], $timeseries);
+        }
+
+        die();
     }
 
     public function generateTimeSeriesB0()
@@ -300,7 +332,7 @@ class LoadScenario_3 implements FixtureInterface, ContainerAwareInterface
         return $area;
     }
 
-    public function addModelObjectProperty(ObjectManager $entityManager, ModelObject $modelObject, $modelObjectPropertyTypeName , $timeSeries)
+    public function addModelObjectProperty(ObjectManager $entityManager, ModelObject $modelObject, $modelObjectPropertyTypeName, $timeSeries)
     {
         $modelObjectProperty = new ModelObjectProperty();
         $modelObjectPropertyType = $entityManager->getRepository('AppBundle:ModelObjectPropertyType')
@@ -333,4 +365,28 @@ class LoadScenario_3 implements FixtureInterface, ContainerAwareInterface
         $modelObjectProperty->setModelObject($modelObject);
         return $modelObject;
     }
+
+    public function convert($filename, $delimiter = ',')
+    {
+        if(!file_exists($filename) || !is_readable($filename)) {
+            return FALSE;
+        }
+
+        $header = NULL;
+        $data = array();
+
+        if (($handle = fopen($filename, 'r')) !== FALSE) {
+            while (($row = fgetcsv($handle, 1000, $delimiter)) !== FALSE) {
+                if(!$header) {
+                    $header = $row;
+                } else {
+                    $data[] = array_combine($header, $row);
+                }
+            }
+            fclose($handle);
+        }
+
+        return $data;
+    }
+
 }
