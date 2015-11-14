@@ -1,6 +1,6 @@
 <?php
 
-namespace AppBundle\DataFixtures\ORM;
+namespace AppBundle\DataFixtures\ORM\Scenarios\Scenario_1;
 
 use AppBundle\Entity\Area;
 use AppBundle\Entity\AreaType;
