@@ -97,6 +97,7 @@ class ModelObject
         $this->owner = $owner;
         $this->public = $public;
         $this->projects = new ArrayCollection();
+        if ($project) $this->addProject($project);
         $this->modelObjectProperties = new ArrayCollection();
         $this->observationPoints = new ArrayCollection();
         $this->dateCreated = new \DateTime();
