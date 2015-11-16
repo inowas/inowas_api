@@ -20,11 +20,15 @@ class Layer extends ModelObject
     private $soilProfileLayer;
 
     /**
-     *
+     * Layer constructor.
+     * @param User|null $owner
+     * @param Project|null $project
+     * @param bool|false $public
      */
-    public function __construct()
+    public function __construct(User $owner = null, Project $project = null, $public = false)
     {
-        parent::__construct();
+        parent::__construct($owner, $project, $public);
+
         $this->soilProfileLayer = new ArrayCollection();
     }
 

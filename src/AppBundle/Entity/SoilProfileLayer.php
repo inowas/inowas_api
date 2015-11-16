@@ -39,9 +39,9 @@ class SoilProfileLayer extends ModelObject
      */
     private $layer;
 
-    public function __construct()
+    public function __construct(User $owner = null, Project $project = null, $public = false)
     {
-        parent::__construct();
+        parent::__construct($owner, $project, $public);
         $this->layer = new ArrayCollection();
     }
 
