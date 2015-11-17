@@ -6,14 +6,14 @@ use FOS\RestBundle\Controller\FOSRestController;
 use FOS\RestBundle\View\View;
 use Nelmio\ApiDocBundle\Annotation\ApiDoc;
 
-class ProjectRestController extends FOSRestController
+class ModelObjectRestController extends FOSRestController
 {
     /**
-     * Return the overall project list.
+     * Return the overall modelobjects-list.
      *
      * @ApiDoc(
      *   resource = true,
-     *   description = "Return the overall Project List",
+     *   description = "Return the overall modelobjects-list.",
      *   statusCodes = {
      *     200 = "Returned when successful",
      *     404 = "Returned when the user is not found"
@@ -22,21 +22,16 @@ class ProjectRestController extends FOSRestController
      *
      * @return View
      */
-    public function getProjectsAction()
+    public function getModelobjectsAction()
     {
-        $projects = $this->getDoctrine()->getRepository('AppBundle:Project')
+        $projects = $this->getDoctrine()->getRepository('AppBundle:ModelObject')
             ->findAll();
-
-        if (!$projects) {
-            throw $this->createNotFoundException('Data not found.');
-        }
 
         $projectList = array();
         foreach ($projects as $project)
         {
             $projectListItem = array(
-                'id' => $project->getId(),
-                'name' => $project->getName()
+                'id' => $project->getId()
             );
 
             $projectList[] = $projectListItem;
@@ -49,11 +44,11 @@ class ProjectRestController extends FOSRestController
     }
 
     /**
-     * Return a project by id
+     * Return a modelobject by id
      *
      * @ApiDoc(
      *   resource = true,
-     *   description = "Return a project by id",
+     *   description = "Return a modelobject by id",
      *   statusCodes = {
      *     200 = "Returned when successful",
      *     404 = "Returned when the user is not found"
@@ -64,17 +59,17 @@ class ProjectRestController extends FOSRestController
      *
      * @return View
      */
-    public function getProjectAction($id)
+    public function getModelobjectAction($id)
     {
 
         $project = $this->getDoctrine()
-            ->getRepository('AppBundle:Project')
+            ->getRepository('AppBundle:ModelObject')
             ->findOneBy(array(
                 'id' => $id
             ));
 
         if (!$project) {
-            throw $this->createNotFoundException('Project not found.');
+            throw $this->createNotFoundException('Modelobject not found.');
         }
 
         $view = View::create();

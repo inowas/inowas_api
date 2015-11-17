@@ -41,7 +41,7 @@ class ModelObjectProperty
     /**
      * @var ArrayCollection TimeSeries
      *
-     * @ORM\OneToMany(targetEntity="AppBundle\Entity\TimeSeries", mappedBy="modelObjectProperty")
+     * @ORM\OneToMany(targetEntity="AppBundle\Entity\TimeSeries", mappedBy="modelObjectProperties")
      */
     private $timeSeries;
 
@@ -62,30 +62,6 @@ class ModelObjectProperty
     public function getId()
     {
         return $this->id;
-    }
-
-
-    /**
-     * Set modelObject
-     *
-     * @param \AppBundle\Entity\ModelObject $modelObject
-     * @return ModelObjectProperty
-     */
-    public function setModelObject(ModelObject $modelObject = null)
-    {
-        $this->modelObject = $modelObject;
-
-        return $this;
-    }
-
-    /**
-     * Get modelObject
-     *
-     * @return \AppBundle\Entity\ModelObject
-     */
-    public function getModelObject()
-    {
-        return $this->modelObject;
     }
 
     /**
@@ -142,5 +118,28 @@ class ModelObjectProperty
     public function getType()
     {
         return $this->type;
+    }
+
+    /**
+     * Set modelObject
+     *
+     * @param \AppBundle\Entity\ModelObject $modelObject
+     * @return ModelObjectProperty
+     */
+    public function setModelObject(\AppBundle\Entity\ModelObject $modelObject = null)
+    {
+        $this->modelObject = $modelObject;
+
+        return $this;
+    }
+
+    /**
+     * Get modelObject
+     *
+     * @return \AppBundle\Entity\ModelObject 
+     */
+    public function getModelObject()
+    {
+        return $this->modelObject;
     }
 }

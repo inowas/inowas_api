@@ -52,7 +52,7 @@ class ModelObject
     /**
      * @var ArrayCollection ModelObjectProperty
      *
-     * @ORM\OneToMany(targetEntity="AppBundle\Entity\ModelObjectProperty", mappedBy="modelObjects")
+     * @ORM\OneToMany(targetEntity="AppBundle\Entity\ModelObjectProperty", mappedBy="modelObject")
      */
     private $modelObjectProperties;
 

@@ -15,3 +15,8 @@ rest_user:
     type: rest
     prefix: /api
     resource: AppBundle\Controller\UserRestController
+
+rest_modelobject:
+    type: rest
+    prefix: /api
+    resource: AppBundle\Controller\ModelObjectRestController

@@ -241,7 +241,7 @@ class LoadScenario_2 implements FixtureInterface, ContainerAwareInterface
             $observationPoint->setPoint($observationPointPoint['point']);
             $this->entityManager->persist($observationPoint);
             $entityManager->flush();
-            
+
             $observationPoint = $this->addModelObjectPropertiesFromCSVFile($observationPoint, __DIR__.'/scenario_2_observationPoint_'.$observationPointPoint['name'].'_properties.csv', ';');
             $this->entityManager->persist($observationPoint);
             $observationPoints[] = $observationPoint;
