@@ -5,10 +5,12 @@ namespace AppBundle\Entity;
 use CrEOF\Spatial\PHP\Types\Geometry\LineString;
 use CrEOF\Spatial\PHP\Types\Geometry\Point;
 use Doctrine\ORM\Mapping as ORM;
+use JMS\Serializer\Annotation as JMS;
 
 /**
  * @ORM\Entity()
  * @ORM\Table(name="inowas_stream")
+ * @JMS\ExclusionPolicy("all")
  */
 class Stream extends ModelObject
 {

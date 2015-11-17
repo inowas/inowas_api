@@ -4,12 +4,14 @@ namespace AppBundle\Entity;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
+use JMS\Serializer\Annotation as JMS;
 
 /**
  * Project
  *
  * @ORM\Table(name="inowas_project")
  * @ORM\Entity(repositoryClass="AppBundle\Entity\ProjectRepository")
+ * @JMS\ExclusionPolicy("all")
  */
 class Project
 {
@@ -19,6 +21,7 @@ class Project
      * @ORM\Column(name="id", type="integer")
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="AUTO")
+     * @JMS\Expose
      */
     private $id;
 
@@ -26,6 +29,7 @@ class Project
      * @var string
      *
      * @ORM\Column(name="name", type="string",length=255)
+     * @JMS\Expose
      */
     private $name;
 
@@ -34,6 +38,8 @@ class Project
      *
      * @ORM\ManyToOne(targetEntity="User", inversedBy="ownedProjects")
      * @ORM\JoinColumn(name="owner_id", referencedColumnName="id", onDelete="cascade")
+     * @JMS\Expose
+     * @JMS\MaxDepth(2)
      */
     private $owner;
 
@@ -42,6 +48,8 @@ class Project
      *
      * @ORM\ManyToMany(targetEntity="User", inversedBy="participatedProjects")
      * @ORM\JoinTable(name="inowas_users_participated_projects")
+     * @JMS\Expose
+     * @JMS\MaxDepth(1)
      */
     private $participants;
 
@@ -49,6 +57,8 @@ class Project
      * @var ArrayCollection ModelObject
      *
      * @ORM\ManyToMany(targetEntity="ModelObject", mappedBy="projects")
+     * @JMS\Expose
+     * @JMS\MaxDepth(2)
      **/
     protected $modelObjects;
 
@@ -56,6 +66,7 @@ class Project
      * @var boolean
      *
      * @ORM\Column(name="public", type="boolean")
+     * @JMS\Expose
      */
     private $public;
 

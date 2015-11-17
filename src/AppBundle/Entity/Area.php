@@ -4,10 +4,12 @@ namespace AppBundle\Entity;
 
 use CrEOF\Spatial\PHP\Types\Geometry\Polygon;
 use Doctrine\ORM\Mapping as ORM;
+use JMS\Serializer\Annotation as JMS;
 
 /**
  * @ORM\Entity()
  * @ORM\Table(name="inowas_area")
+ * @JMS\ExclusionPolicy("all")
  */
 class Area extends ModelObject
 {

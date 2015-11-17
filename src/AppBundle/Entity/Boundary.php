@@ -4,10 +4,12 @@ namespace AppBundle\Entity;
 
 use CrEOF\Spatial\PHP\Types\Geometry\LineString;
 use Doctrine\ORM\Mapping as ORM;
+use JMS\Serializer\Annotation as JMS;
 
 /**
  * @ORM\Entity()
  * @ORM\Table(name="inowas_boundary")
+ * @JMS\ExclusionPolicy("all")
  */
 class Boundary extends ModelObject
 {

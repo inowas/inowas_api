@@ -5,12 +5,14 @@ namespace AppBundle\Entity;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
 use FOS\UserBundle\Model\User as BaseUser;
+use JMS\Serializer\Annotation as JMS;
 
 /**
  * Users
  *
  * @ORM\Table(name="inowas_user")
  * @ORM\Entity()
+ * @JMS\ExclusionPolicy("all")
  */
 class User extends BaseUser
 {
@@ -20,6 +22,7 @@ class User extends BaseUser
      * @ORM\Column(name="id", type="integer")
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="AUTO")
+     * @JMS\Expose
      */
     protected $id;
 
@@ -27,6 +30,7 @@ class User extends BaseUser
      * @var UserProfile
      *
      * @ORM\OneToOne(targetEntity="UserProfile", mappedBy="user", cascade={"persist", "remove"})
+     * @JMS\Expose
      */
     protected $profile;
 

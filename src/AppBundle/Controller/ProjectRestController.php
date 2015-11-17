@@ -4,6 +4,7 @@ namespace AppBundle\Controller;
 
 use FOS\RestBundle\Controller\FOSRestController;
 use FOS\RestBundle\View\View;
+use JMS\Serializer\SerializationContext;
 use Nelmio\ApiDocBundle\Annotation\ApiDoc;
 
 class ProjectRestController extends FOSRestController
@@ -78,10 +79,11 @@ class ProjectRestController extends FOSRestController
         }
 
         $view = View::create();
-        $view->setData($project)->setStatusCode(200);
+        $view->setData($project)
+            ->setStatusCode(200)
+            ->setSerializationContext(SerializationContext::create()->enableMaxDepthChecks())
+        ;
 
         return $view;
     }
-
-
 }

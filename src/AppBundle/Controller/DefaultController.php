@@ -2,6 +2,7 @@
 
 namespace AppBundle\Controller;
 
+use JMS\Serializer\SerializationContext;
 use JMS\Serializer\SerializerInterface;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
@@ -40,14 +41,9 @@ class DefaultController extends Controller
                 'id' => $id
             ));
 
-        dump($project);
-        die();
-
         /** @var SerializerInterface $serializer */
-        $serializer = $this->get('fos_rest.serializer');
-
-        echo $serializer->serialize($projects, 'json');
+        $serializer = $this->get('jms_serializer');
+        echo $serializer->serialize($project, 'json', SerializationContext::create()->enableMaxDepthChecks());
         die();
-
     }
 }

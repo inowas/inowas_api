@@ -5,10 +5,12 @@ namespace AppBundle\Entity;
 use CrEOF\Spatial\PHP\Types\Geometry\Point;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
+use JMS\Serializer\Annotation as JMS;
 
 /**
  * @ORM\Entity
  * @ORM\Table(name="inowas_soil_profile")
+ * @JMS\ExclusionPolicy("all")
  */
 class SoilProfile extends ModelObject
 {

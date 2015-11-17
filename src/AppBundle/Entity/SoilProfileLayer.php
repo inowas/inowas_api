@@ -4,10 +4,12 @@ namespace AppBundle\Entity;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
+use JMS\Serializer\Annotation as JMS;
 
 /**
  * @ORM\Entity
  * @ORM\Table(name="inowas_soil_profile_layer")
+ * @JMS\ExclusionPolicy("all")
  */
 class SoilProfileLayer extends ModelObject
 {

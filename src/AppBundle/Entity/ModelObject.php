@@ -4,6 +4,7 @@ namespace AppBundle\Entity;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
+use JMS\Serializer\Annotation as JMS;
 
 /**
  * ModelObject
@@ -20,9 +21,10 @@ use Doctrine\ORM\Mapping as ORM;
  *                          "soilprofilelayer" = "SoilProfileLayer",
  *                          "stream" = "Stream"
  * })
+ * @JMS\ExclusionPolicy("all")
  */
 
-class ModelObject
+abstract class ModelObject
 {
     /**
      * @var integer
@@ -30,6 +32,7 @@ class ModelObject
      * @ORM\Column(name="id", type="integer")
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="AUTO")
+     * @JMS\Expose
      */
     private $id;
 
