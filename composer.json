@@ -23,7 +23,11 @@
         "friendsofsymfony/user-bundle": "~2.0@dev",
         "creof/doctrine2-spatial": "dev-master",
         "phpunit/phpunit": "4.7.*",
-        "doctrine/doctrine-fixtures-bundle": "^2.2"
+        "doctrine/doctrine-fixtures-bundle": "^2.2",
+        "jms/serializer-bundle": "~1.0",
+        "friendsofsymfony/rest-bundle": "^1.7",
+        "nelmio/api-doc-bundle": "2.9",
+        "jms/security-extra-bundle": "^1.5"
     },
     "require-dev": {
         "sensio/generator-bundle": "~2.3"
