@@ -38,7 +38,7 @@ class GeologicalLayer extends ModelObject
      * Add geologicalUnit
      *
      * @param \AppBundle\Entity\GeologicalUnit $geologicalUnit
-     * @return Layer
+     * @return GeologicalLayer
      */
     public function addGeologicalUnit(GeologicalUnit $geologicalUnit)
     {

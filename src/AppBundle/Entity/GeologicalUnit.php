@@ -11,18 +11,8 @@ use JMS\Serializer\Annotation as JMS;
  * @ORM\Table(name="geological_units")
  * @JMS\ExclusionPolicy("all")
  */
-class GeologicalUnit
+class GeologicalUnit extends ModelObject
 {
-    /**
-     * @var integer
-     *
-     * @ORM\Column(name="id", type="integer")
-     * @ORM\Id
-     * @ORM\GeneratedValue(strategy="AUTO")
-     * @JMS\Expose
-     */
-    private $id;
-    
     /**
      * @var $elevation
      *
@@ -51,19 +41,10 @@ class GeologicalUnit
      */
     private $geologicalLayer;
 
-    public function __construct()
+    public function __construct(User $owner = null, Project $project = null, $public = false)
     {
+        parent::__construct($owner, $project, $public);
         $this->layer = new ArrayCollection();
-    }
-
-    /**
-     * Get id
-     *
-     * @return integer 
-     */
-    public function getId()
-    {
-        return $this->id;
     }
 
     /**

@@ -18,6 +18,7 @@ use JMS\Serializer\Annotation as JMS;
  *                          "observationpoint" = "ObservationPoint",
  *                          "geologicalpoint" = "GeologicalPoint",
  *                          "geologicallayer" = "GeologicalLayer",
+ *                          "geologicalunit" = "GeologicalUnit",
  *                          "stream" = "Stream"
  * })
  * @JMS\ExclusionPolicy("all")
@@ -52,7 +53,7 @@ abstract class ModelObject
     private $owner;
 
     /**
-     * @var ArrayCollection ModelObjectProperty
+     * @var ArrayCollection Property
      *
      * @ORM\OneToMany(targetEntity="AppBundle\Entity\Property", mappedBy="modelObject")
      */
@@ -100,7 +101,7 @@ abstract class ModelObject
         $this->public = $public;
         $this->projects = new ArrayCollection();
         if ($project) $this->addProject($project);
-        $this->modelObjectProperties = new ArrayCollection();
+        $this->properties = new ArrayCollection();
         $this->observationPoints = new ArrayCollection();
         $this->dateCreated = new \DateTime();
         $this->dateModified = new \DateTime();
