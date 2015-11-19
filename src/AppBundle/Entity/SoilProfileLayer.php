@@ -28,11 +28,11 @@ class SoilProfileLayer extends ModelObject
     private $bottomElevation;
 
     /**
-     * @var SoilProfile
+     * @var GeologicalPoint
      *
-     * @ORM\ManyToOne(targetEntity="AppBundle\Entity\SoilProfile", inversedBy="soilProfileLayers")
+     * @ORM\ManyToOne(targetEntity="AppBundle\Entity\GeologicalPoint", inversedBy="soilProfileLayers")
      */
-    private $soilProfile;
+    private $geologicalPoint;
 
     /**
      * @var ArrayCollection
@@ -127,25 +127,25 @@ class SoilProfileLayer extends ModelObject
     }
 
     /**
-     * Set soilProfile
+     * Set geologicalPoint
      *
-     * @param \AppBundle\Entity\SoilProfile $soilProfile
+     * @param \AppBundle\Entity\GeologicalPoint $geologicalPoint
      * @return SoilProfileLayer
      */
-    public function setSoilProfile(SoilProfile $soilProfile = null)
+    public function setGeologicalPoint(\AppBundle\Entity\GeologicalPoint $geologicalPoint = null)
     {
-        $this->soilProfile = $soilProfile;
+        $this->geologicalPoint = $geologicalPoint;
 
         return $this;
     }
 
     /**
-     * Get soilProfile
+     * Get geologicalPoint
      *
-     * @return \AppBundle\Entity\SoilProfile 
+     * @return \AppBundle\Entity\GeologicalPoint 
      */
-    public function getSoilProfile()
+    public function getGeologicalPoint()
     {
-        return $this->soilProfile;
+        return $this->geologicalPoint;
     }
 }

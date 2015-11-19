@@ -9,10 +9,10 @@ use JMS\Serializer\Annotation as JMS;
 
 /**
  * @ORM\Entity
- * @ORM\Table(name="soil_profile")
+ * @ORM\Table(name="geological_points")
  * @JMS\ExclusionPolicy("all")
  */
-class SoilProfile extends ModelObject
+class GeologicalPoint extends ModelObject
 {
     /**
      * @var Point
@@ -44,7 +44,7 @@ class SoilProfile extends ModelObject
      * Set point
      *
      * @param point $point
-     * @return SoilProfile
+     * @return GeologicalPoint
      */
     public function setPoint($point)
     {
@@ -67,7 +67,7 @@ class SoilProfile extends ModelObject
      * Add soilProfileLayers
      *
      * @param \AppBundle\Entity\SoilProfileLayer $soilProfileLayers
-     * @return SoilProfile
+     * @return GeologicalPoint
      */
     public function addSoilProfileLayer(SoilProfileLayer $soilProfileLayers)
     {

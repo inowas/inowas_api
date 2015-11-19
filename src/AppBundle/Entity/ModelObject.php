@@ -10,14 +10,14 @@ use JMS\Serializer\Annotation as JMS;
  * ModelObject
  * @ORM\HasLifecycleCallbacks()
  * @ORM\Entity
- * @ORM\Table(name="model_object")
+ * @ORM\Table(name="model_objects")
  * @ORM\InheritanceType("JOINED")
- * @ORM\DiscriminatorColumn(name="discr", type="string")
+ * @ORM\DiscriminatorColumn(name="name", type="string")
  * @ORM\DiscriminatorMap({  "area" = "Area",
  *                          "boundary" = "Boundary",
  *                          "layer" = "Layer",
  *                          "observationpoint" = "ObservationPoint",
- *                          "soilprofile" = "SoilProfile",
+ *                          "geologicalpoint" = "GeologicalPoint",
  *                          "soilprofilelayer" = "SoilProfileLayer",
  *                          "stream" = "Stream"
  * })
