@@ -25,10 +25,10 @@ class TimeSeries
     /**
      * @var ArrayCollection ModelObjectProperty
      *
-     * @ORM\ManyToOne(targetEntity="AppBundle\Entity\ModelObjectProperty", inversedBy="timeSeries")
+     * @ORM\ManyToOne(targetEntity="AppBundle\Entity\Property", inversedBy="timeSeries")
      * @ORM\JoinColumn(name="model_object_properties_id", referencedColumnName="id", onDelete="CASCADE")
      */
-    private $modelObjectProperties;
+    private $property;
 
     /**
      * @var \DateTime
@@ -110,23 +110,23 @@ class TimeSeries
     /**
      * Set modelObjectProperties
      *
-     * @param \AppBundle\Entity\ModelObjectProperty $modelObjectProperties
+     * @param \AppBundle\Entity\Property $property
      * @return TimeSeries
      */
-    public function setModelObjectProperties(ModelObjectProperty $modelObjectProperties = null)
+    public function setModelObjectProperties(Property $property = null)
     {
-        $this->modelObjectProperties = $modelObjectProperties;
+        $this->property = $property;
         return $this;
     }
 
     /**
      * Get modelObjectProperties
      *
-     * @return \AppBundle\Entity\ModelObjectProperty 
+     * @return \AppBundle\Entity\Property
      */
     public function getModelObjectProperties()
     {
-        return $this->modelObjectProperties;
+        return $this->property;
     }
 
     /**

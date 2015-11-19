@@ -8,10 +8,10 @@ use Doctrine\ORM\Mapping as ORM;
 /**
  * FeatureProperty
  *
- * @ORM\Table(name="model_object_properties")
+ * @ORM\Table(name="properties")
  * @ORM\Entity
  */
-class ModelObjectProperty
+class Property
 {
     /**
      * @var integer
@@ -31,9 +31,9 @@ class ModelObjectProperty
     private $modelObject;
 
     /**
-     * @var ModelObjectPropertyType
+     * @var PropertyType
      *
-     * @ORM\ManyToOne(targetEntity="AppBundle\Entity\ModelObjectPropertyType")
+     * @ORM\ManyToOne(targetEntity="AppBundle\Entity\PropertyType")
      * @ORM\JoinColumn(name="model_object_property_type_id", referencedColumnName="id")
      */
     private $type;
@@ -68,7 +68,7 @@ class ModelObjectProperty
      * Add timeSeries
      *
      * @param \AppBundle\Entity\TimeSeries $timeSeries
-     * @return ModelObjectProperty
+     * @return Property
      */
     public function addTimeSeries(TimeSeries $timeSeries)
     {
@@ -100,10 +100,10 @@ class ModelObjectProperty
     /**
      * Set type
      *
-     * @param \AppBundle\Entity\ModelObjectPropertyType $type
-     * @return ModelObjectProperty
+     * @param \AppBundle\Entity\PropertyType $type
+     * @return Property
      */
-    public function setType(\AppBundle\Entity\ModelObjectPropertyType $type = null)
+    public function setType(PropertyType $type = null)
     {
         $this->type = $type;
 
@@ -113,7 +113,7 @@ class ModelObjectProperty
     /**
      * Get type
      *
-     * @return \AppBundle\Entity\ModelObjectPropertyType 
+     * @return \AppBundle\Entity\PropertyType
      */
     public function getType()
     {
@@ -124,9 +124,9 @@ class ModelObjectProperty
      * Set modelObject
      *
      * @param \AppBundle\Entity\ModelObject $modelObject
-     * @return ModelObjectProperty
+     * @return Property
      */
-    public function setModelObject(\AppBundle\Entity\ModelObject $modelObject = null)
+    public function setModelObject(ModelObject $modelObject = null)
     {
         $this->modelObject = $modelObject;
 

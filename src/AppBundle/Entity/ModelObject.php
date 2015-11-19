@@ -54,9 +54,9 @@ abstract class ModelObject
     /**
      * @var ArrayCollection ModelObjectProperty
      *
-     * @ORM\OneToMany(targetEntity="AppBundle\Entity\ModelObjectProperty", mappedBy="modelObject")
+     * @ORM\OneToMany(targetEntity="AppBundle\Entity\Property", mappedBy="modelObject")
      */
-    private $modelObjectProperties;
+    private $properties;
 
     /**
      * @var ArrayCollection ObservationPoint
@@ -246,12 +246,12 @@ abstract class ModelObject
     /**
      * Add modelObjectProperties
      *
-     * @param \AppBundle\Entity\ModelObjectProperty $modelObjectProperties
+     * @param \AppBundle\Entity\Property $property
      * @return ModelObject
      */
-    public function addModelObjectProperty(ModelObjectProperty $modelObjectProperties)
+    public function addModelObjectProperty(Property $property)
     {
-        $this->modelObjectProperties[] = $modelObjectProperties;
+        $this->properties[] = $property;
 
         return $this;
     }
@@ -259,11 +259,11 @@ abstract class ModelObject
     /**
      * Remove modelObjectProperties
      *
-     * @param \AppBundle\Entity\ModelObjectProperty $modelObjectProperties
+     * @param \AppBundle\Entity\Property $property
      */
-    public function removeModelObjectProperty(ModelObjectProperty $modelObjectProperties)
+    public function removeModelObjectProperty(Property $property)
     {
-        $this->modelObjectProperties->removeElement($modelObjectProperties);
+        $this->properties->removeElement($property);
     }
 
     /**
@@ -273,7 +273,7 @@ abstract class ModelObject
      */
     public function getModelObjectProperties()
     {
-        return $this->modelObjectProperties;
+        return $this->properties;
     }
 
     /**

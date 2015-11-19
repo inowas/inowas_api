@@ -7,10 +7,10 @@ use Doctrine\ORM\Mapping as ORM;
 /**
  * ModelObjectPropertyType
  *
- * @ORM\Table(name="model_object_property_types")
+ * @ORM\Table(name="property_types")
  * @ORM\Entity
  */
-class ModelObjectPropertyType
+class PropertyType
 {
     /**
      * @var integer
@@ -43,7 +43,7 @@ class ModelObjectPropertyType
      * Set name
      *
      * @param string $name
-     * @return ModelObjectPropertyType
+     * @return PropertyType
      */
     public function setName($name)
     {
