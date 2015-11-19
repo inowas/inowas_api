@@ -40,7 +40,7 @@ class Layer extends ModelObject
      * @param \AppBundle\Entity\GeologicalUnit $geologicalUnit
      * @return Layer
      */
-    public function addSoilProfileLayer(GeologicalUnit $geologicalUnit)
+    public function addGeologicalUnit(GeologicalUnit $geologicalUnit)
     {
         $this->geologicalUnits[] = $geologicalUnit;
 
@@ -52,7 +52,7 @@ class Layer extends ModelObject
      *
      * @param \AppBundle\Entity\GeologicalUnit $geologicalUnit
      */
-    public function removeSoilProfileLayer(GeologicalUnit $geologicalUnit)
+    public function removeGeologicalUnit(GeologicalUnit $geologicalUnit)
     {
         $this->geologicalUnits->removeElement($geologicalUnit);
     }
