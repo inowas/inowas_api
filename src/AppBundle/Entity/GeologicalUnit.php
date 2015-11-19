@@ -40,16 +40,16 @@ class GeologicalUnit
     /**
      * @var GeologicalPoint
      *
-     * @ORM\ManyToOne(targetEntity="AppBundle\Entity\GeologicalPoint", inversedBy="soilProfileLayers")
+     * @ORM\ManyToOne(targetEntity="AppBundle\Entity\GeologicalPoint", inversedBy="geologicalUnits")
      */
     private $geologicalPoint;
 
     /**
      * @var ArrayCollection
      *
-     * @ORM\ManyToMany(targetEntity="AppBundle\Entity\Layer", mappedBy="soilProfileLayer")
+     * @ORM\ManyToMany(targetEntity="AppBundle\Entity\GeologicalLayer", mappedBy="geologicalUnits")
      */
-    private $layer;
+    private $geologicalLayer;
 
     public function __construct()
     {
@@ -57,10 +57,20 @@ class GeologicalUnit
     }
 
     /**
+     * Get id
+     *
+     * @return integer 
+     */
+    public function getId()
+    {
+        return $this->id;
+    }
+
+    /**
      * Set topElevation
      *
      * @param float $topElevation
-     * @return GeologicalPoint
+     * @return GeologicalUnit
      */
     public function setTopElevation($topElevation)
     {
@@ -83,7 +93,7 @@ class GeologicalUnit
      * Set bottomElevation
      *
      * @param float $bottomElevation
-     * @return GeologicalPoint
+     * @return GeologicalUnit
      */
     public function setBottomElevation($bottomElevation)
     {
@@ -103,42 +113,10 @@ class GeologicalUnit
     }
 
     /**
-     * Add layer
-     *
-     * @param \AppBundle\Entity\Layer $layer
-     * @return GeologicalPoint
-     */
-    public function addLayer(Layer $layer)
-    {
-        $this->layer[] = $layer;
-        return $this;
-    }
-
-    /**
-     * Remove layer
-     *
-     * @param \AppBundle\Entity\Layer $layer
-     */
-    public function removeLayer(Layer $layer)
-    {
-        $this->layer->removeElement($layer);
-    }
-
-    /**
-     * Get layer
-     *
-     * @return \Doctrine\Common\Collections\Collection 
-     */
-    public function getLayer()
-    {
-        return $this->layer;
-    }
-
-    /**
      * Set geologicalPoint
      *
      * @param \AppBundle\Entity\GeologicalPoint $geologicalPoint
-     * @return GeologicalPoint
+     * @return GeologicalUnit
      */
     public function setGeologicalPoint(GeologicalPoint $geologicalPoint = null)
     {
@@ -158,12 +136,35 @@ class GeologicalUnit
     }
 
     /**
-     * Get id
+     * Add geologicalLayer
      *
-     * @return integer 
+     * @param \AppBundle\Entity\GeologicalLayer $geologicalLayer
+     * @return GeologicalUnit
      */
-    public function getId()
+    public function addGeologicalLayer(GeologicalLayer $geologicalLayer)
     {
-        return $this->id;
+        $this->geologicalLayer[] = $geologicalLayer;
+
+        return $this;
+    }
+
+    /**
+     * Remove geologicalLayer
+     *
+     * @param \AppBundle\Entity\GeologicalLayer $geologicalLayer
+     */
+    public function removeGeologicalLayer(GeologicalLayer $geologicalLayer)
+    {
+        $this->geologicalLayer->removeElement($geologicalLayer);
+    }
+
+    /**
+     * Get geologicalLayer
+     *
+     * @return \Doctrine\Common\Collections\Collection 
+     */
+    public function getGeologicalLayer()
+    {
+        return $this->geologicalLayer;
     }
 }

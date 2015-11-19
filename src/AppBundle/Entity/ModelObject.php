@@ -15,9 +15,9 @@ use JMS\Serializer\Annotation as JMS;
  * @ORM\DiscriminatorColumn(name="name", type="string")
  * @ORM\DiscriminatorMap({  "area" = "Area",
  *                          "boundary" = "Boundary",
- *                          "layer" = "Layer",
  *                          "observationpoint" = "ObservationPoint",
  *                          "geologicalpoint" = "GeologicalPoint",
+ *                          "geologicallayer" = "GeologicalLayer",
  *                          "stream" = "Stream"
  * })
  * @JMS\ExclusionPolicy("all")

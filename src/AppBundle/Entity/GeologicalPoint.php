@@ -100,7 +100,7 @@ class GeologicalPoint extends ModelObject
      *
      * @param \AppBundle\Entity\GeologicalUnit $geologicalUnits
      */
-    public function removeGeologicalUnit(\AppBundle\Entity\GeologicalUnit $geologicalUnits)
+    public function removeGeologicalUnit(GeologicalUnit $geologicalUnits)
     {
         $this->geologicalUnits->removeElement($geologicalUnits);
     }
