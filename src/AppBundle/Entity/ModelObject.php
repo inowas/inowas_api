@@ -18,7 +18,6 @@ use JMS\Serializer\Annotation as JMS;
  *                          "layer" = "Layer",
  *                          "observationpoint" = "ObservationPoint",
  *                          "geologicalpoint" = "GeologicalPoint",
- *                          "soilprofilelayer" = "SoilProfileLayer",
  *                          "stream" = "Stream"
  * })
  * @JMS\ExclusionPolicy("all")

@@ -24,9 +24,9 @@ class GeologicalPoint extends ModelObject
     /**
      * @var ArrayCollection SoilProfileLayer $soilProfileLayers
      *
-     * @ORM\OneToMany(targetEntity="SoilProfileLayer", mappedBy="soilProfile")
+     * @ORM\OneToMany(targetEntity="AppBundle\Entity\GeologicalUnit", mappedBy="geologicalPoint")
      */
-    private $soilProfileLayers;
+    private $geologicalUnits;
 
     /**
      * SoilProfile constructor.
@@ -37,7 +37,7 @@ class GeologicalPoint extends ModelObject
     public function __construct(User $owner = null, Project $project = null, $public = false)
     {
         parent::__construct($owner, $project, $public);
-        $this->soilProfileLayers = new ArrayCollection();
+        $this->geologicalUnits = new ArrayCollection();
     }
 
     /**
@@ -64,35 +64,44 @@ class GeologicalPoint extends ModelObject
     }
 
     /**
-     * Add soilProfileLayers
+     * Add geologicalUnit
      *
-     * @param \AppBundle\Entity\SoilProfileLayer $soilProfileLayers
+     * @param \AppBundle\Entity\GeologicalUnit $geologicalUnit
      * @return GeologicalPoint
      */
-    public function addSoilProfileLayer(SoilProfileLayer $soilProfileLayers)
+    public function addGeologicalUnit(GeologicalUnit $geologicalUnit)
     {
-        $this->soilProfileLayers[] = $soilProfileLayers;
-
+        $this->geologicalUnits[] = $geologicalUnit;
         return $this;
     }
 
     /**
-     * Remove soilProfileLayers
+     * Remove geologicalUnit
      *
-     * @param \AppBundle\Entity\SoilProfileLayer $soilProfileLayers
+     * @param \AppBundle\Entity\GeologicalUnit $geologicalUnit
      */
-    public function removeSoilProfileLayer(SoilProfileLayer $soilProfileLayers)
+    public function removeRemoveGeologicalUnit(GeologicalUnit $geologicalUnit)
     {
-        $this->soilProfileLayers->removeElement($soilProfileLayers);
+        $this->geologicalUnits->removeElement($geologicalUnit);
     }
 
     /**
-     * Get soilProfileLayers
+     * Get geologicalUnits
      *
      * @return \Doctrine\Common\Collections\Collection
      */
-    public function getSoilProfileLayers()
+    public function getGeologicalUnits()
     {
-        return $this->soilProfileLayers;
+        return $this->geologicalUnits;
+    }
+
+    /**
+     * Remove geologicalUnits
+     *
+     * @param \AppBundle\Entity\GeologicalUnit $geologicalUnits
+     */
+    public function removeGeologicalUnit(\AppBundle\Entity\GeologicalUnit $geologicalUnits)
+    {
+        $this->geologicalUnits->removeElement($geologicalUnits);
     }
 }

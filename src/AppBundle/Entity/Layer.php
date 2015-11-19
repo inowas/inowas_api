@@ -16,10 +16,10 @@ class Layer extends ModelObject
     /**
      * @var ArrayCollection SoilProfile
      *
-     * @ORM\ManyToMany(targetEntity="AppBundle\Entity\SoilProfileLayer", inversedBy="layer")
+     * @ORM\ManyToMany(targetEntity="AppBundle\Entity\GeologicalUnit", inversedBy="layer")
      * @ORM\JoinTable(name="layers_soil_profiles")
      **/
-    private $soilProfileLayer;
+    private $geologicalUnits;
 
     /**
      * Layer constructor.
@@ -31,39 +31,39 @@ class Layer extends ModelObject
     {
         parent::__construct($owner, $project, $public);
 
-        $this->soilProfileLayer = new ArrayCollection();
+        $this->geologicalUnits = new ArrayCollection();
     }
 
     /**
-     * Add soilProfileLayer
+     * Add geologicalUnit
      *
-     * @param \AppBundle\Entity\SoilProfileLayer $soilProfileLayer
+     * @param \AppBundle\Entity\GeologicalUnit $geologicalUnit
      * @return Layer
      */
-    public function addSoilProfileLayer(\AppBundle\Entity\SoilProfileLayer $soilProfileLayer)
+    public function addSoilProfileLayer(GeologicalUnit $geologicalUnit)
     {
-        $this->soilProfileLayer[] = $soilProfileLayer;
+        $this->geologicalUnits[] = $geologicalUnit;
 
         return $this;
     }
 
     /**
-     * Remove soilProfileLayer
+     * Remove geologicalUnit
      *
-     * @param \AppBundle\Entity\SoilProfileLayer $soilProfileLayer
+     * @param \AppBundle\Entity\GeologicalUnit $geologicalUnit
      */
-    public function removeSoilProfileLayer(\AppBundle\Entity\SoilProfileLayer $soilProfileLayer)
+    public function removeSoilProfileLayer(GeologicalUnit $geologicalUnit)
     {
-        $this->soilProfileLayer->removeElement($soilProfileLayer);
+        $this->geologicalUnits->removeElement($geologicalUnit);
     }
 
     /**
-     * Get soilProfileLayer
+     * Get geologicalUnits
      *
      * @return \Doctrine\Common\Collections\Collection 
      */
-    public function getSoilProfileLayer()
+    public function getGeologicalUnits()
     {
-        return $this->soilProfileLayer;
+        return $this->geologicalUnits;
     }
 }

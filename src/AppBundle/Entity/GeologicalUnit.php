@@ -8,11 +8,21 @@ use JMS\Serializer\Annotation as JMS;
 
 /**
  * @ORM\Entity
- * @ORM\Table(name="soil_profile_layer")
+ * @ORM\Table(name="geological_units")
  * @JMS\ExclusionPolicy("all")
  */
-class SoilProfileLayer extends ModelObject
+class GeologicalUnit
 {
+    /**
+     * @var integer
+     *
+     * @ORM\Column(name="id", type="integer")
+     * @ORM\Id
+     * @ORM\GeneratedValue(strategy="AUTO")
+     * @JMS\Expose
+     */
+    private $id;
+    
     /**
      * @var $elevation
      *
@@ -41,9 +51,8 @@ class SoilProfileLayer extends ModelObject
      */
     private $layer;
 
-    public function __construct(User $owner = null, Project $project = null, $public = false)
+    public function __construct()
     {
-        parent::__construct($owner, $project, $public);
         $this->layer = new ArrayCollection();
     }
 
@@ -51,7 +60,7 @@ class SoilProfileLayer extends ModelObject
      * Set topElevation
      *
      * @param float $topElevation
-     * @return SoilProfileLayer
+     * @return GeologicalPoint
      */
     public function setTopElevation($topElevation)
     {
@@ -74,7 +83,7 @@ class SoilProfileLayer extends ModelObject
      * Set bottomElevation
      *
      * @param float $bottomElevation
-     * @return SoilProfileLayer
+     * @return GeologicalPoint
      */
     public function setBottomElevation($bottomElevation)
     {
@@ -97,12 +106,11 @@ class SoilProfileLayer extends ModelObject
      * Add layer
      *
      * @param \AppBundle\Entity\Layer $layer
-     * @return SoilProfileLayer
+     * @return GeologicalPoint
      */
     public function addLayer(Layer $layer)
     {
         $this->layer[] = $layer;
-
         return $this;
     }
 
@@ -130,9 +138,9 @@ class SoilProfileLayer extends ModelObject
      * Set geologicalPoint
      *
      * @param \AppBundle\Entity\GeologicalPoint $geologicalPoint
-     * @return SoilProfileLayer
+     * @return GeologicalPoint
      */
-    public function setGeologicalPoint(\AppBundle\Entity\GeologicalPoint $geologicalPoint = null)
+    public function setGeologicalPoint(GeologicalPoint $geologicalPoint = null)
     {
         $this->geologicalPoint = $geologicalPoint;
 
@@ -147,5 +155,15 @@ class SoilProfileLayer extends ModelObject
     public function getGeologicalPoint()
     {
         return $this->geologicalPoint;
+    }
+
+    /**
+     * Get id
+     *
+     * @return integer 
+     */
+    public function getId()
+    {
+        return $this->id;
     }
 }
