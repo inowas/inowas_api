@@ -10,7 +10,7 @@ use JMS\Serializer\Annotation as JMS;
 /**
  * Users
  *
- * @ORM\Table(name="user")
+ * @ORM\Table(name="users")
  * @ORM\Entity()
  * @JMS\ExclusionPolicy("all")
  */
