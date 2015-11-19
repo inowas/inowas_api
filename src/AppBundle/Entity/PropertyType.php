@@ -45,8 +45,12 @@ class PropertyType
      * @param string $name
      * @return PropertyType
      */
-    public function setName($name)
+    public function setName($name=null)
     {
+        if (is_null($name))
+        {
+            $name = "";
+        }
         $this->name = $name;
 
         return $this;
