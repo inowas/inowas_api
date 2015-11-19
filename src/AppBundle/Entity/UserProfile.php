@@ -32,14 +32,14 @@ class UserProfile
     /**
      * @var string
      *
-     * @ORM\Column(name="first_name", type="string", length=255))
+     * @ORM\Column(name="first_name", type="string", length=255)
      */
     protected $firstName = "";
 
     /**
      * @var string
      *
-     * @ORM\Column(name="last_name", type="string", length=255))
+     * @ORM\Column(name="last_name", type="string", length=255)
      */
     protected $lastName = "";
 

@@ -23,6 +23,13 @@ class Property
     private $id;
 
     /**
+     * @var string
+     *
+     * @ORM\Column(name="name", type="string", length=255)
+     */
+    private $name;
+
+    /**
      * @var ModelObject
      *
      * @ORM\ManyToOne(targetEntity="AppBundle\Entity\ModelObject", inversedBy="properties")
@@ -141,5 +148,32 @@ class Property
     public function getModelObject()
     {
         return $this->modelObject;
+    }
+
+    /**
+     * Set name
+     *
+     * @param string $name
+     * @return Property
+     */
+    public function setName($name=null)
+    {
+        if (is_null($name))
+        {
+            $name = "";
+        }
+        $this->name = $name;
+
+        return $this;
+    }
+
+    /**
+     * Get name
+     *
+     * @return string 
+     */
+    public function getName()
+    {
+        return $this->name;
     }
 }

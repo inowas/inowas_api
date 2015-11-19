@@ -151,4 +151,27 @@ class TimeSeries
     {
         return $this->raster;
     }
+
+    /**
+     * Set property
+     *
+     * @param \AppBundle\Entity\Property $property
+     * @return TimeSeries
+     */
+    public function setProperty(\AppBundle\Entity\Property $property = null)
+    {
+        $this->property = $property;
+
+        return $this;
+    }
+
+    /**
+     * Get property
+     *
+     * @return \AppBundle\Entity\Property 
+     */
+    public function getProperty()
+    {
+        return $this->property;
+    }
 }
