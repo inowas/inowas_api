@@ -8,7 +8,7 @@ use Doctrine\ORM\Mapping as ORM;
 /**
  * TimeSeries
  *
- * @ORM\Table(name="inowas_time_series")
+ * @ORM\Table(name="time_series")
  * @ORM\Entity
  */
 class TimeSeries

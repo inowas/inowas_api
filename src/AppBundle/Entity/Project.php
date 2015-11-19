@@ -9,7 +9,7 @@ use JMS\Serializer\Annotation as JMS;
 /**
  * Project
  *
- * @ORM\Table(name="inowas_project")
+ * @ORM\Table(name="project")
  * @ORM\Entity(repositoryClass="AppBundle\Entity\ProjectRepository")
  * @JMS\ExclusionPolicy("all")
  */
@@ -47,7 +47,7 @@ class Project
      * @var ArrayCollection User
      *
      * @ORM\ManyToMany(targetEntity="User", inversedBy="participatedProjects")
-     * @ORM\JoinTable(name="inowas_users_participated_projects")
+     * @ORM\JoinTable(name="users_participated_projects")
      * @JMS\Expose
      * @JMS\MaxDepth(1)
      */

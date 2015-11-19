@@ -8,7 +8,7 @@ use Doctrine\ORM\Mapping as ORM;
 /**
  * FeatureProperty
  *
- * @ORM\Table(name="inowas_model_object_property")
+ * @ORM\Table(name="model_object_property")
  * @ORM\Entity
  */
 class ModelObjectProperty

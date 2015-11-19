@@ -10,7 +10,7 @@ use JMS\Serializer\Annotation as JMS;
  * ModelObject
  * @ORM\HasLifecycleCallbacks()
  * @ORM\Entity
- * @ORM\Table(name="inowas_model_object")
+ * @ORM\Table(name="model_object")
  * @ORM\InheritanceType("JOINED")
  * @ORM\DiscriminatorColumn(name="discr", type="string")
  * @ORM\DiscriminatorMap({  "area" = "Area",
@@ -40,7 +40,7 @@ abstract class ModelObject
      * @var ArrayCollection Project
      *
      * @ORM\ManyToMany(targetEntity="Project", inversedBy="modelObjects")
-     * @ORM\JoinTable(name="inowas_projects_model_objects")
+     * @ORM\JoinTable(name="projects_model_objects")
      **/
     private $projects;
 
@@ -63,7 +63,7 @@ abstract class ModelObject
      * @var ArrayCollection ObservationPoint
      *
      * @ORM\ManyToMany(targetEntity="ObservationPoint", inversedBy="modelObjects")
-     * @ORM\JoinTable(name="inowas_model_object_observation_point")
+     * @ORM\JoinTable(name="model_object_observation_point")
      */
     private $observationPoints;
 

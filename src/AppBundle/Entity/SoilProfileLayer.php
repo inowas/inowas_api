@@ -8,7 +8,7 @@ use JMS\Serializer\Annotation as JMS;
 
 /**
  * @ORM\Entity
- * @ORM\Table(name="inowas_soil_profile_layer")
+ * @ORM\Table(name="soil_profile_layer")
  * @JMS\ExclusionPolicy("all")
  */
 class SoilProfileLayer extends ModelObject

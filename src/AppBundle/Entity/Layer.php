@@ -8,7 +8,7 @@ use JMS\Serializer\Annotation as JMS;
 
 /**
  * @ORM\Entity
- * @ORM\Table(name="inowas_layer")
+ * @ORM\Table(name="layer")
  * @JMS\ExclusionPolicy("all")
  */
 class Layer extends ModelObject
@@ -17,7 +17,7 @@ class Layer extends ModelObject
      * @var ArrayCollection SoilProfile
      *
      * @ORM\ManyToMany(targetEntity="AppBundle\Entity\SoilProfileLayer", inversedBy="layer")
-     * @ORM\JoinTable(name="inowas_layers_soil_profiles")
+     * @ORM\JoinTable(name="layers_soil_profiles")
      **/
     private $soilProfileLayer;
 

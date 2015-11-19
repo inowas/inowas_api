@@ -9,7 +9,7 @@ use JMS\Serializer\Annotation as JMS;
 
 /**
  * @ORM\Entity()
- * @ORM\Table(name="inowas_stream")
+ * @ORM\Table(name="stream")
  * @JMS\ExclusionPolicy("all")
  */
 class Stream extends ModelObject

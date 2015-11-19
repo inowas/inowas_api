@@ -7,7 +7,7 @@ use Doctrine\ORM\Mapping as ORM;
 /**
  * ModelObjectPropertyType
  *
- * @ORM\Table(name="inowas_model_object_property_type")
+ * @ORM\Table(name="model_object_property_type")
  * @ORM\Entity
  */
 class ModelObjectPropertyType

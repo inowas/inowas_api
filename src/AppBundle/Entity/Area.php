@@ -8,7 +8,7 @@ use JMS\Serializer\Annotation as JMS;
 
 /**
  * @ORM\Entity()
- * @ORM\Table(name="inowas_area")
+ * @ORM\Table(name="area")
  * @JMS\ExclusionPolicy("all")
  */
 class Area extends ModelObject
