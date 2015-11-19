@@ -25,7 +25,7 @@ class Property
     /**
      * @var ModelObject
      *
-     * @ORM\ManyToOne(targetEntity="AppBundle\Entity\ModelObject", inversedBy="modelObjectProperties")
+     * @ORM\ManyToOne(targetEntity="AppBundle\Entity\ModelObject", inversedBy="properties")
      * @ORM\JoinColumn(name="model_object_id", referencedColumnName="id", onDelete="CASCADE")
      */
     private $modelObject;
@@ -41,7 +41,7 @@ class Property
     /**
      * @var ArrayCollection TimeSeries
      *
-     * @ORM\OneToMany(targetEntity="AppBundle\Entity\TimeSeries", mappedBy="modelObjectProperties")
+     * @ORM\OneToMany(targetEntity="AppBundle\Entity\TimeSeries", mappedBy="property")
      */
     private $timeSeries;
 
