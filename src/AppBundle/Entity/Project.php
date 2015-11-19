@@ -9,7 +9,7 @@ use JMS\Serializer\Annotation as JMS;
 /**
  * Project
  *
- * @ORM\Table(name="project")
+ * @ORM\Table(name="projects")
  * @ORM\Entity(repositoryClass="AppBundle\Entity\ProjectRepository")
  * @JMS\ExclusionPolicy("all")
  */

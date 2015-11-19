@@ -9,7 +9,7 @@ use JMS\Serializer\Annotation as JMS;
 
 /**
  * @ORM\Entity()
- * @ORM\Table(name="observation_point")
+ * @ORM\Table(name="observation_points")
  * @JMS\ExclusionPolicy("all")
  */
 class ObservationPoint extends ModelObject
