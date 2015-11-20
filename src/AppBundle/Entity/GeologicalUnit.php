@@ -30,7 +30,7 @@ class GeologicalUnit extends ModelObject
     /**
      * @var GeologicalPoint
      *
-     * @ORM\ManyToOne(targetEntity="AppBundle\Entity\GeologicalPoint", inversedBy="geologicalUnits")
+     * @ORM\ManyToOne(targetEntity="AppBundle\Entity\GeologicalPoint", inversedBy="geologicalUnits", cascade={"persist"})
      */
     private $geologicalPoint;
 

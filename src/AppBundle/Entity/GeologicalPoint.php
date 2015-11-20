@@ -22,9 +22,9 @@ class GeologicalPoint extends ModelObject
     private $point;
 
     /**
-     * @var ArrayCollection SoilProfileLayer $soilProfileLayers
+     * @var ArrayCollection GeologicalUnit $geologicalUnit
      *
-     * @ORM\OneToMany(targetEntity="AppBundle\Entity\GeologicalUnit", mappedBy="geologicalPoint")
+     * @ORM\OneToMany(targetEntity="AppBundle\Entity\GeologicalUnit", mappedBy="geologicalPoint", cascade={"persist"})
      */
     private $geologicalUnits;
 

@@ -12,7 +12,7 @@ use JMS\Serializer\Annotation as JMS;
  * @ORM\Entity
  * @ORM\Table(name="model_objects")
  * @ORM\InheritanceType("JOINED")
- * @ORM\DiscriminatorColumn(name="name", type="string")
+ * @ORM\DiscriminatorColumn(name="type", type="string")
  * @ORM\DiscriminatorMap({  "area" = "Area",
  *                          "boundary" = "Boundary",
  *                          "observationpoint" = "ObservationPoint",
@@ -35,6 +35,13 @@ abstract class ModelObject
      * @JMS\Expose
      */
     private $id;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="name", type="string", length=255, nullable=true)
+     */
+    private $name;
 
     /**
      * @var ArrayCollection Project
@@ -351,5 +358,28 @@ abstract class ModelObject
     public function getProperties()
     {
         return $this->properties;
+    }
+
+    /**
+     * Set name
+     *
+     * @param string $name
+     * @return ModelObject
+     */
+    public function setName($name)
+    {
+        $this->name = $name;
+
+        return $this;
+    }
+
+    /**
+     * Get name
+     *
+     * @return string 
+     */
+    public function getName()
+    {
+        return $this->name;
     }
 }

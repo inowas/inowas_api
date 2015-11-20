@@ -2,20 +2,25 @@
 
 namespace AppBundle\DataFixtures\ORM\Scenarios\Scenario_1;
 
-use AppBundle\Entity\Area;
-use AppBundle\Entity\AreaType;
 use AppBundle\Entity\Boundary;
+use AppBundle\Entity\Project;
 use AppBundle\Entity\Property;
 use AppBundle\Entity\PropertyTimeValue;
 use AppBundle\Entity\PropertyType;
 use AppBundle\Entity\ObservationPoint;
-use AppBundle\Entity\Project;
 
 use AppBundle\Entity\GeologicalPoint;
 use AppBundle\Entity\GeologicalUnit;
 use AppBundle\Entity\PropertyValue;
-use AppBundle\Entity\Stream;
 use AppBundle\Entity\GeologicalLayer;
+
+use AppBundle\Model\AreaFactory;
+use AppBundle\Model\AreaTypeFactory;
+use AppBundle\Model\GeologicalLayerFactory;
+use AppBundle\Model\GeologicalPointFactory;
+use AppBundle\Model\ProjectFactory;
+use AppBundle\Model\StreamFactory;
+
 use CrEOF\Spatial\PHP\Types\Geometry\LineString;
 use CrEOF\Spatial\PHP\Types\Geometry\Point;
 use CrEOF\Spatial\PHP\Types\Geometry\Polygon;
@@ -57,135 +62,80 @@ class LoadScenario_1 implements FixtureInterface, ContainerAwareInterface
 
 
         // Add new Project
-        $project = new Project($user);
+        $project = ProjectFactory::setOwnerAndPublic($user, false);
         $project->setName('Scenario 1');
         $entityManager->persist($project);
         $entityManager->flush();
 
 
-        // Create all Layers
-        // Create layers
-        $geologicalLayer1 = new GeologicalLayer($user, $project);
-        $entityManager->persist($geologicalLayer1);
-        $geologicalLayer2 = new GeologicalLayer($user, $project);
-        $entityManager->persist($geologicalLayer2);
-        $geologicalLayer3 = new GeologicalLayer($user, $project);
-        $entityManager->persist($geologicalLayer3);
-        $entityManager->flush();
-
-        // Add Geological Profiles
-        $geologicalPoint = new GeologicalPoint($user, $project);
-        $geologicalPoint->setPoint(new Point(11772891.9650673, 2397519.89608855, 3857));
+        // Add Geological Profile 1
+        $geologicalPoint = GeologicalPointFactory::setOwnerProjectNameAndPoint($user, $project, 'GP1', new Point(11772891.9650673, 2397519.89608855, 3857));
+        $geologicalPoint = $this->addNewGeologicalUnitToGeologicalPoint($geologicalPoint, $project, 'GP1.1', 100, 70);
+        $geologicalPoint = $this->addNewGeologicalUnitToGeologicalPoint($geologicalPoint, $project, 'GP1.2',  70, 40);
+        $geologicalPoint = $this->addNewGeologicalUnitToGeologicalPoint($geologicalPoint, $project, 'GP1.3',  40,  0);
         $entityManager->persist($geologicalPoint);
         $entityManager->flush();
 
-        $geologicalUnit = new GeologicalUnit($user, $project);
-        $geologicalUnit->setGeologicalPoint($geologicalPoint);
-        $geologicalUnit->setTopElevation(100);
-        $geologicalUnit->setBottomElevation(70);
-        $geologicalLayer1->addGeologicalUnit($geologicalUnit);
-        $entityManager->persist($geologicalUnit);
-        $entityManager->flush();
-
-        $geologicalUnit = new GeologicalUnit($user, $project);
-        $geologicalUnit->setGeologicalPoint($geologicalPoint);
-        $geologicalUnit->setTopElevation(70);
-        $geologicalUnit->setBottomElevation(40);
-        $geologicalLayer2->addGeologicalUnit($geologicalUnit);
-        $entityManager->persist($geologicalUnit);
-        $entityManager->flush();
-
-        $geologicalUnit = new GeologicalUnit($user, $project);
-        $geologicalUnit->setGeologicalPoint($geologicalPoint);
-        $geologicalUnit->setTopElevation(40);
-        $geologicalUnit->setBottomElevation(0);
-        $geologicalLayer3->addGeologicalUnit($geologicalUnit);
-        $entityManager->persist($geologicalUnit);
-        $entityManager->flush();
-
-
-        // Add Geological Profiles
-        $geologicalPoint = new GeologicalPoint($user, $project);
-        $geologicalPoint->setPoint(new Point(11786103.1301754, 2397138.80478736, 3857));
+        // Add Geological Profile 2
+        $geologicalPoint = GeologicalPointFactory::setOwnerProjectNameAndPoint($user, $project, 'GP2', new Point(11786103.1301754, 2397138.80478736, 3857));
+        $geologicalPoint = $this->addNewGeologicalUnitToGeologicalPoint($geologicalPoint, $project, 'GP2.1', 100, 70);
+        $geologicalPoint = $this->addNewGeologicalUnitToGeologicalPoint($geologicalPoint, $project, 'GP2.2',  70, 40);
+        $geologicalPoint = $this->addNewGeologicalUnitToGeologicalPoint($geologicalPoint, $project, 'GP2.3',  40,  0);
         $entityManager->persist($geologicalPoint);
         $entityManager->flush();
 
-        $geologicalUnit = new GeologicalUnit($user, $project);
-        $geologicalUnit->setGeologicalPoint($geologicalPoint);
-        $geologicalUnit->setTopElevation(100);
-        $geologicalUnit->setBottomElevation(70);
-        $geologicalLayer1->addGeologicalUnit($geologicalUnit);
-        $entityManager->persist($geologicalUnit);
-        $entityManager->flush();
-
-        $geologicalUnit = new GeologicalUnit($user, $project);
-        $geologicalUnit->setGeologicalPoint($geologicalPoint);
-        $geologicalUnit->setTopElevation(70);
-        $geologicalUnit->setBottomElevation(40);
-        $geologicalLayer2->addGeologicalUnit($geologicalUnit);
-        $entityManager->persist($geologicalUnit);
-        $entityManager->flush();
-
-        $geologicalUnit = new GeologicalUnit($user, $project);
-        $geologicalUnit->setGeologicalPoint($geologicalPoint);
-        $geologicalUnit->setTopElevation(40);
-        $geologicalUnit->setBottomElevation(0);
-        $geologicalLayer3->addGeologicalUnit($geologicalUnit);
-        $entityManager->persist($geologicalUnit);
-        $entityManager->flush();
-
-        // Add Geological Profiles
-        $geologicalPoint = new GeologicalPoint($user, $project);
-        $geologicalPoint->setPoint(new Point(11779836.2954446, 2387061.05704468, 3857));
+        // Add Geological Profile 3
+        $geologicalPoint = GeologicalPointFactory::setOwnerProjectNameAndPoint($user, $project, 'GP3', new Point(11779836.2954446, 2387061.05704468, 3857));
+        $geologicalPoint = $this->addNewGeologicalUnitToGeologicalPoint($geologicalPoint, $project, 'GP3.1', 100, 70);
+        $geologicalPoint = $this->addNewGeologicalUnitToGeologicalPoint($geologicalPoint, $project, 'GP3.2',  70, 40);
+        $geologicalPoint = $this->addNewGeologicalUnitToGeologicalPoint($geologicalPoint, $project, 'GP3.3',  40,  0);
         $entityManager->persist($geologicalPoint);
         $entityManager->flush();
 
-        $geologicalUnit = new GeologicalUnit($user, $project);
-        $geologicalUnit->setGeologicalPoint($geologicalPoint);
-        $geologicalUnit->setTopElevation(100);
-        $geologicalUnit->setBottomElevation(70);
-        $geologicalLayer1->addGeologicalUnit($geologicalUnit);
-        $entityManager->persist($geologicalUnit);
+        // Create layer 1
+        $geologicalLayer = GeologicalLayerFactory::setOwnerProjectNameAndPublic($user, $project, 'L1');
+        $geologicalLayer = $this->addGeologicalUnitToGeologicalLayer($entityManager, $geologicalLayer, 'GP1.1');
+        $geologicalLayer = $this->addGeologicalUnitToGeologicalLayer($entityManager, $geologicalLayer, 'GP2.1');
+        $geologicalLayer = $this->addGeologicalUnitToGeologicalLayer($entityManager, $geologicalLayer, 'GP3.1');
+        $entityManager->persist($geologicalLayer);
         $entityManager->flush();
 
-        $geologicalUnit = new GeologicalUnit($user, $project);
-        $geologicalUnit->setGeologicalPoint($geologicalPoint);
-        $geologicalUnit->setTopElevation(70);
-        $geologicalUnit->setBottomElevation(40);
-        $geologicalLayer2->addGeologicalUnit($geologicalUnit);
-        $entityManager->persist($geologicalUnit);
+        // Create layer 2
+        $geologicalLayer = GeologicalLayerFactory::setOwnerProjectNameAndPublic($user, $project, 'L2');
+        $geologicalLayer = $this->addGeologicalUnitToGeologicalLayer($entityManager, $geologicalLayer, 'GP1.2');
+        $geologicalLayer = $this->addGeologicalUnitToGeologicalLayer($entityManager, $geologicalLayer, 'GP2.2');
+        $geologicalLayer = $this->addGeologicalUnitToGeologicalLayer($entityManager, $geologicalLayer, 'GP3.2');
+        $entityManager->persist($geologicalLayer);
         $entityManager->flush();
 
-        $geologicalUnit = new GeologicalUnit($user, $project);
-        $geologicalUnit->setGeologicalPoint($geologicalPoint);
-        $geologicalUnit->setTopElevation(40);
-        $geologicalUnit->setBottomElevation(0);
-        $geologicalLayer3->addGeologicalUnit($geologicalUnit);
-        $entityManager->persist($geologicalUnit);
+        // Create layer 3
+        $geologicalLayer = GeologicalLayerFactory::setOwnerProjectNameAndPublic($user, $project, 'L3');
+        $geologicalLayer = $this->addGeologicalUnitToGeologicalLayer($entityManager, $geologicalLayer, 'GP1.2');
+        $geologicalLayer = $this->addGeologicalUnitToGeologicalLayer($entityManager, $geologicalLayer, 'GP2.2');
+        $geologicalLayer = $this->addGeologicalUnitToGeologicalLayer($entityManager, $geologicalLayer, 'GP3.2');
+        $entityManager->persist($geologicalLayer);
         $entityManager->flush();
 
-        // Add new stream
-        $stream = new Stream($user, $project);
+
+        // Create Stream
+        $stream = StreamFactory::setOwnerProjectNameAndPublic($user, $project, 'S1');
         $stream->setStartingPoint(new Point(11777338.0302479, 2395656.78306049, 3857));
-        $lineCoordinates = array(
-            array(11766937.6721201, 2380245.03544451),
-            array(11772341.4998545, 2386595.27878767),
-            array(11777338.0302479, 2395656.78306049)
+        $stream->setLine(
+            new LineString(array(
+                array(11766937.6721201, 2380245.03544451),
+                array(11772341.4998545, 2386595.27878767),
+                array(11777338.0302479, 2395656.78306049)),
+                3857
+            )
         );
-        $line = new LineString($lineCoordinates, 3857);
-        $stream->setLine($line);
         $entityManager->persist($stream);
         $entityManager->flush();
 
         // Add new Area
-        $areaType = new AreaType();
-        $areaType->setName('model_area');
+        $areaType = AreaTypeFactory::setName('AT1');
         $entityManager->persist($areaType);
-
-        $area = new Area($user);
-        $area->addProject($project);
+        $area = AreaFactory::setOwnerProjectNameAndPublic($user, $project, 'A1');
         $area->setAreaType($areaType);
-
         $coordinates = array(
             array(11767778.4794313, 2403329.01798664),
             array(11791015.33603, 2403329.01798664),
@@ -193,10 +143,11 @@ class LoadScenario_1 implements FixtureInterface, ContainerAwareInterface
             array(11766937.6721201, 2380245.03544451),
             array(11767778.4794313, 2403329.01798664)
         );
-
         $line = new LineString($coordinates);
         $polygon = new Polygon(array($line), 3857);
         $area->setGeometry($polygon);
+
+
 
         // Create ObservationPoints for area
         $observationPoint1 = new ObservationPoint($user, $project);
@@ -317,5 +268,32 @@ class LoadScenario_1 implements FixtureInterface, ContainerAwareInterface
         $entityManager->persist($propertyValue);
 
         $entityManager->flush();
+    }
+
+    private function addNewGeologicalUnitToGeologicalPoint(GeologicalPoint $geologicalPoint, Project $project, $name = "", $topElevation = 0, $bottomElevation = 0)
+    {
+        $geologicalUnit  = new GeologicalUnit($geologicalPoint->getOwner(), $project, $geologicalPoint->getPublic());
+        $geologicalUnit->setName($name);
+        $geologicalUnit->setTopElevation($topElevation);
+        $geologicalUnit->setBottomElevation($bottomElevation);
+
+        $geologicalUnit->setGeologicalPoint($geologicalPoint);
+
+        return $geologicalPoint;
+    }
+
+    private function addGeologicalUnitToGeologicalLayer(ObjectManager $entityManager, GeologicalLayer $layer, $geologicalUnitName)
+    {
+        $geologicalUnit = $entityManager->getRepository('AppBundle:GeologicalUnit')
+            ->findOneBy(array(
+                'name' => $geologicalUnitName
+            ));
+
+        if ($geologicalUnit)
+        {
+            $layer->addGeologicalUnit($geologicalUnit);
+        }
+
+        return $layer;
     }
 }

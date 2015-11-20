@@ -56,7 +56,7 @@ class Project
     /**
      * @var ArrayCollection ModelObject
      *
-     * @ORM\ManyToMany(targetEntity="ModelObject", mappedBy="projects")
+     * @ORM\ManyToMany(targetEntity="ModelObject", mappedBy="projects", cascade={"all"})
      * @JMS\Expose
      * @JMS\MaxDepth(2)
      **/
@@ -72,13 +72,9 @@ class Project
 
     /**
      * Constructor
-     * @param User $owner
-     * @param $public
      */
-    public function __construct(User $owner = null, $public = false)
+    public function __construct()
     {
-        $this->owner = $owner;
-        $this->public = $public;
         $this->participants = new ArrayCollection();
         $this->modelObjects = new ArrayCollection();
     }
