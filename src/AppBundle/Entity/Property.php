@@ -25,7 +25,7 @@ class Property
     /**
      * @var string
      *
-     * @ORM\Column(name="name", type="string", length=255)
+     * @ORM\Column(name="name", type="string", length=255, nullable=true)
      */
     private $name;
 
@@ -46,11 +46,11 @@ class Property
     private $type;
 
     /**
-     * @var ArrayCollection TimeSeries
+     * @var ArrayCollection Values
      *
-     * @ORM\OneToMany(targetEntity="AppBundle\Entity\TimeSeries", mappedBy="property")
+     * @ORM\OneToMany(targetEntity="AppBundle\Entity\AbstractValue", mappedBy="properties")
      */
-    private $timeSeries;
+    private $values;
 
 
     /**
@@ -58,7 +58,7 @@ class Property
      */
     public function __construct()
     {
-        $this->timeSeries = new ArrayCollection();
+        $this->values = new ArrayCollection();
     }
 
     /**
@@ -70,40 +70,7 @@ class Property
     {
         return $this->id;
     }
-
-    /**
-     * Add timeSeries
-     *
-     * @param \AppBundle\Entity\TimeSeries $timeSeries
-     * @return Property
-     */
-    public function addTimeSeries(TimeSeries $timeSeries)
-    {
-        $this->timeSeries[] = $timeSeries;
-
-        return $this;
-    }
-
-    /**
-     * Remove timeSeries
-     *
-     * @param \AppBundle\Entity\TimeSeries $timeSeries
-     */
-    public function removeTimeSeries(TimeSeries $timeSeries)
-    {
-        $this->timeSeries->removeElement($timeSeries);
-    }
-
-    /**
-     * Get timeSeries
-     *
-     * @return \Doctrine\Common\Collections\Collection 
-     */
-    public function getTimeSeries()
-    {
-        return $this->timeSeries;
-    }
-
+    
     /**
      * Set type
      *
@@ -175,5 +142,38 @@ class Property
     public function getName()
     {
         return $this->name;
+    }
+
+    /**
+     * Add values
+     *
+     * @param \AppBundle\Entity\AbstractValue $values
+     * @return Property
+     */
+    public function addValue(\AppBundle\Entity\AbstractValue $values)
+    {
+        $this->values[] = $values;
+
+        return $this;
+    }
+
+    /**
+     * Remove values
+     *
+     * @param \AppBundle\Entity\AbstractValue $values
+     */
+    public function removeValue(\AppBundle\Entity\AbstractValue $values)
+    {
+        $this->values->removeElement($values);
+    }
+
+    /**
+     * Get values
+     *
+     * @return \Doctrine\Common\Collections\Collection 
+     */
+    public function getValues()
+    {
+        return $this->values;
     }
 }
