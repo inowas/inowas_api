@@ -45,7 +45,6 @@ class LoadScenario_1 implements FixtureInterface, ContainerAwareInterface
      */
     public function load(ObjectManager $entityManager)
     {
-
         // Add new User
         $userManager = $this->container->get('fos_user.user_manager');
         $user = $userManager->createUser();
@@ -55,13 +54,11 @@ class LoadScenario_1 implements FixtureInterface, ContainerAwareInterface
         $userManager->updateUser($user);
         $entityManager->flush();
 
-
         // Add new Project
         $project = ProjectFactory::setOwnerAndPublic($user, false);
         $project->setName('Scenario 1');
         $entityManager->persist($project);
         $entityManager->flush();
-
 
         // Add Geological Profile 1
         $geologicalPoint = GeologicalPointFactory::setOwnerProjectNameAndPoint($user, $project, 'GP1', new Point(11772891.9650673, 2397519.89608855, 3857));
@@ -126,11 +123,13 @@ class LoadScenario_1 implements FixtureInterface, ContainerAwareInterface
         $entityManager->persist($stream);
         $entityManager->flush();
 
-        // Add new Area
+        // Add new Areatype
         $areaType = AreaTypeFactory::setName('AT1');
         $entityManager->persist($areaType);
-        $area = AreaFactory::setOwnerProjectNameAndPublic($user, $project, 'A1');
-        $area->setAreaType($areaType);
+        $entityManager->flush();
+
+        // Add new Area
+        $area = AreaFactory::setOwnerProjectNameAndPublic($user, $project, 'A1', $areaType);
         $coordinates = array(
             array(11767778.4794313, 2403329.01798664),
             array(11791015.33603, 2403329.01798664),
