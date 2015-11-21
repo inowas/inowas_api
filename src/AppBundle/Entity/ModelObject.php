@@ -70,7 +70,7 @@ abstract class ModelObject
      * @var ArrayCollection ObservationPoint
      *
      * @ORM\ManyToMany(targetEntity="ObservationPoint", inversedBy="modelObjects")
-     * @ORM\JoinTable(name="model_object_observation_point")
+     * @ORM\JoinTable(name="model_objects_observation_points")
      */
     private $observationPoints;
 

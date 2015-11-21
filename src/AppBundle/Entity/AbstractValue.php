@@ -13,9 +13,9 @@ use JMS\Serializer\Annotation as JMS;
  * @ORM\Table(name="values")
  * @ORM\InheritanceType("JOINED")
  * @ORM\DiscriminatorColumn(name="name", type="string")
- * @ORM\DiscriminatorMap({  "name" = "PropertyValue",
+ * @ORM\DiscriminatorMap({  "value" = "PropertyValue",
  *                          "timevalue" = "PropertyTimeValue",
- *                          "fixedintervalvalues" = "PropertyFixedIntervalValue"
+ *                          "fixedintervalvalue" = "PropertyFixedIntervalValue"
  * })
  * @JMS\ExclusionPolicy("all")
  */
