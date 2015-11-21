@@ -16,9 +16,15 @@ use AppBundle\Entity\GeologicalLayer;
 
 use AppBundle\Model\AreaFactory;
 use AppBundle\Model\AreaTypeFactory;
+use AppBundle\Model\BoundaryFactory;
 use AppBundle\Model\GeologicalLayerFactory;
 use AppBundle\Model\GeologicalPointFactory;
+use AppBundle\Model\ObservationPointFactory;
 use AppBundle\Model\ProjectFactory;
+use AppBundle\Model\PropertyFactory;
+use AppBundle\Model\PropertyTimeValueFactory;
+use AppBundle\Model\PropertyTypeFactory;
+use AppBundle\Model\PropertyValueFactory;
 use AppBundle\Model\StreamFactory;
 
 use CrEOF\Spatial\PHP\Types\Geometry\LineString;
@@ -147,31 +153,27 @@ class LoadScenario_1 implements FixtureInterface, ContainerAwareInterface
         $polygon = new Polygon(array($line), 3857);
         $area->setGeometry($polygon);
 
-
-
         // Create ObservationPoints for area
-        $observationPoint1 = new ObservationPoint($user, $project);
-        $observationPoint1->setPoint(new Point(11778481.3041515, 2393327.89177542, 3857));
-        $observationPoint1->setElevation(100);
-        $entityManager->persist($observationPoint1);
-        $area->addObservationPoint($observationPoint1);
+        $observationPoint = ObservationPointFactory::setOwnerProjectNameAndPoint($user, $project, 'OP1', new Point(11778481.3041515, 2393327.89177542, 3857));
+        $observationPoint->setElevation(100);
+        $entityManager->persist($observationPoint);
+        $area->addObservationPoint($observationPoint);
 
-        $observationPoint2 = new ObservationPoint($user, $project);
-        $observationPoint2->setPoint(new Point(11772891.9650673, 2397519.89608855, 3857));
-        $observationPoint2->setElevation(100);
-        $entityManager->persist($observationPoint2);
-        $area->addObservationPoint($observationPoint2);
+        $observationPoint = ObservationPointFactory::setOwnerProjectNameAndPoint($user, $project, 'OP2', new Point(11772891.9650673, 2397519.89608855, 3857));
+        $observationPoint->setElevation(100);
+        $entityManager->persist($observationPoint);
+        $area->addObservationPoint($observationPoint);
 
-        $observationPoint3 = new ObservationPoint($user, $project);
-        $observationPoint3->setPoint(new Point(11786103.1301754, 2397138.80478736, 3857));
-        $observationPoint3->setElevation(100);
-        $entityManager->persist($observationPoint3);
+        $observationPoint = ObservationPointFactory::setOwnerProjectNameAndPoint($user, $project, 'OP3', new Point(11786103.1301754, 2397138.80478736, 3857));
+        $observationPoint->setElevation(100);
+        $entityManager->persist($observationPoint);
+        $area->addObservationPoint($observationPoint);
 
-        $area->addObservationPoint($observationPoint3);
         $entityManager->persist($area);
+        $entityManager->flush();
 
-        // Load boundary
-        $boundary = new Boundary($user, $project);
+        // Create boundary
+        $boundary = BoundaryFactory::setOwnerProjectNameAndPublic($user, $project, 'B1');
         $lineCoordinates = array(
             array(11767778.4794313, 2403329.01798664),
             array(11766937.6721201, 2380245.03544451),
@@ -180,91 +182,80 @@ class LoadScenario_1 implements FixtureInterface, ContainerAwareInterface
         $line = new LineString($lineCoordinates, 3857);
         $boundary->setGeometry($line);
         $entityManager->persist($boundary);
+        $entityManager->flush();
 
         // Add ModelObjectPropertyTypes
-        $propertyTypeGwHead = new PropertyType();
-        $propertyTypeGwHead->setName("gwhead");
+        $propertyTypeGwHead = PropertyTypeFactory::setName("gwhead");
         $entityManager->persist($propertyTypeGwHead);
 
-        $propertyTypeElevation = new PropertyType();
-        $propertyTypeElevation->setName("elevation");
+        $propertyTypeElevation = PropertyTypeFactory::setName("elevation");
         $entityManager->persist($propertyTypeElevation);
 
-        // Add ModelObjectProperties and TimeSeries
-        $property = new Property();
-        $property->setType($propertyTypeGwHead);
-        $property->setModelObject($observationPoint1);
+        // Add Property GWHead and TimeValues to ObservationPoint OP1
+        $observationPoint = $entityManager->getRepository('AppBundle:ObservationPoint')
+            ->findOneBy(array(
+                'name' => 'OP1'
+            ));
+        $property = PropertyFactory::setTypeAndModelObject($propertyTypeGwHead, $observationPoint);
         $entityManager->persist($property);
 
-        $timeValue = new PropertyTimeValue();
-        $timeValue->setProperty($property);
-        $timeValue->setTimeStamp(new \DateTime('2015-01-01 00:00:00'));
-        $timeValue->setValue(50);
-        $entityManager->persist($timeValue);
+        $propertyTimeValue = PropertyTimeValueFactory::setPropertyDateTimeAndValue($property, new \DateTime('2015-01-01 00:00:00'), 50);
+        $entityManager->persist($propertyTimeValue);
 
-        $timeValue = new PropertyTimeValue();
-        $timeValue->setProperty($property);
-        $timeValue->setTimeStamp(new \DateTime('2015-02-01 00:00:00'));
-        $timeValue->setValue(51);
-        $entityManager->persist($timeValue);
+        $propertyTimeValue = PropertyTimeValueFactory::setPropertyDateTimeAndValue($property, new \DateTime('2015-02-01 00:00:00'), 51);
+        $entityManager->persist($propertyTimeValue);
 
-        $timeValue = new PropertyTimeValue();
-        $timeValue->setProperty($property);
-        $timeValue->setTimeStamp(new \DateTime('2015-03-01 00:00:00'));
-        $timeValue->setValue(52);
-        $entityManager->persist($timeValue);
+        $propertyTimeValue = PropertyTimeValueFactory::setPropertyDateTimeAndValue($property, new \DateTime('2015-03-01 00:00:00'), 52);
+        $entityManager->persist($propertyTimeValue);
 
-        $timeValue = new PropertyTimeValue();
-        $timeValue->setProperty($property);
-        $timeValue->setTimeStamp(new \DateTime('2015-04-01 00:00:00'));
-        $timeValue->setValue(53);
-        $entityManager->persist($timeValue);
+        $propertyTimeValue = PropertyTimeValueFactory::setPropertyDateTimeAndValue($property, new \DateTime('2015-04-01 00:00:00'), 53);
+        $entityManager->persist($propertyTimeValue);
 
-        $timeValue = new PropertyTimeValue();
-        $timeValue->setProperty($property);
-        $timeValue->setTimeStamp(new \DateTime('2015-05-01 00:00:00'));
-        $timeValue->setValue(54);
-        $entityManager->persist($timeValue);
+        $propertyTimeValue = PropertyTimeValueFactory::setPropertyDateTimeAndValue($property, new \DateTime('2015-05-01 00:00:00'), 54);
+        $entityManager->persist($propertyTimeValue);
 
-
-        $property = new Property();
-        $property->setType($propertyTypeGwHead);
-        $property->setModelObject($boundary);
+        // Add Property Elevation and TimeValues to ObservationPoint OP1
+        $property = PropertyFactory::setTypeAndModelObject($propertyTypeElevation, $observationPoint);
         $entityManager->persist($property);
 
-        $propertyValue = new PropertyValue();
-        $propertyValue->setProperty($property);
-        $propertyValue->setValue(60);
+        $propertyValue = PropertyValueFactory::setPropertyAndValue($property, 100);
         $entityManager->persist($propertyValue);
 
-        $property = new Property();
-        $property->setType($propertyTypeElevation);
-        $property->setModelObject($observationPoint1);
+
+        // Add Property GWHead and TimeValues to ObservationPoint OP2
+        $observationPoint = $entityManager->getRepository('AppBundle:ObservationPoint')
+            ->findOneBy(array(
+                'name' => 'OP2'
+            ));
+
+        $property = PropertyFactory::setTypeAndModelObject($propertyTypeElevation, $observationPoint);
         $entityManager->persist($property);
 
-        $propertyValue = new PropertyValue();
-        $propertyValue->setProperty($property);
-        $propertyValue->setValue(100);
+        $propertyValue = PropertyValueFactory::setPropertyAndValue($property, 100);
         $entityManager->persist($propertyValue);
 
-        $property = new Property();
-        $property->setType($propertyTypeElevation);
-        $property->setModelObject($observationPoint2);
+        // Add Property GWHead and TimeValues to ObservationPoint OP2
+        $observationPoint = $entityManager->getRepository('AppBundle:ObservationPoint')
+            ->findOneBy(array(
+                'name' => 'OP3'
+            ));
+
+        $property = PropertyFactory::setTypeAndModelObject($propertyTypeElevation, $observationPoint);
         $entityManager->persist($property);
 
-        $propertyValue = new PropertyValue();
-        $propertyValue->setProperty($property);
-        $propertyValue->setValue(100);
+        $propertyValue = PropertyValueFactory::setPropertyAndValue($property, 100);
         $entityManager->persist($propertyValue);
 
-        $property = new Property();
-        $property->setType($propertyTypeElevation);
-        $property->setModelObject($observationPoint2);
+        // Add Property, Values to Boundary B1
+        $boundary = $entityManager->getRepository('AppBundle:Boundary')
+            ->findOneBy(array(
+                'name' => 'B1'
+            ));
+
+        $property = PropertyFactory::setTypeAndModelObject($propertyTypeGwHead, $boundary);
         $entityManager->persist($property);
 
-        $propertyValue = new PropertyValue();
-        $propertyValue->setProperty($property);
-        $propertyValue->setValue(100);
+        $propertyValue = PropertyValueFactory::setPropertyAndValue($property, 60);
         $entityManager->persist($propertyValue);
 
         $entityManager->flush();
