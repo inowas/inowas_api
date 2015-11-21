@@ -2,23 +2,12 @@
 
 namespace AppBundle\DataFixtures\ORM\Scenarios\Scenario_1;
 
-use AppBundle\Entity\Boundary;
-use AppBundle\Entity\Project;
-use AppBundle\Entity\Property;
-use AppBundle\Entity\PropertyTimeValue;
-use AppBundle\Entity\PropertyType;
-use AppBundle\Entity\ObservationPoint;
-
-use AppBundle\Entity\GeologicalPoint;
-use AppBundle\Entity\GeologicalUnit;
-use AppBundle\Entity\PropertyValue;
-use AppBundle\Entity\GeologicalLayer;
-
 use AppBundle\Model\AreaFactory;
 use AppBundle\Model\AreaTypeFactory;
 use AppBundle\Model\BoundaryFactory;
 use AppBundle\Model\GeologicalLayerFactory;
 use AppBundle\Model\GeologicalPointFactory;
+use AppBundle\Model\GeologicalUnitFactory;
 use AppBundle\Model\ObservationPointFactory;
 use AppBundle\Model\ProjectFactory;
 use AppBundle\Model\PropertyFactory;
@@ -261,19 +250,17 @@ class LoadScenario_1 implements FixtureInterface, ContainerAwareInterface
         $entityManager->flush();
     }
 
-    private function addNewGeologicalUnitToGeologicalPoint(GeologicalPoint $geologicalPoint, Project $project, $name = "", $topElevation = 0, $bottomElevation = 0)
+    private function addNewGeologicalUnitToGeologicalPoint(\AppBundle\Entity\GeologicalPoint $geologicalPoint, \AppBundle\Entity\Project $project, $name = "", $topElevation = 0, $bottomElevation = 0)
     {
-        $geologicalUnit  = new GeologicalUnit($geologicalPoint->getOwner(), $project, $geologicalPoint->getPublic());
-        $geologicalUnit->setName($name);
+        $geologicalUnit  = GeologicalUnitFactory::setOwnerProjectNameAndPublic($geologicalPoint->getOwner(), $project, $name, $geologicalPoint->getPublic());
         $geologicalUnit->setTopElevation($topElevation);
         $geologicalUnit->setBottomElevation($bottomElevation);
-
         $geologicalUnit->setGeologicalPoint($geologicalPoint);
 
         return $geologicalPoint;
     }
 
-    private function addGeologicalUnitToGeologicalLayer(ObjectManager $entityManager, GeologicalLayer $layer, $geologicalUnitName)
+    private function addGeologicalUnitToGeologicalLayer(ObjectManager $entityManager, \AppBundle\Entity\GeologicalLayer $layer, $geologicalUnitName)
     {
         $geologicalUnit = $entityManager->getRepository('AppBundle:GeologicalUnit')
             ->findOneBy(array(
