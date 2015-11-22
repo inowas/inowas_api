@@ -24,7 +24,7 @@ use JMS\Serializer\Annotation as JMS;
  * @JMS\ExclusionPolicy("all")
  */
 
-abstract class ModelObject
+class ModelObject
 {
     /**
      * @var integer

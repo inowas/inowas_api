@@ -16,6 +16,7 @@ class PropertyValue extends AbstractValue
      * @var float
      *
      * @ORM\Column(name="value", type="float")
+     * @JMS\Expose()
      */
     private $value;
 

@@ -7,12 +7,12 @@ use Doctrine\ORM\Mapping as ORM;
 use JMS\Serializer\Annotation as JMS;
 
 /**
- * ModelObject
+ * AbstractValue
  * @ORM\HasLifecycleCallbacks()
- * @ORM\Entity
+ * @ORM\Entity()
  * @ORM\Table(name="values")
  * @ORM\InheritanceType("JOINED")
- * @ORM\DiscriminatorColumn(name="name", type="string")
+ * @ORM\DiscriminatorColumn(name="type", type="string")
  * @ORM\DiscriminatorMap({  "value" = "PropertyValue",
  *                          "timevalue" = "PropertyTimeValue",
  *                          "fixedintervalvalue" = "PropertyFixedIntervalValue"
@@ -20,7 +20,7 @@ use JMS\Serializer\Annotation as JMS;
  * @JMS\ExclusionPolicy("all")
  */
 
-abstract class AbstractValue
+class AbstractValue
 {
     /**
      * @var integer

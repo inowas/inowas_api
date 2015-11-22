@@ -16,25 +16,27 @@ class PropertyTimeValue extends AbstractValue
      * @var \DateTime
      *
      * @ORM\Column(name="timeStamp", type="datetimetz")
+     * @JMS\Expose()
      */
-    private $timeStamp;
+    private $datetime;
 
     /**
      * @var float
      *
      * @ORM\Column(name="value", type="float")
+     * @JMS\Expose()
      */
     private $value;
 
     /**
      * Set timeStamp
      *
-     * @param \DateTime $timeStamp
+     * @param \DateTime $datetime
      * @return PropertyTimeValue
      */
-    public function setTimeStamp($timeStamp)
+    public function setTimeStamp($datetime)
     {
-        $this->timeStamp = $timeStamp;
+        $this->datetime = $datetime;
 
         return $this;
     }
@@ -46,7 +48,7 @@ class PropertyTimeValue extends AbstractValue
      */
     public function getTimeStamp()
     {
-        return $this->timeStamp;
+        return $this->datetime;
     }
 
     /**

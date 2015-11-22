@@ -16,6 +16,7 @@ class PropertyFixedIntervalValue extends AbstractValue
      * @var \DateTime
      *
      * @ORM\Column(name="date_time", type="datetimetz")
+     * @JMS\Expose()
      */
     private $dateTimeBegin;
 
@@ -23,6 +24,7 @@ class PropertyFixedIntervalValue extends AbstractValue
      * @var String
      *
      * @ORM\Column(name="interval", type="string", length=255)
+     * @JMS\Expose()
      */
     private $dateTimeInterval;
 
@@ -30,6 +32,7 @@ class PropertyFixedIntervalValue extends AbstractValue
      * @var array
      *
      * @ORM\Column(name="values", type="simple_array")
+     * @JMS\Expose()
      */
     private $values;
 
