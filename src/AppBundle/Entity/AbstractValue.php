@@ -36,9 +36,9 @@ abstract class AbstractValue
      * @var ArrayCollection Property
      *
      * @ORM\ManyToOne(targetEntity="AppBundle\Entity\Property", inversedBy="values")
+     * @ORM\JoinColumn(name="property", referencedColumnName="id")
      */
     private $property;
-    
 
     /**
      * Get id

@@ -6,6 +6,21 @@ NelmioApiDocBundle:
     resource: "@NelmioApiDocBundle/Resources/config/routing.yml"
     prefix:   /api/doc
 
+rest_area:
+    type: rest
+    prefix: /api
+    resource: AppBundle\Controller\AreaRestController
+
+rest_area_type:
+    type: rest
+    prefix: /api
+    resource: AppBundle\Controller\AreaTypeRestController
+
+rest_boundary:
+    type: rest
+    prefix: /api
+    resource: AppBundle\Controller\BoundaryRestController
+
 rest_project:
     type: rest
     prefix: /api

@@ -40,6 +40,7 @@ abstract class ModelObject
      * @var string
      *
      * @ORM\Column(name="name", type="string", length=255, nullable=true)
+     * @JMS\Expose()
      */
     private $name;
 
@@ -63,6 +64,7 @@ abstract class ModelObject
      * @var ArrayCollection Property
      *
      * @ORM\OneToMany(targetEntity="AppBundle\Entity\Property", mappedBy="modelObject")
+     * @JMS\Expose()
      */
     private $properties;
 
@@ -78,6 +80,7 @@ abstract class ModelObject
      * @var boolean
      *
      * @ORM\Column(name="public", type="boolean")
+     * @JMS\Expose()
      */
     private $public;
 

@@ -48,7 +48,7 @@ class Property
     /**
      * @var ArrayCollection Values
      *
-     * @ORM\OneToMany(targetEntity="AppBundle\Entity\AbstractValue", mappedBy="properties")
+     * @ORM\OneToMany(targetEntity="AppBundle\Entity\AbstractValue", mappedBy="property")
      */
     private $values;
 
