@@ -129,7 +129,7 @@ class LoadScenario_1 implements FixtureInterface, ContainerAwareInterface
         $entityManager->flush();
 
         // Add new Area
-        $area = AreaFactory::setOwnerProjectNameAndPublic($user, $project, 'A1', $areaType);
+        $area = AreaFactory::setOwnerProjectNameTypeAndPublic($user, $project, 'A1', $areaType);
         $coordinates = array(
             array(11767778.4794313, 2403329.01798664),
             array(11791015.33603, 2403329.01798664),
