@@ -18,6 +18,7 @@ use CrEOF\Spatial\PHP\Types\Geometry\Point;
 use CrEOF\Spatial\PHP\Types\Geometry\Polygon;
 use Doctrine\Common\DataFixtures\FixtureInterface;
 use Doctrine\Common\Persistence\ObjectManager;
+use Doctrine\ORM\Query\ResultSetMapping;
 use Symfony\Component\DependencyInjection\ContainerAwareInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
@@ -299,19 +300,33 @@ class LoadScenario_3 implements FixtureInterface, ContainerAwareInterface
                 $propertyTimeValue = PropertyTimeValueFactory::setPropertyDateTimeAndValue($property, new \DateTime($dataPoint[$dataFields[0]]), (float)$dataPoint[$dataFields[$i]]);
                 $this->entityManager->persist($propertyTimeValue);
 
-                /**
-                    $em = $this->container->get('doctrine.orm.default_entity_manager');
-                    $rsm = new ResultSetMapping();
-                    $nativeQuery = 'INSERT INTO inowas_time_series
-                                    (model_object_properties_id, timestamp, value, id)
-                                    VALUES
-                                    (?, ?, ?, DEFAULT)';
+                /*
+                $em = $this->container->get('doctrine.orm.default_entity_manager');
+                $nativeQuery = 'WITH rows as(
+                    INSERT INTO values
+                        (property_id, name, id)
+                    VALUES
+                        (?, timevalue, (SELECT nextval(\'values_id_seq\'))
+                    RETURNING INTO last_id
+                    )
+                    INSERT INTO property_time_values
+                        (id, timestamp, value)
+                    VALUES
+                        (last_id, ?, ?)
+                    --;
+                ';
 
-                    $query = $em->createNativeQuery($nativeQuery, $rsm);
-                    $query->setParameter(1, $modelObjectProperty->getId());
-                    $query->setParameter(2, new \DateTime($dataPoint[$dataFields[0]]));
-                    $query->setParameter(3, (float)$dataPoint[$dataFields[$i+1]]);
-                    $result = $query->getResult();
+
+                $nativeQuery = 'INSERT INTO values
+                                (property_id, name, id)
+                                VALUES
+                                (?, ?, (SELECT nextval(\'values_id_seq\')))';
+
+                $query = $em->createNativeQuery($nativeQuery, new ResultSetMapping());
+                $query->setParameter(1, $property->getId());
+                $query->setParameter(2, new \DateTime($dataPoint[$dataFields[0]]));
+                $query->setParameter(3, (float)$dataPoint[$dataFields[$i]]);
+                $result = $query->getResult();
                 */
 
                 echo $counter++."\n";
