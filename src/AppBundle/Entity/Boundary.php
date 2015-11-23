@@ -14,6 +14,12 @@ use JMS\Serializer\Annotation as JMS;
 class Boundary extends ModelObject
 {
     /**
+     * @var string
+     * @JMS\Groups({"list", "details"})
+     */
+    protected $type = 'boundary';
+
+    /**
      * @var LineString
      *
      * @ORM\Column(name="geometry", type="linestring", nullable=true)
@@ -34,13 +40,5 @@ class Boundary extends ModelObject
     public function setGeometry(LineString $geometry)
     {
         $this->geometry = $geometry;
-    }
-
-    /**
-     * @return string
-     */
-    public function getType()
-    {
-        return 'Boundary';
     }
 }

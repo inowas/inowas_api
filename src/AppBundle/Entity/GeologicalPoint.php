@@ -14,6 +14,12 @@ use JMS\Serializer\Annotation as JMS;
 class GeologicalPoint extends ModelObject
 {
     /**
+     * @var string
+     * @JMS\Groups({"list", "details"})
+     */
+    protected $type = 'geologicalpoint';
+
+    /**
      * @var Point
      *
      * @ORM\Column(name="geometry", type="point", nullable=true)
@@ -103,13 +109,5 @@ class GeologicalPoint extends ModelObject
     public function removeGeologicalUnit(GeologicalUnit $geologicalUnits)
     {
         $this->geologicalUnits->removeElement($geologicalUnits);
-    }
-
-    /**
-     * @return string
-     */
-    public function getType()
-    {
-        return 'GeologicalPoint';
     }
 }

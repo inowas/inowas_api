@@ -13,6 +13,12 @@ use JMS\Serializer\Annotation as JMS;
 class Area extends ModelObject
 {
     /**
+     * @var string
+     * @JMS\Groups({"list", "details"})
+     */
+    protected $type = 'area';
+
+    /**
      * @var Polygon
      *
      * @ORM\Column(name="geometry", type="polygon", nullable=true)
@@ -63,13 +69,5 @@ class Area extends ModelObject
     public function getAreaType()
     {
         return $this->areaType;
-    }
-
-    /**
-     * @return string
-     */
-    public function getType()
-    {
-        return 'Area';
     }
 }

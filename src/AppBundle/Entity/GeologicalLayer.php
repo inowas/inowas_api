@@ -13,6 +13,12 @@ use JMS\Serializer\Annotation as JMS;
 class GeologicalLayer extends ModelObject
 {
     /**
+     * @var string
+     * @JMS\Groups({"list", "details"})
+     */
+    protected $type = 'geologicallayer';
+
+    /**
      * @var ArrayCollection SoilProfile
      *
      * @ORM\ManyToMany(targetEntity="AppBundle\Entity\GeologicalUnit", inversedBy="geologicalLayer")
@@ -75,13 +81,5 @@ class GeologicalLayer extends ModelObject
     public function getGeologicalUnits()
     {
         return $this->geologicalUnits;
-    }
-
-    /**
-     * @return string
-     */
-    public function getType()
-    {
-        return 'GeologicalLayer';
     }
 }

@@ -13,6 +13,12 @@ use JMS\Serializer\Annotation as JMS;
 class GeologicalUnit extends ModelObject
 {
     /**
+     * @var string
+     * @JMS\Groups({"list", "details"})
+     */
+    protected $type = 'geologicalunit';
+
+    /**
      * @var $elevation
      *
      * @ORM\Column(name="top_elevation", type="float", nullable=true)
@@ -159,15 +165,5 @@ class GeologicalUnit extends ModelObject
     {
         return $this->geologicalLayer;
     }
-
-    /**
-     * @return string
-     */
-    public function getType()
-    {
-        return 'GeologicalUnit';
-    }
-
-
 }
 

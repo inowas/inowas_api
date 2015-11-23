@@ -2,7 +2,6 @@
 
 namespace AppBundle\Entity;
 
-use AppBundle\Model\ModelObjectInterface;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
 use JMS\Serializer\Annotation as JMS;
@@ -13,7 +12,7 @@ use JMS\Serializer\Annotation as JMS;
  * @ORM\Entity
  * @ORM\Table(name="model_objects")
  * @ORM\InheritanceType("JOINED")
- * @ORM\DiscriminatorColumn(name="type", type="string")
+ * @ORM\DiscriminatorColumn(name="discr", type="string")
  * @ORM\DiscriminatorMap({  "area" = "Area",
  *                          "boundary" = "Boundary",
  *                          "observationpoint" = "ObservationPoint",
@@ -24,8 +23,10 @@ use JMS\Serializer\Annotation as JMS;
  * })
  */
 
-abstract class ModelObject implements ModelObjectInterface
+abstract class ModelObject
 {
+    protected $type = 'modelobject';
+
     /**
      * @var integer
      *
@@ -35,14 +36,6 @@ abstract class ModelObject implements ModelObjectInterface
      * @JMS\Groups({"list", "details"})
      */
     private $id;
-
-
-    /**
-     * @var string
-     * @JMS\Groups({"list", "details"})
-     * @JMS\Accessor(getter="getType")
-     */
-    private $modelObjectType;
 
     /**
      * @var string

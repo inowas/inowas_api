@@ -15,6 +15,12 @@ use JMS\Serializer\Annotation as JMS;
 class Stream extends ModelObject
 {
     /**
+     * @var string
+     * @JMS\Groups({"list", "details"})
+     */
+    protected $type = 'stream';
+
+    /**
      * @var Point
      *
      * @ORM\Column(name="starting_point", type="point", nullable=true)
@@ -72,13 +78,5 @@ class Stream extends ModelObject
     public function getLine()
     {
         return $this->line;
-    }
-
-    /**
-     * @return string
-     */
-    public function getType()
-    {
-        return 'Stream';
     }
 }
