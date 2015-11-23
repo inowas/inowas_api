@@ -9,11 +9,11 @@ use Nelmio\ApiDocBundle\Annotation\ApiDoc;
 class PropertyRestController extends FOSRestController
 {
     /**
-     * Return a property by id
+     * Returns a property by id
      *
      * @ApiDoc(
      *   resource = true,
-     *   description = "Return an property by id",
+     *   description = "Returns a property by id",
      *   statusCodes = {
      *     200 = "Returned when successful",
      *     404 = "Returned when the user is not found"
