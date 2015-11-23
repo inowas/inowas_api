@@ -31,6 +31,11 @@ rest_geological_point:
     prefix: /api
     resource: AppBundle\Controller\GeologicalPointRestController
 
+rest_geological_unit:
+    type: rest
+    prefix: /api
+    resource: AppBundle\Controller\GeologicalUnitRestController
+
 rest_observationpoint:
     type: rest
     prefix: /api
@@ -40,4 +45,3 @@ rest_user_project:
     type: rest
     prefix: /api
     resource: AppBundle\Controller\UserProjectRestController
-

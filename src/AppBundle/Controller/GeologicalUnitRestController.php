@@ -7,41 +7,41 @@ use FOS\RestBundle\View\View;
 use JMS\Serializer\SerializationContext;
 use Nelmio\ApiDocBundle\Annotation\ApiDoc;
 
-class GeologicalLayerRestController extends FOSRestController
+class GeologicalUnitRestController extends FOSRestController
 {
     /**
-     * Return a geological layer by id
+     * Return a geological unit by id
      *
      * @ApiDoc(
      *   resource = true,
-     *   description = "Return a geological layer by id",
+     *   description = "Return a geological unit by id",
      *   statusCodes = {
      *     200 = "Returned when successful",
      *     404 = "Returned when the user is not found"
      *   }
      * )
      *
-     * @param string $id geologicalLayer-Id
+     * @param string $id geologicalUnit-Id
      *
      * @return View
      */
-    public function getGeologicallayerAction($id)
+    public function getGeologicalunitAction($id)
     {
-        $geologicalLayer = $this->getDoctrine()
-            ->getRepository('AppBundle:GeologicalLayer')
+        $geologicalUnit = $this->getDoctrine()
+            ->getRepository('AppBundle:GeologicalUnit')
             ->findOneBy(array(
                 'id' => $id
             ));
 
-        if (!$geologicalLayer)
+        if (!$geologicalUnit)
         {
-            throw $this->createNotFoundException('Geological layer with id='.$id.' not found.');
+            throw $this->createNotFoundException('Geological unit with id='.$id.' not found.');
         }
 
-        if ($geologicalLayer->getPublic() || $this->isGranted('ROLE_ADMIN') || $this->getUser() === $geologicalLayer->getOwner())
+        if ($geologicalUnit->getPublic() || $this->isGranted('ROLE_ADMIN') || $this->getUser() === $geologicalUnit->getOwner())
         {
             $view = View::create();
-            $view->setData($geologicalLayer)
+            $view->setData($geologicalUnit)
                 ->setStatusCode(200)
                 ->setSerializationContext(SerializationContext::create()->enableMaxDepthChecks())
             ;

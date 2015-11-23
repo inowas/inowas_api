@@ -106,9 +106,9 @@ class LoadScenario_1 implements FixtureInterface, ContainerAwareInterface
 
         // Create layer 3
         $geologicalLayer = GeologicalLayerFactory::setOwnerProjectNameAndPublic($user, $project, 'SC1_L3', $public);
-        $geologicalLayer = $this->addGeologicalUnitToGeologicalLayer($entityManager, $geologicalLayer, 'SC1_GP1.2');
-        $geologicalLayer = $this->addGeologicalUnitToGeologicalLayer($entityManager, $geologicalLayer, 'SC1_GP2.2');
-        $geologicalLayer = $this->addGeologicalUnitToGeologicalLayer($entityManager, $geologicalLayer, 'SC1_GP3.2');
+        $geologicalLayer = $this->addGeologicalUnitToGeologicalLayer($entityManager, $geologicalLayer, 'SC1_GP1.3');
+        $geologicalLayer = $this->addGeologicalUnitToGeologicalLayer($entityManager, $geologicalLayer, 'SC1_GP2.3');
+        $geologicalLayer = $this->addGeologicalUnitToGeologicalLayer($entityManager, $geologicalLayer, 'SC1_GP3.3');
         $entityManager->persist($geologicalLayer);
         $entityManager->flush();
 

@@ -17,6 +17,7 @@ class GeologicalLayer extends ModelObject
      *
      * @ORM\ManyToMany(targetEntity="AppBundle\Entity\GeologicalUnit", inversedBy="geologicalLayer")
      * @ORM\JoinTable(name="geological_layers_geological_units")
+     * @JMS\MaxDepth(2)
      **/
     private $geologicalUnits;
 
@@ -43,6 +44,11 @@ class GeologicalLayer extends ModelObject
     {
         $this->geologicalUnits[] = $geologicalUnit;
 
+        if (!$geologicalUnit->getGeologicalLayer()->contains($this))
+        {
+            $geologicalUnit->addGeologicalLayer($this);
+        }
+
         return $this;
     }
 
@@ -54,6 +60,11 @@ class GeologicalLayer extends ModelObject
     public function removeGeologicalUnit(GeologicalUnit $geologicalUnit)
     {
         $this->geologicalUnits->removeElement($geologicalUnit);
+
+        if ($geologicalUnit->getGeologicalLayer()->contains($this))
+        {
+            $geologicalUnit->removeGeologicalLayer($this);
+        }
     }
 
     /**

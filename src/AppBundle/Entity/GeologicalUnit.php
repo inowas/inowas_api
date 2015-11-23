@@ -30,6 +30,7 @@ class GeologicalUnit extends ModelObject
      * @var GeologicalPoint
      *
      * @ORM\ManyToOne(targetEntity="AppBundle\Entity\GeologicalPoint", inversedBy="geologicalUnits", cascade={"persist"})
+     * @JMS\MaxDepth(1)
      */
     private $geologicalPoint;
 
@@ -37,13 +38,14 @@ class GeologicalUnit extends ModelObject
      * @var ArrayCollection
      *
      * @ORM\ManyToMany(targetEntity="AppBundle\Entity\GeologicalLayer", mappedBy="geologicalUnits")
+     * @JMS\MaxDepth(3)
      */
     private $geologicalLayer;
 
     public function __construct(User $owner = null, Project $project = null, $public = false)
     {
         parent::__construct($owner, $project, $public);
-        $this->layer = new ArrayCollection();
+        $this->geologicalLayer = new ArrayCollection();
     }
 
     /**
@@ -121,9 +123,14 @@ class GeologicalUnit extends ModelObject
      * @param \AppBundle\Entity\GeologicalLayer $geologicalLayer
      * @return GeologicalUnit
      */
-    public function addGeologicalLayer(GeologicalLayer $geologicalLayer)
+    public function addGeologicalLayer(\AppBundle\Entity\GeologicalLayer $geologicalLayer)
     {
         $this->geologicalLayer[] = $geologicalLayer;
+
+        if (!$geologicalLayer->getGeologicalUnits()->contains($this))
+        {
+            $geologicalLayer->addGeologicalUnit($this);
+        }
 
         return $this;
     }
@@ -133,9 +140,14 @@ class GeologicalUnit extends ModelObject
      *
      * @param \AppBundle\Entity\GeologicalLayer $geologicalLayer
      */
-    public function removeGeologicalLayer(GeologicalLayer $geologicalLayer)
+    public function removeGeologicalLayer(\AppBundle\Entity\GeologicalLayer $geologicalLayer)
     {
         $this->geologicalLayer->removeElement($geologicalLayer);
+
+        if ($geologicalLayer->getGeologicalUnits()->contains($this))
+        {
+            $geologicalLayer->removeGeologicalUnit($this);
+        }
     }
 
     /**
