@@ -13,13 +13,13 @@ use JMS\Serializer\Annotation as JMS;
  * @ORM\Table(name="model_objects")
  * @ORM\InheritanceType("JOINED")
  * @ORM\DiscriminatorColumn(name="discr", type="string")
- * @ORM\DiscriminatorMap({  "area" = "Area",
- *                          "boundary" = "Boundary",
- *                          "observationpoint" = "ObservationPoint",
- *                          "geologicalpoint" = "GeologicalPoint",
- *                          "geologicallayer" = "GeologicalLayer",
- *                          "geologicalunit" = "GeologicalUnit",
- *                          "stream" = "Stream"
+ * @ORM\DiscriminatorMap({  "ar" = "Area",
+ *                          "bo" = "Boundary",
+ *                          "op" = "ObservationPoint",
+ *                          "gp" = "GeologicalPoint",
+ *                          "gl" = "GeologicalLayer",
+ *                          "gu" = "GeologicalUnit",
+ *                          "st" = "Stream"
  * })
  */
 

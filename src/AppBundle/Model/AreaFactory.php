@@ -7,7 +7,7 @@ use AppBundle\Entity\AreaType;
 use AppBundle\Entity\Project;
 use FOS\UserBundle\Model\UserInterface;
 
-class AreaFactory implements ModelObjectInterface
+class AreaFactory
 {
     /**
      * GeologicalPointFactory constructor.
