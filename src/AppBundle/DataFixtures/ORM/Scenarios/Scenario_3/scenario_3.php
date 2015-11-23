@@ -56,6 +56,7 @@ class LoadScenario_3 implements FixtureInterface, ContainerAwareInterface
         $user->setUsername('inowas_scenario_3');
         $user->setEmail('inowas_scenario_3@inowas.com');
         $user->setPassword('inowas_scenario_3');
+        $user->setEnabled(true);
         $userManager->updateUser($user);
         $entityManager->flush();
 

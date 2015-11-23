@@ -24,7 +24,7 @@ rest_boundary:
 rest_project:
     type: rest
     prefix: /api
-    resource: AppBundle\Controller\ProjectRestController
+    resource: AppBundle\Controller\UserProjectsRestController
 
 rest_observationpoint:
     type: rest

@@ -53,17 +53,14 @@ class LoadScenario_1 implements FixtureInterface, ContainerAwareInterface
         $user->setUsername('inowas_scenario_1');
         $user->setEmail('inowas_scenario_1@inowas.com');
         $user->setPassword('inowas_scenario_1');
+        $user->setEnabled(true);
         $entityManager->persist($user);
         $entityManager->flush();
 
         // Add new Project
         $project = ProjectFactory::setOwnerAndPublic($user, $public);
         $project->setName('Scenario 1');
-        $project->setDescription('
-            This is not a real example.
-            The data was stored only for testing purposes.
-            The Data contains 3 geological points with respectively 3 geological units.
-            ');
+        $project->setDescription('This is not a real example.<br>The data was stored only for testing purposes.<br>The Data contains 3 geological points with respectively 3 geological units.');
         $entityManager->persist($project);
         $entityManager->flush();
 
