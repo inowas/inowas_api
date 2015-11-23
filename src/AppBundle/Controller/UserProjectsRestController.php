@@ -6,8 +6,9 @@ use FOS\RestBundle\Controller\FOSRestController;
 use FOS\RestBundle\View\View;
 use JMS\Serializer\SerializationContext;
 use Nelmio\ApiDocBundle\Annotation\ApiDoc;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
-class ProjectRestController extends FOSRestController
+class UserProjectsRestController extends FOSRestController
 {
     /**
      * Return the overall project list.
@@ -21,15 +22,43 @@ class ProjectRestController extends FOSRestController
      *   }
      * )
      *
+     * @param $username
+     *
      * @return View
      */
-    public function getProjectsAction()
+    public function getUserProjectsAction($username)
     {
-        $projects = $this->getDoctrine()->getRepository('AppBundle:Project')
-            ->findAll();
+
+        $user = $this->getDoctrine()
+            ->getRepository('AppBundle:User')
+            ->findOneBy(array(
+                'username' => $username
+            ));
+
+        if ($user)
+        {
+            throw $this->createNotFoundException('User with username '.$username.' not found.');
+        }
+
+        if ($this->getUser() === $user || $this->isGranted('ROLE_ADMIN'))
+        {
+            $projects = $this->getDoctrine()
+                ->getRepository('AppBundle:Project')
+                ->findBy(array(
+                    'owner' => $user
+                ));
+        } else
+        {
+            $projects = $this->getDoctrine()
+                ->getRepository('AppBundle:Project')
+                ->findBy(array(
+                    'owner' => $user,
+                    'public' => true
+                ));
+        }
 
         if (!$projects) {
-            throw $this->createNotFoundException('Data not found.');
+            throw $this->createNotFoundException('Projects not found.');
         }
 
         $projectList = array();

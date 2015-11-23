@@ -21,7 +21,7 @@ class Project
      * @ORM\Column(name="id", type="integer")
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="AUTO")
-     * @JMS\Expose
+     * @JMS\Expose()
      */
     private $id;
 
@@ -29,9 +29,16 @@ class Project
      * @var string
      *
      * @ORM\Column(name="name", type="string",length=255)
-     * @JMS\Expose
+     * @JMS\Expose()
      */
     private $name;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="description", type="text", nullable=true)
+     */
+    private $description;
 
     /**
      * @var User
@@ -232,5 +239,28 @@ class Project
     public function getName()
     {
         return $this->name;
+    }
+
+    /**
+     * Set description
+     *
+     * @param string $description
+     * @return Project
+     */
+    public function setDescription($description)
+    {
+        $this->description = $description;
+
+        return $this;
+    }
+
+    /**
+     * Get description
+     *
+     * @return string 
+     */
+    public function getDescription()
+    {
+        return $this->description;
     }
 }

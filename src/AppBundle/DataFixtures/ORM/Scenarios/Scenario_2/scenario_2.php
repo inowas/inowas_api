@@ -46,6 +46,8 @@ class LoadScenario_2 implements FixtureInterface, ContainerAwareInterface
      */
     public function load(ObjectManager $entityManager)
     {
+
+        $public = true;
         $this->entityManager = $entityManager;
 
         // Add new User
@@ -58,19 +60,20 @@ class LoadScenario_2 implements FixtureInterface, ContainerAwareInterface
         $entityManager->flush();
 
         // Add new Project
-        $project = ProjectFactory::setOwnerAndPublic($user, false);
+        $project = ProjectFactory::setOwnerAndPublic($user, $public);
         $project->setName('Scenario 2');
+        $project->setDescription('This project contains real data of Hanoi. But is not completed already.');
         $entityManager->persist($project);
         $entityManager->flush();
 
         // Create new geological layers
-        $layer = GeologicalLayerFactory::setOwnerProjectNameAndPublic($user, $project, 'SC2_L1');
+        $layer = GeologicalLayerFactory::setOwnerProjectNameAndPublic($user, $project, 'SC2_L1', $public);
         $entityManager->persist($layer);
-        $layer = GeologicalLayerFactory::setOwnerProjectNameAndPublic($user, $project, 'SC2_L2');
+        $layer = GeologicalLayerFactory::setOwnerProjectNameAndPublic($user, $project, 'SC2_L2', $public);
         $entityManager->persist($layer);
-        $layer = GeologicalLayerFactory::setOwnerProjectNameAndPublic($user, $project, 'SC2_L3');
+        $layer = GeologicalLayerFactory::setOwnerProjectNameAndPublic($user, $project, 'SC2_L3', $public);
         $entityManager->persist($layer);
-        $layer = GeologicalLayerFactory::setOwnerProjectNameAndPublic($user, $project, 'SC2_L4');
+        $layer = GeologicalLayerFactory::setOwnerProjectNameAndPublic($user, $project, 'SC2_L4', $public);
         $entityManager->persist($layer);
         $entityManager->flush();
 
@@ -174,11 +177,11 @@ class LoadScenario_2 implements FixtureInterface, ContainerAwareInterface
 
         foreach ($boreholes as $borehole)
         {
-            $geologicalPoint = GeologicalPointFactory::setOwnerProjectNameAndPoint($user, $project, $borehole[0], new Point($borehole[1], $borehole[2], 3857));
+            $geologicalPoint = GeologicalPointFactory::setOwnerProjectNameAndPoint($user, $project, $borehole[0], new Point($borehole[1], $borehole[2], 3857), $public);
             $entityManager->persist($geologicalPoint);
             $entityManager->flush();
 
-            $geologicalUnit = GeologicalUnitFactory::setOwnerProjectNameAndPublic($user, $project, $borehole[0].'.1');
+            $geologicalUnit = GeologicalUnitFactory::setOwnerProjectNameAndPublic($user, $project, $borehole[0].'.1', $public);
             $geologicalUnit->setGeologicalPoint($geologicalPoint);
             $geologicalUnit->setTopElevation($borehole[3]);
             $geologicalUnit->setBottomElevation($borehole[4]);
@@ -191,7 +194,7 @@ class LoadScenario_2 implements FixtureInterface, ContainerAwareInterface
             $entityManager->persist($geologicalUnit);
             $entityManager->flush();
 
-            $geologicalUnit = GeologicalUnitFactory::setOwnerProjectNameAndPublic($user, $project, $borehole[0].'.2');
+            $geologicalUnit = GeologicalUnitFactory::setOwnerProjectNameAndPublic($user, $project, $borehole[0].'.2', $public);
             $geologicalUnit->setGeologicalPoint($geologicalPoint);
             $geologicalUnit->setTopElevation($borehole[4]);
             $geologicalUnit->setBottomElevation($borehole[5]);
@@ -204,7 +207,7 @@ class LoadScenario_2 implements FixtureInterface, ContainerAwareInterface
             $entityManager->persist($geologicalUnit);
             $entityManager->flush();
 
-            $geologicalUnit = GeologicalUnitFactory::setOwnerProjectNameAndPublic($user, $project, $borehole[0].'.3');
+            $geologicalUnit = GeologicalUnitFactory::setOwnerProjectNameAndPublic($user, $project, $borehole[0].'.3', $public);
             $geologicalUnit->setGeologicalPoint($geologicalPoint);
             $geologicalUnit->setTopElevation($borehole[5]);
             $geologicalUnit->setBottomElevation($borehole[6]);
@@ -217,7 +220,7 @@ class LoadScenario_2 implements FixtureInterface, ContainerAwareInterface
             $entityManager->persist($geologicalUnit);
             $entityManager->flush();
 
-            $geologicalUnit = GeologicalUnitFactory::setOwnerProjectNameAndPublic($user, $project, $borehole[0].'.4');
+            $geologicalUnit = GeologicalUnitFactory::setOwnerProjectNameAndPublic($user, $project, $borehole[0].'.4', $public);
             $geologicalUnit->setGeologicalPoint($geologicalPoint);
             $geologicalUnit->setTopElevation($borehole[6]);
             $geologicalUnit->setBottomElevation($borehole[7]);
@@ -242,7 +245,7 @@ class LoadScenario_2 implements FixtureInterface, ContainerAwareInterface
 
         foreach ($observationPointPoints as $observationPointPoint)
         {
-            $observationPoint = ObservationPointFactory::setOwnerProjectNameAndPoint($user, $project, $observationPointPoint['name'], $observationPointPoint['point']);
+            $observationPoint = ObservationPointFactory::setOwnerProjectNameAndPoint($user, $project, $observationPointPoint['name'], $observationPointPoint['point'], $public);
             $entityManager->persist($observationPoint);
             $entityManager->flush();
             $filename = 'scenario_2_observationPoint_'.str_replace('SC2_', '', $observationPoint->getName()).'_properties.csv';
@@ -251,7 +254,7 @@ class LoadScenario_2 implements FixtureInterface, ContainerAwareInterface
 
 
         // Add Boundary
-        $boundary = BoundaryFactory::setOwnerProjectNameAndPublic($user, $project, "SC2_B1");
+        $boundary = BoundaryFactory::setOwnerProjectNameAndPublic($user, $project, "SC2_B1", $public);
         $converter = new \CrEOF\Spatial\DBAL\Types\Geometry\Platforms\PostgreSql();
         $geometryText = "LineString (11777056.49104572273790836 2403440.17028302047401667, 11777973.9436037577688694 2403506.49811625294387341, 11780228.12698311358690262 2402856.2682070448063314, 11781703.59880801662802696 2401713.22520185634493828, 11782192.89715446159243584 2400859.20254275016486645, 11782678.03379831649363041 2399224.82580633740872145, 11782955.64566324092447758 2398372.03099954081699252, 11783586.59488865174353123 2397659.24991086078807712, 11784427.14815393835306168 2396590.66674219723790884, 11784914.27011025696992874 2395382.18267500726506114, 11785330.82068796083331108 2394174.15454542031511664, 11785536.96124399080872536 2393180.11378513323143125, 11786097.1273522675037384 2392467.84464810928329825, 11787011.69080197438597679 2392108.19440084183588624, 11787715.90038010291755199 2391962.42985267844051123, 11788487.82464707084000111 2391319.86146369902417064, 11789680.65233467146754265 2390320.33801258727908134, 11789747.53923093341290951 2389681.79035578016191721, 11789176.05731181986629963 2388337.88133400911465287, 11788252.26803966984152794 2386996.03587882174178958, 11787540.82363948784768581 2385794.83458124194294214, 11783036.01740818470716476 2386882.81766726961359382, 11777486.37431096099317074 2390598.53498441586270928, 11775189.21765423379838467 2396638.4036272126249969, 11777056.49104572273790836 2403440.17028302047401667)";
 
@@ -268,7 +271,7 @@ class LoadScenario_2 implements FixtureInterface, ContainerAwareInterface
         $entityManager->flush();
 
         // Add Area
-        $area = AreaFactory::setOwnerProjectNameTypeAndPublic($user, $project, "SC2_A1", $areaType);
+        $area = AreaFactory::setOwnerProjectNameTypeAndPublic($user, $project, "SC2_A1", $areaType, $public);
         $converter = new \CrEOF\Spatial\DBAL\Types\Geometry\Platforms\PostgreSql();
         $geometryText = "Polygon ((11777056.49104572273790836 2403440.17028302047401667, 11777973.9436037577688694 2403506.49811625294387341, 11780228.12698311358690262 2402856.2682070448063314, 11781703.59880801662802696 2401713.22520185634493828, 11782192.89715446159243584 2400859.20254275016486645, 11782678.03379831649363041 2399224.82580633740872145, 11782955.64566324092447758 2398372.03099954081699252, 11783586.59488865174353123 2397659.24991086078807712, 11784427.14815393835306168 2396590.66674219723790884, 11784914.27011025696992874 2395382.18267500726506114, 11785330.82068796083331108 2394174.15454542031511664, 11785536.96124399080872536 2393180.11378513323143125, 11786097.1273522675037384 2392467.84464810928329825, 11787011.69080197438597679 2392108.19440084183588624, 11787715.90038010291755199 2391962.42985267844051123, 11788487.82464707084000111 2391319.86146369902417064, 11789680.65233467146754265 2390320.33801258727908134, 11789747.53923093341290951 2389681.79035578016191721, 11789176.05731181986629963 2388337.88133400911465287, 11788252.26803966984152794 2386996.03587882174178958, 11787540.82363948784768581 2385794.83458124194294214, 11783036.01740818470716476 2386882.81766726961359382, 11777486.37431096099317074 2390598.53498441586270928, 11775189.21765423379838467 2396638.4036272126249969, 11777056.49104572273790836 2403440.17028302047401667))";
 

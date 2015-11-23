@@ -73,4 +73,27 @@ class PropertyTimeValue extends AbstractValue
     {
         return $this->value;
     }
+
+    /**
+     * Set datetime
+     *
+     * @param \DateTime $datetime
+     * @return PropertyTimeValue
+     */
+    public function setDatetime($datetime)
+    {
+        $this->datetime = $datetime;
+
+        return $this;
+    }
+
+    /**
+     * Get datetime
+     *
+     * @return \DateTime 
+     */
+    public function getDatetime()
+    {
+        return $this->datetime;
+    }
 }
