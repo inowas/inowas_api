@@ -47,15 +47,26 @@ class LoadScenario_1 implements FixtureInterface, ContainerAwareInterface
     public function load(ObjectManager $entityManager)
     {
         $public = true;
+        $username = 'inowas';
+        $email = 'inowas@inowas.com';
+        $password = 'inowas';
 
-        // Add new User
-        $user = new User();
-        $user->setUsername('inowas_scenario_1');
-        $user->setEmail('inowas_scenario_1@inowas.com');
-        $user->setPassword('inowas_scenario_1');
-        $user->setEnabled(true);
-        $entityManager->persist($user);
-        $entityManager->flush();
+        $user = $entityManager->getRepository('AppBundle:User')
+            ->findOneBy(array(
+                'username' => $username
+            ));
+
+        if (!$user)
+        {
+            // Add new User
+            $user = new User();
+            $user->setUsername($username);
+            $user->setEmail($email);
+            $user->setPassword($password);
+            $user->setEnabled(true);
+            $entityManager->persist($user);
+            $entityManager->flush();
+        }
 
         // Add new Project
         $project = ProjectFactory::setOwnerAndPublic($user, $public);

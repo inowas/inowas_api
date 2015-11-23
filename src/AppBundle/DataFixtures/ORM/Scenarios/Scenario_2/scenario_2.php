@@ -2,6 +2,7 @@
 
 namespace AppBundle\DataFixtures\ORM\Scenarios\Scenario_2;
 
+use AppBundle\Entity\User;
 use AppBundle\Model\AreaFactory;
 use AppBundle\Model\AreaTypeFactory;
 use AppBundle\Model\BoundaryFactory;
@@ -46,19 +47,28 @@ class LoadScenario_2 implements FixtureInterface, ContainerAwareInterface
      */
     public function load(ObjectManager $entityManager)
     {
-
-        $public = true;
         $this->entityManager = $entityManager;
+        $public = true;
+        $username = 'inowas';
+        $email = 'inowas@inowas.com';
+        $password = 'inowas';
 
-        // Add new User
-        $userManager = $this->container->get('fos_user.user_manager');
-        $user = $userManager->createUser();
-        $user->setUsername('inowas_scenario_2');
-        $user->setEmail('inowas_scenario_2@inowas.com');
-        $user->setPassword('inowas_scenario_2');
-        $user->setEnabled(true);
-        $userManager->updateUser($user);
-        $entityManager->flush();
+        $user = $entityManager->getRepository('AppBundle:User')
+            ->findOneBy(array(
+                'username' => $username
+            ));
+
+        if (!$user)
+        {
+            // Add new User
+            $user = new User();
+            $user->setUsername($username);
+            $user->setEmail($email);
+            $user->setPassword($password);
+            $user->setEnabled(true);
+            $entityManager->persist($user);
+            $entityManager->flush();
+        }
 
         // Add new Project
         $project = ProjectFactory::setOwnerAndPublic($user, $public);
