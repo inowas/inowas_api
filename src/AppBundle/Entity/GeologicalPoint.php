@@ -10,7 +10,6 @@ use JMS\Serializer\Annotation as JMS;
 /**
  * @ORM\Entity
  * @ORM\Table(name="geological_points")
- * @JMS\ExclusionPolicy("all")
  */
 class GeologicalPoint extends ModelObject
 {
@@ -25,6 +24,7 @@ class GeologicalPoint extends ModelObject
      * @var ArrayCollection GeologicalUnit $geologicalUnit
      *
      * @ORM\OneToMany(targetEntity="AppBundle\Entity\GeologicalUnit", mappedBy="geologicalPoint", cascade={"persist"})
+     * @JMS\MaxDepth(2)
      */
     private $geologicalUnits;
 

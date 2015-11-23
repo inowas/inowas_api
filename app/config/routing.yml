@@ -26,6 +26,11 @@ rest_geological_layer:
     prefix: /api
     resource: AppBundle\Controller\GeologicalLayerRestController
 
+rest_geological_point:
+    type: rest
+    prefix: /api
+    resource: AppBundle\Controller\GeologicalPointRestController
+
 rest_observationpoint:
     type: rest
     prefix: /api
