@@ -20,7 +20,7 @@ use JMS\Serializer\Annotation as JMS;
  * @JMS\ExclusionPolicy("all")
  */
 
-class AbstractValue
+abstract class AbstractValue
 {
     /**
      * @var integer
