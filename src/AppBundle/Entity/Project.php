@@ -11,7 +11,6 @@ use JMS\Serializer\Annotation as JMS;
  *
  * @ORM\Table(name="projects")
  * @ORM\Entity(repositoryClass="AppBundle\Entity\ProjectRepository")
- * @JMS\ExclusionPolicy("all")
  */
 class Project
 {
@@ -21,7 +20,7 @@ class Project
      * @ORM\Column(name="id", type="integer")
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="AUTO")
-     * @JMS\Expose()
+     * @JMS\Groups({"list", "details"})
      */
     private $id;
 
@@ -29,7 +28,7 @@ class Project
      * @var string
      *
      * @ORM\Column(name="name", type="string",length=255)
-     * @JMS\Expose()
+     * @JMS\Groups({"list", "details"})
      */
     private $name;
 
@@ -37,6 +36,7 @@ class Project
      * @var string
      *
      * @ORM\Column(name="description", type="text", nullable=true)
+     * @JMS\Groups({"list", "details"})
      */
     private $description;
 
@@ -45,8 +45,8 @@ class Project
      *
      * @ORM\ManyToOne(targetEntity="User", inversedBy="ownedProjects")
      * @ORM\JoinColumn(name="owner_id", referencedColumnName="id", onDelete="cascade")
-     * @JMS\Expose
      * @JMS\MaxDepth(2)
+     * @JMS\Groups({"list", "details"})
      */
     private $owner;
 
@@ -55,8 +55,8 @@ class Project
      *
      * @ORM\ManyToMany(targetEntity="User", inversedBy="participatedProjects")
      * @ORM\JoinTable(name="users_participated_projects")
-     * @JMS\Expose
      * @JMS\MaxDepth(1)
+     * @JMS\Groups({"list", "details"})
      */
     private $participants;
 
@@ -64,8 +64,8 @@ class Project
      * @var ArrayCollection ModelObject
      *
      * @ORM\ManyToMany(targetEntity="ModelObject", mappedBy="projects", cascade={"all"})
-     * @JMS\Expose
      * @JMS\MaxDepth(2)
+     * @JMS\Groups({"list", "details"})
      **/
     protected $modelObjects;
 
@@ -73,7 +73,7 @@ class Project
      * @var boolean
      *
      * @ORM\Column(name="public", type="boolean")
-     * @JMS\Expose
+     * @JMS\Groups({"list", "details"})
      */
     private $public;
 

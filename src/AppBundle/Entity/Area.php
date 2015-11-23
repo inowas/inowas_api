@@ -64,4 +64,12 @@ class Area extends ModelObject
     {
         return $this->areaType;
     }
+
+    /**
+     * @return string
+     */
+    public function getType()
+    {
+        return 'Area';
+    }
 }

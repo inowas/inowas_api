@@ -137,4 +137,12 @@ class ObservationPoint extends ModelObject
     {
         return $this->modelObjects;
     }
+
+    /**
+     * @return string
+     */
+    public function getType()
+    {
+        return 'ObservationPoint';
+    }
 }

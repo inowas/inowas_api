@@ -76,4 +76,12 @@ class GeologicalLayer extends ModelObject
     {
         return $this->geologicalUnits;
     }
+
+    /**
+     * @return string
+     */
+    public function getType()
+    {
+        return 'GeologicalLayer';
+    }
 }

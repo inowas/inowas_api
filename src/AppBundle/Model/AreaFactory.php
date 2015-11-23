@@ -7,7 +7,7 @@ use AppBundle\Entity\AreaType;
 use AppBundle\Entity\Project;
 use FOS\UserBundle\Model\UserInterface;
 
-class AreaFactory
+class AreaFactory implements ModelObjectInterface
 {
     /**
      * GeologicalPointFactory constructor.
@@ -27,5 +27,13 @@ class AreaFactory
         $area->setPublic($public);
 
         return $area;
+    }
+
+    /**
+     * @return string
+     */
+    public function getType()
+    {
+        return 'Area';
     }
 }

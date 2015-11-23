@@ -67,7 +67,10 @@ class UserProjectRestController extends FOSRestController
         }
 
         $view = View::create();
-        $view->setData($projectList)->setStatusCode(200);
+        $view->setData($projectList)
+            ->setStatusCode(200)
+            ->setSerializationContext(SerializationContext::create()->setGroups(array('list')))
+        ;
 
         return $view;
     }
@@ -125,10 +128,14 @@ class UserProjectRestController extends FOSRestController
             throw $this->createNotFoundException('Project not found.');
         }
 
+        $serializationContext = SerializationContext::create();
+        $serializationContext->setGroups('list');
+        $serializationContext->enableMaxDepthChecks();
+
         $view = View::create();
         $view->setData($project)
             ->setStatusCode(200)
-            ->setSerializationContext(SerializationContext::create()->enableMaxDepthChecks())
+            ->setSerializationContext($serializationContext)
         ;
 
         return $view;

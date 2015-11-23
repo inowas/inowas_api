@@ -73,4 +73,12 @@ class Stream extends ModelObject
     {
         return $this->line;
     }
+
+    /**
+     * @return string
+     */
+    public function getType()
+    {
+        return 'Stream';
+    }
 }

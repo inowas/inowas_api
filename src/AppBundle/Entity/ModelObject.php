@@ -2,6 +2,7 @@
 
 namespace AppBundle\Entity;
 
+use AppBundle\Model\ModelObjectInterface;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
 use JMS\Serializer\Annotation as JMS;
@@ -21,10 +22,9 @@ use JMS\Serializer\Annotation as JMS;
  *                          "geologicalunit" = "GeologicalUnit",
  *                          "stream" = "Stream"
  * })
- * @JMS\ExclusionPolicy("all")
  */
 
-abstract class ModelObject
+abstract class ModelObject implements ModelObjectInterface
 {
     /**
      * @var integer
@@ -32,15 +32,23 @@ abstract class ModelObject
      * @ORM\Column(name="id", type="integer")
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="AUTO")
-     * @JMS\Expose
+     * @JMS\Groups({"list", "details"})
      */
     private $id;
+
+
+    /**
+     * @var string
+     * @JMS\Groups({"list", "details"})
+     * @JMS\Accessor(getter="getType")
+     */
+    private $modelObjectType;
 
     /**
      * @var string
      *
      * @ORM\Column(name="name", type="string", length=255, nullable=true)
-     * @JMS\Expose()
+     * @JMS\Groups({"list", "details"})
      */
     private $name;
 
@@ -49,6 +57,7 @@ abstract class ModelObject
      *
      * @ORM\ManyToMany(targetEntity="Project", inversedBy="modelObjects")
      * @ORM\JoinTable(name="projects_model_objects")
+     * @JMS\Exclude()
      **/
     private $projects;
 
@@ -57,6 +66,7 @@ abstract class ModelObject
      *
      * @ORM\ManyToOne(targetEntity="User", inversedBy="ownedModelObjects")
      * @ORM\JoinColumn(name="owner_id", referencedColumnName="id", onDelete="cascade")
+     * @JMS\Exclude()
      */
     private $owner;
 
@@ -64,13 +74,14 @@ abstract class ModelObject
      * @var ArrayCollection Property
      *
      * @ORM\OneToMany(targetEntity="AppBundle\Entity\Property", mappedBy="modelObject")
+     * @JMS\Groups({"details"})
      */
     private $properties;
 
     /**
      * @var integer
-     * @JMS\Expose()
      * @JMS\Accessor(getter="getNumberOfProperties")
+     * @JMS\Groups({"list"})
      */
     private $numberOfProperties;
 
@@ -79,6 +90,7 @@ abstract class ModelObject
      *
      * @ORM\ManyToMany(targetEntity="ObservationPoint", inversedBy="modelObjects")
      * @ORM\JoinTable(name="model_objects_observation_points")
+     * @JMS\Exclude()
      */
     private $observationPoints;
 
@@ -86,7 +98,7 @@ abstract class ModelObject
      * @var boolean
      *
      * @ORM\Column(name="public", type="boolean")
-     * @JMS\Expose()
+     * @JMS\Groups({"list", "details"})
      */
     private $public;
 
@@ -94,6 +106,7 @@ abstract class ModelObject
      * @var \DateTime
      *
      * @ORM\Column(name="dateCreated", type="datetime")
+     * @JMS\Exclude()
      */
     private $dateCreated;
 
@@ -101,6 +114,7 @@ abstract class ModelObject
      * @var \DateTime
      *
      * @ORM\Column(name="dateModified", type="datetime")
+     * @JMS\Exclude()
      */
     private $dateModified;
     

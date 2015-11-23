@@ -35,4 +35,12 @@ class Boundary extends ModelObject
     {
         $this->geometry = $geometry;
     }
+
+    /**
+     * @return string
+     */
+    public function getType()
+    {
+        return 'Boundary';
+    }
 }

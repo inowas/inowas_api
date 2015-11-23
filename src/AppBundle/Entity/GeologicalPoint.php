@@ -104,4 +104,12 @@ class GeologicalPoint extends ModelObject
     {
         $this->geologicalUnits->removeElement($geologicalUnits);
     }
+
+    /**
+     * @return string
+     */
+    public function getType()
+    {
+        return 'GeologicalPoint';
+    }
 }
