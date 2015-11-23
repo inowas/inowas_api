@@ -9,7 +9,6 @@ use JMS\Serializer\Annotation as JMS;
 /**
  * @ORM\Entity
  * @ORM\Table(name="geological_layers")
- * @JMS\ExclusionPolicy("all")
  */
 class GeologicalLayer extends ModelObject
 {

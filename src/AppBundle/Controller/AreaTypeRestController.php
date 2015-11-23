@@ -25,20 +25,13 @@ class AreaTypeRestController extends FOSRestController
      */
     public function getAreatypesAction()
     {
-        $entities = $this->getDoctrine()
+        $areaTypes = $this->getDoctrine()
             ->getRepository('AppBundle:AreaType')
             ->findAll()
         ;
 
-        if (!$entities) {
-            throw $this->createNotFoundException('Not found.');
-        }
-
         $view = View::create();
-        $view->setData($entities)
-            ->setStatusCode(200)
-            ->setSerializationContext(SerializationContext::create()->enableMaxDepthChecks())
-        ;
+        $view->setData($areaTypes)->setStatusCode(200);
 
         return $view;
     }

@@ -4,7 +4,6 @@ namespace AppBundle\Controller;
 
 use FOS\RestBundle\Controller\FOSRestController;
 use FOS\RestBundle\View\View;
-use JMS\Serializer\SerializationContext;
 use Nelmio\ApiDocBundle\Annotation\ApiDoc;
 
 class BoundaryRestController extends FOSRestController
@@ -27,19 +26,25 @@ class BoundaryRestController extends FOSRestController
      */
     public function getBoundaryAction($id)
     {
-        $entity = $this->getDoctrine()
+        $boundary = $this->getDoctrine()
             ->getRepository('AppBundle:Boundary')
             ->findOneBy(array(
                 'id' => $id
             ));
 
-        if (!$entity) {
-            throw $this->createNotFoundException('Not found.');
+        if (!$boundary)
+        {
+            throw $this->createNotFoundException('Boundary with id='.$id.' not found.');
         }
 
-        $view = View::create();
-        $view->setData($entity)->setStatusCode(200);
-
-        return $view;
+        if ($boundary->getPublic() || $this->isGranted('ROLE_ADMIN') || $this->getUser() === $boundary->getOwner())
+        {
+            $view = View::create();
+            $view->setData($boundary)->setStatusCode(200);
+            return $view;
+        } else
+        {
+            throw $this->createAccessDeniedException();
+        }
     }
 }

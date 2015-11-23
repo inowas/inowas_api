@@ -64,9 +64,15 @@ abstract class ModelObject
      * @var ArrayCollection Property
      *
      * @ORM\OneToMany(targetEntity="AppBundle\Entity\Property", mappedBy="modelObject")
-     * @JMS\Expose()
      */
     private $properties;
+
+    /**
+     * @var integer
+     * @JMS\Expose()
+     * @JMS\Accessor(getter="getNumberOfProperties")
+     */
+    private $numberOfProperties;
 
     /**
      * @var ArrayCollection ObservationPoint
@@ -255,12 +261,12 @@ abstract class ModelObject
     }
 
     /**
-     * Add modelObjectProperties
+     * Add Property
      *
      * @param \AppBundle\Entity\Property $property
      * @return ModelObject
      */
-    public function addModelObjectProperty(Property $property)
+    public function addProperty(Property $property)
     {
         $this->properties[] = $property;
 
@@ -268,23 +274,39 @@ abstract class ModelObject
     }
 
     /**
-     * Remove modelObjectProperties
+     * Remove Property
      *
      * @param \AppBundle\Entity\Property $property
      */
-    public function removeModelObjectProperty(Property $property)
+    public function removeProperty(Property $property)
     {
         $this->properties->removeElement($property);
     }
 
     /**
-     * Get modelObjectProperties
+     * Get Properties
      *
      * @return \Doctrine\Common\Collections\Collection 
      */
-    public function getModelObjectProperties()
+    public function getProperties()
     {
         return $this->properties;
+    }
+
+    /**
+     * @return int
+     */
+    public function getNumberOfProperties()
+    {
+        return $this->properties->count();
+    }
+
+    /**
+     *
+     */
+        public function setNumberOfProperties()
+    {
+        $this->numberOfProperties = $this->properties->count();
     }
 
     /**
@@ -328,39 +350,6 @@ abstract class ModelObject
     public function updateDateModified()
     {
         $this->dateModified = new \DateTime();
-    }
-
-    /**
-     * Add properties
-     *
-     * @param \AppBundle\Entity\Property $properties
-     * @return ModelObject
-     */
-    public function addProperty(\AppBundle\Entity\Property $properties)
-    {
-        $this->properties[] = $properties;
-
-        return $this;
-    }
-
-    /**
-     * Remove properties
-     *
-     * @param \AppBundle\Entity\Property $properties
-     */
-    public function removeProperty(\AppBundle\Entity\Property $properties)
-    {
-        $this->properties->removeElement($properties);
-    }
-
-    /**
-     * Get properties
-     *
-     * @return \Doctrine\Common\Collections\Collection 
-     */
-    public function getProperties()
-    {
-        return $this->properties;
     }
 
     /**

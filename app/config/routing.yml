@@ -21,12 +21,18 @@ rest_boundary:
     prefix: /api
     resource: AppBundle\Controller\BoundaryRestController
 
-rest_project:
+rest_geological_layer:
     type: rest
     prefix: /api
-    resource: AppBundle\Controller\UserProjectsRestController
+    resource: AppBundle\Controller\GeologicalLayerRestController
 
 rest_observationpoint:
     type: rest
     prefix: /api
     resource: AppBundle\Controller\ObservationPointRestController
+
+rest_user_project:
+    type: rest
+    prefix: /api
+    resource: AppBundle\Controller\UserProjectRestController
+

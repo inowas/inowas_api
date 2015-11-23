@@ -6,41 +6,41 @@ use FOS\RestBundle\Controller\FOSRestController;
 use FOS\RestBundle\View\View;
 use Nelmio\ApiDocBundle\Annotation\ApiDoc;
 
-class AreaRestController extends FOSRestController
+class GeologicalLayerRestController extends FOSRestController
 {
     /**
-     * Return an area by id
+     * Return a geological layer by id
      *
      * @ApiDoc(
      *   resource = true,
-     *   description = "Return an area by id",
+     *   description = "Return a geological layer by id",
      *   statusCodes = {
      *     200 = "Returned when successful",
      *     404 = "Returned when the user is not found"
      *   }
      * )
      *
-     * @param string $id area-id
+     * @param string $id geologicalLayer-Id
      *
      * @return View
      */
-    public function getAreaAction($id)
+    public function getGeologicallayerAction($id)
     {
-        $area = $this->getDoctrine()
-            ->getRepository('AppBundle:Area')
+        $geologicalLayer = $this->getDoctrine()
+            ->getRepository('AppBundle:GeologicalLayer')
             ->findOneBy(array(
                 'id' => $id
             ));
 
-        if (!$area)
+        if (!$geologicalLayer)
         {
-            throw $this->createNotFoundException('Area with id='.$id.' not found.');
+            throw $this->createNotFoundException('Geological layer with id='.$id.' not found.');
         }
 
-        if ($area->getPublic() || $this->isGranted('ROLE_ADMIN') || $this->getUser() === $area->getOwner())
+        if ($geologicalLayer->getPublic() || $this->isGranted('ROLE_ADMIN') || $this->getUser() === $geologicalLayer->getOwner())
         {
             $view = View::create();
-            $view->setData($area)->setStatusCode(200);
+            $view->setData($geologicalLayer)->setStatusCode(200);
             return $view;
         } else
         {

@@ -7,7 +7,7 @@ use FOS\RestBundle\View\View;
 use JMS\Serializer\SerializationContext;
 use Nelmio\ApiDocBundle\Annotation\ApiDoc;
 
-class UserProjectsRestController extends FOSRestController
+class UserProjectRestController extends FOSRestController
 {
     /**
      * Return the overall project list from a user.
