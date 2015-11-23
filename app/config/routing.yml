@@ -46,6 +46,11 @@ rest_property:
     prefix: /api
     resource: AppBundle\Controller\PropertyRestController
 
+rest_user_stream:
+    type: rest
+    prefix: /api
+    resource: AppBundle\Controller\StreamRestController
+
 rest_user_project:
     type: rest
     prefix: /api
