@@ -55,16 +55,23 @@ class Property
 
     /**
      * @var \DateTime
+     *
+     * @ORM\Column(name="date_time_begin", type="datetime")
      */
     private $dateTimeBegin;
 
     /**
      * @var \DateTime
+     *
+     * @ORM\Column(name="date_time_end", type="datetime")
+     */
      */
     private $dateTimeEnd;
 
     /**
      * @var integer $numberOfValues
+     *
+     * @ORM\Column(name="number_of_values", type="integer")
      */
     private $numberOfValues;
 
