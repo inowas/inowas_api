@@ -8,6 +8,7 @@ use Doctrine\ORM\Mapping as ORM;
 /**
  * FeatureProperty
  *
+ * @ORM\HasLifecycleCallbacks()
  * @ORM\Table(name="properties")
  * @ORM\Entity
  */
@@ -52,6 +53,20 @@ class Property
      */
     private $values;
 
+    /**
+     * @var \DateTime
+     */
+    private $dateTimeBegin;
+
+    /**
+     * @var \DateTime
+     */
+    private $dateTimeEnd;
+
+    /**
+     * @var integer $numberOfValues
+     */
+    private $numberOfValues;
 
     /**
      * Constructor
@@ -77,7 +92,7 @@ class Property
      * @param \AppBundle\Entity\PropertyType $propertyType
      * @return Property
      */
-    public function setType(PropertyType $propertyType = null)
+    public function setPropertyType(PropertyType $propertyType = null)
     {
         $this->propertyType = $propertyType;
 
@@ -89,7 +104,7 @@ class Property
      *
      * @return \AppBundle\Entity\PropertyType
      */
-    public function getType()
+    public function getPropertyType()
     {
         return $this->propertyType;
     }
@@ -176,4 +191,62 @@ class Property
     {
         return $this->values;
     }
+
+    /**
+     * @return \DateTime
+     */
+    public function getDateTimeBegin()
+    {
+        return $this->dateTimeBegin;
+    }
+
+    /**
+     * @param \DateTime $dateTimeBegin
+     */
+    public function setDateTimeBegin($dateTimeBegin)
+    {
+        $this->dateTimeBegin = $dateTimeBegin;
+    }
+
+    /**
+     * @return \DateTime
+     */
+    public function getDateTimeEnd()
+    {
+        return $this->dateTimeEnd;
+    }
+
+    /**
+     * @param \DateTime $dateTimeEnd
+     */
+    public function setDateTimeEnd($dateTimeEnd)
+    {
+        $this->dateTimeEnd = $dateTimeEnd;
+    }
+
+    /**
+     * @return int
+     */
+    public function getNumberOfValues()
+    {
+        return $this->numberOfValues;
+    }
+
+    /**
+     * @param int $numberOfValues
+     */
+    public function setNumberOfValues($numberOfValues)
+    {
+        $this->numberOfValues = $numberOfValues;
+    }
+
+    /**
+     * TODO
+     * @ORM\PrePersist
+     * @ORM\PreUpdate
+     */
+    public function setDatesAndNumberOfValues()
+    {
+    }
+
 }

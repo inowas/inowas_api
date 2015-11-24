@@ -43,4 +43,21 @@ class PropertyValue extends AbstractValue
     {
         return $this->value;
     }
+
+    public function getDateBegin()
+    {
+        return null;
+    }
+
+    public function getDateEnd()
+    {
+        return null;
+    }
+
+    public function getNumberOfValues()
+    {
+        return 1;
+    }
+
+
 }

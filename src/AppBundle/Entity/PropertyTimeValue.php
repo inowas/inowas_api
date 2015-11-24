@@ -96,4 +96,19 @@ class PropertyTimeValue extends AbstractValue
     {
         return $this->datetime;
     }
+
+    public function getDateBegin()
+    {
+        return $this->datetime;
+    }
+
+    public function getDateEnd()
+    {
+        return $this->datetime;
+    }
+
+    public function getNumberOfValues()
+    {
+        return 1;
+    }
 }

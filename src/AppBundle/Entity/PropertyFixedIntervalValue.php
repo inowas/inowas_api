@@ -22,6 +22,7 @@ class PropertyFixedIntervalValue extends AbstractValue
 
     /**
      * @var String
+     * more info herer: http://php.net/manual/de/dateinterval.construct.php
      *
      * @ORM\Column(name="interval", type="string", length=255)
      * @JMS\Expose()
@@ -104,4 +105,36 @@ class PropertyFixedIntervalValue extends AbstractValue
     {
         return $this->values;
     }
+
+    public function getDateBegin()
+    {
+        return $this->dateTimeBegin;
+    }
+
+    public function getDateEnd()
+    {
+        if ($this->dateTimeInterval)
+        {
+            $interval = new \DateInterval($this->dateTimeInterval);
+            $dateEnd = $this->getDateBegin() + $this->getNumberOfValues() * $interval;
+            return $dateEnd;
+
+        } else
+        {
+            return null;
+        }
+    }
+
+    public function getNumberOfValues()
+    {
+        if ($this->values)
+        {
+            return count($this->values);
+        } else
+        {
+            return 0;
+        }
+    }
+
+
 }
