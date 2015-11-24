@@ -174,7 +174,6 @@ class Property
     public function addValue(\AppBundle\Entity\AbstractValue $values)
     {
         $this->values[] = $values;
-        $this->numberOfValues = count($this->values);
         return $this;
     }
 
@@ -247,8 +246,7 @@ class Property
     }
 
     /**
-     * @ORM\PrePersist
-     * @ORM\PreUpdate
+     * @ORM\PreFlush()
      */
     public function setDatesAndNumberOfValues()
     {
