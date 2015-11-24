@@ -9,6 +9,7 @@ use JMS\Serializer\Annotation as JMS;
 /**
  * Project
  *
+ * @ORM\HasLifecycleCallbacks()
  * @ORM\Table(name="projects")
  * @ORM\Entity(repositoryClass="AppBundle\Entity\ProjectRepository")
  */
@@ -67,7 +68,7 @@ class Project
      * @JMS\MaxDepth(2)
      * @JMS\Groups({"list", "details"})
      **/
-    protected $modelObjects;
+    private $modelObjects;
 
     /**
      * @var boolean
@@ -78,12 +79,30 @@ class Project
     private $public;
 
     /**
+     * @var \DateTime
+     *
+     * @ORM\Column(name="dateCreated", type="datetime")
+     * @JMS\Exclude()
+     */
+    private $dateCreated;
+
+    /**
+     * @var \DateTime
+     *
+     * @ORM\Column(name="dateModified", type="datetime")
+     * @JMS\Exclude()
+     */
+    private $dateModified;
+
+    /**
      * Constructor
      */
     public function __construct()
     {
         $this->participants = new ArrayCollection();
         $this->modelObjects = new ArrayCollection();
+        $this->dateCreated = new \DateTime();
+        $this->dateModified = new \DateTime();
     }
 
     /**
@@ -262,5 +281,59 @@ class Project
     public function getDescription()
     {
         return $this->description;
+    }
+
+    /**
+     * Set dateCreated
+     *
+     * @param \DateTime $dateCreated
+     * @return ModelObject
+     */
+    public function setDateCreated($dateCreated)
+    {
+        $this->dateCreated = $dateCreated;
+
+        return $this;
+    }
+
+    /**
+     * Get dateCreated
+     *
+     * @return \DateTime
+     */
+    public function getDateCreated()
+    {
+        return $this->dateCreated;
+    }
+
+    /**
+     * Set dateModified
+     *
+     * @param \DateTime $dateModified
+     * @return ModelObject
+     */
+    public function setDateModified($dateModified)
+    {
+        $this->dateModified = $dateModified;
+
+        return $this;
+    }
+
+    /**
+     * Get dateModified
+     *
+     * @return \DateTime
+     */
+    public function getDateModified()
+    {
+        return $this->dateModified;
+    }
+
+    /**
+     * @ORM\PreUpdate
+     */
+    public function updateDateModified()
+    {
+        $this->dateModified = new \DateTime();
     }
 }
