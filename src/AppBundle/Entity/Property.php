@@ -241,12 +241,40 @@ class Property
     }
 
     /**
-     * TODO
      * @ORM\PrePersist
      * @ORM\PreUpdate
      */
     public function setDatesAndNumberOfValues()
     {
-    }
+        if ($this->values)
+        {
+            $numberOfValues = 0;
+            $dateTimeBegin = null;
+            $dateTimeEnd = null;
+            /** @var AbstractValue $value */
+            foreach ($this->values as $value)
+            {
+                $numberOfValues += $value->getNumberOfValues();
 
+                if ($dateTimeBegin == null || $dateTimeBegin > $value->getDateBegin())
+                {
+                    if ($value->getDateBegin()) {
+                        $dateTimeBegin = $value->getDateBegin();
+                    }
+                }
+
+                if ($dateTimeEnd == null || $dateTimeEnd < $value->getDateEnd())
+                {
+                    if ($value->getDateEnd())
+                    {
+                        $dateTimeEnd = $value->getDateBegin();
+                    }
+                }
+            }
+
+            $this->numberOfValues = $numberOfValues;
+            $this->dateTimeBegin = $dateTimeBegin;
+            $this->dateTimeEnd = $dateTimeEnd;
+        }
+    }
 }
