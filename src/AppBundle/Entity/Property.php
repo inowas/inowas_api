@@ -49,7 +49,7 @@ class Property
     /**
      * @var ArrayCollection Values
      *
-     * @ORM\OneToMany(targetEntity="AppBundle\Entity\AbstractValue", mappedBy="property")
+     * @ORM\OneToMany(targetEntity="AppBundle\Entity\AbstractValue", mappedBy="property", cascade={"all"})
      */
     private $values;
 
@@ -174,7 +174,7 @@ class Property
     public function addValue(\AppBundle\Entity\AbstractValue $values)
     {
         $this->values[] = $values;
-
+        $this->numberOfValues = count($this->values);
         return $this;
     }
 

@@ -63,10 +63,10 @@ class PropertyFixedIntervalValue extends AbstractValue
     /**
      * Set dateTimeInterval
      *
-     * @param \DateInterval $dateTimeInterval
+     * @param string $dateTimeInterval
      * @return PropertyFixedIntervalValue
      */
-    public function setDateTimeInterval(\DateInterval $dateTimeInterval)
+    public function setDateTimeInterval($dateTimeInterval)
     {
         $this->dateTimeInterval = $dateTimeInterval;
 
@@ -116,7 +116,11 @@ class PropertyFixedIntervalValue extends AbstractValue
         if ($this->dateTimeInterval)
         {
             $interval = new \DateInterval($this->dateTimeInterval);
-            $dateEnd = $this->getDateBegin() + $this->getNumberOfValues() * $interval;
+            $dateEnd = clone $this->getDateBegin();
+            for ($i = 0; $i < $this->getNumberOfValues(); $i++)
+            {
+                $dateEnd->add($interval);
+            }
             return $dateEnd;
 
         } else

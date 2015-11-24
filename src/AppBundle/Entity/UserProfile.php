@@ -25,7 +25,7 @@ class UserProfile
      * @var User
      *
      * @ORM\OneToOne(targetEntity="User", inversedBy="profile", cascade={"persist", "remove"})
-     * @ORM\JoinColumn(name="user_id", referencedColumnName="id", onDelete="CASCADE")
+     * @ORM\JoinColumn(name="user_id", referencedColumnName="id", onDelete="SET NULL")
      */
     protected $user;
 

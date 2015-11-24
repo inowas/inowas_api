@@ -30,6 +30,7 @@ class User extends BaseUser
      * @var UserProfile
      *
      * @ORM\OneToOne(targetEntity="UserProfile", mappedBy="user", cascade={"persist", "remove"})
+     * @ORM\JoinColumn(name="profile_id", referencedColumnName="id", onDelete="CASCADE")
      * @JMS\Expose
      */
     protected $profile;

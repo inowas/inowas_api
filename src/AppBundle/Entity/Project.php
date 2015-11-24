@@ -45,7 +45,7 @@ class Project
      * @var User
      *
      * @ORM\ManyToOne(targetEntity="User", inversedBy="ownedProjects")
-     * @ORM\JoinColumn(name="owner_id", referencedColumnName="id", onDelete="cascade")
+     * @ORM\JoinColumn(name="owner_id", referencedColumnName="id", onDelete="SET NULL")
      * @JMS\MaxDepth(2)
      * @JMS\Groups({"list", "details"})
      */
