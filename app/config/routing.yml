@@ -51,7 +51,7 @@ rest_user_stream:
     prefix: /api
     resource: AppBundle\Controller\StreamRestController
 
-rest_user_project:
+rest_project:
     type: rest
     prefix: /api
-    resource: AppBundle\Controller\UserProjectRestController
+    resource: AppBundle\Controller\ProjectRestController
