@@ -41,9 +41,9 @@ class Property
      * @var PropertyType
      *
      * @ORM\ManyToOne(targetEntity="AppBundle\Entity\PropertyType")
-     * @ORM\JoinColumn(name="model_object_property_type_id", referencedColumnName="id")
+     * @ORM\JoinColumn(name="property_type_id", referencedColumnName="id")
      */
-    private $type;
+    private $propertyType;
 
     /**
      * @var ArrayCollection Values
@@ -74,12 +74,12 @@ class Property
     /**
      * Set type
      *
-     * @param \AppBundle\Entity\PropertyType $type
+     * @param \AppBundle\Entity\PropertyType $propertyType
      * @return Property
      */
-    public function setType(PropertyType $type = null)
+    public function setType(PropertyType $propertyType = null)
     {
-        $this->type = $type;
+        $this->propertyType = $propertyType;
 
         return $this;
     }
@@ -91,7 +91,7 @@ class Property
      */
     public function getType()
     {
-        return $this->type;
+        return $this->propertyType;
     }
 
     /**
