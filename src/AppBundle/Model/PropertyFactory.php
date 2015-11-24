@@ -19,7 +19,7 @@ class PropertyFactory
     public static function setTypeAndModelObject(PropertyType $type, ModelObject $modelObject)
     {
         $property = new Property();
-        $property->setType($type);
+        $property->setPropertyType($type);
         $property->setModelObject($modelObject);
 
         return $property;

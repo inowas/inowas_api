@@ -56,15 +56,14 @@ class Property
     /**
      * @var \DateTime
      *
-     * @ORM\Column(name="date_time_begin", type="datetime")
+     * @ORM\Column(name="date_time_begin", type="datetime", nullable=true)
      */
     private $dateTimeBegin;
 
     /**
      * @var \DateTime
      *
-     * @ORM\Column(name="date_time_end", type="datetime")
-     */
+     * @ORM\Column(name="date_time_end", type="datetime", nullable=true)
      */
     private $dateTimeEnd;
 
