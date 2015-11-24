@@ -255,6 +255,7 @@ class Property
             $numberOfValues = 0;
             $dateTimeBegin = null;
             $dateTimeEnd = null;
+
             /** @var AbstractValue $value */
             foreach ($this->values as $value)
             {
@@ -271,7 +272,7 @@ class Property
                 {
                     if ($value->getDateEnd())
                     {
-                        $dateTimeEnd = $value->getDateBegin();
+                        $dateTimeEnd = $value->getDateEnd();
                     }
                 }
             }
