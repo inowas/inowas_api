@@ -14,6 +14,11 @@ use JMS\Serializer\Annotation as JMS;
  */
 class ObservationPoint extends ModelObject
 {
+    /**
+     * @var string
+     * @JMS\Groups({"list", "details"})
+     */
+    protected $type = 'observationPoint';
 
     /**
      * @var Point
