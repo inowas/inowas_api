@@ -69,6 +69,7 @@ class ProjectControllerTest extends WebTestCase
         $this->assertCount(1, $projectArray);
         $project = $projectArray[0];
         $this->assertEquals($this->projectname, $project->getName());
+        $this->assertEquals($this->project->getId(), $project->getId());
     }
 
     /**
