@@ -49,7 +49,7 @@ class Property
     /**
      * @var ArrayCollection Values
      *
-     * @ORM\OneToMany(targetEntity="AppBundle\Entity\AbstractValue", mappedBy="property", cascade={"all"})
+     * @ORM\OneToMany(targetEntity="AppBundle\Entity\AbstractValue", mappedBy="property", cascade={"persist", "remove"})
      */
     private $values;
 

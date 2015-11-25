@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
-/etc/init.d/postgresql stop
-/etc/init.d/postgresql start
+#/etc/init.d/postgresql stop
+#/etc/init.d/postgresql start
 
 DIR=/var/www/html
 SQL_DIR=$DIR/build/sql
@@ -14,10 +14,10 @@ su - postgres -c "psql inowas_entities_test < "$SQL_DIR"/structure.sql"
 
 app/console doctrine:schema:create --env=test
 
-su - postgres -c "psql inowas_entities_test < "$SQL_DIR"/raster.sql"
+#su - postgres -c "psql inowas_entities_test < "$SQL_DIR"/raster.sql"
 
-DIR=/var/www/html
-SQL_DIR=$DIR/build/sql
+#DIR=/var/www/html
+#SQL_DIR=$DIR/build/sql
 
 cd $DIR
 

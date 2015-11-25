@@ -45,7 +45,7 @@ class Project
      * @var User
      *
      * @ORM\ManyToOne(targetEntity="User", inversedBy="ownedProjects")
-     * @ORM\JoinColumn(name="owner_id", referencedColumnName="id", onDelete="SET NULL")
+     * @ORM\JoinColumn(name="owner_id", referencedColumnName="id", onDelete="CASCADE")
      * @JMS\MaxDepth(2)
      * @JMS\Groups({"list", "details"})
      */
@@ -64,7 +64,7 @@ class Project
     /**
      * @var ArrayCollection ModelObject
      *
-     * @ORM\ManyToMany(targetEntity="ModelObject", mappedBy="projects", cascade={"all"})
+     * @ORM\ManyToMany(targetEntity="ModelObject", mappedBy="projects", cascade={"persist", "remove"})
      * @JMS\MaxDepth(2)
      * @JMS\Groups({"list", "details"})
      **/

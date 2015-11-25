@@ -29,8 +29,8 @@ class User extends BaseUser
     /**
      * @var UserProfile
      *
-     * @ORM\OneToOne(targetEntity="UserProfile", mappedBy="user", cascade={"all"})
-     * @ORM\JoinColumn(name="user_profile_id", onDelete="CASCADE")
+     * @ORM\OneToOne(targetEntity="UserProfile", orphanRemoval=true, cascade={"persist", "remove"})
+     * @ORM\JoinColumn(name="profile_id", referencedColumnName="id")
      * @JMS\Expose
      */
     protected $profile;
@@ -38,7 +38,7 @@ class User extends BaseUser
     /**
      * @var ArrayCollection Project $ownedProjects
      *
-     * @ORM\OneToMany(targetEntity="Project", mappedBy="owner")
+     * @ORM\OneToMany(targetEntity="Project", mappedBy="owner", cascade={"persist", "remove"})
      */
     protected $ownedProjects;
 

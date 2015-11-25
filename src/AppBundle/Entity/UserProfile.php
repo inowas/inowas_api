@@ -22,14 +22,6 @@ class UserProfile
     protected $id;
 
     /**
-     * @var User
-     *
-     * @ORM\OneToOne(targetEntity="User", inversedBy="profile", cascade={"persist", "remove"})
-     * @ORM\JoinColumn(name="user_id", referencedColumnName="id", onDelete="CASCADE")
-     */
-    protected $user;
-
-    /**
      * @var string
      *
      * @ORM\Column(name="first_name", type="string", length=255)

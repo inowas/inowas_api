@@ -10,44 +10,42 @@ use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 class ProjectControllerTest extends WebTestCase
 {
 
-    /**
-     * @var \Doctrine\ORM\EntityManager
-     */
+    /** @var \Doctrine\ORM\EntityManager */
     protected $entityManager;
 
-    /**
-     * @var User $user
-     */
+    /** @var User $user */
     protected $user;
 
-    /**
-     * @var Project $project
-     */
+    /** @var string  */
+    protected $username = 'userprojectcontrollertest';
+
+    /** @var Project $project */
     protected $project;
 
+    /** @var string  */
+    protected $projectname = 'TestProject';
 
     public function setUp()
     {
         self::bootKernel();
         $this->entityManager = static::$kernel->getContainer()
-            ->get('doctrine')
-            ->getManager()
+            ->get('doctrine.orm.default_entity_manager')
         ;
 
+        // Setup
         $this->user = new User();
-        $this->user->setUsername('userProjectControllerTest');
-        $this->user->setEmail('userProjectControllerTest@email.com');
-        $this->user->setPassword('userProjectControllerTestPassword');
+        $this->user->setUsername($this->username);
+        $this->user->setEmail('userprojectcontrollertestemail');
+        $this->user->setPassword('userprojectcontrollertestPassword');
         $this->user->setEnabled(true);
         $this->entityManager->persist($this->user);
+        $this->entityManager->flush();
 
         $this->project = ProjectFactory::setOwnerAndPublic($this->user, true);
-        $this->project->setName('TestProject');
-        $this->project->setDescription('This is the description of the TestProject.');
+        $this->project->setName($this->projectname);
+        $this->project->setDescription('TestProjectDescription!!!');
         $this->entityManager->persist($this->project);
-
         $this->entityManager->flush();
-        $this->entityManager->clear();
     }
 
     /**
@@ -55,13 +53,10 @@ class ProjectControllerTest extends WebTestCase
      */
     public function testUsersProjectsListController()
     {
-        $users = $this->entityManager->getRepository('AppBundle:User')
-            ->findAll();
-        $this->assertCount(1, $users);
-
         $client = static::createClient();
-        $crawler = $client->request('GET', '/api/users/'.$this->user->getUsername().'/projects.json');
+        $client->request('GET', '/api/users/'.$this->user->getUsername().'/projects.json');
         $this->assertEquals(200, $client->getResponse()->getStatusCode());
+        $this->assertTrue(true);
     }
 
     /**
@@ -69,9 +64,20 @@ class ProjectControllerTest extends WebTestCase
      */
     public function tearDown()
     {
-        $this->entityManager->remove($this->user);
-        $this->entityManager->remove($this->project);
+        $user = $this->entityManager->getRepository('AppBundle:User')
+            ->findOneBy(array(
+                'username' => $this->username
+            ));
+
+        $project = $this->entityManager->getRepository('AppBundle:Project')
+            ->findOneBy(array(
+               'name' => $this->projectname
+            ));
+
+        $this->entityManager->remove($user);
+        $this->entityManager->remove($project);
         $this->entityManager->flush();
+
         $this->entityManager->close();
     }
 }
