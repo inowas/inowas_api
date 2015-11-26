@@ -21,7 +21,7 @@ class Project
      * @ORM\Column(name="id", type="integer")
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="AUTO")
-     * @JMS\Groups({"list", "details"})
+     * @JMS\Groups({"projectList", "projectDetails"})
      */
     private $id;
 
@@ -29,7 +29,7 @@ class Project
      * @var string
      *
      * @ORM\Column(name="name", type="string",length=255)
-     * @JMS\Groups({"list", "details"})
+     * @JMS\Groups({"projectList", "projectDetails"})
      */
     private $name;
 
@@ -37,7 +37,7 @@ class Project
      * @var string
      *
      * @ORM\Column(name="description", type="text", nullable=true)
-     * @JMS\Groups({"list", "details"})
+     * @JMS\Groups({"projectList", "projectDetails"})
      */
     private $description;
 
@@ -47,7 +47,7 @@ class Project
      * @ORM\ManyToOne(targetEntity="User", inversedBy="ownedProjects")
      * @ORM\JoinColumn(name="owner_id", referencedColumnName="id", onDelete="CASCADE")
      * @JMS\MaxDepth(3)
-     * @JMS\Groups({"details"})
+     * @JMS\Groups({"projectDetails"})
      */
     private $owner;
 
@@ -56,8 +56,7 @@ class Project
      *
      * @ORM\ManyToMany(targetEntity="User", inversedBy="participatedProjects")
      * @ORM\JoinTable(name="users_participated_projects")
-     * @JMS\MaxDepth(1)
-     * @JMS\Groups({"details"})
+     * @JMS\Groups({"projectDetails"})
      */
     private $participants;
 
@@ -65,7 +64,6 @@ class Project
      * @var ArrayCollection ModelObject $modelObjects
      *
      * @ORM\ManyToMany(targetEntity="ModelObject", mappedBy="projects", cascade={"persist", "remove"})
-     * @JMS\Groups({"details"})
      * @JMS\Type("ArrayCollection<AppBundle\Entity\ModelObject>")
      **/
     private $modelObjects;
@@ -74,7 +72,7 @@ class Project
      * @var boolean
      *
      * @ORM\Column(name="public", type="boolean")
-     * @JMS\Groups({"list", "details"})
+     * @JMS\Groups({"projectList", "projectDetails"})
      */
     private $public;
 
@@ -82,7 +80,7 @@ class Project
      * @var \DateTime
      *
      * @ORM\Column(name="dateCreated", type="datetime")
-     * @JMS\Groups({"list", "details"})
+     * @JMS\Groups({"projectDetails"})
      */
     private $dateCreated;
 
@@ -90,7 +88,7 @@ class Project
      * @var \DateTime
      *
      * @ORM\Column(name="dateModified", type="datetime")
-     * @JMS\Groups({"list", "details"})
+     * @JMS\Groups({"projectDetails"})
      */
     private $dateModified;
 

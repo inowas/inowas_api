@@ -82,8 +82,6 @@ class ProjectRestControllerTest extends WebTestCase
         $this->assertEquals($this->project->getName(), $project->getName());
         $this->assertEquals($this->project->getDescription(), $project->getDescription());
         $this->assertEquals($this->project->getPublic(), $project->getPublic());
-        $this->assertEquals($this->project->getDateCreated(), $project->getDateCreated());
-        $this->assertEquals($this->project->getDateModified(), $project->getDateModified());
     }
 
     public function testProjectDetailsApiCall()
@@ -97,6 +95,11 @@ class ProjectRestControllerTest extends WebTestCase
         $this->assertEquals($this->project->getId(), $project->getId());
         $this->assertEquals($this->project->getName(), $project->getName());
         $this->assertEquals($this->project->getDescription(), $project->getDescription());
+        $this->assertEquals($this->project->getOwner()->getId(), $project->getOwner()->getId());
+        $this->assertEquals($this->project->getOwner()->getUsername(), $project->getOwner()->getUsername());
+        $this->assertEquals($this->project->getOwner()->getEmail(), $project->getOwner()->getEmail());
+        $this->assertTrue($this->project->getParticipants()->contains($this->participant));
+
         $this->assertEquals($this->project->getPublic(), $project->getPublic());
         $this->assertEquals($this->project->getDateCreated(), $project->getDateCreated());
         $this->assertEquals($this->project->getDateModified(), $project->getDateModified());

@@ -57,7 +57,9 @@ class ProjectRestController extends FOSRestController
         $view = View::create();
         $view->setData($projects)
             ->setStatusCode(200)
-            ->setSerializationContext(SerializationContext::create()->setGroups(array('list')))
+            ->setSerializationContext(SerializationContext::create()
+                ->setGroups(array('projectList'))
+            )
         ;
 
         return $view;
@@ -112,8 +114,7 @@ class ProjectRestController extends FOSRestController
         }
 
         $serializationContext = SerializationContext::create();
-        $serializationContext->setGroups('details');
-        $serializationContext->enableMaxDepthChecks();
+        $serializationContext->setGroups('projectDetails');
 
         $view = View::create();
         $view->setData($project)

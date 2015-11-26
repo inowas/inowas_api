@@ -3,13 +3,13 @@ FOS\UserBundle\Model\User:
     properties:
         id:
             expose: true
-            groups: ["details", "list"]
+            groups: ["projectDetails"]
         username:
             expose: true
-            groups: ["details", "list"]
+            groups: ["projectDetails"]
         email:
             expose: true
-            groups: ["details", "list"]
+            groups: ["projectDetails"]
         enabled:
             expose: false
         locked:
