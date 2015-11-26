@@ -62,11 +62,12 @@ class Project
     private $participants;
 
     /**
-     * @var ArrayCollection ModelObject
+     * @var ArrayCollection ModelObject $modelObjects
      *
      * @ORM\ManyToMany(targetEntity="ModelObject", mappedBy="projects", cascade={"persist", "remove"})
      * @JMS\MaxDepth(2)
      * @JMS\Groups({"details"})
+     * @JMS\Type("ArrayCollection<AppBundle\ModelObject>")
      **/
     private $modelObjects;
 

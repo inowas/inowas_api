@@ -26,6 +26,10 @@ class ProjectRestControllerTest extends WebTestCase
     /** @var Project $project */
     protected $project;
 
+    protected $ownerUserName = "ownerUserName";
+    protected $participantUserName = "participantUserName";
+    protected $projectName = "TestProject";
+
     public function setUp()
     {
         self::bootKernel();
@@ -38,22 +42,22 @@ class ProjectRestControllerTest extends WebTestCase
         ;
 
         $this->owner = new User();
-        $this->owner->setUsername('userprojectcontrollertestOwner');
-        $this->owner->setEmail('userprojectcontrollertestOwnerEmail');
+        $this->owner->setUsername($this->ownerUserName);
+        $this->owner->setEmail($this->ownerUserName.'@email.com');
         $this->owner->setPassword('password');
         $this->owner->setEnabled(true);
         $this->entityManager->persist($this->owner);
 
         $this->participant = new User();
-        $this->participant->setUsername('userprojectcontrollertestParticipant');
-        $this->participant->setEmail('userprojectcontrollertestParticipantEmail');
+        $this->participant->setUsername($this->participantUserName);
+        $this->participant->setEmail($this->participantUserName.'@email.com');
         $this->participant->setPassword('password');
         $this->participant->setEnabled(true);
         $this->entityManager->persist($this->participant);
         $this->entityManager->flush();
 
         $this->project = ProjectFactory::setOwnerAndPublic($this->owner, true);
-        $this->project->setName('TestProject');
+        $this->project->setName($this->projectName);
         $this->project->setDescription('TestProjectDescription!!!');
         $this->project->addParticipant($this->participant);
         $this->entityManager->persist($this->project);
@@ -82,6 +86,22 @@ class ProjectRestControllerTest extends WebTestCase
         $this->assertEquals($this->project->getDateModified(), $project->getDateModified());
     }
 
+    public function testProjectDetailsApiCall()
+    {
+        $client = static::createClient();
+        $client->request('GET', '/api/projects/'.$this->project->getId().'.json');
+        $this->assertEquals(200, $client->getResponse()->getStatusCode());
+
+        /** @var Project $project */
+        $project = $this->serializer->deserialize($client->getResponse()->getContent(), 'AppBundle\Entity\Project', 'json');
+        $this->assertEquals($this->project->getId(), $project->getId());
+        $this->assertEquals($this->project->getName(), $project->getName());
+        $this->assertEquals($this->project->getDescription(), $project->getDescription());
+        $this->assertEquals($this->project->getPublic(), $project->getPublic());
+        $this->assertEquals($this->project->getDateCreated(), $project->getDateCreated());
+        $this->assertEquals($this->project->getDateModified(), $project->getDateModified());
+    }
+
     /**
      * {@inheritDoc}
      */
@@ -91,14 +111,21 @@ class ProjectRestControllerTest extends WebTestCase
             ->findOneBy(array(
                 'username' => $this->owner->getUsername()
             ));
+        $this->entityManager->remove($user);
+
+        $participant = $this->entityManager->getRepository('AppBundle:User')
+            ->findOneBy(array(
+                'username' => $this->participant->getUsername()
+            ));
+        $this->entityManager->remove($participant);
 
         $project = $this->entityManager->getRepository('AppBundle:Project')
             ->findOneBy(array(
-               'name' => $this->project->getName()
+               'name' => $this->projectName
             ));
-
-        $this->entityManager->remove($user);
         $this->entityManager->remove($project);
+
+
         $this->entityManager->flush();
 
         $this->entityManager->close();
