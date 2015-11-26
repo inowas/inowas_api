@@ -47,7 +47,7 @@ class Project
      * @ORM\ManyToOne(targetEntity="User", inversedBy="ownedProjects")
      * @ORM\JoinColumn(name="owner_id", referencedColumnName="id", onDelete="CASCADE")
      * @JMS\MaxDepth(2)
-     * @JMS\Groups({"list", "details"})
+     * @JMS\Groups({"details"})
      */
     private $owner;
 
@@ -57,7 +57,7 @@ class Project
      * @ORM\ManyToMany(targetEntity="User", inversedBy="participatedProjects")
      * @ORM\JoinTable(name="users_participated_projects")
      * @JMS\MaxDepth(1)
-     * @JMS\Groups({"list", "details"})
+     * @JMS\Groups({"details"})
      */
     private $participants;
 
@@ -66,7 +66,7 @@ class Project
      *
      * @ORM\ManyToMany(targetEntity="ModelObject", mappedBy="projects", cascade={"persist", "remove"})
      * @JMS\MaxDepth(2)
-     * @JMS\Groups({"list", "details"})
+     * @JMS\Groups({"details"})
      **/
     private $modelObjects;
 
@@ -82,7 +82,7 @@ class Project
      * @var \DateTime
      *
      * @ORM\Column(name="dateCreated", type="datetime")
-     * @JMS\Exclude()
+     * @JMS\Groups({"list", "details"})
      */
     private $dateCreated;
 
@@ -90,7 +90,7 @@ class Project
      * @var \DateTime
      *
      * @ORM\Column(name="dateModified", type="datetime")
-     * @JMS\Exclude()
+     * @JMS\Groups({"list", "details"})
      */
     private $dateModified;
 

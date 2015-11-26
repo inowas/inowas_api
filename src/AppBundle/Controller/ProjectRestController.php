@@ -67,7 +67,7 @@ class ProjectRestController extends FOSRestController
         }
 
         $view = View::create();
-        $view->setData($projectList)
+        $view->setData($projects)
             ->setStatusCode(200)
             ->setSerializationContext(SerializationContext::create()->setGroups(array('list')))
         ;
