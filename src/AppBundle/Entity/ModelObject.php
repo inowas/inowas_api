@@ -67,7 +67,7 @@ abstract class ModelObject
      * @var ArrayCollection Property
      *
      * @ORM\OneToMany(targetEntity="AppBundle\Entity\Property", mappedBy="modelObject")
-     * @JMS\Groups({"details"})
+     * @JMS\Groups({"list", "details"})
      */
     private $properties;
 
