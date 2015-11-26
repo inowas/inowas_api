@@ -12,7 +12,6 @@ use JMS\Serializer\Annotation as JMS;
  *
  * @ORM\Table(name="users")
  * @ORM\Entity()
- * @JMS\ExclusionPolicy("all")
  */
 class User extends BaseUser
 {
@@ -22,7 +21,7 @@ class User extends BaseUser
      * @ORM\Column(name="id", type="integer")
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="AUTO")
-     * @JMS\Expose
+     * @JMS\Groups({"details"})
      */
     protected $id;
 
@@ -52,7 +51,7 @@ class User extends BaseUser
     /**
      * @var ArrayCollection Project $participatedProjects
      *
-     * @ORM\ManyToMany(targetEntity="Project", mappedBy="participants")
+     * @ORM\ManyToMany(targetEntity="Project", mappedBy="participants", cascade={"persist", "remove"})
      **/
     protected $participatedProjects;
 
@@ -62,6 +61,7 @@ class User extends BaseUser
         $this->profile = new UserProfile($this);
         $this->ownedProjects = new ArrayCollection();
         $this->ownedModelObjects = new ArrayCollection();
+        $this->participatedProjects = new ArrayCollection();
     }
 
 

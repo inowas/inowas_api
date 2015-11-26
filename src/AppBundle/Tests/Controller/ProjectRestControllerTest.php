@@ -8,7 +8,7 @@ use AppBundle\Model\ProjectFactory;
 use JMS\Serializer\Serializer;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
-class ProjectControllerTest extends WebTestCase
+class ProjectRestControllerTest extends WebTestCase
 {
 
     /** @var \Doctrine\ORM\EntityManager */
@@ -17,17 +17,14 @@ class ProjectControllerTest extends WebTestCase
     /** @var Serializer */
     protected $serializer;
 
-    /** @var User $user */
-    protected $user;
+    /** @var User $owner */
+    protected $owner;
 
-    /** @var string  */
-    protected $username = 'userprojectcontrollertest';
+    /** @var  User $participant */
+    protected $participant;
 
     /** @var Project $project */
     protected $project;
-
-    /** @var string  */
-    protected $projectname = 'TestProject';
 
     public function setUp()
     {
@@ -37,39 +34,52 @@ class ProjectControllerTest extends WebTestCase
         ;
 
         $this->serializer = static::$kernel->getContainer()
-            ->get('jms_serializer');
+            ->get('jms_serializer')
+        ;
 
-        // Setup
-        $this->user = new User();
-        $this->user->setUsername($this->username);
-        $this->user->setEmail('userprojectcontrollertestemail');
-        $this->user->setPassword('userprojectcontrollertestPassword');
-        $this->user->setEnabled(true);
-        $this->entityManager->persist($this->user);
+        $this->owner = new User();
+        $this->owner->setUsername('userprojectcontrollertestOwner');
+        $this->owner->setEmail('userprojectcontrollertestOwnerEmail');
+        $this->owner->setPassword('password');
+        $this->owner->setEnabled(true);
+        $this->entityManager->persist($this->owner);
+
+        $this->participant = new User();
+        $this->participant->setUsername('userprojectcontrollertestParticipant');
+        $this->participant->setEmail('userprojectcontrollertestParticipantEmail');
+        $this->participant->setPassword('password');
+        $this->participant->setEnabled(true);
+        $this->entityManager->persist($this->participant);
         $this->entityManager->flush();
 
-        $this->project = ProjectFactory::setOwnerAndPublic($this->user, true);
-        $this->project->setName($this->projectname);
+        $this->project = ProjectFactory::setOwnerAndPublic($this->owner, true);
+        $this->project->setName('TestProject');
         $this->project->setDescription('TestProjectDescription!!!');
+        $this->project->addParticipant($this->participant);
         $this->entityManager->persist($this->project);
         $this->entityManager->flush();
     }
 
     /**
-     *
+     * Test for the API-Call /api/users/<username>/projects.json
+     * which is providing a list of projects of the user
      */
     public function testUsersProjectsListController()
     {
         $client = static::createClient();
-        $client->request('GET', '/api/users/'.$this->user->getUsername().'/projects.json');
+        $client->request('GET', '/api/users/'.$this->owner->getUsername().'/projects.json');
         $this->assertEquals(200, $client->getResponse()->getStatusCode());
 
         /** @var Project[] $projectArray */
         $projectArray = $this->serializer->deserialize($client->getResponse()->getContent(), 'array<AppBundle\Entity\Project>', 'json');
         $this->assertCount(1, $projectArray);
         $project = $projectArray[0];
-        $this->assertEquals($this->projectname, $project->getName());
         $this->assertEquals($this->project->getId(), $project->getId());
+        $this->assertEquals($this->project->getName(), $project->getName());
+        $this->assertEquals($this->project->getDescription(), $project->getDescription());
+        $this->assertEquals($this->project->getPublic(), $project->getPublic());
+        $this->assertEquals($this->project->getDateCreated(), $project->getDateCreated());
+        $this->assertEquals($this->project->getDateModified(), $project->getDateModified());
     }
 
     /**
@@ -79,12 +89,12 @@ class ProjectControllerTest extends WebTestCase
     {
         $user = $this->entityManager->getRepository('AppBundle:User')
             ->findOneBy(array(
-                'username' => $this->username
+                'username' => $this->owner->getUsername()
             ));
 
         $project = $this->entityManager->getRepository('AppBundle:Project')
             ->findOneBy(array(
-               'name' => $this->projectname
+               'name' => $this->project->getName()
             ));
 
         $this->entityManager->remove($user);

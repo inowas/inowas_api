@@ -46,7 +46,7 @@ class Project
      *
      * @ORM\ManyToOne(targetEntity="User", inversedBy="ownedProjects")
      * @ORM\JoinColumn(name="owner_id", referencedColumnName="id", onDelete="CASCADE")
-     * @JMS\MaxDepth(2)
+     * @JMS\MaxDepth(3)
      * @JMS\Groups({"details"})
      */
     private $owner;
@@ -164,13 +164,12 @@ class Project
     /**
      * Add participants
      *
-     * @param \AppBundle\Entity\User $participants
+     * @param \AppBundle\Entity\User $participant
      * @return Project
      */
-    public function addParticipant(User $participants)
+    public function addParticipant(User $participant)
     {
-        $this->participants[] = $participants;
-        $participants->addParticipatedProject($this);
+        $this->participants[] = $participant;
 
         return $this;
     }
@@ -178,12 +177,11 @@ class Project
     /**
      * Remove participants
      *
-     * @param \AppBundle\Entity\User $participants
+     * @param \AppBundle\Entity\User $participant
      */
-    public function removeParticipant(User $participants)
+    public function removeParticipant(User $participant)
     {
-        $this->participants->removeElement($participants);
-        $participants->removeParticipatedProject($this);
+        $this->participants->removeElement($participant);
     }
 
     /**

@@ -54,18 +54,6 @@ class ProjectRestController extends FOSRestController
                 ));
         }
 
-        $projectList = array();
-        foreach ($projects as $project)
-        {
-            $projectListItem = array(
-                'id' => $project->getId(),
-                'name' => $project->getName(),
-                'description' => $project->getDescription()
-            );
-
-            $projectList[] = $projectListItem;
-        }
-
         $view = View::create();
         $view->setData($projects)
             ->setStatusCode(200)
@@ -87,39 +75,34 @@ class ProjectRestController extends FOSRestController
      *   }
      * )
      *
-     * @param $username
      * @param $projectId
      *
      * @return View
      */
-    public function getUserProjectAction($username, $projectId)
+    public function getProjectAction($projectId)
     {
-        $user = $this->getDoctrine()
-            ->getRepository('AppBundle:User')
-            ->findOneBy(array(
-                'username' => $username
-            ));
 
-        if (!$user)
+        if ($this->isGranted('ROLE_ADMIN'))
         {
-            throw $this->createNotFoundException('User with username '.$username.' not found.');
-        }
-
-        if ($this->getUser() === $user || $this->isGranted('ROLE_ADMIN'))
+            $project = $this->getDoctrine()
+                ->getRepository('AppBundle:Project')
+                ->findOneBy(array(
+                    'id' => $projectId
+                ));
+        } elseif ($this->isGranted('ROLE_USER'))
         {
             $project = $this->getDoctrine()
                 ->getRepository('AppBundle:Project')
                 ->findOneBy(array(
                     'id' => $projectId,
-                    'owner' => $user
+                    'owner' => $this->getUser()
                 ));
         } else
         {
             $project = $this->getDoctrine()
                 ->getRepository('AppBundle:Project')
-                ->findBy(array(
+                ->findOneBy(array(
                     'id' => $projectId,
-                    'owner' => $user,
                     'public' => true
                 ));
         }
@@ -129,7 +112,7 @@ class ProjectRestController extends FOSRestController
         }
 
         $serializationContext = SerializationContext::create();
-        $serializationContext->setGroups('list');
+        $serializationContext->setGroups('details');
         $serializationContext->enableMaxDepthChecks();
 
         $view = View::create();
