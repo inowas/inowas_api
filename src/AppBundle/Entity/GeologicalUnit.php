@@ -38,7 +38,6 @@ class GeologicalUnit extends ModelObject
      * @var GeologicalPoint
      *
      * @ORM\ManyToOne(targetEntity="AppBundle\Entity\GeologicalPoint", inversedBy="geologicalUnits", cascade={"persist"})
-     * @JMS\Groups({"geologicalLayerDetails"})
      */
     private $geologicalPoint;
 
