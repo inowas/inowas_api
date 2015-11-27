@@ -7,14 +7,14 @@ use Doctrine\ORM\Mapping as ORM;
 use JMS\Serializer\Annotation as JMS;
 
 /**
- * @ORM\Entity
+ * @ORM\Entity(repositoryClass="AppBundle\Entity\GeologicalLayerRepository")
  * @ORM\Table(name="geological_layers")
  */
 class GeologicalLayer extends ModelObject
 {
     /**
      * @var string
-     * @JMS\Groups({"list", "details"})
+     * @JMS\Groups({"list", "details", "geologicalLayerDetails", "geologicalLayerList"})
      */
     protected $type = 'geologicallayer';
 
@@ -23,7 +23,7 @@ class GeologicalLayer extends ModelObject
      *
      * @ORM\ManyToMany(targetEntity="AppBundle\Entity\GeologicalUnit", inversedBy="geologicalLayer")
      * @ORM\JoinTable(name="geological_layers_geological_units")
-     * @JMS\MaxDepth(2)
+     * @JMS\Groups({"geologicalLayerDetails"})
      **/
     private $geologicalUnits;
 

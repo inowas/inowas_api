@@ -23,6 +23,7 @@ class GeologicalPoint extends ModelObject
      * @var Point
      *
      * @ORM\Column(name="geometry", type="point", nullable=true)
+     * @JMS\Groups({"geologicalLayerDetails"})
      */
     private $point;
 

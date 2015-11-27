@@ -33,59 +33,56 @@ abstract class ModelObject
      * @ORM\Column(name="id", type="integer")
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="AUTO")
-     * @JMS\Groups({"list", "details"})
+     * @JMS\Groups({"list", "details", "geologicalLayerList", "geologicalLayerDetails"})
      */
-    private $id;
+    protected $id;
 
     /**
      * @var string
      *
      * @ORM\Column(name="name", type="string", length=255, nullable=true)
-     * @JMS\Groups({"list", "details"})
+     * @JMS\Groups({"list", "details", "geologicalLayerList", "geologicalLayerDetails"})
      */
-    private $name;
+    protected $name;
 
     /**
      * @var ArrayCollection Project
      *
      * @ORM\ManyToMany(targetEntity="Project", inversedBy="modelObjects")
      * @ORM\JoinTable(name="projects_model_objects")
-     * @JMS\Exclude()
      **/
-    private $projects;
+    protected $projects;
 
     /**
      * @var User
      *
      * @ORM\ManyToOne(targetEntity="User", inversedBy="ownedModelObjects")
      * @ORM\JoinColumn(name="owner_id", referencedColumnName="id", onDelete="cascade")
-     * @JMS\Exclude()
      */
-    private $owner;
+    protected $owner;
 
     /**
      * @var ArrayCollection Property
      *
      * @ORM\OneToMany(targetEntity="AppBundle\Entity\Property", mappedBy="modelObject")
-     * @JMS\Groups({"list", "details"})
      */
-    private $properties;
+    protected $properties;
 
     /**
-     * @var integer
-     * @JMS\Accessor(getter="getNumberOfProperties")
-     * @JMS\Groups({"list"})
+     * @var ArrayCollection
+     *
+     * @JMS\Accessor(getter="getPropertyIds")
+     * @JMS\Groups({"geologicalLayerDetails"})
      */
-    private $numberOfProperties;
+    protected $propertyIds;
 
     /**
      * @var ArrayCollection ObservationPoint
      *
      * @ORM\ManyToMany(targetEntity="ObservationPoint", inversedBy="modelObjects")
      * @ORM\JoinTable(name="model_objects_observation_points")
-     * @JMS\Exclude()
      */
-    private $observationPoints;
+    protected $observationPoints;
 
     /**
      * @var boolean
@@ -93,24 +90,21 @@ abstract class ModelObject
      * @ORM\Column(name="public", type="boolean")
      * @JMS\Groups({"list", "details"})
      */
-    private $public;
+    protected $public;
 
     /**
      * @var \DateTime
      *
      * @ORM\Column(name="dateCreated", type="datetime")
-     * @JMS\Exclude()
      */
-    private $dateCreated;
+    protected $dateCreated;
 
     /**
      * @var \DateTime
      *
      * @ORM\Column(name="dateModified", type="datetime")
-     * @JMS\Exclude()
      */
-    private $dateModified;
-    
+    protected $dateModified;
 
     /**
      * Constructor
@@ -123,6 +117,7 @@ abstract class ModelObject
         $this->owner = $owner;
         $this->public = $public;
         $this->projects = new ArrayCollection();
+        $this->propertyIds = new ArrayCollection();
         if ($project) $this->addProject($project);
         $this->properties = new ArrayCollection();
         $this->observationPoints = new ArrayCollection();
@@ -301,22 +296,6 @@ abstract class ModelObject
     }
 
     /**
-     * @return int
-     */
-    public function getNumberOfProperties()
-    {
-        return $this->properties->count();
-    }
-
-    /**
-     *
-     */
-        public function setNumberOfProperties()
-    {
-        $this->numberOfProperties = $this->properties->count();
-    }
-
-    /**
      * Add observationPoints
      *
      * @param \AppBundle\Entity\ObservationPoint $observationPoints
@@ -380,5 +359,19 @@ abstract class ModelObject
     public function getName()
     {
         return $this->name;
+    }
+
+    /**
+     * @return int
+     */
+    public function getPropertyIds()
+    {
+        /** @var Property $property */
+        foreach ($this->getProperties() as $property)
+        {
+            $this->propertyIds[] = $property->getId();
+        }
+
+        return $this->propertyIds;
     }
 }

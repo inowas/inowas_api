@@ -2,6 +2,7 @@
 
 namespace AppBundle\Controller;
 
+use CrEOF\Spatial\PHP\Types\Geography\Point;
 use JMS\Serializer\SerializationContext;
 use JMS\Serializer\SerializerInterface;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
@@ -43,7 +44,7 @@ class DefaultController extends Controller
 
         /** @var SerializerInterface $serializer */
         $serializer = $this->get('jms_serializer');
-        echo $serializer->serialize($project, 'json', SerializationContext::create()->enableMaxDepthChecks());
+        echo $serializer->serialize(new Point(1,2,3), 'json', SerializationContext::create()->enableMaxDepthChecks());
         die();
     }
 }

@@ -2,6 +2,7 @@
 
 namespace AppBundle\Entity;
 
+use CrEOF\Spatial\PHP\Types\Geometry\Point;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
 use JMS\Serializer\Annotation as JMS;
@@ -14,7 +15,6 @@ class GeologicalUnit extends ModelObject
 {
     /**
      * @var string
-     * @JMS\Groups({"list", "details"})
      */
     protected $type = 'geologicalunit';
 
@@ -22,6 +22,7 @@ class GeologicalUnit extends ModelObject
      * @var $elevation
      *
      * @ORM\Column(name="top_elevation", type="float", nullable=true)
+     * @JMS\Groups({"geologicalLayerDetails"})
      */
     private $topElevation;
 
@@ -29,6 +30,7 @@ class GeologicalUnit extends ModelObject
      * @var $elevation
      *
      * @ORM\Column(name="bottom_elevation", type="float", nullable=true)
+     * @JMS\Groups({"geologicalLayerDetails"})
      */
     private $bottomElevation;
 
@@ -36,7 +38,7 @@ class GeologicalUnit extends ModelObject
      * @var GeologicalPoint
      *
      * @ORM\ManyToOne(targetEntity="AppBundle\Entity\GeologicalPoint", inversedBy="geologicalUnits", cascade={"persist"})
-     * @JMS\MaxDepth(1)
+     * @JMS\Groups({"geologicalLayerDetails"})
      */
     private $geologicalPoint;
 
@@ -44,9 +46,16 @@ class GeologicalUnit extends ModelObject
      * @var ArrayCollection
      *
      * @ORM\ManyToMany(targetEntity="AppBundle\Entity\GeologicalLayer", mappedBy="geologicalUnits")
-     * @JMS\MaxDepth(3)
      */
     private $geologicalLayer;
+
+    /**
+     * @var Point
+     *
+     * @JMS\Accessor(getter="getGeometry")
+     * @JMS\Groups({"geologicalLayerDetails"})
+     */
+    protected $geometry;
 
     public function __construct(User $owner = null, Project $project = null, $public = false)
     {
@@ -164,6 +173,20 @@ class GeologicalUnit extends ModelObject
     public function getGeologicalLayer()
     {
         return $this->geologicalLayer;
+    }
+
+    /**
+     * @return array
+     */
+    public function getGeometry()
+    {
+        $point = array(
+            'x' => $this->getGeologicalPoint()->getPoint()->getX(),
+            'y' => $this->getGeologicalPoint()->getPoint()->getY(),
+            'srid' => $this->getGeologicalPoint()->getPoint()->getSrid()
+        );
+
+        return $point;
     }
 }
 
