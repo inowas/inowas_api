@@ -23,7 +23,7 @@ class GeologicalLayerRepository extends EntityRepository
             ->from('AppBundle:GeologicalLayer', 'gl')
             ->join('gl.projects', 'p', 'WITH', $qb->expr()->in('p.id', $projectId));
 
-        $result = $qb->getQuery()->getArrayResult();
+        $result = $qb->getQuery()->getResult();
         return $result;
     }
 

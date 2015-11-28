@@ -2,7 +2,7 @@
 
 namespace AppBundle\Entity;
 
-use CrEOF\Spatial\PHP\Types\Geometry\Point;
+use AppBundle\Model\Point;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
 use JMS\Serializer\Annotation as JMS;
@@ -23,7 +23,7 @@ class GeologicalPoint extends ModelObject
      * @var Point
      *
      * @ORM\Column(name="geometry", type="point", nullable=true)
-     * @JMS\Groups({"geologicalLayerDetails"})
+     * @JMS\Groups({"details"})
      */
     private $point;
 
@@ -53,7 +53,7 @@ class GeologicalPoint extends ModelObject
      * @param point $point
      * @return GeologicalPoint
      */
-    public function setPoint($point)
+    public function setPoint(Point $point)
     {
         $this->point = $point;
 

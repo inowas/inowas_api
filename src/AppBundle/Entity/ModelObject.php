@@ -25,6 +25,11 @@ use JMS\Serializer\Annotation as JMS;
 
 abstract class ModelObject
 {
+    /**
+     * @var string
+     *
+     * @JMS\Groups({"list", "details"})
+     */
     protected $type = 'modelobject';
 
     /**
@@ -33,7 +38,7 @@ abstract class ModelObject
      * @ORM\Column(name="id", type="integer")
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="AUTO")
-     * @JMS\Groups({"list", "details", "geologicalLayerList", "geologicalLayerDetails"})
+     * @JMS\Groups({"list", "details"})
      */
     protected $id;
 
@@ -41,7 +46,7 @@ abstract class ModelObject
      * @var string
      *
      * @ORM\Column(name="name", type="string", length=255, nullable=true)
-     * @JMS\Groups({"list", "details", "geologicalLayerList", "geologicalLayerDetails"})
+     * @JMS\Groups({"list", "details"})
      */
     protected $name;
 
@@ -72,7 +77,7 @@ abstract class ModelObject
      * @var ArrayCollection
      *
      * @JMS\Accessor(getter="getPropertyIds")
-     * @JMS\Groups({"geologicalLayerDetails"})
+     * @JMS\Groups({"details"})
      */
     protected $propertyIds;
 
@@ -96,6 +101,7 @@ abstract class ModelObject
      * @var \DateTime
      *
      * @ORM\Column(name="dateCreated", type="datetime")
+     * @JMS\Groups({"list"})
      */
     protected $dateCreated;
 
@@ -103,6 +109,7 @@ abstract class ModelObject
      * @var \DateTime
      *
      * @ORM\Column(name="dateModified", type="datetime")
+     * @JMS\Groups({"list"})
      */
     protected $dateModified;
 

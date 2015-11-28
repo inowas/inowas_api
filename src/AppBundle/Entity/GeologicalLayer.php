@@ -14,7 +14,7 @@ class GeologicalLayer extends ModelObject
 {
     /**
      * @var string
-     * @JMS\Groups({"list", "details", "geologicalLayerDetails", "geologicalLayerList"})
+     * @JMS\Groups({"list", "details"})
      */
     protected $type = 'geologicallayer';
 
@@ -23,7 +23,7 @@ class GeologicalLayer extends ModelObject
      *
      * @ORM\ManyToMany(targetEntity="AppBundle\Entity\GeologicalUnit", inversedBy="geologicalLayer")
      * @ORM\JoinTable(name="geological_layers_geological_units")
-     * @JMS\Groups({"geologicalLayerDetails"})
+     * @JMS\Groups({"details"})
      **/
     private $geologicalUnits;
 

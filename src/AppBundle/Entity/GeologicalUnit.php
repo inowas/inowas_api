@@ -2,7 +2,7 @@
 
 namespace AppBundle\Entity;
 
-use CrEOF\Spatial\PHP\Types\Geometry\Point;
+use AppBundle\Model\Point;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
 use JMS\Serializer\Annotation as JMS;
@@ -22,7 +22,7 @@ class GeologicalUnit extends ModelObject
      * @var $elevation
      *
      * @ORM\Column(name="top_elevation", type="float", nullable=true)
-     * @JMS\Groups({"geologicalLayerDetails"})
+     * @JMS\Groups({"details"})
      */
     private $topElevation;
 
@@ -30,7 +30,7 @@ class GeologicalUnit extends ModelObject
      * @var $elevation
      *
      * @ORM\Column(name="bottom_elevation", type="float", nullable=true)
-     * @JMS\Groups({"geologicalLayerDetails"})
+     * @JMS\Groups({"details"})
      */
     private $bottomElevation;
 
@@ -51,10 +51,10 @@ class GeologicalUnit extends ModelObject
     /**
      * @var Point
      *
-     * @JMS\Accessor(getter="getGeometry")
-     * @JMS\Groups({"geologicalLayerDetails"})
+     * @JMS\Accessor(getter="getPoint")
+     * @JMS\Groups({"details"})
      */
-    protected $geometry;
+    protected $point;
 
     public function __construct(User $owner = null, Project $project = null, $public = false)
     {
@@ -175,14 +175,14 @@ class GeologicalUnit extends ModelObject
     }
 
     /**
-     * @return array
+     * @return Point
      */
-    public function getGeometry()
+    public function getPoint()
     {
-        $point = array(
-            'x' => $this->getGeologicalPoint()->getPoint()->getX(),
-            'y' => $this->getGeologicalPoint()->getPoint()->getY(),
-            'srid' => $this->getGeologicalPoint()->getPoint()->getSrid()
+        $point = new Point(
+            $this->getGeologicalPoint()->getPoint()->getX(),
+            $this->getGeologicalPoint()->getPoint()->getY(),
+            $this->getGeologicalPoint()->getPoint()->getSrid()
         );
 
         return $point;

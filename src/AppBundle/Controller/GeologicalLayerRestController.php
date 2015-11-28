@@ -48,7 +48,7 @@ class GeologicalLayerRestController extends FOSRestController
         $view->setData($geologicalLayers)
             ->setStatusCode(200)
             ->setSerializationContext(SerializationContext::create()
-                ->setGroups('geologicalLayerList')
+                ->setGroups('list')
             )
         ;
         return $view;
@@ -83,7 +83,7 @@ class GeologicalLayerRestController extends FOSRestController
         $view->setData($geologicalLayer)
             ->setStatusCode(200)
             ->setSerializationContext(SerializationContext::create()
-                ->setGroups('geologicalLayerDetails')
+                ->setGroups('details')
             )
         ;
 

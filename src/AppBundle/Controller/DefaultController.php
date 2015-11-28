@@ -2,12 +2,13 @@
 
 namespace AppBundle\Controller;
 
-use CrEOF\Spatial\PHP\Types\Geography\Point;
+use AppBundle\Model\Point;
 use JMS\Serializer\SerializationContext;
 use JMS\Serializer\SerializerInterface;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 
 class DefaultController extends Controller
 {
@@ -36,6 +37,13 @@ class DefaultController extends Controller
     public function indexTestAction($id)
     {
 
+        $geologicalLayers = $this->getDoctrine()
+            ->getRepository('AppBundle:GeologicalLayer')
+            ->findAllByProjectId($id);
+
+        dump($geologicalLayers);
+        die();
+
         $project = $this->getDoctrine()
             ->getRepository('AppBundle:Project')
             ->findOneBy(array(
@@ -44,7 +52,29 @@ class DefaultController extends Controller
 
         /** @var SerializerInterface $serializer */
         $serializer = $this->get('jms_serializer');
-        echo $serializer->serialize(new Point(1,2,3), 'json', SerializationContext::create()->enableMaxDepthChecks());
-        die();
+
+        $serialisationContext = SerializationContext::create()
+            ->enableMaxDepthChecks()
+            ->setGroups('details')
+        ;
+
+        $point = new Point(1,2,3);
+        $user = $this->getDoctrine()->getRepository('AppBundle:User')
+            ->findOneBy(array(
+                'id' => 1))
+        ;
+
+        dump($serializer);
+
+        $content = "<html><body>";
+        //$content .= $serializer->serialize($user, 'json', $serialisationContext)."\n";
+        $content .= $serializer->serialize($point, 'json', $serialisationContext)."\n";
+        $content .= "</body></html>";
+
+        $response = new Response();
+        $response->setContent($content);
+        $response->setStatusCode(200);
+        $response->headers->set('Content-Type','text/html');
+        return $response;
     }
 }
