@@ -53,6 +53,7 @@ class GeologicalUnit extends ModelObject
      *
      * @JMS\Accessor(getter="getPoint")
      * @JMS\Groups({"details"})
+     * @JMS\Type("AppBundle\Model\Point")
      */
     protected $point;
 

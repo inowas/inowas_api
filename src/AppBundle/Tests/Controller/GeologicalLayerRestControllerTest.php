@@ -6,6 +6,9 @@ use AppBundle\Entity\GeologicalLayer;
 use AppBundle\Entity\Project;
 use AppBundle\Entity\User;
 use AppBundle\Model\GeologicalLayerFactory;
+use AppBundle\Model\GeologicalPointFactory;
+use AppBundle\Model\GeologicalUnitFactory;
+use AppBundle\Model\Point;
 use AppBundle\Model\ProjectFactory;
 use Doctrine\Common\Collections\ArrayCollection;
 use JMS\Serializer\Serializer;
@@ -66,14 +69,63 @@ class GeologicalLayerRestControllerTest extends WebTestCase
         $this->entityManager->persist($this->project);
         $this->entityManager->flush();
 
-        $geologicalLayer = GeologicalLayerFactory::setOwnerProjectNameAndPublic($this->owner, $this->project, 'L1', true);
-        $this->entityManager->persist($geologicalLayer);
-        $geologicalLayer = GeologicalLayerFactory::setOwnerProjectNameAndPublic($this->owner, $this->project, 'L2', true);
-        $this->entityManager->persist($geologicalLayer);
-        $geologicalLayer = GeologicalLayerFactory::setOwnerProjectNameAndPublic($this->owner, $this->project, 'L3', true);
-        $this->entityManager->persist($geologicalLayer);
+        $geologicalLayer1 = GeologicalLayerFactory::setOwnerProjectNameAndPublic($this->owner, $this->project, 'L1', true);
+        $this->entityManager->persist($geologicalLayer1);
+        $geologicalLayer2 = GeologicalLayerFactory::setOwnerProjectNameAndPublic($this->owner, $this->project, 'L2', true);
+        $this->entityManager->persist($geologicalLayer2);
+        $geologicalLayer3 = GeologicalLayerFactory::setOwnerProjectNameAndPublic($this->owner, $this->project, 'L3', true);
+        $this->entityManager->persist($geologicalLayer3);
         $this->entityManager->flush();
 
+        $geologicalPoint = GeologicalPointFactory::setOwnerProjectNameAndPoint($this->owner, $this->project, 'GP1', new Point(1,2,3), true);
+        $this->entityManager->persist($geologicalPoint);
+
+        $geologicalUnit = GeologicalUnitFactory::setOwnerProjectNameAndPublic($this->owner, $this->project, 'GP1.1', true);
+        $geologicalUnit->setGeologicalPoint($geologicalPoint);
+        $geologicalUnit->setTopElevation(100);
+        $geologicalUnit->setBottomElevation(90);
+        $geologicalUnit->addGeologicalLayer($geologicalLayer1);
+        $this->entityManager->persist($geologicalUnit);
+
+        $geologicalUnit = GeologicalUnitFactory::setOwnerProjectNameAndPublic($this->owner, $this->project, 'GP1.2', true);
+        $geologicalUnit->setGeologicalPoint($geologicalPoint);
+        $geologicalUnit->setTopElevation(90);
+        $geologicalUnit->setBottomElevation(80);
+        $geologicalUnit->addGeologicalLayer($geologicalLayer2);
+        $this->entityManager->persist($geologicalUnit);
+
+        $geologicalUnit = GeologicalUnitFactory::setOwnerProjectNameAndPublic($this->owner, $this->project, 'GP1.3', true);
+        $geologicalUnit->setGeologicalPoint($geologicalPoint);
+        $geologicalUnit->setTopElevation(80);
+        $geologicalUnit->setBottomElevation(70);
+        $geologicalUnit->addGeologicalLayer($geologicalLayer3);
+        $this->entityManager->persist($geologicalUnit);
+
+        $geologicalPoint = GeologicalPointFactory::setOwnerProjectNameAndPoint($this->owner, $this->project, 'GP2', new Point(10, 20, 30), true);
+        $this->entityManager->persist($geologicalPoint);
+
+        $geologicalUnit = GeologicalUnitFactory::setOwnerProjectNameAndPublic($this->owner, $this->project, 'GP2.1', true);
+        $geologicalUnit->setGeologicalPoint($geologicalPoint);
+        $geologicalUnit->setTopElevation(100);
+        $geologicalUnit->setBottomElevation(90);
+        $geologicalUnit->addGeologicalLayer($geologicalLayer1);
+        $this->entityManager->persist($geologicalUnit);
+
+        $geologicalUnit = GeologicalUnitFactory::setOwnerProjectNameAndPublic($this->owner, $this->project, 'GP2.2', true);
+        $geologicalUnit->setGeologicalPoint($geologicalPoint);
+        $geologicalUnit->setTopElevation(90);
+        $geologicalUnit->setBottomElevation(80);
+        $geologicalUnit->addGeologicalLayer($geologicalLayer2);
+        $this->entityManager->persist($geologicalUnit);
+
+        $geologicalUnit = GeologicalUnitFactory::setOwnerProjectNameAndPublic($this->owner, $this->project, 'GP2.3', true);
+        $geologicalUnit->setGeologicalPoint($geologicalPoint);
+        $geologicalUnit->setTopElevation(80);
+        $geologicalUnit->setBottomElevation(70);
+        $geologicalUnit->addGeologicalLayer($geologicalLayer3);
+        $this->entityManager->persist($geologicalUnit);
+
+        $this->entityManager->flush();
     }
 
     /**
@@ -89,8 +141,6 @@ class GeologicalLayerRestControllerTest extends WebTestCase
         /** @var ArrayCollection $geologicaLLayers */
         $geologicalLayers = $this->serializer->deserialize($client->getResponse()->getContent(), 'array<AppBundle\Entity\GeologicalLayer>', 'json');
         $this->assertCount(3, $geologicalLayers);
-
-        dump($client->getResponse()->getContent());
 
         /** @var GeologicalLayer $geologicalLayer */
         foreach ($geologicalLayers as $geologicalLayer)
@@ -108,25 +158,33 @@ class GeologicalLayerRestControllerTest extends WebTestCase
         }
     }
 
-    public function rojectDetailsApiCall()
+    public function testProjectLayerDetailsController()
     {
-        $client = static::createClient();
-        $client->request('GET', '/api/projects/'.$this->project->getId().'.json');
-        $this->assertEquals(220, $client->getResponse()->getStatusCode());
+        $geologicalLayersInDB = $this->entityManager->getRepository('AppBundle:GeologicalLayer')
+            ->findAll();
 
-        /** @var Project $project */
-        $project = $this->serializer->deserialize($client->getResponse()->getContent(), 'AppBundle\Entity\Project', 'json');
-        $this->assertEquals($this->project->getId(), $project->getId());
-        $this->assertEquals($this->project->getName(), $project->getName());
-        $this->assertEquals($this->project->getDescription(), $project->getDescription());
-        $this->assertEquals($this->project->getOwner()->getId(), $project->getOwner()->getId());
-        $this->assertEquals($this->project->getOwner()->getUsername(), $project->getOwner()->getUsername());
-        $this->assertEquals($this->project->getOwner()->getEmail(), $project->getOwner()->getEmail());
-        $this->assertTrue($this->project->getParticipants()->contains($this->participant));
+        foreach ($geologicalLayersInDB as $geologicalLayerInDB)
+        {
+            $client = static::createClient();
+            $client->request('GET', '/api/projects/'.$this->project->getId().'/geologicallayers/'.$geologicalLayerInDB->getId().'.json');
+            $this->assertEquals(200, $client->getResponse()->getStatusCode());
 
-        $this->assertEquals($this->project->getPublic(), $project->getPublic());
-        $this->assertEquals($this->project->getDateCreated(), $project->getDateCreated());
-        $this->assertEquals($this->project->getDateModified(), $project->getDateModified());
+            /** @var GeologicalLayer $geologicalLayer */
+            $geologicalLayer = $this->serializer->deserialize($client->getResponse()->getContent(), 'AppBundle\Entity\GeologicalLayer', 'json');
+
+            $this->assertEquals($geologicalLayerInDB->getId(), $geologicalLayer->getId());
+            $this->assertEquals($geologicalLayerInDB->getName(), $geologicalLayer->getName());
+            $this->assertEquals($geologicalLayerInDB->getPublic(), $geologicalLayer->getPublic());
+
+            // TODO
+            // Add more tests for the geological units
+
+            $this->assertEquals(2, count($geologicalLayer->getGeologicalUnits()));
+            $geologicalUnits = $geologicalLayerInDB->getGeologicalUnits();
+            foreach ($geologicalUnits as $geologicalUnit)
+            {
+            }
+        }
     }
 
     /**
@@ -160,6 +218,16 @@ class GeologicalLayerRestControllerTest extends WebTestCase
         {
             $this->entityManager->remove($geologicalLayer);
         }
+
+        $geologicalPoints = $this->entityManager
+            ->getRepository('AppBundle:GeologicalPoint')
+            ->findAll();
+
+        foreach ($geologicalPoints as $geologicalPoint)
+        {
+            $this->entityManager->remove($geologicalPoint);
+        }
+
 
         $this->entityManager->flush();
         $this->entityManager->close();
