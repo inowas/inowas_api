@@ -14,7 +14,6 @@ class GeologicalLayer extends ModelObject
 {
     /**
      * @var string
-     * @JMS\Groups({"list", "details"})
      */
     protected $type = 'geologicallayer';
 

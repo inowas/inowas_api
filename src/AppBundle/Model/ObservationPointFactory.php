@@ -4,7 +4,7 @@ namespace AppBundle\Model;
 
 use AppBundle\Entity\ObservationPoint;
 use AppBundle\Entity\Project;
-use CrEOF\Spatial\PHP\Types\Geometry\Point;
+use AppBundle\Model\Point;
 use FOS\UserBundle\Model\UserInterface;
 
 class ObservationPointFactory

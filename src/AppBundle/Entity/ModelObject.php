@@ -101,7 +101,6 @@ abstract class ModelObject
      * @var \DateTime
      *
      * @ORM\Column(name="dateCreated", type="datetime")
-     * @JMS\Groups({"list"})
      */
     protected $dateCreated;
 
@@ -109,7 +108,6 @@ abstract class ModelObject
      * @var \DateTime
      *
      * @ORM\Column(name="dateModified", type="datetime")
-     * @JMS\Groups({"list"})
      */
     protected $dateModified;
 
