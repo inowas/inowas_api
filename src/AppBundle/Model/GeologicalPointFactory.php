@@ -5,7 +5,7 @@ namespace AppBundle\Model;
 use AppBundle\Entity\GeologicalPoint;
 use AppBundle\Entity\Project;
 use AppBundle\Entity\User;
-use CrEOF\Spatial\PHP\Types\Geometry\Point;
+use AppBundle\Model\Point;
 use FOS\UserBundle\Model\UserInterface;
 
 class GeologicalPointFactory
