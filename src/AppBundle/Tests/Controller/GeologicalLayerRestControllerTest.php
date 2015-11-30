@@ -2,13 +2,16 @@
 
 namespace AppBundle\Tests\Controller;
 
+use AppBundle\Entity\GeologicalLayer;
 use AppBundle\Entity\Project;
 use AppBundle\Entity\User;
+use AppBundle\Model\GeologicalLayerFactory;
 use AppBundle\Model\ProjectFactory;
+use Doctrine\Common\Collections\ArrayCollection;
 use JMS\Serializer\Serializer;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
-class ProjectRestControllerTest extends WebTestCase
+class GeologicalLayerRestControllerTest extends WebTestCase
 {
 
     /** @var \Doctrine\ORM\EntityManager */
@@ -28,7 +31,7 @@ class ProjectRestControllerTest extends WebTestCase
 
     protected $ownerUserName = "ownerUserName";
     protected $participantUserName = "participantUserName";
-    protected $projectName = "TestProject";
+    protected $projectName = "TestLayersProject";
 
     public function setUp()
     {
@@ -62,33 +65,54 @@ class ProjectRestControllerTest extends WebTestCase
         $this->project->addParticipant($this->participant);
         $this->entityManager->persist($this->project);
         $this->entityManager->flush();
+
+        $geologicalLayer = GeologicalLayerFactory::setOwnerProjectNameAndPublic($this->owner, $this->project, 'L1', true);
+        $this->entityManager->persist($geologicalLayer);
+        $geologicalLayer = GeologicalLayerFactory::setOwnerProjectNameAndPublic($this->owner, $this->project, 'L2', true);
+        $this->entityManager->persist($geologicalLayer);
+        $geologicalLayer = GeologicalLayerFactory::setOwnerProjectNameAndPublic($this->owner, $this->project, 'L3', true);
+        $this->entityManager->persist($geologicalLayer);
+        $this->entityManager->flush();
+
     }
 
     /**
      * Test for the API-Call /api/users/<username>/projects.json
      * which is providing a list of projects of the user
      */
-    public function testUsersProjectsListController()
+    public function testProjectLayersListController()
     {
         $client = static::createClient();
-        $client->request('GET', '/api/users/'.$this->owner->getUsername().'/projects.json');
+        $client->request('GET', '/api/projects/'.$this->project->getId().'/geologicallayers.json');
         $this->assertEquals(200, $client->getResponse()->getStatusCode());
 
-        /** @var Project[] $projectArray */
-        $projectArray = $this->serializer->deserialize($client->getResponse()->getContent(), 'array<AppBundle\Entity\Project>', 'json');
-        $this->assertCount(1, $projectArray);
-        $project = $projectArray[0];
-        $this->assertEquals($this->project->getId(), $project->getId());
-        $this->assertEquals($this->project->getName(), $project->getName());
-        $this->assertEquals($this->project->getDescription(), $project->getDescription());
-        $this->assertEquals($this->project->getPublic(), $project->getPublic());
+        /** @var ArrayCollection $geologicaLLayers */
+        $geologicalLayers = $this->serializer->deserialize($client->getResponse()->getContent(), 'array<AppBundle\Entity\GeologicalLayer>', 'json');
+        $this->assertCount(3, $geologicalLayers);
+
+        dump($client->getResponse()->getContent());
+
+        /** @var GeologicalLayer $geologicalLayer */
+        foreach ($geologicalLayers as $geologicalLayer)
+        {
+            $id = $geologicalLayer->getId();
+            $name = $geologicalLayer->getName();
+            $this->assertTrue($geologicalLayer->getPublic());
+
+            $entity = $this->entityManager->getRepository('AppBundle:GeologicalLayer')
+                ->findOneBy(array(
+                    'id' => $id,
+                    'name' => $name
+                ));
+            $this->assertNotNull($entity);
+        }
     }
 
-    public function testProjectDetailsApiCall()
+    public function rojectDetailsApiCall()
     {
         $client = static::createClient();
         $client->request('GET', '/api/projects/'.$this->project->getId().'.json');
-        $this->assertEquals(200, $client->getResponse()->getStatusCode());
+        $this->assertEquals(220, $client->getResponse()->getStatusCode());
 
         /** @var Project $project */
         $project = $this->serializer->deserialize($client->getResponse()->getContent(), 'AppBundle\Entity\Project', 'json');
@@ -128,9 +152,16 @@ class ProjectRestControllerTest extends WebTestCase
             ));
         $this->entityManager->remove($project);
 
+        $geologicalLayers = $this->entityManager
+            ->getRepository('AppBundle:GeologicalLayer')
+            ->findAll();
+
+        foreach ($geologicalLayers as $geologicalLayer)
+        {
+            $this->entityManager->remove($geologicalLayer);
+        }
 
         $this->entityManager->flush();
-
         $this->entityManager->close();
     }
 }
