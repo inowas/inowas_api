@@ -11,6 +11,8 @@ use AppBundle\Model\GeologicalPointFactory;
 use AppBundle\Model\GeologicalUnitFactory;
 use AppBundle\Model\Point;
 use AppBundle\Model\ProjectFactory;
+use AppBundle\Model\PropertyFactory;
+use AppBundle\Model\PropertyTypeFactory;
 use Doctrine\Common\Collections\ArrayCollection;
 use JMS\Serializer\Serializer;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
@@ -91,6 +93,19 @@ class GeologicalLayerRestControllerTest extends WebTestCase
         $geologicalUnit->setBottomElevation(80);
         $geologicalUnit->addGeologicalLayer($geologicalLayer2);
         $geologicalUnit->setGeologicalPoint($geologicalPoint);
+
+        $propertyType = PropertyTypeFactory::setName("newProperty1");
+        $property = PropertyFactory::setTypeAndModelObject($propertyType, $geologicalUnit);
+        $geologicalUnit->addProperty($property);
+        $this->entityManager->persist($property);
+        $this->entityManager->persist($propertyType);
+
+        $propertyType = PropertyTypeFactory::setName("newProperty2");
+        $property = PropertyFactory::setTypeAndModelObject($propertyType, $geologicalUnit);
+        $geologicalUnit->addProperty($property);
+        $this->entityManager->persist($property);
+        $this->entityManager->persist($propertyType);
+
         $this->entityManager->persist($geologicalUnit);
         $this->entityManager->flush();
 
@@ -100,10 +115,13 @@ class GeologicalLayerRestControllerTest extends WebTestCase
         $geologicalUnit->setTopElevation(100);
         $geologicalUnit->setBottomElevation(90);
         $geologicalUnit->addGeologicalLayer($geologicalLayer1);
+
         $this->entityManager->persist($geologicalUnit);
         $this->entityManager->persist($geologicalPoint);
 
         $this->entityManager->flush();
+
+
     }
 
     /**
@@ -200,6 +218,7 @@ class GeologicalLayerRestControllerTest extends WebTestCase
         $this->assertEquals($geologicalUnit->getPoint()->getX(), $geologicalUnitDB->getPoint()->getX());
         $this->assertEquals($geologicalUnit->getPoint()->getY(), $geologicalUnitDB->getPoint()->getY());
         $this->assertEquals($geologicalUnit->getPoint()->getSrid(), $geologicalUnitDB->getPoint()->getSrid());
+        $this->assertCount(2, $geologicalUnit->getPropertyIds());
 
         // TODO
         // Add Properties
@@ -247,7 +266,6 @@ class GeologicalLayerRestControllerTest extends WebTestCase
         {
             $this->entityManager->remove($geologicalPoint);
         }
-
 
         $this->entityManager->flush();
         $this->entityManager->close();
