@@ -2,15 +2,19 @@
 
 namespace AppBundle\Model;
 
+use JMS\Serializer\Annotation as JMS;   
+
 class TimeValue implements TimeValueInterface
 {
     /**
      * @var \DateTime|null
+     * @JMS\Groups({"list", "details"})
      */
     private $datetime;
 
     /**
      * @var float
+     * @JMS\Groups({"list", "details"})
      */
     private $value;
 

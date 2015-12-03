@@ -634,6 +634,7 @@ class LoadScenario_2 implements FixtureInterface, ContainerAwareInterface
                 $propertyType = $this->getPropertyType($this->entityManager, 'Hydraulic conductivity');
                 $property = PropertyFactory::setTypeAndModelObject($propertyType, $geologicalUnit);
                 $propertyValue = PropertyValueFactory::setPropertyAndValue($property, $geologicalUnitProperty[1]);
+                $property->setName('Hydraulic conductivity'.' '.$geologicalUnit->getName());
                 $property->addValue($propertyValue);
                 $geologicalUnit->addProperty($property);
                 $this->entityManager->persist($property);
@@ -641,6 +642,7 @@ class LoadScenario_2 implements FixtureInterface, ContainerAwareInterface
                 $propertyType = $this->getPropertyType($this->entityManager, 'Horizontal anisotropy');
                 $property = PropertyFactory::setTypeAndModelObject($propertyType, $geologicalUnit);
                 $propertyValue = PropertyValueFactory::setPropertyAndValue($property, $geologicalUnitProperty[2]);
+                $property->setName('Horizontal anisotropy'.' '.$geologicalUnit->getName());
                 $property->addValue($propertyValue);
                 $geologicalUnit->addProperty($property);
                 $this->entityManager->persist($property);
@@ -648,6 +650,7 @@ class LoadScenario_2 implements FixtureInterface, ContainerAwareInterface
                 $propertyType = $this->getPropertyType($this->entityManager, 'Vertical anisotropy');
                 $property = PropertyFactory::setTypeAndModelObject($propertyType, $geologicalUnit);
                 $propertyValue = PropertyValueFactory::setPropertyAndValue($property, $geologicalUnitProperty[3]);
+                $property->setName('Vertical anisotropy'.' '.$geologicalUnit->getName());
                 $property->addValue($propertyValue);
                 $geologicalUnit->addProperty($property);
                 $this->entityManager->persist($property);
@@ -724,12 +727,15 @@ class LoadScenario_2 implements FixtureInterface, ContainerAwareInterface
 
             $propertyType = $this->getPropertyType($this->entityManager, $propertyTypeName);
             $property = PropertyFactory::setTypeAndModelObject($propertyType, $baseElement);
+            $property->setName($propertyTypeName);
             $this->entityManager->persist($property);
             $this->entityManager->flush();
 
             foreach ($data as $dataPoint)
             {
                 $propertyTimeValue = PropertyTimeValueFactory::setPropertyDateTimeAndValue($property, new \DateTime($dataPoint[$dataFields[0]]), (float)$dataPoint[$dataFields[$i]]);
+                $property->addValue($propertyTimeValue);
+                $this->entityManager->persist($property);
                 $this->entityManager->persist($propertyTimeValue);
 
                 echo $counter++."\n";
@@ -739,6 +745,9 @@ class LoadScenario_2 implements FixtureInterface, ContainerAwareInterface
                     $this->entityManager->flush();
                 }
             }
+
+            $this->entityManager->persist($property);
+            $this->entityManager->flush();
         }
     }
 

@@ -6,6 +6,7 @@ use FOS\RestBundle\Controller\Annotations\QueryParam;
 use FOS\RestBundle\Controller\FOSRestController;
 use FOS\RestBundle\Request\ParamFetcher;
 use FOS\RestBundle\View\View;
+use JMS\Serializer\SerializationContext;
 use Nelmio\ApiDocBundle\Annotation\ApiDoc;
 
 class PropertyRestController extends FOSRestController
@@ -58,7 +59,13 @@ class PropertyRestController extends FOSRestController
         }
 
         $view = View::create();
-        $view->setData($property)->setStatusCode(200);
+        $view->setData($property)
+            ->setStatusCode(200)
+            ->setSerializationContext(SerializationContext::create()
+                ->setGroups('details')
+            )
+        ;
+
         return $view;
     }
 }

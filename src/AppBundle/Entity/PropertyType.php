@@ -3,6 +3,7 @@
 namespace AppBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use JMS\Serializer\Annotation as JMS;
 
 /**
  * ModelObjectPropertyType
@@ -18,6 +19,7 @@ class PropertyType
      * @ORM\Column(name="id", type="integer")
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="AUTO")
+     * @JMS\Groups({"list", "details"})
      */
     private $id;
 
@@ -25,6 +27,7 @@ class PropertyType
      * @var string
      *
      * @ORM\Column(name="name", type="string", length=255)
+     * @JMS\Groups({"list", "details"})
      */
     private $name;
 
