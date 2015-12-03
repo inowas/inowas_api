@@ -2,7 +2,9 @@
 
 namespace AppBundle\Controller;
 
+use FOS\RestBundle\Controller\Annotations\QueryParam;
 use FOS\RestBundle\Controller\FOSRestController;
+use FOS\RestBundle\Request\ParamFetcher;
 use FOS\RestBundle\View\View;
 use Nelmio\ApiDocBundle\Annotation\ApiDoc;
 
@@ -21,11 +23,29 @@ class PropertyRestController extends FOSRestController
      * )
      *
      * @param string $id property-id
+     * @param ParamFetcher $paramFetcher
+     *
+     * @QueryParam(name="startDate", nullable=false, strict=false, description="startDate")
+     * @QueryParam(name="endDate", nullable=false, strict=false, description="endDate")
      *
      * @return View
      */
-    public function getPropertyAction($id)
+    public function getPropertyAction($id, $paramFetcher)
     {
+
+        $startDate = null;
+        $endDate = null;
+
+        if ($paramFetcher->get('startDate'))
+        {
+            $startDate = new \DateTime($paramFetcher->get('startDate'));
+        }
+
+        if ($paramFetcher->get('endDate'))
+        {
+            $endDate = new \DateTime($paramFetcher->get('endDate'));
+        }
+
         $property = $this->getDoctrine()
             ->getRepository('AppBundle:Property')
             ->findOneBy(array(
@@ -37,14 +57,8 @@ class PropertyRestController extends FOSRestController
             throw $this->createNotFoundException('Property with id='.$id.' not found.');
         }
 
-        if ($property->getModelObject()->getPublic() || $this->isGranted('ROLE_ADMIN') || $this->getUser() === $property->getModelObject()->getOwner())
-        {
-            $view = View::create();
-            $view->setData($property)->setStatusCode(200);
-            return $view;
-        } else
-        {
-            throw $this->createAccessDeniedException();
-        }
+        $view = View::create();
+        $view->setData($property)->setStatusCode(200);
+        return $view;
     }
 }

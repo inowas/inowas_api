@@ -2,6 +2,7 @@
 
 namespace AppBundle\Entity;
 
+use AppBundle\Model\PropertyValueInterface;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
 use JMS\Serializer\Annotation as JMS;
@@ -29,6 +30,7 @@ class Property
      * @var string
      *
      * @ORM\Column(name="name", type="string", length=255, nullable=true)
+     * @JMS\Groups({"list", "details"})
      */
     private $name;
 
@@ -45,6 +47,7 @@ class Property
      *
      * @ORM\ManyToOne(targetEntity="AppBundle\Entity\PropertyType")
      * @ORM\JoinColumn(name="property_type_id", referencedColumnName="id")
+     * @JMS\Groups({"list", "details"})
      */
     private $propertyType;
 
@@ -75,6 +78,14 @@ class Property
      * @ORM\Column(name="number_of_values", type="integer")
      */
     private $numberOfValues;
+
+    /**
+     * @var array timeValues
+     *
+     * @JMS\Accessor(getter="getTimeValues")
+     * @JMS\Type(array<AppBundle\Model\TimeValue>)
+     */
+    private $timeValues;
 
     /**
      * Constructor
@@ -283,5 +294,19 @@ class Property
             $this->dateTimeBegin = $dateTimeBegin;
             $this->dateTimeEnd = $dateTimeEnd;
         }
+    }
+
+    /**
+     *
+     */
+    public function getTimeValues()
+    {
+        $timeValues = array();
+        /** @var PropertyValueInterface $value */
+        foreach ($this->values as $value)
+        {
+            $timeValues = array_merge($timeValues, $value->getTimeValues());
+        }
+        $this->timeValues = $timeValues;
     }
 }

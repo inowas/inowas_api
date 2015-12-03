@@ -2,6 +2,7 @@
 
 namespace AppBundle\Entity;
 
+use AppBundle\Model\TimeValueFactory;
 use Doctrine\ORM\Mapping as ORM;
 use JMS\Serializer\Annotation as JMS;
 
@@ -110,5 +111,12 @@ class PropertyTimeValue extends AbstractValue
     public function getNumberOfValues()
     {
         return 1;
+    }
+
+    public function getTimeValues()
+    {
+        return array(
+            TimeValueFactory::setDateTimeAndValue($this->getDatetime(), $this->value)
+        );
     }
 }

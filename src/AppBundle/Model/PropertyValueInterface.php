@@ -18,4 +18,9 @@ interface PropertyValueInterface
      * @return mixed
      */
     public function getNumberOfValues();
+
+    /**
+     * @return array TimeValue
+     */
+    public function getTimeValues();
 }

@@ -2,6 +2,7 @@
 
 namespace AppBundle\Entity;
 
+use AppBundle\Model\TimeValueFactory;
 use Doctrine\ORM\Mapping as ORM;
 use JMS\Serializer\Annotation as JMS;
 
@@ -140,5 +141,23 @@ class PropertyFixedIntervalValue extends AbstractValue
         }
     }
 
+    public function getTimeValues()
+    {
+        $timeValues = array();
 
+        for ($i = 0; $i < $this->getNumberOfValues(); $i++)
+        {
+            $dateTime = clone $this->dateTimeBegin;
+            $interval = new \DateInterval($this->dateTimeInterval);
+
+            for ($addIntervalCounter = 0; $addIntervalCounter < $i; $i++)
+            {
+                $dateTime->add($interval);
+            }
+
+            $timeValues[] = TimeValueFactory::setDateTimeAndValue($dateTime, $this->values[$i]);
+        }
+
+        return $timeValues;
+    }
 }
