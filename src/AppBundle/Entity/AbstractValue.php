@@ -12,7 +12,7 @@ use JMS\Serializer\Annotation as JMS;
  * @ORM\HasLifecycleCallbacks()
  * @ORM\Entity()
  * @ORM\Table(name="values")
- * @ORM\InheritanceType("JOINED")
+ * @ORM\InheritanceType("SINGLE_TABLE")
  * @ORM\DiscriminatorColumn(name="type", type="string")
  * @ORM\DiscriminatorMap({  "value" = "PropertyValue",
  *                          "timevalue" = "PropertyTimeValue",
