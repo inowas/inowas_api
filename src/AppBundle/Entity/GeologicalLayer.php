@@ -29,6 +29,15 @@ class GeologicalLayer extends ModelObject
     private $geologicalUnits;
 
     /**
+     * @var ArrayCollection Boundary
+     *
+     * @ORM\ManyToMany(targetEntity="AppBundle\Entity\Boundary", inversedBy="geologicalLayers")
+     * @ORM\JoinTable(name="layers_boundaries")
+     */
+    private $boundaries;
+
+
+    /**
      * Layer constructor.
      * @param User|null $owner
      * @param Project|null $project
@@ -39,6 +48,7 @@ class GeologicalLayer extends ModelObject
         parent::__construct($owner, $project, $public);
 
         $this->geologicalUnits = new ArrayCollection();
+        $this->boundaries = new ArrayCollection();
     }
 
     /**
@@ -82,5 +92,39 @@ class GeologicalLayer extends ModelObject
     public function getGeologicalUnits()
     {
         return $this->geologicalUnits;
+    }
+
+    /**
+     * Add boundary
+     *
+     * @param \AppBundle\Entity\Boundary $boundary
+     *
+     * @return GeologicalLayer
+     */
+    public function addBoundary(\AppBundle\Entity\Boundary $boundary)
+    {
+        $this->boundaries[] = $boundary;
+
+        return $this;
+    }
+
+    /**
+     * Remove boundary
+     *
+     * @param \AppBundle\Entity\Boundary $boundary
+     */
+    public function removeBoundary(\AppBundle\Entity\Boundary $boundary)
+    {
+        $this->boundaries->removeElement($boundary);
+    }
+
+    /**
+     * Get boundaries
+     *
+     * @return \Doctrine\Common\Collections\Collection
+     */
+    public function getBoundaries()
+    {
+        return $this->boundaries;
     }
 }

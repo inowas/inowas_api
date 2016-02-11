@@ -189,4 +189,3 @@ class GeologicalUnit extends ModelObject
         return $point;
     }
 }
-
