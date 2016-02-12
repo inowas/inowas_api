@@ -3,8 +3,10 @@
 /etc/init.d/postgresql stop
 /etc/init.d/postgresql start
 
-DIR=/var/www/html
+DIR=$(pwd)
 SQL_DIR=$DIR/build/sql
+
+echo $DIR
 
 cd $DIR
 bin/console doctrine:database:drop --force
