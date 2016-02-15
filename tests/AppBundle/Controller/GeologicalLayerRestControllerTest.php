@@ -13,6 +13,7 @@ use AppBundle\Model\Point;
 use AppBundle\Model\ProjectFactory;
 use AppBundle\Model\PropertyFactory;
 use AppBundle\Model\PropertyTypeFactory;
+use AppBundle\Model\UserFactory;
 use Doctrine\Common\Collections\ArrayCollection;
 use JMS\Serializer\Serializer;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
@@ -50,14 +51,14 @@ class GeologicalLayerRestControllerTest extends WebTestCase
             ->get('jms_serializer')
         ;
 
-        $this->owner = new User();
+        $this->owner = UserFactory::create();
         $this->owner->setUsername($this->ownerUserName);
         $this->owner->setEmail($this->ownerUserName.'@email.com');
         $this->owner->setPassword('password');
         $this->owner->setEnabled(true);
         $this->entityManager->persist($this->owner);
 
-        $this->participant = new User();
+        $this->participant = UserFactory::create();
         $this->participant->setUsername($this->participantUserName);
         $this->participant->setEmail($this->participantUserName.'@email.com');
         $this->participant->setPassword('password');
