@@ -35,6 +35,14 @@ class Property
     private $name;
 
     /**
+     * @var string
+     *
+     * @ORM\Column(name="description", type="text", nullable=true)
+     * @JMS\Groups({"projectList", "projectDetails"})
+     */
+    private $description;
+
+    /**
      * @var ModelObject
      *
      * @ORM\ManyToOne(targetEntity="AppBundle\Entity\ModelObject", inversedBy="properties")
@@ -52,7 +60,7 @@ class Property
     private $propertyType;
 
     /**
-     * @var ArrayCollection Values
+     * @var ArrayCollection
      *
      * @ORM\OneToMany(targetEntity="AppBundle\Entity\AbstractValue", mappedBy="property", cascade={"persist", "remove"})
      */
@@ -313,5 +321,29 @@ class Property
         }
         $this->timeValues = $timeValues;
         return $this->timeValues;
+    }
+
+    /**
+     * Set description
+     *
+     * @param string $description
+     *
+     * @return Property
+     */
+    public function setDescription($description)
+    {
+        $this->description = $description;
+
+        return $this;
+    }
+
+    /**
+     * Get description
+     *
+     * @return string
+     */
+    public function getDescription()
+    {
+        return $this->description;
     }
 }
