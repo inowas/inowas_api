@@ -6,6 +6,7 @@ namespace AppBundle\Tests\Database;
 
 use AppBundle\Entity\User;
 use AppBundle\Entity\UserProfile;
+use AppBundle\Model\UserFactory;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
 /**
@@ -53,11 +54,12 @@ class RegisterUserTest extends WebTestCase
         $email = "testUser@domain.com";
         $password = "testsUsersPassword";
 
-        $user = $this->userManager->createUser();
+        $user = UserFactory::create();
         $user->setUsername($userName);
         $user->setEmail($email);
         $user->setPassword($password);
-        $this->userManager->updateUser($user);
+        $this->entityManager->persist($user);
+        $this->entityManager->flush();
 
         $user = $this->entityManager->getRepository('AppBundle:User')
             ->findOneBy(array(
@@ -80,36 +82,6 @@ class RegisterUserTest extends WebTestCase
             ));
         $this->assertNull($profile);
     }
-
-    /**
-     * TODO make a test of it
-     */
-    public function failAddSecondProfileToUser()
-    {
-        $userName = "testUser";
-        $email = "testUser@domain.com";
-        $password = "testsUsersPassword";
-
-        /**
-         * @var User $user
-         */
-        $user = $this->userManager->createUser();
-        $user->setUsername($userName);
-        $user->setEmail($email);
-        $user->setPassword($password);
-        $this->userManager->updateUser($user);
-
-        $profile = $user->getProfile();
-        $profile = clone $profile;
-        $this->entityManager->persist($profile);
-
-        $profile = new UserProfile($user);
-        $this->entityManager->persist($profile);
-
-        $profiles = $this->entityManager->getRepository('AppBundle:UserProfile')
-            ->findAll();
-    }
-
 
     /**
      * {@inheritDoc}

@@ -14,6 +14,7 @@ use AppBundle\Model\PropertyFactory;
 use AppBundle\Model\PropertyTimeValueFactory;
 use AppBundle\Model\PropertyTypeFactory;
 use AppBundle\Model\PropertyValueFactory;
+use AppBundle\Model\UserFactory;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
 class PropertyTest extends WebTestCase
@@ -61,7 +62,7 @@ class PropertyTest extends WebTestCase
         ;
 
         // Setup
-        $this->user = new User();
+        $this->user = UserFactory::create();
         $this->user->setUsername('testUser_2');
         $this->user->setEmail('testUsersEmail');
         $this->user->setPassword('usersPassword');
