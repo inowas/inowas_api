@@ -36,8 +36,20 @@ class GeologicalLayerRestControllerTest extends WebTestCase
     /** @var Project $project */
     protected $project;
 
-    protected $ownerUserName = "ownerUserName";
-    protected $participantUserName = "participantUserName";
+    /** @var array $ownerCredentials */
+    protected $ownerCredentials = array(
+        "userName" => "ownerUsername",
+        "email" => "ownerUsernamel@email.com",
+        "password" => "ownerUserPassword"
+    );
+
+    /** @var array $participantCredentials */
+    protected $participantCredentials = array(
+        "userName" => "participantUsername",
+        "email" => "participantUserName@email.com",
+        "password" => "participantUserPassword"
+    );
+
     protected $projectName = "TestLayersProject";
 
     public function setUp()
@@ -52,16 +64,17 @@ class GeologicalLayerRestControllerTest extends WebTestCase
         ;
 
         $this->owner = UserFactory::create();
-        $this->owner->setUsername($this->ownerUserName);
-        $this->owner->setEmail($this->ownerUserName.'@email.com');
-        $this->owner->setPassword('password');
+        $this->owner->setUsername($this->ownerCredentials['userName']);
+        $this->owner->setEmail($this->ownerCredentials['email']);
+        $this->owner->setPassword($this->ownerCredentials['password']);
         $this->owner->setEnabled(true);
         $this->entityManager->persist($this->owner);
+        $this->entityManager->flush();
 
         $this->participant = UserFactory::create();
-        $this->participant->setUsername($this->participantUserName);
-        $this->participant->setEmail($this->participantUserName.'@email.com');
-        $this->participant->setPassword('password');
+        $this->participant->setUsername($this->participantCredentials['userName']);
+        $this->participant->setEmail($this->participantCredentials['email']);
+        $this->participant->setPassword($this->participantCredentials['password']);
         $this->participant->setEnabled(true);
         $this->entityManager->persist($this->participant);
         $this->entityManager->flush();
