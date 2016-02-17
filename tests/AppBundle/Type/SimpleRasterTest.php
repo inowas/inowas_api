@@ -55,6 +55,9 @@ class SimpleRasterTest extends WebTestCase
 
         $values = $calculation->getValues();
         $this->assertEquals($submittedValues, $values);
+
+        $this->entityManager->remove($calculation);
+        $this->entityManager->flush();
     }
 
     /**
