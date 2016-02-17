@@ -2,6 +2,7 @@
 
 namespace AppBundle\Entity;
 
+use AppBundle\Model\CalculationFactory;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
 use JMS\Serializer\Annotation as JMS;
@@ -69,6 +70,13 @@ class Project
     private $modelObjects;
 
     /**
+     * @var Calculation
+     *
+     * @ORM\OneToOne(targetEntity="AppBundle\Entity\Calculation", inversedBy="project", cascade={"persist", "remove"})
+     */
+    private $calculation;
+
+    /**
      * @var boolean
      *
      * @ORM\Column(name="public", type="boolean")
@@ -97,6 +105,7 @@ class Project
      */
     public function __construct()
     {
+        $this->calculation = CalculationFactory::create();
         $this->participants = new ArrayCollection();
         $this->modelObjects = new ArrayCollection();
         $this->dateCreated = new \DateTime();
@@ -331,5 +340,29 @@ class Project
     public function updateDateModified()
     {
         $this->dateModified = new \DateTime();
+    }
+
+    /**
+     * Set calculation
+     *
+     * @param \AppBundle\Entity\Calculation $calculation
+     *
+     * @return Project
+     */
+    public function setCalculation(\AppBundle\Entity\Calculation $calculation = null)
+    {
+        $this->calculation = $calculation;
+
+        return $this;
+    }
+
+    /**
+     * Get calculation
+     *
+     * @return \AppBundle\Entity\Calculation
+     */
+    public function getCalculation()
+    {
+        return $this->calculation;
     }
 }
