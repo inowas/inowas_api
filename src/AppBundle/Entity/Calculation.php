@@ -35,6 +35,12 @@ class Calculation
      */
     private $status = 0;
 
+    /**
+     * @var ModelObject
+     *
+     * @ORM\OneToOne(targetEntity="ModelObject")
+     */
+    private $result;
 
     /**
      * Get id
@@ -92,5 +98,29 @@ class Calculation
     public function getProject()
     {
         return $this->project;
+    }
+
+    /**
+     * Set result
+     *
+     * @param \AppBundle\Entity\ModelObject $result
+     *
+     * @return Calculation
+     */
+    public function setResult(\AppBundle\Entity\ModelObject $result = null)
+    {
+        $this->result = $result;
+
+        return $this;
+    }
+
+    /**
+     * Get result
+     *
+     * @return \AppBundle\Entity\ModelObject
+     */
+    public function getResult()
+    {
+        return $this->result;
     }
 }
