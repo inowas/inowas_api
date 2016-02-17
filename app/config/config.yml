@@ -60,6 +60,7 @@ doctrine:
             point:      CrEOF\Spatial\DBAL\Types\Geometry\PointType
             polygon:    CrEOF\Spatial\DBAL\Types\Geometry\PolygonType
             linestring: CrEOF\Spatial\DBAL\Types\Geometry\LineStringType
+            simple_raster: AppBundle\Type\SimpleRaster
 
     orm:
         auto_generate_proxy_classes: "%kernel.debug%"

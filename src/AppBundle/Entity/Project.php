@@ -106,6 +106,7 @@ class Project
     public function __construct()
     {
         $this->calculation = CalculationFactory::create();
+        $this->calculation->setProject($this);
         $this->participants = new ArrayCollection();
         $this->modelObjects = new ArrayCollection();
         $this->dateCreated = new \DateTime();

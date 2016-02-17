@@ -43,6 +43,13 @@ class Calculation
     private $result;
 
     /**
+     * @var
+     *
+     * @ORM\Column(name="values", type="simple_raster", nullable=true)
+     */
+    private $values;
+
+    /**
      * Get id
      *
      * @return int
@@ -122,5 +129,29 @@ class Calculation
     public function getResult()
     {
         return $this->result;
+    }
+
+    /**
+     * Set values
+     *
+     * @param array $values
+     *
+     * @return Calculation
+     */
+    public function setValues($values)
+    {
+        $this->values = $values;
+
+        return $this;
+    }
+
+    /**
+     * Get values
+     *
+     * @return array
+     */
+    public function getValues()
+    {
+        return $this->values;
     }
 }

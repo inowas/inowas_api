@@ -28,7 +28,7 @@ class User extends BaseUser
     /**
      * @var UserProfile
      *
-     * @ORM\OneToOne(targetEntity="UserProfile", orphanRemoval=true, cascade={"persist", "remove"})
+     * @ORM\OneToOne(targetEntity="UserProfile", orphanRemoval=true, cascade={"persist", "detach", "remove"})
      * @ORM\JoinColumn(name="profile_id", referencedColumnName="id")
      * @JMS\Expose
      */
