@@ -92,7 +92,7 @@ class GeologicalLayerRestControllerTest extends WebTestCase
         $this->entityManager->persist($geologicalLayer2);
         $this->entityManager->flush();
 
-        $geologicalPoint = GeologicalPointFactory::setOwnerProjectNameAndPoint($this->owner, $this->project, 'GP1', new Point(1,2,3), true);
+        $geologicalPoint = GeologicalPointFactory::setOwnerProjectNameAndPoint($this->owner, $this->project, 'GP1', new Point(51.0500, 13.7333, 4326), true);
         $this->entityManager->persist($geologicalPoint);
 
         $geologicalUnit = GeologicalUnitFactory::setOwnerProjectNameAndPublic($this->owner, $this->project, 'GP1.1', true);
@@ -123,7 +123,7 @@ class GeologicalLayerRestControllerTest extends WebTestCase
         $this->entityManager->persist($geologicalUnit);
         $this->entityManager->flush();
 
-        $geologicalPoint = GeologicalPointFactory::setOwnerProjectNameAndPoint($this->owner, $this->project, 'GP2', new Point(10, 20, 30), true);
+        $geologicalPoint = GeologicalPointFactory::setOwnerProjectNameAndPoint($this->owner, $this->project, 'GP2', new Point(51.0500, 13.7333, 4326), true);
         $geologicalUnit = GeologicalUnitFactory::setOwnerProjectNameAndPublic($this->owner, $this->project, 'GP2.1', true);
         $geologicalUnit->setGeologicalPoint($geologicalPoint);
         $geologicalUnit->setTopElevation(100);
@@ -134,8 +134,6 @@ class GeologicalLayerRestControllerTest extends WebTestCase
         $this->entityManager->persist($geologicalPoint);
 
         $this->entityManager->flush();
-
-
     }
 
     /**
