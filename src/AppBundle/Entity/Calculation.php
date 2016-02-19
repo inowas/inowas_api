@@ -50,6 +50,21 @@ class Calculation
     private $values;
 
     /**
+     * @var
+     *
+     * @ORM\OneToOne(targetEntity="AppBundle\Entity\Raster", cascade={"persist", "remove"})
+     */
+    private $raster;
+
+    /**
+     * Calculation constructor.
+     */
+    public function __construct()
+    {
+        $this->raster = new Raster();
+    }
+
+    /**
      * Get id
      *
      * @return int
@@ -153,5 +168,29 @@ class Calculation
     public function getValues()
     {
         return $this->values;
+    }
+
+    /**
+     * Set raster
+     *
+     * @param raster $raster
+     *
+     * @return Calculation
+     */
+    public function setRaster($raster)
+    {
+        $this->raster = $raster;
+
+        return $this;
+    }
+
+    /**
+     * Get raster
+     *
+     * @return raster
+     */
+    public function getRaster()
+    {
+        return $this->raster;
     }
 }
