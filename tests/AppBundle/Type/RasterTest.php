@@ -54,8 +54,8 @@ class RasterTest extends WebTestCase
     {
         $raster = RasterFactory::create();
 
-        $raster->setWidth(100);
-        $raster->setHeight(100);
+        $raster->setWidth(10);
+        $raster->setHeight(10);
         $raster->setUpperLeftX(0.0005);
         $raster->setUpperLeftY(0.0005);
         $raster->setScaleX(1);
@@ -79,8 +79,8 @@ class RasterTest extends WebTestCase
     {
         $raster = RasterFactory::create();
 
-        $raster->setWidth(100);
-        $raster->setHeight(100);
+        $raster->setWidth(10);
+        $raster->setHeight(10);
         $raster->setUpperLeftX(0.0005);
         $raster->setUpperLeftY(0.0005);
         $raster->setScaleX(1);
