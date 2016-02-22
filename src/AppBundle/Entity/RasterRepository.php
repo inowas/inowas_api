@@ -123,24 +123,16 @@ class RasterRepository extends EntityRepository
     }
 
     /**
-     * @return bool
+     * @param $sqlExpr
+     * @return array
      * @throws \Doctrine\DBAL\DBALException
      */
-    public function conversionTestPlainSQL()
+    public function executePlainSQL($sqlExpr)
     {
-        $sql = "
-            SELECT st_astext(
-              st_transform(
-                st_geometryfromtext('POINT (12.9 50.8)', 4326), 900913
-              )
-            ) as test
-        ";
-
-        $stmt = $this->getEntityManager()->getConnection()->prepare($sql);
+        $stmt = $this->getEntityManager()->getConnection()->prepare($sqlExpr);
         $stmt->execute();
 
-        //return $stmt->fetchAll();
-        return true;
+        return $stmt->fetchAll();
     }
 
     /**
