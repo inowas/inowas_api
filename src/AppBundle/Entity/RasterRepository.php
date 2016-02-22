@@ -93,7 +93,6 @@ class RasterRepository extends EntityRepository
      */
     public function addDataToRaster(Raster $raster)
     {
-
         /** @var RasterObject $rasterObj */
         $rasterObj = $raster->getRaster();
 
@@ -120,6 +119,34 @@ class RasterRepository extends EntityRepository
 
         //return $stmt->fetchAll();
         return true;
+    }
+
+    public function getValuesFromRaster($id)
+    {
+        $tableName = $this->getEntityManager()
+            ->getClassMetadata('AppBundle:Raster')
+            ->getTableName();
+
+        $sql = "
+            SELECT x, y, ST_VALUE(rast, 1, x,y) AS b1val
+            FROM ".$tableName."
+            CROSS JOIN
+                generate_series(1, 1000) As x CROSS JOIN generate_series(1, 1000) As y
+                WHERE id = ".$id." AND x <= ST_Width(rast) AND y <= ST_Height(rast);
+        ";
+
+        $stmt = $this->getEntityManager()->getConnection()->prepare($sql);
+        $stmt->execute();
+
+        $xyResults = $stmt->fetchAll();
+        $data = array();
+
+        foreach ($xyResults as $xyResult)
+        {
+            $data[$xyResult['y']-1][$xyResult['x']-1] = intval($xyResult['b1val']);
+        }
+
+        return $data;
     }
 
     /**

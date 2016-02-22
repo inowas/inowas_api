@@ -186,6 +186,12 @@ class RasterTest extends WebTestCase
         $this->assertEquals($result[0]["isoutdb"], false);
         $this->assertEquals($result[0]["path"], null);
 
+        $result = $this->entityManager->getRepository('AppBundle:Raster')
+            ->getValuesFromRaster($this->rasterWithData->getId());
+
+        $this->assertEquals($result, $this->rasterWithData->getRaster()->getBand()->getData());
+
+
         $this->entityManager->remove($this->rasterWithData);
         $this->entityManager->flush();
     }

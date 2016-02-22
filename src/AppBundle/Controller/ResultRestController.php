@@ -63,10 +63,7 @@ class ResultRestController extends FOSRestController
 
         if (!$area)
         {
-            throw $this->createNotFoundException('Area with id='.$id.' not found.');
+            throw $this->createNotFoundException('Area with id='.$paramFetcher->get('id').' not found.');
         }
-
-
-
     }
 }

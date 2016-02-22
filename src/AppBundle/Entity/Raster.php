@@ -71,7 +71,7 @@ class Raster
     /**
      * Get raster
      *
-     * @return Raster
+     * @return RasterModel
      */
     public function getRaster()
     {
