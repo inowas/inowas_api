@@ -2,6 +2,7 @@
 
 namespace AppBundle\Entity;
 
+use AppBundle\Model\Raster as RasterObject;
 use Doctrine\ORM\EntityRepository;
 use Doctrine\ORM\Query;
 
@@ -16,25 +17,28 @@ class RasterRepository extends EntityRepository
 
     /**
      * @param Raster $raster
-     * @return array
+     * @return bool
      * @throws \Doctrine\DBAL\DBALException
      */
     public function setEmptyRaster(Raster $raster)
     {
+        /** @var RasterObject $rasterObj */
+        $rasterObj = $raster->getRaster();
+
         $tableName = $this->getEntityManager()->getClassMetadata('AppBundle:Raster')->getTableName();
 
         $sql = "
             UPDATE ".$tableName."
             SET rast = ST_MakeEmptyRaster(
-                ".$raster->getWidth().",
-                ".$raster->getHeight().",
-                ".$raster->getUpperLeftX().",
-                ".$raster->getUpperLeftY().",
-                ".$raster->getScaleX().",
-                ".$raster->getScaleY().",
-                ".$raster->getSkewX().",
-                ".$raster->getSkewY().",
-                ".$raster->getSrid()."
+                ".$rasterObj->getWidth().",
+                ".$rasterObj->getHeight().",
+                ".$rasterObj->getUpperLeftX().",
+                ".$rasterObj->getUpperLeftY().",
+                ".$rasterObj->getScaleX().",
+                ".$rasterObj->getScaleY().",
+                ".$rasterObj->getSkewX().",
+                ".$rasterObj->getSkewY().",
+                ".$rasterObj->getSrid()."
             )
             WHERE id = ".$raster->getId()."
         ";
@@ -42,16 +46,19 @@ class RasterRepository extends EntityRepository
         $stmt = $this->getEntityManager()->getConnection()->prepare($sql);
         $stmt->execute();
 
-        return $stmt->fetchAll();
+        //return $stmt->fetchAll();
+        return true;
     }
 
     /**
      * @param Raster $raster
-     * @return array
+     * @return bool
      * @throws \Doctrine\DBAL\DBALException
      */
     public function setEmptyRasterAndAddBand(Raster $raster)
     {
+        /** @var RasterObject $rasterObj */
+        $rasterObj = $raster->getRaster();
         $tableName = $this->getEntityManager()->getClassMetadata('AppBundle:Raster')->getTableName();
 
         $this->setEmptyRaster($raster);
@@ -62,10 +69,10 @@ class RasterRepository extends EntityRepository
                 rast,
                 ARRAY[
 	            	ROW(
-	            	    1,
-                        ".$raster->getBandPixelType().",
-                        ".$raster->getBandInitValue().",
-                        ".$raster->getBandNoDataVal()."
+	            	    ".$rasterObj->getBand()->getId().",
+                        ".$rasterObj->getBand()->getPixelType().",
+                        ".$rasterObj->getBand()->getInitValue().",
+                        ".$rasterObj->getBand()->getNoDataVal()."
                     )
 			    ]::addbandarg[]
             )
@@ -75,34 +82,48 @@ class RasterRepository extends EntityRepository
         $stmt = $this->getEntityManager()->getConnection()->prepare($sql);
         $stmt->execute();
 
-        return $stmt->fetchAll();
+        //return $stmt->fetchAll();
+        return true;
     }
 
     /**
      * @param Raster $raster
-     * @param int $rasterBandId
-     * @return array
+     * @return bool
      * @throws \Doctrine\DBAL\DBALException
      */
-    public function addSimpleRasterToRaster(Raster $raster, $rasterBandId = 1)
+    public function addDataToRaster(Raster $raster)
     {
-        $tableName = $this->getEntityManager()->getClassMetadata('AppBundle:Raster')->getTableName();
+
+        /** @var RasterObject $rasterObj */
+        $rasterObj = $raster->getRaster();
+
+        $tableName = $this->getEntityManager()
+            ->getClassMetadata('AppBundle:Raster')
+            ->getTableName();
+
         $this->setEmptyRasterAndAddBand($raster);
 
         $sql = "
             UPDATE ".$tableName."
-            SET rast = ST_SetValues(rast, ".$rasterBandId.", 1, 1, (select simple_raster))
+            SET rast = ST_SetValues(
+                rast,
+                ".$rasterObj->getBand()->getId().",
+                1,
+                1,
+                ".$this->conversionArrayToSQL($rasterObj->getBand()->getData())."
+            )
             WHERE id = ".$raster->getId()."
         ";
 
         $stmt = $this->getEntityManager()->getConnection()->prepare($sql);
         $stmt->execute();
 
-        return $stmt->fetchAll();
+        //return $stmt->fetchAll();
+        return true;
     }
 
     /**
-     * @return array
+     * @return bool
      * @throws \Doctrine\DBAL\DBALException
      */
     public function conversionTestPlainSQL()
@@ -117,16 +138,46 @@ class RasterRepository extends EntityRepository
 
         $stmt = $this->getEntityManager()->getConnection()->prepare($sql);
         $stmt->execute();
-        return $stmt->fetchAll();
+
+        //return $stmt->fetchAll();
+        return true;
     }
 
-    public function conversionTestDQL()
+    /**
+     * @return bool
+     */
+    public function conversionTestDQL($sqlExpr)
     {
         $query = $this->getEntityManager()
-            ->createQuery('SELECT st_geomfromtext(\'POINT (12.9 50.8)\', 4326) FROM AppBundle\Entity\Raster');
+            ->createQuery('SELECT '.$sqlExpr.' FROM AppBundle\Entity\Raster');
 
         $result = $query->getResult();
         return $result;
     }
 
+    /**
+     * @param $rows
+     * @return string
+     */
+    private function conversionArrayToSQL($rows)
+    {
+        //ARRAY[[9, 9], [9, 9]]::double precision[][]
+
+        $value = "";
+
+        if (is_array($rows))
+        {
+            $value .= 'ARRAY[';
+            foreach ($rows as $row)
+            {
+                $value .= '[';
+                $value .= sprintf('%s', implode(",", $row));
+                $value .= '],';
+            }
+            $value = rtrim($value, ",");
+            $value .= ']::double precision[][]';
+        }
+
+        return $value;
+    }
 }

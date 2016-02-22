@@ -56,11 +56,11 @@ doctrine:
         #     path:     "%database_path%"
 
         types:
-            point:      CrEOF\Spatial\DBAL\Types\Geography\PointType
-            polygon:    CrEOF\Spatial\DBAL\Types\Geography\PolygonType
-            linestring: CrEOF\Spatial\DBAL\Types\Geography\LineStringType
-            simple_raster: AppBundle\Type\SimpleRaster
-            raster: AppBundle\Type\Raster
+            point:          CrEOF\Spatial\DBAL\Types\Geography\PointType
+            polygon:        CrEOF\Spatial\DBAL\Types\Geography\PolygonType
+            linestring:     CrEOF\Spatial\DBAL\Types\Geography\LineStringType
+            raster:         AppBundle\Type\RasterType
+            simple_raster:  AppBundle\Type\SimpleRaster
 
     orm:
         auto_generate_proxy_classes: "%kernel.debug%"

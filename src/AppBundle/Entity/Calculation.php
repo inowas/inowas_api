@@ -43,25 +43,10 @@ class Calculation
     private $result;
 
     /**
-     * @var
-     *
-     * @ORM\Column(name="values", type="simple_raster", nullable=true)
-     */
-    private $values;
-
-    /**
-     * @var
-     *
-     * @ORM\OneToOne(targetEntity="AppBundle\Entity\Raster", cascade={"persist", "remove"})
-     */
-    private $raster;
-
-    /**
      * Calculation constructor.
      */
     public function __construct()
     {
-        $this->raster = new Raster();
     }
 
     /**
@@ -134,63 +119,5 @@ class Calculation
         $this->result = $result;
 
         return $this;
-    }
-
-    /**
-     * Get result
-     *
-     * @return \AppBundle\Entity\ModelObject
-     */
-    public function getResult()
-    {
-        return $this->result;
-    }
-
-    /**
-     * Set values
-     *
-     * @param array $values
-     *
-     * @return Calculation
-     */
-    public function setValues($values)
-    {
-        $this->values = $values;
-
-        return $this;
-    }
-
-    /**
-     * Get values
-     *
-     * @return array
-     */
-    public function getValues()
-    {
-        return $this->values;
-    }
-
-    /**
-     * Set raster
-     *
-     * @param raster $raster
-     *
-     * @return Calculation
-     */
-    public function setRaster($raster)
-    {
-        $this->raster = $raster;
-
-        return $this;
-    }
-
-    /**
-     * Get raster
-     *
-     * @return raster
-     */
-    public function getRaster()
-    {
-        return $this->raster;
     }
 }
