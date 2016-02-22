@@ -30,6 +30,13 @@ class PropertyTimeValue extends AbstractValue
     private $value;
 
     /**
+     * @var Raster $raster
+     *
+     * @ORM\OneToOne(targetEntity="AppBundle\Entity\Raster", cascade={"persist", "remove"})
+     */
+    private $raster;
+
+    /**
      * Set timeStamp
      *
      * @param \DateTime $datetime
@@ -118,5 +125,29 @@ class PropertyTimeValue extends AbstractValue
         return array(
             TimeValueFactory::setDateTimeAndValue($this->getDatetime(), $this->value)
         );
+    }
+
+    /**
+     * Set raster
+     *
+     * @param \AppBundle\Entity\Raster $raster
+     *
+     * @return PropertyTimeValue
+     */
+    public function setRaster(\AppBundle\Entity\Raster $raster = null)
+    {
+        $this->raster = $raster;
+
+        return $this;
+    }
+
+    /**
+     * Get raster
+     *
+     * @return \AppBundle\Entity\Raster
+     */
+    public function getRaster()
+    {
+        return $this->raster;
     }
 }

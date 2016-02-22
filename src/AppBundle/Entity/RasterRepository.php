@@ -91,7 +91,7 @@ class RasterRepository extends EntityRepository
      * @return bool
      * @throws \Doctrine\DBAL\DBALException
      */
-    public function addDataToRaster(Raster $raster)
+    public function addRasterWithData(Raster $raster)
     {
         /** @var RasterObject $rasterObj */
         $rasterObj = $raster->getRaster();
@@ -163,7 +163,8 @@ class RasterRepository extends EntityRepository
     }
 
     /**
-     * @return bool
+     * @param $sqlExpr
+     * @return array
      */
     public function conversionTestDQL($sqlExpr)
     {

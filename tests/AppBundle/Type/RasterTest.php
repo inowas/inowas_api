@@ -157,7 +157,7 @@ class RasterTest extends WebTestCase
         $this->entityManager->flush();
 
         $result = $this->entityManager->getRepository('AppBundle:Raster')
-            ->addDataToRaster($this->rasterWithData);
+            ->addRasterWithData($this->rasterWithData);
 
         $this->assertTrue($result);
 

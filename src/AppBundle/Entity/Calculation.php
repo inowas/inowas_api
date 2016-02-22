@@ -120,4 +120,14 @@ class Calculation
 
         return $this;
     }
+
+    /**
+     * Get result
+     *
+     * @return \AppBundle\Entity\ModelObject
+     */
+    public function getResult()
+    {
+        return $this->result;
+    }
 }

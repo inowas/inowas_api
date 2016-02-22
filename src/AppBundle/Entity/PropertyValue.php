@@ -21,6 +21,12 @@ class PropertyValue extends AbstractValue
      */
     private $value;
 
+    /**
+     * @var Raster $raster
+     *
+     * @ORM\OneToOne(targetEntity="AppBundle\Entity\Raster", cascade={"persist", "remove"})
+     */
+    private $raster;
 
     /**
      * Set value
@@ -65,5 +71,29 @@ class PropertyValue extends AbstractValue
         return array(
             TimeValueFactory::setValue($this->value)
         );
+    }
+
+    /**
+     * Set raster
+     *
+     * @param \AppBundle\Entity\Raster $raster
+     *
+     * @return PropertyValue
+     */
+    public function setRaster(\AppBundle\Entity\Raster $raster = null)
+    {
+        $this->raster = $raster;
+
+        return $this;
+    }
+
+    /**
+     * Get raster
+     *
+     * @return \AppBundle\Entity\Raster
+     */
+    public function getRaster()
+    {
+        return $this->raster;
     }
 }
