@@ -93,13 +93,19 @@ class RasterTest extends WebTestCase
     }
 
     /**
-     *
+     * For this test the table has to have some content
      */
     public function testConversionWithDQL()
     {
+        $this->entityManager->persist($this->emptyRaster);
+        $this->entityManager->flush();
+
         $result = $this->entityManager->getRepository('AppBundle:Raster')
             ->conversionTestDQL('st_geomfromtext(\'POINT (12.9 50.8)\', 4326)');
         $this->assertContains($result[0][1], "0101000020E6100000CDCCCCCCCCCC29406666666666664940");
+
+        $this->entityManager->remove($this->emptyRaster);
+        $this->entityManager->flush();
     }
 
     /**
