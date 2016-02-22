@@ -39,7 +39,7 @@ class RasterTest extends WebTestCase
         $emptyRasterObject = RasterFactory::createModel();
         $emptyRasterObject
             ->setWidth(10)
-            ->setHeight(10)
+            ->setHeight(11)
             ->setUpperLeftX(0.0005)
             ->setUpperLeftY(0.0005)
             ->setScaleX(1)
@@ -53,16 +53,17 @@ class RasterTest extends WebTestCase
         $rasterBand->setInitValue(200);
         $rasterBand->setNoDataVal(-9999);
         $rasterBand->setData(array(
-            array(10,1,2,3,4,5,6,7,8,19),
-            array(10,1,2,3,4,5,6,7,8,19),
-            array(10,1,2,3,4,5,6,7,8,19),
-            array(10,1,2,3,4,5,6,7,8,19),
-            array(10,1,2,3,4,5,6,7,8,19),
-            array(10,1,2,3,4,5,6,7,8,19),
-            array(10,1,2,3,4,5,6,7,8,19),
-            array(10,1,2,3,4,5,6,7,8,19),
-            array(10,1,2,3,4,5,6,7,8,19),
-            array(10,1,2,3,4,5,6,7,8,19)
+            array(0,1,2,3,4,5,6,7,8,9),
+            array(0,1,2,3,4,5,6,7,8,9),
+            array(0,1,2,3,4,5,6,7,8,9),
+            array(0,1,2,3,4,5,6,7,8,9),
+            array(0,1,2,3,7,5,6,7,8,9),
+            array(0,1,2,3,4,5,6,7,8,9),
+            array(0,1,2,3,4,5,6,7,8,9),
+            array(0,1,2,3,4,5,6,7,8,9),
+            array(0,1,2,3,4,5,6,7,8,9),
+            array(0,1,2,3,4,5,6,7,8,9),
+            array(0,1,2,3,4,5,6,7,8,9)
         ));
 
         $rasterObjectWithData = clone $emptyRasterObject;
@@ -135,7 +136,7 @@ class RasterTest extends WebTestCase
         $this->assertEquals($result[0]["upperleftx"], 0.0005);
         $this->assertEquals($result[0]["upperlefty"], 0.0005);
         $this->assertEquals($result[0]["width"], 10);
-        $this->assertEquals($result[0]["height"], 10);
+        $this->assertEquals($result[0]["height"], 11);
         $this->assertEquals($result[0]["scalex"], 1);
         $this->assertEquals($result[0]["scaley"], 1);
         $this->assertEquals($result[0]["skewx"], 0);
@@ -190,7 +191,6 @@ class RasterTest extends WebTestCase
             ->getValuesFromRaster($this->rasterWithData->getId());
 
         $this->assertEquals($result, $this->rasterWithData->getRaster()->getBand()->getData());
-
 
         $this->entityManager->remove($this->rasterWithData);
         $this->entityManager->flush();
