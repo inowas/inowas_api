@@ -4,7 +4,6 @@ namespace AppBundle\Controller;
 
 use AppBundle\Model\PropertyFactory;
 use AppBundle\Model\PropertyTimeValueFactory;
-use AppBundle\Model\PropertyTypeFactory;
 use AppBundle\Model\PropertyValueFactory;
 use AppBundle\Model\RasterBandFactory;
 use AppBundle\Model\RasterFactory;
@@ -43,6 +42,7 @@ class ResultRestController extends FOSRestController
      * @param ParamFetcher $paramFetcher
      *
      * @RequestParam(name="id", nullable=false, strict=true, description="Area-Id (Modelobject) where to store the results")
+     * @RequestParam(name="propertyType", nullable=false, strict=true, description="Name of PropertyType")
      * @RequestParam(name="width", nullable=false, strict=true, description="Dimension width")
      * @RequestParam(name="height", nullable=false, strict=true, description="Dimension height")
      * @RequestParam(name="upperLeftX", nullable=false, strict=true, description="UpperLeft corner X")
@@ -73,6 +73,20 @@ class ResultRestController extends FOSRestController
             throw $this->createNotFoundException('Area with id='.$paramFetcher->get('id').' not found.');
         }
 
+        $propertyType = $this->getDoctrine()->getRepository('AppBundle:PropertyType')
+            ->findOneBy(array(
+                'name' => $paramFetcher->get('propertyType')
+            ));
+
+        if (!$propertyType)
+        {
+            throw $this->createNotFoundException('PropertyType with name='.$paramFetcher->get('propertyType').' not found.');
+        }
+
+
+        /*
+         * Let's create a RasterObject
+         */
         $rasterObject = RasterFactory::createModel();
         $rasterObject
             ->setWidth($paramFetcher->get('width'))
@@ -86,6 +100,9 @@ class ResultRestController extends FOSRestController
             ->setSrid($paramFetcher->get('srid'))
         ;
 
+        /*
+         * Let's create a Band with values
+         */
         $rasterBand = RasterBandFactory::create();
         $rasterBand
             ->setPixelType($paramFetcher->get("bandPixelType"))
@@ -93,25 +110,25 @@ class ResultRestController extends FOSRestController
             ->setNoDataVal($paramFetcher->get("bandNoDataVal"))
             ->setData(json_decode($paramFetcher->get("data")));
 
-        $property = PropertyFactory::setTypeAndModelObject(PropertyTypeFactory::setName('gwHead'), $area);
 
+        $rasterObject->setBand($rasterBand);
 
-        if ($paramFetcher->get('date') == null)
-        {
-            $value = PropertyValueFactory::create();
-        } else {
-            $value = PropertyTimeValueFactory::create();
-            $value->setDatetime(new \DateTime($paramFetcher->get('date')));
-        }
+        /*
+         * Let's create a property and a value-object
+         */
+        $property = PropertyFactory::setTypeAndModelObject($propertyType, $area);
+        $property->setName('Result');
+        is_null($paramFetcher->get('date')) ? $value = PropertyValueFactory::create() : $value = PropertyTimeValueFactory::createWithTime(new \DateTime($paramFetcher->get('date')));
 
-        // We have to create the row in the rasters-table first
+        // We have to create the empty row in the rasters-table to get the id
         $rasterEntity = RasterFactory::createEntity();
+        $rasterEntity->setRaster($rasterObject);
         $this->getDoctrine()->getManager()->persist($rasterEntity);
         $this->getDoctrine()->getManager()->flush();
 
-        $value->setRaster($rasterEntity);
-        $property->addValue($value);
         $area->addProperty($property);
+        $property->addValue($value);
+        $value->setRaster($rasterEntity);
 
         $this->getDoctrine()->getManager()->persist($value);
         $this->getDoctrine()->getManager()->persist($property);
@@ -120,5 +137,10 @@ class ResultRestController extends FOSRestController
 
         $this->getDoctrine()->getRepository('AppBundle:Raster')
             ->addRasterWithData($rasterEntity);
+
+        $view = View::create();
+        $view->setData($rasterEntity)->setStatusCode(200);
+
+        return $view;
     }
 }

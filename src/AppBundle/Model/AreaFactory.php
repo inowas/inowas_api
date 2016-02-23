@@ -17,6 +17,22 @@ class AreaFactory
         return new Area();
     }
 
+    /**
+     * @return Area
+     */
+    public static function create()
+    {
+        return new Area();
+    }
+
+    /**
+     * @param UserInterface|null $owner
+     * @param Project|null $project
+     * @param string $name
+     * @param AreaType|null $type
+     * @param bool $public
+     * @return Area
+     */
     public static function setOwnerProjectNameTypeAndPublic(UserInterface $owner = null, Project $project = null, $name = "", AreaType $type=null, $public = false)
     {
         $area = new Area();

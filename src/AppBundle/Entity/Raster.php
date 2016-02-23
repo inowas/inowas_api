@@ -41,6 +41,7 @@ class Raster
      * @var RasterModel $raster
      *
      * @ORM\Column(name="rast", type="raster", nullable=true)
+     * @JMS\Type("AppBundle\Model\Raster")
      */
     private $raster;
 

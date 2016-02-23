@@ -38,4 +38,14 @@ class PropertyTimeValueFactory
     {
         return new PropertyTimeValue();
     }
+
+    /**
+     * @return PropertyTimeValue
+     */
+    public static function createWithTime(\DateTime $dateTime)
+    {
+        $propertyTimeValue = new PropertyTimeValue();
+        $propertyTimeValue->setDatetime($dateTime);
+        return $propertyTimeValue;
+    }
 }

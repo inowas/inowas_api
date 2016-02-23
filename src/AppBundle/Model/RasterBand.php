@@ -2,25 +2,31 @@
 
 namespace AppBundle\Model;
 
+use JMS\Serializer\Annotation as JMS;
+
 class RasterBand
 {
     /**
      * @var float[][]
+     * @JMS\Type("array<array>")
      */
     private $data;
 
     /**
      * @var string
+     * @JMS\Type("string")
      */
     private $pixelType;
 
     /**
      * @var float
+     * @JMS\Type("float")
      */
     private $initValue;
 
     /**
      * @var float
+     * @JMS\Type("float")
      */
     private $noDataVal;
 

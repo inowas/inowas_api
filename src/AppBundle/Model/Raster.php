@@ -2,6 +2,8 @@
 
 namespace AppBundle\Model;
 
+use JMS\Serializer\Annotation as JMS;
+
 /**
  * Raster
  */
@@ -14,56 +16,67 @@ class Raster
 
     /**
      * @var integer
+     * @JMS\Type("integer")
      */
     private $width;
 
     /**
      * @var integer
+     * @JMS\Type("integer")
      */
     private $height;
 
     /**
      * @var float
+     * @JMS\Type("float")
      */
     private $upperLeftX;
 
     /**
      * @var float
+     * @JMS\Type("float")
      */
     private $upperLeftY;
 
     /**
      * @var float
+     * @JMS\Type("float")
      */
     private $scaleX;
 
     /**
      * @var float
+     * @JMS\Type("float")
      */
     private $scaleY;
 
     /**
      * @var float
+     * @JMS\Type("float")
      */
     private $skewX;
 
     /**
      * @var float
+     * @JMS\Type("float")
      */
     private $skewY;
 
     /**
      * @var float
+     * @JMS\Type("float")
      */
     private $pixelSize;
 
     /**
      * @var integer
+     * @JMS\Type("integer")
      */
     private $srid;
 
     /**
      * @var RasterBand
+     * @JMS\Type("AppBundle\Model\RasterBand")
      */
     private $band;
 
