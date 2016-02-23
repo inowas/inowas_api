@@ -2,8 +2,10 @@
 
 namespace AppBundle\Controller;
 
+use AppBundle\Model\AreaFactory;
 use AppBundle\Model\PropertyFactory;
 use AppBundle\Model\PropertyTimeValueFactory;
+use AppBundle\Model\PropertyTypeFactory;
 use AppBundle\Model\PropertyValueFactory;
 use AppBundle\Model\RasterBandFactory;
 use AppBundle\Model\RasterFactory;
@@ -70,7 +72,10 @@ class ResultRestController extends FOSRestController
 
         if (!$area)
         {
-            throw $this->createNotFoundException('Area with id='.$paramFetcher->get('id').' not found.');
+            $area = AreaFactory::create();
+            $this->getDoctrine()->getManager()->persist($area);
+            $this->getDoctrine()->getManager()->flush();
+            //throw $this->createNotFoundException('Area with id='.$paramFetcher->get('id').' not found.');
         }
 
         $propertyType = $this->getDoctrine()->getRepository('AppBundle:PropertyType')
@@ -80,9 +85,11 @@ class ResultRestController extends FOSRestController
 
         if (!$propertyType)
         {
-            throw $this->createNotFoundException('PropertyType with name='.$paramFetcher->get('propertyType').' not found.');
+            $propertyType = PropertyTypeFactory::setName($paramFetcher->get('propertyType'));
+            $this->getDoctrine()->getManager()->persist($propertyType);
+            $this->getDoctrine()->getManager()->flush();
+            //throw $this->createNotFoundException('PropertyType with name='.$paramFetcher->get('propertyType').' not found.');
         }
-
 
         /*
          * Let's create a RasterObject
@@ -118,8 +125,6 @@ class ResultRestController extends FOSRestController
          */
         $property = PropertyFactory::setTypeAndModelObject($propertyType, $area);
         $property->setName('Result');
-
-        dump($paramFetcher->get('date'));
 
 
         is_null($paramFetcher->get('date')) ? $value = PropertyValueFactory::create() : $value = PropertyTimeValueFactory::createWithTime(new \DateTime($paramFetcher->get('date')));

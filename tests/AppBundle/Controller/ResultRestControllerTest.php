@@ -87,12 +87,14 @@ class ResultRestControllerTest extends WebTestCase
 
     public function testPostResult()
     {
-        $this->entityManager->persist($this->area);
-        $this->entityManager->flush();
+        //$this->entityManager->persist($this->area);
+        //$this->entityManager->flush();
+
+        $areaId = 2;
 
         $propertyType = PropertyTypeFactory::setName('gwHead');
-        $this->entityManager->persist($propertyType);
-        $this->entityManager->flush();
+        //$this->entityManager->persist($propertyType);
+        //$this->entityManager->flush();
 
         $date = new \DateTime('now');
 
@@ -101,7 +103,7 @@ class ResultRestControllerTest extends WebTestCase
             'POST',
             '/api/results.json',
             array(
-                'id' => $this->area->getId(),
+                'id' => $areaId,
                 'propertyType' => $propertyType->getName(),
                 'width' => $this->rasterObject->getWidth(),
                 'height' => $this->rasterObject->getHeight(),
@@ -120,6 +122,7 @@ class ResultRestControllerTest extends WebTestCase
             )
         );
 
+        dump($client->getResponse()->getContent());
         $this->assertEquals(200, $client->getResponse()->getStatusCode());
         $client->getResponse();
 
@@ -129,11 +132,11 @@ class ResultRestControllerTest extends WebTestCase
 
         $area = $this->entityManager->getRepository('AppBundle:Area')
             ->findOneBy(array(
-                "id" => $this->area->getId()
+                "id" => $areaId
             ));
 
-        $this->entityManager->remove($area);
-        $this->entityManager->flush();
+        //$this->entityManager->remove($area);
+        //$this->entityManager->flush();
     }
 
     /**
