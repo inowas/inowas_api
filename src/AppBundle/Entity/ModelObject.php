@@ -62,14 +62,14 @@ abstract class ModelObject
      * @var User
      *
      * @ORM\ManyToOne(targetEntity="User", inversedBy="ownedModelObjects")
-     * @ORM\JoinColumn(name="owner_id", referencedColumnName="id", onDelete="cascade")
+     * @ORM\JoinColumn(name="owner_id", referencedColumnName="id", onDelete="CASCADE")
      */
     protected $owner;
 
     /**
      * @var ArrayCollection Property
      *
-     * @ORM\OneToMany(targetEntity="AppBundle\Entity\Property", mappedBy="modelObject")
+     * @ORM\OneToMany(targetEntity="AppBundle\Entity\Property", mappedBy="modelObject", cascade={"persist", "remove"})
      */
     protected $properties;
 

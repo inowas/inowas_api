@@ -37,7 +37,7 @@ abstract class AbstractValue implements PropertyValueInterface
      * @var ArrayCollection Property
      *
      * @ORM\ManyToOne(targetEntity="AppBundle\Entity\Property", inversedBy="values")
-     * @ORM\JoinColumn(name="property", referencedColumnName="id")
+     * @ORM\JoinColumn(name="property_id", referencedColumnName="id", onDelete="CASCADE")
      */
     private $property;
 

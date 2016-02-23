@@ -127,7 +127,9 @@ class ResultRestController extends FOSRestController
         $this->getDoctrine()->getManager()->flush();
 
         $area->addProperty($property);
+        $property->setModelObject($area);
         $property->addValue($value);
+        $value->setProperty($property);
         $value->setRaster($rasterEntity);
 
         $this->getDoctrine()->getManager()->persist($value);

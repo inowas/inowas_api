@@ -62,7 +62,7 @@ class Property
     /**
      * @var ArrayCollection
      *
-     * @ORM\OneToMany(targetEntity="AppBundle\Entity\AbstractValue", mappedBy="property", cascade={"persist", "remove"})
+     * @ORM\OneToMany(targetEntity="AppBundle\Entity\AbstractValue", mappedBy="property", cascade={"persist", "remove"}, orphanRemoval=true)
      */
     private $values;
 
