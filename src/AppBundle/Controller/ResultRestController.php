@@ -118,6 +118,10 @@ class ResultRestController extends FOSRestController
          */
         $property = PropertyFactory::setTypeAndModelObject($propertyType, $area);
         $property->setName('Result');
+
+        dump($paramFetcher->get('date'));
+
+
         is_null($paramFetcher->get('date')) ? $value = PropertyValueFactory::create() : $value = PropertyTimeValueFactory::createWithTime(new \DateTime($paramFetcher->get('date')));
 
         // We have to create the empty row in the rasters-table to get the id

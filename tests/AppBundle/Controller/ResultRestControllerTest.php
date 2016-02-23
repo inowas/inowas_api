@@ -94,6 +94,7 @@ class ResultRestControllerTest extends WebTestCase
         $this->entityManager->persist($propertyType);
         $this->entityManager->flush();
 
+        $date = new \DateTime('now');
 
         $client = static::createClient();
         $client->request(
@@ -115,7 +116,7 @@ class ResultRestControllerTest extends WebTestCase
                 'bandInitValue' => $this->rasterObject->getBand()->getInitValue(),
                 'bandNoDataVal' => $this->rasterObject->getBand()->getNoDataVal(),
                 'data' => json_encode($this->rasterObject->getBand()->getData()),
-                'date' => new \DateTime('now')
+                'date' => $date->format('Y-m-d H:i:s')
             )
         );
 
