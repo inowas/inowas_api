@@ -5,6 +5,7 @@ namespace AppBundle\Tests\Entity;
 use AppBundle\Entity\Raster;
 use AppBundle\Model\RasterBandFactory;
 use AppBundle\Model\RasterFactory;
+use Doctrine\DBAL\Driver\PDOConnection;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
 class RasterTest extends WebTestCase
@@ -92,6 +93,110 @@ class RasterTest extends WebTestCase
 
         $this->assertContains($result[0]["test"], "POINT(1436021.43123323 6585991.99809962)");
     }
+
+    // This is working
+    public function testInsertNullRaster()
+    {
+        $conn = $this->entityManager->getConnection();
+
+        $stmt = $conn->prepare('SET NAMES \'UTF8\'');
+        $stmt->execute();
+
+        $stmt = $conn->prepare('SELECT NEXTVAL(\'rasters_id_seq\')');
+        $stmt->execute();
+        $result = $stmt->fetchAll();
+        $nextval = $result[0]['nextval'];
+
+        $stmt = $conn->prepare("INSERT INTO rasters (id, rast) VALUES (:id,:rast)");
+        $stmt->execute(array(
+            ':id'   => $nextval,
+            ':rast' => null,
+        ));
+    }
+
+    // This is working
+    public function testInsertNullRaster2()
+    {
+        $conn = $this->entityManager->getConnection();
+
+        $stmt = $conn->prepare('SET NAMES \'UTF8\'');
+        $stmt->execute();
+
+        $stmt = $conn->prepare('SELECT NEXTVAL(\'rasters_id_seq\')');
+        $stmt->execute();
+        $result = $stmt->fetchAll();
+        $nextval = $result[0]['nextval'];
+
+        $stmt = $conn->prepare("INSERT INTO rasters (id, rast) VALUES (?,?)");
+        $stmt->execute(array(
+            $nextval,
+            null
+        ));
+    }
+
+    // This is working
+    public function testInsertNullRasterWithExecuteQuery()
+    {
+        $conn = $this->entityManager->getConnection();
+
+        $stmt = $conn->prepare('SET NAMES \'UTF8\'');
+        $stmt->execute();
+
+        $stmt = $conn->prepare('SELECT NEXTVAL(\'rasters_id_seq\')');
+        $stmt->execute();
+        $result = $stmt->fetchAll();
+        $nextval = $result[0]['nextval'];
+
+        $stmt = $conn->executeQuery("INSERT INTO rasters (id, rast) VALUES (?,?)",
+            array($nextval, null),
+            array(\PDO::PARAM_INT, \PDO::PARAM_NULL)
+        );
+    }
+
+    // This is working
+    public function testInsertEmptyRasterWithExecuteQuery()
+    {
+        $conn = $this->entityManager->getConnection();
+
+        $stmt = $conn->prepare('SET NAMES \'UTF8\'');
+        $stmt->execute();
+
+        $stmt = $conn->prepare('SELECT NEXTVAL(\'rasters_id_seq\')');
+        $stmt->execute();
+        $result = $stmt->fetchAll();
+        $nextval = $result[0]['nextval'];
+
+        $stmt = $conn->executeQuery("
+            INSERT INTO rasters (id, rast)
+            VALUES (?, ST_MakeEmptyRaster( 100, 100, 0.0005, 0.0005, 1, 1, 0, 0, ? )
+            )",
+
+            array($nextval, 4326),
+            array(\PDO::PARAM_INT)
+        );
+    }
+
+    // This is not working
+    public function InsertEmptyRasterWithExecuteQueryAndParam()
+    {
+        $conn = $this->entityManager->getConnection();
+
+        $stmt = $conn->prepare('SET NAMES \'UTF8\'');
+        $stmt->execute();
+
+        $stmt = $conn->prepare('SELECT NEXTVAL(\'rasters_id_seq\')');
+        $stmt->execute();
+        $result = $stmt->fetchAll();
+        $nextval = $result[0]['nextval'];
+
+        $stmt = $conn->executeQuery("INSERT INTO rasters (id, rast) VALUES (?, ?)",
+            array($nextval, "ST_MakeEmptyRaster( 100, 100, 0.0005, 0.0005, 1, 1, 0, 0, 4326)"),
+            array(\PDO::PARAM_INT, \PDO::PARAM_STR)
+        );
+    }
+
+
+
 
     /**
      * For this test the table has to have some content
