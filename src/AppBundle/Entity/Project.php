@@ -12,7 +12,7 @@ use JMS\Serializer\Annotation as JMS;
  *
  * @ORM\HasLifecycleCallbacks()
  * @ORM\Table(name="projects")
- * @ORM\Entity(repositoryClass="AppBundle\Entity\ProjectRepository")
+ * @ORM\Entity(repositoryClass="AppBundle\Repository\ProjectRepository")
  */
 class Project
 {
@@ -56,7 +56,7 @@ class Project
      * @var ArrayCollection User
      *
      * @ORM\ManyToMany(targetEntity="User", inversedBy="participatedProjects")
-     * @ORM\JoinTable(name="users_participated_projects")
+     * @ORM\JoinTable(name="participants_projects")
      * @JMS\Groups({"projectDetails"})
      */
     private $participants;

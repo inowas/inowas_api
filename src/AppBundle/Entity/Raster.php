@@ -23,7 +23,7 @@ use AppBundle\Model\Raster as RasterModel;
 /**
  * Raster
  *
- * @ORM\Entity(repositoryClass="AppBundle\Entity\RasterRepository")
+ * @ORM\Entity(repositoryClass="AppBundle\Repository\RasterRepository")
  * @ORM\Table(name="rasters")
  */
 class Raster

@@ -7,10 +7,10 @@ use Doctrine\ORM\Mapping as ORM;
 use JMS\Serializer\Annotation as JMS;
 
 /**
- * @ORM\Entity(repositoryClass="AppBundle\Entity\GeologicalLayerRepository")
+ * @ORM\Entity(repositoryClass="AppBundle\Repository\GeologicalLayerRepository")
  * @ORM\Table(name="geological_layers")
  */
-class GeologicalLayer extends ModelObject
+class GeologicalLayer extends SoilModelObject
 {
     /**
      * @var string
@@ -36,7 +36,6 @@ class GeologicalLayer extends ModelObject
      */
     private $boundaries;
 
-
     /**
      * Layer constructor.
      * @param User|null $owner
@@ -47,8 +46,8 @@ class GeologicalLayer extends ModelObject
     {
         parent::__construct($owner, $project, $public);
 
-        $this->geologicalUnits = new ArrayCollection();
         $this->boundaries = new ArrayCollection();
+        $this->geologicalUnits = new ArrayCollection();
     }
 
     /**

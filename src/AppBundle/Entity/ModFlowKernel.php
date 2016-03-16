@@ -2,22 +2,16 @@
 
 namespace AppBundle\Entity;
 
-use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
 use JMS\Serializer\Annotation as JMS;
 
 /**
- * AbstractKernel
+ * ModFlowKernel
  *
- * @ORM\HasLifecycleCallbacks()
  * @ORM\Entity()
- * @ORM\Table(name="kernels")
- * @ORM\InheritanceType("SINGLE_TABLE")
- * @ORM\DiscriminatorColumn(name="type", type="string")
- * @ORM\DiscriminatorMap({  "modflow" = "ModFlowKernel" })
  * @JMS\ExclusionPolicy("all")
  */
-abstract class AbstractKernel
+abstract class ModFlowKernel extends AbstractKernel
 {
     /**
      * @var int
@@ -27,4 +21,14 @@ abstract class AbstractKernel
      * @ORM\GeneratedValue(strategy="AUTO")
      */
     private $id;
+
+    /**
+     * Get id
+     *
+     * @return integer
+     */
+    public function getId()
+    {
+        return $this->id;
+    }
 }

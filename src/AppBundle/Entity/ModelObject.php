@@ -9,7 +9,7 @@ use JMS\Serializer\Annotation as JMS;
 /**
  * ModelObject
  * @ORM\HasLifecycleCallbacks()
- * @ORM\Entity
+ * @ORM\Entity(repositoryClass="AppBundle\Repository\ModelObjectRepository")
  * @ORM\Table(name="model_objects")
  * @ORM\InheritanceType("JOINED")
  * @ORM\DiscriminatorColumn(name="discr", type="string")
@@ -22,7 +22,6 @@ use JMS\Serializer\Annotation as JMS;
  *                          "st" = "Stream"
  * })
  */
-
 abstract class ModelObject
 {
     /**
@@ -57,6 +56,14 @@ abstract class ModelObject
      * @ORM\JoinTable(name="projects_model_objects")
      **/
     protected $projects;
+
+    /**
+     * @var ArrayCollection SoilModel
+     *
+     * @ORM\ManyToMany(targetEntity="AppBundle\Entity\SoilModel", inversedBy="modelObjects")
+     * @ORM\JoinTable(name="soil_model_model_objects")
+     **/
+    protected $soilModels;
 
     /**
      * @var User
@@ -123,6 +130,7 @@ abstract class ModelObject
         $this->owner = $owner;
         $this->public = $public;
         $this->projects = new ArrayCollection();
+        $this->soilModels = new ArrayCollection();
         $this->propertyIds = new ArrayCollection();
         if ($project) $this->addProject($project);
         $this->properties = new ArrayCollection();
@@ -243,6 +251,37 @@ abstract class ModelObject
     public function getProjects()
     {
         return $this->projects;
+    }
+
+    /**
+     * Get SoilModels
+     */
+    public function getSoilModels()
+    {
+        return $this->soilModels;
+    }
+
+    /**
+     * Add SoilModel
+     *
+     * @param SoilModel $soilModel
+     * @return $this
+     */
+    public function addSoilModel(SoilModel $soilModel)
+    {
+        $this->soilModels[] = $soilModel;
+
+        return $this;
+    }
+
+    /**
+     * Remove SoilModel
+     *
+     * @param SoilModel $soilModel
+     */
+    public function removeSoilModel(SoilModel $soilModel)
+    {
+        $this->soilModels->removeElement($soilModel);
     }
 
     /**

@@ -8,10 +8,10 @@ use Doctrine\ORM\Mapping as ORM;
 use JMS\Serializer\Annotation as JMS;
 
 /**
- * @ORM\Entity
+ * @ORM\Entity(repositoryClass="AppBundle\Repository\GeologicalUnitRepository")
  * @ORM\Table(name="geological_units")
  */
-class GeologicalUnit extends ModelObject
+class GeologicalUnit extends SoilModelObject
 {
     /**
      * @var string

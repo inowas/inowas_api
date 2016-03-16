@@ -1,7 +1,8 @@
 <?php
 
-namespace AppBundle\Entity;
+namespace AppBundle\Repository;
 
+use AppBundle\Entity\Raster;
 use AppBundle\Model\Raster as RasterObject;
 use Doctrine\ORM\EntityRepository;
 use Doctrine\ORM\Query;
