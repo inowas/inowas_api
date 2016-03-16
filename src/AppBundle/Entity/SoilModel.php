@@ -2,6 +2,7 @@
 
 namespace AppBundle\Entity;
 
+use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
 use JMS\Serializer\Annotation as JMS;
 
@@ -49,6 +50,15 @@ class SoilModel
     private $owner;
 
     /**
+     * @ORM\ManyToMany(targetEntity="AppBundle\Entity\SoilModelObject")
+     * @ORM\JoinTable(name="soil_models_modelobjects",
+     *      joinColumns={@ORM\JoinColumn(name="soil_model_id", referencedColumnName="id")},
+     *      inverseJoinColumns={@ORM\JoinColumn(name="modelobject_id", referencedColumnName="id")}
+     *      )
+     */
+    private $soilModelObjects;
+
+    /**
      * @var boolean
      *
      * @ORM\Column(name="public", type="boolean")
@@ -73,6 +83,32 @@ class SoilModel
     private $dateModified;
 
     /**
+     * @var ArrayCollection
+     */
+    private $geologicalLayers;
+
+    /**
+     * @var ArrayCollection
+     */
+    private $geologicalPoints;
+
+    /**
+     * @var ArrayCollection
+     */
+    private $geologicalUnits;
+
+    /**
+     * Constructor
+     */
+    public function __construct()
+    {
+        $this->soilModelObjects = new ArrayCollection();
+        $this->geologicalLayers = new ArrayCollection();
+        $this->geologicalPoints = new ArrayCollection();
+        $this->geologicalUnits = new ArrayCollection();
+    }
+
+    /**
      * Get id
      *
      * @return int
@@ -80,14 +116,6 @@ class SoilModel
     public function getId()
     {
         return $this->id;
-    }
-    /**
-     * Constructor
-     */
-    public function __construct()
-    {
-        $this->participants = new \Doctrine\Common\Collections\ArrayCollection();
-        $this->modelObjects = new \Doctrine\Common\Collections\ArrayCollection();
     }
 
     /**
@@ -235,70 +263,181 @@ class SoilModel
     }
 
     /**
-     * Add participant
+     * Get soilModelObjects
      *
-     * @param \AppBundle\Entity\User $participant
+     * @return \Doctrine\Common\Collections\Collection
+     */
+    public function getSoilModelObjects()
+    {
+        return $this->soilModelObjects;
+    }
+
+    /**
+     * Add soilModelObject
+     *
+     * @param \AppBundle\Entity\SoilModelObject $soilModelObject
      *
      * @return SoilModel
      */
-    public function addParticipant(\AppBundle\Entity\User $participant)
+    public function addSoilModelObject(\AppBundle\Entity\SoilModelObject $soilModelObject)
     {
-        $this->participants[] = $participant;
+        $this->soilModelObjects[] = $soilModelObject;
 
         return $this;
     }
 
     /**
-     * Remove participant
+     * Remove soilModelObject
      *
-     * @param \AppBundle\Entity\User $participant
+     * @param \AppBundle\Entity\SoilModelObject $soilModelObject
      */
-    public function removeParticipant(\AppBundle\Entity\User $participant)
+    public function removeSoilModelObject(\AppBundle\Entity\SoilModelObject $soilModelObject)
     {
-        $this->participants->removeElement($participant);
+        $this->soilModelObjects->removeElement($soilModelObject);
     }
 
     /**
-     * Get participants
-     *
-     * @return \Doctrine\Common\Collections\Collection
+     * @return ArrayCollection
      */
-    public function getParticipants()
+    public function getGeologicalLayers()
     {
-        return $this->participants;
+        return $this->geologicalLayers;
     }
 
     /**
-     * Add modelObject
-     *
-     * @param \AppBundle\Entity\ModelObject $modelObject
-     *
-     * @return SoilModel
+     * @param GeologicalLayer $geologicalLayer
+     * @return $this
      */
-    public function addModelObject(\AppBundle\Entity\ModelObject $modelObject)
+    public function addGeologicalLayer(GeologicalLayer $geologicalLayer)
     {
-        $this->modelObjects[] = $modelObject;
+        $this->geologicalLayers[] = $geologicalLayer;
 
         return $this;
     }
 
     /**
-     * Remove modelObject
-     *
-     * @param \AppBundle\Entity\ModelObject $modelObject
+     * @param GeologicalLayer $geologicalLayer
      */
-    public function removeModelObject(\AppBundle\Entity\ModelObject $modelObject)
+    public function removeGeologicalLayer(GeologicalLayer $geologicalLayer)
     {
-        $this->modelObjects->removeElement($modelObject);
+        $this->geologicalLayers->removeElement($geologicalLayer);
     }
 
     /**
-     * Get modelObjects
-     *
-     * @return \Doctrine\Common\Collections\Collection
+     * @return ArrayCollection
      */
-    public function getModelObjects()
+    public function getGeologicalPoints()
     {
-        return $this->modelObjects;
+        return $this->geologicalPoints;
+    }
+
+    /**
+     * @param GeologicalPoint $geologicalPoint
+     * @return $this
+     */
+    public function addGeologicalPoint(GeologicalPoint $geologicalPoint)
+    {
+        $this->geologicalPoints[] = $geologicalPoint;
+
+        return $this;
+    }
+
+    /**
+     * @param GeologicalPoint $geologicalPoint
+     */
+    public function removeGeologicalPoint(GeologicalPoint $geologicalPoint)
+    {
+        $this->geologicalPoints->removeElement($geologicalPoint);
+    }
+
+    /**
+     * @return ArrayCollection
+     */
+    public function getGeologicalUnits()
+    {
+        return $this->geologicalUnits;
+    }
+
+    /**
+     * @param GeologicalUnit $geologicalUnit
+     * @return $this
+     */
+    public function addGeologicalUnit(GeologicalUnit $geologicalUnit)
+    {
+        $this->geologicalUnits[] = $geologicalUnit;
+
+        return $this;
+    }
+
+    /**
+     * @param GeologicalUnit $geologicalUnit
+     */
+    public function removeGeologicalUnit(GeologicalUnit $geologicalUnit)
+    {
+        $this->geologicalUnits->removeElement($geologicalUnit);
+    }
+
+    /**
+     * on PrePersist event all
+     * +layers
+     * +units
+     * +points
+     * have to be written to the soilModelObjects-Array
+     *
+     * @ORM\PrePersist()
+     */
+    public function prePersist()
+    {
+
+        if ($this->geologicalPoints->count() > 0 )
+        {
+            foreach ($this->geologicalPoints as $geologicalPoint)
+            {
+                $this->addSoilModelObject($geologicalPoint);
+            }
+        }
+
+        if ($this->geologicalLayers->count() > 0 )
+        {
+            foreach ($this->geologicalLayers as $geologicalLayer)
+            {
+                $this->addSoilModelObject($geologicalLayer);
+            }
+        }
+
+        if ($this->geologicalUnits->count() > 0 )
+        {
+            foreach ($this->geologicalUnits as $geologicalUnit)
+            {
+                $this->addSoilModelObject($geologicalUnit);
+            }
+        }
+    }
+
+    /**
+     * @ORM\PostLoad()
+     */
+    public function postLoad()
+    {
+        foreach ($this->getSoilModelObjects() as $soilModelObject)
+        {
+            if ($soilModelObject instanceof GeologicalLayer)
+            {
+                $this->addGeologicalLayer($soilModelObject);
+                $this->removeSoilModelObject($soilModelObject);
+            }
+
+            if ($soilModelObject instanceof GeologicalPoint)
+            {
+                $this->addGeologicalPoint($soilModelObject);
+                $this->removeSoilModelObject($soilModelObject);
+            }
+
+            if ($soilModelObject instanceof GeologicalUnit)
+            {
+                $this->addGeologicalUnit($soilModelObject);
+                $this->removeSoilModelObject($soilModelObject);
+            }
+        }
     }
 }
