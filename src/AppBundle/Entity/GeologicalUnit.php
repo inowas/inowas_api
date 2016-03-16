@@ -11,7 +11,7 @@ use JMS\Serializer\Annotation as JMS;
  * @ORM\Entity(repositoryClass="AppBundle\Repository\GeologicalUnitRepository")
  * @ORM\Table(name="geological_units")
  */
-class GeologicalUnit extends SoilModelObject
+class GeologicalUnit extends ModelObject
 {
     /**
      * @var string

@@ -14,6 +14,7 @@ use AppBundle\Model\PropertyFactory;
 use AppBundle\Model\PropertyTimeValueFactory;
 use AppBundle\Model\PropertyTypeFactory;
 use AppBundle\Model\PropertyValueFactory;
+use AppBundle\Model\SoilModelFactory;
 use AppBundle\Model\StreamFactory;
 
 use AppBundle\Model\Point;
@@ -74,6 +75,10 @@ class LoadScenario_1 implements FixtureInterface, ContainerAwareInterface
         #$entityManager->persist($project);
         #$entityManager->flush();
 
+        // Add new SoilModel
+        $soilModel = SoilModelFactory::create();
+        $soilModel->setOwner($user)->setName('SM-3566689');
+
         // Add Geological Profile 1
         $geologicalPoint = GeologicalPointFactory::setOwnerNameAndPoint($user, 'SC1_GP1', new Point(11772891.9650673, 2397519.89608855, 4326), $public);
         $geologicalPoint = $this->addNewGeologicalUnitToGeologicalPoint($geologicalPoint, 'SC1_GP1.1', 100, 70);
@@ -81,6 +86,8 @@ class LoadScenario_1 implements FixtureInterface, ContainerAwareInterface
         $geologicalPoint = $this->addNewGeologicalUnitToGeologicalPoint($geologicalPoint, 'SC1_GP1.3',  40,  0);
         $entityManager->persist($geologicalPoint);
         $entityManager->flush();
+
+        $soilModel->addGeologicalPoint($geologicalPoint);
 
         // Add Geological Profile 2
         $geologicalPoint = GeologicalPointFactory::setOwnerNameAndPoint($user, 'SC1_GP2', new Point(11786103.1301754, 2397138.80478736, 4326), $public);
@@ -90,6 +97,8 @@ class LoadScenario_1 implements FixtureInterface, ContainerAwareInterface
         $entityManager->persist($geologicalPoint);
         $entityManager->flush();
 
+        $soilModel->addGeologicalPoint($geologicalPoint);
+
         // Add Geological Profile 3
         $geologicalPoint = GeologicalPointFactory::setOwnerNameAndPoint($user, 'SC1_GP3', new Point(11779836.2954446, 2387061.05704468, 4326), $public);
         $geologicalPoint = $this->addNewGeologicalUnitToGeologicalPoint($geologicalPoint, 'SC1_GP3.1', 100, 70);
@@ -97,6 +106,8 @@ class LoadScenario_1 implements FixtureInterface, ContainerAwareInterface
         $geologicalPoint = $this->addNewGeologicalUnitToGeologicalPoint($geologicalPoint, 'SC1_GP3.3',  40,  0);
         $entityManager->persist($geologicalPoint);
         $entityManager->flush();
+
+        $soilModel->addGeologicalPoint($geologicalPoint);
 
         // Create layer 1
         $geologicalLayer = GeologicalLayerFactory::setOwnerNameAndPublic($user, 'SC1_L1', $public);
@@ -106,6 +117,8 @@ class LoadScenario_1 implements FixtureInterface, ContainerAwareInterface
         $entityManager->persist($geologicalLayer);
         $entityManager->flush();
 
+        $soilModel->addGeologicalLayer($geologicalLayer);
+
         // Create layer 2
         $geologicalLayer = GeologicalLayerFactory::setOwnerNameAndPublic($user, 'SC1_L2', $public);
         $geologicalLayer = $this->addGeologicalUnitToGeologicalLayer($entityManager, $geologicalLayer, 'SC1_GP1.2');
@@ -114,12 +127,18 @@ class LoadScenario_1 implements FixtureInterface, ContainerAwareInterface
         $entityManager->persist($geologicalLayer);
         $entityManager->flush();
 
+        $soilModel->addGeologicalLayer($geologicalLayer);
+
         // Create layer 3
         $geologicalLayer = GeologicalLayerFactory::setOwnerNameAndPublic($user, 'SC1_L3', $public);
         $geologicalLayer = $this->addGeologicalUnitToGeologicalLayer($entityManager, $geologicalLayer, 'SC1_GP1.3');
         $geologicalLayer = $this->addGeologicalUnitToGeologicalLayer($entityManager, $geologicalLayer, 'SC1_GP2.3');
         $geologicalLayer = $this->addGeologicalUnitToGeologicalLayer($entityManager, $geologicalLayer, 'SC1_GP3.3');
         $entityManager->persist($geologicalLayer);
+        $entityManager->flush();
+
+        $soilModel->addGeologicalLayer($geologicalLayer);
+        $entityManager->persist($soilModel);
         $entityManager->flush();
 
 
@@ -269,6 +288,7 @@ class LoadScenario_1 implements FixtureInterface, ContainerAwareInterface
         $geologicalUnit->setTopElevation($topElevation);
         $geologicalUnit->setBottomElevation($bottomElevation);
         $geologicalUnit->setGeologicalPoint($geologicalPoint);
+        $geologicalPoint->addGeologicalUnit($geologicalUnit);
         return $geologicalPoint;
     }
 

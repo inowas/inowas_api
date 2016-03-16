@@ -9,6 +9,7 @@ use JMS\Serializer\Annotation as JMS;
 /**
  * SoilModel
  *
+ * @ORM\HasLifecycleCallbacks
  * @ORM\Table(name="soil_model")
  * @ORM\Entity(repositoryClass="AppBundle\Repository\SoilModelRepository")
  */
@@ -50,13 +51,11 @@ class SoilModel
     private $owner;
 
     /**
-     * @ORM\ManyToMany(targetEntity="AppBundle\Entity\SoilModelObject")
-     * @ORM\JoinTable(name="soil_models_modelobjects",
-     *      joinColumns={@ORM\JoinColumn(name="soil_model_id", referencedColumnName="id")},
-     *      inverseJoinColumns={@ORM\JoinColumn(name="modelobject_id", referencedColumnName="id")}
-     *      )
-     */
-    private $soilModelObjects;
+     * @var ArrayCollection ModelObject $modelObjects
+     *
+     * @ORM\ManyToMany(targetEntity="ModelObject", mappedBy="soilModels", cascade={"persist", "remove"})
+     **/
+    private $modelObjects;
 
     /**
      * @var boolean
@@ -102,7 +101,7 @@ class SoilModel
      */
     public function __construct()
     {
-        $this->soilModelObjects = new ArrayCollection();
+        $this->modelObjects = new ArrayCollection();
         $this->geologicalLayers = new ArrayCollection();
         $this->geologicalPoints = new ArrayCollection();
         $this->geologicalUnits = new ArrayCollection();
@@ -273,19 +272,23 @@ class SoilModel
      */
     public function getSoilModelObjects()
     {
-        return $this->soilModelObjects;
+        return $this->modelObjects;
     }
 
     /**
      * Add soilModelObject
      *
-     * @param \AppBundle\Entity\SoilModelObject $soilModelObject
+     * @param \AppBundle\Entity\ModelObject $modelObject
      *
      * @return SoilModel
      */
-    public function addSoilModelObject(\AppBundle\Entity\SoilModelObject $soilModelObject)
+    public function addSoilModelObject(ModelObject $modelObject)
     {
-        $this->soilModelObjects[] = $soilModelObject;
+        if (!$modelObject->getSoilModels()->contains($this))
+        {
+            $modelObject->addSoilModel($this);
+        }
+        $this->modelObjects[] = $modelObject;
 
         return $this;
     }
@@ -293,11 +296,15 @@ class SoilModel
     /**
      * Remove soilModelObject
      *
-     * @param \AppBundle\Entity\SoilModelObject $soilModelObject
+     * @param \AppBundle\Entity\ModelObject $modelObject
      */
-    public function removeSoilModelObject(\AppBundle\Entity\SoilModelObject $soilModelObject)
+    public function removeSoilModelObject(ModelObject $modelObject)
     {
-        $this->soilModelObjects->removeElement($soilModelObject);
+        if ($modelObject->getSoilModels()->contains($modelObject))
+        {
+            $this->modelObjects->removeElement($modelObject);
+        }
+        $modelObject->removeSoilModel($this);
     }
 
     /**
@@ -314,7 +321,10 @@ class SoilModel
      */
     public function addGeologicalLayer(GeologicalLayer $geologicalLayer)
     {
-        $this->geologicalLayers[] = $geologicalLayer;
+        if (!$this->geologicalLayers->contains($geologicalLayer))
+        {
+            $this->geologicalLayers[] = $geologicalLayer;
+        }
 
         return $this;
     }
@@ -324,7 +334,10 @@ class SoilModel
      */
     public function removeGeologicalLayer(GeologicalLayer $geologicalLayer)
     {
-        $this->geologicalLayers->removeElement($geologicalLayer);
+        if ($this->geologicalLayers->contains($geologicalLayer))
+        {
+            $this->geologicalLayers->removeElement($geologicalLayer);
+        }
     }
 
     /**
@@ -341,7 +354,10 @@ class SoilModel
      */
     public function addGeologicalPoint(GeologicalPoint $geologicalPoint)
     {
-        $this->geologicalPoints[] = $geologicalPoint;
+        if (!$this->geologicalPoints->contains($geologicalPoint))
+        {
+            $this->geologicalPoints[] = $geologicalPoint;
+        }
 
         return $this;
     }
@@ -351,7 +367,10 @@ class SoilModel
      */
     public function removeGeologicalPoint(GeologicalPoint $geologicalPoint)
     {
-        $this->geologicalPoints->removeElement($geologicalPoint);
+        if ($this->geologicalPoints->contains($geologicalPoint))
+        {
+            $this->geologicalPoints->removeElement($geologicalPoint);
+        }
     }
 
     /**
@@ -368,7 +387,10 @@ class SoilModel
      */
     public function addGeologicalUnit(GeologicalUnit $geologicalUnit)
     {
-        $this->geologicalUnits[] = $geologicalUnit;
+        if (!$this->geologicalUnits->contains($geologicalUnit))
+        {
+            $this->geologicalUnits[] = $geologicalUnit;
+        }
 
         return $this;
     }
@@ -378,7 +400,10 @@ class SoilModel
      */
     public function removeGeologicalUnit(GeologicalUnit $geologicalUnit)
     {
-        $this->geologicalUnits->removeElement($geologicalUnit);
+        if ($this->geologicalUnits->contains($geologicalUnit))
+        {
+            $this->geologicalUnits->removeElement($geologicalUnit);
+        }
     }
 
     /**
@@ -392,12 +417,17 @@ class SoilModel
      */
     public function prePersist()
     {
-
         if ($this->geologicalPoints->count() > 0 )
         {
+            /** @var GeologicalPoint $geologicalPoint */
             foreach ($this->geologicalPoints as $geologicalPoint)
             {
                 $this->addSoilModelObject($geologicalPoint);
+
+                foreach ($geologicalPoint->getGeologicalUnits() as $geologicalUnit)
+                {
+                    $this->addGeologicalUnit($geologicalUnit);
+                }
             }
         }
 

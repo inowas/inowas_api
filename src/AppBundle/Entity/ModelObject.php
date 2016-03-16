@@ -60,7 +60,7 @@ abstract class ModelObject
     /**
      * @var ArrayCollection SoilModel
      *
-     * @ORM\ManyToMany(targetEntity="AppBundle\Entity\SoilModel", inversedBy="modelObjects")
+     * @ORM\ManyToMany(targetEntity="AppBundle\Entity\SoilModel", inversedBy="modelObjects", cascade={"persist", "remove"})
      * @ORM\JoinTable(name="soil_model_model_objects")
      **/
     protected $soilModels;

@@ -10,7 +10,7 @@ use JMS\Serializer\Annotation as JMS;
  * @ORM\Entity(repositoryClass="AppBundle\Repository\GeologicalLayerRepository")
  * @ORM\Table(name="geological_layers")
  */
-class GeologicalLayer extends SoilModelObject
+class GeologicalLayer extends ModelObject
 {
     /**
      * @var string
