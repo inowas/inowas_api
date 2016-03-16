@@ -2,7 +2,6 @@
 
 namespace AppBundle\Entity;
 
-use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
 use JMS\Serializer\Annotation as JMS;
 
@@ -42,21 +41,12 @@ class SoilModel
     /**
      * @var User
      *
-     * @ORM\ManyToOne(targetEntity="User", inversedBy="ownedProjects")
+     * @ORM\ManyToOne(targetEntity="User", inversedBy="ownedSoilModels")
      * @ORM\JoinColumn(name="owner_id", referencedColumnName="id", onDelete="CASCADE")
      * @JMS\MaxDepth(3)
      * @JMS\Groups({"projectDetails"})
      */
     private $owner;
-
-    /**
-     * @var ArrayCollection User
-     *
-     * @ORM\ManyToMany(targetEntity="User", inversedBy="participatedProjects")
-     * @ORM\JoinTable(name="participants_soilmodels")
-     * @JMS\Groups({"projectDetails"})
-     */
-    private $participants;
 
     /**
      * @var boolean

@@ -42,21 +42,12 @@ class Application
     /**
      * @var User
      *
-     * @ORM\ManyToOne(targetEntity="User", inversedBy="ownedProjects")
+     * @ORM\ManyToOne(targetEntity="User", inversedBy="ownedApplications")
      * @ORM\JoinColumn(name="owner_id", referencedColumnName="id", onDelete="CASCADE")
      * @JMS\MaxDepth(3)
      * @JMS\Groups({"projectDetails"})
      */
     private $owner;
-
-    /**
-     * @var ArrayCollection User
-     *
-     * @ORM\ManyToMany(targetEntity="User", inversedBy="participatedProjects")
-     * @ORM\JoinTable(name="participants_applications")
-     * @JMS\Groups({"projectDetails"})
-     */
-    private $participants;
 
     /**
      * @var ArrayCollection Tool $tools

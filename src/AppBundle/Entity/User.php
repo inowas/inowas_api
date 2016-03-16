@@ -35,18 +35,39 @@ class User extends BaseUser
     protected $profile;
 
     /**
-     * @var ArrayCollection Project $ownedProjects
+     * @var ArrayCollection
+     *
+     * @ORM\OneToMany(targetEntity="AppBundle\Entity\Application", mappedBy="owner", cascade={"persist", "remove"})
+     */
+    protected $ownedApplications;
+
+    /**
+     * @var ArrayCollection Project
+     *
+     * @ORM\OneToMany(targetEntity="AppBundle\Entity\ModelObject", mappedBy="owner")
+     */
+    protected $ownedModelObjects;
+
+    /**
+     * @var ArrayCollection AbstractModel
+     *
+     * @ORM\OneToMany(targetEntity="AppBundle\Entity\AbstractModel", mappedBy="owner", cascade={"persist", "remove"})
+     */
+    protected $ownedModels;
+
+    /**
+     * @var ArrayCollection Project
      *
      * @ORM\OneToMany(targetEntity="Project", mappedBy="owner", cascade={"persist", "remove"})
      */
     protected $ownedProjects;
 
     /**
-     * @var ArrayCollection Project $ownedModelObjects
+     * @var ArrayCollection
      *
-     * @ORM\OneToMany(targetEntity="AppBundle\Entity\ModelObject", mappedBy="owner")
+     * @ORM\OneToMany(targetEntity="AppBundle\Entity\SoilModel", mappedBy="owner", cascade={"persist", "remove"})
      */
-    protected $ownedModelObjects;
+    protected $ownedSoilModels;
 
     /**
      * @var ArrayCollection Project $participatedProjects
@@ -59,8 +80,11 @@ class User extends BaseUser
     {
         parent::__construct();
         $this->profile = new UserProfile($this);
-        $this->ownedProjects = new ArrayCollection();
+        $this->ownedApplications = new ArrayCollection();
         $this->ownedModelObjects = new ArrayCollection();
+        $this->ownedModels = new ArrayCollection();
+        $this->ownedProjects = new ArrayCollection();
+        $this->ownedSoilModels = new ArrayCollection();
         $this->participatedProjects = new ArrayCollection();
     }
 
@@ -188,5 +212,107 @@ class User extends BaseUser
     public function getParticipatedProjects()
     {
         return $this->participatedProjects;
+    }
+
+    /**
+     * Add ownedApplication
+     *
+     * @param \AppBundle\Entity\Application $ownedApplication
+     *
+     * @return User
+     */
+    public function addOwnedApplication(\AppBundle\Entity\Application $ownedApplication)
+    {
+        $this->ownedApplications[] = $ownedApplication;
+
+        return $this;
+    }
+
+    /**
+     * Remove ownedApplication
+     *
+     * @param \AppBundle\Entity\Application $ownedApplication
+     */
+    public function removeOwnedApplication(\AppBundle\Entity\Application $ownedApplication)
+    {
+        $this->ownedApplications->removeElement($ownedApplication);
+    }
+
+    /**
+     * Get ownedApplications
+     *
+     * @return \Doctrine\Common\Collections\Collection
+     */
+    public function getOwnedApplications()
+    {
+        return $this->ownedApplications;
+    }
+
+    /**
+     * Add ownedModel
+     *
+     * @param \AppBundle\Entity\AbstractModel $ownedModel
+     *
+     * @return User
+     */
+    public function addOwnedModel(\AppBundle\Entity\AbstractModel $ownedModel)
+    {
+        $this->ownedModels[] = $ownedModel;
+
+        return $this;
+    }
+
+    /**
+     * Remove ownedModel
+     *
+     * @param \AppBundle\Entity\AbstractModel $ownedModel
+     */
+    public function removeOwnedModel(\AppBundle\Entity\AbstractModel $ownedModel)
+    {
+        $this->ownedModels->removeElement($ownedModel);
+    }
+
+    /**
+     * Get ownedModels
+     *
+     * @return \Doctrine\Common\Collections\Collection
+     */
+    public function getOwnedModels()
+    {
+        return $this->ownedModels;
+    }
+
+    /**
+     * Add ownedSoilModel
+     *
+     * @param \AppBundle\Entity\SoilModel $ownedSoilModel
+     *
+     * @return User
+     */
+    public function addOwnedSoilModel(\AppBundle\Entity\SoilModel $ownedSoilModel)
+    {
+        $this->ownedSoilModels[] = $ownedSoilModel;
+
+        return $this;
+    }
+
+    /**
+     * Remove ownedSoilModel
+     *
+     * @param \AppBundle\Entity\SoilModel $ownedSoilModel
+     */
+    public function removeOwnedSoilModel(\AppBundle\Entity\SoilModel $ownedSoilModel)
+    {
+        $this->ownedSoilModels->removeElement($ownedSoilModel);
+    }
+
+    /**
+     * Get ownedSoilModels
+     *
+     * @return \Doctrine\Common\Collections\Collection
+     */
+    public function getOwnedSoilModels()
+    {
+        return $this->ownedSoilModels;
     }
 }

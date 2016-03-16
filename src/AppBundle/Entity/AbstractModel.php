@@ -2,7 +2,6 @@
 
 namespace AppBundle\Entity;
 
-use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
 use JMS\Serializer\Annotation as JMS;
 
@@ -46,21 +45,12 @@ abstract class AbstractModel
     /**
      * @var User
      *
-     * @ORM\ManyToOne(targetEntity="User", inversedBy="ownedProjects")
+     * @ORM\ManyToOne(targetEntity="User", inversedBy="ownedModels")
      * @ORM\JoinColumn(name="owner_id", referencedColumnName="id", onDelete="CASCADE")
      * @JMS\MaxDepth(3)
      * @JMS\Groups({"projectDetails"})
      */
     private $owner;
-
-    /**
-     * @var ArrayCollection User
-     *
-     * @ORM\ManyToMany(targetEntity="User", inversedBy="participatedProjects")
-     * @ORM\JoinTable(name="participants_models")
-     * @JMS\Groups({"projectDetails"})
-     */
-    private $participants;
 
     /**
      * @ORM\ManyToMany(targetEntity="ModelObject")
