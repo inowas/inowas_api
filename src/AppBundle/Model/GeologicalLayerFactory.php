@@ -31,4 +31,14 @@ class GeologicalLayerFactory
 
         return $geologicalLayer;
     }
+
+    public static function setOwnerNameAndPublic(UserInterface $owner = null, $name = "", $public = false)
+    {
+        $geologicalLayer = new GeologicalLayer();
+        $geologicalLayer->setOwner($owner);
+        $geologicalLayer->setName($name);
+        $geologicalLayer->setPublic($public);
+
+        return $geologicalLayer;
+    }
 }

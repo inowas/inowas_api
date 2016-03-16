@@ -26,4 +26,14 @@ class StreamFactory
 
         return $stream;
     }
+
+    public static function setOwnerNameAndPublic(UserInterface $owner = null, $name = "", $public = false)
+    {
+        $stream = new Stream();
+        $stream->setOwner($owner);
+        $stream->setName($name);
+        $stream->setPublic($public);
+
+        return $stream;
+    }
 }

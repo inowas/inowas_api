@@ -4,7 +4,7 @@ namespace AppBundle\Model;
 
 use JMS\Serializer\Annotation as JMS;
 
-class Point extends \CrEOF\Spatial\PHP\Types\Geography\Point
+class Point extends \CrEOF\Spatial\PHP\Types\Geometry\Point
 {
     /**
      * @var float

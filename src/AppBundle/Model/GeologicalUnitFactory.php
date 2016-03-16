@@ -28,4 +28,14 @@ class GeologicalUnitFactory
 
         return $gu;
     }
+
+    public static function setOwnerNameAndPublic(UserInterface $owner = null, $name = "", $public = false)
+    {
+        $gu = new GeologicalUnit();
+        $gu->setOwner($owner);
+        $gu->setName($name);
+        $gu->setPublic($public);
+
+        return $gu;
+    }
 }

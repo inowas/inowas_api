@@ -26,4 +26,14 @@ class BoundaryFactory
 
         return $boundary;
     }
+
+    public static function setOwnerNameAndPublic(UserInterface $owner = null, $name = "", $public = false)
+    {
+        $boundary = new Boundary();
+        $boundary->setOwner($owner);
+        $boundary->setName($name);
+        $boundary->setPublic($public);
+
+        return $boundary;
+    }
 }

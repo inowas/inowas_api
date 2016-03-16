@@ -56,9 +56,9 @@ doctrine:
         #     path:     "%database_path%"
 
         types:
-            point:          CrEOF\Spatial\DBAL\Types\Geography\PointType
-            polygon:        CrEOF\Spatial\DBAL\Types\Geography\PolygonType
-            linestring:     CrEOF\Spatial\DBAL\Types\Geography\LineStringType
+            point:          CrEOF\Spatial\DBAL\Types\Geometry\PointType
+            polygon:        CrEOF\Spatial\DBAL\Types\Geometry\PolygonType
+            linestring:     CrEOF\Spatial\DBAL\Types\Geometry\LineStringType
             raster:         AppBundle\Type\RasterType
 
     orm:

@@ -10,7 +10,6 @@ use AppBundle\Model\GeologicalLayerFactory;
 use AppBundle\Model\GeologicalPointFactory;
 use AppBundle\Model\GeologicalUnitFactory;
 use AppBundle\Model\ObservationPointFactory;
-use AppBundle\Model\ProjectFactory;
 use AppBundle\Model\PropertyFactory;
 use AppBundle\Model\PropertyTimeValueFactory;
 use AppBundle\Model\PropertyTypeFactory;
@@ -69,38 +68,38 @@ class LoadScenario_1 implements FixtureInterface, ContainerAwareInterface
         }
 
         // Add new Project
-        $project = ProjectFactory::setOwnerAndPublic($user, $public);
-        $project->setName('Scenario 1');
-        $project->setDescription('This is not a real example.<br>The data was stored only for testing purposes.<br>The Data contains 3 geological points with respectively 3 geological units.');
-        $entityManager->persist($project);
-        $entityManager->flush();
+        #$project = ProjectFactory::setOwnerAndPublic($user, $public);
+        #$project->setName('Scenario 1');
+        #$project->setDescription('This is not a real example.<br>The data was stored only for testing purposes.<br>The Data contains 3 geological points with respectively 3 geological units.');
+        #$entityManager->persist($project);
+        #$entityManager->flush();
 
         // Add Geological Profile 1
-        $geologicalPoint = GeologicalPointFactory::setOwnerProjectNameAndPoint($user, $project, 'SC1_GP1', new Point(11772891.9650673, 2397519.89608855, 3857), $public);
-        $geologicalPoint = $this->addNewGeologicalUnitToGeologicalPoint($geologicalPoint, $project, 'SC1_GP1.1', 100, 70);
-        $geologicalPoint = $this->addNewGeologicalUnitToGeologicalPoint($geologicalPoint, $project, 'SC1_GP1.2',  70, 40);
-        $geologicalPoint = $this->addNewGeologicalUnitToGeologicalPoint($geologicalPoint, $project, 'SC1_GP1.3',  40,  0);
+        $geologicalPoint = GeologicalPointFactory::setOwnerNameAndPoint($user, 'SC1_GP1', new Point(11772891.9650673, 2397519.89608855, 4326), $public);
+        $geologicalPoint = $this->addNewGeologicalUnitToGeologicalPoint($geologicalPoint, 'SC1_GP1.1', 100, 70);
+        $geologicalPoint = $this->addNewGeologicalUnitToGeologicalPoint($geologicalPoint, 'SC1_GP1.2',  70, 40);
+        $geologicalPoint = $this->addNewGeologicalUnitToGeologicalPoint($geologicalPoint, 'SC1_GP1.3',  40,  0);
         $entityManager->persist($geologicalPoint);
         $entityManager->flush();
 
         // Add Geological Profile 2
-        $geologicalPoint = GeologicalPointFactory::setOwnerProjectNameAndPoint($user, $project, 'SC1_GP2', new Point(11786103.1301754, 2397138.80478736, 3857), $public);
-        $geologicalPoint = $this->addNewGeologicalUnitToGeologicalPoint($geologicalPoint, $project, 'SC1_GP2.1', 100, 70);
-        $geologicalPoint = $this->addNewGeologicalUnitToGeologicalPoint($geologicalPoint, $project, 'SC1_GP2.2',  70, 40);
-        $geologicalPoint = $this->addNewGeologicalUnitToGeologicalPoint($geologicalPoint, $project, 'SC1_GP2.3',  40,  0);
+        $geologicalPoint = GeologicalPointFactory::setOwnerNameAndPoint($user, 'SC1_GP2', new Point(11786103.1301754, 2397138.80478736, 4326), $public);
+        $geologicalPoint = $this->addNewGeologicalUnitToGeologicalPoint($geologicalPoint, 'SC1_GP2.1', 100, 70);
+        $geologicalPoint = $this->addNewGeologicalUnitToGeologicalPoint($geologicalPoint, 'SC1_GP2.2',  70, 40);
+        $geologicalPoint = $this->addNewGeologicalUnitToGeologicalPoint($geologicalPoint, 'SC1_GP2.3',  40,  0);
         $entityManager->persist($geologicalPoint);
         $entityManager->flush();
 
         // Add Geological Profile 3
-        $geologicalPoint = GeologicalPointFactory::setOwnerProjectNameAndPoint($user, $project, 'SC1_GP3', new Point(11779836.2954446, 2387061.05704468, 3857), $public);
-        $geologicalPoint = $this->addNewGeologicalUnitToGeologicalPoint($geologicalPoint, $project, 'SC1_GP3.1', 100, 70);
-        $geologicalPoint = $this->addNewGeologicalUnitToGeologicalPoint($geologicalPoint, $project, 'SC1_GP3.2',  70, 40);
-        $geologicalPoint = $this->addNewGeologicalUnitToGeologicalPoint($geologicalPoint, $project, 'SC1_GP3.3',  40,  0);
+        $geologicalPoint = GeologicalPointFactory::setOwnerNameAndPoint($user, 'SC1_GP3', new Point(11779836.2954446, 2387061.05704468, 4326), $public);
+        $geologicalPoint = $this->addNewGeologicalUnitToGeologicalPoint($geologicalPoint, 'SC1_GP3.1', 100, 70);
+        $geologicalPoint = $this->addNewGeologicalUnitToGeologicalPoint($geologicalPoint, 'SC1_GP3.2',  70, 40);
+        $geologicalPoint = $this->addNewGeologicalUnitToGeologicalPoint($geologicalPoint, 'SC1_GP3.3',  40,  0);
         $entityManager->persist($geologicalPoint);
         $entityManager->flush();
 
         // Create layer 1
-        $geologicalLayer = GeologicalLayerFactory::setOwnerProjectNameAndPublic($user, $project, 'SC1_L1', $public);
+        $geologicalLayer = GeologicalLayerFactory::setOwnerNameAndPublic($user, 'SC1_L1', $public);
         $geologicalLayer = $this->addGeologicalUnitToGeologicalLayer($entityManager, $geologicalLayer, 'SC1_GP1.1');
         $geologicalLayer = $this->addGeologicalUnitToGeologicalLayer($entityManager, $geologicalLayer, 'SC1_GP2.1');
         $geologicalLayer = $this->addGeologicalUnitToGeologicalLayer($entityManager, $geologicalLayer, 'SC1_GP3.1');
@@ -108,7 +107,7 @@ class LoadScenario_1 implements FixtureInterface, ContainerAwareInterface
         $entityManager->flush();
 
         // Create layer 2
-        $geologicalLayer = GeologicalLayerFactory::setOwnerProjectNameAndPublic($user, $project, 'SC1_L2', $public);
+        $geologicalLayer = GeologicalLayerFactory::setOwnerNameAndPublic($user, 'SC1_L2', $public);
         $geologicalLayer = $this->addGeologicalUnitToGeologicalLayer($entityManager, $geologicalLayer, 'SC1_GP1.2');
         $geologicalLayer = $this->addGeologicalUnitToGeologicalLayer($entityManager, $geologicalLayer, 'SC1_GP2.2');
         $geologicalLayer = $this->addGeologicalUnitToGeologicalLayer($entityManager, $geologicalLayer, 'SC1_GP3.2');
@@ -116,7 +115,7 @@ class LoadScenario_1 implements FixtureInterface, ContainerAwareInterface
         $entityManager->flush();
 
         // Create layer 3
-        $geologicalLayer = GeologicalLayerFactory::setOwnerProjectNameAndPublic($user, $project, 'SC1_L3', $public);
+        $geologicalLayer = GeologicalLayerFactory::setOwnerNameAndPublic($user, 'SC1_L3', $public);
         $geologicalLayer = $this->addGeologicalUnitToGeologicalLayer($entityManager, $geologicalLayer, 'SC1_GP1.3');
         $geologicalLayer = $this->addGeologicalUnitToGeologicalLayer($entityManager, $geologicalLayer, 'SC1_GP2.3');
         $geologicalLayer = $this->addGeologicalUnitToGeologicalLayer($entityManager, $geologicalLayer, 'SC1_GP3.3');
@@ -125,14 +124,14 @@ class LoadScenario_1 implements FixtureInterface, ContainerAwareInterface
 
 
         // Create Stream
-        $stream = StreamFactory::setOwnerProjectNameAndPublic($user, $project, 'SC1_S1', $public);
-        $stream->setStartingPoint(new Point(11777338.0302479, 2395656.78306049, 3857));
+        $stream = StreamFactory::setOwnerNameAndPublic($user, 'SC1_S1', $public);
+        $stream->setStartingPoint(new Point(11777338.0302479, 2395656.78306049, 4326));
         $stream->setLine(
             new LineString(array(
                 array(11766937.6721201, 2380245.03544451),
                 array(11772341.4998545, 2386595.27878767),
                 array(11777338.0302479, 2395656.78306049)),
-                3857
+                4326
             )
         );
         $entityManager->persist($stream);
@@ -144,7 +143,7 @@ class LoadScenario_1 implements FixtureInterface, ContainerAwareInterface
         $entityManager->flush();
 
         // Add new Area
-        $area = AreaFactory::setOwnerProjectNameTypeAndPublic($user, $project, 'SC1_A1', $areaType, $public);
+        $area = AreaFactory::setOwnerNameTypeAndPublic($user, 'SC1_A1', $areaType, $public);
         $coordinates = array(
             array(11767778.4794313, 2403329.01798664),
             array(11791015.33603, 2403329.01798664),
@@ -153,21 +152,21 @@ class LoadScenario_1 implements FixtureInterface, ContainerAwareInterface
             array(11767778.4794313, 2403329.01798664)
         );
         $line = new LineString($coordinates);
-        $polygon = new Polygon(array($line), 3857);
+        $polygon = new Polygon(array($line), 4326);
         $area->setGeometry($polygon);
 
         // Create ObservationPoints for area
-        $observationPoint = ObservationPointFactory::setOwnerProjectNameAndPoint($user, $project, 'SC1_OP1', new Point(11778481.3041515, 2393327.89177542, 3857), $public);
+        $observationPoint = ObservationPointFactory::setOwnerNameAndPoint($user, 'SC1_OP1', new Point(11778481.3041515, 2393327.89177542, 4326), $public);
         $observationPoint->setElevation(100);
         $entityManager->persist($observationPoint);
         $area->addObservationPoint($observationPoint);
 
-        $observationPoint = ObservationPointFactory::setOwnerProjectNameAndPoint($user, $project, 'SC1_OP2', new Point(11772891.9650673, 2397519.89608855, 3857), $public);
+        $observationPoint = ObservationPointFactory::setOwnerNameAndPoint($user, 'SC1_OP2', new Point(11772891.9650673, 2397519.89608855, 4326), $public);
         $observationPoint->setElevation(100);
         $entityManager->persist($observationPoint);
         $area->addObservationPoint($observationPoint);
 
-        $observationPoint = ObservationPointFactory::setOwnerProjectNameAndPoint($user, $project, 'SC1_OP3', new Point(11786103.1301754, 2397138.80478736, 3857), $public);
+        $observationPoint = ObservationPointFactory::setOwnerNameAndPoint($user, 'SC1_OP3', new Point(11786103.1301754, 2397138.80478736, 4326), $public);
         $observationPoint->setElevation(100);
         $entityManager->persist($observationPoint);
         $area->addObservationPoint($observationPoint);
@@ -176,13 +175,13 @@ class LoadScenario_1 implements FixtureInterface, ContainerAwareInterface
         $entityManager->flush();
 
         // Create boundary
-        $boundary = BoundaryFactory::setOwnerProjectNameAndPublic($user, $project, 'SC1_B1', $public);
+        $boundary = BoundaryFactory::setOwnerNameAndPublic($user, 'SC1_B1', $public);
         $lineCoordinates = array(
             array(11767778.4794313, 2403329.01798664),
             array(11766937.6721201, 2380245.03544451),
             array(11791168.2100865, 2379939.28733137)
         );
-        $line = new LineString($lineCoordinates, 3857);
+        $line = new LineString($lineCoordinates, 4326);
         $boundary->setGeometry($line);
         $entityManager->persist($boundary);
         $entityManager->flush();
@@ -264,13 +263,12 @@ class LoadScenario_1 implements FixtureInterface, ContainerAwareInterface
         $entityManager->flush();
     }
 
-    private function addNewGeologicalUnitToGeologicalPoint(\AppBundle\Entity\GeologicalPoint $geologicalPoint, \AppBundle\Entity\Project $project, $name = "", $topElevation = 0, $bottomElevation = 0)
+    private function addNewGeologicalUnitToGeologicalPoint(\AppBundle\Entity\GeologicalPoint $geologicalPoint, $name = "", $topElevation = 0, $bottomElevation = 0)
     {
-        $geologicalUnit  = GeologicalUnitFactory::setOwnerProjectNameAndPublic($geologicalPoint->getOwner(), $project, $name, $geologicalPoint->getPublic());
+        $geologicalUnit  = GeologicalUnitFactory::setOwnerNameAndPublic($geologicalPoint->getOwner(), $name, $geologicalPoint->getPublic());
         $geologicalUnit->setTopElevation($topElevation);
         $geologicalUnit->setBottomElevation($bottomElevation);
         $geologicalUnit->setGeologicalPoint($geologicalPoint);
-
         return $geologicalPoint;
     }
 

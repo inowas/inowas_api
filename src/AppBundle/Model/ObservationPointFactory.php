@@ -54,4 +54,22 @@ class ObservationPointFactory
 
         return $op;
     }
+
+    /**
+     * @param UserInterface|null $owner
+     * @param string $name
+     * @param Point|null $point
+     * @param bool|false $public
+     * @return ObservationPoint
+     */
+    public static function setOwnerNameAndPoint(UserInterface $owner = null, $name = "", Point $point = null, $public = false)
+    {
+        $op = new ObservationPoint();
+        $op->setOwner($owner);
+        $op->setName($name);
+        $op->setPoint($point);
+        $op->setPublic($public);
+
+        return $op;
+    }
 }
