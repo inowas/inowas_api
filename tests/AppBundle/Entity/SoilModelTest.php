@@ -89,6 +89,7 @@ class SoilModelTest extends WebTestCase
         $layer1->setName('TestLayer1');
         $this->entityManager->persist($layer1);
         $this->entityManager->flush();
+        $this->entityManager->clear($layer1);
 
         $geologicalLayers = $this->entityManager->getRepository('AppBundle:GeologicalLayer')->findAll();
         $this->assertCount(1, $geologicalLayers);
@@ -96,13 +97,15 @@ class SoilModelTest extends WebTestCase
         $this->soilModel->addGeologicalLayer($layer1);
         $this->entityManager->persist($this->soilModel);
         $this->entityManager->flush();
+        $this->entityManager->clear($this->soilModel);
 
         /** @var array */
         $soilModels = $this->entityManager->getRepository('AppBundle:SoilModel')->findAll();
         $this->assertCount(1, $soilModels);
+        $this->soilModel = $soilModels[0];
 
         /** @var ArrayCollection $layers */
-        $layers = $soilModels[0]->getGeologicalLayers();
+        $layers = $this->soilModel->getGeologicalLayers();
         $this->assertCount(1, $layers);
         $layer = $layers->first();
         $this->assertEquals($layer, $layer1);
