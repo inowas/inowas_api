@@ -16,6 +16,11 @@ class GeologicalLayerFactory
         return new GeologicalLayer();
     }
 
+    public static function create()
+    {
+        return new GeologicalLayer();
+    }
+
     public static function setOwnerProjectNameAndPublic(UserInterface $owner = null, Project $project = null, $name = "", $public = false)
     {
         $geologicalLayer = new GeologicalLayer();

@@ -19,6 +19,14 @@ class GeologicalPointFactory
     }
 
     /**
+     * @return GeologicalPoint
+     */
+    public static function create()
+    {
+        return new GeologicalPoint();
+    }
+
+    /**
      * @param User|null $owner
      * @param Project $project
      * @param bool|false $public

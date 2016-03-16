@@ -13,6 +13,11 @@ class GeologicalUnitFactory
         return new GeologicalUnit();
     }
 
+    public static function create()
+    {
+        return new GeologicalUnit();
+    }
+
     public static function setOwnerProjectNameAndPublic(UserInterface $owner = null, Project $project = null, $name = "", $public = false)
     {
         $gu = new GeologicalUnit();
