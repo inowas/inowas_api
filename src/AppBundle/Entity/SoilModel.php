@@ -413,7 +413,7 @@ class SoilModel
      * +points
      * have to be written to the soilModelObjects-Array
      *
-     * @ORM\PrePersist()
+     * @ORM\PreFlush()
      */
     public function prePersist()
     {

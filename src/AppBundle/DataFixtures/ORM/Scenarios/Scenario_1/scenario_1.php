@@ -88,6 +88,7 @@ class LoadScenario_1 implements FixtureInterface, ContainerAwareInterface
         $entityManager->flush();
 
         $soilModel->addGeologicalPoint($geologicalPoint);
+        $entityManager->persist($soilModel);
 
         // Add Geological Profile 2
         $geologicalPoint = GeologicalPointFactory::setOwnerNameAndPoint($user, 'SC1_GP2', new Point(11786103.1301754, 2397138.80478736, 4326), $public);
@@ -98,6 +99,7 @@ class LoadScenario_1 implements FixtureInterface, ContainerAwareInterface
         $entityManager->flush();
 
         $soilModel->addGeologicalPoint($geologicalPoint);
+        $entityManager->persist($soilModel);
 
         // Add Geological Profile 3
         $geologicalPoint = GeologicalPointFactory::setOwnerNameAndPoint($user, 'SC1_GP3', new Point(11779836.2954446, 2387061.05704468, 4326), $public);
@@ -108,6 +110,7 @@ class LoadScenario_1 implements FixtureInterface, ContainerAwareInterface
         $entityManager->flush();
 
         $soilModel->addGeologicalPoint($geologicalPoint);
+        $entityManager->persist($soilModel);
 
         // Create layer 1
         $geologicalLayer = GeologicalLayerFactory::setOwnerNameAndPublic($user, 'SC1_L1', $public);
@@ -118,6 +121,7 @@ class LoadScenario_1 implements FixtureInterface, ContainerAwareInterface
         $entityManager->flush();
 
         $soilModel->addGeologicalLayer($geologicalLayer);
+        $entityManager->persist($soilModel);
 
         // Create layer 2
         $geologicalLayer = GeologicalLayerFactory::setOwnerNameAndPublic($user, 'SC1_L2', $public);
@@ -128,6 +132,7 @@ class LoadScenario_1 implements FixtureInterface, ContainerAwareInterface
         $entityManager->flush();
 
         $soilModel->addGeologicalLayer($geologicalLayer);
+        $entityManager->persist($soilModel);
 
         // Create layer 3
         $geologicalLayer = GeologicalLayerFactory::setOwnerNameAndPublic($user, 'SC1_L3', $public);
