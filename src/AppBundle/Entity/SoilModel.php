@@ -415,7 +415,7 @@ class SoilModel
      *
      * @ORM\PreFlush()
      */
-    public function prePersist()
+    public function preFlush()
     {
         if ($this->geologicalPoints->count() > 0 )
         {

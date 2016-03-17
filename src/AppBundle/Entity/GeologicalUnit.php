@@ -117,6 +117,10 @@ class GeologicalUnit extends ModelObject
      */
     public function setGeologicalPoint(GeologicalPoint $geologicalPoint = null)
     {
+        if (!$geologicalPoint->getGeologicalUnits()->contains($geologicalPoint))
+        {
+            $geologicalPoint->addGeologicalUnit($this);
+        }
         $this->geologicalPoint = $geologicalPoint;
 
         return $this;

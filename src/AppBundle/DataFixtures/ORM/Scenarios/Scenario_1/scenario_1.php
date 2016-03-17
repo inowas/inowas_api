@@ -77,7 +77,7 @@ class LoadScenario_1 implements FixtureInterface, ContainerAwareInterface
 
         // Add new SoilModel
         $soilModel = SoilModelFactory::create();
-        $soilModel->setOwner($user)->setName('SM-3566689');
+        $soilModel->setOwner($user)->setName('SM Scenario 1');
 
         // Add Geological Profile 1
         $geologicalPoint = GeologicalPointFactory::setOwnerNameAndPoint($user, 'SC1_GP1', new Point(11772891.9650673, 2397519.89608855, 4326), $public);
@@ -132,6 +132,7 @@ class LoadScenario_1 implements FixtureInterface, ContainerAwareInterface
         $entityManager->flush();
 
         $soilModel->addGeologicalLayer($geologicalLayer);
+        $entityManager->persist($soilModel);
         $entityManager->persist($soilModel);
 
         // Create layer 3
