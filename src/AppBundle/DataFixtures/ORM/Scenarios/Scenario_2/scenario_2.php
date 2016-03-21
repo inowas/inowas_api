@@ -10,25 +10,21 @@ use AppBundle\Model\GeologicalLayerFactory;
 use AppBundle\Model\GeologicalPointFactory;
 use AppBundle\Model\GeologicalUnitFactory;
 use AppBundle\Model\ObservationPointFactory;
-use AppBundle\Model\ProjectFactory;
 use AppBundle\Model\PropertyFactory;
 use AppBundle\Model\PropertyTimeValueFactory;
-use AppBundle\Model\PropertyTypeFactory;
 use AppBundle\Model\PropertyValueFactory;
 
 use AppBundle\Model\Point;
 use AppBundle\Model\SoilModelFactory;
 use CrEOF\Spatial\DBAL\Platform\PostgreSql;
-use CrEOF\Spatial\DBAL\Types\Geometry\LineStringType;
-use CrEOF\Spatial\DBAL\Types\Geometry\PolygonType;
 use CrEOF\Spatial\PHP\Types\Geometry\LineString;
 use CrEOF\Spatial\PHP\Types\Geometry\Polygon;
-use CrEOF\Spatial\Tests\DBAL\Types\Geometry\PolygonTypeTest;
 use Doctrine\Common\DataFixtures\FixtureInterface;
 use Doctrine\Common\Persistence\ObjectManager;
 use Doctrine\DBAL\Types\Type;
 use Symfony\Component\DependencyInjection\ContainerAwareInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class LoadScenario_2 implements FixtureInterface, ContainerAwareInterface
 {
@@ -645,7 +641,7 @@ class LoadScenario_2 implements FixtureInterface, ContainerAwareInterface
 
                 echo 'Add properties to '.$geologicalUnit->getName()."\n";
 
-                $propertyType = $this->getPropertyType($this->entityManager, 'Hydraulic conductivity');
+                $propertyType = $this->getPropertyType($this->entityManager, 'hc');
                 $property = PropertyFactory::setTypeAndModelObject($propertyType, $geologicalUnit);
                 $propertyValue = PropertyValueFactory::setPropertyAndValue($property, $geologicalUnitProperty[1]);
                 $property->setName('Hydraulic conductivity'.' '.$geologicalUnit->getName());
@@ -653,7 +649,7 @@ class LoadScenario_2 implements FixtureInterface, ContainerAwareInterface
                 $geologicalUnit->addProperty($property);
                 $this->entityManager->persist($property);
 
-                $propertyType = $this->getPropertyType($this->entityManager, 'Horizontal anisotropy');
+                $propertyType = $this->getPropertyType($this->entityManager, 'ha');
                 $property = PropertyFactory::setTypeAndModelObject($propertyType, $geologicalUnit);
                 $propertyValue = PropertyValueFactory::setPropertyAndValue($property, $geologicalUnitProperty[2]);
                 $property->setName('Horizontal anisotropy'.' '.$geologicalUnit->getName());
@@ -661,7 +657,7 @@ class LoadScenario_2 implements FixtureInterface, ContainerAwareInterface
                 $geologicalUnit->addProperty($property);
                 $this->entityManager->persist($property);
 
-                $propertyType = $this->getPropertyType($this->entityManager, 'Vertical anisotropy');
+                $propertyType = $this->getPropertyType($this->entityManager, 'va');
                 $property = PropertyFactory::setTypeAndModelObject($propertyType, $geologicalUnit);
                 $propertyValue = PropertyValueFactory::setPropertyAndValue($property, $geologicalUnitProperty[3]);
                 $property->setName('Vertical anisotropy'.' '.$geologicalUnit->getName());
@@ -795,21 +791,19 @@ class LoadScenario_2 implements FixtureInterface, ContainerAwareInterface
 
     /**
      * @param ObjectManager $entityManager
-     * @param $propertyName
+     * @param $propertyAbbreviation
      * @return \AppBundle\Entity\PropertyType|object
      */
-    private function getPropertyType(ObjectManager $entityManager, $propertyName)
+    private function getPropertyType(ObjectManager $entityManager, $propertyAbbreviation)
     {
         $propertyType = $entityManager->getRepository('AppBundle:PropertyType')
             ->findOneBy(array(
-                'name' => $propertyName
+                'abbreviation' => $propertyAbbreviation
             ));
 
         if (!$propertyType)
         {
-            $propertyType = PropertyTypeFactory::setName($propertyName);
-            $entityManager->persist($propertyType);
-            $entityManager->flush();
+            throw new NotFoundHttpException();
         }
 
         return $propertyType;

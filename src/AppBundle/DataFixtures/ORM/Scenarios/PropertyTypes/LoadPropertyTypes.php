@@ -36,7 +36,16 @@ class LoadPropertyTypes implements FixtureInterface, ContainerAwareInterface
             array("sy", "Specific yield"),
             array("ss", "Specific storage"),
             array("et", "Top elevation"),
-            array("eb", "Bottom elevation")
+            array("eb", "Bottom elevation"),
+            array("hc", "Hydraulic Conductivity"),
+            array("ha", "Horizontal anisotropy"),
+            array("va", "Vertical anisotropy"),
+            array("gr", "Groundwater Recharge in m"),
+            array("tmin", "Temperature minimum"),
+            array("tmax", "Temperature maximum"),
+            array("pr", "Precipitation in m"),
+            array("pe", "Potential evapotranspiration in mm"),
+            array("vc", "Vertical conductance")
         );
 
         foreach ($propertyTypesArray as $propertyTypeArray)

@@ -12,7 +12,6 @@ use AppBundle\Model\GeologicalUnitFactory;
 use AppBundle\Model\ObservationPointFactory;
 use AppBundle\Model\PropertyFactory;
 use AppBundle\Model\PropertyTimeValueFactory;
-use AppBundle\Model\PropertyTypeFactory;
 use AppBundle\Model\PropertyValueFactory;
 use AppBundle\Model\SoilModelFactory;
 use AppBundle\Model\StreamFactory;
@@ -24,6 +23,7 @@ use Doctrine\Common\DataFixtures\FixtureInterface;
 use Doctrine\Common\Persistence\ObjectManager;
 use Symfony\Component\DependencyInjection\ContainerAwareInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 
 class LoadScenario_1 implements FixtureInterface, ContainerAwareInterface
@@ -212,17 +212,32 @@ class LoadScenario_1 implements FixtureInterface, ContainerAwareInterface
         $entityManager->flush();
 
         // Add ModelObjectPropertyTypes
-        $propertyTypeGwHead = PropertyTypeFactory::setName("gwhead");
-        $entityManager->persist($propertyTypeGwHead);
+        $propertyTypeGwHead = $entityManager->getRepository('AppBundle:PropertyType')
+            ->findOneBy(array(
+                'abbreviation' => "hh"
+            ));
 
-        $propertyTypeElevation = PropertyTypeFactory::setName("elevation");
-        $entityManager->persist($propertyTypeElevation);
+        if (!$propertyTypeGwHead)
+        {
+            return new NotFoundHttpException();
+        }
+
+        $propertyTypeElevation = $entityManager->getRepository('AppBundle:PropertyType')
+            ->findOneBy(array(
+                'abbreviation' => "et"
+            ));
+
+        if (!$propertyTypeElevation)
+        {
+            return new NotFoundHttpException();
+        }
 
         // Add Property GWHead and TimeValues to ObservationPoint SC1_OP1
         $observationPoint = $entityManager->getRepository('AppBundle:ObservationPoint')
             ->findOneBy(array(
                 'name' => 'SC1_OP1'
             ));
+        
         $property = PropertyFactory::setTypeAndModelObject($propertyTypeGwHead, $observationPoint);
         $entityManager->persist($property);
 
@@ -286,6 +301,8 @@ class LoadScenario_1 implements FixtureInterface, ContainerAwareInterface
         $entityManager->persist($propertyValue);
 
         $entityManager->flush();
+
+        return 0;
     }
 
     private function addNewGeologicalUnitToGeologicalPoint(\AppBundle\Entity\GeologicalPoint $geologicalPoint, $name = "", $topElevation = 0, $bottomElevation = 0)

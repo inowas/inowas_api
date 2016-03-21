@@ -9,7 +9,6 @@ use AppBundle\Model\BoundaryFactory;
 use AppBundle\Model\GeologicalLayerFactory;
 use AppBundle\Model\GeologicalPointFactory;
 use AppBundle\Model\GeologicalUnitFactory;
-use AppBundle\Model\ProjectFactory;
 use AppBundle\Model\PropertyFactory;
 use AppBundle\Model\PropertyTimeValueFactory;
 use AppBundle\Model\PropertyTypeFactory;
@@ -182,25 +181,25 @@ class LoadScenario_3 implements FixtureInterface, ContainerAwareInterface
             throw new NotFoundHttpException('Layer not found');
         }
 
-        $propertyType = $this->getPropertyType($entityManager, 'Hydraulic conductivity');
+        $propertyType = $this->getPropertyType($entityManager, 'hc');
         $property = PropertyFactory::setTypeAndModelObject($propertyType, $geologicalLayer);
         $entityManager->persist($property);
         $propertyValue = PropertyValueFactory::setPropertyAndValue($property, 40);
         $entityManager->persist($propertyValue);
 
-        $propertyType = $this->getPropertyType($entityManager, 'Vertical anisotropy');
+        $propertyType = $this->getPropertyType($entityManager, 'va');
         $property = PropertyFactory::setTypeAndModelObject($propertyType, $geologicalLayer);
         $entityManager->persist($property);
         $propertyValue = PropertyValueFactory::setPropertyAndValue($property, 8);
         $entityManager->persist($propertyValue);
 
-        $propertyType = $this->getPropertyType($entityManager, 'Specific storage');
+        $propertyType = $this->getPropertyType($entityManager, 'ss');
         $property = PropertyFactory::setTypeAndModelObject($propertyType, $geologicalLayer);
         $entityManager->persist($property);
         $propertyValue = PropertyValueFactory::setPropertyAndValue($property, 0.00001);
         $entityManager->persist($propertyValue);
 
-        $propertyType = $this->getPropertyType($entityManager, 'Specific yield');
+        $propertyType = $this->getPropertyType($entityManager, 'sy');
         $property = PropertyFactory::setTypeAndModelObject($propertyType, $geologicalLayer);
         $entityManager->persist($property);
         $propertyValue = PropertyValueFactory::setPropertyAndValue($property, 0.1);
@@ -215,7 +214,7 @@ class LoadScenario_3 implements FixtureInterface, ContainerAwareInterface
             throw new NotFoundHttpException('Layer not found');
         }
 
-        $propertyType = $this->getPropertyType($entityManager, 'Vertical conductance');
+        $propertyType = $this->getPropertyType($entityManager, 'vc');
         $property = PropertyFactory::setTypeAndModelObject($propertyType, $geologicalLayer);
         $entityManager->persist($property);
         $propertyValue = PropertyValueFactory::setPropertyAndValue($property, 1);
@@ -231,25 +230,25 @@ class LoadScenario_3 implements FixtureInterface, ContainerAwareInterface
             throw new NotFoundHttpException('Layer not found');
         }
 
-        $propertyType = $this->getPropertyType($entityManager, 'Hydraulic conductivity');
+        $propertyType = $this->getPropertyType($entityManager, 'hc');
         $property = PropertyFactory::setTypeAndModelObject($propertyType, $geologicalLayer);
         $entityManager->persist($property);
         $propertyValue = PropertyValueFactory::setPropertyAndValue($property, 42);
         $entityManager->persist($propertyValue);
 
-        $propertyType = $this->getPropertyType($entityManager, 'Vertical anisotropy');
+        $propertyType = $this->getPropertyType($entityManager, 'va');
         $property = PropertyFactory::setTypeAndModelObject($propertyType, $geologicalLayer);
         $entityManager->persist($property);
         $propertyValue = PropertyValueFactory::setPropertyAndValue($property, 21);
         $entityManager->persist($propertyValue);
 
-        $propertyType = $this->getPropertyType($entityManager, 'Specific storage');
+        $propertyType = $this->getPropertyType($entityManager, 'ss');
         $property = PropertyFactory::setTypeAndModelObject($propertyType, $geologicalLayer);
         $entityManager->persist($property);
         $propertyValue = PropertyValueFactory::setPropertyAndValue($property, 0.00001);
         $entityManager->persist($propertyValue);
 
-        $propertyType = $this->getPropertyType($entityManager, 'Specific yield');
+        $propertyType = $this->getPropertyType($entityManager, 'sy');
         $property = PropertyFactory::setTypeAndModelObject($propertyType, $geologicalLayer);
         $entityManager->persist($property);
         $propertyValue = PropertyValueFactory::setPropertyAndValue($property, 0.1);
@@ -393,24 +392,21 @@ class LoadScenario_3 implements FixtureInterface, ContainerAwareInterface
 
     /**
      * @param ObjectManager $entityManager
-     * @param $propertyName
+     * @param $propertyAbbreviation
      * @return \AppBundle\Entity\PropertyType|object
      */
-    private function getPropertyType(ObjectManager $entityManager, $propertyName)
+    private function getPropertyType(ObjectManager $entityManager, $propertyAbbreviation)
     {
         $propertyType = $entityManager->getRepository('AppBundle:PropertyType')
             ->findOneBy(array(
-                'name' => $propertyName
+                'abbreviation' => $propertyAbbreviation
             ));
 
         if (!$propertyType)
         {
-            $propertyType = PropertyTypeFactory::setName($propertyName);
-            $entityManager->persist($propertyType);
-            $entityManager->flush();
+            throw new NotFoundHttpException($propertyAbbreviation.' not found.');
         }
 
         return $propertyType;
     }
-
 }
