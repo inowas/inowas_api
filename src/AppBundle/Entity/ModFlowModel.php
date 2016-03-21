@@ -50,26 +50,25 @@ class ModFlowModel extends AbstractModel
     private $streams;
 
     /**
-     * @var ArrayCollection
+     * @var array
      *
-     * @ORM\OneToMany(targetEntity="AppBundle\Entity\StressPeriod", mappedBy="model")
+     * @ORM\Column(name="stress_periods", type="json_array")
      */
-    private $stressPeriods;
-
-
-    /**
-     * @var ArrayCollection
-     *
-     * @ORM\Column(type="json_array")
-     */
-    private $initValues;
+    private $stressPeriods = array();
 
     /**
-     * @var ArrayCollection
+     * @var array
      *
-     * @ORM\Column(type="json_array")
+     * @ORM\Column(name="init_values", type="json_array")
      */
-    private $calculationProperties;
+    private $initValues = array();
+
+    /**
+     * @var array
+     *
+     * @ORM\Column(name="calculation_properties", type="json_array")
+     */
+    private $calculationProperties = array();
 
     /**
      * ModFlowModel constructor.
@@ -80,9 +79,6 @@ class ModFlowModel extends AbstractModel
         $this->boundaries = new ArrayCollection();
         $this->observationPoints = new ArrayCollection();
         $this->streams = new ArrayCollection();
-        $this->stressPeriods = new ArrayCollection();
-        $this->initValues = new ArrayCollection();
-        $this->calculationProperties = new ArrayCollection();
     }
 
     /**
@@ -285,11 +281,11 @@ class ModFlowModel extends AbstractModel
     /**
      * Add stressPeriod
      *
-     * @param \AppBundle\Entity\StressPeriod $stressPeriod
+     * @param $stressPeriod
      *
      * @return ModFlowModel
      */
-    public function addStressPeriod(\AppBundle\Entity\StressPeriod $stressPeriod)
+    public function addStressPeriod($stressPeriod)
     {
         $this->stressPeriods[] = $stressPeriod;
 
@@ -297,23 +293,24 @@ class ModFlowModel extends AbstractModel
     }
 
     /**
-     * Remove stressPeriod
-     *
-     * @param \AppBundle\Entity\StressPeriod $stressPeriod
-     */
-    public function removeStressPeriod(\AppBundle\Entity\StressPeriod $stressPeriod)
-    {
-        $this->stressPeriods->removeElement($stressPeriod);
-    }
-
-    /**
      * Get stressPeriods
      *
-     * @return \Doctrine\Common\Collections\Collection
+     * @return array
      */
     public function getStressPeriods()
     {
         return $this->stressPeriods;
+    }
+
+    /**
+     * Set stressPeriods
+     *
+     * @param $stressPeriods
+     * @return ModFlowModel
+     */
+    public function setStressPeriods($stressPeriods)
+    {
+        $this->stressPeriods = $stressPeriods;
     }
 
     /**

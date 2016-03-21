@@ -2,6 +2,7 @@
 
 namespace AppBundle\DataFixtures\ORM\Scenarios\Scenario_2;
 
+use AppBundle\Entity\ModFlowModel;
 use AppBundle\Entity\User;
 use AppBundle\Model\AreaFactory;
 use AppBundle\Model\AreaTypeFactory;
@@ -9,13 +10,15 @@ use AppBundle\Model\BoundaryFactory;
 use AppBundle\Model\GeologicalLayerFactory;
 use AppBundle\Model\GeologicalPointFactory;
 use AppBundle\Model\GeologicalUnitFactory;
+use AppBundle\Model\ModFlowModelFactory;
 use AppBundle\Model\ObservationPointFactory;
 use AppBundle\Model\PropertyFactory;
 use AppBundle\Model\PropertyTimeValueFactory;
 use AppBundle\Model\PropertyValueFactory;
-
 use AppBundle\Model\Point;
 use AppBundle\Model\SoilModelFactory;
+use AppBundle\Model\StressPeriod;
+use AppBundle\Model\StressPeriodFactory;
 use CrEOF\Spatial\DBAL\Platform\PostgreSql;
 use CrEOF\Spatial\PHP\Types\Geometry\LineString;
 use CrEOF\Spatial\PHP\Types\Geometry\Polygon;
@@ -74,9 +77,30 @@ class LoadScenario_2 implements FixtureInterface, ContainerAwareInterface
             $entityManager->flush();
         }
 
+        // Create AreaType
+        $areaType = AreaTypeFactory::setName('SC2_AT1');
+        $entityManager->persist($areaType);
+        $entityManager->flush();
+
+        // Create area
+        $area = AreaFactory::setOwnerNameTypeAndPublic($user, "SC2_A1", $areaType, $public);
+        $converter = new PostgreSql();
+        $geometryText = "Polygon ((11777056.49104572273790836 2403440.17028302047401667, 11777973.9436037577688694 2403506.49811625294387341, 11780228.12698311358690262 2402856.2682070448063314, 11781703.59880801662802696 2401713.22520185634493828, 11782192.89715446159243584 2400859.20254275016486645, 11782678.03379831649363041 2399224.82580633740872145, 11782955.64566324092447758 2398372.03099954081699252, 11783586.59488865174353123 2397659.24991086078807712, 11784427.14815393835306168 2396590.66674219723790884, 11784914.27011025696992874 2395382.18267500726506114, 11785330.82068796083331108 2394174.15454542031511664, 11785536.96124399080872536 2393180.11378513323143125, 11786097.1273522675037384 2392467.84464810928329825, 11787011.69080197438597679 2392108.19440084183588624, 11787715.90038010291755199 2391962.42985267844051123, 11788487.82464707084000111 2391319.86146369902417064, 11789680.65233467146754265 2390320.33801258727908134, 11789747.53923093341290951 2389681.79035578016191721, 11789176.05731181986629963 2388337.88133400911465287, 11788252.26803966984152794 2386996.03587882174178958, 11787540.82363948784768581 2385794.83458124194294214, 11783036.01740818470716476 2386882.81766726961359382, 11777486.37431096099317074 2390598.53498441586270928, 11775189.21765423379838467 2396638.4036272126249969, 11777056.49104572273790836 2403440.17028302047401667))";
+
+        /** @var Polygon $polygon */
+        $polygon = $converter->convertStringToPHPValue(Type::getType('polygon'), $geometryText);
+        $polygon->setSrid(3857);
+        $area->setGeometry($polygon);
+        $entityManager->persist($area);
+        $entityManager->flush();
+
         // Create a soilmodel
         $soilModel = SoilModelFactory::create();
-        $soilModel->setOwner($user)->setName('SM Scenario 2');
+        $soilModel
+            ->setOwner($user)
+            ->setName('SM Scenario 2')
+            ->setArea($area);
+        ;
         $entityManager->persist($soilModel);
 
         // Create new geological layers
@@ -95,6 +119,33 @@ class LoadScenario_2 implements FixtureInterface, ContainerAwareInterface
         $layer = GeologicalLayerFactory::setOwnerNameAndPublic($user, 'SC2_L4', $public);
         $soilModel->addGeologicalLayer($layer);
         $entityManager->persist($layer);
+        $entityManager->flush();
+
+        /** @var ModFlowModel $model */
+        $model = ModFlowModelFactory::create();
+        $model->setName("ModFlowModel Scenario 2");
+        $model->setOwner($user);
+        $model->setDescription("ModFlowModel Scenario 2 Description");
+        $model->setSoilModel($soilModel);
+        $model->setArea($area);
+        
+        /** @var StressPeriod $stressPeriod */
+        $stressPeriod = StressPeriodFactory::create();
+        $stressPeriod->setDateTimeBegin(new \DateTime('01-01-2005'));
+        $stressPeriod->setDateTimeEnd(new \DateTime('31-01-2005'));
+        $model->addStressPeriod($stressPeriod);
+
+        $stressPeriod = StressPeriodFactory::create();
+        $stressPeriod->setDateTimeBegin(new \DateTime('01-02-2005'));
+        $stressPeriod->setDateTimeEnd(new \DateTime('28-02-2005'));
+        $model->addStressPeriod($stressPeriod);
+
+        $stressPeriod = StressPeriodFactory::create();
+        $stressPeriod->setDateTimeBegin(new \DateTime('01-03-2005'));
+        $stressPeriod->setDateTimeEnd(new \DateTime('31-03-2005'));
+        $model->addStressPeriod($stressPeriod);
+
+        $entityManager->persist($model);
         $entityManager->flush();
 
         /**
@@ -256,10 +307,8 @@ class LoadScenario_2 implements FixtureInterface, ContainerAwareInterface
             $soilModel->addGeologicalPoint($geologicalPoint);
             $entityManager->flush();
         }
-
-
+        
         // Add properties to Geological Units
-
         /**
          * geologicalunit-properties
          * format array csv
@@ -638,7 +687,6 @@ class LoadScenario_2 implements FixtureInterface, ContainerAwareInterface
 
             if ($geologicalUnit)
             {
-
                 echo 'Add properties to '.$geologicalUnit->getName()."\n";
 
                 $propertyType = $this->getPropertyType($this->entityManager, 'hc');
@@ -698,23 +746,6 @@ class LoadScenario_2 implements FixtureInterface, ContainerAwareInterface
         $lineString->setSrid(3857);
         $boundary->setGeometry($lineString);
         $entityManager->persist($boundary);
-        $entityManager->flush();
-
-        // Add new AreaType
-        $areaType = AreaTypeFactory::setName('SC2_AT1');
-        $entityManager->persist($areaType);
-        $entityManager->flush();
-
-        // Add Area
-        $area = AreaFactory::setOwnerNameTypeAndPublic($user, "SC2_A1", $areaType, $public);
-        $converter = new PostgreSql();
-        $geometryText = "Polygon ((11777056.49104572273790836 2403440.17028302047401667, 11777973.9436037577688694 2403506.49811625294387341, 11780228.12698311358690262 2402856.2682070448063314, 11781703.59880801662802696 2401713.22520185634493828, 11782192.89715446159243584 2400859.20254275016486645, 11782678.03379831649363041 2399224.82580633740872145, 11782955.64566324092447758 2398372.03099954081699252, 11783586.59488865174353123 2397659.24991086078807712, 11784427.14815393835306168 2396590.66674219723790884, 11784914.27011025696992874 2395382.18267500726506114, 11785330.82068796083331108 2394174.15454542031511664, 11785536.96124399080872536 2393180.11378513323143125, 11786097.1273522675037384 2392467.84464810928329825, 11787011.69080197438597679 2392108.19440084183588624, 11787715.90038010291755199 2391962.42985267844051123, 11788487.82464707084000111 2391319.86146369902417064, 11789680.65233467146754265 2390320.33801258727908134, 11789747.53923093341290951 2389681.79035578016191721, 11789176.05731181986629963 2388337.88133400911465287, 11788252.26803966984152794 2386996.03587882174178958, 11787540.82363948784768581 2385794.83458124194294214, 11783036.01740818470716476 2386882.81766726961359382, 11777486.37431096099317074 2390598.53498441586270928, 11775189.21765423379838467 2396638.4036272126249969, 11777056.49104572273790836 2403440.17028302047401667))";
-
-        /** @var Polygon $polygon */
-        $polygon = $converter->convertStringToPHPValue(Type::getType('polygon'), $geometryText);
-        $polygon->setSrid(3857);
-        $area->setGeometry($polygon);
-        $entityManager->persist($area);
         $entityManager->flush();
     }
 

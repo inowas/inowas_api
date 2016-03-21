@@ -7,7 +7,7 @@ use JMS\Serializer\Annotation as JMS;
 
 /**
  * ModFlowKernel
- *
+ * 
  * @ORM\Entity()
  * @JMS\ExclusionPolicy("all")
  */

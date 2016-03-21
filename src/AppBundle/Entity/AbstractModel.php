@@ -101,6 +101,9 @@ abstract class AbstractModel
     {
         $this->participants = new \Doctrine\Common\Collections\ArrayCollection();
         $this->modelObjects = new \Doctrine\Common\Collections\ArrayCollection();
+        $this->public = true;
+        $this->dateCreated = new \DateTime();
+        $this->dateModified = new \DateTime();
     }
 
     /**

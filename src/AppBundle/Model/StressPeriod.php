@@ -1,34 +1,11 @@
 <?php
 
-namespace AppBundle\Entity;
+namespace AppBundle\Model;
 
 use Doctrine\ORM\Mapping as ORM;
 
-/**
- * stressPeriod
- *
- * @ORM\Table(name="stress_period")
- * @ORM\Entity(repositoryClass="AppBundle\Repository\stressPeriodRepository")
- */
-class StressPeriod
+class StressPeriod implements \JsonSerializable
 {
-    /**
-     * @var int
-     *
-     * @ORM\Column(name="id", type="integer")
-     * @ORM\Id
-     * @ORM\GeneratedValue(strategy="AUTO")
-     */
-    private $id;
-
-    /**
-     * @var ModFlowModel
-     *
-     * @ORM\ManyToOne(targetEntity="AppBundle\Entity\ModFlowModel", inversedBy="stressPeriods")
-     * @ORM\JoinColumn(name="model_id", referencedColumnName="id", onDelete="CASCADE")
-     */
-    private $model;
-
     /**
      * @var \DateTime
      *
@@ -42,17 +19,6 @@ class StressPeriod
      * @ORM\Column(name="dateTimeEnd", type="datetime")
      */
     private $dateTimeEnd;
-
-
-    /**
-     * Get id
-     *
-     * @return int
-     */
-    public function getId()
-    {
-        return $this->id;
-    }
 
     /**
      * Set dateTimeBegin
@@ -103,26 +69,12 @@ class StressPeriod
     }
 
     /**
-     * Set model
-     *
-     * @param \AppBundle\Entity\ModFlowModel $model
-     *
-     * @return StressPeriod
+     * @return object
      */
-    public function setModel(\AppBundle\Entity\ModFlowModel $model = null)
+    function jsonSerialize()
     {
-        $this->model = $model;
-
-        return $this;
+        return (object) get_object_vars($this);
     }
 
-    /**
-     * Get model
-     *
-     * @return \AppBundle\Entity\ModFlowModel
-     */
-    public function getModel()
-    {
-        return $this->model;
-    }
+
 }

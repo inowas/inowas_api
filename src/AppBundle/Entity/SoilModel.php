@@ -97,6 +97,11 @@ class SoilModel
     private $geologicalUnits;
 
     /**
+     * @var Area
+     */
+    private $area;
+
+    /**
      * Constructor
      */
     public function __construct()
@@ -270,7 +275,7 @@ class SoilModel
      *
      * @return \Doctrine\Common\Collections\Collection
      */
-    public function getSoilModelObjects()
+    public function getModelObjects()
     {
         return $this->modelObjects;
     }
@@ -282,7 +287,7 @@ class SoilModel
      *
      * @return SoilModel
      */
-    public function addSoilModelObject(ModelObject $modelObject)
+    public function addModelObject(ModelObject $modelObject)
     {
         if (!$modelObject->getSoilModels()->contains($this))
         {
@@ -298,13 +303,32 @@ class SoilModel
      *
      * @param \AppBundle\Entity\ModelObject $modelObject
      */
-    public function removeSoilModelObject(ModelObject $modelObject)
+    public function removeModelObject(ModelObject $modelObject)
     {
         if ($modelObject->getSoilModels()->contains($modelObject))
         {
             $this->modelObjects->removeElement($modelObject);
         }
         $modelObject->removeSoilModel($this);
+    }
+
+    /**
+     * @param Area $area
+     * @return $this
+     */
+    public function setArea(Area $area)
+    {
+        $this->area = $area;
+
+        return $this;
+    }
+
+    /**
+     * @return Area
+     */
+    public function getArea()
+    {
+        return $this->area;
     }
 
     /**
@@ -422,7 +446,7 @@ class SoilModel
             /** @var GeologicalPoint $geologicalPoint */
             foreach ($this->geologicalPoints as $geologicalPoint)
             {
-                $this->addSoilModelObject($geologicalPoint);
+                $this->addModelObject($geologicalPoint);
 
                 foreach ($geologicalPoint->getGeologicalUnits() as $geologicalUnit)
                 {
@@ -435,7 +459,7 @@ class SoilModel
         {
             foreach ($this->geologicalLayers as $geologicalLayer)
             {
-                $this->addSoilModelObject($geologicalLayer);
+                $this->addModelObject($geologicalLayer);
             }
         }
 
@@ -443,8 +467,13 @@ class SoilModel
         {
             foreach ($this->geologicalUnits as $geologicalUnit)
             {
-                $this->addSoilModelObject($geologicalUnit);
+                $this->addModelObject($geologicalUnit);
             }
+        }
+
+        if (!is_null($this->area))
+        {
+            $this->addModelObject($this->area);
         }
     }
 
@@ -453,59 +482,31 @@ class SoilModel
      */
     public function postLoad()
     {
-        foreach ($this->getSoilModelObjects() as $soilModelObject)
+        foreach ($this->getModelObjects() as $soilModelObject)
         {
             if ($soilModelObject instanceof GeologicalLayer)
             {
                 $this->addGeologicalLayer($soilModelObject);
-                $this->removeSoilModelObject($soilModelObject);
+                $this->removeModelObject($soilModelObject);
             }
 
             if ($soilModelObject instanceof GeologicalPoint)
             {
                 $this->addGeologicalPoint($soilModelObject);
-                $this->removeSoilModelObject($soilModelObject);
+                $this->removeModelObject($soilModelObject);
             }
 
             if ($soilModelObject instanceof GeologicalUnit)
             {
                 $this->addGeologicalUnit($soilModelObject);
-                $this->removeSoilModelObject($soilModelObject);
+                $this->removeModelObject($soilModelObject);
+            }
+
+            if ($soilModelObject instanceof Area)
+            {
+                $this->setArea($soilModelObject);
+                $this->removeModelObject($soilModelObject);
             }
         }
-    }
-
-    /**
-     * Add modelObject
-     *
-     * @param \AppBundle\Entity\ModelObject $modelObject
-     *
-     * @return SoilModel
-     */
-    public function addModelObject(\AppBundle\Entity\ModelObject $modelObject)
-    {
-        $this->modelObjects[] = $modelObject;
-
-        return $this;
-    }
-
-    /**
-     * Remove modelObject
-     *
-     * @param \AppBundle\Entity\ModelObject $modelObject
-     */
-    public function removeModelObject(\AppBundle\Entity\ModelObject $modelObject)
-    {
-        $this->modelObjects->removeElement($modelObject);
-    }
-
-    /**
-     * Get modelObjects
-     *
-     * @return \Doctrine\Common\Collections\Collection
-     */
-    public function getModelObjects()
-    {
-        return $this->modelObjects;
     }
 }

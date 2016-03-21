@@ -9,6 +9,7 @@ use JMS\Serializer\Annotation as JMS;
 
 /**
  * AbstractValue
+ * 
  * @ORM\HasLifecycleCallbacks()
  * @ORM\Entity()
  * @ORM\Table(name="values")
