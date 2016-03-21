@@ -50,6 +50,20 @@ class ModFlowModel extends AbstractModel
     private $streams;
 
     /**
+     * @var ArrayCollection
+     *
+     * @ORM\OneToMany(targetEntity="AppBundle\Entity\StressPeriod", mappedBy="model")
+     */
+    private $stressPeriods;
+
+    /**
+     * @var
+     *
+     * @ORM\Column(type="json_array")
+     */
+    private $calculationProperties;
+
+    /**
      * ModFlowModel constructor.
      */
     public function __construct()
@@ -58,6 +72,7 @@ class ModFlowModel extends AbstractModel
         $this->boundaries = new ArrayCollection();
         $this->observationPoints = new ArrayCollection();
         $this->streams = new ArrayCollection();
+        $this->stressPeriods = new ArrayCollection();
     }
 
     /**
@@ -255,5 +270,63 @@ class ModFlowModel extends AbstractModel
                 $this->removeModelObject($modelObject);
             }
         }
+    }
+
+    /**
+     * Add stressPeriod
+     *
+     * @param \AppBundle\Entity\StressPeriod $stressPeriod
+     *
+     * @return ModFlowModel
+     */
+    public function addStressPeriod(\AppBundle\Entity\StressPeriod $stressPeriod)
+    {
+        $this->stressPeriods[] = $stressPeriod;
+
+        return $this;
+    }
+
+    /**
+     * Remove stressPeriod
+     *
+     * @param \AppBundle\Entity\StressPeriod $stressPeriod
+     */
+    public function removeStressPeriod(\AppBundle\Entity\StressPeriod $stressPeriod)
+    {
+        $this->stressPeriods->removeElement($stressPeriod);
+    }
+
+    /**
+     * Get stressPeriods
+     *
+     * @return \Doctrine\Common\Collections\Collection
+     */
+    public function getStressPeriods()
+    {
+        return $this->stressPeriods;
+    }
+
+    /**
+     * Set calculationProperties
+     *
+     * @param array $calculationProperties
+     *
+     * @return ModFlowModel
+     */
+    public function setCalculationProperties($calculationProperties)
+    {
+        $this->calculationProperties = $calculationProperties;
+
+        return $this;
+    }
+
+    /**
+     * Get calculationProperties
+     *
+     * @return array
+     */
+    public function getCalculationProperties()
+    {
+        return $this->calculationProperties;
     }
 }
