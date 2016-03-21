@@ -56,8 +56,16 @@ class ModFlowModel extends AbstractModel
      */
     private $stressPeriods;
 
+
     /**
-     * @var
+     * @var ArrayCollection
+     *
+     * @ORM\Column(type="json_array")
+     */
+    private $initValues;
+
+    /**
+     * @var ArrayCollection
      *
      * @ORM\Column(type="json_array")
      */
@@ -73,6 +81,8 @@ class ModFlowModel extends AbstractModel
         $this->observationPoints = new ArrayCollection();
         $this->streams = new ArrayCollection();
         $this->stressPeriods = new ArrayCollection();
+        $this->initValues = new ArrayCollection();
+        $this->calculationProperties = new ArrayCollection();
     }
 
     /**
@@ -328,5 +338,29 @@ class ModFlowModel extends AbstractModel
     public function getCalculationProperties()
     {
         return $this->calculationProperties;
+    }
+
+    /**
+     * Set initValues
+     *
+     * @param array $initValues
+     *
+     * @return ModFlowModel
+     */
+    public function setInitValues($initValues)
+    {
+        $this->initValues = $initValues;
+
+        return $this;
+    }
+
+    /**
+     * Get initValues
+     *
+     * @return array
+     */
+    public function getInitValues()
+    {
+        return $this->initValues;
     }
 }
