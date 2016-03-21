@@ -62,7 +62,7 @@ class ResultRestControllerTest extends WebTestCase
             ->setScaleX(1)
             ->setScaleY(1)
             ->setSkewX(0)
-            ->setSkewy(0)
+            ->setSkewY(0)
             ->setSrid(4326);
 
         $rasterBand = RasterBandFactory::create();
@@ -92,9 +92,10 @@ class ResultRestControllerTest extends WebTestCase
 
         $areaId = 2;
 
-        $propertyType = PropertyTypeFactory::setName('gwHead');
-        //$this->entityManager->persist($propertyType);
-        //$this->entityManager->flush();
+        $propertyType = PropertyTypeFactory::setName('Hydraulic Head');
+        $propertyType->setAbbreviation("hh");
+        $this->entityManager->persist($propertyType);
+        $this->entityManager->flush();
 
         $date = new \DateTime('now');
 

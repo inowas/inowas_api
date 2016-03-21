@@ -109,12 +109,14 @@ class GeologicalLayerRestControllerTest extends WebTestCase
         $geologicalUnit->setGeologicalPoint($geologicalPoint);
 
         $propertyType = PropertyTypeFactory::setName("newProperty1");
+        $propertyType->setAbbreviation("np1");
         $property = PropertyFactory::setTypeAndModelObject($propertyType, $geologicalUnit);
         $geologicalUnit->addProperty($property);
         $this->entityManager->persist($property);
         $this->entityManager->persist($propertyType);
 
         $propertyType = PropertyTypeFactory::setName("newProperty2");
+        $propertyType->setAbbreviation("np2");
         $property = PropertyFactory::setTypeAndModelObject($propertyType, $geologicalUnit);
         $geologicalUnit->addProperty($property);
         $this->entityManager->persist($property);

@@ -77,6 +77,7 @@ class PropertyTest extends WebTestCase
         $this->entityManager->persist($this->boundary);
 
         $this->propertyType = PropertyTypeFactory::setName('testProperty');
+        $this->propertyType->setAbbreviation("tp");
         $this->entityManager->persist($this->propertyType);
 
         /** @var Property property */

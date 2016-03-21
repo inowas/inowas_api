@@ -474,4 +474,38 @@ class SoilModel
             }
         }
     }
+
+    /**
+     * Add modelObject
+     *
+     * @param \AppBundle\Entity\ModelObject $modelObject
+     *
+     * @return SoilModel
+     */
+    public function addModelObject(\AppBundle\Entity\ModelObject $modelObject)
+    {
+        $this->modelObjects[] = $modelObject;
+
+        return $this;
+    }
+
+    /**
+     * Remove modelObject
+     *
+     * @param \AppBundle\Entity\ModelObject $modelObject
+     */
+    public function removeModelObject(\AppBundle\Entity\ModelObject $modelObject)
+    {
+        $this->modelObjects->removeElement($modelObject);
+    }
+
+    /**
+     * Get modelObjects
+     *
+     * @return \Doctrine\Common\Collections\Collection
+     */
+    public function getModelObjects()
+    {
+        return $this->modelObjects;
+    }
 }

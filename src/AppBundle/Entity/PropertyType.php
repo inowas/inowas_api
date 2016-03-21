@@ -26,16 +26,25 @@ class PropertyType
     /**
      * @var string
      *
+     * @ORM\Column(name="abbreviation", type="string", length=255)
+     * @JMS\Groups({"list", "details"})
+     */
+    private $abbreviation;
+
+    /**
+     * @var string
+     *
      * @ORM\Column(name="name", type="string", length=255)
      * @JMS\Groups({"list", "details"})
      */
     private $name;
 
+    
 
     /**
      * Get id
      *
-     * @return integer 
+     * @return integer
      */
     public function getId()
     {
@@ -43,17 +52,38 @@ class PropertyType
     }
 
     /**
+     * Set abbreviation
+     *
+     * @param string $abbreviation
+     *
+     * @return PropertyType
+     */
+    public function setAbbreviation($abbreviation)
+    {
+        $this->abbreviation = $abbreviation;
+
+        return $this;
+    }
+
+    /**
+     * Get abbreviation
+     *
+     * @return string
+     */
+    public function getAbbreviation()
+    {
+        return $this->abbreviation;
+    }
+
+    /**
      * Set name
      *
      * @param string $name
+     *
      * @return PropertyType
      */
-    public function setName($name=null)
+    public function setName($name)
     {
-        if (is_null($name))
-        {
-            $name = "";
-        }
         $this->name = $name;
 
         return $this;
@@ -62,7 +92,7 @@ class PropertyType
     /**
      * Get name
      *
-     * @return string 
+     * @return string
      */
     public function getName()
     {
