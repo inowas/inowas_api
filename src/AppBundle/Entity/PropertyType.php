@@ -27,7 +27,7 @@ class PropertyType
      * @var string
      *
      * @ORM\Column(name="abbreviation", type="string", length=255)
-     * @JMS\Groups({"list", "details"})
+     * @JMS\Groups({"list", "details", "modeldetails"})
      */
     private $abbreviation;
 
@@ -39,7 +39,7 @@ class PropertyType
      */
     private $name;
 
-    
+
 
     /**
      * Get id

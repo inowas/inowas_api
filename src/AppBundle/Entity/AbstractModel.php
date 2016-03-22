@@ -23,7 +23,7 @@ abstract class AbstractModel
      * @ORM\Column(name="id", type="integer")
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="AUTO")
-     * @JMS\Groups({"list", "details"})
+     * @JMS\Groups({"list", "details", "modeldetails"})
      */
     private $id;
 
@@ -31,7 +31,7 @@ abstract class AbstractModel
      * @var string
      *
      * @ORM\Column(name="name", type="string",length=255)
-     * @JMS\Groups({"list", "details"})
+     * @JMS\Groups({"list", "details", "modeldetails"})
      */
     private $name;
 
@@ -39,7 +39,7 @@ abstract class AbstractModel
      * @var string
      *
      * @ORM\Column(name="description", type="text", nullable=true)
-     * @JMS\Groups({"list", "details"})
+     * @JMS\Groups({"list", "details", "modeldetails"})
      */
     private $description;
 
@@ -49,7 +49,7 @@ abstract class AbstractModel
      * @ORM\ManyToOne(targetEntity="User", inversedBy="ownedModels")
      * @ORM\JoinColumn(name="owner_id", referencedColumnName="id", onDelete="CASCADE")
      * @JMS\MaxDepth(1)
-     * @JMS\Groups({"details"})
+     * @JMS\Groups({"details", "modeldetails"})
      */
     private $owner;
 
@@ -66,7 +66,7 @@ abstract class AbstractModel
      * @var boolean
      *
      * @ORM\Column(name="public", type="boolean")
-     * @JMS\Groups({"list", "details"})
+     * @JMS\Groups({"list", "details", "modeldetails"})
      */
     private $public;
 

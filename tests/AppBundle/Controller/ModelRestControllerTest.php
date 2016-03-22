@@ -6,12 +6,14 @@ use AppBundle\Entity\GeologicalLayer;
 use AppBundle\Entity\ModFlowModel;
 use AppBundle\Entity\Property;
 use AppBundle\Entity\PropertyType;
+use AppBundle\Entity\PropertyValue;
 use AppBundle\Entity\SoilModel;
 use AppBundle\Entity\User;
 use AppBundle\Model\GeologicalLayerFactory;
 use AppBundle\Model\ModFlowModelFactory;
 use AppBundle\Model\PropertyFactory;
 use AppBundle\Model\PropertyTypeFactory;
+use AppBundle\Model\PropertyValueFactory;
 use AppBundle\Model\SoilModelFactory;
 use AppBundle\Model\UserFactory;
 use JMS\Serializer\Serializer;
@@ -47,6 +49,9 @@ class ModelRestControllerTest extends WebTestCase
     /** @var PropertyType */
     protected $propertyType;
 
+    /** @var PropertyValue */
+    protected $propertyValue;
+
     public function setUp()
     {
         self::bootKernel();
@@ -70,9 +75,14 @@ class ModelRestControllerTest extends WebTestCase
         $this->entityManager->persist($this->propertyType);
         $this->entityManager->flush();
 
+        $this->propertyValue = PropertyValueFactory::create();
+        $this->propertyValue->setValue(1.9991);
+        $this->entityManager->persist($this->propertyValue);
+
         $this->property = PropertyFactory::create();
         $this->property->setName("ModelTest_Property");
         $this->property->setPropertyType($this->propertyType);
+        $this->property->addValue($this->propertyValue);
         $this->entityManager->persist($this->property);
         $this->entityManager->flush();
 
@@ -140,21 +150,17 @@ class ModelRestControllerTest extends WebTestCase
         $this->assertEquals($this->modFlowModel->getName(), $modFlowModel->name);
         $this->assertEquals($this->modFlowModel->getDescription(), $modFlowModel->description);
         $this->assertEquals($this->modFlowModel->getPublic(), $modFlowModel->public);
-        $this->assertEquals($this->modFlowModel->getDateCreated(), new \DateTime($modFlowModel->date_created));
-        $this->assertEquals($this->modFlowModel->getDateModified(), new \DateTime($modFlowModel->date_modified));
         $this->assertEquals($this->modFlowModel->getOwner()->getId(), $modFlowModel->owner->id);
         $this->assertCount(0, $modFlowModel->calculation_properties->stress_periods);
         $this->assertCount(0, $modFlowModel->calculation_properties->init_values);
         $this->assertEquals($this->soilModel->getId(), $modFlowModel->soil_model->id);
         $this->assertEquals($this->soilModel->getName(), $modFlowModel->soil_model->name);
         $this->assertEquals($this->soilModel->getPublic(), $modFlowModel->soil_model->public);
-        $this->assertEquals($this->soilModel->getDateCreated(), new \DateTime($modFlowModel->soil_model->date_created));
-        $this->assertEquals($this->soilModel->getDateModified(), new \DateTime($modFlowModel->soil_model->date_modified));
         $this->assertCount(1, $modFlowModel->soil_model->geological_layers);
         $this->assertEquals($this->layer->getId(), $modFlowModel->soil_model->geological_layers[0]->id);
         $this->assertEquals($this->layer->getName(), $modFlowModel->soil_model->geological_layers[0]->name);
         $this->assertEquals($this->property->getId(), $modFlowModel->soil_model->geological_layers[0]->properties[0]->id);
-        $this->assertEquals($this->propertyType->getId(), $modFlowModel->soil_model->geological_layers[0]->properties[0]->property_type->id);
+        $this->assertEquals($this->propertyType->getAbbreviation(), $modFlowModel->soil_model->geological_layers[0]->properties[0]->property_type->abbreviation);
     }
 
     /**
@@ -179,6 +185,12 @@ class ModelRestControllerTest extends WebTestCase
                 'name' => $this->propertyType->getName()
             ));
         $this->entityManager->remove($propertyType);
+
+        $propertyValue = $this->entityManager->getRepository('AppBundle:PropertyValue')
+            ->findOneBy(array(
+                'value' => $this->propertyValue->getValue()
+            ));
+        $this->entityManager->remove($propertyValue);
 
         $property = $this->entityManager->getRepository('AppBundle:Property')
             ->findOneBy(array(

@@ -9,7 +9,6 @@ use JMS\Serializer\Annotation as JMS;
 /**
  * @ORM\Entity()
  * @ORM\Table(name="property_fixed_interval_values")
- * @JMS\ExclusionPolicy("all")
  */
 class PropertyFixedIntervalValue extends AbstractValue
 {
@@ -17,7 +16,7 @@ class PropertyFixedIntervalValue extends AbstractValue
      * @var \DateTime
      *
      * @ORM\Column(name="date_time", type="datetimetz")
-     * @JMS\Expose()
+     * @JMS\Groups("modeldetails")
      */
     private $dateTimeBegin;
 
@@ -26,7 +25,7 @@ class PropertyFixedIntervalValue extends AbstractValue
      * more info herer: http://php.net/manual/de/dateinterval.construct.php
      *
      * @ORM\Column(name="interval", type="string", length=255)
-     * @JMS\Expose()
+     * @JMS\Groups("modeldetails")
      */
     private $dateTimeInterval;
 
@@ -34,7 +33,7 @@ class PropertyFixedIntervalValue extends AbstractValue
      * @var array
      *
      * @ORM\Column(name="values", type="simple_array")
-     * @JMS\Expose()
+     * @JMS\Groups("modeldetails")
      */
     private $values;
 

@@ -19,7 +19,6 @@ use JMS\Serializer\Annotation as JMS;
  *                          "timevalue" = "PropertyTimeValue",
  *                          "fixedintervalvalue" = "PropertyFixedIntervalValue"
  * })
- * @JMS\ExclusionPolicy("all")
  */
 
 abstract class AbstractValue implements PropertyValueInterface
@@ -30,7 +29,7 @@ abstract class AbstractValue implements PropertyValueInterface
      * @ORM\Column(name="id", type="integer")
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="AUTO")
-     * @JMS\Expose
+     * @JMS\Groups("modeldetails")
      */
     private $id;
 

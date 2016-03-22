@@ -114,7 +114,7 @@ class ModelRestController extends FOSRestController
         }
 
         $serializationContext = SerializationContext::create();
-        $serializationContext->setGroups('details');
+        $serializationContext->setGroups('modeldetails');
 
         $view = View::create();
         $view->setData($model)

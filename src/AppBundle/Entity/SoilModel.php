@@ -21,7 +21,7 @@ class SoilModel
      * @ORM\Column(name="id", type="integer")
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="AUTO")
-     * @JMS\Groups({"details"})
+     * @JMS\Groups({"details", "modeldetails"})
      */
     private $id;
 
@@ -29,7 +29,7 @@ class SoilModel
      * @var string
      *
      * @ORM\Column(name="name", type="string",length=255, nullable=true)
-     * @JMS\Groups({"details"})
+     * @JMS\Groups({"details", "modeldetails"})
      */
     private $name;
 
@@ -61,7 +61,7 @@ class SoilModel
      * @var boolean
      *
      * @ORM\Column(name="public", type="boolean")
-     * @JMS\Groups({"details"})
+     * @JMS\Groups({"details", "modeldetails"})
      */
     private $public;
 
@@ -84,7 +84,7 @@ class SoilModel
     /**
      * @var ArrayCollection
      * @JMS\Type("ArrayCollection<AppBundle\Entity\GeologicalLayer>")
-     * @JMS\Groups({"details"})
+     * @JMS\Groups({"details", "modeldetails"})
      */
     private $geologicalLayers;
 

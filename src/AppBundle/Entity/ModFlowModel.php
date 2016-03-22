@@ -18,7 +18,7 @@ class ModFlowModel extends AbstractModel
      * @ORM\ManyToOne(targetEntity="AppBundle\Entity\SoilModel", cascade={"persist", "remove"})
      * @ORM\JoinColumn(name="soil_model_id", referencedColumnName="id", onDelete="SET NULL")
      * @JMS\Type("AppBundle\Entity\SoilModel")
-     * @JMS\Groups({"details"})
+     * @JMS\Groups({"details", "modeldetails"})
      **/
     private $soilModel;
 
@@ -28,7 +28,7 @@ class ModFlowModel extends AbstractModel
      * @ORM\ManyToOne(targetEntity="AppBundle\Entity\Area", cascade={"persist", "remove"})
      * @ORM\JoinColumn(name="area_id", referencedColumnName="id", onDelete="SET NULL")
      * @JMS\Type("AppBundle\Entity\Area")
-     * @JMS\Groups({"details"})
+     * @JMS\Groups({"details", "modeldetails"})
      **/
     private $area;
 
@@ -36,7 +36,7 @@ class ModFlowModel extends AbstractModel
      * @var ArrayCollection Boundary
      *
      * @JMS\Type("ArrayCollection<AppBundle\Entity\Boundary>")
-     * @JMS\Groups({"details"})
+     * @JMS\Groups({"details", "modeldetails"})
      **/
     private $boundaries;
 
@@ -44,7 +44,7 @@ class ModFlowModel extends AbstractModel
      * @var ArrayCollection
      *
      * @JMS\Type("ArrayCollection<AppBundle\Entity\ObservationPoint>")
-     * @JMS\Groups({"details"})
+     * @JMS\Groups({"details", "modeldetails"})
      */
     private $observationPoints;
 
@@ -52,7 +52,7 @@ class ModFlowModel extends AbstractModel
      * @var ArrayCollection
      *
      * @JMS\Type("ArrayCollection<AppBundle\Entity\Stream>")
-     * @JMS\Groups({"details"})
+     * @JMS\Groups({"details", "modeldetails"})
      */
     private $streams;
 
@@ -60,7 +60,7 @@ class ModFlowModel extends AbstractModel
      * @var array
      *
      * @ORM\Column(name="calculation_properties", type="json_array")
-     * @JMS\Groups({"details"})
+     * @JMS\Groups({"details", "modeldetails"})
      */
     private $calculationProperties = array(
         "stress_periods" => array(),

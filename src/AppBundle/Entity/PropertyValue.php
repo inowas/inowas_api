@@ -9,7 +9,6 @@ use JMS\Serializer\Annotation as JMS;
 /**
  * @ORM\Entity()
  * @ORM\Table(name="property_values")
- * @JMS\ExclusionPolicy("all")
  */
 class PropertyValue extends AbstractValue
 {
@@ -17,7 +16,7 @@ class PropertyValue extends AbstractValue
      * @var float
      *
      * @ORM\Column(name="value", type="float")
-     * @JMS\Expose()
+     * @JMS\Groups("modeldetails")
      */
     private $value;
 
@@ -25,6 +24,7 @@ class PropertyValue extends AbstractValue
      * @var Raster $raster
      *
      * @ORM\OneToOne(targetEntity="AppBundle\Entity\Raster", cascade={"persist", "remove"})
+     * @JMS\Groups("modeldetails")
      */
     private $raster;
 

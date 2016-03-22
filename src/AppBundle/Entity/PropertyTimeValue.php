@@ -9,7 +9,6 @@ use JMS\Serializer\Annotation as JMS;
 /**
  * @ORM\Entity()
  * @ORM\Table(name="property_time_values")
- * @JMS\ExclusionPolicy("all")
  */
 class PropertyTimeValue extends AbstractValue
 {
@@ -17,7 +16,7 @@ class PropertyTimeValue extends AbstractValue
      * @var \DateTime
      *
      * @ORM\Column(name="timeStamp", type="datetimetz")
-     * @JMS\Expose()
+     * @JMS\Groups("modeldetails")
      */
     private $datetime;
 
@@ -25,7 +24,7 @@ class PropertyTimeValue extends AbstractValue
      * @var float
      *
      * @ORM\Column(name="value", type="float")
-     * @JMS\Expose()
+     * @JMS\Groups("modeldetails")
      */
     private $value;
 
@@ -33,6 +32,7 @@ class PropertyTimeValue extends AbstractValue
      * @var Raster $raster
      *
      * @ORM\OneToOne(targetEntity="AppBundle\Entity\Raster", cascade={"persist", "remove"})
+     * @JMS\Groups("modeldetails")
      */
     private $raster;
 

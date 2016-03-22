@@ -22,7 +22,7 @@ class Property
      * @ORM\Column(name="id", type="integer")
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="AUTO")
-     * @JMS\Groups({"list", "details"})
+     * @JMS\Groups({"list", "details", "modeldetails"})
      */
     private $id;
 
@@ -30,7 +30,7 @@ class Property
      * @var string
      *
      * @ORM\Column(name="name", type="string", length=255, nullable=true)
-     * @JMS\Groups({"list", "details"})
+     * @JMS\Groups({"list", "details", "modeldetails"})
      */
     private $name;
 
@@ -55,7 +55,7 @@ class Property
      *
      * @ORM\ManyToOne(targetEntity="AppBundle\Entity\PropertyType", cascade={"persist", "remove"})
      * @ORM\JoinColumn(name="property_type_id", referencedColumnName="id", onDelete="SET NULL")
-     * @JMS\Groups({"list", "details"})
+     * @JMS\Groups({"list", "details", "modeldetails"})
      */
     private $propertyType;
 
@@ -64,7 +64,7 @@ class Property
      *
      * @ORM\OneToMany(targetEntity="AppBundle\Entity\AbstractValue", mappedBy="property", cascade={"persist", "remove"}, orphanRemoval=true)
      * @JMS\Type("ArrayCollection<AppBundle\Entity\AbstractValue>")
-     * @JMS\Groups({"list", "details"})
+     * @JMS\Groups({"list", "details", "modeldetails"})
      */
     private $values;
 
