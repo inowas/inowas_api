@@ -37,7 +37,7 @@ abstract class ModelObject
      * @ORM\Column(name="id", type="integer")
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="AUTO")
-     * @JMS\Groups({"list", "details"})
+     * @JMS\Groups({"list", "details", "layerdetails"})
      */
     protected $id;
 
@@ -45,7 +45,7 @@ abstract class ModelObject
      * @var string
      *
      * @ORM\Column(name="name", type="string", length=255, nullable=true)
-     * @JMS\Groups({"list", "details"})
+     * @JMS\Groups({"list", "details", "layerdetails"})
      */
     protected $name;
 
@@ -78,7 +78,7 @@ abstract class ModelObject
      *
      * @ORM\OneToMany(targetEntity="AppBundle\Entity\Property", mappedBy="modelObject", cascade={"persist", "remove"})
      * @JMS\Type("ArrayCollection<AppBundle\Entity\Property>")
-     * @JMS\Groups({"details"})
+     * @JMS\Groups({"details", "layerdetails"})
      */
     protected $properties;
 
@@ -102,7 +102,7 @@ abstract class ModelObject
      * @var boolean
      *
      * @ORM\Column(name="public", type="boolean")
-     * @JMS\Groups({"list", "details"})
+     * @JMS\Groups({"list", "details", "layerdetails"})
      */
     protected $public;
 
