@@ -41,6 +41,11 @@ rest_observationpoint:
     prefix: /api
     resource: AppBundle\Controller\ObservationPointRestController
 
+rest_model:
+    type: rest
+    prefix: /api
+    resource: AppBundle\Controller\ModelRestController
+
 rest_project:
     type: rest
     prefix: /api

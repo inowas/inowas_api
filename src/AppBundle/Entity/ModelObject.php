@@ -77,6 +77,8 @@ abstract class ModelObject
      * @var ArrayCollection Property
      *
      * @ORM\OneToMany(targetEntity="AppBundle\Entity\Property", mappedBy="modelObject", cascade={"persist", "remove"})
+     * @JMS\Type("ArrayCollection<AppBundle\Entity\Property>")
+     * @JMS\Groups({"details"})
      */
     protected $properties;
 
@@ -84,7 +86,6 @@ abstract class ModelObject
      * @var ArrayCollection
      *
      * @JMS\Accessor(getter="getPropertyIds")
-     * @JMS\Groups({"details"})
      * @JMS\Type("array<integer>")
      */
     protected $propertyIds;
@@ -315,6 +316,7 @@ abstract class ModelObject
      */
     public function addProperty(Property $property)
     {
+        $property->setModelObject($this);
         $this->properties[] = $property;
 
         return $this;

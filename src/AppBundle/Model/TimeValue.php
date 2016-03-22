@@ -14,6 +14,7 @@ class TimeValue implements TimeValueInterface
 
     /**
      * @var float
+     * @JMS\Type("float")
      * @JMS\Groups({"list", "details"})
      */
     private $value;

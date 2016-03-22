@@ -8,7 +8,7 @@ use JMS\Serializer\Annotation as JMS;
 
 /**
  * @ORM\Entity()
- * @JMS\ExclusionPolicy("all")
+ * @JMS\ExclusionPolicy("none")
  */
 class ModFlowModel extends AbstractModel
 {
@@ -18,13 +18,17 @@ class ModFlowModel extends AbstractModel
      * @ORM\ManyToOne(targetEntity="AppBundle\Entity\SoilModel", cascade={"persist", "remove"})
      * @ORM\JoinColumn(name="soil_model_id", referencedColumnName="id", onDelete="SET NULL")
      * @JMS\Type("AppBundle\Entity\SoilModel")
+     * @JMS\Groups({"details"})
      **/
     private $soilModel;
 
     /**
      * @var Area
      *
+     * @ORM\ManyToOne(targetEntity="AppBundle\Entity\Area", cascade={"persist", "remove"})
+     * @ORM\JoinColumn(name="area_id", referencedColumnName="id", onDelete="SET NULL")
      * @JMS\Type("AppBundle\Entity\Area")
+     * @JMS\Groups({"details"})
      **/
     private $area;
 
@@ -32,6 +36,7 @@ class ModFlowModel extends AbstractModel
      * @var ArrayCollection Boundary
      *
      * @JMS\Type("ArrayCollection<AppBundle\Entity\Boundary>")
+     * @JMS\Groups({"details"})
      **/
     private $boundaries;
 
@@ -39,6 +44,7 @@ class ModFlowModel extends AbstractModel
      * @var ArrayCollection
      *
      * @JMS\Type("ArrayCollection<AppBundle\Entity\ObservationPoint>")
+     * @JMS\Groups({"details"})
      */
     private $observationPoints;
 
@@ -46,6 +52,7 @@ class ModFlowModel extends AbstractModel
      * @var ArrayCollection
      *
      * @JMS\Type("ArrayCollection<AppBundle\Entity\Stream>")
+     * @JMS\Groups({"details"})
      */
     private $streams;
 
@@ -53,6 +60,7 @@ class ModFlowModel extends AbstractModel
      * @var array
      *
      * @ORM\Column(name="stress_periods", type="json_array")
+     * @JMS\Groups({"details"})
      */
     private $stressPeriods = array();
 
@@ -60,6 +68,7 @@ class ModFlowModel extends AbstractModel
      * @var array
      *
      * @ORM\Column(name="init_values", type="json_array")
+     * @JMS\Groups({"details"})
      */
     private $initValues = array();
 
@@ -67,6 +76,7 @@ class ModFlowModel extends AbstractModel
      * @var array
      *
      * @ORM\Column(name="calculation_properties", type="json_array")
+     * @JMS\Groups({"details"})
      */
     private $calculationProperties = array();
 

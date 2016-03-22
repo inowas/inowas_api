@@ -21,6 +21,7 @@ class SoilModel
      * @ORM\Column(name="id", type="integer")
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="AUTO")
+     * @JMS\Groups({"details"})
      */
     private $id;
 
@@ -28,7 +29,7 @@ class SoilModel
      * @var string
      *
      * @ORM\Column(name="name", type="string",length=255, nullable=true)
-     * @JMS\Groups({"projectList", "projectDetails"})
+     * @JMS\Groups({"details"})
      */
     private $name;
 
@@ -36,7 +37,7 @@ class SoilModel
      * @var string
      *
      * @ORM\Column(name="description", type="text", nullable=true)
-     * @JMS\Groups({"projectList", "projectDetails"})
+     * @JMS\Groups({"details"})
      */
     private $description;
 
@@ -45,8 +46,7 @@ class SoilModel
      *
      * @ORM\ManyToOne(targetEntity="User", inversedBy="ownedSoilModels")
      * @ORM\JoinColumn(name="owner_id", referencedColumnName="id", onDelete="CASCADE")
-     * @JMS\MaxDepth(3)
-     * @JMS\Groups({"projectDetails"})
+     * @JMS\MaxDepth(1)
      */
     private $owner;
 
@@ -61,7 +61,7 @@ class SoilModel
      * @var boolean
      *
      * @ORM\Column(name="public", type="boolean")
-     * @JMS\Groups({"projectList", "projectDetails"})
+     * @JMS\Groups({"details"})
      */
     private $public;
 
@@ -69,7 +69,7 @@ class SoilModel
      * @var \DateTime
      *
      * @ORM\Column(name="dateCreated", type="datetime")
-     * @JMS\Groups({"projectDetails"})
+     * @JMS\Groups({"details"})
      */
     private $dateCreated;
 
@@ -77,12 +77,14 @@ class SoilModel
      * @var \DateTime
      *
      * @ORM\Column(name="dateModified", type="datetime")
-     * @JMS\Groups({"projectDetails"})
+     * @JMS\Groups({"details"})
      */
     private $dateModified;
 
     /**
      * @var ArrayCollection
+     * @JMS\Type("ArrayCollection<AppBundle\Entity\GeologicalLayer>")
+     * @JMS\Groups({"details"})
      */
     private $geologicalLayers;
 
@@ -345,6 +347,11 @@ class SoilModel
      */
     public function addGeologicalLayer(GeologicalLayer $geologicalLayer)
     {
+        if (is_null($this->geologicalLayers))
+        {
+            $this->geologicalLayers = new ArrayCollection();
+        }
+
         if (!$this->geologicalLayers->contains($geologicalLayer))
         {
             $this->geologicalLayers[] = $geologicalLayer;

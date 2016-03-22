@@ -16,6 +16,11 @@ class PropertyFactory
         return new Property();
     }
 
+    public static function create()
+    {
+        return new Property();
+    }
+
     public static function setTypeAndModelObject(PropertyType $type, ModelObject $modelObject)
     {
         $property = new Property();

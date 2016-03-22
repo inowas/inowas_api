@@ -12,7 +12,7 @@ use JMS\Serializer\Annotation as JMS;
  *
  * @ORM\HasLifecycleCallbacks()
  * @ORM\Table(name="properties")
- * @ORM\Entity
+ * @ORM\Entity()
  */
 class Property
 {
@@ -53,8 +53,8 @@ class Property
     /**
      * @var PropertyType
      *
-     * @ORM\ManyToOne(targetEntity="AppBundle\Entity\PropertyType")
-     * @ORM\JoinColumn(name="property_type_id", referencedColumnName="id")
+     * @ORM\ManyToOne(targetEntity="AppBundle\Entity\PropertyType", cascade={"persist", "remove"})
+     * @ORM\JoinColumn(name="property_type_id", referencedColumnName="id", onDelete="SET NULL")
      * @JMS\Groups({"list", "details"})
      */
     private $propertyType;
@@ -63,6 +63,8 @@ class Property
      * @var ArrayCollection
      *
      * @ORM\OneToMany(targetEntity="AppBundle\Entity\AbstractValue", mappedBy="property", cascade={"persist", "remove"}, orphanRemoval=true)
+     * @JMS\Type("ArrayCollection<AppBundle\Entity\AbstractValue>")
+     * @JMS\Groups({"list", "details"})
      */
     private $values;
 
@@ -193,23 +195,25 @@ class Property
     /**
      * Add values
      *
-     * @param \AppBundle\Entity\AbstractValue $values
+     * @param \AppBundle\Entity\AbstractValue $value
      * @return Property
      */
-    public function addValue(\AppBundle\Entity\AbstractValue $values)
+    public function addValue(\AppBundle\Entity\AbstractValue $value)
     {
-        $this->values[] = $values;
+        $value->setProperty($this);
+        $this->values[] = $value;
         return $this;
     }
 
     /**
-     * Remove values
+     * Remove value
      *
-     * @param \AppBundle\Entity\AbstractValue $values
+     * @param \AppBundle\Entity\AbstractValue $value
      */
-    public function removeValue(\AppBundle\Entity\AbstractValue $values)
+    public function removeValue(\AppBundle\Entity\AbstractValue $value)
     {
-        $this->values->removeElement($values);
+        $value->setProperty(null);
+        $this->values->removeElement($value);
     }
 
     /**
