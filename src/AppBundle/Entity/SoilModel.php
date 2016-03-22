@@ -385,6 +385,11 @@ class SoilModel
      */
     public function addGeologicalPoint(GeologicalPoint $geologicalPoint)
     {
+        if (is_null($this->geologicalPoints))
+        {
+            $this->geologicalPoints = new ArrayCollection();
+        }
+
         if (!$this->geologicalPoints->contains($geologicalPoint))
         {
             $this->geologicalPoints[] = $geologicalPoint;
@@ -418,6 +423,11 @@ class SoilModel
      */
     public function addGeologicalUnit(GeologicalUnit $geologicalUnit)
     {
+        if (is_null($this->geologicalUnits))
+        {
+            $this->geologicalUnits = new ArrayCollection();
+        }
+
         if (!$this->geologicalUnits->contains($geologicalUnit))
         {
             $this->geologicalUnits[] = $geologicalUnit;
