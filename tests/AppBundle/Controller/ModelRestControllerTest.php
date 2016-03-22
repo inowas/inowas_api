@@ -111,6 +111,7 @@ class ModelRestControllerTest extends WebTestCase
     {
         $client = static::createClient();
         $client->request('GET', '/api/users/'.$this->owner->getUsername().'/models.json');
+
         $this->assertEquals(200, $client->getResponse()->getStatusCode());
 
         /** @var ModFlowModel[] $modelArray */
@@ -133,30 +134,27 @@ class ModelRestControllerTest extends WebTestCase
         $client->request('GET', '/api/models/'.$this->modFlowModel->getId().'.json');
 
         $this->assertEquals(200, $client->getResponse()->getStatusCode());
+        $modFlowModel = json_decode($client->getResponse()->getContent());
 
-        /** @var ModFlowModel $modFlowModel */
-        $modFlowModel = $this->serializer->deserialize($client->getResponse()->getContent(), 'AppBundle\Entity\ModFlowModel', 'json');
-
-        $this->assertEquals($this->modFlowModel->getId(), $modFlowModel->getId());
-        $this->assertEquals($this->modFlowModel->getName(), $modFlowModel->getName());
-        $this->assertEquals($this->modFlowModel->getDescription(), $modFlowModel->getDescription());
-        $this->assertEquals($this->modFlowModel->getPublic(), $modFlowModel->getPublic());
-        $this->assertEquals($this->modFlowModel->getDateCreated(), $modFlowModel->getDateCreated());
-        $this->assertEquals($this->modFlowModel->getDateModified(), $modFlowModel->getDateModified());
-        $this->assertEquals($this->modFlowModel->getOwner()->getId(), $modFlowModel->getOwner()->getId());
-        $this->assertCount(0, $this->modFlowModel->getStressPeriods());
-        $this->assertCount(0, $this->modFlowModel->getCalculationProperties());
-        $this->assertCount(0, $this->modFlowModel->getInitValues());
-        $this->assertEquals($this->soilModel->getId(), $modFlowModel->getSoilModel()->getId());
-        $this->assertEquals($this->soilModel->getName(), $modFlowModel->getSoilModel()->getName());
-        $this->assertEquals($this->soilModel->getPublic(), $modFlowModel->getSoilModel()->getPublic());
-        $this->assertEquals($this->soilModel->getDateCreated(), $modFlowModel->getSoilModel()->getDateCreated());
-        $this->assertEquals($this->soilModel->getDateModified(), $modFlowModel->getSoilModel()->getDateModified());
-        $this->assertCount(1, $modFlowModel->getSoilModel()->getGeologicalLayers());
-        $this->assertEquals($this->layer->getId(), $modFlowModel->getSoilModel()->getGeologicalLayers()->first()->getId());
-        $this->assertEquals($this->layer->getName(), $modFlowModel->getSoilModel()->getGeologicalLayers()->first()->getName());
-        $this->assertEquals($this->property->getId(), $modFlowModel->getSoilModel()->getGeologicalLayers()->first()->getProperties()->first()->getId());
-        $this->assertEquals($this->propertyType->getId(), $modFlowModel->getSoilModel()->getGeologicalLayers()->first()->getProperties()->first()->getPropertyType()->getId());
+        $this->assertEquals($this->modFlowModel->getId(), $modFlowModel->id);
+        $this->assertEquals($this->modFlowModel->getName(), $modFlowModel->name);
+        $this->assertEquals($this->modFlowModel->getDescription(), $modFlowModel->description);
+        $this->assertEquals($this->modFlowModel->getPublic(), $modFlowModel->public);
+        $this->assertEquals($this->modFlowModel->getDateCreated(), new \DateTime($modFlowModel->date_created));
+        $this->assertEquals($this->modFlowModel->getDateModified(), new \DateTime($modFlowModel->date_modified));
+        $this->assertEquals($this->modFlowModel->getOwner()->getId(), $modFlowModel->owner->id);
+        $this->assertCount(0, $modFlowModel->calculation_properties->stress_periods);
+        $this->assertCount(0, $modFlowModel->calculation_properties->init_values);
+        $this->assertEquals($this->soilModel->getId(), $modFlowModel->soil_model->id);
+        $this->assertEquals($this->soilModel->getName(), $modFlowModel->soil_model->name);
+        $this->assertEquals($this->soilModel->getPublic(), $modFlowModel->soil_model->public);
+        $this->assertEquals($this->soilModel->getDateCreated(), new \DateTime($modFlowModel->soil_model->date_created));
+        $this->assertEquals($this->soilModel->getDateModified(), new \DateTime($modFlowModel->soil_model->date_modified));
+        $this->assertCount(1, $modFlowModel->soil_model->geological_layers);
+        $this->assertEquals($this->layer->getId(), $modFlowModel->soil_model->geological_layers[0]->id);
+        $this->assertEquals($this->layer->getName(), $modFlowModel->soil_model->geological_layers[0]->name);
+        $this->assertEquals($this->property->getId(), $modFlowModel->soil_model->geological_layers[0]->properties[0]->id);
+        $this->assertEquals($this->propertyType->getId(), $modFlowModel->soil_model->geological_layers[0]->properties[0]->property_type->id);
     }
 
     /**

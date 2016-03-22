@@ -59,26 +59,13 @@ class ModFlowModel extends AbstractModel
     /**
      * @var array
      *
-     * @ORM\Column(name="stress_periods", type="json_array")
-     * @JMS\Groups({"details"})
-     */
-    private $stressPeriods = array();
-
-    /**
-     * @var array
-     *
-     * @ORM\Column(name="init_values", type="json_array")
-     * @JMS\Groups({"details"})
-     */
-    private $initValues = array();
-
-    /**
-     * @var array
-     *
      * @ORM\Column(name="calculation_properties", type="json_array")
      * @JMS\Groups({"details"})
      */
-    private $calculationProperties = array();
+    private $calculationProperties = array(
+        "stress_periods" => array(),
+        "init_values" => array()
+    );
 
     /**
      * ModFlowModel constructor.
@@ -297,7 +284,7 @@ class ModFlowModel extends AbstractModel
      */
     public function addStressPeriod($stressPeriod)
     {
-        $this->stressPeriods[] = $stressPeriod;
+        $this->calculationProperties["stress_periods"][] = $stressPeriod;
 
         return $this;
     }
@@ -309,7 +296,7 @@ class ModFlowModel extends AbstractModel
      */
     public function getStressPeriods()
     {
-        return $this->stressPeriods;
+        return $this->calculationProperties["stress_periods"];
     }
 
     /**
@@ -320,7 +307,7 @@ class ModFlowModel extends AbstractModel
      */
     public function setStressPeriods($stressPeriods)
     {
-        $this->stressPeriods = $stressPeriods;
+        $this->calculationProperties["stress_periods"] = $stressPeriods;
     }
 
     /**
@@ -356,7 +343,7 @@ class ModFlowModel extends AbstractModel
      */
     public function setInitValues($initValues)
     {
-        $this->initValues = $initValues;
+        $this->calculationProperties["init_values"] = $initValues;
 
         return $this;
     }
@@ -368,6 +355,6 @@ class ModFlowModel extends AbstractModel
      */
     public function getInitValues()
     {
-        return $this->initValues;
+        return $this->calculationProperties["init_values"];
     }
 }
