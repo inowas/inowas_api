@@ -16,6 +16,11 @@ class StreamFactory
         return new Stream();
     }
 
+    public static function create()
+    {
+        return new Stream();
+    }
+
     public static function setOwnerProjectNameAndPublic(UserInterface $owner = null, Project $project = null, $name = "", $public = false)
     {
         $stream = new Stream();

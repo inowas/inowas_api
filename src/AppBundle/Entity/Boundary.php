@@ -20,6 +20,14 @@ class Boundary extends ModelObject
     protected $type = 'boundary';
 
     /**
+     * @var ArrayCollection Property
+     *
+     * @ORM\OneToMany(targetEntity="AppBundle\Entity\Property", mappedBy="modelObject", cascade={"persist", "remove"})
+     * @JMS\Type("ArrayCollection<AppBundle\Entity\Property>")
+     */
+    protected $properties;
+
+    /**
      * @var LineString
      *
      * @ORM\Column(name="geometry", type="linestring", nullable=true)

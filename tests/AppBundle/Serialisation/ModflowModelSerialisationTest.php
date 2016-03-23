@@ -6,16 +6,19 @@ use AppBundle\Entity\GeologicalLayer;
 use AppBundle\Entity\ModFlowModel;
 use AppBundle\Entity\Property;
 use AppBundle\Entity\SoilModel;
+use AppBundle\Entity\Stream;
 use AppBundle\Model\AreaFactory;
 use AppBundle\Model\GeologicalLayerFactory;
 use AppBundle\Model\GeologicalPointFactory;
 use AppBundle\Model\GeologicalUnitFactory;
 use AppBundle\Model\ModFlowModelFactory;
+use AppBundle\Model\ObservationPointFactory;
 use AppBundle\Model\PropertyFactory;
 use AppBundle\Model\PropertyTypeFactory;
 use AppBundle\Model\PropertyValueFactory;
 use AppBundle\Model\RasterFactory;
 use AppBundle\Model\SoilModelFactory;
+use AppBundle\Model\StreamFactory;
 use AppBundle\Model\UserFactory;
 use JMS\Serializer\SerializationContext;
 use JMS\Serializer\Serializer;
@@ -38,6 +41,11 @@ class ModFlowModelSerialisationTest extends \PHPUnit_Framework_TestCase
 
     /** @var  Property */
     protected $property;
+
+    /**
+     * @var array Stream
+     */
+    protected $streams;
 
     public function setUp()
     {
@@ -125,6 +133,20 @@ class ModFlowModelSerialisationTest extends \PHPUnit_Framework_TestCase
         ;
 
         $this->layer->addProperty($this->property);
+
+        /** @var Stream $stream */
+        $stream = StreamFactory::create()
+            ->setId(27)
+            ->setOwner($owner)
+            ->setName("Streamname")
+            ->addObservationPoint(ObservationPointFactory::create())
+            ->addProperty(PropertyFactory::create())
+            ->setDateCreated(new \DateTime())
+            ->setDateModified(new \DateTime());
+
+        $this->modFlowModel->addStream($stream);
+        $this->modFlowModel->addStream(StreamFactory::create()->setId(28));
+        $this->modFlowModel->addStream(StreamFactory::create()->setId(29));
     }
 
     public function testRenderJson()
@@ -168,6 +190,13 @@ class ModFlowModelSerialisationTest extends \PHPUnit_Framework_TestCase
         $this->assertObjectHasAttribute('raster', $serializedModel->soil_model->geological_layers[0]->properties[1]->values[0]);
         $this->assertObjectHasAttribute('id', $serializedModel->soil_model->geological_layers[0]->properties[1]->values[0]->raster);
         $this->assertEquals($this->layer->getProperties()->toArray()[1]->getValues()[0]->getRaster()->getId(), $serializedModel->soil_model->geological_layers[0]->properties[1]->values[0]->raster->id);
+
+        $this->assertObjectHasAttribute("streams", $serializedModel);
+        $this->assertEquals(1, count((array)$serializedModel->streams[0]));
+        $this->assertCount(3, $serializedModel->streams);
+        $this->assertEquals($this->modFlowModel->getStreams()->toArray()[0]->getId(), $serializedModel->streams[0]->id);
+        $this->assertEquals($this->modFlowModel->getStreams()->toArray()[1]->getId(), $serializedModel->streams[1]->id);
+        $this->assertEquals($this->modFlowModel->getStreams()->toArray()[2]->getId(), $serializedModel->streams[2]->id);
 
 
         $this->assertCount(0, $serializedModel->calculation_properties->stress_periods);

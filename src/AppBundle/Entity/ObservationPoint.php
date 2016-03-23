@@ -22,6 +22,14 @@ class ObservationPoint extends ModelObject
     protected $type = 'observationPoint';
 
     /**
+     * @var ArrayCollection Property
+     *
+     * @ORM\OneToMany(targetEntity="AppBundle\Entity\Property", mappedBy="modelObject", cascade={"persist", "remove"})
+     * @JMS\Type("ArrayCollection<AppBundle\Entity\Property>")
+     */
+    protected $properties;
+
+    /**
      * @var Point
      *
      * @ORM\Column(name="geometry", type="point", nullable=true)

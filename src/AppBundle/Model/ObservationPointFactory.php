@@ -17,6 +17,11 @@ class ObservationPointFactory
         return new ObservationPoint();
     }
 
+    public static function create()
+    {
+        return new ObservationPoint();
+    }
+
     /**
      * @param UserInterface|null $owner
      * @param Project|null $project

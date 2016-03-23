@@ -4,13 +4,13 @@ namespace AppBundle\Entity;
 
 use AppBundle\Model\Point;
 use CrEOF\Spatial\PHP\Types\Geometry\LineString;
+use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
 use JMS\Serializer\Annotation as JMS;
 
 /**
  * @ORM\Entity()
  * @ORM\Table(name="streams")
- * @JMS\ExclusionPolicy("all")
  */
 class Stream extends ModelObject
 {
@@ -19,6 +19,21 @@ class Stream extends ModelObject
      * @JMS\Groups({"list", "details"})
      */
     protected $type = 'stream';
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="name", type="string", length=255, nullable=true)
+     */
+    protected $name;
+
+    /**
+     * @var ArrayCollection Property
+     *
+     * @ORM\OneToMany(targetEntity="AppBundle\Entity\Property", mappedBy="modelObject", cascade={"persist", "remove"})
+     * @JMS\Type("ArrayCollection<AppBundle\Entity\Property>")
+     */
+    protected $properties;
 
     /**
      * @var Point
