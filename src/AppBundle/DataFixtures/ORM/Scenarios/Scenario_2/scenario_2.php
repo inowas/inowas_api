@@ -365,6 +365,7 @@ class LoadScenario_2 implements FixtureInterface, ContainerAwareInterface
             $property->setPropertyType($propertyType);
             $value = PropertyValueFactory::create()->setValue($geologicalLayerProperty[3]);
             $property->addValue($value);
+            $geologicalLayer->addProperty($property);
 
             $entityManager->persist($value);
             $entityManager->persist($property);
