@@ -3,6 +3,7 @@
 namespace AppBundle\Entity;
 
 use CrEOF\Spatial\PHP\Types\Geometry\Polygon;
+use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
 use JMS\Serializer\Annotation as JMS;
 
@@ -17,6 +18,21 @@ class Area extends ModelObject
      * @JMS\Groups({"list", "details"})
      */
     protected $type = 'area';
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="name", type="string", length=255, nullable=true)
+     */
+    protected $name;
+
+    /**
+     * @var ArrayCollection Property
+     *
+     * @ORM\OneToMany(targetEntity="AppBundle\Entity\Property", mappedBy="modelObject", cascade={"persist", "remove"})
+     * @JMS\Type("ArrayCollection<AppBundle\Entity\Property>")
+     */
+    protected $properties;
 
     /**
      * @var Polygon

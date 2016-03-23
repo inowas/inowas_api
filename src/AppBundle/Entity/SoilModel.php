@@ -100,6 +100,8 @@ class SoilModel
 
     /**
      * @var Area
+     * @JMS\Type("AppBundle\Entity\Area")
+     * @JMS\Groups({"modeldetails"})
      */
     private $area;
 

@@ -102,7 +102,7 @@ abstract class ModelObject
      * @var boolean
      *
      * @ORM\Column(name="public", type="boolean")
-     * @JMS\Groups({"list", "details", "layerdetails", "modeldetails"})
+     * @JMS\Groups({"list", "details", "layerdetails"})
      */
     protected $public;
 
@@ -138,6 +138,19 @@ abstract class ModelObject
         $this->observationPoints = new ArrayCollection();
         $this->dateCreated = new \DateTime();
         $this->dateModified = new \DateTime();
+    }
+
+    /**
+     * Set Id
+     *
+     * @param $id
+     * @return $this
+     */
+    public function setId($id)
+    {
+        $this->id = $id;
+
+        return $this;
     }
 
     /**

@@ -34,6 +34,7 @@ class Raster
      * @ORM\Column(name="id", type="integer")
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="AUTO")
+     * @JMS\Groups("modeldetails")
      */
     private $id;
 
@@ -44,6 +45,19 @@ class Raster
      * @JMS\Type("AppBundle\Model\Raster")
      */
     private $raster;
+
+    /**
+     * Set id
+     *
+     * @param $id
+     * @return $this
+     */
+    public function setId($id)
+    {
+        $this->id = $id;
+
+        return $this;
+    }
 
     /**
      * Get id

@@ -66,7 +66,7 @@ abstract class AbstractModel
      * @var boolean
      *
      * @ORM\Column(name="public", type="boolean")
-     * @JMS\Groups({"list", "details", "modeldetails"})
+     * @JMS\Groups({"list", "details"})
      */
     private $public;
 
@@ -100,7 +100,7 @@ abstract class AbstractModel
 
     /**
      * Set id
-     * 
+     *
      * @param $id
      * @return $this
      */
