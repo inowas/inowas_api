@@ -14,6 +14,7 @@ use AppBundle\Model\ModFlowModelFactory;
 use AppBundle\Model\ObservationPointFactory;
 use AppBundle\Model\PropertyFactory;
 use AppBundle\Model\PropertyTimeValueFactory;
+use AppBundle\Model\PropertyTypeFactory;
 use AppBundle\Model\PropertyValueFactory;
 use AppBundle\Model\Point;
 use AppBundle\Model\SoilModelFactory;
@@ -300,11 +301,74 @@ class LoadScenario_2 implements FixtureInterface, ContainerAwareInterface
                 ->findOneBy(array(
                     'name' => 'SC2_L4'
                 ));
+            $entityManager->persist($geologicalLayer);
+            $entityManager->flush();
+
+            $geologicalUnit->addGeologicalLayer($geologicalLayer);
+            $entityManager->persist($geologicalUnit);
+            $entityManager->flush();
+
             $geologicalUnit->addGeologicalLayer($geologicalLayer);
             $entityManager->persist($geologicalUnit);
             $entityManager->flush();
 
             $soilModel->addGeologicalPoint($geologicalPoint);
+            $entityManager->flush();
+        }
+
+        // Add properties to Geological Layers
+        /**
+         * geologicalLayers-properties
+         * format array csv
+         * values: layer_name, property_Name, property_type_abbreviation, value
+         */
+        $geologicalLayerProperties = array(
+            array('SC2_L1','Layer_1_Top_Elevation','et',10),
+            array('SC2_L1','Layer_1_Bottom_Elevation','eb',5),
+            array('SC2_L1','Layer_1_Hydraulic_Conductivity','hc',10),
+            array('SC2_L1','Layer_1_Horizontal_Anisotropy','ha',10),
+            array('SC2_L1','Layer_1_Vertical_Anisotropy','va',1),
+            array('SC2_L2','Layer_2_Top_Elevation','et',5),
+            array('SC2_L2','Layer_2_Bottom_Elevation','eb',-15),
+            array('SC2_L2','Layer_2_Hydraulic_Conductivity','hc',7),
+            array('SC2_L2','Layer_2_Horizontal_Anisotropy','ha',7),
+            array('SC2_L2','Layer_2_Vertical_Anisotropy','va',0.7),
+            array('SC2_L3','Layer_3_Top_Elevation','et',-15),
+            array('SC2_L3','Layer_3_Bottom_Elevation','eb',-30),
+            array('SC2_L3','Layer_3_Hydraulic_Conductivity','hc',0.001),
+            array('SC2_L3','Layer_3_Horizontal_Anisotropy','ha',0.001),
+            array('SC2_L3','Layer_3_Vertical_Anisotropy','va',0.0001),
+            array('SC2_L4','Layer_4_Top_Elevation','et',-30),
+            array('SC2_L4','Layer_4_Bottom_Elevation','eb',-33),
+            array('SC2_L4','Layer_4_Hydraulic_Conductivity','hc',50),
+            array('SC2_L4','Layer_4_Horizontal_Anisotropy','ha',50),
+            array('SC2_L4','Layer_4_Vertical_Anisotropy','va',5),
+        );
+
+        foreach ($geologicalLayerProperties as $geologicalLayerProperty)
+        {
+            $geologicalLayer = $entityManager->getRepository('AppBundle:GeologicalLayer')
+                ->findOneBy(array(
+                    'name' => $geologicalLayerProperty[0]
+                ));
+
+            $property = PropertyFactory::create();
+            $property->setName($geologicalLayerProperty[1]);
+            $propertyType = $entityManager->getRepository('AppBundle:PropertyType')
+                ->findOneBy(array(
+                    'abbreviation' => $geologicalLayerProperty[2]
+                ));
+
+            if (!$propertyType) {
+                throw new NotFoundHttpException();
+            }
+            $property->setPropertyType($propertyType);
+            $value = PropertyValueFactory::create()->setValue($geologicalLayerProperty[3]);
+            $property->addValue($value);
+
+            $entityManager->persist($value);
+            $entityManager->persist($property);
+            $entityManager->persist($geologicalLayer);
             $entityManager->flush();
         }
         
