@@ -87,15 +87,6 @@ abstract class AbstractModel
     private $dateModified;
 
     /**
-     * Get id
-     *
-     * @return int
-     */
-    public function getId()
-    {
-        return $this->id;
-    }
-    /**
      * Constructor
      */
     public function __construct()
@@ -105,6 +96,29 @@ abstract class AbstractModel
         $this->public = true;
         $this->dateCreated = new \DateTime();
         $this->dateModified = new \DateTime();
+    }
+
+    /**
+     * Set id
+     * 
+     * @param $id
+     * @return $this
+     */
+    public function setId($id)
+    {
+        $this->id = $id;
+
+        return $this;
+    }
+
+    /**
+     * Get id
+     *
+     * @return int
+     */
+    public function getId()
+    {
+        return $this->id;
     }
 
     /**

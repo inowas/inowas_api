@@ -117,7 +117,7 @@ class ModelRestControllerTest extends WebTestCase
      * Test for the API-Call /api/users/<username>/models.json
      * which is providing a list of projects of the user
      */
-    public function testGetListOfModelsByUser()
+    public function testGetListOfModelsByUserAPI()
     {
         $client = static::createClient();
         $client->request('GET', '/api/users/'.$this->owner->getUsername().'/models.json');
@@ -138,7 +138,7 @@ class ModelRestControllerTest extends WebTestCase
         $this->assertNull($modFlowModel->getOwner());
     }
 
-    public function testGetModelDetails()
+    public function testGetModelDetailsAPI()
     {
         $client = static::createClient();
         $client->request('GET', '/api/models/'.$this->modFlowModel->getId().'.json');
