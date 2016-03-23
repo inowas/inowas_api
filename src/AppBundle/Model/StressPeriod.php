@@ -3,6 +3,7 @@
 namespace AppBundle\Model;
 
 use Doctrine\ORM\Mapping as ORM;
+use JMS\Serializer\Annotation as JMS;
 
 class StressPeriod implements \JsonSerializable
 {
@@ -10,6 +11,7 @@ class StressPeriod implements \JsonSerializable
      * @var \DateTime
      *
      * @ORM\Column(name="dateTimeBegin", type="datetime")
+     * @JMS\Groups({"modeldetails"})
      */
     private $dateTimeBegin;
 
@@ -17,6 +19,7 @@ class StressPeriod implements \JsonSerializable
      * @var \DateTime
      *
      * @ORM\Column(name="dateTimeEnd", type="datetime")
+     * @JMS\Groups({"modeldetails"})
      */
     private $dateTimeEnd;
 

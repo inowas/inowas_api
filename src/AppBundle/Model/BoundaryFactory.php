@@ -16,6 +16,11 @@ class BoundaryFactory
         return new Boundary();
     }
 
+    public static function create()
+    {
+        return new Boundary();
+    }
+
     public static function setOwnerProjectNameAndPublic(UserInterface $owner = null, Project $project = null, $name = "", $public = false)
     {
         $boundary = new Boundary();

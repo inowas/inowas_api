@@ -8,6 +8,7 @@ use AppBundle\Entity\Property;
 use AppBundle\Entity\SoilModel;
 use AppBundle\Entity\Stream;
 use AppBundle\Model\AreaFactory;
+use AppBundle\Model\BoundaryFactory;
 use AppBundle\Model\GeologicalLayerFactory;
 use AppBundle\Model\GeologicalPointFactory;
 use AppBundle\Model\GeologicalUnitFactory;
@@ -19,6 +20,7 @@ use AppBundle\Model\PropertyValueFactory;
 use AppBundle\Model\RasterFactory;
 use AppBundle\Model\SoilModelFactory;
 use AppBundle\Model\StreamFactory;
+use AppBundle\Model\StressPeriodFactory;
 use AppBundle\Model\UserFactory;
 use JMS\Serializer\SerializationContext;
 use JMS\Serializer\Serializer;
@@ -147,6 +149,61 @@ class ModFlowModelSerialisationTest extends \PHPUnit_Framework_TestCase
         $this->modFlowModel->addStream($stream);
         $this->modFlowModel->addStream(StreamFactory::create()->setId(28));
         $this->modFlowModel->addStream(StreamFactory::create()->setId(29));
+        
+        $boundary = BoundaryFactory::create()
+            ->setId(38)
+            ->setOwner($owner)
+            ->setName('BoundaryName')
+            ->addObservationPoint(ObservationPointFactory::create())
+            ->addProperty(PropertyFactory::create())
+            ->setDateCreated(new \DateTime())
+            ->setDateModified(new \DateTime());
+
+        $this->modFlowModel->addBoundary($boundary);
+        $this->modFlowModel->addBoundary(BoundaryFactory::create()->setId(39));
+
+        $observationPoint = ObservationPointFactory::create()
+            ->setId(41)
+            ->setOwner($owner)
+            ->setName('ObservationPoint')
+            ->addProperty(PropertyFactory::create())
+            ->setDateCreated(new \DateTime())
+            ->setDateModified(new \DateTime());
+
+        $this->modFlowModel->addObservationPoint($observationPoint);
+        $this->modFlowModel->addObservationPoint(ObservationPointFactory::create()->setId(42));
+        $this->modFlowModel->addObservationPoint(ObservationPointFactory::create()->setId(43));
+        $this->modFlowModel->addObservationPoint(ObservationPointFactory::create()->setId(44));
+
+        $this->modFlowModel->addStressPeriod(
+            StressPeriodFactory::create()
+                ->setDateTimeBegin(new \DateTime('1-1-2000'))
+                ->setDateTimeEnd(new \DateTime('2-1-2000'))
+        );
+
+        $this->modFlowModel->addStressPeriod(
+            StressPeriodFactory::create()
+                ->setDateTimeBegin(new \DateTime('2-1-2000'))
+                ->setDateTimeEnd(new \DateTime('3-1-2000'))
+        );
+
+        $this->modFlowModel->addStressPeriod(
+            StressPeriodFactory::create()
+                ->setDateTimeBegin(new \DateTime('3-1-2000'))
+                ->setDateTimeEnd(new \DateTime('4-1-2000'))
+        );
+
+        $this->modFlowModel->addStressPeriod(
+            StressPeriodFactory::create()
+                ->setDateTimeBegin(new \DateTime('5-1-2000'))
+                ->setDateTimeEnd(new \DateTime('6-1-2000'))
+        );
+        $this->modFlowModel->addStressPeriod(
+            StressPeriodFactory::create()
+                ->setDateTimeBegin(new \DateTime('7-1-2000'))
+                ->setDateTimeEnd(new \DateTime('8-1-2000'))
+        );
+
     }
 
     public function testRenderJson()
@@ -192,14 +249,27 @@ class ModFlowModelSerialisationTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals($this->layer->getProperties()->toArray()[1]->getValues()[0]->getRaster()->getId(), $serializedModel->soil_model->geological_layers[0]->properties[1]->values[0]->raster->id);
 
         $this->assertObjectHasAttribute("streams", $serializedModel);
-        $this->assertEquals(1, count((array)$serializedModel->streams[0]));
         $this->assertCount(3, $serializedModel->streams);
+        $this->assertEquals(1, count((array)$serializedModel->streams[0]));
         $this->assertEquals($this->modFlowModel->getStreams()->toArray()[0]->getId(), $serializedModel->streams[0]->id);
         $this->assertEquals($this->modFlowModel->getStreams()->toArray()[1]->getId(), $serializedModel->streams[1]->id);
         $this->assertEquals($this->modFlowModel->getStreams()->toArray()[2]->getId(), $serializedModel->streams[2]->id);
 
+        $this->assertObjectHasAttribute("boundaries", $serializedModel);
+        $this->assertCount(2, $serializedModel->boundaries);
+        $this->assertEquals(1, count((array)$serializedModel->boundaries[0]));
 
-        $this->assertCount(0, $serializedModel->calculation_properties->stress_periods);
+        $this->assertObjectHasAttribute("observation_points", $serializedModel);
+        $this->assertCount(4, $serializedModel->observation_points);
+        $this->assertEquals(1, count((array)$serializedModel->observation_points[0]));
+
+        $this->assertObjectHasAttribute("calculation_properties", $serializedModel);
+        $this->assertObjectHasAttribute("stress_periods", $serializedModel->calculation_properties);
+        $this->assertCount(5, $serializedModel->calculation_properties->stress_periods);
+        $this->assertEquals(2, count((array)$serializedModel->calculation_properties->stress_periods[0]));
+        $this->assertObjectHasAttribute("date_time_begin", $serializedModel->calculation_properties->stress_periods[0]);
+
+        $this->assertCount(5, $serializedModel->calculation_properties->stress_periods);
         $this->assertCount(0, $serializedModel->calculation_properties->init_values);
     }
 }

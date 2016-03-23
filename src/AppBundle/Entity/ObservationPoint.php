@@ -11,7 +11,6 @@ use JMS\Serializer\Annotation as JMS;
 /**
  * @ORM\Entity()
  * @ORM\Table(name="observation_points")
- * @JMS\ExclusionPolicy("all")
  */
 class ObservationPoint extends ModelObject
 {
@@ -20,6 +19,13 @@ class ObservationPoint extends ModelObject
      * @JMS\Groups({"list", "details"})
      */
     protected $type = 'observationPoint';
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="name", type="string", length=255, nullable=true)
+     */
+    protected $name;
 
     /**
      * @var ArrayCollection Property
