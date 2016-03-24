@@ -441,6 +441,11 @@ class ModFlowModelSerialisationTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals($this->modFlowModel->getStressPeriods()[0]->getDateTimeEnd(), new \DateTime($serializedModel->calculation_properties->stress_periods[0]->date_time_end));
     }
 
+    public function testOutputOptionsPointCalculation()
+    {
+        
+    }
+
     public function testRenderJson()
     {
         $serializationContext = SerializationContext::create();

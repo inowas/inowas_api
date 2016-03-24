@@ -74,6 +74,18 @@ class ModFlowModel extends AbstractModel
         "recalculation" => true
     );
 
+    private $outputOptions = array(
+        "point_calculation" => array(
+            "geological_point" => null,
+            "geological_layer" => null,
+            "result_property" => null
+        ),
+        "layer_calculation" => array(
+            "geological_layer" => null,
+            "result_property" => null
+        )
+    );
+
     /**
      * ModFlowModel constructor.
      */
@@ -364,4 +376,30 @@ class ModFlowModel extends AbstractModel
     {
         return $this->calculationProperties["initial_values"];
     }
+
+
+    /**
+     * Set outputOptions
+     *
+     * @param array $outputOptions
+     *
+     * @return ModFlowModel
+     */
+    public function setOutputOptions($outputOptions)
+    {
+        $this->outputOptions = $outputOptions;
+
+        return $this;
+    }
+
+    /**
+     * Get outputOptions
+     *
+     * @return array
+     */
+    public function getOutputOptions()
+    {
+        return $this->outputOptions;
+    }
+
 }
