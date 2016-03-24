@@ -64,7 +64,14 @@ class ModFlowModel extends AbstractModel
      */
     private $calculationProperties = array(
         "stress_periods" => array(),
-        "init_values" => array()
+        "initial_values" => array(
+            "property" => null,
+            "head_from_top_elevation" => 1,
+            "steady_state_calculation" => null
+        ),
+        "steady_state" => null,
+        "transient" => true,
+        "recalculation" => true
     );
 
     /**
@@ -341,9 +348,9 @@ class ModFlowModel extends AbstractModel
      *
      * @return ModFlowModel
      */
-    public function setInitValues($initValues)
+    public function setInitialValues($initValues)
     {
-        $this->calculationProperties["init_values"] = $initValues;
+        $this->calculationProperties["initial_values"] = $initValues;
 
         return $this;
     }
@@ -353,8 +360,8 @@ class ModFlowModel extends AbstractModel
      *
      * @return array
      */
-    public function getInitValues()
+    public function getInitialValues()
     {
-        return $this->calculationProperties["init_values"];
+        return $this->calculationProperties["initial_values"];
     }
 }

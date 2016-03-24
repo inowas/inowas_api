@@ -2,8 +2,10 @@
 
 namespace AppBundle\Tests\Controller;
 
+use AppBundle\Entity\Boundary;
 use AppBundle\Entity\GeologicalLayer;
 use AppBundle\Entity\ModFlowModel;
+use AppBundle\Entity\ObservationPoint;
 use AppBundle\Entity\Property;
 use AppBundle\Entity\SoilModel;
 use AppBundle\Entity\Stream;
@@ -149,7 +151,8 @@ class ModFlowModelSerialisationTest extends \PHPUnit_Framework_TestCase
         $this->modFlowModel->addStream($stream);
         $this->modFlowModel->addStream(StreamFactory::create()->setId(28));
         $this->modFlowModel->addStream(StreamFactory::create()->setId(29));
-        
+
+        /** @var Boundary $boundary */
         $boundary = BoundaryFactory::create()
             ->setId(38)
             ->setOwner($owner)
@@ -162,6 +165,7 @@ class ModFlowModelSerialisationTest extends \PHPUnit_Framework_TestCase
         $this->modFlowModel->addBoundary($boundary);
         $this->modFlowModel->addBoundary(BoundaryFactory::create()->setId(39));
 
+        /** @var ObservationPoint $observationPoint */
         $observationPoint = ObservationPointFactory::create()
             ->setId(41)
             ->setOwner($owner)
@@ -174,7 +178,222 @@ class ModFlowModelSerialisationTest extends \PHPUnit_Framework_TestCase
         $this->modFlowModel->addObservationPoint(ObservationPointFactory::create()->setId(42));
         $this->modFlowModel->addObservationPoint(ObservationPointFactory::create()->setId(43));
         $this->modFlowModel->addObservationPoint(ObservationPointFactory::create()->setId(44));
+    }
 
+    public function testCalculationPropertiesInitialValuesDefault()
+    {
+        $serializationContext = SerializationContext::create();
+        $serializationContext->setGroups('modeldetails');
+
+        $serializedModel = $this->serializer->serialize($this->modFlowModel, 'json', $serializationContext);
+        $this->assertStringStartsWith('{',$serializedModel);
+
+        $serializedModel = json_decode($serializedModel);
+
+        $this->assertObjectHasAttribute("calculation_properties", $serializedModel);
+        $this->assertObjectHasAttribute("initial_values", $serializedModel->calculation_properties);
+        $this->assertObjectNotHasAttribute("property", $serializedModel->calculation_properties->initial_values);
+        $this->assertObjectHasAttribute("head_from_top_elevation", $serializedModel->calculation_properties->initial_values);
+        $this->assertObjectNotHasAttribute("steady_state_calculation", $serializedModel->calculation_properties->initial_values);
+    }
+
+    public function testCalculationPropertiesInitValueIsAPropertyWithFloatValue()
+    {
+        $property = PropertyFactory::create()->setId(5);
+        $property->addValue(PropertyValueFactory::create()->setValue(1.114));
+
+        $this->modFlowModel->setInitialValues(array(
+            "property" => $property,
+            "head_from_top_elevation" => null,
+            "steady_state_calculation" => null
+        ));
+
+        $serializationContext = SerializationContext::create();
+        $serializationContext->setGroups('modeldetails');
+        $serializedModel = $this->serializer->serialize($this->modFlowModel, 'json', $serializationContext);
+        $this->assertStringStartsWith('{',$serializedModel);
+        $serializedModel = json_decode($serializedModel);
+        $this->assertObjectHasAttribute("calculation_properties", $serializedModel);
+        $this->assertObjectHasAttribute("initial_values", $serializedModel->calculation_properties);
+        $this->assertObjectHasAttribute("property", $serializedModel->calculation_properties->initial_values);
+        $this->assertObjectNotHasAttribute("head_from_top_elevation", $serializedModel->calculation_properties->initial_values);
+        $this->assertObjectNotHasAttribute("steady_state_calculation", $serializedModel->calculation_properties->initial_values);
+        $this->assertEquals($property->getId(), $serializedModel->calculation_properties->initial_values->property->id);
+        $this->assertEquals($property->getValues()->first()->getValue(), $serializedModel->calculation_properties->initial_values->property->values[0]->value);
+    }
+
+    public function testCalculationPropertiesInitValueIsAPropertyWithRaster()
+    {
+        $property = PropertyFactory::create()->setId(5);
+        $property->addValue(PropertyValueFactory::create()
+            ->setRaster(RasterFactory::createEntity()->setId(32))
+        );
+
+        $this->modFlowModel->setInitialValues(array(
+            "property" => $property,
+            "head_from_top_elevation" => null,
+            "steady_state_calculation" => null
+        ));
+
+        $serializationContext = SerializationContext::create();
+        $serializationContext->setGroups('modeldetails');
+        $serializedModel = $this->serializer->serialize($this->modFlowModel, 'json', $serializationContext);
+        $this->assertStringStartsWith('{',$serializedModel);
+        $serializedModel = json_decode($serializedModel);
+        $this->assertObjectHasAttribute("calculation_properties", $serializedModel);
+        $this->assertObjectHasAttribute("initial_values", $serializedModel->calculation_properties);
+        $this->assertObjectHasAttribute("property", $serializedModel->calculation_properties->initial_values);
+        $this->assertObjectNotHasAttribute("head_from_top_elevation", $serializedModel->calculation_properties->initial_values);
+        $this->assertObjectNotHasAttribute("steady_state_calculation", $serializedModel->calculation_properties->initial_values);
+        $this->assertEquals($property->getId(), $serializedModel->calculation_properties->initial_values->property->id);
+        $this->assertEquals($property->getValues()->first()->getRaster()->getId(), $serializedModel->calculation_properties->initial_values->property->values[0]->raster->id);
+    }
+
+    public function testCalculationPropertiesInitValueIsHeadFromTopElevation()
+    {
+        $this->modFlowModel->setInitialValues(array(
+            "property" => null,
+            "head_from_top_elevation" => 1.557,
+            "steady_state_calculation" => null
+        ));
+
+        $serializationContext = SerializationContext::create();
+        $serializationContext->setGroups('modeldetails');
+        $serializedModel = $this->serializer->serialize($this->modFlowModel, 'json', $serializationContext);
+        $this->assertStringStartsWith('{',$serializedModel);
+        $serializedModel = json_decode($serializedModel);
+        $this->assertObjectHasAttribute("calculation_properties", $serializedModel);
+        $this->assertObjectHasAttribute("initial_values", $serializedModel->calculation_properties);
+        $this->assertObjectNotHasAttribute("property", $serializedModel->calculation_properties->initial_values);
+        $this->assertObjectHasAttribute("head_from_top_elevation", $serializedModel->calculation_properties->initial_values);
+        $this->assertObjectNotHasAttribute("steady_state_calculation", $serializedModel->calculation_properties->initial_values);
+        $this->assertEquals($this->modFlowModel->getInitialValues()["head_from_top_elevation"], $serializedModel->calculation_properties->initial_values->head_from_top_elevation);
+    }
+
+    public function testCalculationPropertiesInitValueIsSteadyStateCalculation()
+    {
+        $this->modFlowModel->setInitialValues(array(
+            "property" => null,
+            "head_from_top_elevation" => null,
+            "steady_state_calculation" => 123
+        ));
+
+        $serializationContext = SerializationContext::create();
+        $serializationContext->setGroups('modeldetails');
+        $serializedModel = $this->serializer->serialize($this->modFlowModel, 'json', $serializationContext);
+        $this->assertStringStartsWith('{',$serializedModel);
+        $serializedModel = json_decode($serializedModel);
+        $this->assertObjectHasAttribute("calculation_properties", $serializedModel);
+        $this->assertObjectHasAttribute("initial_values", $serializedModel->calculation_properties);
+        $this->assertObjectNotHasAttribute("property", $serializedModel->calculation_properties->initial_values);
+        $this->assertObjectNotHasAttribute("head_from_top_elevation", $serializedModel->calculation_properties->initial_values);
+        $this->assertObjectHasAttribute("steady_state_calculation", $serializedModel->calculation_properties->initial_values);
+        $this->assertEquals($this->modFlowModel->getInitialValues()["steady_state_calculation"], $serializedModel->calculation_properties->initial_values->steady_state_calculation);
+    }
+
+    public function testCalculationPropertiesSteadyStateCalculation()
+    {
+        $this->modFlowModel->setCalculationProperties(array(
+            "stress_periods" => array(),
+            "initial_values" => array(
+                "property" => null,
+                "head_from_top_elevation" => 1,
+                "steady_state_calculation" => null
+            ),
+            "steady_state" => true,
+            "transient" => null,
+            "recalculation" => true
+        ));
+
+        $serializationContext = SerializationContext::create();
+        $serializationContext->setGroups('modeldetails');
+
+        $serializedModel = $this->serializer->serialize($this->modFlowModel, 'json', $serializationContext);
+        $this->assertStringStartsWith('{',$serializedModel);
+        $serializedModel = json_decode($serializedModel);
+
+        $this->assertObjectHasAttribute("calculation_properties", $serializedModel);
+        $this->assertObjectHasAttribute("steady_state", $serializedModel->calculation_properties);
+        $this->assertTrue($serializedModel->calculation_properties->steady_state);
+    }
+
+    public function testCalculationPropertiesTransientCalculation()
+    {
+        $this->modFlowModel->setCalculationProperties(array(
+            "stress_periods" => array(),
+            "initial_values" => array(
+                "property" => null,
+                "head_from_top_elevation" => 1,
+                "steady_state_calculation" => null
+            ),
+            "steady_state" => null,
+            "transient" => true,
+            "recalculation" => true
+        ));
+
+        $serializationContext = SerializationContext::create();
+        $serializationContext->setGroups('modeldetails');
+
+        $serializedModel = $this->serializer->serialize($this->modFlowModel, 'json', $serializationContext);
+        $this->assertStringStartsWith('{',$serializedModel);
+        $serializedModel = json_decode($serializedModel);
+
+        $this->assertObjectHasAttribute("calculation_properties", $serializedModel);
+        $this->assertObjectHasAttribute("transient", $serializedModel->calculation_properties);
+        $this->assertTrue($serializedModel->calculation_properties->transient);
+    }
+
+    public function testCalculationPropertiesRecalculation()
+    {
+        $this->modFlowModel->setCalculationProperties(array(
+            "stress_periods" => array(),
+            "initial_values" => array(
+                "property" => null,
+                "head_from_top_elevation" => 1,
+                "steady_state_calculation" => null
+            ),
+            "steady_state" => null,
+            "transient" => true,
+            "recalculation" => false
+        ));
+
+        $serializationContext = SerializationContext::create();
+        $serializationContext->setGroups('modeldetails');
+
+        $serializedModel = $this->serializer->serialize($this->modFlowModel, 'json', $serializationContext);
+        $this->assertStringStartsWith('{',$serializedModel);
+        $serializedModel = json_decode($serializedModel);
+
+        $this->assertObjectHasAttribute("calculation_properties", $serializedModel);
+        $this->assertObjectHasAttribute("recalculation", $serializedModel->calculation_properties);
+        $this->assertFalse($serializedModel->calculation_properties->recalculation);
+
+        $this->modFlowModel->setCalculationProperties(array(
+            "stress_periods" => array(),
+            "initial_values" => array(
+                "property" => null,
+                "head_from_top_elevation" => 1,
+                "steady_state_calculation" => null
+            ),
+            "steady_state" => null,
+            "transient" => true,
+            "recalculation" => true
+        ));
+
+        $serializationContext = SerializationContext::create();
+        $serializationContext->setGroups('modeldetails');
+
+        $serializedModel = $this->serializer->serialize($this->modFlowModel, 'json', $serializationContext);
+        $this->assertStringStartsWith('{',$serializedModel);
+        $serializedModel = json_decode($serializedModel);
+
+        $this->assertObjectHasAttribute("calculation_properties", $serializedModel);
+        $this->assertObjectHasAttribute("recalculation", $serializedModel->calculation_properties);
+        $this->assertTrue($serializedModel->calculation_properties->recalculation);
+    }
+
+    public function testCalculationPropertiesStressPeriods()
+    {
         $this->modFlowModel->addStressPeriod(
             StressPeriodFactory::create()
                 ->setDateTimeBegin(new \DateTime('1-1-2000'))
@@ -204,6 +423,22 @@ class ModFlowModelSerialisationTest extends \PHPUnit_Framework_TestCase
                 ->setDateTimeEnd(new \DateTime('8-1-2000'))
         );
 
+        $serializationContext = SerializationContext::create();
+        $serializationContext->setGroups('modeldetails');
+
+        $serializedModel = $this->serializer->serialize($this->modFlowModel, 'json', $serializationContext);
+        $this->assertStringStartsWith('{',$serializedModel);
+
+        $serializedModel = json_decode($serializedModel);
+
+        $this->assertObjectHasAttribute("calculation_properties", $serializedModel);
+        $this->assertObjectHasAttribute("stress_periods", $serializedModel->calculation_properties);
+        $this->assertCount(5, $serializedModel->calculation_properties->stress_periods);
+        $this->assertEquals(2, count((array)$serializedModel->calculation_properties->stress_periods[0]));
+        $this->assertObjectHasAttribute("date_time_begin", $serializedModel->calculation_properties->stress_periods[0]);
+        $this->assertObjectHasAttribute("date_time_end", $serializedModel->calculation_properties->stress_periods[0]);
+        $this->assertEquals($this->modFlowModel->getStressPeriods()[0]->getDateTimeBegin(), new \DateTime($serializedModel->calculation_properties->stress_periods[0]->date_time_begin));
+        $this->assertEquals($this->modFlowModel->getStressPeriods()[0]->getDateTimeEnd(), new \DateTime($serializedModel->calculation_properties->stress_periods[0]->date_time_end));
     }
 
     public function testRenderJson()
@@ -262,14 +497,5 @@ class ModFlowModelSerialisationTest extends \PHPUnit_Framework_TestCase
         $this->assertObjectHasAttribute("observation_points", $serializedModel);
         $this->assertCount(4, $serializedModel->observation_points);
         $this->assertEquals(1, count((array)$serializedModel->observation_points[0]));
-
-        $this->assertObjectHasAttribute("calculation_properties", $serializedModel);
-        $this->assertObjectHasAttribute("stress_periods", $serializedModel->calculation_properties);
-        $this->assertCount(5, $serializedModel->calculation_properties->stress_periods);
-        $this->assertEquals(2, count((array)$serializedModel->calculation_properties->stress_periods[0]));
-        $this->assertObjectHasAttribute("date_time_begin", $serializedModel->calculation_properties->stress_periods[0]);
-
-        $this->assertCount(5, $serializedModel->calculation_properties->stress_periods);
-        $this->assertCount(0, $serializedModel->calculation_properties->init_values);
     }
 }

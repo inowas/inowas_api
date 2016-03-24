@@ -17,6 +17,9 @@ class ObservationPointFactory
         return new ObservationPoint();
     }
 
+    /**
+     * @return ObservationPoint
+     */
     public static function create()
     {
         return new ObservationPoint();
