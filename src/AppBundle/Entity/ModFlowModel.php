@@ -230,74 +230,6 @@ class ModFlowModel extends AbstractModel
     }
 
     /**
-     * @ORM\PrePersist()
-     */
-    public function prePersist()
-    {
-        if (!is_null($this->area))
-        {
-            $this->addModelObject($this->area);
-        }
-
-        if ($this->boundaries->count() > 0 )
-        {
-            foreach ($this->boundaries as $boundary)
-            {
-                $this->addModelObject($boundary);
-            }
-        }
-
-        if ($this->observationPoints->count() > 0 )
-        {
-            foreach ($this->observationPoints as $observationPoint)
-            {
-                $this->addModelObject($observationPoint);
-            }
-        }
-
-        if ($this->streams->count() > 0 )
-        {
-            foreach ($this->streams as $stream)
-            {
-                $this->addModelObject($stream);
-            }
-        }
-    }
-
-    /**
-     * @ORM\PostLoad()
-     */
-    public function postLoad()
-    {
-        foreach ($this->getModelObjects() as $modelObject)
-        {
-            if ($modelObject instanceof Area)
-            {
-                $this->area = $modelObject;
-                $this->removeModelObject($modelObject);
-            }
-
-            if ($modelObject instanceof Boundary)
-            {
-                $this->addBoundary($modelObject);
-                $this->removeModelObject($modelObject);
-            }
-
-            if ($modelObject instanceof ObservationPoint)
-            {
-                $this->addObservationPoint($modelObject);
-                $this->removeModelObject($modelObject);
-            }
-
-            if ($modelObject instanceof Stream)
-            {
-                $this->addStream($modelObject);
-                $this->removeModelObject($modelObject);
-            }
-        }
-    }
-
-    /**
      * Add stressPeriod
      *
      * @param $stressPeriod
@@ -405,4 +337,71 @@ class ModFlowModel extends AbstractModel
         return $this->outputOptions;
     }
 
+    /**
+     * @ORM\PreFlush()
+     */
+    public function prePersist()
+    {
+        if (!is_null($this->area))
+        {
+            $this->addModelObject($this->area);
+        }
+
+        if ($this->boundaries->count() > 0 )
+        {
+            foreach ($this->boundaries as $boundary)
+            {
+                $this->addModelObject($boundary);
+            }
+        }
+
+        if ($this->observationPoints->count() > 0 )
+        {
+            foreach ($this->observationPoints as $observationPoint)
+            {
+                $this->addModelObject($observationPoint);
+            }
+        }
+
+        if ($this->streams->count() > 0 )
+        {
+            foreach ($this->streams as $stream)
+            {
+                $this->addModelObject($stream);
+            }
+        }
+    }
+
+    /**
+     * @ORM\PostLoad()
+     */
+    public function postLoad()
+    {
+        foreach ($this->getModelObjects() as $modelObject)
+        {
+            if ($modelObject instanceof Area)
+            {
+                $this->area = $modelObject;
+                $this->removeModelObject($modelObject);
+            }
+
+            if ($modelObject instanceof Boundary)
+            {
+                $this->addBoundary($modelObject);
+                $this->removeModelObject($modelObject);
+            }
+
+            if ($modelObject instanceof ObservationPoint)
+            {
+                $this->addObservationPoint($modelObject);
+                $this->removeModelObject($modelObject);
+            }
+
+            if ($modelObject instanceof Stream)
+            {
+                $this->addStream($modelObject);
+                $this->removeModelObject($modelObject);
+            }
+        }
+    }
 }
