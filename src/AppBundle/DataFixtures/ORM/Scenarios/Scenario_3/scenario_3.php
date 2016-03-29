@@ -2,6 +2,7 @@
 
 namespace AppBundle\DataFixtures\ORM\Scenarios\Scenario_3;
 
+use AppBundle\Entity\ModFlowModel;
 use AppBundle\Entity\User;
 use AppBundle\Model\AreaFactory;
 use AppBundle\Model\AreaTypeFactory;
@@ -9,6 +10,7 @@ use AppBundle\Model\BoundaryFactory;
 use AppBundle\Model\GeologicalLayerFactory;
 use AppBundle\Model\GeologicalPointFactory;
 use AppBundle\Model\GeologicalUnitFactory;
+use AppBundle\Model\ModFlowModelFactory;
 use AppBundle\Model\PropertyFactory;
 use AppBundle\Model\PropertyTimeValueFactory;
 use AppBundle\Model\PropertyTypeFactory;
@@ -76,9 +78,18 @@ class LoadScenario_3 implements FixtureInterface, ContainerAwareInterface
             $entityManager->flush();
         }
 
+        // Create Modflow-Model
+        /** @var ModFlowModel $modflowModel */
+        $modflowModel = ModFlowModelFactory::create()
+            ->setName('Modflow-Model Scenario 3')
+            ->setOwner($user)
+        ;
+        $entityManager->persist($modflowModel);
+
         // Create a soilmodel
         $soilModel = SoilModelFactory::create();
         $soilModel->setOwner($user)->setName('SM Scenario 3');
+        $modflowModel->setSoilModel($soilModel);
         $entityManager->persist($soilModel);
 
         // Create new geological layers
@@ -269,9 +280,10 @@ class LoadScenario_3 implements FixtureInterface, ContainerAwareInterface
         $polygon->setSrid(3857);
         $area->setGeometry($polygon);
         $entityManager->persist($area);
+        $soilModel->setArea($area);
+        $modflowModel->setArea($area);
         $entityManager->flush();
         $this->addModelObjectPropertiesFromCSVFile($area, __DIR__.'/scenario_3_area_property_timeseries.csv', ';');
-
 
         // Add new boundaries
         $boundary = BoundaryFactory::setOwnerNameAndPublic($user, 'SC3_B1', $public);
@@ -281,6 +293,7 @@ class LoadScenario_3 implements FixtureInterface, ContainerAwareInterface
         $lineString = $converter->convertStringToPHPValue(Type::getType('linestring'), $geometryText);
         $lineString->setSrid(3857);
         $boundary->setGeometry($lineString);
+        $modflowModel->addBoundary($boundary);
         $entityManager->persist($boundary);
         $entityManager->flush();
         $this->addModelObjectPropertiesFromCSVFile($boundary, __DIR__.'/scenario_3_boundary_1_property_timeseries.csv', ';');
@@ -292,6 +305,7 @@ class LoadScenario_3 implements FixtureInterface, ContainerAwareInterface
         $lineString = $converter->convertStringToPHPValue(Type::getType('linestring'), $geometryText);
         $lineString->setSrid(3857);
         $boundary->setGeometry($lineString);
+        $modflowModel->addBoundary($boundary);
         $entityManager->persist($boundary);
         $entityManager->flush();
         $this->addModelObjectPropertiesFromCSVFile($boundary, __DIR__.'/scenario_3_boundary_2_property_timeseries.csv', ';');

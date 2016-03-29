@@ -67,7 +67,8 @@ class ModFlowModel extends AbstractModel
         "initial_values" => array(
             "property" => null,
             "head_from_top_elevation" => 1,
-            "steady_state_calculation" => null
+            "steady_state_calculation" => null,
+            "interpolation" => array()          // of observationPoints
         ),
         "steady_state" => null,
         "transient" => true,
@@ -78,11 +79,13 @@ class ModFlowModel extends AbstractModel
         "point_calculation" => array(
             "geological_point" => null,
             "geological_layer" => null,
-            "result_property" => null
+            "result_property" => null,
+            "formats" => array()                // timeValues -> floats
         ),
         "layer_calculation" => array(
             "geological_layer" => null,
-            "result_property" => null
+            "result_property" => null,
+            "formats" => array()                // timevalues -> raster, image
         )
     );
 
