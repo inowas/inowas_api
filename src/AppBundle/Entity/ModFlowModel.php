@@ -7,6 +7,7 @@ use Doctrine\ORM\Mapping as ORM;
 use JMS\Serializer\Annotation as JMS;
 
 /**
+ * @ORM\HasLifecycleCallbacks
  * @ORM\Entity()
  * @JMS\ExclusionPolicy("none")
  */
@@ -33,25 +34,19 @@ class ModFlowModel extends AbstractModel
     private $area;
 
     /**
-     * @var ArrayCollection Boundary
-     *
-     * @JMS\Type("ArrayCollection<AppBundle\Entity\Boundary>")
+     * @var ArrayCollection
      * @JMS\Groups({"details", "modeldetails"})
      **/
     private $boundaries;
 
     /**
      * @var ArrayCollection
-     *
-     * @JMS\Type("ArrayCollection<AppBundle\Entity\ObservationPoint>")
      * @JMS\Groups({"details", "modeldetails"})
      */
     private $observationPoints;
 
     /**
      * @var ArrayCollection
-     *
-     * @JMS\Type("ArrayCollection<AppBundle\Entity\Stream>")
      * @JMS\Groups({"details", "modeldetails"})
      */
     private $streams;

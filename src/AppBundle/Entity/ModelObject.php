@@ -58,6 +58,14 @@ abstract class ModelObject
     protected $projects;
 
     /**
+     * @var ArrayCollection AbstractModel
+     *
+     * @ORM\ManyToMany(targetEntity="AppBundle\Entity\AbstractModel", inversedBy="modelObjects", cascade={"persist", "remove"})
+     * @ORM\JoinTable(name="models_model_objects")
+     **/
+    protected $models;
+
+    /**
      * @var ArrayCollection SoilModel
      *
      * @ORM\ManyToMany(targetEntity="AppBundle\Entity\SoilModel", inversedBy="modelObjects", cascade={"persist", "remove"})
@@ -131,6 +139,7 @@ abstract class ModelObject
         $this->owner = $owner;
         $this->public = $public;
         $this->projects = new ArrayCollection();
+        $this->models = new ArrayCollection();
         $this->soilModels = new ArrayCollection();
         $this->propertyIds = new ArrayCollection();
         if ($project) $this->addProject($project);
@@ -265,6 +274,49 @@ abstract class ModelObject
     public function getProjects()
     {
         return $this->projects;
+    }
+
+    /**
+     * @return ArrayCollection
+     */
+    public function getModels()
+    {
+        return $this->models;
+    }
+
+    /**
+     * @param ArrayCollection $models
+     * @return ModelObject
+     */
+    public function setModels($models)
+    {
+        $this->models = $models;
+        return $this;
+    }
+
+    /**
+     * Add SoilModel
+     *
+     * @param AbstractModel $model
+     * @return $this
+     */
+    public function addModel(AbstractModel $model)
+    {
+        $this->models[] = $model;
+
+        return $this;
+    }
+
+    /**
+     * Remove Model
+     *
+     * @param AbstractModel $model
+     * @return $this
+     */
+    public function removeModel(AbstractModel $model)
+    {
+        $this->models->removeElement($model);
+        return $this;
     }
 
     /**

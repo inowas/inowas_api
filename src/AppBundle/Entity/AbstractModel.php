@@ -2,6 +2,7 @@
 
 namespace AppBundle\Entity;
 
+use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
 use JMS\Serializer\Annotation as JMS;
 
@@ -54,12 +55,10 @@ abstract class AbstractModel
     private $owner;
 
     /**
-     * @ORM\ManyToMany(targetEntity="ModelObject")
-     * @ORM\JoinTable(name="models_modelobjects",
-     *      joinColumns={@ORM\JoinColumn(name="model_id", referencedColumnName="id")},
-     *      inverseJoinColumns={@ORM\JoinColumn(name="modelobject_id", referencedColumnName="id")}
-     *      )
-     */
+     * @var ArrayCollection ModelObject $modelObjects
+     *
+     * @ORM\ManyToMany(targetEntity="ModelObject", mappedBy="models", cascade={"persist", "remove"})
+     **/
     private $modelObjects;
 
     /**
@@ -91,8 +90,8 @@ abstract class AbstractModel
      */
     public function __construct()
     {
-        $this->participants = new \Doctrine\Common\Collections\ArrayCollection();
-        $this->modelObjects = new \Doctrine\Common\Collections\ArrayCollection();
+        $this->participants = new ArrayCollection();
+        $this->modelObjects = new ArrayCollection();
         $this->public = true;
         $this->dateCreated = new \DateTime();
         $this->dateModified = new \DateTime();
@@ -300,27 +299,35 @@ abstract class AbstractModel
     }
 
     /**
-     * Add modelObject
+     * Add soilModelObject
      *
      * @param \AppBundle\Entity\ModelObject $modelObject
-     *
-     * @return AbstractModel
+     * @return $this
      */
-    public function addModelObject(\AppBundle\Entity\ModelObject $modelObject)
+    public function addModelObject(ModelObject $modelObject)
     {
+        if (!$modelObject->getModels()->contains($this))
+        {
+            $modelObject->addModel($this);
+        }
         $this->modelObjects[] = $modelObject;
 
         return $this;
     }
 
     /**
-     * Remove modelObject
+     * Remove soilModelObject
      *
      * @param \AppBundle\Entity\ModelObject $modelObject
+     * @return $this
      */
-    public function removeModelObject(\AppBundle\Entity\ModelObject $modelObject)
+    public function removeModelObject(ModelObject $modelObject)
     {
-        $this->modelObjects->removeElement($modelObject);
+        if ($modelObject->getModels()->contains($modelObject))
+        {
+            $this->modelObjects->removeElement($modelObject);
+        }
+        $modelObject->removeModel($this);
     }
 
     /**

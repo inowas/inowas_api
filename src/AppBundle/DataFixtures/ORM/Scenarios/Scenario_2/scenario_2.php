@@ -129,6 +129,8 @@ class LoadScenario_2 implements FixtureInterface, ContainerAwareInterface
         $model->setDescription("ModFlowModel Scenario 2 Description");
         $model->setSoilModel($soilModel);
         $model->setArea($area);
+        $entityManager->persist($model);
+
         
         /** @var StressPeriod $stressPeriod */
         $stressPeriod = StressPeriodFactory::create();
@@ -820,6 +822,7 @@ class LoadScenario_2 implements FixtureInterface, ContainerAwareInterface
             }
 
             $boundary->addGeologicalLayer($geologicalLayer);
+            $model->addBoundary($boundary);
             $entityManager->persist($boundary);
             $entityManager->persist($observationPoint);
             $entityManager->flush();
