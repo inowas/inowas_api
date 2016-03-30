@@ -65,8 +65,7 @@ class ModFlowModel extends AbstractModel
             "steady_state_calculation" => null,
             "interpolation" => array()          // of observationPoints
         ),
-        "steady_state" => null,
-        "transient" => true,
+        "calculation_type" => "steady_state",   // steady_state or transient
         "recalculation" => true
     );
 

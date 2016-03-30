@@ -300,7 +300,7 @@ class ModFlowModelSerialisationTest extends \PHPUnit_Framework_TestCase
                 "head_from_top_elevation" => 1,
                 "steady_state_calculation" => null
             ),
-            "steady_state" => true,
+            "calculation_type" => "steady_state",
             "transient" => null,
             "recalculation" => true
         ));
@@ -313,8 +313,8 @@ class ModFlowModelSerialisationTest extends \PHPUnit_Framework_TestCase
         $serializedModel = json_decode($serializedModel);
 
         $this->assertObjectHasAttribute("calculation_properties", $serializedModel);
-        $this->assertObjectHasAttribute("steady_state", $serializedModel->calculation_properties);
-        $this->assertTrue($serializedModel->calculation_properties->steady_state);
+        $this->assertObjectHasAttribute("calculation_type", $serializedModel->calculation_properties);
+        $this->assertEquals("steady_state", $serializedModel->calculation_properties->calculation_type);
     }
 
     public function testCalculationPropertiesTransientCalculation()
@@ -326,8 +326,7 @@ class ModFlowModelSerialisationTest extends \PHPUnit_Framework_TestCase
                 "head_from_top_elevation" => 1,
                 "steady_state_calculation" => null
             ),
-            "steady_state" => null,
-            "transient" => true,
+            "calculation_type" => "steady_state",
             "recalculation" => true
         ));
 
@@ -339,8 +338,8 @@ class ModFlowModelSerialisationTest extends \PHPUnit_Framework_TestCase
         $serializedModel = json_decode($serializedModel);
 
         $this->assertObjectHasAttribute("calculation_properties", $serializedModel);
-        $this->assertObjectHasAttribute("transient", $serializedModel->calculation_properties);
-        $this->assertTrue($serializedModel->calculation_properties->transient);
+        $this->assertObjectHasAttribute("calculation_type", $serializedModel->calculation_properties);
+        $this->assertEquals("steady_state", $serializedModel->calculation_properties->calculation_type);
     }
 
     public function testCalculationPropertiesRecalculation()
