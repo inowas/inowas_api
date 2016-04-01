@@ -91,7 +91,6 @@ class AreaSerialisationTest extends \PHPUnit_Framework_TestCase
 
         $this->assertStringStartsWith('{',$area);
         $area = json_decode($area);
+        $this->assertEquals($area->id, $this->area->getId());
     }
-
-
 }
