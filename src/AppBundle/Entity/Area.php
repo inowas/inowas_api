@@ -47,7 +47,6 @@ class Area extends ModelObject
      * @var array
      *
      * @JMS\Type("array")
-     * @JMS\Groups({"modelobjectdetails"})
      */
     private $rings;
 
@@ -100,13 +99,31 @@ class Area extends ModelObject
     }
 
     /**
-     * @ORM\PostLoad()
+     * @JMS\VirtualProperty
+     * @JMS\SerializedName("geometry")
+     * @JMS\Groups({"modelobjectdetails"})
+     *
+     * @return string
      */
-    public function postLoad()
+    public function serializeDeserializeGeometry()
     {
+        $polygons = null;
+
         if (!is_null($this->geometry))
         {
-            $this->rings = $this->geometry->toArray();
+            $new = array();
+            $polygons = $this->geometry->toArray();
+
+            foreach ($polygons as $polygon)
+            {
+                $polygon["type"] = $this->geometry->getType();
+                $polygon["srid"] = $this->geometry->getSrid();
+                $new[] = $polygon;
+            }
+
+            unset($polygons);
+            $polygons = $new;
         }
+        return $polygons;
     }
 }
