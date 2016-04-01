@@ -37,7 +37,7 @@ abstract class ModelObject
      * @ORM\Column(name="id", type="integer")
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="AUTO")
-     * @JMS\Groups({"list", "details", "layerdetails", "modeldetails"})
+     * @JMS\Groups({"list", "details", "layerdetails", "modeldetails", "modelobjectdetails"})
      */
     protected $id;
 

@@ -15,7 +15,6 @@ class Area extends ModelObject
 {
     /**
      * @var string
-     * @JMS\Groups({"list", "details"})
      */
     protected $type = 'area';
 
@@ -23,6 +22,7 @@ class Area extends ModelObject
      * @var string
      *
      * @ORM\Column(name="name", type="string", length=255, nullable=true)
+     * @JMS\Groups({"list", "modelobjectdetails"})
      */
     protected $name;
 
@@ -31,6 +31,7 @@ class Area extends ModelObject
      *
      * @ORM\OneToMany(targetEntity="AppBundle\Entity\Property", mappedBy="modelObject", cascade={"persist", "remove"})
      * @JMS\Type("ArrayCollection<AppBundle\Entity\Property>")
+     * @JMS\Groups({"modelobjectdetails"})
      */
     protected $properties;
 
@@ -42,9 +43,18 @@ class Area extends ModelObject
     private $geometry;
 
     /**
+     * @var array
+     *
+     * @JMS\Type("array")
+     * @JMS\Groups({"modelobjectdetails"})
+     */
+    private $rings;
+
+    /**
      * @var AreaType
      *
      * @ORM\ManyToOne(targetEntity="AppBundle\Entity\AreaType")
+     * @JMS\Groups({"list", "details"})
      */
     private $areaType;
 
@@ -62,6 +72,7 @@ class Area extends ModelObject
     public function setGeometry(Polygon $geometry)
     {
         $this->geometry = $geometry;
+        $this->rings = $geometry->toArray();
     }
 
     /**
@@ -85,5 +96,13 @@ class Area extends ModelObject
     public function getAreaType()
     {
         return $this->areaType;
+    }
+
+    /**
+     * @ORM\PostLoad()
+     */
+    public function postLoad()
+    {
+        $this->rings = $this->geometry->toArray();
     }
 }

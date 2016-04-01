@@ -3,6 +3,7 @@
 namespace AppBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use JMS\Serializer\Annotation as JMS;
 
 /**
  * AreaType
@@ -18,13 +19,28 @@ class AreaType
      * @ORM\Column(name="id", type="integer")
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="AUTO")
+     * @JMS\Groups({"list", "modelobjectdetails"})
      */
     private $id;
 
     /**
      * @ORM\Column(name="name", type="text")
+     * @JMS\Groups({"list", "modelobjectdetails"})
      */
     private $name;
+
+    /**
+     * Set id
+     *
+     * @param $id
+     * @return $this
+     */
+    public function setId($id)
+    {
+        $this->id = $id;
+
+        return $this;
+    }
 
     /**
      * Get id

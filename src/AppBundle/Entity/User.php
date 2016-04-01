@@ -21,7 +21,7 @@ class User extends BaseUser
      * @ORM\Column(name="id", type="integer")
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="AUTO")
-     * @JMS\Groups({"projectDetails", "details", "modeldetails"})
+     * @JMS\Groups({"list", "projectDetails", "details", "modeldetails", "modelobjectdetails"})
      */
     protected $id;
 
@@ -88,6 +88,24 @@ class User extends BaseUser
         $this->participatedProjects = new ArrayCollection();
     }
 
+    /**
+     * @return int
+     */
+    public function getId()
+    {
+        return $this->id;
+    }
+
+    /**
+     * @param $id
+     * @return $this
+     */
+    public function setId($id)
+    {
+        $this->id = $id;
+
+        return $this;
+    }
 
     /**
      * Set profile
