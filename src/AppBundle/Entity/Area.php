@@ -10,6 +10,7 @@ use JMS\Serializer\Annotation as JMS;
 /**
  * @ORM\Entity()
  * @ORM\Table(name="areas")
+ * @ORM\HasLifecycleCallbacks()
  */
 class Area extends ModelObject
 {
@@ -103,6 +104,9 @@ class Area extends ModelObject
      */
     public function postLoad()
     {
-        $this->rings = $this->geometry->toArray();
+        if (!is_null($this->geometry))
+        {
+            $this->rings = $this->geometry->toArray();
+        }
     }
 }
