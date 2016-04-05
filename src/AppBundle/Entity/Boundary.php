@@ -15,13 +15,13 @@ class Boundary extends ModelObject
 {
     /**
      * @var string
-     * @JMS\Groups({"list", "details"})
+     * @JMS\Type("string")
+     * @JMS\Groups({"list", "details", "modelobjectdetails"})
      */
     protected $type = 'boundary';
 
     /**
      * @var string
-     *
      * @ORM\Column(name="name", type="string", length=255, nullable=true)
      */
     protected $name;

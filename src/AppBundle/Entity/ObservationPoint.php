@@ -16,7 +16,8 @@ class ObservationPoint extends ModelObject
 {
     /**
      * @var string
-     * @JMS\Groups({"list", "details"})
+     * @JMS\Type("string")
+     * @JMS\Groups({"list", "details", "modelobjectdetails"})
      */
     protected $type = 'observationPoint';
 
