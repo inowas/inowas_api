@@ -460,14 +460,14 @@ class ModFlowModelSerialisationTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals($this->modFlowModel->getDescription(), $serializedModel->description);
         $this->assertObjectHasAttribute("area", $serializedModel);
         $this->assertEquals($this->modFlowModel->getArea()->getId(), $serializedModel->area->id);
-        $this->assertEquals(1, count((array)$serializedModel->area));
+        $this->assertEquals(3, count((array)$serializedModel->area));
 
         $this->assertEquals($this->soilModel->getId(), $serializedModel->soil_model->id);
         $this->assertEquals($this->soilModel->getName(), $serializedModel->soil_model->name);
         $this->assertEquals($this->soilModel->getPublic(), $serializedModel->soil_model->public);
         $this->assertObjectHasAttribute("area", $serializedModel->soil_model);
         $this->assertEquals($this->modFlowModel->getSoilModel()->getArea()->getId(), $serializedModel->soil_model->area->id);
-        $this->assertEquals(1, count((array)$serializedModel->area));
+        $this->assertEquals(3, count((array)$serializedModel->area));
         $this->assertObjectNotHasAttribute("geological_units", $serializedModel->soil_model);
         $this->assertObjectNotHasAttribute("geological_points", $serializedModel->soil_model);
 

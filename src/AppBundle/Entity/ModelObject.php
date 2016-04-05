@@ -98,8 +98,6 @@ abstract class ModelObject
      *
      * @JMS\Accessor(getter="getPropertyIds")
      * @JMS\Type("array<integer>")
-     * @JMS\Groups({"modelobjectdetails"})
-     *
      */
     protected $propertyIds;
 
