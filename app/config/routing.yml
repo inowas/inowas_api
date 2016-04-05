@@ -46,6 +46,11 @@ rest_model:
     prefix: /api
     resource: AppBundle\Controller\ModelRestController
 
+rest_modelobject:
+    type: rest
+    prefix: /api
+    resource: AppBundle\Controller\ModelObjectRestController
+
 rest_project:
     type: rest
     prefix: /api
