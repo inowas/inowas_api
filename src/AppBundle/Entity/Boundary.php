@@ -57,10 +57,12 @@ class Boundary extends ModelObject
 
     /**
      * @param LineString $geometry
+     * @return $this
      */
     public function setGeometry(LineString $geometry)
     {
         $this->geometry = $geometry;
+        return $this;
     }
 
     /**
@@ -68,7 +70,7 @@ class Boundary extends ModelObject
      *
      * @param \AppBundle\Entity\GeologicalLayer $geologicalLayer
      *
-     * @return Boundary
+     * @return $this
      */
     public function addGeologicalLayer(\AppBundle\Entity\GeologicalLayer $geologicalLayer)
     {
@@ -95,5 +97,35 @@ class Boundary extends ModelObject
     public function getGeologicalLayers()
     {
         return $this->geologicalLayers;
+    }
+
+
+    /**
+     * @JMS\VirtualProperty
+     * @JMS\SerializedName("geometry")
+     * @JMS\Groups({"modelobjectdetails"})
+     *
+     * @return string
+     */
+    public function serializeDeserializeGeometry()
+    {
+        $geometries = null;
+
+        if (!is_null($this->geometry))
+        {
+            $new = array();
+            $geometries = $this->geometry->toArray();
+
+            foreach ($geometries as $geometry)
+            {
+                $geometry["type"] = $this->geometry->getType();
+                $geometry["srid"] = $this->geometry->getSrid();
+                $new[] = $geometry;
+            }
+
+            unset($geometries);
+            $geometries = $new;
+        }
+        return $geometries;
     }
 }
