@@ -2,6 +2,7 @@
 
 namespace AppBundle\Controller;
 
+use AppBundle\Entity\ModelObject;
 use FOS\RestBundle\Controller\FOSRestController;
 use FOS\RestBundle\View\View;
 use JMS\Serializer\SerializationContext;
@@ -75,21 +76,21 @@ class ModelObjectRestController extends FOSRestController
      */
     public function getModelobjectAction($id)
     {
-        $area = $this->getDoctrine()
+        $modelObject = $this->getDoctrine()
             ->getRepository('AppBundle:ModelObject')
             ->findOneBy(array(
                 'id' => $id
             ));
 
-        if (!$area)
+        if (!$modelObject)
         {
             throw $this->createNotFoundException('ModelObject with id='.$id.' not found.');
         }
-
-        if ($area->getPublic() || $this->isGranted('ROLE_ADMIN') || $this->getUser() === $area->getOwner())
+        
+        if ($modelObject->getPublic() || $this->isGranted('ROLE_ADMIN') || $this->getUser() === $modelObject->getOwner())
         {
             $view = View::create();
-            $view->setData($area)
+            $view->setData($modelObject)
                 ->setStatusCode(200)
                 ->setSerializationContext(SerializationContext::create()
                     ->setGroups(array('modelobjectdetails')));
