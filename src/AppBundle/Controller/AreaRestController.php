@@ -49,7 +49,7 @@ class AreaRestController extends FOSRestController
         $view->setData($areas)
             ->setStatusCode(200)
             ->setSerializationContext(SerializationContext::create()
-                ->setGroups(array('list'))
+                ->setGroups(array('modelobjectlist'))
                 ->setSerializeNull(true)
                 ->enableMaxDepthChecks()
             )

@@ -21,7 +21,7 @@ class SoilModel
      * @ORM\Column(name="id", type="integer")
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="AUTO")
-     * @JMS\Groups({"details", "modeldetails"})
+     * @JMS\Groups({"details", "modeldetails", "modelobjectdetails"})
      */
     private $id;
 

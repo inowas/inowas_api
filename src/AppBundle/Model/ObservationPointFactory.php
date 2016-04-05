@@ -4,22 +4,15 @@ namespace AppBundle\Model;
 
 use AppBundle\Entity\ObservationPoint;
 use AppBundle\Entity\Project;
-use AppBundle\Model\Point;
 use FOS\UserBundle\Model\UserInterface;
 
 class ObservationPointFactory
 {
-    /**
-     * GeologicalPointFactory constructor.
-     */
     public function __construct()
     {
         return new ObservationPoint();
     }
 
-    /**
-     * @return ObservationPoint
-     */
     public static function create()
     {
         return new ObservationPoint();

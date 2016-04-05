@@ -38,12 +38,7 @@ class AreaSerialisationTest extends \PHPUnit_Framework_TestCase
         $this->areaType = AreaTypeFactory::setName('ModelAreaType')->setId(5);
 
         $this->area = AreaFactory::create()
-            ->setId(11)
-            ->setName('AreaName')
-            ->setOwner($this->owner)
-            ->setDateCreated(new \DateTime())
-            ->setDateModified(new \DateTime())
-            ->setPublic(true)
+            ->setAreaType(AreaTypeFactory::setName("AreaType"))
         ;
 
         $rings = array(
@@ -92,16 +87,7 @@ class AreaSerialisationTest extends \PHPUnit_Framework_TestCase
         $this->assertStringStartsWith('{',$area);
         $area = json_decode($area);
         $this->assertEquals($area->type, 'area');
-        $this->assertEquals($area->id, $this->area->getId());
-        $this->assertEquals($area->name, $this->area->getName());
-        $this->assertEquals($area->models, $this->area->getModels()->toArray());
-        $this->assertEquals($area->soil_models, $this->area->getSoilModels()->toArray());
-        $this->assertEquals($area->owner->id, $this->area->getOwner()->getId());
-        $this->assertEquals($area->properties, $this->area->getProperties()->toArray());
-        $this->assertEquals($area->observation_points, $this->area->getObservationPoints()->toArray());
-        $this->assertEquals($area->public, $this->area->getPublic());
-        $this->assertEquals(new \DateTime($area->date_created), $this->area->getDateCreated());
-        $this->assertEquals(new \DateTime($area->date_modified), $this->area->getDateModified());
+        $this->assertEquals($area->area_type->name, $this->area->getAreaType()->getName());
         $this->assertEquals((array) $area->geometry[0], (array)$this->area->serializeDeserializeGeometry()[0]);
     }
 }

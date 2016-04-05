@@ -24,7 +24,7 @@ abstract class AbstractModel
      * @ORM\Column(name="id", type="integer")
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="AUTO")
-     * @JMS\Groups({"list", "details", "modeldetails"})
+     * @JMS\Groups({"list", "details", "modeldetails", "modelobjectdetails"})
      */
     private $id;
 

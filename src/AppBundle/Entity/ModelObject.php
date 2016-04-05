@@ -27,7 +27,7 @@ abstract class ModelObject
     /**
      * @var string
      * @JMS\Type("string")
-     * @JMS\Groups({"list", "details", "modelobjectdetails"})
+     * @JMS\Groups({"list", "details", "modelobjectdetails", "modelobjectlist"})
      */
     protected $type = 'modelobject';
 
@@ -37,7 +37,7 @@ abstract class ModelObject
      * @ORM\Column(name="id", type="integer")
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="AUTO")
-     * @JMS\Groups({"list", "details", "layerdetails", "modeldetails", "modelobjectdetails"})
+     * @JMS\Groups({"list", "details", "layerdetails", "modeldetails", "modelobjectdetails", "modelobjectlist"})
      */
     protected $id;
 
@@ -45,7 +45,7 @@ abstract class ModelObject
      * @var string
      *
      * @ORM\Column(name="name", type="string", length=255, nullable=true)
-     * @JMS\Groups({"list", "details", "layerdetails", "modeldetails", "modelobjectdetails"})
+     * @JMS\Groups({"list", "details", "layerdetails", "modeldetails", "modelobjectdetails", "modelobjectlist"})
      */
     protected $name;
 
@@ -80,7 +80,7 @@ abstract class ModelObject
      *
      * @ORM\ManyToOne(targetEntity="User", inversedBy="ownedModelObjects")
      * @ORM\JoinColumn(name="owner_id", referencedColumnName="id", onDelete="CASCADE")
-     * @JMS\Groups({"modelobjectdetails"})
+     * @JMS\Groups({"modelobjectdetails", "modelobjectlist"})
      */
     protected $owner;
 
@@ -114,7 +114,7 @@ abstract class ModelObject
      * @var boolean
      *
      * @ORM\Column(name="public", type="boolean")
-     * @JMS\Groups({"list", "details", "layerdetails", "modelobjectdetails"})
+     * @JMS\Groups({"list", "details", "layerdetails", "modelobjectdetails", "modelobjectlist"})
      */
     protected $public;
 
@@ -182,7 +182,7 @@ abstract class ModelObject
      * Set public
      *
      * @param boolean $public
-     * @return ModelObject
+     * @return $this
      */
     public function setPublic($public)
     {
@@ -205,7 +205,7 @@ abstract class ModelObject
      * Set dateCreated
      *
      * @param \DateTime $dateCreated
-     * @return ModelObject
+     * @return $this
      */
     public function setDateCreated($dateCreated)
     {
@@ -228,7 +228,7 @@ abstract class ModelObject
      * Set dateModified
      *
      * @param \DateTime $dateModified
-     * @return ModelObject
+     * @return $this
      */
     public function setDateModified($dateModified)
     {
@@ -251,7 +251,7 @@ abstract class ModelObject
      * Add projects
      *
      * @param \AppBundle\Entity\Project $projects
-     * @return ModelObject
+     * @return $this
      */
     public function addProject(Project $projects)
     {
@@ -292,7 +292,7 @@ abstract class ModelObject
 
     /**
      * @param ArrayCollection $models
-     * @return ModelObject
+     * @return $this
      */
     public function setModels($models)
     {
@@ -360,7 +360,7 @@ abstract class ModelObject
      * Set owner
      *
      * @param \AppBundle\Entity\User $owner
-     * @return ModelObject
+     * @return $this
      */
     public function setOwner(User $owner = null)
     {
@@ -383,7 +383,7 @@ abstract class ModelObject
      * Add Property
      *
      * @param \AppBundle\Entity\Property $property
-     * @return ModelObject
+     * @return $this
      */
     public function addProperty(Property $property)
     {
@@ -417,7 +417,7 @@ abstract class ModelObject
      * Add observationPoints
      *
      * @param \AppBundle\Entity\ObservationPoint $observationPoints
-     * @return ModelObject
+     * @return $this
      */
     public function addObservationPoint(ObservationPoint $observationPoints)
     {
@@ -460,7 +460,7 @@ abstract class ModelObject
      * Set name
      *
      * @param string $name
-     * @return ModelObject
+     * @return $this
      */
     public function setName($name)
     {

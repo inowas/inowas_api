@@ -16,7 +16,7 @@ class Area extends ModelObject
     /**
      * @var string
      * @JMS\Type("string")
-     * @JMS\Groups({"list", "details", "modelobjectdetails"})
+     * @JMS\Groups({"list", "details", "modelobjectdetails", "modelobjectlist"})
      */
     protected $type = 'area';
 

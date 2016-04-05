@@ -50,7 +50,7 @@ class ModelObjectRestController extends FOSRestController
         $view->setData($modelObjects)
             ->setStatusCode(200)
             ->setSerializationContext(SerializationContext::create()
-                ->setGroups(array('list'))
+                ->setGroups(array('modelobjectlist'))
                 ->setSerializeNull(true)
                 ->enableMaxDepthChecks()
             )

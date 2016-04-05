@@ -16,23 +16,9 @@ class Boundary extends ModelObject
     /**
      * @var string
      * @JMS\Type("string")
-     * @JMS\Groups({"list", "details", "modelobjectdetails"})
+     * @JMS\Groups({"list", "details", "modelobjectdetails", "modelobjectlist"})
      */
     protected $type = 'boundary';
-
-    /**
-     * @var string
-     * @ORM\Column(name="name", type="string", length=255, nullable=true)
-     */
-    protected $name;
-
-    /**
-     * @var ArrayCollection Property
-     *
-     * @ORM\OneToMany(targetEntity="AppBundle\Entity\Property", mappedBy="modelObject", cascade={"persist", "remove"})
-     * @JMS\Type("ArrayCollection<AppBundle\Entity\Property>")
-     */
-    protected $properties;
 
     /**
      * @var LineString
