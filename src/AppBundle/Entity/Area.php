@@ -56,7 +56,7 @@ class Area extends ModelObject
      * @var AreaType
      *
      * @ORM\ManyToOne(targetEntity="AppBundle\Entity\AreaType")
-     * @JMS\Groups({"list", "details"})
+     * @JMS\Groups({"list", "details", "modelobjectdetails"})
      */
     private $areaType;
 
