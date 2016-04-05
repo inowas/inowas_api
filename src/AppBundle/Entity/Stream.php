@@ -4,7 +4,6 @@ namespace AppBundle\Entity;
 
 use AppBundle\Model\Point;
 use CrEOF\Spatial\PHP\Types\Geometry\LineString;
-use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
 use JMS\Serializer\Annotation as JMS;
 
@@ -20,21 +19,6 @@ class Stream extends ModelObject
      * @JMS\Groups({"list", "details", "modelobjectdetails", "modelobjectlist"})
      */
     protected $type = 'stream';
-
-    /**
-     * @var string
-     *
-     * @ORM\Column(name="name", type="string", length=255, nullable=true)
-     */
-    protected $name;
-
-    /**
-     * @var ArrayCollection Property
-     *
-     * @ORM\OneToMany(targetEntity="AppBundle\Entity\Property", mappedBy="modelObject", cascade={"persist", "remove"})
-     * @JMS\Type("ArrayCollection<AppBundle\Entity\Property>")
-     */
-    protected $properties;
 
     /**
      * @var Point
@@ -94,5 +78,43 @@ class Stream extends ModelObject
     public function getLine()
     {
         return $this->line;
+    }
+
+    /**
+     * @JMS\VirtualProperty
+     * @JMS\SerializedName("starting_point")
+     * @JMS\Groups({"modelobjectdetails"})
+     *
+     * @return string
+     */
+    public function serializeDeserializeStartingPoint()
+    {
+        $sp = null;
+        if (!is_null($this->startingPoint))
+        {
+            $sp = $this->startingPoint->toArray();
+            $sp["type"] = $this->startingPoint->getType();
+            $sp["srid"] = $this->startingPoint->getSrid();
+        }
+        return $sp;
+    }
+
+    /**
+     * @JMS\VirtualProperty
+     * @JMS\SerializedName("line")
+     * @JMS\Groups({"modelobjectdetails"})
+     *
+     * @return string
+     */
+    public function serializeDeserializeLine()
+    {
+        $line = null;
+        if (!is_null($this->line))
+        {
+            $line = $this->line->toArray();
+            $line["type"] = $this->line->getType();
+            $line["srid"] = $this->line->getSrid();
+        }
+        return $line;
     }
 }

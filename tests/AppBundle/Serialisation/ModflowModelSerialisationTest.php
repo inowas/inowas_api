@@ -489,17 +489,17 @@ class ModFlowModelSerialisationTest extends \PHPUnit_Framework_TestCase
 
         $this->assertObjectHasAttribute("streams", $serializedModel);
         $this->assertCount(3, $serializedModel->streams);
-        $this->assertEquals(1, count((array)$serializedModel->streams[0]));
+        $this->assertEquals(3, count((array)$serializedModel->streams[0]));
         $this->assertEquals($this->modFlowModel->getStreams()->toArray()[0]->getId(), $serializedModel->streams[0]->id);
         $this->assertEquals($this->modFlowModel->getStreams()->toArray()[1]->getId(), $serializedModel->streams[1]->id);
         $this->assertEquals($this->modFlowModel->getStreams()->toArray()[2]->getId(), $serializedModel->streams[2]->id);
 
         $this->assertObjectHasAttribute("boundaries", $serializedModel);
         $this->assertCount(2, $serializedModel->boundaries);
-        $this->assertEquals(1, count((array)$serializedModel->boundaries[0]));
+        $this->assertEquals(3, count((array)$serializedModel->boundaries[0]));
 
         $this->assertObjectHasAttribute("observation_points", $serializedModel);
         $this->assertCount(4, $serializedModel->observation_points);
-        $this->assertEquals(1, count((array)$serializedModel->observation_points[0]));
+        $this->assertEquals(3, count((array)$serializedModel->observation_points[0]));
     }
 }

@@ -74,8 +74,8 @@ class BoundaryRestControllerTest extends WebTestCase
         $client = static::createClient();
         $client->request('GET', '/api/boundaries/'.$this->boundary->getId().'.json');
         $this->assertEquals(200, $client->getResponse()->getStatusCode());
-        $area = json_decode($client->getResponse()->getContent());
-        $this->assertEquals($area->id, $this->boundary->getId());
+        $boundary = json_decode($client->getResponse()->getContent());
+        $this->assertEquals($boundary->id, $this->boundary->getId());
     }
 
     /**

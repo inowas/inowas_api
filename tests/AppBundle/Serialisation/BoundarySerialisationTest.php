@@ -57,7 +57,7 @@ class BoundarySerialisationTest extends \PHPUnit_Framework_TestCase
         $boundary = json_decode($boundary);
         $this->assertEquals($boundary->type, 'boundary');
         $this->assertEquals($boundary->owner->id, $this->boundary->getOwner()->getId());
-        $this->assertEquals((array) $boundary->geometry[0], (array)$this->boundary->serializeDeserializeGeometry()[0]);
+        $this->assertEquals((array) $boundary->geometry, (array)$this->boundary->serializeDeserializeGeometry());
         $this->assertCount(1, $this->boundary->getObservationPoints());
         $this->assertEquals($boundary->observation_points[0]->id, $this->boundary->getObservationPoints()->first()->getId());
         $this->assertEquals($boundary->observation_points[0]->name, $this->boundary->getObservationPoints()->first()->getName());

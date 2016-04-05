@@ -109,23 +109,14 @@ class Boundary extends ModelObject
      */
     public function serializeDeserializeGeometry()
     {
-        $geometries = null;
+        $geometry = null;
 
         if (!is_null($this->geometry))
         {
-            $new = array();
-            $geometries = $this->geometry->toArray();
-
-            foreach ($geometries as $geometry)
-            {
-                $geometry["type"] = $this->geometry->getType();
-                $geometry["srid"] = $this->geometry->getSrid();
-                $new[] = $geometry;
-            }
-
-            unset($geometries);
-            $geometries = $new;
+            $geometry = $this->geometry->toArray();
+            $geometry["type"] = $this->geometry->getType();
+            $geometry["srid"] = $this->geometry->getSrid();
         }
-        return $geometries;
+        return $geometry;
     }
 }
