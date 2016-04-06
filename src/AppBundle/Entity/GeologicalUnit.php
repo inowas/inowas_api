@@ -24,7 +24,7 @@ class GeologicalUnit extends ModelObject
      * @var $elevation
      *
      * @ORM\Column(name="top_elevation", type="float", nullable=true)
-     * @JMS\Groups({"details"})
+     * @JMS\Groups({"details", "modelobjectdetails"})
      */
     private $topElevation;
 
@@ -32,7 +32,7 @@ class GeologicalUnit extends ModelObject
      * @var $elevation
      *
      * @ORM\Column(name="bottom_elevation", type="float", nullable=true)
-     * @JMS\Groups({"details"})
+     * @JMS\Groups({"details", "modelobjectdetails"})
      */
     private $bottomElevation;
 
@@ -40,6 +40,7 @@ class GeologicalUnit extends ModelObject
      * @var GeologicalPoint
      *
      * @ORM\ManyToOne(targetEntity="AppBundle\Entity\GeologicalPoint", inversedBy="geologicalUnits", cascade={"persist"})
+     * @JMS\Groups({"details", "modelobjectdetails"})
      */
     private $geologicalPoint;
 
@@ -47,6 +48,7 @@ class GeologicalUnit extends ModelObject
      * @var ArrayCollection
      *
      * @ORM\ManyToMany(targetEntity="AppBundle\Entity\GeologicalLayer", mappedBy="geologicalUnits")
+     * @JMS\Groups({"details", "modelobjectdetails"})
      */
     private $geologicalLayer;
 
