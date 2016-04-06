@@ -25,7 +25,7 @@ class GeologicalLayer extends ModelObject
      * @ORM\ManyToMany(targetEntity="AppBundle\Entity\GeologicalUnit", inversedBy="geologicalLayer")
      * @ORM\JoinTable(name="geological_layers_geological_units")
      * @JMS\Type("ArrayCollection<AppBundle\Entity\GeologicalUnit>"))
-     * @JMS\Groups({"layerdetails"})
+     * @JMS\Groups({"modelobjectdetails"})
      **/
     private $geologicalUnits;
 
@@ -34,6 +34,7 @@ class GeologicalLayer extends ModelObject
      *
      * @ORM\ManyToMany(targetEntity="AppBundle\Entity\Boundary", inversedBy="geologicalLayers")
      * @ORM\JoinTable(name="layers_boundaries")
+     * @JMS\Groups({"modelobjectdetails"})
      */
     private $boundaries;
 
