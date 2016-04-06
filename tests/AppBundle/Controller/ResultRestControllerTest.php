@@ -87,11 +87,7 @@ class ResultRestControllerTest extends WebTestCase
 
     public function testPostResult()
     {
-        //$this->entityManager->persist($this->area);
-        //$this->entityManager->flush();
-
         $areaId = 2;
-
         $propertyType = PropertyTypeFactory::setName('Hydraulic Head');
         $propertyType->setAbbreviation("hh");
         $this->entityManager->persist($propertyType);
@@ -129,14 +125,6 @@ class ResultRestControllerTest extends WebTestCase
         /** @var Raster $raster */
         $raster = $this->serializer->deserialize($client->getResponse()->getContent(), 'AppBundle\Entity\Raster', 'json');
         $this->assertEquals($raster->getRaster(), $this->rasterObject);
-
-        $area = $this->entityManager->getRepository('AppBundle:Area')
-            ->findOneBy(array(
-                "id" => $areaId
-            ));
-
-        //$this->entityManager->remove($area);
-        //$this->entityManager->flush();
     }
 
     /**
