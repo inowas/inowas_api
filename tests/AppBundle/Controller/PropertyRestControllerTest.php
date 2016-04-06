@@ -34,7 +34,7 @@ class PropertyRestControllerTest extends WebTestCase
                 ->setValue(13.1))
             ->addValue(PropertyFixedIntervalValueFactory::create()
                 ->setDateTimeBegin(new \DateTime(2015-01-03))
-                ->setDateTimeInterval('P1D')
+                ->setDateTimeIntervalString('P1D')
                 ->setValues(array(14.1, 15.1, 16.1, 17.1, 18.1, 19.1))
             );
 

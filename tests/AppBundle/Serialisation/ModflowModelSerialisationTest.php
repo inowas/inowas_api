@@ -22,6 +22,7 @@ use AppBundle\Model\PropertyValueFactory;
 use AppBundle\Model\RasterFactory;
 use AppBundle\Model\SoilModelFactory;
 use AppBundle\Model\StreamFactory;
+use AppBundle\Model\StressPeriod;
 use AppBundle\Model\StressPeriodFactory;
 use AppBundle\Model\UserFactory;
 use JMS\Serializer\SerializationContext;
@@ -249,22 +250,6 @@ class ModFlowModelSerialisationTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals($property->getValues()->first()->getRaster()->getId(), $serializedModel->calculation_properties->initial_values->property->values[0]->raster->id);
     }
 
-    public function testPropertyWithModelDetailsGroup()
-    {
-        $property = PropertyFactory::create()->setId(5);
-        $property->addValue(PropertyValueFactory::create()
-            ->setRaster(RasterFactory::createEntity()->setId(32))
-        );
-
-        $serializationContext = SerializationContext::create();
-        $serializationContext->setGroups('modeldetails');
-        $serializedProperty = $this->serializer->serialize($property, 'json', $serializationContext);
-        $this->assertStringStartsWith('{',$serializedProperty);
-
-        unset($property);
-        $property = json_decode($serializedProperty);
-    }
-
     public function testCalculationPropertiesInitValueIsHeadFromTopElevation()
     {
         $this->modFlowModel->setInitialValues(array(
@@ -452,8 +437,11 @@ class ModFlowModelSerialisationTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals(2, count((array)$serializedModel->calculation_properties->stress_periods[0]));
         $this->assertObjectHasAttribute("date_time_begin", $serializedModel->calculation_properties->stress_periods[0]);
         $this->assertObjectHasAttribute("date_time_end", $serializedModel->calculation_properties->stress_periods[0]);
-        $this->assertEquals($this->modFlowModel->getStressPeriods()[0]->getDateTimeBegin(), new \DateTime($serializedModel->calculation_properties->stress_periods[0]->date_time_begin));
-        $this->assertEquals($this->modFlowModel->getStressPeriods()[0]->getDateTimeEnd(), new \DateTime($serializedModel->calculation_properties->stress_periods[0]->date_time_end));
+
+        /** @var StressPeriod $stressPeriod */
+        $stressPeriod = $this->modFlowModel->getStressPeriods()[0];
+        $this->assertEquals($stressPeriod->getDateTimeBegin(), new \DateTime($serializedModel->calculation_properties->stress_periods[0]->date_time_begin));
+        $this->assertEquals($stressPeriod->getDateTimeEnd(), new \DateTime($serializedModel->calculation_properties->stress_periods[0]->date_time_end));
     }
 
     public function testOutputOptionsPointCalculation()
@@ -492,23 +480,37 @@ class ModFlowModelSerialisationTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals($this->layer->getName(), $serializedModel->soil_model->geological_layers[0]->name);
 
         $this->assertCount(2, $serializedModel->soil_model->geological_layers[0]->properties);
-        $this->assertEquals($this->layer->getProperties()->toArray()[0]->getName(), $serializedModel->soil_model->geological_layers[0]->properties[0]->name);
-        $this->assertEquals($this->layer->getProperties()->toArray()[0]->getPropertyType()->getAbbreviation(), $serializedModel->soil_model->geological_layers[0]->properties[0]->property_type->abbreviation);
-        $this->assertObjectHasAttribute('value', $serializedModel->soil_model->geological_layers[0]->properties[0]->values[0]);
-        $this->assertEquals($this->layer->getProperties()->toArray()[0]->getValues()[0]->getValue(), $serializedModel->soil_model->geological_layers[0]->properties[0]->values[0]->value);
 
-        $this->assertEquals($this->layer->getProperties()->toArray()[1]->getName(), $serializedModel->soil_model->geological_layers[0]->properties[1]->name);
-        $this->assertEquals($this->layer->getProperties()->toArray()[1]->getPropertyType()->getAbbreviation(), $serializedModel->soil_model->geological_layers[0]->properties[1]->property_type->abbreviation);
+        /** @var Property $property */
+        $property = $this->layer->getProperties()->toArray()[0];
+        $this->assertEquals($property->getName(), $serializedModel->soil_model->geological_layers[0]->properties[0]->name);
+        $this->assertEquals($property->getPropertyType()->getAbbreviation(), $serializedModel->soil_model->geological_layers[0]->properties[0]->property_type->abbreviation);
+        $this->assertObjectHasAttribute('value', $serializedModel->soil_model->geological_layers[0]->properties[0]->values[0]);
+        $this->assertEquals($property->getValues()[0]->getValue(), $serializedModel->soil_model->geological_layers[0]->properties[0]->values[0]->value);
+
+        /** @var Property $property */
+        $property = $this->layer->getProperties()->toArray()[1];
+        $this->assertEquals($property->getName(), $serializedModel->soil_model->geological_layers[0]->properties[1]->name);
+        $this->assertEquals($property->getPropertyType()->getAbbreviation(), $serializedModel->soil_model->geological_layers[0]->properties[1]->property_type->abbreviation);
         $this->assertObjectHasAttribute('raster', $serializedModel->soil_model->geological_layers[0]->properties[1]->values[0]);
         $this->assertObjectHasAttribute('id', $serializedModel->soil_model->geological_layers[0]->properties[1]->values[0]->raster);
-        $this->assertEquals($this->layer->getProperties()->toArray()[1]->getValues()[0]->getRaster()->getId(), $serializedModel->soil_model->geological_layers[0]->properties[1]->values[0]->raster->id);
+        $this->assertEquals($property->getValues()[0]->getRaster()->getId(), $serializedModel->soil_model->geological_layers[0]->properties[1]->values[0]->raster->id);
 
         $this->assertObjectHasAttribute("streams", $serializedModel);
         $this->assertCount(3, $serializedModel->streams);
         $this->assertEquals(3, count((array)$serializedModel->streams[0]));
-        $this->assertEquals($this->modFlowModel->getStreams()->toArray()[0]->getId(), $serializedModel->streams[0]->id);
-        $this->assertEquals($this->modFlowModel->getStreams()->toArray()[1]->getId(), $serializedModel->streams[1]->id);
-        $this->assertEquals($this->modFlowModel->getStreams()->toArray()[2]->getId(), $serializedModel->streams[2]->id);
+
+        /** @var Stream $stream */
+        $stream = $this->modFlowModel->getStreams()->toArray()[0];
+        $this->assertEquals($stream->getId(), $serializedModel->streams[0]->id);
+
+        /** @var Stream $stream */
+        $stream = $this->modFlowModel->getStreams()->toArray()[1];
+        $this->assertEquals($stream->getId(), $serializedModel->streams[1]->id);
+
+        /** @var Stream $stream */
+        $stream = $this->modFlowModel->getStreams()->toArray()[2];
+        $this->assertEquals($stream->getId(), $serializedModel->streams[2]->id);
 
         $this->assertObjectHasAttribute("boundaries", $serializedModel);
         $this->assertCount(2, $serializedModel->boundaries);
