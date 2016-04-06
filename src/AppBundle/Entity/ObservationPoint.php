@@ -25,6 +25,7 @@ class ObservationPoint extends ModelObject
      * @var Point
      *
      * @ORM\Column(name="geometry", type="point", nullable=true)
+     * @JMS\Groups({"modelobjectdetails"})
      */
     private $point;
 
@@ -32,6 +33,7 @@ class ObservationPoint extends ModelObject
      * @var $elevation
      *
      * @ORM\Column(name="elevation", type="float", nullable=true)
+     * @JMS\Groups({"modelobjectdetails"})
      */
     private $elevation;
 
