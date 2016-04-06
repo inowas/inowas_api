@@ -33,7 +33,7 @@ class PropertyFixedIntervalValue extends AbstractValue
      * @var array
      *
      * @ORM\Column(name="values", type="simple_array")
-     * @JMS\Groups("modeldetails", "modelobjectdetails")
+     * @JMS\Groups({"modeldetails", "modelobjectdetails"})
      */
     private $values;
 
