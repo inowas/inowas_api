@@ -38,6 +38,7 @@ abstract class AbstractValue implements PropertyValueInterface
      *
      * @ORM\ManyToOne(targetEntity="AppBundle\Entity\Property", inversedBy="values")
      * @ORM\JoinColumn(name="property_id", referencedColumnName="id", onDelete="CASCADE")
+     * @JMS\Groups("modeldetails")
      */
     private $property;
 

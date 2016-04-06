@@ -16,7 +16,7 @@ class PropertyFixedIntervalValue extends AbstractValue
      * @var \DateTime
      *
      * @ORM\Column(name="date_time", type="datetimetz")
-     * @JMS\Groups("modeldetails")
+     * @JMS\Groups({"modeldetails", "modelobjectdetails"})
      */
     private $dateTimeBegin;
 
@@ -25,7 +25,7 @@ class PropertyFixedIntervalValue extends AbstractValue
      * more info herer: http://php.net/manual/de/dateinterval.construct.php
      *
      * @ORM\Column(name="interval", type="string", length=255)
-     * @JMS\Groups("modeldetails")
+     * @JMS\Groups({"modeldetails", "modelobjectdetails"})
      */
     private $dateTimeInterval;
 
@@ -143,17 +143,16 @@ class PropertyFixedIntervalValue extends AbstractValue
     public function getTimeValues()
     {
         $timeValues = array();
+        $dateTime = clone $this->dateTimeBegin;
+        $interval = new \DateInterval($this->dateTimeInterval);
 
-        for ($i = 0; $i < $this->getNumberOfValues(); $i++)
+        for ($i = 0; $i < count($this->values); $i++)
         {
-            $dateTime = clone $this->dateTimeBegin;
-            $interval = new \DateInterval($this->dateTimeInterval);
-
-            for ($addIntervalCounter = 0; $addIntervalCounter < $i; $i++)
+            if ($i != 0)
             {
+                $dateTime = clone $dateTime;
                 $dateTime->add($interval);
             }
-
             $timeValues[] = TimeValueFactory::setDateTimeAndValue($dateTime, $this->values[$i]);
         }
 

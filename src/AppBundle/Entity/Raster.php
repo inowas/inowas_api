@@ -34,7 +34,7 @@ class Raster
      * @ORM\Column(name="id", type="integer")
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="AUTO")
-     * @JMS\Groups("modeldetails")
+     * @JMS\Groups({"modeldetails", "modelobjectdetails"})
      */
     private $id;
 
@@ -43,6 +43,7 @@ class Raster
      *
      * @ORM\Column(name="rast", type="raster", nullable=true)
      * @JMS\Type("AppBundle\Model\Raster")
+     * @JMS\Groups({"modeldetails", "modelobjectdetails"})
      */
     private $raster;
 

@@ -2,7 +2,6 @@
 
 namespace AppBundle\Entity;
 
-use AppBundle\Model\PropertyValueInterface;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
 use JMS\Serializer\Annotation as JMS;
@@ -38,7 +37,7 @@ class Property
      * @var string
      *
      * @ORM\Column(name="description", type="text", nullable=true)
-     * @JMS\Groups({"projectList", "projectDetails"})
+     * @JMS\Groups({"projectList", "projectDetails", "modelobjectdetails"})
      */
     private $description;
 
@@ -63,8 +62,6 @@ class Property
      * @var ArrayCollection
      *
      * @ORM\OneToMany(targetEntity="AppBundle\Entity\AbstractValue", mappedBy="property", cascade={"persist", "remove"}, orphanRemoval=true)
-     * @JMS\Type("ArrayCollection<AppBundle\Entity\AbstractValue>")
-     * @JMS\Groups({"list", "details", "modeldetails"})
      */
     private $values;
 
@@ -72,7 +69,7 @@ class Property
      * @var \DateTime
      *
      * @ORM\Column(name="date_time_begin", type="datetime", nullable=true)
-     * @JMS\Groups({"list", "details"})
+     * @JMS\Groups({"list", "details", "modeldetails", "modelobjectdetails"})
      */
     private $dateTimeBegin;
 
@@ -80,7 +77,7 @@ class Property
      * @var \DateTime
      *
      * @ORM\Column(name="date_time_end", type="datetime", nullable=true)
-     * @JMS\Groups({"list", "details"})
+     * @JMS\Groups({"list", "details", "modeldetails", "modelobjectdetails"})
      */
     private $dateTimeEnd;
 
@@ -88,18 +85,9 @@ class Property
      * @var integer $numberOfValues
      *
      * @ORM\Column(name="number_of_values", type="integer")
-     * @JMS\Groups({"list", "details"})
+     * @JMS\Groups({"list", "details", "modeldetails", "modelobjectdetails"})
      */
     private $numberOfValues;
-
-    /**
-     * @var array timeValues
-     *
-     * @JMS\Accessor(getter="getTimeValues")
-     * @JMS\Type("array<AppBundle\Model\TimeValue>")
-     * @JMS\Groups({"list", "details"})
-     */
-    private $timeValues;
 
     /**
      * Constructor
@@ -326,18 +314,21 @@ class Property
     }
 
     /**
-     *
+     * @JMS\VirtualProperty
+     * @JMS\SerializedName("values")
+     * @JMS\Groups({"modeldetails", "modelobjectdetails"})
      */
     public function getTimeValues()
     {
         $timeValues = array();
-        /** @var PropertyValueInterface $value */
+
+        /** @var AbstractValue $value */
         foreach ($this->values as $value)
         {
             $timeValues = array_merge($timeValues, $value->getTimeValues());
         }
-        $this->timeValues = $timeValues;
-        return $this->timeValues;
+
+        return $timeValues;
     }
 
     /**

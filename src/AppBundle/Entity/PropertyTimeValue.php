@@ -16,7 +16,7 @@ class PropertyTimeValue extends AbstractValue
      * @var \DateTime
      *
      * @ORM\Column(name="timeStamp", type="datetimetz")
-     * @JMS\Groups("modeldetails")
+     * @JMS\Groups({"modeldetails", "modelobjectdetails"})
      */
     private $datetime;
 
@@ -24,7 +24,7 @@ class PropertyTimeValue extends AbstractValue
      * @var float
      *
      * @ORM\Column(name="value", type="float")
-     * @JMS\Groups("modeldetails")
+     * @JMS\Groups({"modeldetails", "modelobjectdetails"})
      */
     private $value;
 
@@ -32,7 +32,7 @@ class PropertyTimeValue extends AbstractValue
      * @var Raster $raster
      *
      * @ORM\OneToOne(targetEntity="AppBundle\Entity\Raster", cascade={"persist", "remove"})
-     * @JMS\Groups("modeldetails")
+     * @JMS\Groups({"modeldetails", "modelobjectdetails"})
      */
     private $raster;
 
@@ -123,7 +123,10 @@ class PropertyTimeValue extends AbstractValue
     public function getTimeValues()
     {
         return array(
-            TimeValueFactory::setDateTimeAndValue($this->getDatetime(), $this->value)
+            TimeValueFactory::create()
+                ->setDatetime($this->getDateBegin())
+                ->setValue($this->value)
+                ->setRaster($this->raster)
         );
     }
 

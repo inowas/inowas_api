@@ -13,6 +13,14 @@ class TimeValueFactory
     }
 
     /**
+     * @return TimeValue
+     */
+    public static function create()
+    {
+        return new TimeValue();
+    }
+
+    /**
      * @param $value
      * @return TimeValue
      */

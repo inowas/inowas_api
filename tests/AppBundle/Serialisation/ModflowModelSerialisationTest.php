@@ -249,6 +249,22 @@ class ModFlowModelSerialisationTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals($property->getValues()->first()->getRaster()->getId(), $serializedModel->calculation_properties->initial_values->property->values[0]->raster->id);
     }
 
+    public function testPropertyWithModelDetailsGroup()
+    {
+        $property = PropertyFactory::create()->setId(5);
+        $property->addValue(PropertyValueFactory::create()
+            ->setRaster(RasterFactory::createEntity()->setId(32))
+        );
+
+        $serializationContext = SerializationContext::create();
+        $serializationContext->setGroups('modeldetails');
+        $serializedProperty = $this->serializer->serialize($property, 'json', $serializationContext);
+        $this->assertStringStartsWith('{',$serializedProperty);
+
+        unset($property);
+        $property = json_decode($serializedProperty);
+    }
+
     public function testCalculationPropertiesInitValueIsHeadFromTopElevation()
     {
         $this->modFlowModel->setInitialValues(array(
