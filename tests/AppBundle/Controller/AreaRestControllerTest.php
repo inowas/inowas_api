@@ -22,9 +22,6 @@ class AreaRestControllerTest extends WebTestCase
     /** @var User $owner */
     protected $owner;
 
-    /** @var  User $participant */
-    protected $participant;
-
     /** @var AreaType $areaType*/
     protected $areaType;
 
@@ -41,10 +38,6 @@ class AreaRestControllerTest extends WebTestCase
 
         $this->owner = UserFactory::createTestUser('AreaOwner');
         $this->entityManager->persist($this->owner);
-        $this->entityManager->flush();
-
-        $this->participant = UserFactory::createTestUser('AreaParticipant');
-        $this->entityManager->persist($this->participant);
         $this->entityManager->flush();
 
         $this->areaType = AreaTypeFactory::setName('ModelAreaType');
@@ -132,12 +125,6 @@ class AreaRestControllerTest extends WebTestCase
                 'username' => $this->owner->getUsername()
             ));
         $this->entityManager->remove($user);
-
-        $participant = $this->entityManager->getRepository('AppBundle:User')
-            ->findOneBy(array(
-                'username' => $this->participant->getUsername()
-            ));
-        $this->entityManager->remove($participant);
 
         $areas = $this->entityManager->getRepository('AppBundle:Area')
             ->findAll();

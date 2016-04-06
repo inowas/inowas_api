@@ -3,46 +3,49 @@
 namespace AppBundle\Controller;
 
 use AppBundle\Entity\GeologicalLayer;
-use AppBundle\Entity\Project;
 use FOS\RestBundle\Controller\FOSRestController;
 use FOS\RestBundle\View\View;
 use JMS\Serializer\SerializationContext;
 use Nelmio\ApiDocBundle\Annotation\ApiDoc;
 
 class GeologicalLayerRestController extends FOSRestController
-{    /**
-     * Return a list of geological layers by project
+{
+    /**
+     * Return a list of geological layers by username
      *
      * @ApiDoc(
      *   resource = true,
-     *   description = "Return a list of geological layers by project",
+     *   description = "Return a list of geological layers by username",
      *   statusCodes = {
      *     200 = "Returned when successful",
      *     404 = "Returned when the user is not found"
      *   }
      * )
      *
-     * @param string $projectId project-id
+     * @param string $username username
      *
      * @return View
      */
-    public function getProjectGeologicallayersAction($projectId)
+    public function getUserGeologicallayersAction($username)
     {
-        /** @var Project $project */
-        $project = $this->getDoctrine()
-            ->getRepository('AppBundle:Project')
+        $user = $this->getDoctrine()
+            ->getRepository('AppBundle:User')
             ->findOneBy(array(
-                'id' => $projectId
+                'username' => $username
             ));
 
-        if (!$project)
+        if (!$user)
         {
-            throw $this->createNotFoundException('Project with id='.$projectId.' not found.');
+            throw  $this->createNotFoundException('User with username='.$username.' not found.');
         }
 
         $geologicalLayers = $this->getDoctrine()
             ->getRepository('AppBundle:GeologicalLayer')
-            ->findAllByProjectId($projectId);
+            ->findBy(
+                array('owner' => $user),
+                array('id' => 'ASC')
+            )
+        ;
 
         $view = View::create();
         $view->setData($geologicalLayers)
@@ -51,6 +54,7 @@ class GeologicalLayerRestController extends FOSRestController
                 ->setGroups('modelobjectlist')
             )
         ;
+
         return $view;
     }
 
@@ -66,27 +70,31 @@ class GeologicalLayerRestController extends FOSRestController
      *   }
      * )
      *
-     * @param string $projectId Project-Id
      * @param string $id GeologicalLayer-Id
      *
      * @return View
      */
-    public function getProjectGeologicallayerAction($projectId, $id)
+    public function getGeologicallayersAction($id)
     {
-
         /** @var GeologicalLayer $geologicalLayers */
         $geologicalLayer = $this->getDoctrine()
             ->getRepository('AppBundle:GeologicalLayer')
-            ->findByIdAndProjectId($id, $projectId);
+            ->findOneBy(array(
+                'id' => $id
+            ));
 
-        $view = View::create();
-        $view->setData($geologicalLayer)
-            ->setStatusCode(200)
-            ->setSerializationContext(SerializationContext::create()
-                ->setGroups('layerdetails')
-            )
-        ;
+        if ($geologicalLayer->getPublic() || $this->isGranted('ROLE_ADMIN') || $this->getUser() === $geologicalLayer->getOwner())
+        {
+            $view = View::create();
+            $view->setData($geologicalLayer)
+                ->setStatusCode(200)
+                ->setSerializationContext(SerializationContext::create()
+                    ->setGroups(array('modelobjectdetails')));
 
-        return $view;
+            return $view;
+        } else
+        {
+            throw $this->createAccessDeniedException();
+        }
     }
 }
