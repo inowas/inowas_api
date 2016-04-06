@@ -123,7 +123,7 @@ class PropertyTest extends WebTestCase
 
         $value = new PropertyFixedIntervalValue();
         $value->setDateTimeBegin(new \DateTime('2000-01-01'));
-        $value->setDateTimeInterval('P1D');
+        $value->setDateTimeIntervalString('P1D');
         $value->setValues(array(1,2,3,4,5,6,7,8,9,10));
         $value->setProperty($this->property);
         $this->property->addValue($value);
@@ -180,7 +180,7 @@ class PropertyTest extends WebTestCase
 
         $value = new PropertyFixedIntervalValue();
         $value->setDateTimeBegin($startDate);
-        $value->setDateTimeInterval('P1D');
+        $value->setDateTimeIntervalString('P1D');
         $value->setValues(array(1,2,3,4,5,6,7,8,9,10));
         $value->setProperty($this->property);
         $this->property->addValue($value);
@@ -191,7 +191,7 @@ class PropertyTest extends WebTestCase
 
         $value = new PropertyFixedIntervalValue();
         $value->setDateTimeBegin($earlierStartDate);
-        $value->setDateTimeInterval('P1D');
+        $value->setDateTimeIntervalString('P1D');
         $value->setValues(array(1,2,3,4,5,6,7,8,9,10));
         $value->setProperty($this->property);
         $this->property->addValue($value);
@@ -249,7 +249,7 @@ class PropertyTest extends WebTestCase
 
         $value = new PropertyFixedIntervalValue();
         $value->setDateTimeBegin($startDate);
-        $value->setDateTimeInterval('P1D');
+        $value->setDateTimeIntervalString('P1D');
         $value->setValues(array(1,2,3,4,5,6,7,8,9,10));
         $value->setProperty($this->property);
         $this->property->addValue($value);
@@ -261,7 +261,7 @@ class PropertyTest extends WebTestCase
 
         $value = new PropertyFixedIntervalValue();
         $value->setDateTimeBegin($laterStartDate);
-        $value->setDateTimeInterval('P1D');
+        $value->setDateTimeIntervalString('P1D');
         $value->setValues(array(1,2,3,4,5,6,7,8,9,10));
         $value->setProperty($this->property);
         $this->property->addValue($value);
