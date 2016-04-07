@@ -21,7 +21,7 @@ class SoilModel
      * @ORM\Column(name="id", type="integer")
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="AUTO")
-     * @JMS\Groups({"details", "modeldetails", "modelobjectdetails"})
+     * @JMS\Groups({"details", "modeldetails", "modelobjectdetails", "soilmodellist", "soilmodeldetails"})
      */
     private $id;
 
@@ -29,7 +29,7 @@ class SoilModel
      * @var string
      *
      * @ORM\Column(name="name", type="string",length=255, nullable=true)
-     * @JMS\Groups({"details", "modeldetails"})
+     * @JMS\Groups({"details", "modeldetails", "soilmodellist", "soilmodeldetails"})
      */
     private $name;
 
@@ -37,7 +37,7 @@ class SoilModel
      * @var string
      *
      * @ORM\Column(name="description", type="text", nullable=true)
-     * @JMS\Groups({"details"})
+     * @JMS\Groups({"details", "soilmodellist", "soilmodeldetails"})
      */
     private $description;
 
@@ -47,6 +47,7 @@ class SoilModel
      * @ORM\ManyToOne(targetEntity="User", inversedBy="ownedSoilModels")
      * @ORM\JoinColumn(name="owner_id", referencedColumnName="id", onDelete="CASCADE")
      * @JMS\MaxDepth(1)
+     * @JMS\Groups({"details", "soilmodellist", "soilmodeldetails"})
      */
     private $owner;
 
@@ -61,7 +62,7 @@ class SoilModel
      * @var boolean
      *
      * @ORM\Column(name="public", type="boolean")
-     * @JMS\Groups({"details", "modeldetails"})
+     * @JMS\Groups({"details", "modeldetails", "soilmodellist", "soilmodeldetails"})
      */
     private $public;
 
@@ -69,7 +70,7 @@ class SoilModel
      * @var \DateTime
      *
      * @ORM\Column(name="dateCreated", type="datetime")
-     * @JMS\Groups({"details"})
+     * @JMS\Groups({"details", "soilmodeldetails"})
      */
     private $dateCreated;
 
@@ -77,31 +78,33 @@ class SoilModel
      * @var \DateTime
      *
      * @ORM\Column(name="dateModified", type="datetime")
-     * @JMS\Groups({"details"})
+     * @JMS\Groups({"details", "soilmodeldetails"})
      */
     private $dateModified;
 
     /**
      * @var ArrayCollection
      * @JMS\Type("ArrayCollection<AppBundle\Entity\GeologicalLayer>")
-     * @JMS\Groups({"details", "modeldetails"})
+     * @JMS\Groups({"details", "modeldetails", "soilmodeldetails"})
      */
     private $geologicalLayers;
 
     /**
      * @var ArrayCollection
+     * @JMS\Groups({"soilmodeldetails"})
      */
     private $geologicalPoints;
 
     /**
      * @var ArrayCollection
+     * @JMS\Groups({"soilmodeldetails"})
      */
     private $geologicalUnits;
 
     /**
      * @var Area
      * @JMS\Type("AppBundle\Entity\Area")
-     * @JMS\Groups({"modeldetails"})
+     * @JMS\Groups({"modeldetails", "soilmodeldetails"})
      */
     private $area;
 
