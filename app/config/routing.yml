@@ -66,6 +66,11 @@ rest_result:
     prefix: /api
     resource: AppBundle\Controller\ResultRestController
 
+rest_soilmodels:
+    type: rest
+    prefix: /api
+    resource: AppBundle\Controller\SoilModelRestController
+
 rest_user_stream:
     type: rest
     prefix: /api
