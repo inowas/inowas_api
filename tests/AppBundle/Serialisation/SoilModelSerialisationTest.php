@@ -72,8 +72,8 @@ class SoilModelSerialisationTest extends \PHPUnit_Framework_TestCase
             ->setPublic(true)
             ->setId(31)
             ->setName('SoilModel-TestPoint_1')
-            ->setDateCreated(new \DateTime())
-            ->setDateModified(new \DateTime())
+            ->setDateCreated(new \DateTime('2015-01-01'))
+            ->setDateModified(new \DateTime('2015-01-02'))
             ->setPoint(new Point(12,11,5432))
         ;
 
@@ -82,8 +82,8 @@ class SoilModelSerialisationTest extends \PHPUnit_Framework_TestCase
             ->setPublic(true)
             ->setId(32)
             ->setName('SoilModel-TestPoint_2')
-            ->setDateCreated(new \DateTime())
-            ->setDateModified(new \DateTime())
+            ->setDateCreated(new \DateTime('2015-01-01'))
+            ->setDateModified(new \DateTime('2015-01-02'))
             ->setPoint(new Point(13,12,5432))
         ;
 
@@ -95,8 +95,8 @@ class SoilModelSerialisationTest extends \PHPUnit_Framework_TestCase
             ->setPublic(true)
             ->setId(41)
             ->setName("SoilModel-TestUnit_1_1")
-            ->setDateCreated(new \DateTime())
-            ->setDateModified(new \DateTime())
+            ->setDateCreated(new \DateTime('2015-01-01'))
+            ->setDateModified(new \DateTime('2015-01-02'))
             ->setTopElevation(12)
             ->setBottomElevation(10);
 
@@ -105,8 +105,8 @@ class SoilModelSerialisationTest extends \PHPUnit_Framework_TestCase
             ->setPublic(true)
             ->setId(42)
             ->setName("SoilModel-TestUnit_1_2")
-            ->setDateCreated(new \DateTime())
-            ->setDateModified(new \DateTime())
+            ->setDateCreated(new \DateTime('2015-01-01'))
+            ->setDateModified(new \DateTime('2015-01-02'))
             ->setTopElevation(10)
             ->setBottomElevation(8);
 
@@ -115,8 +115,8 @@ class SoilModelSerialisationTest extends \PHPUnit_Framework_TestCase
             ->setPublic(true)
             ->setId(43)
             ->setName("SoilModel-TestUnit_2_1")
-            ->setDateCreated(new \DateTime())
-            ->setDateModified(new \DateTime())
+            ->setDateCreated(new \DateTime('2015-01-01'))
+            ->setDateModified(new \DateTime('2015-01-02'))
             ->setTopElevation(12)
             ->setBottomElevation(9);
 
@@ -125,8 +125,8 @@ class SoilModelSerialisationTest extends \PHPUnit_Framework_TestCase
             ->setPublic(true)
             ->setId(44)
             ->setName("SoilModel-TestUnit_2_2")
-            ->setDateCreated(new \DateTime())
-            ->setDateModified(new \DateTime())
+            ->setDateCreated(new \DateTime('2015-01-01'))
+            ->setDateModified(new \DateTime('2015-01-02'))
             ->setTopElevation(9)
             ->setBottomElevation(6);
 
@@ -151,10 +151,11 @@ class SoilModelSerialisationTest extends \PHPUnit_Framework_TestCase
         $serializationContext = SerializationContext::create();
         $serializationContext->setGroups('soilmodellist');
 
-        $serializedModel = $this->serializer->serialize($this->soilModel, 'json', $serializationContext);
-        $this->assertStringStartsWith('{',$serializedModel);
-        $serializedModel = json_decode($serializedModel);
-        var_dump($serializedModel);
+        $serializedSoilModel = $this->serializer->serialize($this->soilModel, 'json', $serializationContext);
+        $this->assertStringStartsWith('{',$serializedSoilModel);
+        $serializedSoilModel = json_decode($serializedSoilModel);
+
+
     }
 
     public function testSoilModelDetailsSerialisation()
@@ -162,9 +163,86 @@ class SoilModelSerialisationTest extends \PHPUnit_Framework_TestCase
         $serializationContext = SerializationContext::create();
         $serializationContext->setGroups('soilmodeldetails');
 
-        $serializedModel = $this->serializer->serialize($this->soilModel, 'json', $serializationContext);
-        $this->assertStringStartsWith('{',$serializedModel);
-        $serializedModel = json_decode($serializedModel);
-        var_dump($serializedModel);
+        $serializedSoilModel = $this->serializer->serialize($this->soilModel, 'json', $serializationContext);
+        $this->assertStringStartsWith('{',$serializedSoilModel);
+        $serializedSoilModel = json_decode($serializedSoilModel);
+
+        $this->assertObjectHasAttribute('id', $serializedSoilModel);
+        $this->assertEquals($this->soilModel->getId(), $serializedSoilModel->id);
+        $this->assertObjectHasAttribute('name', $serializedSoilModel);
+        $this->assertEquals($this->soilModel->getName(), $serializedSoilModel->name);
+        $this->assertObjectHasAttribute('description', $serializedSoilModel);
+        $this->assertEquals($this->soilModel->getDescription(), $serializedSoilModel->description);
+        $this->assertObjectHasAttribute('owner', $serializedSoilModel);
+        $this->assertObjectHasAttribute('id', $serializedSoilModel->owner);
+        $this->assertEquals($this->soilModel->getOwner()->getId(), $serializedSoilModel->owner->id);
+        $this->assertObjectHasAttribute('public', $serializedSoilModel);
+        $this->assertEquals(true, $serializedSoilModel->public);
+        $this->assertObjectHasAttribute('date_created', $serializedSoilModel);
+        $this->assertEquals($this->soilModel->getDateCreated(), new \DateTime($serializedSoilModel->date_created));
+        $this->assertObjectHasAttribute('date_modified', $serializedSoilModel);
+        $this->assertEquals($this->soilModel->getDateModified(), new \DateTime($serializedSoilModel->date_modified));
+        $this->assertObjectHasAttribute('geological_layers', $serializedSoilModel);
+        $this->assertEquals($this->soilModel->getGeologicalLayers()->count(), count($serializedSoilModel->geological_layers));
+        $this->assertObjectHasAttribute('id', $serializedSoilModel->geological_layers[0]);
+        $this->assertObjectHasAttribute('properties', $serializedSoilModel->geological_layers[0]);
+        $this->assertObjectHasAttribute('observation_points', $serializedSoilModel->geological_layers[0]);
+        $this->assertEquals($this->soilModel->getGeologicalLayers()->first()->getId(), $serializedSoilModel->geological_layers[0]->id);
+        $this->assertEquals($this->soilModel->getGeologicalLayers()->first()->getName(), $serializedSoilModel->geological_layers[0]->name);
+        $this->assertEquals($this->soilModel->getGeologicalLayers()->first()->getPublic(), $serializedSoilModel->geological_layers[0]->public);
+        $this->assertEquals($this->soilModel->getGeologicalLayers()->first()->getDateCreated(), new \DateTime($serializedSoilModel->geological_layers[0]->date_created));
+        $this->assertEquals($this->soilModel->getGeologicalLayers()->first()->getDateModified(), new \DateTime($serializedSoilModel->geological_layers[0]->date_modified));
+
+        $this->assertObjectHasAttribute('geological_units', $serializedSoilModel->geological_layers[0]);
+        $this->assertEquals($this->soilModel->getGeologicalLayers()->first()->getGeologicalUnits()->count(), count($serializedSoilModel->geological_layers[0]->geological_units));
+        $this->assertEquals($this->soilModel->getGeologicalLayers()->first()->getGeologicalUnits()->first()->getId(), $serializedSoilModel->geological_layers[0]->geological_units[0]->id);
+        $this->assertEquals($this->soilModel->getGeologicalLayers()->first()->getGeologicalUnits()->first()->getName(), $serializedSoilModel->geological_layers[0]->geological_units[0]->name);
+        $this->assertEquals($this->soilModel->getGeologicalLayers()->first()->getGeologicalUnits()->first()->getPublic(), $serializedSoilModel->geological_layers[0]->geological_units[0]->public);
+        $this->assertObjectHasAttribute('properties', $serializedSoilModel->geological_layers[0]->geological_units[0]);
+        $this->assertObjectHasAttribute('observation_points', $serializedSoilModel->geological_layers[0]->geological_units[0]);
+        $this->assertObjectHasAttribute('date_created', $serializedSoilModel->geological_layers[0]->geological_units[0]);
+        $this->assertEquals($this->soilModel->getGeologicalLayers()->first()->getGeologicalUnits()->first()->getDateCreated(), new \DateTime($serializedSoilModel->geological_layers[0]->geological_units[0]->date_created));
+        $this->assertObjectHasAttribute('date_modified', $serializedSoilModel->geological_layers[0]->geological_units[0]);
+        $this->assertEquals($this->soilModel->getGeologicalLayers()->first()->getGeologicalUnits()->first()->getDateModified(), new \DateTime($serializedSoilModel->geological_layers[0]->geological_units[0]->date_modified));
+
+        $this->assertObjectHasAttribute('geological_points', $serializedSoilModel);
+        $this->assertEquals($this->soilModel->getGeologicalPoints()->count(), count($serializedSoilModel->geological_points));
+        $this->assertObjectHasAttribute('id', $serializedSoilModel->geological_points[0]);
+        $this->assertEquals($this->soilModel->getGeologicalPoints()->first()->getId(), $serializedSoilModel->geological_points[0]->id);
+        $this->assertEquals($this->soilModel->getGeologicalPoints()->first()->getName(), $serializedSoilModel->geological_points[0]->name);
+        $this->assertObjectHasAttribute('properties', $serializedSoilModel->geological_points[0]);
+        $this->assertObjectHasAttribute('observation_points', $serializedSoilModel->geological_points[0]);
+        $this->assertObjectHasAttribute('public', $serializedSoilModel->geological_points[0]);
+        $this->assertEquals($this->soilModel->getGeologicalPoints()->first()->getPublic(), $serializedSoilModel->geological_points[0]->public);
+        $this->assertObjectHasAttribute('date_created', $serializedSoilModel->geological_points[0]);
+        $this->assertEquals($this->soilModel->getGeologicalPoints()->first()->getDateCreated(), new \DateTime($serializedSoilModel->geological_points[0]->date_created));
+        $this->assertObjectHasAttribute('date_modified', $serializedSoilModel->geological_points[0]);
+        $this->assertEquals($this->soilModel->getGeologicalPoints()->first()->getDateModified(), new \DateTime($serializedSoilModel->geological_points[0]->date_modified));
+
+        $this->assertObjectHasAttribute('geological_units', $serializedSoilModel->geological_points[0]);
+        $this->assertEquals($this->soilModel->getGeologicalPoints()->first()->getGeologicalUnits()->count(), count($serializedSoilModel->geological_points[0]->geological_units));
+        $this->assertEquals($this->soilModel->getGeologicalPoints()->first()->getGeologicalUnits()->first()->getId(), $serializedSoilModel->geological_points[0]->geological_units[0]->id);
+        $this->assertEquals($this->soilModel->getGeologicalPoints()->first()->getGeologicalUnits()->first()->getName(), $serializedSoilModel->geological_points[0]->geological_units[0]->name);
+        $this->assertEquals($this->soilModel->getGeologicalPoints()->first()->getGeologicalUnits()->first()->getPublic(), $serializedSoilModel->geological_points[0]->geological_units[0]->public);
+        $this->assertObjectHasAttribute('properties', $serializedSoilModel->geological_points[0]->geological_units[0]);
+        $this->assertObjectHasAttribute('observation_points', $serializedSoilModel->geological_points[0]->geological_units[0]);
+        $this->assertObjectHasAttribute('date_created', $serializedSoilModel->geological_points[0]->geological_units[0]);
+        $this->assertEquals($this->soilModel->getGeologicalPoints()->first()->getGeologicalUnits()->first()->getDateCreated(), new \DateTime($serializedSoilModel->geological_points[0]->geological_units[0]->date_created));
+        $this->assertObjectHasAttribute('date_modified', $serializedSoilModel->geological_layers[0]->geological_units[0]);
+        $this->assertEquals($this->soilModel->getGeologicalPoints()->first()->getGeologicalUnits()->first()->getDateModified(), new \DateTime($serializedSoilModel->geological_points[0]->geological_units[0]->date_modified));
+
+        $this->assertObjectHasAttribute('area', $serializedSoilModel);
+        $this->assertObjectHasAttribute('id', $serializedSoilModel->area);
+        $this->assertEquals($this->soilModel->getArea()->getId(), $serializedSoilModel->area->id);
+        $this->assertObjectHasAttribute('properties', $serializedSoilModel->area);
+        $this->assertEquals($this->soilModel->getArea()->getProperties()->count(), count($serializedSoilModel->area->properties));
+        $this->assertObjectHasAttribute('id', $serializedSoilModel->area->properties[0]);
+        $this->assertObjectHasAttribute('observation_points', $serializedSoilModel->area);
+        $this->assertObjectHasAttribute('public', $serializedSoilModel->area);
+        $this->assertEquals($this->soilModel->getArea()->getPublic(), $serializedSoilModel->area->public);
+        $this->assertObjectHasAttribute('date_created', $serializedSoilModel->area);
+        $this->assertEquals($this->soilModel->getArea()->getDateCreated(), new \DateTime($serializedSoilModel->area->date_created));
+        $this->assertObjectHasAttribute('date_modified', $serializedSoilModel->area);
+        $this->assertEquals($this->soilModel->getArea()->getDateModified(), new \DateTime($serializedSoilModel->area->date_modified));
     }
 }

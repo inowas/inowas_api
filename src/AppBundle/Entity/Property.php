@@ -21,7 +21,7 @@ class Property
      * @ORM\Column(name="id", type="integer")
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="AUTO")
-     * @JMS\Groups({"list", "details", "modeldetails", "modelobjectdetails"})
+     * @JMS\Groups({"list", "details", "modeldetails", "modelobjectdetails", "soilmodeldetails"})
      */
     private $id;
 
@@ -29,7 +29,7 @@ class Property
      * @var string
      *
      * @ORM\Column(name="name", type="string", length=255, nullable=true)
-     * @JMS\Groups({"list", "details", "modeldetails", "modelobjectdetails"})
+     * @JMS\Groups({"list", "details", "modeldetails", "modelobjectdetails", "soilmodeldetails"})
      */
     private $name;
 
@@ -37,7 +37,7 @@ class Property
      * @var string
      *
      * @ORM\Column(name="description", type="text", nullable=true)
-     * @JMS\Groups({"projectList", "projectDetails", "modelobjectdetails"})
+     * @JMS\Groups({"projectList", "projectDetails", "modelobjectdetails", "soilmodeldetails"})
      */
     private $description;
 
@@ -54,7 +54,7 @@ class Property
      *
      * @ORM\ManyToOne(targetEntity="AppBundle\Entity\PropertyType", cascade={"persist", "remove"})
      * @ORM\JoinColumn(name="property_type_id", referencedColumnName="id", onDelete="SET NULL")
-     * @JMS\Groups({"list", "details", "modeldetails", "modelobjectdetails"})
+     * @JMS\Groups({"list", "details", "modeldetails", "modelobjectdetails", "soilmodeldetails"})
      */
     private $propertyType;
 
@@ -69,7 +69,7 @@ class Property
      * @var \DateTime
      *
      * @ORM\Column(name="date_time_begin", type="datetime", nullable=true)
-     * @JMS\Groups({"list", "details", "modeldetails", "modelobjectdetails"})
+     * @JMS\Groups({"list", "details", "modeldetails", "modelobjectdetails", "soilmodeldetails"})
      */
     private $dateTimeBegin;
 
@@ -77,7 +77,7 @@ class Property
      * @var \DateTime
      *
      * @ORM\Column(name="date_time_end", type="datetime", nullable=true)
-     * @JMS\Groups({"list", "details", "modeldetails", "modelobjectdetails"})
+     * @JMS\Groups({"list", "details", "modeldetails", "modelobjectdetails", "soilmodeldetails"})
      */
     private $dateTimeEnd;
 
@@ -85,7 +85,7 @@ class Property
      * @var integer $numberOfValues
      *
      * @ORM\Column(name="number_of_values", type="integer")
-     * @JMS\Groups({"list", "details", "modeldetails", "modelobjectdetails"})
+     * @JMS\Groups({"list", "details", "modeldetails", "modelobjectdetails", "soilmodeldetails"})
      */
     private $numberOfValues;
 

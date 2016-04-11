@@ -46,9 +46,7 @@ class SoilModelRestControllerTest extends WebTestCase
         $client = static::createClient();
         $client->request('GET', '/api/users/'.$this->owner->getUsername().'/soilmodels.json');
         $this->assertEquals(200, $client->getResponse()->getStatusCode());
-        dump($client->getResponse()->getContent());
         $soilModels = json_decode($client->getResponse()->getContent());
-
         $this->assertEquals(1, count($soilModels));
         //$this->assertEquals($this->soilModel->getName(), $soilModels[0]->name);
     }
