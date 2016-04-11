@@ -12,7 +12,7 @@ use JMS\Serializer\Annotation as JMS;
  * @ORM\HasLifecycleCallbacks()
  * @ORM\Table(name="properties")
  * @ORM\Entity()
- * @JMS\AccessorOrder("alphabetical")
+ * @JMS\AccessorOrder("custom", custom = {"id", "name", "description", "propertyType", "date_time_begin", "date_time_end"})
  */
 class Property
 {

@@ -63,7 +63,7 @@ abstract class ModelObject
      * @ORM\ManyToMany(targetEntity="AppBundle\Entity\AbstractModel", inversedBy="modelObjects", cascade={"persist", "remove"})
      * @ORM\JoinTable(name="models_model_objects")
      * @JMS\Groups({"modelobjectdetails"})
-     * @JMS\MaxDepth(1)
+     * @JMS\MaxDepth(2)
      **/
     protected $models;
 
@@ -109,7 +109,7 @@ abstract class ModelObject
      * @ORM\ManyToMany(targetEntity="ObservationPoint", inversedBy="modelObjects")
      * @ORM\JoinTable(name="model_objects_observation_points")
      * @JMS\Groups({"modelobjectdetails", "soilmodeldetails"})
-     * @JMS\MaxDepth(2)
+     * @JMS\MaxDepth(5)
      */
     protected $observationPoints;
 
