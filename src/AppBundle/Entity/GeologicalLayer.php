@@ -20,7 +20,7 @@ class GeologicalLayer extends ModelObject
     protected $type = 'geologicallayer';
 
     /**
-     * @var ArrayCollection SoilProfile
+     * @var ArrayCollection GeologicalUnit
      *
      * @ORM\ManyToMany(targetEntity="AppBundle\Entity\GeologicalUnit", inversedBy="geologicalLayer")
      * @ORM\JoinTable(name="geological_layers_geological_units")
