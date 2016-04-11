@@ -31,6 +31,7 @@ class Boundary extends ModelObject
      * @var ArrayCollection GeologicalLayer
      *
      * @ORM\ManyToMany(targetEntity="AppBundle\Entity\GeologicalLayer", mappedBy="boundaries")
+     * @JMS\Groups({"list", "details", "modelobjectdetails"})
      **/
     protected $geologicalLayers;
 

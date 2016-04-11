@@ -6,6 +6,7 @@ use AppBundle\Entity\Boundary;
 use AppBundle\Entity\ModelObject;
 use AppBundle\Entity\User;
 use AppBundle\Model\BoundaryFactory;
+use AppBundle\Model\GeologicalLayerFactory;
 use AppBundle\Model\ModFlowModelFactory;
 use AppBundle\Model\ObservationPointFactory;
 use AppBundle\Model\PropertyFactory;
@@ -65,6 +66,14 @@ class ModelObjectSerialisationTest extends \PHPUnit_Framework_TestCase
                 ->setId(14)
                 ->setName('ObservationPointName')
             )
+            ->addGeologicalLayer(GeologicalLayerFactory::create()
+                ->setId(15)
+                ->setName('GeologicalLayerName_1')
+            )
+            ->addGeologicalLayer(GeologicalLayerFactory::create()
+                ->setId(16)
+                ->setName('GeologicalLayerName_2')
+            )
             ->setDateCreated(new \DateTime())
             ->setDateModified(new \DateTime())
             ->setPublic(true)
@@ -122,5 +131,9 @@ class ModelObjectSerialisationTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals($boundary->public, $this->boundary->getPublic());
         $this->assertEquals(new \DateTime($boundary->date_created), $this->boundary->getDateCreated());
         $this->assertEquals(new \DateTime($boundary->date_modified), $this->boundary->getDateModified());
+
+        $this->assertObjectHasAttribute('geological_layers', $boundary);
+        $this->assertEquals($this->boundary->getGeologicalLayers()->count(), count($boundary->geological_layers));
+        $this->assertEquals($this->boundary->getGeologicalLayers()->first()->getId(), $boundary->geological_layers[0]->id);
     }
 }

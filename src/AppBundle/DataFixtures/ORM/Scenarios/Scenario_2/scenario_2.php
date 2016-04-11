@@ -793,6 +793,31 @@ class LoadScenario_2 implements FixtureInterface, ContainerAwareInterface
         $lineString = $converter->convertStringToPHPValue(Type::getType('linestring'), $geometryText);
         $lineString->setSrid(3857);
         $boundary->setGeometry($lineString);
+
+        $layer = $this->entityManager->getRepository('AppBundle:GeologicalLayer')
+            ->findOneBy(array(
+                'name' => 'SC2_L1'
+            ));
+        $boundary->addGeologicalLayer($layer);
+
+        $layer = $this->entityManager->getRepository('AppBundle:GeologicalLayer')
+            ->findOneBy(array(
+                'name' => 'SC2_L2'
+            ));
+        $boundary->addGeologicalLayer($layer);
+
+        $layer = $this->entityManager->getRepository('AppBundle:GeologicalLayer')
+            ->findOneBy(array(
+                'name' => 'SC2_L3'
+            ));
+        $boundary->addGeologicalLayer($layer);
+
+        $layer = $this->entityManager->getRepository('AppBundle:GeologicalLayer')
+            ->findOneBy(array(
+                'name' => 'SC2_L4'
+            ));
+        $boundary->addGeologicalLayer($layer);
+
         $entityManager->persist($boundary);
         $entityManager->flush();
 
