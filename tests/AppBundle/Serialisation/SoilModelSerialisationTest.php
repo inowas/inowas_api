@@ -39,7 +39,7 @@ class SoilModelSerialisationTest extends \PHPUnit_Framework_TestCase
         $this->soilModel->setPublic(true);
         $this->soilModel->setDescription('TestSoilModelDescription!!!');
 
-        $owner = UserFactory::createTestUser("SoilModelTest_Owner");
+        $owner = UserFactory::createTestUser("SoilModelTest_Owner")->setId(1);
         $this->soilModel->setOwner($owner);
 
         $this->area = AreaFactory::create()
@@ -52,35 +52,24 @@ class SoilModelSerialisationTest extends \PHPUnit_Framework_TestCase
 
         $this->soilModel->setArea($this->area);
 
-        $layer = GeologicalLayerFactory::create()
+        $layer1 = GeologicalLayerFactory::create()
             ->setOwner($owner)
             ->setPublic(true)
-        ;
-
-        $point = GeologicalPointFactory::create()
-            ->setOwner($owner)
-            ->setPublic(true)
-        ;
-
-        $unit = GeologicalUnitFactory::create()
-            ->setOwner($owner)
-            ->setPublic(true)
-        ;
-
-        $layer1 = clone $layer;
-        $layer1
             ->setId(21)
             ->setName("SoilModel-TestLayer_1");
 
-        $layer2 = clone $layer;
-        $layer2
+        $layer2 = GeologicalLayerFactory::create()
+            ->setOwner($owner)
+            ->setPublic(true)
             ->setId(22)
             ->setName("SoilModel-TestLayer_2");
             
         $this->soilModel->addGeologicalLayer($layer1);
         $this->soilModel->addGeologicalLayer($layer2);
 
-        $point1 = clone $point
+        $point1 = GeologicalPointFactory::create()
+            ->setOwner($owner)
+            ->setPublic(true)
             ->setId(31)
             ->setName('SoilModel-TestPoint_1')
             ->setDateCreated(new \DateTime())
@@ -88,9 +77,11 @@ class SoilModelSerialisationTest extends \PHPUnit_Framework_TestCase
             ->setPoint(new Point(12,11,5432))
         ;
 
-        $point2 = clone $point
-            ->setId(31)
-            ->setName('SoilModel-TestPoint_1')
+        $point2 = GeologicalPointFactory::create()
+            ->setOwner($owner)
+            ->setPublic(true)
+            ->setId(32)
+            ->setName('SoilModel-TestPoint_2')
             ->setDateCreated(new \DateTime())
             ->setDateModified(new \DateTime())
             ->setPoint(new Point(13,12,5432))
@@ -99,45 +90,55 @@ class SoilModelSerialisationTest extends \PHPUnit_Framework_TestCase
         $this->soilModel->addGeologicalPoint($point1);
         $this->soilModel->addGeologicalPoint($point2);
 
-        $unit_1_1 = clone $unit;
-        $unit_1_1
+        $unit_1_1 = GeologicalUnitFactory::create()
+            ->setOwner($owner)
+            ->setPublic(true)
             ->setId(41)
             ->setName("SoilModel-TestUnit_1_1")
             ->setDateCreated(new \DateTime())
             ->setDateModified(new \DateTime())
             ->setTopElevation(12)
-            ->setBottomElevation(10)
-            ->setGeologicalPoint($point1);
+            ->setBottomElevation(10);
 
-        $unit_1_2 = clone $unit;
-        $unit_1_2
+        $unit_1_2 = GeologicalUnitFactory::create()
+            ->setOwner($owner)
+            ->setPublic(true)
             ->setId(42)
             ->setName("SoilModel-TestUnit_1_2")
             ->setDateCreated(new \DateTime())
             ->setDateModified(new \DateTime())
             ->setTopElevation(10)
-            ->setBottomElevation(8)
-            ->setGeologicalPoint($point1);
+            ->setBottomElevation(8);
 
-        $unit_2_1 = clone $unit;
-        $unit_2_1
+        $unit_2_1 = GeologicalUnitFactory::create()
+            ->setOwner($owner)
+            ->setPublic(true)
             ->setId(43)
             ->setName("SoilModel-TestUnit_2_1")
             ->setDateCreated(new \DateTime())
             ->setDateModified(new \DateTime())
             ->setTopElevation(12)
-            ->setBottomElevation(9)
-            ->setGeologicalPoint($point2);
+            ->setBottomElevation(9);
 
-        $unit_2_2 = clone $unit;
-        $unit_2_2
+        $unit_2_2 = GeologicalUnitFactory::create()
+            ->setOwner($owner)
+            ->setPublic(true)
             ->setId(44)
             ->setName("SoilModel-TestUnit_2_2")
             ->setDateCreated(new \DateTime())
             ->setDateModified(new \DateTime())
             ->setTopElevation(9)
-            ->setBottomElevation(6)
-            ->setGeologicalPoint($point2);
+            ->setBottomElevation(6);
+
+        $layer1->addGeologicalUnit($unit_1_1);
+        $layer1->addGeologicalUnit($unit_1_2);
+        $layer2->addGeologicalUnit($unit_2_1);
+        $layer2->addGeologicalUnit($unit_2_2);
+
+        $point1->addGeologicalUnit($unit_1_1);
+        $point1->addGeologicalUnit($unit_1_2);
+        $point2->addGeologicalUnit($unit_2_1);
+        $point2->addGeologicalUnit($unit_2_2);
 
         $this->soilModel->addGeologicalUnit($unit_1_1);
         $this->soilModel->addGeologicalUnit($unit_1_2);

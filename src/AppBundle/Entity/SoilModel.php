@@ -70,7 +70,7 @@ class SoilModel
      * @var \DateTime
      *
      * @ORM\Column(name="dateCreated", type="datetime")
-     * @JMS\Groups({"details", "soilmodeldetails"})
+     * @JMS\Groups({"details", "soilmodellist",  "soilmodeldetails"})
      */
     private $dateCreated;
 
@@ -78,7 +78,7 @@ class SoilModel
      * @var \DateTime
      *
      * @ORM\Column(name="dateModified", type="datetime")
-     * @JMS\Groups({"details", "soilmodeldetails"})
+     * @JMS\Groups({"details", "soilmodellist",  "soilmodeldetails"})
      */
     private $dateModified;
 
@@ -97,7 +97,6 @@ class SoilModel
 
     /**
      * @var ArrayCollection
-     * @JMS\Groups({"soilmodeldetails"})
      */
     private $geologicalUnits;
 

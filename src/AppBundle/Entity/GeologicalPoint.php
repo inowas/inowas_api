@@ -24,7 +24,7 @@ class GeologicalPoint extends ModelObject
      * @var Point
      *
      * @ORM\Column(name="geometry", type="point", nullable=true)
-     * @JMS\Groups({"details", "modelobjectdetails"})
+     * @JMS\Groups({"details", "modelobjectdetails", "soilmodelobjectdetails"})
      */
     private $point;
 
@@ -33,7 +33,7 @@ class GeologicalPoint extends ModelObject
      *
      * @ORM\OneToMany(targetEntity="AppBundle\Entity\GeologicalUnit", mappedBy="geologicalPoint", cascade={"persist"})
      * @JMS\MaxDepth(2)
-     * @JMS\Groups({"details", "modelobjectdetails"})
+     * @JMS\Groups({"details", "modelobjectdetails", "soilmodeldetails"})
      */
     private $geologicalUnits;
 

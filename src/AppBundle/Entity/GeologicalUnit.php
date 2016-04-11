@@ -24,7 +24,7 @@ class GeologicalUnit extends ModelObject
      * @var $elevation
      *
      * @ORM\Column(name="top_elevation", type="float", nullable=true)
-     * @JMS\Groups({"details", "modelobjectdetails"})
+     * @JMS\Groups({"details", "modelobjectdetails", "soilmodelobjectdetails"})
      */
     private $topElevation;
 
