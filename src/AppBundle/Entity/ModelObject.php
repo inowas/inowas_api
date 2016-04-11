@@ -37,7 +37,7 @@ abstract class ModelObject
      * @ORM\Column(name="id", type="integer")
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="AUTO")
-     * @JMS\Groups({"list", "details", "layerdetails", "modeldetails", "modelobjectdetails", "modelobjectlist"})
+     * @JMS\Groups({"list", "details", "layerdetails", "modeldetails", "modelobjectdetails", "modelobjectlist", "soilmodeldetails"})
      */
     protected $id;
 
@@ -45,7 +45,7 @@ abstract class ModelObject
      * @var string
      *
      * @ORM\Column(name="name", type="string", length=255, nullable=true)
-     * @JMS\Groups({"list", "details", "layerdetails", "modeldetails", "modelobjectdetails", "modelobjectlist"})
+     * @JMS\Groups({"list", "details", "layerdetails", "modeldetails", "modelobjectdetails", "modelobjectlist", "soilmodeldetails"})
      */
     protected $name;
 
@@ -89,7 +89,7 @@ abstract class ModelObject
      *
      * @ORM\OneToMany(targetEntity="AppBundle\Entity\Property", mappedBy="modelObject", cascade={"persist", "remove"})
      * @JMS\Type("ArrayCollection<AppBundle\Entity\Property>")
-     * @JMS\Groups({"details", "layerdetails", "modeldetails", "modelobjectdetails"})
+     * @JMS\Groups({"details", "layerdetails", "modeldetails", "modelobjectdetails", "soilmodeldetails"})
      */
     protected $properties;
 
@@ -106,7 +106,7 @@ abstract class ModelObject
      *
      * @ORM\ManyToMany(targetEntity="ObservationPoint", inversedBy="modelObjects")
      * @ORM\JoinTable(name="model_objects_observation_points")
-     * @JMS\Groups({"modelobjectdetails"})
+     * @JMS\Groups({"modelobjectdetails", "soilmodeldetails"})
      */
     protected $observationPoints;
 
@@ -114,7 +114,7 @@ abstract class ModelObject
      * @var boolean
      *
      * @ORM\Column(name="public", type="boolean")
-     * @JMS\Groups({"list", "details", "layerdetails", "modelobjectdetails", "modelobjectlist"})
+     * @JMS\Groups({"list", "details", "layerdetails", "modelobjectdetails", "modelobjectlist", "soilmodeldetails"})
      */
     protected $public;
 
@@ -122,7 +122,7 @@ abstract class ModelObject
      * @var \DateTime
      *
      * @ORM\Column(name="dateCreated", type="datetime")
-     * @JMS\Groups({"modelobjectdetails"})
+     * @JMS\Groups({"modelobjectdetails", "soilmodeldetails"})
      */
     protected $dateCreated;
 
@@ -130,7 +130,7 @@ abstract class ModelObject
      * @var \DateTime
      *
      * @ORM\Column(name="dateModified", type="datetime")
-     * @JMS\Groups({"modelobjectdetails"})
+     * @JMS\Groups({"modelobjectdetails", "soilmodeldetails"})
      */
     protected $dateModified;
 
