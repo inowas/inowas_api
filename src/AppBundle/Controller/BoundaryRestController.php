@@ -93,7 +93,9 @@ class BoundaryRestController extends FOSRestController
             $view->setData($boundary)
                 ->setStatusCode(200)
                 ->setSerializationContext(SerializationContext::create()
-                    ->setGroups(array('modelobjectdetails')));
+                    ->setGroups(array('modelobjectdetails'))
+                    ->enableMaxDepthChecks()
+                );
 
             return $view;
         } else

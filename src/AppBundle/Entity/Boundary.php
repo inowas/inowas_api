@@ -32,6 +32,7 @@ class Boundary extends ModelObject
      *
      * @ORM\ManyToMany(targetEntity="AppBundle\Entity\GeologicalLayer", mappedBy="boundaries")
      * @JMS\Groups({"list", "details", "modelobjectdetails"})
+     * @JMS\MaxDepth(2)
      **/
     protected $geologicalLayers;
 
@@ -77,6 +78,11 @@ class Boundary extends ModelObject
     {
         $this->geologicalLayers[] = $geologicalLayer;
 
+        if (!$geologicalLayer->getBoundaries()->contains($this))
+        {
+            $geologicalLayer->addBoundary($this);
+        }
+
         return $this;
     }
 
@@ -88,6 +94,11 @@ class Boundary extends ModelObject
     public function removeGeologicalLayer(\AppBundle\Entity\GeologicalLayer $geologicalLayer)
     {
         $this->geologicalLayers->removeElement($geologicalLayer);
+
+        if ($geologicalLayer->getBoundaries()->contains($this))
+        {
+            $geologicalLayer->removeBoundary($this);
+        }
     }
 
     /**
