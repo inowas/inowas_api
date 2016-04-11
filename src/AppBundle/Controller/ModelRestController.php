@@ -41,17 +41,21 @@ class ModelRestController extends FOSRestController
         {
             $models = $this->getDoctrine()
                 ->getRepository('AppBundle:ModFlowModel')
-                ->findBy(array(
-                    'owner' => $user
-                ));
+                ->findBy(
+                    array('owner' => $user),
+                    array('id' => 'ASC')
+                );
         } else
         {
             $models = $this->getDoctrine()
                 ->getRepository('AppBundle:ModFlowModel')
-                ->findBy(array(
-                    'owner' => $user,
-                    'public' => true
-                ));
+                ->findBy(
+                    array(
+                        'owner' => $user,
+                        'public' => true
+                    ),
+                    array('id' => 'ASC')
+                );
         }
 
         $view = View::create();

@@ -41,17 +41,21 @@ class SoilModelRestController extends FOSRestController
         {
             $soilModels = $this->getDoctrine()
                 ->getRepository('AppBundle:SoilModel')
-                ->findBy(array(
-                    'owner' => $user
-                ));
+                ->findBy(
+                    array('owner' => $user),
+                    array('id' => 'ASC')
+                );
         } else
         {
             $soilModels = $this->getDoctrine()
                 ->getRepository('AppBundle:SoilModel')
-                ->findBy(array(
-                    'owner' => $user,
-                    'public' => true
-                ));
+                ->findBy(
+                    array(
+                        'owner' => $user,
+                        'public' => true
+                    ),
+                    array('id' => 'ASC')
+                );
         }
 
         $view = View::create();
