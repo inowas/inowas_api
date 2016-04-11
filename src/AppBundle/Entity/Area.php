@@ -38,7 +38,7 @@ class Area extends ModelObject
      * @var AreaType
      *
      * @ORM\ManyToOne(targetEntity="AppBundle\Entity\AreaType")
-     * @JMS\Groups({"list", "details", "modelobjectdetails"})
+     * @JMS\Groups({"list", "details", "modelobjectdetails", "modeldetails"})
      */
     private $areaType;
 
@@ -85,7 +85,7 @@ class Area extends ModelObject
     /**
      * @JMS\VirtualProperty
      * @JMS\SerializedName("geometry")
-     * @JMS\Groups({"modelobjectdetails"})
+     * @JMS\Groups({"modelobjectdetails", "modeldetails", "soilmodeldetails"})
      *
      * @return string
      */

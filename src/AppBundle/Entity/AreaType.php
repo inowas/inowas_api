@@ -19,13 +19,13 @@ class AreaType
      * @ORM\Column(name="id", type="integer")
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="AUTO")
-     * @JMS\Groups({"list", "modelobjectdetails"})
+     * @JMS\Groups({"list", "modelobjectdetails", "soilmodeldetails", "modeldetails"})
      */
     private $id;
 
     /**
      * @ORM\Column(name="name", type="text")
-     * @JMS\Groups({"list", "modelobjectdetails"})
+     * @JMS\Groups({"list", "modelobjectdetails", "soilmodeldetails", "modeldetails"})
      */
     private $name;
 
