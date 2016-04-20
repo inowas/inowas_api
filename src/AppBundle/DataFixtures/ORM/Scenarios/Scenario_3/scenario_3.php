@@ -85,6 +85,16 @@ class LoadScenario_3 implements FixtureInterface, ContainerAwareInterface
             ->setOwner($user)
         ;
         $entityManager->persist($modflowModel);
+        $entityManager->flush();
+
+        $properties = $modflowModel->getCalculationProperties();
+        $properties['grid_size'] = array(
+            'rows' => 50,
+            'cols' => 50
+        );
+        $modflowModel->setCalculationProperties($properties);
+        $entityManager->persist($modflowModel);
+        $entityManager->flush();
 
         // Create a soilmodel
         $soilModel = SoilModelFactory::create();

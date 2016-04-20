@@ -58,6 +58,7 @@ class ModFlowModel extends AbstractModel
      * @JMS\Groups({"details", "modeldetails"})
      */
     private $calculationProperties = array(
+        "grid_size" => array(),
         "stress_periods" => array(),
         "initial_values" => array(
             "property" => null,

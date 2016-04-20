@@ -2,6 +2,7 @@
 
 namespace AppBundle\DataFixtures\ORM\Scenarios\Scenario_1;
 
+use AppBundle\Entity\ModFlowModel;
 use AppBundle\Entity\User;
 use AppBundle\Model\AreaFactory;
 use AppBundle\Model\AreaTypeFactory;
@@ -9,6 +10,7 @@ use AppBundle\Model\BoundaryFactory;
 use AppBundle\Model\GeologicalLayerFactory;
 use AppBundle\Model\GeologicalPointFactory;
 use AppBundle\Model\GeologicalUnitFactory;
+use AppBundle\Model\ModFlowModelFactory;
 use AppBundle\Model\ObservationPointFactory;
 use AppBundle\Model\PropertyFactory;
 use AppBundle\Model\PropertyTimeValueFactory;
@@ -300,6 +302,23 @@ class LoadScenario_1 implements FixtureInterface, ContainerAwareInterface
         $propertyValue = PropertyValueFactory::setPropertyAndValue($property, 60);
         $entityManager->persist($propertyValue);
 
+        /** @var ModFlowModel $model */
+        $model = ModFlowModelFactory::create();
+        $model->setName("ModFlowModel Scenario 1");
+        $model->setOwner($user);
+        $model->setDescription("ModFlowModel Scenario 1 Description");
+        $model->setSoilModel($soilModel);
+        $model->setArea($area);
+        $entityManager->persist($model);
+        $entityManager->flush();
+
+        $properties = $model->getCalculationProperties();
+        $properties['grid_size'] = array(
+            'rows' => 50,
+            'cols' => 50
+        );
+        $model->setCalculationProperties($properties);
+        $entityManager->persist($model);
         $entityManager->flush();
 
         return 0;

@@ -14,7 +14,6 @@ use AppBundle\Model\ModFlowModelFactory;
 use AppBundle\Model\ObservationPointFactory;
 use AppBundle\Model\PropertyFactory;
 use AppBundle\Model\PropertyTimeValueFactory;
-use AppBundle\Model\PropertyTypeFactory;
 use AppBundle\Model\PropertyValueFactory;
 use AppBundle\Model\Point;
 use AppBundle\Model\SoilModelFactory;
@@ -148,6 +147,15 @@ class LoadScenario_2 implements FixtureInterface, ContainerAwareInterface
         $stressPeriod->setDateTimeEnd(new \DateTime('31-03-2005'));
         $model->addStressPeriod($stressPeriod);
 
+        $entityManager->persist($model);
+        $entityManager->flush();
+
+        $properties = $model->getCalculationProperties();
+        $properties['grid_size'] = array(
+            'rows' => 50,
+            'cols' => 50
+        );
+        $model->setCalculationProperties($properties);
         $entityManager->persist($model);
         $entityManager->flush();
 

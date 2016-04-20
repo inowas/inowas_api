@@ -346,6 +346,10 @@ class ModFlowModelSerialisationTest extends \PHPUnit_Framework_TestCase
     public function testCalculationPropertiesRecalculation()
     {
         $this->modFlowModel->setCalculationProperties(array(
+            "grid_size" => array(
+                "rows" => 50,
+                "cols" => 60
+            ),
             "stress_periods" => array(),
             "initial_values" => array(
                 "property" => null,
@@ -365,10 +369,22 @@ class ModFlowModelSerialisationTest extends \PHPUnit_Framework_TestCase
         $serializedModel = json_decode($serializedModel);
 
         $this->assertObjectHasAttribute("calculation_properties", $serializedModel);
+        $this->assertObjectHasAttribute("grid_size", $serializedModel->calculation_properties);
+        $this->assertObjectHasAttribute("rows", $serializedModel->calculation_properties->grid_size);
+        $this->assertEquals("50", $serializedModel->calculation_properties->grid_size->rows);
+        $this->assertObjectHasAttribute("cols", $serializedModel->calculation_properties->grid_size);
+        $this->assertEquals("60", $serializedModel->calculation_properties->grid_size->cols);
+        $this->assertObjectHasAttribute("stress_periods", $serializedModel->calculation_properties);
+        $this->assertObjectHasAttribute("initial_values", $serializedModel->calculation_properties);
+        $this->assertObjectHasAttribute("transient", $serializedModel->calculation_properties);
         $this->assertObjectHasAttribute("recalculation", $serializedModel->calculation_properties);
         $this->assertFalse($serializedModel->calculation_properties->recalculation);
 
         $this->modFlowModel->setCalculationProperties(array(
+            "grid_size" => array(
+                "rows" => 50,
+                "cols" => 50
+            ),
             "stress_periods" => array(),
             "initial_values" => array(
                 "property" => null,
