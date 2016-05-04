@@ -60,6 +60,7 @@ doctrine:
             polygon:        CrEOF\Spatial\DBAL\Types\Geometry\PolygonType
             linestring:     CrEOF\Spatial\DBAL\Types\Geometry\LineStringType
             raster:         AppBundle\Type\RasterType
+            uuid:           Ramsey\Uuid\Doctrine\UuidType
 
     orm:
         auto_generate_proxy_classes: "%kernel.debug%"

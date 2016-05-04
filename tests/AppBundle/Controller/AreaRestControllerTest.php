@@ -26,7 +26,10 @@ class AreaRestControllerTest extends WebTestCase
     protected $areaType;
 
     /** @var  Area $area */
-    protected $area;
+    protected $area_1;
+
+    /** @var  Area $area */
+    protected $area_2;
 
 
     public function setUp()
@@ -44,11 +47,11 @@ class AreaRestControllerTest extends WebTestCase
         $this->entityManager->persist($this->areaType);
         $this->entityManager->flush();
 
-        $this->area = AreaFactory::setOwnerNameTypeAndPublic($this->owner, 'ModelArea1', $this->areaType, true);
-        $this->entityManager->persist($this->area);
+        $this->area_1 = AreaFactory::setOwnerNameTypeAndPublic($this->owner, 'ModelArea1', $this->areaType, true);
+        $this->entityManager->persist($this->area_1);
         $this->entityManager->flush();
 
-        $this->area = AreaFactory::setOwnerNameTypeAndPublic($this->owner, 'ModelArea2', $this->areaType, true);
+        $this->area_2 = AreaFactory::setOwnerNameTypeAndPublic($this->owner, 'ModelArea2', $this->areaType, true);
         $rings = array(
             new LineString(
                 array(
@@ -83,8 +86,8 @@ class AreaRestControllerTest extends WebTestCase
 
         /** @var Polygon $polygon */
         $polygon = new Polygon($rings, 3857);
-        $this->area->setGeometry($polygon);
-        $this->entityManager->persist($this->area);
+        $this->area_2->setGeometry($polygon);
+        $this->entityManager->persist($this->area_2);
         $this->entityManager->flush();
     }
 
@@ -99,7 +102,7 @@ class AreaRestControllerTest extends WebTestCase
         $this->assertEquals(200, $client->getResponse()->getStatusCode());
         $modelAreas = json_decode($client->getResponse()->getContent());
         $this->assertEquals(2, count($modelAreas));
-        $this->assertEquals($this->area->getName(), $modelAreas[1]->name);
+        $this->assertEquals($this->area_2->getName(), $modelAreas[1]->name);
     }
 
     /**
@@ -109,10 +112,10 @@ class AreaRestControllerTest extends WebTestCase
     public function testAreaDetails()
     {
         $client = static::createClient();
-        $client->request('GET', '/api/areas/'.$this->area->getId().'.json');
+        $client->request('GET', '/api/areas/'.$this->area_1->getId().'.json');
         $this->assertEquals(200, $client->getResponse()->getStatusCode());
         $area = json_decode($client->getResponse()->getContent());
-        $this->assertEquals($area->id, $this->area->getId());
+        $this->assertEquals($area->id, $this->area_1->getId());
     }
 
     /**
