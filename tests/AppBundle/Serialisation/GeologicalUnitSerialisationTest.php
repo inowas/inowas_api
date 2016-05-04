@@ -23,12 +23,10 @@ class GeologicalUnitSerialisationTest extends \PHPUnit_Framework_TestCase
         $this->serializer = SerializerBuilder::create()->build();
 
         $this->geologicalUnit = GeologicalUnitFactory::create()
-            ->setId(12)
             ->setName('GeologicalUnitName')
             ->setPublic(true)
             ->setOwner(
                 UserFactory::createTestUser('GeologicalUnitTestUser')
-                ->setId(11)
             )
             ->setTopElevation(13.1)
             ->setBottomElevation(12.1)

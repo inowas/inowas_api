@@ -57,7 +57,6 @@ class ModFlowModelSerialisationTest extends \PHPUnit_Framework_TestCase
         $this->serializer = SerializerBuilder::create()->build();
 
         $this->modFlowModel = ModFlowModelFactory::create();
-        $this->modFlowModel->setId(11);
         $this->modFlowModel->setName("TestModel");
         $this->modFlowModel->setPublic(true);
         $this->modFlowModel->setDescription('TestModelDescription!!!');
@@ -69,7 +68,6 @@ class ModFlowModelSerialisationTest extends \PHPUnit_Framework_TestCase
         $this->modFlowModel->addParticipant($participant);
 
         $modelArea = AreaFactory::create();
-        $modelArea->setId(13);
         $modelArea->setName("TestModelArea");
         $modelArea->setOwner($owner);
         $modelArea->addProperty(PropertyFactory::create());
@@ -77,13 +75,11 @@ class ModFlowModelSerialisationTest extends \PHPUnit_Framework_TestCase
         $this->modFlowModel->setArea($modelArea);
 
         $this->soilModel = SoilModelFactory::create();
-        $this->soilModel->setId(12);
         $this->soilModel->setOwner($owner);
         $this->soilModel->setPublic(true);
         $this->soilModel->setName('SoilModel_TestCase');
 
         $soilModelArea = AreaFactory::create();
-        $soilModelArea->setId(15);
         $soilModelArea->setName("TestSoilModelArea");
         $soilModelArea->setOwner($owner);
         $soilModelArea->addProperty(PropertyFactory::create());
@@ -92,7 +88,6 @@ class ModFlowModelSerialisationTest extends \PHPUnit_Framework_TestCase
         $this->modFlowModel->setSoilModel($this->soilModel);
 
         $this->layer = GeologicalLayerFactory::create();
-        $this->layer->setId(21);
         $this->layer->setOwner($owner);
         $this->layer->setPublic(true);
         $this->layer->setName("ModelTest_Layer");
@@ -115,7 +110,6 @@ class ModFlowModelSerialisationTest extends \PHPUnit_Framework_TestCase
         $propertyValue->setValue(1.9991);
 
         $this->property = PropertyFactory::create()
-            ->setId(22)
             ->setName("ModelTest_Property_kx")
             ->setPropertyType($propertyType)
             ->addValue($propertyValue)
@@ -127,11 +121,9 @@ class ModFlowModelSerialisationTest extends \PHPUnit_Framework_TestCase
 
         $propertyValue = PropertyValueFactory::create();
         $raster = RasterFactory::createEntity();
-        $raster->setId(31);
         $propertyValue->setRaster($raster);
 
         $this->property = PropertyFactory::create()
-            ->setId(23)
             ->setName("ModelTest_Property_ky")
             ->setPropertyType($propertyType)
             ->addValue($propertyValue)
@@ -141,7 +133,6 @@ class ModFlowModelSerialisationTest extends \PHPUnit_Framework_TestCase
 
         /** @var Stream $stream */
         $stream = StreamFactory::create()
-            ->setId(27)
             ->setOwner($owner)
             ->setName("Streamname")
             ->addObservationPoint(ObservationPointFactory::create())
@@ -155,7 +146,6 @@ class ModFlowModelSerialisationTest extends \PHPUnit_Framework_TestCase
 
         /** @var Boundary $boundary */
         $boundary = BoundaryFactory::create()
-            ->setId(38)
             ->setOwner($owner)
             ->setName('BoundaryName')
             ->addObservationPoint(ObservationPointFactory::create())
@@ -168,7 +158,6 @@ class ModFlowModelSerialisationTest extends \PHPUnit_Framework_TestCase
 
         /** @var ObservationPoint $observationPoint */
         $observationPoint = ObservationPointFactory::create()
-            ->setId(41)
             ->setOwner($owner)
             ->setName('ObservationPoint')
             ->addProperty(PropertyFactory::create())

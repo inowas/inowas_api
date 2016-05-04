@@ -33,10 +33,8 @@ class AreaSerialisationTest extends \PHPUnit_Framework_TestCase
     public function setUp()
     {
         $this->serializer = SerializerBuilder::create()->build();
-
-        $this->owner = UserFactory::createTestUser("ModelTest_Owner")->setId(1);
-        $this->areaType = AreaTypeFactory::setName('ModelAreaType')->setId(5);
-
+        $this->owner = UserFactory::createTestUser("ModelTest_Owner");
+        $this->areaType = AreaTypeFactory::setName('ModelAreaType');
         $this->area = AreaFactory::create()
             ->setAreaType(AreaTypeFactory::setName("AreaType"))
         ;

@@ -24,14 +24,10 @@ class ObservationPointSerialisationTest extends \PHPUnit_Framework_TestCase
         $this->serializer = SerializerBuilder::create()->build();
 
         $this->observationPoint = ObservationPointFactory::create()
-            ->setId(12)
             ->setName('ObservationPointName')
             ->setPublic(true)
             ->setElevation(12.11)
-            ->setOwner(
-                UserFactory::createTestUser('ObservationPointTestUser')
-                ->setId(11)
-            )
+            ->setOwner(UserFactory::createTestUser('ObservationPointTestUser'))
             ->setPoint(new Point(11.1, 12.1, 3542))
         ;
     }

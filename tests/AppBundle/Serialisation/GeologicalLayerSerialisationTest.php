@@ -25,22 +25,18 @@ class GeologicalLayerSerialisationTest extends \PHPUnit_Framework_TestCase
         $this->serializer = SerializerBuilder::create()->build();
 
         $this->geologicalLayer = GeologicalLayerFactory::create()
-            ->setId(12)
             ->setName('GeologicalLayerName')
             ->setPublic(true)
             ->setOwner(
                 UserFactory::createTestUser('GeologicalLayerTestUser')
-                ->setId(11)
             )
             ->addBoundary(
                 BoundaryFactory::create()
-                    ->setId(12)
                     ->setPublic(true)
                     ->setName('BoundaryName')
             )
             ->addGeologicalUnit(
                 GeologicalUnitFactory::create()
-                ->setId(13)
                 ->setPublic(true)
                 ->setName('GeologicalUnit')
             )

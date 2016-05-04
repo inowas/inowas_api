@@ -24,7 +24,6 @@ class StreamSerialisationTest extends \PHPUnit_Framework_TestCase
         $this->serializer = SerializerBuilder::create()->build();
         
         $this->stream = StreamFactory::create()
-            ->setId(12)
             ->setName('StreamName')
             ->setStartingPoint(new Point(11777056.49104572273790836, 2403440.17028302047401667, 3452))
             ->setLine(new LineString(

@@ -34,16 +34,14 @@ class SoilModelSerialisationTest extends \PHPUnit_Framework_TestCase
         $this->serializer = SerializerBuilder::create()->build();
 
         $this->soilModel = SoilModelFactory::create();
-        $this->soilModel->setId(11);
         $this->soilModel->setName("TestSoilModel");
         $this->soilModel->setPublic(true);
         $this->soilModel->setDescription('TestSoilModelDescription!!!');
 
-        $owner = UserFactory::createTestUser("SoilModelTest_Owner")->setId(1);
+        $owner = UserFactory::createTestUser("SoilModelTest_Owner");
         $this->soilModel->setOwner($owner);
 
         $this->area = AreaFactory::create()
-            ->setId(12)
             ->setOwner($owner)
             ->setPublic(true)
             ->setAreaType(AreaTypeFactory::setName('SoilModelTestAreaType'))
@@ -55,13 +53,11 @@ class SoilModelSerialisationTest extends \PHPUnit_Framework_TestCase
         $layer1 = GeologicalLayerFactory::create()
             ->setOwner($owner)
             ->setPublic(true)
-            ->setId(21)
             ->setName("SoilModel-TestLayer_1");
 
         $layer2 = GeologicalLayerFactory::create()
             ->setOwner($owner)
             ->setPublic(true)
-            ->setId(22)
             ->setName("SoilModel-TestLayer_2");
             
         $this->soilModel->addGeologicalLayer($layer1);
@@ -70,7 +66,6 @@ class SoilModelSerialisationTest extends \PHPUnit_Framework_TestCase
         $point1 = GeologicalPointFactory::create()
             ->setOwner($owner)
             ->setPublic(true)
-            ->setId(31)
             ->setName('SoilModel-TestPoint_1')
             ->setDateCreated(new \DateTime('2015-01-01'))
             ->setDateModified(new \DateTime('2015-01-02'))
@@ -80,7 +75,6 @@ class SoilModelSerialisationTest extends \PHPUnit_Framework_TestCase
         $point2 = GeologicalPointFactory::create()
             ->setOwner($owner)
             ->setPublic(true)
-            ->setId(32)
             ->setName('SoilModel-TestPoint_2')
             ->setDateCreated(new \DateTime('2015-01-01'))
             ->setDateModified(new \DateTime('2015-01-02'))
@@ -93,7 +87,6 @@ class SoilModelSerialisationTest extends \PHPUnit_Framework_TestCase
         $unit_1_1 = GeologicalUnitFactory::create()
             ->setOwner($owner)
             ->setPublic(true)
-            ->setId(41)
             ->setName("SoilModel-TestUnit_1_1")
             ->setDateCreated(new \DateTime('2015-01-01'))
             ->setDateModified(new \DateTime('2015-01-02'))
@@ -103,7 +96,6 @@ class SoilModelSerialisationTest extends \PHPUnit_Framework_TestCase
         $unit_1_2 = GeologicalUnitFactory::create()
             ->setOwner($owner)
             ->setPublic(true)
-            ->setId(42)
             ->setName("SoilModel-TestUnit_1_2")
             ->setDateCreated(new \DateTime('2015-01-01'))
             ->setDateModified(new \DateTime('2015-01-02'))
@@ -113,7 +105,6 @@ class SoilModelSerialisationTest extends \PHPUnit_Framework_TestCase
         $unit_2_1 = GeologicalUnitFactory::create()
             ->setOwner($owner)
             ->setPublic(true)
-            ->setId(43)
             ->setName("SoilModel-TestUnit_2_1")
             ->setDateCreated(new \DateTime('2015-01-01'))
             ->setDateModified(new \DateTime('2015-01-02'))
@@ -123,7 +114,6 @@ class SoilModelSerialisationTest extends \PHPUnit_Framework_TestCase
         $unit_2_2 = GeologicalUnitFactory::create()
             ->setOwner($owner)
             ->setPublic(true)
-            ->setId(44)
             ->setName("SoilModel-TestUnit_2_2")
             ->setDateCreated(new \DateTime('2015-01-01'))
             ->setDateModified(new \DateTime('2015-01-02'))
@@ -153,9 +143,6 @@ class SoilModelSerialisationTest extends \PHPUnit_Framework_TestCase
 
         $serializedSoilModel = $this->serializer->serialize($this->soilModel, 'json', $serializationContext);
         $this->assertStringStartsWith('{',$serializedSoilModel);
-        $serializedSoilModel = json_decode($serializedSoilModel);
-
-
     }
 
     public function testSoilModelDetailsSerialisation()

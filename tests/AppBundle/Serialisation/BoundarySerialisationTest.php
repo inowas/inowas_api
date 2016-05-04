@@ -26,12 +26,10 @@ class BoundarySerialisationTest extends \PHPUnit_Framework_TestCase
         $this->serializer = SerializerBuilder::create()->build();
 
         $this->boundary = BoundaryFactory::create()
-            ->setId(12)
             ->setName('BoundaryName')
             ->setPublic(true)
             ->setOwner(
                 UserFactory::createTestUser('BoundaryTestUser')
-                ->setId(11)
             )
             ->setGeometry(new LineString(
                 array(
@@ -41,7 +39,6 @@ class BoundarySerialisationTest extends \PHPUnit_Framework_TestCase
                     new Point(11781703.59880801662802696, 2401713.22520185634493828)
                 ), 5432))
             ->addObservationPoint(ObservationPointFactory::create()
-                ->setId(21)
                 ->setName('ObservationPointName')
             )
         ;

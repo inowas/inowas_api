@@ -39,12 +39,11 @@ class Boundary extends ModelObject
     /**
      * Boundary constructor.
      * @param User $owner
-     * @param Project $project
      * @param bool $public
      */
-    public function __construct(User $owner = null, Project $project = null, $public = false)
+    public function __construct(User $owner = null, $public = false)
     {
-        parent::__construct($owner, $project, $public);
+        parent::__construct($owner, $public);
 
         $this->geologicalLayers = new ArrayCollection();
     }

@@ -41,12 +41,11 @@ class GeologicalLayer extends ModelObject
     /**
      * Layer constructor.
      * @param User|null $owner
-     * @param Project|null $project
      * @param bool|false $public
      */
-    public function __construct(User $owner = null, Project $project = null, $public = false)
+    public function __construct(User $owner = null, $public = false)
     {
-        parent::__construct($owner, $project, $public);
+        parent::__construct($owner, $public);
 
         $this->boundaries = new ArrayCollection();
         $this->geologicalUnits = new ArrayCollection();

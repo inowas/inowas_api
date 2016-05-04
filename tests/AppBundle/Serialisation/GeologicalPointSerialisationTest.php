@@ -30,16 +30,13 @@ class GeologicalPointSerialisationTest extends \PHPUnit_Framework_TestCase
             ->setPublic(true)
             ->setOwner(
                 UserFactory::createTestUser('GeologicalLayerTestUser')
-                ->setId(11)
             )
             ->setPoint(new Point(11.1, 12.1, 3542))
             ->addGeologicalUnit(
                 GeologicalUnitFactory::create()
-                    ->setId(13)
                     ->setPublic(true)
                     ->setName('GeologicalUnit')
             )
-
         ;
     }
 

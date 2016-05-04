@@ -5,6 +5,7 @@ namespace AppBundle\Entity;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
 use JMS\Serializer\Annotation as JMS;
+use Ramsey\Uuid\Uuid;
 
 /**
  * ModelObject
@@ -32,11 +33,11 @@ abstract class ModelObject
     protected $type = 'modelobject';
 
     /**
-     * @var integer
+     * @var string
      *
-     * @ORM\Column(name="id", type="integer")
      * @ORM\Id
-     * @ORM\GeneratedValue(strategy="AUTO")
+     * @ORM\Column(name="id", type="uuid", unique=true)
+     * @JMS\Type("string")
      * @JMS\Groups({"list", "details", "layerdetails", "modeldetails", "modelobjectdetails", "modelobjectlist", "soilmodeldetails"})
      */
     protected $id;
@@ -136,6 +137,7 @@ abstract class ModelObject
      */
     public function __construct(User $owner = null, $public = false)
     {
+        $this->id = Uuid::uuid4();
         $this->owner = $owner;
         $this->public = $public;
         $this->models = new ArrayCollection();
