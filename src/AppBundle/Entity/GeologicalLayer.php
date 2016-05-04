@@ -19,11 +19,15 @@ class GeologicalLayer extends ModelObject
      */
     protected $type = 'geologicallayer';
 
+
     /**
      * @var ArrayCollection GeologicalUnit
      *
-     * @ORM\ManyToMany(targetEntity="AppBundle\Entity\GeologicalUnit", inversedBy="geologicalLayer")
-     * @ORM\JoinTable(name="geological_layers_geological_units")
+     * @ORM\ManyToMany(targetEntity="AppBundle\Entity\GeologicalUnit")
+     * @ORM\JoinTable(name="geological_layers_geological_units",
+     *     joinColumns={@ORM\JoinColumn(name="geological_layer_id", referencedColumnName="id")},
+     *     inverseJoinColumns={@ORM\JoinColumn(name="geological_unit_id", referencedColumnName="id")}
+     *     )
      * @JMS\Type("ArrayCollection<AppBundle\Entity\GeologicalUnit>"))
      * @JMS\Groups({"modelobjectdetails", "soilmodeldetails"})
      **/
@@ -60,12 +64,6 @@ class GeologicalLayer extends ModelObject
     public function addGeologicalUnit(GeologicalUnit $geologicalUnit)
     {
         $this->geologicalUnits[] = $geologicalUnit;
-
-        if (!$geologicalUnit->getGeologicalLayer()->contains($this))
-        {
-            $geologicalUnit->addGeologicalLayer($this);
-        }
-
         return $this;
     }
 
@@ -77,11 +75,6 @@ class GeologicalLayer extends ModelObject
     public function removeGeologicalUnit(GeologicalUnit $geologicalUnit)
     {
         $this->geologicalUnits->removeElement($geologicalUnit);
-
-        if ($geologicalUnit->getGeologicalLayer()->contains($this))
-        {
-            $geologicalUnit->removeGeologicalLayer($this);
-        }
     }
 
     /**

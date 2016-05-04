@@ -2,8 +2,6 @@
 
 namespace AppBundle\Entity;
 
-use AppBundle\Model\Point;
-use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
 use JMS\Serializer\Annotation as JMS;
 
@@ -35,29 +33,6 @@ class GeologicalUnit extends ModelObject
      * @JMS\Groups({"details", "modelobjectdetails"})
      */
     private $bottomElevation;
-
-    /**
-     * @var ArrayCollection
-     *
-     * @ORM\ManyToMany(targetEntity="AppBundle\Entity\GeologicalLayer", mappedBy="geologicalUnits")
-     * @JMS\Groups({"details", "modelobjectdetails"})
-     */
-    private $geologicalLayer;
-
-    /**
-     * @var Point
-     *
-     * @JMS\Accessor(getter="getPoint")
-     * @JMS\Groups({"details"})
-     * @JMS\Type("AppBundle\Model\Point")
-     */
-    protected $point;
-
-    public function __construct(User $owner = null, $public = false)
-    {
-        parent::__construct($owner, $public);
-        $this->geologicalLayer = new ArrayCollection();
-    }
 
     /**
      * Set topElevation
@@ -103,48 +78,5 @@ class GeologicalUnit extends ModelObject
     public function getBottomElevation()
     {
         return $this->bottomElevation;
-    }
-
-    /**
-     * Add geologicalLayer
-     *
-     * @param \AppBundle\Entity\GeologicalLayer $geologicalLayer
-     * @return GeologicalUnit
-     */
-    public function addGeologicalLayer(\AppBundle\Entity\GeologicalLayer $geologicalLayer)
-    {
-        $this->geologicalLayer[] = $geologicalLayer;
-
-        if (!$geologicalLayer->getGeologicalUnits()->contains($this))
-        {
-            $geologicalLayer->addGeologicalUnit($this);
-        }
-
-        return $this;
-    }
-
-    /**
-     * Remove geologicalLayer
-     *
-     * @param \AppBundle\Entity\GeologicalLayer $geologicalLayer
-     */
-    public function removeGeologicalLayer(\AppBundle\Entity\GeologicalLayer $geologicalLayer)
-    {
-        $this->geologicalLayer->removeElement($geologicalLayer);
-
-        if ($geologicalLayer->getGeologicalUnits()->contains($this))
-        {
-            $geologicalLayer->removeGeologicalUnit($this);
-        }
-    }
-
-    /**
-     * Get geologicalLayer
-     *
-     * @return \Doctrine\Common\Collections\Collection 
-     */
-    public function getGeologicalLayer()
-    {
-        return $this->geologicalLayer;
     }
 }
