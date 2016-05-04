@@ -13,12 +13,12 @@ use AppBundle\Model\GeologicalUnitFactory;
 use AppBundle\Model\ModFlowModelFactory;
 use AppBundle\Model\PropertyFactory;
 use AppBundle\Model\PropertyTimeValueFactory;
-use AppBundle\Model\PropertyTypeFactory;
 use AppBundle\Model\PropertyValueFactory;
 
 use AppBundle\Model\Point;
 use AppBundle\Model\SoilModelFactory;
 use CrEOF\Spatial\DBAL\Platform\PostgreSql;
+use CrEOF\Spatial\DBAL\Types\AbstractSpatialType;
 use CrEOF\Spatial\PHP\Types\Geometry\LineString;
 use CrEOF\Spatial\PHP\Types\Geometry\Polygon;
 
@@ -103,17 +103,17 @@ class LoadScenario_3 implements FixtureInterface, ContainerAwareInterface
         $entityManager->persist($soilModel);
 
         // Create new geological layers
-        $layer = GeologicalLayerFactory::setOwnerNameAndPublic($user, 'SC3_L1', $public);
-        $soilModel->addGeologicalLayer($layer);
-        $entityManager->persist($layer);
+        $layer_1 = GeologicalLayerFactory::setOwnerNameAndPublic($user, 'SC3_L1', $public);
+        $soilModel->addGeologicalLayer($layer_1);
+        $entityManager->persist($layer_1);
 
-        $layer = GeologicalLayerFactory::setOwnerNameAndPublic($user, 'SC3_L2', $public);
-        $soilModel->addGeologicalLayer($layer);
-        $entityManager->persist($layer);
+        $layer_2 = GeologicalLayerFactory::setOwnerNameAndPublic($user, 'SC3_L2', $public);
+        $soilModel->addGeologicalLayer($layer_2);
+        $entityManager->persist($layer_2);
 
-        $layer = GeologicalLayerFactory::setOwnerNameAndPublic($user, 'SC3_L3', $public);
-        $soilModel->addGeologicalLayer($layer);
-        $entityManager->persist($layer);
+        $layer_3 = GeologicalLayerFactory::setOwnerNameAndPublic($user, 'SC3_L3', $public);
+        $soilModel->addGeologicalLayer($layer_3);
+        $entityManager->persist($layer_3);
         $entityManager->flush();
 
         /**
@@ -146,58 +146,37 @@ class LoadScenario_3 implements FixtureInterface, ContainerAwareInterface
 
         foreach ($boreholes as $borehole)
         {
+            echo "Add geologicalPoint".$borehole[0]."\r\n";
             $geologicalPoint = GeologicalPointFactory::setOwnerNameAndPoint($user, $borehole[0], new Point($borehole[1], $borehole[2], 3857), $public);
             $entityManager->persist($geologicalPoint);
-            $entityManager->flush();
 
             $geologicalUnit = GeologicalUnitFactory::setOwnerNameAndPublic($user, $borehole[0].'.1', $public);
-            $geologicalUnit->setGeologicalPoint($geologicalPoint);
             $geologicalUnit->setTopElevation($borehole[3]);
             $geologicalUnit->setBottomElevation($borehole[4]);
-
-            $geologicalLayer = $entityManager->getRepository('AppBundle:GeologicalLayer')
-                ->findOneBy(array(
-                    'name' => 'SC3_L1'
-                ));
-            $geologicalUnit->addGeologicalLayer($geologicalLayer);
+            $geologicalUnit->addGeologicalLayer($layer_1);
+            $geologicalPoint->addGeologicalUnit($geologicalUnit);
             $entityManager->persist($geologicalUnit);
-            $entityManager->flush();
 
             $geologicalUnit = GeologicalUnitFactory::setOwnerNameAndPublic($user, $borehole[0].'.2', $public);
-            $geologicalUnit->setGeologicalPoint($geologicalPoint);
             $geologicalUnit->setTopElevation($borehole[4]);
             $geologicalUnit->setBottomElevation($borehole[5]);
-
-            $geologicalLayer = $entityManager->getRepository('AppBundle:GeologicalLayer')
-                ->findOneBy(array(
-                    'name' => 'SC3_L2'
-                ));
-            $geologicalUnit->addGeologicalLayer($geologicalLayer);
+            $geologicalUnit->addGeologicalLayer($layer_2);
+            $geologicalPoint->addGeologicalUnit($geologicalUnit);
             $entityManager->persist($geologicalUnit);
-            $entityManager->flush();
 
             $geologicalUnit = GeologicalUnitFactory::setOwnerNameAndPublic($user, $borehole[0].'.3', $public);
-            $geologicalUnit->setGeologicalPoint($geologicalPoint);
             $geologicalUnit->setTopElevation($borehole[5]);
             $geologicalUnit->setBottomElevation($borehole[6]);
-
-            $geologicalLayer = $entityManager->getRepository('AppBundle:GeologicalLayer')
-                ->findOneBy(array(
-                    'name' => 'SC3_L3'
-                ));
-            $geologicalUnit->addGeologicalLayer($geologicalLayer);
+            $geologicalUnit->addGeologicalLayer($layer_3);
+            $geologicalPoint->addGeologicalUnit($geologicalUnit);
             $entityManager->persist($geologicalUnit);
-            $entityManager->flush();
 
             $soilModel->addGeologicalPoint($geologicalPoint);
             $entityManager->flush();
         }
 
-
         // Add properties to Layer SC3_L1
-        $geologicalLayer = $entityManager->getRepository('AppBundle:GeologicalLayer')
-            ->findOneBy(array('name' => 'SC3_L1'));
-
+        $geologicalLayer = $layer_1;
         if (!$geologicalLayer) {
             throw new NotFoundHttpException('Layer not found');
         }
@@ -225,11 +204,9 @@ class LoadScenario_3 implements FixtureInterface, ContainerAwareInterface
         $entityManager->persist($property);
         $propertyValue = PropertyValueFactory::setPropertyAndValue($property, 0.1);
         $entityManager->persist($propertyValue);
-        $entityManager->flush();
 
         // Add properties to Layer SC3_L2
-        $geologicalLayer = $entityManager->getRepository('AppBundle:GeologicalLayer')
-            ->findOneBy(array('name' => 'SC3_L2'));
+        $geologicalLayer = $layer_2;
 
         if (!$geologicalLayer) {
             throw new NotFoundHttpException('Layer not found');
@@ -240,12 +217,9 @@ class LoadScenario_3 implements FixtureInterface, ContainerAwareInterface
         $entityManager->persist($property);
         $propertyValue = PropertyValueFactory::setPropertyAndValue($property, 1);
         $entityManager->persist($propertyValue);
-        $entityManager->flush();
-
 
         // Add properties to Layer SC3_L3
-        $geologicalLayer = $entityManager->getRepository('AppBundle:GeologicalLayer')
-            ->findOneBy(array('name' => 'SC3_L3'));
+        $geologicalLayer = $layer_3;
 
         if (!$geologicalLayer) {
             throw new NotFoundHttpException('Layer not found');
@@ -274,33 +248,40 @@ class LoadScenario_3 implements FixtureInterface, ContainerAwareInterface
         $entityManager->persist($property);
         $propertyValue = PropertyValueFactory::setPropertyAndValue($property, 0.1);
         $entityManager->persist($propertyValue);
-        $entityManager->flush();
 
         // Add new AreaType
         $areaType = AreaTypeFactory::setName('SC3_AT1');
         $entityManager->persist($areaType);
-        $entityManager->flush();
 
         // Add new Area
         $area = AreaFactory::setOwnerNameTypeAndPublic($user, 'SC3_A1', $areaType, $public);
         $polygonText = "POLYGON((11792952.16265026479959488 2396619.95378328999504447, 11789249.37860263884067535 2391542.94060458615422249, 11788791.30222561210393906 2391638.37318313354626298, 11788333.22584858722984791 2391810.1518245181068778, 11787417.07309453375637531 2392230.05517012532800436, 11786558.17988761141896248 2392459.09335863823071122, 11786367.31473051756620407 2392993.51579850167036057, 11786061.93047916702926159 2393279.81353414291515946, 11785794.7192592341452837 2393718.8033954594284296, 11785508.42152359336614609 2394291.39886674145236611, 11785412.98894504643976688 2394787.64827518630772829, 11785279.38333507999777794 2395512.93587214406579733, 11785050.34514656849205494 2395932.8392177508212626, 11784897.65302089229226112 2396448.17514190496876836, 11784802.22044234536588192 2397058.94364460650831461, 11784554.0957381222397089 2397803.31775727355852723, 11784515.92270670458674431 2398394.99974426534026861, 11784477.74967528507113457 2398853.07612129114568233, 11784248.71148677170276642 2399063.02779409429058433, 11784057.84632967785000801 2399387.49856115458533168, 11783771.5485940370708704 2399921.92100101802498102, 11783427.99131126701831818 2400360.91086233453825116, 11783504.33737410604953766 2400494.51647230051457882, 11783771.5485940370708704 2400418.1704094628803432, 11784038.75981396809220314 2400303.65131520619615912, 11784382.31709673814475536 2399979.18054814636707306, 11784725.87437950819730759 2399769.22887534275650978, 11785050.34514656849205494 2399769.22887534275650978, 11785527.50803930312395096 2399960.09403243707492948, 11785985.58441632799804211 2400189.13222094997763634, 11786462.74730906449258327 2400418.1704094628803432, 11786806.30459183268249035 2400685.38162939436733723, 11787321.64051598682999611 2400914.41981790727004409, 11788161.44720720127224922 2401277.06361638614907861, 11788848.56177274137735367 2401257.97710067685693502, 11789669.28194824606180191 2401067.11194358253851533, 11790509.08863945864140987 2400971.67936503561213613, 11791158.03017357923090458 2400666.29511368507519364, 11791558.84700347669422626 2400170.04570524021983147, 11791959.66383337415754795 2399502.01765541080385447, 11792207.78853759728372097 2398833.98960558138787746, 11792474.99975752830505371 2397822.40427298285067081, 11792761.29749316908419132 2396944.42455034982413054, 11792952.16265026479959488 2396619.95378328999504447))";
         $converter = new PostgreSql();
+
+        /** @var AbstractSpatialType $polygonType */
+        $polygonType = Type::getType('polygon');
+
         /** @var Polygon $polygon */
-        $polygon = $converter->convertStringToPHPValue(Type::getType('polygon') , $polygonText);
+        $polygon = $converter->convertStringToPHPValue($polygonType , $polygonText);
         $polygon->setSrid(3857);
         $area->setGeometry($polygon);
         $entityManager->persist($area);
         $soilModel->setArea($area);
         $modflowModel->setArea($area);
         $entityManager->flush();
-        $this->addModelObjectPropertiesFromCSVFile($area, __DIR__.'/scenario_3_area_property_timeseries.csv', ';');
 
+
+        $this->addModelObjectPropertiesFromCSVFile($area, __DIR__.'/scenario_3_area_property_timeseries.csv', ';');
         // Add new boundaries
         $boundary = BoundaryFactory::setOwnerNameAndPublic($user, 'SC3_B1', $public);
         $geometryText = "LineString (11792952.16265026479959488 2396619.95378328999504447, 11792761.29749316908419132 2396944.42455034982413054, 11792474.99975752830505371 2397822.40427298285067081, 11792207.78853759728372097 2398833.98960558138787746, 11791959.66383337415754795 2399502.01765541080385447, 11791558.84700347669422626 2400170.04570524021983147, 11791158.03017357923090458 2400666.29511368507519364, 11790509.08863945864140987 2400971.67936503561213613, 11789669.28194824606180191 2401067.11194358253851533, 11788848.56177274137735367 2401257.97710067685693502, 11788161.44720720127224922 2401277.06361638614907861, 11787321.64051598682999611 2400914.41981790727004409, 11786806.30459183268249035 2400685.38162939436733723, 11786462.74730906449258327 2400418.1704094628803432, 11785985.58441632799804211 2400189.13222094997763634, 11785527.50803930312395096 2399960.09403243707492948, 11785050.34514656849205494 2399769.22887534275650978, 11784725.87437950819730759 2399769.22887534275650978, 11784382.31709673814475536 2399979.18054814636707306, 11784038.75981396809220314 2400303.65131520619615912, 11783771.5485940370708704 2400418.1704094628803432, 11783504.33737410604953766 2400494.51647230051457882, 11783427.99131126701831818 2400360.91086233453825116, 11783771.5485940370708704 2399921.92100101802498102, 11784057.84632967785000801 2399387.49856115458533168, 11784248.71148677170276642 2399063.02779409429058433, 11784477.74967528507113457 2398853.07612129114568233, 11784515.92270670458674431 2398394.99974426534026861, 11784554.0957381222397089 2397803.31775727355852723, 11784802.22044234536588192 2397058.94364460650831461, 11784897.65302089229226112 2396448.17514190496876836, 11785050.34514656849205494 2395932.8392177508212626, 11785279.38333507999777794 2395512.93587214406579733, 11785412.98894504643976688 2394787.64827518630772829, 11785508.42152359336614609 2394291.39886674145236611, 11785794.7192592341452837 2393718.8033954594284296, 11786061.93047916702926159 2393279.81353414291515946, 11786367.31473051756620407 2392993.51579850167036057, 11786558.17988761141896248 2392459.09335863823071122, 11787417.07309453375637531 2392230.05517012532800436, 11788333.22584858722984791 2391810.1518245181068778, 11788791.30222561210393906 2391638.37318313354626298)";
         $converter = new PostgreSql();
+
+        /** @var AbstractSpatialType $lineStringType */
+        $lineStringType = Type::getType('linestring');
+
         /** @var LineString $lineString */
-        $lineString = $converter->convertStringToPHPValue(Type::getType('linestring'), $geometryText);
+        $lineString = $converter->convertStringToPHPValue($lineStringType, $geometryText);
         $lineString->setSrid(3857);
         $boundary->setGeometry($lineString);
         $modflowModel->addBoundary($boundary);
@@ -311,8 +292,12 @@ class LoadScenario_3 implements FixtureInterface, ContainerAwareInterface
         $boundary = BoundaryFactory::setOwnerNameAndPublic($user, 'SC3_B2', $public);
         $geometryText = "LineString (11792952.16265026479959488 2396619.95378328999504447, 11789249.37860263884067535 2391542.94060458615422249, 11788791.30222561210393906 2391638.37318313354626298)";
         $converter = new PostgreSql();
+
+        /** @var AbstractSpatialType $lineStringType */
+        $lineStringType = Type::getType('linestring');
+
         /** @var LineString $lineString */
-        $lineString = $converter->convertStringToPHPValue(Type::getType('linestring'), $geometryText);
+        $lineString = $converter->convertStringToPHPValue($lineStringType, $geometryText);
         $lineString->setSrid(3857);
         $boundary->setGeometry($lineString);
         $modflowModel->addBoundary($boundary);
@@ -378,7 +363,7 @@ class LoadScenario_3 implements FixtureInterface, ContainerAwareInterface
                 */
 
                 echo $counter++."\n";
-                if ($counter % 20 == 0)
+                if ($counter % 100 == 0)
                 {
                     $this->entityManager->flush();
                 }
