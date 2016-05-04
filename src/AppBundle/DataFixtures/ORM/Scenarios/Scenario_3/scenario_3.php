@@ -153,23 +153,29 @@ class LoadScenario_3 implements FixtureInterface, ContainerAwareInterface
             $geologicalUnit = GeologicalUnitFactory::setOwnerNameAndPublic($user, $borehole[0].'.1', $public);
             $geologicalUnit->setTopElevation($borehole[3]);
             $geologicalUnit->setBottomElevation($borehole[4]);
-            $geologicalUnit->addGeologicalLayer($layer_1);
             $geologicalPoint->addGeologicalUnit($geologicalUnit);
             $entityManager->persist($geologicalUnit);
+
+            $layer_1->addGeologicalUnit($geologicalUnit);
+            $entityManager->persist($layer_1);
 
             $geologicalUnit = GeologicalUnitFactory::setOwnerNameAndPublic($user, $borehole[0].'.2', $public);
             $geologicalUnit->setTopElevation($borehole[4]);
             $geologicalUnit->setBottomElevation($borehole[5]);
-            $geologicalUnit->addGeologicalLayer($layer_2);
             $geologicalPoint->addGeologicalUnit($geologicalUnit);
             $entityManager->persist($geologicalUnit);
+
+            $layer_2->addGeologicalUnit($geologicalUnit);
+            $entityManager->persist($layer_2);
 
             $geologicalUnit = GeologicalUnitFactory::setOwnerNameAndPublic($user, $borehole[0].'.3', $public);
             $geologicalUnit->setTopElevation($borehole[5]);
             $geologicalUnit->setBottomElevation($borehole[6]);
-            $geologicalUnit->addGeologicalLayer($layer_3);
             $geologicalPoint->addGeologicalUnit($geologicalUnit);
             $entityManager->persist($geologicalUnit);
+
+            $layer_3->addGeologicalUnit($geologicalUnit);
+            $entityManager->persist($layer_3);
 
             $soilModel->addGeologicalPoint($geologicalPoint);
             $entityManager->flush();
