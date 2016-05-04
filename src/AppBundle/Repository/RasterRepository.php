@@ -41,7 +41,7 @@ class RasterRepository extends EntityRepository
                 ".$rasterObj->getSkewY().",
                 ".$rasterObj->getSrid()."
             )
-            WHERE id = ".$raster->getId()."
+            WHERE id = '".$raster->getId()."'
         ";
 
         $stmt = $this->getEntityManager()->getConnection()->prepare($sql);
@@ -77,7 +77,7 @@ class RasterRepository extends EntityRepository
                     )
 			    ]::addbandarg[]
             )
-            WHERE id = ".$raster->getId()."
+            WHERE id = '".$raster->getId()."'
         ";
 
         $stmt = $this->getEntityManager()->getConnection()->prepare($sql);
@@ -112,7 +112,7 @@ class RasterRepository extends EntityRepository
                 1,
                 ".$this->conversionArrayToSQL($rasterObj->getBand()->getData())."
             )
-            WHERE id = ".$raster->getId()."
+            WHERE id = '".$raster->getId()."'
         ";
 
         $stmt = $this->getEntityManager()->getConnection()->prepare($sql);
@@ -133,7 +133,7 @@ class RasterRepository extends EntityRepository
             FROM ".$tableName."
             CROSS JOIN generate_series(1, 1000) As x
             CROSS JOIN generate_series(1, 1000) As y
-            WHERE id = ".$id."
+            WHERE id = '".$id."'
             AND x <= ST_Width(rast) AND y <= ST_Height(rast);
         ";
 

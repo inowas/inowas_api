@@ -4,6 +4,7 @@ namespace AppBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 use JMS\Serializer\Annotation as JMS;
+use Ramsey\Uuid\Uuid;
 
 /**
  * AbstractKernel
@@ -19,11 +20,11 @@ use JMS\Serializer\Annotation as JMS;
 abstract class AbstractKernel
 {
     /**
-     * @var int
+     * @var string
      *
-     * @ORM\Column(name="id", type="integer")
      * @ORM\Id
-     * @ORM\GeneratedValue(strategy="AUTO")
+     * @ORM\Column(name="id", type="uuid", unique=true)
+     * @JMS\Type("string")
      */
     private $id;
 
@@ -35,5 +36,10 @@ abstract class AbstractKernel
     public function getId()
     {
         return $this->id;
+    }
+
+    public function __construct()
+    {
+        $this->id = $uuid4 = Uuid::uuid4();
     }
 }

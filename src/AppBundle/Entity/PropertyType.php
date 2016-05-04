@@ -4,6 +4,7 @@ namespace AppBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 use JMS\Serializer\Annotation as JMS;
+use Ramsey\Uuid\Uuid;
 
 /**
  * ModelObjectPropertyType
@@ -14,11 +15,11 @@ use JMS\Serializer\Annotation as JMS;
 class PropertyType
 {
     /**
-     * @var integer
+     * @var string
      *
-     * @ORM\Column(name="id", type="integer")
      * @ORM\Id
-     * @ORM\GeneratedValue(strategy="AUTO")
+     * @ORM\Column(name="id", type="uuid")
+     * @JMS\Type("string")
      * @JMS\Groups({"list", "details"})
      */
     private $id;
@@ -38,6 +39,11 @@ class PropertyType
      * @JMS\Groups({"list", "details", "modeldetails", "modelobjectdetails"})
      */
     private $name;
+
+    public function __construct()
+    {
+        $this->id = Uuid::uuid4();
+    }
 
     /**
      * Get id

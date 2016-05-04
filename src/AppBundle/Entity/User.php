@@ -6,6 +6,7 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
 use FOS\UserBundle\Model\User as BaseUser;
 use JMS\Serializer\Annotation as JMS;
+use Ramsey\Uuid\Uuid;
 
 /**
  * Users
@@ -16,12 +17,10 @@ use JMS\Serializer\Annotation as JMS;
 class User extends BaseUser
 {
     /**
-     * @var integer
-     *
+     * @var string
+     * 
      * @ORM\Id
-     * @ORM\Column(name="id", type="uuid")
-     * @ORM\GeneratedValue(strategy="CUSTOM")
-     * @ORM\CustomIdGenerator(class="Ramsey\Uuid\Doctrine\UuidGenerator")
+     * @ORM\Column(name="id", type="uuid", unique=true)
      * @JMS\Type("string")
      * @JMS\Groups({"list", "projectDetails", "details", "modeldetails", "modelobjectdetails", "modelobjectlist", "soilmodellist", "soilmodeldetails"})
      */
@@ -81,6 +80,7 @@ class User extends BaseUser
     public function __construct()
     {
         parent::__construct();
+        $this->id = Uuid::uuid4();
         $this->profile = new UserProfile($this);
         $this->ownedApplications = new ArrayCollection();
         $this->ownedModelObjects = new ArrayCollection();

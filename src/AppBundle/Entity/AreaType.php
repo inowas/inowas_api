@@ -4,6 +4,7 @@ namespace AppBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 use JMS\Serializer\Annotation as JMS;
+use Ramsey\Uuid\Uuid;
 
 /**
  * AreaType
@@ -14,11 +15,11 @@ use JMS\Serializer\Annotation as JMS;
 class AreaType
 {
     /**
-     * @var integer
+     * @var string
      *
-     * @ORM\Column(name="id", type="integer")
      * @ORM\Id
-     * @ORM\GeneratedValue(strategy="AUTO")
+     * @ORM\Column(name="id", type="uuid", unique=true)
+     * @JMS\Type("string")
      * @JMS\Groups({"list", "modelobjectdetails", "soilmodeldetails", "modeldetails"})
      */
     private $id;
@@ -28,6 +29,11 @@ class AreaType
      * @JMS\Groups({"list", "modelobjectdetails", "soilmodeldetails", "modeldetails"})
      */
     private $name;
+
+    public function __construct()
+    {
+        $this->id = Uuid::uuid4();
+    }
 
     /**
      * Set id

@@ -3,6 +3,8 @@
 namespace AppBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use JMS\Serializer\Annotation as JMS;
+use Ramsey\Uuid\Uuid;
 
 /**
  * Profile
@@ -13,11 +15,11 @@ use Doctrine\ORM\Mapping as ORM;
 class UserProfile
 {
     /**
-     * @var integer
+     * @var string
      *
-     * @ORM\Column(name="id", type="integer")
      * @ORM\Id
-     * @ORM\GeneratedValue(strategy="AUTO")
+     * @ORM\Column(name="id", type="uuid", unique=true)
+     * @JMS\Type("string")
      */
     protected $id;
 
@@ -41,6 +43,7 @@ class UserProfile
      */
     public function __construct(User $user)
     {
+        $this->id = Uuid::uuid4();
         $this->user = $user;
     }
 

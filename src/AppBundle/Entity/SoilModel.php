@@ -5,6 +5,7 @@ namespace AppBundle\Entity;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
 use JMS\Serializer\Annotation as JMS;
+use Ramsey\Uuid\Uuid;
 
 /**
  * SoilModel
@@ -16,11 +17,11 @@ use JMS\Serializer\Annotation as JMS;
 class SoilModel
 {
     /**
-     * @var int
+     * @var string
      *
-     * @ORM\Column(name="id", type="integer")
      * @ORM\Id
-     * @ORM\GeneratedValue(strategy="AUTO")
+     * @ORM\Column(name="id", type="uuid", unique=true)
+     * @JMS\Type("string")
      * @JMS\Groups({"details", "modeldetails", "modelobjectdetails", "soilmodellist", "soilmodeldetails"})
      */
     private $id;
@@ -112,6 +113,7 @@ class SoilModel
      */
     public function __construct()
     {
+        $this->id = Uuid::uuid4();
         $this->modelObjects = new ArrayCollection();
         $this->geologicalLayers = new ArrayCollection();
         $this->geologicalPoints = new ArrayCollection();

@@ -5,6 +5,7 @@ namespace AppBundle\Entity;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
 use JMS\Serializer\Annotation as JMS;
+use Ramsey\Uuid\Uuid;
 
 /**
  * Tool
@@ -15,10 +16,11 @@ use JMS\Serializer\Annotation as JMS;
 class Tool
 {
     /**
-     * @var int
+     * @var string
      *
-     * @ORM\Column(name="id", type="integer")
      * @ORM\Id
+     * @ORM\Column(name="id", type="uuid", unique=true)
+     * @JMS\Type("string")
      * @ORM\GeneratedValue(strategy="AUTO")
      */
     private $id;
@@ -46,6 +48,11 @@ class Tool
      * @JMS\Type("ArrayCollection<AppBundle\Entity\AbstractKernel>")
      **/
     private $kernel;
+
+    public function __construct()
+    {
+        $this->id = Uuid::uuid4();
+    }
 
     /**
      * Get id

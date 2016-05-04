@@ -19,6 +19,7 @@ namespace AppBundle\Entity;
 use Doctrine\ORM\Mapping as ORM;
 use JMS\Serializer\Annotation as JMS;
 use AppBundle\Model\Raster as RasterModel;
+use Ramsey\Uuid\Uuid;
 
 /**
  * Raster
@@ -29,11 +30,11 @@ use AppBundle\Model\Raster as RasterModel;
 class Raster
 {
     /**
-     * @var integer
+     * @var string
      *
-     * @ORM\Column(name="id", type="integer")
      * @ORM\Id
-     * @ORM\GeneratedValue(strategy="AUTO")
+     * @ORM\Column(name="id", type="uuid", unique=true)
+     * @JMS\Type("string")
      * @JMS\Groups({"modeldetails", "modelobjectdetails"})
      */
     private $id;
@@ -46,6 +47,11 @@ class Raster
      * @JMS\Groups({"modeldetails", "modelobjectdetails"})
      */
     private $raster;
+
+    public function __construct()
+    {
+        $this->id = Uuid::uuid4();
+    }
 
     /**
      * Set id
