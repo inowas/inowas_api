@@ -87,7 +87,7 @@ class ResultRestControllerTest extends WebTestCase
 
     public function testPostResult()
     {
-        $areaId = 2;
+        $areaId = $this->area->getId();
         $propertyType = PropertyTypeFactory::setName('Hydraulic Head');
         $propertyType->setAbbreviation("hh");
         $this->entityManager->persist($propertyType);
@@ -118,7 +118,7 @@ class ResultRestControllerTest extends WebTestCase
                 'date' => $date->format('Y-m-d H:i:s')
             )
         );
-
+        
         $this->assertEquals(200, $client->getResponse()->getStatusCode());
         $client->getResponse();
 

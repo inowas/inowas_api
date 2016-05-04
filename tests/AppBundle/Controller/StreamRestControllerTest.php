@@ -32,7 +32,6 @@ class StreamRestControllerTest extends WebTestCase
         $this->entityManager->flush();
 
         $this->stream = StreamFactory::create()
-            ->setId(12)
             ->setName('Stream')
             ->setPublic(true)
             ->setOwner($this->owner)

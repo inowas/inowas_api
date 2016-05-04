@@ -117,7 +117,7 @@ abstract class ModelObject
     /**
      * @var \DateTime
      *
-     * @ORM\Column(name="dateCreated", type="datetime")
+     * @ORM\Column(name="date_created", type="datetime")
      * @JMS\Groups({"modelobjectdetails", "soilmodeldetails"})
      */
     protected $dateCreated;
@@ -125,7 +125,7 @@ abstract class ModelObject
     /**
      * @var \DateTime
      *
-     * @ORM\Column(name="dateModified", type="datetime")
+     * @ORM\Column(name="date_modified", type="datetime")
      * @JMS\Groups({"modelobjectdetails", "soilmodeldetails"})
      */
     protected $dateModified;

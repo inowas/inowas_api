@@ -43,7 +43,7 @@ class ResultRestController extends FOSRestController
      *
      * @param ParamFetcher $paramFetcher
      *
-     * @RequestParam(name="id", nullable=false, strict=true, description="Area-Id (Modelobject) where to store the results")
+     * @RequestParam(name="id", nullable=false, strict=false, description="Area-Id (Modelobject) where to store the results")
      * @RequestParam(name="propertyType", nullable=false, strict=true, description="Name of PropertyType")
      * @RequestParam(name="width", nullable=false, strict=true, description="Dimension width")
      * @RequestParam(name="height", nullable=false, strict=true, description="Dimension height")

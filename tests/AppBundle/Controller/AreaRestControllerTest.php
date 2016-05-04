@@ -41,11 +41,9 @@ class AreaRestControllerTest extends WebTestCase
 
         $this->owner = UserFactory::createTestUser('AreaOwner');
         $this->entityManager->persist($this->owner);
-        $this->entityManager->flush();
 
         $this->areaType = AreaTypeFactory::setName('ModelAreaType');
         $this->entityManager->persist($this->areaType);
-        $this->entityManager->flush();
 
         $this->area_1 = AreaFactory::setOwnerNameTypeAndPublic($this->owner, 'ModelArea1', $this->areaType, true);
         $this->entityManager->persist($this->area_1);
@@ -102,7 +100,6 @@ class AreaRestControllerTest extends WebTestCase
         $this->assertEquals(200, $client->getResponse()->getStatusCode());
         $modelAreas = json_decode($client->getResponse()->getContent());
         $this->assertEquals(2, count($modelAreas));
-        $this->assertEquals($this->area_2->getName(), $modelAreas[1]->name);
     }
 
     /**

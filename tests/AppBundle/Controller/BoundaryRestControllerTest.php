@@ -34,7 +34,6 @@ class BoundaryRestControllerTest extends WebTestCase
         $this->entityManager->flush();
 
         $this->boundary = BoundaryFactory::create()
-            ->setId(12)
             ->setName('Boundary')
             ->setPublic(true)
             ->setOwner($this->owner)

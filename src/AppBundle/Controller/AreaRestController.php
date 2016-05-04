@@ -41,7 +41,7 @@ class AreaRestController extends FOSRestController
             ->getRepository('AppBundle:Area')
             ->findBy(
                 array('owner' => $user),
-                array('id' => 'ASC')
+                array('dateModified' => 'ASC')
             )
         ;
 
