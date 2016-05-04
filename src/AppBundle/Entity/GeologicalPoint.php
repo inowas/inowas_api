@@ -31,7 +31,13 @@ class GeologicalPoint extends ModelObject
     /**
      * @var ArrayCollection GeologicalUnit $geologicalUnit
      *
-     * @ORM\OneToMany(targetEntity="AppBundle\Entity\GeologicalUnit", mappedBy="geologicalPoint", cascade={"persist"})
+     * @ORM\ManyToMany(targetEntity="AppBundle\Entity\GeologicalUnit", cascade={"persist"})
+     * @ORM\JoinTable(name="geological_points_geological_units",
+     *     joinColumns={
+     *          @ORM\JoinColumn(name="geological_point_id", referencedColumnName="id")
+     *      },
+     *     inverseJoinColumns={@ORM\JoinColumn(name="geological_unit_id", referencedColumnName="id", unique=true)}
+     *     )
      * @JMS\MaxDepth(2)
      * @JMS\Groups({"details", "modelobjectdetails", "soilmodeldetails"})
      */
@@ -40,12 +46,11 @@ class GeologicalPoint extends ModelObject
     /**
      * SoilProfile constructor.
      * @param User|null $owner
-     * @param Project|null $project
      * @param bool|false $public
      */
-    public function __construct(User $owner = null, Project $project = null, $public = false)
+    public function __construct(User $owner = null, $public = false)
     {
-        parent::__construct($owner, $project, $public);
+        parent::__construct($owner, $public);
         $this->geologicalUnits = new ArrayCollection();
     }
 

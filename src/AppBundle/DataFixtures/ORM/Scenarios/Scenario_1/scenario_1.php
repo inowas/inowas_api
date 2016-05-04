@@ -67,7 +67,6 @@ class LoadScenario_1 implements FixtureInterface, ContainerAwareInterface
             $user->setPassword($password);
             $user->setEnabled(true);
             $entityManager->persist($user);
-            $entityManager->flush();
         }
 
         // Add new SoilModel
@@ -80,7 +79,6 @@ class LoadScenario_1 implements FixtureInterface, ContainerAwareInterface
         $geologicalPoint = $this->addNewGeologicalUnitToGeologicalPoint($geologicalPoint, 'SC1_GP1.2',  70, 40);
         $geologicalPoint = $this->addNewGeologicalUnitToGeologicalPoint($geologicalPoint, 'SC1_GP1.3',  40,  0);
         $entityManager->persist($geologicalPoint);
-        $entityManager->flush();
 
         $soilModel->addGeologicalPoint($geologicalPoint);
         $entityManager->persist($soilModel);
@@ -91,7 +89,6 @@ class LoadScenario_1 implements FixtureInterface, ContainerAwareInterface
         $geologicalPoint = $this->addNewGeologicalUnitToGeologicalPoint($geologicalPoint, 'SC1_GP2.2',  70, 40);
         $geologicalPoint = $this->addNewGeologicalUnitToGeologicalPoint($geologicalPoint, 'SC1_GP2.3',  40,  0);
         $entityManager->persist($geologicalPoint);
-        $entityManager->flush();
 
         $soilModel->addGeologicalPoint($geologicalPoint);
         $entityManager->persist($soilModel);
@@ -102,7 +99,6 @@ class LoadScenario_1 implements FixtureInterface, ContainerAwareInterface
         $geologicalPoint = $this->addNewGeologicalUnitToGeologicalPoint($geologicalPoint, 'SC1_GP3.2',  70, 40);
         $geologicalPoint = $this->addNewGeologicalUnitToGeologicalPoint($geologicalPoint, 'SC1_GP3.3',  40,  0);
         $entityManager->persist($geologicalPoint);
-        $entityManager->flush();
 
         $soilModel->addGeologicalPoint($geologicalPoint);
         $entityManager->persist($soilModel);
@@ -322,7 +318,6 @@ class LoadScenario_1 implements FixtureInterface, ContainerAwareInterface
         $geologicalUnit  = GeologicalUnitFactory::setOwnerNameAndPublic($geologicalPoint->getOwner(), $name, $geologicalPoint->getPublic());
         $geologicalUnit->setTopElevation($topElevation);
         $geologicalUnit->setBottomElevation($bottomElevation);
-        $geologicalUnit->setGeologicalPoint($geologicalPoint);
         $geologicalPoint->addGeologicalUnit($geologicalUnit);
         return $geologicalPoint;
     }

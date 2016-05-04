@@ -3,10 +3,7 @@
 namespace AppBundle\Tests\Controller;
 
 use AppBundle\Entity\GeologicalUnit;
-use AppBundle\Model\GeologicalLayerFactory;
-use AppBundle\Model\GeologicalPointFactory;
 use AppBundle\Model\GeologicalUnitFactory;
-use AppBundle\Model\Point;
 use AppBundle\Model\UserFactory;
 use JMS\Serializer\SerializationContext;
 use JMS\Serializer\Serializer;
@@ -35,17 +32,6 @@ class GeologicalUnitSerialisationTest extends \PHPUnit_Framework_TestCase
             )
             ->setTopElevation(13.1)
             ->setBottomElevation(12.1)
-            ->setGeologicalPoint(
-                GeologicalPointFactory::create()
-                    ->setId(21)
-                    ->setPublic(true)
-                    ->setPoint(new Point(11.1, 12.1, 3542))
-            )
-            ->addGeologicalLayer(
-                GeologicalLayerFactory::create()
-                ->setId(22)
-                ->setPublic(true)
-            )
         ;
     }
 
@@ -59,13 +45,7 @@ class GeologicalUnitSerialisationTest extends \PHPUnit_Framework_TestCase
 
         $this->assertEquals($geologicalUnit->type, 'geologicalunit');
         $this->assertEquals($geologicalUnit->owner->id, $this->geologicalUnit->getOwner()->getId());
-
         $this->assertEquals($geologicalUnit->top_elevation, $this->geologicalUnit->getTopElevation());
         $this->assertEquals($geologicalUnit->bottom_elevation, $this->geologicalUnit->getBottomElevation());
-        
-        $this->assertEquals($geologicalUnit->geological_point->id, $this->geologicalUnit->getGeologicalPoint()->getId());
-        $this->assertEquals($geologicalUnit->geological_point->point->x, $this->geologicalUnit->getGeologicalPoint()->getPoint()->getX());
-        $this->assertEquals($geologicalUnit->geological_point->point->y, $this->geologicalUnit->getGeologicalPoint()->getPoint()->getY());
-        $this->assertEquals($geologicalUnit->geological_point->point->srid, $this->geologicalUnit->getGeologicalPoint()->getPoint()->getSrid());
     }
 }

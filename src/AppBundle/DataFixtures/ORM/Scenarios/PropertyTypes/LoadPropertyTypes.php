@@ -53,7 +53,8 @@ class LoadPropertyTypes implements FixtureInterface, ContainerAwareInterface
             $propertyType = PropertyTypeFactory::setName($propertyTypeArray[1]);
             $propertyType->setAbbreviation($propertyTypeArray[0]);
             $entityManager->persist($propertyType);
-            $entityManager->flush();
         }
+        
+        $entityManager->flush();
     }
 }

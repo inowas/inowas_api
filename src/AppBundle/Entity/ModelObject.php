@@ -138,7 +138,6 @@ abstract class ModelObject
     {
         $this->owner = $owner;
         $this->public = $public;
-        $this->projects = new ArrayCollection();
         $this->models = new ArrayCollection();
         $this->soilModels = new ArrayCollection();
         $this->propertyIds = new ArrayCollection();
@@ -238,16 +237,6 @@ abstract class ModelObject
     public function getDateModified()
     {
         return $this->dateModified;
-    }
-
-    /**
-     * Get projects
-     *
-     * @return \Doctrine\Common\Collections\Collection 
-     */
-    public function getProjects()
-    {
-        return $this->projects;
     }
 
     /**
