@@ -3,7 +3,6 @@
 namespace AppBundle\Model;
 
 use AppBundle\Entity\Boundary;
-use AppBundle\Entity\Project;
 use FOS\UserBundle\Model\UserInterface;
 
 class BoundaryFactory
@@ -19,17 +18,6 @@ class BoundaryFactory
     public static function create()
     {
         return new Boundary();
-    }
-
-    public static function setOwnerProjectNameAndPublic(UserInterface $owner = null, Project $project = null, $name = "", $public = false)
-    {
-        $boundary = new Boundary();
-        $boundary->setOwner($owner);
-        $boundary->addProject($project);
-        $boundary->setName($name);
-        $boundary->setPublic($public);
-
-        return $boundary;
     }
 
     public static function setOwnerNameAndPublic(UserInterface $owner = null, $name = "", $public = false)

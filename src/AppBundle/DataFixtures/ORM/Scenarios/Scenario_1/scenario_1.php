@@ -70,13 +70,6 @@ class LoadScenario_1 implements FixtureInterface, ContainerAwareInterface
             $entityManager->flush();
         }
 
-        // Add new Project
-        #$project = ProjectFactory::setOwnerAndPublic($user, $public);
-        #$project->setName('Scenario 1');
-        #$project->setDescription('This is not a real example.<br>The data was stored only for testing purposes.<br>The Data contains 3 geological points with respectively 3 geological units.');
-        #$entityManager->persist($project);
-        #$entityManager->flush();
-
         // Add new SoilModel
         $soilModel = SoilModelFactory::create();
         $soilModel->setOwner($user)->setName('SM Scenario 1');

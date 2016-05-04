@@ -24,13 +24,6 @@ class Calculation
     private $id;
 
     /**
-     * @var Project
-     *
-     * @ORM\OneToOne(targetEntity="AppBundle\Entity\Project", mappedBy="calculation")
-     */
-    private $project;
-
-    /**
      * @var int
      *
      * @ORM\Column(name="status", type="integer")
@@ -85,31 +78,7 @@ class Calculation
     {
         return $this->status;
     }
-
-    /**
-     * Set project
-     *
-     * @param \AppBundle\Entity\Project $project
-     *
-     * @return Calculation
-     */
-    public function setProject(\AppBundle\Entity\Project $project = null)
-    {
-        $this->project = $project;
-
-        return $this;
-    }
-
-    /**
-     * Get project
-     *
-     * @return \AppBundle\Entity\Project
-     */
-    public function getProject()
-    {
-        return $this->project;
-    }
-
+    
     /**
      * Set result
      *

@@ -50,14 +50,6 @@ abstract class ModelObject
     protected $name;
 
     /**
-     * @var ArrayCollection Project
-     *
-     * @ORM\ManyToMany(targetEntity="Project", inversedBy="modelObjects")
-     * @ORM\JoinTable(name="projects_model_objects")
-     **/
-    protected $projects;
-
-    /**
      * @var ArrayCollection AbstractModel
      *
      * @ORM\ManyToMany(targetEntity="AppBundle\Entity\AbstractModel", inversedBy="modelObjects", cascade={"persist", "remove"})
@@ -140,10 +132,9 @@ abstract class ModelObject
     /**
      * Constructor
      * @param User $owner
-     * @param Project $project
      * @param $public
      */
-    public function __construct(User $owner = null, Project $project = null, $public = false)
+    public function __construct(User $owner = null, $public = false)
     {
         $this->owner = $owner;
         $this->public = $public;
@@ -151,7 +142,6 @@ abstract class ModelObject
         $this->models = new ArrayCollection();
         $this->soilModels = new ArrayCollection();
         $this->propertyIds = new ArrayCollection();
-        if ($project) $this->addProject($project);
         $this->properties = new ArrayCollection();
         $this->observationPoints = new ArrayCollection();
         $this->dateCreated = new \DateTime();
@@ -248,31 +238,6 @@ abstract class ModelObject
     public function getDateModified()
     {
         return $this->dateModified;
-    }
-
-    /**
-     * Add projects
-     *
-     * @param \AppBundle\Entity\Project $projects
-     * @return $this
-     */
-    public function addProject(Project $projects)
-    {
-        $this->projects[] = $projects;
-        $projects->addModelObject($this);
-
-        return $this;
-    }
-
-    /**
-     * Remove projects
-     *
-     * @param \AppBundle\Entity\Project $projects
-     */
-    public function removeProject(Project $projects)
-    {
-        $this->projects->removeElement($projects);
-        $projects->removeModelObject($this);
     }
 
     /**

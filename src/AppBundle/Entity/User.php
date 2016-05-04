@@ -17,10 +17,8 @@ use Ramsey\Uuid\Uuid;
 class User extends BaseUser
 {
     /**
-     * @var string
-     * 
      * @ORM\Id
-     * @ORM\Column(name="id", type="uuid", unique=true)
+     * @ORM\Column(name="id", type="uuid")
      * @JMS\Type("string")
      * @JMS\Groups({"list", "projectDetails", "details", "modeldetails", "modelobjectdetails", "modelobjectlist", "soilmodellist", "soilmodeldetails"})
      */
@@ -57,25 +55,11 @@ class User extends BaseUser
     protected $ownedModels;
 
     /**
-     * @var ArrayCollection Project
-     *
-     * @ORM\OneToMany(targetEntity="Project", mappedBy="owner", cascade={"persist", "remove"})
-     */
-    protected $ownedProjects;
-
-    /**
      * @var ArrayCollection
      *
      * @ORM\OneToMany(targetEntity="AppBundle\Entity\SoilModel", mappedBy="owner", cascade={"persist", "remove"})
      */
     protected $ownedSoilModels;
-
-    /**
-     * @var ArrayCollection Project $participatedProjects
-     *
-     * @ORM\ManyToMany(targetEntity="Project", mappedBy="participants", cascade={"persist", "remove"})
-     **/
-    protected $participatedProjects;
 
     public function __construct()
     {
@@ -85,9 +69,7 @@ class User extends BaseUser
         $this->ownedApplications = new ArrayCollection();
         $this->ownedModelObjects = new ArrayCollection();
         $this->ownedModels = new ArrayCollection();
-        $this->ownedProjects = new ArrayCollection();
         $this->ownedSoilModels = new ArrayCollection();
-        $this->participatedProjects = new ArrayCollection();
     }
 
     /**
@@ -134,39 +116,6 @@ class User extends BaseUser
     }
 
     /**
-     * Add ownedProjects
-     *
-     * @param \AppBundle\Entity\Project $ownedProjects
-     * @return User
-     */
-    public function addOwnedProject(Project $ownedProjects)
-    {
-        $this->ownedProjects[] = $ownedProjects;
-        $ownedProjects->setOwner($this);
-        return $this;
-    }
-
-    /**
-     * Remove ownedProjects
-     *
-     * @param \AppBundle\Entity\Project $ownedProjects
-     */
-    public function removeOwnedProject(Project $ownedProjects)
-    {
-        $this->ownedProjects->removeElement($ownedProjects);
-    }
-
-    /**
-     * Get ownedProjects
-     *
-     * @return \Doctrine\Common\Collections\Collection 
-     */
-    public function getOwnedProjects()
-    {
-        return $this->ownedProjects;
-    }
-
-    /**
      * Add ownedModelObjects
      *
      * @param \AppBundle\Entity\ModelObject $ownedModelObjects
@@ -198,41 +147,7 @@ class User extends BaseUser
     {
         return $this->ownedModelObjects;
     }
-
-    /**
-     * Add participatedProjects
-     *
-     * @param \AppBundle\Entity\Project $participatedProjects
-     * @return User
-     */
-    public function addParticipatedProject(Project $participatedProjects)
-    {
-        $this->participatedProjects[] = $participatedProjects;
-        $participatedProjects->addParticipant($this);
-
-        return $this;
-    }
-
-    /**
-     * Remove participatedProjects
-     *
-     * @param \AppBundle\Entity\Project $participatedProjects
-     */
-    public function removeParticipatedProject(Project $participatedProjects)
-    {
-        $this->participatedProjects->removeElement($participatedProjects);
-        $participatedProjects->removeParticipant($this);
-    }
-
-    /**
-     * Get participatedProjects
-     *
-     * @return \Doctrine\Common\Collections\Collection 
-     */
-    public function getParticipatedProjects()
-    {
-        return $this->participatedProjects;
-    }
+    
 
     /**
      * Add ownedApplication
