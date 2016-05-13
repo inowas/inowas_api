@@ -35,13 +35,6 @@ class User extends BaseUser
     protected $profile;
 
     /**
-     * @var ArrayCollection
-     *
-     * @ORM\OneToMany(targetEntity="AppBundle\Entity\Application", mappedBy="owner", cascade={"persist", "remove"})
-     */
-    protected $ownedApplications;
-
-    /**
      * @var ArrayCollection Project
      *
      * @ORM\OneToMany(targetEntity="AppBundle\Entity\ModelObject", mappedBy="owner")
@@ -145,41 +138,6 @@ class User extends BaseUser
     public function getOwnedModelObjects()
     {
         return $this->ownedModelObjects;
-    }
-    
-
-    /**
-     * Add ownedApplication
-     *
-     * @param \AppBundle\Entity\Application $ownedApplication
-     *
-     * @return User
-     */
-    public function addOwnedApplication(Application $ownedApplication)
-    {
-        $this->ownedApplications[] = $ownedApplication;
-
-        return $this;
-    }
-
-    /**
-     * Remove ownedApplication
-     *
-     * @param \AppBundle\Entity\Application $ownedApplication
-     */
-    public function removeOwnedApplication(Application $ownedApplication)
-    {
-        $this->ownedApplications->removeElement($ownedApplication);
-    }
-
-    /**
-     * Get ownedApplications
-     *
-     * @return \Doctrine\Common\Collections\Collection
-     */
-    public function getOwnedApplications()
-    {
-        return $this->ownedApplications;
     }
 
     /**

@@ -21,6 +21,7 @@ class Application
      * @ORM\Id
      * @ORM\Column(name="id", type="uuid", unique=true)
      * @JMS\Type("string")
+     * @JMS\Groups({"applicationList", "applicationDetails"})
      */
     private $id;
 
@@ -28,7 +29,7 @@ class Application
      * @var string
      *
      * @ORM\Column(name="name", type="string",length=255)
-     * @JMS\Groups({"projectList", "projectDetails"})
+     * @JMS\Groups({"applicationList", "applicationDetails"})
      */
     private $name;
 
@@ -36,25 +37,31 @@ class Application
      * @var string
      *
      * @ORM\Column(name="description", type="text", nullable=true)
-     * @JMS\Groups({"projectList", "projectDetails"})
+     * @JMS\Groups({"applicationList", "applicationDetails"})
      */
     private $description;
 
     /**
      * @var User
      *
-     * @ORM\ManyToOne(targetEntity="User", inversedBy="ownedApplications")
-     * @ORM\JoinColumn(name="owner_id", referencedColumnName="id", onDelete="CASCADE")
+     * @ORM\ManyToOne(targetEntity="User")
+     * @ORM\JoinColumn(name="user_id", referencedColumnName="id", onDelete="CASCADE")
      * @JMS\MaxDepth(3)
-     * @JMS\Groups({"projectDetails"})
+     * @JMS\Groups({"applicationDetails"})
      */
-    private $owner;
+    private $user;
 
     /**
-     * @var ArrayCollection Tool $tools
+     * @var ArrayCollection Tool
      *
-     * @ORM\OneToMany(targetEntity="AppBundle\Entity\Tool", mappedBy="application", cascade={"persist", "remove"})
+     * @ORM\ManyToMany(targetEntity="AppBundle\Entity\Tool")
+     * @ORM\JoinTable(name="applications_tools",
+     *     joinColumns={@ORM\JoinColumn(name="application_id", referencedColumnName="id")},
+     *     inverseJoinColumns={@ORM\JoinColumn(name="tool_id", referencedColumnName="id")}
+     * )
+     *
      * @JMS\Type("ArrayCollection<AppBundle\Entity\Tool>")
+     * @JMS\Groups({"applicationDetails"})
      **/
     private $tools;
 
@@ -62,7 +69,7 @@ class Application
      * @var boolean
      *
      * @ORM\Column(name="public", type="boolean")
-     * @JMS\Groups({"projectList", "projectDetails"})
+     * @JMS\Groups({"applicationList", "applicationDetails"})
      */
     private $public;
 
@@ -70,7 +77,7 @@ class Application
      * @var \DateTime
      *
      * @ORM\Column(name="dateCreated", type="datetime")
-     * @JMS\Groups({"projectDetails"})
+     * @JMS\Groups({"applicationDetails"})
      */
     private $dateCreated;
 
@@ -78,7 +85,7 @@ class Application
      * @var \DateTime
      *
      * @ORM\Column(name="dateModified", type="datetime")
-     * @JMS\Groups({"projectDetails"})
+     * @JMS\Groups({"applicationDetails"})
      */
     private $dateModified;
 
@@ -224,13 +231,13 @@ class Application
     /**
      * Set owner
      *
-     * @param \AppBundle\Entity\User $owner
+     * @param \AppBundle\Entity\User $user
      *
      * @return Application
      */
-    public function setOwner(\AppBundle\Entity\User $owner = null)
+    public function setUser(\AppBundle\Entity\User $user = null)
     {
-        $this->owner = $owner;
+        $this->user = $user;
 
         return $this;
     }
@@ -240,9 +247,9 @@ class Application
      *
      * @return \AppBundle\Entity\User
      */
-    public function getOwner()
+    public function getUser()
     {
-        return $this->owner;
+        return $this->user;
     }
 
     /**

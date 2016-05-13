@@ -2,7 +2,6 @@
 
 namespace AppBundle\Entity;
 
-use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
 use JMS\Serializer\Annotation as JMS;
 use Ramsey\Uuid\Uuid;
@@ -24,14 +23,6 @@ class Tool
      * @ORM\GeneratedValue(strategy="AUTO")
      */
     private $id;
-
-    /**
-     * @var ArrayCollection Tool $tools
-     *
-     * @ORM\ManyToOne(targetEntity="AppBundle\Entity\Application", inversedBy="tools")
-     * @JMS\Type("ArrayCollection<AppBundle\Entity\Application>")
-     **/
-    private $application;
 
     /**
      * @var AbstractModel
@@ -62,30 +53,6 @@ class Tool
     public function getId()
     {
         return $this->id;
-    }
-
-    /**
-     * Set application
-     *
-     * @param \AppBundle\Entity\Application $application
-     *
-     * @return Tool
-     */
-    public function setApplication(\AppBundle\Entity\Application $application = null)
-    {
-        $this->application = $application;
-
-        return $this;
-    }
-
-    /**
-     * Get application
-     *
-     * @return \AppBundle\Entity\Application
-     */
-    public function getApplication()
-    {
-        return $this->application;
     }
 
     /**
