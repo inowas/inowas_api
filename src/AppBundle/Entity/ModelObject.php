@@ -38,7 +38,7 @@ abstract class ModelObject
     /**
      * @var User
      *
-     * @ORM\ManyToOne(targetEntity="User", inversedBy="ownedModelObjects")
+     * @ORM\ManyToOne(targetEntity="User")
      * @ORM\JoinColumn(name="owner_id", referencedColumnName="id", onDelete="CASCADE")
      * @JMS\Groups({"modelobjectdetails", "modelobjectlist"})
      */

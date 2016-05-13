@@ -45,7 +45,7 @@ class SoilModel
     /**
      * @var User
      *
-     * @ORM\ManyToOne(targetEntity="User", inversedBy="ownedSoilModels")
+     * @ORM\ManyToOne(targetEntity="User")
      * @ORM\JoinColumn(name="owner_id", referencedColumnName="id", onDelete="CASCADE")
      * @JMS\MaxDepth(1)
      * @JMS\Groups({"details", "soilmodellist", "soilmodeldetails"})
