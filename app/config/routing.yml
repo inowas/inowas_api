@@ -56,10 +56,10 @@ rest_property:
     prefix: /api
     resource: AppBundle\Controller\PropertyRestController
 
-rest_result:
+rest_raster:
     type: rest
     prefix: /api
-    resource: AppBundle\Controller\ResultRestController
+    resource: AppBundle\Controller\RasterRestController
 
 rest_soilmodels:
     type: rest

@@ -2,17 +2,12 @@
 
 namespace AppBundle\Model;
 
-use AppBundle\Entity\Raster as RasterEntity;
+use AppBundle\Entity\Raster;
 
 class RasterFactory
 {
-    public static function createModel()
+    public static function create()
     {
         return new Raster();
-    }
-
-    public static function createEntity()
-    {
-        return new RasterEntity();
     }
 }

@@ -1,6 +1,6 @@
 <?php
 
-namespace AppBundle\Tests\Controller;
+namespace AppBundle\Tests\Serialization;
 
 use AppBundle\Entity\Boundary;
 use AppBundle\Entity\GeologicalLayer;
@@ -120,7 +120,7 @@ class ModFlowModelSerialisationTest extends \PHPUnit_Framework_TestCase
         $propertyType->setName("KF-Y")->setAbbreviation("ky");
 
         $propertyValue = PropertyValueFactory::create();
-        $raster = RasterFactory::createEntity();
+        $raster = RasterFactory::create();
         $propertyValue->setRaster($raster);
 
         $this->property = PropertyFactory::create()
@@ -216,7 +216,7 @@ class ModFlowModelSerialisationTest extends \PHPUnit_Framework_TestCase
     {
         $property = PropertyFactory::create()->setId(5);
         $property->addValue(PropertyValueFactory::create()
-            ->setRaster(RasterFactory::createEntity()->setId(32))
+            ->setRaster(RasterFactory::create())
         );
 
         $this->modFlowModel->setInitialValues(array(
