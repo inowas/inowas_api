@@ -60,16 +60,6 @@ abstract class ModelObject
     protected $type = 'modelobject';
 
     /**
-     * @var ArrayCollection AbstractModel
-     *
-     * @ORM\ManyToMany(targetEntity="AppBundle\Entity\AbstractModel", inversedBy="modelObjects", cascade={"persist", "remove"})
-     * @ORM\JoinTable(name="models_model_objects")
-     * @JMS\Groups({"modelobjectdetails"})
-     * @JMS\MaxDepth(2)
-     **/
-    protected $models;
-
-    /**
      * @var ArrayCollection SoilModel
      *
      * @ORM\ManyToMany(targetEntity="AppBundle\Entity\SoilModel", inversedBy="modelObjects", cascade={"persist", "remove"})
@@ -140,7 +130,6 @@ abstract class ModelObject
         $this->id = Uuid::uuid4();
         $this->owner = $owner;
         $this->public = $public;
-        $this->models = new ArrayCollection();
         $this->soilModels = new ArrayCollection();
         $this->propertyIds = new ArrayCollection();
         $this->properties = new ArrayCollection();
@@ -239,49 +228,6 @@ abstract class ModelObject
     public function getDateModified()
     {
         return $this->dateModified;
-    }
-
-    /**
-     * @return ArrayCollection
-     */
-    public function getModels()
-    {
-        return $this->models;
-    }
-
-    /**
-     * @param ArrayCollection $models
-     * @return $this
-     */
-    public function setModels($models)
-    {
-        $this->models = $models;
-        return $this;
-    }
-
-    /**
-     * Add SoilModel
-     *
-     * @param AbstractModel $model
-     * @return $this
-     */
-    public function addModel(AbstractModel $model)
-    {
-        $this->models[] = $model;
-
-        return $this;
-    }
-
-    /**
-     * Remove Model
-     *
-     * @param AbstractModel $model
-     * @return $this
-     */
-    public function removeModel(AbstractModel $model)
-    {
-        $this->models->removeElement($model);
-        return $this;
     }
 
     /**
