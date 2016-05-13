@@ -2,6 +2,7 @@
 
 namespace AppBundle\Entity;
 
+use AppBundle\Model\UserProfileFactory;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
 use FOS\UserBundle\Model\User as BaseUser;
@@ -65,7 +66,7 @@ class User extends BaseUser
     {
         parent::__construct();
         $this->id = Uuid::uuid4();
-        $this->profile = new UserProfile($this);
+        $this->profile = UserProfileFactory::create();
         $this->ownedApplications = new ArrayCollection();
         $this->ownedModelObjects = new ArrayCollection();
         $this->ownedModels = new ArrayCollection();
@@ -100,8 +101,6 @@ class User extends BaseUser
     public function setProfile(UserProfile $profile = null)
     {
         $this->profile = $profile;
-        $profile->setUser($this);
-
         return $this;
     }
 
@@ -156,7 +155,7 @@ class User extends BaseUser
      *
      * @return User
      */
-    public function addOwnedApplication(\AppBundle\Entity\Application $ownedApplication)
+    public function addOwnedApplication(Application $ownedApplication)
     {
         $this->ownedApplications[] = $ownedApplication;
 
@@ -168,7 +167,7 @@ class User extends BaseUser
      *
      * @param \AppBundle\Entity\Application $ownedApplication
      */
-    public function removeOwnedApplication(\AppBundle\Entity\Application $ownedApplication)
+    public function removeOwnedApplication(Application $ownedApplication)
     {
         $this->ownedApplications->removeElement($ownedApplication);
     }
@@ -190,7 +189,7 @@ class User extends BaseUser
      *
      * @return User
      */
-    public function addOwnedModel(\AppBundle\Entity\AbstractModel $ownedModel)
+    public function addOwnedModel(AbstractModel $ownedModel)
     {
         $this->ownedModels[] = $ownedModel;
 
@@ -202,7 +201,7 @@ class User extends BaseUser
      *
      * @param \AppBundle\Entity\AbstractModel $ownedModel
      */
-    public function removeOwnedModel(\AppBundle\Entity\AbstractModel $ownedModel)
+    public function removeOwnedModel(AbstractModel $ownedModel)
     {
         $this->ownedModels->removeElement($ownedModel);
     }
@@ -224,7 +223,7 @@ class User extends BaseUser
      *
      * @return User
      */
-    public function addOwnedSoilModel(\AppBundle\Entity\SoilModel $ownedSoilModel)
+    public function addOwnedSoilModel(SoilModel $ownedSoilModel)
     {
         $this->ownedSoilModels[] = $ownedSoilModel;
 
@@ -236,7 +235,7 @@ class User extends BaseUser
      *
      * @param \AppBundle\Entity\SoilModel $ownedSoilModel
      */
-    public function removeOwnedSoilModel(\AppBundle\Entity\SoilModel $ownedSoilModel)
+    public function removeOwnedSoilModel(SoilModel $ownedSoilModel)
     {
         $this->ownedSoilModels->removeElement($ownedSoilModel);
     }
