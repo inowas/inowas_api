@@ -769,7 +769,6 @@ class LoadScenario_2 implements FixtureInterface, ContainerAwareInterface
             ->setOwner($user)
             ->setName('SC2_B1')
             ->setPublic(true)
-            ->addModel($model)
         ;
 
         $converter = new PostgreSql();

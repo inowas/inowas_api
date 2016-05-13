@@ -7,7 +7,6 @@ use AppBundle\Entity\ModelObject;
 use AppBundle\Entity\User;
 use AppBundle\Model\BoundaryFactory;
 use AppBundle\Model\GeologicalLayerFactory;
-use AppBundle\Model\ModFlowModelFactory;
 use AppBundle\Model\ObservationPointFactory;
 use AppBundle\Model\PropertyFactory;
 use AppBundle\Model\PropertyTypeFactory;
@@ -41,11 +40,6 @@ class ModelObjectSerialisationTest extends \PHPUnit_Framework_TestCase
         $this->boundary = BoundaryFactory::create()
             ->setName('Boundary_Name')
             ->setOwner($this->owner)
-            ->addModel(ModFlowModelFactory::create()
-                ->setName('ModflowModel')
-                ->setPublic(true)
-                ->setOwner($this->owner)
-            )
             ->addSoilModel(SoilModelFactory::create()
                 ->setName('SoilModel')
                 ->setPublic(true)
@@ -102,9 +96,6 @@ class ModelObjectSerialisationTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals($boundary->id, $this->boundary->getId());
         $this->assertEquals($boundary->name, $this->boundary->getName());
         $this->assertEquals($boundary->owner->id, $this->boundary->getOwner()->getId());
-
-        $this->assertCount(1, $boundary->models);
-        $this->assertEquals($boundary->models[0]->id, $this->boundary->getModels()->first()->getId());
 
         $this->assertCount(1, $boundary->soil_models);
         $this->assertEquals($boundary->soil_models[0]->id, $this->boundary->getSoilModels()->first()->getId());

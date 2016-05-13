@@ -59,6 +59,10 @@ abstract class AbstractModel
      * @var ArrayCollection ModelObject $modelObjects
      *
      * @ORM\ManyToMany(targetEntity="ModelObject", cascade={"persist", "remove"})
+     * @ORM\JoinTable(name="models_model_objects",
+     *      joinColumns={@ORM\JoinColumn(name="model_id", referencedColumnName="id")},
+     *      inverseJoinColumns={@ORM\JoinColumn(name="model_object_id", referencedColumnName="id")}
+     *      )
      **/
     private $modelObjects;
 
@@ -308,7 +312,10 @@ abstract class AbstractModel
      */
     public function addModelObject(ModelObject $modelObject)
     {
-        $this->modelObjects[] = $modelObject;
+        if (!$this->modelObjects->contains($modelObject)){
+            $this->modelObjects[] = $modelObject;
+        }
+
         return $this;
     }
 
@@ -320,7 +327,10 @@ abstract class AbstractModel
      */
     public function removeModelObject(ModelObject $modelObject)
     {
-        $this->modelObjects->removeElement($modelObject);
+        if ($this->modelObjects->contains($modelObject)){
+            $this->modelObjects->removeElement($modelObject);
+        }
+        return $this;
     }
 
     /**

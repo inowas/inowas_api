@@ -276,7 +276,6 @@ class LoadScenario_3 implements FixtureInterface, ContainerAwareInterface
         $modflowModel->setArea($area);
         $entityManager->flush();
 
-
         $this->addModelObjectPropertiesFromCSVFile($area, __DIR__.'/scenario_3_area_property_timeseries.csv', ';');
         // Add new boundaries
         $boundary = BoundaryFactory::setOwnerNameAndPublic($user, 'SC3_B1', $public);
@@ -332,7 +331,9 @@ class LoadScenario_3 implements FixtureInterface, ContainerAwareInterface
             $propertyType = $this->getPropertyType($this->entityManager, $propertyTypeName);
             $property = PropertyFactory::setTypeAndModelObject($propertyType, $baseElement);
             $this->entityManager->persist($property);
+
             $this->entityManager->flush();
+
             
             foreach ($data as $dataPoint)
             {

@@ -155,7 +155,9 @@ class ModFlowModel extends AbstractModel
      */
     public function addBoundary(Boundary $boundary)
     {
-        $this->boundaries[] = $boundary;
+        if (!$this->boundaries->contains($boundary)) {
+            $this->boundaries[] = $boundary;
+        }
 
         return $this;
     }
@@ -167,7 +169,9 @@ class ModFlowModel extends AbstractModel
      */
     public function removeBoundary(Boundary $boundary)
     {
-        $this->boundaries->removeElement($boundary);
+        if ($this->boundaries->contains($boundary)){
+            $this->boundaries->removeElement($boundary);
+        }
     }
 
     /**
@@ -184,17 +188,24 @@ class ModFlowModel extends AbstractModel
      */
     public function addObservationPoint(ObservationPoint $observationPoint)
     {
-        $this->observationPoints[] = $observationPoint;#
+        if (!$this->observationPoints->contains($observationPoint)) {
+            $this->observationPoints[] = $observationPoint;
+        }
 
         return $this;
     }
 
     /**
      * @param ObservationPoint $observationPoint
+     * @return $this
      */
     public function removeObservationPoint(ObservationPoint $observationPoint)
     {
-        $this->observationPoints->removeElement($observationPoint);
+        if ($this->observationPoints->contains($observationPoint)){
+            $this->observationPoints->removeElement($observationPoint);
+        }
+
+        return $this;
     }
 
     /**
@@ -211,17 +222,24 @@ class ModFlowModel extends AbstractModel
      */
     public function addStream(Stream $stream)
     {
-        $this->streams[] = $stream;
+        if (!$this->streams->contains($stream)){
+            $this->streams[] = $stream;
+        }
 
         return $this;
     }
 
     /**
      * @param Stream $stream
+     * @return $this
      */
     public function removeStream(Stream $stream)
     {
-        $this->streams->removeElement($stream);
+        if ($this->streams->contains($stream)) {
+            $this->streams->removeElement($stream);
+        }
+
+        return $this;
     }
 
     /**

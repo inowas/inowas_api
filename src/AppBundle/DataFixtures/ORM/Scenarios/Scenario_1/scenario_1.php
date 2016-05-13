@@ -138,7 +138,6 @@ class LoadScenario_1 implements FixtureInterface, ContainerAwareInterface
         $entityManager->persist($soilModel);
         $entityManager->flush();
 
-
         // Create Stream
         $stream = StreamFactory::setOwnerNameAndPublic($user, 'SC1_S1', $public);
         $stream->setStartingPoint(new Point(11777338.0302479, 2395656.78306049, 4326));
