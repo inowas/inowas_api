@@ -60,7 +60,6 @@ class User extends BaseUser
         parent::__construct();
         $this->id = Uuid::uuid4();
         $this->profile = UserProfileFactory::create();
-        $this->ownedApplications = new ArrayCollection();
         $this->ownedModelObjects = new ArrayCollection();
         $this->ownedModels = new ArrayCollection();
         $this->ownedSoilModels = new ArrayCollection();
