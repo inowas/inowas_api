@@ -65,9 +65,6 @@ class ModelRestControllerTest extends WebTestCase
 
         $this->owner = UserFactory::createTestUser("ModelTest_Owner");
         $this->entityManager->persist($this->owner);
-
-        $this->participant = UserFactory::createTestUser("ModelTest_Participant");
-        $this->entityManager->persist($this->participant);
         $this->entityManager->flush();
 
         $this->propertyType = PropertyTypeFactory::create();
@@ -107,7 +104,6 @@ class ModelRestControllerTest extends WebTestCase
         $this->modFlowModel->setPublic(true);
         $this->modFlowModel->setDescription('TestModelDescription!!!');
         $this->modFlowModel->setOwner($this->owner);
-        $this->modFlowModel->addParticipant($this->participant);
         $this->modFlowModel->setSoilModel($this->soilModel);
         $this->entityManager->persist($this->modFlowModel);
         $this->entityManager->flush();
@@ -121,7 +117,7 @@ class ModelRestControllerTest extends WebTestCase
     {
         $client = static::createClient();
         $client->request('GET', '/api/users/'.$this->owner->getUsername().'/models.json');
-
+        
         $this->assertEquals(200, $client->getResponse()->getStatusCode());
 
         /** @var ModFlowModel[] $modelArray */
@@ -170,12 +166,6 @@ class ModelRestControllerTest extends WebTestCase
                 'username' => $this->owner->getUsername()
             ));
         $this->entityManager->remove($user);
-
-        $participant = $this->entityManager->getRepository('AppBundle:User')
-            ->findOneBy(array(
-                'username' => $this->participant->getUsername()
-            ));
-        $this->entityManager->remove($participant);
 
         $propertyType = $this->entityManager->getRepository('AppBundle:PropertyType')
             ->findOneBy(array(

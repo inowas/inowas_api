@@ -64,9 +64,6 @@ class ModFlowModelSerialisationTest extends \PHPUnit_Framework_TestCase
         $owner = UserFactory::createTestUser("ModelTest_Owner");
         $this->modFlowModel->setOwner($owner);
 
-        $participant = UserFactory::createTestUser("ModelTest_Participant");
-        $this->modFlowModel->addParticipant($participant);
-
         $modelArea = AreaFactory::create();
         $modelArea->setName("TestModelArea");
         $modelArea->setOwner($owner);

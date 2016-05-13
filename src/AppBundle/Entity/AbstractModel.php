@@ -2,7 +2,6 @@
 
 namespace AppBundle\Entity;
 
-use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
 use JMS\Serializer\Annotation as JMS;
 use Ramsey\Uuid\Uuid;
@@ -56,17 +55,6 @@ abstract class AbstractModel
     private $owner;
 
     /**
-     * @var ArrayCollection ModelObject $modelObjects
-     *
-     * @ORM\ManyToMany(targetEntity="ModelObject", cascade={"persist", "remove"})
-     * @ORM\JoinTable(name="models_model_objects",
-     *      joinColumns={@ORM\JoinColumn(name="model_id", referencedColumnName="id")},
-     *      inverseJoinColumns={@ORM\JoinColumn(name="model_object_id", referencedColumnName="id")}
-     *      )
-     **/
-    private $modelObjects;
-
-    /**
      * @var boolean
      *
      * @ORM\Column(name="public", type="boolean")
@@ -96,8 +84,6 @@ abstract class AbstractModel
     public function __construct()
     {
         $this->id = Uuid::uuid4();
-        $this->participants = new ArrayCollection();
-        $this->modelObjects = new ArrayCollection();
         $this->public = true;
         $this->dateCreated = new \DateTime();
         $this->dateModified = new \DateTime();
@@ -268,78 +254,5 @@ abstract class AbstractModel
     public function getOwner()
     {
         return $this->owner;
-    }
-
-    /**
-     * Add participant
-     *
-     * @param \AppBundle\Entity\User $participant
-     *
-     * @return AbstractModel
-     */
-    public function addParticipant(\AppBundle\Entity\User $participant)
-    {
-        $this->participants[] = $participant;
-
-        return $this;
-    }
-
-    /**
-     * Remove participant
-     *
-     * @param \AppBundle\Entity\User $participant
-     */
-    public function removeParticipant(\AppBundle\Entity\User $participant)
-    {
-        $this->participants->removeElement($participant);
-    }
-
-    /**
-     * Get participants
-     *
-     * @return \Doctrine\Common\Collections\Collection
-     */
-    public function getParticipants()
-    {
-        return $this->participants;
-    }
-
-    /**
-     * Add soilModelObject
-     *
-     * @param \AppBundle\Entity\ModelObject $modelObject
-     * @return $this
-     */
-    public function addModelObject(ModelObject $modelObject)
-    {
-        if (!$this->modelObjects->contains($modelObject)){
-            $this->modelObjects[] = $modelObject;
-        }
-
-        return $this;
-    }
-
-    /**
-     * Remove soilModelObject
-     *
-     * @param \AppBundle\Entity\ModelObject $modelObject
-     * @return $this
-     */
-    public function removeModelObject(ModelObject $modelObject)
-    {
-        if ($this->modelObjects->contains($modelObject)){
-            $this->modelObjects->removeElement($modelObject);
-        }
-        return $this;
-    }
-
-    /**
-     * Get modelObjects
-     *
-     * @return \Doctrine\Common\Collections\Collection
-     */
-    public function getModelObjects()
-    {
-        return $this->modelObjects;
     }
 }

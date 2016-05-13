@@ -32,8 +32,7 @@ class ModelRestController extends FOSRestController
                 'username' => $username
             ));
 
-        if (!$user)
-        {
+        if (!$user) {
             throw $this->createNotFoundException('User with username '.$username.' not found.');
         }
 
