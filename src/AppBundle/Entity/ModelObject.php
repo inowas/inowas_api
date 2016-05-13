@@ -27,13 +27,6 @@ abstract class ModelObject
 {
     /**
      * @var string
-     * @JMS\Type("string")
-     * @JMS\Groups({"list", "details", "modelobjectdetails", "modelobjectlist"})
-     */
-    protected $type = 'modelobject';
-
-    /**
-     * @var string
      *
      * @ORM\Id
      * @ORM\Column(name="id", type="uuid", unique=true)
@@ -43,12 +36,28 @@ abstract class ModelObject
     protected $id;
 
     /**
+     * @var User
+     *
+     * @ORM\ManyToOne(targetEntity="User", inversedBy="ownedModelObjects")
+     * @ORM\JoinColumn(name="owner_id", referencedColumnName="id", onDelete="CASCADE")
+     * @JMS\Groups({"modelobjectdetails", "modelobjectlist"})
+     */
+    protected $owner;
+
+    /**
      * @var string
      *
      * @ORM\Column(name="name", type="string", length=255, nullable=true)
      * @JMS\Groups({"list", "details", "layerdetails", "modeldetails", "modelobjectdetails", "modelobjectlist", "soilmodeldetails"})
      */
     protected $name;
+
+    /**
+     * @var string
+     * @JMS\Type("string")
+     * @JMS\Groups({"list", "details", "modelobjectdetails", "modelobjectlist"})
+     */
+    protected $type = 'modelobject';
 
     /**
      * @var ArrayCollection AbstractModel
@@ -69,15 +78,6 @@ abstract class ModelObject
      * @JMS\MaxDepth(1)
      **/
     protected $soilModels;
-
-    /**
-     * @var User
-     *
-     * @ORM\ManyToOne(targetEntity="User", inversedBy="ownedModelObjects")
-     * @ORM\JoinColumn(name="owner_id", referencedColumnName="id", onDelete="CASCADE")
-     * @JMS\Groups({"modelobjectdetails", "modelobjectlist"})
-     */
-    protected $owner;
 
     /**
      * @var ArrayCollection Property
