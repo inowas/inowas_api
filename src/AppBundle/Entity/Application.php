@@ -49,7 +49,7 @@ class Application
      * @JMS\MaxDepth(3)
      * @JMS\Groups({"applicationDetails"})
      */
-    private $user;
+    private $owner;
 
     /**
      * @var ArrayCollection Tool
@@ -231,13 +231,13 @@ class Application
     /**
      * Set owner
      *
-     * @param \AppBundle\Entity\User $user
+     * @param \AppBundle\Entity\User $owner
      *
      * @return Application
      */
-    public function setUser(\AppBundle\Entity\User $user = null)
+    public function setOwner(\AppBundle\Entity\User $owner = null)
     {
-        $this->user = $user;
+        $this->owner = $owner;
 
         return $this;
     }
@@ -247,9 +247,9 @@ class Application
      *
      * @return \AppBundle\Entity\User
      */
-    public function getUser()
+    public function getOwner()
     {
-        return $this->user;
+        return $this->owner;
     }
 
     /**

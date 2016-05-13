@@ -35,13 +35,6 @@ class User extends BaseUser
     protected $profile;
 
     /**
-     * @var ArrayCollection Project
-     *
-     * @ORM\OneToMany(targetEntity="AppBundle\Entity\ModelObject", mappedBy="owner")
-     */
-    protected $ownedModelObjects;
-
-    /**
      * @var ArrayCollection AbstractModel
      *
      * @ORM\OneToMany(targetEntity="AppBundle\Entity\AbstractModel", mappedBy="owner", cascade={"persist", "remove"})
@@ -60,7 +53,6 @@ class User extends BaseUser
         parent::__construct();
         $this->id = Uuid::uuid4();
         $this->profile = UserProfileFactory::create();
-        $this->ownedModelObjects = new ArrayCollection();
         $this->ownedModels = new ArrayCollection();
         $this->ownedSoilModels = new ArrayCollection();
     }
