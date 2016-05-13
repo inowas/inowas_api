@@ -20,7 +20,6 @@ class Tool
      * @ORM\Id
      * @ORM\Column(name="id", type="uuid", unique=true)
      * @JMS\Type("string")
-     * @ORM\GeneratedValue(strategy="AUTO")
      */
     private $id;
 
