@@ -36,6 +36,11 @@ rest_geological_unit:
     prefix: /api
     resource: AppBundle\Controller\GeologicalUnitRestController
 
+rest_interpolation:
+    type: rest
+    prefix: /api
+    resource: AppBundle\Controller\InterpolationRestController
+
 rest_observationpoint:
     type: rest
     prefix: /api
