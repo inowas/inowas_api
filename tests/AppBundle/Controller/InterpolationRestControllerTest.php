@@ -22,7 +22,7 @@ class InterpolationRestControllerTest extends WebTestCase
             'POST',
             '/api/interpolations.json'
         );
-
+        
         $this->assertEquals(200, $client->getResponse()->getStatusCode());
     }
 }
