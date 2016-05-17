@@ -26,11 +26,15 @@ class Boundary extends ModelObject
      * @ORM\Column(name="geometry", type="linestring", nullable=true)
      */
     private $geometry;
-
+    
     /**
      * @var ArrayCollection GeologicalLayer
      *
-     * @ORM\ManyToMany(targetEntity="AppBundle\Entity\GeologicalLayer", mappedBy="boundaries")
+     * @ORM\ManyToMany(targetEntity="AppBundle\Entity\GeologicalLayer")
+     * @ORM\JoinTable(name="geological_layers_boundaries",
+     *     joinColumns={@ORM\JoinColumn(name="geological_layer_id", referencedColumnName="id")},
+     *     inverseJoinColumns={@ORM\JoinColumn(name="boundary_id", referencedColumnName="id")}
+     *     )
      * @JMS\Groups({"list", "details", "modelobjectdetails"})
      * @JMS\MaxDepth(2)
      **/
@@ -70,34 +74,22 @@ class Boundary extends ModelObject
      * Add geologicalLayer
      *
      * @param \AppBundle\Entity\GeologicalLayer $geologicalLayer
-     *
      * @return $this
      */
     public function addGeologicalLayer(\AppBundle\Entity\GeologicalLayer $geologicalLayer)
     {
         $this->geologicalLayers[] = $geologicalLayer;
-
-        if (!$geologicalLayer->getBoundaries()->contains($this))
-        {
-            $geologicalLayer->addBoundary($this);
-        }
-
         return $this;
     }
 
     /**
-     * Remove geologicalLayer
-     *
-     * @param \AppBundle\Entity\GeologicalLayer $geologicalLayer
+     * @param GeologicalLayer $geologicalLayer
+     * @return $this
      */
     public function removeGeologicalLayer(\AppBundle\Entity\GeologicalLayer $geologicalLayer)
     {
         $this->geologicalLayers->removeElement($geologicalLayer);
-
-        if ($geologicalLayer->getBoundaries()->contains($this))
-        {
-            $geologicalLayer->removeBoundary($this);
-        }
+        return $this;
     }
 
     /**

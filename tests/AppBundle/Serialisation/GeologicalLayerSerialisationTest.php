@@ -3,7 +3,6 @@
 namespace AppBundle\Tests\Controller;
 
 use AppBundle\Entity\GeologicalLayer;
-use AppBundle\Model\BoundaryFactory;
 use AppBundle\Model\GeologicalLayerFactory;
 use AppBundle\Model\GeologicalUnitFactory;
 use AppBundle\Model\UserFactory;
@@ -30,11 +29,6 @@ class GeologicalLayerSerialisationTest extends \PHPUnit_Framework_TestCase
             ->setOwner(
                 UserFactory::createTestUser('GeologicalLayerTestUser')
             )
-            ->addBoundary(
-                BoundaryFactory::create()
-                    ->setPublic(true)
-                    ->setName('BoundaryName')
-            )
             ->addGeologicalUnit(
                 GeologicalUnitFactory::create()
                 ->setPublic(true)
@@ -52,9 +46,6 @@ class GeologicalLayerSerialisationTest extends \PHPUnit_Framework_TestCase
         $geologicalLayer = json_decode($geologicalLayer);
         $this->assertEquals($geologicalLayer->type, 'geologicallayer');
         $this->assertEquals($geologicalLayer->owner->id, $this->geologicalLayer->getOwner()->getId());
-        $this->assertCount(1, $geologicalLayer->boundaries);
-        $this->assertEquals($geologicalLayer->boundaries[0]->id, $this->geologicalLayer->getBoundaries()->first()->getId());
-        $this->assertEquals($geologicalLayer->boundaries[0]->name, $this->geologicalLayer->getBoundaries()->first()->getName());
 
         $this->assertCount(1, $geologicalLayer->geological_units);
         $this->assertEquals($geologicalLayer->geological_units[0]->id, $this->geologicalLayer->getGeologicalUnits()->first()->getId());

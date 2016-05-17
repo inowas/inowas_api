@@ -113,7 +113,7 @@ class ModelRestController extends FOSRestController
         }
 
         if (!$model) {
-            throw $this->createNotFoundException('Project not found.');
+            throw $this->createNotFoundException('Model not found.');
         }
 
         $serializationContext = SerializationContext::create();
