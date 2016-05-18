@@ -8,8 +8,9 @@ SQL_DIR=$DIR/build/sql
 
 cd $DIR
 bin/console doctrine:database:drop --force --env=test
-bin/console doctrine:database:create --env=test
-su postgres -c "psql inowas_dev_test < "$SQL_DIR"/structure.sql"
+DBNAME=$(bin/console doctrine:database:create --env=test | grep -Po '".*?"')
+
+su postgres -c "psql $DBNAME < "$SQL_DIR"/structure.sql"
 bin/console doctrine:schema:create --env=test
 cd $DIR
 ./vendor/bin/phpunit
