@@ -1,8 +1,5 @@
 #!/usr/bin/env bash
 
-/etc/init.d/postgresql stop
-/etc/init.d/postgresql start
-
 DIR=.
 SQL_DIR=$DIR/build/sql
 
