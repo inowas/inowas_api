@@ -17,4 +17,4 @@
 .vagrant/
 .DS_Store
 /composer.phar
-
+composer.lock
