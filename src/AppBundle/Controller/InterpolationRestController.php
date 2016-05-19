@@ -6,7 +6,6 @@ use AppBundle\Model\Interpolation\BoundingBox;
 use AppBundle\Model\Interpolation\GridSize;
 use AppBundle\Model\Interpolation\KrigingInterpolation;
 use AppBundle\Model\Interpolation\PointValue;
-use AppBundle\Model\Point;
 use FOS\RestBundle\Controller\FOSRestController;
 use FOS\RestBundle\View\View;
 use Nelmio\ApiDocBundle\Annotation\ApiDoc;
@@ -32,13 +31,12 @@ class InterpolationRestController extends FOSRestController
         $ki = new KrigingInterpolation(new GridSize(12, 13), new BoundingBox(1.2, 1.2, 2.1, .2));
         $ki->addPoint(new PointValue(1.1, 2.2, 3.4));
         $ki->addPoint(new PointValue(4.4, 5.5, 6.6));
-        $serializer = $this->get('serializer');
-        $serializedKi = $serializer->serialize($ki, 'json');
-        $content = $this->render(':inowas/WPS:interpolation.xml.twig', array(
-            'jsonData' => $serializedKi
-        ));
 
-        dump($content);
+        #$serializer = $this->get('serializer');
+        #$serializedKi = $serializer->serialize($ki, 'json');
+        #$content = $this->render(':inowas/WPS:interpolation.xml.twig', array(
+        #    'jsonData' => $serializedKi
+        #));
 
         $view = View::create();
         $view->setData($ki)
