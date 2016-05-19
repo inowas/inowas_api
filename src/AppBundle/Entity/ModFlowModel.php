@@ -100,6 +100,7 @@ class ModFlowModel extends AbstractModel
     public function __construct()
     {
         parent::__construct();
+
         $this->boundaries = new ArrayCollection();
         $this->modelObjects = new ArrayCollection();
         $this->observationPoints = new ArrayCollection();
@@ -206,8 +207,12 @@ class ModFlowModel extends AbstractModel
      */
     public function addBoundary(Boundary $boundary)
     {
+        if ($this->boundaries == null) {
+            $this->boundaries = new ArrayCollection();
+        }
+
         if (!$this->boundaries->contains($boundary)) {
-            $this->boundaries[] = $boundary;
+            $this->boundaries->add($boundary);
         }
 
         return $this;
@@ -239,6 +244,10 @@ class ModFlowModel extends AbstractModel
      */
     public function addObservationPoint(ObservationPoint $observationPoint)
     {
+        if ($this->observationPoints == null) {
+            $this->observationPoints = new ArrayCollection();
+        }
+
         if (!$this->observationPoints->contains($observationPoint)) {
             $this->observationPoints[] = $observationPoint;
         }
@@ -273,6 +282,10 @@ class ModFlowModel extends AbstractModel
      */
     public function addStream(Stream $stream)
     {
+        if ($this->streams == null) {
+            $this->streams = new ArrayCollection();
+        }
+
         if (!$this->streams->contains($stream)){
             $this->streams[] = $stream;
         }
