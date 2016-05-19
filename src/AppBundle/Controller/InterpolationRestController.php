@@ -67,9 +67,12 @@ class InterpolationRestController extends FOSRestController
         $ki->addPoint(new PointValue(4.4, 5.5, 6.6));
         $serializer = $this->get('serializer');
         $serializedKi = $serializer->serialize($ki, 'json');
+        $serializedKi = str_replace('"', '\'', $serializedKi);
+
         $content = $this->render(':inowas/WPS:interpolation.xml.twig', array(
             'jsonData' => $serializedKi
         ));
+
 
         return $content;
     }

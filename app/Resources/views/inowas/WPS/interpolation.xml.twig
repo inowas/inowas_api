@@ -5,7 +5,7 @@
             <ows:Identifier>InputInterpolationObject</ows:Identifier>
             <wps:Data>
                 <wps:ComplexData mimeType="application/json">
-                    {{ jsonData }}
+                    {{ jsonData | raw }}
                 </wps:ComplexData>
             </wps:Data>
         </wps:Input>
