@@ -38,11 +38,41 @@ class InterpolationRestController extends FOSRestController
             'jsonData' => $serializedKi
         ));
 
+        dump($content);
+
         $view = View::create();
         $view->setData($ki)
             ->setStatusCode(200)
         ;
 
         return $view;
+    }
+
+    /**
+     * Make an InterpolationRequest
+     *
+     * @ApiDoc(
+     *   resource = true,
+     *   description = "Make an InterpolationRequest",
+     *   statusCodes = {
+     *     200 = "Returned when successful",
+     *     404 = "Returned when the user is not found"
+     *   }
+     * )
+     *
+     * @return View
+     */
+    public function getInterpolationsAction()
+    {
+        $ki = new KrigingInterpolation(new GridSize(12, 13), new BoundingBox(1.2, 1.2, 2.1, .2));
+        $ki->addPoint(new PointValue(1.1, 2.2, 3.4));
+        $ki->addPoint(new PointValue(4.4, 5.5, 6.6));
+        $serializer = $this->get('serializer');
+        $serializedKi = $serializer->serialize($ki, 'json');
+        $content = $this->render(':inowas/WPS:interpolation.xml.twig', array(
+            'jsonData' => $serializedKi
+        ));
+
+        return $content;
     }
 }
