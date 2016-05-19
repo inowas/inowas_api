@@ -78,7 +78,9 @@ class Boundary extends ModelObject
      */
     public function addGeologicalLayer(\AppBundle\Entity\GeologicalLayer $geologicalLayer)
     {
-        $this->geologicalLayers[] = $geologicalLayer;
+        if (!$this->geologicalLayers->contains($geologicalLayer)){
+            $this->geologicalLayers[] = $geologicalLayer;
+        }
         return $this;
     }
 
@@ -88,7 +90,9 @@ class Boundary extends ModelObject
      */
     public function removeGeologicalLayer(\AppBundle\Entity\GeologicalLayer $geologicalLayer)
     {
-        $this->geologicalLayers->removeElement($geologicalLayer);
+        if ($this->geologicalLayers->contains($geologicalLayer)){
+            $this->geologicalLayers->removeElement($geologicalLayer);
+        }
         return $this;
     }
 

@@ -764,7 +764,7 @@ class LoadScenario_2 implements FixtureInterface, ContainerAwareInterface
             }
         }
 
-        // Add Boundary and observationpoints
+        // Add Boundary and ObservationPoints
         $boundary = BoundaryFactory::create()
             ->setOwner($user)
             ->setName('SC2_B1')
@@ -781,34 +781,12 @@ class LoadScenario_2 implements FixtureInterface, ContainerAwareInterface
         $lineString = $converter->convertStringToPHPValue($lineStringType, $geometryText);
         $lineString->setSrid(3857);
         $boundary->setGeometry($lineString);
-
-        $layer = $this->entityManager->getRepository('AppBundle:GeologicalLayer')
-            ->findOneBy(array(
-                'name' => 'SC2_L1'
-            ));
-        $boundary->addGeologicalLayer($layer);
-
-        $layer = $this->entityManager->getRepository('AppBundle:GeologicalLayer')
-            ->findOneBy(array(
-                'name' => 'SC2_L2'
-            ));
-        $boundary->addGeologicalLayer($layer);
-
-        $layer = $this->entityManager->getRepository('AppBundle:GeologicalLayer')
-            ->findOneBy(array(
-                'name' => 'SC2_L3'
-            ));
-        $boundary->addGeologicalLayer($layer);
-
-        $layer = $this->entityManager->getRepository('AppBundle:GeologicalLayer')
-            ->findOneBy(array(
-                'name' => 'SC2_L4'
-            ));
-        $boundary->addGeologicalLayer($layer);
-
+        $boundary->addGeologicalLayer($layer_1);
+        $boundary->addGeologicalLayer($layer_2);
+        $boundary->addGeologicalLayer($layer_3);
+        $boundary->addGeologicalLayer($layer_4);
         $entityManager->persist($boundary);
         $entityManager->flush();
-
 
         // Add ObservationPoints
         $observationPointPoints = array(
