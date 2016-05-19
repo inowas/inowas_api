@@ -466,41 +466,18 @@ class ModFlowModelSerialisationTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals($this->modFlowModel->getDescription(), $serializedModel->description);
         $this->assertObjectHasAttribute("area", $serializedModel);
         $this->assertEquals($this->modFlowModel->getArea()->getId(), $serializedModel->area->id);
-        $this->assertEquals(3, count((array)$serializedModel->area));
 
         $this->assertEquals($this->soilModel->getId(), $serializedModel->soil_model->id);
-        $this->assertEquals($this->soilModel->getName(), $serializedModel->soil_model->name);
-        $this->assertEquals($this->soilModel->getPublic(), $serializedModel->soil_model->public);
         $this->assertObjectHasAttribute("area", $serializedModel->soil_model);
         $this->assertEquals($this->modFlowModel->getSoilModel()->getArea()->getId(), $serializedModel->soil_model->area->id);
-        $this->assertEquals(3, count((array)$serializedModel->area));
         $this->assertObjectNotHasAttribute("geological_units", $serializedModel->soil_model);
         $this->assertObjectNotHasAttribute("geological_points", $serializedModel->soil_model);
 
         $this->assertCount(1, $serializedModel->soil_model->geological_layers);
         $this->assertEquals($this->layer->getId(), $serializedModel->soil_model->geological_layers[0]->id);
-        $this->assertEquals($this->layer->getName(), $serializedModel->soil_model->geological_layers[0]->name);
-
-        $this->assertCount(2, $serializedModel->soil_model->geological_layers[0]->properties);
-
-        /** @var Property $property */
-        $property = $this->layer->getProperties()->toArray()[0];
-        $this->assertEquals($property->getName(), $serializedModel->soil_model->geological_layers[0]->properties[0]->name);
-        $this->assertEquals($property->getPropertyType()->getAbbreviation(), $serializedModel->soil_model->geological_layers[0]->properties[0]->property_type->abbreviation);
-        $this->assertObjectHasAttribute('value', $serializedModel->soil_model->geological_layers[0]->properties[0]->values[0]);
-        $this->assertEquals($property->getValues()[0]->getValue(), $serializedModel->soil_model->geological_layers[0]->properties[0]->values[0]->value);
-
-        /** @var Property $property */
-        $property = $this->layer->getProperties()->toArray()[1];
-        $this->assertEquals($property->getName(), $serializedModel->soil_model->geological_layers[0]->properties[1]->name);
-        $this->assertEquals($property->getPropertyType()->getAbbreviation(), $serializedModel->soil_model->geological_layers[0]->properties[1]->property_type->abbreviation);
-        $this->assertObjectHasAttribute('raster', $serializedModel->soil_model->geological_layers[0]->properties[1]->values[0]);
-        $this->assertObjectHasAttribute('id', $serializedModel->soil_model->geological_layers[0]->properties[1]->values[0]->raster);
-        $this->assertEquals($property->getValues()[0]->getRaster()->getId(), $serializedModel->soil_model->geological_layers[0]->properties[1]->values[0]->raster->id);
 
         $this->assertObjectHasAttribute("streams", $serializedModel);
         $this->assertCount(3, $serializedModel->streams);
-        $this->assertEquals(3, count((array)$serializedModel->streams[0]));
 
         /** @var Stream $stream */
         $stream = $this->modFlowModel->getStreams()->toArray()[0];
@@ -516,10 +493,8 @@ class ModFlowModelSerialisationTest extends \PHPUnit_Framework_TestCase
 
         $this->assertObjectHasAttribute("boundaries", $serializedModel);
         $this->assertCount(2, $serializedModel->boundaries);
-        $this->assertEquals(3, count((array)$serializedModel->boundaries[0]));
 
         $this->assertObjectHasAttribute("observation_points", $serializedModel);
         $this->assertCount(4, $serializedModel->observation_points);
-        $this->assertEquals(3, count((array)$serializedModel->observation_points[0]));
     }
 }

@@ -30,7 +30,7 @@ class SoilModel
      * @var string
      *
      * @ORM\Column(name="name", type="string",length=255, nullable=true)
-     * @JMS\Groups({"details", "modeldetails", "soilmodellist", "soilmodeldetails"})
+     * @JMS\Groups({"details", "soilmodellist", "soilmodeldetails"})
      */
     private $name;
 
@@ -63,7 +63,7 @@ class SoilModel
      * @var boolean
      *
      * @ORM\Column(name="public", type="boolean")
-     * @JMS\Groups({"details", "modeldetails", "soilmodellist", "soilmodeldetails"})
+     * @JMS\Groups({"details", "soilmodellist", "soilmodeldetails"})
      */
     private $public;
 

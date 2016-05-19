@@ -148,12 +148,8 @@ class ModelRestControllerTest extends WebTestCase
         $this->assertEquals($this->modFlowModel->getOwner()->getId(), $modFlowModel->owner->id);
         $this->assertCount(0, $modFlowModel->calculation_properties->stress_periods);
         $this->assertEquals($this->soilModel->getId(), $modFlowModel->soil_model->id);
-        $this->assertEquals($this->soilModel->getName(), $modFlowModel->soil_model->name);
         $this->assertCount(1, $modFlowModel->soil_model->geological_layers);
         $this->assertEquals($this->layer->getId(), $modFlowModel->soil_model->geological_layers[0]->id);
-        $this->assertEquals($this->layer->getName(), $modFlowModel->soil_model->geological_layers[0]->name);
-        $this->assertEquals($this->property->getId(), $modFlowModel->soil_model->geological_layers[0]->properties[0]->id);
-        $this->assertEquals($this->propertyType->getAbbreviation(), $modFlowModel->soil_model->geological_layers[0]->properties[0]->property_type->abbreviation);
     }
 
     /**
