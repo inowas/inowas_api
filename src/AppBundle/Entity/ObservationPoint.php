@@ -3,7 +3,6 @@
 namespace AppBundle\Entity;
 
 use AppBundle\Model\Point;
-
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
 use JMS\Serializer\Annotation as JMS;
@@ -25,7 +24,6 @@ class ObservationPoint extends ModelObject
      * @var Point
      *
      * @ORM\Column(name="geometry", type="point", nullable=true)
-     * @JMS\Groups({"modelobjectdetails"})
      */
     private $point;
 
@@ -151,5 +149,20 @@ class ObservationPoint extends ModelObject
     public function getType()
     {
         return 'ObservationPoint';
+    }
+
+    /**
+     * @JMS\VirtualProperty()
+     * @JMS\SerializedName("point")
+     * @JMS\Groups({"modelobjectdetails"})
+     */
+    public function convertPointToPoint()
+    {
+        if (!is_null($this->point))
+        {
+            $point = new Point($this->point->getX(),$this->point->getY());
+            $point->setSrid($this->point->getSrid());
+            return $point;
+        }
     }
 }

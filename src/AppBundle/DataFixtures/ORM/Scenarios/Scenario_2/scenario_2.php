@@ -817,6 +817,7 @@ class LoadScenario_2 implements FixtureInterface, ContainerAwareInterface
             $entityManager->persist($boundary);
             $entityManager->persist($observationPoint);
             $entityManager->flush();
+
             $filename = 'scenario_2_observationPoint_'.str_replace('SC2_', '', $observationPoint->getName()).'_properties.csv';
             $this->addModelObjectPropertiesFromCSVFile($observationPoint, __DIR__.'/'.$filename, ';');
         }
