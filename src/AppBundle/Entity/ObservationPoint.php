@@ -164,5 +164,7 @@ class ObservationPoint extends ModelObject
             $point->setSrid($this->point->getSrid());
             return $point;
         }
+
+        return null;
     }
 }
