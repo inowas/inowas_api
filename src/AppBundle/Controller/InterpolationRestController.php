@@ -50,12 +50,12 @@ class InterpolationRestController extends FOSRestController
         $inputFile = $tempFolder.'/'.$uuid->toString();
         $fs->dumpFile($inputFile, $serializedKi);
 
-        $scriptName="interpolation.py";
+        $scriptName="interpolationCalculation.py";
         $builder = new ProcessBuilder();
         $builder
             ->setPrefix('python')
             ->setArguments(array('-W', 'ignore', $scriptName, $inputFile))
-            ->setWorkingDirectory($this->get('kernel')->getRootDir().'/../py/wps/')
+            ->setWorkingDirectory($this->get('kernel')->getRootDir().'/../py/pyprocessing/interpolation')
         ;
 
         /** @var Process $process */

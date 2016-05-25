@@ -40,6 +40,6 @@ abstract class AbstractKernel
 
     public function __construct()
     {
-        $this->id = $uuid4 = Uuid::uuid4();
+        $this->id = Uuid::uuid4();
     }
 }
