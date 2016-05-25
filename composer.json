@@ -36,7 +36,8 @@
         "jms/di-extra-bundle": "dev-master",
         "jms/security-extra-bundle": "dev-master",
         "friendsofsymfony/rest-bundle": "^1.7",
-        "creof/doctrine2-spatial": "dev-master"
+        "creof/doctrine2-spatial": "dev-master",
+        "ramsey/uuid-doctrine": "^1.2"
       
     },
     "require-dev": {

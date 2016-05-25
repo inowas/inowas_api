@@ -15,7 +15,8 @@ class Boundary extends ModelObject
 {
     /**
      * @var string
-     * @JMS\Groups({"list", "details"})
+     * @JMS\Type("string")
+     * @JMS\Groups({"list", "details", "modelobjectdetails", "modelobjectlist"})
      */
     protected $type = 'boundary';
 
@@ -25,23 +26,28 @@ class Boundary extends ModelObject
      * @ORM\Column(name="geometry", type="linestring", nullable=true)
      */
     private $geometry;
-
+    
     /**
      * @var ArrayCollection GeologicalLayer
      *
-     * @ORM\ManyToMany(targetEntity="AppBundle\Entity\GeologicalLayer", mappedBy="boundaries")
+     * @ORM\ManyToMany(targetEntity="AppBundle\Entity\GeologicalLayer")
+     * @ORM\JoinTable(name="geological_layers_boundaries",
+     *     joinColumns={@ORM\JoinColumn(name="geological_layer_id", referencedColumnName="id")},
+     *     inverseJoinColumns={@ORM\JoinColumn(name="boundary_id", referencedColumnName="id")}
+     *     )
+     * @JMS\Groups({"list", "details", "modelobjectdetails"})
+     * @JMS\MaxDepth(2)
      **/
     protected $geologicalLayers;
 
     /**
      * Boundary constructor.
      * @param User $owner
-     * @param Project $project
      * @param bool $public
      */
-    public function __construct(User $owner = null, Project $project = null, $public = false)
+    public function __construct(User $owner = null, $public = false)
     {
-        parent::__construct($owner, $project, $public);
+        parent::__construct($owner, $public);
 
         $this->geologicalLayers = new ArrayCollection();
     }
@@ -56,34 +62,38 @@ class Boundary extends ModelObject
 
     /**
      * @param LineString $geometry
+     * @return $this
      */
     public function setGeometry(LineString $geometry)
     {
         $this->geometry = $geometry;
+        return $this;
     }
 
     /**
      * Add geologicalLayer
      *
      * @param \AppBundle\Entity\GeologicalLayer $geologicalLayer
-     *
-     * @return Boundary
+     * @return $this
      */
     public function addGeologicalLayer(\AppBundle\Entity\GeologicalLayer $geologicalLayer)
     {
-        $this->geologicalLayers[] = $geologicalLayer;
-
+        if (!$this->geologicalLayers->contains($geologicalLayer)){
+            $this->geologicalLayers[] = $geologicalLayer;
+        }
         return $this;
     }
 
     /**
-     * Remove geologicalLayer
-     *
-     * @param \AppBundle\Entity\GeologicalLayer $geologicalLayer
+     * @param GeologicalLayer $geologicalLayer
+     * @return $this
      */
     public function removeGeologicalLayer(\AppBundle\Entity\GeologicalLayer $geologicalLayer)
     {
-        $this->geologicalLayers->removeElement($geologicalLayer);
+        if ($this->geologicalLayers->contains($geologicalLayer)){
+            $this->geologicalLayers->removeElement($geologicalLayer);
+        }
+        return $this;
     }
 
     /**
@@ -94,5 +104,26 @@ class Boundary extends ModelObject
     public function getGeologicalLayers()
     {
         return $this->geologicalLayers;
+    }
+
+
+    /**
+     * @JMS\VirtualProperty
+     * @JMS\SerializedName("geometry")
+     * @JMS\Groups({"modelobjectdetails"})
+     *
+     * @return string
+     */
+    public function serializeDeserializeGeometry()
+    {
+        $geometry = null;
+
+        if (!is_null($this->geometry))
+        {
+            $geometry = $this->geometry->toArray();
+            $geometry["type"] = $this->geometry->getType();
+            $geometry["srid"] = $this->geometry->getSrid();
+        }
+        return $geometry;
     }
 }

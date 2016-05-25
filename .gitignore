@@ -1,6 +1,5 @@
 /app/config/parameters.yml
-/phpunit.xml
-/build/build.sh
+/phpunit.xml.dist
 /var/*
 !/var/cache
 /var/cache/*
@@ -18,3 +17,4 @@
 .vagrant/
 .DS_Store
 /composer.phar
+composer.lock

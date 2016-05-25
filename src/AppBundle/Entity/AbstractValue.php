@@ -6,9 +6,11 @@ use AppBundle\Model\PropertyValueInterface;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
 use JMS\Serializer\Annotation as JMS;
+use Ramsey\Uuid\Uuid;
 
 /**
  * AbstractValue
+ * 
  * @ORM\HasLifecycleCallbacks()
  * @ORM\Entity()
  * @ORM\Table(name="values")
@@ -18,18 +20,17 @@ use JMS\Serializer\Annotation as JMS;
  *                          "timevalue" = "PropertyTimeValue",
  *                          "fixedintervalvalue" = "PropertyFixedIntervalValue"
  * })
- * @JMS\ExclusionPolicy("all")
  */
 
 abstract class AbstractValue implements PropertyValueInterface
 {
     /**
-     * @var integer
+     * @var string
      *
-     * @ORM\Column(name="id", type="integer")
      * @ORM\Id
-     * @ORM\GeneratedValue(strategy="AUTO")
-     * @JMS\Expose
+     * @ORM\Column(name="id", type="uuid", unique=true)
+     * @JMS\Type("string")
+     * @JMS\Groups("modeldetails")
      */
     private $id;
 
@@ -37,9 +38,15 @@ abstract class AbstractValue implements PropertyValueInterface
      * @var ArrayCollection Property
      *
      * @ORM\ManyToOne(targetEntity="AppBundle\Entity\Property", inversedBy="values")
-     * @ORM\JoinColumn(name="property", referencedColumnName="id")
+     * @ORM\JoinColumn(name="property_id", referencedColumnName="id", onDelete="CASCADE")
+     * @JMS\Groups("modeldetails")
      */
     private $property;
+
+    public function __construct()
+    {
+        $this->id = Uuid::uuid4();
+    }
 
     /**
      * Get id

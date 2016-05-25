@@ -7,48 +7,42 @@ use Doctrine\ORM\Mapping as ORM;
 use JMS\Serializer\Annotation as JMS;
 
 /**
- * @ORM\Entity(repositoryClass="AppBundle\Entity\GeologicalLayerRepository")
+ * @ORM\Entity(repositoryClass="AppBundle\Repository\GeologicalLayerRepository")
  * @ORM\Table(name="geological_layers")
  */
 class GeologicalLayer extends ModelObject
 {
     /**
      * @var string
+     * @JMS\Type("string")
+     * @JMS\Groups({"list", "details", "modelobjectdetails", "modelobjectlist"})
      */
     protected $type = 'geologicallayer';
 
+
     /**
-     * @var ArrayCollection SoilProfile
+     * @var ArrayCollection GeologicalUnit
      *
-     * @ORM\ManyToMany(targetEntity="AppBundle\Entity\GeologicalUnit", inversedBy="geologicalLayer")
-     * @ORM\JoinTable(name="geological_layers_geological_units")
-     *
+     * @ORM\ManyToMany(targetEntity="AppBundle\Entity\GeologicalUnit")
+     * @ORM\JoinTable(name="geological_layers_geological_units",
+     *     joinColumns={@ORM\JoinColumn(name="geological_layer_id", referencedColumnName="id")},
+     *     inverseJoinColumns={@ORM\JoinColumn(name="geological_unit_id", referencedColumnName="id")}
+     *     )
      * @JMS\Type("ArrayCollection<AppBundle\Entity\GeologicalUnit>"))
-     * @JMS\Groups({"details"})
+     * @JMS\Groups({"modelobjectdetails", "soilmodeldetails"})
      **/
     private $geologicalUnits;
 
     /**
-     * @var ArrayCollection Boundary
-     *
-     * @ORM\ManyToMany(targetEntity="AppBundle\Entity\Boundary", inversedBy="geologicalLayers")
-     * @ORM\JoinTable(name="layers_boundaries")
-     */
-    private $boundaries;
-
-
-    /**
      * Layer constructor.
      * @param User|null $owner
-     * @param Project|null $project
      * @param bool|false $public
      */
-    public function __construct(User $owner = null, Project $project = null, $public = false)
+    public function __construct(User $owner = null, $public = false)
     {
-        parent::__construct($owner, $project, $public);
+        parent::__construct($owner, $public);
 
         $this->geologicalUnits = new ArrayCollection();
-        $this->boundaries = new ArrayCollection();
     }
 
     /**
@@ -60,12 +54,6 @@ class GeologicalLayer extends ModelObject
     public function addGeologicalUnit(GeologicalUnit $geologicalUnit)
     {
         $this->geologicalUnits[] = $geologicalUnit;
-
-        if (!$geologicalUnit->getGeologicalLayer()->contains($this))
-        {
-            $geologicalUnit->addGeologicalLayer($this);
-        }
-
         return $this;
     }
 
@@ -77,11 +65,6 @@ class GeologicalLayer extends ModelObject
     public function removeGeologicalUnit(GeologicalUnit $geologicalUnit)
     {
         $this->geologicalUnits->removeElement($geologicalUnit);
-
-        if ($geologicalUnit->getGeologicalLayer()->contains($this))
-        {
-            $geologicalUnit->removeGeologicalLayer($this);
-        }
     }
 
     /**
@@ -92,39 +75,5 @@ class GeologicalLayer extends ModelObject
     public function getGeologicalUnits()
     {
         return $this->geologicalUnits;
-    }
-
-    /**
-     * Add boundary
-     *
-     * @param \AppBundle\Entity\Boundary $boundary
-     *
-     * @return GeologicalLayer
-     */
-    public function addBoundary(\AppBundle\Entity\Boundary $boundary)
-    {
-        $this->boundaries[] = $boundary;
-
-        return $this;
-    }
-
-    /**
-     * Remove boundary
-     *
-     * @param \AppBundle\Entity\Boundary $boundary
-     */
-    public function removeBoundary(\AppBundle\Entity\Boundary $boundary)
-    {
-        $this->boundaries->removeElement($boundary);
-    }
-
-    /**
-     * Get boundaries
-     *
-     * @return \Doctrine\Common\Collections\Collection
-     */
-    public function getBoundaries()
-    {
-        return $this->boundaries;
     }
 }

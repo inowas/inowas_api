@@ -15,7 +15,8 @@ class GeologicalPoint extends ModelObject
 {
     /**
      * @var string
-     * @JMS\Groups({"list", "details"})
+     * @JMS\Type("string")
+     * @JMS\Groups({"list", "details", "modelobjectdetails", "modelobjectlist"})
      */
     protected $type = 'geologicalpoint';
 
@@ -23,27 +24,33 @@ class GeologicalPoint extends ModelObject
      * @var Point
      *
      * @ORM\Column(name="geometry", type="point", nullable=true)
-     * @JMS\Groups({"details"})
+     * @JMS\Groups({"details", "modelobjectdetails", "soilmodelobjectdetails"})
      */
     private $point;
 
     /**
      * @var ArrayCollection GeologicalUnit $geologicalUnit
      *
-     * @ORM\OneToMany(targetEntity="AppBundle\Entity\GeologicalUnit", mappedBy="geologicalPoint", cascade={"persist"})
+     * @ORM\ManyToMany(targetEntity="AppBundle\Entity\GeologicalUnit", cascade={"persist"})
+     * @ORM\JoinTable(name="geological_points_geological_units",
+     *     joinColumns={
+     *          @ORM\JoinColumn(name="geological_point_id", referencedColumnName="id")
+     *      },
+     *     inverseJoinColumns={@ORM\JoinColumn(name="geological_unit_id", referencedColumnName="id", unique=true)}
+     *     )
      * @JMS\MaxDepth(2)
+     * @JMS\Groups({"details", "modelobjectdetails", "soilmodeldetails"})
      */
     private $geologicalUnits;
 
     /**
      * SoilProfile constructor.
      * @param User|null $owner
-     * @param Project|null $project
      * @param bool|false $public
      */
-    public function __construct(User $owner = null, Project $project = null, $public = false)
+    public function __construct(User $owner = null, $public = false)
     {
-        parent::__construct($owner, $project, $public);
+        parent::__construct($owner, $public);
         $this->geologicalUnits = new ArrayCollection();
     }
 

@@ -7,7 +7,7 @@ use FOS\RestBundle\View\View;
 use JMS\Serializer\SerializationContext;
 use Nelmio\ApiDocBundle\Annotation\ApiDoc;
 
-class ProjectRestController extends FOSRestController
+class ModelRestController extends FOSRestController
 {
     /**
      * Return the overall project list from a user.
@@ -24,7 +24,7 @@ class ProjectRestController extends FOSRestController
      * @param $username
      * @return View
      */
-    public function getUserProjectsAction($username)
+    public function getUserModelsAction($username)
     {
         $user = $this->getDoctrine()
             ->getRepository('AppBundle:User')
@@ -32,33 +32,36 @@ class ProjectRestController extends FOSRestController
                 'username' => $username
             ));
 
-        if (!$user)
-        {
+        if (!$user) {
             throw $this->createNotFoundException('User with username '.$username.' not found.');
         }
 
         if ($this->getUser() === $user || $this->isGranted('ROLE_ADMIN'))
         {
-            $projects = $this->getDoctrine()
-                ->getRepository('AppBundle:Project')
-                ->findBy(array(
-                    'owner' => $user
-                ));
+            $models = $this->getDoctrine()
+                ->getRepository('AppBundle:ModFlowModel')
+                ->findBy(
+                    array('owner' => $user),
+                    array('id' => 'ASC')
+                );
         } else
         {
-            $projects = $this->getDoctrine()
-                ->getRepository('AppBundle:Project')
-                ->findBy(array(
-                    'owner' => $user,
-                    'public' => true
-                ));
+            $models = $this->getDoctrine()
+                ->getRepository('AppBundle:ModFlowModel')
+                ->findBy(
+                    array(
+                        'owner' => $user,
+                        'public' => true
+                    ),
+                    array('id' => 'ASC')
+                );
         }
 
         $view = View::create();
-        $view->setData($projects)
+        $view->setData($models)
             ->setStatusCode(200)
             ->setSerializationContext(SerializationContext::create()
-                ->setGroups(array('projectList'))
+                ->setGroups(array('list'))
             )
         ;
 
@@ -77,47 +80,47 @@ class ProjectRestController extends FOSRestController
      *   }
      * )
      *
-     * @param $projectId
+     * @param $modelId
      *
      * @return View
      */
-    public function getProjectAction($projectId)
+    public function getModelAction($modelId)
     {
 
         if ($this->isGranted('ROLE_ADMIN'))
         {
-            $project = $this->getDoctrine()
-                ->getRepository('AppBundle:Project')
+            $model = $this->getDoctrine()
+                ->getRepository('AppBundle:ModFlowModel')
                 ->findOneBy(array(
-                    'id' => $projectId
+                    'id' => $modelId
                 ));
         } elseif ($this->isGranted('ROLE_USER'))
         {
-            $project = $this->getDoctrine()
-                ->getRepository('AppBundle:Project')
+            $model = $this->getDoctrine()
+                ->getRepository('AppBundle:ModFlowModel')
                 ->findOneBy(array(
-                    'id' => $projectId,
+                    'id' => $modelId,
                     'owner' => $this->getUser()
                 ));
         } else
         {
-            $project = $this->getDoctrine()
-                ->getRepository('AppBundle:Project')
+            $model = $this->getDoctrine()
+                ->getRepository('AppBundle:ModFlowModel')
                 ->findOneBy(array(
-                    'id' => $projectId,
+                    'id' => $modelId,
                     'public' => true
                 ));
         }
 
-        if (!$project) {
-            throw $this->createNotFoundException('Project not found.');
+        if (!$model) {
+            throw $this->createNotFoundException('Model not found.');
         }
 
         $serializationContext = SerializationContext::create();
-        $serializationContext->setGroups('projectDetails');
+        $serializationContext->setGroups('modeldetails');
 
         $view = View::create();
-        $view->setData($project)
+        $view->setData($model)
             ->setStatusCode(200)
             ->setSerializationContext($serializationContext)
         ;

@@ -3,17 +3,16 @@
 namespace AppBundle\Tests\Entity;
 
 use AppBundle\Entity\Boundary;
-use AppBundle\Entity\Project;
 use AppBundle\Entity\Property;
 use AppBundle\Entity\PropertyFixedIntervalValue;
 use AppBundle\Entity\PropertyType;
 use AppBundle\Entity\User;
 use AppBundle\Model\BoundaryFactory;
-use AppBundle\Model\ProjectFactory;
 use AppBundle\Model\PropertyFactory;
 use AppBundle\Model\PropertyTimeValueFactory;
 use AppBundle\Model\PropertyTypeFactory;
 use AppBundle\Model\PropertyValueFactory;
+use AppBundle\Model\UserFactory;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
 class PropertyTest extends WebTestCase
@@ -27,11 +26,6 @@ class PropertyTest extends WebTestCase
      * @var User $user
      */
     protected $user;
-
-    /**
-     * @var Project $project
-     */
-    protected $project;
 
     /**
      * @var Boundary $boundary
@@ -61,21 +55,18 @@ class PropertyTest extends WebTestCase
         ;
 
         // Setup
-        $this->user = new User();
+        $this->user = UserFactory::create();
         $this->user->setUsername('testUser_2');
         $this->user->setEmail('testUsersEmail');
         $this->user->setPassword('usersPassword');
         $this->user->setEnabled(true);
         $this->entityManager->persist($this->user);
 
-        $this->project = ProjectFactory::setOwnerAndPublic($this->user, true);
-        $this->project->setName('TestProject');
-        $this->entityManager->persist($this->project);
-
-        $this->boundary = BoundaryFactory::setOwnerProjectNameAndPublic($this->user, $this->project, 'testBoundary', true);
+        $this->boundary = BoundaryFactory::setOwnerNameAndPublic($this->user, 'testBoundary', true);
         $this->entityManager->persist($this->boundary);
 
         $this->propertyType = PropertyTypeFactory::setName('testProperty');
+        $this->propertyType->setAbbreviation("tp");
         $this->entityManager->persist($this->propertyType);
 
         /** @var Property property */
@@ -121,7 +112,7 @@ class PropertyTest extends WebTestCase
 
         $value = new PropertyFixedIntervalValue();
         $value->setDateTimeBegin(new \DateTime('2000-01-01'));
-        $value->setDateTimeInterval('P1D');
+        $value->setDateTimeIntervalString('P1D');
         $value->setValues(array(1,2,3,4,5,6,7,8,9,10));
         $value->setProperty($this->property);
         $this->property->addValue($value);
@@ -178,7 +169,7 @@ class PropertyTest extends WebTestCase
 
         $value = new PropertyFixedIntervalValue();
         $value->setDateTimeBegin($startDate);
-        $value->setDateTimeInterval('P1D');
+        $value->setDateTimeIntervalString('P1D');
         $value->setValues(array(1,2,3,4,5,6,7,8,9,10));
         $value->setProperty($this->property);
         $this->property->addValue($value);
@@ -189,7 +180,7 @@ class PropertyTest extends WebTestCase
 
         $value = new PropertyFixedIntervalValue();
         $value->setDateTimeBegin($earlierStartDate);
-        $value->setDateTimeInterval('P1D');
+        $value->setDateTimeIntervalString('P1D');
         $value->setValues(array(1,2,3,4,5,6,7,8,9,10));
         $value->setProperty($this->property);
         $this->property->addValue($value);
@@ -247,7 +238,7 @@ class PropertyTest extends WebTestCase
 
         $value = new PropertyFixedIntervalValue();
         $value->setDateTimeBegin($startDate);
-        $value->setDateTimeInterval('P1D');
+        $value->setDateTimeIntervalString('P1D');
         $value->setValues(array(1,2,3,4,5,6,7,8,9,10));
         $value->setProperty($this->property);
         $this->property->addValue($value);
@@ -259,7 +250,7 @@ class PropertyTest extends WebTestCase
 
         $value = new PropertyFixedIntervalValue();
         $value->setDateTimeBegin($laterStartDate);
-        $value->setDateTimeInterval('P1D');
+        $value->setDateTimeIntervalString('P1D');
         $value->setValues(array(1,2,3,4,5,6,7,8,9,10));
         $value->setProperty($this->property);
         $this->property->addValue($value);
@@ -276,7 +267,6 @@ class PropertyTest extends WebTestCase
     protected function tearDown()
     {
         $this->entityManager->remove($this->user);
-        $this->entityManager->remove($this->project);
         $this->entityManager->remove($this->boundary);
         $this->entityManager->remove($this->property);
         $this->entityManager->flush();

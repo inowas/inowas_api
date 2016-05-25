@@ -9,12 +9,14 @@ use JMS\Serializer\Annotation as JMS;
 /**
  * @ORM\Entity()
  * @ORM\Table(name="areas")
+ * @ORM\HasLifecycleCallbacks()
  */
 class Area extends ModelObject
 {
     /**
      * @var string
-     * @JMS\Groups({"list", "details"})
+     * @JMS\Type("string")
+     * @JMS\Groups({"list", "details", "modelobjectdetails", "modelobjectlist"})
      */
     protected $type = 'area';
 
@@ -26,9 +28,17 @@ class Area extends ModelObject
     private $geometry;
 
     /**
+     * @var array
+     *
+     * @JMS\Type("array")
+     */
+    private $rings;
+
+    /**
      * @var AreaType
      *
      * @ORM\ManyToOne(targetEntity="AppBundle\Entity\AreaType")
+     * @JMS\Groups({"list", "details", "modelobjectdetails", "modeldetails"})
      */
     private $areaType;
 
@@ -46,6 +56,7 @@ class Area extends ModelObject
     public function setGeometry(Polygon $geometry)
     {
         $this->geometry = $geometry;
+        $this->rings = $geometry->toArray();
     }
 
     /**
@@ -69,5 +80,34 @@ class Area extends ModelObject
     public function getAreaType()
     {
         return $this->areaType;
+    }
+
+    /**
+     * @JMS\VirtualProperty
+     * @JMS\SerializedName("geometry")
+     * @JMS\Groups({"modelobjectdetails", "modeldetails", "soilmodeldetails"})
+     *
+     * @return string
+     */
+    public function serializeDeserializeGeometry()
+    {
+        $polygons = null;
+
+        if (!is_null($this->geometry))
+        {
+            $new = array();
+            $polygons = $this->geometry->toArray();
+
+            foreach ($polygons as $polygon)
+            {
+                $polygon["type"] = $this->geometry->getType();
+                $polygon["srid"] = $this->geometry->getSrid();
+                $new[] = $polygon;
+            }
+
+            unset($polygons);
+            $polygons = $new;
+        }
+        return $polygons;
     }
 }

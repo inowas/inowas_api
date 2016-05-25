@@ -19,6 +19,14 @@ class GeologicalPointFactory
     }
 
     /**
+     * @return GeologicalPoint
+     */
+    public static function create()
+    {
+        return new GeologicalPoint();
+    }
+
+    /**
      * @param User|null $owner
      * @param Project $project
      * @param bool|false $public
@@ -47,6 +55,24 @@ class GeologicalPointFactory
         $geologicalPoint = new GeologicalPoint();
         $geologicalPoint->setOwner($owner);
         $geologicalPoint->addProject($project);
+        $geologicalPoint->setName($name);
+        $geologicalPoint->setPoint($point);
+        $geologicalPoint->setPublic($public);
+
+        return $geologicalPoint;
+    }
+
+    /**
+     * @param UserInterface|null $owner
+     * @param string $name
+     * @param Point|null $point
+     * @param bool|false $public
+     * @return GeologicalPoint
+     */
+    public static function setOwnerNameAndPoint(UserInterface $owner = null, $name = "", Point $point = null, $public = false)
+    {
+        $geologicalPoint = new GeologicalPoint();
+        $geologicalPoint->setOwner($owner);
         $geologicalPoint->setName($name);
         $geologicalPoint->setPoint($point);
         $geologicalPoint->setPublic($public);

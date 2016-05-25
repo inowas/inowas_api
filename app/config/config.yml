@@ -56,15 +56,20 @@ doctrine:
         #     path:     "%database_path%"
 
         types:
-            geometry:   CrEOF\Spatial\DBAL\Types\GeometryType
-            point:      CrEOF\Spatial\DBAL\Types\Geometry\PointType
-            polygon:    CrEOF\Spatial\DBAL\Types\Geometry\PolygonType
-            linestring: CrEOF\Spatial\DBAL\Types\Geometry\LineStringType
+            point:          CrEOF\Spatial\DBAL\Types\Geometry\PointType
+            polygon:        CrEOF\Spatial\DBAL\Types\Geometry\PolygonType
+            linestring:     CrEOF\Spatial\DBAL\Types\Geometry\LineStringType
+            raster:         AppBundle\Type\RasterType
+            uuid:           Ramsey\Uuid\Doctrine\UuidType
 
     orm:
         auto_generate_proxy_classes: "%kernel.debug%"
         naming_strategy: doctrine.orm.naming_strategy.underscore
         auto_mapping: true
+
+        dql:
+            numeric_functions:
+                st_geomfromtext: CrEOF\Spatial\ORM\Query\AST\Functions\PostgreSql\STGeomFromText
 
 # Swiftmailer Configuration
 swiftmailer:

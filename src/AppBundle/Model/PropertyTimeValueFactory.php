@@ -15,6 +15,12 @@ class PropertyTimeValueFactory
         return new PropertyTimeValue();
     }
 
+    /**
+     * @param Property $property
+     * @param \DateTime $timestamp
+     * @param $value
+     * @return PropertyTimeValue
+     */
     public static function setPropertyDateTimeAndValue(Property $property, \DateTime $timestamp, $value)
     {
         $ptv = new PropertyTimeValue();
@@ -23,5 +29,23 @@ class PropertyTimeValueFactory
         $ptv->setValue($value);
 
         return $ptv;
+    }
+
+    /**
+     * @return PropertyTimeValue
+     */
+    public static function create()
+    {
+        return new PropertyTimeValue();
+    }
+
+    /**
+     * @return PropertyTimeValue
+     */
+    public static function createWithTime(\DateTime $dateTime)
+    {
+        $propertyTimeValue = new PropertyTimeValue();
+        $propertyTimeValue->setDatetime($dateTime);
+        return $propertyTimeValue;
     }
 }

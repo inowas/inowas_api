@@ -16,6 +16,11 @@ class PropertyTypeFactory
         return new PropertyType();
     }
 
+    public static function create()
+    {
+        return new PropertyType();
+    }
+
     public static function setName($name = "")
     {
         $propertyType = new PropertyType();

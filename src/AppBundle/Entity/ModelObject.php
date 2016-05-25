@@ -5,11 +5,12 @@ namespace AppBundle\Entity;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
 use JMS\Serializer\Annotation as JMS;
+use Ramsey\Uuid\Uuid;
 
 /**
  * ModelObject
  * @ORM\HasLifecycleCallbacks()
- * @ORM\Entity
+ * @ORM\Entity(repositoryClass="AppBundle\Repository\ModelObjectRepository")
  * @ORM\Table(name="model_objects")
  * @ORM\InheritanceType("JOINED")
  * @ORM\DiscriminatorColumn(name="discr", type="string")
@@ -22,54 +23,58 @@ use JMS\Serializer\Annotation as JMS;
  *                          "st" = "Stream"
  * })
  */
-
 abstract class ModelObject
 {
     /**
      * @var string
      *
-     * @JMS\Groups({"list", "details"})
-     */
-    protected $type = 'modelobject';
-
-    /**
-     * @var integer
-     *
-     * @ORM\Column(name="id", type="integer")
      * @ORM\Id
-     * @ORM\GeneratedValue(strategy="AUTO")
-     * @JMS\Groups({"list", "details"})
+     * @ORM\Column(name="id", type="uuid", unique=true)
+     * @JMS\Type("string")
+     * @JMS\Groups({"list", "details", "layerdetails", "modeldetails", "modelobjectdetails", "modelobjectlist", "soilmodeldetails"})
      */
     protected $id;
+
+    /**
+     * @var User
+     *
+     * @ORM\ManyToOne(targetEntity="User")
+     * @ORM\JoinColumn(name="owner_id", referencedColumnName="id", onDelete="CASCADE")
+     * @JMS\Groups({"modelobjectdetails", "modelobjectlist"})
+     */
+    protected $owner;
 
     /**
      * @var string
      *
      * @ORM\Column(name="name", type="string", length=255, nullable=true)
-     * @JMS\Groups({"list", "details"})
+     * @JMS\Groups({"list", "details", "layerdetails", "modelobjectdetails", "modelobjectlist", "soilmodeldetails"})
      */
     protected $name;
 
     /**
-     * @var ArrayCollection Project
-     *
-     * @ORM\ManyToMany(targetEntity="Project", inversedBy="modelObjects")
-     * @ORM\JoinTable(name="projects_model_objects")
-     **/
-    protected $projects;
+     * @var string
+     * @JMS\Type("string")
+     * @JMS\Groups({"list", "details", "modelobjectdetails", "modelobjectlist"})
+     */
+    protected $type = 'modelobject';
 
     /**
-     * @var User
+     * @var ArrayCollection SoilModel
      *
-     * @ORM\ManyToOne(targetEntity="User", inversedBy="ownedModelObjects")
-     * @ORM\JoinColumn(name="owner_id", referencedColumnName="id", onDelete="cascade")
-     */
-    protected $owner;
+     * @ORM\ManyToMany(targetEntity="AppBundle\Entity\SoilModel", inversedBy="modelObjects", cascade={"persist", "remove"})
+     * @ORM\JoinTable(name="soil_model_model_objects")
+     * @JMS\Groups({"modelobjectdetails"})
+     * @JMS\MaxDepth(1)
+     **/
+    protected $soilModels;
 
     /**
      * @var ArrayCollection Property
      *
-     * @ORM\OneToMany(targetEntity="AppBundle\Entity\Property", mappedBy="modelObject")
+     * @ORM\OneToMany(targetEntity="AppBundle\Entity\Property", mappedBy="modelObject", cascade={"persist", "remove"})
+     * @JMS\Type("ArrayCollection<AppBundle\Entity\Property>")
+     * @JMS\Groups({"details", "layerdetails", "modelobjectdetails", "soilmodeldetails"})
      */
     protected $properties;
 
@@ -77,7 +82,6 @@ abstract class ModelObject
      * @var ArrayCollection
      *
      * @JMS\Accessor(getter="getPropertyIds")
-     * @JMS\Groups({"details"})
      * @JMS\Type("array<integer>")
      */
     protected $propertyIds;
@@ -87,6 +91,8 @@ abstract class ModelObject
      *
      * @ORM\ManyToMany(targetEntity="ObservationPoint", inversedBy="modelObjects")
      * @ORM\JoinTable(name="model_objects_observation_points")
+     * @JMS\Groups({"modelobjectdetails", "soilmodeldetails"})
+     * @JMS\MaxDepth(5)
      */
     protected $observationPoints;
 
@@ -94,41 +100,55 @@ abstract class ModelObject
      * @var boolean
      *
      * @ORM\Column(name="public", type="boolean")
-     * @JMS\Groups({"list", "details"})
+     * @JMS\Groups({"list", "details", "layerdetails", "modelobjectdetails", "modelobjectlist", "soilmodeldetails"})
      */
     protected $public;
 
     /**
      * @var \DateTime
      *
-     * @ORM\Column(name="dateCreated", type="datetime")
+     * @ORM\Column(name="date_created", type="datetime")
+     * @JMS\Groups({"modelobjectdetails", "soilmodeldetails"})
      */
     protected $dateCreated;
 
     /**
      * @var \DateTime
      *
-     * @ORM\Column(name="dateModified", type="datetime")
+     * @ORM\Column(name="date_modified", type="datetime")
+     * @JMS\Groups({"modelobjectdetails", "soilmodeldetails"})
      */
     protected $dateModified;
 
     /**
      * Constructor
      * @param User $owner
-     * @param Project $project
      * @param $public
      */
-    public function __construct(User $owner = null, Project $project = null, $public = false)
+    public function __construct(User $owner = null, $public = false)
     {
+        $this->id = Uuid::uuid4();
         $this->owner = $owner;
         $this->public = $public;
-        $this->projects = new ArrayCollection();
+        $this->soilModels = new ArrayCollection();
         $this->propertyIds = new ArrayCollection();
-        if ($project) $this->addProject($project);
         $this->properties = new ArrayCollection();
         $this->observationPoints = new ArrayCollection();
         $this->dateCreated = new \DateTime();
         $this->dateModified = new \DateTime();
+    }
+
+    /**
+     * Set Id
+     *
+     * @param $id
+     * @return $this
+     */
+    public function setId($id)
+    {
+        $this->id = $id;
+
+        return $this;
     }
 
     /**
@@ -145,7 +165,7 @@ abstract class ModelObject
      * Set public
      *
      * @param boolean $public
-     * @return ModelObject
+     * @return $this
      */
     public function setPublic($public)
     {
@@ -168,7 +188,7 @@ abstract class ModelObject
      * Set dateCreated
      *
      * @param \DateTime $dateCreated
-     * @return ModelObject
+     * @return $this
      */
     public function setDateCreated($dateCreated)
     {
@@ -191,7 +211,7 @@ abstract class ModelObject
      * Set dateModified
      *
      * @param \DateTime $dateModified
-     * @return ModelObject
+     * @return $this
      */
     public function setDateModified($dateModified)
     {
@@ -211,45 +231,41 @@ abstract class ModelObject
     }
 
     /**
-     * Add projects
-     *
-     * @param \AppBundle\Entity\Project $projects
-     * @return ModelObject
+     * Get SoilModels
      */
-    public function addProject(Project $projects)
+    public function getSoilModels()
     {
-        $this->projects[] = $projects;
-        $projects->addModelObject($this);
+        return $this->soilModels;
+    }
+
+    /**
+     * Add SoilModel
+     *
+     * @param SoilModel $soilModel
+     * @return $this
+     */
+    public function addSoilModel(SoilModel $soilModel)
+    {
+        $this->soilModels[] = $soilModel;
 
         return $this;
     }
 
     /**
-     * Remove projects
+     * Remove SoilModel
      *
-     * @param \AppBundle\Entity\Project $projects
+     * @param SoilModel $soilModel
      */
-    public function removeProject(Project $projects)
+    public function removeSoilModel(SoilModel $soilModel)
     {
-        $this->projects->removeElement($projects);
-        $projects->removeModelObject($this);
-    }
-
-    /**
-     * Get projects
-     *
-     * @return \Doctrine\Common\Collections\Collection 
-     */
-    public function getProjects()
-    {
-        return $this->projects;
+        $this->soilModels->removeElement($soilModel);
     }
 
     /**
      * Set owner
      *
      * @param \AppBundle\Entity\User $owner
-     * @return ModelObject
+     * @return $this
      */
     public function setOwner(User $owner = null)
     {
@@ -272,10 +288,11 @@ abstract class ModelObject
      * Add Property
      *
      * @param \AppBundle\Entity\Property $property
-     * @return ModelObject
+     * @return $this
      */
     public function addProperty(Property $property)
     {
+        $property->setModelObject($this);
         $this->properties[] = $property;
 
         return $this;
@@ -305,7 +322,7 @@ abstract class ModelObject
      * Add observationPoints
      *
      * @param \AppBundle\Entity\ObservationPoint $observationPoints
-     * @return ModelObject
+     * @return $this
      */
     public function addObservationPoint(ObservationPoint $observationPoints)
     {
@@ -348,7 +365,7 @@ abstract class ModelObject
      * Set name
      *
      * @param string $name
-     * @return ModelObject
+     * @return $this
      */
     public function setName($name)
     {

@@ -3,6 +3,8 @@
 namespace AppBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use JMS\Serializer\Annotation as JMS;
+use Ramsey\Uuid\Uuid;
 
 /**
  * Profile
@@ -13,11 +15,11 @@ use Doctrine\ORM\Mapping as ORM;
 class UserProfile
 {
     /**
-     * @var integer
+     * @var string
      *
-     * @ORM\Column(name="id", type="integer")
      * @ORM\Id
-     * @ORM\GeneratedValue(strategy="AUTO")
+     * @ORM\Column(name="id", type="uuid", unique=true)
+     * @JMS\Type("string")
      */
     protected $id;
 
@@ -37,11 +39,10 @@ class UserProfile
 
     /**
      * UserProfile constructor.
-     * @param User $user
      */
-    public function __construct(User $user)
+    public function __construct()
     {
-        $this->user = $user;
+        $this->id = Uuid::uuid4();
     }
 
     /**
@@ -55,30 +56,6 @@ class UserProfile
     }
 
     /**
-     * Set user
-     *
-     * @param \AppBundle\Entity\User $user
-     * @return UserProfile
-     */
-    public function setUser(User $user = null)
-    {
-        $this->user = $user;
-        $user->setProfile($this);
-
-        return $this;
-    }
-
-    /**
-     * Get user
-     *
-     * @return \AppBundle\Entity\User 
-     */
-    public function getUser()
-    {
-        return $this->user;
-    }
-
-    /**
      * @return string
      */
     public function getFirstName()
@@ -87,7 +64,8 @@ class UserProfile
     }
 
     /**
-     * @param string $firstName
+     * @param null $firstName
+     * @return $this
      */
     public function setFirstName($firstName = null)
     {
@@ -96,6 +74,8 @@ class UserProfile
             $firstName = "";
         }
         $this->firstName = $firstName;
+        
+        return $this;
     }
 
     /**
@@ -107,7 +87,8 @@ class UserProfile
     }
 
     /**
-     * @param string $lastName
+     * @param null $lastName
+     * @return $this
      */
     public function setLastName($lastName = null)
     {
@@ -116,5 +97,7 @@ class UserProfile
             $lastName = "";
         }
         $this->lastName = $lastName;
+
+        return $this;
     }
 }

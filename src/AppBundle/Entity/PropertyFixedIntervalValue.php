@@ -9,7 +9,6 @@ use JMS\Serializer\Annotation as JMS;
 /**
  * @ORM\Entity()
  * @ORM\Table(name="property_fixed_interval_values")
- * @JMS\ExclusionPolicy("all")
  */
 class PropertyFixedIntervalValue extends AbstractValue
 {
@@ -17,7 +16,7 @@ class PropertyFixedIntervalValue extends AbstractValue
      * @var \DateTime
      *
      * @ORM\Column(name="date_time", type="datetimetz")
-     * @JMS\Expose()
+     * @JMS\Groups("modeldetails")
      */
     private $dateTimeBegin;
 
@@ -26,15 +25,15 @@ class PropertyFixedIntervalValue extends AbstractValue
      * more info herer: http://php.net/manual/de/dateinterval.construct.php
      *
      * @ORM\Column(name="interval", type="string", length=255)
-     * @JMS\Expose()
+     * @JMS\Groups("modeldetails")
      */
-    private $dateTimeInterval;
+    private $dateTimeIntervalString;
 
     /**
      * @var array
      *
      * @ORM\Column(name="values", type="simple_array")
-     * @JMS\Expose()
+     * @JMS\Groups({"modeldetails", "modelobjectdetails"})
      */
     private $values;
 
@@ -64,12 +63,12 @@ class PropertyFixedIntervalValue extends AbstractValue
     /**
      * Set dateTimeInterval
      *
-     * @param string $dateTimeInterval
+     * @param string $dateTimeIntervalString
      * @return PropertyFixedIntervalValue
      */
-    public function setDateTimeInterval($dateTimeInterval)
+    public function setDateTimeIntervalString($dateTimeIntervalString)
     {
-        $this->dateTimeInterval = $dateTimeInterval;
+        $this->dateTimeIntervalString = $dateTimeIntervalString;
 
         return $this;
     }
@@ -79,9 +78,9 @@ class PropertyFixedIntervalValue extends AbstractValue
      *
      * @return \DateInterval
      */
-    public function getDateTimeInterval()
+    public function getDateTimeIntervalString()
     {
-        return $this->dateTimeInterval;
+        return $this->dateTimeIntervalString;
     }
 
     /**
@@ -114,9 +113,9 @@ class PropertyFixedIntervalValue extends AbstractValue
 
     public function getDateEnd()
     {
-        if ($this->dateTimeInterval)
+        if ($this->dateTimeIntervalString)
         {
-            $interval = new \DateInterval($this->dateTimeInterval);
+            $interval = new \DateInterval($this->dateTimeIntervalString);
             $dateEnd = clone $this->getDateBegin();
             for ($i = 0; $i < $this->getNumberOfValues(); $i++)
             {
@@ -144,17 +143,16 @@ class PropertyFixedIntervalValue extends AbstractValue
     public function getTimeValues()
     {
         $timeValues = array();
+        $dateTime = clone $this->dateTimeBegin;
+        $interval = new \DateInterval($this->dateTimeIntervalString);
 
-        for ($i = 0; $i < $this->getNumberOfValues(); $i++)
+        for ($i = 0; $i < count($this->values); $i++)
         {
-            $dateTime = clone $this->dateTimeBegin;
-            $interval = new \DateInterval($this->dateTimeInterval);
-
-            for ($addIntervalCounter = 0; $addIntervalCounter < $i; $i++)
+            if ($i != 0)
             {
+                $dateTime = clone $dateTime;
                 $dateTime->add($interval);
             }
-
             $timeValues[] = TimeValueFactory::setDateTimeAndValue($dateTime, $this->values[$i]);
         }
 

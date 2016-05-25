@@ -9,7 +9,7 @@ class Point extends \CrEOF\Spatial\PHP\Types\Geometry\Point
     /**
      * @var float
      *
-     * @JMS\Groups({"details"})
+     * @JMS\Groups({"details", "modelobjectdetails"})
      * @JMS\Type("float")
      */
     protected $x;
@@ -17,7 +17,7 @@ class Point extends \CrEOF\Spatial\PHP\Types\Geometry\Point
     /**
      * @var float
      *
-     * @JMS\Groups({"details"})
+     * @JMS\Groups({"details", "modelobjectdetails"})
      * @JMS\Type("float")
      */
     protected $y;
@@ -25,7 +25,7 @@ class Point extends \CrEOF\Spatial\PHP\Types\Geometry\Point
     /**
      * @var int
      *
-     * @JMS\Groups({"details"})
+     * @JMS\Groups({"details", "modelobjectdetails"})
      * @JMS\Type("integer")
      */
     protected $srid;

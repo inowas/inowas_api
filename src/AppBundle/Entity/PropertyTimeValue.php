@@ -9,7 +9,6 @@ use JMS\Serializer\Annotation as JMS;
 /**
  * @ORM\Entity()
  * @ORM\Table(name="property_time_values")
- * @JMS\ExclusionPolicy("all")
  */
 class PropertyTimeValue extends AbstractValue
 {
@@ -17,7 +16,7 @@ class PropertyTimeValue extends AbstractValue
      * @var \DateTime
      *
      * @ORM\Column(name="timeStamp", type="datetimetz")
-     * @JMS\Expose()
+     * @JMS\Groups({"modeldetails", "modelobjectdetails"})
      */
     private $datetime;
 
@@ -25,9 +24,18 @@ class PropertyTimeValue extends AbstractValue
      * @var float
      *
      * @ORM\Column(name="value", type="float")
-     * @JMS\Expose()
+     * @JMS\Groups({"modeldetails", "modelobjectdetails"})
      */
     private $value;
+
+    /**
+     * @var Raster $raster
+     *
+     * @ORM\OneToOne(targetEntity="AppBundle\Entity\Raster", cascade={"persist", "remove"})
+     * @ORM\JoinColumn(name="raster_id", referencedColumnName="id", onDelete="SET NULL")
+     * @JMS\Groups({"modeldetails", "modelobjectdetails"})
+     */
+    private $raster;
 
     /**
      * Set timeStamp
@@ -116,7 +124,34 @@ class PropertyTimeValue extends AbstractValue
     public function getTimeValues()
     {
         return array(
-            TimeValueFactory::setDateTimeAndValue($this->getDatetime(), $this->value)
+            TimeValueFactory::create()
+                ->setDatetime($this->getDateBegin())
+                ->setValue($this->value)
+                ->setRaster($this->raster)
         );
+    }
+
+    /**
+     * Set raster
+     *
+     * @param \AppBundle\Entity\Raster $raster
+     *
+     * @return PropertyTimeValue
+     */
+    public function setRaster(\AppBundle\Entity\Raster $raster = null)
+    {
+        $this->raster = $raster;
+
+        return $this;
+    }
+
+    /**
+     * Get raster
+     *
+     * @return \AppBundle\Entity\Raster
+     */
+    public function getRaster()
+    {
+        return $this->raster;
     }
 }

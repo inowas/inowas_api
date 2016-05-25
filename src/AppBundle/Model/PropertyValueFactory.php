@@ -23,4 +23,9 @@ class PropertyValueFactory
 
         return $pv;
     }
+
+    public static function create()
+    {
+        return new PropertyValue();
+    }
 }

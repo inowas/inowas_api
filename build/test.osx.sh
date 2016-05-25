@@ -6,11 +6,7 @@ SQL_DIR=$DIR/build/sql
 cd $DIR
 bin/console doctrine:database:drop --force --env=test
 bin/console doctrine:database:create --env=test
-
 psql inowas_test < "$SQL_DIR"/structure.sql
-
 bin/console doctrine:schema:create --env=test
-
 cd $DIR
-
-phpunit
+./vendor/bin/phpunit

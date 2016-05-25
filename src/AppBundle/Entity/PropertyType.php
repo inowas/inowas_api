@@ -4,6 +4,7 @@ namespace AppBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 use JMS\Serializer\Annotation as JMS;
+use Ramsey\Uuid\Uuid;
 
 /**
  * ModelObjectPropertyType
@@ -14,11 +15,11 @@ use JMS\Serializer\Annotation as JMS;
 class PropertyType
 {
     /**
-     * @var integer
+     * @var string
      *
-     * @ORM\Column(name="id", type="integer")
      * @ORM\Id
-     * @ORM\GeneratedValue(strategy="AUTO")
+     * @ORM\Column(name="id", type="uuid")
+     * @JMS\Type("string")
      * @JMS\Groups({"list", "details"})
      */
     private $id;
@@ -26,16 +27,28 @@ class PropertyType
     /**
      * @var string
      *
+     * @ORM\Column(name="abbreviation", type="string", length=255)
+     * @JMS\Groups({"list", "details", "modeldetails", "modelobjectdetails"})
+     */
+    private $abbreviation;
+
+    /**
+     * @var string
+     *
      * @ORM\Column(name="name", type="string", length=255)
-     * @JMS\Groups({"list", "details"})
+     * @JMS\Groups({"list", "details", "modeldetails", "modelobjectdetails"})
      */
     private $name;
 
+    public function __construct()
+    {
+        $this->id = Uuid::uuid4();
+    }
 
     /**
      * Get id
      *
-     * @return integer 
+     * @return integer
      */
     public function getId()
     {
@@ -43,17 +56,38 @@ class PropertyType
     }
 
     /**
+     * Set abbreviation
+     *
+     * @param string $abbreviation
+     *
+     * @return PropertyType
+     */
+    public function setAbbreviation($abbreviation)
+    {
+        $this->abbreviation = $abbreviation;
+
+        return $this;
+    }
+
+    /**
+     * Get abbreviation
+     *
+     * @return string
+     */
+    public function getAbbreviation()
+    {
+        return $this->abbreviation;
+    }
+
+    /**
      * Set name
      *
      * @param string $name
+     *
      * @return PropertyType
      */
-    public function setName($name=null)
+    public function setName($name)
     {
-        if (is_null($name))
-        {
-            $name = "";
-        }
         $this->name = $name;
 
         return $this;
@@ -62,7 +96,7 @@ class PropertyType
     /**
      * Get name
      *
-     * @return string 
+     * @return string
      */
     public function getName()
     {

@@ -3,7 +3,6 @@
 namespace AppBundle\Entity;
 
 use AppBundle\Model\Point;
-
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
 use JMS\Serializer\Annotation as JMS;
@@ -11,13 +10,13 @@ use JMS\Serializer\Annotation as JMS;
 /**
  * @ORM\Entity()
  * @ORM\Table(name="observation_points")
- * @JMS\ExclusionPolicy("all")
  */
 class ObservationPoint extends ModelObject
 {
     /**
      * @var string
-     * @JMS\Groups({"list", "details"})
+     * @JMS\Type("string")
+     * @JMS\Groups({"list", "details", "modelobjectdetails", "modelobjectlist"})
      */
     protected $type = 'observationPoint';
 
@@ -32,6 +31,7 @@ class ObservationPoint extends ModelObject
      * @var $elevation
      *
      * @ORM\Column(name="elevation", type="float", nullable=true)
+     * @JMS\Groups({"modelobjectdetails"})
      */
     private $elevation;
 
@@ -45,12 +45,11 @@ class ObservationPoint extends ModelObject
     /**
      * ObservationPoint constructor.
      * @param User|null $owner
-     * @param Project|null $project
      * @param bool|false $public
      */
-    public function __construct(User $owner = null, Project $project = null, $public = false)
+    public function __construct(User $owner = null, $public = false)
     {
-        parent::__construct($owner, $project, $public);
+        parent::__construct($owner, $public);
 
         $this->modelObjects = new ArrayCollection();
     }
@@ -150,5 +149,22 @@ class ObservationPoint extends ModelObject
     public function getType()
     {
         return 'ObservationPoint';
+    }
+
+    /**
+     * @JMS\VirtualProperty()
+     * @JMS\SerializedName("point")
+     * @JMS\Groups({"modelobjectdetails"})
+     */
+    public function convertPointToPoint()
+    {
+        if (!is_null($this->point))
+        {
+            $point = new Point($this->point->getX(),$this->point->getY());
+            $point->setSrid($this->point->getSrid());
+            return $point;
+        }
+
+        return null;
     }
 }

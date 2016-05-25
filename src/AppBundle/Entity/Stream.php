@@ -10,13 +10,13 @@ use JMS\Serializer\Annotation as JMS;
 /**
  * @ORM\Entity()
  * @ORM\Table(name="streams")
- * @JMS\ExclusionPolicy("all")
  */
 class Stream extends ModelObject
 {
     /**
      * @var string
-     * @JMS\Groups({"list", "details"})
+     * @JMS\Type("string")
+     * @JMS\Groups({"list", "details", "modelobjectdetails", "modelobjectlist"})
      */
     protected $type = 'stream';
 
@@ -78,5 +78,43 @@ class Stream extends ModelObject
     public function getLine()
     {
         return $this->line;
+    }
+
+    /**
+     * @JMS\VirtualProperty
+     * @JMS\SerializedName("starting_point")
+     * @JMS\Groups({"modelobjectdetails"})
+     *
+     * @return string
+     */
+    public function serializeDeserializeStartingPoint()
+    {
+        $sp = null;
+        if (!is_null($this->startingPoint))
+        {
+            $sp = $this->startingPoint->toArray();
+            $sp["type"] = $this->startingPoint->getType();
+            $sp["srid"] = $this->startingPoint->getSrid();
+        }
+        return $sp;
+    }
+
+    /**
+     * @JMS\VirtualProperty
+     * @JMS\SerializedName("line")
+     * @JMS\Groups({"modelobjectdetails"})
+     *
+     * @return string
+     */
+    public function serializeDeserializeLine()
+    {
+        $line = null;
+        if (!is_null($this->line))
+        {
+            $line = $this->line->toArray();
+            $line["type"] = $this->line->getType();
+            $line["srid"] = $this->line->getSrid();
+        }
+        return $line;
     }
 }

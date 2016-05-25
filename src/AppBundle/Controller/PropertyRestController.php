@@ -34,6 +34,17 @@ class PropertyRestController extends FOSRestController
     public function getPropertyAction($id, $paramFetcher)
     {
 
+        $property = $this->getDoctrine()
+            ->getRepository('AppBundle:Property')
+            ->findOneBy(array(
+                'id' => $id
+            ));
+
+        if (!$property)
+        {
+            throw $this->createNotFoundException('Property with id='.$id.' not found.');
+        }
+
         $startDate = null;
         $endDate = null;
 
@@ -47,22 +58,11 @@ class PropertyRestController extends FOSRestController
             $endDate = new \DateTime($paramFetcher->get('endDate'));
         }
 
-        $property = $this->getDoctrine()
-            ->getRepository('AppBundle:Property')
-            ->findOneBy(array(
-                'id' => $id
-            ));
-
-        if (!$property)
-        {
-            throw $this->createNotFoundException('Property with id='.$id.' not found.');
-        }
-
         $view = View::create();
         $view->setData($property)
             ->setStatusCode(200)
             ->setSerializationContext(SerializationContext::create()
-                ->setGroups('details')
+                ->setGroups('modelobjectdetails')
             )
         ;
 

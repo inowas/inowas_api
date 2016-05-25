@@ -2,27 +2,28 @@
 
 namespace AppBundle\Entity;
 
-use AppBundle\Model\PropertyValueInterface;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
 use JMS\Serializer\Annotation as JMS;
+use Ramsey\Uuid\Uuid;
 
 /**
  * FeatureProperty
  *
  * @ORM\HasLifecycleCallbacks()
  * @ORM\Table(name="properties")
- * @ORM\Entity
+ * @ORM\Entity()
+ * @JMS\AccessorOrder("custom", custom = {"id", "name", "description", "propertyType", "date_time_begin", "date_time_end"})
  */
 class Property
 {
     /**
-     * @var integer
+     * @var string
      *
-     * @ORM\Column(name="id", type="integer")
      * @ORM\Id
-     * @ORM\GeneratedValue(strategy="AUTO")
-     * @JMS\Groups({"list", "details"})
+     * @ORM\Column(name="id", type="uuid", unique=true)
+     * @JMS\Type("string")
+     * @JMS\Groups({"list", "details", "modeldetails", "modelobjectdetails", "soilmodeldetails"})
      */
     private $id;
 
@@ -30,9 +31,17 @@ class Property
      * @var string
      *
      * @ORM\Column(name="name", type="string", length=255, nullable=true)
-     * @JMS\Groups({"list", "details"})
+     * @JMS\Groups({"list", "details", "modeldetails", "modelobjectdetails", "soilmodeldetails"})
      */
     private $name;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="description", type="text", nullable=true)
+     * @JMS\Groups({"projectList", "projectDetails", "modelobjectdetails", "soilmodeldetails"})
+     */
+    private $description;
 
     /**
      * @var ModelObject
@@ -45,16 +54,16 @@ class Property
     /**
      * @var PropertyType
      *
-     * @ORM\ManyToOne(targetEntity="AppBundle\Entity\PropertyType")
-     * @ORM\JoinColumn(name="property_type_id", referencedColumnName="id")
-     * @JMS\Groups({"list", "details"})
+     * @ORM\ManyToOne(targetEntity="AppBundle\Entity\PropertyType", cascade={"persist", "remove"})
+     * @ORM\JoinColumn(name="property_type_id", referencedColumnName="id", onDelete="SET NULL")
+     * @JMS\Groups({"list", "details", "modeldetails", "modelobjectdetails", "soilmodeldetails"})
      */
     private $propertyType;
 
     /**
-     * @var ArrayCollection Values
+     * @var ArrayCollection
      *
-     * @ORM\OneToMany(targetEntity="AppBundle\Entity\AbstractValue", mappedBy="property", cascade={"persist", "remove"})
+     * @ORM\OneToMany(targetEntity="AppBundle\Entity\AbstractValue", mappedBy="property", cascade={"persist", "remove"}, orphanRemoval=true)
      */
     private $values;
 
@@ -62,7 +71,7 @@ class Property
      * @var \DateTime
      *
      * @ORM\Column(name="date_time_begin", type="datetime", nullable=true)
-     * @JMS\Groups({"list", "details"})
+     * @JMS\Groups({"list", "details", "modeldetails", "modelobjectdetails", "soilmodeldetails"})
      */
     private $dateTimeBegin;
 
@@ -70,7 +79,7 @@ class Property
      * @var \DateTime
      *
      * @ORM\Column(name="date_time_end", type="datetime", nullable=true)
-     * @JMS\Groups({"list", "details"})
+     * @JMS\Groups({"list", "details", "modeldetails", "modelobjectdetails", "soilmodeldetails"})
      */
     private $dateTimeEnd;
 
@@ -78,25 +87,30 @@ class Property
      * @var integer $numberOfValues
      *
      * @ORM\Column(name="number_of_values", type="integer")
-     * @JMS\Groups({"list", "details"})
+     * @JMS\Groups({"list", "details", "modeldetails", "modelobjectdetails", "soilmodeldetails"})
      */
     private $numberOfValues;
-
-    /**
-     * @var array timeValues
-     *
-     * @JMS\Accessor(getter="getTimeValues")
-     * @JMS\Type("array<AppBundle\Model\TimeValue>")
-     * @JMS\Groups({"list", "details"})
-     */
-    private $timeValues;
 
     /**
      * Constructor
      */
     public function __construct()
     {
+        $this->id = Uuid::uuid4();
         $this->values = new ArrayCollection();
+    }
+
+    /**
+     * Set id
+     * 
+     * @param $id
+     * @return $this
+     */
+    public function setId($id)
+    {
+        $this->id = $id;
+
+        return $this;
     }
 
     /**
@@ -185,23 +199,25 @@ class Property
     /**
      * Add values
      *
-     * @param \AppBundle\Entity\AbstractValue $values
+     * @param \AppBundle\Entity\AbstractValue $value
      * @return Property
      */
-    public function addValue(\AppBundle\Entity\AbstractValue $values)
+    public function addValue(\AppBundle\Entity\AbstractValue $value)
     {
-        $this->values[] = $values;
+        $value->setProperty($this);
+        $this->values[] = $value;
         return $this;
     }
 
     /**
-     * Remove values
+     * Remove value
      *
-     * @param \AppBundle\Entity\AbstractValue $values
+     * @param \AppBundle\Entity\AbstractValue $value
      */
-    public function removeValue(\AppBundle\Entity\AbstractValue $values)
+    public function removeValue(\AppBundle\Entity\AbstractValue $value)
     {
-        $this->values->removeElement($values);
+        $value->setProperty(null);
+        $this->values->removeElement($value);
     }
 
     /**
@@ -301,17 +317,44 @@ class Property
     }
 
     /**
-     *
+     * @JMS\VirtualProperty
+     * @JMS\SerializedName("values")
+     * @JMS\Groups({"modeldetails", "modelobjectdetails"})
      */
     public function getTimeValues()
     {
         $timeValues = array();
-        /** @var PropertyValueInterface $value */
+
+        /** @var AbstractValue $value */
         foreach ($this->values as $value)
         {
             $timeValues = array_merge($timeValues, $value->getTimeValues());
         }
-        $this->timeValues = $timeValues;
-        return $this->timeValues;
+
+        return $timeValues;
+    }
+
+    /**
+     * Set description
+     *
+     * @param string $description
+     *
+     * @return Property
+     */
+    public function setDescription($description)
+    {
+        $this->description = $description;
+
+        return $this;
+    }
+
+    /**
+     * Get description
+     *
+     * @return string
+     */
+    public function getDescription()
+    {
+        return $this->description;
     }
 }

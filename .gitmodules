@@ -1,0 +1,3 @@
+[submodule "py/pyprocessing"]
+	path = py/pyprocessing
+	url = git@github.com:inowas/pyprocessing.git
