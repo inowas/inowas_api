@@ -4,6 +4,14 @@ parameters:
 #    parameter_name: value
 
 services:
+    inowas.interpolation:
+        class: AppBundle\Service\Interpolation
+        arguments: ['@serializer', '@kernel']
+
+    inowas.layer:
+        class: AppBundle\Service\LayerTools
+        arguments: ['@doctrine.orm.default_entity_manager', '@inowas.interpolation']
+
 #    service_name:
 #        class: AppBundle\Directory\ClassName
 #        arguments: ["@another_service_name", "plain_value", "%parameter_name%"]

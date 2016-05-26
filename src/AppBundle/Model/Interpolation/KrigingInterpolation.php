@@ -19,15 +19,20 @@ class KrigingInterpolation
     protected $pointValues;
 
     /**
-     * KridgingInterpolation constructor.
+     * KrigingInterpolation constructor.
      * @param GridSize|null $gridSize
      * @param BoundingBox|null $boundingBox
+     * @param null $pointValues
      */
-    public function __construct(GridSize $gridSize = null, BoundingBox $boundingBox = null)
+    public function __construct(GridSize $gridSize = null, BoundingBox $boundingBox = null, $pointValues = null)
     {
         $this->boundingBox = $boundingBox;
         $this->gridSize = $gridSize;
-        $this->pointValues = new ArrayCollection();
+        $this->pointValues = $pointValues;
+
+        if (is_null($pointValues)) {
+            $this->pointValues = new ArrayCollection();
+        }
     }
 
     /**
