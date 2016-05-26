@@ -85,18 +85,25 @@ class GeologicalPoint extends ModelObject
      */
     public function addGeologicalUnit(GeologicalUnit $geologicalUnit)
     {
-        $this->geologicalUnits[] = $geologicalUnit;
+        if (!$this->geologicalUnits->contains($geologicalUnit)) {
+            $this->geologicalUnits[] = $geologicalUnit;
+        }
+
         return $this;
     }
 
     /**
      * Remove geologicalUnit
      *
-     * @param \AppBundle\Entity\GeologicalUnit $geologicalUnit
+     * @param GeologicalUnit $geologicalUnit
+     * @return $this
      */
-    public function removeRemoveGeologicalUnit(GeologicalUnit $geologicalUnit)
+    public function removeGeologicalUnit(GeologicalUnit $geologicalUnit)
     {
-        $this->geologicalUnits->removeElement($geologicalUnit);
+        if ($this->geologicalUnits->contains($geologicalUnit)) {
+            $this->geologicalUnits->removeElement($geologicalUnit);
+        }
+        return $this;
     }
 
     /**
@@ -107,15 +114,5 @@ class GeologicalPoint extends ModelObject
     public function getGeologicalUnits()
     {
         return $this->geologicalUnits;
-    }
-
-    /**
-     * Remove geologicalUnits
-     *
-     * @param \AppBundle\Entity\GeologicalUnit $geologicalUnits
-     */
-    public function removeGeologicalUnit(GeologicalUnit $geologicalUnits)
-    {
-        $this->geologicalUnits->removeElement($geologicalUnits);
     }
 }

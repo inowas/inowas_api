@@ -60,16 +60,6 @@ abstract class ModelObject
     protected $type = 'modelobject';
 
     /**
-     * @var ArrayCollection SoilModel
-     *
-     * @ORM\ManyToMany(targetEntity="AppBundle\Entity\SoilModel", inversedBy="modelObjects", cascade={"persist", "remove"})
-     * @ORM\JoinTable(name="soil_model_model_objects")
-     * @JMS\Groups({"modelobjectdetails"})
-     * @JMS\MaxDepth(1)
-     **/
-    protected $soilModels;
-
-    /**
      * @var ArrayCollection Property
      *
      * @ORM\OneToMany(targetEntity="AppBundle\Entity\Property", mappedBy="modelObject", cascade={"persist", "remove"})

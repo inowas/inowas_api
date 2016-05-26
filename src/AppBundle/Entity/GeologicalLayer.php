@@ -53,18 +53,26 @@ class GeologicalLayer extends ModelObject
      */
     public function addGeologicalUnit(GeologicalUnit $geologicalUnit)
     {
-        $this->geologicalUnits[] = $geologicalUnit;
+        if (!$this->geologicalUnits->contains($geologicalUnit)) {
+            $this->geologicalUnits[] = $geologicalUnit;
+        }
+
         return $this;
     }
 
     /**
      * Remove geologicalUnit
      *
-     * @param \AppBundle\Entity\GeologicalUnit $geologicalUnit
+     * @param GeologicalUnit $geologicalUnit
+     * @return $this
      */
     public function removeGeologicalUnit(GeologicalUnit $geologicalUnit)
     {
-        $this->geologicalUnits->removeElement($geologicalUnit);
+        if ($this->geologicalUnits->contains($geologicalUnit)) {
+            $this->geologicalUnits->removeElement($geologicalUnit);
+        }
+
+        return $this;
     }
 
     /**

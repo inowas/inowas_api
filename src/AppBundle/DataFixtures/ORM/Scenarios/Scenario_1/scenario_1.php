@@ -124,7 +124,6 @@ class LoadScenario_1 implements FixtureInterface, ContainerAwareInterface
 
         $soilModel->addGeologicalLayer($geologicalLayer);
         $entityManager->persist($soilModel);
-        $entityManager->persist($soilModel);
 
         // Create layer 3
         $geologicalLayer = GeologicalLayerFactory::setOwnerNameAndPublic($user, 'SC1_L3', $public);
@@ -328,8 +327,7 @@ class LoadScenario_1 implements FixtureInterface, ContainerAwareInterface
                 'name' => $geologicalUnitName
             ));
 
-        if ($geologicalUnit)
-        {
+        if ($geologicalUnit) {
             $layer->addGeologicalUnit($geologicalUnit);
         }
 
