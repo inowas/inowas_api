@@ -33,6 +33,7 @@ class InterpolationRestController extends FOSRestController
      */
     public function postInterpolationAction()
     {
+        
         $ki = new KrigingInterpolation(new GridSize(12, 13), new BoundingBox(1.2, 1.2, 2.1, .2));
         $ki->addPoint(new PointValue(1.1, 2.2, 3.4));
         $ki->addPoint(new PointValue(4.4, 5.5, 6.6));
@@ -66,17 +67,12 @@ class InterpolationRestController extends FOSRestController
             throw new ProcessFailedException($process);
         }
 
-        echo $process->getOutput();
+        $test = json_decode($process->getOutput());
 
-
-        #$serializer = $this->get('serializer');
-        #$serializedKi = $serializer->serialize($ki, 'json');
-        #$content = $this->render(':inowas/WPS:interpolation.xml.twig', array(
-        #    'jsonData' => $serializedKi
-        #));
+        print
 
         $view = View::create();
-        $view->setData($ki)
+        $view->setData("test")
             ->setStatusCode(200)
         ;
 
@@ -104,11 +100,48 @@ class InterpolationRestController extends FOSRestController
         $ki->addPoint(new PointValue(4.4, 5.5, 6.6));
         $serializer = $this->get('serializer');
         $serializedKi = $serializer->serialize($ki, 'json');
-        $content = $this->render(':inowas/WPS:interpolation.xml.twig', array(
-            'jsonData' => $serializedKi
-        ));
 
+        $tempFolder = '/tmp/interpolation';
 
-        return $content;
+        $fs = new Filesystem();
+        if (!$fs->exists('/tmp/interpolation')) {
+            $fs->mkdir($tempFolder);
+        }
+
+        $uuid = Uuid::uuid4();
+        $inputFile = $tempFolder.'/'.$uuid->toString();
+        $fs->dumpFile($inputFile, $serializedKi);
+
+        $scriptName="interpolationCalculation.py";
+        $builder = new ProcessBuilder();
+        $builder
+            ->setPrefix('python')
+            ->setArguments(array('-W', 'ignore', $scriptName, $inputFile))
+            ->setWorkingDirectory($this->get('kernel')->getRootDir().'/../py/pyprocessing/interpolation')
+        ;
+
+        /** @var Process $process */
+        $process = $builder
+            ->getProcess();
+        $process->run();
+
+        if (!$process->isSuccessful()) {
+            throw new ProcessFailedException($process);
+        }
+
+        $resultJSON = $process->getOutput();
+        dump($resultJSON);
+
+        $result = json_decode($resultJSON);
+        dump($result);
+
+        dump($serializer->serialize($result, 'json'));
+
+        $view = View::create();
+        $view->setData("")
+            ->setStatusCode(200)
+        ;
+
+        return $view;
     }
 }

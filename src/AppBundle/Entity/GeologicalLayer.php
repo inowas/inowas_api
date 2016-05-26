@@ -33,6 +33,8 @@ class GeologicalLayer extends ModelObject
      **/
     private $geologicalUnits;
 
+    public $soilModels;
+
     /**
      * Layer constructor.
      * @param User|null $owner

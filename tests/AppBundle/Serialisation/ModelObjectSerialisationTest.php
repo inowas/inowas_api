@@ -10,7 +10,6 @@ use AppBundle\Model\GeologicalLayerFactory;
 use AppBundle\Model\ObservationPointFactory;
 use AppBundle\Model\PropertyFactory;
 use AppBundle\Model\PropertyTypeFactory;
-use AppBundle\Model\SoilModelFactory;
 use AppBundle\Model\UserFactory;
 use JMS\Serializer\SerializationContext;
 use JMS\Serializer\Serializer;
@@ -40,11 +39,6 @@ class ModelObjectSerialisationTest extends \PHPUnit_Framework_TestCase
         $this->boundary = BoundaryFactory::create()
             ->setName('Boundary_Name')
             ->setOwner($this->owner)
-            ->addSoilModel(SoilModelFactory::create()
-                ->setName('SoilModel')
-                ->setPublic(true)
-                ->setOwner($this->owner)
-            )
             ->addProperty(PropertyFactory::create()
                 ->setName('ABoundaryProperty')
                 ->setPropertyType(PropertyTypeFactory::create()
@@ -97,11 +91,7 @@ class ModelObjectSerialisationTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals($boundary->name, $this->boundary->getName());
         $this->assertEquals($boundary->owner->id, $this->boundary->getOwner()->getId());
 
-        $this->assertCount(1, $boundary->soil_models);
-        $this->assertEquals($boundary->soil_models[0]->id, $this->boundary->getSoilModels()->first()->getId());
-
         $this->assertEquals($boundary->owner->id, $this->boundary->getOwner()->getId());
-
         $this->assertCount(1, $boundary->properties);
         $this->assertEquals($boundary->properties[0]->id, $this->boundary->getProperties()->first()->getId());
         $this->assertEquals($boundary->properties[0]->name, $this->boundary->getProperties()->first()->getName());

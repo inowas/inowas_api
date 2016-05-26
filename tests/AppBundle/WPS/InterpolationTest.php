@@ -35,7 +35,10 @@ class InterpolationTest extends WebTestCase
             ->get('templating');
     }
 
-    public function testDataWillBeRendered()
+    /**
+
+     */
+    public function DataWillBeRendered()
     {
         $ki = new KrigingInterpolation(new GridSize(12, 13), new BoundingBox(1.2, 1.2, 2.1, .2));
         $ki->addPoint(new PointValue(1.1, 2.2, 3.4));
@@ -50,7 +53,7 @@ class InterpolationTest extends WebTestCase
         $this->assertContains("{'type':'kriging','bounding_box':{'x_min':1.2,'x_max':1.2,'y_min':2.1,'y_max':0.2},'grid_size':{'n_x':12,'n_y':13},'point_values':[{'x':1.1,'y':2.2,'value':3.4},{'x':4.4,'y':5.5,'value':6.6}]}", $content);
     }
 
-    public function testIfServiceIsAvailable()
+    public function IfServiceIsAvailable()
     {
         //open connection
         $ch = curl_init();
@@ -68,7 +71,7 @@ class InterpolationTest extends WebTestCase
         $this->assertContains('<ows:Identifier>interpolation</ows:Identifier>', $response);
     }
 
-    public function testDataWillBeSent()
+    public function DataWillBeSent()
     {
         $numberOfColumns = 20;
         $numberOfRows = 20;

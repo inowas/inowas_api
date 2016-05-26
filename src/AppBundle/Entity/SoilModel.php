@@ -55,10 +55,10 @@ class SoilModel
     /**
      * @var ArrayCollection ModelObject $modelObjects
      *
-     * @ORM\ManyToMany(targetEntity="AppBundle\Entity\ModelObject")
+     * @ORM\ManyToMany(targetEntity="AppBundle\Entity\ModelObject", cascade={"persist", "remove"})
      * @ORM\JoinTable(name="soil_models_model_objects",
-     *     joinColumns={@ORM\JoinColumn(name="soil_model_id", referencedColumnName="id")},
-     *     inverseJoinColumns={@ORM\JoinColumn(name="model_object_id", referencedColumnName="id")}
+     *     joinColumns={@ORM\JoinColumn(name="soil_model_id", referencedColumnName="id", onDelete="CASCADE")},
+     *     inverseJoinColumns={@ORM\JoinColumn(name="model_object_id", referencedColumnName="id", onDelete="CASCADE")}
      *     )
      **/
     private $modelObjects;
@@ -329,7 +329,7 @@ class SoilModel
     public function removeModelObject(ModelObject $modelObject)
     {
         if ($this->modelObjects->contains($modelObject)) {
-            $modelObject->removeSoilModel($this);
+            $this->modelObjects->removeElement($modelObject);
         }
     }
 

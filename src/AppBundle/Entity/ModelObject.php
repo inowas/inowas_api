@@ -221,37 +221,6 @@ abstract class ModelObject
     }
 
     /**
-     * Get SoilModels
-     */
-    public function getSoilModels()
-    {
-        return $this->soilModels;
-    }
-
-    /**
-     * Add SoilModel
-     *
-     * @param SoilModel $soilModel
-     * @return $this
-     */
-    public function addSoilModel(SoilModel $soilModel)
-    {
-        $this->soilModels[] = $soilModel;
-
-        return $this;
-    }
-
-    /**
-     * Remove SoilModel
-     *
-     * @param SoilModel $soilModel
-     */
-    public function removeSoilModel(SoilModel $soilModel)
-    {
-        $this->soilModels->removeElement($soilModel);
-    }
-
-    /**
      * Set owner
      *
      * @param \AppBundle\Entity\User $owner
