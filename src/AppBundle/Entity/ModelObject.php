@@ -120,7 +120,6 @@ abstract class ModelObject
         $this->id = Uuid::uuid4();
         $this->owner = $owner;
         $this->public = $public;
-        $this->soilModels = new ArrayCollection();
         $this->propertyIds = new ArrayCollection();
         $this->properties = new ArrayCollection();
         $this->observationPoints = new ArrayCollection();

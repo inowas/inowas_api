@@ -18,8 +18,7 @@ class GeologicalLayer extends ModelObject
      * @JMS\Groups({"list", "details", "modelobjectdetails", "modelobjectlist"})
      */
     protected $type = 'geologicallayer';
-
-
+    
     /**
      * @var ArrayCollection GeologicalUnit
      *
@@ -32,8 +31,6 @@ class GeologicalLayer extends ModelObject
      * @JMS\Groups({"modelobjectdetails", "soilmodeldetails"})
      **/
     private $geologicalUnits;
-
-    public $soilModels;
 
     /**
      * Layer constructor.
