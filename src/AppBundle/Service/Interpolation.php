@@ -17,9 +17,13 @@ use Symfony\Component\Process\ProcessBuilder;
 
 class Interpolation
 {
-    private $availableTypes = ['kriging'];
+    const TYPE_KRIGING = 'kriging';
 
-    protected $tmpFolder = '/tmp/interpolation';
+    /** @var array */
+    private $availableTypes = [self::TYPE_KRIGING];
+
+    /** @var string  */
+    private $tmpFolder = '/tmp/interpolation';
 
     /** @var string  */
     protected $type;
@@ -30,6 +34,9 @@ class Interpolation
     /** @var  BoundingBox */
     protected $boundingBox;
 
+    /** @var array $data */
+    protected $data;
+
     /** @var ArrayCollection PointValue */
     protected $points;
 
@@ -39,31 +46,68 @@ class Interpolation
     /** @var  KernelInterface */
     protected $kernel;
 
+    /**
+     * Interpolation constructor.
+     * @param $serializer
+     * @param $kernel
+     */
     public function __construct($serializer, $kernel)
     {
-        $this->type = 'kriging';
+        $this->type = self::TYPE_KRIGING;
         $this->points = new ArrayCollection();
         $this->serializer = $serializer;
         $this->kernel = $kernel;
     }
 
+    /**
+     * @param $type
+     * @return $this
+     */
     public function setType($type)
     {
-        if (in_array($type, $this->availableTypes))
-        {
+        if (in_array($type, $this->availableTypes)) {
             $this->type = $type;
         }
+
+        return $this;
     }
 
+    /**
+     * @param GridSize $gridSize
+     * @return $this
+     */
     public function setGridSize(GridSize $gridSize)
     {
         $this->gridSize = $gridSize;
+        return $this;
     }
 
+    /**
+     * @return GridSize
+     */
+    public function getGridSize()
+    {
+        return $this->gridSize;
+    }
+
+    /**
+     * @param BoundingBox $boundingBox
+     * @return $this
+     */
     public function setBoundingBox(BoundingBox $boundingBox)
     {
         $this->boundingBox = $boundingBox;
+        return $this;
     }
+
+    /**
+     * @return BoundingBox
+     */
+    public function getBoundingBox()
+    {
+        return $this->boundingBox;
+    }
+
 
     public function addPoint(PointValue $pointValue)
     {
@@ -80,6 +124,16 @@ class Interpolation
             $this->points->remove($pointValue);
         }
     }
+
+    /**
+     * @return mixed
+     */
+    public function getData()
+    {
+        return $this->data;
+    }
+
+
 
     public function interpolate()
     {
@@ -113,7 +167,10 @@ class Interpolation
                 throw new ProcessFailedException($process);
             }
 
-            return $process->getOutput();
+            $jsonResponse = $process->getOutput();
+            $response = json_decode($jsonResponse);
+
+            $this->data = $response->raster;
         }
 
         return 0;

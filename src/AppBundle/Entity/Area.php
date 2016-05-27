@@ -2,6 +2,7 @@
 
 namespace AppBundle\Entity;
 
+use AppBundle\Model\Interpolation\BoundingBox;
 use CrEOF\Spatial\PHP\Types\Geometry\Polygon;
 use Doctrine\ORM\Mapping as ORM;
 use JMS\Serializer\Annotation as JMS;
@@ -109,5 +110,44 @@ class Area extends ModelObject
             $polygons = $new;
         }
         return $polygons;
+    }
+
+    /**
+     * 
+     */
+    public function getBoundingBox()
+    {
+        if (is_null($this->geometry)) {
+            return new BoundingBox();
+        }
+        
+        $rings = $this->geometry->toArray();
+        $points = $rings[0];
+
+        $xMin = $points[0][0];
+        $xMax = $points[0][0];
+        $yMin = $points[0][1];
+        $yMax = $points[0][1];
+
+        foreach ($points as $point)
+        {
+            if ($point[0]<$xMin) {
+                $xMin =  $point[0];
+            }
+
+            if ($point[0]>$xMax) {
+                $xMax =  $point[0];
+            }
+
+            if ($point[0]<$yMin) {
+                $yMin =  $point[1];
+            }
+
+            if ($point[0]>$yMax) {
+                $yMax =  $point[1];
+            }
+        }
+
+        return new BoundingBox($xMin, $xMax, $yMin, $yMax);
     }
 }

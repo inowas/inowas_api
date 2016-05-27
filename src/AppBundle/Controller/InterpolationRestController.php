@@ -97,16 +97,26 @@ class InterpolationRestController extends FOSRestController
      */
     public function getInterpolationsAction()
     {
+        
+        #$interpolation = $this->get('inowas.interpolation');
+        #$interpolation->setType('kriging');
+        #$interpolation->setGridSize(new GridSize(12,13));
+        #$interpolation->setBoundingBox(new BoundingBox(1.2, 1.2, 2.1, .2));
+        #$interpolation->addPoint(new PointValue(1.1, 2.2, 3.4));
+        #$interpolation->addPoint(new PointValue(4.4, 5.5, 6.6));
 
-        $interpolation = $this->get('inowas.interpolation');
-        $interpolation->setType('kriging');
-        $interpolation->setGridSize(new GridSize(12,13));
-        $interpolation->setBoundingBox(new BoundingBox(1.2, 1.2, 2.1, .2));
-        $interpolation->addPoint(new PointValue(1.1, 2.2, 3.4));
-        $interpolation->addPoint(new PointValue(4.4, 5.5, 6.6));
+        #$interpolation->interpolate();
+        #$result = new Result($interpolation->getGridSize(), $interpolation->getBoundingBox(), $interpolation->getData());
 
-        $resultJSON = $interpolation->interpolate();
-        dump($resultJSON);
+        #$view = View::create();
+        #$view->setData($result)
+        #    ->setStatusCode(200)
+        #;
+
+        $modflowModelTools = $this->get('inowas.modflow');
+        $modflowModelTools->loadModflowModelById('4d981078-e712-42f6-bf1d-8ef605663f8b');
+        dump($modflowModelTools->getModflowModel()->getArea()->getBoundingBox());
+
 
         $view = View::create();
         $view->setData("")

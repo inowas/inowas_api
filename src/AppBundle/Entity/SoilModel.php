@@ -112,6 +112,10 @@ class SoilModel
      */
     private $area;
 
+    private $boundingBox;
+    
+    private $gridSize;
+
     /**
      * Constructor
      */

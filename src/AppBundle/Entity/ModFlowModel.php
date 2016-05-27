@@ -2,6 +2,8 @@
 
 namespace AppBundle\Entity;
 
+use AppBundle\Model\Interpolation\BoundingBox;
+use AppBundle\Model\Interpolation\GridSize;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
 use JMS\Serializer\Annotation as JMS;
@@ -34,6 +36,20 @@ class ModFlowModel extends AbstractModel
      * @JMS\Groups({"details", "modeldetails"})
      **/
     private $soilModel;
+
+    /**
+     * @var array
+     *
+     * @ORM\Column(name="grid_size", type="grid_size", nullable=true)
+     */
+    private $gridSize;
+
+    /**
+     * @var array
+     *
+     * @ORM\Column(name="bounding_box", type="bounding_box", nullable=true)
+     */
+    private $boundingBox;
 
     /**
      * @var Area
@@ -105,6 +121,8 @@ class ModFlowModel extends AbstractModel
         $this->modelObjects = new ArrayCollection();
         $this->observationPoints = new ArrayCollection();
         $this->streams = new ArrayCollection();
+        $this->gridSize = new GridSize(50, 50);
+        $this->boundingBox = new BoundingBox();
     }
 
     /**
@@ -446,6 +464,11 @@ class ModFlowModel extends AbstractModel
             {
                 $this->addModelObject($stream);
             }
+        }
+
+        if ($this->area)
+        {
+            $this->boundingBox = $this->area->getBoundingBox();
         }
     }
 

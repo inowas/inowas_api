@@ -8,8 +8,8 @@ services:
         class: AppBundle\Service\Interpolation
         arguments: ['@serializer', '@kernel']
 
-    inowas.layer:
-        class: AppBundle\Service\LayerTools
+    inowas.modflow:
+        class: AppBundle\Service\Modflow
         arguments: ['@doctrine.orm.default_entity_manager', '@inowas.interpolation']
 
 #    service_name:
