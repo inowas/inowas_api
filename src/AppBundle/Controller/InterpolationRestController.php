@@ -126,7 +126,7 @@ class InterpolationRestController extends FOSRestController
         $modflowModelTools = $this->get('inowas.modflow');
         $modflowModelTools->loadModflowModelById($modflowModel->getId());
         $layer = $modflowModel->getSoilModel()->getGeologicalLayers()->first();
-        $modflowModelTools->interpolateLayerByUnitProperty($layer, Modflow::PROP_BOTTOM_ELEVATION, Interpolation::TYPE_GAUSSIAN);
+        $modflowModelTools->interpolateLayer($layer, Modflow::PROP_BOTTOM_ELEVATION, Interpolation::TYPE_GAUSSIAN);
         #$layer = $modflowModel->getSoilModel()->getGeologicalLayers()->next();
         #$modflowModelTools->interpolateLayerByUnitProperty($layer, Modflow::PROP_BOTTOM_ELEVATION, Interpolation::TYPE_MEAN);
         #$layer = $modflowModel->getSoilModel()->getGeologicalLayers()->next();

@@ -139,14 +139,13 @@ class Modflow
     /**
      * @param GeologicalLayer $layer
      * @param $property
-     * @param $type
+     * @param $algorithm
      */
-    public function interpolateLayerByUnitProperty(GeologicalLayer $layer, $property, $type)
+    public function interpolateLayer(GeologicalLayer $layer, $property, $algorithm)
     {
         $geologicalUnits = $layer->getGeologicalUnits();
 
         if ($property == self::PROP_BOTTOM_ELEVATION) {
-            $this->interpolation->setType($type);
             $this->interpolation->setBoundingBox($this->modflowModel->getBoundingBox());
             $this->interpolation->setGridSize($this->modflowModel->getGridSize());
 
@@ -175,7 +174,7 @@ class Modflow
             }
         }
 
-        $this->interpolation->interpolate();
+        $this->interpolation->interpolate($algorithm);
 
         $raster = RasterFactory::create();
         $raster->setGridSize($this->modflowModel->getGridSize());
@@ -204,6 +203,7 @@ class Modflow
         $property->addValue(PropertyValueFactory::create()->setRaster($raster));
         $layer->addProperty($property);
         
+        $this->em->persist($value);
         $this->em->persist($layer);
         $this->em->persist($property);
         $this->em->flush();

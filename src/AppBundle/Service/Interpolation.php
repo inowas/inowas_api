@@ -3,15 +3,13 @@
 namespace AppBundle\Service;
 
 use AppBundle\Model\Interpolation\BoundingBox;
-use AppBundle\Model\Interpolation\GaussianInterpolation;
 use AppBundle\Model\Interpolation\GridSize;
-use AppBundle\Model\Interpolation\KrigingInterpolation;
-use AppBundle\Model\Interpolation\MeanInterpolation;
 use AppBundle\Model\Interpolation\PointValue;
 use Doctrine\Common\Collections\ArrayCollection;
 use JMS\Serializer\Serializer;
 use Ramsey\Uuid\Uuid;
 use Symfony\Component\Filesystem\Filesystem;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\HttpKernel\KernelInterface;
 use Symfony\Component\Process\Exception\ProcessFailedException;
 use Symfony\Component\Process\Process;
@@ -30,7 +28,7 @@ class Interpolation
     private $tmpFolder = '/tmp/interpolation';
 
     /** @var string  */
-    protected $type;
+    private $tmpFileName = '';
 
     /** @var  GridSize */
     protected $gridSize;
@@ -57,22 +55,45 @@ class Interpolation
      */
     public function __construct($serializer, $kernel)
     {
-        $this->type = self::TYPE_KRIGING;
         $this->points = new ArrayCollection();
         $this->serializer = $serializer;
         $this->kernel = $kernel;
+        $this->tmpFileName = Uuid::uuid4()->toString();
+    }
+    
+    /**
+     * @return string
+     */
+    public function getTmpFolder()
+    {
+        return $this->tmpFolder;
     }
 
     /**
-     * @param $type
-     * @return $this
+     * @param string $tmpFolder
+     * @return Interpolation
      */
-    public function setType($type)
+    public function setTmpFolder($tmpFolder)
     {
-        if (in_array($type, $this->availableTypes)) {
-            $this->type = $type;
-        }
+        $this->tmpFolder = $tmpFolder;
+        return $this;
+    }
 
+    /**
+     * @return string
+     */
+    public function getTmpFileName()
+    {
+        return $this->tmpFileName;
+    }
+
+    /**
+     * @param string $tmpFileName
+     * @return Interpolation
+     */
+    public function setTmpFileName($tmpFileName)
+    {
+        $this->tmpFileName = $tmpFileName;
         return $this;
     }
 
@@ -111,22 +132,80 @@ class Interpolation
     {
         return $this->boundingBox;
     }
-
-
+    
     public function addPoint(PointValue $pointValue)
     {
-        if (!$this->points->contains($pointValue))
-        {
+        if (!$this->points->contains($pointValue)){
             $this->points[] = $pointValue;
         }
     }
 
     public function removePoint(PointValue $pointValue)
     {
-        if ($this->points->contains($pointValue))
-        {
-            $this->points->remove($pointValue);
+        if ($this->points->contains($pointValue)) {
+            $this->points->removeElement($pointValue);
         }
+    }
+
+    /**
+     * @return ArrayCollection
+     */
+    public function getPoints()
+    {
+        return $this->points;
+    }
+
+    public function interpolate($algorithm)
+    {
+        if (!in_array($algorithm, $this->availableTypes)) {
+            throw new NotFoundHttpException(sprintf('Algorithm %s not found.', $algorithm));
+        }
+
+        if (!$this->gridSize instanceof GridSize) {
+            throw new NotFoundHttpException('GridSize not set.');
+        }
+
+        if (!$this->boundingBox instanceof BoundingBox) {
+            throw new NotFoundHttpException('BoundingBox not set.');
+        }
+
+        if ($this->points->count() == 0) {
+            throw new NotFoundHttpException('No PointValues set.');
+        }
+
+        unset($this->data);
+
+        $class = 'AppBundle\Model\Interpolation\\'.ucfirst($algorithm).'Interpolation';
+        $interpolation = new $class($this->gridSize, $this->boundingBox, $this->points);
+        $interpolationJSON = $this->serializer->serialize($interpolation, 'json');
+
+        $fs = new Filesystem();
+        if (!$fs->exists($this->tmpFolder)) {
+            $fs->mkdir($this->tmpFolder);
+        }
+
+        $inputFile = $this->tmpFolder.'/'.$this->tmpFileName;
+        $fs->dumpFile($inputFile, $interpolationJSON);
+
+        $scriptName="interpolationCalculation.py";
+        $builder = new ProcessBuilder();
+        $builder
+            ->setPrefix('python')
+            ->setArguments(array('-W', 'ignore', $scriptName, $inputFile))
+            ->setWorkingDirectory($this->kernel->getRootDir().'/../py/pyprocessing/interpolation')
+        ;
+
+        /** @var Process $process */
+        $process = $builder
+            ->getProcess();
+        $process->run();
+        if (!$process->isSuccessful()) {
+            throw new ProcessFailedException($process);
+        }
+
+        $jsonResponse = $process->getOutput();
+        $response = json_decode($jsonResponse);
+        $this->data = $response->raster;
     }
 
     /**
@@ -135,122 +214,6 @@ class Interpolation
     public function getData()
     {
         return $this->data;
-    }
-
-    public function interpolate()
-    {
-        unset($this->data);
-
-        if ($this->type == 'kriging')
-        {
-            $ki = new KrigingInterpolation($this->gridSize, $this->boundingBox, $this->points);
-            $serializedKi = $this->serializer->serialize($ki, 'json');
-
-            $fs = new Filesystem();
-            if (!$fs->exists($this->tmpFolder)) {
-                $fs->mkdir($this->tmpFolder);
-            }
-
-            $uuid = Uuid::uuid4();
-            $inputFile = $this->tmpFolder.'/'.$uuid->toString();
-            $fs->dumpFile($inputFile, $serializedKi);
-
-            $scriptName="interpolationCalculation.py";
-            $builder = new ProcessBuilder();
-            $builder
-                ->setPrefix('python')
-                ->setArguments(array('-W', 'ignore', $scriptName, $inputFile))
-                ->setWorkingDirectory($this->kernel->getRootDir().'/../py/pyprocessing/interpolation')
-            ;
-
-            /** @var Process $process */
-            $process = $builder
-                ->getProcess();
-            $process->run();
-            if (!$process->isSuccessful()) {
-                throw new ProcessFailedException($process);
-            }
-
-            $jsonResponse = $process->getOutput();
-            $response = json_decode($jsonResponse);
-
-            $this->data = $response->raster;
-        }
-
-        if ($this->type == 'mean')
-        {
-            $ki = new MeanInterpolation($this->gridSize, $this->boundingBox, $this->points);
-            $serializedKi = $this->serializer->serialize($ki, 'json');
-
-            $fs = new Filesystem();
-            if (!$fs->exists($this->tmpFolder)) {
-                $fs->mkdir($this->tmpFolder);
-            }
-
-            $uuid = Uuid::uuid4();
-            $inputFile = $this->tmpFolder.'/'.$uuid->toString();
-            $fs->dumpFile($inputFile, $serializedKi);
-
-            $scriptName="interpolationCalculation.py";
-            $builder = new ProcessBuilder();
-            $builder
-                ->setPrefix('python')
-                ->setArguments(array('-W', 'ignore', $scriptName, $inputFile))
-                ->setWorkingDirectory($this->kernel->getRootDir().'/../py/pyprocessing/interpolation')
-            ;
-
-            /** @var Process $process */
-            $process = $builder
-                ->getProcess();
-            $process->run();
-            if (!$process->isSuccessful()) {
-                throw new ProcessFailedException($process);
-            }
-
-            $jsonResponse = $process->getOutput();
-            $response = json_decode($jsonResponse);
-            $this->data = $response->raster;
-        }
-
-        if ($this->type == 'gaussian')
-        {
-            $ki = new GaussianInterpolation($this->gridSize, $this->boundingBox, $this->points);
-            $serializedKi = $this->serializer->serialize($ki, 'json');
-
-            $fs = new Filesystem();
-            if (!$fs->exists($this->tmpFolder)) {
-                $fs->mkdir($this->tmpFolder);
-            }
-
-            $uuid = Uuid::uuid4();
-            $inputFile = $this->tmpFolder.'/'.$uuid->toString();
-            $fs->dumpFile($inputFile, $serializedKi);
-
-            dump($serializedKi);
-
-            $scriptName="interpolationCalculation.py";
-            $builder = new ProcessBuilder();
-            $builder
-                ->setPrefix('python')
-                ->setArguments(array('-W', 'ignore', $scriptName, $inputFile))
-                ->setWorkingDirectory($this->kernel->getRootDir().'/../py/pyprocessing/interpolation')
-            ;
-
-            /** @var Process $process */
-            $process = $builder
-                ->getProcess();
-            $process->run();
-            if (!$process->isSuccessful()) {
-                throw new ProcessFailedException($process);
-            }
-
-            $jsonResponse = $process->getOutput();
-            $response = json_decode($jsonResponse);
-            $this->data = $response->raster;
-        }
-
-        return 0;
-
     }
 
 }
