@@ -5,6 +5,7 @@ namespace AppBundle\Service;
 use AppBundle\Model\Interpolation\BoundingBox;
 use AppBundle\Model\Interpolation\GridSize;
 use AppBundle\Model\Interpolation\KrigingInterpolation;
+use AppBundle\Model\Interpolation\MeanInterpolation;
 use AppBundle\Model\Interpolation\PointValue;
 use Doctrine\Common\Collections\ArrayCollection;
 use JMS\Serializer\Serializer;
@@ -18,9 +19,10 @@ use Symfony\Component\Process\ProcessBuilder;
 class Interpolation
 {
     const TYPE_KRIGING = 'kriging';
+    const TYPE_MEAN = 'mean';
 
     /** @var array */
-    private $availableTypes = [self::TYPE_KRIGING];
+    private $availableTypes = [self::TYPE_KRIGING, self::TYPE_MEAN];
 
     /** @var string  */
     private $tmpFolder = '/tmp/interpolation';
@@ -137,6 +139,8 @@ class Interpolation
 
     public function interpolate()
     {
+        unset($this->data);
+
         if ($this->type == 'kriging')
         {
             $ki = new KrigingInterpolation($this->gridSize, $this->boundingBox, $this->points);
@@ -170,6 +174,41 @@ class Interpolation
             $jsonResponse = $process->getOutput();
             $response = json_decode($jsonResponse);
 
+            $this->data = $response->raster;
+        }
+
+        if ($this->type == 'mean')
+        {
+            $ki = new MeanInterpolation($this->gridSize, $this->boundingBox, $this->points);
+            $serializedKi = $this->serializer->serialize($ki, 'json');
+
+            $fs = new Filesystem();
+            if (!$fs->exists($this->tmpFolder)) {
+                $fs->mkdir($this->tmpFolder);
+            }
+
+            $uuid = Uuid::uuid4();
+            $inputFile = $this->tmpFolder.'/'.$uuid->toString();
+            $fs->dumpFile($inputFile, $serializedKi);
+
+            $scriptName="interpolationCalculation.py";
+            $builder = new ProcessBuilder();
+            $builder
+                ->setPrefix('python')
+                ->setArguments(array('-W', 'ignore', $scriptName, $inputFile))
+                ->setWorkingDirectory($this->kernel->getRootDir().'/../py/pyprocessing/interpolation')
+            ;
+
+            /** @var Process $process */
+            $process = $builder
+                ->getProcess();
+            $process->run();
+            if (!$process->isSuccessful()) {
+                throw new ProcessFailedException($process);
+            }
+
+            $jsonResponse = $process->getOutput();
+            $response = json_decode($jsonResponse);
             $this->data = $response->raster;
         }
 

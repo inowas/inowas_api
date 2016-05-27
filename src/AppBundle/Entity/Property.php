@@ -63,7 +63,11 @@ class Property
     /**
      * @var ArrayCollection
      *
-     * @ORM\OneToMany(targetEntity="AppBundle\Entity\AbstractValue", mappedBy="property", cascade={"persist", "remove"}, orphanRemoval=true)
+     * @ORM\ManyToMany(targetEntity="AppBundle\Entity\AbstractValue", cascade={"persist", "remove"})
+     * @ORM\JoinTable(name="properties_values",
+     *     joinColumns={@ORM\JoinColumn(name="property_id", referencedColumnName="id", onDelete="CASCADE")},
+     *     inverseJoinColumns={@ORM\JoinColumn(name="value_id", referencedColumnName="id", onDelete="CASCADE")}
+     *     )
      */
     private $values;
 
@@ -204,8 +208,11 @@ class Property
      */
     public function addValue(\AppBundle\Entity\AbstractValue $value)
     {
-        $value->setProperty($this);
-        $this->values[] = $value;
+        if (!$this->values->contains($value))
+        {
+            $this->values[] = $value;
+        }
+
         return $this;
     }
 
@@ -216,8 +223,10 @@ class Property
      */
     public function removeValue(\AppBundle\Entity\AbstractValue $value)
     {
-        $value->setProperty(null);
-        $this->values->removeElement($value);
+        if ($this->values->contains($value))
+        {
+            $this->values->removeElement($value);
+        }
     }
 
     /**

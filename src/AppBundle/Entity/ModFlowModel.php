@@ -38,14 +38,14 @@ class ModFlowModel extends AbstractModel
     private $soilModel;
 
     /**
-     * @var array
+     * @var GridSize
      *
      * @ORM\Column(name="grid_size", type="grid_size", nullable=true)
      */
     private $gridSize;
 
     /**
-     * @var array
+     * @var BoundingBox
      *
      * @ORM\Column(name="bounding_box", type="bounding_box", nullable=true)
      */
@@ -433,9 +433,25 @@ class ModFlowModel extends AbstractModel
     }
 
     /**
+     * @return GridSize
+     */
+    public function getGridSize()
+    {
+        return $this->gridSize;
+    }
+
+    /**
+     * @return BoundingBox
+     */
+    public function getBoundingBox()
+    {
+        return $this->boundingBox;
+    }
+
+    /**
      * @ORM\PreFlush()
      */
-    public function prePersist()
+    public function preFlush()
     {
         if (!is_null($this->area))
         {
@@ -450,12 +466,20 @@ class ModFlowModel extends AbstractModel
             }
         }
 
+        if (!$this->observationPoints) {
+            $this->observationPoints = new ArrayCollection();
+        }
+
         if ($this->observationPoints->count() > 0 )
         {
             foreach ($this->observationPoints as $observationPoint)
             {
                 $this->addModelObject($observationPoint);
             }
+        }
+
+        if (!$this->streams) {
+            $this->streams = new ArrayCollection();
         }
 
         if ($this->streams->count() > 0 )
@@ -471,6 +495,7 @@ class ModFlowModel extends AbstractModel
             $this->boundingBox = $this->area->getBoundingBox();
         }
     }
+
 
     /**
      * @ORM\PostLoad()

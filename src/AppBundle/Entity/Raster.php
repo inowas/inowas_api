@@ -2,6 +2,8 @@
 
 namespace AppBundle\Entity;
 
+use AppBundle\Model\Interpolation\BoundingBox;
+use AppBundle\Model\Interpolation\GridSize;
 use Doctrine\ORM\Mapping as ORM;
 use JMS\Serializer\Annotation as JMS;
 use Ramsey\Uuid\Uuid;
@@ -25,57 +27,23 @@ class Raster
     private $id;
 
     /**
-     * @var integer
+     * @var GridSize
      *
-     * @ORM\Column(name="number_of_rows", type="integer")
-     * @JMS\Type("integer")
+     * @ORM\Column(name="grid_size", type="grid_size", nullable=true)
      */
-    private $numberOfRows;
+    private $gridSize;
+
+    /**
+     * @var BoundingBox
+     *
+     * @ORM\Column(name="bounding_box", type="bounding_box", nullable=true)
+     */
+    private $boundingBox;
 
     /**
      * @var integer
      *
-     * @ORM\Column(name="number_of_columns", type="integer")
-     * @JMS\Type("integer")
-     */
-    private $numberOfColumns;
-
-    /**
-     * @var float
-     *
-     * @ORM\Column(name="upper_left_x", type="float")
-     * @JMS\Type("float")
-     */
-    private $upperLeftX;
-
-    /**
-     * @var float
-     *
-     * @ORM\Column(name="upper_left_y", type="float")
-     * @JMS\Type("float")
-     */
-    private $upperLeftY;
-
-    /**
-     * @var float
-     *
-     * @ORM\Column(name="lower_right_x", type="float")
-     * @JMS\Type("float")
-     */
-    private $lowerRightX;
-
-    /**
-     * @var float
-     *
-     * @ORM\Column(name="lower_right_y", type="float")
-     * @JMS\Type("float")
-     */
-    private $lowerRightY;
-
-    /**
-     * @var integer
-     *
-     * @ORM\Column(name="srid", type="integer")
+     * @ORM\Column(name="srid", type="integer", nullable=true)
      * @JMS\Type("integer")
      */
     private $srid;
@@ -125,148 +93,41 @@ class Raster
     }
 
     /**
-     * Set numberOfRows
-     *
-     * @param integer $numberOfRows
-     *
+     * @return GridSize
+     */
+    public function getGridSize()
+    {
+        return $this->gridSize;
+    }
+
+    /**
+     * @param GridSize $gridSize
      * @return Raster
      */
-    public function setNumberOfRows($numberOfRows)
+    public function setGridSize($gridSize)
     {
-        $this->numberOfRows = $numberOfRows;
-
+        $this->gridSize = $gridSize;
         return $this;
     }
 
     /**
-     * Get numberOfRows
-     *
-     * @return integer
+     * @return BoundingBox
      */
-    public function getNumberOfRows()
+    public function getBoundingBox()
     {
-        return $this->numberOfRows;
+        return $this->boundingBox;
     }
 
     /**
-     * Set numberOfColumns
-     *
-     * @param integer $numberOfColumns
-     *
+     * @param BoundingBox $boundingBox
      * @return Raster
      */
-    public function setNumberOfColumns($numberOfColumns)
+    public function setBoundingBox($boundingBox)
     {
-        $this->numberOfColumns = $numberOfColumns;
-
+        $this->boundingBox = $boundingBox;
         return $this;
     }
 
-    /**
-     * Get numberOfColumns
-     *
-     * @return integer
-     */
-    public function getNumberOfColumns()
-    {
-        return $this->numberOfColumns;
-    }
-
-    /**
-     * Set upperLeftX
-     *
-     * @param float $upperLeftX
-     *
-     * @return Raster
-     */
-    public function setUpperLeftX($upperLeftX)
-    {
-        $this->upperLeftX = $upperLeftX;
-
-        return $this;
-    }
-
-    /**
-     * Get upperLeftX
-     *
-     * @return float
-     */
-    public function getUpperLeftX()
-    {
-        return $this->upperLeftX;
-    }
-
-    /**
-     * Set upperLeftY
-     *
-     * @param float $upperLeftY
-     *
-     * @return Raster
-     */
-    public function setUpperLeftY($upperLeftY)
-    {
-        $this->upperLeftY = $upperLeftY;
-
-        return $this;
-    }
-
-    /**
-     * Get upperLeftY
-     *
-     * @return float
-     */
-    public function getUpperLeftY()
-    {
-        return $this->upperLeftY;
-    }
-
-    /**
-     * Set lowerRightX
-     *
-     * @param float $lowerRightX
-     *
-     * @return Raster
-     */
-    public function setLowerRightX($lowerRightX)
-    {
-        $this->lowerRightX = $lowerRightX;
-
-        return $this;
-    }
-
-    /**
-     * Get lowerRightX
-     *
-     * @return float
-     */
-    public function getLowerRightX()
-    {
-        return $this->lowerRightX;
-    }
-
-    /**
-     * Set lowerRightY
-     *
-     * @param float $lowerRightY
-     *
-     * @return Raster
-     */
-    public function setLowerRightY($lowerRightY)
-    {
-        $this->lowerRightY = $lowerRightY;
-
-        return $this;
-    }
-
-    /**
-     * Get lowerRightY
-     *
-     * @return float
-     */
-    public function getLowerRightY()
-    {
-        return $this->lowerRightY;
-    }
 
     /**
      * Set srid

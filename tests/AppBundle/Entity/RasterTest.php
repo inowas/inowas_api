@@ -3,6 +3,8 @@
 namespace AppBundle\Tests\Entity;
 
 use AppBundle\Entity\Raster;
+use AppBundle\Model\Interpolation\BoundingBox;
+use AppBundle\Model\Interpolation\GridSize;
 use AppBundle\Model\RasterFactory;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
@@ -24,12 +26,8 @@ class RasterTest extends WebTestCase
 
         $this->raster = RasterFactory::create();
         $this->raster
-            ->setUpperLeftX(0.0005)
-            ->setUpperLeftY(0.0007)
-            ->setLowerRightX(0.010)
-            ->setLowerRightY(0.015)
-            ->setNumberOfColumns(10)
-            ->setNumberOfRows(11)
+            ->setBoundingBox(new BoundingBox(0.0005, 0.0007, 0.0010, 0.0015))
+            ->setGridSize(new GridSize(10, 11))
             ->setNoDataVal(-999)
             ->setSrid(4326)
             ->setData(
@@ -45,7 +43,7 @@ class RasterTest extends WebTestCase
                     array(0,1,2,3,4,5,6,7,8,9),
                     array(0,1,2,3,4,5,6,7,8,9),
                     array(0,1,2,3,4,5,6,7,8,9)
-            ))
+                ))
         ;
     }
 
@@ -61,13 +59,9 @@ class RasterTest extends WebTestCase
             ));
 
         $this->assertEquals($this->raster->getId(), $raster->getId());
-        $this->assertEquals($this->raster->getUpperLeftX(), $raster->getUpperLeftX());
-        $this->assertEquals($this->raster->getUpperLeftY(), $raster->getUpperLeftY());
-        $this->assertEquals($this->raster->getLowerRightX(), $raster->getLowerRightX());
-        $this->assertEquals($this->raster->getLowerRightY(), $raster->getLowerRightY());
+        $this->assertEquals($this->raster->getBoundingBox(), $raster->getBoundingBox());
         $this->assertEquals($this->raster->getNoDataVal(), $raster->getNoDataVal());
-        $this->assertEquals($this->raster->getNumberOfColumns(), $raster->getNumberOfColumns());
-        $this->assertEquals($this->raster->getNumberOfRows(), $raster->getNumberOfRows());
+        $this->assertEquals($this->raster->getGridSize(), $raster->getGridSize());
         $this->assertEquals($this->raster->getData(), $raster->getData());
         $this->assertEquals($this->raster->getSrid(), $raster->getSrid());
 

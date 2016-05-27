@@ -230,26 +230,26 @@ class LoadScenario_1 implements FixtureInterface, ContainerAwareInterface
         $property = PropertyFactory::setTypeAndModelObject($propertyTypeGwHead, $observationPoint);
         $entityManager->persist($property);
 
-        $propertyTimeValue = PropertyTimeValueFactory::setPropertyDateTimeAndValue($property, new \DateTime('2015-01-01 00:00:00'), 50);
+        $propertyTimeValue = PropertyTimeValueFactory::setDateTimeAndValue(new \DateTime('2015-01-01 00:00:00'), 50);
         $entityManager->persist($propertyTimeValue);
 
-        $propertyTimeValue = PropertyTimeValueFactory::setPropertyDateTimeAndValue($property, new \DateTime('2015-02-01 00:00:00'), 51);
+        $propertyTimeValue = PropertyTimeValueFactory::setDateTimeAndValue(new \DateTime('2015-02-01 00:00:00'), 51);
         $entityManager->persist($propertyTimeValue);
 
-        $propertyTimeValue = PropertyTimeValueFactory::setPropertyDateTimeAndValue($property, new \DateTime('2015-03-01 00:00:00'), 52);
+        $propertyTimeValue = PropertyTimeValueFactory::setDateTimeAndValue(new \DateTime('2015-03-01 00:00:00'), 52);
         $entityManager->persist($propertyTimeValue);
 
-        $propertyTimeValue = PropertyTimeValueFactory::setPropertyDateTimeAndValue($property, new \DateTime('2015-04-01 00:00:00'), 53);
+        $propertyTimeValue = PropertyTimeValueFactory::setDateTimeAndValue(new \DateTime('2015-04-01 00:00:00'), 53);
         $entityManager->persist($propertyTimeValue);
 
-        $propertyTimeValue = PropertyTimeValueFactory::setPropertyDateTimeAndValue($property, new \DateTime('2015-05-01 00:00:00'), 54);
+        $propertyTimeValue = PropertyTimeValueFactory::setDateTimeAndValue(new \DateTime('2015-05-01 00:00:00'), 54);
         $entityManager->persist($propertyTimeValue);
 
         // Add Property Elevation and TimeValues to ObservationPoint OP1
         $property = PropertyFactory::setTypeAndModelObject($propertyTypeElevation, $observationPoint);
         $entityManager->persist($property);
 
-        $propertyValue = PropertyValueFactory::setPropertyAndValue($property, 100);
+        $propertyValue = PropertyValueFactory::create()->setValue(100);
         $entityManager->persist($propertyValue);
 
 
@@ -262,7 +262,7 @@ class LoadScenario_1 implements FixtureInterface, ContainerAwareInterface
         $property = PropertyFactory::setTypeAndModelObject($propertyTypeElevation, $observationPoint);
         $entityManager->persist($property);
 
-        $propertyValue = PropertyValueFactory::setPropertyAndValue($property, 100);
+        $propertyValue = PropertyValueFactory::create()->setValue(100);
         $entityManager->persist($propertyValue);
 
         // Add Property GWHead and TimeValues to ObservationPoint OP2
@@ -274,7 +274,7 @@ class LoadScenario_1 implements FixtureInterface, ContainerAwareInterface
         $property = PropertyFactory::setTypeAndModelObject($propertyTypeElevation, $observationPoint);
         $entityManager->persist($property);
 
-        $propertyValue = PropertyValueFactory::setPropertyAndValue($property, 100);
+        $propertyValue = PropertyValueFactory::create()->setValue(100);
         $entityManager->persist($propertyValue);
 
         // Add Property, Values to Boundary B1
@@ -286,7 +286,7 @@ class LoadScenario_1 implements FixtureInterface, ContainerAwareInterface
         $property = PropertyFactory::setTypeAndModelObject($propertyTypeGwHead, $boundary);
         $entityManager->persist($property);
 
-        $propertyValue = PropertyValueFactory::setPropertyAndValue($property, 60);
+        $propertyValue = PropertyValueFactory::create()->setValue(60);
         $entityManager->persist($propertyValue);
 
         /** @var ModFlowModel $model */

@@ -2,6 +2,7 @@
 
 namespace AppBundle\Entity;
 
+use AppBundle\Model\Point;
 use Doctrine\ORM\Mapping as ORM;
 use JMS\Serializer\Annotation as JMS;
 
@@ -19,6 +20,13 @@ class GeologicalUnit extends ModelObject
     protected $type = 'geologicalunit';
 
     /**
+     * @var Point
+     *
+     * @ORM\Column(name="geometry", type="point", nullable=true)
+     */
+    private $point;
+
+    /**
      * @var $elevation
      *
      * @ORM\Column(name="top_elevation", type="float", nullable=true)
@@ -33,6 +41,29 @@ class GeologicalUnit extends ModelObject
      * @JMS\Groups({"details", "modelobjectdetails"})
      */
     private $bottomElevation;
+
+    /**
+     * Set point
+     *
+     * @param point $point
+     * @return GeologicalPoint
+     */
+    public function setPoint($point)
+    {
+        $this->point = $point;
+
+        return $this;
+    }
+
+    /**
+     * Get point
+     *
+     * @return point
+     */
+    public function getPoint()
+    {
+        return $this->point;
+    }
 
     /**
      * Set topElevation

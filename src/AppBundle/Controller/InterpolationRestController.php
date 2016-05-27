@@ -6,11 +6,14 @@ use AppBundle\Model\Interpolation\BoundingBox;
 use AppBundle\Model\Interpolation\GridSize;
 use AppBundle\Model\Interpolation\KrigingInterpolation;
 use AppBundle\Model\Interpolation\PointValue;
+use AppBundle\Service\Interpolation;
+use AppBundle\Service\Modflow;
 use FOS\RestBundle\Controller\FOSRestController;
 use FOS\RestBundle\View\View;
 use Nelmio\ApiDocBundle\Annotation\ApiDoc;
 use Ramsey\Uuid\Uuid;
 use Symfony\Component\Filesystem\Filesystem;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Process\Exception\ProcessFailedException;
 use Symfony\Component\Process\Process;
 use Symfony\Component\Process\ProcessBuilder;
@@ -33,9 +36,7 @@ class InterpolationRestController extends FOSRestController
      */
     public function postInterpolationAction()
     {
-
-
-
+        
         $ki = new KrigingInterpolation(new GridSize(12, 13), new BoundingBox(1.2, 1.2, 2.1, .2));
         $ki->addPoint(new PointValue(1.1, 2.2, 3.4));
         $ki->addPoint(new PointValue(4.4, 5.5, 6.6));
@@ -113,11 +114,24 @@ class InterpolationRestController extends FOSRestController
         #    ->setStatusCode(200)
         #;
 
+        $modflowModel = $this->getDoctrine()->getRepository('AppBundle:ModFlowModel')
+            ->findOneBy(array(
+                'name' => 'ModFlowModel Scenario 2'
+            ));
+
+        if (!$modflowModel) {
+            throw new NotFoundHttpException();
+        }
+
         $modflowModelTools = $this->get('inowas.modflow');
-        $modflowModelTools->loadModflowModelById('4d981078-e712-42f6-bf1d-8ef605663f8b');
-        dump($modflowModelTools->getModflowModel()->getArea()->getBoundingBox());
-
-
+        #$modflowModelTools->loadModflowModelById($modflowModel->getId());
+        #$layer = $modflowModel->getSoilModel()->getGeologicalLayers()->first();
+        #$modflowModelTools->interpolateLayerByUnitProperty($layer, Modflow::PROP_BOTTOM_ELEVATION, Interpolation::TYPE_MEAN);
+        #$layer = $modflowModel->getSoilModel()->getGeologicalLayers()->next();
+        #$modflowModelTools->interpolateLayerByUnitProperty($layer, Modflow::PROP_BOTTOM_ELEVATION, Interpolation::TYPE_MEAN);
+        #$layer = $modflowModel->getSoilModel()->getGeologicalLayers()->next();
+        #$modflowModelTools->interpolateLayerByUnitProperty($layer, Modflow::PROP_BOTTOM_ELEVATION, Interpolation::TYPE_MEAN);
+        
         $view = View::create();
         $view->setData("")
             ->setStatusCode(200)

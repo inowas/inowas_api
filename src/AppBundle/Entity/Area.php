@@ -136,15 +136,15 @@ class Area extends ModelObject
             }
 
             if ($point[0]>$xMax) {
-                $xMax =  $point[0];
+                $xMax = $point[0];
             }
 
-            if ($point[0]<$yMin) {
-                $yMin =  $point[1];
+            if ($point[1]<$yMin) {
+                $yMin = $point[1];
             }
 
-            if ($point[0]>$yMax) {
-                $yMax =  $point[1];
+            if ($point[1]>$yMax) {
+                $yMax = $point[1];
             }
         }
 

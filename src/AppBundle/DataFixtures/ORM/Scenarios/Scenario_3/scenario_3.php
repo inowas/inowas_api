@@ -190,25 +190,25 @@ class LoadScenario_3 implements FixtureInterface, ContainerAwareInterface
         $propertyType = $this->getPropertyType($entityManager, 'hc');
         $property = PropertyFactory::setTypeAndModelObject($propertyType, $geologicalLayer);
         $entityManager->persist($property);
-        $propertyValue = PropertyValueFactory::setPropertyAndValue($property, 40);
+        $propertyValue = PropertyValueFactory::create()->setValue(40);
         $entityManager->persist($propertyValue);
 
         $propertyType = $this->getPropertyType($entityManager, 'va');
         $property = PropertyFactory::setTypeAndModelObject($propertyType, $geologicalLayer);
         $entityManager->persist($property);
-        $propertyValue = PropertyValueFactory::setPropertyAndValue($property, 8);
+        $propertyValue = PropertyValueFactory::create()->setValue(8);
         $entityManager->persist($propertyValue);
 
         $propertyType = $this->getPropertyType($entityManager, 'ss');
         $property = PropertyFactory::setTypeAndModelObject($propertyType, $geologicalLayer);
         $entityManager->persist($property);
-        $propertyValue = PropertyValueFactory::setPropertyAndValue($property, 0.00001);
+        $propertyValue = PropertyValueFactory::create()->setValue(0.00001);
         $entityManager->persist($propertyValue);
 
         $propertyType = $this->getPropertyType($entityManager, 'sy');
         $property = PropertyFactory::setTypeAndModelObject($propertyType, $geologicalLayer);
         $entityManager->persist($property);
-        $propertyValue = PropertyValueFactory::setPropertyAndValue($property, 0.1);
+        $propertyValue = PropertyValueFactory::create()->setValue(0.1);
         $entityManager->persist($propertyValue);
 
         // Add properties to Layer SC3_L2
@@ -221,7 +221,7 @@ class LoadScenario_3 implements FixtureInterface, ContainerAwareInterface
         $propertyType = $this->getPropertyType($entityManager, 'vc');
         $property = PropertyFactory::setTypeAndModelObject($propertyType, $geologicalLayer);
         $entityManager->persist($property);
-        $propertyValue = PropertyValueFactory::setPropertyAndValue($property, 1);
+        $propertyValue = PropertyValueFactory::create()->setValue(1);
         $entityManager->persist($propertyValue);
 
         // Add properties to Layer SC3_L3
@@ -234,25 +234,25 @@ class LoadScenario_3 implements FixtureInterface, ContainerAwareInterface
         $propertyType = $this->getPropertyType($entityManager, 'hc');
         $property = PropertyFactory::setTypeAndModelObject($propertyType, $geologicalLayer);
         $entityManager->persist($property);
-        $propertyValue = PropertyValueFactory::setPropertyAndValue($property, 42);
+        $propertyValue = PropertyValueFactory::create()->setValue(42);
         $entityManager->persist($propertyValue);
 
         $propertyType = $this->getPropertyType($entityManager, 'va');
         $property = PropertyFactory::setTypeAndModelObject($propertyType, $geologicalLayer);
         $entityManager->persist($property);
-        $propertyValue = PropertyValueFactory::setPropertyAndValue($property, 21);
+        $propertyValue = PropertyValueFactory::create()->setValue(21);
         $entityManager->persist($propertyValue);
 
         $propertyType = $this->getPropertyType($entityManager, 'ss');
         $property = PropertyFactory::setTypeAndModelObject($propertyType, $geologicalLayer);
         $entityManager->persist($property);
-        $propertyValue = PropertyValueFactory::setPropertyAndValue($property, 0.00001);
+        $propertyValue = PropertyValueFactory::create()->setValue(0.0001);
         $entityManager->persist($propertyValue);
 
         $propertyType = $this->getPropertyType($entityManager, 'sy');
         $property = PropertyFactory::setTypeAndModelObject($propertyType, $geologicalLayer);
         $entityManager->persist($property);
-        $propertyValue = PropertyValueFactory::setPropertyAndValue($property, 0.1);
+        $propertyValue = PropertyValueFactory::create()->setValue(0.1);
         $entityManager->persist($propertyValue);
 
         // Add new AreaType
@@ -337,7 +337,7 @@ class LoadScenario_3 implements FixtureInterface, ContainerAwareInterface
             
             foreach ($data as $dataPoint)
             {
-                $propertyTimeValue = PropertyTimeValueFactory::setPropertyDateTimeAndValue($property, new \DateTime($dataPoint[$dataFields[0]]), (float)$dataPoint[$dataFields[$i]]);
+                $propertyTimeValue = PropertyTimeValueFactory::setDateTimeAndValue(new \DateTime($dataPoint[$dataFields[0]]), (float)$dataPoint[$dataFields[$i]]);
                 $this->entityManager->persist($propertyTimeValue);
 
                 /*

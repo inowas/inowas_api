@@ -8,6 +8,8 @@ use AppBundle\Entity\PropertyTimeValue;
 use AppBundle\Entity\PropertyValue;
 use AppBundle\Entity\Raster;
 use AppBundle\Model\AreaFactory;
+use AppBundle\Model\Interpolation\BoundingBox;
+use AppBundle\Model\Interpolation\GridSize;
 use AppBundle\Model\PropertyTypeFactory;
 use AppBundle\Model\RasterFactory;
 use JMS\Serializer\Serializer;
@@ -52,12 +54,8 @@ class RasterRestControllerTest extends WebTestCase
 
         $this->raster = RasterFactory::create();
         $this->raster
-            ->setUpperLeftX(0.0005)
-            ->setUpperLeftY(0.0007)
-            ->setLowerRightX(0.010)
-            ->setLowerRightY(0.015)
-            ->setNumberOfColumns(10)
-            ->setNumberOfRows(11)
+            ->setBoundingBox(new BoundingBox(0.0005, 0.0007, 0.0010, 0.0015))
+            ->setGridSize(new GridSize(10, 11))
             ->setNoDataVal(-999)
             ->setSrid(4326)
             ->setData(
@@ -98,12 +96,12 @@ class RasterRestControllerTest extends WebTestCase
                 'id' => $this->area->getId(),
                 'propertyName' => 'MyPropertyName',
                 'propertyType' => $propertyType->getName(),
-                'numberOfColumns' => $this->raster->getNumberOfColumns(),
-                'numberOfRows' => $this->raster->getNumberOfRows(),
-                'upperLeftX' => $this->raster->getUpperLeftX(),
-                'upperLeftY' => $this->raster->getUpperLeftY(),
-                'lowerRightX' => $this->raster->getLowerRightX(),
-                'lowerRightY' => $this->raster->getLowerRightY(),
+                'numberOfColumns' => $this->raster->getGridSize()->getNX(),
+                'numberOfRows' => $this->raster->getGridSize()->getNY(),
+                'upperLeftX' => $this->raster->getBoundingBox()->getXMin(),
+                'upperLeftY' => $this->raster->getBoundingBox()->getXMax(),
+                'lowerRightX' => $this->raster->getBoundingBox()->getYMin(),
+                'lowerRightY' => $this->raster->getBoundingBox()->getYMax(),
                 'srid' => $this->raster->getSrid(),
                 'noDataVal' => $this->raster->getNoDataVal(),
                 'data' => json_encode($this->raster->getData()),
@@ -115,12 +113,8 @@ class RasterRestControllerTest extends WebTestCase
         $actualRaster = json_decode($client->getResponse()->getContent());
 
         $this->assertObjectHasAttribute('id', $actualRaster);
-        $this->assertObjectHasAttribute('number_of_rows', $actualRaster);
-        $this->assertObjectHasAttribute('number_of_columns', $actualRaster);
-        $this->assertObjectHasAttribute('upper_left_x', $actualRaster);
-        $this->assertObjectHasAttribute('upper_left_y', $actualRaster);
-        $this->assertObjectHasAttribute('lower_right_x', $actualRaster);
-        $this->assertObjectHasAttribute('lower_right_y', $actualRaster);
+        $this->assertObjectHasAttribute('grid_size', $actualRaster);
+        $this->assertObjectHasAttribute('bounding_box', $actualRaster);
         $this->assertObjectHasAttribute('srid', $actualRaster);
         $this->assertObjectHasAttribute('no_data_val', $actualRaster);
         $this->assertObjectHasAttribute('data', $actualRaster);

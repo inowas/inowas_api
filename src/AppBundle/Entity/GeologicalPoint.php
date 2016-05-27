@@ -10,6 +10,7 @@ use JMS\Serializer\Annotation as JMS;
 /**
  * @ORM\Entity
  * @ORM\Table(name="geological_points")
+ * @ORM\HasLifecycleCallbacks()
  */
 class GeologicalPoint extends ModelObject
 {
@@ -33,9 +34,7 @@ class GeologicalPoint extends ModelObject
      *
      * @ORM\ManyToMany(targetEntity="AppBundle\Entity\GeologicalUnit", cascade={"persist"})
      * @ORM\JoinTable(name="geological_points_geological_units",
-     *     joinColumns={
-     *          @ORM\JoinColumn(name="geological_point_id", referencedColumnName="id")
-     *      },
+     *     joinColumns={@ORM\JoinColumn(name="geological_point_id", referencedColumnName="id")},
      *     inverseJoinColumns={@ORM\JoinColumn(name="geological_unit_id", referencedColumnName="id", unique=true)}
      *     )
      * @JMS\MaxDepth(2)
@@ -114,5 +113,17 @@ class GeologicalPoint extends ModelObject
     public function getGeologicalUnits()
     {
         return $this->geologicalUnits;
+    }
+
+    /**
+     * @ORM\PreFlush()
+     */
+    public function preFlush()
+    {
+        /** @var GeologicalUnit $geologicalUnit */
+        foreach ($this->geologicalUnits as $geologicalUnit)
+        {
+            $geologicalUnit->setPoint($this->point);
+        }
     }
 }

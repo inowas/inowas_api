@@ -2,6 +2,8 @@
 
 namespace AppBundle\Controller;
 
+use AppBundle\Model\Interpolation\BoundingBox;
+use AppBundle\Model\Interpolation\GridSize;
 use AppBundle\Model\PropertyFactory;
 use AppBundle\Model\PropertyTimeValueFactory;
 use AppBundle\Model\PropertyValueFactory;
@@ -82,12 +84,16 @@ class RasterRestController extends FOSRestController
          */
         $raster = RasterFactory::create();
         $raster
-            ->setNumberOfColumns($paramFetcher->get('numberOfColumns'))
-            ->setNumberOfRows($paramFetcher->get('numberOfRows'))
-            ->setUpperLeftX($paramFetcher->get('upperLeftX'))
-            ->setUpperLeftY($paramFetcher->get('upperLeftY'))
-            ->setLowerRightX($paramFetcher->get('lowerRightX'))
-            ->setLowerRightY($paramFetcher->get('lowerRightY'))
+            ->setGridSize(new GridSize(
+                $paramFetcher->get('numberOfColumns'),
+                $paramFetcher->get('numberOfRows')
+            ))
+            ->setBoundingBox(new BoundingBox(
+                $paramFetcher->get('upperLeftX'),
+                $paramFetcher->get('lowerRightX'),
+                $paramFetcher->get('lowerRightY'),
+                $paramFetcher->get('upperLeftY')
+            ))
             ->setData(json_decode($paramFetcher->get("data")))
             ->setNoDataVal($paramFetcher->get('noDataVal'))
             ->setSrid($paramFetcher->get('srid'))
@@ -109,7 +115,6 @@ class RasterRestController extends FOSRestController
         $mo->addProperty($property);
         $property->setModelObject($mo);
         $property->addValue($value);
-        $value->setProperty($property);
         $value->setRaster($raster);
 
         $this->getDoctrine()->getManager()->persist($raster);

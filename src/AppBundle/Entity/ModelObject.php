@@ -356,4 +356,18 @@ abstract class ModelObject
 
         return $this->propertyIds;
     }
+
+    public function getPropertyWithPropertyType(PropertyType $propertyType)
+    {
+        /** @var Property $property */
+        foreach ($this->properties as $property)
+        {
+            if ($property->getPropertyType() == $propertyType)
+            {
+                return $property;
+            }
+        }
+
+        return null;
+    }
 }

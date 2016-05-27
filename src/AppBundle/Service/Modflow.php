@@ -8,6 +8,10 @@ use AppBundle\Entity\GeologicalUnit;
 use AppBundle\Entity\ModFlowModel;
 use AppBundle\Entity\Property;
 use AppBundle\Entity\SoilModel;
+use AppBundle\Model\Interpolation\PointValue;
+use AppBundle\Model\PropertyFactory;
+use AppBundle\Model\PropertyValueFactory;
+use AppBundle\Model\RasterFactory;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\EntityManager;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
@@ -15,8 +19,8 @@ use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 class Modflow
 {
 
-    const PROP_TOP_ELEVATION = 'te';
-    const PROP_BOTTOM_ELEVATION = 'be';
+    const PROP_TOP_ELEVATION = 'et';
+    const PROP_BOTTOM_ELEVATION = 'eb';
 
 
     /** @var EntityManager $em */
@@ -135,18 +139,72 @@ class Modflow
     /**
      * @param GeologicalLayer $layer
      * @param $property
+     * @param $type
      */
-    public function interpolateLayerByUnitProperty(GeologicalLayer $layer, $property)
+    public function interpolateLayerByUnitProperty(GeologicalLayer $layer, $property, $type)
     {
         $geologicalUnits = $layer->getGeologicalUnits();
 
-        if ($property == self::PROP_BOTTOM_ELEVATION)
-        {
-            $this->interpolation->setType(Interpolation::TYPE_KRIGING);
+        if ($property == self::PROP_BOTTOM_ELEVATION) {
+            $this->interpolation->setType($type);
+            $this->interpolation->setBoundingBox($this->modflowModel->getBoundingBox());
+            $this->interpolation->setGridSize($this->modflowModel->getGridSize());
 
+            /** @var GeologicalUnit $geologicalUnit */
+            foreach ($geologicalUnits as $geologicalUnit) {
+                $this->interpolation->addPoint(new PointValue(
+                        $geologicalUnit->getPoint()->getX(),
+                        $geologicalUnit->getPoint()->getY(),
+                        $geologicalUnit->getBottomElevation()
+                ));
+            }
         }
 
+        if ($property == self::PROP_TOP_ELEVATION) {
+            $this->interpolation->setType($type);
+            $this->interpolation->setBoundingBox($this->modflowModel->getBoundingBox());
+            $this->interpolation->setGridSize($this->modflowModel->getGridSize());
+
+            /** @var GeologicalUnit $geologicalUnit */
+            foreach ($geologicalUnits as $geologicalUnit) {
+                $this->interpolation->addPoint(new PointValue(
+                    $geologicalUnit->getPoint()->getX(),
+                    $geologicalUnit->getPoint()->getY(),
+                    $geologicalUnit->getTopElevation()
+                ));
+            }
+        }
+
+        $this->interpolation->interpolate();
+        $raster = RasterFactory::create();
+        $raster->setGridSize($this->modflowModel->getGridSize());
+        $raster->setBoundingBox($this->modflowModel->getBoundingBox());
+        $raster->setData($this->interpolation->getData());
+
+        $value = PropertyValueFactory::create()
+            ->setRaster($raster);
+
+        $propertyType = $this->em->getRepository('AppBundle:PropertyType')
+            ->findOneBy(array(
+                'abbreviation' => $property
+            ));
+
+        if (!$propertyType) {
+            throw new NotFoundHttpException(sprintf('PropertyType with abbreviation "%s" not found.', $property));
+        }
+
+        $property = $layer->getPropertyWithPropertyType($propertyType);
+
+        if (is_null($property)) {
+            $property = PropertyFactory::create()
+                ->setPropertyType($propertyType);
+        }
+
+        $property->addValue(PropertyValueFactory::create()->setRaster($raster));
+        $layer->addProperty($property);
+        
+        $this->em->persist($layer);
+        $this->em->persist($property);
+        $this->em->flush();
     }
-
-
 }

@@ -3,7 +3,6 @@
 namespace AppBundle\Entity;
 
 use AppBundle\Model\PropertyValueInterface;
-use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
 use JMS\Serializer\Annotation as JMS;
 use Ramsey\Uuid\Uuid;
@@ -34,15 +33,6 @@ abstract class AbstractValue implements PropertyValueInterface
      */
     private $id;
 
-    /**
-     * @var ArrayCollection Property
-     *
-     * @ORM\ManyToOne(targetEntity="AppBundle\Entity\Property", inversedBy="values")
-     * @ORM\JoinColumn(name="property_id", referencedColumnName="id", onDelete="CASCADE")
-     * @JMS\Groups("modeldetails")
-     */
-    private $property;
-
     public function __construct()
     {
         $this->id = Uuid::uuid4();
@@ -56,28 +46,5 @@ abstract class AbstractValue implements PropertyValueInterface
     public function getId()
     {
         return $this->id;
-    }
-
-    /**
-     * Set property
-     *
-     * @param \AppBundle\Entity\Property $property
-     * @return AbstractValue
-     */
-    public function setProperty(Property $property = null)
-    {
-        $this->property = $property;
-
-        return $this;
-    }
-
-    /**
-     * Get property
-     *
-     * @return \AppBundle\Entity\Property 
-     */
-    public function getProperty()
-    {
-        return $this->property;
     }
 }
