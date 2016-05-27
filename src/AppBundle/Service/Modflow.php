@@ -176,6 +176,7 @@ class Modflow
         }
 
         $this->interpolation->interpolate();
+
         $raster = RasterFactory::create();
         $raster->setGridSize($this->modflowModel->getGridSize());
         $raster->setBoundingBox($this->modflowModel->getBoundingBox());
