@@ -13,7 +13,6 @@ use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\HttpKernel\KernelInterface;
 use Symfony\Component\Process\Exception\ProcessFailedException;
 use Symfony\Component\Process\Process;
-use Symfony\Component\Process\ProcessBuilder;
 
 class Interpolation
 {
@@ -48,16 +47,21 @@ class Interpolation
     /** @var  KernelInterface */
     protected $kernel;
 
+    /** @var  PythonProcess $pythonProcess */
+    protected $pythonProcess;
+
     /**
      * Interpolation constructor.
      * @param $serializer
      * @param $kernel
+     * @param $pythonProcess
      */
-    public function __construct($serializer, $kernel)
+    public function __construct($serializer, $kernel, $pythonProcess)
     {
         $this->points = new ArrayCollection();
         $this->serializer = $serializer;
         $this->kernel = $kernel;
+        $this->pythonProcess = $pythonProcess;
         $this->tmpFileName = Uuid::uuid4()->toString();
     }
     
@@ -188,16 +192,14 @@ class Interpolation
         $fs->dumpFile($inputFile, $interpolationJSON);
 
         $scriptName="interpolationCalculation.py";
-        $builder = new ProcessBuilder();
-        $builder
-            ->setPrefix('python')
-            ->setArguments(array('-W', 'ignore', $scriptName, $inputFile))
-            ->setWorkingDirectory($this->kernel->getRootDir().'/../py/pyprocessing/interpolation')
-        ;
 
         /** @var Process $process */
-        $process = $builder
-            ->getProcess();
+        $process = $this->pythonProcess
+            ->setArguments(array('-W', 'ignore', $scriptName, $inputFile))
+            ->setWorkingDirectory($this->kernel->getRootDir().'/../py/pyprocessing/interpolation')
+            ->getProcess()
+        ;
+        
         $process->run();
         if (!$process->isSuccessful()) {
             throw new ProcessFailedException($process);

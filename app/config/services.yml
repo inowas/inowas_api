@@ -1,16 +1,21 @@
 # Learn more about services, parameters and containers at
 # http://symfony.com/doc/current/book/service_container.html
 parameters:
-#    parameter_name: value
+    inowas.python_process.prefix:  python
+
 
 services:
     inowas.interpolation:
         class: AppBundle\Service\Interpolation
-        arguments: ['@serializer', '@kernel']
+        arguments: ['@serializer', '@kernel', '@inowas.python_process']
 
     inowas.modflow:
         class: AppBundle\Service\Modflow
         arguments: ['@doctrine.orm.default_entity_manager', '@inowas.interpolation']
+
+    inowas.python_process:
+        class: AppBundle\Service\PythonProcess
+        arguments: ['%inowas.python_process.prefix%']
 
 #    service_name:
 #        class: AppBundle\Directory\ClassName
