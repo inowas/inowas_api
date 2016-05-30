@@ -59,10 +59,10 @@ doctrine:
             point:          CrEOF\Spatial\DBAL\Types\Geometry\PointType
             polygon:        CrEOF\Spatial\DBAL\Types\Geometry\PolygonType
             linestring:     CrEOF\Spatial\DBAL\Types\Geometry\LineStringType
-            uuid:           Ramsey\Uuid\Doctrine\UuidType
-            grid_size:      AppBundle\Type\GridSizeType
             bounding_box:   AppBundle\Type\BoundingBoxType
+            grid_size:      AppBundle\Type\GridSizeType
             raster:         AppBundle\Type\RasterType
+            uuid:           Ramsey\Uuid\Doctrine\UuidType
 
     orm:
         auto_generate_proxy_classes: "%kernel.debug%"
