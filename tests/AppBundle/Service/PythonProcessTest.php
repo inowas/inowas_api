@@ -25,8 +25,40 @@ class PythonProcessTest extends WebTestCase
 
     public function testPythonProcessPreConfiguredPrefixIsSet(){
         $client = static::createClient();
-        $this->assertEquals($client->getKernel()->getContainer()->getParameter('inowas.python_process.prefix'), $this->pythonProcess->getPrefix());
+        $prefix =  $client->getKernel()->getContainer()->getParameter('inowas.python_process.prefix');
+        $this->assertEquals($prefix, $this->pythonProcess->getPrefix());
     }
 
+    public function testGetAndSetArguments(){
+        $arguments = array('Argument1', 'Argument2');
+        $this->pythonProcess->setArguments($arguments);
+        $this->assertEquals($arguments, $this->pythonProcess->getArguments());
+    }
 
+    public function testSetGetPrefix()
+    {
+        $prefix = "foobar";
+        $this->pythonProcess->setPrefix($prefix);
+        $this->assertEquals($prefix, $this->pythonProcess->getPrefix());
+    }
+
+    public function testSetGetWorkingDirectory()
+    {
+        $workingDirectory = '/tmp/workingDirectory';
+        $this->pythonProcess->setWorkingDirectory($workingDirectory);
+        $this->assertEquals($workingDirectory, $this->pythonProcess->getWorkingDirectory());
+        $this->assertEquals($workingDirectory, $this->pythonProcess->getProcess()->getWorkingDirectory());
+    }
+
+    public function testGetCorrectCommandLineWithPrefixAndArgument()
+    {
+        $prefix = 'payTon';
+        $arguments = array('Argument1', 'Argument2');
+        $this->pythonProcess
+            ->setPrefix($prefix)
+            ->setArguments($arguments);
+        $this->assertEquals('\'payTon\' \'Argument1\' \'Argument2\'', $this->pythonProcess->getProcess()->getCommandLine());
+
+
+    }
 }

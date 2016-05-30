@@ -39,11 +39,13 @@ class PythonProcess
     }
 
     /**
-     * @param string $prefix
+     * @param $prefix
+     * @return $this
      */
     public function setPrefix($prefix)
     {
         $this->prefix = $prefix;
+        return $this;
     }
 
     /**
@@ -70,14 +72,22 @@ class PythonProcess
         $this->workingDirectory = $workingDirectory;
         return $this;
     }
-    
+
+    /**
+     * @return string
+     */
+    public function getWorkingDirectory()
+    {
+        return $this->workingDirectory;
+    }
+
     /**
      * @return Process
      */
     public function getProcess()
     {
         return $this->process = $this->builder
-                ->setPrefix('python')
+                ->setPrefix($this->prefix)
                 ->setArguments($this->arguments)
                 ->setWorkingDirectory($this->workingDirectory)
                 ->getProcess();
