@@ -144,8 +144,10 @@ class InterpolationTest extends WebTestCase
         $this->assertFalse(is_dir($folderName));
         $this->interpolation->interpolate(Interpolation::TYPE_MEAN);
         $this->assertTrue(is_dir($folderName));
-        $this->assertFileExists($folderName."/".$this->interpolation->getTmpFileName());
-        unlink($folderName."/".$this->interpolation->getTmpFileName());
+        $this->assertFileExists($folderName."/".$this->interpolation->getTmpFileName().".in");
+        $this->assertFileExists($folderName."/".$this->interpolation->getTmpFileName().".out");
+        unlink($folderName."/".$this->interpolation->getTmpFileName().".in");
+        unlink($folderName."/".$this->interpolation->getTmpFileName().".out");
         rmdir($folderName);
         $this->assertFalse(is_dir($folderName));
     }

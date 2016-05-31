@@ -6,6 +6,7 @@ use AppBundle\Model\Interpolation\BoundingBox;
 use AppBundle\Model\Interpolation\GridSize;
 use AppBundle\Model\Interpolation\PointValue;
 use Doctrine\Common\Collections\ArrayCollection;
+use JMS\Serializer\SerializationContext;
 use JMS\Serializer\Serializer;
 use Ramsey\Uuid\Uuid;
 use Symfony\Component\Filesystem\Filesystem;
@@ -181,25 +182,32 @@ class Interpolation
 
         $class = 'AppBundle\Model\Interpolation\\'.ucfirst($algorithm).'Interpolation';
         $interpolation = new $class($this->gridSize, $this->boundingBox, $this->points);
-        $interpolationJSON = $this->serializer->serialize($interpolation, 'json');
+
+
+        $interpolationJSON = $this->serializer->serialize(
+            $interpolation,
+            'json',
+            SerializationContext::create()->setGroups(array('interpolation'))
+        );
 
         $fs = new Filesystem();
         if (!$fs->exists($this->tmpFolder)) {
             $fs->mkdir($this->tmpFolder);
         }
 
-        $inputFile = $this->tmpFolder.'/'.$this->tmpFileName;
-        $fs->dumpFile($inputFile, $interpolationJSON);
+        $inputFileName = $this->tmpFolder.'/'.$this->tmpFileName.'.in';
+        $fs->dumpFile($inputFileName, $interpolationJSON);
+        $outputFileName = $this->tmpFolder.'/'.$this->tmpFileName.'.out';
 
         $scriptName="interpolationCalculation.py";
 
         /** @var Process $process */
         $process = $this->pythonProcess
-            ->setArguments(array('-W', 'ignore', $scriptName, $inputFile))
+            ->setArguments(array('-W', 'ignore', $scriptName, $inputFileName, $outputFileName))
             ->setWorkingDirectory($this->kernel->getRootDir().'/../py/pyprocessing/interpolation')
             ->getProcess()
         ;
-        
+
         $process->run();
         if (!$process->isSuccessful()) {
             throw new ProcessFailedException($process);
@@ -207,7 +215,14 @@ class Interpolation
 
         $jsonResponse = $process->getOutput();
         $response = json_decode($jsonResponse);
-        $this->data = $response->raster;
+
+        if (isset($response->error)) {
+            throw new \Exception('Error in calculation');
+        } elseif (isset($response->success)){
+            $jsonResults = file_get_contents($outputFileName);
+            $results = json_decode($jsonResults);
+            $this->data = $results->raster;
+        }
     }
 
     /**

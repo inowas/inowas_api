@@ -22,7 +22,7 @@ class Raster
      * @ORM\Id
      * @ORM\Column(name="id", type="uuid", unique=true)
      * @JMS\Type("string")
-     * @JMS\Groups("modeldetails")
+     * @JMS\Groups({"modeldetails", "modelobjectdetails"})
      */
     private $id;
 
@@ -30,6 +30,7 @@ class Raster
      * @var GridSize
      *
      * @ORM\Column(name="grid_size", type="grid_size", nullable=true)
+     * @JMS\Groups({"modeldetails", "modelobjectdetails"})
      */
     private $gridSize;
 

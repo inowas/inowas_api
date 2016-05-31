@@ -2,12 +2,20 @@
 
 namespace AppBundle\Model\Interpolation;
 
+use JMS\Serializer\Annotation as JMS;
 
 class BoundingBox
 {
+    /** @JMS\Groups({"interpolation"}) */
     protected $xMin;
+
+    /** @JMS\Groups({"interpolation"}) */
     protected $xMax;
+
+    /** @JMS\Groups({"interpolation"}) */
     protected $yMin;
+
+    /** @JMS\Groups({"interpolation"}) */
     protected $yMax;
 
     /**

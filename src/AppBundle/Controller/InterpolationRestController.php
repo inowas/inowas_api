@@ -2,14 +2,18 @@
 
 namespace AppBundle\Controller;
 
+use AppBundle\Entity\GeologicalLayer;
 use AppBundle\Model\Interpolation\BoundingBox;
 use AppBundle\Model\Interpolation\GridSize;
 use AppBundle\Model\Interpolation\KrigingInterpolation;
 use AppBundle\Model\Interpolation\PointValue;
 use AppBundle\Service\Interpolation;
 use AppBundle\Service\Modflow;
+use FOS\RestBundle\Controller\Annotations\Get;
+use FOS\RestBundle\Controller\Annotations\Post;
 use FOS\RestBundle\Controller\FOSRestController;
 use FOS\RestBundle\View\View;
+use JMS\Serializer\SerializationContext;
 use Nelmio\ApiDocBundle\Annotation\ApiDoc;
 use Ramsey\Uuid\Uuid;
 use Symfony\Component\Filesystem\Filesystem;
@@ -98,22 +102,6 @@ class InterpolationRestController extends FOSRestController
      */
     public function getInterpolationsAction()
     {
-        
-        #$interpolation = $this->get('inowas.interpolation');
-        #$interpolation->setType('kriging');
-        #$interpolation->setGridSize(new GridSize(12,13));
-        #$interpolation->setBoundingBox(new BoundingBox(1.2, 1.2, 2.1, .2));
-        #$interpolation->addPoint(new PointValue(1.1, 2.2, 3.4));
-        #$interpolation->addPoint(new PointValue(4.4, 5.5, 6.6));
-
-        #$interpolation->interpolate();
-        #$result = new Result($interpolation->getGridSize(), $interpolation->getBoundingBox(), $interpolation->getData());
-
-        #$view = View::create();
-        #$view->setData($result)
-        #    ->setStatusCode(200)
-        #;
-
         $modflowModel = $this->getDoctrine()->getRepository('AppBundle:ModFlowModel')
             ->findOneBy(array(
                 'name' => 'ModFlowModel Scenario 2'
@@ -136,6 +124,75 @@ class InterpolationRestController extends FOSRestController
         $view->setData("")
             ->setStatusCode(200)
         ;
+
+        return $view;
+    }
+
+    /**
+     * Interpolates Layerproperties by Id
+     *
+     * @ApiDoc(
+     *   resource = true,
+     *   description = "Make an InterpolationRequest",
+     *   statusCodes = {
+     *     200 = "Returned when successful",
+     *     404 = "Returned when the user is not found"
+     *   }
+     * )
+     *
+     * @Get("/layers/{layerId}/propertytypes/{propertyTypeAbbreviation}/interpolate")
+     * @param $layerId
+     * @param $propertyTypeAbbreviation
+     * @return View
+     */
+    public function postLayerPropertytypeInterpolateAction($layerId, $propertyTypeAbbreviation)
+    {
+
+        $geologicalLayer = $this->getDoctrine()->getRepository('AppBundle:GeologicalLayer')
+            ->findOneBy(array(
+                'id' => $layerId
+            ));
+
+        if (!$geologicalLayer) {
+            throw new NotFoundHttpException(sprintf('Layer with id=%s not found', $layerId));
+        }
+
+        $propertyType = $this->getDoctrine()->getRepository('AppBundle:PropertyType')
+            ->findOneBy(array(
+                'abbreviation' => $propertyTypeAbbreviation
+            ));
+
+        if (!$propertyType) {
+            throw new NotFoundHttpException(sprintf('PropertyType with abbreviation=%s not found', $propertyTypeAbbreviation));
+        }
+
+        $soilModel = $this->getDoctrine()->getRepository('AppBundle:SoilModel')
+            ->findByLayerId($layerId);
+
+        if (!$soilModel) {
+            throw new NotFoundHttpException(sprintf('There is no soilmodel associated the given layer id=%s.', $layerId));
+        }
+
+        $modflowModel = $this->getDoctrine()->getRepository('AppBundle:ModFlowModel')
+            ->findByLayerId($soilModel->getId());
+
+        if (!$modflowModel) {
+            throw new NotFoundHttpException(sprintf('There is no ModflowModel associated the given soilmodel id=%s.', $soilModel->getId()));
+        }
+
+        $modflowModelTools = $this->get('inowas.modflow');
+        $modflowModelTools->setModflowModel($modflowModel);
+        $modflowModelTools->setSoilModel($soilModel);
+
+
+        /** @var GeologicalLayer $layer */
+        $layer = $modflowModelTools->interpolateLayer($geologicalLayer, $propertyTypeAbbreviation, Interpolation::TYPE_GAUSSIAN);
+
+        $view = View::create();
+        $view->setData($layer)
+            ->setStatusCode(200)
+            ->setSerializationContext(SerializationContext::create()
+                ->setGroups(array('modelobjectdetails')));
 
         return $view;
     }

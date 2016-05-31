@@ -10,7 +10,7 @@ use JMS\Serializer\Annotation as JMS;
 
 /**
  * @ORM\HasLifecycleCallbacks
- * @ORM\Entity()
+ * @ORM\Entity(repositoryClass="AppBundle\Repository\ModFlowModelRepository")
  * @JMS\ExclusionPolicy("none")
  */
 class ModFlowModel extends AbstractModel

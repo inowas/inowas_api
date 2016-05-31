@@ -3,16 +3,30 @@
 namespace AppBundle\Model\Interpolation;
 
 use Doctrine\Common\Collections\ArrayCollection;
+use JMS\Serializer\Annotation as JMS;
 
-abstract class Interpolation
+
+abstract class AbstractInterpolation
 {
-    /** @var  BoundingBox */
+    /**
+     * @var  BoundingBox
+     *
+     * @JMS\Groups({"interpolation"})
+     */
     protected $boundingBox;
 
-    /** @var  GridSize $gridSize */
+    /**
+     * @var GridSize $gridSize
+     *
+     * @JMS\Groups({"interpolation"})
+     */
     protected $gridSize;
 
-    /** @var  ArrayCollection */
+    /**
+     * @var  ArrayCollection
+     *
+     * @JMS\Groups({"interpolation"})
+     */
     protected $pointValues;
 
     /**

@@ -70,7 +70,33 @@ class Modflow
         return $this->modflowModel;
     }
 
+    /**
+     * @param ModFlowModel $modflowModel
+     * @return Modflow
+     */
+    public function setModflowModel($modflowModel)
+    {
+        $this->modflowModel = $modflowModel;
+        return $this;
+    }
 
+    /**
+     * @return SoilModel
+     */
+    public function getSoilModel()
+    {
+        return $this->soilModel;
+    }
+
+    /**
+     * @param SoilModel $soilModel
+     * @return Modflow
+     */
+    public function setSoilModel($soilModel)
+    {
+        $this->soilModel = $soilModel;
+        return $this;
+    }
 
     public function loadSoilModelModelById($id)
     {
@@ -85,14 +111,6 @@ class Modflow
         }
 
         $this->soilModel = $soilModel;
-    }
-
-    /**
-     * @return SoilModel
-     */
-    public function getSoilModel()
-    {
-        return $this->soilModel;
     }
 
     public function loadLayerById($id)
@@ -140,6 +158,8 @@ class Modflow
      * @param GeologicalLayer $layer
      * @param $property
      * @param $algorithm
+     * @return GeologicalLayer
+     * @throws \Exception
      */
     public function interpolateLayer(GeologicalLayer $layer, $property, $algorithm)
     {
@@ -160,7 +180,6 @@ class Modflow
         }
 
         if ($property == self::PROP_TOP_ELEVATION) {
-            $this->interpolation->setType($type);
             $this->interpolation->setBoundingBox($this->modflowModel->getBoundingBox());
             $this->interpolation->setGridSize($this->modflowModel->getGridSize());
 
@@ -200,6 +219,12 @@ class Modflow
                 ->setPropertyType($propertyType);
         }
 
+        foreach ($property->getValues() as $value) {
+            $property->removeValue($value);
+            $this->em->persist($property);
+            $this->em->flush();
+        }
+
         $property->addValue(PropertyValueFactory::create()->setRaster($raster));
         $layer->addProperty($property);
         
@@ -207,5 +232,7 @@ class Modflow
         $this->em->persist($layer);
         $this->em->persist($property);
         $this->em->flush();
+
+        return $layer;
     }
 }
