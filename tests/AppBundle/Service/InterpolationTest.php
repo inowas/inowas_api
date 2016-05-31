@@ -188,6 +188,21 @@ class InterpolationTest extends WebTestCase
         $this->assertCount($this->interpolation->getGridSize()->getNX(), $this->interpolation->getData()[0]);
     }
 
+    public function testMultipleInterpolationAlgorithms(){
+        $this->interpolation->setGridSize(new GridSize(10,11));
+        $this->interpolation->setBoundingBox(new BoundingBox(0, 10, 0, 10));
+        $this->interpolation->addPoint(new PointValue(1, 5, 3));
+        $this->interpolation->addPoint(new PointValue(2, 8, 3));
+        $this->interpolation->addPoint(new PointValue(7, 2, 3));
+        $this->interpolation->addPoint(new PointValue(6, 4, 3));
+        $this->interpolation->addPoint(new PointValue(8, 2, 3));
+        $this->interpolation->addPoint(new PointValue(9, 9, 3));
+        $this->interpolation->interpolate(array(0 => Interpolation::TYPE_GAUSSIAN, 1 => Interpolation::TYPE_MEAN));
+        $this->assertCount($this->interpolation->getGridSize()->getNY(), $this->interpolation->getData());
+        $this->assertCount($this->interpolation->getGridSize()->getNX(), $this->interpolation->getData()[0]);
+        $this->assertEquals($this->interpolation->getMethod(), Interpolation::TYPE_GAUSSIAN);
+    }
+
     public function testInterpolationAlgorithmsFallback(){
         $this->interpolation->setGridSize(new GridSize(10,11));
         $this->interpolation->setBoundingBox(new BoundingBox(0, 10, 0, 10));
