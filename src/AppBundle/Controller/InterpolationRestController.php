@@ -8,9 +8,8 @@ use AppBundle\Model\Interpolation\GridSize;
 use AppBundle\Model\Interpolation\KrigingInterpolation;
 use AppBundle\Model\Interpolation\PointValue;
 use AppBundle\Service\Interpolation;
-use AppBundle\Service\Modflow;
+use AppBundle\Service\SoilModelService;
 use FOS\RestBundle\Controller\Annotations\Get;
-use FOS\RestBundle\Controller\Annotations\Post;
 use FOS\RestBundle\Controller\FOSRestController;
 use FOS\RestBundle\View\View;
 use JMS\Serializer\SerializationContext;
@@ -74,9 +73,8 @@ class InterpolationRestController extends FOSRestController
             throw new ProcessFailedException($process);
         }
 
-        $test = json_decode($process->getOutput());
-
-        print
+        #$test = json_decode($process->getOutput());
+        #print
 
         $view = View::create();
         $view->setData("test")
@@ -114,11 +112,7 @@ class InterpolationRestController extends FOSRestController
         $soilModelService = $this->get('inowas.soilmodel');
         $soilModelService->loadModflowModelById($modflowModel->getId());
         $layer = $modflowModel->getSoilModel()->getGeologicalLayers()->first();
-        $soilModelService->interpolateLayer($layer, Modflow::PROP_BOTTOM_ELEVATION, Interpolation::TYPE_GAUSSIAN);
-        #$layer = $modflowModel->getSoilModel()->getGeologicalLayers()->next();
-        #$modflowModelTools->interpolateLayerByUnitProperty($layer, Modflow::PROP_BOTTOM_ELEVATION, Interpolation::TYPE_MEAN);
-        #$layer = $modflowModel->getSoilModel()->getGeologicalLayers()->next();
-        #$modflowModelTools->interpolateLayerByUnitProperty($layer, Modflow::PROP_BOTTOM_ELEVATION, Interpolation::TYPE_MEAN);
+        $soilModelService->interpolateLayerByProperty($layer, SoilModelService::PROP_BOTTOM_ELEVATION, Interpolation::TYPE_GAUSSIAN);
         
         $view = View::create();
         $view->setData("")
@@ -186,7 +180,7 @@ class InterpolationRestController extends FOSRestController
 
 
         /** @var GeologicalLayer $layer */
-        $layer = $soilModelService->interpolateLayer($geologicalLayer, $propertyTypeAbbreviation, Interpolation::TYPE_GAUSSIAN);
+        $layer = $soilModelService->interpolateLayerByProperty($geologicalLayer, $propertyTypeAbbreviation, Interpolation::TYPE_GAUSSIAN);
 
         $view = View::create();
         $view->setData($layer)

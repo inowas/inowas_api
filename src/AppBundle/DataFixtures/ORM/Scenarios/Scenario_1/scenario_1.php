@@ -12,13 +12,12 @@ use AppBundle\Model\GeologicalPointFactory;
 use AppBundle\Model\GeologicalUnitFactory;
 use AppBundle\Model\ModFlowModelFactory;
 use AppBundle\Model\ObservationPointFactory;
-use AppBundle\Model\PropertyFactory;
+use AppBundle\Model\Point;
 use AppBundle\Model\PropertyTimeValueFactory;
 use AppBundle\Model\PropertyValueFactory;
 use AppBundle\Model\SoilModelFactory;
 use AppBundle\Model\StreamFactory;
-
-use AppBundle\Model\Point;
+use AppBundle\Model\UserFactory;
 use CrEOF\Spatial\PHP\Types\Geometry\LineString;
 use CrEOF\Spatial\PHP\Types\Geometry\Polygon;
 use Doctrine\Common\DataFixtures\FixtureInterface;
@@ -26,7 +25,6 @@ use Doctrine\Common\Persistence\ObjectManager;
 use Symfony\Component\DependencyInjection\ContainerAwareInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
-
 
 class LoadScenario_1 implements FixtureInterface, ContainerAwareInterface
 {
@@ -58,10 +56,9 @@ class LoadScenario_1 implements FixtureInterface, ContainerAwareInterface
                 'username' => $username
             ));
 
-        if (!$user)
-        {
+        if (!$user) {
             // Add new User
-            $user = new User();
+            $user = UserFactory::create();
             $user->setUsername($username);
             $user->setEmail($email);
             $user->setPassword($password);
@@ -69,45 +66,115 @@ class LoadScenario_1 implements FixtureInterface, ContainerAwareInterface
             $entityManager->persist($user);
         }
 
+        // Load PropertyTypes
+        $propertyTypeGwHead = $entityManager->getRepository('AppBundle:PropertyType')
+            ->findOneBy(array(
+                'abbreviation' => "hh"
+            ));
+
+        if (!$propertyTypeGwHead) {
+            return new NotFoundHttpException();
+        }
+
+        $propertyTypeTopElevation = $entityManager->getRepository('AppBundle:PropertyType')
+            ->findOneBy(array(
+                'abbreviation' => "et"
+            ));
+
+        if (!$propertyTypeTopElevation) {
+            return new NotFoundHttpException();
+        }
+
         // Add new SoilModel
         $soilModel = SoilModelFactory::create();
         $soilModel->setOwner($user)->setName('SM Scenario 1');
 
         // Add Geological Profile 1
-        $geologicalPoint = GeologicalPointFactory::setOwnerNameAndPoint($user, 'SC1_GP1', new Point(11772891.9650673, 2397519.89608855, 4326), $public);
-        $geologicalPoint = $this->addNewGeologicalUnitToGeologicalPoint($geologicalPoint, 'SC1_GP1.1', 100, 70);
-        $geologicalPoint = $this->addNewGeologicalUnitToGeologicalPoint($geologicalPoint, 'SC1_GP1.2',  70, 40);
-        $geologicalPoint = $this->addNewGeologicalUnitToGeologicalPoint($geologicalPoint, 'SC1_GP1.3',  40,  0);
-        $entityManager->persist($geologicalPoint);
-
-        $soilModel->addGeologicalPoint($geologicalPoint);
+        $geologicalPoint_1 = GeologicalPointFactory::create()
+            ->setOwner($user)
+            ->setName('SC_GP1')
+            ->setPoint(new Point(11772891.9650673, 2397519.89608855, 4326))
+            ->setPublic($public)
+            ->addGeologicalUnit(GeologicalUnitFactory::create()
+                ->setName('SC1_GU1.1')
+                ->setTopElevation(100)
+                ->setBottomElevation(70)
+            )
+            ->addGeologicalUnit(GeologicalUnitFactory::create()
+                ->setName('SC1_GU1.2')
+                ->setTopElevation(70)
+                ->setBottomElevation(40)
+            )
+            ->addGeologicalUnit(GeologicalUnitFactory::create()
+                ->setName('SC1_GU1.3')
+                ->setTopElevation(40)
+                ->setBottomElevation(0)
+            )
+        ;
+        $entityManager->persist($geologicalPoint_1);
+        $soilModel->addGeologicalPoint($geologicalPoint_1);
         $entityManager->persist($soilModel);
+        $entityManager->flush();
 
         // Add Geological Profile 2
-        $geologicalPoint = GeologicalPointFactory::setOwnerNameAndPoint($user, 'SC1_GP2', new Point(11786103.1301754, 2397138.80478736, 4326), $public);
-        $geologicalPoint = $this->addNewGeologicalUnitToGeologicalPoint($geologicalPoint, 'SC1_GP2.1', 100, 70);
-        $geologicalPoint = $this->addNewGeologicalUnitToGeologicalPoint($geologicalPoint, 'SC1_GP2.2',  70, 40);
-        $geologicalPoint = $this->addNewGeologicalUnitToGeologicalPoint($geologicalPoint, 'SC1_GP2.3',  40,  0);
-        $entityManager->persist($geologicalPoint);
-
-        $soilModel->addGeologicalPoint($geologicalPoint);
+        $geologicalPoint_2 = GeologicalPointFactory::create()
+            ->setOwner($user)
+            ->setName('SC_GP2')
+            ->setPoint(new Point(11786103.1301754, 2397138.80478736, 4326))
+            ->setPublic($public)
+            ->addGeologicalUnit(GeologicalUnitFactory::create()
+                ->setName('SC1_GU2.1')
+                ->setTopElevation(100)
+                ->setBottomElevation(70)
+            )
+            ->addGeologicalUnit(GeologicalUnitFactory::create()
+                ->setName('SC1_GU2.2')
+                ->setTopElevation(70)
+                ->setBottomElevation(40)
+            )
+            ->addGeologicalUnit(GeologicalUnitFactory::create()
+                ->setName('SC1_GU2.3')
+                ->setTopElevation(40)
+                ->setBottomElevation(0)
+            )
+        ;
+        $entityManager->persist($geologicalPoint_2);
+        $soilModel->addGeologicalPoint($geologicalPoint_2);
         $entityManager->persist($soilModel);
+        $entityManager->flush();
 
         // Add Geological Profile 3
-        $geologicalPoint = GeologicalPointFactory::setOwnerNameAndPoint($user, 'SC1_GP3', new Point(11779836.2954446, 2387061.05704468, 4326), $public);
-        $geologicalPoint = $this->addNewGeologicalUnitToGeologicalPoint($geologicalPoint, 'SC1_GP3.1', 100, 70);
-        $geologicalPoint = $this->addNewGeologicalUnitToGeologicalPoint($geologicalPoint, 'SC1_GP3.2',  70, 40);
-        $geologicalPoint = $this->addNewGeologicalUnitToGeologicalPoint($geologicalPoint, 'SC1_GP3.3',  40,  0);
-        $entityManager->persist($geologicalPoint);
-
-        $soilModel->addGeologicalPoint($geologicalPoint);
+        $geologicalPoint_3 = GeologicalPointFactory::create()
+            ->setOwner($user)
+            ->setName('SC_GP3')
+            ->setPoint(new Point(11779836.2954446, 2387061.05704468, 4326))
+            ->setPublic($public)
+            ->addGeologicalUnit(GeologicalUnitFactory::create()
+                ->setName('SC1_GU3.1')
+                ->setTopElevation(100)
+                ->setBottomElevation(70)
+            )
+            ->addGeologicalUnit(GeologicalUnitFactory::create()
+                ->setName('SC1_GU3.2')
+                ->setTopElevation(70)
+                ->setBottomElevation(40)
+            )
+            ->addGeologicalUnit(GeologicalUnitFactory::create()
+                ->setName('SC1_GU3.3')
+                ->setTopElevation(40)
+                ->setBottomElevation(0)
+            )
+        ;
+        $entityManager->persist($geologicalPoint_3);
+        $soilModel->addGeologicalPoint($geologicalPoint_3);
         $entityManager->persist($soilModel);
+        $entityManager->flush();
 
-        // Create layer 1
+
         $geologicalLayer = GeologicalLayerFactory::setOwnerNameAndPublic($user, 'SC1_L1', $public);
-        $geologicalLayer = $this->addGeologicalUnitToGeologicalLayer($entityManager, $geologicalLayer, 'SC1_GP1.1');
-        $geologicalLayer = $this->addGeologicalUnitToGeologicalLayer($entityManager, $geologicalLayer, 'SC1_GP2.1');
-        $geologicalLayer = $this->addGeologicalUnitToGeologicalLayer($entityManager, $geologicalLayer, 'SC1_GP3.1');
+        $geologicalLayer = $this->addGeologicalUnitToGeologicalLayer($entityManager, $geologicalLayer, 'SC1_GU1.1');
+        $geologicalLayer = $this->addGeologicalUnitToGeologicalLayer($entityManager, $geologicalLayer, 'SC1_GU2.1');
+        $geologicalLayer = $this->addGeologicalUnitToGeologicalLayer($entityManager, $geologicalLayer, 'SC1_GU3.1');
         $entityManager->persist($geologicalLayer);
         $entityManager->flush();
 
@@ -116,9 +183,9 @@ class LoadScenario_1 implements FixtureInterface, ContainerAwareInterface
 
         // Create layer 2
         $geologicalLayer = GeologicalLayerFactory::setOwnerNameAndPublic($user, 'SC1_L2', $public);
-        $geologicalLayer = $this->addGeologicalUnitToGeologicalLayer($entityManager, $geologicalLayer, 'SC1_GP1.2');
-        $geologicalLayer = $this->addGeologicalUnitToGeologicalLayer($entityManager, $geologicalLayer, 'SC1_GP2.2');
-        $geologicalLayer = $this->addGeologicalUnitToGeologicalLayer($entityManager, $geologicalLayer, 'SC1_GP3.2');
+        $geologicalLayer = $this->addGeologicalUnitToGeologicalLayer($entityManager, $geologicalLayer, 'SC1_GU1.2');
+        $geologicalLayer = $this->addGeologicalUnitToGeologicalLayer($entityManager, $geologicalLayer, 'SC1_GU2.2');
+        $geologicalLayer = $this->addGeologicalUnitToGeologicalLayer($entityManager, $geologicalLayer, 'SC1_GU3.2');
         $entityManager->persist($geologicalLayer);
         $entityManager->flush();
 
@@ -127,9 +194,9 @@ class LoadScenario_1 implements FixtureInterface, ContainerAwareInterface
 
         // Create layer 3
         $geologicalLayer = GeologicalLayerFactory::setOwnerNameAndPublic($user, 'SC1_L3', $public);
-        $geologicalLayer = $this->addGeologicalUnitToGeologicalLayer($entityManager, $geologicalLayer, 'SC1_GP1.3');
-        $geologicalLayer = $this->addGeologicalUnitToGeologicalLayer($entityManager, $geologicalLayer, 'SC1_GP2.3');
-        $geologicalLayer = $this->addGeologicalUnitToGeologicalLayer($entityManager, $geologicalLayer, 'SC1_GP3.3');
+        $geologicalLayer = $this->addGeologicalUnitToGeologicalLayer($entityManager, $geologicalLayer, 'SC1_GU1.3');
+        $geologicalLayer = $this->addGeologicalUnitToGeologicalLayer($entityManager, $geologicalLayer, 'SC1_GU2.3');
+        $geologicalLayer = $this->addGeologicalUnitToGeologicalLayer($entityManager, $geologicalLayer, 'SC1_GU3.3');
         $entityManager->persist($geologicalLayer);
         $entityManager->flush();
 
@@ -151,143 +218,78 @@ class LoadScenario_1 implements FixtureInterface, ContainerAwareInterface
         $entityManager->persist($stream);
         $entityManager->flush();
 
-        // Add new Areatype
-        $areaType = AreaTypeFactory::setName('SC1_AT1');
-        $entityManager->persist($areaType);
-        $entityManager->flush();
-
         // Add new Area
-        $area = AreaFactory::setOwnerNameTypeAndPublic($user, 'SC1_A1', $areaType, $public);
-        $coordinates = array(
-            array(11767778.4794313, 2403329.01798664),
-            array(11791015.33603, 2403329.01798664),
-            array(11791168.2100865, 2379939.28733137),
-            array(11766937.6721201, 2380245.03544451),
-            array(11767778.4794313, 2403329.01798664)
+        $area = AreaFactory::create()
+            ->setOwner($user)
+            ->setName('SC1_A1')
+            ->setAreaType(AreaTypeFactory::create()
+                ->setName('SC1_AT1'))
+            ->setPublic($public)
+            ->setGeometry(new Polygon(
+                array(new LineString(array(
+                    array(11767778.4794313, 2403329.01798664),
+                    array(11791015.33603, 2403329.01798664),
+                    array(11791168.2100865, 2379939.28733137),
+                    array(11766937.6721201, 2380245.03544451),
+                    array(11767778.4794313, 2403329.01798664)                    
+                ))), 4326));
+        
+
+        $area->addObservationPoint(
+            ObservationPointFactory::create()
+            ->setOwner($user)
+            ->setName('SC1_OP1')
+            ->setPoint(new Point(11778481.3041515, 2393327.89177542, 4326))
+            ->setPublic($public)
+            ->addValue($propertyTypeTopElevation, PropertyValueFactory::create()->setValue(100))
+            ->addValue($propertyTypeGwHead, PropertyTimeValueFactory::create()
+                ->setValue(50)
+                ->setDatetime(new \DateTime('2015-01-01 00:00:00')))
+            ->addValue($propertyTypeGwHead, PropertyTimeValueFactory::create()
+                ->setValue(51)
+                ->setDatetime(new \DateTime('2015-02-01 00:00:00')))
+            ->addValue($propertyTypeGwHead, PropertyTimeValueFactory::create()
+                ->setValue(52)
+                ->setDatetime(new \DateTime('2015-03-01 00:00:00')))
+            ->addValue($propertyTypeGwHead, PropertyTimeValueFactory::create()
+                ->setValue(53)
+                ->setDatetime(new \DateTime('2015-04-01 00:00:00')))
         );
-        $line = new LineString($coordinates);
-        $polygon = new Polygon(array($line), 4326);
-        $area->setGeometry($polygon);
 
-        // Create ObservationPoints for area
-        $observationPoint = ObservationPointFactory::setOwnerNameAndPoint($user, 'SC1_OP1', new Point(11778481.3041515, 2393327.89177542, 4326), $public);
-        $observationPoint->setElevation(100);
-        $entityManager->persist($observationPoint);
-        $area->addObservationPoint($observationPoint);
+        $area->addObservationPoint(
+            ObservationPointFactory::create()
+                ->setOwner($user)
+                ->setName('SC1_OP2')
+                ->setPoint(new Point(11772891.9650673, 2397519.89608855, 4326))
+                ->setPublic($public)
+                ->addValue($propertyTypeTopElevation, PropertyValueFactory::create()->setValue(110))
+        );
 
-        $observationPoint = ObservationPointFactory::setOwnerNameAndPoint($user, 'SC1_OP2', new Point(11772891.9650673, 2397519.89608855, 4326), $public);
-        $observationPoint->setElevation(100);
-        $entityManager->persist($observationPoint);
-        $area->addObservationPoint($observationPoint);
-
-        $observationPoint = ObservationPointFactory::setOwnerNameAndPoint($user, 'SC1_OP3', new Point(11786103.1301754, 2397138.80478736, 4326), $public);
-        $observationPoint->setElevation(100);
-        $entityManager->persist($observationPoint);
-        $area->addObservationPoint($observationPoint);
+        $area->addObservationPoint(
+            ObservationPointFactory::create()
+                ->setOwner($user)
+                ->setName('SC1_OP3')
+                ->setPoint(new Point(11786103.1301754, 2397138.80478736, 4326))
+                ->setPublic($public)
+                ->addValue($propertyTypeTopElevation, PropertyValueFactory::create()->setValue(120))
+        );
 
         $entityManager->persist($area);
         $entityManager->flush();
 
         // Create boundary
-        $boundary = BoundaryFactory::setOwnerNameAndPublic($user, 'SC1_B1', $public);
-        $lineCoordinates = array(
-            array(11767778.4794313, 2403329.01798664),
-            array(11766937.6721201, 2380245.03544451),
-            array(11791168.2100865, 2379939.28733137)
-        );
-        $line = new LineString($lineCoordinates, 4326);
-        $boundary->setGeometry($line);
+        $boundary = BoundaryFactory::create()
+            ->setOwner($user)
+            ->setName('SC1_B1')
+            ->setPublic($public)
+            ->setGeometry(new LineString(array(
+                array(11767778.4794313, 2403329.01798664),
+                array(11766937.6721201, 2380245.03544451),
+                array(11791168.2100865, 2379939.28733137)), 4326))
+            ->addValue($propertyTypeGwHead, PropertyValueFactory::create()->setValue(60));
+
         $entityManager->persist($boundary);
         $entityManager->flush();
-
-        // Add ModelObjectPropertyTypes
-        $propertyTypeGwHead = $entityManager->getRepository('AppBundle:PropertyType')
-            ->findOneBy(array(
-                'abbreviation' => "hh"
-            ));
-
-        if (!$propertyTypeGwHead)
-        {
-            return new NotFoundHttpException();
-        }
-
-        $propertyTypeElevation = $entityManager->getRepository('AppBundle:PropertyType')
-            ->findOneBy(array(
-                'abbreviation' => "et"
-            ));
-
-        if (!$propertyTypeElevation)
-        {
-            return new NotFoundHttpException();
-        }
-
-        // Add Property GWHead and TimeValues to ObservationPoint SC1_OP1
-        $observationPoint = $entityManager->getRepository('AppBundle:ObservationPoint')
-            ->findOneBy(array(
-                'name' => 'SC1_OP1'
-            ));
-        
-        $property = PropertyFactory::setTypeAndModelObject($propertyTypeGwHead, $observationPoint);
-        $entityManager->persist($property);
-
-        $propertyTimeValue = PropertyTimeValueFactory::setDateTimeAndValue(new \DateTime('2015-01-01 00:00:00'), 50);
-        $entityManager->persist($propertyTimeValue);
-
-        $propertyTimeValue = PropertyTimeValueFactory::setDateTimeAndValue(new \DateTime('2015-02-01 00:00:00'), 51);
-        $entityManager->persist($propertyTimeValue);
-
-        $propertyTimeValue = PropertyTimeValueFactory::setDateTimeAndValue(new \DateTime('2015-03-01 00:00:00'), 52);
-        $entityManager->persist($propertyTimeValue);
-
-        $propertyTimeValue = PropertyTimeValueFactory::setDateTimeAndValue(new \DateTime('2015-04-01 00:00:00'), 53);
-        $entityManager->persist($propertyTimeValue);
-
-        $propertyTimeValue = PropertyTimeValueFactory::setDateTimeAndValue(new \DateTime('2015-05-01 00:00:00'), 54);
-        $entityManager->persist($propertyTimeValue);
-
-        // Add Property Elevation and TimeValues to ObservationPoint OP1
-        $property = PropertyFactory::setTypeAndModelObject($propertyTypeElevation, $observationPoint);
-        $entityManager->persist($property);
-
-        $propertyValue = PropertyValueFactory::create()->setValue(100);
-        $entityManager->persist($propertyValue);
-
-
-        // Add Property GWHead and TimeValues to ObservationPoint OP2
-        $observationPoint = $entityManager->getRepository('AppBundle:ObservationPoint')
-            ->findOneBy(array(
-                'name' => 'SC1_OP2'
-            ));
-
-        $property = PropertyFactory::setTypeAndModelObject($propertyTypeElevation, $observationPoint);
-        $entityManager->persist($property);
-
-        $propertyValue = PropertyValueFactory::create()->setValue(100);
-        $entityManager->persist($propertyValue);
-
-        // Add Property GWHead and TimeValues to ObservationPoint OP2
-        $observationPoint = $entityManager->getRepository('AppBundle:ObservationPoint')
-            ->findOneBy(array(
-                'name' => 'SC1_OP3'
-            ));
-
-        $property = PropertyFactory::setTypeAndModelObject($propertyTypeElevation, $observationPoint);
-        $entityManager->persist($property);
-
-        $propertyValue = PropertyValueFactory::create()->setValue(100);
-        $entityManager->persist($propertyValue);
-
-        // Add Property, Values to Boundary B1
-        $boundary = $entityManager->getRepository('AppBundle:Boundary')
-            ->findOneBy(array(
-                'name' => 'SC1_B1'
-            ));
-
-        $property = PropertyFactory::setTypeAndModelObject($propertyTypeGwHead, $boundary);
-        $entityManager->persist($property);
-
-        $propertyValue = PropertyValueFactory::create()->setValue(60);
-        $entityManager->persist($propertyValue);
 
         /** @var ModFlowModel $model */
         $model = ModFlowModelFactory::create();
@@ -311,14 +313,6 @@ class LoadScenario_1 implements FixtureInterface, ContainerAwareInterface
         return 0;
     }
 
-    private function addNewGeologicalUnitToGeologicalPoint(\AppBundle\Entity\GeologicalPoint $geologicalPoint, $name = "", $topElevation = 0, $bottomElevation = 0)
-    {
-        $geologicalUnit  = GeologicalUnitFactory::setOwnerNameAndPublic($geologicalPoint->getOwner(), $name, $geologicalPoint->getPublic());
-        $geologicalUnit->setTopElevation($topElevation);
-        $geologicalUnit->setBottomElevation($bottomElevation);
-        $geologicalPoint->addGeologicalUnit($geologicalUnit);
-        return $geologicalPoint;
-    }
 
     private function addGeologicalUnitToGeologicalLayer(ObjectManager $entityManager, \AppBundle\Entity\GeologicalLayer $layer, $geologicalUnitName)
     {

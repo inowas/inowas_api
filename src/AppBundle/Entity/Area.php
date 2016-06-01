@@ -38,7 +38,7 @@ class Area extends ModelObject
     /**
      * @var AreaType
      *
-     * @ORM\ManyToOne(targetEntity="AppBundle\Entity\AreaType")
+     * @ORM\ManyToOne(targetEntity="AppBundle\Entity\AreaType", cascade={"persist", "remove"})
      * @JMS\Groups({"list", "details", "modelobjectdetails", "modeldetails"})
      */
     private $areaType;
@@ -53,11 +53,14 @@ class Area extends ModelObject
 
     /**
      * @param Polygon $geometry
+     * @return $this
      */
     public function setGeometry(Polygon $geometry)
     {
         $this->geometry = $geometry;
         $this->rings = $geometry->toArray();
+
+        return $this;
     }
 
     /**

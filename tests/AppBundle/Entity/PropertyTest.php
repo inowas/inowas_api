@@ -65,12 +65,16 @@ class PropertyTest extends WebTestCase
         $this->boundary = BoundaryFactory::setOwnerNameAndPublic($this->user, 'testBoundary', true);
         $this->entityManager->persist($this->boundary);
 
-        $this->propertyType = PropertyTypeFactory::setName('testProperty');
-        $this->propertyType->setAbbreviation("tp");
+        $this->propertyType = PropertyTypeFactory::create()
+            ->setName('testProperty')
+            ->setAbbreviation("tp");
+
         $this->entityManager->persist($this->propertyType);
 
         /** @var Property property */
-        $this->property = PropertyFactory::setTypeAndModelObject($this->propertyType, $this->boundary);
+        $this->property = PropertyFactory::create()
+            ->setPropertyType($this->propertyType);
+
         $this->entityManager->persist($this->property);
         $this->entityManager->flush();
     }

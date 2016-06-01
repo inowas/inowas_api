@@ -2,12 +2,12 @@
 
 namespace AppBundle\Service;
 
-
 use AppBundle\Entity\GeologicalLayer;
 use AppBundle\Entity\GeologicalUnit;
 use AppBundle\Entity\ModFlowModel;
 use AppBundle\Entity\Property;
 use AppBundle\Entity\SoilModel;
+use AppBundle\Exception\InvalidArgumentException;
 use AppBundle\Model\Interpolation\PointValue;
 use AppBundle\Model\PropertyFactory;
 use AppBundle\Model\PropertyValueFactory;
@@ -71,7 +71,7 @@ class SoilModelService
 
     /**
      * @param ModFlowModel $modflowModel
-     * @return Modflow
+     * @return SoilModelService
      */
     public function setModflowModel($modflowModel)
     {
@@ -89,7 +89,7 @@ class SoilModelService
 
     /**
      * @param SoilModel $soilModel
-     * @return Modflow
+     * @return SoilModelService
      */
     public function setSoilModel($soilModel)
     {
@@ -153,6 +153,36 @@ class SoilModelService
         return $propertyTypes;
     }
 
+    public function getLayersSortedByElevation(SoilModel $soilModel=null)
+    {
+        if (is_null($soilModel)) {
+            $soilModel=$this->soilModel;
+            if (is_null($soilModel)) {
+                throw new InvalidArgumentException(printf('Soilmodel not loaded'));
+            }
+        }
+
+        $layers = $soilModel->getGeologicalLayers();
+
+        $sortedLayers = array();
+        $meanBottomElevations = array();
+
+        /** @var GeologicalLayer $layer */
+        foreach ($layers as $layer) {
+            $units = $layer->getGeologicalUnits();
+
+            if (count($units) > 0)
+            {
+                $meanBottomElevation = 0.0;
+                /** @var GeologicalUnit $unit */
+                foreach ($units as $unit) {
+                    $meanBottomElevation += $unit->getBottomElevation();
+                }
+                $meanBottomElevation = $meanBottomElevation/count($units);
+            }
+        }
+    }
+
     /**
      * @param GeologicalLayer $layer
      * @param $property
@@ -160,7 +190,7 @@ class SoilModelService
      * @return GeologicalLayer
      * @throws \Exception
      */
-    public function interpolateLayer(GeologicalLayer $layer, $property, $algorithm)
+    public function interpolateLayerByProperty(GeologicalLayer $layer, $property, $algorithm)
     {
         $geologicalUnits = $layer->getGeologicalUnits();
 

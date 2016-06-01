@@ -102,8 +102,9 @@ class RasterRestController extends FOSRestController
         ;
 
         /* Let's create a property and a value-object */
-        $property = PropertyFactory::setTypeAndModelObject($propertyType, $mo);
-        $property->setName($paramFetcher->get('propertyName'));
+        $property = PropertyFactory::create()
+            ->setName($paramFetcher->get('propertyName'))
+            ->setPropertyType($propertyType);
 
         if (is_null($paramFetcher->get('date'))) {
             $value = PropertyValueFactory::create();
@@ -115,7 +116,6 @@ class RasterRestController extends FOSRestController
         $this->getDoctrine()->getManager()->flush();
 
         $mo->addProperty($property);
-        $property->setModelObject($mo);
         $property->addValue($value);
         $value->setRaster($raster);
 

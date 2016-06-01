@@ -2,7 +2,6 @@
 
 namespace AppBundle\Model;
 
-use AppBundle\Entity\ModelObject;
 use AppBundle\Entity\Property;
 use AppBundle\Entity\PropertyType;
 
@@ -21,11 +20,10 @@ class PropertyFactory
         return new Property();
     }
 
-    public static function setTypeAndModelObject(PropertyType $type, ModelObject $modelObject)
+    public static function setTypeAndModelObject(PropertyType $type)
     {
         $property = new Property();
         $property->setPropertyType($type);
-        $property->setModelObject($modelObject);
 
         return $property;
     }

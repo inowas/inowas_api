@@ -44,14 +44,6 @@ class Property
     private $description;
 
     /**
-     * @var ModelObject
-     *
-     * @ORM\ManyToOne(targetEntity="AppBundle\Entity\ModelObject", inversedBy="properties")
-     * @ORM\JoinColumn(name="model_object_id", referencedColumnName="id", onDelete="CASCADE")
-     */
-    private $modelObject;
-
-    /**
      * @var PropertyType
      *
      * @ORM\ManyToOne(targetEntity="AppBundle\Entity\PropertyType", cascade={"persist", "remove"})
@@ -151,29 +143,6 @@ class Property
     }
 
     /**
-     * Set modelObject
-     *
-     * @param \AppBundle\Entity\ModelObject $modelObject
-     * @return Property
-     */
-    public function setModelObject(ModelObject $modelObject = null)
-    {
-        $this->modelObject = $modelObject;
-
-        return $this;
-    }
-
-    /**
-     * Get modelObject
-     *
-     * @return \AppBundle\Entity\ModelObject 
-     */
-    public function getModelObject()
-    {
-        return $this->modelObject;
-    }
-
-    /**
      * Set name
      *
      * @param string $name
@@ -203,14 +172,40 @@ class Property
     /**
      * Add values
      *
-     * @param \AppBundle\Entity\AbstractValue $value
+     * @param \AppBundle\Entity\AbstractValue $newValue
      * @return Property
      */
-    public function addValue(\AppBundle\Entity\AbstractValue $value)
+    public function addValue(AbstractValue $newValue)
     {
-        if (!$this->values->contains($value))
+        if (!$this->values->contains($newValue))
         {
-            $this->values[] = $value;
+            if ($newValue instanceof PropertyValue){
+                $this->values->clear();
+                $this->values[] = $newValue;
+                return $this;
+            }
+
+            if ($newValue instanceof PropertyTimeValue){
+                /** @var AbstractValue $value */
+                foreach ($this->values as $key => $value) {
+                    if ($value->getDateBegin() == $newValue->getDateBegin()) {
+                        $this->values[$key] = $newValue;
+                        return $this;
+                    }
+                }
+                $this->values[] = $newValue;
+            }
+
+            if ($newValue instanceof PropertyFixedIntervalValue){
+                /** @var AbstractValue $value */
+                foreach ($this->values as $key => $value) {
+                    if ($value->getDateBegin() == $newValue->getDateBegin()) {
+                        $this->values[$key] = $newValue;
+                        return $this;
+                    }
+                }
+                $this->values[] = $newValue;
+            }
         }
 
         return $this;
@@ -221,7 +216,7 @@ class Property
      *
      * @param \AppBundle\Entity\AbstractValue $value
      */
-    public function removeValue(\AppBundle\Entity\AbstractValue $value)
+    public function removeValue(AbstractValue $value)
     {
         if ($this->values->contains($value))
         {
