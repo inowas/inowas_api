@@ -52,7 +52,7 @@ class LoadPropertyTypes implements FixtureInterface, ContainerAwareInterface
         foreach ($propertyTypesArray as $propertyTypeArray)
         {
             $propertyType = PropertyTypeFactory::create()
-                ->setAbbreviation($propertyTypesArray[0])
+                ->setAbbreviation($propertyTypeArray[0])
                 ->setName($propertyTypeArray[1])
                 ->setValueType($propertyTypeArray[2])
             ;
