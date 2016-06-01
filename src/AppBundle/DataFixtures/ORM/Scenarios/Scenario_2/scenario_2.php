@@ -77,6 +77,34 @@ class LoadScenario_2 implements FixtureInterface, ContainerAwareInterface
             $entityManager->persist($user);
         }
 
+        // Load PropertyTypes
+        $propertyTypeGwHead = $entityManager->getRepository('AppBundle:PropertyType')
+            ->findOneBy(array(
+                'abbreviation' => "hh"
+            ));
+
+        if (!$propertyTypeGwHead) {
+            return new NotFoundHttpException();
+        }
+
+        $propertyTypeTopElevation = $entityManager->getRepository('AppBundle:PropertyType')
+            ->findOneBy(array(
+                'abbreviation' => "et"
+            ));
+
+        if (!$propertyTypeTopElevation) {
+            return new NotFoundHttpException();
+        }
+
+        $propertyTypeBottomElevation = $entityManager->getRepository('AppBundle:PropertyType')
+            ->findOneBy(array(
+                'abbreviation' => "eb"
+            ));
+
+        if (!$propertyTypeBottomElevation) {
+            return new NotFoundHttpException();
+        }
+
         // Create AreaType
         $areaType = AreaTypeFactory::setName('SC2_AT1');
         $entityManager->persist($areaType);
@@ -256,42 +284,56 @@ class LoadScenario_2 implements FixtureInterface, ContainerAwareInterface
         foreach ($boreholes as $borehole)
         {
             echo "Persisting ".$borehole[0]."\r\n";
-            $geologicalPoint = GeologicalPointFactory::setOwnerNameAndPoint($user, $borehole[0], new Point($borehole[1], $borehole[2], 3857), $public);
+            $geologicalPoint = GeologicalPointFactory::create()
+                ->setOwner($user)
+                ->setName($borehole[0])
+                ->setPoint(new Point($borehole[1], $borehole[2], 3857))
+                ->setPublic($public);
             $entityManager->persist($geologicalPoint);
 
-            $geologicalUnit = GeologicalUnitFactory::setOwnerNameAndPublic($user, $borehole[0].'.1', $public);
-            $geologicalUnit->setTopElevation($borehole[3]);
-            $geologicalUnit->setBottomElevation($borehole[4]);
-            $geologicalPoint->addGeologicalUnit($geologicalUnit);
-            $entityManager->persist($geologicalUnit);
+            $geologicalUnit = GeologicalUnitFactory::create()
+                ->setOwner($user)
+                ->setName($borehole[0].'.1')
+                ->setPublic($public)
+                ->addValue($propertyTypeTopElevation, PropertyValueFactory::create()->setValue($borehole[3]))
+                ->addValue($propertyTypeBottomElevation, PropertyValueFactory::create()->setValue($borehole[4]));
 
+            $geologicalPoint->addGeologicalUnit($geologicalUnit);
             $layer_1->addGeologicalUnit($geologicalUnit);
             $entityManager->persist($layer_1);
 
-            $geologicalUnit = GeologicalUnitFactory::setOwnerNameAndPublic($user, $borehole[0].'.2', $public);
-            $geologicalUnit->setTopElevation($borehole[4]);
-            $geologicalUnit->setBottomElevation($borehole[5]);
+            $geologicalUnit = GeologicalUnitFactory::create()
+                ->setOwner($user)
+                ->setName($borehole[0].'.2')
+                ->setPublic($public)
+                ->addValue($propertyTypeTopElevation, PropertyValueFactory::create()->setValue($borehole[4]))
+                ->addValue($propertyTypeBottomElevation, PropertyValueFactory::create()->setValue($borehole[5]));
+
             $geologicalPoint->addGeologicalUnit($geologicalUnit);
-            $entityManager->persist($geologicalUnit);
             $layer_2->addGeologicalUnit($geologicalUnit);
             $entityManager->persist($layer_2);
 
-            $geologicalUnit = GeologicalUnitFactory::setOwnerNameAndPublic($user, $borehole[0].'.3', $public);
-            $geologicalUnit->setTopElevation($borehole[5]);
-            $geologicalUnit->setBottomElevation($borehole[6]);
+            $geologicalUnit = GeologicalUnitFactory::create()
+                ->setOwner($user)
+                ->setName($borehole[0].'.3')
+                ->setPublic($public)
+                ->addValue($propertyTypeTopElevation, PropertyValueFactory::create()->setValue($borehole[5]))
+                ->addValue($propertyTypeBottomElevation, PropertyValueFactory::create()->setValue($borehole[6]));
+
             $geologicalPoint->addGeologicalUnit($geologicalUnit);
-            $entityManager->persist($geologicalUnit);
             $layer_3->addGeologicalUnit($geologicalUnit);
             $entityManager->persist($layer_3);
 
-            $geologicalUnit = GeologicalUnitFactory::setOwnerNameAndPublic($user, $borehole[0].'.4', $public);
-            $geologicalUnit->setTopElevation($borehole[6]);
-            $geologicalUnit->setBottomElevation($borehole[7]);
+            $geologicalUnit = GeologicalUnitFactory::create()
+                ->setOwner($user)
+                ->setName($borehole[0].'.4')
+                ->setPublic($public)
+                ->addValue($propertyTypeTopElevation, PropertyValueFactory::create()->setValue($borehole[6]))
+                ->addValue($propertyTypeBottomElevation, PropertyValueFactory::create()->setValue($borehole[7]));
+
             $geologicalPoint->addGeologicalUnit($geologicalUnit);
-            $entityManager->persist($geologicalUnit);
             $layer_4->addGeologicalUnit($geologicalUnit);
             $entityManager->persist($layer_4);
-
             $soilModel->addGeologicalPoint($geologicalPoint);
             $entityManager->flush();
         }
@@ -737,7 +779,7 @@ class LoadScenario_2 implements FixtureInterface, ContainerAwareInterface
                 echo 'Add properties to '.$geologicalUnit->getName()."\n";
 
                 $propertyType = $this->getPropertyType($this->entityManager, 'hc');
-                $property = PropertyFactory::setTypeAndModelObject($propertyType, $geologicalUnit);
+                $property = PropertyFactory::create()->setPropertyType($propertyType);
                 $propertyValue = PropertyValueFactory::create()->setValue($geologicalUnitProperty[1]);
                 $property->setName('Hydraulic conductivity'.' '.$geologicalUnit->getName());
                 $property->addValue($propertyValue);
@@ -745,7 +787,7 @@ class LoadScenario_2 implements FixtureInterface, ContainerAwareInterface
                 $this->entityManager->persist($property);
 
                 $propertyType = $this->getPropertyType($this->entityManager, 'ha');
-                $property = PropertyFactory::setTypeAndModelObject($propertyType, $geologicalUnit);
+                $property = PropertyFactory::create()->setPropertyType($propertyType);
                 $propertyValue = PropertyValueFactory::create()->setValue($geologicalUnitProperty[2]);
                 $property->setName('Horizontal anisotropy'.' '.$geologicalUnit->getName());
                 $property->addValue($propertyValue);
@@ -753,7 +795,7 @@ class LoadScenario_2 implements FixtureInterface, ContainerAwareInterface
                 $this->entityManager->persist($property);
 
                 $propertyType = $this->getPropertyType($this->entityManager, 'va');
-                $property = PropertyFactory::setTypeAndModelObject($propertyType, $geologicalUnit);
+                $property = PropertyFactory::create()->setPropertyType($propertyType);
                 $propertyValue = PropertyValueFactory::create()->setValue($geologicalUnitProperty[3]);
                 $property->setName('Vertical anisotropy'.' '.$geologicalUnit->getName());
                 $property->addValue($propertyValue);
@@ -821,6 +863,7 @@ class LoadScenario_2 implements FixtureInterface, ContainerAwareInterface
             $filename = 'scenario_2_observationPoint_'.str_replace('SC2_', '', $observationPoint->getName()).'_properties.csv';
             $this->addModelObjectPropertiesFromCSVFile($observationPoint, __DIR__.'/'.$filename, ';');
         }
+        return 1;
     }
 
 
@@ -839,18 +882,12 @@ class LoadScenario_2 implements FixtureInterface, ContainerAwareInterface
         for ($i = 1; $i <= $elementCount; $i++)
         {
             $propertyTypeName = $dataFields[$i];
-
             $propertyType = $this->getPropertyType($this->entityManager, $propertyTypeName);
-            $property = PropertyFactory::setTypeAndModelObject($propertyType, $baseElement);
-            $property->setName($propertyTypeName);
-            $this->entityManager->persist($property);
-            $this->entityManager->flush();
 
             foreach ($data as $dataPoint)
             {
                 $propertyTimeValue = PropertyTimeValueFactory::setDateTimeAndValue(new \DateTime($dataPoint[$dataFields[0]]), (float)$dataPoint[$dataFields[$i]]);
-                $property->addValue($propertyTimeValue);
-                $this->entityManager->persist($property);
+                $baseElement->addValue($propertyType, $propertyTimeValue);
                 $this->entityManager->persist($propertyTimeValue);
 
                 echo $counter++."\n";
@@ -861,7 +898,6 @@ class LoadScenario_2 implements FixtureInterface, ContainerAwareInterface
                 }
             }
 
-            $this->entityManager->persist($property);
             $this->entityManager->flush();
         }
     }

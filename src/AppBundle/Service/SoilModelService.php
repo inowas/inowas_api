@@ -222,6 +222,8 @@ class SoilModelService
             }
         }
 
+        
+
         $this->interpolation->interpolate($algorithm);
 
         $raster = RasterFactory::create();
@@ -241,7 +243,7 @@ class SoilModelService
             throw new NotFoundHttpException(sprintf('PropertyType with abbreviation "%s" not found.', $property));
         }
 
-        $property = $layer->getPropertyWithPropertyType($propertyType);
+        #$property = $layer->getPropertyByPropertyType($propertyType);
 
         if (is_null($property)) {
             $property = PropertyFactory::create()

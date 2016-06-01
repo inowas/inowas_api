@@ -89,36 +89,28 @@ class SoilModelSerialisationTest extends \PHPUnit_Framework_TestCase
             ->setPublic(true)
             ->setName("SoilModel-TestUnit_1_1")
             ->setDateCreated(new \DateTime('2015-01-01'))
-            ->setDateModified(new \DateTime('2015-01-02'))
-            ->setTopElevation(12)
-            ->setBottomElevation(10);
+            ->setDateModified(new \DateTime('2015-01-02'));
 
         $unit_1_2 = GeologicalUnitFactory::create()
             ->setOwner($owner)
             ->setPublic(true)
             ->setName("SoilModel-TestUnit_1_2")
             ->setDateCreated(new \DateTime('2015-01-01'))
-            ->setDateModified(new \DateTime('2015-01-02'))
-            ->setTopElevation(10)
-            ->setBottomElevation(8);
+            ->setDateModified(new \DateTime('2015-01-02'));
 
         $unit_2_1 = GeologicalUnitFactory::create()
             ->setOwner($owner)
             ->setPublic(true)
             ->setName("SoilModel-TestUnit_2_1")
             ->setDateCreated(new \DateTime('2015-01-01'))
-            ->setDateModified(new \DateTime('2015-01-02'))
-            ->setTopElevation(12)
-            ->setBottomElevation(9);
+            ->setDateModified(new \DateTime('2015-01-02'));
 
         $unit_2_2 = GeologicalUnitFactory::create()
             ->setOwner($owner)
             ->setPublic(true)
             ->setName("SoilModel-TestUnit_2_2")
             ->setDateCreated(new \DateTime('2015-01-01'))
-            ->setDateModified(new \DateTime('2015-01-02'))
-            ->setTopElevation(9)
-            ->setBottomElevation(6);
+            ->setDateModified(new \DateTime('2015-01-02'));
 
         $layer1->addGeologicalUnit($unit_1_1);
         $layer1->addGeologicalUnit($unit_1_2);

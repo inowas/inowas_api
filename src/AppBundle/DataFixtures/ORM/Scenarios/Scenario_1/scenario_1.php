@@ -85,6 +85,15 @@ class LoadScenario_1 implements FixtureInterface, ContainerAwareInterface
             return new NotFoundHttpException();
         }
 
+        $propertyTypeBottomElevation = $entityManager->getRepository('AppBundle:PropertyType')
+            ->findOneBy(array(
+                'abbreviation' => "eb"
+            ));
+
+        if (!$propertyTypeBottomElevation) {
+            return new NotFoundHttpException();
+        }
+
         // Add new SoilModel
         $soilModel = SoilModelFactory::create();
         $soilModel->setOwner($user)->setName('SM Scenario 1');
@@ -97,18 +106,18 @@ class LoadScenario_1 implements FixtureInterface, ContainerAwareInterface
             ->setPublic($public)
             ->addGeologicalUnit(GeologicalUnitFactory::create()
                 ->setName('SC1_GU1.1')
-                ->setTopElevation(100)
-                ->setBottomElevation(70)
+                ->addValue($propertyTypeTopElevation, PropertyValueFactory::create()->setValue(100))
+                ->addValue($propertyTypeBottomElevation, PropertyValueFactory::create()->setValue(70))
             )
             ->addGeologicalUnit(GeologicalUnitFactory::create()
                 ->setName('SC1_GU1.2')
-                ->setTopElevation(70)
-                ->setBottomElevation(40)
+                ->addValue($propertyTypeTopElevation, PropertyValueFactory::create()->setValue(70))
+                ->addValue($propertyTypeBottomElevation, PropertyValueFactory::create()->setValue(40))
             )
             ->addGeologicalUnit(GeologicalUnitFactory::create()
                 ->setName('SC1_GU1.3')
-                ->setTopElevation(40)
-                ->setBottomElevation(0)
+                ->addValue($propertyTypeTopElevation, PropertyValueFactory::create()->setValue(40))
+                ->addValue($propertyTypeBottomElevation, PropertyValueFactory::create()->setValue(0))
             )
         ;
         $entityManager->persist($geologicalPoint_1);
@@ -124,18 +133,18 @@ class LoadScenario_1 implements FixtureInterface, ContainerAwareInterface
             ->setPublic($public)
             ->addGeologicalUnit(GeologicalUnitFactory::create()
                 ->setName('SC1_GU2.1')
-                ->setTopElevation(100)
-                ->setBottomElevation(70)
+                ->addValue($propertyTypeTopElevation, PropertyValueFactory::create()->setValue(100))
+                ->addValue($propertyTypeBottomElevation, PropertyValueFactory::create()->setValue(70))
             )
             ->addGeologicalUnit(GeologicalUnitFactory::create()
                 ->setName('SC1_GU2.2')
-                ->setTopElevation(70)
-                ->setBottomElevation(40)
+                ->addValue($propertyTypeTopElevation, PropertyValueFactory::create()->setValue(70))
+                ->addValue($propertyTypeBottomElevation, PropertyValueFactory::create()->setValue(40))
             )
             ->addGeologicalUnit(GeologicalUnitFactory::create()
                 ->setName('SC1_GU2.3')
-                ->setTopElevation(40)
-                ->setBottomElevation(0)
+                ->addValue($propertyTypeTopElevation, PropertyValueFactory::create()->setValue(40))
+                ->addValue($propertyTypeBottomElevation, PropertyValueFactory::create()->setValue(0))
             )
         ;
         $entityManager->persist($geologicalPoint_2);
@@ -151,18 +160,18 @@ class LoadScenario_1 implements FixtureInterface, ContainerAwareInterface
             ->setPublic($public)
             ->addGeologicalUnit(GeologicalUnitFactory::create()
                 ->setName('SC1_GU3.1')
-                ->setTopElevation(100)
-                ->setBottomElevation(70)
+                ->addValue($propertyTypeTopElevation, PropertyValueFactory::create()->setValue(100))
+                ->addValue($propertyTypeBottomElevation, PropertyValueFactory::create()->setValue(70))
             )
             ->addGeologicalUnit(GeologicalUnitFactory::create()
                 ->setName('SC1_GU3.2')
-                ->setTopElevation(70)
-                ->setBottomElevation(40)
+                ->addValue($propertyTypeTopElevation, PropertyValueFactory::create()->setValue(70))
+                ->addValue($propertyTypeBottomElevation, PropertyValueFactory::create()->setValue(40))
             )
             ->addGeologicalUnit(GeologicalUnitFactory::create()
                 ->setName('SC1_GU3.3')
-                ->setTopElevation(40)
-                ->setBottomElevation(0)
+                ->addValue($propertyTypeTopElevation, PropertyValueFactory::create()->setValue(40))
+                ->addValue($propertyTypeBottomElevation, PropertyValueFactory::create()->setValue(0))
             )
         ;
         $entityManager->persist($geologicalPoint_3);

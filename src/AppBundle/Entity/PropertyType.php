@@ -18,6 +18,9 @@ class PropertyType
     const TIME_DEPENDENT_VALUE_ONLY = 2;
     const STATIC_AND_TIME_DEPENDENT_VALUES = 3;
 
+    const PROP_TYPE_TOP_ELEVATION = 'et';
+    const PROP_TYPE_BOTTOM_ELEVATION = 'eb';
+
     /**
      * @var string
      *
