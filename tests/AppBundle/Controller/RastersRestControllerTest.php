@@ -54,10 +54,9 @@ class RasterRestControllerTest extends WebTestCase
 
         $this->raster = RasterFactory::create();
         $this->raster
-            ->setBoundingBox(new BoundingBox(0.0005, 0.0007, 0.0010, 0.0015))
+            ->setBoundingBox(new BoundingBox(0.0005, 0.0007, 0.0010, 0.0015, 4326))
             ->setGridSize(new GridSize(10, 11))
             ->setNoDataVal(-999)
-            ->setSrid(4326)
             ->setData(
                 array(
                     array(0,1,2,3,4,5,6,7,8,9),
@@ -102,20 +101,19 @@ class RasterRestControllerTest extends WebTestCase
                 'upperLeftY' => $this->raster->getBoundingBox()->getXMax(),
                 'lowerRightX' => $this->raster->getBoundingBox()->getYMin(),
                 'lowerRightY' => $this->raster->getBoundingBox()->getYMax(),
-                'srid' => $this->raster->getSrid(),
+                'srid' => $this->raster->getBoundingBox()->getSrid(),
                 'noDataVal' => $this->raster->getNoDataVal(),
                 'data' => json_encode($this->raster->getData()),
                 'date' => $date->format('Y-m-d H:i:s')
             )
         );
-
+        
         $this->assertEquals(200, $client->getResponse()->getStatusCode());
         $actualRaster = json_decode($client->getResponse()->getContent());
 
         $this->assertObjectHasAttribute('id', $actualRaster);
         $this->assertObjectHasAttribute('grid_size', $actualRaster);
         $this->assertObjectHasAttribute('bounding_box', $actualRaster);
-        $this->assertObjectHasAttribute('srid', $actualRaster);
         $this->assertObjectHasAttribute('no_data_val', $actualRaster);
         $this->assertObjectHasAttribute('data', $actualRaster);
 

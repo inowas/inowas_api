@@ -44,14 +44,6 @@ class Raster
     /**
      * @var integer
      *
-     * @ORM\Column(name="srid", type="integer", nullable=true)
-     * @JMS\Type("integer")
-     */
-    private $srid;
-
-    /**
-     * @var integer
-     *
      * @ORM\Column(name="no_data_val", type="integer")
      * @JMS\Type("integer")
      */
@@ -127,31 +119,6 @@ class Raster
     {
         $this->boundingBox = $boundingBox;
         return $this;
-    }
-
-
-    /**
-     * Set srid
-     *
-     * @param integer $srid
-     *
-     * @return Raster
-     */
-    public function setSrid($srid)
-    {
-        $this->srid = $srid;
-
-        return $this;
-    }
-
-    /**
-     * Get srid
-     *
-     * @return integer
-     */
-    public function getSrid()
-    {
-        return $this->srid;
     }
 
     /**

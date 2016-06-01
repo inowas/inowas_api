@@ -92,11 +92,11 @@ class RasterRestController extends FOSRestController
                 $paramFetcher->get('upperLeftX'),
                 $paramFetcher->get('lowerRightX'),
                 $paramFetcher->get('lowerRightY'),
-                $paramFetcher->get('upperLeftY')
+                $paramFetcher->get('upperLeftY'),
+                $paramFetcher->get('srid')
             ))
             ->setData(json_decode($paramFetcher->get("data")))
             ->setNoDataVal($paramFetcher->get('noDataVal'))
-            ->setSrid($paramFetcher->get('srid'))
         ;
 
         /* Let's create a property and a value-object */

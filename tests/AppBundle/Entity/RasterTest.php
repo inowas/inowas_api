@@ -26,10 +26,9 @@ class RasterTest extends WebTestCase
 
         $this->raster = RasterFactory::create();
         $this->raster
-            ->setBoundingBox(new BoundingBox(0.0005, 0.0007, 0.0010, 0.0015))
+            ->setBoundingBox(new BoundingBox(0.0005, 0.0007, 0.0010, 0.0015, 4326))
             ->setGridSize(new GridSize(10, 11))
             ->setNoDataVal(-999)
-            ->setSrid(4326)
             ->setData(
                 array(
                     array(0,1,2,3,4,5,6,7,8,9),
@@ -63,7 +62,6 @@ class RasterTest extends WebTestCase
         $this->assertEquals($this->raster->getNoDataVal(), $raster->getNoDataVal());
         $this->assertEquals($this->raster->getGridSize(), $raster->getGridSize());
         $this->assertEquals($this->raster->getData(), $raster->getData());
-        $this->assertEquals($this->raster->getSrid(), $raster->getSrid());
 
         $rasters = $this->entityManager
             ->getRepository('AppBundle:Raster')
