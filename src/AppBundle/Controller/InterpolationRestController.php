@@ -111,10 +111,10 @@ class InterpolationRestController extends FOSRestController
             throw new NotFoundHttpException();
         }
 
-        $modflowModelTools = $this->get('inowas.modflow');
-        $modflowModelTools->loadModflowModelById($modflowModel->getId());
+        $soilModelService = $this->get('inowas.soilmodel');
+        $soilModelService->loadModflowModelById($modflowModel->getId());
         $layer = $modflowModel->getSoilModel()->getGeologicalLayers()->first();
-        $modflowModelTools->interpolateLayer($layer, Modflow::PROP_BOTTOM_ELEVATION, Interpolation::TYPE_GAUSSIAN);
+        $soilModelService->interpolateLayer($layer, Modflow::PROP_BOTTOM_ELEVATION, Interpolation::TYPE_GAUSSIAN);
         #$layer = $modflowModel->getSoilModel()->getGeologicalLayers()->next();
         #$modflowModelTools->interpolateLayerByUnitProperty($layer, Modflow::PROP_BOTTOM_ELEVATION, Interpolation::TYPE_MEAN);
         #$layer = $modflowModel->getSoilModel()->getGeologicalLayers()->next();
@@ -180,13 +180,13 @@ class InterpolationRestController extends FOSRestController
             throw new NotFoundHttpException(sprintf('There is no ModflowModel associated the given soilmodel id=%s.', $soilModel->getId()));
         }
 
-        $modflowModelTools = $this->get('inowas.modflow');
-        $modflowModelTools->setModflowModel($modflowModel);
-        $modflowModelTools->setSoilModel($soilModel);
+        $soilModelService = $this->get('inowas.soilmodel');
+        $soilModelService->setModflowModel($modflowModel);
+        $soilModelService->setSoilModel($soilModel);
 
 
         /** @var GeologicalLayer $layer */
-        $layer = $modflowModelTools->interpolateLayer($geologicalLayer, $propertyTypeAbbreviation, Interpolation::TYPE_GAUSSIAN);
+        $layer = $soilModelService->interpolateLayer($geologicalLayer, $propertyTypeAbbreviation, Interpolation::TYPE_GAUSSIAN);
 
         $view = View::create();
         $view->setData($layer)

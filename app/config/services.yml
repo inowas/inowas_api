@@ -8,8 +8,8 @@ services:
         class: AppBundle\Service\Interpolation
         arguments: ['@serializer', '@kernel', '@inowas.python_process']
 
-    inowas.modflow:
-        class: AppBundle\Service\Modflow
+    inowas.soilmodel:
+        class: AppBundle\Service\SoilModelService
         arguments: ['@doctrine.orm.default_entity_manager', '@inowas.interpolation']
 
     inowas.python_process:

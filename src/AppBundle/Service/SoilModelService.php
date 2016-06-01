@@ -16,12 +16,11 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\EntityManager;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
-class Modflow
+class SoilModelService
 {
 
     const PROP_TOP_ELEVATION = 'et';
     const PROP_BOTTOM_ELEVATION = 'eb';
-
 
     /** @var EntityManager $em */
     protected $em;
@@ -128,7 +127,7 @@ class Modflow
         return $layer;
     }
 
-    public function loadPropertyTypesFromLayerUnits($layerId)
+    public function getAllPropertyTypesFromLayer($layerId)
     {
         $layer = $this->loadLayerById($layerId);
 
