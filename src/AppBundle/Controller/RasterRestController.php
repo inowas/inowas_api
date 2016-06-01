@@ -53,6 +53,7 @@ class RasterRestController extends FOSRestController
      * @RequestParam(name="lowerRightY", nullable=false, strict=true, description="UpperLeft corner Y")
      * @RequestParam(name="srid", nullable=false, strict=true, description="SRID", default=4326)
      * @RequestParam(name="data", nullable=false, strict=true, description="Data in JSON-Format")
+     * @RequestParam(name="description", nullable=false, strict=true, description="Description", default="")
      * @RequestParam(name="noDataVal", nullable=false, strict=true, description="Data in JSON-Format", default=-999)
      * @RequestParam(name="date", nullable=true, strict=true, description="Date, default null", default=null)
      *
@@ -97,6 +98,7 @@ class RasterRestController extends FOSRestController
             ))
             ->setData(json_decode($paramFetcher->get("data")))
             ->setNoDataVal($paramFetcher->get('noDataVal'))
+            ->setDescription($paramFetcher->get('description'))
         ;
 
         /* Let's create a property and a value-object */
