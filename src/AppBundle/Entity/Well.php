@@ -10,7 +10,7 @@ use JMS\Serializer\Annotation as JMS;
  * @ORM\Entity()
  * @ORM\Table(name="well_boundaries")
  */
-class WellBoundary extends ModelObject
+class Well extends ModelObject
 {
     /**
      * @var string
@@ -23,7 +23,6 @@ class WellBoundary extends ModelObject
      * @var Point
      *
      * @ORM\Column(name="geometry", type="point", nullable=true)
-     * @JMS\Groups({"details", "modelobjectdetails", "soilmodelobjectdetails"})
      */
     private $point;
 
@@ -49,5 +48,22 @@ class WellBoundary extends ModelObject
     public function getPoint()
     {
         return $this->point;
+    }
+
+    /**
+     * @JMS\VirtualProperty()
+     * @JMS\SerializedName("point")
+     * @JMS\Groups({"details", "modelobjectdetails", "soilmodelobjectdetails"})
+     */
+    public function convertPointToPoint()
+    {
+        if (!is_null($this->point))
+        {
+            $point = new Point($this->point->getX(),$this->point->getY());
+            $point->setSrid($this->point->getSrid());
+            return $point;
+        }
+
+        return null;
     }
 }

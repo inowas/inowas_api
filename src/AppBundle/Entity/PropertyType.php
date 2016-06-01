@@ -51,7 +51,6 @@ class PropertyType
      * @var integer
      *
      * @ORM\Column(name="value_type", type="integer")
-     * @JMS\Groups({"list", "details", "modeldetails", "modelobjectdetails"})
      */
     private $valueType;
 
