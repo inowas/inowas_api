@@ -68,7 +68,7 @@ class ModFlowModel extends AbstractModel
      * @var ArrayCollection
      * @JMS\Groups({"details", "modeldetails"})
      **/
-    private $wellBoundaries;
+    private $wells;
 
     /**
      * @var ArrayCollection
@@ -122,7 +122,7 @@ class ModFlowModel extends AbstractModel
     {
         parent::__construct();
 
-        $this->wellBoundaries = new ArrayCollection();
+        $this->wells = new ArrayCollection();
         $this->boundaries = new ArrayCollection();
         $this->modelObjects = new ArrayCollection();
         $this->observationPoints = new ArrayCollection();
@@ -257,38 +257,38 @@ class ModFlowModel extends AbstractModel
     /**
      * Get boundaries
      *
-     * @return WellBoundary|ArrayCollection
+     * @return Well|ArrayCollection
      */
-    public function getWellBoundaries()
+    public function getWells()
     {
-        return $this->wellBoundaries;
+        return $this->wells;
     }
 
     /**
-     * @param WellBoundary $wellBoundary
+     * @param Well $well
      * @return $this
      */
-    public function addWellBoundary(WellBoundary $wellBoundary)
+    public function addWell(Well $well)
     {
-        if ($this->wellBoundaries == null) {
-            $this->wellBoundaries = new ArrayCollection();
+        if ($this->wells == null) {
+            $this->wells = new ArrayCollection();
         }
 
-        if (!$this->wellBoundaries->contains($wellBoundary)) {
-            $this->wellBoundaries->add($wellBoundary);
+        if (!$this->wells->contains($well)) {
+            $this->wells->add($well);
         }
 
         return $this;
     }
 
     /**
-     * @param WellBoundary $wellBoundary
+     * @param Well $well
      * @return $this
      */
-    public function removeWellBoundary(WellBoundary $wellBoundary)
+    public function removeWell(Well $well)
     {
-        if ($this->boundaries->contains($wellBoundary)){
-            $this->boundaries->removeElement($wellBoundary);
+        if ($this->boundaries->contains($well)){
+            $this->boundaries->removeElement($well);
         }
 
         return $this;
@@ -512,11 +512,11 @@ class ModFlowModel extends AbstractModel
             }
         }
 
-        if ($this->wellBoundaries->count() > 0 )
+        if ($this->wells->count() > 0 )
         {
-            foreach ($this->wellBoundaries as $wellBoundary)
+            foreach ($this->wells as $well)
             {
-                $this->addModelObject($wellBoundary);
+                $this->addModelObject($well);
             }
         }
 
@@ -570,9 +570,9 @@ class ModFlowModel extends AbstractModel
                 $this->removeModelObject($modelObject);
             }
 
-            if ($modelObject instanceof WellBoundary)
+            if ($modelObject instanceof Well)
             {
-                $this->addWellBoundary($modelObject);
+                $this->addWell($modelObject);
                 $this->removeModelObject($modelObject);
             }
 
