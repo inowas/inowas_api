@@ -14,6 +14,10 @@ use Ramsey\Uuid\Uuid;
  */
 class PropertyType
 {
+    const STATIC_VALUE_ONLY = 1;
+    const TIME_DEPENDENT_VALUE_ONLY = 2;
+    const STATIC_AND_TIME_DEPENDENT_VALUES = 3;
+
     /**
      * @var string
      *
@@ -41,20 +45,12 @@ class PropertyType
     private $name;
 
     /**
-     * @var bool
+     * @var integer
      *
-     * @ORM\Column(name="can_be_static", type="boolean")
+     * @ORM\Column(name="value_type", type="integer")
      * @JMS\Groups({"list", "details", "modeldetails", "modelobjectdetails"})
      */
-    private $canBeStatic;
-
-    /**
-     * @var bool
-     *
-     * @ORM\Column(name="can_be_time_dependent", type="boolean")
-     * @JMS\Groups({"list", "details", "modeldetails", "modelobjectdetails"})
-     */
-    private $canBeTimeDependent;
+    private $valueType;
 
     /**
      * PropertyType constructor.
@@ -62,8 +58,7 @@ class PropertyType
     public function __construct()
     {
         $this->id = Uuid::uuid4();
-        $this->canBeStatic = false;
-        $this->canBeTimeDependent = false;
+        $this->valueType = self::STATIC_AND_TIME_DEPENDENT_VALUES;
     }
 
     /**
@@ -125,38 +120,20 @@ class PropertyType
     }
 
     /**
-     * @return boolean
+     * @return int
      */
-    public function isCanBeStatic()
+    public function getValueType()
     {
-        return $this->canBeStatic;
+        return $this->valueType;
     }
 
     /**
-     * @param boolean $canBeStatic
+     * @param int $valueType
      * @return PropertyType
      */
-    public function setCanBeStatic($canBeStatic)
+    public function setValueType($valueType)
     {
-        $this->canBeStatic = $canBeStatic;
-        return $this;
-    }
-
-    /**
-     * @return boolean
-     */
-    public function isCanBeTimeDependent()
-    {
-        return $this->canBeTimeDependent;
-    }
-
-    /**
-     * @param boolean $canBeTimeDependent
-     * @return PropertyType
-     */
-    public function setCanBeTimeDependent($canBeTimeDependent)
-    {
-        $this->canBeTimeDependent = $canBeTimeDependent;
+        $this->valueType = $valueType;
         return $this;
     }
 }
