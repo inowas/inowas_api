@@ -71,6 +71,7 @@ class RasterRestControllerTest extends WebTestCase
                     array(0,1,2,3,4,5,6,7,8,9),
                     array(0,1,2,3,4,5,6,7,8,9)
             ))
+            ->setDescription('Description')
         ;
     }
 
@@ -104,10 +105,11 @@ class RasterRestControllerTest extends WebTestCase
                 'srid' => $this->raster->getBoundingBox()->getSrid(),
                 'noDataVal' => $this->raster->getNoDataVal(),
                 'data' => json_encode($this->raster->getData()),
+                'description' => $this->raster->getDescription(),
                 'date' => $date->format('Y-m-d H:i:s')
             )
         );
-        
+
         $this->assertEquals(200, $client->getResponse()->getStatusCode());
         $actualRaster = json_decode($client->getResponse()->getContent());
 
@@ -116,6 +118,7 @@ class RasterRestControllerTest extends WebTestCase
         $this->assertObjectHasAttribute('bounding_box', $actualRaster);
         $this->assertObjectHasAttribute('no_data_val', $actualRaster);
         $this->assertObjectHasAttribute('data', $actualRaster);
+        $this->assertObjectHasAttribute('description', $actualRaster);
 
         $expectedRaster = $this->entityManager->getRepository('AppBundle:Raster')
             ->findOneBy(array(

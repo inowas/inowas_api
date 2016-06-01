@@ -57,8 +57,18 @@ class Raster
      */
     private $data;
 
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="description", type="string", length=255)
+     * @JMS\Type("string")
+     */
+    private $description = '';
+
+
     public function __construct() {
         $this->id = Uuid::uuid4();
+        $this->description = '';
     }
 
     /**
@@ -168,4 +178,26 @@ class Raster
     {
         return $this->noDataVal;
     }
+
+    /**
+     * @return string
+     */
+    public function getDescription()
+    {
+        return $this->description;
+    }
+
+    /**
+     * @param string $description
+     */
+    public function setDescription($description = null)
+    {
+        if (is_null($description)) {
+            $description = "";
+        }
+
+        $this->description = $description;
+    }
+
+
 }

@@ -43,6 +43,7 @@ class RasterTest extends WebTestCase
                     array(0,1,2,3,4,5,6,7,8,9),
                     array(0,1,2,3,4,5,6,7,8,9)
                 ))
+            ->setDescription('Description')
         ;
     }
 
@@ -62,6 +63,7 @@ class RasterTest extends WebTestCase
         $this->assertEquals($this->raster->getNoDataVal(), $raster->getNoDataVal());
         $this->assertEquals($this->raster->getGridSize(), $raster->getGridSize());
         $this->assertEquals($this->raster->getData(), $raster->getData());
+        $this->assertEquals($this->raster->getDescription(), $raster->getDescription());
 
         $rasters = $this->entityManager
             ->getRepository('AppBundle:Raster')
