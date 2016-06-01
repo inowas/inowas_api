@@ -17,6 +17,7 @@ use Ramsey\Uuid\Uuid;
  * @ORM\DiscriminatorColumn(name="discr", type="string")
  * @ORM\DiscriminatorMap({  "ar" = "Area",
  *                          "bo" = "Boundary",
+ *                          "wbo" = "WellBoundary",
  *                          "op" = "ObservationPoint",
  *                          "gp" = "GeologicalPoint",
  *                          "gl" = "GeologicalLayer",
