@@ -40,9 +40,30 @@ class PropertyType
      */
     private $name;
 
+    /**
+     * @var bool
+     *
+     * @ORM\Column(name="can_be_static", type="boolean")
+     * @JMS\Groups({"list", "details", "modeldetails", "modelobjectdetails"})
+     */
+    private $canBeStatic;
+
+    /**
+     * @var bool
+     *
+     * @ORM\Column(name="can_be_time_dependent", type="boolean")
+     * @JMS\Groups({"list", "details", "modeldetails", "modelobjectdetails"})
+     */
+    private $canBeTimeDependent;
+
+    /**
+     * PropertyType constructor.
+     */
     public function __construct()
     {
         $this->id = Uuid::uuid4();
+        $this->canBeStatic = false;
+        $this->canBeTimeDependent = false;
     }
 
     /**
@@ -101,5 +122,41 @@ class PropertyType
     public function getName()
     {
         return $this->name;
+    }
+
+    /**
+     * @return boolean
+     */
+    public function isCanBeStatic()
+    {
+        return $this->canBeStatic;
+    }
+
+    /**
+     * @param boolean $canBeStatic
+     * @return PropertyType
+     */
+    public function setCanBeStatic($canBeStatic)
+    {
+        $this->canBeStatic = $canBeStatic;
+        return $this;
+    }
+
+    /**
+     * @return boolean
+     */
+    public function isCanBeTimeDependent()
+    {
+        return $this->canBeTimeDependent;
+    }
+
+    /**
+     * @param boolean $canBeTimeDependent
+     * @return PropertyType
+     */
+    public function setCanBeTimeDependent($canBeTimeDependent)
+    {
+        $this->canBeTimeDependent = $canBeTimeDependent;
+        return $this;
     }
 }
