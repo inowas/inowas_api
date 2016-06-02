@@ -15,6 +15,7 @@ use AppBundle\Model\RasterFactory;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\EntityManager;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
+use Symfony\Component\Routing\Exception\ResourceNotFoundException;
 
 class SoilModelService
 {
@@ -106,6 +107,7 @@ class SoilModelService
         }
 
         $this->soilModel = $soilModel;
+        return $soilModel;
     }
 
     public function loadLayerById($id)
@@ -124,12 +126,12 @@ class SoilModelService
     }
 
     /**
-     * @param string $layer|Layer $layer
+     * @param string $layer |Layer $layer
      * @return ArrayCollection
      */
     public function getAllPropertyTypesFromLayer($layer)
     {
-        if (!$layer instanceof GeologicalLayer){
+        if (!$layer instanceof GeologicalLayer) {
             $layer = $this->loadLayerById($layer);
         }
 
@@ -137,12 +139,10 @@ class SoilModelService
         $units = $layer->getGeologicalUnits();
 
         /** @var GeologicalUnit $unit */
-        foreach ($units as $unit)
-        {
+        foreach ($units as $unit) {
             $properties = $unit->getProperties();
             /** @var Property $property */
-            foreach ($properties as $property)
-            {
+            foreach ($properties as $property) {
                 $propertyType = $property->getPropertyType();
                 if (!is_null($propertyType)) {
                     if (!$propertyTypes->contains($property->getPropertyType())) {
@@ -155,10 +155,10 @@ class SoilModelService
         return $propertyTypes;
     }
 
-    public function getLayersSortedByElevation(SoilModel $soilModel=null)
+    public function getLayersSortedByElevation(SoilModel $soilModel = null)
     {
         if (is_null($soilModel)) {
-            $soilModel=$this->soilModel;
+            $soilModel = $this->soilModel;
             if (is_null($soilModel)) {
                 throw new InvalidArgumentException(printf('Soilmodel not loaded'));
             }
@@ -173,14 +173,13 @@ class SoilModelService
         foreach ($layers as $layer) {
             $units = $layer->getGeologicalUnits();
 
-            if (count($units) > 0)
-            {
+            if (count($units) > 0) {
                 $meanBottomElevation = 0.0;
                 /** @var GeologicalUnit $unit */
                 foreach ($units as $unit) {
                     $meanBottomElevation += $unit->getBottomElevation();
                 }
-                $meanBottomElevation = $meanBottomElevation/count($units);
+                $meanBottomElevation = $meanBottomElevation / count($units);
             }
         }
     }
@@ -189,7 +188,7 @@ class SoilModelService
      * @param GeologicalLayer $layer
      * @param $propertyTypeAbbreviation
      * @param $algorithm
-     * @return GeologicalLayer
+     * @return string
      * @throws \Exception
      */
     public function interpolateLayerByProperty(GeologicalLayer $layer, $propertyTypeAbbreviation, $algorithm)
@@ -225,10 +224,9 @@ class SoilModelService
                 }
             }
         }
-        
+
         $out = $this->interpolation->interpolate($algorithm);
-        dump($out);
-        
+
         $propertyValue = PropertyValueFactory::create()
             ->setRaster(RasterFactory::create()
                 ->setGridSize($this->modflowModel->getGridSize())
@@ -236,12 +234,45 @@ class SoilModelService
                 ->setData($this->interpolation->getData())
                 ->setDescription($this->interpolation->getMethod())
             );
-        
+
         $this->interpolation->clear();
 
         $layer->addValue($propertyType, $propertyValue);
         $this->em->persist($layer);
         $this->em->flush();
-        return $layer;
+
+        return $out;
+    }
+
+    /**
+     *
+     */
+    public function interpolateAllLayers()
+    {
+        if (!$this->soilModel) {
+            throw new ResourceNotFoundException('ModflowModel not loaded.');
+        }
+
+        if (!$this->soilModel->getGeologicalLayers() ||
+            $this->soilModel->getGeologicalLayers()->count() == 0
+        ) {
+            throw new ResourceNotFoundException('Soilmodel has no Layers.');
+        }
+
+        $layers = $this->soilModel->getGeologicalLayers();
+        $output = '';
+
+        foreach ($layers as $layer) {
+            $propertyTypes = $this->getAllPropertyTypesFromLayer($layer);
+            /** @var PropertyType $propertyType */
+            foreach ($propertyTypes as $propertyType) {
+                $output .= $this->interpolateLayerByProperty(
+                    $layer,
+                    $propertyType->getAbbreviation(),
+                    array(Interpolation::TYPE_GAUSSIAN, Interpolation::TYPE_MEAN));
+            }
+        }
+
+        return $output;
     }
 }
