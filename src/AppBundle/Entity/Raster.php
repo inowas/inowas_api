@@ -22,7 +22,7 @@ class Raster
      * @ORM\Id
      * @ORM\Column(name="id", type="uuid", unique=true)
      * @JMS\Type("string")
-     * @JMS\Groups({"modeldetails", "modelobjectdetails"})
+     * @JMS\Groups({"modeldetails", "modelobjectdetails", "rasterdetails"})
      */
     private $id;
 
@@ -30,7 +30,7 @@ class Raster
      * @var GridSize
      *
      * @ORM\Column(name="grid_size", type="grid_size", nullable=true)
-     * @JMS\Groups({"modeldetails", "modelobjectdetails"})
+     * @JMS\Groups({"modeldetails", "modelobjectdetails", "rasterdetails"})
      */
     private $gridSize;
 
@@ -38,6 +38,7 @@ class Raster
      * @var BoundingBox
      *
      * @ORM\Column(name="bounding_box", type="bounding_box", nullable=true)
+     * @JMS\Groups({"rasterdetails"})
      */
     private $boundingBox;
 
@@ -45,6 +46,7 @@ class Raster
      * @var integer
      *
      * @ORM\Column(name="no_data_val", type="integer")
+     * @JMS\Groups({"rasterdetails"})
      * @JMS\Type("integer")
      */
     private $noDataVal = -999;
@@ -53,6 +55,7 @@ class Raster
      * @var integer
      *
      * @ORM\Column(name="data", type="json_array")
+     * @JMS\Groups({"rasterdetails"})
      * @JMS\Type("array")
      */
     private $data;
@@ -61,6 +64,7 @@ class Raster
      * @var string
      *
      * @ORM\Column(name="description", type="string", length=255)
+     * @JMS\Groups({"rasterdetails"})
      * @JMS\Type("string")
      */
     private $description = '';
@@ -188,7 +192,8 @@ class Raster
     }
 
     /**
-     * @param string $description
+     * @param null $description
+     * @return $this
      */
     public function setDescription($description = null)
     {
@@ -197,6 +202,8 @@ class Raster
         }
 
         $this->description = $description;
+
+        return $this;
     }
 
 

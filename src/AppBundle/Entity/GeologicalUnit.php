@@ -50,7 +50,7 @@ class GeologicalUnit extends ModelObject
         return $this->point;
     }
 
-    protected function getFirstPropertyValue(Property $property){
+    public function getFirstPropertyValue(Property $property){
         $values = $property->getValues();
 
         foreach ($values as $value) {

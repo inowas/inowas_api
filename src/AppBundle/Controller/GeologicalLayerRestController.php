@@ -83,8 +83,11 @@ class GeologicalLayerRestController extends FOSRestController
                 'id' => $id
             ));
 
-        if ($geologicalLayer->getPublic() || $this->isGranted('ROLE_ADMIN') || $this->getUser() === $geologicalLayer->getOwner())
-        {
+        if (!$geologicalLayer) {
+            throw $this->createNotFoundException('Area with id='.$id.' not found.');
+        }
+
+        if ($geologicalLayer->getPublic() || $this->isGranted('ROLE_ADMIN') || $this->getUser() === $geologicalLayer->getOwner()) {
             $view = View::create();
             $view->setData($geologicalLayer)
                 ->setStatusCode(200)
@@ -92,8 +95,7 @@ class GeologicalLayerRestController extends FOSRestController
                     ->setGroups(array('modelobjectdetails')));
 
             return $view;
-        } else
-        {
+        } else {
             throw $this->createAccessDeniedException();
         }
     }

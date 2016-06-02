@@ -13,10 +13,50 @@ use FOS\RestBundle\Controller\Annotations\RequestParam;
 use FOS\RestBundle\Controller\FOSRestController;
 use FOS\RestBundle\Request\ParamFetcher;
 use FOS\RestBundle\View\View;
+use JMS\Serializer\SerializationContext;
 use Nelmio\ApiDocBundle\Annotation\ApiDoc;
 
 class RasterRestController extends FOSRestController
 {
+
+    /**
+     * Return an Raster by id
+     *
+     * @ApiDoc(
+     *   resource = true,
+     *   description = "Return a raster by id",
+     *   statusCodes = {
+     *     200 = "Returned when successful",
+     *     404 = "Returned when the user is not found"
+     *   }
+     * )
+     *
+     * @param string $id raster
+     *
+     * @return View
+     */
+    public function getRasterAction($id)
+    {
+        $entity = $this->getDoctrine()
+            ->getRepository('AppBundle:Raster')
+            ->findOneBy(array(
+                'id' => $id
+            ));
+
+        if (!$entity)
+        {
+            throw $this->createNotFoundException('Raster with id='.$id.' not found.');
+        }
+
+        $view = View::create();
+        $view->setData($entity)
+            ->setStatusCode(200)
+            ->setSerializationContext(SerializationContext::create()
+                ->setGroups(array('rasterdetails')));
+
+        return $view;
+    }
+
     /**
      * Return an area by id
      *

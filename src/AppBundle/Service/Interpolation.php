@@ -54,6 +54,9 @@ class Interpolation
     /** @var  PythonProcess $pythonProcess */
     protected $pythonProcess;
 
+    /** @var string */
+    protected $stdOut;
+
     /**
      * Interpolation constructor.
      * @param $serializer
@@ -67,6 +70,7 @@ class Interpolation
         $this->kernel = $kernel;
         $this->pythonProcess = $pythonProcess;
         $this->tmpFileName = Uuid::uuid4()->toString();
+        $this->stdOut = '';
     }
     
     /**
@@ -163,6 +167,17 @@ class Interpolation
         return $this->points;
     }
 
+    public function clear()
+    {
+        $this->data = null;
+        $this->boundingBox = null;
+        $this->gridSize = null;
+        $this->method = null;
+        $this->points = new ArrayCollection();
+        $this->stdOut = "";
+        $this->tmpFileName = Uuid::uuid4()->toString();
+    }
+
     public function interpolate($algorithm)
     {
         $this->data = array();
@@ -228,6 +243,7 @@ class Interpolation
             }
 
             $jsonResponse = $process->getOutput();
+            $this->stdOut .= $jsonResponse;
             $response = json_decode($jsonResponse);
 
             if (isset($response->error)) {
@@ -241,7 +257,11 @@ class Interpolation
                 $this->data = $results->raster;
                 break;
             }
+
+            $this->stdOut .= $jsonResponse;
         }
+
+        return $this->stdOut;
     }
 
     /**
@@ -258,5 +278,13 @@ class Interpolation
     public function getMethod()
     {
         return $this->method;
+    }
+
+    /**
+     * @return string
+     */
+    public function getStdOut()
+    {
+        return $this->stdOut;
     }
 }

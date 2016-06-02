@@ -10,7 +10,6 @@ use AppBundle\Entity\PropertyType;
 use AppBundle\Entity\SoilModel;
 use AppBundle\Exception\InvalidArgumentException;
 use AppBundle\Model\Interpolation\PointValue;
-use AppBundle\Model\PropertyFactory;
 use AppBundle\Model\PropertyValueFactory;
 use AppBundle\Model\RasterFactory;
 use Doctrine\Common\Collections\ArrayCollection;
@@ -124,9 +123,15 @@ class SoilModelService
         return $layer;
     }
 
-    public function getAllPropertyTypesFromLayer($layerId)
+    /**
+     * @param string $layer|Layer $layer
+     * @return ArrayCollection
+     */
+    public function getAllPropertyTypesFromLayer($layer)
     {
-        $layer = $this->loadLayerById($layerId);
+        if (!$layer instanceof GeologicalLayer){
+            $layer = $this->loadLayerById($layer);
+        }
 
         $propertyTypes = new ArrayCollection();
         $units = $layer->getGeologicalUnits();
@@ -182,85 +187,61 @@ class SoilModelService
 
     /**
      * @param GeologicalLayer $layer
-     * @param $property
+     * @param $propertyTypeAbbreviation
      * @param $algorithm
      * @return GeologicalLayer
      * @throws \Exception
      */
-    public function interpolateLayerByProperty(GeologicalLayer $layer, $property, $algorithm)
+    public function interpolateLayerByProperty(GeologicalLayer $layer, $propertyTypeAbbreviation, $algorithm)
     {
-        $geologicalUnits = $layer->getGeologicalUnits();
-
-        if ($property == PropertyType::BOTTOM_ELEVATION) {
-            $this->interpolation->setBoundingBox($this->modflowModel->getBoundingBox());
-            $this->interpolation->setGridSize($this->modflowModel->getGridSize());
-
-            /** @var GeologicalUnit $geologicalUnit */
-            foreach ($geologicalUnits as $geologicalUnit) {
-                $this->interpolation->addPoint(new PointValue(
-                        $geologicalUnit->getPoint()->getX(),
-                        $geologicalUnit->getPoint()->getY(),
-                        $geologicalUnit->getBottomElevation()
-                ));
-            }
-        }
-
-        if ($property == PropertyType::TOP_ELEVATION) {
-            $this->interpolation->setBoundingBox($this->modflowModel->getBoundingBox());
-            $this->interpolation->setGridSize($this->modflowModel->getGridSize());
-
-            /** @var GeologicalUnit $geologicalUnit */
-            foreach ($geologicalUnits as $geologicalUnit) {
-                $this->interpolation->addPoint(new PointValue(
-                    $geologicalUnit->getPoint()->getX(),
-                    $geologicalUnit->getPoint()->getY(),
-                    $geologicalUnit->getTopElevation()
-                ));
-            }
-        }
-
-        
-
-        $this->interpolation->interpolate($algorithm);
-
-        $raster = RasterFactory::create();
-        $raster->setGridSize($this->modflowModel->getGridSize());
-        $raster->setBoundingBox($this->modflowModel->getBoundingBox());
-        $raster->setData($this->interpolation->getData());
-
-        $value = PropertyValueFactory::create()
-            ->setRaster($raster);
-
         $propertyType = $this->em->getRepository('AppBundle:PropertyType')
             ->findOneBy(array(
-                'abbreviation' => $property
+                'abbreviation' => $propertyTypeAbbreviation
             ));
 
         if (!$propertyType) {
-            throw new NotFoundHttpException(sprintf('PropertyType with abbreviation "%s" not found.', $property));
+            throw new NotFoundHttpException(sprintf('PropertyType with abbreviation "%s" not found.', $propertyTypeAbbreviation));
         }
 
-        #$property = $layer->getPropertyByPropertyType($propertyType);
+        $units = $layer->getGeologicalUnits();
+        $this->interpolation->setBoundingBox($this->modflowModel->getBoundingBox());
+        $this->interpolation->setGridSize($this->modflowModel->getGridSize());
 
-        if (is_null($property)) {
-            $property = PropertyFactory::create()
-                ->setPropertyType($propertyType);
+        /** @var GeologicalUnit $unit */
+        foreach ($units as $unit) {
+
+            /** @var Property $property */
+            foreach ($unit->getProperties() as $property) {
+                if ($property->getPropertyType() == $propertyType) {
+                    $value = $unit->getFirstPropertyValue($property);
+
+                    if (!is_null($value)) {
+                        $this->interpolation->addPoint(new PointValue(
+                            $unit->getPoint()->getX(),
+                            $unit->getPoint()->getY(),
+                            $value));
+                        break;
+                    }
+                }
+            }
         }
-
-        foreach ($property->getValues() as $value) {
-            $property->removeValue($value);
-            $this->em->persist($property);
-            $this->em->flush();
-        }
-
-        $property->addValue(PropertyValueFactory::create()->setRaster($raster));
-        $layer->addProperty($property);
         
-        $this->em->persist($value);
-        $this->em->persist($layer);
-        $this->em->persist($property);
-        $this->em->flush();
+        $out = $this->interpolation->interpolate($algorithm);
+        dump($out);
+        
+        $propertyValue = PropertyValueFactory::create()
+            ->setRaster(RasterFactory::create()
+                ->setGridSize($this->modflowModel->getGridSize())
+                ->setBoundingBox($this->modflowModel->getBoundingBox())
+                ->setData($this->interpolation->getData())
+                ->setDescription($this->interpolation->getMethod())
+            );
+        
+        $this->interpolation->clear();
 
+        $layer->addValue($propertyType, $propertyValue);
+        $this->em->persist($layer);
+        $this->em->flush();
         return $layer;
     }
 }

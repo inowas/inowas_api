@@ -3,12 +3,12 @@
 namespace AppBundle\Controller;
 
 use AppBundle\Entity\GeologicalLayer;
+use AppBundle\Entity\PropertyType;
 use AppBundle\Model\Interpolation\BoundingBox;
 use AppBundle\Model\Interpolation\GridSize;
 use AppBundle\Model\Interpolation\KrigingInterpolation;
 use AppBundle\Model\Interpolation\PointValue;
 use AppBundle\Service\Interpolation;
-use AppBundle\Service\SoilModelService;
 use FOS\RestBundle\Controller\Annotations\Get;
 use FOS\RestBundle\Controller\FOSRestController;
 use FOS\RestBundle\View\View;
@@ -111,9 +111,21 @@ class InterpolationRestController extends FOSRestController
 
         $soilModelService = $this->get('inowas.soilmodel');
         $soilModelService->loadModflowModelById($modflowModel->getId());
-        $layer = $modflowModel->getSoilModel()->getGeologicalLayers()->first();
-        $soilModelService->interpolateLayerByProperty($layer, SoilModelService::PROP_BOTTOM_ELEVATION, Interpolation::TYPE_GAUSSIAN);
-        
+        $layers = $modflowModel->getSoilModel()->getGeologicalLayers();
+
+        foreach ($layers as $layer)
+        {
+            $propertyTypes = $soilModelService->getAllPropertyTypesFromLayer($layer);
+            /** @var PropertyType $propertyType */
+            foreach ($propertyTypes as $propertyType){
+                $soilModelService->interpolateLayerByProperty(
+                    $layer,
+                    $propertyType->getAbbreviation(),
+                    array(Interpolation::TYPE_GAUSSIAN, Interpolation::TYPE_MEAN));
+            }
+        }
+
+
         $view = View::create();
         $view->setData("")
             ->setStatusCode(200)
@@ -134,12 +146,11 @@ class InterpolationRestController extends FOSRestController
      *   }
      * )
      *
-     * @Get("/layers/{layerId}/propertytypes/{propertyTypeAbbreviation}/interpolate")
      * @param $layerId
      * @param $propertyTypeAbbreviation
      * @return View
      */
-    public function postLayerPropertytypeInterpolateAction($layerId, $propertyTypeAbbreviation)
+    public function getLayerPropertytypeInterpolateAction($layerId, $propertyTypeAbbreviation)
     {
 
         $geologicalLayer = $this->getDoctrine()->getRepository('AppBundle:GeologicalLayer')
