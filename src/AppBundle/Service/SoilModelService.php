@@ -6,6 +6,7 @@ use AppBundle\Entity\GeologicalLayer;
 use AppBundle\Entity\GeologicalUnit;
 use AppBundle\Entity\ModFlowModel;
 use AppBundle\Entity\Property;
+use AppBundle\Entity\PropertyType;
 use AppBundle\Entity\SoilModel;
 use AppBundle\Exception\InvalidArgumentException;
 use AppBundle\Model\Interpolation\PointValue;
@@ -18,10 +19,6 @@ use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class SoilModelService
 {
-
-    const PROP_TOP_ELEVATION = 'et';
-    const PROP_BOTTOM_ELEVATION = 'eb';
-
     /** @var EntityManager $em */
     protected $em;
 
@@ -194,7 +191,7 @@ class SoilModelService
     {
         $geologicalUnits = $layer->getGeologicalUnits();
 
-        if ($property == self::PROP_BOTTOM_ELEVATION) {
+        if ($property == PropertyType::BOTTOM_ELEVATION) {
             $this->interpolation->setBoundingBox($this->modflowModel->getBoundingBox());
             $this->interpolation->setGridSize($this->modflowModel->getGridSize());
 
@@ -208,7 +205,7 @@ class SoilModelService
             }
         }
 
-        if ($property == self::PROP_TOP_ELEVATION) {
+        if ($property == PropertyType::TOP_ELEVATION) {
             $this->interpolation->setBoundingBox($this->modflowModel->getBoundingBox());
             $this->interpolation->setGridSize($this->modflowModel->getGridSize());
 

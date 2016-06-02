@@ -382,6 +382,20 @@ abstract class ModelObject
         return $property;
     }
 
+    protected function getPropertiesByPropertyTypeAbbreviation($abbreviation)
+    {
+        $properties = array();
+        /** @var Property $property */
+        foreach ($this->properties as $property)
+        {
+            if ($property->getPropertyType()->getAbbreviation() == $abbreviation) {
+                $properties[] = $property;
+            }
+        }
+        
+        return $properties;
+    }
+
     public function addValue(PropertyType $propertyType, AbstractValue $value)
     {
         $property = $this->getPropertyByPropertyType($propertyType);

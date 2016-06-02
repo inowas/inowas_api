@@ -49,4 +49,38 @@ class GeologicalUnit extends ModelObject
     {
         return $this->point;
     }
+
+    protected function getFirstPropertyValue(Property $property){
+        $values = $property->getValues();
+
+        foreach ($values as $value) {
+            if ($value instanceof PropertyValue) {
+                return $value->getValue();
+            }
+        }
+
+        return null;
+    }
+    
+    public function getBottomElevation()
+    {
+        /** @var array */
+        $properties = $this->getPropertiesByPropertyTypeAbbreviation(PropertyType::BOTTOM_ELEVATION);
+        if (count($properties)>0) {
+            return $this->getFirstPropertyValue($properties[0]);
+        }
+
+        return null;
+    }
+
+    public function getTopElevation()
+    {
+        /** @var array */
+        $properties = $this->getPropertiesByPropertyTypeAbbreviation(PropertyType::TOP_ELEVATION);
+        if (count($properties)>0) {
+            return $this->getFirstPropertyValue($properties[0]);
+        }
+
+        return null;
+    }
 }
