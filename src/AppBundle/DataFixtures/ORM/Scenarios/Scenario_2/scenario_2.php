@@ -19,7 +19,7 @@ use AppBundle\Model\Point;
 use AppBundle\Model\SoilModelFactory;
 use AppBundle\Model\StressPeriod;
 use AppBundle\Model\StressPeriodFactory;
-use AppBundle\Model\WellBoundaryFactory;
+use AppBundle\Model\WellFactory;
 use CrEOF\Spatial\DBAL\Platform\PostgreSql;
 use CrEOF\Spatial\DBAL\Types\AbstractSpatialType;
 use CrEOF\Spatial\PHP\Types\Geometry\LineString;
@@ -1001,7 +1001,7 @@ class LoadScenario_2 implements FixtureInterface, ContainerAwareInterface
         foreach ($wells as $row) {
             $well = array_combine($header, $row);
 
-            $model->addWellBoundary(WellBoundaryFactory::create()
+            $model->addWell(WellFactory::create()
                 ->setOwner($user)
                 ->setName($well['name'])
                 ->setPublic($public)
