@@ -34,7 +34,6 @@ class InterpolationCommand extends ContainerAwareCommand
 
         $layers = $soilModelService->getModflowModel()->getSoilModel()->getGeologicalLayers();
 
-
         foreach ($layers as $layer)
         {
             $propertyTypes = $soilModelService->getAllPropertyTypesFromLayer($layer);
@@ -44,11 +43,10 @@ class InterpolationCommand extends ContainerAwareCommand
                 $output = $soilModelService->interpolateLayerByProperty(
                     $layer,
                     $propertyType->getAbbreviation(),
-                    array(Interpolation::TYPE_GAUSSIAN, Interpolation::TYPE_MEAN));
+                    array(Interpolation::TYPE_IDW, Interpolation::TYPE_MEAN));
 
                 echo ($output);
             }
-
         }
     }
 }

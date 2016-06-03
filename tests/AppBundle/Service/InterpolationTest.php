@@ -152,6 +152,16 @@ class InterpolationTest extends WebTestCase
         $this->assertFalse(is_dir($folderName));
     }
 
+    public function testIdwInterpolation(){
+        $this->interpolation->setGridSize(new GridSize(10,11));
+        $this->interpolation->setBoundingBox(new BoundingBox(-10.1, 10.2, -5.1, 5.2));
+        $this->interpolation->addPoint(new PointValue(1,2,3));
+        $this->interpolation->addPoint(new PointValue(1,3,4));
+        $this->interpolation->interpolate(Interpolation::TYPE_IDW);
+        $this->assertCount($this->interpolation->getGridSize()->getNY(), $this->interpolation->getData());
+        $this->assertCount($this->interpolation->getGridSize()->getNX(), $this->interpolation->getData()[0]);
+    }
+    
     public function testMeanInterpolation(){
         $this->interpolation->setGridSize(new GridSize(10,11));
         $this->interpolation->setBoundingBox(new BoundingBox(-10.1, 10.2, -5.1, 5.2));
