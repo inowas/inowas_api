@@ -8,7 +8,7 @@ use JMS\Serializer\Annotation as JMS;
 
 /**
  * @ORM\Entity()
- * @ORM\Table(name="well_boundaries")
+ * @ORM\Table(name="wells")
  */
 class Well extends BoundaryModelObject
 {
@@ -17,7 +17,7 @@ class Well extends BoundaryModelObject
      * @JMS\Type("string")
      * @JMS\Groups({"list", "details", "modelobjectdetails", "modelobjectlist"})
      */
-    protected $type = 'well_boundary';
+    protected $type = 'well';
 
     /**
      * @var Point
