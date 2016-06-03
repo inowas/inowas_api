@@ -10,7 +10,7 @@ use JMS\Serializer\Annotation as JMS;
  * @ORM\Entity()
  * @ORM\Table(name="well_boundaries")
  */
-class Well extends ModelObject
+class Well extends BoundaryModelObject
 {
     /**
      * @var string
