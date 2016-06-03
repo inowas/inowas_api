@@ -14,6 +14,13 @@ use Ramsey\Uuid\Uuid;
  */
 class PropertyType
 {
+    const STATIC_VALUE_ONLY = 1;
+    const TIME_DEPENDENT_VALUE_ONLY = 2;
+    const STATIC_AND_TIME_DEPENDENT_VALUES = 3;
+
+    const TOP_ELEVATION = 'et';
+    const BOTTOM_ELEVATION = 'eb';
+
     /**
      * @var string
      *
@@ -40,9 +47,20 @@ class PropertyType
      */
     private $name;
 
+    /**
+     * @var integer
+     *
+     * @ORM\Column(name="value_type", type="integer")
+     */
+    private $valueType;
+
+    /**
+     * PropertyType constructor.
+     */
     public function __construct()
     {
         $this->id = Uuid::uuid4();
+        $this->valueType = self::STATIC_AND_TIME_DEPENDENT_VALUES;
     }
 
     /**
@@ -101,5 +119,23 @@ class PropertyType
     public function getName()
     {
         return $this->name;
+    }
+
+    /**
+     * @return int
+     */
+    public function getValueType()
+    {
+        return $this->valueType;
+    }
+
+    /**
+     * @param int $valueType
+     * @return PropertyType
+     */
+    public function setValueType($valueType)
+    {
+        $this->valueType = $valueType;
+        return $this;
     }
 }

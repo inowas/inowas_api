@@ -2,6 +2,7 @@
 
 namespace AppBundle\Entity;
 
+use AppBundle\Model\PropertyFactory;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
 use JMS\Serializer\Annotation as JMS;
@@ -16,6 +17,7 @@ use Ramsey\Uuid\Uuid;
  * @ORM\DiscriminatorColumn(name="discr", type="string")
  * @ORM\DiscriminatorMap({  "ar" = "Area",
  *                          "bo" = "Boundary",
+ *                          "wbo" = "Well",
  *                          "op" = "ObservationPoint",
  *                          "gp" = "GeologicalPoint",
  *                          "gl" = "GeologicalLayer",
@@ -60,19 +62,13 @@ abstract class ModelObject
     protected $type = 'modelobject';
 
     /**
-     * @var ArrayCollection SoilModel
-     *
-     * @ORM\ManyToMany(targetEntity="AppBundle\Entity\SoilModel", inversedBy="modelObjects", cascade={"persist", "remove"})
-     * @ORM\JoinTable(name="soil_model_model_objects")
-     * @JMS\Groups({"modelobjectdetails"})
-     * @JMS\MaxDepth(1)
-     **/
-    protected $soilModels;
-
-    /**
      * @var ArrayCollection Property
      *
-     * @ORM\OneToMany(targetEntity="AppBundle\Entity\Property", mappedBy="modelObject", cascade={"persist", "remove"})
+     * @ORM\ManyToMany(targetEntity="AppBundle\Entity\Property", cascade={"persist", "remove"})
+     * @ORM\JoinTable(name="model_objects_properties",
+     *     joinColumns={@ORM\JoinColumn(name="model_object_id", referencedColumnName="id")},
+     *     inverseJoinColumns={@ORM\JoinColumn(name="property_id", referencedColumnName="id")}
+     *     )
      * @JMS\Type("ArrayCollection<AppBundle\Entity\Property>")
      * @JMS\Groups({"details", "layerdetails", "modelobjectdetails", "soilmodeldetails"})
      */
@@ -89,7 +85,7 @@ abstract class ModelObject
     /**
      * @var ArrayCollection ObservationPoint
      *
-     * @ORM\ManyToMany(targetEntity="ObservationPoint", inversedBy="modelObjects")
+     * @ORM\ManyToMany(targetEntity="ObservationPoint", inversedBy="modelObjects", cascade={"persist", "remove"})
      * @ORM\JoinTable(name="model_objects_observation_points")
      * @JMS\Groups({"modelobjectdetails", "soilmodeldetails"})
      * @JMS\MaxDepth(5)
@@ -231,37 +227,6 @@ abstract class ModelObject
     }
 
     /**
-     * Get SoilModels
-     */
-    public function getSoilModels()
-    {
-        return $this->soilModels;
-    }
-
-    /**
-     * Add SoilModel
-     *
-     * @param SoilModel $soilModel
-     * @return $this
-     */
-    public function addSoilModel(SoilModel $soilModel)
-    {
-        $this->soilModels[] = $soilModel;
-
-        return $this;
-    }
-
-    /**
-     * Remove SoilModel
-     *
-     * @param SoilModel $soilModel
-     */
-    public function removeSoilModel(SoilModel $soilModel)
-    {
-        $this->soilModels->removeElement($soilModel);
-    }
-
-    /**
      * Set owner
      *
      * @param \AppBundle\Entity\User $owner
@@ -292,9 +257,11 @@ abstract class ModelObject
      */
     public function addProperty(Property $property)
     {
-        $property->setModelObject($this);
-        $this->properties[] = $property;
-
+        if (!$this->properties->contains($property)) {
+            $this->properties[] = $property;
+        } else {
+            
+        }
         return $this;
     }
 
@@ -305,7 +272,9 @@ abstract class ModelObject
      */
     public function removeProperty(Property $property)
     {
-        $this->properties->removeElement($property);
+        if ($this->properties->contains($property)) {
+            $this->properties->removeElement($property);
+        }
     }
 
     /**
@@ -390,11 +359,48 @@ abstract class ModelObject
     public function getPropertyIds()
     {
         /** @var Property $property */
-        foreach ($this->getProperties() as $property)
-        {
+        foreach ($this->getProperties() as $property) {
             $this->propertyIds[] = $property->getId();
         }
 
         return $this->propertyIds;
+    }
+
+    protected function getPropertyByPropertyType(PropertyType $propertyType)
+    {
+        /** @var Property $property */
+        foreach ($this->properties as $property)
+        {
+            if ($property->getPropertyType() == $propertyType) {
+                return $property;
+            }
+        }
+
+        $property = PropertyFactory::create()
+            ->setPropertyType($propertyType);
+        $this->addProperty($property);
+        return $property;
+    }
+
+    protected function getPropertiesByPropertyTypeAbbreviation($abbreviation)
+    {
+        $properties = array();
+        /** @var Property $property */
+        foreach ($this->properties as $property)
+        {
+            if ($property->getPropertyType()->getAbbreviation() == $abbreviation) {
+                $properties[] = $property;
+            }
+        }
+        
+        return $properties;
+    }
+
+    public function addValue(PropertyType $propertyType, AbstractValue $value)
+    {
+        $property = $this->getPropertyByPropertyType($propertyType);
+        $property->addValue($value);
+
+        return $this;
     }
 }

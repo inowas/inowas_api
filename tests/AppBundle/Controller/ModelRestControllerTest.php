@@ -120,18 +120,15 @@ class ModelRestControllerTest extends WebTestCase
         
         $this->assertEquals(200, $client->getResponse()->getStatusCode());
 
-        /** @var ModFlowModel[] $modelArray */
-        $modelArray = $this->serializer->deserialize($client->getResponse()->getContent(), 'array<AppBundle\Entity\ModflowModel>', 'json');
+
+        $modelArray = json_decode($client->getResponse()->getContent());
         $this->assertCount(1, $modelArray);
         $modFlowModel = $modelArray[0];
 
-        $this->assertEquals($this->modFlowModel->getId(), $modFlowModel->getId());
-        $this->assertEquals($this->modFlowModel->getName(), $modFlowModel->getName());
-        $this->assertEquals($this->modFlowModel->getDescription(), $modFlowModel->getDescription());
-        $this->assertEquals($this->modFlowModel->getPublic(), $modFlowModel->getPublic());
-        $this->assertEquals($this->modFlowModel->getDateCreated(), $modFlowModel->getDateCreated());
-        $this->assertEquals($this->modFlowModel->getDateModified(), $modFlowModel->getDateModified());
-        $this->assertNull($modFlowModel->getOwner());
+        $this->assertEquals($this->modFlowModel->getId(), $modFlowModel->id);
+        $this->assertEquals($this->modFlowModel->getName(), $modFlowModel->name);
+        $this->assertEquals($this->modFlowModel->getDescription(), $modFlowModel->description);
+        $this->assertEquals($this->modFlowModel->getPublic(), $modFlowModel->public);
     }
 
     public function testGetModelDetailsAPI()
@@ -191,6 +188,7 @@ class ModelRestControllerTest extends WebTestCase
             ->findOneBy(array(
                'name' => $this->soilModel->getName()
             ));
+
         $this->entityManager->remove($soilModel);
 
         $model = $this->entityManager->getRepository('AppBundle:ModFlowModel')

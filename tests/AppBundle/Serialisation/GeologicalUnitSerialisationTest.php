@@ -28,8 +28,6 @@ class GeologicalUnitSerialisationTest extends \PHPUnit_Framework_TestCase
             ->setOwner(
                 UserFactory::createTestUser('GeologicalUnitTestUser')
             )
-            ->setTopElevation(13.1)
-            ->setBottomElevation(12.1)
         ;
     }
 
@@ -43,7 +41,5 @@ class GeologicalUnitSerialisationTest extends \PHPUnit_Framework_TestCase
 
         $this->assertEquals($geologicalUnit->type, 'geologicalunit');
         $this->assertEquals($geologicalUnit->owner->id, $this->geologicalUnit->getOwner()->getId());
-        $this->assertEquals($geologicalUnit->top_elevation, $this->geologicalUnit->getTopElevation());
-        $this->assertEquals($geologicalUnit->bottom_elevation, $this->geologicalUnit->getBottomElevation());
     }
 }

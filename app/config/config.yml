@@ -56,9 +56,12 @@ doctrine:
         #     path:     "%database_path%"
 
         types:
+            geometry:       CrEOF\Spatial\DBAL\Types\GeometryType
             point:          CrEOF\Spatial\DBAL\Types\Geometry\PointType
             polygon:        CrEOF\Spatial\DBAL\Types\Geometry\PolygonType
             linestring:     CrEOF\Spatial\DBAL\Types\Geometry\LineStringType
+            bounding_box:   AppBundle\Type\BoundingBoxType
+            grid_size:      AppBundle\Type\GridSizeType
             raster:         AppBundle\Type\RasterType
             uuid:           Ramsey\Uuid\Doctrine\UuidType
 

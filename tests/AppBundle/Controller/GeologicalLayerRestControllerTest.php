@@ -78,8 +78,7 @@ class GeologicalLayerRestControllerTest extends WebTestCase
             ->getRepository('AppBundle:GeologicalLayer')
             ->findAll();
 
-        foreach ($geologicalLayers as $geologicalLayer)
-        {
+        foreach ($geologicalLayers as $geologicalLayer) {
             $this->entityManager->remove($geologicalLayer);
         }
 

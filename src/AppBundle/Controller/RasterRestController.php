@@ -2,6 +2,8 @@
 
 namespace AppBundle\Controller;
 
+use AppBundle\Model\Interpolation\BoundingBox;
+use AppBundle\Model\Interpolation\GridSize;
 use AppBundle\Model\PropertyFactory;
 use AppBundle\Model\PropertyTimeValueFactory;
 use AppBundle\Model\PropertyValueFactory;
@@ -11,10 +13,50 @@ use FOS\RestBundle\Controller\Annotations\RequestParam;
 use FOS\RestBundle\Controller\FOSRestController;
 use FOS\RestBundle\Request\ParamFetcher;
 use FOS\RestBundle\View\View;
+use JMS\Serializer\SerializationContext;
 use Nelmio\ApiDocBundle\Annotation\ApiDoc;
 
 class RasterRestController extends FOSRestController
 {
+
+    /**
+     * Return an Raster by id
+     *
+     * @ApiDoc(
+     *   resource = true,
+     *   description = "Return a raster by id",
+     *   statusCodes = {
+     *     200 = "Returned when successful",
+     *     404 = "Returned when the user is not found"
+     *   }
+     * )
+     *
+     * @param string $id raster
+     *
+     * @return View
+     */
+    public function getRasterAction($id)
+    {
+        $entity = $this->getDoctrine()
+            ->getRepository('AppBundle:Raster')
+            ->findOneBy(array(
+                'id' => $id
+            ));
+
+        if (!$entity)
+        {
+            throw $this->createNotFoundException('Raster with id='.$id.' not found.');
+        }
+
+        $view = View::create();
+        $view->setData($entity)
+            ->setStatusCode(200)
+            ->setSerializationContext(SerializationContext::create()
+                ->setGroups(array('rasterdetails')));
+
+        return $view;
+    }
+
     /**
      * Return an area by id
      *
@@ -51,6 +93,7 @@ class RasterRestController extends FOSRestController
      * @RequestParam(name="lowerRightY", nullable=false, strict=true, description="UpperLeft corner Y")
      * @RequestParam(name="srid", nullable=false, strict=true, description="SRID", default=4326)
      * @RequestParam(name="data", nullable=false, strict=true, description="Data in JSON-Format")
+     * @RequestParam(name="description", nullable=false, strict=true, description="Description", default="")
      * @RequestParam(name="noDataVal", nullable=false, strict=true, description="Data in JSON-Format", default=-999)
      * @RequestParam(name="date", nullable=true, strict=true, description="Date, default null", default=null)
      *
@@ -82,20 +125,26 @@ class RasterRestController extends FOSRestController
          */
         $raster = RasterFactory::create();
         $raster
-            ->setNumberOfColumns($paramFetcher->get('numberOfColumns'))
-            ->setNumberOfRows($paramFetcher->get('numberOfRows'))
-            ->setUpperLeftX($paramFetcher->get('upperLeftX'))
-            ->setUpperLeftY($paramFetcher->get('upperLeftY'))
-            ->setLowerRightX($paramFetcher->get('lowerRightX'))
-            ->setLowerRightY($paramFetcher->get('lowerRightY'))
+            ->setGridSize(new GridSize(
+                $paramFetcher->get('numberOfColumns'),
+                $paramFetcher->get('numberOfRows')
+            ))
+            ->setBoundingBox(new BoundingBox(
+                $paramFetcher->get('upperLeftX'),
+                $paramFetcher->get('lowerRightX'),
+                $paramFetcher->get('lowerRightY'),
+                $paramFetcher->get('upperLeftY'),
+                $paramFetcher->get('srid')
+            ))
             ->setData(json_decode($paramFetcher->get("data")))
             ->setNoDataVal($paramFetcher->get('noDataVal'))
-            ->setSrid($paramFetcher->get('srid'))
+            ->setDescription($paramFetcher->get('description'))
         ;
 
         /* Let's create a property and a value-object */
-        $property = PropertyFactory::setTypeAndModelObject($propertyType, $mo);
-        $property->setName($paramFetcher->get('propertyName'));
+        $property = PropertyFactory::create()
+            ->setName($paramFetcher->get('propertyName'))
+            ->setPropertyType($propertyType);
 
         if (is_null($paramFetcher->get('date'))) {
             $value = PropertyValueFactory::create();
@@ -107,9 +156,7 @@ class RasterRestController extends FOSRestController
         $this->getDoctrine()->getManager()->flush();
 
         $mo->addProperty($property);
-        $property->setModelObject($mo);
         $property->addValue($value);
-        $value->setProperty($property);
         $value->setRaster($raster);
 
         $this->getDoctrine()->getManager()->persist($raster);

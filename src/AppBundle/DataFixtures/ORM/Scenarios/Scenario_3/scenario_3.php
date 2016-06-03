@@ -11,7 +11,6 @@ use AppBundle\Model\GeologicalLayerFactory;
 use AppBundle\Model\GeologicalPointFactory;
 use AppBundle\Model\GeologicalUnitFactory;
 use AppBundle\Model\ModFlowModelFactory;
-use AppBundle\Model\PropertyFactory;
 use AppBundle\Model\PropertyTimeValueFactory;
 use AppBundle\Model\PropertyValueFactory;
 
@@ -76,6 +75,34 @@ class LoadScenario_3 implements FixtureInterface, ContainerAwareInterface
             $user->setEnabled(true);
             $entityManager->persist($user);
             $entityManager->flush();
+        }
+
+        // Load PropertyTypes
+        $propertyTypeGwHead = $entityManager->getRepository('AppBundle:PropertyType')
+            ->findOneBy(array(
+                'abbreviation' => "hh"
+            ));
+
+        if (!$propertyTypeGwHead) {
+            return new NotFoundHttpException();
+        }
+
+        $propertyTypeTopElevation = $entityManager->getRepository('AppBundle:PropertyType')
+            ->findOneBy(array(
+                'abbreviation' => "et"
+            ));
+
+        if (!$propertyTypeTopElevation) {
+            return new NotFoundHttpException();
+        }
+
+        $propertyTypeBottomElevation = $entityManager->getRepository('AppBundle:PropertyType')
+            ->findOneBy(array(
+                'abbreviation' => "eb"
+            ));
+
+        if (!$propertyTypeBottomElevation) {
+            return new NotFoundHttpException();
         }
 
         // Create Modflow-Model
@@ -146,34 +173,44 @@ class LoadScenario_3 implements FixtureInterface, ContainerAwareInterface
 
         foreach ($boreholes as $borehole)
         {
-            echo "Add geologicalPoint".$borehole[0]."\r\n";
-            $geologicalPoint = GeologicalPointFactory::setOwnerNameAndPoint($user, $borehole[0], new Point($borehole[1], $borehole[2], 3857), $public);
+            echo "Persisting ".$borehole[0]."\r\n";
+            $geologicalPoint = GeologicalPointFactory::create()
+                ->setOwner($user)
+                ->setName($borehole[0])
+                ->setPoint(new Point($borehole[1], $borehole[2], 3857))
+                ->setPublic($public);
             $entityManager->persist($geologicalPoint);
 
-            $geologicalUnit = GeologicalUnitFactory::setOwnerNameAndPublic($user, $borehole[0].'.1', $public);
-            $geologicalUnit->setTopElevation($borehole[3]);
-            $geologicalUnit->setBottomElevation($borehole[4]);
-            $geologicalPoint->addGeologicalUnit($geologicalUnit);
-            $entityManager->persist($geologicalUnit);
+            $geologicalUnit = GeologicalUnitFactory::create()
+                ->setOwner($user)
+                ->setName($borehole[0].'.1')
+                ->setPublic($public)
+                ->addValue($propertyTypeTopElevation, PropertyValueFactory::create()->setValue($borehole[3]))
+                ->addValue($propertyTypeBottomElevation, PropertyValueFactory::create()->setValue($borehole[4]));
 
+            $geologicalPoint->addGeologicalUnit($geologicalUnit);
             $layer_1->addGeologicalUnit($geologicalUnit);
             $entityManager->persist($layer_1);
 
-            $geologicalUnit = GeologicalUnitFactory::setOwnerNameAndPublic($user, $borehole[0].'.2', $public);
-            $geologicalUnit->setTopElevation($borehole[4]);
-            $geologicalUnit->setBottomElevation($borehole[5]);
-            $geologicalPoint->addGeologicalUnit($geologicalUnit);
-            $entityManager->persist($geologicalUnit);
+            $geologicalUnit = GeologicalUnitFactory::create()
+                ->setOwner($user)
+                ->setName($borehole[0].'.2')
+                ->setPublic($public)
+                ->addValue($propertyTypeTopElevation, PropertyValueFactory::create()->setValue($borehole[4]))
+                ->addValue($propertyTypeBottomElevation, PropertyValueFactory::create()->setValue($borehole[5]));
 
+            $geologicalPoint->addGeologicalUnit($geologicalUnit);
             $layer_2->addGeologicalUnit($geologicalUnit);
             $entityManager->persist($layer_2);
 
-            $geologicalUnit = GeologicalUnitFactory::setOwnerNameAndPublic($user, $borehole[0].'.3', $public);
-            $geologicalUnit->setTopElevation($borehole[5]);
-            $geologicalUnit->setBottomElevation($borehole[6]);
-            $geologicalPoint->addGeologicalUnit($geologicalUnit);
-            $entityManager->persist($geologicalUnit);
+            $geologicalUnit = GeologicalUnitFactory::create()
+                ->setOwner($user)
+                ->setName($borehole[0].'.3')
+                ->setPublic($public)
+                ->addValue($propertyTypeTopElevation, PropertyValueFactory::create()->setValue($borehole[5]))
+                ->addValue($propertyTypeBottomElevation, PropertyValueFactory::create()->setValue($borehole[6]));
 
+            $geologicalPoint->addGeologicalUnit($geologicalUnit);
             $layer_3->addGeologicalUnit($geologicalUnit);
             $entityManager->persist($layer_3);
 
@@ -181,79 +218,55 @@ class LoadScenario_3 implements FixtureInterface, ContainerAwareInterface
             $entityManager->flush();
         }
 
-        // Add properties to Layer SC3_L1
-        $geologicalLayer = $layer_1;
-        if (!$geologicalLayer) {
-            throw new NotFoundHttpException('Layer not found');
-        }
+        // Add values to Layer SC3_L1
+        $layer_1->addValue(
+            $this->getPropertyType($entityManager, 'hc'),
+            PropertyValueFactory::create()->setValue(40));
 
-        $propertyType = $this->getPropertyType($entityManager, 'hc');
-        $property = PropertyFactory::setTypeAndModelObject($propertyType, $geologicalLayer);
-        $entityManager->persist($property);
-        $propertyValue = PropertyValueFactory::setPropertyAndValue($property, 40);
-        $entityManager->persist($propertyValue);
+        $layer_1->addValue(
+            $this->getPropertyType($entityManager, 'va'),
+            PropertyValueFactory::create()->setValue(8));
 
-        $propertyType = $this->getPropertyType($entityManager, 'va');
-        $property = PropertyFactory::setTypeAndModelObject($propertyType, $geologicalLayer);
-        $entityManager->persist($property);
-        $propertyValue = PropertyValueFactory::setPropertyAndValue($property, 8);
-        $entityManager->persist($propertyValue);
+        $layer_1->addValue(
+            $this->getPropertyType($entityManager, 'ss'),
+            PropertyValueFactory::create()->setValue(0.00001));
 
-        $propertyType = $this->getPropertyType($entityManager, 'ss');
-        $property = PropertyFactory::setTypeAndModelObject($propertyType, $geologicalLayer);
-        $entityManager->persist($property);
-        $propertyValue = PropertyValueFactory::setPropertyAndValue($property, 0.00001);
-        $entityManager->persist($propertyValue);
+        $layer_1->addValue(
+            $this->getPropertyType($entityManager, 'sy'),
+            PropertyValueFactory::create()->setValue(0.1));
 
-        $propertyType = $this->getPropertyType($entityManager, 'sy');
-        $property = PropertyFactory::setTypeAndModelObject($propertyType, $geologicalLayer);
-        $entityManager->persist($property);
-        $propertyValue = PropertyValueFactory::setPropertyAndValue($property, 0.1);
-        $entityManager->persist($propertyValue);
+        $entityManager->persist($layer_1);
+        $entityManager->flush();
 
-        // Add properties to Layer SC3_L2
-        $geologicalLayer = $layer_2;
 
-        if (!$geologicalLayer) {
-            throw new NotFoundHttpException('Layer not found');
-        }
+        // Add values to Layer SC3_L2
+        $layer_2->addValue(
+            $this->getPropertyType($entityManager, 'vc'),
+            PropertyValueFactory::create()->setValue(1));
 
-        $propertyType = $this->getPropertyType($entityManager, 'vc');
-        $property = PropertyFactory::setTypeAndModelObject($propertyType, $geologicalLayer);
-        $entityManager->persist($property);
-        $propertyValue = PropertyValueFactory::setPropertyAndValue($property, 1);
-        $entityManager->persist($propertyValue);
+        $entityManager->persist($layer_2);
+        $entityManager->flush();
+
 
         // Add properties to Layer SC3_L3
-        $geologicalLayer = $layer_3;
+        $layer_3->addValue(
+            $this->getPropertyType($entityManager, 'hc'),
+            PropertyValueFactory::create()->setValue(42));
 
-        if (!$geologicalLayer) {
-            throw new NotFoundHttpException('Layer not found');
-        }
+        $layer_3->addValue(
+            $this->getPropertyType($entityManager, 'va'),
+            PropertyValueFactory::create()->setValue(21));
 
-        $propertyType = $this->getPropertyType($entityManager, 'hc');
-        $property = PropertyFactory::setTypeAndModelObject($propertyType, $geologicalLayer);
-        $entityManager->persist($property);
-        $propertyValue = PropertyValueFactory::setPropertyAndValue($property, 42);
-        $entityManager->persist($propertyValue);
+        $layer_3->addValue(
+            $this->getPropertyType($entityManager, 'ss'),
+            PropertyValueFactory::create()->setValue(0.0001));
 
-        $propertyType = $this->getPropertyType($entityManager, 'va');
-        $property = PropertyFactory::setTypeAndModelObject($propertyType, $geologicalLayer);
-        $entityManager->persist($property);
-        $propertyValue = PropertyValueFactory::setPropertyAndValue($property, 21);
-        $entityManager->persist($propertyValue);
+        $layer_3->addValue(
+            $this->getPropertyType($entityManager, 'sy'),
+            PropertyValueFactory::create()->setValue(0.1));
 
-        $propertyType = $this->getPropertyType($entityManager, 'ss');
-        $property = PropertyFactory::setTypeAndModelObject($propertyType, $geologicalLayer);
-        $entityManager->persist($property);
-        $propertyValue = PropertyValueFactory::setPropertyAndValue($property, 0.00001);
-        $entityManager->persist($propertyValue);
-
-        $propertyType = $this->getPropertyType($entityManager, 'sy');
-        $property = PropertyFactory::setTypeAndModelObject($propertyType, $geologicalLayer);
-        $entityManager->persist($property);
-        $propertyValue = PropertyValueFactory::setPropertyAndValue($property, 0.1);
-        $entityManager->persist($propertyValue);
+        $entityManager->persist($layer_3);
+        $entityManager->flush();
 
         // Add new AreaType
         $areaType = AreaTypeFactory::setName('SC3_AT1');
@@ -309,6 +322,8 @@ class LoadScenario_3 implements FixtureInterface, ContainerAwareInterface
         $entityManager->persist($boundary);
         $entityManager->flush();
         $this->addModelObjectPropertiesFromCSVFile($boundary, __DIR__.'/scenario_3_boundary_2_property_timeseries.csv', ';');
+
+        return 1;
     }
 
 
@@ -327,47 +342,16 @@ class LoadScenario_3 implements FixtureInterface, ContainerAwareInterface
         for ($i = 1; $i <= $elementCount; $i++)
         {
             $propertyTypeName = $dataFields[$i];
-
             $propertyType = $this->getPropertyType($this->entityManager, $propertyTypeName);
-            $property = PropertyFactory::setTypeAndModelObject($propertyType, $baseElement);
-            $this->entityManager->persist($property);
 
-            $this->entityManager->flush();
-
-            
             foreach ($data as $dataPoint)
             {
-                $propertyTimeValue = PropertyTimeValueFactory::setPropertyDateTimeAndValue($property, new \DateTime($dataPoint[$dataFields[0]]), (float)$dataPoint[$dataFields[$i]]);
-                $this->entityManager->persist($propertyTimeValue);
+                $baseElement->addValue(
+                    $propertyType,
+                    PropertyTimeValueFactory::setDateTimeAndValue(new \DateTime($dataPoint[$dataFields[0]]), (float)$dataPoint[$dataFields[$i]])
+                );
 
-                /*
-                $em = $this->container->get('doctrine.orm.default_entity_manager');
-                $nativeQuery = 'WITH rows as(
-                    INSERT INTO values
-                        (property_id, name, id)
-                    VALUES
-                        (?, timevalue, (SELECT nextval(\'values_id_seq\'))
-                    RETURNING INTO last_id
-                    )
-                    INSERT INTO property_time_values
-                        (id, timestamp, value)
-                    VALUES
-                        (last_id, ?, ?)
-                    --;
-                ';
-
-
-                $nativeQuery = 'INSERT INTO values
-                                (property_id, name, id)
-                                VALUES
-                                (?, ?, (SELECT nextval(\'values_id_seq\')))';
-
-                $query = $em->createNativeQuery($nativeQuery, new ResultSetMapping());
-                $query->setParameter(1, $property->getId());
-                $query->setParameter(2, new \DateTime($dataPoint[$dataFields[0]]));
-                $query->setParameter(3, (float)$dataPoint[$dataFields[$i]]);
-                $result = $query->getResult();
-                */
+                $this->entityManager->persist($baseElement);
 
                 echo $counter++."\n";
                 if ($counter % 100 == 0)

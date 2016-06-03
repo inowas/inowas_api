@@ -136,7 +136,7 @@ class ObservationPoint extends ModelObject
     /**
      * Get modelObjects
      *
-     * @return \Doctrine\Common\Collections\Collection 
+     * @return \Doctrine\Common\Collections\Collection
      */
     public function getModelObjects()
     {

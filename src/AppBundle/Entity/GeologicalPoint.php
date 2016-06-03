@@ -10,8 +10,9 @@ use JMS\Serializer\Annotation as JMS;
 /**
  * @ORM\Entity
  * @ORM\Table(name="geological_points")
+ * @ORM\HasLifecycleCallbacks()
  */
-class GeologicalPoint extends ModelObject
+class GeologicalPoint extends SoilModelObject
 {
     /**
      * @var string
@@ -33,9 +34,7 @@ class GeologicalPoint extends ModelObject
      *
      * @ORM\ManyToMany(targetEntity="AppBundle\Entity\GeologicalUnit", cascade={"persist"})
      * @ORM\JoinTable(name="geological_points_geological_units",
-     *     joinColumns={
-     *          @ORM\JoinColumn(name="geological_point_id", referencedColumnName="id")
-     *      },
+     *     joinColumns={@ORM\JoinColumn(name="geological_point_id", referencedColumnName="id")},
      *     inverseJoinColumns={@ORM\JoinColumn(name="geological_unit_id", referencedColumnName="id", unique=true)}
      *     )
      * @JMS\MaxDepth(2)
@@ -85,18 +84,25 @@ class GeologicalPoint extends ModelObject
      */
     public function addGeologicalUnit(GeologicalUnit $geologicalUnit)
     {
-        $this->geologicalUnits[] = $geologicalUnit;
+        if (!$this->geologicalUnits->contains($geologicalUnit)) {
+            $this->geologicalUnits[] = $geologicalUnit;
+        }
+
         return $this;
     }
 
     /**
      * Remove geologicalUnit
      *
-     * @param \AppBundle\Entity\GeologicalUnit $geologicalUnit
+     * @param GeologicalUnit $geologicalUnit
+     * @return $this
      */
-    public function removeRemoveGeologicalUnit(GeologicalUnit $geologicalUnit)
+    public function removeGeologicalUnit(GeologicalUnit $geologicalUnit)
     {
-        $this->geologicalUnits->removeElement($geologicalUnit);
+        if ($this->geologicalUnits->contains($geologicalUnit)) {
+            $this->geologicalUnits->removeElement($geologicalUnit);
+        }
+        return $this;
     }
 
     /**
@@ -110,12 +116,14 @@ class GeologicalPoint extends ModelObject
     }
 
     /**
-     * Remove geologicalUnits
-     *
-     * @param \AppBundle\Entity\GeologicalUnit $geologicalUnits
+     * @ORM\PreFlush()
      */
-    public function removeGeologicalUnit(GeologicalUnit $geologicalUnits)
+    public function preFlush()
     {
-        $this->geologicalUnits->removeElement($geologicalUnits);
+        /** @var GeologicalUnit $geologicalUnit */
+        foreach ($this->geologicalUnits as $geologicalUnit)
+        {
+            $geologicalUnit->setPoint($this->point);
+        }
     }
 }

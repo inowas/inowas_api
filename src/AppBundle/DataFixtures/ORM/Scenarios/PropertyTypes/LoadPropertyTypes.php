@@ -2,6 +2,7 @@
 
 namespace AppBundle\DataFixtures\ORM\Scenarios\PropertyTypes;
 
+use AppBundle\Entity\PropertyType;
 use AppBundle\Model\PropertyTypeFactory;
 use Doctrine\Common\DataFixtures\FixtureInterface;
 use Doctrine\Common\Persistence\ObjectManager;
@@ -29,29 +30,34 @@ class LoadPropertyTypes implements FixtureInterface, ContainerAwareInterface
     public function load(ObjectManager $entityManager)
     {
         $propertyTypesArray = array(
-            array("hh", "Hydraulic Head"),
-            array("kx", "Hydraulic Conductivity in x-Direction"),
-            array("ky", "Hydraulic Conductivity in y-Direction"),
-            array("kz", "Hydraulic Conductivity in z-Direction"),
-            array("sy", "Specific yield"),
-            array("ss", "Specific storage"),
-            array("et", "Top elevation"),
-            array("eb", "Bottom elevation"),
-            array("hc", "Hydraulic Conductivity"),
-            array("ha", "Horizontal anisotropy"),
-            array("va", "Vertical anisotropy"),
-            array("gr", "Groundwater Recharge in m"),
-            array("tmin", "Temperature minimum"),
-            array("tmax", "Temperature maximum"),
-            array("pr", "Precipitation in m"),
-            array("pe", "Potential evapotranspiration in mm"),
-            array("vc", "Vertical conductance")
+            array("kx", "Hydraulic Conductivity in x-Direction", PropertyType::STATIC_VALUE_ONLY),
+            array("ky", "Hydraulic Conductivity in y-Direction", PropertyType::STATIC_VALUE_ONLY),
+            array("kz", "Hydraulic Conductivity in z-Direction", PropertyType::STATIC_VALUE_ONLY),
+            array("sy", "Specific yield", PropertyType::STATIC_VALUE_ONLY),
+            array("ss", "Specific storage", PropertyType::STATIC_VALUE_ONLY),
+            array("et", "Top elevation", PropertyType::STATIC_VALUE_ONLY),
+            array("eb", "Bottom elevation", PropertyType::STATIC_VALUE_ONLY),
+            array("hc", "Hydraulic Conductivity", PropertyType::STATIC_VALUE_ONLY),
+            array("ha", "Horizontal anisotropy", PropertyType::STATIC_VALUE_ONLY),
+            array("va", "Vertical anisotropy", PropertyType::STATIC_VALUE_ONLY),
+            array("vc", "Vertical conductance", PropertyType::STATIC_VALUE_ONLY),
+            array("hh", "Hydraulic Head", PropertyType::STATIC_AND_TIME_DEPENDENT_VALUES),
+            array("gr", "Groundwater Recharge in m", PropertyType::STATIC_AND_TIME_DEPENDENT_VALUES),
+            array("tmin", "Temperature minimum", PropertyType::STATIC_AND_TIME_DEPENDENT_VALUES),
+            array("tmax", "Temperature maximum", PropertyType::STATIC_AND_TIME_DEPENDENT_VALUES),
+            array("pr", "Precipitation in m", PropertyType::STATIC_AND_TIME_DEPENDENT_VALUES),
+            array("pe", "Potential evapotranspiration in mm", PropertyType::STATIC_AND_TIME_DEPENDENT_VALUES),
+            array("pur", "Pumping rate in m^/day", PropertyType::STATIC_AND_TIME_DEPENDENT_VALUES)
         );
 
         foreach ($propertyTypesArray as $propertyTypeArray)
         {
-            $propertyType = PropertyTypeFactory::setName($propertyTypeArray[1]);
-            $propertyType->setAbbreviation($propertyTypeArray[0]);
+            $propertyType = PropertyTypeFactory::create()
+                ->setAbbreviation($propertyTypeArray[0])
+                ->setName($propertyTypeArray[1])
+                ->setValueType($propertyTypeArray[2])
+            ;
+
             $entityManager->persist($propertyType);
         }
         

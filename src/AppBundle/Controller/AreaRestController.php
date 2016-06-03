@@ -82,8 +82,7 @@ class AreaRestController extends FOSRestController
                 'id' => $id
             ));
 
-        if (!$area)
-        {
+        if (!$area) {
             throw $this->createNotFoundException('Area with id='.$id.' not found.');
         }
 

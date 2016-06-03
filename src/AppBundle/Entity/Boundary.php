@@ -11,7 +11,7 @@ use JMS\Serializer\Annotation as JMS;
  * @ORM\Entity()
  * @ORM\Table(name="boundaries")
  */
-class Boundary extends ModelObject
+class Boundary extends BoundaryModelObject
 {
     /**
      * @var string

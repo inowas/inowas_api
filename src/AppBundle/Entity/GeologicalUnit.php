@@ -2,14 +2,16 @@
 
 namespace AppBundle\Entity;
 
+use AppBundle\Model\Point;
 use Doctrine\ORM\Mapping as ORM;
 use JMS\Serializer\Annotation as JMS;
 
 /**
+ * @ORM\HasLifecycleCallbacks()
  * @ORM\Entity(repositoryClass="AppBundle\Repository\GeologicalUnitRepository")
  * @ORM\Table(name="geological_units")
  */
-class GeologicalUnit extends ModelObject
+class GeologicalUnit extends SoilModelObject
 {
     /**
      * @var string
@@ -19,64 +21,66 @@ class GeologicalUnit extends ModelObject
     protected $type = 'geologicalunit';
 
     /**
-     * @var $elevation
+     * @var Point
      *
-     * @ORM\Column(name="top_elevation", type="float", nullable=true)
-     * @JMS\Groups({"details", "modelobjectdetails"})
+     * @ORM\Column(name="geometry", type="point", nullable=true)
      */
-    private $topElevation;
+    private $point;
 
     /**
-     * @var $elevation
+     * Set point
      *
-     * @ORM\Column(name="bottom_elevation", type="float", nullable=true)
-     * @JMS\Groups({"details", "modelobjectdetails"})
+     * @param point $point
+     * @return GeologicalPoint
      */
-    private $bottomElevation;
-
-    /**
-     * Set topElevation
-     *
-     * @param float $topElevation
-     * @return GeologicalUnit
-     */
-    public function setTopElevation($topElevation)
+    public function setPoint($point)
     {
-        $this->topElevation = $topElevation;
+        $this->point = $point;
 
         return $this;
     }
 
     /**
-     * Get topElevation
+     * Get point
      *
-     * @return float 
+     * @return point
      */
-    public function getTopElevation()
+    public function getPoint()
     {
-        return $this->topElevation;
+        return $this->point;
     }
 
-    /**
-     * Set bottomElevation
-     *
-     * @param float $bottomElevation
-     * @return GeologicalUnit
-     */
-    public function setBottomElevation($bottomElevation)
-    {
-        $this->bottomElevation = $bottomElevation;
+    public function getFirstPropertyValue(Property $property){
+        $values = $property->getValues();
 
-        return $this;
+        foreach ($values as $value) {
+            if ($value instanceof PropertyValue) {
+                return $value->getValue();
+            }
+        }
+
+        return null;
     }
-
-    /**
-     * Get bottomElevation
-     *
-     * @return float 
-     */
+    
     public function getBottomElevation()
     {
-        return $this->bottomElevation;
+        /** @var array */
+        $properties = $this->getPropertiesByPropertyTypeAbbreviation(PropertyType::BOTTOM_ELEVATION);
+        if (count($properties)>0) {
+            return $this->getFirstPropertyValue($properties[0]);
+        }
+
+        return null;
+    }
+
+    public function getTopElevation()
+    {
+        /** @var array */
+        $properties = $this->getPropertiesByPropertyTypeAbbreviation(PropertyType::TOP_ELEVATION);
+        if (count($properties)>0) {
+            return $this->getFirstPropertyValue($properties[0]);
+        }
+
+        return null;
     }
 }

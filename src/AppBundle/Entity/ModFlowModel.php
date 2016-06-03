@@ -2,18 +2,19 @@
 
 namespace AppBundle\Entity;
 
+use AppBundle\Model\Interpolation\BoundingBox;
+use AppBundle\Model\Interpolation\GridSize;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
 use JMS\Serializer\Annotation as JMS;
 
 /**
  * @ORM\HasLifecycleCallbacks
- * @ORM\Entity()
+ * @ORM\Entity(repositoryClass="AppBundle\Repository\ModFlowModelRepository")
  * @JMS\ExclusionPolicy("none")
  */
 class ModFlowModel extends AbstractModel
 {
-
     /**
      * @var ArrayCollection ModelObject $modelObjects
      *
@@ -36,6 +37,20 @@ class ModFlowModel extends AbstractModel
     private $soilModel;
 
     /**
+     * @var GridSize
+     *
+     * @ORM\Column(name="grid_size", type="grid_size", nullable=true)
+     */
+    private $gridSize;
+
+    /**
+     * @var BoundingBox
+     *
+     * @ORM\Column(name="bounding_box", type="bounding_box", nullable=true)
+     */
+    private $boundingBox;
+
+    /**
      * @var Area
      *
      * @JMS\Type("AppBundle\Entity\Area")
@@ -48,6 +63,12 @@ class ModFlowModel extends AbstractModel
      * @JMS\Groups({"details", "modeldetails"})
      **/
     private $boundaries;
+
+    /**
+     * @var ArrayCollection
+     * @JMS\Groups({"details", "modeldetails"})
+     **/
+    private $wells;
 
     /**
      * @var ArrayCollection
@@ -101,10 +122,13 @@ class ModFlowModel extends AbstractModel
     {
         parent::__construct();
 
+        $this->wells = new ArrayCollection();
         $this->boundaries = new ArrayCollection();
         $this->modelObjects = new ArrayCollection();
         $this->observationPoints = new ArrayCollection();
         $this->streams = new ArrayCollection();
+        $this->gridSize = new GridSize(50, 50);
+        $this->boundingBox = new BoundingBox();
     }
 
     /**
@@ -228,6 +252,46 @@ class ModFlowModel extends AbstractModel
         if ($this->boundaries->contains($boundary)){
             $this->boundaries->removeElement($boundary);
         }
+    }
+
+    /**
+     * Get boundaries
+     *
+     * @return Well|ArrayCollection
+     */
+    public function getWells()
+    {
+        return $this->wells;
+    }
+
+    /**
+     * @param Well $well
+     * @return $this
+     */
+    public function addWell(Well $well)
+    {
+        if ($this->wells == null) {
+            $this->wells = new ArrayCollection();
+        }
+
+        if (!$this->wells->contains($well)) {
+            $this->wells->add($well);
+        }
+
+        return $this;
+    }
+
+    /**
+     * @param Well $well
+     * @return $this
+     */
+    public function removeWell(Well $well)
+    {
+        if ($this->boundaries->contains($well)){
+            $this->boundaries->removeElement($well);
+        }
+
+        return $this;
     }
 
     /**
@@ -415,9 +479,25 @@ class ModFlowModel extends AbstractModel
     }
 
     /**
+     * @return GridSize
+     */
+    public function getGridSize()
+    {
+        return $this->gridSize;
+    }
+
+    /**
+     * @return BoundingBox
+     */
+    public function getBoundingBox()
+    {
+        return $this->boundingBox;
+    }
+
+    /**
      * @ORM\PreFlush()
      */
-    public function prePersist()
+    public function preFlush()
     {
         if (!is_null($this->area))
         {
@@ -432,12 +512,28 @@ class ModFlowModel extends AbstractModel
             }
         }
 
+        if ($this->wells->count() > 0 )
+        {
+            foreach ($this->wells as $well)
+            {
+                $this->addModelObject($well);
+            }
+        }
+
+        if (!$this->observationPoints) {
+            $this->observationPoints = new ArrayCollection();
+        }
+
         if ($this->observationPoints->count() > 0 )
         {
             foreach ($this->observationPoints as $observationPoint)
             {
                 $this->addModelObject($observationPoint);
             }
+        }
+
+        if (!$this->streams) {
+            $this->streams = new ArrayCollection();
         }
 
         if ($this->streams->count() > 0 )
@@ -447,7 +543,13 @@ class ModFlowModel extends AbstractModel
                 $this->addModelObject($stream);
             }
         }
+
+        if ($this->area)
+        {
+            $this->boundingBox = $this->area->getBoundingBox();
+        }
     }
+
 
     /**
      * @ORM\PostLoad()
@@ -465,6 +567,12 @@ class ModFlowModel extends AbstractModel
             if ($modelObject instanceof Boundary)
             {
                 $this->addBoundary($modelObject);
+                $this->removeModelObject($modelObject);
+            }
+
+            if ($modelObject instanceof Well)
+            {
+                $this->addWell($modelObject);
                 $this->removeModelObject($modelObject);
             }
 

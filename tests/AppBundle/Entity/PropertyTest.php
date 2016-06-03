@@ -65,12 +65,16 @@ class PropertyTest extends WebTestCase
         $this->boundary = BoundaryFactory::setOwnerNameAndPublic($this->user, 'testBoundary', true);
         $this->entityManager->persist($this->boundary);
 
-        $this->propertyType = PropertyTypeFactory::setName('testProperty');
-        $this->propertyType->setAbbreviation("tp");
+        $this->propertyType = PropertyTypeFactory::create()
+            ->setName('testProperty')
+            ->setAbbreviation("tp");
+
         $this->entityManager->persist($this->propertyType);
 
         /** @var Property property */
-        $this->property = PropertyFactory::setTypeAndModelObject($this->propertyType, $this->boundary);
+        $this->property = PropertyFactory::create()
+            ->setPropertyType($this->propertyType);
+
         $this->entityManager->persist($this->property);
         $this->entityManager->flush();
     }
@@ -79,7 +83,7 @@ class PropertyTest extends WebTestCase
     {
         $this->assertCount(0, $this->property->getValues());
         $this->assertEquals(0, $this->property->getNumberOfValues());
-        $this->property->addValue(PropertyValueFactory::setPropertyAndValue($this->property, 5));
+        $this->property->addValue(PropertyValueFactory::create()->setValue(5));
         $this->entityManager->persist($this->property);
 
         $this->assertCount(1, $this->property->getValues());
@@ -94,7 +98,7 @@ class PropertyTest extends WebTestCase
     {
         $this->assertCount(0, $this->property->getValues());
         $this->assertEquals(0, $this->property->getNumberOfValues());
-        $this->property->addValue(PropertyTimeValueFactory::setPropertyDateTimeAndValue($this->property, new \DateTime(), 5));
+        $this->property->addValue(PropertyTimeValueFactory::setDateTimeAndValue(new \DateTime(), 5));
         $this->entityManager->persist($this->property);
 
         $this->assertCount(1, $this->property->getValues());
@@ -114,7 +118,6 @@ class PropertyTest extends WebTestCase
         $value->setDateTimeBegin(new \DateTime('2000-01-01'));
         $value->setDateTimeIntervalString('P1D');
         $value->setValues(array(1,2,3,4,5,6,7,8,9,10));
-        $value->setProperty($this->property);
         $this->property->addValue($value);
         $this->entityManager->persist($this->property);
         $this->assertCount(1, $this->property->getValues());
@@ -128,7 +131,7 @@ class PropertyTest extends WebTestCase
     public function testRecalculateStartDateWithPropertyValuePreFlush()
     {
         $this->assertNull($this->property->getDateTimeBegin());
-        $this->property->addValue(PropertyValueFactory::setPropertyAndValue($this->property, 5));
+        $this->property->addValue(PropertyValueFactory::create()->setValue(5));
         $this->entityManager->persist($this->property);
         $this->entityManager->flush();
 
@@ -142,7 +145,7 @@ class PropertyTest extends WebTestCase
 
         $this->assertCount(0, $this->property->getValues());
         $this->assertNull($this->property->getDateTimeBegin());
-        $this->property->addValue(PropertyTimeValueFactory::setPropertyDateTimeAndValue($this->property, $startDate, 5));
+        $this->property->addValue(PropertyTimeValueFactory::setDateTimeAndValue($startDate, 5));
         $this->entityManager->persist($this->property);
         $this->entityManager->flush();
 
@@ -150,7 +153,7 @@ class PropertyTest extends WebTestCase
         $this->assertEquals(1, $this->property->getNumberOfValues());
         $this->assertEquals($startDate, $this->property->getDateTimeBegin());
 
-        $this->property->addValue(PropertyTimeValueFactory::setPropertyDateTimeAndValue($this->property, $earlierStartDate, 6));
+        $this->property->addValue(PropertyTimeValueFactory::setDateTimeAndValue($earlierStartDate, 6));
         $this->entityManager->persist($this->property);
         $this->entityManager->flush();
 
@@ -171,7 +174,6 @@ class PropertyTest extends WebTestCase
         $value->setDateTimeBegin($startDate);
         $value->setDateTimeIntervalString('P1D');
         $value->setValues(array(1,2,3,4,5,6,7,8,9,10));
-        $value->setProperty($this->property);
         $this->property->addValue($value);
         $this->entityManager->persist($this->property);
         $this->entityManager->flush();
@@ -182,7 +184,6 @@ class PropertyTest extends WebTestCase
         $value->setDateTimeBegin($earlierStartDate);
         $value->setDateTimeIntervalString('P1D');
         $value->setValues(array(1,2,3,4,5,6,7,8,9,10));
-        $value->setProperty($this->property);
         $this->property->addValue($value);
         $this->entityManager->persist($this->property);
         $this->entityManager->flush();
@@ -193,7 +194,7 @@ class PropertyTest extends WebTestCase
     public function testRecalculateEndDateWithPropertyValuePreFlush()
     {
         $this->assertNull($this->property->getDateTimeEnd());
-        $this->property->addValue(PropertyValueFactory::setPropertyAndValue($this->property, 5));
+        $this->property->addValue(PropertyValueFactory::create()->setValue(5));
         $this->entityManager->persist($this->property);
         $this->entityManager->flush();
 
@@ -207,7 +208,7 @@ class PropertyTest extends WebTestCase
 
         $this->assertCount(0, $this->property->getValues());
         $this->assertNull($this->property->getDateTimeEnd());
-        $this->property->addValue(PropertyTimeValueFactory::setPropertyDateTimeAndValue($this->property, $endDate, 5));
+        $this->property->addValue(PropertyTimeValueFactory::setDateTimeAndValue($endDate, 5));
         $this->entityManager->persist($this->property);
         $this->entityManager->flush();
 
@@ -215,7 +216,7 @@ class PropertyTest extends WebTestCase
         $this->assertEquals(1, $this->property->getNumberOfValues());
         $this->assertEquals($endDate, $this->property->getDateTimeEnd());
 
-        $this->property->addValue(PropertyTimeValueFactory::setPropertyDateTimeAndValue($this->property, $laterEndDate, 6));
+        $this->property->addValue(PropertyTimeValueFactory::setDateTimeAndValue($laterEndDate, 6));
         $this->entityManager->persist($this->property);
         $this->entityManager->flush();
 
@@ -240,7 +241,6 @@ class PropertyTest extends WebTestCase
         $value->setDateTimeBegin($startDate);
         $value->setDateTimeIntervalString('P1D');
         $value->setValues(array(1,2,3,4,5,6,7,8,9,10));
-        $value->setProperty($this->property);
         $this->property->addValue($value);
         $this->entityManager->persist($this->property);
         $this->entityManager->flush();
@@ -252,7 +252,6 @@ class PropertyTest extends WebTestCase
         $value->setDateTimeBegin($laterStartDate);
         $value->setDateTimeIntervalString('P1D');
         $value->setValues(array(1,2,3,4,5,6,7,8,9,10));
-        $value->setProperty($this->property);
         $this->property->addValue($value);
         $this->entityManager->persist($this->property);
         $this->entityManager->flush();

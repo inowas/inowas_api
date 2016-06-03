@@ -10,7 +10,7 @@ use JMS\Serializer\Annotation as JMS;
  * @ORM\Entity(repositoryClass="AppBundle\Repository\GeologicalLayerRepository")
  * @ORM\Table(name="geological_layers")
  */
-class GeologicalLayer extends ModelObject
+class GeologicalLayer extends SoilModelObject
 {
     /**
      * @var string
@@ -18,8 +18,7 @@ class GeologicalLayer extends ModelObject
      * @JMS\Groups({"list", "details", "modelobjectdetails", "modelobjectlist"})
      */
     protected $type = 'geologicallayer';
-
-
+    
     /**
      * @var ArrayCollection GeologicalUnit
      *
@@ -53,18 +52,26 @@ class GeologicalLayer extends ModelObject
      */
     public function addGeologicalUnit(GeologicalUnit $geologicalUnit)
     {
-        $this->geologicalUnits[] = $geologicalUnit;
+        if (!$this->geologicalUnits->contains($geologicalUnit)) {
+            $this->geologicalUnits[] = $geologicalUnit;
+        }
+
         return $this;
     }
 
     /**
      * Remove geologicalUnit
      *
-     * @param \AppBundle\Entity\GeologicalUnit $geologicalUnit
+     * @param GeologicalUnit $geologicalUnit
+     * @return $this
      */
     public function removeGeologicalUnit(GeologicalUnit $geologicalUnit)
     {
-        $this->geologicalUnits->removeElement($geologicalUnit);
+        if ($this->geologicalUnits->contains($geologicalUnit)) {
+            $this->geologicalUnits->removeElement($geologicalUnit);
+        }
+
+        return $this;
     }
 
     /**

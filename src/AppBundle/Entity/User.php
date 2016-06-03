@@ -33,8 +33,6 @@ class User extends BaseUser
      */
     protected $profile;
 
-    protected $ownedSoilModels;
-
     public function __construct()
     {
         parent::__construct();

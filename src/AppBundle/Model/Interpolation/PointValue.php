@@ -2,12 +2,29 @@
 
 namespace AppBundle\Model\Interpolation;
 
+use JMS\Serializer\Annotation as JMS;
+
 class PointValue
 {
+    /**
+     * @var float
+     *
+     * @JMS\Groups({"interpolation"})
+     */
     protected $x;
 
+    /**
+     * @var float
+     *
+     * @JMS\Groups({"interpolation"})
+     */
     protected $y;
 
+    /**
+     * @var float
+     *
+     * @JMS\Groups({"interpolation"})
+     */
     protected $value;
 
     /**

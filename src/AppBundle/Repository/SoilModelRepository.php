@@ -10,4 +10,18 @@ namespace AppBundle\Repository;
  */
 class SoilModelRepository extends \Doctrine\ORM\EntityRepository
 {
+    public function findByLayerId($layerId)
+    {
+        $query = $this->createQueryBuilder('sm')
+            ->leftJoin('sm.modelObjects', 'mo')
+            ->where('mo.id = :id')
+            ->setParameter('id', $layerId)
+            ->getQuery();
+
+        try {
+            return $query->getSingleResult();
+        } catch (\Doctrine\ORM\NoResultException $e) {
+            return null;
+        }
+    }
 }

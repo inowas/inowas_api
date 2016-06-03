@@ -14,6 +14,11 @@ class AreaTypeFactory
         return new AreaType();
     }
 
+    public static function create()
+    {
+        return new AreaType();
+    }
+
     public static function setName($name = "")
     {
         $areaType = new AreaType();

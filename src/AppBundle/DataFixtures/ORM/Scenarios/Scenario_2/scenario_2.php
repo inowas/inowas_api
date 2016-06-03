@@ -19,6 +19,7 @@ use AppBundle\Model\Point;
 use AppBundle\Model\SoilModelFactory;
 use AppBundle\Model\StressPeriod;
 use AppBundle\Model\StressPeriodFactory;
+use AppBundle\Model\WellFactory;
 use CrEOF\Spatial\DBAL\Platform\PostgreSql;
 use CrEOF\Spatial\DBAL\Types\AbstractSpatialType;
 use CrEOF\Spatial\PHP\Types\Geometry\LineString;
@@ -76,6 +77,44 @@ class LoadScenario_2 implements FixtureInterface, ContainerAwareInterface
             $user->setEnabled(true);
             $entityManager->persist($user);
         }
+
+        // Load PropertyTypes
+        $propertyTypeGwHead = $entityManager->getRepository('AppBundle:PropertyType')
+            ->findOneBy(array(
+                'abbreviation' => "hh"
+            ));
+
+        if (!$propertyTypeGwHead) {
+            return new NotFoundHttpException();
+        }
+
+        $propertyTypeTopElevation = $entityManager->getRepository('AppBundle:PropertyType')
+            ->findOneBy(array(
+                'abbreviation' => "et"
+            ));
+
+        if (!$propertyTypeTopElevation) {
+            return new NotFoundHttpException();
+        }
+
+        $propertyTypeBottomElevation = $entityManager->getRepository('AppBundle:PropertyType')
+            ->findOneBy(array(
+                'abbreviation' => "eb"
+            ));
+
+        if (!$propertyTypeBottomElevation) {
+            return new NotFoundHttpException();
+        }
+
+        $propertyTypePumpingRate = $entityManager->getRepository('AppBundle:PropertyType')
+            ->findOneBy(array(
+                'abbreviation' => "pur"
+            ));
+
+        if (!$propertyTypePumpingRate) {
+            return new NotFoundHttpException();
+        }
+
 
         // Create AreaType
         $areaType = AreaTypeFactory::setName('SC2_AT1');
@@ -256,42 +295,56 @@ class LoadScenario_2 implements FixtureInterface, ContainerAwareInterface
         foreach ($boreholes as $borehole)
         {
             echo "Persisting ".$borehole[0]."\r\n";
-            $geologicalPoint = GeologicalPointFactory::setOwnerNameAndPoint($user, $borehole[0], new Point($borehole[1], $borehole[2], 3857), $public);
+            $geologicalPoint = GeologicalPointFactory::create()
+                ->setOwner($user)
+                ->setName($borehole[0])
+                ->setPoint(new Point($borehole[1], $borehole[2], 3857))
+                ->setPublic($public);
             $entityManager->persist($geologicalPoint);
 
-            $geologicalUnit = GeologicalUnitFactory::setOwnerNameAndPublic($user, $borehole[0].'.1', $public);
-            $geologicalUnit->setTopElevation($borehole[3]);
-            $geologicalUnit->setBottomElevation($borehole[4]);
-            $geologicalPoint->addGeologicalUnit($geologicalUnit);
-            $entityManager->persist($geologicalUnit);
+            $geologicalUnit = GeologicalUnitFactory::create()
+                ->setOwner($user)
+                ->setName($borehole[0].'.1')
+                ->setPublic($public)
+                ->addValue($propertyTypeTopElevation, PropertyValueFactory::create()->setValue($borehole[3]))
+                ->addValue($propertyTypeBottomElevation, PropertyValueFactory::create()->setValue($borehole[4]));
 
+            $geologicalPoint->addGeologicalUnit($geologicalUnit);
             $layer_1->addGeologicalUnit($geologicalUnit);
             $entityManager->persist($layer_1);
 
-            $geologicalUnit = GeologicalUnitFactory::setOwnerNameAndPublic($user, $borehole[0].'.2', $public);
-            $geologicalUnit->setTopElevation($borehole[4]);
-            $geologicalUnit->setBottomElevation($borehole[5]);
+            $geologicalUnit = GeologicalUnitFactory::create()
+                ->setOwner($user)
+                ->setName($borehole[0].'.2')
+                ->setPublic($public)
+                ->addValue($propertyTypeTopElevation, PropertyValueFactory::create()->setValue($borehole[4]))
+                ->addValue($propertyTypeBottomElevation, PropertyValueFactory::create()->setValue($borehole[5]));
+
             $geologicalPoint->addGeologicalUnit($geologicalUnit);
-            $entityManager->persist($geologicalUnit);
             $layer_2->addGeologicalUnit($geologicalUnit);
             $entityManager->persist($layer_2);
 
-            $geologicalUnit = GeologicalUnitFactory::setOwnerNameAndPublic($user, $borehole[0].'.3', $public);
-            $geologicalUnit->setTopElevation($borehole[5]);
-            $geologicalUnit->setBottomElevation($borehole[6]);
+            $geologicalUnit = GeologicalUnitFactory::create()
+                ->setOwner($user)
+                ->setName($borehole[0].'.3')
+                ->setPublic($public)
+                ->addValue($propertyTypeTopElevation, PropertyValueFactory::create()->setValue($borehole[5]))
+                ->addValue($propertyTypeBottomElevation, PropertyValueFactory::create()->setValue($borehole[6]));
+
             $geologicalPoint->addGeologicalUnit($geologicalUnit);
-            $entityManager->persist($geologicalUnit);
             $layer_3->addGeologicalUnit($geologicalUnit);
             $entityManager->persist($layer_3);
 
-            $geologicalUnit = GeologicalUnitFactory::setOwnerNameAndPublic($user, $borehole[0].'.4', $public);
-            $geologicalUnit->setTopElevation($borehole[6]);
-            $geologicalUnit->setBottomElevation($borehole[7]);
+            $geologicalUnit = GeologicalUnitFactory::create()
+                ->setOwner($user)
+                ->setName($borehole[0].'.4')
+                ->setPublic($public)
+                ->addValue($propertyTypeTopElevation, PropertyValueFactory::create()->setValue($borehole[6]))
+                ->addValue($propertyTypeBottomElevation, PropertyValueFactory::create()->setValue($borehole[7]));
+
             $geologicalPoint->addGeologicalUnit($geologicalUnit);
-            $entityManager->persist($geologicalUnit);
             $layer_4->addGeologicalUnit($geologicalUnit);
             $entityManager->persist($layer_4);
-
             $soilModel->addGeologicalPoint($geologicalPoint);
             $entityManager->flush();
         }
@@ -354,7 +407,7 @@ class LoadScenario_2 implements FixtureInterface, ContainerAwareInterface
             $entityManager->persist($geologicalLayer);
             $entityManager->flush();
         }
-        
+
         // Add properties to Geological Units
         /**
          * geologicalunit-properties
@@ -737,24 +790,24 @@ class LoadScenario_2 implements FixtureInterface, ContainerAwareInterface
                 echo 'Add properties to '.$geologicalUnit->getName()."\n";
 
                 $propertyType = $this->getPropertyType($this->entityManager, 'hc');
-                $property = PropertyFactory::setTypeAndModelObject($propertyType, $geologicalUnit);
-                $propertyValue = PropertyValueFactory::setPropertyAndValue($property, $geologicalUnitProperty[1]);
+                $property = PropertyFactory::create()->setPropertyType($propertyType);
+                $propertyValue = PropertyValueFactory::create()->setValue($geologicalUnitProperty[1]);
                 $property->setName('Hydraulic conductivity'.' '.$geologicalUnit->getName());
                 $property->addValue($propertyValue);
                 $geologicalUnit->addProperty($property);
                 $this->entityManager->persist($property);
 
                 $propertyType = $this->getPropertyType($this->entityManager, 'ha');
-                $property = PropertyFactory::setTypeAndModelObject($propertyType, $geologicalUnit);
-                $propertyValue = PropertyValueFactory::setPropertyAndValue($property, $geologicalUnitProperty[2]);
+                $property = PropertyFactory::create()->setPropertyType($propertyType);
+                $propertyValue = PropertyValueFactory::create()->setValue($geologicalUnitProperty[2]);
                 $property->setName('Horizontal anisotropy'.' '.$geologicalUnit->getName());
                 $property->addValue($propertyValue);
                 $geologicalUnit->addProperty($property);
                 $this->entityManager->persist($property);
 
                 $propertyType = $this->getPropertyType($this->entityManager, 'va');
-                $property = PropertyFactory::setTypeAndModelObject($propertyType, $geologicalUnit);
-                $propertyValue = PropertyValueFactory::setPropertyAndValue($property, $geologicalUnitProperty[3]);
+                $property = PropertyFactory::create()->setPropertyType($propertyType);
+                $propertyValue = PropertyValueFactory::create()->setValue($geologicalUnitProperty[3]);
                 $property->setName('Vertical anisotropy'.' '.$geologicalUnit->getName());
                 $property->addValue($propertyValue);
                 $geologicalUnit->addProperty($property);
@@ -821,6 +874,149 @@ class LoadScenario_2 implements FixtureInterface, ContainerAwareInterface
             $filename = 'scenario_2_observationPoint_'.str_replace('SC2_', '', $observationPoint->getName()).'_properties.csv';
             $this->addModelObjectPropertiesFromCSVFile($observationPoint, __DIR__.'/'.$filename, ';');
         }
+
+        $wells = array(
+            array(1, 'CD10', 11777809.79499545693397522, 2401995.67269986681640148, -30, -60, 4320, -4900, 11777809.79, 2401995.67),
+            array(2, 'CD11', 11778088.30947495624423027, 2401994.25986256683245301, -30, -60, 4320, -4900, 11778088.31, 2401994.26),
+            array(3, 'CD12', 11778345.50155015662312508, 2401992.95128001738339663, -30, -60, 4320, -4100, 11778345.5, 2401992.95),
+            array(4, 'CD13', 11778881.09251317754387856, 2401990.21416973834857345, -30, -60, 4320, -4000, 11778881.09, 2401990.21),
+            array(5, 'CD17', 11780226.6936198603361845, 2401185.61681587109342217, -30, -60, 4320, -4900, 11780226.69, 2401185.62),
+            array(6, 'CD18', 11780226.6936198603361845, 2401185.61681587109342217, -30, -60, 4320, -4900, 11780226.69, 2401185.62),
+            array(7, 'CD19', 11780482.3135919813066721, 2400904.04203267069533467, -30, -60, 4320, -4900, 11780482.31, 2400904.04),
+            array(8, 'CD20', 11780482.3135919813066721, 2400904.04203267069533467, -30, -60, 4320, -4900, 11780482.31, 2400904.04),
+            array(9, 'CD7', 11777017.11587653681635857, 2401999.66968260146677494, -30, -60, 4320, -4900, 11777017.12, 2401999.67),
+            array(10, 'CD8', 11777274.20259966887533665, 2401998.3772620651870966, -30, -60, 4320, -4900, 11777274.2, 2401998.38),
+            array(11, 'CD9', 11777552.71745001152157784, 2401996.97288660053163767, -30, -60, 4320, -4900, 11777552.72, 2401996.97),
+            array(12, 'HDI10', 11778803.9348050132393837, 2389919.65258358465507627, -40, -70, 4320, -2800, 11778803.93, 2389919.65),
+            array(13, 'HDI13', 11778287.28281443752348423, 2390424.27275150641798973, -40, -70, 4320, -2800, 11778287.28, 2390424.27),
+            array(14, 'HDI5', 11778565.60789936594665051, 2390422.85955950664356351, -40, -70, 4320, -2800, 11778565.61, 2390422.86),
+            array(15, 'HDI6', 11778628.7308922503143549, 2390196.31113039888441563, -40, -70, 4320, -2800, 11778628.73, 2390196.31),
+            array(16, 'HDI7', 11778821.00705778226256371, 2390119.93042483413591981, -40, -70, 4320, -2800, 11778821.01, 2390119.93),
+            array(17, 'HDI8', 11778822.20144898630678654, 2390356.91003846284002066, -40, -70, 4320, -2800, 11778822.2, 2390356.91),
+            array(18, 'KGIANG1', 11779098.08642016164958477, 2389956.93314105411991477, -32.27, -68.83, 4320, -3000, 11779098.09, 2389956.93),
+            array(19, 'KTN42', 11777146.73212774097919464, 2402246.94875892251729965, -39.88, -66.35, 4320, -80, 11777146.73, 2402246.95),
+            array(20, 'KTN80', 11787797.60370349697768688, 2391202.97728021768853068, -32.19, -88.36, 4320, -600, 11787797.6, 2391202.98),
+            array(21, 'LN1', 11787613.29082772321999073, 2386865.27748037222772837, -40, -70, 4320, -2135, 11787613.29, 2386865.28),
+            array(22, 'LN10', 11788726.25647358968853951, 2388753.58681372459977865, -40, -70, 4320, -2135, 11788726.26, 2388753.59),
+            array(23, 'LN11', 11788984.59457647800445557, 2389010.63655604887753725, -40, -70, 4320, -2135, 11788984.59, 2389010.64),
+            array(24, 'LN12', 11788984.59457647800445557, 2389010.63655604887753725, -40, -70, 4320, -2135, 11788984.59, 2389010.64),
+            array(25, 'LN13', 11788986.16430903784930706, 2389290.6827991041354835, -40, -70, 4320, -2135, 11788986.16, 2389290.68),
+            array(26, 'LN14', 11789267.49526369944214821, 2389826.59154414804652333, -40, -70, 4320, -2135, 11789267.5, 2389826.59),
+            array(27, 'LN15', 11788989.17762009054422379, 2389828.17262880643829703, -40, -70, 4320, -2135, 11788989.18, 2389828.17),
+            array(28, 'LN16', 11788990.6272040531039238, 2390086.69249562220647931, -40, -70, 4320, -2135, 11788990.63, 2390086.69),
+            array(29, 'LN2', 11787347.26407890021800995, 2387145.71913112327456474, -40, -70, 4320, -2135, 11787347.26, 2387145.72),
+            array(30, 'LN20', 11788459.96383132226765156, 2390908.39469485450536013, -40, -70, 4320, -2135, 11788459.96, 2390908.39),
+            array(31, 'LN21', 11788203.05212100967764854, 2390909.84320783708244562, -40, -70, 4320, -2135, 11788203.05, 2390909.84),
+            array(32, 'LN22', 11788204.4910411573946476, 2391168.37900674156844616, -40, -70, 4320, -2135, 11788204.49, 2391168.38),
+            array(33, 'LN23', 11787638.65069332718849182, 2391451.64576283935457468, -40, -70, 4320, -2135, 11787638.65, 2391451.65),
+            array(34, 'LN24', 11787638.65069332718849182, 2391451.64576283935457468, -40, -70, 4320, -2135, 11787638.65, 2391451.65),
+            array(35, 'LN25', 11787372.4459209144115448, 2391711.6866044644266367, -40, -70, 4320, -2135, 11787372.45, 2391711.69),
+            array(36, 'LN3', 11787350.23137721605598927, 2387684.22437982214614749, -40, -70, 4320, -2135, 11787350.23, 2387684.22),
+            array(37, 'LN6', 11787906.80211838521063328, 2387681.1122775818221271, -40, -70, 4320, -2135, 11787906.8, 2387681.11),
+            array(38, 'LN7', 11787908.23473594710230827, 2387939.60222975071519613, -40, -70, 4320, -2135, 11787908.23, 2387939.6),
+            array(39, 'LN8', 11788188.08032611012458801, 2388218.06966029526665807, -40, -70, 4320, -2135, 11788188.08, 2388218.07),
+            array(40, 'LN9', 11788724.69117069430649281, 2388473.54868405824527144, -40, -70, 4320, -2135, 11788724.69, 2388473.55),
+            array(41, 'LY10', 11785599.57843398675322533, 2392497.18166037555783987, -40, -70, 4320, -3125, 11785599.58, 2392497.18),
+            array(42, 'LY11', 11785534.08516378700733185, 2392271.29036100627854466, -40, -70, 4320, -3125, 11785534.09, 2392271.29),
+            array(43, 'LY12', 11785258.63217497803270817, 2392810.39757040143013, -40,-70, 4320, -3125, 11785258.63, 2392810.4),
+            array(44, 'LY13', 11785536.99871129170060158, 2392808.87313925800845027, -40, -70, 4320,- 3125,11785537, 2392808.87),
+            array(45, 'LY14', 11785791.0269112978130579, 2392269.8797018863260746, -40, -70, 4320, -3125, 11785791.03, 2392269.88),
+            array(46, 'LY15', 11785324.00764934346079826, 2393014.74322587111964822, -40, -70, 4320, -3125, 11785324.01, 2393014.74),
+            array(47, 'LY16', 11785228.59817047603428364, 2393198.42720729578286409, -40, -70, 4320, -3125, 11785228.6, 2393198.43),
+            array(48, 'LY17', 11785133.36124992743134499, 2393414.42730379290878773, -40, -70, 4320, -3125, 11785133.36, 2393414.43),
+            array(49, 'LY3', 11784735.13751051388680935, 2393017.95607117516919971, -40, -70, 4320, -3125, 11784735.14, 2393017.96),
+            array(50, 'LY4', 11784840.97543985024094582, 2392801.90504860132932663, -40, -70, 4320, -3125, 11784840.98, 2392801.91),
+            array(51, 'LY5', 11784863.37823952175676823, 2392984.94311415310949087, -40, -70, 4320, -3125, 11784863.38, 2392984.94),
+            array(52, 'LY6', 11784563.76478518545627594, 2393018.88738845149055123, -40, -70, 4320, -3125, 11784563.76, 2393018.89),
+            array(53, 'LY7', 11784734.03711271658539772, 2392813.25852541066706181, -40, -70, 4320, -3125, 11784734.04, 2392813.26),
+            array(54, 'LY8', 11784562.60855001211166382, 2392803.41852059355005622, -40, -70, 4320, -3125, 11784562.61, 2392803.42),
+            array(55, 'LY9', 11785536.99871129170060158, 2392808.87313925800845027, -40, -70, 4320,- 3125,11785537, 2392808.87),
+            array(56, 'MD7', 11775916.97566106915473938, 2396090.40221136016771197, -40, -70, 4320, -2500, 11775916.98, 2396090.4),
+            array(57, 'MD8', 11775639.81231772527098656, 2396350.39451547199860215, -40, -70, 4320, -2500, 11775639.81, 2396350.39),
+            array(58, 'MD9', 11775641.17792554758489132, 2396630.57373226108029485, -40, -70, 4320, -2500, 11775641.18, 2396630.57),
+            array(59, 'NH10', 11778853.89063355140388012, 2396614.43721777061000466, -40, -70, 4320, -3333, 11778853.89, 2396614.44),
+            array(60, 'NH11', 11778595.36439158022403717, 2396335.5729674156755209, -40, -70, 4320, -3333, 11778595.36, 2396335.57),
+            array(61, 'NH12', 11778852.47466489300131798, 2396334.26022379705682397, -40, -70, 4320, -3333, 11778852.47, 2396334.26),
+            array(62, 'NH13', 11779390.52857245318591595, 2396870.31426244927570224, -40, -70, 4320, -3333, 11779390.53, 2396870.31),
+            array(63, 'NH14', 11779133.52573507465422153, 2396871.6345574907027185, -40, -70, 4320, -3333, 11779133.53, 2396871.63),
+            array(64, 'NH4', 11779321.49263433180749416, 2395997.80848255380988121, -40, -70, 4320, -3333, 11779321.49, 2395997.81),
+            array(65, 'NH5', 11779215.84146180190145969, 2396203.09262026753276587, -40, -70, 4320, -3333, 11779215.84, 2396203.09),
+            array(66, 'NH6', 11779130.79418394342064857, 2396332.83497229684144258, -40, -70, 4320, -3333, 11779130.79, 2396332.83),
+            array(67, 'NH7', 11779132.21451539173722267, 2396613.01176991406828165, -40, -70, 4320, -3333, 11779132.21, 2396613.01),
+            array(68, 'NH8', 11778851.16781957447528839, 2396075.64495939249172807, -40, -70, 4320, -3333, 11778851.17, 2396075.64),
+            array(69, 'NH9', 11778856.61411543004214764, 2397153.23475438728928566, -40, -70, 4320, -3333, 11778856.61, 2397153.23),
+            array(70, 'NSL14', 11782118.79915492050349712, 2394335.68804973131045699, -40, -70, 4320, -4545, 11782118.8, 2394335.69),
+            array(71, 'NSL16', 11781778.66265136003494263, 2394800.80602123867720366, -40, -70, 4320, -4545, 11781778.66, 2394800.81),
+            array(72, 'NSL17', 11781745.51815875805914402, 2394607.02874239487573504, -40, -70, 4320, -4545, 11781745.52, 2394607.03),
+            array(73, 'NSL18', 11782066.36777259036898613, 2394529.91463655466213822, -40, -70, 4320, -4545, 11782066.37, 2394529.91),
+            array(74, 'NSL21', 11782142.87746953777968884, 2394841.98270549112930894, -40, -70, 4320, -4545, 11782142.88, 2394841.98),
+            array(75, 'NSL22', 11781684.6754087470471859, 2395264.62336773658171296, -40, -70, 4320, -4545, 11781684.68, 2395264.62),
+            array(76, 'NSL23', 11781800.94027045369148254, 2394983.85897833714261651, -40, -70, 4320, -4545, 11781800.94, 2394983.86),
+            array(77, 'NSL24', 11781744.39507952891290188, 2394391.53954998357221484, -40, -70, 4320, -4545, 11781744.4, 2394391.54),
+            array(78, 'NSL25', 11781850.61456234194338322, 2394240.13197004934772849, -40, -70, 4320, -4545, 11781850.61, 2394240.13),
+            array(79, 'NSL27', 11781928.57555761933326721, 2394810.78727500885725021, -40, -70, 4320, -4545, 11781928.58, 2394810.79),
+            array(80, 'NSL9', 11782142.08785763010382652, 2394691.13602665718644857, -40, -70, 4320, -4545, 11782142.09, 2394691.14),
+            array(81, 'PV1', 11782822.18435899540781975, 2387590.4185093673877418, -40, -70, 4320, -2808, 11782822.18, 2387590.42),
+            array(82, 'PV2', 11782821.33491864986717701, 2387428.86434731679037213, -40, -70, 4320, -2808, 11782821.33, 2387428.86),
+            array(83, 'PV3', 11782906.42668719962239265, 2387342.24314445350319147, -40, -70, 4320, -2808, 11782906.43, 2387342.24),
+            array(84, 'PV6', 11783090.38631781563162804, 2387707.46468133293092251, -40, -70, 4320, -2808, 11783090.39, 2387707.46),
+            array(85, 'PV7', 11783089.13685310818254948, 2387470.51122804777696729, -40, -70, 4320, -2808, 11783089.14, 2387470.51),
+            array(86, 'TM10', 11783188.79112967662513256, 2390140.21012788079679012, -45, -75, 4320, -3125, 11783188.79, 2390140.21),
+            array(87, 'TM11', 11783639.82684437558054924, 2390396.32815032452344894, -45, -75, 4320, -3125, 11783639.83, 2390396.33),
+            array(88, 'TM14', 11783641.19957356713712215, 2390654.85946180252358317, -45, -75, 4320, -3125, 11783641.2, 2390654.86),
+            array(89, 'TM15', 11783916.66560793109238148, 2390114.75327363051474094, -45, -75, 4320, -3125, 11783916.67, 2390114.75),
+            array(90, 'TM16', 11783337.80219421535730362, 2389967.06175833381712437, -45, -75, 4320, -3125, 11783337.8, 2389967.06),
+            array(91, 'TM18', 11783670.46493076905608177, 2390116.07785767177119851, -45, -75, 4320, -3125, 11783670.46, 2390116.08),
+            array(92, 'TM19', 11783918.15691797249019146, 2390394.83077630028128624, -45, -75, 4320, -3125, 11783918.16, 2390394.83),
+            array(93, 'TM8', 11783381.43655735999345779, 2390117.62849007733166218, -45, -75, 4320, -3125, 11783381.44, 2390117.63),
+            array(94, 'UCF22', 11783788.51202009432017803, 2390120.82815810898318887, -2.96, -19.94, 4320, -360, 11783788.51, 2390120.83),
+            array(95, 'YP10', 11782881.68859566561877728, 2396852.00869912700727582, -45, -75, 4320, -4400, 11782881.69, 2396852.01),
+            array(96, 'YP12', 11783141.60782415792346001, 2397400.20711772469803691, -45, -75, 4320, -4400, 11783141.61, 2397400.21),
+            array(97, 'YP15', 11782885.9567362554371357, 2397660.21421966049820185, -45, -75, 4320, -4400, 11782885.96, 2397660.21),
+            array(98, 'YP16', 11782884.59073513932526112, 2397401.58236767631024122, -45, -75, 4320, -4400, 11782884.59, 2397401.58),
+            array(99, 'YP17', 11783141.60782415792346001, 2397400.20711772469803691, -45, -75, 4320, -4400, 11783141.61, 2397400.21),
+            array(100, 'YP18', 11782606.15094231255352497, 2397403.06802417244762182, -45, -75, 4320, -4400, 11782606.15, 2397403.07),
+            array(101, 'YP19', 11782883.16801407374441624, 2397132.18036714708432555, -45, -75, 4320, -4400, 11782883.17, 2397132.18),
+            array(102, 'YP20', 11782604.73241920955479145, 2397133.66582690924406052, -45, -75, 4320, -4400, 11782604.73, 2397133.67),
+            array(103, 'YP22', 11782349.14232590608298779, 2397404.4354342189617455, -45, -75, 4320, -4400, 11782349.14, 2397404.44),
+            array(104, 'YP26', 11783141.60782415792346001, 2397400.20711772469803691, -45, -75, 4320, -4400, 11783141.61, 2397400.21),
+            array(105, 'YP27', 11783140.18122811987996101, 2397130.80529930861666799, -45, -75, 4320, -4400, 11783140.18, 2397130.81),
+            array(106, 'YP29', 11782607.5129128210246563, 2397661.7000650349073112, -45, -75, 4320, -4400, 11782607.51, 2397661.7),
+            array(107, 'YP30', 11782885.9567362554371357, 2397660.21421966049820185, -45, -75, 4320, -4400, 11782885.96, 2397660.21),
+            array(108, 'YP31', 11782353.32513551786541939, 2398200.81470863055437803, -45, -75, 4320, -4400, 11782353.33, 2398200.81),
+            array(109, 'YP32', 11782353.32513551786541939, 2398200.81470863055437803, -45, -75, 4320, -4400, 11782353.33, 2398200.81),
+            array(110, 'YP33', 11782354.79713419266045094, 2398481.00762987695634365, -45, -75, 4320, -4400, 11782354.8, 2398481.01),
+            array(111, 'YP34', 11782077.69510736502707005, 2398741.13343313755467534, -45, -75, 4320, -4400, 11782077.7, 2398741.13),
+            array(112, 'YP35', 11782077.69510736502707005, 2398741.13343313755467534, -45, -75, 4320, -4400, 11782077.7, 2398741.13),
+            array(113, 'YP36', 11781727.0486772432923317, 2399281.86090355273336172, -45, -75, 4320, -4400, 11781727.05, 2399281.86),
+            array(114, 'YP37', 11781822.13090667873620987, 2399022.69560982333496213, -45, -75, 4320, -4400, 11781822.13, 2399022.7),
+            array(115, 'YP38', 11781822.13090667873620987, 2399022.69560982333496213, -45, -75, 4320, -4400, 11781822.13, 2399022.7),
+            array(116, 'YP39', 11781546.47275182791054249, 2399563.04242969118058681, -45, -75, 4320, -4400, 11781546.47, 2399563.04),
+            array(117, 'YP40', 11781375.76468020677566528, 2399704.0468372106552124, -45, -75, 4320, -4400, 11781375.76, 2399704.05),
+            array(118, 'YP41', 11781130.26916185207664967, 2399867.00588304502889514, -45, -75, 4320, -4400, 11781130.27, 2399867.01),
+            array(119, 'YP42', 11780758.02947362139821053, 2400364.75818847771733999, -45, -75, 4320, -4400, 11780758.03, 2400364.76)
+        );
+
+        $header = array('id', 'name', 'wkt_x', 'wkt_y', 'ztop', 'zbot', 'stoptime', 'pumpingrate', 'x', 'y');
+        foreach ($wells as $row) {
+            $well = array_combine($header, $row);
+
+            $model->addWell(WellFactory::create()
+                ->setOwner($user)
+                ->setName($well['name'])
+                ->setPublic($public)
+                ->setPoint(new Point($well['x'], $well['y'], 3857))
+                ->addValue($propertyTypeTopElevation, PropertyValueFactory::create()->setValue($well['ztop']))
+                ->addValue($propertyTypeBottomElevation, PropertyValueFactory::create()->setValue($well['zbot']))
+                ->addValue($propertyTypePumpingRate, PropertyValueFactory::create()->setValue($well['pumpingrate']))
+            );
+
+            $this->entityManager->persist($model);
+            $this->entityManager->flush();
+        }
+
+
+        return 1;
     }
 
 
@@ -839,18 +1035,12 @@ class LoadScenario_2 implements FixtureInterface, ContainerAwareInterface
         for ($i = 1; $i <= $elementCount; $i++)
         {
             $propertyTypeName = $dataFields[$i];
-
             $propertyType = $this->getPropertyType($this->entityManager, $propertyTypeName);
-            $property = PropertyFactory::setTypeAndModelObject($propertyType, $baseElement);
-            $property->setName($propertyTypeName);
-            $this->entityManager->persist($property);
-            $this->entityManager->flush();
 
             foreach ($data as $dataPoint)
             {
-                $propertyTimeValue = PropertyTimeValueFactory::setPropertyDateTimeAndValue($property, new \DateTime($dataPoint[$dataFields[0]]), (float)$dataPoint[$dataFields[$i]]);
-                $property->addValue($propertyTimeValue);
-                $this->entityManager->persist($property);
+                $propertyTimeValue = PropertyTimeValueFactory::setDateTimeAndValue(new \DateTime($dataPoint[$dataFields[0]]), (float)$dataPoint[$dataFields[$i]]);
+                $baseElement->addValue($propertyType, $propertyTimeValue);
                 $this->entityManager->persist($propertyTimeValue);
 
                 echo $counter++."\n";
@@ -861,7 +1051,6 @@ class LoadScenario_2 implements FixtureInterface, ContainerAwareInterface
                 }
             }
 
-            $this->entityManager->persist($property);
             $this->entityManager->flush();
         }
     }

@@ -71,7 +71,12 @@ rest_soilmodels:
     prefix: /api
     resource: AppBundle\Controller\SoilModelRestController
 
-rest_user_stream:
+rest_stream:
     type: rest
     prefix: /api
     resource: AppBundle\Controller\StreamRestController
+
+rest_well_boundary:
+    type: rest
+    prefix: /api
+    resource: AppBundle\Controller\WellRestController

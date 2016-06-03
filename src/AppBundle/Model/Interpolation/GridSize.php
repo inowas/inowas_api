@@ -2,10 +2,24 @@
 
 namespace AppBundle\Model\Interpolation;
 
+use JMS\Serializer\Annotation as JMS;
+
+/**
+ * Class GridSize
+ * @package AppBundle\Model\Interpolation
+ */
 class GridSize
 {
+    /**
+     * @var int
+     * @JMS\Groups({"modeldetails", "modelobjectdetails", "interpolation", "rasterdetails"})
+     */
     protected $nX;
 
+    /**
+     * @var int
+     * @JMS\Groups({"modeldetails", "modelobjectdetails", "interpolation", "rasterdetails"})
+     */
     protected $nY;
 
     public function __construct($nX = 0, $nY = 0)

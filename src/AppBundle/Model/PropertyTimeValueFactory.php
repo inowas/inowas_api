@@ -2,7 +2,6 @@
 
 namespace AppBundle\Model;
 
-use AppBundle\Entity\Property;
 use AppBundle\Entity\PropertyTimeValue;
 
 class PropertyTimeValueFactory
@@ -16,15 +15,13 @@ class PropertyTimeValueFactory
     }
 
     /**
-     * @param Property $property
      * @param \DateTime $timestamp
      * @param $value
      * @return PropertyTimeValue
      */
-    public static function setPropertyDateTimeAndValue(Property $property, \DateTime $timestamp, $value)
+    public static function setDateTimeAndValue(\DateTime $timestamp, $value)
     {
         $ptv = new PropertyTimeValue();
-        $ptv->setProperty($property);
         $ptv->setTimeStamp($timestamp);
         $ptv->setValue($value);
 

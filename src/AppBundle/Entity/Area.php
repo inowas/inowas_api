@@ -2,6 +2,7 @@
 
 namespace AppBundle\Entity;
 
+use AppBundle\Model\Interpolation\BoundingBox;
 use CrEOF\Spatial\PHP\Types\Geometry\Polygon;
 use Doctrine\ORM\Mapping as ORM;
 use JMS\Serializer\Annotation as JMS;
@@ -9,7 +10,6 @@ use JMS\Serializer\Annotation as JMS;
 /**
  * @ORM\Entity()
  * @ORM\Table(name="areas")
- * @ORM\HasLifecycleCallbacks()
  */
 class Area extends ModelObject
 {
@@ -37,7 +37,7 @@ class Area extends ModelObject
     /**
      * @var AreaType
      *
-     * @ORM\ManyToOne(targetEntity="AppBundle\Entity\AreaType")
+     * @ORM\ManyToOne(targetEntity="AppBundle\Entity\AreaType", cascade={"persist", "remove"})
      * @JMS\Groups({"list", "details", "modelobjectdetails", "modeldetails"})
      */
     private $areaType;
@@ -52,11 +52,14 @@ class Area extends ModelObject
 
     /**
      * @param Polygon $geometry
+     * @return $this
      */
     public function setGeometry(Polygon $geometry)
     {
         $this->geometry = $geometry;
         $this->rings = $geometry->toArray();
+
+        return $this;
     }
 
     /**
@@ -109,5 +112,44 @@ class Area extends ModelObject
             $polygons = $new;
         }
         return $polygons;
+    }
+
+    /**
+     * 
+     */
+    public function getBoundingBox()
+    {
+        if (is_null($this->geometry)) {
+            return new BoundingBox();
+        }
+        
+        $rings = $this->geometry->toArray();
+        $points = $rings[0];
+
+        $xMin = $points[0][0];
+        $xMax = $points[0][0];
+        $yMin = $points[0][1];
+        $yMax = $points[0][1];
+
+        foreach ($points as $point)
+        {
+            if ($point[0]<$xMin) {
+                $xMin =  $point[0];
+            }
+
+            if ($point[0]>$xMax) {
+                $xMax = $point[0];
+            }
+
+            if ($point[1]<$yMin) {
+                $yMin = $point[1];
+            }
+
+            if ($point[1]>$yMax) {
+                $yMax = $point[1];
+            }
+        }
+
+        return new BoundingBox($xMin, $xMax, $yMin, $yMax);
     }
 }

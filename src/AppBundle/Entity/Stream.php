@@ -11,7 +11,7 @@ use JMS\Serializer\Annotation as JMS;
  * @ORM\Entity()
  * @ORM\Table(name="streams")
  */
-class Stream extends ModelObject
+class Stream extends BoundaryModelObject
 {
     /**
      * @var string
