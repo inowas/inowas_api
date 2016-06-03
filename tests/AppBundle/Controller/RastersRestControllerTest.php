@@ -75,6 +75,50 @@ class RasterRestControllerTest extends WebTestCase
         ;
     }
 
+    public function testGetRasterById()
+    {
+        $this->entityManager->persist($this->raster);
+        $this->entityManager->flush();
+
+        $client = static::createClient();
+        $client->request('GET', '/api/rasters/'.$this->raster->getId().'.json');
+        $this->assertEquals(200, $client->getResponse()->getStatusCode());
+        $raster = json_decode($client->getResponse()->getContent());
+        $this->assertObjectHasAttribute('id', $raster);
+        $this->assertEquals($this->raster->getId(), $raster->id);
+        
+        $this->assertObjectHasAttribute('grid_size', $raster);
+        $gridSize = $raster->grid_size;
+        $this->assertObjectHasAttribute('n_x', $gridSize);
+        $this->assertEquals($this->raster->getGridSize()->getNX(), $gridSize->n_x);
+        $this->assertObjectHasAttribute('n_y', $gridSize);
+        $this->assertEquals($this->raster->getGridSize()->getNY(), $gridSize->n_y);
+
+
+        $this->assertObjectHasAttribute('bounding_box', $raster);
+        $boundingBox = $raster->bounding_box;
+        $this->assertObjectHasAttribute('x_min', $boundingBox);
+        $this->assertEquals($this->raster->getBoundingBox()->getXMin(), $boundingBox->x_min);
+        $this->assertObjectHasAttribute('x_max', $boundingBox);
+        $this->assertEquals($this->raster->getBoundingBox()->getXMax(), $boundingBox->x_max);
+        $this->assertObjectHasAttribute('y_min', $boundingBox);
+        $this->assertEquals($this->raster->getBoundingBox()->getYMin(), $boundingBox->y_min);
+        $this->assertObjectHasAttribute('y_max', $boundingBox);
+        $this->assertEquals($this->raster->getBoundingBox()->getYMax(), $boundingBox->y_max);
+        $this->assertObjectHasAttribute('srid', $boundingBox);
+        $this->assertEquals($this->raster->getBoundingBox()->getSrid(), $boundingBox->srid);
+
+
+        $this->assertObjectHasAttribute('no_data_val', $raster);
+        $this->assertEquals($this->raster->getNoDataVal(), $raster->no_data_val);
+
+        $this->assertObjectHasAttribute('data', $raster);
+        $this->assertEquals($this->raster->getData(), $raster->data);
+
+        $this->assertObjectHasAttribute('description', $raster);
+        $this->assertEquals($this->raster->getDescription(), $raster->description);
+    }
+
     public function testPostResult()
     {
         $this->entityManager->persist($this->area);
