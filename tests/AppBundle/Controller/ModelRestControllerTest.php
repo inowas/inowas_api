@@ -11,11 +11,13 @@ use AppBundle\Entity\SoilModel;
 use AppBundle\Entity\User;
 use AppBundle\Model\GeologicalLayerFactory;
 use AppBundle\Model\ModFlowModelFactory;
+use AppBundle\Model\Point;
 use AppBundle\Model\PropertyFactory;
 use AppBundle\Model\PropertyTypeFactory;
 use AppBundle\Model\PropertyValueFactory;
 use AppBundle\Model\SoilModelFactory;
 use AppBundle\Model\UserFactory;
+use AppBundle\Model\WellFactory;
 use JMS\Serializer\Serializer;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
@@ -107,6 +109,15 @@ class ModelRestControllerTest extends WebTestCase
         $this->modFlowModel->setSoilModel($this->soilModel);
         $this->entityManager->persist($this->modFlowModel);
         $this->entityManager->flush();
+
+        $this->modFlowModel->addWell(WellFactory::create()
+            ->setPoint(new Point(10, 11, 12))
+            ->setName('Well1')
+            ->setPublic(true)
+            ->setOwner($this->owner)
+        );
+        $this->entityManager->persist($this->modFlowModel);
+        $this->entityManager->flush();
     }
 
     /**
@@ -147,6 +158,16 @@ class ModelRestControllerTest extends WebTestCase
         $this->assertEquals($this->soilModel->getId(), $modFlowModel->soil_model->id);
         $this->assertCount(1, $modFlowModel->soil_model->geological_layers);
         $this->assertEquals($this->layer->getId(), $modFlowModel->soil_model->geological_layers[0]->id);
+    }
+
+    public function testGetModflowModelWellsDetailsAPI()
+    {
+        $client = static::createClient();
+        $client->request('GET', '/api/modflowmodels/'.$this->modFlowModel->getId().'/wells.json');
+
+        $this->assertEquals(200, $client->getResponse()->getStatusCode());
+        $wells = json_decode($client->getResponse()->getContent());
+        $this->assertCount(1, $wells);
     }
 
     /**

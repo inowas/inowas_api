@@ -127,4 +127,68 @@ class ModelRestController extends FOSRestController
 
         return $view;
     }
+
+    /**
+     * Returns a list of all Wells by ModflowModel-Id
+     *
+     * @ApiDoc(
+     *   resource = true,
+     *   description = "Returns a list of all Wells by ModflowModel-Id.",
+     *   statusCodes = {
+     *     200 = "Returned when successful",
+     *     404 = "Returned when the ModflowModel is not found"
+     *   }
+     * )
+     *
+     * @param $modelId
+     *
+     * @return View
+     */
+    public function getModflowmodelWellsAction($modelId)
+    {
+
+        if ($this->isGranted('ROLE_ADMIN'))
+        {
+            $model = $this->getDoctrine()
+                ->getRepository('AppBundle:ModFlowModel')
+                ->findOneBy(array(
+                    'id' => $modelId
+                ));
+        } elseif ($this->isGranted('ROLE_USER'))
+        {
+            $model = $this->getDoctrine()
+                ->getRepository('AppBundle:ModFlowModel')
+                ->findOneBy(array(
+                    'id' => $modelId,
+                    'owner' => $this->getUser()
+                ));
+        } else
+        {
+            $model = $this->getDoctrine()
+                ->getRepository('AppBundle:ModFlowModel')
+                ->findOneBy(array(
+                    'id' => $modelId,
+                    'public' => true
+                ));
+        }
+
+        if (!$model) {
+            throw $this->createNotFoundException('Model not found.');
+        }
+
+        $wells = $model->getWells();
+
+        $serializationContext = SerializationContext::create();
+        $serializationContext->setGroups('modelobjectdetails');
+
+        $view = View::create();
+        $view->setData($wells)
+            ->setStatusCode(200)
+            ->setSerializationContext($serializationContext)
+        ;
+
+        return $view;
+    }
+
+
 }
