@@ -12,7 +12,7 @@ use JMS\Serializer\Annotation as JMS;
  * @ORM\Table(name="geological_points")
  * @ORM\HasLifecycleCallbacks()
  */
-class GeologicalPoint extends ModelObject
+class GeologicalPoint extends SoilModelObject
 {
     /**
      * @var string
