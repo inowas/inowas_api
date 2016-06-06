@@ -43,7 +43,7 @@ class GeologicalLayerRestController extends FOSRestController
             ->getRepository('AppBundle:GeologicalLayer')
             ->findBy(
                 array('owner' => $user),
-                array('id' => 'ASC')
+                array('order' => 'ASC')
             )
         ;
 

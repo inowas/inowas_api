@@ -22,7 +22,7 @@ class Raster
      * @ORM\Id
      * @ORM\Column(name="id", type="uuid", unique=true)
      * @JMS\Type("string")
-     * @JMS\Groups({"modeldetails", "modelobjectdetails", "rasterdetails"})
+     * @JMS\Groups({"modeldetails", "modelobjectdetails", "rasterdetails", "soilmodellayers"})
      */
     private $id;
 

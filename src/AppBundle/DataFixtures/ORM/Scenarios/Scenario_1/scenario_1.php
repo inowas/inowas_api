@@ -2,6 +2,7 @@
 
 namespace AppBundle\DataFixtures\ORM\Scenarios\Scenario_1;
 
+use AppBundle\Entity\GeologicalLayer;
 use AppBundle\Entity\ModFlowModel;
 use AppBundle\Entity\User;
 use AppBundle\Model\AreaFactory;
@@ -181,6 +182,7 @@ class LoadScenario_1 implements FixtureInterface, ContainerAwareInterface
 
 
         $geologicalLayer = GeologicalLayerFactory::setOwnerNameAndPublic($user, 'SC1_L1', $public);
+        $geologicalLayer->setOrder(GeologicalLayer::TOP_LAYER);
         $geologicalLayer = $this->addGeologicalUnitToGeologicalLayer($entityManager, $geologicalLayer, 'SC1_GU1.1');
         $geologicalLayer = $this->addGeologicalUnitToGeologicalLayer($entityManager, $geologicalLayer, 'SC1_GU2.1');
         $geologicalLayer = $this->addGeologicalUnitToGeologicalLayer($entityManager, $geologicalLayer, 'SC1_GU3.1');
@@ -192,6 +194,7 @@ class LoadScenario_1 implements FixtureInterface, ContainerAwareInterface
 
         // Create layer 2
         $geologicalLayer = GeologicalLayerFactory::setOwnerNameAndPublic($user, 'SC1_L2', $public);
+        $geologicalLayer->setOrder(GeologicalLayer::TOP_LAYER+1);
         $geologicalLayer = $this->addGeologicalUnitToGeologicalLayer($entityManager, $geologicalLayer, 'SC1_GU1.2');
         $geologicalLayer = $this->addGeologicalUnitToGeologicalLayer($entityManager, $geologicalLayer, 'SC1_GU2.2');
         $geologicalLayer = $this->addGeologicalUnitToGeologicalLayer($entityManager, $geologicalLayer, 'SC1_GU3.2');
@@ -203,6 +206,7 @@ class LoadScenario_1 implements FixtureInterface, ContainerAwareInterface
 
         // Create layer 3
         $geologicalLayer = GeologicalLayerFactory::setOwnerNameAndPublic($user, 'SC1_L3', $public);
+        $geologicalLayer->setOrder(GeologicalLayer::TOP_LAYER+2);
         $geologicalLayer = $this->addGeologicalUnitToGeologicalLayer($entityManager, $geologicalLayer, 'SC1_GU1.3');
         $geologicalLayer = $this->addGeologicalUnitToGeologicalLayer($entityManager, $geologicalLayer, 'SC1_GU2.3');
         $geologicalLayer = $this->addGeologicalUnitToGeologicalLayer($entityManager, $geologicalLayer, 'SC1_GU3.3');

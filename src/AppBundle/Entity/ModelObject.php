@@ -33,7 +33,7 @@ abstract class ModelObject
      * @ORM\Id
      * @ORM\Column(name="id", type="uuid", unique=true)
      * @JMS\Type("string")
-     * @JMS\Groups({"list", "details", "layerdetails", "modeldetails", "modelobjectdetails", "modelobjectlist", "soilmodeldetails"})
+     * @JMS\Groups({"list", "details", "layerdetails", "modeldetails", "modelobjectdetails", "modelobjectlist", "soilmodeldetails", "soilmodellayers"})
      */
     protected $id;
 
@@ -50,7 +50,7 @@ abstract class ModelObject
      * @var string
      *
      * @ORM\Column(name="name", type="string", length=255, nullable=true)
-     * @JMS\Groups({"list", "details", "layerdetails", "modelobjectdetails", "modelobjectlist", "soilmodeldetails"})
+     * @JMS\Groups({"list", "details", "layerdetails", "modelobjectdetails", "modelobjectlist", "soilmodeldetails", "soilmodellayers"})
      */
     protected $name;
 
@@ -70,7 +70,7 @@ abstract class ModelObject
      *     inverseJoinColumns={@ORM\JoinColumn(name="property_id", referencedColumnName="id")}
      *     )
      * @JMS\Type("ArrayCollection<AppBundle\Entity\Property>")
-     * @JMS\Groups({"details", "layerdetails", "modelobjectdetails", "soilmodeldetails"})
+     * @JMS\Groups({"details", "layerdetails", "modelobjectdetails", "soilmodeldetails", "soilmodellayers"})
      */
     protected $properties;
 
@@ -96,7 +96,7 @@ abstract class ModelObject
      * @var boolean
      *
      * @ORM\Column(name="public", type="boolean")
-     * @JMS\Groups({"list", "details", "layerdetails", "modelobjectdetails", "modelobjectlist", "soilmodeldetails"})
+     * @JMS\Groups({"list", "details", "layerdetails", "modelobjectdetails", "modelobjectlist", "soilmodeldetails", "soilmodellayers"})
      */
     protected $public;
 
@@ -104,7 +104,7 @@ abstract class ModelObject
      * @var \DateTime
      *
      * @ORM\Column(name="date_created", type="datetime")
-     * @JMS\Groups({"modelobjectdetails", "soilmodeldetails"})
+     * @JMS\Groups({"modelobjectdetails", "soilmodeldetails", "soilmodellayers"})
      */
     protected $dateCreated;
 
@@ -112,7 +112,7 @@ abstract class ModelObject
      * @var \DateTime
      *
      * @ORM\Column(name="date_modified", type="datetime")
-     * @JMS\Groups({"modelobjectdetails", "soilmodeldetails"})
+     * @JMS\Groups({"modelobjectdetails", "soilmodeldetails", "soilmodellayers"})
      */
     protected $dateModified;
 
@@ -126,7 +126,6 @@ abstract class ModelObject
         $this->id = Uuid::uuid4();
         $this->owner = $owner;
         $this->public = $public;
-        $this->soilModels = new ArrayCollection();
         $this->propertyIds = new ArrayCollection();
         $this->properties = new ArrayCollection();
         $this->observationPoints = new ArrayCollection();

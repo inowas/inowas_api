@@ -2,6 +2,7 @@
 
 namespace AppBundle\DataFixtures\ORM\Scenarios\Scenario_3;
 
+use AppBundle\Entity\GeologicalLayer;
 use AppBundle\Entity\ModFlowModel;
 use AppBundle\Entity\User;
 use AppBundle\Model\AreaFactory;
@@ -131,14 +132,17 @@ class LoadScenario_3 implements FixtureInterface, ContainerAwareInterface
 
         // Create new geological layers
         $layer_1 = GeologicalLayerFactory::setOwnerNameAndPublic($user, 'SC3_L1', $public);
+        $layer_1->setOrder(GeologicalLayer::TOP_LAYER);
         $soilModel->addGeologicalLayer($layer_1);
         $entityManager->persist($layer_1);
 
         $layer_2 = GeologicalLayerFactory::setOwnerNameAndPublic($user, 'SC3_L2', $public);
+        $layer_2->setOrder(GeologicalLayer::TOP_LAYER+1);
         $soilModel->addGeologicalLayer($layer_2);
         $entityManager->persist($layer_2);
 
         $layer_3 = GeologicalLayerFactory::setOwnerNameAndPublic($user, 'SC3_L3', $public);
+        $layer_3->setOrder(GeologicalLayer::TOP_LAYER+2);
         $soilModel->addGeologicalLayer($layer_3);
         $entityManager->persist($layer_3);
         $entityManager->flush();

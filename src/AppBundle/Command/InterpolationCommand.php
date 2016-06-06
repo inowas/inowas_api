@@ -2,6 +2,7 @@
 
 namespace AppBundle\Command;
 
+use AppBundle\Entity\GeologicalLayer;
 use AppBundle\Entity\PropertyType;
 use AppBundle\Service\Interpolation;
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
@@ -34,11 +35,16 @@ class InterpolationCommand extends ContainerAwareCommand
 
         $layers = $soilModelService->getModflowModel()->getSoilModel()->getGeologicalLayers();
 
+        /** @var GeologicalLayer $layer */
         foreach ($layers as $layer)
         {
             $propertyTypes = $soilModelService->getAllPropertyTypesFromLayer($layer);
             /** @var PropertyType $propertyType */
             foreach ($propertyTypes as $propertyType){
+                if ($propertyType->getAbbreviation() == PropertyType::TOP_ELEVATION && $layer->getOrder() != GeologicalLayer::TOP_LAYER) {
+                    continue;
+                }
+
                 echo (sprintf("Interpolating Layer %s, Property %s\r\n", $layer->getName(), $propertyType->getName()));
                 $output = $soilModelService->interpolateLayerByProperty(
                     $layer,

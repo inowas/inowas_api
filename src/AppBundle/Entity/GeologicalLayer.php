@@ -12,10 +12,13 @@ use JMS\Serializer\Annotation as JMS;
  */
 class GeologicalLayer extends SoilModelObject
 {
+
+    const TOP_LAYER = 0;
+
     /**
      * @var string
      * @JMS\Type("string")
-     * @JMS\Groups({"list", "details", "modelobjectdetails", "modelobjectlist"})
+     * @JMS\Groups({"list", "details", "modelobjectdetails", "modelobjectlist", "soilmodellayers"})
      */
     protected $type = 'geologicallayer';
     
@@ -31,6 +34,14 @@ class GeologicalLayer extends SoilModelObject
      * @JMS\Groups({"modelobjectdetails", "soilmodeldetails"})
      **/
     private $geologicalUnits;
+
+    /**
+     * @var integer
+     *
+     * @ORM\Column(name="order_number", type="integer", nullable=false)
+     * @JMS\Groups({"list", "details", "modelobjectdetails", "modelobjectlist", "soilmodellayers"})
+     */
+    private $order;
 
     /**
      * Layer constructor.
@@ -83,4 +94,25 @@ class GeologicalLayer extends SoilModelObject
     {
         return $this->geologicalUnits;
     }
+
+    /**
+     * @return int
+     */
+    public function getOrder()
+    {
+        return $this->order;
+    }
+
+    /**
+     * @param $order
+     * @return $this
+     */
+    public function setOrder($order)
+    {
+        $this->order = $order;
+
+        return $this;
+    }
+
+
 }

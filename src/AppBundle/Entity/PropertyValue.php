@@ -16,7 +16,7 @@ class PropertyValue extends AbstractValue
      * @var float
      *
      * @ORM\Column(name="value", type="float")
-     * @JMS\Groups({"modeldetails", "modelobjectdetails"})
+     * @JMS\Groups({"modeldetails", "modelobjectdetails", "soilmodellayers"})
      */
     private $value;
 
@@ -25,7 +25,7 @@ class PropertyValue extends AbstractValue
      *
      * @ORM\OneToOne(targetEntity="AppBundle\Entity\Raster", cascade={"persist", "remove"})
      * @ORM\JoinColumn(name="raster_id", referencedColumnName="id", onDelete="SET NULL")
-     * @JMS\Groups({"modeldetails", "modelobjectdetails"})
+     * @JMS\Groups({"modeldetails", "modelobjectdetails", "soilmodellayers"})
      */
     private $raster;
 

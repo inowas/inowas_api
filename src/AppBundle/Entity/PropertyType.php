@@ -35,7 +35,7 @@ class PropertyType
      * @var string
      *
      * @ORM\Column(name="abbreviation", type="string", length=255)
-     * @JMS\Groups({"list", "details", "modeldetails", "modelobjectdetails"})
+     * @JMS\Groups({"list", "details", "modeldetails", "modelobjectdetails", "soilmodellayers"})
      */
     private $abbreviation;
 
@@ -43,7 +43,7 @@ class PropertyType
      * @var string
      *
      * @ORM\Column(name="name", type="string", length=255)
-     * @JMS\Groups({"list", "details", "modeldetails", "modelobjectdetails"})
+     * @JMS\Groups({"list", "details", "modeldetails", "modelobjectdetails", "soilmodellayers"})
      */
     private $name;
 
