@@ -35,6 +35,7 @@ class GeologicalLayerRestControllerTest extends WebTestCase
             ->setName('GeologicalLayerTest')
             ->setOwner($this->owner)
             ->setPublic(true)
+            ->setOrder(GeologicalLayer::TOP_LAYER)
         ;
 
         $this->entityManager->persist($this->geologicalLayer);

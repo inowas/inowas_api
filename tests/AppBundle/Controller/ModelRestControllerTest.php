@@ -90,6 +90,7 @@ class ModelRestControllerTest extends WebTestCase
         $this->layer->setPublic(true);
         $this->layer->setName("ModelTest_Layer");
         $this->layer->addProperty($this->property);
+        $this->layer->setOrder(GeologicalLayer::TOP_LAYER);
         $this->entityManager->persist($this->layer);
         $this->entityManager->flush();
 

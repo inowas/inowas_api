@@ -2,6 +2,7 @@
 
 namespace AppBundle\Tests\Entity;
 
+use AppBundle\Entity\GeologicalLayer;
 use AppBundle\Entity\SoilModel;
 use AppBundle\Entity\User;
 use AppBundle\Model\GeologicalLayerFactory;
@@ -87,6 +88,7 @@ class SoilModelTest extends WebTestCase
         $layer1->setPublic(true);
         $layer1->setOwner($this->user);
         $layer1->setName('TestLayer1');
+        $layer1->setOrder(GeologicalLayer::TOP_LAYER);
         $this->entityManager->persist($layer1);
         $this->entityManager->flush();
         $this->entityManager->clear($layer1);

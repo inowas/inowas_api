@@ -93,8 +93,8 @@ class ModFlowModel extends AbstractModel
         "stress_periods" => array(),
         "initial_values" => array(
             "property" => null,
-            "head_from_top_elevation" => 1,
-            "steady_state_calculation" => null,
+            "head_from_top_elevation" => null,
+            "steady_state_calculation" => true,
             "interpolation" => array()          // of observationPoints
         ),
         "calculation_type" => "steady_state",   // steady_state or transient

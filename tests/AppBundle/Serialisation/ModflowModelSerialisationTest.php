@@ -180,8 +180,8 @@ class ModFlowModelSerialisationTest extends \PHPUnit_Framework_TestCase
         $this->assertObjectHasAttribute("calculation_properties", $serializedModel);
         $this->assertObjectHasAttribute("initial_values", $serializedModel->calculation_properties);
         $this->assertObjectNotHasAttribute("property", $serializedModel->calculation_properties->initial_values);
-        $this->assertObjectHasAttribute("head_from_top_elevation", $serializedModel->calculation_properties->initial_values);
-        $this->assertObjectNotHasAttribute("steady_state_calculation", $serializedModel->calculation_properties->initial_values);
+        $this->assertObjectNotHasAttribute("head_from_top_elevation", $serializedModel->calculation_properties->initial_values);
+        $this->assertObjectHasAttribute("steady_state_calculation", $serializedModel->calculation_properties->initial_values);
     }
 
     public function testCalculationPropertiesInitValueIsAPropertyWithFloatValue()
@@ -436,9 +436,11 @@ class ModFlowModelSerialisationTest extends \PHPUnit_Framework_TestCase
         $this->assertObjectHasAttribute("calculation_properties", $serializedModel);
         $this->assertObjectHasAttribute("stress_periods", $serializedModel->calculation_properties);
         $this->assertCount(5, $serializedModel->calculation_properties->stress_periods);
-        $this->assertEquals(2, count((array)$serializedModel->calculation_properties->stress_periods[0]));
+        $this->assertEquals(3, count((array)$serializedModel->calculation_properties->stress_periods[0]));
+
         $this->assertObjectHasAttribute("date_time_begin", $serializedModel->calculation_properties->stress_periods[0]);
         $this->assertObjectHasAttribute("date_time_end", $serializedModel->calculation_properties->stress_periods[0]);
+        $this->assertObjectHasAttribute("number_of_time_steps", $serializedModel->calculation_properties->stress_periods[0]);
 
         /** @var StressPeriod $stressPeriod */
         $stressPeriod = $this->modFlowModel->getStressPeriods()[0];
