@@ -24,6 +24,27 @@ class StressPeriod implements \JsonSerializable
     private $dateTimeEnd;
 
     /**
+     * @var integer
+     *
+     * @ORM\Column(name="number_of_time_steps", type="integer")
+     * @JMS\Groups({"modeldetails"})
+     */
+    private $numberOfTimeSteps;
+
+    /**
+     * StressPeriod constructor.
+     * @param null $dateTimeBegin
+     * @param null $dateTimeEnd
+     * @param int $numberOfTimeSteps
+     */
+    public function __construct($dateTimeBegin = null, $dateTimeEnd = null, $numberOfTimeSteps = 1)
+    {
+        $this->dateTimeBegin = $dateTimeBegin;
+        $this->dateTimeEnd = $dateTimeEnd;
+        $this->numberOfTimeSteps = $numberOfTimeSteps;
+    }
+
+    /**
      * Set dateTimeBegin
      *
      * @param \DateTime $dateTimeBegin
@@ -79,5 +100,19 @@ class StressPeriod implements \JsonSerializable
         return (object) get_object_vars($this);
     }
 
+    /**
+     * @return int
+     */
+    public function getNumberOfTimeSteps()
+    {
+        return $this->numberOfTimeSteps;
+    }
 
+    /**
+     * @param int $numberOfTimeSteps
+     */
+    public function setNumberOfTimeSteps($numberOfTimeSteps)
+    {
+        $this->numberOfTimeSteps = $numberOfTimeSteps;
+    }
 }
