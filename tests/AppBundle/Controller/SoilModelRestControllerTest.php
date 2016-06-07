@@ -2,8 +2,10 @@
 
 namespace AppBundle\Tests\Controller;
 
+use AppBundle\Entity\GeologicalLayer;
 use AppBundle\Entity\SoilModel;
 use AppBundle\Entity\User;
+use AppBundle\Model\GeologicalLayerFactory;
 use AppBundle\Model\SoilModelFactory;
 use AppBundle\Model\UserFactory;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
@@ -55,6 +57,22 @@ class SoilModelRestControllerTest extends WebTestCase
     {
         $client = static::createClient();
         $client->request('GET', '/api/soilmodels/'.$this->soilModel->getId().'.json');
+        $this->assertEquals(200, $client->getResponse()->getStatusCode());
+    }
+
+    public function testGetSoilModelGeologicalLayersAPI()
+    {
+        $this->soilModel->addGeologicalLayer(
+            GeologicalLayerFactory::create()
+            ->setOwner($this->owner)
+            ->setOrder(GeologicalLayer::TOP_LAYER)
+        );
+
+        $this->entityManager->persist($this->soilModel);
+        $this->entityManager->flush();
+
+        $client = static::createClient();
+        $client->request('GET', '/api/soilmodels/'.$this->soilModel->getId().'/geologicallayers.json');
         $this->assertEquals(200, $client->getResponse()->getStatusCode());
     }
 

@@ -143,9 +143,12 @@ class SoilModelRestController extends FOSRestController
             throw $this->createNotFoundException('Soilmodel with id='.$id.' not found.');
         }
 
-        $criteria = Criteria::create()
-            ->orderBy(array("order" => Criteria::ASC));
-        $layers = $soilModel->getGeologicalLayers()->matching($criteria);
+        $layers = $soilModel->getGeologicalLayers();
+        if ($layers){
+            $criteria = Criteria::create()
+                ->orderBy(array("order" => Criteria::ASC));
+            $layers = $layers->matching($criteria);
+        }
 
         if ($soilModel->getPublic() || $this->isGranted('ROLE_ADMIN') || $this->getUser() === $soilModel->getOwner()) {
             $view = View::create();
