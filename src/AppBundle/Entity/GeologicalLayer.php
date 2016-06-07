@@ -39,7 +39,6 @@ class GeologicalLayer extends SoilModelObject
      * @var integer
      *
      * @ORM\Column(name="order_number", type="integer", nullable=false)
-     * @JMS\Groups({"list", "details", "modelobjectdetails", "modelobjectlist", "soilmodellayers"})
      */
     private $order;
 
