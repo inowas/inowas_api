@@ -6,19 +6,19 @@ use JMS\Serializer\Annotation as JMS;
 
 class BoundingBox
 {
-    /** @JMS\Groups({"interpolation", "rasterdetails"}) */
+    /** @JMS\Groups({"interpolation", "rasterdetails", "modeldetails"}) */
     protected $xMin;
 
-    /** @JMS\Groups({"interpolation", "rasterdetails"}) */
+    /** @JMS\Groups({"interpolation", "rasterdetails", "modeldetails"}) */
     protected $xMax;
 
-    /** @JMS\Groups({"interpolation", "rasterdetails"}) */
+    /** @JMS\Groups({"interpolation", "rasterdetails", "modeldetails"}) */
     protected $yMin;
 
-    /** @JMS\Groups({"interpolation", "rasterdetails"}) */
+    /** @JMS\Groups({"interpolation", "rasterdetails", "modeldetails"}) */
     protected $yMax;
 
-    /** @JMS\Groups({"interpolation", "rasterdetails"}) */
+    /** @JMS\Groups({"interpolation", "rasterdetails", "modeldetails"}) */
     protected $srid;
 
     /**

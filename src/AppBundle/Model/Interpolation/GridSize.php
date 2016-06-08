@@ -12,13 +12,13 @@ class GridSize
 {
     /**
      * @var int
-     * @JMS\Groups({"modeldetails", "modelobjectdetails", "interpolation", "rasterdetails"})
+     * @JMS\Groups({"modeldetails", "modelobjectdetails", "interpolation", "rasterdetails", "modeldetails"})
      */
     protected $nX;
 
     /**
      * @var int
-     * @JMS\Groups({"modeldetails", "modelobjectdetails", "interpolation", "rasterdetails"})
+     * @JMS\Groups({"modeldetails", "modelobjectdetails", "interpolation", "rasterdetails", "modeldetails"})
      */
     protected $nY;
 

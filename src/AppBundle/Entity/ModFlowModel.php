@@ -40,6 +40,9 @@ class ModFlowModel extends AbstractModel
      * @var GridSize
      *
      * @ORM\Column(name="grid_size", type="grid_size", nullable=true)
+     *
+     * @JMS\Type("AppBundle\Model\Interpolation\GridSize")
+     * @JMS\Groups({"details", "modeldetails"})
      */
     private $gridSize;
 
@@ -47,6 +50,9 @@ class ModFlowModel extends AbstractModel
      * @var BoundingBox
      *
      * @ORM\Column(name="bounding_box", type="bounding_box", nullable=true)
+     *
+     * @JMS\Type("AppBundle\Model\Interpolation\BoundingBox")
+     * @JMS\Groups({"details", "modeldetails"})
      */
     private $boundingBox;
 
