@@ -2,10 +2,8 @@
 
 namespace AppBundle\Tests\Controller;
 
-use AppBundle\Entity\Boundary;
-use AppBundle\Entity\GeneralHeadBoundary;
-use AppBundle\Model\BoundaryFactory;
-use AppBundle\Model\GeneralHeadBoundaryFactory;
+use AppBundle\Entity\ConstantHeadBoundary;
+use AppBundle\Model\ConstantHeadBoundaryFactory;
 use AppBundle\Model\ObservationPointFactory;
 use AppBundle\Model\UserFactory;
 use CrEOF\Spatial\PHP\Types\Geometry\LineString;
@@ -14,24 +12,24 @@ use JMS\Serializer\SerializationContext;
 use JMS\Serializer\Serializer;
 use JMS\Serializer\SerializerBuilder;
 
-class BoundarySerialisationTest extends \PHPUnit_Framework_TestCase
+class ConstantHeadBoundarySerialisationTest extends \PHPUnit_Framework_TestCase
 {
 
     /** @var  Serializer $serializer */
     protected $serializer;
 
-    /** @var GeneralHeadBoundary $boundary */
+    /** @var ConstantHeadBoundary $boundary */
     protected $boundary;
 
     public function setUp()
     {
         $this->serializer = SerializerBuilder::create()->build();
 
-        $this->boundary = GeneralHeadBoundaryFactory::create()
-            ->setName('BoundaryName')
+        $this->boundary = ConstantHeadBoundaryFactory::create()
+            ->setName('GeneralHeadBoundaryName')
             ->setPublic(true)
             ->setOwner(
-                UserFactory::createTestUser('BoundaryTestUser')
+                UserFactory::createTestUser('GeneralHeadBoundaryTestUser')
             )
             ->setGeometry(new LineString(
                 array(
@@ -54,7 +52,7 @@ class BoundarySerialisationTest extends \PHPUnit_Framework_TestCase
 
         $this->assertStringStartsWith('{', $boundary);
         $boundary = json_decode($boundary);
-        $this->assertEquals($boundary->type, 'GHB');
+        $this->assertEquals($boundary->type, 'CHB');
         $this->assertEquals($boundary->owner->id, $this->boundary->getOwner()->getId());
         $this->assertEquals((array) $boundary->geometry, (array)$this->boundary->serializeDeserializeGeometry());
         $this->assertCount(1, $this->boundary->getObservationPoints());

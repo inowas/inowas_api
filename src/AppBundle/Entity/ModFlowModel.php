@@ -73,20 +73,8 @@ class ModFlowModel extends AbstractModel
     /**
      * @var ArrayCollection
      * @JMS\Groups({"details", "modeldetails"})
-     **/
-    private $wells;
-
-    /**
-     * @var ArrayCollection
-     * @JMS\Groups({"details", "modeldetails"})
      */
     private $observationPoints;
-
-    /**
-     * @var ArrayCollection
-     * @JMS\Groups({"details", "modeldetails"})
-     */
-    private $streams;
 
     /**
      * @var array
@@ -205,7 +193,7 @@ class ModFlowModel extends AbstractModel
     /**
      * Get boundaries
      *
-     * @return Boundary|ArrayCollection
+     * @return BoundaryModelObject|ArrayCollection
      */
     public function getBoundaries()
     {
@@ -213,12 +201,10 @@ class ModFlowModel extends AbstractModel
     }
 
     /**
-     * Add boundary
-     *
-     * @param Boundary $boundary
+     * @param BoundaryModelObject $boundary
      * @return $this
      */
-    public function addBoundary(Boundary $boundary)
+    public function addBoundary(BoundaryModelObject $boundary)
     {
         if ($this->boundaries == null) {
             $this->boundaries = new ArrayCollection();
@@ -234,53 +220,13 @@ class ModFlowModel extends AbstractModel
     /**
      * Remove boundary
      *
-     * @param Boundary $boundary
+     * @param BoundaryModelObject $boundary
      */
-    public function removeBoundary(Boundary $boundary)
+    public function removeBoundary(BoundaryModelObject $boundary)
     {
         if ($this->boundaries->contains($boundary)){
             $this->boundaries->removeElement($boundary);
         }
-    }
-
-    /**
-     * Get boundaries
-     *
-     * @return Well|ArrayCollection
-     */
-    public function getWells()
-    {
-        return $this->wells;
-    }
-
-    /**
-     * @param Well $well
-     * @return $this
-     */
-    public function addWell(Well $well)
-    {
-        if ($this->wells == null) {
-            $this->wells = new ArrayCollection();
-        }
-
-        if (!$this->wells->contains($well)) {
-            $this->wells->add($well);
-        }
-
-        return $this;
-    }
-
-    /**
-     * @param Well $well
-     * @return $this
-     */
-    public function removeWell(Well $well)
-    {
-        if ($this->boundaries->contains($well)){
-            $this->boundaries->removeElement($well);
-        }
-
-        return $this;
     }
 
     /**
@@ -316,44 +262,6 @@ class ModFlowModel extends AbstractModel
     {
         if ($this->observationPoints->contains($observationPoint)){
             $this->observationPoints->removeElement($observationPoint);
-        }
-
-        return $this;
-    }
-
-    /**
-     * @return ArrayCollection
-     */
-    public function getStreams()
-    {
-        return $this->streams;
-    }
-
-    /**
-     * @param Stream $stream
-     * @return $this
-     */
-    public function addStream(Stream $stream)
-    {
-        if ($this->streams == null) {
-            $this->streams = new ArrayCollection();
-        }
-
-        if (!$this->streams->contains($stream)){
-            $this->streams[] = $stream;
-        }
-
-        return $this;
-    }
-
-    /**
-     * @param Stream $stream
-     * @return $this
-     */
-    public function removeStream(Stream $stream)
-    {
-        if ($this->streams->contains($stream)) {
-            $this->streams->removeElement($stream);
         }
 
         return $this;
@@ -498,14 +406,6 @@ class ModFlowModel extends AbstractModel
             }
         }
 
-        if ($this->wells->count() > 0 )
-        {
-            foreach ($this->wells as $well)
-            {
-                $this->addModelObject($well);
-            }
-        }
-
         if (!$this->observationPoints) {
             $this->observationPoints = new ArrayCollection();
         }
@@ -517,21 +417,8 @@ class ModFlowModel extends AbstractModel
                 $this->addModelObject($observationPoint);
             }
         }
-
-        if (!$this->streams) {
-            $this->streams = new ArrayCollection();
-        }
-
-        if ($this->streams->count() > 0 )
-        {
-            foreach ($this->streams as $stream)
-            {
-                $this->addModelObject($stream);
-            }
-        }
     }
-
-
+    
     /**
      * @ORM\PostLoad()
      */
@@ -545,27 +432,15 @@ class ModFlowModel extends AbstractModel
                 $this->removeModelObject($modelObject);
             }
 
-            if ($modelObject instanceof Boundary)
+            if ($modelObject instanceof BoundaryModelObject)
             {
                 $this->addBoundary($modelObject);
-                $this->removeModelObject($modelObject);
-            }
-
-            if ($modelObject instanceof Well)
-            {
-                $this->addWell($modelObject);
                 $this->removeModelObject($modelObject);
             }
 
             if ($modelObject instanceof ObservationPoint)
             {
                 $this->addObservationPoint($modelObject);
-                $this->removeModelObject($modelObject);
-            }
-
-            if ($modelObject instanceof Stream)
-            {
-                $this->addStream($modelObject);
                 $this->removeModelObject($modelObject);
             }
         }

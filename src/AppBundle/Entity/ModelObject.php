@@ -16,7 +16,6 @@ use Ramsey\Uuid\Uuid;
  * @ORM\InheritanceType("JOINED")
  * @ORM\DiscriminatorColumn(name="discr", type="string")
  * @ORM\DiscriminatorMap({  "ar" = "Area",
- *                          "bo" = "Boundary",
  *                          "chb" = "ConstantHeadBoundary",
  *                          "ghb" = "GeneralHeadBoundary",
  *                          "wbo" = "Well",

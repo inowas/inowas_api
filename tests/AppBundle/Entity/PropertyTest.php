@@ -2,12 +2,12 @@
 
 namespace AppBundle\Tests\Entity;
 
-use AppBundle\Entity\Boundary;
+use AppBundle\Entity\GeneralHeadBoundary;
 use AppBundle\Entity\Property;
 use AppBundle\Entity\PropertyFixedIntervalValue;
 use AppBundle\Entity\PropertyType;
 use AppBundle\Entity\User;
-use AppBundle\Model\BoundaryFactory;
+use AppBundle\Model\GeneralHeadBoundaryFactory;
 use AppBundle\Model\PropertyFactory;
 use AppBundle\Model\PropertyTimeValueFactory;
 use AppBundle\Model\PropertyTypeFactory;
@@ -28,7 +28,7 @@ class PropertyTest extends WebTestCase
     protected $user;
 
     /**
-     * @var Boundary $boundary
+     * @var GeneralHeadBoundary $boundary
      */
     protected $boundary;
 
@@ -62,7 +62,11 @@ class PropertyTest extends WebTestCase
         $this->user->setEnabled(true);
         $this->entityManager->persist($this->user);
 
-        $this->boundary = BoundaryFactory::setOwnerNameAndPublic($this->user, 'testBoundary', true);
+        $this->boundary = GeneralHeadBoundaryFactory::create()
+            ->setOwner($this->user)
+            ->setName('testBoundary')
+            ->setPublic(true)
+        ;
         $this->entityManager->persist($this->boundary);
 
         $this->propertyType = PropertyTypeFactory::create()

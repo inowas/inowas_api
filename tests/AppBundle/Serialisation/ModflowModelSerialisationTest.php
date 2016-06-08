@@ -2,7 +2,7 @@
 
 namespace AppBundle\Tests\Serialization;
 
-use AppBundle\Entity\Boundary;
+use AppBundle\Entity\GeneralHeadBoundary;
 use AppBundle\Entity\GeologicalLayer;
 use AppBundle\Entity\ModFlowModel;
 use AppBundle\Entity\ObservationPoint;
@@ -10,7 +10,7 @@ use AppBundle\Entity\Property;
 use AppBundle\Entity\SoilModel;
 use AppBundle\Entity\Stream;
 use AppBundle\Model\AreaFactory;
-use AppBundle\Model\BoundaryFactory;
+use AppBundle\Model\GeneralHeadBoundaryFactory;
 use AppBundle\Model\GeologicalLayerFactory;
 use AppBundle\Model\GeologicalPointFactory;
 use AppBundle\Model\GeologicalUnitFactory;
@@ -137,12 +137,12 @@ class ModFlowModelSerialisationTest extends \PHPUnit_Framework_TestCase
             ->setDateCreated(new \DateTime())
             ->setDateModified(new \DateTime());
 
-        $this->modFlowModel->addStream($stream);
-        $this->modFlowModel->addStream(StreamFactory::create()->setId(28));
-        $this->modFlowModel->addStream(StreamFactory::create()->setId(29));
+        $this->modFlowModel->addBoundary($stream);
+        $this->modFlowModel->addBoundary(StreamFactory::create()->setId(28));
+        $this->modFlowModel->addBoundary(StreamFactory::create()->setId(29));
 
-        /** @var Boundary $boundary */
-        $boundary = BoundaryFactory::create()
+        /** @var GeneralHeadBoundary $boundary */
+        $boundary = GeneralHeadBoundaryFactory::create()
             ->setOwner($owner)
             ->setName('BoundaryName')
             ->addObservationPoint(ObservationPointFactory::create())
@@ -151,7 +151,7 @@ class ModFlowModelSerialisationTest extends \PHPUnit_Framework_TestCase
             ->setDateModified(new \DateTime());
 
         $this->modFlowModel->addBoundary($boundary);
-        $this->modFlowModel->addBoundary(BoundaryFactory::create()->setId(39));
+        $this->modFlowModel->addBoundary(GeneralHeadBoundaryFactory::create()->setId(39));
 
         /** @var ObservationPoint $observationPoint */
         $observationPoint = ObservationPointFactory::create()
@@ -470,23 +470,8 @@ class ModFlowModelSerialisationTest extends \PHPUnit_Framework_TestCase
         $this->assertCount(1, $serializedModel->soil_model->geological_layers);
         $this->assertEquals($this->layer->getId(), $serializedModel->soil_model->geological_layers[0]->id);
 
-        $this->assertObjectHasAttribute("streams", $serializedModel);
-        $this->assertCount(3, $serializedModel->streams);
-
-        /** @var Stream $stream */
-        $stream = $this->modFlowModel->getStreams()->toArray()[0];
-        $this->assertEquals($stream->getId(), $serializedModel->streams[0]->id);
-
-        /** @var Stream $stream */
-        $stream = $this->modFlowModel->getStreams()->toArray()[1];
-        $this->assertEquals($stream->getId(), $serializedModel->streams[1]->id);
-
-        /** @var Stream $stream */
-        $stream = $this->modFlowModel->getStreams()->toArray()[2];
-        $this->assertEquals($stream->getId(), $serializedModel->streams[2]->id);
-
         $this->assertObjectHasAttribute("boundaries", $serializedModel);
-        $this->assertCount(2, $serializedModel->boundaries);
+        $this->assertCount(5, $serializedModel->boundaries);
 
         $this->assertObjectHasAttribute("observation_points", $serializedModel);
         $this->assertCount(4, $serializedModel->observation_points);

@@ -2,9 +2,10 @@
 
 namespace AppBundle\Tests\Controller;
 
+use AppBundle\Entity\BoundaryModelObject;
 use AppBundle\Entity\ModelObject;
 use AppBundle\Entity\User;
-use AppBundle\Model\BoundaryFactory;
+use AppBundle\Model\GeneralHeadBoundaryFactory;
 use AppBundle\Model\UserFactory;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
@@ -34,7 +35,7 @@ class ModelObjectRestControllerTest extends WebTestCase
 
         $this->participant = UserFactory::createTestUser('ModelObjectTestParticipant');
 
-        $this->modelObject = BoundaryFactory::create()
+        $this->modelObject = GeneralHeadBoundaryFactory::create()
             ->setOwner($this->owner)
             ->setName('ModelObjectTestBoundaryName')
             ->setPublic(true);
@@ -81,13 +82,15 @@ class ModelObjectRestControllerTest extends WebTestCase
             ));
         $this->entityManager->remove($participant);
 
-        $boundaries = $this->entityManager->getRepository('AppBundle:Boundary')
+        $boundaries = $this->entityManager->getRepository('AppBundle:ModelObject')
             ->findBy(array(
                 'owner' => $owner
             ));
 
         foreach ($boundaries as $boundary) {
-            $this->entityManager->remove($boundary);
+            if ($boundary instanceof BoundaryModelObject){
+                $this->entityManager->remove($boundary);
+            }
         }
 
         $this->entityManager->flush();

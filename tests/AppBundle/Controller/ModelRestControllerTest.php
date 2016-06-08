@@ -111,7 +111,7 @@ class ModelRestControllerTest extends WebTestCase
         $this->entityManager->persist($this->modFlowModel);
         $this->entityManager->flush();
 
-        $this->modFlowModel->addWell(WellFactory::create()
+        $this->modFlowModel->addBoundary(WellFactory::create()
             ->setPoint(new Point(10, 11, 12))
             ->setName('Well1')
             ->setPublic(true)
@@ -164,7 +164,7 @@ class ModelRestControllerTest extends WebTestCase
     public function testGetModflowModelWellsDetailsAPI()
     {
         $client = static::createClient();
-        $client->request('GET', '/api/modflowmodels/'.$this->modFlowModel->getId().'/wells.json');
+        $client->request('GET', '/api/modflowmodels/'.$this->modFlowModel->getId().'/boundaries.json');
 
         $this->assertEquals(200, $client->getResponse()->getStatusCode());
         $wells = json_decode($client->getResponse()->getContent());

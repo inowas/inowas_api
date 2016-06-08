@@ -2,10 +2,10 @@
 
 namespace AppBundle\Tests\Controller;
 
-use AppBundle\Entity\Boundary;
+use AppBundle\Entity\GeneralHeadBoundary;
 use AppBundle\Entity\ModelObject;
 use AppBundle\Entity\User;
-use AppBundle\Model\BoundaryFactory;
+use AppBundle\Model\GeneralHeadBoundaryFactory;
 use AppBundle\Model\GeologicalLayerFactory;
 use AppBundle\Model\ObservationPointFactory;
 use AppBundle\Model\PropertyFactory;
@@ -27,7 +27,7 @@ class ModelObjectSerialisationTest extends \PHPUnit_Framework_TestCase
     /** @var ModelObject */
     protected $modelObject;
     
-    /** @var Boundary */
+    /** @var GeneralHeadBoundary */
     protected $boundary;
 
     public function setUp()
@@ -36,7 +36,7 @@ class ModelObjectSerialisationTest extends \PHPUnit_Framework_TestCase
 
         $this->owner = UserFactory::createTestUser("ModelTest_Owner")->setId(1);
 
-        $this->boundary = BoundaryFactory::create()
+        $this->boundary = GeneralHeadBoundaryFactory::create()
             ->setName('Boundary_Name')
             ->setOwner($this->owner)
             ->addProperty(PropertyFactory::create()
@@ -70,7 +70,7 @@ class ModelObjectSerialisationTest extends \PHPUnit_Framework_TestCase
         $this->assertStringStartsWith('{',$boundary);
         $boundary = json_decode($boundary);
 
-        $this->assertEquals($boundary->type, 'boundary');
+        $this->assertEquals($boundary->type, 'GHB');
         $this->assertEquals($boundary->id, $this->boundary->getId());
         $this->assertEquals($boundary->name, $this->boundary->getName());
         $this->assertEquals($boundary->public, $this->boundary->getPublic());
@@ -86,7 +86,7 @@ class ModelObjectSerialisationTest extends \PHPUnit_Framework_TestCase
         $this->assertStringStartsWith('{',$boundary);
         $boundary = json_decode($boundary);
 
-        $this->assertEquals($boundary->type, 'boundary');
+        $this->assertEquals($boundary->type, 'GHB');
         $this->assertEquals($boundary->id, $this->boundary->getId());
         $this->assertEquals($boundary->name, $this->boundary->getName());
         $this->assertEquals($boundary->owner->id, $this->boundary->getOwner()->getId());

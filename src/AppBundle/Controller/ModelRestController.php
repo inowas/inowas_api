@@ -144,7 +144,7 @@ class ModelRestController extends FOSRestController
      *
      * @return View
      */
-    public function getModflowmodelWellsAction($modelId)
+    public function getModflowmodelBoundariesAction($modelId)
     {
 
         if ($this->isGranted('ROLE_ADMIN'))
@@ -176,7 +176,7 @@ class ModelRestController extends FOSRestController
             throw $this->createNotFoundException('Model not found.');
         }
 
-        $wells = $model->getWells();
+        $wells = $model->getBoundaries();
 
         $serializationContext = SerializationContext::create();
         $serializationContext->setGroups('modelobjectdetails');

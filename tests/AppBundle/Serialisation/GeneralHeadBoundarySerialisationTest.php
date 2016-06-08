@@ -2,9 +2,7 @@
 
 namespace AppBundle\Tests\Controller;
 
-use AppBundle\Entity\Boundary;
 use AppBundle\Entity\GeneralHeadBoundary;
-use AppBundle\Model\BoundaryFactory;
 use AppBundle\Model\GeneralHeadBoundaryFactory;
 use AppBundle\Model\ObservationPointFactory;
 use AppBundle\Model\UserFactory;
@@ -14,7 +12,7 @@ use JMS\Serializer\SerializationContext;
 use JMS\Serializer\Serializer;
 use JMS\Serializer\SerializerBuilder;
 
-class BoundarySerialisationTest extends \PHPUnit_Framework_TestCase
+class GeneralHeadBoundarySerialisationTest extends \PHPUnit_Framework_TestCase
 {
 
     /** @var  Serializer $serializer */
@@ -28,10 +26,10 @@ class BoundarySerialisationTest extends \PHPUnit_Framework_TestCase
         $this->serializer = SerializerBuilder::create()->build();
 
         $this->boundary = GeneralHeadBoundaryFactory::create()
-            ->setName('BoundaryName')
+            ->setName('GeneralHeadBoundaryName')
             ->setPublic(true)
             ->setOwner(
-                UserFactory::createTestUser('BoundaryTestUser')
+                UserFactory::createTestUser('GeneralHeadBoundaryTestUser')
             )
             ->setGeometry(new LineString(
                 array(

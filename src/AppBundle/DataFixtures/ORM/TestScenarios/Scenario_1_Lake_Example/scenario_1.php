@@ -8,7 +8,7 @@ use AppBundle\Entity\PropertyType;
 use AppBundle\Entity\User;
 use AppBundle\Model\AreaFactory;
 use AppBundle\Model\AreaTypeFactory;
-use AppBundle\Model\BoundaryFactory;
+use AppBundle\Model\ConstantHeadBoundaryFactory;
 use AppBundle\Model\GeologicalLayerFactory;
 use AppBundle\Model\Interpolation\BoundingBox;
 use AppBundle\Model\Interpolation\GridSize;
@@ -153,7 +153,7 @@ class LoadTestScenario_1 implements FixtureInterface, ContainerAwareInterface
 
         $model->setSoilModel($soilModel);
 
-        $model->addBoundary(BoundaryFactory::create()
+        $model->addBoundary(ConstantHeadBoundaryFactory::create()
                 ->setOwner($user)
                 ->setName('Boundary Outer Circle Lake-Example')
                 ->setPublic($public)
@@ -165,7 +165,7 @@ class LoadTestScenario_1 implements FixtureInterface, ContainerAwareInterface
                 )))
                 ->addValue($propertyTypeGwHead, PropertyValueFactory::create()->setValue(100))
             )
-            ->addBoundary(BoundaryFactory::create()
+            ->addBoundary(ConstantHeadBoundaryFactory::create()
                 ->setOwner($user)
                 ->setName('Boundary Lake Lake-Example')
                 ->setPublic($public)
