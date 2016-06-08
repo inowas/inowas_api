@@ -29,7 +29,7 @@ use Symfony\Component\DependencyInjection\ContainerAwareInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
-class LoadTestScenario_1 implements FixtureInterface, ContainerAwareInterface
+class LoadTestScenario_2 implements FixtureInterface, ContainerAwareInterface
 {
     /**
      * @var ContainerInterface
@@ -50,8 +50,8 @@ class LoadTestScenario_1 implements FixtureInterface, ContainerAwareInterface
     public function load(ObjectManager $entityManager)
     {
         $public = true;
-        $username = 'test_1';
-        $email = 'test_1@inowas.com';
+        $username = 'test_scenario_1';
+        $email = 'test_scenario_1@inowas.com';
         $password = 'inowas';
 
         $user = $entityManager->getRepository('AppBundle:User')
@@ -101,9 +101,9 @@ class LoadTestScenario_1 implements FixtureInterface, ContainerAwareInterface
         $model = ModFlowModelFactory::create()
             ->setOwner($user)
             ->setPublic($public)
-            ->setName('ModflowModel TestScenario 1')
-            ->setBoundingBox(new BoundingBox(10, 23, 10, 23))
-            ->setGridSize(new GridSize(10, 10))
+            ->setName('Lake Example')
+            ->setBoundingBox(new BoundingBox(0, 400, 0, 400))
+            ->setGridSize(new GridSize(101, 101))
             ->setArea(AreaFactory::create()
                 ->setOwner($user)
                 ->setName('Area TestScenario 1')
@@ -112,15 +112,16 @@ class LoadTestScenario_1 implements FixtureInterface, ContainerAwareInterface
                 ->setPublic($public)
                 ->setGeometry(new Polygon(
                     array(new LineString(array(
-                        array(11, 11),
-                        array(11, 22),
-                        array(22, 22),
-                        array(22, 11),
-                        array(11, 11))))))
+                        array(0, 0),
+                        array(0, 400),
+                        array(400, 400),
+                        array(400, 0),
+                        array(0, 0)
+                    )))))
             )
             ->setSoilModel(SoilModelFactory::create()
                 ->setOwner($user)
-                ->setName('SoilModel TestScenario 1')
+                ->setName('SoilModel Lake Example')
                 ->setPublic($public)
                 ->addGeologicalPoint(GeologicalPointFactory::create()
                     ->setOwner($user)

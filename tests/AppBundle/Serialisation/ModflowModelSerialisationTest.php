@@ -436,11 +436,12 @@ class ModFlowModelSerialisationTest extends \PHPUnit_Framework_TestCase
         $this->assertObjectHasAttribute("calculation_properties", $serializedModel);
         $this->assertObjectHasAttribute("stress_periods", $serializedModel->calculation_properties);
         $this->assertCount(5, $serializedModel->calculation_properties->stress_periods);
-        $this->assertEquals(3, count((array)$serializedModel->calculation_properties->stress_periods[0]));
+        $this->assertEquals(4, count((array)$serializedModel->calculation_properties->stress_periods[0]));
 
         $this->assertObjectHasAttribute("date_time_begin", $serializedModel->calculation_properties->stress_periods[0]);
         $this->assertObjectHasAttribute("date_time_end", $serializedModel->calculation_properties->stress_periods[0]);
         $this->assertObjectHasAttribute("number_of_time_steps", $serializedModel->calculation_properties->stress_periods[0]);
+        $this->assertObjectHasAttribute("steady", $serializedModel->calculation_properties->stress_periods[0]);
 
         /** @var StressPeriod $stressPeriod */
         $stressPeriod = $this->modFlowModel->getStressPeriods()[0];

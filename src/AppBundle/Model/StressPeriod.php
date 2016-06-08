@@ -32,6 +32,14 @@ class StressPeriod implements \JsonSerializable
     private $numberOfTimeSteps;
 
     /**
+     * @var boolean
+     *
+     * @ORM\Column(name="steady_state", type="boolean")
+     * @JMS\Groups({"modeldetails"})
+     */
+    private $steady = true;
+
+    /**
      * StressPeriod constructor.
      * @param null $dateTimeBegin
      * @param null $dateTimeEnd
@@ -42,6 +50,7 @@ class StressPeriod implements \JsonSerializable
         $this->dateTimeBegin = $dateTimeBegin;
         $this->dateTimeEnd = $dateTimeEnd;
         $this->numberOfTimeSteps = $numberOfTimeSteps;
+        $this->steady = true;
     }
 
     /**
@@ -109,10 +118,30 @@ class StressPeriod implements \JsonSerializable
     }
 
     /**
-     * @param int $numberOfTimeSteps
+     * @param $numberOfTimeSteps
+     * @return $this
      */
     public function setNumberOfTimeSteps($numberOfTimeSteps)
     {
         $this->numberOfTimeSteps = $numberOfTimeSteps;
+        return $this;
+    }
+
+    /**
+     * @return boolean
+     */
+    public function isSteady()
+    {
+        return $this->steady;
+    }
+
+    /**
+     * @param boolean $steady
+     * @return $this
+     */
+    public function setSteady($steady)
+    {
+        $this->steady = $steady;
+        return $this;
     }
 }
