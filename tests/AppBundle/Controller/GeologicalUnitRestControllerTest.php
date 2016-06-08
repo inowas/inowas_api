@@ -32,6 +32,7 @@ class GeologicalUnitRestControllerTest extends WebTestCase
         $this->entityManager->flush();
 
         $this->geologicalUnit = GeologicalUnitFactory::create()
+            ->setOrder(GeologicalUnit::TOP_LAYER)
             ->setName('GeologicalUnitTest')
             ->setOwner($this->owner)
             ->setPublic(true)
@@ -76,10 +77,11 @@ class GeologicalUnitRestControllerTest extends WebTestCase
 
         $entities = $this->entityManager
             ->getRepository('AppBundle:GeologicalUnit')
-            ->findAll();
+            ->findBy(array(
+                'owner' => $user
+            ));
 
-        foreach ($entities as $entity)
-        {
+        foreach ($entities as $entity) {
             $this->entityManager->remove($entity);
         }
 

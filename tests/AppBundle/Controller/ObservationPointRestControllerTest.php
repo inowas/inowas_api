@@ -76,10 +76,11 @@ class ObservationPointRestControllerTest extends WebTestCase
 
         $entities = $this->entityManager
             ->getRepository('AppBundle:ObservationPoint')
-            ->findAll();
+            ->findBy(array(
+                'owner' => $user
+            ));
 
-        foreach ($entities as $entity)
-        {
+        foreach ($entities as $entity) {
             $this->entityManager->remove($entity);
         }
 

@@ -182,41 +182,11 @@ class ModelRestControllerTest extends WebTestCase
             ));
         $this->entityManager->remove($user);
 
-        $propertyType = $this->entityManager->getRepository('AppBundle:PropertyType')
-            ->findOneBy(array(
-                'name' => $this->propertyType->getName()
-            ));
-        $this->entityManager->remove($propertyType);
-
-        $propertyValue = $this->entityManager->getRepository('AppBundle:PropertyValue')
-            ->findOneBy(array(
-                'value' => $this->propertyValue->getValue()
-            ));
-        $this->entityManager->remove($propertyValue);
-
-        $property = $this->entityManager->getRepository('AppBundle:Property')
-            ->findOneBy(array(
-                'id' => $this->property->getId()
-            ));
-        $this->entityManager->remove($property);
-
-        $layer = $this->entityManager->getRepository('AppBundle:GeologicalLayer')
-            ->findOneBy(array(
-                'name' => $this->layer->getName()
-            ));
-        $this->entityManager->remove($layer);
-
-        $soilModel = $this->entityManager->getRepository('AppBundle:SoilModel')
-            ->findOneBy(array(
-               'name' => $this->soilModel->getName()
-            ));
-
-        $this->entityManager->remove($soilModel);
-
         $model = $this->entityManager->getRepository('AppBundle:ModFlowModel')
             ->findOneBy(array(
                'name' => $this->modFlowModel->getName()
             ));
+
         $this->entityManager->remove($model);
         $this->entityManager->flush();
         $this->entityManager->close();

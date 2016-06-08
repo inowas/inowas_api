@@ -127,10 +127,11 @@ class AreaRestControllerTest extends WebTestCase
         $this->entityManager->remove($user);
 
         $areas = $this->entityManager->getRepository('AppBundle:Area')
-            ->findAll();
+            ->findBy(array(
+                'owner' => $user
+            ));
 
-        foreach ($areas as $area)
-        {
+        foreach ($areas as $area) {
             $this->entityManager->remove($area);
         }
 
@@ -138,6 +139,7 @@ class AreaRestControllerTest extends WebTestCase
             ->findOneBy(array(
                'id' => $this->areaType->getId()
             ));
+        
         $this->entityManager->remove($areaType);
 
         $this->entityManager->flush();

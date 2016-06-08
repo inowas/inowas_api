@@ -112,10 +112,6 @@ class SoilModel
      */
     private $area;
 
-    private $boundingBox;
-    
-    private $gridSize;
-
     /**
      * Constructor
      */
@@ -160,7 +156,7 @@ class SoilModel
      *
      * @param string $name
      *
-     * @return SoilModel
+     * @return $this
      */
     public function setName($name)
     {
@@ -184,7 +180,7 @@ class SoilModel
      *
      * @param string $description
      *
-     * @return SoilModel
+     * @return $this
      */
     public function setDescription($description)
     {
@@ -208,7 +204,7 @@ class SoilModel
      *
      * @param boolean $public
      *
-     * @return SoilModel
+     * @return $this
      */
     public function setPublic($public)
     {
@@ -232,7 +228,7 @@ class SoilModel
      *
      * @param \DateTime $dateCreated
      *
-     * @return SoilModel
+     * @return $this
      */
     public function setDateCreated($dateCreated)
     {
@@ -256,7 +252,7 @@ class SoilModel
      *
      * @param \DateTime $dateModified
      *
-     * @return SoilModel
+     * @return $this
      */
     public function setDateModified($dateModified)
     {
@@ -280,7 +276,7 @@ class SoilModel
      *
      * @param \AppBundle\Entity\User $owner
      *
-     * @return SoilModel
+     * @return $this
      */
     public function setOwner(\AppBundle\Entity\User $owner = null)
     {
@@ -314,7 +310,7 @@ class SoilModel
      *
      * @param \AppBundle\Entity\ModelObject $modelObject
      *
-     * @return SoilModel
+     * @return $this
      */
     public function addModelObject(ModelObject $modelObject)
     {
@@ -375,6 +371,9 @@ class SoilModel
         }
 
         if (!$this->geologicalLayers->contains($geologicalLayer)) {
+            if (null === $geologicalLayer->getOrder()) {
+                $geologicalLayer->setOrder($this->geologicalLayers->count());
+            }
             $this->geologicalLayers[] = $geologicalLayer;
         }
 
@@ -473,7 +472,7 @@ class SoilModel
      */
     public function preFlush()
     {
-        if ($this->geologicalPoints->count() > 0 )
+        if ($this->geologicalPoints && $this->geologicalPoints->count() > 0 )
         {
             /** @var GeologicalPoint $geologicalPoint */
             foreach ($this->geologicalPoints as $geologicalPoint)
@@ -487,7 +486,7 @@ class SoilModel
             }
         }
 
-        if ($this->geologicalLayers->count() > 0 )
+        if ($this->geologicalLayers && $this->geologicalLayers->count() > 0 )
         {
             foreach ($this->geologicalLayers as $geologicalLayer)
             {
@@ -495,7 +494,7 @@ class SoilModel
             }
         }
 
-        if ($this->geologicalUnits->count() > 0 )
+        if ($this->geologicalUnits && $this->geologicalUnits->count() > 0 )
         {
             foreach ($this->geologicalUnits as $geologicalUnit)
             {

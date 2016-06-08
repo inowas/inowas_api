@@ -13,6 +13,9 @@ use JMS\Serializer\Annotation as JMS;
  */
 class GeologicalUnit extends SoilModelObject
 {
+
+    const TOP_LAYER = 0;
+
     /**
      * @var string
      * @JMS\Type("string")
@@ -26,6 +29,13 @@ class GeologicalUnit extends SoilModelObject
      * @ORM\Column(name="geometry", type="point", nullable=true)
      */
     private $point;
+
+    /**
+     * @var integer
+     *
+     * @ORM\Column(name="order_number", type="integer", nullable=false)
+     */
+    private $order;
 
     /**
      * Set point
@@ -82,5 +92,23 @@ class GeologicalUnit extends SoilModelObject
         }
 
         return null;
+    }
+
+    /**
+     * @return int
+     */
+    public function getOrder()
+    {
+        return $this->order;
+    }
+
+    /**
+     * @param int $order
+     * @return $this
+     */
+    public function setOrder($order)
+    {
+        $this->order = $order;
+        return $this;
     }
 }

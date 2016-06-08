@@ -487,12 +487,34 @@ class ModFlowModel extends AbstractModel
     }
 
     /**
+     * @param GridSize $gridSize
+     * @return $this
+     */
+    public function setGridSize($gridSize)
+    {
+        $this->gridSize = $gridSize;
+        return $this;
+    }
+    
+    /**
      * @return BoundingBox
      */
     public function getBoundingBox()
     {
         return $this->boundingBox;
     }
+
+    /**
+     * @param BoundingBox $boundingBox
+     * @return ModFlowModel
+     */
+    public function setBoundingBox($boundingBox)
+    {
+        $this->boundingBox = $boundingBox;
+        return $this;
+    }
+
+
 
     /**
      * @ORM\PreFlush()
@@ -542,11 +564,6 @@ class ModFlowModel extends AbstractModel
             {
                 $this->addModelObject($stream);
             }
-        }
-
-        if ($this->area)
-        {
-            $this->boundingBox = $this->area->getBoundingBox();
         }
     }
 

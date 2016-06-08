@@ -66,8 +66,8 @@ abstract class ModelObject
      *
      * @ORM\ManyToMany(targetEntity="AppBundle\Entity\Property", cascade={"persist", "remove"})
      * @ORM\JoinTable(name="model_objects_properties",
-     *     joinColumns={@ORM\JoinColumn(name="model_object_id", referencedColumnName="id")},
-     *     inverseJoinColumns={@ORM\JoinColumn(name="property_id", referencedColumnName="id")}
+     *     joinColumns={@ORM\JoinColumn(name="model_object_id", referencedColumnName="id", onDelete="CASCADE")},
+     *     inverseJoinColumns={@ORM\JoinColumn(name="property_id", referencedColumnName="id", onDelete="CASCADE")}
      *     )
      * @JMS\Type("ArrayCollection<AppBundle\Entity\Property>")
      * @JMS\Groups({"details", "layerdetails", "modelobjectdetails", "soilmodeldetails", "soilmodellayers"})

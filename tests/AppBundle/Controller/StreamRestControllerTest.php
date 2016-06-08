@@ -78,10 +78,11 @@ class StreamRestControllerTest extends WebTestCase
         $this->entityManager->remove($user);
 
         $entities = $this->entityManager->getRepository('AppBundle:Stream')
-            ->findAll();
+            ->findBy(array(
+                'owner' => $user
+            ));
 
-        foreach ($entities as $entity)
-        {
+        foreach ($entities as $entity) {
             $this->entityManager->remove($entity);
         }
 

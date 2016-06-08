@@ -89,10 +89,11 @@ class BoundaryRestControllerTest extends WebTestCase
         $this->entityManager->remove($user);
 
         $boundaries = $this->entityManager->getRepository('AppBundle:Boundary')
-            ->findAll();
+            ->findBy(array(
+                'owner' => $user
+            ));
 
-        foreach ($boundaries as $boundary)
-        {
+        foreach ($boundaries as $boundary) {
             $this->entityManager->remove($boundary);
         }
 

@@ -61,14 +61,13 @@ class PropertyRestControllerTest extends WebTestCase
      */
     public function tearDown()
     {
-        $entities = $this->entityManager->getRepository('AppBundle:Property')
-            ->findAll();
+        $property = $this->entityManager
+            ->getRepository('AppBundle:Property')
+            ->findOneBy(array(
+                'name' => $this->property->getName()
+            ));
 
-        foreach ($entities as $entity)
-        {
-            $this->entityManager->remove($entity);
-        }
-
+        $this->entityManager->remove($property);
         $this->entityManager->flush();
         $this->entityManager->close();
     }

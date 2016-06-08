@@ -117,7 +117,7 @@ abstract class AbstractModel
      *
      * @param string $name
      *
-     * @return AbstractModel
+     * @return $this
      */
     public function setName($name)
     {
@@ -141,7 +141,7 @@ abstract class AbstractModel
      *
      * @param string $description
      *
-     * @return AbstractModel
+     * @return $this
      */
     public function setDescription($description)
     {
@@ -165,7 +165,7 @@ abstract class AbstractModel
      *
      * @param boolean $public
      *
-     * @return AbstractModel
+     * @return $this
      */
     public function setPublic($public)
     {
@@ -189,7 +189,7 @@ abstract class AbstractModel
      *
      * @param \DateTime $dateCreated
      *
-     * @return AbstractModel
+     * @return $this
      */
     public function setDateCreated($dateCreated)
     {
@@ -213,7 +213,7 @@ abstract class AbstractModel
      *
      * @param \DateTime $dateModified
      *
-     * @return AbstractModel
+     * @return $this
      */
     public function setDateModified($dateModified)
     {
@@ -237,7 +237,7 @@ abstract class AbstractModel
      *
      * @param \AppBundle\Entity\User $owner
      *
-     * @return AbstractModel
+     * @return $this
      */
     public function setOwner(\AppBundle\Entity\User $owner = null)
     {
