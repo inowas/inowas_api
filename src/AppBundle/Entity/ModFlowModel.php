@@ -95,7 +95,6 @@ class ModFlowModel extends AbstractModel
      * @JMS\Groups({"details", "modeldetails"})
      */
     private $calculationProperties = array(
-        "grid_size" => array(),
         "stress_periods" => array(),
         "initial_values" => array(
             "property" => null,
@@ -103,22 +102,6 @@ class ModFlowModel extends AbstractModel
             "steady_state_calculation" => true,
             "interpolation" => array()          // of observationPoints
         ),
-        "calculation_type" => "steady_state",   // steady_state or transient
-        "recalculation" => true
-    );
-
-    private $outputOptions = array(
-        "point_calculation" => array(
-            "geological_point" => null,
-            "geological_layer" => null,
-            "result_property" => null,
-            "formats" => array()                // timeValues -> floats
-        ),
-        "layer_calculation" => array(
-            "geological_layer" => null,
-            "result_property" => null,
-            "formats" => array()                // timevalues -> raster, image
-        )
     );
 
     /**
@@ -457,31 +440,6 @@ class ModFlowModel extends AbstractModel
     public function getInitialValues()
     {
         return $this->calculationProperties["initial_values"];
-    }
-
-
-    /**
-     * Set outputOptions
-     *
-     * @param array $outputOptions
-     *
-     * @return ModFlowModel
-     */
-    public function setOutputOptions($outputOptions)
-    {
-        $this->outputOptions = $outputOptions;
-
-        return $this;
-    }
-
-    /**
-     * Get outputOptions
-     *
-     * @return array
-     */
-    public function getOutputOptions()
-    {
-        return $this->outputOptions;
     }
 
     /**

@@ -367,19 +367,12 @@ class ModFlowModelSerialisationTest extends \PHPUnit_Framework_TestCase
         $this->assertFalse($serializedModel->calculation_properties->recalculation);
 
         $this->modFlowModel->setCalculationProperties(array(
-            "grid_size" => array(
-                "rows" => 50,
-                "cols" => 50
-            ),
             "stress_periods" => array(),
             "initial_values" => array(
                 "property" => null,
                 "head_from_top_elevation" => 1,
                 "steady_state_calculation" => null
-            ),
-            "steady_state" => null,
-            "transient" => true,
-            "recalculation" => true
+            )
         ));
 
         $serializationContext = SerializationContext::create();
@@ -390,8 +383,6 @@ class ModFlowModelSerialisationTest extends \PHPUnit_Framework_TestCase
         $serializedModel = json_decode($serializedModel);
 
         $this->assertObjectHasAttribute("calculation_properties", $serializedModel);
-        $this->assertObjectHasAttribute("recalculation", $serializedModel->calculation_properties);
-        $this->assertTrue($serializedModel->calculation_properties->recalculation);
     }
 
     public function testCalculationPropertiesStressPeriods()
