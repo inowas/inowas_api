@@ -9,16 +9,15 @@ use JMS\Serializer\Annotation as JMS;
 
 /**
  * @ORM\Entity()
- * @ORM\Table(name="boundaries")
  */
-class Boundary extends BoundaryModelObject
+class GeneralHeadBoundary extends BoundaryModelObject
 {
     /**
      * @var string
      * @JMS\Type("string")
      * @JMS\Groups({"list", "details", "modelobjectdetails", "modelobjectlist"})
      */
-    protected $type = 'boundary';
+    protected $type = 'GHB';
 
     /**
      * @var LineString
@@ -26,14 +25,14 @@ class Boundary extends BoundaryModelObject
      * @ORM\Column(name="geometry", type="linestring", nullable=true)
      */
     private $geometry;
-
+    
     /**
      * @var ArrayCollection GeologicalLayer
      *
      * @ORM\ManyToMany(targetEntity="AppBundle\Entity\GeologicalLayer")
-     * @ORM\JoinTable(name="geological_layers_boundaries",
-     *     joinColumns={@ORM\JoinColumn(name="geological_layer_id", referencedColumnName="id")},
-     *     inverseJoinColumns={@ORM\JoinColumn(name="boundary_id", referencedColumnName="id")}
+     * @ORM\JoinTable(name="general_head_boundaries_geological_layers",
+     *     joinColumns={@ORM\JoinColumn(name="general_head_boundary_id", referencedColumnName="id")},
+     *     inverseJoinColumns={@ORM\JoinColumn(name="geological_layer_id", referencedColumnName="id")}
      *     )
      * @JMS\Groups({"list", "details", "modelobjectdetails"})
      * @JMS\MaxDepth(2)

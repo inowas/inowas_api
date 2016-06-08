@@ -9,7 +9,6 @@ use Ramsey\Uuid\Uuid;
 
 /**
  * @ORM\Entity()
- * @ORM\Table(name="wells")
  */
 class Well extends BoundaryModelObject
 {
@@ -18,7 +17,7 @@ class Well extends BoundaryModelObject
      * @JMS\Type("string")
      * @JMS\Groups({"list", "details", "modelobjectdetails", "modelobjectlist"})
      */
-    protected $type = 'well';
+    protected $type = 'WEL';
 
     /**
      * @var Point

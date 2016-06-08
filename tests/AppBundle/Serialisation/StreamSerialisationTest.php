@@ -43,7 +43,7 @@ class StreamSerialisationTest extends \PHPUnit_Framework_TestCase
 
         $this->assertStringStartsWith('{',$stream);
         $stream = json_decode($stream);
-        $this->assertEquals($stream->type, 'stream');
+        $this->assertEquals('RIV', $stream->type);
         $this->assertEquals((array) $stream->line, $this->stream->serializeDeserializeLine());
         $this->assertEquals((array) $stream->starting_point, $this->stream->serializeDeserializeStartingPoint());
     }

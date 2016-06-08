@@ -36,7 +36,7 @@ class WellSerialisationTest extends \PHPUnit_Framework_TestCase
 
         $this->assertStringStartsWith('{',$well);
         $well = json_decode($well);
-        $this->assertEquals($well->type, 'well');
+        $this->assertEquals($well->type, 'WEL');
         $this->assertObjectHasAttribute('id', $well);
         $this->assertEquals($this->well->getId(), $well->id);
         $this->assertObjectHasAttribute('name', $well);

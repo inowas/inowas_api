@@ -17,12 +17,15 @@ use Ramsey\Uuid\Uuid;
  * @ORM\DiscriminatorColumn(name="discr", type="string")
  * @ORM\DiscriminatorMap({  "ar" = "Area",
  *                          "bo" = "Boundary",
+ *                          "chb" = "ConstantHeadBoundary",
+ *                          "ghb" = "GeneralHeadBoundary",
  *                          "wbo" = "Well",
  *                          "op" = "ObservationPoint",
  *                          "gp" = "GeologicalPoint",
  *                          "gl" = "GeologicalLayer",
  *                          "gu" = "GeologicalUnit",
  *                          "st" = "Stream"
+ *
  * })
  */
 abstract class ModelObject

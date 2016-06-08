@@ -9,7 +9,6 @@ use JMS\Serializer\Annotation as JMS;
 
 /**
  * @ORM\Entity()
- * @ORM\Table(name="streams")
  */
 class Stream extends BoundaryModelObject
 {
@@ -18,7 +17,7 @@ class Stream extends BoundaryModelObject
      * @JMS\Type("string")
      * @JMS\Groups({"list", "details", "modelobjectdetails", "modelobjectlist"})
      */
-    protected $type = 'stream';
+    protected $type = 'RIV';
 
     /**
      * @var Point
