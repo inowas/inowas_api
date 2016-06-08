@@ -9,6 +9,8 @@ use AppBundle\Entity\PropertyType;
 use AppBundle\Entity\PropertyValue;
 use AppBundle\Entity\SoilModel;
 use AppBundle\Entity\User;
+use AppBundle\Model\ConstantHeadBoundaryFactory;
+use AppBundle\Model\GeneralHeadBoundaryFactory;
 use AppBundle\Model\GeologicalLayerFactory;
 use AppBundle\Model\ModFlowModelFactory;
 use AppBundle\Model\Point;
@@ -16,6 +18,7 @@ use AppBundle\Model\PropertyFactory;
 use AppBundle\Model\PropertyTypeFactory;
 use AppBundle\Model\PropertyValueFactory;
 use AppBundle\Model\SoilModelFactory;
+use AppBundle\Model\StreamFactory;
 use AppBundle\Model\UserFactory;
 use AppBundle\Model\WellFactory;
 use JMS\Serializer\Serializer;
@@ -111,12 +114,32 @@ class ModelRestControllerTest extends WebTestCase
         $this->entityManager->persist($this->modFlowModel);
         $this->entityManager->flush();
 
+        $this->modFlowModel->addBoundary(GeneralHeadBoundaryFactory::create()
+            ->setName('GHB1')
+            ->setPublic(true)
+            ->setOwner($this->owner)
+        );
+
+        $this->modFlowModel->addBoundary(ConstantHeadBoundaryFactory::create()
+            ->setName('CHB1')
+            ->setPublic(true)
+            ->setOwner($this->owner)
+        );
+
         $this->modFlowModel->addBoundary(WellFactory::create()
             ->setPoint(new Point(10, 11, 12))
             ->setName('Well1')
             ->setPublic(true)
             ->setOwner($this->owner)
         );
+
+        $this->modFlowModel->addBoundary(StreamFactory::create()
+            ->setStartingPoint(new Point(10, 11, 12))
+            ->setName('River1')
+            ->setPublic(true)
+            ->setOwner($this->owner)
+        );
+
         $this->entityManager->persist($this->modFlowModel);
         $this->entityManager->flush();
     }
@@ -161,14 +184,61 @@ class ModelRestControllerTest extends WebTestCase
         $this->assertEquals($this->layer->getId(), $modFlowModel->soil_model->geological_layers[0]->id);
     }
 
-    public function testGetModflowModelWellsDetailsAPI()
+    public function testGetModflowModelBoundariesAPI()
     {
         $client = static::createClient();
         $client->request('GET', '/api/modflowmodels/'.$this->modFlowModel->getId().'/boundaries.json');
+        $this->assertEquals(200, $client->getResponse()->getStatusCode());
+        $boundaries = json_decode($client->getResponse()->getContent());
+        $this->assertCount(4, $boundaries);
+    }
 
+    public function testGetModflowModelConstantHeadAPI()
+    {
+        $client = static::createClient();
+        $client->request('GET', '/api/modflowmodels/'.$this->modFlowModel->getId().'/constant_head.json');
+        $this->assertEquals(200, $client->getResponse()->getStatusCode());
+        $chbs = json_decode($client->getResponse()->getContent());
+        $this->assertCount(1, $chbs);
+        $chb = $chbs[0];
+        $this->assertObjectHasAttribute('type', $chb);
+        $this->assertEquals('CHB', $chb->type);
+    }
+
+    public function testGetModflowModelGeneralHeadAPI()
+    {
+        $client = static::createClient();
+        $client->request('GET', '/api/modflowmodels/'.$this->modFlowModel->getId().'/general_head.json');
+        $this->assertEquals(200, $client->getResponse()->getStatusCode());
+        $ghbs = json_decode($client->getResponse()->getContent());
+        $this->assertCount(1, $ghbs);
+        $ghb = $ghbs[0];
+        $this->assertObjectHasAttribute('type', $ghb);
+        $this->assertEquals('GHB', $ghb->type);
+    }
+
+    public function testGetModflowModelWellsAPI()
+    {
+        $client = static::createClient();
+        $client->request('GET', '/api/modflowmodels/'.$this->modFlowModel->getId().'/wells.json');
         $this->assertEquals(200, $client->getResponse()->getStatusCode());
         $wells = json_decode($client->getResponse()->getContent());
         $this->assertCount(1, $wells);
+        $well = $wells[0];
+        $this->assertObjectHasAttribute('type', $well);
+        $this->assertEquals('WEL', $well->type);
+    }
+
+    public function testGetModflowModelRiversAPI()
+    {
+        $client = static::createClient();
+        $client->request('GET', '/api/modflowmodels/'.$this->modFlowModel->getId().'/rivers.json');
+        $this->assertEquals(200, $client->getResponse()->getStatusCode());
+        $rivers = json_decode($client->getResponse()->getContent());
+        $this->assertCount(1, $rivers);
+        $river = $rivers[0];
+        $this->assertObjectHasAttribute('type', $river);
+        $this->assertEquals('RIV', $river->type);
     }
 
     /**

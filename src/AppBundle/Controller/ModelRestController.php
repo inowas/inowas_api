@@ -2,6 +2,10 @@
 
 namespace AppBundle\Controller;
 
+use AppBundle\Entity\ConstantHeadBoundary;
+use AppBundle\Entity\GeneralHeadBoundary;
+use AppBundle\Entity\Stream;
+use AppBundle\Entity\Well;
 use FOS\RestBundle\Controller\FOSRestController;
 use FOS\RestBundle\View\View;
 use JMS\Serializer\SerializationContext;
@@ -129,11 +133,11 @@ class ModelRestController extends FOSRestController
     }
 
     /**
-     * Returns a list of all Wells by ModflowModel-Id
+     * Returns a list of all Boundaries by ModflowModel-Id
      *
      * @ApiDoc(
      *   resource = true,
-     *   description = "Returns a list of all Wells by ModflowModel-Id.",
+     *   description = "Returns a list of all Boundaries by ModflowModel-Id.",
      *   statusCodes = {
      *     200 = "Returned when successful",
      *     404 = "Returned when the ModflowModel is not found"
@@ -146,7 +150,6 @@ class ModelRestController extends FOSRestController
      */
     public function getModflowmodelBoundariesAction($modelId)
     {
-
         if ($this->isGranted('ROLE_ADMIN'))
         {
             $model = $this->getDoctrine()
@@ -176,7 +179,208 @@ class ModelRestController extends FOSRestController
             throw $this->createNotFoundException('Model not found.');
         }
 
-        $wells = $model->getBoundaries();
+        $boundaries = $model->getBoundaries();
+
+        $serializationContext = SerializationContext::create();
+        $serializationContext->setGroups('modelobjectdetails');
+
+        $view = View::create();
+        $view->setData($boundaries)
+            ->setStatusCode(200)
+            ->setSerializationContext($serializationContext)
+        ;
+
+        return $view;
+    }
+
+    /**
+     * Returns a list of all Constant Head Boundaries by ModflowModel-Id
+     *
+     * @ApiDoc(
+     *   resource = true,
+     *   description = "Returns a list of all Constant Head Boundaries by ModflowModel-Id.",
+     *   statusCodes = {
+     *     200 = "Returned when successful",
+     *     404 = "Returned when the ModflowModel is not found"
+     *   }
+     * )
+     *
+     * @param $modelId
+     *
+     * @return View
+     */
+    public function getModflowmodelConstant_headAction($modelId)
+    {
+        if ($this->isGranted('ROLE_ADMIN'))
+        {
+            $model = $this->getDoctrine()
+                ->getRepository('AppBundle:ModFlowModel')
+                ->findOneBy(array(
+                    'id' => $modelId
+                ));
+        } elseif ($this->isGranted('ROLE_USER'))
+        {
+            $model = $this->getDoctrine()
+                ->getRepository('AppBundle:ModFlowModel')
+                ->findOneBy(array(
+                    'id' => $modelId,
+                    'owner' => $this->getUser()
+                ));
+        } else
+        {
+            $model = $this->getDoctrine()
+                ->getRepository('AppBundle:ModFlowModel')
+                ->findOneBy(array(
+                    'id' => $modelId,
+                    'public' => true
+                ));
+        }
+
+        if (!$model) {
+            throw $this->createNotFoundException('Model not found.');
+        }
+
+        $rivers = array();
+        $boundaries = $model->getBoundaries();
+        foreach ($boundaries as $boundary) {
+            if ($boundary instanceof ConstantHeadBoundary) {
+                $rivers[] = $boundary;
+            }
+        }
+
+        $serializationContext = SerializationContext::create();
+        $serializationContext->setGroups('modelobjectdetails');
+
+        $view = View::create();
+        $view->setData($rivers)
+            ->setStatusCode(200)
+            ->setSerializationContext($serializationContext)
+        ;
+
+        return $view;
+    }
+
+    /**
+     * Returns a list of all General Head Boundaries by ModflowModel-Id
+     *
+     * @ApiDoc(
+     *   resource = true,
+     *   description = "Returns a list of all General Head Boundaries by ModflowModel-Id.",
+     *   statusCodes = {
+     *     200 = "Returned when successful",
+     *     404 = "Returned when the ModflowModel is not found"
+     *   }
+     * )
+     *
+     * @param $modelId
+     *
+     * @return View
+     */
+    public function getModflowmodelGeneral_headAction($modelId)
+    {
+        if ($this->isGranted('ROLE_ADMIN'))
+        {
+            $model = $this->getDoctrine()
+                ->getRepository('AppBundle:ModFlowModel')
+                ->findOneBy(array(
+                    'id' => $modelId
+                ));
+        } elseif ($this->isGranted('ROLE_USER'))
+        {
+            $model = $this->getDoctrine()
+                ->getRepository('AppBundle:ModFlowModel')
+                ->findOneBy(array(
+                    'id' => $modelId,
+                    'owner' => $this->getUser()
+                ));
+        } else
+        {
+            $model = $this->getDoctrine()
+                ->getRepository('AppBundle:ModFlowModel')
+                ->findOneBy(array(
+                    'id' => $modelId,
+                    'public' => true
+                ));
+        }
+
+        if (!$model) {
+            throw $this->createNotFoundException('Model not found.');
+        }
+
+        $rivers = array();
+        $boundaries = $model->getBoundaries();
+        foreach ($boundaries as $boundary) {
+            if ($boundary instanceof GeneralHeadBoundary) {
+                $rivers[] = $boundary;
+            }
+        }
+
+        $serializationContext = SerializationContext::create();
+        $serializationContext->setGroups('modelobjectdetails');
+
+        $view = View::create();
+        $view->setData($rivers)
+            ->setStatusCode(200)
+            ->setSerializationContext($serializationContext)
+        ;
+
+        return $view;
+    }
+
+    /**
+     * Returns a list of all Wells by ModflowModel-Id
+     *
+     * @ApiDoc(
+     *   resource = true,
+     *   description = "Returns a list of all Wells by ModflowModel-Id.",
+     *   statusCodes = {
+     *     200 = "Returned when successful",
+     *     404 = "Returned when the ModflowModel is not found"
+     *   }
+     * )
+     *
+     * @param $modelId
+     *
+     * @return View
+     */
+    public function getModflowmodelWellsAction($modelId)
+    {
+        if ($this->isGranted('ROLE_ADMIN'))
+        {
+            $model = $this->getDoctrine()
+                ->getRepository('AppBundle:ModFlowModel')
+                ->findOneBy(array(
+                    'id' => $modelId
+                ));
+        } elseif ($this->isGranted('ROLE_USER'))
+        {
+            $model = $this->getDoctrine()
+                ->getRepository('AppBundle:ModFlowModel')
+                ->findOneBy(array(
+                    'id' => $modelId,
+                    'owner' => $this->getUser()
+                ));
+        } else
+        {
+            $model = $this->getDoctrine()
+                ->getRepository('AppBundle:ModFlowModel')
+                ->findOneBy(array(
+                    'id' => $modelId,
+                    'public' => true
+                ));
+        }
+
+        if (!$model) {
+            throw $this->createNotFoundException('Model not found.');
+        }
+
+        $wells = array();
+        $boundaries = $model->getBoundaries();
+        foreach ($boundaries as $boundary) {
+            if ($boundary instanceof Well) {
+                $wells[] = $boundary;
+            }
+        }
 
         $serializationContext = SerializationContext::create();
         $serializationContext->setGroups('modelobjectdetails');
@@ -190,5 +394,70 @@ class ModelRestController extends FOSRestController
         return $view;
     }
 
+    /**
+     * Returns a list of all Rivers by ModflowModel-Id
+     *
+     * @ApiDoc(
+     *   resource = true,
+     *   description = "Returns a list of all Rivers by ModflowModel-Id.",
+     *   statusCodes = {
+     *     200 = "Returned when successful",
+     *     404 = "Returned when the ModflowModel is not found"
+     *   }
+     * )
+     *
+     * @param $modelId
+     *
+     * @return View
+     */
+    public function getModflowmodelRiversAction($modelId)
+    {
+        if ($this->isGranted('ROLE_ADMIN'))
+        {
+            $model = $this->getDoctrine()
+                ->getRepository('AppBundle:ModFlowModel')
+                ->findOneBy(array(
+                    'id' => $modelId
+                ));
+        } elseif ($this->isGranted('ROLE_USER'))
+        {
+            $model = $this->getDoctrine()
+                ->getRepository('AppBundle:ModFlowModel')
+                ->findOneBy(array(
+                    'id' => $modelId,
+                    'owner' => $this->getUser()
+                ));
+        } else
+        {
+            $model = $this->getDoctrine()
+                ->getRepository('AppBundle:ModFlowModel')
+                ->findOneBy(array(
+                    'id' => $modelId,
+                    'public' => true
+                ));
+        }
 
+        if (!$model) {
+            throw $this->createNotFoundException('Model not found.');
+        }
+
+        $rivers = array();
+        $boundaries = $model->getBoundaries();
+        foreach ($boundaries as $boundary) {
+            if ($boundary instanceof Stream) {
+                $rivers[] = $boundary;
+            }
+        }
+
+        $serializationContext = SerializationContext::create();
+        $serializationContext->setGroups('modelobjectdetails');
+
+        $view = View::create();
+        $view->setData($rivers)
+            ->setStatusCode(200)
+            ->setSerializationContext($serializationContext)
+        ;
+
+        return $view;
+    }
 }

@@ -7,7 +7,7 @@ use AppBundle\Entity\ModFlowModel;
 use AppBundle\Entity\User;
 use AppBundle\Model\AreaFactory;
 use AppBundle\Model\AreaTypeFactory;
-use AppBundle\Model\BoundaryFactory;
+use AppBundle\Model\GeneralHeadBoundaryFactory;
 use AppBundle\Model\GeologicalLayerFactory;
 use AppBundle\Model\GeologicalPointFactory;
 use AppBundle\Model\GeologicalUnitFactory;
@@ -823,7 +823,7 @@ class LoadScenario_2 implements FixtureInterface, ContainerAwareInterface
         }
 
         // Add Boundary and ObservationPoints
-        $boundary = BoundaryFactory::create()
+        $boundary = GeneralHeadBoundaryFactory::create()
             ->setOwner($user)
             ->setName('SC2_B1')
             ->setPublic(true)
@@ -1006,7 +1006,7 @@ class LoadScenario_2 implements FixtureInterface, ContainerAwareInterface
         foreach ($wells as $row) {
             $well = array_combine($header, $row);
 
-            $model->addWell(WellFactory::create()
+            $model->addBoundary(WellFactory::create()
                 ->setOwner($user)
                 ->setName($well['name'])
                 ->setPublic($public)
