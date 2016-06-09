@@ -34,12 +34,6 @@ class Modflow
     /** @var  string */
     private $dataFolder;
 
-    /** @var array $data */
-    protected $data;
-
-    /** @var string $method */
-    protected $method;
-
     /** @var  Serializer */
     protected $serializer;
 
@@ -124,9 +118,37 @@ class Modflow
         return $this->dataFolder;
     }
 
+    /**
+     * @return string
+     */
+    public function getWorkingDirectory()
+    {
+        return $this->kernel->getRootDir() . '/../py/pyprocessing/modflow';
+    }
+
+    /**
+     * @param $modelId
+     * @return string
+     */
     public function getWorkSpace($modelId)
     {
         return $this->kernel->getRootDir().'/'.$this->dataFolder.'/'.$modelId;
+    }
+
+    /**
+     * @return string
+     */
+    private function getInputFileName()
+    {
+        return $this->tmpFolder . '/' . $this->tmpFileName . '.in';
+    }
+
+    /**
+     * @return string
+     */
+    private function getOutputFileName()
+    {
+        return $this->tmpFolder . '/' . $this->tmpFileName . '.out';
     }
 
     public function clear()
@@ -135,6 +157,42 @@ class Modflow
         $this->tmpFileName = Uuid::uuid4()->toString();
     }
 
+    /**
+     * @param $modelId
+     * @param $propertiesJSON
+     * @return Process
+     */
+    private function getResultsProcess($modelId, $propertiesJSON)
+    {
+        $fs = new Filesystem();
+        if (!$fs->exists($this->tmpFolder)) {
+            $fs->mkdir($this->tmpFolder);
+        }
+
+        $fs->dumpFile($this->getInputFileName(), $propertiesJSON);
+        $scriptName = "modflowResult.py";
+
+        /** @var Process $process */
+        $process = $this->pythonProcess
+            ->setArguments(array(
+                '-W',
+                'ignore',
+                $scriptName,
+                $this->getBaseUrl(),
+                $this->getWorkSpace($modelId),
+                $this->getInputFileName(),
+                $this->getOutputFileName()))
+            ->setWorkingDirectory($this->getWorkingDirectory())
+            ->getProcess();
+
+        return $process;
+    }
+
+    /**
+     * @param $modelId
+     * @param string $executable
+     * @return string
+     */
     public function calculate($modelId, $executable=self::MODFLOW_2005)
     {
         if (!in_array($executable, $this->availableExecutables)) {
@@ -153,16 +211,21 @@ class Modflow
             $fs->mkdir($this->tmpFolder);
         }
 
-        $inputFileName = $this->tmpFolder . '/' . $this->tmpFileName . '.in';
-        $fs->dumpFile($inputFileName, $modflowCalculationPropertiesJSON);
+        $fs->dumpFile($this->getInputFileName(), $modflowCalculationPropertiesJSON);
 
         $scriptName = "modflowCalculation.py";
-        $workspace = $this->getWorkSpace($modelId);
 
         /** @var Process $process */
         $process = $this->pythonProcess
-            ->setArguments(array('-W', 'ignore', $scriptName, $this->getBaseUrl(), $executable, $workspace, $inputFileName))
-            ->setWorkingDirectory($this->kernel->getRootDir() . '/../py/pyprocessing/modflow')
+            ->setArguments(array(
+                '-W',
+                'ignore',
+                $scriptName,
+                $this->getBaseUrl(),
+                $executable,
+                $this->getWorkSpace($modelId),
+                $this->getInputFileName()))
+            ->setWorkingDirectory($this->getWorkingDirectory())
             ->getProcess();
 
         $process->run();
@@ -175,6 +238,13 @@ class Modflow
         return $this->stdOut;
     }
 
+    /**
+     * @param $modelId
+     * @param $operation
+     * @param int $layer
+     * @param array $timesteps
+     * @return string
+     */
     public function getRasterResult($modelId, $operation, $layer=0, $timesteps=array())
     {
         $modflowRasterResultProperties = new ModflowRasterResultProperties($modelId, $layer, $operation);
@@ -185,23 +255,11 @@ class Modflow
             SerializationContext::create()->setGroups(array('modflowProcess'))
         );
 
-        $fs = new Filesystem();
-        if (!$fs->exists($this->tmpFolder)) {
-            $fs->mkdir($this->tmpFolder);
+        $process = $this->getResultsProcess($modelId, $modflowRasterResultPropertiesJSON);
+        $process->run();
+        if (!$process->isSuccessful()) {
+            throw new ProcessFailedException($process);
         }
-
-        $inputFileName = $this->tmpFolder . '/' . $this->tmpFileName . '.in';
-        $outputFileName = $this->tmpFolder . '/' . $this->tmpFileName . '.out';
-        $fs->dumpFile($inputFileName, $modflowRasterResultPropertiesJSON);
-
-        $scriptName = "modflowResult.py";
-        $workspace = $this->getWorkSpace($modelId);
-
-        /** @var Process $process */
-        $process = $this->pythonProcess
-            ->setArguments(array('-W', 'ignore', $scriptName, $this->getBaseUrl(), $workspace, $inputFileName, $outputFileName))
-            ->setWorkingDirectory($this->kernel->getRootDir() . '/../py/pyprocessing/modflow')
-            ->getProcess();
 
         $process->run();
         if (!$process->isSuccessful()) {
@@ -213,6 +271,14 @@ class Modflow
         return $this->stdOut;
     }
 
+    /**
+     * @param $modelId
+     * @param $layer
+     * @param $row
+     * @param $col
+     * @param array $timesteps
+     * @return string
+     */
     public function getTimeseriesResult($modelId, $layer, $row, $col, $timesteps=array())
     {
         $modflowTimeSeriesResultProperties = new ModflowTimeSeriesResultProperties($modelId, $layer, $row, $col);
@@ -223,24 +289,7 @@ class Modflow
             SerializationContext::create()->setGroups(array('modflowProcess'))
         );
 
-        $fs = new Filesystem();
-        if (!$fs->exists($this->tmpFolder)) {
-            $fs->mkdir($this->tmpFolder);
-        }
-
-        $inputFileName = $this->tmpFolder . '/' . $this->tmpFileName . '.in';
-        $outputFileName = $this->tmpFolder . '/' . $this->tmpFileName . '.out';
-        $fs->dumpFile($inputFileName, $modflowTimeSeriesResultPropertiesJSON);
-
-        $scriptName = "modflowResult.py";
-        $workspace = $this->getWorkSpace($modelId);
-
-        /** @var Process $process */
-        $process = $this->pythonProcess
-            ->setArguments(array('-W', 'ignore', $scriptName, $this->getBaseUrl(), $workspace, $inputFileName, $outputFileName))
-            ->setWorkingDirectory($this->kernel->getRootDir() . '/../py/pyprocessing/modflow')
-            ->getProcess();
-
+        $process = $this->getResultsProcess($modelId, $modflowTimeSeriesResultPropertiesJSON);
         $process->run();
         if (!$process->isSuccessful()) {
             throw new ProcessFailedException($process);
@@ -249,22 +298,6 @@ class Modflow
         $jsonResponse = $process->getOutput();
         $this->stdOut .= $jsonResponse;
         return $this->stdOut;
-    }
-
-    /**
-     * @return mixed
-     */
-    public function getData()
-    {
-        return $this->data;
-    }
-
-    /**
-     * @return string
-     */
-    public function getMethod()
-    {
-        return $this->method;
     }
 
     /**
