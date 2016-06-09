@@ -19,3 +19,5 @@ parameters:
     secret:            ThisTokenIsNotSoSecretChangeIt
 
     inowas.python_process.prefix: python
+    inowas.modflow.data_folder:  ../py/pyprocessing/data/modflow
+    inowas.modflow.api_base_url: http://localhost/

@@ -1,12 +1,16 @@
 # Learn more about services, parameters and containers at
 # http://symfony.com/doc/current/book/service_container.html
-# parameters:
-#    inowas.python_process.prefix:  python
+#parameters:
+#    inowas.modflow.data_folder:  ../py/pyprocessing/data/modflow
 
 services:
     inowas.interpolation:
         class: AppBundle\Service\Interpolation
         arguments: ['@serializer', '@kernel', '@inowas.python_process']
+
+    inowas.modflow:
+        class: AppBundle\Service\Modflow
+        arguments: ['@serializer', '@kernel', '@inowas.python_process', '%inowas.modflow.data_folder%', '%inowas.modflow.api_base_url%']
 
     inowas.soilmodel:
         class: AppBundle\Service\SoilModelService
