@@ -4,7 +4,7 @@ namespace AppBundle\Tests\Controller;
 
 use AppBundle\Entity\ModFlowModel;
 use AppBundle\Model\ModFlowModelFactory;
-use AppBundle\Model\ModflowProcess\ModflowRasterResultProcess;
+use AppBundle\Model\ModflowProperties\ModflowRasterResultProperties;
 use JMS\Serializer\SerializationContext;
 use JMS\Serializer\Serializer;
 use JMS\Serializer\SerializerBuilder;
@@ -17,7 +17,7 @@ class ModflowRasterResultSerialisationTest extends \PHPUnit_Framework_TestCase
     /** @var  ModFlowModel */
     protected $model;
 
-    /** @var ModflowRasterResultProcess */
+    /** @var ModflowRasterResultProperties */
     protected $modflowRasterResult;
 
     public function setUp()
@@ -25,10 +25,10 @@ class ModflowRasterResultSerialisationTest extends \PHPUnit_Framework_TestCase
         /** @var ModFlowModel $model */
         $this->model = ModFlowModelFactory::create();
         $this->serializer = SerializerBuilder::create()->build();
-        $this->modflowRasterResult = new ModflowRasterResultProcess(
+        $this->modflowRasterResult = new ModflowRasterResultProperties(
             $this->model->getId()->toString(),
             2,
-            ModflowRasterResultProcess::OP_DELTA
+            ModflowRasterResultProperties::OP_DELTA
         );
         $this->modflowRasterResult->addTimestep(3);
         $this->modflowRasterResult->addTimestep(4);

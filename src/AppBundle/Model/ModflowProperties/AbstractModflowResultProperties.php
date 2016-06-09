@@ -1,6 +1,6 @@
 <?php
 
-namespace AppBundle\Model\ModflowProcess;
+namespace AppBundle\Model\ModflowProperties;
 
 use JMS\Serializer\Annotation as JMS;
 
@@ -8,7 +8,7 @@ use JMS\Serializer\Annotation as JMS;
  * Class AbstractModflowResultProcess
  * @package AppBundle\Model\Modflow
  */
-abstract class AbstractModflowResultProcess extends AbstractModflowProcess
+abstract class AbstractModflowResultProperties extends AbstractModflowProperties
 {
     /**
      * @var bool

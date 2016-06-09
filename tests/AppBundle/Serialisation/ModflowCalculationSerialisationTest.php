@@ -4,7 +4,7 @@ namespace AppBundle\Tests\Controller;
 
 use AppBundle\Entity\ModFlowModel;
 use AppBundle\Model\ModFlowModelFactory;
-use AppBundle\Model\ModflowProcess\ModflowCalculationProcess;
+use AppBundle\Model\ModflowProperties\ModflowCalculationProperties;
 use JMS\Serializer\SerializationContext;
 use JMS\Serializer\Serializer;
 use JMS\Serializer\SerializerBuilder;
@@ -17,7 +17,7 @@ class ModflowCalculationSerialisationTest extends \PHPUnit_Framework_TestCase
     /** @var  ModFlowModel */
     protected $model;
 
-    /** @var ModflowCalculationProcess */
+    /** @var ModflowCalculationProperties */
     protected $modflowCalculation;
 
     public function setUp()
@@ -25,7 +25,7 @@ class ModflowCalculationSerialisationTest extends \PHPUnit_Framework_TestCase
         /** @var ModFlowModel $model */
         $this->model = ModFlowModelFactory::create();
         $this->serializer = SerializerBuilder::create()->build();
-        $this->modflowCalculation = new ModflowCalculationProcess($this->model->getId()->toString());
+        $this->modflowCalculation = new ModflowCalculationProperties($this->model->getId()->toString());
     }
 
     public function testModflowCalculationProcess()

@@ -4,7 +4,7 @@ namespace AppBundle\Tests\Controller;
 
 use AppBundle\Entity\ModFlowModel;
 use AppBundle\Model\ModFlowModelFactory;
-use AppBundle\Model\ModflowProcess\ModflowTimeSeriesResultProcess;
+use AppBundle\Model\ModflowProperties\ModflowTimeSeriesResultProperties;
 use JMS\Serializer\SerializationContext;
 use JMS\Serializer\Serializer;
 use JMS\Serializer\SerializerBuilder;
@@ -17,7 +17,7 @@ class ModflowTimeSeriesResultSerialisationTest extends \PHPUnit_Framework_TestCa
     /** @var  ModFlowModel */
     protected $model;
 
-    /** @var ModflowTimeSeriesResultProcess */
+    /** @var ModflowTimeSeriesResultProperties */
     protected $modflowTimeSeriesResult;
 
     public function setUp()
@@ -25,7 +25,7 @@ class ModflowTimeSeriesResultSerialisationTest extends \PHPUnit_Framework_TestCa
         /** @var ModFlowModel $model */
         $this->model = ModFlowModelFactory::create();
         $this->serializer = SerializerBuilder::create()->build();
-        $this->modflowTimeSeriesResult = new ModflowTimeSeriesResultProcess(
+        $this->modflowTimeSeriesResult = new ModflowTimeSeriesResultProperties(
             $this->model->getId()->toString(),
             2,
             3,

@@ -1,28 +1,21 @@
 <?php
 
-namespace AppBundle\Model\ModflowProcess;
+namespace AppBundle\Model\ModflowProperties;
 
 use JMS\Serializer\Annotation as JMS;
 
 /**
- * Class ModflowRasterResultProcess
- * @package AppBundle\Model\Modflow
+ * Class ModflowTimeSeriesResultProcess
+ * @package AppBundle\Model\ModflowProcess
  */
-class ModflowRasterResultProcess extends AbstractModflowResultProcess
+class ModflowTimeSeriesResultProperties extends AbstractModflowResultProperties
 {
-    const OP_DELTA = 'delta';
-    const OP_MAX = 'max';
-    const OP_MEAN = 'mean';
-    const OP_MIN = 'min';
-    const OP_RAW = 'raw';
-    const OP_STANDARD_DEVIATION = 'standard_deviation';
-
     /**
      * @var string
      *
      * @JMS\Groups("modflowProcess")
      */
-    protected $output_type = 'raster';
+    protected $output_type = 'time_series';
 
     /**
      * @var integer
@@ -32,6 +25,20 @@ class ModflowRasterResultProcess extends AbstractModflowResultProcess
     protected $layer;
 
     /**
+     * @var integer
+     *
+     * @JMS\Groups("modflowProcess")
+     */
+    protected $cell_y;
+
+    /**
+     * @var integer
+     *
+     * @JMS\Groups("modflowProcess")
+     */
+    protected $cell_x;
+
+    /**
      * @var array
      *
      * @JMS\Groups("modflowProcess")
@@ -39,23 +46,18 @@ class ModflowRasterResultProcess extends AbstractModflowResultProcess
     protected $timesteps;
 
     /**
-     * @var string
-     *
-     * @JMS\Groups("modflowProcess")
-     */
-    protected $operation;
-
-    /**
-     * ModflowRasterResultProcess constructor.
+     * ModflowTimeSeriesResultProcess constructor.
      * @param $modelId
      * @param int $layer
-     * @param string $operation
+     * @param int $row
+     * @param int $column
      */
-    public function __construct($modelId, $layer = 0, $operation = self::OP_RAW)
+    public function __construct($modelId, $layer = 0, $row = 0, $column = 0)
     {
         parent::__construct($modelId);
         $this->layer = $layer;
-        $this->operation = $operation;
+        $this->cell_y = $row;
+        $this->cell_x = $column;
         $this->timesteps = array();
     }
 
@@ -69,12 +71,42 @@ class ModflowRasterResultProcess extends AbstractModflowResultProcess
 
     /**
      * @param int $layer
-     * @return ModflowRasterResultProcess
      */
     public function setLayer($layer)
     {
         $this->layer = $layer;
-        return $this;
+    }
+
+    /**
+     * @return int
+     */
+    public function getCellY()
+    {
+        return $this->cell_y;
+    }
+
+    /**
+     * @param int $cell_y
+     */
+    public function setCellY($cell_y)
+    {
+        $this->cell_y = $cell_y;
+    }
+
+    /**
+     * @return int
+     */
+    public function getCellX()
+    {
+        return $this->cell_x;
+    }
+
+    /**
+     * @param int $cell_x
+     */
+    public function setCellX($cell_x)
+    {
+        $this->cell_x = $cell_x;
     }
 
     /**
@@ -87,12 +119,10 @@ class ModflowRasterResultProcess extends AbstractModflowResultProcess
 
     /**
      * @param array $timesteps
-     * @return ModflowRasterResultProcess
      */
     public function setTimesteps($timesteps)
     {
         $this->timesteps = $timesteps;
-        return $this;
     }
 
     /**
@@ -105,21 +135,4 @@ class ModflowRasterResultProcess extends AbstractModflowResultProcess
         return $this;
     }
 
-    /**
-     * @return string
-     */
-    public function getOperation()
-    {
-        return $this->operation;
-    }
-
-    /**
-     * @param string $operation
-     * @return ModflowRasterResultProcess
-     */
-    public function setOperation($operation)
-    {
-        $this->operation = $operation;
-        return $this;
-    }
 }

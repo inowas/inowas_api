@@ -2,6 +2,7 @@
 
 namespace AppBundle\Service;
 
+use AppBundle\Model\ModflowProcess\ModflowCalculationProperties;
 use Doctrine\Common\Collections\ArrayCollection;
 use JMS\Serializer\SerializationContext;
 use JMS\Serializer\Serializer;
@@ -128,73 +129,45 @@ class Modflow
         $this->tmpFileName = Uuid::uuid4()->toString();
     }
 
-    public function calculate($executable)
+    public function calculate($modelId, $executable=self::MODFLOW_2005)
     {
-        if (is_array($executable)) {
-            $executables = $executable;
-        } else {
-            $executables = array();
-            $executables[] = $executable;
+        if (!in_array($executable, $this->availableExecutables)) {
+            throw new NotFoundHttpException();
         }
 
-        foreach ($executables as $executable) {
-            if (!in_array($executable, $this->availableExecutables)) {
-                throw new NotFoundHttpException(sprintf('Algorithm %s not found.', $executable));
-            }
+        $modflowCalculationProperties = new ModflowCalculationProperties($modelId);
+        $modflowCalculationPropertiesJSON = $this->serializer->serialize(
+            $modflowCalculationProperties,
+            'json',
+            SerializationContext::create()->setGroups(array('modflowProcess'))
+        );
+
+        $fs = new Filesystem();
+        if (!$fs->exists($this->tmpFolder)) {
+            $fs->mkdir($this->tmpFolder);
         }
 
-        for ($i = 0; $i < count($executables); $i++) {
+        $inputFileName = $this->tmpFolder . '/' . $this->tmpFileName . '.in';
+        $fs->dumpFile($inputFileName, $modflowCalculationPropertiesJSON);
+        $outputFileName = $this->tmpFolder . '/' . $this->tmpFileName . '.out';
 
-            $class = 'AppBundle\Model\Interpolation\\' . ucfirst($algorithms[$i]) . 'Interpolation';
-            $interpolation = new $class($this->gridSize, $this->boundingBox, $this->points);
+        $scriptName = "modflowCalculation.py";
+        $workspace = "../data/modflow/".$modelId;
+        $baseUrl = "http://localhost:8090";
 
-            $interpolationJSON = $this->serializer->serialize(
-                $interpolation,
-                'json',
-                SerializationContext::create()->setGroups(array('interpolation'))
-            );
+        /** @var Process $process */
+        $process = $this->pythonProcess
+            ->setArguments(array('-W', 'ignore', $scriptName, $baseUrl, $executable, $workspace, $inputFileName))
+            ->setWorkingDirectory($this->kernel->getRootDir() . '/../py/pyprocessing/modflow')
+            ->getProcess();
 
-            $fs = new Filesystem();
-            if (!$fs->exists($this->tmpFolder)) {
-                $fs->mkdir($this->tmpFolder);
-            }
-
-            $inputFileName = $this->tmpFolder . '/' . $this->tmpFileName . '.in';
-            $fs->dumpFile($inputFileName, $interpolationJSON);
-            $outputFileName = $this->tmpFolder . '/' . $this->tmpFileName . '.out';
-
-            $scriptName = "interpolationCalculation.py";
-
-            /** @var Process $process */
-            $process = $this->pythonProcess
-                ->setArguments(array('-W', 'ignore', $scriptName, $inputFileName, $outputFileName))
-                ->setWorkingDirectory($this->kernel->getRootDir() . '/../py/pyprocessing/interpolation')
-                ->getProcess();
-
-            $process->run();
-            if (!$process->isSuccessful()) {
-                throw new ProcessFailedException($process);
-            }
-
-            $jsonResponse = $process->getOutput();
-            $this->stdOut .= $jsonResponse;
-            $response = json_decode($jsonResponse);
-
-            if (isset($response->error)) {
-                if ($i == count($algorithms)) {
-                    throw new \Exception('Error in calculation');
-                }
-            } elseif (isset($response->success)) {
-                $jsonResults = file_get_contents($outputFileName);
-                $results = json_decode($jsonResults);
-                $this->method = $results->method;
-                $this->data = $results->raster;
-                break;
-            }
-
-            $this->stdOut .= $jsonResponse;
+        $process->run();
+        if (!$process->isSuccessful()) {
+            throw new ProcessFailedException($process);
         }
 
+        $jsonResponse = $process->getOutput();
+        $this->stdOut .= $jsonResponse;
         return $this->stdOut;
     }
 
