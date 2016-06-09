@@ -2,9 +2,6 @@
 
 namespace AppBundle\Service;
 
-use AppBundle\Model\Interpolation\BoundingBox;
-use AppBundle\Model\Interpolation\GridSize;
-use AppBundle\Model\Interpolation\PointValue;
 use Doctrine\Common\Collections\ArrayCollection;
 use JMS\Serializer\SerializationContext;
 use JMS\Serializer\Serializer;
@@ -15,36 +12,28 @@ use Symfony\Component\HttpKernel\KernelInterface;
 use Symfony\Component\Process\Exception\ProcessFailedException;
 use Symfony\Component\Process\Process;
 
-class Interpolation
+class Modflow
 {
-    const TYPE_IDW = 'idw';
-    const TYPE_KRIGING = 'kriging';
-    const TYPE_MEAN = 'mean';
-    const TYPE_GAUSSIAN = 'gaussian';
+    const MODFLOW_2005  = "mf2005";
+    const MODFLOW_NWT   = "mfnwt";
 
     /** @var array */
-    private $availableTypes = [self::TYPE_KRIGING, self::TYPE_MEAN, self::TYPE_GAUSSIAN, self::TYPE_IDW];
+    private $availableExecutables = [self::MODFLOW_2005];
 
     /** @var string  */
-    private $tmpFolder = '/tmp/interpolation';
+    private $tmpFolder = '/tmp/modflow';
 
     /** @var string  */
     private $tmpFileName = '';
 
-    /** @var  GridSize */
-    protected $gridSize;
-
-    /** @var  BoundingBox */
-    protected $boundingBox;
+    /** @var string  */
+    private $workspace = '';
 
     /** @var array $data */
     protected $data;
 
     /** @var string $method */
     protected $method;
-
-    /** @var ArrayCollection PointValue */
-    protected $points;
 
     /** @var  Serializer */
     protected $serializer;
@@ -67,11 +56,11 @@ class Interpolation
     public function __construct($serializer, $kernel, $pythonProcess)
     {
         $this->points = new ArrayCollection();
-        $this->serializer = $serializer;
-        $this->kernel = $kernel;
         $this->pythonProcess = $pythonProcess;
-        $this->tmpFileName = Uuid::uuid4()->toString();
+        $this->kernel = $kernel;
+        $this->serializer = $serializer;
         $this->stdOut = '';
+        $this->tmpFileName = Uuid::uuid4()->toString();
     }
     
     /**
@@ -111,105 +100,50 @@ class Interpolation
     }
 
     /**
-     * @param GridSize $gridSize
-     * @return $this
+     * @return string
      */
-    public function setGridSize(GridSize $gridSize)
+    public function getWorkspace()
     {
-        $this->gridSize = $gridSize;
+        return $this->workspace;
+    }
+
+    /**
+     * @param string $workspace
+     * @return Modflow
+     */
+    public function setWorkspace($workspace)
+    {
+        $this->workspace = $workspace;
         return $this;
     }
 
-    /**
-     * @return GridSize
-     */
-    public function getGridSize()
-    {
-        return $this->gridSize;
-    }
 
-    /**
-     * @param BoundingBox $boundingBox
-     * @return $this
-     */
-    public function setBoundingBox(BoundingBox $boundingBox)
-    {
-        $this->boundingBox = $boundingBox;
-        return $this;
-    }
-
-    /**
-     * @return BoundingBox
-     */
-    public function getBoundingBox()
-    {
-        return $this->boundingBox;
-    }
-    
-    public function addPoint(PointValue $pointValue)
-    {
-        if (!$this->points->contains($pointValue)){
-            $this->points[] = $pointValue;
-        }
-    }
-
-    public function removePoint(PointValue $pointValue)
-    {
-        if ($this->points->contains($pointValue)) {
-            $this->points->removeElement($pointValue);
-        }
-    }
-
-    /**
-     * @return ArrayCollection
-     */
-    public function getPoints()
-    {
-        return $this->points;
-    }
 
     public function clear()
     {
         $this->data = null;
-        $this->boundingBox = null;
-        $this->gridSize = null;
         $this->method = null;
         $this->points = new ArrayCollection();
         $this->stdOut = "";
         $this->tmpFileName = Uuid::uuid4()->toString();
     }
 
-    public function interpolate($algorithm)
+    public function calculate($executable)
     {
-        $this->data = array();
-        $this->method = '';
-        
-        if (is_array($algorithm)) {
-            $algorithms = $algorithm;
+        if (is_array($executable)) {
+            $executables = $executable;
         } else {
-            $algorithms = array();
-            $algorithms[] = $algorithm;
+            $executables = array();
+            $executables[] = $executable;
         }
 
-        foreach ($algorithms as $algorithm) {
-            if (!in_array($algorithm, $this->availableTypes)) {
-                throw new NotFoundHttpException(sprintf('Algorithm %s not found.', $algorithm));
+        foreach ($executables as $executable) {
+            if (!in_array($executable, $this->availableExecutables)) {
+                throw new NotFoundHttpException(sprintf('Algorithm %s not found.', $executable));
             }
         }
 
-        if (!$this->gridSize instanceof GridSize) {
-            throw new NotFoundHttpException('GridSize not set.');
-        }
-
-        if (!$this->boundingBox instanceof BoundingBox) {
-            throw new NotFoundHttpException('BoundingBox not set.');
-        }
-
-        if ($this->points->count() == 0) {
-            throw new NotFoundHttpException('No PointValues set.');
-        }
-
-        for ($i = 0; $i < count($algorithms); $i++) {
+        for ($i = 0; $i < count($executables); $i++) {
 
             $class = 'AppBundle\Model\Interpolation\\' . ucfirst($algorithms[$i]) . 'Interpolation';
             $interpolation = new $class($this->gridSize, $this->boundingBox, $this->points);
@@ -264,6 +198,10 @@ class Interpolation
         return $this->stdOut;
     }
 
+    public function getResult()
+    {
+        
+    }
     /**
      * @return mixed
      */

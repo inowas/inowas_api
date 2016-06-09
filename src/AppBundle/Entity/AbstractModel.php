@@ -105,7 +105,7 @@ abstract class AbstractModel
     /**
      * Get id
      *
-     * @return int
+     * @return Uuid
      */
     public function getId()
     {
