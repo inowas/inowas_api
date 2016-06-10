@@ -16,4 +16,14 @@ class AreaRepository extends EntityRepository
 
         return $query->getSingleScalarResult();
     }
+
+    public function getAreaPolygonIn4326($id)
+    {
+        $query = $this->getEntityManager()
+            ->createQuery('SELECT ST_AsGeoJson(ST_Transform(a.geometry, 4326)) FROM AppBundle:Area a WHERE a.id = :id')
+            ->setParameter('id', $id)
+        ;
+
+        return $query->getSingleScalarResult();
+    }
 }

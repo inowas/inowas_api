@@ -6,6 +6,7 @@ use FOS\RestBundle\Controller\FOSRestController;
 use FOS\RestBundle\View\View;
 use JMS\Serializer\SerializationContext;
 use Nelmio\ApiDocBundle\Annotation\ApiDoc;
+use Symfony\Component\HttpFoundation\Response;
 
 class AreaRestController extends FOSRestController
 {
@@ -101,6 +102,46 @@ class AreaRestController extends FOSRestController
                     ->setGroups(array('modelobjectdetails')));
 
             return $view;
+        } else
+        {
+            throw $this->createAccessDeniedException();
+        }
+    }
+
+    /**
+     * Returns the area geometry in geoJson by area-id
+     *
+     * @ApiDoc(
+     *   resource = true,
+     *   description = "Returns the area geometry in geoJson by area-id",
+     *   statusCodes = {
+     *     200 = "Returned when successful",
+     *     404 = "Returned when the user is not found"
+     *   }
+     * )
+     *
+     * @param string $id area-id
+     *
+     * @return View
+     */
+    public function getAreaGeometryAction($id)
+    {
+        $area = $this->getDoctrine()
+            ->getRepository('AppBundle:Area')
+            ->findOneBy(array(
+                'id' => $id
+            ));
+
+        if (!$area) {
+            throw $this->createNotFoundException('Area with id='.$id.' not found.');
+        }
+
+        if ($area->getPublic() || $this->isGranted('ROLE_ADMIN') || $this->getUser() === $area->getOwner())
+        {
+            $geometry = $this->getDoctrine()->getRepository('AppBundle:Area')
+                ->getAreaPolygonIn4326($id);
+
+            return new Response($geometry);
         } else
         {
             throw $this->createAccessDeniedException();

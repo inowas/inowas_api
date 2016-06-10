@@ -86,7 +86,28 @@ class AreaTest extends WebTestCase
         $surface = $this->entityManager->getRepository('AppBundle:Area')
             ->getAreaSurfaceById($this->area->getId());
 
-        var_dump($surface);
+        dump($surface);
+    }
+
+    public function testTransformAreaPolygonFrom3857To4326()
+    {
+        $this->area->setGeometry(new Polygon(array(
+            array(
+                array(11777056.491046, 2403440.170283),
+                array(11777973.943604, 2403506.4981163),
+                array(11780228.126983, 2402856.268207),
+                array(11781703.598808, 2401713.2252019),
+                array(11782192.897154, 2400859.2025428),
+                array(11777056.491046, 2403440.170283)
+            )), 3857));
+
+        $this->entityManager->persist($this->area);
+        $this->entityManager->flush();
+
+        $polygon = $this->entityManager->getRepository('AppBundle:Area')
+            ->getAreaPolygonIn4326($this->area->getId());
+
+        dump($polygon);
     }
 
     /**

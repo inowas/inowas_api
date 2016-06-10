@@ -236,6 +236,12 @@
         $.getJSON( "/api/areas/{{ model.area.id }}.json", function( data ) {
             $(".area_surface").text("Surface: " + data.surface + " sqm");
         });
+
+        $.getJSON( "/api/areas/{{ model.area.id }}/geometry.json", function( data ) {
+            poly = L.geoJson(data).addTo(area_map).bindPopup("Groundwater model area Hanoi II.");
+            area_map.fitBounds(poly.getBounds());
+        });
+
     });
 
 </script>
