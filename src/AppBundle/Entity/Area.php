@@ -121,12 +121,21 @@ class Area extends ModelObject
     {
         $polygons = null;
 
-        if (!is_null($this->geometry)) {
+        if (!is_null($this->geometry))
+        {
+            $new = array();
             $polygons = $this->geometry->toArray();
-            $polygons["type"] = $this->geometry->getType();
-            $polygons["srid"] = $this->geometry->getSrid();
+
+            foreach ($polygons as $polygon)
+            {
+                $polygon["type"] = $this->geometry->getType();
+                $polygon["srid"] = $this->geometry->getSrid();
+                $new[] = $polygon;
+            }
+
+            unset($polygons);
+            $polygons = $new;
         }
-        
         return $polygons;
     }
 
