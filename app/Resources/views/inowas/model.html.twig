@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8" />
-    <title>INOWAS HTML-ToolBox</title>
+    <title>Modflow-Model {{ model.name }}</title>
     <link rel="stylesheet" type="text/css" href="{{ asset('vendor/bootstrap/dist/css/bootstrap.min.css') }}" />
     <link rel="stylesheet" type="text/css" href="{{ asset('vendor/font-awesome/css/font-awesome.min.css') }}" />
     <link rel="stylesheet" type="text/css" href="{{ asset('vendor/leaflet/dist/leaflet.css') }}" />
@@ -55,7 +55,7 @@
         <ol class="breadcrumb">
             <li><a href="#">Models</a></li>
             <li><a href="#">Modflow</a></li>
-            <li class="modelname active">{{ model.id }}</li>
+            <li class="modelname active">{{ model.name }}</li>
         </ol>
     </div>
 
@@ -64,8 +64,8 @@
             <img class="img-thumbnail" src="{{ asset('img/asia.png') }}" style="margin-top: 18px">
         </div>
         <div class="col-sm-11">
-            <h3 class="modelname">Hanoi II</h3>
-            <p class="modelsummary"></p>
+            <h3 class="modelname">{{ model.name }}</h3>
+            <p class="modelsummary">Groundwater Model: {{ model.createTextOverview }}</p>
 
         </div>
     </div>
@@ -73,7 +73,7 @@
     <div class="row">
         <div class="col-sm-offset-1 col-sm-11">
             <hr>
-            <h4>Here can go some more Status-Information</h4>
+            <h4>Created on {{ model.dateCreated | date("d-m-Y") }}</h4>
         </div>
     </div>
     <hr>
@@ -98,21 +98,7 @@
                         <div class="panel panel-default">
                             <div class="panel-body">
                                 <div class="row">
-                                    <div class="col-sm-6">
-                                        <h3>Description</h3>
-                                        <p class="modeldescription"></p>
-                                        <p class="layers"></p>
-                                        <p class="gridsize"></p>
-                                        <h3>Area</h3>
-                                        <p class="area_surface"></p>
-                                        <h3>Soilmodel</h3>
-                                        <p class="soilmodelsummary"></p>
-                                        <h3>Stressperiods</h3>
-                                        <ul class="stressperiods">
-                                            <li class=""></li>
-                                            <li class=""></li>
-                                            <li class=""></li>
-                                        </ul>
+                                    <div class="col-sm-6 content_summary">
                                     </div>
                                     <div class="col-sm-6">
                                         <div class="panel panel-default">
@@ -226,20 +212,10 @@
 <script>
     $(document).ready(function() {
         $(".summary").click();
-        $.getJSON( "/api/models/{{ model.id }}.json", function( data ) {
-            $(".modelname").text(data.name);
-            $(".modeldescription").text(data.description);
-            $(".modelsummary").text("Groundwater Model: " + data.modelsummary);
-            $(".soilmodelsummary").text(data.modelsummary);
-        });
-
-        $.getJSON( "/api/areas/{{ model.area.id }}.json", function( data ) {
-            $(".area_surface").text("Surface: " + data.surface + " sqm");
-        });
-
-        $.getJSON( "/api/areas/{{ model.area.id }}/geometry.json", function( data ) {
-            poly = L.geoJson(data).addTo(area_map).bindPopup("Groundwater model area Hanoi II.");
-            area_map.fitBounds(poly.getBounds());
+        $.getJSON( "/api/modflowmodels/{{ model.id }}/content/summary.json", function ( data ) {
+            $(".content_summary").html( data.html );
+            polygon = L.geoJson(jQuery.parseJSON(data.geojson)).addTo(area_map).bindPopup("Groundwater model area Hanoi II.");
+            area_map.fitBounds(polygon.getBounds());
         });
 
     });

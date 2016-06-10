@@ -1,0 +1,24 @@
+<h3>Description</h3>
+<p class="modeldescription">{{ model.description }}</p>
+<p class="layers"></p>
+<p class="gridsize"></p>
+<h3>Area</h3>
+<p>Surface: {{ model.area.surface }} sqm</p>
+<h3>Soilmodel</h3>
+<p>Layers: {{ model.soilmodel.geologicalLayers.count }}</p>
+<p>Rows: {{ model.gridsize.ny }}</p>
+<p>Columns: {{ model.gridsize.nx }}</p>
+<h3>Stressperiods({{ model.calculationProperties['stress_periods']|length }}):</h3>
+<ul>
+    {% for stressperiod in model.calculationProperties['stress_periods'] %}
+        <li>{{ stressperiod["dateTimeBegin"]["date"] | date('d/m/Y') }} -
+            {{ stressperiod["dateTimeEnd"]["date"] | date('d/m/Y') }} -
+            {% if stressperiod.steady %}
+                steady state
+            {% else %}
+                transient
+            {% endif %} -
+            Timesteps: {{ stressperiod.numberOfTimeSteps }}
+        </li>
+    {% endfor %}
+</ul>

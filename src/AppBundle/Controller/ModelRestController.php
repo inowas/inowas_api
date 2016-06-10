@@ -460,4 +460,61 @@ class ModelRestController extends FOSRestController
 
         return $view;
     }
+
+    /**
+     * Returns the html content and polygon-data for the summary view by modflow-model-id
+     *
+     * @ApiDoc(
+     *   resource = true,
+     *   description = "Returns the html content and polygon-data for the summary view by modflow-model-id.",
+     *   statusCodes = {
+     *     200 = "Returned when successful",
+     *     404 = "Returned when the ModflowModel is not found"
+     *   }
+     * )
+     *
+     * @param $modelId
+     *
+     * @return View
+     */
+    public function getModflowmodelContentSummaryAction($modelId){
+
+        $model = $this->getDoctrine()
+            ->getRepository('AppBundle:ModFlowModel')
+            ->findOneBy(array(
+                'id' => $modelId
+            ));
+
+        if (!$model) {
+            throw $this->createNotFoundException('Model not found.');
+        }
+
+        $area = $model->getArea();
+
+        if (!$area) {
+            throw $this->createNotFoundException('Area not found.');
+        }
+
+        $surface = $this->getDoctrine()->getRepository('AppBundle:Area')
+            ->getAreaSurfaceById($area->getId());
+        $area->setSurface($surface);
+
+        $geojson = $this->getDoctrine()->getRepository('AppBundle:Area')
+            ->getAreaPolygonIn4326($area->getId());
+
+        $twig = $this->get('twig');
+        $html = $twig->render(':inowas/model/modflow:summary.html.twig', array(
+            'model' => $model
+        ));
+
+        $result['html'] = $html;
+        $result['geojson'] = $geojson;
+
+        $view = View::create();
+        $view->setData($result)
+            ->setStatusCode(200)
+        ;
+
+        return $view;
+    }
 }

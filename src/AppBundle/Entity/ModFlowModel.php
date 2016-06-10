@@ -99,11 +99,9 @@ class ModFlowModel extends AbstractModel
     {
         parent::__construct();
 
-        $this->wells = new ArrayCollection();
         $this->boundaries = new ArrayCollection();
         $this->modelObjects = new ArrayCollection();
         $this->observationPoints = new ArrayCollection();
-        $this->streams = new ArrayCollection();
         $this->gridSize = new GridSize(50, 50);
         $this->boundingBox = new BoundingBox();
     }
@@ -387,9 +385,7 @@ class ModFlowModel extends AbstractModel
     }
 
     /**
-     * @JMS\VirtualProperty()
-     * @JMS\SerializedName("modelsummary")
-     * @JMS\Groups({"modeldetails"})
+     * @return string
      */
     public function createTextOverview()
     {
