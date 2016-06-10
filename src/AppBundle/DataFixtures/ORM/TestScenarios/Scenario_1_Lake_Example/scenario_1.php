@@ -145,9 +145,10 @@ class LoadTestScenario_1 implements FixtureInterface, ContainerAwareInterface
             $soilModel->addGeologicalLayer(GeologicalLayerFactory::create()
                 ->setOrder(GeologicalLayer::TOP_LAYER+$i)
                 ->setOwner($user)
-                ->setName('Layer '.$i.' Lake Example')
+                ->setName('Layer '.($i+1).' Lake Example')
                 ->setPublic($public)
-                ->addValue($propertyTypeBottomElevation, PropertyValueFactory::create()->setValue($i * -5))
+                ->addValue($propertyTypeBottomElevation, PropertyValueFactory::create()->setValue(($i+1) * -5))
+                ->addValue($propertyHydraulicConductivity, PropertyValueFactory::create()->setValue(1))
             );
         }
 
