@@ -88,6 +88,12 @@ class AreaRestController extends FOSRestController
 
         if ($area->getPublic() || $this->isGranted('ROLE_ADMIN') || $this->getUser() === $area->getOwner())
         {
+            $area->setSurface(
+                $this->getDoctrine()
+                ->getRepository('AppBundle:Area')
+                ->getAreaSurfaceById($area->getId())
+            );
+            
             $view = View::create();
             $view->setData($area)
                 ->setStatusCode(200)

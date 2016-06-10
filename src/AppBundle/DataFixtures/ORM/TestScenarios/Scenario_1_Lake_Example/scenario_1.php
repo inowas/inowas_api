@@ -161,7 +161,8 @@ class LoadTestScenario_1 implements FixtureInterface, ContainerAwareInterface
                     array(0, 0),
                     array(0, 400),
                     array(400, 400),
-                    array(400, 0)
+                    array(400, 0),
+                    array(0, 0)
                 )))
                 ->addValue($propertyTypeGwHead, PropertyValueFactory::create()->setValue(100))
             )
@@ -173,7 +174,8 @@ class LoadTestScenario_1 implements FixtureInterface, ContainerAwareInterface
                     array(199, 199),
                     array(199, 201),
                     array(201, 201),
-                    array(201, 199)
+                    array(201, 199),
+                    array(199, 199)
                 )))
                 ->addValue($propertyTypeGwHead, PropertyValueFactory::create()->setValue(90))
             )

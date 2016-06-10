@@ -8,7 +8,7 @@ use Doctrine\ORM\Mapping as ORM;
 use JMS\Serializer\Annotation as JMS;
 
 /**
- * @ORM\Entity()
+ * @ORM\Entity(repositoryClass="AppBundle\Repository\AreaRepository")
  * @ORM\Table(name="areas")
  */
 class Area extends ModelObject
@@ -41,6 +41,13 @@ class Area extends ModelObject
      * @JMS\Groups({"list", "details", "modelobjectdetails", "modeldetails"})
      */
     private $areaType;
+
+    /**
+     * @var float
+     *
+     * @JMS\Groups({"list", "details", "modelobjectdetails", "modelobjectlist"})
+     */
+    private $surface;
 
     /**
      * @return Polygon
@@ -83,6 +90,24 @@ class Area extends ModelObject
     public function getAreaType()
     {
         return $this->areaType;
+    }
+
+    /**
+     * @return float
+     */
+    public function getSurface()
+    {
+        return $this->surface;
+    }
+
+    /**
+     * @param float $surface
+     * @return Area
+     */
+    public function setSurface($surface)
+    {
+        $this->surface = $surface;
+        return $this;
     }
 
     /**

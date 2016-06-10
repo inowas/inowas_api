@@ -69,6 +69,26 @@ class AreaTest extends WebTestCase
         $this->assertEquals($this->area->getBoundingBox(), new BoundingBox(0.5, 4.1, -1.1, 12.2));
     }
 
+    public function testGetSurfaceAreaFromArea()
+    {
+        $this->area->setGeometry(new Polygon(array(
+            array(
+                array(1.1,-1.1),
+                array(2.1,2.1),
+                array(0.5, 1.1),
+                array(4.1, 12.2),
+                array(1.1,-1.1)
+            ))));
+
+        $this->entityManager->persist($this->area);
+        $this->entityManager->flush();
+
+        $surface = $this->entityManager->getRepository('AppBundle:Area')
+            ->getAreaSurfaceById($this->area->getId());
+
+        var_dump($surface);
+    }
+
     /**
      * {@inheritDoc}
      */

@@ -151,7 +151,7 @@ class Modflow
         return $this->tmpFolder . '/' . $this->tmpFileName . '.out';
     }
 
-    public function clear()
+    private function clear()
     {
         $this->stdOut = "";
         $this->tmpFileName = Uuid::uuid4()->toString();
@@ -195,6 +195,7 @@ class Modflow
      */
     public function calculate($modelId, $executable=self::MODFLOW_2005)
     {
+        $this->clear();
         if (!in_array($executable, $this->availableExecutables)) {
             throw new NotFoundHttpException();
         }
@@ -247,6 +248,8 @@ class Modflow
      */
     public function getRasterResult($modelId, $operation, $layer=0, $timesteps=array())
     {
+        $this->clear();
+
         $modflowRasterResultProperties = new ModflowRasterResultProperties($modelId, $layer, $operation);
         $modflowRasterResultProperties->setTimesteps($timesteps);
         $modflowRasterResultPropertiesJSON = $this->serializer->serialize(
@@ -281,6 +284,8 @@ class Modflow
      */
     public function getTimeseriesResult($modelId, $layer, $row, $col, $timesteps=array())
     {
+        $this->clear();
+
         $modflowTimeSeriesResultProperties = new ModflowTimeSeriesResultProperties($modelId, $layer, $row, $col);
         $modflowTimeSeriesResultProperties->setTimesteps($timesteps);
         $modflowTimeSeriesResultPropertiesJSON = $this->serializer->serialize(

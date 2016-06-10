@@ -386,7 +386,18 @@ class ModFlowModel extends AbstractModel
         return $this;
     }
 
-
+    /**
+     * @JMS\VirtualProperty()
+     * @JMS\SerializedName("modelsummary")
+     * @JMS\Groups({"modeldetails"})
+     */
+    public function createTextOverview()
+    {
+       return sprintf("%s Rows, %s Columns, %s Layers",
+       $this->gridSize->getNY(),
+       $this->gridSize->getNX(),
+       $this->soilModel->getGeologicalLayers()->count());
+    }
 
     /**
      * @ORM\PreFlush()

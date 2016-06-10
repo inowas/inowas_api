@@ -169,9 +169,9 @@ class LoadScenario_2 implements FixtureInterface, ContainerAwareInterface
         /** @var ModFlowModel $model */
         $model = ModFlowModelFactory::create();
         $entityManager->persist($model);
-        $model->setName("ModFlowModel Scenario 2");
+        $model->setName("Hanoi");
         $model->setOwner($user);
-        $model->setDescription("ModFlowModel Scenario 2 Description");
+        $model->setDescription("Restoration of groundwater levels in overexploited aquifers in Hanoi.");
         $model->setSoilModel($soilModel);
         $model->setArea($area);
         
