@@ -7,7 +7,7 @@ use AppBundle\Entity\ModFlowModel;
 use AppBundle\Entity\User;
 use AppBundle\Model\AreaFactory;
 use AppBundle\Model\AreaTypeFactory;
-use AppBundle\Model\GeneralHeadBoundaryFactory;
+use AppBundle\Model\ConstantHeadBoundaryFactory;
 use AppBundle\Model\GeologicalLayerFactory;
 use AppBundle\Model\GeologicalPointFactory;
 use AppBundle\Model\GeologicalUnitFactory;
@@ -293,7 +293,7 @@ class LoadScenario_3 implements FixtureInterface, ContainerAwareInterface
 
         $this->addModelObjectPropertiesFromCSVFile($area, __DIR__.'/scenario_3_area_property_timeseries.csv', ';');
         // Add new boundaries
-        $boundary = GeneralHeadBoundaryFactory::create()
+        $boundary = ConstantHeadBoundaryFactory::create()
             ->setOwner($user)
             ->setName('SC3_B1')
             ->setPublic($public)
@@ -313,7 +313,7 @@ class LoadScenario_3 implements FixtureInterface, ContainerAwareInterface
         $entityManager->flush();
         $this->addModelObjectPropertiesFromCSVFile($boundary, __DIR__.'/scenario_3_boundary_1_property_timeseries.csv', ';');
 
-        $boundary = GeneralHeadBoundaryFactory::create()
+        $boundary = ConstantHeadBoundaryFactory::create()
             ->setOwner($user)
             ->setName('SC3_B2')
             ->setPublic($public)

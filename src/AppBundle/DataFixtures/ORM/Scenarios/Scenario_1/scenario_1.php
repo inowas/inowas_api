@@ -7,7 +7,7 @@ use AppBundle\Entity\ModFlowModel;
 use AppBundle\Entity\User;
 use AppBundle\Model\AreaFactory;
 use AppBundle\Model\AreaTypeFactory;
-use AppBundle\Model\GeneralHeadBoundaryFactory;
+use AppBundle\Model\ConstantHeadBoundaryFactory;
 use AppBundle\Model\GeologicalLayerFactory;
 use AppBundle\Model\GeologicalPointFactory;
 use AppBundle\Model\GeologicalUnitFactory;
@@ -291,7 +291,7 @@ class LoadScenario_1 implements FixtureInterface, ContainerAwareInterface
         $entityManager->flush();
 
         // Create boundary
-        $boundary = GeneralHeadBoundaryFactory::create()
+        $boundary = ConstantHeadBoundaryFactory::create()
             ->setOwner($user)
             ->setName('SC1_B1')
             ->setPublic($public)
