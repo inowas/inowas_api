@@ -25,8 +25,11 @@ class Modflow
     /** @var string */
     private $baseUrl = "http://localhost/";
 
+    /** @var string $workingDirectory */
+    private $workingDirectory;
+
     /** @var string  */
-    private $tmpFolder = '/tmp/modflow';
+    private $tmpFolder;
 
     /** @var string  */
     private $tmpFileName = '';
@@ -51,15 +54,26 @@ class Modflow
      * @param $serializer
      * @param $kernel
      * @param $pythonProcess
+     * @param $workingDirectory
      * @param $dataFolder
+     * @param $tmpFolder
      * @param $baseUrl
      */
-    public function __construct($serializer, $kernel, $pythonProcess, $dataFolder, $baseUrl)
-    {
+    public function __construct(
+        Serializer $serializer,
+        KernelInterface $kernel,
+        PythonProcess $pythonProcess,
+        $workingDirectory,
+        $dataFolder,
+        $tmpFolder,
+        $baseUrl
+    ){
         $this->serializer = $serializer;
         $this->kernel = $kernel;
         $this->pythonProcess = $pythonProcess;
+        $this->workingDirectory = $workingDirectory;
         $this->dataFolder = $dataFolder;
+        $this->tmpFolder = $tmpFolder;
         $this->baseUrl = $baseUrl;
 
         $this->stdOut = '';
@@ -132,7 +146,7 @@ class Modflow
      */
     public function getWorkSpace($modelId)
     {
-        return $this->kernel->getRootDir().'/'.$this->dataFolder.'/'.$modelId;
+        return $this->dataFolder.'/'.$modelId;
     }
 
     /**
