@@ -392,6 +392,35 @@ class SoilModel
     }
 
     /**
+     * @return bool
+     */
+    public function hasGeologicalLayers(){
+        if (null == $this->getGeologicalLayers() || $this->getGeologicalLayers()->count() == 0) {
+            return false;
+        }
+
+        return true;
+    }
+
+    /**
+     * @param $layerNumber
+     * @return null
+     */
+    public function getLayerByNumber($layerNumber){
+        if ($this->hasGeologicalLayers()){
+
+            /** @var GeologicalLayer $geologicalLayer */
+            foreach ($this->getGeologicalLayers() as $geologicalLayer){
+                if ($geologicalLayer->getOrder() == $layerNumber){
+                    return $geologicalLayer;
+                }
+            }
+        }
+
+        return null;
+    }
+
+    /**
      * @return ArrayCollection
      */
     public function getGeologicalPoints()

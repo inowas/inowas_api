@@ -60,8 +60,16 @@ class GeoTiff
 
     const COLOR_RELIEF_ELEVATION = 'elevation';
 
-    protected $availablie_color_reliefs = array(
+    protected $available_color_reliefs = array(
       self::COLOR_RELIEF_ELEVATION
+    );
+
+    const FILE_TYPE_PNG = "png";
+    const FILE_TYPE_TIFF = "tiff";
+
+    protected $available_imageFileTypes = array(
+        self::FILE_TYPE_PNG,
+        self::FILE_TYPE_TIFF
     );
 
     /** @var Serializer $serializer */
@@ -84,6 +92,9 @@ class GeoTiff
 
     /** @var  string $tmpFileName */
     protected $tmpFileName;
+
+    /** @var  string $outputFileName */
+    protected $outputFileName;
 
     /** @var string */
     protected $stdOut;
@@ -113,7 +124,7 @@ class GeoTiff
         $this->tmpFolder = $tmpFolder;
     }
 
-    public function createGeoTiffFromRaster(Raster $raster, $colorRelief=self::COLOR_RELIEF_ELEVATION, $targetProjection=4326, $fileFormat="tiff")
+    public function createImageFromRaster(Raster $raster, $fileFormat="tiff", $colorRelief=self::COLOR_RELIEF_ELEVATION, $targetProjection=4326)
     {
 
         if (!$raster->getBoundingBox() instanceof BoundingBox) {
@@ -132,8 +143,12 @@ class GeoTiff
             throw new InvalidArgumentException(sprintf('RasterData colCount differs from GridSize colCount', count($raster->getData()[0]), $raster->getGridSize()->getNX()));
         }
 
-        if (!in_array($colorRelief, $this->availablie_color_reliefs)){
+        if (!in_array($colorRelief, $this->available_color_reliefs)){
             throw new InvalidArgumentException('Given color-relief is not available');
+        }
+
+        if (!in_array($colorRelief, $this->available_imageFileTypes)){
+            throw new InvalidArgumentException(sprintf('Given fileType %s is not supported.', $fileFormat));
         }
         
         $geoTiffProperties = new GeoTiffProperties($raster,  $colorRelief, $targetProjection, $fileFormat);
@@ -152,13 +167,13 @@ class GeoTiff
         $this->tmpFileName = Uuid::uuid4()->toString();
         $inputFileName = $this->tmpFolder . '/' . $this->tmpFileName . '.in';
         $fs->dumpFile($inputFileName, $geoTiffPropertiesJSON);
-        $outputFileName = $this->dataFolder.'/'.$raster->getId()->toString().'tiff';
+        $this->outputFileName = $this->dataFolder.'/'.$raster->getId()->toString().$fileFormat;
 
         $scriptName = "geoTiffGenerator.py";
 
         /** @var Process $process */
         $process = $this->pythonProcess
-            ->setArguments(array('-W', 'ignore', $scriptName, $inputFileName, $outputFileName))
+            ->setArguments(array('-W', 'ignore', $scriptName, $inputFileName, $this->outputFileName))
             ->setWorkingDirectory($this->workingDirectory)
             ->getProcess();
 
@@ -179,6 +194,15 @@ class GeoTiff
 
         return $this->stdOut;
     }
+
+    /**
+     * @return string
+     */
+    public function getOutputFileName()
+    {
+        return $this->outputFileName;
+    }
+
     /**
      * @return string
      */

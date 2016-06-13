@@ -367,8 +367,11 @@ abstract class ModelObject
         return $this->propertyIds;
     }
 
-    protected function getPropertyByPropertyType(PropertyType $propertyType)
-    {
+    /**
+     * @param PropertyType $propertyType
+     * @return Property|null
+     */
+    public function getPropertyByPropertyType(PropertyType $propertyType){
         /** @var Property $property */
         foreach ($this->properties as $property)
         {
@@ -377,9 +380,18 @@ abstract class ModelObject
             }
         }
 
-        $property = PropertyFactory::create()
-            ->setPropertyType($propertyType);
-        $this->addProperty($property);
+        return null;
+    }
+
+    protected function getOrCreatePropertyByPropertyType(PropertyType $propertyType)
+    {
+        $property = $this->getPropertyByPropertyType($propertyType);
+
+        if (null === $property) {
+            $property = PropertyFactory::create()
+                ->setPropertyType($propertyType);
+            $this->addProperty($property);
+        }
         return $property;
     }
 
@@ -399,7 +411,7 @@ abstract class ModelObject
 
     public function addValue(PropertyType $propertyType, AbstractValue $value)
     {
-        $property = $this->getPropertyByPropertyType($propertyType);
+        $property = $this->getOrCreatePropertyByPropertyType($propertyType);
         $property->addValue($value);
 
         return $this;

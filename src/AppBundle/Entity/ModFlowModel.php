@@ -189,6 +189,18 @@ class ModFlowModel extends AbstractModel
     }
 
     /**
+     * @return bool
+     */
+    public function hasSoilModel()
+    {
+        if ($this->soilModel instanceof SoilModel){
+            return true;
+        }
+
+        return false;
+    }
+
+    /**
      * Get boundaries
      *
      * @return BoundaryModelObject|ArrayCollection

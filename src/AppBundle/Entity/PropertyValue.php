@@ -52,6 +52,16 @@ class PropertyValue extends AbstractValue
         return $this->value;
     }
 
+    /**
+     * @return bool
+     */
+    public function hasValue(){
+       if (null == $this->value){
+           return false;
+       }
+        return true;
+    }
+
     public function getDateBegin()
     {
         return null;
@@ -99,5 +109,15 @@ class PropertyValue extends AbstractValue
     public function getRaster()
     {
         return $this->raster;
+    }
+
+    /**
+     * @return bool
+     */
+    public function hasRaster(){
+        if (!$this->raster instanceof Raster){
+            return false;
+        }
+        return true;
     }
 }
