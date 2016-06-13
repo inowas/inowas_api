@@ -13,6 +13,8 @@ use JMS\Serializer\Annotation as JMS;
  */
 class GeoTiffProperties
 {
+    const COLOR_RELIEF_ELEVATION = 'elevation';
+
     /**
      * @var GridSize $gridSize
      *
@@ -35,23 +37,48 @@ class GeoTiffProperties
     protected $data;
 
     /**
+     * @var  integer
+     *
+     * @JMS\Groups({"geotiff"})
+     */
+    protected $noDataVal;
+
+    /**
      * @var string $colorRelief
      *
      * @JMS\Groups({"geotiff"})
      */
     protected $colorRelief;
 
+    /**
+     * @var integer
+     *
+     * @JMS\Groups({"geotiff"})
+     */
+    protected $targetProjection;
+
+    /**
+     * @var string
+     *
+     * @JMS\Groups({"geotiff"})
+     */
+    protected $outputFormat;
 
     /**
      * GeoTiffProperties constructor.
      * @param Raster $raster
-     * @param $colorRelief
+     * @param string $colorRelief
+     * @param int $targetProjection
+     * @param string $outputFormat
      */
-    public function __construct(Raster $raster, $colorRelief)
+    public function __construct(Raster $raster, $colorRelief, $targetProjection, $outputFormat)
     {
         $this->boundingBox = $raster->getBoundingBox();
         $this->gridSize = $raster->getGridSize();
         $this->data = $raster->getData();
+        $this->noDataVal = $raster->getNoDataVal();
         $this->colorRelief = $colorRelief;
+        $this->targetProjection = $targetProjection;
+        $this->outputFormat = $outputFormat;
     }
 }

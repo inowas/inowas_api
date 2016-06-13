@@ -113,7 +113,7 @@ class GeoTiff
         $this->tmpFolder = $tmpFolder;
     }
 
-    public function createGeoTiffFromRaster(Raster $raster, $colorRelief)
+    public function createGeoTiffFromRaster(Raster $raster, $colorRelief=self::COLOR_RELIEF_ELEVATION, $targetProjection=4326, $fileFormat="tiff")
     {
 
         if (!$raster->getBoundingBox() instanceof BoundingBox) {
@@ -135,9 +135,8 @@ class GeoTiff
         if (!in_array($colorRelief, $this->availablie_color_reliefs)){
             throw new InvalidArgumentException('Given color-relief is not available');
         }
-
-
-        $geoTiffProperties = new GeoTiffProperties($raster,  $colorRelief);
+        
+        $geoTiffProperties = new GeoTiffProperties($raster,  $colorRelief, $targetProjection, $fileFormat);
         $geoTiffPropertiesJSON = $this->serializer->serialize(
             $geoTiffProperties,
             'json',
