@@ -85,8 +85,6 @@ class AreaTest extends WebTestCase
 
         $surface = $this->entityManager->getRepository('AppBundle:Area')
             ->getAreaSurfaceById($this->area->getId());
-
-        dump($surface);
     }
 
     public function testTransformAreaPolygonFrom3857To4326()
@@ -106,8 +104,7 @@ class AreaTest extends WebTestCase
 
         $polygon = $this->entityManager->getRepository('AppBundle:Area')
             ->getAreaPolygonIn4326($this->area->getId());
-
-        dump($polygon);
+        
     }
 
     /**
