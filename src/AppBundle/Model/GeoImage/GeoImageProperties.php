@@ -1,63 +1,63 @@
 <?php
 
-namespace AppBundle\Model\GeoTiff;
+namespace AppBundle\Model\GeoImage;
 
 use AppBundle\Entity\Raster;
 use AppBundle\Model\Interpolation\BoundingBox;
 use JMS\Serializer\Annotation as JMS;
 
 /**
- * Class GeoTiffProperties
+ * Class GeoImageProperties
  * @package AppBundle\Model\GeoTiff
  */
-class GeoTiffProperties
+class GeoImageProperties
 {
     const COLOR_RELIEF_ELEVATION = 'elevation';
 
     /**
      * @var BoundingBox $boundingBox
      *
-     * @JMS\Groups({"geotiff"})
+     * @JMS\Groups({"geoimage"})
      */
     protected $boundingBox;
 
     /**
      * @var array $data
      *
-     * @JMS\Groups({"geotiff"})
+     * @JMS\Groups({"geoimage"})
      */
     protected $data;
 
     /**
      * @var  integer
      *
-     * @JMS\Groups({"geotiff"})
+     * @JMS\Groups({"geoimage"})
      */
     protected $noDataVal;
 
     /**
      * @var string $colorRelief
      *
-     * @JMS\Groups({"geotiff"})
+     * @JMS\Groups({"geoimage"})
      */
     protected $colorRelief;
 
     /**
      * @var integer
      *
-     * @JMS\Groups({"geotiff"})
+     * @JMS\Groups({"geoimage"})
      */
     protected $targetProjection;
 
     /**
      * @var string
      *
-     * @JMS\Groups({"geotiff"})
+     * @JMS\Groups({"geoimage"})
      */
     protected $outputFormat;
 
     /**
-     * GeoTiffProperties constructor.
+     * GeoImageProperties constructor.
      * @param Raster $raster
      * @param string $colorRelief
      * @param int $targetProjection

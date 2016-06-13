@@ -4,7 +4,7 @@ namespace AppBundle\Service;
 
 use AppBundle\Entity\Raster;
 use AppBundle\Exception\InvalidArgumentException;
-use AppBundle\Model\GeoTiff\GeoTiffProperties;
+use AppBundle\Model\GeoTiff\GeoImageProperties;
 use AppBundle\Model\Interpolation\BoundingBox;
 use AppBundle\Model\Interpolation\GridSize;
 use JMS\Serializer\SerializationContext;
@@ -15,7 +15,7 @@ use Symfony\Component\HttpKernel\KernelInterface;
 use Symfony\Component\Process\Exception\ProcessFailedException;
 use Symfony\Component\Process\Process;
 
-class GeoTiff
+class GeoImage
 {
     /**
         aspect: aspect oriented grey colors
@@ -151,13 +151,12 @@ class GeoTiff
             throw new InvalidArgumentException(sprintf('Given fileType %s is not supported.', $fileFormat));
         }
         
-        $geoTiffProperties = new GeoTiffProperties($raster,  $colorRelief, $targetProjection, $fileFormat);
+        $geoTiffProperties = new GeoImageProperties($raster,  $colorRelief, $targetProjection, $fileFormat);
         $geoTiffPropertiesJSON = $this->serializer->serialize(
             $geoTiffProperties,
             'json',
-            SerializationContext::create()->setGroups(array("geotiff"))
+            SerializationContext::create()->setGroups(array("geoimage"))
         );
-        
 
         $fs = new Filesystem();
         if (!$fs->exists($this->tmpFolder)) {

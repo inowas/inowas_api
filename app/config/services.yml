@@ -12,9 +12,8 @@ services:
         class: AppBundle\Service\Modflow
         arguments: ['@serializer', '@kernel', '@inowas.python_process', '%inowas.modflow.working_directory%', '%inowas.modflow.data_folder%', '%inowas.temp_folder%', '%inowas.modflow.api_base_url%']
 
-
-    inowas.geoTiff:
-        class: AppBundle\Service\GeoTiff
+    inowas.geoimage:
+        class: AppBundle\Service\GeoImage
         arguments: ['@serializer', '@kernel', '@inowas.python_process', '%inowas.geotiff.working_directory%', '%inowas.geotiff.data_folder%', '%inowas.temp_folder%']
 
     inowas.soilmodel:

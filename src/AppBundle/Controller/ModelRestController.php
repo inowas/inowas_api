@@ -227,7 +227,7 @@ class ModelRestController extends FOSRestController
         }
         
         $fileFormat = $paramFetcher->get('_format');
-        $geoImageService = $this->get('inowas.geotiff');
+        $geoImageService = $this->get('inowas.geoimage');
         $geoImageService->createImageFromRaster($raster, $fileFormat);
         $outputFileName = $geoImageService->getOutputFileName();
 

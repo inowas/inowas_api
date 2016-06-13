@@ -3,11 +3,10 @@
 namespace AppBundle\Tests\Controller;
 
 use AppBundle\Entity\Raster;
-use AppBundle\Model\GeoTiff\GeoTiffProperties;
+use AppBundle\Model\GeoImage\GeoImageProperties;
 use AppBundle\Model\Interpolation\BoundingBox;
 use AppBundle\Model\Interpolation\GridSize;
 use AppBundle\Model\RasterFactory;
-use AppBundle\Service\GeoTiff;
 use JMS\Serializer\SerializationContext;
 use JMS\Serializer\Serializer;
 use JMS\Serializer\SerializerBuilder;
@@ -17,7 +16,7 @@ class GeoTiffSerialisationTest extends \PHPUnit_Framework_TestCase
     /** @var  Serializer $serializer */
     protected $serializer;
 
-    /** @var  GeoTiff $geoTiff */
+    /** @var  GeoImageProperties $geoTiffProperties */
     protected $geoTiffProperties;
 
     /** @var  Raster $raster */
@@ -44,13 +43,13 @@ class GeoTiffSerialisationTest extends \PHPUnit_Framework_TestCase
                 array(1,2,3,4,5,6,7,8,9,10),
             ));
 
-        $this->geoTiffProperties = new GeoTiffProperties($this->raster, 'cr_test', 3853, 'test');
+        $this->geoTiffProperties = new GeoImageProperties($this->raster, 'cr_test', 3853, 'test');
     }
 
     public function testInterpolationSerialization()
     {
         $serializationContext = SerializationContext::create();
-        $serializationContext->setGroups('geotiff');
+        $serializationContext->setGroups('geoimage');
         $geoTiffPropertiesJSON = $this->serializer->serialize($this->geoTiffProperties, 'json', $serializationContext);
         $this->assertStringStartsWith('{',$geoTiffPropertiesJSON);
         $geoTiffProperties = json_decode($geoTiffPropertiesJSON);
