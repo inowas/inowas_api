@@ -4,7 +4,7 @@ namespace AppBundle\Service;
 
 use AppBundle\Entity\Raster;
 use AppBundle\Exception\InvalidArgumentException;
-use AppBundle\Model\GeoTiff\GeoImageProperties;
+use AppBundle\Model\GeoImage\GeoImageProperties;
 use AppBundle\Model\Interpolation\BoundingBox;
 use AppBundle\Model\Interpolation\GridSize;
 use JMS\Serializer\SerializationContext;
@@ -58,19 +58,22 @@ class GeoImage
         wave: color wave
      */
 
-    const COLOR_RELIEF_ELEVATION = 'elevation';
+    const COLOR_RELIEF_GIST_EARTH = 'gist_earth';
+    const COLOR_RELIEF_JET = 'jet';
+    const COLOR_RELIEF_RAINBOW = 'rainbow';
+    const COLOR_RELIEF_TERRAIN = 'terrain';
 
     protected $available_color_reliefs = array(
-      self::COLOR_RELIEF_ELEVATION
+      self::COLOR_RELIEF_GIST_EARTH,
+      self::COLOR_RELIEF_JET,
+      self::COLOR_RELIEF_RAINBOW,
+      self::COLOR_RELIEF_TERRAIN
     );
 
     const FILE_TYPE_PNG = "png";
     const FILE_TYPE_TIFF = "tiff";
 
-    protected $available_imageFileTypes = array(
-        self::FILE_TYPE_PNG,
-        self::FILE_TYPE_TIFF
-    );
+    protected $available_imageFileTypes = array(self::FILE_TYPE_PNG);
 
     /** @var Serializer $serializer */
     protected $serializer;
@@ -124,7 +127,7 @@ class GeoImage
         $this->tmpFolder = $tmpFolder;
     }
 
-    public function createImageFromRaster(Raster $raster, $fileFormat="tiff", $colorRelief=self::COLOR_RELIEF_ELEVATION, $targetProjection=4326)
+    public function createImageFromRaster(Raster $raster, $fileFormat="png", $colorRelief=self::COLOR_RELIEF_GIST_EARTH, $targetProjection=4326)
     {
 
         if (!$raster->getBoundingBox() instanceof BoundingBox) {
@@ -147,8 +150,8 @@ class GeoImage
             throw new InvalidArgumentException('Given color-relief is not available');
         }
 
-        if (!in_array($colorRelief, $this->available_imageFileTypes)){
-            throw new InvalidArgumentException(sprintf('Given fileType %s is not supported.', $fileFormat));
+        if (!in_array($fileFormat, $this->available_imageFileTypes)){
+            throw new InvalidArgumentException(sprintf('Given fileFormat %s is not supported.', $fileFormat));
         }
         
         $geoTiffProperties = new GeoImageProperties($raster,  $colorRelief, $targetProjection, $fileFormat);
@@ -166,9 +169,9 @@ class GeoImage
         $this->tmpFileName = Uuid::uuid4()->toString();
         $inputFileName = $this->tmpFolder . '/' . $this->tmpFileName . '.in';
         $fs->dumpFile($inputFileName, $geoTiffPropertiesJSON);
-        $this->outputFileName = $this->dataFolder.'/'.$raster->getId()->toString().$fileFormat;
+        $this->outputFileName = $this->dataFolder.'/'.$raster->getId()->toString();
 
-        $scriptName = "geoTiffGenerator.py";
+        $scriptName = "geoImageCreator.py";
 
         /** @var Process $process */
         $process = $this->pythonProcess
@@ -180,8 +183,6 @@ class GeoImage
         if (!$process->isSuccessful()) {
             throw new ProcessFailedException($process);
         }
-
-
 
         $response = json_decode($process->getOutput());
 
