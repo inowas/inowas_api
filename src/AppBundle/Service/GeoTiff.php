@@ -182,6 +182,8 @@ class GeoTiff
             throw new ProcessFailedException($process);
         }
 
+
+
         $response = json_decode($process->getOutput());
 
         if (isset($response->error)) {

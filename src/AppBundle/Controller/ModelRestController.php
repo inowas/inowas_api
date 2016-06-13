@@ -229,8 +229,8 @@ class ModelRestController extends FOSRestController
         $fileFormat = $paramFetcher->get('_format');
         $geoImageService = $this->get('inowas.geotiff');
         $geoImageService->createImageFromRaster($raster, $fileFormat);
-
         $outputFileName = $geoImageService->getOutputFileName();
+
         $fs = new Filesystem();
         if (!$fs->exists($outputFileName)){
             throw new \Exception('Something went wrong creating the image');
@@ -239,7 +239,7 @@ class ModelRestController extends FOSRestController
         $response = new BinaryFileResponse($outputFileName);
         switch( $fileFormat ) {
             case "png":  $hType="image/png"; break;
-            case "tiff": $hType="image/jpeg"; break;
+            case "tiff": $hType="image/tiff"; break;
             default:
                 $hType = "";
         }
