@@ -4,7 +4,6 @@ namespace AppBundle\Model\GeoTiff;
 
 use AppBundle\Entity\Raster;
 use AppBundle\Model\Interpolation\BoundingBox;
-use AppBundle\Model\Interpolation\GridSize;
 use JMS\Serializer\Annotation as JMS;
 
 /**
@@ -14,13 +13,6 @@ use JMS\Serializer\Annotation as JMS;
 class GeoTiffProperties
 {
     const COLOR_RELIEF_ELEVATION = 'elevation';
-
-    /**
-     * @var GridSize $gridSize
-     *
-     * @JMS\Groups({"geotiff"})
-     */
-    protected $gridSize;
 
     /**
      * @var BoundingBox $boundingBox
@@ -74,7 +66,6 @@ class GeoTiffProperties
     public function __construct(Raster $raster, $colorRelief, $targetProjection, $outputFormat)
     {
         $this->boundingBox = $raster->getBoundingBox();
-        $this->gridSize = $raster->getGridSize();
         $this->data = $raster->getData();
         $this->noDataVal = $raster->getNoDataVal();
         $this->colorRelief = $colorRelief;

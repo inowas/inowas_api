@@ -66,11 +66,6 @@ class GeoTiffSerialisationTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals($this->raster->getBoundingBox()->getYMin(), $geoTiffProperties->bounding_box->y_min);
         $this->assertObjectHasAttribute('y_max', $geoTiffProperties->bounding_box);
         $this->assertEquals($this->raster->getBoundingBox()->getYMax(), $geoTiffProperties->bounding_box->y_max);
-        $this->assertObjectHasAttribute('grid_size', $geoTiffProperties);
-        $this->assertObjectHasAttribute('n_x', $geoTiffProperties->grid_size);
-        $this->assertEquals($this->raster->getGridSize()->getNX(), $geoTiffProperties->grid_size->n_x);
-        $this->assertObjectHasAttribute('n_y', $geoTiffProperties->grid_size);
-        $this->assertEquals($this->raster->getGridSize()->getNY(), $geoTiffProperties->grid_size->n_y);
         $this->assertObjectHasAttribute('no_data_val', $geoTiffProperties);
         $this->assertEquals($this->raster->getNoDataVal(), $geoTiffProperties->no_data_val);
         $this->assertObjectHasAttribute('target_projection', $geoTiffProperties);
