@@ -24,7 +24,7 @@ use AppBundle\Model\WellFactory;
 use JMS\Serializer\Serializer;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
-class ModelRestControllerTest extends WebTestCase
+class ModflowModelRestControllerTest extends WebTestCase
 {
 
     /** @var \Doctrine\ORM\EntityManager */
@@ -72,45 +72,29 @@ class ModelRestControllerTest extends WebTestCase
         $this->entityManager->persist($this->owner);
         $this->entityManager->flush();
 
-        $this->propertyType = PropertyTypeFactory::create();
-        $this->propertyType->setName("KF-X")->setAbbreviation("kx");
-        $this->entityManager->persist($this->propertyType);
-        $this->entityManager->flush();
-
-        $this->propertyValue = PropertyValueFactory::create();
-        $this->propertyValue->setValue(1.9991);
-        $this->entityManager->persist($this->propertyValue);
-
-        $this->property = PropertyFactory::create();
-        $this->property->setName("ModelTest_Property");
-        $this->property->setPropertyType($this->propertyType);
-        $this->property->addValue($this->propertyValue);
-        $this->entityManager->persist($this->property);
-        $this->entityManager->flush();
-
-        $this->layer = GeologicalLayerFactory::create();
-        $this->layer->setOwner($this->owner);
-        $this->layer->setPublic(true);
-        $this->layer->setName("ModelTest_Layer");
-        $this->layer->addProperty($this->property);
-        $this->layer->setOrder(GeologicalLayer::TOP_LAYER);
-        $this->entityManager->persist($this->layer);
-        $this->entityManager->flush();
-
-        $this->soilModel = SoilModelFactory::create();
-        $this->soilModel->setOwner($this->owner);
-        $this->soilModel->setPublic(true);
-        $this->soilModel->setName('SoilModel_TestCase');
-        $this->soilModel->addGeologicalLayer($this->layer);
-        $this->entityManager->persist($this->soilModel);
-        $this->entityManager->flush();
-
         $this->modFlowModel = ModFlowModelFactory::create();
-        $this->modFlowModel->setName("TestModel");
-        $this->modFlowModel->setPublic(true);
-        $this->modFlowModel->setDescription('TestModelDescription!!!');
         $this->modFlowModel->setOwner($this->owner);
-        $this->modFlowModel->setSoilModel($this->soilModel);
+        $this->modFlowModel->setName("TestModel");
+        $this->modFlowModel->setDescription('TestModelDescription!!!');
+        $this->modFlowModel->setPublic(true);
+
+        $this->modFlowModel->setSoilModel(SoilModelFactory::create()
+            ->setOwner($this->owner)
+            ->setPublic(true)
+            ->setName('SoilModel_TestCase')
+            ->addGeologicalLayer(GeologicalLayerFactory::create()
+                ->setOwner($this->owner)
+                ->setPublic(true)
+                ->setName("ModelTest_Layer")
+                ->setOrder(GeologicalLayer::TOP_LAYER)
+                ->addProperty(PropertyFactory::create()
+                    ->setName("ModelTest_Property")
+                    ->setPropertyType(PropertyTypeFactory::create()->setName("KF-X")->setAbbreviation('kx'))
+                    ->addValue(PropertyValueFactory::create()->setValue(1.9991))
+                )
+            )
+        );
+
         $this->entityManager->persist($this->modFlowModel);
         $this->entityManager->flush();
 
@@ -179,9 +163,9 @@ class ModelRestControllerTest extends WebTestCase
         $this->assertEquals($this->modFlowModel->getDescription(), $modFlowModel->description);
         $this->assertEquals($this->modFlowModel->getOwner()->getId(), $modFlowModel->owner->id);
         $this->assertCount(0, $modFlowModel->calculation_properties->stress_periods);
-        $this->assertEquals($this->soilModel->getId(), $modFlowModel->soil_model->id);
+        $this->assertEquals($this->modFlowModel->getSoilModel()->getId(), $modFlowModel->soil_model->id);
         $this->assertCount(1, $modFlowModel->soil_model->geological_layers);
-        $this->assertEquals($this->layer->getId(), $modFlowModel->soil_model->geological_layers[0]->id);
+        $this->assertEquals($this->modFlowModel->getSoilModel()->getGeologicalLayers()->first()->getId(), $modFlowModel->soil_model->geological_layers[0]->id);
     }
 
     public function testGetModflowModelBoundariesAPI()

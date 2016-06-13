@@ -158,7 +158,7 @@ class ModelRestController extends FOSRestController
      * @param $modelId
      * @param $layerNumber
      * @param $propertyAbbreviation
-     * @QueryParam(name="_format", nullable=true, description="Image format, default tiff", default="tiff")
+     * @QueryParam(name="_format", nullable=true, description="Image format, default png", default="png")
      *
      * @return View
      * @throws 
@@ -245,7 +245,7 @@ class ModelRestController extends FOSRestController
         }
 
         $response->headers->set('Content-Type', $hType);
-        return $response;
+            return $response;
     }
 
     /**
