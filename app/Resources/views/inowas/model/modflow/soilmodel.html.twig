@@ -1,0 +1,37 @@
+{# @var model \AppBundle\Entity\ModFlowModel #}
+{%  set layers = model.soilModel.geologicalLayers %}
+
+<h2>Geological Layers</h2>
+<div class="panel-group" id="accordion">
+
+    {% for layer in layers %}
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h3 class="panel-title">
+                    <a data-toggle="collapse" data-parent="#accordion" href="#collapse{{ layer.order }}">
+                        {{ layer.name }}
+                    </a>
+                </h3>
+            </div>
+            <div id="collapse{{ layer.order }}" class="panel-collapse collapse">
+                <div class="row">
+                    <div class="col-sm-10">
+                        <p class="panel-body">Lorem ipsum dolor sit amet, consectetur adipisicing elit,
+                            sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad
+                            minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea
+                            commodo consequat.
+                        </p>
+                    </div>
+                    <div class="col-sm-2">
+                        {# @var poperty \AppBundle\Entity\\AppBundle\Entity\Property #}
+                        <div class="btn-group-vertical">
+                        {% for property in layer.properties %}
+                            <button type="button" onclick="loadLayerImg('{{ model.id }}', '{{ layer.order }}', '{{ property.propertyType.abbreviation }}')" class="btn btn-default">{{ property.propertyType.abbreviation }}</button>
+                        {% endfor %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    {% endfor %}
+</div>

@@ -589,6 +589,55 @@ class ModelRestController extends FOSRestController
     }
 
     /**
+     * Returns the boundingbox array from a model
+     *
+     * @ApiDoc(
+     *   resource = true,
+     *   description = "Returns the boundingbox array from a model.",
+     *   statusCodes = {
+     *     200 = "Returned when successful",
+     *     404 = "Returned when the ModflowModel is not found"
+     *   }
+     * )
+     *
+     * @param $modelId
+     *
+     * @return View
+     */
+    public function getModflowmodelBoundingboxAction($modelId){
+
+        $model = $this->getDoctrine()
+            ->getRepository('AppBundle:ModFlowModel')
+            ->findOneBy(array(
+                'id' => $modelId
+            ));
+
+        if (!$model) {
+            throw $this->createNotFoundException('Model not found.');
+        }
+
+        if (null === $model->getBoundingBox()) {
+            throw $this->createNotFoundException('BoundingBox not found.');
+        }
+
+
+        $bb = $this->getDoctrine()->getRepository('AppBundle:ModFlowModel')
+            ->transformBoundingBox($model->getBoundingBox(), 4326);
+
+        $result = array(
+            array($bb->getYMin(), $bb->getXMin()),
+            array($bb->getYMax(), $bb->getXMax())
+        );
+
+        $view = View::create();
+        $view->setData($result)
+            ->setStatusCode(200)
+        ;
+
+        return $view;
+    }
+
+    /**
      * Returns the html content and polygon-data for the summary view by modflow-model-id
      *
      * @ApiDoc(
@@ -601,10 +650,11 @@ class ModelRestController extends FOSRestController
      * )
      *
      * @param $modelId
+     * @param $contentType
      *
      * @return View
      */
-    public function getModflowmodelContentSummaryAction($modelId){
+    public function getModflowmodelContentAction($modelId, $contentType){
 
         $model = $this->getDoctrine()
             ->getRepository('AppBundle:ModFlowModel')
@@ -616,26 +666,47 @@ class ModelRestController extends FOSRestController
             throw $this->createNotFoundException('Model not found.');
         }
 
-        $area = $model->getArea();
+        if ($contentType == 'summary')
+        {
+            $area = $model->getArea();
+            if (!$area) {
+                throw $this->createNotFoundException('Area not found.');
+            }
 
-        if (!$area) {
-            throw $this->createNotFoundException('Area not found.');
+            $surface = $this->getDoctrine()->getRepository('AppBundle:Area')
+                ->getAreaSurfaceById($area->getId());
+            $area->setSurface($surface);
+
+            $geoJson = $this->getDoctrine()->getRepository('AppBundle:Area')
+                ->getAreaPolygonIn4326($area->getId());
+
+            $twig = $this->get('twig');
+            $html = $twig->render(':inowas/model/modflow:summary.html.twig', array(
+                'model' => $model
+            ));
+
+            $result['html'] = $html;
+            $result['geojson'] = $geoJson;
+
+        } elseif ($contentType == 'soilmodel') {
+            if (!$model->hasSoilModel()){
+                throw $this->createNotFoundException('Soilmodel not found.');
+            }
+
+            $geoJson = $this->getDoctrine()->getRepository('AppBundle:Area')
+                ->getAreaPolygonIn4326($model->getArea()->getId());
+
+            $twig = $this->get('twig');
+            $html = $twig->render(':inowas/model/modflow:soilmodel.html.twig', array(
+                'model' => $model
+            ));
+
+            $result['html'] = $html;
+            $result['geojson'] = $geoJson;
+        } else {
+            $result="";
         }
 
-        $surface = $this->getDoctrine()->getRepository('AppBundle:Area')
-            ->getAreaSurfaceById($area->getId());
-        $area->setSurface($surface);
-
-        $geojson = $this->getDoctrine()->getRepository('AppBundle:Area')
-            ->getAreaPolygonIn4326($area->getId());
-
-        $twig = $this->get('twig');
-        $html = $twig->render(':inowas/model/modflow:summary.html.twig', array(
-            'model' => $model
-        ));
-
-        $result['html'] = $html;
-        $result['geojson'] = $geojson;
 
         $view = View::create();
         $view->setData($result)

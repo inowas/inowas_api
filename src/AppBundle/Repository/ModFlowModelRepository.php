@@ -1,6 +1,7 @@
 <?php
 
 namespace AppBundle\Repository;
+use AppBundle\Model\Interpolation\BoundingBox;
 
 /**
  * ModFlowInitialValueRepository
@@ -23,5 +24,43 @@ class ModFlowModelRepository extends \Doctrine\ORM\EntityRepository
         } catch (\Doctrine\ORM\NoResultException $e) {
             return null;
         }
+    }
+
+    public function transformBoundingBox(BoundingBox $boundingBox, $targetSrid)
+    {
+        $query = $this->getEntityManager()
+            ->getConnection()
+            ->prepare(sprintf('SELECT ST_AsGeoJson(ST_Transform(ST_GeomFromText(\'POINT(%s %s)\' , %s), %s))',
+                $boundingBox->getXMin(),
+                $boundingBox->getYMin(),
+                $boundingBox->getSrid(),
+                $targetSrid
+                ))
+        ;
+
+        $query->execute();
+        $lowerLeft = json_decode($query->fetchAll()[0]['st_asgeojson']);
+
+        $query = $this->getEntityManager()
+            ->getConnection()
+            ->prepare(sprintf('SELECT ST_AsGeoJson(ST_Transform(ST_GeomFromText(\'POINT(%s %s)\' , %s), %s))',
+                $boundingBox->getXMax(),
+                $boundingBox->getYMax(),
+                $boundingBox->getSrid(),
+                $targetSrid
+            ))
+        ;
+
+        $query->execute();
+        $upperRight = json_decode($query->fetchAll()[0]['st_asgeojson']);
+
+        $bb = new BoundingBox();
+        $bb->setXMin($lowerLeft->coordinates[0]);
+        $bb->setYMin($lowerLeft->coordinates[1]);
+        $bb->setXMax($upperRight->coordinates[0]);
+        $bb->setYMax($upperRight->coordinates[1]);
+        $bb->setSrid($targetSrid);
+
+        return $bb;
     }
 }

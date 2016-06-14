@@ -116,16 +116,11 @@
                     <div class="col-sm-12">
                         <div class="panel panel-default">
                             <div class="panel-body">
-                                <h2>Points</h2>
                                 <div class="row">
+                                    <div class="col-sm-6 content_soilmodel"></div>
                                     <div class="col-sm-6">
                                         <div class="panel panel-default">
-                                            <div id="soil-model-map" class="panel-body map"></div>
-                                        </div>
-                                    </div>
-                                    <div class="col-sm-6">
-                                        <div class="panel panel-default">
-                                            Here can go a visualisation of the geological profile of the geological point
+                                            <div id="soilmodel-map" class="panel-body map"></div>
                                         </div>
                                     </div>
                                 </div>
@@ -210,16 +205,8 @@
 <script type="text/javascript" src="{{ asset('js/inowas-leaflet.js') }}"></script>
 
 <script>
-    $(document).ready(function() {
-        $(".summary").click();
-        $.getJSON( "/api/modflowmodels/{{ model.id }}/content/summary.json", function ( data ) {
-            $(".content_summary").html( data.html );
-            polygon = L.geoJson(jQuery.parseJSON(data.geojson)).addTo(area_map).bindPopup("Groundwater model area Hanoi II.");
-            area_map.fitBounds(polygon.getBounds());
-        });
-
-    });
-
+    var modelId = '{{ model.id }}';
+    $(document).ready(function() {$(".summary").click();});
 </script>
 </body>
 </html>

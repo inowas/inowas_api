@@ -12,6 +12,7 @@ use AppBundle\Entity\User;
 use AppBundle\Model\ConstantHeadBoundaryFactory;
 use AppBundle\Model\GeneralHeadBoundaryFactory;
 use AppBundle\Model\GeologicalLayerFactory;
+use AppBundle\Model\Interpolation\BoundingBox;
 use AppBundle\Model\ModFlowModelFactory;
 use AppBundle\Model\Point;
 use AppBundle\Model\PropertyFactory;
@@ -95,6 +96,7 @@ class ModflowModelRestControllerTest extends WebTestCase
             )
         );
 
+        $this->modFlowModel->setBoundingBox(new BoundingBox(1.1, 2.2, 3.3, 4.4));
         $this->entityManager->persist($this->modFlowModel);
         $this->entityManager->flush();
 
@@ -223,6 +225,18 @@ class ModflowModelRestControllerTest extends WebTestCase
         $river = $rivers[0];
         $this->assertObjectHasAttribute('type', $river);
         $this->assertEquals('RIV', $river->type);
+    }
+
+    public function testGetModFlowModelBoundingBox()
+    {
+        $client = static::createClient();
+        $client->request('GET', '/api/modflowmodels/'.$this->modFlowModel->getId().'/boundingbox.json');
+        $this->assertEquals(200, $client->getResponse()->getStatusCode());
+        $bb = json_decode($client->getResponse()->getContent());
+        $this->assertTrue($bb == array(
+               array($this->modFlowModel->getBoundingBox()->getXMin(), $this->modFlowModel->getBoundingBox()->getYMin()),
+               array($this->modFlowModel->getBoundingBox()->getXMax(), $this->modFlowModel->getBoundingBox()->getYMax())
+            ));
     }
 
     /**
