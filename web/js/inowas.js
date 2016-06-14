@@ -45,20 +45,37 @@ $( ".boundaries" ).click(function () {
     $( "#boundaries" ).show();
     $( ".boundaries" ).addClass('active');
 
-    var polygon;
+    var streets = L.tileLayer('https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token=pk.eyJ1IjoibWFwYm94IiwiYSI6ImNpandmbXliNDBjZWd2M2x6bDk3c2ZtOTkifQ._QA7i5Mpkd_m30IGElHziw', {
+        maxZoom: 18,
+        attribution: 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, ' +
+        '<a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, ' +
+        'Imagery © <a href="http://mapbox.com">Mapbox</a>',
+        id: 'mapbox.streets'
+    }).addTo(boundary_map);
+
+    var Hydda_Full = L.tileLayer('http://{s}.tile.openstreetmap.se/hydda/full/{z}/{x}/{y}.png', {
+        attribution: 'Tiles courtesy of <a href="http://openstreetmap.se/" target="_blank">OpenStreetMap Sweden</a> &mdash; Map data &copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+    });
+
+    var area = new L.LayerGroup();
     $.getJSON( "/api/modflowmodels/"+modelId+"/contents/soilmodel.json", function ( data ) {
-        $(".content_soilmodel").html( data.html );
-        polygon = L.geoJson(jQuery.parseJSON(data.geojson)).addTo(boundary_map).bindPopup("Groundwater model area Hanoi II.");
+        var polygon = L.geoJson(jQuery.parseJSON(data.geojson)).addTo(boundary_map).bindPopup("Groundwater model area Hanoi II.");
+        polygon.addTo(area);
+        area.addTo(boundary_map);
         boundary_map.fitBounds(polygon.getBounds());
     });
 
+    var wells = new L.LayerGroup();
     $.getJSON( "/api/modflowmodels/"+modelId+"/wells.json?srid=4326", function ( wellData ) {
-        var wells = new L.LayerGroup();
         wellData.forEach(function (item, index) {
             L.marker([item.point.y, item.point.x]).bindPopup("Well "+item.name).addTo(wells);
         });
         wells.addTo(boundary_map);
     });
+
+    var baseMaps = {"Streets": streets, "Hydda_Full": Hydda_Full};
+    var overlayMaps = {"Area": area, "Wells": wells};
+    L.control.layers(baseMaps, overlayMaps).addTo(boundary_map);
 });
 
 $( ".calculation" ).click(function(){
