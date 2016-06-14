@@ -10,7 +10,6 @@ use AppBundle\Entity\PropertyType;
 use AppBundle\Entity\PropertyValue;
 use AppBundle\Entity\Stream;
 use AppBundle\Entity\Well;
-use AppBundle\Exception\InvalidArgumentException;
 use AppBundle\Model\RasterFactory;
 use FOS\RestBundle\Controller\Annotations\QueryParam;
 use FOS\RestBundle\Controller\FOSRestController;
@@ -20,6 +19,7 @@ use JMS\Serializer\SerializationContext;
 use Nelmio\ApiDocBundle\Annotation\ApiDoc;
 use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class ModelRestController extends FOSRestController
 {
@@ -178,22 +178,22 @@ class ModelRestController extends FOSRestController
             ));
 
         if (!$model instanceof ModFlowModel) {
-            throw new InvalidArgumentException('ModflowModel not available.');
+            throw new NotFoundHttpException('ModflowModel not available.');
         }
 
         if (!$model->hasSoilModel()){
-            throw new InvalidArgumentException(sprintf('ModflowModel %s has no SoilModel already.', $modelId));
+            throw new NotFoundHttpException(sprintf('ModflowModel %s has no SoilModel already.', $modelId));
         }
 
         $soilModel = $model->getSoilModel();
         if (!$soilModel->hasGeologicalLayers()){
-            throw new InvalidArgumentException(sprintf('ModflowModel %s has a Soilmodel without Layers.', $modelId));
+            throw new NotFoundHttpException(sprintf('ModflowModel %s has a Soilmodel without Layers.', $modelId));
         }
 
         /** @var GeologicalLayer $layer */
         $layer = $soilModel->getLayerByNumber($layerNumber);
         if (null == $layer){
-            throw new InvalidArgumentException(sprintf('SoilModel has no Layer with layernumber %s.', $layerNumber));
+            throw new NotFoundHttpException(sprintf('SoilModel has no Layer with layernumber %s.', $layerNumber));
         }
 
         /** @var PropertyType $propertyType */
@@ -202,7 +202,7 @@ class ModelRestController extends FOSRestController
                 'abbreviation' => $propertyAbbreviation
             ));
         if (!$propertyType) {
-            throw new InvalidArgumentException('PropertyType not available.');
+            throw new NotFoundHttpException('PropertyType not available.');
         }
 
         $property = $layer->getPropertyByPropertyType($propertyType);

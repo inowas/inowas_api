@@ -153,7 +153,15 @@ class GeoImage
         if (!in_array($fileFormat, $this->available_imageFileTypes)){
             throw new InvalidArgumentException(sprintf('Given fileFormat %s is not supported.', $fileFormat));
         }
-        
+
+        $outputFileName = $this->dataFolder.'/'.$raster->getId()->toString();
+        $this->outputFileName = $outputFileName.'.'.$fileFormat;
+
+        $fs = new Filesystem();
+        if ($fs->exists($this->outputFileName)){
+            return "File exists already";
+        }
+
         $geoTiffProperties = new GeoImageProperties($raster,  $colorRelief, $targetProjection, $fileFormat);
         $geoTiffPropertiesJSON = $this->serializer->serialize(
             $geoTiffProperties,
@@ -169,9 +177,6 @@ class GeoImage
         $this->tmpFileName = Uuid::uuid4()->toString();
         $inputFileName = $this->tmpFolder . '/' . $this->tmpFileName . '.in';
         $fs->dumpFile($inputFileName, $geoTiffPropertiesJSON);
-        $outputFileName = $this->dataFolder.'/'.$raster->getId()->toString();
-        $this->outputFileName = $outputFileName.'.'.$fileFormat;
-
         $scriptName = "geoImageCreator.py";
 
         /** @var Process $process */
