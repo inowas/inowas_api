@@ -207,12 +207,11 @@ class ModelRestController extends FOSRestController
         /** @var PropertyValue $propertyValue */
         $propertyValue = $property->getValues()->first();
 
-        dump($propertyValue);
-        die();
-
         if ($propertyValue->hasRaster())
         {
             $raster = $propertyValue->getRaster();
+            dump($raster->getData());
+            die();
         } elseif ($propertyValue->hasValue()) {
             $raster = RasterFactory::create()
                 ->setGridSize($model->getGridSize())
@@ -228,7 +227,7 @@ class ModelRestController extends FOSRestController
         } else {
             throw new \Exception('PropertyValue has no Value');
         }
-        
+
         $fileFormat = $paramFetcher->get('_format');
         $geoImageService = $this->get('inowas.geoimage');
         $geoImageService->createImageFromRaster($raster, $fileFormat);

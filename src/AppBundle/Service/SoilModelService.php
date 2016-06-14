@@ -196,7 +196,7 @@ class SoilModelService
         }
 
         $out = $this->interpolation->interpolate($algorithm);
-
+        
         $propertyValue = PropertyValueFactory::create()
             ->setRaster(RasterFactory::create()
                 ->setGridSize($this->modflowModel->getGridSize())
