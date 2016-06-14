@@ -46,7 +46,7 @@ class Property
     /**
      * @var PropertyType
      *
-     * @ORM\ManyToOne(targetEntity="AppBundle\Entity\PropertyType", cascade={"all"})
+     * @ORM\ManyToOne(targetEntity="AppBundle\Entity\PropertyType", cascade={"persist", "remove"})
      * @ORM\JoinColumn(name="property_type_id", referencedColumnName="id", onDelete="SET NULL")
      * @JMS\Groups({"list", "details", "modeldetails", "modelobjectdetails", "soilmodeldetails", "soilmodellayers"})
      */
@@ -55,7 +55,7 @@ class Property
     /**
      * @var ArrayCollection
      *
-     * @ORM\ManyToMany(targetEntity="AppBundle\Entity\AbstractValue", cascade={"all"})
+     * @ORM\ManyToMany(targetEntity="AppBundle\Entity\AbstractValue", cascade={"persist", "remove"})
      * @ORM\JoinTable(name="properties_values",
      *     joinColumns={@ORM\JoinColumn(name="property_id", referencedColumnName="id", onDelete="CASCADE")},
      *     inverseJoinColumns={@ORM\JoinColumn(name="value_id", referencedColumnName="id", onDelete="CASCADE")}

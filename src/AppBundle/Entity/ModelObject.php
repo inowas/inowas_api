@@ -66,7 +66,7 @@ abstract class ModelObject
     /**
      * @var ArrayCollection Property
      *
-     * @ORM\ManyToMany(targetEntity="AppBundle\Entity\Property", cascade={"all"})
+     * @ORM\ManyToMany(targetEntity="AppBundle\Entity\Property", cascade={"persist", "remove"})
      * @ORM\JoinTable(name="model_objects_properties",
      *     joinColumns={@ORM\JoinColumn(name="model_object_id", referencedColumnName="id", onDelete="CASCADE")},
      *     inverseJoinColumns={@ORM\JoinColumn(name="property_id", referencedColumnName="id", onDelete="CASCADE")}
