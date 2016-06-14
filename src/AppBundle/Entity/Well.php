@@ -8,7 +8,7 @@ use JMS\Serializer\Annotation as JMS;
 use Ramsey\Uuid\Uuid;
 
 /**
- * @ORM\Entity()
+ * @ORM\Entity(repositoryClass="AppBundle\Repository\WellRepository")
  */
 class Well extends BoundaryModelObject
 {

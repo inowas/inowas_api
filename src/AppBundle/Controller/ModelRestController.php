@@ -10,6 +10,7 @@ use AppBundle\Entity\PropertyType;
 use AppBundle\Entity\PropertyValue;
 use AppBundle\Entity\Stream;
 use AppBundle\Entity\Well;
+use AppBundle\Model\Point;
 use AppBundle\Model\RasterFactory;
 use FOS\RestBundle\Controller\Annotations\QueryParam;
 use FOS\RestBundle\Controller\FOSRestController;
@@ -466,11 +467,13 @@ class ModelRestController extends FOSRestController
      *   }
      * )
      *
+     * @param ParamFetcher $paramFetcher
      * @param $modelId
+     * @QueryParam(name="srid", nullable=true, description="SRID, default 3857", default="3857")
      *
      * @return View
      */
-    public function getModflowmodelWellsAction($modelId)
+    public function getModflowmodelWellsAction(ParamFetcher $paramFetcher, $modelId)
     {
         if ($this->isGranted('ROLE_ADMIN'))
         {
@@ -506,6 +509,16 @@ class ModelRestController extends FOSRestController
         foreach ($boundaries as $boundary) {
             if ($boundary instanceof Well) {
                 $wells[] = $boundary;
+            }
+        }
+
+        $targetSrid = (int)$paramFetcher->get('srid');
+        /** @var Well $well */
+        foreach ($wells as $well) {
+            if ($well->getPoint()->getSrid() != $targetSrid) {
+                $point = json_decode($this->getDoctrine()->getRepository('AppBundle:Well')
+                    ->transformPointTo($well->getId(), $targetSrid));
+                $well->setPoint(new Point($point->coordinates[0], $point->coordinates[1], $targetSrid));
             }
         }
 

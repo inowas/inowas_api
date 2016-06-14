@@ -44,6 +44,21 @@ $( ".boundaries" ).click(function () {
     hide_all();
     $( "#boundaries" ).show();
     $( ".boundaries" ).addClass('active');
+
+    var polygon;
+    $.getJSON( "/api/modflowmodels/"+modelId+"/contents/soilmodel.json", function ( data ) {
+        $(".content_soilmodel").html( data.html );
+        polygon = L.geoJson(jQuery.parseJSON(data.geojson)).addTo(boundary_map).bindPopup("Groundwater model area Hanoi II.");
+        boundary_map.fitBounds(polygon.getBounds());
+    });
+
+    $.getJSON( "/api/modflowmodels/"+modelId+"/wells.json?srid=4326", function ( wellData ) {
+        var wells = new L.LayerGroup();
+        wellData.forEach(function (item, index) {
+            L.marker([item.point.y, item.point.x]).bindPopup("Well "+item.name).addTo(wells);
+        });
+        wells.addTo(boundary_map);
+    });
 });
 
 $( ".calculation" ).click(function(){
@@ -63,4 +78,15 @@ $( ".history" ).click(function(){
     $( "#history" ).show();
     $( ".history" ).addClass('active');
 });
+
+var imgOverlay;
+loadLayerImg = function(modelId, layerOrder, propertyTypeAbbreviation, ft){
+    if (ft!=true) {soilmodel_map.removeLayer(imgOverlay);}
+    $.getJSON( "/api/modflowmodels/"+modelId+"/boundingbox.json", function ( boundingBox ) {
+        var imageUrl = "/api/modflowmodels/"+modelId+"/layers/"+layerOrder+"/properties/"+propertyTypeAbbreviation+".json?_format=png";
+        imgOverlay = L.imageOverlay(imageUrl, boundingBox).addTo(soilmodel_map).setOpacity(0.6);
+    });
+};
+
+
 
