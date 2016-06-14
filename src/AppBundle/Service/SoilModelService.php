@@ -8,7 +8,6 @@ use AppBundle\Entity\ModFlowModel;
 use AppBundle\Entity\Property;
 use AppBundle\Entity\PropertyType;
 use AppBundle\Entity\SoilModel;
-use AppBundle\Exception\InvalidArgumentException;
 use AppBundle\Model\Interpolation\PointValue;
 use AppBundle\Model\PropertyValueFactory;
 use AppBundle\Model\RasterFactory;
@@ -155,35 +154,6 @@ class SoilModelService
         return $propertyTypes;
     }
 
-    public function getLayersSortedByElevation(SoilModel $soilModel = null)
-    {
-        if (is_null($soilModel)) {
-            $soilModel = $this->soilModel;
-            if (is_null($soilModel)) {
-                throw new InvalidArgumentException(printf('Soilmodel not loaded'));
-            }
-        }
-
-        $layers = $soilModel->getGeologicalLayers();
-
-        $sortedLayers = array();
-        $meanBottomElevations = array();
-
-        /** @var GeologicalLayer $layer */
-        foreach ($layers as $layer) {
-            $units = $layer->getGeologicalUnits();
-
-            if (count($units) > 0) {
-                $meanBottomElevation = 0.0;
-                /** @var GeologicalUnit $unit */
-                foreach ($units as $unit) {
-                    $meanBottomElevation += $unit->getBottomElevation();
-                }
-                $meanBottomElevation = $meanBottomElevation / count($units);
-            }
-        }
-    }
-
     /**
      * @param GeologicalLayer $layer
      * @param $propertyTypeAbbreviation
@@ -236,7 +206,7 @@ class SoilModelService
             );
 
         $this->interpolation->clear();
-
+        
         $layer->addValue($propertyType, $propertyValue);
         $this->em->persist($layer);
         $this->em->flush();

@@ -171,7 +171,7 @@ class ModelRestController extends FOSRestController
                 'id' => $modelId
             ));
 
-        if ($model instanceof ModFlowModel) {
+        if (!$model instanceof ModFlowModel) {
             throw new InvalidArgumentException('ModflowModel not available.');
         }
 
@@ -206,7 +206,10 @@ class ModelRestController extends FOSRestController
         
         /** @var PropertyValue $propertyValue */
         $propertyValue = $property->getValues()->first();
-        
+
+        dump($propertyValue);
+        die();
+
         if ($propertyValue->hasRaster())
         {
             $raster = $propertyValue->getRaster();

@@ -6,10 +6,12 @@ use AppBundle\Entity\ObservationPoint;
 use AppBundle\Entity\Property;
 use AppBundle\Entity\PropertyType;
 use AppBundle\Entity\PropertyValue;
+use AppBundle\Entity\Raster;
 use AppBundle\Model\ObservationPointFactory;
 use AppBundle\Model\PropertyTimeValueFactory;
 use AppBundle\Model\PropertyTypeFactory;
 use AppBundle\Model\PropertyValueFactory;
+use AppBundle\Model\RasterFactory;
 
 class ModelObjectTest extends \PHPUnit_Framework_TestCase
 {
@@ -119,6 +121,26 @@ class ModelObjectTest extends \PHPUnit_Framework_TestCase
         /** @var PropertyValue $value */
         $value = $property->getValues()->first();
         $this->assertEquals(2.2, $value->getValue());
+    }
+
+    public function testAddRasterValueReplacesExistingStaticValue()
+    {
+        $this->modelObject->addValue(
+            $this->propertyType,
+            PropertyValueFactory::create()->setRaster(
+                RasterFactory::create()
+                ->setDescription('New Raster')
+            )
+        );
+
+        /** @var Property $property */
+        $property = $this->modelObject->getProperties()->first();
+        $this->assertCount(1, $property->getValues());
+
+        /** @var PropertyValue $value */
+        $value = $property->getValues()->first();
+        $this->assertNull($value->getValue());
+        $this->assertTrue($value->getRaster() instanceof Raster);
     }
 
     public function testAddTimeValue()

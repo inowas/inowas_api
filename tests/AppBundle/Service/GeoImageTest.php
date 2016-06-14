@@ -46,12 +46,12 @@ class GeoImageTest extends WebTestCase
     public function testCreatePng()
     {
         $this->geoImage->createImageFromRaster($this->raster);
-        $this->assertFileExists('../../data/geotiff/'.$this->raster->getId()->toString().'.png');
+        $this->assertFileExists(__DIR__.'/../../data/geotiff/'.$this->raster->getId()->toString().'.png');
     }
 
     public function tearDown()
     {
         $fs = new Filesystem();
-        $fs->remove('../../data/geotiff/'.$this->raster->getId()->toString().'.png');
+        $fs->remove(__DIR__.'/../../data/geotiff/'.$this->raster->getId()->toString().'.png');
     }
 }

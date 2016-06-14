@@ -169,13 +169,14 @@ class GeoImage
         $this->tmpFileName = Uuid::uuid4()->toString();
         $inputFileName = $this->tmpFolder . '/' . $this->tmpFileName . '.in';
         $fs->dumpFile($inputFileName, $geoTiffPropertiesJSON);
-        $this->outputFileName = $this->dataFolder.'/'.$raster->getId()->toString();
+        $outputFileName = $this->dataFolder.'/'.$raster->getId()->toString();
+        $this->outputFileName = $outputFileName.'.'.$fileFormat;
 
         $scriptName = "geoImageCreator.py";
 
         /** @var Process $process */
         $process = $this->pythonProcess
-            ->setArguments(array('-W', 'ignore', $scriptName, $inputFileName, $this->outputFileName))
+            ->setArguments(array('-W', 'ignore', $scriptName, $inputFileName, $outputFileName))
             ->setWorkingDirectory($this->workingDirectory)
             ->getProcess();
 

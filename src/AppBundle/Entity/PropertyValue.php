@@ -23,7 +23,7 @@ class PropertyValue extends AbstractValue
     /**
      * @var Raster $raster
      *
-     * @ORM\OneToOne(targetEntity="AppBundle\Entity\Raster", cascade={"persist", "remove"})
+     * @ORM\OneToOne(targetEntity="AppBundle\Entity\Raster", cascade={"all"})
      * @ORM\JoinColumn(name="raster_id", referencedColumnName="id", onDelete="SET NULL")
      * @JMS\Groups({"modeldetails", "modelobjectdetails", "soilmodellayers"})
      */
