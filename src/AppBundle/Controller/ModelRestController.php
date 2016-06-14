@@ -166,6 +166,12 @@ class ModelRestController extends FOSRestController
     public function getModflowmodelLayerPropertyAction(ParamFetcher $paramFetcher, $modelId, $layerNumber, $propertyAbbreviation)
     {
 
+        // Top-Elevation == Bottom elevation of the layer above
+        if ($layerNumber >0 && $propertyAbbreviation == PropertyType::TOP_ELEVATION) {
+            $layerNumber -=1;
+            $propertyAbbreviation = PropertyType::BOTTOM_ELEVATION;
+        }
+
         $model = $this->getDoctrine()->getRepository('AppBundle:ModFlowModel')
             ->findOneBy(array(
                 'id' => $modelId
@@ -200,6 +206,11 @@ class ModelRestController extends FOSRestController
         }
 
         $property = $layer->getPropertyByPropertyType($propertyType);
+
+        if (null === $property){
+            throw new \Exception(sprintf('Layer %s has no Property %s', $layerNumber, $propertyAbbreviation));
+        }
+
         if (!$property->getValues()->count() == 1){
             throw new \Exception('Property has more then one value');
         }
