@@ -220,3 +220,13 @@ hr {
     text-align: center;
     float: none;
 }
+
+td {
+    font-size: 16px;
+    font-weight: 200;
+    vertical-align: middle;
+}
+
+.table>tbody>tr>td {
+    vertical-align: middle;
+}
