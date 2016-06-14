@@ -210,8 +210,6 @@ class ModelRestController extends FOSRestController
         if ($propertyValue->hasRaster())
         {
             $raster = $propertyValue->getRaster();
-            dump($raster->getData());
-            die();
         } elseif ($propertyValue->hasValue()) {
             $raster = RasterFactory::create()
                 ->setGridSize($model->getGridSize())
