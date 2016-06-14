@@ -11,6 +11,8 @@ use AppBundle\Model\ConstantHeadBoundaryFactory;
 use AppBundle\Model\GeologicalLayerFactory;
 use AppBundle\Model\GeologicalPointFactory;
 use AppBundle\Model\GeologicalUnitFactory;
+use AppBundle\Model\Interpolation\BoundingBox;
+use AppBundle\Model\Interpolation\GridSize;
 use AppBundle\Model\ModFlowModelFactory;
 use AppBundle\Model\ObservationPointFactory;
 use AppBundle\Model\PropertyFactory;
@@ -174,6 +176,15 @@ class LoadScenario_2 implements FixtureInterface, ContainerAwareInterface
         $model->setDescription("Restoration of groundwater levels in overexploited aquifers in Hanoi.");
         $model->setSoilModel($soilModel);
         $model->setArea($area);
+        $model->setBoundingBox(
+            new BoundingBox(
+                11775189.21765423379838467,
+                11789747.53923093341290951,
+                2385794.83458124194294214,
+                2403506.49811625294387341,
+                3857)
+        );
+        $model->setGridSize(new GridSize(50,50));
         
         /** @var StressPeriod $stressPeriod */
         $stressPeriod = StressPeriodFactory::create();
@@ -192,10 +203,6 @@ class LoadScenario_2 implements FixtureInterface, ContainerAwareInterface
         $model->addStressPeriod($stressPeriod);
 
         $properties = $model->getCalculationProperties();
-        $properties['grid_size'] = array(
-            'rows' => 50,
-            'cols' => 50
-        );
         $model->setCalculationProperties($properties);
         $entityManager->flush();
 
