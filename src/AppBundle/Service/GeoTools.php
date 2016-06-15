@@ -5,7 +5,6 @@ namespace AppBundle\Service;
 use AppBundle\Entity\Area;
 use AppBundle\Model\Interpolation\BoundingBox;
 use AppBundle\Model\Interpolation\GridSize;
-use AppBundle\Model\RasterFactory;
 use Doctrine\ORM\EntityManager;
 
 class GeoTools
