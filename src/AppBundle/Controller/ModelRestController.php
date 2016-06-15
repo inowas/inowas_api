@@ -20,6 +20,7 @@ use JMS\Serializer\SerializationContext;
 use Nelmio\ApiDocBundle\Annotation\ApiDoc;
 use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class ModelRestController extends FOSRestController
@@ -333,11 +334,14 @@ class ModelRestController extends FOSRestController
      *   }
      * )
      *
+     * @param ParamFetcher $paramFetcher
      * @param $modelId
      *
+     * @QueryParam(name="geojson", nullable=true, description="Returns the geometry only as geojson", default=false)
+     * @QueryParam(name="srid", nullable=true, description="The target srid, default is 4326", default=4326)
      * @return View
      */
-    public function getModflowmodelConstant_headAction($modelId)
+    public function getModflowmodelConstant_headAction(ParamFetcher $paramFetcher, $modelId)
     {
         if ($this->isGranted('ROLE_ADMIN'))
         {
@@ -368,19 +372,35 @@ class ModelRestController extends FOSRestController
             throw $this->createNotFoundException('Model not found.');
         }
 
-        $rivers = array();
+        $constantHeadBoundaries = array();
         $boundaries = $model->getBoundaries();
         foreach ($boundaries as $boundary) {
             if ($boundary instanceof ConstantHeadBoundary) {
-                $rivers[] = $boundary;
+                $constantHeadBoundaries[] = $boundary;
             }
         }
 
+        if ($paramFetcher->get('geojson')){
+            $srid = $paramFetcher->get('srid');
+            $geometries = array();
+            /** @var ConstantHeadBoundary $boundary */
+            foreach ($constantHeadBoundaries as $boundary) {
+                $geometry = json_decode(
+                    $this->getDoctrine()->getRepository('AppBundle:ModFlowModel')
+                        ->getGeometryFromModelObjectAsGeoJSON($boundary, $srid)
+                );
+            }
+
+            return new Response(json_encode($geometry, true));
+        }
+
         $serializationContext = SerializationContext::create();
-        $serializationContext->setGroups('modelobjectdetails');
+        $serializationContext
+            ->setGroups("boundarylist")
+        ;
 
         $view = View::create();
-        $view->setData($rivers)
+        $view->setData($constantHeadBoundaries)
             ->setStatusCode(200)
             ->setSerializationContext($serializationContext)
         ;

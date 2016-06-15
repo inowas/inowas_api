@@ -15,7 +15,7 @@ class ConstantHeadBoundary extends BoundaryModelObject
     /**
      * @var string
      * @JMS\Type("string")
-     * @JMS\Groups({"list", "details", "modelobjectdetails", "modelobjectlist"})
+     * @JMS\Groups({"list", "details", "modelobjectdetails", "modelobjectlist", "boundarylist"})
      */
     protected $type = 'CHB';
 
@@ -104,12 +104,11 @@ class ConstantHeadBoundary extends BoundaryModelObject
     {
         return $this->geologicalLayers;
     }
-
-
+    
     /**
      * @JMS\VirtualProperty
      * @JMS\SerializedName("geometry")
-     * @JMS\Groups({"modelobjectdetails"})
+     * @JMS\Groups({"modelobjectdetails", "boundarylist"})
      *
      * @return string
      */

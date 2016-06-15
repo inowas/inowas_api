@@ -1,6 +1,7 @@
 <?php
 
 namespace AppBundle\Repository;
+use AppBundle\Entity\ModelObject;
 use AppBundle\Model\Interpolation\BoundingBox;
 
 /**
@@ -62,5 +63,17 @@ class ModFlowModelRepository extends \Doctrine\ORM\EntityRepository
         $bb->setSrid($targetSrid);
 
         return $bb;
+    }
+
+    public function getGeometryFromModelObjectAsGeoJSON(ModelObject $mo, $targetSrid)
+    {
+        $id = $mo->getId()->toString();
+        $query = $this->getEntityManager()
+            ->createQuery('SELECT ST_AsGeoJson(ST_Transform(a.geometry, :srid)) FROM AppBundle:ConstantHeadBoundary a WHERE a.id = :id')
+            ->setParameter('id', $id)
+            ->setParameter('srid', $targetSrid)
+        ;
+
+        return $query->getSingleScalarResult();
     }
 }

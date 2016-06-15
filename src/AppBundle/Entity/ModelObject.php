@@ -35,7 +35,7 @@ abstract class ModelObject
      * @ORM\Id
      * @ORM\Column(name="id", type="uuid", unique=true)
      * @JMS\Type("string")
-     * @JMS\Groups({"list", "details", "layerdetails", "modeldetails", "modelobjectdetails", "modelobjectlist", "soilmodeldetails", "soilmodellayers"})
+     * @JMS\Groups({"list", "details", "layerdetails", "modeldetails", "modelobjectdetails", "modelobjectlist", "soilmodeldetails", "soilmodellayers", "boundarylist"})
      */
     protected $id;
 
@@ -52,7 +52,7 @@ abstract class ModelObject
      * @var string
      *
      * @ORM\Column(name="name", type="string", length=255, nullable=true)
-     * @JMS\Groups({"list", "details", "layerdetails", "modelobjectdetails", "modelobjectlist", "soilmodeldetails", "soilmodellayers"})
+     * @JMS\Groups({"list", "details", "layerdetails", "modelobjectdetails", "modelobjectlist", "soilmodeldetails", "soilmodellayers", "boundarylist"})
      */
     protected $name;
 
@@ -72,7 +72,7 @@ abstract class ModelObject
      *     inverseJoinColumns={@ORM\JoinColumn(name="property_id", referencedColumnName="id", onDelete="CASCADE")}
      *     )
      * @JMS\Type("ArrayCollection<AppBundle\Entity\Property>")
-     * @JMS\Groups({"details", "layerdetails", "modelobjectdetails", "soilmodeldetails", "soilmodellayers"})
+     * @JMS\Groups({"details", "layerdetails", "modelobjectdetails", "soilmodeldetails", "soilmodellayers", "boundarylist"})
      */
     protected $properties;
 
@@ -89,7 +89,7 @@ abstract class ModelObject
      *
      * @ORM\ManyToMany(targetEntity="ObservationPoint", inversedBy="modelObjects", cascade={"persist", "remove"})
      * @ORM\JoinTable(name="model_objects_observation_points")
-     * @JMS\Groups({"modelobjectdetails", "soilmodeldetails"})
+     * @JMS\Groups({"modelobjectdetails", "soilmodeldetails", "boundarylist"})
      * @JMS\MaxDepth(5)
      */
     protected $observationPoints;
@@ -151,7 +151,7 @@ abstract class ModelObject
     /**
      * Get id
      *
-     * @return integer 
+     * @return Uuid
      */
     public function getId()
     {
