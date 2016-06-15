@@ -389,9 +389,11 @@ class ModelRestController extends FOSRestController
                     $this->getDoctrine()->getRepository('AppBundle:ModFlowModel')
                         ->getGeometryFromModelObjectAsGeoJSON($boundary, $srid)
                 );
+
+                $geometries[] = $geometry;
             }
 
-            return new Response(json_encode($geometry, true));
+            return new Response(json_encode($geometries, true));
         }
 
         $serializationContext = SerializationContext::create();
