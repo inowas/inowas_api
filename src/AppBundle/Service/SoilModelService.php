@@ -7,6 +7,7 @@ use AppBundle\Entity\GeologicalUnit;
 use AppBundle\Entity\ModFlowModel;
 use AppBundle\Entity\Property;
 use AppBundle\Entity\PropertyType;
+use AppBundle\Entity\Raster;
 use AppBundle\Entity\SoilModel;
 use AppBundle\Model\Interpolation\PointValue;
 use AppBundle\Model\PropertyValueFactory;
@@ -14,7 +15,6 @@ use AppBundle\Model\RasterFactory;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\EntityManager;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
-use Symfony\Component\Routing\Exception\ResourceNotFoundException;
 
 class SoilModelService
 {
@@ -161,7 +161,7 @@ class SoilModelService
      * @return string
      * @throws \Exception
      */
-    public function interpolateLayerByProperty(GeologicalLayer $layer, $propertyTypeAbbreviation, $algorithm)
+    public function interpolateLayerByProperty(GeologicalLayer $layer, $propertyTypeAbbreviation, $algorithm, $activeCells)
     {
         $propertyType = $this->em->getRepository('AppBundle:PropertyType')
             ->findOneBy(array(
@@ -196,12 +196,22 @@ class SoilModelService
         }
 
         $out = $this->interpolation->interpolate($algorithm);
+
+        $data = $this->interpolation->getData();
+
+        for ($yi = 0; $yi<count($data); $yi++){
+            for ($xi = 0; $xi<count($data[0]); $xi++) {
+                if ($activeCells[$yi][$xi] == false) {
+                    $data[$yi][$xi] = Raster::DEFAULT_NO_DATA_VAL;
+                }
+            }
+        }
         
         $propertyValue = PropertyValueFactory::create()
             ->setRaster(RasterFactory::create()
                 ->setGridSize($this->modflowModel->getGridSize())
                 ->setBoundingBox($this->modflowModel->getBoundingBox())
-                ->setData($this->interpolation->getData())
+                ->setData($data)
                 ->setDescription($this->interpolation->getMethod())
             );
 
@@ -212,37 +222,5 @@ class SoilModelService
         $this->em->flush();
 
         return $out;
-    }
-
-    /**
-     *
-     */
-    public function interpolateAllLayers()
-    {
-        if (!$this->soilModel) {
-            throw new ResourceNotFoundException('ModflowModel not loaded.');
-        }
-
-        if (!$this->soilModel->getGeologicalLayers() ||
-            $this->soilModel->getGeologicalLayers()->count() == 0
-        ) {
-            throw new ResourceNotFoundException('Soilmodel has no Layers.');
-        }
-
-        $layers = $this->soilModel->getGeologicalLayers();
-        $output = '';
-
-        foreach ($layers as $layer) {
-            $propertyTypes = $this->getAllPropertyTypesFromLayer($layer);
-            /** @var PropertyType $propertyType */
-            foreach ($propertyTypes as $propertyType) {
-                $output .= $this->interpolateLayerByProperty(
-                    $layer,
-                    $propertyType->getAbbreviation(),
-                    array(Interpolation::TYPE_GAUSSIAN, Interpolation::TYPE_MEAN));
-            }
-        }
-
-        return $output;
     }
 }

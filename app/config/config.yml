@@ -72,10 +72,13 @@ doctrine:
 
         dql:
             numeric_functions:
-                st_asgeojson:    CrEOF\Spatial\ORM\Query\AST\Functions\PostgreSql\STAsGeoJson
-                st_geomfromtext: CrEOF\Spatial\ORM\Query\AST\Functions\PostgreSql\STGeomFromText
-                st_area:         CrEOF\Spatial\ORM\Query\AST\Functions\PostgreSql\STArea
-                st_transform:    CrEOF\Spatial\ORM\Query\AST\Functions\PostgreSql\STTransform
+                st_area:          CrEOF\Spatial\ORM\Query\AST\Functions\PostgreSql\STArea
+                st_asgeojson:     CrEOF\Spatial\ORM\Query\AST\Functions\PostgreSql\STAsGeoJson
+                st_geomfromtext:  CrEOF\Spatial\ORM\Query\AST\Functions\PostgreSql\STGeomFromText
+                st_intersects:    CrEOF\Spatial\ORM\Query\AST\Functions\PostgreSql\STIntersects
+                st_point:         CrEOF\Spatial\ORM\Query\AST\Functions\PostgreSql\STPoint
+                st_setsrid:       CrEOF\Spatial\ORM\Query\AST\Functions\PostgreSql\STSetSRID
+                st_transform:     CrEOF\Spatial\ORM\Query\AST\Functions\PostgreSql\STTransform
 
 # Swiftmailer Configuration
 swiftmailer:

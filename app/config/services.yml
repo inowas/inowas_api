@@ -12,6 +12,10 @@ services:
         class: AppBundle\Service\PropertyTypes
         arguments: []
 
+    inowas.geotools:
+        class: AppBundle\Service\GeoTools
+        arguments: ['@doctrine.orm.default_entity_manager']
+
     inowas.modflow:
         class: AppBundle\Service\Modflow
         arguments: ['@serializer', '@kernel', '@inowas.python_process', '%inowas.modflow.working_directory%', '%inowas.modflow.data_folder%', '%inowas.temp_folder%', '%inowas.modflow.api_base_url%']

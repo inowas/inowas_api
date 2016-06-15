@@ -65,6 +65,13 @@ class ModFlowModel extends AbstractModel
     private $area;
 
     /**
+     * @var array
+     *
+     * @ORM\Column(name="active_cells", type="json_array", nullable=true)
+     */
+    private $activeCells;
+
+    /**
      * @var ArrayCollection
      * @JMS\Groups({"details", "modeldetails"})
      **/
@@ -161,6 +168,24 @@ class ModFlowModel extends AbstractModel
     public function setArea(Area $area)
     {
         $this->area = $area;
+        return $this;
+    }
+
+    /**
+     * @return array
+     */
+    public function getActiveCells()
+    {
+        return $this->activeCells;
+    }
+
+    /**
+     * @param array $activeCells
+     * @return ModFlowModel
+     */
+    public function setActiveCells($activeCells)
+    {
+        $this->activeCells = $activeCells;
         return $this;
     }
 

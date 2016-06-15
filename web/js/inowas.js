@@ -140,7 +140,7 @@ $( ".history" ).click(function(){
 var imgOverlay;
 loadLayerImg = function(modelId, layerOrder, propertyTypeAbbreviation, ft){
     if (ft!=true) {soilmodel_map.removeLayer(imgOverlay);}
-    $.getJSON( "/api/modflowmodels/"+modelId+"/boundingbox.json", function ( boundingBox ) {
+    $.getJSON( "/api/modflowmodels/"+modelId+"/boundingbox.json?srid=4326", function ( boundingBox ) {
         var imageUrl = "/api/modflowmodels/"+modelId+"/layers/"+layerOrder+"/properties/"+propertyTypeAbbreviation+".json?_format=png";
         imgOverlay = L.imageOverlay(imageUrl, boundingBox).addTo(soilmodel_map).setOpacity(0.6);
     });

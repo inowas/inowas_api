@@ -16,6 +16,8 @@ use Ramsey\Uuid\Uuid;
  */
 class Raster
 {
+    const DEFAULT_NO_DATA_VAL = -9999;
+
     /**
      * @var uuid
      *
@@ -49,7 +51,7 @@ class Raster
      * @JMS\Groups({"rasterdetails"})
      * @JMS\Type("integer")
      */
-    private $noDataVal = -999;
+    private $noDataVal = self::DEFAULT_NO_DATA_VAL;
 
     /**
      * @var integer
