@@ -18,4 +18,10 @@
 .DS_Store
 /composer.phar
 composer.lock
-tests/data
+
+!/var/data
+/var/data/geotiff/*
+!/var/data/geotiff/.gitkeep
+/var/data/modflow/*
+!/var/data/modflow/.gitkeep
+!/var/tmp/.gitkeep
