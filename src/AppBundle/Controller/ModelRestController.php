@@ -635,12 +635,14 @@ class ModelRestController extends FOSRestController
      *   }
      * )
      *
+     * @param ParamFetcher $paramFetcher
      * @param $modelId
      *
+     * @QueryParam(name="srid", nullable=true, description="SRID, default 3857", default="3857")
      * @return View
      */
-    public function getModflowmodelBoundingboxAction($modelId){
-
+    public function getModflowmodelBoundingboxAction(ParamFetcher $paramFetcher, $modelId)
+    {
         $model = $this->getDoctrine()
             ->getRepository('AppBundle:ModFlowModel')
             ->findOneBy(array(
@@ -655,9 +657,13 @@ class ModelRestController extends FOSRestController
             throw $this->createNotFoundException('BoundingBox not found.');
         }
 
-
-        $bb = $this->getDoctrine()->getRepository('AppBundle:ModFlowModel')
-            ->transformBoundingBox($model->getBoundingBox(), 4326);
+        $srid = $paramFetcher->get('srid');
+        $bb = $model->getBoundingBox();
+        
+        if ($bb->getSrid() != 0 && $bb->getSrid() != $srid){
+            $bb = $this->getDoctrine()->getRepository('AppBundle:ModFlowModel')
+                ->transformBoundingBox($model->getBoundingBox(), $srid);
+        }
 
         $result = array(
             array($bb->getYMin(), $bb->getXMin()),

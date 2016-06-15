@@ -113,14 +113,14 @@ class ModflowModelRestControllerTest extends WebTestCase
         );
 
         $this->modFlowModel->addBoundary(WellFactory::create()
-            ->setPoint(new Point(10, 11, 12))
+            ->setPoint(new Point(10, 11, 3857))
             ->setName('Well1')
             ->setPublic(true)
             ->setOwner($this->owner)
         );
 
         $this->modFlowModel->addBoundary(StreamFactory::create()
-            ->setStartingPoint(new Point(10, 11, 12))
+            ->setStartingPoint(new Point(10, 11, 3857))
             ->setName('River1')
             ->setPublic(true)
             ->setOwner($this->owner)
@@ -227,16 +227,52 @@ class ModflowModelRestControllerTest extends WebTestCase
         $this->assertEquals('RIV', $river->type);
     }
 
-    public function testGetModFlowModelBoundingBox()
+    public function testGetModFlowModelBoundingBoxWithSridZero()
     {
         $client = static::createClient();
         $client->request('GET', '/api/modflowmodels/'.$this->modFlowModel->getId().'/boundingbox.json');
         $this->assertEquals(200, $client->getResponse()->getStatusCode());
         $bb = json_decode($client->getResponse()->getContent());
-        $this->assertTrue($bb == array(
-               array($this->modFlowModel->getBoundingBox()->getXMin(), $this->modFlowModel->getBoundingBox()->getYMin()),
-               array($this->modFlowModel->getBoundingBox()->getXMax(), $this->modFlowModel->getBoundingBox()->getYMax())
-            ));
+        $expectedArray = array(
+            array($this->modFlowModel->getBoundingBox()->getYMin(), $this->modFlowModel->getBoundingBox()->getXMin()),
+            array($this->modFlowModel->getBoundingBox()->getYMax(), $this->modFlowModel->getBoundingBox()->getXMax())
+        );
+        $this->assertEquals($expectedArray, $bb);
+    }
+
+    public function testGetModFlowModelBoundingBoxWithSrid3857ShouldNotTransform()
+    {
+        $this->modFlowModel->setBoundingBox(new BoundingBox(1.1, 2.2, 3.3, 4.4, 3857));
+        $this->entityManager->persist($this->modFlowModel);
+        $this->entityManager->flush();
+
+        $client = static::createClient();
+        $client->request('GET', '/api/modflowmodels/'.$this->modFlowModel->getId().'/boundingbox.json');
+        $this->assertEquals(200, $client->getResponse()->getStatusCode());
+        $bb = json_decode($client->getResponse()->getContent());
+        $expectedArray = array(
+            array($this->modFlowModel->getBoundingBox()->getYMin(), $this->modFlowModel->getBoundingBox()->getXMin()),
+            array($this->modFlowModel->getBoundingBox()->getYMax(), $this->modFlowModel->getBoundingBox()->getXMax())
+        );
+        $this->assertEquals($expectedArray, $bb);
+    }
+
+    public function testGetModFlowModelBoundingBoxWithSrid4326ShouldTransform()
+    {
+        $this->modFlowModel->setBoundingBox(new BoundingBox(1.1, 2.2, 3.3, 4.4, 4326));
+        $this->entityManager->persist($this->modFlowModel);
+        $this->entityManager->flush();
+
+        $client = static::createClient();
+        $client->request('GET', '/api/modflowmodels/'.$this->modFlowModel->getId().'/boundingbox.json');
+        $this->assertEquals(200, $client->getResponse()->getStatusCode());
+        $bb = json_decode($client->getResponse()->getContent());
+        $expectedArray = array(
+            array(367557.59130077, 122451.43987260001),
+            array(490287.90003313002, 244902.87974520001)
+        );
+
+        $this->assertEquals($expectedArray, $bb);
     }
 
     /**
