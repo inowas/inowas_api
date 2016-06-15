@@ -20,10 +20,10 @@ class PropertyTypesTest extends WebTestCase
     }
 
     public function testReturnsPropertyTypeByAbbreviationIfExists(){
-        $this->assertTrue($this->propertyTypesService->findOneByAbbreviation('fuzz') instanceof PropertyType);
+        $this->assertTrue($this->propertyTypesService->findOneByAbbreviation('et') instanceof PropertyType);
     }
 
     public function testReturnsNullIfAbbreviationNotExists(){
-        $this->assertTrue($this->propertyTypesService->findOneByAbbreviation('et') instanceof PropertyType);
+        $this->assertNull($this->propertyTypesService->findOneByAbbreviation('fuss'));
     }
 }
