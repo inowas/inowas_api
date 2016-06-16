@@ -1,7 +1,11 @@
 <?php
 
 namespace AppBundle\Repository;
+use AppBundle\Entity\ConstantHeadBoundary;
+use AppBundle\Entity\GeneralHeadBoundary;
 use AppBundle\Entity\ModelObject;
+use AppBundle\Entity\ObservationPoint;
+use AppBundle\Entity\StreamBoundary;
 use AppBundle\Model\Interpolation\BoundingBox;
 
 /**
@@ -68,12 +72,51 @@ class ModFlowModelRepository extends \Doctrine\ORM\EntityRepository
     public function getGeometryFromModelObjectAsGeoJSON(ModelObject $mo, $targetSrid)
     {
         $id = $mo->getId()->toString();
-        $query = $this->getEntityManager()
-            ->createQuery('SELECT ST_AsGeoJson(ST_Transform(a.geometry, :srid)) FROM AppBundle:ConstantHeadBoundary a WHERE a.id = :id')
-            ->setParameter('id', $id)
-            ->setParameter('srid', $targetSrid)
-        ;
 
-        return $query->getSingleScalarResult();
+        if ($mo instanceof ConstantHeadBoundary)
+        {
+            $query = $this->getEntityManager()
+                ->createQuery('SELECT ST_AsGeoJson(ST_Transform(a.geometry, :srid)) FROM AppBundle:ConstantHeadBoundary a WHERE a.id = :id')
+                ->setParameter('id', $id)
+                ->setParameter('srid', $targetSrid)
+            ;
+
+            return $query->getSingleScalarResult();
+        }
+
+        if ($mo instanceof GeneralHeadBoundary)
+        {
+            $query = $this->getEntityManager()
+                ->createQuery('SELECT ST_AsGeoJson(ST_Transform(a.geometry, :srid)) FROM AppBundle:GeneralHeadBoundary a WHERE a.id = :id')
+                ->setParameter('id', $id)
+                ->setParameter('srid', $targetSrid)
+            ;
+
+            return $query->getSingleScalarResult();
+        }
+
+        if ($mo instanceof ObservationPoint)
+        {
+            $query = $this->getEntityManager()
+                ->createQuery('SELECT ST_AsGeoJson(ST_Transform(a.geometry, :srid)) FROM AppBundle:ObservationPoint a WHERE a.id = :id')
+                ->setParameter('id', $id)
+                ->setParameter('srid', $targetSrid)
+            ;
+
+            return $query->getSingleScalarResult();
+        }
+
+        if ($mo instanceof StreamBoundary)
+        {
+            $query = $this->getEntityManager()
+                ->createQuery('SELECT ST_AsGeoJson(ST_Transform(a.geometry, :srid)) FROM AppBundle:Stream a WHERE a.id = :id')
+                ->setParameter('id', $id)
+                ->setParameter('srid', $targetSrid)
+            ;
+
+            return $query->getSingleScalarResult();
+        }
+
+
     }
 }

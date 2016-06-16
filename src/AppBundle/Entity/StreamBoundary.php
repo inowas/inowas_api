@@ -10,7 +10,7 @@ use JMS\Serializer\Annotation as JMS;
 /**
  * @ORM\Entity()
  */
-class Stream extends BoundaryModelObject
+class StreamBoundary extends BoundaryModelObject
 {
     /**
      * @var string
@@ -31,13 +31,13 @@ class Stream extends BoundaryModelObject
      *
      * @ORM\Column(name="line", type="linestring", nullable=true)
      */
-    private $line;
+    private $geometry;
 
     /**
      * Set startingPoint
      *
      * @param point $startingPoint
-     * @return Stream
+     * @return StreamBoundary
      */
     public function setStartingPoint($startingPoint)
     {
@@ -59,12 +59,12 @@ class Stream extends BoundaryModelObject
     /**
      * Set line
      *
-     * @param LineString $line
-     * @return Stream
+     * @param LineString $geometry
+     * @return StreamBoundary
      */
-    public function setLine(LineString $line)
+    public function setGeometry(LineString $geometry)
     {
-        $this->line = $line;
+        $this->geometry = $geometry;
 
         return $this;
     }
@@ -74,9 +74,9 @@ class Stream extends BoundaryModelObject
      *
      * @return LineString
      */
-    public function getLine()
+    public function getGeometry()
     {
-        return $this->line;
+        return $this->geometry;
     }
 
     /**
@@ -108,11 +108,11 @@ class Stream extends BoundaryModelObject
     public function serializeDeserializeLine()
     {
         $line = null;
-        if (!is_null($this->line))
+        if (!is_null($this->geometry))
         {
-            $line = $this->line->toArray();
-            $line["type"] = $this->line->getType();
-            $line["srid"] = $this->line->getSrid();
+            $line = $this->geometry->toArray();
+            $line["type"] = $this->geometry->getType();
+            $line["srid"] = $this->geometry->getSrid();
         }
         return $line;
     }

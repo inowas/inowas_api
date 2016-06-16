@@ -2,9 +2,9 @@
 
 namespace AppBundle\Tests\Controller;
 
-use AppBundle\Entity\Stream;
+use AppBundle\Entity\StreamBoundary;
 use AppBundle\Entity\User;
-use AppBundle\Model\StreamFactory;
+use AppBundle\Model\StreamBoundaryFactory;
 use AppBundle\Model\UserFactory;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
@@ -17,7 +17,7 @@ class StreamRestControllerTest extends WebTestCase
     /** @var User $owner */
     protected $owner;
 
-    /** @var  Stream $boundary */
+    /** @var  StreamBoundary $boundary */
     protected $stream;
 
     public function setUp()
@@ -31,7 +31,7 @@ class StreamRestControllerTest extends WebTestCase
         $this->entityManager->persist($this->owner);
         $this->entityManager->flush();
 
-        $this->stream = StreamFactory::create()
+        $this->stream = StreamBoundaryFactory::create()
             ->setName('Stream')
             ->setPublic(true)
             ->setOwner($this->owner)
@@ -77,7 +77,7 @@ class StreamRestControllerTest extends WebTestCase
             ));
         $this->entityManager->remove($user);
 
-        $entities = $this->entityManager->getRepository('AppBundle:Stream')
+        $entities = $this->entityManager->getRepository('AppBundle:StreamBoundary')
             ->findBy(array(
                 'owner' => $user
             ));

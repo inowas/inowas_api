@@ -8,7 +8,7 @@ use AppBundle\Entity\ModFlowModel;
 use AppBundle\Entity\ObservationPoint;
 use AppBundle\Entity\Property;
 use AppBundle\Entity\SoilModel;
-use AppBundle\Entity\Stream;
+use AppBundle\Entity\StreamBoundary;
 use AppBundle\Model\AreaFactory;
 use AppBundle\Model\GeneralHeadBoundaryFactory;
 use AppBundle\Model\GeologicalLayerFactory;
@@ -21,7 +21,7 @@ use AppBundle\Model\PropertyTypeFactory;
 use AppBundle\Model\PropertyValueFactory;
 use AppBundle\Model\RasterFactory;
 use AppBundle\Model\SoilModelFactory;
-use AppBundle\Model\StreamFactory;
+use AppBundle\Model\StreamBoundaryFactory;
 use AppBundle\Model\StressPeriod;
 use AppBundle\Model\StressPeriodFactory;
 use AppBundle\Model\UserFactory;
@@ -128,8 +128,8 @@ class ModFlowModelSerialisationTest extends \PHPUnit_Framework_TestCase
 
         $this->layer->addProperty($this->property);
 
-        /** @var Stream $stream */
-        $stream = StreamFactory::create()
+        /** @var StreamBoundary $stream */
+        $stream = StreamBoundaryFactory::create()
             ->setOwner($owner)
             ->setName("Streamname")
             ->addObservationPoint(ObservationPointFactory::create())
@@ -138,8 +138,8 @@ class ModFlowModelSerialisationTest extends \PHPUnit_Framework_TestCase
             ->setDateModified(new \DateTime());
 
         $this->modFlowModel->addBoundary($stream);
-        $this->modFlowModel->addBoundary(StreamFactory::create()->setId(28));
-        $this->modFlowModel->addBoundary(StreamFactory::create()->setId(29));
+        $this->modFlowModel->addBoundary(StreamBoundaryFactory::create()->setId(28));
+        $this->modFlowModel->addBoundary(StreamBoundaryFactory::create()->setId(29));
 
         /** @var GeneralHeadBoundary $boundary */
         $boundary = GeneralHeadBoundaryFactory::create()

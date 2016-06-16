@@ -29,7 +29,7 @@ class ObservationPointFactory
         $op = new ObservationPoint();
         $op->setOwner($owner);
         $op->setName($name);
-        $op->setPoint($point);
+        $op->setGeometry($point);
         $op->setPublic($public);
 
         return $op;

@@ -19,7 +19,7 @@ use AppBundle\Model\PropertyFactory;
 use AppBundle\Model\PropertyTypeFactory;
 use AppBundle\Model\PropertyValueFactory;
 use AppBundle\Model\SoilModelFactory;
-use AppBundle\Model\StreamFactory;
+use AppBundle\Model\StreamBoundaryFactory;
 use AppBundle\Model\UserFactory;
 use AppBundle\Model\WellFactory;
 use JMS\Serializer\Serializer;
@@ -119,7 +119,7 @@ class ModflowModelRestControllerTest extends WebTestCase
             ->setOwner($this->owner)
         );
 
-        $this->modFlowModel->addBoundary(StreamFactory::create()
+        $this->modFlowModel->addBoundary(StreamBoundaryFactory::create()
             ->setStartingPoint(new Point(10, 11, 3857))
             ->setName('River1')
             ->setPublic(true)

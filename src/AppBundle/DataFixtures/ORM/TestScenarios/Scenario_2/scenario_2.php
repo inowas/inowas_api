@@ -18,7 +18,7 @@ use AppBundle\Model\ModFlowModelFactory;
 use AppBundle\Model\Point;
 use AppBundle\Model\PropertyValueFactory;
 use AppBundle\Model\SoilModelFactory;
-use AppBundle\Model\StreamFactory;
+use AppBundle\Model\StreamBoundaryFactory;
 use AppBundle\Model\UserFactory;
 use AppBundle\Model\WellFactory;
 use CrEOF\Spatial\PHP\Types\Geometry\LineString;
@@ -214,12 +214,12 @@ class LoadTestScenario_2 implements FixtureInterface, ContainerAwareInterface
                     ->setPublic($public)
                 )
             )
-            ->addStream(StreamFactory::create()
+            ->addStream(StreamBoundaryFactory::create()
                 ->setOwner($user)
                 ->setPublic($public)
                 ->setName('Stream TestScenario 1')
                 ->setStartingPoint(new Point(12, 21))
-                ->setLine(
+                ->setGeometry(
                     new LineString(array(
                         array(12,21),
                         array(13, 15),

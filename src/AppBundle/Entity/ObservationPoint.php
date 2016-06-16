@@ -25,7 +25,7 @@ class ObservationPoint extends ModelObject
      *
      * @ORM\Column(name="geometry", type="point", nullable=true)
      */
-    private $point;
+    private $geometry;
 
     /**
      * @var $elevation
@@ -57,12 +57,12 @@ class ObservationPoint extends ModelObject
     /**
      * Set point
      *
-     * @param point $point
+     * @param point $geometry
      * @return ObservationPoint
      */
-    public function setPoint($point)
+    public function setGeometry($geometry)
     {
-        $this->point = $point;
+        $this->geometry = $geometry;
 
         return $this;
     }
@@ -72,9 +72,9 @@ class ObservationPoint extends ModelObject
      *
      * @return point 
      */
-    public function getPoint()
+    public function getGeometry()
     {
-        return $this->point;
+        return $this->geometry;
     }
 
     /**
@@ -158,10 +158,10 @@ class ObservationPoint extends ModelObject
      */
     public function convertPointToPoint()
     {
-        if (!is_null($this->point))
+        if (!is_null($this->geometry))
         {
-            $point = new Point($this->point->getX(),$this->point->getY());
-            $point->setSrid($this->point->getSrid());
+            $point = new Point($this->geometry->getX(),$this->geometry->getY());
+            $point->setSrid($this->geometry->getSrid());
             return $point;
         }
 

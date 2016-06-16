@@ -8,7 +8,7 @@ use AppBundle\Entity\GeologicalLayer;
 use AppBundle\Entity\ModFlowModel;
 use AppBundle\Entity\PropertyType;
 use AppBundle\Entity\PropertyValue;
-use AppBundle\Entity\Stream;
+use AppBundle\Entity\StreamBoundary;
 use AppBundle\Entity\Well;
 use AppBundle\Model\Point;
 use AppBundle\Model\RasterFactory;
@@ -391,6 +391,15 @@ class ModelRestController extends FOSRestController
                 );
 
                 $geometries[] = $geometry;
+
+                foreach ($boundary->getObservationPoints() as $observationPoint) {
+                    $geometry = json_decode(
+                        $this->getDoctrine()->getRepository('AppBundle:ModFlowModel')
+                            ->getGeometryFromModelObjectAsGeoJSON($observationPoint, $srid)
+                    );
+
+                    $geometries[] = $geometry;
+                }
             }
 
             return new Response(json_encode($geometries, true));
@@ -606,7 +615,7 @@ class ModelRestController extends FOSRestController
         $rivers = array();
         $boundaries = $model->getBoundaries();
         foreach ($boundaries as $boundary) {
-            if ($boundary instanceof Stream) {
+            if ($boundary instanceof StreamBoundary) {
                 $rivers[] = $boundary;
             }
         }

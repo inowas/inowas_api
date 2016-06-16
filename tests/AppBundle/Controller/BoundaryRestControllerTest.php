@@ -7,7 +7,7 @@ use AppBundle\Entity\ConstantHeadBoundary;
 use AppBundle\Entity\GeneralHeadBoundary;
 use AppBundle\Entity\GeologicalLayer;
 use AppBundle\Entity\PropertyType;
-use AppBundle\Entity\Stream;
+use AppBundle\Entity\StreamBoundary;
 use AppBundle\Entity\User;
 use AppBundle\Entity\Well;
 use AppBundle\Model\ConstantHeadBoundaryFactory;
@@ -15,7 +15,7 @@ use AppBundle\Model\GeneralHeadBoundaryFactory;
 use AppBundle\Model\GeologicalLayerFactory;
 use AppBundle\Model\Point;
 use AppBundle\Model\PropertyValueFactory;
-use AppBundle\Model\StreamFactory;
+use AppBundle\Model\StreamBoundaryFactory;
 use AppBundle\Model\UserFactory;
 use AppBundle\Model\WellFactory;
 use CrEOF\Spatial\PHP\Types\Geometry\LineString;
@@ -35,7 +35,7 @@ class BoundaryRestControllerTest extends WebTestCase
     /** @var  ConstantHeadBoundary $chb */
     protected $chb;
 
-    /** @var  Stream $riv */
+    /** @var  StreamBoundary $riv */
     protected $riv;
 
     /** @var  Well $wel */
@@ -127,12 +127,12 @@ class BoundaryRestControllerTest extends WebTestCase
 
         $this->entityManager->persist($this->ghb);
 
-        $this->riv = StreamFactory::create()
+        $this->riv = StreamBoundaryFactory::create()
             ->setName('RIV-Boundary')
             ->setPublic(true)
             ->setOwner($this->owner)
             ->setStartingPoint(new Point(10, 11))
-            ->setLine(new LineString(
+            ->setGeometry(new LineString(
                 array(
                     new Point(10, 11),
                     new Point(15, 21),

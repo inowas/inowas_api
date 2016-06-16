@@ -23,7 +23,7 @@ use Ramsey\Uuid\Uuid;
  *                          "gp" = "GeologicalPoint",
  *                          "gl" = "GeologicalLayer",
  *                          "gu" = "GeologicalUnit",
- *                          "st" = "Stream"
+ *                          "st" = "StreamBoundary"
  *
  * })
  */

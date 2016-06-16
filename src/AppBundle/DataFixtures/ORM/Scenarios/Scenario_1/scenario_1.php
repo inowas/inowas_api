@@ -17,7 +17,7 @@ use AppBundle\Model\Point;
 use AppBundle\Model\PropertyTimeValueFactory;
 use AppBundle\Model\PropertyValueFactory;
 use AppBundle\Model\SoilModelFactory;
-use AppBundle\Model\StreamFactory;
+use AppBundle\Model\StreamBoundaryFactory;
 use AppBundle\Model\UserFactory;
 use CrEOF\Spatial\PHP\Types\Geometry\LineString;
 use CrEOF\Spatial\PHP\Types\Geometry\Polygon;
@@ -218,9 +218,9 @@ class LoadScenario_1 implements FixtureInterface, ContainerAwareInterface
         $entityManager->flush();
 
         // Create Stream
-        $stream = StreamFactory::setOwnerNameAndPublic($user, 'SC1_S1', $public);
+        $stream = StreamBoundaryFactory::setOwnerNameAndPublic($user, 'SC1_S1', $public);
         $stream->setStartingPoint(new Point(11777338.0302479, 2395656.78306049, 4326));
-        $stream->setLine(
+        $stream->setGeometry(
             new LineString(array(
                 array(11766937.6721201, 2380245.03544451),
                 array(11772341.4998545, 2386595.27878767),
@@ -252,7 +252,7 @@ class LoadScenario_1 implements FixtureInterface, ContainerAwareInterface
             ObservationPointFactory::create()
             ->setOwner($user)
             ->setName('SC1_OP1')
-            ->setPoint(new Point(11778481.3041515, 2393327.89177542, 4326))
+            ->setGeometry(new Point(11778481.3041515, 2393327.89177542, 4326))
             ->setPublic($public)
             ->addValue($propertyTypeTopElevation, PropertyValueFactory::create()->setValue(100))
             ->addValue($propertyTypeGwHead, PropertyTimeValueFactory::create()
@@ -273,7 +273,7 @@ class LoadScenario_1 implements FixtureInterface, ContainerAwareInterface
             ObservationPointFactory::create()
                 ->setOwner($user)
                 ->setName('SC1_OP2')
-                ->setPoint(new Point(11772891.9650673, 2397519.89608855, 4326))
+                ->setGeometry(new Point(11772891.9650673, 2397519.89608855, 4326))
                 ->setPublic($public)
                 ->addValue($propertyTypeTopElevation, PropertyValueFactory::create()->setValue(110))
         );
@@ -282,7 +282,7 @@ class LoadScenario_1 implements FixtureInterface, ContainerAwareInterface
             ObservationPointFactory::create()
                 ->setOwner($user)
                 ->setName('SC1_OP3')
-                ->setPoint(new Point(11786103.1301754, 2397138.80478736, 4326))
+                ->setGeometry(new Point(11786103.1301754, 2397138.80478736, 4326))
                 ->setPublic($public)
                 ->addValue($propertyTypeTopElevation, PropertyValueFactory::create()->setValue(120))
         );

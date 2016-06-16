@@ -7,7 +7,7 @@ use FOS\RestBundle\View\View;
 use JMS\Serializer\SerializationContext;
 use Nelmio\ApiDocBundle\Annotation\ApiDoc;
 
-class StreamRestController extends FOSRestController
+class StreamBoundaryRestController extends FOSRestController
 {
     /**
      * Return the stream list from a user.
@@ -38,7 +38,7 @@ class StreamRestController extends FOSRestController
         }
 
         $streams = $this->getDoctrine()
-            ->getRepository('AppBundle:Stream')
+            ->getRepository('AppBundle:StreamBoundary')
             ->findBy(
                 array('owner' => $user),
                 array('id' => 'ASC')
@@ -77,7 +77,7 @@ class StreamRestController extends FOSRestController
     public function getStreamsAction($id)
     {
         $stream = $this->getDoctrine()
-            ->getRepository('AppBundle:Stream')
+            ->getRepository('AppBundle:StreamBoundary')
             ->findOneBy(array(
                 'id' => $id
             ));
