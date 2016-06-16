@@ -158,6 +158,14 @@ class GeoImage
         $this->outputFileName = $outputFileName.'.'.$fileFormat;
 
         $fs = new Filesystem();
+        if (!$fs->exists($this->dataFolder)) {
+            $fs->mkdir($this->dataFolder);
+        }
+
+        if (!$fs->exists($this->tmpFolder)) {
+            $fs->mkdir($this->tmpFolder);
+        }
+
         if ($fs->exists($this->outputFileName)){
             return "File exists already";
         }
@@ -168,12 +176,7 @@ class GeoImage
             'json',
             SerializationContext::create()->setGroups(array("geoimage"))
         );
-
-        $fs = new Filesystem();
-        if (!$fs->exists($this->tmpFolder)) {
-            $fs->mkdir($this->tmpFolder);
-        }
-
+        
         $this->tmpFileName = Uuid::uuid4()->toString();
         $inputFileName = $this->tmpFolder . '/' . $this->tmpFileName . '.in';
         $fs->dumpFile($inputFileName, $geoTiffPropertiesJSON);
