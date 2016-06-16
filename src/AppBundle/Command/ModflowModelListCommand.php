@@ -13,7 +13,7 @@ class ModflowModelListCommand extends ContainerAwareCommand
     {
         // Name and description for app/console command
         $this
-            ->setName('inowas:modflowmodel:list')
+            ->setName('inowas:model:list')
             ->setDescription('Returns a list of all modflowmodels')
         ;
     }

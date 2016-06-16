@@ -17,7 +17,7 @@ class InterpolationCommand extends ContainerAwareCommand
     {
         // Name and description for app/console command
         $this
-            ->setName('inowas:modflowmodel:layerinterpolation')
+            ->setName('inowas:model:interpolate')
             ->setDescription('Interpolates all Layers automatically.')
             ->addArgument(
                 'id',
