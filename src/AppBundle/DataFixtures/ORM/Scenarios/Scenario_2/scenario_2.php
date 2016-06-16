@@ -4,6 +4,7 @@ namespace AppBundle\DataFixtures\ORM\Scenarios\Scenario_2;
 
 use AppBundle\Entity\GeologicalLayer;
 use AppBundle\Entity\ModFlowModel;
+use AppBundle\Entity\PropertyType;
 use AppBundle\Entity\User;
 use AppBundle\Model\AreaFactory;
 use AppBundle\Model\AreaTypeFactory;
@@ -23,6 +24,7 @@ use AppBundle\Model\SoilModelFactory;
 use AppBundle\Model\StressPeriod;
 use AppBundle\Model\StressPeriodFactory;
 use AppBundle\Model\WellFactory;
+use AppBundle\Service\Interpolation;
 use CrEOF\Spatial\DBAL\Platform\PostgreSql;
 use CrEOF\Spatial\DBAL\Types\AbstractSpatialType;
 use CrEOF\Spatial\PHP\Types\Geometry\LineString;
@@ -1028,7 +1030,38 @@ class LoadScenario_2 implements FixtureInterface, ContainerAwareInterface
             $this->entityManager->flush();
         }
 
+        
+        /* Calculation of active cells and storing it in Database */
+        $geoTools = $this->container->get('inowas.geotools');
+        $activeCells = $geoTools->calculateActiveCells($model->getArea(), $model->getBoundingBox(), $model->getGridSize());
+        $model->setActiveCells($activeCells);
+        $entityManager->persist($model);
+        $entityManager->flush();
 
+        /* Interpolation of all layers */
+        $soilModelService = $this->container->get('inowas.soilmodel');
+        $layers = $model->getSoilModel()->getGeologicalLayers();
+        /** @var GeologicalLayer $layer */
+        foreach ($layers as $layer)
+        {
+            $propertyTypes = $soilModelService->getAllPropertyTypesFromLayer($layer);
+            /** @var PropertyType $propertyType */
+            foreach ($propertyTypes as $propertyType){
+                if ($propertyType->getAbbreviation() == PropertyType::TOP_ELEVATION && $layer->getOrder() != GeologicalLayer::TOP_LAYER) {
+                    continue;
+                }
+
+                echo (sprintf("Interpolating Layer %s, Property %s\r\n", $layer->getName(), $propertyType->getName()));
+                $output = $soilModelService->interpolateLayerByProperty(
+                    $layer,
+                    $propertyType->getAbbreviation(),
+                    array(Interpolation::TYPE_IDW, Interpolation::TYPE_MEAN),
+                    $activeCells
+                );
+
+                echo ($output);
+            }
+        }
         return 1;
     }
 
