@@ -13,7 +13,13 @@ class ModelController extends Controller
      */
     public function modelsAction()
     {
-        return new Response('Models');
+        $models = $this->getDoctrine()->getRepository('AppBundle:ModFlowModel')
+            ->findAll();
+
+        return $this->render(':inowas/model/modflow:models.html.twig', array(
+                'models' => $models
+            )
+        );
     }
 
     /**
@@ -26,7 +32,7 @@ class ModelController extends Controller
                 'id' => $id
             ));
 
-        return $this->render(':inowas:model.html.twig', array(
+        return $this->render(':inowas/model/modflow:model.html.twig', array(
                 'model' => $model
             )
         );

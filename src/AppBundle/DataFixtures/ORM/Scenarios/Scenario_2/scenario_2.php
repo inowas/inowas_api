@@ -1040,6 +1040,7 @@ class LoadScenario_2 implements FixtureInterface, ContainerAwareInterface
 
         /* Interpolation of all layers */
         $soilModelService = $this->container->get('inowas.soilmodel');
+        $soilModelService->setModflowModel($model);
         $layers = $model->getSoilModel()->getGeologicalLayers();
         /** @var GeologicalLayer $layer */
         foreach ($layers as $layer)
