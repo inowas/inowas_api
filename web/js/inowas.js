@@ -129,6 +129,38 @@ $( ".results" ).click(function(){
     hide_all();
     $( "#results" ).show();
     $( ".results" ).addClass('active');
+
+    var results_map = L.map('results-map').setView(
+        [21.033333, 105.85], 12
+    );
+
+    var streets = L.tileLayer('https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token=pk.eyJ1IjoibWFwYm94IiwiYSI6ImNpandmbXliNDBjZWd2M2x6bDk3c2ZtOTkifQ._QA7i5Mpkd_m30IGElHziw', {
+        maxZoom: 18,
+        attribution: 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, ' +
+        '<a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, ' +
+        'Imagery © <a href="http://mapbox.com">Mapbox</a>',
+        id: 'mapbox.streets'
+    });
+    streets.addTo(results_map);
+
+    var area = new L.LayerGroup();
+    $.getJSON( "/api/modflowmodels/"+modelId+"/contents/soilmodel.json", function ( data ) {
+        var polygon = L.geoJson(jQuery.parseJSON(data.geojson), {"weight": 2, "fillOpacity": 0}).bindPopup("Groundwater model area Hanoi II.");
+        polygon.addTo(area);
+        area.addTo(results_map);
+        results_map.fitBounds(polygon.getBounds());
+    });
+
+    var grid = new L.LayerGroup();
+    $.get( "/api/modflowmodels/"+modelId+"/grid.json?srid=4326", function (data) {
+        L.geoJson(data, {"color": "blue", "weight": 1, "opacity": 0.65, "fillOpacity": 0.1}).addTo(grid);
+        grid.addTo(results_map);
+    });
+
+    var baseMaps = {};
+    var overlayMaps = {"Area":area, "Grid": grid};
+    L.control.layers(baseMaps, overlayMaps).addTo(results_map);
+
 });
 
 $( ".history" ).click(function(){

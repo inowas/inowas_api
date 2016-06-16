@@ -679,6 +679,66 @@ class ModelRestController extends FOSRestController
     }
 
     /**
+     * Returns the grid as geojson
+     *
+     * @ApiDoc(
+     *   resource = true,
+     *   description = "Returns the grid as geojson from a model.",
+     *   statusCodes = {
+     *     200 = "Returned when successful",
+     *     404 = "Returned when the ModflowModel is not found"
+     *   }
+     * )
+     *
+     * @param ParamFetcher $paramFetcher
+     * @param $modelId
+     *
+     * @QueryParam(name="srid", nullable=true, description="SRID, default 3857", default="3857")
+     * @return View
+     */
+    public function getModflowmodelGridAction(ParamFetcher $paramFetcher, $modelId)
+    {
+        $model = $this->getDoctrine()
+            ->getRepository('AppBundle:ModFlowModel')
+            ->findOneBy(array(
+                'id' => $modelId
+            ));
+
+        if (!$model) {
+            throw $this->createNotFoundException('Model not found.');
+        }
+
+        if (null === $model->getBoundingBox()) {
+            throw $this->createNotFoundException('BoundingBox not found.');
+        }
+
+        if (null === $model->getGridSize()) {
+            throw $this->createNotFoundException('Gridsize not found.');
+        }
+
+        if (null === $model->getActiveCells()) {
+            throw $this->createNotFoundException('ActiveCells not found.');
+        }
+
+        $srid = $paramFetcher->get('srid');
+        $bb = $model->getBoundingBox();
+
+        if ($bb->getSrid() != 0 && $bb->getSrid() != $srid){
+            $bb = $this->getDoctrine()->getRepository('AppBundle:ModFlowModel')
+                ->transformBoundingBox($model->getBoundingBox(), $srid);
+        }
+
+        $result = $this->get('inowas.geotools')->getGeoJsonGrid($bb, $model->getGridSize(), $model->getActiveCells());
+
+        $view = View::create();
+        $view->setData($result)
+            ->setStatusCode(200)
+        ;
+
+        return $view;
+    }
+
+    /**
      * Returns the html content and polygon-data for the summary view by modflow-model-id
      *
      * @ApiDoc(
