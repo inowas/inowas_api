@@ -12,40 +12,5 @@ use Doctrine\ORM\EntityRepository;
  */
 class GeologicalLayerRepository extends EntityRepository
 {
-    /**
-     * @param $projectId
-     * @return mixed
-     */
-    public function findAllByProjectId($projectId)
-    {
-        $qb = $this->getEntityManager()->createQueryBuilder();
-        $qb ->select(array('gl'))
-            ->from('AppBundle:GeologicalLayer', 'gl')
-            ->join('gl.projects', 'p', 'WITH', $qb->expr()->in('p.id', $projectId));
-
-        $result = $qb->getQuery()->getResult();
-        return $result;
-    }
-
-    /**
-     * @param $id
-     * @param $projectId
-     * @return mixed
-     */
-    public function findByIdAndProjectId($id, $projectId)
-    {
-        $qb = $this->getEntityManager()->createQueryBuilder();
-        $qb ->select(array('gl'))
-            ->from('AppBundle:GeologicalLayer', 'gl')
-            ->join('gl.projects', 'p', 'WITH', $qb->expr()->in('p.id', $projectId))
-            ->where('gl.id = :id')
-            ->setParameter('id', $id)
-        ;
-
-        $result = $qb->getQuery()->getOneOrNullResult();
-        return $result;
-    }
-
-
 }
 

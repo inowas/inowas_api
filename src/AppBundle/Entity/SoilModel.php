@@ -3,6 +3,7 @@
 namespace AppBundle\Entity;
 
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Criteria;
 use Doctrine\ORM\Mapping as ORM;
 use JMS\Serializer\Annotation as JMS;
 use Ramsey\Uuid\Uuid;
@@ -357,6 +358,21 @@ class SoilModel
      */
     public function getGeologicalLayers()
     {
+        return $this->geologicalLayers;
+    }
+
+    /**
+     * @return ArrayCollection
+     */
+    public function getSortedGeologicalLayers()
+    {
+        if (null != $this->geologicalLayers){
+
+            $criteria = Criteria::create()->orderBy(array("order" => Criteria::ASC));
+            $layers = $this->geologicalLayers->matching($criteria);
+            return $layers;
+        }
+
         return $this->geologicalLayers;
     }
 

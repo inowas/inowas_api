@@ -799,11 +799,12 @@ class ModelRestController extends FOSRestController
 
             $geoJson = $this->getDoctrine()->getRepository('AppBundle:Area')
                 ->getAreaPolygonIn4326($model->getArea()->getId());
+            $layers = $model->getSoilModel()->getSortedGeologicalLayers();
 
             $twig = $this->get('twig');
             $html = $twig->render(':inowas/model/modflow:soilmodel.html.twig', array(
                 'modelId' => $model->getId()->toString(),
-                'layers' => $model->getSoilModel()->getGeologicalLayers()
+                'layers' => $layers
             ));
 
             $result['html'] = $html;
