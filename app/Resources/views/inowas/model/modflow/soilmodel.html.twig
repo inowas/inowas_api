@@ -1,6 +1,3 @@
-{# @var model \AppBundle\Entity\ModFlowModel #}
-{%  set layers = model.soilModel.geologicalLayers %}
-
 <h2>Geological Layers</h2>
 <div class="panel-group" id="accordion">
     {% for layer in layers %}
@@ -18,7 +15,7 @@
                     {% for property in layer.properties %}
                         <tr>
                             <td>
-                                <button type="button" onclick="loadLayerImg('{{ model.id }}', '{{ layer.order }}', '{{ property.propertyType.abbreviation }}')" class="btn btn-default">{{ property.propertyType.abbreviation }}</button>
+                                <button type="button" onclick="loadLayerImg('{{ modelId }}', '{{ layer.order }}', '{{ property.propertyType.abbreviation }}')" class="btn btn-default">{{ property.propertyType.abbreviation }}</button>
                             </td>
                             <td>
                                 {{ property.propertyType.name }}

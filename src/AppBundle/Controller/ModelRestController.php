@@ -802,7 +802,8 @@ class ModelRestController extends FOSRestController
 
             $twig = $this->get('twig');
             $html = $twig->render(':inowas/model/modflow:soilmodel.html.twig', array(
-                'model' => $model
+                'modelId' => $model->getId()->toString(),
+                'layers' => $model->getSoilModel()->getGeologicalLayers()
             ));
 
             $result['html'] = $html;
