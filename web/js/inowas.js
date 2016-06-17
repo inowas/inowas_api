@@ -176,6 +176,77 @@ $( ".results" ).click(function(){
         console.log(e);
     });
 
+    var chart_heads = c3.generate({
+        bindto: '#result_chart_heads',
+        size: {
+            height: 220
+        },
+        padding: {
+            top: 0,
+            right: 25,
+            left: 35
+        },
+        legend: {
+            position: 'inset'
+        },
+        data: {
+            x: 'x',
+//        xFormat: '%Y%m%d', // 'xFormat' can be used as custom format of 'x'
+            columns: [
+                ['x', '2013-01-01', '2013-01-02', '2013-01-03', '2013-01-04', '2013-01-05', '2013-01-06'],
+//            ['x', '20130101', '20130102', '20130103', '20130104', '20130105', '20130106'],
+                ['Layer 1', 30, 200, 100, 400, 150, 250],
+                ['Layer 2', 130, 340, 200, 500, 250, 350]
+            ]
+        },
+        axis: {
+            x: {
+                type: 'timeseries',
+                tick: {
+                    format: '%Y-%m-%d'
+                }
+            }
+        }
+    });
+
+    setTimeout(function () {
+        chart_heads.load({
+            columns: [
+                ['Layer 3', 400, 500, 450, 700, 600, 500]
+            ]
+        });
+    }, 1000);
+
+    var chart_boundaries = c3.generate({
+        bindto: '#result_chart_boundaries',
+        size: {
+            height: 200
+        },
+        padding: {
+            right: 25,
+            left: 35
+        },
+        legend: {
+            position: 'inset'
+        },
+        data: {
+            x: 'x',
+//        xFormat: '%Y%m%d', // 'xFormat' can be used as custom format of 'x'
+            columns: [
+                ['x', '2013-01-01', '2013-01-02', '2013-01-03', '2013-01-04', '2013-01-05', '2013-01-06'],
+//            ['x', '20130101', '20130102', '20130103', '20130104', '20130105', '20130106'],
+                ['River Stage', 30, 200, 100, 400, 150, 250],
+            ]
+        },
+        axis: {
+            x: {
+                type: 'timeseries',
+                tick: {
+                    format: '%Y-%m-%d'
+                }
+            }
+        }
+    });
 });
 
 $( ".history" ).click(function(){

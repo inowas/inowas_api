@@ -6,6 +6,7 @@
     <link rel="stylesheet" type="text/css" href="{{ asset('vendor/bootstrap/dist/css/bootstrap.min.css') }}" />
     <link rel="stylesheet" type="text/css" href="{{ asset('vendor/font-awesome/css/font-awesome.min.css') }}" />
     <link rel="stylesheet" type="text/css" href="{{ asset('vendor/leaflet/dist/leaflet.css') }}" />
+    <link rel="stylesheet" type="text/css" href="{{ asset('vendor/c3/c3.min.css') }}" />
     <link rel="stylesheet" type="text/css" href="{{ asset('css/inowas.css') }}" />
     <link rel="stylesheet" type="text/css" href="{{ asset('css/inowas-d3.css') }}" />
     <link rel="icon" type="image/x-icon" href="{{ asset('favicon.ico') }}" />
@@ -165,6 +166,13 @@
                                         </div>
                                     </div>
                                     <div class="col-sm-6 content_results">
+                                        <div class="panel panel-default">
+                                            <p style="text-align: center">Groundwater Heads</p>
+                                            <div id="result_chart_heads"></div>
+                                        </div>
+                                        <div class="panel panel-default">
+                                            <div id="result_chart_boundaries"></div>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -191,6 +199,7 @@
 <script type="text/javascript" src="{{ asset('vendor/bootstrap/dist/js/bootstrap.min.js') }}"></script>
 <script type="text/javascript" src="{{ asset('vendor/leaflet/dist/leaflet.js') }}"></script>
 <script type="text/javascript" src="{{ asset('vendor/d3/d3.min.js') }}"></script>
+<script type="text/javascript" src="{{ asset('vendor/c3/c3.min.js') }}"></script>
 
 <script type="text/javascript" src="{{ asset('js/inowas.js') }}"></script>
 <script type="text/javascript" src="{{ asset('js/inowas-d3.js') }}"></script>
