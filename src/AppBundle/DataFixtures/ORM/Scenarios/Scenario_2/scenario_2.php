@@ -21,6 +21,7 @@ use AppBundle\Model\PropertyTimeValueFactory;
 use AppBundle\Model\PropertyValueFactory;
 use AppBundle\Model\Point;
 use AppBundle\Model\SoilModelFactory;
+use AppBundle\Model\StreamBoundaryFactory;
 use AppBundle\Model\StressPeriod;
 use AppBundle\Model\StressPeriodFactory;
 use AppBundle\Model\WellFactory;
@@ -831,22 +832,21 @@ class LoadScenario_2 implements FixtureInterface, ContainerAwareInterface
             }
         }
 
-        // Add Boundary and ObservationPoints
+        // Add ConstantHeadBoundary and ObservationPoints
         $boundary = ConstantHeadBoundaryFactory::create()
             ->setOwner($user)
             ->setName('SC2_B1')
             ->setPublic(true)
         ;
 
-        $converter = new PostgreSql();
-        $geometryText = "LineString (11777056.49104572273790836 2403440.17028302047401667, 11777973.9436037577688694 2403506.49811625294387341, 11780228.12698311358690262 2402856.2682070448063314, 11781703.59880801662802696 2401713.22520185634493828, 11782192.89715446159243584 2400859.20254275016486645, 11782678.03379831649363041 2399224.82580633740872145, 11782955.64566324092447758 2398372.03099954081699252, 11783586.59488865174353123 2397659.24991086078807712, 11784427.14815393835306168 2396590.66674219723790884, 11784914.27011025696992874 2395382.18267500726506114, 11785330.82068796083331108 2394174.15454542031511664, 11785536.96124399080872536 2393180.11378513323143125, 11786097.1273522675037384 2392467.84464810928329825, 11787011.69080197438597679 2392108.19440084183588624, 11787715.90038010291755199 2391962.42985267844051123, 11788487.82464707084000111 2391319.86146369902417064, 11789680.65233467146754265 2390320.33801258727908134, 11789747.53923093341290951 2389681.79035578016191721, 11789176.05731181986629963 2388337.88133400911465287, 11788252.26803966984152794 2386996.03587882174178958, 11787540.82363948784768581 2385794.83458124194294214, 11783036.01740818470716476 2386882.81766726961359382, 11777486.37431096099317074 2390598.53498441586270928, 11775189.21765423379838467 2396638.4036272126249969, 11777056.49104572273790836 2403440.17028302047401667)";
+        $lineString = new LineString(array(
+                array(11787540.82363948784768581, 2385794.83458124194294214),
+                array(11783036.01740818470716476, 2386882.81766726961359382),
+                array(11777486.37431096099317074, 2390598.53498441586270928),
+                array(11775189.21765423379838467, 2396638.40362721262499690),
+                array(11777056.49104572273790836, 2403440.17028302047401667),
+        ), 3857);
 
-        /** @var AbstractSpatialType $lineStringType */
-        $lineStringType = Type::getType('linestring');
-
-        /** @var LineString $lineString */
-        $lineString = $converter->convertStringToPHPValue($lineStringType, $geometryText);
-        $lineString->setSrid(3857);
         $boundary->setGeometry($lineString);
         $boundary->addGeologicalLayer($layer_1);
         $boundary->addGeologicalLayer($layer_2);
@@ -855,11 +855,8 @@ class LoadScenario_2 implements FixtureInterface, ContainerAwareInterface
         $entityManager->persist($boundary);
         $entityManager->flush();
 
-        // Add ObservationPoints
+        // Add CHB-ObservationPoints
         $observationPointPoints = array(
-            array('name' => 'SC2_HTTP_4', 'point' => new Point(11777056.49104572273790836, 2403440.17028302047401667, 3857)),
-            array('name' => 'SC2_one_more', 'point' => new Point(11784427.14815393835306168, 2396590.66674219723790884, 3857)),
-            array('name' => 'SC2_H9', 'point' => new Point(11787540.82363948784768581, 2385794.83458124194294214, 3857)),
             array('name' => 'SC2_Q68', 'point' => new Point(11783036.01740818470716476, 2386882.81766726961359382, 3857)),
             array('name' => 'SC2_Q_62', 'point' => new Point(11775189.21765423379838467, 2396638.40362721262499690, 3857)),
         );
@@ -880,6 +877,62 @@ class LoadScenario_2 implements FixtureInterface, ContainerAwareInterface
             }
 
             $boundary->addGeologicalLayer($geologicalLayer);
+            $model->addBoundary($boundary);
+            $entityManager->persist($boundary);
+            $entityManager->persist($observationPoint);
+            $entityManager->flush();
+
+            $filename = 'scenario_2_observationPoint_'.str_replace('SC2_', '', $observationPoint->getName()).'_properties.csv';
+            $this->addModelObjectPropertiesFromCSVFile($observationPoint, __DIR__.'/'.$filename, ';');
+        }
+
+
+        // Add RiverBoundary and ObservationPoints
+        $riverBoundary = StreamBoundaryFactory::create()
+            ->setOwner($user)
+            ->setName('SC2_RIV1')
+            ->setPublic(true)
+        ;
+
+        $lineString = new LineString(
+            array(
+                array(11777056.49104572273790836, 2403440.17028302047401667),
+                array(11777973.94360375776886940, 2403506.49811625294387341),
+                array(11780228.12698311358690262, 2402856.26820704480633140),
+                array(11781703.59880801662802696, 2401713.22520185634493828),
+                array(11782192.89715446159243584, 2400859.20254275016486645),
+                array(11782678.03379831649363041, 2399224.82580633740872145),
+                array(11782955.64566324092447758, 2398372.03099954081699252),
+                array(11783586.59488865174353123, 2397659.24991086078807712),
+                array(11784427.14815393835306168, 2396590.66674219723790884),
+                array(11784914.27011025696992874, 2395382.18267500726506114),
+                array(11785330.82068796083331108, 2394174.15454542031511664),
+                array(11785536.96124399080872536, 2393180.11378513323143125),
+                array(11786097.12735226750373840, 2392467.84464810928329825),
+                array(11787011.69080197438597679, 2392108.19440084183588624),
+                array(11787715.90038010291755199, 2391962.42985267844051123),
+                array(11788487.82464707084000111, 2391319.86146369902417064),
+                array(11789680.65233467146754265, 2390320.33801258727908134),
+                array(11789747.53923093341290951, 2389681.79035578016191721),
+                array(11789176.05731181986629963, 2388337.88133400911465287),
+                array(11788252.26803966984152794, 2386996.03587882174178958),
+                array(11787540.82363948784768581, 2385794.83458124194294214)
+            ), 3857);
+
+        $riverBoundary->setGeometry($lineString);
+        $entityManager->persist($boundary);
+        $entityManager->flush();
+
+        $observationPointPoints = array(
+            array('name' => 'SC2_HTTP_4', 'point' => new Point(11777056.49104572273790836, 2403440.17028302047401667, 3857)),
+            array('name' => 'SC2_one_more', 'point' => new Point(11784427.14815393835306168, 2396590.66674219723790884, 3857)),
+            array('name' => 'SC2_H9', 'point' => new Point(11787540.82363948784768581, 2385794.83458124194294214, 3857)),
+        );
+
+        foreach ($observationPointPoints as $observationPointPoint)
+        {
+            $observationPoint = ObservationPointFactory::setOwnerNameAndPoint($user, $observationPointPoint['name'], $observationPointPoint['point'], $public);
+            $riverBoundary->addObservationPoint($observationPoint);
             $model->addBoundary($boundary);
             $entityManager->persist($boundary);
             $entityManager->persist($observationPoint);

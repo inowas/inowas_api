@@ -36,13 +36,6 @@ class ObservationPoint extends ModelObject
     private $elevation;
 
     /**
-     * @var ArrayCollection ModelObject
-     *
-     * @ORM\ManyToMany(targetEntity="AppBundle\Entity\ModelObject", mappedBy="observationPoints")
-     */
-    private $modelObjects;
-
-    /**
      * ObservationPoint constructor.
      * @param User|null $owner
      * @param bool|false $public
@@ -99,50 +92,7 @@ class ObservationPoint extends ModelObject
     {
         return $this->elevation;
     }
-
-    /**
-     * Add modelObjects
-     *
-     * @param \AppBundle\Entity\ModelObject $modelObjects
-     * @return ObservationPoint
-     */
-    public function addModelObject(ModelObject $modelObjects)
-    {
-        $this->modelObjects[] = $modelObjects;
-
-        if (!in_array($this, $modelObjects->getObservationPoints()->toArray()))
-        {
-            $modelObjects->addObservationPoint($this);
-        }
-
-        return $this;
-    }
-
-    /**
-     * Remove modelObjects
-     *
-     * @param \AppBundle\Entity\ModelObject $modelObjects
-     */
-    public function removeModelObject(ModelObject $modelObjects)
-    {
-        $this->modelObjects->removeElement($modelObjects);
-
-        if (in_array($this, $modelObjects->getObservationPoints()->toArray()))
-        {
-            $modelObjects->removeObservationPoint($this);
-        }
-    }
-
-    /**
-     * Get modelObjects
-     *
-     * @return \Doctrine\Common\Collections\Collection
-     */
-    public function getModelObjects()
-    {
-        return $this->modelObjects;
-    }
-
+    
     /**
      * @return string
      */

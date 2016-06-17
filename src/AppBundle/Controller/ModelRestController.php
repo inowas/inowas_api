@@ -382,22 +382,16 @@ class ModelRestController extends FOSRestController
 
         if ($paramFetcher->get('geojson')){
             $srid = $paramFetcher->get('srid');
+            $geoTools = $this->get('inowas.geotools');
+
             $geometries = array();
             /** @var ConstantHeadBoundary $boundary */
             foreach ($constantHeadBoundaries as $boundary) {
-                $geometry = json_decode(
-                    $this->getDoctrine()->getRepository('AppBundle:ModFlowModel')
-                        ->getGeometryFromModelObjectAsGeoJSON($boundary, $srid)
-                );
-
+                $geometry = json_decode($geoTools->getGeometryFromModelObjectAsGeoJSON($boundary, $srid));
                 $geometries[] = $geometry;
 
                 foreach ($boundary->getObservationPoints() as $observationPoint) {
-                    $geometry = json_decode(
-                        $this->getDoctrine()->getRepository('AppBundle:ModFlowModel')
-                            ->getGeometryFromModelObjectAsGeoJSON($observationPoint, $srid)
-                    );
-
+                    $geometry = json_decode($geoTools->getGeometryFromModelObjectAsGeoJSON($observationPoint, $srid));
                     $geometries[] = $geometry;
                 }
             }

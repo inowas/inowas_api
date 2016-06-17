@@ -47,7 +47,9 @@ class LoadPropertyTypes implements FixtureInterface, ContainerAwareInterface
             array("tmax", "Temperature maximum", PropertyType::STATIC_AND_TIME_DEPENDENT_VALUES),
             array("pr", "Precipitation in m", PropertyType::STATIC_AND_TIME_DEPENDENT_VALUES),
             array("pe", "Potential evapotranspiration in mm", PropertyType::STATIC_AND_TIME_DEPENDENT_VALUES),
-            array("pur", "Pumping rate in m^/day", PropertyType::STATIC_AND_TIME_DEPENDENT_VALUES)
+            array("pur", "Pumping rate in m^/day", PropertyType::STATIC_AND_TIME_DEPENDENT_VALUES),
+            array("rs", "River stage", PropertyType::STATIC_AND_TIME_DEPENDENT_VALUES),
+            array("rbc", "Riverbed Conductance", PropertyType::STATIC_AND_TIME_DEPENDENT_VALUES)
         );
 
         foreach ($propertyTypesArray as $propertyTypeArray)

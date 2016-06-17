@@ -87,8 +87,11 @@ abstract class ModelObject
     /**
      * @var ArrayCollection ObservationPoint
      *
-     * @ORM\ManyToMany(targetEntity="ObservationPoint", inversedBy="modelObjects", cascade={"persist", "remove"})
-     * @ORM\JoinTable(name="model_objects_observation_points")
+     * @ORM\ManyToMany(targetEntity="AppBundle\Entity\ObservationPoint", cascade={"persist", "remove"})
+     * @ORM\JoinTable(name="model_objects_observation_points",
+     *     joinColumns={@ORM\JoinColumn(name="model_object_id", referencedColumnName="id", onDelete="CASCADE")},
+     *     inverseJoinColumns={@ORM\JoinColumn(name="observation_point_id", referencedColumnName="id", onDelete="CASCADE")}
+     *     )
      * @JMS\Groups({"modelobjectdetails", "soilmodeldetails", "boundarylist"})
      * @JMS\MaxDepth(5)
      */
@@ -291,13 +294,14 @@ abstract class ModelObject
     /**
      * Add observationPoints
      *
-     * @param \AppBundle\Entity\ObservationPoint $observationPoints
+     * @param \AppBundle\Entity\ObservationPoint $observationPoint
      * @return $this
      */
-    public function addObservationPoint(ObservationPoint $observationPoints)
+    public function addObservationPoint(ObservationPoint $observationPoint)
     {
-        $this->observationPoints[] = $observationPoints;
-        $observationPoints->addModelObject($this);
+        if (!$this->observationPoints->contains($observationPoint)){
+            $this->observationPoints[] = $observationPoint;
+        }
 
         return $this;
     }
@@ -305,12 +309,13 @@ abstract class ModelObject
     /**
      * Remove observationPoints
      *
-     * @param \AppBundle\Entity\ObservationPoint $observationPoints
+     * @param \AppBundle\Entity\ObservationPoint $observationPoint
      */
-    public function removeObservationPoint(ObservationPoint $observationPoints)
+    public function removeObservationPoint(ObservationPoint $observationPoint)
     {
-        $this->observationPoints->removeElement($observationPoints);
-        $observationPoints->removeModelObject($this);
+        if ($this->observationPoints->contains($observationPoint)) {
+            $this->observationPoints->removeElement($observationPoint);
+        }
     }
 
     /**
@@ -415,5 +420,10 @@ abstract class ModelObject
         $property->addValue($value);
 
         return $this;
+    }
+
+    public function getNameOfClass()
+    {
+        return static::class;
     }
 }

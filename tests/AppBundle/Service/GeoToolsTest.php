@@ -4,11 +4,13 @@ namespace AppBundle\Tests\Service;
 
 use AppBundle\Entity\Area;
 use AppBundle\Model\AreaFactory;
+use AppBundle\Model\ConstantHeadBoundaryFactory;
 use AppBundle\Model\Interpolation\BoundingBox;
 use AppBundle\Model\Interpolation\GridSize;
 use AppBundle\Service\GeoTools;
 use CrEOF\Spatial\DBAL\Platform\PostgreSql;
 use CrEOF\Spatial\DBAL\Types\AbstractSpatialType;
+use CrEOF\Spatial\PHP\Types\Geometry\LineString;
 use CrEOF\Spatial\PHP\Types\Geometry\Polygon;
 use Doctrine\DBAL\Types\Type;
 use Doctrine\ORM\EntityManager;
@@ -70,6 +72,50 @@ class GeoToolsTest extends WebTestCase
         $result = $this->geoTools->calculateActiveCells($this->area, $this->boundingBox, $this->gridSize);
         $this->assertCount(5, $result);
         $this->assertCount(5, $result[0]);
+    }
+
+    public function testGetGeometrySRID3857FromConstantHeadBoundaryAsGeoJSON(){
+        $chb = ConstantHeadBoundaryFactory::create()
+            ->setName('CHB1')
+            ->setGeometry(new LineString(array(
+                array(11787540.82363948784768581, 2385794.83458124194294214),
+                array(11783036.01740818470716476, 2386882.81766726961359382),
+                array(11777486.37431096099317074, 2390598.53498441586270928),
+                array(11775189.21765423379838467, 2396638.40362721262499690),
+                array(11777056.49104572273790836, 2403440.17028302047401667),
+            ), 3857));
+
+        $this->entityManager->persist($chb);
+        $this->entityManager->flush();
+        $result = json_decode($this->geoTools->getGeometryFromModelObjectAsGeoJSON($chb, 3857));
+        $this->assertObjectHasAttribute('type', $result);
+        $this->assertEquals('LineString', $result->type);
+        $this->assertObjectHasAttribute('coordinates', $result);
+        $this->assertCount(5, $result->coordinates);
+        $this->assertEquals(11787540.823639, $result->coordinates[0][0]);
+        $this->assertEquals(2385794.8345812, $result->coordinates[0][1]);
+    }
+
+    public function testGetGeometrySRID4326FromConstantHeadBoundaryAsGeoJSON(){
+        $chb = ConstantHeadBoundaryFactory::create()
+            ->setName('CHB1')
+            ->setGeometry(new LineString(array(
+                array(11787540.82363948784768581, 2385794.83458124194294214),
+                array(11783036.01740818470716476, 2386882.81766726961359382),
+                array(11777486.37431096099317074, 2390598.53498441586270928),
+                array(11775189.21765423379838467, 2396638.40362721262499690),
+                array(11777056.49104572273790836, 2403440.17028302047401667),
+            ), 3857));
+
+        $this->entityManager->persist($chb);
+        $this->entityManager->flush();
+        $result = json_decode($this->geoTools->getGeometryFromModelObjectAsGeoJSON($chb, 4326));
+        $this->assertObjectHasAttribute('type', $result);
+        $this->assertEquals('LineString', $result->type);
+        $this->assertObjectHasAttribute('coordinates', $result);
+        $this->assertCount(5, $result->coordinates);
+        $this->assertEquals(105.88928084058, $result->coordinates[0][0]);
+        $this->assertEquals(20.948969914319, $result->coordinates[0][1]);
     }
 
     public function tearDown()
