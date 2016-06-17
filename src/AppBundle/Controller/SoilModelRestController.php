@@ -2,7 +2,6 @@
 
 namespace AppBundle\Controller;
 
-use Doctrine\Common\Collections\Criteria;
 use FOS\RestBundle\Controller\FOSRestController;
 use FOS\RestBundle\View\View;
 use JMS\Serializer\SerializationContext;
