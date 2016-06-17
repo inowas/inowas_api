@@ -5,6 +5,7 @@ namespace AppBundle\Command;
 use AppBundle\Entity\GeologicalLayer;
 use AppBundle\Entity\PropertyType;
 use AppBundle\Service\Interpolation;
+use Doctrine\ORM\EntityManager;
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -29,6 +30,7 @@ class InterpolationCommand extends ContainerAwareCommand
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
+        /** @var EntityManager $entityManager */
         $entityManager = $this->getContainer()->get('doctrine.orm.entity_manager');
         $geoTools = $this->getContainer()->get('inowas.geotools');
         $soilModelService = $this->getContainer()->get('inowas.soilmodel');
@@ -58,9 +60,8 @@ class InterpolationCommand extends ContainerAwareCommand
                 $output = $soilModelService->interpolateLayerByProperty(
                     $layer,
                     $propertyType->getAbbreviation(),
-                    array(Interpolation::TYPE_IDW, Interpolation::TYPE_MEAN),
-                    $activeCells
-                    );
+                    array(Interpolation::TYPE_IDW, Interpolation::TYPE_MEAN)
+                );
 
                 echo ($output);
             }

@@ -1,6 +1,6 @@
 <?php
 
-namespace AppBundle\Tests\Controller;
+namespace AppBundle\Tests\Serialization;
 
 use AppBundle\Entity\Raster;
 use AppBundle\Model\GeoImage\GeoImageProperties;
@@ -43,7 +43,21 @@ class GeoTiffSerialisationTest extends \PHPUnit_Framework_TestCase
                 array(1,2,3,4,5,6,7,8,9,10),
             ));
 
-        $this->geoTiffProperties = new GeoImageProperties($this->raster, 'cr_test', 3853, 'test');
+        $activeCells = array(
+            array(1,1,1,1,1,1,1,1,1,1),
+            array(1,1,1,1,1,1,1,1,1,1),
+            array(1,1,1,1,1,1,1,1,1,1),
+            array(1,1,1,1,1,1,1,1,1,1),
+            array(1,1,1,1,1,1,1,1,1,1),
+            array(1,1,1,1,1,1,1,1,1,1),
+            array(1,1,1,1,1,1,1,1,1,1),
+            array(1,1,1,1,1,1,1,1,1,1),
+            array(1,1,1,1,1,1,1,1,1,1),
+            array(1,1,1,1,1,1,1,1,1,1),
+            array(1,1,1,1,1,1,1,1,1,1)
+        );
+
+        $this->geoTiffProperties = new GeoImageProperties($this->raster, $activeCells, 'cr_test', 3853, 'test');
     }
 
     public function testInterpolationSerialization()

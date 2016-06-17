@@ -241,7 +241,7 @@ class ModelRestController extends FOSRestController
 
         $fileFormat = $paramFetcher->get('_format');
         $geoImageService = $this->get('inowas.geoimage');
-        $geoImageService->createImageFromRaster($raster, $fileFormat);
+        $geoImageService->createImageFromRaster($raster, $model->getActiveCells(), $fileFormat);
         $outputFileName = $geoImageService->getOutputFileName();
 
         $fs = new Filesystem();
@@ -571,36 +571,17 @@ class ModelRestController extends FOSRestController
      *   }
      * )
      *
+     * @param ParamFetcher $paramFetcher
      * @param $modelId
      *
+     * @QueryParam(name="geojson", nullable=true, description="Returns the geometry only as geojson", default=false)
+     * @QueryParam(name="srid", nullable=true, description="The target srid, default is 4326", default=4326)
      * @return View
      */
-    public function getModflowmodelRiversAction($modelId)
+    public function getModflowmodelRiversAction(ParamFetcher $paramFetcher, $modelId)
     {
-        if ($this->isGranted('ROLE_ADMIN'))
-        {
-            $model = $this->getDoctrine()
-                ->getRepository('AppBundle:ModFlowModel')
-                ->findOneBy(array(
-                    'id' => $modelId
-                ));
-        } elseif ($this->isGranted('ROLE_USER'))
-        {
-            $model = $this->getDoctrine()
-                ->getRepository('AppBundle:ModFlowModel')
-                ->findOneBy(array(
-                    'id' => $modelId,
-                    'owner' => $this->getUser()
-                ));
-        } else
-        {
-            $model = $this->getDoctrine()
-                ->getRepository('AppBundle:ModFlowModel')
-                ->findOneBy(array(
-                    'id' => $modelId,
-                    'public' => true
-                ));
-        }
+        $model = $this->getDoctrine()->getRepository('AppBundle:ModFlowModel')
+            ->findOneBy(array('id' => $modelId));
 
         if (!$model) {
             throw $this->createNotFoundException('Model not found.');
@@ -612,6 +593,25 @@ class ModelRestController extends FOSRestController
             if ($boundary instanceof StreamBoundary) {
                 $rivers[] = $boundary;
             }
+        }
+
+        if ($paramFetcher->get('geojson')){
+            $srid = $paramFetcher->get('srid');
+            $geoTools = $this->get('inowas.geotools');
+
+            $geometries = array();
+            /** @var ConstantHeadBoundary $boundary */
+            foreach ($rivers as $boundary) {
+                $geometry = json_decode($geoTools->getGeometryFromModelObjectAsGeoJSON($boundary, $srid));
+                $geometries[] = $geometry;
+
+                foreach ($boundary->getObservationPoints() as $observationPoint) {
+                    $geometry = json_decode($geoTools->getGeometryFromModelObjectAsGeoJSON($observationPoint, $srid));
+                    $geometries[] = $geometry;
+                }
+            }
+
+            return new Response(json_encode($geometries, true));
         }
 
         $serializationContext = SerializationContext::create();

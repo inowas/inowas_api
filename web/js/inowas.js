@@ -114,8 +114,14 @@ $( ".boundaries" ).click(function () {
         chb.addTo(boundary_map);
     });
 
+    var riv = new L.LayerGroup();
+    $.get( "/api/modflowmodels/"+modelId+"/rivers.json?geojson=true&srid=4326", function ( data ) {
+        L.geoJson(data, {color: 'red'}).addTo(riv);
+        riv.addTo(boundary_map);
+    });
+
     var baseMaps = {"Streets": streets, "Hydda_Full": Hydda_Full};
-    var overlayMaps = {"Area": area, "Wells": wells, "CHB": chb};
+    var overlayMaps = {"Area": area, "Wells": wells, "CHB": chb, "RIV": riv};
     L.control.layers(baseMaps, overlayMaps).addTo(boundary_map);
 });
 
@@ -143,6 +149,11 @@ $( ".results" ).click(function(){
     });
     streets.addTo(results_map);
 
+    var layer1 = L.imageOverlay();
+    var layer2 = L.imageOverlay();
+    var layer3 = L.imageOverlay();
+    var layer4 = L.imageOverlay();
+
     var area = new L.LayerGroup();
     $.getJSON( "/api/modflowmodels/"+modelId+"/contents/soilmodel.json", function ( data ) {
         var polygon = L.geoJson(jQuery.parseJSON(data.geojson), {"weight": 2, "fillOpacity": 0}).bindPopup("Groundwater model area Hanoi II.");
@@ -157,9 +168,13 @@ $( ".results" ).click(function(){
         grid.addTo(results_map);
     });
 
-    var baseMaps = {};
+    var baseMaps = {"Layer 1": layer1, "Layer 2": layer2, "Layer 3": layer3, "Layer 4": layer4};
     var overlayMaps = {"Area":area, "Grid": grid};
     L.control.layers(baseMaps, overlayMaps).addTo(results_map);
+
+    results_map.on('baselayerchange', function(e) {
+        console.log(e);
+    });
 
 });
 

@@ -437,15 +437,12 @@ class ModFlowModel extends AbstractModel
      */
     public function preFlush()
     {
-        if (!is_null($this->area))
-        {
+        if (!is_null($this->area)) {
             $this->addModelObject($this->area);
         }
 
-        if ($this->boundaries->count() > 0 )
-        {
-            foreach ($this->boundaries as $boundary)
-            {
+        if ($this->boundaries->count() > 0 ) {
+            foreach ($this->boundaries as $boundary) {
                 $this->addModelObject($boundary);
             }
         }
@@ -454,10 +451,8 @@ class ModFlowModel extends AbstractModel
             $this->observationPoints = new ArrayCollection();
         }
 
-        if ($this->observationPoints->count() > 0 )
-        {
-            foreach ($this->observationPoints as $observationPoint)
-            {
+        if ($this->observationPoints->count() > 0 ) {
+            foreach ($this->observationPoints as $observationPoint) {
                 $this->addModelObject($observationPoint);
             }
         }
@@ -468,22 +463,18 @@ class ModFlowModel extends AbstractModel
      */
     public function postLoad()
     {
-        foreach ($this->getModelObjects() as $modelObject)
-        {
-            if ($modelObject instanceof Area)
-            {
+        foreach ($this->getModelObjects() as $modelObject) {
+            if ($modelObject instanceof Area) {
                 $this->area = $modelObject;
                 $this->removeModelObject($modelObject);
             }
 
-            if ($modelObject instanceof BoundaryModelObject)
-            {
+            if ($modelObject instanceof BoundaryModelObject) {
                 $this->addBoundary($modelObject);
                 $this->removeModelObject($modelObject);
             }
 
-            if ($modelObject instanceof ObservationPoint)
-            {
+            if ($modelObject instanceof ObservationPoint) {
                 $this->addObservationPoint($modelObject);
                 $this->removeModelObject($modelObject);
             }

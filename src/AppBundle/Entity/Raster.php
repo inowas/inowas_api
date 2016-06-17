@@ -54,7 +54,7 @@ class Raster
     private $noDataVal = self::DEFAULT_NO_DATA_VAL;
 
     /**
-     * @var integer
+     * @var array
      *
      * @ORM\Column(name="data", type="json_array")
      * @JMS\Groups({"rasterdetails"})
@@ -159,6 +159,28 @@ class Raster
     public function getData()
     {
         return $this->data;
+    }
+
+    /**
+     * @param $filter
+     * @return array
+     */
+    public function getFilteredData($filter){
+
+        if (null === $filter) {
+            return $this->data;
+        }
+        
+        $data = $this->data;
+        for ($yi = 0; $yi<count($data); $yi++){
+            for ($xi = 0; $xi<count($data[0]); $xi++) {
+                if ($filter[$yi][$xi] == false) {
+                    $data[$yi][$xi] = self::DEFAULT_NO_DATA_VAL;
+                }
+            }
+        }
+
+        return $data;
     }
 
     /**

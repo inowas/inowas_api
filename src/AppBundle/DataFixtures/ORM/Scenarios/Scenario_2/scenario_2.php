@@ -920,7 +920,9 @@ class LoadScenario_2 implements FixtureInterface, ContainerAwareInterface
             ), 3857);
 
         $riverBoundary->setGeometry($lineString);
-        $entityManager->persist($boundary);
+        $riverBoundary->setStartingPoint(new Point(11787540.82363948784768581, 2385794.83458124194294214, 3857));
+        $model->addBoundary($riverBoundary);
+        $entityManager->persist($riverBoundary);
         $entityManager->flush();
 
         $observationPointPoints = array(

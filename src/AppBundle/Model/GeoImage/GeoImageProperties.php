@@ -59,14 +59,15 @@ class GeoImageProperties
     /**
      * GeoImageProperties constructor.
      * @param Raster $raster
-     * @param string $colorRelief
-     * @param int $targetProjection
-     * @param string $outputFormat
+     * @param $activeCells
+     * @param $colorRelief
+     * @param $targetProjection
+     * @param $outputFormat
      */
-    public function __construct(Raster $raster, $colorRelief, $targetProjection, $outputFormat)
+    public function __construct(Raster $raster, $activeCells, $colorRelief, $targetProjection, $outputFormat)
     {
         $this->boundingBox = $raster->getBoundingBox();
-        $this->data = $raster->getData();
+        $this->data = $raster->getFilteredData($activeCells);
         $this->noDataVal = $raster->getNoDataVal();
         $this->colorRelief = $colorRelief;
         $this->targetProjection = $targetProjection;

@@ -7,7 +7,6 @@ use AppBundle\Entity\GeologicalUnit;
 use AppBundle\Entity\ModFlowModel;
 use AppBundle\Entity\Property;
 use AppBundle\Entity\PropertyType;
-use AppBundle\Entity\Raster;
 use AppBundle\Entity\SoilModel;
 use AppBundle\Model\Interpolation\PointValue;
 use AppBundle\Model\PropertyValueFactory;
@@ -161,7 +160,7 @@ class SoilModelService
      * @return string
      * @throws \Exception
      */
-    public function interpolateLayerByProperty(GeologicalLayer $layer, $propertyTypeAbbreviation, $algorithm, $activeCells)
+    public function interpolateLayerByProperty(GeologicalLayer $layer, $propertyTypeAbbreviation, $algorithm)
     {
         $propertyType = $this->em->getRepository('AppBundle:PropertyType')
             ->findOneBy(array(
@@ -196,16 +195,7 @@ class SoilModelService
         }
 
         $out = $this->interpolation->interpolate($algorithm);
-
         $data = $this->interpolation->getData();
-
-        for ($yi = 0; $yi<count($data); $yi++){
-            for ($xi = 0; $xi<count($data[0]); $xi++) {
-                if ($activeCells[$yi][$xi] == false) {
-                    $data[$yi][$xi] = Raster::DEFAULT_NO_DATA_VAL;
-                }
-            }
-        }
         
         $propertyValue = PropertyValueFactory::create()
             ->setRaster(RasterFactory::create()
