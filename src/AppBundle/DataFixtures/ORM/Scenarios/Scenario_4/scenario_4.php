@@ -172,14 +172,7 @@ class LoadScenario_4 implements FixtureInterface, ContainerAwareInterface
                 ->setPublic($public)
                 ->setOwner($user)
             )
-            ->setBoundingBox(
-                new BoundingBox(
-                    578205,
-                    594692,
-                    2316000,
-                    2333500,
-                    32648)
-            )
+            ->setBoundingBox($geoTools->transformBoundingBox(new BoundingBox(578205, 594692, 2316000, 2333500, 32648), 4326))
             ->setGridSize(new GridSize(165, 175))
         ;
 
@@ -312,7 +305,7 @@ class LoadScenario_4 implements FixtureInterface, ContainerAwareInterface
             $geologicalPoint = GeologicalPointFactory::create()
                 ->setOwner($user)
                 ->setName($borehole[0])
-                ->setPoint(new Point($borehole[1], $borehole[2], 3857))
+                ->setPoint($geoTools->transformPoint(new Point($borehole[1], $borehole[2], 3857), 4326))
                 ->setPublic($public);
             $entityManager->persist($geologicalPoint);
 
@@ -495,7 +488,7 @@ class LoadScenario_4 implements FixtureInterface, ContainerAwareInterface
                 ->setOwner($user)
                 ->setName($well['name'])
                 ->setPublic($public)
-                ->setPoint(new Point($well['x'], $well['y'], 3857))
+                ->setPoint($geoTools->transformPoint(new Point($well['x'], $well['y'], 3857), 4326))
                 ->setLayer($layer_4)
                 ->addValue($propertyTypeTopElevation, PropertyValueFactory::create()->setValue($well['ztop']))
                 ->addValue($propertyTypeBottomElevation, PropertyValueFactory::create()->setValue($well['zbot']))
@@ -625,7 +618,7 @@ class LoadScenario_4 implements FixtureInterface, ContainerAwareInterface
                 ->setOwner($user)
                 ->setPublic($public)
                 ->setName($industrialWell[0])
-                ->setPoint(new Point($industrialWell[1], $industrialWell[2], $industrialWell[3]))
+                ->setPoint($geoTools->transformPoint(new Point($industrialWell[1], $industrialWell[2], $industrialWell[3]), 4326))
                 ->setLayer($layer_4)
                 ->addValue($propertyTypePumpingRate, PropertyValueFactory::create()->setValue($industrialWell[4]*-1))
             );

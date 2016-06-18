@@ -7,6 +7,7 @@ use AppBundle\Model\AreaFactory;
 use AppBundle\Model\ConstantHeadBoundaryFactory;
 use AppBundle\Model\Interpolation\BoundingBox;
 use AppBundle\Model\Interpolation\GridSize;
+use AppBundle\Model\Point;
 use AppBundle\Service\GeoTools;
 use CrEOF\Spatial\DBAL\Platform\PostgreSql;
 use CrEOF\Spatial\DBAL\Types\AbstractSpatialType;
@@ -116,6 +117,31 @@ class GeoToolsTest extends WebTestCase
         $this->assertCount(5, $result->coordinates);
         $this->assertEquals(105.88928084058, $result->coordinates[0][0]);
         $this->assertEquals(20.948969914319, $result->coordinates[0][1]);
+    }
+
+    public function testTransformPoint()
+    {
+        $point = new Point(11777056.49104572273790836, 2403440.17028302047401667, 3857);
+        $targetSrid = 4326;
+        $transformedPoint = $this->geoTools->transformPoint($point, $targetSrid);
+        $this->assertTrue($transformedPoint instanceof Point);
+        $this->assertEquals(105.79509847846, $transformedPoint->getX());
+        $this->assertEquals(21.096929627229, $transformedPoint->getY());
+        $this->assertEquals($targetSrid, $transformedPoint->getSrid());
+    }
+
+    public function testTransformBoundingBox()
+    {
+        $boundingBox = new BoundingBox(578205, 594692, 2316000, 2333500, 32648);
+        $targetSrid = 4326;
+        $transformedBoundingBox = $this->geoTools->transformBoundingBox($boundingBox, $targetSrid);
+
+        $this->assertTrue($transformedBoundingBox instanceof BoundingBox);
+        $this->assertEquals(105.75218379342, $transformedBoundingBox->getXMin());
+        $this->assertEquals(105.91170436595, $transformedBoundingBox->getXMax());
+        $this->assertEquals(20.942793923555, $transformedBoundingBox->getYMin());
+        $this->assertEquals(21.100124603334, $transformedBoundingBox->getYMax());
+        $this->assertEquals($targetSrid, $transformedBoundingBox->getSrid());
     }
 
     public function tearDown()

@@ -9,6 +9,7 @@ use AppBundle\Model\GeoJson\FeatureCollection;
 use AppBundle\Model\GeoJson\Polygon;
 use AppBundle\Model\Interpolation\BoundingBox;
 use AppBundle\Model\Interpolation\GridSize;
+use AppBundle\Model\Point;
 use Doctrine\ORM\EntityManager;
 
 class GeoTools
@@ -160,6 +161,49 @@ class GeoTools
         }*/
 
 
+    }
+
+    public function transformPoint(Point $point, $targetSrid)
+    {
+        if ($point->getSrid() == $targetSrid){
+            return $point;
+        }
+
+        $query = $this->entityManager
+            ->getConnection()
+            ->prepare(sprintf('SELECT ST_AsGeoJson(ST_TRANSFORM(ST_SetSRID(ST_Point(%s, %s), %s), %s))',
+                $point->getX(),
+                $point->getY(),
+                $point->getSrid(),
+                $targetSrid
+            ))
+        ;
+
+        $query->execute();
+        $result = json_decode($query->fetchAll()[0]['st_asgeojson']);
+
+        return new Point($result->coordinates[0], $result->coordinates[1], $targetSrid);
+    }
+
+    public function transformBoundingBox(BoundingBox $bb, $targetSrid)
+    {
+        if ($bb->getSrid() == $targetSrid){
+            return $bb;
+        }
+
+        $lowerLeft = new Point($bb->getXMin(), $bb->getYMin(), $bb->getSrid());
+        $upperRight = new Point($bb->getXMax(), $bb->getYMax(), $bb->getSrid());
+
+        $transformedLowerLeft = $this->transformPoint($lowerLeft, $targetSrid);
+        $transformedUpperRight = $this->transformPoint($upperRight, $targetSrid);
+
+        return new BoundingBox(
+            $transformedLowerLeft->getX(),
+            $transformedUpperRight->getX(),
+            $transformedLowerLeft->getY(),
+            $transformedUpperRight->getY(),
+            $targetSrid
+        );
     }
 
 }
