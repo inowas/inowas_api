@@ -1111,8 +1111,7 @@ class LoadScenario_2 implements FixtureInterface, ContainerAwareInterface
                 $output = $soilModelService->interpolateLayerByProperty(
                     $layer,
                     $propertyType->getAbbreviation(),
-                    array(Interpolation::TYPE_IDW, Interpolation::TYPE_MEAN),
-                    $activeCells
+                    array(Interpolation::TYPE_IDW, Interpolation::TYPE_MEAN)
                 );
 
                 echo ($output);

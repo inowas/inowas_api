@@ -10,7 +10,7 @@ class AreaRepository extends EntityRepository
     public function getAreaSurfaceById($id)
     {
         $query = $this->getEntityManager()
-            ->createQuery('SELECT ST_Area(a.geometry) FROM AppBundle:Area a WHERE a.id = :id')
+            ->createQuery('SELECT ST_Area(ST_Transform(a.geometry, 3857)) FROM AppBundle:Area a WHERE a.id = :id')
             ->setParameter('id', $id)
         ;
 

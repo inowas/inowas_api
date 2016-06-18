@@ -36,22 +36,37 @@ class GeoTools
         $srid = $boundingBox->getSrid();
 
         $activeCells = array();
-
         for ($iy = 0; $iy<$ny; $iy++){
+            echo "Row ".$iy.": From left to right. \r\n";
             for ($ix = 0; $ix<$nx; $ix++){
-                $query = $this->entityManager
-                    ->createQuery(sprintf('SELECT ST_Intersects(ST_SetSRID(ST_Point(:x, :y), :srid), ST_Transform(a.geometry, :srid)) FROM AppBundle:Area a WHERE a.id = :id'))
-                    ->setParameter('id', $id)
-                    ->setParameter('srid', $srid)
-                    ->setParameter('x', $boundingBox->getXMin()+$ix*$dx+$dx/2)
-                    ->setParameter('y', $boundingBox->getYMax()-$iy*$dy-$dy/2)
-                ;
+                $x = $boundingBox->getXMin()+$ix*$dx+$dx/2;
+                $y = $boundingBox->getYMax()-$iy*$dy-$dy/2;
+                $activeCells[$iy][$ix] = $this->isActive($id, $srid, $x, $y);
+            }
+        }
 
-                $activeCells[$iy][$ix] = $query->getSingleScalarResult();
+        foreach ($activeCells as $cells) {
+            foreach ($cells as $cell) {
+                if (!is_bool($cell)){
+                    echo "Problem";
+                    return;
+                }
             }
         }
 
         return $activeCells;
+    }
+
+    private function isActive($id, $srid, $x, $y){
+        $query = $this->entityManager
+            ->createQuery(sprintf('SELECT ST_Intersects(ST_SetSRID(ST_Point(:x, :y), :srid), ST_Transform(a.geometry, :srid)) FROM AppBundle:Area a WHERE a.id = :id'))
+            ->setParameter('id', $id)
+            ->setParameter('srid', $srid)
+            ->setParameter('x', $x)
+            ->setParameter('y', $y)
+        ;
+
+        return $query->getSingleScalarResult();
     }
 
     public function getGeoJsonGrid(BoundingBox $boundingBox, GridSize $gridSize, $activeCells)

@@ -358,6 +358,9 @@ class SoilModel
      */
     public function getGeologicalLayers()
     {
+        if (null == $this->geologicalLayers){
+            $this->geologicalLayers = new ArrayCollection();
+        }
         return $this->geologicalLayers;
     }
 

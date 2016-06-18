@@ -4,12 +4,11 @@ namespace AppBundle\Controller;
 
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
-use Symfony\Component\HttpFoundation\Response;
 
 class ModelController extends Controller
 {
     /**
-     * @Route("/models/modflow")
+     * @Route("/models/modflow", name="modflow_model_list")
      */
     public function modelsAction()
     {
@@ -31,6 +30,10 @@ class ModelController extends Controller
             ->findOneBy(array(
                 'id' => $id
             ));
+
+        if (null === $model){
+            return $this->redirectToRoute('modflow_model_list');
+        }
 
         return $this->render(':inowas/model/modflow:model.html.twig', array(
                 'model' => $model

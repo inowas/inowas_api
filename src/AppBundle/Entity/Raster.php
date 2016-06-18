@@ -170,7 +170,7 @@ class Raster
         if (null === $filter) {
             return $this->data;
         }
-        
+
         $data = $this->data;
         for ($yi = 0; $yi<count($data); $yi++){
             for ($xi = 0; $xi<count($data[0]); $xi++) {
