@@ -73,12 +73,13 @@ class AreaTest extends WebTestCase
     {
         $this->area->setGeometry(new Polygon(array(
             array(
-                array(1.1,-1.1),
-                array(2.1,2.1),
-                array(0.5, 1.1),
-                array(4.1, 12.2),
-                array(1.1,-1.1)
-            ))));
+                array(11777056.491046, 2403440.170283),
+                array(11777973.943604, 2403506.4981163),
+                array(11780228.126983, 2402856.268207),
+                array(11781703.598808, 2401713.2252019),
+                array(11782192.897154, 2400859.2025428),
+                array(11777056.491046, 2403440.170283)
+            )), 3857));
 
         $this->entityManager->persist($this->area);
         $this->entityManager->flush();
