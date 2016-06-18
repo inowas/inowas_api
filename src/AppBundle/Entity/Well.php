@@ -9,9 +9,13 @@ use Ramsey\Uuid\Uuid;
 
 /**
  * @ORM\Entity(repositoryClass="AppBundle\Repository\WellRepository")
- */
+ * @ORM\Table(name="wells")
+ **/
 class Well extends BoundaryModelObject
 {
+    const TYPE_PRIVATE_WELL = "pw";
+    const TYPE_INDUSTRIAL_WELL = "iw";
+
     /**
      * @var string
      * @JMS\Type("string")
@@ -21,6 +25,7 @@ class Well extends BoundaryModelObject
 
     /**
      * @var string
+     * @ORM\Column(name="well_type", type="string", length=10)
      * @JMS\Type("string")
      * @JMS\Groups({"list", "details", "modelobjectdetails", "modelobjectlist"})
      */
@@ -33,13 +38,30 @@ class Well extends BoundaryModelObject
      */
     private $point;
 
-
     /**
      * @var GeologicalLayer
      *
      * @ORM\ManyToOne(targetEntity="AppBundle\Entity\GeologicalLayer")
      */
     private $layer;
+
+    /**
+     * @return string
+     */
+    public function getWellType()
+    {
+        return $this->wellType;
+    }
+
+    /**
+     * @param string $wellType
+     * @return $this
+     */
+    public function setWellType($wellType)
+    {
+        $this->wellType = $wellType;
+        return $this;
+    }
 
     /**
      * Set point
@@ -50,7 +72,6 @@ class Well extends BoundaryModelObject
     public function setPoint(Point $point)
     {
         $this->point = $point;
-
         return $this;
     }
 

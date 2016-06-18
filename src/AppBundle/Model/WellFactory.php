@@ -2,8 +2,6 @@
 
 namespace AppBundle\Model;
 
-use AppBundle\Entity\IndustrialWell;
-use AppBundle\Entity\PrivateWell;
 use AppBundle\Entity\Well;
 
 class WellFactory
@@ -13,10 +11,14 @@ class WellFactory
     }
 
     public static function createIndustrialWell(){
-        return new IndustrialWell();
+        $well = new Well();
+        $well->setWellType(Well::TYPE_INDUSTRIAL_WELL);
+        return $well;
     }
 
     public static function createPrivateWell(){
-        return new PrivateWell();
+        $well = new Well();
+        $well->setWellType(Well::TYPE_PRIVATE_WELL);
+        return $well;
     }
 }
