@@ -20,6 +20,13 @@ class Well extends BoundaryModelObject
     protected $type = 'WEL';
 
     /**
+     * @var string
+     * @JMS\Type("string")
+     * @JMS\Groups({"list", "details", "modelobjectdetails", "modelobjectlist"})
+     */
+    protected $wellType = '';
+
+    /**
      * @var Point
      *
      * @ORM\Column(name="geometry", type="point", nullable=true)

@@ -37,7 +37,6 @@ class GeoTools
 
         $activeCells = array();
         for ($iy = 0; $iy<$ny; $iy++){
-            echo "Row ".$iy.": From left to right. \r\n";
             for ($ix = 0; $ix<$nx; $ix++){
                 $x = $boundingBox->getXMin()+$ix*$dx+$dx/2;
                 $y = $boundingBox->getYMax()-$iy*$dy-$dy/2;
@@ -49,7 +48,6 @@ class GeoTools
             foreach ($cells as $cell) {
                 if (!is_bool($cell)){
                     echo "Problem";
-                    return;
                 }
             }
         }
