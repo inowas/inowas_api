@@ -59,6 +59,10 @@ class GeoTools
         return $query->getSingleScalarResult();
     }
 
+    public function pointIntersectsWithArea($areaId, $x, $y, $srid){
+        return $this->isActive($areaId, $srid, $x, $y);
+    }
+
     public function getGeoJsonGrid(BoundingBox $boundingBox, GridSize $gridSize, $activeCells)
     {
         $nx = $gridSize->getNX();
