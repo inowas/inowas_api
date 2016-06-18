@@ -102,8 +102,11 @@ $( ".boundaries" ).click(function () {
 
     var wells = new L.LayerGroup();
     $.getJSON( "/api/modflowmodels/"+modelId+"/wells.json?srid=4326", function ( wellData ) {
-        wellData.forEach(function (item) {
+        wellData.cw.forEach(function (item) {
             L.circle([item.point.y, item.point.x], 10, {color: 'red'}).bindPopup("Well "+item.name).addTo(wells);
+        });
+        wellData.iw.forEach(function (item) {
+            L.circle([item.point.y, item.point.x], 10, {color: 'grey'}).bindPopup("Well "+item.name).addTo(wells);
         });
         wells.addTo(boundary_map);
     });

@@ -634,7 +634,7 @@ class LoadScenario_4 implements FixtureInterface, ContainerAwareInterface
         }
 
         /* Add Private Wells */
-        $privateWells = array(
+        /*        $privateWells = array(
             array("G9",577392,2321208,32648,60,10),
             array("G12",590898,2311742,32648,70,3000),
             array("G18",580179,2320123,32648,76,970),
@@ -910,7 +910,7 @@ class LoadScenario_4 implements FixtureInterface, ContainerAwareInterface
             );
             $entityManager->persist($model);
             $entityManager->flush();
-        }
+        }*/
 
         /* Interpolation of all layers */
         $soilModelService = $this->container->get('inowas.soilmodel');

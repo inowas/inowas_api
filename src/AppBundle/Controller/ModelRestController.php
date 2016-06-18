@@ -547,11 +547,17 @@ class ModelRestController extends FOSRestController
             }
         }
 
+        $response = array();
+        /** @var Well $well */
+        foreach ($wells as $well) {
+            $response[$well->getWellType()][] = $well;
+        }
+
         $serializationContext = SerializationContext::create();
         $serializationContext->setGroups('modelobjectdetails');
 
         $view = View::create();
-        $view->setData($wells)
+        $view->setData($response)
             ->setStatusCode(200)
             ->setSerializationContext($serializationContext)
         ;

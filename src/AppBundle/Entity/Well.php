@@ -29,7 +29,7 @@ class Well extends BoundaryModelObject
      * @JMS\Type("string")
      * @JMS\Groups({"list", "details", "modelobjectdetails", "modelobjectlist"})
      */
-    protected $wellType = '';
+    protected $wellType = 'cw';
 
     /**
      * @var Point
