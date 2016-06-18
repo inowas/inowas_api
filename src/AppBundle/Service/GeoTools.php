@@ -44,14 +44,6 @@ class GeoTools
             }
         }
 
-        foreach ($activeCells as $cells) {
-            foreach ($cells as $cell) {
-                if (!is_bool($cell)){
-                    echo "Problem";
-                }
-            }
-        }
-
         return $activeCells;
     }
 
