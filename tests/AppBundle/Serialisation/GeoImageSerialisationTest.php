@@ -68,8 +68,8 @@ class GeoTiffSerialisationTest extends \PHPUnit_Framework_TestCase
         $this->assertStringStartsWith('{',$geoTiffPropertiesJSON);
         $geoTiffProperties = json_decode($geoTiffPropertiesJSON);
 
-        $this->assertObjectHasAttribute('color_relief', $geoTiffProperties);
-        $this->assertEquals($geoTiffProperties->color_relief, 'cr_test');
+        $this->assertObjectHasAttribute('color_scheme', $geoTiffProperties);
+        $this->assertEquals($geoTiffProperties->color_scheme, 'cr_test');
         $this->assertObjectHasAttribute('bounding_box', $geoTiffProperties);
         $this->assertObjectHasAttribute('x_min', $geoTiffProperties->bounding_box);
         $this->assertEquals($this->raster->getBoundingBox()->getXMin(), $geoTiffProperties->bounding_box->x_min);
