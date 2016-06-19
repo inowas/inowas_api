@@ -17,54 +17,15 @@ use Symfony\Component\Process\Process;
 
 class GeoImage
 {
-    /**
-        aspect: aspect oriented grey colors
-        aspectcolr: aspect oriented rainbow colors
-        bcyr: blue through cyan through yellow to red
-        bgyr: blue through green through yellow to red
-        byg: blue through yellow to green
-        byr: blue through yellow to red
-        celsius: blue to red for degree Celsius temperature
-        corine: EU Corine land cover colors
-        curvature: for terrain curvatures (from v.surf.rst and r.slope.aspect)
-        differences: differences oriented colors
-        elevation: maps relative ranges of raster values to elevation color ramp
-        etopo2: colors for ETOPO2 worldwide bathymetry/topography
-        evi: enhanced vegetative index colors
-        gdd: accumulated growing degree days
-        grey: grey scale
-        grey.eq: histogram-equalized grey scale
-        grey.log: histogram logarithmic transformed grey scale
-        grey1.0: grey scale for raster values between 0.0-1.0
-        grey255: grey scale for raster values between 0-255
-        gyr: green through yellow to red
-        haxby: relative colors for bathymetry or topography
-        ndvi: Normalized Difference Vegetation Index colors
-        population: color table covering human population classification breaks
-        population_dens: color table covering human population density classification breaks
-        precipitation: precipitation color table (0..2000mm)
-        precipitation_monthly: precipitation color table (0..1000mm)
-        rainbow: rainbow color table
-        ramp: color ramp
-        random: random color table
-        rstcurv: terrain curvature (from r.resamp.rst)
-        rules: create new color table based on user-specified rules read from stdin
-        ryb: red through yellow to blue
-        ryg: red through yellow to green
-        sepia: yellowish-brown through to white
-        slope: r.slope.aspect-type slope colors for raster values 0-90
-        srtm: color palette for Shuttle Radar Topography Mission elevation
-        terrain: global elevation color table covering -11000 to +8850m
-        wave: color wave
-     */
-
     const COLOR_RELIEF_GIST_EARTH = 'gist_earth';
+    const COLOR_RELIEF_GIST_RAINBOW = 'gist_rainbow';
     const COLOR_RELIEF_JET = 'jet';
     const COLOR_RELIEF_RAINBOW = 'rainbow';
     const COLOR_RELIEF_TERRAIN = 'terrain';
 
     protected $available_color_reliefs = array(
       self::COLOR_RELIEF_GIST_EARTH,
+      self::COLOR_RELIEF_GIST_RAINBOW,
       self::COLOR_RELIEF_JET,
       self::COLOR_RELIEF_RAINBOW,
       self::COLOR_RELIEF_TERRAIN
@@ -127,7 +88,7 @@ class GeoImage
         $this->tmpFolder = $tmpFolder;
     }
 
-    public function createImageFromRaster(Raster $raster, $activeCells=null, $fileFormat="png", $colorRelief=self::COLOR_RELIEF_GIST_EARTH, $targetProjection=4326)
+    public function createImageFromRaster(Raster $raster, $activeCells=null, $fileFormat="png", $colorRelief=self::COLOR_RELIEF_JET, $targetProjection=4326)
     {
 
         if (!$raster->getBoundingBox() instanceof BoundingBox) {

@@ -12,6 +12,7 @@ use AppBundle\Entity\StreamBoundary;
 use AppBundle\Entity\Well;
 use AppBundle\Model\Point;
 use AppBundle\Model\RasterFactory;
+use AppBundle\Service\GeoImage;
 use FOS\RestBundle\Controller\Annotations\QueryParam;
 use FOS\RestBundle\Controller\FOSRestController;
 use FOS\RestBundle\Request\ParamFetcher;
@@ -239,9 +240,14 @@ class ModelRestController extends FOSRestController
             throw new \Exception('PropertyValue has no Value');
         }
 
+        $colorScheme = GeoImage::COLOR_RELIEF_JET;
+        if ($propertyType->getAbbreviation() == "hh") {
+            $colorScheme = GeoImage::COLOR_RELIEF_GIST_RAINBOW;
+        }
+
         $fileFormat = $paramFetcher->get('_format');
         $geoImageService = $this->get('inowas.geoimage');
-        $geoImageService->createImageFromRaster($raster, $model->getActiveCells(), $fileFormat);
+        $geoImageService->createImageFromRaster($raster, $model->getActiveCells(), $fileFormat, $colorScheme);
         $outputFileName = $geoImageService->getOutputFileName();
 
         $fs = new Filesystem();

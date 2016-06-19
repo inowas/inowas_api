@@ -40,7 +40,7 @@ class GeoImageProperties
      *
      * @JMS\Groups({"geoimage"})
      */
-    protected $colorRelief;
+    protected $colorScheme;
 
     /**
      * @var integer
@@ -60,16 +60,16 @@ class GeoImageProperties
      * GeoImageProperties constructor.
      * @param Raster $raster
      * @param $activeCells
-     * @param $colorRelief
+     * @param $colorScheme
      * @param $targetProjection
      * @param $outputFormat
      */
-    public function __construct(Raster $raster, $activeCells, $colorRelief, $targetProjection, $outputFormat)
+    public function __construct(Raster $raster, $activeCells, $colorScheme, $targetProjection, $outputFormat)
     {
         $this->boundingBox = $raster->getBoundingBox();
         $this->data = $raster->getFilteredData($activeCells);
         $this->noDataVal = $raster->getNoDataVal();
-        $this->colorRelief = $colorRelief;
+        $this->colorScheme = $colorScheme;
         $this->targetProjection = $targetProjection;
         $this->outputFormat = $outputFormat;
     }
