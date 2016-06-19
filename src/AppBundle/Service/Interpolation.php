@@ -18,12 +18,11 @@ use Symfony\Component\Process\Process;
 class Interpolation
 {
     const TYPE_IDW = 'idw';
-    const TYPE_KRIGING = 'kriging';
     const TYPE_MEAN = 'mean';
     const TYPE_GAUSSIAN = 'gaussian';
 
     /** @var array */
-    private $availableTypes = [self::TYPE_KRIGING, self::TYPE_MEAN, self::TYPE_GAUSSIAN, self::TYPE_IDW];
+    private $availableTypes = [self::TYPE_MEAN, self::TYPE_GAUSSIAN, self::TYPE_IDW];
 
     /** @var string  */
     private $tmpFolder = '/tmp/interpolation';

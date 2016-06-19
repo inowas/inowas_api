@@ -209,6 +209,7 @@ class ModflowModelRestControllerTest extends WebTestCase
         $client->request('GET', '/api/modflowmodels/'.$this->modFlowModel->getId().'/wells.json');
         $this->assertEquals(200, $client->getResponse()->getStatusCode());
         $wells = json_decode($client->getResponse()->getContent());
+        $wells = $wells->cw;
         $this->assertCount(1, $wells);
         $well = $wells[0];
         $this->assertObjectHasAttribute('type', $well);

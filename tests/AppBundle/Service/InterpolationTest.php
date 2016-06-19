@@ -173,17 +173,6 @@ class InterpolationTest extends WebTestCase
         $this->assertEquals(3.5, $this->interpolation->getData()[5][5]);
     }
 
-    public function testKrigingInterpolation(){
-        $this->interpolation->setGridSize(new GridSize(10,11));
-        $this->interpolation->setBoundingBox(new BoundingBox(0, 10, 0, 10));
-        $this->interpolation->addPoint(new PointValue(2, 2, 3));
-        $this->interpolation->addPoint(new PointValue(3, 3, 4));
-        $this->interpolation->addPoint(new PointValue(4, 4, 3));
-        $this->interpolation->interpolate(Interpolation::TYPE_KRIGING);
-        $this->assertCount($this->interpolation->getGridSize()->getNY(), $this->interpolation->getData());
-        $this->assertCount($this->interpolation->getGridSize()->getNX(), $this->interpolation->getData()[0]);
-    }
-
     public function testGaussianInterpolation(){
         $this->interpolation->setGridSize(new GridSize(10,11));
         $this->interpolation->setBoundingBox(new BoundingBox(0, 10, 0, 10));
