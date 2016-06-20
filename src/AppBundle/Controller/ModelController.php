@@ -26,7 +26,7 @@ class ModelController extends Controller
     }
 
     /**
-     * @Route("/models/modflow/{id}")
+     * @Route("/models/modflow/{id}", name="modflow_model")
      *
      * @param $id
      * @return Response

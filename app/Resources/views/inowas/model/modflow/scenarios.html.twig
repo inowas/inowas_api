@@ -1,3 +1,5 @@
+{% set baseModel = scenarios[0].basemodel %}
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -54,22 +56,35 @@
         <ol class="breadcrumb">
             <li><a href="#">Models</a></li>
             <li><a href="#">Modflow</a></li>
+            <li><a href="#">{{ scenarios[0].baseModel.name }}</a></li>
+            <li><a href="#">Scenarios</a></li>
         </ol>
     </div>
 
-    {% for scenario in scenarios %}
-        <div class="top-margin-40">
-            <div class="row">
-                <div class="col-sm-1">
-                    <img class="img-thumbnail" src="{{ asset('img/asia.png') }}" style="margin-top: 18px">
-                </div>
-                <div class="col-sm-11">
-                    <h3 class="modelname"><a href="{{ path('modflow_model_modflow_scenario', {'modelId': scenario.baseModel.id.toString, 'scenarioId': scenario.id.toString})  }}"> {{ scenario.name }}</a></h3>
-                    <p class="modelsummary">Groundwater Model: {{ scenario.description }}</p>
-                </div>
+    <div class="top-margin-40">
+        <div class="row">
+            <div class="col-sm-4">
+                <h3><a href="{{ path('modflow_model', {'id': baseModel.id.toString})  }}"> {{ baseModel.name }} (Base model)</a></h3>
+                <img class="img-responsive img-thumbnail" src="{{ asset('img/base_scenario.png') }}" style="margin-top: 18px">
+                <p class="modelsummary">{{ baseModel.description }}</p>
             </div>
+
+        {% for scenario in scenarios %}
+            <div class="col-sm-4">
+                    <h3><a href="{{ path('modflow_model_modflow_scenario', {'modelId': scenario.baseModel.id.toString, 'scenarioId': scenario.id.toString})  }}"> {{ scenario.name }}</a></h3>
+                    <img class="img-responsive img-thumbnail" src="{{ asset('img/scenario_1.png') }}" style="margin-top: 18px">
+                    <p class="modelsummary">{{ scenario.description }}</p>
+            </div>
+        {% endfor %}
+
+            <div class="col-sm-4">
+                <h3 class="modelname">&nbsp;</h3>
+                <img class="img-responsive img-polaroid img-thumbnail" src="{{ asset('img/add_scenario.png') }}" style="margin-top: 18px">
+                <p>Add scenario</p>
+            </div>
+
         </div>
-    {% endfor %}
+    </div>
 </div>
 
 <script type="text/javascript" src="{{ asset('vendor/jquery/dist/jquery.min.js') }}"></script>
