@@ -113,21 +113,29 @@ $( ".boundaries" ).click(function () {
 
     var wells = new L.LayerGroup();
     $.getJSON( "/api/modflowmodels/"+modelId+"/wells.json?srid=4326", function ( wellData ) {
+        console.log(wellData);
+
         if ("cw" in wellData) {
             wellData.cw.forEach(function (item) {
-                L.circle([item.point.y, item.point.x], 10, {color: 'red'}).bindPopup("Well "+item.name).addTo(wells);
+                L.circle([item.point.y, item.point.x], 100, {color: 'black', weight: 1, fillColor: 'darkgreen', fillOpacity: 0.7}).bindPopup("Well "+item.name).addTo(wells);
             });
         }
 
         if ("iw" in wellData) {
             wellData.iw.forEach(function (item) {
-                L.circle([item.point.y, item.point.x], 10, {color: 'black'}).bindPopup("Well "+item.name).addTo(wells);
+                L.circle([item.point.y, item.point.x], 100, {color: 'black', weight: 1, fillColor: 'darkblue', fillOpacity: 0.7}).bindPopup("Well "+item.name).addTo(wells);
+            });
+        }
+
+        if ("smw" in wellData) {
+            wellData.smw.forEach(function (item) {
+                L.circle([item.point.y, item.point.x], 200, {color: 'black', weight: 1, fillColor: 'red', fillOpacity: 1}).bindPopup("Well " + item.name).addTo(wells);
             });
         }
 
         if ("snw" in wellData) {
             wellData.snw.forEach(function (item) {
-                L.circle([item.point.y, item.point.x], 10, {color: 'green'}).bindPopup("Well " + item.name).addTo(wells);
+                L.circle([item.point.y, item.point.x], 200, {color: 'black', weight: 1, fillColor: 'yellow', fillOpacity: 1}).bindPopup("Well " + item.name).addTo(wells);
             });
         }
         wells.addTo(boundary_map);
@@ -192,7 +200,6 @@ $( ".results" ).click(function(){
     var grid = new L.LayerGroup();
     $.get( "/api/modflowmodels/"+modelId+"/grid.json?srid=4326", function (data) {
         L.geoJson(data, {"color": "blue", "weight": 1, "opacity": 0.65, "fillOpacity": 0.1}).addTo(grid);
-        grid.addTo(results_map);
     });
 
     var baseMaps = {};

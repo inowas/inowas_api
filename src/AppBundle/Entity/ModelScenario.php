@@ -40,6 +40,13 @@ class ModelScenario
     private $description;
 
     /**
+     * @var string
+     *
+     * @ORM\Column(name="image_file", type="string", length=255, nullable=true)
+     */
+    private $imageFile;
+
+    /**
      * @var ModFlowModel
      *
      * @ORM\ManyToOne(targetEntity="AppBundle\Entity\ModFlowModel", cascade={"persist", "remove"})
@@ -115,6 +122,24 @@ class ModelScenario
     }
 
     /**
+     * @return string
+     */
+    public function getImageFile()
+    {
+        return $this->imageFile;
+    }
+
+    /**
+     * @param string $imageFile
+     * @return $this
+     */
+    public function setImageFile($imageFile)
+    {
+        $this->imageFile = $imageFile;
+        return $this;
+    }
+
+    /**
      * Get model
      *
      * @return \AppBundle\Entity\AbstractModel
@@ -174,6 +199,16 @@ class ModelScenario
         if ($event instanceof AddBoundaryEvent) {
             if ($event->getBoundary() instanceof ModelObject){
                 $model->addBoundary($event->getBoundary());
+            }
+        }
+
+        if ($event instanceof ChangeLayerValueEvent) {
+            $layer = $event->getLayer();
+            /** @var GeologicalLayer $geologicalLayer */
+            foreach ($model->getSoilModel()->getGeologicalLayers() as $geologicalLayer) {
+                if ($geologicalLayer->getId() == $layer->getId()) {
+                    $geologicalLayer->addValue($event->getPropertyType(), $event->getValue());
+                }
             }
         }
     }
