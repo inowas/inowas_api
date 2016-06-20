@@ -64,7 +64,7 @@
                     <img class="img-thumbnail" src="{{ asset('img/asia.png') }}" style="margin-top: 18px">
                 </div>
                 <div class="col-sm-11">
-                    <h3 class="modelname"><a href="/modflow/scenario/{{ scenario.id.toString }}"> {{ scenario.name }}</a></h3>
+                    <h3 class="modelname"><a href="{{ path('modflow_model_modflow_scenario', {'modelId': scenario.baseModel.id.toString, 'scenarioId': scenario.id.toString})  }}"> {{ scenario.name }}</a></h3>
                     <p class="modelsummary">Groundwater Model: {{ scenario.description }}</p>
                 </div>
             </div>

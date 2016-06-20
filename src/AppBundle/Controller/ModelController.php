@@ -29,7 +29,7 @@ class ModelController extends Controller
      * @Route("/models/modflow/{id}")
      *
      * @param $id
-     * @return Response*
+     * @return Response
      */
     public function modelAction($id)
     {
@@ -50,7 +50,7 @@ class ModelController extends Controller
     }
 
     /**
-     * @Route("/modflow/scenarios", name="modflow_model_modflow_scenarios_list")
+     * @Route("/models/modflow/{id}/scenarios", name="modflow_model_modflow_scenarios_list")
      *
      * @return Response
      */
@@ -66,21 +66,21 @@ class ModelController extends Controller
     }
 
     /**
-     * @Route("/modflow/scenario/{id}", name="modflow_model_modflow_scenario")
+     * @Route("/models/modflow/{modelId}/scenarios/{scenarioId}", name="modflow_model_modflow_scenario")
      *
-     * @param $id
+     * @param $scenarioId
      * @return Response
      */
-    public function modelModFlowScenarioAction($id)
+    public function modelModFlowScenarioAction($scenarioId)
     {
         /** @var ModelScenario $scenario */
         $scenario = $this->getDoctrine()->getRepository('AppBundle:ModelScenario')
             ->findOneBy(array(
-                'id' => $id
+                'id' => $scenarioId
             ));
 
         if (!$scenario instanceof ModelScenario){
-            return $this->redirectToRoute('modflow_model_modflow_scenarios_list');
+            return $this->redirectToRoute('modflow_model_list');
         }
 
         $model = $scenario->getModel();
