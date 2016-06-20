@@ -7,6 +7,7 @@ use AppBundle\Entity\ModelObject;
 use AppBundle\Model\GeoJson\Feature;
 use AppBundle\Model\GeoJson\FeatureCollection;
 use AppBundle\Model\GeoJson\Polygon;
+use AppBundle\Model\GeoJson\Properties;
 use AppBundle\Model\Interpolation\BoundingBox;
 use AppBundle\Model\Interpolation\GridSize;
 use AppBundle\Model\Point;
@@ -95,6 +96,11 @@ class GeoTools
                     ));
                     $feature->setGeometry($polygon);
                     $featureCollection->addFeature($feature);
+
+                    $properties = new Properties();
+                    $properties->row = $iy;
+                    $properties->col = $ix;
+                    $feature->setProperties($properties);
                     $i++;
                 }
             }
@@ -203,6 +209,36 @@ class GeoTools
             $transformedLowerLeft->getY(),
             $transformedUpperRight->getY(),
             $targetSrid
+        );
+    }
+
+    public function getGridCellFromPoint(BoundingBox $bb, GridSize $gz, Point $point)
+    {
+        // Transform Point to the same Coordiate System as Boundingbox
+        $point = $this->transformPoint($point, $bb->getSrid());
+
+        // Check if point is inside of BoundingBox
+        if (!($point->getX() >= $bb->getXMin()
+            && $point->getX() <= $bb->getXMax()
+            && $point->getY() >= $bb->getYMin()
+            && $point->getY() <= $bb->getYMax())
+        ) {
+            return array(
+                "row" => null,
+                "col" => null
+            );
+        }
+
+
+        $dx = ($bb->getXMax() - $bb->getXMin()) / $gz->getNX();
+        $dy = ($bb->getYMax() - $bb->getYMin()) / $gz->getNY();
+
+        $col = floor(($point->getX() - $bb->getXMin()) / $dx);
+        $row = $gz->getNY()-floor(($point->getY() - $bb->getYMin()) / $dy);
+
+        return array(
+            "row" => $row,
+            "col" => $col
         );
     }
 

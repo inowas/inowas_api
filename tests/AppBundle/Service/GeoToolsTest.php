@@ -144,6 +144,20 @@ class GeoToolsTest extends WebTestCase
         $this->assertEquals($targetSrid, $transformedBoundingBox->getSrid());
     }
 
+    public function testGetGridCellFromPoint()
+    {
+        $bb = $this->geoTools->transformBoundingBox(new BoundingBox(578205, 594692, 2316000, 2333500, 32648), 4326);
+        $gz = new GridSize(165, 175);
+        $point = new Point(105.81165, 21, 4326);
+        $result = $this->geoTools->getGridCellFromPoint($bb, $gz, $point);
+        $this->assertArrayHasKey("row", $result);
+        $this->assertArrayHasKey("col", $result);
+        $this->assertEquals(63, $result["row"]);
+        $this->assertEquals(61, $result["col"]);
+        #$point = new Point(105.84152, 21, 4326);
+        #$point = new Point(105.87551, 21, 4326);
+    }
+
     public function tearDown()
     {
         $area = $this->entityManager->getRepository('AppBundle:Area')

@@ -79,8 +79,6 @@ class ModelController extends Controller
                 'id' => $id
             ));
 
-
-
         if (!$scenario instanceof ModelScenario){
             return $this->redirectToRoute('modflow_model_modflow_scenarios_list');
         }
