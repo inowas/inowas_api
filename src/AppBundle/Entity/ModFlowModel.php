@@ -100,6 +100,11 @@ class ModFlowModel extends AbstractModel
     );
 
     /**
+     * @var ArrayCollection
+     */
+    private $scenarios;
+
+    /**
      * ModFlowModel constructor.
      */
     public function __construct()
@@ -430,6 +435,20 @@ class ModFlowModel extends AbstractModel
        $this->gridSize->getNY(),
        $this->gridSize->getNX(),
        $this->soilModel->getGeologicalLayers()->count());
+    }
+
+    /**
+     * @param ModelScenario $scenario
+     */
+    public function registerScenario(ModelScenario $scenario) {
+        $this->scenarios[] = $scenario;
+    }
+
+    /**
+     * @return ArrayCollection
+     */
+    public function getScenarios(){
+        return $this->scenarios;
     }
 
     /**

@@ -3,6 +3,7 @@
 namespace AppBundle\Controller;
 
 use AppBundle\Entity\ModelScenario;
+use AppBundle\Entity\ModFlowModel;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Component\BrowserKit\Response;
@@ -16,8 +17,21 @@ class ModelController extends Controller
      */
     public function modelsAction()
     {
+        /** @var ModFlowModel $models */
         $models = $this->getDoctrine()->getRepository('AppBundle:ModFlowModel')
             ->findAll();
+
+        /** @var ModFlowModel $model */
+        foreach ($models as $model) {
+            $scenarios = $this->getDoctrine()->getRepository('AppBundle:ModelScenario')
+                ->findBy(array(
+                    'baseModel' => $model->getId()->toString()
+                ));
+
+            foreach ($scenarios as $scenario){
+                $model->registerScenario($scenario);
+            }
+        }
 
         return $this->render(':inowas/model/modflow:models.html.twig', array(
                 'models' => $models
