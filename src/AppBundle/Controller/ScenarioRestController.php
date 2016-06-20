@@ -25,133 +25,14 @@ use Symfony\Component\HttpFoundation\BinaryFileResponse;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
-class ModelRestController extends FOSRestController
+class ScenarioRestController extends FOSRestController
 {
     /**
-     * Return the overall project list from a user.
+     * Return the Scenario Layer Property Image.
      *
      * @ApiDoc(
      *   resource = true,
-     *   description = "Return the overall Project list from a user",
-     *   statusCodes = {
-     *     200 = "Returned when successful",
-     *     404 = "Returned when the user is not found"
-     *   }
-     * )
-     *
-     * @param $username
-     * @return View
-     */
-    public function getUserModelsAction($username)
-    {
-        $user = $this->getDoctrine()
-            ->getRepository('AppBundle:User')
-            ->findOneBy(array(
-                'username' => $username
-            ));
-
-        if (!$user) {
-            throw $this->createNotFoundException('User with username '.$username.' not found.');
-        }
-
-        if ($this->getUser() === $user || $this->isGranted('ROLE_ADMIN'))
-        {
-            $models = $this->getDoctrine()
-                ->getRepository('AppBundle:ModFlowModel')
-                ->findBy(
-                    array('owner' => $user),
-                    array('id' => 'ASC')
-                );
-        } else
-        {
-            $models = $this->getDoctrine()
-                ->getRepository('AppBundle:ModFlowModel')
-                ->findBy(
-                    array(
-                        'owner' => $user,
-                        'public' => true
-                    ),
-                    array('id' => 'ASC')
-                );
-        }
-
-        $view = View::create();
-        $view->setData($models)
-            ->setStatusCode(200)
-            ->setSerializationContext(SerializationContext::create()
-                ->setGroups(array('list'))
-            )
-        ;
-
-        return $view;
-    }
-
-    /**
-     * Return the project-information by id.
-     *
-     * @ApiDoc(
-     *   resource = true,
-     *   description = "Return the project-information by id.",
-     *   statusCodes = {
-     *     200 = "Returned when successful",
-     *     404 = "Returned when the user is not found"
-     *   }
-     * )
-     *
-     * @param $modelId
-     *
-     * @return View
-     */
-    public function getModelAction($modelId)
-    {
-
-        if ($this->isGranted('ROLE_ADMIN'))
-        {
-            $model = $this->getDoctrine()
-                ->getRepository('AppBundle:ModFlowModel')
-                ->findOneBy(array(
-                    'id' => $modelId
-                ));
-        } elseif ($this->isGranted('ROLE_USER'))
-        {
-            $model = $this->getDoctrine()
-                ->getRepository('AppBundle:ModFlowModel')
-                ->findOneBy(array(
-                    'id' => $modelId,
-                    'owner' => $this->getUser()
-                ));
-        } else
-        {
-            $model = $this->getDoctrine()
-                ->getRepository('AppBundle:ModFlowModel')
-                ->findOneBy(array(
-                    'id' => $modelId,
-                    'public' => true
-                ));
-        }
-
-        if (!$model) {
-            throw $this->createNotFoundException('Model not found.');
-        }
-
-        $serializationContext = SerializationContext::create();
-        $serializationContext->setGroups('modeldetails');
-
-        $view = View::create();
-        $view->setData($model)
-            ->setStatusCode(200)
-            ->setSerializationContext($serializationContext)
-        ;
-
-        return $view;
-    }
-
-    /**
-     * Return the ModflowModel Layer Property Image.
-     *
-     * @ApiDoc(
-     *   resource = true,
-     *   description = "Return the ModflowModel Layer Property Image.",
+     *   description = "Return the Scenario Layer Property Image.",
      *   statusCodes = {
      *     200 = "Returned when successful",
      *     404 = "Returned when the user is not found"
@@ -159,7 +40,7 @@ class ModelRestController extends FOSRestController
      * )
      *
      * @param ParamFetcher $paramFetcher
-     * @param $id
+     * @param $modelId
      * @param $layerNumber
      * @param $propertyAbbreviation
      * @QueryParam(name="_format", nullable=true, description="Image format, default png", default="png")
@@ -167,7 +48,7 @@ class ModelRestController extends FOSRestController
      * @return View
      * @throws 
      */
-    public function getModflowmodelLayerPropertyAction(ParamFetcher $paramFetcher, $id, $layerNumber, $propertyAbbreviation)
+    public function getScenarioLayerPropertyAction(ParamFetcher $paramFetcher, $scenarioId, $layerNumber, $propertyAbbreviation)
     {
 
         // Top-Elevation == Bottom elevation of the layer above
@@ -176,8 +57,16 @@ class ModelRestController extends FOSRestController
             $propertyAbbreviation = PropertyType::BOTTOM_ELEVATION;
         }
 
-        /** @var ModFlowModel $model */
-        $model = $this->findModelById($id);
+        $modelScenario = $this->getDoctrine()->getRepository('AppBundle:ModelScenario')
+            ->findOneBy(array('id' => $scenarioId));
+        if (!$modelScenario instanceof ModelScenario) {
+            throw new NotFoundHttpException('Scenario not available.');
+        }
+
+        $model = $modelScenario->getModel();
+        if (!$model instanceof ModFlowModel) {
+            throw new NotFoundHttpException('ModflowModel not available.');
+        }
 
         if (!$model->hasSoilModel()){
             throw new NotFoundHttpException(sprintf('ModflowModel %s has no SoilModel already.', $model->getId()->toString()));
@@ -274,14 +163,41 @@ class ModelRestController extends FOSRestController
      *   }
      * )
      *
-     * @param $id
+     * @param $modelId
      *
      * @return View
      */
-    public function getModflowmodelBoundariesAction($id)
+    public function getModflowmodelBoundariesAction($modelId)
     {
-        /** @var ModFlowModel $model */
-        $model = $this->findModelById($id);
+        if ($this->isGranted('ROLE_ADMIN'))
+        {
+            $model = $this->getDoctrine()
+                ->getRepository('AppBundle:ModFlowModel')
+                ->findOneBy(array(
+                    'id' => $modelId
+                ));
+        } elseif ($this->isGranted('ROLE_USER'))
+        {
+            $model = $this->getDoctrine()
+                ->getRepository('AppBundle:ModFlowModel')
+                ->findOneBy(array(
+                    'id' => $modelId,
+                    'owner' => $this->getUser()
+                ));
+        } else
+        {
+            $model = $this->getDoctrine()
+                ->getRepository('AppBundle:ModFlowModel')
+                ->findOneBy(array(
+                    'id' => $modelId,
+                    'public' => true
+                ));
+        }
+
+        if (!$model) {
+            throw $this->createNotFoundException('Model not found.');
+        }
+
         $boundaries = $model->getBoundaries();
 
         $serializationContext = SerializationContext::create();
@@ -309,16 +225,42 @@ class ModelRestController extends FOSRestController
      * )
      *
      * @param ParamFetcher $paramFetcher
-     * @param $id
+     * @param $modelId
      *
      * @QueryParam(name="geojson", nullable=true, description="Returns the geometry only as geojson", default=false)
      * @QueryParam(name="srid", nullable=true, description="The target srid, default is 4326", default=4326)
      * @return View
      */
-    public function getModflowmodelConstant_headAction(ParamFetcher $paramFetcher, $id)
+    public function getModflowmodelConstant_headAction(ParamFetcher $paramFetcher, $modelId)
     {
-        /** @var ModFlowModel $model */
-        $model = $this->findModelById($id);
+        if ($this->isGranted('ROLE_ADMIN'))
+        {
+            $model = $this->getDoctrine()
+                ->getRepository('AppBundle:ModFlowModel')
+                ->findOneBy(array(
+                    'id' => $modelId
+                ));
+        } elseif ($this->isGranted('ROLE_USER'))
+        {
+            $model = $this->getDoctrine()
+                ->getRepository('AppBundle:ModFlowModel')
+                ->findOneBy(array(
+                    'id' => $modelId,
+                    'owner' => $this->getUser()
+                ));
+        } else
+        {
+            $model = $this->getDoctrine()
+                ->getRepository('AppBundle:ModFlowModel')
+                ->findOneBy(array(
+                    'id' => $modelId,
+                    'public' => true
+                ));
+        }
+
+        if (!$model) {
+            throw $this->createNotFoundException('Model not found.');
+        }
 
         $constantHeadBoundaries = array();
         $boundaries = $model->getBoundaries();
@@ -373,14 +315,40 @@ class ModelRestController extends FOSRestController
      *   }
      * )
      *
-     * @param $id
+     * @param $modelId
      *
      * @return View
      */
-    public function getModflowmodelGeneral_headAction($id)
+    public function getModflowmodelGeneral_headAction($modelId)
     {
-        /** @var ModFlowModel $model */
-        $model = $this->findModelById($id);
+        if ($this->isGranted('ROLE_ADMIN'))
+        {
+            $model = $this->getDoctrine()
+                ->getRepository('AppBundle:ModFlowModel')
+                ->findOneBy(array(
+                    'id' => $modelId
+                ));
+        } elseif ($this->isGranted('ROLE_USER'))
+        {
+            $model = $this->getDoctrine()
+                ->getRepository('AppBundle:ModFlowModel')
+                ->findOneBy(array(
+                    'id' => $modelId,
+                    'owner' => $this->getUser()
+                ));
+        } else
+        {
+            $model = $this->getDoctrine()
+                ->getRepository('AppBundle:ModFlowModel')
+                ->findOneBy(array(
+                    'id' => $modelId,
+                    'public' => true
+                ));
+        }
+
+        if (!$model) {
+            throw $this->createNotFoundException('Model not found.');
+        }
 
         $rivers = array();
         $boundaries = $model->getBoundaries();
@@ -415,17 +383,41 @@ class ModelRestController extends FOSRestController
      * )
      *
      * @param ParamFetcher $paramFetcher
-     * @param $id
+     * @param $modelId
      * @QueryParam(name="srid", nullable=true, description="SRID, default 3857", default="3857")
      *
      * @return View
      */
-    public function getModflowmodelWellsAction(ParamFetcher $paramFetcher, $id)
+    public function getModflowmodelWellsAction(ParamFetcher $paramFetcher, $modelId)
     {
-        /** @var ModFlowModel $model */
-        $model = $this->findModelById($id);
+        if ($this->isGranted('ROLE_ADMIN'))
+        {
+            $model = $this->getDoctrine()
+                ->getRepository('AppBundle:ModFlowModel')
+                ->findOneBy(array(
+                    'id' => $modelId
+                ));
+        } elseif ($this->isGranted('ROLE_USER'))
+        {
+            $model = $this->getDoctrine()
+                ->getRepository('AppBundle:ModFlowModel')
+                ->findOneBy(array(
+                    'id' => $modelId,
+                    'owner' => $this->getUser()
+                ));
+        } else
+        {
+            $model = $this->getDoctrine()
+                ->getRepository('AppBundle:ModFlowModel')
+                ->findOneBy(array(
+                    'id' => $modelId,
+                    'public' => true
+                ));
+        }
 
-        dump($model->getBoundaries());
+        if (!$model) {
+            throw $this->createNotFoundException('Model not found.');
+        }
 
         $wells = array();
         $boundaries = $model->getBoundaries();
@@ -476,16 +468,20 @@ class ModelRestController extends FOSRestController
      * )
      *
      * @param ParamFetcher $paramFetcher
-     * @param $id
+     * @param $modelId
      *
      * @QueryParam(name="geojson", nullable=true, description="Returns the geometry only as geojson", default=false)
      * @QueryParam(name="srid", nullable=true, description="The target srid, default is 4326", default=4326)
      * @return View
      */
-    public function getModflowmodelRiversAction(ParamFetcher $paramFetcher, $id)
+    public function getModflowmodelRiversAction(ParamFetcher $paramFetcher, $modelId)
     {
-        /** @var ModFlowModel $model */
-        $model = $this->findModelById($id);
+        $model = $this->getDoctrine()->getRepository('AppBundle:ModFlowModel')
+            ->findOneBy(array('id' => $modelId));
+
+        if (!$model) {
+            throw $this->createNotFoundException('Model not found.');
+        }
 
         $rivers = array();
         $boundaries = $model->getBoundaries();
@@ -539,15 +535,22 @@ class ModelRestController extends FOSRestController
      * )
      *
      * @param ParamFetcher $paramFetcher
-     * @param $id
+     * @param $modelId
      *
      * @QueryParam(name="srid", nullable=true, description="SRID, default 3857", default="3857")
      * @return View
      */
-    public function getModflowmodelBoundingboxAction(ParamFetcher $paramFetcher, $id)
+    public function getModflowmodelBoundingboxAction(ParamFetcher $paramFetcher, $modelId)
     {
-        /** @var ModFlowModel $model */
-        $model = $this->findModelById($id);
+        $model = $this->getDoctrine()
+            ->getRepository('AppBundle:ModFlowModel')
+            ->findOneBy(array(
+                'id' => $modelId
+            ));
+
+        if (!$model) {
+            throw $this->createNotFoundException('Model not found.');
+        }
 
         if (null === $model->getBoundingBox()) {
             throw $this->createNotFoundException('BoundingBox not found.');
@@ -587,15 +590,22 @@ class ModelRestController extends FOSRestController
      * )
      *
      * @param ParamFetcher $paramFetcher
-     * @param $id
+     * @param $modelId
      *
      * @QueryParam(name="srid", nullable=true, description="SRID, default 3857", default="3857")
      * @return View
      */
-    public function getModflowmodelGridAction(ParamFetcher $paramFetcher, $id)
+    public function getModflowmodelGridAction(ParamFetcher $paramFetcher, $modelId)
     {
-        /** @var ModFlowModel $model */
-        $model = $this->findModelById($id);
+        $model = $this->getDoctrine()
+            ->getRepository('AppBundle:ModFlowModel')
+            ->findOneBy(array(
+                'id' => $modelId
+            ));
+
+        if (!$model) {
+            throw $this->createNotFoundException('Model not found.');
+        }
 
         if (null === $model->getBoundingBox()) {
             throw $this->createNotFoundException('BoundingBox not found.');
@@ -639,15 +649,22 @@ class ModelRestController extends FOSRestController
      *   }
      * )
      *
-     * @param $id
+     * @param $modelId
      * @param $contentType
      *
      * @return View
      */
-    public function getModflowmodelContentAction($id, $contentType){
+    public function getModflowmodelContentAction($modelId, $contentType){
 
-        /** @var ModFlowModel $model */
-        $model = $this->findModelById($id);
+        $model = $this->getDoctrine()
+            ->getRepository('AppBundle:ModFlowModel')
+            ->findOneBy(array(
+                'id' => $modelId
+            ));
+
+        if (!$model) {
+            throw $this->createNotFoundException('Model not found.');
+        }
 
         if ($contentType == 'summary')
         {
@@ -699,34 +716,5 @@ class ModelRestController extends FOSRestController
         ;
 
         return $view;
-    }
-
-    /**
-     * @param $id
-     * @return \AppBundle\Entity\AbstractModel
-     */
-    private function findModelById($id)
-    {
-        $scenario = $this->getDoctrine()
-            ->getRepository('AppBundle:ModelScenario')
-            ->findOneBy(array(
-                'id' => $id
-            ));
-
-        if ($scenario instanceof ModelScenario) {
-            return $scenario->getModel();
-        }
-
-        $model = $this->getDoctrine()
-            ->getRepository('AppBundle:ModFlowModel')
-            ->findOneBy(array(
-                'id' => $id,
-            ));
-
-        if (!$model) {
-            throw $this->createNotFoundException('Model not found.');
-        }
-
-        return $model;
     }
 }

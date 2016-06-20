@@ -2,10 +2,12 @@
 
 namespace AppBundle\DataFixtures\ORM\Scenarios\Scenario_4;
 
+use AppBundle\Entity\AddBoundaryEvent;
 use AppBundle\Entity\GeologicalLayer;
 use AppBundle\Entity\PropertyType;
 use AppBundle\Entity\Raster;
 use AppBundle\Entity\User;
+use AppBundle\Entity\Well;
 use AppBundle\Model\AreaFactory;
 use AppBundle\Model\AreaTypeFactory;
 use AppBundle\Model\GeologicalLayerFactory;
@@ -13,6 +15,7 @@ use AppBundle\Model\GeologicalPointFactory;
 use AppBundle\Model\GeologicalUnitFactory;
 use AppBundle\Model\Interpolation\BoundingBox;
 use AppBundle\Model\Interpolation\GridSize;
+use AppBundle\Model\ModelScenarioFactory;
 use AppBundle\Model\ModFlowModelFactory;
 use AppBundle\Model\Point;
 use AppBundle\Model\PropertyValueFactory;
@@ -476,6 +479,7 @@ class LoadScenario_4 implements FixtureInterface, ContainerAwareInterface
             array(117, 'YP40', 11781375.76468020677566528, 2399704.0468372106552124, -45, -75, 4320, -4400, 11781375.76, 2399704.05),
             array(118, 'YP41', 11781130.26916185207664967, 2399867.00588304502889514, -45, -75, 4320, -4400, 11781130.27, 2399867.01),
             array(119, 'YP42', 11780758.02947362139821053, 2400364.75818847771733999, -45, -75, 4320, -4400, 11780758.03, 2400364.76)
+
         );
         $header = array('id', 'name', 'wkt_x', 'wkt_y', 'ztop', 'zbot', 'stoptime', 'pumpingrate', 'x', 'y');
         foreach ($wells as $row) {
@@ -492,6 +496,36 @@ class LoadScenario_4 implements FixtureInterface, ContainerAwareInterface
                 ->setLayer($layer_4)
                 ->addValue($propertyTypeTopElevation, PropertyValueFactory::create()->setValue($well['ztop']))
                 ->addValue($propertyTypeBottomElevation, PropertyValueFactory::create()->setValue($well['zbot']))
+                ->addValue($propertyTypePumpingRate, PropertyValueFactory::create()->setValue($well['pumpingrate']))
+            );
+
+            $entityManager->persist($model);
+            $entityManager->flush();
+        }
+
+        # THIS WELLS ARE THE MISSING BLACK DOTS IN THE IMAGE
+        $wells = array(
+            array('I01', 105.79210, 21.08638, 4326, -4900),
+            array('I02', 105.78936, 21.08686, 4326, -4900),
+            array('I03', 105.78712, 21.08670, 4326, -4900),
+            array('I04', 105.87278, 21.00259, 4326, -4900),
+            array('I05', 105.77700, 21.03880, 4326, -4900),
+            array('I06', 105.77700, 21.03624, 4326, -4900),
+            array('I07', 105.77734, 21.03240, 4326, -4900),
+            array('I08', 105.77271, 21.03288, 4326, -4900),
+            array('I09', 105.77219, 21.03929, 4326, -4900),
+
+        );
+        $header = array('name', 'x', 'y', 'srid', 'pumpingrate');
+        foreach ($wells as $row) {
+            $well = array_combine($header, $row);
+            echo "Persisting ".$well['name']."\r\n";
+            $model->addBoundary(WellFactory::create()
+                ->setOwner($user)
+                ->setName($well['name'])
+                ->setPublic($public)
+                ->setPoint(new Point($well['x'], $well['y'], $well['srid']))
+                ->setLayer($layer_4)
                 ->addValue($propertyTypePumpingRate, PropertyValueFactory::create()->setValue($well['pumpingrate']))
             );
 
@@ -973,6 +1007,58 @@ class LoadScenario_4 implements FixtureInterface, ContainerAwareInterface
         $layer_4->addValue($hh, PropertyValueFactory::create()->setRaster($raster));
         $entityManager->persist($raster);
         $entityManager->persist($layer_4);
+        $entityManager->flush();
+        
+        $scenario_1 = ModelScenarioFactory::create($model)
+            ->setName('Scenario 1')
+            ->setDescription('Description Scenario 1')
+        ;
+
+        # THIS WELLS ARE THE GREEN DOTS IN THE IMAGE
+        $addedWells = array(
+            array('A01', 21.08464, 105.79050, 4326, -4900),
+            array('A02', 21.08472, 105.78878, 4326, -4900),
+            array('A03', 21.08472, 105.78681, 4326, -4900),
+            array('A04', 21.08688, 105.78466, 4326, -4900),
+            array('A05', 21.08616, 105.78432, 4326, -4900),
+            array('A06', 21.08680, 105.77900, 4326, -4900),
+            array('A07', 21.08600, 105.77866, 4326, -4900),
+            array('A08', 21.08472, 105.78192, 4326, -4900),
+            array('A09', 21.08408, 105.81333, 4326, -4900),
+            array('A10', 21.08344, 105.81531, 4326, -4900),
+            array('A11', 21.08264, 105.81719, 4326, -4900),
+            array('A12', 21.08144, 105.81925, 4326, -4900),
+            array('A13', 21.07992, 105.82149, 4326, -4900),
+            array('A15', 21.00221, 105.87479, 4326, -4900),
+            array('A16', 21.00181, 105.87710, 4326, -4900),
+            array('A17', 21.00133, 105.87805, 4326, -4900),
+            array('A18', 21.00061, 105.87839, 4326, -4900),
+            array('A19', 21.00053, 105.88088, 4326, -4900),
+            array('A20', 20.99933, 105.88380, 4326, -4900),
+            array('A21', 20.99885, 105.88569, 4326, -4900)
+        );
+        
+        $header = array('name', 'y', 'x', 'srid', 'pumpingrate');
+        foreach ($addedWells as $row) {
+            $well = array_combine($header, $row);
+            echo "Persisting ".$well['name']."\r\n";
+            $scenario_1->addEvent(new AddBoundaryEvent(
+                WellFactory::create()
+                    ->setOwner($user)
+                    ->setPublic($public)
+                    ->setName($well['name'])
+                    ->setWellType(Well::TYPE_SCENARIO_NEW_WELL)
+                    ->setPoint(new Point($well['x'], $well['y'], $well['srid']))
+                    ->setLayer($layer_4)
+                    ->addValue($propertyTypePumpingRate, PropertyValueFactory::create()->setValue($well['pumpingrate']))
+                )
+            );
+
+            $entityManager->persist($scenario_1);
+            $entityManager->flush();
+        }
+
+        $entityManager->persist($scenario_1);
         $entityManager->flush();
 
         return 1;

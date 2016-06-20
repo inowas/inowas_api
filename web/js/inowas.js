@@ -81,6 +81,17 @@ $( ".boundaries" ).click(function () {
         [21.033333, 105.85], 12
     );
 
+    var popup = L.popup();
+
+    function onMapClick(e) {
+        popup
+            .setLatLng(e.latlng)
+            .setContent("You clicked the map at " + e.latlng.toString())
+            .openOn(boundary_map);
+    }
+
+    boundary_map.on('click', onMapClick);
+
     var streets = L.tileLayer('https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token=pk.eyJ1IjoibWFwYm94IiwiYSI6ImNpandmbXliNDBjZWd2M2x6bDk3c2ZtOTkifQ._QA7i5Mpkd_m30IGElHziw', {
         maxZoom: 18,
         attribution: 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, ' +
@@ -102,12 +113,23 @@ $( ".boundaries" ).click(function () {
 
     var wells = new L.LayerGroup();
     $.getJSON( "/api/modflowmodels/"+modelId+"/wells.json?srid=4326", function ( wellData ) {
-        wellData.cw.forEach(function (item) {
-            L.circle([item.point.y, item.point.x], 10, {color: 'red'}).bindPopup("Well "+item.name).addTo(wells);
-        });
-        wellData.iw.forEach(function (item) {
-            L.circle([item.point.y, item.point.x], 10, {color: 'grey'}).bindPopup("Well "+item.name).addTo(wells);
-        });
+        if ("cw" in wellData) {
+            wellData.cw.forEach(function (item) {
+                L.circle([item.point.y, item.point.x], 10, {color: 'red'}).bindPopup("Well "+item.name).addTo(wells);
+            });
+        }
+
+        if ("iw" in wellData) {
+            wellData.iw.forEach(function (item) {
+                L.circle([item.point.y, item.point.x], 10, {color: 'grey'}).bindPopup("Well "+item.name).addTo(wells);
+            });
+        }
+
+        if ("snw" in wellData) {
+            wellData.snw.forEach(function (item) {
+                L.circle([item.point.y, item.point.x], 10, {color: 'green'}).bindPopup("Well " + item.name).addTo(wells);
+            });
+        }
         wells.addTo(boundary_map);
     });
 

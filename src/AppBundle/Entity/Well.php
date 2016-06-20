@@ -15,6 +15,9 @@ class Well extends BoundaryModelObject
 {
     const TYPE_PRIVATE_WELL = "pw";
     const TYPE_INDUSTRIAL_WELL = "iw";
+    const TYPE_SCENARIO_NEW_WELL = "snw";
+    const TYPE_SCENARIO_MOVED_WELL = "smw";
+    const TYPE_SCENARIO_REMOVED_WELL = "srw";
 
     /**
      * @var string

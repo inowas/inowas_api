@@ -26,7 +26,21 @@ class ModelScenario
     private $id;
 
     /**
-     * @var AbstractModel
+     * @var string
+     *
+     * @ORM\Column(name="name", type="string",length=255)
+     */
+    private $name;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="description", type="text", nullable=true)
+     */
+    private $description;
+
+    /**
+     * @var ModFlowModel
      *
      * @ORM\ManyToOne(targetEntity="AppBundle\Entity\ModFlowModel", cascade={"persist", "remove"})
      * @JMS\Type("ArrayCollection<AppBundle\Entity\AbstractModel>")
@@ -57,11 +71,47 @@ class ModelScenario
     /**
      * Get id
      *
-     * @return int
+     * @return Uuid
      */
     public function getId()
     {
         return $this->id;
+    }
+
+    /**
+     * @return string
+     */
+    public function getName()
+    {
+        return $this->name;
+    }
+
+    /**
+     * @param string $name
+     * @return ModelScenario
+     */
+    public function setName($name)
+    {
+        $this->name = $name;
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getDescription()
+    {
+        return $this->description;
+    }
+
+    /**
+     * @param string $description
+     * @return ModelScenario
+     */
+    public function setDescription($description)
+    {
+        $this->description = $description;
+        return $this;
     }
 
     /**
@@ -103,5 +153,28 @@ class ModelScenario
      */
     public function getEvents(){
         return $this->events;
+    }
+
+    /**
+     * @return \AppBundle\Entity\ModFlowModel
+     */
+    public function getModel(){
+        foreach ($this->events as $event) {
+            $this->applyEvent($this->baseModel, $event);
+        }
+
+        return $this->baseModel;
+    }
+
+    /**
+     * @param ModFlowModel $model
+     * @param AbstractEvent $event
+     */
+    private function applyEvent(ModFlowModel $model, Event $event){
+        if ($event instanceof AddBoundaryEvent) {
+            if ($event->getBoundary() instanceof ModelObject){
+                $model->addBoundary($event->getBoundary());
+            }
+        }
     }
 }

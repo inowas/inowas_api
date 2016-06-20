@@ -13,7 +13,7 @@ use Ramsey\Uuid\Uuid;
  * @ORM\Table(name="events")
  * @ORM\InheritanceType("SINGLE_TABLE")
  * @ORM\DiscriminatorColumn(name="discr", type="string")
- * @ORM\DiscriminatorMap({  "add" = "AddEvent",
+ * @ORM\DiscriminatorMap({  "add" = "AddBoundaryEvent",
  *                          "change" = "ChangeEvent",
  *                          "remove" = "RemoveEvent"
  * })
