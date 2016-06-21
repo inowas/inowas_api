@@ -80,6 +80,41 @@ class ModelController extends Controller
     }
 
     /**
+     * @Route("/models/modflow/{id}/scenarios/results", name="modflow_model_modflow_scenarios_results")
+     *
+     * @param $id
+     * @return Response
+     */
+    public function modelsModflowScenariosResultsAction($id)
+    {
+        $model = $this->getDoctrine()->getRepository('AppBundle:ModFlowModel')
+            ->findOneBy(array(
+                'id' => $id
+            ));
+
+        if (null === $model){
+            return $this->redirectToRoute('modflow_model_list');
+        }
+
+        $scenarios = $this->getDoctrine()->getRepository('AppBundle:ModelScenario')
+            ->findBy(array(
+                    'baseModel' => $model
+                ), array(
+                    'dateCreated' => 'ASC'
+                )
+            );
+
+        foreach ($scenarios as $scenario) {
+            $model->registerScenario($scenario);
+        }
+
+        return $this->render(':inowas/model/modflow:scenarios_results.html.twig', array(
+                'model' => $model
+            )
+        );
+    }
+
+    /**
      * @Route("/models/modflow/{modelId}/scenarios/{scenarioId}", name="modflow_model_modflow_scenario")
      *
      * @param $scenarioId
@@ -97,8 +132,8 @@ class ModelController extends Controller
             return $this->redirectToRoute('modflow_model_list');
         }
         
-        return $this->render(':inowas/model/modflow:szenario.html.twig', array(
-                'scenario' => $scenario,
+        return $this->render(':inowas/model/modflow:scenario.html.twig', array(
+                'scenario' => $scenario
             )
         );
     }

@@ -276,4 +276,3 @@ loadLayerImg = function(modelId, layerOrder, propertyTypeAbbreviation, ft){
 };
 
 
-

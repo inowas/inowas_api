@@ -9,8 +9,9 @@ use JMS\Serializer\Annotation as JMS;
 use Ramsey\Uuid\Uuid;
 
 /**
- * Tool
+ * ModelScenario
  *
+ * @ORM\HasLifecycleCallbacks()
  * @ORM\Table(name="model_scenarios")
  * @ORM\Entity()
  */
@@ -65,6 +66,21 @@ class ModelScenario
     private $events;
 
     /**
+     * @var \DateTime
+     *
+     * @ORM\Column(name="date_created", type="datetime")
+     */
+    private $dateCreated;
+
+    /**
+     * @var \DateTime
+     *
+     * @ORM\Column(name="date_modified", type="datetime")
+     * @JMS\Groups({"list", "details"})
+     */
+    private $dateModified;
+
+    /**
      * ModelScenario constructor.
      * @param AbstractModel $model
      */
@@ -73,6 +89,8 @@ class ModelScenario
         $this->id = Uuid::uuid4();
         $this->events = new ArrayCollection();
         $this->baseModel = $model;
+        $this->dateCreated = new \DateTime();
+        $this->dateModified = new \DateTime();
     }
 
     /**
@@ -212,4 +230,13 @@ class ModelScenario
             }
         }
     }
+
+    /**
+     * @ORM\PrePersist()
+     */
+    public function prePersist()
+    {
+        $this->dateModified = new \DateTime();
+    }
+
 }

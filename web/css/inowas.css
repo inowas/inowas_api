@@ -114,6 +114,10 @@ body h2 {
     height: 500px;
 }
 
+.map_small {
+    height: 300px;
+}
+
 .mesh-map {
     height: 250px;
 }
