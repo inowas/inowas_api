@@ -233,8 +233,8 @@ class GeoTools
         $dx = ($bb->getXMax() - $bb->getXMin()) / $gz->getNX();
         $dy = ($bb->getYMax() - $bb->getYMin()) / $gz->getNY();
 
-        $col = floor(($point->getX() - $bb->getXMin()) / $dx);
-        $row = $gz->getNY()-floor(($point->getY() - $bb->getYMin()) / $dy);
+        $col = (int)(floor(($point->getX() - $bb->getXMin()) / $dx));
+        $row = (int)($gz->getNY()-floor(($point->getY() - $bb->getYMin()) / $dy));
 
         return array(
             "row" => $row,

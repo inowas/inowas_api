@@ -36,6 +36,20 @@ class GeoImageProperties
     protected $noDataVal;
 
     /**
+     * @var  integer|string
+     *
+     * @JMS\Groups({"geoimage"})
+     */
+    protected $min;
+
+    /**
+     * @var  integer|string
+     *
+     * @JMS\Groups({"geoimage"})
+     */
+    protected $max;
+
+    /**
      * @var string $colorRelief
      *
      * @JMS\Groups({"geoimage"})
@@ -63,8 +77,10 @@ class GeoImageProperties
      * @param $colorScheme
      * @param $targetProjection
      * @param $outputFormat
+     * @param string $min
+     * @param string $max
      */
-    public function __construct(Raster $raster, $activeCells, $colorScheme, $targetProjection, $outputFormat)
+    public function __construct(Raster $raster, $activeCells, $colorScheme, $targetProjection, $outputFormat, $min="10%",  $max="90%")
     {
         $this->boundingBox = $raster->getBoundingBox();
         $this->data = $raster->getFilteredData($activeCells);
@@ -72,5 +88,7 @@ class GeoImageProperties
         $this->colorScheme = $colorScheme;
         $this->targetProjection = $targetProjection;
         $this->outputFormat = $outputFormat;
+        $this->min = $min;
+        $this->max = $max;
     }
 }

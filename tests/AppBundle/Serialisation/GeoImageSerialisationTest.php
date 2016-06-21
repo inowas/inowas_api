@@ -85,5 +85,9 @@ class GeoTiffSerialisationTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals(3853, $geoTiffProperties->target_projection);
         $this->assertObjectHasAttribute('output_format', $geoTiffProperties);
         $this->assertEquals('test', $geoTiffProperties->output_format);
+        $this->assertObjectHasAttribute('min', $geoTiffProperties);
+        $this->assertEquals('10%', $geoTiffProperties->min);
+        $this->assertObjectHasAttribute('max', $geoTiffProperties);
+        $this->assertEquals('90%', $geoTiffProperties->max);
     }
 }

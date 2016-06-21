@@ -424,9 +424,6 @@ class ModelRestController extends FOSRestController
     {
         /** @var ModFlowModel $model */
         $model = $this->findModelById($id);
-
-        dump($model->getBoundaries());
-
         $wells = array();
         $boundaries = $model->getBoundaries();
         foreach ($boundaries as $boundary) {

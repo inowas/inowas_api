@@ -152,10 +152,8 @@ class GeoToolsTest extends WebTestCase
         $result = $this->geoTools->getGridCellFromPoint($bb, $gz, $point);
         $this->assertArrayHasKey("row", $result);
         $this->assertArrayHasKey("col", $result);
-        $this->assertEquals(63, $result["row"]);
+        $this->assertEquals(112, $result["row"]);
         $this->assertEquals(61, $result["col"]);
-        #$point = new Point(105.84152, 21, 4326);
-        #$point = new Point(105.87551, 21, 4326);
     }
 
     public function tearDown()
