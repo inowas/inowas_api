@@ -88,7 +88,7 @@ class GeoImage
         $this->tmpFolder = $tmpFolder;
     }
 
-    public function createImageFromRaster(Raster $raster, $activeCells=null, $fileFormat="png", $colorRelief=self::COLOR_RELIEF_JET, $targetProjection=4326)
+    public function createImageFromRaster(Raster $raster, $activeCells=null, $min=null, $max=null, $fileFormat="png", $colorRelief=self::COLOR_RELIEF_JET, $targetProjection=4326)
     {
 
         if (!$raster->getBoundingBox() instanceof BoundingBox) {
@@ -131,7 +131,7 @@ class GeoImage
             return "File exists already";
         }
 
-        $geoTiffProperties = new GeoImageProperties($raster, $activeCells, $colorRelief, $targetProjection, $fileFormat);
+        $geoTiffProperties = new GeoImageProperties($raster, $activeCells, $colorRelief, $targetProjection, $fileFormat, $min, $max);
         $geoTiffPropertiesJSON = $this->serializer->serialize(
             $geoTiffProperties,
             'json',

@@ -112,7 +112,7 @@
                             {% set mapDiv = 'scenario_' ~ loop.index ~ '_map' %}
                             <div id="{{ mapDiv }}" class="panel-body map_small"></div>
                         </div>
-                        <p style="margin-top: -15px">{{ scenario.name }}</p>
+                        <p style="margin-top: -15px">{{ scenario.name }} - {{ scenario.description }}</p>
                     </div>
                 {% endfor %}
             </div>

@@ -236,13 +236,16 @@ class ModelRestController extends FOSRestController
         }
 
         $colorScheme = GeoImage::COLOR_RELIEF_JET;
+        $min = null; $max=null;
         if ($propertyType->getAbbreviation() == "hh") {
             $colorScheme = GeoImage::COLOR_RELIEF_GIST_RAINBOW;
+            $min = -30;
+            $max = 8;
         }
 
         $fileFormat = $paramFetcher->get('_format');
         $geoImageService = $this->get('inowas.geoimage');
-        $geoImageService->createImageFromRaster($raster, $model->getActiveCells(), $fileFormat, $colorScheme);
+        $geoImageService->createImageFromRaster($raster, $model->getActiveCells(), $min, $max, $fileFormat, $colorScheme);
         $outputFileName = $geoImageService->getOutputFileName();
 
         $fs = new Filesystem();
