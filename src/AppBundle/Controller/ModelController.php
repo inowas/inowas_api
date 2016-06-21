@@ -96,12 +96,9 @@ class ModelController extends Controller
         if (!$scenario instanceof ModelScenario){
             return $this->redirectToRoute('modflow_model_list');
         }
-
-        $model = $scenario->getModel();
         
-        return $this->render(':inowas/model/modflow:model.html.twig', array(
-                'model' => $model,
-                'modelId' => $scenario->getId()->toString()
+        return $this->render(':inowas/model/modflow:szenario.html.twig', array(
+                'scenario' => $scenario,
             )
         );
     }
