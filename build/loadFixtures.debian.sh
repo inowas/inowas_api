@@ -1,6 +1,9 @@
 #!/usr/bin/env bash
 
-./build.debian.sh
+DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+unamestr=`uname`
+if [[ "$unamestr" == 'Linux' ]]; then
+    $DIR/build.debian.sh
 
 bin/console doctrine:fixtures:load --fixtures=src/AppBundle/DataFixtures/ORM/Scenarios/PropertyTypes --append
 bin/console doctrine:fixtures:load --fixtures=src/AppBundle/DataFixtures/ORM/TestScenarios/Scenario_1_Lake_Example --append
