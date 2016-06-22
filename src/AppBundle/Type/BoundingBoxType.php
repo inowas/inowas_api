@@ -67,6 +67,6 @@ class BoundingBoxType extends Type
      */
     public function requiresSQLCommentHint(AbstractPlatform $platform)
     {
-        return ! $platform->hasNativeJsonType();
+        return true;
     }
 }
