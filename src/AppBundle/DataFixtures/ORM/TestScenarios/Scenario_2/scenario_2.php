@@ -8,7 +8,7 @@ use AppBundle\Entity\ModFlowModel;
 use AppBundle\Entity\User;
 use AppBundle\Model\AreaFactory;
 use AppBundle\Model\AreaTypeFactory;
-use AppBundle\Model\BoundaryFactory;
+use AppBundle\Model\ConstantHeadBoundaryFactory;
 use AppBundle\Model\GeologicalLayerFactory;
 use AppBundle\Model\GeologicalPointFactory;
 use AppBundle\Model\GeologicalUnitFactory;
@@ -214,7 +214,7 @@ class LoadTestScenario_2 implements FixtureInterface, ContainerAwareInterface
                     ->setPublic($public)
                 )
             )
-            ->addStream(StreamBoundaryFactory::create()
+            ->addBoundary(StreamBoundaryFactory::create()
                 ->setOwner($user)
                 ->setPublic($public)
                 ->setName('Stream TestScenario 1')
@@ -228,7 +228,7 @@ class LoadTestScenario_2 implements FixtureInterface, ContainerAwareInterface
                     )
                 )
             )
-            ->addBoundary(BoundaryFactory::create()
+            ->addBoundary(ConstantHeadBoundaryFactory::create()
                 ->setOwner($user)
                 ->setName('Boundary TestScenario 1')
                 ->setPublic($public)
@@ -237,7 +237,7 @@ class LoadTestScenario_2 implements FixtureInterface, ContainerAwareInterface
                     array(22, 11))))
                 ->addValue($propertyTypeGwHead, PropertyValueFactory::create()->setValue(60))
             )
-            ->addWell(WellFactory::create()
+            ->addBoundary(WellFactory::create()
                 ->setName('Well TestScenario 1')
                 ->setOwner($user)
                 ->setPublic($public)
