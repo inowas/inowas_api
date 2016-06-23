@@ -25,3 +25,4 @@ composer.lock
 /var/data/modflow/*
 !/var/data/modflow/.gitkeep
 !/var/tmp/.gitkeep
+tests/results

@@ -2,10 +2,15 @@
 
 namespace AppBundle\Controller;
 
+use AppBundle\Entity\Area;
+use AppBundle\Entity\User;
 use FOS\RestBundle\Controller\FOSRestController;
 use FOS\RestBundle\View\View;
 use JMS\Serializer\SerializationContext;
 use Nelmio\ApiDocBundle\Annotation\ApiDoc;
+use Ramsey\Uuid\Uuid;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
+use Symfony\Component\Security\Core\Exception\AccessDeniedException;
 
 class AreaRestController extends FOSRestController
 {
@@ -23,6 +28,7 @@ class AreaRestController extends FOSRestController
      *
      * @param $username
      * @return View
+     * @throws NotFoundHttpException
      */
     public function getUserAreasAction($username)
     {
@@ -32,8 +38,7 @@ class AreaRestController extends FOSRestController
                 'username' => $username
             ));
 
-        if (!$user)
-        {
+        if (! $user instanceof User) {
             throw $this->createNotFoundException('User with username '.$username.' not found.');
         }
 
@@ -73,37 +78,39 @@ class AreaRestController extends FOSRestController
      * @param string $id area-id
      *
      * @return View
+     * @throws AccessDeniedException
+     * @throws NotFoundHttpException
      */
     public function getAreaAction($id)
     {
-        $area = $this->getDoctrine()
-            ->getRepository('AppBundle:Area')
-            ->findOneBy(array(
-                'id' => $id
-            ));
-
-        if (!$area) {
+        try {
+            $uuid = Uuid::fromString($id);
+        } catch (\InvalidArgumentException $e) {
             throw $this->createNotFoundException('Area with id='.$id.' not found.');
         }
 
-        if ($area->getPublic() || $this->isGranted('ROLE_ADMIN') || $this->getUser() === $area->getOwner())
-        {
-            $area->setSurface(
-                $this->getDoctrine()
-                ->getRepository('AppBundle:Area')
-                ->getAreaSurfaceById($area->getId())
-            );
-            
-            $view = View::create();
-            $view->setData($area)
-                ->setStatusCode(200)
-                ->setSerializationContext(SerializationContext::create()
-                    ->setGroups(array('modelobjectdetails')));
+        $area = $this->getDoctrine()
+            ->getRepository('AppBundle:Area')
+            ->findOneBy(array(
+                'id' => $uuid
+            ));
 
-            return $view;
-        } else
-        {
-            throw $this->createAccessDeniedException();
+        if (! $area instanceof Area) {
+            throw $this->createNotFoundException('Area with id='.$id.' not found.');
         }
+
+        $area->setSurface(
+            $this->getDoctrine()
+            ->getRepository('AppBundle:Area')
+            ->getAreaSurfaceById($area->getId())
+        );
+
+        $view = View::create();
+        $view->setData($area)
+            ->setStatusCode(200)
+            ->setSerializationContext(SerializationContext::create()
+                ->setGroups(array('modelobjectdetails')));
+
+        return $view;
     }
 }

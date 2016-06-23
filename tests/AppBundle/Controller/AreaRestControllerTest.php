@@ -102,6 +102,14 @@ class AreaRestControllerTest extends WebTestCase
         $this->assertEquals(2, count($modelAreas));
     }
 
+
+    public function testAreaListWithUnknownUserReturns404()
+    {
+        $client = static::createClient();
+        $client->request('GET', '/api/users/unknown_username/areas.json');
+        $this->assertEquals(404, $client->getResponse()->getStatusCode());
+    }
+
     /**
      * Test for the API-Call /api/areas/<id>.json
      * which is providing a the details of a specific areas of the user
@@ -113,6 +121,20 @@ class AreaRestControllerTest extends WebTestCase
         $this->assertEquals(200, $client->getResponse()->getStatusCode());
         $area = json_decode($client->getResponse()->getContent());
         $this->assertEquals($area->id, $this->area_1->getId());
+    }
+
+    public function testAreaDetailsWithInvalidAreaIdReturns404()
+    {
+        $client = static::createClient();
+        $client->request('GET', '/api/areas/unknown_area_id.json');
+        $this->assertEquals(404, $client->getResponse()->getStatusCode());
+    }
+
+    public function testAreaDetailsWithUnknownAreaIdReturns404()
+    {
+        $client = static::createClient();
+        $client->request('GET', '/api/areas/ee3f68a1-7ffe-447c-9a67-bfe40850e1b8.json');
+        $this->assertEquals(404, $client->getResponse()->getStatusCode());
     }
 
     /**
