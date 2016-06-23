@@ -2,6 +2,7 @@
 
 namespace AppBundle\Type;
 
+use AppBundle\Model\ActiveCells;
 use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Doctrine\DBAL\Types\ArrayType;
 
@@ -13,6 +14,25 @@ use Doctrine\DBAL\Types\ArrayType;
 class ActiveCellsType extends ArrayType
 {
     const NAME = 'active_cells';
+
+
+    /**
+     * {@inheritdoc}
+     */
+    public function convertToPHPValue($value, AbstractPlatform $platform)
+    {
+        return ActiveCells::fromArray(parent::convertToPHPValue($value, $platform));
+    }
+
+    /**
+     * {@inheritDoc}
+     *
+     * @param $value ActiveCells
+     */
+    public function convertToDatabaseValue($value, AbstractPlatform $platform)
+    {
+        return parent::convertToDatabaseValueSQL($value->toArray(), $platform);
+    }
 
     /**
      * {@inheritdoc}
