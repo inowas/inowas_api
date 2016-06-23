@@ -21,6 +21,10 @@ class ActiveCellsType extends ArrayType
      */
     public function convertToPHPValue($value, AbstractPlatform $platform)
     {
+        if ($value === null) {
+            return null;
+        }
+        
         return ActiveCells::fromArray(parent::convertToPHPValue($value, $platform));
     }
 
@@ -31,6 +35,10 @@ class ActiveCellsType extends ArrayType
      */
     public function convertToDatabaseValue($value, AbstractPlatform $platform)
     {
+        if ($value === null) {
+            return null;
+        }
+        
         return parent::convertToDatabaseValueSQL($value->toArray(), $platform);
     }
 
