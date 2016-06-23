@@ -966,7 +966,7 @@ class LoadScenario_4 implements FixtureInterface, ContainerAwareInterface
         }
 
         echo "Calculate active Cells-Array\r\n";
-        $model->setActiveCells($geoTools->calculateActiveCells($model->getArea(), $model->getBoundingBox(), $model->getGridSize()));
+        $model->setActiveCells($geoTools->getActiveCells($model->getArea(), $model->getBoundingBox(), $model->getGridSize()));
         $entityManager->persist($model);
         $entityManager->flush();
 

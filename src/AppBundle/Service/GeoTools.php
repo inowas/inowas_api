@@ -35,7 +35,7 @@ class GeoTools
      * @param GridSize $gridSize
      * @return ActiveCells
      */
-    public function calculateActiveCells(Area $area, BoundingBox $boundingBox, GridSize $gridSize)
+    public function getActiveCells(Area $area, BoundingBox $boundingBox, GridSize $gridSize)
     {
         $nx = $gridSize->getNX();
         $ny = $gridSize->getNY();
@@ -54,18 +54,6 @@ class GeoTools
         }
 
         return ActiveCells::fromArray($activeCells);
-    }
-
-    private function isActive($id, $srid, $x, $y){
-        $query = $this->entityManager
-            ->createQuery(sprintf('SELECT ST_Intersects(ST_SetSRID(ST_Point(:x, :y), :srid), ST_Transform(a.geometry, :srid)) FROM AppBundle:Area a WHERE a.id = :id'))
-            ->setParameter('id', $id)
-            ->setParameter('srid', $srid)
-            ->setParameter('x', $x)
-            ->setParameter('y', $y)
-        ;
-
-        return $query->getSingleScalarResult();
     }
 
     public function pointIntersectsWithArea($areaId, $x, $y, $srid){
@@ -201,6 +189,18 @@ class GeoTools
             "row" => $row,
             "col" => $col
         );
+    }
+
+    private function isActive($id, $srid, $x, $y){
+        $query = $this->entityManager
+            ->createQuery(sprintf('SELECT ST_Intersects(ST_SetSRID(ST_Point(:x, :y), :srid), ST_Transform(a.geometry, :srid)) FROM AppBundle:Area a WHERE a.id = :id'))
+            ->setParameter('id', $id)
+            ->setParameter('srid', $srid)
+            ->setParameter('x', $x)
+            ->setParameter('y', $y)
+        ;
+
+        return $query->getSingleScalarResult();
     }
 
 }

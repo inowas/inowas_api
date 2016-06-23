@@ -71,7 +71,7 @@ class GeoToolsTest extends WebTestCase
     }
 
     public function testCalculateActiveCells(){
-        $result = $this->geoTools->calculateActiveCells($this->area, $this->boundingBox, $this->gridSize);
+        $result = $this->geoTools->getActiveCells($this->area, $this->boundingBox, $this->gridSize);
         $expected = array(
             array(1,1,0,0,0),
             array(1,1,1,0,0),
