@@ -39,8 +39,7 @@ class InterpolationCommand extends ContainerAwareCommand
         $soilModelService->loadModflowModelById($id);
 
         $modFlowModel = $soilModelService->getModflowModel();
-        $activeCells = $geoTools->calculateActiveCells($modFlowModel->getArea(), $modFlowModel->getBoundingBox(), $modFlowModel->getGridSize());
-        $modFlowModel->setActiveCells($activeCells);
+        $modFlowModel->setActiveCells($geoTools->calculateActiveCells($modFlowModel->getArea(), $modFlowModel->getBoundingBox(), $modFlowModel->getGridSize()));
         $entityManager->persist($modFlowModel);
         $entityManager->flush();
 

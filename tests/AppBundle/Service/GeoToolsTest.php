@@ -3,6 +3,7 @@
 namespace AppBundle\Tests\Service;
 
 use AppBundle\Entity\Area;
+use AppBundle\Model\ActiveCells;
 use AppBundle\Model\AreaFactory;
 use AppBundle\Model\ConstantHeadBoundaryFactory;
 use AppBundle\Model\Interpolation\BoundingBox;
@@ -69,10 +70,18 @@ class GeoToolsTest extends WebTestCase
         $this->gridSize = new GridSize(5,5);
     }
 
-    public function testReturnsPropertyTypeByAbbreviationIfExists(){
+    public function testCalculateActiveCells(){
         $result = $this->geoTools->calculateActiveCells($this->area, $this->boundingBox, $this->gridSize);
-        $this->assertCount(5, $result);
-        $this->assertCount(5, $result[0]);
+        $expected = array(
+            array(1,1,0,0,0),
+            array(1,1,1,0,0),
+            array(1,1,1,0,0),
+            array(0,1,1,1,1),
+            array(0,0,1,1,1)
+        );
+
+        $this->assertTrue($result instanceof ActiveCells);
+        $this->assertEquals($expected, $result->toArray());
     }
 
     public function testGetGeometrySRID3857FromConstantHeadBoundaryAsGeoJSON(){

@@ -1088,8 +1088,7 @@ class LoadScenario_2 implements FixtureInterface, ContainerAwareInterface
         
         /* Calculation of active cells and storing it in Database */
         $geoTools = $this->container->get('inowas.geotools');
-        $activeCells = $geoTools->calculateActiveCells($model->getArea(), $model->getBoundingBox(), $model->getGridSize());
-        $model->setActiveCells($activeCells);
+        $model->setActiveCells($geoTools->calculateActiveCells($model->getArea(), $model->getBoundingBox(), $model->getGridSize()));
         $entityManager->persist($model);
         $entityManager->flush();
 

@@ -946,8 +946,7 @@ class LoadScenario_4 implements FixtureInterface, ContainerAwareInterface
         $layers = $model->getSoilModel()->getGeologicalLayers();
 
         /** @var GeologicalLayer $layer */
-        foreach ($layers as $layer)
-        {
+        foreach ($layers as $layer) {
             $propertyTypes = $soilModelService->getAllPropertyTypesFromLayer($layer);
             /** @var PropertyType $propertyType */
             foreach ($propertyTypes as $propertyType){
@@ -967,8 +966,7 @@ class LoadScenario_4 implements FixtureInterface, ContainerAwareInterface
         }
 
         echo "Calculate active Cells-Array\r\n";
-        $activeCells = $geoTools->calculateActiveCells($model->getArea(), $model->getBoundingBox(), $model->getGridSize());
-        $model->setActiveCells($activeCells);
+        $model->setActiveCells($geoTools->calculateActiveCells($model->getArea(), $model->getBoundingBox(), $model->getGridSize()));
         $entityManager->persist($model);
         $entityManager->flush();
 

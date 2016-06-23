@@ -2,6 +2,7 @@
 
 namespace AppBundle\Entity;
 
+use AppBundle\Model\ActiveCells;
 use AppBundle\Model\Interpolation\BoundingBox;
 use AppBundle\Model\Interpolation\GridSize;
 use Doctrine\Common\Collections\ArrayCollection;
@@ -65,20 +66,22 @@ class ModFlowModel extends AbstractModel
     private $area;
 
     /**
-     * @var array
+     * @var ActiveCells
      *
-     * @ORM\Column(name="active_cells", type="json_array", nullable=true)
+     * @ORM\Column(name="active_cells", type="active_cells", nullable=true)
      */
     private $activeCells;
 
     /**
      * @var ArrayCollection
+     *
      * @JMS\Groups({"details", "modeldetails"})
      **/
     private $boundaries;
 
     /**
      * @var ArrayCollection
+     * 
      * @JMS\Groups({"details", "modeldetails"})
      */
     private $observationPoints;
@@ -185,10 +188,10 @@ class ModFlowModel extends AbstractModel
     }
 
     /**
-     * @param array $activeCells
-     * @return ModFlowModel
+     * @param ActiveCells $activeCells
+     * @return $this
      */
-    public function setActiveCells($activeCells)
+    public function setActiveCells(ActiveCells $activeCells)
     {
         $this->activeCells = $activeCells;
         return $this;

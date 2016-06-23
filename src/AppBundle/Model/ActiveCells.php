@@ -8,20 +8,23 @@ class ActiveCells
 
     private final function __construct(){}
 
-    public function fromArray(array $activeCells)
+    public static function fromArray(array $activeCells)
     {
-        if (! is_array($activeCells)){
+        $instance = new self();
+        
+        if (!is_array($activeCells)){
             throw new \InvalidArgumentException(sprintf(
                 'ActiveCells is supposed to be an array, %s given',
-                $activeCells
+                gettype($activeCells)
             ));
         }
 
-        $this->activeCells = $activeCells;
-        return $this;
+        $instance->activeCells = $activeCells;
+        return $instance;
     }
 
-    public function getActiveCells(){
+    public function toArray()
+    {
         return $this->activeCells;
     }
 }
