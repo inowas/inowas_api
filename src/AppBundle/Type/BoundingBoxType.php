@@ -5,7 +5,7 @@ namespace AppBundle\Type;
 use AppBundle\Model\Interpolation\BoundingBox;
 use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Doctrine\DBAL\Types\JsonArrayType;
-use Doctrine\DBAL\Types\Type;
+
 
 /**
  * Type that maps an SQL VARCHAR to a PHP string.
