@@ -4,6 +4,7 @@ namespace AppBundle\Type;
 
 use AppBundle\Model\Interpolation\GridSize;
 use Doctrine\DBAL\Platforms\AbstractPlatform;
+use Doctrine\DBAL\Types\JsonArrayType;
 use Doctrine\DBAL\Types\Type;
 
 /**
@@ -11,17 +12,11 @@ use Doctrine\DBAL\Types\Type;
  *
  * @since 2.0
  */
-class GridSizeType extends Type
+class GridSizeType extends JsonArrayType
 {
-    /**
-     * {@inheritdoc}
-     */
-    public function getSQLDeclaration(array $fieldDeclaration, AbstractPlatform $platform)
-    {
-        return $platform->getJsonTypeDeclarationSQL($fieldDeclaration);
-    }
+    const NAME = 'grid_size';
 
-    /**
+     /**
      * {@inheritdoc}
      */
     public function convertToDatabaseValue($value, AbstractPlatform $platform)
@@ -61,7 +56,7 @@ class GridSizeType extends Type
      */
     public function getName()
     {
-        return 'grid_size';
+        return self::NAME;
     }
 
     /**

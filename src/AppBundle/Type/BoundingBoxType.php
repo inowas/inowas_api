@@ -4,6 +4,7 @@ namespace AppBundle\Type;
 
 use AppBundle\Model\Interpolation\BoundingBox;
 use Doctrine\DBAL\Platforms\AbstractPlatform;
+use Doctrine\DBAL\Types\JsonArrayType;
 use Doctrine\DBAL\Types\Type;
 
 /**
@@ -11,15 +12,10 @@ use Doctrine\DBAL\Types\Type;
  *
  * @since 2.0
  */
-class BoundingBoxType extends Type
+class BoundingBoxType extends JsonArrayType
 {
-    /**
-     * {@inheritdoc}
-     */
-    public function getSQLDeclaration(array $fieldDeclaration, AbstractPlatform $platform)
-    {
-        return $platform->getJsonTypeDeclarationSQL($fieldDeclaration);
-    }
+
+    const NAME = 'bounding_box';
 
     /**
      * {@inheritdoc}
@@ -59,7 +55,7 @@ class BoundingBoxType extends Type
      */
     public function getName()
     {
-        return 'bounding_box';
+        return self::NAME;
     }
 
     /**
