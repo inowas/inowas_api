@@ -10,11 +10,15 @@ before_script:
   - sudo apt-get update
   - sed -i 's/git@github.com:/https:\/\/github.com\//' .gitmodules
   - git submodule update --init --recursive
-  - composer install
-  - cp app/config/parameters.yml.travis app/config/parameters.yml
   - psql -c 'create role travis SUPERUSER WITH PASSWORD 'travis';' -U postgres
   - psql -c 'create database travis_ci_db OWNER root;' -U postgres
   - psql -c 'create extension postgis;' -U postgres
+  - cp app/config/parameters.yml.travis app/config/parameters.yml
+  - bin/console doctrine:database:create
+  - bin/console doctrine:schema:create
+  - bin/console doctrine:fixtures:load --fixtures=src/AppBundle/DataFixtures/ORM/TestScenarios/PropertyTypes --append --env=test
+  - bin/console doctrine:fixtures:load --fixtures=src/AppBundle/DataFixtures/ORM/TestScenarios/Scenario_1_Lake_Example --append --env=test
+  - composer install
 
 # Handle git submodules yourself
 git:
