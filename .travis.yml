@@ -10,7 +10,7 @@ before_script:
   - sudo apt-get update
   - sed -i 's/git@github.com:/https:\/\/github.com\//' .gitmodules
   - git submodule update --init --recursive
-  - psql -c "create role travis_ci_user WITH PASSWORD 'travis' LOGIN;" -U postgres
+  - psql -c "create role travis_ci_user WITH PASSWORD 'travis' LOGIN SUPERUSER;" -U postgres
   - psql -c "create database travis_ci_db OWNER travis_ci_user;" -U postgres
   - psql -c "create extension postgis;" -U postgres
   - cp app/config/parameters.yml.travis app/config/parameters.yml
