@@ -7,6 +7,8 @@ use FOS\RestBundle\Controller\FOSRestController;
 use FOS\RestBundle\View\View;
 use JMS\Serializer\SerializationContext;
 use Nelmio\ApiDocBundle\Annotation\ApiDoc;
+use Ramsey\Uuid\Uuid;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class BoundaryRestController extends FOSRestController
 {
@@ -25,9 +27,16 @@ class BoundaryRestController extends FOSRestController
      * @param string $id boundary-id
      *
      * @return View
+     * @throws NotFoundHttpException
      */
     public function getBoundariesAction($id)
     {
+        try {
+            $uuid = Uuid::fromString($id);
+        } catch (\InvalidArgumentException $e) {
+            throw $this->createNotFoundException('Boundary with id='.$id.' not found.');
+        }
+
         $boundary = $this->getDoctrine()
             ->getRepository('AppBundle:ModelObject')
             ->findOneBy(array(
@@ -39,20 +48,14 @@ class BoundaryRestController extends FOSRestController
             throw $this->createNotFoundException('Boundary with id='.$id.' not found.');
         }
 
-        if ($boundary->getPublic() || $this->isGranted('ROLE_ADMIN') || $this->getUser() === $boundary->getOwner())
-        {
-            $view = View::create();
-            $view->setData($boundary)
-                ->setStatusCode(200)
-                ->setSerializationContext(SerializationContext::create()
-                    ->setGroups(array('modelobjectdetails'))
-                    ->enableMaxDepthChecks()
-                );
+        $view = View::create();
+        $view->setData($boundary)
+            ->setStatusCode(200)
+            ->setSerializationContext(SerializationContext::create()
+                ->setGroups(array('modelobjectdetails'))
+                ->enableMaxDepthChecks()
+            );
 
-            return $view;
-        } else
-        {
-            throw $this->createAccessDeniedException();
-        }
+        return $view;
     }
 }

@@ -259,6 +259,20 @@ class BoundaryRestControllerTest extends WebTestCase
         $this->assertCount(1, $property->values);
     }
 
+    public function testBoundaryWithInvalidIdThrows404()
+    {
+        $client = static::createClient();
+        $client->request('GET', '/api/boundaries/invalid_id.json');
+        $this->assertEquals(404, $client->getResponse()->getStatusCode());
+    }
+
+    public function testBoundaryWithUnknownIdThrows404()
+    {
+        $client = static::createClient();
+        $client->request('GET', '/api/boundaries/4d3a6a77-2746-4ea0-884d-79fafcb34a81.json');
+        $this->assertEquals(404, $client->getResponse()->getStatusCode());
+    }
+
     /**
      * {@inheritDoc}
      */
