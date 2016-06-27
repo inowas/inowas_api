@@ -52,6 +52,7 @@ class BoundingBoxType extends JsonArrayType
 
     /**
      * {@inheritdoc}
+     * @codeCoverageIgnore
      */
     public function getName()
     {
@@ -60,6 +61,7 @@ class BoundingBoxType extends JsonArrayType
 
     /**
      * {@inheritdoc}
+     * @codeCoverageIgnore
      */
     public function requiresSQLCommentHint(AbstractPlatform $platform)
     {

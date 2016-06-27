@@ -43,6 +43,7 @@ class ActiveCellsType extends ArrayType
 
     /**
      * {@inheritdoc}
+     * @codeCoverageIgnore
      */
     public function getName()
     {
@@ -51,6 +52,7 @@ class ActiveCellsType extends ArrayType
 
     /**
      * {@inheritdoc}
+     * @codeCoverageIgnore
      */
     public function requiresSQLCommentHint(AbstractPlatform $platform)
     {

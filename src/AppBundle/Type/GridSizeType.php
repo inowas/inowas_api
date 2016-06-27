@@ -47,6 +47,7 @@ class GridSizeType extends JsonArrayType
 
     /**
      * {@inheritdoc}
+     * @codeCoverageIgnore
      */
     public function getName()
     {
@@ -55,6 +56,7 @@ class GridSizeType extends JsonArrayType
 
     /**
      * {@inheritdoc}
+     * @codeCoverageIgnore
      */
     public function requiresSQLCommentHint(AbstractPlatform $platform)
     {
