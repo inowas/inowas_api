@@ -30,5 +30,10 @@
                 <directory>src/*/Bundle/*Bundle/Resources</directory>
             </exclude>
         </whitelist>
+        <whitelist processUncoveredFilesFromWhitelist="true">
+            <exclude>
+                <directory suffix=".php">src/*Bundle/DataFixtures</directory>
+            </exclude>
+        </whitelist>
     </filter>
 </phpunit>

@@ -25,15 +25,10 @@ class GridSizeType extends JsonArrayType
         }
 
         /** @var GridSize $value */
-        if ($value instanceof GridSize) {
-            /** @var GridSize $value */
-            $gs = array();
-            $gs['n_x'] = $value->getNX();
-            $gs['n_y'] = $value->getNY();
-            return json_encode($gs);
-        }
-
-        return null;
+        $gs = array();
+        $gs['n_x'] = $value->getNX();
+        $gs['n_y'] = $value->getNY();
+        return json_encode($gs);
     }
 
     /**
@@ -42,7 +37,7 @@ class GridSizeType extends JsonArrayType
     public function convertToPHPValue($value, AbstractPlatform $platform)
     {
         if ($value === null || $value === '') {
-            return array();
+            return null;
         }
 
         $value = (is_resource($value)) ? stream_get_contents($value) : $value;
