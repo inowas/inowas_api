@@ -63,7 +63,6 @@ doctrine:
             active_cells:   AppBundle\Type\ActiveCellsType
             bounding_box:   AppBundle\Type\BoundingBoxType
             grid_size:      AppBundle\Type\GridSizeType
-            raster:         AppBundle\Type\RasterType
             uuid:           Ramsey\Uuid\Doctrine\UuidType
 
     orm:
