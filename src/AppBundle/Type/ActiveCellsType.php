@@ -15,7 +15,6 @@ class ActiveCellsType extends ArrayType
 {
     const NAME = 'active_cells';
 
-
     /**
      * {@inheritdoc}
      */
@@ -38,8 +37,8 @@ class ActiveCellsType extends ArrayType
         if ($value === null) {
             return null;
         }
-        
-        return parent::convertToDatabaseValueSQL($value->toArray(), $platform);
+
+        return serialize($value->toArray());
     }
 
     /**
