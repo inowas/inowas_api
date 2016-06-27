@@ -14,11 +14,11 @@ before_script:
   - psql -c "create database travis_ci_db OWNER travis_ci_user;" -U postgres
   - psql -c "create extension postgis;" -U postgres
   - cp app/config/parameters.yml.travis app/config/parameters.yml
+  - composer install
   - bin/console doctrine:database:create
   - bin/console doctrine:schema:create
   - bin/console doctrine:fixtures:load --fixtures=src/AppBundle/DataFixtures/ORM/TestScenarios/PropertyTypes --append --env=test
   - bin/console doctrine:fixtures:load --fixtures=src/AppBundle/DataFixtures/ORM/TestScenarios/Scenario_1_Lake_Example --append --env=test
-  - composer install
 
 # Handle git submodules yourself
 git:
