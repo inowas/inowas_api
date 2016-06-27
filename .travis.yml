@@ -8,4 +8,10 @@ addons:
 
 before_script:
   - sudo apt-get update
+  - sed -i 's/git@github.com:/https:\/\/github.com\//' .gitmodules
+  - git submodule update --init --recursive
   - ./build/build.Linux.sh
+
+# Handle git submodules yourself
+git:
+    submodules: false
