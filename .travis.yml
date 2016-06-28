@@ -8,6 +8,8 @@ addons:
 
 before_script:
   - sudo apt-get update
+  - sudo pip install --upgrade pip
+  - sudo pip install matplotlib
   - sudo pip install Pillow
   - sed -i 's/git@github.com:/https:\/\/github.com\//' .gitmodules
   - git submodule update --init --recursive
