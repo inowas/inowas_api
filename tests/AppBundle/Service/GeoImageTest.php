@@ -88,13 +88,13 @@ class GeoImageTest extends WebTestCase
     public function testThrowInvalidArgumentExceptionIfColorReliefIsNotAvailable()
     {
         $this->setExpectedException('AppBundle\Exception\InvalidArgumentException');
-        $this->geoImage->createImageFromRaster($this->raster, null, null, "png", "unknownColorRelief");
+        $this->geoImage->createImageFromRaster($this->raster, null, null, null, "png", "unknownColorRelief");
     }
 
     public function testThrowInvalidArgumentExceptionIfImageTypeIsAvailable()
     {
         $this->setExpectedException('AppBundle\Exception\InvalidArgumentException');
-        $this->geoImage->createImageFromRaster($this->raster, null, null, "kml");
+        $this->geoImage->createImageFromRaster($this->raster, null, null, null, "kml");
     }
 
     public function testThrowsExceptionIfProcessIsNotSuccessful()
@@ -165,5 +165,7 @@ class GeoImageTest extends WebTestCase
     {
         $fs = new Filesystem();
         $fs->remove(__DIR__.'/../../data/geotiff/'.$this->raster->getId()->toString().'.png');
+        $fs->remove(__DIR__.'/dd');
+        $fs->remove(__DIR__.'/wd');
     }
 }
