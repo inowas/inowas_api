@@ -2,6 +2,7 @@
 
 namespace AppBundle\Service;
 
+use AppBundle\Exception\InterpolationException;
 use AppBundle\Exception\ProcessFailedException;
 use AppBundle\Model\Interpolation\BoundingBox;
 use AppBundle\Model\Interpolation\GridSize;
@@ -245,8 +246,8 @@ class Interpolation
             $this->stdOut .= $jsonResponse;
             $response = json_decode($jsonResponse);
 
-            if (isset($response->error) && $i == count($algorithms)) {
-                throw new \Exception('Error in calculation');
+            if (isset($response->error) && $i == (count($algorithms)-1)) {
+                throw new InterpolationException('Error in calculation');
             }
 
             if (isset($response->success)) {

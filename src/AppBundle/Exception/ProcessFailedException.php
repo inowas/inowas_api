@@ -2,6 +2,6 @@
 
 namespace AppBundle\Exception;
 
-class ProcessFailedException extends \InvalidArgumentException
+class ProcessFailedException extends \Exception
 {
 }

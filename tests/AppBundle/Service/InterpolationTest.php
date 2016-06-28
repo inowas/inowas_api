@@ -225,6 +225,30 @@ class InterpolationTest extends WebTestCase
         $this->assertEquals($this->interpolation->getMethod(), Interpolation::TYPE_MEAN);
     }
 
+    public function testThrowsIfInterpolationWithAllMethodsIsNotSuccessful()
+    {
+        $processStub = $this->getMockBuilder(Process::class)
+            ->disableOriginalConstructor()
+            ->setMethods(array('setArguments', 'setWorkingDirectory', 'getProcess', 'isSuccessful', 'run', 'getOutput'))
+            ->getMock()
+        ;
+
+        $processStub->method('isSuccessful')->willReturn(true);
+        $processStub->method('setArguments')->willReturn($processStub);
+        $processStub->method('setWorkingDirectory')->willReturn($processStub);
+        $processStub->method('getProcess')->willReturn($processStub);
+        $processStub->method('getOutput')->willReturn('{"error":"Exception raised in calculation of method gaussian"}');
+
+        $interpolation = new Interpolation($this->serializer, $this->httpKernel, $processStub);
+        $interpolation->setGridSize(new GridSize(10,11));
+        $interpolation->setBoundingBox(new BoundingBox(0, 10, 0, 10));
+        $interpolation->addPoint(new PointValue(1, 5, 3));
+        $interpolation->addPoint(new PointValue(2, 8, 3));
+
+        $this->setExpectedException('AppBundle\Exception\InterpolationException');
+        $interpolation->interpolate(array(0 => Interpolation::TYPE_GAUSSIAN, 1 => Interpolation::TYPE_MEAN));
+    }
+
     public function testThrowsExceptionIfProcessIsNotSuccessful()
     {
         $processStub = $this->getMockBuilder(Process::class)
