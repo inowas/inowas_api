@@ -78,20 +78,6 @@ class Raster
     }
 
     /**
-     * Set id
-     *
-     * @param uuid $id
-     *
-     * @return Raster
-     */
-    public function setId($id)
-    {
-        $this->id = $id;
-
-        return $this;
-    }
-
-    /**
      * Get id
      *
      * @return uuid

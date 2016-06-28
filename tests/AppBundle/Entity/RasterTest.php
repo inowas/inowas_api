@@ -35,7 +35,7 @@ class RasterTest extends WebTestCase
                     array(0,1,2,3,4,5,6,7,8,9),
                     array(0,1,2,3,4,5,6,7,8,9),
                     array(0,1,2,3,4,5,6,7,8,9),
-                    array(0,1,2,3,7,5,6,7,8,9),
+                    array(0,1,2,3,4,5,6,7,8,9),
                     array(0,1,2,3,4,5,6,7,8,9),
                     array(0,1,2,3,4,5,6,7,8,9),
                     array(0,1,2,3,4,5,6,7,8,9),
@@ -45,6 +45,12 @@ class RasterTest extends WebTestCase
                 ))
             ->setDescription('Description')
         ;
+    }
+
+    public function testSetNullDescriptionMakesEmptyString()
+    {
+        $this->raster->setDescription();
+        $this->assertEquals("", $this->raster->getDescription());
     }
 
     public function testStoreRasterInDatabase() {
@@ -73,6 +79,42 @@ class RasterTest extends WebTestCase
             $this->entityManager->remove($raster);
             $this->entityManager->flush();
         }
+    }
+
+    public function testGetFilteredData()
+    {
+        $filter=
+            array(
+                array(false, true, true, true, true, true, true, true, true , false),
+                array(false, true, true, true, true, true, true, true, true , false),
+                array(false, true, true, true, true, true, true, true, true , false),
+                array(false, true, true, true, true, true, true, true, true , false),
+                array(false, true, true, true, true, true, true, true, true , false),
+                array(false, true, true, true, true, true, true, true, true , false),
+                array(false, true, true, true, true, true, true, true, true , false),
+                array(false, true, true, true, true, true, true, true, true , false),
+                array(false, true, true, true, true, true, true, true, true , false),
+                array(false, true, true, true, true, true, true, true, true , false),
+                array(false, true, true, true, true, true, true, true, true , false)
+            );
+
+        $expectedFilteredData=
+            array(
+                array(Raster::DEFAULT_NO_DATA_VAL,1,2,3,4,5,6,7,8,Raster::DEFAULT_NO_DATA_VAL),
+                array(Raster::DEFAULT_NO_DATA_VAL,1,2,3,4,5,6,7,8,Raster::DEFAULT_NO_DATA_VAL),
+                array(Raster::DEFAULT_NO_DATA_VAL,1,2,3,4,5,6,7,8,Raster::DEFAULT_NO_DATA_VAL),
+                array(Raster::DEFAULT_NO_DATA_VAL,1,2,3,4,5,6,7,8,Raster::DEFAULT_NO_DATA_VAL),
+                array(Raster::DEFAULT_NO_DATA_VAL,1,2,3,4,5,6,7,8,Raster::DEFAULT_NO_DATA_VAL),
+                array(Raster::DEFAULT_NO_DATA_VAL,1,2,3,4,5,6,7,8,Raster::DEFAULT_NO_DATA_VAL),
+                array(Raster::DEFAULT_NO_DATA_VAL,1,2,3,4,5,6,7,8,Raster::DEFAULT_NO_DATA_VAL),
+                array(Raster::DEFAULT_NO_DATA_VAL,1,2,3,4,5,6,7,8,Raster::DEFAULT_NO_DATA_VAL),
+                array(Raster::DEFAULT_NO_DATA_VAL,1,2,3,4,5,6,7,8,Raster::DEFAULT_NO_DATA_VAL),
+                array(Raster::DEFAULT_NO_DATA_VAL,1,2,3,4,5,6,7,8,Raster::DEFAULT_NO_DATA_VAL),
+                array(Raster::DEFAULT_NO_DATA_VAL,1,2,3,4,5,6,7,8,Raster::DEFAULT_NO_DATA_VAL)
+            );
+
+        $filteredData = $this->raster->getFilteredData($filter);
+        $this->assertEquals($expectedFilteredData, $filteredData);
     }
 
     /**
