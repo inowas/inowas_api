@@ -8,12 +8,11 @@ addons:
 
 before_script:
   - sudo apt-get update
-  - sudo apt-get install python-numpy python-scipy python-matplotlib
+  - sudo apt-get install python-scipy python-matplotlib
   - sudo pip install --upgrade pip
-  - sudo pip install matplotlib
-  - sudo pip install Pillow
   - sudo pip install demjson
-  - sudo pip install scipy
+  - sudo pip install numpy
+  - sudo pip install Pillow
   - sudo pip install sklearn
   - sed -i 's/git@github.com:/https:\/\/github.com\//' .gitmodules
   - git submodule update --init --recursive
