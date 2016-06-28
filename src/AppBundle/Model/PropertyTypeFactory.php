@@ -3,8 +3,6 @@
 namespace AppBundle\Model;
 
 use AppBundle\Entity\PropertyType;
-use AppBundle\Entity\Project;
-use FOS\UserBundle\Model\UserInterface;
 
 class PropertyTypeFactory
 {

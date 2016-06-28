@@ -40,7 +40,7 @@ class BoundaryRestController extends FOSRestController
         $boundary = $this->getDoctrine()
             ->getRepository('AppBundle:ModelObject')
             ->findOneBy(array(
-                'id' => $id
+                'id' => $uuid->toString()
             ))
         ;
 

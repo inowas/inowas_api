@@ -9,7 +9,6 @@ use AppBundle\Model\Interpolation\GridSize;
 use AppBundle\Model\Interpolation\KrigingInterpolation;
 use AppBundle\Model\Interpolation\PointValue;
 use AppBundle\Service\Interpolation;
-use FOS\RestBundle\Controller\Annotations\Get;
 use FOS\RestBundle\Controller\FOSRestController;
 use FOS\RestBundle\View\View;
 use JMS\Serializer\SerializationContext;

@@ -15,7 +15,7 @@ class ModflowTimeSeriesResultProperties extends AbstractModflowResultProperties
      *
      * @JMS\Groups("modflowProcess")
      */
-    protected $output_type = 'time_series';
+    protected $outputType = 'time_series';
 
     /**
      * @var integer
@@ -29,14 +29,14 @@ class ModflowTimeSeriesResultProperties extends AbstractModflowResultProperties
      *
      * @JMS\Groups("modflowProcess")
      */
-    protected $cell_y;
+    protected $cellY;
 
     /**
      * @var integer
      *
      * @JMS\Groups("modflowProcess")
      */
-    protected $cell_x;
+    protected $cellX;
 
     /**
      * @var array
@@ -56,8 +56,8 @@ class ModflowTimeSeriesResultProperties extends AbstractModflowResultProperties
     {
         parent::__construct($modelId);
         $this->layer = $layer;
-        $this->cell_y = $row;
-        $this->cell_x = $column;
+        $this->cellY = $row;
+        $this->cellX = $column;
         $this->timesteps = array();
     }
 
@@ -82,15 +82,15 @@ class ModflowTimeSeriesResultProperties extends AbstractModflowResultProperties
      */
     public function getCellY()
     {
-        return $this->cell_y;
+        return $this->cellY;
     }
 
     /**
-     * @param int $cell_y
+     * @param int $cellY
      */
-    public function setCellY($cell_y)
+    public function setCellY($cellY)
     {
-        $this->cell_y = $cell_y;
+        $this->cellY = $cellY;
     }
 
     /**
@@ -98,15 +98,15 @@ class ModflowTimeSeriesResultProperties extends AbstractModflowResultProperties
      */
     public function getCellX()
     {
-        return $this->cell_x;
+        return $this->cellX;
     }
 
     /**
-     * @param int $cell_x
+     * @param int $cellX
      */
-    public function setCellX($cell_x)
+    public function setCellX($cellX)
     {
-        $this->cell_x = $cell_x;
+        $this->cellX = $cellX;
     }
 
     /**

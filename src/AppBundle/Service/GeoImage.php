@@ -23,7 +23,7 @@ class GeoImage
     const COLOR_RELIEF_RAINBOW = 'rainbow';
     const COLOR_RELIEF_TERRAIN = 'terrain';
 
-    protected $available_color_reliefs = array(
+    protected $availableColorReliefs = array(
       self::COLOR_RELIEF_GIST_EARTH,
       self::COLOR_RELIEF_GIST_RAINBOW,
       self::COLOR_RELIEF_JET,
@@ -34,7 +34,7 @@ class GeoImage
     const FILE_TYPE_PNG = "png";
     const FILE_TYPE_TIFF = "tiff";
 
-    protected $available_imageFileTypes = array(self::FILE_TYPE_PNG);
+    protected $availableImageFileTypes = array(self::FILE_TYPE_PNG);
 
     /** @var Serializer $serializer */
     protected $serializer;
@@ -107,11 +107,11 @@ class GeoImage
             throw new InvalidArgumentException(sprintf('RasterData colCount differs from GridSize colCount', count($raster->getData()[0]), $raster->getGridSize()->getNX()));
         }
 
-        if (!in_array($colorRelief, $this->available_color_reliefs)){
+        if (!in_array($colorRelief, $this->availableColorReliefs)){
             throw new InvalidArgumentException('Given color-relief is not available');
         }
 
-        if (!in_array($fileFormat, $this->available_imageFileTypes)){
+        if (!in_array($fileFormat, $this->availableImageFileTypes)){
             throw new InvalidArgumentException(sprintf('Given fileFormat %s is not supported.', $fileFormat));
         }
 
