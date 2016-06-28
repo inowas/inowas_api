@@ -91,7 +91,6 @@ class GeoImage
 
     public function createImageFromRaster(Raster $raster, $activeCells=null, $min=null, $max=null, $fileFormat="png", $colorRelief=self::COLOR_RELIEF_JET, $targetProjection=4326)
     {
-
         if (!$raster->getBoundingBox() instanceof BoundingBox) {
             throw new InvalidArgumentException('Raster has no valid BoundingBox-Element');
         }
