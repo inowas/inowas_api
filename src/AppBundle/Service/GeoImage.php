@@ -99,11 +99,11 @@ class GeoImage
             throw new InvalidArgumentException('Raster has no valid Gridsize-Element');
         }
 
-        if (!count($raster->getData()) == $raster->getGridSize()->getNY()){
+        if (count($raster->getData()) != $raster->getGridSize()->getNY()){
             throw new InvalidArgumentException(sprintf('RasterData rowCount differs from GridSize rowCount', count($raster->getData()), $raster->getGridSize()->getNY()));
         }
 
-        if (!count($raster->getData()[0]) == $raster->getGridSize()->getNX()){
+        if (count($raster->getData()[0]) != $raster->getGridSize()->getNX()){
             throw new InvalidArgumentException(sprintf('RasterData colCount differs from GridSize colCount', count($raster->getData()[0]), $raster->getGridSize()->getNX()));
         }
 

@@ -39,8 +39,55 @@ class GeoImageTest extends WebTestCase
                 array(1,2,3,4,5,6,7,8,9,10),
                 array(1,2,3,4,5,6,7,8,9,10),
                 array(1,2,3,4,5,6,7,8,9,10),
+                array(1,2,3,4,5,6,7,8,9,10),
                 array(1,2,3,4,5,6,7,8,9,10)
             ));
+    }
+
+    public function testThrowInvalidArgumentExceptionIfRastersBoundingBoxIsNull()
+    {
+        $this->raster->setBoundingBox(null);
+        $this->setExpectedException('AppBundle\Exception\InvalidArgumentException');
+        $this->geoImage->createImageFromRaster($this->raster);
+    }
+
+    public function testThrowInvalidArgumentExceptionIfRastersGridSizeIsNull()
+    {
+        $this->raster->setGridSize(null);
+        $this->setExpectedException('AppBundle\Exception\InvalidArgumentException');
+        $this->geoImage->createImageFromRaster($this->raster);
+    }
+
+    public function testThrowInvalidArgumentExceptionIfRastersGridSizeYDiffersFromRasterData()
+    {
+        $gridSize = clone $this->raster->getGridSize();
+        $gridSize->setNY($this->raster->getGridSize()->getNY()+1);
+        $this->raster->setGridSize($gridSize);
+        $this->setExpectedException('AppBundle\Exception\InvalidArgumentException');
+        $this->geoImage->createImageFromRaster($this->raster);
+    }
+
+    public function testThrowInvalidArgumentExceptionIfRastersGridSizeXDiffersFromRasterData()
+    {
+        $gridSize = clone $this->raster->getGridSize();
+        $gridSize->setNX($this->raster->getGridSize()->getNX()+1);
+        $this->raster->setGridSize($gridSize);
+        $this->setExpectedException('AppBundle\Exception\InvalidArgumentException');
+        $this->geoImage->createImageFromRaster($this->raster);
+    }
+
+    public function testThrowInvalidArgumentExceptionIfColorReliefIsNotAvailable()
+    {
+        $this->raster->setGridSize(null);
+        $this->setExpectedException('AppBundle\Exception\InvalidArgumentException');
+        $this->geoImage->createImageFromRaster($this->raster, null, null, "png", "unknownColorRelief");
+    }
+
+    public function testThrowInvalidArgumentExceptionIfImageTypeIsAvailable()
+    {
+        $this->raster->setGridSize(null);
+        $this->setExpectedException('AppBundle\Exception\InvalidArgumentException');
+        $this->geoImage->createImageFromRaster($this->raster, null, null, "kml");
     }
 
     public function testCreatePng()
