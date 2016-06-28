@@ -41,6 +41,7 @@
       
     },
     "require-dev": {
+        "phpmd/phpmd" : "@stable",
         "satooshi/php-coveralls": "dev-master",
         "sensio/generator-bundle": "^3.0",
         "symfony/phpunit-bridge": "^2.7"
