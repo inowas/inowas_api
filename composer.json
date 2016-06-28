@@ -41,9 +41,10 @@
       
     },
     "require-dev": {
+        "codeclimate/php-test-reporter": "dev-master",
+        "satooshi/php-coveralls": "dev-master",
         "sensio/generator-bundle": "^3.0",
-        "symfony/phpunit-bridge": "^2.7",
-        "satooshi/php-coveralls": "dev-master"
+        "symfony/phpunit-bridge": "^2.7"
     },
     "scripts": {
         "post-install-cmd": [

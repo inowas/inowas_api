@@ -31,6 +31,7 @@ script:
 
 after_script:
  - php vendor/bin/coveralls -v
+ - CODECLIMATE_REPO_TOKEN=0afc8a2aa73dc5cc9a8988ae4a9c7a7fbc71fb621ea420f4e2599e2c3143e4c0 ./vendor/bin/test-reporter
 
 # Handle git submodules yourself
 git:
