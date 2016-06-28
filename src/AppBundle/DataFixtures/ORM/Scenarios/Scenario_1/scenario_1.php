@@ -327,7 +327,7 @@ class LoadScenario_1 implements FixtureInterface, ContainerAwareInterface
     }
 
 
-    private function addGeologicalUnitToGeologicalLayer(ObjectManager $entityManager, \AppBundle\Entity\GeologicalLayer $layer, $geologicalUnitName)
+    private function addGeologicalUnitToGeologicalLayer(ObjectManager $entityManager, GeologicalLayer $layer, $geologicalUnitName)
     {
         $geologicalUnit = $entityManager->getRepository('AppBundle:GeologicalUnit')
             ->findOneBy(array(

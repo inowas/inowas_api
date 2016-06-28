@@ -72,10 +72,10 @@ class GeneralHeadBoundary extends BoundaryModelObject
     /**
      * Add geologicalLayer
      *
-     * @param \AppBundle\Entity\GeologicalLayer $geologicalLayer
+     * @param GeologicalLayer $geologicalLayer
      * @return $this
      */
-    public function addGeologicalLayer(\AppBundle\Entity\GeologicalLayer $geologicalLayer)
+    public function addGeologicalLayer(GeologicalLayer $geologicalLayer)
     {
         if (!$this->geologicalLayers->contains($geologicalLayer)){
             $this->geologicalLayers[] = $geologicalLayer;
@@ -87,7 +87,7 @@ class GeneralHeadBoundary extends BoundaryModelObject
      * @param GeologicalLayer $geologicalLayer
      * @return $this
      */
-    public function removeGeologicalLayer(\AppBundle\Entity\GeologicalLayer $geologicalLayer)
+    public function removeGeologicalLayer(GeologicalLayer $geologicalLayer)
     {
         if ($this->geologicalLayers->contains($geologicalLayer)){
             $this->geologicalLayers->removeElement($geologicalLayer);

@@ -2,10 +2,8 @@
 
 namespace AppBundle\Repository;
 
-use AppBundle\Model\Interpolation\BoundingBox;
-use CrEOF\Spatial\PHP\Types\Geometry\Point;
+use \Doctrine\ORM\EntityRepository;
 
-class BoundingBoxRepository extends \Doctrine\ORM\EntityRepository
+class BoundingBoxRepository extends EntityRepository
 {
- 
 }

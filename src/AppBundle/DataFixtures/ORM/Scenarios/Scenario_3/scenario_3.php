@@ -3,6 +3,7 @@
 namespace AppBundle\DataFixtures\ORM\Scenarios\Scenario_3;
 
 use AppBundle\Entity\GeologicalLayer;
+use AppBundle\Entity\ModelObject;
 use AppBundle\Entity\ModFlowModel;
 use AppBundle\Entity\User;
 use AppBundle\Model\AreaFactory;
@@ -338,11 +339,11 @@ class LoadScenario_3 implements FixtureInterface, ContainerAwareInterface
 
 
     /**
-     * @param \AppBundle\Entity\ModelObject $baseElement
+     * @param ModelObject $baseElement
      * @param $filename
      * @param $delimiter
      */
-    public function addModelObjectPropertiesFromCSVFile(\AppBundle\Entity\ModelObject $baseElement, $filename, $delimiter)
+    public function addModelObjectPropertiesFromCSVFile(ModelObject $baseElement, $filename, $delimiter)
     {
         $data = $this->convert($filename, $delimiter);
         $elementCount = count($data[0])-1;

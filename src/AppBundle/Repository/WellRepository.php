@@ -2,7 +2,9 @@
 
 namespace AppBundle\Repository;
 
-class WellRepository extends \Doctrine\ORM\EntityRepository
+use \Doctrine\ORM\EntityRepository;
+
+class WellRepository extends EntityRepository
 {
     public function transformPointTo($id, $srid)
     {

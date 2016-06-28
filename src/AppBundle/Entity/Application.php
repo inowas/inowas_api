@@ -104,8 +104,8 @@ class Application
     public function __construct()
     {
         $this->id = Uuid::uuid4();
-        $this->participants = new \Doctrine\Common\Collections\ArrayCollection();
-        $this->tools = new \Doctrine\Common\Collections\ArrayCollection();
+        $this->participants = new ArrayCollection();
+        $this->tools = new ArrayCollection();
     }
 
     /**
@@ -231,11 +231,11 @@ class Application
     /**
      * Set owner
      *
-     * @param \AppBundle\Entity\User $owner
+     * @param User $owner
      *
      * @return Application
      */
-    public function setOwner(\AppBundle\Entity\User $owner = null)
+    public function setOwner(User $owner = null)
     {
         $this->owner = $owner;
 
@@ -245,7 +245,7 @@ class Application
     /**
      * Get owner
      *
-     * @return \AppBundle\Entity\User
+     * @return User
      */
     public function getOwner()
     {
@@ -255,11 +255,11 @@ class Application
     /**
      * Add participant
      *
-     * @param \AppBundle\Entity\User $participant
+     * @param User $participant
      *
      * @return Application
      */
-    public function addParticipant(\AppBundle\Entity\User $participant)
+    public function addParticipant(User $participant)
     {
         $this->participants[] = $participant;
 
@@ -269,9 +269,9 @@ class Application
     /**
      * Remove participant
      *
-     * @param \AppBundle\Entity\User $participant
+     * @param User $participant
      */
-    public function removeParticipant(\AppBundle\Entity\User $participant)
+    public function removeParticipant(User $participant)
     {
         $this->participants->removeElement($participant);
     }
@@ -289,11 +289,11 @@ class Application
     /**
      * Add tool
      *
-     * @param \AppBundle\Entity\Tool $tool
+     * @param Tool $tool
      *
      * @return Application
      */
-    public function addTool(\AppBundle\Entity\Tool $tool)
+    public function addTool(Tool $tool)
     {
         $this->tools[] = $tool;
 
@@ -303,9 +303,9 @@ class Application
     /**
      * Remove tool
      *
-     * @param \AppBundle\Entity\Tool $tool
+     * @param Tool $tool
      */
-    public function removeTool(\AppBundle\Entity\Tool $tool)
+    public function removeTool(Tool $tool)
     {
         $this->tools->removeElement($tool);
     }
@@ -313,7 +313,7 @@ class Application
     /**
      * Get tools
      *
-     * @return \Doctrine\Common\Collections\Collection
+     * @return ArrayCollection
      */
     public function getTools()
     {

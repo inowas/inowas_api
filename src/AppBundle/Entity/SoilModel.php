@@ -275,11 +275,11 @@ class SoilModel
     /**
      * Set owner
      *
-     * @param \AppBundle\Entity\User $owner
+     * @param User $owner
      *
      * @return $this
      */
-    public function setOwner(\AppBundle\Entity\User $owner = null)
+    public function setOwner(User $owner = null)
     {
         $this->owner = $owner;
 
@@ -289,7 +289,7 @@ class SoilModel
     /**
      * Get owner
      *
-     * @return \AppBundle\Entity\User
+     * @return User
      */
     public function getOwner()
     {

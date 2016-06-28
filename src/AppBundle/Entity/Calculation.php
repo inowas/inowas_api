@@ -65,7 +65,6 @@ class Calculation
     public function setStatus($status)
     {
         $this->status = $status;
-
         return $this;
     }
 
@@ -82,21 +81,20 @@ class Calculation
     /**
      * Set result
      *
-     * @param \AppBundle\Entity\ModelObject $result
+     * @param ModelObject $result
      *
      * @return Calculation
      */
-    public function setResult(\AppBundle\Entity\ModelObject $result = null)
+    public function setResult(ModelObject $result = null)
     {
         $this->result = $result;
-
         return $this;
     }
 
     /**
      * Get result
      *
-     * @return \AppBundle\Entity\ModelObject
+     * @return ModelObject
      */
     public function getResult()
     {

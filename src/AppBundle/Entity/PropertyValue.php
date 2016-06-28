@@ -90,11 +90,11 @@ class PropertyValue extends AbstractValue
     /**
      * Set raster
      *
-     * @param \AppBundle\Entity\Raster $raster
+     * @param Raster $raster
      *
      * @return PropertyValue
      */
-    public function setRaster(\AppBundle\Entity\Raster $raster = null)
+    public function setRaster(Raster $raster = null)
     {
         $this->raster = $raster;
 
@@ -104,7 +104,7 @@ class PropertyValue extends AbstractValue
     /**
      * Get raster
      *
-     * @return \AppBundle\Entity\Raster
+     * @return Raster
      */
     public function getRaster()
     {
