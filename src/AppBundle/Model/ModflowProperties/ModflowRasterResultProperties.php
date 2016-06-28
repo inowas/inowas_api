@@ -22,7 +22,7 @@ class ModflowRasterResultProperties extends AbstractModflowResultProperties
      *
      * @JMS\Groups("modflowProcess")
      */
-    protected $output_type = 'raster';
+    protected $outputType = 'raster';
 
     /**
      * @var integer
