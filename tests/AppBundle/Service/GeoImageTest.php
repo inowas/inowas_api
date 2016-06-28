@@ -166,6 +166,14 @@ class GeoImageTest extends WebTestCase
         $this->assertFileExists(__DIR__.'/../../data/geotiff/'.$this->raster->getId()->toString().'.png');
     }
 
+    public function testCreatePngWithTheSameNameReturnsString()
+    {
+        $this->geoImage->createImageFromRaster($this->raster);
+        $this->assertFileExists(__DIR__.'/../../data/geotiff/'.$this->raster->getId()->toString().'.png');
+        $response = $this->geoImage->createImageFromRaster($this->raster);
+        $this->assertEquals("File exists already", $response);
+    }
+
     public function tearDown()
     {
         $fs = new Filesystem();
