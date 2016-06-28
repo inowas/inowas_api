@@ -8,27 +8,23 @@ use FOS\UserBundle\Model\UserInterface;
 
 class GeologicalUnitFactory
 {
-    public function __construct()
-    {
-        return new GeologicalUnit();
-    }
 
+    private final function __construct(){}
+
+    /**
+     * @return GeologicalUnit
+     */
     public static function create()
     {
         return new GeologicalUnit();
     }
 
-    public static function setOwnerProjectNameAndPublic(UserInterface $owner = null, Project $project = null, $name = "", $public = false)
-    {
-        $gu = new GeologicalUnit();
-        $gu->setOwner($owner);
-        $gu->addProject($project);
-        $gu->setName($name);
-        $gu->setPublic($public);
-
-        return $gu;
-    }
-
+    /**
+     * @param UserInterface|null $owner
+     * @param string $name
+     * @param bool $public
+     * @return GeologicalUnit
+     */
     public static function setOwnerNameAndPublic(UserInterface $owner = null, $name = "", $public = false)
     {
         $gu = new GeologicalUnit();

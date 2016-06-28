@@ -6,14 +6,12 @@ use AppBundle\Entity\PropertyValue;
 
 class PropertyValueFactory
 {
-    /**
-     * PropertyTimeValueFactory constructor.
-     */
-    public function __construct()
-    {
-        return new PropertyValue();
-    }
 
+    private final function __construct(){}
+
+    /**
+     * @return PropertyValue
+     */
     public static function create()
     {
         return new PropertyValue();

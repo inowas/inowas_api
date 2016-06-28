@@ -4,13 +4,8 @@ namespace AppBundle\Model;
 
 class TimeValueFactory
 {
-    /**
-     * TimeValueFactory constructor.
-     */
-    public function __construct()
-    {
-        return new TimeValue();
-    }
+
+    private final function __construct(){}
 
     /**
      * @return TimeValue

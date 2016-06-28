@@ -6,13 +6,7 @@ use AppBundle\Entity\PropertyTimeValue;
 
 class PropertyTimeValueFactory
 {
-    /**
-     * PropertyTimeValueFactory constructor.
-     */
-    public function __construct()
-    {
-        return new PropertyTimeValue();
-    }
+    private final function __construct(){}
 
     /**
      * @param \DateTime $timestamp

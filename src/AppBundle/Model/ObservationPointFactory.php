@@ -7,11 +7,12 @@ use FOS\UserBundle\Model\UserInterface;
 
 class ObservationPointFactory
 {
-    public function __construct()
-    {
-        return new ObservationPoint();
-    }
 
+    private final function __construct(){}
+
+    /**
+     * @return ObservationPoint
+     */
     public static function create()
     {
         return new ObservationPoint();

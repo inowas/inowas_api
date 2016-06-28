@@ -7,19 +7,21 @@ use AppBundle\Entity\PropertyType;
 
 class PropertyFactory
 {
-    /**
-     * PropertyFactory constructor.
-     */
-    public function __construct()
-    {
-        return new Property();
-    }
 
+    private final function __construct(){}
+
+    /**
+     * @return Property
+     */
     public static function create()
     {
         return new Property();
     }
 
+    /**
+     * @param PropertyType $type
+     * @return Property
+     */
     public static function setTypeAndModelObject(PropertyType $type)
     {
         $property = new Property();

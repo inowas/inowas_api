@@ -6,13 +6,8 @@ use AppBundle\Entity\PropertyFixedIntervalValue;
 
 class PropertyFixedIntervalValueFactory
 {
-    /**
-     * PropertyIntervalValueFactory constructor.
-     */
-    public function __construct()
-    {
-        return new PropertyFixedIntervalValue();
-    }
+
+    private final function __construct(){}
 
     /**
      * @return PropertyFixedIntervalValue

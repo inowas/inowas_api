@@ -8,13 +8,8 @@ use FOS\UserBundle\Model\UserInterface;
 
 class GeologicalPointFactory
 {
-    /**
-     * GeologicalPointFactory constructor.
-     */
-    public function __construct()
-    {
-        return new GeologicalPoint();
-    }
+
+    private final function __construct(){}
 
     /**
      * @return GeologicalPoint

@@ -6,19 +6,20 @@ use AppBundle\Entity\AreaType;
 
 class AreaTypeFactory
 {
-    /**
-     * GeologicalPointFactory constructor.
-     */
-    public function __construct()
-    {
-        return new AreaType();
-    }
+    private final function __construct(){}
 
+    /**
+     * @return AreaType
+     */
     public static function create()
     {
         return new AreaType();
     }
 
+    /**
+     * @param string $name
+     * @return AreaType
+     */
     public static function setName($name = "")
     {
         $areaType = new AreaType();
