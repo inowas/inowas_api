@@ -8,6 +8,7 @@ addons:
 
 before_script:
   - sudo apt-get update
+  - sudo apt-get install python-numpy python-scipy python-matplotlib
   - sudo pip install --upgrade pip
   - sudo pip install matplotlib
   - sudo pip install Pillow
