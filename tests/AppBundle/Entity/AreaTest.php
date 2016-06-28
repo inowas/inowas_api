@@ -122,9 +122,9 @@ class AreaTest extends WebTestCase
         $this->entityManager->persist($this->area);
         $this->entityManager->flush();
 
-        $polygon = $this->entityManager->getRepository('AppBundle:Area')
-            ->getAreaPolygonIn4326($this->area->getId());
-        
+        /** @var Polygon $polygon */
+        $polygonGeoJson = $this->entityManager->getRepository('AppBundle:Area')->getAreaPolygonIn4326($this->area->getId());
+        $this->assertContains('"type":"Polygon","coordinates":[[[', $polygonGeoJson);
     }
 
     /**
