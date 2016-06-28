@@ -6,17 +6,29 @@ use AppBundle\Model\Interpolation\BoundingBox;
 use AppBundle\Model\Interpolation\GridSize;
 use AppBundle\Model\Interpolation\PointValue;
 use AppBundle\Service\Interpolation;
+use JMS\Serializer\Serializer;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
+use Symfony\Component\HttpKernel\Kernel;
+use Symfony\Component\Process\Process;
 
 class InterpolationTest extends WebTestCase
 {
+    /** @var  Kernel */
+    protected $httpKernel;
+
+    /** @var  Serializer */
+    protected $serializer;
+
     /** @var  Interpolation $interpolation */
     protected $interpolation;
 
     public function setUp()
     {
         self::bootKernel();
-
+        $this->httpKernel = static::$kernel;
+        $this->serializer = static::$kernel->getContainer()
+            ->get('serializer')
+        ;
         $this->interpolation = static::$kernel->getContainer()
             ->get('inowas.interpolation')
         ;
@@ -211,6 +223,28 @@ class InterpolationTest extends WebTestCase
         $this->assertCount($this->interpolation->getGridSize()->getNY(), $this->interpolation->getData());
         $this->assertCount($this->interpolation->getGridSize()->getNX(), $this->interpolation->getData()[0]);
         $this->assertEquals($this->interpolation->getMethod(), Interpolation::TYPE_MEAN);
+    }
+
+    public function testThrowsExceptionIfProcessIsNotSuccessful()
+    {
+        $processStub = $this->getMockBuilder(Process::class)
+            ->disableOriginalConstructor()
+            ->setMethods(array('setArguments', 'setWorkingDirectory', 'getProcess', 'isSuccessful', 'run'))
+            ->getMock()
+        ;
+
+        $processStub->method('isSuccessful')->willReturn(false);
+        $processStub->method('setArguments')->willReturn($processStub);
+        $processStub->method('setWorkingDirectory')->willReturn($processStub);
+        $processStub->method('getProcess')->willReturn($processStub);
+        $interpolation = new Interpolation($this->serializer, $this->httpKernel, $processStub);
+        $interpolation->setGridSize(new GridSize(10,11));
+        $interpolation->setBoundingBox(new BoundingBox(0, 10, 0, 10));
+        $interpolation->addPoint(new PointValue(1, 5, 3));
+        $interpolation->addPoint(new PointValue(2, 8, 3));
+
+        $this->setExpectedException('AppBundle\Exception\ProcessFailedException');
+        $interpolation->interpolate(array(0 => Interpolation::TYPE_GAUSSIAN, 1 => Interpolation::TYPE_MEAN));
     }
 
     public function testClear(){

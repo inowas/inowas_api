@@ -2,6 +2,7 @@
 
 namespace AppBundle\Service;
 
+use AppBundle\Exception\ProcessFailedException;
 use AppBundle\Model\Interpolation\BoundingBox;
 use AppBundle\Model\Interpolation\GridSize;
 use AppBundle\Model\Interpolation\PointValue;
@@ -12,7 +13,6 @@ use Ramsey\Uuid\Uuid;
 use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\HttpKernel\KernelInterface;
-use Symfony\Component\Process\Exception\ProcessFailedException;
 use Symfony\Component\Process\Process;
 
 class Interpolation
@@ -238,18 +238,18 @@ class Interpolation
 
             $process->run();
             if (!$process->isSuccessful()) {
-                throw new ProcessFailedException($process);
+                throw new ProcessFailedException();
             }
 
             $jsonResponse = $process->getOutput();
             $this->stdOut .= $jsonResponse;
             $response = json_decode($jsonResponse);
 
-            if (isset($response->error)) {
-                if ($i == count($algorithms)) {
-                    throw new \Exception('Error in calculation');
-                }
-            } elseif (isset($response->success)) {
+            if (isset($response->error) && $i == count($algorithms)) {
+                throw new \Exception('Error in calculation');
+            }
+
+            if (isset($response->success)) {
                 $jsonResults = file_get_contents($outputFileName);
                 $results = json_decode($jsonResults);
                 $this->method = $results->method;
