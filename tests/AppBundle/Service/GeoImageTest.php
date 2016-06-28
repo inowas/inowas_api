@@ -155,6 +155,11 @@ class GeoImageTest extends WebTestCase
         $this->assertEquals("Success", $geoImage->getStdOut());
     }
 
+    public function testGetOutputFileName(){
+        $this->geoImage->createImageFromRaster($this->raster);
+        $this->assertContains('/data/geotiff/'.$this->raster->getId()->toString().'.png', $this->geoImage->getOutputFileName());
+    }
+
     public function testCreatePng()
     {
         $this->geoImage->createImageFromRaster($this->raster);
