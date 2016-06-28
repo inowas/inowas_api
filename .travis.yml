@@ -12,6 +12,7 @@ before_script:
   - sudo pip install matplotlib
   - sudo pip install Pillow
   - sudo pip install demjson
+  - sudo pip install scipy
   - sudo pip install sklearn
   - sed -i 's/git@github.com:/https:\/\/github.com\//' .gitmodules
   - git submodule update --init --recursive
