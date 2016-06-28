@@ -2,7 +2,6 @@
 
 namespace AppBundle\Entity;
 
-use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
 use JMS\Serializer\Annotation as JMS;
 use Ramsey\Uuid\Uuid;
@@ -29,16 +28,10 @@ abstract class AbstractEvent
      */
     private $id;
 
-    /**
-     * @var
-     */
-    private $events;
-
 
     public function __construct()
     {
         $this->id = Uuid::uuid4();
-        $this->events = new ArrayCollection();
     }
 
     /**
