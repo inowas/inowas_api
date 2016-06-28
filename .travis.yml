@@ -8,6 +8,7 @@ addons:
 
 before_script:
   - sudo apt-get update
+  - pip install Pillow
   - sed -i 's/git@github.com:/https:\/\/github.com\//' .gitmodules
   - git submodule update --init --recursive
   - cp app/config/parameters.yml.travis app/config/parameters.yml
