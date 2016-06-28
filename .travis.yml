@@ -25,6 +25,13 @@ before_script:
   - bin/console doctrine:fixtures:load --fixtures=src/AppBundle/DataFixtures/ORM/TestScenarios/PropertyTypes --append --env=test
   - bin/console doctrine:fixtures:load --fixtures=src/AppBundle/DataFixtures/ORM/TestScenarios/Scenario_1_Lake_Example --append --env=test
 
+script:
+  - mkdir -p build/logs
+  - phpunit --coverage-clover build/logs/clover.xml
+
+after_script:
+ - php vendor/bin/coveralls -v
+
 # Handle git submodules yourself
 git:
     submodules: false
