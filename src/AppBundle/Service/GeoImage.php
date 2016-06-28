@@ -3,6 +3,7 @@
 namespace AppBundle\Service;
 
 use AppBundle\Entity\Raster;
+use AppBundle\Exception\ImageGenerationException;
 use AppBundle\Exception\InvalidArgumentException;
 use AppBundle\Model\GeoImage\GeoImageProperties;
 use AppBundle\Model\Interpolation\BoundingBox;
@@ -12,7 +13,7 @@ use JMS\Serializer\Serializer;
 use Ramsey\Uuid\Uuid;
 use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\HttpKernel\KernelInterface;
-use Symfony\Component\Process\Exception\ProcessFailedException;
+use \AppBundle\Exception\ProcessFailedException;
 use Symfony\Component\Process\Process;
 
 class GeoImage
@@ -75,7 +76,7 @@ class GeoImage
     public function __construct(
         Serializer $serializer,
         KernelInterface $kernel,
-        PythonProcess $pythonProcess,
+        $pythonProcess,
         $workingDirectory,
         $dataFolder,
         $tmpFolder
@@ -151,13 +152,13 @@ class GeoImage
 
         $process->run();
         if (!$process->isSuccessful()) {
-            throw new ProcessFailedException($process);
+            throw new ProcessFailedException();
         }
 
         $response = json_decode($process->getOutput());
 
         if (isset($response->error)) {
-            throw new \Exception('Error in geotiff-generation');
+            throw new ImageGenerationException('Error in geotiff-generation');
         }
 
         if (isset($response->success)) {
