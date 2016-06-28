@@ -61,15 +61,15 @@ class AreaTest extends WebTestCase
             array(
                 array(1.1,-1.1),
                 array(2.1,2.1),
-                array(0.5, 1.1),
+                array(0.5, -1.2),
                 array(4.1, 12.2),
                 array(1.1,-1.1)
             ))));
 
-        $this->assertEquals($this->area->getBoundingBox(), new BoundingBox(0.5, 4.1, -1.1, 12.2));
+        $this->assertEquals($this->area->getBoundingBox(), new BoundingBox(0.5, 4.1, -1.2, 12.2));
     }
 
-    public function testGetSurfaceAreaFromArea()
+    public function testGetCalculateSurfaceAreaFromArea()
     {
         $this->area->setGeometry(new Polygon(array(
             array(
@@ -84,8 +84,27 @@ class AreaTest extends WebTestCase
         $this->entityManager->persist($this->area);
         $this->entityManager->flush();
 
-        $surface = $this->entityManager->getRepository('AppBundle:Area')
-            ->getAreaSurfaceById($this->area->getId());
+        $surface = $this->entityManager->getRepository('AppBundle:Area')->getAreaSurfaceById($this->area->getId());
+        $this->assertEquals(3316799.67999626, $surface);
+    }
+
+    public function testGetSurface(){
+        $this->area->setSurface(123.1);
+        $this->assertEquals(123.1, $this->area->getSurface());
+    }
+
+    public function testGetGeometry(){
+        $polygon = new Polygon(array(
+            array(
+                array(1.1,-1.1),
+                array(2.1,2.1),
+                array(0.5, -1.2),
+                array(4.1, 12.2),
+                array(1.1,-1.1)
+            )));
+
+        $this->area->setGeometry($polygon);
+        $this->assertEquals($polygon, $this->area->getGeometry());
     }
 
     public function testTransformAreaPolygonFrom3857To4326()
