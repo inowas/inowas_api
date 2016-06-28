@@ -212,4 +212,19 @@ class InterpolationTest extends WebTestCase
         $this->assertCount($this->interpolation->getGridSize()->getNX(), $this->interpolation->getData()[0]);
         $this->assertEquals($this->interpolation->getMethod(), Interpolation::TYPE_MEAN);
     }
+
+    public function testClear(){
+        $this->interpolation->setGridSize(new GridSize(10,11));
+        $this->interpolation->setBoundingBox(new BoundingBox(0, 10, 0, 10));
+        $this->interpolation->addPoint(new PointValue(1, 5, 3));
+        $this->interpolation->addPoint(new PointValue(2, 8, 3));
+        $this->interpolation->setTmpFileName('111');
+        $this->interpolation->clear();
+        $this->assertNull($this->interpolation->getData());
+        $this->assertNull($this->interpolation->getGridSize());
+        $this->assertNull($this->interpolation->getBoundingBox());
+        $this->assertCount(0, $this->interpolation->getPoints());
+        $this->assertEquals("", $this->interpolation->getStdOut());
+        $this->assertNotEquals("111", $this->interpolation->getTmpFileName());
+    }
 }
