@@ -167,5 +167,7 @@ class GeoImageTest extends WebTestCase
         $fs->remove(__DIR__.'/../../data/geotiff/'.$this->raster->getId()->toString().'.png');
         $fs->remove(__DIR__.'/dd');
         $fs->remove(__DIR__.'/wd');
+        $fs->remove(__DIR__.'/../../../dd');
+        $fs->remove(__DIR__.'/../../../td');
     }
 }
