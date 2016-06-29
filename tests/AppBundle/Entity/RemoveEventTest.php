@@ -2,11 +2,11 @@
 
 namespace AppBundle\Tests\Entity;
 
-use AppBundle\Entity\AddBoundaryEvent;
+use AppBundle\Entity\RemoveEvent;
 use AppBundle\Entity\Well;
 use AppBundle\Model\WellFactory;
 
-class AbstractEventTest extends \PHPUnit_Framework_TestCase
+class RemoveEventTest extends \PHPUnit_Framework_TestCase
 {
     /** @var  Well */
     protected $well;
@@ -19,10 +19,10 @@ class AbstractEventTest extends \PHPUnit_Framework_TestCase
         $this->well = WellFactory::create();
     }
 
-    public function testCreateId()
+    public function testInstantiateChangeLayerValueEvent()
     {
-        $event = new AddBoundaryEvent($this->well);
-        $this->assertInstanceOf('Ramsey\Uuid\Uuid', $event->getId());
+        $event = new RemoveEvent($this->well);
+        $this->assertInstanceOf('AppBundle\Entity\RemoveEvent', $event);
     }
 
     /**
