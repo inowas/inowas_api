@@ -45,7 +45,7 @@ class GeologicalUnitRestControllerTest extends WebTestCase
     /**
      * Test for the API-Call /api/users/<username>/geologicalunits.json
      */
-    public function testUserLayersListController()
+    public function testListByUser()
     {
         $client = static::createClient();
         $client->request('GET', '/api/users/'.$this->owner->getUsername().'/geologicalunits.json');
@@ -53,15 +53,36 @@ class GeologicalUnitRestControllerTest extends WebTestCase
         $this->assertCount(1, json_decode($client->getResponse()->getContent()));
     }
 
+    public function testListWithUnknownUserReturns404()
+    {
+        $client = static::createClient();
+        $client->request('GET', '/api/users/unknown_username/geologicalunits.json');
+        $this->assertEquals(404, $client->getResponse()->getStatusCode());
+    }
+
     /**
      * Test for the API-Call /api/geologicalunits.<id>.json
      */
-    public function testProjectLayerDetailsController()
+    public function testDetailsById()
     {
         $client = static::createClient();
         $client->request('GET', '/api/geologicalunits/'.$this->geologicalUnit->getId().'.json');
         $this->assertEquals(200, $client->getResponse()->getStatusCode());
         $this->assertEquals($this->geologicalUnit->getId(), json_decode($client->getResponse()->getContent())->id);
+    }
+
+    public function testDetailsWithInvalidIdReturns404()
+    {
+        $client = static::createClient();
+        $client->request('GET', '/api/geologicalunits/unknown_area_id.json');
+        $this->assertEquals(404, $client->getResponse()->getStatusCode());
+    }
+
+    public function testDetailsWithUnknownIdReturns404()
+    {
+        $client = static::createClient();
+        $client->request('GET', '/api/geologicalunits/ee3f68a1-7ffe-447c-9a67-bfe40850e1b8.json');
+        $this->assertEquals(404, $client->getResponse()->getStatusCode());
     }
 
     /**
