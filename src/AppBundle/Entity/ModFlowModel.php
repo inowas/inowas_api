@@ -496,21 +496,12 @@ class ModFlowModel extends AbstractModel
 
             if ($modelObject instanceof BoundaryModelObject) {
 
-                if (is_null($this->boundaries)){
-                    $this->boundaries = new ArrayCollection();
-                }
-
-                $this->addBoundary($modelObject);
+                $this->boundaries[] = $modelObject;
                 $this->removeModelObject($modelObject);
             }
 
             if ($modelObject instanceof ObservationPoint) {
-
-                if (is_null($this->observationPoints)){
-                    $this->observationPoints = new ArrayCollection();
-                }
-
-                $this->addObservationPoint($modelObject);
+                $this->observationPoints[] = $modelObject;
                 $this->removeModelObject($modelObject);
             }
         }
