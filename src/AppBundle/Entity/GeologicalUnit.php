@@ -41,12 +41,11 @@ class GeologicalUnit extends SoilModelObject
      * Set point
      *
      * @param point $point
-     * @return GeologicalPoint
+     * @return $this
      */
     public function setPoint($point)
     {
         $this->point = $point;
-
         return $this;
     }
 
