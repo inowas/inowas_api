@@ -3,10 +3,13 @@
 namespace AppBundle\Controller;
 
 use AppBundle\Entity\GeologicalLayer;
+use AppBundle\Entity\GeologicalPoint;
+use AppBundle\Entity\User;
 use FOS\RestBundle\Controller\FOSRestController;
 use FOS\RestBundle\View\View;
 use JMS\Serializer\SerializationContext;
 use Nelmio\ApiDocBundle\Annotation\ApiDoc;
+use Ramsey\Uuid\Uuid;
 
 class GeologicalLayerRestController extends FOSRestController
 {
@@ -34,12 +37,11 @@ class GeologicalLayerRestController extends FOSRestController
                 'username' => $username
             ));
 
-        if (!$user)
-        {
+        if (! $user instanceof User) {
             throw  $this->createNotFoundException('User with username='.$username.' not found.');
         }
 
-        $geologicalLayers = $this->getDoctrine()
+        $entities = $this->getDoctrine()
             ->getRepository('AppBundle:GeologicalLayer')
             ->findBy(
                 array('owner' => $user),
@@ -48,7 +50,7 @@ class GeologicalLayerRestController extends FOSRestController
         ;
 
         $view = View::create();
-        $view->setData($geologicalLayers)
+        $view->setData($entities)
             ->setStatusCode(200)
             ->setSerializationContext(SerializationContext::create()
                 ->setGroups('modelobjectlist')
@@ -76,27 +78,30 @@ class GeologicalLayerRestController extends FOSRestController
      */
     public function getGeologicallayersAction($id)
     {
+
+        try {
+            $uuid = Uuid::fromString($id);
+        } catch (\InvalidArgumentException $e) {
+            throw $this->createNotFoundException('GeologicalPoint with id='.$id.' not found.');
+        }
+
         /** @var GeologicalLayer $geologicalLayers */
-        $geologicalLayer = $this->getDoctrine()
+        $entity = $this->getDoctrine()
             ->getRepository('AppBundle:GeologicalLayer')
             ->findOneBy(array(
-                'id' => $id
+                'id' => $uuid
             ));
 
-        if (!$geologicalLayer) {
-            throw $this->createNotFoundException('Area with id='.$id.' not found.');
+        if (! $entity instanceof GeologicalLayer) {
+            throw $this->createNotFoundException('Layer with id='.$id.' not found.');
         }
 
-        if ($geologicalLayer->getPublic() || $this->isGranted('ROLE_ADMIN') || $this->getUser() === $geologicalLayer->getOwner()) {
-            $view = View::create();
-            $view->setData($geologicalLayer)
-                ->setStatusCode(200)
-                ->setSerializationContext(SerializationContext::create()
-                    ->setGroups(array('modelobjectdetails')));
+        $view = View::create();
+        $view->setData($entity)
+            ->setStatusCode(200)
+            ->setSerializationContext(SerializationContext::create()
+                ->setGroups(array('modelobjectdetails')));
 
-            return $view;
-        } else {
-            throw $this->createAccessDeniedException();
-        }
+        return $view;
     }
 }

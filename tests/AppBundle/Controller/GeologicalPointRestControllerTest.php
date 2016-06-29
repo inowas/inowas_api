@@ -27,7 +27,7 @@ class GeologicalPointRestControllerTest extends WebTestCase
             ->get('doctrine.orm.default_entity_manager')
         ;
 
-        $this->owner = UserFactory::createTestUser('GeologicalLayerTest');
+        $this->owner = UserFactory::createTestUser('GeologicalPointTest');
         $this->entityManager->persist($this->owner);
         $this->entityManager->flush();
 
