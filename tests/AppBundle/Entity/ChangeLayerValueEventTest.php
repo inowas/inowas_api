@@ -2,7 +2,6 @@
 
 namespace AppBundle\Tests\Entity;
 
-
 use AppBundle\Entity\ChangeLayerValueEvent;
 use AppBundle\Entity\GeologicalLayer;
 use AppBundle\Entity\PropertyType;
@@ -38,6 +37,24 @@ class ChangeLayerValueEventTest extends \PHPUnit_Framework_TestCase
         $changeLayerValueEvent = new ChangeLayerValueEvent($this->layer, $this->propertyType, $this->value);
         $this->assertInstanceOf('AppBundle\Entity\ChangeLayerValueEvent', $changeLayerValueEvent);
         $this->assertInstanceOf('Ramsey\Uuid\Uuid', $changeLayerValueEvent->getId());
+    }
+
+    public function testGetLayer()
+    {
+        $changeLayerValueEvent = new ChangeLayerValueEvent($this->layer, $this->propertyType, $this->value);
+        $this->assertEquals($this->layer, $changeLayerValueEvent->getLayer());
+    }
+
+    public function testGetPropertyType()
+    {
+        $changeLayerValueEvent = new ChangeLayerValueEvent($this->layer, $this->propertyType, $this->value);
+        $this->assertEquals($this->propertyType, $changeLayerValueEvent->getPropertyType());
+    }
+
+    public function testGetValue()
+    {
+        $changeLayerValueEvent = new ChangeLayerValueEvent($this->layer, $this->propertyType, $this->value);
+        $this->assertEquals($this->value, $changeLayerValueEvent->getValue());
     }
 
     /**
