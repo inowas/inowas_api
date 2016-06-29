@@ -23,6 +23,7 @@ use AppBundle\Model\StreamBoundaryFactory;
 use AppBundle\Model\UserFactory;
 use AppBundle\Model\WellFactory;
 use JMS\Serializer\Serializer;
+use Ramsey\Uuid\Uuid;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
 class ModflowModelRestControllerTest extends WebTestCase
@@ -134,13 +135,12 @@ class ModflowModelRestControllerTest extends WebTestCase
      * Test for the API-Call /api/users/<username>/models.json
      * which is providing a list of projects of the user
      */
-    public function testGetListOfModelsByUserAPI()
+    public function testGetListByUsername()
     {
         $client = static::createClient();
         $client->request('GET', '/api/users/'.$this->owner->getUsername().'/models.json');
         
         $this->assertEquals(200, $client->getResponse()->getStatusCode());
-
 
         $modelArray = json_decode($client->getResponse()->getContent());
         $this->assertCount(1, $modelArray);
@@ -152,7 +152,14 @@ class ModflowModelRestControllerTest extends WebTestCase
         $this->assertEquals($this->modFlowModel->getPublic(), $modFlowModel->public);
     }
 
-    public function testGetModelDetailsAPI()
+    public function testGetListByUnknownUsernameReturns404()
+    {
+        $client = static::createClient();
+        $client->request('GET', '/api/users/unknownUser/models.json');
+        $this->assertEquals(404, $client->getResponse()->getStatusCode());
+    }
+
+    public function testGetModelDetailsById()
     {
         $client = static::createClient();
         $client->request('GET', '/api/models/'.$this->modFlowModel->getId().'.json');
@@ -170,7 +177,21 @@ class ModflowModelRestControllerTest extends WebTestCase
         $this->assertEquals($this->modFlowModel->getSoilModel()->getGeologicalLayers()->first()->getId(), $modFlowModel->soil_model->geological_layers[0]->id);
     }
 
-    public function testGetModflowModelBoundariesAPI()
+    public function testGetModelDetailsWithInvalidIdReturns404()
+    {
+        $client = static::createClient();
+        $client->request('GET', '/api/models/122.json');
+        $this->assertEquals(404, $client->getResponse()->getStatusCode());
+    }
+
+    public function testGetModelDetailsWithUnknownIdReturns404()
+    {
+        $client = static::createClient();
+        $client->request('GET', '/api/models/'.Uuid::uuid4()->toString().'.json');
+        $this->assertEquals(404, $client->getResponse()->getStatusCode());
+    }
+
+    public function testGetModflowModelBoundariesById()
     {
         $client = static::createClient();
         $client->request('GET', '/api/modflowmodels/'.$this->modFlowModel->getId().'/boundaries.json');

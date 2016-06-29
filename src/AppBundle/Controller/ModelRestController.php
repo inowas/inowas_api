@@ -10,6 +10,7 @@ use AppBundle\Entity\ModFlowModel;
 use AppBundle\Entity\PropertyType;
 use AppBundle\Entity\PropertyValue;
 use AppBundle\Entity\StreamBoundary;
+use AppBundle\Entity\User;
 use AppBundle\Entity\Well;
 use AppBundle\Model\Point;
 use AppBundle\Model\RasterFactory;
@@ -20,6 +21,7 @@ use FOS\RestBundle\Request\ParamFetcher;
 use FOS\RestBundle\View\View;
 use JMS\Serializer\SerializationContext;
 use Nelmio\ApiDocBundle\Annotation\ApiDoc;
+use Ramsey\Uuid\Uuid;
 use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
 use Symfony\Component\HttpFoundation\Response;
@@ -50,30 +52,16 @@ class ModelRestController extends FOSRestController
                 'username' => $username
             ));
 
-        if (!$user) {
+        if (! $user instanceof User) {
             throw $this->createNotFoundException('User with username '.$username.' not found.');
         }
 
-        if ($this->getUser() === $user || $this->isGranted('ROLE_ADMIN'))
-        {
-            $models = $this->getDoctrine()
-                ->getRepository('AppBundle:ModFlowModel')
-                ->findBy(
-                    array('owner' => $user),
-                    array('id' => 'ASC')
-                );
-        } else
-        {
-            $models = $this->getDoctrine()
-                ->getRepository('AppBundle:ModFlowModel')
-                ->findBy(
-                    array(
-                        'owner' => $user,
-                        'public' => true
-                    ),
-                    array('id' => 'ASC')
-                );
-        }
+        $models = $this->getDoctrine()
+            ->getRepository('AppBundle:ModFlowModel')
+            ->findBy(
+                array('owner' => $user),
+                array('id' => 'ASC')
+            );
 
         $view = View::create();
         $view->setData($models)
@@ -98,42 +86,14 @@ class ModelRestController extends FOSRestController
      *   }
      * )
      *
-     * @param $modelId
+     * @param $id
      *
      * @return View
      */
-    public function getModelAction($modelId)
+    public function getModelAction($id)
     {
-
-        if ($this->isGranted('ROLE_ADMIN'))
-        {
-            $model = $this->getDoctrine()
-                ->getRepository('AppBundle:ModFlowModel')
-                ->findOneBy(array(
-                    'id' => $modelId
-                ));
-        } elseif ($this->isGranted('ROLE_USER'))
-        {
-            $model = $this->getDoctrine()
-                ->getRepository('AppBundle:ModFlowModel')
-                ->findOneBy(array(
-                    'id' => $modelId,
-                    'owner' => $this->getUser()
-                ));
-        } else
-        {
-            $model = $this->getDoctrine()
-                ->getRepository('AppBundle:ModFlowModel')
-                ->findOneBy(array(
-                    'id' => $modelId,
-                    'public' => true
-                ));
-        }
-
-        if (!$model) {
-            throw $this->createNotFoundException('Model not found.');
-        }
-
+        $model = $this->findModelById($id);
+        
         $serializationContext = SerializationContext::create();
         $serializationContext->setGroups('modeldetails');
 
@@ -707,6 +667,12 @@ class ModelRestController extends FOSRestController
      */
     private function findModelById($id)
     {
+        try {
+            $id = Uuid::fromString($id);
+        } catch (\InvalidArgumentException $e) {
+            throw $this->createNotFoundException('Model with id='.$id.' not found.');
+        }
+
         $scenario = $this->getDoctrine()
             ->getRepository('AppBundle:ModelScenario')
             ->findOneBy(array(
