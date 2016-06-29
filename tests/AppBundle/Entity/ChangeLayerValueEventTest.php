@@ -36,7 +36,6 @@ class ChangeLayerValueEventTest extends \PHPUnit_Framework_TestCase
     {
         $changeLayerValueEvent = new ChangeLayerValueEvent($this->layer, $this->propertyType, $this->value);
         $this->assertInstanceOf('AppBundle\Entity\ChangeLayerValueEvent', $changeLayerValueEvent);
-        $this->assertInstanceOf('Ramsey\Uuid\Uuid', $changeLayerValueEvent->getId());
     }
 
     public function testGetLayer()

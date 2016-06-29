@@ -3,10 +3,14 @@
 namespace AppBundle\Tests\Entity;
 
 use AppBundle\Entity\AddBoundaryEvent;
+use AppBundle\Entity\PropertyType;
+use AppBundle\Entity\PropertyValue;
 use AppBundle\Entity\Well;
+use AppBundle\Model\PropertyTypeFactory;
+use AppBundle\Model\PropertyValueFactory;
 use AppBundle\Model\WellFactory;
 
-class AddBoundaryEventTest extends \PHPUnit_Framework_TestCase
+class AbstractEventTest extends \PHPUnit_Framework_TestCase
 {
     /** @var  Well */
     protected $well;
@@ -19,16 +23,10 @@ class AddBoundaryEventTest extends \PHPUnit_Framework_TestCase
         $this->well = WellFactory::create();
     }
 
-    public function testInstantiateChangeLayerValueEvent()
+    public function testCreateId()
     {
         $event = new AddBoundaryEvent($this->well);
-        $this->assertInstanceOf('AppBundle\Entity\AddBoundaryEvent', $event);
-    }
-
-    public function testGetLayer()
-    {
-        $event = new AddBoundaryEvent($this->well);
-        $this->assertEquals($this->well, $event->getBoundary());
+        $this->assertInstanceOf('Ramsey\Uuid\Uuid', $event->getId());
     }
 
     /**
