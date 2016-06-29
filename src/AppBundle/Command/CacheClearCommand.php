@@ -12,8 +12,7 @@ class CacheClearCommand extends ContainerAwareCommand
 
     protected function configure()
     {
-        $this
-            ->setName('inowas:cache:clear')
+        $this->setName('inowas:cache:clear')
             ->setDescription('Clear all caches.')
         ;
     }
@@ -24,17 +23,16 @@ class CacheClearCommand extends ContainerAwareCommand
         $tmpFolder = $this->getContainer()->getParameter('inowas.temp_folder');
         $fs = new Filesystem();
 
-        echo (sprintf("Clear Temp-Folder ".$tmpFolder."\r\n"));
+        $output->writeln(sprintf('Clear Temp-Folder %s', $tmpFolder));
         if ($fs->exists($tmpFolder)) {
             $fs->remove($tmpFolder);
             $fs->mkdir($tmpFolder);
         }
 
-        echo (sprintf("Clear Image Folder ".$geoImgDataFolder."\r\n"));
+        $output->writeln(sprintf('Clear Image-Folder %s', $geoImgDataFolder));
         if ($fs->exists($geoImgDataFolder)) {
             $fs->remove($geoImgDataFolder);
             $fs->mkdir($geoImgDataFolder);
         }
-
     }
 }
