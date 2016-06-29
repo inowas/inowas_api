@@ -143,6 +143,41 @@ class ModflowModelTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals($initValues, $this->modflowModel->getInitialValues());
     }
 
+    public function testPreFlush()
+    {
+        $area = AreaFactory::create()->setName('Area');
+        $this->modflowModel->setArea($area);
+        $this->modflowModel->preFlush();
+        $this->assertNull($this->modflowModel->getArea());
+        $this->assertCount(1, $this->modflowModel->getModelObjects());
+        $this->assertEquals($area, $this->modflowModel->getModelObjects()->first());
+
+        // Reset
+        $this->modflowModel->removeModelObject($area);
+        $this->assertCount(0, $this->modflowModel->getModelObjects());
+
+        // Add Well
+        $well = WellFactory::create();
+        $this->modflowModel->addBoundary($well);
+        $this->modflowModel->preFlush();
+        $this->assertCount(0, $this->modflowModel->getBoundaries());
+        $this->assertCount(1, $this->modflowModel->getModelObjects());
+        $this->assertEquals($well, $this->modflowModel->getModelObjects()->first());
+
+        // Reset
+        $this->modflowModel->removeModelObject($well);
+        $this->assertCount(0, $this->modflowModel->getModelObjects());
+
+        // Add ObservationPoint
+        $observationPoint = ObservationPointFactory::create();
+        $this->modflowModel->addObservationPoint($observationPoint);
+        $this->modflowModel->preFlush();
+        $this->assertCount(0, $this->modflowModel->getObservationPoints());
+        $this->assertCount(1, $this->modflowModel->getModelObjects());
+        $this->assertEquals($observationPoint, $this->modflowModel->getModelObjects()->first());
+
+    }
+
     public function testPostLoad(){
         $area = AreaFactory::create()->setName('Area');
         $this->modflowModel->addModelObject($area);
@@ -166,7 +201,6 @@ class ModflowModelTest extends \PHPUnit_Framework_TestCase
         $this->assertCount(1, $this->modflowModel->getObservationPoints());
         $this->assertEquals($observationPoint, $this->modflowModel->getObservationPoints()->first());
         $this->assertCount(0, $this->modflowModel->getModelObjects());
-
     }
 
     protected function tearDown()
