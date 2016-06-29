@@ -3,7 +3,6 @@
 namespace AppBundle\Controller;
 
 use AppBundle\Entity\GeologicalLayer;
-use AppBundle\Entity\GeologicalPoint;
 use AppBundle\Entity\User;
 use FOS\RestBundle\Controller\FOSRestController;
 use FOS\RestBundle\View\View;
