@@ -123,14 +123,14 @@ class AreaRestControllerTest extends WebTestCase
         $this->assertEquals($area->id, $this->area_1->getId());
     }
 
-    public function testAreaDetailsWithInvalidAreaIdReturns404()
+    public function testDetailsWithInvalidIdReturns404()
     {
         $client = static::createClient();
         $client->request('GET', '/api/areas/unknown_area_id.json');
         $this->assertEquals(404, $client->getResponse()->getStatusCode());
     }
 
-    public function testAreaDetailsWithUnknownAreaIdReturns404()
+    public function testDetailsWithUnknownIdReturns404()
     {
         $client = static::createClient();
         $client->request('GET', '/api/areas/ee3f68a1-7ffe-447c-9a67-bfe40850e1b8.json');
