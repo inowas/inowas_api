@@ -21,12 +21,14 @@ class ModflowModelListCommand extends ContainerAwareCommand
     protected function execute(InputInterface $input, OutputInterface $output)
     {
 
+        $output->writeln("Show all Modflow-Models with ID.");
+        
         $em = $this->getContainer()->get('doctrine')->getManager();
         $modflowModels = $em->getRepository('AppBundle:ModFlowModel')
             ->findAll();
         
         foreach ($modflowModels as $modflowModel) {
-            echo (sprintf("ID: %s, Name: %s, Owner: %s \r\n", $modflowModel->getId(), $modflowModel->getName(), $modflowModel->getOwner()));
+            $output->writeln(sprintf("ID: %s, Name: %s, Owner: %s ", $modflowModel->getId(), $modflowModel->getName(), $modflowModel->getOwner()));
         }
     }
 }
