@@ -245,7 +245,7 @@ class ModelRestController extends FOSRestController
 
         $fileFormat = $paramFetcher->get('_format');
         $geoImageService = $this->get('inowas.geoimage');
-        $geoImageService->createImageFromRaster($raster, $model->getActiveCells(), $min, $max, $fileFormat, $colorScheme);
+        $geoImageService->createImageFromRaster($raster, $model->getActiveCells()->toArray(), $min, $max, $fileFormat, $colorScheme);
         $outputFileName = $geoImageService->getOutputFileName();
 
         $fs = new Filesystem();
