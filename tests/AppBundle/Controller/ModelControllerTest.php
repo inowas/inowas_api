@@ -6,6 +6,7 @@ use AppBundle\Model\ModelScenarioFactory;
 use AppBundle\Model\ModFlowModelFactory;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\EntityManagerInterface;
+use Ramsey\Uuid\Uuid;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
 class ModelControllerTest extends WebTestCase
@@ -61,6 +62,23 @@ class ModelControllerTest extends WebTestCase
         unset($crawler);
     }
 
+
+    public function testRedirectModelModflowWithInvalidId()
+    {
+        $client = static::createClient();
+        $crawler = $client->request('GET', '/models/modflow/123');
+        $this->assertEquals(302, $client->getResponse()->getStatusCode());
+        unset($crawler);
+    }
+
+    public function testRedirectModelModflowWithUnknownId()
+    {
+        $client = static::createClient();
+        $crawler = $client->request('GET', '/models/modflow/'.Uuid::uuid4()->toString());
+        $this->assertEquals(302, $client->getResponse()->getStatusCode());
+        unset($crawler);
+    }
+
     public function testModelModflowScenariosById()
     {
         $client = static::createClient();
@@ -69,11 +87,19 @@ class ModelControllerTest extends WebTestCase
         unset($crawler);
     }
 
-    public function testRedirectModelModflowScenarioResultsWithoutScenarios()
+    public function testRedirectModelModflowScenariosWithInvalidId()
     {
         $client = static::createClient();
-        $crawler = $client->request('GET', '/models/modflow/'.$this->models->first()->getId()->toString().'/scenarios/results');
-        $this->assertEquals(200, $client->getResponse()->getStatusCode());
+        $crawler = $client->request('GET', '/models/modflow/123/scenarios');
+        $this->assertEquals(302, $client->getResponse()->getStatusCode());
+        unset($crawler);
+    }
+
+    public function testRedirectModelModflowScenariosWithUnknownId()
+    {
+        $client = static::createClient();
+        $crawler = $client->request('GET', '/models/modflow/'.Uuid::uuid4()->toString().'/scenarios');
+        $this->assertEquals(302, $client->getResponse()->getStatusCode());
         unset($crawler);
     }
 
@@ -88,6 +114,100 @@ class ModelControllerTest extends WebTestCase
         $client = static::createClient();
         $crawler = $client->request('GET', '/models/modflow/'.$model->getId()->toString().'/scenarios/results');
         $this->assertEquals(200, $client->getResponse()->getStatusCode());
+        unset($crawler);
+    }
+
+    public function testRedirectModelModflowScenarioResultsWithoutScenarios()
+    {
+        $client = static::createClient();
+        $crawler = $client->request('GET', '/models/modflow/'.$this->models->first()->getId()->toString().'/scenarios/results');
+        $this->assertEquals(200, $client->getResponse()->getStatusCode());
+        unset($crawler);
+    }
+
+    public function testRedirectModelModflowScenariosResultsWithInvalidId()
+    {
+        $client = static::createClient();
+        $crawler = $client->request('GET', '/models/modflow/123/scenarios/results');
+        $this->assertEquals(302, $client->getResponse()->getStatusCode());
+        unset($crawler);
+    }
+
+    public function testRedirectModelModflowScenariosResultsWithUnknownId()
+    {
+        $client = static::createClient();
+        $crawler = $client->request('GET', '/models/modflow/'.Uuid::uuid4()->toString().'/scenarios/results');
+        $this->assertEquals(302, $client->getResponse()->getStatusCode());
+        unset($crawler);
+    }
+
+    public function testModelModflowScenarioByModelIdAndScenarioId()
+    {
+        $model = $this->models->first();
+        $scenario = ModelScenarioFactory::create($model)
+            ->setName('TestScenario');
+        $this->em->persist($scenario);
+        $this->em->flush();
+
+        $client = static::createClient();
+        $crawler = $client->request('GET', '/models/modflow/'.$model->getId()->toString().'/scenarios/'.$scenario->getId()->toString());
+        $this->assertEquals(200, $client->getResponse()->getStatusCode());
+        unset($crawler);
+    }
+
+    public function testModelModflowScenarioWithInvalidModelId()
+    {
+        $model = $this->models->first();
+        $scenario = ModelScenarioFactory::create($model)
+            ->setName('TestScenario');
+        $this->em->persist($scenario);
+        $this->em->flush();
+
+        $client = static::createClient();
+        $crawler = $client->request('GET', '/models/modflow/123/scenarios/'.$scenario->getId()->toString());
+        $this->assertEquals(302, $client->getResponse()->getStatusCode());
+        unset($crawler);
+    }
+
+    public function testModelModflowScenarioWithUnknownModelId()
+    {
+        $model = $this->models->first();
+        $scenario = ModelScenarioFactory::create($model)
+            ->setName('TestScenario');
+        $this->em->persist($scenario);
+        $this->em->flush();
+
+        $client = static::createClient();
+        $crawler = $client->request('GET', '/models/modflow/'.Uuid::uuid4()->toString().'/scenarios/'.$scenario->getId()->toString());
+        $this->assertEquals(302, $client->getResponse()->getStatusCode());
+        unset($crawler);
+    }
+
+    public function testModelModflowScenarioWithInvalidScenarioId()
+    {
+        $model = $this->models->first();
+        $scenario = ModelScenarioFactory::create($model)
+            ->setName('TestScenario');
+        $this->em->persist($scenario);
+        $this->em->flush();
+
+        $client = static::createClient();
+        $crawler = $client->request('GET', '/models/modflow/'.$model->getId()->toString().'/scenarios/123');
+        $this->assertEquals(302, $client->getResponse()->getStatusCode());
+        unset($crawler);
+    }
+
+    public function testModelModflowScenarioWithUnknowScenarioId()
+    {
+        $model = $this->models->first();
+        $scenario = ModelScenarioFactory::create($model)
+            ->setName('TestScenario');
+        $this->em->persist($scenario);
+        $this->em->flush();
+
+        $client = static::createClient();
+        $crawler = $client->request('GET', '/models/modflow/'.$model->getId()->toString().'/scenarios/'.Uuid::uuid4()->toString());
+        $this->assertEquals(302, $client->getResponse()->getStatusCode());
         unset($crawler);
     }
 
