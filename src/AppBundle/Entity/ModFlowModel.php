@@ -180,7 +180,7 @@ class ModFlowModel extends AbstractModel
     }
 
     /**
-     * @return array
+     * @return ActiveCells
      */
     public function getActiveCells()
     {

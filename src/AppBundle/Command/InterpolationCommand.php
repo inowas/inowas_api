@@ -6,6 +6,7 @@ use AppBundle\Entity\GeologicalLayer;
 use AppBundle\Entity\PropertyType;
 use AppBundle\Service\Interpolation;
 use Doctrine\ORM\EntityManager;
+use Ramsey\Uuid\Uuid;
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -30,12 +31,21 @@ class InterpolationCommand extends ContainerAwareCommand
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
+        $output->writeln(sprintf("Interpolating Layers"));
+
+        try {
+            $id = Uuid::fromString($input->getArgument('id'));
+        } catch (\InvalidArgumentException $e) {
+            $output->writeln(sprintf("The given id: %s is not valid", $input->getArgument('id')));
+            return;
+        }
+
         /** @var EntityManager $entityManager */
         $entityManager = $this->getContainer()->get('doctrine.orm.entity_manager');
         $geoTools = $this->getContainer()->get('inowas.geotools');
         $soilModelService = $this->getContainer()->get('inowas.soilmodel');
 
-        $id = $input->getArgument('id');
+        ;
         $soilModelService->loadModflowModelById($id);
 
         $modFlowModel = $soilModelService->getModflowModel();
@@ -55,7 +65,7 @@ class InterpolationCommand extends ContainerAwareCommand
                     continue;
                 }
 
-                echo (sprintf("Interpolating Layer %s, Property %s\r\n", $layer->getName(), $propertyType->getName()));
+                $output->writeln(sprintf("Interpolating Layer %s, Property %s", $layer->getName(), $propertyType->getName()));
                 $output = $soilModelService->interpolateLayerByProperty(
                     $layer,
                     $propertyType->getAbbreviation(),
