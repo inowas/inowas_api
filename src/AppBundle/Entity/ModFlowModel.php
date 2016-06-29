@@ -434,10 +434,20 @@ class ModFlowModel extends AbstractModel
      */
     public function createTextOverview()
     {
-       return sprintf("%s Rows, %s Columns, %s Layers",
-       $this->gridSize->getNY(),
-       $this->gridSize->getNX(),
-       $this->soilModel->getGeologicalLayers()->count());
+        $nx = 0;
+        $ny = 0;
+        $layersCount = 0;
+
+        if ($this->gridSize instanceof GridSize){
+            $nx = $this->gridSize->getNX();
+            $ny = $this->gridSize->getNY();
+        }
+
+        if ($this->hasSoilModel() && $this->soilModel->hasGeologicalLayers()){
+            $layersCount = $this->soilModel->getGeologicalLayers()->count();
+        }
+
+       return sprintf("%s Rows, %s Columns, %s Layers", $ny, $nx, $layersCount);
     }
 
     /**

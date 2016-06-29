@@ -51,6 +51,7 @@ class ModelScenario
      * @var ModFlowModel
      *
      * @ORM\ManyToOne(targetEntity="AppBundle\Entity\ModFlowModel", cascade={"persist", "remove"})
+     * @ORM\JoinColumn(name="model_id", referencedColumnName="id", onDelete="CASCADE")
      * @JMS\Type("ArrayCollection<AppBundle\Entity\AbstractModel>")
      **/
     private $baseModel;
