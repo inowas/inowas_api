@@ -15,7 +15,7 @@ use Ramsey\Uuid\Uuid;
 class AreaType
 {
     /**
-     * @var string
+     * @var Uuid
      *
      * @ORM\Id
      * @ORM\Column(name="id", type="uuid", unique=true)
@@ -36,22 +36,9 @@ class AreaType
     }
 
     /**
-     * Set id
-     *
-     * @param $id
-     * @return $this
-     */
-    public function setId($id)
-    {
-        $this->id = $id;
-
-        return $this;
-    }
-
-    /**
      * Get id
      *
-     * @return integer 
+     * @return Uuid
      */
     public function getId()
     {
