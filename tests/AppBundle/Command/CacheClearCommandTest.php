@@ -1,7 +1,6 @@
 <?php
 
-namespace AppBundle\Tests\Command;
-
+namespace Tests\AppBundle\Command;
 
 use AppBundle\Command\CacheClearCommand;
 use Symfony\Bundle\FrameworkBundle\Console\Application;

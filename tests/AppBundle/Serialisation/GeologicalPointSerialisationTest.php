@@ -1,6 +1,6 @@
 <?php
 
-namespace AppBundle\Tests\Controller;
+namespace Tests\AppBundle\Controller;
 
 use AppBundle\Entity\GeologicalPoint;
 use AppBundle\Model\GeologicalPointFactory;

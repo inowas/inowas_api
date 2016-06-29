@@ -1,6 +1,6 @@
 <?php
 
-namespace AppBundle\Tests\Service;
+namespace Tests\AppBundle\Service;
 
 use AppBundle\Entity\GeologicalLayer;
 use AppBundle\Entity\PropertyType;

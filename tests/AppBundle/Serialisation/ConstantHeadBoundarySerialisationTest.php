@@ -1,6 +1,6 @@
 <?php
 
-namespace AppBundle\Tests\Controller;
+namespace Tests\AppBundle\Controller;
 
 use AppBundle\Entity\ConstantHeadBoundary;
 use AppBundle\Model\ConstantHeadBoundaryFactory;

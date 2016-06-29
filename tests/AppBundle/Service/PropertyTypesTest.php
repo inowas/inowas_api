@@ -1,6 +1,6 @@
 <?php
 
-namespace AppBundle\Tests\Service;
+namespace Tests\AppBundle\Service;
 
 use AppBundle\Entity\PropertyType;
 use AppBundle\Service\PropertyTypes;

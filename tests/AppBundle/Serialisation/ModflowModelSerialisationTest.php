@@ -1,6 +1,6 @@
 <?php
 
-namespace AppBundle\Tests\Serialization;
+namespace Tests\AppBundle\Serialization;
 
 use AppBundle\Entity\GeneralHeadBoundary;
 use AppBundle\Entity\GeologicalLayer;

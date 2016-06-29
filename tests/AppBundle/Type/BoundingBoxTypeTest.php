@@ -1,6 +1,6 @@
 <?php
 
-namespace AppBundle\Tests\Type;
+namespace Tests\AppBundle\Type;
 
 use AppBundle\Model\Interpolation\BoundingBox;
 use Doctrine\DBAL\Connection;

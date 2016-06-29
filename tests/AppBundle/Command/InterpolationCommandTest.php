@@ -1,6 +1,6 @@
 <?php
 
-namespace AppBundle\Tests\Command;
+namespace Tests\AppBundle\Command;
 
 use AppBundle\Command\InterpolationCommand;
 use Symfony\Bundle\FrameworkBundle\Console\Application;

@@ -1,6 +1,6 @@
 <?php
 
-namespace AppBundle\Tests\Service;
+namespace Tests\AppBundle\Service;
 
 use AppBundle\Service\Modflow;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;

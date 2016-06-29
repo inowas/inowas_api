@@ -1,6 +1,6 @@
 <?php
 
-namespace AppBundle\Tests\Type;
+namespace Tests\AppBundle\Type;
 
 use AppBundle\Entity\ModFlowModel;
 use AppBundle\Model\Interpolation\GridSize;
