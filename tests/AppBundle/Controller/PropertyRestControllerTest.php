@@ -6,6 +6,7 @@ use AppBundle\Entity\Property;
 use AppBundle\Model\PropertyFactory;
 use AppBundle\Model\PropertyFixedIntervalValueFactory;
 use AppBundle\Model\PropertyTimeValueFactory;
+use Ramsey\Uuid\Uuid;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
 class PropertyRestControllerTest extends WebTestCase
@@ -46,7 +47,7 @@ class PropertyRestControllerTest extends WebTestCase
      * Test for the API-Call /api/properties/<id>.json
      * which is providing a list of areas of the user
      */
-    public function testPropertyCallDetailsWithoutDates()
+    public function testGetPropertyById()
     {
         $client = static::createClient();
         $client->request('GET', '/api/properties/'.$this->property->getId().'.json');
@@ -54,6 +55,20 @@ class PropertyRestControllerTest extends WebTestCase
         $property = json_decode($client->getResponse()->getContent());
         $this->assertEquals($this->property->getId(), $property->id);
         $this->assertEquals($this->property->getName(), $property->name);
+    }
+
+    public function testGetPropertyByInvalidIdReturns404()
+    {
+        $client = static::createClient();
+        $client->request('GET', '/api/properties/123.json');
+        $this->assertEquals(404, $client->getResponse()->getStatusCode());
+    }
+
+    public function testGetPropertyByUnknownIdReturns404()
+    {
+        $client = static::createClient();
+        $client->request('GET', '/api/properties/'.Uuid::uuid4()->toString().'.json');
+        $this->assertEquals(404, $client->getResponse()->getStatusCode());
     }
 
     /**
