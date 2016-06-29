@@ -7,6 +7,7 @@ use AppBundle\Entity\ModelObject;
 use AppBundle\Entity\User;
 use AppBundle\Model\GeneralHeadBoundaryFactory;
 use AppBundle\Model\UserFactory;
+use Ramsey\Uuid\Uuid;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
 class ModelObjectRestControllerTest extends WebTestCase
@@ -46,7 +47,7 @@ class ModelObjectRestControllerTest extends WebTestCase
         $this->entityManager->flush();
     }
 
-    public function testModelObjectListByUser()
+    public function testList()
     {
         $client = static::createClient();
         $client->request('GET', '/api/users/'.$this->owner->getUsername().'/modelobjects.json');
@@ -54,13 +55,34 @@ class ModelObjectRestControllerTest extends WebTestCase
         $this->assertCount(1, json_decode($client->getResponse()->getContent()));
     }
 
-    public function testModelObjectDetails()
+    public function testListWithUnknownUserReturns404()
+    {
+        $client = static::createClient();
+        $client->request('GET', '/api/users/unknown_username/modelobjects.json');
+        $this->assertEquals(404, $client->getResponse()->getStatusCode());
+    }
+
+    public function testDetails()
     {
         $client = static::createClient();
         $client->request('GET', '/api/modelobjects/'.$this->modelObject->getId().'.json');
         $this->assertEquals(200, $client->getResponse()->getStatusCode());
         $modelObject = json_decode($client->getResponse()->getContent());
         $this->assertEquals($this->modelObject->getId(), $modelObject->id);
+    }
+
+    public function testDetailsWithInvalidIdReturns404()
+    {
+        $client = static::createClient();
+        $client->request('GET', '/api/modelobjects/unknown_id.json');
+        $this->assertEquals(404, $client->getResponse()->getStatusCode());
+    }
+
+    public function testDetailsWithUnknownIdReturns404()
+    {
+        $client = static::createClient();
+        $client->request('GET', '/api/modelobjects/'.Uuid::uuid4()->toString().'.json');
+        $this->assertEquals(404, $client->getResponse()->getStatusCode());
     }
 
     /**
