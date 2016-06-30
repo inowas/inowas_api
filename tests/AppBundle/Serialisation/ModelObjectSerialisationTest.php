@@ -55,7 +55,6 @@ class ModelObjectSerialisationTest extends \PHPUnit_Framework_TestCase
             ->addGeologicalLayer(GeologicalLayerFactory::create()
                 ->setName('GeologicalLayerName_2')
             )
-            ->setDateCreated(new \DateTime())
             ->setDateModified(new \DateTime())
             ->setPublic(true)
         ;

@@ -133,38 +133,32 @@ class ModFlowModelSerialisationTest extends \PHPUnit_Framework_TestCase
             ->setOwner($owner)
             ->setName("Streamname")
             ->addObservationPoint(ObservationPointFactory::create())
-            ->addProperty(PropertyFactory::create())
-            ->setDateCreated(new \DateTime())
-            ->setDateModified(new \DateTime());
+            ->addProperty(PropertyFactory::create());
 
         $this->modFlowModel->addBoundary($stream);
-        $this->modFlowModel->addBoundary(StreamBoundaryFactory::create()->setId(28));
-        $this->modFlowModel->addBoundary(StreamBoundaryFactory::create()->setId(29));
+        $this->modFlowModel->addBoundary(StreamBoundaryFactory::create());
+        $this->modFlowModel->addBoundary(StreamBoundaryFactory::create());
 
         /** @var GeneralHeadBoundary $boundary */
         $boundary = GeneralHeadBoundaryFactory::create()
             ->setOwner($owner)
             ->setName('BoundaryName')
             ->addObservationPoint(ObservationPointFactory::create())
-            ->addProperty(PropertyFactory::create())
-            ->setDateCreated(new \DateTime())
-            ->setDateModified(new \DateTime());
+            ->addProperty(PropertyFactory::create());
 
         $this->modFlowModel->addBoundary($boundary);
-        $this->modFlowModel->addBoundary(GeneralHeadBoundaryFactory::create()->setId(39));
+        $this->modFlowModel->addBoundary(GeneralHeadBoundaryFactory::create());
 
         /** @var ObservationPoint $observationPoint */
         $observationPoint = ObservationPointFactory::create()
             ->setOwner($owner)
             ->setName('ObservationPoint')
-            ->addProperty(PropertyFactory::create())
-            ->setDateCreated(new \DateTime())
-            ->setDateModified(new \DateTime());
+            ->addProperty(PropertyFactory::create());
 
         $this->modFlowModel->addObservationPoint($observationPoint);
-        $this->modFlowModel->addObservationPoint(ObservationPointFactory::create()->setId(42));
-        $this->modFlowModel->addObservationPoint(ObservationPointFactory::create()->setId(43));
-        $this->modFlowModel->addObservationPoint(ObservationPointFactory::create()->setId(44));
+        $this->modFlowModel->addObservationPoint(ObservationPointFactory::create());
+        $this->modFlowModel->addObservationPoint(ObservationPointFactory::create());
+        $this->modFlowModel->addObservationPoint(ObservationPointFactory::create());
     }
 
     public function testCalculationPropertiesInitialValuesDefault()
@@ -186,7 +180,7 @@ class ModFlowModelSerialisationTest extends \PHPUnit_Framework_TestCase
 
     public function testCalculationPropertiesInitValueIsAPropertyWithFloatValue()
     {
-        $property = PropertyFactory::create()->setId(5);
+        $property = PropertyFactory::create();
         $property->addValue(PropertyValueFactory::create()->setValue(1.114));
 
         $this->modFlowModel->setInitialValues(array(
