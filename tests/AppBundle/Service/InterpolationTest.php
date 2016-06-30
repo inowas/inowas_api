@@ -5,6 +5,7 @@ namespace Tests\AppBundle\Service;
 use AppBundle\Model\Interpolation\BoundingBox;
 use AppBundle\Model\Interpolation\GridSize;
 use AppBundle\Model\Interpolation\PointValue;
+use AppBundle\Model\Point;
 use AppBundle\Service\Interpolation;
 use JMS\Serializer\Serializer;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
@@ -71,28 +72,28 @@ class InterpolationTest extends WebTestCase
     }
 
     public function testAddingPointValue(){
-        $pointValue = new PointValue(1,2,3);
-        $this->interpolation->addPoint($pointValue);
+        $pointValue = new PointValue(new Point(1, 2, 4326), 3);
+        $this->interpolation->addPointValue($pointValue);
         $this->assertCount(1, $this->interpolation->getPoints());
         $this->assertEquals($pointValue, $this->interpolation->getPoints()->first());
     }
 
     public function testAddingOnePointValueWillNotBeAddedTwice()
     {
-        $pointValue = new PointValue(1,2,3);
-        $this->interpolation->addPoint($pointValue);
-        $this->interpolation->addPoint($pointValue);
+        $pointValue = new PointValue(new Point(1, 2, 4326), 3);
+        $this->interpolation->addPointValue($pointValue);
+        $this->interpolation->addPointValue($pointValue);
         $this->assertCount(1, $this->interpolation->getPoints());
         $this->assertEquals($pointValue, $this->interpolation->getPoints()->first());
     }
 
     public function testRemovePointValue()
     {
-        $pointValue = new PointValue(1,2,3);
-        $this->interpolation->addPoint($pointValue);
+        $pointValue = new PointValue(new Point(1, 2, 4326), 3);
+        $this->interpolation->addPointValue($pointValue);
         $this->assertCount(1, $this->interpolation->getPoints());
         $this->assertEquals($pointValue, $this->interpolation->getPoints()->first());
-        $this->interpolation->removePoint($pointValue);
+        $this->interpolation->removePointValue($pointValue);
         $this->assertCount(0, $this->interpolation->getPoints());
     }
 
@@ -100,7 +101,7 @@ class InterpolationTest extends WebTestCase
     {
         $this->interpolation->setGridSize(new GridSize(10,11));
         $this->interpolation->setBoundingBox(new BoundingBox(-10.1, 10.2, -5.1, 5.2));
-        $this->interpolation->addPoint(new PointValue(1,2,3));
+        $this->interpolation->addPointValue(new PointValue(new Point(1, 2, 4326), 3));
 
         $unknownAlgorithm = 'foo';
         $this->setExpectedException(
@@ -114,7 +115,7 @@ class InterpolationTest extends WebTestCase
     public function testThrowExceptionIfIfGridSizeIsNotSet()
     {
         $this->interpolation->setBoundingBox(new BoundingBox(-10.1, 10.2, -5.1, 5.2));
-        $this->interpolation->addPoint(new PointValue(1,2,3));
+        $this->interpolation->addPointValue(new PointValue(new Point(1, 2, 4326), 3));
 
         $this->setExpectedException(
             'Symfony\Component\HttpKernel\Exception\NotFoundHttpException',
@@ -126,7 +127,7 @@ class InterpolationTest extends WebTestCase
     public function testThrowExceptionIfIfBoundingBoxIsNotSet()
     {
         $this->interpolation->setGridSize(new GridSize(10,11));
-        $this->interpolation->addPoint(new PointValue(1,2,3));
+        $this->interpolation->addPointValue(new PointValue(new Point(1, 2, 4326), 3));
 
         $this->setExpectedException(
             'Symfony\Component\HttpKernel\Exception\NotFoundHttpException',
@@ -151,7 +152,7 @@ class InterpolationTest extends WebTestCase
         $folderName = "/tmp/newFolder".rand(100000,9999999);
         $this->interpolation->setGridSize(new GridSize(10,11));
         $this->interpolation->setBoundingBox(new BoundingBox(-10.1, 10.2, -5.1, 5.2));
-        $this->interpolation->addPoint(new PointValue(1,2,3));
+        $this->interpolation->addPointValue(new PointValue(new Point(1, 2, 4326), 3));
         $this->interpolation->setTmpFolder($folderName);
         $this->assertFalse(is_dir($folderName));
         $this->interpolation->interpolate(Interpolation::TYPE_MEAN);
@@ -167,8 +168,8 @@ class InterpolationTest extends WebTestCase
     public function testIdwInterpolation(){
         $this->interpolation->setGridSize(new GridSize(10,11));
         $this->interpolation->setBoundingBox(new BoundingBox(-10.1, 10.2, -5.1, 5.2));
-        $this->interpolation->addPoint(new PointValue(1,2,3));
-        $this->interpolation->addPoint(new PointValue(1,3,4));
+        $this->interpolation->addPointValue(new PointValue(new Point(1, 2, 4326), 3));
+        $this->interpolation->addPointValue(new PointValue(new Point(1, 2, 4326), 4));
         $this->interpolation->interpolate(Interpolation::TYPE_IDW);
         $this->assertCount($this->interpolation->getGridSize()->getNY(), $this->interpolation->getData());
         $this->assertCount($this->interpolation->getGridSize()->getNX(), $this->interpolation->getData()[0]);
@@ -177,8 +178,8 @@ class InterpolationTest extends WebTestCase
     public function testMeanInterpolation(){
         $this->interpolation->setGridSize(new GridSize(10,11));
         $this->interpolation->setBoundingBox(new BoundingBox(-10.1, 10.2, -5.1, 5.2));
-        $this->interpolation->addPoint(new PointValue(1,2,3));
-        $this->interpolation->addPoint(new PointValue(1,3,4));
+        $this->interpolation->addPointValue(new PointValue(new Point(1, 2, 4326), 3));
+        $this->interpolation->addPointValue(new PointValue(new Point(1, 2, 4326), 4));
         $this->interpolation->interpolate(Interpolation::TYPE_MEAN);
         $this->assertCount($this->interpolation->getGridSize()->getNY(), $this->interpolation->getData());
         $this->assertCount($this->interpolation->getGridSize()->getNX(), $this->interpolation->getData()[0]);
@@ -188,12 +189,12 @@ class InterpolationTest extends WebTestCase
     public function testGaussianInterpolation(){
         $this->interpolation->setGridSize(new GridSize(10,11));
         $this->interpolation->setBoundingBox(new BoundingBox(0, 10, 0, 10));
-        $this->interpolation->addPoint(new PointValue(1, 5, 3));
-        $this->interpolation->addPoint(new PointValue(2, 8, 3));
-        $this->interpolation->addPoint(new PointValue(7, 2, 3));
-        $this->interpolation->addPoint(new PointValue(6, 4, 3));
-        $this->interpolation->addPoint(new PointValue(8, 2, 3));
-        $this->interpolation->addPoint(new PointValue(9, 9, 3));
+        $this->interpolation->addPointValue(new PointValue(new Point(1, 5, 4326), 3));
+        $this->interpolation->addPointValue(new PointValue(new Point(2, 8, 4326), 3));
+        $this->interpolation->addPointValue(new PointValue(new Point(7, 2, 4326), 3));
+        $this->interpolation->addPointValue(new PointValue(new Point(6, 4, 4326), 3));
+        $this->interpolation->addPointValue(new PointValue(new Point(8, 2, 4326), 3));
+        $this->interpolation->addPointValue(new PointValue(new Point(9, 9, 4326), 3));
         $this->interpolation->interpolate(Interpolation::TYPE_GAUSSIAN);
         $this->assertCount($this->interpolation->getGridSize()->getNY(), $this->interpolation->getData());
         $this->assertCount($this->interpolation->getGridSize()->getNX(), $this->interpolation->getData()[0]);
@@ -202,12 +203,12 @@ class InterpolationTest extends WebTestCase
     public function testMultipleInterpolationAlgorithms(){
         $this->interpolation->setGridSize(new GridSize(10,11));
         $this->interpolation->setBoundingBox(new BoundingBox(0, 10, 0, 10));
-        $this->interpolation->addPoint(new PointValue(1, 5, 3));
-        $this->interpolation->addPoint(new PointValue(2, 8, 3));
-        $this->interpolation->addPoint(new PointValue(7, 2, 3));
-        $this->interpolation->addPoint(new PointValue(6, 4, 3));
-        $this->interpolation->addPoint(new PointValue(8, 2, 3));
-        $this->interpolation->addPoint(new PointValue(9, 9, 3));
+        $this->interpolation->addPointValue(new PointValue(new Point(1, 5, 4326), 3));
+        $this->interpolation->addPointValue(new PointValue(new Point(2, 8, 4326), 3));
+        $this->interpolation->addPointValue(new PointValue(new Point(7, 2, 4326), 3));
+        $this->interpolation->addPointValue(new PointValue(new Point(6, 4, 4326), 3));
+        $this->interpolation->addPointValue(new PointValue(new Point(8, 2, 4326), 3));
+        $this->interpolation->addPointValue(new PointValue(new Point(9, 9, 4326), 3));
         $this->interpolation->interpolate(array(0 => Interpolation::TYPE_GAUSSIAN, 1 => Interpolation::TYPE_MEAN));
         $this->assertCount($this->interpolation->getGridSize()->getNY(), $this->interpolation->getData());
         $this->assertCount($this->interpolation->getGridSize()->getNX(), $this->interpolation->getData()[0]);
@@ -217,8 +218,8 @@ class InterpolationTest extends WebTestCase
     public function testInterpolationAlgorithmsFallback(){
         $this->interpolation->setGridSize(new GridSize(10,11));
         $this->interpolation->setBoundingBox(new BoundingBox(0, 10, 0, 10));
-        $this->interpolation->addPoint(new PointValue(1, 5, 3));
-        $this->interpolation->addPoint(new PointValue(2, 8, 3));
+        $this->interpolation->addPointValue(new PointValue(new Point(1, 5), 3));
+        $this->interpolation->addPointValue(new PointValue(new Point(2, 8), 3));
         $this->interpolation->interpolate(array(0 => Interpolation::TYPE_GAUSSIAN, 1 => Interpolation::TYPE_MEAN));
         $this->assertCount($this->interpolation->getGridSize()->getNY(), $this->interpolation->getData());
         $this->assertCount($this->interpolation->getGridSize()->getNX(), $this->interpolation->getData()[0]);
@@ -242,8 +243,8 @@ class InterpolationTest extends WebTestCase
         $interpolation = new Interpolation($this->serializer, $this->httpKernel, $processStub);
         $interpolation->setGridSize(new GridSize(10,11));
         $interpolation->setBoundingBox(new BoundingBox(0, 10, 0, 10));
-        $interpolation->addPoint(new PointValue(1, 5, 3));
-        $interpolation->addPoint(new PointValue(2, 8, 3));
+        $interpolation->addPointValue(new PointValue(new Point(1, 5), 3));
+        $interpolation->addPointValue(new PointValue(new Point(2, 8), 3));
 
         $this->setExpectedException('AppBundle\Exception\InterpolationException');
         $interpolation->interpolate(array(0 => Interpolation::TYPE_GAUSSIAN, 1 => Interpolation::TYPE_MEAN));
@@ -264,8 +265,8 @@ class InterpolationTest extends WebTestCase
         $interpolation = new Interpolation($this->serializer, $this->httpKernel, $processStub);
         $interpolation->setGridSize(new GridSize(10,11));
         $interpolation->setBoundingBox(new BoundingBox(0, 10, 0, 10));
-        $interpolation->addPoint(new PointValue(1, 5, 3));
-        $interpolation->addPoint(new PointValue(2, 8, 3));
+        $interpolation->addPointValue(new PointValue(new Point(1, 5), 3));
+        $interpolation->addPointValue(new PointValue(new Point(2, 8), 3));
 
         $this->setExpectedException('AppBundle\Exception\ProcessFailedException');
         $interpolation->interpolate(array(0 => Interpolation::TYPE_GAUSSIAN, 1 => Interpolation::TYPE_MEAN));
@@ -274,8 +275,8 @@ class InterpolationTest extends WebTestCase
     public function testClear(){
         $this->interpolation->setGridSize(new GridSize(10,11));
         $this->interpolation->setBoundingBox(new BoundingBox(0, 10, 0, 10));
-        $this->interpolation->addPoint(new PointValue(1, 5, 3));
-        $this->interpolation->addPoint(new PointValue(2, 8, 3));
+        $this->interpolation->addPointValue(new PointValue(new Point(1, 5), 3));
+        $this->interpolation->addPointValue(new PointValue(new Point(2, 8), 3));
         $this->interpolation->setTmpFileName('111');
         $this->interpolation->clear();
         $this->assertNull($this->interpolation->getData());

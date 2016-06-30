@@ -6,6 +6,7 @@ use AppBundle\Model\Interpolation\BoundingBox;
 use AppBundle\Model\Interpolation\GaussianInterpolation;
 use AppBundle\Model\Interpolation\GridSize;
 use AppBundle\Model\Interpolation\PointValue;
+use AppBundle\Model\Point;
 use AppBundle\Service\Interpolation;
 use JMS\Serializer\SerializationContext;
 use JMS\Serializer\Serializer;
@@ -35,9 +36,9 @@ class InterpolationSerialisationTest extends \PHPUnit_Framework_TestCase
         $this->boundingBox = new BoundingBox(0.1, 10.2, 0.4, 10.5);
 
         $this->interpolation = new GaussianInterpolation($this->gridSize, $this->boundingBox);
-        $this->interpolation->addPoint(new PointValue(1, 5, 3));
-        $this->interpolation->addPoint(new PointValue(2, 8, 3));
-        $this->interpolation->addPoint(new PointValue(7, 2, 3));
+        $this->interpolation->addPointValue(new PointValue(new Point(1, 5, 4326), 3));
+        $this->interpolation->addPointValue(new PointValue(new Point(2, 8, 4326), 3));
+        $this->interpolation->addPointValue(new PointValue(new Point(7, 2, 4326), 3));
     }
 
     public function testInterpolation()

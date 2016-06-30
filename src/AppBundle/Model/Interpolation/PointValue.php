@@ -2,23 +2,14 @@
 
 namespace AppBundle\Model\Interpolation;
 
+use AppBundle\Model\Point;
 use JMS\Serializer\Annotation as JMS;
 
 class PointValue
 {
-    /**
-     * @var float
-     *
-     * @JMS\Groups({"interpolation"})
-     */
-    protected $x;
 
-    /**
-     * @var float
-     *
-     * @JMS\Groups({"interpolation"})
-     */
-    protected $y;
+    /** @var Point */
+    protected $point;
 
     /**
      * @var float
@@ -28,48 +19,54 @@ class PointValue
     protected $value;
 
     /**
-     * Point constructor.
-     * @param $x
-     * @param $y
+     * PointValue constructor.
+     * @param Point $point
      * @param $value
      */
-    public function __construct($x = null, $y = null, $value = null)
+    public function __construct(Point $point, $value)
     {
-        $this->x = $x;
-        $this->y = $y;
+        $this->point = $point;
         $this->value = $value;
     }
 
     /**
+     * @JMS\VirtualProperty()
+     * @JMS\SerializedName("x")
+     * @JMS\Groups({"interpolation"})
      * @return null
      */
     public function getX()
     {
-        return $this->x;
+        return $this->point->getX();
     }
 
     /**
-     * @param null $x
-     */
-    public function setX($x)
-    {
-        $this->x = $x;
-    }
-
-    /**
+     * @JMS\VirtualProperty()
+     * @JMS\SerializedName("y")
+     * @JMS\Groups({"interpolation"})
      * @return null
      */
     public function getY()
     {
-        return $this->y;
+        return $this->point->getY();
     }
 
     /**
-     * @param null $y
+     * @return Point
      */
-    public function setY($y)
+    public function getPoint()
     {
-        $this->y = $y;
+        return $this->point;
+    }
+
+    /**
+     * @param Point $point
+     * @return $this
+     */
+    public function setPoint($point)
+    {
+        $this->point = $point;
+        return $this;
     }
 
     /**
@@ -79,15 +76,4 @@ class PointValue
     {
         return $this->value;
     }
-
-    /**
-     * @param null $value
-     */
-    public function setValue($value)
-    {
-        $this->value = $value;
-    }
-
-    
-
 }

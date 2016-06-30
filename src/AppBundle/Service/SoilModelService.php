@@ -184,10 +184,7 @@ class SoilModelService
                     $value = $unit->getFirstPropertyValue($property);
 
                     if (!is_null($value)) {
-                        $this->interpolation->addPoint(new PointValue(
-                            $unit->getPoint()->getX(),
-                            $unit->getPoint()->getY(),
-                            $value));
+                        $this->interpolation->addPointValue(new PointValue($unit->getPoint(), $value));
                         break;
                     }
                 }

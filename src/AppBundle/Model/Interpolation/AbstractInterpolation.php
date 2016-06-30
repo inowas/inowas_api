@@ -65,7 +65,7 @@ abstract class AbstractInterpolation
     /**
      * @param PointValue $pointValue
      */
-    public function addPoint(PointValue $pointValue)
+    public function addPointValue(PointValue $pointValue)
     {
         if (!$this->pointValues->contains($pointValue))
         {
@@ -76,7 +76,7 @@ abstract class AbstractInterpolation
     /**
      * @param PointValue $pointValue
      */
-    public function removePoint(PointValue $pointValue)
+    public function removePointValue(PointValue $pointValue)
     {
         if ($this->pointValues->contains($pointValue))
         {

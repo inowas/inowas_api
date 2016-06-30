@@ -146,14 +146,14 @@ class Interpolation
         return $this->boundingBox;
     }
     
-    public function addPoint(PointValue $pointValue)
+    public function addPointValue(PointValue $pointValue)
     {
         if (!$this->points->contains($pointValue)){
             $this->points[] = $pointValue;
         }
     }
 
-    public function removePoint(PointValue $pointValue)
+    public function removePointValue(PointValue $pointValue)
     {
         if ($this->points->contains($pointValue)) {
             $this->points->removeElement($pointValue);

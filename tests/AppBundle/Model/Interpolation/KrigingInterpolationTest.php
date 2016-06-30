@@ -6,6 +6,7 @@ use AppBundle\Model\Interpolation\BoundingBox;
 use AppBundle\Model\Interpolation\GridSize;
 use AppBundle\Model\Interpolation\KrigingInterpolation;
 use AppBundle\Model\Interpolation\PointValue;
+use AppBundle\Model\Point;
 use JMS\Serializer\Serializer;
 use JMS\Serializer\SerializerBuilder;
 
@@ -30,25 +31,25 @@ class KrigingInterpolationTest extends \PHPUnit_Framework_TestCase
     {
         $krigingInterpolation = new KrigingInterpolation(new GridSize(12,13), new BoundingBox(1,2,3,4));
         $this->assertCount(0, $krigingInterpolation->getPointValues());
-        $krigingInterpolation->addPoint(new PointValue(1,2,3));
+        $krigingInterpolation->addPointValue(new PointValue(new Point(1.1, 2.1, 4326), 3.1));
         $this->assertCount(1, $krigingInterpolation->getPointValues());
-        $this->assertEquals(new PointValue(1,2,3), $krigingInterpolation->getPointValues()->first());
+        $this->assertEquals(new PointValue(new Point(1.1, 2.1, 4326), 3.1), $krigingInterpolation->getPointValues()->first());
     }
 
     public function testKrigingObjectCanRemovePoints()
     {
         $krigingInterpolation = new KrigingInterpolation(new GridSize(12,13), new BoundingBox(1,2,3,4));
-        $point = new PointValue(1,2,3);
-        $krigingInterpolation->addPoint($point);
+        $point = new PointValue(new Point(1.1, 2.1, 4326), 3.1);
+        $krigingInterpolation->addPointValue($point);
         $this->assertCount(1, $krigingInterpolation->getPointValues());
-        $krigingInterpolation->removePoint($point);
+        $krigingInterpolation->removePointValue($point);
         $this->assertCount(0, $krigingInterpolation->getPointValues());
     }
 
     public function testSerializeObject()
     {
         $ki = new KrigingInterpolation(new GridSize(12,13), new BoundingBox(1,2,3,4));
-        $ki->addPoint(new PointValue(1.1, 2.1, 3.1));
+        $ki->addPointValue(new PointValue(new Point(1.1, 2.1, 4326), 3.1));
         $ski = $this->serializer->serialize($ki, 'json');
 
         $uki = json_decode($ski);

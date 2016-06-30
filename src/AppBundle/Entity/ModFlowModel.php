@@ -412,7 +412,6 @@ class ModFlowModel extends AbstractModel
     {
         if (!is_null($this->area)) {
             $this->addModelObject($this->area);
-            $this->area = null;
         }
 
         if ($this->boundaries->count() > 0 ) {
@@ -436,6 +435,7 @@ class ModFlowModel extends AbstractModel
     public function postLoad()
     {
         foreach ($this->getModelObjects() as $modelObject) {
+
             if ($modelObject instanceof Area) {
                 $this->area = $modelObject;
                 $this->removeModelObject($modelObject);

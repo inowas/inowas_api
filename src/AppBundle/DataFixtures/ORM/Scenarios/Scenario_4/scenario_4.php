@@ -482,6 +482,7 @@ class LoadScenario_4 implements FixtureInterface, ContainerAwareInterface
             array(119, 'YP42', 11780758.02947362139821053, 2400364.75818847771733999, -45, -75, 4320, -4400, 11780758.03, 2400364.76)
 
         );
+
         $header = array('id', 'name', 'wkt_x', 'wkt_y', 'ztop', 'zbot', 'stoptime', 'pumpingrate', 'x', 'y');
         foreach ($wells as $row) {
             $well = array_combine($header, $row);
