@@ -17,17 +17,6 @@ use JMS\Serializer\Annotation as JMS;
 class ModFlowModel extends AbstractModel
 {
     /**
-     * @var ArrayCollection ModelObject $modelObjects
-     *
-     * @ORM\ManyToMany(targetEntity="ModelObject", cascade={"persist", "remove"})
-     * @ORM\JoinTable(name="models_model_objects",
-     *      joinColumns={@ORM\JoinColumn(name="model_id", referencedColumnName="id")},
-     *      inverseJoinColumns={@ORM\JoinColumn(name="model_object_id", referencedColumnName="id")}
-     *      )
-     **/
-    private $modelObjects;
-    
-    /**
      * @var SoilModel $soilModel
      *
      * @ORM\ManyToOne(targetEntity="AppBundle\Entity\SoilModel", cascade={"persist", "remove"})
@@ -115,52 +104,11 @@ class ModFlowModel extends AbstractModel
         parent::__construct();
 
         $this->boundaries = new ArrayCollection();
-        $this->modelObjects = new ArrayCollection();
         $this->observationPoints = new ArrayCollection();
         $this->gridSize = new GridSize(50, 50);
         $this->boundingBox = new BoundingBox();
         $this->scenarios = new ArrayCollection();
     }
-
-    /**
-     * Add soilModelObject
-     *
-     * @param \AppBundle\Entity\ModelObject $modelObject
-     * @return $this
-     */
-    public function addModelObject(ModelObject $modelObject)
-    {
-        if (!$this->modelObjects->contains($modelObject)){
-            $this->modelObjects[] = $modelObject;
-        }
-
-        return $this;
-    }
-
-    /**
-     * Remove soilModelObject
-     *
-     * @param \AppBundle\Entity\ModelObject $modelObject
-     * @return $this
-     */
-    public function removeModelObject(ModelObject $modelObject)
-    {
-        if ($this->modelObjects->contains($modelObject)){
-            $this->modelObjects->removeElement($modelObject);
-        }
-        return $this;
-    }
-
-    /**
-     * Get modelObjects
-     *
-     * @return \Doctrine\Common\Collections\Collection
-     */
-    public function getModelObjects()
-    {
-        return $this->modelObjects;
-    }
-
 
     /**
      * @return Area

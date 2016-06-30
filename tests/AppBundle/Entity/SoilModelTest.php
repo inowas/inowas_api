@@ -156,6 +156,19 @@ class SoilModelTest extends WebTestCase
         $this->entityManager->flush();
     }
 
+    public function testIfSoilModelCanBeSaved()
+    {
+        $this->soilModel->addGeologicalUnit(GeologicalUnitFactory::create()
+            ->setPublic(true)
+            ->setOwner($this->user)
+            ->setName('TestUnit 1')
+            ->setOrder(GeologicalUnit::TOP_LAYER));
+
+        $this->entityManager->persist($this->soilModel);
+        $this->entityManager->flush();
+    }
+
+
     public function testIfUnitsCanBeSetAndRetrievedFromSoilModel()
     {
         $this->soilModel->addGeologicalUnit(GeologicalUnitFactory::create()

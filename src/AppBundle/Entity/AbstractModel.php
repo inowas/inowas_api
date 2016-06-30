@@ -2,6 +2,7 @@
 
 namespace AppBundle\Entity;
 
+use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
 use JMS\Serializer\Annotation as JMS;
 use Ramsey\Uuid\Uuid;
@@ -13,7 +14,10 @@ use Ramsey\Uuid\Uuid;
  * @ORM\Table(name="models")
  * @ORM\InheritanceType("SINGLE_TABLE")
  * @ORM\DiscriminatorColumn(name="type", type="string")
- * @ORM\DiscriminatorMap({  "modflow" = "ModFlowModel" })
+ * @ORM\DiscriminatorMap({
+ *      "modflow" = "ModFlowModel",
+ *      "soil" = "SoilModel"
+ * })
  * @JMS\ExclusionPolicy("none")
  */
 abstract class AbstractModel
@@ -24,25 +28,25 @@ abstract class AbstractModel
      * @ORM\Id
      * @ORM\Column(name="id", type="uuid", unique=true)
      * @JMS\Type("string")
-     * @JMS\Groups({"list", "details", "modeldetails", "modelobjectdetails"})
+     * @JMS\Groups({"list", "details", "modeldetails", "modelobjectdetails", "soilmodellist", "soilmodeldetails"})
      */
-    private $id;
+    protected $id;
 
     /**
      * @var string
      *
      * @ORM\Column(name="name", type="string",length=255)
-     * @JMS\Groups({"list", "details", "modeldetails"})
+     * @JMS\Groups({"list", "details", "modeldetails", "soilmodellist", "soilmodeldetails"})
      */
-    private $name;
+    protected $name;
 
     /**
      * @var string
      *
      * @ORM\Column(name="description", type="text", nullable=true)
-     * @JMS\Groups({"list", "details", "modeldetails"})
+     * @JMS\Groups({"list", "details", "modeldetails", "soilmodellist", "soilmodeldetails"})
      */
-    private $description;
+    protected $description;
 
     /**
      * @var User
@@ -50,33 +54,44 @@ abstract class AbstractModel
      * @ORM\ManyToOne(targetEntity="User")
      * @ORM\JoinColumn(name="owner_id", referencedColumnName="id", onDelete="CASCADE")
      * @JMS\MaxDepth(1)
-     * @JMS\Groups({"details", "modeldetails"})
+     * @JMS\Groups({"details", "modeldetails", "soilmodellist", "soilmodeldetails"})
      */
-    private $owner;
+    protected $owner;
 
     /**
      * @var boolean
      *
      * @ORM\Column(name="public", type="boolean")
-     * @JMS\Groups({"list", "details"})
+     * @JMS\Groups({"list", "details", "soilmodellist", "soilmodeldetails"})
      */
-    private $public;
+    protected $public;
 
     /**
      * @var \DateTime
      *
      * @ORM\Column(name="dateCreated", type="datetime")
-     * @JMS\Groups({"list", "details"})
+     * @JMS\Groups({"list", "details", "soilmodellist",  "soilmodeldetails"})
      */
-    private $dateCreated;
+    protected $dateCreated;
 
     /**
      * @var \DateTime
      *
      * @ORM\Column(name="dateModified", type="datetime")
-     * @JMS\Groups({"list", "details"})
+     * @JMS\Groups({"list", "details", "soilmodellist",  "soilmodeldetails"})
      */
-    private $dateModified;
+    protected $dateModified;
+
+    /**
+     * @var ArrayCollection ModelObject $modelObjects
+     *
+     * @ORM\ManyToMany(targetEntity="ModelObject", cascade={"persist", "remove"})
+     * @ORM\JoinTable(name="models_model_objects",
+     *      joinColumns={@ORM\JoinColumn(name="model_id", referencedColumnName="id", onDelete="CASCADE")},
+     *      inverseJoinColumns={@ORM\JoinColumn(name="model_object_id", referencedColumnName="id", onDelete="CASCADE")}
+     *      )
+     **/
+    protected $modelObjects;
 
     /**
      * Constructor
@@ -87,6 +102,7 @@ abstract class AbstractModel
         $this->public = true;
         $this->dateCreated = new \DateTime();
         $this->dateModified = new \DateTime();
+        $this->modelObjects = new ArrayCollection();
     }
 
     /**
@@ -227,5 +243,44 @@ abstract class AbstractModel
     public function getOwner()
     {
         return $this->owner;
+    }
+
+    /**
+     * Add soilModelObject
+     *
+     * @param \AppBundle\Entity\ModelObject $modelObject
+     * @return $this
+     */
+    public function addModelObject(ModelObject $modelObject)
+    {
+        if (!$this->modelObjects->contains($modelObject)){
+            $this->modelObjects[] = $modelObject;
+        }
+
+        return $this;
+    }
+
+    /**
+     * Remove soilModelObject
+     *
+     * @param \AppBundle\Entity\ModelObject $modelObject
+     * @return $this
+     */
+    public function removeModelObject(ModelObject $modelObject)
+    {
+        if ($this->modelObjects->contains($modelObject)){
+            $this->modelObjects->removeElement($modelObject);
+        }
+        return $this;
+    }
+
+    /**
+     * Get modelObjects
+     *
+     * @return \Doctrine\Common\Collections\Collection
+     */
+    public function getModelObjects()
+    {
+        return $this->modelObjects;
     }
 }
