@@ -34,7 +34,7 @@ class ModelObjectSerialisationTest extends \PHPUnit_Framework_TestCase
     {
         $this->serializer = SerializerBuilder::create()->build();
 
-        $this->owner = UserFactory::createTestUser("ModelTest_Owner")->setId(1);
+        $this->owner = UserFactory::createTestUser("ModelTest_Owner");
 
         $this->boundary = GeneralHeadBoundaryFactory::create()
             ->setName('Boundary_Name')

@@ -49,29 +49,6 @@ class User extends BaseUser
     }
 
     /**
-     * @param $id
-     * @return $this
-     */
-    public function setId($id)
-    {
-        $this->id = $id;
-
-        return $this;
-    }
-
-    /**
-     * Set profile
-     *
-     * @param \AppBundle\Entity\UserProfile $profile
-     * @return User
-     */
-    public function setProfile(UserProfile $profile = null)
-    {
-        $this->profile = $profile;
-        return $this;
-    }
-
-    /**
      * Get profile
      *
      * @return \AppBundle\Entity\UserProfile 
