@@ -83,16 +83,53 @@ class PropertyTest extends WebTestCase
         $this->entityManager->flush();
     }
 
+    public function testSetGetName()
+    {
+        $name = "name";
+        $this->property->setName($name);
+        $this->assertEquals($name, $this->property->getName());
+        $this->property->setName(null);
+        $this->assertEquals("", $this->property->getName());
+    }
+
+    public function testSetGetDescription()
+    {
+        $description = "description";
+        $this->property->setDescription($description);
+        $this->assertEquals($description, $this->property->getDescription());
+        $this->property->setDescription(null);
+        $this->assertEquals("", $this->property->getDescription());
+    }
+
+    public function testAddGetRemoveValues()
+    {
+        $value = PropertyValueFactory::create();
+        $this->assertCount(0, $this->property->getValues());
+        $this->property->addValue($value);
+        $this->assertCount(1, $this->property->getValues());
+        $this->property->addValue($value);
+        $this->assertCount(1, $this->property->getValues());
+        $this->assertEquals(1, $this->property->getNumberOfValues());
+        $this->property->removeValue($value);
+        $this->assertCount(0, $this->property->getValues());
+    }
+
+    public function testGetTimeValues(){
+
+        $timeValue1 = PropertyTimeValueFactory::createWithTime(new \DateTime('2016-01-01'))->setValue(1.1);
+        $timeValue2 = PropertyTimeValueFactory::createWithTime(new \DateTime('2016-01-02'))->setValue(1.2);
+        $this->property->addValue($timeValue1);
+        $this->assertCount(1, $this->property->getTimeValues());
+        $this->property->addValue($timeValue2);
+        $this->assertCount(2, $this->property->getTimeValues());
+    }
+
     public function testRecalculateNumberOfValuesWithPropertyValuePreFlush()
     {
         $this->assertCount(0, $this->property->getValues());
         $this->assertEquals(0, $this->property->getNumberOfValues());
         $this->property->addValue(PropertyValueFactory::create()->setValue(5));
         $this->entityManager->persist($this->property);
-
-        $this->assertCount(1, $this->property->getValues());
-        $this->assertEquals(0, $this->property->getNumberOfValues());
-        $this->entityManager->flush();
 
         $this->assertCount(1, $this->property->getValues());
         $this->assertEquals(1, $this->property->getNumberOfValues());
@@ -104,10 +141,6 @@ class PropertyTest extends WebTestCase
         $this->assertEquals(0, $this->property->getNumberOfValues());
         $this->property->addValue(PropertyTimeValueFactory::setDateTimeAndValue(new \DateTime(), 5));
         $this->entityManager->persist($this->property);
-
-        $this->assertCount(1, $this->property->getValues());
-        $this->assertEquals(0, $this->property->getNumberOfValues());
-        $this->entityManager->flush();
 
         $this->assertCount(1, $this->property->getValues());
         $this->assertEquals(1, $this->property->getNumberOfValues());
@@ -124,10 +157,6 @@ class PropertyTest extends WebTestCase
         $value->setValues(array(1,2,3,4,5,6,7,8,9,10));
         $this->property->addValue($value);
         $this->entityManager->persist($this->property);
-        $this->assertCount(1, $this->property->getValues());
-        $this->assertEquals(0, $this->property->getNumberOfValues());
-        $this->entityManager->flush();
-
         $this->assertCount(1, $this->property->getValues());
         $this->assertEquals(10, $this->property->getNumberOfValues());
     }

@@ -98,19 +98,6 @@ class Property
     }
 
     /**
-     * Set id
-     * 
-     * @param $id
-     * @return $this
-     */
-    public function setId($id)
-    {
-        $this->id = $id;
-
-        return $this;
-    }
-
-    /**
      * Get id
      *
      * @return integer 
@@ -198,13 +185,6 @@ class Property
             }
 
             if ($newValue instanceof PropertyFixedIntervalValue){
-                /** @var AbstractValue $value */
-                foreach ($this->values as $key => $value) {
-                    if ($value->getDateBegin() == $newValue->getDateBegin()) {
-                        $this->values[$key] = $newValue;
-                        return $this;
-                    }
-                }
                 $this->values[] = $newValue;
             }
         }
@@ -219,8 +199,7 @@ class Property
      */
     public function removeValue(AbstractValue $value)
     {
-        if ($this->values->contains($value))
-        {
+        if ($this->values->contains($value)) {
             $this->values->removeElement($value);
         }
     }
@@ -244,14 +223,6 @@ class Property
     }
 
     /**
-     * @param \DateTime $dateTimeBegin
-     */
-    public function setDateTimeBegin($dateTimeBegin)
-    {
-        $this->dateTimeBegin = $dateTimeBegin;
-    }
-
-    /**
      * @return \DateTime
      */
     public function getDateTimeEnd()
@@ -260,27 +231,12 @@ class Property
     }
 
     /**
-     * @param \DateTime $dateTimeEnd
-     */
-    public function setDateTimeEnd($dateTimeEnd)
-    {
-        $this->dateTimeEnd = $dateTimeEnd;
-    }
-
-    /**
      * @return int
      */
     public function getNumberOfValues()
     {
+        $this->setDatesAndNumberOfValues();
         return $this->numberOfValues;
-    }
-
-    /**
-     * @param int $numberOfValues
-     */
-    public function setNumberOfValues($numberOfValues)
-    {
-        $this->numberOfValues = $numberOfValues;
     }
 
     /**

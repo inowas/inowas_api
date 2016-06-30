@@ -205,7 +205,7 @@ class ModFlowModelSerialisationTest extends \PHPUnit_Framework_TestCase
 
     public function testCalculationPropertiesInitValueIsAPropertyWithRaster()
     {
-        $property = PropertyFactory::create()->setId(5);
+        $property = PropertyFactory::create();
         $property->addValue(PropertyValueFactory::create()
             ->setRaster(RasterFactory::create())
         );

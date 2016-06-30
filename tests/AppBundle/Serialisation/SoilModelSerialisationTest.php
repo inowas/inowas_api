@@ -45,7 +45,7 @@ class SoilModelSerialisationTest extends \PHPUnit_Framework_TestCase
             ->setOwner($owner)
             ->setPublic(true)
             ->setAreaType(AreaTypeFactory::setName('SoilModelTestAreaType'))
-            ->addProperty(PropertyFactory::create()->setId(14))
+            ->addProperty(PropertyFactory::create())
         ;
 
         $this->soilModel->setArea($this->area);
