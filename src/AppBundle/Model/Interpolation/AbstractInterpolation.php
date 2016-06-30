@@ -30,18 +30,18 @@ abstract class AbstractInterpolation
     protected $pointValues;
 
     /**
-     * KrigingInterpolation constructor.
-     * @param GridSize|null $gridSize
-     * @param BoundingBox|null $boundingBox
-     * @param null $pointValues
+     * AbstractInterpolation constructor.
+     * @param GridSize $gridSize
+     * @param BoundingBox $boundingBox
+     * @param ArrayCollection|null $pointValues
      */
-    public function __construct(GridSize $gridSize = null, BoundingBox $boundingBox = null, $pointValues = null)
+    public function __construct(GridSize $gridSize, BoundingBox $boundingBox, ArrayCollection $pointValues = null)
     {
         $this->boundingBox = $boundingBox;
         $this->gridSize = $gridSize;
         $this->pointValues = $pointValues;
 
-        if (is_null($pointValues)) {
+        if (is_null($pointValues)){
             $this->pointValues = new ArrayCollection();
         }
     }
@@ -55,29 +55,11 @@ abstract class AbstractInterpolation
     }
 
     /**
-     * @param mixed $boundingBox
-     */
-    public function setBoundingBox($boundingBox)
-    {
-        $this->boundingBox = $boundingBox;
-    }
-
-    /**
      * @return GridSize
      */
     public function getGridSize()
     {
         return $this->gridSize;
-    }
-
-    /**
-     * @param GridSize $gridSize
-     * @return KrigingInterpolation
-     */
-    public function setGridSize($gridSize)
-    {
-        $this->gridSize = $gridSize;
-        return $this;
     }
 
     /**

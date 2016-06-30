@@ -34,10 +34,7 @@ class InterpolationSerialisationTest extends \PHPUnit_Framework_TestCase
         $this->gridSize = new GridSize(10,11);
         $this->boundingBox = new BoundingBox(0.1, 10.2, 0.4, 10.5);
 
-        $this->interpolation = new GaussianInterpolation();
-        $this->interpolation->setGridSize($this->gridSize);
-        $this->interpolation->setBoundingBox($this->boundingBox);
-
+        $this->interpolation = new GaussianInterpolation($this->gridSize, $this->boundingBox);
         $this->interpolation->addPoint(new PointValue(1, 5, 3));
         $this->interpolation->addPoint(new PointValue(2, 8, 3));
         $this->interpolation->addPoint(new PointValue(7, 2, 3));

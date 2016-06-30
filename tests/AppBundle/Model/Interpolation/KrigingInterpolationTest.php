@@ -20,12 +20,6 @@ class KrigingInterpolationTest extends \PHPUnit_Framework_TestCase
         $this->serializer = SerializerBuilder::create()->build();
     }
 
-    public function testKrigingObjectHasGrid()
-    {
-        $krigingInterpolation = new KrigingInterpolation(new GridSize(12,13), null);
-        $this->assertObjectHasAttribute('gridSize', $krigingInterpolation);
-    }
-
     public function testKrigingObjectHasBoundingBox()
     {
         $krigingInterpolation = new KrigingInterpolation(new GridSize(12,13), new BoundingBox(1,2,3,4));
@@ -34,7 +28,7 @@ class KrigingInterpolationTest extends \PHPUnit_Framework_TestCase
 
     public function testKrigingObjectCanAddPoints()
     {
-        $krigingInterpolation = new KrigingInterpolation(new GridSize(12,13), null);
+        $krigingInterpolation = new KrigingInterpolation(new GridSize(12,13), new BoundingBox(1,2,3,4));
         $this->assertCount(0, $krigingInterpolation->getPointValues());
         $krigingInterpolation->addPoint(new PointValue(1,2,3));
         $this->assertCount(1, $krigingInterpolation->getPointValues());
@@ -43,7 +37,7 @@ class KrigingInterpolationTest extends \PHPUnit_Framework_TestCase
 
     public function testKrigingObjectCanRemovePoints()
     {
-        $krigingInterpolation = new KrigingInterpolation(new GridSize(12,13), null);
+        $krigingInterpolation = new KrigingInterpolation(new GridSize(12,13), new BoundingBox(1,2,3,4));
         $point = new PointValue(1,2,3);
         $krigingInterpolation->addPoint($point);
         $this->assertCount(1, $krigingInterpolation->getPointValues());
