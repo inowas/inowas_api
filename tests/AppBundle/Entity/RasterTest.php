@@ -83,6 +83,9 @@ class RasterTest extends WebTestCase
 
     public function testGetFilteredData()
     {
+
+        $this->assertEquals($this->raster->getData(), $this->raster->getFilteredData(null));
+
         $filter=
             array(
                 array(false, true, true, true, true, true, true, true, true , false),
