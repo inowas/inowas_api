@@ -8,10 +8,12 @@ use AppBundle\Entity\PropertyType;
 use AppBundle\Entity\PropertyValue;
 use AppBundle\Entity\Raster;
 use AppBundle\Model\ObservationPointFactory;
+use AppBundle\Model\PropertyFactory;
 use AppBundle\Model\PropertyTimeValueFactory;
 use AppBundle\Model\PropertyTypeFactory;
 use AppBundle\Model\PropertyValueFactory;
 use AppBundle\Model\RasterFactory;
+use AppBundle\Model\UserFactory;
 
 class ModelObjectTest extends \PHPUnit_Framework_TestCase
 {
@@ -37,6 +39,79 @@ class ModelObjectTest extends \PHPUnit_Framework_TestCase
 
         $this->modelObject = ObservationPointFactory::create();
         $this->modelObject->setName('TestObservationPoint');
+    }
+
+    public function testInstantiate(){
+        $this->assertInstanceOf('AppBundle\Entity\ModelObject', $this->modelObject);
+        $this->assertInstanceOf('AppBundle\Entity\ObservationPoint', $this->modelObject);
+    }
+
+    public function testSetGetPublic()
+    {
+        $this->modelObject->setPublic(true);
+        $this->assertTrue($this->modelObject->getPublic());
+        $this->modelObject->setPublic(false);
+        $this->assertFalse($this->modelObject->getPublic());
+    }
+
+    public function testSetGetUpdateDates()
+    {
+        $this->assertInstanceOf('\DateTime', $this->modelObject->getDateCreated());
+        $date = new \DateTime('2015-01-01');
+        $this->modelObject->setDateModified($date);
+        $this->assertInstanceOf('\DateTime', $this->modelObject->getDateModified());
+        $this->assertEquals($date, $this->modelObject->getDateModified());
+        $this->modelObject->updateDateModified();
+        $this->assertInstanceOf('\DateTime', $this->modelObject->getDateModified());
+        $this->assertEquals(new \DateTime(), $this->modelObject->getDateModified());
+    }
+
+    public function testGetNameOfClass()
+    {
+        $this->assertEquals('AppBundle\Entity\ObservationPoint', $this->modelObject->getNameOfClass());
+    }
+
+    public function testSetGetOwner()
+    {
+        $user = UserFactory::create();
+        $this->modelObject->setOwner($user);
+        $this->assertEquals($user, $this->modelObject->getOwner());
+    }
+
+    public function testAddGetRemoveProperties()
+    {
+        $property = PropertyFactory::create();
+        $this->assertCount(0, $this->modelObject->getProperties());
+        $this->modelObject->addProperty($property);
+        $this->assertCount(1, $this->modelObject->getProperties());
+        $this->modelObject->addProperty($property);
+        $this->assertCount(1, $this->modelObject->getProperties());
+        $this->modelObject->removeProperty($property);
+        $this->assertCount(0, $this->modelObject->getProperties());
+    }
+
+    public function testGetPropertyIds()
+    {
+        $property = PropertyFactory::create();
+        $this->modelObject->addProperty($property);
+        $this->assertCount(1, $this->modelObject->getPropertyIds());
+        $this->assertInstanceOf('Ramsey\Uuid\Uuid', $this->modelObject->getPropertyIds()[0]);
+    }
+
+    public function testAddGetRemoveObservationPoints(){
+        $observationPoint = ObservationPointFactory::create();
+        $this->assertCount(0, $this->modelObject->getObservationPoints());
+        $this->modelObject->addObservationPoint($observationPoint);
+        $this->assertCount(1, $this->modelObject->getObservationPoints());
+        $this->modelObject->addObservationPoint($observationPoint);
+        $this->assertCount(1, $this->modelObject->getObservationPoints());
+        $this->assertEquals($observationPoint, $this->modelObject->getObservationPoints()->first());
+        $anotherObservationPoint = ObservationPointFactory::create();
+        $this->modelObject->addObservationPoint($anotherObservationPoint);
+        $this->assertCount(2, $this->modelObject->getObservationPoints());
+        $this->modelObject->removeObservationPoint($observationPoint);
+        $this->modelObject->removeObservationPoint($anotherObservationPoint);
+        $this->assertCount(0, $this->modelObject->getObservationPoints());
     }
 
     public function testCanAddValuesToModelObject()

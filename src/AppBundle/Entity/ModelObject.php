@@ -139,19 +139,6 @@ abstract class ModelObject
     }
 
     /**
-     * Set Id
-     *
-     * @param $id
-     * @return $this
-     */
-    public function setId($id)
-    {
-        $this->id = $id;
-
-        return $this;
-    }
-
-    /**
      * Get id
      *
      * @return Uuid
@@ -182,19 +169,6 @@ abstract class ModelObject
     public function getPublic()
     {
         return $this->public;
-    }
-
-    /**
-     * Set dateCreated
-     *
-     * @param \DateTime $dateCreated
-     * @return $this
-     */
-    public function setDateCreated($dateCreated)
-    {
-        $this->dateCreated = $dateCreated;
-
-        return $this;
     }
 
     /**
