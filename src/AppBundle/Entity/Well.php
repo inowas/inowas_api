@@ -5,7 +5,6 @@ namespace AppBundle\Entity;
 use AppBundle\Model\Point;
 use Doctrine\ORM\Mapping as ORM;
 use JMS\Serializer\Annotation as JMS;
-use Ramsey\Uuid\Uuid;
 
 /**
  * @ORM\Entity(repositoryClass="AppBundle\Repository\WellRepository")
@@ -112,13 +111,11 @@ class Well extends BoundaryModelObject
      */
     public function getLayerId()
     {
-        if (null === $this->getLayer()){
-            return 1;
+        if (! $this->layer instanceof GeologicalLayer){
+            return null;
         }
 
-        /** @var Uuid $id */
-        $id = $this->getLayer()->getId();
-        return $id->toString();
+        return $this->layer->getId()->toString();
     }
 
     /**
