@@ -186,7 +186,7 @@ class ModelScenario
      */
     public function removeEvent(Event $event){
         if ($this->events->contains($event)){
-            $this->events->remove($event);
+            $this->events->removeElement($event);
         }
 
         return $this;
@@ -233,11 +233,26 @@ class ModelScenario
     }
 
     /**
+     * @return \DateTime
+     */
+    public function getDateCreated()
+    {
+        return $this->dateCreated;
+    }
+
+    /**
+     * @return \DateTime
+     */
+    public function getDateModified()
+    {
+        return $this->dateModified;
+    }
+
+    /**
      * @ORM\PrePersist()
      */
-    public function prePersist()
+    public function updateDateModified()
     {
         $this->dateModified = new \DateTime();
     }
-
 }

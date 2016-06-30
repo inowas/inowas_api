@@ -30,7 +30,7 @@ class ChangeLayerValueEvent extends AbstractEvent
      */
     private $propertyType;
 
-    public function __construct(ModelObject $origin, PropertyType $propertyType, AbstractValue $value)
+    public function __construct(GeologicalLayer $origin, PropertyType $propertyType, AbstractValue $value)
     {
         parent::__construct();
         $this->origin = $origin;

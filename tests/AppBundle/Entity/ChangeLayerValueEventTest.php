@@ -6,7 +6,7 @@ use AppBundle\Entity\ChangeLayerValueEvent;
 use AppBundle\Entity\GeologicalLayer;
 use AppBundle\Entity\PropertyType;
 use AppBundle\Entity\PropertyValue;
-use AppBundle\Model\GeologicalUnitFactory;
+use AppBundle\Model\GeologicalLayerFactory;
 use AppBundle\Model\PropertyTypeFactory;
 use AppBundle\Model\PropertyValueFactory;
 
@@ -27,7 +27,7 @@ class ChangeLayerValueEventTest extends \PHPUnit_Framework_TestCase
      */
     public function setUp()
     {
-        $this->layer = GeologicalUnitFactory::create();
+        $this->layer = GeologicalLayerFactory::create();
         $this->propertyType = PropertyTypeFactory::create();
         $this->value = PropertyValueFactory::create();
     }
