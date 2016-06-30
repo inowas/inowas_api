@@ -12,9 +12,9 @@ class ActiveCells
     {
         $instance = new self();
         
-        if (!is_array($activeCells)){
+        if (!is_array($activeCells[0])){
             throw new \InvalidArgumentException(sprintf(
-                'ActiveCells is supposed to be an array, %s given',
+                'ActiveCells is supposed to be an two dimensional array, %s given',
                 gettype($activeCells)
             ));
         }
