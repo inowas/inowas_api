@@ -122,7 +122,7 @@ class ModFlowModel extends AbstractModel
      * @param Area $area
      * @return ModFlowModel
      */
-    public function setArea(Area $area)
+    public function setArea(Area $area=null)
     {
         $this->area = $area;
         return $this;

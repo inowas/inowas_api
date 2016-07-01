@@ -148,12 +148,12 @@ class ModflowModelTest extends \PHPUnit_Framework_TestCase
         $area = AreaFactory::create()->setName('Area');
         $this->modflowModel->setArea($area);
         $this->modflowModel->preFlush();
-        $this->assertNull($this->modflowModel->getArea());
         $this->assertCount(1, $this->modflowModel->getModelObjects());
         $this->assertEquals($area, $this->modflowModel->getModelObjects()->first());
 
         // Reset
         $this->modflowModel->removeModelObject($area);
+        $this->modflowModel->setArea();
         $this->assertCount(0, $this->modflowModel->getModelObjects());
 
         // Add Well
