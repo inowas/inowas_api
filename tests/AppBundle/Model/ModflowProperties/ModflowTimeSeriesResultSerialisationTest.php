@@ -1,6 +1,6 @@
 <?php
 
-namespace Tests\AppBundle\Controller;
+namespace Tests\AppBundle\Model\ModflowProperties;
 
 use AppBundle\Entity\ModFlowModel;
 use AppBundle\Model\ModFlowModelFactory;

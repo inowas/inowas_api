@@ -1,6 +1,6 @@
 <?php
 
-namespace Tests\AppBundle\Controller;
+namespace Tests\AppBundle\Model\ModflowProperties;
 
 use AppBundle\Entity\ModFlowModel;
 use AppBundle\Model\ModFlowModelFactory;
@@ -9,7 +9,8 @@ use JMS\Serializer\SerializationContext;
 use JMS\Serializer\Serializer;
 use JMS\Serializer\SerializerBuilder;
 
-class ModflowCalculationSerialisationTest extends \PHPUnit_Framework_TestCase
+
+class ModflowCalculationPropertiesTest extends \PHPUnit_Framework_TestCase
 {
     /** @var  Serializer $serializer */
     protected $serializer;

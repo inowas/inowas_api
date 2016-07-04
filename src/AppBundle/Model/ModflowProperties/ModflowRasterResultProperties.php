@@ -68,31 +68,11 @@ class ModflowRasterResultProperties extends AbstractModflowResultProperties
     }
 
     /**
-     * @param int $layer
-     * @return ModflowRasterResultProperties
-     */
-    public function setLayer($layer)
-    {
-        $this->layer = $layer;
-        return $this;
-    }
-
-    /**
      * @return array
      */
     public function getTimesteps()
     {
         return $this->timesteps;
-    }
-
-    /**
-     * @param array $timesteps
-     * @return ModflowRasterResultProperties
-     */
-    public function setTimesteps($timesteps)
-    {
-        $this->timesteps = $timesteps;
-        return $this;
     }
 
     /**
@@ -111,15 +91,5 @@ class ModflowRasterResultProperties extends AbstractModflowResultProperties
     public function getOperation()
     {
         return $this->operation;
-    }
-
-    /**
-     * @param string $operation
-     * @return ModflowRasterResultProperties
-     */
-    public function setOperation($operation)
-    {
-        $this->operation = $operation;
-        return $this;
     }
 }

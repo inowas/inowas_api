@@ -18,24 +18,6 @@ abstract class AbstractModflowProperties
     protected $modelId;
 
     /**
-     * @return string
-     */
-    public function getModelId()
-    {
-        return $this->modelId;
-    }
-
-    /**
-     * @param $modelId
-     * @return $this
-     */
-    public function setModelId($modelId)
-    {
-        $this->modelId = $modelId;
-        return $this;
-    }
-
-    /**
      * AbstractModflowProcess constructor.
      * @param $modelId
      */

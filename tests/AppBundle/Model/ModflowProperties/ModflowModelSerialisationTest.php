@@ -1,6 +1,6 @@
 <?php
 
-namespace Tests\AppBundle\Serialization;
+namespace Tests\AppBundle\Model\ModflowProperties;
 
 use AppBundle\Entity\GeneralHeadBoundary;
 use AppBundle\Entity\GeologicalLayer;
