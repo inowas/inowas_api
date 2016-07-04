@@ -45,11 +45,20 @@ class AreaRestControllerTest extends WebTestCase
         $this->areaType = AreaTypeFactory::setName('ModelAreaType');
         $this->entityManager->persist($this->areaType);
 
-        $this->area_1 = AreaFactory::setOwnerNameTypeAndPublic($this->owner, 'ModelArea1', $this->areaType, true);
+        $this->area_1 = AreaFactory::create()
+            ->setOwner($this->owner)
+            ->setName('ModelArea1')
+            ->setAreaType($this->areaType)
+            ->setPublic(true);
         $this->entityManager->persist($this->area_1);
         $this->entityManager->flush();
 
-        $this->area_2 = AreaFactory::setOwnerNameTypeAndPublic($this->owner, 'ModelArea2', $this->areaType, true);
+        $this->area_2 = AreaFactory::create()
+            ->setOwner($this->owner)
+            ->setName('ModelArea2')
+            ->setAreaType($this->areaType)
+            ->setPublic(true);
+
         $rings = array(
             new LineString(
                 array(

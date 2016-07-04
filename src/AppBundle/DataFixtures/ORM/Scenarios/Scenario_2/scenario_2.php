@@ -128,7 +128,12 @@ class LoadScenario_2 implements FixtureInterface, ContainerAwareInterface
         $entityManager->persist($areaType);
 
         // Create area
-        $area = AreaFactory::setOwnerNameTypeAndPublic($user, "SC2_A1", $areaType, $public);
+        $area = AreaFactory::create()
+            ->setOwner($user)
+            ->setName("SC2_A1")
+            ->setAreaType($areaType)
+            ->setPublic($public);
+        
         $entityManager->persist($area);
 
         $converter = new PostgreSql();
