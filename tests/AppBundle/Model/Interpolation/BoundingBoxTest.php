@@ -2,7 +2,6 @@
 
 namespace Tests\AppBundle\Controller;
 
-
 use AppBundle\Model\Interpolation\BoundingBox;
 
 class BoundingBoxTest extends \PHPUnit_Framework_TestCase
@@ -14,6 +13,7 @@ class BoundingBoxTest extends \PHPUnit_Framework_TestCase
         $this->assertObjectHasAttribute('xMax', $boundingBox);
         $this->assertObjectHasAttribute('yMin', $boundingBox);
         $this->assertObjectHasAttribute('yMax', $boundingBox);
+        $this->assertObjectHasAttribute('srid', $boundingBox);
     }
     
     public function testBoundingBoxHasDefault0()
@@ -23,28 +23,31 @@ class BoundingBoxTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals($boundingBox->getXMax(), 0);
         $this->assertEquals($boundingBox->getYMin(), 0);
         $this->assertEquals($boundingBox->getYMax(), 0);
+        $this->assertEquals($boundingBox->getSrid(), 0);
     }
 
     public function testBoundingBoxConstructor()
     {
-        $boundingBox = new BoundingBox(1, 2, 3, 4);
+        $boundingBox = new BoundingBox(1, 2, 3, 4, 4326);
         $this->assertEquals($boundingBox->getXMin(), 1);
         $this->assertEquals($boundingBox->getXMax(), 2);
         $this->assertEquals($boundingBox->getYMin(), 3);
         $this->assertEquals($boundingBox->getYMax(), 4);
-        $this->assertEquals($boundingBox->getYMax(), 4);
+        $this->assertEquals($boundingBox->getSrid(), 4326);
     }
 
     public function testPointValueSetter()
     {
-        $pointValue = new BoundingBox();
-        $pointValue->setXMin(4.1);
-        $pointValue->setXMax(5.1);
-        $pointValue->setYMin(6.1);
-        $pointValue->setYMax(6.1);
-        $this->assertEquals($pointValue->getXMin(), 4.1);
-        $this->assertEquals($pointValue->getXMax(), 5.1);
-        $this->assertEquals($pointValue->getYMin(), 6.1);
-        $this->assertEquals($pointValue->getYMax(), 6.1);
+        $boundingBox = new BoundingBox();
+        $boundingBox->setXMin(4.1);
+        $boundingBox->setXMax(5.1);
+        $boundingBox->setYMin(6.1);
+        $boundingBox->setYMax(6.1);
+        $boundingBox->setSrid(4326);
+        $this->assertEquals($boundingBox->getXMin(), 4.1);
+        $this->assertEquals($boundingBox->getXMax(), 5.1);
+        $this->assertEquals($boundingBox->getYMin(), 6.1);
+        $this->assertEquals($boundingBox->getYMax(), 6.1);
+        $this->assertEquals($boundingBox->getSrid(), 4326);
     }
 }
