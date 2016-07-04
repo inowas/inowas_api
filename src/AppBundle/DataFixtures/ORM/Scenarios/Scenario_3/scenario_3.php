@@ -130,17 +130,26 @@ class LoadScenario_3 implements FixtureInterface, ContainerAwareInterface
         $entityManager->persist($soilModel);
 
         // Create new geological layers
-        $layer_1 = GeologicalLayerFactory::setOwnerNameAndPublic($user, 'SC3_L1', $public);
+        $layer_1 = GeologicalLayerFactory::create()
+            ->setOwner($user)
+            ->setName('SC3_L1')
+            ->setPublic($public);
         $layer_1->setOrder(GeologicalLayer::TOP_LAYER);
         $soilModel->addGeologicalLayer($layer_1);
         $entityManager->persist($layer_1);
 
-        $layer_2 = GeologicalLayerFactory::setOwnerNameAndPublic($user, 'SC3_L2', $public);
+        $layer_2 = GeologicalLayerFactory::create()
+            ->setOwner($user)
+            ->setName('SC3_L2')
+            ->setPublic($public);
         $layer_2->setOrder(GeologicalLayer::TOP_LAYER+1);
         $soilModel->addGeologicalLayer($layer_2);
         $entityManager->persist($layer_2);
 
-        $layer_3 = GeologicalLayerFactory::setOwnerNameAndPublic($user, 'SC3_L3', $public);
+        $layer_3 = GeologicalLayerFactory::create()
+            ->setOwner($user)
+            ->setName('SC3_L3')
+            ->setPublic($public);
         $layer_3->setOrder(GeologicalLayer::TOP_LAYER+2);
         $soilModel->addGeologicalLayer($layer_3);
         $entityManager->persist($layer_3);

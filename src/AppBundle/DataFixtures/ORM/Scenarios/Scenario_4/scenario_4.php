@@ -184,22 +184,34 @@ class LoadScenario_4 implements FixtureInterface, ContainerAwareInterface
         $entityManager->flush();
 
         // Create new geological layers
-        $layer_1 = GeologicalLayerFactory::setOwnerNameAndPublic($user, 'SC4_L1', $public);
+        $layer_1 = GeologicalLayerFactory::create()
+            ->setOwner($user)
+            ->setName('SC4_L1')
+            ->setPublic($public);
         $layer_1->setOrder(GeologicalLayer::TOP_LAYER);
         $entityManager->persist($layer_1);
         $model->getSoilModel()->addGeologicalLayer($layer_1);
 
-        $layer_2 = GeologicalLayerFactory::setOwnerNameAndPublic($user, 'SC4_L2', $public);
+        $layer_2 = GeologicalLayerFactory::create()
+            ->setOwner($user)
+            ->setName('SC4_L3')
+            ->setPublic($public);
         $layer_2->setOrder(GeologicalLayer::TOP_LAYER+1);
         $entityManager->persist($layer_2);
         $model->getSoilModel()->addGeologicalLayer($layer_2);
 
-        $layer_3 = GeologicalLayerFactory::setOwnerNameAndPublic($user, 'SC4_L3', $public);
+        $layer_3 = GeologicalLayerFactory::create()
+            ->setOwner($user)
+            ->setName('SC4_L3')
+            ->setPublic($public);
         $layer_3->setOrder(GeologicalLayer::TOP_LAYER+2);
         $entityManager->persist($layer_3);
         $model->getSoilModel()->addGeologicalLayer($layer_3);
 
-        $layer_4 = GeologicalLayerFactory::setOwnerNameAndPublic($user, 'SC4_L4', $public);
+        $layer_4 = GeologicalLayerFactory::create()
+            ->setOwner($user)
+            ->setName('SC4_L4')
+            ->setPublic($public);
         $layer_4->setOrder(GeologicalLayer::TOP_LAYER+3);
         $entityManager->persist($layer_4);
         $model->getSoilModel()->addGeologicalLayer($layer_4);

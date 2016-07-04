@@ -133,7 +133,7 @@ class LoadScenario_2 implements FixtureInterface, ContainerAwareInterface
             ->setName("SC2_A1")
             ->setAreaType($areaType)
             ->setPublic($public);
-        
+
         $entityManager->persist($area);
 
         $converter = new PostgreSql();
@@ -157,22 +157,35 @@ class LoadScenario_2 implements FixtureInterface, ContainerAwareInterface
         $entityManager->persist($soilModel);
 
         // Create new geological layers
-        $layer_1 = GeologicalLayerFactory::setOwnerNameAndPublic($user, 'SC2_L1', $public);
+        $layer_1 = GeologicalLayerFactory::create()
+            ->setOwner($user)
+            ->setName('SC2_L1')
+            ->setPublic($public);
+
         $layer_1->setOrder(GeologicalLayer::TOP_LAYER);
         $entityManager->persist($layer_1);
         $soilModel->addGeologicalLayer($layer_1);
 
-        $layer_2 = GeologicalLayerFactory::setOwnerNameAndPublic($user, 'SC2_L2', $public);
+        $layer_2 = GeologicalLayerFactory::create()
+            ->setOwner($user)
+            ->setName('SC2_L2')
+            ->setPublic($public);
         $layer_2->setOrder(GeologicalLayer::TOP_LAYER+1);
         $entityManager->persist($layer_2);
         $soilModel->addGeologicalLayer($layer_2);
 
-        $layer_3 = GeologicalLayerFactory::setOwnerNameAndPublic($user, 'SC2_L3', $public);
+        $layer_3 = GeologicalLayerFactory::create()
+            ->setOwner($user)
+            ->setName('SC2_L3')
+            ->setPublic($public);
         $layer_3->setOrder(GeologicalLayer::TOP_LAYER+2);
         $entityManager->persist($layer_3);
         $soilModel->addGeologicalLayer($layer_3);
 
-        $layer_4 = GeologicalLayerFactory::setOwnerNameAndPublic($user, 'SC2_L4', $public);
+        $layer_4 = GeologicalLayerFactory::create()
+            ->setOwner($user)
+            ->setName('SC2_L4')
+            ->setPublic($public);
         $layer_4->setOrder(GeologicalLayer::TOP_LAYER+3);
         $entityManager->persist($layer_4);
         $soilModel->addGeologicalLayer($layer_4);
