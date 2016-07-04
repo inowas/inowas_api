@@ -60,16 +60,6 @@ class PointValue
     }
 
     /**
-     * @param Point $point
-     * @return $this
-     */
-    public function setPoint($point)
-    {
-        $this->point = $point;
-        return $this;
-    }
-
-    /**
      * @return null
      */
     public function getValue()
