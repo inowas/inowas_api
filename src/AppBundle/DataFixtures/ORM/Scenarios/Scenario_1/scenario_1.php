@@ -228,7 +228,11 @@ class LoadScenario_1 implements FixtureInterface, ContainerAwareInterface
         $entityManager->flush();
 
         // Create Stream
-        $stream = StreamBoundaryFactory::setOwnerNameAndPublic($user, 'SC1_S1', $public);
+        $stream = StreamBoundaryFactory::create()
+        ->setOwner($user)
+        ->setName('SC1_S1')
+        ->setPublic($public);
+        
         $stream->setStartingPoint(new Point(11777338.0302479, 2395656.78306049, 4326));
         $stream->setGeometry(
             new LineString(array(
