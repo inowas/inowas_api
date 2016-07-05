@@ -51,6 +51,11 @@ class ModflowTest extends WebTestCase
         $this->assertTrue(Uuid::isValid($this->modflow->getTmpFileName()));
     }
 
+    public function testGetInputFileName(){
+        $uuid = Uuid::uuid4();
+        $this->assertContains('/var/data/modflow/'.$uuid->toString(), $this->modflow->getWorkSpace($uuid));
+    }
+
     public function testGetBaseUrlInTestMode(){
         $this->assertContains('http://localhost/', $this->modflow->getBaseUrl());
     }
@@ -89,8 +94,30 @@ class ModflowTest extends WebTestCase
         if ($fs->exists($modflow->getTmpFolder())) {
             $fs->remove($modflow->getTmpFolder());
         }
+    }
 
+    public function testCalculationThrowsExcaptionIfProcessIsNotSuccessful(){
+        $processStub = $this->getMockBuilder(Process::class)
+            ->disableOriginalConstructor()
+            ->setMethods(array('setArguments', 'setWorkingDirectory', 'getProcess', 'isSuccessful', 'run', 'getOutput'))
+            ->getMock()
+        ;
 
+        $processStub->method('isSuccessful')->willReturn(false);
+        $processStub->method('setArguments')->willReturn($processStub);
+        $processStub->method('setWorkingDirectory')->willReturn($processStub);
+        $processStub->method('getProcess')->willReturn($processStub);
+        $processStub->method('run')->willReturn($processStub);
+        $processStub->method('getOutput')->willReturn('{"error":"Exception raised in calculation of method gaussian"}');
 
+        $this->setExpectedException('AppBundle\Exception\ProcessFailedException');
+        $modflow = new Modflow($this->serializer, $this->httpKernel, $processStub, 'workingdir', 'dataFolder', 'tempFolder', 'baseUrl');
+        $modelId = Uuid::uuid4();
+        $modflow->calculate($modelId);
+
+        $fs = new Filesystem();
+        if ($fs->exists($modflow->getTmpFolder())) {
+            $fs->remove($modflow->getTmpFolder());
+        }
     }
 }

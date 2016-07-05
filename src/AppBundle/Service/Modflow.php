@@ -224,7 +224,7 @@ class Modflow
 
         $process->run();
         if (!$process->isSuccessful()) {
-            throw new ProcessFailedException($process);
+            throw new \AppBundle\Exception\ProcessFailedException();
         }
 
         $jsonResponse = $process->getOutput();
