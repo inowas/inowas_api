@@ -130,7 +130,7 @@ class RasterRestControllerTest extends WebTestCase
     public function testGetRasterWithUnknownIdReturns404()
     {
         $client = static::createClient();
-        $client->request('GET', '/api/rasters/'.Uuid::uuid4()->toString().'json');
+        $client->request('GET', '/api/rasters/'.Uuid::uuid4()->toString().'.json');
         $this->assertEquals(404, $client->getResponse()->getStatusCode());
     }
 

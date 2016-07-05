@@ -2,6 +2,7 @@
 
 namespace AppBundle\Controller;
 
+use AppBundle\Entity\Raster;
 use AppBundle\Model\Interpolation\BoundingBox;
 use AppBundle\Model\Interpolation\GridSize;
 use AppBundle\Model\PropertyFactory;
@@ -50,7 +51,7 @@ class RasterRestController extends FOSRestController
                 'id' => $uuid
             ));
 
-        if (!$entity) {
+        if (! $entity instanceof Raster) {
             throw $this->createNotFoundException('Raster with id='.$id.' not found.');
         }
 
@@ -107,10 +108,18 @@ class RasterRestController extends FOSRestController
      */
     public function postRasterAction(ParamFetcher $paramFetcher)
     {
+        $modelObjectId = $paramFetcher->get('id');
+
+        try{
+            $uuid = Uuid::fromString($modelObjectId);
+        } catch (\InvalidArgumentException $e){
+            throw $this->createNotFoundException('ModelObject with id='.$modelObjectId.' not found.');
+        }
+
         $mo = $this->getDoctrine()
             ->getRepository('AppBundle:ModelObject')
             ->findOneBy(array(
-                'id' => $paramFetcher->get('id')
+                'id' => $uuid
             ));
 
         if (!$mo) {
