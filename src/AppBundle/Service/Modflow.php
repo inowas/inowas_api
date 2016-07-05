@@ -97,31 +97,11 @@ class Modflow
     }
 
     /**
-     * @param string $tmpFolder
-     * @return Interpolation
-     */
-    public function setTmpFolder($tmpFolder)
-    {
-        $this->tmpFolder = $tmpFolder;
-        return $this;
-    }
-
-    /**
      * @return string
      */
     public function getTmpFileName()
     {
         return $this->tmpFileName;
-    }
-
-    /**
-     * @param string $tmpFileName
-     * @return Interpolation
-     */
-    public function setTmpFileName($tmpFileName)
-    {
-        $this->tmpFileName = $tmpFileName;
-        return $this;
     }
 
     /**

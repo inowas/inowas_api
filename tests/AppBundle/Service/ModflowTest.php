@@ -3,6 +3,7 @@
 namespace Tests\AppBundle\Service;
 
 use AppBundle\Service\Modflow;
+use Ramsey\Uuid\Uuid;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
 class ModflowTest extends WebTestCase
@@ -26,6 +27,10 @@ class ModflowTest extends WebTestCase
         $this->assertContains('/app/../var/data/modflow/123', $this->modflow->getWorkSpace('123'));
         $this->assertContains('/app/../py/pyprocessing/modflow', $this->modflow->getWorkingDirectory());
         $this->assertContains('/123', $this->modflow->getWorkSpace('123'));
+    }
+
+    public function testGetTmpFileName(){
+        $this->assertTrue(Uuid::isValid($this->modflow->getTmpFileName()));
     }
 
     public function testGetBaseUrlInTestMode()
