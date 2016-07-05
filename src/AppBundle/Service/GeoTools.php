@@ -60,12 +60,13 @@ class GeoTools
         return $this->isActive($areaId, $srid, $x, $y);
     }
 
-    public function getGeoJsonGrid(BoundingBox $boundingBox, GridSize $gridSize, $activeCells)
+    public function getGeoJsonGrid(BoundingBox $boundingBox, GridSize $gridSize, ActiveCells $activeCells)
     {
         $nx = $gridSize->getNX();
         $ny = $gridSize->getNY();
         $dx = ($boundingBox->getXMax()-$boundingBox->getXMin())/$nx;
         $dy = ($boundingBox->getYMax()-$boundingBox->getYMin())/$ny;
+        $activeCells = $activeCells->toArray();
 
         $featureCollection = new FeatureCollection();
 

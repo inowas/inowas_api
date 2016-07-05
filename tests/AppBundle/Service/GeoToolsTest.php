@@ -16,6 +16,7 @@ use CrEOF\Spatial\PHP\Types\Geometry\LineString;
 use CrEOF\Spatial\PHP\Types\Geometry\Polygon;
 use Doctrine\DBAL\Types\Type;
 use Doctrine\ORM\EntityManager;
+use JMS\Serializer\Serializer;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
 class GeoToolsTest extends WebTestCase
@@ -35,6 +36,9 @@ class GeoToolsTest extends WebTestCase
     /** @var  EntityManager */
     protected $entityManager;
 
+    /** @var  Serializer */
+    protected $serializer;
+
     public function setUp()
     {
         self::bootKernel();
@@ -44,6 +48,9 @@ class GeoToolsTest extends WebTestCase
 
         $this->entityManager = static::$kernel->getContainer()
             ->get('doctrine.orm.entity_manager');
+
+        $this->serializer = static::$kernel->getContainer()
+            ->get('jms_serializer');
 
         $this->area = AreaFactory::create();
         $converter = new PostgreSql();
@@ -82,6 +89,16 @@ class GeoToolsTest extends WebTestCase
 
         $this->assertTrue($result instanceof ActiveCells);
         $this->assertEquals($expected, $result->toArray());
+        $this->assertTrue($this->geoTools->pointIntersectsWithArea($this->area, 11780000, 2390000, 3857));
+        $this->assertFalse($this->geoTools->pointIntersectsWithArea($this->area, 11770000, 2380000, 3857));
+    }
+
+    public function testGetGeoJsonGrid(){
+        $activeCells = $this->geoTools->getActiveCells($this->area, $this->boundingBox, $this->gridSize);
+        $featureCollection = $this->geoTools->getGeoJsonGrid($this->boundingBox, $this->gridSize, $activeCells);
+        $json = $this->serializer->serialize($featureCollection, 'json');
+        $this->assertEquals($json, '{"type":"FeatureCollection","features":[{"type":"Feature","id":0,"properties":{"row":0,"col":0},"geometry":{"type":"Polygon","coordinates":[[[11775189.217654,2399964.1654093],[11775189.217654,2403506.4981163],[11778100.88197,2403506.4981163],[11778100.88197,2399964.1654093],[11775189.217654,2399964.1654093]]]}},{"type":"Feature","id":1,"properties":{"row":0,"col":1},"geometry":{"type":"Polygon","coordinates":[[[11778100.88197,2399964.1654093],[11778100.88197,2403506.4981163],[11781012.546285,2403506.4981163],[11781012.546285,2399964.1654093],[11778100.88197,2399964.1654093]]]}},{"type":"Feature","id":2,"properties":{"row":1,"col":0},"geometry":{"type":"Polygon","coordinates":[[[11775189.217654,2396421.8327022],[11775189.217654,2399964.1654093],[11778100.88197,2399964.1654093],[11778100.88197,2396421.8327022],[11775189.217654,2396421.8327022]]]}},{"type":"Feature","id":3,"properties":{"row":1,"col":1},"geometry":{"type":"Polygon","coordinates":[[[11778100.88197,2396421.8327022],[11778100.88197,2399964.1654093],[11781012.546285,2399964.1654093],[11781012.546285,2396421.8327022],[11778100.88197,2396421.8327022]]]}},{"type":"Feature","id":4,"properties":{"row":1,"col":2},"geometry":{"type":"Polygon","coordinates":[[[11781012.546285,2396421.8327022],[11781012.546285,2399964.1654093],[11783924.2106,2399964.1654093],[11783924.2106,2396421.8327022],[11781012.546285,2396421.8327022]]]}},{"type":"Feature","id":5,"properties":{"row":2,"col":0},"geometry":{"type":"Polygon","coordinates":[[[11775189.217654,2392879.4999952],[11775189.217654,2396421.8327022],[11778100.88197,2396421.8327022],[11778100.88197,2392879.4999952],[11775189.217654,2392879.4999952]]]}},{"type":"Feature","id":6,"properties":{"row":2,"col":1},"geometry":{"type":"Polygon","coordinates":[[[11778100.88197,2392879.4999952],[11778100.88197,2396421.8327022],[11781012.546285,2396421.8327022],[11781012.546285,2392879.4999952],[11778100.88197,2392879.4999952]]]}},{"type":"Feature","id":7,"properties":{"row":2,"col":2},"geometry":{"type":"Polygon","coordinates":[[[11781012.546285,2392879.4999952],[11781012.546285,2396421.8327022],[11783924.2106,2396421.8327022],[11783924.2106,2392879.4999952],[11781012.546285,2392879.4999952]]]}},{"type":"Feature","id":8,"properties":{"row":3,"col":1},"geometry":{"type":"Polygon","coordinates":[[[11778100.88197,2389337.1672882],[11778100.88197,2392879.4999952],[11781012.546285,2392879.4999952],[11781012.546285,2389337.1672882],[11778100.88197,2389337.1672882]]]}},{"type":"Feature","id":9,"properties":{"row":3,"col":2},"geometry":{"type":"Polygon","coordinates":[[[11781012.546285,2389337.1672882],[11781012.546285,2392879.4999952],[11783924.2106,2392879.4999952],[11783924.2106,2389337.1672882],[11781012.546285,2389337.1672882]]]}},{"type":"Feature","id":10,"properties":{"row":3,"col":3},"geometry":{"type":"Polygon","coordinates":[[[11783924.2106,2389337.1672882],[11783924.2106,2392879.4999952],[11786835.874916,2392879.4999952],[11786835.874916,2389337.1672882],[11783924.2106,2389337.1672882]]]}},{"type":"Feature","id":11,"properties":{"row":3,"col":4},"geometry":{"type":"Polygon","coordinates":[[[11786835.874916,2389337.1672882],[11786835.874916,2392879.4999952],[11789747.539231,2392879.4999952],[11789747.539231,2389337.1672882],[11786835.874916,2389337.1672882]]]}},{"type":"Feature","id":12,"properties":{"row":4,"col":2},"geometry":{"type":"Polygon","coordinates":[[[11781012.546285,2385794.8345812],[11781012.546285,2389337.1672882],[11783924.2106,2389337.1672882],[11783924.2106,2385794.8345812],[11781012.546285,2385794.8345812]]]}},{"type":"Feature","id":13,"properties":{"row":4,"col":3},"geometry":{"type":"Polygon","coordinates":[[[11783924.2106,2385794.8345812],[11783924.2106,2389337.1672882],[11786835.874916,2389337.1672882],[11786835.874916,2385794.8345812],[11783924.2106,2385794.8345812]]]}},{"type":"Feature","id":14,"properties":{"row":4,"col":4},"geometry":{"type":"Polygon","coordinates":[[[11786835.874916,2385794.8345812],[11786835.874916,2389337.1672882],[11789747.539231,2389337.1672882],[11789747.539231,2385794.8345812],[11786835.874916,2385794.8345812]]]}}]}');
+
     }
 
     public function testGetGeometrySRID3857FromConstantHeadBoundaryAsGeoJSON(){
@@ -151,6 +168,14 @@ class GeoToolsTest extends WebTestCase
         $this->assertEquals(20.942793923555, $transformedBoundingBox->getYMin());
         $this->assertEquals(21.100124603334, $transformedBoundingBox->getYMax());
         $this->assertEquals($targetSrid, $transformedBoundingBox->getSrid());
+
+        $transformedBoundingBox = $this->geoTools->transformBoundingBox($transformedBoundingBox, $targetSrid);
+        $this->assertTrue($transformedBoundingBox instanceof BoundingBox);
+        $this->assertEquals(105.75218379342, $transformedBoundingBox->getXMin());
+        $this->assertEquals(105.91170436595, $transformedBoundingBox->getXMax());
+        $this->assertEquals(20.942793923555, $transformedBoundingBox->getYMin());
+        $this->assertEquals(21.100124603334, $transformedBoundingBox->getYMax());
+        $this->assertEquals($targetSrid, $transformedBoundingBox->getSrid());
     }
 
     public function testGetGridCellFromPoint()
@@ -163,6 +188,18 @@ class GeoToolsTest extends WebTestCase
         $this->assertArrayHasKey("col", $result);
         $this->assertEquals(112, $result["row"]);
         $this->assertEquals(61, $result["col"]);
+    }
+
+    public function testGetNullGridCellsFromPointOutSideBoundingBox()
+    {
+        $bb = $this->geoTools->transformBoundingBox(new BoundingBox(578205, 594692, 2316000, 2333500, 32648), 4326);
+        $gz = new GridSize(165, 175);
+        $point = new Point(100.81165, 21, 4326);
+        $result = $this->geoTools->getGridCellFromPoint($bb, $gz, $point);
+        $this->assertArrayHasKey("row", $result);
+        $this->assertArrayHasKey("col", $result);
+        $this->assertEquals(null, $result["row"]);
+        $this->assertEquals(null, $result["col"]);
     }
 
     public function tearDown()
