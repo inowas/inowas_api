@@ -6,6 +6,7 @@ use FOS\RestBundle\Controller\FOSRestController;
 use FOS\RestBundle\View\View;
 use JMS\Serializer\SerializationContext;
 use Nelmio\ApiDocBundle\Annotation\ApiDoc;
+use Ramsey\Uuid\Uuid;
 
 class SoilModelRestController extends FOSRestController
 {
@@ -32,31 +33,19 @@ class SoilModelRestController extends FOSRestController
                 'username' => $username
             ));
 
-        if (!$user)
-        {
+        if (!$user) {
             throw $this->createNotFoundException('User with username '.$username.' not found.');
         }
 
-        if ($this->getUser() === $user || $this->isGranted('ROLE_ADMIN'))
-        {
-            $soilModels = $this->getDoctrine()
-                ->getRepository('AppBundle:SoilModel')
-                ->findBy(
-                    array('owner' => $user),
-                    array('id' => 'ASC')
-                );
-        } else
-        {
-            $soilModels = $this->getDoctrine()
-                ->getRepository('AppBundle:SoilModel')
-                ->findBy(
-                    array(
-                        'owner' => $user,
-                        'public' => true
-                    ),
-                    array('id' => 'ASC')
-                );
-        }
+        $soilModels = $this->getDoctrine()
+            ->getRepository('AppBundle:SoilModel')
+            ->findBy(
+                array(
+                    'owner' => $user,
+                    'public' => true
+                ),
+                array('id' => 'ASC')
+            );
 
         $view = View::create();
         $view->setData($soilModels)
@@ -88,30 +77,29 @@ class SoilModelRestController extends FOSRestController
     public function getSoilmodelsAction($id)
     {
 
-        $area = $this->getDoctrine()
-            ->getRepository('AppBundle:SoilModel')
-            ->findOneBy(array(
-                'id' => $id
-            ));
-
-        if (!$area)
-        {
+        try{
+            $uuid = Uuid::fromString($id);
+        } catch (\InvalidArgumentException $e) {
             throw $this->createNotFoundException('Soilmodel with id='.$id.' not found.');
         }
 
-        if ($area->getPublic() || $this->isGranted('ROLE_ADMIN') || $this->getUser() === $area->getOwner())
-        {
-            $view = View::create();
-            $view->setData($area)
-                ->setStatusCode(200)
-                ->setSerializationContext(SerializationContext::create()
-                    ->setGroups(array('soilmodeldetails')));
+        $soilModel = $this->getDoctrine()
+            ->getRepository('AppBundle:SoilModel')
+            ->findOneBy(array(
+                'id' => $uuid
+            ));
 
-            return $view;
-        } else
-        {
-            throw $this->createAccessDeniedException();
+        if (!$soilModel) {
+            throw $this->createNotFoundException('Soilmodel with id='.$id.' not found.');
         }
+
+        $view = View::create();
+        $view->setData($soilModel)
+            ->setStatusCode(200)
+            ->setSerializationContext(SerializationContext::create()
+                ->setGroups(array('soilmodeldetails')));
+
+        return $view;
     }
 
     /**
@@ -132,28 +120,29 @@ class SoilModelRestController extends FOSRestController
      */
     public function getSoilmodelsGeologicallayersAction($id)
     {
+
+        try{
+            $uuid = Uuid::fromString($id);
+        } catch (\InvalidArgumentException $e) {
+            throw $this->createNotFoundException('Soilmodel with id='.$id.' not found.');
+        }
+
         $soilModel = $this->getDoctrine()
             ->getRepository('AppBundle:SoilModel')
             ->findOneBy(array(
-                'id' => $id
+                'id' => $uuid
             ));
 
         if (!$soilModel) {
             throw $this->createNotFoundException('Soilmodel with id='.$id.' not found.');
         }
 
-        $layers = $soilModel->getSortedGeologicalLayers();
+        $view = View::create();
+        $view->setData($soilModel->getSortedGeologicalLayers())
+            ->setStatusCode(200)
+            ->setSerializationContext(SerializationContext::create()
+                ->setGroups(array('soilmodellayers')));
 
-        if ($soilModel->getPublic() || $this->isGranted('ROLE_ADMIN') || $this->getUser() === $soilModel->getOwner()) {
-            $view = View::create();
-            $view->setData($layers)
-                ->setStatusCode(200)
-                ->setSerializationContext(SerializationContext::create()
-                    ->setGroups(array('soilmodellayers')));
-
-            return $view;
-        } else {
-            throw $this->createAccessDeniedException();
-        }
+        return $view;
     }
 }

@@ -53,6 +53,13 @@ class SoilModelRestControllerTest extends WebTestCase
         //$this->assertEquals($this->soilModel->getName(), $soilModels[0]->name);
     }
 
+    public function testGetListOfSoilModelsWithUnknownReturns404()
+    {
+        $client = static::createClient();
+        $client->request('GET', '/api/users/unknownUser/soilmodels.json');
+        $this->assertEquals(404, $client->getResponse()->getStatusCode());
+    }
+
     public function testGetSoilModelDetailsAPI()
     {
         $client = static::createClient();
