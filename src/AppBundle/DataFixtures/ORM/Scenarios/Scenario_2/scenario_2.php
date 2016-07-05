@@ -882,7 +882,12 @@ class LoadScenario_2 implements FixtureInterface, ContainerAwareInterface
 
         foreach ($observationPointPoints as $observationPointPoint)
         {
-            $observationPoint = ObservationPointFactory::setOwnerNameAndPoint($user, $observationPointPoint['name'], $observationPointPoint['point'], $public);
+            $observationPoint = ObservationPointFactory::create()
+                ->setOwner($user)
+                ->setName($observationPointPoint['name'])
+                ->setGeometry($observationPointPoint['point'])
+                ->setPublic($public);
+
             $boundary->addObservationPoint($observationPoint);
 
             $geologicalLayer = $entityManager->getRepository('AppBundle:GeologicalLayer')
@@ -952,7 +957,11 @@ class LoadScenario_2 implements FixtureInterface, ContainerAwareInterface
 
         foreach ($observationPointPoints as $observationPointPoint)
         {
-            $observationPoint = ObservationPointFactory::setOwnerNameAndPoint($user, $observationPointPoint['name'], $observationPointPoint['point'], $public);
+            $observationPoint = ObservationPointFactory::create()
+                ->setOwner($user)
+                ->setName($observationPointPoint['name'])
+                ->setGeometry($observationPointPoint['point'])
+                ->setPublic($public);
             $riverBoundary->addObservationPoint($observationPoint);
             $model->addBoundary($boundary);
             $entityManager->persist($boundary);
