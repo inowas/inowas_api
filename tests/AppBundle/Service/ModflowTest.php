@@ -96,7 +96,7 @@ class ModflowTest extends WebTestCase
         }
     }
 
-    public function testCalculationThrowsExcaptionIfProcessIsNotSuccessful(){
+    public function testCalculationThrowsExceptionIfProcessIsNotSuccessful(){
         $processStub = $this->getMockBuilder(Process::class)
             ->disableOriginalConstructor()
             ->setMethods(array('setArguments', 'setWorkingDirectory', 'getProcess', 'isSuccessful', 'run', 'getOutput'))
@@ -118,6 +118,14 @@ class ModflowTest extends WebTestCase
         $fs = new Filesystem();
         if ($fs->exists($modflow->getTmpFolder())) {
             $fs->remove($modflow->getTmpFolder());
+        }
+    }
+
+    public function tearDown()
+    {
+        $fs = new Filesystem();
+        if ($fs->exists('tempFolder')) {
+            $fs->remove('tempFolder');
         }
     }
 }
