@@ -13,6 +13,7 @@ use AppBundle\Model\Interpolation\GridSize;
 use AppBundle\Model\PropertyTypeFactory;
 use AppBundle\Model\RasterFactory;
 use JMS\Serializer\Serializer;
+use Ramsey\Uuid\Uuid;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
 class RasterRestControllerTest extends WebTestCase
@@ -117,6 +118,20 @@ class RasterRestControllerTest extends WebTestCase
 
         $this->assertObjectHasAttribute('description', $raster);
         $this->assertEquals($this->raster->getDescription(), $raster->description);
+    }
+
+    public function testGetRasterWithInvalidIdReturns404()
+    {
+        $client = static::createClient();
+        $client->request('GET', '/api/rasters/1234.json');
+        $this->assertEquals(404, $client->getResponse()->getStatusCode());
+    }
+
+    public function testGetRasterWithUnknownIdReturns404()
+    {
+        $client = static::createClient();
+        $client->request('GET', '/api/rasters/'.Uuid::uuid4()->toString().'json');
+        $this->assertEquals(404, $client->getResponse()->getStatusCode());
     }
 
     public function testPostResult()

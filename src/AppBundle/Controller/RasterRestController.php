@@ -15,6 +15,7 @@ use FOS\RestBundle\Request\ParamFetcher;
 use FOS\RestBundle\View\View;
 use JMS\Serializer\SerializationContext;
 use Nelmio\ApiDocBundle\Annotation\ApiDoc;
+use Ramsey\Uuid\Uuid;
 
 class RasterRestController extends FOSRestController
 {
@@ -37,14 +38,19 @@ class RasterRestController extends FOSRestController
      */
     public function getRasterAction($id)
     {
+        try{
+            $uuid = Uuid::fromString($id);
+        } catch (\InvalidArgumentException $e) {
+            throw $this->createNotFoundException('Raster with id='.$id.' not found.');
+        }
+
         $entity = $this->getDoctrine()
             ->getRepository('AppBundle:Raster')
             ->findOneBy(array(
-                'id' => $id
+                'id' => $uuid
             ));
 
-        if (!$entity)
-        {
+        if (!$entity) {
             throw $this->createNotFoundException('Raster with id='.$id.' not found.');
         }
 
