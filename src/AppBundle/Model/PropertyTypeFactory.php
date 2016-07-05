@@ -16,16 +16,4 @@ class PropertyTypeFactory
     {
         return new PropertyType();
     }
-
-    /**
-     * @param string $name
-     * @return PropertyType
-     */
-    public static function setName($name = "")
-    {
-        $propertyType = new PropertyType();
-        $propertyType->setName($name);
-
-        return $propertyType;
-    }
 }

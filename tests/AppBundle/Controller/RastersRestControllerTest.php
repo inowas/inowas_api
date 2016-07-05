@@ -124,8 +124,9 @@ class RasterRestControllerTest extends WebTestCase
         $this->entityManager->persist($this->area);
         $this->entityManager->flush();
 
-        $propertyType = PropertyTypeFactory::setName('Hydraulic Head');
-        $propertyType->setAbbreviation("hh");
+        $propertyType = PropertyTypeFactory::create()
+            ->setName('Hydraulic Head')
+            ->setAbbreviation("hh");
 
         $this->entityManager->persist($propertyType);
         $this->entityManager->flush();
