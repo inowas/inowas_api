@@ -198,8 +198,8 @@ class ModFlowModel extends AbstractModel
      */
     public function addBoundary(BoundaryModelObject $boundary)
     {
-        if (!$this->boundaries->contains($boundary)) {
-            $this->boundaries->add($boundary);
+        if (!$this->getBoundaries()->contains($boundary)) {
+            $this->getBoundaries()->add($boundary);
         }
 
         return $this;
@@ -442,12 +442,19 @@ class ModFlowModel extends AbstractModel
             }
 
             if ($modelObject instanceof BoundaryModelObject) {
+                if (! $this->boundaries instanceof ArrayCollection){
+                    $this->boundaries = new ArrayCollection();
+                }
 
-                $this->boundaries[] = $modelObject;
+                $this->boundaries->add($modelObject);
                 $this->removeModelObject($modelObject);
             }
 
             if ($modelObject instanceof ObservationPoint) {
+                if (! $this->modelObjects instanceof ArrayCollection){
+                    $this->modelObjects = new ArrayCollection();
+                }
+
                 $this->observationPoints[] = $modelObject;
                 $this->removeModelObject($modelObject);
             }
