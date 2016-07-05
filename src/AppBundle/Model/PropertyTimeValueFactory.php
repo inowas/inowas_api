@@ -9,11 +9,19 @@ class PropertyTimeValueFactory
     private final function __construct(){}
 
     /**
+     * @return PropertyTimeValue
+     */
+    public static function create()
+    {
+        return new PropertyTimeValue();
+    }
+
+    /**
      * @param \DateTime $timestamp
      * @param $value
      * @return PropertyTimeValue
      */
-    public static function setDateTimeAndValue(\DateTime $timestamp, $value)
+    public static function createWithTimeAndValue(\DateTime $timestamp, $value)
     {
         $ptv = new PropertyTimeValue();
         $ptv->setTimeStamp($timestamp);
@@ -23,14 +31,7 @@ class PropertyTimeValueFactory
     }
 
     /**
-     * @return PropertyTimeValue
-     */
-    public static function create()
-    {
-        return new PropertyTimeValue();
-    }
-
-    /**
+     * @param \DateTime $dateTime
      * @return PropertyTimeValue
      */
     public static function createWithTime(\DateTime $dateTime)

@@ -372,7 +372,7 @@ class LoadScenario_3 implements FixtureInterface, ContainerAwareInterface
             {
                 $baseElement->addValue(
                     $propertyType,
-                    PropertyTimeValueFactory::setDateTimeAndValue(new \DateTime($dataPoint[$dataFields[0]]), (float)$dataPoint[$dataFields[$i]])
+                    PropertyTimeValueFactory::createWithTimeAndValue(new \DateTime($dataPoint[$dataFields[0]]), (float)$dataPoint[$dataFields[$i]])
                 );
 
                 $this->entityManager->persist($baseElement);

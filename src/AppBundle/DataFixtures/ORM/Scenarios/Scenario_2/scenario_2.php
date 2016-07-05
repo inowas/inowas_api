@@ -1167,7 +1167,7 @@ class LoadScenario_2 implements FixtureInterface, ContainerAwareInterface
 
             foreach ($data as $dataPoint)
             {
-                $propertyTimeValue = PropertyTimeValueFactory::setDateTimeAndValue(new \DateTime($dataPoint[$dataFields[0]]), (float)$dataPoint[$dataFields[$i]]);
+                $propertyTimeValue = PropertyTimeValueFactory::createWithTimeAndValue(new \DateTime($dataPoint[$dataFields[0]]), (float)$dataPoint[$dataFields[$i]]);
                 $baseElement->addValue($propertyType, $propertyTimeValue);
                 $this->entityManager->persist($propertyTimeValue);
 
