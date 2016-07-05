@@ -22,7 +22,7 @@ class PropertyFactory
      * @param PropertyType $type
      * @return Property
      */
-    public static function setTypeAndModelObject(PropertyType $type)
+    public static function createWithType(PropertyType $type)
     {
         $property = new Property();
         $property->setPropertyType($type);
