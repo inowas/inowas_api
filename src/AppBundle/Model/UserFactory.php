@@ -6,8 +6,9 @@ use AppBundle\Entity\User;
 
 class UserFactory
 {
-    public static function create()
-    {
+    private final function __construct(){}
+
+    public static function create(){
         return new User();
     }
 
