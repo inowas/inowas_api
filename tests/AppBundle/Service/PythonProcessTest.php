@@ -60,7 +60,7 @@ class PythonProcessTest extends WebTestCase
         $this->assertEquals('\'payTon\' \'Argument1\' \'Argument2\'', $this->pythonProcess->getProcess()->getCommandLine());
     }
 
-    public function testIfPython2_7IsConnected(){
+    public function testIfPython27IsConnected(){
         $process = $this->pythonProcess
             ->setArguments(array('--version'))
             ->getProcess();

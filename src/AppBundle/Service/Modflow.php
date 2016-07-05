@@ -9,7 +9,6 @@ use JMS\Serializer\SerializationContext;
 use JMS\Serializer\Serializer;
 use Ramsey\Uuid\Uuid;
 use Symfony\Component\Filesystem\Filesystem;
-use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\HttpKernel\KernelInterface;
 use Symfony\Component\Process\Exception\ProcessFailedException;
 use Symfony\Component\Process\Process;
@@ -62,7 +61,7 @@ class Modflow
     public function __construct(
         Serializer $serializer,
         KernelInterface $kernel,
-        PythonProcess $pythonProcess,
+        $pythonProcess,
         $workingDirectory,
         $dataFolder,
         $tmpFolder,
@@ -191,7 +190,7 @@ class Modflow
     {
         $this->clear();
         if (!in_array($executable, $this->availableExecutables)) {
-            throw new NotFoundHttpException();
+            throw new \InvalidArgumentException(sprintf('Executable %s is unknown.', $executable));
         }
 
         $modflowCalculationProperties = new ModflowCalculationProperties($modelId);
@@ -243,9 +242,11 @@ class Modflow
     public function getRasterResult($modelId, $operation, $layer=0, $timesteps=array())
     {
         $this->clear();
-
         $modflowRasterResultProperties = new ModflowRasterResultProperties($modelId, $layer, $operation);
-        $modflowRasterResultProperties->setTimesteps($timesteps);
+        foreach ($timesteps as $timestep) {
+            $modflowRasterResultProperties->addTimestep($timestep);
+        }
+
         $modflowRasterResultPropertiesJSON = $this->serializer->serialize(
             $modflowRasterResultProperties,
             'json',

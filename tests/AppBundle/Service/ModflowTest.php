@@ -3,13 +3,23 @@
 namespace Tests\AppBundle\Service;
 
 use AppBundle\Service\Modflow;
+use JMS\Serializer\Serializer;
 use Ramsey\Uuid\Uuid;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
+use Symfony\Component\Filesystem\Filesystem;
+use Symfony\Component\HttpKernel\KernelInterface;
+use Symfony\Component\Process\Process;
 
 class ModflowTest extends WebTestCase
 {
+    /** @var KernelInterface $httpKernel */
+    protected $httpKernel;
+
     /** @var Modflow $modflow */
     protected $modflow;
+
+    /** @var Serializer $serializer */
+    protected $serializer;
 
     public function setUp()
     {
@@ -18,6 +28,14 @@ class ModflowTest extends WebTestCase
         $this->modflow = static::$kernel->getContainer()
             ->get('inowas.modflow')
         ;
+
+        $this->serializer = static::$kernel->getContainer()
+            ->get('serializer')
+        ;
+
+        $this->httpKernel = static::$kernel->getContainer()
+            ->get('kernel');
+
     }
 
     public function testIsDefaultDataDirectorySet()
@@ -33,8 +51,46 @@ class ModflowTest extends WebTestCase
         $this->assertTrue(Uuid::isValid($this->modflow->getTmpFileName()));
     }
 
-    public function testGetBaseUrlInTestMode()
-    {
+    public function testGetBaseUrlInTestMode(){
         $this->assertContains('http://localhost/', $this->modflow->getBaseUrl());
+    }
+
+    public function testCalculationWithUnknownExecutableThrowsExcebption(){
+        $this->setExpectedException('InvalidArgumentException');
+        $this->modflow->calculate(Uuid::uuid4(), 'sdklfj');
+    }
+
+    public function testCalculateCreatesTmpFolderAndCalculationFile(){
+        $processStub = $this->getMockBuilder(Process::class)
+            ->disableOriginalConstructor()
+            ->setMethods(array('setArguments', 'setWorkingDirectory', 'getProcess', 'isSuccessful', 'run', 'getOutput'))
+            ->getMock()
+        ;
+
+        $processStub->method('isSuccessful')->willReturn(true);
+        $processStub->method('setArguments')->willReturn($processStub);
+        $processStub->method('setWorkingDirectory')->willReturn($processStub);
+        $processStub->method('getProcess')->willReturn($processStub);
+        $processStub->method('getOutput')->willReturn('{"error":"Exception raised in calculation of method gaussian"}');
+
+        $modflow = new Modflow($this->serializer, $this->httpKernel, $processStub, 'workingdir', 'dataFolder', 'tempFolder', 'baseUrl');
+
+        $fs = new Filesystem();
+        if ($fs->exists($modflow->getTmpFolder())) {
+            $fs->remove($modflow->getTmpFolder());
+        }
+        $this->assertFalse($fs->exists($modflow->getTmpFolder()));
+        $modelId = Uuid::uuid4();
+
+        $modflow->calculate($modelId);
+        $this->assertTrue($fs->exists($modflow->getTmpFolder()));
+        $this->assertTrue($fs->exists($modflow->getTmpFolder().'/'.$modflow->getTmpFileName().'.in'));
+
+        if ($fs->exists($modflow->getTmpFolder())) {
+            $fs->remove($modflow->getTmpFolder());
+        }
+
+
+
     }
 }
