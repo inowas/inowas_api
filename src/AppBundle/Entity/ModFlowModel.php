@@ -434,6 +434,9 @@ class ModFlowModel extends AbstractModel
      */
     public function postLoad()
     {
+        $this->boundaries = new ArrayCollection();
+        $this->observationPoints = new ArrayCollection();
+
         foreach ($this->getModelObjects() as $modelObject) {
 
             if ($modelObject instanceof Area) {
@@ -442,20 +445,12 @@ class ModFlowModel extends AbstractModel
             }
 
             if ($modelObject instanceof BoundaryModelObject) {
-                if (! $this->boundaries instanceof ArrayCollection){
-                    $this->boundaries = new ArrayCollection();
-                }
-
                 $this->boundaries->add($modelObject);
                 $this->removeModelObject($modelObject);
             }
 
             if ($modelObject instanceof ObservationPoint) {
-                if (! $this->modelObjects instanceof ArrayCollection){
-                    $this->modelObjects = new ArrayCollection();
-                }
-
-                $this->observationPoints[] = $modelObject;
+                $this->observationPoints->add($modelObject);
                 $this->removeModelObject($modelObject);
             }
         }
