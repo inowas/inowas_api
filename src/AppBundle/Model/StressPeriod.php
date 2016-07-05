@@ -5,7 +5,7 @@ namespace AppBundle\Model;
 use Doctrine\ORM\Mapping as ORM;
 use JMS\Serializer\Annotation as JMS;
 
-class StressPeriod implements \JsonSerializable
+class StressPeriod
 {
     /**
      * @var \DateTime
@@ -44,13 +44,14 @@ class StressPeriod implements \JsonSerializable
      * @param null $dateTimeBegin
      * @param null $dateTimeEnd
      * @param int $numberOfTimeSteps
+     * @param bool $steady
      */
-    public function __construct($dateTimeBegin = null, $dateTimeEnd = null, $numberOfTimeSteps = 1)
+    public function __construct($dateTimeBegin = null, $dateTimeEnd = null, $numberOfTimeSteps = 1, $steady = true)
     {
         $this->dateTimeBegin = $dateTimeBegin;
         $this->dateTimeEnd = $dateTimeEnd;
         $this->numberOfTimeSteps = $numberOfTimeSteps;
-        $this->steady = true;
+        $this->steady = $steady;
     }
 
     /**
@@ -99,14 +100,6 @@ class StressPeriod implements \JsonSerializable
     public function getDateTimeEnd()
     {
         return $this->dateTimeEnd;
-    }
-
-    /**
-     * @return object
-     */
-    function jsonSerialize()
-    {
-        return (object) get_object_vars($this);
     }
 
     /**
