@@ -153,7 +153,9 @@ class PropertyFixedIntervalValue extends AbstractValue
                 $dateTime = clone $dateTime;
                 $dateTime->add($interval);
             }
-            $timeValues[] = TimeValueFactory::setDateTimeAndValue($dateTime, $this->values[$i]);
+            $timeValues[] = TimeValueFactory::create()
+            ->setDatetime($dateTime)
+            ->setValue($this->values[$i]);
         }
 
         return $timeValues;
