@@ -93,6 +93,7 @@ class SoilModelTest extends WebTestCase
 
     public function testIfLayersCanBeAddedAndRetrievedFromSoilModel()
     {
+        $this->assertEquals(0, $this->soilModel->getNumberOfGeologicalLayers());
         $this->soilModel->addGeologicalLayer(GeologicalLayerFactory::create()
             ->setPublic(true)
             ->setOwner($this->user)
@@ -115,6 +116,7 @@ class SoilModelTest extends WebTestCase
         /** @var ArrayCollection $layers */
         $layers = $this->soilModel->getGeologicalLayers();
         $this->assertCount(1, $layers);
+        $this->assertEquals(1, $this->soilModel->getNumberOfGeologicalLayers());
 
         /** @var GeologicalLayer $layer */
         $layer = $layers->first();

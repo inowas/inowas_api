@@ -96,6 +96,18 @@ class SoilModel extends AbstractModel
     }
 
     /**
+     * @return integer
+     */
+    public function getNumberOfGeologicalLayers()
+    {
+        if ($this->geologicalLayers instanceof ArrayCollection){
+            return $this->geologicalLayers->count();
+        }
+
+        return 0;
+    }
+
+    /**
      * @param GeologicalLayer $geologicalLayer
      * @return $this
      */

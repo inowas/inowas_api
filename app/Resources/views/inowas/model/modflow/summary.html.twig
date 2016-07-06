@@ -7,7 +7,7 @@
 <p>Surface: {{ model.area.surface }} sqm</p>
 <h3>Soilmodel</h3>
 <p>
-    Layers: {{ model.soilmodel.geologicalLayers.count }}<br/>
+    Layers: {{ model.soilmodel.getNumberOfGeologicalLayers }}<br/>
     Rows: {{ model.gridsize.ny }}<br/>
     Columns: {{ model.gridsize.nx }}
 </p>
