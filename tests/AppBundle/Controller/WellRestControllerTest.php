@@ -3,10 +3,10 @@
 namespace Tests\AppBundle\Controller;
 
 use AppBundle\Entity\User;
-use AppBundle\Entity\Well;
+use AppBundle\Entity\WellBoundary;
 use AppBundle\Model\Point;
 use AppBundle\Model\UserFactory;
-use AppBundle\Model\WellFactory;
+use AppBundle\Model\WellBoundaryFactory;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
 class WellRestControllerTest extends WebTestCase
@@ -18,7 +18,7 @@ class WellRestControllerTest extends WebTestCase
     /** @var User $owner */
     protected $owner;
 
-    /** @var  Well $well */
+    /** @var  WellBoundary $well */
     protected $well;
 
     public function setUp()
@@ -32,7 +32,7 @@ class WellRestControllerTest extends WebTestCase
         $this->entityManager->persist($this->owner);
         $this->entityManager->flush();
 
-        $this->well = WellFactory::create()
+        $this->well = WellBoundaryFactory::create()
             ->setName('Well')
             ->setPublic(true)
             ->setOwner($this->owner)
@@ -91,7 +91,7 @@ class WellRestControllerTest extends WebTestCase
             ));
         $this->entityManager->remove($user);
 
-        $entities = $this->entityManager->getRepository('AppBundle:Well')
+        $entities = $this->entityManager->getRepository('AppBundle:WellBoundary')
             ->findBy(array(
                 'owner' => $user
             ))

@@ -20,7 +20,7 @@ use AppBundle\Model\PropertyValueFactory;
 use AppBundle\Model\SoilModelFactory;
 use AppBundle\Model\StreamBoundaryFactory;
 use AppBundle\Model\UserFactory;
-use AppBundle\Model\WellFactory;
+use AppBundle\Model\WellBoundaryFactory;
 use CrEOF\Spatial\PHP\Types\Geometry\LineString;
 use CrEOF\Spatial\PHP\Types\Geometry\Polygon;
 use Doctrine\Common\DataFixtures\FixtureInterface;
@@ -237,7 +237,7 @@ class LoadTestScenario_2 implements FixtureInterface, ContainerAwareInterface
                     array(22, 11))))
                 ->addValue($propertyTypeGwHead, PropertyValueFactory::create()->setValue(60))
             )
-            ->addBoundary(WellFactory::create()
+            ->addBoundary(WellBoundaryFactory::create()
                 ->setName('Well TestScenario 1')
                 ->setOwner($user)
                 ->setPublic($public)

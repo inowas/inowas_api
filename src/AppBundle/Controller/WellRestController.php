@@ -38,7 +38,7 @@ class WellRestController extends FOSRestController
         }
 
         $wells = $this->getDoctrine()
-            ->getRepository('AppBundle:Well')
+            ->getRepository('AppBundle:WellBoundary')
             ->findBy(
                 array('owner' => $user),
                 array('id' => 'ASC')
@@ -77,7 +77,7 @@ class WellRestController extends FOSRestController
     public function getWellsAction($id)
     {
         $well = $this->getDoctrine()
-            ->getRepository('AppBundle:Well')
+            ->getRepository('AppBundle:WellBoundary')
             ->findOneBy(array(
                 'id' => $id
             ));

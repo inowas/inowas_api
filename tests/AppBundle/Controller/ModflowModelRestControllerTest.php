@@ -21,7 +21,7 @@ use AppBundle\Model\PropertyValueFactory;
 use AppBundle\Model\SoilModelFactory;
 use AppBundle\Model\StreamBoundaryFactory;
 use AppBundle\Model\UserFactory;
-use AppBundle\Model\WellFactory;
+use AppBundle\Model\WellBoundaryFactory;
 use JMS\Serializer\Serializer;
 use Ramsey\Uuid\Uuid;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
@@ -113,7 +113,7 @@ class ModflowModelRestControllerTest extends WebTestCase
             ->setOwner($this->owner)
         );
 
-        $this->modFlowModel->addBoundary(WellFactory::create()
+        $this->modFlowModel->addBoundary(WellBoundaryFactory::create()
             ->setPoint(new Point(10, 11, 3857))
             ->setName('Well1')
             ->setPublic(true)

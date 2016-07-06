@@ -3,12 +3,12 @@
 namespace Tests\AppBundle\Entity;
 
 use AppBundle\Entity\AddBoundaryEvent;
-use AppBundle\Entity\Well;
-use AppBundle\Model\WellFactory;
+use AppBundle\Entity\WellBoundary;
+use AppBundle\Model\WellBoundaryFactory;
 
 class AddBoundaryEventTest extends \PHPUnit_Framework_TestCase
 {
-    /** @var  Well */
+    /** @var  WellBoundary */
     protected $well;
 
     /**
@@ -16,7 +16,7 @@ class AddBoundaryEventTest extends \PHPUnit_Framework_TestCase
      */
     public function setUp()
     {
-        $this->well = WellFactory::create();
+        $this->well = WellBoundaryFactory::create();
     }
 
     public function testInstantiateChangeLayerValueEvent()

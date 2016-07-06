@@ -8,7 +8,7 @@ use AppBundle\Entity\GeologicalLayer;
 use AppBundle\Entity\PropertyType;
 use AppBundle\Entity\Raster;
 use AppBundle\Entity\User;
-use AppBundle\Entity\Well;
+use AppBundle\Entity\WellBoundary;
 use AppBundle\Model\AreaFactory;
 use AppBundle\Model\AreaTypeFactory;
 use AppBundle\Model\GeologicalLayerFactory;
@@ -22,7 +22,7 @@ use AppBundle\Model\Point;
 use AppBundle\Model\PropertyValueFactory;
 use AppBundle\Model\RasterFactory;
 use AppBundle\Model\SoilModelFactory;
-use AppBundle\Model\WellFactory;
+use AppBundle\Model\WellBoundaryFactory;
 use AppBundle\Service\Interpolation;
 use CrEOF\Spatial\PHP\Types\Geometry\Polygon;
 use Doctrine\Common\DataFixtures\FixtureInterface;
@@ -502,7 +502,7 @@ class LoadScenario_4 implements FixtureInterface, ContainerAwareInterface
                 continue;
             }
             echo "Persisting ".$well['name']."\r\n";
-            $model->addBoundary(WellFactory::create()
+            $model->addBoundary(WellBoundaryFactory::create()
                 ->setOwner($user)
                 ->setName($well['name'])
                 ->setPublic($public)
@@ -534,7 +534,7 @@ class LoadScenario_4 implements FixtureInterface, ContainerAwareInterface
         foreach ($wells as $row) {
             $well = array_combine($header, $row);
             echo "Persisting ".$well['name']."\r\n";
-            $model->addBoundary(WellFactory::create()
+            $model->addBoundary(WellBoundaryFactory::create()
                 ->setOwner($user)
                 ->setName($well['name'])
                 ->setPublic($public)
@@ -662,7 +662,7 @@ class LoadScenario_4 implements FixtureInterface, ContainerAwareInterface
                 continue;
             }
             echo "Persisting Industrial Well ".$industrialWell[0]."\r\n";
-            $model->addBoundary(WellFactory::createIndustrialWell()
+            $model->addBoundary(WellBoundaryFactory::createIndustrialWell()
                 ->setOwner($user)
                 ->setPublic($public)
                 ->setName($industrialWell[0])
@@ -1027,11 +1027,11 @@ class LoadScenario_4 implements FixtureInterface, ContainerAwareInterface
             $well = array_combine($header, $row);
             echo "Persisting ".$well['name']."\r\n";
             $scenario_1->addEvent(new AddBoundaryEvent(
-                    WellFactory::create()
+                    WellBoundaryFactory::create()
                         ->setOwner($user)
                         ->setPublic($public)
                         ->setName($well['name'])
-                        ->setWellType(Well::TYPE_SCENARIO_MOVED_WELL)
+                        ->setWellType(WellBoundary::TYPE_SCENARIO_MOVED_WELL)
                         ->setPoint(new Point($well['x'], $well['y'], $well['srid']))
                         ->setLayer($layer_4)
                         ->addValue($propertyTypePumpingRate, PropertyValueFactory::create()->setValue($well['pumpingrate']))
@@ -1061,11 +1061,11 @@ class LoadScenario_4 implements FixtureInterface, ContainerAwareInterface
             $well = array_combine($header, $row);
             echo "Persisting ".$well['name']."\r\n";
             $scenario_1->addEvent(new AddBoundaryEvent(
-                    WellFactory::create()
+                    WellBoundaryFactory::create()
                         ->setOwner($user)
                         ->setPublic($public)
                         ->setName($well['name'])
-                        ->setWellType(Well::TYPE_SCENARIO_NEW_WELL)
+                        ->setWellType(WellBoundary::TYPE_SCENARIO_NEW_WELL)
                         ->setPoint(new Point($well['x'], $well['y'], $well['srid']))
                         ->setLayer($layer_4)
                         ->addValue($propertyTypePumpingRate, PropertyValueFactory::create()->setValue($well['pumpingrate']))
@@ -1112,11 +1112,11 @@ class LoadScenario_4 implements FixtureInterface, ContainerAwareInterface
             $well = array_combine($header, $row);
             echo "Persisting ".$well['name']."\r\n";
             $scenario_2->addEvent(new AddBoundaryEvent(
-                    WellFactory::create()
+                    WellBoundaryFactory::create()
                         ->setOwner($user)
                         ->setPublic($public)
                         ->setName($well['name'])
-                        ->setWellType(Well::TYPE_SCENARIO_NEW_WELL)
+                        ->setWellType(WellBoundary::TYPE_SCENARIO_NEW_WELL)
                         ->setPoint(new Point($well['x'], $well['y'], $well['srid']))
                         ->setLayer($layer_4)
                         ->addValue($propertyTypePumpingRate, PropertyValueFactory::create()->setValue($well['pumpingrate']))
@@ -1153,11 +1153,11 @@ class LoadScenario_4 implements FixtureInterface, ContainerAwareInterface
             $well = array_combine($header, $row);
             echo "Persisting ".$well['name']."\r\n";
             $scenario_3->addEvent(new AddBoundaryEvent(
-                    WellFactory::create()
+                    WellBoundaryFactory::create()
                         ->setOwner($user)
                         ->setPublic($public)
                         ->setName($well['name'])
-                        ->setWellType(Well::TYPE_SCENARIO_MOVED_WELL)
+                        ->setWellType(WellBoundary::TYPE_SCENARIO_MOVED_WELL)
                         ->setPoint(new Point($well['x'], $well['y'], $well['srid']))
                         ->setLayer($layer_4)
                         ->addValue($propertyTypePumpingRate, PropertyValueFactory::create()->setValue($well['pumpingrate']))
@@ -1175,11 +1175,11 @@ class LoadScenario_4 implements FixtureInterface, ContainerAwareInterface
             $well = array_combine($header, $row);
             echo "Persisting ".$well['name']."\r\n";
             $scenario_3->addEvent(new AddBoundaryEvent(
-                    WellFactory::create()
+                    WellBoundaryFactory::create()
                         ->setOwner($user)
                         ->setPublic($public)
                         ->setName($well['name'])
-                        ->setWellType(Well::TYPE_SCENARIO_NEW_WELL)
+                        ->setWellType(WellBoundary::TYPE_SCENARIO_NEW_WELL)
                         ->setPoint(new Point($well['x'], $well['y'], $well['srid']))
                         ->setLayer($layer_4)
                         ->addValue($propertyTypePumpingRate, PropertyValueFactory::create()->setValue($well['pumpingrate']))

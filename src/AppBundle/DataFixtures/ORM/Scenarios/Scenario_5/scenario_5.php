@@ -6,7 +6,7 @@ use AppBundle\Entity\GeologicalLayer;
 use AppBundle\Entity\GeologicalUnit;
 use AppBundle\Entity\PropertyType;
 use AppBundle\Entity\User;
-use AppBundle\Entity\Well;
+use AppBundle\Entity\WellBoundary;
 use AppBundle\Model\AreaFactory;
 use AppBundle\Model\AreaTypeFactory;
 use AppBundle\Model\ConstantHeadBoundaryFactory;
@@ -21,7 +21,7 @@ use AppBundle\Model\PropertyTimeValueFactory;
 use AppBundle\Model\PropertyValueFactory;
 use AppBundle\Model\SoilModelFactory;
 use AppBundle\Model\TimeValueFactory;
-use AppBundle\Model\WellFactory;
+use AppBundle\Model\WellBoundaryFactory;
 use AppBundle\Service\Interpolation;
 use CrEOF\Spatial\PHP\Types\Geometry\LineString;
 use CrEOF\Spatial\PHP\Types\Geometry\Polygon;
@@ -725,8 +725,8 @@ class LoadScenario_5 implements FixtureInterface, ContainerAwareInterface
 
             $wellData = array_combine($header, $wellData);
             echo "Add Observation-Well ".$wellData['name']."\r\n";
-            $well = WellFactory::create()
-                ->setWellType(Well::TYPE_OBSERVATION_WELL)
+            $well = WellBoundaryFactory::create()
+                ->setWellType(WellBoundary::TYPE_OBSERVATION_WELL)
                 ->setName($wellData['name'])
                 ->setOwner($user)
                 ->setPublic($public)

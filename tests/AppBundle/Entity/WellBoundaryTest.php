@@ -2,20 +2,20 @@
 
 namespace Tests\AppBundle\Entity;
 
-use AppBundle\Entity\Well;
+use AppBundle\Entity\WellBoundary;
 use AppBundle\Model\GeologicalLayerFactory;
 use AppBundle\Model\Point;
-use AppBundle\Model\WellFactory;
+use AppBundle\Model\WellBoundaryFactory;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
-class WellTest extends WebTestCase
+class WellBoundaryTest extends WebTestCase
 {
     /**
      * @var \Doctrine\ORM\EntityManager
      */
     protected $entityManager;
 
-    /** @var  Well */
+    /** @var  WellBoundary */
     protected $industrialWell;
 
     /**
@@ -29,11 +29,11 @@ class WellTest extends WebTestCase
             ->getManager()
         ;
 
-        $this->industrialWell = WellFactory::createIndustrialWell();
+        $this->industrialWell = WellBoundaryFactory::createIndustrialWell();
     }
 
     public function testInstantiate(){
-        $this->assertInstanceOf('AppBundle\Entity\Well', $this->industrialWell);
+        $this->assertInstanceOf('AppBundle\Entity\WellBoundary', $this->industrialWell);
         $this->assertInstanceOf('Ramsey\Uuid\Uuid', $this->industrialWell->getId());
     }
 
@@ -74,13 +74,13 @@ class WellTest extends WebTestCase
         $this->entityManager->persist($this->industrialWell);
         $this->entityManager->flush();
 
-        $iw = $this->entityManager->getRepository('AppBundle:Well')
+        $iw = $this->entityManager->getRepository('AppBundle:WellBoundary')
             ->findOneBy(array(
                 'id' => $this->industrialWell->getId()->toString()
             ));
 
-        $this->assertTrue($iw instanceof Well);
-        $this->assertEquals(Well::TYPE_INDUSTRIAL_WELL, $iw->getWellType());
+        $this->assertTrue($iw instanceof WellBoundary);
+        $this->assertEquals(WellBoundary::TYPE_INDUSTRIAL_WELL, $iw->getWellType());
         $this->entityManager->remove($iw);
         $this->entityManager->flush();
     }

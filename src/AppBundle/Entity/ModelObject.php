@@ -18,7 +18,7 @@ use Ramsey\Uuid\Uuid;
  * @ORM\DiscriminatorMap({  "ar" = "Area",
  *                          "chb" = "ConstantHeadBoundary",
  *                          "ghb" = "GeneralHeadBoundary",
- *                          "wbo" = "Well",
+ *                          "wbo" = "WellBoundary",
  *                          "op" = "ObservationPoint",
  *                          "gp" = "GeologicalPoint",
  *                          "gl" = "GeologicalLayer",

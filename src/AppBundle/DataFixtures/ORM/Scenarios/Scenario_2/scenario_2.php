@@ -25,7 +25,7 @@ use AppBundle\Model\SoilModelFactory;
 use AppBundle\Model\StreamBoundaryFactory;
 use AppBundle\Model\StressPeriod;
 use AppBundle\Model\StressPeriodFactory;
-use AppBundle\Model\WellFactory;
+use AppBundle\Model\WellBoundaryFactory;
 use AppBundle\Service\Interpolation;
 use CrEOF\Spatial\DBAL\Platform\PostgreSql;
 use CrEOF\Spatial\DBAL\Types\AbstractSpatialType;
@@ -1098,7 +1098,7 @@ class LoadScenario_2 implements FixtureInterface, ContainerAwareInterface
         foreach ($wells as $row) {
             $well = array_combine($header, $row);
 
-            $model->addBoundary(WellFactory::create()
+            $model->addBoundary(WellBoundaryFactory::create()
                 ->setOwner($user)
                 ->setName($well['name'])
                 ->setPublic($public)

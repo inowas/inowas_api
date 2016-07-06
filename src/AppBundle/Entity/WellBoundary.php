@@ -10,7 +10,7 @@ use JMS\Serializer\Annotation as JMS;
  * @ORM\Entity(repositoryClass="AppBundle\Repository\WellRepository")
  * @ORM\Table(name="wells")
  **/
-class Well extends BoundaryModelObject
+class WellBoundary extends BoundaryModelObject
 {
     const TYPE_PRIVATE_WELL = "pw";
     const TYPE_OBSERVATION_WELL = "ow";

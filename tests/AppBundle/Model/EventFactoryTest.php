@@ -6,7 +6,7 @@ use AppBundle\Model\EventFactory;
 use AppBundle\Model\GeologicalLayerFactory;
 use AppBundle\Model\PropertyTypeFactory;
 use AppBundle\Model\PropertyValueFactory;
-use AppBundle\Model\WellFactory;
+use AppBundle\Model\WellBoundaryFactory;
 
 class EventFactoryTest extends \PHPUnit_Framework_TestCase
 {
@@ -14,7 +14,7 @@ class EventFactoryTest extends \PHPUnit_Framework_TestCase
     public function testCreateAddBoundaryEvent()
     {
         $this->assertInstanceOf('AppBundle\Entity\AddBoundaryEvent', EventFactory::createAddBoundaryEvent(
-            WellFactory::create()
+            WellBoundaryFactory::create()
         ));
     }
 

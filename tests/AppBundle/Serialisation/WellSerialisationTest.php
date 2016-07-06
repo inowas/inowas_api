@@ -2,9 +2,9 @@
 
 namespace Tests\AppBundle\Controller;
 
-use AppBundle\Entity\Well;
+use AppBundle\Entity\WellBoundary;
 use AppBundle\Model\Point;
-use AppBundle\Model\WellFactory;
+use AppBundle\Model\WellBoundaryFactory;
 use JMS\Serializer\SerializationContext;
 use JMS\Serializer\Serializer;
 use JMS\Serializer\SerializerBuilder;
@@ -15,14 +15,14 @@ class WellSerialisationTest extends \PHPUnit_Framework_TestCase
     /** @var  Serializer $serializer */
     protected $serializer;
 
-    /** @var Well $well */
+    /** @var WellBoundary $well */
     protected $well;
 
     public function setUp()
     {
         $this->serializer = SerializerBuilder::create()->build();
         
-        $this->well = WellFactory::create()
+        $this->well = WellBoundaryFactory::create()
             ->setName('WellName')
             ->setPoint(new Point(11777056.49104572273790836, 2403440.17028302047401667, 3452))
             ;

@@ -11,7 +11,7 @@ use AppBundle\Model\ModFlowModelFactory;
 use AppBundle\Model\PropertyTypeFactory;
 use AppBundle\Model\PropertyValueFactory;
 use AppBundle\Model\SoilModelFactory;
-use AppBundle\Model\WellFactory;
+use AppBundle\Model\WellBoundaryFactory;
 
 class ModflowModelScenarioTest extends \PHPUnit_Framework_TestCase
 {
@@ -66,13 +66,13 @@ class ModflowModelScenarioTest extends \PHPUnit_Framework_TestCase
 
     public function testAddGetRemoveEvents()
     {
-        $event = EventFactory::createAddBoundaryEvent(WellFactory::create());
+        $event = EventFactory::createAddBoundaryEvent(WellBoundaryFactory::create());
         $this->assertCount(0, $this->scenario->getEvents());
         $this->scenario->addEvent($event);
         $this->assertCount(1, $this->scenario->getEvents());
         $this->scenario->addEvent($event);
         $this->assertCount(1, $this->scenario->getEvents());
-        $anotherEvent = EventFactory::createAddBoundaryEvent(WellFactory::create());
+        $anotherEvent = EventFactory::createAddBoundaryEvent(WellBoundaryFactory::create());
         $this->scenario->addEvent($anotherEvent);
         $this->assertCount(2, $this->scenario->getEvents());
         $this->scenario->removeEvent($event);
@@ -87,7 +87,7 @@ class ModflowModelScenarioTest extends \PHPUnit_Framework_TestCase
             ->addGeologicalLayer(GeologicalLayerFactory::create())
         );
 
-        $event = EventFactory::createAddBoundaryEvent(WellFactory::create());
+        $event = EventFactory::createAddBoundaryEvent(WellBoundaryFactory::create());
         $this->scenario->addEvent($event);
         $event = EventFactory::createChangeLayerValueEvent(
             $this->model->getSoilModel()->getGeologicalLayers()->first(),

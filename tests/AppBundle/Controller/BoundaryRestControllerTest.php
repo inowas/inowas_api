@@ -9,7 +9,7 @@ use AppBundle\Entity\GeologicalLayer;
 use AppBundle\Entity\PropertyType;
 use AppBundle\Entity\StreamBoundary;
 use AppBundle\Entity\User;
-use AppBundle\Entity\Well;
+use AppBundle\Entity\WellBoundary;
 use AppBundle\Model\ConstantHeadBoundaryFactory;
 use AppBundle\Model\GeneralHeadBoundaryFactory;
 use AppBundle\Model\GeologicalLayerFactory;
@@ -17,7 +17,7 @@ use AppBundle\Model\Point;
 use AppBundle\Model\PropertyValueFactory;
 use AppBundle\Model\StreamBoundaryFactory;
 use AppBundle\Model\UserFactory;
-use AppBundle\Model\WellFactory;
+use AppBundle\Model\WellBoundaryFactory;
 use CrEOF\Spatial\PHP\Types\Geometry\LineString;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
@@ -38,7 +38,7 @@ class BoundaryRestControllerTest extends WebTestCase
     /** @var  StreamBoundary $riv */
     protected $riv;
 
-    /** @var  Well $wel */
+    /** @var  WellBoundary $wel */
     protected $wel;
 
     /** @var  PropertyType $headPropertyType */
@@ -144,7 +144,7 @@ class BoundaryRestControllerTest extends WebTestCase
 
         $this->entityManager->persist($this->riv);
 
-        $this->wel = WellFactory::create()
+        $this->wel = WellBoundaryFactory::create()
             ->setName('WEL-Boundary')
             ->setPublic(true)
             ->setOwner($this->owner)

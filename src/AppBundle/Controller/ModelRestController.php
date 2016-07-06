@@ -11,7 +11,7 @@ use AppBundle\Entity\PropertyType;
 use AppBundle\Entity\PropertyValue;
 use AppBundle\Entity\StreamBoundary;
 use AppBundle\Entity\User;
-use AppBundle\Entity\Well;
+use AppBundle\Entity\WellBoundary;
 use AppBundle\Model\Point;
 use AppBundle\Model\RasterFactory;
 use AppBundle\Service\GeoImage;
@@ -390,23 +390,23 @@ class ModelRestController extends FOSRestController
         $wells = array();
         $boundaries = $model->getBoundaries();
         foreach ($boundaries as $boundary) {
-            if ($boundary instanceof Well) {
+            if ($boundary instanceof WellBoundary) {
                 $wells[] = $boundary;
             }
         }
 
         $targetSrid = (int)$paramFetcher->get('srid');
-        /** @var Well $well */
+        /** @var WellBoundary $well */
         foreach ($wells as $well) {
             if ($well->getPoint()->getSrid() != $targetSrid) {
-                $point = json_decode($this->getDoctrine()->getRepository('AppBundle:Well')
+                $point = json_decode($this->getDoctrine()->getRepository('WellBoundary.php')
                     ->transformPointTo($well->getId(), $targetSrid));
                 $well->setPoint(new Point($point->coordinates[0], $point->coordinates[1], $targetSrid));
             }
         }
 
         $response = array();
-        /** @var Well $well */
+        /** @var WellBoundary $well */
         foreach ($wells as $well) {
             $response[$well->getWellType()][] = $well;
         }

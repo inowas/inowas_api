@@ -12,7 +12,7 @@ use AppBundle\Model\ModelScenarioFactory;
 use AppBundle\Model\ObservationPointFactory;
 use AppBundle\Model\SoilModelFactory;
 use AppBundle\Model\StressPeriodFactory;
-use AppBundle\Model\WellFactory;
+use AppBundle\Model\WellBoundaryFactory;
 
 class ModflowModelTest extends \PHPUnit_Framework_TestCase
 {
@@ -35,7 +35,7 @@ class ModflowModelTest extends \PHPUnit_Framework_TestCase
     }
 
     public function testAddAndRemoveModelObjects(){
-        $well = WellFactory::create()->setName('Well');
+        $well = WellBoundaryFactory::create()->setName('Well');
         $this->assertCount(0, $this->modflowModel->getModelObjects());
         $this->modflowModel->addModelObject($well);
         $this->assertCount(1, $this->modflowModel->getModelObjects());
@@ -66,7 +66,7 @@ class ModflowModelTest extends \PHPUnit_Framework_TestCase
     }
 
     public function testAddAndRemoveBoundaries(){
-        $well = WellFactory::create()->setName('Well');
+        $well = WellBoundaryFactory::create()->setName('Well');
         $this->assertCount(0, $this->modflowModel->getBoundaries());
         $this->modflowModel->addBoundary($well);
         $this->assertCount(1, $this->modflowModel->getBoundaries());
@@ -157,7 +157,7 @@ class ModflowModelTest extends \PHPUnit_Framework_TestCase
         $this->assertCount(0, $this->modflowModel->getModelObjects());
 
         // Add Well
-        $well = WellFactory::create();
+        $well = WellBoundaryFactory::create();
         $this->modflowModel->addBoundary($well);
         $this->modflowModel->preFlush();
         $this->assertCount(0, $this->modflowModel->getBoundaries());
@@ -186,7 +186,7 @@ class ModflowModelTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals($area, $this->modflowModel->getArea());
         $this->assertCount(0, $this->modflowModel->getModelObjects());
 
-        $well = WellFactory::create();
+        $well = WellBoundaryFactory::create();
         $this->modflowModel->addModelObject($well);
         $this->assertCount(1, $this->modflowModel->getModelObjects());
         $this->modflowModel->postLoad();
