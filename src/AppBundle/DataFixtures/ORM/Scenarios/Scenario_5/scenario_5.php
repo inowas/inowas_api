@@ -19,6 +19,7 @@ use AppBundle\Model\ModFlowModelFactory;
 use AppBundle\Model\Point;
 use AppBundle\Model\PropertyTimeValueFactory;
 use AppBundle\Model\PropertyValueFactory;
+use AppBundle\Model\RechargeBoundaryFactory;
 use AppBundle\Model\SoilModelFactory;
 use AppBundle\Model\WellBoundaryFactory;
 use AppBundle\Service\Interpolation;
@@ -115,6 +116,15 @@ class LoadScenario_5 implements FixtureInterface, ContainerAwareInterface
             ));
 
         if (!$propertyTypeHydraulicConductivity) {
+            return new NotFoundHttpException();
+        }
+
+        $propertyTypePrecipitation = $entityManager->getRepository('AppBundle:PropertyType')
+            ->findOneBy(array(
+                'abbreviation' => "pr"
+            ));
+
+        if (!$propertyTypePrecipitation) {
             return new NotFoundHttpException();
         }
 
@@ -565,6 +575,26 @@ class LoadScenario_5 implements FixtureInterface, ContainerAwareInterface
         }
 
         $model->addBoundary($chd_upper_boundary);
+        $entityManager->flush();
+
+        echo "Add RCH-Boundary for precipitation\r\n";
+        $rch = RechargeBoundaryFactory::create()
+            ->setName('Precipitation')
+            ->setOwner($user)
+            ->setPublic($public)
+            ->setGeometry($model->getArea()->getGeometry());
+
+        $header = null;
+        foreach ($timeValues as $timeValue){
+            if (is_null($header)){
+                $header = $timeValue;
+                continue;
+            }
+            $timeValue = array_combine($header, $timeValue);
+            $rch->addValue($propertyTypePrecipitation, PropertyTimeValueFactory::createWithTimeAndValue(new \DateTime($timeValue['date']), ($timeValue['precipitation']/1000)));
+        }
+        
+        $model->addBoundary($rch);
         $entityManager->flush();
 
         $wells = array(
