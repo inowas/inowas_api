@@ -20,7 +20,6 @@ use AppBundle\Model\Point;
 use AppBundle\Model\PropertyTimeValueFactory;
 use AppBundle\Model\PropertyValueFactory;
 use AppBundle\Model\SoilModelFactory;
-use AppBundle\Model\TimeValueFactory;
 use AppBundle\Model\WellBoundaryFactory;
 use AppBundle\Service\Interpolation;
 use CrEOF\Spatial\PHP\Types\Geometry\LineString;
@@ -189,9 +188,12 @@ class LoadScenario_5 implements FixtureInterface, ContainerAwareInterface
                 ->setPublic($public)
                 ->setOwner($user)
             )
-            ->setBoundingBox($geoTools->transformBoundingBox(new BoundingBox(5424430, 5424576, 5648260.33456791, 5648439.73189307, 31469), 4326))
             ->setGridSize(new GridSize(70, 90))
         ;
+
+        if ($model->getArea()->getBoundingBox() instanceof BoundingBox) {
+            $model->setBoundingBox($geoTools->transformBoundingBox($model->getArea()->getBoundingBox(), 4326));
+        }
 
         $entityManager->persist($model);
         $entityManager->flush();

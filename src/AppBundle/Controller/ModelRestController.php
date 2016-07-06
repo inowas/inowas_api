@@ -399,7 +399,7 @@ class ModelRestController extends FOSRestController
         /** @var WellBoundary $well */
         foreach ($wells as $well) {
             if ($well->getPoint()->getSrid() != $targetSrid) {
-                $point = json_decode($this->getDoctrine()->getRepository('WellBoundary.php')
+                $point = json_decode($this->getDoctrine()->getRepository('AppBundle:WellBoundary')
                     ->transformPointTo($well->getId(), $targetSrid));
                 $well->setPoint(new Point($point->coordinates[0], $point->coordinates[1], $targetSrid));
             }

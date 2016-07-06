@@ -52,7 +52,7 @@ class AreaTest extends WebTestCase
 
     public function testAreaWithNoGeometryReturnsEmptyBoundingBox()
     {
-        $this->assertEquals($this->area->getBoundingBox(), new BoundingBox());
+        $this->assertEquals($this->area->getBoundingBox(), null);
     }
 
     public function testAreaWithGeometryReturnsBoundingBoxWithValues()
@@ -64,9 +64,9 @@ class AreaTest extends WebTestCase
                 array(0.5, -1.2),
                 array(4.1, 12.2),
                 array(1.1,-1.1)
-            ))));
+            )), 4326));
 
-        $this->assertEquals($this->area->getBoundingBox(), new BoundingBox(0.5, 4.1, -1.2, 12.2));
+        $this->assertEquals($this->area->getBoundingBox(), new BoundingBox(0.5, 4.1, -1.2, 12.2, 4326));
     }
 
     public function testGetCalculateSurfaceAreaFromArea()

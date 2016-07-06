@@ -144,8 +144,8 @@ class Area extends ModelObject
      */
     public function getBoundingBox()
     {
-        if (is_null($this->geometry)) {
-            return new BoundingBox();
+        if (! $this->geometry instanceof Polygon) {
+            return null;
         }
         
         $rings = $this->geometry->toArray();
@@ -175,6 +175,6 @@ class Area extends ModelObject
             }
         }
 
-        return new BoundingBox($xMin, $xMax, $yMin, $yMax);
+        return new BoundingBox($xMin, $xMax, $yMin, $yMax, $this->geometry->getSrid());
     }
 }
