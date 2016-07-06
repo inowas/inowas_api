@@ -16,15 +16,15 @@ use Ramsey\Uuid\Uuid;
  * @ORM\InheritanceType("JOINED")
  * @ORM\DiscriminatorColumn(name="discr", type="string")
  * @ORM\DiscriminatorMap({  "ar" = "Area",
- *                          "chb" = "ConstantHeadBoundary",
- *                          "ghb" = "GeneralHeadBoundary",
- *                          "wbo" = "WellBoundary",
  *                          "op" = "ObservationPoint",
  *                          "gp" = "GeologicalPoint",
  *                          "gl" = "GeologicalLayer",
  *                          "gu" = "GeologicalUnit",
- *                          "st" = "StreamBoundary"
- *
+ *                          "chb" = "ConstantHeadBoundary",
+ *                          "ghb" = "GeneralHeadBoundary",
+ *                          "rch" = "RechargeBoundary",
+ *                          "riv" = "StreamBoundary",
+ *                          "wel" = "WellBoundary"
  * })
  */
 abstract class ModelObject
