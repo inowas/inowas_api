@@ -13,6 +13,7 @@ use JMS\Serializer\Annotation as JMS;
 class Well extends BoundaryModelObject
 {
     const TYPE_PRIVATE_WELL = "pw";
+    const TYPE_OBSERVATION_WELL = "ow";
     const TYPE_INDUSTRIAL_WELL = "iw";
     const TYPE_SCENARIO_NEW_WELL = "snw";
     const TYPE_SCENARIO_MOVED_WELL = "smw";

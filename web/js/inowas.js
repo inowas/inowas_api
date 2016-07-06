@@ -190,6 +190,19 @@ $( ".results" ).click(function(){
         results_map.fitBounds(polygon.getBounds());
     });
 
+    var wells = new L.LayerGroup();
+    $.getJSON( "/api/modflowmodels/"+modelId+"/wells.json?srid=4326", function ( wellData ) {
+        console.log(wellData);
+
+        if ("ow" in wellData) {
+            wellData.ow.forEach(function (item) {
+                L.circle([item.point.y, item.point.x], 2, {color: 'black', weight: 1, fillColor: 'blue', fillOpacity: 0.7}).bindPopup("Well "+item.name).addTo(wells);
+            });
+        }
+
+        wells.addTo(results_map);
+    });
+
     $.getJSON( "/api/modflowmodels/"+modelId+"/boundingbox.json?srid=4326", function ( boundingBox ) {
         var imageUrl = "/api/modflowmodels/"+modelId+"/layers/3/properties/hh.json?_format=png";
         imgOverlay = L.imageOverlay(imageUrl, boundingBox).addTo(results_map).setOpacity(0.6);
@@ -203,7 +216,7 @@ $( ".results" ).click(function(){
     });
 
     var baseMaps = {};
-    var overlayMaps = {"Area":area, "Grid": grid};
+    var overlayMaps = {"Area":area, "Grid": grid, "ObservationWells": wells};
     L.control.layers(baseMaps, overlayMaps).addTo(results_map);
 
     results_map.on('baselayerchange', function(e) {
