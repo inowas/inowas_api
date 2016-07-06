@@ -532,8 +532,7 @@ class LoadScenario_5 implements FixtureInterface, ContainerAwareInterface
             $chd_river->addValue($propertyTypeGwHead, PropertyTimeValueFactory::createWithTimeAndValue(new \DateTime($timeValue['date']), (($timeValue['river_stage_max']+ $timeValue['river_stage_max'])/2) ));
         }
 
-        $entityManager->persist($chd_river);
-        $entityManager->flush();
+        $model->addBoundary($chd_river);
 
         echo "Add CHD-Boundary for Upper Boundary\r\n";
         $chd_upper_boundary = ConstantHeadBoundaryFactory::create()
@@ -560,7 +559,7 @@ class LoadScenario_5 implements FixtureInterface, ContainerAwareInterface
             $chd_upper_boundary->addValue($propertyTypeGwHead, PropertyTimeValueFactory::createWithTimeAndValue(new \DateTime($timeValue['date']), (($timeValue['upper_boundary_max']+ $timeValue['upper_boundary_min'])/2) ));
         }
 
-        $entityManager->persist($chd_upper_boundary);
+        $model->addBoundary($chd_upper_boundary);
         $entityManager->flush();
 
         return 1;
