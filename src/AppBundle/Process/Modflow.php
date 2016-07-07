@@ -1,6 +1,6 @@
 <?php
 
-namespace AppBundle\Service;
+namespace AppBundle\Process;
 
 use AppBundle\Model\ModflowProperties\ModflowCalculationProperties;
 use AppBundle\Model\ModflowProperties\ModflowRasterResultProperties;
@@ -20,18 +20,10 @@ class Modflow
 
     /** @var array */
     private $availableExecutables = [self::MODFLOW_2005];
-
-    /** @var string */
-    private $baseUrl = "http://localhost/";
-
-    /** @var string $workingDirectory */
-    private $workingDirectory;
-
-    /** @var string  */
-    private $tmpFolder;
-
-    /** @var string  */
-    private $tmpFileName = '';
+    
+    /** @var array */
+    protected $configuration;
+    
 
     /** @var  string */
     private $dataFolder;
@@ -50,104 +42,11 @@ class Modflow
 
     /**
      * Modflow constructor.
-     * @param $serializer
-     * @param $kernel
-     * @param $pythonProcess
-     * @param $workingDirectory
-     * @param $dataFolder
-     * @param $tmpFolder
-     * @param $baseUrl
+     * @param ModflowConfigurationInterface $configuration
      */
-    public function __construct(
-        Serializer $serializer,
-        KernelInterface $kernel,
-        PythonProcess $pythonProcess,
-        $workingDirectory,
-        $dataFolder,
-        $tmpFolder,
-        $baseUrl
-    ){
-        $this->serializer = $serializer;
-        $this->kernel = $kernel;
-        $this->pythonProcess = $pythonProcess;
-        $this->workingDirectory = $workingDirectory;
-        $this->dataFolder = $dataFolder;
-        $this->tmpFolder = $tmpFolder;
-        $this->baseUrl = $baseUrl;
-
-        $this->stdOut = '';
-        $this->tmpFileName = Uuid::uuid4()->toString();
-    }
-
-    /**
-     * @return string
-     */
-    public function getBaseUrl()
+    public function __construct(ModflowConfigurationInterface $configuration)
     {
-        return $this->baseUrl;
-    }
-
-    /**
-     * @return string
-     */
-    public function getTmpFolder()
-    {
-        return $this->tmpFolder;
-    }
-
-    /**
-     * @return string
-     */
-    public function getTmpFileName()
-    {
-        return $this->tmpFileName;
-    }
-
-    /**
-     * @return string
-     */
-    public function getDataFolder()
-    {
-        return $this->dataFolder;
-    }
-
-    /**
-     * @return string
-     */
-    public function getWorkingDirectory()
-    {
-        return $this->kernel->getRootDir() . '/../py/pyprocessing/modflow';
-    }
-
-    /**
-     * @param $modelId
-     * @return string
-     */
-    public function getWorkSpace($modelId)
-    {
-        return $this->dataFolder.'/'.$modelId;
-    }
-
-    /**
-     * @return string
-     */
-    private function getInputFileName()
-    {
-        return $this->tmpFolder . '/' . $this->tmpFileName . '.in';
-    }
-
-    /**
-     * @return string
-     */
-    private function getOutputFileName()
-    {
-        return $this->tmpFolder . '/' . $this->tmpFileName . '.out';
-    }
-
-    private function clear()
-    {
-        $this->stdOut = "";
-        $this->tmpFileName = Uuid::uuid4()->toString();
+        $this->configuration = $configuration;
     }
 
     /**
@@ -187,29 +86,12 @@ class Modflow
      * @return string
      * @throws \AppBundle\Exception\ProcessFailedException
      */
-    public function calculate($modelId, $executable=self::MODFLOW_2005)
+    public function calculate()
     {
-        $this->clear();
-        if (!in_array($executable, $this->availableExecutables)) {
-            throw new \InvalidArgumentException(sprintf('Executable %s is unknown.', $executable));
-        }
 
-        $modflowCalculationProperties = new ModflowCalculationProperties($modelId);
-        $modflowCalculationPropertiesJSON = $this->serializer->serialize(
-            $modflowCalculationProperties,
-            'json',
-            SerializationContext::create()->setGroups(array('modflowProcess'))
-        );
-
-        $fs = new Filesystem();
-        if (!$fs->exists($this->tmpFolder)) {
-            $fs->mkdir($this->tmpFolder);
-        }
-
-        $fs->dumpFile($this->getInputFileName(), $modflowCalculationPropertiesJSON);
-
-        $scriptName = "modflowCalculation.py";
-
+        $modFlowProcess = new ModflowProcess($this->configuration);
+        $modFlowProcess->getProcess();
+        
         /** @var Process $process */
         $process = $this->pythonProcess
             ->setArguments(array(

@@ -8,7 +8,6 @@ use Ramsey\Uuid\Uuid;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\HttpKernel\KernelInterface;
-use Symfony\Component\Process\Process;
 
 class ModflowTest extends WebTestCase
 {
@@ -66,7 +65,7 @@ class ModflowTest extends WebTestCase
     }
 
     public function testCalculateCreatesTmpFolderAndCalculationFile(){
-        $processStub = $this->getMockBuilder(Process::class)
+        $processStub = $this->getMockBuilder('AppBundle\Service\PythonProcess')
             ->disableOriginalConstructor()
             ->setMethods(array('setArguments', 'setWorkingDirectory', 'getProcess', 'isSuccessful', 'run', 'getOutput'))
             ->getMock()
@@ -97,7 +96,7 @@ class ModflowTest extends WebTestCase
     }
 
     public function testCalculationThrowsExceptionIfProcessIsNotSuccessful(){
-        $processStub = $this->getMockBuilder(Process::class)
+        $processStub = $this->getMockBuilder('AppBundle\Service\PythonProcess')
             ->disableOriginalConstructor()
             ->setMethods(array('setArguments', 'setWorkingDirectory', 'getProcess', 'isSuccessful', 'run', 'getOutput'))
             ->getMock()
