@@ -9,21 +9,43 @@ class ModflowProcessTest extends \PHPUnit_Framework_TestCase
 {
 
     public function testInstantiate(){
-        $this->assertInstanceOf('AppBundle\Process\ModflowProcess', new ModflowProcess(new ModflowProcessConfiguration()));
+        $configurationMock = $this->getMockBuilder('AppBundle\Process\ModflowProcessConfiguration')
+            ->disableOriginalConstructor()
+            ->getMock();
+
+        /** @var ModflowProcessConfiguration $configurationMock */
+        $this->assertInstanceOf('AppBundle\Process\ModflowProcess', new ModflowProcess($configurationMock));
     }
     
     public function testGetProcessReturnsInstanceOfProcess(){
-        $modflowProcess = new ModflowProcess(new ModflowProcessConfiguration());
+        $configurationMock = $this->getMockBuilder('AppBundle\Process\ModflowProcessConfiguration')
+            ->disableOriginalConstructor()
+            ->getMock();
+        $configurationMock->method('getArguments')->willReturn(array());
+
+        /** @var ModflowProcessConfiguration $configurationMock */
+        $modflowProcess = new ModflowProcess($configurationMock);
         $this->assertInstanceOf('Symfony\Component\Process\Process', $modflowProcess->getProcess());
     }
 
     public function testProcessCommandline(){
-        $modflowConfiguration = new ModflowProcessConfiguration();
-        $modflowConfiguration->setIgnoreWarnings(true);
-        $modflowConfiguration->setDataDirectory('dataDirectory/id');
-        $modflowConfiguration->setInputFile('../inputFile.in');
-        $modflowProcess = new ModflowProcess($modflowConfiguration);
+
+        $configurationMock = $this->getMockBuilder('AppBundle\Process\ModflowProcessConfiguration')
+            ->disableOriginalConstructor()
+            ->getMock();
+
+        $configurationMock->method('getPrefix')->willReturn('python');
+        $configurationMock->method('getIgnoreWarnings')->willReturn(true);
+        $configurationMock->method('getArguments')->willReturn(array(
+            'http://localhost/',
+            'mf2005',
+            'dataDirectory/id',
+            '../inputFile.in'
+        ));
+        $configurationMock->method('getScriptName')->willReturn('modflowCalculation.py');
+
+        /** @var ModflowProcessConfiguration $configurationMock */
+        $modflowProcess = new ModflowProcess($configurationMock);
         $this->assertEquals("'python' '-W' 'ignore' 'modflowCalculation.py' 'http://localhost/' 'mf2005' 'dataDirectory/id' '../inputFile.in'", $modflowProcess->getProcess()->getCommandLine());
     }
-
 }

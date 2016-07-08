@@ -2,13 +2,19 @@
 
 namespace AppBundle\Process;
 
-interface ModflowConfigurationInterface extends PythonProcessConfigurationInterface
+interface ModflowProcessConfigurationInterface extends PythonProcessConfigurationInterface
 {
+    /**
+     * ModflowProcessConfigurationInterface constructor.
+     * @param ProcessFile $inputFile
+     */
+    public function __construct(ProcessFile $inputFile);
+
     /**
      * @param $fileName
      * @return $this
      */
-    public function setInputFile($fileName);
+    public function setInputFile(ProcessFile $fileName);
 
     /**
      * @return string
@@ -19,7 +25,7 @@ interface ModflowConfigurationInterface extends PythonProcessConfigurationInterf
      * @param $fileName
      * @return $this
      */
-    public function setOutputFile($fileName);
+    public function setOutputFile(ProcessFile $fileName);
 
     /**
      * @return string

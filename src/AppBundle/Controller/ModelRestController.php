@@ -17,6 +17,7 @@ use AppBundle\Model\Point;
 use AppBundle\Model\RasterFactory;
 use AppBundle\Process\ModflowProcess;
 use AppBundle\Process\ModflowProcessConfiguration;
+use AppBundle\Process\ProcessFile;
 use AppBundle\Service\GeoImage;
 use FOS\RestBundle\Controller\Annotations\QueryParam;
 use FOS\RestBundle\Controller\FOSRestController;
@@ -668,7 +669,7 @@ class ModelRestController extends FOSRestController
     {
         $this->findModelById($id);
 
-        $modflowCalculationProperties = new ModflowCalculationProperties($id);
+        $modflowCalculationProperties = new ModflowCalculationPeroperties($id);
         $modflowCalculationPropertiesJSON = $this->get('serializer')->serialize(
             $modflowCalculationProperties,
             'json',
@@ -681,11 +682,10 @@ class ModelRestController extends FOSRestController
         $fs = new Filesystem();
         $fs->dumpFile($inputFile, $modflowCalculationPropertiesJSON);
 
-        $configuration = new ModflowProcessConfiguration();
+        $configuration = new ModflowProcessConfiguration(ProcessFile::fromFilename($inputFile));
         $configuration->setWorkingDirectory($this->getParameter('inowas.modflow.working_directory'));
         $configuration->setDataDirectory($this->getParameter('inowas.modflow.data_folder').'/'.$id);
         $configuration->setIgnoreWarnings(true);
-        $configuration->setInputFile($inputFile);
 
         $modflowProcess = new ModflowProcess($configuration);
         $process = $modflowProcess->getProcess();

@@ -2,7 +2,9 @@
 
 namespace AppBundle\Process;
 
-class ModflowProcessConfiguration extends PythonProcessConfiguration implements ModflowConfigurationInterface
+use AppBundle\Exception\InvalidArgumentException;
+
+class ModflowProcessConfiguration extends PythonProcessConfiguration implements ModflowProcessConfigurationInterface
 {
 
     const MODFLOW_2005  = "mf2005";
@@ -22,12 +24,12 @@ class ModflowProcessConfiguration extends PythonProcessConfiguration implements 
     protected $executable = 'mf2005';
 
     /**
-     * @var string
+     * @var ProcessFile
      */
     protected $inputFile;
 
     /**
-     * @var string
+     * @var ProcessFile
      */
     protected $outputFile;
 
@@ -36,8 +38,9 @@ class ModflowProcessConfiguration extends PythonProcessConfiguration implements 
      */
     protected $dataDirectory;
 
-    public function __construct()
+    public function __construct(ProcessFile $inputFile)
     {
+        $this->inputFile = $inputFile;
         $this->ignoreWarnings = true;
         $this->scriptName = 'modflowCalculation.py';
     }
@@ -61,39 +64,39 @@ class ModflowProcessConfiguration extends PythonProcessConfiguration implements 
     }
 
     /**
-     * @param $fileName
-     * @return mixed
+     * @param ProcessFile
+     * @return $this
      */
-    public function setInputFile($fileName)
+    public function setInputFile(ProcessFile $file)
     {
-        $this->inputFile = $fileName;
+        $this->inputFile = $file;
         return $this;
     }
 
     /**
-     * @return mixed
+     * @return string
      */
     public function getInputFile()
     {
-        return $this->inputFile;
+        return $this->inputFile->getFileName();
     }
 
     /**
-     * @param $fileName
+     * @param ProcessFile
      * @return mixed
      */
-    public function setOutputFile($fileName)
+    public function setOutputFile(ProcessFile $file)
     {
-        $this->outputFile = $fileName;
+        $this->outputFile = $file;
         return $this;
     }
 
     /**
-     * @return mixed
+     * @return string
      */
     public function getOutputFile()
     {
-        return $this->outputFile;
+        return $this->outputFile->getFileName();
     }
 
     /**
@@ -121,7 +124,7 @@ class ModflowProcessConfiguration extends PythonProcessConfiguration implements 
     public function setExecutable($executable)
     {
         if (! in_array($executable, $this->availableExecutables)){
-            throw new \InvalidArgumentException(sprintf('Executable %s not available', $executable));
+            throw new InvalidArgumentException(sprintf('Executable %s not available', $executable));
         }
         $this->executable = $executable;
         return $this;

@@ -42,9 +42,9 @@ class Modflow
 
     /**
      * Modflow constructor.
-     * @param ModflowConfigurationInterface $configuration
+     * @param ModflowProcessConfigurationInterface $configuration
      */
-    public function __construct(ModflowConfigurationInterface $configuration)
+    public function __construct(ModflowProcessConfigurationInterface $configuration)
     {
         $this->configuration = $configuration;
     }
