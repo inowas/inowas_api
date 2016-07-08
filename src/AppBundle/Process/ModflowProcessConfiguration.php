@@ -143,13 +143,11 @@ class ModflowProcessConfiguration extends PythonProcessConfiguration implements 
      */
     public function getArguments()
     {
-        return array(
-            $this->getAPIBaseUrl(),
-            $this->getExecutable(),
-            $this->getDataDirectory(),
-            $this->getInputFile()
-        );
+        $this->arguments = parent::getArguments();
+        $this->arguments[] = $this->getAPIBaseUrl();
+        $this->arguments[] = $this->getExecutable();
+        $this->arguments[] = $this->getDataDirectory();
+        $this->arguments[] = $this->getInputFile();
+        return $this->arguments;
     }
-
-
 }

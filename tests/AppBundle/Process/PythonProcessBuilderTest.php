@@ -5,7 +5,7 @@ namespace Tests\AppBundle\Process;
 use AppBundle\Process\PythonProcessBuilder;
 use AppBundle\Process\PythonProcessConfiguration;
 
-class PythonProcessTest extends \PHPUnit_Framework_TestCase
+class PythonProcessBuilderTest extends \PHPUnit_Framework_TestCase
 {
 
     public function testInstantiationWithDefaultConfiguration(){

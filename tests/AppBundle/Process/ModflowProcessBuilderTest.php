@@ -5,7 +5,7 @@ namespace Tests\AppBundle\Process;
 use AppBundle\Process\ModflowProcessBuilder;
 use AppBundle\Process\ModflowProcessConfiguration;
 
-class ModflowProcessTest extends \PHPUnit_Framework_TestCase
+class ModflowProcessBuilderTest extends \PHPUnit_Framework_TestCase
 {
 
     public function testInstantiate(){

@@ -7,29 +7,12 @@ use Symfony\Component\Process\ProcessBuilder;
 
 class PythonProcessBuilder
 {
-
-    /** @var array $arguments */
-    protected $arguments;
-
-    /** @var bool */
-    protected $ignoreWarnings;
-
-    /** @var  string $prefix */
-    protected $prefix;
-
-    /** @var  string $scriptName */
-    protected $scriptName;
-
-    /** @var string $workingDirectory */
-    protected $workingDirectory;
+    /** @var  PythonProcessConfigurationInterface */
+    protected $configuration;
 
     public function __construct(PythonProcessConfigurationInterface $configuration)
     {
-        $this->arguments = $configuration->getArguments();
-        $this->ignoreWarnings = $configuration->getIgnoreWarnings();
-        $this->prefix = $configuration->getPrefix();
-        $this->scriptName = $configuration->getScriptName();
-        $this->workingDirectory = $configuration->getWorkingDirectory();
+        $this->configuration = $configuration;
     }
 
     /**
@@ -38,21 +21,20 @@ class PythonProcessBuilder
     public function getProcess()
     {
         $processBuilder = new ProcessBuilder();
-        $processBuilder->setPrefix($this->prefix);
-        $processBuilder->setWorkingDirectory($this->workingDirectory);
+        $processBuilder->setPrefix($this->configuration->getPrefix());
+        $processBuilder->setWorkingDirectory($this->configuration->getWorkingDirectory());
 
-        if ($this->ignoreWarnings){
+        if ($this->configuration->getIgnoreWarnings()){
             $processBuilder->add('-W');
             $processBuilder->add('ignore');
         }
 
-        $processBuilder->add($this->scriptName);
+        $processBuilder->add($this->configuration->getScriptName());
 
-        foreach ($this->arguments as $argument){
+        foreach ($this->configuration->getArguments() as $argument){
             $processBuilder->add($argument);
         }
         
         return $processBuilder->getProcess();
     }
-
 }
