@@ -2,13 +2,17 @@
 
 namespace AppBundle\Process;
 
+use AppBundle\Exception\ProcessFailedException;
 use Symfony\Component\Process\Process;
 use Symfony\Component\Process\ProcessBuilder;
 
-class PythonProcessBuilder
+class PythonProcess
 {
     /** @var  PythonProcessConfigurationInterface */
     protected $configuration;
+
+    /** @var  Process */
+    protected $process;
 
     public function __construct(PythonProcessConfigurationInterface $configuration)
     {
@@ -34,7 +38,38 @@ class PythonProcessBuilder
         foreach ($this->configuration->getArguments() as $argument){
             $processBuilder->add($argument);
         }
-        
-        return $processBuilder->getProcess();
+
+        $this->process = $processBuilder->getProcess();
+
+        return $this->process;
+    }
+
+    public function run()
+    {
+        if (! $this->process instanceof Process){
+            $this->process = $this->getProcess();
+        }
+
+        if (! $this->process->isRunning()) {
+            $this->process->run();
+        }
+    }
+
+    public function isRunning()
+    {
+        return $this->process->isRunning();
+    }
+
+    public function isSuccessful(){
+        if (! $this->process->isSuccessful()){
+            return new ProcessFailedException(sprintf('Process failed: %s', $this->process->getExitCodeText()));
+        }
+
+        $response = json_decode($this->process->getOutput());
+        if (isset($response->error)){
+            return false;
+        }
+
+        return true;
     }
 }

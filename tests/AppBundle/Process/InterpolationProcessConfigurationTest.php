@@ -43,10 +43,6 @@ class InterpolationProcessConfigurationTest extends \PHPUnit_Framework_TestCase
         $interpolationConfiguration->setOutputFile($this->outputFileMock);
         $this->assertEquals('outputTestFile', $interpolationConfiguration->getOutputFile());
 
-        $directory = "../directory";
-        $interpolationConfiguration->setDataDirectory($directory);
-        $this->assertEquals($directory, $interpolationConfiguration->getDataDirectory());
-
         $expectedArguments = array(
             'inputTestFile',
             'outputTestFile'

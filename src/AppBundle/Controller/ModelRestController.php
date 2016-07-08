@@ -15,7 +15,7 @@ use AppBundle\Entity\WellBoundary;
 use AppBundle\Model\ModflowProperties\ModflowCalculationProperties;
 use AppBundle\Model\Point;
 use AppBundle\Model\RasterFactory;
-use AppBundle\Process\ModflowProcessBuilder;
+use AppBundle\Process\ModflowProcess;
 use AppBundle\Process\ModflowProcessConfiguration;
 use AppBundle\Process\ProcessFile;
 use AppBundle\Service\GeoImage;
@@ -687,7 +687,7 @@ class ModelRestController extends FOSRestController
         $configuration->setDataDirectory($this->getParameter('inowas.modflow.data_folder').'/'.$id);
         $configuration->setIgnoreWarnings(true);
 
-        $modflowProcess = new ModflowProcessBuilder($configuration);
+        $modflowProcess = new ModflowProcess($configuration);
         $process = $modflowProcess->getProcess();
         $process->run();
     }

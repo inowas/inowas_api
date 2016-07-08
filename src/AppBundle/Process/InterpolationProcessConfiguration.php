@@ -14,11 +14,7 @@ class InterpolationProcessConfiguration extends PythonProcessConfiguration imple
      * @var ProcessFile
      */
     protected $outputFile;
-
-    /**
-     * @var string
-     */
-    protected $dataDirectory;
+    
 
     /**
      * InterpolationProcessConfiguration constructor.
@@ -67,24 +63,6 @@ class InterpolationProcessConfiguration extends PythonProcessConfiguration imple
     public function getOutputFile()
     {
         return $this->outputFile->getFileName();
-    }
-
-    /**
-     * @param $directory
-     * @return mixed
-     */
-    public function setDataDirectory($directory)
-    {
-        $this->dataDirectory = $directory;
-        return $this;
-    }
-
-    /**
-     * @return mixed
-     */
-    public function getDataDirectory()
-    {
-        return $this->dataDirectory;
     }
 
     /**

@@ -2,10 +2,10 @@
 
 namespace Tests\AppBundle\Process;
 
-use AppBundle\Process\ModflowProcessBuilder;
+use AppBundle\Process\ModflowProcess;
 use AppBundle\Process\ModflowProcessConfiguration;
 
-class ModflowProcessBuilderTest extends \PHPUnit_Framework_TestCase
+class ModflowProcessTest extends \PHPUnit_Framework_TestCase
 {
 
     public function testInstantiate(){
@@ -18,7 +18,7 @@ class ModflowProcessBuilderTest extends \PHPUnit_Framework_TestCase
         $configurationMock->method('setIgnoreWarnings')->willReturn($configurationMock);
 
         /** @var ModflowProcessConfiguration $configurationMock */
-        $this->assertInstanceOf('AppBundle\Process\ModflowProcessBuilder', new ModflowProcessBuilder($configurationMock));
+        $this->assertInstanceOf('AppBundle\Process\ModflowProcess', new ModflowProcess($configurationMock));
     }
 
     public function testGetProcessReturnsInstanceOfProcess(){
@@ -30,7 +30,7 @@ class ModflowProcessBuilderTest extends \PHPUnit_Framework_TestCase
         $configurationMock->method('getIgnoreWarnings')->willReturn(true);
 
         /** @var ModflowProcessConfiguration $configurationMock */
-        $modflowProcess = new ModflowProcessBuilder($configurationMock);
+        $modflowProcess = new ModflowProcess($configurationMock);
         $this->assertInstanceOf('Symfony\Component\Process\Process', $modflowProcess->getProcess());
     }
 
@@ -51,7 +51,7 @@ class ModflowProcessBuilderTest extends \PHPUnit_Framework_TestCase
         $configurationMock->method('getScriptName')->willReturn('modflowCalculation.py');
 
         /** @var ModflowProcessConfiguration $configurationMock */
-        $modflowProcess = new ModflowProcessBuilder($configurationMock);
+        $modflowProcess = new ModflowProcess($configurationMock);
         $this->assertEquals("'python' '-W' 'ignore' 'modflowCalculation.py' 'http://localhost/' 'mf2005' 'dataDirectory/id' '../inputFile.in'", $modflowProcess->getProcess()->getCommandLine());
     }
 }

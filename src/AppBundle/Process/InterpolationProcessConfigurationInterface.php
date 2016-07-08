@@ -32,16 +32,5 @@ interface InterpolationProcessConfigurationInterface extends PythonProcessConfig
      * @return string
      */
     public function getOutputFile();
-
-    /**
-     * @param $directory
-     * @return $this
-     */
-    public function setDataDirectory($directory);
-
-    /**
-     * @return $this
-     */
-    public function getDataDirectory();
-
+    
 }

@@ -2,26 +2,26 @@
 
 namespace Tests\AppBundle\Process;
 
-use AppBundle\Process\PythonProcessBuilder;
+use AppBundle\Process\PythonProcess;
 use AppBundle\Process\PythonProcessConfiguration;
 
-class PythonProcessBuilderTest extends \PHPUnit_Framework_TestCase
+class PythonProcessTest extends \PHPUnit_Framework_TestCase
 {
 
     public function testInstantiationWithDefaultConfiguration(){
-        $pythonProcess = new PythonProcessBuilder(new PythonProcessConfiguration());
-        $this->assertInstanceOf('AppBundle\Process\PythonProcessBuilder', $pythonProcess);
+        $pythonProcess = new PythonProcess(new PythonProcessConfiguration());
+        $this->assertInstanceOf('AppBundle\Process\PythonProcess', $pythonProcess);
     }
 
     public function testGetProcessReturnsProcess(){
-        $pythonProcess = new PythonProcessBuilder(new PythonProcessConfiguration());
+        $pythonProcess = new PythonProcess(new PythonProcessConfiguration());
         $this->assertInstanceOf('Symfony\Component\Process\Process', $pythonProcess->getProcess());
     }
 
     public function testProcessPrefix(){
         $configuration = new PythonProcessConfiguration();
         $configuration->setPrefix('pillow');
-        $pythonProcess = new PythonProcessBuilder($configuration);
+        $pythonProcess = new PythonProcess($configuration);
         $this->assertStringStartsWith('\'pillow', $pythonProcess->getProcess()->getCommandLine());
     }
 
@@ -29,7 +29,7 @@ class PythonProcessBuilderTest extends \PHPUnit_Framework_TestCase
         $configuration = new PythonProcessConfiguration();
         $configuration->setPrefix('pillow');
         $configuration->setIgnoreWarnings(true);
-        $pythonProcess = new PythonProcessBuilder($configuration);
+        $pythonProcess = new PythonProcess($configuration);
         $this->assertStringStartsWith("'pillow' '-W' 'ignore'", $pythonProcess->getProcess()->getCommandLine());
     }
 
@@ -38,7 +38,7 @@ class PythonProcessBuilderTest extends \PHPUnit_Framework_TestCase
         $configuration->setPrefix('pillow');
         $configuration->setIgnoreWarnings(true);
         $configuration->setScriptName('myCustomScript.py');
-        $pythonProcess = new PythonProcessBuilder($configuration);
+        $pythonProcess = new PythonProcess($configuration);
         $this->assertStringStartsWith("'pillow' '-W' 'ignore' 'myCustomScript.py'", $pythonProcess->getProcess()->getCommandLine());
     }
 
@@ -47,7 +47,7 @@ class PythonProcessBuilderTest extends \PHPUnit_Framework_TestCase
         $configuration->setPrefix('pillow');
         $configuration->setIgnoreWarnings(false);
         $configuration->setScriptName('myCustomScript.py');
-        $pythonProcess = new PythonProcessBuilder($configuration);
+        $pythonProcess = new PythonProcess($configuration);
         $this->assertStringStartsWith("'pillow' 'myCustomScript.py'", $pythonProcess->getProcess()->getCommandLine());
     }
 
@@ -57,7 +57,7 @@ class PythonProcessBuilderTest extends \PHPUnit_Framework_TestCase
         $configuration->setIgnoreWarnings(false);
         $configuration->setScriptName('myCustomScript.py');
         $configuration->setArguments(array('a', 'b', 'c'));
-        $pythonProcess = new PythonProcessBuilder($configuration);
+        $pythonProcess = new PythonProcess($configuration);
         $this->assertStringStartsWith("'pillow' 'myCustomScript.py' 'a' 'b' 'c'", $pythonProcess->getProcess()->getCommandLine());
     }
 
