@@ -58,7 +58,7 @@ class PythonProcessConfiguration implements PythonProcessConfigurationInterface
      * @param boolean $ignoreWarnings
      * @return PythonProcessConfiguration
      */
-    public function setIgnoreWarnings(bool $ignoreWarnings)
+    public function setIgnoreWarnings($ignoreWarnings)
     {
         $this->ignoreWarnings = $ignoreWarnings;
         return $this;

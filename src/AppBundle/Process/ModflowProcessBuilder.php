@@ -2,7 +2,7 @@
 
 namespace AppBundle\Process;
 
-class ModflowProcess extends PythonProcess
+class ModflowProcessBuilder extends PythonProcessBuilder
 {
     public function __construct(ModflowProcessConfigurationInterface $configuration)
     {

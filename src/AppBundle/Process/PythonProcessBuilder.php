@@ -5,7 +5,7 @@ namespace AppBundle\Process;
 use Symfony\Component\Process\Process;
 use Symfony\Component\Process\ProcessBuilder;
 
-class PythonProcess
+class PythonProcessBuilder
 {
 
     /** @var array $arguments */

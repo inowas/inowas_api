@@ -19,7 +19,7 @@ interface PythonProcessConfigurationInterface
      * @param boolean $ignoreWarnings
      * @return $this
      */
-    public function setIgnoreWarnings(bool $ignoreWarnings);
+    public function setIgnoreWarnings($ignoreWarnings);
 
     /**
      * @return bool
