@@ -15,5 +15,6 @@ parameters:
     inowas.geotiff.data_folder: '%kernel.root_dir%/../var/data/geotiff'
     inowas.modflow.working_directory: '%kernel.root_dir%/../py/pyprocessing/modflow'
     inowas.geotiff.working_directory: '%kernel.root_dir%/../py/pyprocessing/geoimage'
+    inowas.interpolation.working_directory: '%kernel.root_dir%/../py/pyprocessing/interpolation'
     inowas.modflow.api_base_url: 'http://localhost/'
     inowas.temp_folder: '%kernel.root_dir%/../var/tmp'
