@@ -23,7 +23,7 @@ class InterpolationTest extends WebTestCase
             ->get('kernel');
 
         $configFileCreator = static::$kernel->getContainer()
-            ->get('inowas.interpolation.configurationfile.creator');
+            ->get('inowas.process.configurationfilecreatorfactory');
 
         $this->interpolation = new Interpolation($httpKernel, $configFileCreator);
     }

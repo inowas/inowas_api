@@ -4,12 +4,12 @@
 #    inowas.modflow.data_folder:  ../py/pyprocessing/data/modflow
 
 services:
-    inowas.interpolation:
+    inowas.process.interpolation:
         class: AppBundle\Service\Interpolation
-        arguments: ['@kernel', '@inowas.interpolation.configurationfile.creator']
+        arguments: ['@kernel', '@inowas.process.configurationfilecreatorfactory']
 
-    inowas.interpolation.configurationfile.creator:
-        class: AppBundle\Service\InterpolationConfigurationFileCreator
+    inowas.process.configurationfilecreatorfactory:
+        class: AppBundle\Service\ConfigurationFileCreatorFactory
         arguments: ['@kernel', '@serializer']
 
     inowas.propertytypes:
@@ -30,7 +30,7 @@ services:
 
     inowas.soilmodel:
         class: AppBundle\Service\SoilModelService
-        arguments: ['@doctrine.orm.default_entity_manager', '@inowas.interpolation']
+        arguments: ['@doctrine.orm.default_entity_manager', '@inowas.process.interpolation']
 
     inowas.python_process:
         class: AppBundle\Service\PythonProcess

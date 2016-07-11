@@ -11,7 +11,7 @@ use Ramsey\Uuid\Uuid;
 use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\HttpKernel\KernelInterface;
 
-class InterpolationConfigurationFileCreator implements InputOutputFileInterface
+class ConfigurationFileCreatorFactory implements InputOutputFileInterface
 {
 
     /** @var  Serializer */

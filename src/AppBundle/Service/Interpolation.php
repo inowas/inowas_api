@@ -21,7 +21,7 @@ class Interpolation
     /** @var  InterpolationParameter */
     protected $interpolationConfiguration;
 
-    /** @var InterpolationConfigurationFileCreator */
+    /** @var ConfigurationFileCreatorFactory */
     protected $interpolationConfigurationFileCreator;
 
     /** @var  KernelInterface */
@@ -30,9 +30,9 @@ class Interpolation
     /**
      * Interpolation constructor.
      * @param $kernel
-     * @param InterpolationConfigurationFileCreator $interpolationConfigurationFileCreator
+     * @param ConfigurationFileCreatorFactory $interpolationConfigurationFileCreator
      */
-    public function __construct(KernelInterface $kernel, InterpolationConfigurationFileCreator $interpolationConfigurationFileCreator)
+    public function __construct(KernelInterface $kernel, ConfigurationFileCreatorFactory $interpolationConfigurationFileCreator)
     {
         $this->kernel = $kernel;
         $this->interpolationConfigurationFileCreator = $interpolationConfigurationFileCreator;
