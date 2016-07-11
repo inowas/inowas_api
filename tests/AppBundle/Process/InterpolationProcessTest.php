@@ -2,8 +2,7 @@
 
 namespace Tests\AppBundle\Process;
 
-
-use AppBundle\Process\InterpolationProcess;
+use AppBundle\Process\PythonProcessFactory;
 use AppBundle\Process\ProcessConfigurationInterface;
 
 class InterpolationProcessTest extends \PHPUnit_Framework_TestCase
@@ -22,10 +21,10 @@ class InterpolationProcessTest extends \PHPUnit_Framework_TestCase
     public function testInstantiate()
     {
         $this->configurationMock->method('getArguments')->willReturn(array());
-        $interpolationProcessBuilder = new InterpolationProcess($this->configurationMock);
+        $process = PythonProcessFactory::create($this->configurationMock);
 
 
         /** @var ProcessConfigurationInterface $configurationMock */
-        $this->assertInstanceOf('AppBundle\Process\InterpolationProcess', $interpolationProcessBuilder);
+        $this->assertInstanceOf('AppBundle\Process\PythonProcess', $process);
     }
 }

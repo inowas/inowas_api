@@ -4,7 +4,7 @@ namespace AppBundle\Service;
 
 use AppBundle\Exception\InvalidArgumentException;
 use AppBundle\Process\InterpolationParameter;
-use AppBundle\Process\InterpolationProcess;
+use AppBundle\Process\PythonProcessFactory;
 use AppBundle\Process\InterpolationProcessConfiguration;
 use AppBundle\Process\InterpolationResult;
 use Symfony\Component\HttpKernel\KernelInterface;
@@ -55,9 +55,9 @@ class Interpolation
             $this->interpolationConfigurationFileCreator->createFiles($algorithms[$i], $interpolationParameter);
             $configuration = new InterpolationProcessConfiguration($this->interpolationConfigurationFileCreator);
             $configuration->setWorkingDirectory($this->kernel->getContainer()->getParameter('inowas.interpolation.working_directory'));
-            $process = new InterpolationProcess($configuration);
-
-            if ($process->interpolate())
+            $process = PythonProcessFactory::create($configuration);
+            $process->run();
+            if ($process->isSuccessful())
             {
                 $jsonResults = file_get_contents($this->interpolationConfigurationFileCreator->getOutputFile()->getFileName());
                 $results = json_decode($jsonResults);
