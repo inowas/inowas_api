@@ -1,11 +1,15 @@
 <?php
 
-namespace AppBundle\Process;
+namespace AppBundle\Service;
 
+use AppBundle\Process\InputOutputFileInterface;
+use AppBundle\Process\InterpolationParameter;
+use AppBundle\Process\ProcessFile;
 use JMS\Serializer\SerializationContext;
 use JMS\Serializer\Serializer;
 use Ramsey\Uuid\Uuid;
 use Symfony\Component\Filesystem\Filesystem;
+use Symfony\Component\HttpKernel\KernelInterface;
 
 class InterpolationConfigurationFileCreator implements InputOutputFileInterface
 {
@@ -24,12 +28,12 @@ class InterpolationConfigurationFileCreator implements InputOutputFileInterface
 
     /**
      * InterpolationConfigurationFileCreator constructor.
-     * @param $tempFolder
-     * @param Serializer $serializer
+     * @param $kernel
+     * @param $serializer
      */
-    public function __construct($tempFolder, Serializer $serializer)
+    public function __construct(KernelInterface $kernel, $serializer)
     {
-        $this->tempFolder = $tempFolder;
+        $this->tempFolder = $kernel->getContainer()->getParameter('inowas.temp_folder');
         $this->serializer = $serializer;
     }
 

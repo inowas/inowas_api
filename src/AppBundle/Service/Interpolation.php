@@ -3,8 +3,6 @@
 namespace AppBundle\Service;
 
 use AppBundle\Exception\InvalidArgumentException;
-use AppBundle\Process\InputOutputFileInterface;
-use AppBundle\Process\InterpolationConfigurationFileCreator;
 use AppBundle\Process\InterpolationParameter;
 use AppBundle\Process\InterpolationProcess;
 use AppBundle\Process\InterpolationProcessConfiguration;
@@ -23,7 +21,7 @@ class Interpolation
     /** @var  InterpolationParameter */
     protected $interpolationConfiguration;
 
-    /** @var InputOutputFileInterface */
+    /** @var InterpolationConfigurationFileCreator */
     protected $interpolationConfigurationFileCreator;
 
     /** @var  KernelInterface */
@@ -31,17 +29,13 @@ class Interpolation
 
     /**
      * Interpolation constructor.
-     * @param $serializer
      * @param $kernel
+     * @param InterpolationConfigurationFileCreator $interpolationConfigurationFileCreator
      */
-    public function __construct($serializer, $kernel)
+    public function __construct(KernelInterface $kernel, InterpolationConfigurationFileCreator $interpolationConfigurationFileCreator)
     {
-        $this->serializer = $serializer;
         $this->kernel = $kernel;
-        $this->interpolationConfigurationFileCreator = new InterpolationConfigurationFileCreator(
-            $this->kernel->getContainer()->getParameter('inowas.temp_folder'),
-            $this->serializer
-        );
+        $this->interpolationConfigurationFileCreator = $interpolationConfigurationFileCreator;
     }
 
     /**

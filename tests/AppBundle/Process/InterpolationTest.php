@@ -22,10 +22,10 @@ class InterpolationTest extends WebTestCase
         $httpKernel = static::$kernel->getContainer()
             ->get('kernel');
 
-        $serializer = static::$kernel->getContainer()
-            ->get('serializer');
+        $configFileCreator = static::$kernel->getContainer()
+            ->get('inowas.interpolation.configurationfile.creator');
 
-        $this->interpolation = new Interpolation($serializer, $httpKernel);
+        $this->interpolation = new Interpolation($httpKernel, $configFileCreator);
     }
 
     public function testThrowExceptionIfAlgorithmIsUnknown()

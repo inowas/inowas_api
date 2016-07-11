@@ -6,7 +6,11 @@
 services:
     inowas.interpolation:
         class: AppBundle\Service\Interpolation
-        arguments: ['@serializer', '@kernel', '@inowas.python_process']
+        arguments: ['@kernel', '@inowas.interpolation.configurationfile.creator']
+
+    inowas.interpolation.configurationfile.creator:
+        class: AppBundle\Service\InterpolationConfigurationFileCreator
+        arguments: ['@kernel', '@serializer']
 
     inowas.propertytypes:
         class: AppBundle\Service\PropertyTypes
