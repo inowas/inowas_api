@@ -21,7 +21,9 @@ class InterpolationProcessTest extends \PHPUnit_Framework_TestCase
 
     public function testInstantiate()
     {
+        $this->configurationMock->method('getArguments')->willReturn(array());
         $interpolationProcessBuilder = new InterpolationProcess($this->configurationMock);
+
 
         /** @var InterpolationProcessConfigurationInterface $configurationMock */
         $this->assertInstanceOf('AppBundle\Process\InterpolationProcess', $interpolationProcessBuilder);

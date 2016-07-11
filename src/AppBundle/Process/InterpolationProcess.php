@@ -2,6 +2,8 @@
 
 namespace AppBundle\Process;
 
+use Symfony\Component\Process\ProcessBuilder;
+
 class InterpolationProcess
 {
     /**
@@ -11,7 +13,7 @@ class InterpolationProcess
 
     public function __construct(InterpolationProcessConfigurationInterface $configuration)
     {
-        $this->pythonProcess = new PythonProcess($configuration);
+        $this->pythonProcess = new PythonProcess(new ProcessBuilder(), $configuration);
     }
 
     public function interpolate()

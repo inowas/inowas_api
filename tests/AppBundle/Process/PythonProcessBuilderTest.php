@@ -4,24 +4,25 @@ namespace Tests\AppBundle\Process;
 
 use AppBundle\Process\PythonProcess;
 use AppBundle\Process\PythonProcessConfiguration;
+use Symfony\Component\Process\ProcessBuilder;
 
 class PythonProcessTest extends \PHPUnit_Framework_TestCase
 {
 
     public function testInstantiationWithDefaultConfiguration(){
-        $pythonProcess = new PythonProcess(new PythonProcessConfiguration());
+        $pythonProcess = new PythonProcess(new ProcessBuilder(), new PythonProcessConfiguration());
         $this->assertInstanceOf('AppBundle\Process\PythonProcess', $pythonProcess);
     }
 
     public function testGetProcessReturnsProcess(){
-        $pythonProcess = new PythonProcess(new PythonProcessConfiguration());
+        $pythonProcess = new PythonProcess(new ProcessBuilder(), new PythonProcessConfiguration());
         $this->assertInstanceOf('Symfony\Component\Process\Process', $pythonProcess->getProcess());
     }
 
     public function testProcessPrefix(){
         $configuration = new PythonProcessConfiguration();
         $configuration->setPrefix('pillow');
-        $pythonProcess = new PythonProcess($configuration);
+        $pythonProcess = new PythonProcess(new ProcessBuilder(), $configuration);
         $this->assertStringStartsWith('\'pillow', $pythonProcess->getProcess()->getCommandLine());
     }
 
@@ -29,7 +30,7 @@ class PythonProcessTest extends \PHPUnit_Framework_TestCase
         $configuration = new PythonProcessConfiguration();
         $configuration->setPrefix('pillow');
         $configuration->setIgnoreWarnings(true);
-        $pythonProcess = new PythonProcess($configuration);
+        $pythonProcess = new PythonProcess(new ProcessBuilder(), $configuration);
         $this->assertStringStartsWith("'pillow' '-W' 'ignore'", $pythonProcess->getProcess()->getCommandLine());
     }
 
@@ -38,8 +39,9 @@ class PythonProcessTest extends \PHPUnit_Framework_TestCase
         $configuration->setPrefix('pillow');
         $configuration->setIgnoreWarnings(true);
         $configuration->setScriptName('myCustomScript.py');
-        $pythonProcess = new PythonProcess($configuration);
-        $this->assertStringStartsWith("'pillow' '-W' 'ignore' 'myCustomScript.py'", $pythonProcess->getProcess()->getCommandLine());
+        $pythonProcess = new PythonProcess(new ProcessBuilder(), $configuration);
+        $this->assertEquals("'pillow' '-W' 'ignore' 'myCustomScript.py'", $pythonProcess->getProcess()->getCommandLine());
+
     }
 
     public function testProcessScriptNameAndIgnoreWarningsFalseFlag(){
@@ -47,8 +49,8 @@ class PythonProcessTest extends \PHPUnit_Framework_TestCase
         $configuration->setPrefix('pillow');
         $configuration->setIgnoreWarnings(false);
         $configuration->setScriptName('myCustomScript.py');
-        $pythonProcess = new PythonProcess($configuration);
-        $this->assertStringStartsWith("'pillow' 'myCustomScript.py'", $pythonProcess->getProcess()->getCommandLine());
+        $pythonProcess = new PythonProcess(new ProcessBuilder(), $configuration);
+        $this->assertEquals("'pillow' 'myCustomScript.py'", $pythonProcess->getProcess()->getCommandLine());
     }
 
     public function testProcessScriptAndArguments(){
@@ -57,8 +59,34 @@ class PythonProcessTest extends \PHPUnit_Framework_TestCase
         $configuration->setIgnoreWarnings(false);
         $configuration->setScriptName('myCustomScript.py');
         $configuration->setArguments(array('a', 'b', 'c'));
-        $pythonProcess = new PythonProcess($configuration);
-        $this->assertStringStartsWith("'pillow' 'myCustomScript.py' 'a' 'b' 'c'", $pythonProcess->getProcess()->getCommandLine());
+        $pythonProcess = new PythonProcess(new ProcessBuilder(), $configuration);
+        $this->assertEquals("'pillow' 'myCustomScript.py' 'a' 'b' 'c'", $pythonProcess->getProcess()->getCommandLine());
     }
+    
+    public function testProcessIsRunningMethod(){
 
+        $processMock = $this->getMockBuilder('Symfony\Component\Process\Process')
+            ->disableOriginalConstructor()
+            ->getMock();
+
+        $processMock->method('isRunning')->willReturn(false);
+        $processMock->method('isSuccessful')->willReturn(false);
+
+        $processBuilderMock = $this->getMockBuilder('Symfony\Component\Process\ProcessBuilder')
+            ->setConstructorArgs(array())
+            ->setMethods(array(
+                'setPrefix',
+                'setWorkingDirectory',
+                'add',
+                'getProcess'
+            ))
+            ->getMock();
+
+        $processBuilderMock->method('getProcess')->willReturn($processMock);
+
+        $configuration = new PythonProcessConfiguration();
+        $pythonProcess = new PythonProcess($processBuilderMock, $configuration);
+        $this->assertEquals(false, $pythonProcess->isRunning());
+        $this->assertEquals(false, $pythonProcess->isSuccessful());
+    }
 }
