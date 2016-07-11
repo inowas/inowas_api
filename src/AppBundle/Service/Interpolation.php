@@ -45,42 +45,6 @@ class Interpolation
     }
 
     /**
-     * @return InterpolationParameter
-     */
-    public function getInterpolationConfiguration()
-    {
-        return $this->interpolationConfiguration;
-    }
-
-    /**
-     * @param InterpolationParameter $interpolationConfiguration
-     * @return $this
-     */
-    public function setInterpolationConfiguration($interpolationConfiguration)
-    {
-        $this->interpolationConfiguration = $interpolationConfiguration;
-        return $this;
-    }
-    
-    /**
-     * @param InterpolationConfigurationFileCreatorInterface $interpolationConfigurationFileCreator
-     * @return Interpolation
-     */
-    public function setInterpolationConfigurationFileCreator(InterpolationConfigurationFileCreatorInterface $interpolationConfigurationFileCreator)
-    {
-        $this->interpolationConfigurationFileCreator = $interpolationConfigurationFileCreator;
-        return $this;
-    }
-
-    /**
-     * @return InterpolationConfigurationFileCreator
-     */
-    public function getInterpolationConfigurationFileCreator()
-    {
-        return $this->interpolationConfigurationFileCreator;
-    }
-
-    /**
      * @param InterpolationParameter $interpolationParameter
      * @return InterpolationResult|bool
      */
