@@ -22,20 +22,20 @@ class Interpolation
     protected $interpolationConfiguration;
 
     /** @var ConfigurationFileCreatorFactory */
-    protected $interpolationConfigurationFileCreator;
+    protected $configurationFileCreatorFactory;
 
     /** @var  KernelInterface */
     protected $kernel;
 
     /**
      * Interpolation constructor.
-     * @param $kernel
-     * @param ConfigurationFileCreatorFactory $interpolationConfigurationFileCreator
+     * @param KernelInterface $kernel
+     * @param ConfigurationFileCreatorFactory $configurationFileCreatorFactory
      */
-    public function __construct(KernelInterface $kernel, ConfigurationFileCreatorFactory $interpolationConfigurationFileCreator)
+    public function __construct(KernelInterface $kernel, ConfigurationFileCreatorFactory $configurationFileCreatorFactory)
     {
         $this->kernel = $kernel;
-        $this->interpolationConfigurationFileCreator = $interpolationConfigurationFileCreator;
+        $this->configurationFileCreatorFactory = $configurationFileCreatorFactory;
     }
 
     /**
@@ -52,14 +52,15 @@ class Interpolation
         }
 
         for ($i = 0; $i < count($algorithms); $i++) {
-            $this->interpolationConfigurationFileCreator->createFiles($algorithms[$i], $interpolationParameter);
-            $configuration = new InterpolationProcessConfiguration($this->interpolationConfigurationFileCreator);
+            $interpolationConfigurationFileCreator = $this->configurationFileCreatorFactory->create('interpolation');
+            $interpolationConfigurationFileCreator->createFiles($algorithms[$i], $interpolationParameter);
+            $configuration = new InterpolationProcessConfiguration($interpolationConfigurationFileCreator);
             $configuration->setWorkingDirectory($this->kernel->getContainer()->getParameter('inowas.interpolation.working_directory'));
             $process = PythonProcessFactory::create($configuration);
             $process->run();
             if ($process->isSuccessful())
             {
-                $jsonResults = file_get_contents($this->interpolationConfigurationFileCreator->getOutputFile()->getFileName());
+                $jsonResults = file_get_contents($interpolationConfigurationFileCreator->getOutputFile()->getFileName());
                 $results = json_decode($jsonResults);
 
                 return new InterpolationResult($results->method, $results->raster, $interpolationParameter->getGridSize(), $interpolationParameter->getBoundingBox());

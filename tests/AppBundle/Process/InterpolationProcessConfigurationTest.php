@@ -28,7 +28,7 @@ class InterpolationProcessConfigurationTest extends \PHPUnit_Framework_TestCase
             ->getMock();
         $this->outputFile->method('getFileName')->willReturn('../outputFile.out');
 
-        $this->configurationFileCreator = $this->getMockBuilder('AppBundle\Service\ConfigurationFileCreatorFactory')
+        $this->configurationFileCreator = $this->getMockBuilder('AppBundle\Process\Interpolation\InterpolationConfigurationFileCreator')
             ->disableOriginalConstructor()
             ->getMock();
 
