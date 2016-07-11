@@ -2,7 +2,7 @@
 
 namespace AppBundle\Process;
 
-interface InterpolationConfigurationFileCreatorInterface extends ConfigurationFileCreatorInterface
+interface InterpolationConfigurationFileCreatorInterface extends InputOutputFileInterface
 {
     public function createFiles($algorithm, InterpolationParameter $interpolationParameter);
 }

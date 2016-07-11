@@ -17,9 +17,9 @@ class InterpolationProcessConfiguration extends PythonProcessConfiguration imple
 
     /**
      * InterpolationProcessConfiguration constructor.
-     * @param ConfigurationFileCreatorInterface $configurationFileCreator
+     * @param InputOutputFileInterface $configurationFileCreator
      */
-    public function __construct(ConfigurationFileCreatorInterface $configurationFileCreator)
+    public function __construct(InputOutputFileInterface $configurationFileCreator)
     {
         $this->inputFile = $configurationFileCreator->getInputFile();
         $this->outputFile = $configurationFileCreator->getOutputFile();

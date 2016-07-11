@@ -2,7 +2,7 @@
 
 namespace AppBundle\Process;
 
-interface ConfigurationFileCreatorInterface
+interface InputOutputFileInterface
 {
     public function getInputFile();
 

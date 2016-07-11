@@ -7,7 +7,7 @@ use JMS\Serializer\Serializer;
 use Ramsey\Uuid\Uuid;
 use Symfony\Component\Filesystem\Filesystem;
 
-class InterpolationConfigurationFileCreator implements ConfigurationFileCreatorInterface
+class InterpolationConfigurationFileCreator implements InputOutputFileInterface
 {
 
     /** @var  Serializer */

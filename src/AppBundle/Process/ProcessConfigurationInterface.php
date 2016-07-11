@@ -2,22 +2,12 @@
 
 namespace AppBundle\Process;
 
-interface ProcessConfigurationInterface extends PythonProcessConfigurationInterface
+interface ProcessConfigurationInterface extends PythonProcessConfigurationInterface, InputOutputFileInterface
 {
     /**
      * InterpolationProcessConfigurationInterface constructor.
-     * @param ConfigurationFileCreatorInterface $configurationFileCreator
+     * @param InputOutputFileInterface $configurationFileCreator
      */
-    public function __construct(ConfigurationFileCreatorInterface $configurationFileCreator);
-
-    /**
-     * @return string
-     */
-    public function getInputFile();
-
-    /**
-     * @return string
-     */
-    public function getOutputFile();
+    public function __construct(InputOutputFileInterface $configurationFileCreator);
     
 }
