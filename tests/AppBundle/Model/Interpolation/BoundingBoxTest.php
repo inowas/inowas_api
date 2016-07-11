@@ -1,6 +1,6 @@
 <?php
 
-namespace Tests\AppBundle\Controller;
+namespace Tests\AppBundle\Model\Interpolation;
 
 use AppBundle\Model\Interpolation\BoundingBox;
 

@@ -2,19 +2,14 @@
 
 namespace AppBundle\Service;
 
-use AppBundle\Exception\InterpolationException;
-use AppBundle\Exception\ProcessFailedException;
-use AppBundle\Model\Interpolation\BoundingBox;
-use AppBundle\Model\Interpolation\GridSize;
-use AppBundle\Model\Interpolation\PointValue;
-use Doctrine\Common\Collections\ArrayCollection;
-use JMS\Serializer\SerializationContext;
-use JMS\Serializer\Serializer;
-use Ramsey\Uuid\Uuid;
-use Symfony\Component\Filesystem\Filesystem;
-use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
+use AppBundle\Exception\InvalidArgumentException;
+use AppBundle\Process\InterpolationConfigurationFileCreator;
+use AppBundle\Process\InterpolationConfigurationFileCreatorInterface;
+use AppBundle\Process\InterpolationParameter;
+use AppBundle\Process\InterpolationProcess;
+use AppBundle\Process\InterpolationProcessConfiguration;
+use AppBundle\Process\InterpolationResult;
 use Symfony\Component\HttpKernel\KernelInterface;
-use Symfony\Component\Process\Process;
 
 class Interpolation
 {
@@ -25,266 +20,95 @@ class Interpolation
     /** @var array */
     private $availableTypes = [self::TYPE_MEAN, self::TYPE_GAUSSIAN, self::TYPE_IDW];
 
-    /** @var string  */
-    private $tmpFolder = '/tmp/interpolation';
+    /** @var  InterpolationParameter */
+    protected $interpolationConfiguration;
 
-    /** @var string  */
-    private $tmpFileName = '';
-
-    /** @var  GridSize */
-    protected $gridSize;
-
-    /** @var  BoundingBox */
-    protected $boundingBox;
-
-    /** @var array $data */
-    protected $data;
-
-    /** @var string $method */
-    protected $method;
-
-    /** @var ArrayCollection PointValue */
-    protected $points;
-
-    /** @var  Serializer */
-    protected $serializer;
+    /** @var InterpolationConfigurationFileCreatorInterface */
+    protected $interpolationConfigurationFileCreator;
 
     /** @var  KernelInterface */
     protected $kernel;
-
-    /** @var  PythonProcess $pythonProcess */
-    protected $pythonProcess;
-
-    /** @var string */
-    protected $stdOut;
 
     /**
      * Interpolation constructor.
      * @param $serializer
      * @param $kernel
-     * @param $pythonProcess
      */
-    public function __construct($serializer, $kernel, $pythonProcess)
+    public function __construct($serializer, $kernel)
     {
-        $this->points = new ArrayCollection();
         $this->serializer = $serializer;
         $this->kernel = $kernel;
-        $this->pythonProcess = $pythonProcess;
-        $this->tmpFileName = Uuid::uuid4()->toString();
-        $this->stdOut = '';
+        $this->interpolationConfigurationFileCreator = new InterpolationConfigurationFileCreator(
+            $this->kernel->getContainer()->getParameter('inowas.temp_folder'),
+            $this->serializer
+        );
+    }
+
+    /**
+     * @return InterpolationParameter
+     */
+    public function getInterpolationConfiguration()
+    {
+        return $this->interpolationConfiguration;
+    }
+
+    /**
+     * @param InterpolationParameter $interpolationConfiguration
+     * @return $this
+     */
+    public function setInterpolationConfiguration($interpolationConfiguration)
+    {
+        $this->interpolationConfiguration = $interpolationConfiguration;
+        return $this;
     }
     
     /**
-     * @return string
-     */
-    public function getTmpFolder()
-    {
-        return $this->tmpFolder;
-    }
-
-    /**
-     * @param string $tmpFolder
+     * @param InterpolationConfigurationFileCreatorInterface $interpolationConfigurationFileCreator
      * @return Interpolation
      */
-    public function setTmpFolder($tmpFolder)
+    public function setInterpolationConfigurationFileCreator(InterpolationConfigurationFileCreatorInterface $interpolationConfigurationFileCreator)
     {
-        $this->tmpFolder = $tmpFolder;
+        $this->interpolationConfigurationFileCreator = $interpolationConfigurationFileCreator;
         return $this;
     }
 
     /**
-     * @return string
+     * @return InterpolationConfigurationFileCreator
      */
-    public function getTmpFileName()
+    public function getInterpolationConfigurationFileCreator()
     {
-        return $this->tmpFileName;
+        return $this->interpolationConfigurationFileCreator;
     }
 
     /**
-     * @param string $tmpFileName
-     * @return Interpolation
+     * @param InterpolationParameter $interpolationParameter
+     * @return InterpolationResult|bool
      */
-    public function setTmpFileName($tmpFileName)
+    public function interpolate(InterpolationParameter $interpolationParameter)
     {
-        $this->tmpFileName = $tmpFileName;
-        return $this;
-    }
-
-    /**
-     * @param GridSize $gridSize
-     * @return $this
-     */
-    public function setGridSize(GridSize $gridSize)
-    {
-        $this->gridSize = $gridSize;
-        return $this;
-    }
-
-    /**
-     * @return GridSize
-     */
-    public function getGridSize()
-    {
-        return $this->gridSize;
-    }
-
-    /**
-     * @param BoundingBox $boundingBox
-     * @return $this
-     */
-    public function setBoundingBox(BoundingBox $boundingBox)
-    {
-        $this->boundingBox = $boundingBox;
-        return $this;
-    }
-
-    /**
-     * @return BoundingBox
-     */
-    public function getBoundingBox()
-    {
-        return $this->boundingBox;
-    }
-    
-    public function addPointValue(PointValue $pointValue)
-    {
-        if (!$this->points->contains($pointValue)){
-            $this->points[] = $pointValue;
-        }
-    }
-
-    public function removePointValue(PointValue $pointValue)
-    {
-        if ($this->points->contains($pointValue)) {
-            $this->points->removeElement($pointValue);
-        }
-    }
-
-    /**
-     * @return ArrayCollection
-     */
-    public function getPoints()
-    {
-        return $this->points;
-    }
-
-    public function clear()
-    {
-        $this->data = null;
-        $this->boundingBox = null;
-        $this->gridSize = null;
-        $this->method = null;
-        $this->points = new ArrayCollection();
-        $this->stdOut = "";
-        $this->tmpFileName = Uuid::uuid4()->toString();
-    }
-
-    public function interpolate($algorithm)
-    {
-        $this->data = array();
-        $this->method = '';
-        
-        if (is_array($algorithm)) {
-            $algorithms = $algorithm;
-        } else {
-            $algorithms = array();
-            $algorithms[] = $algorithm;
-        }
-
+        $algorithms = $interpolationParameter->getAlgorithms();
         foreach ($algorithms as $algorithm) {
             if (!in_array($algorithm, $this->availableTypes)) {
-                throw new NotFoundHttpException(sprintf('Algorithm %s not found.', $algorithm));
+                throw new InvalidArgumentException(sprintf('Algorithm %s not found.', $algorithm));
             }
-        }
-
-        if (!$this->gridSize instanceof GridSize) {
-            throw new NotFoundHttpException('GridSize not set.');
-        }
-
-        if (!$this->boundingBox instanceof BoundingBox) {
-            throw new NotFoundHttpException('BoundingBox not set.');
-        }
-
-        if ($this->points->count() == 0) {
-            throw new NotFoundHttpException('No PointValues set.');
         }
 
         for ($i = 0; $i < count($algorithms); $i++) {
+            $this->interpolationConfigurationFileCreator->createFiles($algorithms[$i], $interpolationParameter);
+            $configuration = new InterpolationProcessConfiguration($this->interpolationConfigurationFileCreator);
+            $configuration->setWorkingDirectory($this->kernel->getContainer()->getParameter('inowas.interpolation.working_directory'));
+            $process = new InterpolationProcess($configuration);
 
-            $class = 'AppBundle\Model\Interpolation\\' . ucfirst($algorithms[$i]) . 'Interpolation';
-            $interpolation = new $class($this->gridSize, $this->boundingBox, $this->points);
-
-            $interpolationJSON = $this->serializer->serialize(
-                $interpolation,
-                'json',
-                SerializationContext::create()->setGroups(array('interpolation'))
-            );
-
-            $fs = new Filesystem();
-            if (!$fs->exists($this->tmpFolder)) {
-                $fs->mkdir($this->tmpFolder);
-            }
-
-            $inputFileName = $this->tmpFolder . '/' . $this->tmpFileName . '.in';
-            $fs->dumpFile($inputFileName, $interpolationJSON);
-            $outputFileName = $this->tmpFolder . '/' . $this->tmpFileName . '.out';
-
-            $scriptName = "interpolationCalculation.py";
-
-            /** @var Process $process */
-            $process = $this->pythonProcess
-                ->setArguments(array('-W', 'ignore', $scriptName, $inputFileName, $outputFileName))
-                ->setWorkingDirectory($this->kernel->getRootDir() . '/../py/pyprocessing/interpolation')
-                ->getProcess();
-
-            $process->run();
-            if (!$process->isSuccessful()) {
-                throw new ProcessFailedException();
-            }
-
-            $jsonResponse = $process->getOutput();
-            $this->stdOut .= $jsonResponse;
-            $response = json_decode($jsonResponse);
-
-            if (isset($response->error) && $i == (count($algorithms)-1)) {
-                throw new InterpolationException('Error in calculation');
-            }
-
-            if (isset($response->success)) {
-                $jsonResults = file_get_contents($outputFileName);
+            if ($process->interpolate())
+            {
+                $jsonResults = file_get_contents($this->interpolationConfigurationFileCreator->getOutputFile()->getFileName());
                 $results = json_decode($jsonResults);
-                $this->method = $results->method;
-                $this->data = $results->raster;
+
+                return new InterpolationResult($results->method, $results->raster, $interpolationParameter->getGridSize(), $interpolationParameter->getBoundingBox());
                 break;
             }
-
-            $this->stdOut .= $jsonResponse;
         }
 
-        return $this->stdOut;
-    }
-
-    /**
-     * @return mixed
-     */
-    public function getData()
-    {
-        return $this->data;
-    }
-
-    /**
-     * @return string
-     */
-    public function getMethod()
-    {
-        return $this->method;
-    }
-
-    /**
-     * @return string
-     */
-    public function getStdOut()
-    {
-        return $this->stdOut;
+        return false;
     }
 }

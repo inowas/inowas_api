@@ -14,29 +14,17 @@ class InterpolationProcessConfiguration extends PythonProcessConfiguration imple
      * @var ProcessFile
      */
     protected $outputFile;
-    
 
     /**
      * InterpolationProcessConfiguration constructor.
-     * @param ProcessFile $inputFile
-     * @param ProcessFile $outputFile
+     * @param InterpolationConfigurationFileCreatorInterface $configurationFileCreator
      */
-    public function __construct(ProcessFile $inputFile, ProcessFile $outputFile)
+    public function __construct(InterpolationConfigurationFileCreatorInterface $configurationFileCreator)
     {
-        $this->inputFile = $inputFile;
-        $this->outputFile = $outputFile;
+        $this->inputFile = $configurationFileCreator->getInputFile();
+        $this->outputFile = $configurationFileCreator->getOutputFile();
         $this->ignoreWarnings = true;
         $this->scriptName = 'interpolationCalculation.py';
-    }
-
-    /**
-     * @param ProcessFile $file
-     * @return $this
-     */
-    public function setInputFile(ProcessFile $file)
-    {
-        $this->inputFile = $file;
-        return $this;
     }
 
     /**
@@ -45,16 +33,6 @@ class InterpolationProcessConfiguration extends PythonProcessConfiguration imple
     public function getInputFile()
     {
         return $this->inputFile->getFileName();
-    }
-
-    /**
-     * @param ProcessFile $file
-     * @return mixed
-     */
-    public function setOutputFile(ProcessFile $file)
-    {
-        $this->outputFile = $file;
-        return $this;
     }
 
     /**

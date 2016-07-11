@@ -2,6 +2,7 @@
 
 namespace AppBundle\Model\Interpolation;
 
+use AppBundle\Process\InterpolationParameter;
 use Doctrine\Common\Collections\ArrayCollection;
 use JMS\Serializer\Annotation as JMS;
 
@@ -31,19 +32,13 @@ abstract class AbstractInterpolation
 
     /**
      * AbstractInterpolation constructor.
-     * @param GridSize $gridSize
-     * @param BoundingBox $boundingBox
-     * @param ArrayCollection|null $pointValues
+     * @param InterpolationParameter $interpolationParameter
      */
-    public function __construct(GridSize $gridSize, BoundingBox $boundingBox, ArrayCollection $pointValues = null)
+    public function __construct(InterpolationParameter $interpolationParameter)
     {
-        $this->boundingBox = $boundingBox;
-        $this->gridSize = $gridSize;
-        $this->pointValues = $pointValues;
-
-        if (is_null($pointValues)){
-            $this->pointValues = new ArrayCollection();
-        }
+        $this->boundingBox = $interpolationParameter->getBoundingBox();
+        $this->gridSize = $interpolationParameter->getGridSize();
+        $this->pointValues = $interpolationParameter->getPointValues();
     }
 
     /**
@@ -60,28 +55,6 @@ abstract class AbstractInterpolation
     public function getGridSize()
     {
         return $this->gridSize;
-    }
-
-    /**
-     * @param PointValue $pointValue
-     */
-    public function addPointValue(PointValue $pointValue)
-    {
-        if (!$this->pointValues->contains($pointValue))
-        {
-            $this->pointValues->add($pointValue);
-        }
-    }
-
-    /**
-     * @param PointValue $pointValue
-     */
-    public function removePointValue(PointValue $pointValue)
-    {
-        if ($this->pointValues->contains($pointValue))
-        {
-            $this->pointValues->removeElement($pointValue);
-        }
     }
 
     /**

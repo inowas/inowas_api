@@ -11,6 +11,8 @@ use AppBundle\Entity\SoilModel;
 use AppBundle\Model\Interpolation\PointValue;
 use AppBundle\Model\PropertyValueFactory;
 use AppBundle\Model\RasterFactory;
+use AppBundle\Process\InterpolationParameter;
+use AppBundle\Process\InterpolationResult;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\EntityManager;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
@@ -156,11 +158,10 @@ class SoilModelService
     /**
      * @param GeologicalLayer $layer
      * @param $propertyTypeAbbreviation
-     * @param $algorithm
-     * @return string
-     * @throws \Exception
+     * @param array $algorithms
+     * @return mixed
      */
-    public function interpolateLayerByProperty(GeologicalLayer $layer, $propertyTypeAbbreviation, $algorithm)
+    public function interpolateLayerByProperty(GeologicalLayer $layer, $propertyTypeAbbreviation, array $algorithms)
     {
         $propertyType = $this->em->getRepository('AppBundle:PropertyType')
             ->findOneBy(array(
@@ -172,8 +173,10 @@ class SoilModelService
         }
 
         $units = $layer->getGeologicalUnits();
-        $this->interpolation->setBoundingBox($this->modflowModel->getBoundingBox());
-        $this->interpolation->setGridSize($this->modflowModel->getGridSize());
+
+        $gridSize = $this->modflowModel->getGridSize();
+        $boundingBox = $this->modflowModel->getBoundingBox();
+        $pointValues = array();
 
         /** @var GeologicalUnit $unit */
         foreach ($units as $unit) {
@@ -184,30 +187,29 @@ class SoilModelService
                     $value = $unit->getFirstPropertyValue($property);
 
                     if (!is_null($value)) {
-                        $this->interpolation->addPointValue(new PointValue($unit->getPoint(), $value));
+                        $pointValues[] = new PointValue($unit->getPoint(), $value);
                         break;
                     }
                 }
             }
         }
 
-        $out = $this->interpolation->interpolate($algorithm);
-        $data = $this->interpolation->getData();
+        $interpolationParameter = new InterpolationParameter($gridSize, $boundingBox, $pointValues, $algorithms);
+        $result = $this->interpolation->interpolate($interpolationParameter);
         
-        $propertyValue = PropertyValueFactory::create()
-            ->setRaster(RasterFactory::create()
-                ->setGridSize($this->modflowModel->getGridSize())
-                ->setBoundingBox($this->modflowModel->getBoundingBox())
-                ->setData($data)
-                ->setDescription($this->interpolation->getMethod())
-            );
+        if ($result instanceof InterpolationResult)
+        {
+            $propertyValue = PropertyValueFactory::create()
+                ->setRaster(RasterFactory::create()
+                    ->setGridSize($result->getGridSize())
+                    ->setBoundingBox($result->getBoundingBox())
+                    ->setData($result->getData())
+                    ->setDescription($result->getAlgorithm())
+                );
 
-        $this->interpolation->clear();
-        
-        $layer->addValue($propertyType, $propertyValue);
-        $this->em->persist($layer);
-        $this->em->flush();
-
-        return $out;
+            $layer->addValue($propertyType, $propertyValue);
+            $this->em->persist($layer);
+            $this->em->flush();
+        }
     }
 }

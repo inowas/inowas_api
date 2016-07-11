@@ -6,7 +6,8 @@ use AppBundle\Model\Interpolation\BoundingBox;
 use AppBundle\Model\Interpolation\GridSize;
 use AppBundle\Model\Interpolation\PointValue;
 use AppBundle\Model\Point;
-use AppBundle\Process\Interpolation;
+use AppBundle\Service\Interpolation;
+use AppBundle\Process\InterpolationParameter;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
 class InterpolationTest extends WebTestCase
@@ -26,42 +27,17 @@ class InterpolationTest extends WebTestCase
 
         $this->interpolation = new Interpolation($serializer, $httpKernel);
     }
-    
-    public function testSetAndGetGridSize()
-    {
-        $gridSize = new GridSize(10, 11);
-        $this->interpolation->setGridSize($gridSize);
-        $this->assertEquals($gridSize, $this->interpolation->getGridSize());
-    }
-
-    public function testSetAndGetBoundingBox()
-    {
-        $boundingBox = new BoundingBox(-1.2, 2.1, -5.1, 1.5);
-        $this->interpolation->setBoundingBox($boundingBox);
-        $this->assertEquals($boundingBox, $this->interpolation->getBoundingBox());
-    }
-
-    public function testAddingPointValue(){
-        $pointValue = new PointValue(new Point(1, 2, 4326), 3);
-        $this->interpolation->addPointValue($pointValue);
-        $this->assertCount(1, $this->interpolation->getPoints());
-        $this->assertEquals($pointValue, $this->interpolation->getPoints()->first());
-    }
-
-    public function testAddingOnePointValueWillNotBeAddedTwice()
-    {
-        $pointValue = new PointValue(new Point(1, 2, 4326), 3);
-        $this->interpolation->addPointValue($pointValue);
-        $this->interpolation->addPointValue($pointValue);
-        $this->assertCount(1, $this->interpolation->getPoints());
-        $this->assertEquals($pointValue, $this->interpolation->getPoints()->first());
-    }
 
     public function testThrowExceptionIfAlgorithmIsUnknown()
     {
-        $this->interpolation->setGridSize(new GridSize(10,11));
-        $this->interpolation->setBoundingBox(new BoundingBox(-10.1, 10.2, -5.1, 5.2));
-        $this->interpolation->addPointValue(new PointValue(new Point(1, 2, 4326), 3));
+        $interpolationParameter = new InterpolationParameter(
+            new GridSize(10,11),
+            new BoundingBox(-10.1, 10.2, -5.1, 5.2),
+            array(
+                new PointValue(new Point(1, 2, 4326), 3)
+            ),
+            array('foo')
+        );
 
         $unknownAlgorithm = 'foo';
         $this->setExpectedException(
@@ -69,100 +45,121 @@ class InterpolationTest extends WebTestCase
             'Algorithm '.$unknownAlgorithm.' not found.'
         );
 
-        $this->interpolation->interpolate($unknownAlgorithm);
-    }
-
-    public function testThrowExceptionIfIfGridSizeIsNotSet()
-    {
-        $this->interpolation->setBoundingBox(new BoundingBox(-10.1, 10.2, -5.1, 5.2));
-        $this->interpolation->addPointValue(new PointValue(new Point(1, 2, 4326), 3));
-
-        $this->setExpectedException(
-            'AppBundle\Exception\InvalidArgumentException',
-            'GridSize not set.'
-        );
-        $this->interpolation->interpolate(Interpolation::TYPE_MEAN);
-    }
-
-    public function testThrowExceptionIfIfBoundingBoxIsNotSet()
-    {
-        $this->interpolation->setGridSize(new GridSize(10,11));
-        $this->interpolation->addPointValue(new PointValue(new Point(1, 2, 4326), 3));
-
-        $this->setExpectedException(
-            'AppBundle\Exception\InvalidArgumentException',
-            'BoundingBox not set.'
-        );
-        $this->interpolation->interpolate(Interpolation::TYPE_MEAN);
+        $this->interpolation->interpolate($interpolationParameter);
     }
 
     public function testThrowExceptionIfIfNoPointIstSet()
     {
-        $this->interpolation->setGridSize(new GridSize(10,11));
-        $this->interpolation->setBoundingBox(new BoundingBox(-10.1, 10.2, -5.1, 5.2));
-
-        $this->setExpectedException(
-            'AppBundle\Exception\InvalidArgumentException',
-            'No PointValues set.'
+        $this->setExpectedException('AppBundle\Exception\InvalidArgumentException');
+        new InterpolationParameter(
+            new GridSize(10,11),
+            new BoundingBox(-10.1, 10.2, -5.1, 5.2),
+            array(),
+            array(Interpolation::TYPE_IDW)
         );
-        $this->interpolation->interpolate(Interpolation::TYPE_MEAN);
     }
 
     public function testIdwInterpolation(){
-        $this->interpolation->setGridSize(new GridSize(10,11));
-        $this->interpolation->setBoundingBox(new BoundingBox(-10.1, 10.2, -5.1, 5.2));
-        $this->interpolation->addPointValue(new PointValue(new Point(1, 2, 4326), 3));
-        $this->interpolation->addPointValue(new PointValue(new Point(1, 2, 4326), 4));
-        $result = $this->interpolation->interpolate(Interpolation::TYPE_IDW);
+        $interpolationConfiguration = new InterpolationParameter(
+            new GridSize(10,11),
+            new BoundingBox(-10.1, 10.2, -5.1, 5.2),
+            array(
+                new PointValue(new Point(1, 2, 4326), 3),
+                new PointValue(new Point(1, 3, 4326), 4)
+            ),
+            array(Interpolation::TYPE_IDW)
+        );
+
+        $result = $this->interpolation->interpolate($interpolationConfiguration);
         $this->assertInstanceOf('AppBundle\Process\InterpolationResult', $result);
         $this->assertEquals(Interpolation::TYPE_IDW, $result->getAlgorithm());
     }
 
     public function testMeanInterpolation(){
-        $this->interpolation->setGridSize(new GridSize(10,11));
-        $this->interpolation->setBoundingBox(new BoundingBox(-10.1, 10.2, -5.1, 5.2));
-        $this->interpolation->addPointValue(new PointValue(new Point(1, 2, 4326), 3));
-        $this->interpolation->addPointValue(new PointValue(new Point(1, 2, 4326), 4));
-        $result = $this->interpolation->interpolate(Interpolation::TYPE_MEAN);
+        $interpolationConfiguration = new InterpolationParameter(
+            new GridSize(10,11),
+            new BoundingBox(-10.1, 10.2, -5.1, 5.2),
+            array(
+                new PointValue(new Point(1, 2, 4326), 3),
+                new PointValue(new Point(1, 3, 4326), 4)
+            ),
+            array(Interpolation::TYPE_MEAN)
+        );
+
+        $result = $this->interpolation->interpolate($interpolationConfiguration);
         $this->assertInstanceOf('AppBundle\Process\InterpolationResult', $result);
         $this->assertEquals(Interpolation::TYPE_MEAN, $result->getAlgorithm());
     }
 
     public function testGaussianInterpolation(){
-        $this->interpolation->setGridSize(new GridSize(10,11));
-        $this->interpolation->setBoundingBox(new BoundingBox(0, 10, 0, 10));
-        $this->interpolation->addPointValue(new PointValue(new Point(1, 5, 4326), 3));
-        $this->interpolation->addPointValue(new PointValue(new Point(2, 8, 4326), 3));
-        $this->interpolation->addPointValue(new PointValue(new Point(7, 2, 4326), 3));
-        $this->interpolation->addPointValue(new PointValue(new Point(6, 4, 4326), 3));
-        $this->interpolation->addPointValue(new PointValue(new Point(8, 2, 4326), 3));
-        $this->interpolation->addPointValue(new PointValue(new Point(9, 9, 4326), 3));
-        $result = $this->interpolation->interpolate(Interpolation::TYPE_GAUSSIAN);
+        $interpolationConfiguration = new InterpolationParameter(
+            new GridSize(10,11),
+            new BoundingBox(0, 10, 0, 10),
+            array(
+                new PointValue(new Point(1, 5, 4326), 3),
+                new PointValue(new Point(2, 8, 4326), 3),
+                new PointValue(new Point(7, 2, 4326), 3),
+                new PointValue(new Point(6, 4, 4326), 3),
+                new PointValue(new Point(8, 2, 4326), 3),
+                new PointValue(new Point(9, 9, 4326), 3)
+            ),
+            array(Interpolation::TYPE_GAUSSIAN)
+        );
+
+        $result = $this->interpolation->interpolate($interpolationConfiguration);
         $this->assertInstanceOf('AppBundle\Process\InterpolationResult', $result);
         $this->assertEquals(Interpolation::TYPE_GAUSSIAN, $result->getAlgorithm());
     }
 
     public function testMultipleInterpolationAlgorithms(){
-        $this->interpolation->setGridSize(new GridSize(10,11));
-        $this->interpolation->setBoundingBox(new BoundingBox(0, 10, 0, 10));
-        $this->interpolation->addPointValue(new PointValue(new Point(1, 5, 4326), 3));
-        $this->interpolation->addPointValue(new PointValue(new Point(2, 8, 4326), 3));
-        $this->interpolation->addPointValue(new PointValue(new Point(7, 2, 4326), 3));
-        $this->interpolation->addPointValue(new PointValue(new Point(6, 4, 4326), 3));
-        $this->interpolation->addPointValue(new PointValue(new Point(8, 2, 4326), 3));
-        $this->interpolation->addPointValue(new PointValue(new Point(9, 9, 4326), 3));
-        $result = $this->interpolation->interpolate(array(0 => Interpolation::TYPE_GAUSSIAN, 1 => Interpolation::TYPE_MEAN));
+        $interpolationConfiguration = new InterpolationParameter(
+            new GridSize(10,11),
+            new BoundingBox(0, 10, 0, 10),
+            array(
+                new PointValue(new Point(1, 5, 4326), 3),
+                new PointValue(new Point(2, 8, 4326), 3),
+                new PointValue(new Point(7, 2, 4326), 3),
+                new PointValue(new Point(6, 4, 4326), 3),
+                new PointValue(new Point(8, 2, 4326), 3),
+                new PointValue(new Point(9, 9, 4326), 3)
+            ),
+            array(Interpolation::TYPE_GAUSSIAN, Interpolation::TYPE_MEAN)
+        );
+
+        $result = $this->interpolation->interpolate($interpolationConfiguration);
         $this->assertInstanceOf('AppBundle\Process\InterpolationResult', $result);
         $this->assertEquals(Interpolation::TYPE_GAUSSIAN, $result->getAlgorithm());
     }
 
-    public function testInterpolationAlgorithmsFallback(){
-        $this->interpolation->setGridSize(new GridSize(10,11));
-        $this->interpolation->setBoundingBox(new BoundingBox(0, 10, 0, 10));
-        $this->interpolation->addPointValue(new PointValue(new Point(1, 5), 3));
-        $this->interpolation->addPointValue(new PointValue(new Point(2, 8), 3));
-        $result = $this->interpolation->interpolate(array(0 => Interpolation::TYPE_GAUSSIAN, 1 => Interpolation::TYPE_MEAN));
+    public function testInterpolationAlgorithmsFallback()
+    {
+        $interpolationConfiguration = new InterpolationParameter(
+            new GridSize(10, 11),
+            new BoundingBox(-10.1, 10.2, -5.1, 5.2),
+            array(
+                new PointValue(new Point(1, 2, 4326), 3),
+                new PointValue(new Point(1, 3, 4326), 4)
+            ),
+            array(Interpolation::TYPE_GAUSSIAN, Interpolation::TYPE_MEAN)
+        );
+
+        $result = $this->interpolation->interpolate($interpolationConfiguration);
         $this->assertInstanceOf('AppBundle\Process\InterpolationResult', $result);
         $this->assertEquals(Interpolation::TYPE_MEAN, $result->getAlgorithm());
+    }
+
+    public function testInterpolationAlgorithmCanNotCalculate()
+    {
+        $interpolationConfiguration = new InterpolationParameter(
+            new GridSize(10, 11),
+            new BoundingBox(-10.1, 10.2, -5.1, 5.2),
+            array(
+                new PointValue(new Point(1, 2, 4326), 3),
+                new PointValue(new Point(1, 3, 4326), 4)
+            ),
+            array(Interpolation::TYPE_GAUSSIAN)
+        );
+
+        $this->assertFalse($this->interpolation->interpolate($interpolationConfiguration));
     }
 }

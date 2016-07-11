@@ -6,27 +6,14 @@ interface InterpolationProcessConfigurationInterface extends PythonProcessConfig
 {
     /**
      * InterpolationProcessConfigurationInterface constructor.
-     * @param ProcessFile $inputFile
-     * @param ProcessFile $outputFile
+     * @param InterpolationConfigurationFileCreatorInterface $configurationFileCreator
      */
-    public function __construct(ProcessFile $inputFile, ProcessFile $outputFile);
-
-    /**
-     * @param $file
-     * @return $this
-     */
-    public function setInputFile(ProcessFile $file);
+    public function __construct(InterpolationConfigurationFileCreatorInterface $configurationFileCreator);
 
     /**
      * @return string
      */
     public function getInputFile();
-
-    /**
-     * @param $file
-     * @return $this
-     */
-    public function setOutputFile(ProcessFile $file);
 
     /**
      * @return string

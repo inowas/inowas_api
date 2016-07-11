@@ -2,6 +2,9 @@
 
 namespace AppBundle\Process;
 
+use AppBundle\Model\Interpolation\BoundingBox;
+use AppBundle\Model\Interpolation\GridSize;
+
 class InterpolationResult
 {
 
@@ -11,10 +14,18 @@ class InterpolationResult
     /** @var  string */
     protected $data;
 
-    public function __construct($algorithm, $data)
+    /** @var  GridSize */
+    protected $gridSize;
+
+    /** @var  BoundingBox */
+    protected $boundingBox;
+
+    public function __construct($algorithm, array $data, GridSize $gridSize, BoundingBox $boundingBox)
     {
         $this->algorithm = $algorithm;
         $this->data = $data;
+        $this->gridSize = $gridSize;
+        $this->boundingBox = $boundingBox;
     }
 
     /**
@@ -26,16 +37,6 @@ class InterpolationResult
     }
 
     /**
-     * @param string $algorithm
-     * @return $this
-     */
-    public function setAlgorithm($algorithm)
-    {
-        $this->algorithm = $algorithm;
-        return $this;
-    }
-
-    /**
      * @return string
      */
     public function getData()
@@ -44,14 +45,18 @@ class InterpolationResult
     }
 
     /**
-     * @param string $data
-     * @return $this
+     * @return GridSize
      */
-    public function setData($data)
+    public function getGridSize()
     {
-        $this->data = $data;
-        return $this;
+        return $this->gridSize;
     }
 
-
+    /**
+     * @return BoundingBox
+     */
+    public function getBoundingBox()
+    {
+        return $this->boundingBox;
+    }
 }

@@ -8,6 +8,7 @@ use AppBundle\Model\Interpolation\GridSize;
 use AppBundle\Model\Interpolation\PointValue;
 use AppBundle\Model\Point;
 use AppBundle\Service\Interpolation;
+use AppBundle\Process\InterpolationParameter;
 use JMS\Serializer\SerializationContext;
 use JMS\Serializer\Serializer;
 use JMS\Serializer\SerializerBuilder;
@@ -21,24 +22,33 @@ class InterpolationSerialisationTest extends \PHPUnit_Framework_TestCase
     /** @var  Interpolation $interpolation */
     protected $interpolation;
 
+    /** @var  InterpolationParameter $interpolationParameter */
+    protected $interpolationParameter;
+
     /** @var  BoundingBox $boundingBox */
     protected $boundingBox;
 
     /** @var  GridSize $gridSize */
     protected $gridSize;
 
-
     public function setUp()
     {
         $this->serializer = SerializerBuilder::create()->build();
-
         $this->gridSize = new GridSize(10,11);
         $this->boundingBox = new BoundingBox(0.1, 10.2, 0.4, 10.5);
 
-        $this->interpolation = new GaussianInterpolation($this->gridSize, $this->boundingBox);
-        $this->interpolation->addPointValue(new PointValue(new Point(1, 5, 4326), 3));
-        $this->interpolation->addPointValue(new PointValue(new Point(2, 8, 4326), 3));
-        $this->interpolation->addPointValue(new PointValue(new Point(7, 2, 4326), 3));
+        $this->interpolationParameter = new InterpolationParameter(
+            $this->gridSize,
+            $this->boundingBox,
+            array(
+                new PointValue(new Point(1, 5, 4326), 3),
+                new PointValue(new Point(2, 8, 4326), 3),
+                new PointValue(new Point(7, 2, 4326), 3)
+            ),
+            array(Interpolation::TYPE_GAUSSIAN)
+        );
+
+        $this->interpolation = new GaussianInterpolation($this->interpolationParameter);
     }
 
     public function testInterpolation()
