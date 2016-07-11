@@ -3,8 +3,8 @@
 namespace AppBundle\Service;
 
 use AppBundle\Exception\InvalidArgumentException;
+use AppBundle\Process\ConfigurationFileCreatorInterface;
 use AppBundle\Process\InterpolationConfigurationFileCreator;
-use AppBundle\Process\InterpolationConfigurationFileCreatorInterface;
 use AppBundle\Process\InterpolationParameter;
 use AppBundle\Process\InterpolationProcess;
 use AppBundle\Process\InterpolationProcessConfiguration;
@@ -23,7 +23,7 @@ class Interpolation
     /** @var  InterpolationParameter */
     protected $interpolationConfiguration;
 
-    /** @var InterpolationConfigurationFileCreatorInterface */
+    /** @var ConfigurationFileCreatorInterface */
     protected $interpolationConfigurationFileCreator;
 
     /** @var  KernelInterface */

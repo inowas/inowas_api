@@ -2,7 +2,7 @@
 
 namespace AppBundle\Process;
 
-class InterpolationProcessConfiguration extends PythonProcessConfiguration implements InterpolationProcessConfigurationInterface
+class InterpolationProcessConfiguration extends PythonProcessConfiguration implements ProcessConfigurationInterface
 {
 
     /**
@@ -17,9 +17,9 @@ class InterpolationProcessConfiguration extends PythonProcessConfiguration imple
 
     /**
      * InterpolationProcessConfiguration constructor.
-     * @param InterpolationConfigurationFileCreatorInterface $configurationFileCreator
+     * @param ConfigurationFileCreatorInterface $configurationFileCreator
      */
-    public function __construct(InterpolationConfigurationFileCreatorInterface $configurationFileCreator)
+    public function __construct(ConfigurationFileCreatorInterface $configurationFileCreator)
     {
         $this->inputFile = $configurationFileCreator->getInputFile();
         $this->outputFile = $configurationFileCreator->getOutputFile();

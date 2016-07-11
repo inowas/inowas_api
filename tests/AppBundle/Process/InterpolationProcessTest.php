@@ -4,7 +4,7 @@ namespace Tests\AppBundle\Process;
 
 
 use AppBundle\Process\InterpolationProcess;
-use AppBundle\Process\InterpolationProcessConfigurationInterface;
+use AppBundle\Process\ProcessConfigurationInterface;
 
 class InterpolationProcessTest extends \PHPUnit_Framework_TestCase
 {
@@ -25,7 +25,7 @@ class InterpolationProcessTest extends \PHPUnit_Framework_TestCase
         $interpolationProcessBuilder = new InterpolationProcess($this->configurationMock);
 
 
-        /** @var InterpolationProcessConfigurationInterface $configurationMock */
+        /** @var ProcessConfigurationInterface $configurationMock */
         $this->assertInstanceOf('AppBundle\Process\InterpolationProcess', $interpolationProcessBuilder);
     }
 }

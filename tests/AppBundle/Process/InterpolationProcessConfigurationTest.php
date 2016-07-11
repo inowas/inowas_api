@@ -4,6 +4,7 @@ namespace Tests\AppBundle\Process;
 
 use AppBundle\Process\InterpolationProcessConfiguration;
 
+
 class InterpolationProcessConfigurationTest extends \PHPUnit_Framework_TestCase
 {
     /** @var  \PHPUnit_Framework_MockObject_MockObject */

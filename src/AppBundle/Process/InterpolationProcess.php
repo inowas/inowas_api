@@ -11,7 +11,7 @@ class InterpolationProcess
      */
     protected $pythonProcess;
 
-    public function __construct(InterpolationProcessConfigurationInterface $configuration)
+    public function __construct(ProcessConfigurationInterface $configuration)
     {
         $this->pythonProcess = new PythonProcess(new ProcessBuilder(), $configuration);
     }
