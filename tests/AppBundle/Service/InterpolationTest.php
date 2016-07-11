@@ -1,6 +1,6 @@
 <?php
 
-namespace Tests\AppBundle\Process;
+namespace Tests\AppBundle\Service;
 
 use AppBundle\Model\Interpolation\BoundingBox;
 use AppBundle\Model\Interpolation\GridSize;
