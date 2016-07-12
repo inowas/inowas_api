@@ -2,19 +2,13 @@
 
 namespace AppBundle\Process\Modflow;
 
-use JMS\Serializer\Annotation as JMS;
-
 /**
  * Class AbstractModflowProcess
  * @package AppBundle\Model\Modflow
  */
 abstract class AbstractModflowInput
 {
-    /**
-     * @var string
-     *
-     * @JMS\Groups("modflowProcess")
-     */
+    /** @var string */
     protected $modelId;
 
     /**
