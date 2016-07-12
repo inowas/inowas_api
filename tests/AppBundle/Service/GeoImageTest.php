@@ -123,7 +123,7 @@ class GeoImageTest extends WebTestCase
         $fs->remove(__DIR__.'/../../../td');
     }
 
-    private function createMock()
+    protected function createMock()
     {
         $this->geoImageParameterMock = $this->getMockBuilder('AppBundle\Process\GeoImage\GeoImageParameter')
             ->disableOriginalConstructor()
