@@ -2,16 +2,13 @@
 
 namespace AppBundle\Service;
 
-use AppBundle\Model\ModflowProperties\ModflowCalculationProperties;
-use AppBundle\Model\ModflowProperties\ModflowRasterResultProperties;
-use AppBundle\Model\ModflowProperties\ModflowTimeSeriesResultProperties;
-use JMS\Serializer\SerializationContext;
-use JMS\Serializer\Serializer;
-use Ramsey\Uuid\Uuid;
-use Symfony\Component\Filesystem\Filesystem;
+use AppBundle\Exception\InvalidArgumentException;
+use AppBundle\Exception\ProcessFailedException;
+use AppBundle\Process\Modflow\ModflowCalculationConfigurationFileCreator;
+use AppBundle\Process\Modflow\ModflowCalculationParameter;
+use AppBundle\Process\Modflow\ModflowCalculationProcessConfiguration;
+use AppBundle\Process\PythonProcessFactory;
 use Symfony\Component\HttpKernel\KernelInterface;
-use Symfony\Component\Process\Exception\ProcessFailedException;
-use Symfony\Component\Process\Process;
 
 class Modflow
 {
@@ -21,291 +18,42 @@ class Modflow
     /** @var array */
     private $availableExecutables = [self::MODFLOW_2005];
 
-    /** @var string */
-    private $baseUrl = "http://localhost/";
-
-    /** @var string $workingDirectory */
-    private $workingDirectory;
-
-    /** @var string  */
-    private $tmpFolder;
-
-    /** @var string  */
-    private $tmpFileName = '';
-
     /** @var  string */
-    private $dataFolder;
-
-    /** @var  Serializer */
-    protected $serializer;
-
-    /** @var  KernelInterface */
-    protected $kernel;
-
-    /** @var  PythonProcess $pythonProcess */
-    protected $pythonProcess;
-
-    /** @var string */
-    protected $stdOut;
+    protected $baseUrl;
 
     /**
      * Modflow constructor.
-     * @param $serializer
-     * @param $kernel
-     * @param $pythonProcess
-     * @param $workingDirectory
-     * @param $dataFolder
-     * @param $tmpFolder
-     * @param $baseUrl
+     * @param KernelInterface $kernel
+     * @param ConfigurationFileCreatorFactory $configurationFileCreatorFactory
      */
-    public function __construct(
-        Serializer $serializer,
-        KernelInterface $kernel,
-        PythonProcess $pythonProcess,
-        $workingDirectory,
-        $dataFolder,
-        $tmpFolder,
-        $baseUrl
-    ){
-        $this->serializer = $serializer;
+    public function __construct(KernelInterface $kernel, ConfigurationFileCreatorFactory $configurationFileCreatorFactory)
+    {
         $this->kernel = $kernel;
-        $this->pythonProcess = $pythonProcess;
-        $this->workingDirectory = $workingDirectory;
-        $this->dataFolder = $dataFolder;
-        $this->tmpFolder = $tmpFolder;
-        $this->baseUrl = $baseUrl;
-
-        $this->stdOut = '';
-        $this->tmpFileName = Uuid::uuid4()->toString();
+        $this->configurationFileCreatorFactory = $configurationFileCreatorFactory;
+        $this->baseUrl = $this->kernel->getContainer()->getParameter('inowas.modflow.api_base_url');
+        $this->workspace = $this->kernel->getContainer()->getParameter('inowas.modflow.data_folder');
     }
 
-    /**
-     * @return string
-     */
-    public function getBaseUrl()
-    {
-        return $this->baseUrl;
-    }
-
-    /**
-     * @return string
-     */
-    public function getTmpFolder()
-    {
-        return $this->tmpFolder;
-    }
-
-    /**
-     * @return string
-     */
-    public function getTmpFileName()
-    {
-        return $this->tmpFileName;
-    }
-
-    /**
-     * @return string
-     */
-    public function getDataFolder()
-    {
-        return $this->dataFolder;
-    }
-
-    /**
-     * @return string
-     */
-    public function getWorkingDirectory()
-    {
-        return $this->kernel->getRootDir() . '/../py/pyprocessing/modflow';
-    }
-
-    /**
-     * @param $modelId
-     * @return string
-     */
-    public function getWorkSpace($modelId)
-    {
-        return $this->dataFolder.'/'.$modelId;
-    }
-
-    /**
-     * @return string
-     */
-    private function getInputFileName()
-    {
-        return $this->tmpFolder . '/' . $this->tmpFileName . '.in';
-    }
-
-    /**
-     * @return string
-     */
-    private function getOutputFileName()
-    {
-        return $this->tmpFolder . '/' . $this->tmpFileName . '.out';
-    }
-
-    private function clear()
-    {
-        $this->stdOut = "";
-        $this->tmpFileName = Uuid::uuid4()->toString();
-    }
-
-    /**
-     * @param $modelId
-     * @param $propertiesJSON
-     * @return Process
-     */
-    private function getResultsProcess($modelId, $propertiesJSON)
-    {
-        $fs = new Filesystem();
-        if (!$fs->exists($this->tmpFolder)) {
-            $fs->mkdir($this->tmpFolder);
+    public function calculate($modelId, $executable = 'mf2005'){
+        if (! in_array($executable, $this->availableExecutables)){
+            throw new InvalidArgumentException(sprintf('Executable %s not available.', $executable));
         }
 
-        $fs->dumpFile($this->getInputFileName(), $propertiesJSON);
-        $scriptName = "modflowResult.py";
-
-        /** @var Process $process */
-        $process = $this->pythonProcess
-            ->setArguments(array(
-                '-W',
-                'ignore',
-                $scriptName,
-                $this->getBaseUrl(),
-                $this->getWorkSpace($modelId),
-                $this->getInputFileName(),
-                $this->getOutputFileName()))
-            ->setWorkingDirectory($this->getWorkingDirectory())
-            ->getProcess();
-
-        return $process;
-    }
-
-    /**
-     * @param $modelId
-     * @param string $executable
-     * @return string
-     * @throws \AppBundle\Exception\ProcessFailedException
-     */
-    public function calculate($modelId, $executable=self::MODFLOW_2005)
-    {
-        $this->clear();
-        if (!in_array($executable, $this->availableExecutables)) {
-            throw new \InvalidArgumentException(sprintf('Executable %s is unknown.', $executable));
-        }
-
-        $modflowCalculationProperties = new ModflowCalculationProperties($modelId);
-        $modflowCalculationPropertiesJSON = $this->serializer->serialize(
-            $modflowCalculationProperties,
-            'json',
-            SerializationContext::create()->setGroups(array('modflowProcess'))
-        );
-
-        $fs = new Filesystem();
-        if (!$fs->exists($this->tmpFolder)) {
-            $fs->mkdir($this->tmpFolder);
-        }
-
-        $fs->dumpFile($this->getInputFileName(), $modflowCalculationPropertiesJSON);
-
-        $scriptName = "modflowCalculation.py";
-
-        /** @var Process $process */
-        $process = $this->pythonProcess
-            ->setArguments(array(
-                '-W',
-                'ignore',
-                $scriptName,
-                $this->getBaseUrl(),
-                $executable,
-                $this->getWorkSpace($modelId),
-                $this->getInputFileName()))
-            ->setWorkingDirectory($this->getWorkingDirectory())
-            ->getProcess();
-
+        /** @var ModflowCalculationConfigurationFileCreator $inputFileCreator */
+        $inputFileCreator = $this->configurationFileCreatorFactory->create('modflow.calculation');
+        $inputFileCreator->createFiles(new ModflowCalculationParameter($modelId, $this->baseUrl));
+        $processConfig = new ModflowCalculationProcessConfiguration($inputFileCreator->getInputFile(), $this->workspace.'/'.$modelId, $executable, $this->baseUrl);
+        $processConfig->setWorkingDirectory($this->kernel->getContainer()->getParameter('inowas.modflow.working_directory'));
+        $process = PythonProcessFactory::create($processConfig);
         $process->run();
-        if (!$process->isSuccessful()) {
-            throw new \AppBundle\Exception\ProcessFailedException();
+        dump($process->getProcess()->getCommandLine());
+        dump($process->getProcess()->getErrorOutput());
+        dump($process->getProcess()->getOutput());
+        if (! $process->isSuccessful())
+        {
+            throw new ProcessFailedException('Process failed ;(');
         }
 
-        $jsonResponse = $process->getOutput();
-        $this->stdOut .= $jsonResponse;
-        return $this->stdOut;
-    }
-
-    /**
-     * @param $modelId
-     * @param $operation
-     * @param int $layer
-     * @param array $timesteps
-     * @return string
-     */
-    public function getRasterResult($modelId, $operation, $layer=0, $timesteps=array())
-    {
-        $this->clear();
-        $modflowRasterResultProperties = new ModflowRasterResultProperties($modelId, $layer, $operation);
-        foreach ($timesteps as $timestep) {
-            $modflowRasterResultProperties->addTimestep($timestep);
-        }
-
-        $modflowRasterResultPropertiesJSON = $this->serializer->serialize(
-            $modflowRasterResultProperties,
-            'json',
-            SerializationContext::create()->setGroups(array('modflowProcess'))
-        );
-
-        $process = $this->getResultsProcess($modelId, $modflowRasterResultPropertiesJSON);
-        $process->run();
-        if (!$process->isSuccessful()) {
-            throw new ProcessFailedException($process);
-        }
-
-        $process->run();
-        if (!$process->isSuccessful()) {
-            throw new ProcessFailedException($process);
-        }
-
-        $jsonResponse = $process->getOutput();
-        $this->stdOut .= $jsonResponse;
-        return $this->stdOut;
-    }
-
-    /**
-     * @param $modelId
-     * @param $layer
-     * @param $row
-     * @param $col
-     * @param array $timesteps
-     * @return string
-     */
-    public function getTimeseriesResult($modelId, $layer, $row, $col, $timesteps=array())
-    {
-        $this->clear();
-
-        $modflowTimeSeriesResultProperties = new ModflowTimeSeriesResultProperties($modelId, $layer, $row, $col);
-        $modflowTimeSeriesResultProperties->setTimesteps($timesteps);
-        $modflowTimeSeriesResultPropertiesJSON = $this->serializer->serialize(
-            $modflowTimeSeriesResultProperties,
-            'json',
-            SerializationContext::create()->setGroups(array('modflowProcess'))
-        );
-
-        $process = $this->getResultsProcess($modelId, $modflowTimeSeriesResultPropertiesJSON);
-        $process->run();
-        if (!$process->isSuccessful()) {
-            throw new ProcessFailedException($process);
-        }
-
-        $jsonResponse = $process->getOutput();
-        $this->stdOut .= $jsonResponse;
-        return $this->stdOut;
-    }
-
-    /**
-     * @return string
-     */
-    public function getStdOut()
-    {
-        return $this->stdOut;
+        return true;
     }
 }

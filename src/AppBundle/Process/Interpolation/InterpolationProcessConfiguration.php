@@ -3,11 +3,11 @@
 namespace AppBundle\Process\Interpolation;
 
 use AppBundle\Process\InputOutputFileInterface;
-use AppBundle\Process\ProcessConfigurationInterface;
+use AppBundle\Process\ProcessWithInputOutputFileInterface;
 use AppBundle\Process\ProcessFile;
 use AppBundle\Process\PythonProcessConfiguration;
 
-class InterpolationProcessConfiguration extends PythonProcessConfiguration implements ProcessConfigurationInterface
+class InterpolationProcessConfiguration extends PythonProcessConfiguration implements ProcessWithInputOutputFileInterface
 {
 
     /**

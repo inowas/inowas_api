@@ -3,7 +3,7 @@
 namespace Tests\AppBundle\Process;
 
 use AppBundle\Process\PythonProcessFactory;
-use AppBundle\Process\ProcessConfigurationInterface;
+use AppBundle\Process\ProcessWithInputOutputFileInterface;
 
 class InterpolationProcessTest extends \PHPUnit_Framework_TestCase
 {
@@ -24,7 +24,7 @@ class InterpolationProcessTest extends \PHPUnit_Framework_TestCase
         $process = PythonProcessFactory::create($this->configurationMock);
 
 
-        /** @var ProcessConfigurationInterface $configurationMock */
+        /** @var ProcessWithInputOutputFileInterface $configurationMock */
         $this->assertInstanceOf('AppBundle\Process\PythonProcess', $process);
     }
 }

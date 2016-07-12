@@ -2,7 +2,7 @@
 
 namespace AppBundle\Process;
 
-interface ProcessConfigurationInterface extends PythonProcessConfigurationInterface, InputOutputFileInterface
+interface ProcessWithInputOutputFileInterface extends PythonProcessConfigurationInterface, InputOutputFileInterface
 {
     /**
      * InterpolationProcessConfigurationInterface constructor.

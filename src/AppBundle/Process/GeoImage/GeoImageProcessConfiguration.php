@@ -3,11 +3,11 @@
 namespace AppBundle\Process\GeoImage;
 
 use AppBundle\Process\InputOutputFileInterface;
-use AppBundle\Process\ProcessConfigurationInterface;
+use AppBundle\Process\ProcessWithInputOutputFileInterface;
 use AppBundle\Process\ProcessFile;
 use AppBundle\Process\PythonProcessConfiguration;
 
-class GeoImageProcessConfiguration extends PythonProcessConfiguration implements ProcessConfigurationInterface
+class GeoImageProcessConfiguration extends PythonProcessConfiguration implements ProcessWithInputOutputFileInterface
 {
 
     /**

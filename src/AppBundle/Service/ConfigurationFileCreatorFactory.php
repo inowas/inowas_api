@@ -5,6 +5,7 @@ namespace AppBundle\Service;
 use AppBundle\Exception\InvalidArgumentException;
 use AppBundle\Process\GeoImage\GeoImageConfigurationFileCreator;
 use AppBundle\Process\Interpolation\InterpolationConfigurationFileCreator;
+use AppBundle\Process\Modflow\ModflowCalculationConfigurationFileCreator;
 use JMS\Serializer\Serializer;
 use Symfony\Component\HttpKernel\KernelInterface;
 
@@ -40,6 +41,10 @@ class ConfigurationFileCreatorFactory
 
             case 'geoimage':
                 return new GeoImageConfigurationFileCreator($this->kernel, $this->serializer);
+            break;
+
+            case 'modflow.calculation':
+                return new ModflowCalculationConfigurationFileCreator($this->kernel);
             break;
         }
 
