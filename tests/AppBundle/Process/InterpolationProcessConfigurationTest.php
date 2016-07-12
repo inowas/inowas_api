@@ -2,7 +2,7 @@
 
 namespace Tests\AppBundle\Process;
 
-use AppBundle\Process\InterpolationProcessConfiguration;
+use AppBundle\Process\Interpolation\InterpolationProcessConfiguration;
 
 
 class InterpolationProcessConfigurationTest extends \PHPUnit_Framework_TestCase
@@ -39,7 +39,7 @@ class InterpolationProcessConfigurationTest extends \PHPUnit_Framework_TestCase
     public function testInstantiate()
     {
         $interpolationConfiguration = new InterpolationProcessConfiguration($this->configurationFileCreator);
-        $this->assertInstanceOf('AppBundle\Process\InterpolationProcessConfiguration', $interpolationConfiguration);
+        $this->assertInstanceOf('AppBundle\Process\Interpolation\InterpolationProcessConfiguration', $interpolationConfiguration);
         $this->assertTrue($interpolationConfiguration->getIgnoreWarnings());
         $this->assertEquals('interpolationCalculation.py', $interpolationConfiguration->getScriptName());
     }

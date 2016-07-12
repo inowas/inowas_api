@@ -1,6 +1,6 @@
 <?php
 
-namespace AppBundle\Process;
+namespace AppBundle\Process\Interpolation;
 
 use AppBundle\Exception\InvalidArgumentException;
 use AppBundle\Model\Interpolation\BoundingBox;

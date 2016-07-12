@@ -6,4 +6,8 @@ namespace AppBundle\Process\Modflow;
 class ModflowParameter
 {
 
+    protected $modelId;
+
+    
+
 }

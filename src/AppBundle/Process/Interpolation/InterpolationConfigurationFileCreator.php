@@ -3,7 +3,7 @@
 namespace AppBundle\Process\Interpolation;
 
 use AppBundle\Process\InputOutputFileInterface;
-use AppBundle\Process\InterpolationParameter;
+use AppBundle\Process\Interpolation\InterpolationParameter;
 use AppBundle\Process\ProcessFile;
 use JMS\Serializer\SerializationContext;
 use JMS\Serializer\Serializer;

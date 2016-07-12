@@ -7,7 +7,7 @@ use AppBundle\Model\Interpolation\GridSize;
 use AppBundle\Model\Interpolation\PointValue;
 use AppBundle\Model\Point;
 use AppBundle\Service\Interpolation;
-use AppBundle\Process\InterpolationParameter;
+use AppBundle\Process\Interpolation\InterpolationParameter;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
 class InterpolationTest extends WebTestCase

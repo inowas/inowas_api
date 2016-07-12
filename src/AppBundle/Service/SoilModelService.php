@@ -11,7 +11,7 @@ use AppBundle\Entity\SoilModel;
 use AppBundle\Model\Interpolation\PointValue;
 use AppBundle\Model\PropertyValueFactory;
 use AppBundle\Model\RasterFactory;
-use AppBundle\Process\InterpolationParameter;
+use AppBundle\Process\Interpolation\InterpolationParameter;
 use AppBundle\Process\InterpolationResult;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\EntityManager;

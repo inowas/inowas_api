@@ -8,7 +8,7 @@ use AppBundle\Model\Interpolation\GridSize;
 use AppBundle\Model\Interpolation\MeanInterpolation;
 use AppBundle\Model\Interpolation\PointValue;
 use AppBundle\Model\Point;
-use AppBundle\Process\InterpolationParameter;
+use AppBundle\Process\Interpolation\InterpolationParameter;
 use AppBundle\Service\Interpolation;
 use JMS\Serializer\Serializer;
 use JMS\Serializer\SerializerBuilder;

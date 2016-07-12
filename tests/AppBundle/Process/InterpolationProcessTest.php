@@ -13,7 +13,7 @@ class InterpolationProcessTest extends \PHPUnit_Framework_TestCase
 
     public function setUp()
     {
-        $this->configurationMock = $this->getMockBuilder('AppBundle\Process\InterpolationProcessConfiguration')
+        $this->configurationMock = $this->getMockBuilder('AppBundle\Process\Interpolation\InterpolationProcessConfiguration')
             ->disableOriginalConstructor()
             ->getMock();
     }
