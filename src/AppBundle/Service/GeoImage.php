@@ -2,19 +2,14 @@
 
 namespace AppBundle\Service;
 
-use AppBundle\Entity\Raster;
 use AppBundle\Exception\ImageGenerationException;
 use AppBundle\Exception\InvalidArgumentException;
-use AppBundle\Model\GeoImage\GeoImageProperties;
-use AppBundle\Model\Interpolation\BoundingBox;
-use AppBundle\Model\Interpolation\GridSize;
-use JMS\Serializer\SerializationContext;
-use JMS\Serializer\Serializer;
-use Ramsey\Uuid\Uuid;
-use Symfony\Component\Filesystem\Filesystem;
+use AppBundle\Exception\ProcessFailedException;
+use AppBundle\Process\GeoImage\GeoImageParameter;
+use AppBundle\Process\GeoImage\GeoImageProcessConfiguration;
+use AppBundle\Process\ProcessFile;
+use AppBundle\Process\PythonProcessFactory;
 use Symfony\Component\HttpKernel\KernelInterface;
-use \AppBundle\Exception\ProcessFailedException;
-use Symfony\Component\Process\Process;
 
 class GeoImage
 {
@@ -37,121 +32,49 @@ class GeoImage
 
     protected $availableImageFileTypes = array(self::FILE_TYPE_PNG);
 
-    /** @var Serializer $serializer */
-    protected $serializer;
-
     /** @var  KernelInterface */
     protected $kernel;
 
-    /** @var  PythonProcess $pythonProcess */
-    protected $pythonProcess;
+    /** @var  GeoImageParameter */
+    protected $geoImageParameter;
 
-    /** @var  string $workingDirectory */
-    protected $workingDirectory;
-
-    /** @var  string $dataFolder */
-    protected $dataFolder;
-
-    /** @var  string $tmpFolder */
-    protected $tmpFolder;
-
-    /** @var  string $tmpFileName */
-    protected $tmpFileName;
-
-    /** @var  string $outputFileName */
-    protected $outputFileName;
+    /** @var ConfigurationFileCreatorFactory */
+    protected $configurationFileCreatorFactory;
 
     /** @var string */
-    protected $stdOut;
+    protected $outputFileName;
 
     /**
-     * GeoTiff constructor.
-     * @param Serializer $serializer
+     * GeoImage constructor.
      * @param KernelInterface $kernel
-     * @param PythonProcess $pythonProcess
-     * @param $workingDirectory
-     * @param $dataFolder
-     * @param $tmpFolder
+     * @param ConfigurationFileCreatorFactory $configurationFileCreatorFactory
      */
-    public function __construct(
-        Serializer $serializer,
-        KernelInterface $kernel,
-        $pythonProcess,
-        $workingDirectory,
-        $dataFolder,
-        $tmpFolder
-    ){
-        $this->serializer = $serializer;
+    public function __construct(KernelInterface $kernel, ConfigurationFileCreatorFactory $configurationFileCreatorFactory)
+    {
         $this->kernel = $kernel;
-        $this->pythonProcess = $pythonProcess;
-        $this->workingDirectory = $workingDirectory;
-        $this->dataFolder = $dataFolder;
-        $this->tmpFolder = $tmpFolder;
+        $this->configurationFileCreatorFactory = $configurationFileCreatorFactory;
     }
 
-    public function createImageFromRaster(Raster $raster, $activeCells=null, $min=null, $max=null, $fileFormat="png", $colorRelief=self::COLOR_RELIEF_JET, $targetProjection=4326)
-    {
-        if (!$raster->getBoundingBox() instanceof BoundingBox) {
-            throw new InvalidArgumentException('Raster has no valid BoundingBox-Element');
+    public function createImage(GeoImageParameter $geoImageParameter){
+
+        if (! in_array($geoImageParameter->getColorRelief(), $this->availableColorReliefs)){
+            throw new InvalidArgumentException(sprintf('ColorRelief %s is unknown.', $geoImageParameter->getColorRelief()));
         }
 
-        if (!$raster->getGridSize() instanceof GridSize) {
-            throw new InvalidArgumentException('Raster has no valid Gridsize-Element');
+        if (! in_array($geoImageParameter->getFileFormat(), $this->availableImageFileTypes)){
+            throw new InvalidArgumentException(sprintf('FileFormat %s is unknown.', $geoImageParameter->getFileFormat()));
         }
 
-        if (count($raster->getData()) != $raster->getGridSize()->getNY()){
-            throw new InvalidArgumentException(sprintf('RasterData rowCount differs from GridSize rowCount', count($raster->getData()), $raster->getGridSize()->getNY()));
-        }
-
-        if (count($raster->getData()[0]) != $raster->getGridSize()->getNX()){
-            throw new InvalidArgumentException(sprintf('RasterData colCount differs from GridSize colCount', count($raster->getData()[0]), $raster->getGridSize()->getNX()));
-        }
-
-        if (!in_array($colorRelief, $this->availableColorReliefs)){
-            throw new InvalidArgumentException('Given color-relief is not available');
-        }
-
-        if (!in_array($fileFormat, $this->availableImageFileTypes)){
-            throw new InvalidArgumentException(sprintf('Given fileFormat %s is not supported.', $fileFormat));
-        }
-
-        $outputFileName = $this->dataFolder.'/'.$raster->getId()->toString();
-        $this->outputFileName = $outputFileName.'.'.$fileFormat;
-
-        $fs = new Filesystem();
-        if (!$fs->exists($this->dataFolder)) {
-            $fs->mkdir($this->dataFolder);
-        }
-
-        if (!$fs->exists($this->tmpFolder)) {
-            $fs->mkdir($this->tmpFolder);
-        }
-
-        if ($fs->exists($this->outputFileName)){
-            return "File exists already";
-        }
-
-        $geoTiffProperties = new GeoImageProperties($raster, $activeCells, $colorRelief, $targetProjection, $fileFormat, $min, $max);
-        $geoTiffPropertiesJSON = $this->serializer->serialize(
-            $geoTiffProperties,
-            'json',
-            SerializationContext::create()->setGroups(array("geoimage"))
-        );
-        
-        $this->tmpFileName = Uuid::uuid4()->toString();
-        $inputFileName = $this->tmpFolder . '/' . $this->tmpFileName . '.in';
-        $fs->dumpFile($inputFileName, $geoTiffPropertiesJSON);
-        $scriptName = "geoImageCreator.py";
-
-        /** @var Process $process */
-        $process = $this->pythonProcess
-            ->setArguments(array('-W', 'ignore', $scriptName, $inputFileName, $outputFileName))
-            ->setWorkingDirectory($this->workingDirectory)
-            ->getProcess();
+        $geoImageConfigurationFileCreator = $this->configurationFileCreatorFactory->create('geoimage');
+        $geoImageConfigurationFileCreator->createFiles($geoImageParameter);
+        $configuration = new GeoImageProcessConfiguration($geoImageConfigurationFileCreator);
+        $configuration->setWorkingDirectory($this->kernel->getContainer()->getParameter('inowas.geotiff.working_directory'));
+        $process = PythonProcessFactory::create($configuration);
 
         $process->run();
+        
         if (!$process->isSuccessful()) {
-            throw new ProcessFailedException();
+            throw new ProcessFailedException('GeoImage-Process has failed.');
         }
 
         $response = json_decode($process->getOutput());
@@ -160,26 +83,12 @@ class GeoImage
             throw new ImageGenerationException('Error in geotiff-generation');
         }
 
-        if (isset($response->success)) {
-            $this->stdOut .= $response->success;
-        }
+        $this->outputFileName = $geoImageConfigurationFileCreator->getOutputFile()->getFileName();
 
-        return $this->stdOut;
+        return true;
     }
 
-    /**
-     * @return string
-     */
-    public function getOutputFileName()
-    {
+    public function getOutputFileName(){
         return $this->outputFileName;
-    }
-
-    /**
-     * @return string
-     */
-    public function getStdOut()
-    {
-        return $this->stdOut;
     }
 }

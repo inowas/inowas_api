@@ -58,6 +58,10 @@ class PythonProcess
         }
     }
 
+    public function getOutput(){
+        return $this->process->getOutput();
+    }
+
     public function isRunning()
     {
         return $this->process->isRunning();

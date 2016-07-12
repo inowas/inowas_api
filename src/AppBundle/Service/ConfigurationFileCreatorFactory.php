@@ -3,6 +3,7 @@
 namespace AppBundle\Service;
 
 use AppBundle\Exception\InvalidArgumentException;
+use AppBundle\Process\GeoImage\GeoImageConfigurationFileCreator;
 use AppBundle\Process\Interpolation\InterpolationConfigurationFileCreator;
 use JMS\Serializer\Serializer;
 use Symfony\Component\HttpKernel\KernelInterface;
@@ -27,10 +28,18 @@ class ConfigurationFileCreatorFactory
         $this->serializer = $serializer;
     }
 
+    /**
+     * @param $type
+     * @return GeoImageConfigurationFileCreator|InterpolationConfigurationFileCreator
+     */
     public function create($type){
         switch ($type) {
             case 'interpolation':
                 return new InterpolationConfigurationFileCreator($this->kernel, $this->serializer);
+            break;
+
+            case 'geoimage':
+                return new GeoImageConfigurationFileCreator($this->kernel, $this->serializer);
             break;
         }
 

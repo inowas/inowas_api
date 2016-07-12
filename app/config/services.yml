@@ -26,7 +26,7 @@ services:
 
     inowas.geoimage:
         class: AppBundle\Service\GeoImage
-        arguments: ['@serializer', '@kernel', '@inowas.python_process', '%inowas.geotiff.working_directory%', '%inowas.geotiff.data_folder%', '%inowas.temp_folder%']
+        arguments: ['@kernel', '@inowas.process.configurationfilecreatorfactory']
 
     inowas.soilmodel:
         class: AppBundle\Service\SoilModelService

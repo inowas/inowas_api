@@ -6,8 +6,8 @@ use AppBundle\Entity\Raster;
 use AppBundle\Model\Interpolation\BoundingBox;
 use AppBundle\Model\Interpolation\GridSize;
 use AppBundle\Model\RasterFactory;
+use AppBundle\Process\GeoImage\GeoImageParameter;
 use AppBundle\Service\GeoImage;
-use AppBundle\Service\PythonProcess;
 use JMS\Serializer\Serializer;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Symfony\Component\Filesystem\Filesystem;
@@ -21,11 +21,35 @@ class GeoImageTest extends WebTestCase
     /** @var  Serializer */
     protected $serializer;
 
-    /** @var  GeoImage $geoImage */
-    protected $geoImage;
+    /** @var  GeoImage $geoImageService */
+    protected $geoImageService;
 
-    /** @var  Raster $raster */
+    /** @var  GeoImageParameter */
+    protected $geoImageParameter;
+
+    protected $geoImageParameterMock;
+
+    /** @var  Raster */
     protected $raster;
+
+    /** @var  array */
+    protected $activeCells;
+
+    /** @var  float */
+    protected $min;
+
+    /** @var  float */
+    protected $max;
+
+    /** @var  string */
+    protected $fileFormat;
+
+    /** @var  string */
+    protected $colorRelief;
+
+    /** @var  integer */
+    protected $targetProjection;
+
 
     public function setUp()
     {
@@ -33,145 +57,60 @@ class GeoImageTest extends WebTestCase
 
         $this->httpKernel = static::$kernel;
         $this->serializer = static::$kernel->getContainer()->get('serializer');
-        $this->geoImage   = static::$kernel->getContainer()->get('inowas.geoimage');
+        $this->geoImageService = static::$kernel->getContainer()->get('inowas.geoimage');
 
-        $this->raster = RasterFactory::create()
-            ->setBoundingBox(new BoundingBox(0,10,0,11))
+
+        $this->raster = RasterFactory::create();
+        $this->raster
+            ->setBoundingBox(new BoundingBox(0.0005, 0.0007, 0.0010, 0.0015, 4326))
             ->setGridSize(new GridSize(10, 11))
-            ->setData(array(
-                array(1,2,3,4,5,6,7,8,9,10),
-                array(1,2,3,4,5,6,7,8,9,10),
-                array(1,2,3,4,5,6,7,8,9,10),
-                array(1,2,3,4,5,6,7,8,9,10),
-                array(1,2,3,4,5,6,7,8,9,10),
-                array(1,2,3,4,5,6,7,8,9,10),
-                array(1,2,3,4,5,6,7,8,9,10),
-                array(1,2,3,4,5,6,7,8,9,10),
-                array(1,2,3,4,5,6,7,8,9,10),
-                array(1,2,3,4,5,6,7,8,9,10),
-                array(1,2,3,4,5,6,7,8,9,10)
-            ));
+            ->setNoDataVal(-999)
+            ->setData(
+                array(
+                    array(0,1,2,3,4,5,6,7,8,9),
+                    array(0,1,2,3,4,5,6,7,8,9),
+                    array(0,1,2,3,4,5,6,7,8,9),
+                    array(0,1,2,3,4,5,6,7,8,9),
+                    array(0,1,2,3,4,5,6,7,8,9),
+                    array(0,1,2,3,4,5,6,7,8,9),
+                    array(0,1,2,3,4,5,6,7,8,9),
+                    array(0,1,2,3,4,5,6,7,8,9),
+                    array(0,1,2,3,4,5,6,7,8,9),
+                    array(0,1,2,3,4,5,6,7,8,9),
+                    array(0,1,2,3,4,5,6,7,8,9)
+                ))
+            ->setDescription('Description')
+        ;
+
+        $this->activeCells = array();
+        $this->min = 0;
+        $this->max = 10;
+        $this->fileFormat = "png";
+        $this->colorRelief = GeoImage::COLOR_RELIEF_GIST_RAINBOW;
+        $this->targetProjection = 4326;
     }
 
-    public function testThrowInvalidArgumentExceptionIfRastersBoundingBoxIsNull()
-    {
-        $this->raster->setBoundingBox(null);
-        $this->setExpectedException('AppBundle\Exception\InvalidArgumentException');
-        $this->geoImage->createImageFromRaster($this->raster);
+    public function testCreatePngImage(){
+        $geoImageParameterMock = $this->createMock();
+        $this->geoImageService->createImage($geoImageParameterMock);
+        $this->assertFileExists(__DIR__.'/../../data/geotiff/'.$this->raster->getId()->toString().'.png');
+        $this->assertFileExists($this->geoImageService->getOutputFileName());
     }
 
-    public function testThrowInvalidArgumentExceptionIfRastersGridSizeIsNull()
+    public function testThrowInvalidArgumentExceptionIfFileFormatIsNotAvailable()
     {
-        $this->raster->setGridSize(null);
+        $this->fileFormat = 'foo';
+        $this->createMock();
         $this->setExpectedException('AppBundle\Exception\InvalidArgumentException');
-        $this->geoImage->createImageFromRaster($this->raster);
-    }
-
-    public function testThrowInvalidArgumentExceptionIfRastersGridSizeYDiffersFromRasterData()
-    {
-        $gridSize = clone $this->raster->getGridSize();
-        $gridSize->setNY($this->raster->getGridSize()->getNY()+1);
-        $this->raster->setGridSize($gridSize);
-        $this->setExpectedException('AppBundle\Exception\InvalidArgumentException');
-        $this->geoImage->createImageFromRaster($this->raster);
-    }
-
-    public function testThrowInvalidArgumentExceptionIfRastersGridSizeXDiffersFromRasterData()
-    {
-        $gridSize = clone $this->raster->getGridSize();
-        $gridSize->setNX($this->raster->getGridSize()->getNX()+1);
-        $this->raster->setGridSize($gridSize);
-        $this->setExpectedException('AppBundle\Exception\InvalidArgumentException');
-        $this->geoImage->createImageFromRaster($this->raster);
+        $this->geoImageService->createImage($this->geoImageParameterMock);
     }
 
     public function testThrowInvalidArgumentExceptionIfColorReliefIsNotAvailable()
     {
+        $this->colorRelief = 'foo';
+        $this->createMock();
         $this->setExpectedException('AppBundle\Exception\InvalidArgumentException');
-        $this->geoImage->createImageFromRaster($this->raster, null, null, null, "png", "unknownColorRelief");
-    }
-
-    public function testThrowInvalidArgumentExceptionIfImageTypeIsAvailable()
-    {
-        $this->setExpectedException('AppBundle\Exception\InvalidArgumentException');
-        $this->geoImage->createImageFromRaster($this->raster, null, null, null, "kml");
-    }
-
-    public function testThrowsExceptionIfProcessIsNotSuccessful()
-    {
-        $processStub = $this->getMockBuilder(PythonProcess::class)
-            ->disableOriginalConstructor()
-            ->setMethods(array('setArguments', 'setWorkingDirectory', 'getProcess', 'isSuccessful', 'run'))
-            ->getMock()
-        ;
-        $processStub->method('isSuccessful')->willReturn(false);
-        $processStub->method('setArguments')->willReturn($processStub);
-        $processStub->method('setWorkingDirectory')->willReturn($processStub);
-        $processStub->method('getProcess')->willReturn($processStub);
-
-        /** @var PythonProcess $processStub */
-        $geoImage = new GeoImage($this->serializer, $this->httpKernel, $processStub, 'wd', 'dd', 'td');
-
-        $this->setExpectedException('AppBundle\Exception\ProcessFailedException');
-        $geoImage->createImageFromRaster($this->raster);
-    }
-
-    public function testThrowsExceptionIfProcessIsSuccessfulButHasAnError()
-    {
-        $processStub = $this->getMockBuilder(PythonProcess::class)
-            ->disableOriginalConstructor()
-            ->setMethods(array('setArguments', 'setWorkingDirectory', 'getProcess', 'isSuccessful', 'run', 'getOutput'))
-            ->getMock()
-        ;
-        $processStub->method('isSuccessful')->willReturn(true);
-        $processStub->method('setArguments')->willReturn($processStub);
-        $processStub->method('setWorkingDirectory')->willReturn($processStub);
-        $processStub->method('getProcess')->willReturn($processStub);
-        $processStub->method('getOutput')->willReturn('{"error":"Exception raised in calculation of method gaussian"}');
-
-        /** @var PythonProcess $processStub */
-        $geoImage = new GeoImage($this->serializer, $this->httpKernel, $processStub, 'wd', 'dd', 'td');
-
-        $this->setExpectedException('AppBundle\Exception\ImageGenerationException');
-        $geoImage->createImageFromRaster($this->raster);
-    }
-
-    public function testProcessIsSuccessfulAndReturnsStdOut()
-    {
-        $processStub = $this->getMockBuilder(PythonProcess::class)
-            ->disableOriginalConstructor()
-            ->setMethods(array('setArguments', 'setWorkingDirectory', 'getProcess', 'isSuccessful', 'run', 'getOutput'))
-            ->getMock()
-        ;
-        $processStub->method('isSuccessful')->willReturn(true);
-        $processStub->method('setArguments')->willReturn($processStub);
-        $processStub->method('setWorkingDirectory')->willReturn($processStub);
-        $processStub->method('getProcess')->willReturn($processStub);
-        $processStub->method('getOutput')->willReturn('{"success":"Success"}');
-
-        /** @var PythonProcess $processStub */
-        $geoImage = new GeoImage($this->serializer, $this->httpKernel, $processStub, 'wd', 'dd', 'td');
-        $geoImage->createImageFromRaster($this->raster);
-        $this->assertEquals("Success", $geoImage->getStdOut());
-    }
-
-    public function testGetOutputFileName(){
-        $this->geoImage->createImageFromRaster($this->raster);
-        $this->assertContains('/data/geotiff/'.$this->raster->getId()->toString().'.png', $this->geoImage->getOutputFileName());
-    }
-
-    public function testCreatePng()
-    {
-        $this->geoImage->createImageFromRaster($this->raster);
-        $this->assertFileExists(__DIR__.'/../../data/geotiff/'.$this->raster->getId()->toString().'.png');
-    }
-
-    public function testCreatePngWithTheSameNameReturnsString()
-    {
-        $this->geoImage->createImageFromRaster($this->raster);
-        $this->assertFileExists(__DIR__.'/../../data/geotiff/'.$this->raster->getId()->toString().'.png');
-        $response = $this->geoImage->createImageFromRaster($this->raster);
-        $this->assertEquals("File exists already", $response);
+        $this->geoImageService->createImage($this->geoImageParameterMock);
     }
 
     public function tearDown()
@@ -182,5 +121,21 @@ class GeoImageTest extends WebTestCase
         $fs->remove(__DIR__.'/wd');
         $fs->remove(__DIR__.'/../../../dd');
         $fs->remove(__DIR__.'/../../../td');
+    }
+
+    private function createMock()
+    {
+        $this->geoImageParameterMock = $this->getMockBuilder('AppBundle\Process\GeoImage\GeoImageParameter')
+            ->disableOriginalConstructor()
+            ->getMock();
+
+        $this->geoImageParameterMock->method('getRaster')->willReturn($this->raster);
+        $this->geoImageParameterMock->method('getActiveCells')->willReturn($this->activeCells);
+        $this->geoImageParameterMock->method('getMin')->willReturn($this->min);
+        $this->geoImageParameterMock->method('getMax')->willReturn($this->max);
+        $this->geoImageParameterMock->method('getColorRelief')->willReturn($this->colorRelief);
+        $this->geoImageParameterMock->method('getFileFormat')->willReturn($this->fileFormat);
+        $this->geoImageParameterMock->method('getTargetProjection')->willReturn($this->targetProjection);
+        return $this->geoImageParameterMock;
     }
 }

@@ -11,10 +11,10 @@ class ProcessFile
 
     private final function __construct(){}
 
-    public static function fromFilename($fileName)
+    public static function fromFilename($fileName, $assertFileExists = true)
     {
         $fs = new Filesystem();
-        if (! $fs->exists($fileName)){
+        if ($assertFileExists && ! $fs->exists($fileName)){
             throw new InvalidArgumentException(sprintf('File %s not exists.', $fileName));
         }
 

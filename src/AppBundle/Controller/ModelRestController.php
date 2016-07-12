@@ -15,6 +15,7 @@ use AppBundle\Entity\WellBoundary;
 use AppBundle\Model\ModflowProperties\ModflowCalculationProperties;
 use AppBundle\Model\Point;
 use AppBundle\Model\RasterFactory;
+use AppBundle\Process\GeoImage\GeoImageParameter;
 use AppBundle\Process\ModflowProcess;
 use AppBundle\Process\ModflowProcessConfiguration;
 use AppBundle\Process\ProcessFile;
@@ -209,7 +210,8 @@ class ModelRestController extends FOSRestController
 
         $fileFormat = $paramFetcher->get('_format');
         $geoImageService = $this->get('inowas.geoimage');
-        $geoImageService->createImageFromRaster($raster, $model->getActiveCells()->toArray(), $min, $max, $fileFormat, $colorScheme);
+        $geoImageParameter = new GeoImageParameter($raster, $model->getActiveCells()->toArray(), $min, $max, $fileFormat, $colorScheme);
+        $geoImageService->createImage($geoImageParameter);
         $outputFileName = $geoImageService->getOutputFileName();
 
         $fs = new Filesystem();

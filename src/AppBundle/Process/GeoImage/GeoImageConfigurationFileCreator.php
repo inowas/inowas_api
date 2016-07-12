@@ -2,8 +2,8 @@
 
 namespace AppBundle\Process\GeoImage;
 
+use AppBundle\Model\GeoImage\GeoImageProperties;
 use AppBundle\Process\InputOutputFileInterface;
-use AppBundle\Process\InterpolationParameter;
 use AppBundle\Process\ProcessFile;
 use JMS\Serializer\SerializationContext;
 use JMS\Serializer\Serializer;
@@ -30,37 +30,44 @@ class GeoImageConfigurationFileCreator implements InputOutputFileInterface
     protected $outputFile;
 
     /**
-     * InterpolationConfigurationFileCreator constructor.
-     * @param $kernel
+     * GeoImageConfigurationFileCreator constructor.
+     * @param KernelInterface $kernel
      * @param $serializer
      */
     public function __construct(KernelInterface $kernel, $serializer)
     {
         $this->tempFolder = $kernel->getContainer()->getParameter('inowas.temp_folder');
+        $this->dataFolder = $kernel->getContainer()->getParameter('inowas.geotiff.data_folder');
         $this->serializer = $serializer;
     }
 
-    public function createFiles($algorithm, InterpolationParameter $interpolationParameter){
+    public function createFiles(GeoImageParameter $parameter){
 
-        $class = 'AppBundle\Model\Interpolation\\' . ucfirst($algorithm) . 'Interpolation';
-        $interpolation = new $class($interpolationParameter);
+        $geoImageProperties = new GeoImageProperties(
+            $parameter->getRaster(),
+            $parameter->getActiveCells(),
+            $parameter->getColorRelief(),
+            $parameter->getTargetProjection(),
+            $parameter->getFileFormat(),
+            $parameter->getMin(),
+            $parameter->getMax()
+        );
 
-        $interpolationJSON = $this->serializer->serialize(
-            $interpolation,
+        $json = $this->serializer->serialize(
+            $geoImageProperties,
             'json',
-            SerializationContext::create()->setGroups(array('interpolation'))
+            SerializationContext::create()->setGroups(array("geoimage"))
         );
 
         $randomFileName = Uuid::uuid4()->toString();
         $inputFileName  = $this->tempFolder . '/' . $randomFileName . '.in';
-        $outputFileName = $this->tempFolder . '/' . $randomFileName . '.out';
+        $outputFileName = $this->dataFolder.'/'.$parameter->getRaster()->getId()->toString().'.'.$parameter->getFileFormat();
 
         $fs = new Filesystem();
-        $fs->dumpFile($inputFileName, $interpolationJSON);
-        $fs->touch($outputFileName);
+        $fs->dumpFile($inputFileName, $json);
 
         $this->inputFile = ProcessFile::fromFilename($inputFileName);
-        $this->outputFile = ProcessFile::fromFilename($outputFileName);
+        $this->outputFile = ProcessFile::fromFilename($outputFileName, false);
     }
 
     /**

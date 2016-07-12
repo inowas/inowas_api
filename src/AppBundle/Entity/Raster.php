@@ -153,7 +153,7 @@ class Raster
      */
     public function getFilteredData($filter){
 
-        if (null === $filter) {
+        if (null === $filter || array() === $filter) {
             return $this->data;
         }
 
