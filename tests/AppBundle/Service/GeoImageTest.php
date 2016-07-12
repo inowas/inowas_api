@@ -91,7 +91,7 @@ class GeoImageTest extends WebTestCase
     }
 
     public function testCreatePngImage(){
-        $geoImageParameterMock = $this->createMock();
+        $geoImageParameterMock = $this->createGeoImageParameterMock();
         $this->geoImageService->createImage($geoImageParameterMock);
         $this->assertFileExists(__DIR__.'/../../data/geotiff/'.$this->raster->getId()->toString().'.png');
         $this->assertFileExists($this->geoImageService->getOutputFileName());
@@ -100,7 +100,7 @@ class GeoImageTest extends WebTestCase
     public function testThrowInvalidArgumentExceptionIfFileFormatIsNotAvailable()
     {
         $this->fileFormat = 'foo';
-        $this->createMock();
+        $this->createGeoImageParameterMock();
         $this->setExpectedException('AppBundle\Exception\InvalidArgumentException');
         $this->geoImageService->createImage($this->geoImageParameterMock);
     }
@@ -108,7 +108,7 @@ class GeoImageTest extends WebTestCase
     public function testThrowInvalidArgumentExceptionIfColorReliefIsNotAvailable()
     {
         $this->colorRelief = 'foo';
-        $this->createMock();
+        $this->createGeoImageParameterMock();
         $this->setExpectedException('AppBundle\Exception\InvalidArgumentException');
         $this->geoImageService->createImage($this->geoImageParameterMock);
     }
@@ -123,7 +123,7 @@ class GeoImageTest extends WebTestCase
         $fs->remove(__DIR__.'/../../../td');
     }
 
-    protected function createMock()
+    private function createGeoImageParameterMock()
     {
         $this->geoImageParameterMock = $this->getMockBuilder('AppBundle\Process\GeoImage\GeoImageParameter')
             ->disableOriginalConstructor()

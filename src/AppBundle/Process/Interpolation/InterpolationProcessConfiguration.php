@@ -1,6 +1,11 @@
 <?php
 
-namespace AppBundle\Process;
+namespace AppBundle\Process\Interpolation;
+
+use AppBundle\Process\InputOutputFileInterface;
+use AppBundle\Process\ProcessConfigurationInterface;
+use AppBundle\Process\ProcessFile;
+use AppBundle\Process\PythonProcessConfiguration;
 
 class InterpolationProcessConfiguration extends PythonProcessConfiguration implements ProcessConfigurationInterface
 {
