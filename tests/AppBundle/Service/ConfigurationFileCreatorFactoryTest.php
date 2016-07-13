@@ -41,9 +41,18 @@ class ConfigurationFileCreatorFactoryTest extends WebTestCase
         $this->assertInstanceOf('AppBundle\Process\Interpolation\InterpolationConfigurationFileCreator', $interpolationConfigurationFileCreator);
     }
 
+    public function testCreateGeoImageFileCreatorFactory(){
+        $geoImageConfigurationFileCreator = $this->configurationFileCreatorFactory->create('geoimage');
+        $this->assertInstanceOf('AppBundle\Process\GeoImage\GeoImageConfigurationFileCreator', $geoImageConfigurationFileCreator);
+    }
+
+    public function testCreateModflowFileCreatorFactory(){
+        $modflowConfigurationFileCreator = $this->configurationFileCreatorFactory->create('modflow');
+        $this->assertInstanceOf('AppBundle\Process\Modflow\ModflowConfigurationFileCreator', $modflowConfigurationFileCreator);
+    }
+
     public function testCreateUnknownFileCreatorFactoryThrowsException(){
         $this->setExpectedException('AppBundle\Exception\InvalidArgumentException');
         $this->configurationFileCreatorFactory->create('foo');
     }
-
 }
