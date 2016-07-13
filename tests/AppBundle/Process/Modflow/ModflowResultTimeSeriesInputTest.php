@@ -2,7 +2,7 @@
 
 namespace Tests\AppBundle\Process\Modflow;
 
-use AppBundle\Process\Modflow\ModflowResultTimeSeriesInput;
+use AppBundle\Process\Modflow\ModflowResultTimeSeriesParameter;
 
 class ModflowResultTimeSeriesInputTest extends \PHPUnit_Framework_TestCase
 {
@@ -11,7 +11,7 @@ class ModflowResultTimeSeriesInputTest extends \PHPUnit_Framework_TestCase
     
     public function setUp()
     {
-        $this->modflowResultTimeSeriesInput = new ModflowResultTimeSeriesInput(
+        $this->modflowResultTimeSeriesInput = new ModflowResultTimeSeriesParameter(
             'e33b7db0-43a0-43be-a502-fb4f24efd0cc',
             1,
             21,
@@ -28,7 +28,7 @@ class ModflowResultTimeSeriesInputTest extends \PHPUnit_Framework_TestCase
     public function testThrowsExceptionIfOperationNotExists()
     {
         $this->setExpectedException('AppBundle\Exception\InvalidArgumentException');
-        $this->modflowResultTimeSeriesInput = new ModflowResultTimeSeriesInput(
+        $this->modflowResultTimeSeriesInput = new ModflowResultTimeSeriesParameter(
             'e33b7db0-43a0-43be-a502-fb4f24efd0cc',
             1,
             21,

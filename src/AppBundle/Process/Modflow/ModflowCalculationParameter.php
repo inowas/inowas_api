@@ -3,7 +3,7 @@
 namespace AppBundle\Process\Modflow;
 
 
-class ModflowCalculationParameter implements ModflowCalculationParameterInterface
+class ModflowCalculationParameter implements ModflowParameterInterface
 {
 
     /** @var  string */
@@ -23,19 +23,11 @@ class ModflowCalculationParameter implements ModflowCalculationParameterInterfac
         $this->baseUrl = $baseUrl;
     }
 
-    /**
-     * @return string
-     */
-    public function getModelId()
+    function jsonSerialize()
     {
-        return $this->modelId;
-    }
-
-    /**
-     * @return string
-     */
-    public function getBaseUrl()
-    {
-        return $this->baseUrl;
+        return array(
+            'model_id' => $this->modelId,
+            'base_url' => $this->baseUrl
+        );
     }
 }

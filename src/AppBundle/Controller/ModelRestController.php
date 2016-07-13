@@ -12,13 +12,9 @@ use AppBundle\Entity\PropertyValue;
 use AppBundle\Entity\StreamBoundary;
 use AppBundle\Entity\User;
 use AppBundle\Entity\WellBoundary;
-use AppBundle\Model\ModflowProperties\ModflowCalculationProperties;
 use AppBundle\Model\Point;
 use AppBundle\Model\RasterFactory;
 use AppBundle\Process\GeoImage\GeoImageParameter;
-use AppBundle\Process\ModflowProcess;
-use AppBundle\Process\ModflowProcessConfiguration;
-use AppBundle\Process\ProcessFile;
 use AppBundle\Service\GeoImage;
 use FOS\RestBundle\Controller\Annotations\QueryParam;
 use FOS\RestBundle\Controller\FOSRestController;
@@ -670,28 +666,9 @@ class ModelRestController extends FOSRestController
     public function postModelCalculateAction($id)
     {
         $this->findModelById($id);
+        $modflowService = $this->get('inowas.modflow');
+        $modflowService->calculate($id);
 
-        $modflowCalculationProperties = new ModflowCalculationProperties($id);
-        $modflowCalculationPropertiesJSON = $this->get('serializer')->serialize(
-            $modflowCalculationProperties,
-            'json',
-            SerializationContext::create()->setGroups(array('modflowProcess'))
-        );
-
-        $tempFileName = Uuid::uuid4()->toString();
-        $inputFile = $this->getParameter('inowas.temp_folder').'/'.$tempFileName.'.in';
-
-        $fs = new Filesystem();
-        $fs->dumpFile($inputFile, $modflowCalculationPropertiesJSON);
-
-        $configuration = new ModflowProcessConfiguration(ProcessFile::fromFilename($inputFile));
-        $configuration->setWorkingDirectory($this->getParameter('inowas.modflow.working_directory'));
-        $configuration->setDataDirectory($this->getParameter('inowas.modflow.data_folder').'/'.$id);
-        $configuration->setIgnoreWarnings(true);
-
-        $modflowProcess = new ModflowProcess($configuration);
-        $process = $modflowProcess->getProcess();
-        $process->run();
     }
 
     /**

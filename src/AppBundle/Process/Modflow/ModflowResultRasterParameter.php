@@ -2,14 +2,10 @@
 
 namespace AppBundle\Process\Modflow;
 
-use AppBundle\Exception\InvalidArgumentException;
-use JMS\Serializer\Annotation as JMS;
 
-/**
- * Class ModflowRasterResultProcess
- * @package AppBundle\Model\Modflow
- */
-class ModflowResultRasterInput extends AbstractModflowInput implements \JsonSerializable
+use AppBundle\Exception\InvalidArgumentException;
+
+class ModflowResultRasterParameter implements ModflowParameterInterface
 {
     const OP_DELTA = 'delta';
     const OP_MAX = 'max';
@@ -41,25 +37,24 @@ class ModflowResultRasterInput extends AbstractModflowInput implements \JsonSeri
     protected $operation;
 
     /**
-     * ModflowResultRasterInput constructor.
+     * ModflowResultRasterParameter constructor.
      * @param $modelId
      * @param $layer
      * @param array $timesteps
      * @param array $stressPeriods
-     * @param string $operation
+     * @param $operation
      */
-    public function __construct($modelId, $layer, array $timesteps, array $stressPeriods, $operation = self::OP_RAW)
+    public function __construct($modelId, $layer, array $timesteps, array $stressPeriods, $operation)
     {
         if (!in_array($operation, $this->availableOperations)) {
             throw new InvalidArgumentException(sprintf('The operation %s is not supported.', $operation));
         }
 
-        parent::__construct($modelId);
         $this->modelId = $modelId;
         $this->layer = $layer;
-        $this->operation = $operation;
         $this->timesteps = $timesteps;
         $this->stressPeriods = $stressPeriods;
+        $this->operation = $operation;
     }
 
     /**

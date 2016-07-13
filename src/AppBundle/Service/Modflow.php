@@ -4,9 +4,12 @@ namespace AppBundle\Service;
 
 use AppBundle\Exception\InvalidArgumentException;
 use AppBundle\Exception\ProcessFailedException;
-use AppBundle\Process\Modflow\ModflowCalculationConfigurationFileCreator;
 use AppBundle\Process\Modflow\ModflowCalculationParameter;
 use AppBundle\Process\Modflow\ModflowCalculationProcessConfiguration;
+use AppBundle\Process\Modflow\ModflowConfigurationFileCreator;
+use AppBundle\Process\Modflow\ModflowResultProcessConfiguration;
+use AppBundle\Process\Modflow\ModflowResultRasterParameter;
+use AppBundle\Process\Modflow\ModflowResultTimeSeriesParameter;
 use AppBundle\Process\PythonProcessFactory;
 use Symfony\Component\HttpKernel\KernelInterface;
 
@@ -39,19 +42,67 @@ class Modflow
             throw new InvalidArgumentException(sprintf('Executable %s not available.', $executable));
         }
 
-        /** @var ModflowCalculationConfigurationFileCreator $inputFileCreator */
-        $inputFileCreator = $this->configurationFileCreatorFactory->create('modflow.calculation');
-        $inputFileCreator->createFiles(new ModflowCalculationParameter($modelId, $this->baseUrl));
+        $mfCalculationParams = new ModflowCalculationParameter($modelId, $this->baseUrl);
+
+        /** @var ModflowConfigurationFileCreator $inputFileCreator */
+        $inputFileCreator = $this->configurationFileCreatorFactory->create('modflow');
+        $inputFileCreator->createFiles($mfCalculationParams);
+
         $processConfig = new ModflowCalculationProcessConfiguration($inputFileCreator->getInputFile(), $this->workspace.'/'.$modelId, $executable, $this->baseUrl);
         $processConfig->setWorkingDirectory($this->kernel->getContainer()->getParameter('inowas.modflow.working_directory'));
         $process = PythonProcessFactory::create($processConfig);
         $process->run();
-        dump($process->getProcess()->getCommandLine());
-        dump($process->getProcess()->getErrorOutput());
-        dump($process->getProcess()->getOutput());
         if (! $process->isSuccessful())
         {
             throw new ProcessFailedException('Process failed ;(');
+        }
+
+        return true;
+    }
+
+    public function getRasterResult($modelId, $layer, array $timesteps, array $stressPeriods, $operation = ModflowResultRasterParameter::OP_RAW){
+
+        $mfResultParams = new ModflowResultRasterParameter($modelId, $layer, $timesteps, $stressPeriods, $operation);
+
+        /** @var ModflowConfigurationFileCreator $configFileCreator*/
+        $configFileCreator = $this->configurationFileCreatorFactory->create('modflow');
+        $configFileCreator->createFiles($mfResultParams);
+
+        $processConfig = new ModflowResultProcessConfiguration(
+            $configFileCreator->getInputFile(),
+            $configFileCreator->getOutputFile(),
+            $this->workspace.'/'.$modelId,
+            $this->baseUrl
+        );
+        $processConfig->setWorkingDirectory($this->kernel->getContainer()->getParameter('inowas.modflow.working_directory'));
+        $process = PythonProcessFactory::create($processConfig);
+        $process->run();
+        if (! $process->isSuccessful()) {
+            throw new ProcessFailedException('Process modflow get raster result failed ;(');
+        }
+
+        return true;
+    }
+
+    public function getTimeseriesResult($modelId, $layer, $row, $col, $operation = ModflowResultTimeSeriesParameter::OP_RAW){
+
+        $mfResultParams = new ModflowResultTimeSeriesParameter($modelId, $layer, $row, $col, $operation);
+
+        /** @var ModflowConfigurationFileCreator $configFileCreator*/
+        $configFileCreator = $this->configurationFileCreatorFactory->create('modflow');
+        $configFileCreator->createFiles($mfResultParams);
+
+        $processConfig = new ModflowResultProcessConfiguration(
+            $configFileCreator->getInputFile(),
+            $configFileCreator->getOutputFile(),
+            $this->workspace.'/'.$modelId,
+            $this->baseUrl
+        );
+        $processConfig->setWorkingDirectory($this->kernel->getContainer()->getParameter('inowas.modflow.working_directory'));
+        $process = PythonProcessFactory::create($processConfig);
+        $process->run();
+        if (! $process->isSuccessful()) {
+            throw new ProcessFailedException('Process modflow get timeseries result failed ;(');
         }
 
         return true;

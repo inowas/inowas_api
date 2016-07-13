@@ -2,12 +2,11 @@
 
 namespace Tests\AppBundle\Process\Modflow;
 
+use AppBundle\Process\Modflow\ModflowCalculationParameter;
 
-use AppBundle\Process\Modflow\ModflowCalculationInput;
-
-class ModflowCalculationInputTest extends \PHPUnit_Framework_TestCase
+class ModflowCalculationParameterTest extends \PHPUnit_Framework_TestCase
 {
-    /** @var  ModflowCalculationInput */
+    /** @var  ModflowCalculationParameter */
     protected $modflowCalculation;
 
     /** @var  string */
@@ -20,13 +19,11 @@ class ModflowCalculationInputTest extends \PHPUnit_Framework_TestCase
     {
         $this->modelId = 'e33b7db0-43a0-43be-a502-fb4f24efd0cc';
         $this->baseUrl = 'http://app.dev.inowas.com';
-        $this->modflowCalculation = new ModflowCalculationInput($this->modelId, $this->baseUrl);
+        $this->modflowCalculation = new ModflowCalculationParameter($this->modelId, $this->baseUrl);
     }
 
     public function testInstantiate(){
-        $this->assertInstanceOf('AppBundle\Process\Modflow\ModflowCalculationInput', $this->modflowCalculation);
-        $this->assertEquals($this->modelId, $this->modflowCalculation->getModelId());
-        $this->assertEquals($this->baseUrl, $this->modflowCalculation->getBaseUrl());
+        $this->assertInstanceOf('AppBundle\Process\Modflow\ModflowCalculationParameter', $this->modflowCalculation);
     }
     
     public function testSerialize(){

@@ -8,7 +8,7 @@ use AppBundle\Exception\InvalidArgumentException;
  * Class ModflowTimeSeriesResultProcess
  * @package AppBundle\Model\ModflowProcess
  */
-class ModflowResultTimeSeriesInput extends AbstractModflowInput implements \JsonSerializable
+class ModflowResultTimeSeriesParameter implements ModflowParameterInterface
 {
 
     const OP_DELTA = 'delta';
@@ -21,6 +21,9 @@ class ModflowResultTimeSeriesInput extends AbstractModflowInput implements \Json
     protected $availableOperations = array(
         self::OP_DELTA, self::OP_MAX, self::OP_MEAN, self::OP_MIN, self::OP_RAW, self::OP_STANDARD_DEVIATION
     );
+
+    /** @var string */
+    protected $modelId;
 
     /** @var string */
     protected $outputType = 'time_series';
@@ -57,7 +60,7 @@ class ModflowResultTimeSeriesInput extends AbstractModflowInput implements \Json
             throw new InvalidArgumentException(sprintf('The operation %s is not supported.', $operation));
         }
 
-        parent::__construct($modelId);
+        $this->modelId = $modelId;
         $this->layer = $layer;
         $this->row = $row;
         $this->column = $column;

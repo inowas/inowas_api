@@ -2,13 +2,12 @@
 
 namespace AppBundle\Process\Modflow;
 
-use AppBundle\Process\InputFileWorkspaceInterface;
 use AppBundle\Process\ProcessFile;
 use Ramsey\Uuid\Uuid;
 use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\HttpKernel\KernelInterface;
 
-class ModflowCalculationConfigurationFileCreator implements InputFileWorkspaceInterface
+class ModflowConfigurationFileCreator
 {
 
     /** @var  string */
@@ -20,6 +19,9 @@ class ModflowCalculationConfigurationFileCreator implements InputFileWorkspaceIn
     /** @var  ProcessFile */
     protected $inputFile;
 
+    /** @var  ProcessFile */
+    protected $outputFile;
+
     /**
      * InterpolationConfigurationFileCreator constructor.
      * @param $kernel
@@ -30,19 +32,16 @@ class ModflowCalculationConfigurationFileCreator implements InputFileWorkspaceIn
         $this->dataFolder = $kernel->getContainer()->getParameter('inowas.modflow.data_folder');
     }
 
-    public function createFiles(ModflowCalculationParameterInterface $modflowCalculationParameter){
-
-        $modflowCalculationInput = new ModflowCalculationInput(
-            $modflowCalculationParameter->getModelId(),
-            $modflowCalculationParameter->getBaseUrl()
-        );
+    public function createFiles(ModflowParameterInterface $modflowCalculationParameter){
 
         $randomFileName = Uuid::uuid4()->toString();
         $inputFileName  = $this->tempFolder . '/' . $randomFileName . '.in';
+        $outputFileName  = $this->tempFolder . '/' . $randomFileName . '.out';
 
         $fs = new Filesystem();
-        $fs->dumpFile($inputFileName, json_encode($modflowCalculationInput, JSON_UNESCAPED_SLASHES));
+        $fs->dumpFile($inputFileName, json_encode($modflowCalculationParameter, JSON_UNESCAPED_SLASHES));
         $this->inputFile = ProcessFile::fromFilename($inputFileName);
+        $this->outputFile = ProcessFile::fromFilename($outputFileName);
     }
 
     /**
@@ -54,14 +53,10 @@ class ModflowCalculationConfigurationFileCreator implements InputFileWorkspaceIn
     }
 
     /**
-     * @param ModflowCalculationParameterInterface $modflowCalculationParameter
-     * @return string
+     * @return ProcessFile
      */
-    public function getWorkspace(ModflowCalculationParameterInterface $modflowCalculationParameter)
+    public function getOutputFile()
     {
-        return $this->dataFolder.'/'.$modflowCalculationParameter->getModelId();
-        
+        return $this->outputFile;
     }
-
-
 }

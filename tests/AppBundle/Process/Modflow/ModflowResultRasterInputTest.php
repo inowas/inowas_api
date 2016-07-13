@@ -2,20 +2,20 @@
 
 namespace Tests\AppBundle\Process\Modflow;
 
-use AppBundle\Process\Modflow\ModflowResultRasterInput;
+use AppBundle\Process\Modflow\ModflowResultRasterParameter;
 
 class ModflowResultRasterInputTest extends \PHPUnit_Framework_TestCase
 {
-    /** @var  ModflowResultRasterInput */
+    /** @var  ModflowResultRasterParameter */
     protected $modflowResultRasterInput;
 
     public function setUp(){
-        $this->modflowResultRasterInput = new ModflowResultRasterInput(
+        $this->modflowResultRasterInput = new ModflowResultRasterParameter(
             "e33b7db0-43a0-43be-a502-fb4f24efd0cc",
             1,
             array(0),
             array(0),
-            ModflowResultRasterInput::OP_RAW
+            ModflowResultRasterParameter::OP_RAW
         );
     }
 
@@ -27,7 +27,7 @@ class ModflowResultRasterInputTest extends \PHPUnit_Framework_TestCase
     public function testThrowsExceptionIfOperationNotExists()
     {
         $this->setExpectedException('AppBundle\Exception\InvalidArgumentException');
-        $this->modflowResultRasterInput = new ModflowResultRasterInput(
+        $this->modflowResultRasterInput = new ModflowResultRasterParameter(
             "e33b7db0-43a0-43be-a502-fb4f24efd0cc",
             1,
             array(0),
