@@ -52,6 +52,9 @@ class Modflow
         $processConfig->setWorkingDirectory($this->kernel->getContainer()->getParameter('inowas.modflow.working_directory'));
         $process = PythonProcessFactory::create($processConfig);
         $process->run();
+
+        dump($process->getProcess()->getCommandLine());
+
         if (! $process->isSuccessful())
         {
             throw new ProcessFailedException('Process failed ;(');

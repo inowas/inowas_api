@@ -87,7 +87,7 @@ class ModFlowModel extends AbstractModel
             "property" => null,
             "head_from_top_elevation" => null,
             "steady_state_calculation" => true,
-            "interpolation" => array()          // of observationPoints
+            "interpolation" => array()
         ),
     );
 

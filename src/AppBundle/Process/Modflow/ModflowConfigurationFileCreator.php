@@ -40,6 +40,7 @@ class ModflowConfigurationFileCreator
 
         $fs = new Filesystem();
         $fs->dumpFile($inputFileName, json_encode($modflowCalculationParameter, JSON_UNESCAPED_SLASHES));
+        $fs->touch($outputFileName);
         $this->inputFile = ProcessFile::fromFilename($inputFileName);
         $this->outputFile = ProcessFile::fromFilename($outputFileName);
     }

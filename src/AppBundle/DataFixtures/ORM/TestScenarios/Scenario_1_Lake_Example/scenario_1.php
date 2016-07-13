@@ -191,12 +191,7 @@ class LoadTestScenario_1 implements FixtureInterface, ContainerAwareInterface
 
         $entityManager->persist($model);
         $entityManager->flush();
-
-        $properties = $model->getCalculationProperties();
-        $model->setCalculationProperties($properties);
-        $entityManager->persist($model);
-        $entityManager->flush();
-
+        
         return 0;
     }
 }
