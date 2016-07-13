@@ -13,6 +13,12 @@ use AppBundle\Process\Modflow\ModflowResultTimeSeriesParameter;
 use AppBundle\Process\PythonProcessFactory;
 use Symfony\Component\HttpKernel\KernelInterface;
 
+/**
+ * Class Modflow
+ * @package AppBundle\Service
+ *
+ * @codeCoverageIgnore
+ */
 class Modflow
 {
     const MODFLOW_2005  = "mf2005";
