@@ -43,7 +43,7 @@ class ModflowTest extends WebTestCase
             ));
 
         if (! $model instanceof ModFlowModel){
-            #$this->assertTrue(false);
+            $this->assertTrue(false);
         }
     }
 
