@@ -64,4 +64,15 @@ class StressPeriodTest extends \PHPUnit_Framework_TestCase
         $stressPeriod->setSteady($steady);
         $this->assertEquals($steady, $stressPeriod->isSteady());
     }
+
+    public function testSerialize(){
+        $dateBegin = new \DateTime('2015-01-01', new \DateTimeZone('Europe/Berlin'));
+        $dateEnd = new \DateTime('2015-01-02', new \DateTimeZone('Europe/Berlin'));
+        $numberOfTimeSteps = 2;
+        $steady = false;
+
+        $stressPeriod = new StressPeriod($dateBegin, $dateEnd, $numberOfTimeSteps, $steady);
+        $expected = json_decode('{"dateTimeBegin":{"date":"2015-01-01 00:00:00.000000","timezone_type":3,"timezone":"Europe\/Berlin"},"dateTimeEnd":{"date":"2015-01-02 00:00:00.000000","timezone_type":3,"timezone":"Europe\/Berlin"},"numberOfTimeSteps":2,"steady":false}');
+        $this->assertEquals($expected, json_decode(json_encode($stressPeriod)));
+    }
 }
