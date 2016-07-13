@@ -8,6 +8,12 @@ use Doctrine\ORM\EntityManager;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Symfony\Component\HttpKernel\KernelInterface;
 
+/**
+ * Class ModflowTest
+ * @package Tests\AppBundle\Service
+ *
+ * @group integration_tests
+ */
 class ModflowTest extends WebTestCase
 {
     /** @var KernelInterface $httpKernel */
@@ -48,8 +54,7 @@ class ModflowTest extends WebTestCase
     }
 
     public function testCalculate(){
-        #$model = $this->entityManager->getRepository('AppBundle:ModFlowModel')->findOneBy(array('name' => "Lake Example"));
-        #$this->assertTrue(false);
-        #$this->modflow->calculate($model->getId()->toString());
+        $model = $this->entityManager->getRepository('AppBundle:ModFlowModel')->findOneBy(array('name' => "Lake Example"));
+        $this->modflow->calculate($model->getId()->toString());
     }
 }
