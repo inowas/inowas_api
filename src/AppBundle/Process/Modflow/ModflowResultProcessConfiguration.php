@@ -39,38 +39,6 @@ class ModflowResultProcessConfiguration extends PythonProcessConfiguration
     }
 
     /**
-     * @return string
-     */
-    public function getInputFile()
-    {
-        return $this->inputFile->getFileName();
-    }
-
-    /**
-     * @return string
-     */
-    public function getOutputFile()
-    {
-        return $this->outputFile->getFileName();
-    }
-
-    /**
-     * @return string
-     */
-    public function getWorkspace()
-    {
-        return $this->workspace;
-    }
-
-    /**
-     * @return string
-     */
-    public function getBaseUrl()
-    {
-        return $this->baseUrl;
-    }
-
-    /**
      * @return array
      */
     public function getArguments()

@@ -39,30 +39,6 @@ class ModflowCalculationProcessConfiguration extends PythonProcessConfiguration
     }
 
     /**
-     * @return string
-     */
-    public function getBaseUrl()
-    {
-        return $this->baseUrl;
-    }
-
-    /**
-     * @return string
-     */
-    public function getInputFile()
-    {
-        return $this->inputFile->getFileName();
-    }
-
-    /**
-     * @return string
-     */
-    public function getWorkspace()
-    {
-        return $this->workspace;
-    }
-
-    /**
      * @return array
      */
     public function getArguments()
