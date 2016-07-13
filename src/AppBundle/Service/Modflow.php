@@ -53,8 +53,6 @@ class Modflow
         $process = PythonProcessFactory::create($processConfig);
         $process->run();
 
-        dump($process->getProcess()->getCommandLine());
-
         if (! $process->isSuccessful())
         {
             throw new ProcessFailedException('Process failed ;(');

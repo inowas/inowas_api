@@ -13,4 +13,4 @@ DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 $DIR/loadTestFixtures.sh
 
 cd $ROOTDIR
-./vendor/bin/phpunit
+./vendor/bin/phpunit --exclude-group integration_tests
