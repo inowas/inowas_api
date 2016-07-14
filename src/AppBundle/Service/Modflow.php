@@ -5,15 +5,10 @@ namespace AppBundle\Service;
 use AppBundle\Entity\ModflowCalculation;
 use AppBundle\Exception\InvalidArgumentException;
 use AppBundle\Exception\ProcessFailedException;
-use AppBundle\Process\Modflow\ModflowCalculationParameter;
-use AppBundle\Process\Modflow\ModflowCalculationProcessConfiguration;
-use AppBundle\Process\Modflow\ModflowConfigurationFileCreator;
-use AppBundle\Process\Modflow\ModflowResultProcessConfiguration;
 use AppBundle\Process\Modflow\ModflowResultRasterParameter;
 use AppBundle\Process\Modflow\ModflowResultTimeSeriesParameter;
-use AppBundle\Process\PythonProcessFactory;
+use Doctrine\ORM\EntityManagerInterface;
 use Ramsey\Uuid\Uuid;
-use Symfony\Component\HttpKernel\KernelInterface;
 
 /**
  * Class Modflow
@@ -29,24 +24,18 @@ class Modflow
     /** @var array */
     private $availableExecutables = [self::MODFLOW_2005];
 
-    /** @var  string */
-    protected $baseUrl;
 
-    /** @var  KernelInterface */
-    protected $kernel;
+    /** @var EntityManagerInterface  */
+    protected $entityManager;
 
-    /**
-     * Modflow constructor.
-     * @param KernelInterface $kernel
-     * @param ConfigurationFileCreatorFactory $configurationFileCreatorFactory
-     */
-    public function __construct(KernelInterface $kernel, ConfigurationFileCreatorFactory $configurationFileCreatorFactory)
+    /** @var ModflowProcessBuilder  */
+    protected $modflowProcessBuilder;
+
+
+    public function __construct(EntityManagerInterface $entityManager, ModflowProcessBuilder $modflowProcessBuilder)
     {
-        $this->kernel = $kernel;
-        $this->configurationFileCreatorFactory = $configurationFileCreatorFactory;
-        $this->baseUrl = $this->kernel->getContainer()->getParameter('inowas.modflow.api_base_url');
-        $this->workspace = $this->kernel->getContainer()->getParameter('inowas.modflow.data_folder');
-        $this->entityManager = $this->kernel->getContainer()->get('doctrine.orm.entity_manager');
+        $this->entityManager = $entityManager;
+        $this->modflowProcessBuilder = $modflowProcessBuilder;
     }
 
     public function addToQueue($modelId, $executable = 'mf2005')
@@ -73,7 +62,7 @@ class Modflow
 
     public function calculate($modelId, $executable = 'mf2005')
     {
-        $process = $this->createCalculationProcess($modelId, $executable);
+        $process = $this->modflowProcessBuilder->buildCalculationProcess($modelId, $executable);
         $process->getProcess()->run();
         if (! $process->isSuccessful()) {
             throw new ProcessFailedException('Modflow Calculation Process failed with ErrorMessage: '. $process->getErrorOutput());
@@ -82,38 +71,9 @@ class Modflow
         return true;
     }
 
-    private function createCalculationProcess($modelId, $executable = 'mf2005'){
-        if (! in_array($executable, $this->availableExecutables)){
-            throw new InvalidArgumentException(sprintf('Executable %s not available.', $executable));
-        }
-
-        $mfCalculationParams = new ModflowCalculationParameter($modelId, $this->baseUrl);
-
-        /** @var ModflowConfigurationFileCreator $inputFileCreator */
-        $inputFileCreator = $this->configurationFileCreatorFactory->create('modflow');
-        $inputFileCreator->createFiles($mfCalculationParams);
-
-        $processConfig = new ModflowCalculationProcessConfiguration($inputFileCreator->getInputFile(), $this->workspace.'/'.$modelId, $executable, $this->baseUrl);
-        $processConfig->setWorkingDirectory($this->kernel->getContainer()->getParameter('inowas.modflow.working_directory'));
-        return PythonProcessFactory::create($processConfig);
-    }
-
     public function getRasterResult($modelId, $layer, array $timesteps, array $stressPeriods, $operation = ModflowResultRasterParameter::OP_RAW){
 
-        $mfResultParams = new ModflowResultRasterParameter($modelId, $layer, $timesteps, $stressPeriods, $operation);
-
-        /** @var ModflowConfigurationFileCreator $configFileCreator*/
-        $configFileCreator = $this->configurationFileCreatorFactory->create('modflow');
-        $configFileCreator->createFiles($mfResultParams);
-
-        $processConfig = new ModflowResultProcessConfiguration(
-            $configFileCreator->getInputFile(),
-            $configFileCreator->getOutputFile(),
-            $this->workspace.'/'.$modelId,
-            $this->baseUrl
-        );
-        $processConfig->setWorkingDirectory($this->kernel->getContainer()->getParameter('inowas.modflow.working_directory'));
-        $process = PythonProcessFactory::create($processConfig);
+        $process = $this->modflowProcessBuilder->buildRasterResultProcess($modelId, $layer, $timesteps, $stressPeriods, $operation);
         $process->run();
 
         if (! $process->isSuccessful()) {
@@ -125,20 +85,7 @@ class Modflow
 
     public function getTimeseriesResult($modelId, $layer, $row, $col, $operation = ModflowResultTimeSeriesParameter::OP_RAW){
 
-        $mfResultParams = new ModflowResultTimeSeriesParameter($modelId, $layer, $row, $col, $operation);
-
-        /** @var ModflowConfigurationFileCreator $configFileCreator*/
-        $configFileCreator = $this->configurationFileCreatorFactory->create('modflow');
-        $configFileCreator->createFiles($mfResultParams);
-
-        $processConfig = new ModflowResultProcessConfiguration(
-            $configFileCreator->getInputFile(),
-            $configFileCreator->getOutputFile(),
-            $this->workspace.'/'.$modelId,
-            $this->baseUrl
-        );
-        $processConfig->setWorkingDirectory($this->kernel->getContainer()->getParameter('inowas.modflow.working_directory'));
-        $process = PythonProcessFactory::create($processConfig);
+        $process = $this->modflowProcessBuilder->buildTimeseriesResultProcess($modelId, $layer, $row, $col, $operation);
         $process->run();
 
         if (! $process->isSuccessful()) {

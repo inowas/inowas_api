@@ -22,6 +22,14 @@ services:
 
     inowas.modflow:
         class: AppBundle\Service\Modflow
+        arguments: ['@doctrine.orm.entity_manager', '@inowas.modflow.processbuilder']
+
+    inowas.modflow.processbuilder:
+        class: AppBundle\Service\ModflowProcessBuilder
+        arguments: ['@kernel', '@inowas.process.configurationfilecreatorfactory']
+
+    inowas.modflow.service.runner:
+        class: AppBundle\Service\ModflowServiceRunner
         arguments: ['@kernel', '@inowas.process.configurationfilecreatorfactory']
 
     inowas.geoimage:
