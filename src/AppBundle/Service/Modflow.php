@@ -59,9 +59,8 @@ class Modflow
         $process = PythonProcessFactory::create($processConfig);
         $process->run();
 
-        if (! $process->isSuccessful())
-        {
-            throw new ProcessFailedException('Process failed ;(');
+        if (! $process->isSuccessful()) {
+            throw new ProcessFailedException('Modflow Calculation Process failed with ErrorMessage: '. $process->getErrorOutput());
         }
 
         return true;
@@ -84,8 +83,9 @@ class Modflow
         $processConfig->setWorkingDirectory($this->kernel->getContainer()->getParameter('inowas.modflow.working_directory'));
         $process = PythonProcessFactory::create($processConfig);
         $process->run();
+
         if (! $process->isSuccessful()) {
-            throw new ProcessFailedException('Process modflow get raster result failed ;(');
+            throw new ProcessFailedException('Modflow RasterResult Process failed with ErrorMessage: '. $process->getErrorOutput());
         }
 
         return true;
@@ -108,8 +108,9 @@ class Modflow
         $processConfig->setWorkingDirectory($this->kernel->getContainer()->getParameter('inowas.modflow.working_directory'));
         $process = PythonProcessFactory::create($processConfig);
         $process->run();
+
         if (! $process->isSuccessful()) {
-            throw new ProcessFailedException('Process modflow get timeseries result failed ;(');
+            throw new ProcessFailedException('Modflow TimeSeriesResult Process failed with ErrorMessage: '. $process->getErrorOutput());
         }
 
         return true;

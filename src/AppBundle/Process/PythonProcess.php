@@ -51,6 +51,15 @@ class PythonProcess
         return $this->process;
     }
 
+    /**
+     * @return string
+     */
+    public function getErrorOutput()
+    {
+        return $this->getProcess()->getErrorOutput();
+    }
+
+
     public function run()
     {
         if (! $this->process->isRunning()) {
