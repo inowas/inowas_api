@@ -2,6 +2,7 @@
 
 namespace AppBundle\Service;
 
+use AppBundle\Entity\ModflowCalculation;
 use AppBundle\Exception\InvalidArgumentException;
 use AppBundle\Exception\ProcessFailedException;
 use AppBundle\Process\Modflow\ModflowCalculationParameter;
@@ -11,6 +12,7 @@ use AppBundle\Process\Modflow\ModflowResultProcessConfiguration;
 use AppBundle\Process\Modflow\ModflowResultRasterParameter;
 use AppBundle\Process\Modflow\ModflowResultTimeSeriesParameter;
 use AppBundle\Process\PythonProcessFactory;
+use Ramsey\Uuid\Uuid;
 use Symfony\Component\HttpKernel\KernelInterface;
 
 /**
@@ -30,6 +32,9 @@ class Modflow
     /** @var  string */
     protected $baseUrl;
 
+    /** @var  KernelInterface */
+    protected $kernel;
+
     /**
      * Modflow constructor.
      * @param KernelInterface $kernel
@@ -41,9 +46,43 @@ class Modflow
         $this->configurationFileCreatorFactory = $configurationFileCreatorFactory;
         $this->baseUrl = $this->kernel->getContainer()->getParameter('inowas.modflow.api_base_url');
         $this->workspace = $this->kernel->getContainer()->getParameter('inowas.modflow.data_folder');
+        $this->entityManager = $this->kernel->getContainer()->get('doctrine.orm.entity_manager');
     }
 
-    public function calculate($modelId, $executable = 'mf2005'){
+    public function addToQueue($modelId, $executable = 'mf2005')
+    {
+        if (! in_array($executable, $this->availableExecutables)){
+            throw new InvalidArgumentException(sprintf('Executable %s is not available.', $executable));
+        }
+
+        $modflowCalculation = $this->entityManager->getRepository('AppBundle:ModflowCalculation')
+            ->findOneBy(array(
+                'modelId' => $modelId,
+                'state' => ModflowCalculation::STATE_IN_QUEUE
+            ));
+
+        if (! $modflowCalculation instanceof ModflowCalculation){
+            $modflowCalculation = new ModflowCalculation();
+        }
+
+        $modflowCalculation->setModelId(Uuid::fromString($modelId));
+        $modflowCalculation->setExecutable($executable);
+        $this->entityManager->persist($modflowCalculation);
+        $this->entityManager->flush();
+    }
+
+    public function calculate($modelId, $executable = 'mf2005')
+    {
+        $process = $this->createCalculationProcess($modelId, $executable);
+        $process->getProcess()->run();
+        if (! $process->isSuccessful()) {
+            throw new ProcessFailedException('Modflow Calculation Process failed with ErrorMessage: '. $process->getErrorOutput());
+        }
+
+        return true;
+    }
+
+    private function createCalculationProcess($modelId, $executable = 'mf2005'){
         if (! in_array($executable, $this->availableExecutables)){
             throw new InvalidArgumentException(sprintf('Executable %s not available.', $executable));
         }
@@ -56,14 +95,7 @@ class Modflow
 
         $processConfig = new ModflowCalculationProcessConfiguration($inputFileCreator->getInputFile(), $this->workspace.'/'.$modelId, $executable, $this->baseUrl);
         $processConfig->setWorkingDirectory($this->kernel->getContainer()->getParameter('inowas.modflow.working_directory'));
-        $process = PythonProcessFactory::create($processConfig);
-        $process->run();
-
-        if (! $process->isSuccessful()) {
-            throw new ProcessFailedException('Modflow Calculation Process failed with ErrorMessage: '. $process->getErrorOutput());
-        }
-
-        return true;
+        return PythonProcessFactory::create($processConfig);
     }
 
     public function getRasterResult($modelId, $layer, array $timesteps, array $stressPeriods, $operation = ModflowResultRasterParameter::OP_RAW){

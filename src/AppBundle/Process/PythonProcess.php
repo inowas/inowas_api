@@ -2,11 +2,15 @@
 
 namespace AppBundle\Process;
 
+use Ramsey\Uuid\Uuid;
 use Symfony\Component\Process\Process;
 use Symfony\Component\Process\ProcessBuilder;
 
 class PythonProcess
 {
+    /** @var  Uuid */
+    protected $id;
+
     /** @var  PythonProcessConfigurationInterface */
     protected $configuration;
 
@@ -23,6 +27,7 @@ class PythonProcess
      */
     public function __construct(ProcessBuilder $processBuilder, PythonProcessConfigurationInterface $configuration)
     {
+        $this->id = Uuid::uuid4();
         $this->configuration = $configuration;
         $this->processBuilder = $processBuilder;
 
@@ -41,6 +46,15 @@ class PythonProcess
         }
 
         $this->process = $this->processBuilder->getProcess();
+        $this->process->enableOutput();
+    }
+
+    /**
+     * @return Uuid|\Ramsey\Uuid\UuidInterface
+     */
+    public function getId()
+    {
+        return $this->id;
     }
 
     /**
