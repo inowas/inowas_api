@@ -106,6 +106,13 @@ class AreaRestControllerTest extends WebTestCase
     {
         $client = static::createClient();
         $client->request('GET', '/api/users/'.$this->owner->getUsername().'/areas.json');
+
+        if ($client->getResponse()->getStatusCode() != 200){
+            dump($client->getResponse()->getContent());
+            die();
+        }
+
+
         $this->assertEquals(200, $client->getResponse()->getStatusCode());
         $modelAreas = json_decode($client->getResponse()->getContent());
         $this->assertEquals(2, count($modelAreas));
