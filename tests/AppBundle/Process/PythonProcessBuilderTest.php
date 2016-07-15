@@ -2,8 +2,8 @@
 
 namespace Tests\AppBundle\Process;
 
-use AppBundle\Process\PythonProcess;
 use AppBundle\Process\PythonProcessConfiguration;
+use Inowas\PythonProcessBundle\Model\PythonProcess;
 use Symfony\Component\Process\ProcessBuilder;
 
 class PythonProcessTest extends \PHPUnit_Framework_TestCase
@@ -11,7 +11,7 @@ class PythonProcessTest extends \PHPUnit_Framework_TestCase
 
     public function testInstantiationWithDefaultConfiguration(){
         $pythonProcess = new PythonProcess(new ProcessBuilder(), new PythonProcessConfiguration());
-        $this->assertInstanceOf('AppBundle\Process\PythonProcess', $pythonProcess);
+        $this->assertInstanceOf('Inowas\PythonProcessBundle\Model\PythonProcess', $pythonProcess);
     }
 
     public function testGetProcessReturnsProcess(){

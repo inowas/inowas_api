@@ -8,7 +8,7 @@ use AppBundle\Process\Modflow\ModflowConfigurationFileCreator;
 use AppBundle\Process\Modflow\ModflowResultProcessConfiguration;
 use AppBundle\Process\Modflow\ModflowResultRasterParameter;
 use AppBundle\Process\Modflow\ModflowResultTimeSeriesParameter;
-use AppBundle\Process\PythonProcessFactory;
+use Inowas\PythonProcessBundle\Model\PythonProcessFactory;
 use AppBundle\Service\ConfigurationFileCreatorFactory;
 use Symfony\Component\HttpKernel\KernelInterface;
 

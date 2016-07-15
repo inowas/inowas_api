@@ -7,8 +7,7 @@ use AppBundle\Exception\InvalidArgumentException;
 use AppBundle\Exception\ProcessFailedException;
 use AppBundle\Process\GeoImage\GeoImageParameter;
 use AppBundle\Process\GeoImage\GeoImageProcessConfiguration;
-use AppBundle\Process\ProcessFile;
-use AppBundle\Process\PythonProcessFactory;
+use Inowas\PythonProcessBundle\Model\PythonProcessFactory;
 use Symfony\Component\HttpKernel\KernelInterface;
 
 class GeoImage

@@ -1,7 +1,9 @@
 <?php
 
-namespace AppBundle\Process;
+namespace Inowas\PythonProcessBundle\Model;
 
+use AppBundle\Process\ProcessWithInputOutputFileInterface;
+use AppBundle\Process\PythonProcessConfigurationInterface;
 use Symfony\Component\Process\ProcessBuilder;
 
 class PythonProcessFactory

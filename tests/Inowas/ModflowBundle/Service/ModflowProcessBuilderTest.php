@@ -30,16 +30,16 @@ class ModflowProcessBuilderTest extends KernelTestCase
 
     public function testBuildCalculationProcess(){
         $calculationProcess = $this->modflowProcessBuilder->buildCalculationProcess('123');
-        $this->assertInstanceOf('AppBundle\Process\PythonProcess', $calculationProcess);
+        $this->assertInstanceOf('Inowas\PythonProcessBundle\Model\PythonProcess', $calculationProcess);
     }
 
     public function testBuildRasterResultProcess(){
         $calculationProcess = $this->modflowProcessBuilder->buildRasterResultProcess('123', 1, array(1), array(2), ModflowResultRasterParameter::OP_RAW);
-        $this->assertInstanceOf('AppBundle\Process\PythonProcess', $calculationProcess);
+        $this->assertInstanceOf('Inowas\PythonProcessBundle\Model\PythonProcess', $calculationProcess);
     }
 
     public function testBuildTimeseriesResultProcess(){
         $calculationProcess = $this->modflowProcessBuilder->buildTimeseriesResultProcess('123', 1, array(1), array(2), ModflowResultTimeSeriesParameter::OP_RAW);
-        $this->assertInstanceOf('AppBundle\Process\PythonProcess', $calculationProcess);
+        $this->assertInstanceOf('Inowas\PythonProcessBundle\Model\PythonProcess', $calculationProcess);
     }
 }

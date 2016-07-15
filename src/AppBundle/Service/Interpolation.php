@@ -4,7 +4,7 @@ namespace AppBundle\Service;
 
 use AppBundle\Exception\InvalidArgumentException;
 use AppBundle\Process\Interpolation\InterpolationParameter;
-use AppBundle\Process\PythonProcessFactory;
+use Inowas\PythonProcessBundle\Model\PythonProcessFactory;
 use AppBundle\Process\Interpolation\InterpolationProcessConfiguration;
 use AppBundle\Process\InterpolationResult;
 use Symfony\Component\HttpKernel\KernelInterface;
