@@ -20,4 +20,3 @@ parameters:
 
     inowas.pyprocessing.directory: '%kernel.root_dir%/../py/pyprocessing'
     inowas.geotiff.data_folder: '%kernel.root_dir%/../var/data/geotiff'
-    inowas.temp_folder: '%kernel.root_dir%/../var/tmp'
