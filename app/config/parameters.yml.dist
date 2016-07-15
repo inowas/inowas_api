@@ -19,11 +19,8 @@ parameters:
     secret:            ThisTokenIsNotSoSecretChangeIt
 
     inowas.python_process.prefix: python
-    inowas.modflow.number_of_parallel_running_processes: 5
-    inowas.modflow.data_folder:  '%kernel.root_dir%/../var/data/modflow'
-    inowas.geotiff.data_folder:  '%kernel.root_dir%/../var/data/geotiff'
-    inowas.modflow.working_directory: '%kernel.root_dir%/../py/pyprocessing/modflow'
+    inowas.geotiff.data_folder: '%kernel.root_dir%/../var/data/geotiff'
+    inowas.pyprocessing.directory: '%kernel.root_dir%/../py/pyprocessing'
     inowas.geotiff.working_directory: '%kernel.root_dir%/../py/pyprocessing/geoimage'
     inowas.interpolation.working_directory: '%kernel.root_dir%/../py/pyprocessing/interpolation'
-    inowas.modflow.api_base_url: http://localhost/
-    inowas.temp_folder:  '%kernel.root_dir%/../var/tmp'
+    inowas.temp_folder: '%kernel.root_dir%/../var/tmp'
