@@ -19,6 +19,7 @@ parameters:
     secret:            ThisTokenIsNotSoSecretChangeIt
 
     inowas.python_process.prefix: python
+    inowas.modflow.number_of_parallel_running_processes: 5
     inowas.modflow.data_folder:  '%kernel.root_dir%/../var/data/modflow'
     inowas.geotiff.data_folder:  '%kernel.root_dir%/../var/data/geotiff'
     inowas.modflow.working_directory: '%kernel.root_dir%/../py/pyprocessing/modflow'
