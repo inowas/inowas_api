@@ -1,4 +1,1 @@
 services:
-    inowas.python_process:
-        class: Inowas\PythonProcessBundle\Service\PythonProcess
-        arguments: ['%inowas.python.prefix%']
