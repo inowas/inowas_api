@@ -6,7 +6,7 @@ use AppBundle\Entity\ModflowCalculation;
 use AppBundle\Exception\InvalidArgumentException;
 use AppBundle\Exception\ProcessFailedException;
 use Inowas\ModflowBundle\Model\ModflowResultRasterParameter;
-use AppBundle\Process\Modflow\ModflowResultTimeSeriesParameter;
+use Inowas\ModflowBundle\Model\ModflowResultTimeSeriesParameter;
 use Inowas\ModflowBundle\Service\ModflowProcessBuilder;
 use Doctrine\ORM\EntityManagerInterface;
 use Ramsey\Uuid\Uuid;

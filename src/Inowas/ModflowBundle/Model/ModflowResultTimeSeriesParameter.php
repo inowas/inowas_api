@@ -1,9 +1,9 @@
 <?php
 
-namespace AppBundle\Process\Modflow;
+namespace Inowas\ModflowBundle\Model;
+
 use AppBundle\Exception\InvalidArgumentException;
 use Inowas\ModflowBundle\Model\ModflowParameterInterface;
-
 
 /**
  * Class ModflowTimeSeriesResultProcess

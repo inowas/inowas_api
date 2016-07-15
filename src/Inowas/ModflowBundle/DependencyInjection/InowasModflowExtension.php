@@ -8,6 +8,12 @@ use Symfony\Component\DependencyInjection\Extension\Extension;
 use Symfony\Component\DependencyInjection\Extension\ExtensionInterface;
 use Symfony\Component\DependencyInjection\Loader\YamlFileLoader;
 
+/**
+ * Class InowasModflowExtension
+ * @package Inowas\ModflowBundle\DependencyInjection
+ *
+ * @codeCoverageIgnore
+ */
 class InowasModflowExtension extends Extension  implements ExtensionInterface
 {
     /**

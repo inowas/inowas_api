@@ -5,6 +5,12 @@ namespace Inowas\PythonProcessBundle\DependencyInjection;
 use Symfony\Component\Config\Definition\Builder\TreeBuilder;
 use Symfony\Component\Config\Definition\ConfigurationInterface;
 
+/**
+ * Class Configuration
+ * @package Inowas\PythonProcessBundle\DependencyInjection
+ *
+ * @codeCoverageIgnore
+ */
 class Configuration implements ConfigurationInterface
 {
 

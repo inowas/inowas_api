@@ -7,7 +7,7 @@ use Inowas\ModflowBundle\Model\ModflowCalculationProcessConfiguration;
 use Inowas\ModflowBundle\Model\ModflowConfigurationFileCreator;
 use Inowas\ModflowBundle\Model\ModflowResultProcessConfiguration;
 use Inowas\ModflowBundle\Model\ModflowResultRasterParameter;
-use AppBundle\Process\Modflow\ModflowResultTimeSeriesParameter;
+use Inowas\ModflowBundle\Model\ModflowResultTimeSeriesParameter;
 use Inowas\PythonProcessBundle\Model\PythonProcessFactory;
 use AppBundle\Service\ConfigurationFileCreatorFactory;
 use Symfony\Component\HttpKernel\KernelInterface;

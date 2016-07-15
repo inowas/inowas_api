@@ -3,7 +3,7 @@
 namespace Tests\Inowas\ModflowBundle\Service;
 
 use Inowas\ModflowBundle\Model\ModflowResultRasterParameter;
-use AppBundle\Process\Modflow\ModflowResultTimeSeriesParameter;
+use Inowas\ModflowBundle\Model\ModflowResultTimeSeriesParameter;
 use AppBundle\Service\ConfigurationFileCreatorFactory;
 use Inowas\ModflowBundle\Service\ModflowProcessBuilder;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;

@@ -2,7 +2,7 @@
 
 namespace Tests\AppBundle\Process\Modflow;
 
-use AppBundle\Process\Modflow\ModflowResultTimeSeriesParameter;
+use Inowas\ModflowBundle\Model\ModflowResultTimeSeriesParameter;
 
 class ModflowResultTimeSeriesInputTest extends \PHPUnit_Framework_TestCase
 {
