@@ -20,10 +20,6 @@ services:
         class: AppBundle\Service\GeoTools
         arguments: ['@doctrine.orm.default_entity_manager']
 
-    inowas.modflow.service.runner:
-        class: AppBundle\Service\ModflowServiceRunner
-        arguments: ['@kernel', '@inowas.process.configurationfilecreatorfactory']
-
     inowas.geoimage:
         class: AppBundle\Service\GeoImage
         arguments: ['@kernel', '@inowas.process.configurationfilecreatorfactory']

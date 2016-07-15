@@ -1,6 +1,6 @@
 <?php
 
-namespace AppBundle\Service;
+namespace Inowas\ModflowBundle\Service;
 
 use AppBundle\Entity\ModflowCalculation;
 use AppBundle\Process\Modflow\ModflowCalculationParameter;
@@ -8,6 +8,7 @@ use AppBundle\Process\Modflow\ModflowCalculationProcessConfiguration;
 use AppBundle\Process\Modflow\ModflowConfigurationFileCreator;
 use AppBundle\Process\PythonProcess;
 use AppBundle\Process\PythonProcessFactory;
+use AppBundle\Service\ConfigurationFileCreatorFactory;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\EntityManager;
 use Symfony\Component\HttpKernel\KernelInterface;

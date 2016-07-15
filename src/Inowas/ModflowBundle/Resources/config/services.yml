@@ -7,3 +7,7 @@ services:
     inowas.modflow.processbuilder:
         class: Inowas\ModflowBundle\Service\ModflowProcessBuilder
         arguments: ['@kernel', '@inowas.process.configurationfilecreatorfactory']
+
+    inowas.modflow.servicerunner:
+        class: Inowas\ModflowBundle\Service\ModflowServiceRunner
+        arguments: ['@kernel', '@inowas.process.configurationfilecreatorfactory']
