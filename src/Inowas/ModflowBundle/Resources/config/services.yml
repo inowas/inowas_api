@@ -1,0 +1,4 @@
+services:
+#    inowas_modflow.example:
+#        class: Inowas\ModflowBundle\Example
+#        arguments: ["@service_id", "plain_value", %parameter%]
