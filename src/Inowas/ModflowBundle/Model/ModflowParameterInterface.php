@@ -1,6 +1,6 @@
 <?php
 
-namespace AppBundle\Process\Modflow;
+namespace Inowas\ModflowBundle\Model;
 
 interface ModflowParameterInterface extends \JsonSerializable
 {

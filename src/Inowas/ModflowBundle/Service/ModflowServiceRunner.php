@@ -3,9 +3,9 @@
 namespace Inowas\ModflowBundle\Service;
 
 use AppBundle\Entity\ModflowCalculation;
-use AppBundle\Process\Modflow\ModflowCalculationParameter;
-use AppBundle\Process\Modflow\ModflowCalculationProcessConfiguration;
-use AppBundle\Process\Modflow\ModflowConfigurationFileCreator;
+use Inowas\ModflowBundle\Model\ModflowCalculationParameter;
+use Inowas\ModflowBundle\Model\ModflowCalculationProcessConfiguration;
+use Inowas\ModflowBundle\Model\ModflowConfigurationFileCreator;
 use Inowas\PythonProcessBundle\Model\PythonProcess;
 use Inowas\PythonProcessBundle\Model\PythonProcessFactory;
 use AppBundle\Service\ConfigurationFileCreatorFactory;

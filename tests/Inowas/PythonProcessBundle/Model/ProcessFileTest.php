@@ -1,6 +1,6 @@
 <?php
 
-namespace Tests\AppBundle\Process;
+namespace Tests\Inowas\PythonProcessBundle\Model;
 
 use Inowas\PythonProcessBundle\Model\ProcessFile;
 use Symfony\Component\Filesystem\Filesystem;

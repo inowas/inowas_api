@@ -1,7 +1,9 @@
 <?php
 
-namespace AppBundle\Process\Modflow;
+namespace Inowas\ModflowBundle\Model;
 
+
+use Inowas\ModflowBundle\Model\ModflowParameterInterface;
 
 class ModflowCalculationParameter implements ModflowParameterInterface
 {

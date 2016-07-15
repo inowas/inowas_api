@@ -1,13 +1,13 @@
 <?php
 
-namespace Tests\AppBundle\Process\Modflow;
+namespace Tests\Inowas\ModflowBundle\Model;
 
-use AppBundle\Process\Modflow\ModflowCalculationParameter;
-use AppBundle\Process\Modflow\ModflowConfigurationFileCreator;
-use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
+use Inowas\ModflowBundle\Model\ModflowCalculationParameter;
+use Inowas\ModflowBundle\Model\ModflowConfigurationFileCreator;
+use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Symfony\Component\Filesystem\Filesystem;
 
-class ModflowConfigurationFileCreatorTest extends WebTestCase
+class ModflowConfigurationFileCreatorTest extends KernelTestCase
 {
 
     /** @var  ModflowConfigurationFileCreator */
@@ -15,11 +15,12 @@ class ModflowConfigurationFileCreatorTest extends WebTestCase
 
     public function setUp(){
         self::bootKernel();
-        $this->modflowConfigurationFileCreator = new ModflowConfigurationFileCreator(static::$kernel->getContainer()->get('kernel'));
+        $tempFolder = static::$kernel->getContainer()->getParameter('inowas.temp_folder');
+        $this->modflowConfigurationFileCreator = new ModflowConfigurationFileCreator($tempFolder);
     }
 
     public function testInstantiation(){
-        $this->assertInstanceOf('AppBundle\Process\Modflow\ModflowConfigurationFileCreator', $this->modflowConfigurationFileCreator);
+        $this->assertInstanceOf('Inowas\ModflowBundle\Model\ModflowConfigurationFileCreator', $this->modflowConfigurationFileCreator);
     }
 
     public function testCreateFile(){

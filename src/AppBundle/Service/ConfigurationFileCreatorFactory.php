@@ -5,7 +5,7 @@ namespace AppBundle\Service;
 use AppBundle\Exception\InvalidArgumentException;
 use AppBundle\Process\GeoImage\GeoImageConfigurationFileCreator;
 use AppBundle\Process\Interpolation\InterpolationConfigurationFileCreator;
-use AppBundle\Process\Modflow\ModflowConfigurationFileCreator;
+use Inowas\ModflowBundle\Model\ModflowConfigurationFileCreator;
 use JMS\Serializer\Serializer;
 use Symfony\Component\HttpKernel\KernelInterface;
 
@@ -18,6 +18,9 @@ class ConfigurationFileCreatorFactory
     /** @var  KernelInterface */
     protected $kernel;
 
+    /** @var string */
+    protected $tempFolder;
+
     /**
      * InterpolationConfigurationFileCreator constructor.
      * @param $kernel
@@ -27,11 +30,12 @@ class ConfigurationFileCreatorFactory
     {
         $this->kernel = $kernel;
         $this->serializer = $serializer;
+        $this->tempFolder = $this->kernel->getContainer()->getParameter('inowas.temp_folder');
     }
 
     /**
      * @param $type
-     * @return GeoImageConfigurationFileCreator|InterpolationConfigurationFileCreator|ModflowConfigurationFileCreator
+     * @return GeoImageConfigurationFileCreator|InterpolationConfigurationFileCreator|\Inowas\ModflowBundle\Model\ModflowConfigurationFileCreator
      */
     public function create($type){
         switch ($type) {
@@ -44,7 +48,7 @@ class ConfigurationFileCreatorFactory
             break;
 
             case 'modflow':
-                return new ModflowConfigurationFileCreator($this->kernel);
+                return new ModflowConfigurationFileCreator($this->tempFolder);
             break;
         }
 

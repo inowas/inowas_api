@@ -1,11 +1,10 @@
 <?php
 
-namespace AppBundle\Process\Modflow;
+namespace Inowas\ModflowBundle\Model;
 
 use Inowas\PythonProcessBundle\Model\ProcessFile;
 use Ramsey\Uuid\Uuid;
 use Symfony\Component\Filesystem\Filesystem;
-use Symfony\Component\HttpKernel\KernelInterface;
 
 class ModflowConfigurationFileCreator
 {
@@ -24,12 +23,11 @@ class ModflowConfigurationFileCreator
 
     /**
      * ModflowConfigurationFileCreator constructor.
-     * @param $kernel
+     * @param $tempFolder
      */
-    public function __construct(KernelInterface $kernel)
+    public function __construct($tempFolder)
     {
-        $this->tempFolder = $kernel->getContainer()->getParameter('inowas.temp_folder');
-        $this->dataFolder = $kernel->getContainer()->getParameter('inowas.modflow.data_folder');
+        $this->tempFolder = $tempFolder;
     }
 
     public function createFiles(ModflowParameterInterface $modflowCalculationParameter){

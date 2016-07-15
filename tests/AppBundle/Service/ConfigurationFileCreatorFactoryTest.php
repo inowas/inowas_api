@@ -48,7 +48,7 @@ class ConfigurationFileCreatorFactoryTest extends WebTestCase
 
     public function testCreateModflowFileCreatorFactory(){
         $modflowConfigurationFileCreator = $this->configurationFileCreatorFactory->create('modflow');
-        $this->assertInstanceOf('AppBundle\Process\Modflow\ModflowConfigurationFileCreator', $modflowConfigurationFileCreator);
+        $this->assertInstanceOf('Inowas\ModflowBundle\Model\ModflowConfigurationFileCreator', $modflowConfigurationFileCreator);
     }
 
     public function testCreateUnknownFileCreatorFactoryThrowsException(){

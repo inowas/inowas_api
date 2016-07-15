@@ -2,6 +2,7 @@
 
 namespace AppBundle\Process\Modflow;
 use AppBundle\Exception\InvalidArgumentException;
+use Inowas\ModflowBundle\Model\ModflowParameterInterface;
 
 
 /**

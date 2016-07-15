@@ -1,12 +1,12 @@
 <?php
 
-namespace Tests\AppBundle\Process\Modflow;
+namespace Tests\Inowas\ModflowBundle\Model;
 
-use AppBundle\Process\Modflow\ModflowCalculationParameter;
+use Inowas\ModflowBundle\Model\ModflowCalculationParameter;
 
 class ModflowCalculationParameterTest extends \PHPUnit_Framework_TestCase
 {
-    /** @var  ModflowCalculationParameter */
+    /** @var  \Inowas\ModflowBundle\Model\ModflowCalculationParameter */
     protected $modflowCalculation;
 
     /** @var  string */
@@ -23,7 +23,7 @@ class ModflowCalculationParameterTest extends \PHPUnit_Framework_TestCase
     }
 
     public function testInstantiate(){
-        $this->assertInstanceOf('AppBundle\Process\Modflow\ModflowCalculationParameter', $this->modflowCalculation);
+        $this->assertInstanceOf('Inowas\ModflowBundle\Model\ModflowCalculationParameter', $this->modflowCalculation);
     }
     
     public function testSerialize(){

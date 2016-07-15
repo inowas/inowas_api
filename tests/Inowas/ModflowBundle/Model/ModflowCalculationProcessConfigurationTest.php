@@ -1,8 +1,8 @@
 <?php
 
-namespace Tests\AppBundle\Process\Modflow;
+namespace Tests\Inowas\ModflowBundle\Model;
 
-use AppBundle\Process\Modflow\ModflowCalculationProcessConfiguration;
+use Inowas\ModflowBundle\Model\ModflowCalculationProcessConfiguration;
 
 class ModflowCalculationProcessConfigurationTest extends \PHPUnit_Framework_TestCase
 {
@@ -24,7 +24,7 @@ class ModflowCalculationProcessConfigurationTest extends \PHPUnit_Framework_Test
     }
 
     public function testInstantiate(){
-        $this->assertInstanceOf('AppBundle\Process\Modflow\ModflowCalculationProcessConfiguration', $this->modflowCalculationProcessConfiguration);
+        $this->assertInstanceOf('Inowas\ModflowBundle\Model\ModflowCalculationProcessConfiguration', $this->modflowCalculationProcessConfiguration);
         $this->assertContains('inputFilename', $this->modflowCalculationProcessConfiguration->getArguments());
         $this->assertContains('workspace', $this->modflowCalculationProcessConfiguration->getArguments());
         $this->assertContains('executable', $this->modflowCalculationProcessConfiguration->getArguments());

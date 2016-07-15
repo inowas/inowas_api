@@ -2,9 +2,9 @@
 
 namespace Inowas\ModflowBundle\Service;
 
-use AppBundle\Process\Modflow\ModflowCalculationParameter;
-use AppBundle\Process\Modflow\ModflowCalculationProcessConfiguration;
-use AppBundle\Process\Modflow\ModflowConfigurationFileCreator;
+use Inowas\ModflowBundle\Model\ModflowCalculationParameter;
+use Inowas\ModflowBundle\Model\ModflowCalculationProcessConfiguration;
+use Inowas\ModflowBundle\Model\ModflowConfigurationFileCreator;
 use AppBundle\Process\Modflow\ModflowResultProcessConfiguration;
 use AppBundle\Process\Modflow\ModflowResultRasterParameter;
 use AppBundle\Process\Modflow\ModflowResultTimeSeriesParameter;
@@ -43,7 +43,7 @@ class ModflowProcessBuilder
 
         $mfCalculationParams = new ModflowCalculationParameter($modelId, $this->baseUrl);
 
-        /** @var ModflowConfigurationFileCreator $inputFileCreator */
+        /** @var \Inowas\ModflowBundle\Model\ModflowConfigurationFileCreator $inputFileCreator */
         $inputFileCreator = $this->configurationFileCreatorFactory->create('modflow');
         $inputFileCreator->createFiles($mfCalculationParams);
 
@@ -55,7 +55,7 @@ class ModflowProcessBuilder
     public function buildRasterResultProcess($modelId, $layer, $timesteps, $stressPeriods, $operation){
         $mfResultParams = new ModflowResultRasterParameter($modelId, $layer, $timesteps, $stressPeriods, $operation);
 
-        /** @var ModflowConfigurationFileCreator $configFileCreator*/
+        /** @var \Inowas\ModflowBundle\Model\ModflowConfigurationFileCreator $configFileCreator*/
         $configFileCreator = $this->configurationFileCreatorFactory->create('modflow');
         $configFileCreator->createFiles($mfResultParams);
 
