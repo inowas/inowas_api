@@ -23,7 +23,7 @@ class ModflowConfigurationFileCreator
     protected $outputFile;
 
     /**
-     * InterpolationConfigurationFileCreator constructor.
+     * ModflowConfigurationFileCreator constructor.
      * @param $kernel
      */
     public function __construct(KernelInterface $kernel)

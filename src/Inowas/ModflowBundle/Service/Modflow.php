@@ -1,12 +1,13 @@
 <?php
 
-namespace AppBundle\Service;
+namespace Inowas\ModflowBundle\Service;
 
 use AppBundle\Entity\ModflowCalculation;
 use AppBundle\Exception\InvalidArgumentException;
 use AppBundle\Exception\ProcessFailedException;
 use AppBundle\Process\Modflow\ModflowResultRasterParameter;
 use AppBundle\Process\Modflow\ModflowResultTimeSeriesParameter;
+use Inowas\ModflowBundle\Service\ModflowProcessBuilder;
 use Doctrine\ORM\EntityManagerInterface;
 use Ramsey\Uuid\Uuid;
 

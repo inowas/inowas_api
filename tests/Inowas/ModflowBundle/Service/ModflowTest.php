@@ -1,10 +1,10 @@
 <?php
 
-namespace Tests\AppBundle\Service;
+namespace Tests\Inowas\ModflowBundle\Service;
 
 use AppBundle\Entity\ModFlowModel;
-use AppBundle\Service\Modflow;
 use Doctrine\ORM\EntityManager;
+use Inowas\ModflowBundle\Service\Modflow;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Symfony\Component\HttpKernel\KernelInterface;
 

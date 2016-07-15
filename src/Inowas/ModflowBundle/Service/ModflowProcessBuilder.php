@@ -1,6 +1,6 @@
 <?php
 
-namespace AppBundle\Service;
+namespace Inowas\ModflowBundle\Service;
 
 use AppBundle\Process\Modflow\ModflowCalculationParameter;
 use AppBundle\Process\Modflow\ModflowCalculationProcessConfiguration;
@@ -9,6 +9,7 @@ use AppBundle\Process\Modflow\ModflowResultProcessConfiguration;
 use AppBundle\Process\Modflow\ModflowResultRasterParameter;
 use AppBundle\Process\Modflow\ModflowResultTimeSeriesParameter;
 use AppBundle\Process\PythonProcessFactory;
+use AppBundle\Service\ConfigurationFileCreatorFactory;
 use Symfony\Component\HttpKernel\KernelInterface;
 
 /**

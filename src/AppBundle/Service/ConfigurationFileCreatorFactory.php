@@ -31,7 +31,7 @@ class ConfigurationFileCreatorFactory
 
     /**
      * @param $type
-     * @return GeoImageConfigurationFileCreator|InterpolationConfigurationFileCreator
+     * @return GeoImageConfigurationFileCreator|InterpolationConfigurationFileCreator|ModflowConfigurationFileCreator
      */
     public function create($type){
         switch ($type) {
