@@ -2,7 +2,6 @@
 
 namespace Inowas\PythonProcessBundle\Model;
 
-use AppBundle\Process\PythonProcessConfigurationInterface;
 use Ramsey\Uuid\Uuid;
 use Symfony\Component\Process\Process;
 use Symfony\Component\Process\ProcessBuilder;

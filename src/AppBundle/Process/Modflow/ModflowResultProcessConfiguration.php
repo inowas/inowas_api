@@ -2,13 +2,13 @@
 
 namespace AppBundle\Process\Modflow;
 
-use AppBundle\Process\ProcessFile;
-use AppBundle\Process\PythonProcessConfiguration;
+use Inowas\PythonProcessBundle\Model\ProcessFile;
+use Inowas\PythonProcessBundle\Model\PythonProcessConfiguration;
 
 class ModflowResultProcessConfiguration extends PythonProcessConfiguration
 {
 
-    /** @var ProcessFile */
+    /** @var \Inowas\PythonProcessBundle\Model\ProcessFile */
     protected $inputFile;
 
     /** @var ProcessFile */

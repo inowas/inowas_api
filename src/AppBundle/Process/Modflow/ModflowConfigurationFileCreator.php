@@ -2,7 +2,7 @@
 
 namespace AppBundle\Process\Modflow;
 
-use AppBundle\Process\ProcessFile;
+use Inowas\PythonProcessBundle\Model\ProcessFile;
 use Ramsey\Uuid\Uuid;
 use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\HttpKernel\KernelInterface;
@@ -16,10 +16,10 @@ class ModflowConfigurationFileCreator
     /** @var  string */
     protected $dataFolder;
 
-    /** @var  ProcessFile */
+    /** @var  \Inowas\PythonProcessBundle\Model\ProcessFile */
     protected $inputFile;
 
-    /** @var  ProcessFile */
+    /** @var  \Inowas\PythonProcessBundle\Model\ProcessFile */
     protected $outputFile;
 
     /**
@@ -46,7 +46,7 @@ class ModflowConfigurationFileCreator
     }
 
     /**
-     * @return ProcessFile
+     * @return \Inowas\PythonProcessBundle\Model\ProcessFile
      */
     public function getInputFile()
     {

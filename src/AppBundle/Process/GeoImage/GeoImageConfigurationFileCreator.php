@@ -3,8 +3,8 @@
 namespace AppBundle\Process\GeoImage;
 
 use AppBundle\Model\GeoImage\GeoImageProperties;
-use AppBundle\Process\InputOutputFileInterface;
-use AppBundle\Process\ProcessFile;
+use Inowas\PythonProcessBundle\Model\InputOutputFileInterface;
+use Inowas\PythonProcessBundle\Model\ProcessFile;
 use JMS\Serializer\SerializationContext;
 use JMS\Serializer\Serializer;
 use Ramsey\Uuid\Uuid;

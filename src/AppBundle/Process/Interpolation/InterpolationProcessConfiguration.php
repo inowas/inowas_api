@@ -2,27 +2,27 @@
 
 namespace AppBundle\Process\Interpolation;
 
-use AppBundle\Process\InputOutputFileInterface;
-use AppBundle\Process\ProcessWithInputOutputFileInterface;
-use AppBundle\Process\ProcessFile;
-use AppBundle\Process\PythonProcessConfiguration;
+use Inowas\PythonProcessBundle\Model\InputOutputFileInterface;
+use Inowas\PythonProcessBundle\Model\ProcessWithInputOutputFileInterface;
+use Inowas\PythonProcessBundle\Model\ProcessFile;
+use Inowas\PythonProcessBundle\Model\PythonProcessConfiguration;
 
 class InterpolationProcessConfiguration extends PythonProcessConfiguration implements ProcessWithInputOutputFileInterface
 {
 
     /**
-     * @var ProcessFile
+     * @var \Inowas\PythonProcessBundle\Model\ProcessFile
      */
     protected $inputFile;
 
     /**
-     * @var ProcessFile
+     * @var \Inowas\PythonProcessBundle\Model\ProcessFile
      */
     protected $outputFile;
 
     /**
      * InterpolationProcessConfiguration constructor.
-     * @param InputOutputFileInterface $configurationFileCreator
+     * @param \Inowas\PythonProcessBundle\Model\InputOutputFileInterface $configurationFileCreator
      */
     public function __construct(InputOutputFileInterface $configurationFileCreator)
     {

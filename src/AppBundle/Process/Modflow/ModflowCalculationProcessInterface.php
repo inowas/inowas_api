@@ -2,7 +2,7 @@
 
 namespace AppBundle\Process\Modflow;
 
-use AppBundle\Process\PythonProcessConfigurationInterface;
+use Inowas\PythonProcessBundle\Model\PythonProcessConfigurationInterface;
 
 interface ModflowCalculationProcessInterface extends PythonProcessConfigurationInterface
 {

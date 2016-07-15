@@ -1,6 +1,6 @@
 <?php
 
-namespace AppBundle\Process;
+namespace Inowas\PythonProcessBundle\Model;
 
 interface ProcessWithInputOutputFileInterface extends PythonProcessConfigurationInterface, InputOutputFileInterface
 {

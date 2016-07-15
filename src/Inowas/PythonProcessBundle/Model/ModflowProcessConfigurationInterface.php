@@ -1,6 +1,9 @@
 <?php
 
-namespace AppBundle\Process;
+namespace Inowas\PythonProcessBundle\Model;
+
+use Inowas\PythonProcessBundle\Model\ProcessFile;
+use Inowas\PythonProcessBundle\Model\PythonProcessConfigurationInterface;
 
 interface ModflowProcessConfigurationInterface extends PythonProcessConfigurationInterface
 {

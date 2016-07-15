@@ -2,7 +2,7 @@
 
 namespace Tests\AppBundle\Process;
 
-use AppBundle\Process\PythonProcessConfiguration;
+use Inowas\PythonProcessBundle\Model\PythonProcessConfiguration;
 use Inowas\PythonProcessBundle\Model\PythonProcess;
 use Symfony\Component\Process\ProcessBuilder;
 
@@ -35,7 +35,7 @@ class PythonProcessTest extends \PHPUnit_Framework_TestCase
     }
 
     public function testProcessScriptNameAndIgnoreWarningsTrueFlag(){
-        $configuration = new PythonProcessConfiguration();
+        $configuration = new \Inowas\PythonProcessBundle\Model\PythonProcessConfiguration();
         $configuration->setPrefix('pillow');
         $configuration->setIgnoreWarnings(true);
         $configuration->setScriptName('myCustomScript.py');

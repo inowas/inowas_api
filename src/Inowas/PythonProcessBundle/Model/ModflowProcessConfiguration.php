@@ -1,8 +1,9 @@
 <?php
 
-namespace AppBundle\Process;
+namespace Inowas\PythonProcessBundle\Model;
 
 use AppBundle\Exception\InvalidArgumentException;
+use Inowas\PythonProcessBundle\Model\ModflowProcessConfigurationInterface;
 
 class ModflowProcessConfiguration extends PythonProcessConfiguration implements ModflowProcessConfigurationInterface
 {
@@ -64,7 +65,7 @@ class ModflowProcessConfiguration extends PythonProcessConfiguration implements 
     }
 
     /**
-     * @param ProcessFile
+     * @param ProcessFile $file
      * @return $this
      */
     public function setInputFile(ProcessFile $file)
@@ -82,8 +83,8 @@ class ModflowProcessConfiguration extends PythonProcessConfiguration implements 
     }
 
     /**
-     * @param ProcessFile
-     * @return mixed
+     * @param ProcessFile $file
+     * @return $this
      */
     public function setOutputFile(ProcessFile $file)
     {

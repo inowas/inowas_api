@@ -1,6 +1,6 @@
 <?php
 
-namespace AppBundle\Process;
+namespace Inowas\PythonProcessBundle\Model;
 
 use AppBundle\Exception\InvalidArgumentException;
 use Symfony\Component\Filesystem\Filesystem;

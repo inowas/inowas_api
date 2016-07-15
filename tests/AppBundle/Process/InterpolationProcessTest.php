@@ -2,7 +2,7 @@
 
 namespace Tests\AppBundle\Process;
 
-use AppBundle\Process\ProcessWithInputOutputFileInterface;
+use Inowas\PythonProcessBundle\Model\ProcessWithInputOutputFileInterface;
 use Inowas\PythonProcessBundle\Model\PythonProcessFactory;
 
 class InterpolationProcessTest extends \PHPUnit_Framework_TestCase
@@ -24,7 +24,7 @@ class InterpolationProcessTest extends \PHPUnit_Framework_TestCase
         $process = PythonProcessFactory::create($this->configurationMock);
 
 
-        /** @var ProcessWithInputOutputFileInterface $configurationMock */
+        /** @var \Inowas\PythonProcessBundle\Model\ProcessWithInputOutputFileInterface $configurationMock */
         $this->assertInstanceOf('Inowas\PythonProcessBundle\Model\PythonProcess', $process);
     }
 }

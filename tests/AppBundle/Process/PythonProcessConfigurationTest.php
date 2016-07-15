@@ -3,14 +3,14 @@
 namespace Tests\AppBundle\Process;
 
 
-use AppBundle\Process\PythonProcessConfiguration;
+use Inowas\PythonProcessBundle\Model\PythonProcessConfiguration;
 
 class PythonProcessConfigurationTest extends \PHPUnit_Framework_TestCase
 {
 
     public function testInstantiation(){
         $configuration = new PythonProcessConfiguration();
-        $this->assertInstanceOf('AppBundle\Process\PythonProcessConfiguration', $configuration);
+        $this->assertInstanceOf('Inowas\PythonProcessBundle\Model\PythonProcessConfiguration', $configuration);
         $this->assertEquals(array(), $configuration->getArguments());
         $this->assertEquals('../py/pyprocessing', $configuration->getWorkingDirectory());
         $this->assertEquals(true, $configuration->getIgnoreWarnings());

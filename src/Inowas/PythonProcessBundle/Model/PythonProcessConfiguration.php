@@ -1,6 +1,6 @@
 <?php
 
-namespace AppBundle\Process;
+namespace Inowas\PythonProcessBundle\Model;
 
 class PythonProcessConfiguration implements PythonProcessConfigurationInterface
 {

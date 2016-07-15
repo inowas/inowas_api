@@ -2,21 +2,21 @@
 
 namespace Tests\AppBundle\Process;
 
-use AppBundle\Process\ModflowProcessConfiguration;
-use AppBundle\Process\ProcessFile;
+use Inowas\PythonProcessBundle\Model\ModflowProcessConfiguration;
+use Inowas\PythonProcessBundle\Model\ProcessFile;
 
 class ModflowProcessConfigurationTest extends \PHPUnit_Framework_TestCase
 {
 
     public function testInstantiate(){
         /** @var ProcessFile $processFile */
-        $processFile = $this->getMockBuilder('AppBundle\Process\ProcessFile')
+        $processFile = $this->getMockBuilder('Inowas\PythonProcessBundle\Model\ProcessFile')
             ->disableOriginalConstructor()
             ->getMock();
 
         $modflowConfiguration = new ModflowProcessConfiguration($processFile);
 
-        $this->assertInstanceOf('AppBundle\Process\ModflowProcessConfiguration', $modflowConfiguration);
+        $this->assertInstanceOf('Inowas\PythonProcessBundle\Model\ModflowProcessConfiguration', $modflowConfiguration);
         $this->assertTrue($modflowConfiguration->getIgnoreWarnings());
         $this->assertEquals('modflowCalculation.py', $modflowConfiguration->getScriptName());
         $this->assertEquals('http://localhost/', $modflowConfiguration->getAPIBaseUrl());
@@ -25,17 +25,17 @@ class ModflowProcessConfigurationTest extends \PHPUnit_Framework_TestCase
     
     public function testSetterGetter(){
 
-        $processInputFile = $this->getMockBuilder('AppBundle\Process\ProcessFile')
+        $processInputFile = $this->getMockBuilder('Inowas\PythonProcessBundle\Model\ProcessFile')
             ->disableOriginalConstructor()
             ->getMock();
         $processInputFile->method('getFileName')->willReturn('inputTestFile');
 
-        $processOutputFile = $this->getMockBuilder('AppBundle\Process\ProcessFile')
+        $processOutputFile = $this->getMockBuilder('Inowas\PythonProcessBundle\Model\ProcessFile')
             ->disableOriginalConstructor()
             ->getMock();
         $processOutputFile->method('getFileName')->willReturn('outputTestFile');
 
-        /** @var ProcessFile $processInputFile */
+        /** @var \Inowas\PythonProcessBundle\Model\ProcessFile $processInputFile */
         $modflowConfiguration = new ModflowProcessConfiguration($processInputFile);
 
         $apiBaseUrl = "http://api.base.url";
@@ -45,7 +45,7 @@ class ModflowProcessConfigurationTest extends \PHPUnit_Framework_TestCase
         $modflowConfiguration->setInputFile($processInputFile);
         $this->assertEquals('inputTestFile', $modflowConfiguration->getInputFile());
 
-        /** @var ProcessFile $processOutputFile */
+        /** @var \Inowas\PythonProcessBundle\Model\ProcessFile $processOutputFile */
         $modflowConfiguration->setOutputFile($processOutputFile);
         $this->assertEquals('outputTestFile', $modflowConfiguration->getOutputFile());
 
@@ -67,12 +67,12 @@ class ModflowProcessConfigurationTest extends \PHPUnit_Framework_TestCase
     }
 
     public function testSetUnknownExecutableThrowsException(){
-        $processInputFile = $this->getMockBuilder('AppBundle\Process\ProcessFile')
+        $processInputFile = $this->getMockBuilder('Inowas\PythonProcessBundle\Model\ProcessFile')
             ->disableOriginalConstructor()
             ->getMock();
         $processInputFile->method('getFileName')->willReturn('inputTestFile');
 
-        /** @var ProcessFile $processInputFile */
+        /** @var \Inowas\PythonProcessBundle\Model\ProcessFile $processInputFile */
         $modflowConfiguration = new ModflowProcessConfiguration($processInputFile);
 
         $this->setExpectedException('AppBundle\Exception\InvalidArgumentException');

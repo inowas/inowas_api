@@ -2,8 +2,8 @@
 
 namespace AppBundle\Process\Interpolation;
 
-use AppBundle\Process\InputOutputFileInterface;
-use AppBundle\Process\ProcessFile;
+use Inowas\PythonProcessBundle\Model\InputOutputFileInterface;
+use Inowas\PythonProcessBundle\Model\ProcessFile;
 use JMS\Serializer\SerializationContext;
 use JMS\Serializer\Serializer;
 use Ramsey\Uuid\Uuid;
@@ -60,7 +60,7 @@ class InterpolationConfigurationFileCreator implements InputOutputFileInterface
     }
 
     /**
-     * @return ProcessFile
+     * @return \Inowas\PythonProcessBundle\Model\ProcessFile
      */
     public function getInputFile()
     {

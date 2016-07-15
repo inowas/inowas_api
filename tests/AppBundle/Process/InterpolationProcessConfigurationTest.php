@@ -18,12 +18,12 @@ class InterpolationProcessConfigurationTest extends \PHPUnit_Framework_TestCase
 
     public function setUp()
     {
-        $this->inputFile = $this->getMockBuilder('AppBundle\Process\ProcessFile')
+        $this->inputFile = $this->getMockBuilder('Inowas\PythonProcessBundle\Model\ProcessFile')
             ->disableOriginalConstructor()
             ->getMock();
         $this->inputFile->method('getFileName')->willReturn('../inputFile.in');
 
-        $this->outputFile = $this->getMockBuilder('AppBundle\Process\ProcessFile')
+        $this->outputFile = $this->getMockBuilder('Inowas\PythonProcessBundle\Model\ProcessFile')
             ->disableOriginalConstructor()
             ->getMock();
         $this->outputFile->method('getFileName')->willReturn('../outputFile.out');

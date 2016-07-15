@@ -12,7 +12,7 @@ class ModflowCalculationProcessConfigurationTest extends \PHPUnit_Framework_Test
 
     public function setUp(){
 
-        $inputFile = $this->getMockBuilder('AppBundle\Process\ProcessFile')
+        $inputFile = $this->getMockBuilder('Inowas\PythonProcessBundle\Model\ProcessFile')
             ->disableOriginalConstructor()
             ->getMock();
 

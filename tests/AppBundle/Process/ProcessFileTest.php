@@ -2,7 +2,7 @@
 
 namespace Tests\AppBundle\Process;
 
-use AppBundle\Process\ProcessFile;
+use Inowas\PythonProcessBundle\Model\ProcessFile;
 use Symfony\Component\Filesystem\Filesystem;
 
 class ProcessFileTest extends \PHPUnit_Framework_TestCase
@@ -11,7 +11,7 @@ class ProcessFileTest extends \PHPUnit_Framework_TestCase
         $fs = new Filesystem();
         $fs->touch('./test.txt');
         $file = ProcessFile::fromFilename('test.txt');
-        $this->assertInstanceOf('AppBundle\Process\ProcessFile', $file);
+        $this->assertInstanceOf('Inowas\PythonProcessBundle\Model\ProcessFile', $file);
         $this->assertEquals('test.txt', $file->getFileName());
         $fs->remove('test.txt');
     }
@@ -20,7 +20,7 @@ class ProcessFileTest extends \PHPUnit_Framework_TestCase
         $fs = new Filesystem();
         $fs->touch('../test.txt');
         $file = ProcessFile::fromFilename('../test.txt');
-        $this->assertInstanceOf('AppBundle\Process\ProcessFile', $file);
+        $this->assertInstanceOf('Inowas\PythonProcessBundle\Model\ProcessFile', $file);
         $this->assertEquals('../test.txt', $file->getFileName());
         $fs->remove('../test.txt');
     }
@@ -28,6 +28,6 @@ class ProcessFileTest extends \PHPUnit_Framework_TestCase
     public function testFromFilenameThrowsExceptionIfNotExits(){
         $this->setExpectedException('AppBundle\Exception\InvalidArgumentException');
         $file = ProcessFile::fromFilename('test.txt');
-        $this->assertInstanceOf('AppBundle\Process\ProcessFile', $file);
+        $this->assertInstanceOf('Inowas\PythonProcessBundle\Model\ProcessFile', $file);
     }
 }

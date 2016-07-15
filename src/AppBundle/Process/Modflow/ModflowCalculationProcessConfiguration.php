@@ -2,8 +2,8 @@
 
 namespace AppBundle\Process\Modflow;
 
-use AppBundle\Process\ProcessFile;
-use AppBundle\Process\PythonProcessConfiguration;
+use Inowas\PythonProcessBundle\Model\ProcessFile;
+use Inowas\PythonProcessBundle\Model\PythonProcessConfiguration;
 
 class ModflowCalculationProcessConfiguration extends PythonProcessConfiguration
 {
