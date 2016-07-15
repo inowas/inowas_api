@@ -111,3 +111,9 @@ jms_serializer:
             FOSUserBundle:
                 path: "%kernel.root_dir%/Resources/FOSUserBundle/serializer"
                 namespace_prefix: "FOS\\UserBundle"
+
+inowas_modflow:
+    api_base_url:         "http://localhost"
+    data_folder:          "%kernel.root_dir%/../var/data"
+    temp_folder:          "%kernel.root_dir%/../var/tmp"
+    max_processes:        5

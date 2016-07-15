@@ -10,4 +10,4 @@ services:
 
     inowas.modflow.servicerunner:
         class: Inowas\ModflowBundle\Service\ModflowServiceRunner
-        arguments: ['@kernel', '@inowas.process.configurationfilecreatorfactory']
+        arguments: ['@doctrine.orm.entity_manager', '@inowas.modflow.processbuilder', '%inowas.modflow.max_processes%']

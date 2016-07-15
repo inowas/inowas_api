@@ -20,7 +20,7 @@ class ModflowProcessRunnerCommand extends ContainerAwareCommand
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $output->writeln(sprintf("Start Service"));
-        $modflowServiceRunner = $this->getContainer()->get('inowas.modflow.service.runner');
+        $modflowServiceRunner = $this->getContainer()->get('inowas.modflow.servicerunner');
         $modflowServiceRunner->run();
     }
 }

@@ -18,21 +18,22 @@ class ModflowServiceRunner
     /** @var EntityManager  */
     protected $entityManager;
 
+    /** @var  ModflowProcessBuilder */
+    protected $modflowProcessBuilder;
+
     /** @var ArrayCollection $processes */
     protected $processes;
 
     /** @var int */
-    protected $numberOfParallelCalculations = 5;
+    protected $numberOfParallelCalculations;
 
-    public function __construct(KernelInterface $kernel, ConfigurationFileCreatorFactory $configurationFileCreatorFactory)
+
+    public function __construct(EntityManager $entityManager,  ModflowProcessBuilder $modflowProcessBuilder, $numberOfParallelCalculations = 5)
     {
         $this->processes = new ArrayCollection();
-        $this->entityManager = $kernel->getContainer()->get('doctrine.orm.entity_manager');
-        $this->numberOfParallelCalculations = $kernel->getContainer()->getParameter('inowas.modflow.number_of_parallel_running_processes');
-        $this->baseUrl = $kernel->getContainer()->getParameter('inowas.modflow.api_base_url');
-        $this->workspace = $kernel->getContainer()->getParameter('inowas.modflow.data_folder');
-        $this->kernel = $kernel;
-        $this->configurationFileCreatorFactory = $configurationFileCreatorFactory;
+        $this->entityManager = $entityManager;
+        $this->modflowProcessBuilder = $modflowProcessBuilder;
+        $this->numberOfParallelCalculations = $numberOfParallelCalculations;
     }
 
     /** This could be the cronjob-command */
@@ -87,7 +88,7 @@ class ModflowServiceRunner
 
             /** @var ModflowCalculation $modelCalculation */
             foreach ($modelsToCalculate as $modelCalculation){
-                $process = $this->createCalculationProcess($modelCalculation->getModelId(), $modelCalculation->getExecutable());
+                $process = $this->modflowProcessBuilder->buildCalculationProcess($modelCalculation->getModelId(), $modelCalculation->getExecutable());
 
                 $modelCalculation->setProcessId($process->getId());
                 $modelCalculation->setDateTimeStart(new \DateTime());
@@ -113,18 +114,4 @@ class ModflowServiceRunner
             $this->processes->removeElement($process);
         }
     }
-
-    private function createCalculationProcess($modelId, $executable = 'mf2005'){
-
-        $mfCalculationParams = new ModflowCalculationParameter($modelId, $this->baseUrl);
-
-        /** @var ModflowConfigurationFileCreator $inputFileCreator */
-        $inputFileCreator = $this->configurationFileCreatorFactory->create('modflow');
-        $inputFileCreator->createFiles($mfCalculationParams);
-
-        $processConfig = new ModflowCalculationProcessConfiguration($inputFileCreator->getInputFile(), $this->workspace.'/'.$modelId, $executable, $this->baseUrl);
-        $processConfig->setWorkingDirectory($this->kernel->getContainer()->getParameter('inowas.modflow.working_directory'));
-        return PythonProcessFactory::create($processConfig);
-    }
-
 }

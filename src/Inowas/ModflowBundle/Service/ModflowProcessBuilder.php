@@ -35,7 +35,7 @@ class ModflowProcessBuilder
     {
         $this->kernel = $kernel;
         $this->configurationFileCreatorFactory = $configurationFileCreatorFactory;
-        $this->baseUrl = $this->kernel->getContainer()->getParameter('inowas.modflow.api_base_url');
+        $this->baseUrl = $this->kernel->getContainer()->getParameter('inowas.api_base_url');
         $this->workspace = $this->kernel->getContainer()->getParameter('inowas.modflow.data_folder');
     }
 
@@ -48,7 +48,7 @@ class ModflowProcessBuilder
         $inputFileCreator->createFiles($mfCalculationParams);
 
         $processConfig = new ModflowCalculationProcessConfiguration($inputFileCreator->getInputFile(), $this->workspace.'/'.$modelId, $executable, $this->baseUrl);
-        $processConfig->setWorkingDirectory($this->kernel->getContainer()->getParameter('inowas.modflow.working_directory'));
+        $processConfig->setWorkingDirectory($this->kernel->getContainer()->getParameter('inowas.pyprocessing.directory'));
         return PythonProcessFactory::create($processConfig);
     }
 
@@ -65,7 +65,7 @@ class ModflowProcessBuilder
             $this->workspace.'/'.$modelId,
             $this->baseUrl
         );
-        $processConfig->setWorkingDirectory($this->kernel->getContainer()->getParameter('inowas.modflow.working_directory'));
+        $processConfig->setWorkingDirectory($this->kernel->getContainer()->getParameter('inowas.pyprocessing.directory'));
         return PythonProcessFactory::create($processConfig);
     }
 
@@ -82,7 +82,7 @@ class ModflowProcessBuilder
             $this->workspace.'/'.$modelId,
             $this->baseUrl
         );
-        $processConfig->setWorkingDirectory($this->kernel->getContainer()->getParameter('inowas.modflow.working_directory'));
+        $processConfig->setWorkingDirectory($this->kernel->getContainer()->getParameter('inowas.pyprocessing.directory'));
         return PythonProcessFactory::create($processConfig);
     }
 }

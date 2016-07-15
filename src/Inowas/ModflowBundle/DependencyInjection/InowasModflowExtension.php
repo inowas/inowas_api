@@ -21,10 +21,16 @@ class InowasModflowExtension extends Extension  implements ExtensionInterface
 
         $loader = new YamlFileLoader(
             $container,
-            new FileLocator(__DIR__.'/../Resources/config')
+            new FileLocator(__DIR__ . '/../Resources/config')
         );
         $loader->load('services.yml');
 
-    }
+        $configuration = new Configuration();
+        $config = $this->processConfiguration($configuration, $configs);
 
+        $container->setParameter('inowas.modflow.max_processes', $config['max_processes']);
+        $container->setParameter('inowas.modflow.data_folder', $config['data_folder'].'/modflow');
+        $container->setParameter('inowas.temp_folder', $config['temp_folder']);
+        $container->setParameter('inowas.api_base_url', $config['api_base_url']);
+    }
 }

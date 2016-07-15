@@ -22,7 +22,7 @@ class ModflowModelListCommand extends ContainerAwareCommand
     {
 
         $output->writeln("Show all Modflow-Models with ID.");
-        
+
         $em = $this->getContainer()->get('doctrine')->getManager();
         $modflowModels = $em->getRepository('AppBundle:ModFlowModel')
             ->findAll();

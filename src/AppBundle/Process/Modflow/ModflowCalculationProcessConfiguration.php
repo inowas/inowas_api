@@ -35,7 +35,7 @@ class ModflowCalculationProcessConfiguration extends PythonProcessConfiguration
         $this->baseUrl = $baseUrl;
 
         $this->ignoreWarnings = true;
-        $this->scriptName = 'modflowCalculation.py';
+        $this->scriptName = 'modflow/modflowCalculation.py';
     }
 
     /**
