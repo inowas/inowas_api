@@ -2,7 +2,7 @@
 
 namespace Tests\Inowas\ModflowBundle\Service;
 
-use AppBundle\Process\Modflow\ModflowResultRasterParameter;
+use Inowas\ModflowBundle\Model\ModflowResultRasterParameter;
 use AppBundle\Process\Modflow\ModflowResultTimeSeriesParameter;
 use AppBundle\Service\ConfigurationFileCreatorFactory;
 use Inowas\ModflowBundle\Service\ModflowProcessBuilder;

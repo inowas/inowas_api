@@ -1,10 +1,8 @@
 <?php
 
-namespace AppBundle\Process\Modflow;
-
+namespace Inowas\ModflowBundle\Model;
 
 use AppBundle\Exception\InvalidArgumentException;
-use Inowas\ModflowBundle\Model\ModflowParameterInterface;
 
 class ModflowResultRasterParameter implements ModflowParameterInterface
 {
@@ -66,7 +64,7 @@ class ModflowResultRasterParameter implements ModflowParameterInterface
         return array(
             "model_id" => $this->modelId,
             "time_steps" => $this->timesteps,
-            "stress_periods" => array(0),
+            "stress_periods" => $this->stressPeriods,
             "layer" => $this->layer,
             "operation" => $this->operation,
             "output_type" => $this->outputType

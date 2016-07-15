@@ -1,6 +1,6 @@
 <?php
 
-namespace AppBundle\Process\Modflow;
+namespace Inowas\ModflowBundle\Model;
 
 use Inowas\PythonProcessBundle\Model\ProcessFile;
 use Inowas\PythonProcessBundle\Model\PythonProcessConfiguration;
