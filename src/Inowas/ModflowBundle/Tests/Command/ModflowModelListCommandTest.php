@@ -1,20 +1,15 @@
 <?php
 
-namespace Tests\AppBundle\Command;
+namespace Inowas\ModflowBundle\Tests\Command;
 
-use AppBundle\Command\ModflowModelListCommand;
+use Inowas\ModflowBundle\Command\ModflowModelListCommand;
 use Symfony\Bundle\FrameworkBundle\Console\Application;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Symfony\Component\Console\Tester\CommandTester;
 
 class ModflowModelCommandTest extends KernelTestCase
 {
-
-    public function setUp()
-    {
-    }
-
-    public function testExecute()
+    public function testExecuteCommandShowsWelcomeMessage()
     {
         $kernel = $this->createKernel();
         $kernel->boot();
@@ -30,9 +25,4 @@ class ModflowModelCommandTest extends KernelTestCase
 
         $this->assertContains('Show all Modflow-Models with ID.', $commandTester->getDisplay());
     }
-
-    public function tearDown()
-    {
-    }
-
 }
