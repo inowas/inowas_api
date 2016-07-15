@@ -24,7 +24,7 @@ class PythonProcessTest extends WebTestCase
 
     public function testPythonProcessPreConfiguredPrefixIsSet(){
         $client = static::createClient();
-        $prefix =  $client->getKernel()->getContainer()->getParameter('inowas.python_process.prefix');
+        $prefix =  $client->getKernel()->getContainer()->getParameter('inowas.python.prefix');
         $this->assertEquals($prefix, $this->pythonProcess->getPrefix());
     }
 
