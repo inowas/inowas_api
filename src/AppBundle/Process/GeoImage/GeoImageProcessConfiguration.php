@@ -29,7 +29,7 @@ class GeoImageProcessConfiguration extends PythonProcessConfiguration implements
         $this->inputFile = $configurationFileCreator->getInputFile();
         $this->outputFile = $configurationFileCreator->getOutputFile();
         $this->ignoreWarnings = true;
-        $this->scriptName = 'geoImageCreator.py';
+        $this->scriptName = 'geoimage/geoImageCreator.py';
     }
 
     /**

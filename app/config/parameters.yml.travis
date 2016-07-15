@@ -11,9 +11,6 @@ parameters:
     mailer_password: null
     secret: travis_service_super_secret
 
-    inowas.python_process.prefix: python
-    inowas.geotiff.data_folder: '%kernel.root_dir%/../var/data/geotiff'
     inowas.pyprocessing.directory: '%kernel.root_dir%/../py/pyprocessing'
-    inowas.geotiff.working_directory: '%kernel.root_dir%/../py/pyprocessing/geoimage'
-    inowas.interpolation.working_directory: '%kernel.root_dir%/../py/pyprocessing/interpolation'
+    inowas.geotiff.data_folder: '%kernel.root_dir%/../var/data/geotiff'
     inowas.temp_folder: '%kernel.root_dir%/../var/tmp'

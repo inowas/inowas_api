@@ -41,7 +41,7 @@ class InterpolationProcessConfigurationTest extends \PHPUnit_Framework_TestCase
         $interpolationConfiguration = new InterpolationProcessConfiguration($this->configurationFileCreator);
         $this->assertInstanceOf('AppBundle\Process\Interpolation\InterpolationProcessConfiguration', $interpolationConfiguration);
         $this->assertTrue($interpolationConfiguration->getIgnoreWarnings());
-        $this->assertEquals('interpolationCalculation.py', $interpolationConfiguration->getScriptName());
+        $this->assertEquals('interpolation/interpolationCalculation.py', $interpolationConfiguration->getScriptName());
     }
 
     public function testGetter()

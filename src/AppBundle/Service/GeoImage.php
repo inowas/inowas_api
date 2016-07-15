@@ -67,7 +67,7 @@ class GeoImage
         $geoImageConfigurationFileCreator = $this->configurationFileCreatorFactory->create('geoimage');
         $geoImageConfigurationFileCreator->createFiles($geoImageParameter);
         $configuration = new GeoImageProcessConfiguration($geoImageConfigurationFileCreator);
-        $configuration->setWorkingDirectory($this->kernel->getContainer()->getParameter('inowas.geotiff.working_directory'));
+        $configuration->setWorkingDirectory($this->kernel->getContainer()->getParameter('inowas.pyprocessing.directory'));
         $process = PythonProcessFactory::create($configuration);
 
         $process->run();

@@ -2,8 +2,6 @@
 
 namespace Inowas\PythonProcessBundle\Model;
 
-use Inowas\PythonProcessBundle\Model\ProcessWithInputOutputFileInterface;
-use Inowas\PythonProcessBundle\Model\PythonProcessConfigurationInterface;
 use Symfony\Component\Process\ProcessBuilder;
 
 class PythonProcessFactory

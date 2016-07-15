@@ -4,7 +4,6 @@ namespace AppBundle\Process\Interpolation;
 
 use Inowas\PythonProcessBundle\Model\InputOutputFileInterface;
 use Inowas\PythonProcessBundle\Model\ProcessWithInputOutputFileInterface;
-use Inowas\PythonProcessBundle\Model\ProcessFile;
 use Inowas\PythonProcessBundle\Model\PythonProcessConfiguration;
 
 class InterpolationProcessConfiguration extends PythonProcessConfiguration implements ProcessWithInputOutputFileInterface
@@ -29,7 +28,7 @@ class InterpolationProcessConfiguration extends PythonProcessConfiguration imple
         $this->inputFile = $configurationFileCreator->getInputFile();
         $this->outputFile = $configurationFileCreator->getOutputFile();
         $this->ignoreWarnings = true;
-        $this->scriptName = 'interpolationCalculation.py';
+        $this->scriptName = 'interpolation/interpolationCalculation.py';
     }
 
     /**
