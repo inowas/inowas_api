@@ -1,8 +1,7 @@
 <?php
 
-namespace AppBundle\Service;
+namespace Inowas\PythonProcessBundle\Service;
 
-use Doctrine\Common\Collections\ArrayCollection;
 use Symfony\Component\Process\Process;
 use Symfony\Component\Process\ProcessBuilder;
 
@@ -49,7 +48,7 @@ class PythonProcess
     }
 
     /**
-     * @return ArrayCollection
+     * @return array
      */
     public function getArguments()
     {

@@ -28,10 +28,6 @@ services:
         class: AppBundle\Service\SoilModelService
         arguments: ['@doctrine.orm.default_entity_manager', '@inowas.process.interpolation']
 
-    inowas.python_process:
-        class: AppBundle\Service\PythonProcess
-        arguments: ['%inowas.python_process.prefix%']
-
 #    service_name:
 #        class: AppBundle\Directory\ClassName
 #        arguments: ["@another_service_name", "plain_value", "%parameter_name%"]

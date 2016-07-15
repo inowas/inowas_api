@@ -1,13 +1,12 @@
 <?php
 
-namespace Tests\AppBundle\Service;
+namespace Tests\Inowas\PythonProcessBundle\Service;
 
-use AppBundle\Service\PythonProcess;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
 class PythonProcessTest extends WebTestCase
 {
-    /** @var PythonProcess $pythonProcess */
+    /** @var \Inowas\PythonProcessBundle\Service\PythonProcess $pythonProcess */
     protected $pythonProcess;
 
     public function setUp()
@@ -20,7 +19,7 @@ class PythonProcessTest extends WebTestCase
     }
 
     public function testPythonProcessReturnsProcess(){
-        $this->assertInstanceOf('AppBundle\Service\PythonProcess', $this->pythonProcess);
+        $this->assertInstanceOf('Inowas\PythonProcessBundle\Service\PythonProcess', $this->pythonProcess);
     }
 
     public function testPythonProcessPreConfiguredPrefixIsSet(){

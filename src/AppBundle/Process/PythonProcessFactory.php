@@ -7,7 +7,7 @@ use Symfony\Component\Process\ProcessBuilder;
 class PythonProcessFactory
 {
     /**
-     * @var \AppBundle\Service\PythonProcess
+     * @var \Inowas\PythonProcessBundle\Service\PythonProcess
      */
     protected $pythonProcess;
 
