@@ -1,6 +1,6 @@
 <?php
 
-namespace Inowas\ModflowBundle\Tests\Command;
+namespace tests\Inowas\ModflowBundle\Command;
 
 use Inowas\ModflowBundle\Command\ModflowModelListCommand;
 use Symfony\Bundle\FrameworkBundle\Console\Application;
