@@ -11,7 +11,7 @@ use AppBundle\Entity\SoilModel;
 use AppBundle\Model\Interpolation\PointValue;
 use AppBundle\Model\PropertyValueFactory;
 use AppBundle\Model\RasterFactory;
-use AppBundle\Process\Interpolation\InterpolationParameter;
+use AppBundle\Process\Interpolation\InterpolationConfiguration;
 use AppBundle\Process\InterpolationResult;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\EntityManager;
@@ -194,7 +194,7 @@ class SoilModelService
             }
         }
 
-        $interpolationParameter = new InterpolationParameter($gridSize, $boundingBox, $pointValues, $algorithms);
+        $interpolationParameter = new InterpolationConfiguration($gridSize, $boundingBox, $pointValues, $algorithms);
         $result = $this->interpolation->interpolate($interpolationParameter);
         
         if ($result instanceof InterpolationResult)

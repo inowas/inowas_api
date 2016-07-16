@@ -2,43 +2,52 @@
 
 namespace AppBundle\Model\Interpolation;
 
-use AppBundle\Process\Interpolation\InterpolationParameter;
+use AppBundle\Process\Interpolation\InterpolationConfiguration;
 use Doctrine\Common\Collections\ArrayCollection;
 use JMS\Serializer\Annotation as JMS;
 
-
-abstract class AbstractInterpolation
+class InterpolationParameter implements \JsonSerializable
 {
+
+    /**
+     * @var string
+     */
+    protected $type;
+
     /**
      * @var  BoundingBox
-     *
-     * @JMS\Groups({"interpolation"})
      */
     protected $boundingBox;
 
     /**
      * @var GridSize $gridSize
-     *
-     * @JMS\Groups({"interpolation"})
      */
     protected $gridSize;
 
     /**
      * @var  ArrayCollection
-     *
-     * @JMS\Groups({"interpolation"})
      */
     protected $pointValues;
 
     /**
-     * AbstractInterpolation constructor.
-     * @param InterpolationParameter $interpolationParameter
+     * InterpolationParameter constructor.
+     * @param $type
+     * @param InterpolationConfiguration $interpolationParameter
      */
-    public function __construct(InterpolationParameter $interpolationParameter)
+    public function __construct($type, InterpolationConfiguration $interpolationParameter)
     {
+        $this->type = $type;
         $this->boundingBox = $interpolationParameter->getBoundingBox();
         $this->gridSize = $interpolationParameter->getGridSize();
         $this->pointValues = $interpolationParameter->getPointValues();
+    }
+
+    /**
+     * @return string
+     */
+    public function getType()
+    {
+        return $this->type;
     }
 
     /**
@@ -63,5 +72,18 @@ abstract class AbstractInterpolation
     public function getPointValues()
     {
         return $this->pointValues;
+    }
+
+    /**
+     * @return mixed
+     */
+    function jsonSerialize()
+    {
+        return array(
+            'type' => $this->type,
+            'grid_size' => $this->gridSize,
+            'bounding_box' => $this->boundingBox,
+            'point_values' => $this->pointValues,
+        );
     }
 }

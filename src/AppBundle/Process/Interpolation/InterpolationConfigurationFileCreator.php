@@ -2,20 +2,14 @@
 
 namespace AppBundle\Process\Interpolation;
 
+use AppBundle\Model\Interpolation\InterpolationParameter;
 use Inowas\PythonProcessBundle\Model\InputOutputFileInterface;
 use Inowas\PythonProcessBundle\Model\ProcessFile;
-use JMS\Serializer\SerializationContext;
-use JMS\Serializer\Serializer;
 use Ramsey\Uuid\Uuid;
 use Symfony\Component\Filesystem\Filesystem;
-use Symfony\Component\HttpKernel\KernelInterface;
 
 class InterpolationConfigurationFileCreator implements InputOutputFileInterface
 {
-
-    /** @var  Serializer */
-    protected $serializer;
-
     /** @var  string */
     protected $tempFolder;
 
@@ -27,25 +21,17 @@ class InterpolationConfigurationFileCreator implements InputOutputFileInterface
 
     /**
      * InterpolationConfigurationFileCreator constructor.
-     * @param $kernel
-     * @param $serializer
+     * @param $tempFolder
      */
-    public function __construct(KernelInterface $kernel, $serializer)
+    public function __construct($tempFolder)
     {
-        $this->tempFolder = $kernel->getContainer()->getParameter('inowas.temp_folder');
-        $this->serializer = $serializer;
+        $this->tempFolder = $tempFolder;
     }
 
-    public function createFiles($algorithm, InterpolationParameter $interpolationParameter){
+    public function createFiles($algorithm, InterpolationConfiguration $configuration){
 
-        $class = 'AppBundle\Model\Interpolation\\' . ucfirst($algorithm) . 'Interpolation';
-        $interpolation = new $class($interpolationParameter);
-
-        $interpolationJSON = $this->serializer->serialize(
-            $interpolation,
-            'json',
-            SerializationContext::create()->setGroups(array('interpolation'))
-        );
+        $interpolationParameter = new InterpolationParameter($algorithm, $configuration);
+        $interpolationJSON = json_encode($interpolationParameter);
 
         $randomFileName = Uuid::uuid4()->toString();
         $inputFileName  = $this->tempFolder . '/' . $randomFileName . '.in';

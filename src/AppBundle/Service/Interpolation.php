@@ -3,7 +3,7 @@
 namespace AppBundle\Service;
 
 use AppBundle\Exception\InvalidArgumentException;
-use AppBundle\Process\Interpolation\InterpolationParameter;
+use AppBundle\Process\Interpolation\InterpolationConfiguration;
 use Inowas\PythonProcessBundle\Model\PythonProcessFactory;
 use AppBundle\Process\Interpolation\InterpolationProcessConfiguration;
 use AppBundle\Process\InterpolationResult;
@@ -18,7 +18,7 @@ class Interpolation
     /** @var array */
     private $availableTypes = [self::TYPE_MEAN, self::TYPE_GAUSSIAN, self::TYPE_IDW];
 
-    /** @var  InterpolationParameter */
+    /** @var  InterpolationConfiguration */
     protected $interpolationConfiguration;
 
     /** @var ConfigurationFileCreatorFactory */
@@ -39,10 +39,10 @@ class Interpolation
     }
 
     /**
-     * @param InterpolationParameter $interpolationParameter
+     * @param InterpolationConfiguration $interpolationParameter
      * @return InterpolationResult|bool
      */
-    public function interpolate(InterpolationParameter $interpolationParameter)
+    public function interpolate(InterpolationConfiguration $interpolationParameter)
     {
         $algorithms = $interpolationParameter->getAlgorithms();
         foreach ($algorithms as $algorithm) {
@@ -52,15 +52,17 @@ class Interpolation
         }
 
         for ($i = 0; $i < count($algorithms); $i++) {
-            $interpolationConfigurationFileCreator = $this->configurationFileCreatorFactory->create('interpolation');
-            $interpolationConfigurationFileCreator->createFiles($algorithms[$i], $interpolationParameter);
-            $configuration = new InterpolationProcessConfiguration($interpolationConfigurationFileCreator);
+            $fileCreator = $this->configurationFileCreatorFactory->create('interpolation');
+            $fileCreator->createFiles($algorithms[$i], $interpolationParameter);
+
+            $configuration = new InterpolationProcessConfiguration($fileCreator);
             $configuration->setWorkingDirectory($this->kernel->getContainer()->getParameter('inowas.pyprocessing.directory'));
+
             $process = PythonProcessFactory::create($configuration);
             $process->run();
             if ($process->isSuccessful())
             {
-                $jsonResults = file_get_contents($interpolationConfigurationFileCreator->getOutputFile()->getFileName());
+                $jsonResults = file_get_contents($fileCreator->getOutputFile()->getFileName());
                 $results = json_decode($jsonResults);
 
                 return new InterpolationResult($results->method, $results->raster, $interpolationParameter->getGridSize(), $interpolationParameter->getBoundingBox());

@@ -6,7 +6,7 @@ use AppBundle\Exception\InvalidArgumentException;
 use AppBundle\Model\Interpolation\BoundingBox;
 use AppBundle\Model\Interpolation\GridSize;
 
-class InterpolationParameter
+class InterpolationConfiguration
 {
 
     /** @var  GridSize */
@@ -20,6 +20,9 @@ class InterpolationParameter
 
     /** @var array $algorithms */
     protected $algorithms;
+
+    /** @var  string */
+    protected $currentAlgorithm;
 
     public function __construct(GridSize $gridSize, BoundingBox $boundingBox, array $pointValues, array $algorithms)
     {
@@ -71,5 +74,11 @@ class InterpolationParameter
         return $this->algorithms;
     }
 
-
+    /**
+     * @param $currentAlgorithm
+     */
+    public function setCurrentAlgorithm($currentAlgorithm)
+    {
+        $this->currentAlgorithm = $currentAlgorithm;
+    }
 }

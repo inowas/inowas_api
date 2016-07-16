@@ -7,7 +7,7 @@ use AppBundle\Model\Interpolation\GridSize;
 use AppBundle\Model\Interpolation\PointValue;
 use AppBundle\Model\Point;
 use AppBundle\Service\Interpolation;
-use AppBundle\Process\Interpolation\InterpolationParameter;
+use AppBundle\Process\Interpolation\InterpolationConfiguration;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
 class InterpolationTest extends WebTestCase
@@ -30,7 +30,7 @@ class InterpolationTest extends WebTestCase
 
     public function testThrowExceptionIfAlgorithmIsUnknown()
     {
-        $interpolationParameter = new InterpolationParameter(
+        $interpolationParameter = new InterpolationConfiguration(
             new GridSize(10,11),
             new BoundingBox(-10.1, 10.2, -5.1, 5.2),
             array(
@@ -51,7 +51,7 @@ class InterpolationTest extends WebTestCase
     public function testThrowExceptionIfIfNoPointIstSet()
     {
         $this->setExpectedException('AppBundle\Exception\InvalidArgumentException');
-        new InterpolationParameter(
+        new InterpolationConfiguration(
             new GridSize(10,11),
             new BoundingBox(-10.1, 10.2, -5.1, 5.2),
             array(),
@@ -60,7 +60,7 @@ class InterpolationTest extends WebTestCase
     }
 
     public function testIdwInterpolation(){
-        $interpolationConfiguration = new InterpolationParameter(
+        $interpolationConfiguration = new InterpolationConfiguration(
             new GridSize(10,11),
             new BoundingBox(-10.1, 10.2, -5.1, 5.2),
             array(
@@ -76,7 +76,7 @@ class InterpolationTest extends WebTestCase
     }
 
     public function testMeanInterpolation(){
-        $interpolationConfiguration = new InterpolationParameter(
+        $interpolationConfiguration = new InterpolationConfiguration(
             new GridSize(10,11),
             new BoundingBox(-10.1, 10.2, -5.1, 5.2),
             array(
@@ -92,7 +92,7 @@ class InterpolationTest extends WebTestCase
     }
 
     public function testGaussianInterpolation(){
-        $interpolationConfiguration = new InterpolationParameter(
+        $interpolationConfiguration = new InterpolationConfiguration(
             new GridSize(10,11),
             new BoundingBox(0, 10, 0, 10),
             array(
@@ -112,7 +112,7 @@ class InterpolationTest extends WebTestCase
     }
 
     public function testMultipleInterpolationAlgorithms(){
-        $interpolationConfiguration = new InterpolationParameter(
+        $interpolationConfiguration = new InterpolationConfiguration(
             new GridSize(10,11),
             new BoundingBox(0, 10, 0, 10),
             array(
@@ -133,7 +133,7 @@ class InterpolationTest extends WebTestCase
 
     public function testInterpolationAlgorithmsFallback()
     {
-        $interpolationConfiguration = new InterpolationParameter(
+        $interpolationConfiguration = new InterpolationConfiguration(
             new GridSize(10, 11),
             new BoundingBox(-10.1, 10.2, -5.1, 5.2),
             array(
@@ -150,7 +150,7 @@ class InterpolationTest extends WebTestCase
 
     public function testInterpolationAlgorithmCanNotCalculate()
     {
-        $interpolationConfiguration = new InterpolationParameter(
+        $interpolationConfiguration = new InterpolationConfiguration(
             new GridSize(10, 11),
             new BoundingBox(-10.1, 10.2, -5.1, 5.2),
             array(

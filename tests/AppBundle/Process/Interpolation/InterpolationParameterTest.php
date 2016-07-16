@@ -6,19 +6,19 @@ use AppBundle\Model\Interpolation\BoundingBox;
 use AppBundle\Model\Interpolation\GridSize;
 use AppBundle\Model\Interpolation\PointValue;
 use AppBundle\Model\Point;
-use AppBundle\Process\Interpolation\InterpolationParameter;
+use AppBundle\Process\Interpolation\InterpolationConfiguration;
 use AppBundle\Service\Interpolation;
 
 class InterpolationParameterTest extends \PHPUnit_Framework_TestCase
 {
     public function testInstantiate(){
-        $interpolationParameter = new InterpolationParameter(
+        $interpolationParameter = new InterpolationConfiguration(
             new GridSize(1,2),
             new BoundingBox(1,2,3,4, 4326),
             array(new PointValue(new Point(1,2,4321), 2)),
             array(Interpolation::TYPE_GAUSSIAN)
         );
-        $this->assertInstanceOf('AppBundle\Process\Interpolation\InterpolationParameter', $interpolationParameter);
+        $this->assertInstanceOf('AppBundle\Process\Interpolation\InterpolationConfiguration', $interpolationParameter);
         $this->assertInstanceOf('AppBundle\Model\Interpolation\GridSize', $interpolationParameter->getGridSize());
         $this->assertEquals(new GridSize(1,2), $interpolationParameter->getGridSize());
         $this->assertInstanceOf('AppBundle\Model\Interpolation\BoundingBox', $interpolationParameter->getBoundingBox());
@@ -29,7 +29,7 @@ class InterpolationParameterTest extends \PHPUnit_Framework_TestCase
 
     public function testThrowsExceptionInNoPointValueIsSet(){
         $this->setExpectedException('AppBundle\Exception\InvalidArgumentException');
-        new InterpolationParameter(
+        new InterpolationConfiguration(
             new GridSize(1,2),
             new BoundingBox(1,2,3,4, 4326),
             array(),
@@ -39,7 +39,7 @@ class InterpolationParameterTest extends \PHPUnit_Framework_TestCase
 
     public function testThrowsExceptionInNoAlgorithmIsSet(){
         $this->setExpectedException('AppBundle\Exception\InvalidArgumentException');
-        new InterpolationParameter(
+        new InterpolationConfiguration(
             new GridSize(1,2),
             new BoundingBox(1,2,3,4, 4326),
             array(new PointValue(new Point(1,2,4321), 2)),

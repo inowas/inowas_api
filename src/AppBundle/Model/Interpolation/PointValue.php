@@ -5,7 +5,7 @@ namespace AppBundle\Model\Interpolation;
 use AppBundle\Model\Point;
 use JMS\Serializer\Annotation as JMS;
 
-class PointValue
+class PointValue implements \JsonSerializable
 {
 
     /** @var Point */
@@ -65,5 +65,17 @@ class PointValue
     public function getValue()
     {
         return $this->value;
+    }
+
+    /**
+     * @return mixed
+     */
+    function jsonSerialize()
+    {
+        return array(
+            'x' => $this->point->getX(),
+            'y' => $this->point->getY(),
+            'value' => $this->value
+        );
     }
 }

@@ -40,7 +40,9 @@ class ConfigurationFileCreatorFactory
     public function create($type){
         switch ($type) {
             case 'interpolation':
-                return new InterpolationConfigurationFileCreator($this->kernel, $this->serializer);
+                return new InterpolationConfigurationFileCreator(
+                    $this->tempFolder
+                );
             break;
 
             case 'geoimage':
