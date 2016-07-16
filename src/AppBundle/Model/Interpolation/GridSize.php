@@ -8,7 +8,7 @@ use JMS\Serializer\Annotation as JMS;
  * Class GridSize
  * @package AppBundle\Model\Interpolation
  */
-class GridSize
+class GridSize implements \JsonSerializable
 {
     /**
      * @var int
@@ -63,4 +63,17 @@ class GridSize
         $this->nY = $nY;
         return $this;
     }
+
+    /**
+     * @return mixed
+     */
+    function jsonSerialize()
+    {
+        return array(
+            'n_x' => $this->getNX(),
+            'n_y' => $this->getNY()
+        );
+    }
+
+
 }

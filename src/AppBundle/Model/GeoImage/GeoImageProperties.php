@@ -10,7 +10,7 @@ use JMS\Serializer\Annotation as JMS;
  * Class GeoImageProperties
  * @package AppBundle\Model\GeoTiff
  */
-class GeoImageProperties
+class GeoImageProperties implements \JsonSerializable
 {
     const COLOR_RELIEF_ELEVATION = 'elevation';
 
@@ -90,5 +90,22 @@ class GeoImageProperties
         $this->outputFormat = $outputFormat;
         $this->min = $min;
         $this->max = $max;
+    }
+
+    /**
+     * @return mixed
+     */
+    function jsonSerialize()
+    {
+        return array(
+            'bounding_box' => $this->boundingBox,
+            'data' => $this->data,
+            'no_data_val' => $this->noDataVal,
+            'color_scheme' => $this->colorScheme,
+            'target_projection' => $this->targetProjection,
+            'output_format' => $this->outputFormat,
+            'min' => $this->min,
+            'max' => $this->max
+        );
     }
 }

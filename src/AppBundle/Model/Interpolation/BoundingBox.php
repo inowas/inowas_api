@@ -4,7 +4,7 @@ namespace AppBundle\Model\Interpolation;
 
 use JMS\Serializer\Annotation as JMS;
 
-class BoundingBox
+class BoundingBox implements \JsonSerializable
 {
     /** @JMS\Groups({"interpolation", "rasterdetails", "modeldetails", "geoimage"}) */
     protected $xMin;
@@ -127,4 +127,20 @@ class BoundingBox
         $this->srid = $srid;
         return $this;
     }
+
+    /**
+     * @return mixed
+     */
+    function jsonSerialize()
+    {
+        return array(
+            'x_min' => $this->xMin,
+            'x_max' => $this->xMax,
+            'y_min' => $this->yMin,
+            'y_max' => $this->yMax,
+            'srid' => $this->srid
+        );
+    }
+
+
 }

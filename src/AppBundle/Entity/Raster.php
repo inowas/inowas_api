@@ -215,6 +215,4 @@ class Raster
 
         return $this;
     }
-
-
 }

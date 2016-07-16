@@ -44,11 +44,16 @@ class ConfigurationFileCreatorFactory
             break;
 
             case 'geoimage':
-                return new GeoImageConfigurationFileCreator($this->kernel, $this->serializer);
+                return new GeoImageConfigurationFileCreator(
+                    $this->tempFolder,
+                    $this->kernel->getContainer()->getParameter('inowas.geotiff.data_folder')
+                );
             break;
 
             case 'modflow':
-                return new ModflowConfigurationFileCreator($this->tempFolder);
+                return new ModflowConfigurationFileCreator(
+                    $this->tempFolder
+                );
             break;
         }
 
