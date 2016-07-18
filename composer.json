@@ -5,7 +5,8 @@
     "autoload": {
         "psr-4": {
             "": "src/",
-            "Inowas\\": "src/Inowas"
+            "Inowas\\": "src/Inowas",
+            "Inowas\\Pyprocessing\\": "src/Inowas/PyprocessingBundle"
         },
         "classmap": [
             "app/AppKernel.php",
