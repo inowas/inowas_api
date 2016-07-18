@@ -4,7 +4,8 @@
     "type": "project",
     "autoload": {
         "psr-4": {
-            "": "src/"
+            "": "src/",
+            "Inowas\\": "src/Inowas"
         },
         "classmap": [
             "app/AppKernel.php",
