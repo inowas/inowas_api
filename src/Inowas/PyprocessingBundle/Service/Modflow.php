@@ -7,7 +7,6 @@ use AppBundle\Exception\InvalidArgumentException;
 use AppBundle\Exception\ProcessFailedException;
 use Inowas\PyprocessingBundle\Model\Modflow\ModflowResultRasterParameter;
 use Inowas\PyprocessingBundle\Model\Modflow\ModflowResultTimeSeriesParameter;
-use Inowas\PyprocessingBundle\Service\ModflowProcessBuilder;
 use Doctrine\ORM\EntityManagerInterface;
 use Ramsey\Uuid\Uuid;
 

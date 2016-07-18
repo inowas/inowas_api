@@ -20,8 +20,8 @@
 composer.lock
 
 !/var/data
-/var/data/geotiff/*
-!/var/data/geotiff/.gitkeep
+/var/data/geoimage/*
+!/var/data/geoimage/.gitkeep
 /var/data/modflow/*
 !/var/data/modflow/.gitkeep
 !/var/tmp/.gitkeep
