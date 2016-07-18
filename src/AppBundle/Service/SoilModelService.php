@@ -11,11 +11,11 @@ use AppBundle\Entity\SoilModel;
 use AppBundle\Model\PointValue;
 use AppBundle\Model\PropertyValueFactory;
 use AppBundle\Model\RasterFactory;
-use InowasPyprocessingBundle\Model\Interpolation\InterpolationConfiguration;
-use InowasPyprocessingBundle\Model\Interpolation\InterpolationResult;
+use Inowas\PyprocessingBundle\Model\Interpolation\InterpolationConfiguration;
+use Inowas\PyprocessingBundle\Model\Interpolation\InterpolationResult;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\EntityManager;
-use InowasPyprocessingBundle\Service\Interpolation;
+use Inowas\PyprocessingBundle\Service\Interpolation;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class SoilModelService

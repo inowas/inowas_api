@@ -1,6 +1,6 @@
 <?php
 
-namespace InowasPyprocessingBundle\Tests\Service;
+namespace Inowas\PyprocessingBundle\Tests\Service;
 
 use AppBundle\Entity\GeologicalLayer;
 use AppBundle\Entity\PropertyType;
