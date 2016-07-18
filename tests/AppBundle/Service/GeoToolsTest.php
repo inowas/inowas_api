@@ -1,13 +1,13 @@
 <?php
 
-namespace Tests\AppBundle\Service;
+namespace Inowas\PyprocessingBundle\Tests\Service;
 
 use AppBundle\Entity\Area;
 use AppBundle\Model\ActiveCells;
 use AppBundle\Model\AreaFactory;
 use AppBundle\Model\ConstantHeadBoundaryFactory;
-use AppBundle\Model\Interpolation\BoundingBox;
-use AppBundle\Model\Interpolation\GridSize;
+use AppBundle\Model\BoundingBox;
+use AppBundle\Model\GridSize;
 use AppBundle\Model\Point;
 use AppBundle\Service\GeoTools;
 use CrEOF\Spatial\DBAL\Platform\PostgreSql;

@@ -4,8 +4,8 @@ namespace Tests\AppBundle\Model\GeoImage;
 
 
 use AppBundle\Model\GeoImage\GeoImageProperties;
-use AppBundle\Model\Interpolation\BoundingBox;
-use AppBundle\Model\Interpolation\GridSize;
+use AppBundle\Model\BoundingBox;
+use AppBundle\Model\GridSize;
 use AppBundle\Model\RasterFactory;
 
 class GeoImagePropertiesTest extends \PHPUnit_Framework_TestCase

@@ -3,7 +3,7 @@
 namespace AppBundle\Model\GeoImage;
 
 use AppBundle\Entity\Raster;
-use AppBundle\Model\Interpolation\BoundingBox;
+use AppBundle\Model\BoundingBox;
 use JMS\Serializer\Annotation as JMS;
 
 /**

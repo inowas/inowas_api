@@ -1,0 +1,25 @@
+services:
+
+    inowas.modflow:
+        class: Inowas\PyprocessingBundle\Service\Modflow
+        arguments: ['@doctrine.orm.entity_manager', '@inowas.modflow.processbuilder']
+
+    inowas.modflow.processbuilder:
+        class: Inowas\PyprocessingBundle\Service\ModflowProcessBuilder
+        arguments: ['@kernel', '@inowas.process.configurationfilecreatorfactory']
+
+    inowas.modflow.servicerunner:
+        class: Inowas\PyprocessingBundle\Service\ModflowServiceRunner
+        arguments: ['@doctrine.orm.entity_manager', '@inowas.modflow.processbuilder', '%inowas.modflow.max_processes%']
+
+    inowas.process.interpolation:
+        class: Inowas\PyprocessingBundle\Service\Interpolation
+        arguments: ['@kernel', '@inowas.process.configurationfilecreatorfactory']
+
+    inowas.process.configurationfilecreatorfactory:
+        class: Inowas\PyprocessingBundle\Service\ConfigurationFileCreatorFactory
+        arguments: ['@kernel', '@serializer']
+
+    inowas.geoimage:
+        class: Inowas\PyprocessingBundle\Service\GeoImage
+        arguments: ['@kernel', '@inowas.process.configurationfilecreatorfactory']

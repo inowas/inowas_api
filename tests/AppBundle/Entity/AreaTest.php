@@ -5,7 +5,7 @@ namespace Tests\AppBundle\Entity;
 use AppBundle\Entity\Area;
 use AppBundle\Entity\User;
 use AppBundle\Model\AreaFactory;
-use AppBundle\Model\Interpolation\BoundingBox;
+use AppBundle\Model\BoundingBox;
 use AppBundle\Model\UserFactory;
 use CrEOF\Spatial\PHP\Types\Geometry\Polygon;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;

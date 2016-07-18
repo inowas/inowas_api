@@ -2,7 +2,7 @@
 
 namespace AppBundle\Type;
 
-use AppBundle\Model\Interpolation\GridSize;
+use AppBundle\Model\GridSize;
 use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Doctrine\DBAL\Types\JsonArrayType;
 

@@ -2,7 +2,7 @@
 
 namespace Tests\AppBundle\Type;
 
-use AppBundle\Model\Interpolation\BoundingBox;
+use AppBundle\Model\BoundingBox;
 use Doctrine\DBAL\Connection;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 

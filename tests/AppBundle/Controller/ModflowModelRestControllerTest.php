@@ -12,7 +12,7 @@ use AppBundle\Entity\User;
 use AppBundle\Model\ConstantHeadBoundaryFactory;
 use AppBundle\Model\GeneralHeadBoundaryFactory;
 use AppBundle\Model\GeologicalLayerFactory;
-use AppBundle\Model\Interpolation\BoundingBox;
+use AppBundle\Model\BoundingBox;
 use AppBundle\Model\ModFlowModelFactory;
 use AppBundle\Model\Point;
 use AppBundle\Model\PropertyFactory;

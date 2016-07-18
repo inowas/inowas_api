@@ -3,7 +3,7 @@
 namespace Tests\AppBundle\Type;
 
 use AppBundle\Entity\ModFlowModel;
-use AppBundle\Model\Interpolation\GridSize;
+use AppBundle\Model\GridSize;
 use Doctrine\DBAL\Connection;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;

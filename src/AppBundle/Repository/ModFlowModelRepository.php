@@ -7,7 +7,7 @@ use AppBundle\Entity\GeneralHeadBoundary;
 use AppBundle\Entity\ModelObject;
 use AppBundle\Entity\ObservationPoint;
 use AppBundle\Entity\StreamBoundary;
-use AppBundle\Model\Interpolation\BoundingBox;
+use AppBundle\Model\BoundingBox;
 use Doctrine\ORM\EntityRepository;
 use Doctrine\ORM\NoResultException;
 

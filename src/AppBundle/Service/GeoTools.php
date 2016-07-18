@@ -9,8 +9,8 @@ use AppBundle\Model\GeoJson\Feature;
 use AppBundle\Model\GeoJson\FeatureCollection;
 use AppBundle\Model\GeoJson\Polygon;
 use AppBundle\Model\GeoJson\Properties;
-use AppBundle\Model\Interpolation\BoundingBox;
-use AppBundle\Model\Interpolation\GridSize;
+use AppBundle\Model\BoundingBox;
+use AppBundle\Model\GridSize;
 use AppBundle\Model\Point;
 use Doctrine\ORM\EntityManager;
 

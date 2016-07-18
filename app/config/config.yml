@@ -2,8 +2,7 @@ imports:
     - { resource: parameters.yml }
     - { resource: security.yml }
     - { resource: services.yml }
-    - { resource: "@InowasModflowBundle/Resources/config/services.yml" }
-    - { resource: "@InowasPythonProcessBundle/Resources/config/services.yml" }
+    - { resource: "@InowasPyprocessingBundle/Resources/config/services.yml" }
 
 # Put parameters here that don't need to change on each machine where the app is deployed
 # http://symfony.com/doc/current/best_practices/configuration.html#application-related-configuration
@@ -113,11 +112,9 @@ jms_serializer:
                 path: "%kernel.root_dir%/Resources/FOSUserBundle/serializer"
                 namespace_prefix: "FOS\\UserBundle"
 
-inowas_modflow:
+inowas_pyprocessing:
+    prefix:           "python"
     api_base_url:     "http://localhost"
     data_folder:      "%kernel.root_dir%/../var/data"
     temp_folder:      "%kernel.root_dir%/../var/tmp"
     max_processes:    5
-
-inowas_python_process:
-    prefix:           "python"

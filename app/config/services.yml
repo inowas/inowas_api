@@ -4,13 +4,6 @@
 #    inowas.modflow.data_folder:  ../py/pyprocessing/data/modflow
 
 services:
-    inowas.process.interpolation:
-        class: AppBundle\Service\Interpolation
-        arguments: ['@kernel', '@inowas.process.configurationfilecreatorfactory']
-
-    inowas.process.configurationfilecreatorfactory:
-        class: AppBundle\Service\ConfigurationFileCreatorFactory
-        arguments: ['@kernel', '@serializer']
 
     inowas.propertytypes:
         class: AppBundle\Service\PropertyTypes
@@ -19,10 +12,6 @@ services:
     inowas.geotools:
         class: AppBundle\Service\GeoTools
         arguments: ['@doctrine.orm.default_entity_manager']
-
-    inowas.geoimage:
-        class: AppBundle\Service\GeoImage
-        arguments: ['@kernel', '@inowas.process.configurationfilecreatorfactory']
 
     inowas.soilmodel:
         class: AppBundle\Service\SoilModelService

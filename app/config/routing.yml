@@ -1,13 +1,3 @@
-inowas_python_process:
-    resource: "@InowasPythonProcessBundle/Controller/"
-    type:     annotation
-    prefix:   /
-
-inowas_modflow:
-    resource: "@InowasModflowBundle/Controller/"
-    type:     annotation
-    prefix:   /
-
 app:
     resource: "@AppBundle/Controller/"
     type:     annotation

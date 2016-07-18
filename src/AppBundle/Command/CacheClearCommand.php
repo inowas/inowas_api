@@ -19,7 +19,7 @@ class CacheClearCommand extends ContainerAwareCommand
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $geoImgDataFolder = $this->getContainer()->getParameter('inowas.geotiff.data_folder');
+        $geoImgDataFolder = $this->getContainer()->getParameter('inowas.geoimage.data_folder');
         $tmpFolder = $this->getContainer()->getParameter('inowas.temp_folder');
         $fs = new Filesystem();
 

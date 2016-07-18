@@ -24,6 +24,3 @@ doctrine:
         user:     "%database_user%"
         password: "%database_password%"
         charset:  UTF8
-
-parameters:
-    inowas.geotiff.data_folder:  '%kernel.root_dir%/../tests/data/geotiff'

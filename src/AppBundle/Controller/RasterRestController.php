@@ -3,8 +3,8 @@
 namespace AppBundle\Controller;
 
 use AppBundle\Entity\Raster;
-use AppBundle\Model\Interpolation\BoundingBox;
-use AppBundle\Model\Interpolation\GridSize;
+use AppBundle\Model\BoundingBox;
+use AppBundle\Model\GridSize;
 use AppBundle\Model\PropertyFactory;
 use AppBundle\Model\PropertyTimeValueFactory;
 use AppBundle\Model\PropertyValueFactory;

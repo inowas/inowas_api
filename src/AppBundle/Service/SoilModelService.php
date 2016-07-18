@@ -8,13 +8,14 @@ use AppBundle\Entity\ModFlowModel;
 use AppBundle\Entity\Property;
 use AppBundle\Entity\PropertyType;
 use AppBundle\Entity\SoilModel;
-use AppBundle\Model\Interpolation\PointValue;
+use AppBundle\Model\PointValue;
 use AppBundle\Model\PropertyValueFactory;
 use AppBundle\Model\RasterFactory;
-use AppBundle\Process\Interpolation\InterpolationConfiguration;
-use AppBundle\Process\InterpolationResult;
+use Inowas\PyprocessingBundle\Model\Interpolation\InterpolationConfiguration;
+use Inowas\PyprocessingBundle\Model\Interpolation\InterpolationResult;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\EntityManager;
+use Inowas\PyprocessingBundle\Service\Interpolation;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class SoilModelService

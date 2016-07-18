@@ -3,8 +3,8 @@
 namespace AppBundle\Entity;
 
 use AppBundle\Model\ActiveCells;
-use AppBundle\Model\Interpolation\BoundingBox;
-use AppBundle\Model\Interpolation\GridSize;
+use AppBundle\Model\BoundingBox;
+use AppBundle\Model\GridSize;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
 use JMS\Serializer\Annotation as JMS;
@@ -31,7 +31,7 @@ class ModFlowModel extends AbstractModel
      *
      * @ORM\Column(name="grid_size", type="grid_size", nullable=true)
      *
-     * @JMS\Type("AppBundle\Model\Interpolation\GridSize")
+     * @JMS\Type("AppBundle\Model\GridSize")
      * @JMS\Groups({"details", "modeldetails"})
      */
     private $gridSize;
@@ -41,7 +41,7 @@ class ModFlowModel extends AbstractModel
      *
      * @ORM\Column(name="bounding_box", type="bounding_box", nullable=true)
      *
-     * @JMS\Type("AppBundle\Model\Interpolation\BoundingBox")
+     * @JMS\Type("AppBundle\Model\BoundingBox")
      * @JMS\Groups({"details", "modeldetails"})
      */
     private $boundingBox;
