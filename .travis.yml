@@ -18,6 +18,7 @@ before_script:
   - git submodule update --init --recursive
   - cp app/config/parameters.yml.travis app/config/parameters.yml
   - composer install
+  - composer dump-autoload -o
   - psql -c "create role travis_ci_user WITH PASSWORD 'travis' LOGIN SUPERUSER;" -U postgres
   - bin/console doctrine:database:create --env=test
   - psql travis_ci_db_test < "build/sql/structure.sql"
