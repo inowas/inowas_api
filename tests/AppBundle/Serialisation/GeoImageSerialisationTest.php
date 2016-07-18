@@ -3,7 +3,7 @@
 namespace Tests\AppBundle\Serialization;
 
 use AppBundle\Entity\Raster;
-use Inowas\PyprocessingBundle\Model\GeoImage\GeoImageProperties;
+use InowasPyprocessingBundle\Model\GeoImage\GeoImageProperties;
 use AppBundle\Model\BoundingBox;
 use AppBundle\Model\GridSize;
 use AppBundle\Model\RasterFactory;
@@ -16,7 +16,7 @@ class GeoTiffSerialisationTest extends \PHPUnit_Framework_TestCase
     /** @var  Serializer $serializer */
     protected $serializer;
 
-    /** @var  \Inowas\PyprocessingBundle\Model\GeoImage\GeoImageProperties $geoTiffProperties */
+    /** @var  \InowasPyprocessingBundle\Model\GeoImage\GeoImageProperties $geoTiffProperties */
     protected $geoTiffProperties;
 
     /** @var  Raster $raster */

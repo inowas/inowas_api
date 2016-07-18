@@ -22,7 +22,7 @@ use AppBundle\Model\PropertyValueFactory;
 use AppBundle\Model\RechargeBoundaryFactory;
 use AppBundle\Model\SoilModelFactory;
 use AppBundle\Model\WellBoundaryFactory;
-use Inowas\PyprocessingBundle\Service\Interpolation;
+use InowasPyprocessingBundle\Service\Interpolation;
 use CrEOF\Spatial\PHP\Types\Geometry\LineString;
 use CrEOF\Spatial\PHP\Types\Geometry\Polygon;
 use Doctrine\Common\DataFixtures\FixtureInterface;

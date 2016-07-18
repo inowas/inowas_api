@@ -1,6 +1,6 @@
 <?php
 
-namespace Inowas\PyprocessingBundle\Tests\Service;
+namespace InowasPyprocessingBundle\Tests\Service;
 
 use AppBundle\Entity\PropertyType;
 use AppBundle\Service\PropertyTypes;

@@ -4,7 +4,7 @@ namespace AppBundle\Command;
 
 use AppBundle\Entity\GeologicalLayer;
 use AppBundle\Entity\PropertyType;
-use Inowas\PyprocessingBundle\Service\Interpolation;
+use InowasPyprocessingBundle\Service\Interpolation;
 use Doctrine\ORM\EntityManager;
 use Ramsey\Uuid\Uuid;
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;

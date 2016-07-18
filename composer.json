@@ -4,9 +4,7 @@
     "type": "project",
     "autoload": {
         "psr-4": {
-            "": "src/",
-            "Inowas\\": "src/Inowas",
-            "Inowas\\Pyprocessing\\": "src/Inowas/PyprocessingBundle"
+            "": "src/"
         },
         "classmap": [
             "app/AppKernel.php",

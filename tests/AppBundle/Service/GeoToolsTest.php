@@ -1,6 +1,6 @@
 <?php
 
-namespace Inowas\PyprocessingBundle\Tests\Service;
+namespace InowasPyprocessingBundle\Tests\Service;
 
 use AppBundle\Entity\Area;
 use AppBundle\Model\ActiveCells;

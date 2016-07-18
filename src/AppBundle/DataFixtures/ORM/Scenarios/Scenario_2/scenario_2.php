@@ -26,7 +26,7 @@ use AppBundle\Model\StreamBoundaryFactory;
 use AppBundle\Model\StressPeriod;
 use AppBundle\Model\StressPeriodFactory;
 use AppBundle\Model\WellBoundaryFactory;
-use Inowas\PyprocessingBundle\Service\Interpolation;
+use InowasPyprocessingBundle\Service\Interpolation;
 use CrEOF\Spatial\DBAL\Platform\PostgreSql;
 use CrEOF\Spatial\DBAL\Types\AbstractSpatialType;
 use CrEOF\Spatial\PHP\Types\Geometry\LineString;
