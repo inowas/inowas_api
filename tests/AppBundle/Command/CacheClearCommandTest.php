@@ -25,7 +25,7 @@ class CacheClearCommandTest extends KernelTestCase
         $command = $application->find('inowas:cache:clear');
         $commandTester = new CommandTester($command);
         
-        $geoImgDataFolder = $kernel->getContainer()->getParameter('inowas.geotiff.data_folder');
+        $geoImgDataFolder = $kernel->getContainer()->getParameter('inowas.geoimage.data_folder');
         $tmpFolder = $kernel->getContainer()->getParameter('inowas.temp_folder');
 
         $fs = new Filesystem();

@@ -1,6 +1,6 @@
 <?php
 
-namespace AppBundle\Model\GeoImage;
+namespace Inowas\PyprocessingBundle\Model\GeoImage;
 
 use AppBundle\Entity\Raster;
 use AppBundle\Model\BoundingBox;

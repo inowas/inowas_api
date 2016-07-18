@@ -2,7 +2,7 @@
 
 namespace Inowas\PyprocessingBundle\Model\GeoImage;
 
-use AppBundle\Model\GeoImage\GeoImageProperties;
+use Inowas\PyprocessingBundle\Model\GeoImage\GeoImageProperties;
 use Inowas\PyprocessingBundle\Model\PythonProcess\InputOutputFileInterface;
 use Inowas\PyprocessingBundle\Model\PythonProcess\ProcessFile;
 use Ramsey\Uuid\Uuid;

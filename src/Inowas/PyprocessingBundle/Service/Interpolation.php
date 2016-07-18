@@ -56,7 +56,7 @@ class Interpolation
             $fileCreator->createFiles($algorithms[$i], $interpolationParameter);
 
             $configuration = new InterpolationProcessConfiguration($fileCreator);
-            $configuration->setWorkingDirectory($this->kernel->getContainer()->getParameter('inowas.pyprocessing.directory'));
+            $configuration->setWorkingDirectory($this->kernel->getContainer()->getParameter('inowas.pyprocessing_folder'));
 
             $process = PythonProcessFactory::create($configuration);
             $process->run();

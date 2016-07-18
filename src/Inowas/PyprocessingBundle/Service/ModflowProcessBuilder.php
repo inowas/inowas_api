@@ -9,7 +9,6 @@ use Inowas\PyprocessingBundle\Model\Modflow\ModflowResultProcessConfiguration;
 use Inowas\PyprocessingBundle\Model\Modflow\ModflowResultRasterParameter;
 use Inowas\PyprocessingBundle\Model\Modflow\ModflowResultTimeSeriesParameter;
 use Inowas\PyprocessingBundle\Model\PythonProcess\PythonProcessFactory;
-use Inowas\PyprocessingBundle\Service\ConfigurationFileCreatorFactory;
 use Symfony\Component\HttpKernel\KernelInterface;
 
 /**
@@ -48,7 +47,7 @@ class ModflowProcessBuilder
         $inputFileCreator->createFiles($mfCalculationParams);
 
         $processConfig = new ModflowCalculationProcessConfiguration($inputFileCreator->getInputFile(), $this->workspace.'/'.$modelId, $executable, $this->baseUrl);
-        $processConfig->setWorkingDirectory($this->kernel->getContainer()->getParameter('inowas.pyprocessing.directory'));
+        $processConfig->setWorkingDirectory($this->kernel->getContainer()->getParameter('inowas.pyprocessing_folder'));
         return PythonProcessFactory::create($processConfig);
     }
 
@@ -65,7 +64,7 @@ class ModflowProcessBuilder
             $this->workspace.'/'.$modelId,
             $this->baseUrl
         );
-        $processConfig->setWorkingDirectory($this->kernel->getContainer()->getParameter('inowas.pyprocessing.directory'));
+        $processConfig->setWorkingDirectory($this->kernel->getContainer()->getParameter('inowas.pyprocessing_folder'));
         return PythonProcessFactory::create($processConfig);
     }
 
@@ -82,7 +81,7 @@ class ModflowProcessBuilder
             $this->workspace.'/'.$modelId,
             $this->baseUrl
         );
-        $processConfig->setWorkingDirectory($this->kernel->getContainer()->getParameter('inowas.pyprocessing.directory'));
+        $processConfig->setWorkingDirectory($this->kernel->getContainer()->getParameter('inowas.pyprocessing_folder'));
         return PythonProcessFactory::create($processConfig);
     }
 }

@@ -113,8 +113,9 @@ jms_serializer:
                 namespace_prefix: "FOS\\UserBundle"
 
 inowas_pyprocessing:
-    prefix:           "python"
-    api_base_url:     "http://localhost"
-    data_folder:      "%kernel.root_dir%/../var/data"
-    temp_folder:      "%kernel.root_dir%/../var/tmp"
+    prefix:               "python"
+    api_base_url:         "http://localhost"
+    data_folder:          "%kernel.root_dir%/../var/data"
+    temp_folder:          "%kernel.root_dir%/../var/tmp"
+    pyprocessing_folder:  "%kernel.root_dir%/../py/pyprocessing"
     max_processes:    5

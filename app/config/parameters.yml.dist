@@ -17,6 +17,3 @@ parameters:
 
     # A secret key that's used to generate certain security-related tokens
     secret:            ThisTokenIsNotSoSecretChangeIt
-
-    inowas.pyprocessing.directory: '%kernel.root_dir%/../py/pyprocessing'
-    inowas.geotiff.data_folder: '%kernel.root_dir%/../var/data/geotiff'
