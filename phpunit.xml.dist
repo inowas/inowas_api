@@ -29,6 +29,7 @@
                 <directory>src/*Bundle/Resources</directory>
                 <directory>src/*/*Bundle/Resources</directory>
                 <directory>src/*/Bundle/*Bundle/Resources</directory>
+                <directory>src/Inowas/*Bundle/Tests</directory>
             </exclude>
         </whitelist>
         <whitelist processUncoveredFilesFromWhitelist="true">
