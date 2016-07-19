@@ -45,8 +45,8 @@ class StressPeriodTest extends \PHPUnit_Framework_TestCase
     {
         $dateEnd = new \DateTime();
         $stressPeriod = new StressPeriod();
-        $stressPeriod->setDateTimeBegin($dateEnd);
-        $this->assertEquals($dateEnd, $stressPeriod->getDateTimeBegin());
+        $stressPeriod->setDateTimeEnd($dateEnd);
+        $this->assertEquals($dateEnd, $stressPeriod->getDateTimeEnd());
     }
 
     public function testSetGetNumberOfTimeSteps()
