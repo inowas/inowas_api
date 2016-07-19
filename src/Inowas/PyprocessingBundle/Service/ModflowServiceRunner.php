@@ -13,6 +13,12 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\EntityManager;
 use Symfony\Component\HttpKernel\KernelInterface;
 
+/**
+ * Class ModflowServiceRunner
+ * @package Inowas\PyprocessingBundle\Service
+ *
+ * @codeCoverageIgnore
+ */
 class ModflowServiceRunner
 {
     /** @var EntityManager  */
@@ -88,7 +94,7 @@ class ModflowServiceRunner
 
             /** @var ModflowCalculation $modelCalculation */
             foreach ($modelsToCalculate as $modelCalculation){
-                $process = $this->modflowProcessBuilder->buildCalculationProcess($modelCalculation->getModelId(), $modelCalculation->getExecutable());
+                $process = $this->modflowProcessBuilder->getCalculationProcess($modelCalculation->getModelId(), $modelCalculation->getExecutable());
 
                 $modelCalculation->setProcessId($process->getId());
                 $modelCalculation->setDateTimeStart(new \DateTime());

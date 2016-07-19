@@ -38,7 +38,7 @@ class ModflowProcessBuilder
         $this->workspace = $this->kernel->getContainer()->getParameter('inowas.modflow.data_folder');
     }
 
-    public function buildCalculationProcess($modelId, $executable = 'mf2005'){
+    public function getCalculationProcess($modelId, $executable = 'mf2005'){
 
         $mfCalculationParams = new ModflowCalculationParameter($modelId, $this->baseUrl);
 
@@ -51,7 +51,7 @@ class ModflowProcessBuilder
         return PythonProcessFactory::create($processConfig);
     }
 
-    public function buildRasterResultProcess($modelId, $layer, $timesteps, $stressPeriods, $operation){
+    public function getRasterResultProcess($modelId, $layer, $timesteps, $stressPeriods, $operation){
         $mfResultParams = new ModflowResultRasterParameter($modelId, $layer, $timesteps, $stressPeriods, $operation);
 
         /** @var \Inowas\PyprocessingBundle\Model\Modflow\ModflowConfigurationFileCreator $configFileCreator*/
@@ -68,7 +68,7 @@ class ModflowProcessBuilder
         return PythonProcessFactory::create($processConfig);
     }
 
-    public function buildTimeseriesResultProcess($modelId, $layer, $row, $col, $operation){
+    public function getTimeseriesResultProcess($modelId, $layer, $row, $col, $operation){
         $mfResultParams = new ModflowResultTimeSeriesParameter($modelId, $layer, $row, $col, $operation);
 
         /** @var ModflowConfigurationFileCreator $configFileCreator*/

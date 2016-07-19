@@ -62,7 +62,7 @@ class Modflow
 
     public function calculate($modelId, $executable = 'mf2005')
     {
-        $process = $this->modflowProcessBuilder->buildCalculationProcess($modelId, $executable);
+        $process = $this->modflowProcessBuilder->getCalculationProcess($modelId, $executable);
         $process->getProcess()->run();
         if (! $process->isSuccessful()) {
             throw new ProcessFailedException('Modflow Calculation Process failed with ErrorMessage: '. $process->getErrorOutput());
@@ -73,7 +73,7 @@ class Modflow
 
     public function getRasterResult($modelId, $layer, array $timesteps, array $stressPeriods, $operation = ModflowResultRasterParameter::OP_RAW){
 
-        $process = $this->modflowProcessBuilder->buildRasterResultProcess($modelId, $layer, $timesteps, $stressPeriods, $operation);
+        $process = $this->modflowProcessBuilder->getRasterResultProcess($modelId, $layer, $timesteps, $stressPeriods, $operation);
         $process->run();
 
         if (! $process->isSuccessful()) {
@@ -85,7 +85,7 @@ class Modflow
 
     public function getTimeseriesResult($modelId, $layer, $row, $col, $operation = ModflowResultTimeSeriesParameter::OP_RAW){
 
-        $process = $this->modflowProcessBuilder->buildTimeseriesResultProcess($modelId, $layer, $row, $col, $operation);
+        $process = $this->modflowProcessBuilder->getTimeseriesResultProcess($modelId, $layer, $row, $col, $operation);
         $process->run();
 
         if (! $process->isSuccessful()) {
