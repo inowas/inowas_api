@@ -4,6 +4,7 @@ namespace Inowas\PyprocessingBundle\Tests\Model\PythonProcess;
 
 use Inowas\PyprocessingBundle\Model\PythonProcess\PythonProcessConfiguration;
 use Inowas\PyprocessingBundle\Model\PythonProcess\PythonProcess;
+use Ramsey\Uuid\Uuid;
 use Symfony\Component\Process\Process;
 use Symfony\Component\Process\ProcessBuilder;
 
@@ -13,6 +14,7 @@ class PythonProcessTest extends \PHPUnit_Framework_TestCase
     public function testInstantiationWithDefaultConfiguration(){
         $pythonProcess = new PythonProcess(new ProcessBuilder(), new PythonProcessConfiguration());
         $this->assertInstanceOf(PythonProcess::class, $pythonProcess);
+        $this->assertTrue($pythonProcess->getId() instanceof Uuid);
     }
 
     public function testGetProcessReturnsProcess(){
@@ -71,7 +73,9 @@ class PythonProcessTest extends \PHPUnit_Framework_TestCase
             ->getMock();
 
         $processMock->method('isRunning')->willReturn(false);
-        $processMock->method('isSuccessful')->willReturn(false);
+        $processMock->method('isRunning')->willReturn(false);
+        $processMock->method('getOutput')->willReturn('output');
+        $processMock->method('getErrorOutput')->willReturn('errorOutput');
 
         $processBuilderMock = $this->getMockBuilder(ProcessBuilder::class)
             ->setConstructorArgs(array())
@@ -89,5 +93,7 @@ class PythonProcessTest extends \PHPUnit_Framework_TestCase
         $pythonProcess = new PythonProcess($processBuilderMock, $configuration);
         $this->assertEquals(false, $pythonProcess->isRunning());
         $this->assertEquals(false, $pythonProcess->isSuccessful());
+        $this->assertEquals('output', $pythonProcess->getOutput());
+        $this->assertEquals('errorOutput', $pythonProcess->getErrorOutput());
     }
 }
