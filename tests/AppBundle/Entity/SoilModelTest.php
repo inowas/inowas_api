@@ -7,6 +7,7 @@ use AppBundle\Entity\GeologicalPoint;
 use AppBundle\Entity\GeologicalUnit;
 use AppBundle\Entity\SoilModel;
 use AppBundle\Entity\User;
+use AppBundle\Model\AreaFactory;
 use AppBundle\Model\GeologicalLayerFactory;
 use AppBundle\Model\GeologicalPointFactory;
 use AppBundle\Model\GeologicalUnitFactory;
@@ -55,9 +56,45 @@ class SoilModelTest extends WebTestCase
 
     }
 
-    public function testTrue()
-    {
-        $this->assertTrue(true);
+    public function testHasGeologicalLayers(){
+        $this->assertFalse($this->soilModel->hasGeologicalLayers());
+    }
+
+    public function testGetLayerByNumberReturnsNullIfSoilModelHasNoLayers(){
+        $this->assertNull($this->soilModel->getLayerByNumber(1));
+    }
+
+    public function testGetLayerByNumberReturnsNullIfLayerNumberIsNotThere(){
+        $this->soilModel->addGeologicalLayer(GeologicalLayerFactory::create()->setOrder(0));
+        $this->assertNull($this->soilModel->getLayerByNumber(1));
+    }
+
+    public function testGetLayerByNumberReturnsLayer(){
+        $this->soilModel->addGeologicalLayer(GeologicalLayerFactory::create()->setOrder(0));
+        $this->assertInstanceOf(GeologicalLayer::class, $this->soilModel->getLayerByNumber(0));
+    }
+
+    public function testPostLoad(){
+        $geologicalPoint = GeologicalPointFactory::create();
+        $this->soilModel->addModelObject($geologicalPoint);
+        $this->assertCount(1, $this->soilModel->getModelObjects());
+        $this->soilModel->postLoad();
+        $this->assertCount(0, $this->soilModel->getModelObjects());
+        $this->assertEquals($geologicalPoint, $this->soilModel->getGeologicalPoints()->first());
+
+        $geologicalUnit = GeologicalUnitFactory::create();
+        $this->soilModel->addModelObject($geologicalUnit);
+        $this->assertCount(1, $this->soilModel->getModelObjects());
+        $this->soilModel->postLoad();
+        $this->assertCount(0, $this->soilModel->getModelObjects());
+        $this->assertEquals($geologicalUnit, $this->soilModel->getGeologicalUnits()->first());
+
+        $area = AreaFactory::create();
+        $this->soilModel->addModelObject($area);
+        $this->assertCount(1, $this->soilModel->getModelObjects());
+        $this->soilModel->postLoad();
+        $this->assertCount(0, $this->soilModel->getModelObjects());
+        $this->assertEquals($area, $this->soilModel->getArea());
     }
 
     public function testIfSoilModelCanBePersistedInDatabase()
@@ -169,7 +206,6 @@ class SoilModelTest extends WebTestCase
         $this->entityManager->persist($this->soilModel);
         $this->entityManager->flush();
     }
-
 
     public function testIfUnitsCanBeSetAndRetrievedFromSoilModel()
     {
