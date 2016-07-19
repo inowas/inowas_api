@@ -73,12 +73,4 @@ class InterpolationConfiguration
     {
         return $this->algorithms;
     }
-
-    /**
-     * @param $currentAlgorithm
-     */
-    public function setCurrentAlgorithm($currentAlgorithm)
-    {
-        $this->currentAlgorithm = $currentAlgorithm;
-    }
 }
