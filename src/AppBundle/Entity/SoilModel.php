@@ -268,32 +268,27 @@ class SoilModel extends AbstractModel
      */
     public function postLoad()
     {
+
+        $this->geologicalLayers = new ArrayCollection();
+        $this->geologicalPoints = new ArrayCollection();
+        $this->geologicalUnits = new ArrayCollection();
+
         foreach ($this->getModelObjects() as $soilModelObject)
         {
             if ($soilModelObject instanceof GeologicalLayer)
             {
-                if (is_null($this->geologicalLayers)){
-                    $this->geologicalLayers = new ArrayCollection();
-                }
-
                 $this->addGeologicalLayer($soilModelObject);
                 $this->removeModelObject($soilModelObject);
             }
 
             if ($soilModelObject instanceof GeologicalPoint)
             {
-                if (is_null($this->geologicalPoints)){
-                    $this->geologicalPoints = new ArrayCollection();
-                }
                 $this->addGeologicalPoint($soilModelObject);
                 $this->removeModelObject($soilModelObject);
             }
 
             if ($soilModelObject instanceof GeologicalUnit)
             {
-                if (is_null($this->geologicalUnits)){
-                    $this->geologicalUnits = new ArrayCollection();
-                }
                 $this->addGeologicalUnit($soilModelObject);
                 $this->removeModelObject($soilModelObject);
             }
