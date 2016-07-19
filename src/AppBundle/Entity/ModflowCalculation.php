@@ -182,16 +182,6 @@ class ModflowCalculation
     }
 
     /**
-     * @param \DateTime $dateTimeAddToQueue
-     * @return ModflowCalculation
-     */
-    public function setDateTimeAddToQueue(\DateTime $dateTimeAddToQueue): ModflowCalculation
-    {
-        $this->dateTimeAddToQueue = $dateTimeAddToQueue;
-        return $this;
-    }
-
-    /**
      * @return \DateTime
      */
     public function getDateTimeStart(): \DateTime
