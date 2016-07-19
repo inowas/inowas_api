@@ -8,6 +8,12 @@ use Symfony\Component\DependencyInjection\Extension\Extension;
 use Symfony\Component\DependencyInjection\Extension\ExtensionInterface;
 use Symfony\Component\DependencyInjection\Loader\YamlFileLoader;
 
+/**
+ * Class InowasPyprocessingExtension
+ * @package Inowas\PyprocessingBundle\DependencyInjection
+ *
+ * @codeCoverageIgnore
+ */
 class InowasPyprocessingExtension extends Extension implements ExtensionInterface
 {
     /**
