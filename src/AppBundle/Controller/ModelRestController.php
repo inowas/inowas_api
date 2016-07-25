@@ -651,6 +651,27 @@ class ModelRestController extends FOSRestController
 
             $result['html'] = $html;
             $result['geojson'] = $geoJson;
+        } elseif ($contentType == 'calculation') {
+
+            $calculations = $this->getDoctrine()->getRepository('AppBundle:ModflowCalculation')
+                ->findBy(
+                    array('modelId' => $id),
+                    array('dateTimeAddToQueue' => 'DESC'),
+                    1
+                );
+
+            $calculation = null;
+            if (count($calculations) > 0){
+                $calculation = $calculations[0];
+            }
+
+            $twig = $this->get('twig');
+            $html = $twig->render('inowas/model/modflow/calculation.html.twig', array(
+                'calculation' => $calculation
+            ));
+
+            $result['html'] = $html;
+
         } else {
             $result="";
         }

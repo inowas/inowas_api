@@ -1,5 +1,10 @@
 <h2>Calculation</h2>
+{% if calculation is null %}
+<p>Please calculate</p>
+{% else %}
 <p class="addedtoqueue">{{ calculation.getDateTimeAddToQueue | date }}</p>
-
 <h3>State</h3>
+<p>There is a calculation running</p>
+{% endif %}
 
+<button type="button" class="btn btn-danger btn-block btn_calculation">Run calculation</button>
