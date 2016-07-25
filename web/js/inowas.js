@@ -69,7 +69,7 @@ $( ".soilmodel" ).click(function(){
         soilmodel_map.fitBounds(polygon.getBounds());
     });
 
-                                            loadLayerImg(modelId, 0, 'et', true);
+    loadLayerImg(modelId, 0, 'et', true);
 });
 
 $( ".boundaries" ).click(function () {
@@ -162,7 +162,20 @@ $( ".calculation" ).click(function(){
     hide_all();
     $( "#calculation" ).show();
     $( ".calculation" ).addClass('active');
+
+    $.getJSON( "/api/modflowmodels/"+modelId+"/contents/calculation.json", function ( data ) {
+        $(".content_calculation").html( data.html );
+    });
 });
+
+$(document).on('click', '.btn_calculation', function(event){
+    console.log(event);
+    $.post( "/api/modflowmodels/"+modelId+"/calculations.json", function ( data ) {
+        console.log(data);
+        $(".content_calculation").html( data.html );
+        }, 'json');
+    }
+);
 
 $( ".results" ).click(function(){
     hide_all();

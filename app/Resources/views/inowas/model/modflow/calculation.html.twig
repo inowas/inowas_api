@@ -1,10 +1,29 @@
 <h2>Calculation</h2>
-{% if calculation is null %}
-<p>Please calculate</p>
-{% else %}
-<p class="addedtoqueue">{{ calculation.getDateTimeAddToQueue | date }}</p>
-<h3>State</h3>
-<p>There is a calculation running</p>
-{% endif %}
+<div class="row">
+    <div class="col-sm-4">
+        {% if calculation is null %}
+            <p>Please calculate</p>
+        {% else %}
+            <p class="addedtoqueue">{{ calculation.getDateTimeAddToQueue | date }}</p>
+            <h3>State</h3>
+            {% if calculation.state == 0 %}
+                <p>There is added to calculation queue.</p>
+            {% elseif calculation.state == 1 %}
+                <p>There is a calculation running</p>
+            {% elseif calculation.state == 11 %}
+                <p>The calculation has finished with success.</p>
+            {% elseif calculation.state == 12 %}
+                <p>The calculation has finished with errors.</p>
+            {% endif %}
+        {% endif %}
 
-<button type="button" class="btn btn-danger btn-block btn_calculation">Run calculation</button>
+        <button type="button" class="btn btn-danger btn-block btn_calculation">Run calculation</button>
+    </div>
+    <div class="col-sm-8">
+        {% if calculation.state == 11 %}
+            {{ calculation.getOutput }}
+        {% elseif calculation.state == 12 %}
+            {{ calculation.getErrorOutput }}
+        {% endif %}
+    </div>
+</div>
