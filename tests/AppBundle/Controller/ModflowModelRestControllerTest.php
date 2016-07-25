@@ -3,6 +3,7 @@
 namespace Tests\AppBundle\Controller;
 
 use AppBundle\Entity\GeologicalLayer;
+use AppBundle\Entity\ModflowCalculation;
 use AppBundle\Entity\ModFlowModel;
 use AppBundle\Entity\Property;
 use AppBundle\Entity\PropertyType;
@@ -247,6 +248,70 @@ class ModflowModelRestControllerTest extends WebTestCase
         $river = $rivers[0];
         $this->assertObjectHasAttribute('type', $river);
         $this->assertEquals('RIV', $river->type);
+    }
+
+    public function testGetModFlowModelCalculationsWithoutCalculationsAPI()
+    {
+        $this->entityManager->persist($this->modFlowModel);
+        $this->entityManager->flush();
+
+        $client = static::createClient();
+        $client->request('GET', '/api/modflowmodels/'.$this->modFlowModel->getId().'/calculations.json');
+        $this->assertEquals(200, $client->getResponse()->getStatusCode());
+        $this->assertCount(0, json_decode($client->getResponse()->getContent()));
+    }
+
+    public function testGetModFlowModelCalculationsWithOneCalculationsAPI()
+    {
+        $timeNow = new \DateTime();
+        $calculation = new ModflowCalculation();
+        $calculation->setModelId($this->modFlowModel->getId());
+        $calculation->setExecutable('mf2005');
+        $calculation->setDateTimeStart(new \DateTime('2016-01-01'));
+        $calculation->setDateTimeEnd(new \DateTime('2016-01-02'));
+        $calculation->setOutput('Output');
+        $calculation->setErrorOutput('Error');
+
+        $this->entityManager->persist($this->modFlowModel);
+        $this->entityManager->persist($calculation);
+        $this->entityManager->flush();
+
+        $client = static::createClient();
+        $client->request('GET', '/api/modflowmodels/'.$this->modFlowModel->getId().'/calculations.json');
+        $this->assertEquals(200, $client->getResponse()->getStatusCode());
+        $calculations = json_decode($client->getResponse()->getContent());
+        $this->assertEquals(1, count($calculations));
+        $calculationResponse = $calculations[0];
+
+        $this->assertObjectHasAttribute('model_id', $calculationResponse);
+        $this->assertEquals($calculation->getModelId(), $calculationResponse->model_id);
+        $this->assertObjectHasAttribute('executable', $calculationResponse);
+        $this->assertEquals($calculation->getExecutable(), $calculationResponse->executable);
+        $this->assertObjectHasAttribute('state', $calculationResponse);
+        $this->assertEquals($calculation->getState(), $calculationResponse->state);
+        $this->assertObjectHasAttribute('date_time_add_to_queue', $calculationResponse);
+        $this->assertEquals($calculation->getDateTimeAddToQueue(), $timeNow);
+        $this->assertObjectHasAttribute('date_time_start', $calculationResponse);
+        $this->assertEquals($calculation->getDateTimeStart(), new \DateTime('2016-01-01'));
+        $this->assertObjectHasAttribute('date_time_end', $calculationResponse);
+        $this->assertEquals($calculation->getDateTimeEnd(), new \DateTime('2016-01-02'));
+        $this->assertObjectHasAttribute('output', $calculationResponse);
+        $this->assertEquals($calculation->getOutput(), $calculationResponse->output);
+        $this->assertObjectHasAttribute('error_output', $calculationResponse);
+        $this->assertEquals($calculation->getErrorOutput(), $calculationResponse->error_output);
+    }
+
+    public function testPostModFlowModelCalculationAPIRedirectsToCalculations()
+    {
+        $this->entityManager->persist($this->modFlowModel);
+        $this->entityManager->flush();
+
+        $client = static::createClient();
+        $client->request('POST', '/api/modflowmodels/'.$this->modFlowModel->getId().'/calculations.json');
+        $this->assertEquals(302, $client->getResponse()->getStatusCode());
+        $client->followRedirect();
+        $this->assertEquals(200, $client->getResponse()->getStatusCode());
+        $this->assertRegExp('/api\/calculations\//', $client->getRequest()->getUri());
     }
 
     public function testGetModFlowModelBoundingBoxWithSridZero()

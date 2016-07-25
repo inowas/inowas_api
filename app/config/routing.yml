@@ -25,6 +25,11 @@ rest_boundary:
     prefix: /api
     resource: AppBundle\Controller\BoundaryRestController
 
+rest_calculation:
+    type: rest
+    prefix: /api
+    resource: AppBundle\Controller\CalculationRestController
+
 rest_geological_layer:
     type: rest
     prefix: /api

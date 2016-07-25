@@ -58,6 +58,8 @@ class Modflow
         $modflowCalculation->setExecutable($executable);
         $this->entityManager->persist($modflowCalculation);
         $this->entityManager->flush();
+
+        return $modflowCalculation;
     }
 
     public function calculate($modelId, $executable = 'mf2005')

@@ -6,6 +6,7 @@ use AppBundle\Entity\ConstantHeadBoundary;
 use AppBundle\Entity\GeneralHeadBoundary;
 use AppBundle\Entity\GeologicalLayer;
 use AppBundle\Entity\ModelScenario;
+use AppBundle\Entity\ModflowCalculation;
 use AppBundle\Entity\ModFlowModel;
 use AppBundle\Entity\PropertyType;
 use AppBundle\Entity\PropertyValue;
@@ -663,12 +664,61 @@ class ModelRestController extends FOSRestController
         return $view;
     }
 
-    public function postModelCalculateAction($id)
+    /**
+     * Returns state of calculation of the model by calculation-id.
+     *
+     * @ApiDoc(
+     *   resource = true,
+     *   description = "Returns state of calculation of the model by calculation-id.",
+     *   statusCodes = {
+     *     200 = "Returned when successful",
+     *     404 = "Returned when the Calculation-Id is not found"
+     *   }
+     * )
+     *
+     * @param $id
+     *
+     * @return View
+     */
+    public function getModflowmodelCalculationsAction($id){
+
+        $model = $this->findModelById($id);
+        $calculations = $this->getDoctrine()->getRepository('AppBundle:ModflowCalculation')
+            ->findBy(array(
+                'modelId' => $model->getId()->toString()
+            ));
+
+        $view = View::create();
+        $view->setData($calculations)
+            ->setStatusCode(200)
+        ;
+
+        return $view;
+    }
+
+    /**
+     * Returns state of calculation of the model by calculation-id.
+     *
+     * @ApiDoc(
+     *   resource = true,
+     *   description = "Returns state of calculation of the model by calculation-id.",
+     *   statusCodes = {
+     *     200 = "Returned when successful",
+     *     404 = "Returned when the Calculation-Id is not found"
+     *   }
+     * )
+     *
+     * @param $id
+     *
+     * @return Response
+     */
+    public function postModflowmodelCalculationsAction($id)
     {
         $this->findModelById($id);
         $modflowService = $this->get('inowas.modflow');
-        $modflowService->calculate($id);
+        $modflowCalculation = $modflowService->addToQueue($id);
 
+        return $this->redirect($this->generateUrl('get_calculation', array('id' => $modflowCalculation->getId()->toString())));
     }
 
     /**
@@ -677,9 +727,8 @@ class ModelRestController extends FOSRestController
      */
     private function findModelById($id)
     {
-        try {
-            $id = Uuid::fromString($id);
-        } catch (\InvalidArgumentException $e) {
+
+        if (!Uuid::isValid($id)){
             throw $this->createNotFoundException('Model with id='.$id.' not found.');
         }
 

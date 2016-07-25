@@ -3,6 +3,7 @@
 namespace AppBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use JMS\Serializer\Annotation as JMS;
 use Ramsey\Uuid\Uuid;
 
 /**
@@ -10,6 +11,7 @@ use Ramsey\Uuid\Uuid;
  *
  * @ORM\Table(name="modflow_calculation")
  * @ORM\Entity()
+ * @JMS\ExclusionPolicy("none")
  */
 class ModflowCalculation
 {
@@ -23,24 +25,28 @@ class ModflowCalculation
      * @var Uuid
      * @ORM\Id
      * @ORM\Column(name="id", type="uuid", unique=true)
+     * @JMS\Exclude()
      */
     private $id;
 
     /**
      * @var Uuid
      * @ORM\Column(name="process_id", type="uuid", nullable=true)
+     * @JMS\Type("string")
      */
     private $processId;
 
     /**
      * @var Uuid
      * @ORM\Column(name="model_id", type="uuid", nullable=true)
+     * @JMS\Type("string")
      */
     private $modelId;
 
     /**
      * @var string
      * @ORM\Column(name="executable", type="string")
+     * @JMS\Type("string")
      */
     private $executable;
 
@@ -48,6 +54,7 @@ class ModflowCalculation
      * @var integer $numberOfValues
      *
      * @ORM\Column(name="state", type="integer")
+     * @JMS\Type("integer")
      */
     private $state = self::STATE_IN_QUEUE;
 
@@ -76,6 +83,7 @@ class ModflowCalculation
      * @var string
      *
      * @ORM\Column(name="output", type="text", nullable=true)
+     * @JMS\Type("string")
      */
     private $output;
 
@@ -83,6 +91,7 @@ class ModflowCalculation
      * @var string
      *
      * @ORM\Column(name="error_output", type="text", nullable=true)
+     * @JMS\Type("string")
      */
     private $errorOutput;
 
@@ -94,7 +103,7 @@ class ModflowCalculation
     }
 
     /**
-     * @return string
+     * @return Uuid
      */
     public function getId()
     {
