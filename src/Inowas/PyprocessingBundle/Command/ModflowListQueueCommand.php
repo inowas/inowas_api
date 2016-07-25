@@ -30,7 +30,7 @@ class ModflowListQueueCommand extends ContainerAwareCommand
                 );
 
         foreach ($models as $model){
-            $output->writeln($model->getId()->toString());
+            $output->writeln($model->getModelId()->toString());
         }
 
         $output->writeln('List End.');

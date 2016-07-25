@@ -3,15 +3,9 @@
 namespace Inowas\PyprocessingBundle\Service;
 
 use AppBundle\Entity\ModflowCalculation;
-use Inowas\PyprocessingBundle\Model\Modflow\ModflowCalculationParameter;
-use Inowas\PyprocessingBundle\Model\Modflow\ModflowCalculationProcessConfiguration;
-use Inowas\PyprocessingBundle\Model\Modflow\ModflowConfigurationFileCreator;
 use Inowas\PyprocessingBundle\Model\PythonProcess\PythonProcess;
-use Inowas\PyprocessingBundle\Model\PythonProcess\PythonProcessFactory;
-use Inowas\PyprocessingBundle\Service\ConfigurationFileCreatorFactory;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\EntityManager;
-use Symfony\Component\HttpKernel\KernelInterface;
 
 /**
  * Class ModflowServiceRunner
@@ -42,7 +36,7 @@ class ModflowServiceRunner
         $this->numberOfParallelCalculations = $numberOfParallelCalculations;
     }
 
-    /** This could be the cronjob-command */
+    /** This could be the cronJob-command */
     public function run(){
 
         echo sprintf('Waiting for Jobs.'."\r\n");
@@ -66,9 +60,11 @@ class ModflowServiceRunner
                     if ($process->getProcess()->isSuccessful()){
                         $modflowCalculation->setState(ModflowCalculation::STATE_FINISHED_SUCCESSFUL);
                         $modflowCalculation->setOutput($process->getProcess()->getOutput());
+                        echo sprintf("Process end:\r\n Message: \r\n %s", $process->getProcess()->getOutput());
                     } else {
                         $modflowCalculation->setState(ModflowCalculation::STATE_FINISHED_WITH_ERRORS);
                         $modflowCalculation->setErrorOutput($process->getProcess()->getErrorOutput());
+                        echo sprintf("Process ended up with error:\r\n ErrorMessage: \r\n %s", $process->getProcess()->getErrorOutput());
                     }
 
                     $this->entityManager->persist($modflowCalculation);
@@ -78,7 +74,7 @@ class ModflowServiceRunner
             }
 
             if ($runningProcesses >= $this->numberOfParallelCalculations){
-                return;
+                continue;
             }
 
             $modelsToCalculate = $this->entityManager->getRepository('AppBundle:ModflowCalculation')
@@ -87,6 +83,11 @@ class ModflowServiceRunner
                     array('dateTimeAddToQueue' => 'ASC'),
                     $this->numberOfParallelCalculations - $runningProcesses
                 );
+
+            if (count($modelsToCalculate) == 0){
+                echo sprintf('There are no more jobs in the queue. Leaving...'."\r\n");
+                return;
+            }
 
             if (count($modelsToCalculate) > 0){
                 echo sprintf('Got %s more Jobs.'."\r\n", count($modelsToCalculate));
@@ -105,7 +106,7 @@ class ModflowServiceRunner
                 $process->getProcess()->start();
                 $this->addProcess($process);
             }
-            sleep(1);
+            sleep(10);
         }
     }
 
