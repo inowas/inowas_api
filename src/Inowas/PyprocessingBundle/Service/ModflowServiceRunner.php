@@ -36,8 +36,10 @@ class ModflowServiceRunner
         $this->numberOfParallelCalculations = $numberOfParallelCalculations;
     }
 
-    /** This could be the cronJob-command */
-    public function run(){
+    /**
+     * @param bool $asDaemon
+     */
+    public function run($asDaemon = false){
 
         echo sprintf('Waiting for Jobs.'."\r\n");
 
@@ -84,7 +86,7 @@ class ModflowServiceRunner
                     $this->numberOfParallelCalculations - $runningProcesses
                 );
 
-            if (count($modelsToCalculate) == 0){
+            if (count($modelsToCalculate) == 0 && $asDaemon == false){
                 echo sprintf('There are no more jobs in the queue. Leaving...'."\r\n");
                 return;
             }
@@ -106,7 +108,7 @@ class ModflowServiceRunner
                 $process->getProcess()->start();
                 $this->addProcess($process);
             }
-            sleep(10);
+            sleep(1);
         }
     }
 
