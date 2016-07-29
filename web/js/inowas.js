@@ -127,6 +127,12 @@ $( ".boundaries" ).click(function () {
             });
         }
 
+        if ("pw" in wellData) {
+            wellData.pw.forEach(function (item) {
+                L.circle([item.point.y, item.point.x], 100, {color: 'black', weight: 1, fillColor: 'darkgreen', fillOpacity: 0.7}).bindPopup("Well "+item.name).addTo(wells);
+            });
+        }
+
         if ("smw" in wellData) {
             wellData.smw.forEach(function (item) {
                 L.circle([item.point.y, item.point.x], 200, {color: 'black', weight: 1, fillColor: 'red', fillOpacity: 1}).bindPopup("Well " + item.name).addTo(wells);

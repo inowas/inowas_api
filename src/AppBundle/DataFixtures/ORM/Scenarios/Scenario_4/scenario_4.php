@@ -498,7 +498,7 @@ class LoadScenario_4 implements FixtureInterface, ContainerAwareInterface
         $header = array('id', 'name', 'wkt_x', 'wkt_y', 'ztop', 'zbot', 'stoptime', 'pumpingrate', 'x', 'y');
         foreach ($wells as $row) {
             $well = array_combine($header, $row);
-            if (!$geoTools->pointIntersectsWithArea($model->getArea()->getId()->toString(), $well['x'], $well['y'], 3857)) {
+            if (!$geoTools->pointIntersectsWithArea($model->getArea(), $well['x'], $well['y'], 3857)) {
                 continue;
             }
             echo "Persisting ".$well['name']."\r\n";
@@ -658,7 +658,7 @@ class LoadScenario_4 implements FixtureInterface, ContainerAwareInterface
         );
         foreach ($industrialWells as $industrialWell) {
 
-            if (!$geoTools->pointIntersectsWithArea($model->getArea()->getId()->toString(), $industrialWell[1], $industrialWell[2], $industrialWell[3])) {
+            if (!$geoTools->pointIntersectsWithArea($model->getArea(), $industrialWell[1], $industrialWell[2], $industrialWell[3])) {
                 continue;
             }
             echo "Persisting Industrial Well ".$industrialWell[0]."\r\n";

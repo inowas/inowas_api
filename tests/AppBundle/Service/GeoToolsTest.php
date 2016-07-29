@@ -3,12 +3,14 @@
 namespace Inowas\PyprocessingBundle\Tests\Service;
 
 use AppBundle\Entity\Area;
+use AppBundle\Entity\StreamBoundary;
 use AppBundle\Model\ActiveCells;
 use AppBundle\Model\AreaFactory;
 use AppBundle\Model\ConstantHeadBoundaryFactory;
 use AppBundle\Model\BoundingBox;
 use AppBundle\Model\GridSize;
 use AppBundle\Model\Point;
+use AppBundle\Model\StreamBoundaryFactory;
 use AppBundle\Service\GeoTools;
 use CrEOF\Spatial\DBAL\Platform\PostgreSql;
 use CrEOF\Spatial\DBAL\Types\AbstractSpatialType;
@@ -26,6 +28,9 @@ class GeoToolsTest extends WebTestCase
 
     /** @var  Area */
     protected $area;
+
+    /** @var  StreamBoundary */
+    protected $river;
 
     /** @var  BoundingBox */
     protected $boundingBox;
@@ -67,6 +72,16 @@ class GeoToolsTest extends WebTestCase
         $this->entityManager->persist($this->area);
         $this->entityManager->flush();
 
+        $this->river = StreamBoundaryFactory::create()
+            ->setGeometry(new LineString(array(
+                    array(11775189.21765423379838467, 2385794.83458124194294214),
+                    array(11789747.53923093341290951, 2403506.49811625294387341)
+                ),3857
+            ));
+
+        $this->entityManager->persist($this->river);
+        $this->entityManager->flush();
+
         $this->boundingBox = new BoundingBox(
             11775189.21765423379838467,
             11789747.53923093341290951,
@@ -77,14 +92,14 @@ class GeoToolsTest extends WebTestCase
         $this->gridSize = new GridSize(5,5);
     }
 
-    public function testCalculateActiveCells(){
+    public function testCalculateActiveCellsWithArea(){
         $result = $this->geoTools->getActiveCells($this->area, $this->boundingBox, $this->gridSize);
         $expected = array(
-            array(1,1,0,0,0),
             array(1,1,1,0,0),
-            array(1,1,1,0,0),
-            array(0,1,1,1,1),
-            array(0,0,1,1,1)
+            array(1,1,1,1,0),
+            array(1,1,1,1,0),
+            array(1,1,1,1,1),
+            array(0,1,1,1,1)
         );
 
         $this->assertTrue($result instanceof ActiveCells);
@@ -93,12 +108,25 @@ class GeoToolsTest extends WebTestCase
         $this->assertFalse($this->geoTools->pointIntersectsWithArea($this->area, 11770000, 2380000, 3857));
     }
 
+    public function testCalculateActiveCellsWithRiver(){
+        $result = $this->geoTools->getActiveCells($this->river, $this->boundingBox, $this->gridSize);
+        $expected = array(
+            array(0,0,0,1,1),
+            array(0,0,0,1,0),
+            array(0,1,1,1,0),
+            array(1,1,0,0,0),
+            array(1,0,0,0,0)
+        );
+
+        $this->assertTrue($result instanceof ActiveCells);
+        $this->assertEquals($expected, $result->toArray());
+    }
+
     public function testGetGeoJsonGrid(){
         $activeCells = $this->geoTools->getActiveCells($this->area, $this->boundingBox, $this->gridSize);
         $featureCollection = $this->geoTools->getGeoJsonGrid($this->boundingBox, $this->gridSize, $activeCells);
         $json = $this->serializer->serialize($featureCollection, 'json');
-        $this->assertEquals($json, '{"type":"FeatureCollection","features":[{"type":"Feature","id":0,"properties":{"row":0,"col":0},"geometry":{"type":"Polygon","coordinates":[[[11775189.217654,2399964.1654093],[11775189.217654,2403506.4981163],[11778100.88197,2403506.4981163],[11778100.88197,2399964.1654093],[11775189.217654,2399964.1654093]]]}},{"type":"Feature","id":1,"properties":{"row":0,"col":1},"geometry":{"type":"Polygon","coordinates":[[[11778100.88197,2399964.1654093],[11778100.88197,2403506.4981163],[11781012.546285,2403506.4981163],[11781012.546285,2399964.1654093],[11778100.88197,2399964.1654093]]]}},{"type":"Feature","id":2,"properties":{"row":1,"col":0},"geometry":{"type":"Polygon","coordinates":[[[11775189.217654,2396421.8327022],[11775189.217654,2399964.1654093],[11778100.88197,2399964.1654093],[11778100.88197,2396421.8327022],[11775189.217654,2396421.8327022]]]}},{"type":"Feature","id":3,"properties":{"row":1,"col":1},"geometry":{"type":"Polygon","coordinates":[[[11778100.88197,2396421.8327022],[11778100.88197,2399964.1654093],[11781012.546285,2399964.1654093],[11781012.546285,2396421.8327022],[11778100.88197,2396421.8327022]]]}},{"type":"Feature","id":4,"properties":{"row":1,"col":2},"geometry":{"type":"Polygon","coordinates":[[[11781012.546285,2396421.8327022],[11781012.546285,2399964.1654093],[11783924.2106,2399964.1654093],[11783924.2106,2396421.8327022],[11781012.546285,2396421.8327022]]]}},{"type":"Feature","id":5,"properties":{"row":2,"col":0},"geometry":{"type":"Polygon","coordinates":[[[11775189.217654,2392879.4999952],[11775189.217654,2396421.8327022],[11778100.88197,2396421.8327022],[11778100.88197,2392879.4999952],[11775189.217654,2392879.4999952]]]}},{"type":"Feature","id":6,"properties":{"row":2,"col":1},"geometry":{"type":"Polygon","coordinates":[[[11778100.88197,2392879.4999952],[11778100.88197,2396421.8327022],[11781012.546285,2396421.8327022],[11781012.546285,2392879.4999952],[11778100.88197,2392879.4999952]]]}},{"type":"Feature","id":7,"properties":{"row":2,"col":2},"geometry":{"type":"Polygon","coordinates":[[[11781012.546285,2392879.4999952],[11781012.546285,2396421.8327022],[11783924.2106,2396421.8327022],[11783924.2106,2392879.4999952],[11781012.546285,2392879.4999952]]]}},{"type":"Feature","id":8,"properties":{"row":3,"col":1},"geometry":{"type":"Polygon","coordinates":[[[11778100.88197,2389337.1672882],[11778100.88197,2392879.4999952],[11781012.546285,2392879.4999952],[11781012.546285,2389337.1672882],[11778100.88197,2389337.1672882]]]}},{"type":"Feature","id":9,"properties":{"row":3,"col":2},"geometry":{"type":"Polygon","coordinates":[[[11781012.546285,2389337.1672882],[11781012.546285,2392879.4999952],[11783924.2106,2392879.4999952],[11783924.2106,2389337.1672882],[11781012.546285,2389337.1672882]]]}},{"type":"Feature","id":10,"properties":{"row":3,"col":3},"geometry":{"type":"Polygon","coordinates":[[[11783924.2106,2389337.1672882],[11783924.2106,2392879.4999952],[11786835.874916,2392879.4999952],[11786835.874916,2389337.1672882],[11783924.2106,2389337.1672882]]]}},{"type":"Feature","id":11,"properties":{"row":3,"col":4},"geometry":{"type":"Polygon","coordinates":[[[11786835.874916,2389337.1672882],[11786835.874916,2392879.4999952],[11789747.539231,2392879.4999952],[11789747.539231,2389337.1672882],[11786835.874916,2389337.1672882]]]}},{"type":"Feature","id":12,"properties":{"row":4,"col":2},"geometry":{"type":"Polygon","coordinates":[[[11781012.546285,2385794.8345812],[11781012.546285,2389337.1672882],[11783924.2106,2389337.1672882],[11783924.2106,2385794.8345812],[11781012.546285,2385794.8345812]]]}},{"type":"Feature","id":13,"properties":{"row":4,"col":3},"geometry":{"type":"Polygon","coordinates":[[[11783924.2106,2385794.8345812],[11783924.2106,2389337.1672882],[11786835.874916,2389337.1672882],[11786835.874916,2385794.8345812],[11783924.2106,2385794.8345812]]]}},{"type":"Feature","id":14,"properties":{"row":4,"col":4},"geometry":{"type":"Polygon","coordinates":[[[11786835.874916,2385794.8345812],[11786835.874916,2389337.1672882],[11789747.539231,2389337.1672882],[11789747.539231,2385794.8345812],[11786835.874916,2385794.8345812]]]}}]}');
-
+        $this->assertEquals($json, '{"type":"FeatureCollection","features":[{"type":"Feature","id":0,"properties":{"row":0,"col":0},"geometry":{"type":"Polygon","coordinates":[[[11775189.217654,2399964.1654093],[11775189.217654,2403506.4981163],[11778100.88197,2403506.4981163],[11778100.88197,2399964.1654093],[11775189.217654,2399964.1654093]]]}},{"type":"Feature","id":1,"properties":{"row":0,"col":1},"geometry":{"type":"Polygon","coordinates":[[[11778100.88197,2399964.1654093],[11778100.88197,2403506.4981163],[11781012.546285,2403506.4981163],[11781012.546285,2399964.1654093],[11778100.88197,2399964.1654093]]]}},{"type":"Feature","id":2,"properties":{"row":0,"col":2},"geometry":{"type":"Polygon","coordinates":[[[11781012.546285,2399964.1654093],[11781012.546285,2403506.4981163],[11783924.2106,2403506.4981163],[11783924.2106,2399964.1654093],[11781012.546285,2399964.1654093]]]}},{"type":"Feature","id":3,"properties":{"row":1,"col":0},"geometry":{"type":"Polygon","coordinates":[[[11775189.217654,2396421.8327022],[11775189.217654,2399964.1654093],[11778100.88197,2399964.1654093],[11778100.88197,2396421.8327022],[11775189.217654,2396421.8327022]]]}},{"type":"Feature","id":4,"properties":{"row":1,"col":1},"geometry":{"type":"Polygon","coordinates":[[[11778100.88197,2396421.8327022],[11778100.88197,2399964.1654093],[11781012.546285,2399964.1654093],[11781012.546285,2396421.8327022],[11778100.88197,2396421.8327022]]]}},{"type":"Feature","id":5,"properties":{"row":1,"col":2},"geometry":{"type":"Polygon","coordinates":[[[11781012.546285,2396421.8327022],[11781012.546285,2399964.1654093],[11783924.2106,2399964.1654093],[11783924.2106,2396421.8327022],[11781012.546285,2396421.8327022]]]}},{"type":"Feature","id":6,"properties":{"row":1,"col":3},"geometry":{"type":"Polygon","coordinates":[[[11783924.2106,2396421.8327022],[11783924.2106,2399964.1654093],[11786835.874916,2399964.1654093],[11786835.874916,2396421.8327022],[11783924.2106,2396421.8327022]]]}},{"type":"Feature","id":7,"properties":{"row":2,"col":0},"geometry":{"type":"Polygon","coordinates":[[[11775189.217654,2392879.4999952],[11775189.217654,2396421.8327022],[11778100.88197,2396421.8327022],[11778100.88197,2392879.4999952],[11775189.217654,2392879.4999952]]]}},{"type":"Feature","id":8,"properties":{"row":2,"col":1},"geometry":{"type":"Polygon","coordinates":[[[11778100.88197,2392879.4999952],[11778100.88197,2396421.8327022],[11781012.546285,2396421.8327022],[11781012.546285,2392879.4999952],[11778100.88197,2392879.4999952]]]}},{"type":"Feature","id":9,"properties":{"row":2,"col":2},"geometry":{"type":"Polygon","coordinates":[[[11781012.546285,2392879.4999952],[11781012.546285,2396421.8327022],[11783924.2106,2396421.8327022],[11783924.2106,2392879.4999952],[11781012.546285,2392879.4999952]]]}},{"type":"Feature","id":10,"properties":{"row":2,"col":3},"geometry":{"type":"Polygon","coordinates":[[[11783924.2106,2392879.4999952],[11783924.2106,2396421.8327022],[11786835.874916,2396421.8327022],[11786835.874916,2392879.4999952],[11783924.2106,2392879.4999952]]]}},{"type":"Feature","id":11,"properties":{"row":3,"col":0},"geometry":{"type":"Polygon","coordinates":[[[11775189.217654,2389337.1672882],[11775189.217654,2392879.4999952],[11778100.88197,2392879.4999952],[11778100.88197,2389337.1672882],[11775189.217654,2389337.1672882]]]}},{"type":"Feature","id":12,"properties":{"row":3,"col":1},"geometry":{"type":"Polygon","coordinates":[[[11778100.88197,2389337.1672882],[11778100.88197,2392879.4999952],[11781012.546285,2392879.4999952],[11781012.546285,2389337.1672882],[11778100.88197,2389337.1672882]]]}},{"type":"Feature","id":13,"properties":{"row":3,"col":2},"geometry":{"type":"Polygon","coordinates":[[[11781012.546285,2389337.1672882],[11781012.546285,2392879.4999952],[11783924.2106,2392879.4999952],[11783924.2106,2389337.1672882],[11781012.546285,2389337.1672882]]]}},{"type":"Feature","id":14,"properties":{"row":3,"col":3},"geometry":{"type":"Polygon","coordinates":[[[11783924.2106,2389337.1672882],[11783924.2106,2392879.4999952],[11786835.874916,2392879.4999952],[11786835.874916,2389337.1672882],[11783924.2106,2389337.1672882]]]}},{"type":"Feature","id":15,"properties":{"row":3,"col":4},"geometry":{"type":"Polygon","coordinates":[[[11786835.874916,2389337.1672882],[11786835.874916,2392879.4999952],[11789747.539231,2392879.4999952],[11789747.539231,2389337.1672882],[11786835.874916,2389337.1672882]]]}},{"type":"Feature","id":16,"properties":{"row":4,"col":1},"geometry":{"type":"Polygon","coordinates":[[[11778100.88197,2385794.8345812],[11778100.88197,2389337.1672882],[11781012.546285,2389337.1672882],[11781012.546285,2385794.8345812],[11778100.88197,2385794.8345812]]]}},{"type":"Feature","id":17,"properties":{"row":4,"col":2},"geometry":{"type":"Polygon","coordinates":[[[11781012.546285,2385794.8345812],[11781012.546285,2389337.1672882],[11783924.2106,2389337.1672882],[11783924.2106,2385794.8345812],[11781012.546285,2385794.8345812]]]}},{"type":"Feature","id":18,"properties":{"row":4,"col":3},"geometry":{"type":"Polygon","coordinates":[[[11783924.2106,2385794.8345812],[11783924.2106,2389337.1672882],[11786835.874916,2389337.1672882],[11786835.874916,2385794.8345812],[11783924.2106,2385794.8345812]]]}},{"type":"Feature","id":19,"properties":{"row":4,"col":4},"geometry":{"type":"Polygon","coordinates":[[[11786835.874916,2385794.8345812],[11786835.874916,2389337.1672882],[11789747.539231,2389337.1672882],[11789747.539231,2385794.8345812],[11786835.874916,2385794.8345812]]]}}]}');
     }
 
     public function testGetGeometrySRID3857FromConstantHeadBoundaryAsGeoJSON(){
@@ -210,6 +238,13 @@ class GeoToolsTest extends WebTestCase
             ));
 
         $this->entityManager->remove($area);
+
+        $river = $this->entityManager->getRepository('AppBundle:StreamBoundary')
+            ->findOneBy(array(
+                'id' => $this->river->getId()->toString()
+            ));
+
+        $this->entityManager->remove($river);
         $this->entityManager->flush();
     }
 }

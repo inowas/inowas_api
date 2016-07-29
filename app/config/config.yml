@@ -75,8 +75,10 @@ doctrine:
             numeric_functions:
                 st_area:          CrEOF\Spatial\ORM\Query\AST\Functions\PostgreSql\STArea
                 st_asgeojson:     CrEOF\Spatial\ORM\Query\AST\Functions\PostgreSql\STAsGeoJson
+                st_envelope:      CrEOF\Spatial\ORM\Query\AST\Functions\PostgreSql\STEnvelope
                 st_geomfromtext:  CrEOF\Spatial\ORM\Query\AST\Functions\PostgreSql\STGeomFromText
                 st_intersects:    CrEOF\Spatial\ORM\Query\AST\Functions\PostgreSql\STIntersects
+                st_makeline:      CrEOF\Spatial\ORM\Query\AST\Functions\PostgreSql\STMakeLine
                 st_point:         CrEOF\Spatial\ORM\Query\AST\Functions\PostgreSql\STPoint
                 st_setsrid:       CrEOF\Spatial\ORM\Query\AST\Functions\PostgreSql\STSetSRID
                 st_transform:     CrEOF\Spatial\ORM\Query\AST\Functions\PostgreSql\STTransform

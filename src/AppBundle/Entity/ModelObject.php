@@ -334,7 +334,7 @@ abstract class ModelObject
     }
 
     /**
-     * @return int
+     * @return ArrayCollection
      */
     public function getPropertyIds()
     {

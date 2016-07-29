@@ -2,7 +2,6 @@
 
 namespace AppBundle\Service;
 
-use AppBundle\Entity\Area;
 use AppBundle\Entity\ModelObject;
 use AppBundle\Model\ActiveCells;
 use AppBundle\Model\GeoJson\Feature;
@@ -30,34 +29,35 @@ class GeoTools
     }
 
     /**
-     * @param Area $area
+     * @param ModelObject $mo
      * @param BoundingBox $boundingBox
      * @param GridSize $gridSize
      * @return ActiveCells
      */
-    public function getActiveCells(Area $area, BoundingBox $boundingBox, GridSize $gridSize)
+    public function getActiveCells(ModelObject $mo, BoundingBox $boundingBox, GridSize $gridSize)
     {
         $nx = $gridSize->getNX();
         $ny = $gridSize->getNY();
         $dx = ($boundingBox->getXMax()-$boundingBox->getXMin())/$nx;
         $dy = ($boundingBox->getYMax()-$boundingBox->getYMin())/$ny;
-        $id = $area->getId()->toString();
         $srid = $boundingBox->getSrid();
 
         $activeCells = array();
         for ($iy = 0; $iy<$ny; $iy++){
             for ($ix = 0; $ix<$nx; $ix++){
-                $x = $boundingBox->getXMin()+$ix*$dx+$dx/2;
-                $y = $boundingBox->getYMax()-$iy*$dy-$dy/2;
-                $activeCells[$iy][$ix] = $this->isActive($id, $srid, $x, $y);
+                $xmin = $boundingBox->getXMin()+$ix*$dx;
+                $xmax = $boundingBox->getXMin()+$ix*$dx+$dx;
+                $ymin = $boundingBox->getYMax()-$iy*$dy;
+                $ymax = $boundingBox->getYMax()-$iy*$dy-$dy;
+                $activeCells[$iy][$ix] = $this->isActive($mo, $srid, $xmin, $xmax, $ymin, $ymax);
             }
         }
 
         return ActiveCells::fromArray($activeCells);
     }
 
-    public function pointIntersectsWithArea($areaId, $x, $y, $srid){
-        return $this->isActive($areaId, $srid, $x, $y);
+    public function pointIntersectsWithArea($area, $x, $y, $srid){
+        return $this->isActive($area, $srid, $x, $x, $y, $y);
     }
 
     public function getGeoJsonGrid(BoundingBox $boundingBox, GridSize $gridSize, ActiveCells $activeCells)
@@ -192,13 +192,18 @@ class GeoTools
         );
     }
 
-    private function isActive($id, $srid, $x, $y){
+    private function isActive($mo, $srid, $xmin, $xmax, $ymin, $ymax){
+
+        /** @var ModelObject $mo $className */
+        $className = $mo->getNameOfClass();
         $query = $this->entityManager
-            ->createQuery(sprintf('SELECT ST_Intersects(ST_SetSRID(ST_Point(:x, :y), :srid), ST_Transform(a.geometry, :srid)) FROM AppBundle:Area a WHERE a.id = :id'))
-            ->setParameter('id', $id)
+            ->createQuery(sprintf('SELECT ST_Intersects(ST_Envelope(ST_Makeline(ST_SetSRID(ST_POINT(:xmin, :ymin), :srid), ST_SetSRID(ST_POINT(:xmax, :ymax), :srid))), ST_Transform(a.geometry, :srid)) FROM %s a WHERE a.id = :id', $className))
+            ->setParameter('id', $mo->getId()->toString())
             ->setParameter('srid', $srid)
-            ->setParameter('x', $x)
-            ->setParameter('y', $y)
+            ->setParameter('xmin', $xmin)
+            ->setParameter('xmax', $xmax)
+            ->setParameter('ymin', $ymin)
+            ->setParameter('ymax', $ymax)
         ;
 
         return $query->getSingleScalarResult();

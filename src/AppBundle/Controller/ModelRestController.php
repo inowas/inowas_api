@@ -198,7 +198,7 @@ class ModelRestController extends FOSRestController
         }
 
         $colorScheme = GeoImage::COLOR_RELIEF_JET;
-        $min = "10%"; $max="90%";
+        $min = 290; $max = 480;
         if ($propertyType->getAbbreviation() == "hh") {
             $colorScheme = GeoImage::COLOR_RELIEF_GIST_RAINBOW;
             $min = -30;

@@ -2,6 +2,7 @@
 
 namespace AppBundle\Entity;
 
+use AppBundle\Model\ActiveCells;
 use AppBundle\Model\Point;
 use CrEOF\Spatial\PHP\Types\Geometry\LineString;
 use Doctrine\ORM\Mapping as ORM;
@@ -34,10 +35,17 @@ class StreamBoundary extends BoundaryModelObject
     private $geometry;
 
     /**
+     * @var ActiveCells
+     *
+     * @ORM\Column(name="active_cells", type="active_cells", nullable=true)
+     */
+    private $activeCells;
+
+    /**
      * Set startingPoint
      *
      * @param point $startingPoint
-     * @return StreamBoundary
+     * @return $this
      */
     public function setStartingPoint($startingPoint)
     {
@@ -77,6 +85,24 @@ class StreamBoundary extends BoundaryModelObject
     public function getGeometry()
     {
         return $this->geometry;
+    }
+
+    /**
+     * @return ActiveCells
+     */
+    public function getActiveCells()
+    {
+        return $this->activeCells;
+    }
+
+    /**
+     * @param ActiveCells $activeCells
+     * @return $this
+     */
+    public function setActiveCells(ActiveCells $activeCells)
+    {
+        $this->activeCells = $activeCells;
+        return $this;
     }
 
     /**
