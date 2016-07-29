@@ -10,6 +10,7 @@ use AppBundle\Entity\Raster;
 use AppBundle\Model\AreaFactory;
 use AppBundle\Model\BoundingBox;
 use AppBundle\Model\GridSize;
+use AppBundle\Model\PropertyType;
 use AppBundle\Model\PropertyTypeFactory;
 use AppBundle\Model\RasterFactory;
 use JMS\Serializer\Serializer;
@@ -139,12 +140,7 @@ class RasterRestControllerTest extends WebTestCase
         $this->entityManager->persist($this->area);
         $this->entityManager->flush();
 
-        $propertyType = PropertyTypeFactory::create()
-            ->setName('Hydraulic Head')
-            ->setAbbreviation("hh");
-
-        $this->entityManager->persist($propertyType);
-        $this->entityManager->flush();
+        $propertyType = PropertyTypeFactory::create(PropertyType::HYDRAULIC_HEAD);
 
         $date = new \DateTime('now');
 
@@ -155,7 +151,7 @@ class RasterRestControllerTest extends WebTestCase
             array(
                 'id' => $this->area->getId(),
                 'propertyName' => 'MyPropertyName',
-                'propertyType' => $propertyType->getName(),
+                'propertyType' => $propertyType->getAbbreviation(),
                 'numberOfColumns' => $this->raster->getGridSize()->getNX(),
                 'numberOfRows' => $this->raster->getGridSize()->getNY(),
                 'upperLeftX' => $this->raster->getBoundingBox()->getXMin(),

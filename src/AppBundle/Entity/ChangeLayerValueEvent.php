@@ -2,6 +2,7 @@
 
 namespace AppBundle\Entity;
 
+use AppBundle\Model\PropertyType;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
@@ -26,7 +27,7 @@ class ChangeLayerValueEvent extends AbstractEvent
     /**
      * @var PropertyType $value
      *
-     * @ORM\ManyToOne(targetEntity="AppBundle\Entity\PropertyType")
+     * @ORM\Column(name="property_type", type="property_type", nullable=true)
      */
     private $propertyType;
 

@@ -3,6 +3,7 @@
 namespace AppBundle\Entity;
 
 use AppBundle\Model\Point;
+use AppBundle\Model\PropertyType;
 use Doctrine\ORM\Mapping as ORM;
 use JMS\Serializer\Annotation as JMS;
 

@@ -15,6 +15,8 @@ use AppBundle\Model\ModFlowModelFactory;
 use AppBundle\Model\ObservationPointFactory;
 use AppBundle\Model\Point;
 use AppBundle\Model\PropertyTimeValueFactory;
+use AppBundle\Model\PropertyType;
+use AppBundle\Model\PropertyTypeFactory;
 use AppBundle\Model\PropertyValueFactory;
 use AppBundle\Model\SoilModelFactory;
 use AppBundle\Model\StreamBoundaryFactory;
@@ -25,7 +27,6 @@ use Doctrine\Common\DataFixtures\FixtureInterface;
 use Doctrine\Common\Persistence\ObjectManager;
 use Symfony\Component\DependencyInjection\ContainerAwareInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
-use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class LoadScenario_1 implements FixtureInterface, ContainerAwareInterface
 {
@@ -68,32 +69,9 @@ class LoadScenario_1 implements FixtureInterface, ContainerAwareInterface
         }
 
         // Load PropertyTypes
-        $propertyTypeGwHead = $entityManager->getRepository('AppBundle:PropertyType')
-            ->findOneBy(array(
-                'abbreviation' => "hh"
-            ));
-
-        if (!$propertyTypeGwHead) {
-            return new NotFoundHttpException();
-        }
-
-        $propertyTypeTopElevation = $entityManager->getRepository('AppBundle:PropertyType')
-            ->findOneBy(array(
-                'abbreviation' => "et"
-            ));
-
-        if (!$propertyTypeTopElevation) {
-            return new NotFoundHttpException();
-        }
-
-        $propertyTypeBottomElevation = $entityManager->getRepository('AppBundle:PropertyType')
-            ->findOneBy(array(
-                'abbreviation' => "eb"
-            ));
-
-        if (!$propertyTypeBottomElevation) {
-            return new NotFoundHttpException();
-        }
+        $propertyTypeGwHead = PropertyTypeFactory::create(PropertyType::HYDRAULIC_HEAD);
+        $propertyTypeTopElevation = PropertyTypeFactory::create(PropertyType::TOP_ELEVATION);
+        $propertyTypeBottomElevation = PropertyTypeFactory::create(PropertyType::BOTTOM_ELEVATION);
 
         // Add new SoilModel
         $soilModel = SoilModelFactory::create();

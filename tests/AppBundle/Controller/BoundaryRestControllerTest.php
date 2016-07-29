@@ -6,7 +6,6 @@ use AppBundle\Entity\BoundaryModelObject;
 use AppBundle\Entity\ConstantHeadBoundary;
 use AppBundle\Entity\GeneralHeadBoundary;
 use AppBundle\Entity\GeologicalLayer;
-use AppBundle\Entity\PropertyType;
 use AppBundle\Entity\StreamBoundary;
 use AppBundle\Entity\User;
 use AppBundle\Entity\WellBoundary;
@@ -14,6 +13,8 @@ use AppBundle\Model\ConstantHeadBoundaryFactory;
 use AppBundle\Model\GeneralHeadBoundaryFactory;
 use AppBundle\Model\GeologicalLayerFactory;
 use AppBundle\Model\Point;
+use AppBundle\Model\PropertyType;
+use AppBundle\Model\PropertyTypeFactory;
 use AppBundle\Model\PropertyValueFactory;
 use AppBundle\Model\StreamBoundaryFactory;
 use AppBundle\Model\UserFactory;
@@ -63,25 +64,10 @@ class BoundaryRestControllerTest extends WebTestCase
             ->get('doctrine.orm.default_entity_manager')
         ;
 
-        $this->headPropertyType = new PropertyType();
-        $this->headPropertyType->setName('Head')
-            ->setAbbreviation('hd')
-        ;
-
-        $this->riverStagePropertyType = new PropertyType();
-        $this->riverStagePropertyType->setName('RiverStage')
-            ->setAbbreviation('rs')
-        ;
-
-        $this->riverStageConductancePropertyType = new PropertyType();
-        $this->riverStageConductancePropertyType->setName('RiverStageConductance')
-            ->setAbbreviation('rsc')
-        ;
-
-        $this->pumpingRatePropertyType = new PropertyType();
-        $this->pumpingRatePropertyType->setName('Pumpingrate')
-            ->setAbbreviation('pr')
-        ;
+        $this->headPropertyType = PropertyTypeFactory::create(PropertyType::HYDRAULIC_HEAD);
+        $this->riverStagePropertyType = PropertyTypeFactory::create(PropertyType::RIVER_STAGE);
+        $this->riverStageConductancePropertyType = PropertyTypeFactory::create(PropertyType::RIVERBED_CONDUCTANCE);
+        $this->pumpingRatePropertyType = PropertyTypeFactory::create(PropertyType::PUMPING_RATE);
 
         $this->owner = UserFactory::createTestUser('BoundaryOwner');
         $this->entityManager->persist($this->owner);

@@ -4,7 +4,6 @@ namespace AppBundle\DataFixtures\ORM\TestScenarios\TestScenario_1;
 
 use AppBundle\Entity\GeologicalLayer;
 use AppBundle\Entity\ModFlowModel;
-use AppBundle\Entity\PropertyType;
 use AppBundle\Entity\User;
 use AppBundle\Model\AreaFactory;
 use AppBundle\Model\AreaTypeFactory;
@@ -13,6 +12,8 @@ use AppBundle\Model\GeologicalLayerFactory;
 use AppBundle\Model\BoundingBox;
 use AppBundle\Model\GridSize;
 use AppBundle\Model\ModFlowModelFactory;
+use AppBundle\Model\PropertyType;
+use AppBundle\Model\PropertyTypeFactory;
 use AppBundle\Model\PropertyValueFactory;
 use AppBundle\Model\SoilModelFactory;
 use AppBundle\Model\StressPeriodFactory;
@@ -23,7 +24,6 @@ use Doctrine\Common\DataFixtures\FixtureInterface;
 use Doctrine\Common\Persistence\ObjectManager;
 use Symfony\Component\DependencyInjection\ContainerAwareInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
-use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class LoadTestScenario_1 implements FixtureInterface, ContainerAwareInterface
 {
@@ -65,42 +65,12 @@ class LoadTestScenario_1 implements FixtureInterface, ContainerAwareInterface
             $entityManager->persist($user);
         }
 
+
         // Load PropertyTypes
-        $propertyTypeGwHead = $entityManager->getRepository('AppBundle:PropertyType')
-            ->findOneBy(array(
-                'abbreviation' => "hh"
-            ));
-
-        if (!$propertyTypeGwHead) {
-            return new NotFoundHttpException();
-        }
-
-        $propertyTypeTopElevation = $entityManager->getRepository('AppBundle:PropertyType')
-            ->findOneBy(array(
-                'abbreviation' => "et"
-            ));
-
-        if (!$propertyTypeTopElevation) {
-            return new NotFoundHttpException();
-        }
-
-        $propertyTypeBottomElevation = $entityManager->getRepository('AppBundle:PropertyType')
-            ->findOneBy(array(
-                'abbreviation' => "eb"
-            ));
-
-        if (!$propertyTypeBottomElevation) {
-            return new NotFoundHttpException();
-        }
-
-        $propertyHydraulicConductivity = $entityManager->getRepository('AppBundle:PropertyType')
-            ->findOneBy(array(
-                'abbreviation' => "hc"
-            ));
-
-        if (!$propertyHydraulicConductivity) {
-            return new NotFoundHttpException();
-        }
+        $propertyTypeGwHead = PropertyTypeFactory::create(PropertyType::HYDRAULIC_HEAD);
+        $propertyTypeTopElevation = PropertyTypeFactory::create(PropertyType::TOP_ELEVATION);
+        $propertyTypeBottomElevation = PropertyTypeFactory::create(PropertyType::BOTTOM_ELEVATION);
+        $propertyHydraulicConductivity = PropertyTypeFactory::create(PropertyType::HYDRAULIC_CONDUCTIVITY);
 
         /** @var ModFlowModel $model */
         $model = ModFlowModelFactory::create()

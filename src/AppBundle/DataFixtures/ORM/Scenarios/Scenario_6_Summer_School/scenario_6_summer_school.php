@@ -3,7 +3,6 @@
 namespace AppBundle\DataFixtures\ORM\Scenarios\Scenario_6_Summer_School;
 
 use AppBundle\Entity\GeologicalLayer;
-use AppBundle\Entity\PropertyType;
 use AppBundle\Entity\StreamBoundary;
 use AppBundle\Entity\User;
 use AppBundle\Model\AreaFactory;
@@ -16,8 +15,9 @@ use AppBundle\Model\GridSize;
 use AppBundle\Model\ModFlowModelFactory;
 use AppBundle\Model\Point;
 use AppBundle\Model\PropertyTimeValueFactory;
+use AppBundle\Model\PropertyType;
+use AppBundle\Model\PropertyTypeFactory;
 use AppBundle\Model\PropertyValueFactory;
-use AppBundle\Model\Serializer\RivSerializer;
 use AppBundle\Model\SoilModelFactory;
 use AppBundle\Model\StreamBoundaryFactory;
 use AppBundle\Model\WellBoundaryFactory;
@@ -28,7 +28,6 @@ use Doctrine\Common\Persistence\ObjectManager;
 use Inowas\PyprocessingBundle\Service\Interpolation;
 use Symfony\Component\DependencyInjection\ContainerAwareInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
-use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class LoadScenario_6 implements FixtureInterface, ContainerAwareInterface
 {
@@ -72,69 +71,12 @@ class LoadScenario_6 implements FixtureInterface, ContainerAwareInterface
             $entityManager->persist($user);
         }
 
+
         // Load PropertyTypes
-        $propertyTypeGwHead = $entityManager->getRepository('AppBundle:PropertyType')
-            ->findOneBy(array(
-                'abbreviation' => "hh"
-            ));
-
-        if (!$propertyTypeGwHead) {
-            return new NotFoundHttpException();
-        }
-
-        $propertyTypeTopElevation = $entityManager->getRepository('AppBundle:PropertyType')
-            ->findOneBy(array(
-                'abbreviation' => "et"
-            ));
-
-        if (!$propertyTypeTopElevation) {
-            return new NotFoundHttpException();
-        }
-
-        $propertyTypeBottomElevation = $entityManager->getRepository('AppBundle:PropertyType')
-            ->findOneBy(array(
-                'abbreviation' => "eb"
-            ));
-
-        if (!$propertyTypeBottomElevation) {
-            return new NotFoundHttpException();
-        }
-
-        $propertyTypePumpingRate = $entityManager->getRepository('AppBundle:PropertyType')
-            ->findOneBy(array(
-                'abbreviation' => "pur"
-            ));
-
-        if (!$propertyTypePumpingRate) {
-            return new NotFoundHttpException();
-        }
-
-        $propertyTypeHydraulicConductivity = $entityManager->getRepository('AppBundle:PropertyType')
-            ->findOneBy(array(
-                'abbreviation' => "hc"
-            ));
-
-        if (!$propertyTypeHydraulicConductivity) {
-            return new NotFoundHttpException();
-        }
-
-        $propertyTypePrecipitation = $entityManager->getRepository('AppBundle:PropertyType')
-            ->findOneBy(array(
-                'abbreviation' => "pr"
-            ));
-
-        if (!$propertyTypePrecipitation) {
-            return new NotFoundHttpException();
-        }
-
-        $propertyTypeRiverStage = $entityManager->getRepository('AppBundle:PropertyType')
-            ->findOneBy(array(
-                'abbreviation' => "rs"
-            ));
-
-        if (!$propertyTypeRiverStage) {
-            return new NotFoundHttpException();
-        }
+        $propertyTypeTopElevation = PropertyTypeFactory::create(PropertyType::TOP_ELEVATION);
+        $propertyTypeBottomElevation = PropertyTypeFactory::create(PropertyType::BOTTOM_ELEVATION);
+        $propertyTypeHydraulicConductivity = PropertyTypeFactory::create(PropertyType::HYDRAULIC_CONDUCTIVITY);
+        $propertyTypeRiverStage = PropertyTypeFactory::create(PropertyType::RIVER_STAGE);
 
         $model = ModFlowModelFactory::create()
             ->setName("Inowas Rio Primero")
@@ -321,10 +263,10 @@ class LoadScenario_6 implements FixtureInterface, ContainerAwareInterface
                     continue;
                 }
 
-                echo (sprintf("Interpolating Layer %s, Property %s\r\n", $layer->getName(), $propertyType->getName()));
+                echo (sprintf("Interpolating Layer %s, Property %s\r\n", $layer->getName(), $propertyType->getDescription()));
                 $output = $soilModelService->interpolateLayerByProperty(
                     $layer,
-                    $propertyType->getAbbreviation(),
+                    $propertyType,
                     array(Interpolation::TYPE_IDW, Interpolation::TYPE_MEAN)
                 );
 

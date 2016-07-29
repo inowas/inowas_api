@@ -4,7 +4,6 @@ namespace AppBundle\DataFixtures\ORM\Scenarios\Scenario_5;
 
 use AppBundle\Entity\GeologicalLayer;
 use AppBundle\Entity\GeologicalUnit;
-use AppBundle\Entity\PropertyType;
 use AppBundle\Entity\User;
 use AppBundle\Entity\WellBoundary;
 use AppBundle\Model\AreaFactory;
@@ -18,6 +17,8 @@ use AppBundle\Model\GridSize;
 use AppBundle\Model\ModFlowModelFactory;
 use AppBundle\Model\Point;
 use AppBundle\Model\PropertyTimeValueFactory;
+use AppBundle\Model\PropertyType;
+use AppBundle\Model\PropertyTypeFactory;
 use AppBundle\Model\PropertyValueFactory;
 use AppBundle\Model\RechargeBoundaryFactory;
 use AppBundle\Model\SoilModelFactory;
@@ -29,7 +30,6 @@ use Doctrine\Common\DataFixtures\FixtureInterface;
 use Doctrine\Common\Persistence\ObjectManager;
 use Symfony\Component\DependencyInjection\ContainerAwareInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
-use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class LoadScenario_5 implements FixtureInterface, ContainerAwareInterface
 {
@@ -74,59 +74,11 @@ class LoadScenario_5 implements FixtureInterface, ContainerAwareInterface
         }
 
         // Load PropertyTypes
-        $propertyTypeGwHead = $entityManager->getRepository('AppBundle:PropertyType')
-            ->findOneBy(array(
-                'abbreviation' => "hh"
-            ));
-
-        if (!$propertyTypeGwHead) {
-            return new NotFoundHttpException();
-        }
-
-        $propertyTypeTopElevation = $entityManager->getRepository('AppBundle:PropertyType')
-            ->findOneBy(array(
-                'abbreviation' => "et"
-            ));
-
-        if (!$propertyTypeTopElevation) {
-            return new NotFoundHttpException();
-        }
-
-        $propertyTypeBottomElevation = $entityManager->getRepository('AppBundle:PropertyType')
-            ->findOneBy(array(
-                'abbreviation' => "eb"
-            ));
-
-        if (!$propertyTypeBottomElevation) {
-            return new NotFoundHttpException();
-        }
-
-        $propertyTypePumpingRate = $entityManager->getRepository('AppBundle:PropertyType')
-            ->findOneBy(array(
-                'abbreviation' => "pur"
-            ));
-
-        if (!$propertyTypePumpingRate) {
-            return new NotFoundHttpException();
-        }
-
-        $propertyTypeHydraulicConductivity = $entityManager->getRepository('AppBundle:PropertyType')
-            ->findOneBy(array(
-                'abbreviation' => "hc"
-            ));
-
-        if (!$propertyTypeHydraulicConductivity) {
-            return new NotFoundHttpException();
-        }
-
-        $propertyTypePrecipitation = $entityManager->getRepository('AppBundle:PropertyType')
-            ->findOneBy(array(
-                'abbreviation' => "pr"
-            ));
-
-        if (!$propertyTypePrecipitation) {
-            return new NotFoundHttpException();
-        }
+        $propertyTypeGwHead = PropertyTypeFactory::create(PropertyType::HYDRAULIC_HEAD);
+        $propertyTypeTopElevation = PropertyTypeFactory::create(PropertyType::TOP_ELEVATION);
+        $propertyTypeBottomElevation = PropertyTypeFactory::create(PropertyType::BOTTOM_ELEVATION);
+        $propertyTypeHydraulicConductivity = PropertyTypeFactory::create(PropertyType::HYDRAULIC_CONDUCTIVITY);
+        $propertyTypePrecipitation = PropertyTypeFactory::create(PropertyType::PRECIPITATION);
 
         $model = ModFlowModelFactory::create()
             ->setName("Inowas Pirna")
@@ -346,10 +298,10 @@ class LoadScenario_5 implements FixtureInterface, ContainerAwareInterface
                     continue;
                 }
 
-                echo (sprintf("Interpolating Layer %s, Property %s\r\n", $layer->getName(), $propertyType->getName()));
+                echo (sprintf("Interpolating Layer %s, Property %s\r\n", $layer->getName(), $propertyType->getDescription()));
                 $output = $soilModelService->interpolateLayerByProperty(
                     $layer,
-                    $propertyType->getAbbreviation(),
+                    $propertyType,
                     array(Interpolation::TYPE_GAUSSIAN, Interpolation::TYPE_IDW, Interpolation::TYPE_MEAN)
                 );
 

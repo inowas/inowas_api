@@ -4,9 +4,9 @@ namespace Tests\AppBundle\Entity;
 
 use AppBundle\Entity\ChangeLayerValueEvent;
 use AppBundle\Entity\GeologicalLayer;
-use AppBundle\Entity\PropertyType;
 use AppBundle\Entity\PropertyValue;
 use AppBundle\Model\GeologicalLayerFactory;
+use AppBundle\Model\PropertyType;
 use AppBundle\Model\PropertyTypeFactory;
 use AppBundle\Model\PropertyValueFactory;
 
@@ -28,7 +28,7 @@ class ChangeLayerValueEventTest extends \PHPUnit_Framework_TestCase
     public function setUp()
     {
         $this->layer = GeologicalLayerFactory::create();
-        $this->propertyType = PropertyTypeFactory::create();
+        $this->propertyType = PropertyTypeFactory::create(PropertyType::KX);
         $this->value = PropertyValueFactory::create();
     }
 

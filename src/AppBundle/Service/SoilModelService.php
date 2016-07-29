@@ -6,7 +6,6 @@ use AppBundle\Entity\GeologicalLayer;
 use AppBundle\Entity\GeologicalUnit;
 use AppBundle\Entity\ModFlowModel;
 use AppBundle\Entity\Property;
-use AppBundle\Entity\PropertyType;
 use AppBundle\Entity\SoilModel;
 use AppBundle\Model\PointValue;
 use AppBundle\Model\PropertyValueFactory;
@@ -158,21 +157,11 @@ class SoilModelService
 
     /**
      * @param GeologicalLayer $layer
-     * @param $propertyTypeAbbreviation
+     * @param $propertyType
      * @param array $algorithms
-     * @return mixed
      */
-    public function interpolateLayerByProperty(GeologicalLayer $layer, $propertyTypeAbbreviation, array $algorithms)
+    public function interpolateLayerByProperty(GeologicalLayer $layer, $propertyType, array $algorithms)
     {
-        $propertyType = $this->em->getRepository('AppBundle:PropertyType')
-            ->findOneBy(array(
-                'abbreviation' => $propertyTypeAbbreviation
-            ));
-
-        if (!$propertyType) {
-            throw new NotFoundHttpException(sprintf('PropertyType with abbreviation "%s" not found.', $propertyTypeAbbreviation));
-        }
-
         $units = $layer->getGeologicalUnits();
 
         $gridSize = $this->modflowModel->getGridSize();

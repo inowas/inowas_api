@@ -7,6 +7,7 @@ use AppBundle\Model\BoundingBox;
 use AppBundle\Model\GridSize;
 use AppBundle\Model\PropertyFactory;
 use AppBundle\Model\PropertyTimeValueFactory;
+use AppBundle\Model\PropertyTypeFactory;
 use AppBundle\Model\PropertyValueFactory;
 use AppBundle\Model\RasterFactory;
 
@@ -126,15 +127,6 @@ class RasterRestController extends FOSRestController
             throw $this->createNotFoundException('ModelObject with id='.$paramFetcher->get('id').' not found.');
         }
 
-        $propertyType = $this->getDoctrine()->getRepository('AppBundle:PropertyType')
-            ->findOneBy(array(
-                'name' => $paramFetcher->get('propertyType')
-            ));
-
-        if (!$propertyType) {
-            throw $this->createNotFoundException('PropertyType with name='.$paramFetcher->get('propertyType').' not found.');
-        }
-
         /*
          * Let's create a RasterObject
          */
@@ -159,7 +151,7 @@ class RasterRestController extends FOSRestController
         /* Let's create a property and a value-object */
         $property = PropertyFactory::create()
             ->setName($paramFetcher->get('propertyName'))
-            ->setPropertyType($propertyType);
+            ->setPropertyType(PropertyTypeFactory::create($paramFetcher->get('propertyType')));
 
         if (is_null($paramFetcher->get('date'))) {
             $value = PropertyValueFactory::create();

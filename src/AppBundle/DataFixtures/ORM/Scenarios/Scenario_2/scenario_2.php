@@ -5,7 +5,6 @@ namespace AppBundle\DataFixtures\ORM\Scenarios\Scenario_2;
 use AppBundle\Entity\GeologicalLayer;
 use AppBundle\Entity\ModelObject;
 use AppBundle\Entity\ModFlowModel;
-use AppBundle\Entity\PropertyType;
 use AppBundle\Entity\User;
 use AppBundle\Model\AreaFactory;
 use AppBundle\Model\AreaTypeFactory;
@@ -19,6 +18,8 @@ use AppBundle\Model\ModFlowModelFactory;
 use AppBundle\Model\ObservationPointFactory;
 use AppBundle\Model\PropertyFactory;
 use AppBundle\Model\PropertyTimeValueFactory;
+use AppBundle\Model\PropertyType;
+use AppBundle\Model\PropertyTypeFactory;
 use AppBundle\Model\PropertyValueFactory;
 use AppBundle\Model\Point;
 use AppBundle\Model\SoilModelFactory;
@@ -86,42 +87,9 @@ class LoadScenario_2 implements FixtureInterface, ContainerAwareInterface
         }
 
         // Load PropertyTypes
-        $propertyTypeGwHead = $entityManager->getRepository('AppBundle:PropertyType')
-            ->findOneBy(array(
-                'abbreviation' => "hh"
-            ));
-
-        if (!$propertyTypeGwHead) {
-            return new NotFoundHttpException();
-        }
-
-        $propertyTypeTopElevation = $entityManager->getRepository('AppBundle:PropertyType')
-            ->findOneBy(array(
-                'abbreviation' => "et"
-            ));
-
-        if (!$propertyTypeTopElevation) {
-            return new NotFoundHttpException();
-        }
-
-        $propertyTypeBottomElevation = $entityManager->getRepository('AppBundle:PropertyType')
-            ->findOneBy(array(
-                'abbreviation' => "eb"
-            ));
-
-        if (!$propertyTypeBottomElevation) {
-            return new NotFoundHttpException();
-        }
-
-        $propertyTypePumpingRate = $entityManager->getRepository('AppBundle:PropertyType')
-            ->findOneBy(array(
-                'abbreviation' => "pur"
-            ));
-
-        if (!$propertyTypePumpingRate) {
-            return new NotFoundHttpException();
-        }
-
+        $propertyTypeTopElevation = PropertyTypeFactory::create(PropertyType::TOP_ELEVATION);
+        $propertyTypeBottomElevation = PropertyTypeFactory::create(PropertyType::BOTTOM_ELEVATION);
+        $propertyTypePumpingRate = PropertyTypeFactory::create(PropertyType::PUMPING_RATE);
 
         // Create AreaType
         $areaType = AreaTypeFactory::setName('SC2_AT1');
@@ -423,15 +391,7 @@ class LoadScenario_2 implements FixtureInterface, ContainerAwareInterface
 
             $property = PropertyFactory::create();
             $property->setName($geologicalLayerProperty[1]);
-            $propertyType = $entityManager->getRepository('AppBundle:PropertyType')
-                ->findOneBy(array(
-                    'abbreviation' => $geologicalLayerProperty[2]
-                ));
-
-            if (!$propertyType) {
-                throw new NotFoundHttpException();
-            }
-            $property->setPropertyType($propertyType);
+            $property->setPropertyType(PropertyTypeFactory::create($geologicalLayerProperty[2]));
             $value = PropertyValueFactory::create()->setValue($geologicalLayerProperty[3]);
             $property->addValue($value);
             $geologicalLayer->addProperty($property);
@@ -823,7 +783,7 @@ class LoadScenario_2 implements FixtureInterface, ContainerAwareInterface
             {
                 echo 'Add properties to '.$geologicalUnit->getName()."\n";
 
-                $propertyType = $this->getPropertyType($this->entityManager, 'hc');
+                $propertyType = PropertyTypeFactory::create(PropertyType::HYDRAULIC_CONDUCTIVITY);
                 $property = PropertyFactory::create()->setPropertyType($propertyType);
                 $propertyValue = PropertyValueFactory::create()->setValue($geologicalUnitProperty[1]);
                 $property->setName('Hydraulic conductivity'.' '.$geologicalUnit->getName());
@@ -831,7 +791,7 @@ class LoadScenario_2 implements FixtureInterface, ContainerAwareInterface
                 $geologicalUnit->addProperty($property);
                 $this->entityManager->persist($property);
 
-                $propertyType = $this->getPropertyType($this->entityManager, 'ha');
+                $propertyType = PropertyTypeFactory::create(PropertyType::HORIZONTAL_ANISOTROPY);
                 $property = PropertyFactory::create()->setPropertyType($propertyType);
                 $propertyValue = PropertyValueFactory::create()->setValue($geologicalUnitProperty[2]);
                 $property->setName('Horizontal anisotropy'.' '.$geologicalUnit->getName());
@@ -839,7 +799,7 @@ class LoadScenario_2 implements FixtureInterface, ContainerAwareInterface
                 $geologicalUnit->addProperty($property);
                 $this->entityManager->persist($property);
 
-                $propertyType = $this->getPropertyType($this->entityManager, 'va');
+                $propertyType = PropertyTypeFactory::create(PropertyType::VERTICAL_ANISOTROPY);
                 $property = PropertyFactory::create()->setPropertyType($propertyType);
                 $propertyValue = PropertyValueFactory::create()->setValue($geologicalUnitProperty[3]);
                 $property->setName('Vertical anisotropy'.' '.$geologicalUnit->getName());
@@ -1134,7 +1094,7 @@ class LoadScenario_2 implements FixtureInterface, ContainerAwareInterface
                     continue;
                 }
 
-                echo (sprintf("Interpolating Layer %s, Property %s\r\n", $layer->getName(), $propertyType->getName()));
+                echo (sprintf("Interpolating Layer %s, Property %s\r\n", $layer->getName(), $propertyType->getAbbreviation()));
                 $output = $soilModelService->interpolateLayerByProperty(
                     $layer,
                     $propertyType->getAbbreviation(),
@@ -1162,19 +1122,15 @@ class LoadScenario_2 implements FixtureInterface, ContainerAwareInterface
 
         for ($i = 1; $i <= $elementCount; $i++)
         {
-            $propertyTypeName = $dataFields[$i];
-            $propertyType = $this->getPropertyType($this->entityManager, $propertyTypeName);
-
-            foreach ($data as $dataPoint)
-            {
+            $propertyType = PropertyTypeFactory::create($dataFields[$i]);
+            foreach ($data as $dataPoint) {
                 $propertyTimeValue = PropertyTimeValueFactory::createWithTimeAndValue(new \DateTime($dataPoint[$dataFields[0]]), (float)$dataPoint[$dataFields[$i]]);
                 $baseElement->addValue($propertyType, $propertyTimeValue);
                 $this->entityManager->persist($propertyTimeValue);
 
                 echo $counter++."\n";
 
-                if ($counter % 20 == 0)
-                {
+                if ($counter % 20 == 0) {
                     $this->entityManager->flush();
                 }
             }
@@ -1209,25 +1165,5 @@ class LoadScenario_2 implements FixtureInterface, ContainerAwareInterface
         }
 
         return $data;
-    }
-
-    /**
-     * @param ObjectManager $entityManager
-     * @param $propertyAbbreviation
-     * @return \AppBundle\Entity\PropertyType|object
-     */
-    private function getPropertyType(ObjectManager $entityManager, $propertyAbbreviation)
-    {
-        $propertyType = $entityManager->getRepository('AppBundle:PropertyType')
-            ->findOneBy(array(
-                'abbreviation' => $propertyAbbreviation
-            ));
-
-        if (!$propertyType)
-        {
-            throw new NotFoundHttpException();
-        }
-
-        return $propertyType;
     }
 }

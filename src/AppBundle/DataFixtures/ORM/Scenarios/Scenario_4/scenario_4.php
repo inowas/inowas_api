@@ -5,7 +5,6 @@ namespace AppBundle\DataFixtures\ORM\Scenarios\Scenario_4;
 use AppBundle\Entity\AddBoundaryEvent;
 use AppBundle\Entity\ChangeLayerValueEvent;
 use AppBundle\Entity\GeologicalLayer;
-use AppBundle\Entity\PropertyType;
 use AppBundle\Entity\Raster;
 use AppBundle\Entity\User;
 use AppBundle\Entity\WellBoundary;
@@ -19,6 +18,8 @@ use AppBundle\Model\GridSize;
 use AppBundle\Model\ModelScenarioFactory;
 use AppBundle\Model\ModFlowModelFactory;
 use AppBundle\Model\Point;
+use AppBundle\Model\PropertyType;
+use AppBundle\Model\PropertyTypeFactory;
 use AppBundle\Model\PropertyValueFactory;
 use AppBundle\Model\RasterFactory;
 use AppBundle\Model\SoilModelFactory;
@@ -29,7 +30,6 @@ use Doctrine\Common\DataFixtures\FixtureInterface;
 use Doctrine\Common\Persistence\ObjectManager;
 use Symfony\Component\DependencyInjection\ContainerAwareInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
-use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class LoadScenario_4 implements FixtureInterface, ContainerAwareInterface
 {
@@ -74,41 +74,10 @@ class LoadScenario_4 implements FixtureInterface, ContainerAwareInterface
         }
 
         // Load PropertyTypes
-        $propertyTypeGwHead = $entityManager->getRepository('AppBundle:PropertyType')
-            ->findOneBy(array(
-                'abbreviation' => "hh"
-            ));
-
-        if (!$propertyTypeGwHead) {
-            return new NotFoundHttpException();
-        }
-
-        $propertyTypeTopElevation = $entityManager->getRepository('AppBundle:PropertyType')
-            ->findOneBy(array(
-                'abbreviation' => "et"
-            ));
-
-        if (!$propertyTypeTopElevation) {
-            return new NotFoundHttpException();
-        }
-
-        $propertyTypeBottomElevation = $entityManager->getRepository('AppBundle:PropertyType')
-            ->findOneBy(array(
-                'abbreviation' => "eb"
-            ));
-
-        if (!$propertyTypeBottomElevation) {
-            return new NotFoundHttpException();
-        }
-
-        $propertyTypePumpingRate = $entityManager->getRepository('AppBundle:PropertyType')
-            ->findOneBy(array(
-                'abbreviation' => "pur"
-            ));
-
-        if (!$propertyTypePumpingRate) {
-            return new NotFoundHttpException();
-        }
+        $propertyTypeHydraulicHead = PropertyTypeFactory::create(PropertyType::HYDRAULIC_HEAD);
+        $propertyTypeTopElevation = PropertyTypeFactory::create(PropertyType::TOP_ELEVATION);
+        $propertyTypeBottomElevation = PropertyTypeFactory::create(PropertyType::BOTTOM_ELEVATION);
+        $propertyTypePumpingRate = PropertyTypeFactory::create(PropertyType::PUMPING_RATE);
 
         $model = ModFlowModelFactory::create()
             ->setName("Inowas Hanoi")
@@ -674,285 +643,6 @@ class LoadScenario_4 implements FixtureInterface, ContainerAwareInterface
             $entityManager->flush();
         }
 
-        /* Add Private Wells */
-        /*        $privateWells = array(
-            array("G9",577392,2321208,32648,60,10),
-            array("G12",590898,2311742,32648,70,3000),
-            array("G18",580179,2320123,32648,76,970),
-            array("G19",579482,2319385,32648,58,500),
-            array("G21",574577,2314031,32648,80,30),
-            array("G34",574502,2314771,32648,45,250),
-            array("G37",574297,2315032,32648,60,4),
-            array("G44",578701,2314081,32648,76,45),
-            array("G46",578620,2313768,32648,58,200),
-            array("G55",573874,2313075,32648,32,30),
-            array("G65",574816,2323611,32648,65,80),
-            array("G68",573634,2315634,32648,68,500),
-            array("G74",573344,2329737,32648,105,40),
-            array("G82",589825,2318390,32648,70,100),
-            array("G83",580411,2324457,32648,60,80),
-            array("G85",588149,2325683,32648,60,250),
-            array("G86",590791,2312947,32648,76,320),
-            array("G87",580652,2325872,32648,45,50),
-            array("G89",585324,2320139,32648,70,75),
-            array("G90",582070,2324835,32648,65,75),
-            array("G91",592239,2317049,32648,40,50),
-            array("G92",579081,2329358,32648,70,20),
-            array("G93",594340,2332218,32648,55,50),
-            array("G94",590566,2313200,32648,70,72),
-            array("G95",583264,2322450,32648,70,454),
-            array("G96",590387,2322104,32648,70,200),
-            array("G100",586872,2320714,32648,70,200),
-            array("G101",588576,2312923,32648,74,105),
-            array("G103",593831,2331434,32648,100,60),
-            array("G104",587651,2317690,32648,70,50),
-            array("G105",583957,2326907,32648,75,160),
-            array("G106",579795,2328967,32648,0,55),
-            array("G107",588611,2313030,32648,68,60),
-            array("G108",588543,2313439,32648,70,60),
-            array("G109",578921,2325849,32648,75,650),
-            array("G110",590646,2329401,32648,70,175),
-            array("G111",592064,2330136,32648,70,200),
-            array("G112",579172,2326645,32648,60,180),
-            array("G113",584777,2322331,32648,70,800),
-            array("G115",591454,2321985,32648,69,30),
-            array("G116",593969,2332157,32648,60,90),
-            array("G117",584356,2317573,32648,65,150),
-            array("G119",594430,2330557,32648,80,150),
-            array("G120",583587,2317711,32648,70,300),
-            array("G121",589536,2320375,32648,200,840),
-            array("G122",579446,2321398,32648,60,140),
-            array("G123",581030,2317673,32648,65,60),
-            array("G124",583387,2322271,32648,60,80),
-            array("G125",594118,2329945,32648,70,1080),
-            array("G126",580549,2325334,32648,65,50),
-            array("G128",587431,2316289,32648,65,1040),
-            array("G129",582286,2321931,32648,70,50),
-            array("G130",577221,2327386,32648,36,20),
-            array("G131",585226,2317140,32648,36,66),
-            array("G132",581283,2323830,32648,71,300),
-            array("G133",594583,2330515,32648,65,120),
-            array("G134",594175,2332279,32648,50,50),
-            array("G136",577631,2321970,32648,60,70),
-            array("G137",587130,2313841,32648,60,60),
-            array("G139",584290,2323219,32648,65,110),
-            array("G140",580256,2326451,32648,60,50),
-            array("G141",594036,2332052,32648,100,90),
-            array("G143",583051,2322539,32648,65,50),
-            array("G144",578923,2325685,32648,58,50),
-            array("G145",593923,2331360,32648,60,60),
-            array("G147",583991,2330192,32648,80,100),
-            array("G149",585380,2326708,32648,60,2400),
-            array("G151",594343,2332271,32648,80,75),
-            array("G158",591472,2322405,32648,100,100),
-            array("G159",578568,2323373,32648,50,50),
-            array("G160",589836,2320675,32648,65,1200),
-            array("G161",580344,2331705,32648,60,560),
-            array("G165",584721,2330609,32648,50,800),
-            array("G166",584421,2322496,32648,50,25),
-            array("G168",592492,2319625,32648,70,130),
-            array("G173",586761,2328726,32648,70,60),
-            array("G174",579306,2327437,32648,55,20),
-            array("G177",587061,2320748,32648,70,100),
-            array("G178",581283,2323803,32648,71,300),
-            array("G179",590393,2322230,32648,60,120),
-            array("G180",589832,2320756,32648,70,35),
-            array("G182",581314,2325558,32648,70,50),
-            array("G184",578972,2329502,32648,45,50),
-            array("G186",583245,2321702,32648,60,200),
-            array("G187",588010,2316327,32648,72,6080),
-            array("G188",592011,2320064,32648,73,120),
-            array("G189",586526,2316388,32648,65,2000),
-            array("G190",594338,2332392,32648,60,55),
-            array("G191",577501,2324220,32648,60,80),
-            array("G193",579109,2329109,32648,54,10),
-            array("G194",581522,2325719,32648,65,50),
-            array("G195",588679,2313534,32648,80,80),
-            array("G198",583391,2322641,32648,69,200),
-            array("G202",584186,2317767,32648,56,60),
-            array("G203",579970,2315228,32648,63,150),
-            array("G205",583982,2330216,32648,70,60),
-            array("G206",591547,2328046,32648,65,100),
-            array("G208",587615,2314313,32648,70,60),
-            array("G209",577318,2322819,32648,0,50),
-            array("G210",581595,2323053,32648,57,250),
-            array("G211",590089,2322184,32648,65,500),
-            array("G212",591289,2322419,32648,35,120),
-            array("G213",583941,2316282,32648,0,1000),
-            array("G214",576755,2327142,32648,70,48),
-            array("G215",577937,2331702,32648,60,80),
-            array("G216",591187,2320081,32648,70,50),
-            array("G217",591376,2328138,32648,60,60),
-            array("G219",579430,2329730,32648,60,1080),
-            array("G220",582958,2321854,32648,75,50),
-            array("G221",590947,2329364,32648,60,480),
-            array("G222",581611,2327484,32648,70,200),
-            array("G223",580220,2330700,32648,45,400),
-            array("G224",580041,2326316,32648,60,45),
-            array("G225",587355,2328129,32648,38,75),
-            array("G226",580504,2325091,32648,70,1200),
-            array("G227",575946,2329932,32648,58,270),
-            array("G228",576884,2325742,32648,78,476),
-            array("G229",593921,2325805,32648,80,3000),
-            array("G230",586872,2328865,32648,50,250),
-            array("G231",586945,2328926,32648,65,400),
-            array("G232",586588,2328622,32648,65,180),
-            array("G233",588852,2311888,32648,65,200),
-            array("G234",590685,2329477,32648,60,60),
-            array("G235",593201,2332684,32648,60,50),
-            array("G237",585698,2316658,32648,75,70),
-            array("G238",588529,2312135,32648,70,320),
-            array("G241",594353,2329774,32648,70,900),
-            array("G242",579078,2330036,32648,75,700),
-            array("G244",592449,2317787,32648,60,100),
-            array("G245",577860,2327427,32648,70,48),
-            array("G246",581681,2331396,32648,70,320),
-            array("G247",579005,2327079,32648,70,70),
-            array("G248",583489,2329712,32648,75,600),
-            array("G249",583415,2330196,32648,40,200),
-            array("G251",581605,2331490,32648,60,500),
-            array("G252",583806,2322082,32648,67,100),
-            array("G253",583991,2324371,32648,70,250),
-            array("G254",576735,2325869,32648,60,50),
-            array("G255",578557,2326450,32648,53,90),
-            array("G256",577491,2327828,32648,54,80),
-            array("G257",586257,2316377,32648,78,175),
-            array("G258",592905,2332562,32648,50,80),
-            array("G260",586873,2319335,32648,70,900),
-            array("G261",587008,2317319,32648,70,300),
-            array("G263",588265,2313384,32648,70,90),
-            array("G266",578804,2327247,32648,50,30),
-            array("G267",579328,2322418,32648,65,140),
-            array("G268",585265,2318944,32648,70,270),
-            array("G269",588010,2313474,32648,70,50),
-            array("G271",583172,2319251,32648,75,120),
-            array("G272",583837,2323304,32648,61,195),
-            array("G273",590013,2321476,32648,73,1500),
-            array("G275",583601,2323241,32648,78,1200),
-            array("G276",581863,2321855,32648,51,45),
-            array("G277",575791,2331043,32648,60,50),
-            array("G278",577760,2321812,32648,50,60),
-            array("G279",581899,2331001,32648,50,53),
-            array("G281",578124,2326725,32648,75,110),
-            array("G282",581324,2325558,32648,65,20),
-            array("G283",586473,2321948,32648,180,5235),
-            array("G284",579716,2325836,32648,60,1050),
-            array("G285",583601,2323241,32648,78,3600),
-            array("G288",584649,2318142,32648,78,370),
-            array("G289",582466,2322284,32648,70,100),
-            array("G290",587562,2314269,32648,70,150),
-            array("G291",578450,2327306,32648,60,50),
-            array("G292",578105,2325117,32648,65,75),
-            array("G293",583810,2329951,32648,60,40),
-            array("G294",591703,2317288,32648,65,4),
-            array("G295",591213,2321121,32648,60,150),
-            array("G297",583594,2329881,32648,65,170),
-            array("G298",580382,2330258,32648,65,100),
-            array("G300",584022,2317172,32648,60,160),
-            array("G301",590992,2328614,32648,72,250),
-            array("G302",579198,2327397,32648,62,120),
-            array("G304",593741,2332539,32648,50,300),
-            array("G306",580683,2330793,32648,60,50),
-            array("G307",585480,2317477,32648,70,300),
-            array("G308",576321,2328348,32648,56,1250),
-            array("G309",581590,2327406,32648,60,96),
-            array("G310",580463,2330567,32648,56,750),
-            array("G312",586404,2322667,32648,70,1680),
-            array("G314",583439,2325569,32648,65,70),
-            array("G315",582630,2321279,32648,70,250),
-            array("G316",579887,2326099,32648,60,55),
-            array("G317",580526,2324765,32648,65,50),
-            array("G318",578061,2327509,32648,40,10),
-            array("G319",582287,2324144,32648,75,120),
-            array("G320",582549,2322446,32648,70,300),
-            array("G321",582443,2322418,32648,60,240),
-            array("G326",580261,2325160,32648,60,110),
-            array("G327",578110,2327493,32648,58,160),
-            array("G328",584136,2318205,32648,56,60),
-            array("G329",593023,2333213,32648,65,100),
-            array("G330",580503,2331141,32648,60,50),
-            array("G332",585228,2320455,32648,70,80),
-            array("G333",579738,2330480,32648,65,400),
-            array("G334",579747,2330817,32648,60,300),
-            array("G335",582746,2322520,32648,90,70),
-            array("G337",580575,2330602,32648,70,72),
-            array("G338",575819,2328280,32648,60,170),
-            array("G339",576354,2326951,32648,62,50),
-            array("G340",588171,2314126,32648,60,160),
-            array("G341",582604,2321525,32648,60,60),
-            array("G342",577021,2322538,32648,60,2050),
-            array("G343",592870,2319201,32648,80,3220),
-            array("G344",592358,2321666,32648,70,1920),
-            array("G345",588502,2319702,32648,70,2600),
-            array("G346",593001,2319421,32648,70,350),
-            array("G347",591408,2321234,32648,73,800),
-            array("G348",590015,2318501,32648,67,680),
-            array("G350",578055,2322057,32648,60,720),
-            array("G351",587979,2311699,32648,65,670),
-            array("G352",576706,2329096,32648,60,2475),
-            array("G353",578987,2328303,32648,60,1842),
-            array("G354",581920,2320135,32648,63,2300),
-            array("G355",575603,2330637,32648,64,80),
-            array("G356",587024,2320407,32648,65,20),
-            array("G357",579861,2331364,32648,60,30),
-            array("G358",583981,2322216,32648,60,50),
-            array("G359",581632,2321297,32648,72,160),
-            array("G360",578546,2327318,32648,85,300),
-            array("G361",587538,2315393,32648,60,190),
-            array("G362",577194,2327517,32648,60,40),
-            array("G363",587158,2320346,32648,70,400),
-            array("G364",580726,2330344,32648,60,50),
-            array("G365",586670,2320936,32648,180,120),
-            array("G367",583982,2325224,32648,60,855),
-            array("G368",585520,2319359,32648,60,120),
-            array("G369",584273,2330866,32648,60,75),
-            array("G370",578525,2327537,32648,55,45),
-            array("G371",579158,2327226,32648,40,45),
-            array("G375",587700,2315839,32648,70,60),
-            array("G377",583979,2315378,32648,0,800),
-            array("G378",587909,2315397,32648,70,280),
-            array("G380",579235,2329158,32648,64,15),
-            array("G381",581636,2321306,32648,70,50),
-            array("G382",591337,2329617,32648,75,400),
-            array("G383",577646,2324081,32648,50,60),
-            array("G384",579282,2322112,32648,40,50),
-            array("NT05",578875,2313521,32648,108,70),
-            array("NT19",587436,2314003,32648,70,600),
-            array("NT20",586823,2318826,32648,68,550),
-            array("NT21",587963,2317474,32648,180,2125),
-            array("NT22",586932,2317229,32648,70,900),
-            array("NT23",582802,2318778,32648,60,480),
-            array("NT25",585190,2313089,32648,62,490),
-            array("NT26",590832,2313154,32648,80,1080),
-            array("NT27",591663,2314133,32648,70,480),
-            array("NT28",593423,2313385,32648,70,800),
-            array("NT29",587428,2314000,32648,70,600),
-            array("NT30",583357,2315039,32648,0,800),
-            array("NT31",586113,2321678,32648,70,7680),
-            array("NT32",588421,2318928,32648,76,120),
-            array("NT33",583835,2317115,32648,68,800),
-            array("NT34",583570,2315661,32648,68,1000),
-            array("NT35",585752,2311747,32648,52,480),
-            array("NT36",585517,2319750,32648,60,400)
-        );
-        foreach ($privateWells as $privateWell) {
-            if (!$geoTools->pointIntersectsWithArea($model->getArea()->getId()->toString(), $privateWell[1], $privateWell[2], $privateWell[3])) {
-                continue;
-            }
-
-            echo "Persisting Private Well ".$privateWell[0]."\r\n";
-            $model->addBoundary(WellFactory::createPrivateWell()
-                ->setOwner($user)
-                ->setPublic($public)
-                ->setName($privateWell[0])
-                ->setPoint(new Point($privateWell[1], $privateWell[2], $privateWell[3]))
-                ->setLayer($layer_4)
-                ->addValue($propertyTypePumpingRate, PropertyValueFactory::create()->setValue($privateWell[5]*-1))
-            );
-            $entityManager->persist($model);
-            $entityManager->flush();
-        }*/
-
         /* Interpolation of all layers */
         $soilModelService = $this->container->get('inowas.soilmodel');
         $soilModelService->setModflowModel($model);
@@ -967,10 +657,10 @@ class LoadScenario_4 implements FixtureInterface, ContainerAwareInterface
                     continue;
                 }
 
-                echo (sprintf("Interpolating Layer %s, Property %s\r\n", $layer->getName(), $propertyType->getName()));
+                echo (sprintf("Interpolating Layer %s, Property %s\r\n", $layer->getName(), $propertyType->getDescription()));
                 $output = $soilModelService->interpolateLayerByProperty(
                     $layer,
-                    $propertyType->getAbbreviation(),
+                    $propertyType,
                     array(Interpolation::TYPE_IDW, Interpolation::TYPE_MEAN)
                 );
 
@@ -983,21 +673,12 @@ class LoadScenario_4 implements FixtureInterface, ContainerAwareInterface
         $entityManager->persist($model);
         $entityManager->flush();
 
-
-        $hh = $entityManager->getRepository('AppBundle:PropertyType')
-            ->findOneBy(array(
-                'abbreviation' => 'hh'
-            ));
-        if (null === $hh) {
-            throw new NotFoundHttpException('PropertyType not found');
-        }
-
         echo "Loading heads from file\r\n";
         $raster = RasterFactory::create();
         $raster->setData($this->loadHeadsFromFile(__DIR__."/base_scenario_head_layer_3.json"));
         $raster->setGridSize($model->getGridSize());
         $raster->setBoundingBox($model->getBoundingBox());
-        $layer_4->addValue($hh, PropertyValueFactory::create()->setRaster($raster));
+        $layer_4->addValue($propertyTypeHydraulicHead, PropertyValueFactory::create()->setRaster($raster));
         $entityManager->persist($raster);
         $entityManager->persist($layer_4);
         $entityManager->flush();
@@ -1076,7 +757,7 @@ class LoadScenario_4 implements FixtureInterface, ContainerAwareInterface
             $entityManager->flush();
         }
 
-        $scenario_1->addEvent(new ChangeLayerValueEvent($layer_4, $hh,
+        $scenario_1->addEvent(new ChangeLayerValueEvent($layer_4, $propertyTypeHydraulicHead,
             PropertyValueFactory::create()
                 ->setRaster(RasterFactory::create()
                     ->setBoundingBox($model->getBoundingBox())
@@ -1127,7 +808,7 @@ class LoadScenario_4 implements FixtureInterface, ContainerAwareInterface
             $entityManager->flush();
         }
         
-        $scenario_2->addEvent(new ChangeLayerValueEvent($layer_4, $hh, 
+        $scenario_2->addEvent(new ChangeLayerValueEvent($layer_4, $propertyTypeHydraulicHead,
             PropertyValueFactory::create()
                 ->setRaster(RasterFactory::create()
                     ->setBoundingBox($model->getBoundingBox())
@@ -1190,7 +871,7 @@ class LoadScenario_4 implements FixtureInterface, ContainerAwareInterface
             $entityManager->flush();
         }
 
-        $scenario_3->addEvent(new ChangeLayerValueEvent($layer_4, $hh,
+        $scenario_3->addEvent(new ChangeLayerValueEvent($layer_4, $propertyTypeHydraulicHead,
             PropertyValueFactory::create()
                 ->setRaster(RasterFactory::create()
                     ->setBoundingBox($model->getBoundingBox())

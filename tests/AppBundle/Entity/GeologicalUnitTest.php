@@ -3,8 +3,8 @@
 namespace Tests\AppBundle\Entity;
 
 use AppBundle\Entity\GeologicalUnit;
-use AppBundle\Entity\PropertyType;
 use AppBundle\Model\GeologicalUnitFactory;
+use AppBundle\Model\PropertyType;
 use AppBundle\Model\PropertyTypeFactory;
 use AppBundle\Model\PropertyValueFactory;
 
@@ -26,10 +26,7 @@ class GeologicalUnitTest extends \PHPUnit_Framework_TestCase
      */
     public function setUp()
     {
-        $this->propertyType = PropertyTypeFactory::create()
-            ->setName('Top Elevation')
-            ->setAbbreviation(PropertyType::TOP_ELEVATION);
-
+        $this->propertyType = PropertyTypeFactory::create(PropertyType::TOP_ELEVATION);
         $this->geologicalUnit = GeologicalUnitFactory::create()
             ->setName('TestGeologicalUnit');
     }
@@ -51,10 +48,7 @@ class GeologicalUnitTest extends \PHPUnit_Framework_TestCase
     }
 
     public function testGetTopElevation() {
-        $this->propertyType = PropertyTypeFactory::create()
-            ->setName('Top Elevation')
-            ->setAbbreviation(PropertyType::TOP_ELEVATION);
-
+        $this->propertyType = PropertyTypeFactory::create(PropertyType::TOP_ELEVATION);
         $this->geologicalUnit->addValue(
             $this->propertyType,
             PropertyValueFactory::create()->setValue(20.5)
@@ -64,10 +58,7 @@ class GeologicalUnitTest extends \PHPUnit_Framework_TestCase
     }
 
     public function testGetBottomElevation() {
-        $this->propertyType = PropertyTypeFactory::create()
-            ->setName('Top Elevation')
-            ->setAbbreviation(PropertyType::BOTTOM_ELEVATION);
-
+        $this->propertyType = PropertyTypeFactory::create(PropertyType::BOTTOM_ELEVATION);
         $this->geologicalUnit->addValue(
             $this->propertyType,
             PropertyValueFactory::create()->setValue(21.5)

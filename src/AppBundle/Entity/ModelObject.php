@@ -3,6 +3,7 @@
 namespace AppBundle\Entity;
 
 use AppBundle\Model\PropertyFactory;
+use AppBundle\Model\PropertyType;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
 use JMS\Serializer\Annotation as JMS;

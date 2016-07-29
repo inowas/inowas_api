@@ -9,6 +9,7 @@ use AppBundle\Model\GeneralHeadBoundaryFactory;
 use AppBundle\Model\GeologicalLayerFactory;
 use AppBundle\Model\ObservationPointFactory;
 use AppBundle\Model\PropertyFactory;
+use AppBundle\Model\PropertyType;
 use AppBundle\Model\PropertyTypeFactory;
 use AppBundle\Model\UserFactory;
 use JMS\Serializer\SerializationContext;
@@ -41,10 +42,7 @@ class ModelObjectSerialisationTest extends \PHPUnit_Framework_TestCase
             ->setOwner($this->owner)
             ->addProperty(PropertyFactory::create()
                 ->setName('ABoundaryProperty')
-                ->setPropertyType(PropertyTypeFactory::create()
-                    ->setName("PropertyTypeName")
-                    ->setAbbreviation("PTN")
-                )
+                ->setPropertyType(PropertyTypeFactory::create(PropertyType::HYDRAULIC_HEAD))
             )
             ->addObservationPoint(ObservationPointFactory::create()
                 ->setName('ObservationPointName')
@@ -81,8 +79,7 @@ class ModelObjectSerialisationTest extends \PHPUnit_Framework_TestCase
         $serializationContext = SerializationContext::create();
         $serializationContext->setGroups('modelobjectdetails');
         $boundary = $this->serializer->serialize($this->boundary, 'json', $serializationContext);
-
-        $this->assertStringStartsWith('{',$boundary);
+        $this->assertJson($boundary);
         $boundary = json_decode($boundary);
 
         $this->assertEquals($boundary->type, 'GHB');
@@ -94,8 +91,8 @@ class ModelObjectSerialisationTest extends \PHPUnit_Framework_TestCase
         $this->assertCount(1, $boundary->properties);
         $this->assertEquals($boundary->properties[0]->id, $this->boundary->getProperties()->first()->getId());
         $this->assertEquals($boundary->properties[0]->name, $this->boundary->getProperties()->first()->getName());
-        $this->assertEquals($boundary->properties[0]->property_type->name,
-            $this->boundary->getProperties()->first()->getPropertyType()->getName());
+        $this->assertEquals($boundary->properties[0]->property_type->abbreviation,
+            $this->boundary->getProperties()->first()->getPropertyType()->getAbbreviation());
         $this->assertEquals($boundary->properties[0]->property_type->abbreviation,
             $this->boundary->getProperties()->first()->getPropertyType()->getAbbreviation());
 

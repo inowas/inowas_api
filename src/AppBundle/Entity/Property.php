@@ -2,6 +2,7 @@
 
 namespace AppBundle\Entity;
 
+use AppBundle\Model\PropertyType;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
 use JMS\Serializer\Annotation as JMS;
@@ -46,8 +47,7 @@ class Property
     /**
      * @var PropertyType
      *
-     * @ORM\ManyToOne(targetEntity="AppBundle\Entity\PropertyType", cascade={"persist", "remove"})
-     * @ORM\JoinColumn(name="property_type_id", referencedColumnName="id", onDelete="SET NULL")
+     * @ORM\Column(name="property_type", type="property_type", nullable=true)
      * @JMS\Groups({"list", "details", "modeldetails", "modelobjectdetails", "soilmodeldetails", "soilmodellayers"})
      */
     private $propertyType;
@@ -100,7 +100,7 @@ class Property
     /**
      * Get id
      *
-     * @return integer 
+     * @return Uuid
      */
     public function getId()
     {
@@ -110,7 +110,7 @@ class Property
     /**
      * Set type
      *
-     * @param \AppBundle\Entity\PropertyType $propertyType
+     * @param PropertyType $propertyType
      * @return Property
      */
     public function setPropertyType(PropertyType $propertyType = null)
@@ -123,7 +123,7 @@ class Property
     /**
      * Get type
      *
-     * @return \AppBundle\Entity\PropertyType
+     * @return PropertyType
      */
     public function getPropertyType()
     {

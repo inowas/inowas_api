@@ -14,6 +14,8 @@ use AppBundle\Model\GeologicalPointFactory;
 use AppBundle\Model\GeologicalUnitFactory;
 use AppBundle\Model\ModFlowModelFactory;
 use AppBundle\Model\PropertyTimeValueFactory;
+use AppBundle\Model\PropertyType;
+use AppBundle\Model\PropertyTypeFactory;
 use AppBundle\Model\PropertyValueFactory;
 use AppBundle\Model\Point;
 use AppBundle\Model\SoilModelFactory;
@@ -26,7 +28,6 @@ use Doctrine\Common\Persistence\ObjectManager;
 use Doctrine\DBAL\Types\Type;
 use Symfony\Component\DependencyInjection\ContainerAwareInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
-use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class LoadScenario_3 implements FixtureInterface, ContainerAwareInterface
 {
@@ -78,32 +79,8 @@ class LoadScenario_3 implements FixtureInterface, ContainerAwareInterface
         }
 
         // Load PropertyTypes
-        $propertyTypeGwHead = $entityManager->getRepository('AppBundle:PropertyType')
-            ->findOneBy(array(
-                'abbreviation' => "hh"
-            ));
-
-        if (!$propertyTypeGwHead) {
-            return new NotFoundHttpException();
-        }
-
-        $propertyTypeTopElevation = $entityManager->getRepository('AppBundle:PropertyType')
-            ->findOneBy(array(
-                'abbreviation' => "et"
-            ));
-
-        if (!$propertyTypeTopElevation) {
-            return new NotFoundHttpException();
-        }
-
-        $propertyTypeBottomElevation = $entityManager->getRepository('AppBundle:PropertyType')
-            ->findOneBy(array(
-                'abbreviation' => "eb"
-            ));
-
-        if (!$propertyTypeBottomElevation) {
-            return new NotFoundHttpException();
-        }
+        $propertyTypeTopElevation = PropertyTypeFactory::create(PropertyType::TOP_ELEVATION);
+        $propertyTypeBottomElevation = PropertyTypeFactory::create(PropertyType::BOTTOM_ELEVATION);
 
         // Create Modflow-Model
         /** @var ModFlowModel $modflowModel */
@@ -232,19 +209,19 @@ class LoadScenario_3 implements FixtureInterface, ContainerAwareInterface
 
         // Add values to Layer SC3_L1
         $layer_1->addValue(
-            $this->getPropertyType($entityManager, 'hc'),
+            $this->getPropertyType('hc'),
             PropertyValueFactory::create()->setValue(40));
 
         $layer_1->addValue(
-            $this->getPropertyType($entityManager, 'va'),
+            $this->getPropertyType('va'),
             PropertyValueFactory::create()->setValue(8));
 
         $layer_1->addValue(
-            $this->getPropertyType($entityManager, 'ss'),
+            $this->getPropertyType('ss'),
             PropertyValueFactory::create()->setValue(0.00001));
 
         $layer_1->addValue(
-            $this->getPropertyType($entityManager, 'sy'),
+            $this->getPropertyType('sy'),
             PropertyValueFactory::create()->setValue(0.1));
 
         $entityManager->persist($layer_1);
@@ -253,7 +230,7 @@ class LoadScenario_3 implements FixtureInterface, ContainerAwareInterface
 
         // Add values to Layer SC3_L2
         $layer_2->addValue(
-            $this->getPropertyType($entityManager, 'vc'),
+            $this->getPropertyType('vc'),
             PropertyValueFactory::create()->setValue(1));
 
         $entityManager->persist($layer_2);
@@ -262,19 +239,19 @@ class LoadScenario_3 implements FixtureInterface, ContainerAwareInterface
 
         // Add properties to Layer SC3_L3
         $layer_3->addValue(
-            $this->getPropertyType($entityManager, 'hc'),
+            $this->getPropertyType('hc'),
             PropertyValueFactory::create()->setValue(42));
 
         $layer_3->addValue(
-            $this->getPropertyType($entityManager, 'va'),
+            $this->getPropertyType('va'),
             PropertyValueFactory::create()->setValue(21));
 
         $layer_3->addValue(
-            $this->getPropertyType($entityManager, 'ss'),
+            $this->getPropertyType('ss'),
             PropertyValueFactory::create()->setValue(0.0001));
 
         $layer_3->addValue(
-            $this->getPropertyType($entityManager, 'sy'),
+            $this->getPropertyType('sy'),
             PropertyValueFactory::create()->setValue(0.1));
 
         $entityManager->persist($layer_3);
@@ -365,13 +342,10 @@ class LoadScenario_3 implements FixtureInterface, ContainerAwareInterface
 
         for ($i = 1; $i <= $elementCount; $i++)
         {
-            $propertyTypeName = $dataFields[$i];
-            $propertyType = $this->getPropertyType($this->entityManager, $propertyTypeName);
-
             foreach ($data as $dataPoint)
             {
                 $baseElement->addValue(
-                    $propertyType,
+                    $this->getPropertyType($dataFields[$i]),
                     PropertyTimeValueFactory::createWithTimeAndValue(new \DateTime($dataPoint[$dataFields[0]]), (float)$dataPoint[$dataFields[$i]])
                 );
 
@@ -415,22 +389,11 @@ class LoadScenario_3 implements FixtureInterface, ContainerAwareInterface
     }
 
     /**
-     * @param ObjectManager $entityManager
      * @param $propertyAbbreviation
-     * @return \AppBundle\Entity\PropertyType|object
+     * @return PropertyType
      */
-    private function getPropertyType(ObjectManager $entityManager, $propertyAbbreviation)
+    private function getPropertyType($propertyAbbreviation)
     {
-        $propertyType = $entityManager->getRepository('AppBundle:PropertyType')
-            ->findOneBy(array(
-                'abbreviation' => $propertyAbbreviation
-            ));
-
-        if (!$propertyType)
-        {
-            throw new NotFoundHttpException($propertyAbbreviation.' not found.');
-        }
-
-        return $propertyType;
+        return PropertyTypeFactory::create($propertyAbbreviation);
     }
 }

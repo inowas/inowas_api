@@ -3,7 +3,6 @@
 namespace AppBundle\Model;
 
 use AppBundle\Entity\Property;
-use AppBundle\Entity\PropertyType;
 
 class PropertyFactory
 {

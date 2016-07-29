@@ -3,9 +3,9 @@
 namespace Inowas\PyprocessingBundle\Tests\Service;
 
 use AppBundle\Entity\GeologicalLayer;
-use AppBundle\Entity\PropertyType;
 use AppBundle\Model\GeologicalLayerFactory;
 use AppBundle\Model\PropertyFactory;
+use AppBundle\Model\PropertyType;
 use AppBundle\Model\PropertyTypeFactory;
 use AppBundle\Model\PropertyValueFactory;
 use AppBundle\Service\SoilModelService;
@@ -29,9 +29,7 @@ class SoilModelServiceTest extends WebTestCase
         $this->soilModelService = static::$kernel->getContainer()
             ->get('inowas.soilmodel');
 
-        $this->propertyType = PropertyTypeFactory::create()
-            ->setName('Top Elevation')
-            ->setAbbreviation('te');
+        $this->propertyType = PropertyTypeFactory::create(PropertyType::TOP_ELEVATION);
         
         $this->geologicalLayer = GeologicalLayerFactory::create()
             ->setName('L1')

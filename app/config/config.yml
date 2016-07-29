@@ -64,6 +64,7 @@ doctrine:
             active_cells:   AppBundle\Type\ActiveCellsType
             bounding_box:   AppBundle\Type\BoundingBoxType
             grid_size:      AppBundle\Type\GridSizeType
+            property_type:  AppBundle\Type\PropertyTypeType
             uuid:           Ramsey\Uuid\Doctrine\UuidType
 
     orm:

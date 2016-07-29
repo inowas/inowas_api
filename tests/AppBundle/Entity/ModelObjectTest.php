@@ -2,14 +2,15 @@
 
 namespace Tests\AppBundle\Entity;
 
+use AppBundle\Entity\ModelObject;
 use AppBundle\Entity\ObservationPoint;
 use AppBundle\Entity\Property;
-use AppBundle\Entity\PropertyType;
 use AppBundle\Entity\PropertyValue;
 use AppBundle\Entity\Raster;
 use AppBundle\Model\ObservationPointFactory;
 use AppBundle\Model\PropertyFactory;
 use AppBundle\Model\PropertyTimeValueFactory;
+use AppBundle\Model\PropertyType;
 use AppBundle\Model\PropertyTypeFactory;
 use AppBundle\Model\PropertyValueFactory;
 use AppBundle\Model\RasterFactory;
@@ -33,17 +34,14 @@ class ModelObjectTest extends \PHPUnit_Framework_TestCase
      */
     public function setUp()
     {
-        $this->propertyType = PropertyTypeFactory::create()
-            ->setName('TestPropertyType')
-            ->setAbbreviation('tpt');
-
+        $this->propertyType = PropertyTypeFactory::create(PropertyType::KX);
         $this->modelObject = ObservationPointFactory::create();
         $this->modelObject->setName('TestObservationPoint');
     }
 
     public function testInstantiate(){
-        $this->assertInstanceOf('AppBundle\Entity\ModelObject', $this->modelObject);
-        $this->assertInstanceOf('AppBundle\Entity\ObservationPoint', $this->modelObject);
+        $this->assertInstanceOf(ModelObject::class, $this->modelObject);
+        $this->assertInstanceOf(ObservationPoint::class, $this->modelObject);
     }
 
     public function testSetGetPublic()

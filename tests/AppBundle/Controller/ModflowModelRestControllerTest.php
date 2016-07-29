@@ -6,7 +6,6 @@ use AppBundle\Entity\GeologicalLayer;
 use AppBundle\Entity\ModflowCalculation;
 use AppBundle\Entity\ModFlowModel;
 use AppBundle\Entity\Property;
-use AppBundle\Entity\PropertyType;
 use AppBundle\Entity\PropertyValue;
 use AppBundle\Entity\SoilModel;
 use AppBundle\Entity\User;
@@ -17,6 +16,7 @@ use AppBundle\Model\BoundingBox;
 use AppBundle\Model\ModFlowModelFactory;
 use AppBundle\Model\Point;
 use AppBundle\Model\PropertyFactory;
+use AppBundle\Model\PropertyType;
 use AppBundle\Model\PropertyTypeFactory;
 use AppBundle\Model\PropertyValueFactory;
 use AppBundle\Model\SoilModelFactory;
@@ -92,7 +92,7 @@ class ModflowModelRestControllerTest extends WebTestCase
                 ->setOrder(GeologicalLayer::TOP_LAYER)
                 ->addProperty(PropertyFactory::create()
                     ->setName("ModelTest_Property")
-                    ->setPropertyType(PropertyTypeFactory::create()->setName("KF-X")->setAbbreviation('kx'))
+                    ->setPropertyType(PropertyTypeFactory::create(PropertyType::KX))
                     ->addValue(PropertyValueFactory::create()->setValue(1.9991))
                 )
             )

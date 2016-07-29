@@ -7,7 +7,6 @@ use AppBundle\Entity\AddBoundaryEvent;
 use AppBundle\Entity\BoundaryModelObject;
 use AppBundle\Entity\ChangeLayerValueEvent;
 use AppBundle\Entity\GeologicalLayer;
-use AppBundle\Entity\PropertyType;
 
 class EventFactory
 {

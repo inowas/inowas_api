@@ -8,6 +8,7 @@ use AppBundle\Model\EventFactory;
 use AppBundle\Model\GeologicalLayerFactory;
 use AppBundle\Model\ModelScenarioFactory;
 use AppBundle\Model\ModFlowModelFactory;
+use AppBundle\Model\PropertyType;
 use AppBundle\Model\PropertyTypeFactory;
 use AppBundle\Model\PropertyValueFactory;
 use AppBundle\Model\SoilModelFactory;
@@ -91,10 +92,10 @@ class ModflowModelScenarioTest extends \PHPUnit_Framework_TestCase
         $this->scenario->addEvent($event);
         $event = EventFactory::createChangeLayerValueEvent(
             $this->model->getSoilModel()->getGeologicalLayers()->first(),
-            PropertyTypeFactory::create(),
+            PropertyTypeFactory::create(PropertyType::KX),
             PropertyValueFactory::create()
         );
         $this->scenario->addEvent($event);
-        $this->assertInstanceOf('AppBundle\Entity\ModflowModel', $this->scenario->getModel());
+        $this->assertInstanceOf(ModFlowModel::class, $this->scenario->getModel());
     }
 }

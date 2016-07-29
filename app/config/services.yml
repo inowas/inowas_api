@@ -4,11 +4,6 @@
 #    inowas.modflow.data_folder:  ../py/pyprocessing/data/modflow
 
 services:
-
-    inowas.propertytypes:
-        class: AppBundle\Service\PropertyTypes
-        arguments: []
-
     inowas.geotools:
         class: AppBundle\Service\GeoTools
         arguments: ['@doctrine.orm.default_entity_manager']

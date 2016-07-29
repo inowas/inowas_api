@@ -5,11 +5,11 @@ namespace Tests\AppBundle\Entity;
 use AppBundle\Entity\GeneralHeadBoundary;
 use AppBundle\Entity\Property;
 use AppBundle\Entity\PropertyFixedIntervalValue;
-use AppBundle\Entity\PropertyType;
 use AppBundle\Entity\User;
 use AppBundle\Model\GeneralHeadBoundaryFactory;
 use AppBundle\Model\PropertyFactory;
 use AppBundle\Model\PropertyTimeValueFactory;
+use AppBundle\Model\PropertyType;
 use AppBundle\Model\PropertyTypeFactory;
 use AppBundle\Model\PropertyValueFactory;
 use AppBundle\Model\UserFactory;
@@ -68,12 +68,7 @@ class PropertyTest extends WebTestCase
             ->setPublic(true)
         ;
         $this->entityManager->persist($this->boundary);
-
-        $this->propertyType = PropertyTypeFactory::create()
-            ->setName('testProperty')
-            ->setAbbreviation("tp");
-
-        $this->entityManager->persist($this->propertyType);
+        $this->propertyType = PropertyTypeFactory::create(PropertyType::TOP_ELEVATION);
 
         /** @var Property property */
         $this->property = PropertyFactory::create()
