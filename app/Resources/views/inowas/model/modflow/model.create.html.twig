@@ -94,26 +94,81 @@
     </div>
 
     <h2>Draw your model area</h2>
-
     <div class="row equal">
-        <div class="col-sm-9">
+        <div class="col-sm-8">
             <div class="panel panel-default">
                 <div class="panel-body">
                     <div id="area-map" class="panel-body map"></div>
                 </div>
             </div>
         </div>
-        <div class="col-sm-3">
+        <div class="col-sm-4">
             <div class="panel panel-default">
-                <div class="panel-body">
-                    Test
+                <div id="area-map-description" class="panel-body">
+                    <h3>Please draw your model-area</h3>
                 </div>
             </div>
         </div>
     </div>
+
+    <h2>Model Properties</h2>
+    <div class="row">
+        <div class="col-sm-6">
+            <div class="panel panel-default">
+                <div class="panel-body">
+                    <h3>Choose a Gridsize</h3>
+                    <div class="form-group">
+                        <label for="gridsize">
+                            Select a grid-size for calculation.
+                            Please note, a small size gives faster
+                            results and a big mesh size gives
+                            more accurate results.
+                        </label>
+                        <select id="gridsize" class="form-control">
+                            <option value="15x15">Smallest mesh (15x15)</option>
+                            <option value="30x30">Small mesh (30x30)</option>
+                            <option value="50x50" selected>Normal mesh (50x50)</option>
+                            <option value="100x100">Big mesh (100x100)</option>
+                            <option value="1000x1000">Biggest mesh (1000x1000)</option>
+                        </select>
+                    </div>
+
+                    <h3>Choose number of layers</h3>
+                    <div class="form-group">
+                        <label for="stress_periods">
+                            Select the number of layers of the Soilmodel.
+                        </label>
+                        <select id="soilmodel_number_of_layers" class="form-control">
+                            <option value="1" selected>1</option>
+                            <option value="2">2</option>
+                            <option value="3">3</option>
+                            <option value="4">4</option>
+                            <option value="5">5</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-sm-6">
+            <div class="panel panel-default">
+                <div class="panel-body">
+                    <div id="grid-map" class="panel-body grid-map"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-sm-12">
+            <button type="button" id="btn_create" class="btn btn-danger btn-lg btn-block">Create Model</button>
+        </div>
+    </div>
+
+    <div class="row top-margin-40">
+    </div>
 </div>
 
-<script src="https://maps.googleapis.com/maps/api/js?v=3&sensor=false"></script>
 <script type="text/javascript" src="{{ asset('vendor/jquery/dist/jquery.min.js') }}"></script>
 <script type="text/javascript" src="{{ asset('vendor/bootstrap/dist/js/bootstrap.min.js') }}"></script>
 <script type="text/javascript" src="{{ asset('vendor/leaflet/dist/leaflet.js') }}"></script>
