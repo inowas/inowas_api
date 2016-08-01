@@ -1,6 +1,6 @@
 <?php
 
-namespace Tests\AppBundle\Entity;
+namespace Tests\AppBundle\Model;
 
 use AppBundle\Model\PropertyType;
 use AppBundle\Model\PropertyTypeFactory;
@@ -21,7 +21,7 @@ class PropertyTypeTest extends \PHPUnit_Framework_TestCase
     public function testInstantiation()
     {
         $this->assertInstanceOf(PropertyType::class, $this->propertyType);
-        $this->assertEquals(PropertyType::STATIC_AND_TIME_DEPENDENT_VALUES, $this->propertyType->getValueType());
+        $this->assertEquals(PropertyType::STATIC_VALUE_ONLY, $this->propertyType->getValueType());
     }
 
     public function testSetGetAbbreviation()
