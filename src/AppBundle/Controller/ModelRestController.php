@@ -117,6 +117,32 @@ class ModelRestController extends FOSRestController
     }
 
     /**
+     * Deletes a ModflowModel by id.
+     *
+     * @ApiDoc(
+     *   resource = true,
+     *   description = "Return the project-information by id.",
+     *   statusCodes = {
+     *     200 = "Returned when successful",
+     *     404 = "Returned when the user is not found"
+     *   }
+     * )
+     *
+     * @param $id
+     *
+     * @return Response
+     */
+    public function deleteModflowmodelsAction($id)
+    {
+        $model = $this->findModelById($id);
+
+        $this->getDoctrine()->getManager()->remove($model);
+        $this->getDoctrine()->getManager()->flush();
+
+        return new Response('Success');
+    }
+
+    /**
      * Return the project-information by id.
      *
      * @ApiDoc(
@@ -157,6 +183,12 @@ class ModelRestController extends FOSRestController
 
         $model->setArea($area);
         $model->setBoundingBox($this->get('inowas.geotools')->getBoundingBoxFromPolygon($area->getGeometry()));
+
+        $this->getDoctrine()->getManager()->persist($model);
+        $this->getDoctrine()->getManager()->flush();
+
+        $activeCells = $this->get('inowas.geotools')->getActiveCells($model->getArea(), $model->getBoundingBox(), $model->getGridSize());
+        $model->setActiveCells($activeCells);
 
         $this->getDoctrine()->getManager()->persist($model);
         $this->getDoctrine()->getManager()->flush();

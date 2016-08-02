@@ -362,6 +362,22 @@ class ModflowModelRestControllerTest extends WebTestCase
         $this->assertEquals($expectedArray, $bb);
     }
 
+    public function testDeleteModFlowModel(){
+        $client = static::createClient();
+        $client->request('DELETE', '/api/modflowmodels/'.$this->modFlowModel->getId().'.json');
+        $this->assertEquals(200, $client->getResponse()->getStatusCode());
+        $this->assertEquals('Success', $client->getResponse()->getContent());
+
+        $model = $this->entityManager->getRepository('AppBundle:ModFlowModel')
+            ->findOneBy(
+                array(
+                    'id' => $this->modFlowModel->getId()->toString()
+                )
+            );
+
+        $this->assertNull($model);
+    }
+
     /**
      * {@inheritDoc}
      */
@@ -378,7 +394,10 @@ class ModflowModelRestControllerTest extends WebTestCase
                'name' => $this->modFlowModel->getName()
             ));
 
-        $this->entityManager->remove($model);
+        if ($model instanceof ModFlowModel){
+            $this->entityManager->remove($model);
+        }
+
         $this->entityManager->flush();
         $this->entityManager->close();
     }

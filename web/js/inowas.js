@@ -5,12 +5,14 @@ hide_all = function () {
     $( "#calculation" ).hide();
     $( "#results" ).hide();
     $( "#history" ).hide();
+    $( "#delete" ).hide();
     $( ".summary" ).removeClass('active');
     $( ".soilmodel" ).removeClass('active');
     $( ".boundaries" ).removeClass('active');
     $( ".calculation" ).removeClass('active');
     $( ".results" ).removeClass('active');
     $( ".history" ).removeClass('active');
+    $( ".delete" ).removeClass('active');
 };
 
 $( ".summary" ).click(function(){
@@ -174,15 +176,6 @@ $( ".calculation" ).click(function(){
     });
 });
 
-$(document).on('click', '.btn_calculation', function(event){
-    console.log(event);
-    $.post( "/api/modflowmodels/"+modelId+"/calculations.json", function ( data ) {
-        console.log(data);
-        $(".content_calculation").html( data.html );
-        }, 'json');
-    }
-);
-
 $( ".results" ).click(function(){
     hide_all();
     $( "#results" ).show();
@@ -298,6 +291,21 @@ $( ".history" ).click(function(){
     $( ".history" ).addClass('active');
 });
 
+$( ".delete" ).click(function(){
+    hide_all();
+    $( "#delete" ).show();
+    $( ".delete" ).addClass('active');
+});
+
+$(document).on('click', '.btn_calculation', function(event){
+        console.log(event);
+        $.post( "/api/modflowmodels/"+modelId+"/calculations.json", function ( data ) {
+            console.log(data);
+            $(".content_calculation").html( data.html );
+        }, 'json');
+    }
+);
+
 var imgOverlay;
 loadLayerImg = function(modelId, layerOrder, propertyTypeAbbreviation, ft){
     if (ft!=true) {soilmodel_map.removeLayer(imgOverlay);}
@@ -307,4 +315,14 @@ loadLayerImg = function(modelId, layerOrder, propertyTypeAbbreviation, ft){
     });
 };
 
-
+$( "#btn_delete_model").click(function () {
+    $.ajax({
+        type: 'DELETE',
+        url: '/api/modflowmodels/'+modelId+'.json',
+        statusCode: {
+            200: function() {
+                window.location.href = "/models/modflow";
+            }
+        }
+    });
+});
