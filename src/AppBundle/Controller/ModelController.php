@@ -4,7 +4,6 @@ namespace AppBundle\Controller;
 
 use AppBundle\Entity\ModelScenario;
 use AppBundle\Entity\ModFlowModel;
-use AppBundle\Model\ModFlowModelFactory;
 use Ramsey\Uuid\Uuid;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
@@ -49,8 +48,6 @@ class ModelController extends Controller
      */
     public function modelsModflowCreateAction()
     {
-        $modflowModel = ModFlowModelFactory::create();
-
         return $this->render('inowas/model/modflow/model.create.html.twig');
     }
 

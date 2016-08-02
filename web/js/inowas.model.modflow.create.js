@@ -112,12 +112,19 @@ $('#btn_create').click(function(){
     model.name = $( '#modelname' ).val();
     model.description = $( '#description' ).val();
     model.soil_model.numberOfLayers = $( '#soilmodel_number_of_layers' ).val();
-    console.log(JSON.stringify(model));
-});
 
-$('#gridsize').change(function(){
-    var gridSizeString = $('#gridsize').val();
-    var gridSizeArray = gridSizeString.split("x");
+    var gridSizeArray = $('#gridsize').val().split("x");
     model.grid_size.cols = gridSizeArray[0];
     model.grid_size.rows = gridSizeArray[1];
+
+    $.post("/api/modflowmodels.json",
+        { 'json' : JSON.stringify(model) },
+        function(data, status){
+            if (status == "success"){
+                window.location.href = "/models/modflow/"+data.id;
+            } else {
+                alert("There was a Problem submitting the data.");
+            }
+        }
+    );
 });

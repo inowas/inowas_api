@@ -8,13 +8,20 @@ use AppBundle\Entity\GeologicalLayer;
 use AppBundle\Entity\ModelScenario;
 use AppBundle\Entity\ModflowCalculation;
 use AppBundle\Entity\ModFlowModel;
-use AppBundle\Entity\PropertyType;
 use AppBundle\Entity\PropertyValue;
 use AppBundle\Entity\StreamBoundary;
 use AppBundle\Entity\User;
 use AppBundle\Entity\WellBoundary;
+use AppBundle\Model\AreaFactory;
+use AppBundle\Model\GeologicalLayerFactory;
+use AppBundle\Model\GridSize;
+use AppBundle\Model\ModFlowModelFactory;
 use AppBundle\Model\Point;
+use AppBundle\Model\PropertyType;
+use AppBundle\Model\PropertyTypeFactory;
 use AppBundle\Model\RasterFactory;
+use AppBundle\Model\SoilModelFactory;
+use CrEOF\Spatial\PHP\Types\Geometry\Polygon;
 use Inowas\PyprocessingBundle\Model\GeoImage\GeoImageParameter;
 use Inowas\PyprocessingBundle\Service\GeoImage;
 use FOS\RestBundle\Controller\Annotations\QueryParam;
@@ -26,6 +33,7 @@ use Nelmio\ApiDocBundle\Annotation\ApiDoc;
 use Ramsey\Uuid\Uuid;
 use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
@@ -109,6 +117,63 @@ class ModelRestController extends FOSRestController
     }
 
     /**
+     * Return the project-information by id.
+     *
+     * @ApiDoc(
+     *   resource = true,
+     *   description = "Return the project-information by id.",
+     *   statusCodes = {
+     *     200 = "Returned when successful",
+     *     404 = "Returned when the user is not found"
+     *   }
+     * )
+     *
+     * @param Request $request
+     * @return View
+     * @todo make the code testable
+     */
+    public function postModflowmodelAction(Request $request){
+
+        $data = json_decode($request->request->get('json'), true);
+
+        $model = ModFlowModelFactory::create()
+            ->setName($data['name'])
+            ->setDescription($data['description'])
+            ->setGridSize(new GridSize($data['grid_size']['cols'], $data['grid_size']['rows']))
+            ;
+
+        $soilModel = SoilModelFactory::create();
+        for ($i = 0; $i < $data['soil_model']['numberOfLayers']; $i++){
+            $soilModel->addGeologicalLayer(GeologicalLayerFactory::create()
+            ->setName('Layer'.($i+1))
+            ->setOrder($i));
+        }
+        $model->setSoilModel($soilModel);
+
+        $area = AreaFactory::create()
+            ->setName("")
+            ->setGeometry(new Polygon(json_decode($data['area']['geoJSON'])->geometry->coordinates, 4326))
+        ;
+
+        $model->setArea($area);
+        $model->setBoundingBox($this->get('inowas.geotools')->getBoundingBoxFromPolygon($area->getGeometry()));
+
+        $this->getDoctrine()->getManager()->persist($model);
+        $this->getDoctrine()->getManager()->flush();
+
+        $serializationContext = SerializationContext::create();
+        $serializationContext->setGroups('modeldetails');
+
+        $view = View::create();
+        $view->setData($model)
+            ->setStatusCode(200)
+            ->setSerializationContext($serializationContext)
+        ;
+
+        return $view;
+    }
+
+    /**
      * Return the ModflowModel Layer Property Image.
      *
      * @ApiDoc(
@@ -126,7 +191,7 @@ class ModelRestController extends FOSRestController
      * @param $propertyAbbreviation
      * @QueryParam(name="_format", nullable=true, description="Image format, default png", default="png")
      *
-     * @return View
+     * @return Response
      * @throws 
      */
     public function getModflowmodelLayerPropertyAction(ParamFetcher $paramFetcher, $id, $layerNumber, $propertyAbbreviation)
@@ -157,14 +222,7 @@ class ModelRestController extends FOSRestController
         }
 
         /** @var PropertyType $propertyType */
-        $propertyType = $this->getDoctrine()->getRepository('AppBundle:PropertyType')
-            ->findOneBy(array(
-                'abbreviation' => $propertyAbbreviation
-            ));
-        if (!$propertyType) {
-            throw new NotFoundHttpException('PropertyType not available.');
-        }
-
+        $propertyType = PropertyTypeFactory::create($propertyAbbreviation);
         $property = $layer->getPropertyByPropertyType($propertyType);
 
         if (null === $property){
@@ -225,7 +283,7 @@ class ModelRestController extends FOSRestController
         }
 
         $response->headers->set('Content-Type', $hType);
-            return $response;
+        return $response;
     }
 
     /**
@@ -279,7 +337,7 @@ class ModelRestController extends FOSRestController
      *
      * @QueryParam(name="geojson", nullable=true, description="Returns the geometry only as geojson", default=false)
      * @QueryParam(name="srid", nullable=true, description="The target srid, default is 4326", default=4326)
-     * @return View
+     * @return Response|View
      */
     public function getModflowmodelConstant_headAction(ParamFetcher $paramFetcher, $id)
     {
@@ -443,7 +501,7 @@ class ModelRestController extends FOSRestController
      *
      * @QueryParam(name="geojson", nullable=true, description="Returns the geometry only as geojson", default=false)
      * @QueryParam(name="srid", nullable=true, description="The target srid, default is 4326", default=4326)
-     * @return View
+     * @return Response|View
      */
     public function getModflowmodelRiversAction(ParamFetcher $paramFetcher, $id)
     {

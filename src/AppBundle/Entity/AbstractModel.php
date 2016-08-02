@@ -23,7 +23,7 @@ use Ramsey\Uuid\Uuid;
 abstract class AbstractModel
 {
     /**
-     * @var string
+     * @var Uuid
      *
      * @ORM\Id
      * @ORM\Column(name="id", type="uuid", unique=true)
@@ -38,7 +38,7 @@ abstract class AbstractModel
      * @ORM\Column(name="name", type="string",length=255)
      * @JMS\Groups({"list", "details", "modeldetails", "soilmodellist", "soilmodeldetails"})
      */
-    protected $name;
+    protected $name = "";
 
     /**
      * @var string
@@ -46,7 +46,7 @@ abstract class AbstractModel
      * @ORM\Column(name="description", type="text", nullable=true)
      * @JMS\Groups({"list", "details", "modeldetails", "soilmodellist", "soilmodeldetails"})
      */
-    protected $description;
+    protected $description = "";
 
     /**
      * @var User
@@ -122,10 +122,13 @@ abstract class AbstractModel
      *
      * @return $this
      */
-    public function setName($name)
+    public function setName($name = null)
     {
-        $this->name = $name;
+        if (is_null($name)){
+            $name = "";
+        }
 
+        $this->name = $name;
         return $this;
     }
 
@@ -146,10 +149,12 @@ abstract class AbstractModel
      *
      * @return $this
      */
-    public function setDescription($description)
+    public function setDescription($description = null)
     {
+        if (is_null($description)){
+            $description = "";
+        }
         $this->description = $description;
-
         return $this;
     }
 

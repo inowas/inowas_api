@@ -60,6 +60,34 @@ class GeoTools
         return $this->isActive($area, $srid, $x, $x, $y, $y);
     }
 
+    public function getBoundingBoxFromPolygon(\CrEOF\Spatial\PHP\Types\Geometry\Polygon $polygon){
+        $points = $polygon->getRing(0)->toArray();
+        $srid = $polygon->getSrid();
+
+        $xmin = $points[0][0];
+        $xmax = $points[0][0];
+        $ymin = $points[0][1];
+        $ymax = $points[0][1];
+
+        foreach ($points as $point) {
+            if ($point[0]<$xmin){
+                $xmin=$point[0];
+            }
+            if ($point[0]>$xmax){
+                $xmax=$point[0];
+            }
+
+            if ($point[1]<$ymin){
+                $xmin=$point[1];
+            }
+            if ($point[1]>$ymax){
+                $ymax=$point[1];
+            }
+        }
+
+        return new BoundingBox($xmin, $xmax, $ymin, $ymax, $srid);
+    }
+
     public function getGeoJsonGrid(BoundingBox $boundingBox, GridSize $gridSize, ActiveCells $activeCells)
     {
         $nx = $gridSize->getNX();
