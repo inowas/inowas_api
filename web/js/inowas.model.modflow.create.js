@@ -13,7 +13,8 @@ var area_map = new L.Map('area-map', {
 });
 
 area_map.addControl( new L.Control.FullScreen({
-    position: 'topleft'
+    position: 'bottomright',
+    forceSeparateButton: true
 }));
 
 // Add layers
