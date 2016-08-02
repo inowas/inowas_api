@@ -7,7 +7,14 @@ model.grid_size = {};
 model.soil_model = {};
 
 // Instantiate Map
-var area_map = new L.Map('area-map', {zoom: 9, center: new L.latLng([41.575730,13.002411]) });
+var area_map = new L.Map('area-map', {
+    zoom: 9,
+    center: new L.latLng([41.575730,13.002411])
+});
+
+area_map.addControl( new L.Control.FullScreen({
+    position: 'topleft'
+}));
 
 // Add layers
 area_map.addLayer(L.tileLayer('https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token=pk.eyJ1IjoibWFwYm94IiwiYSI6ImNpandmbXliNDBjZWd2M2x6bDk3c2ZtOTkifQ._QA7i5Mpkd_m30IGElHziw', {
