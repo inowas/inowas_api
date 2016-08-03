@@ -33,15 +33,23 @@ class User extends BaseUser
      */
     protected $profile;
 
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="api_key", type="uuid", length=255)
+     */
+    protected $apiKey;
+
     public function __construct()
     {
         parent::__construct();
         $this->id = Uuid::uuid4();
+        $this->apiKey = Uuid::uuid4();
         $this->profile = UserProfileFactory::create();
     }
 
     /**
-     * @return int
+     * @return Uuid
      */
     public function getId()
     {
@@ -56,5 +64,22 @@ class User extends BaseUser
     public function getProfile()
     {
         return $this->profile;
+    }
+
+    /**
+     * Get apiKey
+     *
+     * @return Uuid
+     */
+    public function getApiKey()
+    {
+        return $this->apiKey;
+    }
+
+    /**
+     *
+     */
+    public function generateNewApiKey(){
+        $this->apiKey = Uuid::uuid4();
     }
 }

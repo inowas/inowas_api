@@ -12,6 +12,10 @@ services:
         class: AppBundle\Service\SoilModelService
         arguments: ['@doctrine.orm.default_entity_manager', '@inowas.process.interpolation']
 
+    app.token_authenticator:
+        class: AppBundle\Security\TokenAuthenticator
+        arguments: ['@doctrine.orm.entity_manager']
+
 #    service_name:
 #        class: AppBundle\Directory\ClassName
 #        arguments: ["@another_service_name", "plain_value", "%parameter_name%"]
