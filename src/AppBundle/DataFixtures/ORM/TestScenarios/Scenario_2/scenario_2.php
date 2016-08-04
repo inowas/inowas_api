@@ -66,6 +66,7 @@ class LoadTestScenario_2 implements FixtureInterface, ContainerAwareInterface
             $user->setPassword($password);
             $user->setEnabled(true);
             $entityManager->persist($user);
+            $entityManager->flush();
         }
 
         // Load PropertyTypes

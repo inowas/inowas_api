@@ -4,7 +4,6 @@ namespace AppBundle\DataFixtures\ORM\Scenarios\Scenario_6_Summer_School;
 
 use AppBundle\Entity\GeologicalLayer;
 use AppBundle\Entity\StreamBoundary;
-use AppBundle\Entity\User;
 use AppBundle\Model\AreaFactory;
 use AppBundle\Model\BoundingBox;
 use AppBundle\Model\GeologicalLayerFactory;
@@ -48,27 +47,28 @@ class LoadScenario_6 implements FixtureInterface, ContainerAwareInterface
      */
     public function load(ObjectManager $entityManager)
     {
-        $geoTools = $this->container->get('inowas.geotools');
+
+
+        $userManager = $this->container->get('fos_user.user_manager');
 
         $public = true;
         $username = 'inowas';
         $email = 'inowas@inowas.com';
         $password = 'inowas';
 
-        $user = $entityManager->getRepository('AppBundle:User')
-            ->findOneBy(array(
-                'username' => $username
-            ));
+        $user = $userManager->findUserByUsername($username);
 
         if (!$user) {
             // Add new User
-            $user = new User();
+            $user = $userManager->createUser();
             $user->setUsername($username);
             $user->setEmail($email);
-            $user->setPassword($password);
+            $user->setPlainPassword($password);
             $user->setEnabled(true);
-            $entityManager->persist($user);
+            $userManager->updateUser($user);
         }
+
+        $geoTools = $this->container->get('inowas.geotools');
 
 
         // Load PropertyTypes
