@@ -60,15 +60,13 @@ class ModelController extends Controller
     public function modelAction($id)
     {
 
-        try {
-            $uuid = Uuid::fromString($id);
-        } catch (\InvalidArgumentException $e) {
+        if (! Uuid::isValid($id)){
             return $this->redirectToRoute('modflow_model_list');
         }
 
         $model = $this->getDoctrine()->getRepository('AppBundle:ModFlowModel')
             ->findOneBy(array(
-                'id' => $uuid
+                'id' => Uuid::fromString($id)
             ));
 
         if (! $model instanceof ModFlowModel){
@@ -77,7 +75,7 @@ class ModelController extends Controller
 
         return $this->render('inowas/model/modflow/model.html.twig', array(
                 'model' => $model,
-                'modelId' => $model->getId()->toString()
+                'apiKey' => $this->getUser()->getApiKey()
             )
         );
     }

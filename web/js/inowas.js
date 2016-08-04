@@ -37,13 +37,16 @@ $( ".summary" ).click(function(){
     });
 
     var area = new L.LayerGroup();
-    $.getJSON( "/api/modflowmodels/"+modelId+"/contents/summary.json", function ( data ) {
-        $(".content_summary").html( data.html );
-        var polygon = L.geoJson(jQuery.parseJSON(data.geojson)).bindPopup("Groundwater model area Hanoi II.");
-        polygon.addTo(area);
-        area.addTo(area_map);
-        area_map.fitBounds(polygon.getBounds());
-    });
+    $.getJSON(
+        "/api/modflowmodels/"+modelId+"/contents/summary.json",
+        function ( data ) {
+            $(".content_summary").html( data.html );
+            var polygon = L.geoJson(jQuery.parseJSON(data.geojson)).bindPopup("Groundwater model area Hanoi II.");
+            polygon.addTo(area);
+            area.addTo(area_map);
+            area_map.fitBounds(polygon.getBounds());
+        }
+    );
 });
 
 $( ".soilmodel" ).click(function(){

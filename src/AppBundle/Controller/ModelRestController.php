@@ -594,7 +594,7 @@ class ModelRestController extends FOSRestController
      * @param ParamFetcher $paramFetcher
      * @param $id
      *
-     * @QueryParam(name="srid", nullable=true, description="SRID, default 3857", default="3857")
+     * @QueryParam(name="srid", nullable=true, description="SRID, default 3857", default=3857)
      * @return View
      */
     public function getModflowmodelBoundingboxAction(ParamFetcher $paramFetcher, $id)
@@ -621,6 +621,36 @@ class ModelRestController extends FOSRestController
 
         $view = View::create();
         $view->setData($result)
+            ->setStatusCode(200)
+        ;
+
+        return $view;
+    }
+
+    /**
+     * Returns the gridsize, boundingbox, activecells array from a model
+     *
+     * @ApiDoc(
+     *   resource = true,
+     *   description = "Returns the boundingbox array from a model.",
+     *   statusCodes = {
+     *     200 = "Returned when successful",
+     *     404 = "Returned when the ModflowModel is not found"
+     *   }
+     * )
+     *
+     * @param $id
+     *
+     * @return View
+     */
+    public function getModflowmodelPropertiesAction($id){
+
+        /** @var ModFlowModel $model */
+        $model = $this->findModelById($id);
+
+        $view = View::create();
+        $view->setData($model)
+            ->setSerializationContext(SerializationContext::create()->setGroups('modelProperties'))
             ->setStatusCode(200)
         ;
 

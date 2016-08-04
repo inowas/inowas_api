@@ -233,8 +233,12 @@
 <script type="text/javascript" src="{{ asset('js/inowas-leaflet.js') }}"></script>
 
 <script>
-    var modelId = '{{ modelId }}';
-    var soilmodel_map;
+    var modelId = '{{ model.id.toString }}';
+
+    $.ajaxSetup({
+        headers : {'X-AUTH-TOKEN' : '{{ apiKey }}'}
+    });
+
     $(document).ready(function() {$(".summary").click();});
 </script>
 </body>

@@ -9,10 +9,12 @@ use AppBundle\Entity\Property;
 use AppBundle\Entity\PropertyValue;
 use AppBundle\Entity\SoilModel;
 use AppBundle\Entity\User;
+use AppBundle\Model\ActiveCells;
 use AppBundle\Model\ConstantHeadBoundaryFactory;
 use AppBundle\Model\GeneralHeadBoundaryFactory;
 use AppBundle\Model\GeologicalLayerFactory;
 use AppBundle\Model\BoundingBox;
+use AppBundle\Model\GridSize;
 use AppBundle\Model\ModFlowModelFactory;
 use AppBundle\Model\Point;
 use AppBundle\Model\PropertyFactory;
@@ -65,7 +67,6 @@ class ModflowModelRestControllerTest extends RestControllerTestCase
         $this->modFlowModel->setName("TestModel");
         $this->modFlowModel->setDescription('TestModelDescription!!!');
         $this->modFlowModel->setPublic(true);
-
         $this->modFlowModel->setSoilModel(SoilModelFactory::create()
             ->setOwner($this->getOwner())
             ->setPublic(true)
@@ -83,7 +84,14 @@ class ModflowModelRestControllerTest extends RestControllerTestCase
             )
         );
 
+        $this->modFlowModel->setGridSize(new GridSize(4,5));
         $this->modFlowModel->setBoundingBox(new BoundingBox(1.1, 2.2, 3.3, 4.4));
+        $this->modFlowModel->setActiveCells(ActiveCells::fromArray(array(
+            array(1,2,3),
+            array(1,2,3),
+            array(1,2,3)
+        )));
+
         $this->getEntityManager()->persist($this->modFlowModel);
         $this->getEntityManager()->flush();
 
@@ -416,6 +424,7 @@ class ModflowModelRestControllerTest extends RestControllerTestCase
             array(),
             array('HTTP_X-AUTH-TOKEN' => $this->getOwner()->getApiKey())
         );
+
         $this->assertEquals(200, $client->getResponse()->getStatusCode());
         $bb = json_decode($client->getResponse()->getContent());
         $expectedArray = array(
@@ -447,6 +456,31 @@ class ModflowModelRestControllerTest extends RestControllerTestCase
         );
 
         $this->assertEquals($expectedArray, $bb);
+    }
+
+    public function testGetModFlowModelProperties(){
+        $this->getEntityManager()->persist($this->modFlowModel);
+        $this->getEntityManager()->flush();
+
+        $client = static::createClient();
+        $client->request(
+            'GET',
+            '/api/modflowmodels/'.$this->modFlowModel->getId().'/properties.json',
+            array(),
+            array(),
+            array('HTTP_X-AUTH-TOKEN' => $this->getOwner()->getApiKey())
+        );
+
+        $this->assertEquals(200, $client->getResponse()->getStatusCode());
+        $properties = json_decode($client->getResponse()->getContent());
+        $this->assertEquals($this->modFlowModel->getActiveCells()->toArray(), $properties->active_cells);
+        $this->assertEquals($this->modFlowModel->getGridSize()->getNX(), $properties->grid_size->n_x);
+        $this->assertEquals($this->modFlowModel->getGridSize()->getNY(), $properties->grid_size->n_y);
+        $this->assertEquals($this->modFlowModel->getBoundingBox()->getXMin(), $properties->bounding_box->x_min);
+        $this->assertEquals($this->modFlowModel->getBoundingBox()->getXMax(), $properties->bounding_box->x_max);
+        $this->assertEquals($this->modFlowModel->getBoundingBox()->getYMin(), $properties->bounding_box->y_min);
+        $this->assertEquals($this->modFlowModel->getBoundingBox()->getYMax(), $properties->bounding_box->y_max);
+        $this->assertEquals($this->modFlowModel->getBoundingBox()->getSrid(), $properties->bounding_box->srid);
     }
 
     public function testDeleteModFlowModel(){

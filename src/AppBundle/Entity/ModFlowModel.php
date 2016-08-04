@@ -32,7 +32,7 @@ class ModFlowModel extends AbstractModel
      * @ORM\Column(name="grid_size", type="grid_size", nullable=true)
      *
      * @JMS\Type("AppBundle\Model\GridSize")
-     * @JMS\Groups({"details", "modeldetails"})
+     * @JMS\Groups({"details", "modeldetails", "modelProperties"})
      */
     private $gridSize;
 
@@ -42,7 +42,7 @@ class ModFlowModel extends AbstractModel
      * @ORM\Column(name="bounding_box", type="bounding_box", nullable=true)
      *
      * @JMS\Type("AppBundle\Model\BoundingBox")
-     * @JMS\Groups({"details", "modeldetails"})
+     * @JMS\Groups({"details", "modeldetails", "modelProperties"})
      */
     private $boundingBox;
 
@@ -454,5 +454,18 @@ class ModFlowModel extends AbstractModel
                 $this->removeModelObject($modelObject);
             }
         }
+    }
+
+    /**
+     * @JMS\Groups({"modelProperties"})
+     * @JMS\VirtualProperty()
+     * @JMS\SerializedName("active_cells")
+     */
+    public function serializeActiveCells(){
+        if (! $this->activeCells instanceof ActiveCells){
+            return null;
+        }
+
+        return $this->activeCells->toArray();
     }
 }
