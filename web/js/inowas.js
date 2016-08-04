@@ -38,7 +38,7 @@ $( ".summary" ).click(function(){
 
     var area = new L.LayerGroup();
     $.getJSON(
-        "/api/modflowmodels/"+modelId+"/contents/summary.json",
+        "/api/modflowmodels/"+model.id+"/contents/summary.json",
         function ( data ) {
             $(".content_summary").html( data.html );
             var polygon = L.geoJson(jQuery.parseJSON(data.geojson)).bindPopup("Groundwater model area Hanoi II.");
@@ -66,7 +66,7 @@ $( ".soilmodel" ).click(function(){
     streets.addTo(soilmodel_map);
 
     var area = new L.LayerGroup();
-    $.getJSON( "/api/modflowmodels/"+modelId+"/contents/soilmodel.json", function ( data ) {
+    $.getJSON( "/api/modflowmodels/"+model.id+"/contents/soilmodel.json", function ( data ) {
         $(".content_soilmodel").html( data.html );
         var polygon = L.geoJson(jQuery.parseJSON(data.geojson)).addTo(soilmodel_map).bindPopup("Groundwater model area Hanoi II.");
         polygon.addTo(area);
@@ -74,7 +74,7 @@ $( ".soilmodel" ).click(function(){
         soilmodel_map.fitBounds(polygon.getBounds());
     });
 
-    loadLayerImg(modelId, 0, 'et', true);
+    loadLayerImg(model.id, 0, 'et', true);
 });
 
 $( ".boundaries" ).click(function () {
@@ -109,7 +109,7 @@ $( ".boundaries" ).click(function () {
     });
 
     var area = new L.LayerGroup();
-    $.getJSON( "/api/modflowmodels/"+modelId+"/contents/soilmodel.json", function ( data ) {
+    $.getJSON( "/api/modflowmodels/"+model.id+"/contents/soilmodel.json", function ( data ) {
         var polygon = L.geoJson(jQuery.parseJSON(data.geojson)).bindPopup("Groundwater model area Hanoi II.");
         polygon.addTo(area);
         area.addTo(boundary_map);
@@ -117,7 +117,7 @@ $( ".boundaries" ).click(function () {
     });
 
     var wells = new L.LayerGroup();
-    $.getJSON( "/api/modflowmodels/"+modelId+"/wells.json?srid=4326", function ( wellData ) {
+    $.getJSON( "/api/modflowmodels/"+model.id+"/wells.json?srid=4326", function ( wellData ) {
         console.log(wellData);
 
         if ("cw" in wellData) {
@@ -153,13 +153,13 @@ $( ".boundaries" ).click(function () {
     });
 
     var chb = new L.LayerGroup();
-    $.get( "/api/modflowmodels/"+modelId+"/constant_head.json?geojson=true&srid=4326", function ( data ) {
+    $.get( "/api/modflowmodels/"+model.id+"/constant_head.json?geojson=true&srid=4326", function ( data ) {
         L.geoJson(data, {color: 'red'}).addTo(chb);
         chb.addTo(boundary_map);
     });
 
     var riv = new L.LayerGroup();
-    $.get( "/api/modflowmodels/"+modelId+"/rivers.json?geojson=true&srid=4326", function ( data ) {
+    $.get( "/api/modflowmodels/"+model.id+"/rivers.json?geojson=true&srid=4326", function ( data ) {
         L.geoJson(data, {color: 'red'}).addTo(riv);
         riv.addTo(boundary_map);
     });
@@ -174,7 +174,7 @@ $( ".calculation" ).click(function(){
     $( "#calculation" ).show();
     $( ".calculation" ).addClass('active');
 
-    $.getJSON( "/api/modflowmodels/"+modelId+"/contents/calculation.json", function ( data ) {
+    $.getJSON( "/api/modflowmodels/"+model.id+"/contents/calculation.json", function ( data ) {
         $(".content_calculation").html( data.html );
     });
 });
@@ -198,7 +198,7 @@ $( ".results" ).click(function(){
     streets.addTo(results_map);
 
     var area = new L.LayerGroup();
-    $.getJSON( "/api/modflowmodels/"+modelId+"/contents/soilmodel.json", function ( data ) {
+    $.getJSON( "/api/modflowmodels/"+model.id+"/contents/soilmodel.json", function ( data ) {
         var polygon = L.geoJson(jQuery.parseJSON(data.geojson), {"weight": 2, "fillOpacity": 0}).bindPopup("Groundwater model area Hanoi II.");
         polygon.addTo(area);
         area.addTo(results_map);
@@ -206,7 +206,7 @@ $( ".results" ).click(function(){
     });
 
     var wells = new L.LayerGroup();
-    $.getJSON( "/api/modflowmodels/"+modelId+"/wells.json?srid=4326", function ( wellData ) {
+    $.getJSON( "/api/modflowmodels/"+model.id+"/wells.json?srid=4326", function ( wellData ) {
         console.log(wellData);
 
         if ("ow" in wellData) {
@@ -218,15 +218,15 @@ $( ".results" ).click(function(){
         wells.addTo(results_map);
     });
 
-    $.getJSON( "/api/modflowmodels/"+modelId+"/boundingbox.json?srid=4326", function ( boundingBox ) {
-        var imageUrl = "/api/modflowmodels/"+modelId+"/layers/3/properties/hh.json?_format=png";
+    $.getJSON( "/api/modflowmodels/"+model.id+"/boundingbox.json?srid=4326", function ( boundingBox ) {
+        var imageUrl = "/api/modflowmodels/"+model.id+"/layers/3/properties/hh.json?_format=png";
         imgOverlay = L.imageOverlay(imageUrl, boundingBox).addTo(results_map).setOpacity(0.6);
     });
 
-    loadLayerImg(modelId, 3, 'hh', true);
+    loadLayerImg(model.id, 3, 'hh', true);
 
     var grid = new L.LayerGroup();
-    $.get( "/api/modflowmodels/"+modelId+"/grid.json?srid=4326", function (data) {
+    $.get( "/api/modflowmodels/"+model.id+"/grid.json?srid=4326", function (data) {
         L.geoJson(data, {"color": "blue", "weight": 1, "opacity": 0.65, "fillOpacity": 0.1}).addTo(grid);
     });
 
@@ -302,7 +302,7 @@ $( ".delete" ).click(function(){
 
 $(document).on('click', '.btn_calculation', function(event){
         console.log(event);
-        $.post( "/api/modflowmodels/"+modelId+"/calculations.json", function ( data ) {
+        $.post( "/api/modflowmodels/"+model.id+"/calculations.json", function ( data ) {
             console.log(data);
             $(".content_calculation").html( data.html );
         }, 'json');
@@ -321,7 +321,7 @@ loadLayerImg = function(modelId, layerOrder, propertyTypeAbbreviation, ft){
 $( "#btn_delete_model").click(function () {
     $.ajax({
         type: 'DELETE',
-        url: '/api/modflowmodels/'+modelId+'.json',
+        url: '/api/modflowmodels/'+model.id+'.json',
         statusCode: {
             200: function() {
                 window.location.href = "/models/modflow";

@@ -233,7 +233,15 @@
 <script type="text/javascript" src="{{ asset('js/inowas-leaflet.js') }}"></script>
 
 <script>
-    var modelId = '{{ model.id.toString }}';
+
+    var model = {};
+    model.id = '{{ model.id.toString }}';
+
+    $.getJSON( "/api/modflowmodels/"+model.id+"/properties.json", function ( data ) {
+        model.active_cells = data.active_cells;
+        model.bounding_box = data.bounding_box;
+        model.grid_size = data.grid_size;
+    });
 
     $.ajaxSetup({
         headers : {'X-AUTH-TOKEN' : '{{ apiKey }}'}
