@@ -17,7 +17,7 @@ class UserFactory
         $user = new User();
         $user->setUsername($testCase.'TestUser'.rand(1000000,10000000000))
             ->setEmail($testCase.'TestUser'.rand(1000000,10000000000).'@inowas.com.')
-            ->setPassword($testCase.'TestUserPassWord')
+            ->setPlainPassword($testCase.'TestUserPassWord')
             ->setEnabled(true);
 
         return $user;

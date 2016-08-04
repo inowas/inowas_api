@@ -7,6 +7,7 @@ use AppBundle\Entity\ModFlowModel;
 use Ramsey\Uuid\Uuid;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Symfony\Component\HttpFoundation\Response;
 
 
@@ -14,6 +15,7 @@ class ModelController extends Controller
 {
     /**
      * @Route("/models/modflow", name="modflow_model_list")
+     * @Security("has_role('ROLE_USER')")
      *
      * @return Response
      */
@@ -43,6 +45,7 @@ class ModelController extends Controller
 
     /**
      * @Route("/models/modflow/create", name="models_modflow_create")
+     * @Security("has_role('ROLE_USER')")
      *
      * @return response
      */
@@ -53,13 +56,13 @@ class ModelController extends Controller
 
     /**
      * @Route("/models/modflow/{id}", name="modflow_model")
+     * @Security("has_role('ROLE_USER')")
      *
      * @param $id
      * @return Response
      */
     public function modelAction($id)
     {
-
         if (! Uuid::isValid($id)){
             return $this->redirectToRoute('modflow_model_list');
         }
@@ -82,6 +85,7 @@ class ModelController extends Controller
 
     /**
      * @Route("/models/modflow/{id}/scenarios", name="modflow_model_modflow_scenarios_list")
+     * @Security("has_role('ROLE_USER')")
      *
      * @param $id
      * @return Response
@@ -124,6 +128,7 @@ class ModelController extends Controller
 
     /**
      * @Route("/models/modflow/{id}/scenarios/results", name="modflow_model_modflow_scenarios_results")
+     * @Security("has_role('ROLE_USER')")
      *
      * @param $id
      * @return Response
@@ -170,6 +175,7 @@ class ModelController extends Controller
 
     /**
      * @Route("/models/modflow/{modelId}/scenarios/{scenarioId}", name="modflow_model_modflow_scenario")
+     * @Security("has_role('ROLE_USER')")
      *
      * @param $modelId
      * @param $scenarioId
