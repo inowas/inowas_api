@@ -18,7 +18,6 @@ class UserFactoryTest extends \PHPUnit_Framework_TestCase
         $this->assertContains('testCase', $user->getUsername());
         $this->assertContains('testCase', $user->getEmail());
         $this->assertContains('@', $user->getEmail());
-        $this->assertContains('testCase', $user->getPassword());
         $this->assertTrue($user->isEnabled());
     }
 
