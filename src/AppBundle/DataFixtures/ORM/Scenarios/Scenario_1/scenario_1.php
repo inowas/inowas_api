@@ -6,7 +6,6 @@ use AppBundle\Entity\GeologicalLayer;
 use AppBundle\Entity\ModFlowModel;
 use AppBundle\Entity\User;
 use AppBundle\Model\AreaFactory;
-use AppBundle\Model\AreaTypeFactory;
 use AppBundle\Model\ConstantHeadBoundaryFactory;
 use AppBundle\Model\GeologicalLayerFactory;
 use AppBundle\Model\GeologicalPointFactory;
@@ -227,8 +226,7 @@ class LoadScenario_1 implements FixtureInterface, ContainerAwareInterface
         $area = AreaFactory::create()
             ->setOwner($user)
             ->setName('SC1_A1')
-            ->setAreaType(AreaTypeFactory::create()
-                ->setName('SC1_AT1'))
+            ->setAreaType('SC1_AT1')
             ->setPublic($public)
             ->setGeometry(new Polygon(
                 array(new LineString(array(

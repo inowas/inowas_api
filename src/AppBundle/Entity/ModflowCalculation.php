@@ -5,6 +5,7 @@ namespace AppBundle\Entity;
 use Doctrine\ORM\Mapping as ORM;
 use JMS\Serializer\Annotation as JMS;
 use Ramsey\Uuid\Uuid;
+use Ramsey\Uuid\UuidInterface;
 
 /**
  * ModflowCalculation
@@ -137,10 +138,10 @@ class ModflowCalculation
     }
 
     /**
-     * @param Uuid $modelId
+     * @param UuidInterface $modelId
      * @return ModflowCalculation
      */
-    public function setModelId(Uuid $modelId): ModflowCalculation
+    public function setModelId(UuidInterface $modelId): ModflowCalculation
     {
         $this->modelId = $modelId;
         return $this;

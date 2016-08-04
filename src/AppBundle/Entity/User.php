@@ -36,7 +36,7 @@ class User extends BaseUser
     /**
      * @var string
      *
-     * @ORM\Column(name="api_key", type="uuid", length=255)
+     * @ORM\Column(name="api_key", type="string", length=255)
      */
     protected $apiKey;
 
@@ -44,7 +44,7 @@ class User extends BaseUser
     {
         parent::__construct();
         $this->id = Uuid::uuid4();
-        $this->apiKey = Uuid::uuid4();
+        $this->apiKey = Uuid::uuid4()->toString();
         $this->profile = UserProfileFactory::create();
     }
 
@@ -69,7 +69,7 @@ class User extends BaseUser
     /**
      * Get apiKey
      *
-     * @return Uuid
+     * @return string
      */
     public function getApiKey()
     {
@@ -80,6 +80,6 @@ class User extends BaseUser
      *
      */
     public function generateNewApiKey(){
-        $this->apiKey = Uuid::uuid4();
+        $this->apiKey = Uuid::uuid4()->toString();
     }
 }

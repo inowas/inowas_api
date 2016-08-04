@@ -5,42 +5,28 @@ namespace Tests\AppBundle\Controller;
 use AppBundle\Entity\User;
 use AppBundle\Entity\WellBoundary;
 use AppBundle\Model\Point;
-use AppBundle\Model\UserFactory;
 use AppBundle\Model\WellBoundaryFactory;
-use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
+use Tests\AppBundle\RestControllerTestCase;
 
-class WellRestControllerTest extends WebTestCase
+class WellRestControllerTest extends RestControllerTestCase
 {
-
-    /** @var \Doctrine\ORM\EntityManager */
-    protected $entityManager;
-
-    /** @var User $owner */
-    protected $owner;
-
     /** @var  WellBoundary $well */
     protected $well;
 
     public function setUp()
     {
-        self::bootKernel();
-        $this->entityManager = static::$kernel->getContainer()
-            ->get('doctrine.orm.default_entity_manager')
-        ;
-
-        $this->owner = UserFactory::createTestUser('BoundaryOwner');
-        $this->entityManager->persist($this->owner);
-        $this->entityManager->flush();
+        $this->getEntityManager()->persist($this->getOwner());
+        $this->getEntityManager()->flush();
 
         $this->well = WellBoundaryFactory::create()
             ->setName('Well')
             ->setPublic(true)
-            ->setOwner($this->owner)
+            ->setOwner($this->getOwner())
             ->setPoint(new Point(10.1, 11.1, 3568))
         ;
 
-        $this->entityManager->persist($this->well);
-        $this->entityManager->flush();
+        $this->getEntityManager()->persist($this->well);
+        $this->getEntityManager()->flush();
     }
 
     /**
@@ -49,7 +35,13 @@ class WellRestControllerTest extends WebTestCase
     public function testWellList()
     {
         $client = static::createClient();
-        $client->request('GET', '/api/users/'.$this->owner->getUsername().'/wells.json');
+        $client->request(
+            'GET',
+            '/api/users/'.$this->getOwner()->getUsername().'/wells.json',
+            array(),
+            array(),
+            array('HTTP_X-AUTH-TOKEN' => $this->getOwner()->getApiKey())
+        );
         $this->assertEquals(200, $client->getResponse()->getStatusCode());
         $wells = json_decode($client->getResponse()->getContent());
         $this->assertEquals(1, count($wells));
@@ -66,7 +58,13 @@ class WellRestControllerTest extends WebTestCase
     public function testWellDetails()
     {
         $client = static::createClient();
-        $client->request('GET', '/api/wells/'.$this->well->getId().'.json');
+        $client->request(
+            'GET',
+            '/api/wells/'.$this->well->getId().'.json',
+            array(),
+            array(),
+            array('HTTP_X-AUTH-TOKEN' => $this->getOwner()->getApiKey())
+        );
         $this->assertEquals(200, $client->getResponse()->getStatusCode());
         $well = json_decode($client->getResponse()->getContent());
         $this->assertObjectHasAttribute('id', $well);
@@ -85,23 +83,23 @@ class WellRestControllerTest extends WebTestCase
      */
     public function tearDown()
     {
-        $user = $this->entityManager->getRepository('AppBundle:User')
+        $user = $this->getEntityManager()->getRepository('AppBundle:User')
             ->findOneBy(array(
-                'username' => $this->owner->getUsername()
+                'username' => $this->getOwner()->getUsername()
             ));
-        $this->entityManager->remove($user);
+        $this->getEntityManager()->remove($user);
 
-        $entities = $this->entityManager->getRepository('AppBundle:WellBoundary')
+        $entities = $this->getEntityManager()->getRepository('AppBundle:WellBoundary')
             ->findBy(array(
                 'owner' => $user
             ))
         ;
 
         foreach ($entities as $entity) {
-            $this->entityManager->remove($entity);
+            $this->getEntityManager()->remove($entity);
         }
 
-        $this->entityManager->flush();
-        $this->entityManager->close();
+        $this->getEntityManager()->flush();
+        $this->getEntityManager()->close();
     }
 }

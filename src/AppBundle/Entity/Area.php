@@ -35,9 +35,9 @@ class Area extends ModelObject
     private $rings;
 
     /**
-     * @var AreaType
+     * @var string
      *
-     * @ORM\ManyToOne(targetEntity="AppBundle\Entity\AreaType", cascade={"persist", "remove"})
+     * @ORM\Column(name="area_type", type="string", nullable=true)
      * @JMS\Groups({"list", "details", "modelobjectdetails", "modeldetails"})
      */
     private $areaType;
@@ -72,10 +72,10 @@ class Area extends ModelObject
     /**
      * Set areaType
      *
-     * @param \AppBundle\Entity\AreaType $areaType
+     * @param string
      * @return Area
      */
-    public function setAreaType(AreaType $areaType = null)
+    public function setAreaType($areaType)
     {
         $this->areaType = $areaType;
 
@@ -85,7 +85,7 @@ class Area extends ModelObject
     /**
      * Get areaType
      *
-     * @return \AppBundle\Entity\AreaType 
+     * @return string
      */
     public function getAreaType()
     {

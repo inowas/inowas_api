@@ -5,7 +5,6 @@ namespace Tests\AppBundle\Controller;
 use AppBundle\Entity\Area;
 use AppBundle\Entity\SoilModel;
 use AppBundle\Model\AreaFactory;
-use AppBundle\Model\AreaTypeFactory;
 use AppBundle\Model\GeologicalLayerFactory;
 use AppBundle\Model\GeologicalPointFactory;
 use AppBundle\Model\GeologicalUnitFactory;
@@ -44,7 +43,7 @@ class SoilModelSerialisationTest extends \PHPUnit_Framework_TestCase
         $this->area = AreaFactory::create()
             ->setOwner($owner)
             ->setPublic(true)
-            ->setAreaType(AreaTypeFactory::setName('SoilModelTestAreaType'))
+            ->setAreaType('SoilModelTestAreaType')
             ->addProperty(PropertyFactory::create())
         ;
 

@@ -7,7 +7,6 @@ use AppBundle\Entity\GeologicalUnit;
 use AppBundle\Entity\ModFlowModel;
 use AppBundle\Entity\User;
 use AppBundle\Model\AreaFactory;
-use AppBundle\Model\AreaTypeFactory;
 use AppBundle\Model\ConstantHeadBoundaryFactory;
 use AppBundle\Model\GeologicalLayerFactory;
 use AppBundle\Model\GeologicalPointFactory;
@@ -106,9 +105,8 @@ class LoadTestScenario_2 implements FixtureInterface, ContainerAwareInterface
             ->setGridSize(new GridSize(101, 101))
             ->setArea(AreaFactory::create()
                 ->setOwner($user)
-                ->setName('Area TestScenario 1')
-                ->setAreaType(AreaTypeFactory::create()
-                    ->setName('AreaType TestScenario 1'))
+                ->setName('Area TestScenario 2')
+                ->setAreaType('AreaType TestScenario 2')
                 ->setPublic($public)
                 ->setGeometry(new Polygon(
                     array(new LineString(array(

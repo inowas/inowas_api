@@ -6,7 +6,6 @@ use AppBundle\Entity\GeologicalLayer;
 use AppBundle\Entity\StreamBoundary;
 use AppBundle\Entity\User;
 use AppBundle\Model\AreaFactory;
-use AppBundle\Model\AreaTypeFactory;
 use AppBundle\Model\BoundingBox;
 use AppBundle\Model\GeologicalLayerFactory;
 use AppBundle\Model\GeologicalPointFactory;
@@ -86,7 +85,7 @@ class LoadScenario_6 implements FixtureInterface, ContainerAwareInterface
                 ->setName('Rio Primero Area')
                 ->setOwner($user)
                 ->setPublic($public)
-                ->setAreaType(AreaTypeFactory::create()->setName('SC6_AT1'))
+                ->setAreaType('SC6_AT1')
                 ->setGeometry(new Polygon(array(
                     array(
                         array(-63.65374923159833, -31.364459841376334),

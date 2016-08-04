@@ -24,9 +24,6 @@ class AreaSerialisationTest extends \PHPUnit_Framework_TestCase
     /** @var User $owner */
     protected $owner;
 
-    /** @var AreaType $areaType*/
-    protected $areaType;
-
     /** @var  Area $area */
     protected $area;
 
@@ -34,10 +31,7 @@ class AreaSerialisationTest extends \PHPUnit_Framework_TestCase
     {
         $this->serializer = SerializerBuilder::create()->build();
         $this->owner = UserFactory::createTestUser("ModelTest_Owner");
-        $this->areaType = AreaTypeFactory::setName('ModelAreaType');
-        $this->area = AreaFactory::create()
-            ->setAreaType(AreaTypeFactory::setName("AreaType"))
-        ;
+        $this->area = AreaFactory::create()->setAreaType('ModelAreaType');
 
         $rings = array(
             new LineString(
@@ -82,10 +76,10 @@ class AreaSerialisationTest extends \PHPUnit_Framework_TestCase
         $serializationContext->setGroups('modelobjectdetails');
         $area = $this->serializer->serialize($this->area, 'json', $serializationContext);
 
-        $this->assertStringStartsWith('{',$area);
+        $this->assertJson($area);
         $area = json_decode($area);
         $this->assertEquals($area->type, 'area');
-        $this->assertEquals($area->area_type->name, $this->area->getAreaType()->getName());
+        $this->assertEquals($this->area->getAreaType(), $area->area_type);
         $this->assertEquals((array) $area->geometry[0], (array)$this->area->serializeDeserializeGeometry()[0]);
     }
 }

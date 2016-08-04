@@ -6,7 +6,6 @@ use AppBundle\Entity\GeologicalLayer;
 use AppBundle\Entity\ModFlowModel;
 use AppBundle\Entity\User;
 use AppBundle\Model\AreaFactory;
-use AppBundle\Model\AreaTypeFactory;
 use AppBundle\Model\ConstantHeadBoundaryFactory;
 use AppBundle\Model\GeologicalLayerFactory;
 use AppBundle\Model\BoundingBox;
@@ -82,8 +81,7 @@ class LoadTestScenario_1 implements FixtureInterface, ContainerAwareInterface
             ->setArea(AreaFactory::create()
                 ->setOwner($user)
                 ->setName('Area TestScenario 1')
-                ->setAreaType(AreaTypeFactory::create()
-                    ->setName('AreaType TestScenario 1'))
+                ->setAreaType("AreaType TestScenario 1")
                 ->setPublic($public)
                 ->setGeometry(new Polygon(
                     array(new LineString(array(

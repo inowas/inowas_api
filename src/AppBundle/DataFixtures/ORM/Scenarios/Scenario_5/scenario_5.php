@@ -7,7 +7,6 @@ use AppBundle\Entity\GeologicalUnit;
 use AppBundle\Entity\User;
 use AppBundle\Entity\WellBoundary;
 use AppBundle\Model\AreaFactory;
-use AppBundle\Model\AreaTypeFactory;
 use AppBundle\Model\ConstantHeadBoundaryFactory;
 use AppBundle\Model\GeologicalLayerFactory;
 use AppBundle\Model\GeologicalPointFactory;
@@ -88,7 +87,7 @@ class LoadScenario_5 implements FixtureInterface, ContainerAwareInterface
                 ->setName('Pirna Area')
                 ->setOwner($user)
                 ->setPublic($public)
-                ->setAreaType(AreaTypeFactory::create()->setName('SC5_AT1'))
+                ->setAreaType('SC5_AT1')
                 ->setGeometry(new Polygon(array(
                     array(
                         array(5424432.87775928, 5648432.35452681),

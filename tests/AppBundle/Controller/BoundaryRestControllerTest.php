@@ -17,19 +17,12 @@ use AppBundle\Model\PropertyType;
 use AppBundle\Model\PropertyTypeFactory;
 use AppBundle\Model\PropertyValueFactory;
 use AppBundle\Model\StreamBoundaryFactory;
-use AppBundle\Model\UserFactory;
 use AppBundle\Model\WellBoundaryFactory;
 use CrEOF\Spatial\PHP\Types\Geometry\LineString;
-use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
+use Tests\AppBundle\RestControllerTestCase;
 
-class BoundaryRestControllerTest extends WebTestCase
+class BoundaryRestControllerTest extends RestControllerTestCase
 {
-    /** @var \Doctrine\ORM\EntityManager */
-    protected $entityManager;
-
-    /** @var User $owner */
-    protected $owner;
-
     /** @var  GeneralHeadBoundary $ghb */
     protected $ghb;
 
@@ -59,30 +52,24 @@ class BoundaryRestControllerTest extends WebTestCase
 
     public function setUp()
     {
-        self::bootKernel();
-        $this->entityManager = static::$kernel->getContainer()
-            ->get('doctrine.orm.default_entity_manager')
-        ;
-
         $this->headPropertyType = PropertyTypeFactory::create(PropertyType::HYDRAULIC_HEAD);
         $this->riverStagePropertyType = PropertyTypeFactory::create(PropertyType::RIVER_STAGE);
         $this->riverStageConductancePropertyType = PropertyTypeFactory::create(PropertyType::RIVERBED_CONDUCTANCE);
         $this->pumpingRatePropertyType = PropertyTypeFactory::create(PropertyType::PUMPING_RATE);
 
-        $this->owner = UserFactory::createTestUser('BoundaryOwner');
-        $this->entityManager->persist($this->owner);
-        $this->entityManager->flush();
+        $this->getEntityManager()->persist($this->getOwner());
+        $this->getEntityManager()->flush();
 
         $this->layer = GeologicalLayerFactory::create()
             ->setName('New Layer')
             ->setOrder(GeologicalLayer::TOP_LAYER)
         ;
-        $this->entityManager->persist($this->layer);
+        $this->getEntityManager()->persist($this->layer);
 
         $this->chb = ConstantHeadBoundaryFactory::create()
             ->setName('GHB-Boundary')
             ->setPublic(true)
-            ->setOwner($this->owner)
+            ->setOwner($this->getOwner())
             ->setGeometry(new LineString(
                     array(
                         new Point(11777056.49104572273790836, 2403440.17028302047401667),
@@ -94,12 +81,12 @@ class BoundaryRestControllerTest extends WebTestCase
             ->addValue($this->headPropertyType, PropertyValueFactory::create()->setValue(10))
         ;
 
-        $this->entityManager->persist($this->chb);
+        $this->getEntityManager()->persist($this->chb);
 
         $this->ghb = GeneralHeadBoundaryFactory::create()
             ->setName('GHB-Boundary')
             ->setPublic(true)
-            ->setOwner($this->owner)
+            ->setOwner($this->getOwner())
             ->setGeometry(new LineString(
                 array(
                     new Point(11777056.49104572273790836, 2403440.17028302047401667),
@@ -111,12 +98,12 @@ class BoundaryRestControllerTest extends WebTestCase
             ->addValue($this->headPropertyType, PropertyValueFactory::create()->setValue(10));
         ;
 
-        $this->entityManager->persist($this->ghb);
+        $this->getEntityManager()->persist($this->ghb);
 
         $this->riv = StreamBoundaryFactory::create()
             ->setName('RIV-Boundary')
             ->setPublic(true)
-            ->setOwner($this->owner)
+            ->setOwner($this->getOwner())
             ->setStartingPoint(new Point(10, 11))
             ->setGeometry(new LineString(
                 array(
@@ -128,19 +115,26 @@ class BoundaryRestControllerTest extends WebTestCase
             ->addValue($this->riverStageConductancePropertyType, PropertyValueFactory::create()->setValue(0.001))
         ;
 
-        $this->entityManager->persist($this->riv);
+        $this->getEntityManager()->persist($this->riv);
 
         $this->wel = WellBoundaryFactory::create()
             ->setName('WEL-Boundary')
             ->setPublic(true)
-            ->setOwner($this->owner)
+            ->setOwner($this->getOwner())
             ->setPoint(new Point(10, 11))
             ->setLayer($this->layer)
             ->addValue($this->pumpingRatePropertyType, PropertyValueFactory::create()->setValue(-1000))
         ;
 
-        $this->entityManager->persist($this->wel);
-        $this->entityManager->flush();
+        $this->getEntityManager()->persist($this->wel);
+        $this->getEntityManager()->flush();
+    }
+
+    public function testBoundaryWithoutAPIKeyThrows401()
+    {
+        $client = static::createClient();
+        $client->request('GET', '/api/boundaries/4d3a6a77-2746-4ea0-884d-79fafcb34a81.json');
+        $this->assertEquals(401, $client->getResponse()->getStatusCode());
     }
 
     /**
@@ -150,7 +144,14 @@ class BoundaryRestControllerTest extends WebTestCase
     public function testConstantHeadsBoundaryDetails()
     {
         $client = static::createClient();
-        $client->request('GET', '/api/boundaries/'.$this->chb->getId().'.json');
+        $client->request(
+            'GET',
+            '/api/boundaries/'.$this->chb->getId().'.json',
+            array(),
+            array(),
+            array('HTTP_X-AUTH-TOKEN' => $this->getOwner()->getApiKey())
+        );
+
         $this->assertEquals(200, $client->getResponse()->getStatusCode());
         $boundary = json_decode($client->getResponse()->getContent());
         $this->assertEquals($this->chb->getId(), $boundary->id);
@@ -175,7 +176,13 @@ class BoundaryRestControllerTest extends WebTestCase
     public function testGeneralHeadsBoundaryDetails()
     {
         $client = static::createClient();
-        $client->request('GET', '/api/boundaries/'.$this->ghb->getId().'.json');
+        $client->request(
+            'GET', '/api/boundaries/'.$this->ghb->getId().'.json',
+            array(),
+            array(),
+            array('HTTP_X-AUTH-TOKEN' => $this->getOwner()->getApiKey())
+        );
+
         $this->assertEquals(200, $client->getResponse()->getStatusCode());
         $boundary = json_decode($client->getResponse()->getContent());
         $this->assertEquals($this->ghb->getId(), $boundary->id);
@@ -200,7 +207,12 @@ class BoundaryRestControllerTest extends WebTestCase
     public function testRiverBoundaryDetails()
     {
         $client = static::createClient();
-        $client->request('GET', '/api/boundaries/' . $this->riv->getId() . '.json');
+        $client->request('GET', '/api/boundaries/' . $this->riv->getId() . '.json',
+            array(),
+            array(),
+            array('HTTP_X-AUTH-TOKEN' => $this->getOwner()->getApiKey())
+        );
+
         $this->assertEquals(200, $client->getResponse()->getStatusCode());
         $boundary = json_decode($client->getResponse()->getContent());
         $this->assertEquals($this->riv->getId(), $boundary->id);
@@ -229,7 +241,12 @@ class BoundaryRestControllerTest extends WebTestCase
     public function testWellBoundaryDetails()
     {
         $client = static::createClient();
-        $client->request('GET', '/api/boundaries/' . $this->wel->getId() . '.json');
+        $client->request('GET', '/api/boundaries/' . $this->wel->getId() . '.json',
+            array(),
+            array(),
+            array('HTTP_X-AUTH-TOKEN' => $this->getOwner()->getApiKey())
+        );
+
         $this->assertEquals(200, $client->getResponse()->getStatusCode());
         $boundary = json_decode($client->getResponse()->getContent());
         $this->assertEquals($this->wel->getId(), $boundary->id);
@@ -248,14 +265,25 @@ class BoundaryRestControllerTest extends WebTestCase
     public function testBoundaryWithInvalidIdThrows404()
     {
         $client = static::createClient();
-        $client->request('GET', '/api/boundaries/invalid_id.json');
+        $client->request('GET', '/api/boundaries/invalid_id.json',
+            array(),
+            array(),
+            array('HTTP_X-AUTH-TOKEN' => $this->getOwner()->getApiKey())
+        );
+
         $this->assertEquals(404, $client->getResponse()->getStatusCode());
     }
 
     public function testBoundaryWithUnknownIdThrows404()
     {
         $client = static::createClient();
-        $client->request('GET', '/api/boundaries/4d3a6a77-2746-4ea0-884d-79fafcb34a81.json');
+        $client->request('GET',
+            '/api/boundaries/4d3a6a77-2746-4ea0-884d-79fafcb34a81.json',
+            array(),
+            array(),
+            array('HTTP_X-AUTH-TOKEN' => $this->getOwner()->getApiKey())
+        );
+
         $this->assertEquals(404, $client->getResponse()->getStatusCode());
     }
 
@@ -264,24 +292,24 @@ class BoundaryRestControllerTest extends WebTestCase
      */
     public function tearDown()
     {
-        $user = $this->entityManager->getRepository('AppBundle:User')
+        $user = $this->getEntityManager()->getRepository('AppBundle:User')
             ->findOneBy(array(
-                'username' => $this->owner->getUsername()
+                'username' => $this->getOwner()->getUsername()
             ));
-        $this->entityManager->remove($user);
+        $this->getEntityManager()->remove($user);
 
-        $entities = $this->entityManager->getRepository('AppBundle:ModelObject')
+        $entities = $this->getEntityManager()->getRepository('AppBundle:ModelObject')
             ->findBy(array(
                 'owner' => $user
             ));
 
         foreach ($entities as $entity) {
             if ($entity instanceof BoundaryModelObject) {
-                $this->entityManager->remove($entity);
+                $this->getEntityManager()->remove($entity);
             }
         }
 
-        $this->entityManager->flush();
-        $this->entityManager->close();
+        $this->getEntityManager()->flush();
+        $this->getEntityManager()->close();
     }
 }

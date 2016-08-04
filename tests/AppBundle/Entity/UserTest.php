@@ -23,16 +23,13 @@ class UserTest extends \PHPUnit_Framework_TestCase
     public function testInstantiate(){
         $this->assertInstanceOf(User::class, $this->user);
         $this->assertInstanceOf(Uuid::class, $this->user->getId());
-        $this->assertInstanceOf(Uuid::class, $this->user->getApiKey());
         $this->assertInstanceOf(UserProfile::class, $this->user->getProfile());
     }
 
     public function testGenerateNewApiKey(){
-        $this->assertInstanceOf(Uuid::class, $this->user->getApiKey());
         $apiKey = $this->user->getApiKey();
         $this->assertEquals($apiKey, $this->user->getApiKey());
         $this->user->generateNewApiKey();
-        $this->assertInstanceOf(Uuid::class, $this->user->getApiKey());
         $this->assertNotEquals($apiKey, $this->user->getApiKey());
     }
 

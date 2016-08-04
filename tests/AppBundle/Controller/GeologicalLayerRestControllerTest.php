@@ -5,41 +5,35 @@ namespace Tests\AppBundle\Controller;
 use AppBundle\Entity\GeologicalLayer;
 use AppBundle\Entity\User;
 use AppBundle\Model\GeologicalLayerFactory;
-use AppBundle\Model\UserFactory;
-use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
+use Tests\AppBundle\RestControllerTestCase;
 
-class GeologicalLayerRestControllerTest extends WebTestCase
+class GeologicalLayerRestControllerTest extends RestControllerTestCase
 {
-
-    /** @var \Doctrine\ORM\EntityManager */
-    protected $entityManager;
-
-    /** @var User $owner */
-    protected $owner;
-
     /** @var  GeologicalLayer $geologicalLayer */
     protected $geologicalLayer;
 
     public function setUp()
     {
-        self::bootKernel();
-        $this->entityManager = static::$kernel->getContainer()
-            ->get('doctrine.orm.default_entity_manager')
-        ;
-
-        $this->owner = UserFactory::createTestUser('GeologicalLayerTest');
-        $this->entityManager->persist($this->owner);
-        $this->entityManager->flush();
+        $this->getEntityManager()->persist($this->getOwner());
+        $this->getEntityManager()->flush();
 
         $this->geologicalLayer = GeologicalLayerFactory::create()
             ->setName('GeologicalLayerTest')
-            ->setOwner($this->owner)
+            ->setOwner($this->getOwner())
             ->setPublic(true)
             ->setOrder(GeologicalLayer::TOP_LAYER)
         ;
 
-        $this->entityManager->persist($this->geologicalLayer);
-        $this->entityManager->flush();
+        $this->getEntityManager()->persist($this->geologicalLayer);
+        $this->getEntityManager()->flush();
+    }
+
+
+    public function testListWithOutAPIKeyReturns401()
+    {
+        $client = static::createClient();
+        $client->request('GET', '/api/users/unknown_username/geologicallayers.json');
+        $this->assertEquals(401, $client->getResponse()->getStatusCode());
     }
 
     /**
@@ -48,7 +42,13 @@ class GeologicalLayerRestControllerTest extends WebTestCase
     public function testListByUser()
     {
         $client = static::createClient();
-        $client->request('GET', '/api/users/'.$this->owner->getUsername().'/geologicallayers.json');
+        $client->request('GET',
+            '/api/users/'.$this->getOwner()->getUsername().'/geologicallayers.json',
+            array(),
+            array(),
+            array('HTTP_X-AUTH-TOKEN' => $this->getOwner()->getApiKey())
+        );
+
         $this->assertEquals(200, $client->getResponse()->getStatusCode());
         $this->assertCount(1, json_decode($client->getResponse()->getContent()));
     }
@@ -56,7 +56,13 @@ class GeologicalLayerRestControllerTest extends WebTestCase
     public function testListWithUnknownUserReturns404()
     {
         $client = static::createClient();
-        $client->request('GET', '/api/users/unknown_username/geologicallayers.json');
+        $client->request(
+            'GET',
+            '/api/users/unknown_username/geologicallayers.json',
+            array(),
+            array(),
+            array('HTTP_X-AUTH-TOKEN' => $this->getOwner()->getApiKey())
+        );
         $this->assertEquals(404, $client->getResponse()->getStatusCode());
     }
 
@@ -66,7 +72,13 @@ class GeologicalLayerRestControllerTest extends WebTestCase
     public function testDetailsById()
     {
         $client = static::createClient();
-        $client->request('GET', '/api/geologicallayers/'.$this->geologicalLayer->getId().'.json');
+        $client->request(
+            'GET',
+            '/api/geologicallayers/'.$this->geologicalLayer->getId().'.json',
+            array(),
+            array(),
+            array('HTTP_X-AUTH-TOKEN' => $this->getOwner()->getApiKey())
+        );
         $this->assertEquals(200, $client->getResponse()->getStatusCode());
         $this->assertEquals($this->geologicalLayer->getId(), json_decode($client->getResponse()->getContent())->id);
     }
@@ -74,14 +86,26 @@ class GeologicalLayerRestControllerTest extends WebTestCase
     public function testDetailsWithInvalidIdReturns404()
     {
         $client = static::createClient();
-        $client->request('GET', '/api/geologicallayers/unknown_area_id.json');
+        $client->request(
+            'GET',
+            '/api/geologicallayers/unknown_area_id.json',
+            array(),
+            array(),
+            array('HTTP_X-AUTH-TOKEN' => $this->getOwner()->getApiKey())
+        );
         $this->assertEquals(404, $client->getResponse()->getStatusCode());
     }
 
     public function testDetailsWithUnknownIdReturns404()
     {
         $client = static::createClient();
-        $client->request('GET', '/api/geologicallayers/ee3f68a1-7ffe-447c-9a67-bfe40850e1b8.json');
+        $client->request(
+            'GET',
+            '/api/geologicallayers/ee3f68a1-7ffe-447c-9a67-bfe40850e1b8.json',
+            array(),
+            array(),
+            array('HTTP_X-AUTH-TOKEN' => $this->getOwner()->getApiKey())
+        );
         $this->assertEquals(404, $client->getResponse()->getStatusCode());
     }
 
@@ -90,23 +114,23 @@ class GeologicalLayerRestControllerTest extends WebTestCase
      */
     public function tearDown()
     {
-        $user = $this->entityManager->getRepository('AppBundle:User')
+        $user = $this->getEntityManager()->getRepository('AppBundle:User')
             ->findOneBy(array(
-                'username' => $this->owner->getUsername()
+                'username' => $this->getOwner()->getUsername()
             ));
-        $this->entityManager->remove($user);
+        $this->getEntityManager()->remove($user);
 
-        $geologicalLayers = $this->entityManager
+        $geologicalLayers = $this->getEntityManager()
             ->getRepository('AppBundle:GeologicalLayer')
             ->findBy(array(
                 'owner' => $user
             ));
 
         foreach ($geologicalLayers as $geologicalLayer) {
-            $this->entityManager->remove($geologicalLayer);
+            $this->getEntityManager()->remove($geologicalLayer);
         }
 
-        $this->entityManager->flush();
-        $this->entityManager->close();
+        $this->getEntityManager()->flush();
+        $this->getEntityManager()->close();
     }
 }

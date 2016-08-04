@@ -9,7 +9,6 @@ use AppBundle\Entity\Raster;
 use AppBundle\Entity\User;
 use AppBundle\Entity\WellBoundary;
 use AppBundle\Model\AreaFactory;
-use AppBundle\Model\AreaTypeFactory;
 use AppBundle\Model\GeologicalLayerFactory;
 use AppBundle\Model\GeologicalPointFactory;
 use AppBundle\Model\GeologicalUnitFactory;
@@ -87,9 +86,7 @@ class LoadScenario_4 implements FixtureInterface, ContainerAwareInterface
                 ->setName('Hanoi Area')
                 ->setOwner($user)
                 ->setPublic($public)
-                ->setAreaType(AreaTypeFactory::create()
-                    ->setName('SC4_AT1')
-                )
+                ->setAreaType('SC4_AT1')
                 ->setGeometry(new Polygon(array(
                         array(
                             array(105.790767733626808, 21.094425932026443),

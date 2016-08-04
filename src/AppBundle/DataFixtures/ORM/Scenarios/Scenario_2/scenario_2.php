@@ -7,7 +7,6 @@ use AppBundle\Entity\ModelObject;
 use AppBundle\Entity\ModFlowModel;
 use AppBundle\Entity\User;
 use AppBundle\Model\AreaFactory;
-use AppBundle\Model\AreaTypeFactory;
 use AppBundle\Model\ConstantHeadBoundaryFactory;
 use AppBundle\Model\GeologicalLayerFactory;
 use AppBundle\Model\GeologicalPointFactory;
@@ -91,15 +90,11 @@ class LoadScenario_2 implements FixtureInterface, ContainerAwareInterface
         $propertyTypeBottomElevation = PropertyTypeFactory::create(PropertyType::BOTTOM_ELEVATION);
         $propertyTypePumpingRate = PropertyTypeFactory::create(PropertyType::PUMPING_RATE);
 
-        // Create AreaType
-        $areaType = AreaTypeFactory::setName('SC2_AT1');
-        $entityManager->persist($areaType);
-
         // Create area
         $area = AreaFactory::create()
             ->setOwner($user)
             ->setName("SC2_A1")
-            ->setAreaType($areaType)
+            ->setAreaType('SC2_AT1')
             ->setPublic($public);
 
         $entityManager->persist($area);

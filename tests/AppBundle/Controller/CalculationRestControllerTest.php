@@ -4,14 +4,10 @@ namespace Tests\AppBundle\Controller;
 
 use AppBundle\Entity\ModflowCalculation;
 use Ramsey\Uuid\Uuid;
-use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
+use Tests\AppBundle\RestControllerTestCase;
 
-class CalculationRestControllerTest extends WebTestCase
+class CalculationRestControllerTest extends RestControllerTestCase
 {
-
-    /** @var \Doctrine\ORM\EntityManager */
-    protected $entityManager;
-
     /** @var ModflowCalculation */
     protected $calculation;
 
@@ -20,9 +16,8 @@ class CalculationRestControllerTest extends WebTestCase
 
     public function setUp()
     {
-        self::bootKernel();
-        $this->entityManager = static::$kernel->getContainer()
-            ->get('doctrine.orm.default_entity_manager');
+        $this->getEntityManager()->persist($this->getUser());
+        $this->getEntityManager()->flush();
 
         $this->timeNow = new \DateTime();
         $this->calculation = new ModflowCalculation();
@@ -35,11 +30,18 @@ class CalculationRestControllerTest extends WebTestCase
     }
 
     public function testGetCalculationByIdAPI(){
-        $this->entityManager->persist($this->calculation);
-        $this->entityManager->flush();
+        $this->getEntityManager()->persist($this->calculation);
+        $this->getEntityManager()->flush();
 
         $client = static::createClient();
-        $client->request('GET', '/api/calculations/'.$this->calculation->getId().'.json');
+        $client->request(
+            'GET',
+            '/api/calculations/'.$this->calculation->getId().'.json',
+            array(),
+            array(),
+            array('HTTP_X-AUTH-TOKEN' => $this->getUser()->getApiKey())
+        );
+
         $this->assertEquals(200, $client->getResponse()->getStatusCode());
         $calculation = json_decode($client->getResponse()->getContent());
 
@@ -60,28 +62,40 @@ class CalculationRestControllerTest extends WebTestCase
         $this->assertObjectHasAttribute('error_output', $calculation);
 
         $this->assertEquals($this->calculation->getErrorOutput(), $calculation->error_output);
-        $calculation = $this->entityManager->getRepository('AppBundle:ModflowCalculation')
+        $calculation = $this->getEntityManager()->getRepository('AppBundle:ModflowCalculation')
             ->findOneBy(array(
                 'id' => $this->calculation->getId()->toString()
             ));
 
-        $this->entityManager->remove($calculation);
-        $this->entityManager->flush();
-        $this->entityManager->close();
+        $this->getEntityManager()->remove($calculation);
+        $this->getEntityManager()->flush();
+        $this->getEntityManager()->close();
     }
 
 
     public function testAreaListWithNotValidIdReturns404()
     {
         $client = static::createClient();
-        $client->request('GET', '/api/calculations/notValidId.json');
+        $client->request(
+            'GET',
+            '/api/calculations/notValidId.json',
+            array(),
+            array(),
+            array('HTTP_X-AUTH-TOKEN' => $this->getUser()->getApiKey())
+        );
         $this->assertEquals(404, $client->getResponse()->getStatusCode());
     }
 
     public function testAreaListWithNotKnownIdReturns404()
     {
         $client = static::createClient();
-        $client->request('GET', '/api/calculations/'.Uuid::uuid4()->toString().'.json');
+        $client->request(
+            'GET',
+            '/api/calculations/'.Uuid::uuid4()->toString().'.json',
+            array(),
+            array(),
+            array('HTTP_X-AUTH-TOKEN' => $this->getUser()->getApiKey())
+        );
         $this->assertEquals(404, $client->getResponse()->getStatusCode());
     }
 
