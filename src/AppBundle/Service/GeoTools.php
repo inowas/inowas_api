@@ -73,13 +73,15 @@ class GeoTools
             if ($point[0]<$xmin){
                 $xmin=$point[0];
             }
+
             if ($point[0]>$xmax){
                 $xmax=$point[0];
             }
 
             if ($point[1]<$ymin){
-                $xmin=$point[1];
+                $ymin=$point[1];
             }
+
             if ($point[1]>$ymax){
                 $ymax=$point[1];
             }
