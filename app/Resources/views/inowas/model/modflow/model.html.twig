@@ -103,7 +103,7 @@
                                     </div>
                                     <div class="col-sm-6">
                                         <div class="panel panel-default">
-                                            <div id="area-map" class="panel-body map"></div>
+                                            <div id="map" class="panel-body map"></div>
                                         </div>
                                     </div>
                                 </div>
@@ -229,25 +229,19 @@
 <script type="text/javascript" src="{{ asset('vendor/c3/c3.min.js') }}"></script>
 
 <script type="text/javascript" src="{{ asset('js/inowas.js') }}"></script>
+<script type="text/javascript" src="{{ asset('js/inowas.model.modflow.js') }}"></script>
 <script type="text/javascript" src="{{ asset('js/inowas-d3.js') }}"></script>
 <script type="text/javascript" src="{{ asset('js/inowas-leaflet.js') }}"></script>
 
 <script>
 
-    var model = {};
-    model.id = '{{ model.id.toString }}';
+    I.user.setApiKey('{{ apiKey }}');
+    I.model.loadPropertiesById('{{ model.id.toString }}');
 
-    $.getJSON( "/api/modflowmodels/"+model.id+"/properties.json", function ( data ) {
-        model.active_cells = data.active_cells;
-        model.bounding_box = data.bounding_box;
-        model.grid_size = data.grid_size;
+    $(document).ready(function() {
+        $(".summary").click();
     });
 
-    $.ajaxSetup({
-        headers : {'X-AUTH-TOKEN' : '{{ apiKey }}'}
-    });
-
-    $(document).ready(function() {$(".summary").click();});
 </script>
 </body>
 </html>
