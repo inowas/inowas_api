@@ -58,6 +58,7 @@ class ModFlowModel extends AbstractModel
      * @var ActiveCells
      *
      * @ORM\Column(name="active_cells", type="active_cells", nullable=true)
+     * @JMS\Groups({"modelProperties"})
      */
     private $activeCells;
 
@@ -454,18 +455,5 @@ class ModFlowModel extends AbstractModel
                 $this->removeModelObject($modelObject);
             }
         }
-    }
-
-    /**
-     * @JMS\Groups({"modelProperties"})
-     * @JMS\VirtualProperty()
-     * @JMS\SerializedName("active_cells")
-     */
-    public function serializeActiveCells(){
-        if (! $this->activeCells instanceof ActiveCells){
-            return null;
-        }
-
-        return $this->activeCells->toArray();
     }
 }

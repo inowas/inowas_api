@@ -2,29 +2,41 @@
 
 namespace AppBundle\Model;
 
+use JMS\Serializer\Annotation as JMS;
+
+/**
+ * Class ActiveCells
+ * @package AppBundle\Model
+ *
+ * @JMS\ExclusionPolicy("none")
+ */
 class ActiveCells
 {
-    private $activeCells;
+    /**
+     * @var
+     * @JMS\Groups({"modelProperties"})
+     */
+    private $cells;
 
     private final function __construct(){}
 
-    public static function fromArray(array $activeCells)
+    public static function fromArray(array $cells)
     {
         $instance = new self();
         
-        if (!is_array($activeCells[0])){
+        if (!is_array($cells[0])){
             throw new \InvalidArgumentException(sprintf(
                 'ActiveCells is supposed to be an two dimensional array, %s given',
-                gettype($activeCells)
+                gettype($cells)
             ));
         }
 
-        $instance->activeCells = $activeCells;
+        $instance->cells = $cells;
         return $instance;
     }
 
     public function toArray()
     {
-        return $this->activeCells;
+        return $this->cells;
     }
 }

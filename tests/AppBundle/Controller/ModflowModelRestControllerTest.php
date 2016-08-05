@@ -473,7 +473,8 @@ class ModflowModelRestControllerTest extends RestControllerTestCase
 
         $this->assertEquals(200, $client->getResponse()->getStatusCode());
         $properties = json_decode($client->getResponse()->getContent());
-        $this->assertEquals($this->modFlowModel->getActiveCells()->toArray(), $properties->active_cells);
+
+        $this->assertEquals($this->modFlowModel->getActiveCells()->toArray(), $properties->active_cells->cells);
         $this->assertEquals($this->modFlowModel->getGridSize()->getNX(), $properties->grid_size->n_x);
         $this->assertEquals($this->modFlowModel->getGridSize()->getNY(), $properties->grid_size->n_y);
         $this->assertEquals($this->modFlowModel->getBoundingBox()->getXMin(), $properties->bounding_box->x_min);
