@@ -15,16 +15,25 @@ I.model = {
     activeCells: null,
     boundingBox: null,
     gridSize: null,
-    boundingBoxLayer: null,
     activeCellsGridLayer: null,
+    boundingBoxLayer: null,
+    wellsLayer: null,
     area: {},
+    boundaries: {},
     content: {},
     maps: {},
     styles: {
-        inactive:{color: "#000", weight: 0, fillColor: "#000", fillOpacity: 0.7},
-        active:{color: "#ff7800", weight: 0, fillColor: "#000", fillOpacity: 0},
-        boundingBox:{color: "#000", weight: 0.5, fillColor: "blue", fillOpacity: 0},
-        areaGeometry:{color: "#000", weight: 0.5, fillColor: "blue", fillOpacity: 0.1}
+        inactive: {color: "#000", weight: 0, fillColor: "#000", fillOpacity: 0.7},
+        active: {color: "#ff7800", weight: 0, fillColor: "#000", fillOpacity: 0},
+        boundingBox: {color: "#000", weight: 0.5, fillColor: "blue", fillOpacity: 0},
+        areaGeometry: {color: "#000", weight: 0.5, fillColor: "blue", fillOpacity: 0.1},
+        wells : {
+            cw: {color: 'black', weight: 1, fillColor: 'darkgreen', fillOpacity: 0.7},
+            iw: {color: 'black', weight: 1, fillColor: 'darkblue', fillOpacity: 0.7},
+            pw: {color: 'black', weight: 1, fillColor: 'darkgreen', fillOpacity: 0.7},
+            smw: {color: 'black', weight: 1, fillColor: 'red', fillOpacity: 1},
+            snw: {color: 'black', weight: 1, fillColor: 'yellow', fillOpacity: 1}
+        }
     },
     getStyle: function (type, value){
         if (type == 'area'){
@@ -86,8 +95,14 @@ I.model = {
                 map.fitBounds(prop.createBoundingBoxPolygon(prop.boundingBox).getBounds());
                 $(".content_summary").html( prop.content.summary );
             });
+
+            $.getJSON( "/api/modflowmodels/"+I.model.id+"/wells.json?srid=4326", function ( data ) {
+                prop.boundaries.wells = data;
+                prop.createWellsLayer( data ).addTo(map);
+            });
         }
     },
+
     loadArea: function ( refresh ) {
 
         if (this.maps.area == null || refresh == true) {
@@ -121,17 +136,31 @@ I.model = {
         }));
         return map;
     },
-    createBoundingBoxLayer: function(boundingBox) {
+    createBoundingBoxLayer: function( boundingBox ) {
         var layer = new L.LayerGroup();
         this.createBoundingBoxPolygon(boundingBox).addTo(layer);
         this.boundingBoxLayer = layer;
         return layer;
     },
-    createBoundingBoxPolygon: function(boundingBox) {
+    createBoundingBoxPolygon: function( boundingBox ) {
         return this.createRectangle(boundingBox, this.styles.boundingBox);
     },
-    createRectangle: function(boundingBox, style){
+    createRectangle: function( boundingBox, style ){
         return new L.Rectangle([[boundingBox.y_min, boundingBox.x_min], [boundingBox.y_max, boundingBox.x_max]], style);
+    },
+    createWellsLayer: function( wells ) {
+        var layer = new L.LayerGroup();
+        for (var key in wells) {
+            if (!wells.hasOwnProperty(key)) continue;
+
+            var items = wells[key];
+            items.forEach(function (item) {
+                L.circle([item.point.y, item.point.x], 100, I.model.styles.wells[key]).bindPopup("Well "+item.name).addTo(layer);
+            });
+        }
+
+        this.wellsLayer = layer;
+        return layer;
     },
     createActiveCellsGridLayer: function (activeCells, boundingBox, gridSize) {
 
