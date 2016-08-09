@@ -51,7 +51,10 @@ class ModelController extends Controller
      */
     public function modelsModflowCreateAction()
     {
-        return $this->render('inowas/model/modflow/model.create.html.twig');
+        return $this->render('inowas/model/modflow/model.create.html.twig', array(
+                'apiKey' => $this->getUser()->getApiKey()
+            )
+        );
     }
 
     /**

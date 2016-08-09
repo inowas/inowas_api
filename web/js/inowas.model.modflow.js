@@ -1,5 +1,6 @@
 hide_all = function () {
     $( "#summary" ).hide();
+    $( "#area" ).hide();
     $( "#soilmodel" ).hide();
     $( "#boundaries" ).hide();
     $( "#calculation" ).hide();
@@ -7,6 +8,7 @@ hide_all = function () {
     $( "#history" ).hide();
     $( "#delete" ).hide();
     $( ".summary" ).removeClass('active');
+    $( ".area" ).removeClass('active');
     $( ".soilmodel" ).removeClass('active');
     $( ".boundaries" ).removeClass('active');
     $( ".calculation" ).removeClass('active');
@@ -19,34 +21,14 @@ $( ".summary" ).click(function(){
     hide_all();
     $( "#summary" ).show();
     $( ".summary" ).addClass('active');
+    I.model.loadSummary();
+});
 
-    // initialize the map on the "map" div with a given center and zoom
-    var area_map = L.map('area-map').setView(
-        [21.033333, 105.85], 9
-    );
-
-    var streets = L.tileLayer('https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token=pk.eyJ1IjoibWFwYm94IiwiYSI6ImNpandmbXliNDBjZWd2M2x6bDk3c2ZtOTkifQ._QA7i5Mpkd_m30IGElHziw', {
-        maxZoom: 18,
-        attribution: 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, ' +
-        '<a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, ' +
-        'Imagery © <a href="http://mapbox.com">Mapbox</a>',
-        id: 'mapbox.streets'
-    }).addTo(area_map);
-    var Hydda_Full = L.tileLayer('http://{s}.tile.openstreetmap.se/hydda/full/{z}/{x}/{y}.png', {
-        attribution: 'Tiles courtesy of <a href="http://openstreetmap.se/" target="_blank">OpenStreetMap Sweden</a> &mdash; Map data &copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
-    });
-
-    var area = new L.LayerGroup();
-    $.getJSON(
-        "/api/modflowmodels/"+I.model.id+"/contents/summary.json",
-        function ( data ) {
-            $(".content_summary").html( data.html );
-            var polygon = L.geoJson(jQuery.parseJSON(data.geojson)).bindPopup("Groundwater model area Hanoi II.");
-            polygon.addTo(area);
-            area.addTo(area_map);
-            area_map.fitBounds(polygon.getBounds());
-        }
-    );
+$( ".area" ).click(function(){
+    hide_all();
+    $( "#area" ).show();
+    $( ".area" ).addClass('active');
+    I.model.loadArea();
 });
 
 $( ".soilmodel" ).click(function(){
@@ -328,4 +310,10 @@ $( "#btn_delete_model").click(function () {
             }
         }
     });
+});
+
+$( "#btn_save_area").click(function () {
+    if (I.model.updateProperties( I.model.id ) == true) {
+        $( "#btn_save_area" ).hide();
+    }
 });

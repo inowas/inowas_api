@@ -12,6 +12,7 @@ use AppBundle\Entity\PropertyValue;
 use AppBundle\Entity\StreamBoundary;
 use AppBundle\Entity\User;
 use AppBundle\Entity\WellBoundary;
+use AppBundle\Model\ActiveCells;
 use AppBundle\Model\AreaFactory;
 use AppBundle\Model\GeologicalLayerFactory;
 use AppBundle\Model\GridSize;
@@ -22,6 +23,7 @@ use AppBundle\Model\PropertyTypeFactory;
 use AppBundle\Model\RasterFactory;
 use AppBundle\Model\SoilModelFactory;
 use CrEOF\Spatial\PHP\Types\Geometry\Polygon;
+use FOS\RestBundle\Controller\Annotations\RequestParam;
 use Inowas\PyprocessingBundle\Model\GeoImage\GeoImageParameter;
 use Inowas\PyprocessingBundle\Service\GeoImage;
 use FOS\RestBundle\Controller\Annotations\QueryParam;
@@ -195,6 +197,47 @@ class ModelRestController extends FOSRestController
 
         $serializationContext = SerializationContext::create();
         $serializationContext->setGroups('modeldetails');
+
+        $view = View::create();
+        $view->setData($model)
+            ->setStatusCode(200)
+            ->setSerializationContext($serializationContext)
+        ;
+
+        return $view;
+    }
+
+    /**
+     * Update ModflowModelData by corresponding model-id
+     *
+     * @ApiDoc(
+     *   resource = true,
+     *   description = "Update ModflowModelData by corresponding model-id.",
+     *   statusCodes = {
+     *     200 = "Returned when successful",
+     *     404 = "Returned when the user is not found"
+     *   }
+     * )
+     *
+     * @RequestParam(name="active_cells", description="Active cells array.", strict=false)
+     *
+     * @param ParamFetcher $paramFetcher
+     * @param $id
+     * @return View
+     */
+    public function putModflowmodelAction(ParamFetcher $paramFetcher, $id){
+        /** @var ModFlowModel $model */
+        $model = $this->findModelById($id);
+
+        if ($paramFetcher->get('active_cells')){
+            $model->setActiveCells(ActiveCells::fromArray(json_decode($paramFetcher->get('active_cells'))));
+        }
+
+        $this->getDoctrine()->getManager()->persist($model);
+        $this->getDoctrine()->getManager()->flush();
+
+        $serializationContext = SerializationContext::create();
+        $serializationContext->setGroups('modelProperties');
 
         $view = View::create();
         $view->setData($model)

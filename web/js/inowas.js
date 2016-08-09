@@ -10,7 +10,6 @@ I.user = {
         });
     }
 };
-
 I.model = {
     id: null,
     activeCells: null,
@@ -18,12 +17,14 @@ I.model = {
     gridSize: null,
     boundingBoxLayer: null,
     activeCellsGridLayer: null,
-    area: null,
-    map: null,
+    area: {},
+    content: {},
+    maps: {},
     styles: {
         inactive:{color: "#000", weight: 0, fillColor: "#000", fillOpacity: 0.7},
         active:{color: "#ff7800", weight: 0, fillColor: "#000", fillOpacity: 0},
-        boundingBox:{color: "#000", weight: 0.5, fillColor: "blue", fillOpacity: 0.1}
+        boundingBox:{color: "#000", weight: 0.5, fillColor: "blue", fillOpacity: 0},
+        areaGeometry:{color: "#000", weight: 0.5, fillColor: "blue", fillOpacity: 0.1}
     },
     getStyle: function (type, value){
         if (type == 'area'){
@@ -34,33 +35,91 @@ I.model = {
             }
         }
     },
-    loadPropertiesById: function (id) {
-        this.id = id;
+    loadProperties: function (id) {
         prop = this;
+        this.id = id;
+
         $.getJSON( "/api/modflowmodels/"+id+"/properties.json", function ( data ) {
             prop.activeCells = data.active_cells;
             prop.boundingBox = data.bounding_box;
             prop.gridSize = data.grid_size;
-            prop.createMap();
-            prop.createBoundingBoxLayer(prop.boundingBox).addTo(prop.map);
-            prop.map.fitBounds(prop.createBoundingBoxPolygon(prop.boundingBox).getBounds());
-            prop.createActiveCellsGridLayer(prop.activeCells, prop.boundingBox, prop.gridSize).addTo(prop.map);
         });
-    },
-    createMap: function() {
-        this.map = L.map('map').setView([
-                (this.boundingBox.x_min + this.boundingBox.x_max)/2,
-                (this.boundingBox.y_min + this.boundingBox.y_max)/2
-            ], 5
-        );
 
+        return true;
+    },
+    updateProperties: function (id) {
+        prop = this;
+
+        $.ajax({
+            type: 'PUT',
+            url: '/api/modflowmodels/'+id+'.json',
+            data: { 'active_cells' : JSON.stringify(I.model.activeCells.cells) },
+            statusCode: {
+                200: function( data ) {
+                    prop.activeCells = data.active_cells;
+                    prop.boundingBox = data.bounding_box;
+                    prop.gridSize = data.grid_size;
+                }
+            }
+        });
+
+        return true;
+    },
+    loadSummary: function ( refresh ) {
+        if (this.maps.summary == null || refresh == true){
+            if (refresh == true){
+                this.maps.summary.remove();
+            }
+
+            var map = this.maps.summary = this.createBaseMap('map-summary', { zoomControl:false });
+            map.touchZoom.disable();
+            map.doubleClickZoom.disable();
+            map.scrollWheelZoom.disable();
+            map.boxZoom.disable();
+            map.keyboard.disable();
+            map.dragging.disable();
+
+            $.getJSON( "/api/modflowmodels/"+I.model.id+"/contents/summary.json", function ( data ) {
+                prop.content.summary =  data.html;
+                prop.area.polygonJSON = data.geojson;
+                L.geoJson(jQuery.parseJSON(prop.area.polygonJSON), prop.styles.areaGeometry).addTo(map);
+                map.fitBounds(prop.createBoundingBoxPolygon(prop.boundingBox).getBounds());
+                $(".content_summary").html( prop.content.summary );
+            });
+        }
+    },
+    loadArea: function ( refresh ) {
+
+        if (this.maps.area == null || refresh == true) {
+            if (refresh == true){
+                this.maps.area.remove();
+            }
+
+            var map = this.createBaseMap( 'map-area' );
+            var boundingBox = this.createBoundingBoxLayer(prop.boundingBox).addTo(map);
+            var polygon = L.geoJson(jQuery.parseJSON(this.area.polygonJSON), prop.styles.areaGeometry);
+            var activeCells = this.createActiveCellsGridLayer(prop.activeCells, prop.boundingBox, prop.gridSize).addTo(map);
+            map.fitBounds(prop.createBoundingBoxPolygon(prop.boundingBox).getBounds());
+
+            var baseMaps = {};
+            var overlayMaps = {"Area": polygon, "Bounding Box": boundingBox, "Active Cells": activeCells};
+            L.control.layers(baseMaps, overlayMaps).addTo(map);
+        }
+    },
+    createBaseMap: function( id, options ) {
+        var map = new L.map( id, options );
         L.tileLayer('https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token=pk.eyJ1IjoibWFwYm94IiwiYSI6ImNpandmbXliNDBjZWd2M2x6bDk3c2ZtOTkifQ._QA7i5Mpkd_m30IGElHziw', {
             maxZoom: 18,
             attribution: 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, ' +
             '<a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, ' +
             'Imagery © <a href="http://mapbox.com">Mapbox</a>',
             id: 'mapbox.streets'
-        }).addTo(this.map);
+        }).addTo(map);
+        map.addControl( new L.Control.FullScreen({
+            position: 'bottomright',
+            forceSeparateButton: true
+        }));
+        return map;
     },
     createBoundingBoxLayer: function(boundingBox) {
         var layer = new L.LayerGroup();
@@ -94,6 +153,7 @@ I.model = {
                 rectangle.on('click', function(e) {
                     activeCells.cells[e.target.row][e.target.col] = !activeCells.cells[e.target.row][e.target.col];
                     e.target.setStyle(prop.getStyle('area', activeCells.cells[e.target.row][e.target.col]));
+                    $('#btn_save_area').show();
                 });
                 rectangle.addTo(layers);
             }

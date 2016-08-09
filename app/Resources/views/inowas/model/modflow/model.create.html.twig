@@ -177,7 +177,13 @@
 <script type="text/javascript" src="{{ asset('vendor/leaflet.fullscreen/Control.FullScreen.js') }}"></script>
 <script type="text/javascript" src="{{ asset('vendor/leaflet-search/dist/leaflet-search.min.js') }}"></script>
 
+<script type="text/javascript" src="{{ asset('js/inowas.js') }}"></script>
 <script type="text/javascript" src="{{ asset('js/inowas.model.modflow.create.js') }}"></script>
+
+<script>
+    I.user.setApiKey('{{ apiKey }}');
+</script>
+
 
 </body>
 </html>

@@ -6,6 +6,8 @@
     <link rel="stylesheet" type="text/css" href="{{ asset('vendor/bootstrap/dist/css/bootstrap.min.css') }}" />
     <link rel="stylesheet" type="text/css" href="{{ asset('vendor/font-awesome/css/font-awesome.min.css') }}" />
     <link rel="stylesheet" type="text/css" href="{{ asset('vendor/leaflet/dist/leaflet.css') }}" />
+    <link rel="stylesheet" type="text/css" href="{{ asset('vendor/leaflet-draw/dist/leaflet.draw.css') }}" />
+    <link rel="stylesheet" type="text/css" href="{{ asset('vendor/leaflet.fullscreen/Control.FullScreen.css') }}" />
     <link rel="stylesheet" type="text/css" href="{{ asset('vendor/c3/c3.min.css') }}" />
     <link rel="stylesheet" type="text/css" href="{{ asset('css/inowas.css') }}" />
     <link rel="stylesheet" type="text/css" href="{{ asset('css/inowas-d3.css') }}" />
@@ -83,6 +85,7 @@
             <nav class="side_nav">
                 <ul>
                     <li> <a class="side_nav_link summary"   href="javascript:void(0)">Summary</a></li>
+                    <li> <a class="side_nav_link area"   href="javascript:void(0)">Model area</a></li>
                     <li> <a class="side_nav_link soilmodel" href="javascript:void(0)">Soil properties</a></li>
                     <li> <a class="side_nav_link boundaries active" href="javascript:void(0)">Boundaries</a></li>
                     <li> <a class="side_nav_link calculation" href="javascript:void(0)">Calculation</a></li>
@@ -99,11 +102,31 @@
                         <div class="panel panel-default">
                             <div class="panel-body">
                                 <div class="row">
-                                    <div class="col-sm-6 content_summary">
+                                    <div class="col-sm-4 content_summary">
                                     </div>
-                                    <div class="col-sm-6">
+                                    <div class="col-sm-8">
                                         <div class="panel panel-default">
-                                            <div id="map" class="panel-body map"></div>
+                                            <div id="map-summary" class="panel-body map"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div id="area">
+                <div class="row">
+                    <div class="col-sm-12">
+                        <div class="panel panel-default">
+                            <div class="panel-body">
+                                <div class="row">
+                                    <div class="col-sm-4 content_area">
+                                    </div>
+                                    <div class="col-sm-8">
+                                        <div class="panel panel-default">
+                                            <div id="map-area" class="panel-body map"></div>
+                                            <button id="btn_save_area" type="button" style="position: absolute; bottom: 30px; left: 30px; display: none" class="btn btn-danger pull-left">Save</button>
                                         </div>
                                     </div>
                                 </div>
@@ -225,6 +248,8 @@
 <script type="text/javascript" src="{{ asset('vendor/jquery/dist/jquery.min.js') }}"></script>
 <script type="text/javascript" src="{{ asset('vendor/bootstrap/dist/js/bootstrap.min.js') }}"></script>
 <script type="text/javascript" src="{{ asset('vendor/leaflet/dist/leaflet.js') }}"></script>
+<script type="text/javascript" src="{{ asset('vendor/leaflet-draw/dist/leaflet.draw.js') }}"></script>
+<script type="text/javascript" src="{{ asset('vendor/leaflet.fullscreen/Control.FullScreen.js') }}"></script>
 <script type="text/javascript" src="{{ asset('vendor/d3/d3.min.js') }}"></script>
 <script type="text/javascript" src="{{ asset('vendor/c3/c3.min.js') }}"></script>
 
@@ -236,7 +261,7 @@
 <script>
 
     I.user.setApiKey('{{ apiKey }}');
-    I.model.loadPropertiesById('{{ model.id.toString }}');
+    I.model.loadProperties('{{ model.id.toString }}');
 
     $(document).ready(function() {
         $(".summary").click();

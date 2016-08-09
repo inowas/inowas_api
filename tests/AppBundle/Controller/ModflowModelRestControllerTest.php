@@ -484,6 +484,71 @@ class ModflowModelRestControllerTest extends RestControllerTestCase
         $this->assertEquals($this->modFlowModel->getBoundingBox()->getSrid(), $properties->bounding_box->srid);
     }
 
+    /**
+     * Test for the API-POST-Call /api/modflowmodels.json
+     * @todo make some more asserts
+     */
+    public function testPostModflowModel(){
+        $client = static::createClient();
+        $client->request(
+            'POST',
+            '/api/modflowmodels.json',
+            array('json' => '{"area":{"geoJSON":"{\"type\":\"Feature\",\"properties\":{},\"geometry\":{\"type\":\"Polygon\",\"coordinates\":[[[12.564239501953123,41.72213058512578],[13.119049072265625,41.90840946591109],[13.594207763671875,41.51269075845857],[13.168487548828123,41.475660200278234],[13.105316162109375,41.759019938155404],[12.808685302734375,41.60722821271717],[12.564239501953123,41.72213058512578]]]}}"},"grid_size":{"cols":"10","rows":"10"},"soil_model":{"numberOfLayers":"1"},"name":"myModelName","description":"myModelDescription"}'),
+            array(),
+            array('HTTP_X-AUTH-TOKEN' => $this->getUser()->getApiKey())
+        );
+        $this->assertEquals(200, $client->getResponse()->getStatusCode());
+        $response = $client->getResponse()->getContent();
+        $model = json_decode($response);
+        $this->assertObjectHasAttribute('id', $model);
+
+        $model = $this->getEntityManager()->getRepository('AppBundle:ModFlowModel')
+            ->findOneBy(array('id' => $this->modFlowModel->getId()->toString()));
+
+        $this->getEntityManager()->remove($model);
+        $this->getEntityManager()->flush();
+    }
+
+    public function testPutModflowModelWithActiveCellsArray(){
+
+        $active_cells = array(
+            array(3,2,1),
+            array(3,2,1),
+            array(3,2,1));
+
+        $client = static::createClient();
+        $client->request(
+            'PUT',
+            '/api/modflowmodels/'.$this->modFlowModel->getId()->toString().'.json',
+            array('active_cells' => json_encode($active_cells)),
+            array(),
+            array('HTTP_X-AUTH-TOKEN' => $this->getOwner()->getApiKey())
+        );
+        $this->assertEquals(200, $client->getResponse()->getStatusCode());
+        $response = $client->getResponse()->getContent();
+        $this->assertJson($response);
+
+        $modelProperties = json_decode($response);
+        $this->assertObjectHasAttribute('grid_size', $modelProperties);
+        $this->assertObjectHasAttribute('bounding_box', $modelProperties);
+        $this->assertObjectHasAttribute('active_cells', $modelProperties);
+        $this->assertObjectHasAttribute('cells', $modelProperties->active_cells);
+        $this->assertEquals($active_cells, $modelProperties->active_cells->cells);
+    }
+
+    public function testPutModflowModelWithOutActiveCellsArray(){
+
+        $client = static::createClient();
+        $client->request(
+            'PUT',
+            '/api/modflowmodels/'.$this->modFlowModel->getId()->toString().'.json',
+            array(),
+            array(),
+            array('HTTP_X-AUTH-TOKEN' => $this->getOwner()->getApiKey())
+        );
+        $this->assertEquals(200, $client->getResponse()->getStatusCode());
+    }
+
     public function testDeleteModFlowModel(){
         $client = static::createClient();
         $client->request(

@@ -67,7 +67,7 @@ class LoadScenario_4 implements FixtureInterface, ContainerAwareInterface
             $user = new User();
             $user->setUsername($username);
             $user->setEmail($email);
-            $user->setPassword($password);
+            $user->setPlainPassword($password);
             $user->setEnabled(true);
             $entityManager->persist($user);
         }
