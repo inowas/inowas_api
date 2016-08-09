@@ -28,11 +28,11 @@ I.model = {
         boundingBox: {color: "#000", weight: 0.5, fillColor: "blue", fillOpacity: 0},
         areaGeometry: {color: "#000", weight: 0.5, fillColor: "blue", fillOpacity: 0.1},
         wells : {
-            cw: {color: 'black', weight: 1, fillColor: 'darkgreen', fillOpacity: 0.7},
-            iw: {color: 'black', weight: 1, fillColor: 'darkblue', fillOpacity: 0.7},
-            pw: {color: 'black', weight: 1, fillColor: 'darkgreen', fillOpacity: 0.7},
-            smw: {color: 'black', weight: 1, fillColor: 'red', fillOpacity: 1},
-            snw: {color: 'black', weight: 1, fillColor: 'yellow', fillOpacity: 1}
+            cw: {radius: 5, color: 'black', weight: 1, fillColor: 'darkgreen', fillOpacity: 0.7},
+            iw: {radius: 5, color: 'black', weight: 1, fillColor: 'darkblue', fillOpacity: 0.7},
+            pw: {radius: 5, color: 'black', weight: 1, fillColor: 'darkgreen', fillOpacity: 0.7},
+            smw: {radius: 5, color: 'black', weight: 1, fillColor: 'red', fillOpacity: 1},
+            snw: {radius: 5, color: 'black', weight: 1, fillColor: 'yellow', fillOpacity: 1}
         }
     },
     getStyle: function (type, value){
@@ -80,18 +80,17 @@ I.model = {
                 this.maps.summary.remove();
             }
 
-            var map = this.maps.summary = this.createBaseMap('map-summary', { zoomControl:false });
+            var map = this.maps.summary = this.createBaseMap('map-summary');
             map.touchZoom.disable();
             map.doubleClickZoom.disable();
             map.scrollWheelZoom.disable();
             map.boxZoom.disable();
             map.keyboard.disable();
-            map.dragging.disable();
 
             $.getJSON( "/api/modflowmodels/"+I.model.id+"/contents/summary.json", function ( data ) {
                 prop.content.summary =  data.html;
                 prop.area.polygonJSON = data.geojson;
-                L.geoJson(jQuery.parseJSON(prop.area.polygonJSON), prop.styles.areaGeometry).addTo(map);
+                prop.createAreaLayer().addTo(map);
                 map.fitBounds(prop.createBoundingBoxPolygon(prop.boundingBox).getBounds());
                 $(".content_summary").html( prop.content.summary );
             });
@@ -120,6 +119,9 @@ I.model = {
             var overlayMaps = {"Area": polygon, "Bounding Box": boundingBox, "Active Cells": activeCells};
             L.control.layers(baseMaps, overlayMaps).addTo(map);
         }
+    },
+    createAreaLayer: function() {
+        return L.geoJson(jQuery.parseJSON(this.area.polygonJSON), this.styles.areaGeometry);
     },
     createBaseMap: function( id, options ) {
         var map = new L.map( id, options );
@@ -155,7 +157,7 @@ I.model = {
 
             var items = wells[key];
             items.forEach(function (item) {
-                L.circle([item.point.y, item.point.x], 100, I.model.styles.wells[key]).bindPopup("Well "+item.name).addTo(layer);
+                L.circleMarker([item.point.y, item.point.x], I.model.styles.wells[key]).bindPopup("Well "+item.name).addTo(layer);
             });
         }
 
