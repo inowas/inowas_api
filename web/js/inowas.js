@@ -37,6 +37,9 @@ I.model = {
         wel: null,
         summary: null
     },
+    buttons: {
+        updateActiveCells: null
+    },
     styles: {
         inactive: {color: "#000", weight: 0, fillColor: "#000", fillOpacity: 0.7},
         active: {color: "#ff7800", weight: 0, fillColor: "#000", fillOpacity: 0},
@@ -83,6 +86,7 @@ I.model = {
                     prop.activeCells = data.active_cells;
                     prop.boundingBox = data.bounding_box;
                     prop.gridSize = data.grid_size;
+                    prop.buttons.updateActiveCells.disable();
                 }
             }
         });
@@ -128,6 +132,11 @@ I.model = {
             var baseMaps = {};
             var overlayMaps = {"Area": polygon, "Bounding Box": boundingBox, "Active Cells": activeCells};
             L.control.layers(baseMaps, overlayMaps).addTo(map);
+
+            this.buttons.updateActiveCells = L.easyButton('fa-save', function(btn, map){
+                I.model.updateProperties( I.model.id );
+            }).disable().addTo(map);
+
             this.maps.area = map;
         }
     },
@@ -140,7 +149,7 @@ I.model = {
             var map = this.createBaseMap( 'boundaries-map' );
             L.geoJson(jQuery.parseJSON(this.area.polygonJSON), prop.styles.areaGeometry).addTo( map );
             map.fitBounds(prop.createBoundingBoxPolygon(prop.boundingBox).getBounds());
-            this._addWellsLayer( map );
+            this._loadAndAddWells( map );
             this.maps.boundaries = map;
         }
     },
@@ -189,6 +198,7 @@ I.model = {
     },
     createActiveCellsGridLayer: function (activeCells, boundingBox, gridSize) {
 
+        that = this;
         var layers = new L.FeatureGroup();
         var dx = (boundingBox.x_max - boundingBox.x_min) / gridSize.n_x;
         var dy = (boundingBox.y_max - boundingBox.y_min) / gridSize.n_y;
@@ -207,7 +217,7 @@ I.model = {
                 rectangle.on('click', function(e) {
                     activeCells.cells[e.target.row][e.target.col] = !activeCells.cells[e.target.row][e.target.col];
                     e.target.setStyle(prop.getStyle('area', activeCells.cells[e.target.row][e.target.col]));
-                    $('#btn_save_area').show();
+                    that.buttons.updateActiveCells.enable();
                 });
                 rectangle.addTo(layers);
             }
@@ -222,10 +232,7 @@ I.model = {
         } else {
             $.getJSON( "/api/modflowmodels/"+this.id+"/wells.json?srid=4326", function ( data ) {
                 that.boundaries.wel = data;
-                console.log( data );
-                console.log( map );
                 that._addWellsLayer( data, map );
-
             });
         }
     },
