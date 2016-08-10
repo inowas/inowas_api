@@ -97,6 +97,12 @@ body h2 {
     color: #999999;
 }
 
+.side_nav ul > li > ul {
+    padding: 0;
+    margin-left: 25px;
+    list-style-position: inside;
+}
+
 .breadcrumb {
     padding: 8px 15px;
     margin-left: 3px;

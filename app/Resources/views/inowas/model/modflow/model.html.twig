@@ -83,11 +83,30 @@
     <div class="row top-margin-40">
         <div class="col-sm-2">
             <nav class="side_nav">
-                <ul>
+                <ul id="stacked-menu" class="nav-stacked">
                     <li> <a class="side_nav_link summary"   href="javascript:void(0)">Summary</a></li>
                     <li> <a class="side_nav_link area"   href="javascript:void(0)">Model area</a></li>
                     <li> <a class="side_nav_link soilmodel" href="javascript:void(0)">Soil properties</a></li>
-                    <li> <a class="side_nav_link boundaries active" href="javascript:void(0)">Boundaries</a></li>
+                    <li>
+                        <a class="side_nav_link boundaries nav-container active" href="#boundaries_submenu" data-toggle="collapse" data-parent="#stacked-menu">Boundaries</a>
+                        <ul id="boundaries_submenu" class="nav-stacked collapse">
+                            <li data-toggle="collapse" data-parent="#boundaries_submenu">
+                                <a class="side_nav_link wells" href="javascript:void(0)">Wells</a>
+                            </li>
+                            <li data-toggle="collapse" data-parent="#boundaries_submenu">
+                                <a class="side_nav_link river" href="javascript:void(0)">Rivers</a>
+                            </li>
+                            <li data-toggle="collapse" data-parent="#boundaries_submenu">
+                                <a class="side_nav_link recharge" href="javascript:void(0)">Recharge</a>
+                            </li>
+                            <li data-toggle="collapse" data-parent="#boundaries_submenu">
+                                <a class="side_nav_link constant_head" href="javascript:void(0)">Constant Head</a>
+                            </li>
+                            <li data-toggle="collapse" data-parent="#boundaries_submenu">
+                                <a class="side_nav_link general_head" href="javascript:void(0)">General Head</a>
+                            </li>
+                        </ul>
+                    </li>
                     <li> <a class="side_nav_link calculation" href="javascript:void(0)">Calculation</a></li>
                     <li> <a class="side_nav_link results" href="javascript:void(0)">Results</a></li>
                     <li> <a class="side_nav_link history" href="javascript:void(0)">History</a></li>
@@ -119,18 +138,8 @@
                 <div class="row">
                     <div class="col-sm-12">
                         <div class="panel panel-default">
-                            <div class="panel-body">
-                                <div class="row">
-                                    <div class="col-sm-4 content_area">
-                                    </div>
-                                    <div class="col-sm-8">
-                                        <div class="panel panel-default">
-                                            <div id="map-area" class="panel-body map"></div>
-                                            <button id="btn_save_area" type="button" style="position: absolute; bottom: 30px; left: 30px; display: none" class="btn btn-danger pull-left">Save</button>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
+                            <div id="map-area" class="panel-body map"></div>
+                            <button id="btn_save_area" type="button" style="position: absolute; bottom: 60px; left: 35px; display: none" class="btn btn-danger pull-left">Save</button>
                         </div>
                     </div>
                 </div>
@@ -154,14 +163,19 @@
                 </div>
             </div>
             <div id="boundaries">
-                <div class="panel panel-default">
-                    <div class="panel-body">
-                        <div class="row">
-                            <div class="col-sm-12">
-                                <div class="panel panel-default">
-                                    <div id="boundaries-map" class="panel-body map"></div>
-                                </div>
-                            </div>
+                <div class="row">
+                    <div class="col-sm-12">
+                        <div class="panel panel-default">
+                            <div id="boundaries-map" class="panel-body map"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div id="wells">
+                <div class="row">
+                    <div class="col-sm-12">
+                        <div class="panel panel-default">
+                            <div id="wells-map" class="panel-body map"></div>
                         </div>
                     </div>
                 </div>

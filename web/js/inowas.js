@@ -19,20 +19,35 @@ I.model = {
     boundingBoxLayer: null,
     wellsLayer: null,
     area: {},
-    boundaries: {},
+    boundaries: {
+        riv: null,
+        chb: null,
+        ghb: null,
+        rch: null,
+        wel: null
+    },
     content: {},
-    maps: {},
+    maps: {
+        area: null,
+        boundaries: null,
+        riv: null,
+        chb: null,
+        ghb: null,
+        rch: null,
+        wel: null,
+        summary: null
+    },
     styles: {
         inactive: {color: "#000", weight: 0, fillColor: "#000", fillOpacity: 0.7},
         active: {color: "#ff7800", weight: 0, fillColor: "#000", fillOpacity: 0},
         boundingBox: {color: "#000", weight: 0.5, fillColor: "blue", fillOpacity: 0},
         areaGeometry: {color: "#000", weight: 0.5, fillColor: "blue", fillOpacity: 0.1},
         wells : {
-            cw: {radius: 5, color: 'black', weight: 1, fillColor: 'darkgreen', fillOpacity: 0.7},
-            iw: {radius: 5, color: 'black', weight: 1, fillColor: 'darkblue', fillOpacity: 0.7},
-            pw: {radius: 5, color: 'black', weight: 1, fillColor: 'darkgreen', fillOpacity: 0.7},
-            smw: {radius: 5, color: 'black', weight: 1, fillColor: 'red', fillOpacity: 1},
-            snw: {radius: 5, color: 'black', weight: 1, fillColor: 'yellow', fillOpacity: 1}
+            cw: {radius: 3, color: 'black', weight: 1, fillColor: 'darkgreen', fillOpacity: 0.7},
+            iw: {radius: 3, color: 'black', weight: 1, fillColor: 'darkblue', fillOpacity: 0.7},
+            pw: {radius: 3, color: 'black', weight: 1, fillColor: 'darkgreen', fillOpacity: 0.7},
+            smw: {radius: 3, color: 'black', weight: 1, fillColor: 'red', fillOpacity: 1},
+            snw: {radius: 3, color: 'black', weight: 1, fillColor: 'yellow', fillOpacity: 1}
         }
     },
     getStyle: function (type, value){
@@ -95,15 +110,10 @@ I.model = {
                 $(".content_summary").html( prop.content.summary );
             });
 
-            $.getJSON( "/api/modflowmodels/"+I.model.id+"/wells.json?srid=4326", function ( data ) {
-                prop.boundaries.wells = data;
-                prop.createWellsLayer( data ).addTo(map);
-            });
+            this._loadAndAddWells( map );
         }
     },
-
     loadArea: function ( refresh ) {
-
         if (this.maps.area == null || refresh == true) {
             if (refresh == true){
                 this.maps.area.remove();
@@ -111,13 +121,40 @@ I.model = {
 
             var map = this.createBaseMap( 'map-area' );
             var boundingBox = this.createBoundingBoxLayer(prop.boundingBox).addTo(map);
-            var polygon = L.geoJson(jQuery.parseJSON(this.area.polygonJSON), prop.styles.areaGeometry);
-            var activeCells = this.createActiveCellsGridLayer(prop.activeCells, prop.boundingBox, prop.gridSize).addTo(map);
+            var polygon = L.geoJson(jQuery.parseJSON(this.area.polygonJSON), prop.styles.areaGeometry).addTo(map);
+            var activeCells = this.createActiveCellsGridLayer(prop.activeCells, prop.boundingBox, prop.gridSize);
             map.fitBounds(prop.createBoundingBoxPolygon(prop.boundingBox).getBounds());
 
             var baseMaps = {};
             var overlayMaps = {"Area": polygon, "Bounding Box": boundingBox, "Active Cells": activeCells};
             L.control.layers(baseMaps, overlayMaps).addTo(map);
+            this.maps.area = map;
+        }
+    },
+    loadBoundaries: function (refresh ) {
+        if (this.maps.boundaries == null || refresh == true) {
+            if (refresh == true && this.maps.boundaries != null){
+                this.maps.boundaries.remove();
+            }
+
+            var map = this.createBaseMap( 'boundaries-map' );
+            L.geoJson(jQuery.parseJSON(this.area.polygonJSON), prop.styles.areaGeometry).addTo( map );
+            map.fitBounds(prop.createBoundingBoxPolygon(prop.boundingBox).getBounds());
+            this._addWellsLayer( map );
+            this.maps.boundaries = map;
+        }
+    },
+    loadWells: function (refresh ) {
+        if (this.maps.wel == null || refresh == true) {
+            if (refresh == true && this.maps.wel != null){
+                this.maps.wel.remove();
+            }
+
+            var map = this.createBaseMap( 'wells-map' );
+            L.geoJson(jQuery.parseJSON(this.area.polygonJSON), prop.styles.areaGeometry).addTo( map );
+            map.fitBounds(prop.createBoundingBoxPolygon(prop.boundingBox).getBounds());
+            this._loadAndAddWells( map );
+            this.maps.wel = map;
         }
     },
     createAreaLayer: function() {
@@ -150,20 +187,6 @@ I.model = {
     createRectangle: function( boundingBox, style ){
         return new L.Rectangle([[boundingBox.y_min, boundingBox.x_min], [boundingBox.y_max, boundingBox.x_max]], style);
     },
-    createWellsLayer: function( wells ) {
-        var layer = new L.LayerGroup();
-        for (var key in wells) {
-            if (!wells.hasOwnProperty(key)) continue;
-
-            var items = wells[key];
-            items.forEach(function (item) {
-                L.circleMarker([item.point.y, item.point.x], I.model.styles.wells[key]).bindPopup("Well "+item.name).addTo(layer);
-            });
-        }
-
-        this.wellsLayer = layer;
-        return layer;
-    },
     createActiveCellsGridLayer: function (activeCells, boundingBox, gridSize) {
 
         var layers = new L.FeatureGroup();
@@ -191,5 +214,31 @@ I.model = {
         }
 
         return layers;
+    },
+    _loadAndAddWells: function( map ){
+        var that = this;
+        if (this.boundaries.wel !== null) {
+            this._addWellsLayer( this.boundaries.wel, map );
+        } else {
+            $.getJSON( "/api/modflowmodels/"+this.id+"/wells.json?srid=4326", function ( data ) {
+                that.boundaries.wel = data;
+                console.log( data );
+                console.log( map );
+                that._addWellsLayer( data, map );
+
+            });
+        }
+    },
+    _addWellsLayer: function ( wells, map ){
+        var layer = new L.LayerGroup();
+        for (var key in wells) {
+            if (!wells.hasOwnProperty(key)) continue;
+
+            var items = wells[key];
+            items.forEach(function (item) {
+                L.circleMarker([item.point.y, item.point.x], I.model.styles.wells[key]).bindPopup("Well "+item.name).addTo(layer);
+            });
+        }
+        return layer.addTo(map);
     }
 };
