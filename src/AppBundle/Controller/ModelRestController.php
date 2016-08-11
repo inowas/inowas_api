@@ -230,7 +230,7 @@ class ModelRestController extends FOSRestController
         $model = $this->findModelById($id);
 
         if ($paramFetcher->get('active_cells')){
-            $model->setActiveCells(ActiveCells::fromArray(json_decode($paramFetcher->get('active_cells'))));
+            $model->setActiveCells(ActiveCells::fromJSON($paramFetcher->get('active_cells')));
         }
 
         $this->getDoctrine()->getManager()->persist($model);
