@@ -95,11 +95,11 @@ class GeoToolsTest extends WebTestCase
     public function testCalculateActiveCellsWithArea(){
         $result = $this->geoTools->getActiveCells($this->area, $this->boundingBox, $this->gridSize);
         $expected = array(
-            array(1,1,1,0,0),
-            array(1,1,1,1,0),
-            array(1,1,1,1,0),
+            array(1,1,1),
+            array(1,1,1,1),
+            array(1,1,1,1),
             array(1,1,1,1,1),
-            array(0,1,1,1,1)
+            array(1=>1, 2=>1, 3=>1, 4=>1)
         );
 
         $this->assertTrue($result instanceof ActiveCells);
@@ -111,11 +111,11 @@ class GeoToolsTest extends WebTestCase
     public function testCalculateActiveCellsWithRiver(){
         $result = $this->geoTools->getActiveCells($this->river, $this->boundingBox, $this->gridSize);
         $expected = array(
-            array(0,0,0,1,1),
-            array(0,0,0,1,0),
-            array(0,1,1,1,0),
-            array(1,1,0,0,0),
-            array(1,0,0,0,0)
+            array(3=>1, 4=>1),
+            array(3=>1),
+            array(1=>1, 2=>1, 3=>1),
+            array(1,1),
+            array(1)
         );
 
         $this->assertTrue($result instanceof ActiveCells);

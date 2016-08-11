@@ -57,7 +57,7 @@ I.model = {
         if (type == 'area'){
             if (value == true){
                 return this.styles.active;
-            } else if (value == false) {
+            } else {
                 return this.styles.inactive;
             }
         }
@@ -211,12 +211,24 @@ I.model = {
                 bb.y_min = boundingBox.y_max - row*dy-dy;
                 bb.y_max = boundingBox.y_max - row*dy;
 
-                var rectangle = this.createRectangle(bb, this.getStyle('area', activeCells.cells[row][col]));
+                var value = true;
+                if (activeCells.cells[row] == undefined || activeCells.cells[row][col] == undefined){
+                    value = false;
+                }
+
+                var rectangle = this.createRectangle(bb, this.getStyle('area', value));
                 rectangle.col = col;
                 rectangle.row = row;
                 rectangle.on('click', function(e) {
-                    activeCells.cells[e.target.row][e.target.col] = !activeCells.cells[e.target.row][e.target.col];
-                    e.target.setStyle(prop.getStyle('area', activeCells.cells[e.target.row][e.target.col]));
+
+                    if (activeCells.cells[e.target.row] == undefined || activeCells.cells[e.target.row][e.target.col] == undefined){
+                        activeCells.cells[e.target.row][e.target.col] = true;
+                        e.target.setStyle(prop.getStyle('area', activeCells.cells[e.target.row][e.target.col]));
+                    } else {
+                        activeCells.cells[e.target.row][e.target.col] = undefined;
+                        e.target.setStyle(prop.getStyle('area', false));
+                    }
+
                     that.buttons.updateActiveCells.enable();
                 });
                 rectangle.addTo(layers);

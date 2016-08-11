@@ -49,7 +49,10 @@ class GeoTools
                 $xmax = $boundingBox->getXMin()+$ix*$dx+$dx;
                 $ymin = $boundingBox->getYMax()-$iy*$dy;
                 $ymax = $boundingBox->getYMax()-$iy*$dy-$dy;
-                $activeCells[$iy][$ix] = $this->isActive($mo, $srid, $xmin, $xmax, $ymin, $ymax);
+
+                if ($this->isActive($mo, $srid, $xmin, $xmax, $ymin, $ymax)){
+                    $activeCells[$iy][$ix] = true;
+                }
             }
         }
 
@@ -104,7 +107,7 @@ class GeoTools
         for ($iy = 0; $iy<$ny; $iy++){
             for ($ix = 0; $ix<$nx; $ix++){
 
-                if ($activeCells[$iy][$ix]){
+                if (is_array($activeCells[$iy]) && key_exists($ix, $activeCells[$iy])){
                     $xMin= $boundingBox->getXMin()+$ix*$dx;
                     $xMax= $boundingBox->getXMin()+$ix*$dx+$dx;
                     $yMin= $boundingBox->getYMax()-$iy*$dy-$dy;

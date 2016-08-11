@@ -32,7 +32,7 @@ class WellBoundary extends BoundaryModelObject
      * @JMS\Type("string")
      * @JMS\Groups({"list", "details", "modelobjectdetails", "modelobjectlist"})
      */
-    protected $wellType = 'cw';
+    protected $wellType = self::TYPE_PRIVATE_WELL;
 
     /**
      * @var Point
