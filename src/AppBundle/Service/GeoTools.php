@@ -3,6 +3,7 @@
 namespace AppBundle\Service;
 
 use AppBundle\Entity\ModelObject;
+use AppBundle\Exception\InvalidArgumentException;
 use AppBundle\Model\ActiveCells;
 use AppBundle\Model\GeoJson\Feature;
 use AppBundle\Model\GeoJson\FeatureCollection;
@@ -195,9 +196,22 @@ class GeoTools
         );
     }
 
+    public function getActiveCellsFromPoint(BoundingBox $bb, GridSize $gz, Point $point){
+
+        $result = $this->getGridCellFromPoint($bb, $gz, $point);
+
+        if (is_null($result)){
+            throw new InvalidArgumentException('Point is outside of BoundingBox.');
+        }
+
+        $cells = array();
+        $cells[$result['row']][$result['col']]=true;
+        return ActiveCells::fromArray($cells);
+    }
+
     public function getGridCellFromPoint(BoundingBox $bb, GridSize $gz, Point $point)
     {
-        // Transform Point to the same Coordiate System as Boundingbox
+        // Transform Point to the same Coordinate System as BoundingBox
         $point = $this->transformPoint($point, $bb->getSrid());
 
         // Check if point is inside of BoundingBox
@@ -206,18 +220,14 @@ class GeoTools
             && $point->getY() >= $bb->getYMin()
             && $point->getY() <= $bb->getYMax())
         ) {
-            return array(
-                "row" => null,
-                "col" => null
-            );
+            return null;
         }
-
 
         $dx = ($bb->getXMax() - $bb->getXMin()) / $gz->getNX();
         $dy = ($bb->getYMax() - $bb->getYMin()) / $gz->getNY();
 
         $col = (int)(floor(($point->getX() - $bb->getXMin()) / $dx));
-        $row = (int)($gz->getNY()-floor(($point->getY() - $bb->getYMin()) / $dy));
+        $row = (int)($gz->getNY()-ceil(($point->getY() - $bb->getYMin()) / $dy));
 
         return array(
             "row" => $row,

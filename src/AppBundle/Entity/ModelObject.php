@@ -2,6 +2,7 @@
 
 namespace AppBundle\Entity;
 
+use AppBundle\Model\ActiveCells;
 use AppBundle\Model\PropertyFactory;
 use AppBundle\Model\PropertyType;
 use Doctrine\Common\Collections\ArrayCollection;
@@ -97,6 +98,13 @@ abstract class ModelObject
      * @JMS\MaxDepth(5)
      */
     protected $observationPoints;
+
+    /**
+     * @var ActiveCells $activeCells
+     *
+     * @JMS\Groups({"modelobjectdetails"})
+     */
+    protected $activeCells;
 
     /**
      * @var boolean
@@ -394,6 +402,24 @@ abstract class ModelObject
         $property = $this->getOrCreatePropertyByPropertyType($propertyType);
         $property->addValue($value);
 
+        return $this;
+    }
+
+    /**
+     * @return ActiveCells
+     */
+    public function getActiveCells()
+    {
+        return $this->activeCells;
+    }
+
+    /**
+     * @param ActiveCells $activeCells
+     * @return $this
+     */
+    public function setActiveCells(ActiveCells $activeCells)
+    {
+        $this->activeCells = $activeCells;
         return $this;
     }
 

@@ -214,20 +214,31 @@ class GeoToolsTest extends WebTestCase
         $result = $this->geoTools->getGridCellFromPoint($bb, $gz, $point);
         $this->assertArrayHasKey("row", $result);
         $this->assertArrayHasKey("col", $result);
-        $this->assertEquals(112, $result["row"]);
+        $this->assertEquals(111, $result["row"]);
         $this->assertEquals(61, $result["col"]);
     }
 
-    public function testGetNullGridCellsFromPointOutSideBoundingBox()
+    public function testGetActiveCellsPoint()
+    {
+        $bb = $this->geoTools->transformBoundingBox(new BoundingBox(578205, 594692, 2316000, 2333500, 32648), 4326);
+        $gz = new GridSize(165, 175);
+        $point = new Point(105.81165, 21, 4326);
+
+        $expected = array();
+        $expected[111][61] = true;
+
+        $result = $this->geoTools->getActiveCellsFromPoint($bb, $gz, $point);
+        $this->assertInstanceOf(ActiveCells::class, $result);
+        $this->assertEquals($expected, $result->toArray());
+    }
+
+    public function testReturnNullIfPointIsOutsieOfBoundingBox()
     {
         $bb = $this->geoTools->transformBoundingBox(new BoundingBox(578205, 594692, 2316000, 2333500, 32648), 4326);
         $gz = new GridSize(165, 175);
         $point = new Point(100.81165, 21, 4326);
         $result = $this->geoTools->getGridCellFromPoint($bb, $gz, $point);
-        $this->assertArrayHasKey("row", $result);
-        $this->assertArrayHasKey("col", $result);
-        $this->assertEquals(null, $result["row"]);
-        $this->assertEquals(null, $result["col"]);
+        $this->assertEquals(null, $result);
     }
 
     public function tearDown()

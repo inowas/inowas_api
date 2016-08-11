@@ -45,6 +45,8 @@ I.model = {
         active: {color: "#ff7800", weight: 0, fillColor: "#000", fillOpacity: 0},
         boundingBox: {color: "#000", weight: 0.5, fillColor: "blue", fillOpacity: 0},
         areaGeometry: {color: "#000", weight: 0.5, fillColor: "blue", fillOpacity: 0.1},
+        hasNoWell: {color: "#000", weight: 0, fillOpacity: 0},
+        hasWell: {color: "blue", weight: 1, fillColor: "darkblue", fillOpacity: 1},
         wells : {
             cw: {radius: 3, color: 'black', weight: 1, fillColor: 'darkgreen', fillOpacity: 0.7},
             iw: {radius: 3, color: 'black', weight: 1, fillColor: 'darkblue', fillOpacity: 0.7},
@@ -59,6 +61,14 @@ I.model = {
                 return this.styles.active;
             } else {
                 return this.styles.inactive;
+            }
+        }
+
+        if (type == 'wells'){
+            if (value == true){
+                return this.styles.hasWell;
+            } else {
+                return this.styles.hasNoWell;
             }
         }
     },
@@ -162,8 +172,8 @@ I.model = {
             var map = this.createBaseMap( 'wells-map' );
             L.geoJson(jQuery.parseJSON(this.area.polygonJSON), prop.styles.areaGeometry).addTo( map );
             map.fitBounds(prop.createBoundingBoxPolygon(prop.boundingBox).getBounds());
+
             this._loadAndAddWells( map );
-            this.maps.wel = map;
         }
     },
     createAreaLayer: function() {
@@ -237,6 +247,33 @@ I.model = {
 
         return layers;
     },
+    createWellCellsLayer: function (activeCells, boundingBox, gridSize) {
+
+        that = this;
+        var layers = new L.FeatureGroup();
+        var dx = (boundingBox.x_max - boundingBox.x_min) / gridSize.n_x;
+        var dy = (boundingBox.y_max - boundingBox.y_min) / gridSize.n_y;
+
+        for (var row=0; row<gridSize.n_y; row++){
+            for (var col=0; col<gridSize.n_x; col++){
+                var bb = {};
+                bb.x_min = boundingBox.x_min + col*dx;
+                bb.x_max = boundingBox.x_min + col*dx+dx;
+                bb.y_min = boundingBox.y_max - row*dy-dy;
+                bb.y_max = boundingBox.y_max - row*dy;
+
+                var value = true;
+                if (activeCells.cells[row] == undefined || activeCells.cells[row][col] == undefined){
+                    value = false;
+                }
+
+                var rectangle = this.createRectangle(bb, this.getStyle('wells', value));
+                rectangle.addTo(layers);
+            }
+        }
+
+        return layers;
+    },
     _loadAndAddWells: function( map ){
         var that = this;
         if (this.boundaries.wel !== null) {
@@ -250,14 +287,37 @@ I.model = {
     },
     _addWellsLayer: function ( wells, map ){
         var layer = new L.LayerGroup();
+        var active_cells = {};
+        active_cells.cells = [];
+
         for (var key in wells) {
             if (!wells.hasOwnProperty(key)) continue;
-
             var items = wells[key];
             items.forEach(function (item) {
                 L.circleMarker([item.point.y, item.point.x], I.model.styles.wells[key]).bindPopup("Well "+item.name).addTo(layer);
+
+                for(var rowProperty in item.active_cells.cells) {
+
+                    if (!item.active_cells.cells.hasOwnProperty(rowProperty)){continue;}
+
+                    if (active_cells.cells[rowProperty] == null) {
+                        active_cells.cells[rowProperty] = [];
+                    }
+
+                    var row = item.active_cells.cells[rowProperty];
+
+                    for(var colProperty in row) {
+                        if (!row.hasOwnProperty(colProperty)){continue;}
+                        active_cells.cells[rowProperty][colProperty] = row[colProperty];
+                    }
+                }
             });
         }
-        return layer.addTo(map);
+
+        var activeCellsLayer = this.createWellCellsLayer( active_cells , this.boundingBox, this.gridSize );
+
+        activeCellsLayer.addTo(map);
+        layer.addTo(map);
+        this.maps.wel = map;
     }
 };

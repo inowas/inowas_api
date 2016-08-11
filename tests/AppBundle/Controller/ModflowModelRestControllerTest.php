@@ -84,12 +84,12 @@ class ModflowModelRestControllerTest extends RestControllerTestCase
             )
         );
 
-        $this->modFlowModel->setGridSize(new GridSize(4,5));
-        $this->modFlowModel->setBoundingBox(new BoundingBox(1.1, 2.2, 3.3, 4.4));
+        $this->modFlowModel->setGridSize(new GridSize(3,4));
+        $this->modFlowModel->setBoundingBox(new BoundingBox(1.1, 2.2, 3.3, 4.4, 4326));
         $this->modFlowModel->setActiveCells(ActiveCells::fromArray(array(
-            array(1,2,3),
-            array(1,2,3),
-            array(1,2,3)
+            array(1,1,1,1),
+            array(1,1,1,1),
+            array(1,1,1,1)
         )));
 
         $this->getEntityManager()->persist($this->modFlowModel);
@@ -108,7 +108,7 @@ class ModflowModelRestControllerTest extends RestControllerTestCase
         );
 
         $this->modFlowModel->addBoundary(WellBoundaryFactory::create()
-            ->setPoint(new Point(10, 11, 3857))
+            ->setPoint(new Point(2, 4, 4326))
             ->setName('Well1')
             ->setPublic(true)
             ->setOwner($this->getOwner())
@@ -389,25 +389,6 @@ class ModflowModelRestControllerTest extends RestControllerTestCase
         $client->followRedirect();
         $this->assertEquals(200, $client->getResponse()->getStatusCode());
         $this->assertRegExp('/api\/calculations\//', $client->getRequest()->getUri());
-    }
-
-    public function testGetModFlowModelBoundingBoxWithSridZero()
-    {
-        $client = static::createClient();
-        $client->request(
-            'GET',
-            '/api/modflowmodels/'.$this->modFlowModel->getId().'/boundingbox.json',
-            array(),
-            array(),
-            array('HTTP_X-AUTH-TOKEN' => $this->getOwner()->getApiKey())
-        );
-        $this->assertEquals(200, $client->getResponse()->getStatusCode());
-        $bb = json_decode($client->getResponse()->getContent());
-        $expectedArray = array(
-            array($this->modFlowModel->getBoundingBox()->getYMin(), $this->modFlowModel->getBoundingBox()->getXMin()),
-            array($this->modFlowModel->getBoundingBox()->getYMax(), $this->modFlowModel->getBoundingBox()->getXMax())
-        );
-        $this->assertEquals($expectedArray, $bb);
     }
 
     public function testGetModFlowModelBoundingBoxWithSrid3857ShouldNotTransform()
