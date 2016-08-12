@@ -2,13 +2,13 @@
 
 namespace Inowas\PyprocessingBundle\Tests\Model\Modflow\Package;
 
-use Inowas\PyprocessingBundle\Model\Modflow\Package\ModflowPackage;
+use Inowas\PyprocessingBundle\Model\Modflow\Package\MfPackage;
 
 class ModflowPackageTest extends \PHPUnit_Framework_TestCase
 {
 
     /**
-     * @var ModflowPackage
+     * @var MfPackage
      */
     protected $basSerializer;
 
@@ -32,12 +32,12 @@ class ModflowPackageTest extends \PHPUnit_Framework_TestCase
     }
 
     public function testInstantiate(){
-        $bas = new ModflowPackage($this->modelname, $this->exe_name, $this->version, $this->model_ws);
-        $this->assertInstanceOf(ModflowPackage::class, $bas);
+        $bas = new MfPackage($this->modelname, $this->exe_name, $this->version, $this->model_ws);
+        $this->assertInstanceOf(MfPackage::class, $bas);
     }
 
     public function testJsonSerialize(){
-        $bas = new ModflowPackage($this->modelname, $this->exe_name, $this->version, $this->model_ws);
+        $bas = new MfPackage($this->modelname, $this->exe_name, $this->version, $this->model_ws);
         $json = json_encode($bas);
         $this->assertJson($json);
         $mfObj = json_decode($json);

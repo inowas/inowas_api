@@ -2,7 +2,7 @@
 
 namespace Inowas\PyprocessingBundle\Model\Modflow\Package;
 
-class ModflowPackage implements \JsonSerializable
+class MfPackage implements \JsonSerializable
 {
 
     private $modelname = 'modflowtest';
