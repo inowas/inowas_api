@@ -1,6 +1,6 @@
 <?php
 
-namespace AppBundle\Model\Serializer;
+namespace Inowas\PyprocessingBundle\Model\Modflow\Package;
 
 use AppBundle\Entity\StreamBoundary;
 
