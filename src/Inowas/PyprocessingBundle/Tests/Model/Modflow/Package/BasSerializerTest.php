@@ -28,16 +28,16 @@ class ModflowPackageTest extends \PHPUnit_Framework_TestCase
         $this->modelname = 'MyFancyModel';
         $this->exe_name = 'mf2005';
         $this->version = 'mf2005v';
-        $this->model_ws = '.';
+        $this->model_ws = './ascii';
     }
 
     public function testInstantiate(){
-        $bas = new MfPackage($this->modelname, $this->exe_name, $this->version, $this->model_ws);
+        $bas = new MfPackage($this->modelname, $this->exe_name, $this->version);
         $this->assertInstanceOf(MfPackage::class, $bas);
     }
 
     public function testJsonSerialize(){
-        $bas = new MfPackage($this->modelname, $this->exe_name, $this->version, $this->model_ws);
+        $bas = new MfPackage($this->modelname, $this->exe_name, $this->version);
         $json = json_encode($bas);
         $this->assertJson($json);
         $mfObj = json_decode($json);
