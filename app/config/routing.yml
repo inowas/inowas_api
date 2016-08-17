@@ -13,6 +13,11 @@ NelmioApiDocBundle:
 fos_user:
     resource: "@FOSUserBundle/Resources/config/routing/all.xml"
 
+rest_modflow_package:
+    type: rest
+    prefix: /api
+    resource: Inowas\PyprocessingBundle\Controller\ModflowModelPackagesController
+
 rest_area:
     type: rest
     prefix: /api

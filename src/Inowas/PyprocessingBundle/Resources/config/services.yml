@@ -1,5 +1,9 @@
 services:
 
+    inowas.flopy:
+        class: Inowas\PyprocessingBundle\Service\Flopy
+        arguments: ['@doctrine.orm.entity_manager', '%inowas.pyprocessing_folder%']
+
     inowas.modflow:
         class: Inowas\PyprocessingBundle\Service\Modflow
         arguments: ['@doctrine.orm.entity_manager', '@inowas.modflow.processbuilder']

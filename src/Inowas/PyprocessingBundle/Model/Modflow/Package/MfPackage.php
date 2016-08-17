@@ -11,10 +11,16 @@ class MfPackage implements \JsonSerializable
     private $exe_name = 'mf2005.exe';
     private $structured = true;
     private $listunit = 2;
-    private $model_ws = '.';
+    private $model_ws = './ascii';
     private $external_path = null;
     private $verbose = false;
 
+    /**
+     * MfPackage constructor.
+     * @param $modelname
+     * @param $exe_name
+     * @param $version
+     */
     public function __construct($modelname, $exe_name, $version) {
         $this->modelname = $modelname;
         $this->exe_name = $exe_name;

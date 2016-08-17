@@ -2,16 +2,14 @@
 
 namespace Inowas\PyprocessingBundle\Controller;
 
+use AppBundle\Entity\ModelScenario;
 use FOS\RestBundle\Controller\Annotations\Get;
 use FOS\RestBundle\Controller\FOSRestController;
 use FOS\RestBundle\View\View;
-use Inowas\PyprocessingBundle\Model\Modflow\Package\MfPackage;
 use Inowas\PyprocessingBundle\Model\Modflow\Package\PackageFactory;
-use JMS\Serializer\SerializationContext;
 use Nelmio\ApiDocBundle\Annotation\ApiDoc;
 use Ramsey\Uuid\Uuid;
 use Symfony\Component\HttpFoundation\JsonResponse;
-use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class ModflowModelPackagesController extends FOSRestController
@@ -37,7 +35,7 @@ class ModflowModelPackagesController extends FOSRestController
      */
     public function getModflowModelPackagesAction($id)
     {
-        $model = $this->findModelById($id);
+        $this->findModelById($id);
         $arr = array('mf', 'dis', 'bas', 'lpf', 'pcg', 'oc');
 
         $view = View::create();
