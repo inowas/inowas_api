@@ -3,6 +3,8 @@
 namespace Inowas\PyprocessingBundle\Service;
 
 use AppBundle\Entity\ModflowCalculation;
+use AppBundle\Entity\User;
+use Inowas\PyprocessingBundle\Exception\InvalidArgumentException;
 use Inowas\PyprocessingBundle\Model\PythonProcess\PythonProcess;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\EntityManager;
@@ -18,6 +20,9 @@ class ModflowServiceRunner
     /** @var EntityManager  */
     protected $entityManager;
 
+    /** @var  Flopy */
+    protected $flopy;
+
     /** @var  ModflowProcessBuilder */
     protected $modflowProcessBuilder;
 
@@ -28,11 +33,11 @@ class ModflowServiceRunner
     protected $numberOfParallelCalculations;
 
 
-    public function __construct(EntityManager $entityManager,  ModflowProcessBuilder $modflowProcessBuilder, $numberOfParallelCalculations = 5)
+    public function __construct(EntityManager $entityManager,  Flopy $flopy, $numberOfParallelCalculations = 5)
     {
         $this->processes = new ArrayCollection();
         $this->entityManager = $entityManager;
-        $this->modflowProcessBuilder = $modflowProcessBuilder;
+        $this->flopy = $flopy;
         $this->numberOfParallelCalculations = $numberOfParallelCalculations;
     }
 
@@ -41,7 +46,19 @@ class ModflowServiceRunner
      */
     public function run($asDaemon = false){
 
+        $startedButNotFinishedJobs = $this->entityManager->getRepository('AppBundle:ModflowCalculation')
+            ->findBy(
+                array('state' => ModflowCalculation::STATE_RUNNING)
+            );
+
+        foreach ($startedButNotFinishedJobs as $startedButNotFinishedJob){
+            $startedButNotFinishedJob->setState(ModflowCalculation::STATE_IN_QUEUE);
+            $this->entityManager->persist($startedButNotFinishedJob);
+            echo sprintf('Reset started but not fished Job %s'."\r\n", $startedButNotFinishedJob->getId()->toString());
+        }
+
         echo sprintf('Waiting for Jobs.'."\r\n");
+        $this->entityManager->flush();
 
         while (1){
             $runningProcesses = 0;
@@ -86,7 +103,7 @@ class ModflowServiceRunner
                     $this->numberOfParallelCalculations - $runningProcesses
                 );
 
-            if (count($modelsToCalculate) == 0 && $asDaemon == false){
+            if (count($modelsToCalculate) == 0 && $asDaemon == false && $runningProcesses == 0){
                 echo sprintf('There are no more jobs in the queue. Leaving...'."\r\n");
                 return;
             }
@@ -97,7 +114,22 @@ class ModflowServiceRunner
 
             /** @var ModflowCalculation $modelCalculation */
             foreach ($modelsToCalculate as $modelCalculation){
-                $process = $this->modflowProcessBuilder->getCalculationProcess($modelCalculation->getModelId(), $modelCalculation->getExecutable());
+
+                $user = $this->entityManager->getRepository('AppBundle:User')
+                    ->findOneBy(array(
+                        'id' => $modelCalculation->getUserId()
+                    ));
+
+                if (! $user instanceof User){
+                    throw new InvalidArgumentException(sprintf('UserId %s not valid or user not found.', $modelCalculation->getUserId()));
+                }
+
+                $process = $this->flopy->calculate(
+                    $modelCalculation->getBaseUrl(),
+                    $modelCalculation->getDataFolder(),
+                    $modelCalculation->getModelId()->toString(),
+                    $user->getApiKey(), true
+                );
 
                 $modelCalculation->setProcessId($process->getId());
                 $modelCalculation->setDateTimeStart(new \DateTime());
@@ -108,7 +140,6 @@ class ModflowServiceRunner
                 $process->getProcess()->start();
                 $this->addProcess($process);
             }
-            sleep(1);
         }
     }
 

@@ -2,6 +2,7 @@
 
 namespace Inowas\PyprocessingBundle\Tests\Service;
 
+use AppBundle\Entity\ModflowCalculation;
 use AppBundle\Entity\ModFlowModel;
 use Doctrine\ORM\EntityManager;
 use Inowas\PyprocessingBundle\Service\Flopy;
@@ -59,6 +60,19 @@ class FlopyTest extends WebTestCase
         $this->assertFileExists($this->dataFolder.'/'.$model->getId()->toString().'/ascii/'.$model->getId()->toString().'.nam');
         $this->assertTrue($processExecutedSuccessfully);
     }
+
+    public function testAddToQueue(){
+        $model = $this->entityManager->getRepository('AppBundle:ModFlowModel')->findOneBy(array('name' => "Lake Example"));
+        $modflowCalculation = $this->flopy->addToQueue(
+            'http://localhost/api',
+            $this->dataFolder,
+            $model->getId()->toString(),
+            $model->getOwner()->getId()->toString()
+        );
+
+        $this->assertInstanceOf(ModflowCalculation::class, $modflowCalculation);
+    }
+
 
     public function tearDown() {
         if (file_exists($this->dataFolder)){

@@ -5,7 +5,6 @@ namespace AppBundle\Entity;
 use Doctrine\ORM\Mapping as ORM;
 use JMS\Serializer\Annotation as JMS;
 use Ramsey\Uuid\Uuid;
-use Ramsey\Uuid\UuidInterface;
 
 /**
  * ModflowCalculation
@@ -45,11 +44,27 @@ class ModflowCalculation
     private $modelId;
 
     /**
-     * @var string
-     * @ORM\Column(name="executable", type="string")
+     * @var Uuid
+     * @ORM\Column(name="user_id", type="uuid", nullable=true)
      * @JMS\Type("string")
      */
-    private $executable;
+    private $userId;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="base_url", type="string", length=255, nullable=true)
+     * @JMS\Type("string")
+     */
+    private $baseUrl;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="data_folder", type="string", length=255, nullable=true)
+     * @JMS\Type("string")
+     */
+    private $dataFolder;
 
     /**
      * @var integer $numberOfValues
@@ -106,7 +121,7 @@ class ModflowCalculation
     /**
      * @return Uuid
      */
-    public function getId()
+    public function getId(): Uuid
     {
         return $this->id;
     }
@@ -138,30 +153,66 @@ class ModflowCalculation
     }
 
     /**
-     * @param UuidInterface $modelId
+     * @param Uuid $modelId
      * @return ModflowCalculation
      */
-    public function setModelId(UuidInterface $modelId): ModflowCalculation
+    public function setModelId(Uuid $modelId): ModflowCalculation
     {
         $this->modelId = $modelId;
         return $this;
     }
 
     /**
-     * @return string
+     * @return Uuid
      */
-    public function getExecutable(): string
+    public function getUserId(): Uuid
     {
-        return $this->executable;
+        return $this->userId;
     }
 
     /**
-     * @param string $executable
+     * @param Uuid $userId
      * @return ModflowCalculation
      */
-    public function setExecutable(string $executable): ModflowCalculation
+    public function setUserId(Uuid $userId): ModflowCalculation
     {
-        $this->executable = $executable;
+        $this->userId = $userId;
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getBaseUrl(): string
+    {
+        return $this->baseUrl;
+    }
+
+    /**
+     * @param string $baseUrl
+     * @return ModflowCalculation
+     */
+    public function setBaseUrl(string $baseUrl): ModflowCalculation
+    {
+        $this->baseUrl = $baseUrl;
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getDataFolder(): string
+    {
+        return $this->dataFolder;
+    }
+
+    /**
+     * @param string $dataFolder
+     * @return ModflowCalculation
+     */
+    public function setDataFolder(string $dataFolder): ModflowCalculation
+    {
+        $this->dataFolder = $dataFolder;
         return $this;
     }
 
@@ -189,6 +240,16 @@ class ModflowCalculation
     public function getDateTimeAddToQueue(): \DateTime
     {
         return $this->dateTimeAddToQueue;
+    }
+
+    /**
+     * @param \DateTime $dateTimeAddToQueue
+     * @return ModflowCalculation
+     */
+    public function setDateTimeAddToQueue(\DateTime $dateTimeAddToQueue): ModflowCalculation
+    {
+        $this->dateTimeAddToQueue = $dateTimeAddToQueue;
+        return $this;
     }
 
     /**

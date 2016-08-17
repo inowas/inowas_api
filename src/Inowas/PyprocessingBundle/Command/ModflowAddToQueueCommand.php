@@ -2,7 +2,8 @@
 
 namespace Inowas\PyprocessingBundle\Command;
 
-use Doctrine\ORM\EntityManager;
+use AppBundle\Entity\ModFlowModel;
+use Inowas\PyprocessingBundle\Service\Flopy;
 use Ramsey\Uuid\Uuid;
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 use Symfony\Component\Console\Input\InputArgument;
@@ -34,9 +35,27 @@ class ModflowAddToQueueCommand extends ContainerAwareCommand
             $output->writeln(sprintf("The given id: %s is not valid", $input->getArgument('id')));
         }
 
-        /** @var EntityManager $entityManager */
-        $modflow = $this->getContainer()->get('inowas.modflow');
-        $modflow->addToQueue($input->getArgument('id'), 'mf2005');
+        $model = $this->getContainer()->get('doctrine.orm.default_entity_manager')
+            ->getRepository('AppBundle:ModFlowModel')
+            ->findOneBy(array(
+                'id' => $input->getArgument('id')
+            ));
+
+        if (! $model instanceof ModFlowModel){
+            $output->writeln(sprintf("The given id %s is no Model-Id", $input->getArgument('id')));
+        }
+
+
+
+        /** @var Flopy $flopy */
+        $flopy = $this->getContainer()->get('inowas.flopy');
+
+        $flopy->addToQueue(
+            $this->getContainer()->getParameter('inowas.api_base_url'),
+            $this->getContainer()->getParameter('inowas.modflow.data_folder'),
+            $input->getArgument('id'),
+            $model->getOwner()->getId()->toString()
+        );
         $output->writeln('Modflow-Model has been added successfully.');
     }
 }

@@ -33,9 +33,17 @@ class ModflowCalculationTest extends \PHPUnit_Framework_TestCase
         $this->modflowCalculation->setModelId($modelId);
         $this->assertEquals($modelId, $this->modflowCalculation->getModelId());
 
-        $executable = 'mf2005';
-        $this->modflowCalculation->setExecutable($executable);
-        $this->assertEquals($executable, $this->modflowCalculation->getExecutable());
+        $userId = Uuid::uuid4();
+        $this->modflowCalculation->setModelId($userId);
+        $this->assertEquals($userId, $this->modflowCalculation->getModelId());
+
+        $baseUrl = 'baseUrl';
+        $this->modflowCalculation->setOutput($baseUrl);
+        $this->assertEquals($baseUrl, $this->modflowCalculation->getOutput());
+
+        $dataFolder = 'dataFolder';
+        $this->modflowCalculation->setOutput($dataFolder);
+        $this->assertEquals($dataFolder, $this->modflowCalculation->getOutput());
 
         $state = ModflowCalculation::STATE_FINISHED_SUCCESSFUL;
         $this->modflowCalculation->setState($state);
