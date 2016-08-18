@@ -55,7 +55,6 @@ class Modflow
         }
 
         $modflowCalculation->setModelId(Uuid::fromString($modelId));
-        $modflowCalculation->setExecutable($executable);
         $this->entityManager->persist($modflowCalculation);
         $this->entityManager->flush();
 

@@ -288,6 +288,13 @@ class ModFlowModel extends AbstractModel
     }
 
     /**
+     * @return int
+     */
+    public function getNumberOfStressPeriods(){
+        return count($this->calculationProperties["stress_periods"]);
+    }
+
+    /**
      * Set calculationProperties
      *
      * @param array $calculationProperties

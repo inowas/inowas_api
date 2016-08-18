@@ -22,6 +22,9 @@ class MfPackage implements \JsonSerializable
      * @param $version
      */
     public function __construct($modelname, $exe_name, $version) {
+        if ($modelname == ""){
+            $modelname = "model_".rand(100000, 200000);
+        }
         $this->modelname = $modelname;
         $this->exe_name = $exe_name;
         $this->version = $version;

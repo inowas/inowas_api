@@ -2,6 +2,9 @@
 
 namespace AppBundle\Entity;
 
+use AppBundle\Exception\InvalidArgumentException;
+use AppBundle\Model\PropertyType;
+use AppBundle\Model\PropertyTypeFactory;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
 use JMS\Serializer\Annotation as JMS;
@@ -111,6 +114,27 @@ class GeologicalLayer extends SoilModelObject
         $this->order = $order;
 
         return $this;
+    }
+
+    /**
+     * @return array
+     */
+    public function getTopElevation(){
+
+        $value = $this->getPropertyByPropertyType(PropertyTypeFactory::create(PropertyType::TOP_ELEVATION));
+
+        /** @var PropertyValue $value */
+        if (! $value instanceof PropertyValue){
+            if ($value->hasValue()){
+                return array($value->getValue());
+            }
+
+            if ($value->hasRaster()){
+                return array($value->getRaster()->getData());
+            }
+        }
+
+        throw new InvalidArgumentException(sprintf('The Top-Elevation of Layer with ID: %s is wrong.', $this->getId()->toString()));
     }
 
 

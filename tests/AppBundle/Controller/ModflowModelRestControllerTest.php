@@ -332,7 +332,7 @@ class ModflowModelRestControllerTest extends RestControllerTestCase
         $timeNow = new \DateTime();
         $calculation = new ModflowCalculation();
         $calculation->setModelId($this->modFlowModel->getId());
-        $calculation->setExecutable('mf2005');
+        $calculation->setBaseUrl('abc');
         $calculation->setDateTimeStart(new \DateTime('2016-01-01'));
         $calculation->setDateTimeEnd(new \DateTime('2016-01-02'));
         $calculation->setOutput('Output');
@@ -357,8 +357,8 @@ class ModflowModelRestControllerTest extends RestControllerTestCase
 
         $this->assertObjectHasAttribute('model_id', $calculationResponse);
         $this->assertEquals($calculation->getModelId(), $calculationResponse->model_id);
-        $this->assertObjectHasAttribute('executable', $calculationResponse);
-        $this->assertEquals($calculation->getExecutable(), $calculationResponse->executable);
+        $this->assertObjectHasAttribute('base_url', $calculationResponse);
+        $this->assertEquals($calculation->getBaseUrl(), $calculationResponse->base_url);
         $this->assertObjectHasAttribute('state', $calculationResponse);
         $this->assertEquals($calculation->getState(), $calculationResponse->state);
         $this->assertObjectHasAttribute('date_time_add_to_queue', $calculationResponse);

@@ -22,7 +22,7 @@ class CalculationRestControllerTest extends RestControllerTestCase
         $this->timeNow = new \DateTime();
         $this->calculation = new ModflowCalculation();
         $this->calculation->setModelId(Uuid::uuid4());
-        $this->calculation->setExecutable('mf2005');
+        $this->calculation->setBaseUrl('abc');
         $this->calculation->setDateTimeStart(new \DateTime('2016-01-01'));
         $this->calculation->setDateTimeEnd(new \DateTime('2016-01-02'));
         $this->calculation->setOutput('Output');
@@ -47,8 +47,8 @@ class CalculationRestControllerTest extends RestControllerTestCase
 
         $this->assertObjectHasAttribute('model_id', $calculation);
         $this->assertEquals($this->calculation->getModelId(), $calculation->model_id);
-        $this->assertObjectHasAttribute('executable', $calculation);
-        $this->assertEquals($this->calculation->getExecutable(), $calculation->executable);
+        $this->assertObjectHasAttribute('base_url', $calculation);
+        $this->assertEquals($this->calculation->getBaseUrl(), $calculation->base_url);
         $this->assertObjectHasAttribute('state', $calculation);
         $this->assertEquals($this->calculation->getState(), $calculation->state);
         $this->assertObjectHasAttribute('date_time_add_to_queue', $calculation);
