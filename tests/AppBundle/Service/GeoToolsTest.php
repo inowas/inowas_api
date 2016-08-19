@@ -210,7 +210,7 @@ class GeoToolsTest extends WebTestCase
         $point1 = new Point(13.75132, 51.04234, 4326);
         $point2 = new Point(13.77452, 51.03324, 4326);
         $distance = $this->geoTools->calculateDistanceInMetersFromTwoPoints($point1, $point2);
-        $this->assertEquals(1916.47306022, $distance);
+        $this->assertEquals(1916, round($distance));
     }
 
     public function testGetGridCellFromPoint()
