@@ -125,6 +125,39 @@ class Flopy3DArray extends FlopyArray implements FlopyArrayInterface
     }
 
     /**
+     * @param $value
+     * @param $nLay
+     * @param $nRow
+     * @param $nCol
+     * @return Flopy3DArray
+     */
+    public static function fromValue($value, $nLay, $nRow, $nCol)
+    {
+
+        $instance = new self();
+
+        if ($instance->count_dimension($value) == 0){
+            return $instance->fromNumeric($value, $nLay, $nRow, $nCol);
+        }
+
+        if ($instance->count_dimension($value) == 1){
+            return $instance->from1DArray($value, $nRow, $nCol);
+        }
+
+        if ($instance->count_dimension($value) == 2){
+            return $instance->from2DArray($value, $nCol);
+        }
+
+        if ($instance->count_dimension($value) == 3){
+            return $instance->from3DArray($value);
+        }
+
+        throw new InvalidArgumentException(sprintf('Value is supposed to have max. 3 Dimensions. Value with %s Dimensions given.', $instance->count_dimension($value)));
+    }
+
+
+
+    /**
      * @return array|float|int
      */
     public function toReducedArray(){

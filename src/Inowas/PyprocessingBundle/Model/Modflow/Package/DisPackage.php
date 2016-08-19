@@ -358,10 +358,10 @@ class DisPackage implements \JsonSerializable
     }
 
     /**
-     * @param boolean $steady
+     * @param Flopy1DArray $steady
      * @return DisPackage
      */
-    public function setSteady(bool $steady): DisPackage
+    public function setSteady(Flopy1DArray $steady): DisPackage
     {
         $this->steady = $steady;
         return $this;

@@ -117,25 +117,52 @@ class GeologicalLayer extends SoilModelObject
     }
 
     /**
-     * @return array
+     * @return mixed
      */
     public function getTopElevation(){
 
-        $value = $this->getPropertyByPropertyType(PropertyTypeFactory::create(PropertyType::TOP_ELEVATION));
-
-        /** @var PropertyValue $value */
-        if (! $value instanceof PropertyValue){
-            if ($value->hasValue()){
-                return array($value->getValue());
-            }
-
-            if ($value->hasRaster()){
-                return array($value->getRaster()->getData());
-            }
-        }
-
-        throw new InvalidArgumentException(sprintf('The Top-Elevation of Layer with ID: %s is wrong.', $this->getId()->toString()));
+        $values = $this->getPropertyValuesByPropertyType(PropertyTypeFactory::create(PropertyType::TOP_ELEVATION));
+        return $this->extractNumericOrRasterValueFromPropertyValue($values->first());
     }
 
+    /**
+     * @return mixed
+     */
+    public function getBottomElevation(){
 
+        $values = $this->getPropertyValuesByPropertyType(PropertyTypeFactory::create(PropertyType::BOTTOM_ELEVATION));
+        return $this->extractNumericOrRasterValueFromPropertyValue($values->first());
+    }
+
+    /**
+     * @param PropertyType $propertyType
+     * @return \Doctrine\Common\Collections\Collection
+     */
+    protected function getPropertyValuesByPropertyType(PropertyType $propertyType){
+
+        $property = $this->getPropertyByPropertyType($propertyType);
+
+        if (! $property instanceof Property){
+            throw new InvalidArgumentException(sprintf('The Layer with ID: %s hat no property from Type %s.', $this->getId()->toString(), $propertyType->getDescription()));
+        }
+
+        return $property->getValues();
+    }
+
+    /**
+     * @param PropertyValue $value
+     * @return array|float
+     */
+    protected function extractNumericOrRasterValueFromPropertyValue(PropertyValue $value){
+
+        if ($value->hasValue()){
+            return $value->getValue();
+        }
+
+        if ($value->hasRaster()){
+            return $value->getRaster()->getData();
+        }
+
+        throw new InvalidArgumentException(sprintf('The PropertyValue of Layer with id=%s has no value and no raster.', $this->getId()->toString()));
+    }
 }

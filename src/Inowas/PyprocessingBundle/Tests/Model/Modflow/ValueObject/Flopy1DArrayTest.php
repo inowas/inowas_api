@@ -27,6 +27,12 @@ class Flopy1DArrayTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals(1.9, $f1d->toReducedArray());
     }
 
+    public function testInstantiateFromValueWithFloatValue(){
+        $f1d = Flopy1DArray::fromValue(1.9, 10);
+        $this->assertInstanceOf(Flopy1DArray::class, $f1d);
+        $this->assertEquals(1.9, $f1d->toReducedArray());
+    }
+
     public function testInstantiateFromNumericWithNotNumericThrowsException(){
         $this->setExpectedException(InvalidArgumentException::class);
         Flopy1DArray::fromNumeric('abc', 1);
@@ -40,6 +46,12 @@ class Flopy1DArrayTest extends \PHPUnit_Framework_TestCase
 
     public function testInstantiateFromArray(){
         $f1d = Flopy1DArray::fromArray(array(0.1,1,2,3,4.1,5.2,6.3,7,8,9));
+        $this->assertInstanceOf(Flopy1DArray::class, $f1d);
+        $this->assertEquals(array(0.1,1,2,3,4.1,5.2,6.3,7,8,9), $f1d->toReducedArray());
+    }
+
+    public function testInstantiateFromValueWithArray(){
+        $f1d = Flopy1DArray::fromValue(array(0.1,1,2,3,4.1,5.2,6.3,7,8,9), 10);
         $this->assertInstanceOf(Flopy1DArray::class, $f1d);
         $this->assertEquals(array(0.1,1,2,3,4.1,5.2,6.3,7,8,9), $f1d->toReducedArray());
     }

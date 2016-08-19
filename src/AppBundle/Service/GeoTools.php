@@ -91,7 +91,9 @@ class GeoTools
             }
         }
 
-        return new BoundingBox($xmin, $xmax, $ymin, $ymax, $srid);
+        $bb = new BoundingBox($xmin, $xmax, $ymin, $ymax, $srid);
+
+        return $this->transformBoundingBox($bb, 4326);
     }
 
     public function getGeoJsonGrid(BoundingBox $boundingBox, GridSize $gridSize, ActiveCells $activeCells)
@@ -175,25 +177,54 @@ class GeoTools
         return new Point($result->coordinates[0], $result->coordinates[1], $targetSrid);
     }
 
+    public function calculateDistanceInMetersFromTwoPoints(Point $point1, Point $point2)
+    {
+        $query = $this->entityManager
+            ->getConnection()
+            ->prepare(sprintf('SELECT ST_Distance(
+                ST_Transform(ST_SetSRID(ST_Point(%s, %s), %s), %s)::geography,
+                ST_Transform(ST_SetSRID(ST_Point(%s, %s), %s), %s)::geography
+                )',
+                $point1->getX(),
+                $point1->getY(),
+                $point1->getSrid(),
+                4326,
+                $point2->getX(),
+                $point2->getY(),
+                $point2->getSrid(),
+                4326
+            ))
+        ;
+
+        $query->execute();
+        $result = $query->fetchAll();
+
+        return (float) $result[0]["st_distance"];
+    }
+
     public function transformBoundingBox(BoundingBox $bb, $targetSrid)
     {
-        if ($bb->getSrid() == $targetSrid){
-            return $bb;
-        }
-
         $lowerLeft = new Point($bb->getXMin(), $bb->getYMin(), $bb->getSrid());
+        $lowerRight = new Point($bb->getXMax(), $bb->getYMin(), $bb->getSrid());
         $upperRight = new Point($bb->getXMax(), $bb->getYMax(), $bb->getSrid());
 
         $transformedLowerLeft = $this->transformPoint($lowerLeft, $targetSrid);
         $transformedUpperRight = $this->transformPoint($upperRight, $targetSrid);
+        $dxInMeter = $this->calculateDistanceInMetersFromTwoPoints($lowerLeft, $lowerRight);
+        $dyInMeter = $this->calculateDistanceInMetersFromTwoPoints($lowerRight, $upperRight);
 
-        return new BoundingBox(
+        $bb = new BoundingBox(
             $transformedLowerLeft->getX(),
             $transformedUpperRight->getX(),
             $transformedLowerLeft->getY(),
             $transformedUpperRight->getY(),
             $targetSrid
         );
+
+        $bb->setDXInMeters($dxInMeter);
+        $bb->setDYInMeters($dyInMeter);
+
+        return $bb;
     }
 
     public function getActiveCellsFromPoint(BoundingBox $bb, GridSize $gz, Point $point){

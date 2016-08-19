@@ -18,6 +18,7 @@ use AppBundle\Model\PropertyTypeFactory;
 use AppBundle\Model\PropertyValueFactory;
 use AppBundle\Model\SoilModelFactory;
 use AppBundle\Model\StreamBoundaryFactory;
+use AppBundle\Model\StressPeriodFactory;
 use AppBundle\Model\WellBoundaryFactory;
 use CrEOF\Spatial\PHP\Types\Geometry\LineString;
 use CrEOF\Spatial\PHP\Types\Geometry\Polygon;
@@ -101,7 +102,12 @@ class LoadScenario_6 implements FixtureInterface, ContainerAwareInterface
             )
             ->setGridSize(new GridSize(75, 40))
             ->setBoundingBox($geoTools->transformBoundingBox(new BoundingBox(-63.65374923159833, -63.57684493472333, -31.364459841376334, -31.318130051738194, 4326), 4326))
-        ;
+            ->addStressPeriod(StressPeriodFactory::create()
+                ->setDateTimeBegin(new \DateTime('1/1/2015'))
+                ->setDateTimeEnd(new \DateTime('1/15/2015'))
+                ->setNumberOfTimeSteps(2)
+                ->setSteady(true)
+            );
 
         $model->addBoundary(StreamBoundaryFactory::create()
             ->setGeometry(new LineString(array(

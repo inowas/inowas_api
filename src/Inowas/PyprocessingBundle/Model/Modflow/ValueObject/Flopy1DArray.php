@@ -67,6 +67,26 @@ class Flopy1DArray extends FlopyArray implements FlopyArrayInterface
     }
 
     /**
+     * @param $value
+     * @param $nCol
+     * @return Flopy1DArray
+     */
+    public static function fromValue($value, $nCol){
+        $instance = new self();
+
+        if ($instance->count_dimension($value) == 0){
+            return $instance->fromNumeric($value, $nCol);
+        }
+
+        if ($instance->count_dimension($value) == 1){
+            return $instance->fromArray($value);
+        }
+
+        throw new InvalidArgumentException(sprintf('Value is supposed to be a 0D or 1D-array value. Value with %s Dimensions given.', $instance->count_dimension($valueArray)));
+
+    }
+
+    /**
      * @return array|float|int
      */
     public function toReducedArray(){

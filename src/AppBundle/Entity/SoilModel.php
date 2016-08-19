@@ -92,7 +92,7 @@ class SoilModel extends AbstractModel
             return $layers;
         }
 
-        return $this->geologicalLayers;
+        return null;
     }
 
     /**

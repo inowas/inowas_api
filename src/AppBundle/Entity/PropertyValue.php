@@ -56,7 +56,7 @@ class PropertyValue extends AbstractValue
      * @return bool
      */
     public function hasValue(){
-       if (null == $this->value){
+       if (null === $this->value){
            return false;
        }
         return true;

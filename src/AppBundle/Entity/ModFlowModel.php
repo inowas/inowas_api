@@ -5,7 +5,10 @@ namespace AppBundle\Entity;
 use AppBundle\Model\ActiveCells;
 use AppBundle\Model\BoundingBox;
 use AppBundle\Model\GridSize;
+use AppBundle\Model\StressPeriod;
+use AppBundle\Model\StressPeriodFactory;
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Criteria;
 use Doctrine\ORM\Mapping as ORM;
 use JMS\Serializer\Annotation as JMS;
 
@@ -183,6 +186,104 @@ class ModFlowModel extends AbstractModel
         return false;
     }
 
+    /** @return int */
+    public function getNumberOfLayers(){
+        if (! $this->hasSoilModel()){
+            return 0;
+        }
+
+        return $this->getSoilModel()->getNumberOfGeologicalLayers();
+    }
+
+    /** @return int */
+    public function getNumberOfColumns(){
+        if (! $this->getGridSize() instanceof GridSize){
+            return 0;
+        }
+
+        return $this->getGridSize()->getNumberOfColumns();
+    }
+
+    /** @return int */
+    public function getNumberOfRows(){
+        if (! $this->getGridSize() instanceof GridSize){
+            return 0;
+        }
+
+        return $this->getGridSize()->getNumberOfRows();
+    }
+
+    /** @return float */
+    public function getDeltaX(){
+        if ($this->getBoundingBox()->getDXInMeters() > 0){
+            return $this->getBoundingBox()->getDXInMeters();
+        }
+        return null;
+    }
+
+    /** @return float */
+    public function getDeltaY(){
+        if ($this->getBoundingBox()->getDYInMeters() > 0){
+            return $this->getBoundingBox()->getDYInMeters();
+        }
+        return null;
+    }
+
+    /** @return float */
+    public function getDeltaRow(){
+        if ($this->getDeltaX() == null){
+            return null;
+        }
+
+        if ($this->getNumberOfColumns() == null){
+            return null;
+        }
+        return ($this->getDeltaX()/$this->getNumberOfColumns());
+    }
+
+    /** @return float */
+    public function getDeltaCol(){
+        if ($this->getDeltaY() == null){
+            return null;
+        }
+
+        if ($this->getNumberOfRows() == null){
+            return null;
+        }
+        return ($this->getDeltaY()/$this->getNumberOfRows());
+    }
+
+    // ToDo: Implement Logic here
+    /** @return int */
+    public function getLayerConfiningBed(){
+        return 0;
+    }
+
+    /** @return ArrayCollection|null */
+    public function getSortedLayers(){
+        if (! $this->hasSoilModel()){
+            return null;
+        }
+
+        if ($this->soilModel->getSortedGeologicalLayers()->count() == 0){
+            return null;
+        }
+
+        return $this->soilModel->getSortedGeologicalLayers();
+    }
+
+    /** @return mixed */
+    public function getTopElevation(){
+        $sortedLayers = $this->getSortedLayers();
+        if ($sortedLayers->count() == 0){
+            return null;
+        }
+
+        /** @var GeologicalLayer $topLayer */
+        $topLayer = $sortedLayers->first();
+        return $topLayer->getTopElevation();
+    }
+
     /**
      * Get boundaries
      *
@@ -259,7 +360,7 @@ class ModFlowModel extends AbstractModel
      *
      * @return ModFlowModel
      */
-    public function addStressPeriod($stressPeriod)
+    public function addStressPeriod(StressPeriod $stressPeriod)
     {
         $this->calculationProperties["stress_periods"][] = $stressPeriod;
 
@@ -274,6 +375,43 @@ class ModFlowModel extends AbstractModel
     public function getStressPeriods()
     {
         return $this->calculationProperties["stress_periods"];
+    }
+
+    /**
+     * Get stressPeriods
+     *
+     * @return array
+     */
+    public function getSortedStressPeriods(){
+
+        if (count($this->getStressPeriods()) == 0){
+            return null;
+        }
+
+        $spArr = new ArrayCollection();
+
+        foreach ($this->getStressPeriods() as $stressPeriod){
+            if (is_array($stressPeriod)){
+                $sp = StressPeriodFactory::create()
+                    ->setDateTimeBegin(new \DateTime($stressPeriod['dateTimeBegin']['date']))
+                    ->setDateTimeEnd(new \DateTime($stressPeriod['dateTimeEnd']['date']))
+                    ->setNumberOfTimeSteps($stressPeriod['numberOfTimeSteps'])
+                    ->setSteady($stressPeriod['steady'])
+                    ->setTimeStepMultiplier($stressPeriod['timeStepMultiplier'])
+                ;
+
+                $spArr->add($sp);
+            }
+
+            if ($stressPeriod instanceof StressPeriod){
+                $spArr->add($stressPeriod);
+            }
+        }
+
+        $criteria = Criteria::create()
+            ->orderBy(array("dateTimeBegin" => Criteria::ASC));
+
+        return $spArr->matching($criteria)->toArray();
     }
 
     /**

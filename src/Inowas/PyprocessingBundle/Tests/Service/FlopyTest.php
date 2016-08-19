@@ -40,7 +40,7 @@ class FlopyTest extends WebTestCase
     {
         $model = $this->entityManager->getRepository('AppBundle:ModFlowModel')
             ->findOneBy(array(
-                'name' => "Lake Example"
+                'name' => "Lake_Example"
             ));
 
         if (! $model instanceof ModFlowModel){
@@ -49,7 +49,7 @@ class FlopyTest extends WebTestCase
     }
 
     public function testCalculate(){
-        $model = $this->entityManager->getRepository('AppBundle:ModFlowModel')->findOneBy(array('name' => "Lake Example"));
+        $model = $this->entityManager->getRepository('AppBundle:ModFlowModel')->findOneBy(array('name' => "Lake_Example"));
         $processExecutedSuccessfully = $this->flopy->calculate(
             'http://localhost/api',
             $this->dataFolder,
@@ -57,12 +57,12 @@ class FlopyTest extends WebTestCase
             $model->getOwner()->getApiKey()
         );
 
-        $this->assertFileExists($this->dataFolder.'/'.$model->getId()->toString().'/ascii/'.$model->getId()->toString().'.nam');
+        $this->assertFileExists($this->dataFolder.'/'.$model->getId()->toString().'/ascii/'.$model->getName().'.nam');
         $this->assertTrue($processExecutedSuccessfully);
     }
 
     public function testAddToQueue(){
-        $model = $this->entityManager->getRepository('AppBundle:ModFlowModel')->findOneBy(array('name' => "Lake Example"));
+        $model = $this->entityManager->getRepository('AppBundle:ModFlowModel')->findOneBy(array('name' => "Lake_Example"));
         $modflowCalculation = $this->flopy->addToQueue(
             'http://localhost/api',
             $this->dataFolder,

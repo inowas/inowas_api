@@ -33,6 +33,8 @@ class BoundingBoxType extends JsonArrayType
         $bb['y_min'] = $value->getYMin();
         $bb['y_max'] = $value->getYMax();
         $bb['srid'] = $value->getSrid();
+        $bb['dx_m'] = $value->getDXInMeters();
+        $bb['dy_m'] = $value->getDYInMeters();
         return json_encode($bb);
     }
 
@@ -47,7 +49,10 @@ class BoundingBoxType extends JsonArrayType
 
         $value = (is_resource($value)) ? stream_get_contents($value) : $value;
         $bb = json_decode($value, true);
-        return new BoundingBox($bb['x_min'], $bb['x_max'], $bb['y_min'], $bb['y_max'], $bb['srid']);
+        $boundingBox = new BoundingBox($bb['x_min'], $bb['x_max'], $bb['y_min'], $bb['y_max'], $bb['srid']);
+        $boundingBox->setDXInMeters($bb['dx_m']);
+        $boundingBox->setDYInMeters($bb['dy_m']);
+        return $boundingBox;
     }
 
     /**

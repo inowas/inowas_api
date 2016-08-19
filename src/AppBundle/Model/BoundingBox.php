@@ -21,6 +21,12 @@ class BoundingBox implements \JsonSerializable
     /** @JMS\Groups({"interpolation", "rasterdetails", "modeldetails", "geoimage", "modelProperties"}) */
     protected $srid;
 
+    /** @var float */
+    protected $dXInMeters = 0.0;
+
+    /** @var float */
+    protected $dYInMeters = 0.0;
+
     /**
      * BoundingBox constructor.
      * @param int $xMin
@@ -125,6 +131,42 @@ class BoundingBox implements \JsonSerializable
     public function setSrid($srid)
     {
         $this->srid = $srid;
+        return $this;
+    }
+
+    /**
+     * @return float
+     */
+    public function getDXInMeters(): float
+    {
+        return $this->dXInMeters;
+    }
+
+    /**
+     * @param float $dXInMeters
+     * @return BoundingBox
+     */
+    public function setDXInMeters(float $dXInMeters): BoundingBox
+    {
+        $this->dXInMeters = $dXInMeters;
+        return $this;
+    }
+
+    /**
+     * @return float
+     */
+    public function getDYInMeters(): float
+    {
+        return $this->dYInMeters;
+    }
+
+    /**
+     * @param float $dYInMeters
+     * @return BoundingBox
+     */
+    public function setDYInMeters(float $dYInMeters): BoundingBox
+    {
+        $this->dYInMeters = $dYInMeters;
         return $this;
     }
 

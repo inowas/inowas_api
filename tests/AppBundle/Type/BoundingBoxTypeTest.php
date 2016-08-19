@@ -24,6 +24,8 @@ class BoundingBoxTest extends WebTestCase
 
         /** @var BoundingBox boundingBox */
         $this->boundingBox = new BoundingBox(578205, 594692, 2316000, 2333500, 32648);
+        $this->boundingBox->setDXInMeters(1000.1);
+        $this->boundingBox->setDYInMeters(2000.1);
     }
 
     public function testConvertNullToDataBaseValueReturnsNull() {
@@ -31,11 +33,11 @@ class BoundingBoxTest extends WebTestCase
     }
 
     public function testConvertToDatabase() {
-        $this->assertEquals('{"x_min":578205,"x_max":594692,"y_min":2316000,"y_max":2333500,"srid":32648}', $this->dbalConnection->convertToDatabaseValue($this->boundingBox, 'bounding_box'));
+        $this->assertEquals('{"x_min":578205,"x_max":594692,"y_min":2316000,"y_max":2333500,"srid":32648,"dx_m":1000.1,"dy_m":2000.1}', $this->dbalConnection->convertToDatabaseValue($this->boundingBox, 'bounding_box'));
     }
 
     public function testConvertToPhpValue() {
-        $this->assertEquals($this->boundingBox, $this->dbalConnection->convertToPHPValue('{"x_min":578205,"x_max":594692,"y_min":2316000,"y_max":2333500,"srid":32648}', 'bounding_box'));
+        $this->assertEquals($this->boundingBox, $this->dbalConnection->convertToPHPValue('{"x_min":578205,"x_max":594692,"y_min":2316000,"y_max":2333500,"srid":32648,"dx_m":1000.1,"dy_m":2000.1}', 'bounding_box'));
     }
 
     public function testConvertNullToPhpValueReturnsNull() {

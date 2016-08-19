@@ -71,12 +71,16 @@ class LoadTestScenario_1 implements FixtureInterface, ContainerAwareInterface
         $propertyTypeBottomElevation = PropertyTypeFactory::create(PropertyType::BOTTOM_ELEVATION);
         $propertyHydraulicConductivity = PropertyTypeFactory::create(PropertyType::HYDRAULIC_CONDUCTIVITY);
 
+        $bb = new BoundingBox(0, 400, 0, 400);
+        $bb->setDXInMeters(400);
+        $bb->setDYInMeters(400);
+
         /** @var ModFlowModel $model */
         $model = ModFlowModelFactory::create()
             ->setOwner($user)
             ->setPublic($public)
-            ->setName('Lake Example')
-            ->setBoundingBox(new BoundingBox(0, 400, 0, 400))
+            ->setName('Lake_Example')
+            ->setBoundingBox($bb)
             ->setGridSize(new GridSize(101, 101))
             ->setArea(AreaFactory::create()
                 ->setOwner($user)

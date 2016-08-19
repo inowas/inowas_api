@@ -87,6 +87,31 @@ class Flopy2DArray extends FlopyArray implements FlopyArrayInterface
     }
 
     /**
+     * @param $value
+     * @param $nRow
+     * @param $nCol
+     * @return Flopy2DArray
+     */
+    public static function fromValue($value, $nRow, $nCol)
+    {
+        $instance = new self();
+
+        if ($instance->count_dimension($value) == 0) {
+            return $instance->fromNumeric($value, $nRow, $nCol);
+        }
+
+        if ($instance->count_dimension($value) == 1) {
+            return $instance->from1DArray($value, $nRow);
+        }
+
+        if ($instance->count_dimension($value) == 2) {
+            return $instance->from2DArray($value);
+        }
+
+        throw new InvalidArgumentException(sprintf('Value is supposed to have max. 2 Dimensions. Value with %s Dimensions given.', $instance->count_dimension($value)));
+    }
+
+    /**
      * @return array|float|int
      */
     public function toReducedArray(){

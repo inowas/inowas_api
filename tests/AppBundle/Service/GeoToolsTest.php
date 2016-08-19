@@ -206,6 +206,13 @@ class GeoToolsTest extends WebTestCase
         $this->assertEquals($targetSrid, $transformedBoundingBox->getSrid());
     }
 
+    public function testCalculateDistanceInMetersBetweenTwoPoints(){
+        $point1 = new Point(13.75132, 51.04234, 4326);
+        $point2 = new Point(13.77452, 51.03324, 4326);
+        $distance = $this->geoTools->calculateDistanceInMetersFromTwoPoints($point1, $point2);
+        $this->assertEquals(1916.47306022, $distance);
+    }
+
     public function testGetGridCellFromPoint()
     {
         $bb = $this->geoTools->transformBoundingBox(new BoundingBox(578205, 594692, 2316000, 2333500, 32648), 4326);

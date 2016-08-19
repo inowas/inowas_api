@@ -37,6 +37,13 @@ class GridSize implements \JsonSerializable
     }
 
     /**
+     * @return int
+     */
+    public function getNumberOfColumns(){
+        return $this->getNX();
+    }
+
+    /**
      * @param int $nX
      * @return GridSize
      */
@@ -52,6 +59,13 @@ class GridSize implements \JsonSerializable
     public function getNY()
     {
         return $this->nY;
+    }
+
+    /**
+     * @return int
+     */
+    public function getNumberOfRows(){
+        return $this->getNY();
     }
 
     /**
