@@ -111,8 +111,6 @@ class ModflowModelTest extends \PHPUnit_Framework_TestCase
         $gridSize = new GridSize(10, 11);
         $this->modflowModel->setGridSize($gridSize);
         $this->assertEquals($gridSize, $this->modflowModel->getGridSize());
-        $this->assertEquals(10, $this->modflowModel->getNumberOfColumns());
-        $this->assertEquals(11, $this->modflowModel->getNumberOfRows());
     }
 
     public function testSetGetBoundingBox(){

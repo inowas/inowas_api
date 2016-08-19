@@ -186,104 +186,6 @@ class ModFlowModel extends AbstractModel
         return false;
     }
 
-    /** @return int */
-    public function getNumberOfLayers(){
-        if (! $this->hasSoilModel()){
-            return 0;
-        }
-
-        return $this->getSoilModel()->getNumberOfGeologicalLayers();
-    }
-
-    /** @return int */
-    public function getNumberOfColumns(){
-        if (! $this->getGridSize() instanceof GridSize){
-            return 0;
-        }
-
-        return $this->getGridSize()->getNumberOfColumns();
-    }
-
-    /** @return int */
-    public function getNumberOfRows(){
-        if (! $this->getGridSize() instanceof GridSize){
-            return 0;
-        }
-
-        return $this->getGridSize()->getNumberOfRows();
-    }
-
-    /** @return float */
-    public function getDeltaX(){
-        if ($this->getBoundingBox()->getDXInMeters() > 0){
-            return $this->getBoundingBox()->getDXInMeters();
-        }
-        return null;
-    }
-
-    /** @return float */
-    public function getDeltaY(){
-        if ($this->getBoundingBox()->getDYInMeters() > 0){
-            return $this->getBoundingBox()->getDYInMeters();
-        }
-        return null;
-    }
-
-    /** @return float */
-    public function getDeltaRow(){
-        if ($this->getDeltaX() == null){
-            return null;
-        }
-
-        if ($this->getNumberOfColumns() == null){
-            return null;
-        }
-        return ($this->getDeltaX()/$this->getNumberOfColumns());
-    }
-
-    /** @return float */
-    public function getDeltaCol(){
-        if ($this->getDeltaY() == null){
-            return null;
-        }
-
-        if ($this->getNumberOfRows() == null){
-            return null;
-        }
-        return ($this->getDeltaY()/$this->getNumberOfRows());
-    }
-
-    // ToDo: Implement Logic here
-    /** @return int */
-    public function getLayerConfiningBed(){
-        return 0;
-    }
-
-    /** @return ArrayCollection|null */
-    public function getSortedLayers(){
-        if (! $this->hasSoilModel()){
-            return null;
-        }
-
-        if ($this->soilModel->getSortedGeologicalLayers()->count() == 0){
-            return null;
-        }
-
-        return $this->soilModel->getSortedGeologicalLayers();
-    }
-
-    /** @return mixed */
-    public function getTopElevation(){
-        $sortedLayers = $this->getSortedLayers();
-        if ($sortedLayers->count() == 0){
-            return null;
-        }
-
-        /** @var GeologicalLayer $topLayer */
-        $topLayer = $sortedLayers->first();
-        return $topLayer->getTopElevation();
-    }
-
     /**
      * Get boundaries
      *
@@ -423,13 +325,6 @@ class ModFlowModel extends AbstractModel
     public function setStressPeriods($stressPeriods)
     {
         $this->calculationProperties["stress_periods"] = $stressPeriods;
-    }
-
-    /**
-     * @return int
-     */
-    public function getNumberOfStressPeriods(){
-        return count($this->calculationProperties["stress_periods"]);
     }
 
     /**
