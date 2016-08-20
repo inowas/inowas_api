@@ -267,6 +267,54 @@ class DisPackageAdapter
         return Flopy1DArray::fromValue($steady, $this->getNper());
     }
 
+    public function getItmuni(){
+        return 4;
+    }
+
+    public function getLenuni(){
+        return 2;
+    }
+
+    public function getExtension(){
+        return 'dis';
+    }
+
+    public function getUnitnumber(){
+        return 11;
+    }
+
+    public function getXul(){
+        if (! $this->model->getBoundingBox() instanceof BoundingBox){
+            return 0.0;
+        }
+
+        if ($this->model->getBoundingBox()->getSrid() != 4326){
+            return 0.0;
+        }
+
+        return $this->model->getBoundingBox()->getXMin();
+    }
+
+    public function getYul(){
+        if (! $this->model->getBoundingBox() instanceof BoundingBox){
+            return 0.0;
+        }
+
+        if ($this->model->getBoundingBox()->getSrid() != 4326){
+            return 0.0;
+        }
+
+        return $this->model->getBoundingBox()->getYMax();
+    }
+
+    public function getRotation(){
+        return 0.0;
+    }
+
+    public function getProj4Str(){
+        return 'EPSG:4326';
+    }
+
     public function getStartDateTime(){
 
         /** @var ArrayCollection $stressPeriods */

@@ -24,6 +24,14 @@ class DisPackageFactory implements PackageFactoryInterface
         $dis->setNstp($adapter->getNstp());
         $dis->setTsmult($adapter->getTsmult());
         $dis->setSteady($adapter->getSteady());
+        $dis->setItmuni($adapter->getItmuni());
+        $dis->setLenuni($adapter->getLenuni());
+        $dis->setExtension($adapter->getExtension());
+        $dis->setUnitnumber($adapter->getUnitnumber());
+        $dis->setXul($adapter->getXul());
+        $dis->setYul($adapter->getYul());
+        $dis->setRotation($adapter->getRotation());
+        $dis->setProj4Str($adapter->getProj4Str());
         $dis->setStartDatetime($adapter->getStartDateTime());
 
         return $dis;
