@@ -10,6 +10,8 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Inowas\PyprocessingBundle\Model\Modflow\ValueObject\Flopy1DArray;
 use Inowas\PyprocessingBundle\Model\Modflow\ValueObject\Flopy2DArray;
 use Inowas\PyprocessingBundle\Model\Modflow\ValueObject\Flopy3DArray;
+use Symfony\Component\Validator\Constraints as Assert;
+
 
 class DisPackageAdapter
 {
@@ -19,12 +21,17 @@ class DisPackageAdapter
      */
     protected $model;
 
+    /**
+     * DisPackageAdapter constructor.
+     * @param ModFlowModel $modFlowModel
+     */
     public function __construct(ModFlowModel $modFlowModel){
         $this->model = $modFlowModel;
     }
 
     /**
      * @return int
+     * @Assert\GreaterThan(0)
      */
     public function getNlay(){
         if (! $this->model->hasSoilModel()){
@@ -36,6 +43,7 @@ class DisPackageAdapter
 
     /**
      * @return int
+     * @Assert\GreaterThan(0)
      */
     public function getNRow(){
         if (! $this->model->getGridSize() instanceof GridSize){
@@ -47,6 +55,7 @@ class DisPackageAdapter
 
     /**
      * @return int
+     * @Assert\GreaterThan(0)
      */
     public function getNCol(){
         if (! $this->model->getGridSize() instanceof GridSize){
@@ -58,6 +67,7 @@ class DisPackageAdapter
 
     /**
      * @return int
+     * @Assert\GreaterThan(0)
      */
     public function getNper(){
         return count($this->model->getCalculationProperties()["stress_periods"]);
@@ -65,6 +75,7 @@ class DisPackageAdapter
 
     /**
      * @return Flopy1DArray|null
+     * @Assert\NotNull()
      */
     public function getDelr(){
 
@@ -97,6 +108,7 @@ class DisPackageAdapter
 
     /**
      * @return Flopy1DArray|null
+     * @Assert\NotNull()
      */
     public function getDelc(){
 
@@ -129,6 +141,7 @@ class DisPackageAdapter
 
     /**
      * @return Flopy1DArray
+     * @Assert\NotNull()
      */
     public function getLaycbd(){
         return Flopy1DArray::fromValue(0, $this->getNlay());
@@ -136,6 +149,7 @@ class DisPackageAdapter
 
     /**
      * @return Flopy2DArray|null
+     * @Assert\NotNull()
      */
     public function getTop(){
 
@@ -157,7 +171,8 @@ class DisPackageAdapter
     }
 
     /**
-     * @return Flopy3DArray
+     * @return Flopy3DArray|null
+     * @Assert\NotNull()
      */
     public function getBotm(){
 
@@ -183,6 +198,10 @@ class DisPackageAdapter
         return Flopy3DArray::fromValue($bottomElevations, $this->getNlay(), $this->getNRow(), $this->getNCol());
     }
 
+    /**
+     * @return Flopy1DArray|null
+     * @Assert\NotNull()
+     */
     public function getPerlen(){
 
         $stressPeriods = $this->model->getSortedStressPeriods();
@@ -204,6 +223,10 @@ class DisPackageAdapter
         return Flopy1DArray::fromValue($perlen, $this->getNper());
     }
 
+    /**
+     * @return Flopy1DArray|null
+     * @Assert\NotNull()
+     */
     public function getNstp(){
 
         $stressPeriods = $this->model->getSortedStressPeriods();
@@ -225,6 +248,10 @@ class DisPackageAdapter
         return Flopy1DArray::fromValue($nstp, $this->getNper());
     }
 
+    /**
+     * @return Flopy1DArray|null
+     * @Assert\NotNull()
+     */
     public function getTsmult(){
 
         $stressPeriods = $this->model->getSortedStressPeriods();
@@ -246,6 +273,10 @@ class DisPackageAdapter
         return Flopy1DArray::fromValue($tsmult, $this->getNper());
     }
 
+    /**
+     * @return Flopy1DArray|null
+     * @Assert\NotNull()
+     */
     public function getSteady(){
 
         $stressPeriods = $this->model->getSortedStressPeriods();
@@ -267,22 +298,37 @@ class DisPackageAdapter
         return Flopy1DArray::fromValue($steady, $this->getNper());
     }
 
+    /**
+     * @return int
+     */
     public function getItmuni(){
         return 4;
     }
 
+    /**
+     * @return int
+     */
     public function getLenuni(){
         return 2;
     }
 
+    /**
+     * @return string
+     */
     public function getExtension(){
         return 'dis';
     }
 
+    /**
+     * @return int
+     */
     public function getUnitnumber(){
         return 11;
     }
 
+    /**
+     * @return float|mixed
+     */
     public function getXul(){
         if (! $this->model->getBoundingBox() instanceof BoundingBox){
             return 0.0;
@@ -295,6 +341,9 @@ class DisPackageAdapter
         return $this->model->getBoundingBox()->getXMin();
     }
 
+    /**
+     * @return float|mixed
+     */
     public function getYul(){
         if (! $this->model->getBoundingBox() instanceof BoundingBox){
             return 0.0;
@@ -307,14 +356,23 @@ class DisPackageAdapter
         return $this->model->getBoundingBox()->getYMax();
     }
 
+    /**
+     * @return float
+     */
     public function getRotation(){
         return 0.0;
     }
 
+    /**
+     * @return string
+     */
     public function getProj4Str(){
         return 'EPSG:4326';
     }
 
+    /**
+     * @return \DateTimeImmutable|null
+     */
     public function getStartDateTime(){
 
         /** @var ArrayCollection $stressPeriods */
