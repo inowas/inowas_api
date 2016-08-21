@@ -33,6 +33,13 @@ class AbstractModelTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals($name, $this->modflowModel->getName());
     }
 
+    public function testGetSanitizedName()
+    {
+        $name = 'Model Name';
+        $this->modflowModel->setName($name);
+        $this->assertEquals('model-name', $this->modflowModel->getSanitizedName());
+    }
+
     public function testSetGetDescription()
     {
         $description = 'Description';
