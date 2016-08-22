@@ -71,7 +71,7 @@ class Flopy1DArray extends FlopyArray implements FlopyArrayInterface
      * @param $nCol
      * @return Flopy1DArray
      */
-    public static function fromValue($value, $nCol){
+    public static function fromValue($value, $nCol = 0){
         $instance = new self();
 
         if ($instance->count_dimension($value) == 0){

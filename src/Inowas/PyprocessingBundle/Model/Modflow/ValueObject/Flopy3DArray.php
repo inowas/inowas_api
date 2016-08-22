@@ -131,7 +131,7 @@ class Flopy3DArray extends FlopyArray implements FlopyArrayInterface
      * @param $nCol
      * @return Flopy3DArray
      */
-    public static function fromValue($value, $nLay, $nRow, $nCol)
+    public static function fromValue($value, $nLay=1, $nRow=1, $nCol=1)
     {
 
         $instance = new self();
