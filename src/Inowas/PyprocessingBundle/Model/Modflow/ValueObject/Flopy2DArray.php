@@ -27,7 +27,7 @@ class Flopy2DArray extends FlopyArray implements FlopyArrayInterface
         $instance = new self();
 
         if (! is_numeric($value)){
-            throw new InvalidArgumentException(sprintf('Value is supposed to be an integer value, %s given', gettype($value)));
+            throw new InvalidArgumentException(sprintf('Value is supposed to be a numerical value, %s given', gettype($value)));
         }
 
         $instance->nx = $nx;
@@ -92,7 +92,7 @@ class Flopy2DArray extends FlopyArray implements FlopyArrayInterface
      * @param $nCol
      * @return Flopy2DArray
      */
-    public static function fromValue($value, $nRow, $nCol)
+    public static function fromValue($value, $nRow=1, $nCol=1)
     {
         $instance = new self();
 
@@ -116,10 +116,6 @@ class Flopy2DArray extends FlopyArray implements FlopyArrayInterface
      */
     public function toReducedArray(){
 
-        if ($this->count_dimension($this->value) <= 1){
-            return $this->value;
-        }
-
         if ($this->count_dimension($this->value) == 2){
             foreach ($this->value as $key => $row){
                 if (is_array($row)){
@@ -129,6 +125,24 @@ class Flopy2DArray extends FlopyArray implements FlopyArrayInterface
                 }
             }
 
+            if ($this->count_dimension($this->value) == 2){
+                return $this->value;
+            }
+        }
+
+        if ($this->count_dimension($this->value) == 1){
+            if (is_array($this->value)){
+                if (count(array_unique($this->value)) == 1){
+                    $this->value = array_unique($this->value)[0];
+                }
+            }
+
+            if ($this->count_dimension($this->value) == 1){
+                return $this->value;
+            }
+        }
+
+        if ($this->count_dimension($this->value) == 0){
             return $this->value;
         }
 

@@ -8,7 +8,7 @@ class MfPackageFactory implements PackageFactoryInterface
 {
     public function create(ModFlowModel $model){
 
-        $adapter = new MfPackageAdapter();
+        $adapter = new MfPackageAdapter($model);
         $mf = new MfPackage();
 
         $mf->setModelname($adapter->getModelname());

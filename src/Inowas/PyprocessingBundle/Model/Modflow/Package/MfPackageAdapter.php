@@ -11,6 +11,14 @@ class MfPackageAdapter
     protected $model;
 
     /**
+     * MfPackageAdapter constructor.
+     * @param ModFlowModel $model
+     */
+    public function __construct(ModFlowModel $model){
+        $this->model = $model;
+    }
+
+    /**
      * @return string
      */
     public function getModelname(): string
