@@ -2,11 +2,9 @@
 
 namespace AppBundle\Type;
 
-use AppBundle\Model\ActiveCells;
 use AppBundle\Model\PropertyType;
 use AppBundle\Model\PropertyTypeFactory;
 use Doctrine\DBAL\Platforms\AbstractPlatform;
-use Doctrine\DBAL\Types\ArrayType;
 use Doctrine\DBAL\Types\StringType;
 
 /**

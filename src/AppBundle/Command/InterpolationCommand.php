@@ -71,8 +71,6 @@ class InterpolationCommand extends ContainerAwareCommand
                     $propertyType->getAbbreviation(),
                     array(Interpolation::TYPE_IDW, Interpolation::TYPE_MEAN)
                 );
-
-                echo ($output);
             }
         }
     }

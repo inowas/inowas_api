@@ -3,6 +3,7 @@
 namespace AppBundle\Entity;
 
 use CrEOF\Spatial\PHP\Types\Geometry\Polygon;
+use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
 use JMS\Serializer\Annotation as JMS;
 
@@ -72,4 +73,14 @@ class RechargeBoundary extends BoundaryModelObject
         }
         return $polygons;
     }
+
+    /**
+     * @return mixed
+     */
+    public function getStressPeriods()
+    {
+        // TODO: Implement getStressPeriods() method.
+    }
+
+
 }

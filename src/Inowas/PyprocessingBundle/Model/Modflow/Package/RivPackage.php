@@ -95,59 +95,73 @@ class RivPackage implements \JsonSerializable
     private $unitnumber = 18;
 
     /**
-     * @return int
+     * @param int $ipakcb
+     * @return RivPackage
      */
-    public function getIpakcb(): int
+    public function setIpakcb(int $ipakcb): RivPackage
     {
-        return $this->ipakcb;
+        $this->ipakcb = $ipakcb;
+        return $this;
     }
 
     /**
-     * @return array
+     * @param array $stressPeriodData
+     * @return RivPackage
      */
-    public function getStressPeriodData(): array
+    public function setStressPeriodData(array $stressPeriodData): RivPackage
     {
-        return $this->stressPeriodData;
+        $this->stressPeriodData = $stressPeriodData;
+        return $this;
     }
 
     /**
-     * @return null
+     * @param null $dtype
+     * @return RivPackage
      */
-    public function getDtype()
+    public function setDtype($dtype)
     {
-        return $this->dtype;
+        $this->dtype = $dtype;
+        return $this;
     }
 
     /**
-     * @return null
+     * @param null $options
+     * @return RivPackage
      */
-    public function getOptions()
+    public function setOptions($options)
     {
-        return $this->options;
+        $this->options = $options;
+        return $this;
     }
 
     /**
-     * @return int|null
+     * @param int|null $naux
+     * @return RivPackage
      */
-    public function getNaux()
+    public function setNaux($naux)
     {
-        return $this->naux;
+        $this->naux = $naux;
+        return $this;
     }
 
     /**
-     * @return string
+     * @param string $extension
+     * @return RivPackage
      */
-    public function getExtension(): string
+    public function setExtension(string $extension): RivPackage
     {
-        return $this->extension;
+        $this->extension = $extension;
+        return $this;
     }
 
     /**
-     * @return int
+     * @param int $unitnumber
+     * @return RivPackage
      */
-    public function getUnitnumber(): int
+    public function setUnitnumber(int $unitnumber): RivPackage
     {
-        return $this->unitnumber;
+        $this->unitnumber = $unitnumber;
+        return $this;
     }
 
     /**

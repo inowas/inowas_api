@@ -6,7 +6,7 @@ use AppBundle\Entity\ModFlowModel;
 use AppBundle\Entity\PropertyTimeValue;
 use AppBundle\Entity\StreamBoundary;
 use AppBundle\Model\PropertyType;
-use Inowas\PyprocessingBundle\Model\Modflow\ValueObject\RivStressPeriod;
+use Inowas\PyprocessingBundle\Model\Modflow\ValueObject\RivStressPeriodData;
 
 class RivPackageAdapter
 {
@@ -32,45 +32,23 @@ class RivPackageAdapter
     }
 
     /**
-     * @return mixed
+     * @return array
      */
     public function getStressPeriodData()
     {
         $stress_period_data = array();
         $rivers = array();
-        $boundaries = $this->model->getBoundaries();
 
-        foreach ($boundaries as $boundary){
+        foreach ($this->model->getBoundaries() as $boundary){
             if ($boundary instanceof StreamBoundary){
                 $rivers[] = $boundary;
             }
         }
 
         /** @var StreamBoundary $river */
-        foreach ($rivers as $river){
-
-            $rbot = $river->getPropertyByPropertyType(PropertyType::fromAbbreviation(PropertyType::BOTTOM_ELEVATION))
-                ->getValues()->first()->getValue();
-            $cond = $river->getPropertyByPropertyType(PropertyType::fromAbbreviation(PropertyType::RIVERBED_CONDUCTANCE))
-                ->getValues()->first()->getValue();
-            $riverStages = $river->getPropertyByPropertyType(PropertyType::fromAbbreviation(PropertyType::RIVER_STAGE))
-                ->getValues();
-
-            /** @var PropertyTimeValue $riverStage */
-            foreach ($riverStages as $riverStage){
-                $spd = array();
-                $stage = $riverStage->getValue();
-
-                $activeCells = $river->getActiveCells()->toArray();
-                foreach ($activeCells as $nRow => $rows){
-                    foreach ($rows as $nCol => $value){
-                        if ($value == true){
-                            $spd[] = RivStressPeriod::create(0, $nRow, $nCol, $stage, $cond, $rbot);
-                        }
-                    }
-                }
-                $stress_period_data[] = $spd;
-            }
+        $stress_period_data = array();
+        foreach ($rivers as $river) {
+            $stress_period_data = $river->getStressPeriodData($stress_period_data, $this->model->getStressPeriods());
         }
 
         return $stress_period_data;

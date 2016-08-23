@@ -6,8 +6,8 @@ use AppBundle\Entity\GeologicalLayer;
 use AppBundle\Entity\GeologicalUnit;
 use AppBundle\Entity\ModFlowModel;
 use AppBundle\Entity\User;
+use AppBundle\Model\ActiveCells;
 use AppBundle\Model\AreaFactory;
-use AppBundle\Model\ConstantHeadBoundaryFactory;
 use AppBundle\Model\GeologicalLayerFactory;
 use AppBundle\Model\GeologicalPointFactory;
 use AppBundle\Model\GeologicalUnitFactory;
@@ -15,18 +15,19 @@ use AppBundle\Model\BoundingBox;
 use AppBundle\Model\GridSize;
 use AppBundle\Model\ModFlowModelFactory;
 use AppBundle\Model\Point;
+use AppBundle\Model\PropertyType;
 use AppBundle\Model\PropertyValueFactory;
 use AppBundle\Model\SoilModelFactory;
 use AppBundle\Model\StreamBoundaryFactory;
+use AppBundle\Model\StressPeriodFactory;
 use AppBundle\Model\UserFactory;
-use AppBundle\Model\WellBoundaryFactory;
 use CrEOF\Spatial\PHP\Types\Geometry\LineString;
 use CrEOF\Spatial\PHP\Types\Geometry\Polygon;
 use Doctrine\Common\DataFixtures\FixtureInterface;
 use Doctrine\Common\Persistence\ObjectManager;
+use Inowas\PyprocessingBundle\Service\Interpolation;
 use Symfony\Component\DependencyInjection\ContainerAwareInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
-use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class LoadTestScenario_2 implements FixtureInterface, ContainerAwareInterface
 {
@@ -49,8 +50,8 @@ class LoadTestScenario_2 implements FixtureInterface, ContainerAwareInterface
     public function load(ObjectManager $entityManager)
     {
         $public = true;
-        $username = 'test_scenario_1';
-        $email = 'test_scenario_1@inowas.com';
+        $username = 'test_scenario_2';
+        $email = 'test_scenario_2@inowas.com';
         $password = 'inowas';
 
         $user = $entityManager->getRepository('AppBundle:User')
@@ -70,40 +71,17 @@ class LoadTestScenario_2 implements FixtureInterface, ContainerAwareInterface
         }
 
         // Load PropertyTypes
-        $propertyTypeGwHead = $entityManager->getRepository('AppBundle:PropertyType')
-            ->findOneBy(array(
-                'abbreviation' => "hh"
-            ));
+        $propertyTypeTopElevation = PropertyType::fromAbbreviation(PropertyType::TOP_ELEVATION);
+        $propertyTypeBottomElevation = PropertyType::fromAbbreviation(PropertyType::BOTTOM_ELEVATION);
 
-        if (!$propertyTypeGwHead) {
-            return new NotFoundHttpException();
-        }
-
-        $propertyTypeTopElevation = $entityManager->getRepository('AppBundle:PropertyType')
-            ->findOneBy(array(
-                'abbreviation' => "et"
-            ));
-
-        if (!$propertyTypeTopElevation) {
-            return new NotFoundHttpException();
-        }
-
-        $propertyTypeBottomElevation = $entityManager->getRepository('AppBundle:PropertyType')
-            ->findOneBy(array(
-                'abbreviation' => "eb"
-            ));
-
-        if (!$propertyTypeBottomElevation) {
-            return new NotFoundHttpException();
-        }
 
         /** @var ModFlowModel $model */
         $model = ModFlowModelFactory::create()
             ->setOwner($user)
             ->setPublic($public)
-            ->setName('Lake Example')
-            ->setBoundingBox(new BoundingBox(0, 400, 0, 400))
-            ->setGridSize(new GridSize(101, 101))
+            ->setName('TestScenario 2')
+            ->setBoundingBox(new BoundingBox(0, 400, 0, 400, 0, 400, 400))
+            ->setGridSize(new GridSize(10, 10))
             ->setArea(AreaFactory::create()
                 ->setOwner($user)
                 ->setName('Area TestScenario 2')
@@ -226,23 +204,84 @@ class LoadTestScenario_2 implements FixtureInterface, ContainerAwareInterface
                         )
                     )
                 )
-            )
-            ->addBoundary(ConstantHeadBoundaryFactory::create()
-                ->setOwner($user)
-                ->setName('Boundary TestScenario 1')
-                ->setPublic($public)
-                ->setGeometry(new LineString(array(
-                    array(22, 22),
-                    array(22, 11))))
-                ->addValue($propertyTypeGwHead, PropertyValueFactory::create()->setValue(60))
-            )
-            ->addBoundary(WellBoundaryFactory::create()
-                ->setName('Well TestScenario 1')
-                ->setOwner($user)
-                ->setPublic($public)
-                ->setPoint(new Point(16,16))
+                ->setActiveCells(ActiveCells::fromArray(
+                    array(
+                        array(0,0,0,0,0,0,0,0,0,0),
+                        array(0,0,0,0,0,0,0,0,0,0),
+                        array(0,1,1,1,0,0,1,1,1,0),
+                        array(0,1,0,0,0,0,0,0,0,0),
+                        array(0,1,0,0,0,0,0,0,0,0),
+                        array(0,1,1,0,0,0,0,0,0,0),
+                        array(0,0,1,1,1,0,0,0,0,0),
+                        array(0,0,0,0,1,1,1,0,0,0),
+                        array(0,0,0,0,0,0,0,1,1,0),
+                        array(0,0,0,0,0,0,0,0,1,1))
+                ))
+                ->addStressPeriod(
+                    StressPeriodFactory::createRiv()
+                        ->setDateTimeBegin(new \DateTime('1.1.2015'))
+                        ->setDateTimeEnd(new \DateTime('2.1.2015'))
+                        ->setStage(1.1)
+                        ->setCond(11.1)
+                        ->setRbot(111.1)
+                )
+                ->addStressPeriod(
+                    StressPeriodFactory::createRiv()
+                        ->setDateTimeBegin(new \DateTime('3.1.2015'))
+                        ->setDateTimeEnd(new \DateTime('6.1.2015'))
+                        ->setStage(1.1)
+                        ->setCond(11.1)
+                        ->setRbot(111.1)
+                )
+                ->addStressPeriod(
+                    StressPeriodFactory::createRiv()
+                        ->setDateTimeBegin(new \DateTime('6.1.2015'))
+                        ->setDateTimeEnd(new \DateTime('9.1.2015'))
+                        ->setStage(1.1)
+                        ->setCond(11.1)
+                        ->setRbot(111.1)
+                )
+                ->addStressPeriod(
+                    StressPeriodFactory::createRiv()
+                        ->setDateTimeBegin(new \DateTime('10.1.2015'))
+                        ->setDateTimeEnd(new \DateTime('12.1.2015'))
+                        ->setStage(1.1)
+                        ->setCond(11.1)
+                        ->setRbot(111.1)
+                )
+                ->addStressPeriod(
+                    StressPeriodFactory::createRiv()
+                        ->setDateTimeBegin(new \DateTime('13.1.2015'))
+                        ->setDateTimeEnd(new \DateTime('16.1.2015'))
+                        ->setStage(1.1)
+                        ->setCond(11.1)
+                        ->setRbot(111.1)
+                )
             )
         ;
+
+        /* Interpolation of all layers */
+        $soilModelService = $this->container->get('inowas.soilmodel');
+        $soilModelService->setModflowModel($model);
+        $layers = $model->getSoilModel()->getGeologicalLayers();
+
+        /** @var GeologicalLayer $layer */
+        foreach ($layers as $layer) {
+            $propertyTypes = $soilModelService->getAllPropertyTypesFromLayer($layer);
+            /** @var PropertyType $propertyType */
+            foreach ($propertyTypes as $propertyType){
+                if ($propertyType->getAbbreviation() == PropertyType::TOP_ELEVATION && $layer->getOrder() != GeologicalLayer::TOP_LAYER) {
+                    continue;
+                }
+
+                echo (sprintf("Interpolating Layer %s, Property %s\r\n", $layer->getName(), $propertyType->getDescription()));
+                $soilModelService->interpolateLayerByProperty(
+                    $layer,
+                    $propertyType,
+                    array(Interpolation::TYPE_IDW, Interpolation::TYPE_MEAN)
+                );
+            }
+        }
 
         $entityManager->persist($model);
         $entityManager->flush();

@@ -3,7 +3,9 @@
 namespace AppBundle\Entity;
 
 use AppBundle\Model\Point;
+use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
+use Inowas\PyprocessingBundle\Model\Modflow\ValueObject\WelStressPeriod;
 use JMS\Serializer\Annotation as JMS;
 
 /**
@@ -49,6 +51,22 @@ class WellBoundary extends BoundaryModelObject
     private $layer;
 
     /**
+     * @var ArrayCollection
+     */
+    private $stressPeriods;
+
+    /**
+     * WellBoundary constructor.
+     * @param User $owner
+     * @param bool $public
+     */
+    public function __construct(User $owner = null, $public = false)
+    {
+        parent::__construct($owner, $public);
+        $this->stressPeriods = new ArrayCollection();
+    }
+
+    /**
      * @return string
      */
     public function getWellType()
@@ -86,6 +104,24 @@ class WellBoundary extends BoundaryModelObject
     public function getPoint()
     {
         return $this->point;
+    }
+
+    /**
+     * @return ArrayCollection
+     */
+    public function getStressPeriods()
+    {
+        return $this->stressPeriods;
+    }
+
+    /**
+     * @param WelStressPeriod $sp
+     * @return $this
+     */
+    public function addStressPeriod(WelStressPeriod $sp)
+    {
+        $this->stressPeriods->add($sp);
+        return $this;
     }
 
     /**

@@ -2,17 +2,14 @@
 
 namespace Inowas\PyprocessingBundle\Model\Modflow\ValueObject;
 
-class RivStressPeriod implements \JsonSerializable
+use AppBundle\Model\StressPeriod;
+
+/**
+ * Class RivStressPeriod
+ * @package Inowas\PyprocessingBundle\Model\Modflow\ValueObject
+ */
+class RivStressPeriod extends StressPeriod
 {
-    /** @var int */
-    private $lay;
-
-    /** @var int */
-    private $col;
-
-    /** @var int */
-    private $row;
-
     /** @var float */
     private $stage;
 
@@ -22,32 +19,69 @@ class RivStressPeriod implements \JsonSerializable
     /** @var float */
     private $rbot;
 
-    private final function __construct(){}
-
-    public static function create(int $lay, int $row, int $col, float $stage, float $cond, float $rbot){
-        $instance = new self();
-        $instance->lay = $lay;
-        $instance->col = $col;
-        $instance->row = $row;
-        $instance->stage = $stage;
-        $instance->cond = $cond;
-        $instance->rbot = $rbot;
-
-        return $instance;
+    /**
+     * @return float
+     */
+    public function getStage(): float
+    {
+        return $this->stage;
     }
 
     /**
-     * @return array
+     * @param float $stage
+     * @return RivStressPeriod
      */
-    function jsonSerialize()
+    public function setStage(float $stage): RivStressPeriod
     {
-        return array(
-            $this->lay,
-            $this->col,
-            $this->row,
-            $this->stage,
-            $this->cond,
-            $this->rbot
-        );
+        $this->stage = $stage;
+        return $this;
     }
+
+    /**
+     * @return float
+     */
+    public function getCond(): float
+    {
+        return $this->cond;
+    }
+
+    /**
+     * @param float $cond
+     * @return RivStressPeriod
+     */
+    public function setCond(float $cond): RivStressPeriod
+    {
+        $this->cond = $cond;
+        return $this;
+    }
+
+    /**
+     * @return float
+     */
+    public function getRbot(): float
+    {
+        return $this->rbot;
+    }
+
+    /**
+     * @param float $rbot
+     * @return RivStressPeriod
+     */
+    public function setRbot(float $rbot): RivStressPeriod
+    {
+        $this->rbot = $rbot;
+        return $this;
+    }
+
+    public function jsonSerialize()
+    {
+        $arr = parent::jsonSerialize();
+        $arr['stage'] = $this->stage;
+        $arr['cond'] = $this->cond;
+        $arr['rbot'] = $this->rbot;
+
+        return $arr;
+    }
+
+
 }

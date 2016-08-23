@@ -124,4 +124,14 @@ class ConstantHeadBoundary extends BoundaryModelObject
         }
         return $geometry;
     }
+
+    /**
+     * @return mixed
+     */
+    public function getStressPeriods()
+    {
+        // TODO: Implement getStressPeriods() method.
+    }
+
+
 }

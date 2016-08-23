@@ -71,7 +71,6 @@ class LoadScenario_6 implements FixtureInterface, ContainerAwareInterface
 
         $geoTools = $this->container->get('inowas.geotools');
 
-
         // Load PropertyTypes
         $propertyTypeTopElevation = PropertyTypeFactory::create(PropertyType::TOP_ELEVATION);
         $propertyTypeBottomElevation = PropertyTypeFactory::create(PropertyType::BOTTOM_ELEVATION);
@@ -101,15 +100,14 @@ class LoadScenario_6 implements FixtureInterface, ContainerAwareInterface
                 ->setOwner($user)
             )
             ->setGridSize(new GridSize(75, 40))
-            ->setBoundingBox($geoTools->transformBoundingBox(new BoundingBox(-63.65374923159833, -63.57684493472333, -31.364459841376334, -31.318130051738194, 4326), 4326))
-            ->addStressPeriod(StressPeriodFactory::create()
-                ->setDateTimeBegin(new \DateTime('1/1/2015'))
-                ->setDateTimeEnd(new \DateTime('1/15/2015'))
-                ->setNumberOfTimeSteps(2)
-                ->setSteady(true)
-            );
+            ->setBoundingBox($geoTools->transformBoundingBox(
+                new BoundingBox(-63.65374923159833, -63.57684493472333, -31.364459841376334, -31.318130051738194, 4326), 4326)
+            )
+        ;
 
         $model->addBoundary(StreamBoundaryFactory::create()
+            ->setOwner($user)
+            ->setPublic($public)
             ->setGeometry(new LineString(array(
                 array(-63.65373, -31.35192),
                 array(-63.65364551602398, -31.351764794584323),
@@ -187,6 +185,46 @@ class LoadScenario_6 implements FixtureInterface, ContainerAwareInterface
             ->addValue($propertyTypeRiverStage, PropertyTimeValueFactory::createWithTimeAndValue(new \DateTime('2015-10-01'), 401))
             ->addValue($propertyTypeRiverStage, PropertyTimeValueFactory::createWithTimeAndValue(new \DateTime('2015-11-01'), 400))
             ->addValue($propertyTypeRiverStage, PropertyTimeValueFactory::createWithTimeAndValue(new \DateTime('2015-12-01'), 399))
+            ->addStressPeriod(
+                StressPeriodFactory::createRiv()
+                    ->setDateTimeBegin(new \DateTime('2.1.2015'))
+                    ->setDateTimeEnd(new \DateTime('3.1.2015'))
+                    ->setStage(1.1)
+                    ->setCond(11.1)
+                    ->setRbot(111.1)
+            )
+            ->addStressPeriod(
+                StressPeriodFactory::createRiv()
+                    ->setDateTimeBegin(new \DateTime('3.1.2015'))
+                    ->setDateTimeEnd(new \DateTime('6.1.2015'))
+                    ->setStage(1.1)
+                    ->setCond(11.1)
+                    ->setRbot(111.1)
+            )
+            ->addStressPeriod(
+                StressPeriodFactory::createRiv()
+                    ->setDateTimeBegin(new \DateTime('6.1.2015'))
+                    ->setDateTimeEnd(new \DateTime('9.1.2015'))
+                    ->setStage(1.1)
+                    ->setCond(11.1)
+                    ->setRbot(111.1)
+            )
+            ->addStressPeriod(
+                StressPeriodFactory::createRiv()
+                    ->setDateTimeBegin(new \DateTime('10.1.2015'))
+                    ->setDateTimeEnd(new \DateTime('12.1.2015'))
+                    ->setStage(1.1)
+                    ->setCond(11.1)
+                    ->setRbot(111.1)
+            )
+            ->addStressPeriod(
+                StressPeriodFactory::createRiv()
+                    ->setDateTimeBegin(new \DateTime('13.1.2015'))
+                    ->setDateTimeEnd(new \DateTime('16.1.2015'))
+                    ->setStage(1.1)
+                    ->setCond(11.1)
+                    ->setRbot(111.1)
+            )
         );
 
         $model->addBoundary(WellBoundaryFactory::createIndustrialWell()->setPoint(new Point(-63.63377, -31.32991, 4326)));
@@ -200,7 +238,6 @@ class LoadScenario_6 implements FixtureInterface, ContainerAwareInterface
 
         $entityManager->persist($model);
         $entityManager->flush();
-
 
         $model->setActiveCells($geoTools->getActiveCells($model->getArea(), $model->getBoundingBox(), $model->getGridSize()));
         foreach ($model->getModelObjects() as $mo){
@@ -269,13 +306,12 @@ class LoadScenario_6 implements FixtureInterface, ContainerAwareInterface
                 }
 
                 echo (sprintf("Interpolating Layer %s, Property %s\r\n", $layer->getName(), $propertyType->getDescription()));
-                $output = $soilModelService->interpolateLayerByProperty(
+
+                $soilModelService->interpolateLayerByProperty(
                     $layer,
                     $propertyType,
                     array(Interpolation::TYPE_IDW, Interpolation::TYPE_MEAN)
                 );
-
-                echo ($output);
             }
         }
 

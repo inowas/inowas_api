@@ -11,8 +11,11 @@ use AppBundle\Model\GridSize;
 use AppBundle\Model\ModelScenarioFactory;
 use AppBundle\Model\ObservationPointFactory;
 use AppBundle\Model\SoilModelFactory;
+use AppBundle\Model\StreamBoundaryFactory;
+use AppBundle\Model\StressPeriod;
 use AppBundle\Model\StressPeriodFactory;
 use AppBundle\Model\WellBoundaryFactory;
+use Doctrine\Common\Collections\ArrayCollection;
 
 class ModflowModelTest extends \PHPUnit_Framework_TestCase
 {
@@ -87,19 +90,207 @@ class ModflowModelTest extends \PHPUnit_Framework_TestCase
         $this->assertCount(0, $this->modflowModel->getObservationPoints());
     }
 
-    public function testAddSetGetStressperiods(){
-        $stressPeriod = StressPeriodFactory::create();
-        $this->assertCount(0, $this->modflowModel->getStressPeriods());
-        $this->modflowModel->addStressPeriod($stressPeriod);
-        $this->assertCount(1, $this->modflowModel->getStressPeriods());
-        $this->modflowModel->addStressPeriod($stressPeriod);
-        $this->assertCount(2, $this->modflowModel->getStressPeriods());
+    public function testLoadStressPeriodsFromBoundaries(){
+        $this->modflowModel
+            ->addBoundary(
+                WellBoundaryFactory::createPrivateWell()
+                    ->addStressPeriod(
+                        StressPeriodFactory::create(StressPeriodFactory::WEL_SP)
+                            ->setDateTimeBegin(new \DateTime('1.1.2015'))
+                            ->setDateTimeEnd(new \DateTime('7.1.2015')))
+                    ->addStressPeriod(
+                        StressPeriodFactory::create(StressPeriodFactory::WEL_SP)
+                            ->setDateTimeBegin(new \DateTime('8.1.2015'))
+                            ->setDateTimeEnd(new \DateTime('13.1.2015')))
+                    ->addStressPeriod(
+                        StressPeriodFactory::create(StressPeriodFactory::WEL_SP)
+                            ->setDateTimeBegin(new \DateTime('14.1.2015'))
+                            ->setDateTimeEnd(new \DateTime('22.1.2015')))
+                    ->addStressPeriod(
+                        StressPeriodFactory::create(StressPeriodFactory::WEL_SP)
+                            ->setDateTimeBegin(new \DateTime('23.1.2015'))
+                            ->setDateTimeEnd(new \DateTime('27.1.2015')))
+                    ->addStressPeriod(
+                        StressPeriodFactory::create(StressPeriodFactory::WEL_SP)
+                            ->setDateTimeBegin(new \DateTime('28.1.2015'))
+                            ->setDateTimeEnd(new \DateTime('29.1.2015')))
+            )
+            ->addBoundary(
+                StreamBoundaryFactory::create()
+                    ->setActiveCells(ActiveCells::fromArray(array(
+                        array(0,0,0,1,0,0,0),
+                        array(0,0,1,1,1,0,0),
+                        array(0,1,1,1,1,1,0),
+                        array(0,0,1,1,1,0,0),
+                        array(0,0,0,1,0,0,0),
+                        array(0,0,1,0,1,0,0),
+                    )))
+                    ->addStressPeriod(
+                        StressPeriodFactory::create(StressPeriodFactory::RIV_SP)
+                            ->setDateTimeBegin(new \DateTime('1.1.2015'))
+                            ->setDateTimeEnd(new \DateTime('2.1.2015'))
+                            ->setStage(1.1)
+                            ->setCond(11.1)
+                            ->setRbot(111.1)
+                    )
+                    ->addStressPeriod(
+                        StressPeriodFactory::create(StressPeriodFactory::RIV_SP)
+                            ->setDateTimeBegin(new \DateTime('3.1.2015'))
+                            ->setDateTimeEnd(new \DateTime('6.1.2015'))
+                            ->setStage(1.1)
+                            ->setCond(11.1)
+                            ->setRbot(111.1)
+                    )
+                    ->addStressPeriod(
+                        StressPeriodFactory::create(StressPeriodFactory::RIV_SP)
+                            ->setDateTimeBegin(new \DateTime('6.1.2015'))
+                            ->setDateTimeEnd(new \DateTime('9.1.2015'))
+                            ->setStage(1.1)
+                            ->setCond(11.1)
+                            ->setRbot(111.1)
+                    )
+                    ->addStressPeriod(
+                        StressPeriodFactory::create(StressPeriodFactory::RIV_SP)
+                            ->setDateTimeBegin(new \DateTime('10.1.2015'))
+                            ->setDateTimeEnd(new \DateTime('12.1.2015'))
+                            ->setStage(1.1)
+                            ->setCond(11.1)
+                            ->setRbot(111.1)
+                    )
+                    ->addStressPeriod(
+                        StressPeriodFactory::create(StressPeriodFactory::RIV_SP)
+                            ->setDateTimeBegin(new \DateTime('13.1.2015'))
+                            ->setDateTimeEnd(new \DateTime('16.1.2015'))
+                            ->setStage(1.1)
+                            ->setCond(11.1)
+                            ->setRbot(111.1)
+                    )
+                    ->addStressPeriod(
+                        StressPeriodFactory::create(StressPeriodFactory::RIV_SP)
+                            ->setDateTimeBegin(new \DateTime('17.1.2015'))
+                            ->setDateTimeEnd(new \DateTime('20.1.2015'))
+                            ->setStage(1.1)
+                            ->setCond(11.1)
+                            ->setRbot(111.1)
+                    )
+                    ->addStressPeriod(
+                        StressPeriodFactory::create(StressPeriodFactory::RIV_SP)
+                            ->setDateTimeBegin(new \DateTime('21.1.2015'))
+                            ->setDateTimeEnd(new \DateTime('22.1.2015'))
+                            ->setStage(1.1)
+                            ->setCond(11.1)
+                            ->setRbot(111.1)
+                    )
+                    ->addStressPeriod(
+                        StressPeriodFactory::create(StressPeriodFactory::RIV_SP)
+                            ->setDateTimeBegin(new \DateTime('23.1.2015'))
+                            ->setDateTimeEnd(new \DateTime('24.1.2015'))
+                            ->setStage(1.1)
+                            ->setCond(11.1)
+                            ->setRbot(111.1)
+                    )
+                    ->addStressPeriod(
+                        StressPeriodFactory::create(StressPeriodFactory::RIV_SP)
+                            ->setDateTimeBegin(new \DateTime('25.1.2015'))
+                            ->setDateTimeEnd(new \DateTime('25.1.2015'))
+                            ->setStage(1.1)
+                            ->setCond(11.1)
+                            ->setRbot(111.1)
+                    )
+                    ->addStressPeriod(
+                        StressPeriodFactory::create(StressPeriodFactory::RIV_SP)
+                            ->setDateTimeBegin(new \DateTime('26.1.2015'))
+                            ->setDateTimeEnd(new \DateTime('27.1.2015'))
+                            ->setStage(1.1)
+                            ->setCond(11.1)
+                            ->setRbot(111.1)
+                    )
+                    ->addStressPeriod(
+                        StressPeriodFactory::create(StressPeriodFactory::RIV_SP)
+                            ->setDateTimeBegin(new \DateTime('28.1.2015'))
+                            ->setDateTimeEnd(new \DateTime('29.1.2015'))
+                            ->setStage(1.1)
+                            ->setCond(11.1)
+                            ->setRbot(111.1)
+                    )
+            )
 
-        $stressPeriods = $this->modflowModel->getStressPeriods();
-        $stressPeriods[] = $stressPeriod;
+        ;
 
-        $this->modflowModel->setStressPeriods($stressPeriods);
-        $this->assertCount(3, $this->modflowModel->getStressPeriods());
+        $this->assertCount(13, $this->modflowModel->getStressPeriods());
+        $this->assertInstanceOf(ArrayCollection::class, $this->modflowModel->getStressPeriods());
+
+        foreach ($this->modflowModel->getStressPeriods() as $sp){
+            $this->assertInstanceOf(StressPeriod::class, $sp);
+        }
+
+        #var_dump($this->modflowModel->getBoundaries()->toArray()[1]->getStressPeriodData($this->modflowModel->getStressPeriods()));
+
+        /** @var StressPeriod $sp */
+        $sp = $this->modflowModel->getStressPeriods()->first();
+        $this->assertEquals(new \DateTime('1.1.2015'), $sp->getDateTimeBegin());
+        $this->assertEquals(new \DateTime('2.1.2015'), $sp->getDateTimeEnd());
+        $this->assertFalse($sp->isSteady());
+
+        $sp = $this->modflowModel->getStressPeriods()->next();
+        $this->assertEquals(new \DateTime('3.1.2015'), $sp->getDateTimeBegin());
+        $this->assertEquals(new \DateTime('5.1.2015'), $sp->getDateTimeEnd());
+        $this->assertFalse($sp->isSteady());
+
+        $sp = $this->modflowModel->getStressPeriods()->next();
+        $this->assertEquals(new \DateTime('6.1.2015'), $sp->getDateTimeBegin());
+        $this->assertEquals(new \DateTime('7.1.2015'), $sp->getDateTimeEnd());
+        $this->assertFalse($sp->isSteady());
+
+        $sp = $this->modflowModel->getStressPeriods()->next();
+        $this->assertEquals(new \DateTime('8.1.2015'), $sp->getDateTimeBegin());
+        $this->assertEquals(new \DateTime('9.1.2015'), $sp->getDateTimeEnd());
+        $this->assertFalse($sp->isSteady());
+
+        $sp = $this->modflowModel->getStressPeriods()->next();
+        $this->assertEquals(new \DateTime('10.1.2015'), $sp->getDateTimeBegin());
+        $this->assertEquals(new \DateTime('12.1.2015'), $sp->getDateTimeEnd());
+        $this->assertFalse($sp->isSteady());
+
+        $sp = $this->modflowModel->getStressPeriods()->next();
+        $this->assertEquals(new \DateTime('13.1.2015'), $sp->getDateTimeBegin());
+        $this->assertEquals(new \DateTime('13.1.2015'), $sp->getDateTimeEnd());
+        $this->assertFalse($sp->isSteady());
+
+        $sp = $this->modflowModel->getStressPeriods()->next();
+        $this->assertEquals(new \DateTime('14.1.2015'), $sp->getDateTimeBegin());
+        $this->assertEquals(new \DateTime('16.1.2015'), $sp->getDateTimeEnd());
+        $this->assertFalse($sp->isSteady());
+
+        $sp = $this->modflowModel->getStressPeriods()->next();
+        $this->assertEquals(new \DateTime('17.1.2015'), $sp->getDateTimeBegin());
+        $this->assertEquals(new \DateTime('20.1.2015'), $sp->getDateTimeEnd());
+        $this->assertFalse($sp->isSteady());
+
+        $sp = $this->modflowModel->getStressPeriods()->next();
+        $this->assertEquals(new \DateTime('21.1.2015'), $sp->getDateTimeBegin());
+        $this->assertEquals(new \DateTime('22.1.2015'), $sp->getDateTimeEnd());
+        $this->assertFalse($sp->isSteady());
+
+        $sp = $this->modflowModel->getStressPeriods()->next();
+        $this->assertEquals(new \DateTime('23.1.2015'), $sp->getDateTimeBegin());
+        $this->assertEquals(new \DateTime('24.1.2015'), $sp->getDateTimeEnd());
+        $this->assertFalse($sp->isSteady());
+
+        $sp = $this->modflowModel->getStressPeriods()->next();
+        $this->assertEquals(new \DateTime('25.1.2015'), $sp->getDateTimeBegin());
+        $this->assertEquals(new \DateTime('25.1.2015'), $sp->getDateTimeEnd());
+        $this->assertFalse($sp->isSteady());
+
+        $sp = $this->modflowModel->getStressPeriods()->next();
+        $this->assertEquals(new \DateTime('26.1.2015'), $sp->getDateTimeBegin());
+        $this->assertEquals(new \DateTime('27.1.2015'), $sp->getDateTimeEnd());
+        $this->assertFalse($sp->isSteady());
+
+        $sp = $this->modflowModel->getStressPeriods()->next();
+        $this->assertEquals(new \DateTime('28.1.2015'), $sp->getDateTimeBegin());
+        $this->assertEquals(new \DateTime('29.1.2015'), $sp->getDateTimeEnd());
+        $this->assertFalse($sp->isSteady());
     }
 
     public function testSetGetCalculationProperties(){

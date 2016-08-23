@@ -3,12 +3,11 @@
 namespace AppBundle\Entity;
 
 use AppBundle\Model\ActiveCells;
+use AppBundle\Model\BoundaryInterface;
 use AppBundle\Model\BoundingBox;
 use AppBundle\Model\GridSize;
-use AppBundle\Model\StressPeriod;
 use AppBundle\Model\StressPeriodFactory;
 use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\Common\Collections\Criteria;
 use Doctrine\ORM\Mapping as ORM;
 use JMS\Serializer\Annotation as JMS;
 
@@ -80,13 +79,17 @@ class ModFlowModel extends AbstractModel
     private $observationPoints;
 
     /**
+     * @var ArrayCollection
+     */
+    private $stressPeriods;
+
+    /**
      * @var array
      *
      * @ORM\Column(name="calculation_properties", type="json_array")
      * @JMS\Groups({"details", "modeldetails"})
      */
     private $calculationProperties = array(
-        "stress_periods" => array(),
         "initial_values" => array(
             "property" => null,
             "head_from_top_elevation" => null,
@@ -256,75 +259,83 @@ class ModFlowModel extends AbstractModel
     }
 
     /**
-     * Add stressPeriod
-     *
-     * @param $stressPeriod
-     *
-     * @return ModFlowModel
-     */
-    public function addStressPeriod(StressPeriod $stressPeriod)
-    {
-        $this->calculationProperties["stress_periods"][] = $stressPeriod;
-
-        return $this;
-    }
-
-    /**
-     * Get stressPeriods
-     *
-     * @return array
+     * @return ArrayCollection
      */
     public function getStressPeriods()
     {
-        return $this->calculationProperties["stress_periods"];
+        if (! $this->stressPeriods instanceof ArrayCollection){
+            $this->stressPeriods = $this->loadStressPeriodsFromBoundaries();
+        }
+
+        return $this->stressPeriods;
     }
 
     /**
-     * Get stressPeriods
-     *
-     * @return array
+     * @return ArrayCollection
      */
-    public function getSortedStressPeriods(){
+    protected function loadStressPeriodsFromBoundaries(){
+        $bSps = new ArrayCollection();
 
-        if (count($this->getStressPeriods()) == 0){
-            return null;
-        }
+        /** @var BoundaryInterface $boundary */
+        foreach ($this->boundaries as $boundary){
 
-        $spArr = new ArrayCollection();
-
-        foreach ($this->getStressPeriods() as $stressPeriod){
-            if (is_array($stressPeriod)){
-                $sp = StressPeriodFactory::create()
-                    ->setDateTimeBegin(new \DateTime($stressPeriod['dateTimeBegin']['date']))
-                    ->setDateTimeEnd(new \DateTime($stressPeriod['dateTimeEnd']['date']))
-                    ->setNumberOfTimeSteps($stressPeriod['numberOfTimeSteps'])
-                    ->setSteady($stressPeriod['steady'])
-                    ->setTimeStepMultiplier($stressPeriod['timeStepMultiplier'])
-                ;
-
-                $spArr->add($sp);
+            if ($boundary->getStressPeriods() == null || $boundary->getStressPeriods()->count() == 0){
+                continue;
             }
 
-            if ($stressPeriod instanceof StressPeriod){
-                $spArr->add($stressPeriod);
-            }
+            $bSps = new ArrayCollection(
+                array_merge($bSps->toArray(), $boundary->getStressPeriods()->toArray())
+            );
         }
 
-        $criteria = Criteria::create()
-            ->orderBy(array("dateTimeBegin" => Criteria::ASC));
+        $startDates = array();
+        $endDates = array();
+        foreach ($bSps as $sp){
+            $startDates[] = $sp->getDateTimeBegin();
+            $endDates[] = $sp->getDateTimeEnd();
+        }
 
-        return $spArr->matching($criteria)->toArray();
-    }
+        $startDates = array_map("unserialize", array_unique(array_map("serialize", $startDates)));
+        usort($startDates, function($a, $b) {return ($a < $b) ? -1 : 1;});
+        usort($endDates, function($a, $b) {return ($a < $b) ? -1 : 1;});
+        $endDate = end($endDates);
 
-    /**
-     * Set stressPeriods
-     *
-     * @param $stressPeriods
-     * @return ModFlowModel
-     */
-    public function setStressPeriods($stressPeriods)
-    {
-        $this->calculationProperties["stress_periods"] = $stressPeriods;
+        $sps = new ArrayCollection();
+
+        /*
+         * Add steady period at the beginning
+         * ToDo: Add a property for init-variables
+         */
+        if (true){
+            /** @var \DateTime $dateTime */
+            $dateTime = clone $startDates[0];
+            $dateTime->modify('-1day');
+            $sps->add(StressPeriodFactory::create()
+                ->setDateTimeBegin($dateTime)
+                ->setDateTimeEnd($dateTime)
+                ->setSteady(true)
+            );
+        }
+
+        for($i=0; $i<count($startDates); $i++) {
+
+            $dateTimeStart = $startDates[$i];
+            if ($i != count($startDates)-1) {
+                /** @var \DateTime $dateTimeEnd */
+                $dateTimeEnd = clone $startDates[$i+1];
+                $dateTimeEnd->modify('-1day');
+            } else{
+                $dateTimeEnd = $endDate;
+            }
+
+            $sps->add(StressPeriodFactory::create()
+                ->setDateTimeBegin($dateTimeStart)
+                ->setDateTimeEnd($dateTimeEnd)
+                ->setSteady(false)
+            );
+        }
+
+        return $sps;
     }
 
     /**

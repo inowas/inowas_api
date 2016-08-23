@@ -660,8 +660,6 @@ class LoadScenario_4 implements FixtureInterface, ContainerAwareInterface
                     $propertyType,
                     array(Interpolation::TYPE_IDW, Interpolation::TYPE_MEAN)
                 );
-
-                echo ($output);
             }
         }
 

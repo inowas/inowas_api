@@ -9,6 +9,7 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
 use JMS\Serializer\Annotation as JMS;
 use Ramsey\Uuid\Uuid;
+use Ramsey\Uuid\UuidInterface;
 
 /**
  * ModelObject
@@ -102,6 +103,7 @@ abstract class ModelObject
     /**
      * @var ActiveCells $activeCells
      *
+     * @ORM\Column(name="active_cells", type="active_cells", nullable=true)
      * @JMS\Groups({"modelobjectdetails"})
      */
     protected $activeCells;
@@ -150,7 +152,7 @@ abstract class ModelObject
     /**
      * Get id
      *
-     * @return Uuid
+     * @return UuidInterface
      */
     public function getId()
     {

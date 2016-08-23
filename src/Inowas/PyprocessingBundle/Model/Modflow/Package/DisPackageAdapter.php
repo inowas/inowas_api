@@ -12,10 +12,8 @@ use Inowas\PyprocessingBundle\Model\Modflow\ValueObject\Flopy2DArray;
 use Inowas\PyprocessingBundle\Model\Modflow\ValueObject\Flopy3DArray;
 use Symfony\Component\Validator\Constraints as Assert;
 
-
 class DisPackageAdapter
 {
-
     /**
      * @var ModFlowModel
      */
@@ -70,7 +68,7 @@ class DisPackageAdapter
      * @Assert\GreaterThan(0)
      */
     public function getNper(){
-        return count($this->model->getCalculationProperties()["stress_periods"]);
+        return count($this->model->getStressPeriods());
     }
 
     /**
@@ -204,7 +202,7 @@ class DisPackageAdapter
      */
     public function getPerlen(){
 
-        $stressPeriods = $this->model->getSortedStressPeriods();
+        $stressPeriods = $this->model->getStressPeriods();
 
         if ($stressPeriods == null){
             return null;
@@ -217,7 +215,7 @@ class DisPackageAdapter
             /** @var StressPeriod $sp */
             $sp = $stressPeriods[$i];
 
-            $perlen[] = $sp->getLengthInDays();
+            $perlen[] = $sp->getLengthInDays()+1;
         }
 
         return Flopy1DArray::fromValue($perlen, $this->getNper());
@@ -229,7 +227,7 @@ class DisPackageAdapter
      */
     public function getNstp(){
 
-        $stressPeriods = $this->model->getSortedStressPeriods();
+        $stressPeriods = $this->model->getStressPeriods();
 
         if ($stressPeriods == null){
             return null;
@@ -254,7 +252,7 @@ class DisPackageAdapter
      */
     public function getTsmult(){
 
-        $stressPeriods = $this->model->getSortedStressPeriods();
+        $stressPeriods = $this->model->getStressPeriods();
 
         if ($stressPeriods == null){
             return null;
@@ -279,7 +277,7 @@ class DisPackageAdapter
      */
     public function getSteady(){
 
-        $stressPeriods = $this->model->getSortedStressPeriods();
+        $stressPeriods = $this->model->getStressPeriods();
 
         if ($stressPeriods == null){
             return null;
@@ -376,7 +374,7 @@ class DisPackageAdapter
     public function getStartDateTime(){
 
         /** @var ArrayCollection $stressPeriods */
-        $stressPeriods = $this->model->getSortedStressPeriods();
+        $stressPeriods = $this->model->getStressPeriods();
 
         if ($stressPeriods == null){
             return null;

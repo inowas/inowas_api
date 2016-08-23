@@ -69,7 +69,7 @@ class StressPeriod implements \JsonSerializable
      *
      * @param \DateTime $dateTimeBegin
      *
-     * @return stressPeriod
+     * @return $this
      */
     public function setDateTimeBegin($dateTimeBegin)
     {
@@ -93,7 +93,7 @@ class StressPeriod implements \JsonSerializable
      *
      * @param \DateTime $dateTimeEnd
      *
-     * @return stressPeriod
+     * @return $this
      */
     public function setDateTimeEnd($dateTimeEnd)
     {
@@ -175,22 +175,30 @@ class StressPeriod implements \JsonSerializable
 
     /**
      * @param float $timeStepMultiplier
-     * @return StressPeriod
+     * @return $this
      */
-    public function setTimeStepMultiplier(float $timeStepMultiplier): StressPeriod
+    public function setTimeStepMultiplier(float $timeStepMultiplier)
     {
         $this->timeStepMultiplier = $timeStepMultiplier;
         return $this;
     }
 
     /**
-     * @return mixed
+     * @return $this
+     */
+    public function toStressPeriod(){
+        $response = new self($this->dateTimeBegin, $this->dateTimeEnd, $this->numberOfTimeSteps, $this->steady, $this->timeStepMultiplier);
+        return $response;
+    }
+
+    /**
+     * @return array
      */
     function jsonSerialize()
     {
         return array(
-            "dateTimeBegin" => $this->dateTimeBegin,
-            "dateTimeEnd" => $this->dateTimeEnd,
+            "dateTimeBegin" => $this->dateTimeBegin->format(\DateTime::ATOM),
+            "dateTimeEnd" => $this->dateTimeEnd->format(\DateTime::ATOM),
             "numberOfTimeSteps" => $this->numberOfTimeSteps,
             "steady" => $this->steady,
             "timeStepMultiplier" => $this->timeStepMultiplier

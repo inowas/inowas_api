@@ -15,7 +15,6 @@ use AppBundle\Model\PropertyType;
 use AppBundle\Model\PropertyTypeFactory;
 use AppBundle\Model\PropertyValueFactory;
 use AppBundle\Model\SoilModelFactory;
-use AppBundle\Model\StressPeriodFactory;
 use AppBundle\Model\UserFactory;
 use CrEOF\Spatial\PHP\Types\Geometry\LineString;
 use CrEOF\Spatial\PHP\Types\Geometry\Polygon;
@@ -153,13 +152,6 @@ class LoadTestScenario_1 implements FixtureInterface, ContainerAwareInterface
                 ->addValue($propertyTypeGwHead, PropertyValueFactory::create()->setValue(90))
             )
         ;
-        
-        $model->addStressPeriod(StressPeriodFactory::create()
-            ->setDateTimeBegin(new \DateTime('2015-01-01'))
-            ->setDateTimeEnd(new \DateTime('2015-12-31'))
-            ->setNumberOfTimeSteps(1)
-            ->setSteady(true)
-        );
 
         $entityManager->persist($model);
         $entityManager->flush();

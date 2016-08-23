@@ -2,9 +2,14 @@
 
 namespace AppBundle\Entity;
 
+use AppBundle\Model\ActiveCells;
 use AppBundle\Model\Point;
+use AppBundle\Model\StressPeriod;
 use CrEOF\Spatial\PHP\Types\Geometry\LineString;
+use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
+use Inowas\PyprocessingBundle\Model\Modflow\ValueObject\RivStressPeriod;
+use Inowas\PyprocessingBundle\Model\Modflow\ValueObject\RivStressPeriodData;
 use JMS\Serializer\Annotation as JMS;
 
 /**
@@ -32,6 +37,20 @@ class StreamBoundary extends BoundaryModelObject
      * @ORM\Column(name="line", type="linestring", nullable=true)
      */
     private $geometry;
+
+    /**
+     * @var ArrayCollection
+     *
+     * @ORM\Column(name="stress_periods", type="riv_stress_periods", nullable=true)
+     */
+    private $stressPeriods;
+
+
+    public function __construct(User $owner=null, $public=null)
+    {
+        parent::__construct($owner, $public);
+        $this->stressPeriods = new ArrayCollection();
+    }
 
     /**
      * Set startingPoint
@@ -80,10 +99,70 @@ class StreamBoundary extends BoundaryModelObject
     }
 
     /**
-     *
+     * @return ArrayCollection
      */
-    public function getStressPeriodData(){
+    public function getStressPeriods()
+    {
+        return $this->stressPeriods;
+    }
 
+    /**
+     * @param $spd
+     * @param ArrayCollection $globalStressPeriods
+     * @return mixed
+     */
+    public function getStressPeriodData($spd, ArrayCollection $globalStressPeriods){
+
+        $rivStressPeriods = $this->stressPeriods;
+
+        /** @var RivStressPeriod $rivStressPeriod */
+        foreach ($rivStressPeriods as $rivStressPeriod){
+            /** @var StressPeriod $globalStressPeriod */
+            foreach ($globalStressPeriods as $key => $globalStressPeriod){
+                if ($rivStressPeriod->getDateTimeBegin() == $globalStressPeriod->getDateTimeBegin()){
+
+                    if (! isset($spd[$key])){
+                        $spd[$key] = array();
+                    }
+
+                    $spd[$key] = array_merge($spd[$key], $this->generateStressPeriodData($rivStressPeriod, $this->activeCells));
+
+                    break;
+                }
+            }
+        }
+
+        return $spd;
+    }
+
+    /**
+     * @param RivStressPeriod $rivStressPeriod
+     * @param ActiveCells $activeCells
+     * @return array
+     */
+    public function generateStressPeriodData(RivStressPeriod $rivStressPeriod, ActiveCells $activeCells){
+
+        $spd = array();
+
+        foreach ($activeCells->toArray() as $nRow => $row){
+            foreach ($row as $nCol => $value){
+                if ($value == true){
+                    $spd[] = RivStressPeriodData::create(0, $nRow, $nCol, $rivStressPeriod->getStage(), $rivStressPeriod->getCond(), $rivStressPeriod->getRbot());
+                }
+            }
+        }
+
+        return $spd;
+    }
+
+    /**
+     * @param RivStressPeriod $sp
+     * @return $this
+     */
+    public function addStressPeriod(RivStressPeriod $sp)
+    {
+        $this->stressPeriods->add($sp);
+        return $this;
     }
 
     /**
