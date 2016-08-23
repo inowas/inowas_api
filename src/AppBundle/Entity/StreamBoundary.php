@@ -80,6 +80,13 @@ class StreamBoundary extends BoundaryModelObject
     }
 
     /**
+     *
+     */
+    public function getStressPeriodData(){
+
+    }
+
+    /**
      * @JMS\VirtualProperty
      * @JMS\SerializedName("starting_point")
      * @JMS\Groups({"modelobjectdetails"})
