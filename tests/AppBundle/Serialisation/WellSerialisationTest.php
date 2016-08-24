@@ -24,7 +24,7 @@ class WellSerialisationTest extends \PHPUnit_Framework_TestCase
         
         $this->well = WellBoundaryFactory::create()
             ->setName('WellName')
-            ->setPoint(new Point(11777056.49104572273790836, 2403440.17028302047401667, 3452))
+            ->setGeometry(new Point(11777056.49104572273790836, 2403440.17028302047401667, 3452))
             ;
     }
 
@@ -43,8 +43,8 @@ class WellSerialisationTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals($this->well->getName(), $well->name);
         $this->assertObjectHasAttribute('point', $well);
         $point = $well->point;
-        $this->assertEquals($this->well->getPoint()->getX(), $point->x);
-        $this->assertEquals($this->well->getPoint()->getY(), $point->y);
-        $this->assertEquals($this->well->getPoint()->getSrid(), $point->srid);
+        $this->assertEquals($this->well->getGeometry()->getX(), $point->x);
+        $this->assertEquals($this->well->getGeometry()->getY(), $point->y);
+        $this->assertEquals($this->well->getGeometry()->getSrid(), $point->srid);
     }
 }

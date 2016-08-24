@@ -82,5 +82,15 @@ class RechargeBoundary extends BoundaryModelObject
         // TODO: Implement getStressPeriods() method.
     }
 
+    /**
+     * @param array $stressPeriodData
+     * @param ArrayCollection $globalStressPeriods
+     * @return mixed
+     */
+    public function addStressPeriodData(array $stressPeriodData, ArrayCollection $globalStressPeriods)
+    {
+        // TODO: Implement addStressPeriodData() method.
+    }
+
 
 }

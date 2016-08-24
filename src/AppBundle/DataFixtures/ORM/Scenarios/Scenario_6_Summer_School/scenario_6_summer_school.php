@@ -4,6 +4,7 @@ namespace AppBundle\DataFixtures\ORM\Scenarios\Scenario_6_Summer_School;
 
 use AppBundle\Entity\GeologicalLayer;
 use AppBundle\Entity\StreamBoundary;
+use AppBundle\Entity\WellBoundary;
 use AppBundle\Model\AreaFactory;
 use AppBundle\Model\BoundingBox;
 use AppBundle\Model\GeologicalLayerFactory;
@@ -104,6 +105,47 @@ class LoadScenario_6 implements FixtureInterface, ContainerAwareInterface
                 new BoundingBox(-63.65374923159833, -63.57684493472333, -31.364459841376334, -31.318130051738194, 4326), 4326)
             )
         ;
+
+        $layer_1 = GeologicalLayerFactory::create()
+            ->setName("Layer_1")
+            ->setOrder(GeologicalLayer::TOP_LAYER)
+            ->setOwner($user)
+            ->setPublic($public);
+
+        $model->getSoilModel()->addGeologicalLayer($layer_1);
+
+        $geologicalPointProperties = array(
+            array(new Point(-63.64698, -31.32741, 4326), 'GP1', 415, 362),
+            array(new Point(-63.64630, -31.34237, 4326), 'GP2', 410, 360),
+            array(new Point(-63.64544, -31.35967, 4326), 'GP3', 417, 365),
+            array(new Point(-63.61591, -31.32404, 4326), 'GP4', 403, 362),
+            array(new Point(-63.61420, -31.34383, 4326), 'GP5', 397, 364),
+            array(new Point(-63.61506, -31.36011, 4326), 'GP6', 415, 362),
+            array(new Point(-63.58536, -31.32653, 4326), 'GP7', 395, 363),
+            array(new Point(-63.58261, -31.34266, 4326), 'GP8', 380, 332),
+            array(new Point(-63.58459, -31.35573, 4326), 'GP9', 410, 350)
+        );
+
+        foreach ($geologicalPointProperties as $gpp){
+            $model->getSoilModel()->addGeologicalPoint(GeologicalPointFactory::create()
+                ->setName($gpp[1])
+                ->setPoint($gpp[0])
+                ->addGeologicalUnit(GeologicalUnitFactory::create()
+                    ->setName($gpp[1].'.1')
+                    ->addValue($propertyTypeTopElevation, PropertyValueFactory::create()->setValue($gpp[2]))
+                    ->addValue($propertyTypeBottomElevation, PropertyValueFactory::create()->setValue($gpp[3]))
+                ));
+
+            $entityManager->persist($model);
+            $entityManager->flush();
+        }
+
+        foreach ($model->getSoilModel()->getGeologicalUnits() as $geologicalUnit){
+            $layer_1->addGeologicalUnit($geologicalUnit);
+        }
+
+        $entityManager->persist($model);
+        $entityManager->flush();
 
         $model->addBoundary(StreamBoundaryFactory::create()
             ->setOwner($user)
@@ -227,14 +269,70 @@ class LoadScenario_6 implements FixtureInterface, ContainerAwareInterface
             )
         );
 
-        $model->addBoundary(WellBoundaryFactory::createIndustrialWell()->setPoint(new Point(-63.63377, -31.32991, 4326)));
-        $model->addBoundary(WellBoundaryFactory::createIndustrialWell()->setPoint(new Point(-63.60939, -31.33108, 4326)));
-        $model->addBoundary(WellBoundaryFactory::createIndustrialWell()->setPoint(new Point(-63.61952, -31.34002, 4326)));
-        $model->addBoundary(WellBoundaryFactory::createPrivateWell()->setPoint(new Point(-63.63651, -31.3541, 4326)));
-        $model->addBoundary(WellBoundaryFactory::createPrivateWell()->setPoint(new Point(-63.64492, -31.3604, 4326)));
-        $model->addBoundary(WellBoundaryFactory::createPrivateWell()->setPoint(new Point(-63.61008, -31.35849, 4326)));
-        $model->addBoundary(WellBoundaryFactory::createPrivateWell()->setPoint(new Point(-63.58175, -31.35849, 4326)));
-        $model->addBoundary(WellBoundaryFactory::createPrivateWell()->setPoint(new Point(-63.58416, -31.34427, 4326)));
+        $model->addBoundary(
+            WellBoundaryFactory::createIndustrialWell()
+                ->setGeometry(new Point(-63.63377, -31.32991, 4326))
+                ->setLayer($layer_1)
+                ->addStressPeriod(
+                    StressPeriodFactory::createWel()
+                        ->setDateTimeBegin(new \DateTime('2.1.2015'))
+                        ->setDateTimeEnd(new \DateTime('3.1.2015'))
+                        ->setFlux(1000)
+                )
+                ->addStressPeriod(
+                    StressPeriodFactory::createWel()
+                        ->setDateTimeBegin(new \DateTime('4.1.2015'))
+                        ->setDateTimeEnd(new \DateTime('10.1.2015'))
+                        ->setFlux(1200)
+                )
+                ->addStressPeriod(
+                    StressPeriodFactory::createWel()
+                        ->setDateTimeBegin(new \DateTime('11.1.2015'))
+                        ->setDateTimeEnd(new \DateTime('20.1.2015'))
+                        ->setFlux(-1000)
+                )
+                ->addStressPeriod(
+                    StressPeriodFactory::createWel()
+                        ->setDateTimeBegin(new \DateTime('21.1.2015'))
+                        ->setDateTimeEnd(new \DateTime('25.1.2015'))
+                        ->setFlux(1500)
+                )
+                ->addStressPeriod(
+                    StressPeriodFactory::createWel()
+                        ->setDateTimeBegin(new \DateTime('26.1.2015'))
+                        ->setDateTimeEnd(new \DateTime('29.1.2015'))
+                        ->setFlux(2000)
+                )
+        );
+
+        $model->addBoundary(WellBoundaryFactory::createIndustrialWell()
+            ->setGeometry(new Point(-63.60939, -31.33108, 4326))
+            ->setLayer($layer_1)
+        );
+        $model->addBoundary(WellBoundaryFactory::createIndustrialWell()
+            ->setGeometry(new Point(-63.61952, -31.34002, 4326))
+            ->setLayer($layer_1)
+        );
+        $model->addBoundary(WellBoundaryFactory::createPrivateWell()
+            ->setGeometry(new Point(-63.63651, -31.3541, 4326))
+            ->setLayer($layer_1)
+        );
+        $model->addBoundary(WellBoundaryFactory::createPrivateWell()
+            ->setGeometry(new Point(-63.64492, -31.3604, 4326))
+            ->setLayer($layer_1)
+        );
+        $model->addBoundary(WellBoundaryFactory::createPrivateWell()
+            ->setGeometry(new Point(-63.61008, -31.35849, 4326))
+            ->setLayer($layer_1)
+        );
+        $model->addBoundary(WellBoundaryFactory::createPrivateWell()
+            ->setGeometry(new Point(-63.58175, -31.35849, 4326))
+            ->setLayer($layer_1)
+        );
+        $model->addBoundary(WellBoundaryFactory::createPrivateWell()
+            ->setGeometry(new Point(-63.58416, -31.34427, 4326))
+            ->setLayer($layer_1)
+        );
 
         $entityManager->persist($model);
         $entityManager->flush();
@@ -245,47 +343,10 @@ class LoadScenario_6 implements FixtureInterface, ContainerAwareInterface
             if ($mo instanceof StreamBoundary){
                 $mo->setActiveCells($geoTools->getActiveCells($mo, $model->getBoundingBox(), $model->getGridSize()));
             }
-        }
 
-        $entityManager->persist($model);
-        $entityManager->flush();
-
-        $layer_1 = GeologicalLayerFactory::create()
-            ->setName("Layer_1")
-            ->setOrder(GeologicalLayer::TOP_LAYER)
-            ->setOwner($user)
-            ->setPublic($public);
-
-        $model->getSoilModel()->addGeologicalLayer($layer_1);
-
-        $geologicalPointProperties = array(
-            array(new Point(-63.64698, -31.32741, 4326), 'GP1', 415, 362),
-            array(new Point(-63.64630, -31.34237, 4326), 'GP2', 410, 360),
-            array(new Point(-63.64544, -31.35967, 4326), 'GP3', 417, 365),
-            array(new Point(-63.61591, -31.32404, 4326), 'GP4', 403, 362),
-            array(new Point(-63.61420, -31.34383, 4326), 'GP5', 397, 364),
-            array(new Point(-63.61506, -31.36011, 4326), 'GP6', 415, 362),
-            array(new Point(-63.58536, -31.32653, 4326), 'GP7', 395, 363),
-            array(new Point(-63.58261, -31.34266, 4326), 'GP8', 380, 332),
-            array(new Point(-63.58459, -31.35573, 4326), 'GP9', 410, 350)
-        );
-
-        foreach ($geologicalPointProperties as $gpp){
-            $model->getSoilModel()->addGeologicalPoint(GeologicalPointFactory::create()
-                ->setName($gpp[1])
-                ->setPoint($gpp[0])
-                ->addGeologicalUnit(GeologicalUnitFactory::create()
-                    ->setName($gpp[1].'.1')
-                    ->addValue($propertyTypeTopElevation, PropertyValueFactory::create()->setValue($gpp[2]))
-                    ->addValue($propertyTypeBottomElevation, PropertyValueFactory::create()->setValue($gpp[3]))
-                ));
-
-            $entityManager->persist($model);
-            $entityManager->flush();
-        }
-
-        foreach ($model->getSoilModel()->getGeologicalUnits() as $geologicalUnit){
-            $layer_1->addGeologicalUnit($geologicalUnit);
+            if ($mo instanceof WellBoundary){
+                $mo->setActiveCells($geoTools->getActiveCells($mo, $model->getBoundingBox(), $model->getGridSize()));
+            }
         }
 
         $entityManager->persist($model);

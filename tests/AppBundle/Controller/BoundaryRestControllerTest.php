@@ -121,7 +121,7 @@ class BoundaryRestControllerTest extends RestControllerTestCase
             ->setName('WEL-Boundary')
             ->setPublic(true)
             ->setOwner($this->getOwner())
-            ->setPoint(new Point(10, 11))
+            ->setGeometry(new Point(10, 11))
             ->setLayer($this->layer)
             ->addValue($this->pumpingRatePropertyType, PropertyValueFactory::create()->setValue(-1000))
         ;

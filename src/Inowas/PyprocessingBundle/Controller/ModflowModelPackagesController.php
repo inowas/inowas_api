@@ -36,7 +36,7 @@ class ModflowModelPackagesController extends FOSRestController
     public function getModflowModelPackagesAction($id)
     {
         $this->findModelById($id);
-        $arr = array('mf', 'dis', 'bas', 'lpf', 'pcg', 'oc', 'riv');
+        $arr = array('mf', 'dis', 'bas', 'lpf', 'pcg', 'oc', 'riv', 'wel');
 
         $view = View::create();
         $view->setData($arr)

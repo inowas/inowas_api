@@ -2,10 +2,13 @@
 
 namespace AppBundle\Entity;
 
+use AppBundle\Model\ActiveCells;
 use AppBundle\Model\Point;
+use AppBundle\Model\StressPeriod;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
 use Inowas\PyprocessingBundle\Model\Modflow\ValueObject\WelStressPeriod;
+use Inowas\PyprocessingBundle\Model\Modflow\ValueObject\WelStressPeriodData;
 use JMS\Serializer\Annotation as JMS;
 
 /**
@@ -41,7 +44,7 @@ class WellBoundary extends BoundaryModelObject
      *
      * @ORM\Column(name="geometry", type="point", nullable=true)
      */
-    private $point;
+    private $geometry;
 
     /**
      * @var GeologicalLayer
@@ -52,6 +55,8 @@ class WellBoundary extends BoundaryModelObject
 
     /**
      * @var ArrayCollection
+     *
+     * @ORM\Column(name="stress_periods", type="wel_stress_periods", nullable=true)
      */
     private $stressPeriods;
 
@@ -87,12 +92,12 @@ class WellBoundary extends BoundaryModelObject
     /**
      * Set point
      *
-     * @param point $point
+     * @param point $geometry
      * @return $this
      */
-    public function setPoint(Point $point)
+    public function setGeometry(Point $geometry)
     {
-        $this->point = $point;
+        $this->geometry = $geometry;
         return $this;
     }
 
@@ -101,9 +106,9 @@ class WellBoundary extends BoundaryModelObject
      *
      * @return point
      */
-    public function getPoint()
+    public function getGeometry()
     {
-        return $this->point;
+        return $this->geometry;
     }
 
     /**
@@ -131,10 +136,10 @@ class WellBoundary extends BoundaryModelObject
      */
     public function convertPointToPoint()
     {
-        if (!is_null($this->point))
+        if (!is_null($this->geometry))
         {
-            $point = new Point($this->point->getX(),$this->point->getY());
-            $point->setSrid($this->point->getSrid());
+            $point = new Point($this->geometry->getX(),$this->geometry->getY());
+            $point->setSrid($this->geometry->getSrid());
             return $point;
         }
 
@@ -172,5 +177,55 @@ class WellBoundary extends BoundaryModelObject
         $this->layer = $layer;
 
         return $this;
+    }
+
+    /**
+     * @param array $stressPeriodData
+     * @param ArrayCollection $globalStressPeriods
+     * @return array
+     */
+    public function addStressPeriodData(array $stressPeriodData, ArrayCollection $globalStressPeriods){
+
+        if ($this->stressPeriods == null){
+            return $stressPeriodData;
+        }
+
+        /** @var WelStressPeriod $stressPeriod */
+        foreach ($this->stressPeriods as $stressPeriod){
+            /** @var StressPeriod $globalStressPeriod */
+            foreach ($globalStressPeriods as $key => $globalStressPeriod){
+                if ($stressPeriod->getDateTimeBegin() == $globalStressPeriod->getDateTimeBegin()){
+
+                    if (! isset($stressPeriodData[$key])){
+                        $stressPeriodData[$key] = array();
+                    }
+
+                    $stressPeriodData[$key] = array_merge($stressPeriodData[$key], $this->generateStressPeriodData($stressPeriod, $this->activeCells));
+                    break;
+                }
+            }
+        }
+
+        return $stressPeriodData;
+    }
+
+    /**
+     * @param WelStressPeriod $stressPeriod
+     * @param ActiveCells $activeCells
+     * @return array
+     */
+    public function generateStressPeriodData(WelStressPeriod $stressPeriod, ActiveCells $activeCells){
+
+        $stressPeriodData = array();
+
+        foreach ($activeCells->toArray() as $nRow => $row){
+            foreach ($row as $nCol => $value){
+                if ($value == true){
+                    $stressPeriodData[] = WelStressPeriodData::create($this->layer->getOrder(), $nRow, $nCol, $stressPeriod->getFlux());
+                }
+            }
+        }
+
+        return $stressPeriodData;
     }
 }

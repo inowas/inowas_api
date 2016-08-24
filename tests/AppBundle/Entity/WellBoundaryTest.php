@@ -49,17 +49,17 @@ class WellBoundaryTest extends WebTestCase
     }
 
     public function testSetGetPoint(){
-        $this->assertNull($this->industrialWell->getPoint());
+        $this->assertNull($this->industrialWell->getGeometry());
         $point = new Point(11777056.491046, 2403440.170283, 3857);
-        $this->industrialWell->setPoint($point);
-        $this->assertEquals($point, $this->industrialWell->getPoint());
+        $this->industrialWell->setGeometry($point);
+        $this->assertEquals($point, $this->industrialWell->getGeometry());
     }
 
     public function testConvertPointToPoint()
     {
         $this->assertNull($this->industrialWell->convertPointToPoint());
         $point = new Point(11777056.491046, 2403440.170283, 3857);
-        $this->industrialWell->setPoint($point);
+        $this->industrialWell->setGeometry($point);
         $this->assertInstanceOf('AppBundle\Model\Point', $this->industrialWell->convertPointToPoint());
         $this->assertEquals($point->getX(), $this->industrialWell->convertPointToPoint()->getX());
         $this->assertEquals($point->getY(), $this->industrialWell->convertPointToPoint()->getY());
@@ -69,7 +69,7 @@ class WellBoundaryTest extends WebTestCase
     public function testIfEntityCanBePersisted(){
         $this->industrialWell
             ->setName('IW_1')
-            ->setPoint(new Point(11777056.491046, 2403440.170283, 3857));
+            ->setGeometry(new Point(11777056.491046, 2403440.170283, 3857));
 
         $this->entityManager->persist($this->industrialWell);
         $this->entityManager->flush();

@@ -536,10 +536,10 @@ class ModelRestController extends FOSRestController
         $targetSrid = (int)$paramFetcher->get('srid');
         /** @var WellBoundary $well */
         foreach ($wells as $well) {
-            if ($well->getPoint()->getSrid() != $targetSrid) {
+            if ($well->getGeometry()->getSrid() != $targetSrid) {
                 $point = json_decode($this->getDoctrine()->getRepository('AppBundle:WellBoundary')
                     ->transformPointTo($well->getId(), $targetSrid));
-                $well->setPoint(new Point($point->coordinates[0], $point->coordinates[1], $targetSrid));
+                $well->setGeometry(new Point($point->coordinates[0], $point->coordinates[1], $targetSrid));
             }
 
             $well->setActiveCells(

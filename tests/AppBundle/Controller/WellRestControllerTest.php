@@ -22,7 +22,7 @@ class WellRestControllerTest extends RestControllerTestCase
             ->setName('Well')
             ->setPublic(true)
             ->setOwner($this->getOwner())
-            ->setPoint(new Point(10.1, 11.1, 3568))
+            ->setGeometry(new Point(10.1, 11.1, 3568))
         ;
 
         $this->getEntityManager()->persist($this->well);
@@ -73,9 +73,9 @@ class WellRestControllerTest extends RestControllerTestCase
         $this->assertEquals($this->well->getName(), $well->name);
         $this->assertObjectHasAttribute('point', $well);
         $point = $well->point;
-        $this->assertEquals($this->well->getPoint()->getX(), $point->x);
-        $this->assertEquals($this->well->getPoint()->getY(), $point->y);
-        $this->assertEquals($this->well->getPoint()->getSrid(), $point->srid);
+        $this->assertEquals($this->well->getGeometry()->getX(), $point->x);
+        $this->assertEquals($this->well->getGeometry()->getY(), $point->y);
+        $this->assertEquals($this->well->getGeometry()->getSrid(), $point->srid);
     }
 
     /**

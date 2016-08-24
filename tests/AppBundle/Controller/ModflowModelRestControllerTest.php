@@ -108,7 +108,7 @@ class ModflowModelRestControllerTest extends RestControllerTestCase
         );
 
         $this->modFlowModel->addBoundary(WellBoundaryFactory::create()
-            ->setPoint(new Point(2, 4, 4326))
+            ->setGeometry(new Point(2, 4, 4326))
             ->setName('Well1')
             ->setPublic(true)
             ->setOwner($this->getOwner())

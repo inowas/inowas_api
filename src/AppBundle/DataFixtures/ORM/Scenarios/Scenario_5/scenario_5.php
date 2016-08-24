@@ -713,7 +713,7 @@ class LoadScenario_5 implements FixtureInterface, ContainerAwareInterface
                 ->setName($wellData['name'])
                 ->setOwner($user)
                 ->setPublic($public)
-                ->setPoint(new Point($wellData['x'], $wellData['y'], $wellData['srid']));
+                ->setGeometry(new Point($wellData['x'], $wellData['y'], $wellData['srid']));
 
             $tvHeader = null;
             foreach ($timeValues as $timeValue){

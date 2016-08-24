@@ -1057,7 +1057,7 @@ class LoadScenario_2 implements FixtureInterface, ContainerAwareInterface
                 ->setOwner($user)
                 ->setName($well['name'])
                 ->setPublic($public)
-                ->setPoint(new Point($well['x'], $well['y'], 3857))
+                ->setGeometry(new Point($well['x'], $well['y'], 3857))
                 ->setLayer($layer_4)
                 ->addValue($propertyTypeTopElevation, PropertyValueFactory::create()->setValue($well['ztop']))
                 ->addValue($propertyTypeBottomElevation, PropertyValueFactory::create()->setValue($well['zbot']))

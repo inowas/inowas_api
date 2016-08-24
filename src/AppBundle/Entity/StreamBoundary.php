@@ -45,7 +45,11 @@ class StreamBoundary extends BoundaryModelObject
      */
     private $stressPeriods;
 
-
+    /**
+     * StreamBoundary constructor.
+     * @param User|null $owner
+     * @param bool $public
+     */
     public function __construct(User $owner=null, $public=true)
     {
         parent::__construct($owner, $public);
@@ -107,11 +111,11 @@ class StreamBoundary extends BoundaryModelObject
     }
 
     /**
-     * @param $spd
+     * @param array $stressPeriodData
      * @param ArrayCollection $globalStressPeriods
      * @return mixed
      */
-    public function getStressPeriodData($spd, ArrayCollection $globalStressPeriods){
+    public function addStressPeriodData(array $stressPeriodData, ArrayCollection $globalStressPeriods){
 
         $rivStressPeriods = $this->stressPeriods;
 
@@ -121,18 +125,18 @@ class StreamBoundary extends BoundaryModelObject
             foreach ($globalStressPeriods as $key => $globalStressPeriod){
                 if ($rivStressPeriod->getDateTimeBegin() == $globalStressPeriod->getDateTimeBegin()){
 
-                    if (! isset($spd[$key])){
-                        $spd[$key] = array();
+                    if (! isset($stressPeriodData[$key])){
+                        $stressPeriodData[$key] = array();
                     }
 
-                    $spd[$key] = array_merge($spd[$key], $this->generateStressPeriodData($rivStressPeriod, $this->activeCells));
+                    $stressPeriodData[$key] = array_merge($stressPeriodData[$key], $this->generateStressPeriodData($rivStressPeriod, $this->activeCells));
 
                     break;
                 }
             }
         }
 
-        return $spd;
+        return $stressPeriodData;
     }
 
     /**
@@ -142,17 +146,17 @@ class StreamBoundary extends BoundaryModelObject
      */
     public function generateStressPeriodData(RivStressPeriod $rivStressPeriod, ActiveCells $activeCells){
 
-        $spd = array();
+        $stressPeriodData = array();
 
         foreach ($activeCells->toArray() as $nRow => $row){
             foreach ($row as $nCol => $value){
                 if ($value == true){
-                    $spd[] = RivStressPeriodData::create(0, $nRow, $nCol, $rivStressPeriod->getStage(), $rivStressPeriod->getCond(), $rivStressPeriod->getRbot());
+                    $stressPeriodData[] = RivStressPeriodData::create(0, $nRow, $nCol, $rivStressPeriod->getStage(), $rivStressPeriod->getCond(), $rivStressPeriod->getRbot());
                 }
             }
         }
 
-        return $spd;
+        return $stressPeriodData;
     }
 
     /**

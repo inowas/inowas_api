@@ -66,6 +66,7 @@ doctrine:
             grid_size:              AppBundle\Type\GridSizeType
             property_type:          AppBundle\Type\PropertyTypeType
             riv_stress_periods:     AppBundle\Type\RivStressPeriodsType
+            wel_stress_periods:     AppBundle\Type\WelStressPeriodsType
             uuid:                   Ramsey\Uuid\Doctrine\UuidType
 
     orm:

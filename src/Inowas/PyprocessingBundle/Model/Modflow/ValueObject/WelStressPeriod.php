@@ -7,23 +7,34 @@ use AppBundle\Model\StressPeriod;
 class WelStressPeriod extends StressPeriod
 {
     /** @var float */
-    private $pumpingRate;
+    private $flux;
 
     /**
      * @return float
      */
-    public function getPumpingRate(): float
+    public function getFlux(): float
     {
-        return $this->pumpingRate;
+        return $this->flux;
     }
 
     /**
-     * @param float $pumpingRate
+     * @param float $flux
      * @return WelStressPeriod
      */
-    public function setPumpingRate(float $pumpingRate): WelStressPeriod
+    public function setFlux(float $flux): WelStressPeriod
     {
-        $this->pumpingRate = $pumpingRate;
+        $this->flux = $flux;
         return $this;
+    }
+
+    /**
+     * @return array
+     */
+    public function jsonSerialize()
+    {
+        $output = parent::jsonSerialize();
+        $output['flux'] = $this->flux;
+
+        return $output;
     }
 }

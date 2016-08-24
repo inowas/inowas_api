@@ -2,7 +2,7 @@
 
 namespace Inowas\PyprocessingBundle\Model\Modflow\ValueObject;
 
-class RivStressPeriodData implements \JsonSerializable
+class WelStressPeriodData implements \JsonSerializable
 {
     /** @var int */
     private $lay;
@@ -14,24 +14,16 @@ class RivStressPeriodData implements \JsonSerializable
     private $row;
 
     /** @var float */
-    private $stage;
-
-    /** @var float */
-    private $cond;
-
-    /** @var float */
-    private $rbot;
+    private $flux;
 
     private final function __construct(){}
 
-    public static function create(int $lay, int $row, int $col, float $stage, float $cond, float $rbot){
+    public static function create(int $lay, int $row, int $col, float $flux){
         $instance = new self();
         $instance->lay = $lay;
         $instance->row = $row;
         $instance->col = $col;
-        $instance->stage = $stage;
-        $instance->cond = $cond;
-        $instance->rbot = $rbot;
+        $instance->flux = $flux;
 
         return $instance;
     }
@@ -45,9 +37,7 @@ class RivStressPeriodData implements \JsonSerializable
             $this->lay,
             $this->row,
             $this->col,
-            $this->stage,
-            $this->cond,
-            $this->rbot
+            $this->flux
         );
     }
 }
