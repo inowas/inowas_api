@@ -46,7 +46,7 @@ class StreamBoundary extends BoundaryModelObject
     private $stressPeriods;
 
 
-    public function __construct(User $owner=null, $public=null)
+    public function __construct(User $owner=null, $public=true)
     {
         parent::__construct($owner, $public);
         $this->stressPeriods = new ArrayCollection();

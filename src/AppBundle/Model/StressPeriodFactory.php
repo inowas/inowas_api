@@ -36,4 +36,11 @@ class StressPeriodFactory
     public static function createRiv(){
         return new RivStressPeriod();
     }
+
+    /**
+     * @return WelStressPeriod
+     */
+    public static function createWel(){
+        return new WelStressPeriod();
+    }
 }

@@ -190,7 +190,6 @@ class ModflowModelRestControllerTest extends RestControllerTestCase
         $this->assertEquals($this->modFlowModel->getName(), $modFlowModel->name);
         $this->assertEquals($this->modFlowModel->getDescription(), $modFlowModel->description);
         $this->assertEquals($this->modFlowModel->getOwner()->getId(), $modFlowModel->owner->id);
-        $this->assertCount(0, $modFlowModel->calculation_properties->stress_periods);
         $this->assertEquals($this->modFlowModel->getSoilModel()->getId(), $modFlowModel->soil_model->id);
         $this->assertCount(1, $modFlowModel->soil_model->geological_layers);
         $this->assertEquals($this->modFlowModel->getSoilModel()->getGeologicalLayers()->first()->getId(), $modFlowModel->soil_model->geological_layers[0]->id);

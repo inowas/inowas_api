@@ -302,21 +302,6 @@ class ModFlowModel extends AbstractModel
 
         $sps = new ArrayCollection();
 
-        /*
-         * Add steady period at the beginning
-         * ToDo: Add a property for init-variables
-         */
-        if (true){
-            /** @var \DateTime $dateTime */
-            $dateTime = clone $startDates[0];
-            $dateTime->modify('-1day');
-            $sps->add(StressPeriodFactory::create()
-                ->setDateTimeBegin($dateTime)
-                ->setDateTimeEnd($dateTime)
-                ->setSteady(true)
-            );
-        }
-
         for($i=0; $i<count($startDates); $i++) {
 
             $dateTimeStart = $startDates[$i];
