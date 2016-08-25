@@ -5,7 +5,6 @@ namespace Inowas\PyprocessingBundle\Controller;
 use AppBundle\Entity\ModelScenario;
 use FOS\RestBundle\Controller\Annotations\Get;
 use FOS\RestBundle\Controller\FOSRestController;
-use FOS\RestBundle\View\View;
 use Inowas\PyprocessingBundle\Model\Modflow\Package\PackageFactory;
 use Nelmio\ApiDocBundle\Annotation\ApiDoc;
 use Ramsey\Uuid\Uuid;
@@ -16,7 +15,7 @@ class ModflowModelPackagesController extends FOSRestController
 {
 
     /**
-     * * @Get("/modflowmodel/{id}/packages")
+     * * @Get("/modflowmodel/{id}/flopy")
      *
      * Return the list of available ModflowPackages from a ModelId.
      *
@@ -30,20 +29,19 @@ class ModflowModelPackagesController extends FOSRestController
      * )
      *
      * @param $id
-     * @return View
+     * @return JsonResponse
      * @throws NotFoundHttpException
      */
-    public function getModflowModelPackagesAction($id)
+    public function getModflowModelFlopyAction($id)
     {
-        $this->findModelById($id);
-        $arr = array('mf', 'dis', 'bas', 'lpf', 'pcg', 'oc', 'riv', 'wel', 'rch');
 
-        $view = View::create();
-        $view->setData($arr)
-            ->setStatusCode(200)
-        ;
+        $model = $this->findModelById($id);
+        $cmd = PackageFactory::create('cmd', $model);
 
-        return $view;
+        $response = new JsonResponse();
+        $response->setData($cmd);
+
+        return $response;
     }
 
     /**
