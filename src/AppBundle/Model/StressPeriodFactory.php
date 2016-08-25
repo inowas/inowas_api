@@ -2,6 +2,7 @@
 
 namespace AppBundle\Model;
 
+use Inowas\PyprocessingBundle\Model\Modflow\ValueObject\RchStressPeriod;
 use Inowas\PyprocessingBundle\Model\Modflow\ValueObject\RivStressPeriod;
 use Inowas\PyprocessingBundle\Model\Modflow\ValueObject\WelStressPeriod;
 
@@ -42,5 +43,12 @@ class StressPeriodFactory
      */
     public static function createWel(){
         return new WelStressPeriod();
+    }
+
+    /**
+     * @return RchStressPeriod
+     */
+    public static function createRch(){
+        return new RchStressPeriod();
     }
 }

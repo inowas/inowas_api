@@ -65,6 +65,7 @@ doctrine:
             bounding_box:           AppBundle\Type\BoundingBoxType
             grid_size:              AppBundle\Type\GridSizeType
             property_type:          AppBundle\Type\PropertyTypeType
+            rch_stress_periods:     AppBundle\Type\RchStressPeriodsType
             riv_stress_periods:     AppBundle\Type\RivStressPeriodsType
             wel_stress_periods:     AppBundle\Type\WelStressPeriodsType
             uuid:                   Ramsey\Uuid\Doctrine\UuidType

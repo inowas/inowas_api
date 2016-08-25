@@ -2,6 +2,7 @@
 
 namespace Inowas\PyprocessingBundle\Command;
 
+use AppBundle\Entity\ModFlowModel;
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -25,10 +26,15 @@ class ModflowModelListCommand extends ContainerAwareCommand
 
         $em = $this->getContainer()->get('doctrine')->getManager();
         $modflowModels = $em->getRepository('AppBundle:ModFlowModel')
-            ->findAll();
-        
+            ->findBy(
+                array(),
+                array('dateCreated' => 'ASC')
+            );
+
+        $counter = 0;
+        /** @var ModFlowModel $modflowModel */
         foreach ($modflowModels as $modflowModel) {
-            $output->writeln(sprintf("ID: %s, Name: %s, Owner: %s ", $modflowModel->getId(), $modflowModel->getName(), $modflowModel->getOwner()));
+            $output->writeln(sprintf("#%s, ID: %s, Name: %s, Owner: %s ", ++$counter, $modflowModel->getId()->toString(), $modflowModel->getName(), $modflowModel->getOwner()));
         }
     }
 }

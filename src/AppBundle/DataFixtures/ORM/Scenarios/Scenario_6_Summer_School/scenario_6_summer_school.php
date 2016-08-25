@@ -17,6 +17,7 @@ use AppBundle\Model\PropertyTimeValueFactory;
 use AppBundle\Model\PropertyType;
 use AppBundle\Model\PropertyTypeFactory;
 use AppBundle\Model\PropertyValueFactory;
+use AppBundle\Model\RechargeBoundaryFactory;
 use AppBundle\Model\SoilModelFactory;
 use AppBundle\Model\StreamBoundaryFactory;
 use AppBundle\Model\StressPeriodFactory;
@@ -25,6 +26,7 @@ use CrEOF\Spatial\PHP\Types\Geometry\LineString;
 use CrEOF\Spatial\PHP\Types\Geometry\Polygon;
 use Doctrine\Common\DataFixtures\FixtureInterface;
 use Doctrine\Common\Persistence\ObjectManager;
+use Inowas\PyprocessingBundle\Model\Modflow\ValueObject\Flopy2DArray;
 use Inowas\PyprocessingBundle\Service\Interpolation;
 use Symfony\Component\DependencyInjection\ContainerAwareInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
@@ -139,7 +141,6 @@ class LoadScenario_6 implements FixtureInterface, ContainerAwareInterface
             $entityManager->persist($model);
             $entityManager->flush();
         }
-
         foreach ($model->getSoilModel()->getGeologicalUnits() as $geologicalUnit){
             $layer_1->addGeologicalUnit($geologicalUnit);
         }
@@ -268,7 +269,6 @@ class LoadScenario_6 implements FixtureInterface, ContainerAwareInterface
                     ->setRbot(111.1)
             )
         );
-
         $model->addBoundary(
             WellBoundaryFactory::createIndustrialWell()
                 ->setGeometry(new Point(-63.63377, -31.32991, 4326))
@@ -304,7 +304,6 @@ class LoadScenario_6 implements FixtureInterface, ContainerAwareInterface
                         ->setFlux(2000)
                 )
         );
-
         $model->addBoundary(WellBoundaryFactory::createIndustrialWell()
             ->setGeometry(new Point(-63.60939, -31.33108, 4326))
             ->setLayer($layer_1)
@@ -332,6 +331,35 @@ class LoadScenario_6 implements FixtureInterface, ContainerAwareInterface
         $model->addBoundary(WellBoundaryFactory::createPrivateWell()
             ->setGeometry(new Point(-63.58416, -31.34427, 4326))
             ->setLayer($layer_1)
+        );
+
+        $model->addBoundary(RechargeBoundaryFactory::create()
+            ->setOwner($user)
+            ->setName('RechargeBoundary')
+            ->setPublic(true)
+            ->setGeometry(new Polygon(array(
+                array(
+                    array(-63.65374923159833, -31.364459841376334),
+                    array(-63.65374923159833, -31.318130051738194),
+                    array(-63.57684493472333, -31.318130051738194),
+                    array(-63.57684493472333, -31.364459841376334),
+                    array(-63.65374923159833, -31.364459841376334)
+                )), 4326))
+            ->addStressPeriod(StressPeriodFactory::createRch()
+                ->setDateTimeBegin(new \DateTime('1.1.2015'))
+                ->setDateTimeEnd(new \DateTime('5.1.2015'))
+                ->setRech(Flopy2DArray::fromValue(0.5e-3))
+            )
+            ->addStressPeriod(StressPeriodFactory::createRch()
+                ->setDateTimeBegin(new \DateTime('6.1.2015'))
+                ->setDateTimeEnd(new \DateTime('31.1.2015'))
+                ->setRech(Flopy2DArray::fromValue(1e-3))
+            )
+            ->addStressPeriod(StressPeriodFactory::createRch()
+                ->setDateTimeBegin(new \DateTime('1.2.2015'))
+                ->setDateTimeEnd(new \DateTime('1.3.2015'))
+                ->setRech(Flopy2DArray::fromValue(1.5e-3))
+            )
         );
 
         $entityManager->persist($model);

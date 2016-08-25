@@ -2,6 +2,7 @@
 
 namespace Inowas\PyprocessingBundle\Command;
 
+use AppBundle\Entity\ModFlowModel;
 use Ramsey\Uuid\Uuid;
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 use Symfony\Component\Console\Input\InputArgument;
@@ -19,27 +20,64 @@ class FlopyCalculateCommand extends ContainerAwareCommand
             ->setDescription('Calculate Flopy Model')
             ->addArgument(
                 'id',
-                InputArgument::REQUIRED,
-                'The ModflowModel-Id is needed'
+                InputArgument::OPTIONAL,
+                'The ModflowModel-Id or Number in the List'
             )
         ;
     }
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        if (! Uuid::isValid($input->getArgument('id'))){
-            $output->writeln(sprintf("The given id: %s is not valid", $input->getArgument('id')));
-            return;
+
+        if (! $input->getArgument('id')){
+            $modflowModels = $this->getContainer()->get('doctrine.orm.default_entity_manager')->getRepository('AppBundle:ModFlowModel')
+                ->findBy(
+                    array(),
+                    array('dateCreated' => 'ASC')
+                );
+
+            $counter = 0;
+            /** @var ModFlowModel $modflowModel */
+            foreach ($modflowModels as $modflowModel) {
+                $output->writeln(sprintf("#%s, ID: %s, Name: %s, Owner: %s ", ++$counter, $modflowModel->getId()->toString(), $modflowModel->getName(), $modflowModel->getOwner()));
+            }
+
+            return 1;
+        }
+
+        if (Uuid::isValid($input->getArgument('id'))){
+            $model = $this->getContainer()->get('doctrine.orm.default_entity_manager')
+                ->getRepository('AppBundle:ModFlowModel')
+                ->findOneBy(array(
+                    'id' => $input->getArgument('id')
+                ));
+
+            if (! $model instanceof ModFlowModel){
+                $output->writeln(sprintf("The given id: %s is not a valid Model", $input->getArgument('id')));
+                return 0;
+            }
+
+
+        } else {
+            $modflowModels = $this->getContainer()->get('doctrine.orm.default_entity_manager')->getRepository('AppBundle:ModFlowModel')
+                ->findBy(
+                    array(),
+                    array('dateCreated' => 'ASC')
+                );
+
+            if (count($modflowModels) < $input->getArgument('id')){
+                $output->writeln(sprintf("The given id: %s is not valid", $input->getArgument('id')));
+                return 0;
+            }
+
+            $model = $modflowModels[$input->getArgument('id')-1];
         }
 
         $output->writeln(sprintf("Calculating model id: %s", $input->getArgument('id')));
 
-        $em = $this->getContainer()->get('doctrine.orm.default_entity_manager');
         $flopy = $this->getContainer()->get('inowas.flopy');
         $dataFolder = $this->getContainer()->getParameter('inowas.modflow.data_folder');
 
-        $model = $em->getRepository('AppBundle:ModFlowModel')
-            ->findOneBy(array('id' => $input->getArgument('id')));
 
         $process = $flopy->calculate(
             'http://localhost/api',
@@ -58,5 +96,7 @@ class FlopyCalculateCommand extends ContainerAwareCommand
         }
 
         $output->writeln($process->getErrorOutput());
+
+        return 1;
     }
 }
