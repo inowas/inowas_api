@@ -15,7 +15,7 @@ use Inowas\PyprocessingBundle\Model\Modflow\ValueObject\Flopy2DArray;
 use Inowas\PyprocessingBundle\Model\Modflow\ValueObject\Flopy3DArray;
 use Symfony\Component\Validator\Constraints as Assert;
 
-class CmdPackageAdapter
+class FlopyCalculationPropertiesAdapter
 {
     /**
      * @var ModFlowModel

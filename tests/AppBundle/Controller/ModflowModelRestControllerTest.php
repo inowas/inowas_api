@@ -24,6 +24,7 @@ use AppBundle\Model\PropertyValueFactory;
 use AppBundle\Model\SoilModelFactory;
 use AppBundle\Model\StreamBoundaryFactory;
 use AppBundle\Model\WellBoundaryFactory;
+use Inowas\PyprocessingBundle\Model\Modflow\Package\FlopyCalculationProperties;
 use Inowas\PyprocessingBundle\Model\Modflow\ValueObject\Flopy3DArray;
 use JMS\Serializer\Serializer;
 use Ramsey\Uuid\Uuid;
@@ -68,6 +69,7 @@ class ModflowModelRestControllerTest extends RestControllerTestCase
         $this->modFlowModel->setName("TestModel");
         $this->modFlowModel->setDescription('TestModelDescription!!!');
         $this->modFlowModel->setPublic(true);
+        $this->modFlowModel->setCalculationProperties(new FlopyCalculationProperties());
         $this->modFlowModel->setSoilModel(SoilModelFactory::create()
             ->setOwner($this->getOwner())
             ->setPublic(true)

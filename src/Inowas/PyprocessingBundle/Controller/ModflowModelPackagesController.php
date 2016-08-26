@@ -3,6 +3,7 @@
 namespace Inowas\PyprocessingBundle\Controller;
 
 use AppBundle\Entity\ModelScenario;
+use AppBundle\Entity\ModFlowModel;
 use FOS\RestBundle\Controller\Annotations\Get;
 use FOS\RestBundle\Controller\FOSRestController;
 use Inowas\PyprocessingBundle\Model\Modflow\Package\PackageFactory;
@@ -35,11 +36,11 @@ class ModflowModelPackagesController extends FOSRestController
     public function getModflowModelFlopyAction($id)
     {
 
+        /** @var ModFlowModel $model */
         $model = $this->findModelById($id);
-        $cmd = PackageFactory::create('cmd', $model);
 
         $response = new JsonResponse();
-        $response->setData($cmd);
+        $response->setData($model->getCalculationProperties());
 
         return $response;
     }

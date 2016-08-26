@@ -3,6 +3,8 @@
 namespace Inowas\PyprocessingBundle\Command;
 
 use AppBundle\Entity\ModFlowModel;
+use Inowas\PyprocessingBundle\Model\Modflow\Package\FlopyCalculationProperties;
+use Inowas\PyprocessingBundle\Model\Modflow\Package\FlopyCalculationPropertiesFactory;
 use Ramsey\Uuid\Uuid;
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 use Symfony\Component\Console\Input\InputArgument;
@@ -28,7 +30,6 @@ class FlopyCalculateCommand extends ContainerAwareCommand
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-
         if (! $input->getArgument('id')){
             $modflowModels = $this->getContainer()->get('doctrine.orm.default_entity_manager')->getRepository('AppBundle:ModFlowModel')
                 ->findBy(
@@ -78,6 +79,9 @@ class FlopyCalculateCommand extends ContainerAwareCommand
         $flopy = $this->getContainer()->get('inowas.flopy');
         $dataFolder = $this->getContainer()->getParameter('inowas.modflow.data_folder');
 
+        $model->setCalculationProperties(FlopyCalculationPropertiesFactory::loadFromApiAndRun($model));
+        $this->getContainer()->get('doctrine.orm.default_entity_manager')->persist($model);
+        $this->getContainer()->get('doctrine.orm.default_entity_manager')->flush();
 
         $process = $flopy->calculate(
             'http://localhost/api',

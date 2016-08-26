@@ -57,18 +57,18 @@ doctrine:
         #     path:     "%database_path%"
 
         types:
-            geometry:               CrEOF\Spatial\DBAL\Types\GeometryType
-            point:                  CrEOF\Spatial\DBAL\Types\Geometry\PointType
-            polygon:                CrEOF\Spatial\DBAL\Types\Geometry\PolygonType
-            linestring:             CrEOF\Spatial\DBAL\Types\Geometry\LineStringType
-            active_cells:           AppBundle\Type\ActiveCellsType
-            bounding_box:           AppBundle\Type\BoundingBoxType
-            grid_size:              AppBundle\Type\GridSizeType
-            property_type:          AppBundle\Type\PropertyTypeType
-            rch_stress_periods:     AppBundle\Type\RchStressPeriodsType
-            riv_stress_periods:     AppBundle\Type\RivStressPeriodsType
-            wel_stress_periods:     AppBundle\Type\WelStressPeriodsType
-            uuid:                   Ramsey\Uuid\Doctrine\UuidType
+            geometry:                     CrEOF\Spatial\DBAL\Types\GeometryType
+            point:                        CrEOF\Spatial\DBAL\Types\Geometry\PointType
+            polygon:                      CrEOF\Spatial\DBAL\Types\Geometry\PolygonType
+            linestring:                   CrEOF\Spatial\DBAL\Types\Geometry\LineStringType
+            active_cells:                 AppBundle\Type\ActiveCellsType
+            bounding_box:                 AppBundle\Type\BoundingBoxType
+            grid_size:                    AppBundle\Type\GridSizeType
+            property_type:                AppBundle\Type\PropertyTypeType
+            rch_stress_periods:           AppBundle\Type\RchStressPeriodsType
+            riv_stress_periods:           AppBundle\Type\RivStressPeriodsType
+            wel_stress_periods:           AppBundle\Type\WelStressPeriodsType
+            uuid:                         Ramsey\Uuid\Doctrine\UuidType
 
     orm:
         auto_generate_proxy_classes: "%kernel.debug%"

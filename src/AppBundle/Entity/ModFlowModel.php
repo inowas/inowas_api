@@ -9,6 +9,7 @@ use AppBundle\Model\GridSize;
 use AppBundle\Model\StressPeriodFactory;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
+use Inowas\PyprocessingBundle\Model\Modflow\Package\FlopyCalculationProperties;
 use JMS\Serializer\Annotation as JMS;
 
 /**
@@ -82,7 +83,7 @@ class ModFlowModel extends AbstractModel
      * Heads-array with key, value = totim => flopy3dArray
      * @var array
      *
-     * @ORM\Column(name="heads", type="json_array")
+     * @ORM\Column(name="heads", type="json_array", nullable=true)
      */
     private $heads;
 
@@ -94,17 +95,9 @@ class ModFlowModel extends AbstractModel
     /**
      * @var array
      *
-     * @ORM\Column(name="calculation_properties", type="json_array")
-     * @JMS\Groups({"details", "modeldetails"})
+     * @ORM\Column(name="calculation_properties", type="json_array", nullable=true)
      */
-    private $calculationProperties = array(
-        "initial_values" => array(
-            "property" => null,
-            "head_from_top_elevation" => null,
-            "steady_state_calculation" => true,
-            "interpolation" => array()
-        ),
-    );
+    private $calculationProperties;
 
     /**
      * @var ArrayCollection
@@ -334,49 +327,22 @@ class ModFlowModel extends AbstractModel
     /**
      * Set calculationProperties
      *
-     * @param array $calculationProperties
+     * @param FlopyCalculationProperties $calculationProperties
      *
      * @return ModFlowModel
      */
-    public function setCalculationProperties($calculationProperties)
+    public function setCalculationProperties(FlopyCalculationProperties $calculationProperties)
     {
-        $this->calculationProperties = $calculationProperties;
-
+        $this->calculationProperties = $calculationProperties->toArray();
         return $this;
     }
 
     /**
-     * Get calculationProperties
-     *
-     * @return array
+     * @return FlopyCalculationProperties
      */
     public function getCalculationProperties()
     {
-        return $this->calculationProperties;
-    }
-
-    /**
-     * Set initValues
-     *
-     * @param array $initValues
-     *
-     * @return ModFlowModel
-     */
-    public function setInitialValues($initValues)
-    {
-        $this->calculationProperties["initial_values"] = $initValues;
-
-        return $this;
-    }
-
-    /**
-     * Get initValues
-     *
-     * @return array
-     */
-    public function getInitialValues()
-    {
-        return $this->calculationProperties["initial_values"];
+        return FlopyCalculationProperties::fromArray($this->calculationProperties);
     }
 
     /**
