@@ -4,7 +4,7 @@ namespace Inowas\PyprocessingBundle\Model\Modflow\ValueObject;
 
 use Inowas\PyprocessingBundle\Exception\InvalidArgumentException;
 
-class Flopy2DArray extends FlopyArray implements FlopyArrayInterface
+class Flopy2DArray extends FlopyArray implements FlopyArrayInterface, \JsonSerializable
 {
     /**
      * @var int|float|array
@@ -27,7 +27,10 @@ class Flopy2DArray extends FlopyArray implements FlopyArrayInterface
         $instance = new self();
 
         if (! is_numeric($value)){
-            throw new InvalidArgumentException(sprintf('Value is supposed to be a numerical value, %s given', gettype($value)));
+            throw new InvalidArgumentException(sprintf(
+                'Value is supposed to be a numerical value, %s given',
+                gettype($value))
+            );
         }
 
         $instance->nx = $nx;
@@ -45,12 +48,18 @@ class Flopy2DArray extends FlopyArray implements FlopyArrayInterface
         $instance = new self();
 
         if ($instance->count_dimension($value) !== 1){
-            throw new InvalidArgumentException(sprintf('Value is supposed to be a 1D-array value. Value with %s Dimensions given.', $instance->count_dimension($value)));
+            throw new InvalidArgumentException(sprintf(
+                'Value is supposed to be a 1D-array value. Value with %s Dimensions given.',
+                $instance->count_dimension($value))
+            );
         }
 
         foreach ($value as $item) {
             if (! is_numeric($item)){
-                throw new InvalidArgumentException(sprintf('Value is supposed to be an integer value, %s given', gettype($value)));
+                throw new InvalidArgumentException(sprintf(
+                    'Value is supposed to be an integer value, %s given',
+                    gettype($value))
+                );
             }
         }
 
@@ -69,13 +78,19 @@ class Flopy2DArray extends FlopyArray implements FlopyArrayInterface
         $instance = new self();
 
         if ($instance->count_dimension($value) !== 2){
-            throw new InvalidArgumentException(sprintf('Value is supposed to be a 2D-array value. Value with %s Dimensions given.', $instance->count_dimension($value)));
+            throw new InvalidArgumentException(sprintf(
+                'Value is supposed to be a 2D-array value. Value with %s Dimensions given.',
+                $instance->count_dimension($value))
+            );
         }
 
         foreach ($value as $row) {
             foreach ($row as $col) {
                 if (! is_numeric($col)){
-                    throw new InvalidArgumentException(sprintf('Value is supposed to be an integer value, %s given', gettype($value)));
+                    throw new InvalidArgumentException(sprintf(
+                        'Value is supposed to be an integer value, %s given',
+                        gettype($value))
+                    );
                 }
             }
         }
@@ -108,7 +123,10 @@ class Flopy2DArray extends FlopyArray implements FlopyArrayInterface
             return $instance->from2DArray($value);
         }
 
-        throw new InvalidArgumentException(sprintf('Value is supposed to have max. 2 Dimensions. Value with %s Dimensions given.', $instance->count_dimension($value)));
+        throw new InvalidArgumentException(sprintf(
+            'Value is supposed to have max. 2 Dimensions. Value with %s Dimensions given.',
+            $instance->count_dimension($value))
+        );
     }
 
     /**
@@ -178,4 +196,14 @@ class Flopy2DArray extends FlopyArray implements FlopyArrayInterface
 
         throw new InvalidArgumentException('The object-value is neither scalar nor 1/2 dimensional array-value.');
     }
+
+    /**
+     * @return array
+     */
+    function jsonSerialize()
+    {
+        return $this->toReducedArray();
+    }
+
+
 }

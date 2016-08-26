@@ -354,6 +354,10 @@ class Flopy3DArrayTest extends \PHPUnit_Framework_TestCase
         $expected = 2;
         $f3d = Flopy3DArray::fromValue($arr3d, 2, 2, 2);
         $this->assertEquals($expected, $f3d->toReducedArray());
+    }
 
+    public function testJsonSerialize(){
+        $f3d = Flopy3DArray::fromNumeric(1.1, 2, 3, 4);
+        $this->assertEquals($f3d->toReducedArray(), json_decode(json_encode($f3d)));
     }
 }

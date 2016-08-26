@@ -4,7 +4,7 @@ namespace Inowas\PyprocessingBundle\Model\Modflow\ValueObject;
 
 use Inowas\PyprocessingBundle\Exception\InvalidArgumentException;
 
-class Flopy1DArray extends FlopyArray implements FlopyArrayInterface
+class Flopy1DArray extends FlopyArray implements FlopyArrayInterface, \JsonSerializable
 {
     /**
      * @var mixed
@@ -82,8 +82,10 @@ class Flopy1DArray extends FlopyArray implements FlopyArrayInterface
             return $instance->fromArray($value);
         }
 
-        throw new InvalidArgumentException(sprintf('Value is supposed to be a 0D or 1D-array value. Value with %s Dimensions given.', $instance->count_dimension($valueArray)));
-
+        throw new InvalidArgumentException(sprintf(
+            'Value is supposed to be a 0D or 1D-array value. Value with %s Dimensions given.',
+            $instance->count_dimension($value))
+        );
     }
 
     /**
@@ -107,7 +109,7 @@ class Flopy1DArray extends FlopyArray implements FlopyArrayInterface
             return $this->value;
         }
 
-        throw new InvalidArgumentException('The object-value is neither scalar nor array-value.');
+        throw new InvalidArgumentException('The object-value is neither scalar not array-value.');
     }
 
     /**
@@ -124,5 +126,13 @@ class Flopy1DArray extends FlopyArray implements FlopyArrayInterface
         }
 
         return $this->value;
+    }
+
+    /**
+     * @return array
+     */
+    function jsonSerialize()
+    {
+        return $this->toReducedArray();
     }
 }
