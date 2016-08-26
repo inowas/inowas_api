@@ -30,11 +30,26 @@ class CmdPackage implements \JsonSerializable
     private $run = true;
 
     /**
+     * Returns the 3D-Heads from headsfile
+     *
+     * if false, no data will be loaded
+     * if array the following keys can be passed
+     * 'totim' -> total time in days
+     *
+     * @var bool|array
+     */
+    private $getData = false;
+
+    /**
      * CmdPackage constructor.
      */
     public function __construct()
     {
         $this->packages = array('mf', 'dis', 'bas', 'lpf', 'pcg', 'oc');
+        $this->loadFrom = 'nam';
+        $this->getData = array(
+            'totim' => 20
+        );
     }
 
     /**
@@ -97,16 +112,25 @@ class CmdPackage implements \JsonSerializable
     }
 
     /**
+     * @param mixed $getData
+     */
+    public function setGetData($getData)
+    {
+        $this->getData = $getData;
+    }
+
+    /**
      * @return mixed
      */
     public function jsonSerialize()
     {
         return array(
-            'loadFrom' => $this->loadFrom,
+            'load_from' => $this->loadFrom,
             'packages' => $this->packages,
             'check' => $this->check,
-            'writeInput' => $this->writeInput,
-            'run' => $this->run
+            'write_input' => $this->writeInput,
+            'run' => $this->run,
+            'get_data' => $this->getData
         );
     }
 }

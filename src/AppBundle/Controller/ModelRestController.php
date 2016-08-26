@@ -915,6 +915,81 @@ class ModelRestController extends FOSRestController
     }
 
     /**
+     * Get head values
+     *
+     * @ApiDoc(
+     *   resource = true,
+     *   description = "Post head values.",
+     *   statusCodes = {
+     *     200 = "Returned when successful",
+     *     404 = "Returned when the Calculation-Id is not found"
+     *   }
+     * )
+     *
+     * @param $id
+     * @param ParamFetcher $paramFetcher
+     * @return View
+     *
+     * @QueryParam(name="totim", description="Time in days from beginning")
+     */
+    public function getModflowmodelHeadsAction($id, ParamFetcher $paramFetcher)
+    {
+        $totim = $paramFetcher->get('totim');
+
+        /** @var ModFlowModel $model */
+        $model = $this->findModelById($id);
+        $heads = $model->getHeads();
+
+        $view = View::create();
+        $view->setData($heads[$totim])
+            ->setStatusCode(200)
+        ;
+
+        return $view;
+    }
+
+    /**
+     * Route to submit Result Head-Values
+     *
+     * @ApiDoc(
+     *   resource = true,
+     *   description = "Post head values.",
+     *   statusCodes = {
+     *     200 = "Returned when successful",
+     *     404 = "Returned when the Calculation-Id is not found"
+     *   }
+     * )
+     *
+     * @param $id
+     * @param ParamFetcher $paramFetcher
+     * @return View
+     *
+     * @RequestParam(name="totim", description="Time in days from beginning")
+     * @RequestParam(name="heads", description="Heads-Array in Json")
+     */
+    public function postModflowmodelHeadsAction($id, ParamFetcher $paramFetcher)
+    {
+        $totim = $paramFetcher->get('totim');
+        $head = $paramFetcher->get('heads');
+
+        /** @var ModFlowModel $model */
+        $model = $this->findModelById($id);
+        $heads = $model->getHeads();
+        $heads[$totim] = $head;
+
+        $model->setHeads($heads);
+        $this->getDoctrine()->getManager()->persist($model);
+        $this->getDoctrine()->getManager()->flush();
+
+        $view = View::create();
+        $view->setData($heads)
+            ->setStatusCode(200)
+        ;
+
+        return $view;
+    }
+
+    /**
      * @param $id
      * @return \AppBundle\Entity\AbstractModel
      */

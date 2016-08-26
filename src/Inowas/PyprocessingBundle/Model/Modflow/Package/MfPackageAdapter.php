@@ -71,7 +71,7 @@ class MfPackageAdapter
      */
     public function getModelWs(): string
     {
-        return './ascii';
+        return 'ascii';
     }
 
     /**

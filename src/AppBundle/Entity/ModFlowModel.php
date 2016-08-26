@@ -453,7 +453,7 @@ class ModFlowModel extends AbstractModel
     /**
      * @return array
      */
-    public function getHeads(): array
+    public function getHeads()
     {
         return $this->heads;
     }
@@ -462,7 +462,7 @@ class ModFlowModel extends AbstractModel
      * @param array $heads
      * @return ModFlowModel
      */
-    public function setHeads(array $heads): ModFlowModel
+    public function setHeads(array $heads)
     {
         $this->heads = $heads;
         return $this;

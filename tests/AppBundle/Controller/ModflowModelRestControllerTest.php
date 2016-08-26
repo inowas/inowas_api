@@ -24,6 +24,7 @@ use AppBundle\Model\PropertyValueFactory;
 use AppBundle\Model\SoilModelFactory;
 use AppBundle\Model\StreamBoundaryFactory;
 use AppBundle\Model\WellBoundaryFactory;
+use Inowas\PyprocessingBundle\Model\Modflow\ValueObject\Flopy3DArray;
 use JMS\Serializer\Serializer;
 use Ramsey\Uuid\Uuid;
 use Tests\AppBundle\RestControllerTestCase;
@@ -481,6 +482,64 @@ class ModflowModelRestControllerTest extends RestControllerTestCase
         $response = $client->getResponse()->getContent();
         $model = json_decode($response);
         $this->assertObjectHasAttribute('id', $model);
+
+        $model = $this->getEntityManager()->getRepository('AppBundle:ModFlowModel')
+            ->findOneBy(array('id' => $this->modFlowModel->getId()->toString()));
+
+        $this->getEntityManager()->remove($model);
+        $this->getEntityManager()->flush();
+    }
+
+
+    public function testGetHeads(){
+        $this->modFlowModel->setHeads(array(
+            20 => Flopy3DArray::fromValue(1,2,3,4)->toArray()
+        ));
+
+        $this->getEntityManager()->persist($this->modFlowModel);
+        $this->getEntityManager()->flush();
+
+        $client = static::createClient();
+        $client->request(
+            'GET',
+            sprintf('/api/modflowmodels/%s/heads.json', $this->modFlowModel->getId()->toString()),
+            array("totim" => 20),
+            array(),
+            array('HTTP_X-AUTH-TOKEN' => $this->getOwner()->getApiKey())
+        );
+
+        $this->assertEquals(200, $client->getResponse()->getStatusCode());
+        $this->assertEquals('[[[1,1,1,1],[1,1,1,1],[1,1,1,1]],[[1,1,1,1],[1,1,1,1],[1,1,1,1]]]', $client->getResponse()->getContent());
+
+        $model = $this->getEntityManager()->getRepository('AppBundle:ModFlowModel')
+            ->findOneBy(array('id' => $this->modFlowModel->getId()->toString()));
+
+        $this->getEntityManager()->remove($model);
+        $this->getEntityManager()->flush();
+    }
+
+    /**
+     * Test for the API-POST-Call /api/modflowmodel/{id}/heads.json
+     * @todo make some more asserts
+     */
+    public function testPostHeads(){
+        $client = static::createClient();
+
+        $data = array(
+            "totim" => 20,
+            "heads" => json_encode(Flopy3DArray::fromValue(1.1,1,2,3)->toArray())
+        );
+
+        $client->request(
+            'POST',
+            sprintf('/api/modflowmodels/%s/heads.json', $this->modFlowModel->getId()->toString()),
+            $data,
+            array(),
+            array('HTTP_X-AUTH-TOKEN' => $this->getOwner()->getApiKey())
+        );
+
+        $this->assertEquals(200, $client->getResponse()->getStatusCode());
+        $this->assertEquals('{"20":"[[[1.1,1.1,1.1],[1.1,1.1,1.1]]]"}', $client->getResponse()->getContent());
 
         $model = $this->getEntityManager()->getRepository('AppBundle:ModFlowModel')
             ->findOneBy(array('id' => $this->modFlowModel->getId()->toString()));
