@@ -16,6 +16,7 @@ use AppBundle\Model\StressPeriod;
 use AppBundle\Model\StressPeriodFactory;
 use AppBundle\Model\WellBoundaryFactory;
 use Doctrine\Common\Collections\ArrayCollection;
+use Inowas\PyprocessingBundle\Model\Modflow\ValueObject\Flopy3DArray;
 
 class ModflowModelTest extends \PHPUnit_Framework_TestCase
 {
@@ -331,6 +332,12 @@ class ModflowModelTest extends \PHPUnit_Framework_TestCase
         $initValues = array(1,2,3);
         $this->modflowModel->setInitialValues($initValues);
         $this->assertEquals($initValues, $this->modflowModel->getInitialValues());
+    }
+
+    public function testSetGetHeads(){
+        $heads = array(1 => Flopy3DArray::fromValue(1,1,1,1));
+        $this->modflowModel->setHeads($heads);
+        $this->assertEquals($heads, $this->modflowModel->getHeads());
     }
 
     public function testPreFlush()
