@@ -15,7 +15,7 @@ class ModflowModelPackagesController extends FOSRestController
 {
 
     /**
-     * * @Get("/modflowmodel/{id}/flopy")
+     * * @Get("/modflowmodels/{id}/flopy")
      *
      * Return the list of available ModflowPackages from a ModelId.
      *
@@ -45,7 +45,7 @@ class ModflowModelPackagesController extends FOSRestController
     }
 
     /**
-     * * @Get("/modflowmodel/{id}/packages/{packageName}")
+     * * @Get("/modflowmodels/{id}/packages/{packageName}")
      *
      * Return the list of available ModflowPackages from a ModelId.
      *
