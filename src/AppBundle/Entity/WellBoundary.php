@@ -17,7 +17,8 @@ use JMS\Serializer\Annotation as JMS;
  **/
 class WellBoundary extends BoundaryModelObject
 {
-    const TYPE_PRIVATE_WELL = "pw";
+    const TYPE_PRIVATE_WELL = "prw";
+    const TYPE_PUBLIC_WELL = "puw";
     const TYPE_OBSERVATION_WELL = "ow";
     const TYPE_INDUSTRIAL_WELL = "iw";
     const TYPE_SCENARIO_NEW_WELL = "snw";
@@ -37,7 +38,7 @@ class WellBoundary extends BoundaryModelObject
      * @JMS\Type("string")
      * @JMS\Groups({"list", "details", "modelobjectdetails", "modelobjectlist"})
      */
-    protected $wellType = self::TYPE_PRIVATE_WELL;
+    protected $wellType = self::TYPE_PUBLIC_WELL;
 
     /**
      * @var Point

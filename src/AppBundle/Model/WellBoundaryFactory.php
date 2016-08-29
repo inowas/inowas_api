@@ -33,4 +33,13 @@ class WellBoundaryFactory
         $well->setWellType(WellBoundary::TYPE_PRIVATE_WELL);
         return $well;
     }
+
+    /**
+     * @return WellBoundary
+     */
+    public static function createPublicWell(){
+        $well = new WellBoundary();
+        $well->setWellType(WellBoundary::TYPE_PUBLIC_WELL);
+        return $well;
+    }
 }

@@ -311,6 +311,20 @@ class LoadScenario_6 implements FixtureInterface, ContainerAwareInterface
             ->setLayer($layer_1)
         );
 
+        /** Public Well 6 */
+        $model->addBoundary(WellBoundaryFactory::createPublicWell()
+            ->setName('Irrigation Well 5')
+            ->setGeometry(new Point(-63.625402, -31.329897, 4326))
+            ->setLayer($layer_1)
+        );
+
+        /** Public Well 7 */
+        $model->addBoundary(WellBoundaryFactory::createPublicWell()
+            ->setName('Irrigation Well 5')
+            ->setGeometry(new Point(-63.623027, -31.331184, 4326))
+            ->setLayer($layer_1)
+        );
+
         /** Recharge */
         $model->addBoundary(RechargeBoundaryFactory::create()
             ->setOwner($user)

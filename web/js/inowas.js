@@ -48,11 +48,12 @@ I.model = {
         hasNoWell: {color: "#000", weight: 0, fillOpacity: 0},
         hasWell: {color: "blue", weight: 1, fillColor: "darkblue", fillOpacity: 1},
         wells : {
-            cw: {radius: 3, color: 'black', weight: 1, fillColor: 'darkgreen', fillOpacity: 0.7},
-            iw: {radius: 3, color: 'black', weight: 1, fillColor: 'darkblue', fillOpacity: 0.7},
-            pw: {radius: 3, color: 'black', weight: 1, fillColor: 'darkgreen', fillOpacity: 0.7},
-            smw: {radius: 3, color: 'black', weight: 1, fillColor: 'red', fillOpacity: 1},
-            snw: {radius: 3, color: 'black', weight: 1, fillColor: 'yellow', fillOpacity: 1}
+            cw:  {radius: 5, color: 'black', weight: 1, fillColor: 'darkgreen', fillOpacity: 0.7},
+            iw:  {radius: 5, color: 'black', weight: 1, fillColor: 'darkgreen', fillOpacity: 0.7},
+            puw: {radius: 5, color: 'black', weight: 1, fillColor: 'darkblue', fillOpacity: 0.7},
+            prw: {radius: 5, color: 'black', weight: 1, fillColor: 'darkblue', fillOpacity: 0.7},
+            smw: {radius: 5, color: 'black', weight: 1, fillColor: 'red', fillOpacity: 1},
+            snw: {radius: 5, color: 'black', weight: 1, fillColor: 'yellow', fillOpacity: 1}
         }
     },
     getStyle: function (type, value){
