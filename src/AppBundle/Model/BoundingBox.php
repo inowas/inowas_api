@@ -29,20 +29,32 @@ class BoundingBox implements \JsonSerializable
 
     /**
      * BoundingBox constructor.
-     * @param int $xMin
-     * @param int $xMax
-     * @param int $yMin
-     * @param int $yMax
+     * @param int $x1
+     * @param int $x2
+     * @param int $y1
+     * @param int $y2
      * @param int $srid
      * @param float $dXInMeters
      * @param float $dYInMeters
      */
-    public function __construct($xMin = 0, $xMax = 0, $yMin = 0, $yMax = 0, $srid = 0, $dXInMeters = 0.0, $dYInMeters = 0.0)
+    public function __construct($x1 = 0, $x2 = 0, $y1 = 0, $y2 = 0, $srid = 0, $dXInMeters = 0.0, $dYInMeters = 0.0)
     {
-        $this->xMin = $xMin;
-        $this->xMax = $xMax;
-        $this->yMin = $yMin;
-        $this->yMax = $yMax;
+        if ($x1 > $x2){
+            $this->xMin = $x2;
+            $this->xMax = $x1;
+        } else {
+            $this->xMin = $x1;
+            $this->xMax = $x2;
+        }
+
+        if ($y1 > $y2){
+            $this->yMin = $y2;
+            $this->yMax = $y1;
+        } else {
+            $this->yMin = $y1;
+            $this->yMax = $y2;
+        }
+
         $this->srid = $srid;
         $this->dXInMeters = $dXInMeters;
         $this->dYInMeters = $dYInMeters;

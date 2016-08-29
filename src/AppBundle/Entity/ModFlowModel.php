@@ -342,6 +342,9 @@ class ModFlowModel extends AbstractModel
      */
     public function getCalculationProperties()
     {
+        if (is_null($this->calculationProperties)){
+            return null;
+        }
         return FlopyCalculationProperties::fromArray($this->calculationProperties);
     }
 

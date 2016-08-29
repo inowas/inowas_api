@@ -91,11 +91,11 @@ class LoadScenario_6 implements FixtureInterface, ContainerAwareInterface
                 ->setAreaType('SC6_AT1')
                 ->setGeometry(new Polygon(array(
                     array(
-                        array(-63.65374923159833, -31.364459841376334),
-                        array(-63.65374923159833, -31.318130051738194),
-                        array(-63.57684493472333, -31.318130051738194),
-                        array(-63.57684493472333, -31.364459841376334),
-                        array(-63.65374923159833, -31.364459841376334)
+                        array(-63.687336, -31.313615),
+                        array(-63.687336, -31.367449),
+                        array(-63.569260, -31.367449),
+                        array(-63.569260, -31.313615),
+                        array(-63.687336, -31.313615)
                     )), 4326)))
             ->setSoilModel(SoilModelFactory::create()
                 ->setName('Soilmodel_Scenario_6')
@@ -104,7 +104,7 @@ class LoadScenario_6 implements FixtureInterface, ContainerAwareInterface
             )
             ->setGridSize(new GridSize(75, 40))
             ->setBoundingBox($geoTools->transformBoundingBox(
-                new BoundingBox(-63.65374923159833, -63.57684493472333, -31.364459841376334, -31.318130051738194, 4326), 4326)
+                new BoundingBox(-63.569260, -63.687336, -31.313615, -31.367449, 4326), 4326)
             )
         ;
 
@@ -148,6 +148,7 @@ class LoadScenario_6 implements FixtureInterface, ContainerAwareInterface
         $entityManager->persist($model);
         $entityManager->flush();
 
+        /** River */
         $model->addBoundary(StreamBoundaryFactory::create()
             ->setOwner($user)
             ->setPublic($public)
@@ -269,96 +270,57 @@ class LoadScenario_6 implements FixtureInterface, ContainerAwareInterface
                     ->setRbot(111.1)
             )
         );
-        $model->addBoundary(
-            WellBoundaryFactory::createIndustrialWell()
-                ->setGeometry(new Point(-63.63377, -31.32991, 4326))
-                ->setLayer($layer_1)
-                ->addStressPeriod(
-                    StressPeriodFactory::createWel()
-                        ->setDateTimeBegin(new \DateTime('2.1.2015'))
-                        ->setDateTimeEnd(new \DateTime('3.1.2015'))
-                        ->setFlux(1000)
-                )
-                ->addStressPeriod(
-                    StressPeriodFactory::createWel()
-                        ->setDateTimeBegin(new \DateTime('4.1.2015'))
-                        ->setDateTimeEnd(new \DateTime('10.1.2015'))
-                        ->setFlux(1200)
-                )
-                ->addStressPeriod(
-                    StressPeriodFactory::createWel()
-                        ->setDateTimeBegin(new \DateTime('11.1.2015'))
-                        ->setDateTimeEnd(new \DateTime('20.1.2015'))
-                        ->setFlux(-1000)
-                )
-                ->addStressPeriod(
-                    StressPeriodFactory::createWel()
-                        ->setDateTimeBegin(new \DateTime('21.1.2015'))
-                        ->setDateTimeEnd(new \DateTime('25.1.2015'))
-                        ->setFlux(1500)
-                )
-                ->addStressPeriod(
-                    StressPeriodFactory::createWel()
-                        ->setDateTimeBegin(new \DateTime('26.1.2015'))
-                        ->setDateTimeEnd(new \DateTime('29.1.2015'))
-                        ->setFlux(2000)
-                )
-        );
+
+        /** Irrigation Well 1 */
         $model->addBoundary(WellBoundaryFactory::createIndustrialWell()
-            ->setGeometry(new Point(-63.60939, -31.33108, 4326))
+            ->setName('Irrigation Well 1')
+            ->setGeometry(new Point(-63.671125, -31.325009, 4326))
             ->setLayer($layer_1)
+            ->addStressPeriod(StressPeriodFactory::createWel()
+                ->setDateTimeBegin(new \DateTime('1.1.2015'))
+                ->setDateTimeEnd(new \DateTime('31.12.2015'))
+                ->setFlux(1000)
+            )
         );
+
+        /** Irrigation Well 2 */
         $model->addBoundary(WellBoundaryFactory::createIndustrialWell()
-            ->setGeometry(new Point(-63.61952, -31.34002, 4326))
-            ->setLayer($layer_1)
-        );
-        $model->addBoundary(WellBoundaryFactory::createPrivateWell()
-            ->setGeometry(new Point(-63.63651, -31.3541, 4326))
-            ->setLayer($layer_1)
-        );
-        $model->addBoundary(WellBoundaryFactory::createPrivateWell()
-            ->setGeometry(new Point(-63.64492, -31.3604, 4326))
-            ->setLayer($layer_1)
-        );
-        $model->addBoundary(WellBoundaryFactory::createPrivateWell()
-            ->setGeometry(new Point(-63.61008, -31.35849, 4326))
-            ->setLayer($layer_1)
-        );
-        $model->addBoundary(WellBoundaryFactory::createPrivateWell()
-            ->setGeometry(new Point(-63.58175, -31.35849, 4326))
-            ->setLayer($layer_1)
-        );
-        $model->addBoundary(WellBoundaryFactory::createPrivateWell()
-            ->setGeometry(new Point(-63.58416, -31.34427, 4326))
+            ->setName('Irrigation Well 2')
+            ->setGeometry(new Point(-63.659952, -31.330144, 4326))
             ->setLayer($layer_1)
         );
 
+        /** Irrigation Well 3 */
+        $model->addBoundary(WellBoundaryFactory::createIndustrialWell()
+            ->setName('Irrigation Well 3')
+            ->setGeometry(new Point(-63.674691, -31.342506, 4326))
+            ->setLayer($layer_1)
+        );
+
+        /** Irrigation Well 4 */
+        $model->addBoundary(WellBoundaryFactory::createIndustrialWell()
+            ->setName('Irrigation Well 4')
+            ->setGeometry(new Point(-63.637379, -31.359613, 4326))
+            ->setLayer($layer_1)
+        );
+
+        /** Irrigation Well 5 */
+        $model->addBoundary(WellBoundaryFactory::createIndustrialWell()
+            ->setName('Irrigation Well 5')
+            ->setGeometry(new Point(-63.582069, -31.324063, 4326))
+            ->setLayer($layer_1)
+        );
+
+        /** Recharge */
         $model->addBoundary(RechargeBoundaryFactory::create()
             ->setOwner($user)
             ->setName('RechargeBoundary')
             ->setPublic(true)
-            ->setGeometry(new Polygon(array(
-                array(
-                    array(-63.65374923159833, -31.364459841376334),
-                    array(-63.65374923159833, -31.318130051738194),
-                    array(-63.57684493472333, -31.318130051738194),
-                    array(-63.57684493472333, -31.364459841376334),
-                    array(-63.65374923159833, -31.364459841376334)
-                )), 4326))
+            ->setGeometry($model->getArea()->getGeometry())
             ->addStressPeriod(StressPeriodFactory::createRch()
                 ->setDateTimeBegin(new \DateTime('1.1.2015'))
-                ->setDateTimeEnd(new \DateTime('5.1.2015'))
+                ->setDateTimeEnd(new \DateTime('31.12.2015'))
                 ->setRech(Flopy2DArray::fromValue(0.5e-3))
-            )
-            ->addStressPeriod(StressPeriodFactory::createRch()
-                ->setDateTimeBegin(new \DateTime('6.1.2015'))
-                ->setDateTimeEnd(new \DateTime('31.1.2015'))
-                ->setRech(Flopy2DArray::fromValue(1e-3))
-            )
-            ->addStressPeriod(StressPeriodFactory::createRch()
-                ->setDateTimeBegin(new \DateTime('1.2.2015'))
-                ->setDateTimeEnd(new \DateTime('1.3.2015'))
-                ->setRech(Flopy2DArray::fromValue(1.5e-3))
             )
         );
 
@@ -373,6 +335,7 @@ class LoadScenario_6 implements FixtureInterface, ContainerAwareInterface
             }
 
             if ($mo instanceof WellBoundary){
+                echo sprintf("Set activeCells for Well %s\r\n", $mo->getId());
                 $mo->setActiveCells($geoTools->getActiveCells($mo, $model->getBoundingBox(), $model->getGridSize()));
             }
         }

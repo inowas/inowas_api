@@ -12,14 +12,14 @@
     Columns: {{ model.gridsize.nx }}
 </p>
 <h3>
-    Stressperiods({{ model.calculationProperties['stress_periods']|length }})
+    Stressperiods({{ model.stressPeriods|length }})
 </h3>
 <p>
     <ul>
-    {% for stressperiod in model.calculationProperties['stress_periods'] %}
+    {% for stressperiod in model.stressPeriods %}
         <li>
-            {{ stressperiod["dateTimeBegin"]["date"] | date('d/m/Y') }} -
-            {{ stressperiod["dateTimeEnd"]["date"] | date('d/m/Y') }} -
+            {{ stressperiod.dateTimeBegin | date('d/m/Y') }} -
+            {{ stressperiod.dateTimeEnd | date('d/m/Y') }} -
             {% if stressperiod.steady %}
                 steady state
             {% else %}

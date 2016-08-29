@@ -225,6 +225,20 @@ class GeoToolsTest extends WebTestCase
         $this->assertEquals(61, $result["col"]);
     }
 
+    public function testGetActiveCellsPoint2()
+    {
+        $bb = $this->geoTools->transformBoundingBox(new BoundingBox(-63.687336, -63.569260, -31.367449, -31.313615, 4326), 4326);
+        $gz = new GridSize(75, 40);
+        $point = new Point(-63.671125, -31.325009, 4326);
+
+        $expected = array();
+        $expected[8][10] = true;
+
+        $result = $this->geoTools->getActiveCellsFromPoint($bb, $gz, $point);
+
+        $this->assertInstanceOf(ActiveCells::class, $result);
+        $this->assertEquals($expected, $result->toArray());
+    }
     public function testGetActiveCellsPoint()
     {
         $bb = $this->geoTools->transformBoundingBox(new BoundingBox(578205, 594692, 2316000, 2333500, 32648), 4326);

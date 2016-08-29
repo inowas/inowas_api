@@ -36,6 +36,16 @@ class BoundingBoxTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals($boundingBox->getSrid(), 4326);
     }
 
+    public function testBoundingBoxConstructorSortsXYValuesAutomatically()
+    {
+        $boundingBox = new BoundingBox(2, 1, 4, 3, 4326);
+        $this->assertEquals($boundingBox->getXMin(), 1);
+        $this->assertEquals($boundingBox->getXMax(), 2);
+        $this->assertEquals($boundingBox->getYMin(), 3);
+        $this->assertEquals($boundingBox->getYMax(), 4);
+        $this->assertEquals($boundingBox->getSrid(), 4326);
+    }
+
     public function testPointValueSetter()
     {
         $boundingBox = new BoundingBox();

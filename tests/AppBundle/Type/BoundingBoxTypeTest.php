@@ -6,7 +6,7 @@ use AppBundle\Model\BoundingBox;
 use Doctrine\DBAL\Connection;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
-class BoundingBoxTest extends WebTestCase
+class BoundingBoxTypeTest extends WebTestCase
 {
 
     /** @var Connection */

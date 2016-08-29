@@ -521,8 +521,6 @@ class ModelRestController extends FOSRestController
      */
     public function getModflowmodelWellsAction(ParamFetcher $paramFetcher, $id)
     {
-        $geoTools = $this->get('inowas.geotools');
-
         /** @var ModFlowModel $model */
         $model = $this->findModelById($id);
         $wells = array();
@@ -541,13 +539,6 @@ class ModelRestController extends FOSRestController
                     ->transformPointTo($well->getId(), $targetSrid));
                 $well->setGeometry(new Point($point->coordinates[0], $point->coordinates[1], $targetSrid));
             }
-
-            $well->setActiveCells(
-                $geoTools->getActiveCellsFromPoint(
-                    $model->getBoundingBox(),
-                    $model->getGridSize(),
-                    $well->convertPointToPoint()
-                ));
         }
 
         $response = array();

@@ -95,10 +95,10 @@ class FlopyCalculationProperties implements \JsonSerializable
     }
 
     /**
-     * @param string $initialValues
+     * @param array $initialValues
      * @return FlopyCalculationProperties
      */
-    public function setInitialValues(string $initialValues): FlopyCalculationProperties
+    public function setInitialValues(array $initialValues): FlopyCalculationProperties
     {
         $this->initialValues = $initialValues;
         return $this;

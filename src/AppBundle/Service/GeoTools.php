@@ -3,7 +3,6 @@
 namespace AppBundle\Service;
 
 use AppBundle\Entity\ModelObject;
-use AppBundle\Exception\InvalidArgumentException;
 use AppBundle\Model\ActiveCells;
 use AppBundle\Model\GeoJson\Feature;
 use AppBundle\Model\GeoJson\FeatureCollection;
@@ -58,6 +57,15 @@ class GeoTools
         }
 
         return ActiveCells::fromArray($activeCells);
+    }
+
+    public function getActiveCellsFromPoint(BoundingBox $bb, GridSize $gz, Point $point){
+
+        $result = $this->getGridCellFromPoint($bb, $gz, $point);
+
+        $cells = array();
+        $cells[$result['row']][$result['col']]=true;
+        return ActiveCells::fromArray($cells);
     }
 
     public function pointIntersectsWithArea($area, $x, $y, $srid){
@@ -225,19 +233,6 @@ class GeoTools
         $bb->setDYInMeters($dyInMeter);
 
         return $bb;
-    }
-
-    public function getActiveCellsFromPoint(BoundingBox $bb, GridSize $gz, Point $point){
-
-        $result = $this->getGridCellFromPoint($bb, $gz, $point);
-
-        if (is_null($result)){
-            throw new InvalidArgumentException('Point is outside of BoundingBox.');
-        }
-
-        $cells = array();
-        $cells[$result['row']][$result['col']]=true;
-        return ActiveCells::fromArray($cells);
     }
 
     public function getGridCellFromPoint(BoundingBox $bb, GridSize $gz, Point $point)
