@@ -5,7 +5,6 @@ namespace Tests\AppBundle;
 use AppBundle\Entity\User;
 use AppBundle\Model\UserFactory;
 use Doctrine\ORM\EntityManager;
-use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
 class RestControllerTestCase extends WebTestCase
