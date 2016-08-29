@@ -229,45 +229,19 @@ class LoadScenario_6 implements FixtureInterface, ContainerAwareInterface
             ->addValue($propertyTypeRiverStage, PropertyTimeValueFactory::createWithTimeAndValue(new \DateTime('2015-10-01'), 401))
             ->addValue($propertyTypeRiverStage, PropertyTimeValueFactory::createWithTimeAndValue(new \DateTime('2015-11-01'), 400))
             ->addValue($propertyTypeRiverStage, PropertyTimeValueFactory::createWithTimeAndValue(new \DateTime('2015-12-01'), 399))
-            ->addStressPeriod(
-                StressPeriodFactory::createRiv()
-                    ->setDateTimeBegin(new \DateTime('2.1.2015'))
-                    ->setDateTimeEnd(new \DateTime('3.1.2015'))
-                    ->setStage(1.1)
-                    ->setCond(11.1)
-                    ->setRbot(111.1)
+            ->addStressPeriod(StressPeriodFactory::createRiv()
+                ->setDateTimeBegin(new \DateTime('1.1.2015'))
+                ->setDateTimeEnd(new \DateTime('31.1.2015'))
+                ->setStage(1.1)
+                ->setCond(11.1)
+                ->setRbot(111.1)
             )
-            ->addStressPeriod(
-                StressPeriodFactory::createRiv()
-                    ->setDateTimeBegin(new \DateTime('3.1.2015'))
-                    ->setDateTimeEnd(new \DateTime('6.1.2015'))
-                    ->setStage(1.1)
-                    ->setCond(11.1)
-                    ->setRbot(111.1)
-            )
-            ->addStressPeriod(
-                StressPeriodFactory::createRiv()
-                    ->setDateTimeBegin(new \DateTime('6.1.2015'))
-                    ->setDateTimeEnd(new \DateTime('9.1.2015'))
-                    ->setStage(1.1)
-                    ->setCond(11.1)
-                    ->setRbot(111.1)
-            )
-            ->addStressPeriod(
-                StressPeriodFactory::createRiv()
-                    ->setDateTimeBegin(new \DateTime('10.1.2015'))
-                    ->setDateTimeEnd(new \DateTime('12.1.2015'))
-                    ->setStage(1.1)
-                    ->setCond(11.1)
-                    ->setRbot(111.1)
-            )
-            ->addStressPeriod(
-                StressPeriodFactory::createRiv()
-                    ->setDateTimeBegin(new \DateTime('13.1.2015'))
-                    ->setDateTimeEnd(new \DateTime('16.1.2015'))
-                    ->setStage(1.1)
-                    ->setCond(11.1)
-                    ->setRbot(111.1)
+            ->addStressPeriod(StressPeriodFactory::createRiv()
+                ->setDateTimeBegin(new \DateTime('1.2.2015'))
+                ->setDateTimeEnd(new \DateTime('31.12.2015'))
+                ->setStage(1.1)
+                ->setCond(11.1)
+                ->setRbot(111.1)
             )
         );
 
@@ -278,8 +252,13 @@ class LoadScenario_6 implements FixtureInterface, ContainerAwareInterface
             ->setLayer($layer_1)
             ->addStressPeriod(StressPeriodFactory::createWel()
                 ->setDateTimeBegin(new \DateTime('1.1.2015'))
-                ->setDateTimeEnd(new \DateTime('31.12.2015'))
+                ->setDateTimeEnd(new \DateTime('31.1.2015'))
                 ->setFlux(1000)
+            )
+            ->addStressPeriod(StressPeriodFactory::createWel()
+                ->setDateTimeBegin(new \DateTime('1.2.2015'))
+                ->setDateTimeEnd(new \DateTime('31.12.2015'))
+                ->setFlux(2000)
             )
         );
 
@@ -288,6 +267,11 @@ class LoadScenario_6 implements FixtureInterface, ContainerAwareInterface
             ->setName('Irrigation Well 2')
             ->setGeometry(new Point(-63.659952, -31.330144, 4326))
             ->setLayer($layer_1)
+            ->addStressPeriod(StressPeriodFactory::createWel()
+                ->setDateTimeBegin(new \DateTime('1.1.2015'))
+                ->setDateTimeEnd(new \DateTime('31.12.2015'))
+                ->setFlux(1000)
+            )
         );
 
         /** Irrigation Well 3 */
@@ -295,6 +279,11 @@ class LoadScenario_6 implements FixtureInterface, ContainerAwareInterface
             ->setName('Irrigation Well 3')
             ->setGeometry(new Point(-63.674691, -31.342506, 4326))
             ->setLayer($layer_1)
+            ->addStressPeriod(StressPeriodFactory::createWel()
+                ->setDateTimeBegin(new \DateTime('1.1.2015'))
+                ->setDateTimeEnd(new \DateTime('31.12.2015'))
+                ->setFlux(1000)
+            )
         );
 
         /** Irrigation Well 4 */
@@ -302,6 +291,11 @@ class LoadScenario_6 implements FixtureInterface, ContainerAwareInterface
             ->setName('Irrigation Well 4')
             ->setGeometry(new Point(-63.637379, -31.359613, 4326))
             ->setLayer($layer_1)
+            ->addStressPeriod(StressPeriodFactory::createWel()
+                ->setDateTimeBegin(new \DateTime('1.1.2015'))
+                ->setDateTimeEnd(new \DateTime('31.12.2015'))
+                ->setFlux(1000)
+            )
         );
 
         /** Irrigation Well 5 */
@@ -309,6 +303,11 @@ class LoadScenario_6 implements FixtureInterface, ContainerAwareInterface
             ->setName('Irrigation Well 5')
             ->setGeometry(new Point(-63.582069, -31.324063, 4326))
             ->setLayer($layer_1)
+            ->addStressPeriod(StressPeriodFactory::createWel()
+                ->setDateTimeBegin(new \DateTime('1.1.2015'))
+                ->setDateTimeEnd(new \DateTime('31.12.2015'))
+                ->setFlux(1000)
+            )
         );
 
         /** Public Well 6 */
@@ -316,6 +315,11 @@ class LoadScenario_6 implements FixtureInterface, ContainerAwareInterface
             ->setName('Irrigation Well 5')
             ->setGeometry(new Point(-63.625402, -31.329897, 4326))
             ->setLayer($layer_1)
+            ->addStressPeriod(StressPeriodFactory::createWel()
+                ->setDateTimeBegin(new \DateTime('1.1.2015'))
+                ->setDateTimeEnd(new \DateTime('31.12.2015'))
+                ->setFlux(1000)
+            )
         );
 
         /** Public Well 7 */
@@ -323,6 +327,11 @@ class LoadScenario_6 implements FixtureInterface, ContainerAwareInterface
             ->setName('Irrigation Well 5')
             ->setGeometry(new Point(-63.623027, -31.331184, 4326))
             ->setLayer($layer_1)
+            ->addStressPeriod(StressPeriodFactory::createWel()
+                ->setDateTimeBegin(new \DateTime('1.1.2015'))
+                ->setDateTimeEnd(new \DateTime('31.12.2015'))
+                ->setFlux(1000)
+            )
         );
 
         /** Recharge */

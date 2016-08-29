@@ -152,7 +152,7 @@ class WelPackage implements \JsonSerializable
     {
         return array(
             'ipakcb' => $this->ipakcb,
-            'stress_period_data' => $this->stressPeriodData,
+            'stress_period_data' => (object)$this->stressPeriodData,
             'dtype' => $this->dtype,
             'options' => $this->options,
             'extension' => $this->extension,

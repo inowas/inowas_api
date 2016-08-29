@@ -128,7 +128,7 @@ class RchPackage implements \JsonSerializable
         return array(
             'nrchop' => $this->nrchop,
             'ipakcb' => $this->ipakcb,
-            'rech' => $this->rech,
+            'rech' => (object)$this->rech,
             'irch' => $this->irch,
             'extension' => $this->extension,
             'unitnumber' => $this->unitnumber

@@ -117,6 +117,5 @@ class SoilModelRestControllerTest extends RestControllerTestCase
             ));
         $this->getEntityManager()->remove($soilModel);
         $this->getEntityManager()->flush();
-        $this->getEntityManager()->close();
     }
 }

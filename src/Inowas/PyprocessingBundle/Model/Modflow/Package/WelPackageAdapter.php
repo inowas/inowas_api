@@ -41,7 +41,6 @@ class WelPackageAdapter
 
         $stress_period_data = array();
         /** @var WellBoundary $well */
-
         foreach ($wells as $well) {
             $stress_period_data = $well->addStressPeriodData($stress_period_data, $this->model->getStressPeriods());
         }

@@ -16,6 +16,7 @@ use AppBundle\Model\StressPeriod;
 use AppBundle\Model\StressPeriodFactory;
 use AppBundle\Model\WellBoundaryFactory;
 use Doctrine\Common\Collections\ArrayCollection;
+use Inowas\PyprocessingBundle\Model\Modflow\Package\FlopyCalculationPropertiesFactory;
 use Inowas\PyprocessingBundle\Model\Modflow\ValueObject\Flopy3DArray;
 
 class ModflowModelTest extends \PHPUnit_Framework_TestCase
@@ -294,8 +295,9 @@ class ModflowModelTest extends \PHPUnit_Framework_TestCase
     }
 
     public function testSetGetCalculationProperties(){
-        $calculationProperties = $this->modflowModel->getCalculationProperties();
-        $this->modflowModel->setCalculationProperties($calculationProperties);
+        $properties = FlopyCalculationPropertiesFactory::loadFromApiAndRun($this->modflowModel);
+        $this->modflowModel->setCalculationProperties($properties);
+        $this->assertEquals($properties, $this->modflowModel->getCalculationProperties());
     }
 
     public function testSetGetGridSize(){
@@ -325,13 +327,6 @@ class ModflowModelTest extends \PHPUnit_Framework_TestCase
         $this->assertCount(0, $this->modflowModel->getScenarios());
         $this->modflowModel->registerScenario(ModelScenarioFactory::create($this->modflowModel));
         $this->assertCount(1, $this->modflowModel->getScenarios());
-    }
-
-    public function testSetInitValues()
-    {
-        $initValues = array(1,2,3);
-        $this->modflowModel->setInitialValues($initValues);
-        $this->assertEquals($initValues, $this->modflowModel->getInitialValues());
     }
 
     public function testSetGetHeads(){

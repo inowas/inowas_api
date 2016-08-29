@@ -100,6 +100,5 @@ class WellRestControllerTest extends RestControllerTestCase
         }
 
         $this->getEntityManager()->flush();
-        $this->getEntityManager()->close();
     }
 }

@@ -192,16 +192,16 @@ class WellBoundary extends BoundaryModelObject
         }
 
         /** @var WelStressPeriod $stressPeriod */
-        foreach ($this->stressPeriods as $stressPeriod){
+        foreach ($this->stressPeriods as $stressPeriod) {
             /** @var StressPeriod $globalStressPeriod */
-            foreach ($globalStressPeriods as $key => $globalStressPeriod){
-                if ($stressPeriod->getDateTimeBegin() == $globalStressPeriod->getDateTimeBegin()){
-
-                    if (! isset($stressPeriodData[$key])){
+            foreach ($globalStressPeriods as $key => $globalStressPeriod) {
+                if ($stressPeriod->getDateTimeBegin() == $globalStressPeriod->getDateTimeBegin()) {
+                    if (!isset($stressPeriodData[$key])) {
                         $stressPeriodData[$key] = array();
                     }
 
                     $stressPeriodData[$key] = array_merge($stressPeriodData[$key], $this->generateStressPeriodData($stressPeriod, $this->activeCells));
+
                     break;
                 }
             }
