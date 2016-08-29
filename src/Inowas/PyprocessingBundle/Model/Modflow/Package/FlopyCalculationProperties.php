@@ -40,15 +40,14 @@ class FlopyCalculationProperties implements \JsonSerializable
     private $run = true;
 
     /**
-     * Returns the 3D-Heads from headsfile
-     *
-     * if false, no data will be loaded
-     * if array the following keys can be passed
-     * 'totim' -> total time in days
-     *
-     * @var bool|array
+     * @var bool
      */
-    private $getData = false;
+    private $submit = false;
+
+    /**
+     * @var float
+     */
+    private $totim = 0.0;
 
     /**
      * CmdPackage constructor.
@@ -135,11 +134,18 @@ class FlopyCalculationProperties implements \JsonSerializable
     }
 
     /**
-     * @param mixed $getData
+     * @param $submit
      */
-    public function setGetData($getData)
+    public function setSubmit(bool $submit)
     {
-        $this->getData = $getData;
+        $this->submit = $submit;
+    }
+
+    /**
+     * @param float $totim
+     */
+    public function setTotim(float $totim){
+        $this->totim = $totim;
     }
 
     /**
@@ -161,7 +167,8 @@ class FlopyCalculationProperties implements \JsonSerializable
             'check' => $this->check,
             'write_input' => $this->writeInput,
             'run' => $this->run,
-            'get_data' => $this->getData
+            'submit' => $this->submit,
+            'totim' => $this->totim
         );
     }
 
@@ -197,8 +204,12 @@ class FlopyCalculationProperties implements \JsonSerializable
             $instance->setRun($properties['run']);
         }
 
-        if (array_key_exists('get_data', $properties)){
-            $instance->setGetData($properties['get_data']);
+        if (array_key_exists('submit', $properties)){
+            $instance->setSubmit($properties['submit']);
+        }
+
+        if (array_key_exists('totim', $properties)){
+            $instance->setTotim($properties['totim']);
         }
 
         return $instance;

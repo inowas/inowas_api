@@ -3,12 +3,12 @@
 namespace Inowas\PyprocessingBundle\Command;
 
 use AppBundle\Entity\ModFlowModel;
-use Inowas\PyprocessingBundle\Model\Modflow\Package\FlopyCalculationProperties;
 use Inowas\PyprocessingBundle\Model\Modflow\Package\FlopyCalculationPropertiesFactory;
 use Ramsey\Uuid\Uuid;
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 
 class FlopyCalculateCommand extends ContainerAwareCommand
@@ -24,6 +24,27 @@ class FlopyCalculateCommand extends ContainerAwareCommand
                 'id',
                 InputArgument::OPTIONAL,
                 'The ModflowModel-Id or Number in the List'
+            )
+            ->addOption(
+                'port',
+                'p',
+                InputOption::VALUE_OPTIONAL,
+                'The port on localhost where the api is running.',
+                80
+            )
+            ->addOption(
+                'totim',
+                null,
+                InputOption::VALUE_OPTIONAL,
+                'Show the list of heads available with total times',
+                true
+            )
+            ->addOption(
+                'submit',
+                's',
+                InputOption::VALUE_OPTIONAL,
+                'Upload the data to local database, setting totim.',
+                0
             )
         ;
     }
@@ -79,12 +100,26 @@ class FlopyCalculateCommand extends ContainerAwareCommand
         $flopy = $this->getContainer()->get('inowas.flopy');
         $dataFolder = $this->getContainer()->getParameter('inowas.modflow.data_folder');
 
-        $model->setCalculationProperties(FlopyCalculationPropertiesFactory::loadFromApiAndRun($model));
+        $fpc = FlopyCalculationPropertiesFactory::loadFromApiAndRun($model);
+
+        $apiBaseUrl = $this->getContainer()->getParameter('inowas.api_base_url');
+        if ($input->getOption('port')){
+            $apiBaseUrl = sprintf("http://localhost:%s/api", $input->getOption('port'));
+        }
+
+        if ($input->getOption('submit')){
+            $fpc->setSubmit(true);
+            $fpc->setTotim(5.0);
+        }
+
+        dump($fpc);
+
+        $model->setCalculationProperties($fpc);
         $this->getContainer()->get('doctrine.orm.default_entity_manager')->persist($model);
         $this->getContainer()->get('doctrine.orm.default_entity_manager')->flush();
 
         $process = $flopy->calculate(
-            'http://localhost/api',
+            $apiBaseUrl,
             $dataFolder,
             $model->getId()->toString(),
             $model->getOwner()->getApiKey(),

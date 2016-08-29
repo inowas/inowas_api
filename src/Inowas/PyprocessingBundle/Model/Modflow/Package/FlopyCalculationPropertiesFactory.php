@@ -24,7 +24,7 @@ class FlopyCalculationPropertiesFactory implements PackageFactoryInterface
         $instance->setCheck(true);
         $instance->setWriteInput(false);
         $instance->setRun(false);
-        $instance->setGetData(false);
+        $instance->setSubmit(false);
 
         return $instance;
     }
@@ -38,7 +38,7 @@ class FlopyCalculationPropertiesFactory implements PackageFactoryInterface
         $instance->setCheck(true);
         $instance->setWriteInput(true);
         $instance->setRun(false);
-        $instance->setGetData(false);
+        $instance->setSubmit(false);
 
         return $instance;
     }
@@ -53,7 +53,7 @@ class FlopyCalculationPropertiesFactory implements PackageFactoryInterface
         $instance->setCheck(false);
         $instance->setWriteInput(true);
         $instance->setRun(true);
-        $instance->setGetData(false);
+        $instance->setSubmit(false);
 
         return $instance;
     }
@@ -64,9 +64,8 @@ class FlopyCalculationPropertiesFactory implements PackageFactoryInterface
         $instance->setCheck(false);
         $instance->setWriteInput(false);
         $instance->setRun(false);
-        $instance->setGetData(array(
-            'totim' => $totim
-        ));
+        $instance->setSubmit(true);
+        $instance->setTotim($totim);
 
         return $instance;
     }

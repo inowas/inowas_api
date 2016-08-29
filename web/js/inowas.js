@@ -26,6 +26,7 @@ I.model = {
         rch: null,
         wel: null
     },
+    heads: null,
     content: {},
     maps: {
         area: null,
@@ -35,7 +36,8 @@ I.model = {
         ghb: null,
         rch: null,
         wel: null,
-        summary: null
+        summary: null,
+        heads: null
     },
     buttons: {
         updateActiveCells: null
@@ -126,6 +128,7 @@ I.model = {
             });
 
             this._loadAndAddWells( map );
+            this._loadAndAddHeads( map );
         }
     },
     loadArea: function ( refresh ) {
@@ -175,6 +178,17 @@ I.model = {
             map.fitBounds(prop.createBoundingBoxPolygon(prop.boundingBox).getBounds());
 
             this._loadAndAddWells( map );
+        }
+    },
+    loadHeads: function (refresh) {
+        if (this.maps.heads == null || refresh == true) {
+            this.maps.heads.remove();
+
+            var map = this.createBaseMap( 'heads-map' );
+            L.geoJson(jQuery.parseJSON(this.area.polygonJSON), prop.styles.areaGeometry).addTo( map );
+            map.fitBounds(prop.createBoundingBoxPolygon(prop.boundingBox).getBounds());
+
+            this._loadAndAddHeads( map );
         }
     },
     createAreaLayer: function() {
@@ -248,6 +262,55 @@ I.model = {
 
         return layers;
     },
+    createHeadsLayer: function (heads, boundingBox, gridSize) {
+
+        heads = heads[0];
+
+        var max = 0, i, i2;
+        for( i=0, i2 = heads.length; i<i2; i++ ){
+            max = Math.max.apply( null, heads[i].concat( max ) );
+        }
+
+
+        var min = 0, i, i2;
+        for( i=0, i2 = heads.length; i<i2; i++ ){
+            min = Math.min.apply( null, heads[i].concat( min ) );
+        }
+
+        console.log(max);
+        console.log(min);
+
+
+        var heatmap = new Rainbow();
+        heatmap.setSpectrum('aqua', 'lime', 'yellow', 'red');
+        heatmap.setNumberRange(min, max);
+
+        that = this;
+        var layers = new L.FeatureGroup();
+        var dx = (boundingBox.x_max - boundingBox.x_min) / gridSize.n_x;
+        var dy = (boundingBox.y_max - boundingBox.y_min) / gridSize.n_y;
+
+        for (var row=0; row<gridSize.n_y; row++){
+            for (var col=0; col<gridSize.n_x; col++){
+                var bb = {};
+                bb.x_min = boundingBox.x_min + col*dx;
+                bb.x_max = boundingBox.x_min + col*dx+dx;
+                bb.y_min = boundingBox.y_max - row*dy-dy;
+                bb.y_max = boundingBox.y_max - row*dy;
+
+                var value = false;
+                if (heads[row] != undefined || heads[row][col] != undefined){
+                    value = heads[row][col];
+                }
+
+                var rectangle = this.createRectangle(
+                    bb, {color: "blue", weight: 0, fillColor: '#'+heatmap.colorAt(value), fillOpacity: 0.2});
+                rectangle.addTo(layers);
+            }
+        }
+
+        return layers;
+    },
     createWellCellsLayer: function (activeCells, boundingBox, gridSize) {
 
         that = this;
@@ -286,6 +349,22 @@ I.model = {
             });
         }
     },
+    _loadAndAddHeads: function( map ){
+        var that = this;
+        if (this.heads !== null) {
+            this._addHeadsLayer( this.heads, map );
+        } else {
+            $.getJSON( "/api/modflowmodels/"+this.id+"/heads.json", function ( data ) {
+                that.heads = data;
+                var keys = Object.keys(data);
+                var head = data[keys[keys.length-1]];
+                if (typeof head == "string"){
+                    head = $.parseJSON(head)
+                }
+                that._addHeadsLayer( head, map );
+            });
+        }
+    },
     _addWellsLayer: function ( wells, map ){
         var layer = new L.LayerGroup();
         var active_cells = {};
@@ -320,5 +399,9 @@ I.model = {
         activeCellsLayer.addTo(map);
         layer.addTo(map);
         this.maps.wel = map;
+    },
+    _addHeadsLayer: function ( data, map ){
+        var layer = this.createHeadsLayer(data, this.boundingBox, this.gridSize);
+        layer.addTo(map);
     }
 };

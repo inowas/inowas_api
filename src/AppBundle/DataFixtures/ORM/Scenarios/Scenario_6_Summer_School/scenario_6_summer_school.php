@@ -51,8 +51,6 @@ class LoadScenario_6 implements FixtureInterface, ContainerAwareInterface
      */
     public function load(ObjectManager $entityManager)
     {
-
-
         $userManager = $this->container->get('fos_user.user_manager');
 
         $public = true;

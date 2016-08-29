@@ -505,13 +505,13 @@ class ModflowModelRestControllerTest extends RestControllerTestCase
         $client->request(
             'GET',
             sprintf('/api/modflowmodels/%s/heads.json', $this->modFlowModel->getId()->toString()),
-            array("totim" => 20),
+            array(),
             array(),
             array('HTTP_X-AUTH-TOKEN' => $this->getOwner()->getApiKey())
         );
 
         $this->assertEquals(200, $client->getResponse()->getStatusCode());
-        $this->assertEquals('[[[1,1,1,1],[1,1,1,1],[1,1,1,1]],[[1,1,1,1],[1,1,1,1],[1,1,1,1]]]', $client->getResponse()->getContent());
+        $this->assertEquals('{"20":[[[1,1,1,1],[1,1,1,1],[1,1,1,1]],[[1,1,1,1],[1,1,1,1],[1,1,1,1]]]}', $client->getResponse()->getContent());
 
         $model = $this->getEntityManager()->getRepository('AppBundle:ModFlowModel')
             ->findOneBy(array('id' => $this->modFlowModel->getId()->toString()));

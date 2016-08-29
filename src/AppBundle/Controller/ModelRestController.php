@@ -918,21 +918,18 @@ class ModelRestController extends FOSRestController
      * )
      *
      * @param $id
-     * @param ParamFetcher $paramFetcher
      * @return View
      *
      * @QueryParam(name="totim", description="Time in days from beginning")
      */
-    public function getModflowmodelHeadsAction($id, ParamFetcher $paramFetcher)
+    public function getModflowmodelHeadsAction($id)
     {
-        $totim = $paramFetcher->get('totim');
-
         /** @var ModFlowModel $model */
         $model = $this->findModelById($id);
         $heads = $model->getHeads();
 
         $view = View::create();
-        $view->setData($heads[$totim])
+        $view->setData($heads)
             ->setStatusCode(200)
         ;
 
@@ -973,7 +970,7 @@ class ModelRestController extends FOSRestController
         $this->getDoctrine()->getManager()->flush();
 
         $view = View::create();
-        $view->setData($heads)
+        $view->setData('OK')
             ->setStatusCode(200)
         ;
 
