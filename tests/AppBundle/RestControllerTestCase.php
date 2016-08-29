@@ -4,6 +4,7 @@ namespace Tests\AppBundle;
 
 use AppBundle\Entity\User;
 use AppBundle\Model\UserFactory;
+use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
@@ -21,7 +22,7 @@ class RestControllerTestCase extends WebTestCase
 
 
     public function getEntityManager(){
-        if (! $this->entityManager instanceof EntityManagerInterface){
+        if (! $this->entityManager instanceof EntityManager ){
             self::bootKernel();
             $this->entityManager = static::$kernel->getContainer()
                 ->get('doctrine.orm.default_entity_manager')
