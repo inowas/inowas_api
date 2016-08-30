@@ -1,0 +1,22 @@
+<?php
+
+namespace Inowas\PyprocessingBundle\Model\Modflow\Package;
+
+use AppBundle\Entity\ModFlowModel;
+
+class chdPackageFactory implements PackageFactoryInterface
+{
+    public function create(ModFlowModel $model){
+
+        $chd = new ChdPackage();
+        $adapter = new ChdPackageAdapter($model);
+
+        $chd->setStressPeriodData($adapter->getStressPeriodData());
+        $chd->setDtype($adapter->getDtype());
+        $chd->setExtension($adapter->getExtension());
+        $chd->setUnitnumber($adapter->getUnitnumber());
+        $chd->setOptions($adapter->getOptions());
+
+        return $chd;
+    }
+}
