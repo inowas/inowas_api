@@ -4,6 +4,10 @@ namespace Inowas\PyprocessingBundle\Model\Modflow\Package;
 
 class FlopyCalculationProperties implements \JsonSerializable
 {
+
+    const INITIAL_VALUE_STEADY_STATE_CALCULATION = 'ssc';
+    const INITIAL_VALUE_HEAD_FROM_TOP_ELEVATION = 'hft';
+
     /**
      * Possible arguments are
      * api and nam (for namfile)
@@ -24,7 +28,7 @@ class FlopyCalculationProperties implements \JsonSerializable
      *
      * @var string
      */
-    private $initialValues = 'ssc';
+    private $initialValues = self::INITIAL_VALUE_STEADY_STATE_CALCULATION;
 
     /** @var  bool */
     private $check = false;

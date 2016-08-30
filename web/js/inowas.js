@@ -262,23 +262,14 @@ I.model = {
 
         return layers;
     },
-    createHeadsLayer: function (heads, time, boundingBox, gridSize, layerGroup) {
+    createHeadsLayer: function (heads, min, max, time, boundingBox, gridSize, layerGroup) {
 
         //console.log(heads);
-        heads = heads[0];
-
-        var max = 0;
-        for( var i = 0; i < heads.length; i++ ){
-            max = Math.max.apply( null, heads[i].concat( max ) );
-        }
-
-        var min = 0;
-        for( i = 0; i < heads.length; i++ ){
-            min = Math.min.apply( null, heads[i].concat( min ) );
-        }
+        var lay = 0;
+        heads = heads[lay];
 
         var heatmap = new Rainbow();
-        heatmap.setSpectrum('aqua', 'lime', 'yellow', 'red');
+        heatmap.setSpectrum('red', 'yellow', 'lime', 'aqua', 'blue');
         heatmap.setNumberRange(min, max);
 
         that = this;
@@ -299,7 +290,45 @@ I.model = {
                 }
 
                 var rectangle = this.createRectangle(
-                    bb, {color: "blue", weight: 0, fillColor: '#'+heatmap.colorAt(value), fillOpacity: 0.2, time: time});
+                    bb, {color: "blue", weight: 0, fillColor: '#'+heatmap.colorAt(value), fillOpacity: 0.2, time: time}
+                    );
+                rectangle.col = col;
+                rectangle.row = row;
+                rectangle.lay = lay;
+                rectangle.on('click', function(e) {
+
+                    var allHeads = $.extend({}, that.heads);
+                    var keys = Object.keys(allHeads);
+                    var dates = ['x'];
+                    var data = ['data1'];
+                    for (var i=0; i<keys.length-1; i++){
+                        dates.push(keys[i]);
+                        var head = allHeads[keys[i]];
+                        head = $.parseJSON(head);
+                        data.push(head[e.target.lay][e.target.row][e.target.col]);
+                    }
+
+                    var chart = c3.generate({
+                        bindto: '#chart',
+                        data: {
+                            x: 'x',
+                            columns: [
+                                dates,
+                                data
+                            ]
+                        },
+                        axis: {
+                            x: {
+                                type: 'timeseries',
+                                tick: {
+                                    format: '%Y-%m-%d'
+                                }
+                            }
+                        }
+                    });
+                });
+
+                rectangle.bindPopup("Groundwater Head: "+value);
                 rectangle.addTo(layerGroup);
             }
         }
@@ -396,20 +425,35 @@ I.model = {
         // where value is a three dimensional heads array
         var dates = Object.keys(data);
 
+        var min = 0;
+        var max = 200;
+
+        /**
+        for( var i = 0; i < heads.length; i++ ){
+            max = Math.max.apply( null, heads[i].concat( max ) );
+        }
+
+
+        for( i = 0; i < heads.length; i++ ){
+            min = Math.min.apply( null, heads[i].concat( min ) );
+        }
+        */
+
         var layerGroup = L.layerGroup();
         for ( var i=0; i<dates.length; i++ ){
             var head = data[dates[i]];
             if (typeof head == "string"){
                 head = $.parseJSON(head)
             }
-            layerGroup = this.createHeadsLayer(head, dates[i], this.boundingBox, this.gridSize, layerGroup);
+            layerGroup = this.createHeadsLayer(head, min, max, dates[i], this.boundingBox, this.gridSize, layerGroup);
         }
 
         var sliderControl = L.control.sliderControl({
             position: "topright",
             layer: layerGroup,
-            sameTime: true,
-            alwaysShowDate : true
+            sameDate: true,
+            alwaysShowDate: true
+
         });
 
         map.addControl(sliderControl);

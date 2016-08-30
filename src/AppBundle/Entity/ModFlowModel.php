@@ -266,6 +266,25 @@ class ModFlowModel extends AbstractModel
     {
         if (! $this->stressPeriods instanceof ArrayCollection){
             $this->stressPeriods = $this->loadStressPeriodsFromBoundaries();
+            $this->stressPeriods = $this->sortStressPeriods($this->stressPeriods);
+
+            if ($this->getCalculationProperties()->getInitialValues() == FlopyCalculationProperties::INITIAL_VALUE_STEADY_STATE_CALCULATION){
+                /** @var \DateTime $dateBegin */
+                /** @var \DateTime $dateEnd */
+                $dateBegin = clone $this->stressPeriods->first()->getDateTimeBegin();
+                $dateEnd = clone $this->stressPeriods->first()->getDateTimeBegin();
+                $dateBegin->modify('-1day');
+
+                $sp = StressPeriodFactory::create()
+                    ->setDateTimeBegin($dateBegin)
+                    ->setDateTimeEnd($dateEnd)
+                    ->setSteady(true);
+
+                if (! $this->stressPeriods->contains($sp)){
+                    $this->stressPeriods->add($sp);
+                    $this->stressPeriods = $this->sortStressPeriods($this->stressPeriods);
+                }
+            }
         }
 
         return $this->stressPeriods;
@@ -274,13 +293,14 @@ class ModFlowModel extends AbstractModel
     /**
      * @return ArrayCollection
      */
-    protected function loadStressPeriodsFromBoundaries(){
+    protected function loadStressPeriodsFromBoundaries()
+    {
         $bSps = new ArrayCollection();
 
         /** @var BoundaryInterface $boundary */
-        foreach ($this->boundaries as $boundary){
+        foreach ($this->boundaries as $boundary) {
 
-            if ($boundary->getStressPeriods() == null || $boundary->getStressPeriods()->count() == 0){
+            if ($boundary->getStressPeriods() == null || $boundary->getStressPeriods()->count() == 0) {
                 continue;
             }
 
@@ -289,6 +309,15 @@ class ModFlowModel extends AbstractModel
             );
         }
 
+        return $bSps;
+    }
+
+    /**
+     * @param ArrayCollection $bSps
+     * @return ArrayCollection
+     */
+    protected function sortStressPeriods(ArrayCollection $bSps)
+    {
         $startDates = array();
         $endDates = array();
         foreach ($bSps as $sp){
@@ -314,10 +343,22 @@ class ModFlowModel extends AbstractModel
                 $dateTimeEnd = $endDate;
             }
 
+            foreach ($bSps as $bSp) {
+                if ($bSp->getDateTimeBegin() == $dateTimeStart){
+                    $stressPeriodWithStartDate = $bSp;
+                    break;
+                }
+            }
+
+            $steady = false;
+            if (isset($stressPeriodWithStartDate)){
+                $steady = $stressPeriodWithStartDate->isSteady();
+            }
+
             $sps->add(StressPeriodFactory::create()
                 ->setDateTimeBegin($dateTimeStart)
                 ->setDateTimeEnd($dateTimeEnd)
-                ->setSteady(false)
+                ->setSteady($steady)
             );
         }
 

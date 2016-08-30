@@ -8,8 +8,8 @@ L.Control.SliderControl = L.Control.extend({
         markers: null,
         range: false,
         follow: false,
-        sameDate: false,
-        alwaysShowDate : false
+        alwaysShowDate : false,
+        sameDate: false
     },
 
     initialize: function (options) {
@@ -127,7 +127,7 @@ L.Control.SliderControl = L.Control.extend({
                         for (i = ui.value - _options.follow + 1; i <= ui.value ; i++) {
                             if(_options.markers[i]) map.addLayer(_options.markers[i]);
                         }
-                    }else if(_options.sameTime){
+                    }else if(_options.sameDate){
                         var currentTime;
                         if (_options.markers[ui.value].feature !== undefined) {
                             currentTime = _options.markers[ui.value].feature.properties.time;

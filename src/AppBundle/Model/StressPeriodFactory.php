@@ -21,11 +21,11 @@ class StressPeriodFactory
     public static function create($type = null)
     {
         if ($type == self::WEL_SP){
-            return new WelStressPeriod();
+            return self::createWel();
         }
 
         if ($type == self::RIV_SP){
-            return new RivStressPeriod();
+            return self::createRiv();
         }
 
         return new StressPeriod();
@@ -35,20 +35,26 @@ class StressPeriodFactory
      * @return RivStressPeriod
      */
     public static function createRiv(){
-        return new RivStressPeriod();
+        $sp = new RivStressPeriod();
+        $sp->setSteady(false);
+        return $sp;
     }
 
     /**
      * @return WelStressPeriod
      */
     public static function createWel(){
-        return new WelStressPeriod();
+        $sp = new WelStressPeriod();
+        $sp->setSteady(false);
+        return $sp;
     }
 
     /**
      * @return RchStressPeriod
      */
     public static function createRch(){
-        return new RchStressPeriod();
+        $sp = new RchStressPeriod();
+        $sp->setSteady(false);
+        return $sp;
     }
 }
