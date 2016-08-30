@@ -142,9 +142,12 @@ class FlopyCalculationProperties implements \JsonSerializable
     }
 
     /**
-     * @param float $totim
+     * @param mixed $totim
      */
-    public function setTotim(float $totim){
+    public function setTotim($totim = null){
+        if (! is_null($totim)){
+            $totim = floatval($totim);
+        }
         $this->totim = $totim;
     }
 

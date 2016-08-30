@@ -6,6 +6,7 @@
     <link rel="stylesheet" type="text/css" href="{{ asset('vendor/bootstrap/dist/css/bootstrap.min.css') }}" />
     <link rel="stylesheet" type="text/css" href="{{ asset('vendor/font-awesome/css/font-awesome.min.css') }}" />
     <link rel="stylesheet" type="text/css" href="{{ asset('vendor/leaflet/dist/leaflet.css') }}" />
+    <link rel="stylesheet" type="text/css" href="{{ asset('vendor/jquery-ui/themes/base/jquery-ui.min.css') }}" />
     <link rel="stylesheet" type="text/css" href="{{ asset('vendor/Leaflet.EasyButton/src/easy-button.css') }}" />
     <link rel="stylesheet" type="text/css" href="{{ asset('vendor/leaflet-draw/dist/leaflet.draw.css') }}" />
     <link rel="stylesheet" type="text/css" href="{{ asset('vendor/leaflet.fullscreen/Control.FullScreen.css') }}" />
@@ -205,24 +206,7 @@
                 <div class="row">
                     <div class="col-sm-12">
                         <div class="panel panel-default">
-                            <div class="panel-body">
-                                <div class="row">
-                                    <div class="col-sm-6">
-                                        <div class="panel panel-default">
-                                            <div id="heads-map" class="panel-body map"></div>
-                                        </div>
-                                    </div>
-                                    <div class="col-sm-6 content_results">
-                                        <div class="panel panel-default">
-                                            <p style="text-align: center">Groundwater Heads</p>
-                                            <div id="result_chart_heads"></div>
-                                        </div>
-                                        <div class="panel panel-default">
-                                            <div id="result_chart_boundaries"></div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
+                            <div id="heads-map" class="panel-body map"></div>
                         </div>
                     </div>
                 </div>
@@ -261,11 +245,13 @@
 </div>
 
 <script type="text/javascript" src="{{ asset('vendor/jquery/dist/jquery.min.js') }}"></script>
+<script type="text/javascript" src="{{ asset('vendor/jquery-ui/jquery-ui.min.js') }}"></script>
 <script type="text/javascript" src="{{ asset('vendor/bootstrap/dist/js/bootstrap.min.js') }}"></script>
 <script type="text/javascript" src="{{ asset('vendor/leaflet/dist/leaflet.js') }}"></script>
 <script type="text/javascript" src="{{ asset('vendor/Leaflet.EasyButton/src/easy-button.js') }}"></script>
 <script type="text/javascript" src="{{ asset('vendor/leaflet-draw/dist/leaflet.draw.js') }}"></script>
 <script type="text/javascript" src="{{ asset('vendor/leaflet.fullscreen/Control.FullScreen.js') }}"></script>
+<script type="text/javascript" src="{{ asset('vendor/leaflet-slider/SliderControl.js') }}"></script>
 <script type="text/javascript" src="{{ asset('vendor/d3/d3.min.js') }}"></script>
 <script type="text/javascript" src="{{ asset('vendor/c3/c3.min.js') }}"></script>
 <script type="text/javascript" src="{{ asset('vendor/rainbowvis.js/rainbowvis.js') }}"></script>

@@ -44,7 +44,7 @@ class FlopyCalculateCommand extends ContainerAwareCommand
                 's',
                 InputOption::VALUE_OPTIONAL,
                 'Upload the data to local database, setting totim.',
-                0
+                true
             )
         ;
     }
@@ -109,12 +109,15 @@ class FlopyCalculateCommand extends ContainerAwareCommand
 
         if ($input->getOption('submit')){
             $fpc->setSubmit(true);
-            $fpc->setTotim(5.0);
+            $fpc->setTotim(null);
+
+            if ($input->getOption('submit') != 'all'){
+                $fpc->setTotim($input->getOption('submit'));
+            }
         }
 
-        dump($fpc);
-
         $model->setCalculationProperties($fpc);
+        $model->setHeads(array());
         $this->getContainer()->get('doctrine.orm.default_entity_manager')->persist($model);
         $this->getContainer()->get('doctrine.orm.default_entity_manager')->flush();
 

@@ -928,8 +928,18 @@ class ModelRestController extends FOSRestController
         $model = $this->findModelById($id);
         $heads = $model->getHeads();
 
+        /** @var \DateTime $startDate */
+        $startDate = $model->getStressPeriods()->first()->getDateTimeBegin();
+
+        $response = array();
+        foreach ($heads as $totim => $head){
+            $date = clone $startDate;
+            $date->modify(sprintf('+%s days', (int)$totim-1));
+            $response[$date->format('Y-m-d')] = $head;
+        }
+
         $view = View::create();
-        $view->setData($heads)
+        $view->setData($response)
             ->setStatusCode(200)
         ;
 

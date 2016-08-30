@@ -128,7 +128,6 @@ I.model = {
             });
 
             this._loadAndAddWells( map );
-            this._loadAndAddHeads( map );
         }
     },
     loadArea: function ( refresh ) {
@@ -182,12 +181,13 @@ I.model = {
     },
     loadHeads: function (refresh) {
         if (this.maps.heads == null || refresh == true) {
-            this.maps.heads.remove();
+            if (refresh == true && this.maps.heads != null){
+                this.maps.heads.remove();
+            }
 
             var map = this.createBaseMap( 'heads-map' );
             L.geoJson(jQuery.parseJSON(this.area.polygonJSON), prop.styles.areaGeometry).addTo( map );
             map.fitBounds(prop.createBoundingBoxPolygon(prop.boundingBox).getBounds());
-
             this._loadAndAddHeads( map );
         }
     },
@@ -262,31 +262,26 @@ I.model = {
 
         return layers;
     },
-    createHeadsLayer: function (heads, boundingBox, gridSize) {
+    createHeadsLayer: function (heads, time, boundingBox, gridSize, layerGroup) {
 
+        //console.log(heads);
         heads = heads[0];
 
-        var max = 0, i, i2;
-        for( i=0, i2 = heads.length; i<i2; i++ ){
+        var max = 0;
+        for( var i = 0; i < heads.length; i++ ){
             max = Math.max.apply( null, heads[i].concat( max ) );
         }
 
-
-        var min = 0, i, i2;
-        for( i=0, i2 = heads.length; i<i2; i++ ){
+        var min = 0;
+        for( i = 0; i < heads.length; i++ ){
             min = Math.min.apply( null, heads[i].concat( min ) );
         }
-
-        console.log(max);
-        console.log(min);
-
 
         var heatmap = new Rainbow();
         heatmap.setSpectrum('aqua', 'lime', 'yellow', 'red');
         heatmap.setNumberRange(min, max);
 
         that = this;
-        var layers = new L.FeatureGroup();
         var dx = (boundingBox.x_max - boundingBox.x_min) / gridSize.n_x;
         var dy = (boundingBox.y_max - boundingBox.y_min) / gridSize.n_y;
 
@@ -304,12 +299,12 @@ I.model = {
                 }
 
                 var rectangle = this.createRectangle(
-                    bb, {color: "blue", weight: 0, fillColor: '#'+heatmap.colorAt(value), fillOpacity: 0.2});
-                rectangle.addTo(layers);
+                    bb, {color: "blue", weight: 0, fillColor: '#'+heatmap.colorAt(value), fillOpacity: 0.2, time: time});
+                rectangle.addTo(layerGroup);
             }
         }
 
-        return layers;
+        return layerGroup;
     },
     createWellCellsLayer: function (activeCells, boundingBox, gridSize) {
 
@@ -356,12 +351,7 @@ I.model = {
         } else {
             $.getJSON( "/api/modflowmodels/"+this.id+"/heads.json", function ( data ) {
                 that.heads = data;
-                var keys = Object.keys(data);
-                var head = data[keys[keys.length-1]];
-                if (typeof head == "string"){
-                    head = $.parseJSON(head)
-                }
-                that._addHeadsLayer( head, map );
+                that._addHeadsLayer( data, map );
             });
         }
     },
@@ -401,7 +391,28 @@ I.model = {
         this.maps.wel = map;
     },
     _addHeadsLayer: function ( data, map ){
-        var layer = this.createHeadsLayer(data, this.boundingBox, this.gridSize);
-        layer.addTo(map);
+
+        // Data is a time-value object
+        // where value is a three dimensional heads array
+        var dates = Object.keys(data);
+
+        var layerGroup = L.layerGroup();
+        for ( var i=0; i<dates.length; i++ ){
+            var head = data[dates[i]];
+            if (typeof head == "string"){
+                head = $.parseJSON(head)
+            }
+            layerGroup = this.createHeadsLayer(head, dates[i], this.boundingBox, this.gridSize, layerGroup);
+        }
+
+        var sliderControl = L.control.sliderControl({
+            position: "topright",
+            layer: layerGroup,
+            sameTime: true,
+            alwaysShowDate : true
+        });
+
+        map.addControl(sliderControl);
+        sliderControl.startSlider();
     }
 };
