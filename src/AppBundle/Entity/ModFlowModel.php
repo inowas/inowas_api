@@ -268,21 +268,24 @@ class ModFlowModel extends AbstractModel
             $this->stressPeriods = $this->loadStressPeriodsFromBoundaries();
             $this->stressPeriods = $this->sortStressPeriods($this->stressPeriods);
 
-            if ($this->getCalculationProperties()->getInitialValues() == FlopyCalculationProperties::INITIAL_VALUE_STEADY_STATE_CALCULATION){
-                /** @var \DateTime $dateBegin */
-                /** @var \DateTime $dateEnd */
-                $dateBegin = clone $this->stressPeriods->first()->getDateTimeBegin();
-                $dateEnd = clone $this->stressPeriods->first()->getDateTimeBegin();
-                $dateBegin->modify('-1day');
+            if (!is_null($this->getCalculationProperties()) && $this->getCalculationProperties()->getInitialValues() == FlopyCalculationProperties::INITIAL_VALUE_STEADY_STATE_CALCULATION){
+                if ($this->stressPeriods->count() > 0)
+                {
+                    /** @var \DateTime $dateBegin */
+                    /** @var \DateTime $dateEnd */
+                    $dateBegin = clone $this->stressPeriods->first()->getDateTimeBegin();
+                    $dateEnd = clone $this->stressPeriods->first()->getDateTimeBegin();
+                    $dateBegin->modify('-1day');
 
-                $sp = StressPeriodFactory::create()
-                    ->setDateTimeBegin($dateBegin)
-                    ->setDateTimeEnd($dateEnd)
-                    ->setSteady(true);
+                    $sp = StressPeriodFactory::create()
+                        ->setDateTimeBegin($dateBegin)
+                        ->setDateTimeEnd($dateEnd)
+                        ->setSteady(true);
 
-                if (! $this->stressPeriods->contains($sp)){
-                    $this->stressPeriods->add($sp);
-                    $this->stressPeriods = $this->sortStressPeriods($this->stressPeriods);
+                    if (! $this->stressPeriods->contains($sp)){
+                        $this->stressPeriods->add($sp);
+                        $this->stressPeriods = $this->sortStressPeriods($this->stressPeriods);
+                    }
                 }
             }
         }

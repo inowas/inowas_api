@@ -23,6 +23,7 @@ use AppBundle\Model\PropertyTypeFactory;
 use AppBundle\Model\PropertyValueFactory;
 use AppBundle\Model\SoilModelFactory;
 use AppBundle\Model\StreamBoundaryFactory;
+use AppBundle\Model\StressPeriodFactory;
 use AppBundle\Model\WellBoundaryFactory;
 use Inowas\PyprocessingBundle\Model\Modflow\Package\FlopyCalculationProperties;
 use Inowas\PyprocessingBundle\Model\Modflow\ValueObject\Flopy3DArray;
@@ -498,6 +499,16 @@ class ModflowModelRestControllerTest extends RestControllerTestCase
             20 => Flopy3DArray::fromValue(1,2,3,4)->toArray()
         ));
 
+        $this->modFlowModel->addBoundary(
+            WellBoundaryFactory::create()
+            ->setName('WellBoundary')
+            ->addStressPeriod(StressPeriodFactory::createWel()
+                ->setFlux(1000)
+                ->setDateTimeBegin(new \DateTime('1.1.2015'))
+                ->setDateTimeEnd(new \DateTime('2.1.2015'))
+            )
+        );
+
         $this->getEntityManager()->persist($this->modFlowModel);
         $this->getEntityManager()->flush();
 
@@ -511,7 +522,7 @@ class ModflowModelRestControllerTest extends RestControllerTestCase
         );
 
         $this->assertEquals(200, $client->getResponse()->getStatusCode());
-        $this->assertEquals('{"20":[[[1,1,1,1],[1,1,1,1],[1,1,1,1]],[[1,1,1,1],[1,1,1,1],[1,1,1,1]]]}', $client->getResponse()->getContent());
+        $this->assertEquals('{"2015-01-19":[[[1,1,1,1],[1,1,1,1],[1,1,1,1]],[[1,1,1,1],[1,1,1,1],[1,1,1,1]]]}', $client->getResponse()->getContent());
 
         $model = $this->getEntityManager()->getRepository('AppBundle:ModFlowModel')
             ->findOneBy(array('id' => $this->modFlowModel->getId()->toString()));
@@ -541,7 +552,7 @@ class ModflowModelRestControllerTest extends RestControllerTestCase
         );
 
         $this->assertEquals(200, $client->getResponse()->getStatusCode());
-        $this->assertEquals('{"20":"[[[1.1,1.1,1.1],[1.1,1.1,1.1]]]"}', $client->getResponse()->getContent());
+        $this->assertContains("OK", $client->getResponse()->getContent());
 
         $model = $this->getEntityManager()->getRepository('AppBundle:ModFlowModel')
             ->findOneBy(array('id' => $this->modFlowModel->getId()->toString()));
