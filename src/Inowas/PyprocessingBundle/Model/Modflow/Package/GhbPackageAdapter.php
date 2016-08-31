@@ -40,10 +40,10 @@ class GhbPackageAdapter
             }
         }
 
-        /** @var GeneralHeadBoundary $b */
+        /** @var GeneralHeadBoundary $boundary */
         $stress_period_data = array();
         foreach ($boundaries as $boundary) {
-            $stress_period_data = $boundary->addStressPeriodData($stress_period_data, $this->model->getStressPeriods());
+            $stress_period_data = $boundary->aggregateStressPeriodData($stress_period_data, $this->model->getStressPeriods());
         }
 
         return $stress_period_data;

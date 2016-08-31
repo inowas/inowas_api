@@ -2,6 +2,8 @@
 
 namespace AppBundle\Model;
 
+use Inowas\PyprocessingBundle\Model\Modflow\ValueObject\ChdStressPeriod;
+use Inowas\PyprocessingBundle\Model\Modflow\ValueObject\GhbStressPeriod;
 use Inowas\PyprocessingBundle\Model\Modflow\ValueObject\RchStressPeriod;
 use Inowas\PyprocessingBundle\Model\Modflow\ValueObject\RivStressPeriod;
 use Inowas\PyprocessingBundle\Model\Modflow\ValueObject\WelStressPeriod;
@@ -54,6 +56,24 @@ class StressPeriodFactory
      */
     public static function createRch(){
         $sp = new RchStressPeriod();
+        $sp->setSteady(false);
+        return $sp;
+    }
+
+    /**
+     * @return ChdStressPeriod
+     */
+    public static function createChd(){
+        $sp = new ChdStressPeriod();
+        $sp->setSteady(false);
+        return $sp;
+    }
+
+    /**
+     * @return GhbStressPeriod
+     */
+    public static function createGhb(){
+        $sp = new GhbStressPeriod();
         $sp->setSteady(false);
         return $sp;
     }

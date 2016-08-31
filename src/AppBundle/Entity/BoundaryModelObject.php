@@ -37,26 +37,34 @@ abstract class BoundaryModelObject extends ModelObject implements BoundaryInterf
             $globalStressPeriodsKey = $this->getGlobalStressPeriodKey($stressPeriod, $globalStressPeriods);
 
             if (is_null($globalStressPeriodsKey)) {
-                return $stressPeriodData;
+                continue;
             }
+
+            $data = $this->generateStressPeriodData($stressPeriod, $this->activeCells);
 
             if (!isset($stressPeriodData[$globalStressPeriodsKey])) {
-                $stressPeriodData[$globalStressPeriodsKey] = array();
+                $stressPeriodData[$globalStressPeriodsKey] = $this->generateStressPeriodData($stressPeriod, $this->activeCells);
+                continue;
             }
 
-            $generatedStressPeriodData = $this->generateStressPeriodData($stressPeriod, $this->activeCells);
-
-            if (is_array($generatedStressPeriodData)){
-                $stressPeriodData[$globalStressPeriodsKey] = array_merge(
-                    $stressPeriodData[$globalStressPeriodsKey],
-                    $generatedStressPeriodData
-                );
+            if (is_array($data)){
+                $stressPeriodData[$globalStressPeriodsKey] = $this->mergeArrays($stressPeriodData[$globalStressPeriodsKey], $data);
             } else {
-                $stressPeriodData[$globalStressPeriodsKey] = $generatedStressPeriodData;
+                $stressPeriodData[$globalStressPeriodsKey] = $data;
             }
         }
 
         return $stressPeriodData;
+    }
+
+    /**
+     * @param array $current
+     * @param array $new
+     * @return array
+     */
+    protected function mergeArrays(array $current, array $new){
+        $merged = array_merge($current, $new);
+        return $merged;
     }
 
     /**

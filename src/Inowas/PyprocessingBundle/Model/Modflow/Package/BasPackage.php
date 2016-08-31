@@ -3,6 +3,7 @@
 namespace Inowas\PyprocessingBundle\Model\Modflow\Package;
 
 use Inowas\PyprocessingBundle\Model\Modflow\ValueObject\Flopy2DArray;
+use Inowas\PyprocessingBundle\Model\Modflow\ValueObject\Flopy3DArray;
 
 class BasPackage implements \JsonSerializable
 {
@@ -10,7 +11,7 @@ class BasPackage implements \JsonSerializable
      * ibound : array of ints, optional
      * The ibound array (the default is 1).
      *
-     * @var Flopy2DArray $ibound
+     * @var Flopy3DArray $ibound
      */
     private $ibound;
 
@@ -91,10 +92,10 @@ class BasPackage implements \JsonSerializable
     }
 
     /**
-     * @param Flopy2DArray $ibound
+     * @param Flopy3DArray $ibound
      * @return BasPackage
      */
-    public function setIbound(Flopy2DArray $ibound): BasPackage
+    public function setIbound(Flopy3DArray $ibound): BasPackage
     {
         $this->ibound = $ibound;
         return $this;

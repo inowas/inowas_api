@@ -4,7 +4,7 @@ namespace Inowas\PyprocessingBundle\Model\Modflow\Package;
 
 use AppBundle\Entity\ModFlowModel;
 
-class chdPackageFactory implements PackageFactoryInterface
+class ChdPackageFactory implements PackageFactoryInterface
 {
     public function create(ModFlowModel $model){
 

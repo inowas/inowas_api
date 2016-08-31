@@ -2,17 +2,12 @@
 
 namespace Inowas\PyprocessingBundle\Model\Modflow\Package;
 
+use AppBundle\Entity\ConstantHeadBoundary;
+use AppBundle\Entity\GeneralHeadBoundary;
 use AppBundle\Entity\ModFlowModel;
 use AppBundle\Entity\RechargeBoundary;
 use AppBundle\Entity\StreamBoundary;
 use AppBundle\Entity\WellBoundary;
-use AppBundle\Model\BoundingBox;
-use AppBundle\Model\GridSize;
-use AppBundle\Model\StressPeriod;
-use Doctrine\Common\Collections\ArrayCollection;
-use Inowas\PyprocessingBundle\Model\Modflow\ValueObject\Flopy1DArray;
-use Inowas\PyprocessingBundle\Model\Modflow\ValueObject\Flopy2DArray;
-use Inowas\PyprocessingBundle\Model\Modflow\ValueObject\Flopy3DArray;
 use Symfony\Component\Validator\Constraints as Assert;
 
 class FlopyCalculationPropertiesAdapter
@@ -49,6 +44,14 @@ class FlopyCalculationPropertiesAdapter
 
             if ($boundary instanceof RechargeBoundary){
                 $this->addPackage('rch');
+            }
+
+            if ($boundary instanceof ConstantHeadBoundary){
+                $this->addPackage('chd');
+            }
+
+            if ($boundary instanceof GeneralHeadBoundary){
+                $this->addPackage('ghb');
             }
         }
 

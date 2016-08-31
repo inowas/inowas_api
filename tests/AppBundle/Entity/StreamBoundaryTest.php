@@ -67,6 +67,7 @@ class StreamBoundaryTest extends \PHPUnit_Framework_TestCase
     }
 
     public function testGenerateStressPeriodDataWithoutOtherBoundariesOrPreCalculation(){
+
         $stressPeriodData = $this->boundary->aggregateStressPeriodData(array(), $this->boundary->getStressPeriods());
 
         $this->assertCount(3, $stressPeriodData);

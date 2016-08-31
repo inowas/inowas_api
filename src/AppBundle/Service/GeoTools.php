@@ -3,6 +3,7 @@
 namespace AppBundle\Service;
 
 use AppBundle\Entity\ModelObject;
+use AppBundle\Entity\WellBoundary;
 use AppBundle\Model\ActiveCells;
 use AppBundle\Model\GeoJson\Feature;
 use AppBundle\Model\GeoJson\FeatureCollection;
@@ -36,6 +37,10 @@ class GeoTools
      */
     public function getActiveCells(ModelObject $mo, BoundingBox $boundingBox, GridSize $gridSize)
     {
+        if ($mo instanceof WellBoundary){
+            return $this->getActiveCellsFromPoint($boundingBox, $gridSize, $mo->getGeometry());
+        }
+
         $nx = $gridSize->getNX();
         $ny = $gridSize->getNY();
         $dx = ($boundingBox->getXMax()-$boundingBox->getXMin())/$nx;

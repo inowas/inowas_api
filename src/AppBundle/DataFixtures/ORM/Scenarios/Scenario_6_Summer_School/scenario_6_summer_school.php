@@ -5,13 +5,14 @@ namespace AppBundle\DataFixtures\ORM\Scenarios\Scenario_6_Summer_School;
 use AppBundle\Entity\GeologicalLayer;
 use AppBundle\Model\AreaFactory;
 use AppBundle\Model\BoundingBox;
+use AppBundle\Model\ConstantHeadBoundaryFactory;
+use AppBundle\Model\GeneralHeadBoundaryFactory;
 use AppBundle\Model\GeologicalLayerFactory;
 use AppBundle\Model\GeologicalPointFactory;
 use AppBundle\Model\GeologicalUnitFactory;
 use AppBundle\Model\GridSize;
 use AppBundle\Model\ModFlowModelFactory;
 use AppBundle\Model\Point;
-use AppBundle\Model\PropertyTimeValueFactory;
 use AppBundle\Model\PropertyType;
 use AppBundle\Model\PropertyTypeFactory;
 use AppBundle\Model\PropertyValueFactory;
@@ -107,15 +108,15 @@ class LoadScenario_6 implements FixtureInterface, ContainerAwareInterface
         $model->getSoilModel()->addGeologicalLayer($layer_1);
 
         $geologicalPointProperties = array(
-            array(new Point(-63.64698, -31.32741, 4326), 'GP1', 415, 362),
-            array(new Point(-63.64630, -31.34237, 4326), 'GP2', 410, 360),
-            array(new Point(-63.64544, -31.35967, 4326), 'GP3', 417, 365),
-            array(new Point(-63.61591, -31.32404, 4326), 'GP4', 403, 362),
-            array(new Point(-63.61420, -31.34383, 4326), 'GP5', 397, 364),
-            array(new Point(-63.61506, -31.36011, 4326), 'GP6', 415, 362),
-            array(new Point(-63.58536, -31.32653, 4326), 'GP7', 395, 363),
-            array(new Point(-63.58261, -31.34266, 4326), 'GP8', 380, 332),
-            array(new Point(-63.58459, -31.35573, 4326), 'GP9', 410, 350)
+            array(new Point(-63.64698, -31.32741, 4326), 'GP1', 465, 392),
+            array(new Point(-63.64630, -31.34237, 4326), 'GP2', 460, 390),
+            array(new Point(-63.64544, -31.35967, 4326), 'GP3', 467, 395),
+            array(new Point(-63.61591, -31.32404, 4326), 'GP4', 463, 392),
+            array(new Point(-63.61420, -31.34383, 4326), 'GP5', 463, 394),
+            array(new Point(-63.61506, -31.36011, 4326), 'GP6', 465, 392),
+            array(new Point(-63.58536, -31.32653, 4326), 'GP7', 465, 393),
+            array(new Point(-63.58261, -31.34266, 4326), 'GP8', 460, 392),
+            array(new Point(-63.58459, -31.35573, 4326), 'GP9', 460, 390)
         );
 
         foreach ($geologicalPointProperties as $gpp){
@@ -126,9 +127,9 @@ class LoadScenario_6 implements FixtureInterface, ContainerAwareInterface
                     ->setName($gpp[1].'.1')
                     ->addValue(PropertyTypeFactory::create(PropertyType::TOP_ELEVATION), PropertyValueFactory::create()->setValue($gpp[2]))
                     ->addValue(PropertyTypeFactory::create(PropertyType::BOTTOM_ELEVATION), PropertyValueFactory::create()->setValue($gpp[3]))
-                    ->addValue(PropertyTypeFactory::create(PropertyType::KX), PropertyValueFactory::create()->setValue(42.2))
-                    ->addValue(PropertyTypeFactory::create(PropertyType::KY), PropertyValueFactory::create()->setValue(42.2))
-                    ->addValue(PropertyTypeFactory::create(PropertyType::KZ), PropertyValueFactory::create()->setValue(4.22))
+                    ->addValue(PropertyTypeFactory::create(PropertyType::KX), PropertyValueFactory::create()->setValue(10))
+                    ->addValue(PropertyTypeFactory::create(PropertyType::KY), PropertyValueFactory::create()->setValue(10))
+                    ->addValue(PropertyTypeFactory::create(PropertyType::KZ), PropertyValueFactory::create()->setValue(1))
                 ));
 
             $entityManager->persist($model);
@@ -141,8 +142,45 @@ class LoadScenario_6 implements FixtureInterface, ContainerAwareInterface
         $entityManager->persist($model);
         $entityManager->flush();
 
-        /** Constant Head */
-        #$model->addBoundary()
+        /** Constant Head West */
+        $model->addBoundary(ConstantHeadBoundaryFactory::create()
+            ->setOwner($user)
+            ->setPublic($public)
+            ->setGeometry(new LineString(array(
+                array($model->getBoundingBox()->getXMin(), $model->getBoundingBox()->getYMin()),
+                array($model->getBoundingBox()->getXMin(), $model->getBoundingBox()->getYMax())
+                ), $model->getBoundingBox()->getSrid())
+            )
+            ->addStressPeriod(StressPeriodFactory::createChd()
+                ->setDateTimeBegin(new \DateTime('1.1.2015'))
+                ->setDateTimeEnd(new \DateTime('30.6.2015'))
+                ->setShead(430)
+                ->setEhead(420)
+            )
+            ->addStressPeriod(StressPeriodFactory::createChd()
+                ->setDateTimeBegin(new \DateTime('1.7.2015'))
+                ->setDateTimeEnd(new \DateTime('31.12.2015'))
+                ->setShead(420)
+                ->setEhead(410)
+            )
+        );
+
+        /** Constant Head East */
+        $model->addBoundary(ConstantHeadBoundaryFactory::create()
+            ->setOwner($user)
+            ->setPublic($public)
+            ->setGeometry(new LineString(array(
+                    array($model->getBoundingBox()->getXMax(), $model->getBoundingBox()->getYMin()),
+                    array($model->getBoundingBox()->getXMax(), $model->getBoundingBox()->getYMax())
+                ), $model->getBoundingBox()->getSrid())
+            )
+            ->addStressPeriod(StressPeriodFactory::createChd()
+                ->setDateTimeBegin(new \DateTime('1.1.2015'))
+                ->setDateTimeEnd(new \DateTime('31.12.2015'))
+                ->setShead(420)
+                ->setEhead(410)
+            )
+        );
 
         /** River */
         $model->addBoundary(StreamBoundaryFactory::create()
@@ -214,86 +252,86 @@ class LoadScenario_6 implements FixtureInterface, ContainerAwareInterface
             ->addStressPeriod(StressPeriodFactory::createRiv()
                 ->setDateTimeBegin(new \DateTime('1.1.2015'))
                 ->setDateTimeEnd(new \DateTime('31.1.2015'))
-                ->setStage(402)
-                ->setCond(100)
-                ->setRbot(400)
+                ->setStage(446)
+                ->setCond(200)
+                ->setRbot(444)
             )
             ->addStressPeriod(StressPeriodFactory::createRiv()
                 ->setDateTimeBegin(new \DateTime('1.2.2015'))
                 ->setDateTimeEnd(new \DateTime('28.2.2015'))
-                ->setStage(402)
-                ->setCond(100)
-                ->setRbot(400)
+                ->setStage(446)
+                ->setCond(2000)
+                ->setRbot(444)
             )
             ->addStressPeriod(StressPeriodFactory::createRiv()
                 ->setDateTimeBegin(new \DateTime('1.3.2015'))
                 ->setDateTimeEnd(new \DateTime('31.3.2015'))
-                ->setStage(404)
-                ->setCond(100)
-                ->setRbot(400)
+                ->setStage(446)
+                ->setCond(2000)
+                ->setRbot(444)
             )
             ->addStressPeriod(StressPeriodFactory::createRiv()
                 ->setDateTimeBegin(new \DateTime('1.4.2015'))
                 ->setDateTimeEnd(new \DateTime('30.4.2015'))
-                ->setStage(403)
-                ->setCond(100)
-                ->setRbot(400)
+                ->setStage(445)
+                ->setCond(2000)
+                ->setRbot(444)
             )
             ->addStressPeriod(StressPeriodFactory::createRiv()
                 ->setDateTimeBegin(new \DateTime('1.5.2015'))
                 ->setDateTimeEnd(new \DateTime('31.5.2015'))
-                ->setStage(402)
-                ->setCond(100)
-                ->setRbot(400)
+                ->setStage(444.5)
+                ->setCond(2000)
+                ->setRbot(444)
             )
             ->addStressPeriod(StressPeriodFactory::createRiv()
                 ->setDateTimeBegin(new \DateTime('1.6.2015'))
                 ->setDateTimeEnd(new \DateTime('30.6.2015'))
-                ->setStage(402)
-                ->setCond(100)
-                ->setRbot(400)
+                ->setStage(444.5)
+                ->setCond(2000)
+                ->setRbot(444)
             )
             ->addStressPeriod(StressPeriodFactory::createRiv()
                 ->setDateTimeBegin(new \DateTime('1.7.2015'))
                 ->setDateTimeEnd(new \DateTime('31.6.2015'))
-                ->setStage(402)
-                ->setCond(100)
-                ->setRbot(400)
+                ->setStage(444.5)
+                ->setCond(2000)
+                ->setRbot(444)
             )
             ->addStressPeriod(StressPeriodFactory::createRiv()
                 ->setDateTimeBegin(new \DateTime('1.8.2015'))
                 ->setDateTimeEnd(new \DateTime('31.8.2015'))
-                ->setStage(403)
-                ->setCond(100)
-                ->setRbot(400)
+                ->setStage(444.5)
+                ->setCond(2000)
+                ->setRbot(444)
             )
             ->addStressPeriod(StressPeriodFactory::createRiv()
                 ->setDateTimeBegin(new \DateTime('1.9.2015'))
                 ->setDateTimeEnd(new \DateTime('30.9.2015'))
-                ->setStage(402)
-                ->setCond(100)
-                ->setRbot(400)
+                ->setStage(444.5)
+                ->setCond(20)
+                ->setRbot(444)
             )
             ->addStressPeriod(StressPeriodFactory::createRiv()
                 ->setDateTimeBegin(new \DateTime('1.10.2015'))
                 ->setDateTimeEnd(new \DateTime('31.10.2015'))
-                ->setStage(401)
-                ->setCond(100)
-                ->setRbot(400)
+                ->setStage(445)
+                ->setCond(20)
+                ->setRbot(444)
             )
             ->addStressPeriod(StressPeriodFactory::createRiv()
                 ->setDateTimeBegin(new \DateTime('1.11.2015'))
                 ->setDateTimeEnd(new \DateTime('30.11.2015'))
-                ->setStage(402)
-                ->setCond(100)
-                ->setRbot(400)
+                ->setStage(446)
+                ->setCond(20)
+                ->setRbot(444)
             )
             ->addStressPeriod(StressPeriodFactory::createRiv()
                 ->setDateTimeBegin(new \DateTime('1.12.2015'))
                 ->setDateTimeEnd(new \DateTime('31.12.2015'))
-                ->setStage(401)
-                ->setCond(100)
-                ->setRbot(400)
+                ->setStage(446)
+                ->setCond(20)
+                ->setRbot(444)
             )
         );
 
@@ -305,7 +343,7 @@ class LoadScenario_6 implements FixtureInterface, ContainerAwareInterface
             ->addStressPeriod(StressPeriodFactory::createWel()
                 ->setDateTimeBegin(new \DateTime('1.1.2015'))
                 ->setDateTimeEnd(new \DateTime('31.12.2015'))
-                ->setFlux(-1000)
+                ->setFlux(-10000)
             )
         );
 
@@ -317,7 +355,7 @@ class LoadScenario_6 implements FixtureInterface, ContainerAwareInterface
             ->addStressPeriod(StressPeriodFactory::createWel()
                 ->setDateTimeBegin(new \DateTime('1.1.2015'))
                 ->setDateTimeEnd(new \DateTime('31.12.2015'))
-                ->setFlux(-2000)
+                ->setFlux(-10000)
             )
         );
 
@@ -329,7 +367,7 @@ class LoadScenario_6 implements FixtureInterface, ContainerAwareInterface
             ->addStressPeriod(StressPeriodFactory::createWel()
                 ->setDateTimeBegin(new \DateTime('1.1.2015'))
                 ->setDateTimeEnd(new \DateTime('31.12.2015'))
-                ->setFlux(-2000)
+                ->setFlux(-10000)
             )
         );
 
@@ -341,7 +379,7 @@ class LoadScenario_6 implements FixtureInterface, ContainerAwareInterface
             ->addStressPeriod(StressPeriodFactory::createWel()
                 ->setDateTimeBegin(new \DateTime('1.1.2015'))
                 ->setDateTimeEnd(new \DateTime('31.12.2015'))
-                ->setFlux(-2000)
+                ->setFlux(-10000)
             )
         );
 
@@ -353,7 +391,7 @@ class LoadScenario_6 implements FixtureInterface, ContainerAwareInterface
             ->addStressPeriod(StressPeriodFactory::createWel()
                 ->setDateTimeBegin(new \DateTime('1.1.2015'))
                 ->setDateTimeEnd(new \DateTime('31.12.2015'))
-                ->setFlux(-2000)
+                ->setFlux(-10000)
             )
         );
 
@@ -365,7 +403,7 @@ class LoadScenario_6 implements FixtureInterface, ContainerAwareInterface
             ->addStressPeriod(StressPeriodFactory::createWel()
                 ->setDateTimeBegin(new \DateTime('1.1.2015'))
                 ->setDateTimeEnd(new \DateTime('31.12.2015'))
-                ->setFlux(-5000)
+                ->setFlux(-20000)
             )
         );
 
@@ -377,7 +415,7 @@ class LoadScenario_6 implements FixtureInterface, ContainerAwareInterface
             ->addStressPeriod(StressPeriodFactory::createWel()
                 ->setDateTimeBegin(new \DateTime('1.1.2015'))
                 ->setDateTimeEnd(new \DateTime('31.12.2015'))
-                ->setFlux(-5000)
+                ->setFlux(-20000)
             )
         );
 
@@ -390,7 +428,7 @@ class LoadScenario_6 implements FixtureInterface, ContainerAwareInterface
             ->addStressPeriod(StressPeriodFactory::createRch()
                 ->setDateTimeBegin(new \DateTime('1.1.2015'))
                 ->setDateTimeEnd(new \DateTime('31.12.2015'))
-                ->setRech(Flopy2DArray::fromValue(1e-3))
+                ->setRech(Flopy2DArray::fromValue(0.0001))
             )
         );
 

@@ -425,8 +425,8 @@ I.model = {
         // where value is a three dimensional heads array
         var dates = Object.keys(data);
 
-        var min = 0;
-        var max = 200;
+        var min = 390;
+        var max = 460;
 
         /**
         for( var i = 0; i < heads.length; i++ ){

@@ -2,9 +2,12 @@
 
 namespace Inowas\PyprocessingBundle\Model\Modflow\Package;
 
+use AppBundle\Entity\ConstantHeadBoundary;
 use AppBundle\Entity\ModFlowModel;
 use AppBundle\Model\ActiveCells;
+use Inowas\PyprocessingBundle\Exception\InvalidArgumentException;
 use Inowas\PyprocessingBundle\Model\Modflow\ValueObject\Flopy2DArray;
+use Inowas\PyprocessingBundle\Model\Modflow\ValueObject\Flopy3DArray;
 
 class BasPackageAdapter
 {
@@ -22,25 +25,29 @@ class BasPackageAdapter
     }
 
     /**
-     * @return Flopy2DArray
+     * @return Flopy3DArray
      */
-    public function getIbound(): Flopy2DArray
+    public function getIbound(): Flopy3DArray
     {
         if (! $this->model->getActiveCells() instanceof ActiveCells){
-            return Flopy2DArray::fromValue(1, $this->model->getGridSize()->getNY(), $this->model->getGridSize()->getNY());
+            return Flopy3DArray::fromValue(1, $this->model->getGridSize()->getNY(), $this->model->getGridSize()->getNY());
         }
 
         $activeCells = $this->model->getActiveCells()->toArray();
 
         $iBound = array();
-        foreach ($activeCells as $nRow => $rowValue){
-            $iBound[$nRow] = array();
-            foreach ($rowValue as $nCol => $value){
-                $iBound[$nRow][$nCol] = (int)$value;
+        for ($nLay = 0; $nLay<$this->model->getSoilModel()->getNumberOfGeologicalLayers(); $nLay++){
+            $iBound[$nLay] = array();
+
+            foreach ($activeCells as $nRow => $rowValue){
+                $iBound[$nLay][$nRow] = array();
+                foreach ($rowValue as $nCol => $value){
+                    $iBound[$nLay][$nRow][$nCol] = (int)$value;
+                }
             }
         }
 
-        return Flopy2DArray::fromValue($iBound, $this->model->getGridSize()->getNY(), $this->model->getGridSize()->getNY());
+        return Flopy3DArray::fromValue($iBound, $this->model->getSoilModel()->getNumberOfGeologicalLayers(), $this->model->getGridSize()->getNY(), $this->model->getGridSize()->getNY());
     }
 
     /**
@@ -48,7 +55,7 @@ class BasPackageAdapter
      */
     public function getStrt(): Flopy2DArray
     {
-        return Flopy2DArray::fromValue(1.0, $this->model->getGridSize()->getNY(), $this->model->getGridSize()->getNY());
+        return Flopy2DArray::fromValue(400.0, $this->model->getGridSize()->getNY(), $this->model->getGridSize()->getNY());
     }
 
     /**

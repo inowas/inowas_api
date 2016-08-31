@@ -184,7 +184,6 @@ class Flopy3DArray extends FlopyArray implements FlopyArrayInterface, \JsonSeria
      * @return array|float|int
      */
     public function toReducedArray(){
-
         if ($this->count_dimension($this->value) == 3){
             foreach ($this->value as $lKey => $layer){
                 foreach ($layer as $rKey => $row){
