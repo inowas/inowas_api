@@ -2,18 +2,17 @@
 
 namespace Inowas\PyprocessingBundle\Model\Modflow\Package;
 
+use AppBundle\Entity\GeneralHeadBoundary;
 use AppBundle\Entity\ModFlowModel;
-use AppBundle\Entity\RechargeBoundary;
 
-class RchPackageAdapter
+class GhbPackageAdapter
 {
-    /**
-     * @var ModFlowModel
-     */
+
+    /** @var ModFlowModel $model */
     private $model;
 
     /**
-     * RchPackageAdapter constructor.
+     * GhbPackageAdapter constructor.
      * @param ModFlowModel $model
      */
     public function __construct(ModFlowModel $model)
@@ -30,41 +29,40 @@ class RchPackageAdapter
     }
 
     /**
-     * @return int
-     */
-    public function getNrchop(): int
-    {
-        return 3;
-    }
-
-    /**
      * @return array
      */
-    public function getRech(): array
+    public function getStressPeriodData()
     {
         $boundaries = array();
         foreach ($this->model->getBoundaries() as $boundary){
-            if ($boundary instanceof RechargeBoundary){
+            if ($boundary instanceof GeneralHeadBoundary){
                 $boundaries[] = $boundary;
             }
         }
 
-        $rech = array();
-
-        /** @var RechargeBoundary $boundary */
+        /** @var GeneralHeadBoundary $b */
+        $stress_period_data = array();
         foreach ($boundaries as $boundary) {
-            $rech = $boundary->aggregateStressPeriodData($rech, $this->model->getStressPeriods());
+            $stress_period_data = $boundary->addStressPeriodData($stress_period_data, $this->model->getStressPeriods());
         }
 
-        return $rech;
+        return $stress_period_data;
     }
 
     /**
-     * @return int
+     * @return null
      */
-    public function getIrch(): int
+    public function getDtype()
     {
-        return 0;
+        return null;
+    }
+
+    /**
+     * @return null
+     */
+    public function getOptions()
+    {
+        return null;
     }
 
     /**
@@ -72,7 +70,7 @@ class RchPackageAdapter
      */
     public function getExtension(): string
     {
-        return 'rch';
+        return 'ghb';
     }
 
     /**
@@ -80,6 +78,9 @@ class RchPackageAdapter
      */
     public function getUnitnumber(): int
     {
-        return 19;
+        return 23;
     }
+
+
+
 }

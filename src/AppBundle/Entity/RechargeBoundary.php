@@ -7,7 +7,7 @@ use AppBundle\Model\StressPeriod;
 use CrEOF\Spatial\PHP\Types\Geometry\Polygon;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
-use Inowas\PyprocessingBundle\Model\Modflow\ValueObject\Flopy2DArray;
+use Inowas\PyprocessingBundle\Exception\InvalidArgumentException;
 use Inowas\PyprocessingBundle\Model\Modflow\ValueObject\RchStressPeriod;
 use Inowas\PyprocessingBundle\Model\Modflow\ValueObject\RchStressPeriodData;
 use JMS\Serializer\Annotation as JMS;
@@ -38,6 +38,12 @@ class RechargeBoundary extends BoundaryModelObject
      */
     private $stressPeriods;
 
+    public function __construct(User $owner = null, $public = true)
+    {
+        parent::__construct($owner, $public);
+        $this->stressPeriods = new ArrayCollection();
+    }
+
     /**
      * @return Polygon
      */
@@ -54,28 +60,6 @@ class RechargeBoundary extends BoundaryModelObject
     {
         $this->geometry = $geometry;
 
-        return $this;
-    }
-
-    /**
-     * @return ArrayCollection
-     */
-    public function getStressPeriods()
-    {
-        return $this->stressPeriods;
-    }
-
-    /**
-     * @param RchStressPeriod $sp
-     * @return $this
-     */
-    public function addStressPeriod(RchStressPeriod $sp)
-    {
-        if (is_null($this->stressPeriods)){
-            $this->stressPeriods = new ArrayCollection();
-        }
-
-        $this->stressPeriods->add($sp);
         return $this;
     }
     
@@ -109,32 +93,37 @@ class RechargeBoundary extends BoundaryModelObject
     }
 
     /**
-     * @param array $stressPeriodData
-     * @param ArrayCollection $globalStressPeriods
+     * @return ArrayCollection
+     */
+    public function getStressPeriods()
+    {
+        return $this->stressPeriods;
+    }
+
+    /**
+     * @param RchStressPeriod $sp
+     * @return $this
+     */
+    public function addStressPeriod(RchStressPeriod $sp)
+    {
+        $this->stressPeriods->add($sp);
+        return $this;
+    }
+
+    /**
+     * @param StressPeriod $stressPeriod
+     * @param ActiveCells $activeCells
      * @return array
      */
-    public function addStressPeriodData(array $stressPeriodData, ArrayCollection $globalStressPeriods){
+    public function generateStressPeriodData(StressPeriod $stressPeriod, ActiveCells $activeCells){
 
-        if ($this->stressPeriods == null){
-            return $stressPeriodData;
+        if (! $stressPeriod instanceof RchStressPeriod){
+            throw new InvalidArgumentException(
+                'First Argument is supposed to be from Type RchStressPeriod, %s given.', gettype($stressPeriod)
+            );
         }
 
-        /** @var RchStressPeriod $stressPeriod */
-        foreach ($this->stressPeriods as $stressPeriod){
-            /** @var StressPeriod $globalStressPeriod */
-            foreach ($globalStressPeriods as $key => $globalStressPeriod){
-                if ($stressPeriod->getDateTimeBegin() == $globalStressPeriod->getDateTimeBegin()){
-
-                    if (! isset($stressPeriodData[$key])){
-                        $stressPeriodData[$key] = array();
-                    }
-
-                    $stressPeriodData[$key] = RchStressPeriodData::create($stressPeriod->getRech());
-
-                    break;
-                }
-            }
-        }
+        $stressPeriodData = $stressPeriod->getRech()->toReducedArray();
 
         return $stressPeriodData;
     }

@@ -67,7 +67,7 @@ class StreamBoundaryTest extends \PHPUnit_Framework_TestCase
     }
 
     public function testGenerateStressPeriodDataWithoutOtherBoundariesOrPreCalculation(){
-        $stressPeriodData = $this->boundary->addStressPeriodData(array(), $this->boundary->getStressPeriods());
+        $stressPeriodData = $this->boundary->aggregateStressPeriodData(array(), $this->boundary->getStressPeriods());
 
         $this->assertCount(3, $stressPeriodData);
         $this->assertCount(9, $stressPeriodData[0]);
@@ -123,7 +123,7 @@ class StreamBoundaryTest extends \PHPUnit_Framework_TestCase
                     ->setRbot(0.1)
             ), $this->boundary->getStressPeriods()->toArray());
 
-        $stressPeriodData = $this->boundary->addStressPeriodData(array(), new ArrayCollection($globalStressPeriods));
+        $stressPeriodData = $this->boundary->aggregateStressPeriodData(array(), new ArrayCollection($globalStressPeriods));
 
         $this->assertCount(3, $stressPeriodData);
         $this->assertCount(9, $stressPeriodData[1]);
@@ -169,7 +169,7 @@ class StreamBoundaryTest extends \PHPUnit_Framework_TestCase
 
     public function testGenerateStressPeriodDataAfterOtherRiverBoundary(){
 
-        $stressPeriodData = $this->boundary->addStressPeriodData(array(), $this->boundary->getStressPeriods());
+        $stressPeriodData = $this->boundary->aggregateStressPeriodData(array(), $this->boundary->getStressPeriods());
 
         $this->assertCount(3, $stressPeriodData);
         $this->assertCount(9, $stressPeriodData[0]);
@@ -187,7 +187,7 @@ class StreamBoundaryTest extends \PHPUnit_Framework_TestCase
             ))
         );
 
-        $stressPeriodData = $this->boundary->addStressPeriodData($stressPeriodData, $this->boundary->getStressPeriods());
+        $stressPeriodData = $this->boundary->aggregateStressPeriodData($stressPeriodData, $this->boundary->getStressPeriods());
 
         $this->assertCount(3, $stressPeriodData);
         $this->assertCount(10, $stressPeriodData[0]);

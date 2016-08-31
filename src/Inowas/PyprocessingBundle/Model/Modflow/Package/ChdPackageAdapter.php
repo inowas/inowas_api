@@ -34,7 +34,7 @@ class ChdPackageAdapter
         $stress_period_data = array();
         /** @var ConstantHeadBoundary $boundary */
         foreach ($boundaries as $boundary) {
-            $stress_period_data = $boundary->addStressPeriodData($stress_period_data, $this->model->getStressPeriods());
+            $stress_period_data = $boundary->aggregateStressPeriodData($stress_period_data, $this->model->getStressPeriods());
         }
 
         return $stress_period_data;

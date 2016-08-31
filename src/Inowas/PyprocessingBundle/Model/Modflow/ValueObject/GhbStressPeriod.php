@@ -8,16 +8,13 @@ use AppBundle\Model\StressPeriod;
  * Class RivStressPeriod
  * @package Inowas\PyprocessingBundle\Model\Modflow\ValueObject
  */
-class RivStressPeriod extends StressPeriod
+class GhbStressPeriod extends StressPeriod
 {
     /** @var float */
     private $stage;
 
     /** @var float */
     private $cond;
-
-    /** @var float */
-    private $rbot;
 
     /**
      * @return float
@@ -29,9 +26,9 @@ class RivStressPeriod extends StressPeriod
 
     /**
      * @param float $stage
-     * @return RivStressPeriod
+     * @return GhbStressPeriod
      */
-    public function setStage(float $stage): RivStressPeriod
+    public function setStage(float $stage): GhbStressPeriod
     {
         $this->stage = $stage;
         return $this;
@@ -47,35 +44,17 @@ class RivStressPeriod extends StressPeriod
 
     /**
      * @param float $cond
-     * @return RivStressPeriod
+     * @return GhbStressPeriod
      */
-    public function setCond(float $cond): RivStressPeriod
+    public function setCond(float $cond): GhbStressPeriod
     {
         $this->cond = $cond;
         return $this;
     }
 
     /**
-     * @return float
-     */
-    public function getRbot(): float
-    {
-        return $this->rbot;
-    }
-
-    /**
-     * @param float $rbot
-     * @return RivStressPeriod
-     */
-    public function setRbot(float $rbot): RivStressPeriod
-    {
-        $this->rbot = $rbot;
-        return $this;
-    }
-
-    /**
      * @param $value
-     * @return RivStressPeriod
+     * @return GhbStressPeriod
      */
     public static function fromArray($value){
         $instance = new self();
@@ -86,16 +65,17 @@ class RivStressPeriod extends StressPeriod
         $instance->setTimeStepMultiplier($value['timeStepMultiplier']);
         $instance->setStage($value['stage']);
         $instance->setCond($value['cond']);
-        $instance->setRbot($value['rbot']);
         return $instance;
     }
 
+    /**
+     * @return array
+     */
     public function jsonSerialize()
     {
         $arr = parent::jsonSerialize();
         $arr['stage'] = $this->stage;
         $arr['cond'] = $this->cond;
-        $arr['rbot'] = $this->rbot;
 
         return $arr;
     }

@@ -3,8 +3,6 @@
 namespace AppBundle\DataFixtures\ORM\Scenarios\Scenario_6_Summer_School;
 
 use AppBundle\Entity\GeologicalLayer;
-use AppBundle\Entity\StreamBoundary;
-use AppBundle\Entity\WellBoundary;
 use AppBundle\Model\AreaFactory;
 use AppBundle\Model\BoundingBox;
 use AppBundle\Model\GeologicalLayerFactory;
@@ -406,7 +404,7 @@ class LoadScenario_6 implements FixtureInterface, ContainerAwareInterface
             ->addStressPeriod(StressPeriodFactory::createRch()
                 ->setDateTimeBegin(new \DateTime('1.1.2015'))
                 ->setDateTimeEnd(new \DateTime('31.12.2015'))
-                ->setRech(Flopy2DArray::fromValue(0.0e-3))
+                ->setRech(Flopy2DArray::fromValue(1e-3))
             )
         );
 
@@ -415,15 +413,11 @@ class LoadScenario_6 implements FixtureInterface, ContainerAwareInterface
 
         $model->setActiveCells($geoTools->getActiveCells($model->getArea(), $model->getBoundingBox(), $model->getGridSize()));
         foreach ($model->getModelObjects() as $mo){
-            /** @var StreamBoundary $boundary */
-            if ($mo instanceof StreamBoundary){
-                $mo->setActiveCells($geoTools->getActiveCells($mo, $model->getBoundingBox(), $model->getGridSize()));
-            }
-
-            if ($mo instanceof WellBoundary){
-                echo sprintf("Set activeCells for Well %s\r\n", $mo->getId());
-                $mo->setActiveCells($geoTools->getActiveCells($mo, $model->getBoundingBox(), $model->getGridSize()));
-            }
+            #preg_match('/[^\\]+$/', get_class($mo), $classNames);
+            echo sprintf("Set activeCells for %s %s\r\n",
+                get_class($mo),
+                $mo->getId());
+            $mo->setActiveCells($geoTools->getActiveCells($mo, $model->getBoundingBox(), $model->getGridSize()));
         }
 
         $entityManager->persist($model);

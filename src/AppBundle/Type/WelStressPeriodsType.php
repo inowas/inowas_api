@@ -7,6 +7,7 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Doctrine\DBAL\Types\JsonArrayType;
 use Inowas\PyprocessingBundle\Model\Modflow\ValueObject\RivStressPeriod;
+use Inowas\PyprocessingBundle\Model\Modflow\ValueObject\WelStressPeriod;
 
 /**
  * Class RivStressPeriodsType
@@ -52,14 +53,7 @@ class WelStressPeriodsType extends JsonArrayType
 
         $sps = new ArrayCollection();
         foreach ($objs as $obj) {
-            $sps->add(StressPeriodFactory::createWel()
-                ->setDateTimeBegin(new \DateTime($obj['dateTimeBegin']))
-                ->setDateTimeEnd(new \DateTime($obj['dateTimeEnd']))
-                ->setNumberOfTimeSteps($obj['numberOfTimeSteps'])
-                ->setSteady($obj['steady'])
-                ->setTimeStepMultiplier($obj['timeStepMultiplier'])
-                ->setFlux($obj['flux'])
-            );
+            $sps->add(WelStressPeriod::fromArray($obj));
         }
 
         return $sps;

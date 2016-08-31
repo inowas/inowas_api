@@ -8,6 +8,7 @@ use AppBundle\Model\StressPeriod;
 use CrEOF\Spatial\PHP\Types\Geometry\LineString;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
+use Inowas\PyprocessingBundle\Exception\InvalidArgumentException;
 use Inowas\PyprocessingBundle\Model\Modflow\ValueObject\RivStressPeriod;
 use Inowas\PyprocessingBundle\Model\Modflow\ValueObject\RivStressPeriodData;
 use JMS\Serializer\Annotation as JMS;
@@ -103,73 +104,6 @@ class StreamBoundary extends BoundaryModelObject
     }
 
     /**
-     * @return ArrayCollection
-     */
-    public function getStressPeriods()
-    {
-        return $this->stressPeriods;
-    }
-
-    /**
-     * @param array $stressPeriodData
-     * @param ArrayCollection $globalStressPeriods
-     * @return mixed
-     */
-    public function addStressPeriodData(array $stressPeriodData, ArrayCollection $globalStressPeriods){
-
-        $rivStressPeriods = $this->stressPeriods;
-
-        /** @var RivStressPeriod $rivStressPeriod */
-        foreach ($rivStressPeriods as $rivStressPeriod){
-            /** @var StressPeriod $globalStressPeriod */
-            foreach ($globalStressPeriods as $key => $globalStressPeriod){
-                if ($rivStressPeriod->getDateTimeBegin() == $globalStressPeriod->getDateTimeBegin()){
-
-                    if (! isset($stressPeriodData[$key])){
-                        $stressPeriodData[$key] = array();
-                    }
-
-                    $stressPeriodData[$key] = array_merge($stressPeriodData[$key], $this->generateStressPeriodData($rivStressPeriod, $this->activeCells));
-
-                    break;
-                }
-            }
-        }
-
-        return $stressPeriodData;
-    }
-
-    /**
-     * @param RivStressPeriod $rivStressPeriod
-     * @param ActiveCells $activeCells
-     * @return array
-     */
-    public function generateStressPeriodData(RivStressPeriod $rivStressPeriod, ActiveCells $activeCells){
-
-        $stressPeriodData = array();
-
-        foreach ($activeCells->toArray() as $nRow => $row){
-            foreach ($row as $nCol => $value){
-                if ($value == true){
-                    $stressPeriodData[] = RivStressPeriodData::create(0, $nRow, $nCol, $rivStressPeriod->getStage(), $rivStressPeriod->getCond(), $rivStressPeriod->getRbot());
-                }
-            }
-        }
-
-        return $stressPeriodData;
-    }
-
-    /**
-     * @param RivStressPeriod $sp
-     * @return $this
-     */
-    public function addStressPeriod(RivStressPeriod $sp)
-    {
-        $this->stressPeriods->add($sp);
-        return $this;
-    }
-
-    /**
      * @JMS\VirtualProperty
      * @JMS\SerializedName("starting_point")
      * @JMS\Groups({"modelobjectdetails"})
@@ -205,5 +139,49 @@ class StreamBoundary extends BoundaryModelObject
             $line["srid"] = $this->geometry->getSrid();
         }
         return $line;
+    }
+
+    /**
+     * @return ArrayCollection
+     */
+    public function getStressPeriods()
+    {
+        return $this->stressPeriods;
+    }
+
+    /**
+     * @param RivStressPeriod $sp
+     * @return $this
+     */
+    public function addStressPeriod(RivStressPeriod $sp)
+    {
+        $this->stressPeriods->add($sp);
+        return $this;
+    }
+
+    /**
+     * @param StressPeriod $stressPeriod
+     * @param ActiveCells $activeCells
+     * @return array
+     */
+    public function generateStressPeriodData(StressPeriod $stressPeriod, ActiveCells $activeCells){
+
+        if (! $stressPeriod instanceof RivStressPeriod){
+            throw new InvalidArgumentException(
+                'First Argument is supposed to be from Type RivStressPeriod, %s given.', gettype($stressPeriod)
+            );
+        }
+
+        $stressPeriodData = array();
+
+        foreach ($activeCells->toArray() as $nRow => $row){
+            foreach ($row as $nCol => $value){
+                if ($value == true){
+                    $stressPeriodData[] = RivStressPeriodData::create(0, $nRow, $nCol, $stressPeriod->getStage(), $stressPeriod->getCond(), $stressPeriod->getRbot());
+                }
+            }
+        }
+
+        return $stressPeriodData;
     }
 }

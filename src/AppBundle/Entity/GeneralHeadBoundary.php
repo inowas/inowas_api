@@ -2,9 +2,14 @@
 
 namespace AppBundle\Entity;
 
+use AppBundle\Model\ActiveCells;
+use AppBundle\Model\StressPeriod;
 use CrEOF\Spatial\PHP\Types\Geometry\LineString;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
+use Inowas\PyprocessingBundle\Exception\InvalidArgumentException;
+use Inowas\PyprocessingBundle\Model\Modflow\ValueObject\GhbStressPeriod;
+use Inowas\PyprocessingBundle\Model\Modflow\ValueObject\GhbStressPeriodData;
 use JMS\Serializer\Annotation as JMS;
 
 /**
@@ -25,6 +30,13 @@ class GeneralHeadBoundary extends BoundaryModelObject
      * @ORM\Column(name="geometry", type="linestring", nullable=true)
      */
     private $geometry;
+
+    /**
+     * @var ArrayCollection
+     *
+     * @ORM\Column(name="stress_periods", type="ghb_stress_periods", nullable=true)
+     */
+    private $stressPeriods;
     
     /**
      * @var ArrayCollection GeologicalLayer
@@ -47,8 +59,8 @@ class GeneralHeadBoundary extends BoundaryModelObject
     public function __construct(User $owner = null, $public = false)
     {
         parent::__construct($owner, $public);
-
         $this->geologicalLayers = new ArrayCollection();
+        $this->stressPeriods = new ArrayCollection();
     }
 
 /**
@@ -127,22 +139,46 @@ class GeneralHeadBoundary extends BoundaryModelObject
     }
 
     /**
-     * @return mixed
+     * @return ArrayCollection
      */
     public function getStressPeriods()
     {
-        // TODO: Implement getStressPeriods() method.
+        return $this->stressPeriods;
     }
 
     /**
-     * @param array $stressPeriodData
-     * @param ArrayCollection $globalStressPeriods
-     * @return mixed
+     * @param GhbStressPeriod $sp
+     * @return $this
      */
-    public function addStressPeriodData(array $stressPeriodData, ArrayCollection $globalStressPeriods)
+    public function addStressPeriod(GhbStressPeriod $sp)
     {
-        // TODO: Implement addStressPeriodData() method.
+        $this->stressPeriods->add($sp);
+        return $this;
     }
 
+    /**
+     * @param StressPeriod $stressPeriod
+     * @param ActiveCells $activeCells
+     * @return array
+     */
+    public function generateStressPeriodData(StressPeriod $stressPeriod, ActiveCells $activeCells){
 
+        if (! $stressPeriod instanceof GhbStressPeriod){
+            throw new InvalidArgumentException(
+                'First Argument is supposed to be from Type GhbStressPeriod, %s given.', gettype($stressPeriod)
+            );
+        }
+
+        $stressPeriodData = array();
+
+        foreach ($activeCells->toArray() as $nRow => $row){
+            foreach ($row as $nCol => $value){
+                if ($value == true){
+                    $stressPeriodData[] = GhbStressPeriodData::create(0, $nRow, $nCol, $stressPeriod->getStage(), $stressPeriod->getCond());
+                }
+            }
+        }
+
+        return $stressPeriodData;
+    }
 }

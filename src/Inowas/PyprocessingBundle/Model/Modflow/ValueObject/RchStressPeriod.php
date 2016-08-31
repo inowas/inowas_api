@@ -28,6 +28,21 @@ class RchStressPeriod extends StressPeriod
     }
 
     /**
+     * @param $value
+     * @return RchStressPeriod
+     */
+    public static function fromArray($value){
+        $instance = new self();
+        $instance->setDateTimeBegin(new \DateTime($value["dateTimeBegin"]));
+        $instance->setDateTimeEnd(new \DateTime($value["dateTimeEnd"]));
+        $instance->setNumberOfTimeSteps($value['numberOfTimeSteps']);
+        $instance->setSteady($value['steady']);
+        $instance->setTimeStepMultiplier($value['timeStepMultiplier']);
+        $instance->setRech(Flopy2DArray::fromValue($value['rech']));
+        return $instance;
+    }
+
+    /**
      * @return array
      */
     public function jsonSerialize()

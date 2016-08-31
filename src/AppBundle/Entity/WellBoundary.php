@@ -7,6 +7,7 @@ use AppBundle\Model\Point;
 use AppBundle\Model\StressPeriod;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
+use Inowas\PyprocessingBundle\Exception\InvalidArgumentException;
 use Inowas\PyprocessingBundle\Model\Modflow\ValueObject\WelStressPeriod;
 use Inowas\PyprocessingBundle\Model\Modflow\ValueObject\WelStressPeriodData;
 use JMS\Serializer\Annotation as JMS;
@@ -113,24 +114,6 @@ class WellBoundary extends BoundaryModelObject
     }
 
     /**
-     * @return ArrayCollection
-     */
-    public function getStressPeriods()
-    {
-        return $this->stressPeriods;
-    }
-
-    /**
-     * @param WelStressPeriod $sp
-     * @return $this
-     */
-    public function addStressPeriod(WelStressPeriod $sp)
-    {
-        $this->stressPeriods->add($sp);
-        return $this;
-    }
-
-    /**
      * @JMS\VirtualProperty()
      * @JMS\SerializedName("point")
      * @JMS\Groups({"details", "modelobjectdetails"})
@@ -181,41 +164,35 @@ class WellBoundary extends BoundaryModelObject
     }
 
     /**
-     * @param array $stressPeriodData
-     * @param ArrayCollection $globalStressPeriods
-     * @return array
+     * @return ArrayCollection
      */
-    public function addStressPeriodData(array $stressPeriodData, ArrayCollection $globalStressPeriods){
-
-        if ($this->stressPeriods == null){
-            return $stressPeriodData;
-        }
-
-        /** @var WelStressPeriod $stressPeriod */
-        foreach ($this->stressPeriods as $stressPeriod) {
-            /** @var StressPeriod $globalStressPeriod */
-            foreach ($globalStressPeriods as $key => $globalStressPeriod) {
-                if ($stressPeriod->getDateTimeBegin() == $globalStressPeriod->getDateTimeBegin()) {
-                    if (!isset($stressPeriodData[$key])) {
-                        $stressPeriodData[$key] = array();
-                    }
-
-                    $stressPeriodData[$key] = array_merge($stressPeriodData[$key], $this->generateStressPeriodData($stressPeriod, $this->activeCells));
-
-                    break;
-                }
-            }
-        }
-
-        return $stressPeriodData;
+    public function getStressPeriods()
+    {
+        return $this->stressPeriods;
     }
 
     /**
-     * @param WelStressPeriod $stressPeriod
+     * @param WelStressPeriod $sp
+     * @return $this
+     */
+    public function addStressPeriod(WelStressPeriod $sp)
+    {
+        $this->stressPeriods->add($sp);
+        return $this;
+    }
+
+    /**
+     * @param StressPeriod $stressPeriod
      * @param ActiveCells $activeCells
      * @return array
      */
-    public function generateStressPeriodData(WelStressPeriod $stressPeriod, ActiveCells $activeCells){
+    public function generateStressPeriodData(StressPeriod $stressPeriod, ActiveCells $activeCells){
+
+        if (! $stressPeriod instanceof WelStressPeriod){
+            throw new InvalidArgumentException(
+                'First Argument is supposed to be from Type WelStressPeriod, %s given.', gettype($stressPeriod)
+            );
+        }
 
         $stressPeriodData = array();
 

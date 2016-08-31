@@ -46,7 +46,7 @@ class RivPackageAdapter
         /** @var StreamBoundary $river */
         $stress_period_data = array();
         foreach ($rivers as $river) {
-            $stress_period_data = $river->addStressPeriodData($stress_period_data, $this->model->getStressPeriods());
+            $stress_period_data = $river->aggregateStressPeriodData($stress_period_data, $this->model->getStressPeriods());
         }
 
         return $stress_period_data;

@@ -2,12 +2,10 @@
 
 namespace AppBundle\Type;
 
-use AppBundle\Model\StressPeriodFactory;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Doctrine\DBAL\Types\JsonArrayType;
-use Inowas\PyprocessingBundle\Model\Modflow\ValueObject\Flopy2DArray;
-use Inowas\PyprocessingBundle\Model\Modflow\ValueObject\RivStressPeriod;
+use Inowas\PyprocessingBundle\Model\Modflow\ValueObject\RchStressPeriod;
 
 /**
  * Class RchStressPeriodsType
@@ -53,14 +51,7 @@ class RchStressPeriodsType extends JsonArrayType
 
         $sps = new ArrayCollection();
         foreach ($objs as $obj) {
-            $sps->add(StressPeriodFactory::createRch()
-                ->setDateTimeBegin(new \DateTime($obj['dateTimeBegin']))
-                ->setDateTimeEnd(new \DateTime($obj['dateTimeEnd']))
-                ->setNumberOfTimeSteps($obj['numberOfTimeSteps'])
-                ->setSteady($obj['steady'])
-                ->setTimeStepMultiplier($obj['timeStepMultiplier'])
-                ->setRech(Flopy2DArray::fromValue($obj['rech']))
-            );
+            $sps->add(RchStressPeriod::fromArray($obj));
         }
 
         return $sps;

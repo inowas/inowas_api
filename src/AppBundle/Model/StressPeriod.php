@@ -194,7 +194,7 @@ class StressPeriod implements \JsonSerializable
     /**
      * @return array
      */
-    function jsonSerialize()
+    public function toArray()
     {
         return array(
             "dateTimeBegin" => $this->dateTimeBegin->format(\DateTime::ATOM),
@@ -203,5 +203,29 @@ class StressPeriod implements \JsonSerializable
             "steady" => $this->steady,
             "timeStepMultiplier" => $this->timeStepMultiplier
         );
+    }
+
+
+    /**
+     * @param $value
+     * @return StressPeriod
+     */
+    public static function fromArray($value)
+    {
+        $instance = new self();
+        $instance->setDateTimeBegin(new \DateTime($value["dateTimeBegin"]));
+        $instance->setDateTimeEnd(new \DateTime($value["dateTimeEnd"]));
+        $instance->setNumberOfTimeSteps($value['numberOfTimeSteps']);
+        $instance->setSteady($value['steady']);
+        $instance->setTimeStepMultiplier($value['timeStepMultiplier']);
+        return $instance;
+    }
+
+    /**
+     * @return array
+     */
+    public function jsonSerialize()
+    {
+        return $this->toArray();
     }
 }

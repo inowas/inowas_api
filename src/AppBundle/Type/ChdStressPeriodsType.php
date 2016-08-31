@@ -5,15 +5,15 @@ namespace AppBundle\Type;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Doctrine\DBAL\Types\JsonArrayType;
-use Inowas\PyprocessingBundle\Model\Modflow\ValueObject\RivStressPeriod;
+use Inowas\PyprocessingBundle\Model\Modflow\ValueObject\ChdStressPeriod;
 
 /**
  * Class RivStressPeriodsType
  * @package AppBundle\Type
  */
-class RivStressPeriodsType extends JsonArrayType
+class ChdStressPeriodsType extends JsonArrayType
 {
-    const NAME = 'riv_stress_periods';
+    const NAME = 'chd_stress_periods';
 
     /**
      * {@inheritdoc}
@@ -51,7 +51,7 @@ class RivStressPeriodsType extends JsonArrayType
 
         $sps = new ArrayCollection();
         foreach ($objs as $obj) {
-            $sps->add(RivStressPeriod::fromArray($obj));
+            $sps->add(ChdStressPeriod::fromArray($obj));
         }
 
         return $sps;

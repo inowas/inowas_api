@@ -16,5 +16,5 @@ interface BoundaryInterface
      * @param ArrayCollection $globalStressPeriods
      * @return mixed
      */
-    public function addStressPeriodData(array $stressPeriodData, ArrayCollection $globalStressPeriods);
+    public function aggregateStressPeriodData(array $stressPeriodData, ArrayCollection $globalStressPeriods);
 }
