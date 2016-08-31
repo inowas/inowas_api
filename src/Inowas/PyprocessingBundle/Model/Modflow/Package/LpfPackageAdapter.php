@@ -113,7 +113,26 @@ class LpfPackageAdapter
      */
     public function getHk(): Flopy3DArray
     {
-        return Flopy3DArray::fromValue(1.0);
+        if (! $this->model->hasSoilModel()){
+            return null;
+        }
+
+        if ($this->model->getSoilModel()->getSortedGeologicalLayers() === null){
+            return null;
+        }
+
+        if ($this->model->getSoilModel()->getSortedGeologicalLayers()->count() == 0){
+            return null;
+        }
+
+        $layers = $this->model->getSoilModel()->getSortedGeologicalLayers();
+
+        $hk = array();
+        for ($i=0; $i<count($layers); $i++){
+            $hk[] = $layers[$i]->getKx();
+        }
+
+        return Flopy3DArray::fromValue($hk);
     }
 
     /**

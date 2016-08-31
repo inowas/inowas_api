@@ -129,8 +129,31 @@ class GeologicalLayer extends SoilModelObject
      * @return mixed
      */
     public function getBottomElevation(){
-
         $values = $this->getPropertyValuesByPropertyType(PropertyTypeFactory::create(PropertyType::BOTTOM_ELEVATION));
+        return $this->extractNumericOrRasterValueFromPropertyValue($values->first());
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getKx(){
+        $values = $this->getPropertyValuesByPropertyType(PropertyTypeFactory::create(PropertyType::KX));
+        return $this->extractNumericOrRasterValueFromPropertyValue($values->first());
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getKy(){
+        $values = $this->getPropertyValuesByPropertyType(PropertyTypeFactory::create(PropertyType::KY));
+        return $this->extractNumericOrRasterValueFromPropertyValue($values->first());
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getKz(){
+        $values = $this->getPropertyValuesByPropertyType(PropertyTypeFactory::create(PropertyType::KZ));
         return $this->extractNumericOrRasterValueFromPropertyValue($values->first());
     }
 

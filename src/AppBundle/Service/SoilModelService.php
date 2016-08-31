@@ -8,6 +8,7 @@ use AppBundle\Entity\ModFlowModel;
 use AppBundle\Entity\Property;
 use AppBundle\Entity\SoilModel;
 use AppBundle\Model\PointValue;
+use AppBundle\Model\PropertyType;
 use AppBundle\Model\PropertyValueFactory;
 use AppBundle\Model\RasterFactory;
 use Inowas\PyprocessingBundle\Model\Interpolation\InterpolationConfiguration;
@@ -141,18 +142,31 @@ class SoilModelService
         /** @var GeologicalUnit $unit */
         foreach ($units as $unit) {
             $properties = $unit->getProperties();
+
             /** @var Property $property */
             foreach ($properties as $property) {
                 $propertyType = $property->getPropertyType();
-                if (!is_null($propertyType)) {
-                    if (!$propertyTypes->contains($property->getPropertyType())) {
-                        $propertyTypes->add($property->getPropertyType());
-                    }
+                if ($propertyType instanceof PropertyType) {
+                    $this->addPropertyTypeToList($propertyType, $propertyTypes);
                 }
             }
         }
 
         return $propertyTypes;
+    }
+
+    /**
+     * @param PropertyType $type
+     * @param ArrayCollection $list
+     */
+    protected function addPropertyTypeToList(PropertyType $type, ArrayCollection $list){
+        foreach ($list as $element){
+            if ($element->getAbbreviation() == $type->getAbbreviation()){
+                return;
+            }
+        }
+
+        $list->add($type);
     }
 
     /**

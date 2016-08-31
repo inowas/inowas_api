@@ -65,6 +65,8 @@ doctrine:
             bounding_box:                 AppBundle\Type\BoundingBoxType
             grid_size:                    AppBundle\Type\GridSizeType
             property_type:                AppBundle\Type\PropertyTypeType
+            chd_stress_periods:           AppBundle\Type\ChdStressPeriodsType
+            ghb_stress_periods:           AppBundle\Type\GhbStressPeriodsType
             rch_stress_periods:           AppBundle\Type\RchStressPeriodsType
             riv_stress_periods:           AppBundle\Type\RivStressPeriodsType
             wel_stress_periods:           AppBundle\Type\WelStressPeriodsType

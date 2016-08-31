@@ -70,12 +70,6 @@ class LoadScenario_6 implements FixtureInterface, ContainerAwareInterface
 
         $geoTools = $this->container->get('inowas.geotools');
 
-        // Load PropertyTypes
-        $propertyTypeTopElevation = PropertyTypeFactory::create(PropertyType::TOP_ELEVATION);
-        $propertyTypeBottomElevation = PropertyTypeFactory::create(PropertyType::BOTTOM_ELEVATION);
-        $propertyTypeHydraulicConductivity = PropertyTypeFactory::create(PropertyType::HYDRAULIC_CONDUCTIVITY);
-        $propertyTypeRiverStage = PropertyTypeFactory::create(PropertyType::RIVER_STAGE);
-
         $model = ModFlowModelFactory::create()
             ->setName("Inowas Rio Primero")
             ->setOwner($user)
@@ -130,8 +124,11 @@ class LoadScenario_6 implements FixtureInterface, ContainerAwareInterface
                 ->setPoint($gpp[0])
                 ->addGeologicalUnit(GeologicalUnitFactory::create()
                     ->setName($gpp[1].'.1')
-                    ->addValue($propertyTypeTopElevation, PropertyValueFactory::create()->setValue($gpp[2]))
-                    ->addValue($propertyTypeBottomElevation, PropertyValueFactory::create()->setValue($gpp[3]))
+                    ->addValue(PropertyTypeFactory::create(PropertyType::TOP_ELEVATION), PropertyValueFactory::create()->setValue($gpp[2]))
+                    ->addValue(PropertyTypeFactory::create(PropertyType::BOTTOM_ELEVATION), PropertyValueFactory::create()->setValue($gpp[3]))
+                    ->addValue(PropertyTypeFactory::create(PropertyType::KX), PropertyValueFactory::create()->setValue(42.2))
+                    ->addValue(PropertyTypeFactory::create(PropertyType::KY), PropertyValueFactory::create()->setValue(42.2))
+                    ->addValue(PropertyTypeFactory::create(PropertyType::KZ), PropertyValueFactory::create()->setValue(4.22))
                 ));
 
             $entityManager->persist($model);
@@ -143,6 +140,9 @@ class LoadScenario_6 implements FixtureInterface, ContainerAwareInterface
 
         $entityManager->persist($model);
         $entityManager->flush();
+
+        /** Constant Head */
+        #$model->addBoundary()
 
         /** River */
         $model->addBoundary(StreamBoundaryFactory::create()
@@ -211,20 +211,6 @@ class LoadScenario_6 implements FixtureInterface, ContainerAwareInterface
                 array(-63.5786914837081, -31.336257834796644),
                 array(-63.57684, -31.33429)
             ), 4326))
-            ->addValue($propertyTypeBottomElevation, PropertyValueFactory::create()->setValue(400))
-            ->addValue($propertyTypeHydraulicConductivity, PropertyValueFactory::create()->setValue(100))
-            ->addValue($propertyTypeRiverStage, PropertyTimeValueFactory::createWithTimeAndValue(new \DateTime('2015-01-01'), 410))
-            ->addValue($propertyTypeRiverStage, PropertyTimeValueFactory::createWithTimeAndValue(new \DateTime('2015-02-01'), 411))
-            ->addValue($propertyTypeRiverStage, PropertyTimeValueFactory::createWithTimeAndValue(new \DateTime('2015-03-01'), 412))
-            ->addValue($propertyTypeRiverStage, PropertyTimeValueFactory::createWithTimeAndValue(new \DateTime('2015-04-01'), 408))
-            ->addValue($propertyTypeRiverStage, PropertyTimeValueFactory::createWithTimeAndValue(new \DateTime('2015-05-01'), 404))
-            ->addValue($propertyTypeRiverStage, PropertyTimeValueFactory::createWithTimeAndValue(new \DateTime('2015-06-01'), 412))
-            ->addValue($propertyTypeRiverStage, PropertyTimeValueFactory::createWithTimeAndValue(new \DateTime('2015-07-01'), 408))
-            ->addValue($propertyTypeRiverStage, PropertyTimeValueFactory::createWithTimeAndValue(new \DateTime('2015-08-01'), 403))
-            ->addValue($propertyTypeRiverStage, PropertyTimeValueFactory::createWithTimeAndValue(new \DateTime('2015-09-01'), 402))
-            ->addValue($propertyTypeRiverStage, PropertyTimeValueFactory::createWithTimeAndValue(new \DateTime('2015-10-01'), 401))
-            ->addValue($propertyTypeRiverStage, PropertyTimeValueFactory::createWithTimeAndValue(new \DateTime('2015-11-01'), 400))
-            ->addValue($propertyTypeRiverStage, PropertyTimeValueFactory::createWithTimeAndValue(new \DateTime('2015-12-01'), 399))
             ->addStressPeriod(StressPeriodFactory::createRiv()
                 ->setDateTimeBegin(new \DateTime('1.1.2015'))
                 ->setDateTimeEnd(new \DateTime('31.1.2015'))
