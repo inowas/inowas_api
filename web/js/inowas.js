@@ -425,27 +425,26 @@ I.model = {
         // where value is a three dimensional heads array
         var dates = Object.keys(data);
 
-        var min = 390;
-        var max = 460;
-
-        /**
-        for( var i = 0; i < heads.length; i++ ){
-            max = Math.max.apply( null, heads[i].concat( max ) );
-        }
-
-
-        for( i = 0; i < heads.length; i++ ){
-            min = Math.min.apply( null, heads[i].concat( min ) );
-        }
-        */
-
         var layerGroup = L.layerGroup();
         for ( var i=0; i<dates.length; i++ ){
-            var head = data[dates[i]];
-            if (typeof head == "string"){
-                head = $.parseJSON(head)
+            var heads = data[dates[i]];
+            if (typeof heads == "string"){
+                heads = $.parseJSON(heads)
             }
-            layerGroup = this.createHeadsLayer(head, min, max, dates[i], this.boundingBox, this.gridSize, layerGroup);
+
+            console.log(heads.length);
+
+            var allHeads =[];
+            for (var j=0; j<heads[0].length; j++){
+                allHeads = $.merge(allHeads, heads[0][j]);
+            }
+
+            // Calculating 5%/95% percentile
+            allHeads.sort();
+            var min = allHeads[Math.round(5 * allHeads.length/100)];
+            var max = allHeads[Math.round(95 * allHeads.length/100)];
+
+            layerGroup = this.createHeadsLayer(heads, min, max, dates[i], this.boundingBox, this.gridSize, layerGroup);
         }
 
         var sliderControl = L.control.sliderControl({
