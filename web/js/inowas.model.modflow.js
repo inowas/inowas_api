@@ -139,6 +139,18 @@ $( "#btn_delete_model").click(function () {
     });
 });
 
+$( "#btn_calculate_model").click(function () {
+    $.ajax({
+        type: 'POST',
+        url: '/api/modflowmodels/'+I.model.id+'/calculation.json',
+        statusCode: {
+            200: function() {
+                window.location.href = "/models/modflow";
+            }
+        }
+    });
+});
+
 $( "#btn_save_area").click(function () {
     if (I.model.updateProperties( I.model.id ) == true) {
         $( "#btn_save_area" ).hide();
