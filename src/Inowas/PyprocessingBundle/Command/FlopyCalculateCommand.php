@@ -123,7 +123,7 @@ class FlopyCalculateCommand extends ContainerAwareCommand
         $this->getContainer()->get('doctrine.orm.default_entity_manager')->flush();
 
         if ($input->getOption('async') === 'true'){
-            $flopy->addToQueue($apiBaseUrl, $dataFolder, $model->getId()->toString(), $model->getOwner());
+            $flopy->addToQueue($apiBaseUrl, $dataFolder, $model->getId()->toString(), $model->getOwner()->getId()->toString());
             $flopy->startAsyncFlopyProcessRunner($this->getContainer()->get('kernel')->getRootDir());
             return 1;
         }
