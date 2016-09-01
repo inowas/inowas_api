@@ -10,6 +10,7 @@ use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\Process\ProcessBuilder;
 
 class FlopyCalculateCommand extends ContainerAwareCommand
 {
@@ -45,6 +46,13 @@ class FlopyCalculateCommand extends ContainerAwareCommand
                 InputOption::VALUE_OPTIONAL,
                 'Upload the data to local database, setting totim.',
                 true
+            )
+            ->addOption(
+                'async',
+                'a',
+                InputOption::VALUE_OPTIONAL,
+                'Start a asynchronous Job.',
+                false
             )
         ;
     }
@@ -114,6 +122,18 @@ class FlopyCalculateCommand extends ContainerAwareCommand
         $model->setHeads(array());
         $this->getContainer()->get('doctrine.orm.default_entity_manager')->persist($model);
         $this->getContainer()->get('doctrine.orm.default_entity_manager')->flush();
+
+        if ($input->getOption('async') === 'true'){
+            $process = ProcessBuilder::create()
+                ->setWorkingDirectory($this->getContainer()->get('kernel')->getRootDir())
+                ->setPrefix('/usr/bin/php')
+                ->setArguments(array('bin/console', 'inowas:flopy:process:runner'))
+                ->getProcess();
+
+            $process->start();
+
+            return 1;
+        }
 
         $process = $flopy->calculate(
             $apiBaseUrl,
