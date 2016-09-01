@@ -8,13 +8,13 @@ use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Filesystem\LockHandler;
 
-class ModflowProcessRunnerCommand extends ContainerAwareCommand
+class FlopyProcessRunnerCommand extends ContainerAwareCommand
 {
     protected function configure()
     {
         // Name and description for app/console command
         $this
-            ->setName('inowas:modflow:process:runner')
+            ->setName('inowas:flopy:process:runner')
             ->setDescription('Service that runs all models in the queue.')
             ->addOption(
                 'daemon',
@@ -28,7 +28,7 @@ class ModflowProcessRunnerCommand extends ContainerAwareCommand
     protected function execute(InputInterface $input, OutputInterface $output)
     {
 
-        $lockHandler = new LockHandler('inowas.modflow.servicerunner');
+        $lockHandler = new LockHandler('inowas:flopy:process:runner');
         if (!$lockHandler->lock()) {
             $output->writeln('This command is already running in another process.');
             return 0;
@@ -36,12 +36,14 @@ class ModflowProcessRunnerCommand extends ContainerAwareCommand
 
         if ($input->getOption('daemon') == true){
             $output->writeln(sprintf("Start ServiceRunner as Daemon"));
-            $modflowServiceRunner = $this->getContainer()->get('inowas.modflow.servicerunner');
+            $modflowServiceRunner = $this->getContainer()->get('inowas.flopy.servicerunner');
             $modflowServiceRunner->run(true);
         }
 
         $output->writeln(sprintf("Start ServiceRunner"));
-        $modflowServiceRunner = $this->getContainer()->get('inowas.modflow.servicerunner');
+        $modflowServiceRunner = $this->getContainer()->get('inowas.flopy.servicerunner');
         $modflowServiceRunner->run(false);
+
+        return true;
     }
 }

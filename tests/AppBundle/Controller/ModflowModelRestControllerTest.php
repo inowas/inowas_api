@@ -391,7 +391,10 @@ class ModflowModelRestControllerTest extends RestControllerTestCase
         $this->assertEquals(302, $client->getResponse()->getStatusCode());
         $client->followRedirect();
         $this->assertEquals(200, $client->getResponse()->getStatusCode());
-        $this->assertRegExp('/api\/calculations\//', $client->getRequest()->getUri());
+        $this->assertRegExp(
+            sprintf('/api\/modflowmodels\/%s\/calculations.json/', $this->modFlowModel->getId()->toString()),
+            $client->getRequest()->getUri()
+        );
     }
 
     public function testGetModFlowModelBoundingBoxWithSrid3857ShouldNotTransform()
@@ -622,6 +625,8 @@ class ModflowModelRestControllerTest extends RestControllerTestCase
 
         $this->assertNull($model);
     }
+
+
 
     /**
      * {@inheritDoc}

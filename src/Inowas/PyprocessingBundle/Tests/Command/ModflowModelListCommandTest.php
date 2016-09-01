@@ -2,7 +2,7 @@
 
 namespace Inowas\PyprocessingBundle\Tests\Command;
 
-use Inowas\PyprocessingBundle\Command\ModflowModelListCommand;
+use Inowas\PyprocessingBundle\Command\ModelListCommand;
 use Symfony\Bundle\FrameworkBundle\Console\Application;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Symfony\Component\Console\Tester\CommandTester;
@@ -15,7 +15,7 @@ class ModflowModelCommandTest extends KernelTestCase
         $kernel->boot();
 
         $application = new Application($kernel);
-        $application->add(new ModflowModelListCommand());
+        $application->add(new ModelListCommand());
         $command = $application->find('inowas:model:list');
         $commandTester = new CommandTester($command);
 

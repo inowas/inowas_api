@@ -25,6 +25,8 @@ use AppBundle\Model\SoilModelFactory;
 use CrEOF\Spatial\PHP\Types\Geometry\Polygon;
 use FOS\RestBundle\Controller\Annotations\RequestParam;
 use Inowas\PyprocessingBundle\Model\GeoImage\GeoImageParameter;
+use Inowas\PyprocessingBundle\Model\Modflow\Package\FlopyCalculationPropertiesFactory;
+use Inowas\PyprocessingBundle\Service\Flopy;
 use Inowas\PyprocessingBundle\Service\GeoImage;
 use FOS\RestBundle\Controller\Annotations\QueryParam;
 use FOS\RestBundle\Controller\FOSRestController;
@@ -38,6 +40,7 @@ use Symfony\Component\HttpFoundation\BinaryFileResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
+use Symfony\Component\Process\ProcessBuilder;
 
 class ModelRestController extends FOSRestController
 {
@@ -849,7 +852,7 @@ class ModelRestController extends FOSRestController
     }
 
     /**
-     * Returns state of calculation of the model by calculation-id.
+     * Returns state of calculation of the model by model-id.
      *
      * @ApiDoc(
      *   resource = true,
@@ -881,11 +884,11 @@ class ModelRestController extends FOSRestController
     }
 
     /**
-     * Returns state of calculation of the model by calculation-id.
+     * Sends the command to calculate the model by model-id.
      *
      * @ApiDoc(
      *   resource = true,
-     *   description = "Returns state of calculation of the model by calculation-id.",
+     *   description = "Sends the command to calculate the model by model-id",
      *   statusCodes = {
      *     200 = "Returned when successful",
      *     404 = "Returned when the Calculation-Id is not found"
@@ -896,13 +899,34 @@ class ModelRestController extends FOSRestController
      *
      * @return Response
      */
-    public function postModflowmodelCalculationsAction($id)
+    public function postModflowmodelCalculationAction($id)
     {
-        $this->findModelById($id);
-        $modflowService = $this->get('inowas.modflow');
-        $modflowCalculation = $modflowService->addToQueue($id);
+        /** @var ModFlowModel $model */
+        $model = $this->findModelById($id);
+        $fpc = FlopyCalculationPropertiesFactory::loadFromApiRunAndSubmit($model);
+        $model->setCalculationProperties($fpc);
+        $this->getDoctrine()->getManager()->persist($model);
+        $this->getDoctrine()->getManager()->flush();
 
-        return $this->redirect($this->generateUrl('get_calculation', array('id' => $modflowCalculation->getId()->toString())));
+        /** @var Flopy $flopy */
+        $flopy = $this->get('inowas.flopy');
+
+        $flopy->addToQueue(
+            $this->getParameter('inowas.api_base_url'),
+            $this->getParameter('inowas.modflow.data_folder'),
+            $model->getId()->toString(),
+            $model->getOwner()->getId()->toString()
+        );
+
+        $process = ProcessBuilder::create()
+            ->setWorkingDirectory($this->get('kernel')->getRootDir())
+            ->setPrefix('/usr/bin/php')
+            ->setArguments(array('bin/console', 'inowas:flopy:process:runner'))
+            ->getProcess();
+
+        $process->start();
+
+        return $this->redirect($this->generateUrl('get_modflowmodel_calculations', array('id' => $model->getId()->toString())).'.json');
     }
 
     /**

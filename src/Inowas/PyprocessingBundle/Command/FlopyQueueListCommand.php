@@ -2,18 +2,19 @@
 
 namespace Inowas\PyprocessingBundle\Command;
 
+use AppBundle\Entity\ModflowCalculation;
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
-class ModflowListQueueCommand extends ContainerAwareCommand
+class FlopyQueueListCommand extends ContainerAwareCommand
 {
 
     protected function configure()
     {
         // Name and description for app/console command
         $this
-            ->setName('inowas:modflow:queue:list')
+            ->setName('inowas:flopy:queue:list')
             ->setDescription('List all waiting Models in the queue')
         ;
     }
@@ -23,14 +24,15 @@ class ModflowListQueueCommand extends ContainerAwareCommand
         $output->writeln(sprintf("List all models in the Modflow queue."));
         $em = $this->getContainer()->get('doctrine.orm.entity_manager');
 
-        $models = $em->getRepository('AppBundle:ModflowCalculation')
+        $calculations = $em->getRepository('AppBundle:ModflowCalculation')
             ->findBy(
                 array('state' => 0),
                 array('dateTimeAddToQueue' => 'ASC')
                 );
 
-        foreach ($models as $model){
-            $output->writeln($model->getModelId()->toString());
+        /** @var ModflowCalculation $calculation */
+        foreach ($calculations as $calculation){
+            $output->writeln($calculation->getModelId()->toString());
         }
 
         $output->writeln('List End.');

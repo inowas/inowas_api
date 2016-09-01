@@ -79,7 +79,6 @@ class FlopyCalculateCommand extends ContainerAwareCommand
                 return 0;
             }
 
-
         } else {
             $modflowModels = $this->getContainer()->get('doctrine.orm.default_entity_manager')->getRepository('AppBundle:ModFlowModel')
                 ->findBy(
@@ -100,20 +99,15 @@ class FlopyCalculateCommand extends ContainerAwareCommand
         $flopy = $this->getContainer()->get('inowas.flopy');
         $dataFolder = $this->getContainer()->getParameter('inowas.modflow.data_folder');
 
-        $fpc = FlopyCalculationPropertiesFactory::loadFromApiAndRun($model);
+        $fpc = FlopyCalculationPropertiesFactory::loadFromApiRunAndSubmit($model);
 
         $apiBaseUrl = $this->getContainer()->getParameter('inowas.api_base_url');
         if ($input->getOption('port')){
             $apiBaseUrl = sprintf("http://localhost:%s/api", $input->getOption('port'));
         }
 
-        if ($input->getOption('submit')){
-            $fpc->setSubmit(true);
-            $fpc->setTotim(null);
-
-            if ($input->getOption('submit') != 'all'){
-                $fpc->setTotim($input->getOption('submit'));
-            }
+        if ($input->getOption('submit') === 'false'){
+            $fpc->setSubmit(false);
         }
 
         $model->setCalculationProperties($fpc);

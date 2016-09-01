@@ -58,6 +58,21 @@ class FlopyCalculationPropertiesFactory implements PackageFactoryInterface
         return $instance;
     }
 
+    public static function loadFromApiRunAndSubmit(ModFlowModel $model){
+
+        $adapter = new FlopyCalculationPropertiesAdapter($model);
+        $instance = new FlopyCalculationProperties();
+        $instance->setLoadFrom('api');
+        $instance->setPackages($adapter->getPackages());
+        $instance->setInitialValues('ssc');
+        $instance->setCheck(false);
+        $instance->setWriteInput(true);
+        $instance->setRun(true);
+        $instance->setSubmit(true);
+
+        return $instance;
+    }
+
     public static function loadHeads($totim = 0){
         $instance = new FlopyCalculationProperties();
         $instance->setLoadFrom('nam');

@@ -15,16 +15,13 @@ use Doctrine\ORM\EntityManager;
  *
  * @codeCoverageIgnore
  */
-class ModflowServiceRunner
+class FlopyServiceRunner
 {
     /** @var EntityManager  */
     protected $entityManager;
 
     /** @var  Flopy */
     protected $flopy;
-
-    /** @var  ModflowProcessBuilder */
-    protected $modflowProcessBuilder;
 
     /** @var ArrayCollection $processes */
     protected $processes;

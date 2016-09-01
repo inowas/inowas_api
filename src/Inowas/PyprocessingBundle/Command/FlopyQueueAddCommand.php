@@ -3,6 +3,8 @@
 namespace Inowas\PyprocessingBundle\Command;
 
 use AppBundle\Entity\ModFlowModel;
+use Inowas\PyprocessingBundle\Model\Modflow\Package\FlopyCalculationProperties;
+use Inowas\PyprocessingBundle\Model\Modflow\Package\FlopyCalculationPropertiesFactory;
 use Inowas\PyprocessingBundle\Service\Flopy;
 use Ramsey\Uuid\Uuid;
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
@@ -10,14 +12,14 @@ use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
-class ModflowAddToQueueCommand extends ContainerAwareCommand
+class FlopyQueueAddCommand extends ContainerAwareCommand
 {
 
     protected function configure()
     {
         // Name and description for app/console command
         $this
-            ->setName('inowas:modflow:queue:add')
+            ->setName('inowas:flopy:queue:add')
             ->setDescription('Add Modflow Model to Calculation Queue')
             ->addArgument(
                 'id',
@@ -45,7 +47,10 @@ class ModflowAddToQueueCommand extends ContainerAwareCommand
             $output->writeln(sprintf("The given id %s is no Model-Id", $input->getArgument('id')));
         }
 
-
+        $fpc = FlopyCalculationPropertiesFactory::loadFromApiRunAndSubmit($model);
+        $model->setCalculationProperties($fpc);
+        $this->getContainer()->get('doctrine.orm.default_entity_manager')->persist($model);
+        $this->getContainer()->get('doctrine.orm.default_entity_manager')->flush();
 
         /** @var Flopy $flopy */
         $flopy = $this->getContainer()->get('inowas.flopy');

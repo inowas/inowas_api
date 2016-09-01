@@ -12,8 +12,8 @@ services:
         class: Inowas\PyprocessingBundle\Service\ModflowProcessBuilder
         arguments: ['@kernel', '@inowas.process.configurationfilecreatorfactory']
 
-    inowas.modflow.servicerunner:
-        class: Inowas\PyprocessingBundle\Service\ModflowServiceRunner
+    inowas.flopy.servicerunner:
+        class: Inowas\PyprocessingBundle\Service\FlopyServiceRunner
         arguments: ['@doctrine.orm.entity_manager', '@inowas.flopy', '%inowas.modflow.max_processes%']
 
     inowas.process.interpolation:
