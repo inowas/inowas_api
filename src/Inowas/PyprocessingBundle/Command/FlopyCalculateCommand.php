@@ -10,7 +10,6 @@ use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
-use Symfony\Component\Process\ProcessBuilder;
 
 class FlopyCalculateCommand extends ContainerAwareCommand
 {
@@ -124,14 +123,8 @@ class FlopyCalculateCommand extends ContainerAwareCommand
         $this->getContainer()->get('doctrine.orm.default_entity_manager')->flush();
 
         if ($input->getOption('async') === 'true'){
-            $process = ProcessBuilder::create()
-                ->setWorkingDirectory($this->getContainer()->get('kernel')->getRootDir())
-                ->setPrefix('/usr/bin/php')
-                ->setArguments(array('bin/console', 'inowas:flopy:process:runner'))
-                ->getProcess();
-
-            $process->start();
-
+            $flopy->addToQueue($apiBaseUrl, $dataFolder, $model->getId()->toString(), $model->getOwner());
+            $flopy->startAsyncFlopyProcessRunner($this->getContainer()->get('kernel')->getRootDir());
             return 1;
         }
 

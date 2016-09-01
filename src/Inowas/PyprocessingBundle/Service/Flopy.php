@@ -8,6 +8,7 @@ use Inowas\PyprocessingBundle\Model\Modflow\FlopyProcessConfiguration;
 use Doctrine\ORM\EntityManagerInterface;
 use Inowas\PyprocessingBundle\Model\PythonProcess\PythonProcessFactory;
 use Ramsey\Uuid\Uuid;
+use Symfony\Component\Process\ProcessBuilder;
 
 /**
  * Class Flopy
@@ -84,6 +85,24 @@ class Flopy
         }
 
         return true;
+    }
+
+    /**
+     * @param string $kernelRootDir
+     * @param bool $asDeamon
+     * @return int
+     */
+    public function startAsyncFlopyProcessRunner(string $kernelRootDir, bool $asDeamon = false){
+        $process = ProcessBuilder::create()
+            ->setWorkingDirectory($kernelRootDir)
+            ->setPrefix('/usr/bin/php')
+            ->setArguments(array('bin/console', 'inowas:flopy:process:runner'))
+            ->getProcess();
+
+        $process->setCommandLine('/usr/bin/php ../bin/console inowas:flopy:process:runner >> ../var/logs/flopy.log');
+        $process->start();
+
+        return 1;
     }
 
     /**
