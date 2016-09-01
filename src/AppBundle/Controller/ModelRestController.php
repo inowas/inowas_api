@@ -40,7 +40,6 @@ use Symfony\Component\HttpFoundation\BinaryFileResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
-use Symfony\Component\Process\ProcessBuilder;
 
 class ModelRestController extends FOSRestController
 {
@@ -915,18 +914,16 @@ class ModelRestController extends FOSRestController
             $this->getParameter('inowas.api_base_url'),
             $this->getParameter('inowas.modflow.data_folder'),
             $model->getId()->toString(),
-            $model->getOwner()->getId()->toString()
+            $this->getUser()->getId()->toString()
         );
 
-        $process = ProcessBuilder::create()
-            ->setWorkingDirectory($this->get('kernel')->getRootDir())
-            ->setPrefix('/usr/bin/php')
-            ->setArguments(array('bin/console', 'inowas:flopy:process:runner'))
-            ->getProcess();
+        $flopy->startAsyncFlopyProcessRunner(
+            $this->get('kernel')->getRootDir()
+        );
 
-        $process->start();
-
-        return $this->redirect($this->generateUrl('get_modflowmodel_calculations', array('id' => $model->getId()->toString())).'.json');
+        return $this->redirect(
+            $this->generateUrl('get_modflowmodel_calculations', array('id' => $model->getId()->toString())).'.json'
+        );
     }
 
     /**
