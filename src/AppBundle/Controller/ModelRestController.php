@@ -366,6 +366,40 @@ class ModelRestController extends FOSRestController
     }
 
     /**
+     * Returns the area by ModflowModel-Id
+     *
+     * @ApiDoc(
+     *   resource = true,
+     *   description = "Returns the area by ModflowModel-Id.",
+     *   statusCodes = {
+     *     200 = "Returned when successful",
+     *     404 = "Returned when the ModflowModel is not found"
+     *   }
+     * )
+     *
+     * @param $id
+     *
+     * @return View
+     */
+    public function getModflowmodelAreaAction($id)
+    {
+        /** @var ModFlowModel $model */
+        $model = $this->findModelById($id);
+        $area = $model->getArea();
+
+        $serializationContext = SerializationContext::create();
+        $serializationContext->setGroups('modelobjectdetails');
+
+        $view = View::create();
+        $view->setData($area)
+            ->setStatusCode(200)
+            ->setSerializationContext($serializationContext)
+        ;
+
+        return $view;
+    }
+
+    /**
      * Returns a list of all Boundaries by ModflowModel-Id
      *
      * @ApiDoc(

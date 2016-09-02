@@ -25,7 +25,7 @@ $( ".summary" ).click(function(){
     hide_all();
     $( "#summary" ).show();
     $( ".summary" ).addClass('active');
-    I.model.loadSummary();
+    //I.model.loadSummary();
 });
 
 $( ".area" ).click(function(){

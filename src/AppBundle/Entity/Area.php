@@ -119,6 +119,9 @@ class Area extends ModelObject
      */
     public function serializeDeserializeGeometry()
     {
+        return $this->geometry->toJson();
+
+        /**
         $polygons = null;
 
         if (!is_null($this->geometry))
@@ -137,6 +140,7 @@ class Area extends ModelObject
             $polygons = $new;
         }
         return $polygons;
+         */
     }
 
     /**

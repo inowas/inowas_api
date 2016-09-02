@@ -18,6 +18,14 @@ I.model = {
     activeCellsGridLayer: null,
     boundingBoxLayer: null,
     wellsLayer: null,
+    data: {
+        area: null,
+        riv: null,
+        chb: null,
+        ghb: null,
+        rch: null,
+        wel: null
+    },
     area: {},
     boundaries: {
         riv: null,
@@ -40,7 +48,7 @@ I.model = {
         heads: null
     },
     buttons: {
-        updateActiveCellsArea: null,
+        updateActiveCells: null,
         updateRiver: null
     },
     styles: {
@@ -60,6 +68,29 @@ I.model = {
         },
         river: {color: "#000", weight: 0.5, fillColor: "blue", fillOpacity: 0}
     },
+    initialize: function(id){
+        this.id = id;
+        that = this;
+
+        $.getJSON( "/api/modflowmodels/"+id+"/properties.json", function ( data ) {
+            that.activeCells = data.active_cells;
+            that.boundingBox = data.bounding_box;
+            that.gridSize = data.grid_size;
+            that.loadSummary();
+        });
+
+        $.getJSON( "/api/modflowmodels/"+this.id+"/area.json?srid=4326", function ( data ) {
+            that.data.area = data;
+        });
+
+        $.getJSON( "/api/modflowmodels/"+this.id+"/wells.json?srid=4326", function ( data ) {
+            that.data.wel = data;
+        });
+
+        $.getJSON( "/api/modflowmodels/"+this.id+"/rivers.json?srid=4326", function ( data ) {
+            that.data.riv = data;
+        });
+    },
     getStyle: function (type, value){
         if (type == 'area'){
             if (value == true){
@@ -77,20 +108,8 @@ I.model = {
             }
         }
     },
-    loadProperties: function (id) {
-        prop = this;
-        this.id = id;
-
-        $.getJSON( "/api/modflowmodels/"+id+"/properties.json", function ( data ) {
-            prop.activeCells = data.active_cells;
-            prop.boundingBox = data.bounding_box;
-            prop.gridSize = data.grid_size;
-        });
-
-        return true;
-    },
     updateProperties: function (id) {
-        prop = this;
+        that = this;
 
         $.ajax({
             type: 'PUT',
@@ -98,10 +117,10 @@ I.model = {
             data: { 'active_cells' : JSON.stringify(I.model.activeCells.cells) },
             statusCode: {
                 200: function( data ) {
-                    prop.activeCells = data.active_cells;
-                    prop.boundingBox = data.bounding_box;
-                    prop.gridSize = data.grid_size;
-                    prop.buttons.updateActiveCellsArea.disable();
+                    that.activeCells = data.active_cells;
+                    that.boundingBox = data.bounding_box;
+                    that.gridSize = data.grid_size;
+                    that.buttons.updateActiveCells.disable();
                 }
             }
         });
@@ -109,7 +128,7 @@ I.model = {
         return true;
     },
     updateRiver: function () {
-        prop = this;
+        that = this;
 
         var rivers = this.boundaries.riv;
         for(var rKey in rivers){
@@ -123,7 +142,7 @@ I.model = {
             }
 
             if (river.updateActiveCells) {
-                data = {'activeCells': JSON.stringify(river.active_cells)};
+                data = {'activeCells': JSON.stringify(river.active_cells.cells)};
             }
 
             if (data) {
@@ -133,7 +152,7 @@ I.model = {
                     data: data,
                     statusCode: {
                         200: function( data ) {
-                            prop.buttons.updateRiver.disable();
+                            that.buttons.updateRiver.disable();
                         }
                     }
                 })
@@ -143,6 +162,7 @@ I.model = {
         return true;
     },
     loadSummary: function ( refresh ) {
+        that = this;
         if (this.maps.summary == null || refresh == true){
             if (refresh == true){
                 this.maps.summary.remove();
@@ -156,11 +176,11 @@ I.model = {
             map.keyboard.disable();
 
             $.getJSON( "/api/modflowmodels/"+I.model.id+"/contents/summary.json", function ( data ) {
-                prop.content.summary =  data.html;
-                prop.area.polygonJSON = data.geojson;
-                prop.createAreaLayer().addTo(map);
-                map.fitBounds(prop.createBoundingBoxPolygon(prop.boundingBox).getBounds());
-                $(".content_summary").html( prop.content.summary );
+                that.content.summary =  data.html;
+                that.area.polygonJSON = data.geojson;
+                that.createAreaLayer().addTo(map);
+                map.fitBounds(that.createBoundingBoxPolygon(that.boundingBox).getBounds());
+                $(".content_summary").html( that.content.summary );
             });
 
             this._loadAndAddWells( map, false );
@@ -173,34 +193,39 @@ I.model = {
             }
 
             var map = this.createBaseMap( 'map-area' );
-            var boundingBox = this.createBoundingBoxLayer(prop.boundingBox).addTo(map);
-            var polygon = L.geoJson(jQuery.parseJSON(this.area.polygonJSON), prop.styles.areaGeometry).addTo(map);
-            var activeCells = this.createActiveCellsGridLayer(prop.activeCells, prop.boundingBox, prop.gridSize);
-            map.fitBounds(prop.createBoundingBoxPolygon(prop.boundingBox).getBounds());
+            var boundingBox = this.createBoundingBoxLayer(this.boundingBox).addTo(map);
+            var areaPolygon = L.geoJson(jQuery.parseJSON(this.data.area.geometry), this.styles.areaGeometry).addTo(map);
+            var areaActiveCells = this.createAreaActiveCellsLayer(this.activeCells, this.boundingBox, this.gridSize, true);
+            map.fitBounds(this.createBoundingBoxPolygon(this.boundingBox).getBounds());
 
             var baseMaps = {};
-            var overlayMaps = {"Area": polygon, "Bounding Box": boundingBox, "Active Cells": activeCells};
+            var overlayMaps = {"Area": areaPolygon, "Bounding Box": boundingBox, "Active Cells": areaActiveCells};
             L.control.layers(baseMaps, overlayMaps).addTo(map);
 
-            this.buttons.updateActiveCellsArea = L.easyButton('fa-save', function(btn, map){
+            this.buttons.updateActiveCells = L.easyButton('fa-save', function(btn, map){
                 I.model.updateProperties( I.model.id );
             }).disable().addTo(map);
 
             this.maps.area = map;
         }
     },
-    loadBoundaries: function (refresh ) {
+    loadBoundaries: function(refresh) {
         if (this.maps.boundaries == null || refresh == true) {
             if (refresh == true && this.maps.boundaries != null){
                 this.maps.boundaries.remove();
             }
 
             var map = this.createBaseMap( 'boundaries-map' );
-            L.geoJson(jQuery.parseJSON(this.area.polygonJSON), prop.styles.areaGeometry).addTo( map );
-            map.fitBounds(prop.createBoundingBoxPolygon(prop.boundingBox).getBounds());
+            var boundingBox = this.createBoundingBoxLayer(this.boundingBox).addTo(map);
+            var areaPolygon = L.geoJson(jQuery.parseJSON(this.area.polygonJSON), this.styles.areaGeometry).addTo(map);
+            map.fitBounds(this.createBoundingBoxPolygon(this.boundingBox).getBounds());
+            var wells = this.createWellsLayer(this.data.wel).addTo(map);
+            var rivers = this.createRiversLayer(this.data.riv).addTo(map);
 
-            this._loadAndAddWells( map, false );
-            this._loadAndAddRivers( map, false );
+            var baseMaps = {};
+            var overlayMaps = {"Wells": wells, "Rivers": rivers};
+            L.control.layers(baseMaps, overlayMaps).addTo(map);
+
             this.maps.boundaries = map;
         }
     },
@@ -211,10 +236,16 @@ I.model = {
             }
 
             var map = this.createBaseMap( 'wells-map' );
-            L.geoJson(jQuery.parseJSON(this.area.polygonJSON), prop.styles.areaGeometry).addTo( map );
-            map.fitBounds(prop.createBoundingBoxPolygon(prop.boundingBox).getBounds());
+            var boundingBox = this.createBoundingBoxLayer(this.boundingBox).addTo(map);
+            var areaPolygon = L.geoJson(jQuery.parseJSON(this.area.polygonJSON), this.styles.areaGeometry).addTo(map);
+            map.fitBounds(this.createBoundingBoxPolygon(this.boundingBox).getBounds());
+            var wells = this.createWellsLayer(this.data.wel).addTo(map);
+            var wellsActiveCells = this.createWellsActiveCellsLayer(this.data.wel, this.boundingBox, this.gridSize);
 
-            this._loadAndAddWells( map, true );
+            var baseMaps = {};
+            var overlayMaps = {"Wells": wells, "Active cells": wellsActiveCells};
+            L.control.layers(baseMaps, overlayMaps).addTo(map);
+
             this.maps.wel = map;
         }
     },
@@ -225,8 +256,8 @@ I.model = {
             }
 
             var map = this.createBaseMap( 'rivers-map' );
-            L.geoJson(jQuery.parseJSON(this.area.polygonJSON), prop.styles.areaGeometry).addTo( map );
-            map.fitBounds(prop.createBoundingBoxPolygon(prop.boundingBox).getBounds());
+            L.geoJson(jQuery.parseJSON(this.area.polygonJSON), this.styles.areaGeometry).addTo( map );
+            map.fitBounds(this.createBoundingBoxPolygon(this.boundingBox).getBounds());
 
             this._loadAndAddRivers( map, true );
 
@@ -240,14 +271,12 @@ I.model = {
             }
 
             var map = this.createBaseMap( 'heads-map' );
-            L.geoJson(jQuery.parseJSON(this.area.polygonJSON), prop.styles.areaGeometry).addTo( map );
-            map.fitBounds(prop.createBoundingBoxPolygon(prop.boundingBox).getBounds());
+            L.geoJson(jQuery.parseJSON(this.area.polygonJSON), this.styles.areaGeometry).addTo( map );
+            map.fitBounds(this.createBoundingBoxPolygon(this.boundingBox).getBounds());
             this._loadAndAddHeads( map );
         }
     },
-    createAreaLayer: function() {
-        return L.geoJson(jQuery.parseJSON(this.area.polygonJSON), this.styles.areaGeometry);
-    },
+
     createBaseMap: function( id, options ) {
         var map = new L.map( id, options );
         L.tileLayer('https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token=pk.eyJ1IjoibWFwYm94IiwiYSI6ImNpandmbXliNDBjZWd2M2x6bDk3c2ZtOTkifQ._QA7i5Mpkd_m30IGElHziw', {
@@ -263,19 +292,10 @@ I.model = {
         }));
         return map;
     },
-    createBoundingBoxLayer: function( boundingBox ) {
-        var layer = new L.LayerGroup();
-        this.createBoundingBoxPolygon(boundingBox).addTo(layer);
-        this.boundingBoxLayer = layer;
-        return layer;
+    createAreaLayer: function() {
+        return L.geoJson(jQuery.parseJSON(this.area.polygonJSON), this.styles.areaGeometry);
     },
-    createBoundingBoxPolygon: function( boundingBox ) {
-        return this.createRectangle(boundingBox, this.styles.boundingBox);
-    },
-    createRectangle: function( boundingBox, style ){
-        return new L.Rectangle([[boundingBox.y_min, boundingBox.x_min], [boundingBox.y_max, boundingBox.x_max]], style);
-    },
-    createActiveCellsGridLayer: function (activeCells, boundingBox, gridSize) {
+    createAreaActiveCellsLayer: function (activeCells, boundingBox, gridSize, interactive) {
 
         that = this;
         var layers = new L.FeatureGroup();
@@ -298,23 +318,113 @@ I.model = {
                 var rectangle = this.createRectangle(bb, this.getStyle('area', value));
                 rectangle.col = col;
                 rectangle.row = row;
-                rectangle.on('click', function(e) {
 
-                    if (activeCells.cells[e.target.row] == undefined || activeCells.cells[e.target.row][e.target.col] == undefined){
-                        activeCells.cells[e.target.row][e.target.col] = true;
-                        e.target.setStyle(prop.getStyle('area', activeCells.cells[e.target.row][e.target.col]));
-                    } else {
-                        activeCells.cells[e.target.row][e.target.col] = undefined;
-                        e.target.setStyle(prop.getStyle('area', false));
-                    }
+                if (interactive){
+                    rectangle.on('click', function(e) {
 
-                    that.buttons.updateActiveCellsArea.enable();
-                });
+                        if (activeCells.cells[e.target.row] == undefined || activeCells.cells[e.target.row][e.target.col] == undefined){
+                            activeCells.cells[e.target.row][e.target.col] = true;
+                            e.target.setStyle(that.getStyle('area', activeCells.cells[e.target.row][e.target.col]));
+                        } else {
+                            activeCells.cells[e.target.row][e.target.col] = undefined;
+                            e.target.setStyle(that.getStyle('area', false));
+                        }
+
+                        that.buttons.updateActiveCells.enable();
+                    });
+                }
+
                 rectangle.addTo(layers);
             }
         }
 
         return layers;
+    },
+    createWellsLayer: function(wells) {
+        var layer = new L.LayerGroup();
+        for (var key in wells) {
+            if (!wells.hasOwnProperty(key)) continue;
+            var items = wells[key];
+            items.forEach(function (item) {
+                L.circleMarker([item.point.y, item.point.x], I.model.styles.wells[key]).bindPopup("Well "+item.name).addTo(layer);
+            });
+        }
+
+        return layer;
+    },
+    createWellsActiveCellsLayer: function (wells, boundingBox, gridSize) {
+
+        that = this;
+
+        var layers = new L.FeatureGroup();
+        var dx = (boundingBox.x_max - boundingBox.x_min) / gridSize.n_x;
+        var dy = (boundingBox.y_max - boundingBox.y_min) / gridSize.n_y;
+
+        for (var key in wells) {
+            if (!wells.hasOwnProperty(key)) continue;
+            var items = wells[key];
+
+            items.forEach(function (item) {
+                for(var nRow in item.active_cells.cells) {
+
+                    if (!item.active_cells.cells.hasOwnProperty(nRow)){
+                        continue;
+                    }
+
+                    var row = item.active_cells.cells[nRow];
+
+                    for(var nCol in row) {
+                        if (!row.hasOwnProperty(nCol)){continue;}
+
+                        var bb = {};
+                        bb.x_min = boundingBox.x_min + nCol*dx;
+                        bb.x_max = boundingBox.x_min + nCol*dx+dx;
+                        bb.y_min = boundingBox.y_max - nRow*dy-dy;
+                        bb.y_max = boundingBox.y_max - nRow*dy;
+
+                        var rectangle = that.createRectangle(bb, that.getStyle('wells', true));
+                        rectangle.addTo(layers);
+                    }
+                }
+            });
+        }
+
+        return layers;
+    },
+
+    createRiversLayer: function(rivers) {
+        var layer = new L.LayerGroup();
+        for (var rivKey in rivers) {
+            if (!rivers.hasOwnProperty(rivKey)) continue;
+            var line = rivers[rivKey]['line'];
+
+            var linePoints = [];
+
+            for (var pointKey in line) {
+                if (!line.hasOwnProperty(pointKey)) continue;
+                if (isNaN(parseInt(pointKey))) continue;
+
+                linePoints.push(L.latLng(line[pointKey][1], line[pointKey][0]));
+            }
+
+            L.polyline(linePoints, this.styles).addTo(layer);
+        }
+
+        return layer;
+    },
+
+    createBoundingBoxLayer: function( boundingBox ) {
+        var layer = new L.LayerGroup();
+        this.createBoundingBoxPolygon(boundingBox).addTo(layer);
+        this.boundingBoxLayer = layer;
+        return layer;
+    },
+    createBoundingBoxPolygon: function( boundingBox ) {
+        return this.createRectangle(boundingBox, this.styles.boundingBox);
+    },
+
+    createRectangle: function( boundingBox, style ){
+        return new L.Rectangle([[boundingBox.y_min, boundingBox.x_min], [boundingBox.y_max, boundingBox.x_max]], style);
     },
     createHeadsLayer: function (heads, min, max, time, boundingBox, gridSize, layerGroup) {
 
@@ -418,33 +528,8 @@ I.model = {
 
         return layerGroup;
     },
-    createWellCellsLayer: function (activeCells, boundingBox, gridSize) {
 
-        that = this;
-        var layers = new L.FeatureGroup();
-        var dx = (boundingBox.x_max - boundingBox.x_min) / gridSize.n_x;
-        var dy = (boundingBox.y_max - boundingBox.y_min) / gridSize.n_y;
 
-        for (var row=0; row<gridSize.n_y; row++){
-            for (var col=0; col<gridSize.n_x; col++){
-                var bb = {};
-                bb.x_min = boundingBox.x_min + col*dx;
-                bb.x_max = boundingBox.x_min + col*dx+dx;
-                bb.y_min = boundingBox.y_max - row*dy-dy;
-                bb.y_max = boundingBox.y_max - row*dy;
-
-                var value = true;
-                if (activeCells.cells[row] == undefined || activeCells.cells[row][col] == undefined){
-                    value = false;
-                }
-
-                var rectangle = this.createRectangle(bb, this.getStyle('wells', value));
-                rectangle.addTo(layers);
-            }
-        }
-
-        return layers;
-    },
     _loadAndAddWells: function( map, addActiveCells ){
         var that = this;
         if (this.boundaries.wel !== null) {
@@ -478,6 +563,7 @@ I.model = {
             });
         }
     },
+
     _addWellsLayer: function ( wells, map , addActiveCells){
         var geographyLayer = new L.LayerGroup();
         var active_cells = {};
@@ -513,7 +599,7 @@ I.model = {
         geographyLayer.addTo(map);
 
         if (addActiveCells == true) {
-            var activeCellsLayer = this.createWellCellsLayer(active_cells, this.boundingBox, this.gridSize);
+            var activeCellsLayer = this.createWellsActiveCellsLayer(active_cells, this.boundingBox, this.gridSize);
             activeCellsLayer.addTo(map);
             var baseMaps = {};
             var overlayMaps = {"Wells": geographyLayer, "Active Cells": activeCellsLayer};
@@ -564,7 +650,7 @@ I.model = {
         geographyLayer.addTo(map);
 
         if (addActiveCells == true) {
-            var activeCellsLayer = this.createWellCellsLayer(active_cells, this.boundingBox, this.gridSize).addTo(map);
+            var activeCellsLayer = this.createWellsActiveCellsLayer(active_cells, this.boundingBox, this.gridSize).addTo(map);
             var baseMaps = {};
             var overlayMaps = {"River": geographyLayer, "Active Cells": activeCellsLayer};
             L.control.layers(baseMaps, overlayMaps).addTo(map);

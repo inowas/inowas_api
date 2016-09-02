@@ -294,7 +294,7 @@
 <script>
 
     I.user.setApiKey('{{ apiKey }}');
-    I.model.loadProperties('{{ model.id.toString }}');
+    I.model.initialize('{{ model.id.toString }}');
 
     $(document).ready(function() {
         $(".summary").click();
