@@ -127,7 +127,7 @@ I.model = {
                 $(".content_summary").html( prop.content.summary );
             });
 
-            this._loadAndAddWells( map );
+            this._loadAndAddWells( map, false );
         }
     },
     loadArea: function ( refresh ) {
@@ -162,7 +162,9 @@ I.model = {
             var map = this.createBaseMap( 'boundaries-map' );
             L.geoJson(jQuery.parseJSON(this.area.polygonJSON), prop.styles.areaGeometry).addTo( map );
             map.fitBounds(prop.createBoundingBoxPolygon(prop.boundingBox).getBounds());
-            this._loadAndAddWells( map );
+
+            this._loadAndAddWells( map, false );
+            //this._loadAndAddRiver( map, false);
             this.maps.boundaries = map;
         }
     },
@@ -176,7 +178,21 @@ I.model = {
             L.geoJson(jQuery.parseJSON(this.area.polygonJSON), prop.styles.areaGeometry).addTo( map );
             map.fitBounds(prop.createBoundingBoxPolygon(prop.boundingBox).getBounds());
 
-            this._loadAndAddWells( map );
+            this._loadAndAddWells( map, true );
+            this.maps.wel = map;
+        }
+    },
+    loadRivers: function (refresh ) {
+        if (this.maps.riv == null || refresh == true) {
+            if (refresh == true && this.maps.riv != null){
+                this.maps.riv.remove();
+            }
+
+            var map = this.createBaseMap( 'rivers-map' );
+            L.geoJson(jQuery.parseJSON(this.area.polygonJSON), prop.styles.areaGeometry).addTo( map );
+            map.fitBounds(prop.createBoundingBoxPolygon(prop.boundingBox).getBounds());
+
+            this._loadAndAddWells( map, true );
         }
     },
     loadHeads: function (refresh) {
@@ -264,7 +280,6 @@ I.model = {
     },
     createHeadsLayer: function (heads, min, max, time, boundingBox, gridSize, layerGroup) {
 
-        //console.log(heads);
         var lay = 0;
         heads = heads[lay];
 
@@ -392,14 +407,14 @@ I.model = {
 
         return layers;
     },
-    _loadAndAddWells: function( map ){
+    _loadAndAddWells: function( map, addActiveCells ){
         var that = this;
         if (this.boundaries.wel !== null) {
-            this._addWellsLayer( this.boundaries.wel, map );
+            this._addWellsLayer( this.boundaries.wel, map, addActiveCells );
         } else {
             $.getJSON( "/api/modflowmodels/"+this.id+"/wells.json?srid=4326", function ( data ) {
                 that.boundaries.wel = data;
-                that._addWellsLayer( data, map );
+                that._addWellsLayer( data, map, addActiveCells );
             });
         }
     },
@@ -414,7 +429,7 @@ I.model = {
             });
         }
     },
-    _addWellsLayer: function ( wells, map ){
+    _addWellsLayer: function ( wells, map , addActiveCells){
         var layer = new L.LayerGroup();
         var active_cells = {};
         active_cells.cells = [];
@@ -425,19 +440,21 @@ I.model = {
             items.forEach(function (item) {
                 L.circleMarker([item.point.y, item.point.x], I.model.styles.wells[key]).bindPopup("Well "+item.name).addTo(layer);
 
-                for(var rowProperty in item.active_cells.cells) {
+                if (addActiveCells == true){
+                    for(var rowProperty in item.active_cells.cells) {
 
-                    if (!item.active_cells.cells.hasOwnProperty(rowProperty)){continue;}
+                        if (!item.active_cells.cells.hasOwnProperty(rowProperty)){continue;}
 
-                    if (active_cells.cells[rowProperty] == null) {
-                        active_cells.cells[rowProperty] = [];
-                    }
+                        if (active_cells.cells[rowProperty] == null) {
+                            active_cells.cells[rowProperty] = [];
+                        }
 
-                    var row = item.active_cells.cells[rowProperty];
+                        var row = item.active_cells.cells[rowProperty];
 
-                    for(var colProperty in row) {
-                        if (!row.hasOwnProperty(colProperty)){continue;}
-                        active_cells.cells[rowProperty][colProperty] = row[colProperty];
+                        for(var colProperty in row) {
+                            if (!row.hasOwnProperty(colProperty)){continue;}
+                            active_cells.cells[rowProperty][colProperty] = row[colProperty];
+                        }
                     }
                 }
             });
@@ -447,7 +464,6 @@ I.model = {
 
         activeCellsLayer.addTo(map);
         layer.addTo(map);
-        this.maps.wel = map;
     },
     _addHeadsLayer: function ( data, map ){
 
@@ -461,8 +477,6 @@ I.model = {
             if (typeof heads == "string"){
                 heads = $.parseJSON(heads)
             }
-
-            console.log(heads.length);
 
             var allHeads =[];
             for (var j=0; j<heads[0].length; j++){
