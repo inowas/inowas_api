@@ -290,8 +290,11 @@ I.model = {
                 }
 
                 var rectangle = this.createRectangle(
-                    bb, {color: "blue", weight: 0, fillColor: '#'+heatmap.colorAt(value), fillOpacity: 0.2, time: time}
-                    );
+                    bb,
+                    {color: "blue", weight: 0, fillColor: '#'+heatmap.colorAt(value), fillOpacity: 0.2, time: time}
+                );
+
+                rectangle.time = time;
                 rectangle.col = col;
                 rectangle.row = row;
                 rectangle.lay = lay;
@@ -299,31 +302,55 @@ I.model = {
 
                     var allHeads = $.extend({}, that.heads);
                     var keys = Object.keys(allHeads);
-                    var dates = ['x'];
-                    var data = ['data1'];
-                    for (var i=0; i<keys.length-1; i++){
-                        dates.push(keys[i]);
-                        var head = allHeads[keys[i]];
-                        head = $.parseJSON(head);
-                        data.push(head[e.target.lay][e.target.row][e.target.col]);
-                    }
 
-                    var chart = c3.generate({
-                        bindto: '#chart',
-                        data: {
-                            x: 'x',
-                            columns: [
-                                dates,
-                                data
-                            ]
-                        },
-                        axis: {
-                            x: {
-                                type: 'timeseries',
-                                tick: {
-                                    format: '%Y-%m-%d'
+                    // Generate timeseries Graph only if more then one time is given.
+                    if (keys.length > 1){
+                        var datesColumn = ['x'];
+                        var dataColumn = ['data1'];
+                        for (var i=0; i<keys.length-1; i++){
+                            datesColumn.push(keys[i]);
+                            var head = allHeads[keys[i]];
+                            head = $.parseJSON(head);
+                            dataColumn.push(head[e.target.lay][e.target.row][e.target.col]);
+                        }
+
+                        var chart_ts = c3.generate({
+                            bindto: '#chart_ts',
+                            data: {
+                                x: 'x',
+                                columns: [
+                                    datesColumn,
+                                    dataColumn
+                                ]
+                            },
+                            axis: {
+                                x: {
+                                    type: 'timeseries',
+                                    tick: {
+                                        format: '%Y-%m-%d'
+                                    }
                                 }
                             }
+                        });
+                    }
+
+                    var heads = allHeads[e.target.time];
+                    heads = $.parseJSON(heads);
+
+                    // Data for each layer
+                    for (var nLay=0; nLay<heads.length; nLay++) {
+                        var rowData = [];
+                        for (var nCol = 0; nCol<heads[nLay][0].length; nCol++){
+                            rowData.push(heads[nLay][e.target.row][nCol])
+                        }
+                    }
+
+                    var chart_rows = c3.generate({
+                        bindto: '#chart_rows',
+                        data: {
+                            columns: [
+                                rowData
+                            ]
                         }
                     });
                 });
@@ -451,8 +478,8 @@ I.model = {
             position: "topright",
             layer: layerGroup,
             sameDate: true,
-            alwaysShowDate: true
-
+            showDate: dates[0],
+            showSlider: dates.length>1
         });
 
         map.addControl(sliderControl);

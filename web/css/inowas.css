@@ -116,6 +116,10 @@ body h2 {
     padding: 5px;
 }
 
+.chart {
+    height: 200px;
+}
+
 .map {
     height: 500px;
 }

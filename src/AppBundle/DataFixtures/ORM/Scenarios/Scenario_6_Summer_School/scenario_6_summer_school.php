@@ -6,6 +6,7 @@ use AppBundle\Entity\GeologicalLayer;
 use AppBundle\Model\AreaFactory;
 use AppBundle\Model\BoundingBox;
 use AppBundle\Model\ConstantHeadBoundaryFactory;
+use AppBundle\Model\GeneralHeadBoundaryFactory;
 use AppBundle\Model\GeologicalLayerFactory;
 use AppBundle\Model\GeologicalPointFactory;
 use AppBundle\Model\GeologicalUnitFactory;
@@ -142,7 +143,7 @@ class LoadScenario_6 implements FixtureInterface, ContainerAwareInterface
         $entityManager->flush();
 
         /** Constant Head West */
-        $model->addBoundary(ConstantHeadBoundaryFactory::create()
+        $model->addBoundary(GeneralHeadBoundaryFactory::create()
             ->setOwner($user)
             ->setPublic($public)
             ->setGeometry(new LineString(array(
@@ -150,16 +151,16 @@ class LoadScenario_6 implements FixtureInterface, ContainerAwareInterface
                 array($model->getBoundingBox()->getXMin(), $model->getBoundingBox()->getYMax())
                 ), $model->getBoundingBox()->getSrid())
             )
-            ->addStressPeriod(StressPeriodFactory::createChd()
+            ->addStressPeriod(StressPeriodFactory::createGhb()
                 ->setDateTimeBegin(new \DateTime('1.1.2015'))
                 ->setDateTimeEnd(new \DateTime('31.12.2015'))
-                ->setShead(450)
-                ->setEhead(450)
+                ->setStage(430)
+                ->setCond(100)
             )
         );
 
         /** Constant Head East */
-        $model->addBoundary(ConstantHeadBoundaryFactory::create()
+        $model->addBoundary(GeneralHeadBoundaryFactory::create()
             ->setOwner($user)
             ->setPublic($public)
             ->setGeometry(new LineString(array(
@@ -167,11 +168,11 @@ class LoadScenario_6 implements FixtureInterface, ContainerAwareInterface
                     array($model->getBoundingBox()->getXMax(), $model->getBoundingBox()->getYMax())
                 ), $model->getBoundingBox()->getSrid())
             )
-            ->addStressPeriod(StressPeriodFactory::createChd()
+            ->addStressPeriod(StressPeriodFactory::createGhb()
                 ->setDateTimeBegin(new \DateTime('1.1.2015'))
                 ->setDateTimeEnd(new \DateTime('31.12.2015'))
-                ->setShead(440)
-                ->setEhead(440)
+                ->setStage(420)
+                ->setCond(100)
             )
         );
 
@@ -246,7 +247,7 @@ class LoadScenario_6 implements FixtureInterface, ContainerAwareInterface
                 ->setDateTimeBegin(new \DateTime('1.1.2015'))
                 ->setDateTimeEnd(new \DateTime('31.12.2015'))
                 ->setStage(446)
-                ->setCond(100)
+                ->setCond(200)
                 ->setRbot(444)
             )
         );
@@ -319,11 +320,11 @@ class LoadScenario_6 implements FixtureInterface, ContainerAwareInterface
             ->addStressPeriod(StressPeriodFactory::createWel()
                 ->setDateTimeBegin(new \DateTime('1.1.2015'))
                 ->setDateTimeEnd(new \DateTime('31.12.2015'))
-                ->setFlux(-20000)
+                ->setFlux(-10000)
             )
         );
 
-        /** Public Well 1 */
+        /** Public Well 2 */
         $model->addBoundary(WellBoundaryFactory::createPublicWell()
             ->setName('Irrigation Well 5')
             ->setGeometry(new Point(-63.623027, -31.331184, 4326))
@@ -331,7 +332,7 @@ class LoadScenario_6 implements FixtureInterface, ContainerAwareInterface
             ->addStressPeriod(StressPeriodFactory::createWel()
                 ->setDateTimeBegin(new \DateTime('1.1.2015'))
                 ->setDateTimeEnd(new \DateTime('31.12.2015'))
-                ->setFlux(-20000)
+                ->setFlux(-10000)
             )
         );
 
