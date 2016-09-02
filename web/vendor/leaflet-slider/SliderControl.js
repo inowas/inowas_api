@@ -1,7 +1,7 @@
 L.Control.SliderControl = L.Control.extend({
     options: {
         position: 'topright',
-        layers: null,
+        layer: null,
         maxValue: -1,
         minValue: 0,
         showAllOnStart: false,

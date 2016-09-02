@@ -339,7 +339,7 @@ I.model = {
 
                     // Data for each layer
                     for (var nLay=0; nLay<heads.length; nLay++) {
-                        var rowData = [];
+                        var rowData = ['GW-Head'];
                         for (var nCol = 0; nCol<heads[nLay][0].length; nCol++){
                             rowData.push(heads[nLay][e.target.row][nCol])
                         }
@@ -351,6 +351,9 @@ I.model = {
                             columns: [
                                 rowData
                             ]
+                        },
+                        legend: {
+                            position: 'top'
                         }
                     });
                 });
