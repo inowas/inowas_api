@@ -49,14 +49,15 @@ I.model = {
         areaGeometry: {color: "#000", weight: 0.5, fillColor: "blue", fillOpacity: 0.1},
         hasNoWell: {color: "#000", weight: 0, fillOpacity: 0},
         hasWell: {color: "blue", weight: 1, fillColor: "darkblue", fillOpacity: 1},
-        wells : {
+        wells: {
             cw:  {radius: 5, color: 'black', weight: 1, fillColor: 'darkgreen', fillOpacity: 0.7},
             iw:  {radius: 5, color: 'black', weight: 1, fillColor: 'darkgreen', fillOpacity: 0.7},
             puw: {radius: 5, color: 'black', weight: 1, fillColor: 'darkblue', fillOpacity: 0.7},
             prw: {radius: 5, color: 'black', weight: 1, fillColor: 'darkblue', fillOpacity: 0.7},
             smw: {radius: 5, color: 'black', weight: 1, fillColor: 'red', fillOpacity: 1},
             snw: {radius: 5, color: 'black', weight: 1, fillColor: 'yellow', fillOpacity: 1}
-        }
+        },
+        river: {color: "#000", weight: 0.5, fillColor: "blue", fillOpacity: 0}
     },
     getStyle: function (type, value){
         if (type == 'area'){
@@ -164,7 +165,7 @@ I.model = {
             map.fitBounds(prop.createBoundingBoxPolygon(prop.boundingBox).getBounds());
 
             this._loadAndAddWells( map, false );
-            //this._loadAndAddRiver( map, false);
+            this._loadAndAddRivers( map, false );
             this.maps.boundaries = map;
         }
     },
@@ -192,7 +193,9 @@ I.model = {
             L.geoJson(jQuery.parseJSON(this.area.polygonJSON), prop.styles.areaGeometry).addTo( map );
             map.fitBounds(prop.createBoundingBoxPolygon(prop.boundingBox).getBounds());
 
-            this._loadAndAddWells( map, true );
+            this._loadAndAddRivers( map, true );
+
+            this.maps.riv = map;
         }
     },
     loadHeads: function (refresh) {
@@ -418,6 +421,17 @@ I.model = {
             });
         }
     },
+    _loadAndAddRivers: function( map, addActiveCells ){
+        var that = this;
+        if (this.boundaries.riv !== null) {
+            this._addRiversLayer( this.boundaries.riv, map, addActiveCells );
+        } else {
+            $.getJSON( "/api/modflowmodels/"+this.id+"/rivers.json?srid=4326", function ( data ) {
+                that.boundaries.riv = data;
+                that._addRiversLayer( data, map, addActiveCells );
+            });
+        }
+    },
     _loadAndAddHeads: function( map ){
         var that = this;
         if (this.heads !== null) {
@@ -437,6 +451,7 @@ I.model = {
         for (var key in wells) {
             if (!wells.hasOwnProperty(key)) continue;
             var items = wells[key];
+
             items.forEach(function (item) {
                 L.circleMarker([item.point.y, item.point.x], I.model.styles.wells[key]).bindPopup("Well "+item.name).addTo(layer);
 
@@ -464,6 +479,49 @@ I.model = {
 
         activeCellsLayer.addTo(map);
         layer.addTo(map);
+    },
+    _addRiversLayer: function ( rivers, map , addActiveCells){
+
+        var geographyLayer = new L.LayerGroup();
+
+        var active_cells = {};
+        active_cells.cells = [];
+
+        for (var rivKey in rivers){
+            if (!rivers.hasOwnProperty(rivKey)) continue;
+            var line = rivers[rivKey]['line'];
+
+            var linePoints = [];
+
+            for (var pointKey in line) {
+                if (! line.hasOwnProperty(pointKey)) continue;
+                if (isNaN(parseInt(pointKey))) continue;
+
+                linePoints.push(L.latLng(line[pointKey][1], line[pointKey][0]));
+            }
+
+            L.polyline(linePoints, this.styles).addTo(geographyLayer);
+
+            if (addActiveCells == true){
+                for(var rowProperty in rivers[rivKey].active_cells.cells) {
+                    if (!rivers[rivKey].active_cells.cells.hasOwnProperty(rowProperty)){continue;}
+
+                    if (active_cells.cells[rowProperty] == null) {
+                        active_cells.cells[rowProperty] = [];
+                    }
+
+                    var row = rivers[rivKey].active_cells.cells[rowProperty];
+
+                    for(var colProperty in row) {
+                        if (!row.hasOwnProperty(colProperty)){continue;}
+                        active_cells.cells[rowProperty][colProperty] = row[colProperty];
+                    }
+                }
+            }
+        }
+
+        this.createWellCellsLayer( active_cells , this.boundingBox, this.gridSize ).addTo(map);
+        geographyLayer.addTo(map);
     },
     _addHeadsLayer: function ( data, map ){
 

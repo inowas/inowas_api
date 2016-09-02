@@ -4,6 +4,7 @@ hide_all = function () {
     $( "#soilmodel" ).hide();
     $( "#boundaries" ).hide();
     $( "#wells" ).hide();
+    $( "#rivers" ).hide();
     $( "#calculation" ).hide();
     $( "#results" ).hide();
     $( "#history" ).hide();
@@ -13,6 +14,7 @@ hide_all = function () {
     $( ".soilmodel" ).removeClass('active');
     $( ".boundaries" ).removeClass('active');
     $( ".wells" ).removeClass('active');
+    $( ".rivers" ).removeClass('active');
     $( ".calculation" ).removeClass('active');
     $( ".results" ).removeClass('active');
     $( ".history" ).removeClass('active');
@@ -77,6 +79,15 @@ $( ".wells" ).click(function() {
     $( ".wells" ).addClass('active');
 
     I.model.loadWells();
+});
+
+$( ".rivers" ).click(function() {
+    hide_all();
+    $( "#rivers" ).show();
+    $( ".boundaries" ).addClass('active');
+    $( ".rivers" ).addClass('active');
+
+    I.model.loadRivers();
 });
 
 $( ".calculation" ).click(function(){
