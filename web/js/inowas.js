@@ -444,7 +444,7 @@ I.model = {
         }
     },
     _addWellsLayer: function ( wells, map , addActiveCells){
-        var layer = new L.LayerGroup();
+        var geographyLayer = new L.LayerGroup();
         var active_cells = {};
         active_cells.cells = [];
 
@@ -453,7 +453,7 @@ I.model = {
             var items = wells[key];
 
             items.forEach(function (item) {
-                L.circleMarker([item.point.y, item.point.x], I.model.styles.wells[key]).bindPopup("Well "+item.name).addTo(layer);
+                L.circleMarker([item.point.y, item.point.x], I.model.styles.wells[key]).bindPopup("Well "+item.name).addTo(geographyLayer);
 
                 if (addActiveCells == true){
                     for(var rowProperty in item.active_cells.cells) {
@@ -475,10 +475,15 @@ I.model = {
             });
         }
 
-        var activeCellsLayer = this.createWellCellsLayer( active_cells , this.boundingBox, this.gridSize );
+        geographyLayer.addTo(map);
 
-        activeCellsLayer.addTo(map);
-        layer.addTo(map);
+        if (addActiveCells == true) {
+            var activeCellsLayer = this.createWellCellsLayer(active_cells, this.boundingBox, this.gridSize);
+            activeCellsLayer.addTo(map);
+            var baseMaps = {};
+            var overlayMaps = {"Wells": geographyLayer, "Active Cells": activeCellsLayer};
+            L.control.layers(baseMaps, overlayMaps).addTo(map);
+        }
     },
     _addRiversLayer: function ( rivers, map , addActiveCells){
 
@@ -520,8 +525,14 @@ I.model = {
             }
         }
 
-        this.createWellCellsLayer( active_cells , this.boundingBox, this.gridSize ).addTo(map);
         geographyLayer.addTo(map);
+
+        if (addActiveCells == true) {
+            var activeCellsLayer = this.createWellCellsLayer(active_cells, this.boundingBox, this.gridSize).addTo(map);
+            var baseMaps = {};
+            var overlayMaps = {"River": geographyLayer, "Active Cells": activeCellsLayer};
+            L.control.layers(baseMaps, overlayMaps).addTo(map);
+        }
     },
     _addHeadsLayer: function ( data, map ){
 
