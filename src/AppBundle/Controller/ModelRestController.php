@@ -2,6 +2,7 @@
 
 namespace AppBundle\Controller;
 
+use AppBundle\Entity\BoundaryModelObject;
 use AppBundle\Entity\ConstantHeadBoundary;
 use AppBundle\Entity\GeneralHeadBoundary;
 use AppBundle\Entity\GeologicalLayer;
@@ -16,6 +17,7 @@ use AppBundle\Model\ActiveCells;
 use AppBundle\Model\AreaFactory;
 use AppBundle\Model\GeologicalLayerFactory;
 use AppBundle\Model\GridSize;
+use AppBundle\Model\LineStringFactory;
 use AppBundle\Model\ModFlowModelFactory;
 use AppBundle\Model\Point;
 use AppBundle\Model\PropertyType;
@@ -617,6 +619,67 @@ class ModelRestController extends FOSRestController
 
         $view = View::create();
         $view->setData($rivers)
+            ->setStatusCode(200)
+            ->setSerializationContext($serializationContext)
+        ;
+
+        return $view;
+    }
+
+    /**
+     * Returns a list of all Rivers by ModflowModel-Id
+     *
+     * @ApiDoc(
+     *   resource = true,
+     *   description = "Returns a list of all Rivers by ModflowModel-Id.",
+     *   statusCodes = {
+     *     200 = "Returned when successful",
+     *     404 = "Returned when the ModflowModel is not found"
+     *   }
+     * )
+     *
+     * @param $modelId
+     * @param $riverId
+     * @param Request $request
+     *
+     * @return Response|View
+     */
+    public function putModflowmodelRiversAction($modelId, $riverId, Request $request)
+    {
+        /** @var ModFlowModel $model */
+        $model = $this->findModelById($modelId);
+
+        $river = null;
+        /** @var BoundaryModelObject $boundary */
+        foreach ($model->getBoundaries() as $boundary){
+            if ($boundary instanceof StreamBoundary){
+                if ($boundary->getId()->toString() == $riverId){
+                    $river = $boundary;
+                }
+            }
+        }
+
+        if ($request->request->has('latLngs')){
+            $river->setGeometry(LineStringFactory::fromLatLngs(json_decode($request->request->get('latLngs'))));
+            $this->getDoctrine()->getManager()->persist($river);
+            $this->getDoctrine()->getManager()->flush();
+
+            $activeCells = $this->get('inowas.geotools')->getActiveCells($river, $model->getBoundingBox(), $model->getGridSize());
+            $river->setActiveCells($activeCells);
+            $this->getDoctrine()->getManager()->persist($river);
+            $this->getDoctrine()->getManager()->flush();
+        }
+
+        if ($request->request->has('activeCells')){
+            $river->setActiveCells(ActiveCells::fromObject(json_decode($request->request->get('activeCells'))));
+        }
+
+
+        $serializationContext = SerializationContext::create();
+        $serializationContext->setGroups('modelobjectdetails');
+
+        $view = View::create();
+        $view->setData($river)
             ->setStatusCode(200)
             ->setSerializationContext($serializationContext)
         ;

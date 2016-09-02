@@ -40,7 +40,8 @@ I.model = {
         heads: null
     },
     buttons: {
-        updateActiveCells: null
+        updateActiveCellsArea: null,
+        updateRiver: null
     },
     styles: {
         inactive: {color: "#000", weight: 0, fillColor: "#000", fillOpacity: 0.7},
@@ -100,10 +101,44 @@ I.model = {
                     prop.activeCells = data.active_cells;
                     prop.boundingBox = data.bounding_box;
                     prop.gridSize = data.grid_size;
-                    prop.buttons.updateActiveCells.disable();
+                    prop.buttons.updateActiveCellsArea.disable();
                 }
             }
         });
+
+        return true;
+    },
+    updateRiver: function () {
+        prop = this;
+
+        var rivers = this.boundaries.riv;
+        for(var rKey in rivers){
+            if (! rivers.hasOwnProperty(rKey)) continue;
+
+            var river = rivers[rKey];
+
+            var data = null;
+            if (river.updateGeometry) {
+                data = {'latLngs': JSON.stringify(river.latLngs)};
+            }
+
+            if (river.updateActiveCells) {
+                data = {'activeCells': JSON.stringify(river.active_cells)};
+            }
+
+            if (data) {
+                $.ajax({
+                    type: 'PUT',
+                    url: '/api/modflowmodels/'+this.id+'/rivers/'+river.id+'.json',
+                    data: data,
+                    statusCode: {
+                        200: function( data ) {
+                            prop.buttons.updateRiver.disable();
+                        }
+                    }
+                })
+            }
+        }
 
         return true;
     },
@@ -147,7 +182,7 @@ I.model = {
             var overlayMaps = {"Area": polygon, "Bounding Box": boundingBox, "Active Cells": activeCells};
             L.control.layers(baseMaps, overlayMaps).addTo(map);
 
-            this.buttons.updateActiveCells = L.easyButton('fa-save', function(btn, map){
+            this.buttons.updateActiveCellsArea = L.easyButton('fa-save', function(btn, map){
                 I.model.updateProperties( I.model.id );
             }).disable().addTo(map);
 
@@ -273,7 +308,7 @@ I.model = {
                         e.target.setStyle(prop.getStyle('area', false));
                     }
 
-                    that.buttons.updateActiveCells.enable();
+                    that.buttons.updateActiveCellsArea.enable();
                 });
                 rectangle.addTo(layers);
             }
@@ -505,7 +540,8 @@ I.model = {
                 linePoints.push(L.latLng(line[pointKey][1], line[pointKey][0]));
             }
 
-            L.polyline(linePoints, this.styles).addTo(geographyLayer);
+            var river = L.polyline(linePoints, this.styles).addTo(geographyLayer);
+            river.raw = rivers[rivKey];
 
             if (addActiveCells == true){
                 for(var rowProperty in rivers[rivKey].active_cells.cells) {
@@ -532,6 +568,37 @@ I.model = {
             var baseMaps = {};
             var overlayMaps = {"River": geographyLayer, "Active Cells": activeCellsLayer};
             L.control.layers(baseMaps, overlayMaps).addTo(map);
+        }
+
+        if (addActiveCells == true){
+            that = this;
+            var drawnItems = new L.FeatureGroup();
+            river.addTo(drawnItems);
+            drawnItems.addTo(map);
+
+            var drawControlEditOnly = new L.Control.Draw({
+                edit: {
+                    featureGroup: drawnItems
+                },
+                draw: false
+            });
+
+            drawControlEditOnly.addTo(map);
+
+            this.buttons.updateRiver = L.easyButton('fa-save', function(btn, map){
+                I.model.updateRiver( I.model.id );
+                this.disable();
+            }).disable().addTo(map);
+
+            map.on("draw:edited", function (e) {
+                var layers = e.layers;
+                layers.eachLayer(function (layer) {
+                    layer.raw.latLngs = layer.getLatLngs();
+                    layer.raw.updateGeometry = true;
+                });
+
+                that.buttons.updateRiver.enable();
+            });
         }
     },
     _addHeadsLayer: function ( data, map ){
