@@ -119,9 +119,6 @@ class Area extends ModelObject
      */
     public function serializeDeserializeGeometry()
     {
-        return $this->geometry->toJson();
-
-        /**
         $polygons = null;
 
         if (!is_null($this->geometry))
@@ -140,7 +137,18 @@ class Area extends ModelObject
             $polygons = $new;
         }
         return $polygons;
-         */
+    }
+
+    /**
+     * @JMS\VirtualProperty
+     * @JMS\SerializedName("geojson")
+     * @JMS\Groups({"modelobjectdetails", "modeldetails", "soilmodeldetails"})
+     *
+     * @return string
+     */
+    public function geoJson()
+    {
+        return $this->geometry->toJson();
     }
 
     /**

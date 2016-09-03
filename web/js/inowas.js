@@ -130,7 +130,7 @@ I.model = {
     updateRiver: function () {
         that = this;
 
-        var rivers = this.boundaries.riv;
+        var rivers = this.data.riv;
         for(var rKey in rivers){
             if (! rivers.hasOwnProperty(rKey)) continue;
 
@@ -194,7 +194,7 @@ I.model = {
 
             var map = this.createBaseMap( 'map-area' );
             var boundingBox = this.createBoundingBoxLayer(this.boundingBox).addTo(map);
-            var areaPolygon = L.geoJson(jQuery.parseJSON(this.data.area.geometry), this.styles.areaGeometry).addTo(map);
+            var areaPolygon = L.geoJson($.parseJSON(this.data.area.geojson), this.styles.areaGeometry).addTo(map);
             var areaActiveCells = this.createAreaActiveCellsLayer(this.activeCells, this.boundingBox, this.gridSize, true);
             map.fitBounds(this.createBoundingBoxPolygon(this.boundingBox).getBounds());
 
@@ -249,17 +249,60 @@ I.model = {
             this.maps.wel = map;
         }
     },
-    loadRivers: function (refresh ) {
+    loadRivers: function (refresh, editable ) {
         if (this.maps.riv == null || refresh == true) {
             if (refresh == true && this.maps.riv != null){
                 this.maps.riv.remove();
             }
 
+            that = this;
+
             var map = this.createBaseMap( 'rivers-map' );
             L.geoJson(jQuery.parseJSON(this.area.polygonJSON), this.styles.areaGeometry).addTo( map );
             map.fitBounds(this.createBoundingBoxPolygon(this.boundingBox).getBounds());
+            var boundingBox = this.createBoundingBoxLayer(this.boundingBox).addTo(map);
+            var areaPolygon = L.geoJson(jQuery.parseJSON(this.area.polygonJSON), this.styles.areaGeometry).addTo(map);
+            map.fitBounds(this.createBoundingBoxPolygon(this.boundingBox).getBounds());
+            var rivers = this.createRiversLayer(this.data.riv).addTo(map);
+            var riversActiveCells = this.createRiversActiveCellsLayer(this.data.riv, this.boundingBox, this.gridSize);
 
-            this._loadAndAddRivers( map, true );
+            var baseMaps = {};
+            var overlayMaps = {"Wells": rivers, "Active cells": riversActiveCells};
+            L.control.layers(baseMaps, overlayMaps).addTo(map);
+
+            if (true){
+                var drawnItems = new L.FeatureGroup();
+
+                rivers.eachLayer(function (layer) {
+                    layer.addTo(drawnItems);
+                });
+
+                var drawControlEditOnly = new L.Control.Draw({
+                    edit: {
+                        featureGroup: drawnItems
+                    },
+                    draw: false
+                });
+
+                drawControlEditOnly.addTo(map);
+
+                this.buttons.updateRiver = L.easyButton('fa-save', function(btn, map){
+                    that.updateRiver( I.model.id );
+                }).disable().addTo(map);
+
+                map.on("draw:edited", function (e) {
+                    var layers = e.layers;
+                    layers.eachLayer(function (layer) {
+                        console.log(layer);
+                        layer.raw.latLngs = layer.getLatLngs();
+                        layer.raw.updateGeometry = true;
+                    });
+
+                    that.buttons.updateRiver.enable();
+                });
+            }
+
+
 
             this.maps.riv = map;
         }
@@ -353,9 +396,7 @@ I.model = {
         return layer;
     },
     createWellsActiveCellsLayer: function (wells, boundingBox, gridSize) {
-
         that = this;
-
         var layers = new L.FeatureGroup();
         var dx = (boundingBox.x_max - boundingBox.x_min) / gridSize.n_x;
         var dy = (boundingBox.y_max - boundingBox.y_min) / gridSize.n_y;
@@ -391,28 +432,56 @@ I.model = {
 
         return layers;
     },
-
     createRiversLayer: function(rivers) {
-        var layer = new L.LayerGroup();
+        var layers = new L.LayerGroup();
         for (var rivKey in rivers) {
             if (!rivers.hasOwnProperty(rivKey)) continue;
-            var line = rivers[rivKey]['line'];
+            var riverLayer = L.geoJson($.parseJSON(rivers[rivKey].geojson), this.styles);
 
-            var linePoints = [];
-
-            for (var pointKey in line) {
-                if (!line.hasOwnProperty(pointKey)) continue;
-                if (isNaN(parseInt(pointKey))) continue;
-
-                linePoints.push(L.latLng(line[pointKey][1], line[pointKey][0]));
-            }
-
-            L.polyline(linePoints, this.styles).addTo(layer);
+            var raw = rivers[rivKey];
+            riverLayer.eachLayer(function(layer){
+                layer.raw = raw;
+                layer.addTo(layers)
+            });
         }
 
-        return layer;
+        return layers;
     },
+    createRiversActiveCellsLayer: function(rivers, boundingBox, gridSize){
+        that = this;
+        var layers = new L.FeatureGroup();
+        var dx = (boundingBox.x_max - boundingBox.x_min) / gridSize.n_x;
+        var dy = (boundingBox.y_max - boundingBox.y_min) / gridSize.n_y;
 
+        for (var key in rivers) {
+            if (!rivers.hasOwnProperty(key)) continue;
+
+            var activeCells = rivers[key].active_cells.cells;
+            for(var nRow in activeCells) {
+
+                if (!activeCells.hasOwnProperty(nRow)){
+                    continue;
+                }
+
+                var row = activeCells[nRow];
+
+                for(var nCol in row) {
+                    if (!row.hasOwnProperty(nCol)){continue;}
+
+                    var bb = {};
+                    bb.x_min = boundingBox.x_min + nCol*dx;
+                    bb.x_max = boundingBox.x_min + nCol*dx+dx;
+                    bb.y_min = boundingBox.y_max - nRow*dy-dy;
+                    bb.y_max = boundingBox.y_max - nRow*dy;
+
+                    var rectangle = that.createRectangle(bb, that.getStyle('wells', true));
+                    rectangle.addTo(layers);
+                }
+            }
+        }
+
+        return layers;
+    },
     createBoundingBoxLayer: function( boundingBox ) {
         var layer = new L.LayerGroup();
         this.createBoundingBoxPolygon(boundingBox).addTo(layer);
@@ -538,17 +607,6 @@ I.model = {
             $.getJSON( "/api/modflowmodels/"+this.id+"/wells.json?srid=4326", function ( data ) {
                 that.boundaries.wel = data;
                 that._addWellsLayer( data, map, addActiveCells );
-            });
-        }
-    },
-    _loadAndAddRivers: function( map, addActiveCells ){
-        var that = this;
-        if (this.boundaries.riv !== null) {
-            this._addRiversLayer( this.boundaries.riv, map, addActiveCells );
-        } else {
-            $.getJSON( "/api/modflowmodels/"+this.id+"/rivers.json?srid=4326", function ( data ) {
-                that.boundaries.riv = data;
-                that._addRiversLayer( data, map, addActiveCells );
             });
         }
     },

@@ -142,6 +142,18 @@ class StreamBoundary extends BoundaryModelObject
     }
 
     /**
+     * @JMS\VirtualProperty
+     * @JMS\SerializedName("geojson")
+     * @JMS\Groups({"modelobjectdetails"})
+     *
+     * @return string
+     */
+    public function getGoeJson()
+    {
+        return $this->geometry->toJson();
+    }
+
+    /**
      * @return ArrayCollection
      */
     public function getStressPeriods()
