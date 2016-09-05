@@ -4,7 +4,11 @@
 <p class="layers"></p>
 <p class="gridsize"></p>
 <h3>Area</h3>
-<p>Surface: {{ model.area.surface }} sqm</p>
+<p>
+    Surface: {{ model.area.surface }}<br/>
+    dx: {{ model.boundingBox.dXInMeters|round }} m <br/>
+    dy: {{ model.boundingBox.dyInMeters|round }} m
+</p>
 <h3>Soilmodel</h3>
 <p>
     Layers: {{ model.soilmodel.getNumberOfGeologicalLayers }}<br/>

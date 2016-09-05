@@ -931,6 +931,13 @@ class ModelRestController extends FOSRestController
 
             $surface = $this->getDoctrine()->getRepository('AppBundle:Area')
                 ->getAreaSurfaceById($area->getId());
+
+            if ($surface > 100000){
+                $surface = round($surface/1000000, 1). ' sqkm';
+            } else (
+                $surface = round($surface). ' sqm'
+            );
+
             $area->setSurface($surface);
 
             $geoJson = $this->getDoctrine()->getRepository('AppBundle:Area')

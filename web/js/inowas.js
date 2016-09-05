@@ -48,9 +48,7 @@ I.model = {
         heads: null
     },
     buttons: {
-        updateActiveCells: null,
-        updateRiver: null,
-        updateWells: null
+        updateActiveCells: null
     },
     styles: {
         inactive: {color: "#000", weight: 0, fillColor: "#000", fillOpacity: 0.7},
@@ -296,20 +294,12 @@ I.model = {
                 var drawControlEditOnly = new L.Control.Draw({
                     edit: {
                         featureGroup: drawnItems,
-                        remove: false,
-                        circle: {
-                            showRadius: false
-                        }
+                        remove: false
                     },
                     draw: false
                 });
 
                 drawControlEditOnly.addTo(map);
-
-                this.buttons.updateWells = L.easyButton('fa-save', function(btn, map){
-                    that.updateWells();
-                }).disable().addTo(map);
-
                 map.on("draw:edited", function (e) {
                     var layers = e.layers;
 
@@ -317,8 +307,7 @@ I.model = {
                         layer.raw.latLng = layer.getLatLng();
                         layer.raw.updateGeometry = true;
                     });
-
-                    that.buttons.updateWells.enable();
+                    that.updateWells();
                 });
             }
 
@@ -353,16 +342,13 @@ I.model = {
             if (drawnItems.getLayers().length > 0){
                 var drawControlEditOnly = new L.Control.Draw({
                     edit: {
-                        featureGroup: drawnItems
+                        featureGroup: drawnItems,
+                        remove: false
                     },
                     draw: false
                 });
 
                 drawControlEditOnly.addTo(map);
-
-                this.buttons.updateRiver = L.easyButton('fa-save', function(btn, map){
-                    that.updateRiver( I.model.id );
-                }).disable().addTo(map);
 
                 map.on("draw:edited", function (e) {
                     var layers = e.layers;
@@ -370,8 +356,7 @@ I.model = {
                         layer.raw.latLngs = layer.getLatLngs();
                         layer.raw.updateGeometry = true;
                     });
-
-                    that.buttons.updateRiver.enable();
+                    that.updateRiver( I.model.id );
                 });
             }
 

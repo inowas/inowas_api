@@ -26,8 +26,8 @@
                 <span class="icon-bar"></span>
                 <span class="icon-bar"></span>
             </button>
-            <a class="navbar-brand" href="#">
-                <img src="{{ asset('img/logo.svg') }}" alt="inowas-logo">
+            <a class="navbar-brand" href="{{ path('modflow_model_list') }}">
+                <img src="{{ asset('img/logo.png') }}" alt="inowas-logo">
             </a>
         </div>
         <div id="navbar" class="navbar-collapse collapse">
@@ -40,13 +40,7 @@
                 <li class="dropdown">
                     <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false"><i class="fa fa-cog"></i> <span class="caret"></span></a>
                     <ul class="dropdown-menu">
-                        <li><a href="#">Action</a></li>
-                        <li><a href="#">Another action</a></li>
-                        <li><a href="#">Something else here</a></li>
-                        <li role="separator" class="divider"></li>
-                        <li class="dropdown-header">Nav header</li>
-                        <li><a href="#">Separated link</a></li>
-                        <li><a href="#">One more separated link</a></li>
+                        <li><a href="{{ path('fos_user_security_logout') }}">Logout</a></li>
                     </ul>
                 </li>
             </ul>
@@ -57,9 +51,9 @@
 <div class="container">
     <div class="row">
         <ol class="breadcrumb">
-            <li><a href="#">Models</a></li>
-            <li><a href="#">Modflow</a></li>
-            <li class="modelname active">{{ model.name }}</li>
+            <li>Models</li>
+            <li><a href="{{ path('modflow_model_list') }}">Modflow</a></li>
+            <li class="modelname active"><a href="{{ path('modflow_model', {'id': model.id.toString}) }}">{{ model.name }}</a></li>
         </ol>
     </div>
 
@@ -69,15 +63,20 @@
         </div>
         <div class="col-sm-11">
             <h3 class="modelname">{{ model.name }}</h3>
-            <p class="modelsummary">Groundwater Model: {{ model.createTextOverview }}</p>
-
+            <p class="pull-right">{State}</p>
+            <p class="modelsummary">
+                Groundwater Model: {{ model.createTextOverview }},
+                Last modified: {{ model.dateModified | date("d-m-Y") }}
+            </p>
         </div>
     </div>
 
     <div class="row">
         <div class="col-sm-offset-1 col-sm-11">
             <hr>
-            <h4>Created on {{ model.dateCreated | date("d-m-Y") }}</h4>
+            <h4>
+                <a href="{{ path('modflow_model_modflow_scenarios_list', {'id': model.id.toString}) }}">Scenarios: {{ model.getScenarios | length }}</a>
+            </h4>
         </div>
     </div>
     <hr>
