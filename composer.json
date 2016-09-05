@@ -37,7 +37,8 @@
         "jms/security-extra-bundle": "dev-master",
         "friendsofsymfony/rest-bundle": "^1.7",
         "creof/doctrine2-spatial": "dev-master",
-        "ramsey/uuid-doctrine": "^1.2"
+        "ramsey/uuid-doctrine": "^1.2",
+        "sensiolabs/ansi-to-html": "^1.1"
       
     },
     "require-dev": {

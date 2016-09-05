@@ -5,6 +5,7 @@ namespace AppBundle\Entity;
 use Doctrine\ORM\Mapping as ORM;
 use JMS\Serializer\Annotation as JMS;
 use Ramsey\Uuid\Uuid;
+use SensioLabs\AnsiConverter\AnsiToHtmlConverter;
 
 /**
  * ModflowCalculation
@@ -323,4 +324,13 @@ class ModflowCalculation
         $this->errorOutput = $errorOutput;
         return $this;
     }
+
+    public function getRenderedOutput(){
+
+        $input = array("\n");
+        $output = array('<br>');
+        return str_replace($input, $output, $this->output);
+    }
+
+
 }

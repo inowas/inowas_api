@@ -1,6 +1,6 @@
-<h2>Calculation</h2>
 <div class="row">
     <div class="col-sm-4">
+        <h2>Calculation</h2>
         {% if calculation is null %}
             <p>Please calculate</p>
         {% else %}
@@ -20,10 +20,12 @@
         <button type="button" class="btn btn-danger btn-block btn_calculation">Run calculation</button>
     </div>
     <div class="col-sm-8">
-        {% if calculation.state == 11 %}
-            {{ calculation.getOutput }}
-        {% elseif calculation.state == 12 %}
-            {{ calculation.getErrorOutput }}
-        {% endif %}
+        <p id="log" class="small">
+            {% if calculation.state == 11 %}
+                {{ calculation.getRenderedOutput | raw}}
+            {% elseif calculation.state == 12 %}
+                {{ calculation.getErrorOutput }}
+            {% endif %}
+        </p>
     </div>
 </div>

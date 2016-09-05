@@ -245,3 +245,11 @@ td {
 .table>tbody>tr>td {
     vertical-align: middle;
 }
+
+#log {
+    padding: 5px;
+    background: black;
+    color: white;
+    font-family: "Courier New";
+    font-size: 10px;
+}
