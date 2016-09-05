@@ -49,7 +49,8 @@ I.model = {
     },
     buttons: {
         updateActiveCells: null,
-        updateRiver: null
+        updateRiver: null,
+        updateWells: null
     },
     styles: {
         inactive: {color: "#000", weight: 0, fillColor: "#000", fillOpacity: 0.7},
@@ -163,7 +164,42 @@ I.model = {
 
         return true;
     },
-    loadSummary: function ( refresh ) {
+    updateWells: function () {
+        that = this;
+        var allWells = this.data.wel;
+        for(var wellsTypeKey in allWells){
+            if (! allWells.hasOwnProperty(wellsTypeKey)) continue;
+            var wells = allWells[wellsTypeKey];
+
+            for(var wellsKey in wells) {
+                if (!wells.hasOwnProperty(wellsKey)) continue;
+                var well = wells[wellsKey];
+
+                var data = null;
+                if (well.updateGeometry) {
+                    data = {'latLng': JSON.stringify(well.latLng)};
+                }
+
+                if (data) {
+                    $.ajax({
+                        type: 'PUT',
+                        url: '/api/modflowmodels/' + this.id + '/wells/' + well.id + '.json',
+                        data: data,
+                        statusCode: {
+                            200: function (data) {
+                                that.data.wel = data;
+                                that.loadWells(true);
+                                that.buttons.updateWells.disable();
+                            }
+                        }
+                    })
+                }
+            }
+        }
+
+        return true;
+    },
+    loadSummary: function (refresh) {
         that = this;
         if (this.maps.summary == null || refresh == true){
             if (refresh == true){
@@ -188,7 +224,7 @@ I.model = {
             this._loadAndAddWells( map, false );
         }
     },
-    loadArea: function ( refresh ) {
+    loadArea: function (refresh) {
         if (this.maps.area == null || refresh == true) {
             if (refresh == true){
                 this.maps.area.remove();
@@ -231,7 +267,8 @@ I.model = {
             this.maps.boundaries = map;
         }
     },
-    loadWells: function (refresh ) {
+    loadWells: function (refresh) {
+        that = this;
         if (this.maps.wel == null || refresh == true) {
             if (refresh == true && this.maps.wel != null){
                 this.maps.wel.remove();
@@ -248,10 +285,48 @@ I.model = {
             var overlayMaps = {"Wells": wells, "Active cells": wellsActiveCells};
             L.control.layers(baseMaps, overlayMaps).addTo(map);
 
+            var drawnItems = new L.FeatureGroup();
+            wells.eachLayer(function (layer) {
+                if (layer.raw.mutable)(
+                    layer.addTo(drawnItems)
+                )
+            });
+
+            if (drawnItems.getLayers().length > 0){
+                var drawControlEditOnly = new L.Control.Draw({
+                    edit: {
+                        featureGroup: drawnItems,
+                        remove: false,
+                        circle: {
+                            showRadius: false
+                        }
+                    },
+                    draw: false
+                });
+
+                drawControlEditOnly.addTo(map);
+
+                this.buttons.updateWells = L.easyButton('fa-save', function(btn, map){
+                    that.updateWells();
+                }).disable().addTo(map);
+
+                map.on("draw:edited", function (e) {
+                    var layers = e.layers;
+
+                    layers.eachLayer(function (layer) {
+                        layer.raw.latLng = layer.getLatLng();
+                        layer.raw.updateGeometry = true;
+                    });
+
+                    that.buttons.updateWells.enable();
+                });
+            }
+
+
             this.maps.wel = map;
         }
     },
-    loadRivers: function (refresh, editable ) {
+    loadRivers: function (refresh) {
         if (this.maps.riv == null || refresh == true) {
             if (refresh == true && this.maps.riv != null){
                 this.maps.riv.remove();
@@ -276,7 +351,6 @@ I.model = {
             });
 
             if (drawnItems.getLayers().length > 0){
-                console.log(drawnItems);
                 var drawControlEditOnly = new L.Control.Draw({
                     edit: {
                         featureGroup: drawnItems
@@ -293,7 +367,6 @@ I.model = {
                 map.on("draw:edited", function (e) {
                     var layers = e.layers;
                     layers.eachLayer(function (layer) {
-                        console.log(layer);
                         layer.raw.latLngs = layer.getLatLngs();
                         layer.raw.updateGeometry = true;
                     });
@@ -318,7 +391,7 @@ I.model = {
         }
     },
 
-    createBaseMap: function( id, options ) {
+    createBaseMap: function (id, options) {
         var map = new L.map( id, options );
         L.tileLayer('https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token=pk.eyJ1IjoibWFwYm94IiwiYSI6ImNpandmbXliNDBjZWd2M2x6bDk3c2ZtOTkifQ._QA7i5Mpkd_m30IGElHziw', {
             maxZoom: 18,
@@ -381,13 +454,14 @@ I.model = {
 
         return layers;
     },
-    createWellsLayer: function(wells) {
+    createWellsLayer: function (wells) {
         var layer = new L.LayerGroup();
         for (var key in wells) {
             if (!wells.hasOwnProperty(key)) continue;
             var items = wells[key];
             items.forEach(function (item) {
-                L.circleMarker([item.point.y, item.point.x], I.model.styles.wells[key]).bindPopup("Well "+item.name).addTo(layer);
+                var well = L.circleMarker(L.latLng(item.point.y, item.point.x), I.model.styles.wells[key]).bindPopup("Well "+item.name).addTo(layer);
+                well.raw = item;
             });
         }
 

@@ -19,6 +19,7 @@ use AppBundle\Model\GeologicalLayerFactory;
 use AppBundle\Model\GridSize;
 use AppBundle\Model\LineStringFactory;
 use AppBundle\Model\ModFlowModelFactory;
+use AppBundle\Model\PointFactory;
 use AppBundle\Model\PropertyType;
 use AppBundle\Model\PropertyTypeFactory;
 use AppBundle\Model\RasterFactory;
@@ -551,6 +552,84 @@ class ModelRestController extends FOSRestController
             if ($boundary instanceof WellBoundary) {
                 $wells[] = $boundary;
             }
+        }
+
+        $response = array();
+        /** @var WellBoundary $well */
+        foreach ($wells as $well) {
+            $response[$well->getWellType()][] = $well;
+        }
+
+        $serializationContext = SerializationContext::create();
+        $serializationContext->setGroups('modelobjectdetails');
+
+        $view = View::create();
+        $view->setData($response)
+            ->setStatusCode(200)
+            ->setSerializationContext($serializationContext)
+        ;
+
+        return $view;
+    }
+
+    /**
+     * Returns a list of all Rivers by ModflowModel-Id
+     *
+     * @ApiDoc(
+     *   resource = true,
+     *   description = "Returns a list of all Rivers by ModflowModel-Id.",
+     *   statusCodes = {
+     *     200 = "Returned when successful",
+     *     404 = "Returned when the ModflowModel is not found"
+     *   }
+     * )
+     *
+     * @param $modelId
+     * @param $wellId
+     * @param Request $request
+     *
+     * @return Response|View
+     */
+    public function putModflowmodelWellsAction($modelId, $wellId, Request $request)
+    {
+        /** @var ModFlowModel $model */
+        $model = $this->findModelById($modelId);
+        $model = $this->setMutable($model, $this->getUser());
+
+        if ($model->getOwner() != $this->getUser()){
+            throw new AccessDeniedHttpException(
+                sprintf('User %s has no access Model id: %s from User %s',
+                    $this->getUser()->getUserName(),
+                    $model->getId()->toString(),
+                    $model->getOwner()->getUsername()
+                )
+            );
+        }
+
+        $wells = array();
+        $boundaries = $model->getBoundaries();
+        foreach ($boundaries as $boundary) {
+            if ($boundary instanceof WellBoundary) {
+                $wells[] = $boundary;
+            }
+        }
+
+        /** @var WellBoundary $well */
+        foreach ($wells as $well){
+            if ($well->getId()->toString() == $wellId){
+                break;
+            }
+        }
+
+        if ($request->request->has('latLng')){
+            $well->setGeometry(PointFactory::fromLatLng(json_decode($request->request->get('latLng'))));
+            $this->getDoctrine()->getManager()->persist($well);
+            $this->getDoctrine()->getManager()->flush();
+
+            $activeCells = $this->get('inowas.geotools')->getActiveCells($well, $model->getBoundingBox(), $model->getGridSize());
+            $well->setActiveCells($activeCells);
+            $this->getDoctrine()->getManager()->persist($well);
+            $this->getDoctrine()->getManager()->flush();
         }
 
         $response = array();
