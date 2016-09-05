@@ -7,6 +7,7 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
 use JMS\Serializer\Annotation as JMS;
 use Ramsey\Uuid\Uuid;
+use Ramsey\Uuid\UuidInterface;
 
 /**
  * ModelScenario
@@ -46,6 +47,14 @@ class ModelScenario
      * @ORM\Column(name="image_file", type="string", length=255, nullable=true)
      */
     private $imageFile;
+
+    /**
+     * Heads-array with key, value = totim => flopy3dArray
+     * @var array
+     *
+     * @ORM\Column(name="heads", type="json_array", nullable=true)
+     */
+    private $heads;
 
     /**
      * @var ModFlowModel
@@ -97,7 +106,7 @@ class ModelScenario
     /**
      * Get id
      *
-     * @return Uuid
+     * @return UuidInterface
      */
     public function getId()
     {
@@ -155,6 +164,24 @@ class ModelScenario
     public function setImageFile($imageFile)
     {
         $this->imageFile = $imageFile;
+        return $this;
+    }
+
+    /**
+     * @return array
+     */
+    public function getHeads()
+    {
+        return $this->heads;
+    }
+
+    /**
+     * @param array $heads
+     * @return ModelScenario
+     */
+    public function setHeads(array $heads)
+    {
+        $this->heads = $heads;
         return $this;
     }
 

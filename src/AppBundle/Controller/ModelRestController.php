@@ -519,11 +519,11 @@ class ModelRestController extends FOSRestController
         /** @var ModFlowModel $model */
         $model = $this->findModelById($id);
 
-        $rivers = array();
+        $ghb = array();
         $boundaries = $model->getBoundaries();
         foreach ($boundaries as $boundary) {
             if ($boundary instanceof GeneralHeadBoundary) {
-                $rivers[] = $boundary;
+                $ghb[] = $boundary;
             }
         }
 
@@ -531,7 +531,7 @@ class ModelRestController extends FOSRestController
         $serializationContext->setGroups('modelobjectdetails');
 
         $view = View::create();
-        $view->setData($rivers)
+        $view->setData($ghb)
             ->setStatusCode(200)
             ->setSerializationContext($serializationContext)
         ;
@@ -970,6 +970,8 @@ class ModelRestController extends FOSRestController
             ->findBy(array(
                 'modelId' => $model->getId()->toString()
             ));
+
+
 
         $view = View::create();
         $view->setData($calculations)

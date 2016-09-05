@@ -133,6 +133,14 @@ abstract class ModelObject
     protected $dateModified;
 
     /**
+     * @var boolean
+     *
+     * @JMS\Groups({"modelobjectdetails", "modeldetails", "soilmodeldetails"})
+     */
+    protected $mutable = false;
+
+
+    /**
      * Constructor
      * @param User $owner
      * @param $public
@@ -424,6 +432,26 @@ abstract class ModelObject
         $this->activeCells = $activeCells;
         return $this;
     }
+
+    /**
+     * @return boolean
+     */
+    public function isMutable(): bool
+    {
+        return $this->mutable;
+    }
+
+    /**
+     * @param boolean $mutable
+     * @return ModelObject
+     */
+    public function setMutable(bool $mutable): ModelObject
+    {
+        $this->mutable = $mutable;
+        return $this;
+    }
+
+
 
     public function getNameOfClass()
     {
