@@ -41,6 +41,7 @@ use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class ModelRestController extends FOSRestController
@@ -385,6 +386,8 @@ class ModelRestController extends FOSRestController
     {
         /** @var ModFlowModel $model */
         $model = $this->findModelById($id);
+        $model = $this->setMutable($model, $this->getUser());
+
         $area = $model->getArea();
 
         $serializationContext = SerializationContext::create();
@@ -419,6 +422,8 @@ class ModelRestController extends FOSRestController
     {
         /** @var ModFlowModel $model */
         $model = $this->findModelById($id);
+        $model = $this->setMutable($model, $this->getUser());
+
         $boundaries = $model->getBoundaries();
 
         $serializationContext = SerializationContext::create();
@@ -456,6 +461,7 @@ class ModelRestController extends FOSRestController
     {
         /** @var ModFlowModel $model */
         $model = $this->findModelById($id);
+        $model = $this->setMutable($model, $this->getUser());
 
         $constantHeadBoundaries = array();
         $boundaries = $model->getBoundaries();
@@ -518,6 +524,7 @@ class ModelRestController extends FOSRestController
     {
         /** @var ModFlowModel $model */
         $model = $this->findModelById($id);
+        $model = $this->setMutable($model, $this->getUser());
 
         $ghb = array();
         $boundaries = $model->getBoundaries();
@@ -561,6 +568,8 @@ class ModelRestController extends FOSRestController
     {
         /** @var ModFlowModel $model */
         $model = $this->findModelById($id);
+        $model = $this->setMutable($model, $this->getUser());
+
         $wells = array();
         $boundaries = $model->getBoundaries();
         foreach ($boundaries as $boundary) {
@@ -620,6 +629,7 @@ class ModelRestController extends FOSRestController
     {
         /** @var ModFlowModel $model */
         $model = $this->findModelById($id);
+        $model = $this->setMutable($model, $this->getUser());
 
         $rivers = array();
         $boundaries = $model->getBoundaries();
@@ -682,6 +692,16 @@ class ModelRestController extends FOSRestController
     {
         /** @var ModFlowModel $model */
         $model = $this->findModelById($modelId);
+
+        if ($model->getOwner() != $this->getUser()){
+            throw new AccessDeniedHttpException(
+                sprintf('User %s has no access Model id: %s from User %s',
+                    $this->getUser()->getUserName(),
+                    $model->getId()->toString(),
+                    $model->getOwner()->getUsername()
+                )
+            );
+        }
 
         $river = null;
         /** @var BoundaryModelObject $boundary */
@@ -971,8 +991,6 @@ class ModelRestController extends FOSRestController
                 'modelId' => $model->getId()->toString()
             ));
 
-
-
         $view = View::create();
         $view->setData($calculations)
             ->setStatusCode(200)
@@ -1138,6 +1156,30 @@ class ModelRestController extends FOSRestController
 
         if (!$model) {
             throw $this->createNotFoundException('Model not found.');
+        }
+
+        return $model;
+    }
+
+    /**
+     * @param ModFlowModel $model
+     * @param User $user
+     * @return ModFlowModel
+     */
+    private function setMutable(ModFlowModel $model, User $user){
+
+        if (! $model->isModelScenario() && $model->getOwner() == $user){
+            $model->getArea()->setMutable(true);
+
+            /** @var BoundaryModelObject $boundary */
+            foreach ($model->getBoundaries() as $boundary) {
+                $boundary->setMutable(true);
+            }
+
+            /** @var BoundaryModelObject $boundary */
+            foreach ($model->getObservationPoints() as $observationPoint) {
+                $observationPoint->setMutable(true);
+            }
         }
 
         return $model;

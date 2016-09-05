@@ -306,4 +306,11 @@ abstract class AbstractModel
     {
         return $this->modelObjects;
     }
+
+    /**
+     * @return bool
+     */
+    public function isModelScenario(){
+        return false;
+    }
 }

@@ -274,8 +274,12 @@ I.model = {
                 var drawnItems = new L.FeatureGroup();
 
                 rivers.eachLayer(function (layer) {
-                    layer.addTo(drawnItems);
+                    if (layer.raw.mutable)(
+                        layer.addTo(drawnItems)
+                    )
                 });
+
+
 
                 var drawControlEditOnly = new L.Control.Draw({
                     edit: {

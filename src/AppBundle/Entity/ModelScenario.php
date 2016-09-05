@@ -282,4 +282,11 @@ class ModelScenario
     {
         $this->dateModified = new \DateTime();
     }
+
+    /**
+     * @return bool
+     */
+    public function isModelScenario(){
+        return true;
+    }
 }
