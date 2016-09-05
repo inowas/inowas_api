@@ -153,7 +153,6 @@ I.model = {
                         200: function( data ) {
                             that.data.riv = data;
                             that.loadRivers(true);
-                            that.buttons.updateRiver.disable();
                         }
                     }
                 })
@@ -187,7 +186,6 @@ I.model = {
                             200: function (data) {
                                 that.data.wel = data;
                                 that.loadWells(true);
-                                that.buttons.updateWells.disable();
                             }
                         }
                     })
@@ -252,11 +250,17 @@ I.model = {
             }
 
             var map = this.createBaseMap( 'boundaries-map' );
+
             var boundingBox = this.createBoundingBoxLayer(this.boundingBox).addTo(map);
             var areaPolygon = L.geoJson(jQuery.parseJSON(this.area.polygonJSON), this.styles.areaGeometry).addTo(map);
             map.fitBounds(this.createBoundingBoxPolygon(this.boundingBox).getBounds());
             var wells = this.createWellsLayer(this.data.wel).addTo(map);
             var rivers = this.createRiversLayer(this.data.riv).addTo(map);
+
+            function onMapClick(e) {
+                console.log("You clicked the map at " + e.latlng);
+            }
+            areaPolygon.on('click', onMapClick);
 
             var baseMaps = {};
             var overlayMaps = {"Wells": wells, "Rivers": rivers};

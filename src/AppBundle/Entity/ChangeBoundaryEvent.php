@@ -7,7 +7,7 @@ use Doctrine\ORM\Mapping as ORM;
 /**
  * @ORM\Entity()
  */
-class AddBoundaryEvent extends AbstractEvent
+class ChangeBoundaryEvent extends AbstractEvent
 {
     /**
      * @var ModelObject $boundary

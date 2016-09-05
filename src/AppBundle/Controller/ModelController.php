@@ -186,19 +186,15 @@ class ModelController extends Controller
      */
     public function modelModFlowScenarioAction($modelId, $scenarioId)
     {
-
-        try {
-            $modelUuid = Uuid::fromString($modelId);
-            $scenarioUuid = Uuid::fromString($scenarioId);
-        } catch (\InvalidArgumentException $e) {
+        if (! Uuid::isValid($modelId) || ! Uuid::isValid($scenarioId)){
             return $this->redirectToRoute('modflow_model_list');
         }
 
         /** @var ModelScenario $scenario */
         $scenario = $this->getDoctrine()->getRepository('AppBundle:ModelScenario')
             ->findOneBy(array(
-                'id' => $scenarioUuid,
-                'baseModel' => $modelUuid
+                'id' => Uuid::fromString($scenarioId),
+                'baseModel' => Uuid::fromString($modelId)
             ));
 
         if (!$scenario instanceof ModelScenario){
@@ -206,7 +202,8 @@ class ModelController extends Controller
         }
         
         return $this->render('inowas/model/modflow/scenario.html.twig', array(
-                'scenario' => $scenario
+                'scenario' => $scenario,
+                'apiKey' => $this->getUser()->getApiKey()
             )
         );
     }

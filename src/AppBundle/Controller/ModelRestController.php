@@ -1054,6 +1054,7 @@ class ModelRestController extends FOSRestController
     {
         /** @var ModFlowModel $model */
         $model = $this->findModelById($id);
+
         $fpc = FlopyCalculationPropertiesFactory::loadFromApiRunAndSubmit($model);
         $model->setCalculationProperties($fpc);
         $this->getDoctrine()->getManager()->persist($model);

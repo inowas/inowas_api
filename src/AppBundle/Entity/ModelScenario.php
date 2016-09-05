@@ -243,8 +243,23 @@ class ModelScenario
      */
     private function applyEvent(ModFlowModel $model, Event $event){
         if ($event instanceof AddBoundaryEvent) {
-            if ($event->getBoundary() instanceof ModelObject){
-                $model->addBoundary($event->getBoundary());
+            if ($event->getBoundary() instanceof BoundaryModelObject){
+                $model->addBoundary($event->getBoundary()->setMutable(true));
+            }
+        }
+
+        if ($event instanceof ChangeBoundaryEvent) {
+            if ($event->getBoundary() instanceof BoundaryModelObject){
+                /** @var ModFlowModel $baseModel */
+                $baseModel = $this->getBaseModel();
+
+                /** @var BoundaryModelObject $boundary */
+                foreach ($baseModel->getBoundaries()->toArray() as $bKey => $boundary){
+                    if ($boundary->getId() == $event->getBoundary()){
+                        $baseModel->getBoundaries()->toArray()[$bKey] = $event->getBoundary()->setMutable(true);
+                        return;
+                    }
+                }
             }
         }
 

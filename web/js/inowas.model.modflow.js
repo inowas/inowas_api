@@ -153,7 +153,7 @@ $( "#btn_delete_model").click(function () {
 $( "#btn_calculate_model").click(function () {
     $.ajax({
         type: 'POST',
-        url: '/api/modflowmodels/'+I.model.id+'/calculation.json',
+        url: '/api/modflowmodels/'+I.model.id+'/calculations.json',
         statusCode: {
             200: function() {
                 window.location.href = "/models/modflow";

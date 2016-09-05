@@ -1,0 +1,15 @@
+{
+  "name": "leaflet-image",
+  "homepage": "https://github.com/mapbox/leaflet-image",
+  "version": "0.2.1",
+  "_release": "0.2.1",
+  "_resolution": {
+    "type": "version",
+    "tag": "v0.2.1",
+    "commit": "bb593a7462d093f104b8c8ee64d462509db7b6c1"
+  },
+  "_source": "https://github.com/mapbox/leaflet-image.git",
+  "_target": "^0.2.1",
+  "_originalSource": "leaflet-image",
+  "_direct": true
+}

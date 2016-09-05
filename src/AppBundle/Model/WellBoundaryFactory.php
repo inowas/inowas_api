@@ -42,4 +42,22 @@ class WellBoundaryFactory
         $well->setWellType(WellBoundary::TYPE_PUBLIC_WELL);
         return $well;
     }
+
+    /**
+     * @return WellBoundary
+     */
+    public static function createNewPublicWell(){
+        $well = new WellBoundary();
+        $well->setWellType(WellBoundary::TYPE_SCENARIO_NEW_WELL);
+        return $well;
+    }
+
+    /**
+     * @return WellBoundary
+     */
+    public static function createNewIndustrialWell(){
+        $well = new WellBoundary();
+        $well->setWellType(WellBoundary::TYPE_SCENARIO_NEW_WELL);
+        return $well;
+    }
 }
