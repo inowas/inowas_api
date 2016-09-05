@@ -104,30 +104,4 @@ class Flopy
 
         return 1;
     }
-
-    /**
-    public function getRasterResult($modelId, $layer, array $timesteps, array $stressPeriods, $operation = ModflowResultRasterParameter::OP_RAW){
-
-        $process = $this->modflowProcessBuilder->getRasterResultProcess($modelId, $layer, $timesteps, $stressPeriods, $operation);
-        $process->run();
-
-        if (! $process->isSuccessful()) {
-            throw new ProcessFailedException('Modflow RasterResult Process failed with ErrorMessage: '. $process->getErrorOutput());
-        }
-
-        return true;
-    }
-
-    public function getTimeseriesResult($modelId, $layer, $row, $col, $operation = ModflowResultTimeSeriesParameter::OP_RAW){
-
-        $process = $this->modflowProcessBuilder->getTimeseriesResultProcess($modelId, $layer, $row, $col, $operation);
-        $process->run();
-
-        if (! $process->isSuccessful()) {
-            throw new ProcessFailedException('Modflow TimeSeriesResult Process failed with ErrorMessage: '. $process->getErrorOutput());
-        }
-
-        return true;
-    }
-    */
 }

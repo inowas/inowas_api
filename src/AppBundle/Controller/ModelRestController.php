@@ -19,7 +19,6 @@ use AppBundle\Model\GeologicalLayerFactory;
 use AppBundle\Model\GridSize;
 use AppBundle\Model\LineStringFactory;
 use AppBundle\Model\ModFlowModelFactory;
-use AppBundle\Model\Point;
 use AppBundle\Model\PropertyType;
 use AppBundle\Model\PropertyTypeFactory;
 use AppBundle\Model\RasterFactory;
@@ -450,14 +449,11 @@ class ModelRestController extends FOSRestController
      *   }
      * )
      *
-     * @param ParamFetcher $paramFetcher
      * @param $id
      *
-     * @QueryParam(name="geojson", nullable=true, description="Returns the geometry only as geojson", default=false)
-     * @QueryParam(name="srid", nullable=true, description="The target srid, default is 4326", default=4326)
      * @return Response|View
      */
-    public function getModflowmodelConstant_headAction(ParamFetcher $paramFetcher, $id)
+    public function getModflowmodelConstant_headAction($id)
     {
         /** @var ModFlowModel $model */
         $model = $this->findModelById($id);
@@ -469,25 +465,6 @@ class ModelRestController extends FOSRestController
             if ($boundary instanceof ConstantHeadBoundary) {
                 $constantHeadBoundaries[] = $boundary;
             }
-        }
-
-        if ($paramFetcher->get('geojson')){
-            $srid = $paramFetcher->get('srid');
-            $geoTools = $this->get('inowas.geotools');
-
-            $geometries = array();
-            /** @var ConstantHeadBoundary $boundary */
-            foreach ($constantHeadBoundaries as $boundary) {
-                $geometry = json_decode($geoTools->getGeometryFromModelObjectAsGeoJSON($boundary, $srid));
-                $geometries[] = $geometry;
-
-                foreach ($boundary->getObservationPoints() as $observationPoint) {
-                    $geometry = json_decode($geoTools->getGeometryFromModelObjectAsGeoJSON($observationPoint, $srid));
-                    $geometries[] = $geometry;
-                }
-            }
-
-            return new Response(json_encode($geometries, true));
         }
 
         $serializationContext = SerializationContext::create();
@@ -558,13 +535,11 @@ class ModelRestController extends FOSRestController
      *   }
      * )
      *
-     * @param ParamFetcher $paramFetcher
      * @param $id
-     * @QueryParam(name="srid", nullable=true, description="SRID, default 3857", default="3857")
      *
      * @return View
      */
-    public function getModflowmodelWellsAction(ParamFetcher $paramFetcher, $id)
+    public function getModflowmodelWellsAction($id)
     {
         /** @var ModFlowModel $model */
         $model = $this->findModelById($id);
@@ -575,16 +550,6 @@ class ModelRestController extends FOSRestController
         foreach ($boundaries as $boundary) {
             if ($boundary instanceof WellBoundary) {
                 $wells[] = $boundary;
-            }
-        }
-
-        $targetSrid = (int)$paramFetcher->get('srid');
-        /** @var WellBoundary $well */
-        foreach ($wells as $well) {
-            if ($well->getGeometry()->getSrid() != $targetSrid) {
-                $point = json_decode($this->getDoctrine()->getRepository('AppBundle:WellBoundary')
-                    ->transformPointTo($well->getId(), $targetSrid));
-                $well->setGeometry(new Point($point->coordinates[0], $point->coordinates[1], $targetSrid));
             }
         }
 
@@ -618,14 +583,11 @@ class ModelRestController extends FOSRestController
      *   }
      * )
      *
-     * @param ParamFetcher $paramFetcher
      * @param $id
      *
-     * @QueryParam(name="geojson", nullable=true, description="Returns the geometry only as geojson", default=false)
-     * @QueryParam(name="srid", nullable=true, description="The target srid, default is 4326", default=4326)
      * @return Response|View
      */
-    public function getModflowmodelRiversAction(ParamFetcher $paramFetcher, $id)
+    public function getModflowmodelRiversAction($id)
     {
         /** @var ModFlowModel $model */
         $model = $this->findModelById($id);
@@ -637,25 +599,6 @@ class ModelRestController extends FOSRestController
             if ($boundary instanceof StreamBoundary) {
                 $rivers[] = $boundary;
             }
-        }
-
-        if ($paramFetcher->get('geojson')){
-            $srid = $paramFetcher->get('srid');
-            $geoTools = $this->get('inowas.geotools');
-
-            $geometries = array();
-            /** @var ConstantHeadBoundary $boundary */
-            foreach ($rivers as $boundary) {
-                $geometry = json_decode($geoTools->getGeometryFromModelObjectAsGeoJSON($boundary, $srid));
-                $geometries[] = $geometry;
-
-                foreach ($boundary->getObservationPoints() as $observationPoint) {
-                    $geometry = json_decode($geoTools->getGeometryFromModelObjectAsGeoJSON($observationPoint, $srid));
-                    $geometries[] = $geometry;
-                }
-            }
-
-            return new Response(json_encode($geometries, true));
         }
 
         $serializationContext = SerializationContext::create();
@@ -692,6 +635,7 @@ class ModelRestController extends FOSRestController
     {
         /** @var ModFlowModel $model */
         $model = $this->findModelById($modelId);
+        $model = $this->setMutable($model, $this->getUser());
 
         if ($model->getOwner() != $this->getUser()){
             throw new AccessDeniedHttpException(
@@ -703,13 +647,18 @@ class ModelRestController extends FOSRestController
             );
         }
 
-        $river = null;
-        /** @var BoundaryModelObject $boundary */
+        $rivers = [];
         foreach ($model->getBoundaries() as $boundary){
             if ($boundary instanceof StreamBoundary){
-                if ($boundary->getId()->toString() == $riverId){
-                    $river = $boundary;
-                }
+                $rivers[] = $boundary;
+            }
+        }
+
+        $river = null;
+        /** @var BoundaryModelObject $boundary */
+        foreach ($rivers as $river){
+            if ($river->getId()->toString() == $riverId){
+                break;
             }
         }
 
@@ -726,16 +675,16 @@ class ModelRestController extends FOSRestController
 
         if ($request->request->has('activeCells')){
             $river->setActiveCells(ActiveCells::fromObject(json_decode($request->request->get('activeCells'))));
+            $this->getDoctrine()->getManager()->persist($river);
+            $this->getDoctrine()->getManager()->flush();
         }
-
 
         $serializationContext = SerializationContext::create();
         $serializationContext->setGroups('modelobjectdetails');
 
         $view = View::create();
-        $view->setData($river)
+        $view->setData($rivers)
             ->setStatusCode(200)
-            ->setSerializationContext($serializationContext)
         ;
 
         return $view;

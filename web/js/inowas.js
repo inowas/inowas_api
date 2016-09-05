@@ -79,15 +79,15 @@ I.model = {
             that.loadSummary();
         });
 
-        $.getJSON( "/api/modflowmodels/"+this.id+"/area.json?srid=4326", function ( data ) {
+        $.getJSON( "/api/modflowmodels/"+this.id+"/area.json", function ( data ) {
             that.data.area = data;
         });
 
-        $.getJSON( "/api/modflowmodels/"+this.id+"/wells.json?srid=4326", function ( data ) {
+        $.getJSON( "/api/modflowmodels/"+this.id+"/wells.json", function ( data ) {
             that.data.wel = data;
         });
 
-        $.getJSON( "/api/modflowmodels/"+this.id+"/rivers.json?srid=4326", function ( data ) {
+        $.getJSON( "/api/modflowmodels/"+this.id+"/rivers.json", function ( data ) {
             that.data.riv = data;
         });
     },
@@ -152,6 +152,8 @@ I.model = {
                     data: data,
                     statusCode: {
                         200: function( data ) {
+                            that.data.riv = data;
+                            that.loadRivers(true);
                             that.buttons.updateRiver.disable();
                         }
                     }
@@ -255,11 +257,7 @@ I.model = {
                 this.maps.riv.remove();
             }
 
-            that = this;
-
             var map = this.createBaseMap( 'rivers-map' );
-            L.geoJson(jQuery.parseJSON(this.area.polygonJSON), this.styles.areaGeometry).addTo( map );
-            map.fitBounds(this.createBoundingBoxPolygon(this.boundingBox).getBounds());
             var boundingBox = this.createBoundingBoxLayer(this.boundingBox).addTo(map);
             var areaPolygon = L.geoJson(jQuery.parseJSON(this.area.polygonJSON), this.styles.areaGeometry).addTo(map);
             map.fitBounds(this.createBoundingBoxPolygon(this.boundingBox).getBounds());
@@ -270,17 +268,15 @@ I.model = {
             var overlayMaps = {"Wells": rivers, "Active cells": riversActiveCells};
             L.control.layers(baseMaps, overlayMaps).addTo(map);
 
-            if (true){
-                var drawnItems = new L.FeatureGroup();
+            var drawnItems = new L.FeatureGroup();
+            rivers.eachLayer(function (layer) {
+                if (layer.raw.mutable)(
+                    layer.addTo(drawnItems)
+                )
+            });
 
-                rivers.eachLayer(function (layer) {
-                    if (layer.raw.mutable)(
-                        layer.addTo(drawnItems)
-                    )
-                });
-
-
-
+            if (drawnItems.getLayers().length > 0){
+                console.log(drawnItems);
                 var drawControlEditOnly = new L.Control.Draw({
                     edit: {
                         featureGroup: drawnItems
@@ -305,8 +301,6 @@ I.model = {
                     that.buttons.updateRiver.enable();
                 });
             }
-
-
 
             this.maps.riv = map;
         }
