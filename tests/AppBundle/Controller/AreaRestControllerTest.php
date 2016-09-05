@@ -135,14 +135,15 @@ class AreaRestControllerTest extends RestControllerTestCase
         $client = static::createClient();
         $client->request(
             'GET',
-            '/api/areas/'.$this->area_1->getId().'.json',
+            '/api/areas/'.$this->area_2->getId().'.json',
             array(),
             array(),
             array('HTTP_X-AUTH-TOKEN' => $this->getOwner()->getApiKey())
         );
+
         $this->assertEquals(200, $client->getResponse()->getStatusCode());
         $area = json_decode($client->getResponse()->getContent());
-        $this->assertEquals($area->id, $this->area_1->getId());
+        $this->assertEquals($area->id, $this->area_2->getId());
     }
 
     public function testDetailsWithInvalidIdReturns404()
