@@ -385,7 +385,6 @@ I.model = {
             id: 'mapbox.streets'
         }).addTo(map);
         map.addControl( new L.Control.FullScreen({
-            position: 'bottomright',
             forceSeparateButton: true
         }));
         return map;
@@ -544,7 +543,6 @@ I.model = {
     createBoundingBoxPolygon: function( boundingBox ) {
         return this.createRectangle(boundingBox, this.styles.boundingBox);
     },
-
     createRectangle: function( boundingBox, style ){
         return new L.Rectangle([[boundingBox.y_min, boundingBox.x_min], [boundingBox.y_max, boundingBox.x_max]], style);
     },
@@ -552,10 +550,6 @@ I.model = {
 
         var lay = 0;
         heads = heads[lay];
-
-        var heatmap = new Rainbow();
-        heatmap.setSpectrum('red', 'yellow', 'lime', 'aqua', 'blue');
-        heatmap.setNumberRange(min, max);
 
         var dx = (boundingBox.x_max - boundingBox.x_min) / gridSize.n_x;
         var dy = (boundingBox.y_max - boundingBox.y_min) / gridSize.n_y;
@@ -575,7 +569,7 @@ I.model = {
 
                 var rectangle = this.createRectangle(
                     bb,
-                    {color: "blue", weight: 0, fillColor: '#'+heatmap.colorAt(value), fillOpacity: 0.2, time: time}
+                    {color: "blue", weight: 0, fillColor: this.getColor(min, max, value), fillOpacity: 0.2, time: time}
                 );
 
                 rectangle.time = time;
@@ -633,6 +627,12 @@ I.model = {
                     }
 
                     var chart_rows = c3.generate({
+                        padding: {
+                            top: 0,
+                            right: 100,
+                            bottom: 0,
+                            left: 50
+                        },
                         bindto: '#chart_rows',
                         data: {
                             columns: [
@@ -651,11 +651,14 @@ I.model = {
                 rectangle.addTo(layerGroup);
             }
         }
-
         return layerGroup;
     },
-
-
+    getColor: function(min, max, value){
+        var heatmap = new Rainbow();
+        heatmap.setSpectrum('red', 'yellow', 'lime', 'aqua', 'blue');
+        heatmap.setNumberRange(min, max);
+        return '#'+heatmap.colorAt(value);
+    },
     _loadAndAddWells: function( map, addActiveCells ){
         if (this.boundaries.wel !== null) {
             this._addWellsLayer( this.boundaries.wel, map, addActiveCells );
@@ -745,6 +748,40 @@ I.model = {
             layerGroup = this.createHeadsLayer(heads, min, max, dates[i], this.boundingBox, this.gridSize, layerGroup);
         }
 
+        var info = L.control();
+        info.onAdd = function (map) {
+            this._div = L.DomUtil.create('div', 'info');
+            this.update();
+            return this._div;
+        };
+
+        info.update = function (props) {
+            this._div.innerHTML = '' +
+                '<h4>US Population Density</h4>' +  (props ?
+                '<b>' + props.name + '</b><br />' + props.density + ' people / mi<sup>2</sup>'
+                    : 'Hover over a state');
+        };
+        info.addTo(map);
+
+        var legend = L.control({position: 'bottomright'});
+        legend.onAdd = function (map) {
+            var div = L.DomUtil.create('div', 'info legend'),
+                grades = that.calculateLegend(min, max, 6),
+                labels = [];
+
+            // loop through our density intervals and generate a label with a colored square for each interval
+            for (var i = 0; i < grades.length; i++) {
+                div.innerHTML +=
+                    '<i style="background: ' + that.getColor(min, max, grades[i]) + '"></i>' +
+                    grades[i] + (grades[i + 1] ? '&ndash;' + grades[i + 1] + '<br>' : '+');
+            }
+
+            return div;
+        };
+
+        legend.addTo(map);
+
+
         var sliderControl = L.control.sliderControl({
             position: "topright",
             layer: layerGroup,
@@ -755,5 +792,20 @@ I.model = {
 
         map.addControl(sliderControl);
         sliderControl.startSlider();
+    },
+    calculateLegend: function (min, max, numberOfItems) {
+
+        max = Math.ceil(max/10)*10;
+        min = Math.floor(min/10)*10;
+
+        var delta = max-min;
+        var dn = delta/numberOfItems;
+
+        var grades = [];
+        for (var i=0; i<numberOfItems; i++){
+            grades.push(Math.round(min+i*dn));
+        }
+
+        return grades;
     }
 };

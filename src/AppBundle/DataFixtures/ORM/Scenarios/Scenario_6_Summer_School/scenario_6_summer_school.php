@@ -191,7 +191,7 @@ class LoadScenario_6 implements FixtureInterface, ContainerAwareInterface
             ->addStressPeriod(StressPeriodFactory::createGhb()
                 ->setDateTimeBegin(new \DateTime('1.1.2015'))
                 ->setDateTimeEnd(new \DateTime('31.12.2015'))
-                ->setStage(430)
+                ->setStage(450)
                 ->setCond(100)
             )
         );
@@ -208,7 +208,7 @@ class LoadScenario_6 implements FixtureInterface, ContainerAwareInterface
             ->addStressPeriod(StressPeriodFactory::createGhb()
                 ->setDateTimeBegin(new \DateTime('1.1.2015'))
                 ->setDateTimeEnd(new \DateTime('31.12.2015'))
-                ->setStage(420)
+                ->setStage(440)
                 ->setCond(100)
             )
         );
@@ -317,7 +317,7 @@ class LoadScenario_6 implements FixtureInterface, ContainerAwareInterface
             ->addStressPeriod(StressPeriodFactory::createWel()
                 ->setDateTimeBegin(new \DateTime('1.1.2015'))
                 ->setDateTimeEnd(new \DateTime('31.12.2015'))
-                ->setFlux(-10000)
+                ->setFlux(-5000)
             )
         );
 
@@ -329,7 +329,7 @@ class LoadScenario_6 implements FixtureInterface, ContainerAwareInterface
             ->addStressPeriod(StressPeriodFactory::createWel()
                 ->setDateTimeBegin(new \DateTime('1.1.2015'))
                 ->setDateTimeEnd(new \DateTime('31.12.2015'))
-                ->setFlux(-10000)
+                ->setFlux(-5000)
             )
         );
 
@@ -341,7 +341,7 @@ class LoadScenario_6 implements FixtureInterface, ContainerAwareInterface
             ->addStressPeriod(StressPeriodFactory::createWel()
                 ->setDateTimeBegin(new \DateTime('1.1.2015'))
                 ->setDateTimeEnd(new \DateTime('31.12.2015'))
-                ->setFlux(-10000)
+                ->setFlux(-5000)
             )
         );
 
@@ -353,7 +353,7 @@ class LoadScenario_6 implements FixtureInterface, ContainerAwareInterface
             ->addStressPeriod(StressPeriodFactory::createWel()
                 ->setDateTimeBegin(new \DateTime('1.1.2015'))
                 ->setDateTimeEnd(new \DateTime('31.12.2015'))
-                ->setFlux(-10000)
+                ->setFlux(-5000)
             )
         );
 
@@ -365,7 +365,7 @@ class LoadScenario_6 implements FixtureInterface, ContainerAwareInterface
             ->addStressPeriod(StressPeriodFactory::createWel()
                 ->setDateTimeBegin(new \DateTime('1.1.2015'))
                 ->setDateTimeEnd(new \DateTime('31.12.2015'))
-                ->setFlux(-10000)
+                ->setFlux(-5000)
             )
         );
 
@@ -377,7 +377,7 @@ class LoadScenario_6 implements FixtureInterface, ContainerAwareInterface
             ->addStressPeriod(StressPeriodFactory::createWel()
                 ->setDateTimeBegin(new \DateTime('1.1.2015'))
                 ->setDateTimeEnd(new \DateTime('31.12.2015'))
-                ->setFlux(-10000)
+                ->setFlux(-5000)
             )
         );
 
@@ -389,7 +389,7 @@ class LoadScenario_6 implements FixtureInterface, ContainerAwareInterface
             ->addStressPeriod(StressPeriodFactory::createWel()
                 ->setDateTimeBegin(new \DateTime('1.1.2015'))
                 ->setDateTimeEnd(new \DateTime('31.12.2015'))
-                ->setFlux(-10000)
+                ->setFlux(-5000)
             )
         );
 
@@ -464,7 +464,7 @@ class LoadScenario_6 implements FixtureInterface, ContainerAwareInterface
                     ->addStressPeriod(StressPeriodFactory::createWel()
                         ->setDateTimeBegin(new \DateTime('1.1.2015'))
                         ->setDateTimeEnd(new \DateTime('31.12.2015'))
-                        ->setFlux(-10000)
+                        ->setFlux(-5000)
                     )
             ));
 
@@ -476,7 +476,7 @@ class LoadScenario_6 implements FixtureInterface, ContainerAwareInterface
                     ->addStressPeriod(StressPeriodFactory::createWel()
                         ->setDateTimeBegin(new \DateTime('1.1.2015'))
                         ->setDateTimeEnd(new \DateTime('31.12.2015'))
-                        ->setFlux(-10000)
+                        ->setFlux(-5000)
                     )
             ));
 
@@ -488,7 +488,7 @@ class LoadScenario_6 implements FixtureInterface, ContainerAwareInterface
                     ->addStressPeriod(StressPeriodFactory::createWel()
                         ->setDateTimeBegin(new \DateTime('1.1.2015'))
                         ->setDateTimeEnd(new \DateTime('31.12.2015'))
-                        ->setFlux(-10000)
+                        ->setFlux(-5000)
                     )
             ));
 
@@ -500,7 +500,7 @@ class LoadScenario_6 implements FixtureInterface, ContainerAwareInterface
                     ->addStressPeriod(StressPeriodFactory::createWel()
                         ->setDateTimeBegin(new \DateTime('1.1.2015'))
                         ->setDateTimeEnd(new \DateTime('31.12.2015'))
-                        ->setFlux(-10000)
+                        ->setFlux(-5000)
                     )
             ));
 
@@ -512,7 +512,7 @@ class LoadScenario_6 implements FixtureInterface, ContainerAwareInterface
                     ->addStressPeriod(StressPeriodFactory::createWel()
                         ->setDateTimeBegin(new \DateTime('1.1.2015'))
                         ->setDateTimeEnd(new \DateTime('31.12.2015'))
-                        ->setFlux(-10000)
+                        ->setFlux(-5000)
                     )
             ));
 
@@ -524,7 +524,7 @@ class LoadScenario_6 implements FixtureInterface, ContainerAwareInterface
                     ->addStressPeriod(StressPeriodFactory::createWel()
                         ->setDateTimeBegin(new \DateTime('1.1.2015'))
                         ->setDateTimeEnd(new \DateTime('31.12.2015'))
-                        ->setFlux(-10000)
+                        ->setFlux(-5000)
                     )
             ));
 
@@ -536,7 +536,7 @@ class LoadScenario_6 implements FixtureInterface, ContainerAwareInterface
                     ->addStressPeriod(StressPeriodFactory::createWel()
                         ->setDateTimeBegin(new \DateTime('1.1.2015'))
                         ->setDateTimeEnd(new \DateTime('31.12.2015'))
-                        ->setFlux(-10000)
+                        ->setFlux(-5000)
                     )
             ));
 
@@ -548,7 +548,7 @@ class LoadScenario_6 implements FixtureInterface, ContainerAwareInterface
                     ->addStressPeriod(StressPeriodFactory::createWel()
                         ->setDateTimeBegin(new \DateTime('1.1.2015'))
                         ->setDateTimeEnd(new \DateTime('31.12.2015'))
-                        ->setFlux(-10000)
+                        ->setFlux(-5000)
                     )
             ));
 
@@ -560,7 +560,7 @@ class LoadScenario_6 implements FixtureInterface, ContainerAwareInterface
                     ->addStressPeriod(StressPeriodFactory::createWel()
                         ->setDateTimeBegin(new \DateTime('1.1.2015'))
                         ->setDateTimeEnd(new \DateTime('31.12.2015'))
-                        ->setFlux(-10000)
+                        ->setFlux(-5000)
                     )
             ));
 
@@ -572,7 +572,7 @@ class LoadScenario_6 implements FixtureInterface, ContainerAwareInterface
                     ->addStressPeriod(StressPeriodFactory::createWel()
                         ->setDateTimeBegin(new \DateTime('1.1.2015'))
                         ->setDateTimeEnd(new \DateTime('31.12.2015'))
-                        ->setFlux(-10000)
+                        ->setFlux(-5000)
                     )
             ));
             $scenario_1->addEvent(EventFactory::createAddBoundaryEvent(
@@ -583,7 +583,7 @@ class LoadScenario_6 implements FixtureInterface, ContainerAwareInterface
                     ->addStressPeriod(StressPeriodFactory::createWel()
                         ->setDateTimeBegin(new \DateTime('1.1.2015'))
                         ->setDateTimeEnd(new \DateTime('31.12.2015'))
-                        ->setFlux(-10000)
+                        ->setFlux(-5000)
                     )
             ));
 
