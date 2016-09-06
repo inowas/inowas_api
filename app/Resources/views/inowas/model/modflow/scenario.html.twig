@@ -80,7 +80,7 @@
         <div class="col-sm-offset-1 col-sm-11">
             <hr>
             <h4>Base Scenario:
-                <a href="{{ path('modflow_model_modflow_scenarios_list', {'id': model.id.toString}) }}"> {{ model.name }}</a>
+                <a href="{{ path('modflow_model', {'id': model.id.toString}) }}"> {{ model.name }}</a>
             </h4>
         </div>
     </div>
@@ -200,16 +200,7 @@
                     <div class="col-sm-12">
                         <div class="panel panel-default">
                             <div class="panel-body">
-                                <div class="content_calculation">
-                                    <h2>Calculation</h2>
-                                    <div class="row">
-                                        <div class="col-sm-4">
-                                            <button id="btn_calculate_model" type="button" class="btn btn-danger btn-block btn_calculation">Run calculation</button>
-                                        </div>
-                                        <div class="col-sm-8">
-                                        </div>
-                                    </div>
-                                </div>
+                                <div class="content_calculation"></div>
                             </div>
                         </div>
                     </div>

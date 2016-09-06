@@ -186,6 +186,7 @@ body h2 {
     border: 1px solid transparent;
 }
 
+/**
 .btn.active,
 .btn:active {
     background-image: none;
@@ -211,6 +212,7 @@ body h2 {
 .btn:active {
     outline: none !important;
 }
+*/
 
 .top-margin-20 {
     margin-top: 20px;
@@ -244,10 +246,15 @@ td {
     vertical-align: middle;
 }
 
+.log {
+    background: black;
+    max-height: 300px;
+    overflow-y: scroll;
+}
+
 #log {
     padding: 5px;
-    background: black;
     color: white;
-    font-family: "Courier New";
+    font-family: "Courier New", 'Open Sans', sans-serif;
     font-size: 10px;
 }

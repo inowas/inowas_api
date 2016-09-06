@@ -75,11 +75,11 @@ class FlopyServiceRunner
 
                     if ($process->getProcess()->isSuccessful()){
                         $modflowCalculation->setState(ModflowCalculation::STATE_FINISHED_SUCCESSFUL);
-                        $modflowCalculation->setOutput($process->getProcess()->getOutput());
+                        $modflowCalculation->setOutput($modflowCalculation->getOutput().$process->getProcess()->getOutput());
                         echo sprintf("Process end:\r\n Message: \r\n %s", $process->getProcess()->getOutput());
                     } else {
                         $modflowCalculation->setState(ModflowCalculation::STATE_FINISHED_WITH_ERRORS);
-                        $modflowCalculation->setErrorOutput($process->getProcess()->getErrorOutput());
+                        $modflowCalculation->setErrorOutput($modflowCalculation->getOutput().$process->getProcess()->getErrorOutput());
                         echo sprintf("Process ended up with error:\r\n ErrorMessage: \r\n %s", $process->getProcess()->getErrorOutput());
                     }
 
@@ -131,6 +131,8 @@ class FlopyServiceRunner
                 $modelCalculation->setProcessId($process->getId());
                 $modelCalculation->setDateTimeStart(new \DateTime());
                 $modelCalculation->setState(ModflowCalculation::STATE_RUNNING);
+
+                $modelCalculation->setOutput($modelCalculation->getOutput().sprintf("Calculation started at %s...\r\n", (new \DateTime('now'))->format('Y-m-d H:i:s')));
                 $this->entityManager->persist($modelCalculation);
                 $this->entityManager->flush();
 

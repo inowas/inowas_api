@@ -1,30 +1,38 @@
 <div class="row">
-    <div class="col-sm-4">
+    <div class="col-sm-4" style="height: 300px;">
         <h2>Calculation</h2>
         {% if calculation is null %}
             <p>Please calculate</p>
+            <button type="button" class="btn btn-success btn-block btn_calculation top-margin-40">Run calculation</button>
         {% else %}
             <p class="addedtoqueue">{{ calculation.getDateTimeAddToQueue | date }}</p>
             <h3>State</h3>
             {% if calculation.state == 0 %}
-                <p>There is added to calculation queue.</p>
+                <p>Calculation added to queue.</p>
+                <button type="button" class="btn btn-success btn-block disabled top-margin-40">The calculation starts soon.</button>
             {% elseif calculation.state == 1 %}
-                <p>There is a calculation running</p>
+                <p>Calculation is running</p>
+                <button type="button" class="btn btn-success btn-block disabled top-margin-40">The calculation is running.</button>
             {% elseif calculation.state == 11 %}
-                <p>The calculation has finished with success.</p>
+                <p>Calculation has finished with success.</p>
+                <button type="button" class="btn btn-success btn-block btn_calculation top-margin-40">Run calculation</button>
             {% elseif calculation.state == 12 %}
-                <p>The calculation has finished with errors.</p>
+                <p>Calculation has finished with errors.</p>
+                <button type="button" class="btn btn-success btn-block btn_calculation top-margin-40">Run calculation</button>
             {% endif %}
         {% endif %}
-
-        <button type="button" class="btn btn-danger btn-block btn_calculation">Run calculation</button>
     </div>
-    <div class="col-sm-8">
+
+    <div class="col-sm-8 log">
         <p id="log" class="small">
-            {% if calculation.state == 11 %}
-                {{ calculation.getRenderedOutput | raw}}
-            {% elseif calculation.state == 12 %}
-                {{ calculation.getErrorOutput }}
+            {% if calculation %}
+                {% if calculation.state == 12 %}
+                    {{ calculation.getRenderedOutput | raw }}
+                {% elseif calculation.state == 12 %}
+                    {{ calculation.getErrorOutput | raw}}
+                {% else %}
+                    {{ calculation.getRenderedOutput | raw }}
+                {% endif %}
             {% endif %}
         </p>
     </div>

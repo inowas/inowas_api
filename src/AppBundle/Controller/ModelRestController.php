@@ -1020,11 +1020,17 @@ class ModelRestController extends FOSRestController
      */
     public function getModflowmodelCalculationsAction($id){
 
-        $model = $this->findModelById($id);
+        $model = $this->findElementById($id);
         $calculations = $this->getDoctrine()->getRepository('AppBundle:ModflowCalculation')
-            ->findBy(array(
-                'modelId' => $model->getId()->toString()
-            ));
+            ->findBy(
+                array('modelId' => $model->getId()->toString()),
+                array('dateTimeAddToQueue' => 'DESC'),
+                1
+            );
+
+        if (count($calculations)>0){
+            $calculations = $calculations[0];
+        }
 
         $view = View::create();
         $view->setData($calculations)
@@ -1053,30 +1059,64 @@ class ModelRestController extends FOSRestController
     public function postModflowmodelCalculationAction($id)
     {
         /** @var ModFlowModel $model */
-        $model = $this->findModelById($id);
+        $element = $this->findElementById($id);
 
-        $fpc = FlopyCalculationPropertiesFactory::loadFromApiRunAndSubmit($model);
-        $model->setCalculationProperties($fpc);
-        $this->getDoctrine()->getManager()->persist($model);
-        $this->getDoctrine()->getManager()->flush();
+        if ($element->isModelScenario()){
+            $scenario = $element;
+            $model = $element->getModel();
 
-        /** @var Flopy $flopy */
-        $flopy = $this->get('inowas.flopy');
+            $fpc = FlopyCalculationPropertiesFactory::loadFromApiRunAndSubmit($model);
+            $model->setCalculationProperties($fpc);
+            $this->getDoctrine()->getManager()->persist($model);
+            $this->getDoctrine()->getManager()->flush();
 
-        $flopy->addToQueue(
-            $this->getParameter('inowas.api_base_url'),
-            $this->getParameter('inowas.modflow.data_folder'),
-            $model->getId()->toString(),
-            $this->getUser()->getId()->toString()
-        );
+            /** @var Flopy $flopy */
+            $flopy = $this->get('inowas.flopy');
 
-        $flopy->startAsyncFlopyProcessRunner(
-            $this->get('kernel')->getRootDir()
-        );
+            $flopy->addToQueue(
+                $this->getParameter('inowas.api_base_url'),
+                $this->getParameter('inowas.modflow.data_folder'),
+                $scenario->getId()->toString(),
+                $this->getUser()->getId()->toString()
+            );
 
-        return $this->redirect(
-            $this->generateUrl('get_modflowmodel_calculations', array('id' => $model->getId()->toString())).'.json'
-        );
+            $flopy->startAsyncFlopyProcessRunner(
+                $this->get('kernel')->getRootDir()
+            );
+
+            return $this->redirect(
+                $this->generateUrl('get_modflowmodel_calculations', array('id' => $scenario->getId()->toString())).'.json'
+            );
+        }
+
+        if (!$element->isModelScenario()){
+            $model = $element;
+
+            $fpc = FlopyCalculationPropertiesFactory::loadFromApiRunAndSubmit($model);
+            $model->setCalculationProperties($fpc);
+            $this->getDoctrine()->getManager()->persist($model);
+            $this->getDoctrine()->getManager()->flush();
+
+            /** @var Flopy $flopy */
+            $flopy = $this->get('inowas.flopy');
+
+            $flopy->addToQueue(
+                $this->getParameter('inowas.api_base_url'),
+                $this->getParameter('inowas.modflow.data_folder'),
+                $model->getId()->toString(),
+                $this->getUser()->getId()->toString()
+            );
+
+            $flopy->startAsyncFlopyProcessRunner(
+                $this->get('kernel')->getRootDir()
+            );
+
+            return $this->redirect(
+                $this->generateUrl('get_modflowmodel_calculations', array('id' => $model->getId()->toString())).'.json'
+            );
+        }
+
+
     }
 
     /**
@@ -1099,8 +1139,14 @@ class ModelRestController extends FOSRestController
     public function getModflowmodelHeadsAction($id)
     {
         /** @var ModFlowModel $model */
-        $model = $this->findModelById($id);
+        $model = $this->findElementById($id);
         $heads = $model->getHeads();
+
+        dump($model);
+
+        if ($model->isModelScenario()){
+            $model = $model->getModel();
+        }
 
         $response = array();
         if ($model->getStressPeriods()->count() > 0){
@@ -1147,7 +1193,7 @@ class ModelRestController extends FOSRestController
         $head = $paramFetcher->get('heads');
 
         /** @var ModFlowModel $model */
-        $model = $this->findModelById($id);
+        $model = $this->findElementById($id);
         $heads = $model->getHeads();
         $heads[$totim] = $head;
 
@@ -1161,6 +1207,40 @@ class ModelRestController extends FOSRestController
         ;
 
         return $view;
+    }
+
+    /**
+     * @param $id
+     * @return \AppBundle\Entity\AbstractModel
+     */
+    private function findElementById($id)
+    {
+
+        if (!Uuid::isValid($id)){
+            throw $this->createNotFoundException(sprintf('Element with id: %s not found.', $id));
+        }
+
+        $element = $this->getDoctrine()
+            ->getRepository('AppBundle:ModelScenario')
+            ->findOneBy(array(
+                'id' => $id
+            ));
+
+        if ($element instanceof ModelScenario) {
+            return $element;
+        }
+
+        $element = $this->getDoctrine()
+            ->getRepository('AppBundle:ModFlowModel')
+            ->findOneBy(array(
+                'id' => $id,
+            ));
+
+        if (! $element instanceof ModFlowModel) {
+            throw $this->createNotFoundException(sprintf('Element with id: %s not found', $id));
+        }
+
+        return $element;
     }
 
     /**

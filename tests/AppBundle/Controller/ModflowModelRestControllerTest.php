@@ -345,6 +345,21 @@ class ModflowModelRestControllerTest extends RestControllerTestCase
         $this->getEntityManager()->persist($calculation);
         $this->getEntityManager()->flush();
 
+        sleep(1);
+
+        $timeNow = new \DateTime();
+        $calculation = new ModflowCalculation();
+        $calculation->setModelId($this->modFlowModel->getId());
+        $calculation->setBaseUrl('abcde');
+        $calculation->setDateTimeStart(new \DateTime('2016-01-02'));
+        $calculation->setDateTimeEnd(new \DateTime('2016-01-03'));
+        $calculation->setOutput('Output_2');
+        $calculation->setErrorOutput('Error_2');
+
+        $this->getEntityManager()->persist($this->modFlowModel);
+        $this->getEntityManager()->persist($calculation);
+        $this->getEntityManager()->flush();
+
         $client = static::createClient();
         $client->request(
             'GET',
@@ -353,6 +368,9 @@ class ModflowModelRestControllerTest extends RestControllerTestCase
             array(),
             array('HTTP_X-AUTH-TOKEN' => $this->getOwner()->getApiKey())
         );
+
+        dump(json_decode($client->getResponse()->getContent()));
+
         $this->assertEquals(200, $client->getResponse()->getStatusCode());
         $calculations = json_decode($client->getResponse()->getContent());
         $this->assertEquals(1, count($calculations));
@@ -367,9 +385,9 @@ class ModflowModelRestControllerTest extends RestControllerTestCase
         $this->assertObjectHasAttribute('date_time_add_to_queue', $calculationResponse);
         $this->assertEquals($calculation->getDateTimeAddToQueue(), $timeNow);
         $this->assertObjectHasAttribute('date_time_start', $calculationResponse);
-        $this->assertEquals($calculation->getDateTimeStart(), new \DateTime('2016-01-01'));
+        $this->assertEquals($calculation->getDateTimeStart(), new \DateTime('2016-01-02'));
         $this->assertObjectHasAttribute('date_time_end', $calculationResponse);
-        $this->assertEquals($calculation->getDateTimeEnd(), new \DateTime('2016-01-02'));
+        $this->assertEquals($calculation->getDateTimeEnd(), new \DateTime('2016-01-03'));
         $this->assertObjectHasAttribute('output', $calculationResponse);
         $this->assertEquals($calculation->getOutput(), $calculationResponse->output);
         $this->assertObjectHasAttribute('error_output', $calculationResponse);

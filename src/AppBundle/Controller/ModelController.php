@@ -79,6 +79,18 @@ class ModelController extends Controller
             return $this->redirectToRoute('modflow_model_list');
         }
 
+        $scenarios = $this->getDoctrine()->getRepository('AppBundle:ModelScenario')
+            ->findBy(array(
+                'baseModel' => $model
+            ), array(
+                    'dateCreated' => 'ASC'
+                )
+            );
+
+        foreach ($scenarios as $scenario) {
+            $model->registerScenario($scenario);
+        }
+
         return $this->render('inowas/model/modflow/model.html.twig', array(
                 'model' => $model,
                 'apiKey' => $this->getUser()->getApiKey()
@@ -95,15 +107,13 @@ class ModelController extends Controller
      */
     public function modelsModflowScenariosAction($id)
     {
-        try {
-            $uuid = Uuid::fromString($id);
-        } catch (\InvalidArgumentException $e) {
+        if (! Uuid::isValid($id)){
             return $this->redirectToRoute('modflow_model_list');
         }
 
         $model = $this->getDoctrine()->getRepository('AppBundle:ModFlowModel')
             ->findOneBy(array(
-                'id' => $uuid
+                'id' => Uuid::fromString($id)
             ));
 
         if (! $model instanceof ModFlowModel){

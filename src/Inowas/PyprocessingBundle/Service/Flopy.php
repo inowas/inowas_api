@@ -54,6 +54,7 @@ class Flopy
         $modflowCalculation->setUserId(Uuid::fromString($userId));
         $modflowCalculation->setBaseUrl($baseUrl);
         $modflowCalculation->setDataFolder($dataFolder);
+        $modflowCalculation->setOutput("Model added to queue.\r\nThe Calculation starts soon...\r\n");
 
         $this->entityManager->persist($modflowCalculation);
         $this->entityManager->flush();
