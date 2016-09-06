@@ -143,9 +143,9 @@ class ModelScenario
 
     /**
      * ModelScenario constructor.
-     * @param AbstractModel $model
+     * @param ModFlowModel $model
      */
-    public function __construct(AbstractModel $model)
+    public function __construct(ModFlowModel $model)
     {
         $this->id = Uuid::uuid4();
         $this->events = new ArrayCollection();
@@ -239,7 +239,7 @@ class ModelScenario
     /**
      * Get model
      *
-     * @return \AppBundle\Entity\AbstractModel
+     * @return \AppBundle\Entity\ModFlowModel
      */
     public function getBaseModel()
     {

@@ -38,7 +38,6 @@ use FOS\RestBundle\View\View;
 use JMS\Serializer\SerializationContext;
 use Nelmio\ApiDocBundle\Annotation\ApiDoc;
 use Ramsey\Uuid\Uuid;
-use SensioLabs\AnsiConverter\Theme\Theme;
 use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -144,6 +143,10 @@ class ModelRestController extends FOSRestController
     public function deleteModflowmodelsAction($id)
     {
         $model = $this->findModelById($id);
+
+        if (! $this->getUser() == $model->getOwner()){
+            throw new AccessDeniedHttpException('To delete the model you have to be the owner.');
+        }
 
         $this->getDoctrine()->getManager()->remove($model);
         $this->getDoctrine()->getManager()->flush();
@@ -1100,12 +1103,14 @@ class ModelRestController extends FOSRestController
      */
     public function postModflowmodelCalculationAction($id)
     {
-        /** @var ModFlowModel $model */
-        $element = $this->findElementById($id);
 
-        /** ModelScenario $scenario */
-        if ($element->isModelScenario()){
-            $scenario = $element;
+        if ($this->isScenario($id))
+        {
+            $scenario = $this->getDoctrine()->getRepository('AppBundle:ModelScenario')
+                ->findOneBy(array(
+                    'id' => $id
+                ));
+
             $model = $scenario->getBaseModel();
 
             $fpc = FlopyCalculationPropertiesFactory::loadFromApiRunAndSubmit($model);
@@ -1132,33 +1137,31 @@ class ModelRestController extends FOSRestController
             );
         }
 
-        if (!$element->isModelScenario()){
-            $model = $element;
+        /** @var ModFlowModel $model */
+        $model = $this->findModelById($id);
 
-            $fpc = FlopyCalculationPropertiesFactory::loadFromApiRunAndSubmit($model);
-            $model->setCalculationProperties($fpc);
-            $this->getDoctrine()->getManager()->persist($model);
-            $this->getDoctrine()->getManager()->flush();
+        $fpc = FlopyCalculationPropertiesFactory::loadFromApiRunAndSubmit($model);
+        $model->setCalculationProperties($fpc);
+        $this->getDoctrine()->getManager()->persist($model);
+        $this->getDoctrine()->getManager()->flush();
 
-            /** @var Flopy $flopy */
-            $flopy = $this->get('inowas.flopy');
+        /** @var Flopy $flopy */
+        $flopy = $this->get('inowas.flopy');
 
-            $flopy->addToQueue(
-                $this->getParameter('inowas.api_base_url'),
-                $this->getParameter('inowas.modflow.data_folder'),
-                $model->getId()->toString(),
-                $this->getUser()->getId()->toString()
-            );
+        $flopy->addToQueue(
+            $this->getParameter('inowas.api_base_url'),
+            $this->getParameter('inowas.modflow.data_folder'),
+            $model->getId()->toString(),
+            $this->getUser()->getId()->toString()
+        );
 
-            $flopy->startAsyncFlopyProcessRunner(
-                $this->get('kernel')->getRootDir()
-            );
+        $flopy->startAsyncFlopyProcessRunner(
+            $this->get('kernel')->getRootDir()
+        );
 
-            return $this->redirect(
-                $this->generateUrl('get_modflowmodel_calculations', array('id' => $model->getId()->toString())).'.json'
-            );
-        }
-
+        return $this->redirect(
+            $this->generateUrl('get_modflowmodel_calculations', array('id' => $model->getId()->toString())).'.json'
+        );
 
     }
 
@@ -1182,13 +1185,19 @@ class ModelRestController extends FOSRestController
     public function getModflowmodelHeadsAction($id)
     {
         /** @var ModFlowModel $model */
-        $model = $this->findElementById($id);
-        $heads = $model->getHeads();
+        $element = $this->findElementById($id);
 
-        dump($model);
+        $heads = null;
+        $model = null;
 
-        if ($model->isModelScenario()){
-            $model = $model->getModel();
+        if ($element instanceof ModFlowModel){
+            $heads = $element->getHeads();
+            $model = $element;
+        }
+
+        if ($element instanceof ModelScenario){
+            $heads = $element->getHeads();
+            $model = $element->getBaseModel();
         }
 
         $response = array();
@@ -1327,9 +1336,8 @@ class ModelRestController extends FOSRestController
      */
     private function setMutable(ModFlowModel $model, User $user){
 
-        if (! $model->isModelScenario() && $model->getOwner() == $user){
+        if ($model->getOwner() == $user){
             $model->getArea()->setMutable(true);
-
             /** @var BoundaryModelObject $boundary */
             foreach ($model->getBoundaries() as $boundary) {
                 $boundary->setMutable(true);
