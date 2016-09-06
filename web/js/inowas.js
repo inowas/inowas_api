@@ -108,8 +108,6 @@ I.model = {
         }
     },
     updateProperties: function (id) {
-        that = this;
-
         $.ajax({
             type: 'PUT',
             url: '/api/modflowmodels/'+id+'.json',
@@ -127,8 +125,6 @@ I.model = {
         return true;
     },
     updateRiver: function () {
-        that = this;
-
         var rivers = this.data.riv;
         for(var rKey in rivers){
             if (! rivers.hasOwnProperty(rKey)) continue;
@@ -162,7 +158,6 @@ I.model = {
         return true;
     },
     updateWells: function () {
-        that = this;
         var allWells = this.data.wel;
         for(var wellsTypeKey in allWells){
             if (! allWells.hasOwnProperty(wellsTypeKey)) continue;
@@ -198,7 +193,6 @@ I.model = {
         return true;
     },
     loadSummary: function (refresh) {
-        that = this;
         if (this.maps.summary == null || refresh == true){
             if (refresh == true){
                 this.maps.summary.remove();
@@ -272,7 +266,6 @@ I.model = {
         }
     },
     loadWells: function (refresh) {
-        that = this;
         if (this.maps.wel == null || refresh == true) {
             if (refresh == true && this.maps.wel != null){
                 this.maps.wel.remove();
@@ -402,7 +395,6 @@ I.model = {
     },
     createAreaActiveCellsLayer: function (activeCells, boundingBox, gridSize, interactive) {
 
-        that = this;
         var layers = new L.FeatureGroup();
         var dx = (boundingBox.x_max - boundingBox.x_min) / gridSize.n_x;
         var dy = (boundingBox.y_max - boundingBox.y_min) / gridSize.n_y;
@@ -459,7 +451,6 @@ I.model = {
         return layer;
     },
     createWellsActiveCellsLayer: function (wells, boundingBox, gridSize) {
-        that = this;
         var layers = new L.FeatureGroup();
         var dx = (boundingBox.x_max - boundingBox.x_min) / gridSize.n_x;
         var dy = (boundingBox.y_max - boundingBox.y_min) / gridSize.n_y;
@@ -511,7 +502,6 @@ I.model = {
         return layers;
     },
     createRiversActiveCellsLayer: function(rivers, boundingBox, gridSize){
-        that = this;
         var layers = new L.FeatureGroup();
         var dx = (boundingBox.x_max - boundingBox.x_min) / gridSize.n_x;
         var dy = (boundingBox.y_max - boundingBox.y_min) / gridSize.n_y;
@@ -567,7 +557,6 @@ I.model = {
         heatmap.setSpectrum('red', 'yellow', 'lime', 'aqua', 'blue');
         heatmap.setNumberRange(min, max);
 
-        that = this;
         var dx = (boundingBox.x_max - boundingBox.x_min) / gridSize.n_x;
         var dy = (boundingBox.y_max - boundingBox.y_min) / gridSize.n_y;
 
@@ -627,6 +616,9 @@ I.model = {
                                 }
                             }
                         });
+
+                        $('.chart_ts').show();
+
                     }
 
                     var heads = allHeads[e.target.time];
@@ -651,6 +643,8 @@ I.model = {
                             position: 'top'
                         }
                     });
+
+                    $('.chart_rows').show();
                 });
 
                 rectangle.bindPopup("Groundwater Head: "+value);
@@ -663,7 +657,6 @@ I.model = {
 
 
     _loadAndAddWells: function( map, addActiveCells ){
-        var that = this;
         if (this.boundaries.wel !== null) {
             this._addWellsLayer( this.boundaries.wel, map, addActiveCells );
         } else {
@@ -674,7 +667,6 @@ I.model = {
         }
     },
     _loadAndAddHeads: function( map ){
-        var that = this;
         if (this.heads !== null) {
             this._addHeadsLayer( this.heads, map );
         } else {
@@ -725,87 +717,6 @@ I.model = {
             var baseMaps = {};
             var overlayMaps = {"Wells": geographyLayer, "Active Cells": activeCellsLayer};
             L.control.layers(baseMaps, overlayMaps).addTo(map);
-        }
-    },
-    _addRiversLayer: function ( rivers, map , addActiveCells){
-
-        var geographyLayer = new L.LayerGroup();
-
-        var active_cells = {};
-        active_cells.cells = [];
-
-        for (var rivKey in rivers){
-            if (!rivers.hasOwnProperty(rivKey)) continue;
-            var line = rivers[rivKey]['line'];
-
-            var linePoints = [];
-
-            for (var pointKey in line) {
-                if (! line.hasOwnProperty(pointKey)) continue;
-                if (isNaN(parseInt(pointKey))) continue;
-
-                linePoints.push(L.latLng(line[pointKey][1], line[pointKey][0]));
-            }
-
-            var river = L.polyline(linePoints, this.styles).addTo(geographyLayer);
-            river.raw = rivers[rivKey];
-
-            if (addActiveCells == true){
-                for(var rowProperty in rivers[rivKey].active_cells.cells) {
-                    if (!rivers[rivKey].active_cells.cells.hasOwnProperty(rowProperty)){continue;}
-
-                    if (active_cells.cells[rowProperty] == null) {
-                        active_cells.cells[rowProperty] = [];
-                    }
-
-                    var row = rivers[rivKey].active_cells.cells[rowProperty];
-
-                    for(var colProperty in row) {
-                        if (!row.hasOwnProperty(colProperty)){continue;}
-                        active_cells.cells[rowProperty][colProperty] = row[colProperty];
-                    }
-                }
-            }
-        }
-
-        geographyLayer.addTo(map);
-
-        if (addActiveCells == true) {
-            var activeCellsLayer = this.createWellsActiveCellsLayer(active_cells, this.boundingBox, this.gridSize).addTo(map);
-            var baseMaps = {};
-            var overlayMaps = {"River": geographyLayer, "Active Cells": activeCellsLayer};
-            L.control.layers(baseMaps, overlayMaps).addTo(map);
-        }
-
-        if (addActiveCells == true){
-            that = this;
-            var drawnItems = new L.FeatureGroup();
-            river.addTo(drawnItems);
-            drawnItems.addTo(map);
-
-            var drawControlEditOnly = new L.Control.Draw({
-                edit: {
-                    featureGroup: drawnItems
-                },
-                draw: false
-            });
-
-            drawControlEditOnly.addTo(map);
-
-            this.buttons.updateRiver = L.easyButton('fa-save', function(btn, map){
-                I.model.updateRiver( I.model.id );
-                this.disable();
-            }).disable().addTo(map);
-
-            map.on("draw:edited", function (e) {
-                var layers = e.layers;
-                layers.eachLayer(function (layer) {
-                    layer.raw.latLngs = layer.getLatLngs();
-                    layer.raw.updateGeometry = true;
-                });
-
-                that.buttons.updateRiver.enable();
-            });
         }
     },
     _addHeadsLayer: function ( data, map ){
