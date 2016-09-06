@@ -1103,9 +1103,10 @@ class ModelRestController extends FOSRestController
         /** @var ModFlowModel $model */
         $element = $this->findElementById($id);
 
+        /** ModelScenario $scenario */
         if ($element->isModelScenario()){
             $scenario = $element;
-            $model = $element->getModel();
+            $model = $scenario->getBaseModel();
 
             $fpc = FlopyCalculationPropertiesFactory::loadFromApiRunAndSubmit($model);
             $model->setCalculationProperties($fpc);

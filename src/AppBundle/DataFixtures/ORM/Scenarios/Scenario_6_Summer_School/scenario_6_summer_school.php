@@ -52,26 +52,61 @@ class LoadScenario_6 implements FixtureInterface, ContainerAwareInterface
      */
     public function load(ObjectManager $entityManager)
     {
+        $geoTools = $this->container->get('inowas.geotools');
         $userManager = $this->container->get('fos_user.user_manager');
 
-        $public = true;
-        $username = 'inowas';
-        $email = 'inowas@inowas.com';
-        $password = 'inowas';
+        $userListHeads = array('username', 'email', 'password');
+        $userList = array(
+            array('inowas', 'inowas@inowas.com', 'inowas'),
+            array('ralf.junghanns', 'ralf.junghanns@tu-dresden.de', 'inowas'),
+            array('jana.ringleb', 'jana.ringleb@tu-dresden.de', 'inowas'),
+            array('jana.sallwey', 'jana.sallwey@tu-dresden.de', 'inowas'),
+            array('catalin.stefan', 'catalin.stefan@tu-dresden.de', 'inowas'),
+            array('mohammed.basheer', 'mohammedadamabbaker@gmail.com', 'inowas'),
+            array('adeniran.akanni', 'adeniranakanni@yahoo.com', 'inowas'),
+            array('hoang.thi.ngoc.anh', 'anhhtn96@wru.vn', 'inowas'),
+            array('rana.benguel', 'rana-benguel@web.de', 'inowas'),
+            array('orin.browne', 'errolbrowne19@yahoo.com', 'inowas'),
+            array('sylvia.jimenez.cavallini', 'sylvia.jimenez.cavallini@una.cr', 'inowas'),
+            array('manuel.haeberle', 'manuel.haeberle@gmx.de', 'inowas'),
+            array('sina.shahabi.ghahfarokhi', 'sina.shahabi.gh@gmail.com', 'inowas'),
+            array('veronika.hoecker.de.guillermo', 'veronika.hoecker@conagua.gob.mx', 'inowas'),
+            array('ann.wahu.kamamia', 'wahukamamia@gmail.com', 'inowas'),
+            array('seyed.hossein.kazemi', 's.h.kazemie@gmail.com', 'inowas'),
+            array('alamgir.khalil', 'alamgirkhalil@hotmail.com', 'inowas'),
+            array('genevieve.labrecque', 'labrecque.genevieve@gmail.com', 'inowas'),
+            array('maria.villanueva.lago', 'mvillan2.ext@tragsa.es', 'inowas'),
+            array('fernando.luna', 'mfluna12@gmail.com', 'inowas'),
+            array('serena.caucci', 'Caucci@unu.edu', 'inowas'),
+            array('muhammad.nasir.mahmood', 'muhammad.nasir-mahmood@ufz.de', 'inowas'),
+            array('silvia.santato', '956249@stud.unive.it', 'inowas'),
+            array('raghwendra.shandilya', 'shand2@unesco-ihe.org', 'inowas'),
+            array('laslo.staedtler', 'laslostaedtler@web.de', 'inowas'),
+            array('claudia.teutsch', 'Claudia.Teutsch@mailbox.tu-dresden.de', 'inowas'),
+            array('florian.walter', 'florian.walter@geo.uni-goettingen.de', 'inowas'),
+            array('kpotivi.kpatanyo.wilson-bahun', 'wilsonbahunoah@gmail.com', 'inowas'),
+            array('fasil.teshome.worku', 'w.fasil.t@gmail.com', 'inowas'),
+            array('hexuan.zhang', 'hexuan.zhang.destiny@gmail.com', 'inowas'),
+            array('yan.zhou', 'Yan.Zhou@ufz.de', 'inowas')
+        );
 
-        $user = $userManager->findUserByUsername($username);
+        foreach ($userList as $item){
+            $item = array_combine($userListHeads, $item);
 
-        if (!$user) {
-            // Add new User
-            $user = $userManager->createUser();
-            $user->setUsername($username);
-            $user->setEmail($email);
-            $user->setPlainPassword($password);
-            $user->setEnabled(true);
-            $userManager->updateUser($user);
+            $user = $userManager->findUserByUsername($item['username']);
+            if (!$user) {
+                // Add new User
+                $user = $userManager->createUser();
+                $user->setUsername($item['username']);
+                $user->setEmail($item['email']);
+                $user->setPlainPassword($item['password']);
+                $user->setEnabled(true);
+                $userManager->updateUser($user);
+            }
         }
 
-        $geoTools = $this->container->get('inowas.geotools');
+        $user = $userManager->findUserByUsername('inowas');
+        $public = true;
 
         $model = ModFlowModelFactory::create()
             ->setName("Inowas Rio Primero")
@@ -410,153 +445,160 @@ class LoadScenario_6 implements FixtureInterface, ContainerAwareInterface
             }
         }
 
-        $scenario_1 = ModelScenarioFactory::create($model);
-        $scenario_1->setOwner($user);
-        $scenario_1->setPublic($public);
-        $scenario_1->setName('Rio Primero 2020');
-        $scenario_1->setDescription('Future Prediction for the year 2020');
-        $scenario_1->addEvent(EventFactory::createAddBoundaryEvent(
-            WellBoundaryFactory::createNewIndustrialWell()
-                ->setName('Irrigation Well 6')
-                ->setGeometry(new Point(-63.62383, -31.34, 4326))
-                ->setLayer($layer_1)
-                ->addStressPeriod(StressPeriodFactory::createWel()
-                    ->setDateTimeBegin(new \DateTime('1.1.2015'))
-                    ->setDateTimeEnd(new \DateTime('31.12.2015'))
-                    ->setFlux(-10000)
-                )
-        ));
+        foreach ($userList as $item) {
+            $item = array_combine($userListHeads, $item);
+            $user = $userManager->findUserByUsername($item['username']);
 
-        $scenario_1->addEvent(EventFactory::createAddBoundaryEvent(
-            WellBoundaryFactory::createNewIndustrialWell()
-                ->setName('Irrigation Well 7')
-                ->setGeometry(new Point(-63.65101, -31.33516, 4326))
-                ->setLayer($layer_1)
-                ->addStressPeriod(StressPeriodFactory::createWel()
-                    ->setDateTimeBegin(new \DateTime('1.1.2015'))
-                    ->setDateTimeEnd(new \DateTime('31.12.2015'))
-                    ->setFlux(-10000)
-                )
-        ));
+            echo (sprintf("Generating Scenarios for User %s \r\n", $user->getUsername()));
 
-        $scenario_1->addEvent(EventFactory::createAddBoundaryEvent(
-            WellBoundaryFactory::createNewIndustrialWell()
-                ->setName('Irrigation Well 8')
-                ->setGeometry(new Point(-63.64792, -31.33546, 4326))
-                ->setLayer($layer_1)
-                ->addStressPeriod(StressPeriodFactory::createWel()
-                    ->setDateTimeBegin(new \DateTime('1.1.2015'))
-                    ->setDateTimeEnd(new \DateTime('31.12.2015'))
-                    ->setFlux(-10000)
-                )
-        ));
+            $scenario_1 = ModelScenarioFactory::create($model);
+            $scenario_1->setOwner($user);
+            $scenario_1->setPublic(false);
+            $scenario_1->setName('Rio Primero 2020');
+            $scenario_1->setDescription('Future Prediction for the year 2020');
+            $scenario_1->addEvent(EventFactory::createAddBoundaryEvent(
+                WellBoundaryFactory::createNewIndustrialWell()
+                    ->setName('Irrigation Well 6')
+                    ->setGeometry(new Point(-63.62383, -31.34, 4326))
+                    ->setLayer($layer_1)
+                    ->addStressPeriod(StressPeriodFactory::createWel()
+                        ->setDateTimeBegin(new \DateTime('1.1.2015'))
+                        ->setDateTimeEnd(new \DateTime('31.12.2015'))
+                        ->setFlux(-10000)
+                    )
+            ));
 
-        $scenario_1->addEvent(EventFactory::createAddBoundaryEvent(
-            WellBoundaryFactory::createNewIndustrialWell()
-                ->setName('Irrigation Well 9')
-                ->setGeometry(new Point(-63.66714, -31.34513, 4326))
-                ->setLayer($layer_1)
-                ->addStressPeriod(StressPeriodFactory::createWel()
-                    ->setDateTimeBegin(new \DateTime('1.1.2015'))
-                    ->setDateTimeEnd(new \DateTime('31.12.2015'))
-                    ->setFlux(-10000)
-                )
-        ));
+            $scenario_1->addEvent(EventFactory::createAddBoundaryEvent(
+                WellBoundaryFactory::createNewIndustrialWell()
+                    ->setName('Irrigation Well 7')
+                    ->setGeometry(new Point(-63.65101, -31.33516, 4326))
+                    ->setLayer($layer_1)
+                    ->addStressPeriod(StressPeriodFactory::createWel()
+                        ->setDateTimeBegin(new \DateTime('1.1.2015'))
+                        ->setDateTimeEnd(new \DateTime('31.12.2015'))
+                        ->setFlux(-10000)
+                    )
+            ));
 
-        $scenario_1->addEvent(EventFactory::createAddBoundaryEvent(
-            WellBoundaryFactory::createNewIndustrialWell()
-                ->setName('Irrigation Well 10')
-                ->setGeometry(new Point(-63.6644, -31.34513, 4326))
-                ->setLayer($layer_1)
-                ->addStressPeriod(StressPeriodFactory::createWel()
-                    ->setDateTimeBegin(new \DateTime('1.1.2015'))
-                    ->setDateTimeEnd(new \DateTime('31.12.2015'))
-                    ->setFlux(-10000)
-                )
-        ));
+            $scenario_1->addEvent(EventFactory::createAddBoundaryEvent(
+                WellBoundaryFactory::createNewIndustrialWell()
+                    ->setName('Irrigation Well 8')
+                    ->setGeometry(new Point(-63.64792, -31.33546, 4326))
+                    ->setLayer($layer_1)
+                    ->addStressPeriod(StressPeriodFactory::createWel()
+                        ->setDateTimeBegin(new \DateTime('1.1.2015'))
+                        ->setDateTimeEnd(new \DateTime('31.12.2015'))
+                        ->setFlux(-10000)
+                    )
+            ));
 
-        $scenario_1->addEvent(EventFactory::createAddBoundaryEvent(
-            WellBoundaryFactory::createNewIndustrialWell()
-                ->setName('Irrigation Well 11')
-                ->setGeometry(new Point(-63.60363, -31.32578, 4326))
-                ->setLayer($layer_1)
-                ->addStressPeriod(StressPeriodFactory::createWel()
-                    ->setDateTimeBegin(new \DateTime('1.1.2015'))
-                    ->setDateTimeEnd(new \DateTime('31.12.2015'))
-                    ->setFlux(-10000)
-                )
-        ));
+            $scenario_1->addEvent(EventFactory::createAddBoundaryEvent(
+                WellBoundaryFactory::createNewIndustrialWell()
+                    ->setName('Irrigation Well 9')
+                    ->setGeometry(new Point(-63.66714, -31.34513, 4326))
+                    ->setLayer($layer_1)
+                    ->addStressPeriod(StressPeriodFactory::createWel()
+                        ->setDateTimeBegin(new \DateTime('1.1.2015'))
+                        ->setDateTimeEnd(new \DateTime('31.12.2015'))
+                        ->setFlux(-10000)
+                    )
+            ));
 
-        $scenario_1->addEvent(EventFactory::createAddBoundaryEvent(
-            WellBoundaryFactory::createNewIndustrialWell()
-                ->setName('Irrigation Well 12')
-                ->setGeometry(new Point(-63.59367, -31.35803, 4326))
-                ->setLayer($layer_1)
-                ->addStressPeriod(StressPeriodFactory::createWel()
-                    ->setDateTimeBegin(new \DateTime('1.1.2015'))
-                    ->setDateTimeEnd(new \DateTime('31.12.2015'))
-                    ->setFlux(-10000)
-                )
-        ));
+            $scenario_1->addEvent(EventFactory::createAddBoundaryEvent(
+                WellBoundaryFactory::createNewIndustrialWell()
+                    ->setName('Irrigation Well 10')
+                    ->setGeometry(new Point(-63.6644, -31.34513, 4326))
+                    ->setLayer($layer_1)
+                    ->addStressPeriod(StressPeriodFactory::createWel()
+                        ->setDateTimeBegin(new \DateTime('1.1.2015'))
+                        ->setDateTimeEnd(new \DateTime('31.12.2015'))
+                        ->setFlux(-10000)
+                    )
+            ));
 
-        $scenario_1->addEvent(EventFactory::createAddBoundaryEvent(
-            WellBoundaryFactory::createNewIndustrialWell()
-                ->setName('Irrigation Well 13')
-                ->setGeometry(new Point(-63.60123, -31.32578, 4326))
-                ->setLayer($layer_1)
-                ->addStressPeriod(StressPeriodFactory::createWel()
-                    ->setDateTimeBegin(new \DateTime('1.1.2015'))
-                    ->setDateTimeEnd(new \DateTime('31.12.2015'))
-                    ->setFlux(-10000)
-                )
-        ));
+            $scenario_1->addEvent(EventFactory::createAddBoundaryEvent(
+                WellBoundaryFactory::createNewIndustrialWell()
+                    ->setName('Irrigation Well 11')
+                    ->setGeometry(new Point(-63.60363, -31.32578, 4326))
+                    ->setLayer($layer_1)
+                    ->addStressPeriod(StressPeriodFactory::createWel()
+                        ->setDateTimeBegin(new \DateTime('1.1.2015'))
+                        ->setDateTimeEnd(new \DateTime('31.12.2015'))
+                        ->setFlux(-10000)
+                    )
+            ));
 
-        $scenario_1->addEvent(EventFactory::createAddBoundaryEvent(
-            WellBoundaryFactory::createNewIndustrialWell()
-                ->setName('Irrigation Well 14')
-                ->setGeometry(new Point(-63.58852, -31.35803, 4326))
-                ->setLayer($layer_1)
-                ->addStressPeriod(StressPeriodFactory::createWel()
-                    ->setDateTimeBegin(new \DateTime('1.1.2015'))
-                    ->setDateTimeEnd(new \DateTime('31.12.2015'))
-                    ->setFlux(-10000)
-                )
-        ));
+            $scenario_1->addEvent(EventFactory::createAddBoundaryEvent(
+                WellBoundaryFactory::createNewIndustrialWell()
+                    ->setName('Irrigation Well 12')
+                    ->setGeometry(new Point(-63.59367, -31.35803, 4326))
+                    ->setLayer($layer_1)
+                    ->addStressPeriod(StressPeriodFactory::createWel()
+                        ->setDateTimeBegin(new \DateTime('1.1.2015'))
+                        ->setDateTimeEnd(new \DateTime('31.12.2015'))
+                        ->setFlux(-10000)
+                    )
+            ));
 
-        $scenario_1->addEvent(EventFactory::createAddBoundaryEvent(
-            WellBoundaryFactory::createNewPublicWell()
-                ->setName('Public Well 3')
-                ->setGeometry(new Point(-63.62383, -31.34, 4326))
-                ->setLayer($layer_1)
-                ->addStressPeriod(StressPeriodFactory::createWel()
-                    ->setDateTimeBegin(new \DateTime('1.1.2015'))
-                    ->setDateTimeEnd(new \DateTime('31.12.2015'))
-                    ->setFlux(-10000)
-                )
-        ));
-        $scenario_1->addEvent(EventFactory::createAddBoundaryEvent(
-            WellBoundaryFactory::createNewPublicWell()
-                ->setName('Public Well 4')
-                ->setGeometry(new Point(-63.6216, -31.34162, 4326))
-                ->setLayer($layer_1)
-                ->addStressPeriod(StressPeriodFactory::createWel()
-                    ->setDateTimeBegin(new \DateTime('1.1.2015'))
-                    ->setDateTimeEnd(new \DateTime('31.12.2015'))
-                    ->setFlux(-10000)
-                )
-        ));
+            $scenario_1->addEvent(EventFactory::createAddBoundaryEvent(
+                WellBoundaryFactory::createNewIndustrialWell()
+                    ->setName('Irrigation Well 13')
+                    ->setGeometry(new Point(-63.60123, -31.32578, 4326))
+                    ->setLayer($layer_1)
+                    ->addStressPeriod(StressPeriodFactory::createWel()
+                        ->setDateTimeBegin(new \DateTime('1.1.2015'))
+                        ->setDateTimeEnd(new \DateTime('31.12.2015'))
+                        ->setFlux(-10000)
+                    )
+            ));
 
-        /** @var AddBoundaryEvent $event */
-        foreach ($scenario_1->getEvents() as $event) {
-            $boundary = $event->getBoundary();
-            echo sprintf("Set activeCells for %s %s\r\n",
-                get_class($boundary),
-                $boundary->getId());
-            $boundary->setActiveCells($geoTools->getActiveCells($boundary, $model->getBoundingBox(), $model->getGridSize()));
+            $scenario_1->addEvent(EventFactory::createAddBoundaryEvent(
+                WellBoundaryFactory::createNewIndustrialWell()
+                    ->setName('Irrigation Well 14')
+                    ->setGeometry(new Point(-63.58852, -31.35803, 4326))
+                    ->setLayer($layer_1)
+                    ->addStressPeriod(StressPeriodFactory::createWel()
+                        ->setDateTimeBegin(new \DateTime('1.1.2015'))
+                        ->setDateTimeEnd(new \DateTime('31.12.2015'))
+                        ->setFlux(-10000)
+                    )
+            ));
+
+            $scenario_1->addEvent(EventFactory::createAddBoundaryEvent(
+                WellBoundaryFactory::createNewPublicWell()
+                    ->setName('Public Well 3')
+                    ->setGeometry(new Point(-63.62383, -31.34, 4326))
+                    ->setLayer($layer_1)
+                    ->addStressPeriod(StressPeriodFactory::createWel()
+                        ->setDateTimeBegin(new \DateTime('1.1.2015'))
+                        ->setDateTimeEnd(new \DateTime('31.12.2015'))
+                        ->setFlux(-10000)
+                    )
+            ));
+            $scenario_1->addEvent(EventFactory::createAddBoundaryEvent(
+                WellBoundaryFactory::createNewPublicWell()
+                    ->setName('Public Well 4')
+                    ->setGeometry(new Point(-63.6216, -31.34162, 4326))
+                    ->setLayer($layer_1)
+                    ->addStressPeriod(StressPeriodFactory::createWel()
+                        ->setDateTimeBegin(new \DateTime('1.1.2015'))
+                        ->setDateTimeEnd(new \DateTime('31.12.2015'))
+                        ->setFlux(-10000)
+                    )
+            ));
+
+            /** @var AddBoundaryEvent $event */
+            foreach ($scenario_1->getEvents() as $event) {
+                $boundary = $event->getBoundary();
+                echo sprintf("Set activeCells for %s %s\r\n",
+                    get_class($boundary),
+                    $boundary->getId());
+                $boundary->setActiveCells($geoTools->getActiveCells($boundary, $model->getBoundingBox(), $model->getGridSize()));
+            }
+
+            $entityManager->persist($scenario_1);
+            $entityManager->flush();
         }
-
-        $entityManager->persist($scenario_1);
-        $entityManager->flush();
 
         return 1;
     }

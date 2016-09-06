@@ -22,14 +22,19 @@ class ModelController extends Controller
     public function modelsAction()
     {
         /** @var ModFlowModel $models */
-        $models = $this->getDoctrine()->getRepository('AppBundle:ModFlowModel')
-            ->findAll();
+        $models = $this->getDoctrine()
+            ->getRepository('AppBundle:ModFlowModel')
+            ->findBy(array(
+                'public' => true
+            ));
+
 
         /** @var ModFlowModel $model */
         foreach ($models as $model) {
             $scenarios = $this->getDoctrine()->getRepository('AppBundle:ModelScenario')
                 ->findBy(array(
-                    'baseModel' => $model->getId()->toString()
+                    'baseModel' => $model->getId()->toString(),
+                    'owner' => $this->getUser()
                 ));
 
             foreach ($scenarios as $scenario){
@@ -81,7 +86,8 @@ class ModelController extends Controller
 
         $scenarios = $this->getDoctrine()->getRepository('AppBundle:ModelScenario')
             ->findBy(array(
-                'baseModel' => $model
+                'baseModel' => $model,
+                'owner' => $this->getUser()
             ), array(
                     'dateCreated' => 'ASC'
                 )
@@ -122,7 +128,8 @@ class ModelController extends Controller
 
         $scenarios = $this->getDoctrine()->getRepository('AppBundle:ModelScenario')
             ->findBy(array(
-                'baseModel' => $model
+                'baseModel' => $model,
+                'owner' => $this->getUser()
             ), array(
                     'dateCreated' => 'ASC'
                 )
@@ -149,9 +156,7 @@ class ModelController extends Controller
     public function modelsModflowScenariosResultsAction($id)
     {
 
-        try {
-            $uuid = Uuid::fromString($id);
-        } catch (\InvalidArgumentException $e) {
+        if (! $uuid = Uuid::isValid($id)) {
             return $this->redirectToRoute('modflow_model_list');
         }
 
@@ -166,7 +171,8 @@ class ModelController extends Controller
 
         $scenarios = $this->getDoctrine()->getRepository('AppBundle:ModelScenario')
             ->findBy(array(
-                    'baseModel' => $model
+                'baseModel' => $model,
+                'owner' => $this->getUser()
                 ), array(
                     'dateCreated' => 'ASC'
                 )
