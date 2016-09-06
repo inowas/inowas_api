@@ -11,6 +11,7 @@ use Inowas\PyprocessingBundle\Exception\InvalidArgumentException;
 use Inowas\PyprocessingBundle\Model\Modflow\ValueObject\WelStressPeriod;
 use Inowas\PyprocessingBundle\Model\Modflow\ValueObject\WelStressPeriodData;
 use JMS\Serializer\Annotation as JMS;
+use Ramsey\Uuid\Uuid;
 
 /**
  * @ORM\Entity(repositoryClass="AppBundle\Repository\WellRepository")
@@ -206,4 +207,14 @@ class WellBoundary extends BoundaryModelObject
 
         return $stressPeriodData;
     }
+
+    /**
+     *
+     */
+    function __clone()
+    {
+        $this->id = Uuid::uuid4();
+    }
+
+
 }

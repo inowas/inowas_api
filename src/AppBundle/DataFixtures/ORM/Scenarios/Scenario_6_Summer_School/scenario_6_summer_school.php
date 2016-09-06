@@ -411,6 +411,8 @@ class LoadScenario_6 implements FixtureInterface, ContainerAwareInterface
         }
 
         $scenario_1 = ModelScenarioFactory::create($model);
+        $scenario_1->setOwner($user);
+        $scenario_1->setPublic($public);
         $scenario_1->setName('Rio Primero 2020');
         $scenario_1->setDescription('Future Prediction for the year 2020');
         $scenario_1->addEvent(EventFactory::createAddBoundaryEvent(

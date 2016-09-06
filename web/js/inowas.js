@@ -184,8 +184,10 @@ I.model = {
                         data: data,
                         statusCode: {
                             200: function (data) {
-                                that.data.wel = data;
-                                that.loadWells(true);
+                                $.getJSON( "/api/modflowmodels/"+that.id+"/wells.json", function ( data ) {
+                                    that.data.wel = data;
+                                    that.loadWells(true);
+                                });
                             }
                         }
                     })

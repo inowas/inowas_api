@@ -5,6 +5,7 @@ namespace AppBundle\Model;
 use AppBundle\Entity\AbstractValue;
 use AppBundle\Entity\AddBoundaryEvent;
 use AppBundle\Entity\BoundaryModelObject;
+use AppBundle\Entity\ChangeBoundaryEvent;
 use AppBundle\Entity\ChangeLayerValueEvent;
 use AppBundle\Entity\GeologicalLayer;
 
@@ -19,6 +20,16 @@ class EventFactory
     public static function createAddBoundaryEvent(BoundaryModelObject $boundary)
     {
         return new AddBoundaryEvent($boundary);
+    }
+
+    /**
+     * @param BoundaryModelObject $origin
+     * @param BoundaryModelObject $newBoundary
+     * @return ChangeBoundaryEvent
+     */
+    public static function createChangeBoundaryEvent(BoundaryModelObject $origin, BoundaryModelObject $newBoundary)
+    {
+        return new ChangeBoundaryEvent($origin, $newBoundary);
     }
 
     /**

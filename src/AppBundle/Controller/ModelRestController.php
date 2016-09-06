@@ -15,6 +15,7 @@ use AppBundle\Entity\User;
 use AppBundle\Entity\WellBoundary;
 use AppBundle\Model\ActiveCells;
 use AppBundle\Model\AreaFactory;
+use AppBundle\Model\EventFactory;
 use AppBundle\Model\GeologicalLayerFactory;
 use AppBundle\Model\GridSize;
 use AppBundle\Model\LineStringFactory;
@@ -37,6 +38,7 @@ use FOS\RestBundle\View\View;
 use JMS\Serializer\SerializationContext;
 use Nelmio\ApiDocBundle\Annotation\ApiDoc;
 use Ramsey\Uuid\Uuid;
+use SensioLabs\AnsiConverter\Theme\Theme;
 use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -592,6 +594,46 @@ class ModelRestController extends FOSRestController
      */
     public function putModflowmodelWellsAction($modelId, $wellId, Request $request)
     {
+        if ($this->isScenario($modelId)) {
+            $scenario = $this->getDoctrine()->getRepository('AppBundle:ModelScenario')
+                ->findOneBy(array(
+                    'id' => $modelId
+                ));
+
+            $well = $this->getDoctrine()->getRepository('AppBundle:WellBoundary')
+                ->findOneBy(array(
+                    'id' => $wellId
+                ));
+
+
+            if ($request->request->has('latLng')) {
+
+                $newWell = clone $well;
+                $newWell->setGeometry(PointFactory::fromLatLng(json_decode($request->request->get('latLng'))));
+                $this->getDoctrine()->getManager()->persist($newWell);
+                $this->getDoctrine()->getManager()->flush();
+
+                $newWell->setActiveCells(
+                    $this->get('inowas.geotools')
+                        ->getActiveCells(
+                            $newWell,
+                            $scenario->getBaseModel()->getBoundingBox(),
+                            $scenario->getBaseModel()->getGridSize()
+                        )
+                );
+
+                $scenario->addEvent(EventFactory::createChangeBoundaryEvent($well, $newWell));
+                $this->getDoctrine()->getManager()->merge($scenario);
+                $this->getDoctrine()->getManager()->flush();
+            }
+
+            $view = View::create();
+            $view->setData('OK');
+
+            return $view;
+        }
+
+
         /** @var ModFlowModel $model */
         $model = $this->findModelById($modelId);
         $model = $this->setMutable($model, $this->getUser());
@@ -1299,5 +1341,12 @@ class ModelRestController extends FOSRestController
         }
 
         return $model;
+    }
+
+    private function isScenario($id){
+        return $this->getDoctrine()->getRepository('AppBundle:ModelScenario')
+            ->findOneBy(array(
+                'id' => $id
+            ));
     }
 }

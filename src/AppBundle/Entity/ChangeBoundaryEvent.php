@@ -10,23 +10,38 @@ use Doctrine\ORM\Mapping as ORM;
 class ChangeBoundaryEvent extends AbstractEvent
 {
     /**
-     * @var ModelObject $boundary
+     * @var ModelObject $origin
+     *
+     * @ORM\ManyToOne(targetEntity="ModelObject")
+     */
+    private $origin;
+
+    /**
+     * @var ModelObject $newBoundary
      *
      * @ORM\ManyToOne(targetEntity="ModelObject", cascade={"persist", "remove"})
      */
-    private $boundary;
+    private $newBoundary;
 
-    public function __construct(BoundaryModelObject $boundary)
+
+    public function __construct(BoundaryModelObject $origin, BoundaryModelObject $newBoundary)
     {
         parent::__construct();
-        $this->boundary = $boundary;
+        $this->origin = $origin;
+        $this->newBoundary = $newBoundary;
     }
 
     /**
-     * @return ModelObject
+     * @return BoundaryModelObject|ModelObject
      */
-    public function getBoundary()
-    {
-        return $this->boundary;
+    public function getOrigin(){
+        return $this->origin;
+    }
+
+    /**
+     * @return BoundaryModelObject|ModelObject
+     */
+    public function getNewBoundary(){
+        return $this->newBoundary;
     }
 }

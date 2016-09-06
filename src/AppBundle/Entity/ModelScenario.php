@@ -28,11 +28,62 @@ class ModelScenario
     private $id;
 
     /**
+     * @var User
+     *
+     * @ORM\ManyToOne(targetEntity="User")
+     * @ORM\JoinColumn(name="owner_id", referencedColumnName="id", onDelete="CASCADE")
+     */
+    protected $owner;
+
+    /**
+     * @var boolean
+     *
+     * @ORM\Column(name="public", type="boolean")
+     */
+    protected $public;
+
+    /**
      * @var string
      *
      * @ORM\Column(name="name", type="string",length=255)
      */
     private $name;
+
+    /**
+     * @return User
+     */
+    public function getOwner(): User
+    {
+        return $this->owner;
+    }
+
+    /**
+     * @param User $owner
+     * @return ModelScenario
+     */
+    public function setOwner(User $owner): ModelScenario
+    {
+        $this->owner = $owner;
+        return $this;
+    }
+
+    /**
+     * @return boolean
+     */
+    public function isPublic(): bool
+    {
+        return $this->public;
+    }
+
+    /**
+     * @param boolean $public
+     * @return ModelScenario
+     */
+    public function setPublic(bool $public): ModelScenario
+    {
+        $this->public = $public;
+        return $this;
+    }
 
     /**
      * @var string
@@ -231,33 +282,42 @@ class ModelScenario
      */
     public function getModel(){
         foreach ($this->events as $event) {
-            $this->applyEvent($this->baseModel, $event);
+            $this->applyAddEvents($this->baseModel, $event);
+        }
+
+        foreach ($this->events as $event) {
+            $this->applyChangeEvents($this->baseModel, $event);
         }
 
         return $this->baseModel;
     }
 
     /**
-     * @param ModFlowModel $model
-     * @param AbstractEvent $event
-     */
-    private function applyEvent(ModFlowModel $model, Event $event){
+ * @param ModFlowModel $model
+ * @param AbstractEvent $event
+ */
+    private function applyAddEvents(ModFlowModel $model, Event $event){
         if ($event instanceof AddBoundaryEvent) {
             if ($event->getBoundary() instanceof BoundaryModelObject){
                 $model->addBoundary($event->getBoundary()->setMutable(true));
             }
         }
+    }
 
+    /**
+     * @param ModFlowModel $model
+     * @param AbstractEvent $event
+     */
+    private function applyChangeEvents(ModFlowModel $model, Event $event)
+    {
         if ($event instanceof ChangeBoundaryEvent) {
-            if ($event->getBoundary() instanceof BoundaryModelObject){
-                /** @var ModFlowModel $baseModel */
-                $baseModel = $this->getBaseModel();
+            if ($event->getOrigin() instanceof BoundaryModelObject && $event->getNewBoundary() instanceof BoundaryModelObject){
 
                 /** @var BoundaryModelObject $boundary */
-                foreach ($baseModel->getBoundaries()->toArray() as $bKey => $boundary){
-                    if ($boundary->getId() == $event->getBoundary()){
-                        $baseModel->getBoundaries()->toArray()[$bKey] = $event->getBoundary()->setMutable(true);
-                        return;
+                foreach ($model->getBoundaries()->toArray() as $bKey => $boundary){
+                    if ($boundary->getId() == $event->getOrigin()->getId()){
+                        $model->removeBoundary($boundary);
+                        $model->addBoundary($event->getNewBoundary());
                     }
                 }
             }
