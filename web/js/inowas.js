@@ -61,13 +61,13 @@ I.model = {
         wells: {
             cw:  {radius: 5, color: 'black', weight: 1, fillColor: 'darkgreen', fillOpacity: 0.7},
             iw:  {radius: 5, color: 'black', weight: 1, fillColor: 'darkgreen', fillOpacity: 0.7},
-            sniw:  {radius: 5, color: 'red', weight: 2, fillColor: 'darkgreen', fillOpacity: 0.7},
+            sniw:  {radius: 7, color: 'red', weight: 2, fillColor: 'darkgreen', fillOpacity: 0.7},
             puw: {radius: 5, color: 'black', weight: 1, fillColor: 'darkblue', fillOpacity: 0.7},
-            snpw:  {radius: 5, color: 'red', weight: 2, fillColor: 'darkblue', fillOpacity: 0.7},
+            snpw:  {radius: 7, color: 'red', weight: 2, fillColor: 'darkblue', fillOpacity: 0.7},
             prw: {radius: 5, color: 'black', weight: 1, fillColor: 'darkblue', fillOpacity: 0.7},
-            smw: {radius: 5, color: 'black', weight: 1, fillColor: 'red', fillOpacity: 1},
-            snw: {radius: 5, color: 'black', weight: 1, fillColor: 'yellow', fillOpacity: 1},
-            snifw:  {radius: 5, color: '#63b3ea', weight: 2, fillColor: '#bbdff6', fillOpacity: 0.7},
+            smw: {radius: 7, color: 'black', weight: 1, fillColor: 'red', fillOpacity: 1},
+            snw: {radius: 7, color: 'black', weight: 1, fillColor: 'yellow', fillOpacity: 1},
+            snifw:  {radius: 7, color: '#63b3ea', weight: 2, fillColor: '#bbdff6', fillOpacity: 0.7},
         },
         river: {color: "#000", weight: 0.5, fillColor: "blue", fillOpacity: 0}
     },
