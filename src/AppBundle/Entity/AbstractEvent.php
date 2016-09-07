@@ -30,9 +30,18 @@ abstract class AbstractEvent
     private $id;
 
 
+    /**
+     * @var bool
+     *
+     * @ORM\Column(name="mutable", type="boolean")
+     */
+    private $mutable = true;
+
+
     public function __construct()
     {
         $this->id = Uuid::uuid4();
+        $this->mutable = true;
     }
 
     /**
@@ -43,5 +52,23 @@ abstract class AbstractEvent
     public function getId()
     {
         return $this->id;
+    }
+
+    /**
+     * @return boolean
+     */
+    public function isMutable(): bool
+    {
+        return $this->mutable;
+    }
+
+    /**
+     * @param boolean $mutable
+     * @return AbstractEvent
+     */
+    public function setMutable(bool $mutable): AbstractEvent
+    {
+        $this->mutable = $mutable;
+        return $this;
     }
 }

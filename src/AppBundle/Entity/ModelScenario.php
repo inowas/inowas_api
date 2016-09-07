@@ -299,7 +299,7 @@ class ModelScenario
     private function applyAddEvents(ModFlowModel $model, Event $event){
         if ($event instanceof AddBoundaryEvent) {
             if ($event->getBoundary() instanceof BoundaryModelObject){
-                $model->addBoundary($event->getBoundary()->setMutable(true));
+                $model->addBoundary($event->getBoundary()->setMutable($event->isMutable()));
             }
         }
     }
@@ -317,7 +317,7 @@ class ModelScenario
                 foreach ($model->getBoundaries()->toArray() as $bKey => $boundary){
                     if ($boundary->getId() == $event->getOrigin()->getId()){
                         $model->removeBoundary($boundary);
-                        $model->addBoundary($event->getNewBoundary()->setMutable(true));
+                        $model->addBoundary($event->getNewBoundary()->setMutable($event->isMutable()));
                     }
                 }
             }

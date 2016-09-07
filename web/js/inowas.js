@@ -192,7 +192,7 @@ I.model = {
                             200: function (data) {
                                 $.getJSON("/api/modflowmodels/" + that.id + "/wells.json", function (data) {
                                     that.data.wel = data;
-                                    that.updateWells(true);
+                                    that.loadWells(true);
                                 });
                             }
                         }
