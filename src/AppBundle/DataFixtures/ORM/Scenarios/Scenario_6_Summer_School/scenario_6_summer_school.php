@@ -920,7 +920,7 @@ class LoadScenario_6 implements FixtureInterface, ContainerAwareInterface
             $scenario_3 = ModelScenarioFactory::create($model);
             $scenario_3->setOwner($user);
             $scenario_3->setPublic(false);
-            $scenario_3->setName('Scenario 3: Infiltration wells and ri ver bank filtration');
+            $scenario_3->setName('Scenario 3: Infiltration wells and river bank filtration');
             $scenario_3->setDescription('Move wells next to the river and add infiltration wells around the urban area.');
             $scenario_3->addEvent(EventFactory::createAddBoundaryEvent(
                 WellBoundaryFactory::createNewIndustrialWell()
