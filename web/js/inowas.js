@@ -374,7 +374,6 @@ I.model = {
             this._loadAndAddHeads( map );
         }
     },
-
     createBaseMap: function (id, options) {
         var map = new L.map( id, options );
         L.tileLayer('https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token=pk.eyJ1IjoibWFwYm94IiwiYSI6ImNpandmbXliNDBjZWd2M2x6bDk3c2ZtOTkifQ._QA7i5Mpkd_m30IGElHziw', {
@@ -546,7 +545,7 @@ I.model = {
     createRectangle: function( boundingBox, style ){
         return new L.Rectangle([[boundingBox.y_min, boundingBox.x_min], [boundingBox.y_max, boundingBox.x_max]], style);
     },
-    createHeadsLayer: function (heads, min, max, time, boundingBox, gridSize, layerGroup) {
+    createHeadsLayer: function (heads, min, max, time, boundingBox, gridSize, layerGroup, info) {
 
         var lay = 0;
         heads = heads[lay];
@@ -565,6 +564,7 @@ I.model = {
                 var value = false;
                 if (heads[row] != undefined || heads[row][col] != undefined){
                     value = heads[row][col];
+                    value = Math.round(value*100)/100;
                 }
 
                 var rectangle = this.createRectangle(
@@ -576,10 +576,12 @@ I.model = {
                 rectangle.col = col;
                 rectangle.row = row;
                 rectangle.lay = lay;
+                rectangle.value = value;
                 rectangle.on('click', function(e) {
 
                     var allHeads = $.extend({}, that.heads);
                     var keys = Object.keys(allHeads);
+                    info.update(e.target.value);
 
                     // Generate timeseries Graph only if more then one time is given.
                     if (keys.length > 1){
@@ -645,9 +647,10 @@ I.model = {
                     });
 
                     $('.chart_rows').show();
+
                 });
 
-                rectangle.bindPopup("Groundwater Head: "+value);
+                //rectangle.bindPopup("Groundwater Head: "+value);
                 rectangle.addTo(layerGroup);
             }
         }
@@ -679,7 +682,6 @@ I.model = {
             });
         }
     },
-
     _addWellsLayer: function ( wells, map , addActiveCells){
         var geographyLayer = new L.LayerGroup();
         var active_cells = {};
@@ -727,8 +729,23 @@ I.model = {
         // Data is a time-value object
         // where value is a three dimensional heads array
         var dates = Object.keys(data);
-
         var layerGroup = L.layerGroup();
+
+        var info = L.control();
+        info.onAdd = function (map) {
+            this._div = L.DomUtil.create('div', 'info');
+            this.update();
+            return this._div;
+        };
+
+        info.update = function (head) {
+            this._div.innerHTML = '' +
+                '<h4>Groundwater Heads</h4>' +  (head ?
+                '<b>' + head + '</b> m'
+                    : 'Click on the map');
+        };
+        info.addTo(map);
+
         for ( var i=0; i<dates.length; i++ ){
             var heads = data[dates[i]];
             if (typeof heads == "string"){
@@ -745,23 +762,8 @@ I.model = {
             var min = allHeads[Math.round(5 * allHeads.length/100)];
             var max = allHeads[Math.round(95 * allHeads.length/100)];
 
-            layerGroup = this.createHeadsLayer(heads, min, max, dates[i], this.boundingBox, this.gridSize, layerGroup);
+            layerGroup = this.createHeadsLayer(heads, min, max, dates[i], this.boundingBox, this.gridSize, layerGroup, info);
         }
-
-        var info = L.control();
-        info.onAdd = function (map) {
-            this._div = L.DomUtil.create('div', 'info');
-            this.update();
-            return this._div;
-        };
-
-        info.update = function (props) {
-            this._div.innerHTML = '' +
-                '<h4>US Population Density</h4>' +  (props ?
-                '<b>' + props.name + '</b><br />' + props.density + ' people / mi<sup>2</sup>'
-                    : 'Hover over a state');
-        };
-        info.addTo(map);
 
         var legend = L.control({position: 'bottomright'});
         legend.onAdd = function (map) {
@@ -772,15 +774,13 @@ I.model = {
             // loop through our density intervals and generate a label with a colored square for each interval
             for (var i = 0; i < grades.length; i++) {
                 div.innerHTML +=
-                    '<i style="background: ' + that.getColor(min, max, grades[i]) + '"></i>' +
-                    grades[i] + (grades[i + 1] ? '&ndash;' + grades[i + 1] + '<br>' : '+');
+                    '<i style="background: ' + that.getColor(min, max, grades[i]) + '"></i>' +  grades[i] + '<br>';
             }
 
             return div;
         };
 
         legend.addTo(map);
-
 
         var sliderControl = L.control.sliderControl({
             position: "topright",

@@ -82,4 +82,15 @@ class User extends BaseUser
     public function generateNewApiKey(){
         $this->apiKey = Uuid::uuid4()->toString();
     }
+
+    /**
+     * @return bool
+     */
+    public function isAdmin(){
+        if ($this->hasRole('ROLE_ADMIN')){
+            return true;
+        }
+
+        return false;
+    }
 }

@@ -106,6 +106,8 @@ class LoadScenario_6 implements FixtureInterface, ContainerAwareInterface
         }
 
         $user = $userManager->findUserByUsername('inowas');
+        $user->addRole('ROLE_ADMIN');
+        $userManager->updateUser($user);
         $public = true;
 
         $model = ModFlowModelFactory::create()

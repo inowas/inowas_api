@@ -100,7 +100,16 @@ $( ".calculation" ).click(function(){
     });
 
     $.getJSON( "/api/modflowmodels/"+I.model.id+"/calculations.json", function ( data ) {
-        $('#log').html(data.output.replace(new RegExp('\r?\n','g'), '<br />'));
+        console.log(data);
+
+        var message = '';
+        if (data.length == 0){
+            message = 'Please run the calculation...';
+        } else {
+            message = data.output.replace(new RegExp('\r?\n','g'), '<br />')
+        }
+
+        $('#log').html(message);
     });
 });
 

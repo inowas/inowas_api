@@ -99,7 +99,7 @@ class ModelController extends Controller
 
         return $this->render('inowas/model/modflow/model.html.twig', array(
                 'model' => $model,
-                'apiKey' => $this->getUser()->getApiKey()
+                'user' => $this->getUser()
             )
         );
     }
@@ -219,7 +219,7 @@ class ModelController extends Controller
         
         return $this->render('inowas/model/modflow/scenario.html.twig', array(
                 'scenario' => $scenario,
-                'apiKey' => $this->getUser()->getApiKey()
+                'user' => $this->getUser()
             )
         );
     }

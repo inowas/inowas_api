@@ -92,7 +92,7 @@
                 <ul id="stacked-menu" class="nav-stacked">
                     <li> <a class="side_nav_link summary"   href="javascript:void(0)">Summary</a></li>
                     <li> <a class="side_nav_link area"   href="javascript:void(0)">Model area</a></li>
-                    <li> <a class="side_nav_link soilmodel" href="javascript:void(0)">Soil properties</a></li>
+                    <li {% if not user.isAdmin %} hidden {% endif %}> <a class="side_nav_link soilmodel" href="javascript:void(0)">Soil properties</a></li>
                     <li>
                         <a class="side_nav_link boundaries nav-container active" href="#boundaries_submenu" data-toggle="collapse" data-parent="#stacked-menu">Boundaries</a>
                         <ul id="boundaries_submenu" class="nav-stacked collapse">
@@ -102,21 +102,21 @@
                             <li data-toggle="collapse" data-parent="#boundaries_submenu">
                                 <a class="side_nav_link rivers" href="javascript:void(0)">Rivers</a>
                             </li>
-                            <li data-toggle="collapse" data-parent="#boundaries_submenu">
+                            <li {% if not user.isAdmin %} hidden {% endif %} data-toggle="collapse" data-parent="#boundaries_submenu">
                                 <a class="side_nav_link recharge" href="javascript:void(0)">Recharge</a>
                             </li>
-                            <li data-toggle="collapse" data-parent="#boundaries_submenu">
+                            <li {% if not user.isAdmin %} hidden {% endif %} data-toggle="collapse" data-parent="#boundaries_submenu">
                                 <a class="side_nav_link constant_head" href="javascript:void(0)">Constant Head</a>
                             </li>
-                            <li data-toggle="collapse" data-parent="#boundaries_submenu">
+                            <li {% if not user.isAdmin %} hidden {% endif %} data-toggle="collapse" data-parent="#boundaries_submenu">
                                 <a class="side_nav_link general_head" href="javascript:void(0)">General Head</a>
                             </li>
                         </ul>
                     </li>
                     <li> <a class="side_nav_link calculation" href="javascript:void(0)">Calculation</a></li>
                     <li> <a class="side_nav_link results" href="javascript:void(0)">Results</a></li>
-                    <li> <a class="side_nav_link history" href="javascript:void(0)">History</a></li>
-                    <li> <a class="side_nav_link delete" href="javascript:void(0)">Delete</a></li>
+                    <li {% if not user.isAdmin %} hidden {% endif %}> <a class="side_nav_link history" href="javascript:void(0)">History</a></li>
+                    <li {% if not user.isAdmin %} hidden {% endif %}> <a class="side_nav_link delete" href="javascript:void(0)">Delete</a></li>
                 </ul>
             </nav>
         </div>
@@ -214,21 +214,21 @@
                         </div>
                     </div>
                 </div>
-                <div class="row">
+                <div class="row chart_rows" hidden>
                     <div class="col-sm-12">
                         <div class="panel panel-default">
                             <div id="chart_rows" class="panel-body chart"></div>
                         </div>
                     </div>
                 </div>
-                <div class="row">
+                <div class="row chart_cols" hidden>
                     <div class="col-sm-12">
                         <div class="panel panel-default">
                             <div id="chart_cols" class="panel-body chart"></div>
                         </div>
                     </div>
                 </div>
-                <div class="row">
+                <div class="row chart_ts" hidden>
                     <div class="col-sm-12">
                         <div class="panel panel-default">
                             <div id="chart_ts" class="panel-body chart"></div>
@@ -236,7 +236,7 @@
                     </div>
                 </div>
             </div>
-            <div id="history">
+            <div id="history" hidden>
                 <div class="row">
                     <div class="col-sm-12">
                         <div class="panel panel-default">
@@ -247,7 +247,7 @@
                     </div>
                 </div>
             </div>
-            <div id="delete">
+            <div id="delete" hidden>
                 <div class="row">
                     <div class="col-sm-12">
                         <div class="panel panel-default">
@@ -288,7 +288,7 @@
 
 <script>
 
-    I.user.setApiKey('{{ apiKey }}');
+    I.user.setApiKey('{{ user.getApiKey }}');
     I.model.initialize('{{ scenario.id.toString }}');
 
     $(document).ready(function() {
