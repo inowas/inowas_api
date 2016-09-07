@@ -558,7 +558,7 @@ I.model = {
     createRectangle: function( boundingBox, style ){
         return new L.Rectangle([[boundingBox.y_min, boundingBox.x_min], [boundingBox.y_max, boundingBox.x_max]], style);
     },
-    createHeadsLayer: function (heads, min, max, time, boundingBox, gridSize, layerGroup, info) {
+    createHeadsLayer: function (heads, min, max, time, boundingBox, gridSize, layerGroup, info, map) {
 
         var lay = 0;
         heads = heads[lay];
@@ -591,6 +591,24 @@ I.model = {
                 rectangle.lay = lay;
                 rectangle.value = value;
                 rectangle.on('click', function(e) {
+
+                    map.eachLayer(function(layer){
+                        if (layer.marker){
+                            map.removeLayer(layer);
+                        }
+                    });
+
+                    var bb = {};
+                    bb.x_min = boundingBox.x_min;
+                    bb.x_max = boundingBox.x_max;
+                    bb.y_min = boundingBox.y_max - e.target.row*dy-dy;
+                    bb.y_max = boundingBox.y_max - e.target.row*dy;
+
+                    var rect = that.createRectangle(bb, {color: "blue", weight: 0, fillColor: 'grey', fillOpacity: 0.5});
+                    rect.marker = true;
+
+
+                    rect.addTo(map).bringToFront();
 
                     var allHeads = $.extend({}, that.heads);
                     var keys = Object.keys(allHeads);
@@ -658,9 +676,7 @@ I.model = {
                             position: 'top'
                         }
                     });
-
                     $('.chart_rows').show();
-
                 });
 
                 //rectangle.bindPopup("Groundwater Head: "+value);
@@ -750,7 +766,6 @@ I.model = {
             this.update();
             return this._div;
         };
-
         info.update = function (head, min, max) {
             head = Math.round(head*100)/100;
             max = Math.round(max*100)/100;
@@ -784,7 +799,7 @@ I.model = {
             var min = allHeads[Math.round(5 * allHeads.length/100)];
             var max = allHeads[Math.round(95 * allHeads.length/100)];
 
-            layerGroup = this.createHeadsLayer(heads, min, max, dates[i], this.boundingBox, this.gridSize, layerGroup, info);
+            layerGroup = this.createHeadsLayer(heads, min, max, dates[i], this.boundingBox, this.gridSize, layerGroup, info, map);
         }
 
         var legend = L.control({position: 'bottomright'});
