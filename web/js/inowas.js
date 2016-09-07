@@ -586,7 +586,7 @@ I.model = {
 
                     var allHeads = $.extend({}, that.heads);
                     var keys = Object.keys(allHeads);
-                    info.update(e.target.value);
+                    info.update(e.target.value, min, max);
 
                     // Generate timeseries Graph only if more then one time is given.
                     if (keys.length > 1){
@@ -743,11 +743,20 @@ I.model = {
             return this._div;
         };
 
-        info.update = function (head) {
+        info.update = function (head, min, max) {
+            head = Math.round(head*100)/100;
+            max = Math.round(max*100)/100;
+            min = Math.round(min*100)/100;
+
             this._div.innerHTML = '' +
-                '<h4>Groundwater Heads</h4>' +  (head ?
-                '<b>' + head + '</b> m'
-                    : 'Click on the map');
+                '<h4>Groundwater Heads</h4>' +
+                (
+                    head ?
+                    '<p>Head: <b>' + head + '</b> m</p>' +
+                    'min: '+ min + ' m; ' +
+                    'max: '+ max + ' m' :
+                    'Click on the map'
+                );
         };
         info.addTo(map);
 
