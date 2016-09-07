@@ -228,16 +228,18 @@ I.model = {
             var map = this.createBaseMap( 'map-area' );
             var boundingBox = this.createBoundingBoxLayer(this.boundingBox).addTo(map);
             var areaPolygon = L.geoJson($.parseJSON(this.data.area.geojson), this.styles.areaGeometry).addTo(map);
-            var areaActiveCells = this.createAreaActiveCellsLayer(this.activeCells, this.boundingBox, this.gridSize, true);
+            var areaActiveCells = this.createAreaActiveCellsLayer(this.activeCells, this.boundingBox, this.gridSize, this.data.area.mutable);
             map.fitBounds(this.createBoundingBoxPolygon(this.boundingBox).getBounds());
 
             var baseMaps = {};
-            var overlayMaps = {"Area": areaPolygon, "Bounding Box": boundingBox, "Active Cells": areaActiveCells};
+            var overlayMaps = {"Area": areaPolygon, "Bounding Box": boundingBox, "Inactive Cells": areaActiveCells};
             L.control.layers(baseMaps, overlayMaps).addTo(map);
 
-            this.buttons.updateActiveCells = L.easyButton('fa-save', function(btn, map){
-                I.model.updateProperties( I.model.id );
-            }).disable().addTo(map);
+            if (this.data.area.mutable){
+                this.buttons.updateActiveCells = L.easyButton('fa-save', function(btn, map){
+                    I.model.updateProperties( I.model.id );
+                }).disable().addTo(map);
+            }
 
             this.maps.area = map;
         }
@@ -394,7 +396,7 @@ I.model = {
     createAreaLayer: function() {
         return L.geoJson(jQuery.parseJSON(this.area.polygonJSON), this.styles.areaGeometry);
     },
-    createAreaActiveCellsLayer: function (activeCells, boundingBox, gridSize, interactive) {
+    createAreaActiveCellsLayer: function (activeCells, boundingBox, gridSize, mutable) {
 
         var layers = new L.FeatureGroup();
         var dx = (boundingBox.x_max - boundingBox.x_min) / gridSize.n_x;
@@ -417,7 +419,7 @@ I.model = {
                 rectangle.col = col;
                 rectangle.row = row;
 
-                if (interactive){
+                if (mutable){
                     rectangle.on('click', function(e) {
 
                         if (activeCells.cells[e.target.row] == undefined || activeCells.cells[e.target.row][e.target.col] == undefined){
