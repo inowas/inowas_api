@@ -203,7 +203,9 @@ class WellBoundary extends BoundaryModelObject
         foreach ($activeCells->toArray() as $nRow => $row){
             foreach ($row as $nCol => $value){
                 if ($value == true){
-                    $stressPeriodData[] = WelStressPeriodData::create($this->layer->getOrder(), $nRow, $nCol, $stressPeriod->getFlux());
+                    if (is_int($nRow) && is_int($nCol)){
+                        $stressPeriodData[] = WelStressPeriodData::create($this->layer->getOrder(), $nRow, $nCol, $stressPeriod->getFlux());
+                    }
                 }
             }
         }
