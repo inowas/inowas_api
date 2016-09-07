@@ -43,6 +43,7 @@ class StreamBoundary extends BoundaryModelObject
      * @var ArrayCollection
      *
      * @ORM\Column(name="stress_periods", type="riv_stress_periods", nullable=true)
+     * @JMS\Groups({"list", "details", "modelobjectdetails", "modelobjectlist"})
      */
     private $stressPeriods;
 

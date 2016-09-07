@@ -3,10 +3,14 @@
 namespace Inowas\PyprocessingBundle\Model\Modflow\ValueObject;
 
 use AppBundle\Model\StressPeriod;
+use JMS\Serializer\Annotation as JMS;
 
 class WelStressPeriod extends StressPeriod
 {
-    /** @var float */
+    /**
+     * @var float
+     * @JMS\Groups({"list", "details", "modelobjectdetails", "modelobjectlist"})
+     */
     private $flux;
 
     /**

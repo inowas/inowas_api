@@ -63,6 +63,7 @@ class WellBoundary extends BoundaryModelObject
      * @var ArrayCollection
      *
      * @ORM\Column(name="stress_periods", type="wel_stress_periods", nullable=true)
+     * @JMS\Groups({"list", "details", "modelobjectdetails", "modelobjectlist"})
      */
     private $stressPeriods;
 

@@ -266,11 +266,6 @@ I.model = {
             var wells = this.createWellsLayer(this.data.wel).addTo(map);
             var rivers = this.createRiversLayer(this.data.riv).addTo(map);
 
-            function onMapClick(e) {
-                console.log("You clicked the map at " + e.latlng);
-            }
-            areaPolygon.on('click', onMapClick);
-
             var baseMaps = {};
             var overlayMaps = {"Wells": wells, "Rivers": rivers};
             L.control.layers(baseMaps, overlayMaps).addTo(map);
@@ -454,7 +449,9 @@ I.model = {
             if (!wells.hasOwnProperty(key)) continue;
             var items = wells[key];
             items.forEach(function (item) {
-                var well = L.circleMarker(L.latLng(item.point.y, item.point.x), I.model.styles.wells[key]).bindPopup(item.name).addTo(layer);
+                var popupContent = '<h4>' + item.name + '</h4>';
+                popupContent += '<p>Flux: ' + item.stress_periods[0].flux +  ' m<sup>3</sup>/day</p>';
+                var well = L.circleMarker(L.latLng(item.point.y, item.point.x), I.model.styles.wells[key]).bindPopup(popupContent).addTo(layer);
                 well.raw = item;
             });
         }
@@ -505,8 +502,13 @@ I.model = {
 
             var raw = rivers[rivKey];
             riverLayer.eachLayer(function(layer){
+                var popupContent = '<h4>' + raw.name + '</h4>';
+                popupContent += '<p>Bottom: ' + raw.stress_periods[0].rbot +  ' m<br/>';
+                popupContent += 'Stage: ' + raw.stress_periods[0].stage +  ' m<br/>';
+                popupContent += 'Cond: ' + raw.stress_periods[0].cond +  ' m/day</p>';
+
                 layer.raw = raw;
-                layer.addTo(layers)
+                layer.bindPopup(popupContent).addTo(layers)
             });
         }
 
@@ -721,7 +723,7 @@ I.model = {
             var items = wells[key];
 
             items.forEach(function (item) {
-                L.circleMarker([item.point.y, item.point.x], I.model.styles.wells[key]).bindPopup("Well "+item.name).addTo(geographyLayer);
+                L.circleMarker([item.point.y, item.point.x], I.model.styles.wells[key]).addTo(geographyLayer);
 
                 if (addActiveCells == true){
                     for(var rowProperty in item.active_cells.cells) {

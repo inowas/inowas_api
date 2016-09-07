@@ -11,7 +11,7 @@ class StressPeriod implements \JsonSerializable
      * @var \DateTime
      *
      * @ORM\Column(name="dateTimeBegin", type="datetime")
-     * @JMS\Groups({"modeldetails"})
+     * @JMS\Groups({"modeldetails", "modelobjectdetails"})
      */
     private $dateTimeBegin;
 
@@ -19,7 +19,7 @@ class StressPeriod implements \JsonSerializable
      * @var \DateTime
      *
      * @ORM\Column(name="dateTimeEnd", type="datetime")
-     * @JMS\Groups({"modeldetails"})
+     * @JMS\Groups({"modeldetails", "modelobjectdetails"})
      */
     private $dateTimeEnd;
 
@@ -27,7 +27,7 @@ class StressPeriod implements \JsonSerializable
      * @var integer
      *
      * @ORM\Column(name="number_of_time_steps", type="integer")
-     * @JMS\Groups({"modeldetails"})
+     * @JMS\Groups({"modeldetails", "modelobjectdetails"})
      */
     private $numberOfTimeSteps;
 
@@ -35,7 +35,7 @@ class StressPeriod implements \JsonSerializable
      * @var boolean
      *
      * @ORM\Column(name="steady_state", type="boolean")
-     * @JMS\Groups({"modeldetails"})
+     * @JMS\Groups({"modeldetails", "modelobjectdetails"})
      */
     private $steady = true;
 
@@ -43,7 +43,7 @@ class StressPeriod implements \JsonSerializable
      * @var float
      *
      * @ORM\Column(name="timestep_multiplier", type="float")
-     * @JMS\Groups({"modeldetails"})
+     * @JMS\Groups({"modeldetails", "modelobjectdetails"})
      */
     private $timeStepMultiplier = 1.0;
 

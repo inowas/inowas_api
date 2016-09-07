@@ -3,6 +3,7 @@
 namespace Inowas\PyprocessingBundle\Model\Modflow\ValueObject;
 
 use AppBundle\Model\StressPeriod;
+use JMS\Serializer\Annotation as JMS;
 
 /**
  * Class RivStressPeriod
@@ -10,13 +11,25 @@ use AppBundle\Model\StressPeriod;
  */
 class RivStressPeriod extends StressPeriod
 {
-    /** @var float */
+    /**
+     * @var float
+     *
+     * @JMS\Groups({"modeldetails", "modelobjectdetails"})
+     */
     private $stage;
 
-    /** @var float */
+    /**
+     * @var float
+     *
+     * @JMS\Groups({"modeldetails", "modelobjectdetails"})
+     */
     private $cond;
 
-    /** @var float */
+    /**
+     * @var float
+     *
+     * @JMS\Groups({"modeldetails", "modelobjectdetails"})
+     */
     private $rbot;
 
     /**

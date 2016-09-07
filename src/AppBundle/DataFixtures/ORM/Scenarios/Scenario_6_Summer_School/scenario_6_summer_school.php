@@ -217,6 +217,7 @@ class LoadScenario_6 implements FixtureInterface, ContainerAwareInterface
 
         /** River */
         $model->addBoundary(StreamBoundaryFactory::create()
+            ->setName('Río Primero')
             ->setOwner($user)
             ->setPublic($public)
             ->setGeometry(new LineString(array(
