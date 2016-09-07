@@ -86,7 +86,6 @@ I.model = {
         });
 
         $.getJSON( "/api/modflowmodels/"+this.id+"/wells.json", function ( data ) {
-            console.log(data);
             that.data.wel = data;
         });
 
@@ -183,13 +182,13 @@ I.model = {
                         data: data,
                         statusCode: {
                             200: function (data) {
-                                $.getJSON( "/api/modflowmodels/"+that.id+"/wells.json", function ( data ) {
+                                $.getJSON("/api/modflowmodels/" + that.id + "/wells.json", function (data) {
                                     that.data.wel = data;
-                                    that.loadWells(true);
+                                    that.updateWells(true);
                                 });
                             }
                         }
-                    })
+                    });
                 }
             }
         }
@@ -308,7 +307,6 @@ I.model = {
 
                     layers.eachLayer(function (layer) {
                         layer.raw.latLng = layer.getLatLng();
-                        console.log(layer.getLatLng());
                         layer.raw.updateGeometry = true;
                     });
                     that.updateWells();
@@ -446,8 +444,6 @@ I.model = {
             if (!wells.hasOwnProperty(key)) continue;
             var items = wells[key];
             items.forEach(function (item) {
-                console.log(key);
-                console.log(I.model.styles.wells[key]);
                 var well = L.circleMarker(L.latLng(item.point.y, item.point.x), I.model.styles.wells[key]).bindPopup(item.name).addTo(layer);
                 well.raw = item;
             });
