@@ -317,7 +317,7 @@ class ModelScenario
                 foreach ($model->getBoundaries()->toArray() as $bKey => $boundary){
                     if ($boundary->getId() == $event->getOrigin()->getId()){
                         $model->removeBoundary($boundary);
-                        $model->addBoundary($event->getNewBoundary());
+                        $model->addBoundary($event->getNewBoundary()->setMutable(true));
                     }
                 }
             }

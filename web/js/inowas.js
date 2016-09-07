@@ -60,10 +60,13 @@ I.model = {
         wells: {
             cw:  {radius: 5, color: 'black', weight: 1, fillColor: 'darkgreen', fillOpacity: 0.7},
             iw:  {radius: 5, color: 'black', weight: 1, fillColor: 'darkgreen', fillOpacity: 0.7},
+            sniw:  {radius: 5, color: 'red', weight: 2, fillColor: 'darkgreen', fillOpacity: 0.7},
             puw: {radius: 5, color: 'black', weight: 1, fillColor: 'darkblue', fillOpacity: 0.7},
+            snpw:  {radius: 5, color: 'red', weight: 2, fillColor: 'darkblue', fillOpacity: 0.7},
             prw: {radius: 5, color: 'black', weight: 1, fillColor: 'darkblue', fillOpacity: 0.7},
             smw: {radius: 5, color: 'black', weight: 1, fillColor: 'red', fillOpacity: 1},
-            snw: {radius: 5, color: 'black', weight: 1, fillColor: 'yellow', fillOpacity: 1}
+            snw: {radius: 5, color: 'black', weight: 1, fillColor: 'yellow', fillOpacity: 1},
+            snifw:  {radius: 5, color: '#63b3ea', weight: 2, fillColor: '#bbdff6', fillOpacity: 0.7},
         },
         river: {color: "#000", weight: 0.5, fillColor: "blue", fillOpacity: 0}
     },
@@ -83,6 +86,7 @@ I.model = {
         });
 
         $.getJSON( "/api/modflowmodels/"+this.id+"/wells.json", function ( data ) {
+            console.log(data);
             that.data.wel = data;
         });
 
@@ -304,6 +308,7 @@ I.model = {
 
                     layers.eachLayer(function (layer) {
                         layer.raw.latLng = layer.getLatLng();
+                        console.log(layer.getLatLng());
                         layer.raw.updateGeometry = true;
                     });
                     that.updateWells();
@@ -441,7 +446,9 @@ I.model = {
             if (!wells.hasOwnProperty(key)) continue;
             var items = wells[key];
             items.forEach(function (item) {
-                var well = L.circleMarker(L.latLng(item.point.y, item.point.x), I.model.styles.wells[key]).bindPopup("Well "+item.name).addTo(layer);
+                console.log(key);
+                console.log(I.model.styles.wells[key]);
+                var well = L.circleMarker(L.latLng(item.point.y, item.point.x), I.model.styles.wells[key]).bindPopup(item.name).addTo(layer);
                 well.raw = item;
             });
         }

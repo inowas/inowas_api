@@ -23,8 +23,11 @@ class WellBoundary extends BoundaryModelObject
     const TYPE_PUBLIC_WELL = "puw";
     const TYPE_OBSERVATION_WELL = "ow";
     const TYPE_INDUSTRIAL_WELL = "iw";
-    const TYPE_SCENARIO_NEW_WELL = "snw";
     const TYPE_SCENARIO_MOVED_WELL = "smw";
+    const TYPE_SCENARIO_NEW_INDUSTRIAL_WELL = "sniw";
+    const TYPE_SCENARIO_NEW_INFILTRATION_WELL = "snifw";
+    const TYPE_SCENARIO_NEW_PUBLIC_WELL = "snpw";
+    const TYPE_SCENARIO_NEW_WELL = "snw";
     const TYPE_SCENARIO_REMOVED_WELL = "srw";
 
     /**

@@ -48,7 +48,7 @@ class WellBoundaryFactory
      */
     public static function createNewPublicWell(){
         $well = new WellBoundary();
-        $well->setWellType(WellBoundary::TYPE_SCENARIO_NEW_WELL);
+        $well->setWellType(WellBoundary::TYPE_SCENARIO_NEW_PUBLIC_WELL);
         return $well;
     }
 
@@ -57,7 +57,16 @@ class WellBoundaryFactory
      */
     public static function createNewIndustrialWell(){
         $well = new WellBoundary();
-        $well->setWellType(WellBoundary::TYPE_SCENARIO_NEW_WELL);
+        $well->setWellType(WellBoundary::TYPE_SCENARIO_NEW_INDUSTRIAL_WELL);
+        return $well;
+    }
+
+    /**
+     * @return WellBoundary
+     */
+    public static function createNewInfiltrationWell(){
+        $well = new WellBoundary();
+        $well->setWellType(WellBoundary::TYPE_SCENARIO_NEW_INFILTRATION_WELL);
         return $well;
     }
 }
