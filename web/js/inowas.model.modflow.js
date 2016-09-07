@@ -22,13 +22,15 @@ hide_all = function () {
 };
 
 $( ".summary" ).click(function(){
+    if (! I.model.initialized){return}
     hide_all();
     $( "#summary" ).show();
     $( ".summary" ).addClass('active');
-    //I.model.loadSummary();
+    I.model.loadSummary();
 });
 
 $( ".area" ).click(function(){
+    if (! I.model.initialized){return}
     hide_all();
     $( "#area" ).show();
     $( ".area" ).addClass('active');
@@ -36,6 +38,7 @@ $( ".area" ).click(function(){
 });
 
 $( ".soilmodel" ).click(function(){
+    if (! I.model.initialized){return}
     hide_all();
     $( "#soilmodel" ).show();
     $( ".soilmodel" ).addClass('active');
@@ -64,6 +67,7 @@ $( ".soilmodel" ).click(function(){
 });
 
 $( ".boundaries" ).click(function () {
+    if (! I.model.initialized){return}
     hide_all();
     $( "#boundaries" ).show();
     $( ".boundaries" ).addClass('active');
@@ -73,6 +77,7 @@ $( ".boundaries" ).click(function () {
 });
 
 $( ".wells" ).click(function() {
+    if (! I.model.initialized){return}
     hide_all();
     $( "#wells" ).show();
     $( ".boundaries" ).addClass('active');
@@ -82,6 +87,7 @@ $( ".wells" ).click(function() {
 });
 
 $( ".rivers" ).click(function() {
+    if (! I.model.initialized){return}
     hide_all();
     $( "#rivers" ).show();
     $( ".boundaries" ).addClass('active');
@@ -91,6 +97,7 @@ $( ".rivers" ).click(function() {
 });
 
 $( ".calculation" ).click(function(){
+    if (! I.model.initialized){return}
     hide_all();
     $( "#calculation" ).show();
     $( ".calculation" ).addClass('active');
@@ -114,6 +121,7 @@ $( ".calculation" ).click(function(){
 });
 
 $( ".results" ).click(function(){
+    if (! I.model.initialized){return}
     hide_all();
     $( "#results" ).show();
     $( ".results" ).addClass('active');
@@ -122,12 +130,14 @@ $( ".results" ).click(function(){
 });
 
 $( ".history" ).click(function(){
+    if (! I.model.initialized){return}
     hide_all();
     $( "#history" ).show();
     $( ".history" ).addClass('active');
 });
 
 $( ".delete" ).click(function(){
+    if (! I.model.initialized){return}
     hide_all();
     $( "#delete" ).show();
     $( ".delete" ).addClass('active');

@@ -12,6 +12,7 @@ I.user = {
 };
 I.model = {
     id: null,
+    initialized: false,
     activeCells: null,
     boundingBox: null,
     gridSize: null,
@@ -74,23 +75,30 @@ I.model = {
         this.id = id;
         that = this;
 
-        $.getJSON( "/api/modflowmodels/"+id+"/properties.json", function ( data ) {
-            that.activeCells = data.active_cells;
-            that.boundingBox = data.bounding_box;
-            that.gridSize = data.grid_size;
-            that.loadSummary();
-        });
+        $.when(
 
-        $.getJSON( "/api/modflowmodels/"+this.id+"/area.json", function ( data ) {
-            that.data.area = data;
-        });
+            $.getJSON( "/api/modflowmodels/"+id+"/properties.json", function ( data ) {
+                that.activeCells = data.active_cells;
+                that.boundingBox = data.bounding_box;
+                that.gridSize = data.grid_size;
+                that.loadSummary();
+            }),
 
-        $.getJSON( "/api/modflowmodels/"+this.id+"/wells.json", function ( data ) {
-            that.data.wel = data;
-        });
+            $.getJSON( "/api/modflowmodels/"+this.id+"/area.json", function ( data ) {
+                that.data.area = data;
+            }),
 
-        $.getJSON( "/api/modflowmodels/"+this.id+"/rivers.json", function ( data ) {
-            that.data.riv = data;
+            $.getJSON( "/api/modflowmodels/"+this.id+"/wells.json", function ( data ) {
+                that.data.wel = data;
+            }),
+
+            $.getJSON( "/api/modflowmodels/"+this.id+"/rivers.json", function ( data ) {
+                that.data.riv = data;
+            })
+
+        ).then(function(){
+            that.initialized = true;
+            $( ".summary" ).click();
         });
     },
     getStyle: function (type, value){
