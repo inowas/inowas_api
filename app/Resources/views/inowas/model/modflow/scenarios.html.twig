@@ -54,25 +54,18 @@
 
     <div class="top-margin-40">
         <div class="row">
-            <div class="col-sm-4">
+            <div class="col-sm-3">
                 <h3><a href="{{ path('modflow_model', {'id': baseModel.id.toString})  }}"> {{ baseModel.name }} </a></h3>
-                <img class="img-responsive img-thumbnail" src="{{ asset('img/base_scenario.png') }}" style="margin-top: 18px">
                 <p class="modelsummary">Base Model</p>
             </div>
-
+        </div>
+        <div class="row">
             {% for scenario in scenarios %}
-            <div class="col-sm-4">
+            <div class="col-sm-3">
                     <h3><a href="{{ path('modflow_model_modflow_scenario', {'modelId': scenario.baseModel.id.toString, 'scenarioId': scenario.id.toString})  }}"> {{ scenario.name }}</a></h3>
-                    <img class="img-responsive img-thumbnail" src="{{ asset( scenario.imageFile ) }}" style="margin-top: 18px">
                     <p class="modelsummary">{{ scenario.description }}</p>
             </div>
             {% endfor %}
-
-            <div class="col-sm-4">
-                <h3 class="modelname">&nbsp;</h3>
-                <img class="img-responsive img-polaroid img-thumbnail" src="{{ asset('img/add_scenario.png') }}" style="margin-top: 18px">
-                <p>Add scenario</p>
-            </div>
         </div>
     </div>
 </div>

@@ -131,7 +131,7 @@ class ModelController extends Controller
                 'baseModel' => $model,
                 'owner' => $this->getUser()
             ), array(
-                    'dateCreated' => 'ASC'
+                    'name' => 'ASC'
                 )
             );
 

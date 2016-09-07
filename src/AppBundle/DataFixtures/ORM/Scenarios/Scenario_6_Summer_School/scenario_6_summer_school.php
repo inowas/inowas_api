@@ -916,12 +916,12 @@ class LoadScenario_6 implements FixtureInterface, ContainerAwareInterface
             $entityManager->persist($scenario_2);
             $entityManager->flush();
 
-            $scenario_2 = ModelScenarioFactory::create($model);
-            $scenario_2->setOwner($user);
-            $scenario_2->setPublic(false);
-            $scenario_2->setName('Scenario 3: Infiltration wells and rivver bank filtration');
-            $scenario_2->setDescription('Move wells next to the river and add infiltration wells around the urban area.');
-            $scenario_2->addEvent(EventFactory::createAddBoundaryEvent(
+            $scenario_3 = ModelScenarioFactory::create($model);
+            $scenario_3->setOwner($user);
+            $scenario_3->setPublic(false);
+            $scenario_3->setName('Scenario 3: Infiltration wells and river bank filtration');
+            $scenario_3->setDescription('Move wells next to the river and add infiltration wells around the urban area.');
+            $scenario_3->addEvent(EventFactory::createAddBoundaryEvent(
                 WellBoundaryFactory::createNewIndustrialWell()
                     ->setName('Irrigation Well 6')
                     ->setGeometry(new Point(-63.62383, -31.34, 4326))
@@ -932,7 +932,7 @@ class LoadScenario_6 implements FixtureInterface, ContainerAwareInterface
                         ->setFlux(-5000)
                     )
             ));
-            $scenario_2->addEvent(EventFactory::createAddBoundaryEvent(
+            $scenario_3->addEvent(EventFactory::createAddBoundaryEvent(
                 WellBoundaryFactory::createNewIndustrialWell()
                     ->setName('Irrigation Well 7')
                     ->setGeometry(new Point(-63.65101, -31.33516, 4326))
@@ -943,7 +943,7 @@ class LoadScenario_6 implements FixtureInterface, ContainerAwareInterface
                         ->setFlux(-5000)
                     )
             ));
-            $scenario_2->addEvent(EventFactory::createAddBoundaryEvent(
+            $scenario_3->addEvent(EventFactory::createAddBoundaryEvent(
                 WellBoundaryFactory::createNewIndustrialWell()
                     ->setName('Irrigation Well 8')
                     ->setGeometry(new Point(-63.64792, -31.33546, 4326))
@@ -954,7 +954,7 @@ class LoadScenario_6 implements FixtureInterface, ContainerAwareInterface
                         ->setFlux(-5000)
                     )
             ));
-            $scenario_2->addEvent(EventFactory::createAddBoundaryEvent(
+            $scenario_3->addEvent(EventFactory::createAddBoundaryEvent(
                 WellBoundaryFactory::createNewIndustrialWell()
                     ->setName('Irrigation Well 9')
                     ->setGeometry(new Point(-63.66714, -31.34513, 4326))
@@ -965,7 +965,7 @@ class LoadScenario_6 implements FixtureInterface, ContainerAwareInterface
                         ->setFlux(-5000)
                     )
             ));
-            $scenario_2->addEvent(EventFactory::createAddBoundaryEvent(
+            $scenario_3->addEvent(EventFactory::createAddBoundaryEvent(
                 WellBoundaryFactory::createNewIndustrialWell()
                     ->setName('Irrigation Well 10')
                     ->setGeometry(new Point(-63.6644, -31.34513, 4326))
@@ -976,7 +976,7 @@ class LoadScenario_6 implements FixtureInterface, ContainerAwareInterface
                         ->setFlux(-5000)
                     )
             ));
-            $scenario_2->addEvent(EventFactory::createAddBoundaryEvent(
+            $scenario_3->addEvent(EventFactory::createAddBoundaryEvent(
                 WellBoundaryFactory::createNewIndustrialWell()
                     ->setName('Irrigation Well 11')
                     ->setGeometry(new Point(-63.60363, -31.32578, 4326))
@@ -987,7 +987,7 @@ class LoadScenario_6 implements FixtureInterface, ContainerAwareInterface
                         ->setFlux(-5000)
                     )
             ));
-            $scenario_2->addEvent(EventFactory::createAddBoundaryEvent(
+            $scenario_3->addEvent(EventFactory::createAddBoundaryEvent(
                 WellBoundaryFactory::createNewIndustrialWell()
                     ->setName('Irrigation Well 12')
                     ->setGeometry(new Point(-63.59367, -31.35803, 4326))
@@ -998,7 +998,7 @@ class LoadScenario_6 implements FixtureInterface, ContainerAwareInterface
                         ->setFlux(-5000)
                     )
             ));
-            $scenario_2->addEvent(EventFactory::createAddBoundaryEvent(
+            $scenario_3->addEvent(EventFactory::createAddBoundaryEvent(
                 WellBoundaryFactory::createNewIndustrialWell()
                     ->setName('Irrigation Well 13')
                     ->setGeometry(new Point(-63.60123, -31.32578, 4326))
@@ -1009,7 +1009,7 @@ class LoadScenario_6 implements FixtureInterface, ContainerAwareInterface
                         ->setFlux(-5000)
                     )
             ));
-            $scenario_2->addEvent(EventFactory::createAddBoundaryEvent(
+            $scenario_3->addEvent(EventFactory::createAddBoundaryEvent(
                 WellBoundaryFactory::createNewIndustrialWell()
                     ->setName('Irrigation Well 14')
                     ->setGeometry(new Point(-63.58852, -31.35803, 4326))
@@ -1020,7 +1020,7 @@ class LoadScenario_6 implements FixtureInterface, ContainerAwareInterface
                         ->setFlux(-5000)
                     )
             ));
-            $scenario_2->addEvent(EventFactory::createAddBoundaryEvent(
+            $scenario_3->addEvent(EventFactory::createAddBoundaryEvent(
                 WellBoundaryFactory::createNewPublicWell()
                     ->setName('Public Well 3')
                     ->setGeometry(new Point(-63.62383, -31.34, 4326))
@@ -1031,7 +1031,7 @@ class LoadScenario_6 implements FixtureInterface, ContainerAwareInterface
                         ->setFlux(-5000)
                     )
             ));
-            $scenario_2->addEvent(EventFactory::createAddBoundaryEvent(
+            $scenario_3->addEvent(EventFactory::createAddBoundaryEvent(
                 WellBoundaryFactory::createNewPublicWell()
                     ->setName('Public Well 4')
                     ->setGeometry(new Point(-63.6216, -31.34162, 4326))
@@ -1044,7 +1044,7 @@ class LoadScenario_6 implements FixtureInterface, ContainerAwareInterface
             ));
 
             /** InfiltrationWells */
-            $scenario_2->addEvent(EventFactory::createAddBoundaryEvent(
+            $scenario_3->addEvent(EventFactory::createAddBoundaryEvent(
                 WellBoundaryFactory::createNewInfiltrationWell()
                     ->setName('Infiltration Well 1')
                     ->setGeometry(new Point(-63.571, -31.315, 4326))
@@ -1055,7 +1055,7 @@ class LoadScenario_6 implements FixtureInterface, ContainerAwareInterface
                         ->setFlux(5000)
                     )
             ));
-            $scenario_2->addEvent(EventFactory::createAddBoundaryEvent(
+            $scenario_3->addEvent(EventFactory::createAddBoundaryEvent(
                 WellBoundaryFactory::createNewInfiltrationWell()
                     ->setName('Infiltration Well 2')
                     ->setGeometry(new Point(-63.571, -31.3175, 4326))
@@ -1066,7 +1066,7 @@ class LoadScenario_6 implements FixtureInterface, ContainerAwareInterface
                         ->setFlux(5000)
                     )
             ));
-            $scenario_2->addEvent(EventFactory::createAddBoundaryEvent(
+            $scenario_3->addEvent(EventFactory::createAddBoundaryEvent(
                 WellBoundaryFactory::createNewInfiltrationWell()
                     ->setName('Infiltration Well 3')
                     ->setGeometry(new Point(-63.571, -31.32, 4326))
@@ -1077,7 +1077,7 @@ class LoadScenario_6 implements FixtureInterface, ContainerAwareInterface
                         ->setFlux(5000)
                     )
             ));
-            $scenario_2->addEvent(EventFactory::createAddBoundaryEvent(
+            $scenario_3->addEvent(EventFactory::createAddBoundaryEvent(
                 WellBoundaryFactory::createNewInfiltrationWell()
                     ->setName('Infiltration Well 4')
                     ->setGeometry(new Point(-63.571, -31.3225, 4326))
@@ -1090,7 +1090,7 @@ class LoadScenario_6 implements FixtureInterface, ContainerAwareInterface
             ));
 
             /** @var AddBoundaryEvent $event */
-            foreach ($scenario_2->getEvents() as $event) {
+            foreach ($scenario_3->getEvents() as $event) {
                 $boundary = $event->getBoundary();
                 echo sprintf("Set activeCells for %s %s\r\n",
                     get_class($boundary),
@@ -1098,7 +1098,7 @@ class LoadScenario_6 implements FixtureInterface, ContainerAwareInterface
                 $boundary->setActiveCells($geoTools->getActiveCells($boundary, $model->getBoundingBox(), $model->getGridSize()));
             }
 
-            $entityManager->persist($scenario_2);
+            $entityManager->persist($scenario_3);
             $entityManager->flush();
         }
 
