@@ -62,32 +62,32 @@ class LoadScenario_6 implements FixtureInterface, ContainerAwareInterface
             array('jana.ringleb', 'jana.ringleb@tu-dresden.de', 'inowas'),
             array('jana.sallwey', 'jana.sallwey@tu-dresden.de', 'inowas'),
             array('catalin.stefan', 'catalin.stefan@tu-dresden.de', 'inowas'),
-            array('mohammed.basheer', 'mohammedadamabbaker@gmail.com', 'inowas'),
-            array('adeniran.akanni', 'adeniranakanni@yahoo.com', 'inowas'),
-            array('hoang.thi.ngoc.anh', 'anhhtn96@wru.vn', 'inowas'),
-            array('rana.benguel', 'rana-benguel@web.de', 'inowas'),
-            array('orin.browne', 'errolbrowne19@yahoo.com', 'inowas'),
-            array('sylvia.jimenez.cavallini', 'sylvia.jimenez.cavallini@una.cr', 'inowas'),
-            array('manuel.haeberle', 'manuel.haeberle@gmx.de', 'inowas'),
-            array('sina.shahabi.ghahfarokhi', 'sina.shahabi.gh@gmail.com', 'inowas'),
-            array('veronika.hoecker.de.guillermo', 'veronika.hoecker@conagua.gob.mx', 'inowas'),
-            array('ann.wahu.kamamia', 'wahukamamia@gmail.com', 'inowas'),
-            array('seyed.hossein.kazemi', 's.h.kazemie@gmail.com', 'inowas'),
-            array('alamgir.khalil', 'alamgirkhalil@hotmail.com', 'inowas'),
-            array('genevieve.labrecque', 'labrecque.genevieve@gmail.com', 'inowas'),
-            array('maria.villanueva.lago', 'mvillan2.ext@tragsa.es', 'inowas'),
-            array('fernando.luna', 'mfluna12@gmail.com', 'inowas'),
-            array('serena.caucci', 'Caucci@unu.edu', 'inowas'),
-            array('muhammad.nasir.mahmood', 'muhammad.nasir-mahmood@ufz.de', 'inowas'),
-            array('silvia.santato', '956249@stud.unive.it', 'inowas'),
-            array('raghwendra.shandilya', 'shand2@unesco-ihe.org', 'inowas'),
-            array('laslo.staedtler', 'laslostaedtler@web.de', 'inowas'),
-            array('claudia.teutsch', 'Claudia.Teutsch@mailbox.tu-dresden.de', 'inowas'),
-            array('florian.walter', 'florian.walter@geo.uni-goettingen.de', 'inowas'),
-            array('kpotivi.kpatanyo.wilson-bahun', 'wilsonbahunoah@gmail.com', 'inowas'),
-            array('fasil.teshome.worku', 'w.fasil.t@gmail.com', 'inowas'),
-            array('hexuan.zhang', 'hexuan.zhang.destiny@gmail.com', 'inowas'),
-            array('yan.zhou', 'Yan.Zhou@ufz.de', 'inowas')
+            array('aakanni', 'aakanni@gast', 'ahcoecie'),
+            array('akhalil', 'akhalil@gast', 'oneiraem'),
+            array('akamamia', 'akamamia@gast', 'thiezozo'),
+            array('cteusch', 'cteusch@gast', 'ieshaing'),
+            array('fworku', 'fworku@gast', 'soopeich'),
+            array('fluna', 'fluna@gast', 'dahshuoy'),
+            array('fwalter', 'fwalter@gast', 'quohhoev'),
+            array('glabrecque', 'glabrecque@gast', 'fuaquaeg'),
+            array('hzhang', 'hzhang@gast', 'xahtiech'),
+            array('ahoang', 'ahoang@gast', 'jiichaer'),
+            array('kwilson', 'kwilson@gast', 'aitaichi'),
+            array('lstaedtler', 'lstaedtler@gast', 'eediegha'),
+            array('mhaeberle', 'mhaeberle@gast', 'peehaida'),
+            array('mvillanueva', 'mvillanueva@gast', 'eereinoh'),
+            array('mabbaker', 'mabbaker@gast', 'iegeicos'),
+            array('mmahmood', 'mmahmood@gast', 'quegaing'),
+            array('onegoita', 'onegoita@gast', 'jeibohgh'),
+            array('obrowne', 'obrowne@gast', 'mohsohhi'),
+            array('rshandilya', 'rshandilya@gast', 'zeicicei'),
+            array('rbengul', 'rbengul@gast', 'oocohcis'),
+            array('skazemi', 'skazemi@gast', 'eghaeshu'),
+            array('ssantato', 'ssantato@gast', 'laeseque'),
+            array('sghahfarokhi', 'sghahfarokhi@gast', 'leiceequ'),
+            array('sjimenez', 'sjimenez@gast', 'oongaeno'),
+            array('vhoecker', 'vhoecker@gast', 'weupohng'),
+            array('yzhou', 'yzhou@gast', 'moojieyi')
         );
 
         foreach ($userList as $item){
@@ -919,7 +919,7 @@ class LoadScenario_6 implements FixtureInterface, ContainerAwareInterface
             $scenario_3 = ModelScenarioFactory::create($model);
             $scenario_3->setOwner($user);
             $scenario_3->setPublic(false);
-            $scenario_3->setName('Scenario 3: Infiltration wells and river bank filtration');
+            $scenario_3->setName('Scenario 3: Infiltration wells and ri ver bank filtration');
             $scenario_3->setDescription('Move wells next to the river and add infiltration wells around the urban area.');
             $scenario_3->addEvent(EventFactory::createAddBoundaryEvent(
                 WellBoundaryFactory::createNewIndustrialWell()
