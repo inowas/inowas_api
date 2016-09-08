@@ -187,7 +187,7 @@ class BasPackage implements \JsonSerializable
     public function jsonSerialize()
     {
         return array(
-            'ibound' => $this->ibound->toReducedArray(),
+            'ibound' => $this->ibound->toArray(),
             'strt' => $this->strt->toReducedArray(),
             'ifrefm' => $this->ifrefm,
             'ixsec' => $this->ixsec,
