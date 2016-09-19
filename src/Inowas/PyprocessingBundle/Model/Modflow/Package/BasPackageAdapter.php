@@ -2,12 +2,10 @@
 
 namespace Inowas\PyprocessingBundle\Model\Modflow\Package;
 
-use AppBundle\Entity\ConstantHeadBoundary;
 use AppBundle\Entity\ModFlowModel;
 use AppBundle\Model\ActiveCells;
-use Inowas\PyprocessingBundle\Exception\InvalidArgumentException;
-use Inowas\PyprocessingBundle\Model\Modflow\ValueObject\Flopy2DArray;
 use Inowas\PyprocessingBundle\Model\Modflow\ValueObject\Flopy3DArray;
+use Inowas\PyprocessingBundle\Model\Modflow\ValueObject\IBound;
 
 class BasPackageAdapter
 {
@@ -25,37 +23,23 @@ class BasPackageAdapter
     }
 
     /**
-     * @return Flopy3DArray
+     * @return IBound
      */
-    public function getIbound(): Flopy3DArray
+    public function getIbound(): IBound
     {
         if (! $this->model->getActiveCells() instanceof ActiveCells){
-            return Flopy3DArray::fromValue(1, $this->model->getGridSize()->getNY(), $this->model->getGridSize()->getNY());
+            return IBound::fromValue(1, $this->model->getSoilModel()->getNumberOfGeologicalLayers(), $this->model->getGridSize()->getNY(), $this->model->getGridSize()->getNX());
         }
 
-        $activeCells = $this->model->getActiveCells()->toArray();
-
-        $iBound = array();
-        for ($nLay = 0; $nLay<$this->model->getSoilModel()->getNumberOfGeologicalLayers(); $nLay++){
-            $iBound[$nLay] = array();
-
-            foreach ($activeCells as $nRow => $rowValue){
-                $iBound[$nLay][$nRow] = array();
-                foreach ($rowValue as $nCol => $value){
-                    $iBound[$nLay][$nRow][$nCol] = (int)$value;
-                }
-            }
-        }
-
-        return Flopy3DArray::fromValue($iBound, $this->model->getSoilModel()->getNumberOfGeologicalLayers(), $this->model->getGridSize()->getNY(), $this->model->getGridSize()->getNY());
+        return IBound::fromActiveCells($this->model->getActiveCells(), $this->model->getSoilModel()->getNumberOfGeologicalLayers(), $this->model->getGridSize()->getNY(), $this->model->getGridSize()->getNX());
     }
 
     /**
-     * @return Flopy2DArray
+     * @return Flopy3DArray
      */
-    public function getStrt(): Flopy2DArray
+    public function getStrt(): Flopy3DArray
     {
-        return Flopy2DArray::fromValue(400.0, $this->model->getGridSize()->getNY(), $this->model->getGridSize()->getNY());
+        return Flopy3DArray::fromValue(400.0, $this->model->getSoilModel()->getNumberOfGeologicalLayers(), $this->model->getGridSize()->getNY(), $this->model->getGridSize()->getNX());
     }
 
     /**

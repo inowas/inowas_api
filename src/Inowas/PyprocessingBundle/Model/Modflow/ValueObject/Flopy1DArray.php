@@ -4,7 +4,7 @@ namespace Inowas\PyprocessingBundle\Model\Modflow\ValueObject;
 
 use Inowas\PyprocessingBundle\Exception\InvalidArgumentException;
 
-class Flopy1DArray extends FlopyArray implements FlopyArrayInterface, \JsonSerializable
+class Flopy1DArray extends FlopyArray implements FlopyArrayInterface
 {
     /**
      * @var mixed
@@ -93,20 +93,22 @@ class Flopy1DArray extends FlopyArray implements FlopyArrayInterface, \JsonSeria
      */
     public function toReducedArray(){
 
-        if (is_bool($this->value)){
-            return $this->value;
+        $value = $this->value;
+
+        if (is_bool($value)){
+            return $value;
         }
 
-        if (is_numeric($this->value)){
-            return $this->value;
+        if (is_numeric($value)){
+            return $value;
         }
 
-        if (is_array($this->value)){
-            if (count(array_unique($this->value)) == 1){
-                return array_unique($this->value)[0];
+        if (is_array($value)){
+            if (count(array_unique($value)) == 1){
+                return array_unique($value)[0];
             }
 
-            return $this->value;
+            return $value;
         }
 
         throw new InvalidArgumentException('The object-value is neither scalar not array-value.');
@@ -117,22 +119,16 @@ class Flopy1DArray extends FlopyArray implements FlopyArrayInterface, \JsonSeria
      */
     public function toArray(){
 
-        if (is_bool($this->value)){
-            return array_pad(array(), $this->length, $this->value);
+        $value = $this->value;
+
+        if (is_bool($value)){
+            return array_pad(array(), $this->length, $value);
         }
 
-        if (is_numeric($this->value)){
-            return array_pad(array(), $this->length, $this->value);
+        if (is_numeric($value)){
+            return array_pad(array(), $this->length, $value);
         }
 
-        return $this->value;
-    }
-
-    /**
-     * @return array
-     */
-    function jsonSerialize()
-    {
-        return $this->toReducedArray();
+        return $value;
     }
 }

@@ -157,11 +157,4 @@ class Flopy2DArrayTest extends \PHPUnit_Framework_TestCase
             array(1.5, 2.6, 3.7, 4.8)
         ));
     }
-
-    public function testJsonSerialize(){
-        $f2d = Flopy2DArray::fromNumeric(1.1, 4, 5);
-        $this->assertEquals($f2d->toReducedArray(), json_decode(json_encode($f2d)));
-    }
-
-
 }

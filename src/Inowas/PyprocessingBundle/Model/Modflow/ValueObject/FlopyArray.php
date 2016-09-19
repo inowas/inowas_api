@@ -10,16 +10,24 @@ abstract class FlopyArray implements FlopyArrayInterface
     protected final function __construct(){}
 
     /**
-     * @param $Array
-     * @param int $count
+     * @param $array
      * @return int
      */
-    protected function count_dimension($Array, $count = 0) {
-        if(is_array($Array)) {
-            return $this->count_dimension(current($Array), ++$count);
-        } else {
-            return $count;
+    protected function count_dimension($array) {
+        if(is_array($array)) {
+            foreach ($array as $aKey => $aValue) {
+                if (is_array($aValue)) {
+                    foreach ($aValue as $bKey => $bValue) {
+                        if (is_array($bValue)) {
+                            return 3;
+                        }
+                    }
+                    return 2;
+                }
+            }
+            return 1;
         }
+        return 0;
     }
 
     /**
@@ -35,4 +43,23 @@ abstract class FlopyArray implements FlopyArrayInterface
 
         return $arr;
     }
+
+    /**
+     * @return array|float|int|mixed
+     */
+    public function toSingleNumericValueOrFullArray(){
+
+        $value = $this->toReducedArray();
+
+        if (! is_array($value)){
+            return $value;
+        }
+
+        return $this->toArray();
+    }
+
+    /**
+     * @return array
+     */
+    abstract public function toArray();
 }

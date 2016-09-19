@@ -61,10 +61,5 @@ class Flopy1DArrayTest extends \PHPUnit_Framework_TestCase
         $this->assertInstanceOf(Flopy1DArray::class, $f1d);
         $this->assertEquals(1, $f1d->toReducedArray());
     }
-
-    public function testJsonSerialize(){
-        $f1d = Flopy1DArray::fromNumeric(1.1 ,10);
-        $this->assertEquals($f1d->toReducedArray(), json_decode(json_encode($f1d)));
-    }
 }
 

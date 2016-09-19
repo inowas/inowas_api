@@ -2,8 +2,8 @@
 
 namespace Inowas\PyprocessingBundle\Model\Modflow\Package;
 
-use Inowas\PyprocessingBundle\Model\Modflow\ValueObject\Flopy2DArray;
 use Inowas\PyprocessingBundle\Model\Modflow\ValueObject\Flopy3DArray;
+use Inowas\PyprocessingBundle\Model\Modflow\ValueObject\IBound;
 
 class BasPackage implements \JsonSerializable
 {
@@ -19,7 +19,7 @@ class BasPackage implements \JsonSerializable
      * strt : array of floats, optional
      * An array of starting heads (the default is 1.0).
      *
-     * @var Flopy2DArray $strt
+     * @var Flopy3DArray $strt
      */
     private $strt;
 
@@ -87,25 +87,25 @@ class BasPackage implements \JsonSerializable
      */
     public function __construct()
     {
-        $this->ibound = Flopy2DArray::fromValue(1);
-        $this->strt = Flopy2DArray::fromValue(1.0);
+        $this->ibound = IBound::fromValue(1);
+        $this->strt = Flopy3DArray::fromValue(1.0);
     }
 
     /**
-     * @param Flopy3DArray $ibound
+     * @param IBound $ibound
      * @return BasPackage
      */
-    public function setIbound(Flopy3DArray $ibound): BasPackage
+    public function setIbound(IBound $ibound): BasPackage
     {
         $this->ibound = $ibound;
         return $this;
     }
 
     /**
-     * @param Flopy2DArray $strt
+     * @param Flopy3DArray $strt
      * @return BasPackage
      */
-    public function setStrt(Flopy2DArray $strt): BasPackage
+    public function setStrt(Flopy3DArray $strt): BasPackage
     {
         $this->strt = $strt;
         return $this;
@@ -187,8 +187,8 @@ class BasPackage implements \JsonSerializable
     public function jsonSerialize()
     {
         return array(
-            'ibound' => $this->ibound->toArray(),
-            'strt' => $this->strt->toReducedArray(),
+            'ibound' => $this->ibound->toSingleNumericValueOrFullArray(),
+            'strt' => $this->strt->toSingleNumericValueOrFullArray(),
             'ifrefm' => $this->ifrefm,
             'ixsec' => $this->ixsec,
             'ichflg' => $this->ichflg,

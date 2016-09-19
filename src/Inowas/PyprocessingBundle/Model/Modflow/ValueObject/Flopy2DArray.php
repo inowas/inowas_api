@@ -4,7 +4,7 @@ namespace Inowas\PyprocessingBundle\Model\Modflow\ValueObject;
 
 use Inowas\PyprocessingBundle\Exception\InvalidArgumentException;
 
-class Flopy2DArray extends FlopyArray implements FlopyArrayInterface, \JsonSerializable
+class Flopy2DArray extends FlopyArray implements FlopyArrayInterface
 {
     /**
      * @var int|float|array
@@ -134,34 +134,36 @@ class Flopy2DArray extends FlopyArray implements FlopyArrayInterface, \JsonSeria
      */
     public function toReducedArray(){
 
-        if ($this->count_dimension($this->value) == 2){
-            foreach ($this->value as $key => $row){
+        $value = $this->value;
+
+        if ($this->count_dimension($value) == 2){
+            foreach ($value as $key => $row){
                 if (is_array($row)){
                     if (count(array_unique($row)) == 1){
-                        $this->value[$key] = array_unique($row)[0];
+                        $value[$key] = array_unique($row)[0];
                     }
                 }
             }
 
-            if ($this->count_dimension($this->value) == 2){
+            if ($this->count_dimension($value) == 2){
                 return $this->value;
             }
         }
 
-        if ($this->count_dimension($this->value) == 1){
-            if (is_array($this->value)){
-                if (count(array_unique($this->value)) == 1){
-                    $this->value = array_unique($this->value)[0];
+        if ($this->count_dimension($value) == 1){
+            if (is_array($value)){
+                if (count(array_unique($value)) == 1){
+                    $value = array_unique($value)[0];
                 }
             }
 
-            if ($this->count_dimension($this->value) == 1){
-                return $this->value;
+            if ($this->count_dimension($value) == 1){
+                return $value;
             }
         }
 
-        if ($this->count_dimension($this->value) == 0){
-            return $this->value;
+        if ($this->count_dimension($value) == 0){
+            return $value;
         }
 
         throw new InvalidArgumentException('The object-value is neither scalar nor 1/2 dimensional array-value.');
@@ -172,38 +174,30 @@ class Flopy2DArray extends FlopyArray implements FlopyArrayInterface, \JsonSeria
      */
     public function toArray()
     {
-        if ($this->count_dimension($this->value) == 2){
-            return $this->value;
-        }
+        $value = $this->value;
 
-        if ($this->count_dimension($this->value) == 1){
-            foreach ($this->value as $key => $value){
-                $row = array_pad(array(), $this->nx, $value);
-                $this->value[$key] = $row;
-            }
-
-            return $this->value;
-        }
-
-        if ($this->count_dimension($this->value) == 0){
-            $value = array();
-            for ($i=0; $i<$this->ny; $i++){
-                $row = array_pad(array(), $this->nx, $this->value);
-                $value[] = $row;
-            }
+        if ($this->count_dimension($value) == 2){
             return $value;
+        }
+
+        if ($this->count_dimension($value) == 1){
+            foreach ($value as $key => $val){
+                $row = array_pad(array(), $this->nx, $val);
+                $value[$key] = $row;
+            }
+
+            return $value;
+        }
+
+        if ($this->count_dimension($value) == 0){
+            $val = array();
+            for ($i=0; $i<$this->ny; $i++){
+                $row = array_pad(array(), $this->nx, $value);
+                $val[] = $row;
+            }
+            return $val;
         }
 
         throw new InvalidArgumentException('The object-value is neither scalar nor 1/2 dimensional array-value.');
     }
-
-    /**
-     * @return array
-     */
-    function jsonSerialize()
-    {
-        return $this->toReducedArray();
-    }
-
-
 }

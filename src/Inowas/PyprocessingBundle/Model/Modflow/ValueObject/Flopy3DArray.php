@@ -4,21 +4,21 @@ namespace Inowas\PyprocessingBundle\Model\Modflow\ValueObject;
 
 use Inowas\PyprocessingBundle\Exception\InvalidArgumentException;
 
-class Flopy3DArray extends FlopyArray implements FlopyArrayInterface, \JsonSerializable
+class Flopy3DArray extends FlopyArray implements FlopyArrayInterface
 {
     /**
      * @var int|float|array
      */
-    private $value;
+    protected $value;
 
     /** @var  int */
-    private $nx;
+    protected  $nx;
 
     /** @var  int */
-    private $ny;
+    protected  $ny;
 
     /** @var  int */
-    private $nz;
+    protected  $nz;
 
     /**
      * @param $value
@@ -184,34 +184,44 @@ class Flopy3DArray extends FlopyArray implements FlopyArrayInterface, \JsonSeria
      * @return array|float|int
      */
     public function toReducedArray(){
-        if ($this->count_dimension($this->value) == 3){
-            foreach ($this->value as $lKey => $layer){
+
+        $value = $this->value;
+
+        if ($this->count_dimension($value) == 3){
+            foreach ($value as $lKey => $layer){
                 foreach ($layer as $rKey => $row){
-                    $this->value[$lKey][$rKey] = $this->reduceArray($row);
+                    if (is_array($row)){
+                        $value[$lKey][$rKey] = $this->reduceArray($row);
+                    }
                 }
 
-                $this->value[$lKey] = $this->reduceArray($this->value[$lKey]);
+                if (is_array($value[$lKey])) {
+                    $value[$lKey] = $this->reduceArray($value[$lKey]);
+                }
+
             }
 
-            $this->value = $this->reduceArray($this->value);
+            $value = $this->reduceArray($value);
 
-            return $this->value;
+
+
+            return $value;
         }
 
-        if ($this->count_dimension($this->value) == 2){
-            foreach ($this->value as $lKey => $layer){
-                $this->value[$lKey] = $this->reduceArray($this->value[$lKey]);
+        if ($this->count_dimension($value) == 2){
+            foreach ($value as $lKey => $layer){
+                $value[$lKey] = $this->reduceArray($value[$lKey]);
             }
-            $this->value = $this->reduceArray($this->value);
-            return $this->value;
+            $value = $this->reduceArray($value);
+            return $value;
         }
 
-        if ($this->count_dimension($this->value) == 1){
-            return $this->reduceArray($this->value);
+        if ($this->count_dimension($value) == 1){
+            return $this->reduceArray($value);
         }
 
-        if ($this->count_dimension($this->value) == 0){
-            return $this->value;
+        if ($this->count_dimension($value) == 0){
+            return $value;
         }
 
         throw new InvalidArgumentException('The object-value is neither scalar nor 1/2 dimensional array-value.');
@@ -222,53 +232,54 @@ class Flopy3DArray extends FlopyArray implements FlopyArrayInterface, \JsonSeria
      */
     public function toArray()
     {
-        if ($this->count_dimension($this->value) == 3){
-            return $this->value;
-        }
+        $value = $this->value;
 
-        if ($this->count_dimension($this->value) == 2){
-            foreach ($this->value as $lKey => $lValue){
+        if ($this->count_dimension($value) == 3){
+            foreach ($value as $lKey => $lValue){
                 foreach ($lValue as $rKey => $rValue){
-                    $this->value[$lKey][$rKey] = array_pad(array(), $this->nx, $rValue);
-                }
-            }
-
-            return $this->value;
-        }
-
-        if ($this->count_dimension($this->value) == 1){
-
-            foreach ($this->value as $key => $value){
-                $this->value[$key] = array();
-                for ($iy=0; $iy<$this->ny; $iy++){
-                    $this->value[$key][$iy] = array_pad(array(), $this->nx, $value);
-                }
-            }
-
-            return $this->value;
-        }
-
-        if ($this->count_dimension($this->value) == 0){
-            $value = array();
-
-            for ($iz=0; $iz<$this->nz; $iz++){
-                $value[$iz] = array();
-                for ($iy=0; $iy<$this->ny; $iy++){
-                    $row = array_pad(array(), $this->nx, $this->value);
-                    $value[$iz][] = $row;
+                    if (count($rValue) == 1){
+                        $value[$lKey][$rKey] = array_pad(array(), $this->nx, $rValue[0]);
+                    }
                 }
             }
             return $value;
         }
 
-        throw new InvalidArgumentException('The object-value is neither scalar nor 1/2 dimensional array-value.');
-    }
+        if ($this->count_dimension($value) == 2){
+            foreach ($value as $lKey => $lValue){
+                foreach ($lValue as $rKey => $rValue){
+                    $value[$lKey][$rKey] = array_pad(array(), $this->nx, $rValue);
+                }
+            }
 
-    /**
-     * @return array
-     */
-    function jsonSerialize()
-    {
-        return $this->toReducedArray();
+            return $value;
+        }
+
+        if ($this->count_dimension($value) == 1){
+
+            foreach ($value as $key => $val){
+                $value[$key] = array();
+                for ($iy=0; $iy<$this->ny; $iy++){
+                    $value[$key][$iy] = array_pad(array(), $this->nx, $val);
+                }
+            }
+
+            return $value;
+        }
+
+        if ($this->count_dimension($value) == 0){
+            $val = array();
+
+            for ($iz=0; $iz<$this->nz; $iz++){
+                $val[$iz] = array();
+                for ($iy=0; $iy<$this->ny; $iy++){
+                    $row = array_pad(array(), $this->nx, $value);
+                    $val[$iz][] = $row;
+                }
+            }
+            return $val;
+        }
+
+        throw new InvalidArgumentException('The object-value is neither scalar nor 1/2 dimensional array-value.');
     }
 }
