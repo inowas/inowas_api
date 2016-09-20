@@ -76,7 +76,6 @@ I.model = {
         that = this;
 
         $.when(
-
             $.getJSON( "/api/modflowmodels/"+id+"/properties.json", function ( data ) {
                 that.activeCells = data.active_cells;
                 that.boundingBox = data.bounding_box;
@@ -414,7 +413,7 @@ I.model = {
                 bb.y_max = boundingBox.y_max - row*dy;
 
                 var value = true;
-                if (activeCells.cells[row] == undefined || activeCells.cells[row][col] == undefined){
+                if (activeCells.cells[row] == undefined || activeCells.cells[row][col] == false){
                     value = false;
                 }
 
@@ -425,11 +424,11 @@ I.model = {
                 if (mutable){
                     rectangle.on('click', function(e) {
 
-                        if (activeCells.cells[e.target.row] == undefined || activeCells.cells[e.target.row][e.target.col] == undefined){
+                        if (activeCells.cells[e.target.row] == undefined || activeCells.cells[e.target.row][e.target.col] == false){
                             activeCells.cells[e.target.row][e.target.col] = true;
                             e.target.setStyle(that.getStyle('area', activeCells.cells[e.target.row][e.target.col]));
                         } else {
-                            activeCells.cells[e.target.row][e.target.col] = undefined;
+                            activeCells.cells[e.target.row][e.target.col] = false;
                             e.target.setStyle(that.getStyle('area', false));
                         }
 

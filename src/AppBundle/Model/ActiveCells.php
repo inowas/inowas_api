@@ -41,7 +41,16 @@ class ActiveCells
             }
         }
 
-        $instance->cells = $cells;
+        $rows = $cells;
+        foreach ($rows as $rKey => $row){
+            foreach ($row as $cKey => $col){
+                if ($col != true){
+                    $rows[$rKey][$cKey] = false;
+                }
+            }
+        }
+
+        $instance->cells = $rows;
         return $instance;
     }
 
