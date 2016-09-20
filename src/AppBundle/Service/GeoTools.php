@@ -160,7 +160,7 @@ class GeoTools
         $className = $mo->getNameOfClass();
 
         $query = $this->entityManager
-            ->createQuery('SELECT ST_AsGeoJson(ST_Transform(a.geometry, :srid)) FROM '.$className.' a WHERE a.id = :id')
+            ->createQuery(sprintf('SELECT ST_AsGeoJson(ST_Transform(a.geometry, :srid)) FROM %s a WHERE a.id = :id', $className))
             ->setParameter('id', $id)
             ->setParameter('srid', $targetSrid)
         ;
