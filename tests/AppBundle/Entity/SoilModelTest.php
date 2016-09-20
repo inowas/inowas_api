@@ -138,7 +138,6 @@ class SoilModelTest extends WebTestCase
             ->setOrder(GeologicalLayer::TOP_LAYER));
         $this->entityManager->persist($this->soilModel);
         $this->entityManager->flush();
-        $this->entityManager->clear($this->soilModel);
 
         /** @var array */
         $soilModels = $this->entityManager
@@ -172,7 +171,6 @@ class SoilModelTest extends WebTestCase
 
         $this->entityManager->persist($this->soilModel);
         $this->entityManager->flush();
-        $this->entityManager->clear($this->soilModel);
 
         /** @var array */
         $soilModels = $this->entityManager
@@ -217,7 +215,6 @@ class SoilModelTest extends WebTestCase
 
         $this->entityManager->persist($this->soilModel);
         $this->entityManager->flush();
-        $this->entityManager->clear($this->soilModel);
 
         /** @var array */
         $soilModels = $this->entityManager
