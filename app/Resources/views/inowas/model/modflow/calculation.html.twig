@@ -26,12 +26,12 @@
     <div class="col-sm-8 log">
         <p id="log" class="small">
             {% if calculation %}
-                {% if calculation.state == 12 %}
-                    {{ calculation.getRenderedOutput | raw }}
+                {% if calculation.state == 11 %}
+                    {{ calculation.getOutput | nl2br }}
                 {% elseif calculation.state == 12 %}
-                    {{ calculation.getErrorOutput | raw}}
+                    {{ calculation.getErrorOutput | nl2br}}
                 {% else %}
-                    {{ calculation.getRenderedOutput | raw }}
+                    {{ calculation.getOutput | nl2br }}
                 {% endif %}
             {% endif %}
         </p>
