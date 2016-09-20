@@ -124,12 +124,19 @@ class ModelControllerTest extends WebTestCase
     {
         $model = $this->models->first();
         $scenario = ModelScenarioFactory::create($model)
-            ->setName('TestScenario');
+            ->setName('TestScenario')
+            ->setOwner($this->user)
+            ->setPublic(true)
+        ;
+
         $this->em->persist($scenario);
         $this->em->flush();
 
         $client = $this->login($this->user->getUsername(), 'TestPassword');
-        $client->request('GET', '/models/modflow/'.$model->getId()->toString().'/scenarios/results');
+        $client->request(
+            'GET',
+            '/models/modflow/'.$model->getId()->toString().'/scenarios/results'
+        );
         $this->assertEquals(200, $client->getResponse()->getStatusCode());
     }
 
@@ -158,7 +165,9 @@ class ModelControllerTest extends WebTestCase
     {
         $model = $this->models->first();
         $scenario = ModelScenarioFactory::create($model)
-            ->setName('TestScenario');
+            ->setName('TestScenario')
+            ->setOwner($this->user)
+            ->setPublic(true);
         $this->em->persist($scenario);
         $this->em->flush();
 
@@ -171,7 +180,9 @@ class ModelControllerTest extends WebTestCase
     {
         $model = $this->models->first();
         $scenario = ModelScenarioFactory::create($model)
-            ->setName('TestScenario');
+            ->setName('TestScenario')
+            ->setOwner($this->user)
+            ->setPublic(true);
         $this->em->persist($scenario);
         $this->em->flush();
 
@@ -184,7 +195,9 @@ class ModelControllerTest extends WebTestCase
     {
         $model = $this->models->first();
         $scenario = ModelScenarioFactory::create($model)
-            ->setName('TestScenario');
+            ->setName('TestScenario')
+            ->setOwner($this->user)
+            ->setPublic(true);
         $this->em->persist($scenario);
         $this->em->flush();
 
@@ -197,7 +210,9 @@ class ModelControllerTest extends WebTestCase
     {
         $model = $this->models->first();
         $scenario = ModelScenarioFactory::create($model)
-            ->setName('TestScenario');
+            ->setName('TestScenario')
+            ->setOwner($this->user)
+            ->setPublic(true);
         $this->em->persist($scenario);
         $this->em->flush();
 
@@ -210,7 +225,9 @@ class ModelControllerTest extends WebTestCase
     {
         $model = $this->models->first();
         $scenario = ModelScenarioFactory::create($model)
-            ->setName('TestScenario');
+            ->setName('TestScenario')
+            ->setOwner($this->user)
+            ->setPublic(true);
         $this->em->persist($scenario);
         $this->em->flush();
 

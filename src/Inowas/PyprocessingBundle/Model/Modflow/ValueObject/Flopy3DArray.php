@@ -4,7 +4,7 @@ namespace Inowas\PyprocessingBundle\Model\Modflow\ValueObject;
 
 use Inowas\PyprocessingBundle\Exception\InvalidArgumentException;
 
-class Flopy3DArray extends FlopyArray implements FlopyArrayInterface
+class Flopy3DArray extends FlopyArray implements FlopyArrayInterface, \JsonSerializable
 {
     /**
      * @var int|float|array
@@ -281,5 +281,13 @@ class Flopy3DArray extends FlopyArray implements FlopyArrayInterface
         }
 
         throw new InvalidArgumentException('The object-value is neither scalar nor 1/2 dimensional array-value.');
+    }
+
+    /**
+     * @return mixed
+     */
+    public function jsonSerialize()
+    {
+        return $this->toSingleNumericValueOrFullArray();
     }
 }

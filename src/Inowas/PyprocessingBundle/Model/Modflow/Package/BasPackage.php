@@ -83,15 +83,6 @@ class BasPackage implements \JsonSerializable
     private $unitnumber = 13;
 
     /**
-     * BasPackage constructor.
-     */
-    public function __construct()
-    {
-        $this->ibound = IBound::fromValue(1);
-        $this->strt = Flopy3DArray::fromValue(1.0);
-    }
-
-    /**
      * @param IBound $ibound
      * @return BasPackage
      */
@@ -187,8 +178,8 @@ class BasPackage implements \JsonSerializable
     public function jsonSerialize()
     {
         return array(
-            'ibound' => $this->ibound->toSingleNumericValueOrFullArray(),
-            'strt' => $this->strt->toSingleNumericValueOrFullArray(),
+            'ibound' => $this->ibound,
+            'strt' => $this->strt,
             'ifrefm' => $this->ifrefm,
             'ixsec' => $this->ixsec,
             'ichflg' => $this->ichflg,

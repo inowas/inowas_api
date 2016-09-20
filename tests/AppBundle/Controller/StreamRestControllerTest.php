@@ -4,7 +4,9 @@ namespace Tests\AppBundle\Controller;
 
 use AppBundle\Entity\StreamBoundary;
 use AppBundle\Entity\User;
+use AppBundle\Model\Point;
 use AppBundle\Model\StreamBoundaryFactory;
+use CrEOF\Spatial\PHP\Types\Geometry\LineString;
 use Tests\AppBundle\RestControllerTestCase;
 
 class StreamRestControllerTest extends RestControllerTestCase
@@ -22,6 +24,11 @@ class StreamRestControllerTest extends RestControllerTestCase
             ->setName('Stream')
             ->setPublic(true)
             ->setOwner($this->getOwner())
+            ->setGeometry(new LineString(array(
+                new Point(1,2,4326),
+                new Point(1,3,4326),
+                new Point(1,4,4326)
+            )))
         ;
 
         $this->getEntityManager()->persist($this->stream);

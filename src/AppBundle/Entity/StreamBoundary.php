@@ -149,7 +149,7 @@ class StreamBoundary extends BoundaryModelObject
      *
      * @return string
      */
-    public function getGoeJson()
+    public function getGeoJson()
     {
         return $this->geometry->toJson();
     }

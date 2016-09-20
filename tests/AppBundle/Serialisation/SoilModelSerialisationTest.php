@@ -12,6 +12,7 @@ use AppBundle\Model\Point;
 use AppBundle\Model\PropertyFactory;
 use AppBundle\Model\SoilModelFactory;
 use AppBundle\Model\UserFactory;
+use CrEOF\Spatial\PHP\Types\Geometry\Polygon;
 use JMS\Serializer\SerializationContext;
 use JMS\Serializer\Serializer;
 use JMS\Serializer\SerializerBuilder;
@@ -43,6 +44,17 @@ class SoilModelSerialisationTest extends \PHPUnit_Framework_TestCase
         $this->area = AreaFactory::create()
             ->setOwner($owner)
             ->setPublic(true)
+            ->setGeometry(new Polygon(
+                array(
+                    array(
+                        new Point(1.1, 1.1, 4326),
+                        new Point(1.1, 2.2, 4326),
+                        new Point(2.2, 2.2, 4326),
+                        new Point(2.2, 1.1, 4326),
+                        new Point(1.1, 1.1, 4326)
+                    )
+                )
+            ))
             ->setAreaType('SoilModelTestAreaType')
             ->addProperty(PropertyFactory::create())
         ;

@@ -4,11 +4,15 @@ namespace Inowas\PyprocessingBundle\Model\Modflow\ValueObject;
 
 use AppBundle\Model\ActiveCells;
 
-class IBound extends Flopy3DArray
+class IBound implements \JsonSerializable
 {
-
     const ACTIVE = 1;
     const INACTIVE = 0;
+
+    private $nx;
+    private $ny;
+    private $nz;
+    private $value;
 
     /**
      * @param ActiveCells $activeCells
@@ -17,7 +21,7 @@ class IBound extends Flopy3DArray
      * @param $nCol
      * @return IBound
      */
-    public static function fromActiveCells(ActiveCells $activeCells, $nLay, $nRow, $nCol)
+    public static function fromActiveCells(ActiveCells $activeCells, int $nLay, int $nRow, int $nCol)
     {
 
         $instance = new self();
@@ -54,5 +58,13 @@ class IBound extends Flopy3DArray
     public function toArray()
     {
         return $this->value;
+    }
+
+    /**
+     * @return array
+     */
+    function jsonSerialize()
+    {
+        return $this->toArray();
     }
 }

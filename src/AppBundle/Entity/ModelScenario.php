@@ -25,7 +25,7 @@ class ModelScenario
      * @ORM\Column(name="id", type="uuid", unique=true)
      * @JMS\Type("string")
      */
-    private $id;
+    protected $id;
 
     /**
      * @var User

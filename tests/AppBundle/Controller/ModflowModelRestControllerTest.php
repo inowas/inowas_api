@@ -10,6 +10,7 @@ use AppBundle\Entity\PropertyValue;
 use AppBundle\Entity\SoilModel;
 use AppBundle\Entity\User;
 use AppBundle\Model\ActiveCells;
+use AppBundle\Model\AreaFactory;
 use AppBundle\Model\ConstantHeadBoundaryFactory;
 use AppBundle\Model\GeneralHeadBoundaryFactory;
 use AppBundle\Model\GeologicalLayerFactory;
@@ -25,6 +26,8 @@ use AppBundle\Model\SoilModelFactory;
 use AppBundle\Model\StreamBoundaryFactory;
 use AppBundle\Model\StressPeriodFactory;
 use AppBundle\Model\WellBoundaryFactory;
+use CrEOF\Spatial\PHP\Types\Geometry\LineString;
+use CrEOF\Spatial\PHP\Types\Geometry\Polygon;
 use Inowas\PyprocessingBundle\Model\Modflow\Package\FlopyCalculationProperties;
 use Inowas\PyprocessingBundle\Model\Modflow\ValueObject\Flopy3DArray;
 use JMS\Serializer\Serializer;
@@ -89,6 +92,23 @@ class ModflowModelRestControllerTest extends RestControllerTestCase
         );
 
         $this->modFlowModel->setGridSize(new GridSize(3,4));
+        $this->modFlowModel->setArea(
+            AreaFactory::create()
+                ->setOwner($this->getOwner())
+                ->setGeometry(new Polygon(
+                    array(
+                        array(
+                            new Point(1.1, 3.3, 4326),
+                            new Point(2.2, 3.3, 4326),
+                            new Point(2.2, 4.4, 4326),
+                            new Point(1.1, 4.4, 4326),
+                            new Point(1.1, 3.3, 4326)
+                        )
+                    )
+                )
+            )
+        );
+
         $this->modFlowModel->setBoundingBox(new BoundingBox(1.1, 2.2, 3.3, 4.4, 4326));
         $this->modFlowModel->setActiveCells(ActiveCells::fromArray(array(
             array(1,1,1,1),
@@ -101,12 +121,22 @@ class ModflowModelRestControllerTest extends RestControllerTestCase
 
         $this->modFlowModel->addBoundary(GeneralHeadBoundaryFactory::create()
             ->setName('GHB1')
+            ->setGeometry(new LineString(
+                array(
+                    new Point(1.1, 3.3, 4326),
+                    new Point(2.2, 3.3, 4326)
+                )))
             ->setPublic(true)
             ->setOwner($this->getOwner())
         );
 
         $this->modFlowModel->addBoundary(ConstantHeadBoundaryFactory::create()
             ->setName('CHB1')
+            ->setGeometry(new LineString(
+                array(
+                    new Point(1.1, 3.3, 4326),
+                    new Point(2.2, 3.3, 4326)
+                )))
             ->setPublic(true)
             ->setOwner($this->getOwner())
         );
@@ -114,6 +144,7 @@ class ModflowModelRestControllerTest extends RestControllerTestCase
         $this->modFlowModel->addBoundary(WellBoundaryFactory::create()
             ->setGeometry(new Point(2, 4, 4326))
             ->setName('Well1')
+            ->setGeometry(new Point(1.1, 3.3, 4326))
             ->setPublic(true)
             ->setOwner($this->getOwner())
         );
@@ -121,6 +152,11 @@ class ModflowModelRestControllerTest extends RestControllerTestCase
         $this->modFlowModel->addBoundary(StreamBoundaryFactory::create()
             ->setStartingPoint(new Point(10, 11, 3857))
             ->setName('River1')
+            ->setGeometry(new LineString(
+                array(
+                    new Point(1.1, 3.3, 4326),
+                    new Point(2.2, 3.3, 4326)
+                )))
             ->setPublic(true)
             ->setOwner($this->getOwner())
         );
@@ -332,7 +368,6 @@ class ModflowModelRestControllerTest extends RestControllerTestCase
 
     public function testGetModFlowModelCalculationsWithOneCalculationsAPI()
     {
-        $timeNow = new \DateTime();
         $calculation = new ModflowCalculation();
         $calculation->setModelId($this->modFlowModel->getId());
         $calculation->setBaseUrl('abc');
@@ -369,12 +404,8 @@ class ModflowModelRestControllerTest extends RestControllerTestCase
             array('HTTP_X-AUTH-TOKEN' => $this->getOwner()->getApiKey())
         );
 
-        dump(json_decode($client->getResponse()->getContent()));
-
         $this->assertEquals(200, $client->getResponse()->getStatusCode());
-        $calculations = json_decode($client->getResponse()->getContent());
-        $this->assertEquals(1, count($calculations));
-        $calculationResponse = $calculations[0];
+        $calculationResponse = json_decode($client->getResponse()->getContent());
 
         $this->assertObjectHasAttribute('model_id', $calculationResponse);
         $this->assertEquals($calculation->getModelId(), $calculationResponse->model_id);

@@ -162,7 +162,7 @@ class ModelController extends Controller
 
         $model = $this->getDoctrine()->getRepository('AppBundle:ModFlowModel')
             ->findOneBy(array(
-                'id' => $uuid
+                'id' => Uuid::fromString($id)
             ));
 
         if (null === $model){

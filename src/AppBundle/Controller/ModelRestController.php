@@ -1338,6 +1338,7 @@ class ModelRestController extends FOSRestController
 
         if ($model->getOwner() == $user){
             $model->getArea()->setMutable(true);
+
             /** @var BoundaryModelObject $boundary */
             foreach ($model->getBoundaries() as $boundary) {
                 $boundary->setMutable(true);
