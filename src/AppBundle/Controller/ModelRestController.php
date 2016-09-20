@@ -40,9 +40,9 @@ use Nelmio\ApiDocBundle\Annotation\ApiDoc;
 use Ramsey\Uuid\Uuid;
 use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
+use Symfony\Component\HttpFoundation\File\Exception\AccessDeniedException;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class ModelRestController extends FOSRestController
@@ -145,7 +145,7 @@ class ModelRestController extends FOSRestController
         $model = $this->findModelById($id);
 
         if (! $this->getUser() == $model->getOwner()){
-            throw new AccessDeniedHttpException('To delete the model you have to be the owner.');
+            throw new AccessDeniedException('To delete the model you have to be the owner.');
         }
 
         $this->getDoctrine()->getManager()->remove($model);
@@ -642,7 +642,7 @@ class ModelRestController extends FOSRestController
         $model = $this->setMutable($model, $this->getUser());
 
         if ($model->getOwner() != $this->getUser()){
-            throw new AccessDeniedHttpException(
+            throw new AccessDeniedException(
                 sprintf('User %s has no access Model id: %s from User %s',
                     $this->getUser()->getUserName(),
                     $model->getId()->toString(),
@@ -762,7 +762,7 @@ class ModelRestController extends FOSRestController
         $model = $this->setMutable($model, $this->getUser());
 
         if ($model->getOwner() != $this->getUser()){
-            throw new AccessDeniedHttpException(
+            throw new AccessDeniedException(
                 sprintf('User %s has no access Model id: %s from User %s',
                     $this->getUser()->getUserName(),
                     $model->getId()->toString(),

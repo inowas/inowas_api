@@ -1,6 +1,7 @@
 {
-    "name": "ralf/inowas",
-    "license": "proprietary",
+    "name": "inowas",
+    "description": "Inowas MAR-DSS",
+    "license": "MIT",
     "type": "project",
     "autoload": {
         "psr-4": {
