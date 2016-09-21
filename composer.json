@@ -35,9 +35,9 @@
         "jms/serializer-bundle": "^1.1",
         "nelmio/api-doc-bundle": "^2.11",
         "jms/di-extra-bundle": "^1.8",
-        "jms/security-extra-bundle": "dev-master",
+        "jms/security-extra-bundle": "^1.6",
         "friendsofsymfony/rest-bundle": "^1.7",
-        "creof/doctrine2-spatial": "dev-master",
+        "creof/doctrine2-spatial": "^1.1",
         "ramsey/uuid-doctrine": "^1.2",
         "sensiolabs/ansi-to-html": "^1.1"
       
