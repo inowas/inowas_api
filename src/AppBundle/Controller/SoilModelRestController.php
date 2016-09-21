@@ -48,7 +48,7 @@ class SoilModelRestController extends FOSRestController
             ));
 
         if (!$user) {
-            throw $this->createNotFoundException('User with username '.$username.' not found.');
+            throw $this->createNotFoundException('User with username ' . $username . ' not found.');
         }
 
         $soilModels = $this->getDoctrine()
@@ -66,8 +66,7 @@ class SoilModelRestController extends FOSRestController
             ->setStatusCode(200)
             ->setSerializationContext(SerializationContext::create()
                 ->setGroups(array('soilmodellist'))
-            )
-        ;
+            );
 
         return $view;
     }
@@ -91,10 +90,10 @@ class SoilModelRestController extends FOSRestController
     public function getSoilmodelsAction($id)
     {
 
-        try{
+        try {
             $uuid = Uuid::fromString($id);
         } catch (\InvalidArgumentException $e) {
-            throw $this->createNotFoundException('Soilmodel with id='.$id.' not found.');
+            throw $this->createNotFoundException('Soilmodel with id=' . $id . ' not found.');
         }
 
         $soilModel = $this->getDoctrine()
@@ -104,7 +103,7 @@ class SoilModelRestController extends FOSRestController
             ));
 
         if (!$soilModel) {
-            throw $this->createNotFoundException('Soilmodel with id='.$id.' not found.');
+            throw $this->createNotFoundException('Soilmodel with id=' . $id . ' not found.');
         }
 
         $view = View::create();
@@ -135,10 +134,10 @@ class SoilModelRestController extends FOSRestController
     public function getSoilmodelsGeologicallayersAction($id)
     {
 
-        try{
+        try {
             $uuid = Uuid::fromString($id);
         } catch (\InvalidArgumentException $e) {
-            throw $this->createNotFoundException('Soilmodel with id='.$id.' not found.');
+            throw $this->createNotFoundException('Soilmodel with id=' . $id . ' not found.');
         }
 
         $soilModel = $this->getDoctrine()
@@ -148,7 +147,7 @@ class SoilModelRestController extends FOSRestController
             ));
 
         if (!$soilModel) {
-            throw $this->createNotFoundException('Soilmodel with id='.$id.' not found.');
+            throw $this->createNotFoundException('Soilmodel with id=' . $id . ' not found.');
         }
 
         $view = View::create();
@@ -185,26 +184,26 @@ class SoilModelRestController extends FOSRestController
     {
 
         // Top-Elevation == Bottom elevation of the layer above
-        if ($layerNumber >0 && $propertyAbbreviation == PropertyType::TOP_ELEVATION) {
-            $layerNumber -=1;
+        if ($layerNumber > 0 && $propertyAbbreviation == PropertyType::TOP_ELEVATION) {
+            $layerNumber -= 1;
             $propertyAbbreviation = PropertyType::BOTTOM_ELEVATION;
         }
 
         /** @var ModFlowModel $model */
         $model = $this->findModelById($id);
 
-        if (!$model->hasSoilModel()){
+        if (!$model->hasSoilModel()) {
             throw new NotFoundHttpException(sprintf('ModflowModel %s has no SoilModel already.', $model->getId()->toString()));
         }
 
         $soilModel = $model->getSoilModel();
-        if (!$soilModel->hasGeologicalLayers()){
+        if (!$soilModel->hasGeologicalLayers()) {
             throw new NotFoundHttpException(sprintf('ModflowModel %s has a Soilmodel without Layers.', $model->getId()->toString()));
         }
 
         /** @var GeologicalLayer $layer */
         $layer = $soilModel->getLayerByNumber($layerNumber);
-        if (null == $layer){
+        if (null == $layer) {
             throw new NotFoundHttpException(sprintf('SoilModel has no Layer with layernumber %s.', $layerNumber));
         }
 
@@ -212,19 +211,18 @@ class SoilModelRestController extends FOSRestController
         $propertyType = PropertyTypeFactory::create($propertyAbbreviation);
         $property = $layer->getPropertyByPropertyType($propertyType);
 
-        if (null === $property){
+        if (null === $property) {
             throw new \Exception(sprintf('Layer %s has no Property %s', $layerNumber, $propertyAbbreviation));
         }
 
-        if (!$property->getValues()->count() == 1){
+        if (!$property->getValues()->count() == 1) {
             throw new \Exception('Property has more then one value');
         }
 
         /** @var PropertyValue $propertyValue */
         $propertyValue = $property->getValues()->first();
 
-        if ($propertyValue->hasRaster())
-        {
+        if ($propertyValue->hasRaster()) {
             $raster = $propertyValue->getRaster();
         } elseif ($propertyValue->hasValue()) {
             $raster = RasterFactory::create()
@@ -233,7 +231,7 @@ class SoilModelRestController extends FOSRestController
 
             $data = array();
             $value = $propertyValue->getValue();
-            for ($y = 0; $y<$model->getGridSize()->getNY(); $y++){
+            for ($y = 0; $y < $model->getGridSize()->getNY(); $y++) {
                 $data[] = array_fill(0, $model->getGridSize()->getNX(), $value);
             }
 
@@ -243,7 +241,8 @@ class SoilModelRestController extends FOSRestController
         }
 
         $colorScheme = GeoImage::COLOR_RELIEF_JET;
-        $min = 290; $max = 480;
+        $min = 290;
+        $max = 480;
         if ($propertyType->getAbbreviation() == "hh") {
             $colorScheme = GeoImage::COLOR_RELIEF_GIST_RAINBOW;
             $min = -30;
@@ -257,14 +256,18 @@ class SoilModelRestController extends FOSRestController
         $outputFileName = $geoImageService->getOutputFileName();
 
         $fs = new Filesystem();
-        if (!$fs->exists($outputFileName)){
+        if (!$fs->exists($outputFileName)) {
             throw new \Exception('Something went wrong creating the image');
         }
 
         $response = new BinaryFileResponse($outputFileName);
-        switch( $fileFormat ) {
-            case "png":  $hType="image/png"; break;
-            case "tiff": $hType="image/tiff"; break;
+        switch ($fileFormat) {
+            case "png":
+                $hType = "image/png";
+                break;
+            case "tiff":
+                $hType = "image/tiff";
+                break;
             default:
                 $hType = "";
         }
@@ -281,8 +284,8 @@ class SoilModelRestController extends FOSRestController
     private function findModelById($id)
     {
 
-        if (!Uuid::isValid($id)){
-            throw $this->createNotFoundException('Model with id='.$id.' not found.');
+        if (!Uuid::isValid($id)) {
+            throw $this->createNotFoundException('Model with id=' . $id . ' not found.');
         }
 
         $scenario = $this->getDoctrine()
