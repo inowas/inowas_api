@@ -34,7 +34,7 @@ class ActiveCellsTypeTest extends WebTestCase
     }
 
     public function testConvertToDatabase() {
-        $this->assertEquals("a:2:{i:0;a:2:{i:0;i:2;i:1;i:3;}i:1;a:2:{i:0;i:1;i:1;i:2;}}", $this->dbalConnection->convertToDatabaseValue($this->activeCells, 'active_cells'));
+        $this->assertEquals("a:2:{i:0;a:2:{i:0;b:1;i:1;b:1;}i:1;a:2:{i:0;b:1;i:1;b:1;}}", $this->dbalConnection->convertToDatabaseValue($this->activeCells, 'active_cells'));
     }
 
     public function testConvertNullToPhpValueReturnsNull() {
