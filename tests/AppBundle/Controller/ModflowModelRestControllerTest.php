@@ -168,7 +168,7 @@ class ModflowModelRestControllerTest extends RestControllerTestCase
     public function testGetListWithoutAPIKeyReturns401()
     {
         $client = static::createClient();
-        $client->request('GET', '/api/users/unknownUser/models.json');
+        $client->request('GET', '/api/users/unknownUser/modflowmodels.json');
         $this->assertEquals(401, $client->getResponse()->getStatusCode());
     }
 
@@ -181,7 +181,7 @@ class ModflowModelRestControllerTest extends RestControllerTestCase
         $client = static::createClient();
         $client->request(
             'GET',
-            '/api/users/'.$this->getOwner()->getUsername().'/models.json',
+            '/api/users/'.$this->getOwner()->getUsername().'/modflowmodels.json',
             array(),
             array(),
             array('HTTP_X-AUTH-TOKEN' => $this->getOwner()->getApiKey())
@@ -204,7 +204,7 @@ class ModflowModelRestControllerTest extends RestControllerTestCase
         $client = static::createClient();
         $client->request(
             'GET',
-            '/api/users/unknownUser/models.json',
+            '/api/users/unknownUser/modflowmodels.json',
             array(),
             array(),
             array('HTTP_X-AUTH-TOKEN' => $this->getOwner()->getApiKey())
@@ -217,7 +217,7 @@ class ModflowModelRestControllerTest extends RestControllerTestCase
         $client = static::createClient();
         $client->request(
             'GET',
-            '/api/models/'.$this->modFlowModel->getId().'.json',
+            '/api/modflowmodels/'.$this->modFlowModel->getId().'.json',
             array(),
             array(),
             array('HTTP_X-AUTH-TOKEN' => $this->getOwner()->getApiKey())

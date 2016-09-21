@@ -45,7 +45,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
-class ModelRestController extends FOSRestController
+class ModflowModelRestController extends FOSRestController
 {
     /**
      * Return the overall project list from a user.
@@ -62,7 +62,7 @@ class ModelRestController extends FOSRestController
      * @param $username
      * @return View
      */
-    public function getUserModelsAction($username)
+    public function getUserModflowmodelsAction($username)
     {
         $user = $this->getDoctrine()
             ->getRepository('AppBundle:User')
@@ -108,7 +108,7 @@ class ModelRestController extends FOSRestController
      *
      * @return View
      */
-    public function getModelAction($id)
+    public function getModflowmodelsAction($id)
     {
         $model = $this->findModelById($id);
         
@@ -1112,6 +1112,7 @@ class ModelRestController extends FOSRestController
                     'id' => $id
                 ));
 
+            /** @var ModFlowModel $model */
             $model = $scenario->getBaseModel();
 
             $fpc = FlopyCalculationPropertiesFactory::loadFromApiRunAndSubmit($model);
