@@ -2,25 +2,17 @@
 
 namespace AppBundle\Controller;
 
-use AppBundle\Entity\BoundaryModelObject;
-use AppBundle\Entity\ConstantHeadBoundary;
-use AppBundle\Entity\GeneralHeadBoundary;
 use AppBundle\Entity\GeologicalLayer;
 use AppBundle\Entity\ModelScenario;
 use AppBundle\Entity\ModflowCalculation;
 use AppBundle\Entity\ModFlowModel;
 use AppBundle\Entity\PropertyValue;
-use AppBundle\Entity\StreamBoundary;
 use AppBundle\Entity\User;
-use AppBundle\Entity\WellBoundary;
 use AppBundle\Model\ActiveCells;
 use AppBundle\Model\AreaFactory;
-use AppBundle\Model\EventFactory;
 use AppBundle\Model\GeologicalLayerFactory;
 use AppBundle\Model\GridSize;
-use AppBundle\Model\LineStringFactory;
 use AppBundle\Model\ModFlowModelFactory;
-use AppBundle\Model\PointFactory;
 use AppBundle\Model\PropertyType;
 use AppBundle\Model\PropertyTypeFactory;
 use AppBundle\Model\RasterFactory;
@@ -259,562 +251,6 @@ class ModflowModelRestController extends FOSRestController
     }
 
     /**
-     * Return the ModflowModel Layer Property Image.
-     *
-     * @ApiDoc(
-     *   resource = true,
-     *   description = "Return the ModflowModel Layer Property Image.",
-     *   statusCodes = {
-     *     200 = "Returned when successful",
-     *     404 = "Returned when the user is not found"
-     *   }
-     * )
-     *
-     * @param ParamFetcher $paramFetcher
-     * @param $id
-     * @param $layerNumber
-     * @param $propertyAbbreviation
-     * @QueryParam(name="_format", nullable=true, description="Image format, default png", default="png")
-     *
-     * @return Response
-     * @throws 
-     */
-    public function getModflowmodelLayerPropertyAction(ParamFetcher $paramFetcher, $id, $layerNumber, $propertyAbbreviation)
-    {
-
-        // Top-Elevation == Bottom elevation of the layer above
-        if ($layerNumber >0 && $propertyAbbreviation == PropertyType::TOP_ELEVATION) {
-            $layerNumber -=1;
-            $propertyAbbreviation = PropertyType::BOTTOM_ELEVATION;
-        }
-
-        /** @var ModFlowModel $model */
-        $model = $this->findModelById($id);
-
-        if (!$model->hasSoilModel()){
-            throw new NotFoundHttpException(sprintf('ModflowModel %s has no SoilModel already.', $model->getId()->toString()));
-        }
-
-        $soilModel = $model->getSoilModel();
-        if (!$soilModel->hasGeologicalLayers()){
-            throw new NotFoundHttpException(sprintf('ModflowModel %s has a Soilmodel without Layers.', $model->getId()->toString()));
-        }
-
-        /** @var GeologicalLayer $layer */
-        $layer = $soilModel->getLayerByNumber($layerNumber);
-        if (null == $layer){
-            throw new NotFoundHttpException(sprintf('SoilModel has no Layer with layernumber %s.', $layerNumber));
-        }
-
-        /** @var PropertyType $propertyType */
-        $propertyType = PropertyTypeFactory::create($propertyAbbreviation);
-        $property = $layer->getPropertyByPropertyType($propertyType);
-
-        if (null === $property){
-            throw new \Exception(sprintf('Layer %s has no Property %s', $layerNumber, $propertyAbbreviation));
-        }
-
-        if (!$property->getValues()->count() == 1){
-            throw new \Exception('Property has more then one value');
-        }
-        
-        /** @var PropertyValue $propertyValue */
-        $propertyValue = $property->getValues()->first();
-
-        if ($propertyValue->hasRaster())
-        {
-            $raster = $propertyValue->getRaster();
-        } elseif ($propertyValue->hasValue()) {
-            $raster = RasterFactory::create()
-                ->setGridSize($model->getGridSize())
-                ->setBoundingBox($model->getBoundingBox());
-
-            $data = array();
-            $value = $propertyValue->getValue();
-            for ($y = 0; $y<$model->getGridSize()->getNY(); $y++){
-                $data[] = array_fill(0, $model->getGridSize()->getNX(), $value);
-            }
-
-            $raster->setData($data);
-        } else {
-            throw new \Exception('PropertyValue has no Value');
-        }
-
-        $colorScheme = GeoImage::COLOR_RELIEF_JET;
-        $min = 290; $max = 480;
-        if ($propertyType->getAbbreviation() == "hh") {
-            $colorScheme = GeoImage::COLOR_RELIEF_GIST_RAINBOW;
-            $min = -30;
-            $max = 8;
-        }
-
-        $fileFormat = $paramFetcher->get('_format');
-        $geoImageService = $this->get('inowas.geoimage');
-        $geoImageParameter = new GeoImageParameter($raster, $model->getActiveCells()->toArray(), $min, $max, $fileFormat, $colorScheme);
-        $geoImageService->createImage($geoImageParameter);
-        $outputFileName = $geoImageService->getOutputFileName();
-
-        $fs = new Filesystem();
-        if (!$fs->exists($outputFileName)){
-            throw new \Exception('Something went wrong creating the image');
-        }
-
-        $response = new BinaryFileResponse($outputFileName);
-        switch( $fileFormat ) {
-            case "png":  $hType="image/png"; break;
-            case "tiff": $hType="image/tiff"; break;
-            default:
-                $hType = "";
-        }
-
-        $response->headers->set('Content-Type', $hType);
-        return $response;
-    }
-
-    /**
-     * Returns the area by ModflowModel-Id
-     *
-     * @ApiDoc(
-     *   resource = true,
-     *   description = "Returns the area by ModflowModel-Id.",
-     *   statusCodes = {
-     *     200 = "Returned when successful",
-     *     404 = "Returned when the ModflowModel is not found"
-     *   }
-     * )
-     *
-     * @param $id
-     *
-     * @return View
-     */
-    public function getModflowmodelAreaAction($id)
-    {
-        /** @var ModFlowModel $model */
-        $model = $this->findModelById($id);
-        $model = $this->setMutable($model, $this->getUser());
-
-        $area = $model->getArea();
-
-        $serializationContext = SerializationContext::create();
-        $serializationContext->setGroups('modelobjectdetails');
-
-        $view = View::create();
-        $view->setData($area)
-            ->setStatusCode(200)
-            ->setSerializationContext($serializationContext)
-        ;
-
-        return $view;
-    }
-
-    /**
-     * Returns a list of all Boundaries by ModflowModel-Id
-     *
-     * @ApiDoc(
-     *   resource = true,
-     *   description = "Returns a list of all Boundaries by ModflowModel-Id.",
-     *   statusCodes = {
-     *     200 = "Returned when successful",
-     *     404 = "Returned when the ModflowModel is not found"
-     *   }
-     * )
-     *
-     * @param $id
-     *
-     * @return View
-     */
-    public function getModflowmodelBoundariesAction($id)
-    {
-        /** @var ModFlowModel $model */
-        $model = $this->findModelById($id);
-        $model = $this->setMutable($model, $this->getUser());
-
-        $boundaries = $model->getBoundaries();
-
-        $serializationContext = SerializationContext::create();
-        $serializationContext->setGroups('modelobjectdetails');
-
-        $view = View::create();
-        $view->setData($boundaries)
-            ->setStatusCode(200)
-            ->setSerializationContext($serializationContext)
-        ;
-
-        return $view;
-    }
-
-    /**
-     * Returns a list of all Constant Head Boundaries by ModflowModel-Id
-     *
-     * @ApiDoc(
-     *   resource = true,
-     *   description = "Returns a list of all Constant Head Boundaries by ModflowModel-Id.",
-     *   statusCodes = {
-     *     200 = "Returned when successful",
-     *     404 = "Returned when the ModflowModel is not found"
-     *   }
-     * )
-     *
-     * @param $id
-     *
-     * @return Response|View
-     */
-    public function getModflowmodelConstant_headAction($id)
-    {
-        /** @var ModFlowModel $model */
-        $model = $this->findModelById($id);
-        $model = $this->setMutable($model, $this->getUser());
-
-        $constantHeadBoundaries = array();
-        $boundaries = $model->getBoundaries();
-        foreach ($boundaries as $boundary) {
-            if ($boundary instanceof ConstantHeadBoundary) {
-                $constantHeadBoundaries[] = $boundary;
-            }
-        }
-
-        $serializationContext = SerializationContext::create();
-        $serializationContext
-            ->setGroups("boundarylist")
-        ;
-
-        $view = View::create();
-        $view->setData($constantHeadBoundaries)
-            ->setStatusCode(200)
-            ->setSerializationContext($serializationContext)
-        ;
-
-        return $view;
-    }
-
-    /**
-     * Returns a list of all General Head Boundaries by ModflowModel-Id
-     *
-     * @ApiDoc(
-     *   resource = true,
-     *   description = "Returns a list of all General Head Boundaries by ModflowModel-Id.",
-     *   statusCodes = {
-     *     200 = "Returned when successful",
-     *     404 = "Returned when the ModflowModel is not found"
-     *   }
-     * )
-     *
-     * @param $id
-     *
-     * @return View
-     */
-    public function getModflowmodelGeneral_headAction($id)
-    {
-        /** @var ModFlowModel $model */
-        $model = $this->findModelById($id);
-        $model = $this->setMutable($model, $this->getUser());
-
-        $ghb = array();
-        $boundaries = $model->getBoundaries();
-        foreach ($boundaries as $boundary) {
-            if ($boundary instanceof GeneralHeadBoundary) {
-                $ghb[] = $boundary;
-            }
-        }
-
-        $serializationContext = SerializationContext::create();
-        $serializationContext->setGroups('modelobjectdetails');
-
-        $view = View::create();
-        $view->setData($ghb)
-            ->setStatusCode(200)
-            ->setSerializationContext($serializationContext)
-        ;
-
-        return $view;
-    }
-
-    /**
-     * Returns a list of all Wells by ModflowModel-Id
-     *
-     * @ApiDoc(
-     *   resource = true,
-     *   description = "Returns a list of all Wells by ModflowModel-Id.",
-     *   statusCodes = {
-     *     200 = "Returned when successful",
-     *     404 = "Returned when the ModflowModel is not found"
-     *   }
-     * )
-     *
-     * @param $id
-     *
-     * @return View
-     */
-    public function getModflowmodelWellsAction($id)
-    {
-        /** @var ModFlowModel $model */
-        $model = $this->findModelById($id);
-        $model = $this->setMutable($model, $this->getUser());
-
-        $wells = array();
-        $boundaries = $model->getBoundaries();
-        foreach ($boundaries as $boundary) {
-            if ($boundary instanceof WellBoundary) {
-                $wells[] = $boundary;
-            }
-        }
-
-        $response = array();
-        /** @var WellBoundary $well */
-        foreach ($wells as $well) {
-            $response[$well->getWellType()][] = $well;
-        }
-
-        $serializationContext = SerializationContext::create();
-        $serializationContext->setGroups('modelobjectdetails');
-
-        $view = View::create();
-        $view->setData($response)
-            ->setStatusCode(200)
-            ->setSerializationContext($serializationContext)
-        ;
-
-        return $view;
-    }
-
-    /**
-     * Returns a list of all Rivers by ModflowModel-Id
-     *
-     * @ApiDoc(
-     *   resource = true,
-     *   description = "Returns a list of all Rivers by ModflowModel-Id.",
-     *   statusCodes = {
-     *     200 = "Returned when successful",
-     *     404 = "Returned when the ModflowModel is not found"
-     *   }
-     * )
-     *
-     * @param $modelId
-     * @param $wellId
-     * @param Request $request
-     *
-     * @return Response|View
-     */
-    public function putModflowmodelWellsAction($modelId, $wellId, Request $request)
-    {
-        if ($this->isScenario($modelId)) {
-            $scenario = $this->getDoctrine()->getRepository('AppBundle:ModelScenario')
-                ->findOneBy(array(
-                    'id' => $modelId
-                ));
-
-            $well = $this->getDoctrine()->getRepository('AppBundle:WellBoundary')
-                ->findOneBy(array(
-                    'id' => $wellId
-                ));
-
-
-            if ($request->request->has('latLng')) {
-
-                $newWell = clone $well;
-                $newWell->setGeometry(PointFactory::fromLatLng(json_decode($request->request->get('latLng'))));
-                $this->getDoctrine()->getManager()->persist($newWell);
-                $this->getDoctrine()->getManager()->flush();
-
-                $newWell->setActiveCells(
-                    $this->get('inowas.geotools')
-                        ->getActiveCells(
-                            $newWell,
-                            $scenario->getBaseModel()->getBoundingBox(),
-                            $scenario->getBaseModel()->getGridSize()
-                        )
-                );
-
-                $scenario->addEvent(EventFactory::createChangeBoundaryEvent($well, $newWell));
-                $this->getDoctrine()->getManager()->merge($scenario);
-                $this->getDoctrine()->getManager()->flush();
-            }
-
-            $view = View::create();
-            $view->setData('OK');
-
-            return $view;
-        }
-
-
-        /** @var ModFlowModel $model */
-        $model = $this->findModelById($modelId);
-        $model = $this->setMutable($model, $this->getUser());
-
-        if ($model->getOwner() != $this->getUser()){
-            throw new AccessDeniedException(
-                sprintf('User %s has no access Model id: %s from User %s',
-                    $this->getUser()->getUserName(),
-                    $model->getId()->toString(),
-                    $model->getOwner()->getUsername()
-                )
-            );
-        }
-
-        $wells = array();
-        $boundaries = $model->getBoundaries();
-        foreach ($boundaries as $boundary) {
-            if ($boundary instanceof WellBoundary) {
-                $wells[] = $boundary;
-            }
-        }
-
-        /** @var WellBoundary $well */
-        foreach ($wells as $well){
-            if ($well->getId()->toString() == $wellId){
-                break;
-            }
-        }
-
-        if ($request->request->has('latLng')){
-            $well->setGeometry(PointFactory::fromLatLng(json_decode($request->request->get('latLng'))));
-            $this->getDoctrine()->getManager()->persist($well);
-            $this->getDoctrine()->getManager()->flush();
-
-            $activeCells = $this->get('inowas.geotools')->getActiveCells($well, $model->getBoundingBox(), $model->getGridSize());
-            $well->setActiveCells($activeCells);
-            $this->getDoctrine()->getManager()->persist($well);
-            $this->getDoctrine()->getManager()->flush();
-        }
-
-        $response = array();
-        /** @var WellBoundary $well */
-        foreach ($wells as $well) {
-            $response[$well->getWellType()][] = $well;
-        }
-
-        $serializationContext = SerializationContext::create();
-        $serializationContext->setGroups('modelobjectdetails');
-
-        $view = View::create();
-        $view->setData($response)
-            ->setStatusCode(200)
-            ->setSerializationContext($serializationContext)
-        ;
-
-        return $view;
-    }
-
-    /**
-     * Returns a list of all Rivers by ModflowModel-Id
-     *
-     * @ApiDoc(
-     *   resource = true,
-     *   description = "Returns a list of all Rivers by ModflowModel-Id.",
-     *   statusCodes = {
-     *     200 = "Returned when successful",
-     *     404 = "Returned when the ModflowModel is not found"
-     *   }
-     * )
-     *
-     * @param $id
-     *
-     * @return Response|View
-     */
-    public function getModflowmodelRiversAction($id)
-    {
-        /** @var ModFlowModel $model */
-        $model = $this->findModelById($id);
-        $model = $this->setMutable($model, $this->getUser());
-
-        $rivers = array();
-        $boundaries = $model->getBoundaries();
-        foreach ($boundaries as $boundary) {
-            if ($boundary instanceof StreamBoundary) {
-                $rivers[] = $boundary;
-            }
-        }
-
-        $serializationContext = SerializationContext::create();
-        $serializationContext->setGroups('modelobjectdetails');
-
-        $view = View::create();
-        $view->setData($rivers)
-            ->setStatusCode(200)
-            ->setSerializationContext($serializationContext)
-        ;
-
-        return $view;
-    }
-
-    /**
-     * Returns a list of all Rivers by ModflowModel-Id
-     *
-     * @ApiDoc(
-     *   resource = true,
-     *   description = "Returns a list of all Rivers by ModflowModel-Id.",
-     *   statusCodes = {
-     *     200 = "Returned when successful",
-     *     404 = "Returned when the ModflowModel is not found"
-     *   }
-     * )
-     *
-     * @param $modelId
-     * @param $riverId
-     * @param Request $request
-     *
-     * @return Response|View
-     */
-    public function putModflowmodelRiversAction($modelId, $riverId, Request $request)
-    {
-        /** @var ModFlowModel $model */
-        $model = $this->findModelById($modelId);
-        $model = $this->setMutable($model, $this->getUser());
-
-        if ($model->getOwner() != $this->getUser()){
-            throw new AccessDeniedException(
-                sprintf('User %s has no access Model id: %s from User %s',
-                    $this->getUser()->getUserName(),
-                    $model->getId()->toString(),
-                    $model->getOwner()->getUsername()
-                )
-            );
-        }
-
-        $rivers = [];
-        foreach ($model->getBoundaries() as $boundary){
-            if ($boundary instanceof StreamBoundary){
-                $rivers[] = $boundary;
-            }
-        }
-
-        $river = null;
-        /** @var BoundaryModelObject $boundary */
-        foreach ($rivers as $river){
-            if ($river->getId()->toString() == $riverId){
-                break;
-            }
-        }
-
-        if ($request->request->has('latLngs')){
-            $river->setGeometry(LineStringFactory::fromLatLngs(json_decode($request->request->get('latLngs'))));
-            $this->getDoctrine()->getManager()->persist($river);
-            $this->getDoctrine()->getManager()->flush();
-
-            $activeCells = $this->get('inowas.geotools')->getActiveCells($river, $model->getBoundingBox(), $model->getGridSize());
-            $river->setActiveCells($activeCells);
-            $this->getDoctrine()->getManager()->persist($river);
-            $this->getDoctrine()->getManager()->flush();
-        }
-
-        if ($request->request->has('activeCells')){
-            $river->setActiveCells(ActiveCells::fromObject(json_decode($request->request->get('activeCells'))));
-            $this->getDoctrine()->getManager()->persist($river);
-            $this->getDoctrine()->getManager()->flush();
-        }
-
-        $serializationContext = SerializationContext::create();
-        $serializationContext->setGroups('modelobjectdetails');
-
-        $view = View::create();
-        $view->setData($rivers)
-            ->setStatusCode(200)
-        ;
-
-        return $view;
-    }
-
-    /**
      * Returns the boundingbox array from a model
      *
      * @ApiDoc(
@@ -843,7 +279,7 @@ class ModflowModelRestController extends FOSRestController
 
         $srid = $paramFetcher->get('srid');
         $bb = $model->getBoundingBox();
-        
+
         if ($bb->getSrid() != 0 && $bb->getSrid() != $srid){
             $bb = $this->getDoctrine()->getRepository('AppBundle:ModFlowModel')
                 ->transformBoundingBox($model->getBoundingBox(), $srid);
@@ -981,7 +417,7 @@ class ModflowModelRestController extends FOSRestController
             if ($surface > 100000){
                 $surface = round($surface/1000000, 1). ' sqkm';
             } else (
-                $surface = round($surface). ' sqm'
+            $surface = round($surface). ' sqm'
             );
 
             $area->setSurface($surface);
@@ -1046,6 +482,215 @@ class ModflowModelRestController extends FOSRestController
         ;
 
         return $view;
+    }
+
+    /**
+     * Get head values
+     *
+     * @ApiDoc(
+     *   resource = true,
+     *   description = "Post head values.",
+     *   statusCodes = {
+     *     200 = "Returned when successful",
+     *     404 = "Returned when the Calculation-Id is not found"
+     *   }
+     * )
+     *
+     * @param $id
+     * @return View
+     *
+     * @QueryParam(name="totim", description="Time in days from beginning")
+     */
+    public function getModflowmodelHeadsAction($id)
+    {
+        /** @var ModFlowModel $model */
+        $element = $this->findElementById($id);
+
+        $heads = null;
+        $model = null;
+
+        if ($element instanceof ModFlowModel){
+            $heads = $element->getHeads();
+            $model = $element;
+        }
+
+        if ($element instanceof ModelScenario){
+            $heads = $element->getHeads();
+            $model = $element->getBaseModel();
+        }
+
+        $response = array();
+        if ($model->getStressPeriods()->count() > 0){
+            /** @var \DateTime $startDate */
+            $startDate = $model->getStressPeriods()->first()->getDateTimeBegin();
+
+            foreach ($heads as $totim => $head){
+                $date = clone $startDate;
+                $date->modify(sprintf('+%s days', (int)$totim-1));
+                $response[$date->format('Y-m-d')] = $head;
+            }
+        }
+
+        $view = View::create();
+        $view->setData($response)
+            ->setStatusCode(200)
+        ;
+
+        return $view;
+    }
+
+    /**
+     * Route to submit Result Head-Values
+     *
+     * @ApiDoc(
+     *   resource = true,
+     *   description = "Post head values.",
+     *   statusCodes = {
+     *     200 = "Returned when successful",
+     *     404 = "Returned when the Calculation-Id is not found"
+     *   }
+     * )
+     *
+     * @param $id
+     * @param ParamFetcher $paramFetcher
+     * @return View
+     *
+     * @RequestParam(name="totim", description="Time in days from beginning")
+     * @RequestParam(name="heads", description="Heads-Array in Json")
+     */
+    public function postModflowmodelHeadsAction($id, ParamFetcher $paramFetcher)
+    {
+        $totim = $paramFetcher->get('totim');
+        $head = $paramFetcher->get('heads');
+
+        /** @var ModFlowModel $model */
+        $model = $this->findElementById($id);
+        $heads = $model->getHeads();
+        $heads[$totim] = $head;
+
+        $model->setHeads($heads);
+        $this->getDoctrine()->getManager()->persist($model);
+        $this->getDoctrine()->getManager()->flush();
+
+        $view = View::create();
+        $view->setData('OK')
+            ->setStatusCode(200)
+        ;
+
+        return $view;
+    }
+
+    /**
+     * Return the ModflowModel Layer Property Image.
+     *
+     * @ApiDoc(
+     *   resource = true,
+     *   description = "Return the ModflowModel Layer Property Image.",
+     *   statusCodes = {
+     *     200 = "Returned when successful",
+     *     404 = "Returned when the user is not found"
+     *   }
+     * )
+     *
+     * @param ParamFetcher $paramFetcher
+     * @param $id
+     * @param $layerNumber
+     * @param $propertyAbbreviation
+     * @QueryParam(name="_format", nullable=true, description="Image format, default png", default="png")
+     *
+     * @return Response
+     * @throws 
+     */
+    public function getModflowmodelLayerPropertyAction(ParamFetcher $paramFetcher, $id, $layerNumber, $propertyAbbreviation)
+    {
+
+        // Top-Elevation == Bottom elevation of the layer above
+        if ($layerNumber >0 && $propertyAbbreviation == PropertyType::TOP_ELEVATION) {
+            $layerNumber -=1;
+            $propertyAbbreviation = PropertyType::BOTTOM_ELEVATION;
+        }
+
+        /** @var ModFlowModel $model */
+        $model = $this->findModelById($id);
+
+        if (!$model->hasSoilModel()){
+            throw new NotFoundHttpException(sprintf('ModflowModel %s has no SoilModel already.', $model->getId()->toString()));
+        }
+
+        $soilModel = $model->getSoilModel();
+        if (!$soilModel->hasGeologicalLayers()){
+            throw new NotFoundHttpException(sprintf('ModflowModel %s has a Soilmodel without Layers.', $model->getId()->toString()));
+        }
+
+        /** @var GeologicalLayer $layer */
+        $layer = $soilModel->getLayerByNumber($layerNumber);
+        if (null == $layer){
+            throw new NotFoundHttpException(sprintf('SoilModel has no Layer with layernumber %s.', $layerNumber));
+        }
+
+        /** @var PropertyType $propertyType */
+        $propertyType = PropertyTypeFactory::create($propertyAbbreviation);
+        $property = $layer->getPropertyByPropertyType($propertyType);
+
+        if (null === $property){
+            throw new \Exception(sprintf('Layer %s has no Property %s', $layerNumber, $propertyAbbreviation));
+        }
+
+        if (!$property->getValues()->count() == 1){
+            throw new \Exception('Property has more then one value');
+        }
+        
+        /** @var PropertyValue $propertyValue */
+        $propertyValue = $property->getValues()->first();
+
+        if ($propertyValue->hasRaster())
+        {
+            $raster = $propertyValue->getRaster();
+        } elseif ($propertyValue->hasValue()) {
+            $raster = RasterFactory::create()
+                ->setGridSize($model->getGridSize())
+                ->setBoundingBox($model->getBoundingBox());
+
+            $data = array();
+            $value = $propertyValue->getValue();
+            for ($y = 0; $y<$model->getGridSize()->getNY(); $y++){
+                $data[] = array_fill(0, $model->getGridSize()->getNX(), $value);
+            }
+
+            $raster->setData($data);
+        } else {
+            throw new \Exception('PropertyValue has no Value');
+        }
+
+        $colorScheme = GeoImage::COLOR_RELIEF_JET;
+        $min = 290; $max = 480;
+        if ($propertyType->getAbbreviation() == "hh") {
+            $colorScheme = GeoImage::COLOR_RELIEF_GIST_RAINBOW;
+            $min = -30;
+            $max = 8;
+        }
+
+        $fileFormat = $paramFetcher->get('_format');
+        $geoImageService = $this->get('inowas.geoimage');
+        $geoImageParameter = new GeoImageParameter($raster, $model->getActiveCells()->toArray(), $min, $max, $fileFormat, $colorScheme);
+        $geoImageService->createImage($geoImageParameter);
+        $outputFileName = $geoImageService->getOutputFileName();
+
+        $fs = new Filesystem();
+        if (!$fs->exists($outputFileName)){
+            throw new \Exception('Something went wrong creating the image');
+        }
+
+        $response = new BinaryFileResponse($outputFileName);
+        switch( $fileFormat ) {
+            case "png":  $hType="image/png"; break;
+            case "tiff": $hType="image/tiff"; break;
+            default:
+                $hType = "";
+        }
+
+        $response->headers->set('Content-Type', $hType);
+        return $response;
     }
 
     /**
@@ -1168,102 +813,6 @@ class ModflowModelRestController extends FOSRestController
     }
 
     /**
-     * Get head values
-     *
-     * @ApiDoc(
-     *   resource = true,
-     *   description = "Post head values.",
-     *   statusCodes = {
-     *     200 = "Returned when successful",
-     *     404 = "Returned when the Calculation-Id is not found"
-     *   }
-     * )
-     *
-     * @param $id
-     * @return View
-     *
-     * @QueryParam(name="totim", description="Time in days from beginning")
-     */
-    public function getModflowmodelHeadsAction($id)
-    {
-        /** @var ModFlowModel $model */
-        $element = $this->findElementById($id);
-
-        $heads = null;
-        $model = null;
-
-        if ($element instanceof ModFlowModel){
-            $heads = $element->getHeads();
-            $model = $element;
-        }
-
-        if ($element instanceof ModelScenario){
-            $heads = $element->getHeads();
-            $model = $element->getBaseModel();
-        }
-
-        $response = array();
-        if ($model->getStressPeriods()->count() > 0){
-            /** @var \DateTime $startDate */
-            $startDate = $model->getStressPeriods()->first()->getDateTimeBegin();
-
-            foreach ($heads as $totim => $head){
-                $date = clone $startDate;
-                $date->modify(sprintf('+%s days', (int)$totim-1));
-                $response[$date->format('Y-m-d')] = $head;
-            }
-        }
-
-        $view = View::create();
-        $view->setData($response)
-            ->setStatusCode(200)
-        ;
-
-        return $view;
-    }
-
-    /**
-     * Route to submit Result Head-Values
-     *
-     * @ApiDoc(
-     *   resource = true,
-     *   description = "Post head values.",
-     *   statusCodes = {
-     *     200 = "Returned when successful",
-     *     404 = "Returned when the Calculation-Id is not found"
-     *   }
-     * )
-     *
-     * @param $id
-     * @param ParamFetcher $paramFetcher
-     * @return View
-     *
-     * @RequestParam(name="totim", description="Time in days from beginning")
-     * @RequestParam(name="heads", description="Heads-Array in Json")
-     */
-    public function postModflowmodelHeadsAction($id, ParamFetcher $paramFetcher)
-    {
-        $totim = $paramFetcher->get('totim');
-        $head = $paramFetcher->get('heads');
-
-        /** @var ModFlowModel $model */
-        $model = $this->findElementById($id);
-        $heads = $model->getHeads();
-        $heads[$totim] = $head;
-
-        $model->setHeads($heads);
-        $this->getDoctrine()->getManager()->persist($model);
-        $this->getDoctrine()->getManager()->flush();
-
-        $view = View::create();
-        $view->setData('OK')
-            ->setStatusCode(200)
-        ;
-
-        return $view;
-    }
-
-    /**
      * @param $id
      * @return \AppBundle\Entity\AbstractModel
      */
@@ -1326,30 +875,6 @@ class ModflowModelRestController extends FOSRestController
 
         if (!$model) {
             throw $this->createNotFoundException('Model not found.');
-        }
-
-        return $model;
-    }
-
-    /**
-     * @param ModFlowModel $model
-     * @param User $user
-     * @return ModFlowModel
-     */
-    private function setMutable(ModFlowModel $model, User $user){
-
-        if ($model->getOwner() == $user){
-            $model->getArea()->setMutable(true);
-
-            /** @var BoundaryModelObject $boundary */
-            foreach ($model->getBoundaries() as $boundary) {
-                $boundary->setMutable(true);
-            }
-
-            /** @var BoundaryModelObject $boundary */
-            foreach ($model->getObservationPoints() as $observationPoint) {
-                $observationPoint->setMutable(true);
-            }
         }
 
         return $model;

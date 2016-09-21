@@ -58,6 +58,11 @@ rest_model:
     prefix: /api
     resource: AppBundle\Controller\ModflowModelRestController
 
+rest_model_boundaries:
+    type: rest
+    prefix: /api
+    resource: AppBundle\Controller\ModflowModelBoundariesRestController
+
 rest_modelobject:
     type: rest
     prefix: /api
