@@ -58,6 +58,60 @@ class FlopyCalculateCommand extends ContainerAwareCommand
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
+
+        $response = $this->getModelFromInput($input, $output);
+
+        if ($response instanceof ModFlowModel){
+            $model = $response;
+            $output->writeln(sprintf("Calculating model id: %s", $input->getArgument('id')));
+
+            $flopy = $this->getContainer()->get('inowas.flopy');
+            $dataFolder = $this->getContainer()->getParameter('inowas.modflow.data_folder');
+
+            $fpc = FlopyCalculationPropertiesFactory::loadFromApiRunAndSubmit($model);
+
+            $apiBaseUrl = $this->getContainer()->getParameter('inowas.api_base_url');
+            if ($input->getOption('port')){
+                $apiBaseUrl = sprintf("http://localhost:%s/api", $input->getOption('port'));
+            }
+
+            if ($input->getOption('submit') === 'false'){
+                $fpc->setSubmit(false);
+            }
+
+            $model->setCalculationProperties($fpc);
+            $model->setHeads(array());
+            $this->getContainer()->get('doctrine.orm.default_entity_manager')->persist($model);
+            $this->getContainer()->get('doctrine.orm.default_entity_manager')->flush();
+
+            if ($input->getOption('async') === 'true'){
+                $flopy->addToQueue($apiBaseUrl, $dataFolder, $model->getId()->toString(), $model->getOwner()->getId()->toString());
+                $flopy->startAsyncFlopyProcessRunner($this->getContainer()->get('kernel')->getRootDir());
+                return 1;
+            }
+
+            $process = $flopy->calculate(
+                $apiBaseUrl,
+                $dataFolder,
+                $model->getId()->toString(),
+                $model->getOwner()->getApiKey(),
+                true
+            );
+
+            $output->writeln($process->getProcess()->getCommandLine());
+            $process->run();
+
+            if ($process->isSuccessful()){
+                $output->writeln('The Process has finished successful.');
+                $output->writeln($process->getOutput());
+            }
+
+            $output->writeln($process->getErrorOutput());
+        }
+        return 1;
+    }
+
+    private function getModelFromInput(InputInterface $input, OutputInterface $output){
         if (! $input->getArgument('id')){
             $modflowModels = $this->getContainer()->get('doctrine.orm.default_entity_manager')->getRepository('AppBundle:ModFlowModel')
                 ->findBy(
@@ -101,51 +155,6 @@ class FlopyCalculateCommand extends ContainerAwareCommand
             $model = $modflowModels[$input->getArgument('id')-1];
         }
 
-        $output->writeln(sprintf("Calculating model id: %s", $input->getArgument('id')));
-
-        $flopy = $this->getContainer()->get('inowas.flopy');
-        $dataFolder = $this->getContainer()->getParameter('inowas.modflow.data_folder');
-
-        $fpc = FlopyCalculationPropertiesFactory::loadFromApiRunAndSubmit($model);
-
-        $apiBaseUrl = $this->getContainer()->getParameter('inowas.api_base_url');
-        if ($input->getOption('port')){
-            $apiBaseUrl = sprintf("http://localhost:%s/api", $input->getOption('port'));
-        }
-
-        if ($input->getOption('submit') === 'false'){
-            $fpc->setSubmit(false);
-        }
-
-        $model->setCalculationProperties($fpc);
-        $model->setHeads(array());
-        $this->getContainer()->get('doctrine.orm.default_entity_manager')->persist($model);
-        $this->getContainer()->get('doctrine.orm.default_entity_manager')->flush();
-
-        if ($input->getOption('async') === 'true'){
-            $flopy->addToQueue($apiBaseUrl, $dataFolder, $model->getId()->toString(), $model->getOwner()->getId()->toString());
-            $flopy->startAsyncFlopyProcessRunner($this->getContainer()->get('kernel')->getRootDir());
-            return 1;
-        }
-
-        $process = $flopy->calculate(
-            $apiBaseUrl,
-            $dataFolder,
-            $model->getId()->toString(),
-            $model->getOwner()->getApiKey(),
-            true
-        );
-
-        $output->writeln($process->getProcess()->getCommandLine());
-        $process->run();
-
-        if ($process->isSuccessful()){
-            $output->writeln('The Process has finished successful.');
-            $output->writeln($process->getOutput());
-        }
-
-        $output->writeln($process->getErrorOutput());
-
-        return 1;
+        return $model;
     }
 }
