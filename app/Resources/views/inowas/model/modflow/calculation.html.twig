@@ -1,3 +1,5 @@
+{% set state = calculation.state %}
+
 <div class="row">
     <div class="col-sm-4" style="height: 300px;">
         <h2>Calculation</h2>
@@ -7,16 +9,16 @@
         {% else %}
             <p class="addedtoqueue">{{ calculation.getDateTimeAddToQueue | date }}</p>
             <h3>State</h3>
-            {% if calculation.state == 0 %}
+            {% if state == 0 %}
                 <p>Calculation added to queue.</p>
                 <button type="button" class="btn btn-success btn-block disabled top-margin-40">The calculation starts soon.</button>
-            {% elseif calculation.state == 1 %}
+            {% elseif state == 1 %}
                 <p>Calculation is running</p>
                 <button type="button" class="btn btn-success btn-block disabled top-margin-40">The calculation is running.</button>
-            {% elseif calculation.state == 11 %}
+            {% elseif state == 11 %}
                 <p>Calculation has finished with success.</p>
                 <button type="button" class="btn btn-success btn-block btn_calculation top-margin-40">Run calculation</button>
-            {% elseif calculation.state == 12 %}
+            {% elseif state == 12 %}
                 <p>Calculation has finished with errors.</p>
                 <button type="button" class="btn btn-success btn-block btn_calculation top-margin-40">Run calculation</button>
             {% endif %}
@@ -26,7 +28,11 @@
     <div class="col-sm-8 log">
         <p id="log" class="small">
             {% if calculation %}
-                {{ calculation.getOutput | nl2br }}
+                {% if state == 12 %}
+                    {{ calculation.getErrorOutput | nl2br}}
+                {% else %}
+                    {{ calculation.getOutput | nl2br }}
+                {% endif %}
             {% endif %}
         </p>
     </div>
