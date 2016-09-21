@@ -34,7 +34,7 @@ class FlopyProcessRunnerCommand extends ContainerAwareCommand
             return 0;
         }
 
-        if ($input->getOption('daemon') == true){
+        if ($input->getOption('daemon') === true){
             $output->writeln(sprintf("Start ServiceRunner as Daemon"));
             $modflowServiceRunner = $this->getContainer()->get('inowas.flopy.servicerunner');
             $modflowServiceRunner->run(true);

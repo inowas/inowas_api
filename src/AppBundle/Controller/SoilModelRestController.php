@@ -203,7 +203,7 @@ class SoilModelRestController extends FOSRestController
 
         /** @var GeologicalLayer $layer */
         $layer = $soilModel->getLayerByNumber($layerNumber);
-        if (null == $layer) {
+        if (null === $layer) {
             throw new NotFoundHttpException(sprintf('SoilModel has no Layer with layernumber %s.', $layerNumber));
         }
 

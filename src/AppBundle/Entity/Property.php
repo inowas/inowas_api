@@ -255,14 +255,14 @@ class Property
             {
                 $numberOfValues += $value->getNumberOfValues();
 
-                if ($dateTimeBegin == null || $dateTimeBegin > $value->getDateBegin())
+                if ($dateTimeBegin === null || $dateTimeBegin > $value->getDateBegin())
                 {
                     if ($value->getDateBegin()) {
                         $dateTimeBegin = $value->getDateBegin();
                     }
                 }
 
-                if ($dateTimeEnd == null || $dateTimeEnd < $value->getDateEnd())
+                if ($dateTimeEnd === null || $dateTimeEnd < $value->getDateEnd())
                 {
                     if ($value->getDateEnd())
                     {

@@ -85,7 +85,7 @@ class SoilModel extends AbstractModel
      */
     public function getSortedGeologicalLayers()
     {
-        if (null != $this->geologicalLayers){
+        if (null !== $this->geologicalLayers){
 
             $criteria = Criteria::create()->orderBy(array("order" => Criteria::ASC));
             $layers = $this->geologicalLayers->matching($criteria);
@@ -138,7 +138,7 @@ class SoilModel extends AbstractModel
      * @return bool
      */
     public function hasGeologicalLayers(){
-        if (null == $this->getGeologicalLayers() || $this->getGeologicalLayers()->count() == 0) {
+        if (null === $this->getGeologicalLayers() || $this->getGeologicalLayers()->count() == 0) {
             return false;
         }
 

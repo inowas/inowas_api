@@ -100,7 +100,7 @@ class FlopyServiceRunner
                     $this->numberOfParallelCalculations - $runningProcesses
                 );
 
-            if (count($modelsToCalculate) == 0 && $asDaemon == false && $runningProcesses == 0){
+            if (count($modelsToCalculate) == 0 && $asDaemon === false && $runningProcesses == 0){
                 echo sprintf('There are no more jobs in the queue. Leaving...'."\r\n");
                 return;
             }

@@ -78,7 +78,7 @@ class ConstantHeadBoundary extends HeadBoundary
 
         foreach ($activeCells->toArray() as $nRow => $row){
             foreach ($row as $nCol => $value){
-                if ($value == true){
+                if ($value === true){
                     $stressPeriodData[] = ChdStressPeriodData::create(0, $nRow, $nCol, $stressPeriod->getShead(), $stressPeriod->getEhead());
                 }
             }

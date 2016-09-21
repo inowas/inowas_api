@@ -304,7 +304,7 @@ class ModFlowModel extends AbstractModel
         /** @var BoundaryInterface $boundary */
         foreach ($this->boundaries as $boundary) {
 
-            if ($boundary->getStressPeriods() == null || $boundary->getStressPeriods()->count() == 0) {
+            if ($boundary->getStressPeriods() === null || $boundary->getStressPeriods()->count() == 0) {
                 continue;
             }
 

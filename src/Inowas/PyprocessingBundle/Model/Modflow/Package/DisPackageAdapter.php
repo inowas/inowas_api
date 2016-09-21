@@ -83,7 +83,7 @@ class DisPackageAdapter
 
         $deltaX = $this->model->getBoundingBox()->getDXInMeters();
 
-        if ($deltaX == null){
+        if ($deltaX === null){
             return null;
         }
 
@@ -116,7 +116,7 @@ class DisPackageAdapter
 
         $deltaY = $this->model->getBoundingBox()->getDYInMeters();
 
-        if ($deltaY == null){
+        if ($deltaY === null){
             return null;
         }
 
@@ -204,7 +204,7 @@ class DisPackageAdapter
 
         $stressPeriods = $this->model->getStressPeriods();
 
-        if ($stressPeriods == null){
+        if ($stressPeriods === null){
             return null;
         }
 
@@ -229,7 +229,7 @@ class DisPackageAdapter
 
         $stressPeriods = $this->model->getStressPeriods();
 
-        if ($stressPeriods == null){
+        if ($stressPeriods === null){
             return null;
         }
 
@@ -254,7 +254,7 @@ class DisPackageAdapter
 
         $stressPeriods = $this->model->getStressPeriods();
 
-        if ($stressPeriods == null){
+        if ($stressPeriods === null){
             return null;
         }
 
@@ -279,7 +279,7 @@ class DisPackageAdapter
 
         $stressPeriods = $this->model->getStressPeriods();
 
-        if ($stressPeriods == null){
+        if ($stressPeriods === null){
             return null;
         }
 
@@ -376,7 +376,7 @@ class DisPackageAdapter
         /** @var ArrayCollection $stressPeriods */
         $stressPeriods = $this->model->getStressPeriods();
 
-        if ($stressPeriods == null){
+        if ($stressPeriods === null){
             return null;
         }
 

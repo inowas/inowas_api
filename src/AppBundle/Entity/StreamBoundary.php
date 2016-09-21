@@ -189,7 +189,7 @@ class StreamBoundary extends BoundaryModelObject
 
         foreach ($activeCells->toArray() as $nRow => $row){
             foreach ($row as $nCol => $value){
-                if ($value == true){
+                if ($value === true){
                     $stressPeriodData[] = RivStressPeriodData::create(0, $nRow, $nCol, $stressPeriod->getStage(), $stressPeriod->getCond(), $stressPeriod->getRbot());
                 }
             }
