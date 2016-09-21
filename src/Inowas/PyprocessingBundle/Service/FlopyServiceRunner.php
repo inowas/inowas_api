@@ -67,24 +67,7 @@ class FlopyServiceRunner
                 }
 
                 if (! $process->isRunning()){
-                    $modflowCalculation = $this->entityManager->getRepository('AppBundle:ModflowCalculation')
-                        ->findOneBy(array(
-                            'processId' => $process->getId()
-                        ));
-                    $modflowCalculation->setDateTimeEnd(new \DateTime());
-
-                    if ($process->getProcess()->isSuccessful()){
-                        $modflowCalculation->setState(ModflowCalculation::STATE_FINISHED_SUCCESSFUL);
-                        $modflowCalculation->setOutput($modflowCalculation->getOutput().$process->getProcess()->getOutput());
-                        echo sprintf("Process end:\r\n Message: \r\n %s", $process->getProcess()->getOutput());
-                    } else {
-                        $modflowCalculation->setState(ModflowCalculation::STATE_FINISHED_WITH_ERRORS);
-                        $modflowCalculation->setOutput($modflowCalculation->getOutput().$process->getProcess()->getErrorOutput());
-                        echo sprintf("Process ended up with error:\r\n ErrorMessage: \r\n %s", $process->getProcess()->getErrorOutput());
-                    }
-
-                    $this->entityManager->persist($modflowCalculation);
-                    $this->entityManager->flush();
+                    $this->treatFinishedProcess($process);
                     $this->removeProcess($process);
                 }
             }
@@ -146,6 +129,30 @@ class FlopyServiceRunner
     private function addProcess(PythonProcess $process)
     {
         $this->processes->add($process);
+    }
+
+    private function treatFinishedProcess(PythonProcess $process, $andFlush = true){
+        $modflowCalculation = $this->entityManager->getRepository('AppBundle:ModflowCalculation')
+            ->findOneBy(array(
+                'processId' => $process->getId()
+            ));
+        $modflowCalculation->setDateTimeEnd(new \DateTime());
+
+        if ($process->getProcess()->isSuccessful()){
+            $modflowCalculation->setState(ModflowCalculation::STATE_FINISHED_SUCCESSFUL);
+            $modflowCalculation->setOutput($modflowCalculation->getOutput().$process->getProcess()->getOutput());
+            echo sprintf("Process end:\r\n Message: \r\n %s", $process->getProcess()->getOutput());
+        } else {
+            $modflowCalculation->setState(ModflowCalculation::STATE_FINISHED_WITH_ERRORS);
+            $modflowCalculation->setOutput($modflowCalculation->getOutput().$process->getProcess()->getErrorOutput());
+            echo sprintf("Process ended up with error:\r\n ErrorMessage: \r\n %s", $process->getProcess()->getErrorOutput());
+        }
+
+        $this->entityManager->persist($modflowCalculation);
+
+        if ($andFlush){
+            $this->entityManager->flush();
+        }
     }
 
     private function removeProcess(PythonProcess $process)
