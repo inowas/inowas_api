@@ -15,7 +15,7 @@ use JMS\Serializer\Annotation as JMS;
 /**
  * @ORM\Entity()
  */
-class GeneralHeadBoundary extends BoundaryModelObject
+class GeneralHeadBoundary extends HeadBoundary
 {
     /**
      * @var string
@@ -29,14 +29,14 @@ class GeneralHeadBoundary extends BoundaryModelObject
      *
      * @ORM\Column(name="geometry", type="linestring", nullable=true)
      */
-    private $geometry;
+    protected $geometry;
 
     /**
      * @var ArrayCollection
      *
      * @ORM\Column(name="stress_periods", type="ghb_stress_periods", nullable=true)
      */
-    private $stressPeriods;
+    protected $stressPeriods;
     
     /**
      * @var ArrayCollection GeologicalLayer
@@ -50,101 +50,6 @@ class GeneralHeadBoundary extends BoundaryModelObject
      * @JMS\MaxDepth(2)
      **/
     protected $geologicalLayers;
-
-    /**
-     * Boundary constructor.
-     * @param User $owner
-     * @param bool $public
-     */
-    public function __construct(User $owner = null, $public = false)
-    {
-        parent::__construct($owner, $public);
-        $this->geologicalLayers = new ArrayCollection();
-        $this->stressPeriods = new ArrayCollection();
-    }
-
-/**
-     * @return LineString
-     */
-    public function getGeometry()
-    {
-        return $this->geometry;
-    }
-
-    /**
-     * @param LineString $geometry
-     * @return $this
-     */
-    public function setGeometry(LineString $geometry)
-    {
-        $this->geometry = $geometry;
-        return $this;
-    }
-
-    /**
-     * Add geologicalLayer
-     *
-     * @param GeologicalLayer $geologicalLayer
-     * @return $this
-     */
-    public function addGeologicalLayer(GeologicalLayer $geologicalLayer)
-    {
-        if (!$this->geologicalLayers->contains($geologicalLayer)){
-            $this->geologicalLayers[] = $geologicalLayer;
-        }
-        return $this;
-    }
-
-    /**
-     * @param GeologicalLayer $geologicalLayer
-     * @return $this
-     */
-    public function removeGeologicalLayer(GeologicalLayer $geologicalLayer)
-    {
-        if ($this->geologicalLayers->contains($geologicalLayer)){
-            $this->geologicalLayers->removeElement($geologicalLayer);
-        }
-        return $this;
-    }
-
-    /**
-     * Get geologicalLayers
-     *
-     * @return \Doctrine\Common\Collections\Collection
-     */
-    public function getGeologicalLayers()
-    {
-        return $this->geologicalLayers;
-    }
-
-
-    /**
-     * @JMS\VirtualProperty
-     * @JMS\SerializedName("geometry")
-     * @JMS\Groups({"modelobjectdetails"})
-     *
-     * @return string
-     */
-    public function serializeDeserializeGeometry()
-    {
-        $geometry = null;
-
-        if (!is_null($this->geometry))
-        {
-            $geometry = $this->geometry->toArray();
-            $geometry["type"] = $this->geometry->getType();
-            $geometry["srid"] = $this->geometry->getSrid();
-        }
-        return $geometry;
-    }
-
-    /**
-     * @return ArrayCollection
-     */
-    public function getStressPeriods()
-    {
-        return $this->stressPeriods;
-    }
 
     /**
      * @param GhbStressPeriod $sp
