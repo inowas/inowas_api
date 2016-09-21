@@ -79,7 +79,7 @@ class FlopyServiceRunner
                         echo sprintf("Process end:\r\n Message: \r\n %s", $process->getProcess()->getOutput());
                     } else {
                         $modflowCalculation->setState(ModflowCalculation::STATE_FINISHED_WITH_ERRORS);
-                        $modflowCalculation->setErrorOutput($modflowCalculation->getOutput().$process->getProcess()->getErrorOutput());
+                        $modflowCalculation->setOutput($modflowCalculation->getOutput().$process->getProcess()->getErrorOutput());
                         echo sprintf("Process ended up with error:\r\n ErrorMessage: \r\n %s", $process->getProcess()->getErrorOutput());
                     }
 

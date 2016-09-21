@@ -969,8 +969,7 @@ class ModelRestController extends FOSRestController
         /** @var ModFlowModel $model */
         $model = $this->findModelById($id);
 
-        if ($contentType == 'summary')
-        {
+        if ($contentType == 'summary') {
             $area = $model->getArea();
             if (!$area) {
                 throw $this->createNotFoundException('Area not found.');
@@ -1029,10 +1028,10 @@ class ModelRestController extends FOSRestController
                 $calculation = $calculations[0];
             }
 
-            $twig = $this->get('twig');
-            $html = $twig->render('inowas/model/modflow/calculation.html.twig', array(
+            $twig = $this->get('templating');
+            $html = $twig->renderResponse(':inowas/model/modflow:calculation.html.twig', array(
                 'calculation' => $calculation
-            ));
+            ))->getContent();
 
             $result['html'] = $html;
 

@@ -1,0 +1,22 @@
+calculation:
+    message:
+        test: "Calculation added to queue."
+        0: "Calculation added to queue."
+        1: "The calculation is running."
+        11: "Calculation has finished with success."
+        12: "Calculation has finished with errors."
+    button:
+        0: "The calculation starts soon."
+        1: "Calculation is running."
+        11: "Run calculation"
+        12: "Run calculation"
+    button_class:
+        0: "disabled"
+        1: "disabled"
+        11: "btn_calculation"
+        12: "btn_calculation"
+
+state: 'test'
+
+
+

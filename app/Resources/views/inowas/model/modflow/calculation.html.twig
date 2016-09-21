@@ -1,39 +1,30 @@
-{% set state = calculation.state %}
-
-<div class="row">
-    <div class="col-sm-4" style="height: 300px;">
-        <h2>Calculation</h2>
-        {% if calculation is null %}
+{% trans_default_domain "inowas" %}
+{% if calculation is null %}
+    <div class="row">
+        <div class="col-sm-4" style="height: 300px;">
             <p>Please calculate</p>
             <button type="button" class="btn btn-success btn-block btn_calculation top-margin-40">Run calculation</button>
-        {% else %}
+        </div>
+
+        <div class="col-sm-8 log">
+            <p id="log" class="small"></p>
+        </div>
+    </div>
+{% else %}
+    <div class="row">
+        <div class="col-sm-4" style="height: 300px;">
             <p class="addedtoqueue">{{ calculation.getDateTimeAddToQueue | date }}</p>
             <h3>State</h3>
-            {% if state == 0 %}
-                <p>Calculation added to queue.</p>
-                <button type="button" class="btn btn-success btn-block disabled top-margin-40">The calculation starts soon.</button>
-            {% elseif state == 1 %}
-                <p>Calculation is running</p>
-                <button type="button" class="btn btn-success btn-block disabled top-margin-40">The calculation is running.</button>
-            {% elseif state == 11 %}
-                <p>Calculation has finished with success.</p>
-                <button type="button" class="btn btn-success btn-block btn_calculation top-margin-40">Run calculation</button>
-            {% elseif state == 12 %}
-                <p>Calculation has finished with errors.</p>
-                <button type="button" class="btn btn-success btn-block btn_calculation top-margin-40">Run calculation</button>
-            {% endif %}
-        {% endif %}
-    </div>
+            <p>{{ ('calculation.message.' ~ calculation.state) | trans }}</p>
+            <button type="button" class="btn btn-success btn-block {{ ('calculation.button_class.' ~ calculation.state) | trans }} top-margin-40">
+                {{ ('calculation.button.' ~ calculation.state) | trans }}
+            </button>
+        </div>
 
-    <div class="col-sm-8 log">
-        <p id="log" class="small">
-            {% if calculation %}
-                {% if state == 12 %}
-                    {{ calculation.getErrorOutput | nl2br}}
-                {% else %}
-                    {{ calculation.getOutput | nl2br }}
-                {% endif %}
-            {% endif %}
-        </p>
+        <div class="col-sm-8 log">
+            <p id="log" class="small">
+                {{ calculation.getOutput | nl2br }}
+            </p>
+        </div>
     </div>
-</div>
+{% endif %}
