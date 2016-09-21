@@ -134,11 +134,12 @@ class FlopyServiceRunner
 
                 $modelCalculation->setOutput($modelCalculation->getOutput().sprintf("Calculation started at %s...\r\n", (new \DateTime('now'))->format('Y-m-d H:i:s')));
                 $this->entityManager->persist($modelCalculation);
-                $this->entityManager->flush();
 
                 $process->getProcess()->start();
                 $this->addProcess($process);
             }
+
+            $this->entityManager->flush();
         }
     }
 
