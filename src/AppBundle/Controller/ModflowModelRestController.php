@@ -148,7 +148,6 @@ class ModflowModelRestController extends FOSRestController
      *
      * @param Request $request
      * @return View
-     * @todo make the code testable
      */
     public function postModflowmodelAction(Request $request){
 
@@ -168,30 +167,29 @@ class ModflowModelRestController extends FOSRestController
         }
         $model->setSoilModel($soilModel);
 
-        $area = AreaFactory::create()
+        $model->setArea(AreaFactory::create()
             ->setName("")
-            ->setGeometry(new Polygon(json_decode($data['area']['geoJSON'])->geometry->coordinates, 4326))
-        ;
+            ->setGeometry(new Polygon(json_decode($data['area']['geoJSON'])->geometry->coordinates, 4326)));
 
-        $model->setArea($area);
-        $model->setBoundingBox($this->get('inowas.geotools')->getBoundingBoxFromPolygon($area->getGeometry()));
+        $model->setBoundingBox(
+            $this->get('inowas.geotools')->getBoundingBoxFromPolygon(
+                $model->getArea()->getGeometry()
+            ));
 
         $this->getDoctrine()->getManager()->persist($model);
         $this->getDoctrine()->getManager()->flush();
 
         $activeCells = $this->get('inowas.geotools')->getActiveCells($model->getArea(), $model->getBoundingBox(), $model->getGridSize());
         $model->setActiveCells($activeCells);
-
-        $this->getDoctrine()->getManager()->persist($model);
         $this->getDoctrine()->getManager()->flush();
-
-        $serializationContext = SerializationContext::create();
-        $serializationContext->setGroups('modeldetails');
 
         $view = View::create();
         $view->setData($model)
             ->setStatusCode(200)
-            ->setSerializationContext($serializationContext)
+            ->setSerializationContext(
+                SerializationContext::create()
+                    ->setGroups('modeldetails')
+            )
         ;
 
         return $view;
