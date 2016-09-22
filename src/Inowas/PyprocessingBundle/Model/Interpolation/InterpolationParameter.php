@@ -77,7 +77,7 @@ class InterpolationParameter implements \JsonSerializable
     /**
      * @return mixed
      */
-    function jsonSerialize()
+    public function jsonSerialize()
     {
         return array(
             'type' => $this->type,

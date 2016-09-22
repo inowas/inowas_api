@@ -70,7 +70,7 @@ class PointValue implements \JsonSerializable
     /**
      * @return mixed
      */
-    function jsonSerialize()
+    public function jsonSerialize()
     {
         return array(
             'x' => $this->point->getX(),

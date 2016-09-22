@@ -217,7 +217,7 @@ class WellBoundary extends BoundaryModelObject
     /**
      *
      */
-    function __clone()
+    public function __clone()
     {
         $this->id = Uuid::uuid4();
     }

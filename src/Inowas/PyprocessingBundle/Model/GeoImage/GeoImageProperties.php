@@ -95,7 +95,7 @@ class GeoImageProperties implements \JsonSerializable
     /**
      * @return mixed
      */
-    function jsonSerialize()
+    public function jsonSerialize()
     {
         return array(
             'bounding_box' => $this->boundingBox,

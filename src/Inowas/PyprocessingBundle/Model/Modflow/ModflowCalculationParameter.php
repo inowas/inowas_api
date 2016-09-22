@@ -23,7 +23,7 @@ class ModflowCalculationParameter implements ModflowParameterInterface
         $this->baseUrl = $baseUrl;
     }
 
-    function jsonSerialize()
+    public function jsonSerialize()
     {
         return array(
             'model_id' => $this->modelId,

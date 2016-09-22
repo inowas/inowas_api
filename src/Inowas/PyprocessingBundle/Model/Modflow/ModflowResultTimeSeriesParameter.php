@@ -67,7 +67,7 @@ class ModflowResultTimeSeriesParameter implements ModflowParameterInterface
         $this->operation = $operation;
     }
 
-    function jsonSerialize()
+    public function jsonSerialize()
     {
         return array(
             'model_id' => $this->modelId,

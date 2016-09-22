@@ -59,7 +59,7 @@ class ModflowResultRasterParameter implements ModflowParameterInterface
     /**
      * @return mixed
      */
-    function jsonSerialize()
+    public function jsonSerialize()
     {
         return array(
             "model_id" => $this->modelId,

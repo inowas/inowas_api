@@ -33,7 +33,7 @@ class Point extends \CrEOF\Spatial\PHP\Types\Geometry\Point implements \JsonSeri
     /**
      * @return mixed
      */
-    function jsonSerialize()
+    public function jsonSerialize()
     {
         return array(
             'x' => $this->x,

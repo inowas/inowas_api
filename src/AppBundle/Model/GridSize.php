@@ -81,7 +81,7 @@ class GridSize implements \JsonSerializable
     /**
      * @return mixed
      */
-    function jsonSerialize()
+    public function jsonSerialize()
     {
         return array(
             'n_x' => $this->getNX(),
