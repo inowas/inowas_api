@@ -3,7 +3,6 @@
 namespace AppBundle\Model;
 
 use AppBundle\Entity\GeologicalLayer;
-use FOS\UserBundle\Model\UserInterface;
 
 class GeologicalLayerFactory
 {

@@ -9,7 +9,6 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
 use Inowas\PyprocessingBundle\Exception\InvalidArgumentException;
 use Inowas\PyprocessingBundle\Model\Modflow\ValueObject\RchStressPeriod;
-use Inowas\PyprocessingBundle\Model\Modflow\ValueObject\RchStressPeriodData;
 use JMS\Serializer\Annotation as JMS;
 
 /**

@@ -2,11 +2,9 @@
 
 namespace AppBundle\Type;
 
-use AppBundle\Model\StressPeriodFactory;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Doctrine\DBAL\Types\JsonArrayType;
-use Inowas\PyprocessingBundle\Model\Modflow\ValueObject\RivStressPeriod;
 use Inowas\PyprocessingBundle\Model\Modflow\ValueObject\WelStressPeriod;
 
 /**

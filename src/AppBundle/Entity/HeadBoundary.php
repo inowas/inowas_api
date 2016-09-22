@@ -4,7 +4,6 @@ namespace AppBundle\Entity;
 
 use CrEOF\Spatial\PHP\Types\Geometry\LineString;
 use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\ORM\Mapping as ORM;
 use JMS\Serializer\Annotation as JMS;
 
 abstract class HeadBoundary extends BoundaryModelObject

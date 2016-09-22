@@ -5,7 +5,6 @@ namespace Inowas\PyprocessingBundle\Model\Interpolation;
 use AppBundle\Model\BoundingBox;
 use AppBundle\Model\GridSize;
 use Doctrine\Common\Collections\ArrayCollection;
-use JMS\Serializer\Annotation as JMS;
 
 class InterpolationParameter implements \JsonSerializable
 {

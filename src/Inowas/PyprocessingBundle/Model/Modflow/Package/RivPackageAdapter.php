@@ -3,10 +3,7 @@
 namespace Inowas\PyprocessingBundle\Model\Modflow\Package;
 
 use AppBundle\Entity\ModFlowModel;
-use AppBundle\Entity\PropertyTimeValue;
 use AppBundle\Entity\StreamBoundary;
-use AppBundle\Model\PropertyType;
-use Inowas\PyprocessingBundle\Model\Modflow\ValueObject\RivStressPeriodData;
 
 class RivPackageAdapter
 {

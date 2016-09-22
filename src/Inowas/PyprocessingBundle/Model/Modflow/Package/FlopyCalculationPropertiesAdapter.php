@@ -8,7 +8,6 @@ use AppBundle\Entity\ModFlowModel;
 use AppBundle\Entity\RechargeBoundary;
 use AppBundle\Entity\StreamBoundary;
 use AppBundle\Entity\WellBoundary;
-use Symfony\Component\Validator\Constraints as Assert;
 
 class FlopyCalculationPropertiesAdapter
 {

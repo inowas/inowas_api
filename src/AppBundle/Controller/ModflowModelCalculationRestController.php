@@ -3,7 +3,6 @@
 namespace AppBundle\Controller;
 
 use AppBundle\Entity\ModelScenario;
-use AppBundle\Entity\ModflowCalculation;
 use AppBundle\Entity\ModFlowModel;
 use Inowas\PyprocessingBundle\Model\Modflow\Package\FlopyCalculationPropertiesFactory;
 use Inowas\PyprocessingBundle\Service\Flopy;

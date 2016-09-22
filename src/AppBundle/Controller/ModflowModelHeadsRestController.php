@@ -3,27 +3,14 @@
 namespace AppBundle\Controller;
 
 use AppBundle\Entity\ModelScenario;
-use AppBundle\Entity\ModflowCalculation;
 use AppBundle\Entity\ModFlowModel;
-use AppBundle\Entity\User;
-use AppBundle\Model\ActiveCells;
-use AppBundle\Model\AreaFactory;
-use AppBundle\Model\GeologicalLayerFactory;
-use AppBundle\Model\GridSize;
-use AppBundle\Model\ModFlowModelFactory;
-use AppBundle\Model\SoilModelFactory;
-use CrEOF\Spatial\PHP\Types\Geometry\Polygon;
 use FOS\RestBundle\Controller\Annotations\RequestParam;
 use FOS\RestBundle\Controller\Annotations\QueryParam;
 use FOS\RestBundle\Controller\FOSRestController;
 use FOS\RestBundle\Request\ParamFetcher;
 use FOS\RestBundle\View\View;
-use JMS\Serializer\SerializationContext;
 use Nelmio\ApiDocBundle\Annotation\ApiDoc;
 use Ramsey\Uuid\Uuid;
-use Symfony\Component\HttpFoundation\File\Exception\AccessDeniedException;
-use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\Response;
 
 class ModflowModelHeadsRestController extends FOSRestController
 {
