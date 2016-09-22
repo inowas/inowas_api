@@ -19,5 +19,4 @@ class FeatureCollection
     {
         $this->features[] = $feature;
     }
-
 }

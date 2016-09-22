@@ -57,8 +57,8 @@ class Flopy1DArray extends FlopyArray implements FlopyArrayInterface
     public static function fromArray($valueArray){
         $instance = new self();
 
-        if ($instance->count_dimension($valueArray) !== 1){
-            throw new InvalidArgumentException(sprintf('Value is supposed to be a 1D-array value. Value with %s Dimensions given.', $instance->count_dimension($valueArray)));
+        if ($instance->countDimension($valueArray) !== 1){
+            throw new InvalidArgumentException(sprintf('Value is supposed to be a 1D-array value. Value with %s Dimensions given.', $instance->countDimension($valueArray)));
         }
 
         $instance->length = count($valueArray);
@@ -74,17 +74,17 @@ class Flopy1DArray extends FlopyArray implements FlopyArrayInterface
     public static function fromValue($value, $nCol = 0){
         $instance = new self();
 
-        if ($instance->count_dimension($value) == 0){
+        if ($instance->countDimension($value) == 0){
             return $instance->fromNumeric($value, $nCol);
         }
 
-        if ($instance->count_dimension($value) == 1){
+        if ($instance->countDimension($value) == 1){
             return $instance->fromArray($value);
         }
 
         throw new InvalidArgumentException(sprintf(
             'Value is supposed to be a 0D or 1D-array value. Value with %s Dimensions given.',
-            $instance->count_dimension($value))
+            $instance->countDimension($value))
         );
     }
 

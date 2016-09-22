@@ -13,7 +13,7 @@ abstract class FlopyArray implements FlopyArrayInterface
      * @param $array
      * @return int
      */
-    protected function count_dimension($array) {
+    protected function countDimension($array) {
         if(is_array($array)) {
             foreach ($array as $aKey => $aValue) {
                 if (is_array($aValue)) {
@@ -35,7 +35,7 @@ abstract class FlopyArray implements FlopyArrayInterface
      * @return array
      */
     protected function reduceArray(array $arr){
-        if ($this->count_dimension($arr) == 1){
+        if ($this->countDimension($arr) == 1){
             if (count(array_unique($arr)) == 1){
                 return array_unique($arr)[0];
             }

@@ -12,5 +12,4 @@ interface PackageFactoryInterface
      * @return mixed
      */
     public function create(ModFlowModel $model);
-
 }

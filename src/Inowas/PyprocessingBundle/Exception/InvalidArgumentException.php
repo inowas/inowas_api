@@ -8,3 +8,4 @@ namespace Inowas\PyprocessingBundle\Exception;
 class InvalidArgumentException extends \InvalidArgumentException
 {
 }
+

@@ -47,10 +47,10 @@ class Flopy2DArray extends FlopyArray implements FlopyArrayInterface
     public static function from1DArray($value, $nx){
         $instance = new self();
 
-        if ($instance->count_dimension($value) !== 1){
+        if ($instance->countDimension($value) !== 1){
             throw new InvalidArgumentException(sprintf(
                 'Value is supposed to be a 1D-array value. Value with %s Dimensions given.',
-                $instance->count_dimension($value))
+                $instance->countDimension($value))
             );
         }
 
@@ -77,10 +77,10 @@ class Flopy2DArray extends FlopyArray implements FlopyArrayInterface
 
         $instance = new self();
 
-        if ($instance->count_dimension($value) !== 2){
+        if ($instance->countDimension($value) !== 2){
             throw new InvalidArgumentException(sprintf(
                 'Value is supposed to be a 2D-array value. Value with %s Dimensions given.',
-                $instance->count_dimension($value))
+                $instance->countDimension($value))
             );
         }
 
@@ -111,21 +111,21 @@ class Flopy2DArray extends FlopyArray implements FlopyArrayInterface
     {
         $instance = new self();
 
-        if ($instance->count_dimension($value) == 0) {
+        if ($instance->countDimension($value) == 0) {
             return $instance->fromNumeric($value, $nRow, $nCol);
         }
 
-        if ($instance->count_dimension($value) == 1) {
+        if ($instance->countDimension($value) == 1) {
             return $instance->from1DArray($value, $nRow);
         }
 
-        if ($instance->count_dimension($value) == 2) {
+        if ($instance->countDimension($value) == 2) {
             return $instance->from2DArray($value);
         }
 
         throw new InvalidArgumentException(sprintf(
             'Value is supposed to have max. 2 Dimensions. Value with %s Dimensions given.',
-            $instance->count_dimension($value))
+            $instance->countDimension($value))
         );
     }
 
@@ -136,7 +136,7 @@ class Flopy2DArray extends FlopyArray implements FlopyArrayInterface
 
         $value = $this->value;
 
-        if ($this->count_dimension($value) == 2){
+        if ($this->countDimension($value) == 2){
             foreach ($value as $key => $row){
                 if (is_array($row)){
                     if (count(array_unique($row)) == 1){
@@ -145,24 +145,24 @@ class Flopy2DArray extends FlopyArray implements FlopyArrayInterface
                 }
             }
 
-            if ($this->count_dimension($value) == 2){
+            if ($this->countDimension($value) == 2){
                 return $this->value;
             }
         }
 
-        if ($this->count_dimension($value) == 1){
+        if ($this->countDimension($value) == 1){
             if (is_array($value)){
                 if (count(array_unique($value)) == 1){
                     $value = array_unique($value)[0];
                 }
             }
 
-            if ($this->count_dimension($value) == 1){
+            if ($this->countDimension($value) == 1){
                 return $value;
             }
         }
 
-        if ($this->count_dimension($value) == 0){
+        if ($this->countDimension($value) == 0){
             return $value;
         }
 
@@ -176,11 +176,11 @@ class Flopy2DArray extends FlopyArray implements FlopyArrayInterface
     {
         $value = $this->value;
 
-        if ($this->count_dimension($value) == 2){
+        if ($this->countDimension($value) == 2){
             return $value;
         }
 
-        if ($this->count_dimension($value) == 1){
+        if ($this->countDimension($value) == 1){
             foreach ($value as $key => $val){
                 $row = array_pad(array(), $this->nx, $val);
                 $value[$key] = $row;
@@ -189,7 +189,7 @@ class Flopy2DArray extends FlopyArray implements FlopyArrayInterface
             return $value;
         }
 
-        if ($this->count_dimension($value) == 0){
+        if ($this->countDimension($value) == 0){
             $val = array();
             for ($i=0; $i<$this->ny; $i++){
                 $row = array_pad(array(), $this->nx, $value);

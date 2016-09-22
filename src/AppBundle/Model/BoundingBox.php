@@ -199,6 +199,4 @@ class BoundingBox implements \JsonSerializable
             'srid' => $this->srid
         );
     }
-
-
 }

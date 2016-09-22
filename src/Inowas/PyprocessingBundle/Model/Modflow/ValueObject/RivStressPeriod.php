@@ -112,6 +112,4 @@ class RivStressPeriod extends StressPeriod
 
         return $arr;
     }
-
-
 }

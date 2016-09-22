@@ -16,5 +16,4 @@ class GeneralHeadBoundaryFactory
     {
         return new GeneralHeadBoundary();
     }
-
 }

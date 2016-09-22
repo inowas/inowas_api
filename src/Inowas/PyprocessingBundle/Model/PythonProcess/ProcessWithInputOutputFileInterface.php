@@ -9,5 +9,4 @@ interface ProcessWithInputOutputFileInterface extends PythonProcessConfiguration
      * @param InputOutputFileInterface $configurationFileCreator
      */
     public function __construct(InputOutputFileInterface $configurationFileCreator);
-    
 }

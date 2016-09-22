@@ -88,7 +88,4 @@ class RivPackageAdapter
     {
         return 18;
     }
-
-
-
 }

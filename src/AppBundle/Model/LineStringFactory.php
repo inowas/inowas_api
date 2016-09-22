@@ -18,5 +18,4 @@ class LineStringFactory
 
         return new LineString($points, 4326);
     }
-
 }

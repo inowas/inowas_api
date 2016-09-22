@@ -16,5 +16,4 @@ class GeologicalPointFactory
     {
         return new GeologicalPoint();
     }
-
 }

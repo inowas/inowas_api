@@ -80,7 +80,4 @@ class GhbPackageAdapter
     {
         return 23;
     }
-
-
-
 }

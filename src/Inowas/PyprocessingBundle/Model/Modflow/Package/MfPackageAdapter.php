@@ -105,5 +105,4 @@ class MfPackageAdapter
     {
         return 0;
     }
-
 }

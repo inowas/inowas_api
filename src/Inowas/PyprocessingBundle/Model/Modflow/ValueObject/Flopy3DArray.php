@@ -53,10 +53,10 @@ class Flopy3DArray extends FlopyArray implements FlopyArrayInterface, \JsonSeria
     public static function from1DArray($value, $ny, $nx){
         $instance = new self();
 
-        if ($instance->count_dimension($value) !== 1){
+        if ($instance->countDimension($value) !== 1){
             throw new InvalidArgumentException(sprintf(
                 'Value is supposed to be a 1D-array value. Value with %s Dimensions given.',
-                $instance->count_dimension($value))
+                $instance->countDimension($value))
             );
         }
 
@@ -85,10 +85,10 @@ class Flopy3DArray extends FlopyArray implements FlopyArrayInterface, \JsonSeria
 
         $instance = new self();
 
-        if ($instance->count_dimension($value) !== 2){
+        if ($instance->countDimension($value) !== 2){
             throw new InvalidArgumentException(sprintf(
                 'Value is supposed to be a 2D-array value. Value with %s Dimensions given.',
-                $instance->count_dimension($value))
+                $instance->countDimension($value))
             );
         }
 
@@ -117,10 +117,10 @@ class Flopy3DArray extends FlopyArray implements FlopyArrayInterface, \JsonSeria
 
         $instance = new self();
 
-        if ($instance->count_dimension($value) !== 3){
+        if ($instance->countDimension($value) !== 3){
             throw new InvalidArgumentException(sprintf(
                 'Value is supposed to be a 2D-array value. Value with %s Dimensions given.',
-                $instance->count_dimension($value))
+                $instance->countDimension($value))
             );
         }
 
@@ -156,25 +156,25 @@ class Flopy3DArray extends FlopyArray implements FlopyArrayInterface, \JsonSeria
 
         $instance = new self();
 
-        if ($instance->count_dimension($value) == 0){
+        if ($instance->countDimension($value) == 0){
             return $instance->fromNumeric($value, $nLay, $nRow, $nCol);
         }
 
-        if ($instance->count_dimension($value) == 1){
+        if ($instance->countDimension($value) == 1){
             return $instance->from1DArray($value, $nRow, $nCol);
         }
 
-        if ($instance->count_dimension($value) == 2){
+        if ($instance->countDimension($value) == 2){
             return $instance->from2DArray($value, $nCol);
         }
 
-        if ($instance->count_dimension($value) == 3){
+        if ($instance->countDimension($value) == 3){
             return $instance->from3DArray($value);
         }
 
         throw new InvalidArgumentException(sprintf(
             'Value is supposed to have max. 3 Dimensions. Value with %s Dimensions given.',
-            $instance->count_dimension($value))
+            $instance->countDimension($value))
         );
     }
 
@@ -187,7 +187,7 @@ class Flopy3DArray extends FlopyArray implements FlopyArrayInterface, \JsonSeria
 
         $value = $this->value;
 
-        if ($this->count_dimension($value) == 3){
+        if ($this->countDimension($value) == 3){
             foreach ($value as $lKey => $layer){
                 foreach ($layer as $rKey => $row){
                     if (is_array($row)){
@@ -208,7 +208,7 @@ class Flopy3DArray extends FlopyArray implements FlopyArrayInterface, \JsonSeria
             return $value;
         }
 
-        if ($this->count_dimension($value) == 2){
+        if ($this->countDimension($value) == 2){
             foreach ($value as $lKey => $layer){
                 $value[$lKey] = $this->reduceArray($value[$lKey]);
             }
@@ -216,11 +216,11 @@ class Flopy3DArray extends FlopyArray implements FlopyArrayInterface, \JsonSeria
             return $value;
         }
 
-        if ($this->count_dimension($value) == 1){
+        if ($this->countDimension($value) == 1){
             return $this->reduceArray($value);
         }
 
-        if ($this->count_dimension($value) == 0){
+        if ($this->countDimension($value) == 0){
             return $value;
         }
 
@@ -234,7 +234,7 @@ class Flopy3DArray extends FlopyArray implements FlopyArrayInterface, \JsonSeria
     {
         $value = $this->value;
 
-        if ($this->count_dimension($value) == 3){
+        if ($this->countDimension($value) == 3){
             foreach ($value as $lKey => $lValue){
                 foreach ($lValue as $rKey => $rValue){
                     if (count($rValue) == 1){
@@ -245,7 +245,7 @@ class Flopy3DArray extends FlopyArray implements FlopyArrayInterface, \JsonSeria
             return $value;
         }
 
-        if ($this->count_dimension($value) == 2){
+        if ($this->countDimension($value) == 2){
             foreach ($value as $lKey => $lValue){
                 foreach ($lValue as $rKey => $rValue){
                     $value[$lKey][$rKey] = array_pad(array(), $this->nx, $rValue);
@@ -255,7 +255,7 @@ class Flopy3DArray extends FlopyArray implements FlopyArrayInterface, \JsonSeria
             return $value;
         }
 
-        if ($this->count_dimension($value) == 1){
+        if ($this->countDimension($value) == 1){
 
             foreach ($value as $key => $val){
                 $value[$key] = array();
@@ -267,7 +267,7 @@ class Flopy3DArray extends FlopyArray implements FlopyArrayInterface, \JsonSeria
             return $value;
         }
 
-        if ($this->count_dimension($value) == 0){
+        if ($this->countDimension($value) == 0){
             $val = array();
 
             for ($iz=0; $iz<$this->nz; $iz++){

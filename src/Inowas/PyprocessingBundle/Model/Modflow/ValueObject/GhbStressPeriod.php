@@ -79,6 +79,4 @@ class GhbStressPeriod extends StressPeriod
 
         return $arr;
     }
-
-
 }

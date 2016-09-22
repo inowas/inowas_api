@@ -16,5 +16,4 @@ class GeologicalLayerFactory
     {
         return new GeologicalLayer();
     }
-    
 }

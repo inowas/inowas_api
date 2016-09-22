@@ -26,5 +26,4 @@ class Feature
     {
         $this->geometry = $geometry;
     }
-
 }

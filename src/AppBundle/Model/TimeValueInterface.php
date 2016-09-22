@@ -5,5 +5,4 @@ namespace AppBundle\Model;
 
 interface TimeValueInterface
 {
-
 }

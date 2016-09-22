@@ -88,6 +88,4 @@ class GridSize implements \JsonSerializable
             'n_y' => $this->getNY()
         );
     }
-
-
 }

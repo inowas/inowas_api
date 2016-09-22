@@ -200,6 +200,4 @@ class TokenAuthenticator extends AbstractGuardAuthenticator
 
         return new JsonResponse($data, 401);
     }
-
-
 }

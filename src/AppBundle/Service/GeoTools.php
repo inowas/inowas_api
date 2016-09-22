@@ -282,5 +282,4 @@ class GeoTools
 
         return $query->getSingleScalarResult();
     }
-
 }
