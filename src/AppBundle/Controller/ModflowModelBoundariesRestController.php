@@ -268,7 +268,7 @@ class ModflowModelBoundariesRestController extends FOSRestController
 
                 $newWell = clone $well;
 
-                $latLng = LatLng::fromObject(json_decode($request->request->get('latLng')));
+                $latLng = LatLng::fromJson($request->request->get('latLng'));
 
                 $newWell->setGeometry(PointFactory::fromLatLng($latLng));
                 $this->getDoctrine()->getManager()->persist($newWell);
@@ -325,7 +325,7 @@ class ModflowModelBoundariesRestController extends FOSRestController
         }
 
         if ($request->request->has('latLng')){
-            $latLng = LatLng::fromObject(json_decode($request->request->get('latLng')));
+            $latLng = LatLng::fromJson($request->request->get('latLng'));
             $well->setGeometry(PointFactory::fromLatLng($latLng));
             $this->getDoctrine()->getManager()->persist($well);
             $this->getDoctrine()->getManager()->flush();

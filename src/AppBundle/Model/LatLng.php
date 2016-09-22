@@ -14,7 +14,9 @@ class LatLng
 
     private function __construct(){}
 
-    public static function fromObject($latLng){
+    public static function fromJson($json){
+
+        $latLng = json_decode($json);
 
         if (!isset($latLng->lat)){
             throw new InvalidArgumentException('Given parameter has no property lat.');

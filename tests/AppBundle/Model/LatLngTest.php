@@ -13,27 +13,27 @@ class LatLngTest extends \PHPUnit_Framework_TestCase
     }
 
     public function testCreateObjectFromObjectWithPropertiesLatAndLng(){
-        $latLngObj = json_decode('{"lat": 2.1, "lng": 3.1}');
-        $latLng = LatLng::fromObject($latLngObj);
+        $json = '{"lat": 2.1, "lng": 3.1}';
+        $latLng = LatLng::fromJson($json);
         $this->assertInstanceOf(LatLng::class, $latLng);
     }
 
     public function testGetters(){
-        $latLngObj = json_decode('{"lat": 2.1, "lng": 3.1}');
-        $latLng = LatLng::fromObject($latLngObj);
+        $json = '{"lat": 2.1, "lng": 3.1}';
+        $latLng = LatLng::fromJson($json);
         $this->assertEquals(3.1, $latLng->getLng());
         $this->assertEquals(2.1, $latLng->getLat());
     }
 
-    public function testThrowsExceptionIfObjectHasNoPropertyLat(){
-        $latLngObj = json_decode('{"l": 2.1, "lng": 3.1}');
+    public function testThrowsExceptionIfJsonObjectHasNoPropertyLat(){
+        $json = '{"l": 2.1, "lng": 3.1}';
         $this->setExpectedException(InvalidArgumentException::class);
-        LatLng::fromObject($latLngObj);
+        LatLng::fromJson($json);
     }
 
-    public function testThrowsExceptionIfObjectHasNoPropertyLng(){
-        $latLngObj = json_decode('{"lat": 2.1, "l": 3.1}');
+    public function testThrowsExceptionIfJsonObjectHasNoPropertyLng(){
+        $json = '{"lat": 2.1, "l": 3.1}';
         $this->setExpectedException(InvalidArgumentException::class);
-        LatLng::fromObject($latLngObj);
+        LatLng::fromJson($json);
     }
 }
