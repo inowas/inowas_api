@@ -112,7 +112,6 @@ class AreaRestControllerTest extends RestControllerTestCase
         $this->assertEquals(2, count($modelAreas));
     }
 
-
     public function testAreaListWithUnknownUserReturns404()
     {
         $client = static::createClient();

@@ -8,9 +8,15 @@ use Inowas\PyprocessingBundle\Model\Modflow\ValueObject\StressPeriodOutputContro
 class OcPackageAdapter
 {
 
-    /** @var  ModFlowModel $model */
-    private $model;
+    /**
+     * @var ModFlowModel $model
+     */
+    protected $model;
 
+    /**
+     * OcPackageAdapter constructor.
+     * @param ModFlowModel $model
+     */
     public function __construct(ModFlowModel $model)
     {
         $this->model = $model;

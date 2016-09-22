@@ -90,10 +90,9 @@ class Flopy
 
     /**
      * @param string $kernelRootDir
-     * @param bool $asDeamon
      * @return int
      */
-    public function startAsyncFlopyProcessRunner(string $kernelRootDir, bool $asDeamon = false){
+    public function startAsyncFlopyProcessRunner(string $kernelRootDir){
         $process = ProcessBuilder::create()
             ->setWorkingDirectory($kernelRootDir)
             ->setPrefix('/usr/bin/php')

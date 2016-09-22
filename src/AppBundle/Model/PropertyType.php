@@ -3,7 +3,6 @@
 namespace AppBundle\Model;
 
 use AppBundle\Exception\InvalidArgumentException;
-use Doctrine\ORM\Mapping as ORM;
 use JMS\Serializer\Annotation as JMS;
 
 /**
@@ -37,7 +36,7 @@ class PropertyType
     const RIVER_STAGE = 'rs';
     const RIVERBED_CONDUCTANCE = 'rbc';
 
-    private $availablePropertyTypes = array(
+    protected $availablePropertyTypes = array(
         self::KX => array("Hydraulic Conductivity in x-Direction", self::STATIC_VALUE_ONLY),
         self::KY => array("Hydraulic Conductivity in y-Direction", self::STATIC_VALUE_ONLY),
         self::KZ => array("Hydraulic Conductivity in z-Direction", self::STATIC_VALUE_ONLY),
@@ -101,13 +100,19 @@ class PropertyType
         if (array_key_exists($abbreviation, $instance->availablePropertyTypes)){
             $instance->description = $instance->availablePropertyTypes[$abbreviation][0];
             $instance->valueType = $instance->availablePropertyTypes[$abbreviation][1];
-            return $instance;
         }
+
+        return $instance;
     }
 
     /**
-     * Get abbreviation
-     *
+     * @return array
+     */
+    public function getAvailablePropertyTypes(){
+        return $this->availablePropertyTypes;
+    }
+
+    /**
      * @return string
      */
     public function getAbbreviation()

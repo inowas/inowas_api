@@ -156,7 +156,7 @@ class ModelController extends Controller
     public function modelsModflowScenariosResultsAction($id)
     {
 
-        if (! $uuid = Uuid::isValid($id)) {
+        if (! Uuid::isValid($id)) {
             return $this->redirectToRoute('modflow_model_list');
         }
 

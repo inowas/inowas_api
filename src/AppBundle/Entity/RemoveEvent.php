@@ -17,4 +17,12 @@ class RemoveEvent extends AbstractEvent
         parent::__construct();
         $this->modelObject = $modelObject;
     }
+
+    /**
+     * @return ModelObject
+     */
+    public function getElement()
+    {
+        return $this->modelObject;
+    }
 }

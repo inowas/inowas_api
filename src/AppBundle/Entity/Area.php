@@ -28,13 +28,6 @@ class Area extends ModelObject
     private $geometry;
 
     /**
-     * @var array
-     *
-     * @JMS\Type("array")
-     */
-    private $rings;
-
-    /**
      * @var string
      *
      * @ORM\Column(name="area_type", type="string", nullable=true)
@@ -64,8 +57,6 @@ class Area extends ModelObject
     public function setGeometry(Polygon $geometry)
     {
         $this->geometry = $geometry;
-        $this->rings = $geometry->toArray();
-
         return $this;
     }
 

@@ -63,8 +63,40 @@ class IBound implements \JsonSerializable
     /**
      * @return array
      */
-    function jsonSerialize()
+    public function jsonSerialize()
     {
         return $this->toArray();
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getNx()
+    {
+        return $this->nx;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getNy()
+    {
+        return $this->ny;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getNz()
+    {
+        return $this->nz;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getValue()
+    {
+        return $this->value;
     }
 }
