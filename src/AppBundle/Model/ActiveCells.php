@@ -71,7 +71,7 @@ class ActiveCells
     public static function fromJSON($json){
         $decodedJson = json_decode($json);
 
-        if ($decodedJson == null){
+        if ($decodedJson === null){
             throw new InvalidArgumentException(sprintf(
                 'Argument is supposed to be a valid JSON-String, %s given.',
                 $json
