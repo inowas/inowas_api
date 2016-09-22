@@ -6,8 +6,8 @@ class PointFactory
 {
     private final function __construct(){}
 
-    public static function fromLatLng($latLng){
-        $point = new Point($latLng->lng, $latLng->lat, 4326);
+    public static function fromLatLng(LatLng $latLng){
+        $point = new Point($latLng->getLng(), $latLng->getLng(), 4326);
         return $point;
     }
 }

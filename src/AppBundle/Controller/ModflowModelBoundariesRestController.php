@@ -12,6 +12,7 @@ use AppBundle\Entity\User;
 use AppBundle\Entity\WellBoundary;
 use AppBundle\Model\ActiveCells;
 use AppBundle\Model\EventFactory;
+use AppBundle\Model\LatLng;
 use AppBundle\Model\LineStringFactory;
 use AppBundle\Model\PointFactory;
 use FOS\RestBundle\Controller\FOSRestController;
@@ -266,7 +267,10 @@ class ModflowModelBoundariesRestController extends FOSRestController
             if ($request->request->has('latLng')) {
 
                 $newWell = clone $well;
-                $newWell->setGeometry(PointFactory::fromLatLng(json_decode($request->request->get('latLng'))));
+
+                $latLng = LatLng::fromObject(json_decode($request->request->get('latLng')));
+
+                $newWell->setGeometry(PointFactory::fromLatLng($latLng));
                 $this->getDoctrine()->getManager()->persist($newWell);
                 $this->getDoctrine()->getManager()->flush();
 
@@ -321,7 +325,8 @@ class ModflowModelBoundariesRestController extends FOSRestController
         }
 
         if ($request->request->has('latLng')){
-            $well->setGeometry(PointFactory::fromLatLng(json_decode($request->request->get('latLng'))));
+            $latLng = LatLng::fromObject(json_decode($request->request->get('latLng')));
+            $well->setGeometry(PointFactory::fromLatLng($latLng));
             $this->getDoctrine()->getManager()->persist($well);
             $this->getDoctrine()->getManager()->flush();
 
