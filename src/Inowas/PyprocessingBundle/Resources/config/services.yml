@@ -27,4 +27,3 @@ services:
     inowas.geoimage:
         class: Inowas\PyprocessingBundle\Service\GeoImage
         arguments: ['@kernel', '@inowas.process.configurationfilecreatorfactory']
-        
