@@ -266,18 +266,18 @@ class GeoTools
         );
     }
 
-    private function isActive($mo, $srid, $xmin, $xmax, $ymin, $ymax){
+    private function isActive(ModelObject $mo, int $srid, float $xMin, float $xMax, float $yMin, float $yMax){
 
         /** @var ModelObject $mo $className */
         $className = $mo->getNameOfClass();
         $query = $this->entityManager
-            ->createQuery(sprintf('SELECT ST_Intersects(ST_Envelope(ST_Makeline(ST_SetSRID(ST_POINT(:xmin, :ymin), :srid), ST_SetSRID(ST_POINT(:xmax, :ymax), :srid))), ST_Transform(a.geometry, :srid)) FROM %s a WHERE a.id = :id', $className))
+            ->createQuery(sprintf('SELECT ST_Intersects(ST_Envelope(ST_Makeline(ST_SetSRID(ST_POINT(:xMin, :yMin), :srid), ST_SetSRID(ST_POINT(:xMax, :yMax), :srid))), ST_Transform(a.geometry, :srid)) FROM %s a WHERE a.id = :id', $className))
             ->setParameter('id', $mo->getId()->toString())
             ->setParameter('srid', $srid)
-            ->setParameter('xmin', $xmin)
-            ->setParameter('xmax', $xmax)
-            ->setParameter('ymin', $ymin)
-            ->setParameter('ymax', $ymax)
+            ->setParameter('xMin', $xMin)
+            ->setParameter('xMax', $xMax)
+            ->setParameter('yMin', $yMin)
+            ->setParameter('yMax', $yMax)
         ;
 
         return $query->getSingleScalarResult();
