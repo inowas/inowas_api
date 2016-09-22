@@ -231,7 +231,9 @@ class SoilModelRestController extends FOSRestController
 
             $data = array();
             $value = $propertyValue->getValue();
-            for ($y = 0; $y < $model->getGridSize()->getNY(); $y++) {
+
+            $ny = $model->getGridSize()->getNY();
+            for ($y = 0; $y < $ny; $y++) {
                 $data[] = array_fill(0, $model->getGridSize()->getNX(), $value);
             }
 

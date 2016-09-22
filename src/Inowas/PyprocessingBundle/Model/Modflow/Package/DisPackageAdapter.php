@@ -189,7 +189,8 @@ class DisPackageAdapter
         $layers = $this->model->getSoilModel()->getSortedGeologicalLayers();
 
         $bottomElevations = array();
-        for ($i=0; $i<count($layers); $i++){
+        $ni = count($layers);
+        for ($i=0; $i<$ni; $i++){
             $bottomElevations[] = $layers[$i]->getBottomElevation();
         }
 
@@ -210,7 +211,8 @@ class DisPackageAdapter
 
         $perlen = array();
 
-        for ($i = 0; $i<count($stressPeriods); $i++){
+        $ni = count($stressPeriods);
+        for ($i = 0; $i<$ni; $i++){
 
             /** @var StressPeriod $sp */
             $sp = $stressPeriods[$i];
@@ -235,7 +237,8 @@ class DisPackageAdapter
 
         $nstp = array();
 
-        for ($i = 0; $i<count($stressPeriods); $i++){
+        $ni = count($stressPeriods);
+        for ($i = 0; $i<$ni; $i++){
 
             /** @var StressPeriod $sp */
             $sp = $stressPeriods[$i];
@@ -260,7 +263,8 @@ class DisPackageAdapter
 
         $tsmult = array();
 
-        for ($i = 0; $i<count($stressPeriods); $i++){
+        $ni = count($stressPeriods);
+        for ($i = 0; $i<$ni; $i++){
 
             /** @var StressPeriod $sp */
             $sp = $stressPeriods[$i];
@@ -285,7 +289,8 @@ class DisPackageAdapter
 
         $steady = array();
 
-        for ($i = 0; $i<count($stressPeriods); $i++){
+        $ni = count($stressPeriods);
+        for ($i = 0; $i<$ni; $i++){
 
             /** @var StressPeriod $sp */
             $sp = $stressPeriods[$i];

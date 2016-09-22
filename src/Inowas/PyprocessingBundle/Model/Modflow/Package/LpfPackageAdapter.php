@@ -128,7 +128,8 @@ class LpfPackageAdapter
         $layers = $this->model->getSoilModel()->getSortedGeologicalLayers();
 
         $hk = array();
-        for ($i=0; $i<count($layers); $i++){
+        $ni = count($layers);
+        for ($i=0; $i<$ni; $i++){
             $hk[] = $layers[$i]->getKx();
         }
 

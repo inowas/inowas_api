@@ -320,7 +320,8 @@ class ModFlowModel extends AbstractModel
 
         $sps = new ArrayCollection();
 
-        for($i=0; $i<count($startDates); $i++) {
+        $ni = count($startDates);
+        for($i=0; $i<$ni; $i++) {
 
             $dateTimeStart = $startDates[$i];
             if ($i != count($startDates)-1) {

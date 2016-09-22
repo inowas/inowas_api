@@ -158,8 +158,11 @@ class Raster
         }
 
         $data = $this->data;
-        for ($yi = 0; $yi<count($data); $yi++){
-            for ($xi = 0; $xi<count($data[0]); $xi++) {
+        $ny = count($data);
+        $nx = count($data[0]);
+
+        for ($yi = 0; $yi<$ny; $yi++){
+            for ($xi = 0; $xi<$nx; $xi++) {
                 if ($filter[$yi][$xi] === false) {
                     $data[$yi][$xi] = self::DEFAULT_NO_DATA_VAL;
                 }

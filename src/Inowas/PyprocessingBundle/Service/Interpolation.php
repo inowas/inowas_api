@@ -51,7 +51,8 @@ class Interpolation
             }
         }
 
-        for ($i = 0; $i < count($algorithms); $i++) {
+        $ni = count($algorithms);
+        for ($i = 0; $i < $ni; $i++) {
             $fileCreator = $this->configurationFileCreatorFactory->create('interpolation');
             $fileCreator->createFiles($algorithms[$i], $interpolationParameter);
 
