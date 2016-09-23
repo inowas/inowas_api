@@ -50,12 +50,12 @@ class GeoTools
         $activeCells = array();
         for ($iy = 0; $iy<$ny; $iy++){
             for ($ix = 0; $ix<$nx; $ix++){
-                $xmin = $boundingBox->getXMin()+$ix*$dx;
-                $xmax = $boundingBox->getXMin()+$ix*$dx+$dx;
-                $ymin = $boundingBox->getYMax()-$iy*$dy;
-                $ymax = $boundingBox->getYMax()-$iy*$dy-$dy;
+                $xMin = $boundingBox->getXMin()+$ix*$dx;
+                $xMax = $boundingBox->getXMin()+$ix*$dx+$dx;
+                $yMin = $boundingBox->getYMax()-$iy*$dy;
+                $yMax = $boundingBox->getYMax()-$iy*$dy-$dy;
 
-                if ($this->isActive($mo, $srid, $xmin, $xmax, $ymin, $ymax)){
+                if ($this->isActive($mo, $srid, $xMin, $xMax, $yMin, $yMax)){
                     $activeCells[$iy][$ix] = true;
                 }
             }
