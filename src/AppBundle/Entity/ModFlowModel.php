@@ -2,6 +2,7 @@
 
 namespace AppBundle\Entity;
 
+use AppBundle\Exception\InvalidArgumentException;
 use AppBundle\Model\ActiveCells;
 use AppBundle\Model\BoundaryInterface;
 use AppBundle\Model\BoundingBox;
@@ -56,14 +57,6 @@ class ModFlowModel extends AbstractModel
      * @JMS\Groups({"details", "modeldetails"})
      **/
     private $area;
-
-    /**
-     * @var ActiveCells
-     *
-     * @ORM\Column(name="active_cells", type="active_cells", nullable=true)
-     * @JMS\Groups({"modelProperties"})
-     */
-    private $activeCells;
 
     /**
      * @var ArrayCollection
@@ -137,11 +130,18 @@ class ModFlowModel extends AbstractModel
     }
 
     /**
+     * @JMS\VirtualProperty
+     * @JMS\SerializedName("active_cells")
+     * @JMS\Groups({"details", "modeldetails", "modelProperties"})
      * @return ActiveCells
      */
     public function getActiveCells()
     {
-        return $this->activeCells;
+        if ($this->area instanceof Area){
+            return $this->area->getActiveCells();
+        }
+
+        return null;
     }
 
     /**
@@ -150,7 +150,11 @@ class ModFlowModel extends AbstractModel
      */
     public function setActiveCells(ActiveCells $activeCells)
     {
-        $this->activeCells = $activeCells;
+        if (! $this->area instanceof Area){
+            throw new InvalidArgumentException('The model needs an area to update activeCells.');
+        }
+
+        $this->area->setActiveCells($activeCells);
         return $this;
     }
 

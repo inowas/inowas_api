@@ -57,6 +57,7 @@ class ModflowModelTest extends \PHPUnit_Framework_TestCase
     }
 
     public function testSetAndGetActiveCells(){
+        $this->modflowModel->setArea(AreaFactory::create());
         $activeCells = ActiveCells::fromArray(array(array(1,2,3), array(1,2,3)));
         $this->modflowModel->setActiveCells($activeCells);
         $this->assertEquals($activeCells, $this->modflowModel->getActiveCells());

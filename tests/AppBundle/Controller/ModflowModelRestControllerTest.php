@@ -129,7 +129,6 @@ class ModflowModelRestControllerTest extends RestControllerTestCase
             ->setPublic(true)
             ->setOwner($this->getOwner())
         );
-
         $this->modFlowModel->addBoundary(ConstantHeadBoundaryFactory::create()
             ->setName('CHB1')
             ->setGeometry(new LineString(
@@ -140,7 +139,6 @@ class ModflowModelRestControllerTest extends RestControllerTestCase
             ->setPublic(true)
             ->setOwner($this->getOwner())
         );
-
         $this->modFlowModel->addBoundary(WellBoundaryFactory::create()
             ->setGeometry(new Point(2, 4, 4326))
             ->setName('Well1')
@@ -148,7 +146,6 @@ class ModflowModelRestControllerTest extends RestControllerTestCase
             ->setPublic(true)
             ->setOwner($this->getOwner())
         );
-
         $this->modFlowModel->addBoundary(StreamBoundaryFactory::create()
             ->setStartingPoint(new Point(10, 11, 3857))
             ->setName('River1')

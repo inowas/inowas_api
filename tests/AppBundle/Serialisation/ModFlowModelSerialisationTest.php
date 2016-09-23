@@ -4,6 +4,7 @@ namespace Tests\AppBundle\Controller;
 
 use AppBundle\Entity\ModFlowModel;
 use AppBundle\Model\ActiveCells;
+use AppBundle\Model\AreaFactory;
 use AppBundle\Model\BoundingBox;
 use AppBundle\Model\GridSize;
 use AppBundle\Model\ModFlowModelFactory;
@@ -28,6 +29,7 @@ class ModflowModelSerialisationTest extends \PHPUnit_Framework_TestCase
         $this->modflowModel = ModFlowModelFactory::create()
             ->setName('ModFlowModel')
             ->setOwner(UserFactory::create())
+            ->setArea(AreaFactory::create())
             ->setActiveCells(ActiveCells::fromArray(
                 array(
                     array(1,2,3),

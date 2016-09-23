@@ -64,6 +64,19 @@ class GeoTools
         return ActiveCells::fromArray($activeCells);
     }
 
+    /**
+     * @param ModelObject $mo
+     * @param BoundingBox $boundingBox
+     * @param GridSize $gridSize
+     * @return ModelObject
+     */
+    public function setActiveCells(ModelObject $mo, BoundingBox $boundingBox, GridSize $gridSize){
+        $activeCells = $this->getActiveCells($mo, $boundingBox, $gridSize);
+        $mo->setActiveCells($activeCells);
+
+        return $mo;
+    }
+
     public function getActiveCellsFromPoint(BoundingBox $bb, GridSize $gz, Point $point){
 
         $result = $this->getGridCellFromPoint($bb, $gz, $point);
@@ -81,30 +94,30 @@ class GeoTools
         $points = $polygon->getRing(0)->toArray();
         $srid = $polygon->getSrid();
 
-        $xmin = $points[0][0];
-        $xmax = $points[0][0];
-        $ymin = $points[0][1];
-        $ymax = $points[0][1];
+        $xMin = $points[0][0];
+        $xMax = $points[0][0];
+        $yMin = $points[0][1];
+        $yMax = $points[0][1];
 
         foreach ($points as $point) {
-            if ($point[0]<$xmin){
-                $xmin=$point[0];
+            if ($point[0]<$xMin){
+                $xMin=$point[0];
             }
 
-            if ($point[0]>$xmax){
-                $xmax=$point[0];
+            if ($point[0]>$xMax){
+                $xMax=$point[0];
             }
 
-            if ($point[1]<$ymin){
-                $ymin=$point[1];
+            if ($point[1]<$yMin){
+                $yMin=$point[1];
             }
 
-            if ($point[1]>$ymax){
-                $ymax=$point[1];
+            if ($point[1]>$yMax){
+                $yMax=$point[1];
             }
         }
 
-        $bb = new BoundingBox($xmin, $xmax, $ymin, $ymax, $srid);
+        $bb = new BoundingBox($xMin, $xMax, $yMin, $yMax, $srid);
 
         return $this->transformBoundingBox($bb, 4326);
     }

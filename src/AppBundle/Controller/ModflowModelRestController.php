@@ -7,10 +7,7 @@ use AppBundle\Entity\ModFlowModel;
 use AppBundle\Entity\User;
 use AppBundle\Model\ActiveCells;
 use AppBundle\Model\AreaFactory;
-use AppBundle\Model\GeologicalLayerFactory;
 use AppBundle\Model\GridSize;
-use AppBundle\Model\ModFlowModelFactory;
-use AppBundle\Model\SoilModelFactory;
 use CrEOF\Spatial\PHP\Types\Geometry\Polygon;
 use FOS\RestBundle\Controller\Annotations\RequestParam;
 use FOS\RestBundle\Controller\Annotations\QueryParam;
@@ -152,35 +149,20 @@ class ModflowModelRestController extends FOSRestController
 
         $data = json_decode($request->request->get('json'), true);
 
-        $model = ModFlowModelFactory::create()
+        $modflowModelManager = $this->get('inowas.modflowmodel.manager');
+        $model = $modflowModelManager->create()
+            ->setOwner($this->getUser())
             ->setName($data['name'])
             ->setDescription($data['description'])
             ->setGridSize(new GridSize($data['grid_size']['cols'], $data['grid_size']['rows']))
-            ;
+            ->setArea(AreaFactory::create()
+                ->setGeometry(new Polygon(json_decode($data['area']['geoJSON'])->geometry->coordinates, 4326))
+            )
+        ;
 
-        $soilModel = SoilModelFactory::create();
-        for ($i = 0; $i < $data['soil_model']['numberOfLayers']; $i++){
-            $soilModel->addGeologicalLayer(GeologicalLayerFactory::create()
-            ->setName('Layer'.($i+1))
-            ->setOrder($i));
-        }
+        $soilModel = $this->get('inowas.soilmodel.manager')->create($data['soil_model']['numberOfLayers']);
         $model->setSoilModel($soilModel);
-
-        $model->setArea(AreaFactory::create()
-            ->setName("")
-            ->setGeometry(new Polygon(json_decode($data['area']['geoJSON'])->geometry->coordinates, 4326)));
-
-        $model->setBoundingBox(
-            $this->get('inowas.geotools')->getBoundingBoxFromPolygon(
-                $model->getArea()->getGeometry()
-            ));
-
-        $this->getDoctrine()->getManager()->persist($model);
-        $this->getDoctrine()->getManager()->flush();
-
-        $activeCells = $this->get('inowas.geotools')->getActiveCells($model->getArea(), $model->getBoundingBox(), $model->getGridSize());
-        $model->setActiveCells($activeCells);
-        $this->getDoctrine()->getManager()->flush();
+        $modflowModelManager->update($model);
 
         $view = View::create();
         $view->setData($model)
@@ -220,8 +202,8 @@ class ModflowModelRestController extends FOSRestController
             $model->setActiveCells(ActiveCells::fromJSON($paramFetcher->get('active_cells')));
         }
 
-        $this->getDoctrine()->getManager()->persist($model);
-        $this->getDoctrine()->getManager()->flush();
+        $modflowModelManager = $this->get('inowas.modflowmodel.manager');
+        $modflowModelManager->persist($model);
 
         $serializationContext = SerializationContext::create();
         $serializationContext->setGroups('modelProperties');
