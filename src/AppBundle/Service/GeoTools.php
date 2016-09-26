@@ -71,6 +71,7 @@ class GeoTools
      * @return ModelObject
      */
     public function setActiveCells(ModelObject $mo, BoundingBox $boundingBox, GridSize $gridSize){
+
         $activeCells = $this->getActiveCells($mo, $boundingBox, $gridSize);
         $mo->setActiveCells($activeCells);
 

@@ -5,7 +5,6 @@ namespace AppBundle\DataFixtures\ORM\Scenarios\Scenario_6_Summer_School;
 use AppBundle\Entity\AddBoundaryEvent;
 use AppBundle\Entity\GeologicalLayer;
 use AppBundle\Model\AreaFactory;
-use AppBundle\Model\BoundingBox;
 use AppBundle\Model\EventFactory;
 use AppBundle\Model\GeneralHeadBoundaryFactory;
 use AppBundle\Model\GeologicalLayerFactory;
@@ -13,7 +12,6 @@ use AppBundle\Model\GeologicalPointFactory;
 use AppBundle\Model\GeologicalUnitFactory;
 use AppBundle\Model\GridSize;
 use AppBundle\Model\ModelScenarioFactory;
-use AppBundle\Model\ModFlowModelFactory;
 use AppBundle\Model\Point;
 use AppBundle\Model\PropertyType;
 use AppBundle\Model\PropertyTypeFactory;
@@ -110,8 +108,10 @@ class LoadScenario_6 implements FixtureInterface, ContainerAwareInterface
         $userManager->updateUser($user);
         $public = true;
 
-        $model = ModFlowModelFactory::create()
-            ->setName("Inowas Rio Primero")
+        $modflowModelManager = $this->container->get('inowas.modflowmodel.manager');
+
+        $model = $modflowModelManager->create();
+        $model->setName("Inowas Rio Primero")
             ->setOwner($user)
             ->setPublic($public)
             ->setArea(AreaFactory::create()
@@ -133,9 +133,6 @@ class LoadScenario_6 implements FixtureInterface, ContainerAwareInterface
                 ->setOwner($user)
             )
             ->setGridSize(new GridSize(75, 40))
-            ->setBoundingBox($geoTools->transformBoundingBox(
-                new BoundingBox(-63.569260, -63.687336, -31.313615, -31.367449, 4326), 4326)
-            )
         ;
 
         $layer_1 = GeologicalLayerFactory::create()
@@ -178,8 +175,7 @@ class LoadScenario_6 implements FixtureInterface, ContainerAwareInterface
             $layer_1->addGeologicalUnit($geologicalUnit);
         }
 
-        $entityManager->persist($model);
-        $entityManager->flush();
+        $modflowModelManager->updateBoundingBox($model);
 
         /** Constant Head West */
         $model->addBoundary(GeneralHeadBoundaryFactory::create()
@@ -409,20 +405,8 @@ class LoadScenario_6 implements FixtureInterface, ContainerAwareInterface
             )
         );
 
-        $entityManager->persist($model);
-        $entityManager->flush();
 
-        $model->setActiveCells($geoTools->getActiveCells($model->getArea(), $model->getBoundingBox(), $model->getGridSize()));
-        foreach ($model->getModelObjects() as $mo){
-            #preg_match('/[^\\]+$/', get_class($mo), $classNames);
-            echo sprintf("Set activeCells for %s %s\r\n",
-                get_class($mo),
-                $mo->getId());
-            $mo->setActiveCells($geoTools->getActiveCells($mo, $model->getBoundingBox(), $model->getGridSize()));
-        }
-
-        $entityManager->persist($model);
-        $entityManager->flush();
+        $modflowModelManager->update($model, true);
 
         /* Interpolation of all layers */
         $soilModelService = $this->container->get('inowas.soilmodel');
@@ -447,7 +431,6 @@ class LoadScenario_6 implements FixtureInterface, ContainerAwareInterface
                 );
             }
         }
-
         foreach ($userList as $item) {
             $item = array_combine($userListHeads, $item);
             $user = $userManager->findUserByUsername($item['username']);

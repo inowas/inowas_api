@@ -507,17 +507,14 @@ class ModFlowModel extends AbstractModel
 
             if ($modelObject instanceof Area) {
                 $this->area = $modelObject;
-                $this->removeModelObject($modelObject);
             }
 
             if ($modelObject instanceof BoundaryModelObject) {
                 $this->boundaries->add($modelObject);
-                $this->removeModelObject($modelObject);
             }
 
             if ($modelObject instanceof ObservationPoint) {
                 $this->observationPoints->add($modelObject);
-                $this->removeModelObject($modelObject);
             }
         }
     }

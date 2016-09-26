@@ -56,8 +56,8 @@ class PropertyTest extends WebTestCase
 
         // Setup
         $this->user = UserFactory::create();
-        $this->user->setUsername('testUser_2');
-        $this->user->setEmail('testUsersEmail');
+        $this->user->setUsername('testUser_2'.rand(1000000, 2000000));
+        $this->user->setEmail('testUsersEmail'.rand(1000000, 2000000));
         $this->user->setPassword('usersPassword');
         $this->user->setEnabled(true);
         $this->entityManager->persist($this->user);

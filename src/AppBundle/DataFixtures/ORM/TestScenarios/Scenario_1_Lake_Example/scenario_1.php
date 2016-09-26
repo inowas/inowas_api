@@ -10,7 +10,6 @@ use AppBundle\Model\ConstantHeadBoundaryFactory;
 use AppBundle\Model\GeologicalLayerFactory;
 use AppBundle\Model\BoundingBox;
 use AppBundle\Model\GridSize;
-use AppBundle\Model\ModFlowModelFactory;
 use AppBundle\Model\PropertyType;
 use AppBundle\Model\PropertyTypeFactory;
 use AppBundle\Model\PropertyValueFactory;
@@ -74,8 +73,10 @@ class LoadTestScenario_1 implements FixtureInterface, ContainerAwareInterface
         $bb->setDXInMeters(400);
         $bb->setDYInMeters(400);
 
+        $modflowModelManager = $this->container->get('inowas.modflowmodel.manager');
+
         /** @var ModFlowModel $model */
-        $model = ModFlowModelFactory::create()
+        $model = $modflowModelManager->create()
             ->setOwner($user)
             ->setPublic($public)
             ->setName('Lake_Example')
@@ -93,7 +94,7 @@ class LoadTestScenario_1 implements FixtureInterface, ContainerAwareInterface
                         array(400, 400),
                         array(400, 0),
                         array(0, 0)
-                    )))))
+                    ))), 4326))
             )
         ;
 
@@ -148,14 +149,13 @@ class LoadTestScenario_1 implements FixtureInterface, ContainerAwareInterface
                     array(201, 201),
                     array(201, 199),
                     array(199, 199)
-                )))
+                ), 4326))
                 ->addValue($propertyTypeGwHead, PropertyValueFactory::create()->setValue(90))
             )
         ;
 
-        $entityManager->persist($model);
-        $entityManager->flush();
-        
+        $modflowModelManager->update($model, false);
+
         return 0;
     }
 }

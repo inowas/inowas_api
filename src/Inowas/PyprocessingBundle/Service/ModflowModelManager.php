@@ -3,13 +3,12 @@
 namespace Inowas\PyprocessingBundle\Service;
 
 use AppBundle\Entity\Area;
-use AppBundle\Entity\BoundaryModelObject;
 use AppBundle\Entity\ModelObject;
 use AppBundle\Entity\ModFlowModel;
 use AppBundle\Model\ModFlowModelFactory;
 use AppBundle\Service\GeoTools;
 use CrEOF\Spatial\PHP\Types\Geometry\Polygon;
-use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\EntityManager;
 use Inowas\PyprocessingBundle\Exception\InvalidArgumentException;
 use Ramsey\Uuid\Uuid;
@@ -70,6 +69,7 @@ class ModflowModelManager
         }
 
         $this->persist($model);
+        $model->postLoad();
         return $model;
     }
 
@@ -79,6 +79,7 @@ class ModflowModelManager
     public function persist(ModFlowModel $model){
         $this->entityManager->persist($model);
         $this->entityManager->flush();
+        $model->postLoad();
     }
 
     /**
@@ -113,7 +114,7 @@ class ModflowModelManager
 
         $this->entityManager->persist($model);
         $this->entityManager->flush();
-
+        $model->postLoad();
         return $model;
     }
 
@@ -124,26 +125,20 @@ class ModflowModelManager
      */
     public function updateActiveCells(ModFlowModel $model, ModelObject $entity = null){
 
-        $area = $model->getArea();
-        if ($area instanceof Area){
-            if (is_null($entity) || $area->getId() == $entity->getId()){
-                $this->geoTools->setActiveCells($model->getArea(), $model->getBoundingBox(), $model->getGridSize());
-            }
-        }
+        $model->preFlush();
+        $modelObjects = $model->getModelObjects();
 
-        $boundaries = $model->getBoundaries();
-        if ($boundaries instanceof ArrayCollection){
-
-            /** @var BoundaryModelObject $boundary */
-            foreach ($boundaries as $boundary){
-                if (is_null($entity) || $boundary->getId() == $entity->getId()){
-                    $this->geoTools->setActiveCells($boundary, $model->getBoundingBox(), $model->getGridSize());
+        if ($modelObjects instanceof Collection) {
+            foreach ($modelObjects as $key => $mo){
+                if (is_null($entity) || $mo->getId() == $entity->getId()){
+                    $this->geoTools->setActiveCells($mo, $model->getBoundingBox(), $model->getGridSize());
                 }
             }
         }
 
         $this->entityManager->persist($model);
         $this->entityManager->flush();
+        $model->postLoad();
 
         return $model;
     }

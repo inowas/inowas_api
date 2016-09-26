@@ -374,26 +374,20 @@ class ModflowModelTest extends \PHPUnit_Framework_TestCase
     public function testPostLoad(){
         $area = AreaFactory::create()->setName('Area');
         $this->modflowModel->addModelObject($area);
-        $this->assertCount(1, $this->modflowModel->getModelObjects());
         $this->modflowModel->postLoad();
         $this->assertEquals($area, $this->modflowModel->getArea());
-        $this->assertCount(0, $this->modflowModel->getModelObjects());
 
         $well = WellBoundaryFactory::create();
         $this->modflowModel->addModelObject($well);
-        $this->assertCount(1, $this->modflowModel->getModelObjects());
         $this->modflowModel->postLoad();
         $this->assertCount(1, $this->modflowModel->getBoundaries());
         $this->assertEquals($well, $this->modflowModel->getBoundaries()->first());
-        $this->assertCount(0, $this->modflowModel->getModelObjects());
 
         $observationPoint = ObservationPointFactory::create();
         $this->modflowModel->addModelObject($observationPoint);
-        $this->assertCount(1, $this->modflowModel->getModelObjects());
         $this->modflowModel->postLoad();
         $this->assertCount(1, $this->modflowModel->getObservationPoints());
         $this->assertEquals($observationPoint, $this->modflowModel->getObservationPoints()->first());
-        $this->assertCount(0, $this->modflowModel->getModelObjects());
     }
 
     protected function tearDown()

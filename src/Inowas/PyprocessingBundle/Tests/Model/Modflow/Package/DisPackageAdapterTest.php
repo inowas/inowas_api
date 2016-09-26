@@ -25,6 +25,7 @@ class DisPackageAdapterTest extends KernelTestCase
     }
 
     public function testInstantiate(){
+        /** @var ModFlowModel $stub */
         $stub = $this->getMockBuilder(ModFlowModel::class)
             ->disableOriginalConstructor()
             ->getMock()
@@ -41,3 +42,4 @@ class DisPackageAdapterTest extends KernelTestCase
     }
 
 }
+

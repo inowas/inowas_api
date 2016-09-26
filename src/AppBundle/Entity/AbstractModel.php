@@ -300,7 +300,7 @@ abstract class AbstractModel
     /**
      * Get modelObjects
      *
-     * @return \Doctrine\Common\Collections\Collection
+     * @return ArrayCollection
      */
     public function getModelObjects()
     {
