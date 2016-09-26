@@ -35,4 +35,13 @@ class SoilModelManager
         }
         return $soilModel;
     }
+
+    /**
+     * @param SoilModel $soilModel
+     */
+    public function update(SoilModel $soilModel)
+    {
+        $this->entityManager->persist($soilModel);
+        $this->entityManager->flush($soilModel);
+    }
 }
