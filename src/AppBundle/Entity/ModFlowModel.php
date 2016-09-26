@@ -86,9 +86,9 @@ class ModFlowModel extends AbstractModel
     private $stressPeriods;
 
     /**
-     * @var array
+     * @var FlopyCalculationProperties
      *
-     * @ORM\Column(name="calculation_properties", type="json_array", nullable=true)
+     * @ORM\Column(name="calculation_properties", type="flopy_calculation_properties", nullable=true)
      */
     private $calculationProperties;
 
@@ -367,7 +367,7 @@ class ModFlowModel extends AbstractModel
      */
     public function setCalculationProperties(FlopyCalculationProperties $calculationProperties)
     {
-        $this->calculationProperties = $calculationProperties->toArray();
+        $this->calculationProperties = $calculationProperties;
         return $this;
     }
 
@@ -376,10 +376,7 @@ class ModFlowModel extends AbstractModel
      */
     public function getCalculationProperties()
     {
-        if (is_null($this->calculationProperties)){
-            return null;
-        }
-        return FlopyCalculationProperties::fromArray($this->calculationProperties);
+        return $this->calculationProperties;
     }
 
     /**

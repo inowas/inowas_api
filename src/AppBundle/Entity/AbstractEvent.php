@@ -13,6 +13,7 @@ use Ramsey\Uuid\Uuid;
  * @ORM\InheritanceType("SINGLE_TABLE")
  * @ORM\DiscriminatorColumn(name="discr", type="string")
  * @ORM\DiscriminatorMap({  "add_bound" = "AddBoundaryEvent",
+ *                          "add_calc" = "AddCalculationPropertiesEvent",
  *                          "change_bound" = "ChangeBoundaryEvent",
  *                          "change_layer" = "ChangeLayerValueEvent",
  *                          "remove" = "RemoveEvent"

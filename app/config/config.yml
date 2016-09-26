@@ -67,6 +67,7 @@ doctrine:
             grid_size:                    AppBundle\Type\GridSizeType
             property_type:                AppBundle\Type\PropertyTypeType
             chd_stress_periods:           AppBundle\Type\ChdStressPeriodsType
+            flopy_calculation_properties: AppBundle\Type\FlopyCalculationPropertiesType
             ghb_stress_periods:           AppBundle\Type\GhbStressPeriodsType
             rch_stress_periods:           AppBundle\Type\RchStressPeriodsType
             riv_stress_periods:           AppBundle\Type\RivStressPeriodsType
