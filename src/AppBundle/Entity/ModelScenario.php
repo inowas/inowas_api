@@ -281,55 +281,35 @@ class ModelScenario
      * @return \AppBundle\Entity\ModFlowModel
      */
     public function getModel(){
-        foreach ($this->events as $event) {
-            $this->applyAddEvents($this->baseModel, $event);
-        }
-
-        foreach ($this->events as $event) {
-            $this->applyChangeEvents($this->baseModel, $event);
+        if ($this->events instanceof ArrayCollection){
+            $this->applyAddEvents($this->baseModel, $this->events);
+            $this->applyChangeEvents($this->baseModel, $this->events);
         }
 
         return $this->baseModel;
     }
 
     /**
- * @param ModFlowModel $model
- * @param AbstractEvent $event
- */
-    private function applyAddEvents(ModFlowModel $model, Event $event){
-        if ($event instanceof AddBoundaryEvent) {
-            if ($event->getBoundary() instanceof BoundaryModelObject){
-                $model->addBoundary($event->getBoundary()->setMutable($event->isMutable()));
+     * @param ModFlowModel $model
+     * @param ArrayCollection $events
+     */
+    private function applyAddEvents(ModFlowModel $model, ArrayCollection $events){
+        foreach ($this->events as $event) {
+            if ($event instanceof AddEvent){
+                $event->applyTo($model);
             }
         }
     }
 
     /**
      * @param ModFlowModel $model
-     * @param AbstractEvent $event
+     * @param ArrayCollection $events
      */
-    private function applyChangeEvents(ModFlowModel $model, Event $event)
+    private function applyChangeEvents(ModFlowModel $model, ArrayCollection $events)
     {
-        if ($event instanceof ChangeBoundaryEvent) {
-            if ($event->getOrigin() instanceof BoundaryModelObject && $event->getNewBoundary() instanceof BoundaryModelObject){
-
-                /** @var BoundaryModelObject $boundary */
-                foreach ($model->getBoundaries()->toArray() as $bKey => $boundary){
-                    if ($boundary->getId() == $event->getOrigin()->getId()){
-                        $model->removeBoundary($boundary);
-                        $model->addBoundary($event->getNewBoundary()->setMutable($event->isMutable()));
-                    }
-                }
-            }
-        }
-
-        if ($event instanceof ChangeLayerValueEvent) {
-            $layer = $event->getLayer();
-            /** @var GeologicalLayer $geologicalLayer */
-            foreach ($model->getSoilModel()->getGeologicalLayers() as $geologicalLayer) {
-                if ($geologicalLayer->getId() == $layer->getId()) {
-                    $geologicalLayer->addValue($event->getPropertyType(), $event->getValue());
-                }
+        foreach ($this->events as $event) {
+            if ($event instanceof ChangeEvent){
+                $event->applyTo($model);
             }
         }
     }

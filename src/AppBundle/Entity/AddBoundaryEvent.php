@@ -7,7 +7,7 @@ use Doctrine\ORM\Mapping as ORM;
 /**
  * @ORM\Entity()
  */
-class AddBoundaryEvent extends AbstractEvent
+class AddBoundaryEvent extends AddEvent
 {
     /**
      * @var ModelObject $boundary
@@ -23,10 +23,18 @@ class AddBoundaryEvent extends AbstractEvent
     }
 
     /**
-     * @return ModelObject
+     * @return BoundaryModelObject
      */
     public function getBoundary()
     {
         return $this->boundary;
+    }
+
+    /**
+     * @param ModFlowModel $model
+     */
+    public function applyTo(ModFlowModel $model)
+    {
+        $model->addBoundary($this->getBoundary()->setMutable($this->isMutable()));
     }
 }

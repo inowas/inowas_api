@@ -2,6 +2,7 @@
 
 namespace AppBundle\Entity;
 
+use AppBundle\Exception\InvalidArgumentException;
 use AppBundle\Model\PropertyType;
 use Doctrine\ORM\Mapping as ORM;
 
@@ -61,5 +62,39 @@ class ChangeLayerValueEvent extends AbstractEvent
     public function getValue()
     {
         return $this->value;
+    }
+
+    /**
+     * @param ModFlowModel $model
+     * @return mixed
+     */
+    public function applyTo(ModFlowModel $model)
+    {
+        if (! $model->hasSoilModel()){
+            throw new InvalidArgumentException('Model has to have a Soilmodel.');
+        }
+
+        $soilModel = $model->getSoilModel();
+
+        if (! $soilModel->hasGeologicalLayers()){
+            throw new InvalidArgumentException('SoilModel has to have a Layers.');
+        }
+
+        $layers = $soilModel->getGeologicalLayers();
+
+        $selectedLayer = null;
+        foreach ($layers as $layer){
+            if ($this->origin->getId() == $layer->getId()){
+                $selectedLayer = $layer;
+            }
+        }
+
+        if (is_null($selectedLayer)){
+            throw new InvalidArgumentException('BaseLayer not found');
+        }
+
+        $selectedLayer->addValue($this->getPropertyType(), $this->getValue());
+
+        return $model;
     }
 }

@@ -8,7 +8,7 @@ use Inowas\PyprocessingBundle\Model\Modflow\Package\FlopyCalculationProperties;
 /**
  * @ORM\Entity()
  */
-class AddCalculationPropertiesEvent extends AbstractEvent
+class AddCalculationPropertiesEvent extends AddEvent
 {
     /**
      * @var FlopyCalculationProperties
@@ -25,9 +25,9 @@ class AddCalculationPropertiesEvent extends AbstractEvent
     }
 
     /**
-     * @return FlopyCalculationProperties
+     * @param ModFlowModel $model
      */
-    public function getCalculationProperties(){
-        return $this->calculationProperties;
+    public function applyTo(ModFlowModel $model){
+        $model->setCalculationProperties($this->calculationProperties);
     }
 }

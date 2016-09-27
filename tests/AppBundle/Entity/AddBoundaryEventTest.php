@@ -4,6 +4,7 @@ namespace Tests\AppBundle\Entity;
 
 use AppBundle\Entity\AddBoundaryEvent;
 use AppBundle\Entity\WellBoundary;
+use AppBundle\Model\ModFlowModelFactory;
 use AppBundle\Model\WellBoundaryFactory;
 
 class AddBoundaryEventTest extends \PHPUnit_Framework_TestCase
@@ -11,29 +12,43 @@ class AddBoundaryEventTest extends \PHPUnit_Framework_TestCase
     /** @var  WellBoundary */
     protected $well;
 
+    /** @var  AddBoundaryEvent $event */
+    protected $event;
+
     /**
      * {@inheritDoc}
      */
     public function setUp()
     {
         $this->well = WellBoundaryFactory::create();
+        $this->event = new AddBoundaryEvent($this->well);
     }
 
     public function testInstantiateChangeLayerValueEvent()
     {
-        $event = new AddBoundaryEvent($this->well);
-        $this->assertInstanceOf('AppBundle\Entity\AddBoundaryEvent', $event);
+        $this->assertInstanceOf(AddBoundaryEvent::class, $this->event);
     }
 
-    public function testGetLayer()
+    public function testGetBoundary()
     {
-        $event = new AddBoundaryEvent($this->well);
-        $this->assertEquals($this->well, $event->getBoundary());
+        $this->assertEquals($this->well, $this->event->getBoundary());
+    }
+
+    public function testApplyToModel()
+    {
+        $model = ModFlowModelFactory::create();
+        $this->assertCount(0, $model->getBoundaries());
+        $this->event->applyTo($model);
+        $this->assertCount(1, $model->getBoundaries());
+        $this->assertEquals($this->well, $model->getBoundaries()->first());
     }
 
     /**
      * {@inheritDoc}
      */
     protected function tearDown()
-    {}
+    {
+        unset($this->well);
+        unset($this->event);
+    }
 }

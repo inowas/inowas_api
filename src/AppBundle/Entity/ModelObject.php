@@ -443,16 +443,17 @@ abstract class ModelObject
 
     /**
      * @param boolean $mutable
-     * @return ModelObject
+     * @return $this
      */
-    public function setMutable(bool $mutable): ModelObject
+    public function setMutable(bool $mutable)
     {
         $this->mutable = $mutable;
         return $this;
     }
 
-
-
+    /**
+     * @return string
+     */
     public function getNameOfClass()
     {
         return static::class;
