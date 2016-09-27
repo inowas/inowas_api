@@ -12,6 +12,10 @@ services:
         class: Inowas\PyprocessingBundle\Service\ModflowModelManager
         arguments: ['@doctrine.orm.entity_manager', '@inowas.geotools']
 
+    inowas.modflowmodelscenario.manager:
+        class: Inowas\PyprocessingBundle\Service\ModflowModelScenarioManager
+        arguments: ['@doctrine.orm.entity_manager']
+
     inowas.soilmodel.manager:
         class: Inowas\PyprocessingBundle\Service\SoilModelManager
         arguments: ['@doctrine.orm.entity_manager']

@@ -2,6 +2,7 @@
 
 namespace Inowas\PyprocessingBundle\Service;
 
+
 use AppBundle\Entity\ModFlowModel;
 use AppBundle\Entity\ModflowModelScenario;
 use AppBundle\Model\ModelScenarioFactory;
@@ -18,17 +19,12 @@ class ModflowModelScenarioManager implements ModflowModelScenarioManagerInterfac
      */
     private $entityManager;
 
-    /** @var  GeoTools $geoTools */
-    private $geoTools;
-
     /**
      * ModflowModelManager constructor.
      * @param EntityManager $entityManager
-     * @param GeoTools $geoTools
      */
-    public function __construct(EntityManager $entityManager, GeoTools $geoTools){
+    public function __construct(EntityManager $entityManager){
         $this->entityManager = $entityManager;
-        $this->geoTools = $geoTools;
     }
 
     /**

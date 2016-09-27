@@ -16,6 +16,7 @@ use AppBundle\Model\GeneralHeadBoundaryFactory;
 use AppBundle\Model\GeologicalLayerFactory;
 use AppBundle\Model\BoundingBox;
 use AppBundle\Model\GridSize;
+use AppBundle\Model\ModelScenarioFactory;
 use AppBundle\Model\ModFlowModelFactory;
 use AppBundle\Model\Point;
 use AppBundle\Model\PropertyFactory;
@@ -672,7 +673,35 @@ class ModflowModelRestControllerTest extends RestControllerTestCase
         $this->assertNull($model);
     }
 
+    public function testDeleteModelScenario(){
 
+        $modelScenario = ModelScenarioFactory::create($this->modFlowModel);
+        $modelScenario->setName('ScenarioName');
+        $modelScenario->setOwner($this->getOwner());
+
+        $this->getEntityManager()->persist($modelScenario);
+        $this->getEntityManager()->flush();
+
+        $client = static::createClient();
+        $client->request(
+            'DELETE',
+            '/api/modflowmodels/'.$modelScenario->getId().'.json',
+            array(),
+            array(),
+            array('HTTP_X-AUTH-TOKEN' => $this->getOwner()->getApiKey())
+        );
+        $this->assertEquals(200, $client->getResponse()->getStatusCode());
+        $this->assertEquals('Success', $client->getResponse()->getContent());
+
+        $model = $this->getEntityManager()->getRepository('AppBundle:ModflowModelScenario')
+            ->findOneBy(
+                array(
+                    'id' => $this->modFlowModel->getId()->toString()
+                )
+            );
+
+        $this->assertNull($model);
+    }
 
     /**
      * {@inheritDoc}

@@ -124,22 +124,23 @@ class ModflowModelRestController extends FOSRestController
             throw new AccessDeniedException('To delete the model you have to be the owner.');
         }
 
-        if ($modelOrScenario->isModelScenario()){
-
+        if ($modelOrScenario instanceof ModFlowModel){
+            $manager = $this->get('inowas.modflowmodel.manager');
+            $manager->remove($modelOrScenario);
+            return new Response('Success');
         }
 
-        $manager = $this->get('inowas.modflowmodel.manager');
+        $manager = $this->get('inowas.modflowmodelscenario.manager');
         $manager->remove($modelOrScenario);
-
         return new Response('Success');
     }
 
     /**
-     * Return the project-information by id.
+     * Creating a new ModflowModel
      *
      * @ApiDoc(
      *   resource = true,
-     *   description = "Return the project-information by id.",
+     *   description = "Returns the details of the new Modflowmodel",
      *   statusCodes = {
      *     200 = "Returned when successful",
      *     404 = "Returned when the user is not found"

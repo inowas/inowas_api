@@ -501,6 +501,14 @@ class ModFlowModel extends AbstractModel implements ModflowModelInterface
     }
 
     /**
+     * @return bool
+     */
+    public function isScenario()
+    {
+        return false;
+    }
+
+    /**
      * @ORM\PreFlush()
      */
     public function preFlush()

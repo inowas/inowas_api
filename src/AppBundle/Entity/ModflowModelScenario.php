@@ -154,6 +154,7 @@ class ModflowModelScenario implements ModflowScenarioInterface
         $this->baseModel = $model;
         $this->dateCreated = new \DateTime();
         $this->dateModified = new \DateTime();
+        $this->public = true;
     }
 
     /**
@@ -386,5 +387,13 @@ class ModflowModelScenario implements ModflowScenarioInterface
     {
         $this->addEvent(new AddCalculationPropertiesEvent($calculationProperties));
         return $this;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isScenario()
+    {
+        return true;
     }
 }
