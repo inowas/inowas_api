@@ -118,14 +118,18 @@ class ModflowModelRestController extends FOSRestController
      */
     public function deleteModflowmodelsAction($id)
     {
-        $model = $this->findModelById($id);
+        $modelOrScenario = $this->findModelOrScenarioById($id);
 
-        if (! $this->getUser() == $model->getOwner()){
+        if (! $this->getUser() == $modelOrScenario->getOwner()){
             throw new AccessDeniedException('To delete the model you have to be the owner.');
         }
 
-        $this->getDoctrine()->getManager()->remove($model);
-        $this->getDoctrine()->getManager()->flush();
+        if ($modelOrScenario->isModelScenario()){
+
+        }
+
+        $manager = $this->get('inowas.modflowmodel.manager');
+        $manager->remove($modelOrScenario);
 
         return new Response('Success');
     }
@@ -480,6 +484,40 @@ class ModflowModelRestController extends FOSRestController
 
         if (!$model) {
             throw $this->createNotFoundException('Model not found.');
+        }
+
+        return $model;
+    }
+
+    /**
+     * @param $id
+     * @return ModFlowModel|ModflowModelScenario
+     */
+    private function findModelOrScenarioById($id)
+    {
+
+        if (!Uuid::isValid($id)){
+            throw $this->createNotFoundException(sprintf('Model or ModelScenario with id: %s not found.'), $id);
+        }
+
+        $scenario = $this->getDoctrine()
+            ->getRepository('AppBundle:ModflowModelScenario')
+            ->findOneBy(array(
+                'id' => $id
+            ));
+
+        if ($scenario instanceof ModflowModelScenario) {
+            return $scenario;
+        }
+
+        $model = $this->getDoctrine()
+            ->getRepository('AppBundle:ModFlowModel')
+            ->findOneBy(array(
+                'id' => $id,
+            ));
+
+        if (!$model) {
+            throw $this->createNotFoundException(sprintf('Model or ModelScenario with id: %s not found.'), $id);
         }
 
         return $model;

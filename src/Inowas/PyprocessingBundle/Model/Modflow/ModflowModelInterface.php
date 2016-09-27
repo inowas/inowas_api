@@ -14,5 +14,4 @@ interface ModflowModelInterface
     public function removeBoundary(BoundaryModelObject $boundary);
 
     public function addCalculationProperties(FlopyCalculationProperties $calculationProperties);
-
 }
