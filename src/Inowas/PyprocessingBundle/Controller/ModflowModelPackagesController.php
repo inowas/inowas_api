@@ -2,7 +2,7 @@
 
 namespace Inowas\PyprocessingBundle\Controller;
 
-use AppBundle\Entity\ModelScenario;
+use AppBundle\Entity\ModflowModelScenario;
 use AppBundle\Entity\ModFlowModel;
 use FOS\RestBundle\Controller\Annotations\Get;
 use FOS\RestBundle\Controller\FOSRestController;
@@ -87,12 +87,12 @@ class ModflowModelPackagesController extends FOSRestController
         }
 
         $scenario = $this->getDoctrine()
-            ->getRepository('AppBundle:ModelScenario')
+            ->getRepository('AppBundle:ModflowModelScenario')
             ->findOneBy(array(
                 'id' => $id
             ));
 
-        if ($scenario instanceof ModelScenario) {
+        if ($scenario instanceof ModflowModelScenario) {
             return $scenario->getModel();
         }
 

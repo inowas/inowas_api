@@ -3,7 +3,7 @@
 namespace AppBundle\Controller;
 
 use AppBundle\Entity\GeologicalLayer;
-use AppBundle\Entity\ModelScenario;
+use AppBundle\Entity\ModflowModelScenario;
 use AppBundle\Entity\ModFlowModel;
 use AppBundle\Entity\PropertyValue;
 use AppBundle\Model\PropertyType;
@@ -291,12 +291,12 @@ class SoilModelRestController extends FOSRestController
         }
 
         $scenario = $this->getDoctrine()
-            ->getRepository('AppBundle:ModelScenario')
+            ->getRepository('AppBundle:ModflowModelScenario')
             ->findOneBy(array(
                 'id' => $id
             ));
 
-        if ($scenario instanceof ModelScenario) {
+        if ($scenario instanceof ModflowModelScenario) {
             return $scenario->getModel();
         }
 

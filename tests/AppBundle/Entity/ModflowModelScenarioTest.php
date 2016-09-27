@@ -2,8 +2,12 @@
 
 namespace Tests\AppBundle\Entity;
 
-use AppBundle\Entity\ModelScenario;
+use AppBundle\Entity\AddBoundaryEvent;
+use AppBundle\Entity\AddCalculationPropertiesEvent;
+use AppBundle\Entity\ChangeBoundaryEvent;
+use AppBundle\Entity\ModflowModelScenario;
 use AppBundle\Entity\ModFlowModel;
+use AppBundle\Entity\RemoveBoundaryEvent;
 use AppBundle\Model\EventFactory;
 use AppBundle\Model\GeologicalLayerFactory;
 use AppBundle\Model\ModelScenarioFactory;
@@ -13,6 +17,8 @@ use AppBundle\Model\PropertyTypeFactory;
 use AppBundle\Model\PropertyValueFactory;
 use AppBundle\Model\SoilModelFactory;
 use AppBundle\Model\WellBoundaryFactory;
+use Inowas\PyprocessingBundle\Model\Modflow\Package\FlopyCalculationPropertiesFactory;
+use Ramsey\Uuid\Uuid;
 
 class ModflowModelScenarioTest extends \PHPUnit_Framework_TestCase
 {
@@ -20,7 +26,7 @@ class ModflowModelScenarioTest extends \PHPUnit_Framework_TestCase
     /** @var  ModFlowModel */
     protected $model;
 
-    /** @var  ModelScenario */
+    /** @var  ModflowModelScenario */
     protected $scenario;
 
     public function setUp()
@@ -31,17 +37,17 @@ class ModflowModelScenarioTest extends \PHPUnit_Framework_TestCase
 
     public function testInstantiate()
     {
-        $this->assertInstanceOf('AppBundle\Entity\ModelScenario', $this->scenario);
-        $this->assertInstanceOf('Ramsey\Uuid\Uuid', $this->scenario->getId());
-        $this->assertInstanceOf('\DateTime', $this->scenario->getDateCreated());
-        $this->assertInstanceOf('\DateTime', $this->scenario->getDateModified());
+        $this->assertInstanceOf(ModflowModelScenario::class, $this->scenario);
+        $this->assertInstanceOf(Uuid::class, $this->scenario->getId());
+        $this->assertInstanceOf(\DateTime::class, $this->scenario->getDateCreated());
+        $this->assertInstanceOf(\DateTime::class, $this->scenario->getDateModified());
         $this->assertEquals($this->model->getId(), $this->scenario->getBaseModel()->getId());
     }
 
     public function testUpdateDateTimeModified()
     {
         $this->scenario->updateDateModified();
-        $this->assertInstanceOf('\DateTime', $this->scenario->getDateModified());
+        $this->assertInstanceOf(\DateTime::class, $this->scenario->getDateModified());
     }
 
     public function testSetGetName()
@@ -81,7 +87,7 @@ class ModflowModelScenarioTest extends \PHPUnit_Framework_TestCase
         $this->assertCount(0, $this->scenario->getEvents());
     }
 
-    public function testGetModelwithAppliedEvents()
+    public function testGetModelWithAppliedEvents()
     {
         $this->model->setSoilModel(SoilModelFactory::create()
             ->setName('SoilModel')
@@ -97,5 +103,47 @@ class ModflowModelScenarioTest extends \PHPUnit_Framework_TestCase
         );
         $this->scenario->addEvent($event);
         $this->assertInstanceOf(ModFlowModel::class, $this->scenario->getModel());
+    }
+
+    public function testIsModelScenario(){
+        $this->assertTrue($this->scenario->isModelScenario());
+    }
+
+    public function testAddBoundaryToScenario(){
+        $boundary = WellBoundaryFactory::createIndustrialWell();
+        $this->assertCount(0, $this->scenario->getEvents());
+        $this->scenario->addBoundary($boundary);
+        $this->assertCount(1, $this->scenario->getEvents());
+        $this->assertInstanceOf(AddBoundaryEvent::class, $this->scenario->getEvents()->first());
+        $this->assertEquals($boundary, $this->scenario->getEvents()->first()->getBoundary());
+    }
+
+    public function testChangeBoundaryOfScenario(){
+        $boundary = WellBoundaryFactory::createIndustrialWell();
+        $newBoundary = WellBoundaryFactory::createPrivateWell();
+        $this->assertCount(0, $this->scenario->getEvents());
+        $this->scenario->changeBoundary($boundary, $newBoundary);
+        $this->assertCount(1, $this->scenario->getEvents());
+        $this->assertInstanceOf(ChangeBoundaryEvent::class, $this->scenario->getEvents()->first());
+        $this->assertEquals($boundary, $this->scenario->getEvents()->first()->getOrigin());
+        $this->assertEquals($newBoundary, $this->scenario->getEvents()->first()->getNewBoundary());
+    }
+
+    public function testRemoveBoundaryFromScenario(){
+        $boundary = WellBoundaryFactory::createIndustrialWell();
+        $this->assertCount(0, $this->scenario->getEvents());
+        $this->scenario->removeBoundary($boundary);
+        $this->assertCount(1, $this->scenario->getEvents());
+        $this->assertInstanceOf(RemoveBoundaryEvent::class, $this->scenario->getEvents()->first());
+        $this->assertEquals($boundary, $this->scenario->getEvents()->first()->getElement());
+    }
+
+    public function testAddCalculationProperties(){
+        $calculationProperties = FlopyCalculationPropertiesFactory::loadFromApiAndRun($this->scenario->getBaseModel());
+        $this->assertCount(0, $this->scenario->getEvents());
+        $this->scenario->addCalculationProperties($calculationProperties);
+        $this->assertCount(1, $this->scenario->getEvents());
+        $this->assertInstanceOf(AddCalculationPropertiesEvent::class, $this->scenario->getEvents()->first());
+        $this->assertEquals($calculationProperties, $this->scenario->getEvents()->first()->getCalculationProperties());
     }
 }

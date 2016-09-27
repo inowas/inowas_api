@@ -25,6 +25,14 @@ class AddCalculationPropertiesEvent extends AddEvent
     }
 
     /**
+     * @return FlopyCalculationProperties
+     */
+    public function getCalculationProperties(): FlopyCalculationProperties
+    {
+        return $this->calculationProperties;
+    }
+
+    /**
      * @param ModFlowModel $model
      */
     public function applyTo(ModFlowModel $model){

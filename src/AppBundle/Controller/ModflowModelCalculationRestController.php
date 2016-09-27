@@ -2,7 +2,7 @@
 
 namespace AppBundle\Controller;
 
-use AppBundle\Entity\ModelScenario;
+use AppBundle\Entity\ModflowModelScenario;
 use AppBundle\Entity\ModFlowModel;
 use Inowas\PyprocessingBundle\Model\Modflow\Package\FlopyCalculationPropertiesFactory;
 use Inowas\PyprocessingBundle\Service\Flopy;
@@ -73,7 +73,7 @@ class ModflowModelCalculationRestController extends FOSRestController
 
         if ($this->isScenario($id))
         {
-            $scenario = $this->getDoctrine()->getRepository('AppBundle:ModelScenario')
+            $scenario = $this->getDoctrine()->getRepository('AppBundle:ModflowModelScenario')
                 ->findOneBy(array(
                     'id' => $id
                 ));
@@ -145,12 +145,12 @@ class ModflowModelCalculationRestController extends FOSRestController
         }
 
         $element = $this->getDoctrine()
-            ->getRepository('AppBundle:ModelScenario')
+            ->getRepository('AppBundle:ModflowModelScenario')
             ->findOneBy(array(
                 'id' => $id
             ));
 
-        if ($element instanceof ModelScenario) {
+        if ($element instanceof ModflowModelScenario) {
             return $element;
         }
 
@@ -179,12 +179,12 @@ class ModflowModelCalculationRestController extends FOSRestController
         }
 
         $scenario = $this->getDoctrine()
-            ->getRepository('AppBundle:ModelScenario')
+            ->getRepository('AppBundle:ModflowModelScenario')
             ->findOneBy(array(
                 'id' => $id
             ));
 
-        if ($scenario instanceof ModelScenario) {
+        if ($scenario instanceof ModflowModelScenario) {
             return $scenario->getModel();
         }
 
@@ -202,7 +202,7 @@ class ModflowModelCalculationRestController extends FOSRestController
     }
 
     private function isScenario($id){
-        return $this->getDoctrine()->getRepository('AppBundle:ModelScenario')
+        return $this->getDoctrine()->getRepository('AppBundle:ModflowModelScenario')
             ->findOneBy(array(
                 'id' => $id
             ));

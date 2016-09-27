@@ -4,7 +4,7 @@ namespace AppBundle\Model;
 
 
 use AppBundle\Entity\AbstractModel;
-use AppBundle\Entity\ModelScenario;
+use AppBundle\Entity\ModflowModelScenario;
 
 class ModelScenarioFactory
 {
@@ -12,10 +12,10 @@ class ModelScenarioFactory
 
     /**
      * @param AbstractModel $model
-     * @return ModelScenario
+     * @return ModflowModelScenario
      */
     public static function create(AbstractModel $model)
     {
-        return new ModelScenario($model);
+        return new ModflowModelScenario($model);
     }
 }

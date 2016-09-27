@@ -27,6 +27,11 @@ class AddCalculationPropertiesEventTest extends \PHPUnit_Framework_TestCase
         $this->assertInstanceOf(AddCalculationPropertiesEvent::class, new AddCalculationPropertiesEvent($this->calculationProperties));
     }
 
+    public function testGetter(){
+        $event = new AddCalculationPropertiesEvent($this->calculationProperties);
+        $this->assertEquals($this->calculationProperties, $event->getCalculationProperties());
+    }
+
     public function testApplyToMethodToModelOverwritesCalculationProperties(){
         $event = new AddCalculationPropertiesEvent($this->calculationProperties);
         $this->assertNull($this->model->getCalculationProperties());

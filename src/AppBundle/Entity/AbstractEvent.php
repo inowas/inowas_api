@@ -17,7 +17,7 @@ use Ramsey\Uuid\Uuid;
  *                          "add_calc" = "AddCalculationPropertiesEvent",
  *                          "change_bound" = "ChangeBoundaryEvent",
  *                          "change_layer" = "ChangeLayerValueEvent",
- *                          "remove" = "RemoveEvent"
+ *                          "remove" = "RemoveBoundaryEvent"
  * })
  */
 abstract class AbstractEvent implements EventInterface

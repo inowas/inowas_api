@@ -5,6 +5,8 @@ namespace AppBundle\Entity;
 use AppBundle\Entity\AbstractEvent as Event;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
+use Inowas\PyprocessingBundle\Model\Modflow\ModflowScenarioInterface;
+use Inowas\PyprocessingBundle\Model\Modflow\Package\FlopyCalculationProperties;
 use JMS\Serializer\Annotation as JMS;
 use Ramsey\Uuid\Uuid;
 use Ramsey\Uuid\UuidInterface;
@@ -16,7 +18,7 @@ use Ramsey\Uuid\UuidInterface;
  * @ORM\Table(name="model_scenarios")
  * @ORM\Entity()
  */
-class ModelScenario
+class ModflowModelScenario implements ModflowScenarioInterface
 {
     /**
      * @var string
@@ -59,9 +61,9 @@ class ModelScenario
 
     /**
      * @param User $owner
-     * @return ModelScenario
+     * @return ModflowModelScenario
      */
-    public function setOwner(User $owner): ModelScenario
+    public function setOwner(User $owner): ModflowModelScenario
     {
         $this->owner = $owner;
         return $this;
@@ -77,9 +79,9 @@ class ModelScenario
 
     /**
      * @param boolean $public
-     * @return ModelScenario
+     * @return ModflowModelScenario
      */
-    public function setPublic(bool $public): ModelScenario
+    public function setPublic(bool $public): ModflowModelScenario
     {
         $this->public = $public;
         return $this;
@@ -174,7 +176,7 @@ class ModelScenario
 
     /**
      * @param string $name
-     * @return ModelScenario
+     * @return ModflowModelScenario
      */
     public function setName($name)
     {
@@ -192,7 +194,7 @@ class ModelScenario
 
     /**
      * @param string $description
-     * @return ModelScenario
+     * @return ModflowModelScenario
      */
     public function setDescription($description)
     {
@@ -228,7 +230,7 @@ class ModelScenario
 
     /**
      * @param array $heads
-     * @return ModelScenario
+     * @return ModflowModelScenario
      */
     public function setHeads(array $heads)
     {
@@ -343,5 +345,46 @@ class ModelScenario
      */
     public function isModelScenario(){
         return true;
+    }
+
+    /**
+     * @param BoundaryModelObject $boundary
+     * @return mixed
+     */
+    public function addBoundary(BoundaryModelObject $boundary)
+    {
+        $this->addEvent(new AddBoundaryEvent($boundary));
+        return $this;
+    }
+
+    /**
+     * @param BoundaryModelObject $origin
+     * @param BoundaryModelObject $newBoundary
+     * @return mixed
+     */
+    public function changeBoundary(BoundaryModelObject $origin, BoundaryModelObject $newBoundary)
+    {
+        $this->addEvent(new ChangeBoundaryEvent($origin, $newBoundary));
+        return $this;
+    }
+
+    /**
+     * @param BoundaryModelObject $boundary
+     * @return mixed
+     */
+    public function removeBoundary(BoundaryModelObject $boundary)
+    {
+        $this->addEvent(new RemoveBoundaryEvent($boundary));
+        return $this;
+    }
+
+    /**
+     * @param FlopyCalculationProperties $calculationProperties
+     * @return mixed
+     */
+    public function addCalculationProperties(FlopyCalculationProperties $calculationProperties)
+    {
+        $this->addEvent(new AddCalculationPropertiesEvent($calculationProperties));
+        return $this;
     }
 }

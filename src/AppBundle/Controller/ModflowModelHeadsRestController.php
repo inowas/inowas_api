@@ -2,7 +2,7 @@
 
 namespace AppBundle\Controller;
 
-use AppBundle\Entity\ModelScenario;
+use AppBundle\Entity\ModflowModelScenario;
 use AppBundle\Entity\ModFlowModel;
 use FOS\RestBundle\Controller\Annotations\RequestParam;
 use FOS\RestBundle\Controller\Annotations\QueryParam;
@@ -44,7 +44,7 @@ class ModflowModelHeadsRestController extends FOSRestController
             $model = $element;
         }
 
-        if ($element instanceof ModelScenario){
+        if ($element instanceof ModflowModelScenario){
             $heads = $element->getHeads();
             $model = $element->getBaseModel();
         }
@@ -122,12 +122,12 @@ class ModflowModelHeadsRestController extends FOSRestController
         }
 
         $element = $this->getDoctrine()
-            ->getRepository('AppBundle:ModelScenario')
+            ->getRepository('AppBundle:ModflowModelScenario')
             ->findOneBy(array(
                 'id' => $id
             ));
 
-        if ($element instanceof ModelScenario) {
+        if ($element instanceof ModflowModelScenario) {
             return $element;
         }
 

@@ -11,9 +11,10 @@ use CrEOF\Spatial\PHP\Types\Geometry\Polygon;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\EntityManager;
 use Inowas\PyprocessingBundle\Exception\InvalidArgumentException;
+use Inowas\PyprocessingBundle\Model\Modflow\ModflowModelManagerInterface;
 use Ramsey\Uuid\Uuid;
 
-class ModflowModelManager
+class ModflowModelManager implements ModflowModelManagerInterface
 {
     /**
      * @var EntityManager $entityManager

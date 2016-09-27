@@ -10,6 +10,7 @@ use AppBundle\Model\GridSize;
 use AppBundle\Model\StressPeriodFactory;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
+use Inowas\PyprocessingBundle\Model\Modflow\ModflowModelInterface;
 use Inowas\PyprocessingBundle\Model\Modflow\Package\FlopyCalculationProperties;
 use JMS\Serializer\Annotation as JMS;
 
@@ -18,7 +19,7 @@ use JMS\Serializer\Annotation as JMS;
  * @ORM\Entity(repositoryClass="AppBundle\Repository\ModFlowModelRepository")
  * @JMS\ExclusionPolicy("none")
  */
-class ModFlowModel extends AbstractModel
+class ModFlowModel extends AbstractModel implements ModflowModelInterface
 {
     /**
      * @var SoilModel $soilModel
@@ -437,9 +438,9 @@ class ModFlowModel extends AbstractModel
     }
 
     /**
-     * @param ModelScenario $scenario
+     * @param ModflowModelScenario $scenario
      */
-    public function registerScenario(ModelScenario $scenario) {
+    public function registerScenario(ModflowModelScenario $scenario) {
         $this->scenarios[] = $scenario;
     }
 
@@ -465,6 +466,37 @@ class ModFlowModel extends AbstractModel
     public function setHeads(array $heads)
     {
         $this->heads = $heads;
+        return $this;
+    }
+
+    /**
+     * @param BoundaryModelObject $origin
+     * @param BoundaryModelObject $newBoundary
+     * @return mixed
+     */
+    public function changeBoundary(BoundaryModelObject $origin, BoundaryModelObject $newBoundary)
+    {
+        if ($this->boundaries instanceof ArrayCollection){
+
+            /** @var BoundaryModelObject $boundary */
+            foreach ($this->boundaries as $boundary){
+                if ($boundary->getId() == $origin->getId()){
+                    $this->boundaries->removeElement($boundary);
+                    $this->boundaries->add($newBoundary);
+                }
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @param FlopyCalculationProperties $calculationProperties
+     * @return mixed
+     */
+    public function addCalculationProperties(FlopyCalculationProperties $calculationProperties)
+    {
+        $this->calculationProperties = $calculationProperties;
         return $this;
     }
 

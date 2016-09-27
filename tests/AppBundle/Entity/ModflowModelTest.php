@@ -371,6 +371,25 @@ class ModflowModelTest extends \PHPUnit_Framework_TestCase
 
     }
 
+    public function testChangeBoundary(){
+        $boundary = WellBoundaryFactory::createIndustrialWell();
+        $newBoundary = WellBoundaryFactory::createNewPublicWell();
+        $this->modflowModel->addBoundary($boundary);
+
+        $this->assertCount(1, $this->modflowModel->getBoundaries());
+        $this->assertEquals($boundary, $this->modflowModel->getBoundaries()->first());
+        $this->modflowModel->changeBoundary($boundary, $newBoundary);
+        $this->assertCount(1, $this->modflowModel->getBoundaries());
+        $this->assertEquals($newBoundary, $this->modflowModel->getBoundaries()->first());
+    }
+
+    public function testAddCalculationProperties(){
+        $this->assertNull($this->modflowModel->getCalculationProperties());
+        $calculationProperties = FlopyCalculationPropertiesFactory::loadFromApiAndRun($this->modflowModel);
+        $this->modflowModel->addCalculationProperties($calculationProperties);
+        $this->assertEquals($calculationProperties, $this->modflowModel->getCalculationProperties());
+    }
+
     public function testPostLoad(){
         $area = AreaFactory::create()->setName('Area');
         $this->modflowModel->addModelObject($area);

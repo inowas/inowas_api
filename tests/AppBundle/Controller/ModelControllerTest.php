@@ -71,6 +71,7 @@ class ModelControllerTest extends WebTestCase
         $client = $this->login($this->user->getUsername(), 'TestPassword');
         $client->followRedirects();
         $client->request('GET', '/models/modflow');
+
         $this->assertEquals(200, $client->getResponse()->getStatusCode());
 
         foreach ($this->models as $model){

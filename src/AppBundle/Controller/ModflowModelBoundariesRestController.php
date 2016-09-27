@@ -5,7 +5,7 @@ namespace AppBundle\Controller;
 use AppBundle\Entity\BoundaryModelObject;
 use AppBundle\Entity\ConstantHeadBoundary;
 use AppBundle\Entity\GeneralHeadBoundary;
-use AppBundle\Entity\ModelScenario;
+use AppBundle\Entity\ModflowModelScenario;
 use AppBundle\Entity\ModFlowModel;
 use AppBundle\Entity\StreamBoundary;
 use AppBundle\Entity\User;
@@ -253,7 +253,7 @@ class ModflowModelBoundariesRestController extends FOSRestController
     public function putModflowmodelWellsAction($modelId, $wellId, Request $request)
     {
         if ($this->isScenario($modelId)) {
-            $scenario = $this->getDoctrine()->getRepository('AppBundle:ModelScenario')
+            $scenario = $this->getDoctrine()->getRepository('AppBundle:ModflowModelScenario')
                 ->findOneBy(array(
                     'id' => $modelId
                 ));
@@ -485,12 +485,12 @@ class ModflowModelBoundariesRestController extends FOSRestController
         }
 
         $scenario = $this->getDoctrine()
-            ->getRepository('AppBundle:ModelScenario')
+            ->getRepository('AppBundle:ModflowModelScenario')
             ->findOneBy(array(
                 'id' => $id
             ));
 
-        if ($scenario instanceof ModelScenario) {
+        if ($scenario instanceof ModflowModelScenario) {
             return $scenario->getModel();
         }
 
@@ -532,7 +532,7 @@ class ModflowModelBoundariesRestController extends FOSRestController
     }
 
     private function isScenario($id){
-        return $this->getDoctrine()->getRepository('AppBundle:ModelScenario')
+        return $this->getDoctrine()->getRepository('AppBundle:ModflowModelScenario')
             ->findOneBy(array(
                 'id' => $id
             ));

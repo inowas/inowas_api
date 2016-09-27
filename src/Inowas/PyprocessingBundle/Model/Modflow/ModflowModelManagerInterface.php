@@ -2,36 +2,13 @@
 
 namespace Inowas\PyprocessingBundle\Model\Modflow;
 
-
 use AppBundle\Entity\ModFlowModel;
 
-interface ModflowModelInterface
+interface ModflowModelManagerInterface extends ModflowManagerInterface
 {
-    /**
-     * @return ModFlowModel
-     */
-    public function create();
+    public function remove(ModFlowModel $model);
 
-    /**
-     * @param $id
-     * @return ModFlowModel
-     */
-    public function findById($id);
-
-    /**
-     * @param ModFlowModel $model
-     * @param bool $calculate
-     * @return ModFlowModel
-     */
     public function update(ModFlowModel $model, $calculate = false);
 
-    /**
-     * @param ModFlowModel $model
-     */
     public function persist(ModFlowModel $model);
-
-    /**
-     * @param ModFlowModel $model
-     */
-    public function remove(ModFlowModel $model);
 }

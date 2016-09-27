@@ -8,7 +8,7 @@ use Doctrine\ORM\Mapping as ORM;
 /**
  * @ORM\Entity()
  */
-class RemoveEvent extends AbstractEvent
+class RemoveBoundaryEvent extends AbstractEvent
 {
     /** @var ModelObject $modelObject */
     private $modelObject;
@@ -35,14 +35,6 @@ class RemoveEvent extends AbstractEvent
     {
         if ($model->getBoundaries() instanceof ArrayCollection){
             $this->applyToArrayCollection($model->getBoundaries(), $this->modelObject);
-        }
-
-        if ($model->getObservationPoints() instanceof ArrayCollection){
-            $this->applyToArrayCollection($model->getObservationPoints(), $this->modelObject);
-        }
-
-        if ($model->getModelObjects() instanceof ArrayCollection){
-            $this->applyToArrayCollection($model->getModelObjects(), $this->modelObject);
         }
 
         return $model;

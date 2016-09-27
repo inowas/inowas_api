@@ -2,7 +2,7 @@
 
 namespace AppBundle\Controller;
 
-use AppBundle\Entity\ModelScenario;
+use AppBundle\Entity\ModflowModelScenario;
 use AppBundle\Entity\ModFlowModel;
 use Ramsey\Uuid\Uuid;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
@@ -33,7 +33,7 @@ class ModelController extends Controller
 
         /** @var ModFlowModel $model */
         foreach ($models as $model) {
-            $scenarios = $this->getDoctrine()->getRepository('AppBundle:ModelScenario')
+            $scenarios = $this->getDoctrine()->getRepository('AppBundle:ModflowModelScenario')
                 ->findBy(array(
                     'baseModel' => $model->getId()->toString(),
                     'owner' => $this->getUser()
@@ -88,7 +88,7 @@ class ModelController extends Controller
             return $this->redirectToRoute('modflow_model_list');
         }
 
-        $scenarios = $this->getDoctrine()->getRepository('AppBundle:ModelScenario')
+        $scenarios = $this->getDoctrine()->getRepository('AppBundle:ModflowModelScenario')
             ->findBy(array(
                 'baseModel' => $model,
                 'owner' => $this->getUser()
@@ -131,7 +131,7 @@ class ModelController extends Controller
             return $this->redirectToRoute('modflow_model_list');
         }
 
-        $scenarios = $this->getDoctrine()->getRepository('AppBundle:ModelScenario')
+        $scenarios = $this->getDoctrine()->getRepository('AppBundle:ModflowModelScenario')
             ->findBy(array(
                 'baseModel' => $model,
                 'owner' => $this->getUser()
@@ -175,7 +175,7 @@ class ModelController extends Controller
             return $this->redirectToRoute('modflow_model_list');
         }
 
-        $scenarios = $this->getDoctrine()->getRepository('AppBundle:ModelScenario')
+        $scenarios = $this->getDoctrine()->getRepository('AppBundle:ModflowModelScenario')
             ->findBy(array(
                 'baseModel' => $model,
                 'owner' => $this->getUser()
@@ -213,14 +213,14 @@ class ModelController extends Controller
             return $this->redirectToRoute('modflow_model_list');
         }
 
-        /** @var ModelScenario $scenario */
-        $scenario = $this->getDoctrine()->getRepository('AppBundle:ModelScenario')
+        /** @var ModflowModelScenario $scenario */
+        $scenario = $this->getDoctrine()->getRepository('AppBundle:ModflowModelScenario')
             ->findOneBy(array(
                 'id' => Uuid::fromString($scenarioId),
                 'baseModel' => Uuid::fromString($modelId)
             ));
 
-        if (!$scenario instanceof ModelScenario){
+        if (!$scenario instanceof ModflowModelScenario){
             return $this->redirectToRoute('modflow_model_list');
         }
         
