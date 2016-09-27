@@ -294,7 +294,7 @@ class ModelScenario
      * @param ArrayCollection $events
      */
     private function applyAddEvents(ModFlowModel $model, ArrayCollection $events){
-        foreach ($this->events as $event) {
+        foreach ($events as $event) {
             if ($event instanceof AddEvent){
                 $event->applyTo($model);
             }
@@ -307,7 +307,7 @@ class ModelScenario
      */
     private function applyChangeEvents(ModFlowModel $model, ArrayCollection $events)
     {
-        foreach ($this->events as $event) {
+        foreach ($events as $event) {
             if ($event instanceof ChangeEvent){
                 $event->applyTo($model);
             }
