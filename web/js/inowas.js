@@ -13,7 +13,6 @@ I.user = {
 I.model = {
     id: null,
     initialized: false,
-    activeCells: null,
     boundingBox: null,
     gridSize: null,
     activeCellsGridLayer: null,
@@ -76,11 +75,9 @@ I.model = {
         that = this;
 
         $.when(
-            $.getJSON( "/api/modflowmodels/"+id+"/properties.json", function ( data ) {
-                that.activeCells = data.active_cells;
+            $.getJSON( "/api/modflowmodels/"+id+".json", function ( data ) {
                 that.boundingBox = data.bounding_box;
                 that.gridSize = data.grid_size;
-                that.loadSummary();
             }),
 
             $.getJSON( "/api/modflowmodels/"+this.id+"/area.json", function ( data ) {
@@ -96,6 +93,8 @@ I.model = {
             })
 
         ).then(function(){
+            that.loadSummary();
+
             that.initialized = true;
             $( ".summary" ).click();
         });
@@ -215,11 +214,12 @@ I.model = {
             map.boxZoom.disable();
             map.keyboard.disable();
 
-            $.getJSON( "/api/modflowmodels/"+I.model.id+"/contents/summary.json", function ( data ) {
-                that.content.summary =  data.html;
-                that.area.polygonJSON = data.geojson;
-                that.createAreaLayer().addTo(map);
-                map.fitBounds(that.createBoundingBoxPolygon(that.boundingBox).getBounds());
+            this.createAreaLayer().addTo(map);
+            map.fitBounds(this.createBoundingBoxPolygon(this.boundingBox).getBounds());
+
+
+            $.get( "/api/modflowmodels/"+I.model.id+".html", function ( data ) {
+                that.content.summary =  data;
                 $(".content_summary").html( that.content.summary );
             });
 
@@ -235,7 +235,7 @@ I.model = {
             var map = this.createBaseMap( 'map-area' );
             var boundingBox = this.createBoundingBoxLayer(this.boundingBox).addTo(map);
             var areaPolygon = L.geoJson($.parseJSON(this.data.area.geojson), this.styles.areaGeometry).addTo(map);
-            var areaActiveCells = this.createAreaActiveCellsLayer(this.activeCells, this.boundingBox, this.gridSize, this.data.area.mutable);
+            var areaActiveCells = this.createAreaActiveCellsLayer(this.data.area.activeCells, this.boundingBox, this.gridSize, this.data.area.mutable);
             map.fitBounds(this.createBoundingBoxPolygon(this.boundingBox).getBounds());
 
             var baseMaps = {};
@@ -396,7 +396,7 @@ I.model = {
         return map;
     },
     createAreaLayer: function() {
-        return L.geoJson(jQuery.parseJSON(this.area.polygonJSON), this.styles.areaGeometry);
+        return L.geoJson(jQuery.parseJSON(this.data.area.geojson), this.styles.areaGeometry);
     },
     createAreaActiveCellsLayer: function (activeCells, boundingBox, gridSize, mutable) {
 

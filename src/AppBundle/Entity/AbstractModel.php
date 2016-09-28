@@ -62,7 +62,7 @@ abstract class AbstractModel
      * @var boolean
      *
      * @ORM\Column(name="public", type="boolean")
-     * @JMS\Groups({"list", "details", "soilmodellist", "soilmodeldetails"})
+     * @JMS\Groups({"list", "modeldetails", "soilmodellist", "soilmodeldetails"})
      */
     protected $public;
 

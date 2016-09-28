@@ -15,7 +15,7 @@ class ActiveCells
 {
     /**
      * @var
-     * @JMS\Groups({"modelProperties", "modelobjectdetails"})
+     * @JMS\Groups({"modelProperties", "modelobjectdetails", "details", "modeldetails", "modelProperties"})
      */
     private $cells;
 

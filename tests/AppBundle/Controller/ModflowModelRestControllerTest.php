@@ -210,7 +210,7 @@ class ModflowModelRestControllerTest extends RestControllerTestCase
         $this->assertEquals(404, $client->getResponse()->getStatusCode());
     }
 
-    public function testGetModelDetailsById()
+    public function testGetModelDetailsJsonById()
     {
         $client = static::createClient();
         $client->request(
@@ -227,18 +227,63 @@ class ModflowModelRestControllerTest extends RestControllerTestCase
         $this->assertEquals($this->modFlowModel->getId(), $modFlowModel->id);
         $this->assertEquals($this->modFlowModel->getName(), $modFlowModel->name);
         $this->assertEquals($this->modFlowModel->getDescription(), $modFlowModel->description);
+        $this->assertObjectHasAttribute('grid_size', $modFlowModel);
+        $this->assertObjectHasAttribute('n_x', $modFlowModel->grid_size);
+        $this->assertEquals(3, $modFlowModel->grid_size->n_x);
+        $this->assertObjectHasAttribute('n_y', $modFlowModel->grid_size);
+        $this->assertEquals(4, $modFlowModel->grid_size->n_y);
+
+        $this->assertObjectHasAttribute('bounding_box', $modFlowModel);
+        $this->assertObjectHasAttribute('x_min', $modFlowModel->bounding_box);
+        $this->assertEquals(1.1, $modFlowModel->bounding_box->x_min);
+        $this->assertObjectHasAttribute('x_max', $modFlowModel->bounding_box);
+        $this->assertEquals(2.2, $modFlowModel->bounding_box->x_max);
+        $this->assertObjectHasAttribute('y_min', $modFlowModel->bounding_box);
+        $this->assertEquals(3.3, $modFlowModel->bounding_box->y_min);
+        $this->assertObjectHasAttribute('y_max', $modFlowModel->bounding_box);
+        $this->assertEquals(4.4, $modFlowModel->bounding_box->y_max);
+        $this->assertObjectHasAttribute('srid', $modFlowModel->bounding_box);
+        $this->assertEquals(4326, $modFlowModel->bounding_box->srid);
+
         $this->assertEquals($this->modFlowModel->getOwner()->getId(), $modFlowModel->owner->id);
         $this->assertEquals($this->modFlowModel->getSoilModel()->getId(), $modFlowModel->soil_model->id);
         $this->assertCount(1, $modFlowModel->soil_model->geological_layers);
         $this->assertEquals($this->modFlowModel->getSoilModel()->getGeologicalLayers()->first()->getId(), $modFlowModel->soil_model->geological_layers[0]->id);
     }
 
-    public function testGetModelDetailsWithInvalidIdReturns404()
+    public function testGetModelDetailsHtmlById()
     {
         $client = static::createClient();
         $client->request(
             'GET',
-            '/api/models/122.json',
+            '/api/modflowmodels/'.$this->modFlowModel->getId().'.html',
+            array(),
+            array(),
+            array('HTTP_X-AUTH-TOKEN' => $this->getOwner()->getApiKey())
+        );
+
+        $this->assertEquals(200, $client->getResponse()->getStatusCode());
+    }
+
+    public function testGetModelDetailsJsonWithInvalidIdReturns404()
+    {
+        $client = static::createClient();
+        $client->request(
+            'GET',
+            '/api/modflowmodels/122.json',
+            array(),
+            array(),
+            array('HTTP_X-AUTH-TOKEN' => $this->getOwner()->getApiKey())
+        );
+        $this->assertEquals(404, $client->getResponse()->getStatusCode());
+    }
+
+    public function testGetModelDetailsHtmlWithInvalidIdReturns404()
+    {
+        $client = static::createClient();
+        $client->request(
+            'GET',
+            '/api/modflowmodels/122.html',
             array(),
             array(),
             array('HTTP_X-AUTH-TOKEN' => $this->getOwner()->getApiKey())
@@ -518,31 +563,99 @@ class ModflowModelRestControllerTest extends RestControllerTestCase
         $this->assertEquals($this->modFlowModel->getBoundingBox()->getSrid(), $properties->bounding_box->srid);
     }
 
-    /**
-     * Test for the API-POST-Call /api/modflowmodels.json
-     * @todo make some more asserts
-     */
-    public function testPostModflowModel(){
+    public function testPostModflowModelWithValues(){
         $client = static::createClient();
         $client->request(
             'POST',
             '/api/modflowmodels.json',
-            array('json' => '{"area":{"geoJSON":"{\"type\":\"Feature\",\"properties\":{},\"geometry\":{\"type\":\"Polygon\",\"coordinates\":[[[12.564239501953123,41.72213058512578],[13.119049072265625,41.90840946591109],[13.594207763671875,41.51269075845857],[13.168487548828123,41.475660200278234],[13.105316162109375,41.759019938155404],[12.808685302734375,41.60722821271717],[12.564239501953123,41.72213058512578]]]}}"},"grid_size":{"cols":"10","rows":"10"},"soil_model":{"numberOfLayers":"1"},"name":"myModelName","description":"myModelDescription"}'),
+            array(
+                'name' => 'MyShinyNewModel',
+                'description' => 'MyModelDescription',
+                'public' => false
+            ),
             array(),
             array('HTTP_X-AUTH-TOKEN' => $this->getOwner()->getApiKey())
         );
+
+        $this->assertEquals(302, $client->getResponse()->getStatusCode());
+        $client->followRedirect();
+        $redirectUri = $client->getRequest()->getUri();
+
+        $client->request(
+            'GET',
+            $redirectUri,
+            array(),
+            array(),
+            array('HTTP_X-AUTH-TOKEN' => $this->getOwner()->getApiKey())
+        );
+
         $this->assertEquals(200, $client->getResponse()->getStatusCode());
+
         $response = $client->getResponse()->getContent();
-        $model = json_decode($response);
-        $this->assertObjectHasAttribute('id', $model);
+        $response = json_decode($response);
+
+        $this->assertObjectHasAttribute('id', $response);
+        $this->assertObjectHasAttribute('name', $response);
+        $this->assertEquals('MyShinyNewModel', $response->name);
+        $this->assertObjectHasAttribute('description', $response);
+        $this->assertEquals('MyModelDescription', $response->description);
+        $this->assertObjectHasAttribute('public', $response);
+        $this->assertFalse($response->public);
 
         $model = $this->getEntityManager()->getRepository('AppBundle:ModFlowModel')
             ->findOneBy(array('id' => $this->modFlowModel->getId()->toString()));
+        $this->getEntityManager()->remove($model);
 
+        $model = $this->getEntityManager()->getRepository('AppBundle:ModFlowModel')
+            ->findOneBy(array('id' => $response->id));
         $this->getEntityManager()->remove($model);
         $this->getEntityManager()->flush();
     }
 
+    public function testPostModflowModelWithoutValuesAppliesDefaults(){
+        $client = static::createClient();
+        $client->request(
+            'POST',
+            '/api/modflowmodels.json',
+            array(),
+            array(),
+            array('HTTP_X-AUTH-TOKEN' => $this->getOwner()->getApiKey())
+        );
+        $this->assertEquals(302, $client->getResponse()->getStatusCode());
+        $client->followRedirect();
+        $redirectUri = $client->getRequest()->getUri();
+
+        $client->request(
+            'GET',
+            $redirectUri,
+            array(),
+            array(),
+            array('HTTP_X-AUTH-TOKEN' => $this->getOwner()->getApiKey())
+        );
+
+        $this->assertEquals(200, $client->getResponse()->getStatusCode());
+
+        $response = $client->getResponse()->getContent();
+        $response = json_decode($response);
+
+        $this->assertObjectHasAttribute('id', $response);
+        $this->assertObjectHasAttribute('name', $response);
+        $this->assertEquals('', $response->name);
+        $this->assertObjectHasAttribute('description', $response);
+        $this->assertEquals('', $response->description);
+        $this->assertObjectHasAttribute('public', $response);
+        $this->assertTrue($response->public);
+
+        $model = $this->getEntityManager()->getRepository('AppBundle:ModFlowModel')
+            ->findOneBy(array('id' => $this->modFlowModel->getId()->toString()));
+        $this->getEntityManager()->remove($model);
+
+        $model = $this->getEntityManager()->getRepository('AppBundle:ModFlowModel')
+            ->findOneBy(array('id' => $response->id));
+        $this->getEntityManager()->remove($model);
+
+        $this->getEntityManager()->flush();
+    }
 
     public function testGetHeads(){
         $this->modFlowModel->setHeads(array(
@@ -581,10 +694,6 @@ class ModflowModelRestControllerTest extends RestControllerTestCase
         $this->getEntityManager()->flush();
     }
 
-    /**
-     * Test for the API-POST-Call /api/modflowmodel/{id}/heads.json
-     * @todo make some more asserts
-     */
     public function testPostHeads(){
         $client = static::createClient();
 

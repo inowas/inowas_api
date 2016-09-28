@@ -104,7 +104,7 @@ abstract class ModelObject
      * @var ActiveCells $activeCells
      *
      * @ORM\Column(name="active_cells", type="active_cells", nullable=true)
-     * @JMS\Groups({"modelobjectdetails"})
+     * @JMS\Groups({"details", "modeldetails", "modelProperties", "modelobjectdetails"})
      */
     protected $activeCells;
 

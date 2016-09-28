@@ -6,9 +6,6 @@ use AppBundle\Entity\ModflowModelScenario;
 use AppBundle\Entity\ModFlowModel;
 use AppBundle\Entity\User;
 use AppBundle\Model\ActiveCells;
-use AppBundle\Model\AreaFactory;
-use AppBundle\Model\GridSize;
-use CrEOF\Spatial\PHP\Types\Geometry\Polygon;
 use FOS\RestBundle\Controller\Annotations\RequestParam;
 use FOS\RestBundle\Controller\Annotations\QueryParam;
 use FOS\RestBundle\Controller\FOSRestController;
@@ -18,7 +15,7 @@ use JMS\Serializer\SerializationContext;
 use Nelmio\ApiDocBundle\Annotation\ApiDoc;
 use Ramsey\Uuid\Uuid;
 use Symfony\Component\HttpFoundation\File\Exception\AccessDeniedException;
-use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Response;
 
 class ModflowModelRestController extends FOSRestController
@@ -69,11 +66,11 @@ class ModflowModelRestController extends FOSRestController
     }
 
     /**
-     * Return the project-information by id.
+     * Returns modeldetails by model-id.
      *
      * @ApiDoc(
      *   resource = true,
-     *   description = "Return the project-information by id.",
+     *   description = "Returns modeldetails by model-id.",
      *   statusCodes = {
      *     200 = "Returned when successful",
      *     404 = "Returned when the user is not found"
@@ -95,7 +92,8 @@ class ModflowModelRestController extends FOSRestController
         $view->setData($model)
             ->setStatusCode(200)
             ->setSerializationContext($serializationContext)
-        ;
+            ->setTemplate('InowasPyprocessingBundle:inowas/modflow:model.html.twig')
+            ->setTemplateData(array('model' => $model));
 
         return $view;
     }
@@ -147,38 +145,28 @@ class ModflowModelRestController extends FOSRestController
      *   }
      * )
      *
-     * @param Request $request
-     * @return View
+     * @param ParamFetcher $paramFetcher
+     * @RequestParam(name="name", default="", description="Modelname.")
+     * @RequestParam(name="description", default="", description="Modelname.")
+     * @RequestParam(name="public", default=true, description="Public.")
+     *
+     * @return RedirectResponse
      */
-    public function postModflowmodelAction(Request $request){
-
-        $data = json_decode($request->request->get('json'), true);
+    public function postModflowmodelAction(ParamFetcher $paramFetcher){
 
         $modflowModelManager = $this->get('inowas.modflowmodel.manager');
         $model = $modflowModelManager->create()
             ->setOwner($this->getUser())
-            ->setName($data['name'])
-            ->setDescription($data['description'])
-            ->setGridSize(new GridSize($data['grid_size']['cols'], $data['grid_size']['rows']))
-            ->setArea(AreaFactory::create()
-                ->setGeometry(new Polygon(json_decode($data['area']['geoJSON'])->geometry->coordinates, 4326))
-            )
+            ->setName($paramFetcher->get('name'))
+            ->setDescription($paramFetcher->get('description'))
+            ->setPublic($paramFetcher->get('public'))
         ;
 
-        $soilModel = $this->get('inowas.soilmodel.manager')->create($data['soil_model']['numberOfLayers']);
+        $soilModel = $this->get('inowas.soilmodel.manager')->create();
         $model->setSoilModel($soilModel);
         $modflowModelManager->update($model);
 
-        $view = View::create();
-        $view->setData($model)
-            ->setStatusCode(200)
-            ->setSerializationContext(
-                SerializationContext::create()
-                    ->setGroups('modeldetails')
-            )
-        ;
-
-        return $view;
+        return $this->redirectToRoute('get_modflowmodels', array('id'=>$model->getId()->toString()));
     }
 
     /**

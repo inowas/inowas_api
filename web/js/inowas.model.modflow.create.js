@@ -126,7 +126,6 @@ $('#btn_create').click(function(){
     model.grid_size.rows = gridSizeArray[1];
 
     $.post("/api/modflowmodels.json",
-        { 'json' : JSON.stringify(model) },
         function(data, status){
             if (status == "success"){
                 window.location.href = "/models/modflow/"+data.id;
