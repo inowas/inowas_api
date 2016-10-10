@@ -2,10 +2,16 @@
 
 namespace AppBundle\Entity;
 
-use AppBundle\Model\Interpolation\BoundingBox;
-use AppBundle\Model\Interpolation\GridSize;
+use AppBundle\Exception\InvalidArgumentException;
+use AppBundle\Model\ActiveCells;
+use AppBundle\Model\BoundaryInterface;
+use AppBundle\Model\BoundingBox;
+use AppBundle\Model\GridSize;
+use AppBundle\Model\StressPeriodFactory;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
+use Inowas\PyprocessingBundle\Model\Modflow\ModflowModelInterface;
+use Inowas\PyprocessingBundle\Model\Modflow\Package\FlopyCalculationProperties;
 use JMS\Serializer\Annotation as JMS;
 
 /**
@@ -13,19 +19,8 @@ use JMS\Serializer\Annotation as JMS;
  * @ORM\Entity(repositoryClass="AppBundle\Repository\ModFlowModelRepository")
  * @JMS\ExclusionPolicy("none")
  */
-class ModFlowModel extends AbstractModel
+class ModFlowModel extends AbstractModel implements ModflowModelInterface
 {
-    /**
-     * @var ArrayCollection ModelObject $modelObjects
-     *
-     * @ORM\ManyToMany(targetEntity="ModelObject", cascade={"persist", "remove"})
-     * @ORM\JoinTable(name="models_model_objects",
-     *      joinColumns={@ORM\JoinColumn(name="model_id", referencedColumnName="id")},
-     *      inverseJoinColumns={@ORM\JoinColumn(name="model_object_id", referencedColumnName="id")}
-     *      )
-     **/
-    private $modelObjects;
-    
     /**
      * @var SoilModel $soilModel
      *
@@ -40,6 +35,9 @@ class ModFlowModel extends AbstractModel
      * @var GridSize
      *
      * @ORM\Column(name="grid_size", type="grid_size", nullable=true)
+     *
+     * @JMS\Type("AppBundle\Model\GridSize")
+     * @JMS\Groups({"details", "modeldetails", "modelProperties"})
      */
     private $gridSize;
 
@@ -47,6 +45,9 @@ class ModFlowModel extends AbstractModel
      * @var BoundingBox
      *
      * @ORM\Column(name="bounding_box", type="bounding_box", nullable=true)
+     *
+     * @JMS\Type("AppBundle\Model\BoundingBox")
+     * @JMS\Groups({"details", "modeldetails", "modelProperties"})
      */
     private $boundingBox;
 
@@ -60,60 +61,42 @@ class ModFlowModel extends AbstractModel
 
     /**
      * @var ArrayCollection
+     *
      * @JMS\Groups({"details", "modeldetails"})
      **/
     private $boundaries;
 
     /**
      * @var ArrayCollection
-     * @JMS\Groups({"details", "modeldetails"})
-     **/
-    private $wells;
-
-    /**
-     * @var ArrayCollection
+     * 
      * @JMS\Groups({"details", "modeldetails"})
      */
     private $observationPoints;
 
     /**
-     * @var ArrayCollection
-     * @JMS\Groups({"details", "modeldetails"})
-     */
-    private $streams;
-
-    /**
+     * Heads-array with key, value = totim => flopy3dArray
      * @var array
      *
-     * @ORM\Column(name="calculation_properties", type="json_array")
-     * @JMS\Groups({"details", "modeldetails"})
+     * @ORM\Column(name="heads", type="json_array", nullable=true)
      */
-    private $calculationProperties = array(
-        "grid_size" => array(),
-        "stress_periods" => array(),
-        "initial_values" => array(
-            "property" => null,
-            "head_from_top_elevation" => 1,
-            "steady_state_calculation" => null,
-            "interpolation" => array()          // of observationPoints
-        ),
-        "calculation_type" => "steady_state",   // steady_state or transient
-        "recalculation" => true
-    );
+    private $heads;
 
-    private $outputOptions = array(
-        "point_calculation" => array(
-            "geological_point" => null,
-            "geological_layer" => null,
-            "result_property" => null,
-            "formats" => array()                // timeValues -> floats
-        ),
-        "layer_calculation" => array(
-            "geological_layer" => null,
-            "result_property" => null,
-            "formats" => array()                // timevalues -> raster, image
-        )
-    );
+    /**
+     * @var ArrayCollection
+     */
+    private $stressPeriods;
+
+    /**
+     * @var FlopyCalculationProperties
+     *
+     * @ORM\Column(name="calculation_properties", type="flopy_calculation_properties", nullable=true)
+     */
+    private $calculationProperties;
+
+    /**
+     * @var ArrayCollection
+     */
+    private $scenarios;
 
     /**
      * ModFlowModel constructor.
@@ -122,54 +105,12 @@ class ModFlowModel extends AbstractModel
     {
         parent::__construct();
 
-        $this->wells = new ArrayCollection();
         $this->boundaries = new ArrayCollection();
-        $this->modelObjects = new ArrayCollection();
         $this->observationPoints = new ArrayCollection();
-        $this->streams = new ArrayCollection();
         $this->gridSize = new GridSize(50, 50);
         $this->boundingBox = new BoundingBox();
+        $this->scenarios = new ArrayCollection();
     }
-
-    /**
-     * Add soilModelObject
-     *
-     * @param \AppBundle\Entity\ModelObject $modelObject
-     * @return $this
-     */
-    public function addModelObject(ModelObject $modelObject)
-    {
-        if (!$this->modelObjects->contains($modelObject)){
-            $this->modelObjects[] = $modelObject;
-        }
-
-        return $this;
-    }
-
-    /**
-     * Remove soilModelObject
-     *
-     * @param \AppBundle\Entity\ModelObject $modelObject
-     * @return $this
-     */
-    public function removeModelObject(ModelObject $modelObject)
-    {
-        if ($this->modelObjects->contains($modelObject)){
-            $this->modelObjects->removeElement($modelObject);
-        }
-        return $this;
-    }
-
-    /**
-     * Get modelObjects
-     *
-     * @return \Doctrine\Common\Collections\Collection
-     */
-    public function getModelObjects()
-    {
-        return $this->modelObjects;
-    }
-
 
     /**
      * @return Area
@@ -183,9 +124,38 @@ class ModFlowModel extends AbstractModel
      * @param Area $area
      * @return ModFlowModel
      */
-    public function setArea(Area $area)
+    public function setArea(Area $area=null)
     {
         $this->area = $area;
+        return $this;
+    }
+
+    /**
+     * @JMS\VirtualProperty
+     * @JMS\SerializedName("active_cells")
+     * @JMS\Groups({"details", "modeldetails", "modelProperties"})
+     * @return ActiveCells
+     */
+    public function getActiveCells()
+    {
+        if ($this->area instanceof Area){
+            return $this->area->getActiveCells();
+        }
+
+        return null;
+    }
+
+    /**
+     * @param ActiveCells $activeCells
+     * @return $this
+     */
+    public function setActiveCells(ActiveCells $activeCells)
+    {
+        if (! $this->area instanceof Area){
+            throw new InvalidArgumentException('The model needs an area to update activeCells.');
+        }
+
+        $this->area->setActiveCells($activeCells);
         return $this;
     }
 
@@ -214,9 +184,21 @@ class ModFlowModel extends AbstractModel
     }
 
     /**
+     * @return bool
+     */
+    public function hasSoilModel()
+    {
+        if ($this->soilModel instanceof SoilModel){
+            return true;
+        }
+
+        return false;
+    }
+
+    /**
      * Get boundaries
      *
-     * @return Boundary|ArrayCollection
+     * @return BoundaryModelObject|ArrayCollection
      */
     public function getBoundaries()
     {
@@ -224,19 +206,13 @@ class ModFlowModel extends AbstractModel
     }
 
     /**
-     * Add boundary
-     *
-     * @param Boundary $boundary
+     * @param BoundaryModelObject $boundary
      * @return $this
      */
-    public function addBoundary(Boundary $boundary)
+    public function addBoundary(BoundaryModelObject $boundary)
     {
-        if ($this->boundaries == null) {
-            $this->boundaries = new ArrayCollection();
-        }
-
-        if (!$this->boundaries->contains($boundary)) {
-            $this->boundaries->add($boundary);
+        if (!$this->getBoundaries()->contains($boundary)) {
+            $this->getBoundaries()->add($boundary);
         }
 
         return $this;
@@ -245,53 +221,13 @@ class ModFlowModel extends AbstractModel
     /**
      * Remove boundary
      *
-     * @param Boundary $boundary
+     * @param BoundaryModelObject $boundary
      */
-    public function removeBoundary(Boundary $boundary)
+    public function removeBoundary(BoundaryModelObject $boundary)
     {
         if ($this->boundaries->contains($boundary)){
             $this->boundaries->removeElement($boundary);
         }
-    }
-
-    /**
-     * Get boundaries
-     *
-     * @return Well|ArrayCollection
-     */
-    public function getWells()
-    {
-        return $this->wells;
-    }
-
-    /**
-     * @param Well $well
-     * @return $this
-     */
-    public function addWell(Well $well)
-    {
-        if ($this->wells == null) {
-            $this->wells = new ArrayCollection();
-        }
-
-        if (!$this->wells->contains($well)) {
-            $this->wells->add($well);
-        }
-
-        return $this;
-    }
-
-    /**
-     * @param Well $well
-     * @return $this
-     */
-    public function removeWell(Well $well)
-    {
-        if ($this->boundaries->contains($well)){
-            $this->boundaries->removeElement($well);
-        }
-
-        return $this;
     }
 
     /**
@@ -308,10 +244,6 @@ class ModFlowModel extends AbstractModel
      */
     public function addObservationPoint(ObservationPoint $observationPoint)
     {
-        if ($this->observationPoints == null) {
-            $this->observationPoints = new ArrayCollection();
-        }
-
         if (!$this->observationPoints->contains($observationPoint)) {
             $this->observationPoints[] = $observationPoint;
         }
@@ -335,147 +267,117 @@ class ModFlowModel extends AbstractModel
     /**
      * @return ArrayCollection
      */
-    public function getStreams()
-    {
-        return $this->streams;
-    }
-
-    /**
-     * @param Stream $stream
-     * @return $this
-     */
-    public function addStream(Stream $stream)
-    {
-        if ($this->streams == null) {
-            $this->streams = new ArrayCollection();
-        }
-
-        if (!$this->streams->contains($stream)){
-            $this->streams[] = $stream;
-        }
-
-        return $this;
-    }
-
-    /**
-     * @param Stream $stream
-     * @return $this
-     */
-    public function removeStream(Stream $stream)
-    {
-        if ($this->streams->contains($stream)) {
-            $this->streams->removeElement($stream);
-        }
-
-        return $this;
-    }
-
-    /**
-     * Add stressPeriod
-     *
-     * @param $stressPeriod
-     *
-     * @return ModFlowModel
-     */
-    public function addStressPeriod($stressPeriod)
-    {
-        $this->calculationProperties["stress_periods"][] = $stressPeriod;
-
-        return $this;
-    }
-
-    /**
-     * Get stressPeriods
-     *
-     * @return array
-     */
     public function getStressPeriods()
     {
-        return $this->calculationProperties["stress_periods"];
+        if (! $this->stressPeriods instanceof ArrayCollection){
+            $this->stressPeriods = $this->loadStressPeriodsFromBoundaries();
+            $this->stressPeriods = $this->sortStressPeriods($this->stressPeriods);
+
+            if (!is_null($this->getCalculationProperties()) && $this->getCalculationProperties()->getInitialValues() == FlopyCalculationProperties::INITIAL_VALUE_STEADY_STATE_CALCULATION){
+                if ($this->stressPeriods->count() > 0) {
+                    $this->stressPeriods->first()->setSteady(true);
+                }
+            }
+        }
+
+        return $this->stressPeriods;
     }
 
     /**
-     * Set stressPeriods
-     *
-     * @param $stressPeriods
-     * @return ModFlowModel
+     * @return ArrayCollection
      */
-    public function setStressPeriods($stressPeriods)
+    protected function loadStressPeriodsFromBoundaries()
     {
-        $this->calculationProperties["stress_periods"] = $stressPeriods;
+        $bSps = new ArrayCollection();
+
+        /** @var BoundaryInterface $boundary */
+        foreach ($this->boundaries as $boundary) {
+
+            if ($boundary->getStressPeriods() === null || $boundary->getStressPeriods()->count() == 0) {
+                continue;
+            }
+
+            $bSps = new ArrayCollection(
+                array_merge($bSps->toArray(), $boundary->getStressPeriods()->toArray())
+            );
+        }
+
+        return $bSps;
+    }
+
+    /**
+     * @param ArrayCollection $bSps
+     * @return ArrayCollection
+     */
+    protected function sortStressPeriods(ArrayCollection $bSps)
+    {
+        $startDates = array();
+        $endDates = array();
+        foreach ($bSps as $sp){
+            $startDates[] = $sp->getDateTimeBegin();
+            $endDates[] = $sp->getDateTimeEnd();
+        }
+
+        $startDates = array_map("unserialize", array_unique(array_map("serialize", $startDates)));
+        usort($startDates, function($a, $b) {return ($a < $b) ? -1 : 1;});
+        usort($endDates, function($a, $b) {return ($a < $b) ? -1 : 1;});
+        $endDate = end($endDates);
+
+        $sps = new ArrayCollection();
+
+        $ni = count($startDates);
+        for($i=0; $i<$ni; $i++) {
+
+            $dateTimeStart = $startDates[$i];
+            if ($i != count($startDates)-1) {
+                /** @var \DateTime $dateTimeEnd */
+                $dateTimeEnd = clone $startDates[$i+1];
+                $dateTimeEnd->modify('-1day');
+            } else{
+                $dateTimeEnd = $endDate;
+            }
+
+            foreach ($bSps as $bSp) {
+                if ($bSp->getDateTimeBegin() == $dateTimeStart){
+                    $stressPeriodWithStartDate = $bSp;
+                    break;
+                }
+            }
+
+            $steady = false;
+            if (isset($stressPeriodWithStartDate)){
+                $steady = $stressPeriodWithStartDate->isSteady();
+            }
+
+            $sps->add(StressPeriodFactory::create()
+                ->setDateTimeBegin($dateTimeStart)
+                ->setDateTimeEnd($dateTimeEnd)
+                ->setSteady($steady)
+            );
+        }
+
+        return $sps;
     }
 
     /**
      * Set calculationProperties
      *
-     * @param array $calculationProperties
+     * @param FlopyCalculationProperties $calculationProperties
      *
      * @return ModFlowModel
      */
-    public function setCalculationProperties($calculationProperties)
+    public function setCalculationProperties(FlopyCalculationProperties $calculationProperties)
     {
         $this->calculationProperties = $calculationProperties;
-
         return $this;
     }
 
     /**
-     * Get calculationProperties
-     *
-     * @return array
+     * @return FlopyCalculationProperties
      */
     public function getCalculationProperties()
     {
         return $this->calculationProperties;
-    }
-
-    /**
-     * Set initValues
-     *
-     * @param array $initValues
-     *
-     * @return ModFlowModel
-     */
-    public function setInitialValues($initValues)
-    {
-        $this->calculationProperties["initial_values"] = $initValues;
-
-        return $this;
-    }
-
-    /**
-     * Get initValues
-     *
-     * @return array
-     */
-    public function getInitialValues()
-    {
-        return $this->calculationProperties["initial_values"];
-    }
-
-
-    /**
-     * Set outputOptions
-     *
-     * @param array $outputOptions
-     *
-     * @return ModFlowModel
-     */
-    public function setOutputOptions($outputOptions)
-    {
-        $this->outputOptions = $outputOptions;
-
-        return $this;
-    }
-
-    /**
-     * Get outputOptions
-     *
-     * @return array
-     */
-    public function getOutputOptions()
-    {
-        return $this->outputOptions;
     }
 
     /**
@@ -487,6 +389,16 @@ class ModFlowModel extends AbstractModel
     }
 
     /**
+     * @param GridSize $gridSize
+     * @return $this
+     */
+    public function setGridSize($gridSize)
+    {
+        $this->gridSize = $gridSize;
+        return $this;
+    }
+    
+    /**
      * @return BoundingBox
      */
     public function getBoundingBox()
@@ -495,97 +407,151 @@ class ModFlowModel extends AbstractModel
     }
 
     /**
+     * @param BoundingBox $boundingBox
+     * @return ModFlowModel
+     */
+    public function setBoundingBox($boundingBox)
+    {
+        $this->boundingBox = $boundingBox;
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function createTextOverview()
+    {
+        $nx = 0;
+        $ny = 0;
+        $layersCount = 0;
+
+        if ($this->gridSize instanceof GridSize){
+            $nx = $this->gridSize->getNX();
+            $ny = $this->gridSize->getNY();
+        }
+
+        if ($this->hasSoilModel() && $this->soilModel->hasGeologicalLayers()){
+            $layersCount = $this->soilModel->getGeologicalLayers()->count();
+        }
+
+       return sprintf("%s Rows, %s Columns, %s Layers", $ny, $nx, $layersCount);
+    }
+
+    /**
+     * @param ModflowModelScenario $scenario
+     */
+    public function registerScenario(ModflowModelScenario $scenario) {
+        $this->scenarios[] = $scenario;
+    }
+
+    /**
+     * @return ArrayCollection
+     */
+    public function getScenarios(){
+        return $this->scenarios;
+    }
+
+    /**
+     * @return array
+     */
+    public function getHeads()
+    {
+        return $this->heads;
+    }
+
+    /**
+     * @param array $heads
+     * @return ModFlowModel
+     */
+    public function setHeads(array $heads)
+    {
+        $this->heads = $heads;
+        return $this;
+    }
+
+    /**
+     * @param BoundaryModelObject $origin
+     * @param BoundaryModelObject $newBoundary
+     * @return mixed
+     */
+    public function changeBoundary(BoundaryModelObject $origin, BoundaryModelObject $newBoundary)
+    {
+        if ($this->boundaries instanceof ArrayCollection){
+
+            /** @var BoundaryModelObject $boundary */
+            foreach ($this->boundaries as $boundary){
+                if ($boundary->getId() == $origin->getId()){
+                    $this->boundaries->removeElement($boundary);
+                    $this->boundaries->add($newBoundary);
+                }
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @param FlopyCalculationProperties $calculationProperties
+     * @return mixed
+     */
+    public function addCalculationProperties(FlopyCalculationProperties $calculationProperties)
+    {
+        $this->calculationProperties = $calculationProperties;
+        return $this;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isScenario()
+    {
+        return false;
+    }
+
+    /**
      * @ORM\PreFlush()
      */
     public function preFlush()
     {
-        if (!is_null($this->area))
-        {
+        if (!is_null($this->area)) {
             $this->addModelObject($this->area);
         }
 
-        if ($this->boundaries->count() > 0 )
-        {
-            foreach ($this->boundaries as $boundary)
-            {
+        if ($this->boundaries->count() > 0 ) {
+            foreach ($this->boundaries as $boundary) {
                 $this->addModelObject($boundary);
+                $this->removeBoundary($boundary);
             }
         }
 
-        if ($this->wells->count() > 0 )
-        {
-            foreach ($this->wells as $well)
-            {
-                $this->addModelObject($well);
-            }
-        }
-
-        if (!$this->observationPoints) {
-            $this->observationPoints = new ArrayCollection();
-        }
-
-        if ($this->observationPoints->count() > 0 )
-        {
-            foreach ($this->observationPoints as $observationPoint)
-            {
+        if ($this->observationPoints->count() > 0 ) {
+            foreach ($this->observationPoints as $observationPoint) {
                 $this->addModelObject($observationPoint);
+                $this->removeObservationPoint($observationPoint);
             }
-        }
-
-        if (!$this->streams) {
-            $this->streams = new ArrayCollection();
-        }
-
-        if ($this->streams->count() > 0 )
-        {
-            foreach ($this->streams as $stream)
-            {
-                $this->addModelObject($stream);
-            }
-        }
-
-        if ($this->area)
-        {
-            $this->boundingBox = $this->area->getBoundingBox();
         }
     }
-
-
+    
     /**
      * @ORM\PostLoad()
      */
     public function postLoad()
     {
-        foreach ($this->getModelObjects() as $modelObject)
-        {
-            if ($modelObject instanceof Area)
-            {
+        $this->boundaries = new ArrayCollection();
+        $this->observationPoints = new ArrayCollection();
+
+        foreach ($this->getModelObjects() as $modelObject) {
+
+            if ($modelObject instanceof Area) {
                 $this->area = $modelObject;
-                $this->removeModelObject($modelObject);
             }
 
-            if ($modelObject instanceof Boundary)
-            {
-                $this->addBoundary($modelObject);
-                $this->removeModelObject($modelObject);
+            if ($modelObject instanceof BoundaryModelObject) {
+                $this->boundaries->add($modelObject);
             }
 
-            if ($modelObject instanceof Well)
-            {
-                $this->addWell($modelObject);
-                $this->removeModelObject($modelObject);
-            }
-
-            if ($modelObject instanceof ObservationPoint)
-            {
-                $this->addObservationPoint($modelObject);
-                $this->removeModelObject($modelObject);
-            }
-
-            if ($modelObject instanceof Stream)
-            {
-                $this->addStream($modelObject);
-                $this->removeModelObject($modelObject);
+            if ($modelObject instanceof ObservationPoint) {
+                $this->observationPoints->add($modelObject);
             }
         }
     }

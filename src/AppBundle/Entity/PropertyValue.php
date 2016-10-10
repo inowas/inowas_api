@@ -16,7 +16,7 @@ class PropertyValue extends AbstractValue
      * @var float
      *
      * @ORM\Column(name="value", type="float")
-     * @JMS\Groups({"modeldetails", "modelobjectdetails"})
+     * @JMS\Groups({"modeldetails", "modelobjectdetails", "soilmodellayers"})
      */
     private $value;
 
@@ -25,7 +25,7 @@ class PropertyValue extends AbstractValue
      *
      * @ORM\OneToOne(targetEntity="AppBundle\Entity\Raster", cascade={"persist", "remove"})
      * @ORM\JoinColumn(name="raster_id", referencedColumnName="id", onDelete="SET NULL")
-     * @JMS\Groups({"modeldetails", "modelobjectdetails"})
+     * @JMS\Groups({"modeldetails", "modelobjectdetails", "soilmodellayers"})
      */
     private $raster;
 
@@ -50,6 +50,16 @@ class PropertyValue extends AbstractValue
     public function getValue()
     {
         return $this->value;
+    }
+
+    /**
+     * @return bool
+     */
+    public function hasValue(){
+       if (null === $this->value){
+           return false;
+       }
+        return true;
     }
 
     public function getDateBegin()
@@ -80,11 +90,11 @@ class PropertyValue extends AbstractValue
     /**
      * Set raster
      *
-     * @param \AppBundle\Entity\Raster $raster
+     * @param Raster $raster
      *
      * @return PropertyValue
      */
-    public function setRaster(\AppBundle\Entity\Raster $raster = null)
+    public function setRaster(Raster $raster = null)
     {
         $this->raster = $raster;
 
@@ -94,10 +104,20 @@ class PropertyValue extends AbstractValue
     /**
      * Get raster
      *
-     * @return \AppBundle\Entity\Raster
+     * @return Raster
      */
     public function getRaster()
     {
         return $this->raster;
+    }
+
+    /**
+     * @return bool
+     */
+    public function hasRaster(){
+        if (!$this->raster instanceof Raster){
+            return false;
+        }
+        return true;
     }
 }

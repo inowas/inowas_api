@@ -3,6 +3,7 @@
 namespace AppBundle\Entity;
 
 use AppBundle\Model\Point;
+use AppBundle\Model\PropertyType;
 use Doctrine\ORM\Mapping as ORM;
 use JMS\Serializer\Annotation as JMS;
 
@@ -13,6 +14,9 @@ use JMS\Serializer\Annotation as JMS;
  */
 class GeologicalUnit extends SoilModelObject
 {
+
+    const TOP_LAYER = 0;
+
     /**
      * @var string
      * @JMS\Type("string")
@@ -28,15 +32,21 @@ class GeologicalUnit extends SoilModelObject
     private $point;
 
     /**
+     * @var integer
+     *
+     * @ORM\Column(name="order_number", type="integer", nullable=false)
+     */
+    private $order;
+
+    /**
      * Set point
      *
      * @param point $point
-     * @return GeologicalPoint
+     * @return $this
      */
     public function setPoint($point)
     {
         $this->point = $point;
-
         return $this;
     }
 
@@ -82,5 +92,23 @@ class GeologicalUnit extends SoilModelObject
         }
 
         return null;
+    }
+
+    /**
+     * @return int
+     */
+    public function getOrder()
+    {
+        return $this->order;
+    }
+
+    /**
+     * @param int $order
+     * @return $this
+     */
+    public function setOrder($order)
+    {
+        $this->order = $order;
+        return $this;
     }
 }

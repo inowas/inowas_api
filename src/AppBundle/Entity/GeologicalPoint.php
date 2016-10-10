@@ -85,6 +85,10 @@ class GeologicalPoint extends SoilModelObject
     public function addGeologicalUnit(GeologicalUnit $geologicalUnit)
     {
         if (!$this->geologicalUnits->contains($geologicalUnit)) {
+            if (is_null($geologicalUnit->getOrder())) {
+                $geologicalUnit->setOrder($this->getGeologicalUnits()->count());
+            }
+
             $this->geologicalUnits[] = $geologicalUnit;
         }
 

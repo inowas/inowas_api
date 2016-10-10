@@ -1,20 +1,20 @@
 # Learn more about services, parameters and containers at
 # http://symfony.com/doc/current/book/service_container.html
-# parameters:
-#    inowas.python_process.prefix:  python
+#parameters:
+#    inowas.modflow.data_folder:  ../py/pyprocessing/data/modflow
 
 services:
-    inowas.interpolation:
-        class: AppBundle\Service\Interpolation
-        arguments: ['@serializer', '@kernel', '@inowas.python_process']
+    inowas.geotools:
+        class: AppBundle\Service\GeoTools
+        arguments: ['@doctrine.orm.default_entity_manager']
 
     inowas.soilmodel:
         class: AppBundle\Service\SoilModelService
-        arguments: ['@doctrine.orm.default_entity_manager', '@inowas.interpolation']
+        arguments: ['@doctrine.orm.default_entity_manager', '@inowas.process.interpolation']
 
-    inowas.python_process:
-        class: AppBundle\Service\PythonProcess
-        arguments: ['%inowas.python_process.prefix%']
+    app.token_authenticator:
+        class: AppBundle\Security\TokenAuthenticator
+        arguments: ['@doctrine.orm.entity_manager']
 
 #    service_name:
 #        class: AppBundle\Directory\ClassName

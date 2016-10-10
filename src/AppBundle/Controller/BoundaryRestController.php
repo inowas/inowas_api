@@ -2,62 +2,16 @@
 
 namespace AppBundle\Controller;
 
+use AppBundle\Entity\BoundaryModelObject;
 use FOS\RestBundle\Controller\FOSRestController;
 use FOS\RestBundle\View\View;
 use JMS\Serializer\SerializationContext;
 use Nelmio\ApiDocBundle\Annotation\ApiDoc;
+use Ramsey\Uuid\Uuid;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class BoundaryRestController extends FOSRestController
 {
-    /**
-     * Return the boundary list from a user.
-     *
-     * @ApiDoc(
-     *   resource = true,
-     *   description = "Return the boundary list from a user",
-     *   statusCodes = {
-     *     200 = "Returned when successful",
-     *     404 = "Returned when the user is not found"
-     *   }
-     * )
-     *
-     * @param $username
-     * @return View
-     */
-    public function getUserBoundariesAction($username)
-    {
-        $user = $this->getDoctrine()
-            ->getRepository('AppBundle:User')
-            ->findOneBy(array(
-                'username' => $username
-            ));
-
-        if (!$user)
-        {
-            throw $this->createNotFoundException('User with username '.$username.' not found.');
-        }
-
-        $boundaries = $this->getDoctrine()
-            ->getRepository('AppBundle:Boundary')
-            ->findBy(
-                array('owner' => $user),
-                array('id' => 'ASC')
-            )
-        ;
-
-        $view = View::create();
-        $view->setData($boundaries)
-            ->setStatusCode(200)
-            ->setSerializationContext(SerializationContext::create()
-                ->setGroups(array('modelobjectlist'))
-                ->setSerializeNull(true)
-                ->enableMaxDepthChecks()
-            )
-        ;
-
-        return $view;
-    }
-
     /**
      * Return a boundary by id
      *
@@ -73,34 +27,35 @@ class BoundaryRestController extends FOSRestController
      * @param string $id boundary-id
      *
      * @return View
+     * @throws NotFoundHttpException
      */
     public function getBoundariesAction($id)
     {
-        $boundary = $this->getDoctrine()
-            ->getRepository('AppBundle:Boundary')
-            ->findOneBy(array(
-                'id' => $id
-            ));
-
-        if (!$boundary)
-        {
+        try {
+            $uuid = Uuid::fromString($id);
+        } catch (\InvalidArgumentException $e) {
             throw $this->createNotFoundException('Boundary with id='.$id.' not found.');
         }
 
-        if ($boundary->getPublic() || $this->isGranted('ROLE_ADMIN') || $this->getUser() === $boundary->getOwner())
-        {
-            $view = View::create();
-            $view->setData($boundary)
-                ->setStatusCode(200)
-                ->setSerializationContext(SerializationContext::create()
-                    ->setGroups(array('modelobjectdetails'))
-                    ->enableMaxDepthChecks()
-                );
+        $boundary = $this->getDoctrine()
+            ->getRepository('AppBundle:ModelObject')
+            ->findOneBy(array(
+                'id' => $uuid->toString()
+            ))
+        ;
 
-            return $view;
-        } else
-        {
-            throw $this->createAccessDeniedException();
+        if (!$boundary instanceof BoundaryModelObject) {
+            throw $this->createNotFoundException('Boundary with id='.$id.' not found.');
         }
+
+        $view = View::create();
+        $view->setData($boundary)
+            ->setStatusCode(200)
+            ->setSerializationContext(SerializationContext::create()
+                ->setGroups(array('modelobjectdetails'))
+                ->enableMaxDepthChecks()
+            );
+
+        return $view;
     }
 }

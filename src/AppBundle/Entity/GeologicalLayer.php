@@ -2,6 +2,9 @@
 
 namespace AppBundle\Entity;
 
+use AppBundle\Exception\InvalidArgumentException;
+use AppBundle\Model\PropertyType;
+use AppBundle\Model\PropertyTypeFactory;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
 use JMS\Serializer\Annotation as JMS;
@@ -12,10 +15,13 @@ use JMS\Serializer\Annotation as JMS;
  */
 class GeologicalLayer extends SoilModelObject
 {
+
+    const TOP_LAYER = 0;
+
     /**
      * @var string
      * @JMS\Type("string")
-     * @JMS\Groups({"list", "details", "modelobjectdetails", "modelobjectlist"})
+     * @JMS\Groups({"list", "details", "modelobjectdetails", "modelobjectlist", "soilmodellayers"})
      */
     protected $type = 'geologicallayer';
     
@@ -31,6 +37,13 @@ class GeologicalLayer extends SoilModelObject
      * @JMS\Groups({"modelobjectdetails", "soilmodeldetails"})
      **/
     private $geologicalUnits;
+
+    /**
+     * @var integer
+     *
+     * @ORM\Column(name="order_number", type="integer", nullable=false)
+     */
+    private $order;
 
     /**
      * Layer constructor.
@@ -82,5 +95,97 @@ class GeologicalLayer extends SoilModelObject
     public function getGeologicalUnits()
     {
         return $this->geologicalUnits;
+    }
+
+    /**
+     * @return int
+     */
+    public function getOrder()
+    {
+        return $this->order;
+    }
+
+    /**
+     * @param $order
+     * @return $this
+     */
+    public function setOrder($order)
+    {
+        $this->order = $order;
+
+        return $this;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getTopElevation(){
+
+        $values = $this->getPropertyValuesByPropertyType(PropertyTypeFactory::create(PropertyType::TOP_ELEVATION));
+        return $this->extractNumericOrRasterValueFromPropertyValue($values->first());
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getBottomElevation(){
+        $values = $this->getPropertyValuesByPropertyType(PropertyTypeFactory::create(PropertyType::BOTTOM_ELEVATION));
+        return $this->extractNumericOrRasterValueFromPropertyValue($values->first());
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getKx(){
+        $values = $this->getPropertyValuesByPropertyType(PropertyTypeFactory::create(PropertyType::KX));
+        return $this->extractNumericOrRasterValueFromPropertyValue($values->first());
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getKy(){
+        $values = $this->getPropertyValuesByPropertyType(PropertyTypeFactory::create(PropertyType::KY));
+        return $this->extractNumericOrRasterValueFromPropertyValue($values->first());
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getKz(){
+        $values = $this->getPropertyValuesByPropertyType(PropertyTypeFactory::create(PropertyType::KZ));
+        return $this->extractNumericOrRasterValueFromPropertyValue($values->first());
+    }
+
+    /**
+     * @param PropertyType $propertyType
+     * @return \Doctrine\Common\Collections\Collection
+     */
+    protected function getPropertyValuesByPropertyType(PropertyType $propertyType){
+
+        $property = $this->getPropertyByPropertyType($propertyType);
+
+        if (! $property instanceof Property){
+            throw new InvalidArgumentException(sprintf('The Layer with ID: %s hat no property from Type %s.', $this->getId()->toString(), $propertyType->getDescription()));
+        }
+
+        return $property->getValues();
+    }
+
+    /**
+     * @param PropertyValue $value
+     * @return array|float
+     */
+    protected function extractNumericOrRasterValueFromPropertyValue(PropertyValue $value){
+
+        if ($value->hasValue()){
+            return $value->getValue();
+        }
+
+        if ($value->hasRaster()){
+            return $value->getRaster()->getData();
+        }
+
+        throw new InvalidArgumentException(sprintf('The PropertyValue of Layer with id=%s has no value and no raster.', $this->getId()->toString()));
     }
 }

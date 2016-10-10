@@ -1,30 +1,25 @@
 <?php
 
-namespace AppBundle\Tests\Controller;
+namespace Tests\AppBundle\Controller;
 
 use AppBundle\Entity\Property;
 use AppBundle\Model\PropertyFactory;
 use AppBundle\Model\PropertyFixedIntervalValueFactory;
 use AppBundle\Model\PropertyTimeValueFactory;
-use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
+use Ramsey\Uuid\Uuid;
+use Tests\AppBundle\RestControllerTestCase;
 
-class PropertyRestControllerTest extends WebTestCase
+class PropertyRestControllerTest extends RestControllerTestCase
 {
-
-    /** @var \Doctrine\ORM\EntityManager */
-    protected $entityManager;
 
     /** @var Property $area */
     protected $property;
 
     public function setUp()
     {
-        self::bootKernel();
-        $this->entityManager = static::$kernel->getContainer()
-            ->get('doctrine.orm.default_entity_manager')
-        ;
+        $this->getEntityManager()->persist($this->getOwner());
 
-        $this->property = PropertyFactory::create()
+         $this->property = PropertyFactory::create()
             ->setName('PropertyControllerTest')
             ->addValue(PropertyTimeValueFactory::create()
                 ->setDatetime(new \DateTime(2015-01-01))
@@ -38,22 +33,54 @@ class PropertyRestControllerTest extends WebTestCase
                 ->setValues(array(14.1, 15.1, 16.1, 17.1, 18.1, 19.1))
             );
 
-        $this->entityManager->persist($this->property);
-        $this->entityManager->flush();
+        $this->getEntityManager()->persist($this->property);
+        $this->getEntityManager()->flush();
     }
 
     /**
      * Test for the API-Call /api/properties/<id>.json
      * which is providing a list of areas of the user
      */
-    public function testPropertyCallDetailsWithoutDates()
+    public function testGetPropertyById()
     {
         $client = static::createClient();
-        $client->request('GET', '/api/properties/'.$this->property->getId().'.json');
+        $client->request(
+            'GET',
+            '/api/properties/'.$this->property->getId().'.json',
+            array(),
+            array(),
+            array('HTTP_X-AUTH-TOKEN' => $this->getOwner()->getApiKey())
+        );
         $this->assertEquals(200, $client->getResponse()->getStatusCode());
         $property = json_decode($client->getResponse()->getContent());
         $this->assertEquals($this->property->getId(), $property->id);
         $this->assertEquals($this->property->getName(), $property->name);
+    }
+
+    public function testGetPropertyByInvalidIdReturns404()
+    {
+        $client = static::createClient();
+        $client->request(
+            'GET',
+            '/api/properties/123.json',
+            array(),
+            array(),
+            array('HTTP_X-AUTH-TOKEN' => $this->getOwner()->getApiKey())
+        );
+        $this->assertEquals(404, $client->getResponse()->getStatusCode());
+    }
+
+    public function testGetPropertyByUnknownIdReturns404()
+    {
+        $client = static::createClient();
+        $client->request(
+            'GET',
+            '/api/properties/'.Uuid::uuid4()->toString().'.json',
+            array(),
+            array(),
+            array('HTTP_X-AUTH-TOKEN' => $this->getOwner()->getApiKey())
+        );
+        $this->assertEquals(404, $client->getResponse()->getStatusCode());
     }
 
     /**
@@ -61,15 +88,16 @@ class PropertyRestControllerTest extends WebTestCase
      */
     public function tearDown()
     {
-        $entities = $this->entityManager->getRepository('AppBundle:Property')
-            ->findAll();
+        $property = $this->getEntityManager()
+            ->getRepository('AppBundle:Property')
+            ->findOneBy(array(
+                'name' => $this->property->getName()
+            ));
 
-        foreach ($entities as $entity)
-        {
-            $this->entityManager->remove($entity);
-        }
-
-        $this->entityManager->flush();
-        $this->entityManager->close();
+        $owner = $this->getEntityManager()->getRepository('AppBundle:User')->findOneBy(array('id' => $this->getOwner()->getId()->toString()));
+        $this->getEntityManager()->remove($owner);
+        $this->getEntityManager()->remove($property);
+        $this->getEntityManager()->flush();
+        $this->getEntityManager()->close();
     }
 }

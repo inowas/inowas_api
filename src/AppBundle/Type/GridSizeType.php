@@ -2,26 +2,20 @@
 
 namespace AppBundle\Type;
 
-use AppBundle\Model\Interpolation\GridSize;
+use AppBundle\Model\GridSize;
 use Doctrine\DBAL\Platforms\AbstractPlatform;
-use Doctrine\DBAL\Types\Type;
+use Doctrine\DBAL\Types\JsonArrayType;
 
 /**
  * Type that maps an SQL VARCHAR to a PHP string.
  *
  * @since 2.0
  */
-class GridSizeType extends Type
+class GridSizeType extends JsonArrayType
 {
-    /**
-     * {@inheritdoc}
-     */
-    public function getSQLDeclaration(array $fieldDeclaration, AbstractPlatform $platform)
-    {
-        return $platform->getJsonTypeDeclarationSQL($fieldDeclaration);
-    }
+    const NAME = 'grid_size';
 
-    /**
+     /**
      * {@inheritdoc}
      */
     public function convertToDatabaseValue($value, AbstractPlatform $platform)
@@ -31,15 +25,10 @@ class GridSizeType extends Type
         }
 
         /** @var GridSize $value */
-        if ($value instanceof GridSize) {
-            /** @var GridSize $value */
-            $gs = array();
-            $gs['n_x'] = $value->getNX();
-            $gs['n_y'] = $value->getNY();
-            return json_encode($gs);
-        }
-
-        return null;
+        $gs = array();
+        $gs['n_x'] = $value->getNX();
+        $gs['n_y'] = $value->getNY();
+        return json_encode($gs);
     }
 
     /**
@@ -48,7 +37,7 @@ class GridSizeType extends Type
     public function convertToPHPValue($value, AbstractPlatform $platform)
     {
         if ($value === null || $value === '') {
-            return array();
+            return null;
         }
 
         $value = (is_resource($value)) ? stream_get_contents($value) : $value;
@@ -58,17 +47,19 @@ class GridSizeType extends Type
 
     /**
      * {@inheritdoc}
+     * @codeCoverageIgnore
      */
     public function getName()
     {
-        return 'grid_size';
+        return self::NAME;
     }
 
     /**
      * {@inheritdoc}
+     * @codeCoverageIgnore
      */
     public function requiresSQLCommentHint(AbstractPlatform $platform)
     {
-        return ! $platform->hasNativeJsonType();
+        return true;
     }
 }

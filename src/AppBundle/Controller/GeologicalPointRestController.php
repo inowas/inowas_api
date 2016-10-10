@@ -3,10 +3,12 @@
 namespace AppBundle\Controller;
 
 use AppBundle\Entity\GeologicalPoint;
+use AppBundle\Entity\User;
 use FOS\RestBundle\Controller\FOSRestController;
 use FOS\RestBundle\View\View;
 use JMS\Serializer\SerializationContext;
 use Nelmio\ApiDocBundle\Annotation\ApiDoc;
+use Ramsey\Uuid\Uuid;
 
 class GeologicalPointRestController extends FOSRestController
 {
@@ -34,8 +36,7 @@ class GeologicalPointRestController extends FOSRestController
                 'username' => $username
             ));
 
-        if (!$user)
-        {
+        if (! $user instanceof User) {
             throw  $this->createNotFoundException('User with username='.$username.' not found.');
         }
 
@@ -76,25 +77,30 @@ class GeologicalPointRestController extends FOSRestController
      */
     public function getGeologicalpointsAction($id)
     {
+
+        try {
+            $uuid = Uuid::fromString($id);
+        } catch (\InvalidArgumentException $e) {
+            throw $this->createNotFoundException('GeologicalPoint with id='.$id.' not found.');
+        }
+
         /** @var GeologicalPoint $entity */
         $entity = $this->getDoctrine()
             ->getRepository('AppBundle:GeologicalPoint')
             ->findOneBy(array(
-                'id' => $id
+                'id' => $uuid
             ));
 
-        if ($entity->getPublic() || $this->isGranted('ROLE_ADMIN') || $this->getUser() === $entity->getOwner())
-        {
-            $view = View::create();
-            $view->setData($entity)
-                ->setStatusCode(200)
-                ->setSerializationContext(SerializationContext::create()
-                    ->setGroups(array('modelobjectdetails')));
-
-            return $view;
-        } else
-        {
-            throw $this->createAccessDeniedException();
+        if (! $entity instanceof GeologicalPoint) {
+            throw $this->createNotFoundException('GeologicalPoint with id='.$id.' not found.');
         }
+
+        $view = View::create();
+        $view->setData($entity)
+            ->setStatusCode(200)
+            ->setSerializationContext(SerializationContext::create()
+                ->setGroups(array('modelobjectdetails')));
+
+        return $view;
     }
 }

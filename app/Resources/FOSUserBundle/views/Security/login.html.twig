@@ -1,0 +1,42 @@
+{% trans_default_domain 'FOSUserBundle' %}
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8" />
+        <title>{% block title %}Login{% endblock %}</title>
+        <link rel="stylesheet" type="text/css" href="{{ asset('vendor/bootstrap/dist/css/bootstrap.css') }}" />
+        <link rel="stylesheet" type="text/css" href="{{ asset('vendor/font-awesome/css/font-awesome.min.css') }}" />
+        <link rel="stylesheet" type="text/css" href="{{ asset('vendor/jquery-ui/themes/smoothness/jquery-ui.min.css') }}" />
+        <link rel="stylesheet" type="text/css" href="{{ asset('css/login.css') }}" />
+        <link rel="icon" type="image/x-icon" href="{{ asset('favicon.ico') }}" />
+    </head>
+    <body>
+        <div class="contentWrapper">
+            <form class="form-signin" action="{{ path("fos_user_security_check") }}" method="post">
+                <h2 class="form-signin-heading">{{ 'security.login.sign_in_message'|trans }}</h2>
+                {% if error %}
+                    <div class="alert alert-danger">
+                        {{ error.messageKey|trans(error.messageData, 'security') }}
+                    </div>
+                {% endif %}
+                <label class="sr-only" for="username">{{ 'security.login.username'|trans }}</label>
+                <input class="form-control" type="text" id="username" name="_username" value="{{ last_username }}" required autofocus />
+
+                <label class="sr-only" for="password">{{ 'security.login.password'|trans }}</label>
+                <input class="form-control" type="password" id="password" name="_password" required />
+                <div class="checkbox">
+                    <label>
+                        <input type="checkbox" id="remember_me" name="_remember_me" value="on" />{{ 'security.login.remember_me'|trans }}
+                    </label>
+                </div>
+                <button class="btn btn-lg btn-primary btn-block" type="submit" id="_submit">{{ 'security.login.submit'|trans }}</button>
+                <input type="hidden" name="_csrf_token" value="{{ csrf_token }}" />
+            </form>
+        </div>
+
+        <script type="text/javascript" src="{{ asset('vendor/jquery/dist/jquery.min.js') }}"></script>
+        <script type="text/javascript" src="{{ asset('vendor/bootstrap/dist/js/bootstrap.min.js') }}"></script>
+        <script type="text/javascript" src="{{ asset('vendor/jquery-ui/jquery-ui.min.js') }}"></script>
+        <script type="text/javascript" src="{{ asset('vendor/jquery-ui/ui/i18n/datepicker-de.js') }}"></script>
+    </body>
+</html>

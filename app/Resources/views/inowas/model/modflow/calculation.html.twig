@@ -1,0 +1,30 @@
+{% trans_default_domain "inowas" %}
+{% if calculation is null %}
+    <div class="row">
+        <div class="col-sm-4" style="height: 300px;">
+            <p>Please calculate</p>
+            <button type="button" class="btn btn-success btn-block btn_calculation top-margin-40">Run calculation</button>
+        </div>
+
+        <div class="col-sm-8 log">
+            <p id="log" class="small"></p>
+        </div>
+    </div>
+{% else %}
+    <div class="row">
+        <div class="col-sm-4" style="height: 300px;">
+            <p class="addedtoqueue">{{ calculation.getDateTimeAddToQueue | date }}</p>
+            <h3>State</h3>
+            <p>{{ ('calculation.message.' ~ calculation.state) | trans }}</p>
+            <button type="button" class="btn btn-success btn-block {{ ('calculation.button_class.' ~ calculation.state) | trans }} top-margin-40">
+                {{ ('calculation.button.' ~ calculation.state) | trans }}
+            </button>
+        </div>
+
+        <div class="col-sm-8 log">
+            <p id="log" class="small">
+                {{ calculation.getOutput | nl2br }}
+            </p>
+        </div>
+    </div>
+{% endif %}

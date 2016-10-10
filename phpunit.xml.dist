@@ -14,6 +14,7 @@
     <testsuites>
         <testsuite name="Project Test Suite">
             <directory>tests</directory>
+            <directory>src/Inowas/*Bundle/Tests</directory>
         </testsuite>
     </testsuites>
 
@@ -28,6 +29,12 @@
                 <directory>src/*Bundle/Resources</directory>
                 <directory>src/*/*Bundle/Resources</directory>
                 <directory>src/*/Bundle/*Bundle/Resources</directory>
+                <directory>src/Inowas/*Bundle/Tests</directory>
+            </exclude>
+        </whitelist>
+        <whitelist processUncoveredFilesFromWhitelist="true">
+            <exclude>
+                <directory suffix=".php">src/*Bundle/DataFixtures</directory>
             </exclude>
         </whitelist>
     </filter>

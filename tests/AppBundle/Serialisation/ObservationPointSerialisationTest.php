@@ -1,6 +1,6 @@
 <?php
 
-namespace AppBundle\Tests\Controller;
+namespace Tests\AppBundle\Controller;
 
 use AppBundle\Entity\ObservationPoint;
 use AppBundle\Model\ObservationPointFactory;
@@ -28,7 +28,7 @@ class ObservationPointSerialisationTest extends \PHPUnit_Framework_TestCase
             ->setPublic(true)
             ->setElevation(12.11)
             ->setOwner(UserFactory::createTestUser('ObservationPointTestUser'))
-            ->setPoint(new Point(11.1, 12.1, 3542))
+            ->setGeometry(new Point(11.1, 12.1, 3542))
         ;
     }
 
@@ -45,8 +45,8 @@ class ObservationPointSerialisationTest extends \PHPUnit_Framework_TestCase
 
         $this->assertEquals($observationPoint->elevation, $this->observationPoint->getElevation());
 
-        $this->assertEquals($observationPoint->point->x, $this->observationPoint->getPoint()->getX());
-        $this->assertEquals($observationPoint->point->y, $this->observationPoint->getPoint()->getY());
-        $this->assertEquals($observationPoint->point->srid, $this->observationPoint->getPoint()->getSrid());
+        $this->assertEquals($observationPoint->point->x, $this->observationPoint->getGeometry()->getX());
+        $this->assertEquals($observationPoint->point->y, $this->observationPoint->getGeometry()->getY());
+        $this->assertEquals($observationPoint->point->srid, $this->observationPoint->getGeometry()->getSrid());
     }
 }

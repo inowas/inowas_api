@@ -1,44 +1,38 @@
 <?php
 
-namespace AppBundle\Tests\Controller;
+namespace Tests\AppBundle\Controller;
 
-use AppBundle\Entity\Stream;
+use AppBundle\Entity\StreamBoundary;
 use AppBundle\Entity\User;
-use AppBundle\Model\StreamFactory;
-use AppBundle\Model\UserFactory;
-use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
+use AppBundle\Model\Point;
+use AppBundle\Model\StreamBoundaryFactory;
+use CrEOF\Spatial\PHP\Types\Geometry\LineString;
+use Tests\AppBundle\RestControllerTestCase;
 
-class StreamRestControllerTest extends WebTestCase
+class StreamRestControllerTest extends RestControllerTestCase
 {
 
-    /** @var \Doctrine\ORM\EntityManager */
-    protected $entityManager;
-
-    /** @var User $owner */
-    protected $owner;
-
-    /** @var  Stream $boundary */
+    /** @var  StreamBoundary $boundary */
     protected $stream;
 
     public function setUp()
     {
-        self::bootKernel();
-        $this->entityManager = static::$kernel->getContainer()
-            ->get('doctrine.orm.default_entity_manager')
-        ;
+        $this->getEntityManager()->persist($this->getOwner());
+        $this->getEntityManager()->flush();
 
-        $this->owner = UserFactory::createTestUser('BoundaryOwner');
-        $this->entityManager->persist($this->owner);
-        $this->entityManager->flush();
-
-        $this->stream = StreamFactory::create()
+        $this->stream = StreamBoundaryFactory::create()
             ->setName('Stream')
             ->setPublic(true)
-            ->setOwner($this->owner)
+            ->setOwner($this->getOwner())
+            ->setGeometry(new LineString(array(
+                new Point(1,2,4326),
+                new Point(1,3,4326),
+                new Point(1,4,4326)
+            )))
         ;
 
-        $this->entityManager->persist($this->stream);
-        $this->entityManager->flush();
+        $this->getEntityManager()->persist($this->stream);
+        $this->getEntityManager()->flush();
     }
 
     /**
@@ -47,7 +41,13 @@ class StreamRestControllerTest extends WebTestCase
     public function testStreamList()
     {
         $client = static::createClient();
-        $client->request('GET', '/api/users/'.$this->owner->getUsername().'/streams.json');
+        $client->request(
+            'GET',
+            '/api/users/'.$this->getOwner()->getUsername().'/streams.json',
+            array(),
+            array(),
+            array('HTTP_X-AUTH-TOKEN' => $this->getOwner()->getApiKey())
+        );
         $this->assertEquals(200, $client->getResponse()->getStatusCode());
         $streams = json_decode($client->getResponse()->getContent());
         $this->assertEquals(1, count($streams));
@@ -60,7 +60,13 @@ class StreamRestControllerTest extends WebTestCase
     public function testStreamDetails()
     {
         $client = static::createClient();
-        $client->request('GET', '/api/streams/'.$this->stream->getId().'.json');
+        $client->request(
+            'GET',
+            '/api/streams/'.$this->stream->getId().'.json',
+            array(),
+            array(),
+            array('HTTP_X-AUTH-TOKEN' => $this->getOwner()->getApiKey())
+        );
         $this->assertEquals(200, $client->getResponse()->getStatusCode());
         $area = json_decode($client->getResponse()->getContent());
         $this->assertEquals($area->id, $this->stream->getId());
@@ -71,21 +77,21 @@ class StreamRestControllerTest extends WebTestCase
      */
     public function tearDown()
     {
-        $user = $this->entityManager->getRepository('AppBundle:User')
+        $user = $this->getEntityManager()->getRepository('AppBundle:User')
             ->findOneBy(array(
-                'username' => $this->owner->getUsername()
+                'username' => $this->getOwner()->getUsername()
             ));
-        $this->entityManager->remove($user);
+        $this->getEntityManager()->remove($user);
 
-        $entities = $this->entityManager->getRepository('AppBundle:Stream')
-            ->findAll();
+        $entities = $this->getEntityManager()->getRepository('AppBundle:StreamBoundary')
+            ->findBy(array(
+                'owner' => $user
+            ));
 
-        foreach ($entities as $entity)
-        {
-            $this->entityManager->remove($entity);
+        foreach ($entities as $entity) {
+            $this->getEntityManager()->remove($entity);
         }
 
-        $this->entityManager->flush();
-        $this->entityManager->close();
+        $this->getEntityManager()->flush();
     }
 }

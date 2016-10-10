@@ -3,10 +3,12 @@
 namespace AppBundle\Controller;
 
 use AppBundle\Entity\ObservationPoint;
+use AppBundle\Entity\User;
 use FOS\RestBundle\Controller\FOSRestController;
 use FOS\RestBundle\View\View;
 use JMS\Serializer\SerializationContext;
 use Nelmio\ApiDocBundle\Annotation\ApiDoc;
+use Ramsey\Uuid\Uuid;
 
 class ObservationPointRestController extends FOSRestController
 {
@@ -34,9 +36,8 @@ class ObservationPointRestController extends FOSRestController
                 'username' => $username
             ));
 
-        if (!$user)
-        {
-            throw  $this->createNotFoundException('User with username='.$username.' not found.');
+        if (! $user instanceof User) {
+            throw  $this->createNotFoundException(sprintf('User with username %s not found.', $username));
         }
 
         $entities = $this->getDoctrine()
@@ -76,25 +77,30 @@ class ObservationPointRestController extends FOSRestController
      */
     public function getObservationpointsAction($id)
     {
+
+        try {
+            $uuid = Uuid::fromString($id);
+        } catch (\InvalidArgumentException $e) {
+            throw $this->createNotFoundException(sprintf('ObservationPoint with Id %s not found.', $id));
+        }
+
         /** @var ObservationPoint $entity */
         $entity = $this->getDoctrine()
             ->getRepository('AppBundle:ObservationPoint')
             ->findOneBy(array(
-                'id' => $id
+                'id' => $uuid
             ));
 
-        if ($entity->getPublic() || $this->isGranted('ROLE_ADMIN') || $this->getUser() === $entity->getOwner())
-        {
-            $view = View::create();
-            $view->setData($entity)
-                ->setStatusCode(200)
-                ->setSerializationContext(SerializationContext::create()
-                    ->setGroups(array('modelobjectdetails')));
-
-            return $view;
-        } else
-        {
-            throw $this->createAccessDeniedException();
+        if (! $entity instanceof ObservationPoint){
+            throw $this->createNotFoundException(sprintf('ObservationPoint with Id %s not found.', $id));
         }
+
+        $view = View::create();
+        $view->setData($entity)
+            ->setStatusCode(200)
+            ->setSerializationContext(SerializationContext::create()
+                ->setGroups(array('modelobjectdetails')));
+
+        return $view;
     }
 }

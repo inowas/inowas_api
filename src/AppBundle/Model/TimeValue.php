@@ -80,6 +80,5 @@ class TimeValue implements TimeValueInterface
         $this->raster = $raster;
         return $this;
     }
-
-
 }
+

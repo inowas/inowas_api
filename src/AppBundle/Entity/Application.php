@@ -28,7 +28,7 @@ class Application
     /**
      * @var string
      *
-     * @ORM\Column(name="name", type="string",length=255)
+     * @ORM\Column(name="name", type="string",length=255, nullable=true)
      * @JMS\Groups({"applicationList", "applicationDetails"})
      */
     private $name;
@@ -40,16 +40,6 @@ class Application
      * @JMS\Groups({"applicationList", "applicationDetails"})
      */
     private $description;
-
-    /**
-     * @var User
-     *
-     * @ORM\ManyToOne(targetEntity="User")
-     * @ORM\JoinColumn(name="user_id", referencedColumnName="id", onDelete="CASCADE")
-     * @JMS\MaxDepth(3)
-     * @JMS\Groups({"applicationDetails"})
-     */
-    private $owner;
 
     /**
      * @var ArrayCollection Tool
@@ -66,30 +56,6 @@ class Application
     private $tools;
 
     /**
-     * @var boolean
-     *
-     * @ORM\Column(name="public", type="boolean")
-     * @JMS\Groups({"applicationList", "applicationDetails"})
-     */
-    private $public;
-
-    /**
-     * @var \DateTime
-     *
-     * @ORM\Column(name="dateCreated", type="datetime")
-     * @JMS\Groups({"applicationDetails"})
-     */
-    private $dateCreated;
-
-    /**
-     * @var \DateTime
-     *
-     * @ORM\Column(name="dateModified", type="datetime")
-     * @JMS\Groups({"applicationDetails"})
-     */
-    private $dateModified;
-
-    /**
      * Get id
      *
      * @return int
@@ -104,8 +70,7 @@ class Application
     public function __construct()
     {
         $this->id = Uuid::uuid4();
-        $this->participants = new \Doctrine\Common\Collections\ArrayCollection();
-        $this->tools = new \Doctrine\Common\Collections\ArrayCollection();
+        $this->tools = new ArrayCollection();
     }
 
     /**
@@ -157,145 +122,17 @@ class Application
     }
 
     /**
-     * Set public
-     *
-     * @param boolean $public
-     *
-     * @return Application
-     */
-    public function setPublic($public)
-    {
-        $this->public = $public;
-
-        return $this;
-    }
-
-    /**
-     * Get public
-     *
-     * @return boolean
-     */
-    public function getPublic()
-    {
-        return $this->public;
-    }
-
-    /**
-     * Set dateCreated
-     *
-     * @param \DateTime $dateCreated
-     *
-     * @return Application
-     */
-    public function setDateCreated($dateCreated)
-    {
-        $this->dateCreated = $dateCreated;
-
-        return $this;
-    }
-
-    /**
-     * Get dateCreated
-     *
-     * @return \DateTime
-     */
-    public function getDateCreated()
-    {
-        return $this->dateCreated;
-    }
-
-    /**
-     * Set dateModified
-     *
-     * @param \DateTime $dateModified
-     *
-     * @return Application
-     */
-    public function setDateModified($dateModified)
-    {
-        $this->dateModified = $dateModified;
-
-        return $this;
-    }
-
-    /**
-     * Get dateModified
-     *
-     * @return \DateTime
-     */
-    public function getDateModified()
-    {
-        return $this->dateModified;
-    }
-
-    /**
-     * Set owner
-     *
-     * @param \AppBundle\Entity\User $owner
-     *
-     * @return Application
-     */
-    public function setOwner(\AppBundle\Entity\User $owner = null)
-    {
-        $this->owner = $owner;
-
-        return $this;
-    }
-
-    /**
-     * Get owner
-     *
-     * @return \AppBundle\Entity\User
-     */
-    public function getOwner()
-    {
-        return $this->owner;
-    }
-
-    /**
-     * Add participant
-     *
-     * @param \AppBundle\Entity\User $participant
-     *
-     * @return Application
-     */
-    public function addParticipant(\AppBundle\Entity\User $participant)
-    {
-        $this->participants[] = $participant;
-
-        return $this;
-    }
-
-    /**
-     * Remove participant
-     *
-     * @param \AppBundle\Entity\User $participant
-     */
-    public function removeParticipant(\AppBundle\Entity\User $participant)
-    {
-        $this->participants->removeElement($participant);
-    }
-
-    /**
-     * Get participants
-     *
-     * @return \Doctrine\Common\Collections\Collection
-     */
-    public function getParticipants()
-    {
-        return $this->participants;
-    }
-
-    /**
      * Add tool
      *
-     * @param \AppBundle\Entity\Tool $tool
+     * @param Tool $tool
      *
      * @return Application
      */
-    public function addTool(\AppBundle\Entity\Tool $tool)
+    public function addTool(Tool $tool)
     {
-        $this->tools[] = $tool;
+        if (! $this->tools->contains($tool)) {
+            $this->tools[] = $tool;
+        };
 
         return $this;
     }
@@ -303,9 +140,9 @@ class Application
     /**
      * Remove tool
      *
-     * @param \AppBundle\Entity\Tool $tool
+     * @param Tool $tool
      */
-    public function removeTool(\AppBundle\Entity\Tool $tool)
+    public function removeTool(Tool $tool)
     {
         $this->tools->removeElement($tool);
     }
@@ -313,7 +150,7 @@ class Application
     /**
      * Get tools
      *
-     * @return \Doctrine\Common\Collections\Collection
+     * @return ArrayCollection
      */
     public function getTools()
     {

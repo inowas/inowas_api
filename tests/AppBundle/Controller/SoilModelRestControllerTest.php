@@ -1,41 +1,37 @@
 <?php
 
-namespace AppBundle\Tests\Controller;
+namespace Tests\AppBundle\Controller;
 
+use AppBundle\Entity\GeologicalLayer;
 use AppBundle\Entity\SoilModel;
 use AppBundle\Entity\User;
+use AppBundle\Model\GeologicalLayerFactory;
 use AppBundle\Model\SoilModelFactory;
-use AppBundle\Model\UserFactory;
-use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
+use Tests\AppBundle\RestControllerTestCase;
 
-class SoilModelRestControllerTest extends WebTestCase
+class SoilModelRestControllerTest extends RestControllerTestCase
 {
-
-    /** @var \Doctrine\ORM\EntityManager */
-    protected $entityManager;
-
-    /** @var User $owner */
-    protected $owner;
-
     /** @var SoilModel $soilModel */
     protected $soilModel;
 
     public function setUp()
     {
-        self::bootKernel();
-        $this->entityManager = static::$kernel->getContainer()
-            ->get('doctrine.orm.default_entity_manager')
-        ;
 
-        $this->owner = UserFactory::createTestUser("SoilModelTestOwner");
-        $this->entityManager->persist($this->owner);
+        $this->getEntityManager()->persist($this->getOwner());
 
         $this->soilModel = SoilModelFactory::create();
-        $this->soilModel->setOwner($this->owner);
+        $this->soilModel->setOwner($this->getOwner());
         $this->soilModel->setPublic(true);
         $this->soilModel->setName('SoilModelTest');
-        $this->entityManager->persist($this->soilModel);
-        $this->entityManager->flush();
+        $this->getEntityManager()->persist($this->soilModel);
+        $this->getEntityManager()->flush();
+    }
+
+    public function testGetListWithoutAPIKeyReturns401()
+    {
+        $client = static::createClient();
+        $client->request('GET', '/api/users/unknownUser/soilmodels.json');
+        $this->assertEquals(401, $client->getResponse()->getStatusCode());
     }
 
     /**
@@ -44,17 +40,63 @@ class SoilModelRestControllerTest extends WebTestCase
     public function testGetListOfSoilModelsByUserAPI()
     {
         $client = static::createClient();
-        $client->request('GET', '/api/users/'.$this->owner->getUsername().'/soilmodels.json');
+        $client->request(
+            'GET',
+            '/api/users/'.$this->getOwner()->getUsername().'/soilmodels.json',
+            array(),
+            array(),
+            array('HTTP_X-AUTH-TOKEN' => $this->getOwner()->getApiKey())
+        );
         $this->assertEquals(200, $client->getResponse()->getStatusCode());
         $soilModels = json_decode($client->getResponse()->getContent());
         $this->assertEquals(1, count($soilModels));
-        //$this->assertEquals($this->soilModel->getName(), $soilModels[0]->name);
+    }
+
+    public function testGetListOfSoilModelsWithUnknownReturns404()
+    {
+        $client = static::createClient();
+        $client->request(
+            'GET',
+            '/api/users/unknownUser/soilmodels.json',
+            array(),
+            array(),
+            array('HTTP_X-AUTH-TOKEN' => $this->getOwner()->getApiKey())
+        );
+        $this->assertEquals(404, $client->getResponse()->getStatusCode());
     }
 
     public function testGetSoilModelDetailsAPI()
     {
         $client = static::createClient();
-        $client->request('GET', '/api/soilmodels/'.$this->soilModel->getId().'.json');
+        $client->request(
+            'GET',
+            '/api/soilmodels/'.$this->soilModel->getId().'.json',
+            array(),
+            array(),
+            array('HTTP_X-AUTH-TOKEN' => $this->getOwner()->getApiKey())
+        );
+        $this->assertEquals(200, $client->getResponse()->getStatusCode());
+    }
+
+    public function testGetSoilModelGeologicalLayersAPI()
+    {
+        $this->soilModel->addGeologicalLayer(
+            GeologicalLayerFactory::create()
+            ->setOwner($this->getOwner())
+            ->setOrder(GeologicalLayer::TOP_LAYER)
+        );
+
+        $this->getEntityManager()->persist($this->soilModel);
+        $this->getEntityManager()->flush();
+
+        $client = static::createClient();
+        $client->request(
+            'GET',
+            '/api/soilmodels/'.$this->soilModel->getId().'/geologicallayers.json',
+            array(),
+            array(),
+            array('HTTP_X-AUTH-TOKEN' => $this->getOwner()->getApiKey())
+        );
         $this->assertEquals(200, $client->getResponse()->getStatusCode());
     }
 
@@ -63,18 +105,17 @@ class SoilModelRestControllerTest extends WebTestCase
      */
     public function tearDown()
     {
-        $user = $this->entityManager->getRepository('AppBundle:User')
+        $user = $this->getEntityManager()->getRepository('AppBundle:User')
             ->findOneBy(array(
-                'username' => $this->owner->getUsername()
+                'username' => $this->getOwner()->getUsername()
             ));
-        $this->entityManager->remove($user);
+        $this->getEntityManager()->remove($user);
 
-        $soilModel = $this->entityManager->getRepository('AppBundle:SoilModel')
+        $soilModel = $this->getEntityManager()->getRepository('AppBundle:SoilModel')
             ->findOneBy(array(
                'name' => $this->soilModel->getName()
             ));
-        $this->entityManager->remove($soilModel);
-        $this->entityManager->flush();
-        $this->entityManager->close();
+        $this->getEntityManager()->remove($soilModel);
+        $this->getEntityManager()->flush();
     }
 }

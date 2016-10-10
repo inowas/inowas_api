@@ -1,11 +1,10 @@
 <?php
 
-namespace AppBundle\Tests\Controller;
+namespace Tests\AppBundle\Controller;
 
 use AppBundle\Entity\Area;
 use AppBundle\Entity\SoilModel;
 use AppBundle\Model\AreaFactory;
-use AppBundle\Model\AreaTypeFactory;
 use AppBundle\Model\GeologicalLayerFactory;
 use AppBundle\Model\GeologicalPointFactory;
 use AppBundle\Model\GeologicalUnitFactory;
@@ -13,6 +12,7 @@ use AppBundle\Model\Point;
 use AppBundle\Model\PropertyFactory;
 use AppBundle\Model\SoilModelFactory;
 use AppBundle\Model\UserFactory;
+use CrEOF\Spatial\PHP\Types\Geometry\Polygon;
 use JMS\Serializer\SerializationContext;
 use JMS\Serializer\Serializer;
 use JMS\Serializer\SerializerBuilder;
@@ -44,8 +44,19 @@ class SoilModelSerialisationTest extends \PHPUnit_Framework_TestCase
         $this->area = AreaFactory::create()
             ->setOwner($owner)
             ->setPublic(true)
-            ->setAreaType(AreaTypeFactory::setName('SoilModelTestAreaType'))
-            ->addProperty(PropertyFactory::create()->setId(14))
+            ->setGeometry(new Polygon(
+                array(
+                    array(
+                        new Point(1.1, 1.1, 4326),
+                        new Point(1.1, 2.2, 4326),
+                        new Point(2.2, 2.2, 4326),
+                        new Point(2.2, 1.1, 4326),
+                        new Point(1.1, 1.1, 4326)
+                    )
+                )
+            ))
+            ->setAreaType('SoilModelTestAreaType')
+            ->addProperty(PropertyFactory::create())
         ;
 
         $this->soilModel->setArea($this->area);
@@ -67,8 +78,6 @@ class SoilModelSerialisationTest extends \PHPUnit_Framework_TestCase
             ->setOwner($owner)
             ->setPublic(true)
             ->setName('SoilModel-TestPoint_1')
-            ->setDateCreated(new \DateTime('2015-01-01'))
-            ->setDateModified(new \DateTime('2015-01-02'))
             ->setPoint(new Point(12,11,5432))
         ;
 
@@ -76,8 +85,6 @@ class SoilModelSerialisationTest extends \PHPUnit_Framework_TestCase
             ->setOwner($owner)
             ->setPublic(true)
             ->setName('SoilModel-TestPoint_2')
-            ->setDateCreated(new \DateTime('2015-01-01'))
-            ->setDateModified(new \DateTime('2015-01-02'))
             ->setPoint(new Point(13,12,5432))
         ;
 
@@ -88,29 +95,25 @@ class SoilModelSerialisationTest extends \PHPUnit_Framework_TestCase
             ->setOwner($owner)
             ->setPublic(true)
             ->setName("SoilModel-TestUnit_1_1")
-            ->setDateCreated(new \DateTime('2015-01-01'))
-            ->setDateModified(new \DateTime('2015-01-02'));
+        ;
 
         $unit_1_2 = GeologicalUnitFactory::create()
             ->setOwner($owner)
             ->setPublic(true)
             ->setName("SoilModel-TestUnit_1_2")
-            ->setDateCreated(new \DateTime('2015-01-01'))
-            ->setDateModified(new \DateTime('2015-01-02'));
+        ;
 
         $unit_2_1 = GeologicalUnitFactory::create()
             ->setOwner($owner)
             ->setPublic(true)
             ->setName("SoilModel-TestUnit_2_1")
-            ->setDateCreated(new \DateTime('2015-01-01'))
-            ->setDateModified(new \DateTime('2015-01-02'));
+        ;
 
         $unit_2_2 = GeologicalUnitFactory::create()
             ->setOwner($owner)
             ->setPublic(true)
             ->setName("SoilModel-TestUnit_2_2")
-            ->setDateCreated(new \DateTime('2015-01-01'))
-            ->setDateModified(new \DateTime('2015-01-02'));
+        ;
 
         $layer1->addGeologicalUnit($unit_1_1);
         $layer1->addGeologicalUnit($unit_1_2);

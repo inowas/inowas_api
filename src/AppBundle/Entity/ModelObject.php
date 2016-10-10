@@ -2,11 +2,14 @@
 
 namespace AppBundle\Entity;
 
+use AppBundle\Model\ActiveCells;
 use AppBundle\Model\PropertyFactory;
+use AppBundle\Model\PropertyType;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
 use JMS\Serializer\Annotation as JMS;
 use Ramsey\Uuid\Uuid;
+use Ramsey\Uuid\UuidInterface;
 
 /**
  * ModelObject
@@ -16,13 +19,15 @@ use Ramsey\Uuid\Uuid;
  * @ORM\InheritanceType("JOINED")
  * @ORM\DiscriminatorColumn(name="discr", type="string")
  * @ORM\DiscriminatorMap({  "ar" = "Area",
- *                          "bo" = "Boundary",
- *                          "wbo" = "Well",
  *                          "op" = "ObservationPoint",
  *                          "gp" = "GeologicalPoint",
  *                          "gl" = "GeologicalLayer",
  *                          "gu" = "GeologicalUnit",
- *                          "st" = "Stream"
+ *                          "chb" = "ConstantHeadBoundary",
+ *                          "ghb" = "GeneralHeadBoundary",
+ *                          "rch" = "RechargeBoundary",
+ *                          "riv" = "StreamBoundary",
+ *                          "wel" = "WellBoundary"
  * })
  */
 abstract class ModelObject
@@ -33,7 +38,7 @@ abstract class ModelObject
      * @ORM\Id
      * @ORM\Column(name="id", type="uuid", unique=true)
      * @JMS\Type("string")
-     * @JMS\Groups({"list", "details", "layerdetails", "modeldetails", "modelobjectdetails", "modelobjectlist", "soilmodeldetails"})
+     * @JMS\Groups({"list", "details", "layerdetails", "modeldetails", "modelobjectdetails", "modelobjectlist", "soilmodeldetails", "soilmodellayers", "boundarylist"})
      */
     protected $id;
 
@@ -50,7 +55,7 @@ abstract class ModelObject
      * @var string
      *
      * @ORM\Column(name="name", type="string", length=255, nullable=true)
-     * @JMS\Groups({"list", "details", "layerdetails", "modelobjectdetails", "modelobjectlist", "soilmodeldetails"})
+     * @JMS\Groups({"list", "details", "layerdetails", "modelobjectdetails", "modelobjectlist", "soilmodeldetails", "soilmodellayers", "boundarylist"})
      */
     protected $name;
 
@@ -66,11 +71,11 @@ abstract class ModelObject
      *
      * @ORM\ManyToMany(targetEntity="AppBundle\Entity\Property", cascade={"persist", "remove"})
      * @ORM\JoinTable(name="model_objects_properties",
-     *     joinColumns={@ORM\JoinColumn(name="model_object_id", referencedColumnName="id")},
-     *     inverseJoinColumns={@ORM\JoinColumn(name="property_id", referencedColumnName="id")}
+     *     joinColumns={@ORM\JoinColumn(name="model_object_id", referencedColumnName="id", onDelete="CASCADE")},
+     *     inverseJoinColumns={@ORM\JoinColumn(name="property_id", referencedColumnName="id", onDelete="CASCADE")}
      *     )
      * @JMS\Type("ArrayCollection<AppBundle\Entity\Property>")
-     * @JMS\Groups({"details", "layerdetails", "modelobjectdetails", "soilmodeldetails"})
+     * @JMS\Groups({"details", "layerdetails", "modelobjectdetails", "soilmodeldetails", "soilmodellayers", "boundarylist"})
      */
     protected $properties;
 
@@ -85,18 +90,29 @@ abstract class ModelObject
     /**
      * @var ArrayCollection ObservationPoint
      *
-     * @ORM\ManyToMany(targetEntity="ObservationPoint", inversedBy="modelObjects", cascade={"persist", "remove"})
-     * @ORM\JoinTable(name="model_objects_observation_points")
-     * @JMS\Groups({"modelobjectdetails", "soilmodeldetails"})
+     * @ORM\ManyToMany(targetEntity="AppBundle\Entity\ObservationPoint", cascade={"persist", "remove"})
+     * @ORM\JoinTable(name="model_objects_observation_points",
+     *     joinColumns={@ORM\JoinColumn(name="model_object_id", referencedColumnName="id", onDelete="CASCADE")},
+     *     inverseJoinColumns={@ORM\JoinColumn(name="observation_point_id", referencedColumnName="id", onDelete="CASCADE")}
+     *     )
+     * @JMS\Groups({"modelobjectdetails", "soilmodeldetails", "boundarylist"})
      * @JMS\MaxDepth(5)
      */
     protected $observationPoints;
 
     /**
+     * @var ActiveCells $activeCells
+     *
+     * @ORM\Column(name="active_cells", type="active_cells", nullable=true)
+     * @JMS\Groups({"details", "modeldetails", "modelProperties", "modelobjectdetails"})
+     */
+    protected $activeCells;
+
+    /**
      * @var boolean
      *
      * @ORM\Column(name="public", type="boolean")
-     * @JMS\Groups({"list", "details", "layerdetails", "modelobjectdetails", "modelobjectlist", "soilmodeldetails"})
+     * @JMS\Groups({"list", "details", "layerdetails", "modelobjectdetails", "modelobjectlist", "soilmodeldetails", "soilmodellayers"})
      */
     protected $public;
 
@@ -104,7 +120,7 @@ abstract class ModelObject
      * @var \DateTime
      *
      * @ORM\Column(name="date_created", type="datetime")
-     * @JMS\Groups({"modelobjectdetails", "soilmodeldetails"})
+     * @JMS\Groups({"modelobjectdetails", "soilmodeldetails", "soilmodellayers"})
      */
     protected $dateCreated;
 
@@ -112,9 +128,17 @@ abstract class ModelObject
      * @var \DateTime
      *
      * @ORM\Column(name="date_modified", type="datetime")
-     * @JMS\Groups({"modelobjectdetails", "soilmodeldetails"})
+     * @JMS\Groups({"modelobjectdetails", "soilmodeldetails", "soilmodellayers"})
      */
     protected $dateModified;
+
+    /**
+     * @var boolean
+     *
+     * @JMS\Groups({"modelobjectdetails", "modeldetails", "soilmodeldetails"})
+     */
+    protected $mutable = false;
+
 
     /**
      * Constructor
@@ -126,7 +150,6 @@ abstract class ModelObject
         $this->id = Uuid::uuid4();
         $this->owner = $owner;
         $this->public = $public;
-        $this->soilModels = new ArrayCollection();
         $this->propertyIds = new ArrayCollection();
         $this->properties = new ArrayCollection();
         $this->observationPoints = new ArrayCollection();
@@ -135,22 +158,9 @@ abstract class ModelObject
     }
 
     /**
-     * Set Id
-     *
-     * @param $id
-     * @return $this
-     */
-    public function setId($id)
-    {
-        $this->id = $id;
-
-        return $this;
-    }
-
-    /**
      * Get id
      *
-     * @return integer 
+     * @return UuidInterface
      */
     public function getId()
     {
@@ -178,19 +188,6 @@ abstract class ModelObject
     public function getPublic()
     {
         return $this->public;
-    }
-
-    /**
-     * Set dateCreated
-     *
-     * @param \DateTime $dateCreated
-     * @return $this
-     */
-    public function setDateCreated($dateCreated)
-    {
-        $this->dateCreated = $dateCreated;
-
-        return $this;
     }
 
     /**
@@ -290,13 +287,14 @@ abstract class ModelObject
     /**
      * Add observationPoints
      *
-     * @param \AppBundle\Entity\ObservationPoint $observationPoints
+     * @param \AppBundle\Entity\ObservationPoint $observationPoint
      * @return $this
      */
-    public function addObservationPoint(ObservationPoint $observationPoints)
+    public function addObservationPoint(ObservationPoint $observationPoint)
     {
-        $this->observationPoints[] = $observationPoints;
-        $observationPoints->addModelObject($this);
+        if (!$this->observationPoints->contains($observationPoint)){
+            $this->observationPoints[] = $observationPoint;
+        }
 
         return $this;
     }
@@ -304,12 +302,13 @@ abstract class ModelObject
     /**
      * Remove observationPoints
      *
-     * @param \AppBundle\Entity\ObservationPoint $observationPoints
+     * @param \AppBundle\Entity\ObservationPoint $observationPoint
      */
-    public function removeObservationPoint(ObservationPoint $observationPoints)
+    public function removeObservationPoint(ObservationPoint $observationPoint)
     {
-        $this->observationPoints->removeElement($observationPoints);
-        $observationPoints->removeModelObject($this);
+        if ($this->observationPoints->contains($observationPoint)) {
+            $this->observationPoints->removeElement($observationPoint);
+        }
     }
 
     /**
@@ -354,7 +353,7 @@ abstract class ModelObject
     }
 
     /**
-     * @return int
+     * @return ArrayCollection
      */
     public function getPropertyIds()
     {
@@ -366,8 +365,11 @@ abstract class ModelObject
         return $this->propertyIds;
     }
 
-    protected function getPropertyByPropertyType(PropertyType $propertyType)
-    {
+    /**
+     * @param PropertyType $propertyType
+     * @return Property|null
+     */
+    public function getPropertyByPropertyType(PropertyType $propertyType){
         /** @var Property $property */
         foreach ($this->properties as $property)
         {
@@ -376,9 +378,18 @@ abstract class ModelObject
             }
         }
 
-        $property = PropertyFactory::create()
-            ->setPropertyType($propertyType);
-        $this->addProperty($property);
+        return null;
+    }
+
+    protected function getOrCreatePropertyByPropertyType(PropertyType $propertyType)
+    {
+        $property = $this->getPropertyByPropertyType($propertyType);
+
+        if (null === $property) {
+            $property = PropertyFactory::create()
+                ->setPropertyType($propertyType);
+            $this->addProperty($property);
+        }
         return $property;
     }
 
@@ -398,9 +409,53 @@ abstract class ModelObject
 
     public function addValue(PropertyType $propertyType, AbstractValue $value)
     {
-        $property = $this->getPropertyByPropertyType($propertyType);
+        $property = $this->getOrCreatePropertyByPropertyType($propertyType);
         $property->addValue($value);
 
         return $this;
+    }
+
+    /**
+     * @return ActiveCells
+     */
+    public function getActiveCells()
+    {
+        return $this->activeCells;
+    }
+
+    /**
+     * @param ActiveCells $activeCells
+     * @return $this
+     */
+    public function setActiveCells(ActiveCells $activeCells)
+    {
+        $this->activeCells = $activeCells;
+        return $this;
+    }
+
+    /**
+     * @return boolean
+     */
+    public function isMutable(): bool
+    {
+        return $this->mutable;
+    }
+
+    /**
+     * @param boolean $mutable
+     * @return $this
+     */
+    public function setMutable(bool $mutable)
+    {
+        $this->mutable = $mutable;
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getNameOfClass()
+    {
+        return static::class;
     }
 }

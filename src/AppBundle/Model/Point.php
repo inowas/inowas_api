@@ -4,7 +4,7 @@ namespace AppBundle\Model;
 
 use JMS\Serializer\Annotation as JMS;
 
-class Point extends \CrEOF\Spatial\PHP\Types\Geometry\Point
+class Point extends \CrEOF\Spatial\PHP\Types\Geometry\Point implements \JsonSerializable
 {
     /**
      * @var float
@@ -29,4 +29,16 @@ class Point extends \CrEOF\Spatial\PHP\Types\Geometry\Point
      * @JMS\Type("integer")
      */
     protected $srid;
+
+    /**
+     * @return mixed
+     */
+    public function jsonSerialize()
+    {
+        return array(
+            'x' => $this->x,
+            'y' => $this->y,
+            'srid' => $this->srid
+        );
+    }
 }

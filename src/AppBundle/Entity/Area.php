@@ -2,13 +2,13 @@
 
 namespace AppBundle\Entity;
 
-use AppBundle\Model\Interpolation\BoundingBox;
+use AppBundle\Model\BoundingBox;
 use CrEOF\Spatial\PHP\Types\Geometry\Polygon;
 use Doctrine\ORM\Mapping as ORM;
 use JMS\Serializer\Annotation as JMS;
 
 /**
- * @ORM\Entity()
+ * @ORM\Entity(repositoryClass="AppBundle\Repository\AreaRepository")
  * @ORM\Table(name="areas")
  */
 class Area extends ModelObject
@@ -28,19 +28,19 @@ class Area extends ModelObject
     private $geometry;
 
     /**
-     * @var array
+     * @var string
      *
-     * @JMS\Type("array")
-     */
-    private $rings;
-
-    /**
-     * @var AreaType
-     *
-     * @ORM\ManyToOne(targetEntity="AppBundle\Entity\AreaType", cascade={"persist", "remove"})
+     * @ORM\Column(name="area_type", type="string", nullable=true)
      * @JMS\Groups({"list", "details", "modelobjectdetails", "modeldetails"})
      */
     private $areaType;
+
+    /**
+     * @var float
+     *
+     * @JMS\Groups({"list", "details", "modelobjectdetails", "modelobjectlist"})
+     */
+    private $surface;
 
     /**
      * @return Polygon
@@ -57,18 +57,16 @@ class Area extends ModelObject
     public function setGeometry(Polygon $geometry)
     {
         $this->geometry = $geometry;
-        $this->rings = $geometry->toArray();
-
         return $this;
     }
 
     /**
      * Set areaType
      *
-     * @param \AppBundle\Entity\AreaType $areaType
+     * @param string
      * @return Area
      */
-    public function setAreaType(AreaType $areaType = null)
+    public function setAreaType($areaType)
     {
         $this->areaType = $areaType;
 
@@ -78,11 +76,29 @@ class Area extends ModelObject
     /**
      * Get areaType
      *
-     * @return \AppBundle\Entity\AreaType 
+     * @return string
      */
     public function getAreaType()
     {
         return $this->areaType;
+    }
+
+    /**
+     * @return float
+     */
+    public function getSurface()
+    {
+        return $this->surface;
+    }
+
+    /**
+     * @param float $surface
+     * @return Area
+     */
+    public function setSurface($surface)
+    {
+        $this->surface = $surface;
+        return $this;
     }
 
     /**
@@ -115,12 +131,24 @@ class Area extends ModelObject
     }
 
     /**
+     * @JMS\VirtualProperty
+     * @JMS\SerializedName("geojson")
+     * @JMS\Groups({"modelobjectdetails", "modeldetails", "soilmodeldetails"})
+     *
+     * @return string
+     */
+    public function geoJson()
+    {
+        return $this->geometry->toJson();
+    }
+
+    /**
      * 
      */
     public function getBoundingBox()
     {
-        if (is_null($this->geometry)) {
-            return new BoundingBox();
+        if (! $this->geometry instanceof Polygon) {
+            return null;
         }
         
         $rings = $this->geometry->toArray();
@@ -150,6 +178,6 @@ class Area extends ModelObject
             }
         }
 
-        return new BoundingBox($xMin, $xMax, $yMin, $yMax);
+        return new BoundingBox($xMin, $xMax, $yMin, $yMax, $this->geometry->getSrid());
     }
 }

@@ -2,31 +2,31 @@
 
 namespace AppBundle\DataFixtures\ORM\Scenarios\Scenario_3;
 
+use AppBundle\Entity\GeologicalLayer;
+use AppBundle\Entity\ModelObject;
 use AppBundle\Entity\ModFlowModel;
 use AppBundle\Entity\User;
 use AppBundle\Model\AreaFactory;
-use AppBundle\Model\AreaTypeFactory;
-use AppBundle\Model\BoundaryFactory;
+use AppBundle\Model\ConstantHeadBoundaryFactory;
 use AppBundle\Model\GeologicalLayerFactory;
 use AppBundle\Model\GeologicalPointFactory;
 use AppBundle\Model\GeologicalUnitFactory;
 use AppBundle\Model\ModFlowModelFactory;
 use AppBundle\Model\PropertyTimeValueFactory;
+use AppBundle\Model\PropertyType;
+use AppBundle\Model\PropertyTypeFactory;
 use AppBundle\Model\PropertyValueFactory;
-
 use AppBundle\Model\Point;
 use AppBundle\Model\SoilModelFactory;
 use CrEOF\Spatial\DBAL\Platform\PostgreSql;
 use CrEOF\Spatial\DBAL\Types\AbstractSpatialType;
 use CrEOF\Spatial\PHP\Types\Geometry\LineString;
 use CrEOF\Spatial\PHP\Types\Geometry\Polygon;
-
 use Doctrine\Common\DataFixtures\FixtureInterface;
 use Doctrine\Common\Persistence\ObjectManager;
 use Doctrine\DBAL\Types\Type;
 use Symfony\Component\DependencyInjection\ContainerAwareInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
-use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class LoadScenario_3 implements FixtureInterface, ContainerAwareInterface
 {
@@ -78,32 +78,8 @@ class LoadScenario_3 implements FixtureInterface, ContainerAwareInterface
         }
 
         // Load PropertyTypes
-        $propertyTypeGwHead = $entityManager->getRepository('AppBundle:PropertyType')
-            ->findOneBy(array(
-                'abbreviation' => "hh"
-            ));
-
-        if (!$propertyTypeGwHead) {
-            return new NotFoundHttpException();
-        }
-
-        $propertyTypeTopElevation = $entityManager->getRepository('AppBundle:PropertyType')
-            ->findOneBy(array(
-                'abbreviation' => "et"
-            ));
-
-        if (!$propertyTypeTopElevation) {
-            return new NotFoundHttpException();
-        }
-
-        $propertyTypeBottomElevation = $entityManager->getRepository('AppBundle:PropertyType')
-            ->findOneBy(array(
-                'abbreviation' => "eb"
-            ));
-
-        if (!$propertyTypeBottomElevation) {
-            return new NotFoundHttpException();
-        }
+        $propertyTypeTopElevation = PropertyTypeFactory::create(PropertyType::TOP_ELEVATION);
+        $propertyTypeBottomElevation = PropertyTypeFactory::create(PropertyType::BOTTOM_ELEVATION);
 
         // Create Modflow-Model
         /** @var ModFlowModel $modflowModel */
@@ -130,15 +106,27 @@ class LoadScenario_3 implements FixtureInterface, ContainerAwareInterface
         $entityManager->persist($soilModel);
 
         // Create new geological layers
-        $layer_1 = GeologicalLayerFactory::setOwnerNameAndPublic($user, 'SC3_L1', $public);
+        $layer_1 = GeologicalLayerFactory::create()
+            ->setOwner($user)
+            ->setName('SC3_L1')
+            ->setPublic($public);
+        $layer_1->setOrder(GeologicalLayer::TOP_LAYER);
         $soilModel->addGeologicalLayer($layer_1);
         $entityManager->persist($layer_1);
 
-        $layer_2 = GeologicalLayerFactory::setOwnerNameAndPublic($user, 'SC3_L2', $public);
+        $layer_2 = GeologicalLayerFactory::create()
+            ->setOwner($user)
+            ->setName('SC3_L2')
+            ->setPublic($public);
+        $layer_2->setOrder(GeologicalLayer::TOP_LAYER+1);
         $soilModel->addGeologicalLayer($layer_2);
         $entityManager->persist($layer_2);
 
-        $layer_3 = GeologicalLayerFactory::setOwnerNameAndPublic($user, 'SC3_L3', $public);
+        $layer_3 = GeologicalLayerFactory::create()
+            ->setOwner($user)
+            ->setName('SC3_L3')
+            ->setPublic($public);
+        $layer_3->setOrder(GeologicalLayer::TOP_LAYER+2);
         $soilModel->addGeologicalLayer($layer_3);
         $entityManager->persist($layer_3);
         $entityManager->flush();
@@ -220,19 +208,19 @@ class LoadScenario_3 implements FixtureInterface, ContainerAwareInterface
 
         // Add values to Layer SC3_L1
         $layer_1->addValue(
-            $this->getPropertyType($entityManager, 'hc'),
+            $this->getPropertyType('hc'),
             PropertyValueFactory::create()->setValue(40));
 
         $layer_1->addValue(
-            $this->getPropertyType($entityManager, 'va'),
+            $this->getPropertyType('va'),
             PropertyValueFactory::create()->setValue(8));
 
         $layer_1->addValue(
-            $this->getPropertyType($entityManager, 'ss'),
+            $this->getPropertyType('ss'),
             PropertyValueFactory::create()->setValue(0.00001));
 
         $layer_1->addValue(
-            $this->getPropertyType($entityManager, 'sy'),
+            $this->getPropertyType('sy'),
             PropertyValueFactory::create()->setValue(0.1));
 
         $entityManager->persist($layer_1);
@@ -241,7 +229,7 @@ class LoadScenario_3 implements FixtureInterface, ContainerAwareInterface
 
         // Add values to Layer SC3_L2
         $layer_2->addValue(
-            $this->getPropertyType($entityManager, 'vc'),
+            $this->getPropertyType('vc'),
             PropertyValueFactory::create()->setValue(1));
 
         $entityManager->persist($layer_2);
@@ -250,30 +238,30 @@ class LoadScenario_3 implements FixtureInterface, ContainerAwareInterface
 
         // Add properties to Layer SC3_L3
         $layer_3->addValue(
-            $this->getPropertyType($entityManager, 'hc'),
+            $this->getPropertyType('hc'),
             PropertyValueFactory::create()->setValue(42));
 
         $layer_3->addValue(
-            $this->getPropertyType($entityManager, 'va'),
+            $this->getPropertyType('va'),
             PropertyValueFactory::create()->setValue(21));
 
         $layer_3->addValue(
-            $this->getPropertyType($entityManager, 'ss'),
+            $this->getPropertyType('ss'),
             PropertyValueFactory::create()->setValue(0.0001));
 
         $layer_3->addValue(
-            $this->getPropertyType($entityManager, 'sy'),
+            $this->getPropertyType('sy'),
             PropertyValueFactory::create()->setValue(0.1));
 
         $entityManager->persist($layer_3);
         $entityManager->flush();
 
-        // Add new AreaType
-        $areaType = AreaTypeFactory::setName('SC3_AT1');
-        $entityManager->persist($areaType);
-
         // Add new Area
-        $area = AreaFactory::setOwnerNameTypeAndPublic($user, 'SC3_A1', $areaType, $public);
+        $area = AreaFactory::create()
+            ->setOwner($user)
+            ->setName('SC3_A1')
+            ->setAreaType('SC3_AT1')
+            ->setPublic($public);
         $polygonText = "POLYGON((11792952.16265026479959488 2396619.95378328999504447, 11789249.37860263884067535 2391542.94060458615422249, 11788791.30222561210393906 2391638.37318313354626298, 11788333.22584858722984791 2391810.1518245181068778, 11787417.07309453375637531 2392230.05517012532800436, 11786558.17988761141896248 2392459.09335863823071122, 11786367.31473051756620407 2392993.51579850167036057, 11786061.93047916702926159 2393279.81353414291515946, 11785794.7192592341452837 2393718.8033954594284296, 11785508.42152359336614609 2394291.39886674145236611, 11785412.98894504643976688 2394787.64827518630772829, 11785279.38333507999777794 2395512.93587214406579733, 11785050.34514656849205494 2395932.8392177508212626, 11784897.65302089229226112 2396448.17514190496876836, 11784802.22044234536588192 2397058.94364460650831461, 11784554.0957381222397089 2397803.31775727355852723, 11784515.92270670458674431 2398394.99974426534026861, 11784477.74967528507113457 2398853.07612129114568233, 11784248.71148677170276642 2399063.02779409429058433, 11784057.84632967785000801 2399387.49856115458533168, 11783771.5485940370708704 2399921.92100101802498102, 11783427.99131126701831818 2400360.91086233453825116, 11783504.33737410604953766 2400494.51647230051457882, 11783771.5485940370708704 2400418.1704094628803432, 11784038.75981396809220314 2400303.65131520619615912, 11784382.31709673814475536 2399979.18054814636707306, 11784725.87437950819730759 2399769.22887534275650978, 11785050.34514656849205494 2399769.22887534275650978, 11785527.50803930312395096 2399960.09403243707492948, 11785985.58441632799804211 2400189.13222094997763634, 11786462.74730906449258327 2400418.1704094628803432, 11786806.30459183268249035 2400685.38162939436733723, 11787321.64051598682999611 2400914.41981790727004409, 11788161.44720720127224922 2401277.06361638614907861, 11788848.56177274137735367 2401257.97710067685693502, 11789669.28194824606180191 2401067.11194358253851533, 11790509.08863945864140987 2400971.67936503561213613, 11791158.03017357923090458 2400666.29511368507519364, 11791558.84700347669422626 2400170.04570524021983147, 11791959.66383337415754795 2399502.01765541080385447, 11792207.78853759728372097 2398833.98960558138787746, 11792474.99975752830505371 2397822.40427298285067081, 11792761.29749316908419132 2396944.42455034982413054, 11792952.16265026479959488 2396619.95378328999504447))";
         $converter = new PostgreSql();
 
@@ -291,7 +279,11 @@ class LoadScenario_3 implements FixtureInterface, ContainerAwareInterface
 
         $this->addModelObjectPropertiesFromCSVFile($area, __DIR__.'/scenario_3_area_property_timeseries.csv', ';');
         // Add new boundaries
-        $boundary = BoundaryFactory::setOwnerNameAndPublic($user, 'SC3_B1', $public);
+        $boundary = ConstantHeadBoundaryFactory::create()
+            ->setOwner($user)
+            ->setName('SC3_B1')
+            ->setPublic($public)
+        ;
         $geometryText = "LineString (11792952.16265026479959488 2396619.95378328999504447, 11792761.29749316908419132 2396944.42455034982413054, 11792474.99975752830505371 2397822.40427298285067081, 11792207.78853759728372097 2398833.98960558138787746, 11791959.66383337415754795 2399502.01765541080385447, 11791558.84700347669422626 2400170.04570524021983147, 11791158.03017357923090458 2400666.29511368507519364, 11790509.08863945864140987 2400971.67936503561213613, 11789669.28194824606180191 2401067.11194358253851533, 11788848.56177274137735367 2401257.97710067685693502, 11788161.44720720127224922 2401277.06361638614907861, 11787321.64051598682999611 2400914.41981790727004409, 11786806.30459183268249035 2400685.38162939436733723, 11786462.74730906449258327 2400418.1704094628803432, 11785985.58441632799804211 2400189.13222094997763634, 11785527.50803930312395096 2399960.09403243707492948, 11785050.34514656849205494 2399769.22887534275650978, 11784725.87437950819730759 2399769.22887534275650978, 11784382.31709673814475536 2399979.18054814636707306, 11784038.75981396809220314 2400303.65131520619615912, 11783771.5485940370708704 2400418.1704094628803432, 11783504.33737410604953766 2400494.51647230051457882, 11783427.99131126701831818 2400360.91086233453825116, 11783771.5485940370708704 2399921.92100101802498102, 11784057.84632967785000801 2399387.49856115458533168, 11784248.71148677170276642 2399063.02779409429058433, 11784477.74967528507113457 2398853.07612129114568233, 11784515.92270670458674431 2398394.99974426534026861, 11784554.0957381222397089 2397803.31775727355852723, 11784802.22044234536588192 2397058.94364460650831461, 11784897.65302089229226112 2396448.17514190496876836, 11785050.34514656849205494 2395932.8392177508212626, 11785279.38333507999777794 2395512.93587214406579733, 11785412.98894504643976688 2394787.64827518630772829, 11785508.42152359336614609 2394291.39886674145236611, 11785794.7192592341452837 2393718.8033954594284296, 11786061.93047916702926159 2393279.81353414291515946, 11786367.31473051756620407 2392993.51579850167036057, 11786558.17988761141896248 2392459.09335863823071122, 11787417.07309453375637531 2392230.05517012532800436, 11788333.22584858722984791 2391810.1518245181068778, 11788791.30222561210393906 2391638.37318313354626298)";
         $converter = new PostgreSql();
 
@@ -307,7 +299,11 @@ class LoadScenario_3 implements FixtureInterface, ContainerAwareInterface
         $entityManager->flush();
         $this->addModelObjectPropertiesFromCSVFile($boundary, __DIR__.'/scenario_3_boundary_1_property_timeseries.csv', ';');
 
-        $boundary = BoundaryFactory::setOwnerNameAndPublic($user, 'SC3_B2', $public);
+        $boundary = ConstantHeadBoundaryFactory::create()
+            ->setOwner($user)
+            ->setName('SC3_B2')
+            ->setPublic($public)
+            ;
         $geometryText = "LineString (11792952.16265026479959488 2396619.95378328999504447, 11789249.37860263884067535 2391542.94060458615422249, 11788791.30222561210393906 2391638.37318313354626298)";
         $converter = new PostgreSql();
 
@@ -328,11 +324,11 @@ class LoadScenario_3 implements FixtureInterface, ContainerAwareInterface
 
 
     /**
-     * @param \AppBundle\Entity\ModelObject $baseElement
+     * @param ModelObject $baseElement
      * @param $filename
      * @param $delimiter
      */
-    public function addModelObjectPropertiesFromCSVFile(\AppBundle\Entity\ModelObject $baseElement, $filename, $delimiter)
+    public function addModelObjectPropertiesFromCSVFile(ModelObject $baseElement, $filename, $delimiter)
     {
         $data = $this->convert($filename, $delimiter);
         $elementCount = count($data[0])-1;
@@ -341,14 +337,11 @@ class LoadScenario_3 implements FixtureInterface, ContainerAwareInterface
 
         for ($i = 1; $i <= $elementCount; $i++)
         {
-            $propertyTypeName = $dataFields[$i];
-            $propertyType = $this->getPropertyType($this->entityManager, $propertyTypeName);
-
             foreach ($data as $dataPoint)
             {
                 $baseElement->addValue(
-                    $propertyType,
-                    PropertyTimeValueFactory::setDateTimeAndValue(new \DateTime($dataPoint[$dataFields[0]]), (float)$dataPoint[$dataFields[$i]])
+                    $this->getPropertyType($dataFields[$i]),
+                    PropertyTimeValueFactory::createWithTimeAndValue(new \DateTime($dataPoint[$dataFields[0]]), (float)$dataPoint[$dataFields[$i]])
                 );
 
                 $this->entityManager->persist($baseElement);
@@ -391,22 +384,11 @@ class LoadScenario_3 implements FixtureInterface, ContainerAwareInterface
     }
 
     /**
-     * @param ObjectManager $entityManager
      * @param $propertyAbbreviation
-     * @return \AppBundle\Entity\PropertyType|object
+     * @return PropertyType
      */
-    private function getPropertyType(ObjectManager $entityManager, $propertyAbbreviation)
+    private function getPropertyType($propertyAbbreviation)
     {
-        $propertyType = $entityManager->getRepository('AppBundle:PropertyType')
-            ->findOneBy(array(
-                'abbreviation' => $propertyAbbreviation
-            ));
-
-        if (!$propertyType)
-        {
-            throw new NotFoundHttpException($propertyAbbreviation.' not found.');
-        }
-
-        return $propertyType;
+        return PropertyTypeFactory::create($propertyAbbreviation);
     }
 }

@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <title>Modflow-Models</title>
+    <link rel="stylesheet" type="text/css" href="{{ asset('vendor/bootstrap/dist/css/bootstrap.min.css') }}" />
+    <link rel="stylesheet" type="text/css" href="{{ asset('vendor/font-awesome/css/font-awesome.min.css') }}" />
+    <link rel="stylesheet" type="text/css" href="{{ asset('vendor/leaflet/dist/leaflet.css') }}" />
+    <link rel="stylesheet" type="text/css" href="{{ asset('css/inowas.css') }}" />
+    <link rel="icon" type="image/x-icon" href="{{ asset('favicon.ico') }}" />
+</head>
+<body>
+<!-- Static navbar -->
+<nav class="navbar navbar-default navbar-static-top">
+    <div class="container">
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="{{ path('modflow_model_list') }}">
+                <img src="{{ asset('img/logo.png') }}" alt="inowas-logo">
+            </a>
+        </div>
+        <div id="navbar" class="navbar-collapse collapse">
+            <ul class="nav navbar-nav">
+                <li><a href="#">Applications</a></li>
+                <li><a href="#">Tools</a></li>
+                <li class="active"><a href="#">Models</a></li>
+            </ul>
+            <ul class="nav navbar-nav navbar-right">
+                <li class="dropdown">
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false"><i class="fa fa-cog"></i> <span class="caret"></span></a>
+                    <ul class="dropdown-menu">
+                        <li><a href="{{ path('fos_user_security_logout') }}">Logout</a></li>
+                    </ul>
+                </li>
+            </ul>
+        </div><!--/.nav-collapse -->
+    </div>
+</nav>
+
+<div class="container">
+    <div class="row">
+        <ol class="breadcrumb">
+            <li><a href="#">Models</a></li>
+            <li><a href="#">Modflow</a></li>
+        </ol>
+    </div>
+
+    {% for model in models %}
+        <div class="top-margin-40">
+            <div class="row">
+                <div class="col-xs-1">
+                    <img class="img-thumbnail" src="{{ asset('img/map_icons/south-america.svg') }}" style="margin-top: 18px">
+                </div>
+                <div class="col-xs-11">
+                    <h3 class="modelname"><a href="{{ path('modflow_model', {'id': model.id.toString}) }}"> {{ model.name }}</a></h3>
+                    <p class="modelsummary">
+                        Groundwater Model: {{ model.createTextOverview }} <br/>
+                        <a href="{{ path('modflow_model_modflow_scenarios_list', {'id': model.id.toString}) }}">Scenarios: {{ model.getScenarios | length }}</a>
+                    </p>
+                </div>
+            </div>
+        </div>
+    {% endfor %}
+</div>
+
+<script type="text/javascript" src="{{ asset('vendor/jquery/dist/jquery.min.js') }}"></script>
+<script type="text/javascript" src="{{ asset('vendor/bootstrap/dist/js/bootstrap.min.js') }}"></script>
+
+</body>
+</html>

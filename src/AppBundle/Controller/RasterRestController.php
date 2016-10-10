@@ -2,10 +2,12 @@
 
 namespace AppBundle\Controller;
 
-use AppBundle\Model\Interpolation\BoundingBox;
-use AppBundle\Model\Interpolation\GridSize;
+use AppBundle\Entity\Raster;
+use AppBundle\Model\BoundingBox;
+use AppBundle\Model\GridSize;
 use AppBundle\Model\PropertyFactory;
 use AppBundle\Model\PropertyTimeValueFactory;
+use AppBundle\Model\PropertyTypeFactory;
 use AppBundle\Model\PropertyValueFactory;
 use AppBundle\Model\RasterFactory;
 
@@ -15,6 +17,7 @@ use FOS\RestBundle\Request\ParamFetcher;
 use FOS\RestBundle\View\View;
 use JMS\Serializer\SerializationContext;
 use Nelmio\ApiDocBundle\Annotation\ApiDoc;
+use Ramsey\Uuid\Uuid;
 
 class RasterRestController extends FOSRestController
 {
@@ -37,14 +40,19 @@ class RasterRestController extends FOSRestController
      */
     public function getRasterAction($id)
     {
+        try{
+            $uuid = Uuid::fromString($id);
+        } catch (\InvalidArgumentException $e) {
+            throw $this->createNotFoundException('Raster with id='.$id.' not found.');
+        }
+
         $entity = $this->getDoctrine()
             ->getRepository('AppBundle:Raster')
             ->findOneBy(array(
-                'id' => $id
+                'id' => $uuid
             ));
 
-        if (!$entity)
-        {
+        if (! $entity instanceof Raster) {
             throw $this->createNotFoundException('Raster with id='.$id.' not found.');
         }
 
@@ -101,23 +109,22 @@ class RasterRestController extends FOSRestController
      */
     public function postRasterAction(ParamFetcher $paramFetcher)
     {
+        $modelObjectId = $paramFetcher->get('id');
+
+        try{
+            $uuid = Uuid::fromString($modelObjectId);
+        } catch (\InvalidArgumentException $e){
+            throw $this->createNotFoundException('ModelObject with id='.$modelObjectId.' not found.');
+        }
+
         $mo = $this->getDoctrine()
             ->getRepository('AppBundle:ModelObject')
             ->findOneBy(array(
-                'id' => $paramFetcher->get('id')
+                'id' => $uuid
             ));
 
         if (!$mo) {
             throw $this->createNotFoundException('ModelObject with id='.$paramFetcher->get('id').' not found.');
-        }
-
-        $propertyType = $this->getDoctrine()->getRepository('AppBundle:PropertyType')
-            ->findOneBy(array(
-                'name' => $paramFetcher->get('propertyType')
-            ));
-
-        if (!$propertyType) {
-            throw $this->createNotFoundException('PropertyType with name='.$paramFetcher->get('propertyType').' not found.');
         }
 
         /*
@@ -144,7 +151,7 @@ class RasterRestController extends FOSRestController
         /* Let's create a property and a value-object */
         $property = PropertyFactory::create()
             ->setName($paramFetcher->get('propertyName'))
-            ->setPropertyType($propertyType);
+            ->setPropertyType(PropertyTypeFactory::create($paramFetcher->get('propertyType')));
 
         if (is_null($paramFetcher->get('date'))) {
             $value = PropertyValueFactory::create();

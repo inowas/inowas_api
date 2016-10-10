@@ -1,66 +1,110 @@
 <?php
 
-namespace AppBundle\Tests\Controller;
+namespace Tests\AppBundle\Controller;
 
 use AppBundle\Entity\ObservationPoint;
 use AppBundle\Entity\User;
 use AppBundle\Model\ObservationPointFactory;
-use AppBundle\Model\UserFactory;
-use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
+use Tests\AppBundle\RestControllerTestCase;
 
-class ObservationPointRestControllerTest extends WebTestCase
+class ObservationPointRestControllerTest extends RestControllerTestCase
 {
-
-    /** @var \Doctrine\ORM\EntityManager */
-    protected $entityManager;
-
-    /** @var User $owner */
-    protected $owner;
-
     /** @var  ObservationPoint $observationPoint */
     protected $observationPoint;
 
     public function setUp()
     {
-        self::bootKernel();
-        $this->entityManager = static::$kernel->getContainer()
-            ->get('doctrine.orm.default_entity_manager')
-        ;
-
-        $this->owner = UserFactory::createTestUser('ObservationPointTest');
-        $this->entityManager->persist($this->owner);
-        $this->entityManager->flush();
+        $this->getEntityManager()->persist($this->getOwner());
+        $this->getEntityManager()->flush();
 
         $this->observationPoint = ObservationPointFactory::create()
             ->setName('ObservationPointTest')
-            ->setOwner($this->owner)
+            ->setOwner($this->getOwner())
             ->setPublic(true)
         ;
 
-        $this->entityManager->persist($this->observationPoint);
-        $this->entityManager->flush();
+        $this->getEntityManager()->persist($this->observationPoint);
+        $this->getEntityManager()->flush();
+    }
+
+    public function testListWithoutAPIKeyReturns401()
+    {
+        $client = static::createClient();
+        $client->request('GET', '/api/users/unknown_username/observationpoints.json');
+        $this->assertEquals(401, $client->getResponse()->getStatusCode());
     }
 
     /**
      * Test for the API-Call /api/users/<username>/observationpoints.json
      */
-    public function testUserObservationPointsListController()
+    public function testListByUser()
     {
         $client = static::createClient();
-        $client->request('GET', '/api/users/'.$this->owner->getUsername().'/observationpoints.json');
+        $client->request(
+            'GET',
+            '/api/users/'.$this->getOwner()->getUsername().'/observationpoints.json',
+            array(),
+            array(),
+            array('HTTP_X-AUTH-TOKEN' => $this->getOwner()->getApiKey())
+        );
         $this->assertEquals(200, $client->getResponse()->getStatusCode());
         $this->assertCount(1, json_decode($client->getResponse()->getContent()));
+    }
+
+    public function testListWithUnknownUserReturns404()
+    {
+        $client = static::createClient();
+        $client->request(
+            'GET',
+            '/api/users/unknown_username/observationpoints.json',
+            array(),
+            array(),
+            array('HTTP_X-AUTH-TOKEN' => $this->getOwner()->getApiKey())
+        );
+        $this->assertEquals(404, $client->getResponse()->getStatusCode());
     }
 
     /**
      * Test for the API-Call /api/observationpoints.<id>.json
      */
-    public function testProjectLayerDetailsController()
+    public function testDetailsById()
     {
         $client = static::createClient();
-        $client->request('GET', '/api/observationpoints/'.$this->observationPoint->getId().'.json');
+        $client->request(
+            'GET', #
+            '/api/observationpoints/'.$this->observationPoint->getId().'.json',
+            array(),
+            array(),
+            array('HTTP_X-AUTH-TOKEN' => $this->getOwner()->getApiKey())
+        );
         $this->assertEquals(200, $client->getResponse()->getStatusCode());
         $this->assertEquals($this->observationPoint->getId(), json_decode($client->getResponse()->getContent())->id);
+    }
+
+    public function testDetailsWithInvalidIdReturns404()
+    {
+        $client = static::createClient();
+        $client->request(
+            'GET',
+            '/api/observationpoints/unknown_area_id.json',
+            array(),
+            array(),
+            array('HTTP_X-AUTH-TOKEN' => $this->getOwner()->getApiKey())
+        );
+        $this->assertEquals(404, $client->getResponse()->getStatusCode());
+    }
+
+    public function testDetailsWithUnknownIdReturns404()
+    {
+        $client = static::createClient();
+        $client->request(
+            'GET',
+            '/api/observationpoints/ee3f68a1-7ffe-447c-9a67-bfe40850e1b8.json',
+            array(),
+            array(),
+            array('HTTP_X-AUTH-TOKEN' => $this->getOwner()->getApiKey())
+        );
+        $this->assertEquals(404, $client->getResponse()->getStatusCode());
     }
 
     /**
@@ -68,22 +112,23 @@ class ObservationPointRestControllerTest extends WebTestCase
      */
     public function tearDown()
     {
-        $user = $this->entityManager->getRepository('AppBundle:User')
+        $user = $this->getEntityManager()->getRepository('AppBundle:User')
             ->findOneBy(array(
-                'username' => $this->owner->getUsername()
+                'username' => $this->getOwner()->getUsername()
             ));
-        $this->entityManager->remove($user);
+        $this->getEntityManager()->remove($user);
 
-        $entities = $this->entityManager
+        $entities = $this->getEntityManager()
             ->getRepository('AppBundle:ObservationPoint')
-            ->findAll();
+            ->findBy(array(
+                'owner' => $user
+            ));
 
-        foreach ($entities as $entity)
-        {
-            $this->entityManager->remove($entity);
+        foreach ($entities as $entity) {
+            $this->getEntityManager()->remove($entity);
         }
 
-        $this->entityManager->flush();
-        $this->entityManager->close();
+        $this->getEntityManager()->flush();
+        $this->getEntityManager()->close();
     }
 }

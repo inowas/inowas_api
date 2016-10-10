@@ -13,8 +13,13 @@
 !var/SymfonyRequirements.php
 /vendor/
 /web/bundles/
-.idea/
-.vagrant/
-.DS_Store
 /composer.phar
 composer.lock
+
+!/var/data
+/var/data/geoimage/*
+!/var/data/geoimage/.gitkeep
+/var/data/modflow/*
+!/var/data/modflow/.gitkeep
+!/var/tmp/.gitkeep
+tests/results

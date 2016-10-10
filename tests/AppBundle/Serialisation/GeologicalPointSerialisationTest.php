@@ -1,6 +1,6 @@
 <?php
 
-namespace AppBundle\Tests\Controller;
+namespace Tests\AppBundle\Controller;
 
 use AppBundle\Entity\GeologicalPoint;
 use AppBundle\Model\GeologicalPointFactory;
@@ -25,7 +25,6 @@ class GeologicalPointSerialisationTest extends \PHPUnit_Framework_TestCase
         $this->serializer = SerializerBuilder::create()->build();
 
         $this->geologicalPoint = GeologicalPointFactory::create()
-            ->setId(12)
             ->setName('GeologicalLayerName')
             ->setPublic(true)
             ->setOwner(

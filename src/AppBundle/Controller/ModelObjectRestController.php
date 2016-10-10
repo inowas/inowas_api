@@ -3,10 +3,12 @@
 namespace AppBundle\Controller;
 
 use AppBundle\Entity\ModelObject;
+use AppBundle\Entity\User;
 use FOS\RestBundle\Controller\FOSRestController;
 use FOS\RestBundle\View\View;
 use JMS\Serializer\SerializationContext;
 use Nelmio\ApiDocBundle\Annotation\ApiDoc;
+use Ramsey\Uuid\Uuid;
 
 class ModelObjectRestController extends FOSRestController
 {
@@ -33,8 +35,7 @@ class ModelObjectRestController extends FOSRestController
                 'username' => $username
             ));
 
-        if (!$user)
-        {
+        if (! $user instanceof User) {
             throw $this->createNotFoundException('User with username '.$username.' not found.');
         }
 
@@ -76,29 +77,28 @@ class ModelObjectRestController extends FOSRestController
      */
     public function getModelobjectAction($id)
     {
-        $modelObject = $this->getDoctrine()
+        try {
+            $uuid = Uuid::fromString($id);
+        } catch (\InvalidArgumentException $e) {
+            throw $this->createNotFoundException('ModelObject with id='.$id.' not found.');
+        }
+
+        $entity = $this->getDoctrine()
             ->getRepository('AppBundle:ModelObject')
             ->findOneBy(array(
-                'id' => $id
+                'id' => $uuid
             ));
 
-        if (!$modelObject)
-        {
+        if (! $entity instanceof ModelObject) {
             throw $this->createNotFoundException('ModelObject with id='.$id.' not found.');
         }
         
-        if ($modelObject->getPublic() || $this->isGranted('ROLE_ADMIN') || $this->getUser() === $modelObject->getOwner())
-        {
-            $view = View::create();
-            $view->setData($modelObject)
-                ->setStatusCode(200)
-                ->setSerializationContext(SerializationContext::create()
-                    ->setGroups(array('modelobjectdetails')));
+        $view = View::create();
+        $view->setData($entity)
+            ->setStatusCode(200)
+            ->setSerializationContext(SerializationContext::create()
+                ->setGroups(array('modelobjectdetails')));
 
-            return $view;
-        } else
-        {
-            throw $this->createAccessDeniedException();
-        }
+        return $view;
     }
 }

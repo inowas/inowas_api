@@ -1,10 +1,10 @@
 <?php
 
-namespace AppBundle\Tests\Controller;
+namespace Tests\AppBundle\Controller;
 
-use AppBundle\Entity\Stream;
+use AppBundle\Entity\StreamBoundary;
 use AppBundle\Model\Point;
-use AppBundle\Model\StreamFactory;
+use AppBundle\Model\StreamBoundaryFactory;
 use CrEOF\Spatial\PHP\Types\Geometry\LineString;
 use JMS\Serializer\SerializationContext;
 use JMS\Serializer\Serializer;
@@ -16,17 +16,17 @@ class StreamSerialisationTest extends \PHPUnit_Framework_TestCase
     /** @var  Serializer $serializer */
     protected $serializer;
 
-    /** @var Stream $stream */
+    /** @var StreamBoundary $stream */
     protected $stream;
 
     public function setUp()
     {
         $this->serializer = SerializerBuilder::create()->build();
         
-        $this->stream = StreamFactory::create()
+        $this->stream = StreamBoundaryFactory::create()
             ->setName('StreamName')
             ->setStartingPoint(new Point(11777056.49104572273790836, 2403440.17028302047401667, 3452))
-            ->setLine(new LineString(
+            ->setGeometry(new LineString(
                 array(
                     new Point(11777056.49104572273790836, 2403440.17028302047401667),
                     new Point(11777973.9436037577688694, 2403506.49811625294387341),
@@ -43,7 +43,7 @@ class StreamSerialisationTest extends \PHPUnit_Framework_TestCase
 
         $this->assertStringStartsWith('{',$stream);
         $stream = json_decode($stream);
-        $this->assertEquals($stream->type, 'stream');
+        $this->assertEquals('RIV', $stream->type);
         $this->assertEquals((array) $stream->line, $this->stream->serializeDeserializeLine());
         $this->assertEquals((array) $stream->starting_point, $this->stream->serializeDeserializeStartingPoint());
     }

@@ -2,30 +2,16 @@
 
 namespace AppBundle\Model;
 
-use AppBundle\Entity\PropertyType;
-use AppBundle\Entity\Project;
-use FOS\UserBundle\Model\UserInterface;
-
 class PropertyTypeFactory
 {
+    private final function __construct(){}
+
     /**
-     * GeologicalPointFactory constructor.
+     * @param $abbreviation
+     * @return PropertyType
      */
-    public function __construct()
+    public static function create($abbreviation)
     {
-        return new PropertyType();
-    }
-
-    public static function create()
-    {
-        return new PropertyType();
-    }
-
-    public static function setName($name = "")
-    {
-        $propertyType = new PropertyType();
-        $propertyType->setName($name);
-
-        return $propertyType;
+        return PropertyType::fromAbbreviation($abbreviation);
     }
 }

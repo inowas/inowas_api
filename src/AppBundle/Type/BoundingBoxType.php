@@ -2,24 +2,20 @@
 
 namespace AppBundle\Type;
 
-use AppBundle\Model\Interpolation\BoundingBox;
+use AppBundle\Model\BoundingBox;
 use Doctrine\DBAL\Platforms\AbstractPlatform;
-use Doctrine\DBAL\Types\Type;
+use Doctrine\DBAL\Types\JsonArrayType;
+
 
 /**
  * Type that maps an SQL VARCHAR to a PHP string.
  *
  * @since 2.0
  */
-class BoundingBoxType extends Type
+class BoundingBoxType extends JsonArrayType
 {
-    /**
-     * {@inheritdoc}
-     */
-    public function getSQLDeclaration(array $fieldDeclaration, AbstractPlatform $platform)
-    {
-        return $platform->getJsonTypeDeclarationSQL($fieldDeclaration);
-    }
+
+    const NAME = 'bounding_box';
 
     /**
      * {@inheritdoc}
@@ -37,6 +33,8 @@ class BoundingBoxType extends Type
         $bb['y_min'] = $value->getYMin();
         $bb['y_max'] = $value->getYMax();
         $bb['srid'] = $value->getSrid();
+        $bb['dx_m'] = $value->getDXInMeters();
+        $bb['dy_m'] = $value->getDYInMeters();
         return json_encode($bb);
     }
 
@@ -51,22 +49,27 @@ class BoundingBoxType extends Type
 
         $value = (is_resource($value)) ? stream_get_contents($value) : $value;
         $bb = json_decode($value, true);
-        return new BoundingBox($bb['x_min'], $bb['x_max'], $bb['y_min'], $bb['y_max'], $bb['srid']);
+        $boundingBox = new BoundingBox($bb['x_min'], $bb['x_max'], $bb['y_min'], $bb['y_max'], $bb['srid']);
+        $boundingBox->setDXInMeters($bb['dx_m']);
+        $boundingBox->setDYInMeters($bb['dy_m']);
+        return $boundingBox;
     }
 
     /**
      * {@inheritdoc}
+     * @codeCoverageIgnore
      */
     public function getName()
     {
-        return 'bounding_box';
+        return self::NAME;
     }
 
     /**
      * {@inheritdoc}
+     * @codeCoverageIgnore
      */
     public function requiresSQLCommentHint(AbstractPlatform $platform)
     {
-        return ! $platform->hasNativeJsonType();
+        return true;
     }
 }

@@ -3,10 +3,12 @@
 namespace AppBundle\Controller;
 
 use AppBundle\Entity\GeologicalUnit;
+use AppBundle\Entity\User;
 use FOS\RestBundle\Controller\FOSRestController;
 use FOS\RestBundle\View\View;
 use JMS\Serializer\SerializationContext;
 use Nelmio\ApiDocBundle\Annotation\ApiDoc;
+use Ramsey\Uuid\Uuid;
 
 class GeologicalUnitRestController extends FOSRestController
 {
@@ -34,9 +36,8 @@ class GeologicalUnitRestController extends FOSRestController
                 'username' => $username
             ));
 
-        if (!$user)
-        {
-            throw  $this->createNotFoundException('User with username='.$username.' not found.');
+        if (! $user instanceof User) {
+            throw  $this->createNotFoundException(sprintf('User with username %s not found.', $username));
         }
 
         $entities = $this->getDoctrine()
@@ -76,25 +77,30 @@ class GeologicalUnitRestController extends FOSRestController
      */
     public function getGeologicalunitsAction($id)
     {
+
+        try {
+            $uuid = Uuid::fromString($id);
+        } catch (\InvalidArgumentException $e) {
+            throw $this->createNotFoundException('GeologicalUnit with id='.$id.' not found.');
+        }
+
         /** @var GeologicalUnit $entity */
         $entity = $this->getDoctrine()
             ->getRepository('AppBundle:GeologicalUnit')
             ->findOneBy(array(
-                'id' => $id
+                'id' => $uuid
             ));
 
-        if ($entity->getPublic() || $this->isGranted('ROLE_ADMIN') || $this->getUser() === $entity->getOwner())
-        {
-            $view = View::create();
-            $view->setData($entity)
-                ->setStatusCode(200)
-                ->setSerializationContext(SerializationContext::create()
-                    ->setGroups(array('modelobjectdetails')));
-
-            return $view;
-        } else
-        {
-            throw $this->createAccessDeniedException();
+        if (! $entity instanceof GeologicalUnit) {
+            throw $this->createNotFoundException('GeologicalUnit with id='.$id.' not found.');
         }
+
+        $view = View::create();
+        $view->setData($entity)
+            ->setStatusCode(200)
+            ->setSerializationContext(SerializationContext::create()
+                ->setGroups(array('modelobjectdetails')));
+
+        return $view;
     }
 }

@@ -2,8 +2,8 @@
 
 namespace AppBundle\Entity;
 
-use AppBundle\Model\Interpolation\BoundingBox;
-use AppBundle\Model\Interpolation\GridSize;
+use AppBundle\Model\BoundingBox;
+use AppBundle\Model\GridSize;
 use Doctrine\ORM\Mapping as ORM;
 use JMS\Serializer\Annotation as JMS;
 use Ramsey\Uuid\Uuid;
@@ -16,13 +16,15 @@ use Ramsey\Uuid\Uuid;
  */
 class Raster
 {
+    const DEFAULT_NO_DATA_VAL = -9999;
+
     /**
      * @var uuid
      *
      * @ORM\Id
      * @ORM\Column(name="id", type="uuid", unique=true)
      * @JMS\Type("string")
-     * @JMS\Groups({"modeldetails", "modelobjectdetails", "rasterdetails"})
+     * @JMS\Groups({"modeldetails", "modelobjectdetails", "rasterdetails", "soilmodellayers"})
      */
     private $id;
 
@@ -49,10 +51,10 @@ class Raster
      * @JMS\Groups({"rasterdetails"})
      * @JMS\Type("integer")
      */
-    private $noDataVal = -999;
+    private $noDataVal = self::DEFAULT_NO_DATA_VAL;
 
     /**
-     * @var integer
+     * @var array
      *
      * @ORM\Column(name="data", type="json_array")
      * @JMS\Groups({"rasterdetails"})
@@ -73,20 +75,6 @@ class Raster
     public function __construct() {
         $this->id = Uuid::uuid4();
         $this->description = '';
-    }
-
-    /**
-     * Set id
-     *
-     * @param uuid $id
-     *
-     * @return Raster
-     */
-    public function setId($id)
-    {
-        $this->id = $id;
-
-        return $this;
     }
 
     /**
@@ -160,6 +148,31 @@ class Raster
     }
 
     /**
+     * @param $filter
+     * @return array
+     */
+    public function getFilteredData($filter){
+
+        if (null === $filter || array() === $filter) {
+            return $this->data;
+        }
+
+        $data = $this->data;
+        $ny = count($data);
+        $nx = count($data[0]);
+
+        for ($yi = 0; $yi<$ny; $yi++){
+            for ($xi = 0; $xi<$nx; $xi++) {
+                if ($filter[$yi][$xi] === false) {
+                    $data[$yi][$xi] = self::DEFAULT_NO_DATA_VAL;
+                }
+            }
+        }
+
+        return $data;
+    }
+
+    /**
      * Set noDataVal
      *
      * @param integer $noDataVal
@@ -205,6 +218,4 @@ class Raster
 
         return $this;
     }
-
-
 }

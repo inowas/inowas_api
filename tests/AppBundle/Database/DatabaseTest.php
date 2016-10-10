@@ -2,7 +2,7 @@
 /**
  *
  */
-namespace AppBundle\Tests\Database;
+namespace Tests\AppBundle\Database;
 
 use AppBundle\Entity\User;
 use AppBundle\Entity\UserProfile;

@@ -2,8 +2,11 @@
 
 namespace AppBundle\Command;
 
+use AppBundle\Entity\GeologicalLayer;
 use AppBundle\Entity\PropertyType;
-use AppBundle\Service\Interpolation;
+use Inowas\PyprocessingBundle\Service\Interpolation;
+use Doctrine\ORM\EntityManager;
+use Ramsey\Uuid\Uuid;
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -16,7 +19,7 @@ class InterpolationCommand extends ContainerAwareCommand
     {
         // Name and description for app/console command
         $this
-            ->setName('inowas:modflowmodel:layerinterpolation')
+            ->setName('inowas:model:interpolate')
             ->setDescription('Interpolates all Layers automatically.')
             ->addArgument(
                 'id',
@@ -28,27 +31,47 @@ class InterpolationCommand extends ContainerAwareCommand
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
+        $output->writeln(sprintf("Interpolating Layers"));
+
+        try {
+            $id = Uuid::fromString($input->getArgument('id'));
+        } catch (\InvalidArgumentException $e) {
+            $output->writeln(sprintf("The given id: %s is not valid", $input->getArgument('id')));
+            return;
+        }
+
+        /** @var EntityManager $entityManager */
+        $entityManager = $this->getContainer()->get('doctrine.orm.entity_manager');
+        $geoTools = $this->getContainer()->get('inowas.geotools');
         $soilModelService = $this->getContainer()->get('inowas.soilmodel');
-        $id = $input->getArgument('id');
+
+        ;
         $soilModelService->loadModflowModelById($id);
 
-        $layers = $soilModelService->getModflowModel()->getSoilModel()->getGeologicalLayers();
+        $modFlowModel = $soilModelService->getModflowModel();
+        $modFlowModel->setActiveCells($geoTools->getActiveCells($modFlowModel->getArea(), $modFlowModel->getBoundingBox(), $modFlowModel->getGridSize()));
+        $entityManager->persist($modFlowModel);
+        $entityManager->flush();
 
+        $layers = $modFlowModel->getSoilModel()->getGeologicalLayers();
 
+        /** @var GeologicalLayer $layer */
         foreach ($layers as $layer)
         {
             $propertyTypes = $soilModelService->getAllPropertyTypesFromLayer($layer);
             /** @var PropertyType $propertyType */
             foreach ($propertyTypes as $propertyType){
-                echo (sprintf("Interpolating Layer %s, Property %s\r\n", $layer->getName(), $propertyType->getName()));
+                if ($propertyType->getAbbreviation() == PropertyType::TOP_ELEVATION && $layer->getOrder() != GeologicalLayer::TOP_LAYER) {
+                    continue;
+                }
+
+                $output->writeln(sprintf("Interpolating Layer %s, Property %s", $layer->getName(), $propertyType->getName()));
                 $output = $soilModelService->interpolateLayerByProperty(
                     $layer,
                     $propertyType->getAbbreviation(),
-                    array(Interpolation::TYPE_GAUSSIAN, Interpolation::TYPE_MEAN));
-
-                echo ($output);
+                    array(Interpolation::TYPE_IDW, Interpolation::TYPE_MEAN)
+                );
             }
-
         }
     }
 }

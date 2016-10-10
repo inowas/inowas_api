@@ -134,11 +134,11 @@ class PropertyTimeValue extends AbstractValue
     /**
      * Set raster
      *
-     * @param \AppBundle\Entity\Raster $raster
+     * @param Raster $raster
      *
      * @return PropertyTimeValue
      */
-    public function setRaster(\AppBundle\Entity\Raster $raster = null)
+    public function setRaster(Raster $raster = null)
     {
         $this->raster = $raster;
 
@@ -148,7 +148,7 @@ class PropertyTimeValue extends AbstractValue
     /**
      * Get raster
      *
-     * @return \AppBundle\Entity\Raster
+     * @return Raster
      */
     public function getRaster()
     {

@@ -1,6 +1,6 @@
 <?php
 
-namespace AppBundle\Tests\Controller;
+namespace Tests\AppBundle\Controller;
 
 use AppBundle\Entity\Area;
 use AppBundle\Entity\Property;
@@ -8,18 +8,17 @@ use AppBundle\Entity\PropertyTimeValue;
 use AppBundle\Entity\PropertyValue;
 use AppBundle\Entity\Raster;
 use AppBundle\Model\AreaFactory;
-use AppBundle\Model\Interpolation\BoundingBox;
-use AppBundle\Model\Interpolation\GridSize;
+use AppBundle\Model\BoundingBox;
+use AppBundle\Model\GridSize;
+use AppBundle\Model\PropertyType;
 use AppBundle\Model\PropertyTypeFactory;
 use AppBundle\Model\RasterFactory;
 use JMS\Serializer\Serializer;
-use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
+use Ramsey\Uuid\Uuid;
+use Tests\AppBundle\RestControllerTestCase;
 
-class RasterRestControllerTest extends WebTestCase
+class RasterRestControllerTest extends RestControllerTestCase
 {
-
-    /** @var \Doctrine\ORM\EntityManager */
-    protected $entityManager;
 
     /** @var Serializer */
     protected $serializer;
@@ -42,9 +41,9 @@ class RasterRestControllerTest extends WebTestCase
     public function setUp()
     {
         self::bootKernel();
-        $this->entityManager = static::$kernel->getContainer()
-            ->get('doctrine.orm.default_entity_manager')
-        ;
+
+        $this->getEntityManager()->persist($this->getOwner());
+        $this->getEntityManager()->flush();
 
         $this->serializer = static::$kernel->getContainer()
             ->get('jms_serializer')
@@ -77,11 +76,17 @@ class RasterRestControllerTest extends WebTestCase
 
     public function testGetRasterById()
     {
-        $this->entityManager->persist($this->raster);
-        $this->entityManager->flush();
+        $this->getEntityManager()->persist($this->raster);
+        $this->getEntityManager()->flush();
 
         $client = static::createClient();
-        $client->request('GET', '/api/rasters/'.$this->raster->getId().'.json');
+        $client->request(
+            'GET',
+            '/api/rasters/'.$this->raster->getId().'.json',
+            array(),
+            array(),
+            array('HTTP_X-AUTH-TOKEN' => $this->getOwner()->getApiKey())
+        );
         $this->assertEquals(200, $client->getResponse()->getStatusCode());
         $raster = json_decode($client->getResponse()->getContent());
         $this->assertObjectHasAttribute('id', $raster);
@@ -119,16 +124,38 @@ class RasterRestControllerTest extends WebTestCase
         $this->assertEquals($this->raster->getDescription(), $raster->description);
     }
 
+    public function testGetRasterWithInvalidIdReturns404()
+    {
+        $client = static::createClient();
+        $client->request(
+            'GET',
+            '/api/rasters/1234.json',
+            array(),
+            array(),
+            array('HTTP_X-AUTH-TOKEN' => $this->getOwner()->getApiKey())
+        );
+        $this->assertEquals(404, $client->getResponse()->getStatusCode());
+    }
+
+    public function testGetRasterWithUnknownIdReturns404()
+    {
+        $client = static::createClient();
+        $client->request(
+            'GET',
+            '/api/rasters/'.Uuid::uuid4()->toString().'.json',
+            array(),
+            array(),
+            array('HTTP_X-AUTH-TOKEN' => $this->getOwner()->getApiKey())
+        );
+        $this->assertEquals(404, $client->getResponse()->getStatusCode());
+    }
+
     public function testPostResult()
     {
-        $this->entityManager->persist($this->area);
-        $this->entityManager->flush();
+        $this->getEntityManager()->persist($this->area);
+        $this->getEntityManager()->flush();
 
-        $propertyType = PropertyTypeFactory::setName('Hydraulic Head');
-        $propertyType->setAbbreviation("hh");
-
-        $this->entityManager->persist($propertyType);
-        $this->entityManager->flush();
+        $propertyType = PropertyTypeFactory::create(PropertyType::HYDRAULIC_HEAD);
 
         $date = new \DateTime('now');
 
@@ -139,7 +166,7 @@ class RasterRestControllerTest extends WebTestCase
             array(
                 'id' => $this->area->getId(),
                 'propertyName' => 'MyPropertyName',
-                'propertyType' => $propertyType->getName(),
+                'propertyType' => $propertyType->getAbbreviation(),
                 'numberOfColumns' => $this->raster->getGridSize()->getNX(),
                 'numberOfRows' => $this->raster->getGridSize()->getNY(),
                 'upperLeftX' => $this->raster->getBoundingBox()->getXMin(),
@@ -151,7 +178,9 @@ class RasterRestControllerTest extends WebTestCase
                 'data' => json_encode($this->raster->getData()),
                 'description' => $this->raster->getDescription(),
                 'date' => $date->format('Y-m-d H:i:s')
-            )
+            ),
+            array(),
+            array('HTTP_X-AUTH-TOKEN' => $this->getOwner()->getApiKey())
         );
 
         $this->assertEquals(200, $client->getResponse()->getStatusCode());
@@ -164,7 +193,7 @@ class RasterRestControllerTest extends WebTestCase
         $this->assertObjectHasAttribute('data', $actualRaster);
         $this->assertObjectHasAttribute('description', $actualRaster);
 
-        $expectedRaster = $this->entityManager->getRepository('AppBundle:Raster')
+        $expectedRaster = $this->getEntityManager()->getRepository('AppBundle:Raster')
             ->findOneBy(array(
                 'id' => $actualRaster->id
             ));
@@ -177,5 +206,10 @@ class RasterRestControllerTest extends WebTestCase
      */
     public function tearDown()
     {
+        $user = $this->getEntityManager()->getRepository('AppBundle:User')
+            ->findOneBy(array(
+                'username' => $this->getOwner()->getUsername()
+            ));
+        $this->getEntityManager()->remove($user);
     }
 }

@@ -2,24 +2,31 @@
 
 namespace AppBundle\DataFixtures\ORM\Scenarios\Scenario_2;
 
+use AppBundle\Entity\GeologicalLayer;
+use AppBundle\Entity\ModelObject;
 use AppBundle\Entity\ModFlowModel;
 use AppBundle\Entity\User;
 use AppBundle\Model\AreaFactory;
-use AppBundle\Model\AreaTypeFactory;
-use AppBundle\Model\BoundaryFactory;
+use AppBundle\Model\ConstantHeadBoundaryFactory;
 use AppBundle\Model\GeologicalLayerFactory;
 use AppBundle\Model\GeologicalPointFactory;
 use AppBundle\Model\GeologicalUnitFactory;
+use AppBundle\Model\BoundingBox;
+use AppBundle\Model\GridSize;
 use AppBundle\Model\ModFlowModelFactory;
 use AppBundle\Model\ObservationPointFactory;
 use AppBundle\Model\PropertyFactory;
 use AppBundle\Model\PropertyTimeValueFactory;
+use AppBundle\Model\PropertyType;
+use AppBundle\Model\PropertyTypeFactory;
 use AppBundle\Model\PropertyValueFactory;
 use AppBundle\Model\Point;
 use AppBundle\Model\SoilModelFactory;
+use AppBundle\Model\StreamBoundaryFactory;
 use AppBundle\Model\StressPeriod;
 use AppBundle\Model\StressPeriodFactory;
-use AppBundle\Model\WellFactory;
+use AppBundle\Model\WellBoundaryFactory;
+use Inowas\PyprocessingBundle\Service\Interpolation;
 use CrEOF\Spatial\DBAL\Platform\PostgreSql;
 use CrEOF\Spatial\DBAL\Types\AbstractSpatialType;
 use CrEOF\Spatial\PHP\Types\Geometry\LineString;
@@ -79,49 +86,17 @@ class LoadScenario_2 implements FixtureInterface, ContainerAwareInterface
         }
 
         // Load PropertyTypes
-        $propertyTypeGwHead = $entityManager->getRepository('AppBundle:PropertyType')
-            ->findOneBy(array(
-                'abbreviation' => "hh"
-            ));
-
-        if (!$propertyTypeGwHead) {
-            return new NotFoundHttpException();
-        }
-
-        $propertyTypeTopElevation = $entityManager->getRepository('AppBundle:PropertyType')
-            ->findOneBy(array(
-                'abbreviation' => "et"
-            ));
-
-        if (!$propertyTypeTopElevation) {
-            return new NotFoundHttpException();
-        }
-
-        $propertyTypeBottomElevation = $entityManager->getRepository('AppBundle:PropertyType')
-            ->findOneBy(array(
-                'abbreviation' => "eb"
-            ));
-
-        if (!$propertyTypeBottomElevation) {
-            return new NotFoundHttpException();
-        }
-
-        $propertyTypePumpingRate = $entityManager->getRepository('AppBundle:PropertyType')
-            ->findOneBy(array(
-                'abbreviation' => "pur"
-            ));
-
-        if (!$propertyTypePumpingRate) {
-            return new NotFoundHttpException();
-        }
-
-
-        // Create AreaType
-        $areaType = AreaTypeFactory::setName('SC2_AT1');
-        $entityManager->persist($areaType);
+        $propertyTypeTopElevation = PropertyTypeFactory::create(PropertyType::TOP_ELEVATION);
+        $propertyTypeBottomElevation = PropertyTypeFactory::create(PropertyType::BOTTOM_ELEVATION);
+        $propertyTypePumpingRate = PropertyTypeFactory::create(PropertyType::PUMPING_RATE);
 
         // Create area
-        $area = AreaFactory::setOwnerNameTypeAndPublic($user, "SC2_A1", $areaType, $public);
+        $area = AreaFactory::create()
+            ->setOwner($user)
+            ->setName("SC2_A1")
+            ->setAreaType('SC2_AT1')
+            ->setPublic($public);
+
         $entityManager->persist($area);
 
         $converter = new PostgreSql();
@@ -145,30 +120,56 @@ class LoadScenario_2 implements FixtureInterface, ContainerAwareInterface
         $entityManager->persist($soilModel);
 
         // Create new geological layers
-        $layer_1 = GeologicalLayerFactory::setOwnerNameAndPublic($user, 'SC2_L1', $public);
+        $layer_1 = GeologicalLayerFactory::create()
+            ->setOwner($user)
+            ->setName('SC2_L1')
+            ->setPublic($public);
+
+        $layer_1->setOrder(GeologicalLayer::TOP_LAYER);
         $entityManager->persist($layer_1);
         $soilModel->addGeologicalLayer($layer_1);
 
-        $layer_2 = GeologicalLayerFactory::setOwnerNameAndPublic($user, 'SC2_L2', $public);
+        $layer_2 = GeologicalLayerFactory::create()
+            ->setOwner($user)
+            ->setName('SC2_L2')
+            ->setPublic($public);
+        $layer_2->setOrder(GeologicalLayer::TOP_LAYER+1);
         $entityManager->persist($layer_2);
         $soilModel->addGeologicalLayer($layer_2);
 
-        $layer_3 = GeologicalLayerFactory::setOwnerNameAndPublic($user, 'SC2_L3', $public);
+        $layer_3 = GeologicalLayerFactory::create()
+            ->setOwner($user)
+            ->setName('SC2_L3')
+            ->setPublic($public);
+        $layer_3->setOrder(GeologicalLayer::TOP_LAYER+2);
         $entityManager->persist($layer_3);
         $soilModel->addGeologicalLayer($layer_3);
 
-        $layer_4 = GeologicalLayerFactory::setOwnerNameAndPublic($user, 'SC2_L4', $public);
+        $layer_4 = GeologicalLayerFactory::create()
+            ->setOwner($user)
+            ->setName('SC2_L4')
+            ->setPublic($public);
+        $layer_4->setOrder(GeologicalLayer::TOP_LAYER+3);
         $entityManager->persist($layer_4);
         $soilModel->addGeologicalLayer($layer_4);
 
         /** @var ModFlowModel $model */
         $model = ModFlowModelFactory::create();
         $entityManager->persist($model);
-        $model->setName("ModFlowModel Scenario 2");
+        $model->setName("Hanoi");
         $model->setOwner($user);
-        $model->setDescription("ModFlowModel Scenario 2 Description");
+        $model->setDescription("Restoration of groundwater levels in overexploited aquifers in Hanoi.");
         $model->setSoilModel($soilModel);
         $model->setArea($area);
+        $model->setBoundingBox(
+            new BoundingBox(
+                11775189.21765423379838467,
+                11789747.53923093341290951,
+                2385794.83458124194294214,
+                2403506.49811625294387341,
+                3857)
+        );
+        $model->setGridSize(new GridSize(50,50));
         
         /** @var StressPeriod $stressPeriod */
         $stressPeriod = StressPeriodFactory::create();
@@ -187,10 +188,6 @@ class LoadScenario_2 implements FixtureInterface, ContainerAwareInterface
         $model->addStressPeriod($stressPeriod);
 
         $properties = $model->getCalculationProperties();
-        $properties['grid_size'] = array(
-            'rows' => 50,
-            'cols' => 50
-        );
         $model->setCalculationProperties($properties);
         $entityManager->flush();
 
@@ -389,15 +386,7 @@ class LoadScenario_2 implements FixtureInterface, ContainerAwareInterface
 
             $property = PropertyFactory::create();
             $property->setName($geologicalLayerProperty[1]);
-            $propertyType = $entityManager->getRepository('AppBundle:PropertyType')
-                ->findOneBy(array(
-                    'abbreviation' => $geologicalLayerProperty[2]
-                ));
-
-            if (!$propertyType) {
-                throw new NotFoundHttpException();
-            }
-            $property->setPropertyType($propertyType);
+            $property->setPropertyType(PropertyTypeFactory::create($geologicalLayerProperty[2]));
             $value = PropertyValueFactory::create()->setValue($geologicalLayerProperty[3]);
             $property->addValue($value);
             $geologicalLayer->addProperty($property);
@@ -789,7 +778,7 @@ class LoadScenario_2 implements FixtureInterface, ContainerAwareInterface
             {
                 echo 'Add properties to '.$geologicalUnit->getName()."\n";
 
-                $propertyType = $this->getPropertyType($this->entityManager, 'hc');
+                $propertyType = PropertyTypeFactory::create(PropertyType::HYDRAULIC_CONDUCTIVITY);
                 $property = PropertyFactory::create()->setPropertyType($propertyType);
                 $propertyValue = PropertyValueFactory::create()->setValue($geologicalUnitProperty[1]);
                 $property->setName('Hydraulic conductivity'.' '.$geologicalUnit->getName());
@@ -797,7 +786,7 @@ class LoadScenario_2 implements FixtureInterface, ContainerAwareInterface
                 $geologicalUnit->addProperty($property);
                 $this->entityManager->persist($property);
 
-                $propertyType = $this->getPropertyType($this->entityManager, 'ha');
+                $propertyType = PropertyTypeFactory::create(PropertyType::HORIZONTAL_ANISOTROPY);
                 $property = PropertyFactory::create()->setPropertyType($propertyType);
                 $propertyValue = PropertyValueFactory::create()->setValue($geologicalUnitProperty[2]);
                 $property->setName('Horizontal anisotropy'.' '.$geologicalUnit->getName());
@@ -805,7 +794,7 @@ class LoadScenario_2 implements FixtureInterface, ContainerAwareInterface
                 $geologicalUnit->addProperty($property);
                 $this->entityManager->persist($property);
 
-                $propertyType = $this->getPropertyType($this->entityManager, 'va');
+                $propertyType = PropertyTypeFactory::create(PropertyType::VERTICAL_ANISOTROPY);
                 $property = PropertyFactory::create()->setPropertyType($propertyType);
                 $propertyValue = PropertyValueFactory::create()->setValue($geologicalUnitProperty[3]);
                 $property->setName('Vertical anisotropy'.' '.$geologicalUnit->getName());
@@ -817,22 +806,21 @@ class LoadScenario_2 implements FixtureInterface, ContainerAwareInterface
             }
         }
 
-        // Add Boundary and ObservationPoints
-        $boundary = BoundaryFactory::create()
+        // Add ConstantHeadBoundary and ObservationPoints
+        $boundary = ConstantHeadBoundaryFactory::create()
             ->setOwner($user)
             ->setName('SC2_B1')
             ->setPublic(true)
         ;
 
-        $converter = new PostgreSql();
-        $geometryText = "LineString (11777056.49104572273790836 2403440.17028302047401667, 11777973.9436037577688694 2403506.49811625294387341, 11780228.12698311358690262 2402856.2682070448063314, 11781703.59880801662802696 2401713.22520185634493828, 11782192.89715446159243584 2400859.20254275016486645, 11782678.03379831649363041 2399224.82580633740872145, 11782955.64566324092447758 2398372.03099954081699252, 11783586.59488865174353123 2397659.24991086078807712, 11784427.14815393835306168 2396590.66674219723790884, 11784914.27011025696992874 2395382.18267500726506114, 11785330.82068796083331108 2394174.15454542031511664, 11785536.96124399080872536 2393180.11378513323143125, 11786097.1273522675037384 2392467.84464810928329825, 11787011.69080197438597679 2392108.19440084183588624, 11787715.90038010291755199 2391962.42985267844051123, 11788487.82464707084000111 2391319.86146369902417064, 11789680.65233467146754265 2390320.33801258727908134, 11789747.53923093341290951 2389681.79035578016191721, 11789176.05731181986629963 2388337.88133400911465287, 11788252.26803966984152794 2386996.03587882174178958, 11787540.82363948784768581 2385794.83458124194294214, 11783036.01740818470716476 2386882.81766726961359382, 11777486.37431096099317074 2390598.53498441586270928, 11775189.21765423379838467 2396638.4036272126249969, 11777056.49104572273790836 2403440.17028302047401667)";
+        $lineString = new LineString(array(
+                array(11787540.82363948784768581, 2385794.83458124194294214),
+                array(11783036.01740818470716476, 2386882.81766726961359382),
+                array(11777486.37431096099317074, 2390598.53498441586270928),
+                array(11775189.21765423379838467, 2396638.40362721262499690),
+                array(11777056.49104572273790836, 2403440.17028302047401667),
+        ), 3857);
 
-        /** @var AbstractSpatialType $lineStringType */
-        $lineStringType = Type::getType('linestring');
-
-        /** @var LineString $lineString */
-        $lineString = $converter->convertStringToPHPValue($lineStringType, $geometryText);
-        $lineString->setSrid(3857);
         $boundary->setGeometry($lineString);
         $boundary->addGeologicalLayer($layer_1);
         $boundary->addGeologicalLayer($layer_2);
@@ -841,18 +829,20 @@ class LoadScenario_2 implements FixtureInterface, ContainerAwareInterface
         $entityManager->persist($boundary);
         $entityManager->flush();
 
-        // Add ObservationPoints
+        // Add CHB-ObservationPoints
         $observationPointPoints = array(
-            array('name' => 'SC2_HTTP_4', 'point' => new Point(11777056.49104572273790836, 2403440.17028302047401667, 3857)),
-            array('name' => 'SC2_one_more', 'point' => new Point(11784427.14815393835306168, 2396590.66674219723790884, 3857)),
-            array('name' => 'SC2_H9', 'point' => new Point(11787540.82363948784768581, 2385794.83458124194294214, 3857)),
             array('name' => 'SC2_Q68', 'point' => new Point(11783036.01740818470716476, 2386882.81766726961359382, 3857)),
             array('name' => 'SC2_Q_62', 'point' => new Point(11775189.21765423379838467, 2396638.40362721262499690, 3857)),
         );
 
         foreach ($observationPointPoints as $observationPointPoint)
         {
-            $observationPoint = ObservationPointFactory::setOwnerNameAndPoint($user, $observationPointPoint['name'], $observationPointPoint['point'], $public);
+            $observationPoint = ObservationPointFactory::create()
+                ->setOwner($user)
+                ->setName($observationPointPoint['name'])
+                ->setGeometry($observationPointPoint['point'])
+                ->setPublic($public);
+
             $boundary->addObservationPoint($observationPoint);
 
             $geologicalLayer = $entityManager->getRepository('AppBundle:GeologicalLayer')
@@ -866,6 +856,68 @@ class LoadScenario_2 implements FixtureInterface, ContainerAwareInterface
             }
 
             $boundary->addGeologicalLayer($geologicalLayer);
+            $model->addBoundary($boundary);
+            $entityManager->persist($boundary);
+            $entityManager->persist($observationPoint);
+            $entityManager->flush();
+
+            $filename = 'scenario_2_observationPoint_'.str_replace('SC2_', '', $observationPoint->getName()).'_properties.csv';
+            $this->addModelObjectPropertiesFromCSVFile($observationPoint, __DIR__.'/'.$filename, ';');
+        }
+
+
+        // Add RiverBoundary and ObservationPoints
+        $riverBoundary = StreamBoundaryFactory::create()
+            ->setOwner($user)
+            ->setName('SC2_RIV1')
+            ->setPublic(true)
+        ;
+
+        $lineString = new LineString(
+            array(
+                array(11777056.49104572273790836, 2403440.17028302047401667),
+                array(11777973.94360375776886940, 2403506.49811625294387341),
+                array(11780228.12698311358690262, 2402856.26820704480633140),
+                array(11781703.59880801662802696, 2401713.22520185634493828),
+                array(11782192.89715446159243584, 2400859.20254275016486645),
+                array(11782678.03379831649363041, 2399224.82580633740872145),
+                array(11782955.64566324092447758, 2398372.03099954081699252),
+                array(11783586.59488865174353123, 2397659.24991086078807712),
+                array(11784427.14815393835306168, 2396590.66674219723790884),
+                array(11784914.27011025696992874, 2395382.18267500726506114),
+                array(11785330.82068796083331108, 2394174.15454542031511664),
+                array(11785536.96124399080872536, 2393180.11378513323143125),
+                array(11786097.12735226750373840, 2392467.84464810928329825),
+                array(11787011.69080197438597679, 2392108.19440084183588624),
+                array(11787715.90038010291755199, 2391962.42985267844051123),
+                array(11788487.82464707084000111, 2391319.86146369902417064),
+                array(11789680.65233467146754265, 2390320.33801258727908134),
+                array(11789747.53923093341290951, 2389681.79035578016191721),
+                array(11789176.05731181986629963, 2388337.88133400911465287),
+                array(11788252.26803966984152794, 2386996.03587882174178958),
+                array(11787540.82363948784768581, 2385794.83458124194294214)
+            ), 3857);
+
+        $riverBoundary->setGeometry($lineString);
+        $riverBoundary->setStartingPoint(new Point(11787540.82363948784768581, 2385794.83458124194294214, 3857));
+        $model->addBoundary($riverBoundary);
+        $entityManager->persist($riverBoundary);
+        $entityManager->flush();
+
+        $observationPointPoints = array(
+            array('name' => 'SC2_HTTP_4', 'point' => new Point(11777056.49104572273790836, 2403440.17028302047401667, 3857)),
+            array('name' => 'SC2_one_more', 'point' => new Point(11784427.14815393835306168, 2396590.66674219723790884, 3857)),
+            array('name' => 'SC2_H9', 'point' => new Point(11787540.82363948784768581, 2385794.83458124194294214, 3857)),
+        );
+
+        foreach ($observationPointPoints as $observationPointPoint)
+        {
+            $observationPoint = ObservationPointFactory::create()
+                ->setOwner($user)
+                ->setName($observationPointPoint['name'])
+                ->setGeometry($observationPointPoint['point'])
+                ->setPublic($public);
+            $riverBoundary->addObservationPoint($observationPoint);
             $model->addBoundary($boundary);
             $entityManager->persist($boundary);
             $entityManager->persist($observationPoint);
@@ -1001,11 +1053,12 @@ class LoadScenario_2 implements FixtureInterface, ContainerAwareInterface
         foreach ($wells as $row) {
             $well = array_combine($header, $row);
 
-            $model->addWell(WellFactory::create()
+            $model->addBoundary(WellBoundaryFactory::create()
                 ->setOwner($user)
                 ->setName($well['name'])
                 ->setPublic($public)
-                ->setPoint(new Point($well['x'], $well['y'], 3857))
+                ->setGeometry(new Point($well['x'], $well['y'], 3857))
+                ->setLayer($layer_4)
                 ->addValue($propertyTypeTopElevation, PropertyValueFactory::create()->setValue($well['ztop']))
                 ->addValue($propertyTypeBottomElevation, PropertyValueFactory::create()->setValue($well['zbot']))
                 ->addValue($propertyTypePumpingRate, PropertyValueFactory::create()->setValue($well['pumpingrate']))
@@ -1015,17 +1068,47 @@ class LoadScenario_2 implements FixtureInterface, ContainerAwareInterface
             $this->entityManager->flush();
         }
 
+        
+        /* Calculation of active cells and storing it in Database */
+        $geoTools = $this->container->get('inowas.geotools');
+        $model->setActiveCells($geoTools->getActiveCells($model->getArea(), $model->getBoundingBox(), $model->getGridSize()));
+        $entityManager->persist($model);
+        $entityManager->flush();
 
+        /* Interpolation of all layers */
+        $soilModelService = $this->container->get('inowas.soilmodel');
+        $soilModelService->setModflowModel($model);
+        $layers = $model->getSoilModel()->getGeologicalLayers();
+        /** @var GeologicalLayer $layer */
+        foreach ($layers as $layer)
+        {
+            $propertyTypes = $soilModelService->getAllPropertyTypesFromLayer($layer);
+            /** @var PropertyType $propertyType */
+            foreach ($propertyTypes as $propertyType){
+                if ($propertyType->getAbbreviation() == PropertyType::TOP_ELEVATION && $layer->getOrder() != GeologicalLayer::TOP_LAYER) {
+                    continue;
+                }
+
+                echo (sprintf("Interpolating Layer %s, Property %s\r\n", $layer->getName(), $propertyType->getAbbreviation()));
+                $output = $soilModelService->interpolateLayerByProperty(
+                    $layer,
+                    $propertyType->getAbbreviation(),
+                    array(Interpolation::TYPE_IDW, Interpolation::TYPE_MEAN)
+                );
+
+                echo ($output);
+            }
+        }
         return 1;
     }
 
 
     /**
-     * @param \AppBundle\Entity\ModelObject $baseElement
+     * @param ModelObject $baseElement
      * @param $filename
      * @param $delimiter
      */
-    public function addModelObjectPropertiesFromCSVFile(\AppBundle\Entity\ModelObject $baseElement, $filename, $delimiter)
+    public function addModelObjectPropertiesFromCSVFile(ModelObject $baseElement, $filename, $delimiter)
     {
         $data = $this->convert($filename, $delimiter);
         $elementCount = count($data[0])-1;
@@ -1034,19 +1117,15 @@ class LoadScenario_2 implements FixtureInterface, ContainerAwareInterface
 
         for ($i = 1; $i <= $elementCount; $i++)
         {
-            $propertyTypeName = $dataFields[$i];
-            $propertyType = $this->getPropertyType($this->entityManager, $propertyTypeName);
-
-            foreach ($data as $dataPoint)
-            {
-                $propertyTimeValue = PropertyTimeValueFactory::setDateTimeAndValue(new \DateTime($dataPoint[$dataFields[0]]), (float)$dataPoint[$dataFields[$i]]);
+            $propertyType = PropertyTypeFactory::create($dataFields[$i]);
+            foreach ($data as $dataPoint) {
+                $propertyTimeValue = PropertyTimeValueFactory::createWithTimeAndValue(new \DateTime($dataPoint[$dataFields[0]]), (float)$dataPoint[$dataFields[$i]]);
                 $baseElement->addValue($propertyType, $propertyTimeValue);
                 $this->entityManager->persist($propertyTimeValue);
 
                 echo $counter++."\n";
 
-                if ($counter % 20 == 0)
-                {
+                if ($counter % 20 == 0) {
                     $this->entityManager->flush();
                 }
             }
@@ -1081,25 +1160,5 @@ class LoadScenario_2 implements FixtureInterface, ContainerAwareInterface
         }
 
         return $data;
-    }
-
-    /**
-     * @param ObjectManager $entityManager
-     * @param $propertyAbbreviation
-     * @return \AppBundle\Entity\PropertyType|object
-     */
-    private function getPropertyType(ObjectManager $entityManager, $propertyAbbreviation)
-    {
-        $propertyType = $entityManager->getRepository('AppBundle:PropertyType')
-            ->findOneBy(array(
-                'abbreviation' => $propertyAbbreviation
-            ));
-
-        if (!$propertyType)
-        {
-            throw new NotFoundHttpException();
-        }
-
-        return $propertyType;
     }
 }

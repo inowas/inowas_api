@@ -1,10 +1,12 @@
 {
-    "name": "ralf/inowas",
-    "license": "proprietary",
+    "name": "inowas/inowas",
+    "description": "Inowas MAR-DSS",
+    "license": "MIT",
     "type": "project",
     "autoload": {
         "psr-4": {
-            "": "src/"
+            "AppBundle\\": "src/AppBundle/",
+            "Inowas\\": "src/Inowas/"
         },
         "classmap": [
             "app/AppKernel.php",
@@ -17,8 +19,8 @@
         }
     },
     "require": {
-        "php": ">=5.5.9",
-        "symfony/symfony": "3.0.*",
+        "php": ">=7.0.0",
+        "symfony/symfony": "3.1.*",
         "doctrine/orm": "^2.5",
         "doctrine/doctrine-bundle": "^1.6",
         "doctrine/doctrine-cache-bundle": "^1.2",
@@ -33,14 +35,17 @@
         "doctrine/doctrine-fixtures-bundle": "^2.3",
         "jms/serializer-bundle": "^1.1",
         "nelmio/api-doc-bundle": "^2.11",
-        "jms/di-extra-bundle": "dev-master",
+        "jms/di-extra-bundle": "^1.8",
         "jms/security-extra-bundle": "dev-master",
         "friendsofsymfony/rest-bundle": "^1.7",
-        "creof/doctrine2-spatial": "dev-master",
-        "ramsey/uuid-doctrine": "^1.2"
+        "creof/doctrine2-spatial": "^1.1",
+        "ramsey/uuid-doctrine": "^1.2",
+        "sensiolabs/ansi-to-html": "^1.1"
       
     },
     "require-dev": {
+        "phpmd/phpmd" : "@stable",
+        "satooshi/php-coveralls": "dev-master",
         "sensio/generator-bundle": "^3.0",
         "symfony/phpunit-bridge": "^2.7"
     },
@@ -64,7 +69,7 @@
     },
     "config": {
         "platform": {
-            "php": "5.5.9"
+            "php": "7.0.7"
         }
     },
     "extra": {

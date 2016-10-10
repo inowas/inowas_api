@@ -2,12 +2,13 @@
 
 namespace AppBundle\Controller;
 
+use AppBundle\Entity\Property;
 use FOS\RestBundle\Controller\Annotations\QueryParam;
 use FOS\RestBundle\Controller\FOSRestController;
-use FOS\RestBundle\Request\ParamFetcher;
 use FOS\RestBundle\View\View;
 use JMS\Serializer\SerializationContext;
 use Nelmio\ApiDocBundle\Annotation\ApiDoc;
+use Ramsey\Uuid\Uuid;
 
 class PropertyRestController extends FOSRestController
 {
@@ -24,38 +25,29 @@ class PropertyRestController extends FOSRestController
      * )
      *
      * @param string $id property-id
-     * @param ParamFetcher $paramFetcher
      *
      * @QueryParam(name="startDate", nullable=false, strict=false, description="startDate")
      * @QueryParam(name="endDate", nullable=false, strict=false, description="endDate")
      *
      * @return View
      */
-    public function getPropertyAction($id, $paramFetcher)
+    public function getPropertyAction($id)
     {
+
+        try {
+            $uuid = Uuid::fromString($id);
+        } catch (\InvalidArgumentException $e) {
+            throw $this->createNotFoundException(sprintf('Property with id=%s not found.', $id));
+        }
 
         $property = $this->getDoctrine()
             ->getRepository('AppBundle:Property')
             ->findOneBy(array(
-                'id' => $id
+                'id' => $uuid
             ));
 
-        if (!$property)
-        {
-            throw $this->createNotFoundException('Property with id='.$id.' not found.');
-        }
-
-        $startDate = null;
-        $endDate = null;
-
-        if ($paramFetcher->get('startDate'))
-        {
-            $startDate = new \DateTime($paramFetcher->get('startDate'));
-        }
-
-        if ($paramFetcher->get('endDate'))
-        {
-            $endDate = new \DateTime($paramFetcher->get('endDate'));
+        if (! $property instanceof Property) {
+            throw $this->createNotFoundException(sprintf('Property with id=%s not found.', $id));
         }
 
         $view = View::create();

@@ -25,7 +25,7 @@ class ObservationPoint extends ModelObject
      *
      * @ORM\Column(name="geometry", type="point", nullable=true)
      */
-    private $point;
+    private $geometry;
 
     /**
      * @var $elevation
@@ -34,13 +34,6 @@ class ObservationPoint extends ModelObject
      * @JMS\Groups({"modelobjectdetails"})
      */
     private $elevation;
-
-    /**
-     * @var ArrayCollection ModelObject
-     *
-     * @ORM\ManyToMany(targetEntity="AppBundle\Entity\ModelObject", mappedBy="observationPoints")
-     */
-    private $modelObjects;
 
     /**
      * ObservationPoint constructor.
@@ -57,12 +50,12 @@ class ObservationPoint extends ModelObject
     /**
      * Set point
      *
-     * @param point $point
+     * @param point $geometry
      * @return ObservationPoint
      */
-    public function setPoint($point)
+    public function setGeometry($geometry)
     {
-        $this->point = $point;
+        $this->geometry = $geometry;
 
         return $this;
     }
@@ -72,9 +65,9 @@ class ObservationPoint extends ModelObject
      *
      * @return point 
      */
-    public function getPoint()
+    public function getGeometry()
     {
-        return $this->point;
+        return $this->geometry;
     }
 
     /**
@@ -99,50 +92,7 @@ class ObservationPoint extends ModelObject
     {
         return $this->elevation;
     }
-
-    /**
-     * Add modelObjects
-     *
-     * @param \AppBundle\Entity\ModelObject $modelObjects
-     * @return ObservationPoint
-     */
-    public function addModelObject(ModelObject $modelObjects)
-    {
-        $this->modelObjects[] = $modelObjects;
-
-        if (!in_array($this, $modelObjects->getObservationPoints()->toArray()))
-        {
-            $modelObjects->addObservationPoint($this);
-        }
-
-        return $this;
-    }
-
-    /**
-     * Remove modelObjects
-     *
-     * @param \AppBundle\Entity\ModelObject $modelObjects
-     */
-    public function removeModelObject(ModelObject $modelObjects)
-    {
-        $this->modelObjects->removeElement($modelObjects);
-
-        if (in_array($this, $modelObjects->getObservationPoints()->toArray()))
-        {
-            $modelObjects->removeObservationPoint($this);
-        }
-    }
-
-    /**
-     * Get modelObjects
-     *
-     * @return \Doctrine\Common\Collections\Collection
-     */
-    public function getModelObjects()
-    {
-        return $this->modelObjects;
-    }
-
+    
     /**
      * @return string
      */
@@ -158,10 +108,10 @@ class ObservationPoint extends ModelObject
      */
     public function convertPointToPoint()
     {
-        if (!is_null($this->point))
+        if (!is_null($this->geometry))
         {
-            $point = new Point($this->point->getX(),$this->point->getY());
-            $point->setSrid($this->point->getSrid());
+            $point = new Point($this->geometry->getX(),$this->geometry->getY());
+            $point->setSrid($this->geometry->getSrid());
             return $point;
         }
 

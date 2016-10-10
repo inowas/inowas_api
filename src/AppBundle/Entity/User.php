@@ -33,42 +33,27 @@ class User extends BaseUser
      */
     protected $profile;
 
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="api_key", type="string", length=255)
+     */
+    protected $apiKey;
+
     public function __construct()
     {
         parent::__construct();
         $this->id = Uuid::uuid4();
+        $this->apiKey = Uuid::uuid4()->toString();
         $this->profile = UserProfileFactory::create();
     }
 
     /**
-     * @return int
+     * @return Uuid
      */
     public function getId()
     {
         return $this->id;
-    }
-
-    /**
-     * @param $id
-     * @return $this
-     */
-    public function setId($id)
-    {
-        $this->id = $id;
-
-        return $this;
-    }
-
-    /**
-     * Set profile
-     *
-     * @param \AppBundle\Entity\UserProfile $profile
-     * @return User
-     */
-    public function setProfile(UserProfile $profile = null)
-    {
-        $this->profile = $profile;
-        return $this;
     }
 
     /**
@@ -79,5 +64,33 @@ class User extends BaseUser
     public function getProfile()
     {
         return $this->profile;
+    }
+
+    /**
+     * Get apiKey
+     *
+     * @return string
+     */
+    public function getApiKey()
+    {
+        return $this->apiKey;
+    }
+
+    /**
+     *
+     */
+    public function generateNewApiKey(){
+        $this->apiKey = Uuid::uuid4()->toString();
+    }
+
+    /**
+     * @return bool
+     */
+    public function isAdmin(){
+        if ($this->hasRole('ROLE_ADMIN')){
+            return true;
+        }
+
+        return false;
     }
 }

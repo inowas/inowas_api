@@ -6,27 +6,7 @@ use AppBundle\Entity\PropertyTimeValue;
 
 class PropertyTimeValueFactory
 {
-    /**
-     * PropertyTimeValueFactory constructor.
-     */
-    public function __construct()
-    {
-        return new PropertyTimeValue();
-    }
-
-    /**
-     * @param \DateTime $timestamp
-     * @param $value
-     * @return PropertyTimeValue
-     */
-    public static function setDateTimeAndValue(\DateTime $timestamp, $value)
-    {
-        $ptv = new PropertyTimeValue();
-        $ptv->setTimeStamp($timestamp);
-        $ptv->setValue($value);
-
-        return $ptv;
-    }
+    private final function __construct(){}
 
     /**
      * @return PropertyTimeValue
@@ -37,6 +17,21 @@ class PropertyTimeValueFactory
     }
 
     /**
+     * @param \DateTime $timestamp
+     * @param $value
+     * @return PropertyTimeValue
+     */
+    public static function createWithTimeAndValue(\DateTime $timestamp, $value)
+    {
+        $ptv = new PropertyTimeValue();
+        $ptv->setTimeStamp($timestamp);
+        $ptv->setValue($value);
+
+        return $ptv;
+    }
+
+    /**
+     * @param \DateTime $dateTime
      * @return PropertyTimeValue
      */
     public static function createWithTime(\DateTime $dateTime)

@@ -117,8 +117,9 @@ class PropertyFixedIntervalValue extends AbstractValue
         {
             $interval = new \DateInterval($this->dateTimeIntervalString);
             $dateEnd = clone $this->getDateBegin();
-            for ($i = 0; $i < $this->getNumberOfValues(); $i++)
-            {
+
+            $ni = $this->getNumberOfValues();
+            for ($i = 0; $i < $ni; $i++) {
                 $dateEnd->add($interval);
             }
             return $dateEnd;
@@ -146,14 +147,17 @@ class PropertyFixedIntervalValue extends AbstractValue
         $dateTime = clone $this->dateTimeBegin;
         $interval = new \DateInterval($this->dateTimeIntervalString);
 
-        for ($i = 0; $i < count($this->values); $i++)
+        $ni = count($this->values);
+        for ($i = 0; $i < $ni; $i++)
         {
             if ($i != 0)
             {
                 $dateTime = clone $dateTime;
                 $dateTime->add($interval);
             }
-            $timeValues[] = TimeValueFactory::setDateTimeAndValue($dateTime, $this->values[$i]);
+            $timeValues[] = TimeValueFactory::create()
+            ->setDatetime($dateTime)
+            ->setValue($this->values[$i]);
         }
 
         return $timeValues;

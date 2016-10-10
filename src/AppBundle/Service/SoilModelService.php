@@ -6,16 +6,17 @@ use AppBundle\Entity\GeologicalLayer;
 use AppBundle\Entity\GeologicalUnit;
 use AppBundle\Entity\ModFlowModel;
 use AppBundle\Entity\Property;
-use AppBundle\Entity\PropertyType;
 use AppBundle\Entity\SoilModel;
-use AppBundle\Exception\InvalidArgumentException;
-use AppBundle\Model\Interpolation\PointValue;
+use AppBundle\Model\PointValue;
+use AppBundle\Model\PropertyType;
 use AppBundle\Model\PropertyValueFactory;
 use AppBundle\Model\RasterFactory;
+use Inowas\PyprocessingBundle\Model\Interpolation\InterpolationConfiguration;
+use Inowas\PyprocessingBundle\Model\Interpolation\InterpolationResult;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\EntityManager;
+use Inowas\PyprocessingBundle\Service\Interpolation;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
-use Symfony\Component\Routing\Exception\ResourceNotFoundException;
 
 class SoilModelService
 {
@@ -141,13 +142,12 @@ class SoilModelService
         /** @var GeologicalUnit $unit */
         foreach ($units as $unit) {
             $properties = $unit->getProperties();
+
             /** @var Property $property */
             foreach ($properties as $property) {
                 $propertyType = $property->getPropertyType();
-                if (!is_null($propertyType)) {
-                    if (!$propertyTypes->contains($property->getPropertyType())) {
-                        $propertyTypes->add($property->getPropertyType());
-                    }
+                if ($propertyType instanceof PropertyType) {
+                    $this->addPropertyTypeToList($propertyType, $propertyTypes);
                 }
             }
         }
@@ -155,56 +155,32 @@ class SoilModelService
         return $propertyTypes;
     }
 
-    public function getLayersSortedByElevation(SoilModel $soilModel = null)
-    {
-        if (is_null($soilModel)) {
-            $soilModel = $this->soilModel;
-            if (is_null($soilModel)) {
-                throw new InvalidArgumentException(printf('Soilmodel not loaded'));
+    /**
+     * @param PropertyType $type
+     * @param ArrayCollection $list
+     */
+    protected function addPropertyTypeToList(PropertyType $type, ArrayCollection $list){
+        foreach ($list as $element){
+            if ($element->getAbbreviation() == $type->getAbbreviation()){
+                return;
             }
         }
 
-        $layers = $soilModel->getGeologicalLayers();
-
-        $sortedLayers = array();
-        $meanBottomElevations = array();
-
-        /** @var GeologicalLayer $layer */
-        foreach ($layers as $layer) {
-            $units = $layer->getGeologicalUnits();
-
-            if (count($units) > 0) {
-                $meanBottomElevation = 0.0;
-                /** @var GeologicalUnit $unit */
-                foreach ($units as $unit) {
-                    $meanBottomElevation += $unit->getBottomElevation();
-                }
-                $meanBottomElevation = $meanBottomElevation / count($units);
-            }
-        }
+        $list->add($type);
     }
 
     /**
      * @param GeologicalLayer $layer
-     * @param $propertyTypeAbbreviation
-     * @param $algorithm
-     * @return string
-     * @throws \Exception
+     * @param $propertyType
+     * @param array $algorithms
      */
-    public function interpolateLayerByProperty(GeologicalLayer $layer, $propertyTypeAbbreviation, $algorithm)
+    public function interpolateLayerByProperty(GeologicalLayer $layer, $propertyType, array $algorithms)
     {
-        $propertyType = $this->em->getRepository('AppBundle:PropertyType')
-            ->findOneBy(array(
-                'abbreviation' => $propertyTypeAbbreviation
-            ));
-
-        if (!$propertyType) {
-            throw new NotFoundHttpException(sprintf('PropertyType with abbreviation "%s" not found.', $propertyTypeAbbreviation));
-        }
-
         $units = $layer->getGeologicalUnits();
-        $this->interpolation->setBoundingBox($this->modflowModel->getBoundingBox());
-        $this->interpolation->setGridSize($this->modflowModel->getGridSize());
+
+        $gridSize = $this->modflowModel->getGridSize();
+        $boundingBox = $this->modflowModel->getBoundingBox();
+        $pointValues = array();
 
         /** @var GeologicalUnit $unit */
         foreach ($units as $unit) {
@@ -215,64 +191,29 @@ class SoilModelService
                     $value = $unit->getFirstPropertyValue($property);
 
                     if (!is_null($value)) {
-                        $this->interpolation->addPoint(new PointValue(
-                            $unit->getPoint()->getX(),
-                            $unit->getPoint()->getY(),
-                            $value));
+                        $pointValues[] = new PointValue($unit->getPoint(), $value);
                         break;
                     }
                 }
             }
         }
 
-        $out = $this->interpolation->interpolate($algorithm);
+        $interpolationParameter = new InterpolationConfiguration($gridSize, $boundingBox, $pointValues, $algorithms);
+        $result = $this->interpolation->interpolate($interpolationParameter);
+        
+        if ($result instanceof InterpolationResult)
+        {
+            $propertyValue = PropertyValueFactory::create()
+                ->setRaster(RasterFactory::create()
+                    ->setGridSize($result->getGridSize())
+                    ->setBoundingBox($result->getBoundingBox())
+                    ->setData($result->getData())
+                    ->setDescription($result->getAlgorithm())
+                );
 
-        $propertyValue = PropertyValueFactory::create()
-            ->setRaster(RasterFactory::create()
-                ->setGridSize($this->modflowModel->getGridSize())
-                ->setBoundingBox($this->modflowModel->getBoundingBox())
-                ->setData($this->interpolation->getData())
-                ->setDescription($this->interpolation->getMethod())
-            );
-
-        $this->interpolation->clear();
-
-        $layer->addValue($propertyType, $propertyValue);
-        $this->em->persist($layer);
-        $this->em->flush();
-
-        return $out;
-    }
-
-    /**
-     *
-     */
-    public function interpolateAllLayers()
-    {
-        if (!$this->soilModel) {
-            throw new ResourceNotFoundException('ModflowModel not loaded.');
+            $layer->addValue($propertyType, $propertyValue);
+            $this->em->persist($layer);
+            $this->em->flush();
         }
-
-        if (!$this->soilModel->getGeologicalLayers() ||
-            $this->soilModel->getGeologicalLayers()->count() == 0
-        ) {
-            throw new ResourceNotFoundException('Soilmodel has no Layers.');
-        }
-
-        $layers = $this->soilModel->getGeologicalLayers();
-        $output = '';
-
-        foreach ($layers as $layer) {
-            $propertyTypes = $this->getAllPropertyTypesFromLayer($layer);
-            /** @var PropertyType $propertyType */
-            foreach ($propertyTypes as $propertyType) {
-                $output .= $this->interpolateLayerByProperty(
-                    $layer,
-                    $propertyType->getAbbreviation(),
-                    array(Interpolation::TYPE_GAUSSIAN, Interpolation::TYPE_MEAN));
-            }
-        }
-
-        return $output;
     }
 }

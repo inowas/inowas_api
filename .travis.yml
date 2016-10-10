@@ -1,0 +1,37 @@
+language: php
+
+php:
+  - '7.0'
+
+addons:
+  postgresql: "9.4"
+
+before_script:
+  - sudo apt-get update
+  - sudo apt-get install python-numpy python-scipy python-matplotlib
+  - sudo pip install --upgrade pip
+  - sudo pip install numpy --upgrade
+  - sudo pip install demjson
+  - sudo pip install Pillow
+  - sudo pip install sklearn
+  - sed -i 's/git@github.com:/https:\/\/github.com\//' .gitmodules
+  - git submodule update --init --recursive
+  - cp app/config/parameters.yml.travis app/config/parameters.yml
+  - composer install
+  - composer dump-autoload -o
+  - psql -c "create role travis_ci_user WITH PASSWORD 'travis' LOGIN SUPERUSER;" -U postgres
+  - bin/console doctrine:database:create --env=test
+  - psql travis_ci_db_test < "build/sql/structure.sql"
+  - bin/console doctrine:schema:create --env=test
+  - bin/console doctrine:fixtures:load --fixtures=src/AppBundle/DataFixtures/ORM/TestScenarios/Scenario_1_Lake_Example --append --env=test
+
+script:
+  - mkdir -p build/logs
+  - phpunit --exclude-group integration_tests --coverage-clover build/logs/clover.xml
+
+after_script:
+ - php vendor/bin/coveralls -v
+
+# Handle git submodules yourself
+git:
+    submodules: false

@@ -2,11 +2,11 @@
 
 namespace AppBundle\DataFixtures\ORM\Scenarios\Scenario_1;
 
+use AppBundle\Entity\GeologicalLayer;
 use AppBundle\Entity\ModFlowModel;
 use AppBundle\Entity\User;
 use AppBundle\Model\AreaFactory;
-use AppBundle\Model\AreaTypeFactory;
-use AppBundle\Model\BoundaryFactory;
+use AppBundle\Model\ConstantHeadBoundaryFactory;
 use AppBundle\Model\GeologicalLayerFactory;
 use AppBundle\Model\GeologicalPointFactory;
 use AppBundle\Model\GeologicalUnitFactory;
@@ -14,9 +14,11 @@ use AppBundle\Model\ModFlowModelFactory;
 use AppBundle\Model\ObservationPointFactory;
 use AppBundle\Model\Point;
 use AppBundle\Model\PropertyTimeValueFactory;
+use AppBundle\Model\PropertyType;
+use AppBundle\Model\PropertyTypeFactory;
 use AppBundle\Model\PropertyValueFactory;
 use AppBundle\Model\SoilModelFactory;
-use AppBundle\Model\StreamFactory;
+use AppBundle\Model\StreamBoundaryFactory;
 use AppBundle\Model\UserFactory;
 use CrEOF\Spatial\PHP\Types\Geometry\LineString;
 use CrEOF\Spatial\PHP\Types\Geometry\Polygon;
@@ -24,7 +26,6 @@ use Doctrine\Common\DataFixtures\FixtureInterface;
 use Doctrine\Common\Persistence\ObjectManager;
 use Symfony\Component\DependencyInjection\ContainerAwareInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
-use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class LoadScenario_1 implements FixtureInterface, ContainerAwareInterface
 {
@@ -67,32 +68,9 @@ class LoadScenario_1 implements FixtureInterface, ContainerAwareInterface
         }
 
         // Load PropertyTypes
-        $propertyTypeGwHead = $entityManager->getRepository('AppBundle:PropertyType')
-            ->findOneBy(array(
-                'abbreviation' => "hh"
-            ));
-
-        if (!$propertyTypeGwHead) {
-            return new NotFoundHttpException();
-        }
-
-        $propertyTypeTopElevation = $entityManager->getRepository('AppBundle:PropertyType')
-            ->findOneBy(array(
-                'abbreviation' => "et"
-            ));
-
-        if (!$propertyTypeTopElevation) {
-            return new NotFoundHttpException();
-        }
-
-        $propertyTypeBottomElevation = $entityManager->getRepository('AppBundle:PropertyType')
-            ->findOneBy(array(
-                'abbreviation' => "eb"
-            ));
-
-        if (!$propertyTypeBottomElevation) {
-            return new NotFoundHttpException();
-        }
+        $propertyTypeGwHead = PropertyTypeFactory::create(PropertyType::HYDRAULIC_HEAD);
+        $propertyTypeTopElevation = PropertyTypeFactory::create(PropertyType::TOP_ELEVATION);
+        $propertyTypeBottomElevation = PropertyTypeFactory::create(PropertyType::BOTTOM_ELEVATION);
 
         // Add new SoilModel
         $soilModel = SoilModelFactory::create();
@@ -180,7 +158,12 @@ class LoadScenario_1 implements FixtureInterface, ContainerAwareInterface
         $entityManager->flush();
 
 
-        $geologicalLayer = GeologicalLayerFactory::setOwnerNameAndPublic($user, 'SC1_L1', $public);
+        $geologicalLayer = GeologicalLayerFactory::create()
+        ->setOwner($user)
+        ->setName('SC1_L1')
+        ->setPublic($public);
+
+        $geologicalLayer->setOrder(GeologicalLayer::TOP_LAYER);
         $geologicalLayer = $this->addGeologicalUnitToGeologicalLayer($entityManager, $geologicalLayer, 'SC1_GU1.1');
         $geologicalLayer = $this->addGeologicalUnitToGeologicalLayer($entityManager, $geologicalLayer, 'SC1_GU2.1');
         $geologicalLayer = $this->addGeologicalUnitToGeologicalLayer($entityManager, $geologicalLayer, 'SC1_GU3.1');
@@ -191,7 +174,11 @@ class LoadScenario_1 implements FixtureInterface, ContainerAwareInterface
         $entityManager->persist($soilModel);
 
         // Create layer 2
-        $geologicalLayer = GeologicalLayerFactory::setOwnerNameAndPublic($user, 'SC1_L2', $public);
+        $geologicalLayer = GeologicalLayerFactory::create()
+            ->setOwner($user)
+            ->setName('SC1_L2')
+            ->setPublic($public);
+        $geologicalLayer->setOrder(GeologicalLayer::TOP_LAYER+1);
         $geologicalLayer = $this->addGeologicalUnitToGeologicalLayer($entityManager, $geologicalLayer, 'SC1_GU1.2');
         $geologicalLayer = $this->addGeologicalUnitToGeologicalLayer($entityManager, $geologicalLayer, 'SC1_GU2.2');
         $geologicalLayer = $this->addGeologicalUnitToGeologicalLayer($entityManager, $geologicalLayer, 'SC1_GU3.2');
@@ -202,7 +189,11 @@ class LoadScenario_1 implements FixtureInterface, ContainerAwareInterface
         $entityManager->persist($soilModel);
 
         // Create layer 3
-        $geologicalLayer = GeologicalLayerFactory::setOwnerNameAndPublic($user, 'SC1_L3', $public);
+        $geologicalLayer = GeologicalLayerFactory::create()
+            ->setOwner($user)
+            ->setName('SC1_L3')
+            ->setPublic($public);
+        $geologicalLayer->setOrder(GeologicalLayer::TOP_LAYER+2);
         $geologicalLayer = $this->addGeologicalUnitToGeologicalLayer($entityManager, $geologicalLayer, 'SC1_GU1.3');
         $geologicalLayer = $this->addGeologicalUnitToGeologicalLayer($entityManager, $geologicalLayer, 'SC1_GU2.3');
         $geologicalLayer = $this->addGeologicalUnitToGeologicalLayer($entityManager, $geologicalLayer, 'SC1_GU3.3');
@@ -214,9 +205,13 @@ class LoadScenario_1 implements FixtureInterface, ContainerAwareInterface
         $entityManager->flush();
 
         // Create Stream
-        $stream = StreamFactory::setOwnerNameAndPublic($user, 'SC1_S1', $public);
+        $stream = StreamBoundaryFactory::create()
+        ->setOwner($user)
+        ->setName('SC1_S1')
+        ->setPublic($public);
+        
         $stream->setStartingPoint(new Point(11777338.0302479, 2395656.78306049, 4326));
-        $stream->setLine(
+        $stream->setGeometry(
             new LineString(array(
                 array(11766937.6721201, 2380245.03544451),
                 array(11772341.4998545, 2386595.27878767),
@@ -231,8 +226,7 @@ class LoadScenario_1 implements FixtureInterface, ContainerAwareInterface
         $area = AreaFactory::create()
             ->setOwner($user)
             ->setName('SC1_A1')
-            ->setAreaType(AreaTypeFactory::create()
-                ->setName('SC1_AT1'))
+            ->setAreaType('SC1_AT1')
             ->setPublic($public)
             ->setGeometry(new Polygon(
                 array(new LineString(array(
@@ -248,7 +242,7 @@ class LoadScenario_1 implements FixtureInterface, ContainerAwareInterface
             ObservationPointFactory::create()
             ->setOwner($user)
             ->setName('SC1_OP1')
-            ->setPoint(new Point(11778481.3041515, 2393327.89177542, 4326))
+            ->setGeometry(new Point(11778481.3041515, 2393327.89177542, 4326))
             ->setPublic($public)
             ->addValue($propertyTypeTopElevation, PropertyValueFactory::create()->setValue(100))
             ->addValue($propertyTypeGwHead, PropertyTimeValueFactory::create()
@@ -269,7 +263,7 @@ class LoadScenario_1 implements FixtureInterface, ContainerAwareInterface
             ObservationPointFactory::create()
                 ->setOwner($user)
                 ->setName('SC1_OP2')
-                ->setPoint(new Point(11772891.9650673, 2397519.89608855, 4326))
+                ->setGeometry(new Point(11772891.9650673, 2397519.89608855, 4326))
                 ->setPublic($public)
                 ->addValue($propertyTypeTopElevation, PropertyValueFactory::create()->setValue(110))
         );
@@ -278,7 +272,7 @@ class LoadScenario_1 implements FixtureInterface, ContainerAwareInterface
             ObservationPointFactory::create()
                 ->setOwner($user)
                 ->setName('SC1_OP3')
-                ->setPoint(new Point(11786103.1301754, 2397138.80478736, 4326))
+                ->setGeometry(new Point(11786103.1301754, 2397138.80478736, 4326))
                 ->setPublic($public)
                 ->addValue($propertyTypeTopElevation, PropertyValueFactory::create()->setValue(120))
         );
@@ -287,7 +281,7 @@ class LoadScenario_1 implements FixtureInterface, ContainerAwareInterface
         $entityManager->flush();
 
         // Create boundary
-        $boundary = BoundaryFactory::create()
+        $boundary = ConstantHeadBoundaryFactory::create()
             ->setOwner($user)
             ->setName('SC1_B1')
             ->setPublic($public)
@@ -323,7 +317,7 @@ class LoadScenario_1 implements FixtureInterface, ContainerAwareInterface
     }
 
 
-    private function addGeologicalUnitToGeologicalLayer(ObjectManager $entityManager, \AppBundle\Entity\GeologicalLayer $layer, $geologicalUnitName)
+    private function addGeologicalUnitToGeologicalLayer(ObjectManager $entityManager, GeologicalLayer $layer, $geologicalUnitName)
     {
         $geologicalUnit = $entityManager->getRepository('AppBundle:GeologicalUnit')
             ->findOneBy(array(

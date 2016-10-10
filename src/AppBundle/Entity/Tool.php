@@ -10,7 +10,7 @@ use Ramsey\Uuid\Uuid;
  * Tool
  *
  * @ORM\Table(name="tools")
- * @ORM\Entity(repositoryClass="AppBundle\Repository\ToolRepository")
+ * @ORM\Entity()
  */
 class Tool
 {
@@ -57,11 +57,10 @@ class Tool
     /**
      * Set model
      *
-     * @param \AppBundle\Entity\AbstractModel $model
-     *
+     * @param AbstractModel $model
      * @return Tool
      */
-    public function setModel(\AppBundle\Entity\AbstractModel $model = null)
+    public function setModel(AbstractModel $model = null)
     {
         $this->model = $model;
 
@@ -81,11 +80,11 @@ class Tool
     /**
      * Set kernel
      *
-     * @param \AppBundle\Entity\AbstractKernel $kernel
+     * @param AbstractKernel $kernel
      *
      * @return Tool
      */
-    public function setKernel(\AppBundle\Entity\AbstractKernel $kernel = null)
+    public function setKernel(AbstractKernel $kernel = null)
     {
         $this->kernel = $kernel;
 
@@ -95,7 +94,7 @@ class Tool
     /**
      * Get kernel
      *
-     * @return \AppBundle\Entity\AbstractKernel
+     * @return AbstractKernel
      */
     public function getKernel()
     {
