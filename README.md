@@ -1,5 +1,3 @@
-INOWAS
-=======
 # inowas
 
 [![SensioLabsInsight](https://insight.sensiolabs.com/projects/dbc76ad5-719f-4b3a-a3c0-5b9848309e90/mini.png)](https://insight.sensiolabs.com/projects/dbc76ad5-719f-4b3a-a3c0-5b9848309e90)
