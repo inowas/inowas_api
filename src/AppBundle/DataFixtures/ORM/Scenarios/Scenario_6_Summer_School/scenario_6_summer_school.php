@@ -570,19 +570,17 @@ class LoadScenario_6 implements FixtureInterface, ContainerAwareInterface
             $scenario_1->setPublic(false);
             $scenario_1->setName('Scenario 1: River bank filtration');
             $scenario_1->setDescription('Move the wells next to the river');
-            $scenario_1->addEvent(EventFactory::createAddBoundaryEvent(
-                WellBoundaryFactory::createNewIndustrialWell()
-                    ->setName('Irrigation Well 6')
-                    ->setGeometry(new Point(-63.65101, -31.33516, 4326))
-                    ->setLayer($layer_1)
-                    ->addStressPeriod(StressPeriodFactory::createWel()
-                        ->setDateTimeBegin(new \DateTime('1.1.2015'))
-                        ->setDateTimeEnd(new \DateTime('31.12.2015'))
-                        ->setFlux(-5000)
-                    )
-            ));
-            $scenario_1->addEvent(EventFactory::createAddBoundaryEvent(
-                WellBoundaryFactory::createNewIndustrialWell()
+            $scenario_1->addBoundary(WellBoundaryFactory::createNewIndustrialWell()
+                ->setName('Irrigation Well 6')
+                ->setGeometry(new Point(-63.65101, -31.33516, 4326))
+                ->setLayer($layer_1)
+                ->addStressPeriod(StressPeriodFactory::createWel()
+                    ->setDateTimeBegin(new \DateTime('1.1.2015'))
+                    ->setDateTimeEnd(new \DateTime('31.12.2015'))
+                    ->setFlux(-5000)
+                )
+            );
+            $scenario_1->addBoundary(WellBoundaryFactory::createNewIndustrialWell()
                     ->setName('Irrigation Well 7')
                     ->setGeometry(new Point(-63.64792, -31.33546, 4326))
                     ->setLayer($layer_1)
@@ -591,9 +589,8 @@ class LoadScenario_6 implements FixtureInterface, ContainerAwareInterface
                         ->setDateTimeEnd(new \DateTime('31.12.2015'))
                         ->setFlux(-5000)
                     )
-            ));
-            $scenario_1->addEvent(EventFactory::createAddBoundaryEvent(
-                WellBoundaryFactory::createNewIndustrialWell()
+            );
+            $scenario_1->addBoundary(WellBoundaryFactory::createNewIndustrialWell()
                     ->setName('Irrigation Well 8')
                     ->setGeometry(new Point(-63.66714, -31.34513, 4326))
                     ->setLayer($layer_1)
@@ -602,9 +599,8 @@ class LoadScenario_6 implements FixtureInterface, ContainerAwareInterface
                         ->setDateTimeEnd(new \DateTime('31.12.2015'))
                         ->setFlux(-5000)
                     )
-            ));
-            $scenario_1->addEvent(EventFactory::createAddBoundaryEvent(
-                WellBoundaryFactory::createNewIndustrialWell()
+            );
+            $scenario_1->addBoundary(WellBoundaryFactory::createNewIndustrialWell()
                     ->setName('Irrigation Well 9')
                     ->setGeometry(new Point(-63.6644, -31.34513, 4326))
                     ->setLayer($layer_1)
@@ -613,9 +609,8 @@ class LoadScenario_6 implements FixtureInterface, ContainerAwareInterface
                         ->setDateTimeEnd(new \DateTime('31.12.2015'))
                         ->setFlux(-5000)
                     )
-            ));
-            $scenario_1->addEvent(EventFactory::createAddBoundaryEvent(
-                WellBoundaryFactory::createNewIndustrialWell()
+            );
+            $scenario_1->addBoundary(WellBoundaryFactory::createNewIndustrialWell()
                     ->setName('Irrigation Well 10')
                     ->setGeometry(new Point(-63.60363, -31.32578, 4326))
                     ->setLayer($layer_1)
@@ -624,9 +619,8 @@ class LoadScenario_6 implements FixtureInterface, ContainerAwareInterface
                         ->setDateTimeEnd(new \DateTime('31.12.2015'))
                         ->setFlux(-5000)
                     )
-            ));
-            $scenario_1->addEvent(EventFactory::createAddBoundaryEvent(
-                WellBoundaryFactory::createNewIndustrialWell()
+            );
+            $scenario_1->addBoundary(WellBoundaryFactory::createNewIndustrialWell()
                     ->setName('Irrigation Well 11')
                     ->setGeometry(new Point(-63.59367, -31.35803, 4326))
                     ->setLayer($layer_1)
@@ -635,9 +629,8 @@ class LoadScenario_6 implements FixtureInterface, ContainerAwareInterface
                         ->setDateTimeEnd(new \DateTime('31.12.2015'))
                         ->setFlux(-5000)
                     )
-            ));
-            $scenario_1->addEvent(EventFactory::createAddBoundaryEvent(
-                WellBoundaryFactory::createNewIndustrialWell()
+            );
+            $scenario_1->addBoundary(WellBoundaryFactory::createNewIndustrialWell()
                     ->setName('Irrigation Well 12')
                     ->setGeometry(new Point(-63.60123, -31.32578, 4326))
                     ->setLayer($layer_1)
@@ -646,9 +639,8 @@ class LoadScenario_6 implements FixtureInterface, ContainerAwareInterface
                         ->setDateTimeEnd(new \DateTime('31.12.2015'))
                         ->setFlux(-5000)
                     )
-            ));
-            $scenario_1->addEvent(EventFactory::createAddBoundaryEvent(
-                WellBoundaryFactory::createNewIndustrialWell()
+            );
+            $scenario_1->addBoundary(WellBoundaryFactory::createNewIndustrialWell()
                     ->setName('Irrigation Well 13')
                     ->setGeometry(new Point(-63.58852, -31.35803, 4326))
                     ->setLayer($layer_1)
@@ -657,9 +649,8 @@ class LoadScenario_6 implements FixtureInterface, ContainerAwareInterface
                         ->setDateTimeEnd(new \DateTime('31.12.2015'))
                         ->setFlux(-5000)
                     )
-            ));
-            $scenario_1->addEvent(EventFactory::createAddBoundaryEvent(
-                WellBoundaryFactory::createNewPublicWell()
+            );
+            $scenario_1->addBoundary(WellBoundaryFactory::createNewIndustrialWell()
                     ->setName('Public Well 3')
                     ->setGeometry(new Point(-63.62383, -31.34, 4326))
                     ->setLayer($layer_1)
@@ -668,9 +659,8 @@ class LoadScenario_6 implements FixtureInterface, ContainerAwareInterface
                         ->setDateTimeEnd(new \DateTime('31.12.2015'))
                         ->setFlux(-5000)
                     )
-            ));
-            $scenario_1->addEvent(EventFactory::createAddBoundaryEvent(
-                WellBoundaryFactory::createNewPublicWell()
+            );
+            $scenario_1->addBoundary(WellBoundaryFactory::createNewIndustrialWell()
                     ->setName('Public Well 4')
                     ->setGeometry(new Point(-63.6216, -31.34162, 4326))
                     ->setLayer($layer_1)
@@ -679,7 +669,7 @@ class LoadScenario_6 implements FixtureInterface, ContainerAwareInterface
                         ->setDateTimeEnd(new \DateTime('31.12.2015'))
                         ->setFlux(-5000)
                     )
-            ));
+            );
 
             /** @var AddBoundaryEvent $event */
             foreach ($scenario_1->getEvents() as $event) {

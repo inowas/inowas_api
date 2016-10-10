@@ -277,7 +277,7 @@ I.model = {
             var map = this.createBaseMap( 'boundaries-map' );
 
             var boundingBox = this.createBoundingBoxLayer(this.boundingBox).addTo(map);
-            var areaPolygon = L.geoJson(jQuery.parseJSON(this.area.polygonJSON), this.styles.areaGeometry).addTo(map);
+            var areaPolygon = L.geoJson(jQuery.parseJSON(this.data.area.geojson), this.styles.areaGeometry).addTo(map);
             map.fitBounds(this.createBoundingBoxPolygon(this.boundingBox).getBounds());
             var wells = this.createWellsLayer(this.data.wel).addTo(map);
             var rivers = this.createRiversLayer(this.data.riv).addTo(map);
@@ -297,7 +297,7 @@ I.model = {
 
             var map = this.createBaseMap( 'wells-map' );
             var boundingBox = this.createBoundingBoxLayer(this.boundingBox).addTo(map);
-            var areaPolygon = L.geoJson(jQuery.parseJSON(this.area.polygonJSON), this.styles.areaGeometry).addTo(map);
+            var areaPolygon = L.geoJson(jQuery.parseJSON(this.data.area.geojson), this.styles.areaGeometry).addTo(map);
             map.fitBounds(this.createBoundingBoxPolygon(this.boundingBox).getBounds());
             var wells = this.createWellsLayer(this.data.wel).addTo(map);
             var wellsActiveCells = this.createWellsActiveCellsLayer(this.data.wel, this.boundingBox, this.gridSize);
@@ -346,7 +346,7 @@ I.model = {
 
             var map = this.createBaseMap( 'rivers-map' );
             var boundingBox = this.createBoundingBoxLayer(this.boundingBox).addTo(map);
-            var areaPolygon = L.geoJson(jQuery.parseJSON(this.area.polygonJSON), this.styles.areaGeometry).addTo(map);
+            var areaPolygon = L.geoJson(jQuery.parseJSON(this.data.area.geojson), this.styles.areaGeometry).addTo(map);
             map.fitBounds(this.createBoundingBoxPolygon(this.boundingBox).getBounds());
             var rivers = this.createRiversLayer(this.data.riv).addTo(map);
             var riversActiveCells = this.createRiversActiveCellsLayer(this.data.riv, this.boundingBox, this.gridSize);

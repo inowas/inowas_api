@@ -4,6 +4,7 @@ namespace AppBundle\Entity;
 
 use AppBundle\Entity\AbstractEvent as Event;
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Inowas\PyprocessingBundle\Model\Modflow\ModflowScenarioInterface;
 use Inowas\PyprocessingBundle\Model\Modflow\Package\FlopyCalculationProperties;
@@ -284,7 +285,7 @@ class ModflowModelScenario implements ModflowScenarioInterface
      * @return \AppBundle\Entity\ModFlowModel
      */
     public function getModel(){
-        if ($this->events instanceof ArrayCollection){
+        if ($this->events instanceof Collection){
             $this->applyAddEvents($this->baseModel, $this->events);
             $this->applyChangeEvents($this->baseModel, $this->events);
         }
@@ -294,9 +295,9 @@ class ModflowModelScenario implements ModflowScenarioInterface
 
     /**
      * @param ModFlowModel $model
-     * @param ArrayCollection $events
+     * @param Collection $events
      */
-    private function applyAddEvents(ModFlowModel $model, ArrayCollection $events){
+    private function applyAddEvents(ModFlowModel $model, Collection $events){
         foreach ($events as $event) {
             if ($event instanceof AddEvent){
                 $event->applyTo($model);
@@ -306,9 +307,9 @@ class ModflowModelScenario implements ModflowScenarioInterface
 
     /**
      * @param ModFlowModel $model
-     * @param ArrayCollection $events
+     * @param Collection $events
      */
-    private function applyChangeEvents(ModFlowModel $model, ArrayCollection $events)
+    private function applyChangeEvents(ModFlowModel $model, Collection $events)
     {
         foreach ($events as $event) {
             if ($event instanceof ChangeEvent){
