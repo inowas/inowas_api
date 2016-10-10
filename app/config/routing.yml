@@ -73,6 +73,11 @@ rest_model_heads:
     prefix: /api
     resource: AppBundle\Controller\ModflowModelHeadsRestController
 
+rest_model_soilmodel:
+    type: rest
+    prefix: /api
+    resource: AppBundle\Controller\ModflowModelSoilmodelRestController
+
 rest_modelobject:
     type: rest
     prefix: /api

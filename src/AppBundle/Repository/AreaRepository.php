@@ -17,6 +17,17 @@ class AreaRepository extends EntityRepository
         return $query->getSingleScalarResult();
     }
 
+    public function getHumanReadableSurfaceById($id)
+    {
+        $surface = $this->getAreaSurfaceById($id);
+
+        if ($surface > 100000){
+            return round($surface/1000000, 1). ' sqkm';
+        } else {
+            return round($surface) . ' sqm';
+        }
+    }
+
     public function getAreaPolygonIn4326($id)
     {
         $query = $this->getEntityManager()

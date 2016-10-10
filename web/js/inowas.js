@@ -20,6 +20,7 @@ I.model = {
     wellsLayer: null,
     data: {
         area: null,
+        soilmodel: null,
         riv: null,
         chb: null,
         ghb: null,
@@ -235,7 +236,7 @@ I.model = {
             var map = this.createBaseMap( 'map-area' );
             var boundingBox = this.createBoundingBoxLayer(this.boundingBox).addTo(map);
             var areaPolygon = L.geoJson($.parseJSON(this.data.area.geojson), this.styles.areaGeometry).addTo(map);
-            var areaActiveCells = this.createAreaActiveCellsLayer(this.data.area.activeCells, this.boundingBox, this.gridSize, this.data.area.mutable);
+            var areaActiveCells = this.createAreaActiveCellsLayer(this.data.area.active_cells, this.boundingBox, this.gridSize, this.data.area.mutable);
             map.fitBounds(this.createBoundingBoxPolygon(this.boundingBox).getBounds());
 
             var baseMaps = {};
@@ -249,6 +250,22 @@ I.model = {
             }
 
             this.maps.area = map;
+        }
+    },
+    loadSoilmodel: function(refresh) {
+        if (this.maps.soilmodel == null || refresh == true) {
+            if (refresh == true){
+                this.maps.soilmodel.remove();
+            }
+
+            var map = this.createBaseMap( 'soilmodel-map' );
+            var boundingBox = this.createBoundingBoxLayer(this.boundingBox).addTo(map);
+            var areaPolygon = L.geoJson($.parseJSON(this.data.area.geojson), this.styles.areaGeometry).addTo(map);
+            map.fitBounds(this.createBoundingBoxPolygon(this.boundingBox).getBounds());
+
+            $.get( "/api/modflowmodels/"+I.model.id+"/soilmodel.html", function ( data ) {
+                $(".content_soilmodel").html( data );
+            });
         }
     },
     loadBoundaries: function(refresh) {

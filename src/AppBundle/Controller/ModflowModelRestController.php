@@ -2,6 +2,7 @@
 
 namespace AppBundle\Controller;
 
+use AppBundle\Entity\Area;
 use AppBundle\Entity\ModflowModelScenario;
 use AppBundle\Entity\ModFlowModel;
 use AppBundle\Entity\User;
@@ -83,8 +84,17 @@ class ModflowModelRestController extends FOSRestController
      */
     public function getModflowmodelsAction($id)
     {
+        /** @var ModFlowModel $model */
         $model = $this->findModelById($id);
-        
+
+        $area = $model->getArea();
+        if ($area instanceof Area){
+            $surface = $this->getDoctrine()->getRepository('AppBundle:Area')
+                ->getHumanReadableSurfaceById($area->getId());
+
+            $area->setSurface($surface);
+        }
+
         $serializationContext = SerializationContext::create();
         $serializationContext->setGroups('modeldetails');
 
@@ -365,35 +375,7 @@ class ModflowModelRestController extends FOSRestController
         /** @var ModFlowModel $model */
         $model = $this->findModelById($id);
 
-        if ($contentType == 'summary') {
-            $area = $model->getArea();
-            if (!$area) {
-                throw $this->createNotFoundException('Area not found.');
-            }
-
-            $surface = $this->getDoctrine()->getRepository('AppBundle:Area')
-                ->getAreaSurfaceById($area->getId());
-
-            if ($surface > 100000){
-                $surface = round($surface/1000000, 1). ' sqkm';
-            } else (
-            $surface = round($surface). ' sqm'
-            );
-
-            $area->setSurface($surface);
-
-            $geoJson = $this->getDoctrine()->getRepository('AppBundle:Area')
-                ->getAreaPolygonIn4326($area->getId());
-
-            $twig = $this->get('twig');
-            $html = $twig->render(':inowas/model/modflow:summary.html.twig', array(
-                'model' => $model
-            ));
-
-            $result['html'] = $html;
-            $result['geojson'] = $geoJson;
-
-        } elseif ($contentType == 'soilmodel') {
+        if ($contentType == 'soilmodel') {
             if (!$model->hasSoilModel()){
                 throw $this->createNotFoundException('Soilmodel not found.');
             }

@@ -90,20 +90,18 @@ class SoilModelRestController extends FOSRestController
     public function getSoilmodelsAction($id)
     {
 
-        try {
-            $uuid = Uuid::fromString($id);
-        } catch (\InvalidArgumentException $e) {
-            throw $this->createNotFoundException('Soilmodel with id=' . $id . ' not found.');
+        if (! Uuid::isValid($id)){
+            throw $this->createNotFoundException(sprintf('Soilmodel with id= %s not found.', $id));
         }
 
         $soilModel = $this->getDoctrine()
             ->getRepository('AppBundle:SoilModel')
             ->findOneBy(array(
-                'id' => $uuid
+                'id' => Uuid::fromString($id)
             ));
 
         if (!$soilModel) {
-            throw $this->createNotFoundException('Soilmodel with id=' . $id . ' not found.');
+            throw $this->createNotFoundException(sprintf('Soilmodel with id= %s not found.', $id));
         }
 
         $view = View::create();
@@ -134,20 +132,18 @@ class SoilModelRestController extends FOSRestController
     public function getSoilmodelsGeologicallayersAction($id)
     {
 
-        try {
-            $uuid = Uuid::fromString($id);
-        } catch (\InvalidArgumentException $e) {
-            throw $this->createNotFoundException('Soilmodel with id=' . $id . ' not found.');
+        if (! Uuid::isValid($id)){
+            throw $this->createNotFoundException(sprintf('Soilmodel with id= %s not found.', $id));
         }
 
         $soilModel = $this->getDoctrine()
             ->getRepository('AppBundle:SoilModel')
             ->findOneBy(array(
-                'id' => $uuid
+                'id' => Uuid::fromString($id)
             ));
 
         if (!$soilModel) {
-            throw $this->createNotFoundException('Soilmodel with id=' . $id . ' not found.');
+            throw $this->createNotFoundException(sprintf('Soilmodel with id= %s not found.', $id));
         }
 
         $view = View::create();
@@ -277,7 +273,6 @@ class SoilModelRestController extends FOSRestController
         $response->headers->set('Content-Type', $hType);
         return $response;
     }
-
 
     /**
      * @param $id
