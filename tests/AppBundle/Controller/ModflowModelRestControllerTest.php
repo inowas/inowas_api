@@ -105,7 +105,7 @@ class ModflowModelRestControllerTest extends RestControllerTestCase
                             new Point(1.1, 4.4, 4326),
                             new Point(1.1, 3.3, 4326)
                         )
-                    )
+                    ), 4326
                 )
             )
         );
