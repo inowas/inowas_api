@@ -30,4 +30,15 @@ class DefaultController extends Controller
         // replace this example code with whatever you need
         return $this->render('inowas/index.html.twig');
     }
+
+    /**
+     * @Security("is_granted('IS_AUTHENTICATED_FULLY')")
+     * @Route("/new_layout", name="new_layout")
+     * @Method({"GET"})
+     */
+    public function NewLayoutHomeIndexAction()
+    {
+        // replace this example code with whatever you need
+        return $this->render('inowas/model/modflow/model.lv2.html.twig');
+    }
 }
