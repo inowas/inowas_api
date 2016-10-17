@@ -31,4 +31,13 @@ $(document).ready(function(){
             $("#models").stop().animate({height: h+'px'}, 800);
         }
     });
+
+    $('.list-group-item.boundary_list_item').hover(
+        function () {
+            $(this).find('.tools_menu').show();
+        },
+        function () {
+            $(this).find('.tools_menu').hide();
+        }
+    )
 });
