@@ -128,6 +128,25 @@ I.model = {
 
             L.control.layers({}, overlayMaps).addTo(I.model.map);
 
+            L.control.zoom({
+                position:'topright'
+            }).addTo(I.model.map);
+
+            L.easyButton({
+                id: 'center-model',
+                position: 'topright',
+                type: 'replace',
+                leafletClasses: true,
+                states:[{                 // specify different icons and responses for your button
+                    stateName: 'get-center',
+                    onClick: function(button, map){
+                        I.model.map.fitBounds(I.model.createBoundingBoxPolygon(I.model.boundingBox).getBounds());
+                    },
+                    title: 'Show me the model',
+                    icon: 'fa-crosshairs'
+                }]
+            }).addTo( I.model.map );
+
             // Setup Badges of ModelObjects
             $("#wells_badge").text(I.model.getNumberOf(I.model.data.wel));
             $("#rivers_badge").text(I.model.getNumberOf(I.model.data.riv));
