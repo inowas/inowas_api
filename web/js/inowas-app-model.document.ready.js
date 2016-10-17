@@ -39,5 +39,5 @@ $(document).ready(function(){
         function () {
             $(this).find('.tools_menu').hide();
         }
-    )
+    );
 });

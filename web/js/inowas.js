@@ -135,7 +135,22 @@ I.model = {
             $("#constant_head_badge").text(I.model.getNumberOf(I.model.data.chb));
             $("#general_head_badge").text(I.model.getNumberOf(I.model.data.ghb));
 
+            $('#toolbox').on('mouseover mousedown touchstart', function() {
+                I.model.disableMap();
+            }).on('mouseout mouseup touchend', function() {
+                I.model.enableMap();
+            });
         });
+    },
+    disableMap: function() {
+        I.model.map.dragging.disable();
+        I.model.map.touchZoom.disable();
+        I.model.map.doubleClickZoom.disable();
+    },
+    enableMap: function() {
+        I.model.map.dragging.enable();
+        I.model.map.touchZoom.enable();
+        I.model.map.doubleClickZoom.enable();
     },
     getNumberOf: function( data ){
         if (data == undefined){
