@@ -112,6 +112,7 @@ class LoadScenario_6 implements FixtureInterface, ContainerAwareInterface
 
         $model = $modflowModelManager->create();
         $model->setName("Inowas Rio Primero")
+            ->setDescription('Application of managed aquifer recharge for maximization of water storage capacity in Río Primero area of Argentina.')
             ->setOwner($user)
             ->setPublic($public)
             ->setArea(AreaFactory::create()

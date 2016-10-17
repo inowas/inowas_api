@@ -1,5 +1,5 @@
 // global namespace
-var I = I || {};
+var I = {};
 
 I.user = {
     apiKey: '',
@@ -67,37 +67,66 @@ I.model = {
             prw: {radius: 5, color: 'black', weight: 1, fillColor: 'darkblue', fillOpacity: 0.7},
             smw: {radius: 7, color: 'black', weight: 1, fillColor: 'red', fillOpacity: 1},
             snw: {radius: 7, color: 'black', weight: 1, fillColor: 'yellow', fillOpacity: 1},
-            snifw:  {radius: 7, color: '#63b3ea', weight: 2, fillColor: '#bbdff6', fillOpacity: 0.7},
+            snifw:  {radius: 7, color: '#63b3ea', weight: 2, fillColor: '#bbdff6', fillOpacity: 0.7}
         },
         river: {color: "#000", weight: 0.5, fillColor: "blue", fillOpacity: 0}
     },
     initialize: function(id){
-        this.id = id;
-        that = this;
+        I.model.id = id;
+        I.model.map = L.map('map', {
+            zoomControl: false
+        }).setView([50.9661, 13.92367], 5);
+
+        L.tileLayer('http://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png', {
+            attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="http://cartodb.com/attributions">CartoDB</a>',
+            subdomains: 'abcd',
+            maxZoom: 19
+        }).addTo(I.model.map);
+
+        $(window).on("resize", function() {
+            $("#map").height($(window).height()).width($(window).width());
+            I.model.map.invalidateSize();
+        }).trigger("resize");
 
         $.when(
             $.getJSON( "/api/modflowmodels/"+id+".json", function ( data ) {
-                that.boundingBox = data.bounding_box;
-                that.gridSize = data.grid_size;
+                I.model.boundingBox = data.bounding_box;
+                I.model.gridSize = data.grid_size;
             }),
 
             $.getJSON( "/api/modflowmodels/"+this.id+"/area.json", function ( data ) {
-                that.data.area = data;
+                I.model.data.area = data;
             }),
 
             $.getJSON( "/api/modflowmodels/"+this.id+"/wells.json", function ( data ) {
-                that.data.wel = data;
+                I.model.data.wel = data;
             }),
 
             $.getJSON( "/api/modflowmodels/"+this.id+"/rivers.json", function ( data ) {
-                that.data.riv = data;
+                I.model.data.riv = data;
             })
 
         ).then(function(){
-            that.loadSummary();
+            var boundingBox = I.model.createBoundingBoxLayer(I.model.boundingBox).addTo(I.model.map);
+            var area = L.geoJson($.parseJSON(I.model.data.area.geojson), I.model.styles.areaGeometry).addTo(I.model.map);
+            var areaActiveCells = I.model.createAreaActiveCellsLayer(I.model.data.area.active_cells, I.model.boundingBox, I.model.gridSize, I.model.data.area);
+            var wells = I.model.createWellsLayer(I.model.data.wel).addTo(I.model.map);
+            var wellsActiveCells = I.model.createWellsActiveCellsLayer(I.model.data.wel, I.model.boundingBox, I.model.gridSize);
+            var rivers = I.model.createRiversLayer(I.model.data.riv).addTo(I.model.map);
+            var riversActiveCells = I.model.createRiversActiveCellsLayer(I.model.data.riv, I.model.boundingBox, I.model.gridSize);
+            I.model.map.fitBounds(I.model.createBoundingBoxPolygon(I.model.boundingBox).getBounds());
 
-            that.initialized = true;
-            $( ".summary" ).click();
+            var overlayMaps = {
+                'Area': area,
+                'Area inactive cells': areaActiveCells,
+                'Bounding Box': boundingBox,
+                'Wells' : wells,
+                'Wells active cells': wellsActiveCells,
+                'Rivers': rivers,
+                'Rivers active cells': riversActiveCells
+            };
+
+            L.control.layers({}, overlayMaps).addTo(I.model.map);
         });
     },
     getStyle: function (type, value){
@@ -189,9 +218,9 @@ I.model = {
                         data: data,
                         statusCode: {
                             200: function (data) {
-                                $.getJSON("/api/modflowmodels/" + that.id + "/wells.json", function (data) {
-                                    that.data.wel = data;
-                                    that.loadWells(true);
+                                $.getJSON("/api/modflowmodels/" + I.model.id + "/wells.json", function (data) {
+                                    I.model.data.wel = data;
+                                    I.model.loadWells(true);
                                 });
                             }
                         }
@@ -203,6 +232,7 @@ I.model = {
         return true;
     },
     loadSummary: function (refresh) {
+        var that = this;
         if (this.maps.summary == null || refresh == true){
             if (refresh == true){
                 this.maps.summary.remove();
@@ -233,7 +263,6 @@ I.model = {
                 this.maps.area.remove();
             }
 
-            var map = this.createBaseMap( 'map-area' );
             var boundingBox = this.createBoundingBoxLayer(this.boundingBox).addTo(map);
             var areaPolygon = L.geoJson($.parseJSON(this.data.area.geojson), this.styles.areaGeometry).addTo(map);
             var areaActiveCells = this.createAreaActiveCellsLayer(this.data.area.active_cells, this.boundingBox, this.gridSize, this.data.area.mutable);
@@ -501,7 +530,7 @@ I.model = {
                         bb.y_min = boundingBox.y_max - nRow*dy-dy;
                         bb.y_max = boundingBox.y_max - nRow*dy;
 
-                        var rectangle = that.createRectangle(bb, that.getStyle('wells', true));
+                        var rectangle = I.model.createRectangle(bb, I.model.getStyle('wells', true));
                         rectangle.addTo(layers);
                     }
                 }
@@ -556,7 +585,7 @@ I.model = {
                     bb.y_min = boundingBox.y_max - nRow*dy-dy;
                     bb.y_max = boundingBox.y_max - nRow*dy;
 
-                    var rectangle = that.createRectangle(bb, that.getStyle('wells', true));
+                    var rectangle = I.model.createRectangle(bb, I.model.getStyle('wells', true));
                     rectangle.addTo(layers);
                 }
             }

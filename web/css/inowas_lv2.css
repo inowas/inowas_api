@@ -194,18 +194,19 @@
     cursor: pointer;
     position: absolute;
     left: 40px;
-    z-index: 2;
+    z-index: 10;
 }
 
 #models_label p {
     font-size: 1.2em;
     padding: 5px 10px 5px 5px;
     margin: 0;
-    z-index: 2;
+    z-index: 10;
 }
 
 #models_label .icon {
     padding: 0 5px 2px 5px;
+    z-index: 10;
 }
 
 #toolbox-content p{

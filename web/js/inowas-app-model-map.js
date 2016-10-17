@@ -1,4 +1,4 @@
-var myGeoJSONPath = 'geojson/worldmap.geo.json';
+var myGeoJSONPath = '/geojson/worldmap.geo.json';
 var myCustomStyle = {
     stroke: false,
     fill: true,

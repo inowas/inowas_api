@@ -101,7 +101,7 @@ class ModelController extends Controller
             $model->registerScenario($scenario);
         }
 
-        return $this->render('inowas/model/modflow/model.html.twig', array(
+        return $this->render('inowas/model/modflow/model.lv2.html.twig', array(
                 'model' => $model,
                 'user' => $this->getUser()
             )
