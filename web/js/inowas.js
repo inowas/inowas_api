@@ -127,7 +127,32 @@ I.model = {
             };
 
             L.control.layers({}, overlayMaps).addTo(I.model.map);
+
+            // Setup Badges of ModelObjects
+            $("#wells_badge").text(I.model.getNumberOf(I.model.data.wel));
+            $("#rivers_badge").text(I.model.getNumberOf(I.model.data.riv));
+            $("#recharge_badge").text(I.model.getNumberOf(I.model.data.rch));
+            $("#constant_head_badge").text(I.model.getNumberOf(I.model.data.chb));
+            $("#general_head_badge").text(I.model.getNumberOf(I.model.data.ghb));
+
         });
+    },
+    getNumberOf: function( data ){
+        if (data == undefined){
+            return 0;
+        }
+
+        var number = 0;
+        for (var property in data) {
+            if (data.hasOwnProperty(property)) {
+                if (data[property] instanceof Array){
+                    number += data[property].length;
+                } else {
+                    number ++;
+                }
+            }
+        }
+        return number;
     },
     getStyle: function (type, value){
         if (type == 'area'){
