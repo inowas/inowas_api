@@ -23,3 +23,6 @@ composer.lock
 !/var/data/modflow/.gitkeep
 !/var/tmp/.gitkeep
 tests/results
+
+/bin/phantomjs
+
