@@ -74,7 +74,8 @@ I.model = {
     initialize: function(id){
         I.model.id = id;
         I.model.map = L.map('map', {
-            zoomControl: false
+            zoomControl: false,
+            preferCanvas: true
         }).setView([50.9661, 13.92367], 5);
 
         L.tileLayer('http://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png', {
@@ -125,7 +126,6 @@ I.model = {
                 'Rivers': rivers,
                 'Rivers active cells': riversActiveCells
             };
-
             L.control.layers({}, overlayMaps).addTo(I.model.map);
 
             L.control.zoom({
@@ -159,6 +159,19 @@ I.model = {
             }).on('mouseout mouseup touchend', function() {
                 I.model.enableMap();
             });
+
+            leafletImage(I.model.map, function(err, canvas) {
+                // now you have canvas
+                // example thing to do with that canvas:
+                var img = document.createElement('img');
+                var dimensions = map.getSize();
+                img.width = dimensions.x;
+                img.height = dimensions.y;
+                img.src = canvas.toDataURL();
+                document.getElementById('testimage').innerHTML = '';
+                document.getElementById('testimage').appendChild(img);
+            });
+
         });
     },
     disableMap: function() {
