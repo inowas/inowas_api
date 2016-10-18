@@ -782,6 +782,41 @@ class ModflowModelRestControllerTest extends RestControllerTestCase
         $this->assertNull($model);
     }
 
+    public function testGetModelScenarios(){
+
+        $modelScenario = ModelScenarioFactory::create($this->modFlowModel);
+        $modelScenario->setName('Scenario 1');
+        $modelScenario->setDescription('Description Scenario 1');
+        $modelScenario->setOwner($this->getOwner());
+        $this->getEntityManager()->persist($modelScenario);
+
+        $modelScenario = ModelScenarioFactory::create($this->modFlowModel);
+        $modelScenario->setName('Scenario 2');
+        $modelScenario->setDescription('Description Scenario 2');
+        $modelScenario->setOwner($this->getOwner());
+        $this->getEntityManager()->persist($modelScenario);
+        $this->getEntityManager()->flush();
+
+        $client = static::createClient();
+        $client->request(
+            'GET',
+            '/api/modflowmodels/'.$this->modFlowModel->getId()->toString().'/scenarios.json',
+            array(),
+            array(),
+            array('HTTP_X-AUTH-TOKEN' => $this->getOwner()->getApiKey())
+        );
+
+        $this->assertEquals(200, $client->getResponse()->getStatusCode());
+        $response = json_decode($client->getResponse()->getContent());
+        $this->assertCount(2, $response);
+        $scenario1 = $response[0];
+        $this->assertObjectHasAttribute('id', $scenario1);
+        $this->assertObjectHasAttribute('name', $scenario1);
+        $this->assertObjectHasAttribute('description', $scenario1);
+        $this->assertObjectHasAttribute('date_created', $scenario1);
+        $this->assertObjectHasAttribute('date_modified', $scenario1);
+    }
+
     public function testDeleteModelScenario(){
 
         $modelScenario = ModelScenarioFactory::create($this->modFlowModel);

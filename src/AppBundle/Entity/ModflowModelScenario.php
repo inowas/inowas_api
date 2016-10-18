@@ -22,11 +22,12 @@ use Ramsey\Uuid\UuidInterface;
 class ModflowModelScenario implements ModflowScenarioInterface
 {
     /**
-     * @var string
+     * @var Uuid
      *
      * @ORM\Id
      * @ORM\Column(name="id", type="uuid", unique=true)
      * @JMS\Type("string")
+     * @JMS\Groups({"scenariodetails"})
      */
     protected $id;
 
@@ -42,6 +43,7 @@ class ModflowModelScenario implements ModflowScenarioInterface
      * @var boolean
      *
      * @ORM\Column(name="public", type="boolean")
+     * @JMS\Groups({"scenariodetails"})
      */
     protected $public;
 
@@ -49,49 +51,15 @@ class ModflowModelScenario implements ModflowScenarioInterface
      * @var string
      *
      * @ORM\Column(name="name", type="string",length=255)
+     * @JMS\Groups({"scenariodetails"})
      */
     private $name;
-
-    /**
-     * @return User
-     */
-    public function getOwner(): User
-    {
-        return $this->owner;
-    }
-
-    /**
-     * @param User $owner
-     * @return ModflowModelScenario
-     */
-    public function setOwner(User $owner): ModflowModelScenario
-    {
-        $this->owner = $owner;
-        return $this;
-    }
-
-    /**
-     * @return boolean
-     */
-    public function isPublic(): bool
-    {
-        return $this->public;
-    }
-
-    /**
-     * @param boolean $public
-     * @return ModflowModelScenario
-     */
-    public function setPublic(bool $public): ModflowModelScenario
-    {
-        $this->public = $public;
-        return $this;
-    }
 
     /**
      * @var string
      *
      * @ORM\Column(name="description", type="text", nullable=true)
+     * @JMS\Groups({"scenariodetails"})
      */
     private $description;
 
@@ -99,6 +67,7 @@ class ModflowModelScenario implements ModflowScenarioInterface
      * @var string
      *
      * @ORM\Column(name="image_file", type="string", length=255, nullable=true)
+     * @JMS\Groups({"scenariodetails"})
      */
     private $imageFile;
 
@@ -115,7 +84,6 @@ class ModflowModelScenario implements ModflowScenarioInterface
      *
      * @ORM\ManyToOne(targetEntity="AppBundle\Entity\ModFlowModel", cascade={"persist", "remove"})
      * @ORM\JoinColumn(name="model_id", referencedColumnName="id", onDelete="CASCADE")
-     * @JMS\Type("ArrayCollection<AppBundle\Entity\AbstractModel>")
      **/
     private $baseModel;
 
@@ -133,6 +101,7 @@ class ModflowModelScenario implements ModflowScenarioInterface
      * @var \DateTime
      *
      * @ORM\Column(name="date_created", type="datetime")
+     * @JMS\Groups({"scenariodetails"})
      */
     private $dateCreated;
 
@@ -140,7 +109,7 @@ class ModflowModelScenario implements ModflowScenarioInterface
      * @var \DateTime
      *
      * @ORM\Column(name="date_modified", type="datetime")
-     * @JMS\Groups({"list", "details"})
+     * @JMS\Groups({"scenariodetails"})
      */
     private $dateModified;
 
@@ -397,4 +366,41 @@ class ModflowModelScenario implements ModflowScenarioInterface
     {
         return true;
     }
+
+    /**
+     * @return User
+     */
+    public function getOwner(): User
+    {
+        return $this->owner;
+    }
+
+    /**
+     * @param User $owner
+     * @return ModflowModelScenario
+     */
+    public function setOwner(User $owner): ModflowModelScenario
+    {
+        $this->owner = $owner;
+        return $this;
+    }
+
+    /**
+     * @return boolean
+     */
+    public function isPublic(): bool
+    {
+        return $this->public;
+    }
+
+    /**
+     * @param boolean $public
+     * @return ModflowModelScenario
+     */
+    public function setPublic(bool $public): ModflowModelScenario
+    {
+        $this->public = $public;
+        return $this;
+    }
+
 }
