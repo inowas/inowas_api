@@ -393,7 +393,7 @@ I.model = {
             }
 
             var map = this.createBaseMap( 'heads-map' );
-            L.geoJson(jQuery.parseJSON(this.area.polygonJSON), this.styles.areaGeometry).addTo( map );
+            L.geoJson(jQuery.parseJSON(this.data.area.geojson), this.styles.areaGeometry).addTo( map );
             map.fitBounds(this.createBoundingBoxPolygon(this.boundingBox).getBounds());
             this._loadAndAddHeads( map );
         }
