@@ -817,6 +817,20 @@ class ModflowModelRestControllerTest extends RestControllerTestCase
         $this->assertObjectHasAttribute('date_modified', $scenario1);
     }
 
+    public function testGetModelImage(){
+
+        $client = static::createClient();
+        $client->request(
+            'GET',
+            '/models/modflow/'.$this->modFlowModel->getId()->toString().'/image.png',
+            array(),
+            array(),
+            array('HTTP_X-AUTH-TOKEN' => $this->getOwner()->getApiKey())
+        );
+
+        $this->assertEquals(200, $client->getResponse()->getStatusCode());
+    }
+
     public function testDeleteModelScenario(){
 
         $modelScenario = ModelScenarioFactory::create($this->modFlowModel);

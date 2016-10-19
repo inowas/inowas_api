@@ -18,6 +18,7 @@ I.model = {
     activeCellsGridLayer: null,
     boundingBoxLayer: null,
     wellsLayer: null,
+    scenarios: null,
     data: {
         area: null,
         soilmodel: null,
@@ -74,8 +75,7 @@ I.model = {
     initialize: function(id){
         I.model.id = id;
         I.model.map = L.map('map', {
-            zoomControl: false,
-            preferCanvas: true
+            zoomControl: false
         }).setView([50.9661, 13.92367], 5);
 
         L.tileLayer('http://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png', {
@@ -105,8 +105,11 @@ I.model = {
 
             $.getJSON( "/api/modflowmodels/"+this.id+"/rivers.json", function ( data ) {
                 I.model.data.riv = data;
-            })
+            }),
 
+            $.getJSON( "/api/modflowmodels/"+this.id+"/scenarios.json", function ( data ) {
+                I.model.scenarios = data;
+            })
         ).then(function(){
             var boundingBox = I.model.createBoundingBoxLayer(I.model.boundingBox).addTo(I.model.map);
             var area = L.geoJson($.parseJSON(I.model.data.area.geojson), I.model.styles.areaGeometry).addTo(I.model.map);
@@ -126,6 +129,7 @@ I.model = {
                 'Rivers': rivers,
                 'Rivers active cells': riversActiveCells
             };
+
             L.control.layers({}, overlayMaps).addTo(I.model.map);
 
             L.control.zoom({
@@ -160,18 +164,7 @@ I.model = {
                 I.model.enableMap();
             });
 
-            leafletImage(I.model.map, function(err, canvas) {
-                // now you have canvas
-                // example thing to do with that canvas:
-                var img = document.createElement('img');
-                var dimensions = map.getSize();
-                img.width = dimensions.x;
-                img.height = dimensions.y;
-                img.src = canvas.toDataURL();
-                document.getElementById('testimage').innerHTML = '';
-                document.getElementById('testimage').appendChild(img);
-            });
-
+            I.model.renderScenarios(I.model.scenarios);
         });
     },
     disableMap: function() {
@@ -200,6 +193,27 @@ I.model = {
             }
         }
         return number;
+    },
+    renderScenarios: function( scenarios ){
+        var html='<div class="list-group-item list-group-item-action inactive_scenario"></div>';
+        $.each(scenarios , function (index, value){
+            html+=
+                '<a href="#" class="list-group-item list-group-item-action inactive_scenario"> \
+                    <div class="row">\
+                        <div class="col-sm-4 image">\
+                            <img src="/models/modflow/'+value.id+'/image.png" class="img-responsive" alt="'+value.name+'">\
+                        </div> \
+                        <div class="col-sm-8">\
+                            <h1>'+value.name+'</h1>\
+                            <p>'+value.description+'</p>\
+                        </div>\
+                    </div>\
+                </a>';
+            console.log(value);
+        });
+
+        $('#scenarios_list').html(html);
+
     },
     getStyle: function (type, value){
         if (type == 'area'){

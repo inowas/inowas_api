@@ -98,6 +98,11 @@ rest_soilmodels:
     prefix: /api
     resource: AppBundle\Controller\SoilModelRestController
 
+rest_model_scenarios:
+    type: rest
+    prefix: /api
+    resource: AppBundle\Controller\ModflowModelScenariosRestController
+
 rest_stream_boundary:
     type: rest
     prefix: /api
