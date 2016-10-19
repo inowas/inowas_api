@@ -109,6 +109,10 @@ I.model = {
 
             $.getJSON( "/api/modflowmodels/"+this.id+"/scenarios.json", function ( data ) {
                 I.model.scenarios = data;
+            }),
+
+            $.getJSON( "/api/modflowmodels/"+this.id+"/heads.json", function ( data ) {
+                I.model.heads = data;
             })
         ).then(function(){
             var boundingBox = I.model.createBoundingBoxLayer(I.model.boundingBox).addTo(I.model.map);
@@ -165,6 +169,7 @@ I.model = {
             });
 
             I.model.renderScenarios(I.model.scenarios);
+            I.model.addLastHead( I.model.heads, I.model.map );
         });
     },
     disableMap: function() {
@@ -209,7 +214,6 @@ I.model = {
                         </div>\
                     </div>\
                 </a>';
-            console.log(value);
         });
 
         $('#scenarios_list').html(html);
@@ -691,6 +695,35 @@ I.model = {
     createRectangle: function( boundingBox, style ){
         return new L.Rectangle([[boundingBox.y_min, boundingBox.x_min], [boundingBox.y_max, boundingBox.x_max]], style);
     },
+    createHeatMap: function (heads, min, max, boundingBox, gridSize, layerGroup) {
+        var dx = (boundingBox.x_max - boundingBox.x_min) / gridSize.n_x;
+        var dy = (boundingBox.y_max - boundingBox.y_min) / gridSize.n_y;
+
+        for (var row=0; row<gridSize.n_y; row++){
+            for (var col=0; col<gridSize.n_x; col++) {
+                var bb = {};
+                bb.x_min = boundingBox.x_min + col * dx;
+                bb.x_max = boundingBox.x_min + col * dx + dx;
+                bb.y_min = boundingBox.y_max - row * dy - dy;
+                bb.y_max = boundingBox.y_max - row * dy;
+
+                var value = false;
+                if (heads[row] != undefined || heads[row][col] != undefined) {
+                    value = heads[row][col];
+                    value = Math.round(value * 100) / 100;
+                }
+
+                var rectangle = this.createRectangle(
+                    bb,
+                    {color: "blue", weight: 0, fillColor: I.model.getColor(min, max, value), fillOpacity: 0.2}
+                );
+
+                rectangle.addTo(layerGroup);
+            }
+        }
+
+        return layerGroup;
+    },
     createHeadsLayer: function (heads, min, max, time, boundingBox, gridSize, layerGroup, info, map) {
 
         var lay = 0;
@@ -713,9 +746,9 @@ I.model = {
                     value = Math.round(value*100)/100;
                 }
 
-                var rectangle = this.createRectangle(
+                var rectangle = I.model.createRectangle(
                     bb,
-                    {color: "blue", weight: 0, fillColor: this.getColor(min, max, value), fillOpacity: 0.2, time: time}
+                    {color: "blue", weight: 0, fillColor: I.model.getColor(min, max, value), fillOpacity: 0.2, time: time}
                 );
 
                 rectangle.time = time;
@@ -885,6 +918,33 @@ I.model = {
             var overlayMaps = {"Wells": geographyLayer, "Active Cells": activeCellsLayer};
             L.control.layers(baseMaps, overlayMaps).addTo(map);
         }
+    },
+    addLastHead: function ( data, map ) {
+        var dates = Object.keys(data);
+        var layerGroup = L.layerGroup();
+        var lastHeads;
+
+        for ( var i=0; i<dates.length; i++ ){
+            var heads = data[dates[i]];
+            if (typeof heads == "string"){
+                heads = $.parseJSON(heads)
+            }
+
+            var allHeads =[];
+            for (var j=0; j<heads[0].length; j++){
+                allHeads = $.merge(allHeads, heads[0][j]);
+            }
+
+            lastHeads = heads;
+        }
+
+        // Calculating 5%/95% percentile
+        allHeads.sort();
+        var min = allHeads[Math.round(5 * allHeads.length/100)];
+        var max = allHeads[Math.round(95 * allHeads.length/100)];
+
+        layerGroup = this.createHeatMap(lastHeads[0], min, max, I.model.boundingBox, I.model.gridSize, layerGroup);
+        layerGroup.addTo(map);
     },
     _addHeadsLayer: function ( data, map ){
 

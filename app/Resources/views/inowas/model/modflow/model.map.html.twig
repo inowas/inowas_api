@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <title>Modflow-Model {{ model.name }}</title>
+    <link rel="stylesheet" type="text/css" href="{{ asset('vendor/bootstrap/dist/css/bootstrap.min.css') }}" />
+    <link rel="stylesheet" type="text/css" href="{{ asset('vendor/font-awesome/css/font-awesome.min.css') }}" />
+    <link rel="stylesheet" type="text/css" href="{{ asset('vendor/leaflet/dist/leaflet.css') }}" />
+    <link rel="stylesheet" type="text/css" href="{{ asset('vendor/Leaflet.EasyButton/src/easy-button.css') }}" />
+    <link rel="stylesheet" type="text/css" href="{{ asset('css/inowas_lv2.css') }}" />
+    <link rel="icon" type="image/x-icon" href="{{ asset('favicon.ico') }}" />
+</head>
+<body>
+    <div class="app">
+        <div id="map"></div>
+    </div>
+
+    <script type="text/javascript" src="{{ asset('vendor/jquery/dist/jquery.min.js') }}"></script>
+    <script type="text/javascript" src="{{ asset('vendor/bootstrap/dist/js/bootstrap.min.js') }}"></script>
+    <script type="text/javascript" src="{{ asset('vendor/leaflet/dist/leaflet.js') }}"></script>
+    <script type="text/javascript" src="{{ asset('vendor/Leaflet.EasyButton/src/easy-button.js') }}"></script>
+    <script type="text/javascript" src="{{ asset('vendor/leaflet-image/leaflet-image.js') }}"></script>
+    <script type="text/javascript" src="{{ asset('vendor/rainbowvis.js/rainbowvis.js') }}"></script>
+
+    <script type="text/javascript" src="{{ asset('js/inowas.js') }}"></script>
+    <script type="text/javascript" src="{{ asset('js/inowas-app-model-map.js') }}"></script>
+    <script type="text/javascript" src="{{ asset('js/inowas-app-model.document.ready.js') }}"></script>
+
+    <script>
+        I.user.setApiKey('{{ user.getApiKey }}');
+        I.model.initialize('{{ model.id.toString }}');
+    </script>
+</body>
+</html>
