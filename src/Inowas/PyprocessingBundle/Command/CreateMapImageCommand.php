@@ -3,6 +3,7 @@
 namespace Inowas\PyprocessingBundle\Command;
 
 use AppBundle\Entity\ModFlowModel;
+use Inowas\PyprocessingBundle\Model\Modflow\ModflowModelInterface;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -27,7 +28,7 @@ class CreateMapImageCommand extends FlopyCommand
     {
         $model = $this->getModelFromInput($input, $output);
 
-        if ($model instanceof ModFlowModel) {
+        if ($model instanceof ModflowModelInterface) {
             $mapImage = $this->getContainer()->get('inowas.mapimage');
             $mapImage->createImage($model);
         }
