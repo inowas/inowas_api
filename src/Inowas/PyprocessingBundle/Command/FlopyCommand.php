@@ -36,6 +36,14 @@ abstract class FlopyCommand extends ContainerAwareCommand
                     'id' => $input->getArgument('id')
                 ));
 
+            if (!$model instanceof ModflowModelInterface){
+                $model = $this->getContainer()->get('doctrine.orm.default_entity_manager')
+                    ->getRepository('AppBundle:ModflowModelScenario')
+                    ->findOneBy(array(
+                        'id' => $input->getArgument('id')
+                    ));
+            }
+
             if (! $model instanceof ModflowModelInterface){
                 $output->writeln(sprintf("The given id: %s is not a valid Model", $input->getArgument('id')));
                 return 0;
