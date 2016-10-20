@@ -12,14 +12,151 @@ Array.prototype.clean = function(deleteValue) {
 var I = {};
 
 I.user = {
-    apiKey: '',
+    id: null,
+    apiKey: null,
     setApiKey: function (apiKey) {
         this.apiKey = apiKey;
         $.ajaxSetup({
             headers : {'X-AUTH-TOKEN' : apiKey }
         });
+    },
+    setId: function (id) {
+
     }
 };
+
+I.models = {
+    locale: 'en-US',
+    private: [],
+    public: [],
+    load: function(){
+        $.getJSON( "/api/modflowmodels.json", function ( data ) {
+            I.models.renderModels( data );
+            $.each(data, function (key, value) {
+                if (value.public){
+                    I.models.public.push(value);
+                } else {
+                    I.models.private.push(value);
+                }
+            });
+        })
+    },
+    renderModels: function ( data ) {
+        var html = '' +
+            '<thead>' +
+            '<tr>' +
+            '<th>#</th>' +
+            '<th>Model name</th> ' +
+            '<th>Creator</th>' +
+            '<th>Created</th>' +
+            '<th>Last modified</th>' +
+            '<th>Public</th>' +
+            '<th>State</th>' +
+            '</tr>' +
+            '</thead>' +
+            '<tbody >';
+
+        $.each(data, function (key, value) {
+            html += '<tr id="'+ value.id +'" class="model_list_item">';
+            html += '<td>Asia</td>';
+            html += '<td>'+ value.name +'</td>';
+            html += '<td>'+ value.owner.username +'</td>';
+            html += '<td>'+ I.models.stringToDate(value.date_created) +'</td>';
+            html += '<td>'+ I.models.stringToDate(value.date_modified) +'</td>';
+            html += '<td>'+ (value.public==true?'yes':'no') +'</td>';
+            html += '<td>---</td>';
+            html += '</tr>';
+        });
+
+        html += '</tbody>';
+
+        $('#table_public_models').html(html);
+        $('.model_list_item').hover(function() {
+            I.models.loadInfoBox(this.id);
+        });
+
+        $('.model_list_item').click(function() {
+            I.model.clear();
+            I.model.initialize(this.id);
+        });
+
+    },
+    loadInfoBox: function (modelId) {
+        var model = this.findModelById( modelId );
+
+
+        if (model !== null){
+            var html = '';
+            html += '<div class="panel-body">';
+            html += '    <div class="row">';
+            html += '        <div class="col-md-4">';
+            html += '            <img class="image img-responsive" src="/models/modflow/'+ model.id +'/image.png" />';
+            html += '        </div>';
+            html += '        <div id="testimage"></div>';
+            html += '        <div class="col-md-8">';
+            html += '            <div class="row">';
+            html += '                <div class="col-md-4">Model name:</div>';
+            html += '                <div class="col-md-8">'+ model.name +'</div>';
+            html += '            </div>';
+            html += '            <div class="row">';
+            html += '                <div class="col-md-4">Description:</div>';
+            html += '                <div class="col-md-8">'+ model.description +'</div>';
+            html += '            </div>';
+            html += '            <div class="row">';
+            html += '                <div class="col-md-4">Creator</div>';
+            html += '                <div class="col-md-8">'+ model.owner.username +'</div>';
+            html += '            </div>';
+            html += '            <div class="row">';
+            html += '                <div class="col-md-4">Created:</div>';
+            html += '                <div class="col-md-8">'+ I.models.stringToDate(model.date_created) +'</div>';
+            html += '            </div>';
+            html += '            <div class="row">';
+            html += '                <div class="col-md-4">Modified on:</div>';
+            html += '                <div class="col-md-8">'+ I.models.stringToDate(model.date_modified) +'</div>';
+            html += '            </div>';
+            html += '            <div class="row">';
+            html += '                <div class="col-md-4">Surface area:</div>';
+            html += '                <div class="col-md-8"></div>';
+            html += '            </div>';
+            html += '            <div class="row">';
+            html += '                <div class="col-md-4">Status:</div>';
+            html += '                <div class="col-md-8">'+ 'Status' +'</div>';
+            html += '            </div>';
+            html += '        </div>';
+            html += '    </div>';
+            html += '</div>';
+
+            $('#model_info').html(html);
+        }
+    },
+    findModelById: function (id) {
+        var model = null;
+
+        if (this.public !== null){
+            $.each(this.public, function (key, value) {
+                if (value.id === id){
+                    model = value;
+                    return false;
+                }
+            });
+        }
+
+        if (this.private !== null) {
+            $.each(this.private, function (key, value) {
+                if (value.id === id) {
+                    model = value;
+                    return false;
+                }
+            });
+        }
+
+        return model;
+    },
+    stringToDate: function ( text ) {
+        return new Date(text).toLocaleString(this.locale);
+    }
+};
+
 I.model = {
     id: null,
     initialized: false,
@@ -27,6 +164,7 @@ I.model = {
     gridSize: null,
     activeCellsGridLayer: null,
     boundingBoxLayer: null,
+    map: null,
     wellsLayer: null,
     scenarios: null,
     data: {
@@ -180,6 +318,16 @@ I.model = {
 
             I.model.renderScenarios(I.model.scenarios);
         });
+    },
+    clear: function () {
+        I.model.initialized = false;
+        I.model.boundingBox = null;
+        I.model.gridSize = null;
+        I.model.activeCellsGridLayer = null;
+        I.model.boundingBoxLayer = null;
+        I.model.wellsLayer = null;
+        I.model.scenarios = null;
+        I.model.map.remove();
     },
     initializeMapImage: function(id){
         I.model.id = id;

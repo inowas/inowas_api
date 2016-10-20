@@ -23,7 +23,7 @@
                             <div class="col-sm-6">
                                 <ul class="nav nav-pills">
                                     <li role="presentation" class="clickable"><a href="#">My models</a></li>
-                                    <li role="presentation" class="clickable"><a href="#">Public models</a></li>
+                                    <li role="presentation" class="clickable active"><a href="#">Public models</a></li>
                                 </ul>
                             </div>
                             <div class="col-sm-6">
@@ -35,88 +35,8 @@
                                 </div>
                             </div>
                         </div>
-                        <table class="table table-striped table-hover" style="border-collapse:collapse; margin-top: 20px">
-                            <thead>
-                                <tr>
-                                    <th>#</th>
-                                    <th>Model name</th>
-                                    <th>Created by</th>
-                                    <th>Created</th>
-                                    <th>Last modified</th>
-                                    <th>Public</th>
-                                    <th>State</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr>
-                                    <td>1</td>
-                                    <td>Pirna Copitz</td>
-                                    <td>Felix Barquero</td>
-                                    <td>02.09.2016 17:42</td>
-                                    <td>02.09.2016 17:42</td>
-                                    <td></td>
-                                    <td>Running</td>
-                                </tr>
-                                <tr data-toggle="collapse" data-target="#demo2">
-                                    <td>2</td>
-                                    <td>Hanoi Old Quarter</td>
-                                    <td>Jana Ringleb</td>
-                                    <td>02.09.2016 17:42</td>
-                                    <td>02.09.2016 17:42</td>
-                                    <td></td>
-                                    <td>Running</td>
-                                </tr>
-                                <tr data-toggle="collapse" data-target="#demo3">
-                                    <td>3</td>
-                                    <td>Baranca river</td>
-                                    <td>José Barquero</td>
-                                    <td>02.09.2016 17:42</td>
-                                    <td>02.09.2016 17:42</td>
-                                    <td></td>
-                                    <td>Running</td>
-                                </tr>
-                            </tbody>
-                        </table>
-                        <div class="panel panel-default">
-                            <div class="panel-body">
-                                <div class="row">
-                                    <div class="col-md-4">
-                                        <img class="image img-responsive" src="{{ asset('img/model.jpg') }}" />
-                                    </div>
-                                    <div id="testimage"></div>
-                                    <div class="col-md-8">
-                                        <div class="row">
-                                            <div class="col-md-4">Model name:</div>
-                                            <div class="col-md-8">Río Primero</div>
-                                        </div>
-                                        <div class="row">
-                                            <div class="col-md-4">Description:</div>
-                                            <div class="col-md-8">Application of managed aquifer recharge for maximization of water storage capacity in Rio Primero area of Argentina.</div>
-                                        </div>
-                                        <div class="row">
-                                            <div class="col-md-4">Created by:</div>
-                                            <div class="col-md-8">Ralf Junghanns</div>
-                                        </div>
-                                        <div class="row">
-                                            <div class="col-md-4">Created on:</div>
-                                            <div class="col-md-8">05.10.2016 13:47</div>
-                                        </div>
-                                        <div class="row">
-                                            <div class="col-md-4">Modified on:</div>
-                                            <div class="col-md-8">06.10.2016 12:18</div>
-                                        </div>
-                                        <div class="row">
-                                            <div class="col-md-4">Surface area:</div>
-                                            <div class="col-md-8">92.2 km<sup>2</sup></div>
-                                        </div>
-                                        <div class="row">
-                                            <div class="col-md-4">Status:</div>
-                                            <div class="col-md-8">Calculating</div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
+                        <table id="table_public_models" class="table table-striped table-hover table_models"></table>
+                        <div id="model_info" class="panel panel-default"></div>
                     </div>
                     <div class="col-sm-4">
                         <div id="models-map"></div>
@@ -288,6 +208,7 @@
 
     <script>
         I.user.setApiKey('{{ user.getApiKey }}');
+        I.models.load();
         I.model.initialize('{{ model.id.toString }}');
     </script>
 </body>

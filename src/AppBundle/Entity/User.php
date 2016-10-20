@@ -93,4 +93,14 @@ class User extends BaseUser
 
         return false;
     }
+
+    /**
+     * @JMS\VirtualProperty()
+     * @JMS\SerializedName("username")
+     * @JMS\Groups({"list"})
+     */
+    public function getUsername()
+    {
+        return parent::getUsername();
+    }
 }

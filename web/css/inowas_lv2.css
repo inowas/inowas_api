@@ -254,6 +254,15 @@
     content: "\f105";    /* adjust as needed, taken from bootstrap.css */
 }
 
+.table_models{
+    margin-top: 20px;
+    border-collapse:collapse;
+}
+
+.table_models tbody{
+    cursor: pointer;
+}
+
 
 
 

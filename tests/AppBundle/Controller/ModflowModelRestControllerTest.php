@@ -170,6 +170,27 @@ class ModflowModelRestControllerTest extends RestControllerTestCase
         $this->assertEquals(401, $client->getResponse()->getStatusCode());
     }
 
+    public function testGetListOfPublicAndUserModelsWithAPIKey(){
+        $client = static::createClient();
+        $client->request(
+            'GET',
+            '/api/modflowmodels.json',
+            array(),
+            array(),
+            array('HTTP_X-AUTH-TOKEN' => $this->getOwner()->getApiKey())
+        );
+
+        $this->assertEquals(200, $client->getResponse()->getStatusCode());
+        $modelArray = json_decode($client->getResponse()->getContent());
+        $this->assertCount(1, $modelArray);
+
+        $modFlowModel = $modelArray[0];
+        $this->assertEquals($this->modFlowModel->getId(), $modFlowModel->id);
+        $this->assertEquals($this->modFlowModel->getName(), $modFlowModel->name);
+        $this->assertEquals($this->modFlowModel->getDescription(), $modFlowModel->description);
+        $this->assertEquals($this->modFlowModel->getPublic(), $modFlowModel->public);
+    }
+
     /**
      * Test for the API-Call /api/users/<username>/models.json
      * which is providing a list of projects of the user

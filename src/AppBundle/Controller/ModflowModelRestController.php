@@ -22,6 +22,57 @@ use Symfony\Component\HttpFoundation\Response;
 class ModflowModelRestController extends FOSRestController
 {
     /**
+     * Return all public models and the private models from the user.
+     *
+     * @ApiDoc(
+     *   resource = true,
+     *   description = "Return all public models and the private models from the user.",
+     *   statusCodes = {
+     *     200 = "Returned when successful",
+     *     404 = "Returned when the user is not found"
+     *   }
+     * )
+     *
+     * @return View
+     */
+    public function getModflowmodelsAction()
+    {
+        $user = $this->getUser();
+
+        if (! $user instanceof User) {
+            throw $this->createNotFoundException('User not found.');
+        }
+
+        $models = $this->getDoctrine()
+            ->getRepository('AppBundle:ModFlowModel')
+            ->findBy(
+                array('owner' => $user)
+            );
+
+        $publicModels = $this->getDoctrine()
+            ->getRepository('AppBundle:ModFlowModel')
+            ->findBy(
+                array('public' => true)
+            );
+
+        foreach ($publicModels as $model){
+            if ($model->getOwner() !== $user){
+                $models[] = $model;
+            }
+        }
+
+        $view = View::create();
+        $view->setData($models)
+            ->setStatusCode(200)
+            ->setSerializationContext(SerializationContext::create()
+                ->setGroups(array('list'))
+            )
+        ;
+
+        return $view;
+    }
+
+    /**
      * Return the overall project list from a user.
      *
      * @ApiDoc(
@@ -82,7 +133,7 @@ class ModflowModelRestController extends FOSRestController
      *
      * @return View
      */
-    public function getModflowmodelsAction($id)
+    public function getModflowmodelAction($id)
     {
         /** @var ModFlowModel $model */
         $model = $this->findModelById($id);

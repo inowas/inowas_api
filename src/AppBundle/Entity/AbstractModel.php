@@ -54,7 +54,7 @@ abstract class AbstractModel
      * @ORM\ManyToOne(targetEntity="User")
      * @ORM\JoinColumn(name="owner_id", referencedColumnName="id", onDelete="CASCADE")
      * @JMS\MaxDepth(1)
-     * @JMS\Groups({"details", "modeldetails", "soilmodellist", "soilmodeldetails"})
+     * @JMS\Groups({"list", "details", "modeldetails", "soilmodellist", "soilmodeldetails"})
      */
     protected $owner;
 
