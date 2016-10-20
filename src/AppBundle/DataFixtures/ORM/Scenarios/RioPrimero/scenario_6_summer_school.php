@@ -51,61 +51,6 @@ class LoadScenario_6 implements FixtureInterface, ContainerAwareInterface
     public function load(ObjectManager $entityManager)
     {
         $geoTools = $this->container->get('inowas.geotools');
-        $userManager = $this->container->get('fos_user.user_manager');
-
-        $userListHeads = array('username', 'email', 'password');
-        $userList = array(
-            array('inowas', 'inowas@inowas.com', 'inowas'),
-            array('ralf.junghanns', 'ralf.junghanns@tu-dresden.de', 'inowas'),
-            array('jana.ringleb', 'jana.ringleb@tu-dresden.de', 'inowas'),
-            array('jana.sallwey', 'jana.sallwey@tu-dresden.de', 'inowas'),
-            array('catalin.stefan', 'catalin.stefan@tu-dresden.de', 'inowas'),
-            array('aakanni', 'aakanni@gast', 'ahcoecie'),
-            array('akhalil', 'akhalil@gast', 'oneiraem'),
-            array('akamamia', 'akamamia@gast', 'thiezozo'),
-            array('cteusch', 'cteusch@gast', 'ieshaing'),
-            array('fworku', 'fworku@gast', 'soopeich'),
-            array('fluna', 'fluna@gast', 'dahshuoy'),
-            array('fwalter', 'fwalter@gast', 'quohhoev'),
-            array('glabrecque', 'glabrecque@gast', 'fuaquaeg'),
-            array('hzhang', 'hzhang@gast', 'xahtiech'),
-            array('ahoang', 'ahoang@gast', 'jiichaer'),
-            array('kwilson', 'kwilson@gast', 'aitaichi'),
-            array('lstaedtler', 'lstaedtler@gast', 'eediegha'),
-            array('mhaeberle', 'mhaeberle@gast', 'peehaida'),
-            array('mvillanueva', 'mvillanueva@gast', 'eereinoh'),
-            array('mabbaker', 'mabbaker@gast', 'iegeicos'),
-            array('mmahmood', 'mmahmood@gast', 'quegaing'),
-            array('onegoita', 'onegoita@gast', 'jeibohgh'),
-            array('obrowne', 'obrowne@gast', 'mohsohhi'),
-            array('rshandilya', 'rshandilya@gast', 'zeicicei'),
-            array('rbengul', 'rbengul@gast', 'oocohcis'),
-            array('skazemi', 'skazemi@gast', 'eghaeshu'),
-            array('ssantato', 'ssantato@gast', 'laeseque'),
-            array('sghahfarokhi', 'sghahfarokhi@gast', 'leiceequ'),
-            array('sjimenez', 'sjimenez@gast', 'oongaeno'),
-            array('vhoecker', 'vhoecker@gast', 'weupohng'),
-            array('yzhou', 'yzhou@gast', 'moojieyi')
-        );
-
-        foreach ($userList as $item){
-            $item = array_combine($userListHeads, $item);
-
-            $user = $userManager->findUserByUsername($item['username']);
-            if (!$user) {
-                // Add new User
-                $user = $userManager->createUser();
-                $user->setUsername($item['username']);
-                $user->setEmail($item['email']);
-                $user->setPlainPassword($item['password']);
-                $user->setEnabled(true);
-                $userManager->updateUser($user);
-            }
-        }
-
-        $user = $userManager->findUserByUsername('inowas');
-        $user->addRole('ROLE_ADMIN');
-        $userManager->updateUser($user);
         $public = true;
 
         $modflowModelManager = $this->container->get('inowas.modflowmodel.manager');

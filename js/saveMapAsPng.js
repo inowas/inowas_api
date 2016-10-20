@@ -1,1 +1,1 @@
-var system = require('system');var args = system.args;var page = require('webpage').create();page.open(args[1], function() {    page.render(args[2]);    phantom.exit();});
+var system = require('system');var args = system.args;var page = require('webpage').create();page.open('http://localhost:8090/models/modflow/32574bfd-1a05-4325-820f-66781a7dec93/map', function() {    window.setTimeout(function () {        page.render(page.render('testimage.png'));        phantom.exit();    }, 2000);});

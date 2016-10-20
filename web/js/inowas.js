@@ -1,3 +1,13 @@
+Array.prototype.clean = function(deleteValue) {
+    for (var i = 0; i < this.length; i++) {
+        if (this[i] == deleteValue) {
+            this.splice(i, 1);
+            i--;
+        }
+    }
+    return this;
+};
+
 // global namespace
 var I = {};
 
@@ -115,23 +125,23 @@ I.model = {
                 I.model.heads = data;
             })
         ).then(function(){
-            var boundingBox = I.model.createBoundingBoxLayer(I.model.boundingBox).addTo(I.model.map);
+            var boundingBox = I.model.createBoundingBoxLayer(I.model.boundingBox);
             var area = L.geoJson($.parseJSON(I.model.data.area.geojson), I.model.styles.areaGeometry).addTo(I.model.map);
-            var areaActiveCells = I.model.createAreaActiveCellsLayer(I.model.data.area.active_cells, I.model.boundingBox, I.model.gridSize, I.model.data.area);
             var wells = I.model.createWellsLayer(I.model.data.wel).addTo(I.model.map);
             var wellsActiveCells = I.model.createWellsActiveCellsLayer(I.model.data.wel, I.model.boundingBox, I.model.gridSize);
             var rivers = I.model.createRiversLayer(I.model.data.riv).addTo(I.model.map);
             var riversActiveCells = I.model.createRiversActiveCellsLayer(I.model.data.riv, I.model.boundingBox, I.model.gridSize);
-            I.model.map.fitBounds(I.model.createBoundingBoxPolygon(I.model.boundingBox).getBounds());
+            var heads = I.model.getLayerOfLastHead( I.model.heads, I.model.map );
+            I.model.map.fitBounds(area.getBounds());
 
             var overlayMaps = {
                 'Area': area,
-                'Area inactive cells': areaActiveCells,
                 'Bounding Box': boundingBox,
                 'Wells' : wells,
                 'Wells active cells': wellsActiveCells,
                 'Rivers': rivers,
-                'Rivers active cells': riversActiveCells
+                'Rivers active cells': riversActiveCells,
+                'Heads' : heads
             };
 
             L.control.layers({}, overlayMaps).addTo(I.model.map);
@@ -148,7 +158,7 @@ I.model = {
                 states:[{                 // specify different icons and responses for your button
                     stateName: 'get-center',
                     onClick: function(button, map){
-                        I.model.map.fitBounds(I.model.createBoundingBoxPolygon(I.model.boundingBox).getBounds());
+                        I.model.map.fitBounds(area.getBounds());
                     },
                     title: 'Show me the model',
                     icon: 'fa-crosshairs'
@@ -169,7 +179,53 @@ I.model = {
             });
 
             I.model.renderScenarios(I.model.scenarios);
-            I.model.addLastHead( I.model.heads, I.model.map );
+        });
+    },
+    initializeMapImage: function(id){
+        I.model.id = id;
+        I.model.map = L.map('map', {
+            zoomControl: false
+        }).setView([50.9661, 13.92367], 5);
+
+        L.tileLayer('http://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png', {
+            attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="http://cartodb.com/attributions">CartoDB</a>',
+            subdomains: 'abcd',
+            maxZoom: 19
+        }).addTo(I.model.map);
+
+        $("#map").height(500).width(500);
+        I.model.map.invalidateSize();
+
+        $.when(
+            $.getJSON( "/api/modflowmodels/"+id+".json", function ( data ) {
+                I.model.boundingBox = data.bounding_box;
+                I.model.gridSize = data.grid_size;
+            }),
+
+            $.getJSON( "/api/modflowmodels/"+this.id+"/area.json", function ( data ) {
+                I.model.data.area = data;
+            }),
+
+            $.getJSON( "/api/modflowmodels/"+this.id+"/wells.json", function ( data ) {
+                I.model.data.wel = data;
+            }),
+
+            $.getJSON( "/api/modflowmodels/"+this.id+"/rivers.json", function ( data ) {
+                I.model.data.riv = data;
+            }),
+
+            $.getJSON( "/api/modflowmodels/"+this.id+"/scenarios.json", function ( data ) {
+                I.model.scenarios = data;
+            }),
+            $.getJSON( "/api/modflowmodels/"+this.id+"/heads.json", function ( data ) {
+                I.model.heads = data;
+            })
+        ).then(function(){
+            var heads = I.model.getLayerOfLastHead( I.model.heads).addTo(I.model.map);
+            var area = L.geoJson($.parseJSON(I.model.data.area.geojson), I.model.styles.areaGeometry).addTo(I.model.map);
+            var wells = I.model.createWellsLayer(I.model.data.wel).addTo(I.model.map);
+            var rivers = I.model.createRiversLayer(I.model.data.riv).addTo(I.model.map);
+            I.model.map.fitBounds(area.getBounds());
         });
     },
     disableMap: function() {
@@ -585,7 +641,9 @@ I.model = {
             var items = wells[key];
             items.forEach(function (item) {
                 var popupContent = '<h4>' + item.name + '</h4>';
-                popupContent += '<p>Flux: ' + item.stress_periods[0].flux +  ' m<sup>3</sup>/day</p>';
+                if (item.stress_periods.length>0 && item.stress_periods[0].hasOwnProperty(flux)){
+                    popupContent += '<p>Flux: ' + item.stress_periods[0].flux +  ' m<sup>3</sup>/day</p>';
+                }
                 var well = L.circleMarker(L.latLng(item.point.y, item.point.x), I.model.styles.wells[key]).bindPopup(popupContent).addTo(layer);
                 well.raw = item;
             });
@@ -707,15 +765,16 @@ I.model = {
                 bb.y_min = boundingBox.y_max - row * dy - dy;
                 bb.y_max = boundingBox.y_max - row * dy;
 
-                var value = false;
-                if (heads[row] != undefined || heads[row][col] != undefined) {
-                    value = heads[row][col];
-                    value = Math.round(value * 100) / 100;
+                if (heads[row] === undefined || heads[row][col] === undefined || heads[row][col] === null) {
+                    continue;
                 }
+
+                var value = heads[row][col];
+                value = Math.round(value * 100) / 100;
 
                 var rectangle = this.createRectangle(
                     bb,
-                    {color: "blue", weight: 0, fillColor: I.model.getColor(min, max, value), fillOpacity: 0.2}
+                    {color: "blue", weight: 0, fillColor: I.model.getColor(min, max, value), fillOpacity: 0.3}
                 );
 
                 rectangle.addTo(layerGroup);
@@ -919,7 +978,7 @@ I.model = {
             L.control.layers(baseMaps, overlayMaps).addTo(map);
         }
     },
-    addLastHead: function ( data, map ) {
+    getLayerOfLastHead: function ( data ) {
         var dates = Object.keys(data);
         var layerGroup = L.layerGroup();
         var lastHeads;
@@ -930,21 +989,29 @@ I.model = {
                 heads = $.parseJSON(heads)
             }
 
-            var allHeads =[];
+            var allValues = [];
             for (var j=0; j<heads[0].length; j++){
-                allHeads = $.merge(allHeads, heads[0][j]);
+                allValues = $.merge(allValues, heads[0][j]);
+            }
+
+            var filteredValues = [];
+            for (j=0; j<allValues.length; j++){
+                var value = allValues[j];
+                if (value != null){
+                    filteredValues.push(value)
+                }
             }
 
             lastHeads = heads;
         }
 
         // Calculating 5%/95% percentile
-        allHeads.sort();
-        var min = allHeads[Math.round(5 * allHeads.length/100)];
-        var max = allHeads[Math.round(95 * allHeads.length/100)];
+        filteredValues.sort();
+        var min = filteredValues[Math.round(5 * filteredValues.length/100)];
+        var max = filteredValues[Math.round(95 * filteredValues.length/100)];
 
         layerGroup = this.createHeatMap(lastHeads[0], min, max, I.model.boundingBox, I.model.gridSize, layerGroup);
-        layerGroup.addTo(map);
+        return layerGroup;
     },
     _addHeadsLayer: function ( data, map ){
 

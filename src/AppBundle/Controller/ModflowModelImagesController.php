@@ -74,7 +74,7 @@ class ModflowModelImagesController extends Controller
             ));
 
         if ($scenario instanceof ModflowModelScenario) {
-            return $scenario->getModel();
+            return $scenario;
         }
 
         $model = $this->getDoctrine()

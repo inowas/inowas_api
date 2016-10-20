@@ -9,8 +9,10 @@ use FOS\RestBundle\Controller\Annotations\QueryParam;
 use FOS\RestBundle\Controller\FOSRestController;
 use FOS\RestBundle\Request\ParamFetcher;
 use FOS\RestBundle\View\View;
+use JMS\Serializer\SerializationContext;
 use Nelmio\ApiDocBundle\Annotation\ApiDoc;
 use Ramsey\Uuid\Uuid;
+use Symfony\Component\HttpFoundation\JsonResponse;
 
 class ModflowModelHeadsRestController extends FOSRestController
 {
@@ -27,7 +29,7 @@ class ModflowModelHeadsRestController extends FOSRestController
      * )
      *
      * @param $id
-     * @return View
+     * @return JsonResponse
      *
      * @QueryParam(name="totim", description="Time in days from beginning")
      */
@@ -59,14 +61,12 @@ class ModflowModelHeadsRestController extends FOSRestController
                 $date->modify(sprintf('+%s days', (int)$totim-1));
                 $response[$date->format('Y-m-d')] = $head;
             }
+        } else {
+            $date = new \DateTime('now');
+            $response[$date->format('Y-m-d')] = $heads;
         }
 
-        $view = View::create();
-        $view->setData($response)
-            ->setStatusCode(200)
-        ;
-
-        return $view;
+        return new JsonResponse($response);
     }
 
     /**

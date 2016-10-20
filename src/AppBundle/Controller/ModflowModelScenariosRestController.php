@@ -35,10 +35,15 @@ class ModflowModelScenariosRestController extends FOSRestController
         }
 
         $scenarios = $this->getDoctrine()->getRepository('AppBundle:ModflowModelScenario')
-            ->findBy(array(
-                'baseModel' => $id,
-                'owner' => $this->getUser()
-            ));
+            ->findBy(
+                array(
+                    'baseModel' => $id,
+                    'owner' => $this->getUser()
+                ),
+                array(
+                    'dateCreated' => 'ASC'
+                )
+            );
 
         $serializationContext = SerializationContext::create();
         $serializationContext->setGroups('scenariodetails');

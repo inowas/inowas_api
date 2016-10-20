@@ -265,43 +265,7 @@
         </div>
         <div id="scenarios">
             <div class="panel">
-                <div id="scenarios_list" class="list-group">
-                    <div class="list-group-item list-group-item-action inactive_scenario"></div>
-
-                    <a href="#" class="list-group-item list-group-item-action inactive_scenario">
-                        <div class="row">
-                            <div class="col-sm-4 image">
-                                <img src="http://www.fillmurray.com/300/300" class="img-responsive" alt="Cinque Terre">
-                            </div>
-                            <div class="col-sm-8">
-                                <h1>Scenario 0: Base Scenario</h1>
-                                <p>Application of managed aquifer recharge for maximization of water storage capacity in Rio Primero area of Argentina.</p>
-                            </div>
-                        </div>
-                    </a>
-                    <a href="#" class="list-group-item list-group-item-action active_scenario">
-                        <div class="row">
-                            <div class="col-sm-4 image">
-                                <img src="http://www.fillmurray.com/200/200" class="img-responsive" alt="Cinque Terre">
-                            </div>
-                            <div class="col-sm-8">
-                                <h1>Scenario 0: Base Scenario</h1>
-                                <p>Application of managed aquifer recharge for maximization of water storage capacity in Rio Primero area of Argentina.</p>
-                            </div>
-                        </div>
-                    </a>
-                    <a href="#" class="list-group-item list-group-item-action inactive_scenario">
-                        <div class="row">
-                            <div class="col-sm-4 image">
-                                <img src="http://www.fillmurray.com/500/500" class="img-responsive" alt="Cinque Terre">
-                            </div>
-                            <div class="col-sm-8">
-                                <h1>Scenario 0: Base Scenario</h1>
-                                <p>Application of managed aquifer recharge for maximization of water storage capacity in Rio Primero area of Argentina.</p>
-                            </div>
-                        </div>
-                    </a>
-                </div>
+                <div id="scenarios_list" class="list-group"></div>
             </div>
             <div class="flip">
                 <div class="scenarios_label">
@@ -316,6 +280,7 @@
     <script type="text/javascript" src="{{ asset('vendor/leaflet/dist/leaflet.js') }}"></script>
     <script type="text/javascript" src="{{ asset('vendor/Leaflet.EasyButton/src/easy-button.js') }}"></script>
     <script type="text/javascript" src="{{ asset('vendor/leaflet-image/leaflet-image.js') }}"></script>
+    <script type="text/javascript" src="{{ asset('vendor/rainbowvis.js/rainbowvis.js') }}"></script>
 
     <script type="text/javascript" src="{{ asset('js/inowas.js') }}"></script>
     <script type="text/javascript" src="{{ asset('js/inowas-app-model-map.js') }}"></script>

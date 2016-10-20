@@ -513,6 +513,8 @@ class ModFlowModel extends AbstractModel implements ModflowModelInterface
      */
     public function preFlush()
     {
+        $this->modelObjects = new ArrayCollection();
+
         if (!is_null($this->area)) {
             $this->addModelObject($this->area);
         }
@@ -520,14 +522,14 @@ class ModFlowModel extends AbstractModel implements ModflowModelInterface
         if ($this->boundaries->count() > 0 ) {
             foreach ($this->boundaries as $boundary) {
                 $this->addModelObject($boundary);
-                $this->removeBoundary($boundary);
+                //$this->removeBoundary($boundary);
             }
         }
 
         if ($this->observationPoints->count() > 0 ) {
             foreach ($this->observationPoints as $observationPoint) {
                 $this->addModelObject($observationPoint);
-                $this->removeObservationPoint($observationPoint);
+                //$this->removeObservationPoint($observationPoint);
             }
         }
     }
