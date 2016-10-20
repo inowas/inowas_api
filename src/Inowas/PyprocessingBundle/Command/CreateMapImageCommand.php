@@ -2,7 +2,6 @@
 
 namespace Inowas\PyprocessingBundle\Command;
 
-use AppBundle\Entity\ModFlowModel;
 use Inowas\PyprocessingBundle\Model\Modflow\ModflowModelInterface;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
