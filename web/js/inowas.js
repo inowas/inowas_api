@@ -374,6 +374,7 @@ I.model = {
             var wells = I.model.createWellsLayer(I.model.data.wel).addTo(I.model.map);
             var rivers = I.model.createRiversLayer(I.model.data.riv).addTo(I.model.map);
             I.model.map.fitBounds(area.getBounds());
+            I.model.initialized = true;
         });
     },
     disableMap: function() {

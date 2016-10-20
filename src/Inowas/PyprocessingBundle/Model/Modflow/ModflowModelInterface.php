@@ -7,6 +7,8 @@ use Inowas\PyprocessingBundle\Model\Modflow\Package\FlopyCalculationProperties;
 
 interface ModflowModelInterface
 {
+    public function getId();
+
     public function addBoundary(BoundaryModelObject $boundary);
 
     public function changeBoundary(BoundaryModelObject $origin, BoundaryModelObject $newBoundary);
