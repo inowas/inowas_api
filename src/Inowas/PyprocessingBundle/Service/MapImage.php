@@ -33,7 +33,7 @@ class MapImage
         $phantomJsBuilder->setWorkingDirectory($this->kernel->getRootDir().'/../');
         $phantomJsBuilder->setPrefix('./bin/phantomjs');
         $phantomJsBuilder->add('./js/saveMapAsPng.js');
-        $phantomJsBuilder->add(sprintf('http://localhost/models/modflow/%s/map', $model->getId()));
+        $phantomJsBuilder->add(sprintf('http://localhost:%s/models/modflow/%s/map', $this->kernel->getContainer()->getParameter('port'), $model->getId()));
         $phantomJsBuilder->add($dataFolder.'/image.png');
         $phantomJS = $phantomJsBuilder->getProcess();
         $phantomJS->run();

@@ -17,3 +17,4 @@ parameters:
 
     # A secret key that's used to generate certain security-related tokens
     secret:            492835789239765782345709128509128309583289075
+    port: 80
