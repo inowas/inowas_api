@@ -313,6 +313,20 @@ class ModflowModelScenario implements ModflowScenarioInterface
     }
 
     /**
+     * @return array
+     */
+    public function getBoundaries(){
+        $boundaries = [];
+        foreach ($this->events as $event){
+            if ($event instanceof AddBoundaryEvent){
+                $boundaries[] = $event->getBoundary();
+            }
+        }
+
+        return $boundaries;
+    }
+
+    /**
      * @param BoundaryModelObject $origin
      * @param BoundaryModelObject $newBoundary
      * @return mixed

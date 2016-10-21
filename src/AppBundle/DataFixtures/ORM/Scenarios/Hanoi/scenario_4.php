@@ -4,6 +4,7 @@ namespace AppBundle\DataFixtures\ORM\Scenarios\Scenario_4;
 
 use AppBundle\DataFixtures\ORM\Scenarios\LoadScenarioBase;
 use AppBundle\Entity\AddBoundaryEvent;
+use AppBundle\Entity\BoundaryModelObject;
 use AppBundle\Entity\ChangeLayerValueEvent;
 use AppBundle\Entity\GeologicalLayer;
 use AppBundle\Entity\WellBoundary;
@@ -743,6 +744,12 @@ class LoadScenario_4 extends LoadScenarioBase implements FixtureInterface, Conta
             }
             $scenario_1->setHeads($heads);
             $entityManager->persist($scenario_1);
+
+            /** @var BoundaryModelObject $boundary */
+            foreach ($scenario_1->getBoundaries() as $boundary){
+                $boundary->setActiveCells($geoTools->getActiveCells($boundary, $model->getBoundingBox(), $model->getGridSize()));
+                $entityManager->persist($boundary);
+            }
             $entityManager->flush();
 
             // Add the second Scenario (InjectionWells)
@@ -790,6 +797,14 @@ class LoadScenario_4 extends LoadScenarioBase implements FixtureInterface, Conta
 
             $scenario_2->setHeads($heads);
             $entityManager->persist($scenario_2);
+
+            /** @var BoundaryModelObject $boundary */
+            foreach ($scenario_2->getBoundaries() as $boundary){
+                $boundary->setActiveCells($geoTools->getActiveCells($boundary, $model->getBoundingBox(), $model->getGridSize()));
+                $entityManager->persist($boundary);
+            }
+            $entityManager->flush();
+
             $entityManager->flush();
 
             // Add the first Scenario (RiverBankFiltration)
@@ -852,6 +867,14 @@ class LoadScenario_4 extends LoadScenarioBase implements FixtureInterface, Conta
                 $heads[] = $head;
             }
             $scenario_3->setHeads($heads);
+
+            /** @var BoundaryModelObject $boundary */
+            foreach ($scenario_3->getBoundaries() as $boundary){
+                $boundary->setActiveCells($geoTools->getActiveCells($boundary, $model->getBoundingBox(), $model->getGridSize()));
+                $entityManager->persist($boundary);
+            }
+
+            $entityManager->flush();
             $entityManager->persist($scenario_3);
             $entityManager->flush();
         }
