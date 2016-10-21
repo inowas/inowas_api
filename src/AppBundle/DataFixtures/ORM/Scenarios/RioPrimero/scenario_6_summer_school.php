@@ -2,8 +2,10 @@
 
 namespace AppBundle\DataFixtures\ORM\Scenarios\Scenario_6_Summer_School;
 
+use AppBundle\DataFixtures\ORM\Scenarios\LoadScenarioBase;
 use AppBundle\Entity\AddBoundaryEvent;
 use AppBundle\Entity\GeologicalLayer;
+use AppBundle\Entity\User;
 use AppBundle\Model\AreaFactory;
 use AppBundle\Model\EventFactory;
 use AppBundle\Model\GeneralHeadBoundaryFactory;
@@ -30,7 +32,7 @@ use Inowas\PyprocessingBundle\Service\Interpolation;
 use Symfony\Component\DependencyInjection\ContainerAwareInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
-class LoadScenario_6 implements FixtureInterface, ContainerAwareInterface
+class LoadScenario_6 extends LoadScenarioBase implements FixtureInterface, ContainerAwareInterface
 {
     /**
      * @var ContainerInterface
@@ -50,6 +52,7 @@ class LoadScenario_6 implements FixtureInterface, ContainerAwareInterface
      */
     public function load(ObjectManager $entityManager)
     {
+        $this->loadUsers($this->container->get('fos_user.user_manager'));
         $geoTools = $this->container->get('inowas.geotools');
         $public = true;
 
@@ -58,11 +61,11 @@ class LoadScenario_6 implements FixtureInterface, ContainerAwareInterface
         $model = $modflowModelManager->create();
         $model->setName("Inowas Rio Primero")
             ->setDescription('Application of managed aquifer recharge for maximization of water storage capacity in Río Primero area of Argentina.')
-            ->setOwner($user)
+            ->setOwner($this->getOwner())
             ->setPublic($public)
             ->setArea(AreaFactory::create()
                 ->setName('Rio Primero Area')
-                ->setOwner($user)
+                ->setOwner($this->getOwner())
                 ->setPublic($public)
                 ->setAreaType('SC6_AT1')
                 ->setGeometry(new Polygon(array(
@@ -76,7 +79,7 @@ class LoadScenario_6 implements FixtureInterface, ContainerAwareInterface
             ->setSoilModel(SoilModelFactory::create()
                 ->setName('Soilmodel_Scenario_6')
                 ->setPublic($public)
-                ->setOwner($user)
+                ->setOwner($this->getOwner())
             )
             ->setGridSize(new GridSize(75, 40))
         ;
@@ -84,7 +87,7 @@ class LoadScenario_6 implements FixtureInterface, ContainerAwareInterface
         $layer_1 = GeologicalLayerFactory::create()
             ->setName("Layer_1")
             ->setOrder(GeologicalLayer::TOP_LAYER)
-            ->setOwner($user)
+            ->setOwner($this->getOwner())
             ->setPublic($public);
 
         $model->getSoilModel()->addGeologicalLayer($layer_1);
@@ -125,7 +128,7 @@ class LoadScenario_6 implements FixtureInterface, ContainerAwareInterface
 
         /** Constant Head West */
         $model->addBoundary(GeneralHeadBoundaryFactory::create()
-            ->setOwner($user)
+            ->setOwner($this->getOwner())
             ->setPublic($public)
             ->setGeometry(new LineString(array(
                 array($model->getBoundingBox()->getXMin(), $model->getBoundingBox()->getYMin()),
@@ -142,7 +145,7 @@ class LoadScenario_6 implements FixtureInterface, ContainerAwareInterface
 
         /** Constant Head East */
         $model->addBoundary(GeneralHeadBoundaryFactory::create()
-            ->setOwner($user)
+            ->setOwner($this->getOwner())
             ->setPublic($public)
             ->setGeometry(new LineString(array(
                     array($model->getBoundingBox()->getXMax(), $model->getBoundingBox()->getYMin()),
@@ -160,7 +163,7 @@ class LoadScenario_6 implements FixtureInterface, ContainerAwareInterface
         /** River */
         $model->addBoundary(StreamBoundaryFactory::create()
             ->setName('Río Primero')
-            ->setOwner($user)
+            ->setOwner($this->getOwner())
             ->setPublic($public)
             ->setGeometry(new LineString(array(
                 array(-63.676586151123,-31.367415770489),
@@ -340,7 +343,7 @@ class LoadScenario_6 implements FixtureInterface, ContainerAwareInterface
 
         /** Recharge */
         $model->addBoundary(RechargeBoundaryFactory::create()
-            ->setOwner($user)
+            ->setOwner($this->getOwner())
             ->setName('RechargeBoundary')
             ->setPublic(true)
             ->setGeometry($model->getArea()->getGeometry())
@@ -377,12 +380,10 @@ class LoadScenario_6 implements FixtureInterface, ContainerAwareInterface
                 );
             }
         }
-        foreach ($userList as $item) {
-            $item = array_combine($userListHeads, $item);
-            $user = $userManager->findUserByUsername($item['username']);
 
+        /** @var User $user */
+        foreach ($this->getUserList() as $user) {
             echo (sprintf("Generating Scenarios for User %s \r\n", $user->getUsername()));
-
             $scenario_0 = ModelScenarioFactory::create($model);
             $scenario_0->setOwner($user);
             $scenario_0->setPublic(false);
