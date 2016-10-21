@@ -265,33 +265,18 @@ I.model = {
         ).then(function(){
 
             var overlayMaps = {};
-
-            var area = L.geoJson($.parseJSON(I.model.data.area.geojson), I.model.styles.areaGeometry).addTo(I.model.map);
-            overlayMaps['Area'] = area;
-
-            var boundingBox = I.model.createBoundingBoxLayer(I.model.boundingBox);
-            overlayMaps['Bounding Box'] = boundingBox;
-
-            var wells = I.model.createWellsLayer(I.model.data.wel).addTo(I.model.map);
-            overlayMaps['Wells'] = wells;
-
-            var wellsActiveCells = I.model.createWellsActiveCellsLayer(I.model.data.wel, I.model.boundingBox, I.model.gridSize);
-            overlayMaps['Wells active Cells'] = wellsActiveCells;
-
-            var rivers = I.model.createRiversLayer(I.model.data.riv).addTo(I.model.map);
-            overlayMaps['Rivers'] = rivers;
-
-            var riversActiveCells = I.model.createRiversActiveCellsLayer(I.model.data.riv, I.model.boundingBox, I.model.gridSize);
-            overlayMaps['Rivers active cells'] = riversActiveCells;
+            var area = overlayMaps['Area'] = L.geoJson($.parseJSON(I.model.data.area.geojson), I.model.styles.areaGeometry).addTo(I.model.map);
+            overlayMaps['Bounding Box'] = I.model.createBoundingBoxLayer(I.model.boundingBox);
+            overlayMaps['Wells'] = I.model.createWellsLayer(I.model.data.wel).addTo(I.model.map);
+            overlayMaps['Wells active Cells'] = I.model.createWellsActiveCellsLayer(I.model.data.wel, I.model.boundingBox, I.model.gridSize);
+            overlayMaps['Rivers'] = I.model.createRiversLayer(I.model.data.riv).addTo(I.model.map);
+            overlayMaps['Rivers active cells'] = I.model.createRiversActiveCellsLayer(I.model.data.riv, I.model.boundingBox, I.model.gridSize);
 
             if (I.model.heads.length > 0){
-                var heads = I.model.getLayerOfLastHead( I.model.heads).addTo(I.model.map);
-                overlayMaps['Heads'] = heads;
+                overlayMaps['Heads'] = I.model.getLayerOfLastHead(I.model.heads).addTo(I.model.map);
             }
 
             I.model.map.fitBounds(area.getBounds());
-
-
 
             L.control.layers({}, overlayMaps).addTo(I.model.map);
 
