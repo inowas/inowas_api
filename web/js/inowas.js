@@ -256,7 +256,6 @@ I.model = {
             }),
 
             $.getJSON( "/api/modflowmodels/"+this.id+"/scenarios.json", function ( data ) {
-                console.log(data);
                 I.model.scenarios = data;
             }),
 
@@ -264,24 +263,35 @@ I.model = {
                 I.model.heads = data;
             })
         ).then(function(){
-            var boundingBox = I.model.createBoundingBoxLayer(I.model.boundingBox);
+
+            var overlayMaps = {};
+
             var area = L.geoJson($.parseJSON(I.model.data.area.geojson), I.model.styles.areaGeometry).addTo(I.model.map);
+            overlayMaps['Area'] = area;
+
+            var boundingBox = I.model.createBoundingBoxLayer(I.model.boundingBox);
+            overlayMaps['Bounding Box'] = boundingBox;
+
             var wells = I.model.createWellsLayer(I.model.data.wel).addTo(I.model.map);
+            overlayMaps['Wells'] = wells;
+
             var wellsActiveCells = I.model.createWellsActiveCellsLayer(I.model.data.wel, I.model.boundingBox, I.model.gridSize);
+            overlayMaps['Wells active Cells'] = wellsActiveCells;
+
             var rivers = I.model.createRiversLayer(I.model.data.riv).addTo(I.model.map);
+            overlayMaps['Rivers'] = rivers;
+
             var riversActiveCells = I.model.createRiversActiveCellsLayer(I.model.data.riv, I.model.boundingBox, I.model.gridSize);
-            var heads = I.model.getLayerOfLastHead( I.model.heads, I.model.map );
+            overlayMaps['Rivers active cells'] = riversActiveCells;
+
+            if (I.model.heads.length > 0){
+                var heads = I.model.getLayerOfLastHead( I.model.heads).addTo(I.model.map);
+                overlayMaps['Heads'] = heads;
+            }
+
             I.model.map.fitBounds(area.getBounds());
 
-            var overlayMaps = {
-                'Area': area,
-                'Bounding Box': boundingBox,
-                'Wells' : wells,
-                'Wells active cells': wellsActiveCells,
-                'Rivers': rivers,
-                'Rivers active cells': riversActiveCells,
-                'Heads' : heads
-            };
+
 
             L.control.layers({}, overlayMaps).addTo(I.model.map);
 
@@ -373,7 +383,10 @@ I.model = {
                 I.model.heads = data;
             })
         ).then(function(){
-            var heads = I.model.getLayerOfLastHead( I.model.heads).addTo(I.model.map);
+            if (I.model.heads.length > 0){
+                var heads = I.model.getLayerOfLastHead( I.model.heads).addTo(I.model.map);
+            }
+
             var area = L.geoJson($.parseJSON(I.model.data.area.geojson), I.model.styles.areaGeometry).addTo(I.model.map);
             var wells = I.model.createWellsLayer(I.model.data.wel).addTo(I.model.map);
             var rivers = I.model.createRiversLayer(I.model.data.riv).addTo(I.model.map);
@@ -794,8 +807,9 @@ I.model = {
             if (!wells.hasOwnProperty(key)) continue;
             var items = wells[key];
             items.forEach(function (item) {
+                console.log(item);
                 var popupContent = '<h4>' + item.name + '</h4>';
-                if (item.stress_periods.length>0 && item.stress_periods[0].hasOwnProperty(flux)){
+                if (item.stress_periods.length>0 && item.stress_periods[0].hasOwnProperty('flux')){
                     popupContent += '<p>Flux: ' + item.stress_periods[0].flux +  ' m<sup>3</sup>/day</p>';
                 }
                 var well = L.circleMarker(L.latLng(item.point.y, item.point.x), I.model.styles.wells[key]).bindPopup(popupContent).addTo(layer);
