@@ -262,7 +262,7 @@ I.model = {
             }),
 
             $.getJSON( "/api/modflowmodels/"+this.id+"/heads.json", function ( data ) {
-                if (typeof data === "object"){
+                if (! $.isArray(data)) {
                     I.model.heads = data;
                 }
             })
@@ -276,7 +276,7 @@ I.model = {
             overlayMaps['Rivers'] = I.model.createRiversLayer(I.model.data.riv).addTo(I.model.map);
             overlayMaps['Rivers active cells'] = I.model.createRiversActiveCellsLayer(I.model.data.riv, I.model.boundingBox, I.model.gridSize);
 
-            if (I.model.heads.length !== null){
+            if (I.model.heads !== null){
                 overlayMaps['Heads'] = I.model.getLayerOfLastHead(I.model.heads).addTo(I.model.map);
             }
 
