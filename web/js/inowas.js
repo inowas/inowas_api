@@ -318,6 +318,8 @@ I.model = {
             });
 
             I.model.renderScenarios(I.model.scenarios);
+            I.model.initialized = true;
+            $("#app").addClass("initialized");
         });
     },
     clear: function () {
@@ -329,6 +331,7 @@ I.model = {
         I.model.wellsLayer = null;
         I.model.scenarios = null;
         I.model.map.remove();
+        I.model.map = null;
     },
     initializeMapImage: function(id){
         I.model.id = id;
@@ -376,6 +379,7 @@ I.model = {
             var rivers = I.model.createRiversLayer(I.model.data.riv).addTo(I.model.map);
             I.model.map.fitBounds(area.getBounds());
             I.model.initialized = true;
+            $("#app").addClass("initialized");
         });
     },
     disableMap: function() {
