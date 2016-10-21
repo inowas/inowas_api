@@ -277,7 +277,7 @@ I.model = {
             overlayMaps['Rivers active cells'] = I.model.createRiversActiveCellsLayer(I.model.data.riv, I.model.boundingBox, I.model.gridSize);
 
             if (I.model.heads !== null){
-                overlayMaps['Heads'] = I.model.getLayerOfLastHead(I.model.heads).addTo(I.model.map);
+                overlayMaps['Heads'] = I.model.getLayerOfLastHead(I.model.heads);
             }
 
             I.model.map.fitBounds(area.getBounds());
