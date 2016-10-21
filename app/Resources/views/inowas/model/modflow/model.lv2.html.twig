@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8" />
-    <title>Modflow-Model {{ model.name }}</title>
+    <title>Modflow-Model</title>
     <link rel="stylesheet" type="text/css" href="{{ asset('vendor/bootstrap/dist/css/bootstrap.min.css') }}" />
     <link rel="stylesheet" type="text/css" href="{{ asset('vendor/font-awesome/css/font-awesome.min.css') }}" />
     <link rel="stylesheet" type="text/css" href="{{ asset('vendor/leaflet/dist/leaflet.css') }}" />
@@ -52,17 +52,17 @@
                     Models
                 </p>
             </div>
-            <div id="sidebar">
+            <div id="sidebar" hidden>
                 <div id="toolbox">
                     <div class="heading toolbox-element">
                         <h3>
-                            <a class="accordion-toggle" data-toggle="collapse" href="#toolbox-content">{{ model.name }}</a>
+                            <a id="model_name" class="accordion-toggle" data-toggle="collapse" href="#toolbox-content"></a>
                             <i class="fa fa-bars pull-left" aria-hidden="true"></i>
                         </h3>
                     </div>
 
                     <div id="toolbox-content" class="collapse in">
-                        <p class="description">{{ model.description }}</p>
+                        <p id="model_description" class="description"></p>
 
                         <div class="toolbox-element">
                             <h4>
@@ -209,7 +209,16 @@
     <script>
         I.user.setApiKey('{{ user.getApiKey }}');
         I.models.load();
-        I.model.initialize('{{ model.id.toString }}', true);
+
+        $(document).ready(function(){
+            {% if model %}
+                I.model.initialize('{{ model.id.toString }}', true);
+            {% else %}
+                loadWhenReady();
+                I.model.initializeWithoutModel();
+            {% endif %}
+        });
+
     </script>
 </body>
 </html>

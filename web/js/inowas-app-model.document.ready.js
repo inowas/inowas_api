@@ -1,4 +1,4 @@
-$(document).ready(function(){
+loadWhenReady = function(){
     var r=0, open_scenarios=false;
     $('#scenarios').find('.flip').click(function() {
         open_scenarios = !open_scenarios;
@@ -40,4 +40,4 @@ $(document).ready(function(){
             $(this).find('.tools_menu').hide();
         }
     );
-});
+};

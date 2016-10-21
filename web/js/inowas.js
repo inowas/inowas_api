@@ -301,12 +301,16 @@ I.model = {
                 }]
             }).addTo( I.model.map );
 
+            $("#model_name").text(I.model.name);
+            $("#model_description ").text(I.model.description);
+
             // Setup Badges of ModelObjects
             $("#wells_badge").text(I.model.getNumberOf(I.model.data.wel));
             $("#rivers_badge").text(I.model.getNumberOf(I.model.data.riv));
             $("#recharge_badge").text(I.model.getNumberOf(I.model.data.rch));
             $("#constant_head_badge").text(I.model.getNumberOf(I.model.data.chb));
             $("#general_head_badge").text(I.model.getNumberOf(I.model.data.ghb));
+            $("#sidebar").show();
 
             $('#toolbox').on('mouseover mousedown touchstart', function() {
                 I.model.disableMap();
@@ -321,6 +325,24 @@ I.model = {
             I.model.initialized = true;
             $("#app").addClass("initialized");
         });
+    },
+    initializeWithoutModel: function () {
+        I.model.map = L.map('map', {
+            zoomControl: false
+        }).setView([50.9661, 13.92367], 5);
+
+        L.tileLayer('http://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png', {
+            attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="http://cartodb.com/attributions">CartoDB</a>',
+            subdomains: 'abcd',
+            maxZoom: 19
+        }).addTo(I.model.map);
+
+        $(window).on("resize", function() {
+            $("#map").height($(window).height()).width($(window).width());
+            I.model.map.invalidateSize();
+        }).trigger("resize");
+
+        $('#models_label').click();
     },
     clear: function ( isBaseModel ) {
         I.model.initialized = false;
