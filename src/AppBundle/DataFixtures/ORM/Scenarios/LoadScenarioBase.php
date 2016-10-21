@@ -32,8 +32,8 @@ class LoadScenarioBase
                 $user->setPlainPassword($item['password']);
                 $user->setEnabled(true);
                 $userManager->updateUser($user);
-                $this->userList[]=$user;
             }
+            $this->userList[]=$user;
         }
 
         $this->owner = $userManager->findUserByUsername('inowas');
