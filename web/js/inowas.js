@@ -90,7 +90,7 @@ I.models = {
             html += '<div class="panel-body">';
             html += '    <div class="row">';
             html += '        <div class="col-md-4">';
-            html += '            <img class="image img-responsive" src="/models/modflow/'+ model.id +'/image.png" />';
+            html += '            <img class="image img-responsive" src="/models/modflow/'+ model.id +'/image.jpg" />';
             html += '        </div>';
             html += '        <div id="testimage"></div>';
             html += '        <div class="col-md-8">';
@@ -256,6 +256,7 @@ I.model = {
             }),
 
             $.getJSON( "/api/modflowmodels/"+this.id+"/scenarios.json", function ( data ) {
+                console.log(data);
                 I.model.scenarios = data;
             }),
 
@@ -411,7 +412,7 @@ I.model = {
                 '<a href="#" class="list-group-item list-group-item-action inactive_scenario"> \
                     <div class="row">\
                         <div class="col-sm-4 image">\
-                            <img src="/models/modflow/'+value.id+'/image.png" class="img-responsive" alt="'+value.name+'">\
+                            <img src="/models/modflow/'+value.id+'/image.jpg" class="img-responsive" alt="'+value.name+'">\
                         </div> \
                         <div class="col-sm-8">\
                             <h1>'+value.name+'</h1>\

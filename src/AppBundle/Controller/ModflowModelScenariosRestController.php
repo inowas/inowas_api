@@ -39,9 +39,7 @@ class ModflowModelScenariosRestController extends FOSRestController
                     'baseModel' => $id,
                     'owner' => $this->getUser()
                 ),
-                array(
-                    'dateCreated' => 'ASC'
-                )
+                array('order' => 'ASC')
             );
 
         $serializationContext = SerializationContext::create();

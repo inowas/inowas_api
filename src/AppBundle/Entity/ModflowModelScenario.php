@@ -64,14 +64,6 @@ class ModflowModelScenario implements ModflowScenarioInterface
     private $description;
 
     /**
-     * @var string
-     *
-     * @ORM\Column(name="image_file", type="string", length=255, nullable=true)
-     * @JMS\Groups({"scenariodetails"})
-     */
-    private $imageFile;
-
-    /**
      * Heads-array with key, value = totim => flopy3dArray
      * @var array
      *
@@ -114,6 +106,14 @@ class ModflowModelScenario implements ModflowScenarioInterface
     private $dateModified;
 
     /**
+     * @var integer
+     *
+     * @ORM\Column(name="`order`", type="integer", nullable=true)
+     * @JMS\Groups({"scenariodetails"})
+     */
+    private $order;
+
+    /**
      * ModelScenario constructor.
      * @param ModFlowModel $model
      */
@@ -125,6 +125,8 @@ class ModflowModelScenario implements ModflowScenarioInterface
         $this->dateCreated = new \DateTime();
         $this->dateModified = new \DateTime();
         $this->public = true;
+        $this->order = $model->getScenarios()->count();
+        $model->registerScenario($this);
     }
 
     /**
@@ -170,24 +172,6 @@ class ModflowModelScenario implements ModflowScenarioInterface
     public function setDescription($description)
     {
         $this->description = $description;
-        return $this;
-    }
-
-    /**
-     * @return string
-     */
-    public function getImageFile()
-    {
-        return $this->imageFile;
-    }
-
-    /**
-     * @param string $imageFile
-     * @return $this
-     */
-    public function setImageFile($imageFile)
-    {
-        $this->imageFile = $imageFile;
         return $this;
     }
 
@@ -403,4 +387,21 @@ class ModflowModelScenario implements ModflowScenarioInterface
         return $this;
     }
 
+    /**
+     * @return integer
+     */
+    public function getOrder(): int
+    {
+        return $this->order;
+    }
+
+    /**
+     * @param string $order
+     * @return ModflowModelScenario
+     */
+    public function setOrder(string $order): ModflowModelScenario
+    {
+        $this->order = $order;
+        return $this;
+    }
 }

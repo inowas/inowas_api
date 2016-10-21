@@ -13,7 +13,7 @@ use Symfony\Component\HttpFoundation\Response;
 class ModflowModelImagesController extends Controller
 {
     /**
-     * @Route("/models/modflow/{id}/image.png", name="modflow_model_image")
+     * @Route("/models/modflow/{id}/image.jpg", name="modflow_model_image")
      * @Method({"GET"})
      *
      * @param $id
@@ -26,10 +26,10 @@ class ModflowModelImagesController extends Controller
             throw $this->createNotFoundException('Model with id='.$id.' not found.');
         }
 
-        $path = $this->get('kernel')->getRootDir() . '/../var/data/modflow/' . $id . '/image.png';
+        $path = $this->get('kernel')->getRootDir() . '/../var/data/modflow/' . $id . '/image.jpg';
 
         if (! file_exists($path)){
-            $path = $this->get('kernel')->getRootDir() . '/../web/img/emptyModel.png';
+            $path = $this->get('kernel')->getRootDir() . '/../web/img/emptyModel.jpg';
         }
 
         $response = new BinaryFileResponse($path);
