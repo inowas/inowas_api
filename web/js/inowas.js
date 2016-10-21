@@ -57,7 +57,7 @@ I.models = {
             '<tbody >';
 
         $.each(data, function (key, value) {
-            html += '<tr id="'+ value.id +'" class="model_list_item">';
+            html += '<tr id="model_'+ value.id +'" class="model_list_item">';
             html += '<td>Asia</td>';
             html += '<td>'+ value.name +'</td>';
             html += '<td>'+ value.owner.username +'</td>';
@@ -71,19 +71,17 @@ I.models = {
         html += '</tbody>';
 
         $('#table_public_models').html(html);
-        $('.model_list_item').hover(function() {
-            I.models.loadInfoBox(this.id);
-        });
 
-        $('.model_list_item').click(function() {
-            I.model.clear();
-            I.model.initialize(this.id);
-        });
-
+            $('.model_list_item').hover(function() {
+                I.models.loadInfoBox(this.id.split("_")[1]);
+            }).click(function() {
+                I.model.clear( true );
+                I.model.initialize(this.id.split("_")[1], true);
+                $('#models_label').click();
+            });
     },
     loadInfoBox: function (modelId) {
         var model = this.findModelById( modelId );
-
 
         if (model !== null){
             var html = '';
@@ -159,6 +157,8 @@ I.models = {
 
 I.model = {
     id: null,
+    name: null,
+    description: null,
     initialized: false,
     boundingBox: null,
     gridSize: null,
@@ -220,7 +220,7 @@ I.model = {
         },
         river: {color: "#000", weight: 0.5, fillColor: "blue", fillOpacity: 0}
     },
-    initialize: function(id){
+    initialize: function(id, isBaseModel){
         I.model.id = id;
         I.model.map = L.map('map', {
             zoomControl: false
@@ -239,6 +239,8 @@ I.model = {
 
         $.when(
             $.getJSON( "/api/modflowmodels/"+id+".json", function ( data ) {
+                I.model.name = data.name;
+                I.model.description = data.description;
                 I.model.boundingBox = data.bounding_box;
                 I.model.gridSize = data.grid_size;
             }),
@@ -256,7 +258,7 @@ I.model = {
             }),
 
             $.getJSON( "/api/modflowmodels/"+this.id+"/scenarios.json", function ( data ) {
-                I.model.scenarios = data;
+                I.model.scenarios = data
             }),
 
             $.getJSON( "/api/modflowmodels/"+this.id+"/heads.json", function ( data ) {
@@ -312,21 +314,29 @@ I.model = {
                 I.model.enableMap();
             });
 
-            I.model.renderScenarios(I.model.scenarios);
+            if (isBaseModel){
+                I.model.renderScenarios(I.model.scenarios);
+            }
+
             I.model.initialized = true;
             $("#app").addClass("initialized");
         });
     },
-    clear: function () {
+    clear: function ( isBaseModel ) {
+        I.model.name = null;
+        I.model.description = null;
         I.model.initialized = false;
         I.model.boundingBox = null;
         I.model.gridSize = null;
         I.model.activeCellsGridLayer = null;
         I.model.boundingBoxLayer = null;
         I.model.wellsLayer = null;
-        I.model.scenarios = null;
         I.model.map.remove();
         I.model.map = null;
+
+        if ( isBaseModel ){
+            I.model.scenarios = null;
+        }
     },
     initializeMapImage: function(id){
         I.model.id = id;
@@ -408,10 +418,22 @@ I.model = {
         return number;
     },
     renderScenarios: function( scenarios ){
-        var html='<div class="list-group-item list-group-item-action inactive_scenario"></div>';
+        var html='<div class="list-group-item list-group-item-action"></div>';
+        html+=
+            '<a href="#" id="scenario_'+ I.model.id +'" class="list-group-item list-group-item-action scenario_list_item base_model active"> \
+                <div class="row">\
+                    <div class="col-sm-4 image">\
+                        <img src="/models/modflow/'+I.model.id+'/image.jpg" class="img-responsive" alt="'+I.model.name+'">\
+                        </div> \
+                        <div class="col-sm-8">\
+                            <h1>'+I.model.name+'</h1>\
+                            <p>'+I.model.description+'</p>\
+                        </div>\
+                    </div>\
+                </a>';
         $.each(scenarios , function (index, value){
             html+=
-                '<a href="#" class="list-group-item list-group-item-action inactive_scenario"> \
+                '<a href="#" id="scenario_'+ value.id +'" class="list-group-item list-group-item-action scenario_list_item"> \
                     <div class="row">\
                         <div class="col-sm-4 image">\
                             <img src="/models/modflow/'+value.id+'/image.jpg" class="img-responsive" alt="'+value.name+'">\
@@ -426,6 +448,14 @@ I.model = {
 
         $('#scenarios_list').html(html);
 
+        $('.scenario_list_item').click(function() {
+            $( ".scenario_list_item" ).each(function( index ) {
+                $(this).removeClass('active');
+            });
+            $(this).addClass('active');
+            I.model.clear( false );
+            I.model.initialize(this.id.split("_")[1], false);
+        });
     },
     getStyle: function (type, value){
         if (type == 'area'){
@@ -779,7 +809,6 @@ I.model = {
                         that.buttons.updateActiveCells.enable();
                     });
                 }
-
                 rectangle.addTo(layers);
             }
         }
@@ -792,7 +821,6 @@ I.model = {
             if (!wells.hasOwnProperty(key)) continue;
             var items = wells[key];
             items.forEach(function (item) {
-                console.log(item);
                 var popupContent = '<h4>' + item.name + '</h4>';
                 if (item.stress_periods.length>0 && item.stress_periods[0].hasOwnProperty('flux')){
                     popupContent += '<p>Flux: ' + item.stress_periods[0].flux +  ' m<sup>3</sup>/day</p>';
