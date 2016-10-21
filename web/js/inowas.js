@@ -323,6 +323,7 @@ I.model = {
         });
     },
     clear: function ( isBaseModel ) {
+        I.model.initialized = false;
         I.model.name = null;
         I.model.description = null;
         I.model.initialized = false;
@@ -449,12 +450,14 @@ I.model = {
         $('#scenarios_list').html(html);
 
         $('.scenario_list_item').click(function() {
-            $( ".scenario_list_item" ).each(function( index ) {
-                $(this).removeClass('active');
-            });
-            $(this).addClass('active');
-            I.model.clear( false );
-            I.model.initialize(this.id.split("_")[1], false);
+            if (I.model.initialized){
+                $( ".scenario_list_item" ).each(function( index ) {
+                    $(this).removeClass('active');
+                });
+                $(this).addClass('active');
+                I.model.clear( false );
+                I.model.initialize(this.id.split("_")[1], false);
+            }
         });
     },
     getStyle: function (type, value){
