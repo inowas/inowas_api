@@ -138,23 +138,13 @@ class ModflowModelRestController extends FOSRestController
         /** @var ModFlowModel $model */
         $model = $this->findModelById($id);
 
-        $area = $model->getArea();
-        if ($area instanceof Area){
-            $surface = $this->getDoctrine()->getRepository('AppBundle:Area')
-                ->getHumanReadableSurfaceById($area->getId());
-
-            $area->setSurface($surface);
-        }
-
         $serializationContext = SerializationContext::create();
         $serializationContext->setGroups('modeldetails');
 
         $view = View::create();
         $view->setData($model)
             ->setStatusCode(200)
-            ->setSerializationContext($serializationContext)
-            ->setTemplate('InowasPyprocessingBundle:inowas/modflow:model.html.twig')
-            ->setTemplateData(array('model' => $model));
+            ->setSerializationContext($serializationContext);
 
         return $view;
     }

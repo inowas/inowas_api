@@ -862,7 +862,7 @@ class LoadScenario_4 extends LoadScenarioBase implements FixtureInterface, Conta
 
             echo "Loading heads from file\r\n";
             $heads = array();
-            $head = $this->loadHeadsFromFile(__DIR__ . "/scenario_2_head_layer_3.json");
+            $head = $this->loadHeadsFromFile(__DIR__ . "/scenario_3_head_layer_3.json");
             for ($i = 0; $i < $model->getSoilModel()->getNumberOfGeologicalLayers(); $i++) {
                 $heads[] = $head;
             }

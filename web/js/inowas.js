@@ -156,6 +156,7 @@ I.models = {
 };
 
 I.model = {
+    baseModelId: null,
     id: null,
     name: null,
     description: null,
@@ -221,17 +222,18 @@ I.model = {
         river: {color: "#000", weight: 0.5, fillColor: "blue", fillOpacity: 0}
     },
     initialize: function(id, isBaseModel){
+        if (isBaseModel){
+            I.model.baseModelId = id;
+        }
         I.model.id = id;
         I.model.map = L.map('map', {
             zoomControl: false
         }).setView([50.9661, 13.92367], 5);
-
         L.tileLayer('http://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png', {
             attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="http://cartodb.com/attributions">CartoDB</a>',
             subdomains: 'abcd',
             maxZoom: 19
         }).addTo(I.model.map);
-
         $(window).on("resize", function() {
             $("#map").height($(window).height()).width($(window).width());
             I.model.map.invalidateSize();
@@ -313,12 +315,12 @@ I.model = {
             $("#constant_head_badge").text(I.model.getNumberOf(I.model.data.chb));
             $("#general_head_badge").text(I.model.getNumberOf(I.model.data.ghb));
             $("#sidebar").show();
-
             $('#toolbox').on('mouseover mousedown touchstart', function() {
                 I.model.disableMap();
             }).on('mouseout mouseup touchend', function() {
                 I.model.enableMap();
             });
+            $("#results_label").show();
 
             if (isBaseModel){
                 I.model.renderScenarios(I.model.scenarios);
@@ -471,9 +473,7 @@ I.model = {
                     </div>\
                 </a>';
         });
-
         $('#scenarios_list').html(html);
-
         $('.scenario_list_item').click(function() {
             if (I.model.initialized){
                 $( ".scenario_list_item" ).each(function( index ) {
@@ -982,7 +982,7 @@ I.model = {
                 var value = heads[row][col];
                 value = Math.round(value * 100) / 100;
 
-                var rectangle = this.createRectangle(
+                var rectangle = I.model.createRectangle(
                     bb,
                     {color: "blue", weight: 0, fillColor: I.model.getColor(min, max, value), fillOpacity: 0.3}
                 );
@@ -1314,5 +1314,183 @@ I.model = {
         }
 
         return grades;
+    }
+};
+
+I.results = {
+    baseModel: null,
+    scenarios: null,
+    initialized: false,
+    headValues: {
+        dates : [],
+        values: [],
+        min: null,
+        max: null
+    },
+    initialize: function( baseModelId ) {
+        if (this.baseModel == null) {
+            $.when(
+                $.getJSON( "/api/modflowmodels/"+baseModelId+".json", function ( data ) {
+                    I.results.baseModel = data;
+                }),
+
+                $.getJSON( "/api/modflowmodels/"+baseModelId+"/scenarios.json", function ( data ) {
+                    I.results.scenarios = data;
+                    $.each(I.results.scenarios, function (key, scenario) {
+                       scenario.show = false;
+                    });
+                    I.results.scenarios[I.results.scenarios.length-1].show = true;
+                })
+            ).then(function(){
+
+                $.getJSON( "/api/modflowmodels/"+I.results.baseModel.id+"/heads.json", function ( data ) {
+                    if (! $.isArray(data)) {
+                        I.results.baseModel.heads = data;
+                        I.results.extractDatesFromHeads( data );
+                        I.results.addHeadValues(I.results.headValues, data, 0, 0);
+                        I.results.addMap( I.results.baseModel );
+
+                        I.model.createHeatMap(
+                            I.results.baseModel.heads[I.results.headValues.dates[0]][3],
+                            I.results.headValues.min,
+                            I.results.headValues.max,
+                            I.model.boundingBox,
+                            I.model.gridSize,
+                            new L.layerGroup()
+                        ).addTo(I.results.baseModel.map);
+                    }
+                });
+
+                $.each(I.results.scenarios, function (key, value) {
+                    $.getJSON( "/api/modflowmodels/"+value.id+"/heads.json", function ( data ) {
+                        if (! $.isArray(data)) {
+                            value.heads = data;
+                            I.results.addHeadValues(I.results.headValues, data, 0, 0);
+
+                            if (value.show == true){
+                                I.results.addMap( value );
+                                I.model.createHeatMap(
+                                    value.heads[I.results.headValues.dates[0]][3],
+                                    I.results.headValues.min,
+                                    I.results.headValues.max,
+                                    I.model.boundingBox,
+                                    I.model.gridSize,
+                                    new L.layerGroup()
+                                ).addTo( value.map );
+                            }
+                        }
+                    })
+                });
+
+                I.results.renderModelResultsSideBar( '#results_scenario_sidebar' );
+
+                this.initialized = true;
+            });
+        }
+    },
+    renderModelResultsSideBar: function ( elementId ) {
+        var html = '';
+        html += '<ul class="list-group">';
+        html += I.results.renderScenariosElement( I.results.baseModel );
+
+        $.each(I.results.scenarios, function(key, model){
+            html += I.results.renderScenariosElement( model );
+        });
+
+        html += '</ul>';
+        $(elementId).html(html);
+    },
+    renderScenariosElement: function ( model ) {
+        var html = '';
+        html += '<li class="list-group-item">';
+        html += '<img src="/models/modflow/'+model.id+'/image.jpg" class="img-responsive" alt="'+model.name+'">';
+        html += '</li>';
+
+        return html;
+    },
+    compareHeadsToConsole: function (heads1, heads2) {
+        heads1 = heads1[I.results.headValues.dates[0]];
+        heads2 = heads2[I.results.headValues.dates[0]];
+
+        var nLayMax = 0;
+        var nRowMax = 0;
+        var nColMax = 0;
+        var maxDiff = 0;
+
+        for (var nLay = 0; nLay < heads1.length; nLay++){
+            for (var nRow = 0; nRow < heads1[nLay].length; nRow++){
+                for (var nCol = 0; nCol < heads1[nLay][nRow].length; nCol++){
+
+                    if (Math.abs(heads1[nLay][nRow][nCol]-heads2[nLay][nRow][nCol]) > Math.abs(maxDiff)){
+                        nLayMax = nLay;
+                        nRowMax = nRow;
+                        nColMax = nCol;
+                        maxDiff = heads1[nLay][nRow][nCol]-heads2[nLay][nRow][nCol];
+                    }
+                }
+            }
+        }
+
+        console.log(nLayMax, nRowMax, nColMax, maxDiff);
+
+    },
+    extractDatesFromHeads: function( heads ){
+        I.results.headValues.dates = Object.keys(heads);
+    },
+    addHeadValues: function ( headValues, heads, date, layer ){
+
+        var dates = I.results.headValues.dates;
+        var twoDimensionalHeads = heads[dates[dates.length-1]][layer];
+        var oneDimensionalHeads = [];
+
+        $.each(twoDimensionalHeads, function (key, value) {
+            oneDimensionalHeads = $.merge(oneDimensionalHeads, value);
+        });
+
+        oneDimensionalHeads.clean();
+        $.merge(headValues.values, oneDimensionalHeads);
+
+        headValues.values.sort(function(a,b){return a - b});
+        headValues.min = headValues.values[Math.round(5 * headValues.values.length/100)];
+        headValues.max = headValues.values[Math.round(95 * headValues.values.length/100)];
+    },
+    addMap: function ( model ){
+
+        var divName = "result_map_"+ model.id;
+
+        var html = '';
+        html += '<div class="col-sm-6 results_map_container">';
+        html += '<div class="panel panel-default">';
+        html += '<div class="panel-body">';
+        html += '<div id="'+divName+'" class="results_map"></div>';
+        html += model.name + '<br/>' + model.description;
+        html += '</div>';
+        html += '</div>';
+        html += '</div>';
+        $("#result_maps").append(html);
+
+        model.map = L.map(divName, {zoomControl: false});
+        model.map.on('moveend', function() {
+            I.results.fitBounds(model.map.getBounds());
+        });
+
+        var area = L.geoJson($.parseJSON(I.model.data.area.geojson), I.model.styles.areaGeometry).addTo(model.map);
+        model.map.fitBounds(area.getBounds());
+        L.tileLayer('http://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png', {
+            attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="http://cartodb.com/attributions">CartoDB</a>',
+            subdomains: 'abcd',
+            maxZoom: 19
+        }).addTo(model.map);
+    },
+    fitBounds: function( bounds ){
+        if (I.results.baseModel.map != null){
+            I.results.baseModel.map.fitBounds( bounds );
+        }
+
+        $.each(I.results.scenarios, function (key, model) {
+            if (model.map != null){
+                model.map.fitBounds( bounds );
+            }
+        });
     }
 };

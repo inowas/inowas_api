@@ -34,6 +34,7 @@ loadWhenReady = function(){
 
     var h_results=0, open_results=false;
     $('#results_label').click(function() {
+        I.results.initialize(I.model.baseModelId);
         open_results = !open_results;
         if (!open_results) {
             h_results = 0;

@@ -38,7 +38,7 @@ class Area extends ModelObject
     /**
      * @var float
      *
-     * @JMS\Groups({"list", "details", "modelobjectdetails", "modelobjectlist"})
+     * @JMS\Groups({"list", "details", "modeldetails", "modelobjectdetails", "modelobjectlist"})
      */
     private $surface;
 
