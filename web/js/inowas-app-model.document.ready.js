@@ -32,6 +32,20 @@ loadWhenReady = function(){
         }
     });
 
+    var h_results=0, open_results=false;
+    $('#results_label').click(function() {
+        open_results = !open_results;
+        if (!open_results) {
+            h_results = 0;
+            $("#map").stop().animate({marginTop: h_results+'px'}, 800);
+        }
+
+        if (open_results){
+            h_results = -($( window ).height()-40);
+            $("#map").stop().animate({marginTop: h_results+'px'}, 800);
+        }
+    });
+
     $('.list-group-item.boundary_list_item').hover(
         function () {
             $(this).find('.tools_menu').show();

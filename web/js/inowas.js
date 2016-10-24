@@ -342,6 +342,7 @@ I.model = {
         $(window).on("resize", function() {
             $("#map").height($(window).height()).width($(window).width());
             I.model.map.invalidateSize();
+            $("#results").height($(window).height());
         }).trigger("resize");
 
         $('#models_label').click();

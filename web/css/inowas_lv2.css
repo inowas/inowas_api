@@ -185,24 +185,41 @@
     margin: 0 auto;
 }
 
-#models_label {
+#results{
+    background-color: #e9e9e9;
+    min-height: 100%;
+}
+
+#models_label, #results_label {
     color: white;
     border: 1px solid white;
     background-color: deepskyblue;
     cursor: pointer;
     position: absolute;
-    left: 40px;
     z-index: 10;
 }
 
-#models_label p {
+#models_label{
+    left: 40px;
+}
+
+#results_label{
+    left: 40px;
+    bottom: 0;
+}
+
+#models_label p,
+#results_label p
+{
     font-size: 1.2em;
     padding: 5px 10px 5px 5px;
     margin: 0;
     z-index: 10;
 }
 
-#models_label .icon {
+#models_label .icon,
+#results_label .icon
+{
     padding: 0 5px 2px 5px;
     z-index: 10;
 }
