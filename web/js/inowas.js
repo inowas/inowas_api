@@ -1370,7 +1370,7 @@ I.results = {
                             if (value.show == true){
                                 I.results.addMap( value );
                                 I.model.createHeatMap(
-                                    value.heads[I.results.headValues.dates[0]][3],
+                                    value.heads[I.results.headValues.dates[0]][0],
                                     I.results.headValues.min,
                                     I.results.headValues.max,
                                     I.model.boundingBox,
