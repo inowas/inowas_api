@@ -481,6 +481,7 @@ I.model = {
                 $(this).addClass('active');
                 I.model.clear( false );
                 I.model.initialize(this.id.split("_")[1], false);
+                $('#scenarios').find('.flip').click();
             }
         });
     },
