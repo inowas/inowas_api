@@ -1215,7 +1215,7 @@ I.model = {
         }
 
         // Calculating 5%/95% percentile
-        filteredValues.sort();
+        filteredValues.sort(function(a,b){return a - b});
         var min = filteredValues[Math.round(5 * filteredValues.length/100)];
         var max = filteredValues[Math.round(95 * filteredValues.length/100)];
 
