@@ -61,7 +61,7 @@ class LoadScenario_4 extends LoadScenarioBase implements FixtureInterface, Conta
         $propertyTypePumpingRate = PropertyTypeFactory::create(PropertyType::PUMPING_RATE);
 
         $model = ModFlowModelFactory::create()
-            ->setName("Inowas Hanoi")
+            ->setName("Base model INOWAS Hanoi")
             ->setDescription('Application of managed aquifer recharge for maximization of water storage capacity in Hanoi.')
             ->setOwner($this->getOwner())
             ->setPublic($public)

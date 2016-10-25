@@ -290,6 +290,26 @@
     cursor: pointer;
 }
 
+.scenario_selected_container{
+    padding: 5px;
+    background: deepskyblue;
+    color: white;
+    position: absolute;
+    right: 30px;
+    top: 30px;
+    font-size: 18px;
+    line-height: 14px;
+}
+
+.scenario_selected:after{
+    font-family: 'FontAwesome';
+    content: "\f096";
+}
+
+.scenario_selected.checked:after{
+    content: "\f046";
+}
+
 
 
 

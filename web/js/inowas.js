@@ -1332,6 +1332,7 @@ I.results = {
             $.when(
                 $.getJSON( "/api/modflowmodels/"+baseModelId+".json", function ( data ) {
                     I.results.baseModel = data;
+                    I.results.baseModel.show = true;
                 }),
 
                 $.getJSON( "/api/modflowmodels/"+baseModelId+"/scenarios.json", function ( data ) {
@@ -1404,6 +1405,15 @@ I.results = {
         var html = '';
         html += '<li class="list-group-item">';
         html += '<img src="/models/modflow/'+model.id+'/image.jpg" class="img-responsive" alt="'+model.name+'">';
+        html += '<div class="scenario_selected_container">';
+
+        if (model.show){
+            html += '<div class="scenario_selected checked"></div>'
+        } else (
+            html += '<div class="scenario_selected"></div>'
+        );
+
+        html += '</div>';
         html += '</li>';
 
         return html;
