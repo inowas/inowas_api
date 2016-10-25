@@ -7,6 +7,7 @@
     <link rel="stylesheet" type="text/css" href="{{ asset('vendor/font-awesome/css/font-awesome.min.css') }}" />
     <link rel="stylesheet" type="text/css" href="{{ asset('vendor/leaflet/dist/leaflet.css') }}" />
     <link rel="stylesheet" type="text/css" href="{{ asset('vendor/Leaflet.EasyButton/src/easy-button.css') }}" />
+    <link rel="stylesheet" type="text/css" href="{{ asset('vendor/c3/c3.min.css') }}" />
     <link rel="stylesheet" type="text/css" href="{{ asset('css/inowas_lv2.css') }}" />
     <link rel="icon" type="image/x-icon" href="{{ asset('favicon.ico') }}" />
 </head>
@@ -203,6 +204,7 @@
                     <div id="results_scenario_sidebar" class="col-sm-2"></div>
                     <div class="col-sm-10">
                         <div id="result_maps" class="row"></div>
+                        <div id="results_chart"></div>
                     </div>
                 </div>
             </div>
@@ -210,6 +212,8 @@
     </div>
 
     <script type="text/javascript" src="{{ asset('vendor/jquery/dist/jquery.min.js') }}"></script>
+    <script type="text/javascript" src="{{ asset('vendor/d3/d3.min.js') }}"></script>
+    <script type="text/javascript" src="{{ asset('vendor/c3/c3.min.js') }}"></script>
     <script type="text/javascript" src="{{ asset('vendor/bootstrap/dist/js/bootstrap.min.js') }}"></script>
     <script type="text/javascript" src="{{ asset('vendor/leaflet/dist/leaflet.js') }}"></script>
     <script type="text/javascript" src="{{ asset('vendor/Leaflet.EasyButton/src/easy-button.js') }}"></script>

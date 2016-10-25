@@ -1321,6 +1321,7 @@ I.results = {
     baseModel: null,
     scenarios: null,
     initialized: false,
+    activeMaps: [],
     headValues: {
         dates : [],
         values: [],
@@ -1350,8 +1351,7 @@ I.results = {
                         I.results.extractDatesFromHeads( data );
                         I.results.addHeadValues(I.results.headValues, data, 0, 0);
                         I.results.addMap( I.results.baseModel );
-
-                        I.model.createHeatMap(
+                        I.results.createHeatMap(
                             I.results.baseModel.heads[I.results.headValues.dates[0]][3],
                             I.results.headValues.min,
                             I.results.headValues.max,
@@ -1370,7 +1370,7 @@ I.results = {
 
                             if (value.show == true){
                                 I.results.addMap( value );
-                                I.model.createHeatMap(
+                                I.results.createHeatMap(
                                     value.heads[I.results.headValues.dates[0]][0],
                                     I.results.headValues.min,
                                     I.results.headValues.max,
@@ -1384,10 +1384,118 @@ I.results = {
                 });
 
                 I.results.renderModelResultsSideBar( '#results_scenario_sidebar' );
-
                 this.initialized = true;
             });
         }
+    },
+    createHeatMap: function (heads, min, max, boundingBox, gridSize, layerGroup) {
+        var dx = (boundingBox.x_max - boundingBox.x_min) / gridSize.n_x;
+        var dy = (boundingBox.y_max - boundingBox.y_min) / gridSize.n_y;
+
+        for (var row=0; row<gridSize.n_y; row++){
+            for (var col=0; col<gridSize.n_x; col++) {
+                var bb = {};
+                bb.x_min = boundingBox.x_min + col * dx;
+                bb.x_max = boundingBox.x_min + col * dx + dx;
+                bb.y_min = boundingBox.y_max - row * dy - dy;
+                bb.y_max = boundingBox.y_max - row * dy;
+
+                if (heads[row] === undefined || heads[row][col] === undefined || heads[row][col] === null) {
+                    continue;
+                }
+
+                var value = heads[row][col];
+                value = Math.round(value * 100) / 100;
+
+                var rectangle = I.model.createRectangle(
+                    bb,
+                    {color: "blue", weight: 0, fillColor: I.model.getColor(min, max, value), fillOpacity: 0.3}
+                );
+
+                rectangle.row = row;
+                rectangle.on('click', function(e) {
+
+                    $.each(I.results.activeMaps, function(key, map){
+                        map.eachLayer(function(layer){
+                            if (layer.marker){
+                                map.removeLayer(layer);
+                            }
+                        });
+
+                        var bb = {};
+                        bb.x_min = boundingBox.x_min;
+                        bb.x_max = boundingBox.x_max;
+                        bb.y_min = boundingBox.y_max - e.target.row*dy-dy;
+                        bb.y_max = boundingBox.y_max - e.target.row*dy;
+
+                        var rectangle = I.model.createRectangle(
+                            bb,
+                            {color: "blue", weight: 0, fillColor: 'grey', fillOpacity: 0.5}
+                        );
+
+                        rectangle.marker = true;
+                        rectangle.addTo(map).bringToFront();
+                    });
+
+                    I.results.createChart( e.target.row );
+                });
+
+                rectangle.addTo(layerGroup);
+            }
+        }
+
+        return layerGroup;
+    },
+    createChart: function( row ){
+        if (I.results.chart){
+            I.results.chart.destroy();
+        }
+
+        var rowData = I.results.baseModel.heads[I.results.headValues.dates[0]][0][row];
+
+        var leftValue = null;
+        var rightValue = null;
+        for (var i=0; i<rowData.length; i++){
+
+            if (!rowData[i]){
+                if (leftValue && !rightValue){
+                    rightValue=i;
+                }
+            } else {
+                if (!leftValue){
+                    leftValue=i;
+                }
+            }
+        }
+
+        I.results.chart = c3.generate({
+            bindto: '#results_chart',
+            data: {
+                columns: []
+            },
+            grid: {
+                x: {
+                    show: true,
+                    lines: [
+                        {value: leftValue, text: 'Eastern model border', position: 'middle'},
+                        {value: rightValue, text: 'Western model border', position: 'middle'}
+                    ]
+                }
+            }
+        });
+
+        var column = [I.results.baseModel.name];
+        column = $.merge(column, I.results.baseModel.heads[I.results.headValues.dates[0]][0][row]);
+        I.results.chart.load({columns: [column]});
+
+
+        $.each(I.results.scenarios, function (key, value) {
+            var column = [value.name];
+            column = $.merge(column, value.heads[I.results.headValues.dates[0]][0][row]);
+            I.results.chart.load({
+                columns: [column]
+            });
+        });
     },
     renderModelResultsSideBar: function ( elementId ) {
         var html = '';
@@ -1465,9 +1573,7 @@ I.results = {
         headValues.max = headValues.values[Math.round(95 * headValues.values.length/100)];
     },
     addMap: function ( model ){
-
         var divName = "result_map_"+ model.id;
-
         var html = '';
         html += '<div class="col-sm-6 results_map_container">';
         html += '<div class="panel panel-default">';
@@ -1491,6 +1597,8 @@ I.results = {
             subdomains: 'abcd',
             maxZoom: 19
         }).addTo(model.map);
+
+        I.results.activeMaps.push(model.map);
     },
     fitBounds: function( bounds ){
         if (I.results.baseModel.map != null){
