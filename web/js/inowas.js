@@ -241,7 +241,7 @@ I.model = {
 
         $.when(
             $.getJSON( "/api/modflowmodels/"+id+".json", function ( data ) {
-                I.model.name = data.name;
+                document.title = I.model.name = data.name;
                 I.model.description = data.description;
                 I.model.boundingBox = data.bounding_box;
                 I.model.gridSize = data.grid_size;
@@ -1217,6 +1217,9 @@ I.model = {
 
         // Calculating 5%/95% percentile
         filteredValues.sort(function(a,b){return a - b});
+        //var min = filteredValues[Math.round(5 * filteredValues.length/100)];
+        //var max = filteredValues[Math.round(95 * filteredValues.length/100)];
+
         var min = -26.6;
         var max = 0.93;
 
@@ -1459,7 +1462,7 @@ I.results = {
 
             if (!rowData[i]){
                 if (leftValue && !rightValue){
-                    rightValue=i;
+                    rightValue=i-1;
                 }
             } else {
                 if (!leftValue){
