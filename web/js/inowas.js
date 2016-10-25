@@ -271,6 +271,11 @@ I.model = {
         ).then(function(){
 
             var overlayMaps = {};
+
+            if (I.model.heads !== null){
+                overlayMaps['Heads'] = I.model.getLayerOfLastHead(I.model.heads);
+            }
+
             var area = overlayMaps['Area'] = L.geoJson($.parseJSON(I.model.data.area.geojson), I.model.styles.areaGeometry).addTo(I.model.map);
             overlayMaps['Bounding Box'] = I.model.createBoundingBoxLayer(I.model.boundingBox);
             overlayMaps['Wells'] = I.model.createWellsLayer(I.model.data.wel).addTo(I.model.map);
@@ -278,9 +283,6 @@ I.model = {
             overlayMaps['Rivers'] = I.model.createRiversLayer(I.model.data.riv).addTo(I.model.map);
             overlayMaps['Rivers active cells'] = I.model.createRiversActiveCellsLayer(I.model.data.riv, I.model.boundingBox, I.model.gridSize);
 
-            if (I.model.heads !== null){
-                overlayMaps['Heads'] = I.model.getLayerOfLastHead(I.model.heads);
-            }
 
             I.model.map.fitBounds(area.getBounds());
 
