@@ -1,8 +1,8 @@
 <?php
 
-namespace Inowas\PyprocessingBundle\Tests\Model\RainbowVis;
+namespace Tests\AppBundle\Model\RainbowVis;
 
-use Inowas\PyprocessingBundle\Model\RainbowVis\RainbowVis;
+use AppBundle\Model\RainbowVis\RainbowVis;
 
 class RainbowVisTest extends \PHPUnit_Framework_TestCase
 {

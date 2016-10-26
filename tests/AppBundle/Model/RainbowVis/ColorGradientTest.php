@@ -1,11 +1,11 @@
 <?php
 
 
-namespace Inowas\PyprocessingBundle\Tests\Model\RainbowVis;
+namespace Tests\AppBundle\Model\RainbowVis;
 
 
 use Inowas\PyprocessingBundle\Exception\InvalidArgumentException;
-use Inowas\PyprocessingBundle\Model\RainbowVis\ColorGradient;
+use AppBundle\Model\RainbowVis\ColorGradient;
 
 class ColorGradientTest extends \PHPUnit_Framework_TestCase
 {

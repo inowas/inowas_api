@@ -1,6 +1,6 @@
 <?php
 
-namespace Inowas\PyprocessingBundle\Model\RainbowVis;
+namespace AppBundle\Model\RainbowVis;
 
 
 use Inowas\PyprocessingBundle\Exception\InvalidArgumentException;
