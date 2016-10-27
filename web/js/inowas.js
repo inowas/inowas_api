@@ -88,7 +88,7 @@ I.models = {
             html += '<div class="panel-body">';
             html += '    <div class="row">';
             html += '        <div class="col-md-4">';
-            html += '            <img class="image img-responsive" src="/models/modflow/'+ model.id +'/image.jpg" />';
+            html += '            <img class="image img-responsive" src="/api/modflowmodels/'+ model.id +'/image.jpg" />';
             html += '        </div>';
             html += '        <div id="testimage"></div>';
             html += '        <div class="col-md-8">';
@@ -454,7 +454,7 @@ I.model = {
             '<a href="#" id="scenario_'+ I.model.id +'" class="list-group-item list-group-item-action scenario_list_item base_model active"> \
                 <div class="row">\
                     <div class="col-sm-4 image">\
-                        <img src="/models/modflow/'+I.model.id+'/image.jpg" class="img-responsive" alt="'+I.model.name+'">\
+                        <img src="/api/modflowmodels/'+I.model.id+'/image.jpg" class="img-responsive" alt="'+I.model.name+'">\
                         </div> \
                         <div class="col-sm-8">\
                             <h1>'+I.model.name+'</h1>\
@@ -467,7 +467,7 @@ I.model = {
                 '<a href="#" id="scenario_'+ value.id +'" class="list-group-item list-group-item-action scenario_list_item"> \
                     <div class="row">\
                         <div class="col-sm-4 image">\
-                            <img src="/models/modflow/'+value.id+'/image.jpg" class="img-responsive" alt="'+value.name+'">\
+                            <img src="/api/modflowmodels/'+value.id+'/image.jpg" class="img-responsive" alt="'+value.name+'">\
                         </div> \
                         <div class="col-sm-8">\
                             <h1>'+value.name+'</h1>\
@@ -1506,7 +1506,7 @@ I.results = {
     renderScenariosElement: function ( model ) {
         var html = '';
         html += '<li class="list-group-item">';
-        html += '<img src="/models/modflow/'+model.id+'/image.jpg" class="img-responsive" alt="'+model.name+'">';
+        html += '<img src="/api/modflowmodels/'+model.id+'/image.jpg" class="img-responsive" alt="'+model.name+'">';
         html += '<div class="scenario_selected_container">';
 
         if (model.show){

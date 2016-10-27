@@ -9,6 +9,7 @@ use AppBundle\Entity\User;
 use AppBundle\Model\ActiveCells;
 use FOS\RestBundle\Controller\Annotations\RequestParam;
 use FOS\RestBundle\Controller\Annotations\QueryParam;
+use FOS\RestBundle\Controller\Annotations\Route;
 use FOS\RestBundle\Controller\FOSRestController;
 use FOS\RestBundle\Request\ParamFetcher;
 use FOS\RestBundle\View\View;
@@ -150,6 +151,40 @@ class ModflowModelRestController extends FOSRestController
     }
 
     /**
+     * Get head values
+     *
+     * @Route(requirements={"_format"="jpg"})
+     *
+     * @ApiDoc(
+     *   resource = true,
+     *   description = "Post head values.",
+     *   statusCodes = {
+     *     200 = "Returned when successful",
+     *     404 = "Returned when the Calculation-Id is not found"
+     *   }
+     * )
+     *
+     * @param $id
+     * @return Response
+     */
+    public function getModflowmodelImageAction($id){
+
+        /** @var ModFlowModel $model */
+        $this->findModelById($id);
+
+        $file = $this->get('kernel')->getRootDir() . '/../var/data/modflow/' . $id . '/image.jpg';
+
+        if (! file_exists($file)){
+            $file = $this->get('kernel')->getRootDir() . '/../web/img/emptyModel.jpg';
+        }
+
+        $response = new Response();
+        $response->headers->set('Content-Type', 'image/png');
+        $response->setContent(file_get_contents($file));
+        return $response;
+    }
+
+    /**
      * Deletes a ModflowModel by id.
      *
      * @ApiDoc(
@@ -217,7 +252,7 @@ class ModflowModelRestController extends FOSRestController
         $model->setSoilModel($soilModel);
         $modflowModelManager->update($model);
 
-        return $this->redirectToRoute('get_modflowmodels', array('id'=>$model->getId()->toString()));
+        return $this->redirectToRoute('get_modflowmodel', array('id'=>$model->getId()->toString()));
     }
 
     /**

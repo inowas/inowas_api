@@ -49,7 +49,7 @@ class ModelController extends Controller
         }
 
         if (! Uuid::isValid($id)){
-            return $this->redirectToRoute('modflow_model_list');
+            return $this->redirectToRoute('modflow_model');
         }
 
         $model = $this->getDoctrine()->getRepository('AppBundle:ModFlowModel')
@@ -58,7 +58,7 @@ class ModelController extends Controller
             ));
 
         if (! $model instanceof ModFlowModel){
-            return $this->redirectToRoute('modflow_model_list');
+            return $this->redirectToRoute('modflow_model');
         }
 
         $scenarios = $this->getDoctrine()->getRepository('AppBundle:ModflowModelScenario')

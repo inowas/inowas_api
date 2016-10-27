@@ -272,20 +272,6 @@ class ModflowModelRestControllerTest extends RestControllerTestCase
         $this->assertEquals($this->modFlowModel->getSoilModel()->getGeologicalLayers()->first()->getId(), $modFlowModel->soil_model->geological_layers[0]->id);
     }
 
-    public function testGetModelDetailsHtmlById()
-    {
-        $client = static::createClient();
-        $client->request(
-            'GET',
-            '/api/modflowmodels/'.$this->modFlowModel->getId().'.html',
-            array(),
-            array(),
-            array('HTTP_X-AUTH-TOKEN' => $this->getOwner()->getApiKey())
-        );
-
-        $this->assertEquals(200, $client->getResponse()->getStatusCode());
-    }
-
     public function testGetModelDetailsJsonWithInvalidIdReturns404()
     {
         $client = static::createClient();
@@ -715,6 +701,24 @@ class ModflowModelRestControllerTest extends RestControllerTestCase
         $this->getEntityManager()->flush();
     }
 
+    public function testGetModflowModelImage(){
+        $client = static::createClient();
+        $client->request(
+            'GET',
+            sprintf('/api/modflowmodels/%s/image.jpg', $this->modFlowModel->getId()->toString()),
+            array(),
+            array(),
+            array('HTTP_X-AUTH-TOKEN' => $this->getOwner()->getApiKey())
+        );
+
+        $this->assertEquals(200, $client->getResponse()->getStatusCode());
+        $model = $this->getEntityManager()->getRepository('AppBundle:ModFlowModel')
+            ->findOneBy(array('id' => $this->modFlowModel->getId()->toString()));
+
+        $this->getEntityManager()->remove($model);
+        $this->getEntityManager()->flush();
+    }
+
     public function testGetHeadsImage(){
 
         $this->modFlowModel->setHeads(array(
@@ -751,7 +755,6 @@ class ModflowModelRestControllerTest extends RestControllerTestCase
             array('HTTP_X-AUTH-TOKEN' => $this->getOwner()->getApiKey())
         );
 
-        var_dump($client->getResponse()->getContent());
         $this->assertEquals(200, $client->getResponse()->getStatusCode());
         $model = $this->getEntityManager()->getRepository('AppBundle:ModFlowModel')
             ->findOneBy(array('id' => $this->modFlowModel->getId()->toString()));
@@ -883,20 +886,6 @@ class ModflowModelRestControllerTest extends RestControllerTestCase
         $this->assertObjectHasAttribute('date_modified', $scenario1);
     }
 
-    public function testGetModelImage(){
-
-        $client = static::createClient();
-        $client->request(
-            'GET',
-            '/models/modflow/'.$this->modFlowModel->getId()->toString().'/image.png',
-            array(),
-            array(),
-            array('HTTP_X-AUTH-TOKEN' => $this->getOwner()->getApiKey())
-        );
-
-        $this->assertEquals(200, $client->getResponse()->getStatusCode());
-    }
-
     public function testDeleteModelScenario(){
 
         $modelScenario = ModelScenarioFactory::create($this->modFlowModel);
@@ -938,13 +927,13 @@ class ModflowModelRestControllerTest extends RestControllerTestCase
             ));
         $this->getEntityManager()->remove($user);
 
-        $model = $this->getEntityManager()->getRepository('AppBundle:ModFlowModel')
-            ->findOneBy(array(
-               'name' => $this->modFlowModel->getName()
-            ));
+        $models = $this->getEntityManager()->getRepository('AppBundle:ModFlowModel')
+            ->findAll();
 
-        if ($model instanceof ModFlowModel){
-            $this->getEntityManager()->remove($model);
+        foreach ($models as $model){
+            if ($model instanceof ModFlowModel){
+                $this->getEntityManager()->remove($model);
+            }
         }
 
         $this->getEntityManager()->flush();

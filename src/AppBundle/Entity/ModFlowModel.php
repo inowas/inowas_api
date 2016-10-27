@@ -441,7 +441,9 @@ class ModFlowModel extends AbstractModel implements ModflowModelInterface
      * @param ModflowModelScenario $scenario
      */
     public function registerScenario(ModflowModelScenario $scenario) {
-        $this->scenarios[] = $scenario;
+        if (! $this->scenarios->contains($scenario)){
+            $this->scenarios[] = $scenario;
+        }
     }
 
     /**
