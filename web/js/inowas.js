@@ -1358,7 +1358,7 @@ I.results = {
                         I.results.addHeadValues(I.results.headValues, data, 0, 0);
                         I.results.addMap( I.results.baseModel );
                         var bounds = [[I.model.boundingBox.y_min, I.model.boundingBox.x_min],[I.model.boundingBox.y_max, I.model.boundingBox.x_max]];
-                        L.imageOverlay('/models/modflow/'+I.results.baseModel.id+'/heads.png', bounds, { opacity: 0.5, position: 'back' }).addTo(I.results.baseModel.map).bringToBack();
+                        L.imageOverlay('/api/modflowmodels/'+I.results.baseModel.id+'/heads/image.png', bounds, { opacity: 0.5, position: 'back' }).addTo(I.results.baseModel.map).bringToBack();
                     }
                 });
 
@@ -1371,7 +1371,7 @@ I.results = {
                             if (value.show == true){
                                 I.results.addMap( value );
                                 var bounds = [[I.model.boundingBox.y_min, I.model.boundingBox.x_min],[I.model.boundingBox.y_max, I.model.boundingBox.x_max]];
-                                L.imageOverlay('/models/modflow/'+value.id+'/heads.png', bounds, { opacity: 0.5, position: 'back' }).addTo(value.map).bringToBack();
+                                L.imageOverlay('/api/modflowmodels/'+value.id+'/heads/image.png', bounds, { opacity: 0.5, position: 'back' }).addTo(value.map).bringToBack();
                             }
                         }
                     })
