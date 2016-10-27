@@ -715,6 +715,51 @@ class ModflowModelRestControllerTest extends RestControllerTestCase
         $this->getEntityManager()->flush();
     }
 
+    public function testGetHeadsImage(){
+
+        $this->modFlowModel->setHeads(array(
+            0 => array([
+                    [1,2,3,4,5,6,7,8,9],
+                    [1,2,3,4,5,6,7,8,9],
+                    [1,2,3,4,5,6,7,8,9],
+                    [1,2,3,4,5,6,7,8,9],
+                    [1,2,3,4,5,6,7,8,9],
+                    [1,2,3,4,5,6,7,8,9]
+                ])
+            )
+        );
+
+        $this->modFlowModel->addBoundary(
+            WellBoundaryFactory::create()
+                ->setName('WellBoundary')
+                ->addStressPeriod(StressPeriodFactory::createWel()
+                    ->setFlux(1000)
+                    ->setDateTimeBegin(new \DateTime('1.1.2015'))
+                    ->setDateTimeEnd(new \DateTime('2.1.2015'))
+                )
+        );
+
+        $this->getEntityManager()->persist($this->modFlowModel);
+        $this->getEntityManager()->flush();
+
+        $client = static::createClient();
+        $client->request(
+            'GET',
+            sprintf('/api/modflowmodels/%s/heads/image.png', $this->modFlowModel->getId()->toString()),
+            array(),
+            array(),
+            array('HTTP_X-AUTH-TOKEN' => $this->getOwner()->getApiKey())
+        );
+
+        var_dump($client->getResponse()->getContent());
+        $this->assertEquals(200, $client->getResponse()->getStatusCode());
+        $model = $this->getEntityManager()->getRepository('AppBundle:ModFlowModel')
+            ->findOneBy(array('id' => $this->modFlowModel->getId()->toString()));
+
+        $this->getEntityManager()->remove($model);
+        $this->getEntityManager()->flush();
+    }
+
     public function testPostHeads(){
         $client = static::createClient();
 

@@ -273,7 +273,8 @@ I.model = {
             var overlayMaps = {};
 
             if (I.model.heads !== null){
-                overlayMaps['Heads'] = I.model.getLayerOfLastHead(I.model.heads);
+                var bounds = [[I.model.boundingBox.y_min, I.model.boundingBox.x_min],[I.model.boundingBox.y_max, I.model.boundingBox.x_max]];
+                overlayMaps['Heads'] = L.imageOverlay('/api/modflowmodels/'+I.model.id+'/heads/image.png', bounds, { opacity: 0.5, position: 'back' }).addTo(I.model.map).bringToBack();
             }
 
             var area = overlayMaps['Area'] = L.geoJson($.parseJSON(I.model.data.area.geojson), I.model.styles.areaGeometry).addTo(I.model.map);
@@ -1356,14 +1357,8 @@ I.results = {
                         I.results.extractDatesFromHeads( data );
                         I.results.addHeadValues(I.results.headValues, data, 0, 0);
                         I.results.addMap( I.results.baseModel );
-                        I.results.createHeatMap(
-                            I.results.baseModel.heads[I.results.headValues.dates[0]][3],
-                            I.results.headValues.min,
-                            I.results.headValues.max,
-                            I.model.boundingBox,
-                            I.model.gridSize,
-                            new L.layerGroup()
-                        ).addTo(I.results.baseModel.map);
+                        var bounds = [[I.model.boundingBox.y_min, I.model.boundingBox.x_min],[I.model.boundingBox.y_max, I.model.boundingBox.x_max]];
+                        L.imageOverlay('/models/modflow/'+I.results.baseModel.id+'/heads.png', bounds, { opacity: 0.5, position: 'back' }).addTo(I.results.baseModel.map).bringToBack();
                     }
                 });
 
@@ -1375,14 +1370,8 @@ I.results = {
 
                             if (value.show == true){
                                 I.results.addMap( value );
-                                I.results.createHeatMap(
-                                    value.heads[I.results.headValues.dates[0]][0],
-                                    I.results.headValues.min,
-                                    I.results.headValues.max,
-                                    I.model.boundingBox,
-                                    I.model.gridSize,
-                                    new L.layerGroup()
-                                ).addTo( value.map );
+                                var bounds = [[I.model.boundingBox.y_min, I.model.boundingBox.x_min],[I.model.boundingBox.y_max, I.model.boundingBox.x_max]];
+                                L.imageOverlay('/models/modflow/'+value.id+'/heads.png', bounds, { opacity: 0.5, position: 'back' }).addTo(value.map).bringToBack();
                             }
                         }
                     })

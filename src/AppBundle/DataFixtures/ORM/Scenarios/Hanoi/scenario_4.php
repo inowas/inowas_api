@@ -664,7 +664,8 @@ class LoadScenario_4 extends LoadScenarioBase implements FixtureInterface, Conta
         for ($i=0; $i<$model->getSoilModel()->getNumberOfGeologicalLayers(); $i++){
             $heads[] = $head;
         }
-        $model->setHeads($heads);
+
+        $model->setHeads(array(0 => $heads));
         $entityManager->persist($model);
         $entityManager->flush();
 
@@ -742,7 +743,8 @@ class LoadScenario_4 extends LoadScenarioBase implements FixtureInterface, Conta
             for ($i = 0; $i < $model->getSoilModel()->getNumberOfGeologicalLayers(); $i++) {
                 $heads[] = $head;
             }
-            $scenario_1->setHeads($heads);
+
+            $scenario_1->setHeads(array(0 => $heads));
             $entityManager->persist($scenario_1);
 
             /** @var BoundaryModelObject $boundary */
@@ -795,7 +797,7 @@ class LoadScenario_4 extends LoadScenarioBase implements FixtureInterface, Conta
                 $heads[] = $head;
             }
 
-            $scenario_2->setHeads($heads);
+            $scenario_2->setHeads(array(0 => $heads));
             $entityManager->persist($scenario_2);
 
             /** @var BoundaryModelObject $boundary */
@@ -803,9 +805,9 @@ class LoadScenario_4 extends LoadScenarioBase implements FixtureInterface, Conta
                 $boundary->setActiveCells($geoTools->getActiveCells($boundary, $model->getBoundingBox(), $model->getGridSize()));
                 $entityManager->persist($boundary);
             }
-            $entityManager->flush();
 
             $entityManager->flush();
+
 
             // Add the first Scenario (RiverBankFiltration)
             $scenario_3 = ModelScenarioFactory::create($model)
@@ -866,7 +868,7 @@ class LoadScenario_4 extends LoadScenarioBase implements FixtureInterface, Conta
             for ($i = 0; $i < $model->getSoilModel()->getNumberOfGeologicalLayers(); $i++) {
                 $heads[] = $head;
             }
-            $scenario_3->setHeads($heads);
+            $scenario_3->setHeads(array(0 => $heads));
 
             /** @var BoundaryModelObject $boundary */
             foreach ($scenario_3->getBoundaries() as $boundary){

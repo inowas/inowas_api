@@ -22,4 +22,6 @@ interface ModflowModelInterface
     public function addCalculationProperties(FlopyCalculationProperties $calculationProperties);
 
     public function isScenario();
+
+    public function getHeads();
 }
