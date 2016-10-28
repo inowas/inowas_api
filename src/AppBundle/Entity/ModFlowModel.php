@@ -47,7 +47,7 @@ class ModFlowModel extends AbstractModel implements ModflowModelInterface
      * @ORM\Column(name="bounding_box", type="bounding_box", nullable=true)
      *
      * @JMS\Type("AppBundle\Model\BoundingBox")
-     * @JMS\Groups({"details", "modeldetails", "modelProperties"})
+     * @JMS\Groups({"details", "list", "modeldetails", "modelProperties"})
      */
     private $boundingBox;
 
