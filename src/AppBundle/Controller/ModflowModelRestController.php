@@ -47,20 +47,8 @@ class ModflowModelRestController extends FOSRestController
         $models = $this->getDoctrine()
             ->getRepository('AppBundle:ModFlowModel')
             ->findBy(
-                array('owner' => $user)
-            );
-
-        $publicModels = $this->getDoctrine()
-            ->getRepository('AppBundle:ModFlowModel')
-            ->findBy(
                 array('public' => true)
             );
-
-        foreach ($publicModels as $model){
-            if ($model->getOwner() !== $user){
-                $models[] = $model;
-            }
-        }
 
         $view = View::create();
         $view->setData($models)
@@ -98,6 +86,10 @@ class ModflowModelRestController extends FOSRestController
 
         if (! $user instanceof User) {
             throw $this->createNotFoundException('User with username '.$username.' not found.');
+        }
+
+        if (! $user === $this->getUser()){
+            throw $this->createAccessDeniedException('You have no access to this resource wit user privileges.');
         }
 
         $models = $this->getDoctrine()

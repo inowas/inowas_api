@@ -170,7 +170,14 @@ class ModflowModelRestControllerTest extends RestControllerTestCase
         $this->assertEquals(401, $client->getResponse()->getStatusCode());
     }
 
-    public function testGetListOfPublicAndUserModelsWithAPIKey(){
+    public function testGetListOfPublicModelsWithAPIKey()
+    {
+        $modFlowModel = ModFlowModelFactory::create();
+        $modFlowModel->setOwner($this->getOwner());
+        $modFlowModel->setPublic(false);
+        $this->getEntityManager()->persist($modFlowModel);
+        $this->getEntityManager()->flush();
+
         $client = static::createClient();
         $client->request(
             'GET',
@@ -229,6 +236,19 @@ class ModflowModelRestControllerTest extends RestControllerTestCase
             array('HTTP_X-AUTH-TOKEN' => $this->getOwner()->getApiKey())
         );
         $this->assertEquals(404, $client->getResponse()->getStatusCode());
+    }
+
+    public function testGetListByAsUserFromOtherUser()
+    {
+        $client = static::createClient();
+        $client->request(
+            'GET',
+            sprintf('/api/users/%s/modflowmodels.json', $this->getOwner()->getUsername()),
+            array(),
+            array(),
+            array('HTTP_X-AUTH-TOKEN' => $this->getUser()->getApiKey())
+        );
+        $this->assertEquals(403, $client->getResponse()->getStatusCode());
     }
 
     public function testGetModelDetailsJsonById()
