@@ -226,6 +226,7 @@
 
     <script>
         I.user.setApiKey('{{ user.getApiKey }}');
+        I.user.userName = '{{ user.getUserName }}';
         I.models.load();
 
         $(document).ready(function(){

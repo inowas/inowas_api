@@ -13,16 +13,15 @@ var I = {};
 
 I.user = {
     id: null,
+    userName: null,
     apiKey: null,
     setApiKey: function (apiKey) {
         this.apiKey = apiKey;
         $.ajaxSetup({
             headers : {'X-AUTH-TOKEN' : apiKey }
         });
-    },
-    setId: function (id) {
-
     }
+
 };
 
 I.models = {
@@ -31,17 +30,20 @@ I.models = {
     public: [],
     load: function(){
         $.getJSON( "/api/modflowmodels.json", function ( data ) {
-            I.models.renderModels( data );
+            I.models.renderModels( data, '#table_public_models' );
             $.each(data, function (key, value) {
-                if (value.public){
-                    I.models.public.push(value);
-                } else {
-                    I.models.private.push(value);
-                }
+                I.models.public.push(value);
+            });
+        });
+
+        $.getJSON( "/api/users/"+ I.user.userName +"/modflowmodels.json", function ( data ) {
+            I.models.renderModels( data, '#table_public_models' );
+            $.each(data, function (key, value) {
+                I.models.private.push(value);
             });
         })
     },
-    renderModels: function ( data ) {
+    renderModels: function ( data, id ) {
         var html = '' +
             '<thead>' +
             '<tr>' +
@@ -70,7 +72,7 @@ I.models = {
 
         html += '</tbody>';
 
-        $('#table_public_models').html(html);
+        $( id ).html(html);
 
             $('.model_list_item').hover(function() {
                 I.models.loadInfoBox(this.id.split("_")[1]);
@@ -317,6 +319,7 @@ I.model = {
             $("#recharge_badge").text(I.model.getNumberOf(I.model.data.rch));
             $("#constant_head_badge").text(I.model.getNumberOf(I.model.data.chb));
             $("#general_head_badge").text(I.model.getNumberOf(I.model.data.ghb));
+
             $("#sidebar").show();
             $('#toolbox').on('mouseover mousedown touchstart', function() {
                 I.model.disableMap();
