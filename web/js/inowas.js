@@ -74,16 +74,24 @@ I.models = {
 
         $( id ).html(html);
 
-            $('.model_list_item').hover(function() {
-                I.models.loadInfoBox(this.id.split("_")[1]);
-            }).click(function() {
-                I.model.clear( true );
-                I.model.initialize(this.id.split("_")[1], true);
-                $('#models_label').click();
-            });
+        $('.model_list_item').hover(function() {
+            var modelId = this.id.split("_")[1];
+            I.models.loadInfoBox(modelId);
+        }).click(function() {
+            var modelId = this.id.split("_")[1];
+            var model = I.models.findModelById( modelId );
+
+            I.model.clear( true );
+            I.model.name = model.name;
+            I.model.description = model.description;
+            I.model.boundingBox = model.bounding_box;
+            I.model.gridSize = model.grid_size;
+            I.model.initialize(modelId, true);
+            $('#models_label').click();
+        });
     },
     loadInfoBox: function (modelId) {
-        var model = this.findModelById( modelId );
+        var model = I.models.findModelById( modelId );
 
         if (model !== null){
             var html = '';
@@ -230,39 +238,51 @@ I.model = {
         I.model.id = id;
         I.model.map = L.map('map', {
             zoomControl: false
-        }).setView([50.9661, 13.92367], 5);
+        }).fitBounds(this.createBoundingBoxPolygon(this.boundingBox).getBounds());
         L.tileLayer('http://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png', {
             attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="http://cartodb.com/attributions">CartoDB</a>',
             subdomains: 'abcd',
             maxZoom: 19
         }).addTo(I.model.map);
+
         $(window).on("resize", function() {
             $("#map").height($(window).height()).width($(window).width());
             I.model.map.invalidateSize();
         }).trigger("resize");
 
+        $("#model_name").text(I.model.name);
+        $("#model_description ").text(I.model.description);
+
+        var overlayMaps = {};
+        overlayMaps['Bounding Box'] = I.model.createBoundingBoxLayer(I.model.boundingBox);
+
         $.when(
-            $.getJSON( "/api/modflowmodels/"+id+".json", function ( data ) {
-                document.title = I.model.name = data.name;
-                I.model.description = data.description;
-                I.model.boundingBox = data.bounding_box;
-                I.model.gridSize = data.grid_size;
-            }),
 
             $.getJSON( "/api/modflowmodels/"+this.id+"/area.json", function ( data ) {
+                overlayMaps['Area'] = L.geoJson($.parseJSON(data.geojson), I.model.styles.areaGeometry).addTo(I.model.map);
+                I.model.map.fitBounds(overlayMaps['Area']);
                 I.model.data.area = data;
             }),
 
             $.getJSON( "/api/modflowmodels/"+this.id+"/wells.json", function ( data ) {
+                overlayMaps['Wells'] = I.model.createWellsLayer(data).addTo(I.model.map);
+                overlayMaps['Wells active Cells'] = I.model.createWellsActiveCellsLayer(data, I.model.boundingBox, I.model.gridSize);
                 I.model.data.wel = data;
+
+                $("#wells_badge").text(I.model.getNumberOf(data));
             }),
 
             $.getJSON( "/api/modflowmodels/"+this.id+"/rivers.json", function ( data ) {
+                overlayMaps['Rivers'] = I.model.createRiversLayer(data).addTo(I.model.map);
+                overlayMaps['Rivers active cells'] = I.model.createRiversActiveCellsLayer(data, I.model.boundingBox, I.model.gridSize);
                 I.model.data.riv = data;
+
+                $("#rivers_badge").text(I.model.getNumberOf(data));
             }),
 
             $.getJSON( "/api/modflowmodels/"+this.id+"/scenarios.json", function ( data ) {
-                I.model.scenarios = data
+                I.model.renderScenarios(data);
+                I.model.scenarios = data;
             }),
 
             $.getJSON( "/api/modflowmodels/"+this.id+"/heads.json", function ( data ) {
@@ -272,50 +292,30 @@ I.model = {
             })
         ).then(function(){
 
-            var overlayMaps = {};
-
             if (I.model.heads !== null){
                 var bounds = [[I.model.boundingBox.y_min, I.model.boundingBox.x_min],[I.model.boundingBox.y_max, I.model.boundingBox.x_max]];
                 overlayMaps['Heads'] = L.imageOverlay('/api/modflowmodels/'+I.model.id+'/heads/image.png', bounds, { opacity: 0.5, position: 'back' }).addTo(I.model.map).bringToBack();
             }
 
-            var area = overlayMaps['Area'] = L.geoJson($.parseJSON(I.model.data.area.geojson), I.model.styles.areaGeometry).addTo(I.model.map);
-            overlayMaps['Bounding Box'] = I.model.createBoundingBoxLayer(I.model.boundingBox);
-            overlayMaps['Wells'] = I.model.createWellsLayer(I.model.data.wel).addTo(I.model.map);
-            overlayMaps['Wells active Cells'] = I.model.createWellsActiveCellsLayer(I.model.data.wel, I.model.boundingBox, I.model.gridSize);
-            overlayMaps['Rivers'] = I.model.createRiversLayer(I.model.data.riv).addTo(I.model.map);
-            overlayMaps['Rivers active cells'] = I.model.createRiversActiveCellsLayer(I.model.data.riv, I.model.boundingBox, I.model.gridSize);
-
-
-            I.model.map.fitBounds(area.getBounds());
-
             L.control.layers({}, overlayMaps).addTo(I.model.map);
-
-            L.control.zoom({
-                position:'topright'
-            }).addTo(I.model.map);
+            L.control.zoom({position:'topright'}).addTo(I.model.map);
 
             L.easyButton({
                 id: 'center-model',
                 position: 'topright',
                 type: 'replace',
                 leafletClasses: true,
-                states:[{                 // specify different icons and responses for your button
+                states:[{
                     stateName: 'get-center',
                     onClick: function(button, map){
-                        I.model.map.fitBounds(area.getBounds());
+                        I.model.map.fitBounds(overlayMaps['Area'].getBounds());
                     },
                     title: 'Show me the model',
                     icon: 'fa-crosshairs'
                 }]
             }).addTo( I.model.map );
 
-            $("#model_name").text(I.model.name);
-            $("#model_description ").text(I.model.description);
 
-            // Setup Badges of ModelObjects
-            $("#wells_badge").text(I.model.getNumberOf(I.model.data.wel));
-            $("#rivers_badge").text(I.model.getNumberOf(I.model.data.riv));
             $("#recharge_badge").text(I.model.getNumberOf(I.model.data.rch));
             $("#constant_head_badge").text(I.model.getNumberOf(I.model.data.chb));
             $("#general_head_badge").text(I.model.getNumberOf(I.model.data.ghb));
@@ -328,12 +328,7 @@ I.model = {
             });
             $("#results_label").show();
 
-            if (isBaseModel){
-                I.model.renderScenarios(I.model.scenarios);
-            }
-
             I.model.initialized = true;
-            $("#app").addClass("initialized");
         });
     },
     initializeWithoutModel: function () {
@@ -1545,9 +1540,6 @@ I.results = {
                 }
             }
         }
-
-        console.log(nLayMax, nRowMax, nColMax, maxDiff);
-
     },
     extractDatesFromHeads: function( heads ){
         I.results.headValues.dates = Object.keys(heads);

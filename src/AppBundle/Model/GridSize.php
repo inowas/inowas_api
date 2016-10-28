@@ -12,13 +12,13 @@ class GridSize implements \JsonSerializable
 {
     /**
      * @var int
-     * @JMS\Groups({"modeldetails", "modelobjectdetails", "interpolation", "rasterdetails", "modeldetails", "geoimage", "modelProperties"})
+     * @JMS\Groups({"list", "modeldetails", "modelobjectdetails", "interpolation", "rasterdetails", "modeldetails", "geoimage", "modelProperties"})
      */
     protected $nX;
 
     /**
      * @var int
-     * @JMS\Groups({"modeldetails", "modelobjectdetails", "interpolation", "rasterdetails", "modeldetails", "geoimage", "modelProperties"})
+     * @JMS\Groups({"list", "modeldetails", "modelobjectdetails", "interpolation", "rasterdetails", "modeldetails", "geoimage", "modelProperties"})
      */
     protected $nY;
 

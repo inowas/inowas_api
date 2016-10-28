@@ -37,7 +37,7 @@ class ModFlowModel extends AbstractModel implements ModflowModelInterface
      * @ORM\Column(name="grid_size", type="grid_size", nullable=true)
      *
      * @JMS\Type("AppBundle\Model\GridSize")
-     * @JMS\Groups({"details", "modeldetails", "modelProperties"})
+     * @JMS\Groups({"details", "list", "modeldetails", "modelProperties"})
      */
     private $gridSize;
 
