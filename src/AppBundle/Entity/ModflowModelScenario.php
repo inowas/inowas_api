@@ -64,14 +64,6 @@ class ModflowModelScenario implements ModflowScenarioInterface
     private $description;
 
     /**
-     * Heads-array with key, value = totim => flopy3dArray
-     * @var array
-     *
-     * @ORM\Column(name="heads", type="json_array", nullable=true)
-     */
-    private $heads;
-
-    /**
      * @var ModFlowModel
      *
      * @ORM\ManyToOne(targetEntity="AppBundle\Entity\ModFlowModel", cascade={"persist", "remove"})
@@ -172,24 +164,6 @@ class ModflowModelScenario implements ModflowScenarioInterface
     public function setDescription($description)
     {
         $this->description = $description;
-        return $this;
-    }
-
-    /**
-     * @return array
-     */
-    public function getHeads()
-    {
-        return $this->heads;
-    }
-
-    /**
-     * @param array $heads
-     * @return ModflowModelScenario
-     */
-    public function setHeads(array $heads)
-    {
-        $this->heads = $heads;
         return $this;
     }
 

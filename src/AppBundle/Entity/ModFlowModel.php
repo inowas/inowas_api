@@ -74,14 +74,6 @@ class ModFlowModel extends AbstractModel implements ModflowModelInterface
     private $observationPoints;
 
     /**
-     * Heads-array with key, value = totim => flopy3dArray
-     * @var array
-     *
-     * @ORM\Column(name="heads", type="json_array", nullable=true)
-     */
-    private $heads;
-
-    /**
      * @var ArrayCollection
      */
     private $stressPeriods;
@@ -451,24 +443,6 @@ class ModFlowModel extends AbstractModel implements ModflowModelInterface
      */
     public function getScenarios(){
         return $this->scenarios;
-    }
-
-    /**
-     * @return array
-     */
-    public function getHeads()
-    {
-        return $this->heads;
-    }
-
-    /**
-     * @param array $heads
-     * @return ModFlowModel
-     */
-    public function setHeads(array $heads)
-    {
-        $this->heads = $heads;
-        return $this;
     }
 
     /**

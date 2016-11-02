@@ -330,12 +330,6 @@ class ModflowModelTest extends \PHPUnit_Framework_TestCase
         $this->assertCount(1, $this->modflowModel->getScenarios());
     }
 
-    public function testSetGetHeads(){
-        $heads = array(1 => Flopy3DArray::fromValue(1,1,1,1));
-        $this->modflowModel->setHeads($heads);
-        $this->assertEquals($heads, $this->modflowModel->getHeads());
-    }
-
     public function testPreFlush()
     {
         $area = AreaFactory::create()->setName('Area');

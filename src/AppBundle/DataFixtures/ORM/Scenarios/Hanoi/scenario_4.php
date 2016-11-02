@@ -50,6 +50,9 @@ class LoadScenario_4 extends LoadScenarioBase implements FixtureInterface, Conta
      */
     public function load(ObjectManager $entityManager)
     {
+
+        $headsService = $this->container->get('inowas.heads');
+
         $this->loadUsers($this->container->get('fos_user.user_manager'));
         $geoTools = $this->container->get('inowas.geotools');
         $public = true;
@@ -659,13 +662,11 @@ class LoadScenario_4 extends LoadScenarioBase implements FixtureInterface, Conta
         }
 
         echo "Loading heads from file\r\n";
-        $heads = array();
         $head = $this->loadHeadsFromFile(__DIR__."/base_scenario_head_layer_3.json");
         for ($i=0; $i<$model->getSoilModel()->getNumberOfGeologicalLayers(); $i++){
-            $heads[] = $head;
+            $headsService->addHead($model, 0, $i, $head);
         }
 
-        $model->setHeads(array(0 => $heads));
         $entityManager->persist($model);
         $entityManager->flush();
 
@@ -738,13 +739,11 @@ class LoadScenario_4 extends LoadScenarioBase implements FixtureInterface, Conta
             }
 
             echo "Loading heads from file\r\n";
-            $heads = array();
             $head = $this->loadHeadsFromFile(__DIR__ . "/scenario_1_head_layer_3.json");
             for ($i = 0; $i < $model->getSoilModel()->getNumberOfGeologicalLayers(); $i++) {
-                $heads[] = $head;
+                $headsService->addHead($scenario_1, 0, $i, $head);
             }
 
-            $scenario_1->setHeads(array(0 => $heads));
             $entityManager->persist($scenario_1);
 
             /** @var BoundaryModelObject $boundary */
@@ -791,13 +790,11 @@ class LoadScenario_4 extends LoadScenarioBase implements FixtureInterface, Conta
             }
 
             echo "Loading heads from file\r\n";
-            $heads = array();
             $head = $this->loadHeadsFromFile(__DIR__ . "/scenario_2_head_layer_3.json");
             for ($i = 0; $i < $model->getSoilModel()->getNumberOfGeologicalLayers(); $i++) {
-                $heads[] = $head;
+                $headsService->addHead($scenario_2, 0, $i, $head);
             }
 
-            $scenario_2->setHeads(array(0 => $heads));
             $entityManager->persist($scenario_2);
 
             /** @var BoundaryModelObject $boundary */
@@ -863,12 +860,10 @@ class LoadScenario_4 extends LoadScenarioBase implements FixtureInterface, Conta
             ));
 
             echo "Loading heads from file\r\n";
-            $heads = array();
             $head = $this->loadHeadsFromFile(__DIR__ . "/scenario_3_head_layer_3.json");
             for ($i = 0; $i < $model->getSoilModel()->getNumberOfGeologicalLayers(); $i++) {
-                $heads[] = $head;
+                $headsService->addHead($scenario_3, 0, $i, $head);
             }
-            $scenario_3->setHeads(array(0 => $heads));
 
             /** @var BoundaryModelObject $boundary */
             foreach ($scenario_3->getBoundaries() as $boundary){

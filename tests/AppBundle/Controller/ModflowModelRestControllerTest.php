@@ -25,11 +25,12 @@ use AppBundle\Model\PropertyTypeFactory;
 use AppBundle\Model\PropertyValueFactory;
 use AppBundle\Model\SoilModelFactory;
 use AppBundle\Model\StreamBoundaryFactory;
-use AppBundle\Model\StressPeriodFactory;
 use AppBundle\Model\WellBoundaryFactory;
+use AppBundle\Service\HeadsService;
 use CrEOF\Spatial\PHP\Types\Geometry\LineString;
 use CrEOF\Spatial\PHP\Types\Geometry\Polygon;
 use Inowas\PyprocessingBundle\Model\Modflow\Package\FlopyCalculationProperties;
+use Inowas\PyprocessingBundle\Model\Modflow\ValueObject\Flopy2DArray;
 use Inowas\PyprocessingBundle\Model\Modflow\ValueObject\Flopy3DArray;
 use JMS\Serializer\Serializer;
 use Ramsey\Uuid\Uuid;
@@ -40,6 +41,9 @@ class ModflowModelRestControllerTest extends RestControllerTestCase
 
     /** @var Serializer */
     protected $serializer;
+
+    /** @var HeadsService */
+    protected $headsService;
 
     /** @var ModFlowModel $modFlowModel */
     protected $modFlowModel;
@@ -64,6 +68,10 @@ class ModflowModelRestControllerTest extends RestControllerTestCase
         self::bootKernel();
         $this->serializer = static::$kernel->getContainer()
             ->get('jms_serializer')
+        ;
+
+        $this->headsService = static::$kernel->getContainer()
+            ->get('inowas.heads')
         ;
 
         $this->getEntityManager()->persist($this->getOwner());
@@ -684,21 +692,37 @@ class ModflowModelRestControllerTest extends RestControllerTestCase
         $this->getEntityManager()->flush();
     }
 
-    public function testGetHeads(){
-        $this->modFlowModel->setHeads(array(
-            20 => Flopy3DArray::fromValue(1,2,3,4)->toArray()
-        ));
-
-        $this->modFlowModel->addBoundary(
-            WellBoundaryFactory::create()
-            ->setName('WellBoundary')
-            ->addStressPeriod(StressPeriodFactory::createWel()
-                ->setFlux(1000)
-                ->setDateTimeBegin(new \DateTime('1.1.2015'))
-                ->setDateTimeEnd(new \DateTime('2.1.2015'))
-            )
+    public function testGetHeadList(){
+        $data = array(
+            [1,2,3],
+            [1,2,3],
+            [1,2,3]
         );
 
+        $this->headsService->addHead($this->modFlowModel, 0, 0, $data);
+        $this->headsService->addHead($this->modFlowModel, 1, 0, $data);
+        $this->headsService->addHead($this->modFlowModel, 2, 0, $data);
+        $this->headsService->addHead($this->modFlowModel, 3, 0, $data);
+
+        $client = static::createClient();
+        $client->request(
+            'GET',
+            sprintf('/api/modflowmodels/%s/heads/list.json', $this->modFlowModel->getId()->toString()),
+            array(),
+            array(),
+            array('HTTP_X-AUTH-TOKEN' => $this->getOwner()->getApiKey())
+        );
+
+        $this->assertEquals(200, $client->getResponse()->getStatusCode());
+        $this->assertJson($client->getResponse()->getContent());
+        $responseObj = json_decode($client->getResponse()->getContent());
+        $this->assertCount(4, $responseObj);
+        $this->assertObjectNotHasAttribute('data', $responseObj[0]);
+    }
+
+    public function testGetHeads(){
+
+        $this->headsService->addHead($this->modFlowModel, 0, 0, Flopy2DArray::fromValue(1,2,3)->toArray());
         $this->getEntityManager()->persist($this->modFlowModel);
         $this->getEntityManager()->flush();
 
@@ -706,17 +730,29 @@ class ModflowModelRestControllerTest extends RestControllerTestCase
         $client->request(
             'GET',
             sprintf('/api/modflowmodels/%s/heads.json', $this->modFlowModel->getId()->toString()),
-            array(),
+            array(
+                'totim' => 0,
+                'layer' => 0
+            ),
             array(),
             array('HTTP_X-AUTH-TOKEN' => $this->getOwner()->getApiKey())
         );
 
         $this->assertEquals(200, $client->getResponse()->getStatusCode());
-        $this->assertEquals('{"2015-01-20":[[[1,1,1,1],[1,1,1,1],[1,1,1,1]],[[1,1,1,1],[1,1,1,1],[1,1,1,1]]]}', $client->getResponse()->getContent());
+        $this->assertJson($client->getResponse()->getContent());
+        $responseObj = json_decode($client->getResponse()->getContent());
+
+        $this->assertObjectHasAttribute('id', $responseObj);
+        $this->assertObjectHasAttribute('min', $responseObj);
+        $this->assertObjectHasAttribute('max', $responseObj);
+        $this->assertObjectHasAttribute('layer', $responseObj);
+        $this->assertObjectHasAttribute('totim', $responseObj);
+        $this->assertObjectHasAttribute('data', $responseObj);
 
         $model = $this->getEntityManager()->getRepository('AppBundle:ModFlowModel')
             ->findOneBy(array('id' => $this->modFlowModel->getId()->toString()));
 
+        $this->headsService->removeHeadsFromModel($model);
         $this->getEntityManager()->remove($model);
         $this->getEntityManager()->flush();
     }
@@ -741,28 +777,14 @@ class ModflowModelRestControllerTest extends RestControllerTestCase
 
     public function testGetHeadsImage(){
 
-        $this->modFlowModel->setHeads(array(
-            0 => array([
-                    [1,2,3,4,5,6,7,8,9],
-                    [1,2,3,4,5,6,7,8,9],
-                    [1,2,3,4,5,6,7,8,9],
-                    [1,2,3,4,5,6,7,8,9],
-                    [1,2,3,4,5,6,7,8,9],
-                    [1,2,3,4,5,6,7,8,9]
-                ])
-            )
+        $data = array(
+            [1,2,4],
+            [1,2,4],
+            [1,2,4],
+            [1,2,4]
         );
 
-        $this->modFlowModel->addBoundary(
-            WellBoundaryFactory::create()
-                ->setName('WellBoundary')
-                ->addStressPeriod(StressPeriodFactory::createWel()
-                    ->setFlux(1000)
-                    ->setDateTimeBegin(new \DateTime('1.1.2015'))
-                    ->setDateTimeEnd(new \DateTime('2.1.2015'))
-                )
-        );
-
+        $this->headsService->addHead($this->modFlowModel, 0, 0, $data);
         $this->getEntityManager()->persist($this->modFlowModel);
         $this->getEntityManager()->flush();
 
@@ -770,15 +792,20 @@ class ModflowModelRestControllerTest extends RestControllerTestCase
         $client->request(
             'GET',
             sprintf('/api/modflowmodels/%s/heads/image.png', $this->modFlowModel->getId()->toString()),
-            array(),
+            array(
+                'totim' => 0,
+                'layer' => 0
+            ),
             array(),
             array('HTTP_X-AUTH-TOKEN' => $this->getOwner()->getApiKey())
         );
 
         $this->assertEquals(200, $client->getResponse()->getStatusCode());
+
         $model = $this->getEntityManager()->getRepository('AppBundle:ModFlowModel')
             ->findOneBy(array('id' => $this->modFlowModel->getId()->toString()));
 
+        $this->headsService->removeHeadsFromModel($this->modFlowModel);
         $this->getEntityManager()->remove($model);
         $this->getEntityManager()->flush();
     }
