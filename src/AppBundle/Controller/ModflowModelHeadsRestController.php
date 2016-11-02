@@ -17,6 +17,7 @@ use JMS\Serializer\SerializationContext;
 use Nelmio\ApiDocBundle\Annotation\ApiDoc;
 use Ramsey\Uuid\Uuid;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
@@ -88,6 +89,7 @@ class ModflowModelHeadsRestController extends FOSRestController
             ->setStatusCode(200)
             ->setSerializationContext(SerializationContext::create()
                 ->setGroups(['details'])
+                ->setSerializeNull(true)
             )
         ;
 
@@ -115,8 +117,8 @@ class ModflowModelHeadsRestController extends FOSRestController
      *
      * @QueryParam(name="totim", requirements="\d+", default=0, description="Time in days from beginning")
      * @QueryParam(name="layer", requirements="\d+", default=0, description="Layer number")
-     * @QueryParam(name="max", requirements="\d+", default=null, description="Value of the spectrum maximum")
-     * @QueryParam(name="min", requirements="\d+", default=null, description="Value of the spectrum minimum")
+     * @QueryParam(name="max", default=null, description="Value of the spectrum maximum")
+     * @QueryParam(name="min", default=null, description="Value of the spectrum minimum")
      * @QueryParam(name="upper", requirements="\d+", default=95, description="Percentile spectrum max")
      * @QueryParam(name="loper", requirements="\d+", default=5, description="Percentile spectrum min")
      */

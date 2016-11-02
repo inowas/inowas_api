@@ -45,6 +45,15 @@ class Head
      * @JMS\Groups({"list", "details"})
      */
     private $max;
+
+    /**
+     * @var float
+     *
+     * @ORM\Column(name="mean", type="float")
+     * @JMS\Groups({"list", "details"})
+     */
+    private $mean;
+
     /**
      * @var integer
      *
@@ -147,6 +156,8 @@ class Head
     {
         $this->data = $data;
 
+        $counter = 0;
+        $sum = 0;
         foreach ($data as $nRow => $row){
             foreach ($row as $nCol => $value) {
                 if (is_null($this->min)){
@@ -168,8 +179,13 @@ class Head
                         $this->max = $value;
                     }
                 }
+
+                $counter++;
+                $sum += $value;
             }
         }
+
+        $this->mean = $sum/$counter;
 
         return $this;
     }
@@ -188,5 +204,23 @@ class Head
     public function getMax(): float
     {
         return $this->max;
+    }
+
+    /**
+     * @return float
+     */
+    public function getMean(): float
+    {
+        return $this->mean;
+    }
+
+    /**
+     * @param float $mean
+     * @return Head
+     */
+    public function setMean(float $mean): Head
+    {
+        $this->mean = $mean;
+        return $this;
     }
 }

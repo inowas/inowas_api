@@ -1327,10 +1327,9 @@ I.results = {
     initialized: false,
     activeMaps: [],
     headValues: {
-        dates : [],
-        values: [],
         min: null,
-        max: null
+        max: null,
+        mean: null
     },
     initialize: function( baseModelId ) {
         if (this.baseModel == null) {
@@ -1349,27 +1348,31 @@ I.results = {
                 })
             ).then(function(){
 
-                $.getJSON( "/api/modflowmodels/"+I.results.baseModel.id+"/heads.json", function ( data ) {
-                    if (! $.isArray(data)) {
-                        I.results.baseModel.heads = data;
-                        I.results.extractDatesFromHeads( data );
-                        I.results.addHeadValues(I.results.headValues, data, 0, 0);
+                $.getJSON( "/api/modflowmodels/"+I.results.baseModel.id+"/heads.json", function ( heads ) {
+
+                    if (! $.isArray(heads)) {
+                        I.results.baseModel.heads = heads;
+                        I.results.updateMinMaxHeadValues(heads.min, heads.max);
+                        I.results.headValues.mean = heads.mean;
+
                         I.results.addMap( I.results.baseModel );
                         var bounds = [[I.model.boundingBox.y_min, I.model.boundingBox.x_min],[I.model.boundingBox.y_max, I.model.boundingBox.x_max]];
-                        L.imageOverlay('/api/modflowmodels/'+I.results.baseModel.id+'/heads/image.png', bounds, { opacity: 0.5, position: 'back' }).addTo(I.results.baseModel.map).bringToBack();
+                        var url = '/api/modflowmodels/'+I.results.baseModel.id+'/heads/image.png?min='+((I.results.headValues.mean+I.results.headValues.min)/2)+'&max='+I.results.headValues.max;
+                        L.imageOverlay(url , bounds, { opacity: 0.5, position: 'back' }).addTo(I.results.baseModel.map).bringToBack();
                     }
                 });
 
                 $.each(I.results.scenarios, function (key, value) {
-                    $.getJSON( "/api/modflowmodels/"+value.id+"/heads.json", function ( data ) {
-                        if (! $.isArray(data)) {
-                            value.heads = data;
-                            I.results.addHeadValues(I.results.headValues, data, 0, 0);
+                    $.getJSON( "/api/modflowmodels/"+value.id+"/heads.json", function ( heads ) {
+                        if (! $.isArray(heads)) {
+                            value.heads = heads;
+                            I.results.updateMinMaxHeadValues(heads.min, heads.max);
 
                             if (value.show == true){
                                 I.results.addMap( value );
                                 var bounds = [[I.model.boundingBox.y_min, I.model.boundingBox.x_min],[I.model.boundingBox.y_max, I.model.boundingBox.x_max]];
-                                L.imageOverlay('/api/modflowmodels/'+value.id+'/heads/image.png', bounds, { opacity: 0.5, position: 'back' }).addTo(value.map).bringToBack();
+                                var url = '/api/modflowmodels/'+value.id+'/heads/image.png?min='+((I.results.headValues.mean+I.results.headValues.min)/2)+'&max='+I.results.headValues.max;
+                                L.imageOverlay(url, bounds, { opacity: 0.5, position: 'back' }).addTo(value.map).bringToBack();
                             }
                         }
                     })
@@ -1380,70 +1383,21 @@ I.results = {
             });
         }
     },
-    createHeatMap: function (heads, min, max, boundingBox, gridSize, layerGroup) {
-        var dx = (boundingBox.x_max - boundingBox.x_min) / gridSize.n_x;
-        var dy = (boundingBox.y_max - boundingBox.y_min) / gridSize.n_y;
-
-        for (var row=0; row<gridSize.n_y; row++){
-            for (var col=0; col<gridSize.n_x; col++) {
-                var bb = {};
-                bb.x_min = boundingBox.x_min + col * dx;
-                bb.x_max = boundingBox.x_min + col * dx + dx;
-                bb.y_min = boundingBox.y_max - row * dy - dy;
-                bb.y_max = boundingBox.y_max - row * dy;
-
-                if (heads[row] === undefined || heads[row][col] === undefined || heads[row][col] === null) {
-                    continue;
-                }
-
-                var value = heads[row][col];
-                value = Math.round(value * 100) / 100;
-
-                var rectangle = I.model.createRectangle(
-                    bb,
-                    {color: "blue", weight: 0, fillColor: I.model.getColor(min, max, value), fillOpacity: 0.3}
-                );
-
-                rectangle.row = row;
-                rectangle.on('click', function(e) {
-
-                    $.each(I.results.activeMaps, function(key, map){
-                        map.eachLayer(function(layer){
-                            if (layer.marker){
-                                map.removeLayer(layer);
-                            }
-                        });
-
-                        var bb = {};
-                        bb.x_min = boundingBox.x_min;
-                        bb.x_max = boundingBox.x_max;
-                        bb.y_min = boundingBox.y_max - e.target.row*dy-dy;
-                        bb.y_max = boundingBox.y_max - e.target.row*dy;
-
-                        var rectangle = I.model.createRectangle(
-                            bb,
-                            {color: "blue", weight: 0, fillColor: 'grey', fillOpacity: 0.5}
-                        );
-
-                        rectangle.marker = true;
-                        rectangle.addTo(map).bringToFront();
-                    });
-
-                    I.results.createChart( e.target.row );
-                });
-
-                rectangle.addTo(layerGroup);
-            }
+    updateMinMaxHeadValues: function (min, max) {
+        if (I.results.headValues.min == null || I.results.headValues.min > min){
+            I.results.headValues.min = min;
         }
 
-        return layerGroup;
+        if (I.results.headValues.max == null || I.results.headValues.max > min){
+            I.results.headValues.max = max;
+        }
     },
     createChart: function( row ){
         if (I.results.chart){
             I.results.chart.destroy();
         }
 
-        var rowData = I.results.baseModel.heads[I.results.headValues.dates[0]][0][row];
+        var rowData = I.results.baseModel.heads.data[row];
 
         var leftValue = null;
         var rightValue = null;
@@ -1477,13 +1431,13 @@ I.results = {
         });
 
         var column = [I.results.baseModel.name];
-        column = $.merge(column, I.results.baseModel.heads[I.results.headValues.dates[0]][0][row]);
+        column = $.merge(column, I.results.baseModel.heads.data[row]);
         I.results.chart.load({columns: [column]});
 
 
         $.each(I.results.scenarios, function (key, value) {
             var column = [value.name];
-            column = $.merge(column, value.heads[I.results.headValues.dates[0]][0][row]);
+            column = $.merge(column, value.heads.data[row]);
             I.results.chart.load({
                 columns: [column]
             });
@@ -1518,49 +1472,6 @@ I.results = {
 
         return html;
     },
-    compareHeadsToConsole: function (heads1, heads2) {
-        heads1 = heads1[I.results.headValues.dates[0]];
-        heads2 = heads2[I.results.headValues.dates[0]];
-
-        var nLayMax = 0;
-        var nRowMax = 0;
-        var nColMax = 0;
-        var maxDiff = 0;
-
-        for (var nLay = 0; nLay < heads1.length; nLay++){
-            for (var nRow = 0; nRow < heads1[nLay].length; nRow++){
-                for (var nCol = 0; nCol < heads1[nLay][nRow].length; nCol++){
-
-                    if (Math.abs(heads1[nLay][nRow][nCol]-heads2[nLay][nRow][nCol]) > Math.abs(maxDiff)){
-                        nLayMax = nLay;
-                        nRowMax = nRow;
-                        nColMax = nCol;
-                        maxDiff = heads1[nLay][nRow][nCol]-heads2[nLay][nRow][nCol];
-                    }
-                }
-            }
-        }
-    },
-    extractDatesFromHeads: function( heads ){
-        I.results.headValues.dates = Object.keys(heads);
-    },
-    addHeadValues: function ( headValues, heads, date, layer ){
-
-        var dates = I.results.headValues.dates;
-        var twoDimensionalHeads = heads[dates[dates.length-1]][layer];
-        var oneDimensionalHeads = [];
-
-        $.each(twoDimensionalHeads, function (key, value) {
-            oneDimensionalHeads = $.merge(oneDimensionalHeads, value);
-        });
-
-        oneDimensionalHeads.clean();
-        $.merge(headValues.values, oneDimensionalHeads);
-
-        headValues.values.sort(function(a,b){return a - b});
-        headValues.min = headValues.values[Math.round(5 * headValues.values.length/100)];
-        headValues.max = headValues.values[Math.round(95 * headValues.values.length/100)];
-    },
     addMap: function ( model ){
         var divName = "result_map_"+ model.id;
         var html = '';
@@ -1587,6 +1498,12 @@ I.results = {
             maxZoom: 19
         }).addTo(model.map);
 
+        area.on('click', function(e) {
+            var row = I.results.calculateRowFromLatLng(e.latlng);
+            I.results.createMarkerRow( row );
+            I.results.createChart( row );
+        });
+
         I.results.activeMaps.push(model.map);
     },
     fitBounds: function( bounds ){
@@ -1598,6 +1515,57 @@ I.results = {
             if (model.map != null){
                 model.map.fitBounds( bounds );
             }
+        });
+    },
+    calculateRowFromLatLng: function(latLng){
+
+        var gz = I.model.gridSize;
+        var bb = I.model.boundingBox;
+
+        var xMin = bb.x_min;
+        var xMax = bb.x_max;
+        var yMin = bb.y_min;
+        var yMax = bb.y_max;
+        var nCol = gz.n_x;
+        var nRow = gz.n_y;
+        var dX = (xMax-xMin)/nCol;
+        var dY = (yMax-yMin)/nRow;
+
+        var x = latLng.lng;
+        var y = latLng.lat;
+
+        var col = Math.floor((x-xMin)/dX);
+        var row = Math.floor(nRow-((y-yMin)/dY));
+
+        return row;
+    },
+    createMarkerRow: function (row) {
+
+        $.each(I.results.activeMaps, function(key, map){
+            map.eachLayer(function(layer){
+                if (layer.marker){
+                    map.removeLayer(layer);
+                }
+            });
+
+            var yMin = I.model.boundingBox.y_min;
+            var yMax = I.model.boundingBox.y_max;
+            var nRow = I.model.gridSize.n_y;
+            var dY = (yMax-yMin)/nRow;
+
+            var bb = {};
+            bb.x_min = I.model.boundingBox.x_min;
+            bb.x_max = I.model.boundingBox.x_max;
+            bb.y_min = I.model.boundingBox.y_max - row*dY-dY;
+            bb.y_max = I.model.boundingBox.y_max - row*dY;
+
+            var rectangle = I.model.createRectangle(
+                bb,
+                {color: "grey", weight: 0.5, fillColor: 'grey', fillOpacity: 0.5}
+            );
+
+            rectangle.marker = true;
+            rectangle.addTo(map).bringToFront();
         });
     }
 };
