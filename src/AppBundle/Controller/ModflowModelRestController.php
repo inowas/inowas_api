@@ -2,7 +2,6 @@
 
 namespace AppBundle\Controller;
 
-use AppBundle\Entity\Area;
 use AppBundle\Entity\ModflowModelScenario;
 use AppBundle\Entity\ModFlowModel;
 use AppBundle\Entity\User;

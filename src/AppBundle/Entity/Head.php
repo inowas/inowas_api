@@ -149,7 +149,7 @@ class Head
 
         foreach ($data as $nRow => $row){
             foreach ($row as $nCol => $value) {
-                if ($this->min == null){
+                if (is_null($this->min)){
                     $this->min = $value;
                 }
 
@@ -159,7 +159,7 @@ class Head
                     }
                 }
 
-                if ($this->max == null){
+                if (is_null($this->max)){
                     $this->max = $value;
                 }
 

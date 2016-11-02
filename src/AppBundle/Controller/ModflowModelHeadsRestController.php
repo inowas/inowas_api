@@ -16,6 +16,7 @@ use Inowas\PyprocessingBundle\Model\Modflow\ModflowModelInterface;
 use JMS\Serializer\SerializationContext;
 use Nelmio\ApiDocBundle\Annotation\ApiDoc;
 use Ramsey\Uuid\Uuid;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
@@ -97,6 +98,7 @@ class ModflowModelHeadsRestController extends FOSRestController
      * Get head values
      *
      * @Route(requirements={"_format"="png"})
+     * @Method({"GET"})
      *
      * @ApiDoc(
      *   resource = true,
