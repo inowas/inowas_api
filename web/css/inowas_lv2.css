@@ -162,6 +162,10 @@
     padding: 10px;
 }
 
+.toolbox-element h4.active {
+    text-decoration: underline;
+}
+
 #models {
     height: 0;
     overflow: hidden;
@@ -267,7 +271,7 @@
 }
 
 #toolbox .icon {
-    padding: 0 4px 2px 0;
+    padding: 0 5px;
 }
 
 .accordion-toggle:after {

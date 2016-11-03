@@ -66,19 +66,14 @@
                     <div id="toolbox-content" class="collapse in">
                         <p id="model_description" class="description"></p>
 
-                        <div class="toolbox-element">
-                            <h4>
-                                <img src="{{ asset('img/icons/area.svg') }}" height="14px" class="icon">
-                                Model Area
-                                <div id="area_tools_menu" class="tools_menu"></div>
-                            </h4>
+                        <div id="area_toolbox_element" class="toolbox-element">
+                            <img src="{{ asset('img/icons/area.svg') }}" height="14px" class="icon pull-left">
+                            <h4>Model Area</h4>
                         </div>
 
                         <div class="toolbox-element">
-                            <h4>
-                                <img src="{{ asset('img/icons/soilmodel.svg') }}" height="16px" class="icon">
-                                <a class="accordion-toggle collapsed" data-toggle="collapse" href="#toolbox-soilmodel">Soilmodel</a>
-                            </h4>
+                                <img src="{{ asset('img/icons/soilmodel.svg') }}" height="16px" class="icon pull-left">
+                                <h4><a class="accordion-toggle collapsed" data-toggle="collapse" href="#toolbox-soilmodel">Soilmodel</a></h4>
                         </div>
 
                         <div id="toolbox-soilmodel" class="panel-collapse collapse">
@@ -86,10 +81,8 @@
                         </div>
 
                         <div class="toolbox-element">
-                            <h4>
-                                <img src="{{ asset('img/icons/boundaries.svg') }}" height="16px" class="icon">
-                                <a class="accordion-toggle collapsed" data-toggle="collapse" href="#toolbox-boundaries">Boundaries</a>
-                            </h4>
+                            <img src="{{ asset('img/icons/boundaries.svg') }}" height="16px" class="icon pull-left">
+                            <h4><a class="accordion-toggle collapsed" data-toggle="collapse" href="#toolbox-boundaries">Boundaries</a></h4>
                         </div>
 
                         <div id="toolbox-boundaries" class="panel-collapse collapse">
@@ -103,8 +96,8 @@
                                             <img src="{{ asset('img/icons/list.svg') }}" height="20px" class="thumbnail" alt="Show list of all wells">
                                         </div>
                                         <span id="wells_badge" class="badge"></span>
-                                        <img src="{{ asset('img/icons/wells.svg') }}" height="16px" class="icon">
-                                        Wells
+                                        <img src="{{ asset('img/icons/wells.svg') }}" height="16px" class="pull-left icon">
+                                        <h4>Wells</h4>
                                     </li>
                                     <li class="list-group-item boundary_list_item">
                                         <div class="tools_menu">
@@ -155,10 +148,8 @@
                         </div>
 
                         <div class="toolbox-element">
-                            <h4>
-                                <img src="{{ asset('img/icons/properties.svg') }}" height="16px" class="icon">
-                                <a class="accordion-toggle collapsed" data-toggle="collapse" href="#toolbox-properties">Properties</a>
-                            </h4>
+                            <img src="{{ asset('img/icons/properties.svg') }}" height="16px" class="icon pull-left">
+                            <h4><a class="accordion-toggle collapsed" data-toggle="collapse" href="#toolbox-properties">Properties</a></h4>
                         </div>
 
                         <div id="toolbox-properties" class="panel-collapse collapse">
@@ -166,10 +157,8 @@
                         </div>
 
                         <div class="toolbox-element">
-                            <h4>
-                                <a class="accordion-toggle collapsed" data-toggle="collapse" href="#toolbox-calculation">Calculation</a>
-                                <i class="fa fa-calculator pull-left" aria-hidden="true"></i>
-                            </h4>
+                            <i class="fa fa-calculator pull-left icon" aria-hidden="true"></i>
+                            <h4><a class="accordion-toggle collapsed" data-toggle="collapse" href="#toolbox-calculation">Calculation</a></h4>
                         </div>
 
                         <div id="toolbox-calculation" class="panel-collapse collapse">
@@ -215,7 +204,7 @@
     <script type="text/javascript" src="{{ asset('vendor/leaflet/dist/leaflet.js') }}"></script>
     <script type="text/javascript" src="{{ asset('vendor/Leaflet.EasyButton/src/easy-button.js') }}"></script>
     <script type="text/javascript" src="{{ asset('vendor/leaflet-image/leaflet-image.js') }}"></script>
-    <script type="text/javascript" src="{{ asset('vendor/leaflet-draw/dist/leaflet.draw.js') }}"></script>
+    <script type="text/javascript" src="{{ asset('vendor/leaflet-draw/dist/leaflet.draw-src.js') }}"></script>
     <script type="text/javascript" src="{{ asset('vendor/rainbowvis.js/rainbowvis.js') }}"></script>
 
     <script type="text/javascript" src="{{ asset('js/inowas.js') }}"></script>

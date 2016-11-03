@@ -55,4 +55,30 @@ loadWhenReady = function(){
             $(this).find('.tools_menu').hide();
         }
     );
+
+    $('.toolbox-element').click(
+        function() {
+            $( '.toolbox-element' ).each(function () {
+                $(this).children('h4').removeClass('active');
+            });
+            $(this).children('h4').addClass('active');
+
+            if ( I.model.controls.drawControl != null ){
+                I.model.map.removeControl(I.model.controls.drawControl);
+                I.model.controls.drawControl = null;
+            }
+
+            if ($(this).attr('id')) {
+                var name = $(this).attr('id').split('_')[0];
+                var featureGroup = new L.FeatureGroup();
+                I.model.map.eachLayer(function ( layer ) {
+                    if (layer.label == name){
+                        featureGroup.addLayer(layer)
+                    }
+                });
+
+                I.model.drawTools( name, featureGroup );
+            }
+        }
+    );
 };

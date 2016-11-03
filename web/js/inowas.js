@@ -263,13 +263,12 @@ I.model = {
             var area = overlayMaps['Area'] = L.geoJson($.parseJSON(data.geojson), I.model.styles.areaGeometry).addTo(I.model.map);
             I.model.map.fitBounds(overlayMaps['Area']);
             I.model.data.area = data;
-            I.model.renderTools( 'area', 'edit', area );
-        }).fail(function() {
-            $('#area_tools_menu').html('<img src="/img/icons/add.svg" height="20px" class="thumbnail" alt="Add Area" title="Add Area">');
+            area.eachLayer(function (layer) {
+                layer.label = 'area';
+            })
         });
 
         $.when(
-
             $.getJSON( "/api/modflowmodels/"+this.id+"/wells.json", function ( data ) {
                 overlayMaps['Wells'] = I.model.createWellsLayer(data).addTo(I.model.map);
                 overlayMaps['Wells active Cells'] = I.model.createWellsActiveCellsLayer(data, I.model.boundingBox, I.model.gridSize);
@@ -493,40 +492,31 @@ I.model = {
             }
         });
     },
-    renderTools: function( part, tools, drawnItems ){
-        if (part == 'area' && tools == 'edit'){
-            $('#area_tools_menu').html('<img src="/img/icons/edit.svg" height="20px" class="thumbnail" alt="Edit Area" title="Edit Area">').click(function () {
-                // Initialise the draw control and pass it the FeatureGroup of editable layers
+    drawTools: function( name, drawnItems ){
 
-                if ( I.model.controls.drawControl != null ){
-                    I.model.map.removeControl(I.model.controls.drawControl);
-                }
+        I.model.controls.drawControl = new L.Control.Draw({
+            position: 'topright',
+            draw: {
+                polygon : false,
+                polyline : false,
+                rectangle : false,
+                circle : false,
+                marker : false
+            },
+            edit: {
+                featureGroup: drawnItems,
+                remove: false
+            }
+        });
 
-                I.model.controls.drawControl = new L.Control.Draw({
-                    position: 'topright',
-                    draw: {
-                        polygon : false,
-                        polyline : false,
-                        rectangle : false,
-                        circle : false,
-                        marker : false
-                    },
-                    edit: {
-                        featureGroup: drawnItems,
-                        remove: false
-                    }
-                });
+        I.model.map.addControl(I.model.controls.drawControl);
 
-                I.model.map.addControl(I.model.controls.drawControl);
-
-                I.model.map.on('draw:edited', function (e) {
-                    var layers = e.layers;
-                    layers.eachLayer(function (layer) {
-                        I.model.updateArea( layer );
-                    });
-                })
+        I.model.map.on('draw:edited', function (e) {
+            var layers = e.layers;
+            layers.eachLayer(function (layer) {
+                I.model.updateArea( layer );
             });
-        }
+        })
     },
     updateArea: function ( layer ) {
 
