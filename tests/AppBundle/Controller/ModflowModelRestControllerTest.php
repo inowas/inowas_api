@@ -402,7 +402,6 @@ class ModflowModelRestControllerTest extends RestControllerTestCase
         );
         $this->assertEquals(200, $client->getResponse()->getStatusCode());
         $wells = json_decode($client->getResponse()->getContent());
-        $wells = $wells->puw;
         $this->assertCount(1, $wells);
         $well = $wells[0];
         $this->assertObjectHasAttribute('type', $well);
