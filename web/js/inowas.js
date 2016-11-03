@@ -916,55 +916,48 @@ I.model = {
         return layers;
     },
     createWellsLayer: function (wells) {
-        var layer = new L.LayerGroup();
-        for (var key in wells) {
-            if (!wells.hasOwnProperty(key)) continue;
-            var items = wells[key];
-            items.forEach(function (item) {
-                var popupContent = '<h4>' + item.name + '</h4>';
-                if (item.stress_periods.length>0 && item.stress_periods[0].hasOwnProperty('flux')){
-                    popupContent += '<p>Flux: ' + item.stress_periods[0].flux +  ' m<sup>3</sup>/day</p>';
-                }
-                var well = L.circleMarker(L.latLng(item.point.y, item.point.x), I.model.styles.wells[key]).bindPopup(popupContent).addTo(layer);
-                well.raw = item;
-            });
-        }
 
-        return layer;
+        var featureGroup = new L.FeatureGroup();
+        wells.forEach(function ( well ) {
+            var popupContent = '<h4>' + well.name + '</h4>';
+            if (well.stress_periods.length>0 && item.stress_periods[0].hasOwnProperty('flux')){
+                popupContent += '<p>Flux: ' + item.stress_periods[0].flux +  ' m<sup>3</sup>/day</p>';
+            }
+
+            var layer = L.circleMarker(L.latLng(well.point.y, well.point.x), I.model.styles.wells[well.well_type]).bindPopup(popupContent).addTo(featureGroup);
+            layer.item = well;
+        });
+
+        return featureGroup;
     },
     createWellsActiveCellsLayer: function (wells, boundingBox, gridSize) {
         var layers = new L.FeatureGroup();
         var dx = (boundingBox.x_max - boundingBox.x_min) / gridSize.n_x;
         var dy = (boundingBox.y_max - boundingBox.y_min) / gridSize.n_y;
 
-        for (var key in wells) {
-            if (!wells.hasOwnProperty(key)) continue;
-            var items = wells[key];
+        wells.forEach(function ( well ) {
+            for(var nRow in well.active_cells.cells) {
 
-            items.forEach(function (item) {
-                for(var nRow in item.active_cells.cells) {
-
-                    if (!item.active_cells.cells.hasOwnProperty(nRow)){
-                        continue;
-                    }
-
-                    var row = item.active_cells.cells[nRow];
-
-                    for(var nCol in row) {
-                        if (!row.hasOwnProperty(nCol)){continue;}
-
-                        var bb = {};
-                        bb.x_min = boundingBox.x_min + nCol*dx;
-                        bb.x_max = boundingBox.x_min + nCol*dx+dx;
-                        bb.y_min = boundingBox.y_max - nRow*dy-dy;
-                        bb.y_max = boundingBox.y_max - nRow*dy;
-
-                        var rectangle = I.model.createRectangle(bb, I.model.getStyle('wells', true));
-                        rectangle.addTo(layers);
-                    }
+                if (!well.active_cells.cells.hasOwnProperty(nRow)){
+                    continue;
                 }
-            });
-        }
+
+                var row = well.active_cells.cells[nRow];
+
+                for(var nCol in row) {
+                    if (!row.hasOwnProperty(nCol)){continue;}
+
+                    var bb = {};
+                    bb.x_min = boundingBox.x_min + nCol*dx;
+                    bb.x_max = boundingBox.x_min + nCol*dx+dx;
+                    bb.y_min = boundingBox.y_max - nRow*dy-dy;
+                    bb.y_max = boundingBox.y_max - nRow*dy;
+
+                    var rectangle = I.model.createRectangle(bb, I.model.getStyle('wells', true));
+                    rectangle.addTo(layers);
+                }
+            }
+        });
 
         return layers;
     },

@@ -131,7 +131,6 @@ class ModflowModelBoundariesRestController extends FOSRestController
         return $view;
     }
 
-
     /**
      * Updates the area by ModflowModel-Id
      *
@@ -341,17 +340,11 @@ class ModflowModelBoundariesRestController extends FOSRestController
             }
         }
 
-        $response = array();
-        /** @var WellBoundary $well */
-        foreach ($wells as $well) {
-            $response[$well->getWellType()][] = $well;
-        }
-
         $serializationContext = SerializationContext::create();
         $serializationContext->setGroups('modelobjectdetails');
 
         $view = View::create();
-        $view->setData($response)
+        $view->setData($wells)
             ->setStatusCode(200)
             ->setSerializationContext($serializationContext)
         ;
