@@ -2,6 +2,7 @@
 
 namespace AppBundle\Controller;
 
+use AppBundle\Entity\Area;
 use AppBundle\Entity\BoundaryModelObject;
 use AppBundle\Entity\ConstantHeadBoundary;
 use AppBundle\Entity\GeneralHeadBoundary;
@@ -15,6 +16,7 @@ use AppBundle\Model\EventFactory;
 use AppBundle\Model\LatLng;
 use AppBundle\Model\LineStringFactory;
 use AppBundle\Model\PointFactory;
+use AppBundle\Model\PolygonFactory;
 use FOS\RestBundle\Controller\FOSRestController;
 use FOS\RestBundle\View\View;
 use JMS\Serializer\SerializationContext;
@@ -62,6 +64,69 @@ class ModflowModelBoundariesRestController extends FOSRestController
         $view->setData($area)
             ->setStatusCode(200)
             ->setSerializationContext($serializationContext)
+        ;
+
+        return $view;
+    }
+
+    /**
+     * Updates the area by ModflowModel-Id
+     *
+     * @ApiDoc(
+     *   resource = true,
+     *   description = "Returns the area by ModflowModel-Id.",
+     *   statusCodes = {
+     *     200 = "Returned when successful",
+     *     404 = "Returned when the ModflowModel is not found"
+     *   }
+     * )
+     *
+     * @param Request $request
+     * @param $id
+     *
+     * @return View
+     */
+    public function putModflowmodelAreaAction(Request $request, $id)
+    {
+        /** @var ModFlowModel $model */
+        $model = $this->findModelById($id);
+        $model = $this->setMutable($model, $this->getUser());
+
+        if ($model->getOwner() != $this->getUser()){
+            throw new AccessDeniedException(
+                sprintf('User %s has no access Model id: %s from User %s',
+                    $this->getUser()->getUserName(),
+                    $model->getId()->toString(),
+                    $model->getOwner()->getUsername()
+                )
+            );
+        }
+
+        $area = $model->getArea();
+
+        if ($request->request->has('latLngs')){
+            $area->setGeometry(PolygonFactory::fromLatLngs(json_decode($request->request->get('latLngs'))));
+            $this->getDoctrine()->getManager()->persist($area);
+            $this->getDoctrine()->getManager()->flush();
+
+            $activeCells = $this->get('inowas.geotools')->getActiveCells($area, $model->getBoundingBox(), $model->getGridSize());
+            $area->setActiveCells($activeCells);
+            $this->getDoctrine()->getManager()->persist($area);
+            $this->getDoctrine()->getManager()->flush();
+        }
+
+        if ($request->request->has('activeCells')){
+            $area->setActiveCells(ActiveCells::fromObject(json_decode($request->request->get('activeCells'))));
+            $this->getDoctrine()->getManager()->persist($area);
+            $this->getDoctrine()->getManager()->flush();
+        }
+
+        $serializationContext = SerializationContext::create();
+        $serializationContext->setGroups('modelobjectdetails');
+
+        $view = View::create();
+        $view->setData($area)
+            ->setStatusCode(200)
         ;
 
         return $view;
