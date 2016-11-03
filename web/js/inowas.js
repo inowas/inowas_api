@@ -492,19 +492,24 @@ I.model = {
             }
         });
     },
-    drawTools: function( name, drawnItems ){
+    drawTools: function( name, featureGroup ){
+
+        var drawPolygon = false;
+        if (featureGroup.getLayers().length == 0){
+            drawPolygon = true;
+        }
 
         I.model.controls.drawControl = new L.Control.Draw({
             position: 'topright',
             draw: {
-                polygon : false,
+                polygon : drawPolygon,
                 polyline : false,
                 rectangle : false,
                 circle : false,
                 marker : false
             },
             edit: {
-                featureGroup: drawnItems,
+                featureGroup: featureGroup,
                 remove: false
             }
         });
@@ -514,25 +519,43 @@ I.model = {
         I.model.map.on('draw:edited', function (e) {
             var layers = e.layers;
             layers.eachLayer(function (layer) {
-                I.model.updateArea( layer );
+                I.model.update( layer );
             });
-        })
+        });
+
+        I.model.map.on('draw:created', function (e) {
+            var layer = e.layer;
+            layer.label = name;
+            I.model.create( layer );
+        });
     },
-    updateArea: function ( layer ) {
-
-        console.log('PUT AREA', layer);
-
-        $.ajax({
-            type: 'PUT',
-            url: '/api/modflowmodels/'+this.id+'/area.json',
-            data: {'latLngs': JSON.stringify(layer.getLatLngs())},
-            statusCode: {
-                200: function( data ) {
-                    I.model.data.area = data;
+    update: function ( layer ) {
+        if (layer.label == 'area'){
+            $.ajax({
+                type: 'PUT',
+                url: '/api/modflowmodels/'+this.id+'/area.json',
+                data: {'latLngs': JSON.stringify(layer.getLatLngs())},
+                statusCode: {
+                    200: function( data ) {
+                        I.model.data.area = data;
+                    }
                 }
-            }
-        })
-
+            })
+        }
+    },
+    create: function ( layer ){
+        if (layer.label == 'area'){
+            $.ajax({
+                type: 'POST',
+                url: '/api/modflowmodels/'+this.id+'/area.json',
+                data: {'latLngs': JSON.stringify(layer.getLatLngs())},
+                statusCode: {
+                    200: function( data ) {
+                        I.model.data.area = data;
+                    }
+                }
+            })
+        }
     },
     getStyle: function (type, value){
         if (type == 'area'){
