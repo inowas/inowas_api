@@ -23,6 +23,7 @@ use Ramsey\Uuid\Uuid;
 use Symfony\Component\HttpFoundation\File\Exception\AccessDeniedException;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class ModflowModelBoundariesRestController extends FOSRestController
 {
@@ -49,6 +50,10 @@ class ModflowModelBoundariesRestController extends FOSRestController
         $model = $this->setMutable($model, $this->getUser());
 
         $area = $model->getArea();
+
+        if (is_null($area)){
+            throw new NotFoundHttpException('Area not found');
+        }
 
         $serializationContext = SerializationContext::create();
         $serializationContext->setGroups('modelobjectdetails');

@@ -256,13 +256,16 @@ I.model = {
         var overlayMaps = {};
         overlayMaps['Bounding Box'] = I.model.createBoundingBoxLayer(I.model.boundingBox);
 
-        $.when(
+        $.getJSON( "/api/modflowmodels/"+this.id+"/area.json", function ( data ) {
+            overlayMaps['Area'] = L.geoJson($.parseJSON(data.geojson), I.model.styles.areaGeometry).addTo(I.model.map);
+            I.model.map.fitBounds(overlayMaps['Area']);
+            I.model.data.area = data;
+            $('#area_tools_menu').html('<img src="/img/icons/edit.svg" height="20px" class="thumbnail" alt="Edit Area" title="Edit Area">');
+        }).fail(function() {
+            $('#area_tools_menu').html('<img src="/img/icons/add.svg" height="20px" class="thumbnail" alt="Add Area" title="Add Area">');
+        });
 
-            $.getJSON( "/api/modflowmodels/"+this.id+"/area.json", function ( data ) {
-                overlayMaps['Area'] = L.geoJson($.parseJSON(data.geojson), I.model.styles.areaGeometry).addTo(I.model.map);
-                I.model.map.fitBounds(overlayMaps['Area']);
-                I.model.data.area = data;
-            }),
+        $.when(
 
             $.getJSON( "/api/modflowmodels/"+this.id+"/wells.json", function ( data ) {
                 overlayMaps['Wells'] = I.model.createWellsLayer(data).addTo(I.model.map);
