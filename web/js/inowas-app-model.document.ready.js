@@ -47,7 +47,7 @@ loadWhenReady = function(){
         }
     });
 
-    $('.list-group-item.boundary_list_item').hover(
+    $('.tools_menu').parent().hover(
         function () {
             $(this).find('.tools_menu').show();
         },

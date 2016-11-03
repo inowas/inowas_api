@@ -142,7 +142,7 @@
     cursor: pointer;
 }
 
-#toolbox .boundary_list_item .tools_menu {
+#toolbox .tools_menu {
     top:0;
     position: absolute;
     left: 100%;
@@ -151,7 +151,7 @@
     display: none;
 }
 
-#toolbox .boundary_list_item .tools_menu img {
+#toolbox .tools_menu img {
     margin-left: 4px;
     display: inline;
     vertical-align: top;
@@ -245,7 +245,9 @@
 
 .toolbox-element,
 .models-element {
+    position: relative;
     margin: 0 10px;
+    cursor: pointer;
 }
 
 .toolbox-element h4 {
