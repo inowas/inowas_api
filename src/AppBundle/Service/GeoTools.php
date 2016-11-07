@@ -72,6 +72,7 @@ class GeoTools
      */
     public function setActiveCells(ModelObject $mo, BoundingBox $boundingBox, GridSize $gridSize){
 
+        echo sprintf("Calculate active cells for Class: %s.\r\n", get_class($mo));
         $activeCells = $this->getActiveCells($mo, $boundingBox, $gridSize);
         $mo->setActiveCells($activeCells);
 
@@ -285,9 +286,8 @@ class GeoTools
         /** @var ModelObject $mo $className */
         $className = $mo->getNameOfClass();
         $query = $this->entityManager
-            ->createQuery(sprintf('SELECT ST_Intersects(ST_Envelope(ST_Makeline(ST_SetSRID(ST_POINT(:xMin, :yMin), :srid), ST_SetSRID(ST_POINT(:xMax, :yMax), :srid))), ST_Transform(a.geometry, :srid)) FROM %s a WHERE a.id = :id', $className))
+            ->createQuery(sprintf('SELECT ST_Intersects(ST_Envelope(ST_Makeline(ST_SetSRID(ST_POINT(:xMin, :yMin), %s), ST_SetSRID(ST_POINT(:xMax, :yMax), %s))), ST_Transform(a.geometry, %s)) FROM %s a WHERE a.id = :id', $srid, $srid, $srid, $className))
             ->setParameter('id', $mo->getId()->toString())
-            ->setParameter('srid', $srid)
             ->setParameter('xMin', $xMin)
             ->setParameter('xMax', $xMax)
             ->setParameter('yMin', $yMin)

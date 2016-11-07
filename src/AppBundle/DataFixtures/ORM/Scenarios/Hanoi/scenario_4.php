@@ -30,6 +30,8 @@ use Doctrine\Common\Persistence\ObjectManager;
 use Symfony\Component\DependencyInjection\ContainerAwareInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
+ini_set('memory_limit', '256M');
+
 class LoadScenario_4 extends LoadScenarioBase implements FixtureInterface, ContainerAwareInterface
 {
     /**
