@@ -3,7 +3,7 @@
 namespace AppBundle\Command;
 
 use AppBundle\Entity\GeologicalLayer;
-use AppBundle\Entity\PropertyType;
+use AppBundle\Model\PropertyType;
 use Inowas\PyprocessingBundle\Service\Interpolation;
 use Doctrine\ORM\EntityManager;
 use Ramsey\Uuid\Uuid;

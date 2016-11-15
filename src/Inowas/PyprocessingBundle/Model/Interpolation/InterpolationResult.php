@@ -11,7 +11,7 @@ class InterpolationResult
     /** @var  string */
     protected $algorithm;
 
-    /** @var  string */
+    /** @var  array */
     protected $data;
 
     /** @var  GridSize */
@@ -37,7 +37,7 @@ class InterpolationResult
     }
 
     /**
-     * @return string
+     * @return array
      */
     public function getData()
     {
