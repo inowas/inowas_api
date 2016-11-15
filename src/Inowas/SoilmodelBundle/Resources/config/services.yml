@@ -1,0 +1,5 @@
+services:
+
+    inowas.soilmodel:
+        class: Inowas\Soilmodel\Service\SoilmodelManager
+        arguments: ['@doctrine.orm.soilmodel_entity_manager']
