@@ -43,19 +43,24 @@ twig:
 # Doctrine Configuration
 doctrine:
     dbal:
-        driver:   pdo_pgsql
-        host:     "%database_host%"
-        port:     "%database_port%"
-        dbname:   "%database_name%"
-        user:     "%database_user%"
-        password: "%database_password%"
-        charset:  UTF8
-        # if using pdo_sqlite as your database driver:
-        #   1. add the path in parameters.yml
-        #     e.g. database_path: "%kernel.root_dir%/data/data.db3"
-        #   2. Uncomment database_path in parameters.yml.dist
-        #   3. Uncomment next line:
-        #     path:     "%database_path%"
+        default_connection: default
+        connections:
+            default:
+                driver:   pdo_pgsql
+                host:     "%database_host%"
+                port:     "%database_port%"
+                dbname:   "%database_name%"
+                user:     "%database_user%"
+                password: "%database_password%"
+                charset:  UTF8
+            soilmodel:
+                driver:   pdo_pgsql
+                host:     "%database_host%"
+                port:     "%database_port%"
+                dbname:   "%database_name%_soilmodel"
+                user:     "%database_user%"
+                password: "%database_password%"
+                charset:  UTF8
 
         types:
             geometry:                     CrEOF\Spatial\DBAL\Types\GeometryType
@@ -72,24 +77,40 @@ doctrine:
             rch_stress_periods:           AppBundle\Type\RchStressPeriodsType
             riv_stress_periods:           AppBundle\Type\RivStressPeriodsType
             wel_stress_periods:           AppBundle\Type\WelStressPeriodsType
+            soilmodel_property_type:      Inowas\Soilmodel\Type\PropertyTypeType
+            soilmodel_property_value:     Inowas\Soilmodel\Type\PropertyValueType
             uuid:                         Ramsey\Uuid\Doctrine\UuidType
 
     orm:
         auto_generate_proxy_classes: "%kernel.debug%"
-        naming_strategy: doctrine.orm.naming_strategy.underscore
-        auto_mapping: true
+        entity_managers:
+            default:
+                connection: default
+                auto_mapping: true
+                naming_strategy: doctrine.orm.naming_strategy.underscore
+                mappings:
+                    AppBundle:  ~
 
-        dql:
-            numeric_functions:
-                st_area:          CrEOF\Spatial\ORM\Query\AST\Functions\PostgreSql\STArea
-                st_asgeojson:     CrEOF\Spatial\ORM\Query\AST\Functions\PostgreSql\STAsGeoJson
-                st_envelope:      CrEOF\Spatial\ORM\Query\AST\Functions\PostgreSql\STEnvelope
-                st_geomfromtext:  CrEOF\Spatial\ORM\Query\AST\Functions\PostgreSql\STGeomFromText
-                st_intersects:    CrEOF\Spatial\ORM\Query\AST\Functions\PostgreSql\STIntersects
-                st_makeline:      CrEOF\Spatial\ORM\Query\AST\Functions\PostgreSql\STMakeLine
-                st_point:         CrEOF\Spatial\ORM\Query\AST\Functions\PostgreSql\STPoint
-                st_setsrid:       CrEOF\Spatial\ORM\Query\AST\Functions\PostgreSql\STSetSRID
-                st_transform:     CrEOF\Spatial\ORM\Query\AST\Functions\PostgreSql\STTransform
+                dql:
+                    numeric_functions:
+                        st_area:          CrEOF\Spatial\ORM\Query\AST\Functions\PostgreSql\STArea
+                        st_asgeojson:     CrEOF\Spatial\ORM\Query\AST\Functions\PostgreSql\STAsGeoJson
+                        st_envelope:      CrEOF\Spatial\ORM\Query\AST\Functions\PostgreSql\STEnvelope
+                        st_geomfromtext:  CrEOF\Spatial\ORM\Query\AST\Functions\PostgreSql\STGeomFromText
+                        st_intersects:    CrEOF\Spatial\ORM\Query\AST\Functions\PostgreSql\STIntersects
+                        st_makeline:      CrEOF\Spatial\ORM\Query\AST\Functions\PostgreSql\STMakeLine
+                        st_point:         CrEOF\Spatial\ORM\Query\AST\Functions\PostgreSql\STPoint
+                        st_setsrid:       CrEOF\Spatial\ORM\Query\AST\Functions\PostgreSql\STSetSRID
+                        st_transform:     CrEOF\Spatial\ORM\Query\AST\Functions\PostgreSql\STTransform
+
+            soilmodel:
+                connection: soilmodel
+                auto_mapping: false
+                mappings:
+                    InowasSoilmodelBundle:
+                        type: xml
+                        prefix: Inowas\Soilmodel\Model
+
 
 # Swiftmailer Configuration
 swiftmailer:

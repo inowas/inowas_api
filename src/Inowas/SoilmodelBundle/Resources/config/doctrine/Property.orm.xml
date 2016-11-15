@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<doctrine-mapping
+    xmlns="http://doctrine-project.org/schemas/orm/doctrine-mapping"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://doctrine-project.org/schemas/orm/doctrine-mapping
+        http://doctrine-project.org/schemas/orm/doctrine-mapping.xsd">
+
+    <entity name="Inowas\Soilmodel\Model\Property" table="properties">
+        <indexes>
+            <index name="idx_property_id" columns="id"/>
+        </indexes>
+
+        <unique-constraints>
+            <unique-constraint columns="id" name="uc_property_id"/>
+        </unique-constraints>
+
+        <id name="id" type="uuid" column="id"/>
+        <field name="type" column="type"  type="soilmodel_property_type"/>
+        <field name="value" column="value" type="soilmodel_property_value"/>
+    </entity>
+</doctrine-mapping>

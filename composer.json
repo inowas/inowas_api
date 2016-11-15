@@ -6,6 +6,7 @@
     "autoload": {
         "psr-4": {
             "AppBundle\\": "src/AppBundle/",
+            "Inowas\\Soilmodel\\": "src/Inowas/SoilmodelBundle",
             "Inowas\\": "src/Inowas/"
         },
         "classmap": [

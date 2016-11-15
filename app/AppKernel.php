@@ -24,7 +24,8 @@ class AppKernel extends Kernel
             new JMS\DiExtraBundle\JMSDiExtraBundle($this),
             new Nelmio\ApiDocBundle\NelmioApiDocBundle(),
             new Inowas\PyprocessingBundle\InowasPyprocessingBundle(),
-            new AppBundle\AppBundle(),
+            new Inowas\SoilmodelBundle\InowasSoilmodelBundle(),
+            new AppBundle\AppBundle()
         ];
 
         if (in_array($this->getEnvironment(), ['dev', 'test'], true)) {

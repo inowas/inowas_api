@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<doctrine-mapping
+    xmlns="http://doctrine-project.org/schemas/orm/doctrine-mapping"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://doctrine-project.org/schemas/orm/doctrine-mapping
+        http://doctrine-project.org/schemas/orm/doctrine-mapping.xsd">
+
+    <entity name="Inowas\Soilmodel\Model\Layer" table="layers">
+
+        <indexes>
+            <index name="idx_layer_id" columns="id"/>
+        </indexes>
+
+        <unique-constraints>
+            <unique-constraint columns="id" name="uc_layer_id"/>
+        </unique-constraints>
+
+        <id name="id" type="uuid" column="id"/>
+
+        <field name="order" column="`order`" type="integer"/>
+        <field name="name" column="name" type="string" nullable="true"/>
+        <field name="description" column="description" type="string" nullable="true"/>
+
+        <many-to-many field="properties" target-entity="Inowas\Soilmodel\Model\Property">
+            <cascade>
+                <cascade-persist/>
+                <cascade-refresh/>
+                <cascade-remove/>
+            </cascade>
+            <join-table name="layer_properties">
+                <join-columns>
+                    <join-column name="soilmodel_id" referenced-column-name="id" on-delete="CASCADE"/>
+                </join-columns>
+                <inverse-join-columns>
+                    <join-column name="property_id" referenced-column-name="id" on-delete="CASCADE"/>
+                </inverse-join-columns>
+            </join-table>
+        </many-to-many>
+
+    </entity>
+</doctrine-mapping>
