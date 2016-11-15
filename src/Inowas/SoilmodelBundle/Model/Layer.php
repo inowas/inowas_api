@@ -4,6 +4,7 @@ namespace Inowas\Soilmodel\Model;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Ramsey\Uuid\Uuid;
+use SensioLabs\AnsiConverter\Theme\Theme;
 
 class Layer extends SoilmodelObject
 {
@@ -123,6 +124,22 @@ class Layer extends SoilmodelObject
 
         $this->properties[] = $soilModelProperty;
         return $this;
+    }
+
+    /**
+     * @param PropertyType $propertyType
+     * @return Property
+     */
+    public function findPropertyByType(PropertyType $propertyType): Property
+    {
+        /** @var Property $property */
+        foreach ($this->properties as $property){
+            if ($property->getType() == $propertyType){
+                return $property;
+            }
+        }
+
+        return null;
     }
 
     /**

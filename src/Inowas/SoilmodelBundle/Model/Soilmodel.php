@@ -2,11 +2,11 @@
 
 namespace Inowas\Soilmodel\Model;
 
-use AppBundle\Model\BoundingBox;
-use AppBundle\Model\GridSize;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Inowas\ModflowBundle\Model\ValueObject\BoundingBox;
+use Inowas\ModflowBundle\Model\ValueObject\GridSize;
 use Ramsey\Uuid\Uuid;
 
 class Soilmodel
