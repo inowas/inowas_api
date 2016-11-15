@@ -8,6 +8,7 @@ use Inowas\PyprocessingBundle\Model\PythonProcess\PythonProcessFactory;
 use Inowas\PyprocessingBundle\Model\Interpolation\InterpolationProcessConfiguration;
 use Inowas\PyprocessingBundle\Model\Interpolation\InterpolationResult;
 use Symfony\Component\HttpKernel\KernelInterface;
+use Symfony\Component\Process\Process;
 
 class Interpolation
 {
@@ -60,6 +61,7 @@ class Interpolation
             $configuration->setWorkingDirectory($this->kernel->getContainer()->getParameter('inowas.pyprocessing_folder'));
 
             $process = PythonProcessFactory::create($configuration);
+
             $process->run();
             if ($process->isSuccessful())
             {
@@ -68,6 +70,8 @@ class Interpolation
 
                 return new InterpolationResult($results->method, $results->raster, $interpolationParameter->getGridSize(), $interpolationParameter->getBoundingBox());
                 break;
+            } else {
+                echo $process->getErrorOutput();
             }
         }
 

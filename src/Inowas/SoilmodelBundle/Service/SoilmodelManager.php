@@ -4,6 +4,7 @@ namespace Inowas\Soilmodel\Service;
 
 use AppBundle\Model\BoundingBox;
 use AppBundle\Model\GridSize;
+use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\EntityManager;
 use Inowas\PyprocessingBundle\Model\Interpolation\InterpolationConfiguration;
 use Inowas\PyprocessingBundle\Model\Interpolation\InterpolationResult;
@@ -40,6 +41,30 @@ class SoilmodelManager
         $this->em->flush();
     }
 
+    public function readPropertyTypesFrom(Soilmodel $soilmodel, Layer $layer)
+    {
+        $propertyTypes = new ArrayCollection();
+
+        $layerOrder = $layer->getOrder();
+
+        /** @var BoreHole $boreHole */
+        foreach ($soilmodel->getBoreHoles() as $boreHole){
+            /** @var Layer $layer */
+            foreach ($boreHole->getLayers() as $layer){
+                if ($layer->getOrder() === $layerOrder){
+                    /** @var Property $property */
+                    foreach ($layer->getProperties() as $property){
+                        if (! $propertyTypes->contains($property->getType())){
+                            $propertyTypes->add($property->getType());
+                        }
+                    }
+                }
+            }
+        }
+
+        return $propertyTypes;
+    }
+
     public function interpolate(Soilmodel $soilmodel, Layer $layer, PropertyType $propertyType, array $algorithms)
     {
         if (!$soilmodel->getLayers()->contains($layer)) {
@@ -64,7 +89,7 @@ class SoilmodelManager
                 if ($layer->getOrder() == $layerOrder) {
                     /** @var Property $property */
                     foreach ($layer->getProperties() as $property) {
-                        if ($property->getType() === $propertyType) {
+                        if ($property->getType() == $propertyType) {
                             $pointValues[] = new PointValue($boreHole->getPoint(), $property->getValue()->getValue());
                         }
                     }
@@ -75,7 +100,7 @@ class SoilmodelManager
         $interpolationParameter = new InterpolationConfiguration($soilmodel->getGridSize(), $soilmodel->getBoundingBox(), $pointValues, $algorithms);
         $result = $this->interpolation->interpolate($interpolationParameter);
 
-        if ($result instanceof InterpolationResult) {
+        if (! $result instanceof InterpolationResult) {
             throw new InvalidArgumentException('The result is not valid');
         }
 
