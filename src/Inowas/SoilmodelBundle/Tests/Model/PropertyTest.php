@@ -2,10 +2,9 @@
 
 namespace Inowas\Soilmodel\Tests\Model;
 
-use Inowas\Soilmodel\Model\BoreHoleLayerPropertyValue;
 use Inowas\Soilmodel\Model\Property;
 use Inowas\Soilmodel\Model\PropertyType;
-use Inowas\Soilmodel\Model\PropertyValueInterface;
+use Inowas\Soilmodel\Model\PropertyValue;
 
 class PropertyTest extends \PHPUnit_Framework_TestCase
 {
@@ -17,7 +16,7 @@ class PropertyTest extends \PHPUnit_Framework_TestCase
     {
         $this->property = new Property(
             PropertyType::fromString('kx'),
-            BoreHoleLayerPropertyValue::fromValue(1.0)
+            PropertyValue::fromValue(1.0)
         );
     }
 
@@ -31,8 +30,7 @@ class PropertyTest extends \PHPUnit_Framework_TestCase
     }
 
     public function testGetPropertyValue(){
-        $this->assertInstanceOf(PropertyValueInterface::class, $this->property->getValue());
-        $this->assertInstanceOf(BoreHoleLayerPropertyValue::class, $this->property->getValue());
+        $this->assertInstanceOf(PropertyValue::class, $this->property->getValue());
     }
 
     public function tearDown()

@@ -3,7 +3,7 @@
 namespace Inowas\Soilmodel\Tests\Model;
 
 use Inowas\Soilmodel\Exception\InvalidArgumentException;
-use Inowas\Soilmodel\Model\LayerPropertyValue;
+use Inowas\Soilmodel\Model\PropertyValue;
 
 class LayerPropertyValueTest extends \PHPUnit_Framework_TestCase
 {
@@ -21,21 +21,21 @@ class LayerPropertyValueTest extends \PHPUnit_Framework_TestCase
     }
 
     public function testCreateFrom2DArray(){
-        $soilModelPropertyValue = LayerPropertyValue::fromValue($this->values2D);
-        $this->assertInstanceOf(LayerPropertyValue::class, $soilModelPropertyValue);
-        $this->assertEquals($this->values2D, $soilModelPropertyValue->getValues());
+        $soilModelPropertyValue = PropertyValue::fromValue($this->values2D);
+        $this->assertInstanceOf(PropertyValue::class, $soilModelPropertyValue);
+        $this->assertEquals($this->values2D, $soilModelPropertyValue->getValue());
     }
 
     public function testCreateFrom1DArrayThrowsException(){
-        $this->expectException(InvalidArgumentException::class);
+        $this->setExpectedException(InvalidArgumentException::class);
         $value1D = $this->values2D[0];
-        $this->assertInstanceOf(LayerPropertyValue::class, LayerPropertyValue::fromValue($value1D));
+        $this->assertInstanceOf(PropertyValue::class, PropertyValue::fromValue($value1D));
     }
 
     public function testCreateFrom3DArrayThrowsException(){
-        $this->expectException(InvalidArgumentException::class);
+        $this->setExpectedException(InvalidArgumentException::class);
         $value3D = array($this->values2D);
-        $this->assertInstanceOf(LayerPropertyValue::class, LayerPropertyValue::fromValue($value3D));
+        $this->assertInstanceOf(PropertyValue::class, PropertyValue::fromValue($value3D));
     }
 
     public function tearDown(){

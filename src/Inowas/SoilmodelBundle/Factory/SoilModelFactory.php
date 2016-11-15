@@ -1,6 +1,8 @@
 <?php
 
-namespace Inowas\Soilmodel\Model;
+namespace Inowas\Soilmodel\Factory;
+
+use Inowas\Soilmodel\Model\Soilmodel;
 
 class SoilmodelFactory
 {

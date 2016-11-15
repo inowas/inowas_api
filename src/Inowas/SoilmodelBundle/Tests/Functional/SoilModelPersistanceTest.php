@@ -11,11 +11,11 @@ use Inowas\Soilmodel\Model\Layer;
 use Inowas\Soilmodel\Model\Property;
 use Inowas\Soilmodel\Model\PropertyType;
 use Inowas\Soilmodel\Model\PropertyValue;
-use Inowas\Soilmodel\Model\PropertyValueFactory;
+use Inowas\Soilmodel\Factory\PropertyValueFactory;
 use Inowas\Soilmodel\Model\Soilmodel;
-use Inowas\Soilmodel\Model\SoilmodelFactory;
-use Inowas\SoilmodelBundle\Model\BoreHoleFactory;
-use Inowas\SoilmodelBundle\Model\LayerFactory;
+use Inowas\Soilmodel\Factory\SoilmodelFactory;
+use Inowas\Soilmodel\Factory\BoreHoleFactory;
+use Inowas\Soilmodel\Factory\LayerFactory;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
 class SoilModelPersistenceTest extends WebTestCase

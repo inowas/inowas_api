@@ -9,11 +9,11 @@ use Doctrine\ORM\EntityManager;
 use Inowas\PyprocessingBundle\Service\Interpolation;
 use Inowas\Soilmodel\Model\Property;
 use Inowas\Soilmodel\Model\PropertyType;
-use Inowas\Soilmodel\Model\PropertyValueFactory;
+use Inowas\Soilmodel\Factory\PropertyValueFactory;
 use Inowas\Soilmodel\Model\Soilmodel;
 use Inowas\Soilmodel\Service\SoilmodelManager;
-use Inowas\SoilmodelBundle\Model\BoreHoleFactory;
-use Inowas\SoilmodelBundle\Model\LayerFactory;
+use Inowas\Soilmodel\Factory\BoreHoleFactory;
+use Inowas\Soilmodel\Factory\LayerFactory;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
 class SoilModelInterpolationTest extends WebTestCase

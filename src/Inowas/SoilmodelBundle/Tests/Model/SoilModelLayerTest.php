@@ -3,9 +3,9 @@
 namespace Inowas\Soilmodel\Tests\Model;
 
 use Inowas\Soilmodel\Model\Layer;
-use Inowas\Soilmodel\Model\LayerPropertyValue;
 use Inowas\Soilmodel\Model\Property;
 use Inowas\Soilmodel\Model\PropertyType;
+use Inowas\Soilmodel\Model\PropertyValue;
 
 class SoilmodelLayerTest extends \PHPUnit_Framework_TestCase
 {
@@ -30,7 +30,7 @@ class SoilmodelLayerTest extends \PHPUnit_Framework_TestCase
     public function testAddOrReplaceProperty(){
         $soilmodelProperty = new Property(
             PropertyType::fromString('kx'),
-            LayerPropertyValue::fromValue(array([1,2,3], [1,2,3]))
+            PropertyValue::fromValue(array([1,2,3], [1,2,3]))
         );
 
         $this->soilModelLayer->addOrReplaceProperty($soilmodelProperty);
@@ -40,7 +40,7 @@ class SoilmodelLayerTest extends \PHPUnit_Framework_TestCase
 
         $soilmodelProperty = new Property(
             PropertyType::fromString('ky'),
-            LayerPropertyValue::fromValue(array([1,2,3], [1,2,3]))
+            PropertyValue::fromValue(array([1,2,3], [1,2,3]))
         );
 
         $this->soilModelLayer->addOrReplaceProperty($soilmodelProperty);

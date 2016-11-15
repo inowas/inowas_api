@@ -1,9 +1,9 @@
 <?php
 
-namespace Inowas\Soilmodel\Tests\Model;
+namespace Inowas\Soilmodel\Tests\Factory;
 
 use Inowas\Soilmodel\Model\Soilmodel;
-use Inowas\Soilmodel\Model\SoilmodelFactory;
+use Inowas\Soilmodel\Factory\SoilmodelFactory;
 
 class SoilmodelFactoryTest extends \PHPUnit_Framework_TestCase
 {

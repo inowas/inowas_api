@@ -1,10 +1,9 @@
 <?php
 
-namespace Inowas\SoilmodelBundle\Tests\Model;
-
+namespace Inowas\Soilmodel\Tests\Factory;
 
 use Inowas\Soilmodel\Model\BoreHole;
-use Inowas\SoilmodelBundle\Model\BoreHoleFactory;
+use Inowas\Soilmodel\Factory\BoreHoleFactory;
 
 class BoreHoleFactoryTest extends \PHPUnit_Framework_TestCase
 {

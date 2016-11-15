@@ -8,10 +8,10 @@ use Inowas\Soilmodel\Model\Property;
 use Inowas\Soilmodel\Model\PropertyType;
 use Inowas\Soilmodel\Model\PropertyValue;
 use Inowas\Soilmodel\Model\Soilmodel;
-use Inowas\Soilmodel\Model\SoilmodelFactory;
+use Inowas\Soilmodel\Factory\SoilmodelFactory;
 use Inowas\Soilmodel\Service\SoilmodelManager;
-use Inowas\SoilmodelBundle\Model\BoreHoleFactory;
-use Inowas\SoilmodelBundle\Model\LayerFactory;
+use Inowas\Soilmodel\Factory\BoreHoleFactory;
+use Inowas\Soilmodel\Factory\LayerFactory;
 
 class SoilmodelManagerTest extends \PHPUnit_Framework_TestCase
 {

@@ -1,6 +1,6 @@
 <?php
 
-namespace Inowas\SoilmodelBundle\Model;
+namespace Inowas\Soilmodel\Model;
 
 use CrEOF\Spatial\PHP\Types\Geometry\Point;
 

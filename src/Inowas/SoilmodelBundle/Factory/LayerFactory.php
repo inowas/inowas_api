@@ -1,6 +1,6 @@
 <?php
 
-namespace Inowas\SoilmodelBundle\Model;
+namespace Inowas\Soilmodel\Factory;
 
 use Inowas\Soilmodel\Model\Layer;
 
