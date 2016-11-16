@@ -111,6 +111,13 @@ doctrine:
                     InowasSoilmodelBundle:
                         type: xml
                         prefix: Inowas\Soilmodel\Model
+            modflow:
+                connection: soilmodel
+                auto_mapping: false
+                mappings:
+                    InowasModflowBundle:
+                        type: xml
+                        prefix: Inowas\ModflowBundle\Model
 
 
 # Swiftmailer Configuration

@@ -3,8 +3,8 @@
 namespace Inowas\ModflowBundle\Tests\Model\Adapter;
 
 use Inowas\ModflowBundle\Model\Adapter\DisPackageAdapter;
-use Inowas\ModflowBundle\Model\ModFlowModel;
 use Inowas\ModflowBundle\Model\ModflowModelFactory;
+use Inowas\Soilmodel\Factory\SoilmodelFactory;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
@@ -25,21 +25,18 @@ class DisPackageAdapterTest extends KernelTestCase
     }
 
     public function testInstantiate(){
-        /** @var ModFlowModel $stub */
-        $stub = $this->getMockBuilder(ModFlowModel::class)
-            ->disableOriginalConstructor()
-            ->getMock()
-        ;
+        $modflowModel = ModflowModelFactory::create();
+        $soilmodel = SoilmodelFactory::create();
 
-        $this->assertInstanceOf(DisPackageAdapter::class, new DisPackageAdapter($stub));
+        $this->assertInstanceOf(DisPackageAdapter::class, new DisPackageAdapter($modflowModel, $soilmodel));
     }
 
     public function testValidation(){
-        $model = ModflowModelFactory::create();
-        $dpa = new DisPackageAdapter($model);
+        $modflowModel = ModflowModelFactory::create();
+        $soilmodel = SoilmodelFactory::create();
+        $dpa = new DisPackageAdapter($modflowModel, $soilmodel);
         $errors = $this->validator->validate($dpa);
         $this->assertGreaterThan(0, count($errors));
     }
-
 }
 

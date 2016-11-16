@@ -1,10 +1,10 @@
 <?php
 
-namespace Inowas\ModflowBundle\Model;
+namespace Inowas\ModflowBundle\Model\Boundary;
 
 use CrEOF\Spatial\PHP\Types\Geometry\Point;
-use Doctrine\Common\Collections\ArrayCollection;
 use Inowas\ModflowBundle\Exception\InvalidArgumentException;
+use Inowas\ModflowBundle\Model\StressPeriod;
 use Inowas\ModflowBundle\Model\ValueObject\ActiveCells;
 use Inowas\ModflowBundle\Model\ValueObject\WelStressPeriod;
 use Inowas\ModflowBundle\Model\ValueObject\WelStressPeriodData;
@@ -30,15 +30,6 @@ class WellBoundary extends Boundary
 
     /** @var int */
     private $layerNumber = 0;
-
-    /** @var ArrayCollection */
-    private $stressPeriods;
-
-    public function __construct()
-    {
-        parent::__construct();
-        $this->stressPeriods = new ArrayCollection();
-    }
 
     /**
      * @return string
@@ -95,26 +86,6 @@ class WellBoundary extends Boundary
     public function setLayerNumber(int $layerNumber): WellBoundary
     {
         $this->layerNumber = $layerNumber;
-        return $this;
-    }
-
-    /**
-     * @return ArrayCollection
-     */
-    public function getStressPeriods()
-    {
-        return $this->stressPeriods;
-    }
-
-    /**
-     * @param StressPeriodInterface $stressPeriod
-     * @return $this
-     */
-    public function addStressPeriod(StressPeriodInterface $stressPeriod)
-    {
-        if ($stressPeriod instanceof WelStressPeriod){
-            $this->stressPeriods->add($stressPeriod);
-        }
         return $this;
     }
 

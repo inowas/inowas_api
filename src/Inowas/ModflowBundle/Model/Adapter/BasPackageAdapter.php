@@ -3,7 +3,7 @@
 namespace Inowas\ModflowBundle\Model\Adapter;
 
 use Inowas\ModflowBundle\Model\Area;
-use Inowas\ModflowBundle\Model\ModFlowModel;
+use Inowas\ModflowBundle\Model\ModflowModel;
 use Inowas\ModflowBundle\Model\ValueObject\ActiveCells;
 use Inowas\ModflowBundle\Model\ValueObject\Flopy3DArray;
 use Inowas\ModflowBundle\Model\ValueObject\IBound;
@@ -11,15 +11,15 @@ use Inowas\ModflowBundle\Model\ValueObject\IBound;
 class BasPackageAdapter
 {
     /**
-     * @var ModFlowModel $model
+     * @var ModflowModel $model
      */
     protected $model;
 
     /**
      * BasPackageAdapter constructor.
-     * @param ModFlowModel $model
+     * @param ModflowModel $model
      */
-    public function __construct(ModFlowModel $model){
+    public function __construct(ModflowModel $model){
         $this->model = $model;
     }
 

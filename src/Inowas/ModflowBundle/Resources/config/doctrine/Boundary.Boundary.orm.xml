@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<doctrine-mapping
+    xmlns="http://doctrine-project.org/schemas/orm/doctrine-mapping"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://doctrine-project.org/schemas/orm/doctrine-mapping
+        http://doctrine-project.org/schemas/orm/doctrine-mapping.xsd">
+
+    <entity name="Inowas\ModflowBundle\Model\Boundary\Boundary" table="mf_boundaries" inheritance-type="SINGLE_TABLE">
+
+        <indexes>
+            <index name="idx_boundaries_id" columns="id"/>
+        </indexes>
+
+        <unique-constraints>
+            <unique-constraint columns="id" name="uc_boundaries_id"/>
+        </unique-constraints>
+
+        <discriminator-column name="discr" type="string" />
+        <discriminator-map>
+            <discriminator-mapping value="CHB" class="Inowas\ModflowBundle\Model\Boundary\ConstantHeadBoundary" />
+            <discriminator-mapping value="GHB" class="Inowas\ModflowBundle\Model\Boundary\GeneralHeadBoundary" />
+            <discriminator-mapping value="RCH" class="Inowas\ModflowBundle\Model\Boundary\RechargeBoundary" />
+            <discriminator-mapping value="RIV" class="Inowas\ModflowBundle\Model\Boundary\RiverBoundary" />
+            <discriminator-mapping value="WEL" class="Inowas\ModflowBundle\Model\Boundary\WellBoundary" />
+        </discriminator-map>
+
+    </entity>
+</doctrine-mapping>

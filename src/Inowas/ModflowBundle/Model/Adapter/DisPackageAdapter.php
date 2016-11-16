@@ -5,7 +5,7 @@ namespace Inowas\ModflowBundle\Model\Adapter;
 use Doctrine\Common\Collections\ArrayCollection;
 use Inowas\ModflowBundle\Model\BoundingBox;
 use Inowas\ModflowBundle\Model\GridSize;
-use Inowas\ModflowBundle\Model\ModFlowModel;
+use Inowas\ModflowBundle\Model\ModflowModel;
 use Inowas\ModflowBundle\Model\StressPeriod;
 use Inowas\ModflowBundle\Model\ValueObject\Flopy1DArray;
 use Inowas\ModflowBundle\Model\ValueObject\Flopy2DArray;
@@ -13,20 +13,25 @@ use Inowas\ModflowBundle\Model\ValueObject\Flopy3DArray;
 use Inowas\Soilmodel\Model\Layer;
 use Inowas\Soilmodel\Model\Property;
 use Inowas\Soilmodel\Model\PropertyType;
+use Inowas\Soilmodel\Model\Soilmodel;
+use Symfony\Component\Validator\Constraints as Assert;
 
 class DisPackageAdapter
 {
-    /**
-     * @var ModFlowModel
-     */
+    /** @var ModflowModel */
     protected $model;
+
+    /** @var  Soilmodel  */
+    protected $soilmodel;
 
     /**
      * DisPackageAdapter constructor.
-     * @param ModFlowModel $modFlowModel
+     * @param ModflowModel $modFlowModel
+     * @param Soilmodel $soilmodel
      */
-    public function __construct(ModFlowModel $modFlowModel){
+    public function __construct(ModflowModel $modFlowModel, Soilmodel $soilmodel){
         $this->model = $modFlowModel;
+        $this->soilmodel = $soilmodel;
     }
 
     /**
@@ -35,11 +40,7 @@ class DisPackageAdapter
      */
     public function getNlay(): int
     {
-        if (! $this->model->hasSoilModel()){
-            return 0;
-        }
-
-        return $this->model->getSoilModel()->getLayers()->count();
+        return $this->soilmodel->getLayers()->count();
     }
 
     /**
@@ -74,7 +75,7 @@ class DisPackageAdapter
      */
     public function getNper(): int
     {
-        return count($this->model->getStressPeriods());
+        return count($this->model->getGlobalStressPeriods());
     }
 
     /**
@@ -157,12 +158,12 @@ class DisPackageAdapter
      */
     public function getTop(){
 
-        if ($this->model->hasSoilModel() === false || $this->model->getSoilModel()->getLayers()->count() === 0) {
+        if ($this->soilmodel->getLayers()->count() === 0) {
             return null;
         }
 
         /** @var Layer $topLayer */
-        $topLayer = $this->model->getSoilModel()->getLayers()->first();
+        $topLayer = $this->soilmodel->getLayers()->first();
 
         /** @var Property $property */
         $property = $topLayer->findPropertyByType(PropertyType::fromString(PropertyType::TOP_ELEVATION));
@@ -184,11 +185,11 @@ class DisPackageAdapter
      */
     public function getBotm(){
 
-        if ($this->model->hasSoilModel() === false || $this->model->getSoilModel()->getLayers()->count() === 0) {
+        if ($this->soilmodel->getLayers()->count() === 0) {
             return null;
         }
 
-        $layers = $this->model->getSoilModel()->getLayers();
+        $layers = $this->soilmodel->getLayers();
 
         $bottomElevations = array();
         $nLay = count($layers);
@@ -217,7 +218,7 @@ class DisPackageAdapter
      */
     public function getPerlen(){
 
-        $stressPeriods = $this->model->getStressPeriods();
+        $stressPeriods = $this->model->getGlobalStressPeriods();
 
         if ($stressPeriods === null){
             return null;
@@ -239,7 +240,7 @@ class DisPackageAdapter
      */
     public function getNstp(){
 
-        $stressPeriods = $this->model->getStressPeriods();
+        $stressPeriods = $this->model->getGlobalStressPeriods();
 
         if ($stressPeriods === null){
             return null;
@@ -261,7 +262,7 @@ class DisPackageAdapter
      */
     public function getTsmult(){
 
-        $stressPeriods = $this->model->getStressPeriods();
+        $stressPeriods = $this->model->getGlobalStressPeriods();
 
         if ($stressPeriods === null){
             return null;
@@ -283,7 +284,7 @@ class DisPackageAdapter
      */
     public function getSteady(){
 
-        $stressPeriods = $this->model->getStressPeriods();
+        $stressPeriods = $this->model->getGlobalStressPeriods();
         if ($stressPeriods === null){
             return null;
         }
@@ -377,7 +378,7 @@ class DisPackageAdapter
     public function getStartDateTime(){
 
         /** @var ArrayCollection $stressPeriods */
-        $stressPeriods = $this->model->getStressPeriods();
+        $stressPeriods = $this->model->getGlobalStressPeriods();
 
         if ($stressPeriods === null){
             return null;

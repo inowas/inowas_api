@@ -3,10 +3,11 @@
 namespace Inowas\ModflowBundle\Model;
 
 use Doctrine\Common\Collections\ArrayCollection;
+use Inowas\ModflowBundle\Model\Boundary\Boundary;
 use Inowas\Soilmodel\Model\Soilmodel;
 use Ramsey\Uuid\Uuid;
 
-class ModFlowModel
+class ModflowModel
 {
     /** @var Uuid */
     private $id;
@@ -27,13 +28,14 @@ class ModFlowModel
     private $area;
 
     /** @var  Soilmodel */
-    private $soilModel;
+    private $soilmodel;
 
     /** @var ArrayCollection  */
     private $boundaries;
 
     public function __construct()
     {
+        $this->id = Uuid::uuid4();
         $this->gridSize = new GridSize(50, 50);
         $this->boundingBox = new BoundingBox();
         $this->boundaries = new ArrayCollection();
@@ -57,9 +59,9 @@ class ModFlowModel
 
     /**
      * @param string $name
-     * @return ModFlowModel
+     * @return ModflowModel
      */
-    public function setName(string $name): ModFlowModel
+    public function setName(string $name): ModflowModel
     {
         $this->name = $name;
         return $this;
@@ -75,9 +77,9 @@ class ModFlowModel
 
     /**
      * @param string $description
-     * @return ModFlowModel
+     * @return ModflowModel
      */
-    public function setDescription(string $description): ModFlowModel
+    public function setDescription(string $description): ModflowModel
     {
         $this->description = $description;
         return $this;
@@ -93,9 +95,9 @@ class ModFlowModel
 
     /**
      * @param GridSize $gridSize
-     * @return ModFlowModel
+     * @return ModflowModel
      */
-    public function setGridSize(GridSize $gridSize): ModFlowModel
+    public function setGridSize(GridSize $gridSize): ModflowModel
     {
         $this->gridSize = $gridSize;
         return $this;
@@ -111,9 +113,9 @@ class ModFlowModel
 
     /**
      * @param BoundingBox $boundingBox
-     * @return ModFlowModel
+     * @return ModflowModel
      */
-    public function setBoundingBox(BoundingBox $boundingBox): ModFlowModel
+    public function setBoundingBox(BoundingBox $boundingBox): ModflowModel
     {
         $this->boundingBox = $boundingBox;
         return $this;
@@ -129,9 +131,9 @@ class ModFlowModel
 
     /**
      * @param Area $area
-     * @return ModFlowModel
+     * @return ModflowModel
      */
-    public function setArea(Area $area): ModFlowModel
+    public function setArea(Area $area): ModflowModel
     {
         $this->area = $area;
         return $this;
@@ -140,18 +142,18 @@ class ModFlowModel
     /**
      * @return Soilmodel
      */
-    public function getSoilModel(): Soilmodel
+    public function getSoilmodel(): Soilmodel
     {
-        return $this->soilModel;
+        return $this->soilmodel;
     }
 
     /**
      * @param Soilmodel $soilModel
-     * @return ModFlowModel
+     * @return ModflowModel
      */
-    public function setSoilModel(Soilmodel $soilModel): ModFlowModel
+    public function setSoilmodel(Soilmodel $soilModel): ModflowModel
     {
-        $this->soilModel = $soilModel;
+        $this->soilmodel = $soilModel;
         return $this;
     }
 
@@ -165,9 +167,9 @@ class ModFlowModel
 
     /**
      * @param Boundary $boundary
-     * @return ModFlowModel
+     * @return ModflowModel
      */
-    public function addBoundary(Boundary $boundary): ModFlowModel
+    public function addBoundary(Boundary $boundary): ModflowModel
     {
         $this->boundaries->add($boundary);
         return $this;
@@ -175,9 +177,9 @@ class ModFlowModel
 
     /**
      * @param ArrayCollection $boundaries
-     * @return ModFlowModel
+     * @return ModflowModel
      */
-    public function setBoundaries(ArrayCollection $boundaries): ModFlowModel
+    public function setBoundaries(ArrayCollection $boundaries): ModflowModel
     {
         $this->boundaries = $boundaries;
         return $this;
@@ -188,13 +190,13 @@ class ModFlowModel
      */
     public function hasSoilModel(): bool
     {
-        return ($this->soilModel instanceof Soilmodel);
+        return ($this->soilmodel instanceof Soilmodel);
     }
 
     /**
      * @return ArrayCollection
      */
-    public function calculateGlobalStressPeriods(){
+    public function getGlobalStressPeriods(){
         $globalStressPeriods = new ArrayCollection();
 
         /** @var Boundary $boundary */

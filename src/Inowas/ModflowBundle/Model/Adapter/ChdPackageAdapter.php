@@ -2,19 +2,19 @@
 
 namespace Inowas\ModflowBundle\Model\Adapter;
 
-use Inowas\ModflowBundle\Model\ModFlowModel;
+use Inowas\ModflowBundle\Model\ModflowModel;
 
 class ChdPackageAdapter
 {
 
-    /** @var  ModFlowModel $model */
+    /** @var  ModflowModel $model */
     protected $model;
 
     /**
      * ChdPackageAdapter constructor.
-     * @param ModFlowModel $model
+     * @param ModflowModel $model
      */
-    public function __construct(ModFlowModel $model){
+    public function __construct(ModflowModel $model){
         $this->model = $model;
     }
 

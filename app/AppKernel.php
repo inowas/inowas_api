@@ -25,6 +25,7 @@ class AppKernel extends Kernel
             new Nelmio\ApiDocBundle\NelmioApiDocBundle(),
             new Inowas\PyprocessingBundle\InowasPyprocessingBundle(),
             new Inowas\SoilmodelBundle\InowasSoilmodelBundle(),
+            new Inowas\ModflowBundle\InowasModflowBundle(),
             new AppBundle\AppBundle()
         ];
 

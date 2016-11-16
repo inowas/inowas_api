@@ -1,30 +1,22 @@
 <?php
 
-namespace Inowas\ModflowBundle\Model;
+namespace Inowas\ModflowBundle\Model\Boundary;
 
 use CrEOF\Spatial\PHP\Types\Geometry\LineString;
 use Doctrine\Common\Collections\ArrayCollection;
 use Inowas\ModflowBundle\Exception\InvalidArgumentException;
+use Inowas\ModflowBundle\Model\StressPeriod;
 use Inowas\ModflowBundle\Model\ValueObject\ActiveCells;
-use Inowas\ModflowBundle\Model\ValueObject\GhbStressPeriod;
-use Inowas\ModflowBundle\Model\ValueObject\GhbStressPeriodData;
+use Inowas\ModflowBundle\Model\ValueObject\ChdStressPeriod;
+use Inowas\ModflowBundle\Model\ValueObject\ChdStressPeriodData;
 
-class GeneralHeadBoundary extends Boundary
+class ConstantHeadBoundary extends Boundary
 {
     /** @var LineString */
     protected $geometry;
 
     /** @var array */
     protected $layerNumbers;
-
-    /** @var ArrayCollection */
-    protected $stressPeriods;
-
-    public function __construct()
-    {
-        parent::__construct();
-        $this->stressPeriods = new ArrayCollection();
-    }
 
     /**
      * @return LineString
@@ -36,9 +28,9 @@ class GeneralHeadBoundary extends Boundary
 
     /**
      * @param LineString $geometry
-     * @return GeneralHeadBoundary
+     * @return ConstantHeadBoundary
      */
-    public function setGeometry(LineString $geometry): GeneralHeadBoundary
+    public function setGeometry(LineString $geometry): ConstantHeadBoundary
     {
         $this->geometry = $geometry;
         return $this;
@@ -54,32 +46,12 @@ class GeneralHeadBoundary extends Boundary
 
     /**
      * @param array $layerNumbers
-     * @return GeneralHeadBoundary
+     * @return ConstantHeadBoundary
      */
-    public function setLayerNumbers(array $layerNumbers): GeneralHeadBoundary
+    public function setLayerNumbers(array $layerNumbers): ConstantHeadBoundary
     {
         $this->layerNumbers = $layerNumbers;
         return $this;
-    }
-
-    /**
-     * @param StressPeriodInterface $stressPeriod
-     * @return $this
-     */
-    public function addStressPeriod(StressPeriodInterface $stressPeriod)
-    {
-        if ($stressPeriod instanceof GhbStressPeriod){
-            $this->stressPeriods->add($stressPeriod);
-        }
-        return $this;
-    }
-
-    /**
-     * @return ArrayCollection
-     */
-    public function getStressPeriods()
-    {
-        return $this->stressPeriods;
     }
 
     /**
@@ -89,9 +61,9 @@ class GeneralHeadBoundary extends Boundary
      */
     public function generateStressPeriodData(StressPeriod $stressPeriod, ActiveCells $activeCells){
 
-        if (! $stressPeriod instanceof GhbStressPeriod){
+        if (! $stressPeriod instanceof ChdStressPeriod){
             throw new InvalidArgumentException(
-                'First Argument is supposed to be from Type GhbStressPeriod, %s given.', gettype($stressPeriod)
+                'First Argument is supposed to be from Type ChdStressPeriod, %s given.', gettype($stressPeriod)
             );
         }
 
@@ -100,7 +72,7 @@ class GeneralHeadBoundary extends Boundary
         foreach ($activeCells->toArray() as $nRow => $row){
             foreach ($row as $nCol => $value){
                 if ($value === true){
-                    $stressPeriodData[] = GhbStressPeriodData::create(0, $nRow, $nCol, $stressPeriod->getStage(), $stressPeriod->getCond());
+                    $stressPeriodData[] = ChdStressPeriodData::create(0, $nRow, $nCol, $stressPeriod->getShead(), $stressPeriod->getEhead());
                 }
             }
         }

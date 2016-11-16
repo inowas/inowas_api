@@ -1,6 +1,6 @@
 <?php
 
-namespace Inowas\SoilmodelBundle;
+namespace Inowas\ModflowBundle;
 
 use Symfony\Component\HttpKernel\Bundle\Bundle;
 
