@@ -2,11 +2,14 @@
 
 namespace Inowas\ModflowBundle\Model\Factory;
 
-use AppBundle\Entity\ModFlowModel;
+use Inowas\ModflowBundle\Model\Adapter\GhbPackageAdapter;
+use Inowas\ModflowBundle\Model\ModflowModel;
+use Inowas\ModflowBundle\Model\Package\GhbPackage;
+use Inowas\Soilmodel\Model\Soilmodel;
 
 class GhbPackageFactory implements PackageFactoryInterface
 {
-    public function create(ModFlowModel $model){
+    public function create(ModflowModel $model, Soilmodel $soilmodel){
 
         $ghb = new GhbPackage();
         $adapter = new GhbPackageAdapter($model);

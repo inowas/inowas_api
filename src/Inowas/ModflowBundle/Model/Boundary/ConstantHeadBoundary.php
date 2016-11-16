@@ -3,7 +3,6 @@
 namespace Inowas\ModflowBundle\Model\Boundary;
 
 use CrEOF\Spatial\PHP\Types\Geometry\LineString;
-use Doctrine\Common\Collections\ArrayCollection;
 use Inowas\ModflowBundle\Exception\InvalidArgumentException;
 use Inowas\ModflowBundle\Model\StressPeriod;
 use Inowas\ModflowBundle\Model\ValueObject\ActiveCells;

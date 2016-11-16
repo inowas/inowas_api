@@ -2,14 +2,14 @@
 
 namespace Inowas\ModflowBundle\Model\Factory;
 
-
-use AppBundle\Entity\ModFlowModel;
+use Inowas\ModflowBundle\Model\ModflowModel;
+use Inowas\Soilmodel\Model\Soilmodel;
 
 interface PackageFactoryInterface
 {
     /**
      * @param ModFlowModel $model
-     * @return mixed
+     * @param Soilmodel $soilmodel
      */
-    public function create(ModFlowModel $model);
+    public function create(ModflowModel $model, Soilmodel $soilmodel);
 }

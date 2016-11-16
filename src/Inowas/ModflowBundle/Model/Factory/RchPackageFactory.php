@@ -2,11 +2,14 @@
 
 namespace Inowas\ModflowBundle\Model\Factory;
 
-use AppBundle\Entity\ModFlowModel;
+use Inowas\ModflowBundle\Model\Adapter\RchPackageAdapter;
+use Inowas\ModflowBundle\Model\ModflowModel;
+use Inowas\ModflowBundle\Model\Package\RchPackage;
+use Inowas\Soilmodel\Model\Soilmodel;
 
 class RchPackageFactory implements PackageFactoryInterface
 {
-    public function create(ModFlowModel $model){
+    public function create(ModflowModel $model, Soilmodel $soilmodel){
 
         $rch = new RchPackage();
         $adapter = new RchPackageAdapter($model);

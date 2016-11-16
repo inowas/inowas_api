@@ -2,11 +2,14 @@
 
 namespace Inowas\ModflowBundle\Model\Factory;
 
-use AppBundle\Entity\ModFlowModel;
+use Inowas\ModflowBundle\Model\Adapter\LpfPackageAdapter;
+use Inowas\ModflowBundle\Model\ModflowModel;
+use Inowas\ModflowBundle\Model\Package\LpfPackage;
+use Inowas\Soilmodel\Model\Soilmodel;
 
 class LpfPackageFactory implements PackageFactoryInterface
 {
-    public function create(ModFlowModel $model){
+    public function create(ModflowModel $model, Soilmodel $soilmodel){
 
         $lpf = new LpfPackage();
         $adapter = new LpfPackageAdapter($model);

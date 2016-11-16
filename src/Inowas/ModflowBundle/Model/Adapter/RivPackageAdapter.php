@@ -2,20 +2,20 @@
 
 namespace Inowas\ModflowBundle\Model\Adapter;
 
-use AppBundle\Entity\ModFlowModel;
-use AppBundle\Entity\StreamBoundary;
+use Inowas\ModflowBundle\Model\Boundary\RiverBoundary;
+use Inowas\ModflowBundle\Model\ModflowModel;
 
 class RivPackageAdapter
 {
 
-    /** @var ModFlowModel $model */
+    /** @var ModflowModel $model */
     private $model;
 
     /**
      * RivPackageAdapter constructor.
      * @param ModFlowModel $model
      */
-    public function __construct(ModFlowModel $model)
+    public function __construct(ModflowModel $model)
     {
         $this->model = $model;
     }
@@ -35,15 +35,15 @@ class RivPackageAdapter
     {
         $rivers = array();
         foreach ($this->model->getBoundaries() as $boundary){
-            if ($boundary instanceof StreamBoundary){
+            if ($boundary instanceof RiverBoundary){
                 $rivers[] = $boundary;
             }
         }
 
-        /** @var StreamBoundary $river */
+        /** @var RiverBoundary $river */
         $stress_period_data = array();
         foreach ($rivers as $river) {
-            $stress_period_data = $river->aggregateStressPeriodData($stress_period_data, $this->model->getStressPeriods());
+            $stress_period_data = $river->aggregateStressPeriodData($stress_period_data, $this->model->getGlobalStressPeriods());
         }
 
         return $stress_period_data;

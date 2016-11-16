@@ -2,14 +2,18 @@
 
 namespace Inowas\ModflowBundle\Model\Factory;
 
-use AppBundle\Entity\ModFlowModel;
+
+use Inowas\ModflowBundle\Model\Adapter\DisPackageAdapter;
+use Inowas\ModflowBundle\Model\ModflowModel;
+use Inowas\ModflowBundle\Model\Package\DisPackage;
+use Inowas\Soilmodel\Model\Soilmodel;
 
 class DisPackageFactory implements PackageFactoryInterface
 {
-    public function create(ModFlowModel $model){
+    public function create(ModflowModel $model, Soilmodel $soilmodel){
 
         $dis = new DisPackage();
-        $adapter = new DisPackageAdapter($model);
+        $adapter = new DisPackageAdapter($model, $soilmodel);
 
         $dis->setNlay($adapter->getNlay());
         $dis->setNrow($adapter->getNRow());

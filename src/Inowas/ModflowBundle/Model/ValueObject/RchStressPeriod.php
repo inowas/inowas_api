@@ -2,7 +2,7 @@
 
 namespace Inowas\ModflowBundle\Model\ValueObject;
 
-use AppBundle\Model\StressPeriod;
+use Inowas\ModflowBundle\Model\StressPeriod;
 
 class RchStressPeriod extends StressPeriod
 {

@@ -2,11 +2,14 @@
 
 namespace Inowas\ModflowBundle\Model\Factory;
 
-use AppBundle\Entity\ModFlowModel;
+use Inowas\ModflowBundle\Model\Adapter\OcPackageAdapter;
+use Inowas\ModflowBundle\Model\ModflowModel;
+use Inowas\ModflowBundle\Model\Package\OcPackage;
+use Inowas\Soilmodel\Model\Soilmodel;
 
 class OcPackageFactory implements PackageFactoryInterface
 {
-    public function create(ModFlowModel $model){
+    public function create(ModflowModel $model, Soilmodel $soilmodel){
 
         $oc = new OcPackage();
         $adapter = new OcPackageAdapter($model);

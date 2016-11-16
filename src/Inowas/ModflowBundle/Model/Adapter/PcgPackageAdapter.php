@@ -2,18 +2,18 @@
 
 namespace Inowas\ModflowBundle\Model\Adapter;
 
-use AppBundle\Entity\ModFlowModel;
+use Inowas\ModflowBundle\Model\ModflowModel;
 
 class PcgPackageAdapter
 {
-    /** @var  ModFlowModel */
+    /** @var  ModflowModel */
     protected $model;
 
     /**
      * PcgPackageAdapter constructor.
      * @param ModFlowModel $model
      */
-    public function __construct(ModFlowModel $model)
+    public function __construct(ModflowModel $model)
     {
         $this->model = $model;
     }

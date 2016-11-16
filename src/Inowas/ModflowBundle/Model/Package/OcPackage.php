@@ -2,7 +2,7 @@
 
 namespace Inowas\ModflowBundle\Model\Package;
 
-use Inowas\PyprocessingBundle\Model\Modflow\ValueObject\StressPeriodOutputControl;
+use Inowas\ModflowBundle\Model\ValueObject\StressPeriodOutputControl;
 
 class OcPackage implements \JsonSerializable
 {

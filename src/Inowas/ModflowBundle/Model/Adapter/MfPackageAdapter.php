@@ -2,7 +2,7 @@
 
 namespace Inowas\ModflowBundle\Model\Adapter;
 
-use AppBundle\Entity\ModFlowModel;
+use Inowas\ModflowBundle\Model\ModflowModel;
 
 class MfPackageAdapter
 {
@@ -14,7 +14,7 @@ class MfPackageAdapter
      * MfPackageAdapter constructor.
      * @param ModFlowModel $model
      */
-    public function __construct(ModFlowModel $model){
+    public function __construct(ModflowModel $model){
         $this->model = $model;
     }
 
@@ -23,7 +23,7 @@ class MfPackageAdapter
      */
     public function getModelname(): string
     {
-        return $this->model->getSanitizedName();
+        return $this->sanitize($this->model->getName());
     }
 
     /**
@@ -104,5 +104,23 @@ class MfPackageAdapter
     public function getSilent(): int
     {
         return 0;
+    }
+
+    /**
+     * @param string $str
+     * @return string
+     */
+    private function sanitize(string $str): string {
+        $str = strip_tags($str);
+        $str = preg_replace('/[\r\n\t ]+/', ' ', $str);
+        $str = preg_replace('/[\"\*\/\:\<\>\?\'\|]+/', ' ', $str);
+        $str = strtolower($str);
+        $str = html_entity_decode( $str, ENT_QUOTES, "utf-8" );
+        $str = htmlentities($str, ENT_QUOTES, "utf-8");
+        $str = preg_replace("/(&)([a-z])([a-z]+;)/i", '$2', $str);
+        $str = str_replace(' ', '-', $str);
+        $str = rawurlencode($str);
+        $str = str_replace('%', '-', $str);
+        return $str;
     }
 }

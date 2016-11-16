@@ -2,7 +2,7 @@
 
 namespace Inowas\ModflowBundle\Model\Adapter;
 
-use AppBundle\Entity\ModFlowModel;
+use Inowas\ModflowBundle\Model\ModflowModel;
 use Inowas\PyprocessingBundle\Model\Modflow\ValueObject\StressPeriodOutputControl;
 
 class OcPackageAdapter
@@ -17,7 +17,7 @@ class OcPackageAdapter
      * OcPackageAdapter constructor.
      * @param ModFlowModel $model
      */
-    public function __construct(ModFlowModel $model)
+    public function __construct(ModflowModel $model)
     {
         $this->model = $model;
     }

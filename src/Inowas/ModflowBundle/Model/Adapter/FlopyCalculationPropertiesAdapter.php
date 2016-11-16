@@ -2,17 +2,17 @@
 
 namespace Inowas\ModflowBundle\Model\Adapter;
 
-use AppBundle\Entity\ConstantHeadBoundary;
-use AppBundle\Entity\GeneralHeadBoundary;
-use AppBundle\Entity\ModFlowModel;
-use AppBundle\Entity\RechargeBoundary;
-use AppBundle\Entity\StreamBoundary;
-use AppBundle\Entity\WellBoundary;
+use Inowas\ModflowBundle\Model\Boundary\ConstantHeadBoundary;
+use Inowas\ModflowBundle\Model\Boundary\GeneralHeadBoundary;
+use Inowas\ModflowBundle\Model\Boundary\RechargeBoundary;
+use Inowas\ModflowBundle\Model\Boundary\RiverBoundary;
+use Inowas\ModflowBundle\Model\Boundary\WellBoundary;
+use Inowas\ModflowBundle\Model\ModflowModel;
 
 class FlopyCalculationPropertiesAdapter
 {
     /**
-     * @var ModFlowModel
+     * @var ModflowModel
      */
     protected $model;
 
@@ -25,7 +25,7 @@ class FlopyCalculationPropertiesAdapter
      * DisPackageAdapter constructor.
      * @param ModFlowModel $modFlowModel
      */
-    public function __construct(ModFlowModel $modFlowModel){
+    public function __construct(ModflowModel $modFlowModel){
         $this->model = $modFlowModel;
         $this->packages = array('mf', 'dis', 'bas', 'lpf', 'pcg', 'oc');
     }
@@ -33,7 +33,7 @@ class FlopyCalculationPropertiesAdapter
     public function getPackages(){
 
         foreach ($this->model->getBoundaries() as $boundary) {
-            if ($boundary instanceof StreamBoundary){
+            if ($boundary instanceof RiverBoundary){
                 $this->addPackage('riv');
             }
 

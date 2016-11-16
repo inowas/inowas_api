@@ -2,23 +2,27 @@
 
 namespace Inowas\ModflowBundle\Model\Adapter;
 
-use AppBundle\Entity\ModFlowModel;
+use Inowas\ModflowBundle\Model\ModflowModel;
 use Inowas\PyprocessingBundle\Model\Modflow\ValueObject\Flopy1DArray;
 use Inowas\PyprocessingBundle\Model\Modflow\ValueObject\Flopy3DArray;
+use Inowas\Soilmodel\Model\Soilmodel;
 
 class LpfPackageAdapter
 {
-    /**
-     * ModFlowModel $model
-     */
+    /** @var ModflowModel */
     protected $model;
+
+    /** @var  Soilmodel */
+    protected $soilmodel;
 
     /**
      * LpfPackageAdapter constructor.
-     * @param ModFlowModel $model
+     * @param ModflowModel $model
+     * @param Soilmodel $soilmodel
      */
-    public function __construct(ModFlowModel $model){
+    public function __construct(ModflowModel $model, Soilmodel $soilmodel){
         $this->model = $model;
+        $this->soilmodel = $soilmodel;
     }
 
     /**
@@ -117,15 +121,11 @@ class LpfPackageAdapter
             return null;
         }
 
-        if ($this->model->getSoilModel()->getSortedGeologicalLayers() === null){
+        if ($this->soilmodel->getLayers()->count() === 0){
             return null;
         }
 
-        if ($this->model->getSoilModel()->getSortedGeologicalLayers()->count() == 0){
-            return null;
-        }
-
-        $layers = $this->model->getSoilModel()->getSortedGeologicalLayers();
+        $layers = $this->soilmodel->getLayers();
 
         $hk = array();
         $ni = count($layers);

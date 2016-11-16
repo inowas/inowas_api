@@ -2,8 +2,8 @@
 
 namespace Inowas\ModflowBundle\Model\Package;
 
-use Inowas\PyprocessingBundle\Model\Modflow\ValueObject\Flopy3DArray;
-use Inowas\PyprocessingBundle\Model\Modflow\ValueObject\IBound;
+use Inowas\ModflowBundle\Model\ValueObject\Flopy3DArray;
+use Inowas\ModflowBundle\Model\ValueObject\IBound;
 
 class BasPackage implements \JsonSerializable
 {

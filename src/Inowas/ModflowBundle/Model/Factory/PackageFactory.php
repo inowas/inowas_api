@@ -2,14 +2,15 @@
 
 namespace Inowas\ModflowBundle\Model\Factory;
 
-use AppBundle\Entity\ModFlowModel;
+use Inowas\ModflowBundle\Model\ModflowModel;
 use Inowas\PyprocessingBundle\Exception\InvalidArgumentException;
+use Inowas\Soilmodel\Model\Soilmodel;
 
 class PackageFactory
 {
     private function __construct(){}
 
-    public static function create($packageName, ModFlowModel $model) {
+    public static function create($packageName, ModflowModel $model, Soilmodel $soilmodel) {
 
         $packageFactory = "Inowas\\PyprocessingBundle\\Model\\Modflow\\Package\\".ucfirst(strtolower($packageName))."PackageFactory";
         if(! class_exists($packageFactory)){
@@ -22,6 +23,6 @@ class PackageFactory
             throw new InvalidArgumentException(sprintf('Class %s has not implemented the PackageFactoryInterface', $packageFactory));
         }
 
-        return $packageFactory->create($model);
+        return $packageFactory->create($model, $soilmodel);
     }
 }

@@ -2,6 +2,7 @@
 
 namespace Inowas\ModflowBundle\Model\Adapter;
 
+use Inowas\ModflowBundle\Model\Boundary\ConstantHeadBoundary;
 use Inowas\ModflowBundle\Model\ModflowModel;
 
 class ChdPackageAdapter

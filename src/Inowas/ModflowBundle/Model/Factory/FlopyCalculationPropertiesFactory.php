@@ -2,14 +2,17 @@
 
 namespace Inowas\ModflowBundle\Model\Factory;
 
-use AppBundle\Entity\ModFlowModel;
+use Inowas\ModflowBundle\Model\Adapter\FlopyCalculationPropertiesAdapter;
+use Inowas\ModflowBundle\Model\ModflowModel;
+use Inowas\ModflowBundle\Model\Package\FlopyCalculationProperties;
+use Inowas\Soilmodel\Model\Soilmodel;
 
 class FlopyCalculationPropertiesFactory implements PackageFactoryInterface
 {
-    public function create(ModFlowModel $model){
+    public function create(ModflowModel $model, Soilmodel $soilmodel){
 
         $cmd = new FlopyCalculationProperties();
-        $adapter = new FlopyCalculationPropertiesAdapter($model);
+        $adapter = new FlopyCalculationPropertiesAdapter($model, $soilmodel);
 
         $cmd->setPackages($adapter->getPackages());
         $cmd->setWriteInput(true);

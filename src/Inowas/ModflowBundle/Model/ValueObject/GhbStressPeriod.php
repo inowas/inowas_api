@@ -1,6 +1,7 @@
 <?php
 
 namespace Inowas\ModflowBundle\Model\ValueObject;
+
 use Inowas\ModflowBundle\Model\StressPeriod;
 
 class GhbStressPeriod extends StressPeriod

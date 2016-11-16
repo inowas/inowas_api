@@ -2,8 +2,8 @@
 
 namespace Inowas\ModflowBundle\Model\Adapter;
 
-use AppBundle\Entity\ModFlowModel;
-use AppBundle\Entity\RechargeBoundary;
+use Inowas\ModflowBundle\Model\Boundary\RechargeBoundary;
+use Inowas\ModflowBundle\Model\ModflowModel;
 
 class RchPackageAdapter
 {
@@ -16,7 +16,7 @@ class RchPackageAdapter
      * RchPackageAdapter constructor.
      * @param ModFlowModel $model
      */
-    public function __construct(ModFlowModel $model)
+    public function __construct(ModflowModel $model)
     {
         $this->model = $model;
     }
@@ -53,7 +53,7 @@ class RchPackageAdapter
 
         /** @var RechargeBoundary $boundary */
         foreach ($boundaries as $boundary) {
-            $rech = $boundary->aggregateStressPeriodData($rech, $this->model->getStressPeriods());
+            $rech = $boundary->aggregateStressPeriodData($rech, $this->model->getGlobalStressPeriods());
         }
 
         return $rech;

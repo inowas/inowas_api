@@ -2,7 +2,7 @@
 
 namespace Inowas\ModflowBundle\Model\Package;
 
-use Inowas\PyprocessingBundle\Model\Modflow\ValueObject\Flopy2DArray;
+use Inowas\ModflowBundle\Model\ValueObject\Flopy2DArray;
 
 class RchPackage implements \JsonSerializable
 {

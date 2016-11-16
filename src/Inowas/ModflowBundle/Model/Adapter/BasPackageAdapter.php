@@ -7,6 +7,7 @@ use Inowas\ModflowBundle\Model\ModflowModel;
 use Inowas\ModflowBundle\Model\ValueObject\ActiveCells;
 use Inowas\ModflowBundle\Model\ValueObject\Flopy3DArray;
 use Inowas\ModflowBundle\Model\ValueObject\IBound;
+use Inowas\Soilmodel\Model\Soilmodel;
 
 class BasPackageAdapter
 {
@@ -18,9 +19,11 @@ class BasPackageAdapter
     /**
      * BasPackageAdapter constructor.
      * @param ModflowModel $model
+     * @param Soilmodel $soilmodel
      */
-    public function __construct(ModflowModel $model){
+    public function __construct(ModflowModel $model, Soilmodel $soilmodel){
         $this->model = $model;
+        $this->soilmodel = $soilmodel;
     }
 
     /**
@@ -31,14 +34,14 @@ class BasPackageAdapter
         if (! $this->model->getArea() instanceof Area || ! $this->model->getArea()->getActiveCells() instanceof ActiveCells){
             return IBound::fromValue(
                 1,
-                $this->model->getSoilModel()->getLayers()->count(),
+                $this->soilmodel->getLayers()->count(),
                 $this->model->getGridSize()->getNY(),
                 $this->model->getGridSize()->getNX());
         }
 
         return IBound::fromActiveCells(
             $this->model->getArea()->getActiveCells(),
-            $this->model->getSoilModel()->getLayers()->count(),
+            $this->soilmodel->getLayers()->count(),
             $this->model->getGridSize()->getNY(),
             $this->model->getGridSize()->getNX()
         );
@@ -51,7 +54,7 @@ class BasPackageAdapter
     {
         return Flopy3DArray::fromValue(
             400.0,
-            $this->model->getSoilModel()->getLayers()->count(),
+            $this->soilmodel->getLayers()->count(),
             $this->model->getGridSize()->getNY(),
             $this->model->getGridSize()->getNX()
         );

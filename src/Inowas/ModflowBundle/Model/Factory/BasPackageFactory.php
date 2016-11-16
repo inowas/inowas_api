@@ -2,13 +2,16 @@
 
 namespace Inowas\ModflowBundle\Model\Factory;
 
-use AppBundle\Entity\ModFlowModel;
+use Inowas\ModflowBundle\Model\Adapter\BasPackageAdapter;
+use Inowas\ModflowBundle\Model\ModflowModel;
+use Inowas\ModflowBundle\Model\Package\BasPackage;
+use Inowas\Soilmodel\Model\Soilmodel;
 
 class BasPackageFactory implements PackageFactoryInterface
 {
-    public function create(ModFlowModel $model){
+    public function create(ModflowModel $model, Soilmodel $soilmodel){
         $bas = new BasPackage();
-        $adapter = new BasPackageAdapter($model);
+        $adapter = new BasPackageAdapter($model, $soilmodel);
 
         $bas->setIbound($adapter->getIbound());
         $bas->setStrt($adapter->getStrt());

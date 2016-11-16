@@ -2,20 +2,21 @@
 
 namespace Inowas\ModflowBundle\Model\Adapter;
 
-use AppBundle\Entity\GeneralHeadBoundary;
-use AppBundle\Entity\ModFlowModel;
+
+use Inowas\ModflowBundle\Model\Boundary\GeneralHeadBoundary;
+use Inowas\ModflowBundle\Model\ModflowModel;
 
 class GhbPackageAdapter
 {
 
-    /** @var ModFlowModel $model */
+    /** @var ModflowModel $model */
     private $model;
 
     /**
      * GhbPackageAdapter constructor.
      * @param ModFlowModel $model
      */
-    public function __construct(ModFlowModel $model)
+    public function __construct(ModflowModel $model)
     {
         $this->model = $model;
     }
@@ -43,7 +44,7 @@ class GhbPackageAdapter
         /** @var GeneralHeadBoundary $boundary */
         $stress_period_data = array();
         foreach ($boundaries as $boundary) {
-            $stress_period_data = $boundary->aggregateStressPeriodData($stress_period_data, $this->model->getStressPeriods());
+            $stress_period_data = $boundary->aggregateStressPeriodData($stress_period_data, $this->model->getGlobalStressPeriods());
         }
 
         return $stress_period_data;
