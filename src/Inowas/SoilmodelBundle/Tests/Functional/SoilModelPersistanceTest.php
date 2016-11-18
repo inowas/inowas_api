@@ -4,6 +4,8 @@ namespace Inowas\Soilmodel\Tests\Model;
 
 use CrEOF\Spatial\PHP\Types\Geometry\Point;
 use Doctrine\ORM\EntityManager;
+use Inowas\ModflowBundle\Model\BoundingBox;
+use Inowas\ModflowBundle\Model\GridSize;
 use Inowas\SoilmodelBundle\Model\BoreHole;
 use Inowas\SoilmodelBundle\Model\Layer;
 use Inowas\SoilmodelBundle\Model\Property;
