@@ -28,7 +28,7 @@
             <join-column name="area_id" referenced-column-name="id" on-delete="CASCADE"/>
         </one-to-one>
 
-        <field name="soilmodel" column="soilmodel_id" type="uuid" nullable="true" />
+        <field name="soilmodelId" column="soilmodel_id" type="uuid" nullable="true" />
 
     </entity>
 </doctrine-mapping>

@@ -5,7 +5,7 @@
     xsi:schemaLocation="http://doctrine-project.org/schemas/orm/doctrine-mapping
         http://doctrine-project.org/schemas/orm/doctrine-mapping.xsd">
 
-    <entity name="Inowas\Soilmodel\Model\BoreHole" table="boreholes">
+    <entity name="Inowas\SoilmodelBundle\Model\BoreHole" table="boreholes">
 
         <indexes>
             <index name="idx_borehole_id" columns="id"/>
@@ -21,7 +21,7 @@
         <field name="name" column="name" type="string" nullable="true"/>
         <field name="description" column="description" type="string" nullable="true"/>
 
-        <many-to-many field="layers" target-entity="Inowas\Soilmodel\Model\Layer">
+        <many-to-many field="layers" target-entity="Inowas\SoilmodelBundle\Model\Layer">
             <cascade>
                 <cascade-all/>
             </cascade>

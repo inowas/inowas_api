@@ -2,8 +2,8 @@
 
 namespace Inowas\Soilmodel\Tests\Factory;
 
-use Inowas\Soilmodel\Model\BoreHole;
-use Inowas\Soilmodel\Factory\BoreHoleFactory;
+use Inowas\SoilmodelBundle\Model\BoreHole;
+use Inowas\SoilmodelBundle\Factory\BoreHoleFactory;
 
 class BoreHoleFactoryTest extends \PHPUnit_Framework_TestCase
 {

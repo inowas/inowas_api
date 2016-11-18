@@ -5,7 +5,7 @@ namespace Inowas\ModflowBundle\Model\Factory;
 use Inowas\ModflowBundle\Model\Adapter\WelPackageAdapter;
 use Inowas\ModflowBundle\Model\ModflowModel;
 use Inowas\ModflowBundle\Model\Package\WelPackage;
-use Inowas\Soilmodel\Model\Soilmodel;
+use Inowas\SoilmodelBundle\Model\Soilmodel;
 
 class WelPackageFactory implements PackageFactoryInterface
 {

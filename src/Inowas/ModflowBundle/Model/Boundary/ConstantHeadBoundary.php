@@ -4,18 +4,27 @@ namespace Inowas\ModflowBundle\Model\Boundary;
 
 use CrEOF\Spatial\PHP\Types\Geometry\LineString;
 use Inowas\ModflowBundle\Exception\InvalidArgumentException;
-use Inowas\ModflowBundle\Model\StressPeriod;
 use Inowas\ModflowBundle\Model\ValueObject\ActiveCells;
-use Inowas\ModflowBundle\Model\ValueObject\ChdStressPeriod;
 use Inowas\ModflowBundle\Model\ValueObject\ChdStressPeriodData;
 
 class ConstantHeadBoundary extends Boundary
 {
+    /** @var string */
+    private $type = 'CHD';
+
     /** @var LineString */
     protected $geometry;
 
     /** @var array */
     protected $layerNumbers;
+
+    /**
+     * @return string
+     */
+    public function getType(): string
+    {
+        return $this->type;
+    }
 
     /**
      * @return LineString

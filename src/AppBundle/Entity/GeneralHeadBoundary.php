@@ -8,14 +8,10 @@ use CrEOF\Spatial\PHP\Types\Geometry\LineString;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
 use Inowas\PyprocessingBundle\Exception\InvalidArgumentException;
-use Inowas\PyprocessingBundle\Model\Modflow\ValueObject\GhbStressPeriod;
-use Inowas\PyprocessingBundle\Model\Modflow\ValueObject\GhbStressPeriodData;
 use JMS\Serializer\Annotation as JMS;
 
-/**
- * @ORM\Entity()
- */
-class GeneralHeadBoundary extends HeadBoundary
+
+class GeneralHeadBoundary
 {
     /**
      * @var string

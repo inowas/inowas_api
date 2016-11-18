@@ -4,15 +4,24 @@ namespace Inowas\ModflowBundle\Model\Boundary;
 
 use CrEOF\Spatial\PHP\Types\Geometry\LineString;
 use Inowas\ModflowBundle\Exception\InvalidArgumentException;
-use Inowas\ModflowBundle\Model\StressPeriod;
 use Inowas\ModflowBundle\Model\ValueObject\ActiveCells;
-use Inowas\ModflowBundle\Model\ValueObject\RivStressPeriod;
 use Inowas\ModflowBundle\Model\ValueObject\RivStressPeriodData;
 
 class RiverBoundary extends Boundary
 {
+    /** @var string */
+    private $type = 'RIV';
+
     /** @var LineString */
     private $geometry;
+
+    /**
+     * @return string
+     */
+    public function getType(): string
+    {
+        return $this->type;
+    }
 
     /**
      * @param LineString $geometry
@@ -49,7 +58,7 @@ class RiverBoundary extends Boundary
         foreach ($activeCells->toArray() as $nRow => $row){
             foreach ($row as $nCol => $value){
                 if ($value === true){
-                    $stressPeriodData[] = RivStressPeriodData::create(0, $nRow, $nCol, $stressPeriod->getStage(), $stressPeriod->getCond(), $stressPeriod->getRbot());
+                    $stressPeriodData[] = RivStressPeriodData::create(0, $nRow, $nCol, $stressPeriod->getStage(), $stressPeriod->getConductivity(), $stressPeriod->getBottomElevation());
                 }
             }
         }

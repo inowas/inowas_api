@@ -2,34 +2,18 @@
 
 namespace Inowas\ModflowBundle\Model;
 
-use Inowas\ModflowBundle\Model\ValueObject\ChdStressPeriod;
-use Inowas\ModflowBundle\Model\ValueObject\GhbStressPeriod;
-use Inowas\ModflowBundle\Model\ValueObject\RchStressPeriod;
-use Inowas\ModflowBundle\Model\ValueObject\RivStressPeriod;
-use Inowas\ModflowBundle\Model\ValueObject\WelStressPeriod;
+use Inowas\ModflowBundle\Model\Boundary\ChdStressPeriod;
+use Inowas\ModflowBundle\Model\Boundary\GhbStressPeriod;
+use Inowas\ModflowBundle\Model\Boundary\RchStressPeriod;
+use Inowas\ModflowBundle\Model\Boundary\RivStressPeriod;
+use Inowas\ModflowBundle\Model\Boundary\StressPeriod;
+use Inowas\ModflowBundle\Model\Boundary\WelStressPeriod;
 
 class StressPeriodFactory
 {
-
-    const WEL_SP = "WEL";
-    const RIV_SP = "RIV";
-
     private final function __construct(){}
 
-    /**
-     * @param null $type
-     * @return StressPeriod
-     */
-    public static function create($type = null)
-    {
-        if ($type == self::WEL_SP){
-            return self::createWel();
-        }
-
-        if ($type == self::RIV_SP){
-            return self::createRiv();
-        }
-
+    public static function create(){
         return new StressPeriod();
     }
 
@@ -37,44 +21,34 @@ class StressPeriodFactory
      * @return RivStressPeriod
      */
     public static function createRiv(){
-        $sp = new RivStressPeriod();
-        $sp->setSteady(false);
-        return $sp;
+        return new RivStressPeriod();
     }
 
     /**
      * @return WelStressPeriod
      */
     public static function createWel(){
-        $sp = new WelStressPeriod();
-        $sp->setSteady(false);
-        return $sp;
+        return new WelStressPeriod();
     }
 
     /**
      * @return RchStressPeriod
      */
     public static function createRch(){
-        $sp = new RchStressPeriod();
-        $sp->setSteady(false);
-        return $sp;
+        return new RchStressPeriod();
     }
 
     /**
      * @return ChdStressPeriod
      */
     public static function createChd(){
-        $sp = new ChdStressPeriod();
-        $sp->setSteady(false);
-        return $sp;
+        return new ChdStressPeriod();
     }
 
     /**
      * @return GhbStressPeriod
      */
     public static function createGhb(){
-        $sp = new GhbStressPeriod();
-        $sp->setSteady(false);
-        return $sp;
+        return new GhbStressPeriod();
     }
 }

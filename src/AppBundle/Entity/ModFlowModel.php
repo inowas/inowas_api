@@ -10,8 +10,6 @@ use AppBundle\Model\GridSize;
 use AppBundle\Model\StressPeriodFactory;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
-use Inowas\PyprocessingBundle\Model\Modflow\ModflowModelInterface;
-use Inowas\PyprocessingBundle\Model\Modflow\Package\FlopyCalculationProperties;
 use JMS\Serializer\Annotation as JMS;
 
 /**
@@ -19,7 +17,7 @@ use JMS\Serializer\Annotation as JMS;
  * @ORM\Entity(repositoryClass="AppBundle\Repository\ModFlowModelRepository")
  * @JMS\ExclusionPolicy("none")
  */
-class ModFlowModel extends AbstractModel implements ModflowModelInterface
+class ModFlowModel extends AbstractModel
 {
     /**
      * @var SoilModel $soilModel
@@ -358,7 +356,7 @@ class ModFlowModel extends AbstractModel implements ModflowModelInterface
      *
      * @return ModFlowModel
      */
-    public function setCalculationProperties(FlopyCalculationProperties $calculationProperties)
+    public function setCalculationProperties($calculationProperties)
     {
         $this->calculationProperties = $calculationProperties;
         return $this;
@@ -470,7 +468,7 @@ class ModFlowModel extends AbstractModel implements ModflowModelInterface
      * @param FlopyCalculationProperties $calculationProperties
      * @return mixed
      */
-    public function addCalculationProperties(FlopyCalculationProperties $calculationProperties)
+    public function addCalculationProperties($calculationProperties)
     {
         $this->calculationProperties = $calculationProperties;
         return $this;

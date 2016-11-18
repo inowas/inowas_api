@@ -6,8 +6,6 @@ use AppBundle\Entity\AbstractEvent as Event;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
-use Inowas\PyprocessingBundle\Model\Modflow\ModflowScenarioInterface;
-use Inowas\PyprocessingBundle\Model\Modflow\Package\FlopyCalculationProperties;
 use JMS\Serializer\Annotation as JMS;
 use Ramsey\Uuid\Uuid;
 use Ramsey\Uuid\UuidInterface;
@@ -19,7 +17,7 @@ use Ramsey\Uuid\UuidInterface;
  * @ORM\Table(name="model_scenarios")
  * @ORM\Entity()
  */
-class ModflowModelScenario implements ModflowScenarioInterface
+class ModflowModelScenario
 {
     /**
      * @var Uuid
@@ -322,10 +320,10 @@ class ModflowModelScenario implements ModflowScenarioInterface
     }
 
     /**
-     * @param FlopyCalculationProperties $calculationProperties
+     * @param $calculationProperties
      * @return mixed
      */
-    public function addCalculationProperties(FlopyCalculationProperties $calculationProperties)
+    public function addCalculationProperties($calculationProperties)
     {
         $this->addEvent(new AddCalculationPropertiesEvent($calculationProperties));
         return $this;

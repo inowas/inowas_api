@@ -5,14 +5,14 @@ namespace Inowas\ModflowBundle\Model\Factory;
 use Inowas\ModflowBundle\Model\Adapter\LpfPackageAdapter;
 use Inowas\ModflowBundle\Model\ModflowModel;
 use Inowas\ModflowBundle\Model\Package\LpfPackage;
-use Inowas\Soilmodel\Model\Soilmodel;
+use Inowas\SoilmodelBundle\Model\Soilmodel;
 
 class LpfPackageFactory implements PackageFactoryInterface
 {
     public function create(ModflowModel $model, Soilmodel $soilmodel){
 
         $lpf = new LpfPackage();
-        $adapter = new LpfPackageAdapter($model);
+        $adapter = new LpfPackageAdapter($model, $soilmodel);
 
         $lpf->setLaytyp($adapter->getLaytyp());
         $lpf->setLayavg($adapter->getLayavg());

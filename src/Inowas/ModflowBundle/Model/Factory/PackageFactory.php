@@ -4,7 +4,7 @@ namespace Inowas\ModflowBundle\Model\Factory;
 
 use Inowas\ModflowBundle\Model\ModflowModel;
 use Inowas\PyprocessingBundle\Exception\InvalidArgumentException;
-use Inowas\Soilmodel\Model\Soilmodel;
+use Inowas\SoilmodelBundle\Model\Soilmodel;
 
 class PackageFactory
 {

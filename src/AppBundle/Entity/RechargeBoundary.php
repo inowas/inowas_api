@@ -7,8 +7,8 @@ use AppBundle\Model\StressPeriod;
 use CrEOF\Spatial\PHP\Types\Geometry\Polygon;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
+use Inowas\ModflowBundle\Model\Boundary\RchStressPeriod;
 use Inowas\PyprocessingBundle\Exception\InvalidArgumentException;
-use Inowas\PyprocessingBundle\Model\Modflow\ValueObject\RchStressPeriod;
 use JMS\Serializer\Annotation as JMS;
 
 /**

@@ -8,14 +8,9 @@ use AppBundle\Model\StressPeriod;
 use CrEOF\Spatial\PHP\Types\Geometry\LineString;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
-use Inowas\PyprocessingBundle\Model\Modflow\ValueObject\ChdStressPeriod;
-use Inowas\PyprocessingBundle\Model\Modflow\ValueObject\ChdStressPeriodData;
 use JMS\Serializer\Annotation as JMS;
 
-/**
- * @ORM\Entity()
- */
-class ConstantHeadBoundary extends HeadBoundary
+class ConstantHeadBoundary
 {
     /**
      * @var string

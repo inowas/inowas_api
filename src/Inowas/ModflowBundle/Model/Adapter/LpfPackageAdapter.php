@@ -5,7 +5,7 @@ namespace Inowas\ModflowBundle\Model\Adapter;
 use Inowas\ModflowBundle\Model\ModflowModel;
 use Inowas\PyprocessingBundle\Model\Modflow\ValueObject\Flopy1DArray;
 use Inowas\PyprocessingBundle\Model\Modflow\ValueObject\Flopy3DArray;
-use Inowas\Soilmodel\Model\Soilmodel;
+use Inowas\SoilmodelBundle\Model\Soilmodel;
 
 class LpfPackageAdapter
 {

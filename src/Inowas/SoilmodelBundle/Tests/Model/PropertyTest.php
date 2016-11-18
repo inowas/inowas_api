@@ -2,9 +2,9 @@
 
 namespace Inowas\Soilmodel\Tests\Model;
 
-use Inowas\Soilmodel\Model\Property;
-use Inowas\Soilmodel\Model\PropertyType;
-use Inowas\Soilmodel\Model\PropertyValue;
+use Inowas\SoilmodelBundle\Model\Property;
+use Inowas\SoilmodelBundle\Model\PropertyType;
+use Inowas\SoilmodelBundle\Model\PropertyValue;
 
 class PropertyTest extends \PHPUnit_Framework_TestCase
 {

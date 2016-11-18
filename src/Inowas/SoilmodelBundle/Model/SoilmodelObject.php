@@ -1,6 +1,6 @@
 <?php
 
-namespace Inowas\Soilmodel\Model;
+namespace Inowas\SoilmodelBundle\Model;
 
 abstract class SoilmodelObject
 {}

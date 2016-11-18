@@ -5,7 +5,7 @@
     xsi:schemaLocation="http://doctrine-project.org/schemas/orm/doctrine-mapping
         http://doctrine-project.org/schemas/orm/doctrine-mapping.xsd">
 
-    <entity name="Inowas\Soilmodel\Model\Layer" table="layers">
+    <entity name="Inowas\SoilmodelBundle\Model\Layer" table="layers">
 
         <indexes>
             <index name="idx_layer_id" columns="id"/>
@@ -21,7 +21,7 @@
         <field name="name" column="name" type="string" nullable="true"/>
         <field name="description" column="description" type="string" nullable="true"/>
 
-        <many-to-many field="properties" target-entity="Inowas\Soilmodel\Model\Property">
+        <many-to-many field="properties" target-entity="Inowas\SoilmodelBundle\Model\Property">
             <cascade>
                 <cascade-persist/>
                 <cascade-refresh/>

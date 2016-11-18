@@ -7,7 +7,7 @@ use Inowas\ModflowBundle\Model\ModflowModel;
 use Inowas\ModflowBundle\Model\ValueObject\ActiveCells;
 use Inowas\ModflowBundle\Model\ValueObject\Flopy3DArray;
 use Inowas\ModflowBundle\Model\ValueObject\IBound;
-use Inowas\Soilmodel\Model\Soilmodel;
+use Inowas\SoilmodelBundle\Model\Soilmodel;
 
 class BasPackageAdapter
 {

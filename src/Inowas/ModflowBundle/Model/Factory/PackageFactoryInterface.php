@@ -3,7 +3,7 @@
 namespace Inowas\ModflowBundle\Model\Factory;
 
 use Inowas\ModflowBundle\Model\ModflowModel;
-use Inowas\Soilmodel\Model\Soilmodel;
+use Inowas\SoilmodelBundle\Model\Soilmodel;
 
 interface PackageFactoryInterface
 {

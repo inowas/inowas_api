@@ -5,7 +5,7 @@ namespace Inowas\ModflowBundle\Model\Factory;
 use Inowas\ModflowBundle\Model\Adapter\OcPackageAdapter;
 use Inowas\ModflowBundle\Model\ModflowModel;
 use Inowas\ModflowBundle\Model\Package\OcPackage;
-use Inowas\Soilmodel\Model\Soilmodel;
+use Inowas\SoilmodelBundle\Model\Soilmodel;
 
 class OcPackageFactory implements PackageFactoryInterface
 {

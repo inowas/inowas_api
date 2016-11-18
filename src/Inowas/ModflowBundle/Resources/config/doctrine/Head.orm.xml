@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<doctrine-mapping
+    xmlns="http://doctrine-project.org/schemas/orm/doctrine-mapping"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://doctrine-project.org/schemas/orm/doctrine-mapping
+        http://doctrine-project.org/schemas/orm/doctrine-mapping.xsd">
+
+    <entity name="Inowas\ModflowBundle\Model\Head" table="mf_heads">
+
+        <indexes>
+            <index name="idx_heads_id" columns="id"/>
+        </indexes>
+
+        <unique-constraints>
+            <unique-constraint columns="id" name="uc_heads_id"/>
+        </unique-constraints>
+
+        <id name="id" type="uuid" column="id"/>
+        <field name="modelId" type="uuid" column="model_id"/>
+        <field name="layerNumber" type="integer" column="layer_number"/>
+        <field name="minValue" type="float" column="min_value"/>
+        <field name="maxValue" type="float" column="max_value"/>
+        <field name="meanValue" type="float" column="mean_value"/>
+        <field name="totalTime" type="integer" column="total_time"/>
+        <field name="data" type="json_array" column="data"/>
+
+    </entity>
+</doctrine-mapping>

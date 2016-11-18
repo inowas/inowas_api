@@ -5,7 +5,7 @@ namespace Inowas\ModflowBundle\Model\Factory;
 use Inowas\ModflowBundle\Model\Adapter\MfPackageAdapter;
 use Inowas\ModflowBundle\Model\ModflowModel;
 use Inowas\ModflowBundle\Model\Package\MfPackage;
-use Inowas\Soilmodel\Model\Soilmodel;
+use Inowas\SoilmodelBundle\Model\Soilmodel;
 
 class MfPackageFactory implements PackageFactoryInterface
 {

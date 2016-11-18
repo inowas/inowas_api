@@ -2,8 +2,8 @@
 
 namespace Inowas\Soilmodel\Tests\Model;
 
-use Inowas\Soilmodel\Exception\InvalidArgumentException;
-use Inowas\Soilmodel\Model\PropertyType;
+use Inowas\SoilmodelBundle\Exception\InvalidArgumentException;
+use Inowas\SoilmodelBundle\Model\PropertyType;
 
 class SoilmodelPropertyTypeTest extends \PHPUnit_Framework_TestCase
 {

@@ -4,9 +4,7 @@ namespace Inowas\ModflowBundle\Model\Boundary;
 
 use CrEOF\Spatial\PHP\Types\Geometry\Point;
 use Inowas\ModflowBundle\Exception\InvalidArgumentException;
-use Inowas\ModflowBundle\Model\StressPeriod;
 use Inowas\ModflowBundle\Model\ValueObject\ActiveCells;
-use Inowas\ModflowBundle\Model\ValueObject\WelStressPeriod;
 use Inowas\ModflowBundle\Model\ValueObject\WelStressPeriodData;
 
 class WellBoundary extends Boundary
@@ -23,6 +21,9 @@ class WellBoundary extends Boundary
     const TYPE_SCENARIO_REMOVED_WELL = "srw";
 
     /** @var string */
+    private $type = 'WEL';
+
+    /** @var string */
     protected $wellType = self::TYPE_PUBLIC_WELL;
 
     /** @var Point */
@@ -30,6 +31,14 @@ class WellBoundary extends Boundary
 
     /** @var int */
     private $layerNumber = 0;
+
+    /**
+     * @return string
+     */
+    public function getType(): string
+    {
+        return $this->type;
+    }
 
     /**
      * @return string

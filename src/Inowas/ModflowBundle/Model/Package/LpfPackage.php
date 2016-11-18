@@ -2,8 +2,8 @@
 
 namespace Inowas\ModflowBundle\Model\Package;
 
-use Inowas\PyprocessingBundle\Model\Modflow\ValueObject\Flopy1DArray;
-use Inowas\PyprocessingBundle\Model\Modflow\ValueObject\Flopy3DArray;
+use Inowas\ModflowBundle\Model\ValueObject\Flopy1DArray;
+use Inowas\ModflowBundle\Model\ValueObject\Flopy3DArray;
 
 class LpfPackage implements \JsonSerializable
 {

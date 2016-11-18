@@ -3,6 +3,6 @@
 namespace Inowas\ModflowBundle\Model\Factory;
 
 
-class FcpPackageFactory extends FlopyCalculationPropertiesFactory implements PackageFactoryInterface
+class FcpPackageFactory extends CalculationPropertiesFactory implements PackageFactoryInterface
 {
 }

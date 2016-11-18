@@ -1,8 +1,8 @@
 <?php
 
-namespace Inowas\Soilmodel\Factory;
+namespace Inowas\SoilmodelBundle\Factory;
 
-use Inowas\Soilmodel\Model\BoreHole;
+use Inowas\SoilmodelBundle\Model\BoreHole;
 
 class BoreHoleFactory
 {

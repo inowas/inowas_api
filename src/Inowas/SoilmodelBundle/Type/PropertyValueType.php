@@ -1,11 +1,11 @@
 <?php
 
-namespace Inowas\Soilmodel\Type;
+namespace Inowas\SoilmodelBundle\Type;
 
 use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Doctrine\DBAL\Types\JsonArrayType;
-use Inowas\Soilmodel\Factory\PropertyType;
-use Inowas\Soilmodel\Factory\PropertyValueFactory;
+use Inowas\SoilmodelBundle\Factory\PropertyValueFactory;
+use Inowas\SoilmodelBundle\Model\PropertyType;
 
 /**
  * Type that maps an SQL VARCHAR to a PHP string.

@@ -4,14 +4,14 @@ namespace Inowas\SoilmodelBundle\Tests\Service;
 
 use Doctrine\ORM\EntityManager;
 use Inowas\PyprocessingBundle\Service\Interpolation;
-use Inowas\Soilmodel\Model\Property;
-use Inowas\Soilmodel\Model\PropertyType;
-use Inowas\Soilmodel\Model\PropertyValue;
-use Inowas\Soilmodel\Model\Soilmodel;
-use Inowas\Soilmodel\Factory\SoilmodelFactory;
-use Inowas\Soilmodel\Service\SoilmodelManager;
-use Inowas\Soilmodel\Factory\BoreHoleFactory;
-use Inowas\Soilmodel\Factory\LayerFactory;
+use Inowas\SoilmodelBundle\Model\Property;
+use Inowas\SoilmodelBundle\Model\PropertyType;
+use Inowas\SoilmodelBundle\Model\PropertyValue;
+use Inowas\SoilmodelBundle\Model\Soilmodel;
+use Inowas\SoilmodelBundle\Factory\SoilmodelFactory;
+use Inowas\SoilmodelBundle\Service\SoilmodelManager;
+use Inowas\SoilmodelBundle\Factory\BoreHoleFactory;
+use Inowas\SoilmodelBundle\Factory\LayerFactory;
 
 class SoilmodelManagerTest extends \PHPUnit_Framework_TestCase
 {

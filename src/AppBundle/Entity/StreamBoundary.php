@@ -8,9 +8,9 @@ use AppBundle\Model\StressPeriod;
 use CrEOF\Spatial\PHP\Types\Geometry\LineString;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
+use Inowas\ModflowBundle\Model\Boundary\RivStressPeriod;
+use Inowas\ModflowBundle\Model\ValueObject\RivStressPeriodData;
 use Inowas\PyprocessingBundle\Exception\InvalidArgumentException;
-use Inowas\PyprocessingBundle\Model\Modflow\ValueObject\RivStressPeriod;
-use Inowas\PyprocessingBundle\Model\Modflow\ValueObject\RivStressPeriodData;
 use JMS\Serializer\Annotation as JMS;
 
 /**

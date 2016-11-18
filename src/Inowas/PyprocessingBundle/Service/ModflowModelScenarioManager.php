@@ -2,16 +2,14 @@
 
 namespace Inowas\PyprocessingBundle\Service;
 
-
 use AppBundle\Entity\ModFlowModel;
 use AppBundle\Entity\ModflowModelScenario;
 use AppBundle\Model\ModelScenarioFactory;
 use Doctrine\ORM\EntityManager;
 use Inowas\PyprocessingBundle\Exception\InvalidArgumentException;
-use Inowas\PyprocessingBundle\Model\Modflow\ModflowModelScenarioManagerInterface;
 use Ramsey\Uuid\Uuid;
 
-class ModflowModelScenarioManager implements ModflowModelScenarioManagerInterface
+class ModflowModelScenarioManager
 {
     /**
      * @var EntityManager $entityManager

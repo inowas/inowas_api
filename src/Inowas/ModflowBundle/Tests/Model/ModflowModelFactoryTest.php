@@ -10,5 +10,4 @@ class ModflowModelFactoryTest extends \PHPUnit_Framework_TestCase
     public function testCreate(){
         $this->assertInstanceOf(ModflowModel::class, ModflowModelFactory::create());
     }
-
 }

@@ -2,8 +2,8 @@
 
 namespace Inowas\Soilmodel\Tests\Factory;
 
-use Inowas\Soilmodel\Model\Layer;
-use Inowas\Soilmodel\Factory\LayerFactory;
+use Inowas\SoilmodelBundle\Model\Layer;
+use Inowas\SoilmodelBundle\Factory\LayerFactory;
 
 class LayerFactoryTest extends \PHPUnit_Framework_TestCase
 {

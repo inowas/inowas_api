@@ -4,24 +4,34 @@ namespace Inowas\ModflowBundle\Model\Boundary;
 
 use CrEOF\Spatial\PHP\Types\Geometry\Polygon;
 use Inowas\ModflowBundle\Exception\InvalidArgumentException;
-use Inowas\ModflowBundle\Model\StressPeriod;
-use Inowas\ModflowBundle\Model\ValueObject\RchStressPeriod;
 
 class RechargeBoundary extends Boundary
 {
+    /** @var string */
+    private $type = 'RCH';
+
     /** @var Polygon */
     private $geometry;
 
+    /**
+     * @return string
+     */
+    public function getType(): string
+    {
+        return $this->type;
+    }
+
     /** @return Polygon */
-    public function getGeometry(){
+    public function getGeometry(): Polygon
+    {
         return $this->geometry;
     }
 
     /**
      * @param Polygon $geometry
-     * @return $this
+     * @return RechargeBoundary
      */
-    public function setGeometry(Polygon $geometry)
+    public function setGeometry(Polygon $geometry): RechargeBoundary
     {
         $this->geometry = $geometry;
         return $this;
@@ -39,7 +49,7 @@ class RechargeBoundary extends Boundary
             );
         }
 
-        $stressPeriodData = $stressPeriod->getRech()->toReducedArray();
+        $stressPeriodData = $stressPeriod->getRecharge()->toReducedArray();
 
         return $stressPeriodData;
     }

@@ -1,6 +1,6 @@
 <?php
 
-namespace Inowas\Soilmodel\Exception;
+namespace Inowas\SoilmodelBundle\Exception;
 
 class InvalidArgumentException extends \InvalidArgumentException
 {}

@@ -10,10 +10,10 @@ use Inowas\ModflowBundle\Model\StressPeriod;
 use Inowas\ModflowBundle\Model\ValueObject\Flopy1DArray;
 use Inowas\ModflowBundle\Model\ValueObject\Flopy2DArray;
 use Inowas\ModflowBundle\Model\ValueObject\Flopy3DArray;
-use Inowas\Soilmodel\Model\Layer;
-use Inowas\Soilmodel\Model\Property;
-use Inowas\Soilmodel\Model\PropertyType;
-use Inowas\Soilmodel\Model\Soilmodel;
+use Inowas\SoilmodelBundle\Model\Layer;
+use Inowas\SoilmodelBundle\Model\Property;
+use Inowas\SoilmodelBundle\Model\PropertyType;
+use Inowas\SoilmodelBundle\Model\Soilmodel;
 use Symfony\Component\Validator\Constraints as Assert;
 
 class DisPackageAdapter

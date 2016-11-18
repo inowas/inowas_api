@@ -6,7 +6,7 @@ namespace Inowas\ModflowBundle\Model\Factory;
 use Inowas\ModflowBundle\Model\Adapter\DisPackageAdapter;
 use Inowas\ModflowBundle\Model\ModflowModel;
 use Inowas\ModflowBundle\Model\Package\DisPackage;
-use Inowas\Soilmodel\Model\Soilmodel;
+use Inowas\SoilmodelBundle\Model\Soilmodel;
 
 class DisPackageFactory implements PackageFactoryInterface
 {

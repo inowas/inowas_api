@@ -4,7 +4,7 @@ namespace Inowas\ModflowBundle\Tests\Model\Adapter;
 
 use Inowas\ModflowBundle\Model\Adapter\DisPackageAdapter;
 use Inowas\ModflowBundle\Model\ModflowModelFactory;
-use Inowas\Soilmodel\Factory\SoilmodelFactory;
+use Inowas\SoilmodelBundle\Factory\SoilmodelFactory;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 

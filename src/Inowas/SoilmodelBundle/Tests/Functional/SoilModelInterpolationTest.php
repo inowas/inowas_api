@@ -2,18 +2,16 @@
 
 namespace Inowas\Soilmodel\Tests\Model;
 
-use AppBundle\Model\BoundingBox;
-use AppBundle\Model\GridSize;
 use CrEOF\Spatial\PHP\Types\Geometry\Point;
 use Doctrine\ORM\EntityManager;
 use Inowas\PyprocessingBundle\Service\Interpolation;
-use Inowas\Soilmodel\Model\Property;
-use Inowas\Soilmodel\Model\PropertyType;
-use Inowas\Soilmodel\Factory\PropertyValueFactory;
-use Inowas\Soilmodel\Model\Soilmodel;
-use Inowas\Soilmodel\Service\SoilmodelManager;
-use Inowas\Soilmodel\Factory\BoreHoleFactory;
-use Inowas\Soilmodel\Factory\LayerFactory;
+use Inowas\SoilmodelBundle\Model\Property;
+use Inowas\SoilmodelBundle\Model\PropertyType;
+use Inowas\SoilmodelBundle\Factory\PropertyValueFactory;
+use Inowas\SoilmodelBundle\Model\Soilmodel;
+use Inowas\SoilmodelBundle\Service\SoilmodelManager;
+use Inowas\SoilmodelBundle\Factory\BoreHoleFactory;
+use Inowas\SoilmodelBundle\Factory\LayerFactory;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
 class SoilModelInterpolationTest extends WebTestCase

@@ -1,11 +1,3 @@
-app:
-    resource: "@AppBundle/Controller/"
-    type:     annotation
-
-InowasPyprocessing:
-    resource: "@InowasPyprocessingBundle/Controller/"
-    type:     annotation
-
 NelmioApiDocBundle:
     resource: "@NelmioApiDocBundle/Resources/config/routing.yml"
     prefix:   /api/doc
@@ -13,102 +5,8 @@ NelmioApiDocBundle:
 fos_user:
     resource: "@FOSUserBundle/Resources/config/routing/all.xml"
 
-rest_modflow_package:
-    type: rest
-    prefix: /api
-    resource: Inowas\PyprocessingBundle\Controller\ModflowModelPackagesController
+InowasModflowBundle:
+    resource: "@InowasModflowBundle/Resources/config/routing.yml"
+    prefix:    /api/modflow
 
-rest_area:
-    type: rest
-    prefix: /api
-    resource: AppBundle\Controller\AreaRestController
 
-rest_boundary:
-    type: rest
-    prefix: /api
-    resource: AppBundle\Controller\BoundaryRestController
-
-rest_calculation:
-    type: rest
-    prefix: /api
-    resource: AppBundle\Controller\CalculationRestController
-
-rest_geological_layer:
-    type: rest
-    prefix: /api
-    resource: AppBundle\Controller\GeologicalLayerRestController
-
-rest_geological_point:
-    type: rest
-    prefix: /api
-    resource: AppBundle\Controller\GeologicalPointRestController
-
-rest_geological_unit:
-    type: rest
-    prefix: /api
-    resource: AppBundle\Controller\GeologicalUnitRestController
-
-rest_observationpoint:
-    type: rest
-    prefix: /api
-    resource: AppBundle\Controller\ObservationPointRestController
-
-rest_model:
-    type: rest
-    prefix: /api
-    resource: AppBundle\Controller\ModflowModelRestController
-
-rest_model_boundaries:
-    type: rest
-    prefix: /api
-    resource: AppBundle\Controller\ModflowModelBoundariesRestController
-
-rest_model_calculations:
-    type: rest
-    prefix: /api
-    resource: AppBundle\Controller\ModflowModelCalculationRestController
-
-rest_model_heads:
-    type: rest
-    prefix: /api
-    resource: AppBundle\Controller\ModflowModelHeadsRestController
-
-rest_model_soilmodel:
-    type: rest
-    prefix: /api
-    resource: AppBundle\Controller\ModflowModelSoilmodelRestController
-
-rest_modelobject:
-    type: rest
-    prefix: /api
-    resource: AppBundle\Controller\ModelObjectRestController
-
-rest_property:
-    type: rest
-    prefix: /api
-    resource: AppBundle\Controller\PropertyRestController
-
-rest_raster:
-    type: rest
-    prefix: /api
-    resource: AppBundle\Controller\RasterRestController
-
-rest_soilmodels:
-    type: rest
-    prefix: /api
-    resource: AppBundle\Controller\SoilModelRestController
-
-rest_model_scenarios:
-    type: rest
-    prefix: /api
-    resource: AppBundle\Controller\ModflowModelScenariosRestController
-
-rest_stream_boundary:
-    type: rest
-    prefix: /api
-    resource: AppBundle\Controller\StreamBoundaryRestController
-
-rest_well_boundary:
-    type: rest
-    prefix: /api
-    resource: AppBundle\Controller\WellRestController

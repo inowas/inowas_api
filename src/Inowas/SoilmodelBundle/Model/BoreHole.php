@@ -1,6 +1,6 @@
 <?php
 
-namespace Inowas\Soilmodel\Model;
+namespace Inowas\SoilmodelBundle\Model;
 
 use CrEOF\Spatial\PHP\Types\Geometry\Point;
 use Doctrine\Common\Collections\ArrayCollection;

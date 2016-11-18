@@ -7,7 +7,7 @@
         "psr-4": {
             "AppBundle\\": "src/AppBundle/",
             "Inowas\\Soilmodel\\": "src/Inowas/SoilmodelBundle",
-            "Inowas\\ModflowBäundle\\": "src/Inowas/ModflowBundle",
+            "Inowas\\ModflowBundle\\": "src/Inowas/ModflowBundle",
             "Inowas\\": "src/Inowas/"
         },
         "classmap": [

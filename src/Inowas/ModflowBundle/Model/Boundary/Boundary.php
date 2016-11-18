@@ -5,8 +5,11 @@ namespace Inowas\ModflowBundle\Model\Boundary;
 use Doctrine\Common\Collections\ArrayCollection;
 use Inowas\ModflowBundle\Model\ModelObject;
 
-abstract class Boundary extends ModelObject  implements BoundaryInterface
+class Boundary extends ModelObject  implements BoundaryInterface
 {
+    /** @var string */
+    private $type = 'bnd';
+
     /** @var  ArrayCollection */
     protected $observationPoints;
 
@@ -16,8 +19,16 @@ abstract class Boundary extends ModelObject  implements BoundaryInterface
     }
 
     /**
+     * @return string
+     */
+    public function getType(): string
+    {
+        return $this->type;
+    }
+
+    /**
      * @param ObservationPoint $observationPoint
-     * @return ConstantHeadBoundary
+     * @return Boundary
      */
     public function addObservationPoint(ObservationPoint $observationPoint): Boundary {
         $this->observationPoints->add($observationPoint);

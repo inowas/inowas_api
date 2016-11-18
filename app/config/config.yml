@@ -54,32 +54,26 @@ doctrine:
                 user:     "%database_user%"
                 password: "%database_password%"
                 charset:  UTF8
-            soilmodel:
-                driver:   pdo_pgsql
-                host:     "%database_host%"
-                port:     "%database_port%"
-                dbname:   "%database_name%_soilmodel"
-                user:     "%database_user%"
-                password: "%database_password%"
-                charset:  UTF8
 
         types:
             geometry:                     CrEOF\Spatial\DBAL\Types\GeometryType
             point:                        CrEOF\Spatial\DBAL\Types\Geometry\PointType
             polygon:                      CrEOF\Spatial\DBAL\Types\Geometry\PolygonType
             linestring:                   CrEOF\Spatial\DBAL\Types\Geometry\LineStringType
-            active_cells:                 AppBundle\Type\ActiveCellsType
-            bounding_box:                 AppBundle\Type\BoundingBoxType
-            grid_size:                    AppBundle\Type\GridSizeType
-            property_type:                AppBundle\Type\PropertyTypeType
-            chd_stress_periods:           AppBundle\Type\ChdStressPeriodsType
-            flopy_calculation_properties: AppBundle\Type\FlopyCalculationPropertiesType
-            ghb_stress_periods:           AppBundle\Type\GhbStressPeriodsType
-            rch_stress_periods:           AppBundle\Type\RchStressPeriodsType
-            riv_stress_periods:           AppBundle\Type\RivStressPeriodsType
-            wel_stress_periods:           AppBundle\Type\WelStressPeriodsType
-            soilmodel_property_type:      Inowas\Soilmodel\Type\PropertyTypeType
-            soilmodel_property_value:     Inowas\Soilmodel\Type\PropertyValueType
+
+            active_cells:                 Inowas\ModflowBundle\Model\Type\ActiveCellsType
+            bounding_box:                 Inowas\ModflowBundle\Model\Type\BoundingBoxType
+            calculation_properties:       Inowas\ModflowBundle\Model\Type\CalculationPropertiesType
+            grid_size:                    Inowas\ModflowBundle\Model\Type\GridSizeType
+
+            chd_stress_period:            Inowas\ModflowBundle\Model\Type\ChdStressPeriodsType
+            ghb_stress_period:            Inowas\ModflowBundle\Model\Type\GhbStressPeriodsType
+            rch_stress_period:            Inowas\ModflowBundle\Model\Type\RchStressPeriodsType
+            riv_stress_period:            Inowas\ModflowBundle\Model\Type\RivStressPeriodsType
+            wel_stress_period:            Inowas\ModflowBundle\Model\Type\WelStressPeriodsType
+
+            soilmodel_property_type:      Inowas\SoilmodelBundle\Type\PropertyTypeType
+            soilmodel_property_value:     Inowas\SoilmodelBundle\Type\PropertyValueType
             uuid:                         Ramsey\Uuid\Doctrine\UuidType
 
     orm:
@@ -105,14 +99,14 @@ doctrine:
                         st_transform:     CrEOF\Spatial\ORM\Query\AST\Functions\PostgreSql\STTransform
 
             soilmodel:
-                connection: soilmodel
+                connection: default
                 auto_mapping: false
                 mappings:
                     InowasSoilmodelBundle:
                         type: xml
-                        prefix: Inowas\Soilmodel\Model
+                        prefix: Inowas\SoilmodelBundle\Model
             modflow:
-                connection: soilmodel
+                connection: default
                 auto_mapping: false
                 mappings:
                     InowasModflowBundle:

@@ -5,7 +5,7 @@
     xsi:schemaLocation="http://doctrine-project.org/schemas/orm/doctrine-mapping
         http://doctrine-project.org/schemas/orm/doctrine-mapping.xsd">
 
-    <entity name="Inowas\Soilmodel\Model\Soilmodel" table="soilmodels">
+    <entity name="Inowas\SoilmodelBundle\Model\Soilmodel" table="soilmodels">
 
         <indexes>
             <index name="idx_soilmodels_id" columns="id"/>
@@ -20,11 +20,11 @@
         <field name="gridSize" type="grid_size" column="grid_size" nullable="true"/>
         <field name="boundingBox" type="bounding_box" column="bounding_box" nullable="true"/>
 
-        <many-to-many field="layers" target-entity="Inowas\Soilmodel\Model\Layer" orphan-removal="true">
+        <many-to-many field="layers" target-entity="Inowas\SoilmodelBundle\Model\Layer" orphan-removal="true">
             <cascade>
                 <cascade-all/>
             </cascade>
-            <join-table name="soilmodel_layers">
+            <join-table name="sm_soilmodel_layers">
                 <join-columns>
                     <join-column name="soilmodel_id" referenced-column-name="id" on-delete="CASCADE"/>
                 </join-columns>
@@ -34,11 +34,11 @@
             </join-table>
         </many-to-many>
 
-        <many-to-many field="boreholes" target-entity="Inowas\Soilmodel\Model\BoreHole" orphan-removal="true">
+        <many-to-many field="boreholes" target-entity="Inowas\SoilmodelBundle\Model\BoreHole" orphan-removal="true">
             <cascade>
                 <cascade-all/>
             </cascade>
-            <join-table name="soilmodel_boreholes">
+            <join-table name="sm_soilmodel_boreholes">
                 <join-columns>
                     <join-column name="soilmodel_id" referenced-column-name="id" on-delete="CASCADE"/>
                 </join-columns>

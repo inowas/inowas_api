@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<doctrine-mapping
+    xmlns="http://doctrine-project.org/schemas/orm/doctrine-mapping"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://doctrine-project.org/schemas/orm/doctrine-mapping
+        http://doctrine-project.org/schemas/orm/doctrine-mapping.xsd">
+
+    <entity name="Inowas\ModflowBundle\Model\Calculation" table="mf_calculations">
+
+        <indexes>
+            <index name="idx_calculations_id" columns="id"/>
+        </indexes>
+
+        <unique-constraints>
+            <unique-constraint columns="id" name="uc_calculations_id"/>
+        </unique-constraints>
+
+        <id name="id" type="uuid" column="id"/>
+        <field name="modelId" type="uuid" column="model_id"/>
+        <field name="baseUrl" type="string" column="base_url"/>
+        <field name="dataFolder" type="string" column="data_folder"/>
+        <field name="state" type="integer" column="state"/>
+        <field name="dateTimeAddToQueue" type="datetime" column="add_to_queue"/>
+        <field name="dateTimeStart" type="datetime" column="start"/>
+        <field name="dateTimeEnd" type="datetime" column="end"/>
+        <field name="finishedWithSuccess" type="boolean" column="finished_with_success"/>
+        <field name="output" type="text" column="output"/>
+        <field name="calculationProperties" type="calculation_properties" column="calculation_properties"/>
+
+    </entity>
+</doctrine-mapping>

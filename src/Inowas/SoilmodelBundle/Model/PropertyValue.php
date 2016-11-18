@@ -1,8 +1,8 @@
 <?php
 
-namespace Inowas\Soilmodel\Model;
+namespace Inowas\SoilmodelBundle\Model;
 
-use Inowas\Soilmodel\Exception\InvalidArgumentException;
+use Inowas\SoilmodelBundle\Exception\InvalidArgumentException;
 
 class PropertyValue implements \JsonSerializable
 {

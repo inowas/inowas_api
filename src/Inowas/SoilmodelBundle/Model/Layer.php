@@ -1,6 +1,6 @@
 <?php
 
-namespace Inowas\Soilmodel\Model;
+namespace Inowas\SoilmodelBundle\Model;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Ramsey\Uuid\Uuid;

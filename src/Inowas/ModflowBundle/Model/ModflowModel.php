@@ -4,10 +4,10 @@ namespace Inowas\ModflowBundle\Model;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Inowas\ModflowBundle\Model\Boundary\Boundary;
-use Inowas\Soilmodel\Model\Soilmodel;
+use Inowas\SoilmodelBundle\Model\Soilmodel;
 use Ramsey\Uuid\Uuid;
 
-class ModflowModel
+class ModflowModel implements ModflowModelInterface
 {
     /** @var Uuid */
     private $id;
@@ -27,8 +27,8 @@ class ModflowModel
     /** @var  Area */
     private $area;
 
-    /** @var  Soilmodel */
-    private $soilmodel;
+    /** @var  Uuid */
+    private $soilmodelId;
 
     /** @var ArrayCollection  */
     private $boundaries;
@@ -140,29 +140,41 @@ class ModflowModel
     }
 
     /**
-     * @return Soilmodel
+     * @return Uuid
      */
-    public function getSoilmodel(): Soilmodel
+    public function getSoilmodelId(): Uuid
     {
-        return $this->soilmodel;
+        return $this->soilmodelId;
     }
 
     /**
      * @param Soilmodel $soilModel
      * @return ModflowModel
      */
-    public function setSoilmodel(Soilmodel $soilModel): ModflowModel
+    public function setSoilmodelId(Soilmodel $soilModel): ModflowModel
     {
-        $this->soilmodel = $soilModel;
+        $this->soilmodelId = $soilModel;
         return $this;
     }
 
     /**
+     * @param string|null $type
      * @return ArrayCollection
      */
-    public function getBoundaries(): ArrayCollection
+    public function getBoundaries(string $type=null): ArrayCollection
     {
-        return $this->boundaries;
+        if (is_null($type)){
+            return $this->boundaries;
+        }
+
+        $boundaries = new ArrayCollection();
+        /** @var Boundary $boundary */
+        foreach ($this->boundaries as $boundary){
+            if ($boundary->getType() == $type){
+                $boundaries->add($boundary);
+            }
+        }
+        return $boundaries;
     }
 
     /**
@@ -174,6 +186,19 @@ class ModflowModel
         $this->boundaries->add($boundary);
         return $this;
     }
+
+    /**
+     * @param Boundary $boundary
+     * @return ModflowModel
+     */
+    public function removeBoundary(Boundary $boundary): ModflowModel
+    {
+        if ($this->boundaries->contains($boundary)){
+            $this->boundaries->removeElement($boundary);
+        }
+        return $this;
+    }
+
 
     /**
      * @param ArrayCollection $boundaries
@@ -190,7 +215,7 @@ class ModflowModel
      */
     public function hasSoilModel(): bool
     {
-        return ($this->soilmodel instanceof Soilmodel);
+        return ($this->soilmodelId instanceof Soilmodel);
     }
 
     /**
