@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<serializer>
+    <class name="Inowas\ModflowBundle\Model\BoundingBox">
+        <property name="xMin" type="float" groups="details"/>
+        <property name="xMax" type="float" groups="details"/>
+        <property name="yMin" type="float" groups="details"/>
+        <property name="yMax" type="float" groups="details"/>
+        <property name="srid" type="integer" groups="details"/>
+    </class>
+</serializer>
+

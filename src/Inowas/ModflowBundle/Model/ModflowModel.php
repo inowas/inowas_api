@@ -3,10 +3,16 @@
 namespace Inowas\ModflowBundle\Model;
 
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Inowas\ModflowBundle\Model\Boundary\Boundary;
 use Inowas\SoilmodelBundle\Model\Soilmodel;
+use JMS\Serializer\Annotation as JMS;
 use Ramsey\Uuid\Uuid;
 
+/**
+ * Class ModflowModel
+ * @package Inowas\ModflowBundle\Model
+ */
 class ModflowModel implements ModflowModelInterface
 {
     /** @var Uuid */
@@ -148,10 +154,10 @@ class ModflowModel implements ModflowModelInterface
     }
 
     /**
-     * @param Soilmodel $soilModel
+     * @param Uuid $soilModel
      * @return ModflowModel
      */
-    public function setSoilmodelId(Soilmodel $soilModel): ModflowModel
+    public function setSoilmodelId(Uuid $soilModel): ModflowModel
     {
         $this->soilmodelId = $soilModel;
         return $this;
@@ -159,9 +165,9 @@ class ModflowModel implements ModflowModelInterface
 
     /**
      * @param string|null $type
-     * @return ArrayCollection
+     * @return Collection
      */
-    public function getBoundaries(string $type=null): ArrayCollection
+    public function getBoundaries(string $type=null): Collection
     {
         if (is_null($type)){
             return $this->boundaries;

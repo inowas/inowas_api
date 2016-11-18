@@ -1,10 +1,10 @@
 <?php
 
-namespace Inowas\ModflowBundle\Controller;
+namespace Inowas\FlopyBundle\Controller;
 
 use FOS\RestBundle\Controller\Annotations\Get;
 use FOS\RestBundle\Controller\FOSRestController;
-use Inowas\ModflowBundle\Model\Factory\PackageFactory;
+
 use Inowas\ModflowBundle\Model\ModflowModel;
 use Nelmio\ApiDocBundle\Annotation\ApiDoc;
 use Symfony\Component\HttpFoundation\JsonResponse;

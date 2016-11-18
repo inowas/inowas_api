@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<serializer>
+    <class name="Inowas\ModflowBundle\Model\ModflowModel">
+        <property name="id" type="string" groups="details"/>
+        <property name="name" type="string" groups="details"/>
+        <property name="description" type="string" groups="details"/>
+        <property name="boundingBox" type="Inowas\ModflowBundle\Model\BoundingBox" groups="details"/>
+        <property name="gridSize" type="Inowas\ModflowBundle\Model\GridSize" groups="details"/>
+        <property name="area" type="Inowas\ModflowBundle\Model\Area" groups="details"/>
+        <property name="soilmodelId" type="string" groups="details"/>
+        <property name="boundaries" groups="details">
+            <type><![CDATA[ArrayCollection<Inowas\ModflowBundle\Model\Boundary\Boundary>]]></type>
+        </property>
+    </class>
+</serializer>
+

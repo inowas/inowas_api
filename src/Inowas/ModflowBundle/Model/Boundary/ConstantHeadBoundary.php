@@ -6,10 +6,14 @@ use CrEOF\Spatial\PHP\Types\Geometry\LineString;
 use Inowas\ModflowBundle\Exception\InvalidArgumentException;
 use Inowas\ModflowBundle\Model\ValueObject\ActiveCells;
 use Inowas\ModflowBundle\Model\ValueObject\ChdStressPeriodData;
+use JMS\Serializer\Annotation as JMS;
 
 class ConstantHeadBoundary extends Boundary
 {
-    /** @var string */
+    /**
+     * @var string
+     * @JMS\Groups("details")
+     */
     private $type = 'CHD';
 
     /** @var LineString */

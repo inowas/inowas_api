@@ -2,6 +2,10 @@ rest_model:
     type: rest
     resource: Inowas\ModflowBundle\Controller\ModelController
 
+rest_model_boundary:
+    type: rest
+    resource: Inowas\ModflowBundle\Controller\ModelBoundaryController
+
 rest_model_package:
     type: rest
     resource: Inowas\ModflowBundle\Controller\ModelPackagesController

@@ -7,8 +7,10 @@ use FOS\RestBundle\Controller\Annotations\Post;
 use FOS\RestBundle\Controller\Annotations\RequestParam;
 use FOS\RestBundle\Controller\FOSRestController;
 use FOS\RestBundle\Request\ParamFetcher;
+use FOS\RestBundle\View\View;
 use Inowas\ModflowBundle\Model\Boundary\Boundary;
 use Inowas\ModflowBundle\Model\ModflowModel;
+use JMS\Serializer\SerializationContext;
 use Nelmio\ApiDocBundle\Annotation\ApiDoc;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
@@ -29,25 +31,30 @@ class ModelBoundaryController extends FOSRestController
      *   }
      * )
      *
+     * @param $id
      * @param ParamFetcher $paramFetcher
      *
      * @RequestParam(name="type", nullable=false, strict=true, description="BoundaryType. Available types are: chd, ghb, rch, riv, wel")
      * @RequestParam(name="name", nullable=false, strict=true, description="Name of the new Boundary.")
      *
-     * @return JsonResponse
+     * @return View
      */
-    public function postModflowModelBoundaryAction(ParamFetcher $paramFetcher)
+    public function postModflowModelBoundaryAction($id, ParamFetcher $paramFetcher)
     {
-        $boundaryManager = $this->get('inowas.modflow.boundarymanager');
+        $model = $this->get('inowas.modflow.modelmanager')->findById($id);
 
-        /** @var Boundary $boundary */
-        $boundary = $boundaryManager->create($paramFetcher->get('type'));
-        $boundary->setName($paramFetcher->get('name'));
-        $boundaryManager->update($boundary);
+        $boundary = $this->get('inowas.modflow.boundarymanager')->create($paramFetcher->get('type'));
+        $model->addBoundary($boundary);
+        $this->get('inowas.modflow.modelmanager')->update($model);
 
-        $response = new JsonResponse();
-        $response->setData($boundary);
-        return $response;
+        $view = View::create($boundary)
+            ->setStatusCode(200)
+            ->setSerializationContext(SerializationContext::create()
+                ->setGroups(array('details'))
+            )
+        ;
+
+        return $view;
     }
 
     /**

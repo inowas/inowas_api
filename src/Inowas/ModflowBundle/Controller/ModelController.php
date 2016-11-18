@@ -7,7 +7,9 @@ use FOS\RestBundle\Controller\Annotations\Post;
 use FOS\RestBundle\Controller\Annotations\RequestParam;
 use FOS\RestBundle\Controller\FOSRestController;
 use FOS\RestBundle\Request\ParamFetcher;
+use FOS\RestBundle\View\View;
 use Inowas\ModflowBundle\Model\ModflowModel;
+use JMS\Serializer\SerializationContext;
 use Nelmio\ApiDocBundle\Annotation\ApiDoc;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
@@ -73,8 +75,13 @@ class ModelController extends FOSRestController
             throw $this->createNotFoundException(sprintf('Model with id=%s not found.', $id));
         }
 
-        $response = new JsonResponse();
-        $response->setData($model);
-        return $response;
+        $view = View::create($model)
+            ->setStatusCode(200)
+            ->setSerializationContext(SerializationContext::create()
+                ->setGroups(array('details'))
+            )
+        ;
+
+        return $view;
     }
 }

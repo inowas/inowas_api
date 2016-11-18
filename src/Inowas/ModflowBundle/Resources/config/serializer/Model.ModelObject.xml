@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<serializer>
+    <class name="Inowas\ModflowBundle\Model\ModelObject">
+        <property name="id" type="string" groups="details"/>
+        <property name="name" type="string" groups="details"/>
+        <property name="activeCells" type="Inowas\ModflowBundle\Model\ValueObject\ActiveCells" groups="details"/>
+        <property name="dateCreated" type="DateTime" groups="details"/>
+        <property name="dateModified" type="DateTime" groups="details"/>
+    </class>
+</serializer>
+

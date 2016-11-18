@@ -1,12 +1,12 @@
 services:
     inowas.modflow.boundarymanager:
         class: Inowas\ModflowBundle\Service\BoundaryManager
-        arguments: ['@doctrine.orm.entity_manager']
+        arguments: ['@doctrine.orm.modflow_entity_manager']
 
     inowas.modflow.headsmanager:
         class: Inowas\ModflowBundle\Service\HeadsManager
-        arguments: ['@doctrine.orm.entity_manager']
+        arguments: ['@doctrine.orm.modflow_entity_manager']
 
     inowas.modflow.modelmanager:
         class: Inowas\ModflowBundle\Service\ModflowModelManager
-        arguments: ['@doctrine.orm.entity_manager']
+        arguments: ['@doctrine.orm.modflow_entity_manager']

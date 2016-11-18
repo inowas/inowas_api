@@ -28,7 +28,21 @@
             <join-column name="area_id" referenced-column-name="id" on-delete="CASCADE"/>
         </one-to-one>
 
-        <field name="soilmodelId" column="soilmodel_id" type="uuid" nullable="true" />
+        <field name="soilmodelId" column="soilmodel_id" type="uuid" nullable="true"/>
+
+        <many-to-many field="boundaries" target-entity="Inowas\ModflowBundle\Model\Boundary\Boundary" orphan-removal="true">
+            <cascade>
+                <cascade-all/>
+            </cascade>
+            <join-table name="mf_modflowmodels_boundaries">
+                <join-columns>
+                    <join-column name="modflowmodel_id" referenced-column-name="id" on-delete="CASCADE"/>
+                </join-columns>
+                <inverse-join-columns>
+                    <join-column name="boundary_id" referenced-column-name="id" on-delete="CASCADE"/>
+                </inverse-join-columns>
+            </join-table>
+        </many-to-many>
 
     </entity>
 </doctrine-mapping>

@@ -4,6 +4,7 @@ imports:
     - { resource: services.yml }
     - { resource: "@InowasPyprocessingBundle/Resources/config/services.yml" }
     - { resource: "@InowasSoilmodelBundle/Resources/config/services.yml" }
+    - { resource: "@InowasModflowBundle/Resources/config/services.yml" }
 
 # Put parameters here that don't need to change on each machine where the app is deployed
 # http://symfony.com/doc/current/best_practices/configuration.html#application-related-configuration
@@ -35,6 +36,8 @@ framework:
     fragments:       ~
     http_method_override: true
     assets: ~
+    serializer:
+        enabled: true
 
 # Twig Configuration
 twig:

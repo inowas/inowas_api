@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<serializer>
+    <class name="Inowas\ModflowBundle\Model\Area">
+        <property name="id" type="string" groups="details"/>
+        <property name="name" type="string" groups="details"/>
+    </class>
+</serializer>
+

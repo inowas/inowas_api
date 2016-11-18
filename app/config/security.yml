@@ -14,11 +14,11 @@ security:
             id: fos_user.user_provider.username_email
 
     firewalls:
-        api_key:
-            pattern: ^/api
-            guard:
-                authenticators:
-                    - app.token_authenticator
+        #api_key:
+        #    pattern: ^/api
+        #    guard:
+        #        authenticators:
+        #            - app.token_authenticator
         main:
             pattern: ^/
             form_login:
