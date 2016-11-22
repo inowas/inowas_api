@@ -2,13 +2,13 @@
 
 namespace AppBundle\Controller;
 
-use AppBundle\Entity\Area;
 use AppBundle\Entity\ModflowModelScenario;
 use AppBundle\Entity\ModFlowModel;
 use AppBundle\Entity\User;
 use AppBundle\Model\ActiveCells;
 use FOS\RestBundle\Controller\Annotations\RequestParam;
 use FOS\RestBundle\Controller\Annotations\QueryParam;
+use FOS\RestBundle\Controller\Annotations\Route;
 use FOS\RestBundle\Controller\FOSRestController;
 use FOS\RestBundle\Request\ParamFetcher;
 use FOS\RestBundle\View\View;
@@ -21,6 +21,45 @@ use Symfony\Component\HttpFoundation\Response;
 
 class ModflowModelRestController extends FOSRestController
 {
+    /**
+     * Return all public models and the private models from the user.
+     *
+     * @ApiDoc(
+     *   resource = true,
+     *   description = "Return all public models and the private models from the user.",
+     *   statusCodes = {
+     *     200 = "Returned when successful",
+     *     404 = "Returned when the user is not found"
+     *   }
+     * )
+     *
+     * @return View
+     */
+    public function getModflowmodelsAction()
+    {
+        $user = $this->getUser();
+
+        if (! $user instanceof User) {
+            throw $this->createNotFoundException('User not found.');
+        }
+
+        $models = $this->getDoctrine()
+            ->getRepository('AppBundle:ModFlowModel')
+            ->findBy(
+                array('public' => true)
+            );
+
+        $view = View::create();
+        $view->setData($models)
+            ->setStatusCode(200)
+            ->setSerializationContext(SerializationContext::create()
+                ->setGroups(array('list'))
+            )
+        ;
+
+        return $view;
+    }
+
     /**
      * Return the overall project list from a user.
      *
@@ -46,6 +85,10 @@ class ModflowModelRestController extends FOSRestController
 
         if (! $user instanceof User) {
             throw $this->createNotFoundException('User with username '.$username.' not found.');
+        }
+
+        if (! $user === $this->getUser()){
+            throw $this->createAccessDeniedException('You have no access to this resource wit user privileges.');
         }
 
         $models = $this->getDoctrine()
@@ -82,18 +125,10 @@ class ModflowModelRestController extends FOSRestController
      *
      * @return View
      */
-    public function getModflowmodelsAction($id)
+    public function getModflowmodelAction($id)
     {
         /** @var ModFlowModel $model */
         $model = $this->findModelById($id);
-
-        $area = $model->getArea();
-        if ($area instanceof Area){
-            $surface = $this->getDoctrine()->getRepository('AppBundle:Area')
-                ->getHumanReadableSurfaceById($area->getId());
-
-            $area->setSurface($surface);
-        }
 
         $serializationContext = SerializationContext::create();
         $serializationContext->setGroups('modeldetails');
@@ -101,11 +136,43 @@ class ModflowModelRestController extends FOSRestController
         $view = View::create();
         $view->setData($model)
             ->setStatusCode(200)
-            ->setSerializationContext($serializationContext)
-            ->setTemplate('InowasPyprocessingBundle:inowas/modflow:model.html.twig')
-            ->setTemplateData(array('model' => $model));
+            ->setSerializationContext($serializationContext);
 
         return $view;
+    }
+
+    /**
+     * Get head values
+     *
+     * @Route(requirements={"_format"="jpg"})
+     *
+     * @ApiDoc(
+     *   resource = true,
+     *   description = "Post head values.",
+     *   statusCodes = {
+     *     200 = "Returned when successful",
+     *     404 = "Returned when the Calculation-Id is not found"
+     *   }
+     * )
+     *
+     * @param $id
+     * @return Response
+     */
+    public function getModflowmodelImageAction($id){
+
+        /** @var ModFlowModel $model */
+        $this->findModelById($id);
+
+        $file = $this->get('kernel')->getRootDir() . '/../var/data/modflow/' . $id . '/image.jpg';
+
+        if (! file_exists($file)){
+            $file = $this->get('kernel')->getRootDir() . '/../web/img/emptyModel.jpg';
+        }
+
+        $response = new Response();
+        $response->headers->set('Content-Type', 'image/png');
+        $response->setContent(file_get_contents($file));
+        return $response;
     }
 
     /**
@@ -176,7 +243,7 @@ class ModflowModelRestController extends FOSRestController
         $model->setSoilModel($soilModel);
         $modflowModelManager->update($model);
 
-        return $this->redirectToRoute('get_modflowmodels', array('id'=>$model->getId()->toString()));
+        return $this->redirectToRoute('get_modflowmodel', array('id'=>$model->getId()->toString()));
     }
 
     /**

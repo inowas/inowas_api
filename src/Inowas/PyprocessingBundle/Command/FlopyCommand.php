@@ -3,6 +3,7 @@
 namespace Inowas\PyprocessingBundle\Command;
 
 use AppBundle\Entity\ModFlowModel;
+use Inowas\PyprocessingBundle\Model\Modflow\ModflowModelInterface;
 use Ramsey\Uuid\Uuid;
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 use Symfony\Component\Console\Input\InputInterface;
@@ -35,7 +36,15 @@ abstract class FlopyCommand extends ContainerAwareCommand
                     'id' => $input->getArgument('id')
                 ));
 
-            if (! $model instanceof ModFlowModel){
+            if (!$model instanceof ModflowModelInterface){
+                $model = $this->getContainer()->get('doctrine.orm.default_entity_manager')
+                    ->getRepository('AppBundle:ModflowModelScenario')
+                    ->findOneBy(array(
+                        'id' => $input->getArgument('id')
+                    ));
+            }
+
+            if (! $model instanceof ModflowModelInterface){
                 $output->writeln(sprintf("The given id: %s is not a valid Model", $input->getArgument('id')));
                 return 0;
             }

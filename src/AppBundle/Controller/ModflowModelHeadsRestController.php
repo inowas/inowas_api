@@ -2,20 +2,30 @@
 
 namespace AppBundle\Controller;
 
+use AppBundle\Entity\Head;
 use AppBundle\Entity\ModflowModelScenario;
 use AppBundle\Entity\ModFlowModel;
 use FOS\RestBundle\Controller\Annotations\RequestParam;
 use FOS\RestBundle\Controller\Annotations\QueryParam;
+use FOS\RestBundle\Controller\Annotations\Route;
 use FOS\RestBundle\Controller\FOSRestController;
 use FOS\RestBundle\Request\ParamFetcher;
 use FOS\RestBundle\View\View;
+use HeatMap\HeatMap;
+use Inowas\PyprocessingBundle\Model\Modflow\ModflowModelInterface;
+use JMS\Serializer\SerializationContext;
 use Nelmio\ApiDocBundle\Annotation\ApiDoc;
 use Ramsey\Uuid\Uuid;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class ModflowModelHeadsRestController extends FOSRestController
 {
+
     /**
-     * Get head values
+     * Get head list
      *
      * @ApiDoc(
      *   resource = true,
@@ -29,44 +39,115 @@ class ModflowModelHeadsRestController extends FOSRestController
      * @param $id
      * @return View
      *
-     * @QueryParam(name="totim", description="Time in days from beginning")
      */
-    public function getModflowmodelHeadsAction($id)
+    public function getModflowmodelHeadsListAction($id)
     {
-        /** @var ModFlowModel $model */
-        $element = $this->findElementById($id);
+        /** @var ModflowModelInterface $model */
+        $model = $this->findElementById($id);
 
-        $heads = null;
-        $model = null;
-
-        if ($element instanceof ModFlowModel){
-            $heads = $element->getHeads();
-            $model = $element;
-        }
-
-        if ($element instanceof ModflowModelScenario){
-            $heads = $element->getHeads();
-            $model = $element->getBaseModel();
-        }
-
-        $response = array();
-        if ($model->getStressPeriods()->count() > 0){
-            /** @var \DateTime $startDate */
-            $startDate = $model->getStressPeriods()->first()->getDateTimeBegin();
-
-            foreach ($heads as $totim => $head){
-                $date = clone $startDate;
-                $date->modify(sprintf('+%s days', (int)$totim-1));
-                $response[$date->format('Y-m-d')] = $head;
-            }
-        }
+        $heads = $this->get('inowas.heads')->getList($model);
 
         $view = View::create();
-        $view->setData($response)
+        $view->setData($heads)
             ->setStatusCode(200)
+            ->setSerializationContext(SerializationContext::create()
+                ->setGroups(['list'])
+            )
         ;
 
         return $view;
+    }
+
+
+    /**
+     * Get head values
+     *
+     * @ApiDoc(
+     *   resource = true,
+     *   description = "Post head values.",
+     *   statusCodes = {
+     *     200 = "Returned when successful",
+     *     404 = "Returned when the Calculation-Id is not found"
+     *   }
+     * )
+     *
+     * @param $id
+     * @param $paramFetcher
+     * @return View
+     *
+     * @QueryParam(name="totim", requirements="\d+", default=0, strict=false, description="Time in days from beginning")
+     * @QueryParam(name="layer", requirements="\d+", default=0, strict=false, description="Layer number")
+     */
+    public function getModflowmodelHeadsAction($id, ParamFetcher $paramFetcher)
+    {
+        /** @var ModFlowModel $model */
+        $element = $this->findElementById($id);
+        $head = $this->get('inowas.heads')->getHead($element, $paramFetcher->get('totim'), $paramFetcher->get('layer'));
+
+        $view = View::create();
+        $view->setData($head)
+            ->setStatusCode(200)
+            ->setSerializationContext(SerializationContext::create()
+                ->setGroups(['details'])
+                ->setSerializeNull(true)
+            )
+        ;
+
+        return $view;
+    }
+
+    /**
+     * Get head values
+     *
+     * @Route(requirements={"_format"="png"})
+     * @Method({"GET"})
+     *
+     * @ApiDoc(
+     *   resource = true,
+     *   description = "Post head values.",
+     *   statusCodes = {
+     *     200 = "Returned when successful",
+     *     404 = "Returned when the Calculation-Id is not found"
+     *   }
+     * )
+     *
+     * @param ParamFetcher $paramFetcher
+     * @param $id
+     * @return Response
+     *
+     * @QueryParam(name="totim", requirements="\d+", default=0, description="Time in days from beginning")
+     * @QueryParam(name="layer", requirements="\d+", default=0, description="Layer number")
+     * @QueryParam(name="max", default=null, description="Value of the spectrum maximum")
+     * @QueryParam(name="min", default=null, description="Value of the spectrum minimum")
+     * @QueryParam(name="upper", requirements="\d+", default=95, description="Percentile spectrum max")
+     * @QueryParam(name="loper", requirements="\d+", default=5, description="Percentile spectrum min")
+     */
+    public function getModflowmodelHeadsImageAction(ParamFetcher $paramFetcher, $id){
+
+        /** @var ModflowModelInterface $element $element */
+        $element = $this->findElementById($id);
+
+        /** @var Head $head */
+        $head = $this->get('inowas.heads')->getHead($element, $paramFetcher->get('totim'), $paramFetcher->get('layer'));
+
+        if (! $head instanceof Head){
+            throw new NotFoundHttpException(
+                sprintf('Head values for totim = %s and layer %s not found.', $paramFetcher->get('totim'), $paramFetcher->get('layer')));
+        }
+
+        $data = $head->getData();
+        $heatMap = new HeatMap();
+
+        if ($paramFetcher->get('min') && $paramFetcher->get('max')){
+            $file = $heatMap->createWithAbsoluteLimits($data, $paramFetcher->get('min'), $paramFetcher->get('max'));
+        } else {
+            $file = $heatMap->createWithPercentileLimits($data, $paramFetcher->get('loper'), $paramFetcher->get('upper'));
+        }
+
+        $response = new Response();
+        $response->headers->set('Content-Type', 'image/png');
+        $response->setContent(file_get_contents($file));
+        return $response;
     }
 
     /**
@@ -90,17 +171,16 @@ class ModflowModelHeadsRestController extends FOSRestController
      */
     public function postModflowmodelHeadsAction($id, ParamFetcher $paramFetcher)
     {
-        $totim = $paramFetcher->get('totim');
-        $head = $paramFetcher->get('heads');
-
-        /** @var ModFlowModel $model */
+        /** @var ModflowModelInterface $model */
         $model = $this->findElementById($id);
-        $heads = $model->getHeads();
-        $heads[$totim] = $head;
 
-        $model->setHeads($heads);
-        $this->getDoctrine()->getManager()->persist($model);
-        $this->getDoctrine()->getManager()->flush();
+
+        $totim = $paramFetcher->get('totim');
+        $heads = json_decode($paramFetcher->get('heads'));
+
+        foreach ($heads as $key => $data){
+            $this->get('inowas.heads')->addHead($model, $totim, $key, $data);
+        }
 
         $view = View::create();
         $view->setData('OK')

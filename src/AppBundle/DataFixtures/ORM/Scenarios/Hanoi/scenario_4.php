@@ -2,11 +2,11 @@
 
 namespace AppBundle\DataFixtures\ORM\Scenarios\Scenario_4;
 
+use AppBundle\DataFixtures\ORM\Scenarios\LoadScenarioBase;
 use AppBundle\Entity\AddBoundaryEvent;
+use AppBundle\Entity\BoundaryModelObject;
 use AppBundle\Entity\ChangeLayerValueEvent;
 use AppBundle\Entity\GeologicalLayer;
-use AppBundle\Entity\Raster;
-use AppBundle\Entity\User;
 use AppBundle\Entity\WellBoundary;
 use AppBundle\Model\AreaFactory;
 use AppBundle\Model\GeologicalLayerFactory;
@@ -30,7 +30,7 @@ use Doctrine\Common\Persistence\ObjectManager;
 use Symfony\Component\DependencyInjection\ContainerAwareInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
-class LoadScenario_4 implements FixtureInterface, ContainerAwareInterface
+class LoadScenario_4 extends LoadScenarioBase implements FixtureInterface, ContainerAwareInterface
 {
     /**
      * @var ContainerInterface
@@ -50,27 +50,12 @@ class LoadScenario_4 implements FixtureInterface, ContainerAwareInterface
      */
     public function load(ObjectManager $entityManager)
     {
+
+        $headsService = $this->container->get('inowas.heads');
+
+        $this->loadUsers($this->container->get('fos_user.user_manager'));
         $geoTools = $this->container->get('inowas.geotools');
-
         $public = true;
-        $username = 'inowas';
-        $email = 'inowas@inowas.com';
-        $password = 'inowas';
-
-        $user = $entityManager->getRepository('AppBundle:User')
-            ->findOneBy(array(
-                'username' => $username
-            ));
-
-        if (!$user) {
-            // Add new User
-            $user = new User();
-            $user->setUsername($username);
-            $user->setEmail($email);
-            $user->setPlainPassword($password);
-            $user->setEnabled(true);
-            $entityManager->persist($user);
-        }
 
         // Load PropertyTypes
         $propertyTypeHydraulicHead = PropertyTypeFactory::create(PropertyType::HYDRAULIC_HEAD);
@@ -79,12 +64,13 @@ class LoadScenario_4 implements FixtureInterface, ContainerAwareInterface
         $propertyTypePumpingRate = PropertyTypeFactory::create(PropertyType::PUMPING_RATE);
 
         $model = ModFlowModelFactory::create()
-            ->setName("Inowas Hanoi")
-            ->setOwner($user)
+            ->setName("Base model INOWAS Hanoi")
+            ->setDescription('Application of managed aquifer recharge for maximization of water storage capacity in Hanoi.')
+            ->setOwner($this->getOwner())
             ->setPublic($public)
             ->setArea(AreaFactory::create()
                 ->setName('Hanoi Area')
-                ->setOwner($user)
+                ->setOwner($this->getOwner())
                 ->setPublic($public)
                 ->setAreaType('SC4_AT1')
                 ->setGeometry(new Polygon(array(
@@ -140,7 +126,7 @@ class LoadScenario_4 implements FixtureInterface, ContainerAwareInterface
             ->setSoilModel(SoilModelFactory::create()
                 ->setName('Soilmodel_Scenario_4')
                 ->setPublic($public)
-                ->setOwner($user)
+                ->setOwner($this->getOwner())
             )
             ->setBoundingBox($geoTools->transformBoundingBox(new BoundingBox(578205, 594692, 2316000, 2333500, 32648), 4326))
             ->setGridSize(new GridSize(165, 175))
@@ -151,7 +137,7 @@ class LoadScenario_4 implements FixtureInterface, ContainerAwareInterface
 
         // Create new geological layers
         $layer_1 = GeologicalLayerFactory::create()
-            ->setOwner($user)
+            ->setOwner($this->getOwner())
             ->setName('SC4_L1')
             ->setPublic($public);
         $layer_1->setOrder(GeologicalLayer::TOP_LAYER);
@@ -159,7 +145,7 @@ class LoadScenario_4 implements FixtureInterface, ContainerAwareInterface
         $model->getSoilModel()->addGeologicalLayer($layer_1);
 
         $layer_2 = GeologicalLayerFactory::create()
-            ->setOwner($user)
+            ->setOwner($this->getOwner())
             ->setName('SC4_L3')
             ->setPublic($public);
         $layer_2->setOrder(GeologicalLayer::TOP_LAYER+1);
@@ -167,7 +153,7 @@ class LoadScenario_4 implements FixtureInterface, ContainerAwareInterface
         $model->getSoilModel()->addGeologicalLayer($layer_2);
 
         $layer_3 = GeologicalLayerFactory::create()
-            ->setOwner($user)
+            ->setOwner($this->getOwner())
             ->setName('SC4_L3')
             ->setPublic($public);
         $layer_3->setOrder(GeologicalLayer::TOP_LAYER+2);
@@ -175,7 +161,7 @@ class LoadScenario_4 implements FixtureInterface, ContainerAwareInterface
         $model->getSoilModel()->addGeologicalLayer($layer_3);
 
         $layer_4 = GeologicalLayerFactory::create()
-            ->setOwner($user)
+            ->setOwner($this->getOwner())
             ->setName('SC4_L4')
             ->setPublic($public);
         $layer_4->setOrder(GeologicalLayer::TOP_LAYER+3);
@@ -285,14 +271,14 @@ class LoadScenario_4 implements FixtureInterface, ContainerAwareInterface
         {
             echo "Persisting Borehole ".$borehole[0]."\r\n";
             $geologicalPoint = GeologicalPointFactory::create()
-                ->setOwner($user)
+                ->setOwner($this->getOwner())
                 ->setName($borehole[0])
                 ->setPoint($geoTools->transformPoint(new Point($borehole[1], $borehole[2], 3857), 4326))
                 ->setPublic($public);
             $entityManager->persist($geologicalPoint);
 
             $geologicalUnit = GeologicalUnitFactory::create()
-                ->setOwner($user)
+                ->setOwner($this->getOwner())
                 ->setName($borehole[0].'.1')
                 ->setPublic($public)
                 ->addValue($propertyTypeTopElevation, PropertyValueFactory::create()->setValue($borehole[3]))
@@ -303,7 +289,7 @@ class LoadScenario_4 implements FixtureInterface, ContainerAwareInterface
             $entityManager->persist($layer_1);
 
             $geologicalUnit = GeologicalUnitFactory::create()
-                ->setOwner($user)
+                ->setOwner($this->getOwner())
                 ->setName($borehole[0].'.2')
                 ->setPublic($public)
                 ->addValue($propertyTypeTopElevation, PropertyValueFactory::create()->setValue($borehole[4]))
@@ -314,7 +300,7 @@ class LoadScenario_4 implements FixtureInterface, ContainerAwareInterface
             $entityManager->persist($layer_2);
 
             $geologicalUnit = GeologicalUnitFactory::create()
-                ->setOwner($user)
+                ->setOwner($this->getOwner())
                 ->setName($borehole[0].'.3')
                 ->setPublic($public)
                 ->addValue($propertyTypeTopElevation, PropertyValueFactory::create()->setValue($borehole[5]))
@@ -325,7 +311,7 @@ class LoadScenario_4 implements FixtureInterface, ContainerAwareInterface
             $entityManager->persist($layer_3);
 
             $geologicalUnit = GeologicalUnitFactory::create()
-                ->setOwner($user)
+                ->setOwner($this->getOwner())
                 ->setName($borehole[0].'.4')
                 ->setPublic($public)
                 ->addValue($propertyTypeTopElevation, PropertyValueFactory::create()->setValue($borehole[6]))
@@ -469,7 +455,7 @@ class LoadScenario_4 implements FixtureInterface, ContainerAwareInterface
             }
             echo "Persisting ".$well['name']."\r\n";
             $model->addBoundary(WellBoundaryFactory::create()
-                ->setOwner($user)
+                ->setOwner($this->getOwner())
                 ->setName($well['name'])
                 ->setPublic($public)
                 ->setGeometry($geoTools->transformPoint(new Point($well['x'], $well['y'], 3857), 4326))
@@ -501,7 +487,7 @@ class LoadScenario_4 implements FixtureInterface, ContainerAwareInterface
             $well = array_combine($header, $row);
             echo "Persisting ".$well['name']."\r\n";
             $model->addBoundary(WellBoundaryFactory::create()
-                ->setOwner($user)
+                ->setOwner($this->getOwner())
                 ->setName($well['name'])
                 ->setPublic($public)
                 ->setGeometry(new Point($well['x'], $well['y'], $well['srid']))
@@ -629,16 +615,17 @@ class LoadScenario_4 implements FixtureInterface, ContainerAwareInterface
             }
             echo "Persisting Industrial Well ".$industrialWell[0]."\r\n";
             $model->addBoundary(WellBoundaryFactory::createIndustrialWell()
-                ->setOwner($user)
+                ->setOwner($this->getOwner())
                 ->setPublic($public)
                 ->setName($industrialWell[0])
                 ->setGeometry($geoTools->transformPoint(new Point($industrialWell[1], $industrialWell[2], $industrialWell[3]), 4326))
                 ->setLayer($layer_4)
                 ->addValue($propertyTypePumpingRate, PropertyValueFactory::create()->setValue($industrialWell[4]*-1))
             );
-            $entityManager->persist($model);
-            $entityManager->flush();
         }
+
+        $entityManager->persist($model);
+        $entityManager->flush();
 
         /* Interpolation of all layers */
         $soilModelService = $this->container->get('inowas.soilmodel');
@@ -655,7 +642,7 @@ class LoadScenario_4 implements FixtureInterface, ContainerAwareInterface
                 }
 
                 echo (sprintf("Interpolating Layer %s, Property %s\r\n", $layer->getName(), $propertyType->getDescription()));
-                $output = $soilModelService->interpolateLayerByProperty(
+                $soilModelService->interpolateLayerByProperty(
                     $layer,
                     $propertyType,
                     array(Interpolation::TYPE_IDW, Interpolation::TYPE_MEAN)
@@ -668,215 +655,226 @@ class LoadScenario_4 implements FixtureInterface, ContainerAwareInterface
         $entityManager->persist($model);
         $entityManager->flush();
 
+        echo "Calculate active Cells for all Boundaries\r\n";
+        foreach ($model->getBoundaries() as $boundary){
+            echo "Calculate active Cells for Boundary ".$boundary->getName()."\r\n";
+            $boundary->setActiveCells($geoTools->getActiveCells($boundary, $model->getBoundingBox(), $model->getGridSize()));
+        }
+
         echo "Loading heads from file\r\n";
-        $raster = RasterFactory::create();
-        $raster->setData($this->loadHeadsFromFile(__DIR__."/base_scenario_head_layer_3.json"));
-        $raster->setGridSize($model->getGridSize());
-        $raster->setBoundingBox($model->getBoundingBox());
-        $layer_4->addValue($propertyTypeHydraulicHead, PropertyValueFactory::create()->setRaster($raster));
-        $entityManager->persist($raster);
-        $entityManager->persist($layer_4);
-        $entityManager->flush();
-
-        // Add the first Scenario (RiverBankFiltration)
-        $scenario_1 = ModelScenarioFactory::create($model)
-            ->setName('Scenario 1')
-            ->setDescription('River Bank Filtration')
-            ->setImageFile('img/scenario_1.png')
-        ;
-
-        # THIS WELLS ARE THE RED AND RED DOTS IN THE LEFT IMAGE
-        $movedWells_sc1 = array(
-            array('A01', 21.03580, 105.78032, 4326, -4900),
-            array('A02', 21.03420, 105.78135, 4326, -4900),
-            array('A03', 21.03131, 105.77963, 4326, -4900),
-            array('A04', 20.98580, 105.80641, 4326, -4900),
-            array('A05', 20.98548, 105.81430, 4326, -4900),
-            array('A06', 20.98388, 105.81224, 4326, -4900),
-            array('A07', 20.98484, 105.81465, 4326, -4900),
-            array('A08', 20.96561, 105.85001, 4326, -4900),
-            array('A09', 20.96433, 105.84761, 4326, -4900),
-            array('A10', 20.96176, 105.85070, 4326, -4900)
-        );
-        $header = array('name', 'y', 'x', 'srid', 'pumpingrate');
-        foreach ($movedWells_sc1 as $row) {
-            $well = array_combine($header, $row);
-            echo "Persisting ".$well['name']."\r\n";
-            $scenario_1->addEvent(new AddBoundaryEvent(
-                    WellBoundaryFactory::create()
-                        ->setOwner($user)
-                        ->setPublic($public)
-                        ->setName($well['name'])
-                        ->setWellType(WellBoundary::TYPE_SCENARIO_MOVED_WELL)
-                        ->setGeometry(new Point($well['x'], $well['y'], $well['srid']))
-                        ->setLayer($layer_4)
-                        ->addValue($propertyTypePumpingRate, PropertyValueFactory::create()->setValue($well['pumpingrate']))
-                )
-            );
-
-            $entityManager->persist($scenario_1);
-            $entityManager->flush();
+        $head = $this->loadHeadsFromFile(__DIR__."/base_scenario_head_layer_3.json");
+        for ($i=0; $i<$model->getSoilModel()->getNumberOfGeologicalLayers(); $i++){
+            $headsService->addHead($model, 0, $i, $head);
         }
 
-        # THIS WELLS ARE THE RED AND YELLOW DOTS IN THE LEFT IMAGE
-        $newWells_sc1 = array(
-            array('A11', 21.08354, 105.81499, 4326, -4900),
-            array('A12', 21.08226, 105.81671, 4326, -4900),
-            array('A13', 21.04125, 105.85173, 4326, -4900),
-            array('A15', 21.03868, 105.85310, 4326, -4900),
-            array('A16', 21.00181, 105.87710, 4326, -4900),
-            array('A17', 21.03708, 105.85379, 4326, -4900),
-            array('A18', 21.03548, 105.85550, 4326, -4900),
-            array('A19', 21.03484, 105.85585, 4326, -4900),
-            array('A20', 20.98965, 105.89842, 4326, -4900),
-            array('A21', 20.98837, 105.90014, 4326, -4900),
-            array('A22', 20.98644, 105.89842, 4326, -4900)
-        );
-        $header = array('name', 'y', 'x', 'srid', 'pumpingrate');
-        foreach ($newWells_sc1 as $row) {
-            $well = array_combine($header, $row);
-            echo "Persisting ".$well['name']."\r\n";
-            $scenario_1->addEvent(new AddBoundaryEvent(
-                    WellBoundaryFactory::create()
-                        ->setOwner($user)
-                        ->setPublic($public)
-                        ->setName($well['name'])
-                        ->setWellType(WellBoundary::TYPE_SCENARIO_NEW_WELL)
-                        ->setGeometry(new Point($well['x'], $well['y'], $well['srid']))
-                        ->setLayer($layer_4)
-                        ->addValue($propertyTypePumpingRate, PropertyValueFactory::create()->setValue($well['pumpingrate']))
-                )
-            );
-
-            $entityManager->persist($scenario_1);
-            $entityManager->flush();
-        }
-
-        $scenario_1->addEvent(new ChangeLayerValueEvent($layer_4, $propertyTypeHydraulicHead,
-            PropertyValueFactory::create()
-                ->setRaster(RasterFactory::create()
-                    ->setBoundingBox($model->getBoundingBox())
-                    ->setGridSize($model->getGridSize())
-                    ->setData($this->loadHeadsFromFile(__DIR__."/scenario_1_head_layer_3.json"))
-                )
-        ));
-        $entityManager->persist($scenario_1);
+        $entityManager->persist($model);
         $entityManager->flush();
 
-        // Add the second Scenario (InjectionWells)
-        $scenario_2 = ModelScenarioFactory::create($model)
-            ->setName('Scenario 2')
-            ->setDescription('Injection Wells')
-            ->setImageFile('img/scenario_2.png')
-        ;
+        foreach ($this->getUserList() as $user) {
+            // Add the first Scenario (RiverBankFiltration)
+            $scenario_1 = ModelScenarioFactory::create($model)
+                ->setName('Scenario 1')
+                ->setOwner($user)
+                ->setDescription('River Bank Filtration');
 
-        # THIS WELLS ARE THE YELLOW DOTS IN THE RIGHT IMAGE
-        $newWells_sc2 = array(
-            array('B01', 21.002, 105.8415, 4326, -4900),
-            array('B02', 21.002, 105.8425, 4326, -4900),
-            array('B03', 21.002, 105.8435, 4326, -4900),
-            array('B04', 21.002, 105.8445, 4326, -4900),
-            array('B05', 21.002, 105.8455, 4326, -4900),
-            array('B06', 21.00271, 105.84653, 4326, -4900),
-            array('B07', 20.98292, 105.82872, 4326, -4900),
-            array('B08', 20.9826, 105.82975, 4326, -4900),
-            array('B09', 20.9826, 105.83113, 4326, -4900),
-            array('B10', 20.98164, 105.83216, 4326, -4900)
-        );
-        $header = array('name', 'y', 'x', 'srid', 'pumpingrate');
-        foreach ($newWells_sc2 as $row) {
-            $well = array_combine($header, $row);
-            echo "Persisting ".$well['name']."\r\n";
-            $scenario_2->addEvent(new AddBoundaryEvent(
-                    WellBoundaryFactory::create()
-                        ->setOwner($user)
-                        ->setPublic($public)
-                        ->setName($well['name'])
-                        ->setWellType(WellBoundary::TYPE_SCENARIO_NEW_WELL)
-                        ->setGeometry(new Point($well['x'], $well['y'], $well['srid']))
-                        ->setLayer($layer_4)
-                        ->addValue($propertyTypePumpingRate, PropertyValueFactory::create()->setValue($well['pumpingrate']))
-                )
+            # THIS WELLS ARE THE RED AND RED DOTS IN THE LEFT IMAGE
+            $movedWells_sc1 = array(
+                array('A01', 21.03580, 105.78032, 4326, -4900),
+                array('A02', 21.03420, 105.78135, 4326, -4900),
+                array('A03', 21.03131, 105.77963, 4326, -4900),
+                array('A04', 20.98580, 105.80641, 4326, -4900),
+                array('A05', 20.98548, 105.81430, 4326, -4900),
+                array('A06', 20.98388, 105.81224, 4326, -4900),
+                array('A07', 20.98484, 105.81465, 4326, -4900),
+                array('A08', 20.96561, 105.85001, 4326, -4900),
+                array('A09', 20.96433, 105.84761, 4326, -4900),
+                array('A10', 20.96176, 105.85070, 4326, -4900)
             );
+            $header = array('name', 'y', 'x', 'srid', 'pumpingrate');
+            foreach ($movedWells_sc1 as $row) {
+                $well = array_combine($header, $row);
+                echo "Persisting " . $well['name'] . "\r\n";
+                $scenario_1->addEvent(new AddBoundaryEvent(
+                        WellBoundaryFactory::create()
+                            ->setOwner($user)
+                            ->setPublic($public)
+                            ->setName($well['name'])
+                            ->setWellType(WellBoundary::TYPE_SCENARIO_MOVED_WELL)
+                            ->setGeometry(new Point($well['x'], $well['y'], $well['srid']))
+                            ->setLayer($layer_4)
+                            ->addValue($propertyTypePumpingRate, PropertyValueFactory::create()->setValue($well['pumpingrate']))
+                    )
+                );
+            }
+
+            # THIS WELLS ARE THE RED AND YELLOW DOTS IN THE LEFT IMAGE
+            $newWells_sc1 = array(
+                array('A11', 21.08354, 105.81499, 4326, -4900),
+                array('A12', 21.08226, 105.81671, 4326, -4900),
+                array('A13', 21.04125, 105.85173, 4326, -4900),
+                array('A15', 21.03868, 105.85310, 4326, -4900),
+                array('A16', 21.00181, 105.87710, 4326, -4900),
+                array('A17', 21.03708, 105.85379, 4326, -4900),
+                array('A18', 21.03548, 105.85550, 4326, -4900),
+                array('A19', 21.03484, 105.85585, 4326, -4900),
+                array('A20', 20.98965, 105.89842, 4326, -4900),
+                array('A21', 20.98837, 105.90014, 4326, -4900),
+                array('A22', 20.98644, 105.89842, 4326, -4900)
+            );
+            $header = array('name', 'y', 'x', 'srid', 'pumpingrate');
+            foreach ($newWells_sc1 as $row) {
+                $well = array_combine($header, $row);
+                echo "Persisting " . $well['name'] . "\r\n";
+                $scenario_1->addEvent(new AddBoundaryEvent(
+                        WellBoundaryFactory::create()
+                            ->setOwner($user)
+                            ->setPublic($public)
+                            ->setName($well['name'])
+                            ->setWellType(WellBoundary::TYPE_SCENARIO_NEW_WELL)
+                            ->setGeometry(new Point($well['x'], $well['y'], $well['srid']))
+                            ->setLayer($layer_4)
+                            ->addValue($propertyTypePumpingRate, PropertyValueFactory::create()->setValue($well['pumpingrate']))
+                    )
+                );
+            }
+
+            echo "Loading heads from file\r\n";
+            $head = $this->loadHeadsFromFile(__DIR__ . "/scenario_1_head_layer_3.json");
+            for ($i = 0; $i < $model->getSoilModel()->getNumberOfGeologicalLayers(); $i++) {
+                $headsService->addHead($scenario_1, 0, $i, $head);
+            }
+
+            $entityManager->persist($scenario_1);
+
+            /** @var BoundaryModelObject $boundary */
+            foreach ($scenario_1->getBoundaries() as $boundary){
+                $boundary->setActiveCells($geoTools->getActiveCells($boundary, $model->getBoundingBox(), $model->getGridSize()));
+                $entityManager->persist($boundary);
+            }
+            $entityManager->flush();
+
+            // Add the second Scenario (InjectionWells)
+            $scenario_2 = ModelScenarioFactory::create($model)
+                ->setName('Scenario 2')
+                ->setOwner($user)
+                ->setDescription('Injection Wells');
+
+            # THIS WELLS ARE THE YELLOW DOTS IN THE RIGHT IMAGE
+            $newWells_sc2 = array(
+                array('B01', 21.002, 105.8415, 4326, -4900),
+                array('B02', 21.002, 105.8425, 4326, -4900),
+                array('B03', 21.002, 105.8435, 4326, -4900),
+                array('B04', 21.002, 105.8445, 4326, -4900),
+                array('B05', 21.002, 105.8455, 4326, -4900),
+                array('B06', 21.00271, 105.84653, 4326, -4900),
+                array('B07', 20.98292, 105.82872, 4326, -4900),
+                array('B08', 20.9826, 105.82975, 4326, -4900),
+                array('B09', 20.9826, 105.83113, 4326, -4900),
+                array('B10', 20.98164, 105.83216, 4326, -4900)
+            );
+            $header = array('name', 'y', 'x', 'srid', 'pumpingrate');
+            foreach ($newWells_sc2 as $row) {
+                $well = array_combine($header, $row);
+                echo "Persisting " . $well['name'] . "\r\n";
+                $scenario_2->addEvent(new AddBoundaryEvent(
+                        WellBoundaryFactory::create()
+                            ->setOwner($user)
+                            ->setPublic($public)
+                            ->setName($well['name'])
+                            ->setWellType(WellBoundary::TYPE_SCENARIO_NEW_WELL)
+                            ->setGeometry(new Point($well['x'], $well['y'], $well['srid']))
+                            ->setLayer($layer_4)
+                            ->addValue($propertyTypePumpingRate, PropertyValueFactory::create()->setValue($well['pumpingrate']))
+                    )
+                );
+            }
+
+            echo "Loading heads from file\r\n";
+            $head = $this->loadHeadsFromFile(__DIR__ . "/scenario_2_head_layer_3.json");
+            for ($i = 0; $i < $model->getSoilModel()->getNumberOfGeologicalLayers(); $i++) {
+                $headsService->addHead($scenario_2, 0, $i, $head);
+            }
 
             $entityManager->persist($scenario_2);
+
+            /** @var BoundaryModelObject $boundary */
+            foreach ($scenario_2->getBoundaries() as $boundary){
+                $boundary->setActiveCells($geoTools->getActiveCells($boundary, $model->getBoundingBox(), $model->getGridSize()));
+                $entityManager->persist($boundary);
+            }
+
             $entityManager->flush();
-        }
-        
-        $scenario_2->addEvent(new ChangeLayerValueEvent($layer_4, $propertyTypeHydraulicHead,
-            PropertyValueFactory::create()
-                ->setRaster(RasterFactory::create()
-                    ->setBoundingBox($model->getBoundingBox())
-                    ->setGridSize($model->getGridSize())
-                    ->setData($this->loadHeadsFromFile(__DIR__."/scenario_2_head_layer_3.json"))
-                )
-        ));
 
-        $entityManager->persist($scenario_2);
-        $entityManager->flush();
 
-        // Add the first Scenario (RiverBankFiltration)
-        $scenario_3 = ModelScenarioFactory::create($model)
-            ->setName('Scenario 3')
-            ->setDescription('River bank filtration and injection wells')
-            ->setImageFile('img/scenario_3.png')
-        ;
+            // Add the first Scenario (RiverBankFiltration)
+            $scenario_3 = ModelScenarioFactory::create($model)
+                ->setName('Scenario 3')
+                ->setOwner($user)
+                ->setDescription('River bank filtration and injection wells');
 
-        # THIS WELLS ARE THE RED AND RED DOTS IN THE LEFT IMAGE
-        $movedWells_sc3 = $movedWells_sc1;
-        $header = array('name', 'y', 'x', 'srid', 'pumpingrate');
-        foreach ($movedWells_sc3 as $row) {
-            $well = array_combine($header, $row);
-            echo "Persisting ".$well['name']."\r\n";
-            $scenario_3->addEvent(new AddBoundaryEvent(
-                    WellBoundaryFactory::create()
-                        ->setOwner($user)
-                        ->setPublic($public)
-                        ->setName($well['name'])
-                        ->setWellType(WellBoundary::TYPE_SCENARIO_MOVED_WELL)
-                        ->setGeometry(new Point($well['x'], $well['y'], $well['srid']))
-                        ->setLayer($layer_4)
-                        ->addValue($propertyTypePumpingRate, PropertyValueFactory::create()->setValue($well['pumpingrate']))
-                )
-            );
+            # THIS WELLS ARE THE RED AND RED DOTS IN THE LEFT IMAGE
+            $movedWells_sc3 = $movedWells_sc1;
+            $header = array('name', 'y', 'x', 'srid', 'pumpingrate');
+            foreach ($movedWells_sc3 as $row) {
+                $well = array_combine($header, $row);
+                echo "Persisting " . $well['name'] . "\r\n";
+                $scenario_3->addEvent(new AddBoundaryEvent(
+                        WellBoundaryFactory::create()
+                            ->setOwner($user)
+                            ->setPublic($public)
+                            ->setName($well['name'])
+                            ->setWellType(WellBoundary::TYPE_SCENARIO_MOVED_WELL)
+                            ->setGeometry(new Point($well['x'], $well['y'], $well['srid']))
+                            ->setLayer($layer_4)
+                            ->addValue($propertyTypePumpingRate, PropertyValueFactory::create()->setValue($well['pumpingrate']))
+                    )
+                );
+            }
 
+            # THIS WELLS ARE ALL YELLOW DOTS OG BOTH IMAGES
+            $newWells_sc3 = array_merge($newWells_sc1, $newWells_sc2);
+            $header = array('name', 'y', 'x', 'srid', 'pumpingrate');
+            foreach ($newWells_sc3 as $row) {
+                $well = array_combine($header, $row);
+                echo "Persisting " . $well['name'] . "\r\n";
+                $scenario_3->addEvent(new AddBoundaryEvent(
+                        WellBoundaryFactory::create()
+                            ->setOwner($user)
+                            ->setPublic($public)
+                            ->setName($well['name'])
+                            ->setWellType(WellBoundary::TYPE_SCENARIO_NEW_WELL)
+                            ->setGeometry(new Point($well['x'], $well['y'], $well['srid']))
+                            ->setLayer($layer_4)
+                            ->addValue($propertyTypePumpingRate, PropertyValueFactory::create()->setValue($well['pumpingrate']))
+                    )
+                );
+            }
+
+            $scenario_3->addEvent(new ChangeLayerValueEvent($layer_4, $propertyTypeHydraulicHead,
+                PropertyValueFactory::create()
+                    ->setRaster(RasterFactory::create()
+                        ->setBoundingBox($model->getBoundingBox())
+                        ->setGridSize($model->getGridSize())
+                        ->setData($this->loadHeadsFromFile(__DIR__ . "/scenario_3_head_layer_3.json"))
+                    )
+            ));
+
+            echo "Loading heads from file\r\n";
+            $head = $this->loadHeadsFromFile(__DIR__ . "/scenario_3_head_layer_3.json");
+            for ($i = 0; $i < $model->getSoilModel()->getNumberOfGeologicalLayers(); $i++) {
+                $headsService->addHead($scenario_3, 0, $i, $head);
+            }
+
+            /** @var BoundaryModelObject $boundary */
+            foreach ($scenario_3->getBoundaries() as $boundary){
+                $boundary->setActiveCells($geoTools->getActiveCells($boundary, $model->getBoundingBox(), $model->getGridSize()));
+                $entityManager->persist($boundary);
+            }
+
+            $entityManager->flush();
             $entityManager->persist($scenario_3);
             $entityManager->flush();
         }
-
-        # THIS WELLS ARE ALL YELLOW DOTS OG BOTH IMAGES
-        $newWells_sc3 = array_merge($newWells_sc1, $newWells_sc2);
-        $header = array('name', 'y', 'x', 'srid', 'pumpingrate');
-        foreach ($newWells_sc3 as $row) {
-            $well = array_combine($header, $row);
-            echo "Persisting ".$well['name']."\r\n";
-            $scenario_3->addEvent(new AddBoundaryEvent(
-                    WellBoundaryFactory::create()
-                        ->setOwner($user)
-                        ->setPublic($public)
-                        ->setName($well['name'])
-                        ->setWellType(WellBoundary::TYPE_SCENARIO_NEW_WELL)
-                        ->setGeometry(new Point($well['x'], $well['y'], $well['srid']))
-                        ->setLayer($layer_4)
-                        ->addValue($propertyTypePumpingRate, PropertyValueFactory::create()->setValue($well['pumpingrate']))
-                )
-            );
-
-            $entityManager->persist($scenario_3);
-            $entityManager->flush();
-        }
-
-        $scenario_3->addEvent(new ChangeLayerValueEvent($layer_4, $propertyTypeHydraulicHead,
-            PropertyValueFactory::create()
-                ->setRaster(RasterFactory::create()
-                    ->setBoundingBox($model->getBoundingBox())
-                    ->setGridSize($model->getGridSize())
-                    ->setData($this->loadHeadsFromFile(__DIR__."/scenario_3_head_layer_3.json"))
-                )
-        ));
-
-        $entityManager->persist($scenario_3);
-        $entityManager->flush();
 
         return 1;
     }
@@ -893,8 +891,8 @@ class LoadScenario_4 implements FixtureInterface, ContainerAwareInterface
 
         for ($iy = 0; $iy < count($heads); $iy++){
             for ($ix = 0; $ix < count($heads[0]); $ix++){
-                if ($heads[$iy][$ix] < -2000){
-                    $heads[$iy][$ix] = Raster::DEFAULT_NO_DATA_VAL;
+                if ($heads[$iy][$ix] <= -9999){
+                    $heads[$iy][$ix] = null;
                 }
             }
         }

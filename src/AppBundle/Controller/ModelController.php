@@ -15,42 +15,6 @@ use Symfony\Component\HttpFoundation\Response;
 class ModelController extends Controller
 {
     /**
-     * @Route("/models/modflow", name="modflow_model_list")
-     * @Method({"GET"})
-     * @Security("has_role('ROLE_USER')")
-     *
-     * @return Response
-     */
-    public function modelsAction()
-    {
-        /** @var ModFlowModel $models */
-        $models = $this->getDoctrine()
-            ->getRepository('AppBundle:ModFlowModel')
-            ->findBy(array(
-                'public' => true
-            ));
-
-
-        /** @var ModFlowModel $model */
-        foreach ($models as $model) {
-            $scenarios = $this->getDoctrine()->getRepository('AppBundle:ModflowModelScenario')
-                ->findBy(array(
-                    'baseModel' => $model->getId()->toString(),
-                    'owner' => $this->getUser()
-                ));
-
-            foreach ($scenarios as $scenario){
-                $model->registerScenario($scenario);
-            }
-        }
-
-        return $this->render(
-            'inowas/model/modflow/models.html.twig',
-            array('models' => $models)
-        );
-    }
-
-    /**
      * @Route("/models/modflow/create", name="models_modflow_create")
      * @Method({"GET"})
      * @Security("has_role('ROLE_USER')")
@@ -66,6 +30,7 @@ class ModelController extends Controller
     }
 
     /**
+     * @Route("/models/modflow", name="modflow_model_without_id")
      * @Route("/models/modflow/{id}", name="modflow_model")
      * @Method({"GET"})
      * @Security("has_role('ROLE_USER')")
@@ -73,10 +38,18 @@ class ModelController extends Controller
      * @param $id
      * @return Response
      */
-    public function modelAction($id)
+    public function modelAction($id=null)
     {
+        if (is_null($id)){
+            return $this->render('inowas/model/modflow/model.lv2.html.twig', array(
+                    'model' => null,
+                    'user' => $this->getUser()
+                )
+            );
+        }
+
         if (! Uuid::isValid($id)){
-            return $this->redirectToRoute('modflow_model_list');
+            return $this->redirectToRoute('modflow_model');
         }
 
         $model = $this->getDoctrine()->getRepository('AppBundle:ModFlowModel')
@@ -85,7 +58,7 @@ class ModelController extends Controller
             ));
 
         if (! $model instanceof ModFlowModel){
-            return $this->redirectToRoute('modflow_model_list');
+            return $this->redirectToRoute('modflow_model');
         }
 
         $scenarios = $this->getDoctrine()->getRepository('AppBundle:ModflowModelScenario')
@@ -101,7 +74,7 @@ class ModelController extends Controller
             $model->registerScenario($scenario);
         }
 
-        return $this->render('inowas/model/modflow/model.html.twig', array(
+        return $this->render('inowas/model/modflow/model.lv2.html.twig', array(
                 'model' => $model,
                 'user' => $this->getUser()
             )

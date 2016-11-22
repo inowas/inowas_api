@@ -330,12 +330,6 @@ class ModflowModelTest extends \PHPUnit_Framework_TestCase
         $this->assertCount(1, $this->modflowModel->getScenarios());
     }
 
-    public function testSetGetHeads(){
-        $heads = array(1 => Flopy3DArray::fromValue(1,1,1,1));
-        $this->modflowModel->setHeads($heads);
-        $this->assertEquals($heads, $this->modflowModel->getHeads());
-    }
-
     public function testPreFlush()
     {
         $area = AreaFactory::create()->setName('Area');
@@ -353,19 +347,20 @@ class ModflowModelTest extends \PHPUnit_Framework_TestCase
         $well = WellBoundaryFactory::create();
         $this->modflowModel->addBoundary($well);
         $this->modflowModel->preFlush();
-        $this->assertCount(0, $this->modflowModel->getBoundaries());
+        $this->assertCount(1, $this->modflowModel->getBoundaries());
         $this->assertCount(1, $this->modflowModel->getModelObjects());
         $this->assertEquals($well, $this->modflowModel->getModelObjects()->first());
 
         // Reset
         $this->modflowModel->removeModelObject($well);
+        $this->modflowModel->removeBoundary($well);
         $this->assertCount(0, $this->modflowModel->getModelObjects());
 
         // Add ObservationPoint
         $observationPoint = ObservationPointFactory::create();
         $this->modflowModel->addObservationPoint($observationPoint);
         $this->modflowModel->preFlush();
-        $this->assertCount(0, $this->modflowModel->getObservationPoints());
+        $this->assertCount(1, $this->modflowModel->getObservationPoints());
         $this->assertCount(1, $this->modflowModel->getModelObjects());
         $this->assertEquals($observationPoint, $this->modflowModel->getModelObjects()->first());
 

@@ -64,13 +64,6 @@ class ModflowModelScenarioTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals($description, $this->scenario->getDescription());
     }
 
-    public function testSetGetImageFileName()
-    {
-        $file = "fileName";
-        $this->scenario->setImageFile($file);
-        $this->assertEquals($file, $this->scenario->getImageFile());
-    }
-
     public function testAddGetRemoveEvents()
     {
         $event = EventFactory::createAddBoundaryEvent(WellBoundaryFactory::create());

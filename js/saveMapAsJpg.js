@@ -1,0 +1,1 @@
+var system = require('system');var args = system.args;var page = require('webpage').create();page.open(args[1] , function() {    window.setTimeout(function () {        page.render(args[2], {format: 'jpeg', quality: '50'});        phantom.exit();    }, 10000);});

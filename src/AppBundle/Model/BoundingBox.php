@@ -6,19 +6,19 @@ use JMS\Serializer\Annotation as JMS;
 
 class BoundingBox implements \JsonSerializable
 {
-    /** @JMS\Groups({"interpolation", "rasterdetails", "modeldetails", "geoimage", "modelProperties"}) */
+    /** @JMS\Groups({"interpolation", "rasterdetails", "modeldetails", "geoimage", "list", "modelProperties"}) */
     protected $xMin;
 
-    /** @JMS\Groups({"interpolation", "rasterdetails", "modeldetails", "geoimage", "modelProperties"}) */
+    /** @JMS\Groups({"interpolation", "rasterdetails", "modeldetails", "geoimage", "list", "modelProperties"}) */
     protected $xMax;
 
-    /** @JMS\Groups({"interpolation", "rasterdetails", "modeldetails", "geoimage", "modelProperties"}) */
+    /** @JMS\Groups({"interpolation", "rasterdetails", "modeldetails", "geoimage", "list", "modelProperties"}) */
     protected $yMin;
 
-    /** @JMS\Groups({"interpolation", "rasterdetails", "modeldetails", "geoimage", "modelProperties"}) */
+    /** @JMS\Groups({"interpolation", "rasterdetails", "modeldetails", "geoimage", "list", "modelProperties"}) */
     protected $yMax;
 
-    /** @JMS\Groups({"interpolation", "rasterdetails", "modeldetails", "geoimage", "modelProperties"}) */
+    /** @JMS\Groups({"interpolation", "rasterdetails", "modeldetails", "geoimage", "list", "modelProperties"}) */
     protected $srid;
 
     /** @var float */

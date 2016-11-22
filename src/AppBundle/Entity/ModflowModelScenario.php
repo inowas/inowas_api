@@ -22,11 +22,12 @@ use Ramsey\Uuid\UuidInterface;
 class ModflowModelScenario implements ModflowScenarioInterface
 {
     /**
-     * @var string
+     * @var Uuid
      *
      * @ORM\Id
      * @ORM\Column(name="id", type="uuid", unique=true)
      * @JMS\Type("string")
+     * @JMS\Groups({"scenariodetails"})
      */
     protected $id;
 
@@ -42,6 +43,7 @@ class ModflowModelScenario implements ModflowScenarioInterface
      * @var boolean
      *
      * @ORM\Column(name="public", type="boolean")
+     * @JMS\Groups({"scenariodetails"})
      */
     protected $public;
 
@@ -49,73 +51,23 @@ class ModflowModelScenario implements ModflowScenarioInterface
      * @var string
      *
      * @ORM\Column(name="name", type="string",length=255)
+     * @JMS\Groups({"scenariodetails"})
      */
     private $name;
-
-    /**
-     * @return User
-     */
-    public function getOwner(): User
-    {
-        return $this->owner;
-    }
-
-    /**
-     * @param User $owner
-     * @return ModflowModelScenario
-     */
-    public function setOwner(User $owner): ModflowModelScenario
-    {
-        $this->owner = $owner;
-        return $this;
-    }
-
-    /**
-     * @return boolean
-     */
-    public function isPublic(): bool
-    {
-        return $this->public;
-    }
-
-    /**
-     * @param boolean $public
-     * @return ModflowModelScenario
-     */
-    public function setPublic(bool $public): ModflowModelScenario
-    {
-        $this->public = $public;
-        return $this;
-    }
 
     /**
      * @var string
      *
      * @ORM\Column(name="description", type="text", nullable=true)
+     * @JMS\Groups({"scenariodetails"})
      */
     private $description;
-
-    /**
-     * @var string
-     *
-     * @ORM\Column(name="image_file", type="string", length=255, nullable=true)
-     */
-    private $imageFile;
-
-    /**
-     * Heads-array with key, value = totim => flopy3dArray
-     * @var array
-     *
-     * @ORM\Column(name="heads", type="json_array", nullable=true)
-     */
-    private $heads;
 
     /**
      * @var ModFlowModel
      *
      * @ORM\ManyToOne(targetEntity="AppBundle\Entity\ModFlowModel", cascade={"persist", "remove"})
      * @ORM\JoinColumn(name="model_id", referencedColumnName="id", onDelete="CASCADE")
-     * @JMS\Type("ArrayCollection<AppBundle\Entity\AbstractModel>")
      **/
     private $baseModel;
 
@@ -133,6 +85,7 @@ class ModflowModelScenario implements ModflowScenarioInterface
      * @var \DateTime
      *
      * @ORM\Column(name="date_created", type="datetime")
+     * @JMS\Groups({"scenariodetails"})
      */
     private $dateCreated;
 
@@ -140,9 +93,17 @@ class ModflowModelScenario implements ModflowScenarioInterface
      * @var \DateTime
      *
      * @ORM\Column(name="date_modified", type="datetime")
-     * @JMS\Groups({"list", "details"})
+     * @JMS\Groups({"scenariodetails"})
      */
     private $dateModified;
+
+    /**
+     * @var integer
+     *
+     * @ORM\Column(name="`order`", type="integer", nullable=true)
+     * @JMS\Groups({"scenariodetails"})
+     */
+    private $order;
 
     /**
      * ModelScenario constructor.
@@ -156,6 +117,8 @@ class ModflowModelScenario implements ModflowScenarioInterface
         $this->dateCreated = new \DateTime();
         $this->dateModified = new \DateTime();
         $this->public = true;
+        $this->order = $model->getScenarios()->count();
+        $model->registerScenario($this);
     }
 
     /**
@@ -201,42 +164,6 @@ class ModflowModelScenario implements ModflowScenarioInterface
     public function setDescription($description)
     {
         $this->description = $description;
-        return $this;
-    }
-
-    /**
-     * @return string
-     */
-    public function getImageFile()
-    {
-        return $this->imageFile;
-    }
-
-    /**
-     * @param string $imageFile
-     * @return $this
-     */
-    public function setImageFile($imageFile)
-    {
-        $this->imageFile = $imageFile;
-        return $this;
-    }
-
-    /**
-     * @return array
-     */
-    public function getHeads()
-    {
-        return $this->heads;
-    }
-
-    /**
-     * @param array $heads
-     * @return ModflowModelScenario
-     */
-    public function setHeads(array $heads)
-    {
-        $this->heads = $heads;
         return $this;
     }
 
@@ -360,6 +287,20 @@ class ModflowModelScenario implements ModflowScenarioInterface
     }
 
     /**
+     * @return array
+     */
+    public function getBoundaries(){
+        $boundaries = [];
+        foreach ($this->events as $event){
+            if ($event instanceof AddBoundaryEvent){
+                $boundaries[] = $event->getBoundary();
+            }
+        }
+
+        return $boundaries;
+    }
+
+    /**
      * @param BoundaryModelObject $origin
      * @param BoundaryModelObject $newBoundary
      * @return mixed
@@ -396,5 +337,59 @@ class ModflowModelScenario implements ModflowScenarioInterface
     public function isScenario()
     {
         return true;
+    }
+
+    /**
+     * @return User
+     */
+    public function getOwner(): User
+    {
+        return $this->owner;
+    }
+
+    /**
+     * @param User $owner
+     * @return ModflowModelScenario
+     */
+    public function setOwner(User $owner): ModflowModelScenario
+    {
+        $this->owner = $owner;
+        return $this;
+    }
+
+    /**
+     * @return boolean
+     */
+    public function isPublic(): bool
+    {
+        return $this->public;
+    }
+
+    /**
+     * @param boolean $public
+     * @return ModflowModelScenario
+     */
+    public function setPublic(bool $public): ModflowModelScenario
+    {
+        $this->public = $public;
+        return $this;
+    }
+
+    /**
+     * @return integer
+     */
+    public function getOrder(): int
+    {
+        return $this->order;
+    }
+
+    /**
+     * @param string $order
+     * @return ModflowModelScenario
+     */
+    public function setOrder(string $order): ModflowModelScenario
+    {
+        $this->order = $order;
+        return $this;
     }
 }

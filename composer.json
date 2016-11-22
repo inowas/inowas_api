@@ -40,14 +40,17 @@
         "friendsofsymfony/rest-bundle": "^1.7",
         "creof/doctrine2-spatial": "^1.1",
         "ramsey/uuid-doctrine": "^1.2",
-        "sensiolabs/ansi-to-html": "^1.1"
+        "sensiolabs/ansi-to-html": "^1.1",
+        "jakoch/phantomjs-installer": "^2.1",
+        "rabbl/heatmap": "^1.0"
       
     },
     "require-dev": {
         "phpmd/phpmd" : "@stable",
         "satooshi/php-coveralls": "dev-master",
         "sensio/generator-bundle": "^3.0",
-        "symfony/phpunit-bridge": "^2.7"
+        "symfony/phpunit-bridge": "^2.7",
+        "mi-schi/phpmd-symfony2": "^2.1"
     },
     "scripts": {
         "post-install-cmd": [
@@ -56,7 +59,8 @@
             "Sensio\\Bundle\\DistributionBundle\\Composer\\ScriptHandler::clearCache",
             "Sensio\\Bundle\\DistributionBundle\\Composer\\ScriptHandler::installAssets",
             "Sensio\\Bundle\\DistributionBundle\\Composer\\ScriptHandler::installRequirementsFile",
-            "Sensio\\Bundle\\DistributionBundle\\Composer\\ScriptHandler::prepareDeploymentTarget"
+            "Sensio\\Bundle\\DistributionBundle\\Composer\\ScriptHandler::prepareDeploymentTarget",
+            "PhantomInstaller\\Installer::installPhantomJS"
         ],
         "post-update-cmd": [
             "Incenteev\\ParameterHandler\\ScriptHandler::buildParameters",
@@ -64,10 +68,12 @@
             "Sensio\\Bundle\\DistributionBundle\\Composer\\ScriptHandler::clearCache",
             "Sensio\\Bundle\\DistributionBundle\\Composer\\ScriptHandler::installAssets",
             "Sensio\\Bundle\\DistributionBundle\\Composer\\ScriptHandler::installRequirementsFile",
-            "Sensio\\Bundle\\DistributionBundle\\Composer\\ScriptHandler::prepareDeploymentTarget"
+            "Sensio\\Bundle\\DistributionBundle\\Composer\\ScriptHandler::prepareDeploymentTarget",
+            "PhantomInstaller\\Installer::installPhantomJS"
         ]
     },
     "config": {
+        "bin-dir": "bin",
         "platform": {
             "php": "7.0.7"
         }

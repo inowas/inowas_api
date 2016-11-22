@@ -37,7 +37,7 @@ class ModFlowModel extends AbstractModel implements ModflowModelInterface
      * @ORM\Column(name="grid_size", type="grid_size", nullable=true)
      *
      * @JMS\Type("AppBundle\Model\GridSize")
-     * @JMS\Groups({"details", "modeldetails", "modelProperties"})
+     * @JMS\Groups({"details", "list", "modeldetails", "modelProperties"})
      */
     private $gridSize;
 
@@ -47,7 +47,7 @@ class ModFlowModel extends AbstractModel implements ModflowModelInterface
      * @ORM\Column(name="bounding_box", type="bounding_box", nullable=true)
      *
      * @JMS\Type("AppBundle\Model\BoundingBox")
-     * @JMS\Groups({"details", "modeldetails", "modelProperties"})
+     * @JMS\Groups({"details", "list", "modeldetails", "modelProperties"})
      */
     private $boundingBox;
 
@@ -72,14 +72,6 @@ class ModFlowModel extends AbstractModel implements ModflowModelInterface
      * @JMS\Groups({"details", "modeldetails"})
      */
     private $observationPoints;
-
-    /**
-     * Heads-array with key, value = totim => flopy3dArray
-     * @var array
-     *
-     * @ORM\Column(name="heads", type="json_array", nullable=true)
-     */
-    private $heads;
 
     /**
      * @var ArrayCollection
@@ -441,7 +433,9 @@ class ModFlowModel extends AbstractModel implements ModflowModelInterface
      * @param ModflowModelScenario $scenario
      */
     public function registerScenario(ModflowModelScenario $scenario) {
-        $this->scenarios[] = $scenario;
+        if (! $this->scenarios->contains($scenario)){
+            $this->scenarios[] = $scenario;
+        }
     }
 
     /**
@@ -449,24 +443,6 @@ class ModFlowModel extends AbstractModel implements ModflowModelInterface
      */
     public function getScenarios(){
         return $this->scenarios;
-    }
-
-    /**
-     * @return array
-     */
-    public function getHeads()
-    {
-        return $this->heads;
-    }
-
-    /**
-     * @param array $heads
-     * @return ModFlowModel
-     */
-    public function setHeads(array $heads)
-    {
-        $this->heads = $heads;
-        return $this;
     }
 
     /**
@@ -513,6 +489,8 @@ class ModFlowModel extends AbstractModel implements ModflowModelInterface
      */
     public function preFlush()
     {
+        $this->modelObjects = new ArrayCollection();
+
         if (!is_null($this->area)) {
             $this->addModelObject($this->area);
         }
@@ -520,14 +498,12 @@ class ModFlowModel extends AbstractModel implements ModflowModelInterface
         if ($this->boundaries->count() > 0 ) {
             foreach ($this->boundaries as $boundary) {
                 $this->addModelObject($boundary);
-                $this->removeBoundary($boundary);
             }
         }
 
         if ($this->observationPoints->count() > 0 ) {
             foreach ($this->observationPoints as $observationPoint) {
                 $this->addModelObject($observationPoint);
-                $this->removeObservationPoint($observationPoint);
             }
         }
     }

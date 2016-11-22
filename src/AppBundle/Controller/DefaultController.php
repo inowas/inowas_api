@@ -17,17 +17,6 @@ class DefaultController extends Controller
     public function indexAction()
     {
         // replace this example code with whatever you need
-        return $this->redirectToRoute('modflow_model_list');
-    }
-
-    /**
-     * @Security("is_granted('IS_AUTHENTICATED_FULLY')")
-     * @Route("/old", name="old_home")
-     * @Method({"GET"})
-     */
-    public function oldHomeIndexAction()
-    {
-        // replace this example code with whatever you need
-        return $this->render('inowas/index.html.twig');
+        return $this->redirectToRoute('modflow_model_without_id');
     }
 }
