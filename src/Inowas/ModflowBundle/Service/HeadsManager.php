@@ -3,9 +3,9 @@
 namespace Inowas\ModflowBundle\Service;
 
 use Doctrine\ORM\EntityManager;
+use Inowas\Flopy\Model\ValueObject\Flopy2DArray;
 use Inowas\ModflowBundle\Model\Head;
 use Inowas\ModflowBundle\Model\ModflowModelInterface;
-use Inowas\ModflowBundle\Model\ValueObject\Flopy2DArray;
 use Ramsey\Uuid\Uuid;
 
 class HeadsManager

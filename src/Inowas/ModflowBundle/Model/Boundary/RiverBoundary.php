@@ -3,9 +3,10 @@
 namespace Inowas\ModflowBundle\Model\Boundary;
 
 use CrEOF\Spatial\PHP\Types\Geometry\LineString;
+use CrEOF\Spatial\PHP\Types\Geometry\Point;
+use Inowas\Flopy\Model\ValueObject\RivStressPeriodData;
 use Inowas\ModflowBundle\Exception\InvalidArgumentException;
-use Inowas\ModflowBundle\Model\ValueObject\ActiveCells;
-use Inowas\ModflowBundle\Model\ValueObject\RivStressPeriodData;
+use Inowas\ModflowBundle\Model\ActiveCells;
 
 class RiverBoundary extends Boundary
 {
@@ -18,8 +19,7 @@ class RiverBoundary extends Boundary
     /**
      * @return string
      */
-    public function getType(): string
-    {
+    public function getType(): string {
         return $this->type;
     }
 
@@ -27,25 +27,33 @@ class RiverBoundary extends Boundary
      * @param LineString $geometry
      * @return RiverBoundary
      */
-    public function setGeometry(LineString $geometry)
-    {
+    public function setGeometry(LineString $geometry): RiverBoundary {
         $this->geometry = $geometry;
         return $this;
     }
 
     /** @return LineString */
-    public function getGeometry()
-    {
+    public function getGeometry(): LineString{
         return $this->geometry;
     }
 
-    // Todo: Adapt this
+    /**
+     * @param RivStressPeriod $rivStressPeriod
+     * @param Point $point
+     * @return RiverBoundary
+     */
+    public function addStressPeriod(RivStressPeriod $rivStressPeriod, Point $point): RiverBoundary {
+        $observationPoint = $this->getObservationPoint($point);
+        $observationPoint->addStressPeriod($rivStressPeriod);
+        return $this;
+    }
+
     /**
      * @param StressPeriod $stressPeriod
      * @param ActiveCells $activeCells
      * @return array
      */
-    public function generateStressPeriodData(StressPeriod $stressPeriod, ActiveCells $activeCells){
+    public function generateStressPeriodData(StressPeriod $stressPeriod, ActiveCells $activeCells): array {
 
         if (! $stressPeriod instanceof RivStressPeriod){
             throw new InvalidArgumentException(
@@ -58,7 +66,9 @@ class RiverBoundary extends Boundary
         foreach ($activeCells->toArray() as $nRow => $row){
             foreach ($row as $nCol => $value){
                 if ($value === true){
-                    $stressPeriodData[] = RivStressPeriodData::create(0, $nRow, $nCol, $stressPeriod->getStage(), $stressPeriod->getConductivity(), $stressPeriod->getBottomElevation());
+                    if (is_int($nRow) && is_int($nCol)) {
+                        $stressPeriodData[] = RivStressPeriodData::create(0, $nRow, $nCol, $stressPeriod->getStage(), $stressPeriod->getConductivity(), $stressPeriod->getBottomElevation());
+                    }
                 }
             }
         }

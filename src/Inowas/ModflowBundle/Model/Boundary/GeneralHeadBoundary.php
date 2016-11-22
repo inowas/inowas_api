@@ -3,9 +3,10 @@
 namespace Inowas\ModflowBundle\Model\Boundary;
 
 use CrEOF\Spatial\PHP\Types\Geometry\LineString;
+use CrEOF\Spatial\PHP\Types\Geometry\Point;
+use Inowas\Flopy\Model\ValueObject\GhbStressPeriodData;
 use Inowas\ModflowBundle\Exception\InvalidArgumentException;
-use Inowas\ModflowBundle\Model\ValueObject\ActiveCells;
-use Inowas\ModflowBundle\Model\ValueObject\GhbStressPeriodData;
+use Inowas\ModflowBundle\Model\ActiveCells;
 
 class GeneralHeadBoundary extends Boundary
 {
@@ -16,7 +17,7 @@ class GeneralHeadBoundary extends Boundary
     protected $geometry;
 
     /** @var array */
-    protected $layerNumbers;
+    protected $layerNumbers = array(0);
 
     /**
      * @return string
@@ -62,13 +63,23 @@ class GeneralHeadBoundary extends Boundary
         return $this;
     }
 
-    // Todo: Adapt this
+    /**
+     * @param GhbStressPeriod $ghbStressPeriod
+     * @param Point $point
+     * @return GeneralHeadBoundary
+     */
+    public function addStressPeriod(GhbStressPeriod $ghbStressPeriod, Point $point): GeneralHeadBoundary {
+        $observationPoint = $this->getObservationPoint($point);
+        $observationPoint->addStressPeriod($ghbStressPeriod);
+        return $this;
+    }
+
     /**
      * @param StressPeriod $stressPeriod
      * @param ActiveCells $activeCells
      * @return array
      */
-    public function generateStressPeriodData(StressPeriod $stressPeriod, ActiveCells $activeCells){
+    public function generateStressPeriodData(StressPeriod $stressPeriod, ActiveCells $activeCells): array {
 
         if (! $stressPeriod instanceof GhbStressPeriod){
             throw new InvalidArgumentException(
@@ -78,10 +89,14 @@ class GeneralHeadBoundary extends Boundary
 
         $stressPeriodData = array();
 
-        foreach ($activeCells->toArray() as $nRow => $row){
-            foreach ($row as $nCol => $value){
-                if ($value === true){
-                    $stressPeriodData[] = GhbStressPeriodData::create(0, $nRow, $nCol, $stressPeriod->getStage(), $stressPeriod->getCond());
+        foreach ($this->getLayerNumbers() as $layerNumber){
+            foreach ($activeCells->toArray() as $nRow => $row){
+                foreach ($row as $nCol => $value){
+                    if ($value === true){
+                        if (is_int($nRow) && is_int($nCol)) {
+                            $stressPeriodData[] = GhbStressPeriodData::create($layerNumber, $nRow, $nCol, $stressPeriod->getStage(), $stressPeriod->getConductivity());
+                        }
+                    }
                 }
             }
         }

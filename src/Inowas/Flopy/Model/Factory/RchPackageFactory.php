@@ -1,10 +1,10 @@
 <?php
 
-namespace Inowas\FlopyBundle\Model\Factory;
+namespace Inowas\Flopy\Model\Factory;
 
-use Inowas\ModflowBundle\Model\Adapter\RchPackageAdapter;
+use Inowas\Flopy\Model\Adapter\RchPackageAdapter;
+use Inowas\Flopy\Model\Package\RchPackage;
 use Inowas\ModflowBundle\Model\ModflowModel;
-use Inowas\ModflowBundle\Model\Package\RchPackage;
 use Inowas\SoilmodelBundle\Model\Soilmodel;
 
 class RchPackageFactory implements PackageFactoryInterface
@@ -16,7 +16,7 @@ class RchPackageFactory implements PackageFactoryInterface
 
         $rch->setIpakcb($adapter->getIpakcb());
         $rch->setNrchop($adapter->getNrchop());
-        $rch->setRech($adapter->getRech());
+        $rch->setRech($adapter->getStressPeriodData());
         $rch->setIrch($adapter->getIrch());
         $rch->setExtension($adapter->getExtension());
         $rch->setUnitnumber($adapter->getUnitnumber());

@@ -1,8 +1,8 @@
 <?php
 
-namespace Inowas\FlopyBundle\Model\Package;
+namespace Inowas\Flopy\Model\Package;
 
-use Inowas\FlopyBundle\Model\ValueObject\StressPeriodOutputControl;
+use Inowas\Flopy\Model\ValueObject\StressPeriodOutputControl;
 
 class OcPackage implements PackageInterface
 {

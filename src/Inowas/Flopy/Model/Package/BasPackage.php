@@ -1,9 +1,9 @@
 <?php
 
-namespace Inowas\FlopyBundle\Model\Package;
+namespace Inowas\Flopy\Model\Package;
 
-use Inowas\FlopyBundle\Model\ValueObject\Flopy3DArray;
-use Inowas\FlopyBundle\Model\ValueObject\IBound;
+use Inowas\Flopy\Model\ValueObject\Flopy3DArray;
+use Inowas\Flopy\Model\ValueObject\IBound;
 
 class BasPackage implements PackageInterface
 {

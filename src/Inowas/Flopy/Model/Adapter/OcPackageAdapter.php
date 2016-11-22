@@ -1,6 +1,6 @@
 <?php
 
-namespace Inowas\FlopyBundle\Model\Adapter;
+namespace Inowas\Flopy\Model\Adapter;
 
 use Inowas\ModflowBundle\Model\ModflowModel;
 use Inowas\PyprocessingBundle\Model\Modflow\ValueObject\StressPeriodOutputControl;

@@ -1,6 +1,6 @@
 <?php
 
-namespace Inowas\FlopyBundle\Model\Factory;
+namespace Inowas\Flopy\Model\Factory;
 
 use Inowas\ModflowBundle\Model\ModflowModel;
 use Inowas\SoilmodelBundle\Model\Soilmodel;

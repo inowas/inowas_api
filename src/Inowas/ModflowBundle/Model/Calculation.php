@@ -2,7 +2,7 @@
 
 namespace Inowas\ModflowBundle\Model;
 
-use Inowas\ModflowBundle\Model\Package\CalculationProperties;
+use Inowas\Flopy\Model\Package\CalculationProperties;
 use Ramsey\Uuid\Uuid;
 
 class Calculation
@@ -61,6 +61,14 @@ class Calculation
     public function getId(): Uuid
     {
         return $this->id;
+    }
+
+    /**
+     * @return CalculationProperties
+     */
+    public function getCalculationProperties(): CalculationProperties
+    {
+        return $this->calculationProperties;
     }
 
     /**

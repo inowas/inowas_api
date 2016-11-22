@@ -1,10 +1,10 @@
 <?php
 
-namespace Inowas\FlopyBundle\Model\Factory;
+namespace Inowas\Flopy\Model\Factory;
 
-use Inowas\ModflowBundle\Model\Adapter\PcgPackageAdapter;
+use Inowas\Flopy\Model\Adapter\PcgPackageAdapter;
+use Inowas\Flopy\Model\Package\PcgPackage;
 use Inowas\ModflowBundle\Model\ModflowModel;
-use Inowas\ModflowBundle\Model\Package\PcgPackage;
 use Inowas\SoilmodelBundle\Model\Soilmodel;
 
 class PcgPackageFactory implements PackageFactoryInterface

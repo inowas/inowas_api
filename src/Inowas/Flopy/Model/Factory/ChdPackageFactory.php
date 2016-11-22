@@ -1,9 +1,9 @@
 <?php
 
-namespace Inowas\FlopyBundle\Model\Factory;
+namespace Inowas\Flopy\Model\Factory;
 
-use Inowas\FlopyBundle\Model\Adapter\ChdPackageAdapter;
-use Inowas\FlopyBundle\Model\Package\ChdPackage;
+use Inowas\Flopy\Model\Adapter\ChdPackageAdapter;
+use Inowas\Flopy\Model\Package\ChdPackage;
 use Inowas\ModflowBundle\Model\ModflowModel;
 use Inowas\SoilmodelBundle\Model\Soilmodel;
 

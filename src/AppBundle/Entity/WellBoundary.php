@@ -8,7 +8,7 @@ use AppBundle\Model\StressPeriod;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
 use Inowas\ModflowBundle\Model\Boundary\WelStressPeriod;
-use Inowas\ModflowBundle\Model\ValueObject\WelStressPeriodData;
+use Inowas\FlopyBundle\Model\ValueObject\WelStressPeriodData;
 use Inowas\PyprocessingBundle\Exception\InvalidArgumentException;
 use JMS\Serializer\Annotation as JMS;
 use Ramsey\Uuid\Uuid;

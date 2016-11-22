@@ -12,8 +12,7 @@ class WelStressPeriod extends StressPeriod
     /**
      * @return float
      */
-    public function getFlux(): float
-    {
+    public function getFlux(): float {
         return $this->flux;
     }
 
@@ -21,8 +20,7 @@ class WelStressPeriod extends StressPeriod
      * @param float $flux
      * @return WelStressPeriod
      */
-    public function setFlux(float $flux): WelStressPeriod
-    {
+    public function setFlux(float $flux): WelStressPeriod {
         $this->flux = $flux;
         return $this;
     }
@@ -31,10 +29,9 @@ class WelStressPeriod extends StressPeriod
      * @param $value
      * @return WelStressPeriod
      */
-    public static function fromArray($value){
+    public static function fromArray($value): WelStressPeriod {
         $instance = new self();
         $instance->setDateTimeBegin(new \DateTime($value["dateTimeBegin"]));
-        $instance->setDateTimeEnd(new \DateTime($value["dateTimeEnd"]));
         $instance->setNumberOfTimeSteps($value['numberOfTimeSteps']);
         $instance->setSteady($value['steady']);
         $instance->setTimeStepMultiplier($value['timeStepMultiplier']);
@@ -45,11 +42,9 @@ class WelStressPeriod extends StressPeriod
     /**
      * @return array
      */
-    public function jsonSerialize()
-    {
+    public function jsonSerialize(): array {
         $output = parent::jsonSerialize();
         $output['flux'] = $this->flux;
-
         return $output;
     }
 }

@@ -1,6 +1,6 @@
 <?php
 
-namespace Inowas\FlopyBundle\Model\ValueObject;
+namespace Inowas\Flopy\Model\ValueObject;
 
 interface FlopyArrayInterface
 {

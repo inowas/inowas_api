@@ -1,8 +1,8 @@
 <?php
 
-namespace Inowas\FlopyBundle\Model\Package;
+namespace Inowas\Flopy\Model\Package;
 
-use Inowas\FlopyBundle\Model\ValueObject\Flopy2DArray;
+use Inowas\Flopy\Model\ValueObject\Flopy2DArray;
 
 class RchPackage implements PackageInterface
 {

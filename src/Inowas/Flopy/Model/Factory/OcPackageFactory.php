@@ -1,10 +1,10 @@
 <?php
 
-namespace Inowas\FlopyBundle\Model\Factory;
+namespace Inowas\Flopy\Model\Factory;
 
-use Inowas\ModflowBundle\Model\Adapter\OcPackageAdapter;
+use Inowas\Flopy\Model\Adapter\OcPackageAdapter;
+use Inowas\Flopy\Model\Package\OcPackage;
 use Inowas\ModflowBundle\Model\ModflowModel;
-use Inowas\ModflowBundle\Model\Package\OcPackage;
 use Inowas\SoilmodelBundle\Model\Soilmodel;
 
 class OcPackageFactory implements PackageFactoryInterface

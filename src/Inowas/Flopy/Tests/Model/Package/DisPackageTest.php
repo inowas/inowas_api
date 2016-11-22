@@ -1,8 +1,8 @@
 <?php
 
-namespace Inowas\FlopyBundle\Tests\Model\Package;
+namespace Inowas\Flopy\Tests\Model\Package;
 
-use Inowas\FlopyBundle\Model\Package\DisPackage;
+use Inowas\Flopy\Model\Package\DisPackage;
 
 class DisPackageTest extends \PHPUnit_Framework_TestCase
 {

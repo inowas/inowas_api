@@ -5,6 +5,7 @@ namespace Inowas\ModflowBundle\Model;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Inowas\ModflowBundle\Model\Boundary\Boundary;
+use Inowas\ModflowBundle\Model\Boundary\StressPeriod;
 use Inowas\SoilmodelBundle\Model\Soilmodel;
 use JMS\Serializer\Annotation as JMS;
 use Ramsey\Uuid\Uuid;
@@ -39,12 +40,22 @@ class ModflowModel implements ModflowModelInterface
     /** @var ArrayCollection  */
     private $boundaries;
 
+    /** @var  \DateTime */
+    private $start;
+
+    /** @var  \DateTime */
+    private $end;
+
+    /** @var TimeUnit */
+    private $timeUnit;
+
     public function __construct()
     {
         $this->id = Uuid::uuid4();
         $this->gridSize = new GridSize(50, 50);
         $this->boundingBox = new BoundingBox();
         $this->boundaries = new ArrayCollection();
+        $this->timeUnit = TimeUnit::fromString('day');
     }
 
     /**
@@ -225,61 +236,74 @@ class ModflowModel implements ModflowModelInterface
     }
 
     /**
-     * @return ArrayCollection
+     * @return \DateTime
+     */
+    public function getStart(): \DateTime
+    {
+        return $this->start;
+    }
+
+    /**
+     * @param \DateTime $start
+     * @return ModflowModel
+     */
+    public function setStart(\DateTime $start): ModflowModel
+    {
+        $this->start = $start;
+        return $this;
+    }
+
+    /**
+     * @return \DateTime
+     */
+    public function getEnd(): \DateTime
+    {
+        return $this->end;
+    }
+
+    /**
+     * @param \DateTime $end
+     * @return ModflowModel
+     */
+    public function setEnd(\DateTime $end): ModflowModel
+    {
+        $this->end = $end;
+        return $this;
+    }
+
+    /**
+     * @return TimeUnit
+     */
+    public function getTimeUnit(): TimeUnit
+    {
+        return $this->timeUnit;
+    }
+
+    /**
+     * @param TimeUnit $timeUnit
+     * @return ModflowModel
+     */
+    public function setTimeUnit(TimeUnit $timeUnit): ModflowModel
+    {
+        $this->timeUnit = $timeUnit;
+        return $this;
+    }
+
+    /**
+     * @return GlobalStressPeriods
      */
     public function getGlobalStressPeriods(){
-        $globalStressPeriods = new ArrayCollection();
+
+        $globalStressPeriods = new GlobalStressPeriods($this->start, $this->end, $this->timeUnit);
 
         /** @var Boundary $boundary */
-        foreach ($this->boundaries as $boundary){
-            $globalStressPeriods = new ArrayCollection(
-                array_merge($globalStressPeriods->toArray(), $boundary->getStressPeriods()->toArray())
-            );
+        foreach ($this->getBoundaries() as $boundary){
+            /** @var StressPeriod $stressPeriod */
+            foreach ($boundary->getStressPeriods() as $stressPeriod){
+                $globalStressPeriods->addStressPeriod($stressPeriod);
+            }
         }
 
-        $startDates = array();
-        $endDates = array();
-        foreach ($globalStressPeriods as $stressPeriod){
-            $startDates[] = $stressPeriod->getDateTimeBegin();
-            $endDates[] = $stressPeriod->getDateTimeEnd();
-        }
-
-        $startDates = array_map("unserialize", array_unique(array_map("serialize", $startDates)));
-        usort($startDates, function($a, $b) {return ($a < $b) ? -1 : 1;});
-        usort($endDates, function($a, $b) {return ($a < $b) ? -1 : 1;});
-        $endDate = end($endDates);
-
-        $stressPeriods = new ArrayCollection();
-        for($i=0; $i<count($startDates); $i++) {
-
-            $dateTimeStart = $startDates[$i];
-            if ($i != count($startDates)-1) {
-                /** @var \DateTime $dateTimeEnd */
-                $dateTimeEnd = clone $startDates[$i+1];
-                $dateTimeEnd->modify('-1day');
-            } else{
-                $dateTimeEnd = $endDate;
-            }
-
-            foreach ($globalStressPeriods as $globalStressPeriod) {
-                if ($globalStressPeriod->getDateTimeBegin() == $dateTimeStart){
-                    $stressPeriodWithStartDate = $globalStressPeriod;
-                    break;
-                }
-            }
-
-            $steady = false;
-            if (isset($stressPeriodWithStartDate)){
-                $steady = $stressPeriodWithStartDate->isSteady();
-            }
-
-            $stressPeriods->add(StressPeriodFactory::create()
-                ->setDateTimeBegin($dateTimeStart)
-                ->setDateTimeEnd($dateTimeEnd)
-                ->setSteady($steady)
-            );
-        }
-
-        return $stressPeriods;
+        return $globalStressPeriods;
     }
 }

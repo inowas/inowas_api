@@ -1,6 +1,6 @@
 <?php
 
-namespace Inowas\FlopyBundle\Model\Adapter;
+namespace Inowas\Flopy\Model\Adapter;
 
 use Inowas\ModflowBundle\Model\Boundary\WellBoundary;
 use Inowas\ModflowBundle\Model\ModflowModel;
@@ -30,7 +30,7 @@ class WelPackageAdapter
     /**
      * @return array
      */
-    public function getStressPeriodData()
+    public function getStressPeriodData(): array
     {
         $wells = array();
         foreach ($this->model->getBoundaries() as $boundary){
@@ -39,10 +39,21 @@ class WelPackageAdapter
             }
         }
 
+        $globalStressPeriods = $this->model->getGlobalStressPeriods();
         $stress_period_data = array();
-        /** @var WellBoundary $well */
-        foreach ($wells as $well) {
-            $stress_period_data = $well->aggregateStressPeriodData($stress_period_data, $this->model->getGlobalStressPeriods());
+        foreach ($globalStressPeriods->getTotalTimesStart() as $key => $startTime){
+            /** @var WellBoundary $well */
+            foreach ($wells as $well) {
+                $data =  $well->getStressPeriodData($this->model->getStart(), $this->model->getTimeUnit(), $startTime);
+
+                if (! is_null($data)){
+                    if (! array_key_exists($key, $stress_period_data)){
+                        $stress_period_data[$key] = array();
+                    }
+
+                    $stress_period_data[$key] = array_merge($stress_period_data[$key], $data);
+                }
+            }
         }
 
         return $stress_period_data;

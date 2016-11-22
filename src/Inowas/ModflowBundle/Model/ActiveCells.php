@@ -1,6 +1,6 @@
 <?php
 
-namespace Inowas\ModflowBundle\Model\ValueObject;
+namespace Inowas\ModflowBundle\Model;
 
 use Inowas\ModflowBundle\Exception\InvalidArgumentException;
 

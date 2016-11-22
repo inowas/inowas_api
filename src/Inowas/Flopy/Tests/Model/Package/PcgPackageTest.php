@@ -1,8 +1,8 @@
 <?php
 
-namespace Inowas\FlopyBundle\Tests\Model\Package;
+namespace Inowas\Flopy\Tests\Model\Package;
 
-use Inowas\FlopyBundle\Model\Package\PcgPackage;
+use Inowas\Flopy\Model\Package\PcgPackage;
 
 class PcgPackageTest extends \PHPUnit_Framework_TestCase
 {

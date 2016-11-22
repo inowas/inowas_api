@@ -1,10 +1,10 @@
 <?php
 
-namespace Inowas\FlopyBundle\Model\Factory;
+namespace Inowas\Flopy\Model\Factory;
 
-use Inowas\ModflowBundle\Model\Adapter\MfPackageAdapter;
+use Inowas\Flopy\Model\Adapter\MfPackageAdapter;
+use Inowas\Flopy\Model\Package\MfPackage;
 use Inowas\ModflowBundle\Model\ModflowModel;
-use Inowas\ModflowBundle\Model\Package\MfPackage;
 use Inowas\SoilmodelBundle\Model\Soilmodel;
 
 class MfPackageFactory implements PackageFactoryInterface

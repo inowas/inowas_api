@@ -1,8 +1,8 @@
 <?php
 
-namespace Inowas\FlopyBundle\Tests\Model\Package;
+namespace Inowas\Flopy\Tests\Model\Package;
 
-use Inowas\FlopyBundle\Model\Package\BasPackage;
+use Inowas\Flopy\Model\Package\BasPackage;
 
 class BasPackageTest extends \PHPUnit_Framework_TestCase
 {

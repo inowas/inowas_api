@@ -4,6 +4,7 @@ namespace Inowas\ModflowBundle\Controller;
 
 use FOS\RestBundle\Controller\Annotations\Get;
 use FOS\RestBundle\Controller\Annotations\Post;
+use FOS\RestBundle\Controller\Annotations\Put;
 use FOS\RestBundle\Controller\Annotations\RequestParam;
 use FOS\RestBundle\Controller\FOSRestController;
 use FOS\RestBundle\Request\ParamFetcher;
@@ -74,6 +75,56 @@ class ModelController extends FOSRestController
         if (! $model instanceof ModflowModel){
             throw $this->createNotFoundException(sprintf('Model with id=%s not found.', $id));
         }
+
+        $view = View::create($model)
+            ->setStatusCode(200)
+            ->setSerializationContext(SerializationContext::create()
+                ->setGroups(array('details'))
+            )
+        ;
+
+        return $view;
+    }
+
+    /**
+     * * @Put("/model/{id}")
+     *
+     * Update the model details specified by modelId.
+     *
+     * @ApiDoc(
+     *   resource = true,
+     *   description = "Returns the model details specified by modelId.",
+     *   statusCodes = {
+     *     200 = "Returned when successful",
+     *     404 = "Returned when the model is not found"
+     *   }
+     * )
+     *
+     * @param ParamFetcher $paramFetcher
+     * @param $id
+     *
+     * @RequestParam(name="name", nullable=false, strict=false, description="Model name")
+     * @RequestParam(name="description", nullable=false, strict=false, description="Model description")
+     * @RequestParam(name="start", nullable=false, strict=false, description="Start date")
+     * @RequestParam(name="end", nullable=false, strict=false, description="End date")
+     *
+     * @return JsonResponse
+     * @throws NotFoundHttpException
+     */
+    public function putModflowModelAction(ParamFetcher $paramFetcher, $id)
+    {
+        $model = $this->get('inowas.modflow.modelmanager')->findById($id);
+
+        if (! $model instanceof ModflowModel){
+            throw $this->createNotFoundException(sprintf('Model with id=%s not found.', $id));
+        }
+
+        $model->setName($paramFetcher->get('name'));
+        $model->setDescription($paramFetcher->get('description'));
+        $model->setStart($paramFetcher->get(new \DateTime('start')));
+        $model->setEnd($paramFetcher->get(new \DateTime('end')));
+
+        $this->get('inowas.modflow.modelmanager')->update($model);
 
         $view = View::create($model)
             ->setStatusCode(200)

@@ -2,7 +2,7 @@
 
 namespace Inowas\ModflowBundle\Model;
 
-use Inowas\ModflowBundle\Model\ValueObject\Flopy2DArray;
+use Inowas\Flopy\Model\ValueObject\Flopy2DArray;
 use Ramsey\Uuid\Uuid;
 
 class Head

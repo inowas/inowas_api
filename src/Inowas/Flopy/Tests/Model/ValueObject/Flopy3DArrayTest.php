@@ -1,8 +1,8 @@
 <?php
 
-namespace Inowas\FlopyBundle\Tests\Model\ValueObject;
+namespace Inowas\Flopy\Tests\Model\ValueObject;
 
-use Inowas\FlopyBundle\Model\ValueObject\Flopy3DArray;
+use Inowas\Flopy\Model\ValueObject\Flopy3DArray;
 
 class Flopy3DArrayTest extends \PHPUnit_Framework_TestCase
 {

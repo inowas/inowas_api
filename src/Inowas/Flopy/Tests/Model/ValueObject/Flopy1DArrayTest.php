@@ -1,9 +1,9 @@
 <?php
 
-namespace Inowas\FlopyBundle\Tests\Model\ValueObject;
+namespace Inowas\Flopy\Tests\Model\ValueObject;
 
-use Inowas\FlopyBundle\Exception\InvalidArgumentException;
-use Inowas\FlopyBundle\Model\ValueObject\Flopy1DArray;
+use Inowas\Flopy\Exception\InvalidArgumentException;
+use Inowas\Flopy\Model\ValueObject\Flopy1DArray;
 
 class Flopy1DArrayTest extends \PHPUnit_Framework_TestCase
 {
@@ -34,7 +34,7 @@ class Flopy1DArrayTest extends \PHPUnit_Framework_TestCase
     }
 
     public function testInstantiateFromNumericWithNotNumericThrowsException(){
-        $this->setExpectedException(InvalidArgumentException::class);
+        $this->expectException(InvalidArgumentException::class);
         Flopy1DArray::fromNumeric('abc', 1);
     }
 

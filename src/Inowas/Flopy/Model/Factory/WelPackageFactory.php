@@ -1,10 +1,10 @@
 <?php
 
-namespace Inowas\FlopyBundle\Model\Factory;
+namespace Inowas\Flopy\Model\Factory;
 
-use Inowas\ModflowBundle\Model\Adapter\WelPackageAdapter;
+use Inowas\Flopy\Model\Adapter\WelPackageAdapter;
+use Inowas\Flopy\Model\Package\WelPackage;
 use Inowas\ModflowBundle\Model\ModflowModel;
-use Inowas\ModflowBundle\Model\Package\WelPackage;
 use Inowas\SoilmodelBundle\Model\Soilmodel;
 
 class WelPackageFactory implements PackageFactoryInterface

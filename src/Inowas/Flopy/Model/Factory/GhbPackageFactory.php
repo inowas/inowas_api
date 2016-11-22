@@ -1,10 +1,10 @@
 <?php
 
-namespace Inowas\FlopyBundle\Model\Factory;
+namespace Inowas\Flopy\Model\Factory;
 
-use Inowas\ModflowBundle\Model\Adapter\GhbPackageAdapter;
+use Inowas\Flopy\Model\Adapter\GhbPackageAdapter;
+use Inowas\Flopy\Model\Package\GhbPackage;
 use Inowas\ModflowBundle\Model\ModflowModel;
-use Inowas\ModflowBundle\Model\Package\GhbPackage;
 use Inowas\SoilmodelBundle\Model\Soilmodel;
 
 class GhbPackageFactory implements PackageFactoryInterface

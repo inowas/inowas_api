@@ -2,26 +2,24 @@
 
 namespace Inowas\ModflowBundle\Model\Boundary;
 
-use Inowas\ModflowBundle\Model\ValueObject\Flopy2DArray;
 
 class RchStressPeriod extends StressPeriod
 {
-    /** @var  Flopy2DArray */
+    /** @var float */
     private $recharge;
 
     /**
-     * @return Flopy2DArray
+     * @return float
      */
-    public function getRecharge(): Flopy2DArray
-    {
+    public function getRecharge(): float {
         return $this->recharge;
     }
 
     /**
-     * @param Flopy2DArray $recharge
+     * @param float $recharge
      * @return RchStressPeriod
      */
-    public function setRecharge(Flopy2DArray $recharge): RchStressPeriod
+    public function setRecharge(float $recharge): RchStressPeriod
     {
         $this->recharge = $recharge;
         return $this;
@@ -31,25 +29,22 @@ class RchStressPeriod extends StressPeriod
      * @param $value
      * @return RchStressPeriod
      */
-    public static function fromArray($value){
+    public static function fromArray($value): RchStressPeriod {
         $instance = new self();
         $instance->setDateTimeBegin(new \DateTime($value["dateTimeBegin"]));
-        $instance->setDateTimeEnd(new \DateTime($value["dateTimeEnd"]));
         $instance->setNumberOfTimeSteps($value['numberOfTimeSteps']);
         $instance->setSteady($value['steady']);
         $instance->setTimeStepMultiplier($value['timeStepMultiplier']);
-        $instance->setRecharge(Flopy2DArray::fromValue($value['rech']));
+        $instance->setRecharge($value['rech']);
         return $instance;
     }
 
     /**
      * @return array
      */
-    public function jsonSerialize()
-    {
+    public function jsonSerialize(): array {
         $output = parent::jsonSerialize();
-        $output['rech'] = $this->recharge->toReducedArray();
-
+        $output['rech'] = $this->recharge;
         return $output;
     }
 }

@@ -4,7 +4,7 @@ namespace Inowas\ModflowBundle\Model\Type;
 
 use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Doctrine\DBAL\Types\ArrayType;
-use Inowas\ModflowBundle\Model\Package\CalculationProperties;
+use Inowas\Flopy\Model\Package\CalculationProperties;
 
 class CalculationPropertiesType extends ArrayType
 {

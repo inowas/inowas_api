@@ -79,7 +79,7 @@ class ModFlowModel extends AbstractModel
     /**
      * @var FlopyCalculationProperties
      *
-     * @ORM\Column(name="calculation_properties", type="flopy_calculation_properties", nullable=true)
+     * @ORM\Column(name="calculation_properties", type="calculation_properties", nullable=true)
      */
     private $calculationProperties;
 

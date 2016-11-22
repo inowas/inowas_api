@@ -1,6 +1,6 @@
 <?php
 
-namespace Inowas\FlopyBundle\Controller;
+namespace Inowas\ModflowBundle\Controller;
 
 use FOS\RestBundle\Controller\Annotations\Get;
 use FOS\RestBundle\Controller\FOSRestController;
@@ -10,13 +10,13 @@ use Nelmio\ApiDocBundle\Annotation\ApiDoc;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
-class ModelPackagesController extends FOSRestController
+class ModelCalculationsController extends FOSRestController
 {
 
     /**
-     * * @Get("/model/{id}/packages")
+     * * @Get("/calculation/{id}/packages")
      *
-     * Return the list of available ModflowPackages from a ModelId.
+     * Return the list of available ModflowPackages from a Calculation Id.
      *
      * @ApiDoc(
      *   resource = true,
@@ -31,19 +31,14 @@ class ModelPackagesController extends FOSRestController
      * @return JsonResponse
      * @throws NotFoundHttpException
      */
-    public function getModflowModelPackagesAction($id)
+    public function getFlopyCalculationPropertiesAction($id)
     {
-        /** @var ModflowModel $model */
-        $model = $this->get('inowas.modflow.modelmanager')->findById($id);
-
-        $response = new JsonResponse();
-        $response->setData($model->getCalculationProperties());
-
-        return $response;
+        $calculation = $this->get('inowas.modflow.calculationmanager')->findById($id);
+        return new JsonResponse($calculation->getCalculationProperties(), 200);
     }
 
     /**
-     * * @Get("/model/{id}/packages/{packageName}")
+     * * @Get("/calculation/{id}/packages/{packageName}")
      *
      * Return the list of available ModflowPackages from a ModelId.
      *
@@ -66,10 +61,8 @@ class ModelPackagesController extends FOSRestController
         /** @var ModflowModel $model */
         $model = $this->get('inowas.modflow.modelmanager')->findById($id);
         $soilmodel = $this->get('inowas.soilmodel.soilmodelmanager')->findById($model->getSoilmodelId());
-        $package = PackageFactory::create($packageName, $model, $soilmodel);
-        $response = new JsonResponse();
-        $response->setData($package);
+        $packageManager = $this->get('inowas.flopy.packagemanager');
 
-        return $response;
+        return new JsonResponse($packageManager->getPackageData($model, $soilmodel, $packageName), 200);
     }
 }

@@ -1,9 +1,8 @@
 <?php
 
-namespace Tests\AppBundle\Model;
+namespace Inowas\ModflowBundle\Tests\Model;
 
-
-use AppBundle\Model\ActiveCells;
+use Inowas\ModflowBundle\Model\ActiveCells;
 
 class ActiveCellsTest extends \PHPUnit_Framework_TestCase
 {
@@ -56,14 +55,13 @@ class ActiveCellsTest extends \PHPUnit_Framework_TestCase
 
     public function testThrowExceptionIfNotAnTwoDimensionalArray(){
         $data = array(1,2,3);
-        $this->setExpectedException('InvalidArgumentException');
+        $this->expectException('InvalidArgumentException');
         ActiveCells::fromArray($data);
     }
 
     public function testThrowExceptionWithInvalidJson(){
         $data = "{{ 6: 239iu4";
-        $this->setExpectedException('InvalidArgumentException');
+        $this->expectException('InvalidArgumentException');
         ActiveCells::fromJSON($data);
     }
-
 }

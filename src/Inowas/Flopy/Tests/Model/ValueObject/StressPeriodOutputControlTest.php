@@ -1,8 +1,8 @@
 <?php
 
-namespace Inowas\FlopyBundle\Tests\Model\ValueObject;
+namespace Inowas\Flopy\Tests\Model\ValueObject;
 
-use Inowas\FlopyBundle\Model\ValueObject\StressPeriodOutputControl;
+use Inowas\Flopy\Model\ValueObject\StressPeriodOutputControl;
 
 class StressPeriodOutputControlTest extends \PHPUnit_Framework_TestCase
 {

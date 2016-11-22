@@ -1,7 +1,8 @@
 <?php
 
-namespace Inowas\FlopyBundle\Model\Factory;
+namespace Inowas\Flopy\Model\Factory;
 
+use Inowas\Flopy\Model\Package\PackageInterface;
 use Inowas\ModflowBundle\Model\ModflowModel;
 use Inowas\PyprocessingBundle\Exception\InvalidArgumentException;
 use Inowas\SoilmodelBundle\Model\Soilmodel;
@@ -10,7 +11,7 @@ class PackageFactory
 {
     private function __construct(){}
 
-    public static function create($packageName, ModflowModel $model, Soilmodel $soilmodel) {
+    public static function create($packageName, ModflowModel $model, Soilmodel $soilmodel): PackageInterface {
 
         $packageFactory = "Inowas\\PyprocessingBundle\\Model\\Modflow\\Package\\".ucfirst(strtolower($packageName))."PackageFactory";
         if(! class_exists($packageFactory)){

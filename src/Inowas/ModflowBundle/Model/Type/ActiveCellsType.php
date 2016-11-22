@@ -4,7 +4,7 @@ namespace Inowas\ModflowBundle\Model\Type;
 
 use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Doctrine\DBAL\Types\ArrayType;
-use Inowas\ModflowBundle\Model\ValueObject\ActiveCells;
+use Inowas\ModflowBundle\Model\ActiveCells;
 
 /**
  * Type that maps an SQL VARCHAR to a PHP string.

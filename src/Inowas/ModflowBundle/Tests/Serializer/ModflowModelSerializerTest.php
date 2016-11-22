@@ -34,6 +34,8 @@ class ModflowModelSerializerTest extends KernelTestCase {
     public function testSerialize(){
         $model = $this->modelManager->create();
         $model->setName('TestModel');
+        $model->setStart(new \DateTime('2016-01-01'));
+        $model->setEnd(new \DateTime('2016-12-31'));
         $model->setDescription('TestModelDescription');
         $model->setBoundingBox(new BoundingBox(1, 2, 3, 4, 4326));
         $model->setGridSize(new GridSize(50, 60));

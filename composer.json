@@ -6,6 +6,7 @@
     "autoload": {
         "psr-4": {
             "AppBundle\\": "src/AppBundle/",
+            "Inowas\\Flopy\\": "src/Inowas/Flopy",
             "Inowas\\Soilmodel\\": "src/Inowas/SoilmodelBundle",
             "Inowas\\ModflowBundle\\": "src/Inowas/ModflowBundle",
             "Inowas\\": "src/Inowas/"
@@ -33,7 +34,6 @@
         "symfony/process": "^3.0",
         "incenteev/composer-parameter-handler": "^2.0",
         "friendsofsymfony/user-bundle": "~2.0@dev",
-        "phpunit/phpunit": "^4.8",
         "doctrine/doctrine-fixtures-bundle": "^2.3",
         "jms/serializer-bundle": "^1.1",
         "nelmio/api-doc-bundle": "^2.11",
@@ -45,7 +45,8 @@
         "sensiolabs/ansi-to-html": "^1.1",
         "jakoch/phantomjs-installer": "^2.1",
         "rabbl/heatmap": "^1.0",
-        "symfony/serializer": "^3.1"
+        "symfony/serializer": "^3.1",
+        "phpunit/phpunit": "^5.6"
       
     },
     "require-dev": {

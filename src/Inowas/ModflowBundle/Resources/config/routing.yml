@@ -8,4 +8,4 @@ rest_model_boundary:
 
 rest_model_package:
     type: rest
-    resource: Inowas\ModflowBundle\Controller\ModelPackagesController
+    resource: Inowas\ModflowBundle\Controller\ModelCalculationsController

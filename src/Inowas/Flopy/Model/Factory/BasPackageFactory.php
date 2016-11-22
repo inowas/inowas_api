@@ -1,15 +1,16 @@
 <?php
 
-namespace Inowas\FlopyBundle\Model\Factory;
+namespace Inowas\Flopy\Model\Factory;
 
-use Inowas\ModflowBundle\Model\Adapter\BasPackageAdapter;
+use Inowas\Flopy\Model\Adapter\BasPackageAdapter;
+use Inowas\Flopy\Model\Package\BasPackage;
+use Inowas\Flopy\Model\Package\PackageInterface;
 use Inowas\ModflowBundle\Model\ModflowModel;
-use Inowas\ModflowBundle\Model\Package\BasPackage;
 use Inowas\SoilmodelBundle\Model\Soilmodel;
 
 class BasPackageFactory implements PackageFactoryInterface
 {
-    public function create(ModflowModel $model, Soilmodel $soilmodel){
+    public function create(ModflowModel $model, Soilmodel $soilmodel): PackageInterface {
         $bas = new BasPackage();
         $adapter = new BasPackageAdapter($model, $soilmodel);
 
@@ -22,7 +23,6 @@ class BasPackageFactory implements PackageFactoryInterface
         $bas->setHnoflo($adapter->getHnoflo());
         $bas->setExtension($adapter->getExtension());
         $bas->setUnitnumber($adapter->getUnitnumber());
-
         return $bas;
     }
 }

@@ -1,6 +1,6 @@
 <?php
 
-namespace Inowas\FlopyBundle\Model\ValueObject;
+namespace Inowas\Flopy\Model\ValueObject;
 
 class WelStressPeriodData implements \JsonSerializable
 {
@@ -18,7 +18,7 @@ class WelStressPeriodData implements \JsonSerializable
 
     private final function __construct(){}
 
-    public static function create(int $lay, int $row, int $col, float $flux){
+    public static function create(int $lay, int $row, int $col, float $flux): WelStressPeriodData {
         $instance = new self();
         $instance->lay = $lay;
         $instance->row = $row;
@@ -31,8 +31,7 @@ class WelStressPeriodData implements \JsonSerializable
     /**
      * @return array
      */
-    public function jsonSerialize()
-    {
+    public function jsonSerialize(): array {
         return array(
             $this->lay,
             $this->row,

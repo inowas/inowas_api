@@ -2,8 +2,8 @@
 
 namespace Inowas\ModflowBundle\Tests\Serializer;
 
+use Inowas\ModflowBundle\Model\ActiveCells;
 use Inowas\ModflowBundle\Model\Area;
-use Inowas\ModflowBundle\Model\ValueObject\ActiveCells;
 use JMS\Serializer\SerializationContext;
 use JMS\Serializer\Serializer;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;

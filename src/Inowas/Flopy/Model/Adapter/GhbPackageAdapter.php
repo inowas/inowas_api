@@ -1,6 +1,6 @@
 <?php
 
-namespace Inowas\FlopyBundle\Model\Adapter;
+namespace Inowas\Flopy\Model\Adapter;
 
 
 use Inowas\ModflowBundle\Model\Boundary\GeneralHeadBoundary;
@@ -16,16 +16,14 @@ class GhbPackageAdapter
      * GhbPackageAdapter constructor.
      * @param ModFlowModel $model
      */
-    public function __construct(ModflowModel $model)
-    {
+    public function __construct(ModflowModel $model) {
         $this->model = $model;
     }
 
     /**
      * @return int
      */
-    public function getIpakcb(): int
-    {
+    public function getIpakcb(): int {
         return 0;
     }
 
@@ -41,10 +39,21 @@ class GhbPackageAdapter
             }
         }
 
-        /** @var GeneralHeadBoundary $boundary */
+        $globalStressPeriods = $this->model->getGlobalStressPeriods();
         $stress_period_data = array();
-        foreach ($boundaries as $boundary) {
-            $stress_period_data = $boundary->aggregateStressPeriodData($stress_period_data, $this->model->getGlobalStressPeriods());
+
+        foreach ($globalStressPeriods->getTotalTimesStart() as $key => $startTime){
+            /** @var GeneralHeadBoundary $boundary */
+            foreach ($boundaries as $boundary) {
+                $data = $boundary->getStressPeriodData($this->model->getStart(), $this->model->getTimeUnit(), $startTime);
+                if (! is_null($data)){
+                    if (! array_key_exists($key, $stress_period_data)){
+                        $stress_period_data[$key] = array();
+                    }
+
+                    $stress_period_data[$key] = array_merge($stress_period_data[$key], $data);
+                }
+            }
         }
 
         return $stress_period_data;

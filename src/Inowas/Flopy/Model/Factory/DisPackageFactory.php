@@ -1,11 +1,10 @@
 <?php
 
-namespace Inowas\FlopyBundle\Model\Factory;
+namespace Inowas\Flopy\Model\Factory;
 
-
-use Inowas\ModflowBundle\Model\Adapter\DisPackageAdapter;
+use Inowas\Flopy\Model\Adapter\DisPackageAdapter;
+use Inowas\Flopy\Model\Package\DisPackage;
 use Inowas\ModflowBundle\Model\ModflowModel;
-use Inowas\ModflowBundle\Model\Package\DisPackage;
 use Inowas\SoilmodelBundle\Model\Soilmodel;
 
 class DisPackageFactory implements PackageFactoryInterface

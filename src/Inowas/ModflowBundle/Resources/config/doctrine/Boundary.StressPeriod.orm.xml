@@ -27,7 +27,6 @@
 
         <id name="id" type="uuid" column="id"/>
         <field name="dateTimeBegin" type="datetime" column="begin"/>
-        <field name="dateTimeEnd" type="datetime" column="end"/>
         <field name="numberOfTimeSteps" type="integer" column="number_of_timesteps"/>
         <field name="steady" type="boolean" column="steady"/>
         <field name="timeStepMultiplier" type="float" column="timestep_multiplier"/>

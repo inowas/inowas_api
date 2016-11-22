@@ -1,6 +1,6 @@
 <?php
 
-namespace Inowas\FlopyBundle\Model\Package;
+namespace Inowas\Flopy\Model\Package;
 
 class GhbPackage implements PackageInterface
 {

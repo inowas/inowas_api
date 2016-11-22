@@ -3,9 +3,10 @@
 namespace Inowas\ModflowBundle\Model\Boundary;
 
 use CrEOF\Spatial\PHP\Types\Geometry\LineString;
+use CrEOF\Spatial\PHP\Types\Geometry\Point;
+use Inowas\Flopy\Model\ValueObject\ChdStressPeriodData;
 use Inowas\ModflowBundle\Exception\InvalidArgumentException;
-use Inowas\ModflowBundle\Model\ValueObject\ActiveCells;
-use Inowas\ModflowBundle\Model\ValueObject\ChdStressPeriodData;
+use Inowas\ModflowBundle\Model\ActiveCells;
 use JMS\Serializer\Annotation as JMS;
 
 class ConstantHeadBoundary extends Boundary
@@ -20,7 +21,7 @@ class ConstantHeadBoundary extends Boundary
     protected $geometry;
 
     /** @var array */
-    protected $layerNumbers;
+    protected $layerNumbers = array(0);
 
     /**
      * @return string
@@ -66,6 +67,18 @@ class ConstantHeadBoundary extends Boundary
         return $this;
     }
 
+
+    /**
+     * @param ChdStressPeriod $chdStressPeriod
+     * @param Point $point
+     * @return ConstantHeadBoundary
+     */
+    public function addStressPeriod(ChdStressPeriod $chdStressPeriod, Point $point): ConstantHeadBoundary {
+        $observationPoint = $this->getObservationPoint($point);
+        $observationPoint->addStressPeriod($chdStressPeriod);
+        return $this;
+    }
+
     /**
      * @param StressPeriod $stressPeriod
      * @param ActiveCells $activeCells
@@ -81,10 +94,14 @@ class ConstantHeadBoundary extends Boundary
 
         $stressPeriodData = array();
 
-        foreach ($activeCells->toArray() as $nRow => $row){
-            foreach ($row as $nCol => $value){
-                if ($value === true){
-                    $stressPeriodData[] = ChdStressPeriodData::create(0, $nRow, $nCol, $stressPeriod->getShead(), $stressPeriod->getEhead());
+        foreach ($this->getLayerNumbers() as $layerNumber){
+            foreach ($activeCells->toArray() as $nRow => $row){
+                foreach ($row as $nCol => $value){
+                    if ($value === true){
+                        if (is_int($nRow) && is_int($nCol)) {
+                            $stressPeriodData[] = ChdStressPeriodData::create($layerNumber, $nRow, $nCol, $stressPeriod->getShead(), $stressPeriod->getEhead());
+                        }
+                    }
                 }
             }
         }

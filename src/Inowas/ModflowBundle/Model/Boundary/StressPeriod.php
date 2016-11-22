@@ -2,7 +2,9 @@
 
 namespace Inowas\ModflowBundle\Model\Boundary;
 
+use Inowas\Flopy\Model\ValueObject\FlopyTotalTime;
 use Inowas\ModflowBundle\Model\StressPeriodInterface;
+use Inowas\ModflowBundle\Model\TimeUnit;
 use Ramsey\Uuid\Uuid;
 
 class StressPeriod implements StressPeriodInterface, \JsonSerializable
@@ -12,9 +14,6 @@ class StressPeriod implements StressPeriodInterface, \JsonSerializable
 
     /** @var \DateTime */
     private $dateTimeBegin;
-
-    /** @var \DateTime */
-    private $dateTimeEnd;
 
     /** @var integer */
     private $numberOfTimeSteps;
@@ -28,16 +27,14 @@ class StressPeriod implements StressPeriodInterface, \JsonSerializable
     /**
      * StressPeriod constructor.
      * @param null $dateTimeBegin
-     * @param null $dateTimeEnd
      * @param int $numberOfTimeSteps
      * @param bool $steady
      * @param float $timeStepMultiplier
      */
-    public function __construct($dateTimeBegin = null, $dateTimeEnd = null, $numberOfTimeSteps = 1, $steady = true, $timeStepMultiplier = 1.0)
+    public function __construct($dateTimeBegin = null, $numberOfTimeSteps = 1, $steady = false, $timeStepMultiplier = 1.0)
     {
         $this->id = Uuid::uuid4();
         $this->dateTimeBegin = $dateTimeBegin;
-        $this->dateTimeEnd = $dateTimeEnd;
         $this->numberOfTimeSteps = $numberOfTimeSteps;
         $this->steady = $steady;
         $this->timeStepMultiplier = $timeStepMultiplier;
@@ -69,40 +66,15 @@ class StressPeriod implements StressPeriodInterface, \JsonSerializable
         return $this->dateTimeBegin;
     }
 
-    /**
-     * @param \DateTime $dateTimeEnd
-     * @return $this
-     */
-    public function setDateTimeEnd(\DateTime $dateTimeEnd)
-    {
-        $this->dateTimeEnd = $dateTimeEnd;
-
-        return $this;
-    }
 
     /**
-     * @return \DateTime|null
+     * @param \DateTime $start
+     * @param TimeUnit $timeUnit
+     * @return int
      */
-    public function getDateTimeEnd()
-    {
-        return $this->dateTimeEnd;
-    }
-
-    /**
-     * @return float
-     */
-    public function getLengthInDays(){
-
-        if (! $this->dateTimeBegin instanceof \DateTime){
-            return null;
-        }
-
-        if (! $this->dateTimeEnd instanceof \DateTime){
-            return null;
-        }
-
-        $dDiff = $this->dateTimeBegin->diff($this->dateTimeEnd);
-        return $dDiff->days;
+    public function getTotalTimeStart(\DateTime $start, TimeUnit $timeUnit){
+        $interval = $start->diff($this->dateTimeBegin);
+        return FlopyTotalTime::intervalToInt($interval, $timeUnit);
     }
 
     /**
@@ -166,7 +138,6 @@ class StressPeriod implements StressPeriodInterface, \JsonSerializable
     {
         return array(
             "dateTimeBegin" => $this->dateTimeBegin->format(\DateTime::ATOM),
-            "dateTimeEnd" => $this->dateTimeEnd->format(\DateTime::ATOM),
             "numberOfTimeSteps" => $this->numberOfTimeSteps,
             "steady" => $this->steady,
             "timeStepMultiplier" => $this->timeStepMultiplier

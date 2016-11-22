@@ -1,8 +1,8 @@
 <?php
 
-namespace Inowas\FlopyBundle\Model\ValueObject;
+namespace Inowas\Flopy\Model\ValueObject;
 
-use Inowas\ModflowBundle\Exception\InvalidArgumentException;
+use Inowas\Flopy\Exception\InvalidArgumentException;
 
 class Flopy1DArray extends FlopyArray implements FlopyArrayInterface
 {

@@ -1,12 +1,12 @@
 <?php
 
-namespace Inowas\FlopyBundle\Model\Adapter;
+namespace Inowas\Flopy\Model\Adapter;
 
 use Inowas\ModflowBundle\Model\Area;
 use Inowas\ModflowBundle\Model\ModflowModel;
-use Inowas\FlopyBundle\Model\ValueObject\ActiveCells;
-use Inowas\FlopyBundle\Model\ValueObject\Flopy3DArray;
-use Inowas\FlopyBundle\Model\ValueObject\IBound;
+use Inowas\Flopy\Model\ValueObject\ActiveCells;
+use Inowas\Flopy\Model\ValueObject\Flopy3DArray;
+use Inowas\Flopy\Model\ValueObject\IBound;
 use Inowas\SoilmodelBundle\Model\Soilmodel;
 
 class BasPackageAdapter

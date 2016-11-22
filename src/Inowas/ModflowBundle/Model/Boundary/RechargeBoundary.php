@@ -4,6 +4,7 @@ namespace Inowas\ModflowBundle\Model\Boundary;
 
 use CrEOF\Spatial\PHP\Types\Geometry\Polygon;
 use Inowas\ModflowBundle\Exception\InvalidArgumentException;
+use Inowas\ModflowBundle\Model\ActiveCells;
 
 class RechargeBoundary extends Boundary
 {
@@ -38,10 +39,21 @@ class RechargeBoundary extends Boundary
     }
 
     /**
+     * @param RchStressPeriod $welStressPeriod
+     * @return RechargeBoundary
+     */
+    public function addStressPeriod(RchStressPeriod $welStressPeriod): RechargeBoundary {
+        $observationPoint = $this->getObservationPoint();
+        $observationPoint->addStressPeriod($welStressPeriod);
+        return $this;
+    }
+
+    /**
      * @param StressPeriod $stressPeriod
+     * @param ActiveCells $activeCells
      * @return array
      */
-    public function generateStressPeriodData(StressPeriod $stressPeriod){
+    public function generateStressPeriodData(StressPeriod $stressPeriod, ActiveCells $activeCells){
 
         if (! $stressPeriod instanceof RchStressPeriod){
             throw new InvalidArgumentException(
@@ -49,8 +61,17 @@ class RechargeBoundary extends Boundary
             );
         }
 
-        $stressPeriodData = $stressPeriod->getRecharge()->toReducedArray();
+        $data = array();
+        foreach ($activeCells->toArray() as $nRow => $row){
+            foreach ($row as $nCol => $value){
+                if ($value === true){
+                    if (is_int($nRow) && is_int($nCol)){
+                        $data[$nRow][$nCol] = $stressPeriod->getRecharge();
+                    }
+                }
+            }
+        }
 
-        return $stressPeriodData;
+        return $data;
     }
 }

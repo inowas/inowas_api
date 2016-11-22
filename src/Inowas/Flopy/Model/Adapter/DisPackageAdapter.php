@@ -1,15 +1,13 @@
 <?php
 
-namespace Inowas\FlopyBundle\Model\Adapter;
+namespace Inowas\Flopy\Model\Adapter;
 
-use Doctrine\Common\Collections\ArrayCollection;
 use Inowas\ModflowBundle\Model\BoundingBox;
 use Inowas\ModflowBundle\Model\GridSize;
 use Inowas\ModflowBundle\Model\ModflowModel;
-use Inowas\ModflowBundle\Model\StressPeriod;
-use Inowas\FlopyBundle\Model\ValueObject\Flopy1DArray;
-use Inowas\FlopyBundle\Model\ValueObject\Flopy2DArray;
-use Inowas\FlopyBundle\Model\ValueObject\Flopy3DArray;
+use Inowas\Flopy\Model\ValueObject\Flopy1DArray;
+use Inowas\Flopy\Model\ValueObject\Flopy2DArray;
+use Inowas\Flopy\Model\ValueObject\Flopy3DArray;
 use Inowas\SoilmodelBundle\Model\Layer;
 use Inowas\SoilmodelBundle\Model\Property;
 use Inowas\SoilmodelBundle\Model\PropertyType;
@@ -75,7 +73,7 @@ class DisPackageAdapter
      */
     public function getNper(): int
     {
-        return count($this->model->getGlobalStressPeriods());
+        return count($this->model->getGlobalStressPeriods()->getTotalTimesStart());
     }
 
     /**
@@ -213,25 +211,11 @@ class DisPackageAdapter
     }
 
     /**
-     * @return Flopy1DArray|null
+     * @return Flopy1DArray
      * @Assert\NotNull()
      */
     public function getPerlen(){
-
-        $stressPeriods = $this->model->getGlobalStressPeriods();
-
-        if ($stressPeriods === null){
-            return null;
-        }
-
-        $perlen = array();
-        for ($i = 0; $i<count($stressPeriods); $i++){
-            /** @var StressPeriod $sp */
-            $sp = $stressPeriods[$i];
-            $perlen[] = $sp->getLengthInDays()+1;
-        }
-
-        return Flopy1DArray::fromValue($perlen, $this->getNper());
+        return Flopy1DArray::fromArray($this->model->getGlobalStressPeriods()->getPerlen());
     }
 
     /**
@@ -239,21 +223,7 @@ class DisPackageAdapter
      * @Assert\NotNull()
      */
     public function getNstp(){
-
-        $stressPeriods = $this->model->getGlobalStressPeriods();
-
-        if ($stressPeriods === null){
-            return null;
-        }
-
-        $nstp = array();
-        for ($i = 0; $i<count($stressPeriods); $i++){
-            /** @var StressPeriod $sp */
-            $sp = $stressPeriods[$i];
-            $nstp[] = $sp->getNumberOfTimeSteps();
-        }
-
-        return Flopy1DArray::fromValue($nstp, $this->getNper());
+        return Flopy1DArray::fromArray($this->model->getGlobalStressPeriods()->getNstp());
     }
 
     /**
@@ -261,21 +231,7 @@ class DisPackageAdapter
      * @Assert\NotNull()
      */
     public function getTsmult(){
-
-        $stressPeriods = $this->model->getGlobalStressPeriods();
-
-        if ($stressPeriods === null){
-            return null;
-        }
-
-        $tsmult = array();
-        for ($i = 0; $i<count($stressPeriods); $i++){
-            /** @var StressPeriod $sp */
-            $sp = $stressPeriods[$i];
-            $tsmult[] = $sp->getTimeStepMultiplier();
-        }
-
-        return Flopy1DArray::fromValue($tsmult, $this->getNper());
+        return Flopy1DArray::fromValue($this->model->getGlobalStressPeriods()->getTsmult());
     }
 
     /**
@@ -283,21 +239,7 @@ class DisPackageAdapter
      * @Assert\NotNull()
      */
     public function getSteady(){
-
-        $stressPeriods = $this->model->getGlobalStressPeriods();
-        if ($stressPeriods === null){
-            return null;
-        }
-
-        $steady = array();
-        for ($i = 0; $i<count($stressPeriods); $i++){
-
-            /** @var StressPeriod $sp */
-            $sp = $stressPeriods[$i];
-            $steady[] = $sp->isSteady();
-        }
-
-        return Flopy1DArray::fromValue($steady, $this->getNper());
+        return Flopy1DArray::fromArray($this->model->getGlobalStressPeriods()->getSteady());
     }
 
     /**
@@ -370,23 +312,5 @@ class DisPackageAdapter
      */
     public function getProj4Str(){
         return 'EPSG:4326';
-    }
-
-    /**
-     * @return \DateTimeImmutable|null
-     */
-    public function getStartDateTime(){
-
-        /** @var ArrayCollection $stressPeriods */
-        $stressPeriods = $this->model->getGlobalStressPeriods();
-
-        if ($stressPeriods === null){
-            return null;
-        }
-
-        /** @var StressPeriod $sp */
-        $sp = $stressPeriods[0];
-
-        return \DateTimeImmutable::createFromMutable($sp->getDateTimeBegin());
     }
 }

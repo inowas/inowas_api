@@ -13,7 +13,7 @@ class AddCalculationPropertiesEvent extends AddEvent
     /**
      * @var FlopyCalculationProperties
      *
-     * @ORM\Column(name="calculation_properties", type="flopy_calculation_properties")
+     * @ORM\Column(name="calculation_properties", type="calculation_properties")
      */
     private $calculationProperties;
 

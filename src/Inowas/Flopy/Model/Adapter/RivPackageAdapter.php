@@ -1,6 +1,6 @@
 <?php
 
-namespace Inowas\FlopyBundle\Model\Adapter;
+namespace Inowas\Flopy\Model\Adapter;
 
 use Inowas\ModflowBundle\Model\Boundary\RiverBoundary;
 use Inowas\ModflowBundle\Model\ModflowModel;
@@ -40,10 +40,21 @@ class RivPackageAdapter
             }
         }
 
-        /** @var RiverBoundary $river */
+        $globalStressPeriods = $this->model->getGlobalStressPeriods();
         $stress_period_data = array();
-        foreach ($rivers as $river) {
-            $stress_period_data = $river->aggregateStressPeriodData($stress_period_data, $this->model->getGlobalStressPeriods());
+
+        foreach ($globalStressPeriods->getTotalTimesStart() as $key => $startTime){
+            /** @var RiverBoundary $river */
+            foreach ($rivers as $river) {
+                $data = $river->getStressPeriodData($this->model->getStart(), $this->model->getTimeUnit(), $startTime);
+                if (! is_null($data)){
+                    if (! array_key_exists($key, $stress_period_data)){
+                        $stress_period_data[$key] = array();
+                    }
+
+                    $stress_period_data[$key] = array_merge($stress_period_data[$key], $data);
+                }
+            }
         }
 
         return $stress_period_data;

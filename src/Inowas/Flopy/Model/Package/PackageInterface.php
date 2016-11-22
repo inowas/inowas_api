@@ -1,6 +1,6 @@
 <?php
 
-namespace Inowas\FlopyBundle\Model\Package;
+namespace Inowas\Flopy\Model\Package;
 
 
 interface PackageInterface extends \JsonSerializable {}

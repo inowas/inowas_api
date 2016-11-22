@@ -1,10 +1,10 @@
 <?php
 
-namespace Inowas\FlopyBundle\Model\Package;
+namespace Inowas\Flopy\Model\Package;
 
-use Inowas\FlopyBundle\Model\ValueObject\Flopy1DArray;
-use Inowas\FlopyBundle\Model\ValueObject\Flopy2DArray;
-use Inowas\FlopyBundle\Model\ValueObject\Flopy3DArray;
+use Inowas\Flopy\Model\ValueObject\Flopy1DArray;
+use Inowas\Flopy\Model\ValueObject\Flopy2DArray;
+use Inowas\Flopy\Model\ValueObject\Flopy3DArray;
 
 class DisPackage implements PackageInterface
 {

@@ -38,6 +38,8 @@ class ModelBoundaryControllerTest extends WebTestCase
     public function testPostBoundary()
     {
         $model = $this->modelManager->create();
+        $model->setStart(new \DateTime('2016-01-01'));
+        $model->setEnd(new \DateTime('2016-12-31'));
         $model->setName('TestModel');
         $this->modelManager->update($model);
 

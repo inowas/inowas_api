@@ -1,6 +1,6 @@
 <?php
 
-namespace Inowas\FlopyBundle\Model\Factory;
+namespace Inowas\Flopy\Model\Factory;
 
 
 class FcpPackageFactory extends CalculationPropertiesFactory implements PackageFactoryInterface

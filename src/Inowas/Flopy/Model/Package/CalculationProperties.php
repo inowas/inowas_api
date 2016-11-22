@@ -1,6 +1,6 @@
 <?php
 
-namespace Inowas\FlopyBundle\Model\Package;
+namespace Inowas\Flopy\Model\Package;
 
 class CalculationProperties implements \JsonSerializable
 {
@@ -16,6 +16,12 @@ class CalculationProperties implements \JsonSerializable
      * @var string
      */
     private $loadFrom = 'api';
+
+    /** @var \DateTime $dateTimeBegin */
+    private $dateTimeBegin;
+
+    /** @var \DateTime $dateTimeEnd */
+    private $dateTimeEnd;
 
     /** @var  array */
     private $packages;
@@ -67,6 +73,26 @@ class CalculationProperties implements \JsonSerializable
     public function setLoadFrom(string $loadFrom): CalculationProperties
     {
         $this->loadFrom = $loadFrom;
+        return $this;
+    }
+
+    /**
+     * @param \DateTime $dateTimeBegin
+     * @return CalculationProperties
+     */
+    public function setDateTimeBegin(\DateTime $dateTimeBegin): CalculationProperties
+    {
+        $this->dateTimeBegin = $dateTimeBegin;
+        return $this;
+    }
+
+    /**
+     * @param \DateTime $dateTimeEnd
+     * @return CalculationProperties
+     */
+    public function setDateTimeEnd(\DateTime $dateTimeEnd): CalculationProperties
+    {
+        $this->dateTimeEnd = $dateTimeEnd;
         return $this;
     }
 
@@ -169,6 +195,8 @@ class CalculationProperties implements \JsonSerializable
     public function toArray(){
         return array(
             'load_from' => $this->loadFrom,
+            'date_time_begin' => $this->dateTimeBegin,
+            'date_time_end' => $this->dateTimeEnd,
             'packages' => $this->packages,
             'initial_values' => $this->initialValues,
             'check' => $this->check,
@@ -189,6 +217,14 @@ class CalculationProperties implements \JsonSerializable
 
         if (array_key_exists('load_from', $properties)){
             $instance->setLoadFrom($properties['load_from']);
+        }
+
+        if (array_key_exists('date_time_begin', $properties)){
+            $instance->setDateTimeBegin($properties['date_time_begin']);
+        }
+
+        if (array_key_exists('date_time_end', $properties)){
+            $instance->setDateTimeBegin($properties['date_time_end']);
         }
 
         if (array_key_exists('packages', $properties)){

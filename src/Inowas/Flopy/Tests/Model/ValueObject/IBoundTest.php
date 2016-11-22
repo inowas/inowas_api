@@ -1,8 +1,8 @@
 <?php
 
-namespace Inowas\FlopyBundle\Tests\Model\ValueObject;
+namespace Inowas\Flopy\Tests\Model\ValueObject;
 
-use Inowas\FlopyBundle\Model\ValueObject\IBound;
+use Inowas\Flopy\Model\ValueObject\IBound;
 use Inowas\ModflowBundle\Model\ActiveCells;
 
 class IBoundTest extends \PHPUnit_Framework_TestCase

@@ -1,9 +1,9 @@
 <?php
 
-namespace Inowas\FlopyBundle\Tests\Model\ValueObject;
+namespace Inowas\Flopy\Tests\Model\ValueObject;
 
-use Inowas\FlopyBundle\Exception\InvalidArgumentException;
-use Inowas\FlopyBundle\Model\ValueObject\Flopy2DArray;
+use Inowas\Flopy\Exception\InvalidArgumentException;
+use Inowas\Flopy\Model\ValueObject\Flopy2DArray;
 
 class Flopy2DArrayTest extends \PHPUnit_Framework_TestCase
 {

@@ -1,11 +1,11 @@
 <?php
 
-namespace Inowas\FlopyBundle\Service;
+namespace Inowas\ModflowBundle\Service;
 
-use Inowas\FlopyBundle\Model\Factory\CalculationPropertiesFactory;
-use Inowas\FlopyBundle\Model\Factory\PackageFactory;
-use Inowas\FlopyBundle\Model\Package\CalculationProperties;
-use Inowas\FlopyBundle\Model\Package\PackageInterface;
+use Inowas\Flopy\Model\Factory\CalculationPropertiesFactory;
+use Inowas\Flopy\Model\Factory\PackageFactory;
+use Inowas\Flopy\Model\Package\CalculationProperties;
+use Inowas\Flopy\Model\Package\PackageInterface;
 use Inowas\ModflowBundle\Model\ModflowModel;
 use Inowas\SoilmodelBundle\Model\Soilmodel;
 
@@ -15,8 +15,8 @@ class FlopyPackageManager
      * @param ModflowModel $model
      * @return CalculationProperties
      */
-    public function getCalculationProperties(ModflowModel $model){
-        return CalculationPropertiesFactory::loadFromApiAndRun($model);
+    public function getCalculationProperties(ModflowModel $model): CalculationProperties {
+        return CalculationPropertiesFactory::loadFromApiRunAndSubmit($model);
     }
 
     /**
@@ -28,5 +28,4 @@ class FlopyPackageManager
     public function getPackageData(ModflowModel $model, Soilmodel $soilmodel, string $packageName):PackageInterface {
         return PackageFactory::create($packageName, $model, $soilmodel);
     }
-
 }

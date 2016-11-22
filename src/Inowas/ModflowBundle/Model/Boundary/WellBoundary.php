@@ -3,9 +3,9 @@
 namespace Inowas\ModflowBundle\Model\Boundary;
 
 use CrEOF\Spatial\PHP\Types\Geometry\Point;
+use Inowas\Flopy\Model\ValueObject\WelStressPeriodData;
 use Inowas\ModflowBundle\Exception\InvalidArgumentException;
-use Inowas\ModflowBundle\Model\ValueObject\ActiveCells;
-use Inowas\ModflowBundle\Model\ValueObject\WelStressPeriodData;
+use Inowas\ModflowBundle\Model\ActiveCells;
 
 class WellBoundary extends Boundary
 {
@@ -26,8 +26,8 @@ class WellBoundary extends Boundary
     /** @var string */
     protected $wellType = self::TYPE_PUBLIC_WELL;
 
-    /** @var Point */
-    private $geometry;
+    /** @var  Point */
+    protected $geometry;
 
     /** @var int */
     private $layerNumber = 0;
@@ -64,19 +64,15 @@ class WellBoundary extends Boundary
      * @param point $geometry
      * @return $this
      */
-    public function setGeometry(Point $geometry)
-    {
+    public function setGeometry(Point $geometry){
         $this->geometry = $geometry;
         return $this;
     }
 
     /**
-     * Get point
-     *
      * @return point
      */
-    public function getGeometry()
-    {
+    public function getGeometry(){
         return $this->geometry;
     }
 
@@ -95,6 +91,16 @@ class WellBoundary extends Boundary
     public function setLayerNumber(int $layerNumber): WellBoundary
     {
         $this->layerNumber = $layerNumber;
+        return $this;
+    }
+
+    /**
+     * @param StressPeriod $welStressPeriod
+     * @return WellBoundary
+     */
+    public function addStressPeriod(StressPeriod $welStressPeriod): WellBoundary {
+        $observationPoint = $this->getObservationPoint();
+        $observationPoint->addStressPeriod($welStressPeriod);
         return $this;
     }
 

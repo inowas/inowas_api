@@ -1,8 +1,8 @@
 <?php
 
-namespace Inowas\FlopyBundle\Tests\Model\Package;
+namespace Inowas\Flopy\Tests\Model\Package;
 
-use Inowas\FlopyBundle\Model\Package\OcPackage;
+use Inowas\Flopy\Model\Package\OcPackage;
 
 class OcPackageTest extends \PHPUnit_Framework_TestCase
 {

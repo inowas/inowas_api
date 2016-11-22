@@ -20,6 +20,9 @@
         <field name="description" column="description" type="string" length="255" nullable="true" />
         <field name="gridSize" type="grid_size" column="grid_size" nullable="true"/>
         <field name="boundingBox" type="bounding_box" column="bounding_box" nullable="true"/>
+        <field name="start" type="datetime" column="`start`" nullable="false"/>
+        <field name="end" type="datetime" column="`end`" nullable="false"/>
+        <field name="timeUnit" type="time_unit" column="timeunit" nullable="false"/>
 
         <one-to-one field="area" target-entity="Inowas\ModflowBundle\Model\Area" orphan-removal="true">
             <cascade>

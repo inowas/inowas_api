@@ -1,10 +1,10 @@
 <?php
 
-namespace Inowas\FlopyBundle\Model\Factory;
+namespace Inowas\Flopy\Model\Factory;
 
 
-use Inowas\FlopyBundle\Model\Adapter\CalculationPropertiesAdapter;
-use Inowas\FlopyBundle\Model\Package\CalculationProperties;
+use Inowas\Flopy\Model\Adapter\CalculationPropertiesAdapter;
+use Inowas\Flopy\Model\Package\CalculationProperties;
 use Inowas\ModflowBundle\Model\ModflowModel;
 use Inowas\SoilmodelBundle\Model\Soilmodel;
 

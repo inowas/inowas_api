@@ -80,7 +80,6 @@ class RivStressPeriod extends StressPeriod
     public static function fromArray($value){
         $instance = new self();
         $instance->setDateTimeBegin(new \DateTime($value["dateTimeBegin"]));
-        $instance->setDateTimeEnd(new \DateTime($value["dateTimeEnd"]));
         $instance->setNumberOfTimeSteps($value['numberOfTimeSteps']);
         $instance->setSteady($value['steady']);
         $instance->setTimeStepMultiplier($value['timeStepMultiplier']);

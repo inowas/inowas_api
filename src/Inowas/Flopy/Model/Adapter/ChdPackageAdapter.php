@@ -1,8 +1,9 @@
 <?php
 
-namespace Inowas\FlopyBundle\Model\Adapter;
+namespace Inowas\Flopy\Model\Adapter;
 
 use Inowas\ModflowBundle\Model\Boundary\ConstantHeadBoundary;
+use Inowas\ModflowBundle\Model\Boundary\GeneralHeadBoundary;
 use Inowas\ModflowBundle\Model\ModflowModel;
 
 class ChdPackageAdapter
@@ -20,7 +21,7 @@ class ChdPackageAdapter
     }
 
     /**
-     * @return mixed
+     * @return array
      */
     public function getStressPeriodData()
     {
@@ -31,10 +32,21 @@ class ChdPackageAdapter
             }
         }
 
+        $globalStressPeriods = $this->model->getGlobalStressPeriods();
         $stress_period_data = array();
-        /** @var ConstantHeadBoundary $boundary */
-        foreach ($boundaries as $boundary) {
-            $stress_period_data = $boundary->aggregateStressPeriodData($stress_period_data, $this->model->getStressPeriods());
+
+        foreach ($globalStressPeriods->getTotalTimesStart() as $key => $startTime){
+            /** @var ConstantHeadBoundary $boundary */
+            foreach ($boundaries as $boundary) {
+                $data = $boundary->getStressPeriodData($this->model->getStart(), $this->model->getTimeUnit(), $startTime);
+                if (! is_null($data)){
+                    if (! array_key_exists($key, $stress_period_data)){
+                        $stress_period_data[$key] = array();
+                    }
+
+                    $stress_period_data[$key] = array_merge($stress_period_data[$key], $data);
+                }
+            }
         }
 
         return $stress_period_data;

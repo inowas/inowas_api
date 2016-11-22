@@ -1,6 +1,6 @@
 <?php
 
-namespace Inowas\FlopyBundle\Exception;
+namespace Inowas\Flopy\Exception;
 
 /**
  * InvalidArgumentException

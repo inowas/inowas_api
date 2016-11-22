@@ -2,7 +2,6 @@
 
 namespace Inowas\ModflowBundle\Model;
 
-use Inowas\ModflowBundle\Model\ValueObject\ActiveCells;
 use Ramsey\Uuid\Uuid;
 
 abstract class ModelObject

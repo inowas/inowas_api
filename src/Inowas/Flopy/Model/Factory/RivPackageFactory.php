@@ -1,10 +1,10 @@
 <?php
 
-namespace Inowas\FlopyBundle\Model\Factory;
+namespace Inowas\Flopy\Model\Factory;
 
-use Inowas\ModflowBundle\Model\Adapter\RivPackageAdapter;
+use Inowas\Flopy\Model\Adapter\RivPackageAdapter;
+use Inowas\Flopy\Model\Package\RivPackage;
 use Inowas\ModflowBundle\Model\ModflowModel;
-use Inowas\ModflowBundle\Model\Package\RivPackage;
 use Inowas\SoilmodelBundle\Model\Soilmodel;
 
 class RivPackageFactory implements PackageFactoryInterface
