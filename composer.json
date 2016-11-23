@@ -46,7 +46,8 @@
         "jakoch/phantomjs-installer": "^2.1",
         "rabbl/heatmap": "^1.0",
         "symfony/serializer": "^3.1",
-        "phpunit/phpunit": "^5.6"
+        "phpunit/phpunit": "^5.6",
+        "phayes/geophp": "^1.2"
       
     },
     "require-dev": {
