@@ -2,6 +2,7 @@
 
 namespace Inowas\ModflowBundle\Controller;
 
+use CrEOF\Spatial\PHP\Types\Geometry\Polygon;
 use FOS\RestBundle\Controller\Annotations\Get;
 use FOS\RestBundle\Controller\Annotations\Put;
 use FOS\RestBundle\Controller\Annotations\RequestParam;
@@ -64,7 +65,7 @@ class ModelAreaController extends FOSRestController
      *
      * @RequestParam(name="name", nullable=false, strict=false, description="The name of the area")
      * @RequestParam(name="activeCells", nullable=false, strict=false, description="The area active cells")
-     * @RequestParam(name="geometry", nullable=false, strict=false, description="The area geometry")
+     * @RequestParam(name="geometry", nullable=false, strict=false, description="The area geometry in geoJson")
      *
      * @return View
      */
@@ -77,7 +78,9 @@ class ModelAreaController extends FOSRestController
         }
 
         if ($paramFetcher->get('geometry')){
-            $area->setGeometry($paramFetcher->get('geometry'));
+            $geometry = \geoPHP::load($paramFetcher->get('geometry'), 'json');
+            $polygon = new Polygon($geometry->asArray());
+            $area->setGeometry($polygon->setSrid(4326));
         }
 
         $this->get('inowas.modflow.modelmanager')->updateArea($area);
