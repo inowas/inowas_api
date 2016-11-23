@@ -15,7 +15,7 @@
             <unique-constraint columns="id" name="uc_constant_head_boundary_id"/>
         </unique-constraints>
 
-        <field name="geometry" column="geometry" type="linestring" nullable="true"/>
+        <field name="geometry" column="chd_geometry" type="linestring" nullable="true"/>
         <field name="layerNumbers" column="layer_numbers" type="array" nullable="true"/>
 
     </entity>

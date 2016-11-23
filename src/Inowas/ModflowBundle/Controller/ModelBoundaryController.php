@@ -2,8 +2,12 @@
 
 namespace Inowas\ModflowBundle\Controller;
 
+use CrEOF\Spatial\PHP\Types\Geometry\LineString;
+use CrEOF\Spatial\PHP\Types\Geometry\Point;
+use CrEOF\Spatial\PHP\Types\Geometry\Polygon;
 use FOS\RestBundle\Controller\Annotations\Get;
 use FOS\RestBundle\Controller\Annotations\Post;
+use FOS\RestBundle\Controller\Annotations\Put;
 use FOS\RestBundle\Controller\Annotations\RequestParam;
 use FOS\RestBundle\Controller\FOSRestController;
 use FOS\RestBundle\Request\ParamFetcher;
@@ -41,11 +45,17 @@ class ModelBoundaryController extends FOSRestController
      */
     public function postModflowModelBoundaryAction($id, ParamFetcher $paramFetcher)
     {
-        $model = $this->get('inowas.modflow.modelmanager')->findById($id);
+        $modelManager = $this->get('inowas.modflow.modelmanager');
 
-        $boundary = $this->get('inowas.modflow.boundarymanager')->create($paramFetcher->get('type'));
+        /** @var Boundary $boundary */
+        $boundary = $this->get('inowas.modflow.boundarymanager')
+            ->create($paramFetcher->get('type'));
+
+        $boundary->setName($paramFetcher->get('name'));
+
+        $model = $modelManager->findById($id);
         $model->addBoundary($boundary);
-        $this->get('inowas.modflow.modelmanager')->update($model);
+        $modelManager->update($model);
 
         $view = View::create($boundary)
             ->setStatusCode(200)
@@ -72,8 +82,7 @@ class ModelBoundaryController extends FOSRestController
      * )
      *
      * @param $id
-     * @return JsonResponse
-     * @throws NotFoundHttpException
+     * @return View
      */
     public function getBoundaryAction($id)
     {
@@ -84,9 +93,92 @@ class ModelBoundaryController extends FOSRestController
             throw $this->createNotFoundException(sprintf('Boundary with id=%s not found.', $id));
         }
 
-        $response = new JsonResponse();
-        $response->setData($boundary);
-        return $response;
+        $view = View::create($boundary)
+            ->setStatusCode(200)
+            ->setSerializationContext(SerializationContext::create()
+                ->setGroups(array('details'))
+            )
+        ;
+
+        return $view;
+    }
+
+    /**
+     * * @Put("/boundary/{id}")
+     *
+     * Returns the boundary details specified by boundary-ID.
+     *
+     * @ApiDoc(
+     *   resource = true,
+     *   description = "Returns the boundary details by id.",
+     *   statusCodes = {
+     *     200 = "Returned when successful",
+     *     404 = "Returned when the model is not found"
+     *   }
+     * )
+     *
+     * @RequestParam(name="name", nullable=false, strict=false, description="Name of the Boundary.")
+     * @RequestParam(name="active_cells", nullable=false, strict=false, description="Active Cells Json")
+     * @RequestParam(name="geometry", nullable=false, strict=false, description="The Boundary geometry in geoJson")
+     * @RequestParam(name="layer_numbers", nullable=false, strict=false, description="Affected layers, 0-based number")
+     * @RequestParam(name="well_type", nullable=false, strict=false, description="For well boundary, which type of well.
+     *     Available Well-Types:
+     *          Private Well: prw
+     *          Public Well: puw
+     *          Observation Well: ow
+     *          Industrial Well: iw
+     *     ")
+     *
+     * @param $id
+     * @param ParamFetcher $paramFetcher
+     * @return View
+     */
+    public function putBoundaryAction($id, ParamFetcher $paramFetcher)
+    {
+        $manager = $this->get('inowas.modflow.boundarymanager');
+        $boundary = $manager->findById($id);
+
+        if (! $boundary instanceof Boundary){
+            throw $this->createNotFoundException(sprintf('Boundary with id=%s not found.', $id));
+        }
+
+        if ($paramFetcher->get('name')){
+            $boundary->setName($paramFetcher->get('name'));
+        }
+
+        if ($paramFetcher->get('geometry') && method_exists($boundary, 'setGeometry')){
+            $geometry = \geoPHP::load($paramFetcher->get('geometry'), 'json');
+            switch (strtolower(get_class($geometry))){
+                case "polygon":
+                    $geometry = new Polygon($geometry->asArray());
+                    break;
+                case "linestring":
+                    $geometry = new LineString($geometry->asArray());
+                    break;
+                case "point":
+                    $geometry = new Point($geometry->asArray());
+                    break;
+            }
+
+            $boundary->setGeometry($geometry->setSrid(4326));
+        }
+
+        if ($paramFetcher->get('layer_numbers') && method_exists($boundary, 'setLayerNumbers')){
+            $boundary->setLayerNumbers($paramFetcher->get('layer_numbers'));
+        }
+
+        if ($paramFetcher->get('well_type') && method_exists($boundary, 'setWellType')){
+            $boundary->setWellType($paramFetcher->get('well_type'));
+        }
+
+        $view = View::create($boundary)
+            ->setStatusCode(200)
+            ->setSerializationContext(SerializationContext::create()
+                ->setGroups(array('details'))
+            )
+        ;
+
+        return $view;
     }
 
     /**
@@ -116,8 +208,13 @@ class ModelBoundaryController extends FOSRestController
             throw $this->createNotFoundException(sprintf('Model with id=%s not found.', $id));
         }
 
-        $response = new JsonResponse();
-        $response->setData($model->getBoundaries());
-        return $response;
+        $view = View::create($model->getBoundaries())
+            ->setStatusCode(200)
+            ->setSerializationContext(SerializationContext::create()
+                ->setGroups(array('details'))
+            )
+        ;
+
+        return $view;
     }
 }

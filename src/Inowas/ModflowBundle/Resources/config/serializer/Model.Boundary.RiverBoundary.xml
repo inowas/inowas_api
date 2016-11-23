@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<serializer>
+    <class name="Inowas\ModflowBundle\Model\Boundary\RiverBoundary">
+        <property name="type" type="string" groups="details"/>
+        <property name="layerNumbers" type="array" groups="details"/>
+        <virtual-property method="getJsonGeometry" type="string" serialized-name="geometry" groups="details"/>
+    </class>
+</serializer>

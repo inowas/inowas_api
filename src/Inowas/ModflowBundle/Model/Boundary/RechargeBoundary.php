@@ -74,4 +74,15 @@ class RechargeBoundary extends Boundary
 
         return $data;
     }
+
+    /**
+     * @return null|string
+     */
+    public function getJsonGeometry(){
+        if (! $this->geometry instanceof Polygon){
+            return null;
+        }
+
+        return $this->geometry->toJson();
+    }
 }

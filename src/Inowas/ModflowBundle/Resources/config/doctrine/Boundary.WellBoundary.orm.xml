@@ -16,7 +16,7 @@
         </unique-constraints>
 
         <field name="wellType" column="type" type="string" length="16" nullable="true"/>
-        <field name="geometry" column="geometry" type="point" nullable="true"/>
+        <field name="geometry" column="wel_geometry" type="point" nullable="true"/>
         <field name="layerNumber" column="layer_number" type="integer" nullable="true"/>
 
     </entity>

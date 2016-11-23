@@ -131,4 +131,15 @@ class WellBoundary extends Boundary
 
         return $stressPeriodData;
     }
+
+    /**
+     * @return null|string
+     */
+    public function getJsonGeometry(){
+        if (! $this->geometry instanceof Point){
+            return null;
+        }
+
+        return $this->geometry->toJson();
+    }
 }

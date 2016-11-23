@@ -17,7 +17,6 @@
 
         <discriminator-column name="discr" type="string" />
         <discriminator-map>
-            <discriminator-mapping value="bnd" class="Inowas\ModflowBundle\Model\Boundary\Boundary" />
             <discriminator-mapping value="CHB" class="Inowas\ModflowBundle\Model\Boundary\ConstantHeadBoundary" />
             <discriminator-mapping value="GHB" class="Inowas\ModflowBundle\Model\Boundary\GeneralHeadBoundary" />
             <discriminator-mapping value="RCH" class="Inowas\ModflowBundle\Model\Boundary\RechargeBoundary" />

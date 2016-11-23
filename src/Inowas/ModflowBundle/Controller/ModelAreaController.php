@@ -64,7 +64,7 @@ class ModelAreaController extends FOSRestController
      * @param $id
      *
      * @RequestParam(name="name", nullable=false, strict=false, description="The name of the area")
-     * @RequestParam(name="activeCells", nullable=false, strict=false, description="The area active cells")
+     * @RequestParam(name="active_cells", nullable=false, strict=false, description="The area active cells")
      * @RequestParam(name="geometry", nullable=false, strict=false, description="The area geometry in geoJson")
      *
      * @return View

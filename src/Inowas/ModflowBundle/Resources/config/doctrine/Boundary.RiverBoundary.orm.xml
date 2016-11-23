@@ -15,7 +15,7 @@
             <unique-constraint columns="id" name="uc_recharge_boundary_id"/>
         </unique-constraints>
 
-        <field name="geometry" column="geometry" type="linestring" nullable="true"/>
+        <field name="geometry" column="riv_geometry" type="linestring" nullable="true"/>
 
     </entity>
 </doctrine-mapping>

@@ -75,4 +75,15 @@ class RiverBoundary extends Boundary
 
         return $stressPeriodData;
     }
+
+    /**
+     * @return null|string
+     */
+    public function getJsonGeometry(){
+        if (! $this->geometry instanceof LineString){
+            return null;
+        }
+
+        return $this->geometry->toJson();
+    }
 }
