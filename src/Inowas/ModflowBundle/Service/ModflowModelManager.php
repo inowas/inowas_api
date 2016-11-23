@@ -4,6 +4,7 @@ namespace Inowas\ModflowBundle\Service;
 
 use Doctrine\ORM\EntityManager;
 use Inowas\ModflowBundle\Exception\InvalidArgumentException;
+use Inowas\ModflowBundle\Model\Area;
 use Inowas\ModflowBundle\Model\ModflowModel;
 use Inowas\ModflowBundle\Model\ModflowModelFactory;
 use Ramsey\Uuid\Uuid;
@@ -47,6 +48,25 @@ class ModflowModelManager
     }
 
     /**
+     * @param $id
+     * @return Area
+     */
+    public function findAreaByModelId($id)
+    {
+        if (!Uuid::isValid($id)) {
+            throw new InvalidArgumentException('The given id is not a valid Uuid.');
+        }
+
+        $model = $this->findById($id);
+
+        if (!$model->getArea() instanceof Area) {
+            throw new InvalidArgumentException(sprintf('ModelArea of Model with id=%s not found', $id));
+        }
+
+        return $model->getArea();
+    }
+
+    /**
      * @param ModFlowModel $model
      * @return ModFlowModel
      */
@@ -55,6 +75,17 @@ class ModflowModelManager
         $this->entityManager->persist($model);
         $this->entityManager->flush();
         return $model;
+    }
+
+    /**
+     * @param Area $area
+     * @return Area
+     */
+    public function updateArea(Area $area)
+    {
+        $this->entityManager->persist($area);
+        $this->entityManager->flush();
+        return $area;
     }
 
     /**

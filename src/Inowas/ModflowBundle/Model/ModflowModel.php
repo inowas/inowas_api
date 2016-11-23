@@ -54,6 +54,7 @@ class ModflowModel implements ModflowModelInterface
         $this->id = Uuid::uuid4();
         $this->gridSize = new GridSize(50, 50);
         $this->boundingBox = new BoundingBox();
+        $this->area = AreaFactory::create();
         $this->boundaries = new ArrayCollection();
         $this->timeUnit = TimeUnit::fromString('day');
     }

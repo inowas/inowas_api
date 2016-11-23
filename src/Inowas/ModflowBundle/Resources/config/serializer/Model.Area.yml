@@ -1,0 +1,6 @@
+Inowas\ModflowBundle\Model\Area:
+    virtual_properties:
+        getJsonGeometry:
+            serialized_name: geojson
+            type: string
+            groups: [details]

@@ -26,4 +26,15 @@ class Area extends ModelObject
         $this->geometry = $geometry;
         return $this;
     }
+
+    /**
+     * @return null|string
+     */
+    public function getJsonGeometry(){
+        if (! $this->geometry instanceof Polygon){
+            return null;
+        }
+
+        return $this->geometry->toJson();
+    }
 }
