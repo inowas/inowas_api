@@ -9,6 +9,7 @@ use FOS\RestBundle\Controller\Annotations\RequestParam;
 use FOS\RestBundle\Controller\FOSRestController;
 use FOS\RestBundle\Request\ParamFetcher;
 use FOS\RestBundle\View\View;
+use Inowas\ModflowBundle\Model\GridSize;
 use Inowas\ModflowBundle\Model\ModflowModel;
 use JMS\Serializer\SerializationContext;
 use Nelmio\ApiDocBundle\Annotation\ApiDoc;
@@ -35,7 +36,7 @@ class ModelController extends FOSRestController
      *
      * @RequestParam(name="name", nullable=false, strict=true, description="Name of the new ModflowModel.")
      *
-     * @return JsonResponse
+     * @return View
      */
     public function postModflowModelAction(ParamFetcher $paramFetcher)
     {
@@ -44,9 +45,14 @@ class ModelController extends FOSRestController
         $model->setName($paramFetcher->get('name'));
         $modelManager->update($model);
 
-        $response = new JsonResponse();
-        $response->setData($model);
-        return $response;
+        $view = View::create($model)
+            ->setStatusCode(200)
+            ->setSerializationContext(SerializationContext::create()
+                ->setGroups(array('details'))
+            )
+        ;
+
+        return $view;
     }
 
     /**
@@ -107,6 +113,9 @@ class ModelController extends FOSRestController
      * @RequestParam(name="description", nullable=false, strict=false, description="Model description")
      * @RequestParam(name="start", nullable=false, strict=false, description="Start date")
      * @RequestParam(name="end", nullable=false, strict=false, description="End date")
+     * @RequestParam(name="gridsizeNx", nullable=false, strict=false, description="Gridsize, number of columns")
+     * @RequestParam(name="gridsizeNy", nullable=false, strict=false, description="Gridsize, number of rows")
+     * @RequestParam(name="soilmodelId", nullable=false, strict=false, description="Soilmodel Id")
      *
      * @return JsonResponse
      * @throws NotFoundHttpException
@@ -119,10 +128,29 @@ class ModelController extends FOSRestController
             throw $this->createNotFoundException(sprintf('Model with id=%s not found.', $id));
         }
 
-        $model->setName($paramFetcher->get('name'));
-        $model->setDescription($paramFetcher->get('description'));
-        $model->setStart($paramFetcher->get(new \DateTime('start')));
-        $model->setEnd($paramFetcher->get(new \DateTime('end')));
+        if ($paramFetcher->get('name')){
+            $model->setName($paramFetcher->get('name'));
+        }
+
+        if ($paramFetcher->get('description')){
+            $model->setDescription($paramFetcher->get('description'));
+        }
+
+        if ($paramFetcher->get('start')){
+            $model->setStart(new \DateTime($paramFetcher->get('start')));
+        }
+
+        if ($paramFetcher->get('end')){
+            $model->setEnd(new \DateTime($paramFetcher->get('end')));
+        }
+
+        if ($paramFetcher->get('gridsizeNx') && $paramFetcher->get('gridsizeNy')){
+            $model->setGridSize(new GridSize($paramFetcher->get('gridsizeNx'), $paramFetcher->get('gridsizeNy')));
+        }
+
+        if ($paramFetcher->get('soilmodelId')){
+            $model->setSoilmodelId($paramFetcher->get('soilmodelId'));
+        }
 
         $this->get('inowas.modflow.modelmanager')->update($model);
 

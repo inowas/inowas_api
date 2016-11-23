@@ -139,9 +139,9 @@ class ModflowModel implements ModflowModelInterface
     }
 
     /**
-     * @return Area
+     * @return Area|null
      */
-    public function getArea(): Area
+    public function getArea()
     {
         return $this->area;
     }
@@ -157,9 +157,9 @@ class ModflowModel implements ModflowModelInterface
     }
 
     /**
-     * @return Uuid
+     * @return Uuid|null
      */
-    public function getSoilmodelId(): Uuid
+    public function getSoilmodelId()
     {
         return $this->soilmodelId;
     }
