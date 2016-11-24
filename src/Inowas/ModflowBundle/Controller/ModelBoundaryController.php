@@ -25,7 +25,7 @@ class ModelBoundaryController extends FOSRestController
     /**
      * @Post("/model/{id}/boundary")
      *
-     * Create a new Model.
+     * Add a new boundary to the model.
      *
      * @ApiDoc(
      *   resource = true,
@@ -106,11 +106,11 @@ class ModelBoundaryController extends FOSRestController
     /**
      * * @Put("/boundary/{id}")
      *
-     * Returns the boundary details specified by boundary-ID.
+     * Updates the boundary details specified by boundary-ID.
      *
      * @ApiDoc(
      *   resource = true,
-     *   description = "Returns the boundary details by id.",
+     *   description = "Updates the boundary details specified by boundary-ID.",
      *   statusCodes = {
      *     200 = "Returned when successful",
      *     404 = "Returned when the model is not found"
@@ -196,7 +196,7 @@ class ModelBoundaryController extends FOSRestController
      * )
      *
      * @param $id
-     * @return JsonResponse
+     * @return View
      * @throws NotFoundHttpException
      */
     public function getModelBoundariesAction($id)

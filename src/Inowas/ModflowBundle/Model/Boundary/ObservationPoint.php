@@ -55,6 +55,16 @@ class ObservationPoint
     }
 
     /**
+     * @param ArrayCollection $stressPeriods
+     * @return ObservationPoint
+     */
+    public function setStressPeriods(ArrayCollection $stressPeriods): ObservationPoint
+    {
+        $this->stressPeriods = $stressPeriods;
+        return $this;
+    }
+
+    /**
      * @param StressPeriodInterface $stressPeriod
      * @return $this
      */

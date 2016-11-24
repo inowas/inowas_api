@@ -11,4 +11,5 @@ interface BoundaryInterface {
     public function getStressPeriods(): ArrayCollection;
     public function generateStressPeriodData(StressPeriod $stressPeriod, ActiveCells $activeCells);
     public function getObservationPoint(Point $point = null);
+    public function addObservationPoint(ObservationPoint $observationPoint);
 }
