@@ -236,9 +236,7 @@ I.model = {
             I.model.baseModelId = id;
         }
         I.model.id = id;
-        I.model.map = L.map('map', {
-            zoomControl: false
-        }).fitBounds(this.createBoundingBoxPolygon(this.boundingBox).getBounds());
+        I.model.map = L.map('map', {zoomControl: false});
         L.tileLayer('http://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png', {
             attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="http://cartodb.com/attributions">CartoDB</a>',
             subdomains: 'abcd',
@@ -250,13 +248,18 @@ I.model = {
             I.model.map.invalidateSize();
         }).trigger("resize");
 
-        $("#model_name").text(I.model.name);
-        $("#model_description ").text(I.model.description);
-
         var overlayMaps = {};
-        overlayMaps['Bounding Box'] = I.model.createBoundingBoxLayer(I.model.boundingBox);
-
         $.when(
+            $.getJSON( "/api/modflowmodels/"+this.id+".json", function ( data ) {
+                I.model.name = data.name;
+                I.model.description = data.description;
+                I.model.boundingBox = data.bounding_box;
+                I.model.gridSize = data.grid_size;
+                overlayMaps['Bounding Box'] = I.model.createBoundingBoxLayer(I.model.boundingBox);
+                I.model.map.fitBounds(I.model.createBoundingBoxPolygon(I.model.boundingBox).getBounds());
+                $("#model_name").text(I.model.name);
+                $("#model_description ").text(I.model.description);
+            }),
 
             $.getJSON( "/api/modflowmodels/"+this.id+"/area.json", function ( data ) {
                 overlayMaps['Area'] = L.geoJson($.parseJSON(data.geojson), I.model.styles.areaGeometry).addTo(I.model.map);
@@ -280,7 +283,7 @@ I.model = {
                 $("#rivers_badge").text(I.model.getNumberOf(data));
             }),
 
-            $.getJSON( "/api/modflowmodels/"+this.id+"/scenarios.json", function ( data ) {
+            $.getJSON( "/api/modflowmodels/"+this.baseModelId+"/scenarios.json", function ( data ) {
                 I.model.renderScenarios(data);
                 I.model.scenarios = data;
             }),
@@ -350,22 +353,17 @@ I.model = {
 
         $('#models_label').click();
     },
-    clear: function ( isBaseModel ) {
+    clear: function () {
         I.model.initialized = false;
         I.model.name = null;
         I.model.description = null;
         I.model.initialized = false;
-        I.model.boundingBox = null;
         I.model.gridSize = null;
         I.model.activeCellsGridLayer = null;
         I.model.boundingBoxLayer = null;
         I.model.wellsLayer = null;
         I.model.map.remove();
         I.model.map = null;
-
-        if ( isBaseModel ){
-            I.model.scenarios = null;
-        }
     },
     initializeMapImage: function(id){
         I.model.id = id;
