@@ -156,6 +156,7 @@ class Hanoi implements FixtureInterface, ContainerAwareInterface
             }
 
             $borehole = array_combine($header, $borehole);
+            echo sprintf("Add BoreHole %s to soilmodel %s.\r\n", $borehole['name'], $soilModel->getId()->toString());
 
             $soilModel->addBoreHole(
                 BoreHoleFactory::create()
