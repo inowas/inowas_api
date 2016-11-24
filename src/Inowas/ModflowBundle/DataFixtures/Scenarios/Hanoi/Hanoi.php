@@ -7,8 +7,11 @@ use CrEOF\Spatial\PHP\Types\Geometry\Polygon;
 use Doctrine\Common\DataFixtures\FixtureInterface;
 use Doctrine\Common\Persistence\ObjectManager;
 use Inowas\ModflowBundle\Model\AreaFactory;
+use Inowas\ModflowBundle\Model\Boundary\ObservationPointFactory;
+use Inowas\ModflowBundle\Model\BoundaryFactory;
 use Inowas\ModflowBundle\Model\BoundingBox;
 use Inowas\ModflowBundle\Model\GridSize;
+use Inowas\ModflowBundle\Model\StressPeriodFactory;
 use Inowas\SoilmodelBundle\Factory\BoreHoleFactory;
 use Inowas\SoilmodelBundle\Factory\LayerFactory;
 use Inowas\SoilmodelBundle\Model\Property;
@@ -41,6 +44,7 @@ class Hanoi implements FixtureInterface, ContainerAwareInterface
     {
         $geoTools = $this->container->get('inowas.geotools.geotools');
 
+        // Add the SoilModel
         $soilmodelManager = $this->container->get('inowas.soilmodel.soilmodelmanager');
         $soilModel = $soilmodelManager->create();
         $soilModel->addLayer(LayerFactory::create()->setName('Surface Layer')->setDescription('silt, silty clay, loam'));
@@ -147,7 +151,6 @@ class Hanoi implements FixtureInterface, ContainerAwareInterface
             array('SC2_GU89', 11775192.52, 2388842.32, 4.719, -23.28, -36.27, -37.28, -76.28),
             array('SC2_GU90', 11772988.05, 2386432.76, 5.43, -9.57, -38.06, -39.07, -65.97)
         );
-
         $header = null;
         foreach ($boreholes as $borehole) {
             if (is_null($header)) {
@@ -180,6 +183,7 @@ class Hanoi implements FixtureInterface, ContainerAwareInterface
             $soilmodelManager->update($soilModel);
         }
 
+        // Add the ModflowModel
         $modelManager = $this->container->get('inowas.modflow.modelmanager');
         $model = $modelManager->create();
         $model->setName("BaseModel INOWAS Hanoi")
@@ -242,5 +246,81 @@ class Hanoi implements FixtureInterface, ContainerAwareInterface
             ->setGridSize(new GridSize(165, 175));
 
         $modelManager->update($model);
+
+        $wells = $this->loadDataFromCsv(__DIR__."/wells_basecase.csv");
+        $header = $this->loadHeaderFromCsv(__DIR__."/wells_basecase.csv");
+        $dates = $this->getDates($header);
+
+        foreach ($wells as $well){
+            $wellBoundary = BoundaryFactory::createWel();
+            $wellBoundary->setName($well['Name']);
+            $wellBoundary->setWellType($well['type']);
+            $wellBoundary->setLayerNumber($well['layer']);
+            $wellBoundary->setGeometry($geoTools->transformPoint(new Point($well['x'], $well['y'], $well['srid']), 4326));
+
+            $observationPoint = ObservationPointFactory::create()
+                ->setGeometry($geoTools->transformPoint(new Point($well['x'], $well['y'], $well['srid']), 4326));
+
+            $value = null;
+            foreach ($dates as $date){
+                if (is_numeric($well[$date])){
+                    if ($well[$date] !== $value){
+                        $observationPoint->addStressPeriod(
+                            StressPeriodFactory::createWel()
+                                ->setDateTimeBegin(new \DateTime(explode(':', $date)[1]))
+                                ->setFlux($well[$date])
+                        );
+                    }
+                    $value = $well[$date];
+                }
+            }
+            $wellBoundary->addObservationPoint($observationPoint);
+            $model->addBoundary($wellBoundary);
+            echo sprintf("Add well %s.\r\n", $wellBoundary->getName());
+        }
+
+        $modelManager->update($model);
+    }
+
+    protected function loadDataFromCsv($filename): array
+    {
+        $header = null;
+        $wells = array();
+        if (($handle = fopen($filename, "r")) !== FALSE) {
+            while (($data = fgetcsv($handle, 1000, ";")) !== FALSE) {
+                if ($header == null){
+                    $header = $data;
+                    continue;
+                }
+
+                $well = array_combine($header, $data);
+                $wells[] = $well;
+
+            }
+            fclose($handle);
+        }
+
+        return $wells;
+    }
+
+    protected function loadHeaderFromCsv($filename): array
+    {
+        $data = array();
+        if (($handle = fopen($filename, "r")) !== FALSE) {
+            $data = fgetcsv($handle, 1000, ";");
+            fclose($handle);
+        }
+
+        return $data;
+    }
+
+    protected function getDates(array $header): array{
+        $dates = array();
+        foreach ($header as $data){
+            if (explode(':', $data)[0] == 'date'){
+                $dates[] = $data;
+            }
+        }
+        return $dates;
     }
 }
