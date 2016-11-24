@@ -1,19 +1,24 @@
+rest_model_area:
+    type: rest
+    resource: Inowas\ModflowBundle\Controller\AreaController
+
+rest_model_boundary:
+    type: rest
+    resource: Inowas\ModflowBundle\Controller\BoundaryController
+
+rest_model_calculation:
+    type: rest
+    resource: Inowas\ModflowBundle\Controller\CalculationsController
+
 rest_model:
     type: rest
     resource: Inowas\ModflowBundle\Controller\ModelController
 
-rest_model_area:
-    type: rest
-    resource: Inowas\ModflowBundle\Controller\ModelAreaController
-
-rest_model_boundary:
-    type: rest
-    resource: Inowas\ModflowBundle\Controller\ModelBoundaryController
-
 rest_model_observationpoint:
     type: rest
-    resource: Inowas\ModflowBundle\Controller\ModelBoundaryObservationPointController
+    resource: Inowas\ModflowBundle\Controller\ObservationPointController
 
-rest_model_package:
+rest_model_stressperiod:
     type: rest
-    resource: Inowas\ModflowBundle\Controller\ModelCalculationsController
+    resource: Inowas\ModflowBundle\Controller\StressPeriodController
+

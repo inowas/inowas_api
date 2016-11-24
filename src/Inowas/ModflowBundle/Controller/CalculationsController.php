@@ -10,9 +10,8 @@ use Nelmio\ApiDocBundle\Annotation\ApiDoc;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
-class ModelCalculationsController extends FOSRestController
+class CalculationsController extends FOSRestController
 {
-
     /**
      * * @Get("/calculation/{id}/packages")
      *

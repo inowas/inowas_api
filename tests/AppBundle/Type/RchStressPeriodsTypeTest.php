@@ -38,13 +38,13 @@ class RchStressPeriodsTypeTest extends WebTestCase
     }
 
     public function testConvertNullToDataBaseValueReturnsNull() {
-        $this->assertEquals(null, $this->dbalConnection->convertToDatabaseValue(null, 'rch_stress_periods'));
+        $this->assertEquals(null, $this->dbalConnection->convertToDatabaseValue(null, 'rch_stress_period'));
     }
 
     public function testConvertToDatabaseAndRevertBack()
     {
-        $converted = $this->dbalConnection->convertToDatabaseValue($this->stressPeriods, 'rch_stress_periods');
-        $revert = $this->dbalConnection->convertToPHPValue($converted, 'rch_stress_periods');
+        $converted = $this->dbalConnection->convertToDatabaseValue($this->stressPeriods, 'rch_stress_period');
+        $revert = $this->dbalConnection->convertToPHPValue($converted, 'rch_stress_period');
 
         $this->assertNotEquals($converted, $revert);
         $this->assertCount(2, $revert);
@@ -52,6 +52,6 @@ class RchStressPeriodsTypeTest extends WebTestCase
     }
 
     public function testConvertNullToPhpValueReturnsNull() {
-        $this->assertEquals(null, $this->dbalConnection->convertToPHPValue(null, 'rch_stress_periods'));
+        $this->assertEquals(null, $this->dbalConnection->convertToPHPValue(null, 'rch_stress_period'));
     }
 }

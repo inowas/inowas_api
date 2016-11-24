@@ -11,7 +11,7 @@ use Inowas\ModflowBundle\Service\ModflowModelManager;
 use Inowas\SoilmodelBundle\Service\SoilmodelManager;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
-class ModelBoundaryControllerTest extends WebTestCase
+class BoundaryControllerTest extends WebTestCase
 {
 
     /** @var  EntityManager */

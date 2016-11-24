@@ -12,7 +12,7 @@ use FOS\RestBundle\View\View;
 use JMS\Serializer\SerializationContext;
 use Nelmio\ApiDocBundle\Annotation\ApiDoc;
 
-class ModelAreaController extends FOSRestController
+class AreaController extends FOSRestController
 {
 
     /**

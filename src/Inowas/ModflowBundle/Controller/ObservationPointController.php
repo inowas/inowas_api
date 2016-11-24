@@ -16,7 +16,7 @@ use JMS\Serializer\SerializationContext;
 use Nelmio\ApiDocBundle\Annotation\ApiDoc;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
-class ModelBoundaryObservationPointController extends FOSRestController
+class ObservationPointController extends FOSRestController
 {
     /**
      * @Post("/boundary/{id}")
@@ -36,7 +36,7 @@ class ModelBoundaryObservationPointController extends FOSRestController
      *
      * @RequestParam(name="lng", nullable=false, strict=true, description="Longitude of the observation point")
      * @RequestParam(name="lat", nullable=false, strict=true, description="Latitude of the observation point")
-     * @RequestParam(name="srid", nullable=false, strict=false, default=4326 description="Name of the new Boundary.")
+     * @RequestParam(name="srid", nullable=false, strict=false, default=4326, description="Name of the new Boundary.")
      *
      * @return View
      */
@@ -66,7 +66,7 @@ class ModelBoundaryObservationPointController extends FOSRestController
     }
 
     /**
-     * * @Get("/observationpoint/{id}")
+     * @Get("/observationpoint/{id}")
      *
      * Returns the observationpoint details specified by boundaryId.
      *
@@ -120,7 +120,7 @@ class ModelBoundaryObservationPointController extends FOSRestController
      *
      * @RequestParam(name="lng", nullable=false, strict=true, description="Longitude of the observation point")
      * @RequestParam(name="lat", nullable=false, strict=true, description="Latitude of the observation point")
-     * @RequestParam(name="srid", nullable=false, strict=false, default=4326 description="Name of the new Boundary.")
+     * @RequestParam(name="srid", nullable=false, strict=false, default=4326, description="Name of the new Boundary.")
      *
      * @return View
      */

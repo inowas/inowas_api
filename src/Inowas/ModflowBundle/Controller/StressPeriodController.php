@@ -12,7 +12,7 @@ use Inowas\ModflowBundle\Model\Boundary\ObservationPoint;
 use JMS\Serializer\SerializationContext;
 use Nelmio\ApiDocBundle\Annotation\ApiDoc;
 
-class ModelBoundaryObservationPointStressPeriodsController extends FOSRestController
+class StressPeriodController extends FOSRestController
 {
     /**
      * * @Get("/observationpoint/{id}/stressperiods")

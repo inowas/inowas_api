@@ -33,7 +33,7 @@ class RechargeBoundary extends BoundaryModelObject
     /**
      * @var ArrayCollection
      *
-     * @ORM\Column(name="stress_periods", type="rch_stress_periods", nullable=true)
+     * @ORM\Column(name="stress_periods", type="rch_stress_period", nullable=true)
      */
     private $stressPeriods;
 

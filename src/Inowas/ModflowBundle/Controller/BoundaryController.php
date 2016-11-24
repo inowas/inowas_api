@@ -19,7 +19,7 @@ use Nelmio\ApiDocBundle\Annotation\ApiDoc;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
-class ModelBoundaryController extends FOSRestController
+class BoundaryController extends FOSRestController
 {
 
     /**

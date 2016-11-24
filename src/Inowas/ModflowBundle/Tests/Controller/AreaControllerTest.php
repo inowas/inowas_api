@@ -10,7 +10,7 @@ use Inowas\ModflowBundle\Model\ModflowModel;
 use Inowas\ModflowBundle\Service\ModflowModelManager;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
-class ModelAreaControllerTest extends WebTestCase
+class AreaControllerTest extends WebTestCase
 {
 
     /** @var  EntityManager */
