@@ -26,6 +26,7 @@ class AppKernel extends Kernel
             new Inowas\PyprocessingBundle\InowasPyprocessingBundle(),
             new Inowas\SoilmodelBundle\InowasSoilmodelBundle(),
             new Inowas\ModflowBundle\InowasModflowBundle(),
+            new Inowas\GeoToolsBundle\InowasGeoToolsBundle(),
             new AppBundle\AppBundle()
         ];
 

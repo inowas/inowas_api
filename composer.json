@@ -9,6 +9,7 @@
             "Inowas\\Flopy\\": "src/Inowas/Flopy",
             "Inowas\\Soilmodel\\": "src/Inowas/SoilmodelBundle",
             "Inowas\\ModflowBundle\\": "src/Inowas/ModflowBundle",
+            "Inowas\\GeoToolsBundle\\": "src/Inowas/GeoToolsBundle",
             "Inowas\\": "src/Inowas/"
         },
         "classmap": [

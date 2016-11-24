@@ -5,7 +5,7 @@
     xsi:schemaLocation="http://doctrine-project.org/schemas/orm/doctrine-mapping
         http://doctrine-project.org/schemas/orm/doctrine-mapping.xsd">
 
-    <entity name="Inowas\SoilmodelBundle\Model\Layer" table="layers">
+    <entity name="Inowas\SoilmodelBundle\Model\Layer" table="sm_layers">
 
         <indexes>
             <index name="idx_layer_id" columns="id"/>
@@ -27,9 +27,9 @@
                 <cascade-refresh/>
                 <cascade-remove/>
             </cascade>
-            <join-table name="layer_properties">
+            <join-table name="sm_layer_properties">
                 <join-columns>
-                    <join-column name="soilmodel_id" referenced-column-name="id" on-delete="CASCADE"/>
+                    <join-column name="layer_id" referenced-column-name="id" on-delete="CASCADE"/>
                 </join-columns>
                 <inverse-join-columns>
                     <join-column name="property_id" referenced-column-name="id" on-delete="CASCADE"/>

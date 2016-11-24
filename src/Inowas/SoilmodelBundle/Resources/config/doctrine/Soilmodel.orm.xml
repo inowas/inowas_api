@@ -5,7 +5,7 @@
     xsi:schemaLocation="http://doctrine-project.org/schemas/orm/doctrine-mapping
         http://doctrine-project.org/schemas/orm/doctrine-mapping.xsd">
 
-    <entity name="Inowas\SoilmodelBundle\Model\Soilmodel" table="soilmodels">
+    <entity name="Inowas\SoilmodelBundle\Model\Soilmodel" table="sm_soilmodels">
 
         <indexes>
             <index name="idx_soilmodels_id" columns="id"/>
