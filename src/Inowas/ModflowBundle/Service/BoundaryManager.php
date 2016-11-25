@@ -7,6 +7,7 @@ use Inowas\ModflowBundle\Exception\InvalidArgumentException;
 use Inowas\ModflowBundle\Model\Boundary\Boundary;
 use Inowas\ModflowBundle\Model\Boundary\BoundaryInterface;
 use Inowas\ModflowBundle\Model\BoundaryFactory;
+use Inowas\ModflowBundle\Model\ModflowModel;
 use Ramsey\Uuid\Uuid;
 
 class BoundaryManager
@@ -26,6 +27,28 @@ class BoundaryManager
      */
     public function create(string $type){
         return BoundaryFactory::create($type);
+    }
+
+    /**
+     * @param $id
+     * @return BoundaryInterface|null
+     */
+    public function findByModelId($id){
+        if (! Uuid::isValid($id)){
+            throw new InvalidArgumentException('The given id is not a valid Uuid.');
+        }
+
+        $model = $this->entityManager
+            ->getRepository('InowasModflowBundle:ModflowModel')
+            ->findOneBy(array(
+                'id' => $id
+            ));
+
+        if (! $model instanceof ModflowModel){
+            return null;
+        }
+
+        return $model->getBoundaries();
     }
 
     /**

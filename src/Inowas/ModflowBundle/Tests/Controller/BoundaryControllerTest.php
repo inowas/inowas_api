@@ -50,7 +50,7 @@ class BoundaryControllerTest extends WebTestCase
         $client = static::createClient();
         $client->request(
             'POST',
-            sprintf('/api/modflow/models/%s/boundary.json', $model->getId()->toString()),
+            sprintf('/api/modflow/models/%s/boundaries.json', $model->getId()->toString()),
             array(
                 'name' => 'MyBoundary',
                 'type' => 'chd'
@@ -112,6 +112,112 @@ class BoundaryControllerTest extends WebTestCase
         $this->assertJson($client->getResponse()->getContent());
         $response = json_decode($client->getResponse()->getContent());#
         $this->assertCount(3, $response);
+    }
+
+    public function testGetBoundariesByModelIdAndType()
+    {
+        $model = $this->modelManager->create();
+        $model->setStart(new \DateTime('2016-01-01'));
+        $model->setEnd(new \DateTime('2016-12-31'));
+        $model->setName('TestModel');
+
+        $boundary = BoundaryFactory::createChd()
+            ->setLayerNumbers(array(1,2,3))
+            ->setGeometry(new LineString([[0,0],[1,1]]))
+            ->setName('ChdBoundary');
+        $model->addBoundary($boundary);
+
+        $boundary = BoundaryFactory::createGhb()
+            ->setLayerNumbers(array(1,2,3))
+            ->setGeometry(new LineString([[0,0],[1,1]]))
+            ->setName('GhbBoundary');
+        $model->addBoundary($boundary);
+
+        $boundary = BoundaryFactory::createRch()
+            ->setName('RchBoundary');
+        $model->addBoundary($boundary);
+
+        $boundary = BoundaryFactory::createRiv()
+            ->setGeometry(new LineString([[0,0],[1,1]]))
+            ->setName('RivBoundary');
+        $model->addBoundary($boundary);
+
+        $boundary = BoundaryFactory::createWel()
+            ->setGeometry(new Point(1,2,3))
+            ->setName('WelBoundary');
+        $model->addBoundary($boundary);
+
+        $this->modelManager->update($model);
+
+        $client = static::createClient();
+        $client->request(
+            'GET',
+            sprintf(
+                '/api/modflow/models/%s/boundaries/chd.json',
+                $model->getId()->toString()
+            )
+        );
+        $this->assertEquals(200, $client->getResponse()->getStatusCode());
+        $this->assertJson($client->getResponse()->getContent());
+        $response = json_decode($client->getResponse()->getContent());
+        $this->assertCount(1, $response);
+        $this->assertEquals('ChdBoundary', $response[0]->name);
+
+        $client = static::createClient();
+        $client->request(
+            'GET',
+            sprintf(
+                '/api/modflow/models/%s/boundaries/ghb.json',
+                $model->getId()->toString()
+            )
+        );
+        $this->assertEquals(200, $client->getResponse()->getStatusCode());
+        $this->assertJson($client->getResponse()->getContent());
+        $response = json_decode($client->getResponse()->getContent());
+        $this->assertCount(1, $response);
+        $this->assertEquals('GhbBoundary', $response[0]->name);
+
+        $client = static::createClient();
+        $client->request(
+            'GET',
+            sprintf(
+                '/api/modflow/models/%s/boundaries/rch.json',
+                $model->getId()->toString()
+            )
+        );
+        $this->assertEquals(200, $client->getResponse()->getStatusCode());
+        $this->assertJson($client->getResponse()->getContent());
+        $response = json_decode($client->getResponse()->getContent());
+        $this->assertCount(1, $response);
+        $this->assertEquals('RchBoundary', $response[0]->name);
+
+        $client = static::createClient();
+        $client->request(
+            'GET',
+            sprintf(
+                '/api/modflow/models/%s/boundaries/riv.json',
+                $model->getId()->toString()
+            )
+        );
+        $this->assertEquals(200, $client->getResponse()->getStatusCode());
+        $this->assertJson($client->getResponse()->getContent());
+        $response = json_decode($client->getResponse()->getContent());
+        $this->assertCount(1, $response);
+        $this->assertEquals('RivBoundary', $response[0]->name);
+
+        $client = static::createClient();
+        $client->request(
+            'GET',
+            sprintf(
+                '/api/modflow/models/%s/boundaries/wel.json',
+                $model->getId()->toString()
+            )
+        );
+        $this->assertEquals(200, $client->getResponse()->getStatusCode());
+        $this->assertJson($client->getResponse()->getContent());
+        $response = json_decode($client->getResponse()->getContent());
+        $this->assertCount(1, $response);
+        $this->assertEquals('WelBoundary', $response[0]->name);
     }
 
     public function testGetChdBoundaryDetailsByBoundaryId()

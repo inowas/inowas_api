@@ -5,64 +5,26 @@ namespace Inowas\ModflowBundle\Controller;
 use CrEOF\Spatial\PHP\Types\Geometry\LineString;
 use CrEOF\Spatial\PHP\Types\Geometry\Point;
 use CrEOF\Spatial\PHP\Types\Geometry\Polygon;
+use Doctrine\Common\Collections\ArrayCollection;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use FOS\RestBundle\Controller\Annotations\RequestParam;
 use FOS\RestBundle\Controller\FOSRestController;
 use FOS\RestBundle\Request\ParamFetcher;
 use FOS\RestBundle\View\View;
+use Inowas\ModflowBundle\Exception\InvalidArgumentException;
 use Inowas\ModflowBundle\Model\Boundary\Boundary;
-use Inowas\ModflowBundle\Model\ModflowModel;
+use Inowas\ModflowBundle\Model\Boundary\ConstantHeadBoundary;
+use Inowas\ModflowBundle\Model\Boundary\GeneralHeadBoundary;
+use Inowas\ModflowBundle\Model\Boundary\RechargeBoundary;
+use Inowas\ModflowBundle\Model\Boundary\RiverBoundary;
+use Inowas\ModflowBundle\Model\Boundary\WellBoundary;
 use JMS\Serializer\SerializationContext;
 use Nelmio\ApiDocBundle\Annotation\ApiDoc;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
+use Symfony\Component\Validator\Constraints\Uuid;
 
 class BoundaryController extends FOSRestController
 {
-
-    /**
-     * Add a new boundary to the model.
-     *
-     * @ApiDoc(
-     *   resource = true,
-     *   description = "Add a new boundary to the model.",
-     *   statusCodes = {
-     *     200 = "Returned when successful"
-     *   }
-     * )
-     *
-     * @Rest\Post("/models/{id}/boundary")
-     * @param $id
-     * @param ParamFetcher $paramFetcher
-     *
-     * @RequestParam(name="type", nullable=false, strict=true, description="BoundaryType. Available types are: chd, ghb, rch, riv, wel")
-     * @RequestParam(name="name", nullable=false, strict=true, description="Name of the new Boundary.")
-     *
-     * @return View
-     */
-    public function postModflowModelBoundaryAction($id, ParamFetcher $paramFetcher)
-    {
-        $modelManager = $this->get('inowas.modflow.modelmanager');
-
-        /** @var Boundary $boundary */
-        $boundary = $this->get('inowas.modflow.boundarymanager')
-            ->create($paramFetcher->get('type'));
-
-        $boundary->setName($paramFetcher->get('name'));
-
-        $model = $modelManager->findById($id);
-        $model->addBoundary($boundary);
-        $modelManager->update($model);
-
-        $view = View::create($boundary)
-            ->setStatusCode(200)
-            ->setSerializationContext(SerializationContext::create()
-                ->setGroups(array('details'))
-            )
-        ;
-
-        return $view;
-    }
-
     /**
      * Returns the boundary details specified by boundary-ID.
      *
@@ -79,7 +41,7 @@ class BoundaryController extends FOSRestController
      * @param $id
      * @return View
      */
-    public function getBoundaryAction($id)
+    public function getBoundariesAction($id)
     {
         $manager = $this->get('inowas.modflow.boundarymanager');
         $boundary = $manager->findById($id);
@@ -128,7 +90,7 @@ class BoundaryController extends FOSRestController
      * @param ParamFetcher $paramFetcher
      * @return View
      */
-    public function putBoundaryAction($id, ParamFetcher $paramFetcher)
+    public function putBoundariesAction($id, ParamFetcher $paramFetcher)
     {
         $manager = $this->get('inowas.modflow.boundarymanager');
         $boundary = $manager->findById($id);
@@ -195,14 +157,112 @@ class BoundaryController extends FOSRestController
      */
     public function getModelBoundariesAction($id)
     {
-        $manager = $this->get('inowas.modflow.modelmanager');
-        $model = $manager->findById($id);
+        $boundaries = $this->get('inowas.modflow.boundarymanager')->findByModelId($id);
+        $view = View::create($boundaries)
+            ->setStatusCode(200)
+            ->setSerializationContext(SerializationContext::create()
+                ->setGroups(array('details'))
+            )
+        ;
 
-        if (! $model instanceof ModflowModel){
-            throw $this->createNotFoundException(sprintf('Model with id=%s not found.', $id));
+        return $view;
+    }
+
+    /**
+     * Returns boundaries from a Model specified by model id and boundary type.
+     *
+     * @ApiDoc(
+     *   resource = true,
+     *   description = "Returns all boundaries from a Model specified by model id",
+     *   statusCodes = {
+     *     200 = "Returned when successful",
+     *     404 = "Returned when the model is not found"
+     *   }
+     * )
+     *
+     * @Rest\Get("/models/{id}/boundaries/{type}")
+     * @param Uuid $id The Uuid of the Model
+     * @param string $type Possible types are: chd, ghb, rch, riv, wel
+     * @return View
+     * @throws NotFoundHttpException
+     */
+    public function getModelBoundariesByTypeAction($id, $type)
+    {
+        $allBoundaries = $this->get('inowas.modflow.boundarymanager')->findByModelId($id);
+
+        $targetInstance = null;
+        switch ($type){
+            case 'chd':
+                $targetInstance = ConstantHeadBoundary::class;
+                break;
+            case 'ghb':
+                $targetInstance = GeneralHeadBoundary::class;
+                break;
+            case 'rch':
+                $targetInstance = RechargeBoundary::class;
+                break;
+            case 'riv':
+                $targetInstance = RiverBoundary::class;
+                break;
+            case 'wel':
+                $targetInstance = WellBoundary::class;
+                break;
+            default:
+                throw new InvalidArgumentException(sprintf('Boundary from type %s not found.', $type));
         }
 
-        $view = View::create($model->getBoundaries())
+        $boundaries = new ArrayCollection();
+        foreach ($allBoundaries as $boundary){
+            if ($boundary instanceof $targetInstance){
+                $boundaries->add($boundary);
+            }
+        }
+
+        $view = View::create($boundaries)
+            ->setStatusCode(200)
+            ->setSerializationContext(SerializationContext::create()
+                ->setGroups(array('details'))
+            )
+        ;
+
+        return $view;
+    }
+
+    /**
+     * Add a new boundary to the model.
+     *
+     * @ApiDoc(
+     *   resource = true,
+     *   description = "Add a new boundary to the model.",
+     *   statusCodes = {
+     *     200 = "Returned when successful"
+     *   }
+     * )
+     *
+     * @Rest\Post("/models/{id}/boundaries")
+     * @param $id
+     * @param ParamFetcher $paramFetcher
+     *
+     * @RequestParam(name="type", nullable=false, strict=true, description="BoundaryType. Available types are: chd, ghb, rch, riv, wel")
+     * @RequestParam(name="name", nullable=false, strict=true, description="Name of the new Boundary.")
+     *
+     * @return View
+     */
+    public function postModflowModelBoundariesAction($id, ParamFetcher $paramFetcher)
+    {
+        $modelManager = $this->get('inowas.modflow.modelmanager');
+
+        /** @var Boundary $boundary */
+        $boundary = $this->get('inowas.modflow.boundarymanager')
+            ->create($paramFetcher->get('type'));
+
+        $boundary->setName($paramFetcher->get('name'));
+
+        $model = $modelManager->findById($id);
+        $model->addBoundary($boundary);
+        $modelManager->update($model);
+
+        $view = View::create($boundary)
             ->setStatusCode(200)
             ->setSerializationContext(SerializationContext::create()
                 ->setGroups(array('details'))
