@@ -35,8 +35,10 @@ class ModelController extends FOSRestController
 
         $view = View::create($modelManager->findAll())
             ->setStatusCode(200)
-            ->setSerializationContext(SerializationContext::create()
-                ->setGroups(array('list'))
+            ->setSerializationContext(
+                SerializationContext::create()
+                    ->setGroups(array('list'))
+                    ->enableMaxDepthChecks()
             )
         ;
 
@@ -71,6 +73,7 @@ class ModelController extends FOSRestController
             ->setStatusCode(200)
             ->setSerializationContext(SerializationContext::create()
                 ->setGroups(array('details'))
+                ->enableMaxDepthChecks()
             )
         ;
 
@@ -107,6 +110,7 @@ class ModelController extends FOSRestController
             ->setStatusCode(200)
             ->setSerializationContext(SerializationContext::create()
                 ->setGroups(array('details'))
+                ->enableMaxDepthChecks()
             )
         ;
 
@@ -179,6 +183,7 @@ class ModelController extends FOSRestController
             ->setStatusCode(200)
             ->setSerializationContext(SerializationContext::create()
                 ->setGroups(array('details'))
+                ->enableMaxDepthChecks()
             )
         ;
 

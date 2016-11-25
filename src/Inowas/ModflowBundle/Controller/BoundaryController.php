@@ -83,6 +83,7 @@ class BoundaryController extends FOSRestController
     {
         $manager = $this->get('inowas.modflow.boundarymanager');
         $boundary = $manager->findById($id);
+        $boundary->getObservationPoints();
 
         if (! $boundary instanceof Boundary){
             throw $this->createNotFoundException(sprintf('Boundary with id=%s not found.', $id));

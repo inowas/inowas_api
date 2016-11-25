@@ -4,6 +4,7 @@ namespace Inowas\ModflowBundle\Model\Boundary;
 
 use CrEOF\Spatial\PHP\Types\Geometry\Point;
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Inowas\ModflowBundle\Model\ModelObject;
 use Inowas\ModflowBundle\Model\TimeUnit;
 
@@ -64,13 +65,13 @@ abstract class Boundary extends ModelObject implements BoundaryInterface
         return $observationPoint;
     }
 
-    /** @return ArrayCollection */
-    public function getObservationPoints(): ArrayCollection {
+    /** @return Collection */
+    public function getObservationPoints(): Collection {
         return $this->observationPoints;
     }
 
-    /** @return ArrayCollection */
-    public function getStressPeriods(): ArrayCollection
+    /** @return Collection */
+    public function getStressPeriods(): Collection
     {
         $stressPeriods = new ArrayCollection();
         /** @var ObservationPoint $observationPoint */

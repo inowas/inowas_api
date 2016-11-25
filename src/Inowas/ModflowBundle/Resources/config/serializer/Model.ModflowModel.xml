@@ -8,7 +8,7 @@
         <property name="gridSize" type="Inowas\ModflowBundle\Model\GridSize" groups="details"/>
         <property name="area" type="Inowas\ModflowBundle\Model\Area" groups="details"/>
         <property name="soilmodelId" type="string" groups="details"/>
-        <property name="boundaries" groups="details">
+        <property name="boundaries" groups="details" max-depth="2">
             <type><![CDATA[ArrayCollection<Inowas\ModflowBundle\Model\Boundary\Boundary>]]></type>
         </property>
     </class>
