@@ -5,9 +5,7 @@ namespace Inowas\ModflowBundle\Controller;
 use CrEOF\Spatial\PHP\Types\Geometry\LineString;
 use CrEOF\Spatial\PHP\Types\Geometry\Point;
 use CrEOF\Spatial\PHP\Types\Geometry\Polygon;
-use FOS\RestBundle\Controller\Annotations\Get;
-use FOS\RestBundle\Controller\Annotations\Post;
-use FOS\RestBundle\Controller\Annotations\Put;
+use FOS\RestBundle\Controller\Annotations as Rest;
 use FOS\RestBundle\Controller\Annotations\RequestParam;
 use FOS\RestBundle\Controller\FOSRestController;
 use FOS\RestBundle\Request\ParamFetcher;
@@ -16,15 +14,12 @@ use Inowas\ModflowBundle\Model\Boundary\Boundary;
 use Inowas\ModflowBundle\Model\ModflowModel;
 use JMS\Serializer\SerializationContext;
 use Nelmio\ApiDocBundle\Annotation\ApiDoc;
-use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class BoundaryController extends FOSRestController
 {
 
     /**
-     * @Post("/model/{id}/boundary")
-     *
      * Add a new boundary to the model.
      *
      * @ApiDoc(
@@ -35,6 +30,7 @@ class BoundaryController extends FOSRestController
      *   }
      * )
      *
+     * @Rest\Post("/models/{id}/boundary")
      * @param $id
      * @param ParamFetcher $paramFetcher
      *
@@ -68,8 +64,6 @@ class BoundaryController extends FOSRestController
     }
 
     /**
-     * * @Get("/boundary/{id}")
-     *
      * Returns the boundary details specified by boundary-ID.
      *
      * @ApiDoc(
@@ -81,6 +75,7 @@ class BoundaryController extends FOSRestController
      *   }
      * )
      *
+     * @Rest\Get("/boundaries/{id}")
      * @param $id
      * @return View
      */
@@ -104,8 +99,6 @@ class BoundaryController extends FOSRestController
     }
 
     /**
-     * * @Put("/boundary/{id}")
-     *
      * Updates the boundary details specified by boundary-ID.
      *
      * @ApiDoc(
@@ -129,6 +122,7 @@ class BoundaryController extends FOSRestController
      *          Industrial Well: iw
      *     ")
      *
+     * @Rest\Put("/boundaries/{id}")
      * @param $id
      * @param ParamFetcher $paramFetcher
      * @return View
@@ -182,8 +176,6 @@ class BoundaryController extends FOSRestController
     }
 
     /**
-     * * @Get("/model/{id}/boundaries")
-     *
      * Returns all boundaries from a Model specified by model id.
      *
      * @ApiDoc(
@@ -195,6 +187,7 @@ class BoundaryController extends FOSRestController
      *   }
      * )
      *
+     * @Rest\Get("/models/{id}/boundaries")
      * @param $id
      * @return View
      * @throws NotFoundHttpException

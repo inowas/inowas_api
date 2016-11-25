@@ -3,10 +3,7 @@
 namespace Inowas\ModflowBundle\Controller;
 
 use CrEOF\Spatial\PHP\Types\Geometry\Point;
-use FOS\RestBundle\Controller\Annotations\Get;
-use FOS\RestBundle\Controller\Annotations\Post;
-use FOS\RestBundle\Controller\Annotations\Put;
-use FOS\RestBundle\Controller\Annotations\RequestParam;
+use FOS\RestBundle\Controller\Annotations as Rest;
 use FOS\RestBundle\Controller\FOSRestController;
 use FOS\RestBundle\Request\ParamFetcher;
 use FOS\RestBundle\View\View;
@@ -19,8 +16,6 @@ use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 class ObservationPointController extends FOSRestController
 {
     /**
-     * @Post("/boundary/{id}")
-     *
      * Add an observation point to the boundary.
      *
      * @ApiDoc(
@@ -31,12 +26,13 @@ class ObservationPointController extends FOSRestController
      *   }
      * )
      *
+     * @Rest\Post("/boundaries/{id}")
      * @param $id
      * @param ParamFetcher $paramFetcher
      *
-     * @RequestParam(name="lng", nullable=false, strict=true, description="Longitude of the observation point")
-     * @RequestParam(name="lat", nullable=false, strict=true, description="Latitude of the observation point")
-     * @RequestParam(name="srid", nullable=false, strict=false, default=4326, description="Name of the new Boundary.")
+     * @Rest\RequestParam(name="lng", nullable=false, strict=true, description="Longitude of the observation point")
+     * @Rest\RequestParam(name="lat", nullable=false, strict=true, description="Latitude of the observation point")
+     * @Rest\RequestParam(name="srid", nullable=false, strict=false, default=4326, description="Name of the new Boundary.")
      *
      * @return View
      */
@@ -66,8 +62,6 @@ class ObservationPointController extends FOSRestController
     }
 
     /**
-     * @Get("/observationpoint/{id}")
-     *
      * Returns the observationpoint details specified by boundaryId.
      *
      * @ApiDoc(
@@ -79,6 +73,7 @@ class ObservationPointController extends FOSRestController
      *   }
      * )
      *
+     * @Rest\Get("/observationpoint/{id}")
      * @param $id
      * @return View
      */
@@ -102,8 +97,6 @@ class ObservationPointController extends FOSRestController
     }
 
     /**
-     * * @Put("/observationpoint/{id}")
-     *
      * Updates the observationPoint details specified by observationPoint-Id.
      *
      * @ApiDoc(
@@ -115,12 +108,13 @@ class ObservationPointController extends FOSRestController
      *   }
      * )
      *
+     * @Rest\Put("/observationpoint/{id}")
      * @param $id
      * @param ParamFetcher $paramFetcher
      *
-     * @RequestParam(name="lng", nullable=false, strict=true, description="Longitude of the observation point")
-     * @RequestParam(name="lat", nullable=false, strict=true, description="Latitude of the observation point")
-     * @RequestParam(name="srid", nullable=false, strict=false, default=4326, description="Name of the new Boundary.")
+     * @Rest\RequestParam(name="lng", nullable=false, strict=true, description="Longitude of the observation point")
+     * @Rest\RequestParam(name="lat", nullable=false, strict=true, description="Latitude of the observation point")
+     * @Rest\RequestParam(name="srid", nullable=false, strict=false, default=4326, description="Name of the new Boundary.")
      *
      * @return View
      */
@@ -148,8 +142,6 @@ class ObservationPointController extends FOSRestController
     }
 
     /**
-     * * @Get("/boundary/{id}/observationpoints")
-     *
      * Returns a list of observationpoints from a boundary specified by boundary id.
      *
      * @ApiDoc(
@@ -161,6 +153,7 @@ class ObservationPointController extends FOSRestController
      *   }
      * )
      *
+     * @Rest\Get("/boundaries/{id}/observationpoints")
      * @param $id
      * @return View
      * @throws NotFoundHttpException

@@ -4,6 +4,7 @@ namespace Inowas\ModflowBundle\Model\Boundary;
 
 use CrEOF\Spatial\PHP\Types\Geometry\Point;
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Inowas\ModflowBundle\Model\StressPeriodInterface;
 use Ramsey\Uuid\Uuid;
 
@@ -47,9 +48,9 @@ class ObservationPoint
     }
 
     /**
-     * @return ArrayCollection
+     * @return Collection
      */
-    public function getStressPeriods(): ArrayCollection
+    public function getStressPeriods(): Collection
     {
         return $this->stressPeriods;
     }
@@ -72,5 +73,17 @@ class ObservationPoint
     {
         $this->stressPeriods->add($stressPeriod);
         return $this;
+    }
+
+
+    /**
+     * @return null|string
+     */
+    public function getJsonGeometry(){
+        if (! $this->geometry instanceof Point){
+            return null;
+        }
+
+        return $this->geometry->toJson();
     }
 }

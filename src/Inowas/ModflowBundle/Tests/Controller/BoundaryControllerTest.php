@@ -50,7 +50,7 @@ class BoundaryControllerTest extends WebTestCase
         $client = static::createClient();
         $client->request(
             'POST',
-            sprintf('/api/modflow/model/%s/boundary.json', $model->getId()->toString()),
+            sprintf('/api/modflow/models/%s/boundary.json', $model->getId()->toString()),
             array(
                 'name' => 'MyBoundary',
                 'type' => 'chd'
@@ -103,7 +103,7 @@ class BoundaryControllerTest extends WebTestCase
         $client->request(
             'GET',
             sprintf(
-                '/api/modflow/model/%s/boundaries.json',
+                '/api/modflow/models/%s/boundaries.json',
                 $model->getId()->toString()
             )
         );
@@ -134,7 +134,7 @@ class BoundaryControllerTest extends WebTestCase
         $client->request(
             'GET',
             sprintf(
-                '/api/modflow/boundary/%s.json',
+                '/api/modflow/boundaries/%s.json',
                 $boundary->getId()->toString()
             )
         );
@@ -180,7 +180,7 @@ class BoundaryControllerTest extends WebTestCase
         $client->request(
             'GET',
             sprintf(
-                '/api/modflow/boundary/%s.json',
+                '/api/modflow/boundaries/%s.json',
                 $boundary->getId()->toString()
             )
         );
@@ -232,7 +232,7 @@ class BoundaryControllerTest extends WebTestCase
         $client->request(
             'GET',
             sprintf(
-                '/api/modflow/boundary/%s.json',
+                '/api/modflow/boundaries/%s.json',
                 $boundary->getId()->toString()
             )
         );
@@ -274,7 +274,7 @@ class BoundaryControllerTest extends WebTestCase
         $client->request(
             'GET',
             sprintf(
-                '/api/modflow/boundary/%s.json',
+                '/api/modflow/boundaries/%s.json',
                 $boundary->getId()->toString()
             )
         );
@@ -317,7 +317,7 @@ class BoundaryControllerTest extends WebTestCase
         $client->request(
             'GET',
             sprintf(
-                '/api/modflow/boundary/%s.json',
+                '/api/modflow/boundaries/%s.json',
                 $boundary->getId()->toString()
             )
         );
@@ -360,7 +360,7 @@ class BoundaryControllerTest extends WebTestCase
         $client->request(
             'PUT',
             sprintf(
-                '/api/modflow/boundary/%s.json',
+                '/api/modflow/boundaries/%s.json',
                 $boundary->getId()->toString()
             ),
             array(
@@ -406,7 +406,7 @@ class BoundaryControllerTest extends WebTestCase
         $client->request(
             'PUT',
             sprintf(
-                '/api/modflow/boundary/%s.json',
+                '/api/modflow/boundaries/%s.json',
                 $boundary->getId()->toString()
             ),
             array(
@@ -458,7 +458,7 @@ class BoundaryControllerTest extends WebTestCase
         $client->request(
             'PUT',
             sprintf(
-                '/api/modflow/boundary/%s.json',
+                '/api/modflow/boundaries/%s.json',
                 $boundary->getId()->toString()
             ),
             array(
@@ -500,7 +500,7 @@ class BoundaryControllerTest extends WebTestCase
         $client->request(
             'PUT',
             sprintf(
-                '/api/modflow/boundary/%s.json',
+                '/api/modflow/boundaries/%s.json',
                 $boundary->getId()->toString()
             ),
             array(
@@ -543,7 +543,7 @@ class BoundaryControllerTest extends WebTestCase
         $client->request(
             'PUT',
             sprintf(
-                '/api/modflow/boundary/%s.json',
+                '/api/modflow/boundaries/%s.json',
                 $boundary->getId()->toString()
             ),
             array(

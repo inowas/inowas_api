@@ -2,7 +2,7 @@
 
 namespace Inowas\ModflowBundle\Controller;
 
-use FOS\RestBundle\Controller\Annotations\Get;
+use FOS\RestBundle\Controller\Annotations as Rest;
 use FOS\RestBundle\Controller\FOSRestController;
 
 use Inowas\ModflowBundle\Model\ModflowModel;
@@ -13,8 +13,6 @@ use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 class CalculationsController extends FOSRestController
 {
     /**
-     * * @Get("/calculation/{id}/packages")
-     *
      * Return the list of available ModflowPackages from a Calculation Id.
      *
      * @ApiDoc(
@@ -26,6 +24,7 @@ class CalculationsController extends FOSRestController
      *   }
      * )
      *
+     * @Rest\Get("/calculation/{id}/packages")
      * @param $id
      * @return JsonResponse
      * @throws NotFoundHttpException
@@ -37,8 +36,6 @@ class CalculationsController extends FOSRestController
     }
 
     /**
-     * * @Get("/calculation/{id}/packages/{packageName}")
-     *
      * Return the list of available ModflowPackages from a ModelId.
      *
      * @ApiDoc(
@@ -50,6 +47,7 @@ class CalculationsController extends FOSRestController
      *   }
      * )
      *
+     * @Rest\Get("/calculation/{id}/packages/{packageName}")
      * @param $id
      * @param $packageName
      * @return JsonResponse

@@ -2,9 +2,7 @@
 
 namespace Inowas\ModflowBundle\Controller;
 
-use FOS\RestBundle\Controller\Annotations\Get;
-use FOS\RestBundle\Controller\Annotations\Put;
-use FOS\RestBundle\Controller\Annotations\RequestParam;
+use FOS\RestBundle\Controller\Annotations as Rest;
 use FOS\RestBundle\Controller\FOSRestController;
 use FOS\RestBundle\Request\ParamFetcher;
 use FOS\RestBundle\View\View;
@@ -15,8 +13,6 @@ use Nelmio\ApiDocBundle\Annotation\ApiDoc;
 class StressPeriodController extends FOSRestController
 {
     /**
-     * * @Get("/observationpoint/{id}/stressperiods")
-     *
      * Returns a list of stressperiods by observationpoint id.
      *
      * @ApiDoc(
@@ -27,7 +23,7 @@ class StressPeriodController extends FOSRestController
      *     404 = "Returned when the model is not found"
      *   }
      * )
-     *
+     * @Rest\Get("/observationpoints/{id}/stressperiods")
      * @param $id
      * @return View
      */
@@ -51,8 +47,6 @@ class StressPeriodController extends FOSRestController
     }
 
     /**
-     * @Put("/observationpoint/{id}/stressperiods")
-     *
      * Update stressperiods of an observation point.
      *
      * @ApiDoc(
@@ -63,11 +57,11 @@ class StressPeriodController extends FOSRestController
      *   }
      * )
      *
+     * @Rest\Put("/observationpoints/{id}/stressperiods")
+     * @Rest\RequestParam(name="data", nullable=false, strict=true, description="Stressperiod-Data in Json-Format")
+     *
      * @param $id
      * @param ParamFetcher $paramFetcher
-     *
-     * @RequestParam(name="data", nullable=false, strict=true, description="Stressperiod-Data in Json-Format")
-     *
      * @return View
      */
     public function putObservationPointStressPeriodsAction($id, ParamFetcher $paramFetcher)

@@ -3,8 +3,7 @@
 namespace Inowas\ModflowBundle\Controller;
 
 use CrEOF\Spatial\PHP\Types\Geometry\Polygon;
-use FOS\RestBundle\Controller\Annotations\Get;
-use FOS\RestBundle\Controller\Annotations\Put;
+use FOS\RestBundle\Controller\Annotations as Rest;
 use FOS\RestBundle\Controller\Annotations\RequestParam;
 use FOS\RestBundle\Controller\FOSRestController;
 use FOS\RestBundle\Request\ParamFetcher;
@@ -16,8 +15,6 @@ class AreaController extends FOSRestController
 {
 
     /**
-     * @Get("/model/{id}/area")
-     *
      * Returns the model area details specified by modelId
      *
      * @ApiDoc(
@@ -29,6 +26,7 @@ class AreaController extends FOSRestController
      *   }
      * )
      *
+     * @Rest\Get("/models/{id}/area")
      * @param $id
      * @return View
      */
@@ -47,8 +45,6 @@ class AreaController extends FOSRestController
     }
 
     /**
-     * @Put("/model/{id}/area")
-     *
      * Update the model area specified by modelId.
      *
      * @ApiDoc(
@@ -60,6 +56,7 @@ class AreaController extends FOSRestController
      *   }
      * )
      *
+     * @Rest\Put("/models/{id}/area")
      * @param ParamFetcher $paramFetcher
      * @param $id
      *

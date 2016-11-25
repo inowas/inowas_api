@@ -57,7 +57,7 @@ class AreaControllerTest extends WebTestCase
         $client = static::createClient();
         $client->request(
             'GET',
-            sprintf('/api/modflow/model/%s/area.json', $model->getId()->toString())
+            sprintf('/api/modflow/models/%s/area.json', $model->getId()->toString())
         );
 
         $this->assertEquals(200, $client->getResponse()->getStatusCode());
@@ -82,7 +82,7 @@ class AreaControllerTest extends WebTestCase
         $client = static::createClient();
         $client->request(
             'PUT',
-            sprintf('/api/modflow/model/%s/area.json', $model->getId()->toString()),
+            sprintf('/api/modflow/models/%s/area.json', $model->getId()->toString()),
             array(
                 'name' => 'AreaName',
                 'geometry' => '{"type":"Polygon","coordinates":[[[1,3],[2,2],[2,1],[1,1],[1,3]]]}'

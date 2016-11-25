@@ -34,7 +34,7 @@ class ModelControllerTest extends WebTestCase
         $client = static::createClient();
         $client->request(
             'POST',
-            '/api/modflow/model.json',
+            '/api/modflow/models.json',
             array('name' => 'MyModelName')
         );
 

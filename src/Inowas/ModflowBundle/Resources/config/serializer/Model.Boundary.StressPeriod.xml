@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<serializer>
+    <class name="Inowas\ModflowBundle\Model\Boundary\StressPeriod">
+        <property name="id" type="string" groups="details"/>
+        <property name="dateTimeBegin" type="DateTime" groups="details"/>
+        <property name="numberOfTimeSteps" type="integer" groups=""/>
+        <property name="steady" type="boolean" groups=""/>
+        <property name="timeStepMultiplier" type="float" groups=""/>
+    </class>
+</serializer>

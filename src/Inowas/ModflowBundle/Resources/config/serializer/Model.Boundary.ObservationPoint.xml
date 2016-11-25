@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<serializer>
+    <class name="Inowas\ModflowBundle\Model\Boundary\ObservationPoint">
+        <property name="id" type="string" groups="details"/>
+        <property name="observationPoints" groups="details">
+            <type><![CDATA[ArrayCollection<Inowas\ModflowBundle\Model\Boundary\StressPeriod>]]></type>
+        </property>
+        <virtual-property method="getJsonGeometry" type="string" serialized-name="geometry" groups="details"/>
+    </class>
+</serializer>
