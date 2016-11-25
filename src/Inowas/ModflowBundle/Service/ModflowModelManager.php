@@ -48,6 +48,15 @@ class ModflowModelManager
     }
 
     /**
+     * @return array
+     */
+    public function findAll(){
+        return $this->entityManager
+            ->getRepository('InowasModflowBundle:ModflowModel')
+            ->findAll();
+    }
+
+    /**
      * @param $id
      * @return Area
      */

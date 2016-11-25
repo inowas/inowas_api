@@ -46,6 +46,36 @@ class ModelControllerTest extends WebTestCase
         $this->assertEquals('MyModelName', $response->name);
     }
 
+    public function testGetListOfModels() {
+        $model = $this->modelManager->create();
+        $model->setStart(new \DateTime('2016-01-01'));
+        $model->setEnd(new \DateTime('2016-12-31'));
+        $model->setName('TestModel');
+        $model->setDescription('TestModelDescription');
+        $this->modelManager->update($model);
+
+        $model = $this->modelManager->create();
+        $model->setStart(new \DateTime('2016-01-02'));
+        $model->setEnd(new \DateTime('2016-12-30'));
+        $model->setName('TestModel_2');
+        $model->setDescription('TestModelDescription_2');
+        $this->modelManager->update($model);
+
+        $client = static::createClient();
+        $client->request(
+            'GET',
+            sprintf('/api/modflow/models.json', $model->getId()->toString())
+        );
+
+        $this->assertEquals(200, $client->getResponse()->getStatusCode());
+        $this->assertJson($client->getResponse()->getContent());
+        $response = json_decode($client->getResponse()->getContent());
+        $this->assertCount(2, $response);
+        $this->assertObjectHasAttribute('id', $response[0]);
+        $this->assertObjectHasAttribute('name', $response[0]);
+        $this->assertObjectHasAttribute('description', $response[0]);
+    }
+
     public function testGetModelById() {
         $model = $this->modelManager->create();
         $model->setStart(new \DateTime('2016-01-01'));
@@ -56,7 +86,7 @@ class ModelControllerTest extends WebTestCase
         $client = static::createClient();
         $client->request(
             'GET',
-            sprintf('/api/modflow/model/%s.json', $model->getId()->toString())
+            sprintf('/api/modflow/models/%s.json', $model->getId()->toString())
         );
 
         $this->assertEquals(200, $client->getResponse()->getStatusCode());
@@ -78,7 +108,7 @@ class ModelControllerTest extends WebTestCase
         $client = static::createClient();
         $client->request(
             'PUT',
-            sprintf('/api/modflow/model/%s.json', $model->getId()->toString()),
+            sprintf('/api/modflow/models/%s.json', $model->getId()->toString()),
             array(
                 'name' => 'NewName',
                 'description' => 'NewDescription',
@@ -125,7 +155,7 @@ class ModelControllerTest extends WebTestCase
         $client = static::createClient();
         $client->request(
             'PUT',
-            sprintf('/api/modflow/model/%s.json', $model->getId()->toString()),
+            sprintf('/api/modflow/models/%s.json', $model->getId()->toString()),
             array(
                 'description' => 'NewDescription'
             )

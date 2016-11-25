@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <serializer>
     <class name="Inowas\ModflowBundle\Model\ModflowModel">
-        <property name="id" type="string" groups="details"/>
-        <property name="name" type="string" groups="details"/>
-        <property name="description" type="string" groups="details"/>
+        <property name="id" type="string" groups="details,list"/>
+        <property name="name" type="string" groups="details,list"/>
+        <property name="description" type="string" groups="details,list"/>
         <property name="boundingBox" type="Inowas\ModflowBundle\Model\BoundingBox" groups="details"/>
         <property name="gridSize" type="Inowas\ModflowBundle\Model\GridSize" groups="details"/>
         <property name="area" type="Inowas\ModflowBundle\Model\Area" groups="details"/>

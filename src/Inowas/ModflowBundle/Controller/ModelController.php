@@ -2,9 +2,7 @@
 
 namespace Inowas\ModflowBundle\Controller;
 
-use FOS\RestBundle\Controller\Annotations\Get;
-use FOS\RestBundle\Controller\Annotations\Post;
-use FOS\RestBundle\Controller\Annotations\Put;
+use FOS\RestBundle\Controller\Annotations as Rest;
 use FOS\RestBundle\Controller\Annotations\RequestParam;
 use FOS\RestBundle\Controller\FOSRestController;
 use FOS\RestBundle\Request\ParamFetcher;
@@ -13,15 +11,11 @@ use Inowas\ModflowBundle\Model\GridSize;
 use Inowas\ModflowBundle\Model\ModflowModel;
 use JMS\Serializer\SerializationContext;
 use Nelmio\ApiDocBundle\Annotation\ApiDoc;
-use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class ModelController extends FOSRestController
 {
-
     /**
-     * @Post("/model")
-     *
      * Create a new Model.
      *
      * @ApiDoc(
@@ -32,8 +26,36 @@ class ModelController extends FOSRestController
      *   }
      * )
      *
-     * @param ParamFetcher $paramFetcher
+     * @Rest\Get("/models")
+     * @return View
+     */
+    public function getModflowModelsAction()
+    {
+        $modelManager = $this->get('inowas.modflow.modelmanager');
+
+        $view = View::create($modelManager->findAll())
+            ->setStatusCode(200)
+            ->setSerializationContext(SerializationContext::create()
+                ->setGroups(array('list'))
+            )
+        ;
+
+        return $view;
+    }
+
+    /**
+     * Create a new Model.
      *
+     * @ApiDoc(
+     *   resource = true,
+     *   description = "Create a new Model.",
+     *   statusCodes = {
+     *     200 = "Returned when successful"
+     *   }
+     * )
+     *
+     * @Rest\Post("/models")
+     * @param ParamFetcher $paramFetcher
      * @RequestParam(name="name", nullable=false, strict=true, description="Name of the new ModflowModel.")
      *
      * @return View
@@ -56,8 +78,6 @@ class ModelController extends FOSRestController
     }
 
     /**
-     * * @Get("/model/{id}")
-     *
      * Returns the model details specified by modelId.
      *
      * @ApiDoc(
@@ -69,8 +89,9 @@ class ModelController extends FOSRestController
      *   }
      * )
      *
+     * @Rest\Get("/models/{id}")
      * @param $id
-     * @return JsonResponse
+     * @return View
      * @throws NotFoundHttpException
      */
     public function getModflowModelAction($id)
@@ -93,7 +114,7 @@ class ModelController extends FOSRestController
     }
 
     /**
-     * * @Put("/model/{id}")
+     * @Rest\Put("/models/{id}")
      *
      * Update the model details specified by modelId.
      *
@@ -117,7 +138,7 @@ class ModelController extends FOSRestController
      * @RequestParam(name="gridsizeNy", nullable=false, strict=false, description="Gridsize, number of rows")
      * @RequestParam(name="soilmodelId", nullable=false, strict=false, description="Soilmodel Id")
      *
-     * @return JsonResponse
+     * @return View
      * @throws NotFoundHttpException
      */
     public function putModflowModelAction(ParamFetcher $paramFetcher, $id)
