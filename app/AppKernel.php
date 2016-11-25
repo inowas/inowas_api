@@ -23,6 +23,7 @@ class AppKernel extends Kernel
             new JMS\SecurityExtraBundle\JMSSecurityExtraBundle(),
             new JMS\DiExtraBundle\JMSDiExtraBundle($this),
             new Nelmio\ApiDocBundle\NelmioApiDocBundle(),
+            new Nelmio\CorsBundle\NelmioCorsBundle(),
             new Inowas\PyprocessingBundle\InowasPyprocessingBundle(),
             new Inowas\SoilmodelBundle\InowasSoilmodelBundle(),
             new Inowas\ModflowBundle\InowasModflowBundle(),
