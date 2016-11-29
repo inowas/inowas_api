@@ -8,6 +8,7 @@ use CrEOF\Spatial\PHP\Types\Geometry\Polygon;
 use Doctrine\Common\DataFixtures\FixtureInterface;
 use Doctrine\Common\Persistence\ObjectManager;
 use Inowas\ModflowBundle\Model\AreaFactory;
+use Inowas\ModflowBundle\Model\Boundary\ConstantHeadBoundary;
 use Inowas\ModflowBundle\Model\Boundary\ObservationPointFactory;
 use Inowas\ModflowBundle\Model\Boundary\RiverBoundary;
 use Inowas\ModflowBundle\Model\BoundaryFactory;
@@ -330,6 +331,48 @@ class Hanoi implements FixtureInterface, ContainerAwareInterface
 
         $model->addBoundary($riverBoundary);
         $modelManager->update($model);
+
+        // Add Constant Head Boundary
+        $chdPoints = $this->loadRowsFromCsv(__DIR__."/chd_geometry_basecase.csv");
+        foreach ($chdPoints as $key => $point){
+            $chdPoints[$key] = $geoTools->transformPoint(new Point($point['x'], $point['y'], $point['srid']), 4326);
+        }
+        $geometry = new LineString($chdPoints, 4326);
+
+        /** @var ConstantHeadBoundary $chdBoundary */
+        $chdBoundary = BoundaryFactory::createChd()
+            ->setGeometry($geometry)
+            ->setName('CHD-Boundary');
+
+        echo sprintf("Add Constant-Head-Boundary %s.\r\n", $chdBoundary->getName());
+        $modelManager->update($model);
+
+        $observationPoints = $this->loadRowsFromCsv(__DIR__."/chd_stages_basecase.csv");
+        $header = $this->loadHeaderFromCsv(__DIR__."/chd_stages_basecase.csv");
+        $dates = $this->getDates($header);
+
+        foreach ($observationPoints as $op){
+            $observationPoint = ObservationPointFactory::create()
+                ->setName($op['name'])
+                ->setGeometry($geoTools->transformPoint(new Point($op['x'], $op['y'], $op['srid']), 4326))
+            ;
+
+            foreach ($dates as $date){
+                if (is_numeric($op[$date])) {
+                    $observationPoint->addStressPeriod(StressPeriodFactory::createChd()
+                        ->setDateTimeBegin(new \DateTime(explode(':', $date)[1]))
+                        ->setShead($op[$date])
+                        ->setEhead($op[$date])
+                    );
+                }
+            }
+            echo sprintf("Add Chd-Boundary ObservationPoint %s.\r\n", $observationPoint->getName());
+            $chdBoundary->addObservationPoint($observationPoint);
+        }
+
+        $model->addBoundary($chdBoundary);
+        $modelManager->update($model);
+
     }
 
     protected function loadRowsFromCsv($filename): array {
