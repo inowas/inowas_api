@@ -251,7 +251,7 @@ class Hanoi implements FixtureInterface, ContainerAwareInterface
 
         // Add Boundaries
         // Add Wells
-        $wells = $this->loadDataFromCsv(__DIR__."/wells_basecase.csv");
+        $wells = $this->loadRowsFromCsv(__DIR__."/wells_basecase.csv");
         $header = $this->loadHeaderFromCsv(__DIR__."/wells_basecase.csv");
         $dates = $this->getDates($header);
 
@@ -287,7 +287,7 @@ class Hanoi implements FixtureInterface, ContainerAwareInterface
         $modelManager->update($model);
 
         // Add River
-        $riverPoints = $this->loadPointsFromCsv(__DIR__."/river_geometry_basecase.csv");
+        $riverPoints = $this->loadRowsFromCsv(__DIR__."/river_geometry_basecase.csv");
         foreach ($riverPoints as $key => $point){
             $riverPoints[$key] = $geoTools->transformPoint(new Point($point['x'], $point['y'], $point['srid']), 4326);
         }
@@ -304,7 +304,7 @@ class Hanoi implements FixtureInterface, ContainerAwareInterface
         echo sprintf("Add River-Boundary %s.\r\n", $riverBoundary->getName());
         $modelManager->update($model);
 
-        $observationPoints = $this->loadDataFromCsv(__DIR__."/river_stages_basecase.csv");
+        $observationPoints = $this->loadRowsFromCsv(__DIR__."/river_stages_basecase.csv");
         $header = $this->loadHeaderFromCsv(__DIR__."/river_stages_basecase.csv");
         $dates = $this->getDates($header);
 
@@ -332,9 +332,9 @@ class Hanoi implements FixtureInterface, ContainerAwareInterface
         $modelManager->update($model);
     }
 
-    protected function loadDataFromCsv($filename): array {
+    protected function loadRowsFromCsv($filename): array {
         $header = null;
-        $wells = array();
+        $rows = array();
         if (($handle = fopen($filename, "r")) !== FALSE) {
             while (($data = fgetcsv($handle, 1000, ";")) !== FALSE) {
                 if ($header == null){
@@ -342,14 +342,13 @@ class Hanoi implements FixtureInterface, ContainerAwareInterface
                     continue;
                 }
 
-                $well = array_combine($header, $data);
-                $wells[] = $well;
+                $rows[] = array_combine($header, $data);
 
             }
             fclose($handle);
         }
 
-        return $wells;
+        return $rows;
     }
 
     protected function loadHeaderFromCsv($filename): array
@@ -361,26 +360,6 @@ class Hanoi implements FixtureInterface, ContainerAwareInterface
         }
 
         return $data;
-    }
-
-    protected function loadPointsFromCsv($filename): array{
-        $header = null;
-        $points = array();
-        if (($handle = fopen($filename, "r")) !== FALSE) {
-            while (($data = fgetcsv($handle, 1000, ";")) !== FALSE) {
-                if ($header == null){
-                    $header = $data;
-                    continue;
-                }
-
-                $point = array_combine($header, $data);
-                $points[] = $point;
-
-            }
-            fclose($handle);
-        }
-
-        return $points;
     }
 
     protected function getDates(array $header): array{

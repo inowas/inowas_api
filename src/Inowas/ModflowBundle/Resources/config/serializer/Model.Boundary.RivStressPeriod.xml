@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<serializer>
+    <class name="Inowas\ModflowBundle\Model\Boundary\RivStressPeriod">
+        <property name="stage" type="float" groups="details"/>
+        <property name="conductivity" type="float" groups="details"/>
+        <property name="bottomElevation" type="float" groups="details"/>
+    </class>
+</serializer>
