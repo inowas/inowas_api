@@ -2,12 +2,14 @@
 
 namespace Inowas\ModflowBundle\DataFixtures\Scenarios\Hanoi;
 
+use CrEOF\Spatial\PHP\Types\Geometry\LineString;
 use CrEOF\Spatial\PHP\Types\Geometry\Point;
 use CrEOF\Spatial\PHP\Types\Geometry\Polygon;
 use Doctrine\Common\DataFixtures\FixtureInterface;
 use Doctrine\Common\Persistence\ObjectManager;
 use Inowas\ModflowBundle\Model\AreaFactory;
 use Inowas\ModflowBundle\Model\Boundary\ObservationPointFactory;
+use Inowas\ModflowBundle\Model\Boundary\RiverBoundary;
 use Inowas\ModflowBundle\Model\BoundaryFactory;
 use Inowas\ModflowBundle\Model\BoundingBox;
 use Inowas\ModflowBundle\Model\GridSize;
@@ -247,6 +249,8 @@ class Hanoi implements FixtureInterface, ContainerAwareInterface
 
         $modelManager->update($model);
 
+        // Add Boundaries
+        // Add Wells
         $wells = $this->loadDataFromCsv(__DIR__."/wells_basecase.csv");
         $header = $this->loadHeaderFromCsv(__DIR__."/wells_basecase.csv");
         $dates = $this->getDates($header);
@@ -260,6 +264,7 @@ class Hanoi implements FixtureInterface, ContainerAwareInterface
 
             $observationPoint = ObservationPointFactory::create()
                 ->setGeometry($geoTools->transformPoint(new Point($well['x'], $well['y'], $well['srid']), 4326))
+                ->setName($wellBoundary->getName())
             ;
 
             $value = null;
@@ -279,12 +284,55 @@ class Hanoi implements FixtureInterface, ContainerAwareInterface
             $model->addBoundary($wellBoundary);
             echo sprintf("Add well %s.\r\n", $wellBoundary->getName());
         }
+        $modelManager->update($model);
 
+        // Add River
+        $riverPoints = $this->loadPointsFromCsv(__DIR__."/river_geometry_basecase.csv");
+        foreach ($riverPoints as $key => $point){
+            $riverPoints[$key] = $geoTools->transformPoint(new Point($point['x'], $point['y'], $point['srid']), 4326);
+        }
+
+
+        $geometry = new LineString($riverPoints, 4326);
+
+        /** @var RiverBoundary $riverBoundary */
+        $riverBoundary = BoundaryFactory::createRiv()
+            ->setName('Red River')
+            ->setGeometry($geometry)
+        ;
+
+        echo sprintf("Add River-Boundary %s.\r\n", $riverBoundary->getName());
+        $modelManager->update($model);
+
+        $observationPoints = $this->loadDataFromCsv(__DIR__."/river_stages_basecase.csv");
+        $header = $this->loadHeaderFromCsv(__DIR__."/river_stages_basecase.csv");
+        $dates = $this->getDates($header);
+
+        foreach ($observationPoints as $op){
+            $observationPoint = ObservationPointFactory::create()
+                ->setName($op['name'])
+                ->setGeometry($geoTools->transformPoint(new Point($op['x'], $op['y'], $op['srid']), 4326))
+            ;
+
+            foreach ($dates as $date){
+                if (is_numeric($op[$date])) {
+                    $observationPoint->addStressPeriod(StressPeriodFactory::createRiv()
+                        ->setDateTimeBegin(new \DateTime(explode(':', $date)[1]))
+                        ->setBottomElevation(0)
+                        ->setConductivity(18)
+                        ->setStage($op[$date])
+                    );
+                }
+            }
+            echo sprintf("Add River-Boundary ObservationPoint %s.\r\n", $observationPoint->getName());
+            $riverBoundary->addObservationPoint($observationPoint);
+        }
+
+        $model->addBoundary($riverBoundary);
         $modelManager->update($model);
     }
 
-    protected function loadDataFromCsv($filename): array
-    {
+    protected function loadDataFromCsv($filename): array {
         $header = null;
         $wells = array();
         if (($handle = fopen($filename, "r")) !== FALSE) {
@@ -313,6 +361,26 @@ class Hanoi implements FixtureInterface, ContainerAwareInterface
         }
 
         return $data;
+    }
+
+    protected function loadPointsFromCsv($filename): array{
+        $header = null;
+        $points = array();
+        if (($handle = fopen($filename, "r")) !== FALSE) {
+            while (($data = fgetcsv($handle, 1000, ";")) !== FALSE) {
+                if ($header == null){
+                    $header = $data;
+                    continue;
+                }
+
+                $point = array_combine($header, $data);
+                $points[] = $point;
+
+            }
+            fclose($handle);
+        }
+
+        return $points;
     }
 
     protected function getDates(array $header): array{
