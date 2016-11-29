@@ -9,6 +9,7 @@ use FOS\RestBundle\Controller\FOSRestController;
 use FOS\RestBundle\Request\ParamFetcher;
 use FOS\RestBundle\View\View;
 use Inowas\ModflowBundle\Model\Boundary\ObservationPoint;
+use Inowas\ModflowBundle\Model\Boundary\StressPeriod;
 use JMS\Serializer\SerializationContext;
 use Nelmio\ApiDocBundle\Annotation\ApiDoc;
 
@@ -40,12 +41,14 @@ class StressPeriodController extends FOSRestController
 
         /** @var ArrayCollection $stressPeriods */
         $stressPeriods = $observationPoint->getStressPeriods();
-        $sort = Criteria::create();
-        $sort->orderBy(array(
-            'dateTimeBegin' => Criteria::ASC
-        ));
 
-        $view = View::create($stressPeriods->matching($sort))
+        /** @var array $stressPeriods */
+        $stressPeriods = $stressPeriods->toArray();
+        usort($stressPeriods, function($a, $b) {
+           return $a->getDateTimeBegin() <=> $b->getDateTimeBegin();
+        });
+
+        $view = View::create($stressPeriods)
             ->setStatusCode(200)
             ->setSerializationContext(SerializationContext::create()
                 ->setGroups(array('details'))
