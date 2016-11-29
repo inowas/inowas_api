@@ -2,6 +2,8 @@
 
 namespace Inowas\ModflowBundle\Controller;
 
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Criteria;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use FOS\RestBundle\Controller\FOSRestController;
 use FOS\RestBundle\Request\ParamFetcher;
@@ -36,7 +38,14 @@ class StressPeriodController extends FOSRestController
             throw $this->createNotFoundException(sprintf('ObservationPoint with id=%s not found.', $id));
         }
 
-        $view = View::create($observationPoint->getStressPeriods())
+        /** @var ArrayCollection $stressPeriods */
+        $stressPeriods = $observationPoint->getStressPeriods();
+        $sort = Criteria::create();
+        $sort->orderBy(array(
+            'dateTimeBegin' => Criteria::ASC
+        ));
+
+        $view = View::create($stressPeriods->matching($sort))
             ->setStatusCode(200)
             ->setSerializationContext(SerializationContext::create()
                 ->setGroups(array('details'))
