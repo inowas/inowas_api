@@ -2,14 +2,11 @@
 
 namespace Inowas\ModflowBundle\Controller;
 
-use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\Common\Collections\Criteria;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use FOS\RestBundle\Controller\FOSRestController;
 use FOS\RestBundle\Request\ParamFetcher;
 use FOS\RestBundle\View\View;
 use Inowas\ModflowBundle\Model\Boundary\ObservationPoint;
-use Inowas\ModflowBundle\Model\Boundary\StressPeriod;
 use JMS\Serializer\SerializationContext;
 use Nelmio\ApiDocBundle\Annotation\ApiDoc;
 
@@ -39,11 +36,9 @@ class StressPeriodController extends FOSRestController
             throw $this->createNotFoundException(sprintf('ObservationPoint with id=%s not found.', $id));
         }
 
-        /** @var ArrayCollection $stressPeriods */
-        $stressPeriods = $observationPoint->getStressPeriods();
-
         /** @var array $stressPeriods */
-        $stressPeriods = $stressPeriods->toArray();
+        $stressPeriods = $observationPoint->getStressPeriods()->toArray();
+
         usort($stressPeriods, function($a, $b) {
            return $a->getDateTimeBegin() <=> $b->getDateTimeBegin();
         });
