@@ -16,6 +16,8 @@
         </unique-constraints>
 
         <id name="id" type="uuid" column="id"/>
+        <field name="name" type="string" column="name" nullable="true"/>
+        <field name="description" type="string" column="description" nullable="true"/>
         <field name="geometry" column="geometry" type="point" nullable="true"/>
 
         <many-to-many field="stressPeriods" target-entity="Inowas\ModflowBundle\Model\Boundary\StressPeriod" orphan-removal="true">

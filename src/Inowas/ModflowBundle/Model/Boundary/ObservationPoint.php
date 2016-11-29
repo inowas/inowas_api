@@ -13,6 +13,12 @@ class ObservationPoint
     /** @var Uuid */
     private $id;
 
+    /** @var string */
+    private $name;
+
+    /** @var string */
+    private $description;
+
     /** @var Point */
     private $geometry;
 
@@ -23,6 +29,42 @@ class ObservationPoint
     {
         $this->id = Uuid::uuid4();
         $this->stressPeriods = new ArrayCollection();
+    }
+
+    /**
+     * @return string
+     */
+    public function getName(): string
+    {
+        return $this->name;
+    }
+
+    /**
+     * @param string $name
+     * @return ObservationPoint
+     */
+    public function setName(string $name): ObservationPoint
+    {
+        $this->name = $name;
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getDescription(): string
+    {
+        return $this->description;
+    }
+
+    /**
+     * @param string $description
+     * @return ObservationPoint
+     */
+    public function setDescription(string $description): ObservationPoint
+    {
+        $this->description = $description;
+        return $this;
     }
 
     /**

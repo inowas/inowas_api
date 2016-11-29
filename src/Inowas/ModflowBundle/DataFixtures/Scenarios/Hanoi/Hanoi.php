@@ -259,7 +259,8 @@ class Hanoi implements FixtureInterface, ContainerAwareInterface
             $wellBoundary->setGeometry($geoTools->transformPoint(new Point($well['x'], $well['y'], $well['srid']), 4326));
 
             $observationPoint = ObservationPointFactory::create()
-                ->setGeometry($geoTools->transformPoint(new Point($well['x'], $well['y'], $well['srid']), 4326));
+                ->setGeometry($geoTools->transformPoint(new Point($well['x'], $well['y'], $well['srid']), 4326))
+            ;
 
             $value = null;
             foreach ($dates as $date){
