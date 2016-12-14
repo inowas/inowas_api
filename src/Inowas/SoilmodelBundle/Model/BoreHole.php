@@ -122,4 +122,15 @@ class BoreHole extends SoilmodelObject
     public function getLayers(){
         return $this->layers;
     }
+
+    public function getLayerByNumber($order){
+        /** @var Layer $layer */
+        foreach ($this->layers as $layer){
+            if ($layer->getOrder() == $order){
+                return $layer;
+            }
+        }
+
+        return null;
+    }
 }

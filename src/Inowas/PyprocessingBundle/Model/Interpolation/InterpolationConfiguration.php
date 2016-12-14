@@ -2,17 +2,13 @@
 
 namespace Inowas\PyprocessingBundle\Model\Interpolation;
 
-use AppBundle\Model\BoundingBox;
-use AppBundle\Model\GridSize;
 use Inowas\PyprocessingBundle\Exception\InvalidArgumentException;
 
 class InterpolationConfiguration
 {
 
-    /** @var  GridSize */
     protected $gridSize;
 
-    /** @var  BoundingBox */
     protected $boundingBox;
 
     /** @var  array */
@@ -24,7 +20,7 @@ class InterpolationConfiguration
     /** @var  string */
     protected $currentAlgorithm;
 
-    public function __construct(GridSize $gridSize, BoundingBox $boundingBox, array $pointValues, array $algorithms)
+    public function __construct($gridSize, $boundingBox, array $pointValues, array $algorithms)
     {
         $this->gridSize = $gridSize;
         $this->boundingBox = $boundingBox;
@@ -43,7 +39,7 @@ class InterpolationConfiguration
     }
 
     /**
-     * @return GridSize
+     * @return mixed
      */
     public function getGridSize()
     {
@@ -51,7 +47,7 @@ class InterpolationConfiguration
     }
 
     /**
-     * @return BoundingBox
+     * @return mixed
      */
     public function getBoundingBox()
     {

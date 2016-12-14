@@ -148,4 +148,19 @@ class Layer extends SoilmodelObject
     public function getProperties(){
         return $this->properties;
     }
+
+    /**
+     * @return array
+     */
+    public function getPropertyTypes(){
+        $types = [];
+        /** @var Property $property */
+        foreach ($this->properties as $property){
+            if ($property->getType() instanceof PropertyType){
+                array_push($types, $property->getType());
+            }
+        }
+
+        return $types;
+    }
 }

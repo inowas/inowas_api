@@ -2,3 +2,7 @@ services:
     inowas.soilmodel.soilmodelmanager:
         class: Inowas\SoilmodelBundle\Service\SoilmodelManager
         arguments: ['@doctrine.orm.soilmodel_entity_manager']
+
+    inowas.soilmodel.soilmodelservice:
+        class: Inowas\SoilmodelBundle\Service\SoilmodelService
+        arguments: ['@doctrine.orm.soilmodel_entity_manager', '@inowas.process.interpolation']

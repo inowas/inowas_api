@@ -14,13 +14,11 @@ class InterpolationResult
     /** @var  array */
     protected $data;
 
-    /** @var  GridSize */
     protected $gridSize;
 
-    /** @var  BoundingBox */
     protected $boundingBox;
 
-    public function __construct($algorithm, array $data, GridSize $gridSize, BoundingBox $boundingBox)
+    public function __construct($algorithm, array $data, $gridSize, $boundingBox)
     {
         $this->algorithm = $algorithm;
         $this->data = $data;
