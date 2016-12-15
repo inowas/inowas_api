@@ -109,6 +109,7 @@ doctrine:
                     InowasSoilmodelBundle:
                         type: xml
                         prefix: Inowas\SoilmodelBundle\Model
+
             modflow:
                 connection: default
                 auto_mapping: false
@@ -116,6 +117,14 @@ doctrine:
                     InowasModflowBundle:
                         type: xml
                         prefix: Inowas\ModflowBundle\Model
+
+            scenario_analysis:
+                connection: default
+                auto_mapping: false
+                mappings:
+                    InowasScenarioAnalysisBundle:
+                        type: xml
+                        prefix: Inowas\ScenarioAnalysisBundle\Model
 
 
 # Swiftmailer Configuration

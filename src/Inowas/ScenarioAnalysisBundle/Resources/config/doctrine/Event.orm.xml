@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<doctrine-mapping
+    xmlns="http://doctrine-project.org/schemas/orm/doctrine-mapping"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://doctrine-project.org/schemas/orm/doctrine-mapping
+        http://doctrine-project.org/schemas/orm/doctrine-mapping.xsd">
+
+    <entity name="Inowas\ScenarioAnalysisBundle\Model\Event" table="sca_events">
+
+        <indexes>
+            <index name="idx_events_id" columns="id"/>
+        </indexes>
+
+        <unique-constraints>
+            <unique-constraint columns="id" name="uc_events_id"/>
+        </unique-constraints>
+
+        <id name="id" type="uuid" column="id"/>
+        <field name="type" column="name" type="string" length="255" nullable="false" />
+        <field name="order" type="integer" column="order" nullable="false"/>
+        <field name="payload" type="text" column="payload" nullable="false"/>
+
+    </entity>
+</doctrine-mapping>
