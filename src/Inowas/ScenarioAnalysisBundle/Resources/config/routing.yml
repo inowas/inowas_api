@@ -1,0 +1,3 @@
+rest_scenarios:
+    type: rest
+    resource: '@InowasScenarioAnalysisBundle/Controller/ScenarioController.php'

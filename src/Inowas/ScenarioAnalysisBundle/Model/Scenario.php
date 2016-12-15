@@ -95,9 +95,9 @@ class Scenario
     }
 
     /**
-     * @return Uuid
+     * @return ModflowModel
      */
-    public function getBaseModel(): Uuid
+    public function getBaseModel(): ModflowModel
     {
         return $this->baseModel;
     }
@@ -127,6 +127,16 @@ class Scenario
     public function setEvents(ArrayCollection $events): Scenario
     {
         $this->events = $events;
+        return $this;
+    }
+
+    /**
+     * @param Event $event
+     * @return $this
+     */
+    public function addEvent(Event $event)
+    {
+        $this->events[] = $event;
         return $this;
     }
 
