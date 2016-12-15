@@ -196,6 +196,22 @@ class ModflowModel implements ModflowModelInterface
     }
 
     /**
+     * @param Uuid $id
+     * @return Boundary|null
+     */
+    public function getBoundary(Uuid $id)
+    {
+        /** @var Boundary $boundary */
+        foreach ($this->getBoundaries() as $boundary){
+            if ($boundary->getId() == $id){
+                return $boundary;
+            }
+        }
+
+        return null;
+    }
+
+    /**
      * @param Boundary $boundary
      * @return ModflowModel
      */

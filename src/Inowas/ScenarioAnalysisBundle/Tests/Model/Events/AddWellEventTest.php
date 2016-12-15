@@ -3,35 +3,19 @@
 namespace Inowas\ScenarioAnalysisBundle\Tests\Model\Events;
 
 use Inowas\ModflowBundle\Model\Boundary\WellBoundary;
-use Inowas\ModflowBundle\Model\ModflowModel;
-use Inowas\ModflowBundle\Model\ModflowModelFactory;
-use Inowas\ScenarioAnalysisBundle\Factory\ScenarioFactory;
 use Inowas\ScenarioAnalysisBundle\Model\Events\AddWellEvent;
-use Inowas\ScenarioAnalysisBundle\Model\Scenario;
 
-class AddWellEventTest extends \PHPUnit_Framework_TestCase
+class AddWellEventTest extends EventsBaseTest
 {
     /** @var  AddWellEvent */
     protected $event;
-
-    /** @var  ModflowModel */
-    protected $model;
-
-    /** @var  Scenario */
-    protected $scenario;
-
-    public function setUp()
-    {
-        $this->model = ModflowModelFactory::create();
-        $this->scenario =  ScenarioFactory::create($this->model);
-    }
 
     public function testCanInstantiateAddWellEvent(){
         $this->event = new AddWellEvent('TestWell');
         $this->assertInstanceOf(AddWellEvent::class, $this->event);
     }
 
-    public function testApplyAddWellEvent(){
+    public function testApplyEvent(){
         $this->event = new AddWellEvent('TestWell');
         $this->event->applyTo($this->model);
         $this->assertCount(1, $this->model->getBoundaries());
@@ -43,9 +27,7 @@ class AddWellEventTest extends \PHPUnit_Framework_TestCase
     }
 
     public function tearDown(){
+        parent::tearDown();
         unset($this->event);
-        unset($this->model);
-        unset($this->scenario);
     }
-
 }
