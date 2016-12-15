@@ -10,6 +10,18 @@ use Inowas\ScenarioAnalysisBundle\Model\Event;
 class AddWellEvent extends Event
 {
     /**
+     * AddWellEvent constructor.
+     * @param string $name
+     */
+    public function __construct(string $name)
+    {
+        parent::__construct();
+        $this->payload = [];
+        $this->payload['name'] = $name;
+        return $this;
+    }
+
+    /**
      * @param ModflowModel $model
      * @return void
      */
@@ -19,12 +31,5 @@ class AddWellEvent extends Event
         $well = BoundaryFactory::createWel();
         $well->setName($this->payload['name']);
         $model->addBoundary($well);
-    }
-
-    public static function fromName(string $name){
-        $instance = new self();
-        $instance->payload = [];
-        $instance->payload['name'] = $name;
-        return $instance;
     }
 }

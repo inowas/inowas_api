@@ -22,7 +22,7 @@ abstract class Event
      */
     protected $createdAt;
 
-    final protected function __construct()
+    public function __construct()
     {
         $this->id = Uuid::uuid4();
         $this->createdAt = new \DateTime('now');

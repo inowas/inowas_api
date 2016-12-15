@@ -27,12 +27,12 @@ class AddWellEventTest extends \PHPUnit_Framework_TestCase
     }
 
     public function testCanInstantiateAddWellEvent(){
-        $this->event = AddWellEvent::fromName('TestWell');
+        $this->event = new AddWellEvent('TestWell');
         $this->assertInstanceOf(AddWellEvent::class, $this->event);
     }
 
     public function testApplyAddWellEvent(){
-        $this->event = AddWellEvent::fromName('TestWell');
+        $this->event = new AddWellEvent('TestWell');
         $this->event->applyTo($this->model);
         $this->assertCount(1, $this->model->getBoundaries());
 
