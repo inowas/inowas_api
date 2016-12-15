@@ -28,6 +28,7 @@ class AppKernel extends Kernel
             new Inowas\SoilmodelBundle\InowasSoilmodelBundle(),
             new Inowas\ModflowBundle\InowasModflowBundle(),
             new Inowas\GeoToolsBundle\InowasGeoToolsBundle(),
+            new Inowas\ScenarioAnalysisBundle\InowasScenarioAnalysisBundle(),
             new AppBundle\AppBundle()
         ];
 
