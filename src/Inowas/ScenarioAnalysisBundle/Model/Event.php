@@ -4,7 +4,7 @@ namespace Inowas\ScenarioAnalysisBundle\Model;
 
 use Symfony\Component\Validator\Constraints\Uuid;
 
-class Event
+abstract class Event
 {
     /**
      * @var Uuid
