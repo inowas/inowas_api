@@ -3,6 +3,7 @@
 namespace Inowas\ModflowBundle\Model\Boundary;
 
 use CrEOF\Spatial\PHP\Types\Geometry\Point;
+use Doctrine\Common\Collections\ArrayCollection;
 use Inowas\Flopy\Model\ValueObject\WelStressPeriodData;
 use Inowas\ModflowBundle\Exception\InvalidArgumentException;
 use Inowas\ModflowBundle\Model\ActiveCells;
@@ -103,6 +104,17 @@ class WellBoundary extends Boundary
         $observationPoint = $this->getObservationPoint();
         $observationPoint->addStressPeriod($welStressPeriod);
         return $this;
+    }
+
+    /**
+     * @param array $stressPeriods
+     */
+    public function setStressPeriods(array $stressPeriods){
+        $observationPoint = $this->getObservationPoint();
+        $observationPoint->setStressPeriods(new ArrayCollection());
+        foreach ($stressPeriods as $stressPeriod) {
+            $this->addStressPeriod($stressPeriod);
+        }
     }
 
     /**
