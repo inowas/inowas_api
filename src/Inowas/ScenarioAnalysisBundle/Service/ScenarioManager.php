@@ -30,7 +30,8 @@ class ScenarioManager
      */
     public function create(ModflowModel $model)
     {
-        return ScenarioFactory::create($model);
+        $scenario = ScenarioFactory::create($model);
+        return $scenario;
     }
 
     /**
@@ -47,7 +48,7 @@ class ScenarioManager
         return $this->entityManager
             ->getRepository('InowasScenarioAnalysisBundle:Scenario')
             ->findBy(array(
-                'baseModel' => $id
+                'baseModelId' => $id
             ));
     }
 

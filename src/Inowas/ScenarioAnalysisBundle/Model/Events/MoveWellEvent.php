@@ -10,7 +10,7 @@ use Ramsey\Uuid\Uuid;
 
 class MoveWellEvent extends Event
 {
-    public function __construct(Uuid $id, Point $newLocation)
+    public function __construct(Uuid $id, Point $newLocation=null)
     {
         parent::__construct();
         $this->payload = [];

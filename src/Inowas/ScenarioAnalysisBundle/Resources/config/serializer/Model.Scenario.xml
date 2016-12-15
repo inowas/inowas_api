@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<serializer>
+    <class name="Inowas\ScenarioAnalysisBundle\Model\Scenario">
+        <property name="id" type="string" exclude="false"/>
+        <property name="name" type="string" exclude="false"/>
+        <property name="description" type="string" exclude="false"/>
+        <property name="baseModelId" type="string" exclude="false"/>
+        <property name="order" type="integer" exclude="false"/>
+        <property name="events" exclude="true"/>
+    </class>
+</serializer>
+

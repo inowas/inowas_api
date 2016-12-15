@@ -34,22 +34,15 @@ class ScenarioController extends FOSRestController
      * )
      *
      * @param string $modelId
-     * @Rest\Get("/model/{modelId}/scenarios")
+     * @Rest\Get("/models/{modelId}/scenarios")
      * @return View
      */
     public function getScenariosAction($modelId)
     {
         $scenarioManager = $this->get('inowas.scenarioanalysis.scenariomanager');
+        $scenarios = $scenarioManager->findByModelId($modelId);
 
-        $view = View::create($scenarioManager->findByModelId($modelId))
-            ->setStatusCode(200)
-            ->setSerializationContext(
-                SerializationContext::create()
-                    ->setGroups(array('list'))
-                    ->enableMaxDepthChecks()
-            )
-        ;
-
+        $view = View::create($scenarios)->setStatusCode(200);
         return $view;
     }
 
@@ -64,7 +57,7 @@ class ScenarioController extends FOSRestController
      *   }
      * )
      *
-     * @Rest\Post("/model/{modelId}/scenarios")
+     * @Rest\Post("/models/{modelId}/scenarios")
      * @param string $modelId
      * @param ParamFetcher $paramFetcher
      * @Rest\RequestParam(name="name", nullable=false, strict=true, description="Name of the scenario.")
@@ -83,13 +76,7 @@ class ScenarioController extends FOSRestController
         $scenario->setDescription($paramFetcher->get('description'));
         $scenarioManager->update($scenario);
 
-        $view = View::create($scenario)
-            ->setStatusCode(200)
-            ->setSerializationContext(SerializationContext::create()
-                ->setGroups(array('details'))
-            )
-        ;
-
+        $view = View::create($scenario)->setStatusCode(200);
         return $view;
     }
 
@@ -104,7 +91,7 @@ class ScenarioController extends FOSRestController
      *   }
      * )
      *
-     * @Rest\Put("/model/{modelId}/scenarios/{scenarioId}")
+     * @Rest\Put("/models/{modelId}/scenarios/{scenarioId}")
      * @param string $modelId
      * @param string $scenarioId
      * @param ParamFetcher $paramFetcher
@@ -119,7 +106,7 @@ class ScenarioController extends FOSRestController
         $scenarioManager = $this->get('inowas.scenarioanalysis.scenariomanager');
         $scenario = $scenarioManager->findById($scenarioId);
 
-        if (! $modelId == $scenario->getBaseModel()->getId()->toString()){
+        if (! $modelId == $scenario->getBaseModelId()->toString()){
             throw new InvalidArgumentException(sprintf('Scenario with id %s has no Basemodel with Id %s', $scenario->getId()->toString(), $modelId));
         }
 
@@ -127,13 +114,7 @@ class ScenarioController extends FOSRestController
         $scenario->setDescription($paramFetcher->get('description'));
         $scenarioManager->update($scenario);
 
-        $view = View::create($scenario)
-            ->setStatusCode(200)
-            ->setSerializationContext(SerializationContext::create()
-                ->setGroups(array('details'))
-            )
-        ;
-
+        $view = View::create($scenario)->setStatusCode(200);
         return $view;
     }
 
@@ -148,7 +129,7 @@ class ScenarioController extends FOSRestController
      *   }
      * )
      *
-     * @Rest\Post("/model/{modelId}/scenarios/{scenarioId}")
+     * @Rest\Post("/models/{modelId}/scenarios/{scenarioId}")
      * @param string $modelId
      * @param string $scenarioId
      * @param ParamFetcher $paramFetcher
@@ -158,12 +139,12 @@ class ScenarioController extends FOSRestController
      * @return View
      * @throws InvalidArgumentException
      */
-    public function postEventsToScenario(ParamFetcher $paramFetcher, $modelId, $scenarioId)
+    public function postEventsToScenarioAction(ParamFetcher $paramFetcher, $modelId, $scenarioId)
     {
         $scenarioManager = $this->get('inowas.scenarioanalysis.scenariomanager');
         $scenario = $scenarioManager->findById($scenarioId);
 
-        if (! $modelId == $scenario->getBaseModel()->getId()->toString()){
+        if (! $modelId == $scenario->getBaseModelId()->toString()){
             throw new InvalidArgumentException(sprintf('Scenario with id %s has no Basemodel with Id %s', $scenario->getId()->toString(), $modelId));
         }
 
@@ -201,7 +182,10 @@ class ScenarioController extends FOSRestController
                 break;
             case 'MOVE_WELL':
                 $wellId = Uuid::fromString($payload->well_id);
-                $newLocation = new Point($payload->geometry->lat, $payload->geometry->lng, $payload->geometry->srid);
+                $lat = $payload->geometry->lat;
+                $lng = $payload->geometry->lng;
+                $srid = $payload->geometry->srid;
+                $newLocation = new Point($lat, $lng,  $srid);
                 $scenario->addEvent(new MoveWellEvent($wellId, $newLocation));
                 break;
             case 'REMOVE_WELL':
@@ -210,13 +194,9 @@ class ScenarioController extends FOSRestController
                 break;
         }
 
-        $view = View::create($scenario)
-            ->setStatusCode(200)
-            ->setSerializationContext(SerializationContext::create()
-                ->setGroups(array('details'))
-            )
-        ;
+        $scenarioManager->update($scenario);
 
+        $view = View::create($scenario)->setStatusCode(200);
         return $view;
     }
 }

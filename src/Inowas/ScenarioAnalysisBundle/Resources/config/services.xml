@@ -6,7 +6,7 @@
 
     <services>
         <service id="inowas.scenarioanalysis.scenariomanager" class="Inowas\ScenarioAnalysisBundle\Service\ScenarioManager">
-            <argument type="service" id="doctrine.orm.modflow_entity_manager"/>
+            <argument type="service" id="doctrine.orm.scenario_analysis_entity_manager"/>
         </service>
     </services>
 </container>

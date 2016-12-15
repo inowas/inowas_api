@@ -3,6 +3,7 @@
 namespace Inowas\ScenarioAnalysisBundle\Model;
 
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Inowas\ModflowBundle\Model\ModflowModel;
 use Ramsey\Uuid\Uuid;
 
@@ -27,7 +28,7 @@ class Scenario
     /**
      * @var Uuid
      */
-    protected $baseModel;
+    protected $baseModelId;
 
     /**
      * @var ArrayCollection
@@ -45,9 +46,10 @@ class Scenario
      */
     public function __construct(ModflowModel $model)
     {
+        $this->order = 0;
         $this->id = Uuid::uuid4();
         $this->events = new ArrayCollection();
-        $this->baseModel = $model;
+        $this->baseModelId = $model->getId();
     }
 
     /**
@@ -95,27 +97,27 @@ class Scenario
     }
 
     /**
-     * @return ModflowModel
+     * @return Uuid
      */
-    public function getBaseModel(): ModflowModel
+    public function getBaseModelId(): Uuid
     {
-        return $this->baseModel;
+        return $this->baseModelId;
     }
 
     /**
-     * @param Uuid $baseModel
+     * @param Uuid $baseModelId
      * @return Scenario
      */
-    public function setBaseModel(Uuid $baseModel): Scenario
+    public function setBaseModelId(Uuid $baseModelId): Scenario
     {
-        $this->baseModel = $baseModel;
+        $this->baseModelId = $baseModelId;
         return $this;
     }
 
     /**
-     * @return ArrayCollection
+     * @return Collection
      */
-    public function getEvents(): ArrayCollection
+    public function getEvents(): Collection
     {
         return $this->events;
     }
