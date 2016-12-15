@@ -7,6 +7,9 @@ use Inowas\ScenarioAnalysisBundle\Model\Event;
 
 class AddWellEvent extends Event
 {
+
+
+
     /**
      * @param ModflowModel $model
      * @return void

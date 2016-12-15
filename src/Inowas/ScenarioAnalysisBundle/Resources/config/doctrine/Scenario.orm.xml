@@ -18,8 +18,14 @@
         <id name="id" type="uuid" column="id"/>
         <field name="name" column="name" type="string" length="255" nullable="true" />
         <field name="description" column="description" type="string" length="255" nullable="true" />
-        <field name="baseModelId" type="uuid" column="basemodel" nullable="false"/>
         <field name="order" type="integer" column="order" nullable="true"/>
+
+        <one-to-one field="baseModel" target-entity="Inowas\ModflowBundle\Model\ModflowModel">
+            <cascade>
+                <cascade-all/>
+            </cascade>
+            <join-column name="base_model" referenced-column-name="id" on-delete="CASCADE"/>
+        </one-to-one>
 
         <many-to-many field="events" target-entity="Inowas\ScenarioAnalysisBundle\Model\Event" orphan-removal="true">
             <cascade>

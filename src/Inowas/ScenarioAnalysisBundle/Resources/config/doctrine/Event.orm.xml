@@ -28,8 +28,7 @@
             <discriminator-mapping value="REMOVE_WELL" class="Inowas\ScenarioAnalysisBundle\Model\Events\RemoveWellEvent"/>
         </discriminator-map>
 
-        <field name="type" column="name" type="string" length="255" nullable="false" />
-        <field name="order" type="integer" column="order" nullable="false"/>
+        <field name="createdAt" type="datetime" column="created_at" nullable="false"/>
         <field name="payload" type="text" column="payload" nullable="false"/>
 
     </entity>
