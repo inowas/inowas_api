@@ -20,6 +20,12 @@
         <discriminator-column name="discr" type="string" />
         <discriminator-map>
             <discriminator-mapping value="ADD_WELL" class="Inowas\ScenarioAnalysisBundle\Model\Events\AddWellEvent"/>
+            <discriminator-mapping value="CHANGE_WELL_LAYER_NUMBER" class="Inowas\ScenarioAnalysisBundle\Model\Events\ChangeWellLayerNumberEvent"/>
+            <discriminator-mapping value="CHANGE_WELL_NAME" class="Inowas\ScenarioAnalysisBundle\Model\Events\ChangeWellNameEvent"/>
+            <discriminator-mapping value="CHANGE_WELL_STRESSPERIODS" class="Inowas\ScenarioAnalysisBundle\Model\Events\ChangeWellStressperiodsEvent"/>
+            <discriminator-mapping value="CHANGE_WELL_TYPE" class="Inowas\ScenarioAnalysisBundle\Model\Events\ChangeWellTypeEvent"/>
+            <discriminator-mapping value="MOVE_WELL" class="Inowas\ScenarioAnalysisBundle\Model\Events\MoveWellEvent"/>
+            <discriminator-mapping value="REMOVE_WELL" class="Inowas\ScenarioAnalysisBundle\Model\Events\RemoveWellEvent"/>
         </discriminator-map>
 
         <field name="type" column="name" type="string" length="255" nullable="false" />

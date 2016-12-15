@@ -2,6 +2,7 @@
 
 namespace Inowas\ScenarioAnalysisBundle\Model;
 
+use Inowas\ModflowBundle\Model\ModflowModel;
 use Symfony\Component\Validator\Constraints\Uuid;
 
 abstract class Event
@@ -87,4 +88,6 @@ abstract class Event
         $this->payload = $payload;
         return $this;
     }
+
+    abstract protected function applyTo(ModflowModel $model);
 }

@@ -5,7 +5,7 @@ namespace Inowas\ScenarioAnalysisBundle\Model\Events;
 use Inowas\ModflowBundle\Model\ModflowModel;
 use Inowas\ScenarioAnalysisBundle\Model\Event;
 
-class AddWellEvent extends Event
+class ChangeWellLayerNumberEvent extends Event
 {
     /**
      * @param ModflowModel $model
