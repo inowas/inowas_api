@@ -20,10 +20,10 @@ class ModflowModel implements ModflowModelInterface
     private $id;
 
     /** @var string */
-    private $name;
+    private $name = '';
 
     /** @var string */
-    private $description;
+    private $description = '';
 
     /** @var GridSize */
     private $gridSize;

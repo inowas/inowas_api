@@ -7,7 +7,7 @@ use Doctrine\Common\Collections\Collection;
 use Inowas\ModflowBundle\Model\ModflowModel;
 use Ramsey\Uuid\Uuid;
 
-class Scenario
+class Scenario implements \JsonSerializable
 {
 
     /**
@@ -158,5 +158,18 @@ class Scenario
     {
         $this->order = $order;
         return $this;
+    }
+
+    /**
+     * @return object
+     */
+    function jsonSerialize()
+    {
+        return (object) array(
+            'id' => $this->getId()->toString(),
+            'name' => $this->getName(),
+            'description' => $this->getDescription(),
+            'order' => $this->getOrder()
+        );
     }
 }

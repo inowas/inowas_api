@@ -9,6 +9,7 @@ use FOS\UserBundle\Model\UserInterface;
 use Inowas\ModflowBundle\Model\ModflowModel;
 use Inowas\ScenarioAnalysisBundle\Exception\InvalidArgumentException;
 use Inowas\ScenarioAnalysisBundle\Exception\InvalidUuidException;
+use Inowas\ScenarioAnalysisBundle\Model\ScenarioAnalysis;
 use Nelmio\ApiDocBundle\Annotation\ApiDoc as ApiDoc;
 use Ramsey\Uuid\Uuid;
 use Symfony\Component\Finder\Exception\AccessDeniedException;
@@ -29,7 +30,7 @@ class ScenarioAnalysisController extends FOSRestController
      *
      * @Rest\Get("users/{username}")
      * @param string $username
-     * @return View
+     * @return JsonResponse
      * @throws AccessDeniedException
      */
     public function getScenariosAnalysisAction($username)
@@ -44,9 +45,22 @@ class ScenarioAnalysisController extends FOSRestController
         /** @var UserInterface $user */
         $user = $this->getUser();
         $scenarioAnalysisManager = $this->get('inowas.scenarioanalysis.scenarioanalysismanager');
-        $scenarioAnalysis = $scenarioAnalysisManager->findByUserId($user->getId());
-        $view = View::create($scenarioAnalysis)->setStatusCode(200);
-        return $view;
+        $scenarioAnalyses = $scenarioAnalysisManager->findByUserId($user->getId());
+
+        $responseData = [];
+
+        /** @var ScenarioAnalysis $scenarioAnalysis */
+        foreach ($scenarioAnalyses as $scenarioAnalysis){
+            $model = new \stdClass();
+            $model->id = $scenarioAnalysis->getBaseModelId();
+
+            $responseData[] = (object) array(
+                'base_model' => $model,
+                'scenarios' => $scenarioAnalysis->getScenarios()->toArray()
+            );
+        }
+
+        return new JsonResponse($responseData);
     }
 
     /**
@@ -61,20 +75,23 @@ class ScenarioAnalysisController extends FOSRestController
      * )
      *
      * @Rest\Get("/models/{modelId}")
-     * @param $baseModelId
+     * @param $modelId
      * @return JsonResponse
      * @throws InvalidUuidException
      * @throws InvalidArgumentException
      */
-    public function getScenariosAnalysisDetailsAction($baseModelId)
+    public function getScenariosAnalysisDetailsAction($modelId)
     {
-        if (! Uuid::isValid($baseModelId)){
+
+
+        if (! Uuid::isValid($modelId)){
             throw new InvalidUuidException();
         }
 
-        $baseModel = $this->get('inowas.modflow.modelmanager')->findById($baseModelId);
+        /** @var ModflowModel $baseModel */
+        $baseModel = $this->get('inowas.modflow.modelmanager')->findById($modelId);
         if (!$baseModel instanceof ModflowModel){
-            throw new InvalidArgumentException(sprintf('Model with id=%s does not exist.', $baseModelId));
+            throw new InvalidArgumentException(sprintf('Model with id=%s does not exist.', $modelId));
         }
 
         /** @var UserInterface $user */
@@ -88,19 +105,16 @@ class ScenarioAnalysisController extends FOSRestController
             $scenarioAnalysis = $scenarioAnalysisManager->create($user, $baseModel);
         }
 
+        $model = new \stdClass();
+        $model->id = $baseModel->getId()->toString();
+        $model->name = $baseModel->getName();
+        $model->description = $baseModel->getDescription();
+
         $responseData = [
-            [ 'baseModel' =>
-                [
-                    'id' => $baseModel->getId()->toString(),
-                    'name' => $baseModel->getName(),
-                    'description' => $baseModel->getDescription()
-                ]
-            ],
-            [ 'scenarios' => $scenarioAnalysis->getScenarios() ]
+            'base_model' => $model,
+            'scenarios' => $scenarioAnalysis->getScenarios()->toArray()
         ];
 
         return new JsonResponse($responseData);
     }
-
-
 }
