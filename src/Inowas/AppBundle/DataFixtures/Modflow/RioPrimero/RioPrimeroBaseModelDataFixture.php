@@ -65,7 +65,7 @@ class RioPrimeroBaseModelDataFixture extends LoadScenarioBase implements Fixture
         $soilmodel = $soilModelManager->create();
         $soilmodel->setName('SoilModel Río Primero');
         $soilmodel->addLayer(LayerFactory::create()->setName('Surface Layer')->setDescription('The one and only.'));
-        $soilmodel->setBoundingBox(new BoundingBox(-31.367449, -31.313615, -63.687336, -63.569260, 4326));
+        $soilmodel->setBoundingBox(new BoundingBox(-63.687336, -63.569260, -31.367449, -31.313615, 4326));
         $soilmodel->setGridSize(new GridSize(75,40));
         $soilModelManager->update($soilmodel);
 
@@ -128,7 +128,7 @@ class RioPrimeroBaseModelDataFixture extends LoadScenarioBase implements Fixture
                 ))
             )
             ->setSoilmodelId($soilmodel->getId())
-            ->setBoundingBox(new BoundingBox(-31.367449, -31.313615, -63.687336, -63.569260, 4326))
+            ->setBoundingBox(new BoundingBox(-63.687336, -63.569260, -31.367449, -31.313615, 4326))
             ->setGridSize(new GridSize(75,40))
             ->setStart(new \DateTime('1.1.2015'))
             ->setEnd(new \DateTime('31.12.2015'))
@@ -453,6 +453,7 @@ class RioPrimeroBaseModelDataFixture extends LoadScenarioBase implements Fixture
          */
         $recharge = BoundaryFactory::createRch();
         $recharge->setName('Recharge Boundary');
+        $recharge->setGeometry($model->getArea()->getGeometry());
         $recharge->addStressPeriod(StressPeriodFactory::createRch()
             ->setDateTimeBegin(new \DateTime('1.1.2015'))
             ->setRecharge(3.29e-4)
@@ -463,13 +464,15 @@ class RioPrimeroBaseModelDataFixture extends LoadScenarioBase implements Fixture
         $modelManager->update($model);
         unset($recharge);
 
+        echo sprintf("Set activeCells for ModelArea\r\n");
+        $activeCells = $geoTools->getActiveCells($model->getArea(), $model->getBoundingBox(), $model->getGridSize());
+        $model->getArea()->setActiveCells($activeCells);
 
         /** @var Boundary $boundary */
         foreach ($model->getBoundaries() as $boundary){
+            echo sprintf("Set activeCells for %s.\r\n", get_class($boundary));
             $boundary->setActiveCells($geoTools->getActiveCells($boundary, $model->getBoundingBox(), $model->getGridSize()));
         }
-
-        $model->getArea()->setActiveCells($geoTools->getActiveCells($model->getArea(), $model->getBoundingBox(), $model->getGridSize()));
 
         /* Interpolation of all layers */
         $soilModelService = $this->container->get('inowas.soilmodel.soilmodelservice');
