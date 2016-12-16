@@ -26,7 +26,7 @@ class SoilModelInterpolationTest extends WebTestCase
 
         self::bootKernel();
         $this->em = static::$kernel->getContainer()
-            ->get('doctrine.orm.soilmodel_entity_manager')
+            ->get('doctrine.orm.default_entity_manager')
         ;
 
         $this->soilmodelManager = static::$kernel->getContainer()

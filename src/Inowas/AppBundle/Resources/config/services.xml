@@ -5,6 +5,8 @@
         http://symfony.com/schema/dic/services/services-1.0.xsd">
 
     <services>
-
+        <service id="inowas.app.token_authenticator" class="Inowas\AppBundle\Security\TokenAuthenticator">
+            <argument type="service" id="doctrine.orm.default_entity_manager"/>
+        </service>
     </services>
 </container>

@@ -2,7 +2,7 @@ imports:
     - { resource: parameters.yml }
     - { resource: security.yml }
     - { resource: services.yml }
-    - { resource: "@InowasGeoToolsBundle/Resources/config/services.xml" }
+    - { resource: "@InowasAppBundle/Resources/config/services.xml" }
     - { resource: "@InowasGeoToolsBundle/Resources/config/services.xml" }
     - { resource: "@InowasModflowBundle/Resources/config/services.xml" }
     - { resource: "@InowasSoilmodelBundle/Resources/config/services.yml" }
