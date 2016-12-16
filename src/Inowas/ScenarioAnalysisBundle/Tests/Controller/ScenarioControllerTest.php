@@ -2,7 +2,10 @@
 
 namespace Inowas\ScenarioAnalysisBundle\Tests\Controller;
 
+use AppBundle\Entity\User;
 use Doctrine\ORM\EntityManager;
+use FOS\UserBundle\Doctrine\UserManager;
+use FOS\UserBundle\Model\UserInterface;
 use Inowas\ModflowBundle\Model\BoundaryFactory;
 use Inowas\ModflowBundle\Service\ModflowModelManager;
 use Inowas\ScenarioAnalysisBundle\Model\Events\AddWellEvent;
@@ -12,7 +15,9 @@ use Inowas\ScenarioAnalysisBundle\Model\Events\ChangeWellStressperiodsEvent;
 use Inowas\ScenarioAnalysisBundle\Model\Events\ChangeWellTypeEvent;
 use Inowas\ScenarioAnalysisBundle\Model\Events\MoveWellEvent;
 use Inowas\ScenarioAnalysisBundle\Model\Events\RemoveWellEvent;
+use Inowas\ScenarioAnalysisBundle\Service\ScenarioAnalysisManager;
 use Inowas\ScenarioAnalysisBundle\Service\ScenarioManager;
+use Ramsey\Uuid\Uuid;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
 class ScenarioControllerTest extends WebTestCase
@@ -27,12 +32,25 @@ class ScenarioControllerTest extends WebTestCase
     /** @var ScenarioManager */
     protected $scenarioManager;
 
+    /** @var ScenarioAnalysisManager */
+    protected $scenarioAnalysisManager;
+
+    /** @var UserManager */
+    protected $userManager;
+
+    /** @var User */
+    protected $user;
+
     public function setUp()
     {
         self::bootKernel();
 
         $this->modelManager = static::$kernel->getContainer()
             ->get('inowas.modflow.modelmanager')
+        ;
+
+        $this->scenarioAnalysisManager = static::$kernel->getContainer()
+            ->get('inowas.scenarioanalysis.scenarioanalysismanager')
         ;
 
         $this->scenarioManager = static::$kernel->getContainer()
@@ -42,6 +60,18 @@ class ScenarioControllerTest extends WebTestCase
         $this->entityManager = static::$kernel->getContainer()
             ->get('doctrine.orm.modflow_entity_manager')
         ;
+
+        $this->userManager = static::$kernel->getContainer()
+            ->get('fos_user.user_manager')
+        ;
+
+        $this->user = $this->userManager->createUser();
+        $this->user->setUsername('testUser');
+        $this->user->setEmail('testUser@testUser.com');
+        $this->user->setPlainPassword('testUserPassword');
+        $this->userManager->updateUser($this->user);
+
+        var_dump($this->user);
     }
 
     public function testLoadScenariosFromModel(){
@@ -49,11 +79,14 @@ class ScenarioControllerTest extends WebTestCase
         $model = $this->modelManager->create()->setName('TestModel');
         $this->modelManager->update($model);
 
+        $scenarioAnalysis = $this->scenarioAnalysisManager->create($model);
+
         $scenario = $this->scenarioManager->create($model)->setName('TestScenarioName 1')->setDescription('TestScenarioDescription 1');
         $this->scenarioManager->update($scenario);
 
         $scenario = $this->scenarioManager->create($model)->setName('TestScenarioName 2')->setDescription('TestScenarioDescription 2');
-        $this->scenarioManager->update($scenario);
+        $scenarioAnalysis->addScenario($scenario);
+        $this->scenarioAnalysisManager->update($scenarioAnalysis);
 
         $client = static::createClient();
         $client->request(

@@ -1,3 +1,7 @@
+rest_scenario_analysis:
+    type: rest
+    resource: '@InowasScenarioAnalysisBundle/Controller/ScenarioAnalysisController.php'
+
 rest_scenarios:
     type: rest
     resource: '@InowasScenarioAnalysisBundle/Controller/ScenarioController.php'

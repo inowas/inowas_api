@@ -7,8 +7,10 @@ use FOS\RestBundle\Controller\Annotations as Rest;
 use FOS\RestBundle\Controller\FOSRestController;
 use FOS\RestBundle\Request\ParamFetcher;
 use FOS\RestBundle\View\View;
+use FOS\UserBundle\Model\UserInterface;
 use Inowas\ModflowBundle\Model\StressPeriodFactory;
 use Inowas\ScenarioAnalysisBundle\Exception\InvalidArgumentException;
+use Inowas\ScenarioAnalysisBundle\Exception\InvalidUuidException;
 use Inowas\ScenarioAnalysisBundle\Model\Events\AddWellEvent;
 use Inowas\ScenarioAnalysisBundle\Model\Events\ChangeWellLayerNumberEvent;
 use Inowas\ScenarioAnalysisBundle\Model\Events\ChangeWellNameEvent;
@@ -16,14 +18,14 @@ use Inowas\ScenarioAnalysisBundle\Model\Events\ChangeWellStressperiodsEvent;
 use Inowas\ScenarioAnalysisBundle\Model\Events\ChangeWellTypeEvent;
 use Inowas\ScenarioAnalysisBundle\Model\Events\MoveWellEvent;
 use Inowas\ScenarioAnalysisBundle\Model\Events\RemoveWellEvent;
-use JMS\Serializer\SerializationContext;
+use Inowas\ScenarioAnalysisBundle\Model\ScenarioAnalysis;
 use Nelmio\ApiDocBundle\Annotation\ApiDoc as ApiDoc;
 use Ramsey\Uuid\Uuid;
 
 class ScenarioController extends FOSRestController
 {
     /**
-     * Load Scenarios from a Model.
+     * Load Scenarios from a Model and User.
      *
      * @ApiDoc(
      *   resource = true,
@@ -36,12 +38,25 @@ class ScenarioController extends FOSRestController
      * @param string $modelId
      * @Rest\Get("/models/{modelId}/scenarios")
      * @return View
+     * @throws InvalidArgumentException
+     * @throws InvalidUuidException
      */
     public function getScenariosAction($modelId)
     {
-        $scenarioManager = $this->get('inowas.scenarioanalysis.scenariomanager');
-        $scenarios = $scenarioManager->findByModelId($modelId);
+        if (! Uuid::isValid($modelId)){
+            throw new InvalidUuidException();
+        }
 
+        /** @var UserInterface $user */
+        $user = $this->getUser();
+        $scenarioAnalysisManager = $this->get('inowas.scenarioanalysis.scenarioanalysismanager');
+        $scenarioAnalysis = $scenarioAnalysisManager->findByUserIdAndBasemodelId($user->getId(), Uuid::fromString($modelId));
+
+        if (! $scenarioAnalysis instanceof ScenarioAnalysis){
+            throw new InvalidArgumentException('ScenarioAnalysis not available.');
+        }
+
+        $scenarios = $scenarioAnalysis->getScenarios();
         $view = View::create($scenarios)->setStatusCode(200);
         return $view;
     }

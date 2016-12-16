@@ -3,6 +3,7 @@ imports:
     - { resource: security.yml }
     - { resource: services.yml }
     - { resource: "@InowasGeoToolsBundle/Resources/config/services.xml" }
+    - { resource: "@InowasGeoToolsBundle/Resources/config/services.xml" }
     - { resource: "@InowasModflowBundle/Resources/config/services.xml" }
     - { resource: "@InowasSoilmodelBundle/Resources/config/services.yml" }
     - { resource: "@InowasScenarioAnalysisBundle/Resources/config/services.xml" }
@@ -90,6 +91,9 @@ doctrine:
                 naming_strategy: doctrine.orm.naming_strategy.underscore
                 mappings:
                     AppBundle:  ~
+                    InowasAppBundle:
+                        type: xml
+                        prefix: Inowas\AppBundle\Model
 
                 dql:
                     numeric_functions:
@@ -140,7 +144,7 @@ swiftmailer:
 fos_user:
     db_driver: orm
     firewall_name: main
-    user_class: AppBundle\Entity\User
+    user_class: Inowas\AppBundle\Model\User
 
 # FOS RestBundle Configuration
 fos_rest:

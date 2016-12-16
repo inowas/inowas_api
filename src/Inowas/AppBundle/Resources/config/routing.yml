@@ -1,0 +1,3 @@
+#rest_model_area:
+#    type: rest
+#    resource: Inowas\ModflowBundle\Controller\AreaController

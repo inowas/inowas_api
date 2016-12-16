@@ -17,6 +17,7 @@
 
         <id name="id" type="uuid" column="id"/>
         <field name="userId" column="user_id" type="uuid" />
+        <field name="baseModelId" column="model_id" type="uuid" />
 
         <many-to-many field="scenarios" target-entity="Inowas\ScenarioAnalysisBundle\Model\Scenario">
             <cascade>

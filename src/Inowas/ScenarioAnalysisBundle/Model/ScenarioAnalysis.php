@@ -3,6 +3,7 @@
 namespace Inowas\ScenarioAnalysisBundle\Model;
 
 use Doctrine\Common\Collections\ArrayCollection;
+use Inowas\ModflowBundle\Model\ModflowModel;
 use Ramsey\Uuid\Uuid;
 
 class ScenarioAnalysis
@@ -18,15 +19,22 @@ class ScenarioAnalysis
     protected $userId;
 
     /**
+     * @var Uuid
+     */
+    protected $baseModelId;
+
+    /**
      * @var ArrayCollection
      */
     protected $scenarios;
 
     /**
      * ScenarioAnalysis constructor.
+     * @param ModflowModel $model
      */
-    public function __construct()
+    public function __construct(ModflowModel $model)
     {
+        $this->baseModelId = $model->getId();
         $this->id = Uuid::uuid4();
     }
 
@@ -63,6 +71,24 @@ class ScenarioAnalysis
     public function setUserId(Uuid $userId): ScenarioAnalysis
     {
         $this->userId = $userId;
+        return $this;
+    }
+
+    /**
+     * @return Uuid
+     */
+    public function getBaseModelId(): Uuid
+    {
+        return $this->baseModelId;
+    }
+
+    /**
+     * @param Uuid $baseModelId
+     * @return ScenarioAnalysis
+     */
+    public function setBaseModelId(Uuid $baseModelId): ScenarioAnalysis
+    {
+        $this->baseModelId = $baseModelId;
         return $this;
     }
 
