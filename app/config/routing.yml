@@ -14,5 +14,5 @@ InowasScenarioAnalysisBundle:
     prefix:    /api/scenarioanalysis
 
 InowasAppBundle:
-    resource: "@InowasModflowBundle/Resources/config/routing.yml"
+    resource: "@InowasAppBundle/Resources/config/routing.yml"
     prefix:    /api
