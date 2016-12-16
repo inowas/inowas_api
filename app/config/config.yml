@@ -78,6 +78,7 @@ doctrine:
             riv_stress_period:            Inowas\ModflowBundle\Model\Type\RivStressPeriodsType
             wel_stress_period:            Inowas\ModflowBundle\Model\Type\WelStressPeriodsType
 
+            property_type:                Inowas\SoilmodelBundle\Type\PropertyTypeType
             soilmodel_property_type:      Inowas\SoilmodelBundle\Type\PropertyTypeType
             soilmodel_property_value:     Inowas\SoilmodelBundle\Type\PropertyValueType
             uuid:                         Ramsey\Uuid\Doctrine\UuidType
@@ -90,10 +91,21 @@ doctrine:
                 auto_mapping: true
                 naming_strategy: doctrine.orm.naming_strategy.underscore
                 mappings:
-                    AppBundle:  ~
+                    AppBundle:
+                        type: xml
+                        prefix: AppBundle\Entity
                     InowasAppBundle:
                         type: xml
                         prefix: Inowas\AppBundle\Model
+                    InowasSoilmodelBundle:
+                        type: xml
+                        prefix: Inowas\SoilmodelBundle\Model
+                    InowasModflowBundle:
+                        type: xml
+                        prefix: Inowas\ModflowBundle\Model
+                    InowasScenarioAnalysisBundle:
+                        type: xml
+                        prefix: Inowas\ScenarioAnalysisBundle\Model
 
                 dql:
                     numeric_functions:
@@ -106,31 +118,6 @@ doctrine:
                         st_point:         CrEOF\Spatial\ORM\Query\AST\Functions\PostgreSql\STPoint
                         st_setsrid:       CrEOF\Spatial\ORM\Query\AST\Functions\PostgreSql\STSetSRID
                         st_transform:     CrEOF\Spatial\ORM\Query\AST\Functions\PostgreSql\STTransform
-
-            soilmodel:
-                connection: default
-                auto_mapping: false
-                mappings:
-                    InowasSoilmodelBundle:
-                        type: xml
-                        prefix: Inowas\SoilmodelBundle\Model
-
-            modflow:
-                connection: default
-                auto_mapping: false
-                mappings:
-                    InowasModflowBundle:
-                        type: xml
-                        prefix: Inowas\ModflowBundle\Model
-
-            scenario_analysis:
-                connection: default
-                auto_mapping: false
-                mappings:
-                    InowasScenarioAnalysisBundle:
-                        type: xml
-                        prefix: Inowas\ScenarioAnalysisBundle\Model
-
 
 # Swiftmailer Configuration
 swiftmailer:

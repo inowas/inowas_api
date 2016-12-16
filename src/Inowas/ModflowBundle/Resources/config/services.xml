@@ -6,19 +6,19 @@
 
     <services>
         <service id="inowas.modflow.boundarymanager" class="Inowas\ModflowBundle\Service\BoundaryManager">
-            <argument type="service" id="doctrine.orm.modflow_entity_manager"/>
+            <argument type="service" id="doctrine.orm.default_entity_manager"/>
         </service>
         <service id="inowas.modflow.calculationmanager" class="Inowas\ModflowBundle\Service\CalculationManager">
-            <argument type="service" id="doctrine.orm.modflow_entity_manager"/>
+            <argument type="service" id="doctrine.orm.default_entity_manager"/>
         </service>
         <service id="inowas.modflow.headsmanager" class="Inowas\ModflowBundle\Service\HeadsManager">
-            <argument type="service" id="doctrine.orm.modflow_entity_manager"/>
+            <argument type="service" id="doctrine.orm.default_entity_manager"/>
         </service>
         <service id="inowas.modflow.modelmanager" class="Inowas\ModflowBundle\Service\ModflowModelManager">
-            <argument type="service" id="doctrine.orm.modflow_entity_manager"/>
+            <argument type="service" id="doctrine.orm.default_entity_manager"/>
         </service>
         <service id="inowas.modflow.observationpointmanager" class="Inowas\ModflowBundle\Service\ObservationPointManager">
-            <argument type="service" id="doctrine.orm.modflow_entity_manager"/>
+            <argument type="service" id="doctrine.orm.default_entity_manager"/>
         </service>
         <service id="inowas.flopy.packagemanager" class="Inowas\ModflowBundle\Service\FlopyPackageManager"/>
     </services>

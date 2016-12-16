@@ -6,10 +6,10 @@
 
     <services>
         <service id="inowas.scenarioanalysis.scenariomanager" class="Inowas\ScenarioAnalysisBundle\Service\ScenarioManager">
-            <argument type="service" id="doctrine.orm.scenario_analysis_entity_manager"/>
+            <argument type="service" id="doctrine.orm.default_entity_manager"/>
         </service>
         <service id="inowas.scenarioanalysis.scenarioanalysismanager" class="Inowas\ScenarioAnalysisBundle\Service\ScenarioAnalysisManager">
-            <argument type="service" id="doctrine.orm.scenario_analysis_entity_manager"/>
+            <argument type="service" id="doctrine.orm.default_entity_manager"/>
         </service>
     </services>
 </container>
