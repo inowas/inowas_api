@@ -1,6 +1,6 @@
 <?php
 
-namespace Inowas\ModflowBundle\DataFixtures\Scenarios\RioPrimero;
+namespace Inowas\AppBundle\DataFixtures\Modflow\Hanoi;
 
 use CrEOF\Spatial\PHP\Types\Geometry\LineString;
 use CrEOF\Spatial\PHP\Types\Geometry\Point;

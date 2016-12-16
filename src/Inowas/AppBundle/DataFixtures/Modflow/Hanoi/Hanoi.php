@@ -1,6 +1,6 @@
 <?php
 
-namespace Inowas\ModflowBundle\DataFixtures\Scenarios\Hanoi;
+namespace Inowas\AppBundle\DataFixtures\Modflow\Hanoi;
 
 use CrEOF\Spatial\PHP\Types\Geometry\LineString;
 use CrEOF\Spatial\PHP\Types\Geometry\Point;
@@ -252,8 +252,8 @@ class Hanoi implements FixtureInterface, ContainerAwareInterface
 
         // Add Boundaries
         // Add Wells
-        $wells = $this->loadRowsFromCsv(__DIR__."/wells_basecase.csv");
-        $header = $this->loadHeaderFromCsv(__DIR__."/wells_basecase.csv");
+        $wells = $this->loadRowsFromCsv(__DIR__ . "/wells_basecase.csv");
+        $header = $this->loadHeaderFromCsv(__DIR__ . "/wells_basecase.csv");
         $dates = $this->getDates($header);
 
         foreach ($wells as $well){
@@ -288,7 +288,7 @@ class Hanoi implements FixtureInterface, ContainerAwareInterface
         $modelManager->update($model);
 
         // Add River
-        $riverPoints = $this->loadRowsFromCsv(__DIR__."/river_geometry_basecase.csv");
+        $riverPoints = $this->loadRowsFromCsv(__DIR__ . "/river_geometry_basecase.csv");
         foreach ($riverPoints as $key => $point){
             $riverPoints[$key] = $geoTools->transformPoint(new Point($point['x'], $point['y'], $point['srid']), 4326);
         }
@@ -305,8 +305,8 @@ class Hanoi implements FixtureInterface, ContainerAwareInterface
         echo sprintf("Add River-Boundary %s.\r\n", $riverBoundary->getName());
         $modelManager->update($model);
 
-        $observationPoints = $this->loadRowsFromCsv(__DIR__."/river_stages_basecase.csv");
-        $header = $this->loadHeaderFromCsv(__DIR__."/river_stages_basecase.csv");
+        $observationPoints = $this->loadRowsFromCsv(__DIR__ . "/river_stages_basecase.csv");
+        $header = $this->loadHeaderFromCsv(__DIR__ . "/river_stages_basecase.csv");
         $dates = $this->getDates($header);
 
         foreach ($observationPoints as $op){
@@ -333,7 +333,7 @@ class Hanoi implements FixtureInterface, ContainerAwareInterface
         $modelManager->update($model);
 
         // Add Constant Head Boundary
-        $chdPoints = $this->loadRowsFromCsv(__DIR__."/chd_geometry_basecase.csv");
+        $chdPoints = $this->loadRowsFromCsv(__DIR__ . "/chd_geometry_basecase.csv");
         foreach ($chdPoints as $key => $point){
             $chdPoints[$key] = $geoTools->transformPoint(new Point($point['x'], $point['y'], $point['srid']), 4326);
         }
@@ -347,8 +347,8 @@ class Hanoi implements FixtureInterface, ContainerAwareInterface
         echo sprintf("Add Constant-Head-Boundary %s.\r\n", $chdBoundary->getName());
         $modelManager->update($model);
 
-        $observationPoints = $this->loadRowsFromCsv(__DIR__."/chd_stages_basecase.csv");
-        $header = $this->loadHeaderFromCsv(__DIR__."/chd_stages_basecase.csv");
+        $observationPoints = $this->loadRowsFromCsv(__DIR__ . "/chd_stages_basecase.csv");
+        $header = $this->loadHeaderFromCsv(__DIR__ . "/chd_stages_basecase.csv");
         $dates = $this->getDates($header);
 
         foreach ($observationPoints as $op){
