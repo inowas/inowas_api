@@ -7,6 +7,7 @@ use CrEOF\Spatial\PHP\Types\Geometry\Point;
 use CrEOF\Spatial\PHP\Types\Geometry\Polygon;
 use Doctrine\Common\DataFixtures\FixtureInterface;
 use Doctrine\Common\Persistence\ObjectManager;
+use Inowas\AppBundle\DataFixtures\Modflow\LoadScenarioBase;
 use Inowas\ModflowBundle\Model\AreaFactory;
 use Inowas\ModflowBundle\Model\Boundary\ConstantHeadBoundary;
 use Inowas\ModflowBundle\Model\Boundary\ObservationPointFactory;
@@ -25,7 +26,7 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 
 ini_set('memory_limit', '256M');
 
-class Hanoi implements FixtureInterface, ContainerAwareInterface
+class Hanoi extends LoadScenarioBase implements FixtureInterface, ContainerAwareInterface
 {
     /**
      * @var ContainerInterface
@@ -45,6 +46,7 @@ class Hanoi implements FixtureInterface, ContainerAwareInterface
      */
     public function load(ObjectManager $entityManager)
     {
+        $this->loadUsers($this->container->get('fos_user.user_manager'));
         $geoTools = $this->container->get('inowas.geotools.geotools');
 
         // Add the SoilModel

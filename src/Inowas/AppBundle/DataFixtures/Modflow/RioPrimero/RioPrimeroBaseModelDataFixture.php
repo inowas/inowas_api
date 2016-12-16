@@ -7,6 +7,7 @@ use CrEOF\Spatial\PHP\Types\Geometry\Point;
 use CrEOF\Spatial\PHP\Types\Geometry\Polygon;
 use Doctrine\Common\DataFixtures\FixtureInterface;
 use Doctrine\Common\Persistence\ObjectManager;
+use Inowas\AppBundle\DataFixtures\Modflow\LoadScenarioBase;
 use Inowas\ModflowBundle\Model\AreaFactory;
 use Inowas\ModflowBundle\Model\Boundary\GeneralHeadBoundary;
 use Inowas\ModflowBundle\Model\Boundary\ObservationPoint;
@@ -29,7 +30,7 @@ use Inowas\SoilmodelBundle\Model\PropertyValue;
 use Symfony\Component\DependencyInjection\ContainerAwareInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
-class RioPrimeroBaseModelDataFixture implements FixtureInterface, ContainerAwareInterface
+class RioPrimeroBaseModelDataFixture extends LoadScenarioBase implements FixtureInterface, ContainerAwareInterface
 {
 
     /**
@@ -53,6 +54,9 @@ class RioPrimeroBaseModelDataFixture implements FixtureInterface, ContainerAware
      */
     public function load(ObjectManager $manager)
     {
+
+        $this->loadUsers($this->container->get('fos_user.user_manager'));
+
         // Add the SoilModel
         $soilModelManager = $this->container->get('inowas.soilmodel.soilmodelmanager');
         $soilmodel = $soilModelManager->create();
