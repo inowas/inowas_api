@@ -8,6 +8,7 @@ use FOS\RestBundle\Controller\FOSRestController;
 use FOS\RestBundle\Request\ParamFetcher;
 use FOS\RestBundle\View\View;
 use FOS\UserBundle\Model\UserInterface;
+use Inowas\ModflowBundle\Model\ModflowModel;
 use Inowas\ModflowBundle\Model\StressPeriodFactory;
 use Inowas\ScenarioAnalysisBundle\Exception\InvalidArgumentException;
 use Inowas\ScenarioAnalysisBundle\Exception\InvalidUuidException;
@@ -18,6 +19,7 @@ use Inowas\ScenarioAnalysisBundle\Model\Events\ChangeWellStressperiodsEvent;
 use Inowas\ScenarioAnalysisBundle\Model\Events\ChangeWellTypeEvent;
 use Inowas\ScenarioAnalysisBundle\Model\Events\MoveWellEvent;
 use Inowas\ScenarioAnalysisBundle\Model\Events\RemoveWellEvent;
+use Inowas\ScenarioAnalysisBundle\Model\Scenario;
 use Inowas\ScenarioAnalysisBundle\Model\ScenarioAnalysis;
 use Nelmio\ApiDocBundle\Annotation\ApiDoc as ApiDoc;
 use Ramsey\Uuid\Uuid;
@@ -49,6 +51,7 @@ class ScenarioController extends FOSRestController
 
         /** @var UserInterface $user */
         $user = $this->getUser();
+
         $scenarioAnalysisManager = $this->get('inowas.scenarioanalysis.scenarioanalysismanager');
         $scenarioAnalysis = $scenarioAnalysisManager->findByUserIdAndBasemodelId($user->getId(), Uuid::fromString($modelId));
 
@@ -79,17 +82,40 @@ class ScenarioController extends FOSRestController
      * @Rest\RequestParam(name="description", strict=false, description="Description of scenario.", default="")
      *
      * @return View
+     * @throws InvalidUuidException
+     * @throws InvalidArgumentException
      */
     public function postScenarioAction(ParamFetcher $paramFetcher, $modelId)
     {
+
+        /** @var UserInterface $user */
+        $user = $this->getUser();
+
+        if (! Uuid::isValid($modelId)){
+            throw new InvalidUuidException();
+        }
+
         $modelManager = $this->get('inowas.modflow.modelmanager');
-        $model = $modelManager->findById($modelId);
+        $baseModel = $modelManager->findById($modelId);
+
+        if (! $baseModel instanceof ModflowModel){
+            throw new InvalidArgumentException();
+        }
+
+        $scenarioAnalysisManager = $this->get('inowas.scenarioanalysis.scenarioanalysismanager');
+        $scenarioAnalysis = $scenarioAnalysisManager->findByUserIdAndBasemodelId($user->getId(), Uuid::fromString($modelId));
+
+        if (! $scenarioAnalysis instanceof ScenarioAnalysis){
+            $scenarioAnalysis = $scenarioAnalysisManager->create($baseModel);
+            $scenarioAnalysis->setUserId($user->getId());
+        }
 
         $scenarioManager = $this->get('inowas.scenarioanalysis.scenariomanager');
-        $scenario = $scenarioManager->create($model);
+        $scenario = $scenarioManager->create($baseModel);
         $scenario->setName($paramFetcher->get('name'));
         $scenario->setDescription($paramFetcher->get('description'));
-        $scenarioManager->update($scenario);
+        $scenarioAnalysis->addScenario($scenario);
+        $scenarioAnalysisManager->update($scenarioAnalysis);
 
         $view = View::create($scenario)->setStatusCode(200);
         return $view;
@@ -114,20 +140,43 @@ class ScenarioController extends FOSRestController
      * @Rest\RequestParam(name="description", strict=false, description="Description of scenario.")
      *
      * @return View
+     * @throws InvalidUuidException
      * @throws InvalidArgumentException
      */
     public function putScenarioAction(ParamFetcher $paramFetcher, $modelId, $scenarioId)
     {
-        $scenarioManager = $this->get('inowas.scenarioanalysis.scenariomanager');
-        $scenario = $scenarioManager->findById($scenarioId);
 
-        if (! $modelId == $scenario->getBaseModelId()->toString()){
-            throw new InvalidArgumentException(sprintf('Scenario with id %s has no Basemodel with Id %s', $scenario->getId()->toString(), $modelId));
+        /** @var UserInterface $user */
+        $user = $this->getUser();
+
+        if (! Uuid::isValid($modelId)){
+            throw new InvalidUuidException();
+        }
+
+        $modelManager = $this->get('inowas.modflow.modelmanager');
+        $baseModel = $modelManager->findById($modelId);
+
+        if (! $baseModel instanceof ModflowModel){
+            throw new InvalidArgumentException();
+        }
+
+        $scenarioAnalysisManager = $this->get('inowas.scenarioanalysis.scenarioanalysismanager');
+        $scenarioAnalysis = $scenarioAnalysisManager->findByUserIdAndBasemodelId($user->getId(), Uuid::fromString($modelId));
+
+        $scenario = null;
+        foreach ($scenarioAnalysis->getScenarios() as $scenario){
+            if ($scenario->getId()->toString() == $scenarioId){
+                break;
+            }
+        }
+
+        if (! $scenario instanceof Scenario){
+            throw new InvalidArgumentException();
         }
 
         $scenario->setName($paramFetcher->get('name'));
         $scenario->setDescription($paramFetcher->get('description'));
-        $scenarioManager->update($scenario);
+        $scenarioAnalysisManager->update($scenarioAnalysis);
 
         $view = View::create($scenario)->setStatusCode(200);
         return $view;

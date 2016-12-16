@@ -25,7 +25,7 @@ class ModelListCommand extends ContainerAwareCommand
         $output->writeln("Show all Modflow-Models with ID.");
 
         $em = $this->getContainer()->get('doctrine')->getManager();
-        $modflowModels = $em->getRepository('AppBundle:ModFlowModel')
+        $modflowModels = $em->getRepository('InowasModflowBundle:ModflowModel')
             ->findBy(
                 array(),
                 array('dateCreated' => 'ASC')

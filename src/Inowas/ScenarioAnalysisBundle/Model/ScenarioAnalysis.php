@@ -3,6 +3,7 @@
 namespace Inowas\ScenarioAnalysisBundle\Model;
 
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Inowas\ModflowBundle\Model\ModflowModel;
 use Ramsey\Uuid\Uuid;
 
@@ -93,9 +94,9 @@ class ScenarioAnalysis
     }
 
     /**
-     * @return ArrayCollection
+     * @return Collection
      */
-    public function getScenarios(): ArrayCollection
+    public function getScenarios(): Collection
     {
         return $this->scenarios;
     }

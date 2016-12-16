@@ -7,6 +7,7 @@
     <services>
         <service id="inowas.app.token_authenticator" class="Inowas\AppBundle\Security\TokenAuthenticator">
             <argument type="service" id="doctrine.orm.default_entity_manager"/>
+            <argument type="service" id="fos_user.user_manager"/>
         </service>
     </services>
 </container>

@@ -2,11 +2,9 @@
 
 namespace Inowas\PyprocessingBundle\Tests\Model\Modflow;
 
-use Inowas\PyprocessingBundle\Model\Modflow\ModflowCalculationParameter;
-
 class ModflowCalculationParameterTest extends \PHPUnit_Framework_TestCase
 {
-    /** @var  \Inowas\PyprocessingBundle\Model\Modflow\ModflowCalculationParameter */
+    /** @var  ModflowCalculationParameter */
     protected $modflowCalculation;
 
     /** @var  string */

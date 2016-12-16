@@ -26,7 +26,7 @@ class ModelControllerTest extends WebTestCase
         ;
 
         $this->entityManager = static::$kernel->getContainer()
-            ->get('doctrine.orm.modflow_entity_manager')
+            ->get('doctrine.orm.default_entity_manager')
         ;
     }
 

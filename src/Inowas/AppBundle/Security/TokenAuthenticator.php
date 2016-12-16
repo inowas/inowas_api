@@ -3,6 +3,7 @@
 namespace Inowas\AppBundle\Security;
 
 use Doctrine\ORM\EntityManager;
+use FOS\UserBundle\Doctrine\UserManager;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -17,9 +18,13 @@ class TokenAuthenticator extends AbstractGuardAuthenticator
     /** @var EntityManager $em */
     private $em;
 
-    public function __construct(EntityManager $em)
+    /** @var UserManager $um */
+    private $um;
+
+    public function __construct(EntityManager $em, UserManager $um)
     {
         $this->em = $em;
+        $this->um = $um;
     }
 
     /**
@@ -75,11 +80,7 @@ class TokenAuthenticator extends AbstractGuardAuthenticator
     public function getUser($credentials, UserProviderInterface $userProvider)
     {
         $apiKey = $credentials['token'];
-
-        // if null, authentication will fail
-        // if a User object, checkCredentials() is called
-        return $this->em->getRepository('AppBundle:User')
-            ->findOneBy(array('apiKey' => $apiKey));
+        return $this->um->findUserBy(array('apiKey' => $apiKey));
     }
 
     /**

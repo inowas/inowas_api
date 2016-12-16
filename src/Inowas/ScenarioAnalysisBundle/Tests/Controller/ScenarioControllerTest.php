@@ -71,6 +71,7 @@ class ScenarioControllerTest extends WebTestCase
             $this->user->setUsername('testUser');
             $this->user->setEmail('testUser@testUser.com');
             $this->user->setPlainPassword('testUserPassword');
+            $this->user->setEnabled(true);
             $this->userManager->updateUser($this->user);
         }
     }
@@ -84,7 +85,8 @@ class ScenarioControllerTest extends WebTestCase
         $scenarioAnalysis->setUserId($this->user->getId());
 
         $scenario = $this->scenarioManager->create($model)->setName('TestScenarioName 1')->setDescription('TestScenarioDescription 1');
-        $this->scenarioManager->update($scenario);
+        $scenarioAnalysis->addScenario($scenario);
+        $this->scenarioAnalysisManager->update($scenarioAnalysis);
 
         $scenario = $this->scenarioManager->create($model)->setName('TestScenarioName 2')->setDescription('TestScenarioDescription 2');
         $scenarioAnalysis->addScenario($scenario);
@@ -93,7 +95,10 @@ class ScenarioControllerTest extends WebTestCase
         $client = static::createClient();
         $client->request(
             'GET',
-            sprintf('/api/scenarioanalysis/models/%s/scenarios.json', $model->getId()->toString())
+            sprintf('/api/scenarioanalysis/models/%s/scenarios.json', $model->getId()->toString()),
+            array(),
+            array(),
+            array('HTTP_X-AUTH-TOKEN' => $this->user->getApiKey())
         );
 
         $this->assertEquals(200, $client->getResponse()->getStatusCode());
@@ -120,6 +125,10 @@ class ScenarioControllerTest extends WebTestCase
         $model = $this->modelManager->create()->setName('TestModel');
         $this->modelManager->update($model);
 
+        $scenarioAnalysis = $this->scenarioAnalysisManager->create($model);
+        $scenarioAnalysis->setUserId($this->user->getId());
+        $this->scenarioAnalysisManager->update($scenarioAnalysis);
+
         $client = static::createClient();
         $client->request(
             'POST',
@@ -127,7 +136,9 @@ class ScenarioControllerTest extends WebTestCase
             array(
                 'name' => 'MyScenarioName',
                 'description' => 'MyScenarioDescription'
-            )
+            ),
+            array(),
+            array('HTTP_X-AUTH-TOKEN' => $this->user->getApiKey())
         );
 
         $this->assertEquals(200, $client->getResponse()->getStatusCode());
@@ -147,14 +158,20 @@ class ScenarioControllerTest extends WebTestCase
     }
 
     public function testPutScenario(){
+
         $model = $this->modelManager->create()->setName('TestModel');
         $this->modelManager->update($model);
 
+        $scenarioAnalysis = $this->scenarioAnalysisManager->create($model);
+        $scenarioAnalysis->setUserId($this->user->getId());
+
         $scenario = $this->scenarioManager->create($model)->setName('TestScenarioName 1')->setDescription('TestScenarioDescription 1');
-        $this->scenarioManager->update($scenario);
+        $scenarioAnalysis->addScenario($scenario);
+        $this->scenarioAnalysisManager->update($scenarioAnalysis);
 
         $scenario = $this->scenarioManager->create($model)->setName('TestScenarioName 2')->setDescription('TestScenarioDescription 2');
-        $this->scenarioManager->update($scenario);
+        $scenarioAnalysis->addScenario($scenario);
+        $this->scenarioAnalysisManager->update($scenarioAnalysis);
 
         $client = static::createClient();
         $client->request(
@@ -163,7 +180,9 @@ class ScenarioControllerTest extends WebTestCase
             array(
                 'name' => 'MyScenarioName',
                 'description' => 'MyScenarioDescription'
-            )
+            ),
+            array(),
+            array('HTTP_X-AUTH-TOKEN' => $this->user->getApiKey())
         );
 
         $this->assertEquals(200, $client->getResponse()->getStatusCode());
@@ -201,7 +220,9 @@ class ScenarioControllerTest extends WebTestCase
         $client->request(
             'POST',
             sprintf('/api/scenarioanalysis/models/%s/scenarios/%s.json', $model->getId()->toString(), $scenario->getId()->toString()),
-            array('payload' => json_encode($addWellPayload))
+            array('payload' => json_encode($addWellPayload)),
+            array(),
+            array('HTTP_X-AUTH-TOKEN' => $this->user->getApiKey())
         );
 
         $scenario = $this->scenarioManager->findById($scenario->getId());
@@ -229,7 +250,9 @@ class ScenarioControllerTest extends WebTestCase
         $client->request(
             'POST',
             sprintf('/api/scenarioanalysis/models/%s/scenarios/%s.json', $model->getId()->toString(), $scenario->getId()->toString()),
-            array('payload' => json_encode($addWellPayload))
+            array('payload' => json_encode($addWellPayload)),
+            array(),
+            array('HTTP_X-AUTH-TOKEN' => $this->user->getApiKey())
         );
 
         $scenario = $this->scenarioManager->findById($scenario->getId());
@@ -257,7 +280,9 @@ class ScenarioControllerTest extends WebTestCase
         $client->request(
             'POST',
             sprintf('/api/scenarioanalysis/models/%s/scenarios/%s.json', $model->getId()->toString(), $scenario->getId()->toString()),
-            array('payload' => json_encode($addWellPayload))
+            array('payload' => json_encode($addWellPayload)),
+            array(),
+            array('HTTP_X-AUTH-TOKEN' => $this->user->getApiKey())
         );
 
         $scenario = $this->scenarioManager->findById($scenario->getId());
@@ -291,7 +316,9 @@ class ScenarioControllerTest extends WebTestCase
         $client->request(
             'POST',
             sprintf('/api/scenarioanalysis/models/%s/scenarios/%s.json', $model->getId()->toString(), $scenario->getId()->toString()),
-            array('payload' => json_encode($addWellPayload))
+            array('payload' => json_encode($addWellPayload)),
+            array(),
+            array('HTTP_X-AUTH-TOKEN' => $this->user->getApiKey())
         );
 
         $scenario = $this->scenarioManager->findById($scenario->getId());
@@ -319,7 +346,9 @@ class ScenarioControllerTest extends WebTestCase
         $client->request(
             'POST',
             sprintf('/api/scenarioanalysis/models/%s/scenarios/%s.json', $model->getId()->toString(), $scenario->getId()->toString()),
-            array('payload' => json_encode($addWellPayload))
+            array('payload' => json_encode($addWellPayload)),
+            array(),
+            array('HTTP_X-AUTH-TOKEN' => $this->user->getApiKey())
         );
 
         $scenario = $this->scenarioManager->findById($scenario->getId());
@@ -347,7 +376,9 @@ class ScenarioControllerTest extends WebTestCase
         $client->request(
             'POST',
             sprintf('/api/scenarioanalysis/models/%s/scenarios/%s.json', $model->getId()->toString(), $scenario->getId()->toString()),
-            array('payload' => json_encode($addWellPayload))
+            array('payload' => json_encode($addWellPayload)),
+            array(),
+            array('HTTP_X-AUTH-TOKEN' => $this->user->getApiKey())
         );
 
         $scenario = $this->scenarioManager->findById($scenario->getId());
@@ -374,7 +405,9 @@ class ScenarioControllerTest extends WebTestCase
         $client->request(
             'POST',
             sprintf('/api/scenarioanalysis/models/%s/scenarios/%s.json', $model->getId()->toString(), $scenario->getId()->toString()),
-            array('payload' => json_encode($addWellPayload))
+            array('payload' => json_encode($addWellPayload)),
+            array(),
+            array('HTTP_X-AUTH-TOKEN' => $this->user->getApiKey())
         );
 
         $scenario = $this->scenarioManager->findById($scenario->getId());
@@ -398,6 +431,9 @@ class ScenarioControllerTest extends WebTestCase
             $this->modelManager->remove($model);
         }
 
-        $this->userManager->deleteUser($this->user);
+        $users = $this->userManager->findUsers();
+        foreach ($users as $user){
+            $this->userManager->deleteUser($user);
+        }
     }
 }

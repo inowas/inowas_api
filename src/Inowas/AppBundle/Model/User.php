@@ -23,7 +23,7 @@ class User extends BaseUser
     /**
      * @return Uuid
      */
-    public function getApiKey(): Uuid
+    public function getApiKey()
     {
         return $this->apiKey;
     }

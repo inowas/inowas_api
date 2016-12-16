@@ -2,24 +2,13 @@
 
 namespace Inowas\ScenarioAnalysisBundle\Controller;
 
-use CrEOF\Spatial\PHP\Types\Geometry\Point;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use FOS\RestBundle\Controller\FOSRestController;
-use FOS\RestBundle\Request\ParamFetcher;
 use FOS\RestBundle\View\View;
 use FOS\UserBundle\Model\UserInterface;
 use Inowas\ModflowBundle\Model\ModflowModel;
-use Inowas\ModflowBundle\Model\StressPeriodFactory;
 use Inowas\ScenarioAnalysisBundle\Exception\InvalidArgumentException;
 use Inowas\ScenarioAnalysisBundle\Exception\InvalidUuidException;
-use Inowas\ScenarioAnalysisBundle\Model\Events\AddWellEvent;
-use Inowas\ScenarioAnalysisBundle\Model\Events\ChangeWellLayerNumberEvent;
-use Inowas\ScenarioAnalysisBundle\Model\Events\ChangeWellNameEvent;
-use Inowas\ScenarioAnalysisBundle\Model\Events\ChangeWellStressperiodsEvent;
-use Inowas\ScenarioAnalysisBundle\Model\Events\ChangeWellTypeEvent;
-use Inowas\ScenarioAnalysisBundle\Model\Events\MoveWellEvent;
-use Inowas\ScenarioAnalysisBundle\Model\Events\RemoveWellEvent;
-use JMS\Serializer\SerializationContext;
 use Nelmio\ApiDocBundle\Annotation\ApiDoc as ApiDoc;
 use Ramsey\Uuid\Uuid;
 use Symfony\Component\Finder\Exception\AccessDeniedException;
