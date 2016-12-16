@@ -17,11 +17,10 @@ security:
         credentials:
             pattern: ^/api/users/credentials
             security: false
-        api_key:
-            pattern: ^/api
-            guard:
-                authenticators:
-                    - inowas.app.token_authenticator
+        apidoc:
+            pattern: ^/api/doc
+            security: false
+
         main:
             pattern: ^/
             form_login:
@@ -41,7 +40,7 @@ security:
             security: false
 
     access_control:
-        - { path: /api/users/credentials, role: IS_AUTHENTICATED_ANONYMOUSLY }
+        - { path: /api/doc, role: IS_AUTHENTICATED_ANONYMOUSLY }
         - { path: ^/login$, role: IS_AUTHENTICATED_ANONYMOUSLY }
         - { path: ^/register, role: IS_AUTHENTICATED_ANONYMOUSLY }
         - { path: ^/resetting, role: IS_AUTHENTICATED_ANONYMOUSLY }

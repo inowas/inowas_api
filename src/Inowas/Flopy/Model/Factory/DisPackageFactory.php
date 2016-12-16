@@ -35,7 +35,7 @@ class DisPackageFactory implements PackageFactoryInterface
         $dis->setYul($adapter->getYul());
         $dis->setRotation($adapter->getRotation());
         $dis->setProj4Str($adapter->getProj4Str());
-        $dis->setStartDatetime($adapter->getStartDateTime());
+        $dis->setStartDatetime($adapter->getStartTime());
 
         return $dis;
     }

@@ -313,4 +313,11 @@ class DisPackageAdapter
     public function getProj4Str(){
         return 'EPSG:4326';
     }
+
+    /**
+     * @return \DateTimeImmutable
+     */
+    public function getStartTime(){
+       return $this->model->getStart();
+    }
 }

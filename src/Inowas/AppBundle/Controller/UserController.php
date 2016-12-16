@@ -14,11 +14,11 @@ use Symfony\Component\HttpKernel\Exception\HttpException;
 class UserController extends FOSRestController
 {
     /**
-     * Returns the model area details specified by modelId
+     * Returns the api-key of the user.
      *
      * @ApiDoc(
      *   resource = true,
-     *   description = "Returns the model area details specified by modelId",
+     *   description = "Returns the api-key of the user.",
      *   statusCodes = {
      *     200 = "Returned when successful",
      *     404 = "Returned when the model is not found"

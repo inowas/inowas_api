@@ -13,7 +13,7 @@ class PackageFactory
 
     public static function create($packageName, ModflowModel $model, Soilmodel $soilmodel): PackageInterface {
 
-        $packageFactory = "Inowas\\PyprocessingBundle\\Model\\Modflow\\Package\\".ucfirst(strtolower($packageName))."PackageFactory";
+        $packageFactory = "Inowas\\Flopy\\Model\\Factory\\".ucfirst(strtolower($packageName))."PackageFactory";
         if(! class_exists($packageFactory)){
             throw new InvalidArgumentException(sprintf('Invalid packageName %s', $packageName));
         }

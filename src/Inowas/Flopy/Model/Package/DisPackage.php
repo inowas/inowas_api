@@ -5,6 +5,7 @@ namespace Inowas\Flopy\Model\Package;
 use Inowas\Flopy\Model\ValueObject\Flopy1DArray;
 use Inowas\Flopy\Model\ValueObject\Flopy2DArray;
 use Inowas\Flopy\Model\ValueObject\Flopy3DArray;
+use Symfony\Component\Validator\Constraints\DateTime;
 
 class DisPackage implements PackageInterface
 {
@@ -448,10 +449,10 @@ class DisPackage implements PackageInterface
     }
 
     /**
-     * @param \DateTimeImmutable $start_datetime
+     * @param \DateTime $start_datetime
      * @return $this
      */
-    public function setStartDatetime(\DateTimeImmutable $start_datetime)
+    public function setStartDatetime(\DateTime $start_datetime)
     {
         $this->start_datetime = $start_datetime;
         return $this;

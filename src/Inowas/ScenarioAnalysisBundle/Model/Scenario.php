@@ -161,6 +161,19 @@ class Scenario implements \JsonSerializable
     }
 
     /**
+     * @param ModflowModel $modflowModel
+     * @return ModflowModel
+     */
+    public function applyTo(ModflowModel $modflowModel): ModflowModel
+    {
+        foreach ($this->events as $event){
+            $event->applyTo($modflowModel);
+        }
+
+        return $modflowModel;
+    }
+
+    /**
      * @return object
      */
     function jsonSerialize()

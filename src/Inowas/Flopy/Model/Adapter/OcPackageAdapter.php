@@ -2,8 +2,8 @@
 
 namespace Inowas\Flopy\Model\Adapter;
 
+use Inowas\Flopy\Model\ValueObject\StressPeriodOutputControl;
 use Inowas\ModflowBundle\Model\ModflowModel;
-use Inowas\PyprocessingBundle\Model\Modflow\ValueObject\StressPeriodOutputControl;
 
 class OcPackageAdapter
 {

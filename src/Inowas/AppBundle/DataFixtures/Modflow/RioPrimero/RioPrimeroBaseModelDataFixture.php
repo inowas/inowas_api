@@ -9,6 +9,7 @@ use Doctrine\Common\DataFixtures\FixtureInterface;
 use Doctrine\Common\Persistence\ObjectManager;
 use Inowas\AppBundle\DataFixtures\Modflow\LoadScenarioBase;
 use Inowas\ModflowBundle\Model\AreaFactory;
+use Inowas\ModflowBundle\Model\Boundary\Boundary;
 use Inowas\ModflowBundle\Model\Boundary\GeneralHeadBoundary;
 use Inowas\ModflowBundle\Model\Boundary\ObservationPoint;
 use Inowas\ModflowBundle\Model\Boundary\ObservationPointFactory;
@@ -18,6 +19,7 @@ use Inowas\ModflowBundle\Model\Boundary\WellBoundary;
 use Inowas\ModflowBundle\Model\BoundaryFactory;
 use Inowas\ModflowBundle\Model\BoundingBox;
 use Inowas\ModflowBundle\Model\GridSize;
+use Inowas\ModflowBundle\Model\ModflowModel;
 use Inowas\ModflowBundle\Model\StressPeriodFactory;
 use Inowas\PyprocessingBundle\Service\Interpolation;
 use Inowas\SoilmodelBundle\Factory\BoreHoleFactory;
@@ -54,6 +56,7 @@ class RioPrimeroBaseModelDataFixture extends LoadScenarioBase implements Fixture
      */
     public function load(ObjectManager $manager)
     {
+        $geoTools = $this->container->get('inowas.geotools.geotools');
 
         $this->loadUsers($this->container->get('fos_user.user_manager'));
 
@@ -127,6 +130,8 @@ class RioPrimeroBaseModelDataFixture extends LoadScenarioBase implements Fixture
             ->setSoilmodelId($soilmodel->getId())
             ->setBoundingBox(new BoundingBox(-31.367449, -31.313615, -63.687336, -63.569260, 4326))
             ->setGridSize(new GridSize(75,40))
+            ->setStart(new \DateTime('1.1.2015'))
+            ->setEnd(new \DateTime('31.12.2015'))
         ;
 
         $modelManager->update($model);
@@ -458,6 +463,14 @@ class RioPrimeroBaseModelDataFixture extends LoadScenarioBase implements Fixture
         $modelManager->update($model);
         unset($recharge);
 
+
+        /** @var Boundary $boundary */
+        foreach ($model->getBoundaries() as $boundary){
+            $boundary->setActiveCells($geoTools->getActiveCells($boundary, $model->getBoundingBox(), $model->getGridSize()));
+        }
+
+        $model->getArea()->setActiveCells($geoTools->getActiveCells($model->getArea(), $model->getBoundingBox(), $model->getGridSize()));
+
         /* Interpolation of all layers */
         $soilModelService = $this->container->get('inowas.soilmodel.soilmodelservice');
         $soilModelService->setSoilModel($soilmodel);
@@ -487,13 +500,19 @@ class RioPrimeroBaseModelDataFixture extends LoadScenarioBase implements Fixture
             }
         }
 
+        $this->loadScenarios($model);
+        return 1;
+    }
+
+    private function loadScenarios(ModflowModel $model){
         $scenarioAnalysisManager = $this->container->get('inowas.scenarioanalysis.scenarioanalysismanager');
+        $scenarioManager = $this->container->get('inowas.scenarioanalysis.scenariomanager');
 
         foreach ($this->getUserList() as $user){
             $scenarioAnalysis = $scenarioAnalysisManager->create($user, $model);
+            $scenario = $scenarioManager->create($model);
+            $scenarioManager->update($scenario);
             $scenarioAnalysisManager->update($scenarioAnalysis);
         }
-
-        return 1;
     }
 }

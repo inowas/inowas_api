@@ -5,6 +5,9 @@ namespace Inowas\Flopy\Model\Adapter;
 use Inowas\Flopy\Model\ValueObject\Flopy1DArray;
 use Inowas\Flopy\Model\ValueObject\Flopy3DArray;
 use Inowas\ModflowBundle\Model\ModflowModel;
+use Inowas\SoilmodelBundle\Model\Layer;
+use Inowas\SoilmodelBundle\Model\Property;
+use Inowas\SoilmodelBundle\Model\PropertyType;
 use Inowas\SoilmodelBundle\Model\Soilmodel;
 
 class LpfPackageAdapter
@@ -117,20 +120,22 @@ class LpfPackageAdapter
      */
     public function getHk(): Flopy3DArray
     {
-        if (! $this->model->hasSoilModel()){
-            return null;
-        }
-
         if ($this->soilmodel->getLayers()->count() === 0){
             return null;
         }
+
 
         $layers = $this->soilmodel->getLayers();
 
         $hk = array();
         $ni = count($layers);
+
+
         for ($i=0; $i<$ni; $i++){
-            $hk[] = $layers[$i]->getKx();
+            /** @var Layer $layer */
+            $layer = $layers[$i];
+            $property = $layer->findPropertyByType(PropertyType::fromString(PropertyType::K_X));
+            $hk[] = $property->getValue()->getValue();
         }
 
         return Flopy3DArray::fromValue($hk);

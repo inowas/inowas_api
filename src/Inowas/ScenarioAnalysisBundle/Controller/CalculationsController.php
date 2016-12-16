@@ -1,11 +1,13 @@
 <?php
 
-namespace Inowas\ModflowBundle\Controller;
+namespace Inowas\ScenarioAnalysisBundle\Controller;
 
 use FOS\RestBundle\Controller\Annotations as Rest;
 use FOS\RestBundle\Controller\FOSRestController;
 
 use Inowas\ModflowBundle\Model\ModflowModel;
+use Inowas\ScenarioAnalysisBundle\Exception\InvalidArgumentException;
+use Inowas\ScenarioAnalysisBundle\Model\Scenario;
 use Nelmio\ApiDocBundle\Annotation\ApiDoc;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
@@ -36,30 +38,43 @@ class CalculationsController extends FOSRestController
     }
 
     /**
-     * Return the list of available ModflowPackages from a ModelId.
+     * Returns the flopy package data as json.
      *
      * @ApiDoc(
      *   resource = true,
-     *   description = "Return the list of available ModflowPackages from a ModelId.",
+     *   description = "Returns the flopy package data as json.",
      *   statusCodes = {
      *     200 = "Returned when successful",
      *     404 = "Returned when the model is not found"
      *   }
      * )
      *
-     * @Rest\Get("/calculation/{modelId}/packages/{packageName}")
-     * @param $modelId
+     * @Rest\Get("/calculation/{scenarioId}/packages/{packageName}")
+     * @param $scenarioId
      * @param $packageName
      * @return JsonResponse
-     * @throws NotFoundHttpException
+     * @throws InvalidArgumentException
      */
-    public function getModflowModelPackageAction($modelId, $packageName)
+    public function getModflowModelPackageAction($scenarioId, $packageName)
     {
-        /** @var ModflowModel $model */
-        $model = $this->get('inowas.modflow.modelmanager')->findById($modelId);
-        $soilmodel = $this->get('inowas.soilmodel.soilmodelmanager')->findById($model->getSoilmodelId());
-        $packageManager = $this->get('inowas.flopy.packagemanager');
+        /** @var Scenario $scenario */
+        $scenario = $this->get('inowas.scenarioanalysis.scenariomanager')->findById($scenarioId);
 
+        if (! $scenario instanceof Scenario) {
+            throw new InvalidArgumentException(sprintf('There is no scenario with id = %s', $scenarioId));
+        }
+
+        /** @var ModflowModel $model */
+        $basemodel = $this->get('inowas.modflow.modelmanager')->findById($scenario->getBaseModelId());
+
+        if (! $basemodel instanceof ModflowModel) {
+            throw new InvalidArgumentException(sprintf('There is no modflow-baseModel with id = %s', $scenario->getBaseModelId()));
+        }
+
+        $model = $scenario->applyTo($basemodel);
+        $soilmodel = $this->get('inowas.soilmodel.soilmodelmanager')->findById($model->getSoilmodelId());
+
+        $packageManager = $this->get('inowas.flopy.packagemanager');
         return new JsonResponse($packageManager->getPackageData($model, $soilmodel, $packageName), 200);
     }
 }
