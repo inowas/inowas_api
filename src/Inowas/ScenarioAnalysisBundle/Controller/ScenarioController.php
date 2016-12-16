@@ -106,7 +106,7 @@ class ScenarioController extends FOSRestController
         $scenarioAnalysis = $scenarioAnalysisManager->findByUserIdAndBasemodelId($user->getId(), Uuid::fromString($modelId));
 
         if (! $scenarioAnalysis instanceof ScenarioAnalysis){
-            $scenarioAnalysis = $scenarioAnalysisManager->create($baseModel);
+            $scenarioAnalysis = $scenarioAnalysisManager->create($user, $baseModel);
             $scenarioAnalysis->setUserId($user->getId());
         }
 

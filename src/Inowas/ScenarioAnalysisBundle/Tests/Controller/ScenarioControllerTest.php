@@ -81,9 +81,7 @@ class ScenarioControllerTest extends WebTestCase
         $model = $this->modelManager->create()->setName('TestModel');
         $this->modelManager->update($model);
 
-        $scenarioAnalysis = $this->scenarioAnalysisManager->create($model);
-        $scenarioAnalysis->setUserId($this->user->getId());
-
+        $scenarioAnalysis = $this->scenarioAnalysisManager->create($this->user, $model);
         $scenario = $this->scenarioManager->create($model)->setName('TestScenarioName 1')->setDescription('TestScenarioDescription 1');
         $scenarioAnalysis->addScenario($scenario);
         $this->scenarioAnalysisManager->update($scenarioAnalysis);
@@ -125,8 +123,7 @@ class ScenarioControllerTest extends WebTestCase
         $model = $this->modelManager->create()->setName('TestModel');
         $this->modelManager->update($model);
 
-        $scenarioAnalysis = $this->scenarioAnalysisManager->create($model);
-        $scenarioAnalysis->setUserId($this->user->getId());
+        $scenarioAnalysis = $this->scenarioAnalysisManager->create($this->user, $model);
         $this->scenarioAnalysisManager->update($scenarioAnalysis);
 
         $client = static::createClient();
@@ -162,9 +159,7 @@ class ScenarioControllerTest extends WebTestCase
         $model = $this->modelManager->create()->setName('TestModel');
         $this->modelManager->update($model);
 
-        $scenarioAnalysis = $this->scenarioAnalysisManager->create($model);
-        $scenarioAnalysis->setUserId($this->user->getId());
-
+        $scenarioAnalysis = $this->scenarioAnalysisManager->create($this->user, $model);
         $scenario = $this->scenarioManager->create($model)->setName('TestScenarioName 1')->setDescription('TestScenarioDescription 1');
         $scenarioAnalysis->addScenario($scenario);
         $this->scenarioAnalysisManager->update($scenarioAnalysis);

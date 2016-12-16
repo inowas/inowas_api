@@ -85,7 +85,7 @@ class ScenarioAnalysisController extends FOSRestController
         );
 
         if (is_null($scenarioAnalysis)){
-            $scenarioAnalysis = $scenarioAnalysisManager->create($baseModel);
+            $scenarioAnalysis = $scenarioAnalysisManager->create($user, $baseModel);
         }
 
         $responseData = [

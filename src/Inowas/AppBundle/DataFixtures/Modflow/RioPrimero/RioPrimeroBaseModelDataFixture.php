@@ -487,6 +487,13 @@ class RioPrimeroBaseModelDataFixture extends LoadScenarioBase implements Fixture
             }
         }
 
+        $scenarioAnalysisManager = $this->container->get('inowas.scenarioanalysis.scenarioanalysismanager');
+
+        foreach ($this->getUserList() as $user){
+            $scenarioAnalysis = $scenarioAnalysisManager->create($user, $model);
+            $scenarioAnalysisManager->update($scenarioAnalysis);
+        }
+
         return 1;
     }
 }

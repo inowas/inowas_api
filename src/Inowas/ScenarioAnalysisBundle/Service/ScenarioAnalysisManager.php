@@ -3,6 +3,7 @@
 namespace Inowas\ScenarioAnalysisBundle\Service;
 
 use Doctrine\ORM\EntityManager;
+use FOS\UserBundle\Model\UserInterface;
 use Inowas\ModflowBundle\Model\ModflowModel;
 use Inowas\ScenarioAnalysisBundle\Factory\ScenarioAnalysisFactory;
 use Inowas\ScenarioAnalysisBundle\Model\ScenarioAnalysis;
@@ -38,8 +39,8 @@ class ScenarioAnalysisManager
             ));
     }
 
-    public function create(ModflowModel $baseModel){
-        return ScenarioAnalysisFactory::create($baseModel);
+    public function create(UserInterface $user, ModflowModel $baseModel){
+        return ScenarioAnalysisFactory::create($user, $baseModel);
     }
 
     /**
