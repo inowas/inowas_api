@@ -6,8 +6,12 @@ use FOS\RestBundle\Controller\Annotations as Rest;
 use FOS\RestBundle\Controller\FOSRestController;
 
 use FOS\RestBundle\View\View;
+use Inowas\ModflowBundle\Exception\InvalidArgumentException;
+use Inowas\ModflowBundle\Model\Modflow;
 use Inowas\ModflowBundle\Model\ModflowModel;
+use JMS\Serializer\SerializationContext;
 use Nelmio\ApiDocBundle\Annotation\ApiDoc;
+use Ramsey\Uuid\Uuid;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
@@ -82,7 +86,35 @@ class CalculationsController extends FOSRestController
      * @return View
      */
     public function postModflowCalculation($modelId){
+        $modflowController = $this->get('inowas.modflow.modelmanager');
+        $model = $modflowController->findById(Uuid::fromString($modelId));
 
+        if (! $model instanceof ModflowModel){
+            throw new InvalidArgumentException(sprintf('Model with id=%s not available', $modelId));
+        }
+
+        $modflow = $this->getDoctrine()->getRepository('InowasModflowBundle:Modflow')
+            ->findOneBy(array(
+                'modflowModel' => $model,
+                'userId' => $this->getUser()->getId()
+            ));
+
+        if (! $modflow instanceof Modflow){
+            throw new InvalidArgumentException(sprintf('Model %s available, but not owner', $modelId));
+        }
+
+        $cc = $this->get('inowas.modflow.calculationmanager');
+        $calculation = $cc->create($modflow->getModflowModel());
+        $cc->update($calculation);
+
+        $view = View::create($calculation)
+            ->setStatusCode(200)
+            ->setSerializationContext(SerializationContext::create()
+                ->setGroups(array('details'))
+            )
+        ;
+
+        return $view;
     }
 
     /**
@@ -104,6 +136,13 @@ class CalculationsController extends FOSRestController
      */
     public function getModflowCalculation($modelId){
         $calculation = $this->get('inowas.modflow.calculationmanager')->findByModelId($modelId);
-        return new JsonResponse($calculation->getCalculationProperties(), 200);
+        $view = View::create($calculation)
+            ->setStatusCode(200)
+            ->setSerializationContext(SerializationContext::create()
+                ->setGroups(array('details'))
+            )
+        ;
+
+        return $view;
     }
 }

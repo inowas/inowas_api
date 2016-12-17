@@ -124,10 +124,10 @@ class CalculationProperties implements \JsonSerializable
     }
 
     /**
-     * @param array $initialValues
+     * @param $initialValues
      * @return CalculationProperties
      */
-    public function setInitialValues( $initialValues): CalculationProperties
+    public function setInitialValues($initialValues): CalculationProperties
     {
         $this->initialValues = $initialValues;
         return $this;
