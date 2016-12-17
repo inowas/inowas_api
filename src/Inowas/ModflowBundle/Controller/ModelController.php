@@ -7,16 +7,37 @@ use FOS\RestBundle\Controller\Annotations\RequestParam;
 use FOS\RestBundle\Controller\FOSRestController;
 use FOS\RestBundle\Request\ParamFetcher;
 use FOS\RestBundle\View\View;
+use Inowas\ModflowBundle\Data\MapData;
 use Inowas\ModflowBundle\Model\GridSize;
 use Inowas\ModflowBundle\Model\ModflowModel;
 use JMS\Serializer\SerializationContext;
 use Nelmio\ApiDocBundle\Annotation\ApiDoc;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class ModelController extends FOSRestController
 {
+
     /**
-     * Create a new Model.
+     * Returns GeoJson for map in models-list.
+     *
+     * @ApiDoc(
+     *   resource = true,
+     *   description = "Returns GeoJson for map in models-list.",
+     *   statusCodes = {
+     *     200 = "Returned when successful"
+     *   }
+     * )
+     *
+     * @Rest\Get("/models/list/map")
+     * @return JsonResponse
+     */
+    public function getModflowModelsGeoJsonAction(){
+        return new JsonResponse(MapData::getGeoJson(), 200, array(), true);
+    }
+
+    /**
+     * Get list of models.
      *
      * @ApiDoc(
      *   resource = true,
