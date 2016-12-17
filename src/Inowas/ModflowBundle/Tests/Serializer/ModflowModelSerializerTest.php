@@ -78,5 +78,4 @@ class ModflowModelSerializerTest extends KernelTestCase {
         $this->assertObjectHasAttribute('boundaries', $response);
         $this->assertTrue(is_array($response->boundaries));
     }
-
 }

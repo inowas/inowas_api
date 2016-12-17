@@ -5,6 +5,7 @@ namespace Inowas\ModflowBundle\Controller;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use FOS\RestBundle\Controller\FOSRestController;
 
+use FOS\RestBundle\View\View;
 use Inowas\ModflowBundle\Model\ModflowModel;
 use Nelmio\ApiDocBundle\Annotation\ApiDoc;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -61,5 +62,48 @@ class CalculationsController extends FOSRestController
         $packageManager = $this->get('inowas.flopy.packagemanager');
 
         return new JsonResponse($packageManager->getPackageData($model, $soilmodel, $packageName), 200);
+    }
+
+    /**
+     * Sends the command to calculate the model by model-id.
+     *
+     * @ApiDoc(
+     *   resource = true,
+     *   description = "Sends the command to calculate the model by model-id",
+     *   statusCodes = {
+     *     200 = "Returned when successful",
+     *     404 = "Returned when the Calculation-Id is not found"
+     *   }
+     * )
+     *
+     *
+     * @Rest\Post("/calculation/{modelId}")
+     * @param $modelId
+     * @return View
+     */
+    public function postModflowCalculation($modelId){
+
+    }
+
+    /**
+     * Sends the command to calculate the model by model-id.
+     *
+     * @ApiDoc(
+     *   resource = true,
+     *   description = "Sends the command to calculate the model by model-id",
+     *   statusCodes = {
+     *     200 = "Returned when successful",
+     *     404 = "Returned when the Calculation-Id is not found"
+     *   }
+     * )
+     *
+     *
+     * @Rest\Get("/calculation/{modelId}")
+     * @param $modelId
+     * @return View
+     */
+    public function getModflowCalculation($modelId){
+        $calculation = $this->get('inowas.modflow.calculationmanager')->findByModelId($modelId);
+        return new JsonResponse($calculation->getCalculationProperties(), 200);
     }
 }

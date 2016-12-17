@@ -21,8 +21,8 @@
         <field name="dataFolder" type="string" column="data_folder"/>
         <field name="state" type="integer" column="state"/>
         <field name="dateTimeAddToQueue" type="datetime" column="add_to_queue"/>
-        <field name="dateTimeStart" type="datetime" column="start"/>
-        <field name="dateTimeEnd" type="datetime" column="end"/>
+        <field name="dateTimeStart" type="datetime" column="`start`"/>
+        <field name="dateTimeEnd" type="datetime" column="`end`"/>
         <field name="finishedWithSuccess" type="boolean" column="finished_with_success"/>
         <field name="output" type="text" column="output"/>
         <field name="calculationProperties" type="calculation_properties" column="calculation_properties"/>
