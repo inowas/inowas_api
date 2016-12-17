@@ -19,6 +19,7 @@ use Inowas\ModflowBundle\Model\Boundary\WellBoundary;
 use Inowas\ModflowBundle\Model\BoundaryFactory;
 use Inowas\ModflowBundle\Model\BoundingBox;
 use Inowas\ModflowBundle\Model\GridSize;
+use Inowas\ModflowBundle\Model\Modflow;
 use Inowas\ModflowBundle\Model\ModflowModel;
 use Inowas\ModflowBundle\Model\StressPeriodFactory;
 use Inowas\PyprocessingBundle\Service\Interpolation;
@@ -502,6 +503,12 @@ class RioPrimeroBaseModelDataFixture extends LoadScenarioBase implements Fixture
                 );
             }
         }
+
+        $modflow = new Modflow();
+        $modflow->setUserId($this->getOwner()->getId());
+        $modflow->setModflowModel($model);
+        $this->container->get('doctrine.orm.default_entity_manager')->persist($modflow);
+        $this->container->get('doctrine.orm.default_entity_manager')->flush();
 
         $this->loadScenarios($model);
         return 1;
