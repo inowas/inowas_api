@@ -1,13 +1,13 @@
 <?php
 
-namespace Inowas\PyprocessingBundle\Command;
+namespace Inowas\ModflowBundle\Command;
 
 use AppBundle\Entity\ModFlowModel;
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
-class ModelListCommand extends ContainerAwareCommand
+class ModflowModelListCommand extends ContainerAwareCommand
 {
 
     protected function configure()
@@ -21,20 +21,15 @@ class ModelListCommand extends ContainerAwareCommand
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-
         $output->writeln("Show all Modflow-Models with ID.");
 
-        $em = $this->getContainer()->get('doctrine')->getManager();
-        $modflowModels = $em->getRepository('InowasModflowBundle:ModflowModel')
-            ->findBy(
-                array(),
-                array('dateCreated' => 'ASC')
-            );
+        $mm = $this->getContainer()->get('inowas.modflow.modelmanager');
+        $models = $mm->findAll();
 
         $counter = 0;
-        /** @var ModFlowModel $modflowModel */
-        foreach ($modflowModels as $modflowModel) {
-            $output->writeln(sprintf("#%s, ID: %s, Name: %s, Owner: %s ", ++$counter, $modflowModel->getId()->toString(), $modflowModel->getName(), $modflowModel->getOwner()));
+        /** @var ModFlowModel $model */
+        foreach ($models as $model) {
+            $output->writeln(sprintf("#%s, ID: %s, Name: %s", ++$counter, $model->getId()->toString(), $model->getName()));
         }
     }
 }

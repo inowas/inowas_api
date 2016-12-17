@@ -1,8 +1,7 @@
 <?php
 
-namespace Inowas\PyprocessingBundle\Command;
+namespace Inowas\ModflowBundle\Command;
 
-use Doctrine\ORM\EntityManager;
 use Ramsey\Uuid\Uuid;
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 use Symfony\Component\Console\Input\InputArgument;
@@ -16,12 +15,12 @@ class ModflowCalculateCommand extends ContainerAwareCommand
     {
         // Name and description for app/console command
         $this
-            ->setName('inowas:modflow:calculate')
-            ->setDescription('Calculate Modflow Model')
+            ->setName('inowas:model:queue')
+            ->setDescription('Add model to queue')
             ->addArgument(
                 'id',
                 InputArgument::REQUIRED,
-                'The ModflowModel-Id is needed'
+                'The model id is needed.'
             )
         ;
     }
@@ -34,9 +33,15 @@ class ModflowCalculateCommand extends ContainerAwareCommand
             $output->writeln(sprintf("The given id: %s is not valid", $input->getArgument('id')));
         }
 
-        /** @var EntityManager $entityManager */
-        $modflow = $this->getContainer()->get('inowas.modflow');
-        $modflow->calculate($input->getArgument('id'), 'mf2005');
-        $output->writeln('Modflow-Model has been calculated successfully.');
+        $mm = $this->getContainer()->get('inowas.modflow.modelmanager');
+        $model = $mm->findById($input->getArgument('id'));
+
+        $cm = $this->getContainer()->get('inowas.modflow.calculationmanager');
+        $calculation = $cm->create($model);
+        $calculation->setBaseUrl($this->getContainer()->getParameter('inowas.api_base_url'));
+        $calculation->setDataFolder($this->getContainer()->getParameter('inowas.modflow.data_folder'));
+        $cm->update($calculation);
+
+        $output->writeln('Modflow-Model has been added to queue.');
     }
 }

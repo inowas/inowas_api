@@ -2,8 +2,8 @@
 
 namespace Inowas\PyprocessingBundle\Service;
 
-use AppBundle\Entity\ModflowCalculation;
-use AppBundle\Entity\User;
+use Inowas\AppBundle\Model\User;
+use Inowas\ModflowBundle\Model\Calculation;
 use Inowas\PyprocessingBundle\Exception\InvalidArgumentException;
 use Inowas\PyprocessingBundle\Model\PythonProcess\PythonProcess;
 use Doctrine\Common\Collections\ArrayCollection;
@@ -30,7 +30,7 @@ class FlopyServiceRunner
     protected $numberOfParallelCalculations;
 
 
-    public function __construct(EntityManager $entityManager,  Flopy $flopy, $numberOfParallelCalculations = 5)
+    public function __construct(EntityManager $entityManager, Flopy $flopy, $numberOfParallelCalculations = 5)
     {
         $this->processes = new ArrayCollection();
         $this->entityManager = $entityManager;
@@ -45,11 +45,11 @@ class FlopyServiceRunner
 
         $startedButNotFinishedJobs = $this->entityManager->getRepository('AppBundle:ModflowCalculation')
             ->findBy(
-                array('state' => ModflowCalculation::STATE_RUNNING)
+                array('state' => Calculation::STATE_RUNNING)
             );
 
         foreach ($startedButNotFinishedJobs as $startedButNotFinishedJob){
-            $startedButNotFinishedJob->setState(ModflowCalculation::STATE_IN_QUEUE);
+            $startedButNotFinishedJob->setState(Calculation::STATE_IN_QUEUE);
             $this->entityManager->persist($startedButNotFinishedJob);
             echo sprintf('Reset started but not fished Job %s'."\r\n", $startedButNotFinishedJob->getId()->toString());
         }
@@ -67,18 +67,18 @@ class FlopyServiceRunner
                 }
 
                 if (! $process->isRunning()){
-                    $modflowCalculation = $this->entityManager->getRepository('AppBundle:ModflowCalculation')
+                    $modflowCalculation = $this->entityManager->getRepository('InowasModflowBundle:Calculation')
                         ->findOneBy(array(
                             'processId' => $process->getId()
                         ));
                     $modflowCalculation->setDateTimeEnd(new \DateTime());
 
                     if ($process->getProcess()->isSuccessful()){
-                        $modflowCalculation->setState(ModflowCalculation::STATE_FINISHED_SUCCESSFUL);
+                        $modflowCalculation->setState(Calculation::STATE_FINISHED_SUCCESSFUL);
                         $modflowCalculation->setOutput($modflowCalculation->getOutput().$process->getProcess()->getOutput());
                         echo sprintf("Process end:\r\n Message: \r\n %s", $process->getProcess()->getOutput());
                     } else {
-                        $modflowCalculation->setState(ModflowCalculation::STATE_FINISHED_WITH_ERRORS);
+                        $modflowCalculation->setState(Calculation::STATE_FINISHED_WITH_ERRORS);
                         $modflowCalculation->setOutput($modflowCalculation->getOutput().$process->getProcess()->getErrorOutput());
                         echo sprintf("Process ended up with error:\r\n ErrorMessage: \r\n %s", $process->getProcess()->getErrorOutput());
                     }
@@ -95,7 +95,7 @@ class FlopyServiceRunner
 
             $modelsToCalculate = $this->entityManager->getRepository('AppBundle:ModflowCalculation')
                 ->findBy(
-                    array('state' => ModflowCalculation::STATE_IN_QUEUE),
+                    array('state' => Calculation::STATE_IN_QUEUE),
                     array('dateTimeAddToQueue' => 'ASC'),
                     $this->numberOfParallelCalculations - $runningProcesses
                 );
@@ -109,7 +109,7 @@ class FlopyServiceRunner
                 echo sprintf('Got %s more Jobs.'."\r\n", count($modelsToCalculate));
             }
 
-            /** @var ModflowCalculation $modelCalculation */
+            /** @var Calculation $modelCalculation */
             foreach ($modelsToCalculate as $modelCalculation){
 
                 $user = $this->entityManager->getRepository('AppBundle:User')
@@ -130,7 +130,7 @@ class FlopyServiceRunner
 
                 $modelCalculation->setProcessId($process->getId());
                 $modelCalculation->setDateTimeStart(new \DateTime());
-                $modelCalculation->setState(ModflowCalculation::STATE_RUNNING);
+                $modelCalculation->setState(Calculation::STATE_RUNNING);
 
                 $modelCalculation->setOutput($modelCalculation->getOutput().sprintf("Calculation started at %s...\r\n", (new \DateTime('now'))->format('Y-m-d H:i:s')));
                 $this->entityManager->persist($modelCalculation);
