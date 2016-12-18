@@ -265,6 +265,10 @@ class Calculation
      */
     public function getOutput(): string
     {
+        if (is_null($this->output))
+        {
+            $this->output = "";
+        }
         return $this->output;
     }
 

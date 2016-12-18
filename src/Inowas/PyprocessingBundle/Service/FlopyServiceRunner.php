@@ -2,12 +2,11 @@
 
 namespace Inowas\PyprocessingBundle\Service;
 
-use Inowas\AppBundle\Model\User;
-use Inowas\ModflowBundle\Model\Calculation;
-use Inowas\PyprocessingBundle\Exception\InvalidArgumentException;
-use Inowas\PyprocessingBundle\Model\PythonProcess\PythonProcess;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\EntityManager;
+use Inowas\ModflowBundle\Model\Calculation;
+use Inowas\PyprocessingBundle\Model\ProcessWrapper;
+
 
 /**
  * Class ModflowServiceRunner
@@ -43,49 +42,46 @@ class FlopyServiceRunner
      */
     public function run($asDaemon = false){
 
-        $startedButNotFinishedJobs = $this->entityManager->getRepository('AppBundle:ModflowCalculation')
-            ->findBy(
-                array('state' => Calculation::STATE_RUNNING)
-            );
-
-        foreach ($startedButNotFinishedJobs as $startedButNotFinishedJob){
-            $startedButNotFinishedJob->setState(Calculation::STATE_IN_QUEUE);
-            $this->entityManager->persist($startedButNotFinishedJob);
-            echo sprintf('Reset started but not fished Job %s'."\r\n", $startedButNotFinishedJob->getId()->toString());
-        }
+        /**
+         * Reset not finished jobs
+         */
+        $this->cleanUp();
 
         echo sprintf('Waiting for Jobs.'."\r\n");
-        $this->entityManager->flush();
 
         while (1){
             $runningProcesses = 0;
-            /** @var PythonProcess $process */
-            foreach ($this->processes as $process){
+            /** @var ProcessWrapper $processWrapper */
+            foreach ($this->processes as $processWrapper){
+                $process = $processWrapper->getProcess();
                 if ($process->isRunning()){
                     $runningProcesses++;
                     continue;
                 }
 
                 if (! $process->isRunning()){
-                    $modflowCalculation = $this->entityManager->getRepository('InowasModflowBundle:Calculation')
+                    $modflowCalculation = $this->entityManager
+                        ->getRepository('InowasModflowBundle:Calculation')
                         ->findOneBy(array(
-                            'processId' => $process->getId()
+                            'id' => $processWrapper->getId()
                         ));
-                    $modflowCalculation->setDateTimeEnd(new \DateTime());
 
-                    if ($process->getProcess()->isSuccessful()){
+                    $modflowCalculation->setDateTimeEnd(new \DateTime());
+                    if ($process->isSuccessful()){
                         $modflowCalculation->setState(Calculation::STATE_FINISHED_SUCCESSFUL);
-                        $modflowCalculation->setOutput($modflowCalculation->getOutput().$process->getProcess()->getOutput());
-                        echo sprintf("Process end:\r\n Message: \r\n %s", $process->getProcess()->getOutput());
+                        $modflowCalculation->setFinishedWithSuccess(true);
+                        $modflowCalculation->setOutput($modflowCalculation->getOutput().$process->getOutput());
+                        echo sprintf("Process end:\r\n Message: \r\n %s", $process->getOutput());
                     } else {
                         $modflowCalculation->setState(Calculation::STATE_FINISHED_WITH_ERRORS);
-                        $modflowCalculation->setOutput($modflowCalculation->getOutput().$process->getProcess()->getErrorOutput());
-                        echo sprintf("Process ended up with error:\r\n ErrorMessage: \r\n %s", $process->getProcess()->getErrorOutput());
+                        $modflowCalculation->setFinishedWithSuccess(false);
+                        $modflowCalculation->setOutput($modflowCalculation->getOutput().$process->getErrorOutput());
+                        echo sprintf("Process ended up with error:\r\n ErrorMessage: \r\n %s", $process->getErrorOutput());
                     }
 
                     $this->entityManager->persist($modflowCalculation);
                     $this->entityManager->flush($modflowCalculation);
-                    $this->removeProcess($process);
+                    $this->removeProcess($processWrapper);
                 }
             }
 
@@ -93,7 +89,7 @@ class FlopyServiceRunner
                 continue;
             }
 
-            $modelsToCalculate = $this->entityManager->getRepository('AppBundle:ModflowCalculation')
+            $modelsToCalculate = $this->entityManager->getRepository('InowasModflowBundle:Calculation')
                 ->findBy(
                     array('state' => Calculation::STATE_IN_QUEUE),
                     array('dateTimeAddToQueue' => 'ASC'),
@@ -112,45 +108,43 @@ class FlopyServiceRunner
             /** @var Calculation $modelCalculation */
             foreach ($modelsToCalculate as $modelCalculation){
 
-                $user = $this->entityManager->getRepository('AppBundle:User')
-                    ->findOneBy(array(
-                        'id' => $modelCalculation->getUserId()
-                    ));
-
-                if (! $user instanceof User){
-                    throw new InvalidArgumentException(sprintf('UserId %s not valid or user not found.', $modelCalculation->getUserId()));
-                }
-
-                $process = $this->flopy->calculate(
-                    $modelCalculation->getModelUrl(),
-                    $modelCalculation->getDataFolder(),
-                    $modelCalculation->getModelId()->toString(),
-                    $user->getApiKey(), true
-                );
-
-                $modelCalculation->setProcessId($process->getId());
+                $process = $this->flopy->calculate($modelCalculation, true);
                 $modelCalculation->setDateTimeStart(new \DateTime());
                 $modelCalculation->setState(Calculation::STATE_RUNNING);
-
                 $modelCalculation->setOutput($modelCalculation->getOutput().sprintf("Calculation started at %s...\r\n", (new \DateTime('now'))->format('Y-m-d H:i:s')));
                 $this->entityManager->persist($modelCalculation);
                 $this->entityManager->flush($modelCalculation);
 
-                $process->getProcess()->start();
-                $this->addProcess($process);
+
+                $processWrapper = new ProcessWrapper($process, $modelCalculation->getId());
+                $this->addProcess($processWrapper);
+                $process->start();
             }
         }
     }
 
-    private function addProcess(PythonProcess $process)
+    private function addProcess(ProcessWrapper $processWrapper)
     {
-        $this->processes->add($process);
+        $this->processes->add($processWrapper);
     }
 
-    private function removeProcess(PythonProcess $process)
+    private function removeProcess(ProcessWrapper $processWrapper)
     {
-        if ($this->processes->contains($process)){
-            $this->processes->removeElement($process);
+        if ($this->processes->contains($processWrapper)){
+            $this->processes->removeElement($processWrapper);
         }
+    }
+
+    private function cleanUp(){
+        $startedButNotFinishedJobs = $this->entityManager->getRepository('InowasModflowBundle:Calculation')
+            ->findBy(array('state' => Calculation::STATE_RUNNING));
+
+        foreach ($startedButNotFinishedJobs as $startedButNotFinishedJob){
+            $startedButNotFinishedJob->setState(Calculation::STATE_IN_QUEUE);
+            $this->entityManager->persist($startedButNotFinishedJob);
+            echo sprintf('Reset started but not fished Job %s'."\r\n", $startedButNotFinishedJob->getId()->toString());
+        }
+
+        $this->entityManager->flush();
     }
 }
