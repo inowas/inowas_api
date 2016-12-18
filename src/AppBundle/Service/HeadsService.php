@@ -2,9 +2,9 @@
 
 namespace AppBundle\Service;
 
-use AppBundle\Entity\Head;
 use Doctrine\ORM\EntityManager;
-use Inowas\PyprocessingBundle\Model\Modflow\ModflowModelInterface;
+use Inowas\ModflowBundle\Model\Head;
+use Inowas\ModflowBundle\Model\ModflowModelInterface;
 use Ramsey\Uuid\Uuid;
 
 class HeadsService
@@ -30,7 +30,7 @@ class HeadsService
      */
     public function addHead(ModflowModelInterface $model, int $totim, int $layer, array $data){
 
-        $head = $this->entityManager->getRepository('AppBundle:Head')
+        $head = $this->entityManager->getRepository('InowasModflowBundle:Head')
             ->findOneBy(array(
                 'modelId' => $model->getId(),
                 'totim' => $totim,
@@ -109,6 +109,7 @@ class HeadsService
         $this->entityManager->flush();
     }
 
+    /**
     /**
      * @param ModflowModelInterface $model
      * @return array

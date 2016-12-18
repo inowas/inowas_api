@@ -3,7 +3,6 @@
 namespace Inowas\ModflowBundle\Service;
 
 use Doctrine\ORM\EntityManager;
-use Inowas\Flopy\Model\ValueObject\Flopy2DArray;
 use Inowas\ModflowBundle\Model\Head;
 use Inowas\ModflowBundle\Model\ModflowModelInterface;
 use Ramsey\Uuid\Uuid;
@@ -66,8 +65,8 @@ class HeadsManager
             ->getRepository('InowasModflowBundle:Head')
             ->findOneBy(array(
                 'modelId' => $model->getId(),
-                'totim' => $totim,
-                'layer' => $layer
+                'totalTime' => $totim,
+                'layerNumber' => $layer
             ));
     }
 
@@ -100,7 +99,7 @@ class HeadsManager
                 ->getRepository('InowasModflowBundle:Head')
                 ->findBy(array(
                     'modelId' => $model->getId(),
-                    'totim' => $totim
+                    'totalTime' => $totim
                 ));
         }
 
@@ -121,7 +120,7 @@ class HeadsManager
             ->getRepository('InowasModflowBundle:Head')
             ->findBy(
                 array('modelId' => $model->getId()),
-                array('totim' => 'ASC', 'layer' => 'ASC')
+                array('totalTime' => 'ASC', 'layerNumber' => 'ASC')
             );
     }
 }

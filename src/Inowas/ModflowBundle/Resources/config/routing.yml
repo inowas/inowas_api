@@ -6,6 +6,10 @@ rest_modflow_boundary:
     type: rest
     resource: '@InowasModflowBundle/Controller/BoundaryController.php'
 
+rest_modflow_heads:
+    type: rest
+    resource: '@InowasModflowBundle/Controller/HeadsController.php'
+
 rest_modflow:
     type: rest
     resource: '@InowasModflowBundle/Controller/ModelController.php'
