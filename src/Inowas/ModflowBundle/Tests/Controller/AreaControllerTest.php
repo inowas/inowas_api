@@ -7,7 +7,7 @@ use CrEOF\Spatial\PHP\Types\Geometry\Polygon;
 use Doctrine\ORM\EntityManager;
 use Inowas\ModflowBundle\Model\AreaFactory;
 use Inowas\ModflowBundle\Model\ModflowModel;
-use Inowas\ModflowBundle\Service\ModflowModelManager;
+use Inowas\ModflowBundle\Service\ModflowToolManager;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
 class AreaControllerTest extends WebTestCase
@@ -16,7 +16,7 @@ class AreaControllerTest extends WebTestCase
     /** @var  EntityManager */
     protected $entityManager;
 
-    /** @var ModflowModelManager */
+    /** @var ModflowToolManager */
     protected $modelManager;
 
     public function setUp()
@@ -32,7 +32,7 @@ class AreaControllerTest extends WebTestCase
     }
 
     public function testGetAreaByModelId() {
-        $model = $this->modelManager->create();
+        $model = $this->modelManager->createModel();
         $model->setStart(new \DateTime('2016-01-01'));
         $model->setEnd(new \DateTime('2016-12-31'));
         $model->setName('TestModel');
@@ -52,7 +52,7 @@ class AreaControllerTest extends WebTestCase
             )
         );
 
-        $this->modelManager->update($model);
+        $this->modelManager->updateModel($model);
 
         $client = static::createClient();
         $client->request(
@@ -73,11 +73,11 @@ class AreaControllerTest extends WebTestCase
     }
 
     public function testPutAreaByModelId() {
-        $model = $this->modelManager->create();
+        $model = $this->modelManager->createModel();
         $model->setStart(new \DateTime('2016-01-01'));
         $model->setEnd(new \DateTime('2016-12-31'));
         $model->setName('TestModel');
-        $this->modelManager->update($model);
+        $this->modelManager->updateModel($model);
 
         $client = static::createClient();
         $client->request(

@@ -190,7 +190,7 @@ class Hanoi extends LoadScenarioBase implements FixtureInterface, ContainerAware
 
         // Add the ModflowModel
         $modelManager = $this->container->get('inowas.modflow.modelmanager');
-        $model = $modelManager->create();
+        $model = $modelManager->createModel();
         $model->setName("BaseModel INOWAS Hanoi")
             ->setDescription('Application of managed aquifer recharge for maximization of water storage capacity in Hanoi.')
             ->setArea(AreaFactory::create()
@@ -250,7 +250,7 @@ class Hanoi extends LoadScenarioBase implements FixtureInterface, ContainerAware
             ->setBoundingBox($geoTools->transformBoundingBox(new BoundingBox(578205, 594692, 2316000, 2333500, 32648), 4326))
             ->setGridSize(new GridSize(165, 175));
 
-        $modelManager->update($model);
+        $modelManager->updateModel($model);
 
         // Add Boundaries
         // Add Wells
@@ -287,7 +287,7 @@ class Hanoi extends LoadScenarioBase implements FixtureInterface, ContainerAware
             $model->addBoundary($wellBoundary);
             echo sprintf("Add well %s.\r\n", $wellBoundary->getName());
         }
-        $modelManager->update($model);
+        $modelManager->updateModel($model);
 
         // Add River
         $riverPoints = $this->loadRowsFromCsv(__DIR__ . "/river_geometry_basecase.csv");
@@ -305,7 +305,7 @@ class Hanoi extends LoadScenarioBase implements FixtureInterface, ContainerAware
         ;
 
         echo sprintf("Add River-Boundary %s.\r\n", $riverBoundary->getName());
-        $modelManager->update($model);
+        $modelManager->updateModel($model);
 
         $observationPoints = $this->loadRowsFromCsv(__DIR__ . "/river_stages_basecase.csv");
         $header = $this->loadHeaderFromCsv(__DIR__ . "/river_stages_basecase.csv");
@@ -332,7 +332,7 @@ class Hanoi extends LoadScenarioBase implements FixtureInterface, ContainerAware
         }
 
         $model->addBoundary($riverBoundary);
-        $modelManager->update($model);
+        $modelManager->updateModel($model);
 
         // Add Constant Head Boundary
         $chdPoints = $this->loadRowsFromCsv(__DIR__ . "/chd_geometry_basecase.csv");
@@ -347,7 +347,7 @@ class Hanoi extends LoadScenarioBase implements FixtureInterface, ContainerAware
             ->setName('CHD-Boundary');
 
         echo sprintf("Add Constant-Head-Boundary %s.\r\n", $chdBoundary->getName());
-        $modelManager->update($model);
+        $modelManager->updateModel($model);
 
         $observationPoints = $this->loadRowsFromCsv(__DIR__ . "/chd_stages_basecase.csv");
         $header = $this->loadHeaderFromCsv(__DIR__ . "/chd_stages_basecase.csv");
@@ -373,7 +373,7 @@ class Hanoi extends LoadScenarioBase implements FixtureInterface, ContainerAware
         }
 
         $model->addBoundary($chdBoundary);
-        $modelManager->update($model);
+        $modelManager->updateModel($model);
 
     }
 

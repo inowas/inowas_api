@@ -23,17 +23,18 @@ class Flopy
      */
     protected $entityManager;
 
-    /**
-     * @var string $pyProcessingFolder
-     */
+    /** @var string $pyProcessingFolder */
     protected $pyProcessingFolder;
+
+    /** @var string $prefix */
+    protected $prefix;
 
     /**
      * Flopy constructor.
      * @param EntityManagerInterface $entityManager
-     * @param $pyProcessingFolder
+     * @param string $pyProcessingFolder
      */
-    public function __construct(EntityManagerInterface $entityManager, $pyProcessingFolder){
+    public function __construct(EntityManagerInterface $entityManager, string $pyProcessingFolder){
         $this->entityManager = $entityManager;
         $this->pyProcessingFolder = $pyProcessingFolder;
     }
@@ -63,16 +64,20 @@ class Flopy
     }
 
     /**
-     * @param $baseUrl
      * @param $dataFolder
-     * @param $modelId
-     * @param $apiKey
      * @param bool $returnProcess
      * @return bool|\Inowas\PyprocessingBundle\Model\PythonProcess\PythonProcess
      * @throws ProcessFailedException
      */
-    public function calculate($baseUrl, $dataFolder, $modelId, $apiKey, $returnProcess=false)
+    public function calculate($dataFolder, $returnProcess=false)
     {
+        $processBuilder = new ProcessBuilder();
+        $processBuilder->setPrefix($this->prefix);
+        $processBuilder->setWorkingDirectory($this->pyProcessingFolder);
+        $processBuilder->add('-W');
+        $processBuilder->add('ignore');
+
+
         $process = PythonProcessFactory::create(new FlopyProcessConfiguration($baseUrl, $dataFolder, $modelId, $apiKey));
         $process->getProcess()->setWorkingDirectory($this->pyProcessingFolder);
 

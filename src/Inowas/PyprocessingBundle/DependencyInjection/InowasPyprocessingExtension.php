@@ -34,7 +34,9 @@ class InowasPyprocessingExtension extends Extension implements ExtensionInterfac
 
         $config = $this->processConfiguration($configuration, $configs);
 
+        $container->setParameter('inowas.python.executable', $config['prefix']);
         $container->setParameter('inowas.api_base_url', $config['api_base_url']);
+        $container->setParameter('inowas.api_port', $config['api_port']);
         $container->setParameter('inowas.geoimage.data_folder', $config['data_folder'].'/geoimage');
         $container->setParameter('inowas.modflow.max_processes', $config['max_processes']);
         $container->setParameter('inowas.modflow.data_folder', $config['data_folder'].'/modflow');

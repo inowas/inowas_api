@@ -2,10 +2,10 @@ rest_scenario_analysis:
     type: rest
     resource: '@InowasScenarioAnalysisBundle/Controller/ScenarioAnalysisController.php'
 
-rest_scenarios:
+rest_scenario_analysis_scenario:
     type: rest
     resource: '@InowasScenarioAnalysisBundle/Controller/ScenarioController.php'
 
-rest_scenarios_calculation:
+rest_scenario_analysis_calculation:
     type: rest
     resource: '@InowasScenarioAnalysisBundle/Controller/CalculationsController.php'

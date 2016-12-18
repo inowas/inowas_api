@@ -23,7 +23,16 @@ class Calculation
     private $calculationProperties;
 
     /** @var string */
-    private $baseUrl;
+    private $calculationUrl;
+
+    /** @var string */
+    private $modelUrl;
+
+    /** @var string */
+    private $submitHeadsUrl;
+
+    /** @var  Uuid */
+    private $apiKey;
 
     /** @var string */
     private $dataFolder;
@@ -92,18 +101,72 @@ class Calculation
     /**
      * @return string
      */
-    public function getBaseUrl(): string
+    public function getCalculationUrl(): string
     {
-        return $this->baseUrl;
+        return $this->calculationUrl;
     }
 
     /**
-     * @param string $baseUrl
+     * @param string $calculationUrl
      * @return Calculation
      */
-    public function setBaseUrl(string $baseUrl): Calculation
+    public function setCalculationUrl(string $calculationUrl): Calculation
     {
-        $this->baseUrl = $baseUrl;
+        $this->calculationUrl = $calculationUrl;
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getModelUrl(): string
+    {
+        return $this->modelUrl;
+    }
+
+    /**
+     * @param string $modelUrl
+     * @return Calculation
+     */
+    public function setModelUrl(string $modelUrl): Calculation
+    {
+        $this->modelUrl = $modelUrl;
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getSubmitHeadsUrl(): string
+    {
+        return $this->submitHeadsUrl;
+    }
+
+    /**
+     * @param string $submitHeadsUrl
+     * @return Calculation
+     */
+    public function setSubmitHeadsUrl(string $submitHeadsUrl): Calculation
+    {
+        $this->submitHeadsUrl = $submitHeadsUrl;
+        return $this;
+    }
+
+    /**
+     * @return Uuid
+     */
+    public function getApiKey(): Uuid
+    {
+        return $this->apiKey;
+    }
+
+    /**
+     * @param Uuid $apiKey
+     * @return Calculation
+     */
+    public function setApiKey(Uuid $apiKey): Calculation
+    {
+        $this->apiKey = $apiKey;
         return $this;
     }
 

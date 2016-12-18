@@ -122,7 +122,7 @@ class FlopyServiceRunner
                 }
 
                 $process = $this->flopy->calculate(
-                    $modelCalculation->getBaseUrl(),
+                    $modelCalculation->getModelUrl(),
                     $modelCalculation->getDataFolder(),
                     $modelCalculation->getModelId()->toString(),
                     $user->getApiKey(), true

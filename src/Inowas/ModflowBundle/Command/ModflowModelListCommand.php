@@ -23,8 +23,8 @@ class ModflowModelListCommand extends ContainerAwareCommand
     {
         $output->writeln("Show all Modflow-Models with ID.");
 
-        $mm = $this->getContainer()->get('inowas.modflow.modelmanager');
-        $models = $mm->findAll();
+        $mm = $this->getContainer()->get('inowas.modflow.toolmanager');
+        $models = $mm->findAllModels();
 
         $counter = 0;
         /** @var ModFlowModel $model */

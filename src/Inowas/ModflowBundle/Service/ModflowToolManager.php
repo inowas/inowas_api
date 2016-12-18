@@ -5,11 +5,13 @@ namespace Inowas\ModflowBundle\Service;
 use Doctrine\ORM\EntityManager;
 use Inowas\ModflowBundle\Exception\InvalidArgumentException;
 use Inowas\ModflowBundle\Model\Area;
+use Inowas\ModflowBundle\Model\Modflow;
+use Inowas\ModflowBundle\Model\ModflowFactory;
 use Inowas\ModflowBundle\Model\ModflowModel;
 use Inowas\ModflowBundle\Model\ModflowModelFactory;
 use Ramsey\Uuid\Uuid;
 
-class ModflowModelManager
+class ModflowToolManager
 {
     /**
      * @var EntityManager $entityManager
@@ -25,9 +27,51 @@ class ModflowModelManager
     }
 
     /**
-     * @return ModflowModel
+     * @return Modflow
      */
     public function create(){
+        return ModflowFactory::create();
+    }
+
+    /**
+     * @param Modflow $modflow
+     * @return Modflow
+     */
+    public function update(Modflow $modflow){
+        $this->entityManager->persist($modflow);
+        $this->entityManager->flush();
+        return $modflow;
+    }
+
+    /**
+     * @param $modelId
+     * @return Uuid
+     */
+    public function findApiKeyByModelId($modelId){
+        $model = $this->entityManager->getRepository('InowasModflowBundle:ModflowModel')
+            ->findOneBy(array(
+                'id' => $modelId
+            ));
+
+        $modflowTool = $this->entityManager->getRepository('InowasModflowBundle:Modflow')
+           ->findOneBy(array(
+              'modflowModel' => $model
+           ));
+
+        $userId = $modflowTool->getUserId();
+
+        $user = $this->entityManager->getRepository('InowasAppBundle:User')
+            ->findOneBy(array(
+                'id' => $userId
+            ));
+
+        return $user->getApiKey();
+    }
+
+    /**
+     * @return ModflowModel
+     */
+    public function createModel(){
         return ModflowModelFactory::create();
     }
 
@@ -35,7 +79,7 @@ class ModflowModelManager
      * @param $id
      * @return ModFlowModel|null
      */
-    public function findById($id){
+    public function findModelById($id){
         if (! Uuid::isValid($id)){
             throw new InvalidArgumentException('The given id is not a valid Uuid.');
         }
@@ -50,7 +94,7 @@ class ModflowModelManager
     /**
      * @return array
      */
-    public function findAll(){
+    public function findAllModels(){
         return $this->entityManager
             ->getRepository('InowasModflowBundle:ModflowModel')
             ->findAll();
@@ -66,7 +110,7 @@ class ModflowModelManager
             throw new InvalidArgumentException('The given id is not a valid Uuid.');
         }
 
-        $model = $this->findById($id);
+        $model = $this->findModelById($id);
 
         if (!$model->getArea() instanceof Area) {
             throw new InvalidArgumentException(sprintf('ModelArea of Model with id=%s not found', $id));
@@ -79,7 +123,7 @@ class ModflowModelManager
      * @param ModFlowModel $model
      * @return ModFlowModel
      */
-    public function update(ModflowModel $model)
+    public function updateModel(ModflowModel $model)
     {
         $this->entityManager->persist($model);
         $this->entityManager->flush();
@@ -90,7 +134,7 @@ class ModflowModelManager
      * @param Area $area
      * @return Area
      */
-    public function updateArea(Area $area)
+    public function updateModelArea(Area $area)
     {
         $this->entityManager->persist($area);
         $this->entityManager->flush();
@@ -100,7 +144,7 @@ class ModflowModelManager
     /**
      * @param ModFlowModel $model
      */
-    public function remove(ModflowModel $model){
+    public function removeModel(ModflowModel $model){
         $this->entityManager->remove($model);
         $this->entityManager->flush();
     }

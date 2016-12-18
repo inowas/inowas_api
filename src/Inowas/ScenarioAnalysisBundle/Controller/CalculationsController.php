@@ -31,7 +31,7 @@ class CalculationsController extends FOSRestController
      * @return JsonResponse
      * @throws NotFoundHttpException
      */
-    public function getFlopyCalculationPropertiesAction($id)
+    public function getScenarioCalculationPropertiesAction($id)
     {
         $calculation = $this->get('inowas.modflow.calculationmanager')->findById($id);
         return new JsonResponse($calculation->getCalculationProperties(), 200);
@@ -55,7 +55,7 @@ class CalculationsController extends FOSRestController
      * @return JsonResponse
      * @throws InvalidArgumentException
      */
-    public function getModflowModelPackageAction($scenarioId, $packageName)
+    public function getScenarioModelPackageAction($scenarioId, $packageName)
     {
         /** @var Scenario $scenario */
         $scenario = $this->get('inowas.scenarioanalysis.scenariomanager')->findById($scenarioId);
@@ -65,7 +65,7 @@ class CalculationsController extends FOSRestController
         }
 
         /** @var ModflowModel $model */
-        $basemodel = $this->get('inowas.modflow.modelmanager')->findById($scenario->getBaseModelId());
+        $basemodel = $this->get('inowas.modflow.toolmanager')->findModelById($scenario->getBaseModelId());
 
         if (! $basemodel instanceof ModflowModel) {
             throw new InvalidArgumentException(sprintf('There is no modflow-baseModel with id = %s', $scenario->getBaseModelId()));

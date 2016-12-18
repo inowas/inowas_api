@@ -8,7 +8,7 @@ use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
-class ModflowCalculateCommand extends ContainerAwareCommand
+class ModflowModelAddToQueueCommand extends ContainerAwareCommand
 {
 
     protected function configure()
@@ -16,7 +16,7 @@ class ModflowCalculateCommand extends ContainerAwareCommand
         // Name and description for app/console command
         $this
             ->setName('inowas:model:queue')
-            ->setDescription('Add model to queue')
+            ->setDescription('Add model to calculations queue')
             ->addArgument(
                 'id',
                 InputArgument::REQUIRED,
@@ -33,13 +33,11 @@ class ModflowCalculateCommand extends ContainerAwareCommand
             $output->writeln(sprintf("The given id: %s is not valid", $input->getArgument('id')));
         }
 
-        $mm = $this->getContainer()->get('inowas.modflow.modelmanager');
-        $model = $mm->findById($input->getArgument('id'));
+        $mm = $this->getContainer()->get('inowas.modflow.toolmanager');
+        $model = $mm->findModelById($input->getArgument('id'));
 
         $cm = $this->getContainer()->get('inowas.modflow.calculationmanager');
         $calculation = $cm->create($model);
-        $calculation->setBaseUrl($this->getContainer()->getParameter('inowas.api_base_url'));
-        $calculation->setDataFolder($this->getContainer()->getParameter('inowas.modflow.data_folder'));
         $cm->update($calculation);
 
         $output->writeln('Modflow-Model has been added to queue.');

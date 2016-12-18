@@ -4,7 +4,7 @@ namespace Inowas\ModflowBundle\Tests\Serializer;
 
 use Inowas\ModflowBundle\Model\Calculation;
 use Inowas\ModflowBundle\Service\CalculationManager;
-use Inowas\ModflowBundle\Service\ModflowModelManager;
+use Inowas\ModflowBundle\Service\ModflowToolManager;
 use JMS\Serializer\SerializationContext;
 use JMS\Serializer\Serializer;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
@@ -14,7 +14,7 @@ class CalculationSerializerTest extends KernelTestCase {
     /** @var  CalculationManager */
     protected $cm;
 
-    /** @var  ModflowModelManager */
+    /** @var  ModflowToolManager */
     protected $mm;
 
     /** @var  Serializer */
@@ -41,9 +41,10 @@ class CalculationSerializerTest extends KernelTestCase {
 
     public function testSerialize(){
 
-        $model = $this->mm->create();
+        $model = $this->mm->createModel();
         $calculation = $this->cm->create($model);
-        $calculation->setBaseUrl('testUrl');
+        $calculation->setModelUrl('testUrl');
+        $calculation->setPort(8080);
         $calculation->setDataFolder('datafolder');
         $calculation->setDateTimeAddToQueue(new \DateTime('2015-01-01'));
         $calculation->setDateTimeStart(new \DateTime('2015-01-02'));
@@ -64,8 +65,8 @@ class CalculationSerializerTest extends KernelTestCase {
         $this->assertEquals($calculation->getId()->toString(), $response->id);
         $this->assertObjectHasAttribute('model_id', $response);
         $this->assertEquals($calculation->getModelId(), $response->model_id);
-        $this->assertObjectHasAttribute('base_url', $response);
-        $this->assertEquals($calculation->getBaseUrl(), $response->base_url);
+        $this->assertObjectHasAttribute('model_url', $response);
+        $this->assertEquals($calculation->getModelUrl(), $response->model_url);
         $this->assertObjectHasAttribute('data_folder', $response);
         $this->assertEquals($calculation->getDataFolder(), $response->data_folder);
         $this->assertObjectHasAttribute('state', $response);

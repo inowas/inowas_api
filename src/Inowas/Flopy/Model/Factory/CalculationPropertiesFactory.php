@@ -17,6 +17,8 @@ class CalculationPropertiesFactory implements PackageFactoryInterface
         $instance->setPackages($adapter->getPackages());
         $instance->setWriteInput(true);
         $instance->setRun(true);
+        $instance->setDateTimeBegin($model->getStart());
+        $instance->setDateTimeEnd($model->getEnd());
         return $instance;
     }
 
@@ -27,6 +29,8 @@ class CalculationPropertiesFactory implements PackageFactoryInterface
         $instance->setWriteInput(false);
         $instance->setRun(false);
         $instance->setSubmit(false);
+        $instance->setDateTimeBegin($model->getStart());
+        $instance->setDateTimeEnd($model->getEnd());
 
         return $instance;
     }
@@ -41,6 +45,8 @@ class CalculationPropertiesFactory implements PackageFactoryInterface
         $instance->setWriteInput(true);
         $instance->setRun(false);
         $instance->setSubmit(false);
+        $instance->setDateTimeBegin($model->getStart());
+        $instance->setDateTimeEnd($model->getEnd());
 
         return $instance;
     }
@@ -56,6 +62,8 @@ class CalculationPropertiesFactory implements PackageFactoryInterface
         $instance->setWriteInput(true);
         $instance->setRun(true);
         $instance->setSubmit(false);
+        $instance->setDateTimeBegin($model->getStart());
+        $instance->setDateTimeEnd($model->getEnd());
 
         return $instance;
     }
@@ -71,6 +79,8 @@ class CalculationPropertiesFactory implements PackageFactoryInterface
         $instance->setWriteInput(true);
         $instance->setRun(true);
         $instance->setSubmit(true);
+        $instance->setDateTimeBegin($model->getStart());
+        $instance->setDateTimeEnd($model->getEnd());
 
         return $instance;
     }

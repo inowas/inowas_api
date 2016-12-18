@@ -5,7 +5,7 @@ namespace Inowas\ModflowBundle\Tests\Controller;
 use Doctrine\ORM\EntityManager;
 use Inowas\ModflowBundle\Model\GridSize;
 use Inowas\ModflowBundle\Model\ModflowModel;
-use Inowas\ModflowBundle\Service\ModflowModelManager;
+use Inowas\ModflowBundle\Service\ModflowToolManager;
 use Ramsey\Uuid\Uuid;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
@@ -15,7 +15,7 @@ class ModelControllerTest extends WebTestCase
     /** @var  EntityManager */
     protected $entityManager;
 
-    /** @var ModflowModelManager */
+    /** @var ModflowToolManager */
     protected $modelManager;
 
     public function setUp()
@@ -47,19 +47,19 @@ class ModelControllerTest extends WebTestCase
     }
 
     public function testGetListOfModels() {
-        $model = $this->modelManager->create();
+        $model = $this->modelManager->createModel();
         $model->setStart(new \DateTime('2016-01-01'));
         $model->setEnd(new \DateTime('2016-12-31'));
         $model->setName('TestModel');
         $model->setDescription('TestModelDescription');
-        $this->modelManager->update($model);
+        $this->modelManager->updateModel($model);
 
-        $model = $this->modelManager->create();
+        $model = $this->modelManager->createModel();
         $model->setStart(new \DateTime('2016-01-02'));
         $model->setEnd(new \DateTime('2016-12-30'));
         $model->setName('TestModel_2');
         $model->setDescription('TestModelDescription_2');
-        $this->modelManager->update($model);
+        $this->modelManager->updateModel($model);
 
         $client = static::createClient();
         $client->request(
@@ -77,11 +77,11 @@ class ModelControllerTest extends WebTestCase
     }
 
     public function testGetModelById() {
-        $model = $this->modelManager->create();
+        $model = $this->modelManager->createModel();
         $model->setStart(new \DateTime('2016-01-01'));
         $model->setEnd(new \DateTime('2016-12-31'));
         $model->setName('TestModel');
-        $this->modelManager->update($model);
+        $this->modelManager->updateModel($model);
 
         $client = static::createClient();
         $client->request(
@@ -99,11 +99,11 @@ class ModelControllerTest extends WebTestCase
     }
 
     public function testPutAllAvailableArgumentsModelById() {
-        $model = $this->modelManager->create();
+        $model = $this->modelManager->createModel();
         $model->setStart(new \DateTime('2016-01-01'));
         $model->setEnd(new \DateTime('2016-12-31'));
         $model->setName('TestModel');
-        $this->modelManager->update($model);
+        $this->modelManager->updateModel($model);
 
         $client = static::createClient();
         $client->request(
@@ -146,11 +146,11 @@ class ModelControllerTest extends WebTestCase
     }
 
     public function testPutOnlyOneArgumentModelById() {
-        $model = $this->modelManager->create();
+        $model = $this->modelManager->createModel();
         $model->setStart(new \DateTime('2016-01-01'));
         $model->setEnd(new \DateTime('2016-12-31'));
         $model->setName('TestModel');
-        $this->modelManager->update($model);
+        $this->modelManager->updateModel($model);
 
         $client = static::createClient();
         $client->request(

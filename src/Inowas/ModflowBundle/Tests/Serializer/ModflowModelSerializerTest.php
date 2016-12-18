@@ -5,7 +5,7 @@ namespace Inowas\ModflowBundle\Tests\Serializer;
 use Inowas\ModflowBundle\Model\BoundaryFactory;
 use Inowas\ModflowBundle\Model\BoundingBox;
 use Inowas\ModflowBundle\Model\GridSize;
-use Inowas\ModflowBundle\Service\ModflowModelManager;
+use Inowas\ModflowBundle\Service\ModflowToolManager;
 use JMS\Serializer\SerializationContext;
 use JMS\Serializer\Serializer;
 use Ramsey\Uuid\Uuid;
@@ -13,7 +13,7 @@ use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 
 class ModflowModelSerializerTest extends KernelTestCase {
 
-    /** @var  ModflowModelManager */
+    /** @var  ModflowToolManager */
     protected $modelManager;
 
     /** @var  Serializer */
@@ -32,7 +32,7 @@ class ModflowModelSerializerTest extends KernelTestCase {
     }
 
     public function testSerialize(){
-        $model = $this->modelManager->create();
+        $model = $this->modelManager->createModel();
         $model->setName('TestModel');
         $model->setStart(new \DateTime('2016-01-01'));
         $model->setEnd(new \DateTime('2016-12-31'));
@@ -41,7 +41,7 @@ class ModflowModelSerializerTest extends KernelTestCase {
         $model->setGridSize(new GridSize(50, 60));
         $model->setSoilmodelId(Uuid::uuid4());
         $model->addBoundary(BoundaryFactory::createRch());
-        $this->modelManager->update($model);
+        $this->modelManager->updateModel($model);
 
         $json = $this->serializer
             ->serialize($model, 'json',

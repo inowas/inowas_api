@@ -31,11 +31,12 @@ class HeadsManager
      */
     public function addHead(ModflowModelInterface $model, int $totim, int $layer, array $data){
 
+
         $head = $this->entityManager->getRepository('InowasModflowBundle:Head')
             ->findOneBy(array(
                 'modelId' => $model->getId(),
-                'totim' => $totim,
-                'layer' => $layer
+                'totalTime' => $totim,
+                'layerNumber' => $layer
             ));
 
         if (! $head instanceof Head){
@@ -43,9 +44,9 @@ class HeadsManager
         }
 
         $head->setModelId($model->getId());
-        $head->setTotim($totim);
-        $head->setLayer($layer);
-        $head->setData(Flopy2DArray::from2DArray($data));
+        $head->setTotalTime($totim);
+        $head->setLayerNumber($layer);
+        $head->setData($data);
 
         $this->entityManager->persist($head);
         $this->entityManager->flush();

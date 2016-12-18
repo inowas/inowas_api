@@ -96,7 +96,7 @@ class ScenarioController extends FOSRestController
         }
 
         $modelManager = $this->get('inowas.modflow.modelmanager');
-        $baseModel = $modelManager->findById($modelId);
+        $baseModel = $modelManager->findModelById($modelId);
 
         if (! $baseModel instanceof ModflowModel){
             throw new InvalidArgumentException();
@@ -154,7 +154,7 @@ class ScenarioController extends FOSRestController
         }
 
         $modelManager = $this->get('inowas.modflow.modelmanager');
-        $baseModel = $modelManager->findById($modelId);
+        $baseModel = $modelManager->findModelById($modelId);
 
         if (! $baseModel instanceof ModflowModel){
             throw new InvalidArgumentException();

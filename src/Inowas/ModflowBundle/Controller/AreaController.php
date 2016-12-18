@@ -32,7 +32,7 @@ class AreaController extends FOSRestController
      */
     public function getModflowModelAreaAction($id)
     {
-        $area = $this->get('inowas.modflow.modelmanager')->findAreaByModelId($id);
+        $area = $this->get('inowas.modflow.toolmanager')->findAreaByModelId($id);
 
         $view = View::create($area)
             ->setStatusCode(200)
@@ -68,7 +68,7 @@ class AreaController extends FOSRestController
      */
     public function putModflowModelAreaAction(ParamFetcher $paramFetcher, $id)
     {
-        $area = $this->get('inowas.modflow.modelmanager')->findAreaByModelId($id);
+        $area = $this->get('inowas.modflow.toolmanager')->findAreaByModelId($id);
 
         if ($paramFetcher->get('name')){
             $area->setName($paramFetcher->get('name'));
@@ -80,7 +80,7 @@ class AreaController extends FOSRestController
             $area->setGeometry($polygon->setSrid(4326));
         }
 
-        $this->get('inowas.modflow.modelmanager')->updateArea($area);
+        $this->get('inowas.modflow.toolmanager')->updateModelArea($area);
 
         $view = View::create($area)
             ->setStatusCode(200)

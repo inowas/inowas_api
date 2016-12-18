@@ -17,7 +17,10 @@
 
         <id name="id" type="uuid" column="id"/>
         <field name="modelId" type="uuid" column="model_id"/>
-        <field name="baseUrl" type="string" column="base_url"/>
+        <field name="calculationUrl" type="string" column="calculation_url"/>
+        <field name="modelUrl" type="string" column="model_url"/>
+        <field name="submitHeadsUrl" type="string" column="submit_heads_url"/>
+        <field name="apiKey" type="uuid" column="api_key"/>
         <field name="dataFolder" type="string" column="data_folder"/>
         <field name="state" type="integer" column="state"/>
         <field name="dateTimeAddToQueue" type="datetime" column="add_to_queue"/>

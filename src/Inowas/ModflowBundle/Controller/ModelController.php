@@ -54,7 +54,7 @@ class ModelController extends FOSRestController
     {
         $modelManager = $this->get('inowas.modflow.modelmanager');
 
-        $view = View::create($modelManager->findAll())
+        $view = View::create($modelManager->findAllModels())
             ->setStatusCode(200)
             ->setSerializationContext(
                 SerializationContext::create()
@@ -85,10 +85,10 @@ class ModelController extends FOSRestController
      */
     public function postModflowModelAction(ParamFetcher $paramFetcher)
     {
-        $modelManager = $this->get('inowas.modflow.modelmanager');
-        $model = $modelManager->create();
+        $modelManager = $this->get('inowas.modflow.toolmanager');
+        $model = $modelManager->createModel();
         $model->setName($paramFetcher->get('name'));
-        $modelManager->update($model);
+        $modelManager->updateModel($model);
 
         $view = View::create($model)
             ->setStatusCode(200)
@@ -120,8 +120,8 @@ class ModelController extends FOSRestController
      */
     public function getModflowModelAction($id)
     {
-        $modelManager = $this->get('inowas.modflow.modelmanager');
-        $model = $modelManager->findById($id);
+        $modelManager = $this->get('inowas.modflow.toolmanager');
+        $model = $modelManager->findModelById($id);
 
         if (! $model instanceof ModflowModel){
             throw $this->createNotFoundException(sprintf('Model with id=%s not found.', $id));
@@ -168,7 +168,7 @@ class ModelController extends FOSRestController
      */
     public function putModflowModelAction(ParamFetcher $paramFetcher, $id)
     {
-        $model = $this->get('inowas.modflow.modelmanager')->findById($id);
+        $model = $this->get('inowas.modflow.toolmanager')->findModelById($id);
 
         if (! $model instanceof ModflowModel){
             throw $this->createNotFoundException(sprintf('Model with id=%s not found.', $id));
@@ -198,7 +198,7 @@ class ModelController extends FOSRestController
             $model->setSoilmodelId($paramFetcher->get('soilmodelId'));
         }
 
-        $this->get('inowas.modflow.modelmanager')->update($model);
+        $this->get('inowas.modflow.toolmanager')->updateModel($model);
 
         $view = View::create($model)
             ->setStatusCode(200)

@@ -7,7 +7,7 @@ use CrEOF\Spatial\PHP\Types\Geometry\Point;
 use CrEOF\Spatial\PHP\Types\Geometry\Polygon;
 use Doctrine\ORM\EntityManager;
 use Inowas\ModflowBundle\Model\BoundaryFactory;
-use Inowas\ModflowBundle\Service\ModflowModelManager;
+use Inowas\ModflowBundle\Service\ModflowToolManager;
 use Inowas\SoilmodelBundle\Service\SoilmodelManager;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
@@ -17,7 +17,7 @@ class BoundaryControllerTest extends WebTestCase
     /** @var  EntityManager */
     protected $entityManager;
 
-    /** @var ModflowModelManager */
+    /** @var ModflowToolManager */
     protected $modelManager;
 
     /** @var SoilmodelManager */
@@ -41,11 +41,11 @@ class BoundaryControllerTest extends WebTestCase
 
     public function testPostBoundary()
     {
-        $model = $this->modelManager->create();
+        $model = $this->modelManager->createModel();
         $model->setStart(new \DateTime('2016-01-01'));
         $model->setEnd(new \DateTime('2016-12-31'));
         $model->setName('TestModel');
-        $this->modelManager->update($model);
+        $this->modelManager->updateModel($model);
 
         $client = static::createClient();
         $client->request(
@@ -65,13 +65,13 @@ class BoundaryControllerTest extends WebTestCase
         $this->assertEquals('MyBoundary', $response->name);
         $this->assertObjectHasAttribute('type', $response);
         $this->assertEquals('chd', strtolower($response->type));
-        $model = $this->modelManager->findById($model->getId());
+        $model = $this->modelManager->findModelById($model->getId());
         $this->assertCount(1, $model->getBoundaries());
     }
 
     public function testGetBoundariesByModelId()
     {
-        $model = $this->modelManager->create();
+        $model = $this->modelManager->createModel();
         $model->setStart(new \DateTime('2016-01-01'));
         $model->setEnd(new \DateTime('2016-12-31'));
         $model->setName('TestModel');
@@ -97,7 +97,7 @@ class BoundaryControllerTest extends WebTestCase
 
         $model->addBoundary($boundary);
 
-        $this->modelManager->update($model);
+        $this->modelManager->updateModel($model);
 
         $client = static::createClient();
         $client->request(
@@ -116,7 +116,7 @@ class BoundaryControllerTest extends WebTestCase
 
     public function testGetBoundariesByModelIdAndType()
     {
-        $model = $this->modelManager->create();
+        $model = $this->modelManager->createModel();
         $model->setStart(new \DateTime('2016-01-01'));
         $model->setEnd(new \DateTime('2016-12-31'));
         $model->setName('TestModel');
@@ -147,7 +147,7 @@ class BoundaryControllerTest extends WebTestCase
             ->setName('WelBoundary');
         $model->addBoundary($boundary);
 
-        $this->modelManager->update($model);
+        $this->modelManager->updateModel($model);
 
         $client = static::createClient();
         $client->request(
@@ -222,7 +222,7 @@ class BoundaryControllerTest extends WebTestCase
 
     public function testGetChdBoundaryDetailsByBoundaryId()
     {
-        $model = $this->modelManager->create();
+        $model = $this->modelManager->createModel();
         $model->setStart(new \DateTime('2016-01-01'));
         $model->setEnd(new \DateTime('2016-12-31'));
         $model->setName('TestModel');
@@ -234,7 +234,7 @@ class BoundaryControllerTest extends WebTestCase
 
         $model->addBoundary($boundary);
 
-        $this->modelManager->update($model);
+        $this->modelManager->updateModel($model);
 
         $client = static::createClient();
         $client->request(
@@ -262,13 +262,13 @@ class BoundaryControllerTest extends WebTestCase
         $this->assertEquals('{"type":"LineString","coordinates":[[0,0],[1,1]]}', $response->geometry);
         $this->assertObjectHasAttribute('observation_points', $response);
 
-        $model = $this->modelManager->findById($model->getId());
+        $model = $this->modelManager->findModelById($model->getId());
         $this->assertCount(1, $model->getBoundaries());
     }
 
     public function testGetGhbBoundaryDetailsByBoundaryId()
     {
-        $model = $this->modelManager->create();
+        $model = $this->modelManager->createModel();
         $model->setStart(new \DateTime('2016-01-01'));
         $model->setEnd(new \DateTime('2016-12-31'));
         $model->setName('TestModel');
@@ -280,7 +280,7 @@ class BoundaryControllerTest extends WebTestCase
 
         $model->addBoundary($boundary);
 
-        $this->modelManager->update($model);
+        $this->modelManager->updateModel($model);
 
         $client = static::createClient();
         $client->request(
@@ -308,13 +308,13 @@ class BoundaryControllerTest extends WebTestCase
         $this->assertEquals('{"type":"LineString","coordinates":[[0,0],[1,1]]}', $response->geometry);
         $this->assertObjectHasAttribute('observation_points', $response);
 
-        $model = $this->modelManager->findById($model->getId());
+        $model = $this->modelManager->findModelById($model->getId());
         $this->assertCount(1, $model->getBoundaries());
     }
 
     public function testGetRchBoundaryDetailsByBoundaryId()
     {
-        $model = $this->modelManager->create();
+        $model = $this->modelManager->createModel();
         $model->setStart(new \DateTime('2016-01-01'));
         $model->setEnd(new \DateTime('2016-12-31'));
         $model->setName('TestModel');
@@ -332,7 +332,7 @@ class BoundaryControllerTest extends WebTestCase
             ->setName('MyRchBoundary');
 
         $model->addBoundary($boundary);
-        $this->modelManager->update($model);
+        $this->modelManager->updateModel($model);
 
         $client = static::createClient();
         $client->request(
@@ -358,13 +358,13 @@ class BoundaryControllerTest extends WebTestCase
         $this->assertEquals('{"type":"Polygon","coordinates":[[[0,0],[0,1],[1,1],[1,0],[0,0]]]}', $response->geometry);
         $this->assertObjectHasAttribute('observation_points', $response);
 
-        $model = $this->modelManager->findById($model->getId());
+        $model = $this->modelManager->findModelById($model->getId());
         $this->assertCount(1, $model->getBoundaries());
     }
 
     public function testGetWelBoundaryDetailsByBoundaryId()
     {
-        $model = $this->modelManager->create();
+        $model = $this->modelManager->createModel();
         $model->setStart(new \DateTime('2016-01-01'));
         $model->setEnd(new \DateTime('2016-12-31'));
         $model->setName('TestModel');
@@ -374,7 +374,7 @@ class BoundaryControllerTest extends WebTestCase
             ->setName('MyWelBoundary');
 
         $model->addBoundary($boundary);
-        $this->modelManager->update($model);
+        $this->modelManager->updateModel($model);
 
         $client = static::createClient();
         $client->request(
@@ -400,13 +400,13 @@ class BoundaryControllerTest extends WebTestCase
         $this->assertEquals('{"type":"Point","coordinates":[0,1]}', $response->geometry);
         $this->assertObjectHasAttribute('observation_points', $response);
 
-        $model = $this->modelManager->findById($model->getId());
+        $model = $this->modelManager->findModelById($model->getId());
         $this->assertCount(1, $model->getBoundaries());
     }
 
     public function testGetRivBoundaryDetailsByBoundaryId()
     {
-        $model = $this->modelManager->create();
+        $model = $this->modelManager->createModel();
         $model->setStart(new \DateTime('2016-01-01'));
         $model->setEnd(new \DateTime('2016-12-31'));
         $model->setName('TestModel');
@@ -417,7 +417,7 @@ class BoundaryControllerTest extends WebTestCase
 
         $model->addBoundary($boundary);
 
-        $this->modelManager->update($model);
+        $this->modelManager->updateModel($model);
 
         $client = static::createClient();
         $client->request(
@@ -443,12 +443,12 @@ class BoundaryControllerTest extends WebTestCase
         $this->assertEquals('{"type":"LineString","coordinates":[[0,0],[1,1]]}', $response->geometry);
         $this->assertObjectHasAttribute('observation_points', $response);
 
-        $model = $this->modelManager->findById($model->getId());
+        $model = $this->modelManager->findModelById($model->getId());
         $this->assertCount(1, $model->getBoundaries());
     }
 
     public function testPutChdBoundaryDetailsByBoundaryId(){
-        $model = $this->modelManager->create();
+        $model = $this->modelManager->createModel();
         $model->setStart(new \DateTime('2016-01-01'));
         $model->setEnd(new \DateTime('2016-12-31'));
         $model->setName('TestModel');
@@ -460,7 +460,7 @@ class BoundaryControllerTest extends WebTestCase
 
         $model->addBoundary($boundary);
 
-        $this->modelManager->update($model);
+        $this->modelManager->updateModel($model);
 
         $client = static::createClient();
         $client->request(
@@ -494,7 +494,7 @@ class BoundaryControllerTest extends WebTestCase
     }
 
     public function testPutGhbBoundaryDetailsByBoundaryId(){
-        $model = $this->modelManager->create();
+        $model = $this->modelManager->createModel();
         $model->setStart(new \DateTime('2016-01-01'));
         $model->setEnd(new \DateTime('2016-12-31'));
         $model->setName('TestModel');
@@ -506,7 +506,7 @@ class BoundaryControllerTest extends WebTestCase
 
         $model->addBoundary($boundary);
 
-        $this->modelManager->update($model);
+        $this->modelManager->updateModel($model);
 
         $client = static::createClient();
         $client->request(
@@ -540,7 +540,7 @@ class BoundaryControllerTest extends WebTestCase
     }
 
     public function testPutRchBoundaryDetailsByBoundaryId(){
-        $model = $this->modelManager->create();
+        $model = $this->modelManager->createModel();
         $model->setStart(new \DateTime('2016-01-01'));
         $model->setEnd(new \DateTime('2016-12-31'));
         $model->setName('TestModel');
@@ -558,7 +558,7 @@ class BoundaryControllerTest extends WebTestCase
             ->setName('MyRchBoundary');
 
         $model->addBoundary($boundary);
-        $this->modelManager->update($model);
+        $this->modelManager->updateModel($model);
 
         $client = static::createClient();
         $client->request(
@@ -589,7 +589,7 @@ class BoundaryControllerTest extends WebTestCase
     }
 
     public function testPutRivBoundaryDetailsByBoundaryId(){
-        $model = $this->modelManager->create();
+        $model = $this->modelManager->createModel();
         $model->setStart(new \DateTime('2016-01-01'));
         $model->setEnd(new \DateTime('2016-12-31'));
         $model->setName('TestModel');
@@ -600,7 +600,7 @@ class BoundaryControllerTest extends WebTestCase
 
         $model->addBoundary($boundary);
 
-        $this->modelManager->update($model);
+        $this->modelManager->updateModel($model);
 
         $client = static::createClient();
         $client->request(
@@ -631,7 +631,7 @@ class BoundaryControllerTest extends WebTestCase
     }
 
     public function testPutWelBoundaryDetailsByBoundaryId(){
-        $model = $this->modelManager->create();
+        $model = $this->modelManager->createModel();
         $model->setStart(new \DateTime('2016-01-01'));
         $model->setEnd(new \DateTime('2016-12-31'));
         $model->setName('TestModel');
@@ -643,7 +643,7 @@ class BoundaryControllerTest extends WebTestCase
 
         $model->addBoundary($boundary);
 
-        $this->modelManager->update($model);
+        $this->modelManager->updateModel($model);
 
         $client = static::createClient();
         $client->request(

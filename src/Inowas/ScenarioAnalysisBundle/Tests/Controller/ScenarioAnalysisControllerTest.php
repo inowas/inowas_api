@@ -7,7 +7,7 @@ use FOS\UserBundle\Doctrine\UserManager;
 use Inowas\AppBundle\Model\User;
 use Inowas\ModflowBundle\Model\BoundaryFactory;
 use Inowas\ModflowBundle\Model\ModflowModel;
-use Inowas\ModflowBundle\Service\ModflowModelManager;
+use Inowas\ModflowBundle\Service\ModflowToolManager;
 use Inowas\ScenarioAnalysisBundle\Model\Events\AddWellEvent;
 use Inowas\ScenarioAnalysisBundle\Model\Events\ChangeWellLayerNumberEvent;
 use Inowas\ScenarioAnalysisBundle\Model\Events\ChangeWellNameEvent;
@@ -26,7 +26,7 @@ class ScenarioControllerTest extends WebTestCase
     /** @var  EntityManager */
     protected $entityManager;
 
-    /** @var ModflowModelManager */
+    /** @var ModflowToolManager */
     protected $modelManager;
 
     /** @var ScenarioManager */
@@ -78,8 +78,8 @@ class ScenarioControllerTest extends WebTestCase
 
     public function testGetScenarioAnalysis(){
 
-        $model = $this->modelManager->create()->setName('TestModel')->setDescription('Description');
-        $this->modelManager->update($model);
+        $model = $this->modelManager->createModel()->setName('TestModel')->setDescription('Description');
+        $this->modelManager->updateModel($model);
 
         $scenarioAnalysis = $this->scenarioAnalysisManager->create($this->user, $model);
         $scenario = $this->scenarioManager->create($model)->setName('TestScenarioName 1')->setDescription('TestScenarioDescription 1');
@@ -116,8 +116,8 @@ class ScenarioControllerTest extends WebTestCase
 
     public function testGetScenarioAnalysisByUserName(){
 
-        $model = $this->modelManager->create()->setName('TestModel')->setDescription('Description');
-        $this->modelManager->update($model);
+        $model = $this->modelManager->createModel()->setName('TestModel')->setDescription('Description');
+        $this->modelManager->updateModel($model);
 
         $scenarioAnalysis = $this->scenarioAnalysisManager->create($this->user, $model);
         $scenario = $this->scenarioManager->create($model)->setName('TestScenarioName 1')->setDescription('TestScenarioDescription 1');
@@ -152,7 +152,7 @@ class ScenarioControllerTest extends WebTestCase
 
 
     public function tearDown(){
-        $models = $this->modelManager->findAll();
+        $models = $this->modelManager->findAllModels();
 
         /** @var ModflowModel $model */
         foreach ($models as $model)
@@ -163,7 +163,7 @@ class ScenarioControllerTest extends WebTestCase
             foreach ($scenarios as $scenario){
                 $this->scenarioManager->remove($scenario->getId());
             }
-            $this->modelManager->remove($model);
+            $this->modelManager->removeModel($model);
         }
 
         $users = $this->userManager->findUsers();

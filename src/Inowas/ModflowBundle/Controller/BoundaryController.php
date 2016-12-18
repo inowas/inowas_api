@@ -258,9 +258,9 @@ class BoundaryController extends FOSRestController
 
         $boundary->setName($paramFetcher->get('name'));
 
-        $model = $modelManager->findById($id);
+        $model = $modelManager->findModelById($id);
         $model->addBoundary($boundary);
-        $modelManager->update($model);
+        $modelManager->updateModel($model);
 
         $view = View::create($boundary)
             ->setStatusCode(200)

@@ -66,7 +66,7 @@ class RioPrimeroBaseModelDataFixture extends LoadScenarioBase implements Fixture
         $soilmodel = $soilModelManager->create();
         $soilmodel->setName('SoilModel Río Primero');
         $soilmodel->addLayer(LayerFactory::create()->setName('Surface Layer')->setDescription('The one and only.'));
-        $soilmodel->setBoundingBox(new BoundingBox(-63.687336, -63.569260, -31.367449, -31.313615, 4326));
+        $soilmodel->setBoundingBox($geoTools->transformBoundingBox(new BoundingBox(-63.687336, -63.569260, -31.367449, -31.313615, 4326), 4326));
         $soilmodel->setGridSize(new GridSize(75,40));
         $soilModelManager->update($soilmodel);
 
@@ -110,8 +110,8 @@ class RioPrimeroBaseModelDataFixture extends LoadScenarioBase implements Fixture
         }
 
         // Add the ModflowModel
-        $modelManager = $this->container->get('inowas.modflow.modelmanager');
-        $model = $modelManager->create();
+        $modflowToolManager = $this->container->get('inowas.modflow.toolmanager');
+        $model = $modflowToolManager->createModel();
         $model->setName("Rio Primero Base Model")
             ->setDescription('Base Model for the scenario analysis 2020 Rio Primero')
             ->setArea(AreaFactory::create()
@@ -129,13 +129,13 @@ class RioPrimeroBaseModelDataFixture extends LoadScenarioBase implements Fixture
                 ))
             )
             ->setSoilmodelId($soilmodel->getId())
-            ->setBoundingBox(new BoundingBox(-63.687336, -63.569260, -31.367449, -31.313615, 4326))
+            ->setBoundingBox($geoTools->transformBoundingBox(new BoundingBox(-63.687336, -63.569260, -31.367449, -31.313615, 4326), 4326))
             ->setGridSize(new GridSize(75,40))
             ->setStart(new \DateTime('1.1.2015'))
             ->setEnd(new \DateTime('31.12.2015'))
         ;
 
-        $modelManager->update($model);
+        $modflowToolManager->updateModel($model);
 
         // Add Boundaries
         /**
@@ -167,7 +167,7 @@ class RioPrimeroBaseModelDataFixture extends LoadScenarioBase implements Fixture
 
         $ghbWest->addObservationPoint($observationPoint);
         $model->addBoundary($ghbWest);
-        $modelManager->update($model);
+        $modflowToolManager->updateModel($model);
 
         unset($ghbWest);
         unset($observationPoint);
@@ -203,7 +203,7 @@ class RioPrimeroBaseModelDataFixture extends LoadScenarioBase implements Fixture
 
         $ghbEast->addObservationPoint($observationPoint);
         $model->addBoundary($ghbEast);
-        $modelManager->update($model);
+        $modflowToolManager->updateModel($model);
 
         unset($ghbEast);
         unset($observationPoint);
@@ -310,7 +310,7 @@ class RioPrimeroBaseModelDataFixture extends LoadScenarioBase implements Fixture
             );
 
         $model->addBoundary($riverBoundary);
-        $modelManager->update($model);
+        $modflowToolManager->updateModel($model);
         echo sprintf("Add River-Boundary %s.\r\n", $riverBoundary->getName());
         unset($riverBoundary);
 
@@ -330,7 +330,7 @@ class RioPrimeroBaseModelDataFixture extends LoadScenarioBase implements Fixture
 
         $model->addBoundary($well);
         echo sprintf("Add well %s.\r\n", $well->getName());
-        $modelManager->update($model);
+        $modflowToolManager->updateModel($model);
         unset($well);
 
         /**
@@ -349,7 +349,7 @@ class RioPrimeroBaseModelDataFixture extends LoadScenarioBase implements Fixture
 
         $model->addBoundary($well);
         echo sprintf("Add well %s.\r\n", $well->getName());
-        $modelManager->update($model);
+        $modflowToolManager->updateModel($model);
         unset($well);
 
         /**
@@ -368,7 +368,7 @@ class RioPrimeroBaseModelDataFixture extends LoadScenarioBase implements Fixture
 
         $model->addBoundary($well);
         echo sprintf("Add well %s.\r\n", $well->getName());
-        $modelManager->update($model);
+        $modflowToolManager->updateModel($model);
         unset($well);
 
         /**
@@ -387,7 +387,7 @@ class RioPrimeroBaseModelDataFixture extends LoadScenarioBase implements Fixture
 
         $model->addBoundary($well);
         echo sprintf("Add well %s.\r\n", $well->getName());
-        $modelManager->update($model);
+        $modflowToolManager->updateModel($model);
         unset($well);
 
         /**
@@ -406,7 +406,7 @@ class RioPrimeroBaseModelDataFixture extends LoadScenarioBase implements Fixture
 
         $model->addBoundary($well);
         echo sprintf("Add well %s.\r\n", $well->getName());
-        $modelManager->update($model);
+        $modflowToolManager->updateModel($model);
         unset($well);
 
         /**
@@ -425,7 +425,7 @@ class RioPrimeroBaseModelDataFixture extends LoadScenarioBase implements Fixture
 
         $model->addBoundary($well);
         echo sprintf("Add well %s.\r\n", $well->getName());
-        $modelManager->update($model);
+        $modflowToolManager->updateModel($model);
         unset($well);
 
         /**
@@ -445,7 +445,7 @@ class RioPrimeroBaseModelDataFixture extends LoadScenarioBase implements Fixture
 
         $model->addBoundary($well);
         echo sprintf("Add well %s.\r\n", $well->getName());
-        $modelManager->update($model);
+        $modflowToolManager->updateModel($model);
         unset($well);
 
         /**
@@ -462,7 +462,7 @@ class RioPrimeroBaseModelDataFixture extends LoadScenarioBase implements Fixture
 
         $model->addBoundary($recharge);
         echo sprintf("Add recharge %s.\r\n", $recharge->getName());
-        $modelManager->update($model);
+        $modflowToolManager->updateModel($model);
         unset($recharge);
 
         echo sprintf("Set activeCells for ModelArea\r\n");
@@ -504,11 +504,10 @@ class RioPrimeroBaseModelDataFixture extends LoadScenarioBase implements Fixture
             }
         }
 
-        $modflow = new Modflow();
+        $modflow = $modflowToolManager->create();
         $modflow->setUserId($this->getOwner()->getId());
         $modflow->setModflowModel($model);
-        $this->container->get('doctrine.orm.default_entity_manager')->persist($modflow);
-        $this->container->get('doctrine.orm.default_entity_manager')->flush();
+        $modflowToolManager->update($modflow);
 
         $this->loadScenarios($model);
         return 1;

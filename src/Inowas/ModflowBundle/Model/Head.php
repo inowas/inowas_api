@@ -101,12 +101,12 @@ class Head
     }
 
     /**
-     * @param Flopy2DArray $data
+     * @param array $data
      * @return $this
      */
-    public function setData(Flopy2DArray $data)
+    public function setData(array $data)
     {
-        $this->data = $data->toArray();
+        $this->data = $data;
 
         $counter = 0;
         $sum = 0;
@@ -138,7 +138,6 @@ class Head
         }
 
         $this->meanValue = $sum/$counter;
-
         return $this;
     }
 

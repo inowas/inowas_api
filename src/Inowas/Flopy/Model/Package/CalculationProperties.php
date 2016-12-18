@@ -224,7 +224,7 @@ class CalculationProperties implements \JsonSerializable
         }
 
         if (array_key_exists('date_time_end', $properties)){
-            $instance->setDateTimeBegin($properties['date_time_end']);
+            $instance->setDateTimeEnd($properties['date_time_end']);
         }
 
         if (array_key_exists('packages', $properties)){
