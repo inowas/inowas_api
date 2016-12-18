@@ -23,7 +23,6 @@ class Flopy
     /** @var  CalculationManager */
     protected $cm;
 
-
     /** @var Kernel */
     protected $kernel;
 
@@ -107,17 +106,17 @@ class Flopy
     }
 
     /**
-     * @param string $kernelRootDir
      * @return int
      */
-    public function startAsyncFlopyProcessRunner(string $kernelRootDir){
+    public function startAsyncFlopyProcessRunner()
+    {
+        $kernelRootDir = $this->kernel->getRootDir();
         $process = ProcessBuilder::create()
             ->setWorkingDirectory($kernelRootDir)
-            ->setPrefix('/usr/bin/php')
-            ->setArguments(array('bin/console', 'inowas:flopy:process:runner'))
+            ->add("")
             ->getProcess();
 
-        $process->setCommandLine('/usr/bin/php ../bin/console inowas:flopy:process:runner >> ../var/logs/flopy.log');
+        $process->setCommandLine('../bin/console inowas:flopy:process:runner >> ../var/logs/flopy.log');
         $process->start();
 
         return 1;

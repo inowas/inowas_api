@@ -110,7 +110,7 @@ class CalculationsController extends FOSRestController
 
         $flopy = $this->get('inowas.flopy');
         $calculation = $flopy->addModelToQueue($modflow->getModflowModel());
-        $flopy->calculate($calculation);
+        $flopy->startAsyncFlopyProcessRunner();
 
         $view = View::create($calculation)
             ->setStatusCode(200)
