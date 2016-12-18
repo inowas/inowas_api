@@ -31,7 +31,7 @@ class CalculationSerializerTest extends KernelTestCase {
         ;
 
         $this->mm = static::$kernel->getContainer()
-            ->get('inowas.modflow.modelmanager')
+            ->get('inowas.modflow.toolmanager')
         ;
 
         $this->serializer = static::$kernel->getContainer()

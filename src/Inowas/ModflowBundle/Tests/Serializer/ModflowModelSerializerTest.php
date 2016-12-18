@@ -23,7 +23,7 @@ class ModflowModelSerializerTest extends KernelTestCase {
     {
         self::bootKernel();
         $this->modelManager = static::$kernel->getContainer()
-            ->get('inowas.modflow.modelmanager')
+            ->get('inowas.modflow.toolmanager')
         ;
 
         $this->serializer = static::$kernel->getContainer()

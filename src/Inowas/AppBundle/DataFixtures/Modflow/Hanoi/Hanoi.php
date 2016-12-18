@@ -189,7 +189,7 @@ class Hanoi extends LoadScenarioBase implements FixtureInterface, ContainerAware
         }
 
         // Add the ModflowModel
-        $modelManager = $this->container->get('inowas.modflow.modelmanager');
+        $modelManager = $this->container->get('inowas.modflow.toolmanager');
         $model = $modelManager->createModel();
         $model->setName("BaseModel INOWAS Hanoi")
             ->setDescription('Application of managed aquifer recharge for maximization of water storage capacity in Hanoi.')

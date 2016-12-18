@@ -52,7 +52,7 @@ class ModelController extends FOSRestController
      */
     public function getModflowModelsAction()
     {
-        $modelManager = $this->get('inowas.modflow.modelmanager');
+        $modelManager = $this->get('inowas.modflow.toolmanager');
 
         $view = View::create($modelManager->findAllModels())
             ->setStatusCode(200)

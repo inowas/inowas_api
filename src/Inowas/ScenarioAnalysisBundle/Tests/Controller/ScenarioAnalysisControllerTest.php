@@ -5,22 +5,14 @@ namespace Inowas\ScenarioAnalysisBundle\Tests\Controller;
 use Doctrine\ORM\EntityManager;
 use FOS\UserBundle\Doctrine\UserManager;
 use Inowas\AppBundle\Model\User;
-use Inowas\ModflowBundle\Model\BoundaryFactory;
 use Inowas\ModflowBundle\Model\ModflowModel;
 use Inowas\ModflowBundle\Service\ModflowToolManager;
-use Inowas\ScenarioAnalysisBundle\Model\Events\AddWellEvent;
-use Inowas\ScenarioAnalysisBundle\Model\Events\ChangeWellLayerNumberEvent;
-use Inowas\ScenarioAnalysisBundle\Model\Events\ChangeWellNameEvent;
-use Inowas\ScenarioAnalysisBundle\Model\Events\ChangeWellStressperiodsEvent;
-use Inowas\ScenarioAnalysisBundle\Model\Events\ChangeWellTypeEvent;
-use Inowas\ScenarioAnalysisBundle\Model\Events\MoveWellEvent;
-use Inowas\ScenarioAnalysisBundle\Model\Events\RemoveWellEvent;
 use Inowas\ScenarioAnalysisBundle\Model\Scenario;
 use Inowas\ScenarioAnalysisBundle\Service\ScenarioAnalysisManager;
 use Inowas\ScenarioAnalysisBundle\Service\ScenarioManager;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
-class ScenarioControllerTest extends WebTestCase
+class ScenarioAnalysisControllerTest extends WebTestCase
 {
 
     /** @var  EntityManager */
@@ -46,7 +38,7 @@ class ScenarioControllerTest extends WebTestCase
         self::bootKernel();
 
         $this->modelManager = static::$kernel->getContainer()
-            ->get('inowas.modflow.modelmanager')
+            ->get('inowas.modflow.toolmanager')
         ;
 
         $this->scenarioAnalysisManager = static::$kernel->getContainer()

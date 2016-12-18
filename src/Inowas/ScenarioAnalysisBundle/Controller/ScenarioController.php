@@ -95,7 +95,7 @@ class ScenarioController extends FOSRestController
             throw new InvalidUuidException();
         }
 
-        $modelManager = $this->get('inowas.modflow.modelmanager');
+        $modelManager = $this->get('inowas.modflow.toolmanager');
         $baseModel = $modelManager->findModelById($modelId);
 
         if (! $baseModel instanceof ModflowModel){
@@ -153,7 +153,7 @@ class ScenarioController extends FOSRestController
             throw new InvalidUuidException();
         }
 
-        $modelManager = $this->get('inowas.modflow.modelmanager');
+        $modelManager = $this->get('inowas.modflow.toolmanager');
         $baseModel = $modelManager->findModelById($modelId);
 
         if (! $baseModel instanceof ModflowModel){

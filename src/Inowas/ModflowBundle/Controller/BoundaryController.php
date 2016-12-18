@@ -250,7 +250,7 @@ class BoundaryController extends FOSRestController
      */
     public function postModflowModelBoundariesAction($id, ParamFetcher $paramFetcher)
     {
-        $modelManager = $this->get('inowas.modflow.modelmanager');
+        $modelManager = $this->get('inowas.modflow.toolmanager');
 
         /** @var Boundary $boundary */
         $boundary = $this->get('inowas.modflow.boundarymanager')

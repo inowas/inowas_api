@@ -22,7 +22,6 @@ use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
 class ScenarioControllerTest extends WebTestCase
 {
-
     /** @var  EntityManager */
     protected $entityManager;
 
@@ -46,7 +45,7 @@ class ScenarioControllerTest extends WebTestCase
         self::bootKernel();
 
         $this->modelManager = static::$kernel->getContainer()
-            ->get('inowas.modflow.modelmanager')
+            ->get('inowas.modflow.toolmanager')
         ;
 
         $this->scenarioAnalysisManager = static::$kernel->getContainer()

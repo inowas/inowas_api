@@ -23,7 +23,7 @@ class AreaControllerTest extends WebTestCase
     {
         self::bootKernel();
         $this->modelManager = static::$kernel->getContainer()
-            ->get('inowas.modflow.modelmanager')
+            ->get('inowas.modflow.toolmanager')
         ;
 
         $this->entityManager = static::$kernel->getContainer()

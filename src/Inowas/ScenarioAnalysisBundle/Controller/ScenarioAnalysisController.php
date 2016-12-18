@@ -83,13 +83,12 @@ class ScenarioAnalysisController extends FOSRestController
     public function getScenariosAnalysisDetailsAction($modelId)
     {
 
-
         if (! Uuid::isValid($modelId)){
             throw new InvalidUuidException();
         }
 
         /** @var ModflowModel $baseModel */
-        $baseModel = $this->get('inowas.modflow.modelmanager')->findModelById($modelId);
+        $baseModel = $this->get('inowas.modflow.toolmanager')->findModelById($modelId);
         if (!$baseModel instanceof ModflowModel){
             throw new InvalidArgumentException(sprintf('Model with id=%s does not exist.', $modelId));
         }
