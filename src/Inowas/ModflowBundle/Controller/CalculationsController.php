@@ -88,7 +88,8 @@ class CalculationsController extends FOSRestController
      * @param $modelId
      * @return View
      */
-    public function postModflowModelCalculationAction($modelId){
+    public function postModflowModelCalculationAction($modelId)
+    {
         $modflowController = $this->get('inowas.modflow.toolmanager');
         $model = $modflowController->findModelById(Uuid::fromString($modelId));
 
@@ -106,9 +107,10 @@ class CalculationsController extends FOSRestController
             throw new InvalidArgumentException(sprintf('Model %s available, but not owner', $modelId));
         }
 
-        $cc = $this->get('inowas.modflow.calculationmanager');
-        $calculation = $cc->create($modflow->getModflowModel());
-        $cc->update($calculation);
+
+        $flopy = $this->get('inowas.flopy');
+        $calculation = $flopy->addModelToQueue($modflow->getModflowModel());
+        $flopy->calculate($calculation);
 
         $view = View::create($calculation)
             ->setStatusCode(200)
@@ -121,11 +123,11 @@ class CalculationsController extends FOSRestController
     }
 
     /**
-     * Sends the command to calculate the model by model-id.
+     * Get the state of current calculation by Model-Id.
      *
      * @ApiDoc(
      *   resource = true,
-     *   description = "Sends the command to calculate the model by model-id",
+     *   description = "Get the state of current calculation by Model-Id",
      *   statusCodes = {
      *     200 = "Returned when successful",
      *     404 = "Returned when the Calculation-Id is not found"

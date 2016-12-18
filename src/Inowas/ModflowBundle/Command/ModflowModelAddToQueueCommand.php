@@ -37,7 +37,7 @@ class ModflowModelAddToQueueCommand extends ContainerAwareCommand
         $model = $mm->findModelById($input->getArgument('id'));
 
         $cm = $this->getContainer()->get('inowas.modflow.calculationmanager');
-        $calculation = $cm->create($model);
+        $calculation = $cm->createFromModel($model);
         $cm->update($calculation);
 
         $output->writeln('Modflow-Model has been added to queue.');

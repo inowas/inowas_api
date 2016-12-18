@@ -2,7 +2,7 @@ services:
 
     inowas.flopy:
         class: Inowas\PyprocessingBundle\Service\Flopy
-        arguments: ['@doctrine.orm.entity_manager', '%inowas.pyprocessing_folder%']
+        arguments: ['@kernel']
 
     inowas.modflowmodelscenario.manager:
         class: Inowas\PyprocessingBundle\Service\ModflowModelScenarioManager

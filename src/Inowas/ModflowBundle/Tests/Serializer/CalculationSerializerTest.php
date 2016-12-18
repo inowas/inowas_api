@@ -42,7 +42,7 @@ class CalculationSerializerTest extends KernelTestCase {
     public function testSerialize(){
 
         $model = $this->mm->createModel();
-        $calculation = $this->cm->create($model);
+        $calculation = $this->cm->createFromModel($model);
         $calculation->setModelUrl('testUrl');
         $calculation->setPort(8080);
         $calculation->setDataFolder('datafolder');

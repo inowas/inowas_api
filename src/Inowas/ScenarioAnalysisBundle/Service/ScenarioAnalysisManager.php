@@ -4,7 +4,9 @@ namespace Inowas\ScenarioAnalysisBundle\Service;
 
 use Doctrine\ORM\EntityManager;
 use FOS\UserBundle\Model\UserInterface;
+use Inowas\AppBundle\Model\User;
 use Inowas\ModflowBundle\Model\ModflowModel;
+use Inowas\ScenarioAnalysisBundle\Exception\InvalidArgumentException;
 use Inowas\ScenarioAnalysisBundle\Factory\ScenarioAnalysisFactory;
 use Inowas\ScenarioAnalysisBundle\Model\ScenarioAnalysis;
 use Ramsey\Uuid\Uuid;
@@ -52,5 +54,27 @@ class ScenarioAnalysisManager
         $this->entityManager->persist($scenarioAnalysis);
         $this->entityManager->flush();
         return $scenarioAnalysis;
+    }
+
+    public function findApiKeyByScenarioId(Uuid $id){
+        $sa = $this->entityManager->getRepository('InowasScenarioAnalysisBundle:ScenarioAnalysis')
+            ->findOneBy(array('id' => $id));
+
+        if (! $sa instanceof ScenarioAnalysis){
+            throw new InvalidArgumentException(sprintf('Scenarioanalysis with Id=% not found.', $id));
+        }
+
+        $userId = $sa->getUserId();
+
+        $user = $this->entityManager->getRepository('InowasAppBundle:User')
+            ->findOneBy(array(
+                'id' => $userId
+            ));
+
+        if (! $user instanceof User){
+            throw new InvalidArgumentException(sprintf('User with Id=% not found.', $userId));
+        }
+
+        return $user->getApiKey();
     }
 }

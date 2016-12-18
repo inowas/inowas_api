@@ -2,12 +2,14 @@
 
 namespace Inowas\PyprocessingBundle\Service;
 
-use AppBundle\Entity\ModflowCalculation;
 use AppBundle\Exception\ProcessFailedException;
-use Inowas\PyprocessingBundle\Model\Modflow\FlopyProcessConfiguration;
-use Doctrine\ORM\EntityManagerInterface;
-use Inowas\PyprocessingBundle\Model\PythonProcess\PythonProcessFactory;
-use Ramsey\Uuid\Uuid;
+use Inowas\ModflowBundle\Model\Calculation;
+use Inowas\ModflowBundle\Model\ModflowModel;
+use Inowas\ModflowBundle\Service\CalculationManager;
+use Inowas\ScenarioAnalysisBundle\Model\Scenario;
+use Symfony\Component\HttpKernel\Kernel;
+use Symfony\Component\HttpKernel\KernelInterface;
+use Symfony\Component\Process\Process;
 use Symfony\Component\Process\ProcessBuilder;
 
 /**
@@ -18,79 +20,90 @@ use Symfony\Component\Process\ProcessBuilder;
  */
 class Flopy
 {
-    /**
-     * @var EntityManagerInterface
-     */
-    protected $entityManager;
+    /** @var  CalculationManager */
+    protected $cm;
 
-    /** @var string $pyProcessingFolder */
-    protected $pyProcessingFolder;
 
-    /** @var string $prefix */
-    protected $prefix;
+    /** @var Kernel */
+    protected $kernel;
 
     /**
      * Flopy constructor.
-     * @param EntityManagerInterface $entityManager
-     * @param string $pyProcessingFolder
+     * @param KernelInterface $kernel
      */
-    public function __construct(EntityManagerInterface $entityManager, string $pyProcessingFolder){
-        $this->entityManager = $entityManager;
-        $this->pyProcessingFolder = $pyProcessingFolder;
+    public function __construct(KernelInterface $kernel)
+    {
+        $this->kernel = $kernel;
+        $this->kernel = $kernel->getContainer();
+        $this->cm = $kernel->getContainer()->get('inowas.modflow.calculationmanager');
     }
 
-    public function addToQueue($baseUrl, $dataFolder, $modelId, $userId)
+    public function addModelToQueue(ModflowModel $model)
     {
-        $modflowCalculation = $this->entityManager->getRepository('AppBundle:ModflowCalculation')
-            ->findOneBy(array(
-                'modelId' => $modelId,
-                'state' => ModflowCalculation::STATE_IN_QUEUE
-            ));
+        $calculation = $this->cm->createFromModel($model);
+        $calculation->setOutput("Model added to queue.\r\nThe Calculation starts soon...\r\n");
+        $this->cm->update($calculation);
 
-        if (! $modflowCalculation instanceof ModflowCalculation){
-            $modflowCalculation = new ModflowCalculation();
-        }
+        return $calculation;
+    }
 
-        $modflowCalculation->setModelId(Uuid::fromString($modelId));
-        $modflowCalculation->setUserId(Uuid::fromString($userId));
-        $modflowCalculation->setBaseUrl($baseUrl);
-        $modflowCalculation->setDataFolder($dataFolder);
-        $modflowCalculation->setOutput("Model added to queue.\r\nThe Calculation starts soon...\r\n");
-
-        $this->entityManager->persist($modflowCalculation);
-        $this->entityManager->flush();
-
-        return $modflowCalculation;
+    public function addScenarioToQueue(Scenario $scenario)
+    {
+        $calculation = $this->cm->createFromScenario($scenario);
+        $calculation->setOutput("Scenario added to queue.\r\nThe Calculation starts soon...\r\n");
+        $this->cm->update($calculation);
+        return $calculation;
     }
 
     /**
-     * @param $dataFolder
+     * @param Calculation $calculation
      * @param bool $returnProcess
-     * @return bool|\Inowas\PyprocessingBundle\Model\PythonProcess\PythonProcess
+     * @return Process|Calculation
      * @throws ProcessFailedException
      */
-    public function calculate($dataFolder, $returnProcess=false)
+    public function calculate(Calculation $calculation, $returnProcess=false)
     {
+        $executable = $this->kernel->getParameter('inowas.python.executable');
+        $rootDirectory = $this->kernel->getParameter('kernel.root_dir');
+        $pyProcessingFolder = $this->kernel->getParameter('inowas.pyprocessing_folder');
+        $scriptName = 'FlopyCalculation.py';
+        $dataFolder = $calculation->getDataFolder();
+        $calculationUrl = $calculation->getCalculationUrl();
+        $modelUrl = $calculation->getModelUrl();
+        $submitHeadsUrl = $calculation->getSubmitHeadsUrl();
+        $apiKey = $calculation->getApiKey();
+
         $processBuilder = new ProcessBuilder();
-        $processBuilder->setPrefix($this->prefix);
-        $processBuilder->setWorkingDirectory($this->pyProcessingFolder);
-        $processBuilder->add('-W');
-        $processBuilder->add('ignore');
+        $processBuilder->setWorkingDirectory('../'.$rootDirectory);
+        $processBuilder->add('');
+        $process = $processBuilder->getProcess();
 
-
-        $process = PythonProcessFactory::create(new FlopyProcessConfiguration($baseUrl, $dataFolder, $modelId, $apiKey));
-        $process->getProcess()->setWorkingDirectory($this->pyProcessingFolder);
+        $process->setCommandLine(sprintf(
+            '\'%s\' \'%s/flopy/%s\' \'%s\' \'%s\' \'%s\' \'%s\' \'%s\'',
+            $executable,
+            $pyProcessingFolder,
+            $scriptName,
+            $dataFolder,
+            $calculationUrl,
+            $modelUrl,
+            $submitHeadsUrl,
+            $apiKey
+        ));
 
         if ($returnProcess){
             return $process;
         }
 
-        $process->getProcess()->run();
-        if (! $process->isSuccessful()) {
-            throw new ProcessFailedException('Modflow Calculation Process failed with ErrorMessage: '. $process->getErrorOutput());
+        if ($process->isSuccessful()){
+            $calculation->setOutput($process->getOutput());
+            $calculation->setFinishedWithSuccess(true);
+        } else {
+            $calculation->setOutput($process->getErrorOutput());
+            $calculation->setFinishedWithSuccess(false);
         }
 
-        return true;
+        $this->cm->update($calculation);
+        return $calculation;
     }
 
     /**

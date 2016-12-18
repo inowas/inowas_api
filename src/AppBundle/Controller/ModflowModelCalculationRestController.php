@@ -89,7 +89,7 @@ class ModflowModelCalculationRestController extends FOSRestController
             /** @var Flopy $flopy */
             $flopy = $this->get('inowas.flopy');
 
-            $flopy->addToQueue(
+            $flopy->addModelToQueue(
                 $this->getParameter('inowas.api_base_url'),
                 $this->getParameter('inowas.modflow.data_folder'),
                 $scenario->getId()->toString(),
@@ -116,7 +116,7 @@ class ModflowModelCalculationRestController extends FOSRestController
         /** @var Flopy $flopy */
         $flopy = $this->get('inowas.flopy');
 
-        $flopy->addToQueue(
+        $flopy->addModelToQueue(
             $this->getParameter('inowas.api_base_url'),
             $this->getParameter('inowas.modflow.data_folder'),
             $model->getId()->toString(),

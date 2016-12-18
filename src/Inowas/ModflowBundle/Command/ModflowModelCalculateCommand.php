@@ -45,37 +45,10 @@ class ModflowModelCalculateCommand extends ContainerAwareCommand
             throw new InvalidArgumentException(sprintf('There is no calculation with ID=%s', $id));
         }
 
-        $executable = $this->getContainer()->getParameter('inowas.python.executable');
-        $rootDirectory = $this->getContainer()->getParameter('kernel.root_dir');
-
-        $pyProcessingFolder = $this->getContainer()->getParameter('inowas.pyprocessing_folder');
-        $scriptName = 'FlopyCalculation.py';
-
-        $dataFolder = $calculation->getDataFolder();
-        $calculationUrl = $calculation->getCalculationUrl();
-        $modelUrl = $calculation->getModelUrl();
-        $submitHeadsUrl = $calculation->getSubmitHeadsUrl();
-        $apiKey = $calculation->getApiKey();
+        $flopy = $this->getContainer()->get('inowas.flopy');
 
         $output->writeln(sprintf("Calculating model id: %s", $calculation->getModelId()));
-
-        $processBuilder = new ProcessBuilder();
-        $processBuilder->setWorkingDirectory('../'.$rootDirectory);
-        $processBuilder->add('');
-        $process = $processBuilder->getProcess();
-
-        $process->setCommandLine(sprintf(
-            '\'%s\' \'%s/flopy/%s\' \'%s\' \'%s\' \'%s\' \'%s\' \'%s\'',
-            $executable,
-            $pyProcessingFolder,
-            $scriptName,
-            $dataFolder,
-            $calculationUrl,
-            $modelUrl,
-            $submitHeadsUrl,
-            $apiKey
-        ));
-
+        $process = $flopy->calculate($calculation, true);
         $output->writeln($process->getCommandLine());
         $process->run();
 

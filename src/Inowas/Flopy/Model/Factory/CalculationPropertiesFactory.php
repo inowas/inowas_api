@@ -29,8 +29,6 @@ class CalculationPropertiesFactory implements PackageFactoryInterface
         $instance->setWriteInput(false);
         $instance->setRun(false);
         $instance->setSubmit(false);
-        $instance->setDateTimeBegin($model->getStart());
-        $instance->setDateTimeEnd($model->getEnd());
 
         return $instance;
     }

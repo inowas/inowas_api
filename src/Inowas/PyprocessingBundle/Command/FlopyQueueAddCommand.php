@@ -55,7 +55,7 @@ class FlopyQueueAddCommand extends ContainerAwareCommand
         /** @var Flopy $flopy */
         $flopy = $this->getContainer()->get('inowas.flopy');
 
-        $flopy->addToQueue(
+        $flopy->addModelToQueue(
             $this->getContainer()->getParameter('inowas.api_base_url'),
             $this->getContainer()->getParameter('inowas.modflow.data_folder'),
             $input->getArgument('id'),

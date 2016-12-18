@@ -8,6 +8,7 @@ use Inowas\ModflowBundle\Exception\InvalidArgumentException;
 use Inowas\ModflowBundle\Model\Calculation;
 use Inowas\ModflowBundle\Model\CalculationFactory;
 use Inowas\ModflowBundle\Model\ModflowModel;
+use Inowas\ScenarioAnalysisBundle\Model\Scenario;
 use Ramsey\Uuid\Uuid;
 use Symfony\Component\HttpKernel\KernelInterface;
 
@@ -35,20 +36,11 @@ class CalculationManager
 
     /**
      * @param ModflowModel $model
-     * @param string $type
      * @return Calculation
      */
-    public function create(ModflowModel $model, $type = 'modflow')
+    public function createFromModel(ModflowModel $model)
     {
-        switch ($type){
-            case ('modflow'):
-                $type = 'modflow';
-                break;
-            case ('scenarioanalysis'):
-                $type = 'scenarioanalysis';
-                break;
-        }
-
+        $type = 'modflow';
         $calculationProperties = CalculationPropertiesFactory::loadFromApiRunAndSubmit($model);
         $calculation = CalculationFactory::create($calculationProperties, $model);
         $calculation->setModelId($model->getId());
@@ -67,6 +59,42 @@ class CalculationManager
         $calculation->setModelUrl($modelUrl);
         $calculation->setSubmitHeadsUrl($submitHeadsUrl);
         $calculation->setApiKey($this->kernel->getContainer()->get('inowas.modflow.toolmanager')->findApiKeyByModelId($modelId));
+
+        return $calculation;
+    }
+
+    /**
+     * @param Scenario $scenario
+     * @return Calculation
+     */
+    public function createFromScenario(Scenario $scenario)
+    {
+        $baseModelId = $scenario->getBaseModelId();
+        $model = $this->kernel->getContainer()->get('inowas.modflow.toolmanager')->findModelById($baseModelId);
+        if (! $model instanceof ModflowModel){
+            throw new InvalidArgumentException(sprintf('Model with Id=%s not available.', $baseModelId));
+        }
+        $type = 'scenarioanalysis';
+        $model = $scenario->applyTo($model);
+        $calculationProperties = CalculationPropertiesFactory::loadFromApiRunAndSubmit($model);
+        $calculation = CalculationFactory::create($calculationProperties, $model);
+
+        $scenarioId = $scenario->getId();
+        $calculation->setModelId($scenarioId);
+        $baseUrl = $this->kernel->getContainer()->getParameter('inowas.api_base_url');
+        $port = $this->kernel->getContainer()->getParameter('inowas.api_port');
+        $calculationId = $calculation->getId();
+
+        $dataFolder = sprintf('%s/%s', $this->kernel->getContainer()->getParameter('inowas.modflow.data_folder'), $scenarioId);
+        $calculationUrl = sprintf('%s:%d/api/%s/calculation/%s/packages.json', $baseUrl, $port, $type, $calculationId);
+        $modelUrl = sprintf('%s:%d/api/%s/calculation/%s/packages/packageName.json', $baseUrl, $port, $type, $scenarioId);
+        $submitHeadsUrl = sprintf('%s:%d/api/%s/calculation/%s/heads.json', $baseUrl, $port, $type, $scenario);
+
+        $calculation->setDataFolder($dataFolder);
+        $calculation->setCalculationUrl($calculationUrl);
+        $calculation->setModelUrl($modelUrl);
+        $calculation->setSubmitHeadsUrl($submitHeadsUrl);
+        $calculation->setApiKey($this->kernel->getContainer()->get('inowas.scenarioanalysis.scenarioanalysismanager')->findApiKeyByScenarioId($scenarioId));
 
         return $calculation;
     }

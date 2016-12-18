@@ -63,7 +63,7 @@ class FlopyTest extends WebTestCase
 
     public function testAddToQueue(){
         $model = $this->entityManager->getRepository('AppBundle:ModFlowModel')->findOneBy(array('name' => "Lake_Example"));
-        $modflowCalculation = $this->flopy->addToQueue(
+        $modflowCalculation = $this->flopy->addModelToQueue(
             'http://localhost/api',
             $this->dataFolder,
             $model->getId()->toString(),
