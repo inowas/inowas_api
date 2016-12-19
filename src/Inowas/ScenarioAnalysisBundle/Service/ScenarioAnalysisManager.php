@@ -57,11 +57,16 @@ class ScenarioAnalysisManager
     }
 
     public function findApiKeyByScenarioId(Uuid $id){
-        $sa = $this->entityManager->getRepository('InowasScenarioAnalysisBundle:ScenarioAnalysis')
+        $scenario = $this->entityManager
+            ->getRepository('InowasScenarioAnalysisBundle:Scenario')
             ->findOneBy(array('id' => $id));
 
+        $sa = $this->entityManager
+            ->getRepository('InowasScenarioAnalysisBundle:ScenarioAnalysis')
+            ->findOneBy(array('scenarios' => $scenario));
+
         if (! $sa instanceof ScenarioAnalysis){
-            throw new InvalidArgumentException(sprintf('Scenarioanalysis with Id=% not found.', $id));
+            throw new InvalidArgumentException(sprintf('Scenarioanalysis with Id=%s not found.', $id));
         }
 
         $userId = $sa->getUserId();
@@ -72,7 +77,7 @@ class ScenarioAnalysisManager
             ));
 
         if (! $user instanceof User){
-            throw new InvalidArgumentException(sprintf('User with Id=% not found.', $userId));
+            throw new InvalidArgumentException(sprintf('User with Id=%s not found.', $userId));
         }
 
         return $user->getApiKey();
