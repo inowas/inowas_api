@@ -20,11 +20,11 @@ security:
         apidoc:
             pattern: ^/api/doc
             security: false
-        #api:
-        #    pattern: ^/api
-        #    guard:
-        #        authenticators:
-        #            - inowas.app.token_authenticator
+        api:
+            pattern: ^/api
+            guard:
+                authenticators:
+                    - inowas.app.token_authenticator
         main:
             pattern: ^/
             form_login:
