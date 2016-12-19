@@ -8,6 +8,7 @@ use FOS\RestBundle\Controller\FOSRestController;
 use FOS\RestBundle\Request\ParamFetcher;
 use FOS\RestBundle\View\View;
 use FOS\UserBundle\Model\UserInterface;
+use Inowas\ModflowBundle\Model\Boundary\Boundary;
 use Inowas\ModflowBundle\Model\ModflowModel;
 use Inowas\ModflowBundle\Model\StressPeriodFactory;
 use Inowas\ScenarioAnalysisBundle\Exception\InvalidArgumentException;
@@ -21,6 +22,7 @@ use Inowas\ScenarioAnalysisBundle\Model\Events\MoveWellEvent;
 use Inowas\ScenarioAnalysisBundle\Model\Events\RemoveWellEvent;
 use Inowas\ScenarioAnalysisBundle\Model\Scenario;
 use Inowas\ScenarioAnalysisBundle\Model\ScenarioAnalysis;
+use JMS\Serializer\SerializationContext;
 use Nelmio\ApiDocBundle\Annotation\ApiDoc as ApiDoc;
 use Ramsey\Uuid\Uuid;
 
@@ -65,6 +67,69 @@ class ScenarioController extends FOSRestController
     }
 
     /**
+     * Returns the scenario model details specified by scenarioId.
+     *
+     * @ApiDoc(
+     *   resource = true,
+     *   description = "Returns the model details specified by modelId.",
+     *   statusCodes = {
+     *     200 = "Returned when successful",
+     *     404 = "Returned when the model is not found"
+     *   }
+     * )
+     *
+     * @Rest\Get("/models/{modelId}/scenarios/{scenarioId}")
+     * @param $modelId
+     * @param $scenarioId
+     * @return View
+     * @throws InvalidUuidException
+     * @throws InvalidArgumentException
+     */
+    public function getScenarioAction($modelId, $scenarioId)
+    {
+        /** @var UserInterface $user */
+        $user = $this->getUser();
+
+        if (! Uuid::isValid($modelId)){
+            throw new InvalidUuidException();
+        }
+
+        $modelManager = $this->get('inowas.modflow.toolmanager');
+        $baseModel = $modelManager->findModelById($modelId);
+
+        if (! $baseModel instanceof ModflowModel){
+            throw new InvalidArgumentException();
+        }
+
+        $scenarioAnalysisManager = $this->get('inowas.scenarioanalysis.scenarioanalysismanager');
+        $scenarioAnalysis = $scenarioAnalysisManager->findByUserIdAndBasemodelId($user->getId(), Uuid::fromString($modelId));
+
+        $myScenario = null;
+        foreach ($scenarioAnalysis->getScenarios() as $scenario){
+            if ($scenario->getId()->toString() == $scenarioId){
+                $myScenario = $scenario;
+                break;
+            }
+        }
+
+        if (! $myScenario instanceof Scenario){
+            throw new InvalidArgumentException();
+        }
+
+        $model = $myScenario->applyTo($baseModel);
+
+        $view = View::create($model)
+            ->setStatusCode(200)
+            ->setSerializationContext(SerializationContext::create()
+                ->setGroups(array('details'))
+                ->enableMaxDepthChecks()
+            )
+        ;
+
+        return $view;
+    }
+
+    /**
      * Update scenario.
      *
      * @ApiDoc(
@@ -88,7 +153,6 @@ class ScenarioController extends FOSRestController
      */
     public function putScenarioAction(ParamFetcher $paramFetcher, $modelId, $scenarioId)
     {
-
         /** @var UserInterface $user */
         $user = $this->getUser();
 
@@ -106,19 +170,20 @@ class ScenarioController extends FOSRestController
         $scenarioAnalysisManager = $this->get('inowas.scenarioanalysis.scenarioanalysismanager');
         $scenarioAnalysis = $scenarioAnalysisManager->findByUserIdAndBasemodelId($user->getId(), Uuid::fromString($modelId));
 
-        $scenario = null;
+        $myScenario = null;
         foreach ($scenarioAnalysis->getScenarios() as $scenario){
             if ($scenario->getId()->toString() == $scenarioId){
+                $myScenario = $scenario;
                 break;
             }
         }
 
-        if (! $scenario instanceof Scenario){
+        if (! $myScenario instanceof Scenario){
             throw new InvalidArgumentException();
         }
 
-        $scenario->setName($paramFetcher->get('name'));
-        $scenario->setDescription($paramFetcher->get('description'));
+        $myScenario->setName($paramFetcher->get('name'));
+        $myScenario->setDescription($paramFetcher->get('description'));
         $scenarioAnalysisManager->update($scenarioAnalysis);
 
         $view = View::create($scenarioAnalysis->getScenarios()->toArray())->setStatusCode(200);
@@ -204,6 +269,82 @@ class ScenarioController extends FOSRestController
         $scenarioManager->update($scenario);
 
         $view = View::create($scenario)->setStatusCode(200);
+        return $view;
+    }
+
+    /**
+     * Returns the boundary details specified by boundary-ID.
+     *
+     * @ApiDoc(
+     *   resource = true,
+     *   description = "Returns the boundary details by id.",
+     *   statusCodes = {
+     *     200 = "Returned when successful",
+     *     404 = "Returned when the model is not found"
+     *   }
+     * )
+     *
+     * @Rest\Get("/models/{modelId}/scenarios/{scenarioId}/boundary/{boundaryId}")
+     * @param $modelId
+     * @param $scenarioId
+     * @param $boundaryId
+     * @return View
+     * @throws InvalidUuidException
+     * @throws InvalidArgumentException
+     */
+    public function getScenarioBoundariesAction($modelId, $scenarioId, $boundaryId)
+    {
+        /** @var UserInterface $user */
+        $user = $this->getUser();
+
+        if (! Uuid::isValid($modelId)){
+            throw new InvalidUuidException();
+        }
+
+        $modelManager = $this->get('inowas.modflow.toolmanager');
+        $baseModel = $modelManager->findModelById($modelId);
+
+        if (! $baseModel instanceof ModflowModel){
+            throw new InvalidArgumentException();
+        }
+
+        $scenarioAnalysisManager = $this->get('inowas.scenarioanalysis.scenarioanalysismanager');
+        $scenarioAnalysis = $scenarioAnalysisManager->findByUserIdAndBasemodelId($user->getId(), Uuid::fromString($modelId));
+
+        $myScenario = null;
+        foreach ($scenarioAnalysis->getScenarios() as $scenario){
+            if ($scenario->getId()->toString() == $scenarioId){
+                $myScenario = $scenario;
+                break;
+            }
+        }
+
+        if (! $myScenario instanceof Scenario){
+            throw new InvalidArgumentException();
+        }
+
+        $model = $myScenario->applyTo($baseModel);
+
+        $myBoundary = null;
+        /** @var Boundary $boundary */
+        foreach ($model->getBoundaries() as $boundary){
+            if ($boundary->getId()->toString() == $boundaryId){
+                $myBoundary = $boundary;
+            }
+        }
+
+        if (! $myBoundary instanceof Boundary){
+            throw new InvalidArgumentException();
+        }
+
+        $view = View::create($boundary)
+            ->setStatusCode(200)
+            ->setSerializationContext(SerializationContext::create()
+                ->setGroups(array('details'))
+                ->enableMaxDepthChecks()
+            )
+        ;
+
         return $view;
     }
 }
