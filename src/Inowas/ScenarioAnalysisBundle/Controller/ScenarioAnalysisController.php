@@ -104,16 +104,15 @@ class ScenarioAnalysisController extends FOSRestController
             $scenarioAnalysis = $scenarioAnalysisManager->create($user, $baseModel);
         }
 
-        $model = new \stdClass();
-        $model->id = $baseModel->getId()->toString();
-        $model->name = $baseModel->getName();
-        $model->description = $baseModel->getDescription();
+        $scenarioManager = $this->get('inowas.scenarioanalysis.scenariomanager');
+        $scenario = $scenarioManager->create($baseModel)
+            ->setName('Base Scenario')
+            ->setDescription($baseModel->getDescription());
+        ;
 
-        $responseData = [
-            'base_model' => $model,
-            'scenarios' => $scenarioAnalysis->getScenarios()->toArray()
-        ];
+        $scenarioAnalysis->addScenario($scenario);
+        $scenarioAnalysisManager->update($scenarioAnalysis);
 
-        return new JsonResponse($responseData);
+        return new JsonResponse($scenarioAnalysis->getScenarios());
     }
 }
