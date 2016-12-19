@@ -5,7 +5,7 @@
     xsi:schemaLocation="http://doctrine-project.org/schemas/orm/doctrine-mapping
         http://doctrine-project.org/schemas/orm/doctrine-mapping.xsd">
 
-    <entity name="Inowas\ScenarioAnalysisBundle\Model\ScenarioAnalysis" table="sca_scenarioanalysis">
+    <entity name="Inowas\ScenarioAnalysisBundle\Model\ScenarioAnalysis" table="sca_scenarioanalysis" repository-class="Inowas\ScenarioAnalysisBundle\Repository\ScenarioAnalysisRepository">
 
         <indexes>
             <index name="idx_scenarioanalysis_id" columns="id"/>
