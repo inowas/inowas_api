@@ -8,8 +8,10 @@ use FOS\RestBundle\Controller\FOSRestController;
 use FOS\RestBundle\Request\ParamFetcher;
 use FOS\RestBundle\View\View;
 use Inowas\ModflowBundle\Model\ModflowModel;
+use Inowas\ModflowBundle\Service\HeadsManager;
 use Inowas\ScenarioAnalysisBundle\Exception\InvalidArgumentException;
 use Inowas\ScenarioAnalysisBundle\Model\Scenario;
+use Inowas\ScenarioAnalysisBundle\Service\ScenarioManager;
 use JMS\Serializer\SerializationContext;
 use Nelmio\ApiDocBundle\Annotation\ApiDoc;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -152,7 +154,11 @@ class CalculationsController extends FOSRestController
         $heads = json_decode($paramFetcher->get('heads'));
         $totim = $paramFetcher->get('totim');
 
-        $scenario = $this->get('inowas.scenarioanalysis.scenariomanager')->findById($id);
+        /** @var ScenarioManager $scenarioManager */
+        $scenarioManager = $this->get('inowas.scenarioanalysis.scenariomanager');
+        $scenario = $scenarioManager->findById($id);
+
+        /** @var HeadsManager $headsManager */
         $headsManager = $this->get('inowas.modflow.headsmanager');
 
         foreach ( $heads as $layerNumber => $data){
