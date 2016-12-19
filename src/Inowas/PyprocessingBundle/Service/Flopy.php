@@ -26,6 +26,9 @@ class Flopy
     /** @var Kernel */
     protected $kernel;
 
+    /** @var  string */
+    protected $rootDir;
+
     /**
      * Flopy constructor.
      * @param KernelInterface $kernel
@@ -35,6 +38,7 @@ class Flopy
         $this->kernel = $kernel;
         $this->kernel = $kernel->getContainer();
         $this->cm = $kernel->getContainer()->get('inowas.modflow.calculationmanager');
+        $this->rootDir = $kernel->getRootDir();
     }
 
     public function addModelToQueue(ModflowModel $model)
@@ -110,7 +114,7 @@ class Flopy
      */
     public function startAsyncFlopyProcessRunner()
     {
-        $kernelRootDir = $this->kernel->getRootDir();
+        $kernelRootDir = $this->rootDir;
         $process = ProcessBuilder::create()
             ->setWorkingDirectory($kernelRootDir)
             ->add("")
