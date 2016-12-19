@@ -5,15 +5,60 @@ namespace Inowas\ScenarioAnalysisBundle\Controller;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use FOS\RestBundle\Controller\FOSRestController;
 
+use FOS\RestBundle\View\View;
 use Inowas\ModflowBundle\Model\ModflowModel;
 use Inowas\ScenarioAnalysisBundle\Exception\InvalidArgumentException;
 use Inowas\ScenarioAnalysisBundle\Model\Scenario;
+use JMS\Serializer\SerializationContext;
 use Nelmio\ApiDocBundle\Annotation\ApiDoc;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class CalculationsController extends FOSRestController
 {
+
+    /**
+     * Sends the command to calculate the scenario by scenario-id.
+     *
+     * @ApiDoc(
+     *   resource = true,
+     *   description = "Sends the command to calculate the scenario by scenario-id.",
+     *   statusCodes = {
+     *     200 = "Returned when successful",
+     *     404 = "Returned when the Calculation-Id is not found"
+     *   }
+     * )
+     *
+     *
+     * @Rest\Post("/calculation/{scenarioId}")
+     * @param $scenarioId
+     * @return View
+     * @throws
+     */
+    public function postScenarioAnalysisCalculationAction($scenarioId)
+    {
+
+        /** @var Scenario $scenario */
+        $scenario = $this->get('inowas.scenarioanalysis.scenariomanager')->findById($scenarioId);
+
+        if (! $scenario instanceof Scenario) {
+            throw new InvalidArgumentException(sprintf('There is no scenario with id = %s', $scenarioId));
+        }
+
+        $flopy = $this->get('inowas.flopy');
+        $calculation = $flopy->addScenarioToQueue($scenario);
+        $flopy->startAsyncFlopyProcessRunner();
+
+        $view = View::create($calculation)
+            ->setStatusCode(200)
+            ->setSerializationContext(SerializationContext::create()
+                ->setGroups(array('details'))
+            )
+        ;
+
+        return $view;
+    }
+
     /**
      * Return the list of available ModflowPackages from a Calculation Id.
      *
