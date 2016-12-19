@@ -117,7 +117,7 @@ class ScenarioAnalysisController extends FOSRestController
             $scenarioAnalysisManager->update($scenarioAnalysis);
         }
 
-        return new JsonResponse($scenarioAnalysis->getScenarios()->toArray());
+        return new JsonResponse((array)$scenarioAnalysis->getScenarios()->toArray());
     }
 
     /**
@@ -176,7 +176,7 @@ class ScenarioAnalysisController extends FOSRestController
         $scenarioAnalysis->addScenario($newScenario);
         $scenarioAnalysisManager->update($scenarioAnalysis);
 
-        return new JsonResponse($scenarioAnalysis->getScenarios()->toArray());
+        return new JsonResponse((array)$scenarioAnalysis->getScenarios()->toArray());
     }
 
     /**
@@ -234,6 +234,6 @@ class ScenarioAnalysisController extends FOSRestController
         $scenarioAnalysis->removeScenario($scenarioToDelete);
         $scenarioAnalysisManager->update($scenarioAnalysis);
 
-        return new JsonResponse($scenarioAnalysis->getScenarios()->toArray());
+        return new JsonResponse((array) $scenarioAnalysis->getScenarios()->toArray());
     }
 }
