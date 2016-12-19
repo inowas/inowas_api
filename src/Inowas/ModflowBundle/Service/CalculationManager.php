@@ -88,7 +88,7 @@ class CalculationManager
         $dataFolder = sprintf('%s/%s', $this->kernel->getContainer()->getParameter('inowas.modflow.data_folder'), $scenarioId);
         $calculationUrl = sprintf('%s:%d/api/%s/calculation/%s/packages.json', $baseUrl, $port, $type, $calculationId);
         $modelUrl = sprintf('%s:%d/api/%s/calculation/%s/packages/packageName.json', $baseUrl, $port, $type, $scenarioId);
-        $submitHeadsUrl = sprintf('%s:%d/api/%s/calculation/%s/heads.json', $baseUrl, $port, $type, $scenario);
+        $submitHeadsUrl = sprintf('%s:%d/api/%s/calculation/%s/heads.json', $baseUrl, $port, $type, $scenarioId);
 
         $calculation->setDataFolder($dataFolder);
         $calculation->setCalculationUrl($calculationUrl);
