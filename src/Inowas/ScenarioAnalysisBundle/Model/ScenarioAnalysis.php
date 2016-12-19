@@ -131,6 +131,8 @@ class ScenarioAnalysis
         if ($this->scenarios->contains($scenario)){
             $this->scenarios->removeElement($scenario);
         }
+
+        $this->scenarios = new ArrayCollection($this->scenarios->toArray());
         return $this;
     }
 }
