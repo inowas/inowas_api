@@ -284,7 +284,7 @@ class ScenarioController extends FOSRestController
      *   }
      * )
      *
-     * @Rest\Get("/models/{modelId}/scenarios/{scenarioId}/boundary/{boundaryId}")
+     * @Rest\Get("/models/{modelId}/scenarios/{scenarioId}/boundaries/{boundaryId}")
      * @param $modelId
      * @param $scenarioId
      * @param $boundaryId
