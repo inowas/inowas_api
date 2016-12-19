@@ -57,6 +57,8 @@ class Scenario implements \JsonSerializable
         $this->id = Uuid::uuid4();
         $this->order = $this->order+1;
         $this->events = new ArrayCollection();
+        $this->name = sprintf('%s (copy)', $this->getName());
+        $this->description = sprintf('Copy of %s', $this->getDescription());
     }
 
     /**
