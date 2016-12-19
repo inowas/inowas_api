@@ -54,6 +54,16 @@ class ScenarioManager
     }
 
     /**
+     * @return array|Scenario[]
+     */
+    public function findAll()
+    {
+        return $this->entityManager
+            ->getRepository('InowasScenarioAnalysisBundle:Scenario')
+            ->findAll();
+    }
+
+    /**
      * @param $id
      * @return Scenario|null
      * @throws InvalidArgumentException
