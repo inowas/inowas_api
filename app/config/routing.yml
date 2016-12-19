@@ -7,7 +7,6 @@ fos_user:
 
 InowasModflowBundle:
     resource: "@InowasModflowBundle/Resources/config/routing.yml"
-    prefix:    /api/modflow
 
 InowasScenarioAnalysisBundle:
     resource: "@InowasScenarioAnalysisBundle/Resources/config/routing.yml"

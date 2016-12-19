@@ -1,27 +1,39 @@
 rest_modflow_area:
     type: rest
     resource: '@InowasModflowBundle/Controller/AreaController.php'
+    prefix:    /api/modflow
 
 rest_modflow_boundary:
     type: rest
     resource: '@InowasModflowBundle/Controller/BoundaryController.php'
+    prefix:    /api/modflow
 
 rest_modflow_heads:
     type: rest
     resource: '@InowasModflowBundle/Controller/HeadsController.php'
+    prefix:    /api/modflow
+
+rest_modflow_heads_images:
+    type: rest
+    resource: '@InowasModflowBundle/Controller/HeadsImageController.php'
+    prefix:    /image/modflow
 
 rest_modflow:
     type: rest
     resource: '@InowasModflowBundle/Controller/ModelController.php'
+    prefix:    /api/modflow
 
 rest_modflow_observationpoint:
     type: rest
     resource: '@InowasModflowBundle/Controller/ObservationPointController.php'
+    prefix:    /api/modflow
 
 rest_modflow_stressperiod:
     type: rest
     resource: '@InowasModflowBundle/Controller/StressPeriodController.php'
+    prefix:    /api/modflow
 
 rest_modflow_calculation:
     type: rest
     resource: '@InowasModflowBundle/Controller/CalculationsController.php'
+    prefix:    /api/modflow
