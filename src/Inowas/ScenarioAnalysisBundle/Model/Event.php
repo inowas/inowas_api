@@ -28,5 +28,10 @@ abstract class Event
         $this->createdAt = new \DateTime('now');
     }
 
+    public function __clone()
+    {
+        $this->id = Uuid::uuid4();
+    }
+
     abstract protected function applyTo(ModflowModel $model);
 }

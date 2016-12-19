@@ -6,6 +6,7 @@ use Doctrine\ORM\EntityManager;
 use Inowas\ModflowBundle\Model\ModflowModel;
 use Inowas\ScenarioAnalysisBundle\Exception\InvalidArgumentException;
 use Inowas\ScenarioAnalysisBundle\Factory\ScenarioFactory;
+use Inowas\ScenarioAnalysisBundle\Model\Event;
 use Inowas\ScenarioAnalysisBundle\Model\Scenario;
 use Ramsey\Uuid\Uuid;
 
@@ -92,5 +93,19 @@ class ScenarioManager
         $this->entityManager->persist($scenario);
         $this->entityManager->flush();
         return $scenario;
+    }
+
+    /**
+     * @param Scenario $scenario
+     * @return Scenario
+     */
+    public function clone(Scenario $scenario){
+        $newScenario = clone $scenario;
+        /** @var Event $event */
+        foreach ($scenario->getEvents() as $event){
+            $newScenario->addEvent(clone $event);
+        }
+
+        return $newScenario;
     }
 }

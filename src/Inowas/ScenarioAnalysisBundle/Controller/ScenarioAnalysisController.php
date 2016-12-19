@@ -9,6 +9,7 @@ use FOS\UserBundle\Model\UserInterface;
 use Inowas\ModflowBundle\Model\ModflowModel;
 use Inowas\ScenarioAnalysisBundle\Exception\InvalidArgumentException;
 use Inowas\ScenarioAnalysisBundle\Exception\InvalidUuidException;
+use Inowas\ScenarioAnalysisBundle\Model\Scenario;
 use Inowas\ScenarioAnalysisBundle\Model\ScenarioAnalysis;
 use Nelmio\ApiDocBundle\Annotation\ApiDoc as ApiDoc;
 use Ramsey\Uuid\Uuid;
@@ -115,6 +116,65 @@ class ScenarioAnalysisController extends FOSRestController
             $scenarioAnalysis->addScenario($scenario);
             $scenarioAnalysisManager->update($scenarioAnalysis);
         }
+
+        return new JsonResponse($scenarioAnalysis->getScenarios()->toArray());
+    }
+
+    /**
+     * Duplicate scenario by modelId and scenarioId.
+     *
+     * @ApiDoc(
+     *   resource = true,
+     *   description = "Duplicate scenario by modelId and scenarioId.",
+     *   statusCodes = {
+     *     200 = "Returned when successful"
+     *   }
+     * )
+     *
+     * @Rest\POST("/models/{modelId}/scenarios/{scenarioId}/duplicate")
+     * @param $modelId
+     * @param $scenarioId
+     * @return JsonResponse
+     * @throws InvalidUuidException
+     * @throws InvalidArgumentException
+     */
+    public function postDuplicateScenariosAction($modelId, $scenarioId)
+    {
+
+        if (! Uuid::isValid($modelId)){
+            throw new InvalidUuidException();
+        }
+
+        /** @var ModflowModel $baseModel */
+        $baseModel = $this->get('inowas.modflow.toolmanager')->findModelById($modelId);
+        if (!$baseModel instanceof ModflowModel){
+            throw new InvalidArgumentException(sprintf('Model with id=%s does not exist.', $modelId));
+        }
+
+        /** @var UserInterface $user */
+        $user = $this->getUser();
+        $scenarioAnalysisManager = $this->get('inowas.scenarioanalysis.scenarioanalysismanager');
+        $scenarioAnalysis = $scenarioAnalysisManager->findByUserIdAndBasemodelId($user->getId(), $baseModel->getId());
+
+        if (! $scenarioAnalysis instanceof ScenarioAnalysis){
+            throw new InvalidArgumentException();
+        }
+
+        $scenarioToDuplicate = null;
+        /** @var Scenario $scenario */
+        foreach ($scenarioAnalysis->getScenarios() as $scenario){
+            if ($scenarioId == $scenario->getId()->toString()){
+                $scenarioToDuplicate = $scenario;
+            }
+        }
+
+        if (! $scenarioToDuplicate instanceof Scenario){
+            throw new InvalidArgumentException();
+        }
+
+        $newScenario = $this->get('inowas.scenarioanalysis.scenariomanager')->clone($scenarioToDuplicate);
+        $scenarioAnalysis->addScenario($newScenario);
+        $scenarioAnalysisManager->update($scenarioAnalysis);
 
         return new JsonResponse($scenarioAnalysis->getScenarios()->toArray());
     }
