@@ -5,6 +5,7 @@ namespace Inowas\ScenarioAnalysisBundle\Controller;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use FOS\RestBundle\Controller\FOSRestController;
 
+use FOS\RestBundle\Request\ParamFetcher;
 use FOS\RestBundle\View\View;
 use Inowas\ModflowBundle\Model\ModflowModel;
 use Inowas\ScenarioAnalysisBundle\Exception\InvalidArgumentException;
@@ -121,5 +122,44 @@ class CalculationsController extends FOSRestController
 
         $packageManager = $this->get('inowas.flopy.packagemanager');
         return new JsonResponse($packageManager->getPackageData($model, $soilmodel, $packageName), 200);
+    }
+
+    /**
+     * Posts the headData
+     *
+     * @ApiDoc(
+     *   resource = true,
+     *   description = "Update the model area specified by modelId.",
+     *   statusCodes = {
+     *     200 = "Returned when successful",
+     *     404 = "Returned when the model is not found"
+     *   }
+     * )
+     *
+     * @Rest\Post("/calculation/{id}/heads")
+     *
+     * @param ParamFetcher $paramFetcher
+     * @param $id
+     *
+     * @Rest\RequestParam(name="heads", nullable=false, strict=false, description="The heads array")
+     * @Rest\RequestParam(name="totim", nullable=false, strict=false, description="The totim")
+     *
+     * @return View
+     */
+    public function postScenarioHeadsAction(ParamFetcher $paramFetcher, $id)
+    {
+
+        $heads = json_decode($paramFetcher->get('heads'));
+        $totim = $paramFetcher->get('totim');
+
+        $scenario = $this->get('inowas.scenarioanalysis.scenariomanager')->findById($id);
+        $headsManager = $this->get('inowas.modflow.headsmanager');
+
+        foreach ( $heads as $layerNumber => $data){
+            $headsManager->addHead($scenario, $totim, $layerNumber, $data);
+        }
+
+        $view = View::create('OK')->setStatusCode(200);
+        return $view;
     }
 }
