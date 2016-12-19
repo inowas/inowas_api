@@ -178,4 +178,62 @@ class ScenarioAnalysisController extends FOSRestController
 
         return new JsonResponse($scenarioAnalysis->getScenarios()->toArray());
     }
+
+    /**
+     * Delete scenario by modelId and scenarioId.
+     *
+     * @ApiDoc(
+     *   resource = true,
+     *   description = "Delete scenario by modelId and scenarioId.",
+     *   statusCodes = {
+     *     200 = "Returned when successful"
+     *   }
+     * )
+     *
+     * @Rest\Delete("/models/{modelId}/scenarios/{scenarioId}/duplicate")
+     * @param $modelId
+     * @param $scenarioId
+     * @return JsonResponse
+     * @throws InvalidUuidException
+     * @throws InvalidArgumentException
+     */
+    public function deleteScenarioAction($modelId, $scenarioId)
+    {
+
+        if (! Uuid::isValid($modelId)){
+            throw new InvalidUuidException();
+        }
+
+        /** @var ModflowModel $baseModel */
+        $baseModel = $this->get('inowas.modflow.toolmanager')->findModelById($modelId);
+        if (!$baseModel instanceof ModflowModel){
+            throw new InvalidArgumentException(sprintf('Model with id=%s does not exist.', $modelId));
+        }
+
+        /** @var UserInterface $user */
+        $user = $this->getUser();
+        $scenarioAnalysisManager = $this->get('inowas.scenarioanalysis.scenarioanalysismanager');
+        $scenarioAnalysis = $scenarioAnalysisManager->findByUserIdAndBasemodelId($user->getId(), $baseModel->getId());
+
+        if (! $scenarioAnalysis instanceof ScenarioAnalysis){
+            throw new InvalidArgumentException();
+        }
+
+        $scenarioToDelete = null;
+        /** @var Scenario $scenario */
+        foreach ($scenarioAnalysis->getScenarios() as $scenario){
+            if ($scenarioId == $scenario->getId()->toString()){
+                $scenarioToDelete = $scenario;
+            }
+        }
+
+        if (! $scenarioToDelete instanceof Scenario){
+            throw new InvalidArgumentException();
+        }
+
+        $scenarioAnalysis->removeScenario($scenarioToDelete);
+        $scenarioAnalysisManager->update($scenarioAnalysis);
+
+        return new JsonResponse($scenarioAnalysis->getScenarios()->toArray());
+    }
 }

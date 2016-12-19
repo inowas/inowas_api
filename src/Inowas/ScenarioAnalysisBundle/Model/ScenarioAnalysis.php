@@ -122,4 +122,15 @@ class ScenarioAnalysis
         $this->scenarios[] = $scenario;
         return $this;
     }
+
+    /**
+     * @param Scenario $scenario
+     * @return $this
+     */
+    public function removeScenario(Scenario $scenario){
+        if ($this->scenarios->contains($scenario)){
+            $this->scenarios->removeElement($scenario);
+        }
+        return $this;
+    }
 }
