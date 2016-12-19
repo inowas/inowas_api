@@ -190,7 +190,7 @@ class ScenarioAnalysisController extends FOSRestController
      *   }
      * )
      *
-     * @Rest\Delete("/models/{modelId}/scenarios/{scenarioId}/duplicate")
+     * @Rest\Delete("/models/{modelId}/scenarios/{scenarioId}")
      * @param $modelId
      * @param $scenarioId
      * @return JsonResponse
