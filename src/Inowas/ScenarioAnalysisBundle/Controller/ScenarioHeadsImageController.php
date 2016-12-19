@@ -9,6 +9,9 @@ use FOS\RestBundle\Request\ParamFetcher;
 use FOS\RestBundle\View\View;
 use HeatMap\HeatMap;
 use Inowas\ModflowBundle\Model\Head;
+use Inowas\ModflowBundle\Service\HeadsManager;
+use Inowas\ScenarioAnalysisBundle\Model\Scenario;
+use Inowas\ScenarioAnalysisBundle\Service\ScenarioManager;
 use JMS\Serializer\SerializationContext;
 use Nelmio\ApiDocBundle\Annotation\ApiDoc;
 use Symfony\Component\HttpFoundation\Response;
@@ -43,11 +46,17 @@ class ScenarioHeadsImageController extends FOSRestController
      */
     public function getScenarioHeadsImageAction(ParamFetcher $paramFetcher, $id){
 
+        /** @var ScenarioManager $scenarioManager */
+        $scenarioManager = $this->get('inowas.scenarioanalysis.scenariomanager');
+        $scenario = $scenarioManager->findById($id);
 
-        $scenario = $this->get('inowas.scenarioanalysis.scenariomanager')->findById($id);
+        if (! $scenario instanceof Scenario){
+            throw new NotFoundHttpException(sprintf('Scenarios with Id=%s not found.', $id));
+        }
 
-        /** @var Head $head */
-        $head = $this->get('inowas.modflow.headsmanager')->getHead($scenario, $paramFetcher->get('totim'), $paramFetcher->get('layer'));
+        /** @var HeadsManager $headsManager */
+        $headsManager = $this->get('inowas.modflow.headsmanager');
+        $head = $headsManager->getHead($scenario, $paramFetcher->get('totim'), $paramFetcher->get('layer'));
 
 
         if (! $head instanceof Head){
