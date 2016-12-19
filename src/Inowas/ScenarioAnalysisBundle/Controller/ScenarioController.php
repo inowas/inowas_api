@@ -65,63 +65,6 @@ class ScenarioController extends FOSRestController
     }
 
     /**
-     * Create a new Scenario.
-     *
-     * @ApiDoc(
-     *   resource = true,
-     *   description = "Create a new Scenario.",
-     *   statusCodes = {
-     *     200 = "Returned when successful"
-     *   }
-     * )
-     *
-     * @Rest\Post("/models/{modelId}/scenarios")
-     * @param string $modelId
-     * @param ParamFetcher $paramFetcher
-     * @Rest\RequestParam(name="name", nullable=false, strict=true, description="Name of the scenario.")
-     * @Rest\RequestParam(name="description", strict=false, description="Description of scenario.", default="")
-     *
-     * @return View
-     * @throws InvalidUuidException
-     * @throws InvalidArgumentException
-     */
-    public function postScenarioAction(ParamFetcher $paramFetcher, $modelId)
-    {
-
-        /** @var UserInterface $user */
-        $user = $this->getUser();
-
-        if (! Uuid::isValid($modelId)){
-            throw new InvalidUuidException();
-        }
-
-        $modelManager = $this->get('inowas.modflow.toolmanager');
-        $baseModel = $modelManager->findModelById($modelId);
-
-        if (! $baseModel instanceof ModflowModel){
-            throw new InvalidArgumentException();
-        }
-
-        $scenarioAnalysisManager = $this->get('inowas.scenarioanalysis.scenarioanalysismanager');
-        $scenarioAnalysis = $scenarioAnalysisManager->findByUserIdAndBasemodelId($user->getId(), Uuid::fromString($modelId));
-
-        if (! $scenarioAnalysis instanceof ScenarioAnalysis){
-            $scenarioAnalysis = $scenarioAnalysisManager->create($user, $baseModel);
-            $scenarioAnalysis->setUserId($user->getId());
-        }
-
-        $scenarioManager = $this->get('inowas.scenarioanalysis.scenariomanager');
-        $scenario = $scenarioManager->create($baseModel);
-        $scenario->setName($paramFetcher->get('name'));
-        $scenario->setDescription($paramFetcher->get('description'));
-        $scenarioAnalysis->addScenario($scenario);
-        $scenarioAnalysisManager->update($scenarioAnalysis);
-
-        $view = View::create($scenario)->setStatusCode(200);
-        return $view;
-    }
-
-    /**
      * Update scenario.
      *
      * @ApiDoc(
@@ -178,7 +121,7 @@ class ScenarioController extends FOSRestController
         $scenario->setDescription($paramFetcher->get('description'));
         $scenarioAnalysisManager->update($scenarioAnalysis);
 
-        $view = View::create($scenario)->setStatusCode(200);
+        $view = View::create($scenarioAnalysis->getScenarios()->toArray())->setStatusCode(200);
         return $view;
     }
 
