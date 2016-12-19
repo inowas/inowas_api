@@ -2,6 +2,7 @@
 
 namespace Inowas\ScenarioAnalysisBundle\Command;
 
+use Inowas\ScenarioAnalysisBundle\Service\ScenarioManager;
 use Ramsey\Uuid\Uuid;
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 use Symfony\Component\Console\Input\InputArgument;
@@ -33,8 +34,9 @@ class ScenarioAddToQueueCommand extends ContainerAwareCommand
             $output->writeln(sprintf("The given id: %s is not valid", $input->getArgument('id')));
         }
 
+        /** @var ScenarioManager $sm */
         $sm = $this->getContainer()->get('inowas.scenarioanalysis.scenariomanager');
-        $scenario = $sm->findModelById($input->getArgument('id'));
+        $scenario = $sm->findById($input->getArgument('id'));
 
         $cm = $this->getContainer()->get('inowas.modflow.calculationmanager');
         $calculation = $cm->createFromScenario($scenario);
