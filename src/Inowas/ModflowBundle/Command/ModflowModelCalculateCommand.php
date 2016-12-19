@@ -19,11 +19,11 @@ class ModflowModelCalculateCommand extends ContainerAwareCommand
         // Name and description for app/console command
         $this
             ->setName('inowas:model:calculate')
-            ->setDescription('Calculate ModflowModel by Calculation Id')
+            ->setDescription('Calculate ModflowModel by CalculationId or ModelId')
             ->addArgument(
                 'id',
                 InputArgument::REQUIRED,
-                'The Calculation-Id'
+                'The CalculationId or ModelId'
             )
             ->addOption(
                 'async',
@@ -40,6 +40,10 @@ class ModflowModelCalculateCommand extends ContainerAwareCommand
         $id = $input->getArgument('id');
         $cm = $this->getContainer()->get('inowas.modflow.calculationmanager');
         $calculation = $cm->findById($id);
+
+        if (! $calculation instanceof Calculation) {
+            $calculation = $cm->findByModelId($id);
+        }
 
         if (! $calculation instanceof Calculation) {
             throw new InvalidArgumentException(sprintf('There is no calculation with ID=%s', $id));
