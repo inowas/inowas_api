@@ -72,6 +72,10 @@ class Scenario implements \JsonSerializable
      */
     public function getName(): string
     {
+        if (is_null($this->name))
+        {
+            $this->name = "";
+        }
         return $this->name;
     }
 
@@ -90,6 +94,10 @@ class Scenario implements \JsonSerializable
      */
     public function getDescription(): string
     {
+        if (is_null($this->description))
+        {
+            $this->description = "";
+        }
         return $this->description;
     }
 

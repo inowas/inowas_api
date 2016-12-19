@@ -234,6 +234,6 @@ class ScenarioAnalysisController extends FOSRestController
         $scenarioAnalysis->removeScenario($scenarioToDelete);
         $scenarioAnalysisManager->update($scenarioAnalysis);
 
-        return new JsonResponse((array) $scenarioAnalysis->getScenarios()->toArray());
+        return new JsonResponse($scenarioAnalysis->getScenarios()->toArray());
     }
 }

@@ -40,6 +40,7 @@ class ScenarioAnalysis
         $this->baseModelId = $model->getId();
         $this->userId = $user->getId();
         $this->id = Uuid::uuid4();
+        $this->scenarios = new ArrayCollection();
     }
 
     /**
@@ -132,7 +133,12 @@ class ScenarioAnalysis
             $this->scenarios->removeElement($scenario);
         }
 
-        $this->scenarios = new ArrayCollection($this->scenarios->toArray());
+        $newScenarios = new ArrayCollection();
+        foreach ($this->scenarios as $scenario){
+            $newScenarios[] = $scenario;
+        }
+
+        $this->scenarios = $newScenarios;
         return $this;
     }
 }
