@@ -32,8 +32,8 @@ class ChangeWellStressperiodsEvent extends Event
         $stressperiods = [];
         foreach ($this->payload['stressPeriods'] as $stressperiod){
             $stressperiods[] = StressPeriodFactory::createWel()
-                ->setDateTimeBegin(new \DateTime($stressperiod->date_time_begin))
-                ->setFlux($stressperiod->flux);
+                ->setDateTimeBegin(new \DateTime($stressperiod['date_time_begin']))
+                ->setFlux($stressperiod['flux']);
         }
 
         if ($boundary){
