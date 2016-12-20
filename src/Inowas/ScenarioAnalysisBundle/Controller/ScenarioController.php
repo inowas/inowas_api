@@ -225,7 +225,11 @@ class ScenarioController extends FOSRestController
         switch ($payload->event) {
             case 'ADD_WELL':
                 $name = $payload->name;
-                $scenario->addEvent(new AddWellEvent($name));
+                $point = new Point();
+                $point->setLatitude($payload->lat);
+                $point->setLongitude($payload->lng);
+                $point->setSrid($payload->srid);
+                $scenario->addEvent(new AddWellEvent($name, $point));
                 break;
             case 'CHANGE_WELL_LAYER_NUMBER':
                 $wellId = Uuid::fromString($payload->well_id);

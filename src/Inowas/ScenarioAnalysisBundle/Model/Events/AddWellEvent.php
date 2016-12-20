@@ -2,6 +2,7 @@
 
 namespace Inowas\ScenarioAnalysisBundle\Model\Events;
 
+use CrEOF\Spatial\PHP\Types\Geometry\Point;
 use Inowas\ModflowBundle\Model\Boundary\WellBoundary;
 use Inowas\ModflowBundle\Model\BoundaryFactory;
 use Inowas\ModflowBundle\Model\ModflowModel;
@@ -12,12 +13,16 @@ class AddWellEvent extends Event
     /**
      * AddWellEvent constructor.
      * @param string $name
+     * @param Point $point
      */
-    public function __construct(string $name)
+    public function __construct(string $name, Point $point)
     {
         parent::__construct();
         $this->payload = [];
         $this->payload['name'] = $name;
+        $this->payload['lat'] = $point->getLatitude();
+        $this->payload['lng'] = $point->getLongitude();
+        $this->payload['srid'] = $point->getSrid();
         return $this;
     }
 
@@ -30,6 +35,12 @@ class AddWellEvent extends Event
         /** @var WellBoundary $well */
         $well = BoundaryFactory::createWel();
         $well->setName($this->payload['name']);
+
+        $point = new Point();
+        $point->setLatitude($this->payload['lat']);
+        $point->setLongitude($this->payload['lng']);
+        $point->setSrid($this->payload['srid']);
+        $well->setGeometry($point);
         $model->addBoundary($well);
     }
 }
