@@ -139,7 +139,7 @@ class CalculationManager
     public function update(Calculation $calculation): Calculation
     {
         $this->entityManager->persist($calculation);
-        $this->entityManager->flush();
+        $this->entityManager->flush($calculation);
         return $calculation;
     }
 
@@ -150,7 +150,7 @@ class CalculationManager
     public function remove(Calculation $calculation): Calculation
     {
         $this->entityManager->remove($calculation);
-        $this->entityManager->flush();
+        $this->entityManager->flush($calculation);
         return $calculation;
     }
 }

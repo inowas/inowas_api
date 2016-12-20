@@ -90,7 +90,7 @@ class ScenarioManager
 
         if ($scenario instanceof Scenario){
             $this->entityManager->remove($scenario);
-            $this->entityManager->flush();
+            $this->entityManager->flush($scenario);
         }
     }
 
@@ -101,7 +101,7 @@ class ScenarioManager
     public function update(Scenario $scenario)
     {
         $this->entityManager->persist($scenario);
-        $this->entityManager->flush();
+        $this->entityManager->flush($scenario);
         return $scenario;
     }
 

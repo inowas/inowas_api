@@ -52,7 +52,7 @@ class ScenarioAnalysisManager
     public function update(ScenarioAnalysis $scenarioAnalysis)
     {
         $this->entityManager->persist($scenarioAnalysis);
-        $this->entityManager->flush();
+        $this->entityManager->flush($scenarioAnalysis);
         return $scenarioAnalysis;
     }
 
