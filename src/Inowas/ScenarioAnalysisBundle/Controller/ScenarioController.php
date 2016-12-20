@@ -271,8 +271,22 @@ class ScenarioController extends FOSRestController
         }
 
         $scenarioManager->update($scenario);
+        $baseModelId = $scenario->getBaseModelId();
 
-        $view = View::create($scenario)->setStatusCode(200);
+        $baseModel = $this->getDoctrine()->getRepository('InowasModflowBundle:ModflowModel')
+            ->findOneBy(array(
+                'id' => $baseModelId
+            ));
+
+        $baseModel = $scenario->applyTo($baseModel);
+        $view = View::create($baseModel)
+            ->setStatusCode(200)
+            ->setSerializationContext(SerializationContext::create()
+                ->setGroups(array('details'))
+                ->enableMaxDepthChecks()
+            )
+        ;
+
         return $view;
     }
 
