@@ -245,9 +245,10 @@ class ScenarioController extends FOSRestController
                 $wellId = Uuid::fromString($payload->well_id);
                 $stressperiods = [];
                 foreach ($payload->stress_periods as $stressperiod){
-                    $stressperiods[] = StressPeriodFactory::createWel()
-                        ->setDateTimeBegin(new \DateTime($stressperiod->date_time_begin))
-                        ->setFlux($stressperiod->flux);
+                    $stressperiods[] = [
+                        'date_time_begin' => $stressperiod->date_time_begin,
+                        'flux' => $stressperiod->flux
+                    ];
                 }
                 $scenario->addEvent(new ChangeWellStressperiodsEvent($wellId, $stressperiods));
                 break;
