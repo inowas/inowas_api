@@ -7,6 +7,9 @@ use FOS\RestBundle\Controller\FOSRestController;
 
 use FOS\RestBundle\Request\ParamFetcher;
 use FOS\RestBundle\View\View;
+use Inowas\GeoToolsBundle\Service\GeoTools;
+use Inowas\ModflowBundle\Model\Boundary\Boundary;
+use Inowas\ModflowBundle\Model\Boundary\WellBoundary;
 use Inowas\ModflowBundle\Model\ModflowModel;
 use Inowas\ModflowBundle\Service\HeadsManager;
 use Inowas\ScenarioAnalysisBundle\Exception\InvalidArgumentException;
@@ -120,8 +123,21 @@ class CalculationsController extends FOSRestController
         }
 
         $model = $scenario->applyTo($basemodel);
-        $soilmodel = $this->get('inowas.soilmodel.soilmodelmanager')->findById($model->getSoilmodelId());
 
+        /** @var GeoTools $geoTools */
+        $geoTools = $this->get('inowas.geotools.geotools');
+        /** @var WellBoundary $boundary */
+        foreach ($model->getBoundaries() as $boundary){
+            if ($boundary->getType() == 'WEL'){
+                $boundary->setActiveCells($geoTools->getActiveCellsFromPoint(
+                    $model->getBoundingBox(),
+                    $model->getGridSize(),
+                    $boundary->getGeometry())
+                );
+            }
+        }
+
+        $soilmodel = $this->get('inowas.soilmodel.soilmodelmanager')->findById($model->getSoilmodelId());
         $packageManager = $this->get('inowas.flopy.packagemanager');
         return new JsonResponse($packageManager->getPackageData($model, $soilmodel, $packageName), 200);
     }
