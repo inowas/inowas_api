@@ -37,6 +37,16 @@ abstract class ModelObject
     }
 
     /**
+     * @param Uuid $id
+     * @return ModelObject
+     */
+    public function setId(Uuid $id): ModelObject
+    {
+        $this->id = $id;
+        return $this;
+    }
+
+    /**
      * @return string
      */
     public function getName(): string

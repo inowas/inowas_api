@@ -8,6 +8,7 @@ use Inowas\ModflowBundle\Model\BoundaryFactory;
 use Inowas\ModflowBundle\Model\ModflowModel;
 use Inowas\ModflowBundle\Model\StressPeriodFactory;
 use Inowas\ScenarioAnalysisBundle\Model\Event;
+use Ramsey\Uuid\Uuid;
 
 class AddWellEvent extends Event
 {
@@ -24,6 +25,7 @@ class AddWellEvent extends Event
         $this->payload['lat'] = $point->getLatitude();
         $this->payload['lng'] = $point->getLongitude();
         $this->payload['srid'] = $point->getSrid();
+        $this->payload['id'] = Uuid::uuid4()->toString();
         return $this;
     }
 
@@ -35,6 +37,7 @@ class AddWellEvent extends Event
     {
         /** @var WellBoundary $well */
         $well = BoundaryFactory::createWel();
+        $well->setId(Uuid::fromString($this->payload['id']));
         $well->setName($this->payload['name']);
 
         $point = new Point(1,2,3);
