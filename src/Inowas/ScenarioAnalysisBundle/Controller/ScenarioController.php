@@ -337,7 +337,7 @@ class ScenarioController extends FOSRestController
             throw new InvalidArgumentException();
         }
 
-        $view = View::create($boundary)
+        $view = View::create($myBoundary)
             ->setStatusCode(200)
             ->setSerializationContext(SerializationContext::create()
                 ->setGroups(array('details'))
