@@ -36,7 +36,7 @@ class AddWellEvent extends Event
         $well = BoundaryFactory::createWel();
         $well->setName($this->payload['name']);
 
-        $point = new Point();
+        $point = new Point(1,2,3);
         $point->setLatitude($this->payload['lat']);
         $point->setLongitude($this->payload['lng']);
         $point->setSrid($this->payload['srid']);

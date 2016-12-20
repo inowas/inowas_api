@@ -225,7 +225,7 @@ class ScenarioController extends FOSRestController
         switch ($payload->event) {
             case 'ADD_WELL':
                 $name = $payload->name;
-                $point = new Point();
+                $point = new Point(1,2,3);
                 $point->setLatitude($payload->lat);
                 $point->setLongitude($payload->lng);
                 $point->setSrid($payload->srid);
@@ -261,7 +261,7 @@ class ScenarioController extends FOSRestController
                 $lat = $payload->geometry->lat;
                 $lng = $payload->geometry->lng;
                 $srid = $payload->geometry->srid;
-                $newLocation = new Point($lat, $lng,  $srid);
+                $newLocation = new Point($lat, $lng, $srid);
                 $scenario->addEvent(new MoveWellEvent($wellId, $newLocation));
                 break;
             case 'REMOVE_WELL':
