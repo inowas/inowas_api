@@ -6,6 +6,7 @@ use CrEOF\Spatial\PHP\Types\Geometry\Point;
 use Inowas\ModflowBundle\Model\Boundary\WellBoundary;
 use Inowas\ModflowBundle\Model\BoundaryFactory;
 use Inowas\ModflowBundle\Model\ModflowModel;
+use Inowas\ModflowBundle\Model\StressPeriodFactory;
 use Inowas\ScenarioAnalysisBundle\Model\Event;
 
 class AddWellEvent extends Event
@@ -41,6 +42,12 @@ class AddWellEvent extends Event
         $point->setLongitude($this->payload['lng']);
         $point->setSrid($this->payload['srid']);
         $well->setGeometry($point);
+
+        $well->addStressPeriod(
+            StressPeriodFactory::createWel()
+                ->setDateTimeBegin(new \DateTime('2015-01-01'))
+                ->setFlux(0)
+        );
         $model->addBoundary($well);
     }
 }
