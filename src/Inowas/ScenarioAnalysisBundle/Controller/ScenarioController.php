@@ -225,7 +225,7 @@ class ScenarioController extends FOSRestController
         switch ($payload->event) {
             case 'ADD_WELL':
                 $name = $payload->name;
-                $point = new Point(1,2,3);
+                $point = new Point(1,2,4326);
                 $point->setLatitude($payload->lat);
                 $point->setLongitude($payload->lng);
                 $point->setSrid($payload->srid);
