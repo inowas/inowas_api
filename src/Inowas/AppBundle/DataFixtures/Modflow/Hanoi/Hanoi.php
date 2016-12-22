@@ -19,6 +19,7 @@ use Inowas\ModflowBundle\Model\BoundingBox;
 use Inowas\ModflowBundle\Model\GridSize;
 use Inowas\ModflowBundle\Model\ModflowModel;
 use Inowas\ModflowBundle\Model\StressPeriodFactory;
+use Inowas\ModflowBundle\Service\HeadsManager;
 use Inowas\SoilmodelBundle\Factory\BoreHoleFactory;
 use Inowas\SoilmodelBundle\Factory\LayerFactory;
 use Inowas\SoilmodelBundle\Model\Property;
@@ -380,6 +381,15 @@ class Hanoi extends LoadScenarioBase implements FixtureInterface, ContainerAware
 
         $this->setActiveCells($model, $geoTools);
 
+        echo "Loading heads from file\r\n";
+        $head = $this->loadHeadsFromFile(__DIR__."/base_scenario_head_layer.json");
+
+        /** @var HeadsManager $headsmanager */
+        $headsmanager = $this->container->get('inowas.modflow.headsmanager');
+        for ($i=0; $i<$soilModel->getLayers()->count(); $i++){
+            $headsmanager->addHead($model, 364, $i, $head);
+        }
+
         $modflow = $modelManager->create();
         $modflow->setUserId($this->getOwner()->getId());
         $modflow->setModflowModel($model);
@@ -401,6 +411,27 @@ class Hanoi extends LoadScenarioBase implements FixtureInterface, ContainerAware
             echo sprintf("Set activeCells for %s.\r\n", get_class($boundary));
             $boundary->setActiveCells($geoTools->getActiveCells($boundary, $model->getBoundingBox(), $model->getGridSize()));
         }
+    }
+
+    private function loadHeadsFromFile($filename){
+
+        if (!file_exists($filename) || !is_readable($filename)) {
+            echo "File not found.\r\n";
+            return FALSE;
+        }
+
+        $headsJSON = file_get_contents($filename, FILE_USE_INCLUDE_PATH);
+        $heads = json_decode($headsJSON, true);
+
+        for ($iy = 0; $iy < count($heads); $iy++){
+            for ($ix = 0; $ix < count($heads[0]); $ix++){
+                if ($heads[$iy][$ix] <= -9999){
+                    $heads[$iy][$ix] = null;
+                }
+            }
+        }
+
+        return $heads;
     }
 
     private function loadScenarios(ModflowModel $model){
