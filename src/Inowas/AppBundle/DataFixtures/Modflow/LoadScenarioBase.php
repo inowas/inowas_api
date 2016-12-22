@@ -3,11 +3,15 @@
 namespace Inowas\AppBundle\DataFixtures\Modflow;
 
 use FOS\UserBundle\Doctrine\UserManager;
+use Inowas\AppBundle\Model\User;
 
 class LoadScenarioBase
 {
 
+    /** @var  User */
     protected $owner;
+
+    /** @var  array */
     protected $userList;
 
     public function loadUsers(UserManager $userManager)

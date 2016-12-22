@@ -8,6 +8,7 @@ use CrEOF\Spatial\PHP\Types\Geometry\Polygon;
 use Doctrine\Common\DataFixtures\FixtureInterface;
 use Doctrine\Common\Persistence\ObjectManager;
 use Inowas\AppBundle\DataFixtures\Modflow\LoadScenarioBase;
+use Inowas\GeoToolsBundle\Service\GeoTools;
 use Inowas\ModflowBundle\Model\AreaFactory;
 use Inowas\ModflowBundle\Model\Boundary\Boundary;
 use Inowas\ModflowBundle\Model\Boundary\GeneralHeadBoundary;
@@ -57,9 +58,10 @@ class RioPrimeroBaseModelDataFixture extends LoadScenarioBase implements Fixture
      */
     public function load(ObjectManager $manager)
     {
-        $geoTools = $this->container->get('inowas.geotools.geotools');
-
         $this->loadUsers($this->container->get('fos_user.user_manager'));
+
+        /** @var GeoTools $geoTools */
+        $geoTools = $this->container->get('inowas.geotools.geotools');
 
         // Add the SoilModel
         $soilModelManager = $this->container->get('inowas.soilmodel.soilmodelmanager');
@@ -465,15 +467,7 @@ class RioPrimeroBaseModelDataFixture extends LoadScenarioBase implements Fixture
         $modflowToolManager->updateModel($model);
         unset($recharge);
 
-        echo sprintf("Set activeCells for ModelArea\r\n");
-        $activeCells = $geoTools->getActiveCells($model->getArea(), $model->getBoundingBox(), $model->getGridSize());
-        $model->getArea()->setActiveCells($activeCells);
-
-        /** @var Boundary $boundary */
-        foreach ($model->getBoundaries() as $boundary){
-            echo sprintf("Set activeCells for %s.\r\n", get_class($boundary));
-            $boundary->setActiveCells($geoTools->getActiveCells($boundary, $model->getBoundingBox(), $model->getGridSize()));
-        }
+        $this->setActiveCells($model, $geoTools);
 
         /* Interpolation of all layers */
         $soilModelService = $this->container->get('inowas.soilmodel.soilmodelservice');
@@ -522,6 +516,18 @@ class RioPrimeroBaseModelDataFixture extends LoadScenarioBase implements Fixture
             $scenario = $scenarioManager->create($model);
             $scenarioManager->update($scenario);
             $scenarioAnalysisManager->update($scenarioAnalysis);
+        }
+    }
+
+    private function setActiveCells(ModflowModel $model, GeoTools $geoTools){
+        echo sprintf("Set activeCells for ModelArea\r\n");
+        $activeCells = $geoTools->getActiveCells($model->getArea(), $model->getBoundingBox(), $model->getGridSize());
+        $model->getArea()->setActiveCells($activeCells);
+
+        /** @var Boundary $boundary */
+        foreach ($model->getBoundaries() as $boundary){
+            echo sprintf("Set activeCells for %s.\r\n", get_class($boundary));
+            $boundary->setActiveCells($geoTools->getActiveCells($boundary, $model->getBoundingBox(), $model->getGridSize()));
         }
     }
 }

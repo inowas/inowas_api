@@ -8,13 +8,16 @@ use CrEOF\Spatial\PHP\Types\Geometry\Polygon;
 use Doctrine\Common\DataFixtures\FixtureInterface;
 use Doctrine\Common\Persistence\ObjectManager;
 use Inowas\AppBundle\DataFixtures\Modflow\LoadScenarioBase;
+use Inowas\GeoToolsBundle\Service\GeoTools;
 use Inowas\ModflowBundle\Model\AreaFactory;
+use Inowas\ModflowBundle\Model\Boundary\Boundary;
 use Inowas\ModflowBundle\Model\Boundary\ConstantHeadBoundary;
 use Inowas\ModflowBundle\Model\Boundary\ObservationPointFactory;
 use Inowas\ModflowBundle\Model\Boundary\RiverBoundary;
 use Inowas\ModflowBundle\Model\BoundaryFactory;
 use Inowas\ModflowBundle\Model\BoundingBox;
 use Inowas\ModflowBundle\Model\GridSize;
+use Inowas\ModflowBundle\Model\ModflowModel;
 use Inowas\ModflowBundle\Model\StressPeriodFactory;
 use Inowas\SoilmodelBundle\Factory\BoreHoleFactory;
 use Inowas\SoilmodelBundle\Factory\LayerFactory;
@@ -375,6 +378,41 @@ class Hanoi extends LoadScenarioBase implements FixtureInterface, ContainerAware
         $model->addBoundary($chdBoundary);
         $modelManager->updateModel($model);
 
+        $this->setActiveCells($model, $geoTools);
+
+        $modflow = $modelManager->create();
+        $modflow->setUserId($this->getOwner()->getId());
+        $modflow->setModflowModel($model);
+        $modelManager->update($modflow);
+
+        $this->loadScenarios($model);
+        return 1;
+
+    }
+
+
+    private function setActiveCells(ModflowModel $model, GeoTools $geoTools){
+        echo sprintf("Set activeCells for ModelArea\r\n");
+        $activeCells = $geoTools->getActiveCells($model->getArea(), $model->getBoundingBox(), $model->getGridSize());
+        $model->getArea()->setActiveCells($activeCells);
+
+        /** @var Boundary $boundary */
+        foreach ($model->getBoundaries() as $boundary){
+            echo sprintf("Set activeCells for %s.\r\n", get_class($boundary));
+            $boundary->setActiveCells($geoTools->getActiveCells($boundary, $model->getBoundingBox(), $model->getGridSize()));
+        }
+    }
+
+    private function loadScenarios(ModflowModel $model){
+        $scenarioAnalysisManager = $this->container->get('inowas.scenarioanalysis.scenarioanalysismanager');
+        $scenarioManager = $this->container->get('inowas.scenarioanalysis.scenariomanager');
+
+        foreach ($this->getUserList() as $user){
+            $scenarioAnalysis = $scenarioAnalysisManager->create($user, $model);
+            $scenario = $scenarioManager->create($model);
+            $scenarioManager->update($scenario);
+            $scenarioAnalysisManager->update($scenarioAnalysis);
+        }
     }
 
     protected function loadRowsFromCsv($filename): array {
