@@ -23,7 +23,7 @@
         }
     },
     "require": {
-        "php": ">=7.0.0",
+        "php": ">=7.1.0",
         "symfony/symfony": "3.1.*",
         "doctrine/orm": "^2.5",
         "doctrine/doctrine-bundle": "^1.6",
@@ -44,7 +44,6 @@
         "creof/doctrine2-spatial": "^1.1",
         "ramsey/uuid-doctrine": "^1.2",
         "sensiolabs/ansi-to-html": "^1.1",
-        "jakoch/phantomjs-installer": "^2.1",
         "rabbl/heatmap": "^1.0",
         "symfony/serializer": "^3.1",
         "phpunit/phpunit": "^5.6",
@@ -65,8 +64,7 @@
             "Sensio\\Bundle\\DistributionBundle\\Composer\\ScriptHandler::clearCache",
             "Sensio\\Bundle\\DistributionBundle\\Composer\\ScriptHandler::installAssets",
             "Sensio\\Bundle\\DistributionBundle\\Composer\\ScriptHandler::installRequirementsFile",
-            "Sensio\\Bundle\\DistributionBundle\\Composer\\ScriptHandler::prepareDeploymentTarget",
-            "PhantomInstaller\\Installer::installPhantomJS"
+            "Sensio\\Bundle\\DistributionBundle\\Composer\\ScriptHandler::prepareDeploymentTarget"
         ],
         "post-update-cmd": [
             "Incenteev\\ParameterHandler\\ScriptHandler::buildParameters",
@@ -74,14 +72,13 @@
             "Sensio\\Bundle\\DistributionBundle\\Composer\\ScriptHandler::clearCache",
             "Sensio\\Bundle\\DistributionBundle\\Composer\\ScriptHandler::installAssets",
             "Sensio\\Bundle\\DistributionBundle\\Composer\\ScriptHandler::installRequirementsFile",
-            "Sensio\\Bundle\\DistributionBundle\\Composer\\ScriptHandler::prepareDeploymentTarget",
-            "PhantomInstaller\\Installer::installPhantomJS"
+            "Sensio\\Bundle\\DistributionBundle\\Composer\\ScriptHandler::prepareDeploymentTarget"
         ]
     },
     "config": {
         "bin-dir": "bin",
         "platform": {
-            "php": "7.0.7"
+            "php": "7.1.0"
         }
     },
     "extra": {
