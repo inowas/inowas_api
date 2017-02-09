@@ -48,7 +48,11 @@
         "symfony/serializer": "^3.1",
         "phpunit/phpunit": "^5.6",
         "phayes/geophp": "^1.2",
-        "nelmio/cors-bundle": "^1.4"
+        "nelmio/cors-bundle": "^1.4",
+        "mattketmo/uuid-2x-bridge": "^1.0",
+        "prooph/event-store-symfony-bundle": "^0.2.2",
+        "prooph/service-bus-symfony-bundle": "^0.3.0",
+        "doctrine/doctrine-migrations-bundle": "^1.2"
       
     },
     "require-dev": {
