@@ -132,6 +132,10 @@ fos_user:
     db_driver: orm
     firewall_name: main
     user_class: Inowas\AppBundle\Model\User
+    from_email:
+        address: you@example.com
+        sender_name: You
+
 
 # FOS RestBundle Configuration
 fos_rest:
