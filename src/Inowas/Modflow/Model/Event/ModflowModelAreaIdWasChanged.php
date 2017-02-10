@@ -4,29 +4,29 @@ declare(strict_types=1);
 
 namespace Inowas\Modflow\Model\Event;
 
-use Inowas\Modflow\Model\ModflowModelArea;
+use Inowas\Modflow\Model\BoundaryId;
 use Inowas\Modflow\Model\ModflowModelId;
 use Prooph\EventSourcing\AggregateChanged;
 
-class ModflowModelAreaWasChanged extends AggregateChanged
+class ModflowModelAreaIdWasChanged extends AggregateChanged
 {
 
     /** @var  ModflowModelId */
     private $modflowModelId;
 
-    /** @var ModflowModelArea */
-    private $area;
+    /** @var BoundaryId */
+    private $areaId;
 
-    public static function withArea(ModflowModelId $modflowModelId, ModflowModelArea $area): ModflowModelAreaWasChanged
+    public static function withAreaId(ModflowModelId $modflowModelId, BoundaryId $areaId): ModflowModelAreaIdWasChanged
     {
         $event = self::occur(
             $modflowModelId->toString(), [
-                'area' => serialize($area)
+                'area_id' => $areaId->toString()
             ]
         );
 
         $event->modflowModelId = $modflowModelId;
-        $event->area = $area;
+        $event->areaId = $areaId;
 
         return $event;
     }
@@ -40,12 +40,12 @@ class ModflowModelAreaWasChanged extends AggregateChanged
         return $this->modflowModelId;
     }
 
-    public function area(): ModflowModelArea
+    public function areaId(): BoundaryId
     {
-        if ($this->area === null){
-            $this->area = unserialize($this->payload['area']);
+        if ($this->areaId === null){
+            $this->areaId = BoundaryId::fromString($this->payload['area_id']);
         }
 
-        return $this->area;
+        return $this->areaId;
     }
 }

@@ -4,7 +4,8 @@ declare(strict_types=1);
 
 namespace Inowas\ModflowBundle\Tests\Functional;
 
-use Inowas\Modflow\Model\Command\ChangeModflowModelArea;
+use Inowas\Modflow\Model\BoundaryId;
+use Inowas\Modflow\Model\Command\ChangeModflowModelAreaId;
 use Inowas\Modflow\Model\Command\ChangeModflowModelBoundingBox;
 use Inowas\Modflow\Model\Command\ChangeModflowModelDescription;
 use Inowas\Modflow\Model\Command\ChangeModflowModelGridSize;
@@ -12,15 +13,12 @@ use Inowas\Modflow\Model\Command\ChangeModflowModelName;
 use Inowas\Modflow\Model\Command\ChangeModflowModelSoilmodelId;
 use Inowas\Modflow\Model\Command\CreateModflowModel;
 use Inowas\Modflow\Model\ModflowModel;
-use Inowas\Modflow\Model\ModflowModelActiveCells;
-use Inowas\Modflow\Model\ModflowModelArea;
 use Inowas\Modflow\Model\ModflowModelBoundingBox;
 use Inowas\Modflow\Model\ModflowModelDescription;
 use Inowas\Modflow\Model\ModflowModelGridSize;
 use Inowas\Modflow\Model\ModflowModelId;
 use Inowas\Modflow\Model\ModflowModelList;
 use Inowas\Modflow\Model\ModflowModelName;
-use Inowas\Modflow\Model\Polygon;
 use Inowas\Modflow\Model\SoilModelId;
 use Prooph\ServiceBus\CommandBus;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
@@ -46,13 +44,9 @@ class ModflowModelEventSourcingTest extends KernelTestCase
         $this->commandBus->dispatch(CreateModflowModel::withId($modflowModelId));
         $this->commandBus->dispatch(ChangeModflowModelName::forModflowModel($modflowModelId, ModflowModelName::fromString('MyNewModel')));
         $this->commandBus->dispatch(ChangeModflowModelDescription::forModflowModel($modflowModelId, ModflowModelDescription::fromString('MyNewModelDescription')));
-        $this->commandBus->dispatch(ChangeModflowModelArea::forModflowModel(
-            $modflowModelId,
-            ModflowModelArea::fromPolygonAndActiveCells(
-                Polygon::fromArray([[1,2], [2,2], [3,2], [4,2], [1,2]]),
-                ModflowModelActiveCells::fromArray([[1,2], [2,2], [3,2], [4,2], [1,2]])
-            )
-        ));
+
+        $areaId = BoundaryId::generate();
+        $this->commandBus->dispatch(ChangeModflowModelAreaId::forModflowModel($modflowModelId, $areaId));
         $this->commandBus->dispatch(ChangeModflowModelBoundingBox::forModflowModel($modflowModelId, ModflowModelBoundingBox::fromCoordinates(1,2,3,4,5)));
         $this->commandBus->dispatch(ChangeModflowModelGridSize::forModflowModel($modflowModelId, ModflowModelGridSize::fromXY(50, 60)));
 
@@ -65,11 +59,7 @@ class ModflowModelEventSourcingTest extends KernelTestCase
         $this->assertEquals($modflowModelId, $model->modflowModelId());
         $this->assertEquals(ModflowModelName::fromString('MyNewModel'), $model->name());
         $this->assertEquals(ModflowModelDescription::fromString('MyNewModelDescription'), $model->description());
-        $this->assertEquals(
-            ModflowModelArea::fromPolygonAndActiveCells(
-                Polygon::fromArray([[1,2], [2,2], [3,2], [4,2], [1,2]]),
-                ModflowModelActiveCells::fromArray([[1,2], [2,2], [3,2], [4,2], [1,2]])
-            ), $model->area());
+        $this->assertEquals($areaId, $model->areaId());
         $this->assertEquals(ModflowModelBoundingBox::fromCoordinates(1,2,3,4,5), $model->boundingBox());
         $this->assertEquals(ModflowModelGridSize::fromXY(50, 60), $model->gridSize());
         $this->assertEquals($soilmodelId, $model->soilmodelId());

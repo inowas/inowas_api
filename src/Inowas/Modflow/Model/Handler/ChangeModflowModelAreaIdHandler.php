@@ -4,12 +4,12 @@ declare(strict_types=1);
 
 namespace Inowas\Modflow\Model\Handler;
 
-use Inowas\Modflow\Model\Command\ChangeModflowModelArea;
+use Inowas\Modflow\Model\Command\ChangeModflowModelAreaId;
 use Inowas\Modflow\Model\Exception\ModflowModelNotFoundException;
 use Inowas\Modflow\Model\ModflowModelList;
 use Inowas\Modflow\Model\ModflowModel;
 
-final class ChangeModflowModelAreaHandler
+final class ChangeModflowModelAreaIdHandler
 {
 
     /** @var  ModflowModelList */
@@ -23,7 +23,7 @@ final class ChangeModflowModelAreaHandler
         $this->modelList = $modelList;
     }
 
-    public function __invoke(ChangeModflowModelArea $command)
+    public function __invoke(ChangeModflowModelAreaId $command)
     {
         /** @var ModflowModel $modflowModel */
         $modflowModel = $this->modelList->get($command->modflowModelId());
@@ -32,6 +32,6 @@ final class ChangeModflowModelAreaHandler
             throw ModflowModelNotFoundException::withModelId($command->modflowModelId());
         }
 
-        $modflowModel->changeArea($command->area());
+        $modflowModel->changeAreaId($command->areaId());
     }
 }

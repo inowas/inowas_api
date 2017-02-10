@@ -6,7 +6,7 @@ prooph_service_bus:
             router:
                 type: 'prooph_service_bus.command_bus_router'
                 routes:
-                    'Inowas\Modflow\Model\Command\ChangeModflowModelArea': 'inowas.change_modflow_model_area_handler'
+                    'Inowas\Modflow\Model\Command\ChangeModflowModelAreaId': 'inowas.change_modflow_model_area_id_handler'
                     'Inowas\Modflow\Model\Command\ChangeModflowModelBoundingBox': 'inowas.change_modflow_model_bounding_box_handler'
                     'Inowas\Modflow\Model\Command\ChangeModflowModelDescription': 'inowas.change_modflow_model_description_handler'
                     'Inowas\Modflow\Model\Command\ChangeModflowModelGridSize': 'inowas.change_modflow_model_grid_size_handler'

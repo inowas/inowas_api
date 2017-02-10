@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Inowas\Modflow\Model;
 
 use Doctrine\Common\Collections\Collection;
-use Inowas\Modflow\Model\Event\ModflowModelAreaWasChanged;
+use Inowas\Modflow\Model\Event\ModflowModelAreaIdWasChanged;
 use Inowas\Modflow\Model\Event\ModflowModelBoundingBoxWasChanged;
 use Inowas\Modflow\Model\Event\ModflowModelDescriptionWasChanged;
 use Inowas\Modflow\Model\Event\ModflowModelGridSizeWasChanged;
@@ -31,8 +31,8 @@ class ModflowModel extends AggregateRoot
     /** @var ModflowModelBoundingBox  */
     private $boundingBox;
 
-    /** @var ModflowModelArea */
-    private $area;
+    /** @var BoundaryId */
+    private $areaId;
 
     /** @var SoilModelId */
     private $soilmodelId;
@@ -92,12 +92,12 @@ class ModflowModel extends AggregateRoot
         ));
     }
 
-    public function changeArea(ModflowModelArea $area)
+    public function changeAreaId(BoundaryId $areaId)
     {
-        $this->area = $area;
-        $this->recordThat(ModflowModelAreaWasChanged::withArea(
+        $this->areaId = $areaId;
+        $this->recordThat(ModflowModelAreaIdWasChanged::withAreaId(
             $this->modflowModelId,
-            $this->area
+            $this->areaId
         ));
     }
 
@@ -135,9 +135,9 @@ class ModflowModel extends AggregateRoot
         return $this->boundingBox;
     }
 
-    public function area(): ModflowModelArea
+    public function areaId(): BoundaryId
     {
-        return $this->area;
+        return $this->areaId;
     }
 
     public function soilmodelId(): SoilModelId
@@ -170,9 +170,9 @@ class ModflowModel extends AggregateRoot
         $this->boundingBox = $event->boundingBox();
     }
 
-    protected function whenModflowModelAreaWasChanged(ModflowModelAreaWasChanged $event)
+    protected function whenModflowModelAreaIdWasChanged(ModflowModelAreaIdWasChanged $event)
     {
-        $this->area = $event->area();
+        $this->areaId = $event->areaId();
     }
 
     protected function whenModflowModelSoilModelIdWasChanged(ModflowModelSoilModelIdWasChanged $event)
