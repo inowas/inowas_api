@@ -44,7 +44,7 @@ class ChangeModflowModelBoundingBox extends Command implements PayloadConstructa
             $this->payload['bounding_box']['x_max'],
             $this->payload['bounding_box']['y_min'],
             $this->payload['bounding_box']['y_max'],
-            $this->payload['bounding_box']['srind']
+            $this->payload['bounding_box']['srid']
         );
     }
 }

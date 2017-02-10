@@ -14,10 +14,10 @@ class ModflowModelArea
 
     public static function fromPolygon(Polygon $polygon): ModflowModelArea
     {
-        return new self($polygon, null);
+        return new self($polygon, ModflowModelActiveCells::fromArray([]));
     }
 
-    public static function fromPolygonAndActiveCells(Polygon $polygon, ModflowModelActiveCells $activeCells = null): ModflowModelArea
+    public static function fromPolygonAndActiveCells(Polygon $polygon, ModflowModelActiveCells $activeCells): ModflowModelArea
     {
         return new self($polygon, $activeCells);
     }

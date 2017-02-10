@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Inowas\Modflow;
+namespace Inowas\Modflow\Model;
 
 use Doctrine\Common\Collections\Collection;
 use Inowas\Modflow\Model\Event\ModflowModelAreaWasChanged;
@@ -12,13 +12,6 @@ use Inowas\Modflow\Model\Event\ModflowModelGridSizeWasChanged;
 use Inowas\Modflow\Model\Event\ModflowModelNameWasChanged;
 use Inowas\Modflow\Model\Event\ModflowModelSoilModelIdWasChanged;
 use Inowas\Modflow\Model\Event\ModflowModelWasCreated;
-use Inowas\Modflow\Model\ModflowModelArea;
-use Inowas\Modflow\Model\ModflowModelBoundingBox;
-use Inowas\Modflow\Model\ModflowModelDescription;
-use Inowas\Modflow\Model\ModflowModelGridSize;
-use Inowas\Modflow\Model\ModflowModelId;
-use Inowas\Modflow\Model\ModflowModelName;
-use Inowas\Modflow\Model\SoilModelId;
 use Prooph\EventSourcing\AggregateRoot;
 
 class ModflowModel extends AggregateRoot

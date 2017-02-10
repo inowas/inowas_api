@@ -21,10 +21,7 @@ class ModflowModelAreaWasChanged extends AggregateChanged
     {
         $event = self::occur(
             $modflowModelId->toString(), [
-                'area' => [
-                    'active_cells' => $area->activeCells(),
-                    'geometry' => $area->geometry()
-                ]
+                'area' => serialize($area)
             ]
         );
 
@@ -46,10 +43,7 @@ class ModflowModelAreaWasChanged extends AggregateChanged
     public function area(): ModflowModelArea
     {
         if ($this->area === null){
-            $this->area = ModflowModelArea::fromPolygonAndActiveCells(
-                $this->payload['area']['geometry'],
-                $this->payload['area']['active_cells']
-            );
+            $this->area = unserialize($this->payload['area']);
         }
 
         return $this->area;

@@ -31,8 +31,12 @@ class ModflowModelActiveCells
         return new self($cells);
     }
 
-    public function cells():array
+    public function cells(): array
     {
-        return $this->cells();
+        if (!is_array($this->cells)) {
+            $this->cells = [];
+        }
+
+        return $this->cells;
     }
 }

@@ -26,6 +26,7 @@ class ModflowModelBoundingBoxWasChanged extends AggregateChanged
                     'x_max' => $boundingBox->xMax(),
                     'y_min' => $boundingBox->yMin(),
                     'y_max' => $boundingBox->yMax(),
+                    'srid' => $boundingBox->srid(),
                 ]
             ]
         );
@@ -48,11 +49,12 @@ class ModflowModelBoundingBoxWasChanged extends AggregateChanged
     public function boundingBox(): ModflowModelBoundingBox
     {
         if ($this->boundingBox === null){
-            $this->boundingBox = ModflowModelBoundingBox::fromEPSG4326Coordinates(
+            $this->boundingBox = ModflowModelBoundingBox::fromCoordinates(
                 $this->payload['bounding_box']['x_min'],
                 $this->payload['bounding_box']['x_max'],
                 $this->payload['bounding_box']['y_min'],
-                $this->payload['bounding_box']['y_max']
+                $this->payload['bounding_box']['y_max'],
+                $this->payload['bounding_box']['srid']
             );
         }
 

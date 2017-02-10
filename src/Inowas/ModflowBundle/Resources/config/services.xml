@@ -22,5 +22,28 @@
             <argument type="service" id="doctrine.orm.default_entity_manager"/>
         </service>
         <service id="inowas.flopy.packagemanager" class="Inowas\ModflowBundle\Service\FlopyPackageManager"/>
+
+        <service id="inowas.change_modflow_model_area_handler" class="Inowas\Modflow\Model\Handler\ChangeModflowModelAreaHandler">
+            <argument type="service" id="modflow_model_list" />
+        </service>
+        <service id="inowas.change_modflow_model_bounding_box_handler" class="Inowas\Modflow\Model\Handler\ChangeModflowModelBoundingBoxHandler">
+            <argument type="service" id="modflow_model_list" />
+        </service>
+        <service id="inowas.change_modflow_model_description_handler" class="Inowas\Modflow\Model\Handler\ChangeModflowModelDescriptionHandler">
+            <argument type="service" id="modflow_model_list" />
+        </service>
+        <service id="inowas.change_modflow_model_grid_size_handler" class="Inowas\Modflow\Model\Handler\ChangeModflowModelGridSizeHandler">
+            <argument type="service" id="modflow_model_list" />
+        </service>
+        <service id="inowas.change_modflow_model_name_handler" class="Inowas\Modflow\Model\Handler\ChangeModflowModelNameHandler">
+            <argument type="service" id="modflow_model_list" />
+        </service>
+        <service id="inowas.change_modflow_model_soilmodel_id_handler" class="Inowas\Modflow\Model\Handler\ChangeModflowModelSoilmodelIdHandler">
+            <argument type="service" id="modflow_model_list" />
+        </service>
+        <service id="inowas.create_modflow_model_handler" class="Inowas\Modflow\Model\Handler\CreateModflowModelHandler">
+            <argument type="service" id="modflow_model_list" />
+        </service>
+
     </services>
 </container>

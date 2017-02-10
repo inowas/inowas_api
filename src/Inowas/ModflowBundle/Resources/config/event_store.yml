@@ -1,0 +1,28 @@
+prooph_event_store:
+    stores:
+        modflow_model_store:
+            adapter: 'prooph_event_store.doctrine_adapter.modflow_model_store'
+            repositories:
+                modflow_model_list:
+                    repository_class: 'Inowas\Modflow\Infrastructure\Repository\EventStoreModflowModelList'
+                    aggregate_type: 'Inowas\Modflow\Model\ModflowModel'
+                    aggregate_translator: 'prooph_event_sourcing.aggregate_translator'
+
+services:
+    prooph_event_store.doctrine_adapter.modflow_model_store:
+        class: Prooph\EventStore\Adapter\Doctrine\DoctrineEventStoreAdapter
+        arguments: ['@database_connection', '@prooph_event_store.message_factory', '@prooph_event_store.message_converter', '@prooph_event_store.payload_serializer', '%prooph_event_store.stream_table_map%']
+
+    prooph_event_sourcing.aggregate_translator:
+        class: Prooph\EventSourcing\EventStoreIntegration\AggregateTranslator
+
+    prooph_event_store_bus_bridge.transaction_manager:
+        class: Prooph\EventStoreBusBridge\TransactionManager
+        tags:
+            - { name: 'prooph_event_store.modflow_model_store.plugin' }
+
+    prooph_event_store_bus_bridge.todo_event_publisher:
+          class: Prooph\EventStoreBusBridge\EventPublisher
+          arguments: ['@prooph_service_bus.modflow_event_bus']
+          tags:
+            - { name: 'prooph_event_store.modflow_model_store.plugin' }

@@ -7,7 +7,7 @@ namespace Inowas\Modflow\Model\Handler;
 use Inowas\Modflow\Model\Command\ChangeModflowModelBoundingBox;
 use Inowas\Modflow\Model\Exception\ModflowModelNotFoundException;
 use Inowas\Modflow\Model\ModflowModelList;
-use Inowas\Modflow\ModflowModel;
+use Inowas\Modflow\Model\ModflowModel;
 
 final class ChangeModflowModelBoundingBoxHandler
 {
@@ -18,7 +18,7 @@ final class ChangeModflowModelBoundingBoxHandler
     /**
      * @param ModflowModelList $modelList
      */
-    private function __construct(ModflowModelList $modelList)
+    public function __construct(ModflowModelList $modelList)
     {
         $this->modelList = $modelList;
     }

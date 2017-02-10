@@ -7,6 +7,7 @@ namespace Inowas\Modflow\Model\Command;
 use Inowas\Modflow\Model\ModflowModelActiveCells;
 use Inowas\Modflow\Model\ModflowModelArea;
 use Inowas\Modflow\Model\ModflowModelId;
+use Inowas\Modflow\Model\Polygon;
 use Prooph\Common\Messaging\Command;
 use Prooph\Common\Messaging\PayloadConstructable;
 use Prooph\Common\Messaging\PayloadTrait;
@@ -18,16 +19,12 @@ class ChangeModflowModelArea extends Command implements PayloadConstructable
 
     public static function forModflowModel(ModflowModelId $modelId, ModflowModelArea $area): ChangeModflowModelArea
     {
-        return new self(
-            [
-                'modflow_model_id' => $modelId->toString(),
-                'area' =>
-                    [
-                        'active_cells' => $area->activeCells(),
-                        'geometry' => $area->geometry()
-                    ]
-            ]
-        );
+        $payload = [
+            'modflow_model_id' => $modelId->toString(),
+            'area' => serialize($area)
+        ];
+
+        return new self($payload);
     }
 
     public function modflowModelId(): ModflowModelId
@@ -37,14 +34,6 @@ class ChangeModflowModelArea extends Command implements PayloadConstructable
 
     public function area(): ModflowModelArea
     {
-        $area = ModflowModelArea::fromPolygon(
-            $this->payload['area']['geometry']
-        );
-
-        if ($this->payload['area']['active_cells'] instanceof ModflowModelActiveCells){
-            $area->setActiveCells($this->payload['area']['active_cells']);
-        }
-
-        return $area;
+        return unserialize($this->payload['area']);
     }
 }
