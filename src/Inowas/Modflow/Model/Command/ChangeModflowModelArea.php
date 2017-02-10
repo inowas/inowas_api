@@ -35,7 +35,7 @@ class ChangeModflowModelArea extends Command implements PayloadConstructable
         return ModflowModelId::fromString($this->payload['modflow_model_id']);
     }
 
-    public function gridSize(): ModflowModelArea
+    public function area(): ModflowModelArea
     {
         $area = ModflowModelArea::fromPolygon(
             $this->payload['area']['geometry']

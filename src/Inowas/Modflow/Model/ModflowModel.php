@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Inowas\Modflow;
 
+use Doctrine\Common\Collections\Collection;
 use Inowas\Modflow\Model\Event\ModflowModelAreaWasChanged;
 use Inowas\Modflow\Model\Event\ModflowModelBoundingBoxWasChanged;
 use Inowas\Modflow\Model\Event\ModflowModelDescriptionWasChanged;
@@ -43,8 +44,8 @@ class ModflowModel extends AggregateRoot
     /** @var SoilModelId */
     private $soilmodelId;
 
-    #/** @var ArrayCollection  */
-    #private $boundaries;
+    /** @var Collection  */
+    private $boundaries;
 
     #/** @var  \DateTime */
     #private $start;

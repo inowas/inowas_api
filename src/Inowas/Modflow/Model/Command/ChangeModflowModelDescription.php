@@ -30,7 +30,7 @@ class ChangeModflowModelDescription extends Command implements PayloadConstructa
         return ModflowModelId::fromString($this->payload['modflow_model_id']);
     }
 
-    public function name(): ModflowModelDescription
+    public function description(): ModflowModelDescription
     {
         return ModflowModelDescription::fromString($this->payload['description']);
     }

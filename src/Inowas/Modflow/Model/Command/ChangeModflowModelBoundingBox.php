@@ -37,7 +37,7 @@ class ChangeModflowModelBoundingBox extends Command implements PayloadConstructa
         return ModflowModelId::fromString($this->payload['modflow_model_id']);
     }
 
-    public function gridSize(): ModflowModelBoundingBox
+    public function boundingBox(): ModflowModelBoundingBox
     {
         return ModflowModelBoundingBox::fromCoordinates(
             $this->payload['bounding_box']['x_min'],
