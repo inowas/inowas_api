@@ -21,12 +21,17 @@ class ModflowModelBoundingBox
     /** @var float */
     private $srid;
 
-    public static function fromEPSG4326Coordinates($x1 = 0, $x2 = 0, $y1 = 0, $y2 = 0): ModflowModelBoundingBox
+    public static function fromEPSG4326Coordinates($x1, $x2, $y1, $y2): ModflowModelBoundingBox
     {
         return new self($x1, $x2, $y1, $y2, 4326);
     }
 
-    private function __construct($x1 = 0, $x2 = 0, $y1 = 0, $y2 = 0, $srid = 0)
+    public static function fromCoordinates($x1, $x2, $y1, $y2, $srid): ModflowModelBoundingBox
+    {
+        return new self($x1, $x2, $y1, $y2, $srid);
+    }
+
+    private function __construct($x1, $x2, $y1, $y2, $srid)
     {
         if ($x1 > $x2){
             $this->xMin = $x2;
