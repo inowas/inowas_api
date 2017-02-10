@@ -38,7 +38,7 @@ class ModflowModelArea
         return $this->geometry;
     }
 
-    public function activeCells(): ModflowModelActiveCells
+    public function activeCells(): ?ModflowModelActiveCells
     {
         return $this->activeCells;
     }
