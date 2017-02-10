@@ -23,6 +23,9 @@
         </service>
         <service id="inowas.flopy.packagemanager" class="Inowas\ModflowBundle\Service\FlopyPackageManager"/>
 
+        <service id="inowas.add_modflow_model_boundary_handler" class="Inowas\Modflow\Model\Handler\AddModflowModelBoundaryHandler">
+            <argument type="service" id="modflow_model_list" />
+        </service>
         <service id="inowas.change_modflow_model_area_id_handler" class="Inowas\Modflow\Model\Handler\ChangeModflowModelAreaIdHandler">
             <argument type="service" id="modflow_model_list" />
         </service>
@@ -42,6 +45,9 @@
             <argument type="service" id="modflow_model_list" />
         </service>
         <service id="inowas.create_modflow_model_handler" class="Inowas\Modflow\Model\Handler\CreateModflowModelHandler">
+            <argument type="service" id="modflow_model_list" />
+        </service>
+        <service id="inowas.remove_modflow_model_boundary_handler" class="Inowas\Modflow\Model\Handler\RemoveModflowModelBoundaryHandler">
             <argument type="service" id="modflow_model_list" />
         </service>
 

@@ -4,8 +4,11 @@ declare(strict_types=1);
 
 namespace Inowas\Modflow\Model;
 
+use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Inowas\Modflow\Model\Event\ModflowModelAreaIdWasChanged;
+use Inowas\Modflow\Model\Event\ModflowModelBoundaryWasAdded;
+use Inowas\Modflow\Model\Event\ModflowModelBoundaryWasRemoved;
 use Inowas\Modflow\Model\Event\ModflowModelBoundingBoxWasChanged;
 use Inowas\Modflow\Model\Event\ModflowModelDescriptionWasChanged;
 use Inowas\Modflow\Model\Event\ModflowModelGridSizeWasChanged;
@@ -110,6 +113,39 @@ class ModflowModel extends AggregateRoot
         ));
     }
 
+    public function addBoundary(BoundaryId $boundaryId)
+    {
+        if ($this->boundaries === null){
+            $this->boundaries = new ArrayCollection();
+        }
+
+        if (! $this->boundaries->contains($boundaryId)){
+            $this->boundaries->add($boundaryId);
+            $this->recordThat(ModflowModelBoundaryWasAdded::withBoundaryId(
+                $this->modflowModelId,
+                $boundaryId
+            ));
+        }
+    }
+
+    public function removeBoundary(BoundaryId $boundaryId)
+    {
+        if ($this->boundaries === null){
+            $this->boundaries = new ArrayCollection();
+        }
+
+        foreach ($this->boundaries as $key => $boundary){
+            if ($boundary->toString() == $boundaryId->toString()){
+                $this->boundaries->remove($key);
+
+                $this->recordThat(ModflowModelBoundaryWasRemoved::withBoundaryId(
+                    $this->modflowModelId,
+                    $boundaryId
+                ));
+            }
+        }
+    }
+
     public function modflowModelId(): ModflowModelId
     {
         return $this->modflowModelId;
@@ -145,6 +181,15 @@ class ModflowModel extends AggregateRoot
         return $this->soilmodelId;
     }
 
+    public function boundaries(): Collection
+    {
+        if ($this->boundaries === null){
+            $this->boundaries = new ArrayCollection();
+        }
+
+        return $this->boundaries;
+    }
+
     protected function whenModflowModelWasCreated(ModflowModelWasCreated $event)
     {
         $this->modflowModelId = $event->modflowModelId();
@@ -178,6 +223,30 @@ class ModflowModel extends AggregateRoot
     protected function whenModflowModelSoilModelIdWasChanged(ModflowModelSoilModelIdWasChanged $event)
     {
         $this->soilmodelId = $event->soilModelId();
+    }
+
+    protected function whenModflowModelBoundaryWasAdded(ModflowModelBoundaryWasAdded $event)
+    {
+        if ($this->boundaries === null){
+            $this->boundaries = new ArrayCollection();
+        }
+
+        if (! $this->boundaries->contains($event->boundaryId())){
+            $this->boundaries->add($event->boundaryId());
+        }
+    }
+
+    protected function whenModflowModelBoundaryWasRemoved(ModflowModelBoundaryWasRemoved $event)
+    {
+        if ($this->boundaries === null){
+            $this->boundaries = new ArrayCollection();
+        }
+
+        foreach ($this->boundaries as $key => $boundary){
+            if ($boundary->toString() == $event->boundaryId()->toString()) {
+                $this->boundaries->remove($key);
+            }
+        }
     }
 
     protected function aggregateId(): string

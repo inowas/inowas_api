@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Inowas\ModflowBundle\Tests\Functional;
 
 use Inowas\Modflow\Model\BoundaryId;
+use Inowas\Modflow\Model\Command\AddModflowModelBoundary;
 use Inowas\Modflow\Model\Command\ChangeModflowModelAreaId;
 use Inowas\Modflow\Model\Command\ChangeModflowModelBoundingBox;
 use Inowas\Modflow\Model\Command\ChangeModflowModelDescription;
@@ -12,6 +13,7 @@ use Inowas\Modflow\Model\Command\ChangeModflowModelGridSize;
 use Inowas\Modflow\Model\Command\ChangeModflowModelName;
 use Inowas\Modflow\Model\Command\ChangeModflowModelSoilmodelId;
 use Inowas\Modflow\Model\Command\CreateModflowModel;
+use Inowas\Modflow\Model\Command\RemoveModflowModelBoundary;
 use Inowas\Modflow\Model\ModflowModel;
 use Inowas\Modflow\Model\ModflowModelBoundingBox;
 use Inowas\Modflow\Model\ModflowModelDescription;
@@ -63,5 +65,14 @@ class ModflowModelEventSourcingTest extends KernelTestCase
         $this->assertEquals(ModflowModelBoundingBox::fromCoordinates(1,2,3,4,5), $model->boundingBox());
         $this->assertEquals(ModflowModelGridSize::fromXY(50, 60), $model->gridSize());
         $this->assertEquals($soilmodelId, $model->soilmodelId());
+
+        $boundaryId = BoundaryId::generate();
+        $this->commandBus->dispatch(AddModflowModelBoundary::forModflowModel($modflowModelId, $boundaryId));
+        $model = $this->repository->get($modflowModelId);
+        $this->assertCount(1, $model->boundaries());
+
+        $this->commandBus->dispatch(RemoveModflowModelBoundary::forModflowModel($modflowModelId, $boundaryId));
+        $model = $this->repository->get($modflowModelId);
+        $this->assertCount(0, $model->boundaries());
     }
 }
