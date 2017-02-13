@@ -6,7 +6,7 @@ namespace Inowas\Modflow\Model;
 
 use Ramsey\Uuid\Uuid;
 
-class SoilModelId
+class SoilModelId implements ModflowId
 {
     /** @var  Uuid */
     private $uuid;
@@ -31,7 +31,7 @@ class SoilModelId
         return $this->uuid->toString();
     }
 
-    public function sameValueAs(SoilModelId $other): bool
+    public function sameValueAs($other): bool
     {
         return $this->toString() === $other->toString();
     }

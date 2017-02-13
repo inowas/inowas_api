@@ -6,17 +6,17 @@ namespace Inowas\Modflow\Model;
 
 use Ramsey\Uuid\Uuid;
 
-class BoundaryId implements ModflowId
+class ScenarioId implements ModflowId
 {
     /** @var  Uuid */
     private $uuid;
 
-    public static function generate(): BoundaryId
+    public static function generate(): ScenarioId
     {
         return new self(Uuid::uuid4());
     }
 
-    public static function fromString(string $id): BoundaryId
+    public static function fromString(string $id): ScenarioId
     {
         return new self(Uuid::fromString($id));
     }

@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Inowas\Modflow\Model\Event;
 
 use Inowas\Modflow\Model\BoundaryId;
+use Inowas\Modflow\Model\BoundaryType;
 use Inowas\Modflow\Model\ModflowModelId;
 use Prooph\EventSourcing\AggregateChanged;
 
@@ -17,16 +18,21 @@ class ModflowModelBoundaryWasAdded extends AggregateChanged
     /** @var BoundaryId */
     private $boundaryId;
 
-    public static function withBoundaryId(ModflowModelId $modflowModelId, BoundaryId $boundaryId): ModflowModelBoundaryWasAdded
+    /** @var BoundaryType */
+    private $boundaryType;
+
+    public static function withIdAndType(ModflowModelId $modflowModelId, BoundaryId $boundaryId, BoundaryType $boundaryType): ModflowModelBoundaryWasAdded
     {
         $event = self::occur(
             $modflowModelId->toString(), [
-                'boundary_id' => $boundaryId->toString()
+                'boundary_id' => $boundaryId->toString(),
+                'boundary_type' => $boundaryType->type(),
             ]
         );
 
         $event->modflowModelId = $modflowModelId;
         $event->boundaryId = $boundaryId;
+        $event->boundaryType = $boundaryType;
 
         return $event;
     }
@@ -47,5 +53,14 @@ class ModflowModelBoundaryWasAdded extends AggregateChanged
         }
 
         return $this->boundaryId;
+    }
+
+    public function boundaryType(): BoundaryType
+    {
+        if ($this->boundaryType === null){
+            $this->boundaryType = BoundaryType::fromString($this->payload['boundary_type']);
+        }
+
+        return $this->boundaryType;
     }
 }

@@ -7,13 +7,13 @@ prooph_service_bus:
                 type: 'prooph_service_bus.command_bus_router'
                 routes:
                     'Inowas\Modflow\Model\Command\AddModflowModelBoundary': 'inowas.add_modflow_model_boundary_handler'
-                    'Inowas\Modflow\Model\Command\ChangeModflowModelAreaId': 'inowas.change_modflow_model_area_id_handler'
                     'Inowas\Modflow\Model\Command\ChangeModflowModelBoundingBox': 'inowas.change_modflow_model_bounding_box_handler'
                     'Inowas\Modflow\Model\Command\ChangeModflowModelDescription': 'inowas.change_modflow_model_description_handler'
                     'Inowas\Modflow\Model\Command\ChangeModflowModelGridSize': 'inowas.change_modflow_model_grid_size_handler'
                     'Inowas\Modflow\Model\Command\ChangeModflowModelName': 'inowas.change_modflow_model_name_handler'
                     'Inowas\Modflow\Model\Command\ChangeModflowModelSoilmodelId': 'inowas.change_modflow_model_soilmodel_id_handler'
                     'Inowas\Modflow\Model\Command\CreateModflowModel': 'inowas.create_modflow_model_handler'
+                    'Inowas\Modflow\Model\Command\CreateModflowScenario': 'inowas.create_modflow_scenario_handler'
                     'Inowas\Modflow\Model\Command\RemoveModflowModelBoundary': 'inowas.remove_modflow_model_boundary_handler'
 
     event_buses:
