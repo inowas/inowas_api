@@ -2,7 +2,7 @@
 
 namespace Inowas\Modflow\Model;
 
-class AreaBoundary extends ModflowBoundary
+class AreaBoundary extends AbstractModflowBoundary
 {
     public static function create(BoundaryId $boundaryId)
     {

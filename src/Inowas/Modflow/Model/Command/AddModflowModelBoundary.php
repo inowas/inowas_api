@@ -6,7 +6,10 @@ namespace Inowas\Modflow\Model\Command;
 
 use Inowas\Modflow\Model\BoundaryId;
 use Inowas\Modflow\Model\BoundaryType;
+use Inowas\Modflow\Model\ModflowBoundary;
 use Inowas\Modflow\Model\ModflowModelId;
+use Inowas\Modflow\Model\ScenarioId;
+use Inowas\ModflowBundle\Model\Boundary\Boundary;
 use Prooph\Common\Messaging\Command;
 use Prooph\Common\Messaging\PayloadConstructable;
 use Prooph\Common\Messaging\PayloadTrait;
@@ -16,12 +19,29 @@ class AddModflowModelBoundary extends Command implements PayloadConstructable
 
     use PayloadTrait;
 
-    public static function forModflowModel(ModflowModelId $modelId, BoundaryId $boundaryId, BoundaryType $boundaryType): AddModflowModelBoundary
+    public static function forModflowModel(
+        ModflowModelId $modelId,
+        ModflowBoundary $boundary
+    ): AddModflowModelBoundary
     {
         $payload = [
             'modflow_model_id' => $modelId->toString(),
-            'boundary_id' => $boundaryId->toString(),
-            'boundary_type' => $boundaryType->type()
+            'boundary' => serialize($boundary)
+        ];
+
+        return new self($payload);
+    }
+
+    public static function forModflowScenario(
+        ModflowModelId $modelId,
+        ScenarioId $scenarioId,
+        ModflowBoundary $boundary
+    ): AddModflowModelBoundary
+    {
+        $payload = [
+            'modflow_model_id' => $modelId->toString(),
+            'scenario_id' => $scenarioId->toString(),
+            'boundary' => serialize($boundary)
         ];
 
         return new self($payload);
@@ -32,13 +52,17 @@ class AddModflowModelBoundary extends Command implements PayloadConstructable
         return ModflowModelId::fromString($this->payload['modflow_model_id']);
     }
 
-    public function boundaryId(): BoundaryId
+    public function boundary(): ModflowBoundary
     {
-        return BoundaryId::fromString($this->payload['boundary_id']);
+        return unserialize($this->payload['boundary']);
     }
 
-    public function boundaryType(): BoundaryType
+    public function scenarioId(): ?ScenarioId
     {
-        return BoundaryType::fromString($this->payload['boundary_type']);
+        if (array_key_exists('scenario_id', $this->payload)){
+            return ScenarioId::fromString($this->payload['scenario_id']);
+        }
+
+        return null;
     }
 }

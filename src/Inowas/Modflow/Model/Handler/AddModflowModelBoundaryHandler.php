@@ -32,6 +32,12 @@ final class AddModflowModelBoundaryHandler
             throw ModflowModelNotFoundException::withModelId($command->modflowModelId());
         }
 
-        $modflowModel->addBoundary($command->boundaryId(), $command->boundaryType());
+        if ($command->scenarioId()){
+            $modflowModel->addBoundaryToScenario($command->scenarioId(), $command->boundary());
+            return;
+        }
+
+
+        $modflowModel->addBoundary($command->boundary());
     }
 }

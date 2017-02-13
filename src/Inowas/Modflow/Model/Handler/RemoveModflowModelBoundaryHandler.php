@@ -32,6 +32,11 @@ final class RemoveModflowModelBoundaryHandler
             throw ModflowModelNotFoundException::withModelId($command->modflowModelId());
         }
 
+        if ($command->scenarioId()) {
+            $modflowModel->removeBoundaryFromScenario($command->scenarioId(), $command->boundaryId());
+            return;
+        }
+
         $modflowModel->removeBoundary($command->boundaryId());
     }
 }

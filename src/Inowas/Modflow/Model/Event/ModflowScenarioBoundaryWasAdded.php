@@ -6,9 +6,10 @@ namespace Inowas\Modflow\Model\Event;
 
 use Inowas\Modflow\Model\ModflowBoundary;
 use Inowas\Modflow\Model\ModflowModelId;
+use Inowas\Modflow\Model\ScenarioId;
 use Prooph\EventSourcing\AggregateChanged;
 
-class ModflowModelBoundaryWasAdded extends AggregateChanged
+class ModflowScenarioBoundaryWasAdded extends AggregateChanged
 {
 
     /** @var  ModflowModelId */
@@ -17,19 +18,25 @@ class ModflowModelBoundaryWasAdded extends AggregateChanged
     /** @var ModflowBoundary */
     private $boundary;
 
-    public static function withBoundary(
+    /** @var ScenarioId */
+    private $scenarioId;
+
+    public static function toScenarioWithBoundary(
         ModflowModelId $modflowModelId,
+        ScenarioId $scenarioId,
         ModflowBoundary $boundary
-    ): ModflowModelBoundaryWasAdded
+    ): ModflowScenarioBoundaryWasAdded
     {
         $event = self::occur(
             $modflowModelId->toString(), [
+                'scenario_id' => $scenarioId->toString(),
                 'boundary' => serialize($boundary)
             ]
         );
 
         $event->modflowModelId = $modflowModelId;
         $event->boundary = $boundary;
+        $event->scenarioId = $scenarioId;
 
         return $event;
     }
@@ -50,5 +57,15 @@ class ModflowModelBoundaryWasAdded extends AggregateChanged
         }
 
         return $this->boundary;
+    }
+
+
+    public function scenarioId(): ScenarioId
+    {
+        if ($this->scenarioId === null) {
+            $this->scenarioId = ScenarioId::fromString($this->payload['scenario_id']);
+        }
+
+        return $this->scenarioId;
     }
 }

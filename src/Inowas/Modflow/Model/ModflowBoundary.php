@@ -2,14 +2,9 @@
 
 namespace Inowas\Modflow\Model;
 
-abstract class ModflowBoundary
+interface ModflowBoundary
 {
-    /** @var  BoundaryId */
-    protected $boundaryId;
+    public static function create(BoundaryId $boundaryId);
 
-    abstract public static function create(BoundaryId $boundaryId);
-
-    public function boundaryId(){
-        return $this->boundaryId;
-    }
+    public function boundaryId(): BoundaryId;
 }

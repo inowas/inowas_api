@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Inowas\ModflowBundle\Tests\Functional;
 
+use Inowas\Modflow\Model\AreaBoundary;
 use Inowas\Modflow\Model\BoundaryId;
-use Inowas\Modflow\Model\BoundaryType;
 use Inowas\Modflow\Model\Command\AddModflowModelBoundary;
 use Inowas\Modflow\Model\Command\ChangeModflowModelBoundingBox;
 use Inowas\Modflow\Model\Command\ChangeModflowModelDescription;
@@ -15,6 +15,7 @@ use Inowas\Modflow\Model\Command\ChangeModflowModelSoilmodelId;
 use Inowas\Modflow\Model\Command\CreateModflowModel;
 use Inowas\Modflow\Model\Command\CreateModflowScenario;
 use Inowas\Modflow\Model\Command\RemoveModflowModelBoundary;
+use Inowas\Modflow\Model\ModflowBoundary;
 use Inowas\Modflow\Model\ModflowModel;
 use Inowas\Modflow\Model\ModflowModelBoundingBox;
 use Inowas\Modflow\Model\ModflowModelDescription;
@@ -26,8 +27,8 @@ use Inowas\Modflow\Model\ModflowScenario;
 use Inowas\Modflow\Model\ModflowScenarioList;
 use Inowas\Modflow\Model\ScenarioId;
 use Inowas\Modflow\Model\SoilModelId;
+use Inowas\Modflow\Model\WellBoundary;
 use Prooph\EventStore\EventStore;
-use Prooph\EventStore\Stream\StreamName;
 use Prooph\ServiceBus\CommandBus;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 
@@ -61,7 +62,8 @@ class ModflowModelEventSourcingTest extends KernelTestCase
         $this->commandBus->dispatch(ChangeModflowModelDescription::forModflowModel($modflowModelId, ModflowModelDescription::fromString('MyNewModelDescription')));
 
         $areaId = BoundaryId::generate();
-        $this->commandBus->dispatch(AddModflowModelBoundary::forModflowModel($modflowModelId, $areaId, BoundaryType::fromString('area')));
+        $area = AreaBoundary::create($areaId);
+        $this->commandBus->dispatch(AddModflowModelBoundary::forModflowModel($modflowModelId, $area));
         $this->commandBus->dispatch(ChangeModflowModelBoundingBox::forModflowModel($modflowModelId, ModflowModelBoundingBox::fromCoordinates(1,2,3,4,5)));
         $this->commandBus->dispatch(ChangeModflowModelGridSize::forModflowModel($modflowModelId, ModflowModelGridSize::fromXY(50, 60)));
 
@@ -79,12 +81,13 @@ class ModflowModelEventSourcingTest extends KernelTestCase
         $this->assertEquals(ModflowModelGridSize::fromXY(50, 60), $model->gridSize());
         $this->assertEquals($soilmodelId, $model->soilmodelId());
 
-        $boundaryId = BoundaryId::generate();
-        $this->commandBus->dispatch(AddModflowModelBoundary::forModflowModel($modflowModelId, $boundaryId, BoundaryType::createWellType()));
+        $wellId = BoundaryId::generate();
+        $well = WellBoundary::create($wellId);
+        $this->commandBus->dispatch(AddModflowModelBoundary::forModflowModel($modflowModelId, $well));
         $model = $this->modelRepository->get($modflowModelId);
         $this->assertCount(1, $model->boundaries());
 
-        $this->commandBus->dispatch(RemoveModflowModelBoundary::forModflowModel($modflowModelId, $boundaryId));
+        $this->commandBus->dispatch(RemoveModflowModelBoundary::forModflowModel($modflowModelId, $wellId));
         $model = $this->modelRepository->get($modflowModelId);
         $this->assertCount(0, $model->boundaries());
 
@@ -98,5 +101,22 @@ class ModflowModelEventSourcingTest extends KernelTestCase
         /** @var  ModflowScenario $scenario **/
         $scenario = $model->scenarios()[$scenarioId->toString()];
         $this->assertEquals('Copy of MyNewModel', $scenario->name()->toString());
+
+        $wellId = BoundaryId::generate();
+        $well = WellBoundary::create($wellId);
+        $this->commandBus->dispatch(AddModflowModelBoundary::forModflowScenario($modflowModelId, $scenarioId, $well));
+        $model = $this->modelRepository->get($modflowModelId);
+        $scenario = $model->scenarios()[$scenarioId->toString()];
+        $this->assertCount(1, $scenario->boundaries());
+
+        /** @var ModflowBoundary $well */
+        $well = $scenario->boundaries()[$wellId->toString()];
+        $this->assertInstanceOf(WellBoundary::class, $well);
+        $this->assertEquals($wellId, $well->boundaryId());
+
+        $this->commandBus->dispatch(RemoveModflowModelBoundary::forModflowScenario($modflowModelId, $scenarioId, $well->boundaryId()));
+        $model = $this->modelRepository->get($modflowModelId);
+        $scenario = $model->scenarios()[$scenarioId->toString()];
+        $this->assertCount(0, $scenario->boundaries());
     }
 }

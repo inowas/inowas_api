@@ -2,7 +2,7 @@
 
 namespace Inowas\Modflow\Model;
 
-class WellBoundary extends AbstractModflowBoundary
+class ConstantHeadBoundary extends AbstractModflowBoundary
 {
     public static function create(BoundaryId $boundaryId)
     {
