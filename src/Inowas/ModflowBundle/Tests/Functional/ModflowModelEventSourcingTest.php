@@ -24,9 +24,9 @@ use Inowas\Modflow\Model\ModflowModelId;
 use Inowas\Modflow\Model\ModflowModelList;
 use Inowas\Modflow\Model\ModflowModelName;
 use Inowas\Modflow\Model\ModflowScenario;
-use Inowas\Modflow\Model\ModflowScenarioList;
 use Inowas\Modflow\Model\ScenarioId;
 use Inowas\Modflow\Model\SoilModelId;
+use Inowas\Modflow\Model\UserId;
 use Inowas\Modflow\Model\WellBoundary;
 use Prooph\EventStore\EventStore;
 use Prooph\ServiceBus\CommandBus;
@@ -43,9 +43,6 @@ class ModflowModelEventSourcingTest extends KernelTestCase
     /** @var ModflowModelList */
     protected $modelRepository;
 
-    /** @var ModflowScenarioList */
-    protected $scenarioRepository;
-
     public function setUp()
     {
         self::bootKernel();
@@ -56,8 +53,9 @@ class ModflowModelEventSourcingTest extends KernelTestCase
 
     public function testModflowModelCommands()
     {
+        $ownerId = UserId::generate();
         $modflowModelId = ModflowModelId::generate();
-        $this->commandBus->dispatch(CreateModflowModel::withId($modflowModelId));
+        $this->commandBus->dispatch(CreateModflowModel::byUserWithModelId($ownerId, $modflowModelId));
         $this->commandBus->dispatch(ChangeModflowModelName::forModflowModel($modflowModelId, ModflowModelName::fromString('MyNewModel')));
         $this->commandBus->dispatch(ChangeModflowModelDescription::forModflowModel($modflowModelId, ModflowModelDescription::fromString('MyNewModelDescription')));
 
@@ -73,6 +71,7 @@ class ModflowModelEventSourcingTest extends KernelTestCase
         /** @var ModflowModel $model */
         $model = $this->modelRepository->get($modflowModelId);
         $this->assertInstanceOf(ModflowModel::class, $model);
+        $this->assertEquals($ownerId, $model->ownerId());
         $this->assertEquals($modflowModelId, $model->modflowModelId());
         $this->assertEquals(ModflowModelName::fromString('MyNewModel'), $model->name());
         $this->assertEquals(ModflowModelDescription::fromString('MyNewModelDescription'), $model->description());

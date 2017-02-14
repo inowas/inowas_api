@@ -25,7 +25,11 @@ final class CreateModflowModelHandler
 
     public function __invoke(CreateModflowModel $createModflowModel)
     {
-        $modflowModel = ModflowModel::create($createModflowModel->modflowModelId());
+        $modflowModel = ModflowModel::create(
+            $createModflowModel->userId(),
+            $createModflowModel->modflowModelId()
+        );
+
         $this->modelList->add($modflowModel);
     }
 }

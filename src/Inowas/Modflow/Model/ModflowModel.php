@@ -22,6 +22,9 @@ class ModflowModel extends AggregateRoot
     /** @var  ModflowModelId */
     protected $modflowModelId;
 
+    /** @var  UserId */
+    protected $owner;
+
     /** @var ModflowModelName */
     protected $name;
 
@@ -55,11 +58,12 @@ class ModflowModel extends AggregateRoot
     #/** @var TimeUnit */
     #protected $timeUnit;
 
-    public static function create(ModflowId $modelId): ModflowModel
+    public static function create(UserId $userId, ModflowId $modelId): ModflowModel
     {
         $self = new self();
+        $self->owner = $userId;
         $self->modflowModelId = $modelId;
-        $self->recordThat(ModflowModelWasCreated::withId($modelId));
+        $self->recordThat(ModflowModelWasCreated::byUserWithModflowId($userId, $modelId));
         return $self;
     }
 
@@ -199,6 +203,11 @@ class ModflowModel extends AggregateRoot
         return $this->modflowModelId;
     }
 
+    public function ownerId(): UserId
+    {
+        return $this->owner;
+    }
+
     public function name(): ModflowModelName
     {
         return $this->name;
@@ -250,6 +259,7 @@ class ModflowModel extends AggregateRoot
     protected function whenModflowModelWasCreated(ModflowModelWasCreated $event)
     {
         $this->modflowModelId = $event->modflowModelId();
+        $this->owner = $event->userId();
     }
 
     protected function whenModflowModelNameWasChanged(ModflowModelNameWasChanged $event)
