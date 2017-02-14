@@ -67,37 +67,41 @@ class ModflowModel extends AggregateRoot
         return $self;
     }
 
-    public function changeName(ModflowModelName $name)
+    public function changeName(UserId $userId, ModflowModelName $name)
     {
         $this->name = $name;
-        $this->recordThat(ModflowModelNameWasChanged::withName(
+        $this->recordThat(ModflowModelNameWasChanged::byUserWithName(
+            $userId,
             $this->modflowModelId,
             $this->name
         ));
     }
 
-    public function changeDescription(ModflowModelDescription $description)
+    public function changeDescription(UserId $userId, ModflowModelDescription $description)
     {
         $this->description = $description;
         $this->recordThat(ModflowModelDescriptionWasChanged::withDescription(
+            $userId,
             $this->modflowModelId,
             $this->description)
         );
     }
 
-    public function changeGridSize(ModflowModelGridSize $gridSize)
+    public function changeGridSize(UserId $userId, ModflowModelGridSize $gridSize)
     {
         $this->gridSize = $gridSize;
         $this->recordThat(ModflowModelGridSizeWasChanged::withGridSize(
+            $userId,
             $this->modflowModelId,
             $this->gridSize
         ));
     }
 
-    public function changeBoundingBox(ModflowModelBoundingBox $boundingBox)
+    public function changeBoundingBox(UserId $userId, ModflowModelBoundingBox $boundingBox)
     {
         $this->boundingBox = $boundingBox;
         $this->recordThat(ModflowModelBoundingBoxWasChanged::withBoundingBox(
+            $userId,
             $this->modflowModelId,
             $this->boundingBox
         ));
@@ -176,14 +180,14 @@ class ModflowModel extends AggregateRoot
         return array_key_exists($boundaryId->toString(), $this->boundaries());
     }
 
-    public function createScenario(ScenarioId $scenarioId): void
+    public function createScenario(UserId $userId, ScenarioId $scenarioId): void
     {
         if ($this->containsScenario($scenarioId)){
             throw new \Exception;
         }
 
-        $this->scenarios[$scenarioId->toString()] = ModflowScenario::createFromModflowModel($scenarioId, $this);
-        $this->recordThat(ModflowScenarioWasCreated::withId($this->modflowModelId, $scenarioId));
+        $this->scenarios[$scenarioId->toString()] = ModflowScenario::createFromModflowModel($userId, $scenarioId, $this);
+        $this->recordThat(ModflowScenarioWasCreated::withId($userId, $this->modflowModelId, $scenarioId));
     }
 
     public function removeScenario(ModflowScenario $scenario): void
@@ -264,22 +268,30 @@ class ModflowModel extends AggregateRoot
 
     protected function whenModflowModelNameWasChanged(ModflowModelNameWasChanged $event)
     {
-        $this->name = $event->name();
+        if ($event->userId()->sameValueAs($this->ownerId())){
+            $this->name = $event->name();
+        }
     }
 
     protected function whenModflowModelDescriptionWasChanged(ModflowModelDescriptionWasChanged $event)
     {
-        $this->description = $event->description();
+        if ($event->userId()->sameValueAs($this->ownerId())){
+            $this->description = $event->description();
+        }
     }
 
     protected function whenModflowModelGridSizeWasChanged(ModflowModelGridSizeWasChanged $event)
     {
-        $this->gridSize = $event->gridSize();
+        if ($event->userId()->sameValueAs($this->ownerId())) {
+            $this->gridSize = $event->gridSize();
+        }
     }
 
     protected function whenModflowModelBoundingBoxWasChanged(ModflowModelBoundingBoxWasChanged $event)
     {
-        $this->boundingBox = $event->boundingBox();
+        if ($event->userId()->sameValueAs($this->ownerId())){
+            $this->boundingBox = $event->boundingBox();
+        }
     }
 
     protected function whenModflowModelSoilModelIdWasChanged(ModflowModelSoilModelIdWasChanged $event)
@@ -309,7 +321,7 @@ class ModflowModel extends AggregateRoot
     protected function whenModflowScenarioWasCreated(ModflowScenarioWasCreated $event)
     {
         if (! $this->containsScenario($event->scenarioId())){
-            $this->scenarios[$event->scenarioId()->toString()] = ModflowScenario::createFromModflowModel($event->scenarioId(), $this);
+            $this->scenarios[$event->scenarioId()->toString()] = ModflowScenario::createFromModflowModel($event->userId(), $event->scenarioId(), $this);
         }
     }
 

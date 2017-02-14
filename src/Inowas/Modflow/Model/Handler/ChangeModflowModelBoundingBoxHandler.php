@@ -32,6 +32,9 @@ final class ChangeModflowModelBoundingBoxHandler
             throw ModflowModelNotFoundException::withModelId($command->modflowModelId());
         }
 
-        $modflowModel->changeBoundingBox($command->boundingBox());
+        if ($command->userId()->sameValueAs($modflowModel->ownerId()))
+        {
+            $modflowModel->changeBoundingBox($command->userId(), $command->boundingBox());
+        }
     }
 }

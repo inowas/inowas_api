@@ -6,6 +6,7 @@ namespace Inowas\Modflow\Model\Command;
 
 use Inowas\Modflow\Model\ModflowModelBoundingBox;
 use Inowas\Modflow\Model\ModflowModelId;
+use Inowas\Modflow\Model\UserId;
 use Prooph\Common\Messaging\Command;
 use Prooph\Common\Messaging\PayloadConstructable;
 use Prooph\Common\Messaging\PayloadTrait;
@@ -15,10 +16,11 @@ class ChangeModflowModelBoundingBox extends Command implements PayloadConstructa
 
     use PayloadTrait;
 
-    public static function forModflowModel(ModflowModelId $modelId, ModflowModelBoundingBox $boundingBox): ChangeModflowModelBoundingBox
+    public static function forModflowModel(UserId $userId, ModflowModelId $modelId, ModflowModelBoundingBox $boundingBox): ChangeModflowModelBoundingBox
     {
         return new self(
             [
+                'user_id' => $userId->toString(),
                 'modflow_model_id' => $modelId->toString(),
                 'bounding_box' =>
                     [
@@ -46,5 +48,10 @@ class ChangeModflowModelBoundingBox extends Command implements PayloadConstructa
             $this->payload['bounding_box']['y_max'],
             $this->payload['bounding_box']['srid']
         );
+    }
+
+    public function userId(): UserId
+    {
+        return UserId::fromString($this->payload['user_id']);
     }
 }

@@ -8,6 +8,7 @@ use Inowas\Modflow\Model\Command\ChangeModflowModelGridSize;
 use Inowas\Modflow\Model\Exception\ModflowModelNotFoundException;
 use Inowas\Modflow\Model\ModflowModelList;
 use Inowas\Modflow\Model\ModflowModel;
+use Inowas\Modflow\Model\UserId;
 
 final class ChangeModflowModelGridSizeHandler
 {
@@ -32,6 +33,8 @@ final class ChangeModflowModelGridSizeHandler
             throw ModflowModelNotFoundException::withModelId($command->modflowModelId());
         }
 
-        $modflowModel->changeGridSize($command->gridSize());
+        if ($command->userId()->sameValueAs($modflowModel->ownerId())){
+            $modflowModel->changeGridSize($command->userId(), $command->gridSize());
+        }
     }
 }

@@ -32,6 +32,8 @@ final class ChangeModflowModelNameHandler
             throw ModflowModelNotFoundException::withModelId($command->modflowModelId());
         }
 
-        $modflowModel->changeName($command->name());
+        if ($modflowModel->ownerId()->toString() == $command->userId()->toString()){
+            $modflowModel->changeName($command->userId(), $command->name());
+        }
     }
 }

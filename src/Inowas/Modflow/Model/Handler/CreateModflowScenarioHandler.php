@@ -29,6 +29,6 @@ final class CreateModflowScenarioHandler
     {
         /** @var ModflowModel $modflowModel */
         $modflowModel = $this->modelList->get($createModflowScenario->modflowModelId());
-        $modflowModel->createScenario($createModflowScenario->scenarioId());
+        $modflowModel->createScenario($createModflowScenario->userId(), $createModflowScenario->scenarioId());
     }
 }

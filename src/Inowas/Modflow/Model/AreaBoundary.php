@@ -4,10 +4,22 @@ namespace Inowas\Modflow\Model;
 
 class AreaBoundary extends AbstractModflowBoundary
 {
-    public static function create(BoundaryId $boundaryId)
+    public static function create(BoundaryId $boundaryId): AreaBoundary
     {
-        $static = new self();
-        $static->boundaryId = $boundaryId;
-        return $static;
+        return new self($boundaryId);
+    }
+
+    /**
+     * @param BoundaryName $name
+     * @return AreaBoundary
+     */
+    public function setName(BoundaryName $name): AreaBoundary
+    {
+        return new self($this->boundaryId, $name, $this->geometry);
+    }
+
+    public function setGeometry(BoundaryGeometry $geometry): AreaBoundary
+    {
+        return new self($this->boundaryId, $this->name, $geometry);
     }
 }

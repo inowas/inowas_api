@@ -6,6 +6,7 @@ namespace Inowas\Modflow\Model\Event;
 
 use Inowas\Modflow\Model\ModflowModelBoundingBox;
 use Inowas\Modflow\Model\ModflowModelId;
+use Inowas\Modflow\Model\UserId;
 use Prooph\EventSourcing\AggregateChanged;
 
 class ModflowModelBoundingBoxWasChanged extends AggregateChanged
@@ -17,10 +18,14 @@ class ModflowModelBoundingBoxWasChanged extends AggregateChanged
     /** @var ModflowModelBoundingBox */
     private $boundingBox;
 
-    public static function withBoundingBox(ModflowModelId $modflowModelId, ModflowModelBoundingBox $boundingBox): ModflowModelBoundingBoxWasChanged
+    /** @var  UserId */
+    private $userId;
+
+    public static function withBoundingBox(UserId $userId, ModflowModelId $modflowModelId, ModflowModelBoundingBox $boundingBox): ModflowModelBoundingBoxWasChanged
     {
         $event = self::occur(
             $modflowModelId->toString(), [
+                'user_id' => $userId->toString(),
                 'bounding_box' => [
                     'x_min' => $boundingBox->xMin(),
                     'x_max' => $boundingBox->xMax(),
@@ -33,6 +38,7 @@ class ModflowModelBoundingBoxWasChanged extends AggregateChanged
 
         $event->modflowModelId = $modflowModelId;
         $event->boundingBox = $boundingBox;
+        $event->userId = $userId;
 
         return $event;
     }
@@ -59,5 +65,14 @@ class ModflowModelBoundingBoxWasChanged extends AggregateChanged
         }
 
         return $this->boundingBox;
+    }
+
+    public function userId(): UserId
+    {
+        if ($this->userId === null){
+            $this->userId = UserId::fromString($this->payload['user_id']);
+        }
+
+        return $this->userId;
     }
 }

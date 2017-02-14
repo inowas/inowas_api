@@ -2,6 +2,7 @@
 
 namespace AppBundle\DataFixtures\ORM\Scenarios;
 
+use AppBundle\Entity\User;
 use FOS\UserBundle\Doctrine\UserManager;
 
 class LoadScenarioBase
@@ -41,7 +42,8 @@ class LoadScenarioBase
         $userManager->updateUser($this->owner);
     }
 
-    public function getOwner(){
+    public function getOwner(): User
+    {
         return $this->owner;
     }
 

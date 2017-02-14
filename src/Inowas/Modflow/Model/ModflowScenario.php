@@ -11,16 +11,17 @@ class ModflowScenario extends ModflowModel
     /** @var  ScenarioId */
     private $scenarioId;
 
-    public static function createFromModflowModel(ScenarioId $scenarioId, ModflowModel $baseModel): ModflowScenario
+    public static function createFromModflowModel(UserId $userId, ScenarioId $scenarioId, ModflowModel $baseModel): ModflowScenario
     {
         $self = new self();
         $self->scenarioId = $scenarioId;
+        $self->owner = $userId;
         $self->modflowModelId = $baseModel->modflowModelId();
         $self->name = ModflowModelName::fromString('Copy of '.$baseModel->name()->toString());
         $self->description = $baseModel->description();
         $self->boundaries = unserialize(serialize($baseModel->boundaries()));
 
-        $self->recordThat(ModflowScenarioWasCreated::withId($baseModel->modflowModelId(), $scenarioId));
+        $self->recordThat(ModflowScenarioWasCreated::withId($userId, $baseModel->modflowModelId(), $scenarioId));
         return $self;
     }
 

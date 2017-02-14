@@ -4,12 +4,9 @@ declare(strict_types=1);
 
 namespace Inowas\Modflow\Model\Command;
 
-use Inowas\Modflow\Model\BoundaryId;
-use Inowas\Modflow\Model\BoundaryType;
 use Inowas\Modflow\Model\ModflowBoundary;
 use Inowas\Modflow\Model\ModflowModelId;
 use Inowas\Modflow\Model\ScenarioId;
-use Inowas\ModflowBundle\Model\Boundary\Boundary;
 use Prooph\Common\Messaging\Command;
 use Prooph\Common\Messaging\PayloadConstructable;
 use Prooph\Common\Messaging\PayloadTrait;

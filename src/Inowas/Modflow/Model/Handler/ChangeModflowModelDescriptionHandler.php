@@ -32,6 +32,8 @@ final class ChangeModflowModelDescriptionHandler
             throw ModflowModelNotFoundException::withModelId($command->modflowModelId());
         }
 
-        $modflowModel->changeDescription($command->description());
+        if ($command->userId()->toString() == $modflowModel->ownerId()->toString()){
+            $modflowModel->changeDescription($command->userId(), $command->description());
+        }
     }
 }
