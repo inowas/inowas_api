@@ -33,7 +33,7 @@ class ModflowModelWasCreated extends AggregateChanged
     public function modflowModelId(): ModflowIdInterface
     {
         if ($this->modflowModelId === null){
-            $this->modflowModelId = ModflowId::fromString($this->modflowId());
+            $this->modflowModelId = ModflowId::fromString($this->aggregateId());
         }
 
         return $this->modflowModelId;

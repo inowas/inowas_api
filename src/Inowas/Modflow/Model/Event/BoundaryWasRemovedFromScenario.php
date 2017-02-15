@@ -51,7 +51,7 @@ class BoundaryWasRemovedFromScenario extends AggregateChanged
     public function modflowId(): ModflowId
     {
         if ($this->modflowId === null){
-            $this->modflowId = ModflowId::fromString($this->modflowId());
+            $this->modflowId = ModflowId::fromString($this->aggregateId());
         }
 
         return $this->modflowId;

@@ -8,6 +8,7 @@ imports:
     - { resource: "@InowasScenarioAnalysisBundle/Resources/config/services.xml" }
 
     - { resource: "@InowasModflowBundle/Resources/config/event_store.yml" }
+    - { resource: "@InowasModflowBundle/Resources/config/projection.yml" }
     - { resource: "@InowasModflowBundle/Resources/config/service_bus.yml" }
     - { resource: "@InowasModflowBundle/Resources/config/services.xml" }
 

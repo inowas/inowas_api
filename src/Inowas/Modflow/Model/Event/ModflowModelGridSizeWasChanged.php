@@ -42,7 +42,7 @@ class ModflowModelGridSizeWasChanged extends AggregateChanged
     public function modflowModelId(): ModflowId
     {
         if ($this->modflowModelId === null){
-            $this->modflowModelId = ModflowId::fromString($this->modflowId());
+            $this->modflowModelId = ModflowId::fromString($this->aggregateId());
         }
 
         return $this->modflowModelId;

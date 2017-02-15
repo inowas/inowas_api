@@ -4,6 +4,7 @@ namespace Inowas\ModflowBundle\Model;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
+use Inowas\Modflow\Model\ModflowId;
 use Inowas\ModflowBundle\Model\Boundary\Boundary;
 use Inowas\ModflowBundle\Model\Boundary\StressPeriod;
 use Inowas\SoilmodelBundle\Model\Soilmodel;
@@ -48,6 +49,13 @@ class ModflowModel implements ModflowModelInterface
 
     /** @var TimeUnit */
     private $timeUnit;
+
+    public static function createWithModflowId(ModflowId $id): ModflowModel
+    {
+        $self = new self();
+        $self->id = Uuid::fromString($id->toString());
+        return $self;
+    }
 
     public function __construct()
     {

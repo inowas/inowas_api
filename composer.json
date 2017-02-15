@@ -52,7 +52,10 @@
         "mattketmo/uuid-2x-bridge": "^1.0",
         "prooph/event-store-symfony-bundle": "^0.2.2",
         "prooph/service-bus-symfony-bundle": "^0.3.0",
-        "doctrine/doctrine-migrations-bundle": "^1.2"
+        "doctrine/doctrine-migrations-bundle": "^1.2",
+        "prooph/event-store-bus-bridge": "^2.0",
+        "prooph/event-store-doctrine-adapter": "^3.3",
+        "prooph/event-sourcing": "^4.0"
       
     },
     "require-dev": {

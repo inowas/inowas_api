@@ -21,6 +21,7 @@ use Inowas\Modflow\Model\Command\CreateModflowModel;
 use Inowas\Modflow\Model\Command\AddModflowScenario;
 use Inowas\Modflow\Model\Command\RemoveBoundary;
 use Inowas\Modflow\Model\Command\UpdateBoundary;
+use Inowas\Modflow\Model\Event\ModflowModelWasCreated;
 use Inowas\Modflow\Model\LayerNumber;
 use Inowas\Modflow\Model\ModflowBoundary;
 use Inowas\Modflow\Model\ModflowModel;
@@ -38,6 +39,7 @@ use Inowas\Modflow\Model\WellType;
 use Inowas\ModflowBundle\Model\BoundingBox;
 use Prooph\EventStore\EventStore;
 use Prooph\ServiceBus\CommandBus;
+use Prooph\ServiceBus\EventBus;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 
 class ModflowModelEventSourcingTest extends KernelTestCase
@@ -45,11 +47,17 @@ class ModflowModelEventSourcingTest extends KernelTestCase
     /** @var  CommandBus */
     protected $commandBus;
 
+    /** @var  EventBus */
+    private $eventBus;
+
     /** @var  EventStore */
     protected $eventStore;
 
     /** @var  GeoTools */
     protected $geoTools;
+
+
+    protected $projection;
 
     /** @var ModflowModelList */
     protected $modelRepository;
@@ -58,9 +66,23 @@ class ModflowModelEventSourcingTest extends KernelTestCase
     {
         self::bootKernel();
         $this->commandBus = static::$kernel->getContainer()->get('prooph_service_bus.modflow_command_bus');
+        $this->eventBus = static::$kernel->getContainer()->get('prooph_service_bus.modflow_event_bus');
         $this->eventStore = static::$kernel->getContainer()->get('prooph_event_store.modflow_model_store');
         $this->modelRepository = static::$kernel->getContainer()->get('modflow_model_list');
         $this->geoTools = static::$kernel->getContainer()->get('inowas.geotools.geotools');
+        $this->projection = static::$kernel->getContainer()->get('inowas.modflow_projection.model_scenarios');
+    }
+
+    public function testModflowEventBus()
+    {
+        $ownerId = UserId::generate();
+        $modflowModelId = ModflowId::generate();
+        $event = ModflowModelWasCreated::byUserWithModflowId(
+            $ownerId,
+            $modflowModelId
+        );
+
+        $this->eventBus->dispatch($event);
     }
 
     public function testModflowModelCommands()
@@ -114,6 +136,16 @@ class ModflowModelEventSourcingTest extends KernelTestCase
         $model = $this->modelRepository->get($modflowModelId);
         $this->assertCount(1, $model->scenarios());
 
+        $scenarioId = ModflowId::generate();
+        $this->commandBus->dispatch(AddModflowScenario::from($ownerId, $modflowModelId, $scenarioId));
+        $scenarioId = ModflowId::generate();
+        $this->commandBus->dispatch(AddModflowScenario::from($ownerId, $modflowModelId, $scenarioId));
+        $scenarioId = ModflowId::generate();
+        $this->commandBus->dispatch(AddModflowScenario::from($ownerId, $modflowModelId, $scenarioId));
+
+        $model = $this->modelRepository->get($modflowModelId);
+        $this->assertCount(4, $model->scenarios());
+
         /** @var ModflowModel $scenario * */
         $scenario = $model->scenarios()[$scenarioId->toString()];
         $this->assertInstanceOf(ModflowModel::class, $scenario);
@@ -163,6 +195,8 @@ class ModflowModelEventSourcingTest extends KernelTestCase
         $scenario = $model->scenarios()[$scenarioId->toString()];
         $well = $scenario->boundaries()[$scenarioWellId->toString()];
         $this->assertEquals('testScenario', $well->test);
+
+        dump($this->projection->getData());
     }
 
 

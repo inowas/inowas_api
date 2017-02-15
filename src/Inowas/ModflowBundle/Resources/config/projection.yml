@@ -1,0 +1,3 @@
+services:
+    inowas.modflow_projection.model_scenarios:
+        class: Inowas\Modflow\Projection\ModelScenariosProjector

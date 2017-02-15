@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Inowas\Modflow\Model\Event;
 
+use Inowas\Modflow\Model\ModflowId;
 use Inowas\Modflow\Model\ModflowIdInterface;
 use Inowas\Modflow\Model\ModflowModelName;
 use Inowas\Modflow\Model\UserId;
@@ -40,7 +41,7 @@ class ModflowModelNameWasChanged extends AggregateChanged
     public function modflowId(): ModflowIdInterface
     {
         if ($this->modflowId === null){
-            $this->modflowId = ModflowIdInterface::fromString($this->modflowId());
+            $this->modflowId = ModflowId::fromString($this->aggregateId());
         }
 
         return $this->modflowId;

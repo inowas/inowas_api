@@ -22,3 +22,23 @@ prooph_service_bus:
         modflow_event_bus:
             plugins:
                 - 'prooph_service_bus.on_event_invoke_strategy'
+            router:
+                type: 'prooph_service_bus.event_bus_router'
+                routes:
+                    'Inowas\Modflow\Model\Event\ModflowModelWasCreated':
+                        - 'inowas.modflow_projection.model_scenarios'
+
+                    'Inowas\Modflow\Model\Event\ModflowScenarioWasAdded':
+                        - 'inowas.modflow_projection.model_scenarios'
+
+                    'Inowas\Modflow\Model\Event\ModflowModelBoundingBoxWasChanged':
+                        - 'inowas.modflow_projection.model_scenarios'
+
+                    'Inowas\Modflow\Model\Event\ModflowModelNameWasChanged':
+                        - 'inowas.modflow_projection.model_scenarios'
+
+                    'Inowas\Modflow\Model\Event\ModflowModelDescriptionWasChanged':
+                        - 'inowas.modflow_projection.model_scenarios'
+
+                    'Inowas\Modflow\Model\Event\ModflowModelGridSizeWasChanged':
+                        - 'inowas.modflow_projection.model_scenarios'

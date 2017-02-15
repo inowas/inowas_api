@@ -49,7 +49,7 @@ class ModflowScenarioWasAdded extends AggregateChanged
     public function baseModelId(): ModflowId
     {
         if ($this->baseModelId === null){
-            $this->baseModelId = ModflowId::fromString($this->modflowId());
+            $this->baseModelId = ModflowId::fromString($this->aggregateId());
         }
 
         return $this->baseModelId;
