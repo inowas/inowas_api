@@ -8,5 +8,5 @@ interface ModflowModelList
 {
     public function add(ModflowModel $model);
 
-    public function get(ModflowModelId $modelId);
+    public function get(ModflowId $modelId);
 }

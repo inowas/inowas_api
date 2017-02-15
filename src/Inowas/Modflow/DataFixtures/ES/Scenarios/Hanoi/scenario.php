@@ -16,19 +16,19 @@ use Inowas\Modflow\Model\AreaBoundary;
 use Inowas\Modflow\Model\BoundaryGeometry;
 use Inowas\Modflow\Model\BoundaryId;
 use Inowas\Modflow\Model\BoundaryName;
-use Inowas\Modflow\Model\Command\AddModflowModelBoundary;
+use Inowas\Modflow\Model\Command\AddBoundary;
 use Inowas\Modflow\Model\Command\ChangeModflowModelBoundingBox;
 use Inowas\Modflow\Model\Command\ChangeModflowModelDescription;
 use Inowas\Modflow\Model\Command\ChangeModflowModelGridSize;
 use Inowas\Modflow\Model\Command\ChangeModflowModelName;
 use Inowas\Modflow\Model\Command\ChangeModflowModelSoilmodelId;
 use Inowas\Modflow\Model\Command\CreateModflowModel;
-use Inowas\Modflow\Model\Command\CreateModflowScenario;
+use Inowas\Modflow\Model\Command\AddModflowScenario;
 use Inowas\Modflow\Model\LayerNumber;
 use Inowas\Modflow\Model\ModflowModelBoundingBox;
 use Inowas\Modflow\Model\ModflowModelDescription;
 use Inowas\Modflow\Model\ModflowModelGridSize;
-use Inowas\Modflow\Model\ModflowModelId;
+use Inowas\Modflow\Model\ModflowId;
 use Inowas\Modflow\Model\ModflowModelName;
 use Inowas\Modflow\Model\PumpingRate;
 use Inowas\Modflow\Model\ScenarioId;
@@ -70,7 +70,7 @@ class Hanoi extends LoadScenarioBase implements FixtureInterface, ContainerAware
         $this->loadUsers($this->container->get('fos_user.user_manager'));
 
         $ownerId = UserId::fromString($this->getOwner()->getId()->toString());
-        $modelId = ModflowModelId::generate();
+        $modelId = ModflowId::generate();
 
         $commandBus->dispatch(CreateModflowModel::byUserWithModelId($ownerId, $modelId));
         $commandBus->dispatch(ChangeModflowModelName::forModflowModel($ownerId, $modelId, ModflowModelName::fromString('BaseModel INOWAS Hanoi')));
@@ -132,7 +132,7 @@ class Hanoi extends LoadScenarioBase implements FixtureInterface, ContainerAware
                         array(105.790767733626808, 21.094425932026443)
                     )
                 ), 4326)));
-        $commandBus->dispatch(AddModflowModelBoundary::forModflowModel($modelId, $area));
+        $commandBus->dispatch(AddBoundary::toBaseModel($modelId, $area));
 
         $soilModelId = SoilModelId::generate();
         $commandBus->dispatch(ChangeModflowModelSoilmodelId::forModflowModel($modelId, $soilModelId));
@@ -277,7 +277,7 @@ class Hanoi extends LoadScenarioBase implements FixtureInterface, ContainerAware
                 PumpingRate::fromValue($wellData['pumpingrate'])
             );
 
-            $commandBus->dispatch(AddModflowModelBoundary::forModflowModel($modelId, $well));
+            $commandBus->dispatch(AddBoundary::toBaseModel($modelId, $well));
         }
 
         # THIS WELLS ARE THE MISSING BLACK DOTS IN THE IMAGE
@@ -305,7 +305,7 @@ class Hanoi extends LoadScenarioBase implements FixtureInterface, ContainerAware
                 PumpingRate::fromValue($wellData['pumpingrate'])
             );
 
-            $commandBus->dispatch(AddModflowModelBoundary::forModflowModel($modelId, $well));
+            $commandBus->dispatch(AddBoundary::toBaseModel($modelId, $well));
         }
 
         /* Add Industrial Wells */
@@ -430,7 +430,7 @@ class Hanoi extends LoadScenarioBase implements FixtureInterface, ContainerAware
                 PumpingRate::fromValue($wellData['pumpingrate'])
             );
 
-            $commandBus->dispatch(AddModflowModelBoundary::forModflowModel($modelId, $well));
+            $commandBus->dispatch(AddBoundary::toBaseModel($modelId, $well));
         }
 
         #echo "Calculate active Cells-Array\r\n";
@@ -452,7 +452,7 @@ class Hanoi extends LoadScenarioBase implements FixtureInterface, ContainerAware
         #$entityManager->flush();
 
         $scenarioId = ScenarioId::generate();
-        $commandBus->dispatch(CreateModflowScenario::byUserWithIds($ownerId, $scenarioId, $modelId));
+        $commandBus->dispatch(AddModflowScenario::from($ownerId, $scenarioId, $modelId));
 
 
 

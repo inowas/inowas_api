@@ -6,7 +6,7 @@ namespace Inowas\Modflow\Model;
 
 use Ramsey\Uuid\Uuid;
 
-class UserId implements ModflowId
+class UserId implements ModflowIdInterface
 {
     /** @var  Uuid */
     private $uuid;

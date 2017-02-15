@@ -6,7 +6,7 @@ namespace Inowas\Modflow\Model;
 
 use Ramsey\Uuid\Uuid;
 
-class SoilModelId implements ModflowId
+class SoilModelId implements ModflowIdInterface
 {
     /** @var  Uuid */
     private $uuid;

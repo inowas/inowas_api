@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Inowas\Modflow\Infrastructure\Repository;
 
-use Inowas\Modflow\Model\ModflowModelId;
+use Inowas\Modflow\Model\ModflowId;
 use Inowas\Modflow\Model\ModflowModelList;
 use Inowas\Modflow\Model\ModflowModel;
 use Prooph\EventStore\Aggregate\AggregateRepository;
@@ -21,10 +21,10 @@ class EventStoreModflowModelList extends AggregateRepository implements ModflowM
     }
 
     /**
-     * @param ModflowModelId $modelId
+     * @param ModflowId $modelId
      * @return mixed
      */
-    public function get(ModflowModelId $modelId)
+    public function get(ModflowId $modelId)
     {
         return $this->getAggregateRoot($modelId->toString());
     }

@@ -4,13 +4,14 @@ declare(strict_types=1);
 
 namespace Inowas\Modflow\Model\Handler;
 
-use Inowas\Modflow\Model\Command\ChangeModflowModelDescription;
+use Inowas\Modflow\Model\Command\AddBoundary;
+use Inowas\Modflow\Model\Command\UpdateBoundary;
 use Inowas\Modflow\Model\Exception\ModflowModelNotFoundException;
 use Inowas\Modflow\Model\Exception\WriteAccessFailedException;
 use Inowas\Modflow\Model\ModflowModelList;
 use Inowas\Modflow\Model\ModflowModel;
 
-final class ChangeModflowModelDescriptionHandler
+final class UpdateBoundaryHandler
 {
 
     /** @var  ModflowModelList */
@@ -24,19 +25,23 @@ final class ChangeModflowModelDescriptionHandler
         $this->modelList = $modelList;
     }
 
-    public function __invoke(ChangeModflowModelDescription $command)
+    public function __invoke(UpdateBoundary $command)
     {
         /** @var ModflowModel $modflowModel */
-        $modflowModel = $this->modelList->get($command->modflowModelId());
+        $modflowModel = $this->modelList->get($command->baseModelId());
 
         if (!$modflowModel){
-            throw ModflowModelNotFoundException::withModelId($command->modflowModelId());
+            throw ModflowModelNotFoundException::withModelId($command->baseModelId());
         }
 
         if (! $modflowModel->ownerId()->sameValueAs($command->userId())){
             throw WriteAccessFailedException::withUserAndOwner($command->userId(), $modflowModel->ownerId());
         }
 
-        $modflowModel->changeDescription($command->userId(), $command->description());
+        if ($command->scenarioId()){
+            $modflowModel->updateBoundaryOfScenario($command->userId(), $command->scenarioId(), $command->boundary());
+        }
+
+        $modflowModel->updateBoundary($command->userId(), $command->boundary());
     }
 }

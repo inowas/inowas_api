@@ -6,6 +6,7 @@ namespace Inowas\Modflow\Model\Handler;
 
 use Inowas\Modflow\Model\Command\ChangeModflowModelName;
 use Inowas\Modflow\Model\Exception\ModflowModelNotFoundException;
+use Inowas\Modflow\Model\Exception\WriteAccessFailedException;
 use Inowas\Modflow\Model\ModflowModelList;
 use Inowas\Modflow\Model\ModflowModel;
 
@@ -32,8 +33,10 @@ final class ChangeModflowModelNameHandler
             throw ModflowModelNotFoundException::withModelId($command->modflowModelId());
         }
 
-        if ($modflowModel->ownerId()->toString() == $command->userId()->toString()){
-            $modflowModel->changeName($command->userId(), $command->name());
+        if (! $modflowModel->ownerId()->sameValueAs($command->userId())){
+            throw WriteAccessFailedException::withUserAndOwner($command->userId(), $modflowModel->ownerId());
         }
+
+        $modflowModel->changeName($command->userId(), $command->name());
     }
 }

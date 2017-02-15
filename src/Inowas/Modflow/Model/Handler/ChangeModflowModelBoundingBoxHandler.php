@@ -5,7 +5,9 @@ declare(strict_types=1);
 namespace Inowas\Modflow\Model\Handler;
 
 use Inowas\Modflow\Model\Command\ChangeModflowModelBoundingBox;
+use Inowas\Modflow\Model\Exception\ChangePropertyInScenarioNotPossibleException;
 use Inowas\Modflow\Model\Exception\ModflowModelNotFoundException;
+use Inowas\Modflow\Model\Exception\WriteAccessFailedException;
 use Inowas\Modflow\Model\ModflowModelList;
 use Inowas\Modflow\Model\ModflowModel;
 
@@ -32,9 +34,10 @@ final class ChangeModflowModelBoundingBoxHandler
             throw ModflowModelNotFoundException::withModelId($command->modflowModelId());
         }
 
-        if ($command->userId()->sameValueAs($modflowModel->ownerId()))
-        {
-            $modflowModel->changeBoundingBox($command->userId(), $command->boundingBox());
+        if (! $modflowModel->ownerId()->sameValueAs($command->userId())){
+            throw WriteAccessFailedException::withUserAndOwner($command->userId(), $modflowModel->ownerId());
         }
+
+        $modflowModel->changeBoundingBox($command->userId(), $command->boundingBox());
     }
 }

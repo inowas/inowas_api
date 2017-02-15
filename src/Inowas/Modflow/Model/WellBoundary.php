@@ -19,6 +19,8 @@ class WellBoundary extends AbstractModflowBoundary
         return new self($boundaryId);
     }
 
+
+
     public static function createWithAllParams(
         BoundaryId $boundaryId,
         BoundaryName $name,

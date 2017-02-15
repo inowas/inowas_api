@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Inowas\Modflow\Model\Handler;
 
 use Inowas\Modflow\Model\Command\ChangeModflowModelSoilmodelId;
+use Inowas\Modflow\Model\Exception\ChangePropertyInScenarioNotPossibleException;
 use Inowas\Modflow\Model\Exception\ModflowModelNotFoundException;
 use Inowas\Modflow\Model\ModflowModelList;
 use Inowas\Modflow\Model\ModflowModel;

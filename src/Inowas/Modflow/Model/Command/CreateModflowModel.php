@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Inowas\Modflow\Model\Command;
 
-use Inowas\Modflow\Model\ModflowModelId;
+use Inowas\Modflow\Model\ModflowId;
 use Inowas\Modflow\Model\ModflowUser;
 use Inowas\Modflow\Model\UserId;
 use Prooph\Common\Messaging\Command;
@@ -16,7 +16,7 @@ class CreateModflowModel extends Command implements PayloadConstructable
 
     use PayloadTrait;
 
-    public static function byUserWithModelId(UserId $userId, ModflowModelId $modelId): CreateModflowModel
+    public static function byUserWithModelId(UserId $userId, ModflowId $modelId): CreateModflowModel
     {
         return new self(
             [
@@ -31,8 +31,8 @@ class CreateModflowModel extends Command implements PayloadConstructable
         return UserId::fromString($this->payload['user_id']);
     }
 
-    public function modflowModelId(): ModflowModelId
+    public function modflowModelId(): ModflowId
     {
-        return ModflowModelId::fromString($this->payload['modflow_model_id']);
+        return ModflowId::fromString($this->payload['modflow_model_id']);
     }
 }
