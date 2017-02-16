@@ -3,6 +3,7 @@
 namespace Inowas\Modflow\Model;
 
 
+use Inowas\Modflow\Model\Event\ModflowCalculationResultWasAdded;
 use Inowas\Modflow\Model\Event\ModflowCalculationWasCreated;
 use Prooph\EventSourcing\AggregateRoot;
 
@@ -21,6 +22,9 @@ class ModflowCalculationAggregate extends AggregateRoot
     /** @var  UserId */
     private $ownerId;
 
+    /** @var  array */
+    private $results;
+
     public static function create(ModflowId $calculationId, ModflowId $modflowModelId, SoilModelId $soilModelId, UserId $userId): ModflowCalculationAggregate
     {
         $self = new self();
@@ -31,6 +35,12 @@ class ModflowCalculationAggregate extends AggregateRoot
 
         $self->recordThat(ModflowCalculationWasCreated::fromModel($userId, $calculationId, $soilModelId, $modflowModelId));
         return $self;
+    }
+
+    public function addResult(CalculationResult $result)
+    {
+        $this->mergeResult($result);
+        $this->recordThat(ModflowCalculationResultWasAdded::to($this->calculationId(), $result));
     }
 
     public function calculationId(): ModflowId
@@ -53,15 +63,31 @@ class ModflowCalculationAggregate extends AggregateRoot
         return $this->ownerId;
     }
 
-    protected function whenModflowCalculationWasCreated(ModflowCalculationWasCreated $event){
+    public function results(): array
+    {
+        return $this->results;
+    }
+
+    protected function whenModflowCalculationWasCreated(ModflowCalculationWasCreated $event): void
+    {
         $this->calculationId = $event->calculationId();
         $this->modflowModelId = $event->modflowModelId();
         $this->soilModelId = $event->soilModelId();
         $this->ownerId = $event->userId();
     }
 
+    protected function whenModflowCalculationResultWasAdded(ModflowCalculationResultWasAdded $event): void
+    {
+        $this->mergeResult($event->result());
+    }
+
+    protected function mergeResult(CalculationResult $result): void
+    {
+        $this->results[$result->type()->toString()][$result->totalTime()->toTotalTime()] = $result->data();
+    }
+
     /**
-     * @return mixed
+     * @return string
      */
     protected function aggregateId(): string
     {

@@ -60,5 +60,8 @@
             <argument type="service" id="modflow_model_list" />
             <argument type="service" id="modflow_calculation_list" />
         </service>
+        <service id="inowas.add_result_to_calculation_handler" class="Inowas\Modflow\Model\Handler\AddResultToCalculationHandler">
+            <argument type="service" id="modflow_calculation_list" />
+        </service>
     </services>
 </container>

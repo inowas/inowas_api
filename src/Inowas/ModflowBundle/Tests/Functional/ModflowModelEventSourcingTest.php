@@ -11,7 +11,11 @@ use Inowas\Modflow\Model\AreaBoundary;
 use Inowas\Modflow\Model\BoundaryGeometry;
 use Inowas\Modflow\Model\BoundaryId;
 use Inowas\Modflow\Model\BoundaryName;
+use Inowas\Modflow\Model\CalculationResult;
+use Inowas\Modflow\Model\CalculationResultData;
+use Inowas\Modflow\Model\CalculationResultType;
 use Inowas\Modflow\Model\Command\AddBoundary;
+use Inowas\Modflow\Model\Command\AddResultToCalculation;
 use Inowas\Modflow\Model\Command\ChangeModflowModelBoundingBox;
 use Inowas\Modflow\Model\Command\ChangeModflowModelDescription;
 use Inowas\Modflow\Model\Command\ChangeModflowModelGridSize;
@@ -36,6 +40,7 @@ use Inowas\Modflow\Model\ModflowModelList;
 use Inowas\Modflow\Model\ModflowModelName;
 use Inowas\Modflow\Model\PumpingRate;
 use Inowas\Modflow\Model\SoilModelId;
+use Inowas\Modflow\Model\TotalTime;
 use Inowas\Modflow\Model\UserId;
 use Inowas\Modflow\Model\WellBoundary;
 use Inowas\Modflow\Model\WellType;
@@ -223,6 +228,13 @@ class ModflowModelEventSourcingTest extends KernelTestCase
         $this->assertEquals($ownerId, $calculation->ownerId());
         $this->assertEquals($soilmodelId, $calculation->soilModelId());
 
+        $calculationResult = CalculationResult::fromParameters(
+            TotalTime::fromInt(1),
+            CalculationResultType::fromString(CalculationResultType::HEAD_TYPE),
+            CalculationResultData::from3dArray([[[1,2,3]]])
+        );
+        $this->commandBus->dispatch(AddResultToCalculation::to($calculationId, $calculationResult));
+        $calculation = $this->calculationRepository->get($calculationId);
         #dump($this->projection->getData());
     }
 
