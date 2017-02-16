@@ -24,7 +24,7 @@ use Inowas\Modflow\Model\Command\UpdateBoundary;
 use Inowas\Modflow\Model\Event\ModflowModelWasCreated;
 use Inowas\Modflow\Model\LayerNumber;
 use Inowas\Modflow\Model\ModflowBoundary;
-use Inowas\Modflow\Model\ModflowModel;
+use Inowas\Modflow\Model\ModflowModelAggregate;
 use Inowas\Modflow\Model\ModflowModelBoundingBox;
 use Inowas\Modflow\Model\ModflowModelDescription;
 use Inowas\Modflow\Model\ModflowModelGridSize;
@@ -102,9 +102,9 @@ class ModflowModelEventSourcingTest extends KernelTestCase
         $soilmodelId = SoilModelId::generate();
         $this->commandBus->dispatch(ChangeModflowModelSoilmodelId::forModflowModel($modflowModelId, $soilmodelId));
 
-        /** @var ModflowModel $model */
+        /** @var ModflowModelAggregate $model */
         $model = $this->modelRepository->get($modflowModelId);
-        $this->assertInstanceOf(ModflowModel::class, $model);
+        $this->assertInstanceOf(ModflowModelAggregate::class, $model);
         $this->assertEquals($ownerId, $model->ownerId());
         $this->assertEquals($modflowModelId, $model->modflowModelId());
         $this->assertEquals(ModflowModelName::fromString('MyNewModel'), $model->name());
@@ -146,9 +146,9 @@ class ModflowModelEventSourcingTest extends KernelTestCase
         $model = $this->modelRepository->get($modflowModelId);
         $this->assertCount(4, $model->scenarios());
 
-        /** @var ModflowModel $scenario * */
+        /** @var ModflowModelAggregate $scenario * */
         $scenario = $model->scenarios()[$scenarioId->toString()];
-        $this->assertInstanceOf(ModflowModel::class, $scenario);
+        $this->assertInstanceOf(ModflowModelAggregate::class, $scenario);
         $this->assertEquals('Scenario of MyNewModel', $scenario->name()->toString());
         $this->assertCount(1, $scenario->boundaries());
 
@@ -196,7 +196,7 @@ class ModflowModelEventSourcingTest extends KernelTestCase
         $well = $scenario->boundaries()[$scenarioWellId->toString()];
         $this->assertEquals('testScenario', $well->test);
 
-        dump($this->projection->getData());
+        #dump($this->projection->getData());
     }
 
 
@@ -296,7 +296,7 @@ class ModflowModelEventSourcingTest extends KernelTestCase
             $this->commandBus->dispatch(AddBoundary::toBaseModel($ownerId, $modelId, $well));
         }
 
-        /** @var ModflowModel $model */
+        /** @var ModflowModelAggregate $model */
         $model = $this->modelRepository->get($modelId);
         $this->assertInstanceOf(AreaBoundary::class, $model->area());
         $this->assertInstanceOf(BoundaryId::class, $model->area()->boundaryId());
@@ -324,7 +324,7 @@ class ModflowModelEventSourcingTest extends KernelTestCase
         $model = $this->modelRepository->get($modelId);
         $this->assertCount(1, $model->scenarios());
 
-        /** @var ModflowModel $scenario */
+        /** @var ModflowModelAggregate $scenario */
         $scenario = array_values($model->scenarios())[0];
         $this->assertEquals($scenarioId, $scenario->modflowModelId());
         $this->assertEquals($ownerId, $scenario->ownerId());

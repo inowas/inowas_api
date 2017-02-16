@@ -6,7 +6,7 @@ namespace Inowas\Modflow\Model\Handler;
 
 use Inowas\Modflow\Model\Command\CreateModflowModel;
 use Inowas\Modflow\Model\ModflowModelList;
-use Inowas\Modflow\Model\ModflowModel;
+use Inowas\Modflow\Model\ModflowModelAggregate;
 
 final class CreateModflowModelHandler
 {
@@ -25,7 +25,7 @@ final class CreateModflowModelHandler
 
     public function __invoke(CreateModflowModel $createModflowModel)
     {
-        $modflowModel = ModflowModel::create(
+        $modflowModel = ModflowModelAggregate::create(
             $createModflowModel->userId(),
             $createModflowModel->modflowModelId()
         );

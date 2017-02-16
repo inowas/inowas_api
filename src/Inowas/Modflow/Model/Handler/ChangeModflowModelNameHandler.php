@@ -8,7 +8,7 @@ use Inowas\Modflow\Model\Command\ChangeModflowModelName;
 use Inowas\Modflow\Model\Exception\ModflowModelNotFoundException;
 use Inowas\Modflow\Model\Exception\WriteAccessFailedException;
 use Inowas\Modflow\Model\ModflowModelList;
-use Inowas\Modflow\Model\ModflowModel;
+use Inowas\Modflow\Model\ModflowModelAggregate;
 
 final class ChangeModflowModelNameHandler
 {
@@ -26,7 +26,7 @@ final class ChangeModflowModelNameHandler
 
     public function __invoke(ChangeModflowModelName $command)
     {
-        /** @var ModflowModel $modflowModel */
+        /** @var ModflowModelAggregate $modflowModel */
         $modflowModel = $this->modelList->get($command->modflowModelId());
 
         if (!$modflowModel){

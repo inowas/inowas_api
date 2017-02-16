@@ -9,7 +9,7 @@ use Inowas\Modflow\Model\Exception\ChangePropertyInScenarioNotPossibleException;
 use Inowas\Modflow\Model\Exception\ModflowModelNotFoundException;
 use Inowas\Modflow\Model\Exception\WriteAccessFailedException;
 use Inowas\Modflow\Model\ModflowModelList;
-use Inowas\Modflow\Model\ModflowModel;
+use Inowas\Modflow\Model\ModflowModelAggregate;
 
 final class ChangeModflowModelBoundingBoxHandler
 {
@@ -27,7 +27,7 @@ final class ChangeModflowModelBoundingBoxHandler
 
     public function __invoke(ChangeModflowModelBoundingBox $command)
     {
-        /** @var ModflowModel $modflowModel */
+        /** @var ModflowModelAggregate $modflowModel */
         $modflowModel = $this->modelList->get($command->modflowModelId());
 
         if (!$modflowModel){

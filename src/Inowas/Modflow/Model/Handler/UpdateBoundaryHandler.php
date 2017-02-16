@@ -9,7 +9,7 @@ use Inowas\Modflow\Model\Command\UpdateBoundary;
 use Inowas\Modflow\Model\Exception\ModflowModelNotFoundException;
 use Inowas\Modflow\Model\Exception\WriteAccessFailedException;
 use Inowas\Modflow\Model\ModflowModelList;
-use Inowas\Modflow\Model\ModflowModel;
+use Inowas\Modflow\Model\ModflowModelAggregate;
 
 final class UpdateBoundaryHandler
 {
@@ -27,7 +27,7 @@ final class UpdateBoundaryHandler
 
     public function __invoke(UpdateBoundary $command)
     {
-        /** @var ModflowModel $modflowModel */
+        /** @var ModflowModelAggregate $modflowModel */
         $modflowModel = $this->modelList->get($command->baseModelId());
 
         if (!$modflowModel){

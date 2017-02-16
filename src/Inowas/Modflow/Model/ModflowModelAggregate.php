@@ -20,7 +20,7 @@ use Inowas\Modflow\Model\Event\ModflowScenarioWasRemoved;
 use Inowas\Modflow\Model\Event\ScenarioBoundaryWasUpdated;
 use Prooph\EventSourcing\AggregateRoot;
 
-class ModflowModel extends AggregateRoot
+class ModflowModelAggregate extends AggregateRoot
 {
     /** @var  ModflowId */
     protected $modflowId;
@@ -67,7 +67,7 @@ class ModflowModel extends AggregateRoot
     #/** @var TimeUnit */
     #protected $timeUnit;
 
-    public static function create(UserId $userId, ModflowId $modflowId): ModflowModel
+    public static function create(UserId $userId, ModflowId $modflowId): ModflowModelAggregate
     {
         $self = new self();
         $self->modflowId = $modflowId;
@@ -81,7 +81,7 @@ class ModflowModel extends AggregateRoot
 
     public function addScenario(UserId $userId, ModflowId $scenarioId): void
     {
-        /** @var ModflowModel $scenario */
+        /** @var ModflowModelAggregate $scenario */
         $scenario = $this->createScenarioFromThis($userId, $scenarioId);
 
         if (! $this->contains($scenario->modflowId, $this->scenarios)){
@@ -153,7 +153,7 @@ class ModflowModel extends AggregateRoot
     public function addBoundaryToScenario(UserId $userId, ModflowId $scenarioId, ModflowBoundary $boundary)
     {
         if ($this->contains($scenarioId, $this->scenarios)) {
-            /** @var ModflowModel $scenario */
+            /** @var ModflowModelAggregate $scenario */
             $scenario = $this->scenarios[$scenarioId->toString()];
             if (!$scenario->contains($boundary->boundaryId(), $scenario->boundaries())) {
                 $this->recordThat(BoundaryWasAddedToScenario::toScenario(
@@ -413,7 +413,7 @@ class ModflowModel extends AggregateRoot
         }
     }
 
-    private function createScenarioFromThis(UserId $userId, ModflowId $scenarioId): ModflowModel
+    private function createScenarioFromThis(UserId $userId, ModflowId $scenarioId): ModflowModelAggregate
     {
         $self = new self();
         $self->baseModelId = $this->modflowId;

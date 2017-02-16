@@ -8,7 +8,7 @@ use Inowas\Modflow\Model\Command\ChangeModflowModelSoilmodelId;
 use Inowas\Modflow\Model\Exception\ChangePropertyInScenarioNotPossibleException;
 use Inowas\Modflow\Model\Exception\ModflowModelNotFoundException;
 use Inowas\Modflow\Model\ModflowModelList;
-use Inowas\Modflow\Model\ModflowModel;
+use Inowas\Modflow\Model\ModflowModelAggregate;
 
 final class ChangeModflowModelSoilmodelIdHandler
 {
@@ -26,7 +26,7 @@ final class ChangeModflowModelSoilmodelIdHandler
 
     public function __invoke(ChangeModflowModelSoilmodelId $command)
     {
-        /** @var ModflowModel $modflowModel */
+        /** @var ModflowModelAggregate $modflowModel */
         $modflowModel = $this->modelList->get($command->modflowModelId());
 
         if (!$modflowModel){

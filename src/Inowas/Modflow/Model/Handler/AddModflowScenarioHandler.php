@@ -7,7 +7,7 @@ namespace Inowas\Modflow\Model\Handler;
 use Inowas\Modflow\Model\Command\AddModflowScenario;
 use Inowas\Modflow\Model\Exception\ModflowModelNotFoundException;
 use Inowas\Modflow\Model\Exception\WriteAccessFailedException;
-use Inowas\Modflow\Model\ModflowModel;
+use Inowas\Modflow\Model\ModflowModelAggregate;
 use Inowas\Modflow\Model\ModflowModelList;
 
 final class AddModflowScenarioHandler
@@ -27,7 +27,7 @@ final class AddModflowScenarioHandler
 
     public function __invoke(AddModflowScenario $command)
     {
-        /** @var ModflowModel $modflowModel */
+        /** @var ModflowModelAggregate $modflowModel */
         $modflowModel = $this->modelList->get($command->baseModelId());
 
         if (!$modflowModel){

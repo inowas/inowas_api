@@ -5,7 +5,7 @@ prooph_event_store:
             repositories:
                 modflow_model_list:
                     repository_class: 'Inowas\Modflow\Infrastructure\Repository\EventStoreModflowModelList'
-                    aggregate_type: 'Inowas\Modflow\Model\ModflowModel'
+                    aggregate_type: 'Inowas\Modflow\Model\ModflowModelAggregate'
                     aggregate_translator: 'prooph_event_sourcing.aggregate_translator'
 
 services:

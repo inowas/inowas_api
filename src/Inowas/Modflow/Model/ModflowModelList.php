@@ -6,7 +6,7 @@ namespace Inowas\Modflow\Model;
 
 interface ModflowModelList
 {
-    public function add(ModflowModel $model);
+    public function add(ModflowModelAggregate $model);
 
     public function get(ModflowId $modelId);
 }
