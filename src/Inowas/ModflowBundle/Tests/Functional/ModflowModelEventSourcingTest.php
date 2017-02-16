@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Inowas\ModflowBundle\Tests\Functional;
 
+ini_set('memory_limit', '1024M');
+
 use CrEOF\Spatial\PHP\Types\Geometry\Point;
 use CrEOF\Spatial\PHP\Types\Geometry\Polygon;
 use Inowas\GeoToolsBundle\Service\GeoTools;
@@ -225,6 +227,27 @@ class ModflowModelEventSourcingTest extends KernelTestCase
         $this->assertEquals($ownerId, $calculation->ownerId());
         $this->assertEquals($soilmodelId, $calculation->soilModelId());
 
+
+        /*
+        $times = [];
+        for ($i = 1; $i < 1096; $i++){
+            if ($i%15==0){
+                $times[] = $i;
+            }
+        }
+
+        foreach ($times as $time){
+            $heads = $this->loadHeads(0, $time, [0, 1, 2, 3]);
+            $calculationResult = CalculationResult::fromParameters(
+                TotalTime::fromInt($time),
+                CalculationResultType::fromString(CalculationResultType::HEAD_TYPE),
+                CalculationResultData::from3dArray($heads)
+            );
+            $this->commandBus->dispatch(AddResultToCalculation::to($calculationId, $calculationResult));
+            unset($calculationResult);
+        }
+        */
+
         $calculationId = ModflowId::generate();
         $this->commandBus->dispatch(CreateModflowModelCalculation::byUserWithModelAndScenarioId($calculationId, $ownerId, $modflowModelId, $scenarioId));
         $calculation = $this->calculationRepository->get($calculationId);
@@ -435,6 +458,18 @@ class ModflowModelEventSourcingTest extends KernelTestCase
         $this->assertEquals(-2135, $well->pumpingRate()->toFloat());
     }
 
+    private function loadHeads($scenarioNumber, $time, $layers)
+    {
+        $heads = [];
+        foreach ($layers as $layer){
+            $filename = sprintf(__DIR__.'/../../../Modflow/DataFixtures/ES/Scenarios/Hanoi/heads/heads_S%s-T%s-L%s.json', $scenarioNumber, $time, $layer);
+            $heads[$layer] = $this->loadHeadsFromFile($filename);
+            echo $filename."\r\n";
+        }
+
+        return $heads;
+    }
+
     private function loadHeadsFromFile($filename){
 
         if (!file_exists($filename) || !is_readable($filename)) {
@@ -453,6 +488,7 @@ class ModflowModelEventSourcingTest extends KernelTestCase
             }
         }
 
+        unset($headsJSON);
         return $heads;
     }
 }
