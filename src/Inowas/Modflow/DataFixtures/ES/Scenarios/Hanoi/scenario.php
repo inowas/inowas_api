@@ -16,7 +16,11 @@ use Inowas\Modflow\Model\AreaBoundary;
 use Inowas\Modflow\Model\BoundaryGeometry;
 use Inowas\Modflow\Model\BoundaryId;
 use Inowas\Modflow\Model\BoundaryName;
+use Inowas\Modflow\Model\CalculationResult;
+use Inowas\Modflow\Model\CalculationResultData;
+use Inowas\Modflow\Model\CalculationResultType;
 use Inowas\Modflow\Model\Command\AddBoundary;
+use Inowas\Modflow\Model\Command\AddResultToCalculation;
 use Inowas\Modflow\Model\Command\ChangeModflowModelBoundingBox;
 use Inowas\Modflow\Model\Command\ChangeModflowModelDescription;
 use Inowas\Modflow\Model\Command\ChangeModflowModelGridSize;
@@ -24,6 +28,7 @@ use Inowas\Modflow\Model\Command\ChangeModflowModelName;
 use Inowas\Modflow\Model\Command\ChangeModflowModelSoilmodelId;
 use Inowas\Modflow\Model\Command\CreateModflowModel;
 use Inowas\Modflow\Model\Command\AddModflowScenario;
+use Inowas\Modflow\Model\Command\CreateModflowModelCalculation;
 use Inowas\Modflow\Model\LayerNumber;
 use Inowas\Modflow\Model\ModflowModelBoundingBox;
 use Inowas\Modflow\Model\ModflowModelDescription;
@@ -31,8 +36,8 @@ use Inowas\Modflow\Model\ModflowModelGridSize;
 use Inowas\Modflow\Model\ModflowId;
 use Inowas\Modflow\Model\ModflowModelName;
 use Inowas\Modflow\Model\PumpingRate;
-use Inowas\Modflow\Model\ScenarioId;
 use Inowas\Modflow\Model\SoilModelId;
+use Inowas\Modflow\Model\TotalTime;
 use Inowas\Modflow\Model\UserId;
 use Inowas\Modflow\Model\WellBoundary;
 use Inowas\Modflow\Model\WellType;
@@ -132,7 +137,7 @@ class Hanoi extends LoadScenarioBase implements FixtureInterface, ContainerAware
                         array(105.790767733626808, 21.094425932026443)
                     )
                 ), 4326)));
-        $commandBus->dispatch(AddBoundary::toBaseModel($modelId, $area));
+        $commandBus->dispatch(AddBoundary::toBaseModel($ownerId, $modelId, $area));
 
         $soilModelId = SoilModelId::generate();
         $commandBus->dispatch(ChangeModflowModelSoilmodelId::forModflowModel($modelId, $soilModelId));
@@ -277,7 +282,7 @@ class Hanoi extends LoadScenarioBase implements FixtureInterface, ContainerAware
                 PumpingRate::fromValue($wellData['pumpingrate'])
             );
 
-            $commandBus->dispatch(AddBoundary::toBaseModel($modelId, $well));
+            $commandBus->dispatch(AddBoundary::toBaseModel($ownerId, $modelId, $well));
         }
 
         # THIS WELLS ARE THE MISSING BLACK DOTS IN THE IMAGE
@@ -305,7 +310,7 @@ class Hanoi extends LoadScenarioBase implements FixtureInterface, ContainerAware
                 PumpingRate::fromValue($wellData['pumpingrate'])
             );
 
-            $commandBus->dispatch(AddBoundary::toBaseModel($modelId, $well));
+            $commandBus->dispatch(AddBoundary::toBaseModel($ownerId, $modelId, $well));
         }
 
         /* Add Industrial Wells */
@@ -430,8 +435,59 @@ class Hanoi extends LoadScenarioBase implements FixtureInterface, ContainerAware
                 PumpingRate::fromValue($wellData['pumpingrate'])
             );
 
-            $commandBus->dispatch(AddBoundary::toBaseModel($modelId, $well));
+            $commandBus->dispatch(AddBoundary::toBaseModel($ownerId, $modelId, $well));
         }
+
+        $headsS0L3 = $this->loadHeadsFromFile(__DIR__."/data/base_scenario_head_layer_3.json");
+        $calculationId = ModflowId::generate();
+        $commandBus->dispatch(CreateModflowModelCalculation::byUserWithModelId($calculationId, $ownerId, $modelId));
+        $commandBus->dispatch(AddResultToCalculation::to($calculationId,
+            CalculationResult::fromParameters(
+                TotalTime::fromInt(120),
+                CalculationResultType::fromString(CalculationResultType::HEAD_TYPE),
+                CalculationResultData::from3dArray([[], [], $headsS0L3, []])
+            )
+        ));
+
+        $scenarioId = ModflowId::generate();
+        $commandBus->dispatch(AddModflowScenario::from($ownerId, $scenarioId, $modelId));
+        $headsS1L3 = $this->loadHeadsFromFile(__DIR__."/data/scenario_1_head_layer_3.json");
+        $calculationId = ModflowId::generate();
+        $commandBus->dispatch(CreateModflowModelCalculation::byUserWithModelAndScenarioId($calculationId, $ownerId, $modelId, $scenarioId));
+        $commandBus->dispatch(AddResultToCalculation::to($calculationId,
+            CalculationResult::fromParameters(
+                TotalTime::fromInt(120),
+                CalculationResultType::fromString(CalculationResultType::HEAD_TYPE),
+                CalculationResultData::from3dArray([[], [], $headsS1L3, []])
+            )
+        ));
+
+        $scenarioId = ModflowId::generate();
+        $commandBus->dispatch(AddModflowScenario::from($ownerId, $scenarioId, $modelId));
+        $headsS2L3 = $this->loadHeadsFromFile(__DIR__."/data/scenario_2_head_layer_3.json");
+        $calculationId = ModflowId::generate();
+        $commandBus->dispatch(CreateModflowModelCalculation::byUserWithModelAndScenarioId($calculationId, $ownerId, $modelId, $scenarioId));
+        $commandBus->dispatch(AddResultToCalculation::to($calculationId,
+            CalculationResult::fromParameters(
+                TotalTime::fromInt(120),
+                CalculationResultType::fromString(CalculationResultType::HEAD_TYPE),
+                CalculationResultData::from3dArray([[], [], $headsS2L3, []])
+            )
+        ));
+
+        $scenarioId = ModflowId::generate();
+        $commandBus->dispatch(AddModflowScenario::from($ownerId, $scenarioId, $modelId));
+        $headsS3L3 = $this->loadHeadsFromFile(__DIR__."/data/scenario_3_head_layer_3.json");
+        $calculationId = ModflowId::generate();
+        $commandBus->dispatch(CreateModflowModelCalculation::byUserWithModelAndScenarioId($calculationId, $ownerId, $modelId, $scenarioId));
+        $commandBus->dispatch(AddResultToCalculation::to($calculationId,
+            CalculationResult::fromParameters(
+                TotalTime::fromInt(120),
+                CalculationResultType::fromString(CalculationResultType::HEAD_TYPE),
+                CalculationResultData::from3dArray([[], [], $headsS3L3, []])
+            )
+        ));
+
 
         #echo "Calculate active Cells-Array\r\n";
         #$model->setActiveCells($geoTools->getActiveCells($model->getArea(), $model->getBoundingBox(), $model->getGridSize()));
@@ -451,7 +507,7 @@ class Hanoi extends LoadScenarioBase implements FixtureInterface, ContainerAware
         #$entityManager->persist($model);
         #$entityManager->flush();
 
-        $scenarioId = ScenarioId::generate();
+        $scenarioId = ModflowId::generate();
         $commandBus->dispatch(AddModflowScenario::from($ownerId, $scenarioId, $modelId));
 
 

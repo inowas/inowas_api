@@ -5,7 +5,10 @@ declare(strict_types=1);
 namespace Inowas\Modflow\Model\Event;
 
 use Inowas\Modflow\Model\CalculationResult;
+use Inowas\Modflow\Model\CalculationResultData;
+use Inowas\Modflow\Model\CalculationResultType;
 use Inowas\Modflow\Model\ModflowId;
+use Inowas\Modflow\Model\TotalTime;
 use Prooph\EventSourcing\AggregateChanged;
 
 class ModflowCalculationResultWasAdded extends AggregateChanged
@@ -19,7 +22,9 @@ class ModflowCalculationResultWasAdded extends AggregateChanged
     public static function to(ModflowId $calculationId, CalculationResult $result): ModflowCalculationResultWasAdded
     {
         $event = self::occur($calculationId->toString(),[
-            'result' => serialize($result)
+            'total_time' => $result->totalTime()->toTotalTime(),
+            'type' => $result->type()->toString(),
+            'data' => $result->data()->toArray()
         ]);
 
         $event->result = $result;
@@ -38,7 +43,12 @@ class ModflowCalculationResultWasAdded extends AggregateChanged
     public function result(): CalculationResult
     {
         if ($this->result === null){
-            $this->result = unserialize($this->payload['result']);
+
+            $this->result = CalculationResult::fromParameters(
+                TotalTime::fromInt($this->payload['total_time']),
+                CalculationResultType::fromString($this->payload['type']),
+                CalculationResultData::from3dArray($this->payload['data'])
+            );
         }
 
         return $this->result;

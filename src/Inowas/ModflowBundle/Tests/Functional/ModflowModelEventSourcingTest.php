@@ -44,6 +44,8 @@ use Inowas\Modflow\Model\TotalTime;
 use Inowas\Modflow\Model\UserId;
 use Inowas\Modflow\Model\WellBoundary;
 use Inowas\Modflow\Model\WellType;
+use Inowas\Modflow\Projection\CalculationsProjector;
+use Inowas\Modflow\Projection\ModelScenariosProjector;
 use Inowas\ModflowBundle\Model\BoundingBox;
 use Prooph\EventStore\EventStore;
 use Prooph\ServiceBus\CommandBus;
@@ -64,8 +66,11 @@ class ModflowModelEventSourcingTest extends KernelTestCase
     /** @var  GeoTools */
     protected $geoTools;
 
+    /** @var  ModelScenariosProjector */
+    protected $model_scenarios_projector;
 
-    protected $projection;
+    /** @var  CalculationsProjector */
+    protected $model_calculations_projector;
 
     /** @var ModflowModelList */
     protected $modelRepository;
@@ -83,7 +88,8 @@ class ModflowModelEventSourcingTest extends KernelTestCase
         $this->modelRepository = static::$kernel->getContainer()->get('modflow_model_list');
         $this->calculationRepository = static::$kernel->getContainer()->get('modflow_calculation_list');
         $this->geoTools = static::$kernel->getContainer()->get('inowas.geotools.geotools');
-        $this->projection = static::$kernel->getContainer()->get('inowas.modflow_projection.model_scenarios');
+        $this->model_scenarios_projector = static::$kernel->getContainer()->get('inowas.modflow_projection.model_scenarios');
+        $this->model_calculations_projector = static::$kernel->getContainer()->get('inowas.modflow_projection.model_calculations');
     }
 
     public function testModflowEventBus()
@@ -234,8 +240,61 @@ class ModflowModelEventSourcingTest extends KernelTestCase
             CalculationResultData::from3dArray([[[1,2,3]]])
         );
         $this->commandBus->dispatch(AddResultToCalculation::to($calculationId, $calculationResult));
-        $calculation = $this->calculationRepository->get($calculationId);
-        #dump($this->projection->getData());
+
+        $headsS0L3 = $this->loadHeadsFromFile(__DIR__."/data/base_scenario_head_layer_3.json");
+        $calculationId = ModflowId::generate();
+        $this->commandBus->dispatch(CreateModflowModelCalculation::byUserWithModelId($calculationId, $ownerId, $modflowModelId));
+        $this->commandBus->dispatch(AddResultToCalculation::to($calculationId,
+            CalculationResult::fromParameters(
+                TotalTime::fromInt(120),
+                CalculationResultType::fromString(CalculationResultType::HEAD_TYPE),
+                CalculationResultData::from3dArray([[], [], $headsS0L3, []])
+            )
+        ));
+
+        $scenarioId = ModflowId::generate();
+        $this->commandBus->dispatch(AddModflowScenario::from($ownerId, $modflowModelId, $scenarioId));
+        $headsS1L3 = $this->loadHeadsFromFile(__DIR__."/data/scenario_1_head_layer_3.json");
+        $calculationId = ModflowId::generate();
+        $this->commandBus->dispatch(CreateModflowModelCalculation::byUserWithModelAndScenarioId($calculationId, $ownerId, $modflowModelId, $scenarioId));
+        $this->commandBus->dispatch(AddResultToCalculation::to($calculationId,
+            CalculationResult::fromParameters(
+                TotalTime::fromInt(120),
+                CalculationResultType::fromString(CalculationResultType::HEAD_TYPE),
+                CalculationResultData::from3dArray([[], [], $headsS1L3, []])
+            )
+        ));
+
+        $scenarioId = ModflowId::generate();
+        $this->commandBus->dispatch(AddModflowScenario::from($ownerId, $modflowModelId, $scenarioId));
+        $headsS2L3 = $this->loadHeadsFromFile(__DIR__."/data/scenario_2_head_layer_3.json");
+        $calculationId = ModflowId::generate();
+        $this->commandBus->dispatch(CreateModflowModelCalculation::byUserWithModelAndScenarioId($calculationId, $ownerId, $modflowModelId, $scenarioId));
+        $this->commandBus->dispatch(AddResultToCalculation::to($calculationId,
+            CalculationResult::fromParameters(
+                TotalTime::fromInt(120),
+                CalculationResultType::fromString(CalculationResultType::HEAD_TYPE),
+                CalculationResultData::from3dArray([[], [], $headsS2L3, []])
+            )
+        ));
+
+        $scenarioId = ModflowId::generate();
+        $this->commandBus->dispatch(AddModflowScenario::from($ownerId, $modflowModelId, $scenarioId));
+        $headsS3L3 = $this->loadHeadsFromFile(__DIR__."/data/scenario_3_head_layer_3.json");
+        $calculationId = ModflowId::generate();
+        $this->commandBus->dispatch(CreateModflowModelCalculation::byUserWithModelAndScenarioId($calculationId, $ownerId, $modflowModelId, $scenarioId));
+        $this->commandBus->dispatch(AddResultToCalculation::to($calculationId,
+            CalculationResult::fromParameters(
+                TotalTime::fromInt(120),
+                CalculationResultType::fromString(CalculationResultType::HEAD_TYPE),
+                CalculationResultData::from3dArray([[], [], $headsS3L3, []])
+            )
+        ));
+
+        /** @var ModflowCalculationAggregate $calculation */
+        #$calculation = $this->calculationRepository->get($calculationId);
+        #dump($calculation->results());
+        #dump($this->model_calculations_projector->getData());
     }
 
     public function testModflowModelCommandsAgain()
@@ -374,5 +433,26 @@ class ModflowModelEventSourcingTest extends KernelTestCase
         $this->assertEquals('puw', $well->wellType()->type());
         $this->assertEquals(4, $well->layerNumber()->toInteger());
         $this->assertEquals(-2135, $well->pumpingRate()->toFloat());
+    }
+
+    private function loadHeadsFromFile($filename){
+
+        if (!file_exists($filename) || !is_readable($filename)) {
+            echo "File not found.\r\n";
+            return FALSE;
+        }
+
+        $headsJSON = file_get_contents($filename, true);
+        $heads = json_decode($headsJSON, true);
+
+        for ($iy = 0; $iy < count($heads); $iy++){
+            for ($ix = 0; $ix < count($heads[0]); $ix++){
+                if ($heads[$iy][$ix] <= -9999){
+                    $heads[$iy][$ix] = null;
+                }
+            }
+        }
+
+        return $heads;
     }
 }

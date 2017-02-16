@@ -1,3 +1,5 @@
 services:
     inowas.modflow_projection.model_scenarios:
         class: Inowas\Modflow\Projection\ModelScenariosProjector
+    inowas.modflow_projection.model_calculations:
+        class: Inowas\Modflow\Projection\CalculationsProjector

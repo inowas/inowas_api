@@ -44,3 +44,9 @@ prooph_service_bus:
 
                     'Inowas\Modflow\Model\Event\ModflowModelGridSizeWasChanged':
                         - 'inowas.modflow_projection.model_scenarios'
+
+                    'Inowas\Modflow\Model\Event\ModflowCalculationWasAdded':
+                        - 'inowas.modflow_projection.model_calculations'
+
+                    'Inowas\Modflow\Model\Event\ModflowCalculationResultWasAdded':
+                        - 'inowas.modflow_projection.model_calculations'
