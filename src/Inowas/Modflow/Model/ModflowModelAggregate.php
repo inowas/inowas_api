@@ -79,9 +79,18 @@ class ModflowModelAggregate extends AggregateRoot
         return $self;
     }
 
-    public function addCalculation(ModflowId $calculationId): ModflowCalculationAggregate
+    public function createCalculationFromBaseModel(ModflowId $calculationId): ModflowCalculationAggregate
     {
         return ModflowCalculationAggregate::create($calculationId, $this->modflowId, $this->soilmodelId, $this->owner);
+    }
+
+    public function createCalculationFromScenario(ModflowId $calculationId, ModflowId $scenarioId): ?ModflowCalculationAggregate
+    {
+        if ($this->contains($scenarioId, $this->scenarios)){
+            return ModflowCalculationAggregate::create($calculationId, $scenarioId, $this->soilmodelId, $this->owner);
+        }
+
+        return null;
     }
 
     public function addScenario(UserId $userId, ModflowId $scenarioId): void

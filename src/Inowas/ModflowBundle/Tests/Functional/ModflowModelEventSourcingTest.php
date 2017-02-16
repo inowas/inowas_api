@@ -210,8 +210,19 @@ class ModflowModelEventSourcingTest extends KernelTestCase
         $calculation = $this->calculationRepository->get($calculationId);
         $this->assertInstanceOf(ModflowCalculationAggregate::class, $calculation);
         $this->assertEquals($calculationId, $calculation->calculationId());
+        $this->assertEquals($modflowModelId, $calculation->modelId());
         $this->assertEquals($ownerId, $calculation->ownerId());
         $this->assertEquals($soilmodelId, $calculation->soilModelId());
+
+        $calculationId = ModflowId::generate();
+        $this->commandBus->dispatch(CreateModflowModelCalculation::byUserWithModelAndScenarioId($calculationId, $ownerId, $modflowModelId, $scenarioId));
+        $calculation = $this->calculationRepository->get($calculationId);
+        $this->assertInstanceOf(ModflowCalculationAggregate::class, $calculation);
+        $this->assertEquals($calculationId->toString(), $calculation->calculationId()->toString());
+        $this->assertEquals($scenarioId, $calculation->modelId());
+        $this->assertEquals($ownerId, $calculation->ownerId());
+        $this->assertEquals($soilmodelId, $calculation->soilModelId());
+
         #dump($this->projection->getData());
     }
 
