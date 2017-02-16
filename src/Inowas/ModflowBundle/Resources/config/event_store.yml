@@ -7,6 +7,10 @@ prooph_event_store:
                     repository_class: 'Inowas\Modflow\Infrastructure\Repository\EventStoreModflowModelList'
                     aggregate_type: 'Inowas\Modflow\Model\ModflowModelAggregate'
                     aggregate_translator: 'prooph_event_sourcing.aggregate_translator'
+                modflow_calculation_list:
+                    repository_class: 'Inowas\Modflow\Infrastructure\Repository\EventStoreModflowCalculationList'
+                    aggregate_type: 'Inowas\Modflow\Model\ModflowCalculationAggregate'
+                    aggregate_translator: 'prooph_event_sourcing.aggregate_translator'
 
 services:
     prooph_event_store.doctrine_adapter.modflow_model_store:

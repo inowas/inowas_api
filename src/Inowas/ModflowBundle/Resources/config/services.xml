@@ -56,6 +56,9 @@
         <service id="inowas.remove_modflow_model_boundary_handler" class="Inowas\Modflow\Model\Handler\RemoveBoundaryHandler">
             <argument type="service" id="modflow_model_list" />
         </service>
-
+        <service id="inowas.create_modflow_calculation_handler" class="Inowas\Modflow\Model\Handler\CreateModflowModelCalculationHandler">
+            <argument type="service" id="modflow_model_list" />
+            <argument type="service" id="modflow_calculation_list" />
+        </service>
     </services>
 </container>

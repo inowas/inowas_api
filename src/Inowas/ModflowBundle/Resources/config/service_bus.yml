@@ -17,6 +17,7 @@ prooph_service_bus:
                     'Inowas\Modflow\Model\Command\AddModflowScenario': 'inowas.add_modflow_scenario_handler'
                     'Inowas\Modflow\Model\Command\RemoveModflowScenario': 'inowas.remove_modflow_scenario_handler'
                     'Inowas\Modflow\Model\Command\RemoveBoundary': 'inowas.remove_modflow_model_boundary_handler'
+                    'Inowas\Modflow\Model\Command\CreateModflowModelCalculation': 'inowas.create_modflow_calculation_handler'
 
     event_buses:
         modflow_event_bus:

@@ -19,13 +19,16 @@ use Inowas\Modflow\Model\Command\ChangeModflowModelName;
 use Inowas\Modflow\Model\Command\ChangeModflowModelSoilmodelId;
 use Inowas\Modflow\Model\Command\CreateModflowModel;
 use Inowas\Modflow\Model\Command\AddModflowScenario;
+use Inowas\Modflow\Model\Command\CreateModflowModelCalculation;
 use Inowas\Modflow\Model\Command\RemoveBoundary;
 use Inowas\Modflow\Model\Command\UpdateBoundary;
 use Inowas\Modflow\Model\Event\ModflowModelWasCreated;
 use Inowas\Modflow\Model\LayerNumber;
 use Inowas\Modflow\Model\ModflowBoundary;
+use Inowas\Modflow\Model\ModflowCalculationAggregate;
 use Inowas\Modflow\Model\ModflowModelAggregate;
 use Inowas\Modflow\Model\ModflowModelBoundingBox;
+use Inowas\Modflow\Model\ModflowModelCalculationList;
 use Inowas\Modflow\Model\ModflowModelDescription;
 use Inowas\Modflow\Model\ModflowModelGridSize;
 use Inowas\Modflow\Model\ModflowId;
@@ -62,6 +65,10 @@ class ModflowModelEventSourcingTest extends KernelTestCase
     /** @var ModflowModelList */
     protected $modelRepository;
 
+    /** @var  ModflowModelCalculationList */
+    protected $calculationRepository;
+
+
     public function setUp()
     {
         self::bootKernel();
@@ -69,6 +76,7 @@ class ModflowModelEventSourcingTest extends KernelTestCase
         $this->eventBus = static::$kernel->getContainer()->get('prooph_service_bus.modflow_event_bus');
         $this->eventStore = static::$kernel->getContainer()->get('prooph_event_store.modflow_model_store');
         $this->modelRepository = static::$kernel->getContainer()->get('modflow_model_list');
+        $this->calculationRepository = static::$kernel->getContainer()->get('modflow_calculation_list');
         $this->geoTools = static::$kernel->getContainer()->get('inowas.geotools.geotools');
         $this->projection = static::$kernel->getContainer()->get('inowas.modflow_projection.model_scenarios');
     }
@@ -196,9 +204,16 @@ class ModflowModelEventSourcingTest extends KernelTestCase
         $well = $scenario->boundaries()[$scenarioWellId->toString()];
         $this->assertEquals('testScenario', $well->test);
 
+        $calculationId = ModflowId::generate();
+        $this->commandBus->dispatch(CreateModflowModelCalculation::byUserWithModelId($calculationId, $ownerId, $modflowModelId));
+        /** @var ModflowCalculationAggregate $calculation */
+        $calculation = $this->calculationRepository->get($calculationId);
+        $this->assertInstanceOf(ModflowCalculationAggregate::class, $calculation);
+        $this->assertEquals($calculationId, $calculation->calculationId());
+        $this->assertEquals($ownerId, $calculation->ownerId());
+        $this->assertEquals($soilmodelId, $calculation->soilModelId());
         #dump($this->projection->getData());
     }
-
 
     public function testModflowModelCommandsAgain()
     {
