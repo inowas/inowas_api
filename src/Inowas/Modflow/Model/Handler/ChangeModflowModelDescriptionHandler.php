@@ -37,6 +37,11 @@ final class ChangeModflowModelDescriptionHandler
             throw WriteAccessFailedException::withUserAndOwner($command->userId(), $modflowModel->ownerId());
         }
 
-        $modflowModel->changeDescription($command->userId(), $command->description());
+        if ($command->scenarioId()) {
+            $modflowModel->changeScenarioDescription($command->userId(), $command->scenarioId(), $command->description());
+            return;
+        }
+
+        $modflowModel->changeBaseModelDescription($command->userId(), $command->description());
     }
 }

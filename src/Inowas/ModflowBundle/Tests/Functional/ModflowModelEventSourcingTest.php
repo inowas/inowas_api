@@ -106,6 +106,82 @@ class ModflowModelEventSourcingTest extends KernelTestCase
         $this->eventBus->dispatch($event);
     }
 
+    public function testAddBoundaryToScenario()
+    {
+        $ownerId = UserId::generate();
+        $modflowModelId = ModflowId::generate();
+        $scenarioId = ModflowId::generate();
+        $scenarioWellId = BoundaryId::generate();
+        $well = WellBoundary::create($scenarioWellId);
+
+        $this->commandBus->dispatch(CreateModflowModel::byUserWithModelId($ownerId, $modflowModelId));
+        $this->commandBus->dispatch(AddModflowScenario::from($ownerId, $modflowModelId, $scenarioId));
+        $this->commandBus->dispatch(AddBoundary::toScenario($ownerId, $modflowModelId, $scenarioId, $well));
+
+        /** @var ModflowModelAggregate $model */
+        $model = $this->modelRepository->get($modflowModelId);
+        $this->assertCount(1, $model->scenarios());
+        $this->assertCount(0, $model->boundaries());
+
+        /** @var ModflowModelAggregate $scenario */
+        $scenario = array_values($model->scenarios())[0];
+        $this->assertCount(1, $scenario->boundaries());
+        $this->assertEquals($well, $scenario->boundaries()[$well->boundaryId()->toString()]);
+    }
+
+    public function testChangeBaseModelMetadata()
+    {
+        $ownerId = UserId::generate();
+        $modflowModelId = ModflowId::generate();
+        $this->commandBus->dispatch(CreateModflowModel::byUserWithModelId($ownerId, $modflowModelId));
+        $this->commandBus->dispatch(ChangeModflowModelName::forModflowModel($ownerId, $modflowModelId, ModflowModelName::fromString('MyNewModel')));
+        $this->commandBus->dispatch(ChangeModflowModelDescription::forModflowModel($ownerId, $modflowModelId, ModflowModelDescription::fromString('MyNewModelDescription')));
+
+        /** @var ModflowModelAggregate $model */
+        $model = $this->modelRepository->get($modflowModelId);
+        $this->assertEquals(ModflowModelName::fromString('MyNewModel'), $model->name());
+        $this->assertEquals(ModflowModelDescription::fromString('MyNewModelDescription'), $model->description());
+
+        $this->commandBus->dispatch(ChangeModflowModelName::forModflowModel($ownerId, $modflowModelId, ModflowModelName::fromString('MyNewModelChanged')));
+        $this->commandBus->dispatch(ChangeModflowModelDescription::forModflowModel($ownerId, $modflowModelId, ModflowModelDescription::fromString('MyNewModelDescriptionChanged')));
+
+        /** @var ModflowModelAggregate $model */
+        $model = $this->modelRepository->get($modflowModelId);
+        $this->assertEquals(ModflowModelName::fromString('MyNewModelChanged'), $model->name());
+        $this->assertEquals(ModflowModelDescription::fromString('MyNewModelDescriptionChanged'), $model->description());
+    }
+
+    public function testChangeScenarioMetadata()
+    {
+        $ownerId = UserId::generate();
+        $modflowModelId = ModflowId::generate();
+        $scenarioId = ModflowId::generate();
+        $this->commandBus->dispatch(CreateModflowModel::byUserWithModelId($ownerId, $modflowModelId));
+        $this->commandBus->dispatch(AddModflowScenario::from($ownerId, $modflowModelId, $scenarioId));
+
+        $this->commandBus->dispatch(ChangeModflowModelName::forScenario($ownerId, $modflowModelId, $scenarioId, ModflowModelName::fromString('MyNewModel')));
+        $this->commandBus->dispatch(ChangeModflowModelDescription::forScenario($ownerId, $modflowModelId, $scenarioId, ModflowModelDescription::fromString('MyNewModelDescription')));
+
+        /** @var ModflowModelAggregate $model */
+        $model = $this->modelRepository->get($modflowModelId);
+
+        /** @var ModflowModelAggregate $scenario */
+        $scenario = $model->scenarios()[$scenarioId->toString()];
+        $this->assertEquals(ModflowModelName::fromString('MyNewModel'), $scenario->name());
+        $this->assertEquals(ModflowModelDescription::fromString('MyNewModelDescription'), $scenario->description());
+
+        $this->commandBus->dispatch(ChangeModflowModelName::forScenario($ownerId, $modflowModelId, $scenarioId, ModflowModelName::fromString('MyNewModelChanged')));
+        $this->commandBus->dispatch(ChangeModflowModelDescription::forScenario($ownerId, $modflowModelId, $scenarioId, ModflowModelDescription::fromString('MyNewModelDescriptionChanged')));
+
+        /** @var ModflowModelAggregate $model */
+        $model = $this->modelRepository->get($modflowModelId);
+
+        /** @var ModflowModelAggregate $scenario */
+        $scenario = $model->scenarios()[$scenarioId->toString()];
+        $this->assertEquals(ModflowModelName::fromString('MyNewModelChanged'), $scenario->name());
+        $this->assertEquals(ModflowModelDescription::fromString('MyNewModelDescriptionChanged'), $scenario->description());
+    }
+
     public function testModflowModelCommands()
     {
         $ownerId = UserId::generate();

@@ -27,6 +27,18 @@ class ChangeModflowModelDescription extends Command implements PayloadConstructa
         );
     }
 
+    public static function forScenario(UserId $userId, ModflowId $modelId, ModflowId $scenarioId, ModflowModelDescription $description): ChangeModflowModelDescription
+    {
+        return new self(
+            [
+                'user_id' => $userId->toString(),
+                'modflow_model_id' => $modelId->toString(),
+                'scenario_id' => $scenarioId->toString(),
+                'description' => $description->toString()
+            ]
+        );
+    }
+
     public function userId(): UserId
     {
         return UserId::fromString($this->payload['user_id']);
@@ -40,5 +52,14 @@ class ChangeModflowModelDescription extends Command implements PayloadConstructa
     public function description(): ModflowModelDescription
     {
         return ModflowModelDescription::fromString($this->payload['description']);
+    }
+
+    public function scenarioId(): ?ModflowId
+    {
+        if (array_key_exists('scenario_id', $this->payload)){
+            return ModflowId::fromString($this->payload['scenario_id']);
+        }
+
+        return null;
     }
 }

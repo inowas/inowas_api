@@ -39,8 +39,9 @@ final class AddBoundaryHandler
 
         if ($command->scenarioId()){
             $modflowModel->addBoundaryToScenario($command->userId(), $command->scenarioId(), $command->boundary());
+            return;
         }
 
-        $modflowModel->addBoundary($command->userId(), $command->boundary());
+        $modflowModel->addBoundaryToBaseModel($command->userId(), $command->boundary());
     }
 }

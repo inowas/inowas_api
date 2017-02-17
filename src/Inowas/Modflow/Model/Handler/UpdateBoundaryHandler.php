@@ -42,6 +42,6 @@ final class UpdateBoundaryHandler
             $modflowModel->updateBoundaryOfScenario($command->userId(), $command->scenarioId(), $command->boundary());
         }
 
-        $modflowModel->updateBoundary($command->userId(), $command->boundary());
+        $modflowModel->updateBoundaryOfBaseModel($command->userId(), $command->boundary());
     }
 }

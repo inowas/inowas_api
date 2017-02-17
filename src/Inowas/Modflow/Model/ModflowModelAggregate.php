@@ -15,6 +15,8 @@ use Inowas\Modflow\Model\Event\ModflowModelGridSizeWasChanged;
 use Inowas\Modflow\Model\Event\ModflowModelNameWasChanged;
 use Inowas\Modflow\Model\Event\ModflowModelSoilModelIdWasChanged;
 use Inowas\Modflow\Model\Event\ModflowModelWasCreated;
+use Inowas\Modflow\Model\Event\ModflowScenarioDescriptionWasChanged;
+use Inowas\Modflow\Model\Event\ModflowScenarioNameWasChanged;
 use Inowas\Modflow\Model\Event\ModflowScenarioWasAdded;
 use Inowas\Modflow\Model\Event\ModflowScenarioWasRemoved;
 use Inowas\Modflow\Model\Event\ScenarioBoundaryWasUpdated;
@@ -112,7 +114,12 @@ class ModflowModelAggregate extends AggregateRoot
         }
     }
 
-    public function changeName(UserId $userId, ModflowModelName $name)
+    public function changeName(ModflowModelName $name): void
+    {
+        $this->name = $name;
+    }
+
+    public function changeBaseModelName(UserId $userId, ModflowModelName $name)
     {
         $this->name = $name;
         $this->recordThat(ModflowModelNameWasChanged::byUserWithName(
@@ -122,7 +129,27 @@ class ModflowModelAggregate extends AggregateRoot
         ));
     }
 
-    public function changeDescription(UserId $userId, ModflowModelDescription $description)
+    public function changeScenarioName(UserId $userId, ModflowId $scenarioId, ModflowModelName $name)
+    {
+        if ($this->contains($scenarioId, $this->scenarios)) {
+            /** @var ModflowModelAggregate $scenario */
+            $scenario = $this->scenarios[$scenarioId->toString()];
+            $scenario->changeName($name);
+            $this->recordThat(ModflowScenarioNameWasChanged::byUserWithName(
+                $userId,
+                $this->modflowId,
+                $scenarioId,
+                $scenario->name()
+            ));
+        }
+    }
+
+    public function changeDescription(ModflowModelDescription $description): void
+    {
+        $this->description = $description;
+    }
+
+    public function changeBaseModelDescription(UserId $userId, ModflowModelDescription $description)
     {
         $this->description = $description;
         $this->recordThat(ModflowModelDescriptionWasChanged::withDescription(
@@ -130,6 +157,21 @@ class ModflowModelAggregate extends AggregateRoot
             $this->modflowId,
             $this->description)
         );
+    }
+
+    public function changeScenarioDescription(UserId $userId, ModflowId $scenarioId, ModflowModelDescription $description)
+    {
+        if ($this->contains($scenarioId, $this->scenarios)) {
+            /** @var ModflowModelAggregate $scenario */
+            $scenario = $this->scenarios[$scenarioId->toString()];
+            $scenario->changeDescription($description);
+            $this->recordThat(ModflowScenarioDescriptionWasChanged::byUserWithName(
+                $userId,
+                $this->modflowId,
+                $scenarioId,
+                $scenario->description()
+            ));
+        }
     }
 
     public function changeGridSize(UserId $userId, ModflowModelGridSize $gridSize)
@@ -152,10 +194,14 @@ class ModflowModelAggregate extends AggregateRoot
         ));
     }
 
-    public function addBoundary(UserId $userId, ModflowBoundary $boundary): void
+    public function addBoundary(ModflowBoundary $boundary): void
     {
-        $boundaryId = $boundary->boundaryId();
-        if (! $this->contains($boundaryId, $this->boundaries)) {
+        $this->boundaries[$boundary->boundaryId()->toString()] = $boundary;
+    }
+
+    public function addBoundaryToBaseModel(UserId $userId, ModflowBoundary $boundary){
+        if (! $this->contains($boundary->boundaryId(), $this->boundaries)) {
+            $this->addBoundary($boundary);
             $this->recordThat(BoundaryWasAdded::toBaseModel(
                 $userId,
                 $this->modflowId,
@@ -169,21 +215,25 @@ class ModflowModelAggregate extends AggregateRoot
         if ($this->contains($scenarioId, $this->scenarios)) {
             /** @var ModflowModelAggregate $scenario */
             $scenario = $this->scenarios[$scenarioId->toString()];
-            if (!$scenario->contains($boundary->boundaryId(), $scenario->boundaries())) {
-                $this->recordThat(BoundaryWasAddedToScenario::toScenario(
-                    $userId,
-                    $this->modflowId,
-                    $scenarioId,
-                    $boundary
-                ));
-            }
+            $scenario->addBoundary($boundary);
+            $this->recordThat(BoundaryWasAddedToScenario::toScenario(
+                $userId,
+                $this->modflowId,
+                $scenarioId,
+                $boundary
+            ));
         }
     }
 
-    public function updateBoundary(UserId $userId, ModflowBoundary $boundary): void
+    public function updateBoundary(ModflowBoundary $boundary): void
     {
-        $boundaryId = $boundary->boundaryId();
-        if ($this->contains($boundaryId, $this->boundaries)) {
+        $this->boundaries[$boundary->boundaryId()->toString()] = $boundary;
+    }
+
+    public function updateBoundaryOfBaseModel(UserId $userId, ModflowBoundary $boundary): void
+    {
+        if ($this->contains($boundary->boundaryId(), $this->boundaries)) {
+            $this->updateBoundary($boundary);
             $this->recordThat(ModflowModelBoundaryWasUpdated::ofBaseModel(
                 $userId,
                 $this->modflowId,
@@ -194,8 +244,13 @@ class ModflowModelAggregate extends AggregateRoot
 
     public function updateBoundaryOfScenario(UserId $userId, ModflowId $scenarioId, ModflowBoundary $boundary): void
     {
-        $boundaryId = $boundary->boundaryId();
-        if ($this->contains($boundaryId, $this->boundaries)) {
+        if ($this->contains($scenarioId, $this->scenarios)){
+            /** @var ModflowModelAggregate $scenario */
+            $scenario = $this->scenarios[$scenarioId->toString()];
+            if ($scenario->contains($boundary->boundaryId(), $scenario->boundaries())){
+                $scenario->updateBoundary($boundary);
+            }
+
             $this->recordThat(ScenarioBoundaryWasUpdated::ofScenario(
                 $userId,
                 $this->modflowId,
@@ -263,11 +318,17 @@ class ModflowModelAggregate extends AggregateRoot
 
     public function name(): ModflowModelName
     {
+        if ($this->name === null){
+            $this->name = ModflowModelName::fromString('');
+        }
         return $this->name;
     }
 
     public function description(): ModflowModelDescription
     {
+        if ($this->description === null){
+            $this->description = ModflowModelDescription::fromString('');
+        }
         return $this->description;
     }
 
@@ -331,10 +392,28 @@ class ModflowModelAggregate extends AggregateRoot
         }
     }
 
+    protected function whenModflowScenarioNameWasChanged(ModflowScenarioNameWasChanged $event)
+    {
+        if ($this->contains($event->scenarioId(), $this->scenarios)){
+            /** @var ModflowModelAggregate $scenario */
+            $scenario = $this->scenarios[$event->scenarioId()->toString()];
+            $scenario->changeName($event->name());
+        }
+    }
+
     protected function whenModflowModelDescriptionWasChanged(ModflowModelDescriptionWasChanged $event)
     {
         if ($event->userId()->sameValueAs($this->ownerId())){
             $this->description = $event->description();
+        }
+    }
+
+    protected function whenModflowScenarioDescriptionWasChanged(ModflowScenarioDescriptionWasChanged $event)
+    {
+        if ($this->contains($event->scenarioId(), $this->scenarios)){
+            /** @var ModflowModelAggregate $scenario */
+            $scenario = $this->scenarios[$event->scenarioId()->toString()];
+            $scenario->changeDescription($event->description());
         }
     }
 
