@@ -42,7 +42,7 @@ class LoadScenarioBase
         $userManager->updateUser($this->owner);
     }
 
-    public function getOwner(): User
+    public function getOwner()
     {
         return $this->owner;
     }
@@ -54,5 +54,4 @@ class LoadScenarioBase
     {
         return $this->userList;
     }
-
 }

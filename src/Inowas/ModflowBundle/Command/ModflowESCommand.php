@@ -1,17 +1,12 @@
 <?php
 
-namespace AppBundle\DataFixtures\ORM\Scenarios\Scenario_4;
+declare(strict_types=1);
 
-use AppBundle\DataFixtures\ORM\Scenarios\LoadScenarioBase;
-use AppBundle\Entity\AddBoundaryEvent;
-use AppBundle\Entity\BoundaryModelObject;
-use AppBundle\Entity\ChangeLayerValueEvent;
+namespace Inowas\ModflowBundle\Command;
+
 use AppBundle\Model\BoundingBox;
-use AppBundle\Model\ModelScenarioFactory;
 use AppBundle\Model\Point;
-use AppBundle\Model\PropertyValueFactory;
-use AppBundle\Model\RasterFactory;
-use AppBundle\Model\WellBoundaryFactory;
+use FOS\UserBundle\Doctrine\UserManager;
 use Inowas\Modflow\Model\AreaBoundary;
 use Inowas\Modflow\Model\BoundaryGeometry;
 use Inowas\Modflow\Model\BoundaryId;
@@ -42,41 +37,35 @@ use Inowas\Modflow\Model\UserId;
 use Inowas\Modflow\Model\WellBoundary;
 use Inowas\Modflow\Model\WellType;
 use CrEOF\Spatial\PHP\Types\Geometry\Polygon;
-use Doctrine\Common\DataFixtures\FixtureInterface;
-use Doctrine\Common\Persistence\ObjectManager;
-use Symfony\Component\DependencyInjection\ContainerAwareInterface;
-use Symfony\Component\DependencyInjection\ContainerInterface;
+use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
+use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Output\OutputInterface;
 
-ini_set('memory_limit', '256M');
-
-class Hanoi extends LoadScenarioBase implements FixtureInterface, ContainerAwareInterface
+class ModflowESCommand extends ContainerAwareCommand
 {
-    /**
-     * @var ContainerInterface
-     */
-    private $container;
 
-    /**
-     * {@inheritDoc}
-     */
-    public function setContainer(ContainerInterface $container = null)
+    /** @var  UserId */
+    protected $ownerId;
+
+    protected function configure(): void
     {
-        $this->container = $container;
+        // Name and description for app/console command
+        $this
+            ->setName('inowas:es:migrate')
+            ->setDescription('Migrates');
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    public function load(ObjectManager $entityManager)
+    protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $commandBus = $this->container->get('prooph_service_bus.modflow_command_bus');
-        $geoTools = $this->container->get('inowas.geotools');
+        $geoTools = $this->getContainer()->get('inowas.geotools');
 
-        $this->loadUsers($this->container->get('fos_user.user_manager'));
+        /** @var UserManager $userManager */
+        $userManager = $this->getContainer()->get('fos_user.user_manager');
+        $this->loadUsers($userManager);
 
-        $ownerId = UserId::fromString($this->getOwner()->getId()->toString());
+        $commandBus = $this->getContainer()->get('prooph_service_bus.modflow_command_bus');
+        $ownerId = $this->ownerId;
         $modelId = ModflowId::generate();
-
         $commandBus->dispatch(CreateModflowModel::byUserWithModelId($ownerId, $modelId));
         $commandBus->dispatch(ChangeModflowModelName::forModflowModel($ownerId, $modelId, ModflowModelName::fromString('BaseModel INOWAS Hanoi')));
         $commandBus->dispatch(ChangeModflowModelDescription::forModflowModel(
@@ -84,59 +73,59 @@ class Hanoi extends LoadScenarioBase implements FixtureInterface, ContainerAware
             $modelId,
             ModflowModelDescription::fromString(
                 'Application of managed aquifer recharge for maximization of water storage capacity in Hanoi.')
-            )
+        )
         );
 
         $area = AreaBoundary::create(BoundaryId::generate())
             ->setName(BoundaryName::fromString('Hanoi Area'))
             ->setGeometry(BoundaryGeometry::fromPolygon(new Polygon(array(
-                    array(
-                        array(105.790767733626808, 21.094425932026443),
-                        array(105.796959843400032, 21.093521487879368),
-                        array(105.802017060333782, 21.092234483652170),
-                        array(105.808084259744490, 21.090442258424751),
-                        array(105.812499379361824, 21.088745285770433),
-                        array(105.817189857772419, 21.086246452411380),
-                        array(105.821849880920155, 21.083084791161816),
-                        array(105.826206685192972, 21.080549811906632),
-                        array(105.829745666549428, 21.077143263497668),
-                        array(105.833738284468225, 21.073871989488410),
-                        array(105.837054371969458, 21.068790508713093),
-                        array(105.843156477826938, 21.061619066459148),
-                        array(105.845257297050807, 21.058494488216656),
-                        array(105.848091064693264, 21.055416254106909),
-                        array(105.850415052797018, 21.051740212147806),
-                        array(105.853986426189834, 21.047219935885728),
-                        array(105.857317797743207, 21.042700799256870),
-                        array(105.860886165285677, 21.037730164508108),
-                        array(105.862781077291359, 21.033668431680731),
-                        array(105.865628458812012, 21.028476242159179),
-                        array(105.867512713611035, 21.022613568026749),
-                        array(105.869402048566840, 21.017651320651229),
-                        array(105.871388782041976, 21.013426442220442),
-                        array(105.872849945737570, 21.008166192541132),
-                        array(105.876181664767913, 21.003946864458868),
-                        array(105.882508712001197, 21.001813076331899),
-                        array(105.889491767034770, 21.000288452359857),
-                        array(105.894324807327010, 20.997811850332017),
-                        array(105.898130162725238, 20.994990356212355),
-                        array(105.903035574892471, 20.989098851962478),
-                        array(105.905619253163707, 20.984707849769400),
-                        array(105.905107309855680, 20.977094091795209),
-                        array(105.901707144804220, 20.969670720258843),
-                        array(105.896052272867848, 20.959195015805960),
-                        array(105.886865167028475, 20.950138230157627),
-                        array(105.877901274443431, 20.947208019282808),
-                        array(105.834499067698161, 20.951978316227517),
-                        array(105.806257646336405, 20.968923300374374),
-                        array(105.781856978173835, 21.008608549010258),
-                        array(105.768216532593982, 21.039487418417067),
-                        array(105.774357585691064, 21.072902571997240),
-                        array(105.777062025914603, 21.090749775344797),
-                        array(105.783049106327312, 21.093961473086512),
-                        array(105.790767733626808, 21.094425932026443)
-                    )
-                ), 4326)));
+                array(
+                    array(105.790767733626808, 21.094425932026443),
+                    array(105.796959843400032, 21.093521487879368),
+                    array(105.802017060333782, 21.092234483652170),
+                    array(105.808084259744490, 21.090442258424751),
+                    array(105.812499379361824, 21.088745285770433),
+                    array(105.817189857772419, 21.086246452411380),
+                    array(105.821849880920155, 21.083084791161816),
+                    array(105.826206685192972, 21.080549811906632),
+                    array(105.829745666549428, 21.077143263497668),
+                    array(105.833738284468225, 21.073871989488410),
+                    array(105.837054371969458, 21.068790508713093),
+                    array(105.843156477826938, 21.061619066459148),
+                    array(105.845257297050807, 21.058494488216656),
+                    array(105.848091064693264, 21.055416254106909),
+                    array(105.850415052797018, 21.051740212147806),
+                    array(105.853986426189834, 21.047219935885728),
+                    array(105.857317797743207, 21.042700799256870),
+                    array(105.860886165285677, 21.037730164508108),
+                    array(105.862781077291359, 21.033668431680731),
+                    array(105.865628458812012, 21.028476242159179),
+                    array(105.867512713611035, 21.022613568026749),
+                    array(105.869402048566840, 21.017651320651229),
+                    array(105.871388782041976, 21.013426442220442),
+                    array(105.872849945737570, 21.008166192541132),
+                    array(105.876181664767913, 21.003946864458868),
+                    array(105.882508712001197, 21.001813076331899),
+                    array(105.889491767034770, 21.000288452359857),
+                    array(105.894324807327010, 20.997811850332017),
+                    array(105.898130162725238, 20.994990356212355),
+                    array(105.903035574892471, 20.989098851962478),
+                    array(105.905619253163707, 20.984707849769400),
+                    array(105.905107309855680, 20.977094091795209),
+                    array(105.901707144804220, 20.969670720258843),
+                    array(105.896052272867848, 20.959195015805960),
+                    array(105.886865167028475, 20.950138230157627),
+                    array(105.877901274443431, 20.947208019282808),
+                    array(105.834499067698161, 20.951978316227517),
+                    array(105.806257646336405, 20.968923300374374),
+                    array(105.781856978173835, 21.008608549010258),
+                    array(105.768216532593982, 21.039487418417067),
+                    array(105.774357585691064, 21.072902571997240),
+                    array(105.777062025914603, 21.090749775344797),
+                    array(105.783049106327312, 21.093961473086512),
+                    array(105.790767733626808, 21.094425932026443)
+                )
+            ), 4326)));
         $commandBus->dispatch(AddBoundary::toBaseModel($ownerId, $modelId, $area));
 
         $soilModelId = SoilModelId::generate();
@@ -429,7 +418,7 @@ class Hanoi extends LoadScenarioBase implements FixtureInterface, ContainerAware
             $well = WellBoundary::createWithAllParams(
                 BoundaryId::generate(),
                 BoundaryName::fromString($wellData['name']),
-                BoundaryGeometry::fromPoint($geoTools->transformPoint(new Point($industrialWell['x'], $industrialWell['y'], $industrialWell['srid']), 4326)),
+                BoundaryGeometry::fromPoint($geoTools->transformPoint(new Point($wellData['x'], $wellData['y'], $wellData['srid']), 4326)),
                 WellType::fromString(WellType::TYPE_INDUSTRIAL_WELL),
                 LayerNumber::fromInteger(4),
                 PumpingRate::fromValue($wellData['pumpingrate'])
@@ -438,7 +427,7 @@ class Hanoi extends LoadScenarioBase implements FixtureInterface, ContainerAware
             $commandBus->dispatch(AddBoundary::toBaseModel($ownerId, $modelId, $well));
         }
 
-        $headsS0L3 = $this->loadHeadsFromFile(__DIR__."/data/base_scenario_head_layer_3.json");
+        $headsS0L3 = $this->loadHeadsFromFile(__DIR__."/../DataFixtures/ES/Scenarios/Hanoi/data/base_scenario_head_layer_3.json");
         $calculationId = ModflowId::generate();
         $commandBus->dispatch(CreateModflowModelCalculation::byUserWithModelId($calculationId, $ownerId, $modelId));
         $commandBus->dispatch(AddResultToCalculation::to($calculationId,
@@ -449,276 +438,223 @@ class Hanoi extends LoadScenarioBase implements FixtureInterface, ContainerAware
             )
         ));
 
+        /*
+         * Begin add Scenario 1
+         */
         $scenarioId = ModflowId::generate();
-        $commandBus->dispatch(AddModflowScenario::from($ownerId, $scenarioId, $modelId));
-        $headsS1L3 = $this->loadHeadsFromFile(__DIR__."/data/scenario_1_head_layer_3.json");
-        $calculationId = ModflowId::generate();
-        $commandBus->dispatch(CreateModflowModelCalculation::byUserWithModelAndScenarioId($calculationId, $ownerId, $modelId, $scenarioId));
-        $commandBus->dispatch(AddResultToCalculation::to($calculationId,
-            CalculationResult::fromParameters(
-                TotalTime::fromInt(120),
-                CalculationResultType::fromString(CalculationResultType::HEAD_TYPE),
-                CalculationResultData::from3dArray([[], [], $headsS1L3, []])
-            )
-        ));
+        $commandBus->dispatch(AddModflowScenario::from($ownerId, $modelId, $scenarioId));
+        $commandBus->dispatch(ChangeModflowModelName::forScenario($ownerId, $modelId, $scenarioId, ModflowModelName::fromString('Scenario 1')));
+        $commandBus->dispatch(ChangeModflowModelDescription::forScenario($ownerId, $modelId, $scenarioId, ModflowModelDescription::fromString('River Bank Filtration')));
 
-        $scenarioId = ModflowId::generate();
-        $commandBus->dispatch(AddModflowScenario::from($ownerId, $scenarioId, $modelId));
-        $headsS2L3 = $this->loadHeadsFromFile(__DIR__."/data/scenario_2_head_layer_3.json");
-        $calculationId = ModflowId::generate();
-        $commandBus->dispatch(CreateModflowModelCalculation::byUserWithModelAndScenarioId($calculationId, $ownerId, $modelId, $scenarioId));
-        $commandBus->dispatch(AddResultToCalculation::to($calculationId,
-            CalculationResult::fromParameters(
-                TotalTime::fromInt(120),
-                CalculationResultType::fromString(CalculationResultType::HEAD_TYPE),
-                CalculationResultData::from3dArray([[], [], $headsS2L3, []])
-            )
-        ));
-
-        $scenarioId = ModflowId::generate();
-        $commandBus->dispatch(AddModflowScenario::from($ownerId, $scenarioId, $modelId));
-        $headsS3L3 = $this->loadHeadsFromFile(__DIR__."/data/scenario_3_head_layer_3.json");
-        $calculationId = ModflowId::generate();
-        $commandBus->dispatch(CreateModflowModelCalculation::byUserWithModelAndScenarioId($calculationId, $ownerId, $modelId, $scenarioId));
-        $commandBus->dispatch(AddResultToCalculation::to($calculationId,
-            CalculationResult::fromParameters(
-                TotalTime::fromInt(120),
-                CalculationResultType::fromString(CalculationResultType::HEAD_TYPE),
-                CalculationResultData::from3dArray([[], [], $headsS3L3, []])
-            )
-        ));
-
-
-        #echo "Calculate active Cells-Array\r\n";
-        #$model->setActiveCells($geoTools->getActiveCells($model->getArea(), $model->getBoundingBox(), $model->getGridSize()));
-
-        #echo "Calculate active Cells for all Boundaries\r\n";
-        #foreach ($model->getBoundaries() as $boundary){
-        #    echo "Calculate active Cells for Boundary ".$boundary->getName()."\r\n";
-        #    $boundary->setActiveCells($geoTools->getActiveCells($boundary, $model->getBoundingBox(), $model->getGridSize()));
-        #}
-
-        #echo "Loading heads from file\r\n";
-        #$head = $this->loadHeadsFromFile(__DIR__."/base_scenario_head_layer_3.json");
-        #for ($i=0; $i<$model->getSoilModel()->getNumberOfGeologicalLayers(); $i++){
-        #    $headsService->addHead($model, 0, $i, $head);
-        #}
-
-        #$entityManager->persist($model);
-        #$entityManager->flush();
-
-        $scenarioId = ModflowId::generate();
-        $commandBus->dispatch(AddModflowScenario::from($ownerId, $scenarioId, $modelId));
-
-
-
-        foreach ($this->getUserList() as $user) {
-            // Add the first Scenario (RiverBankFiltration)
-            $scenario_1 = ModelScenarioFactory::create($model)
-                ->setName('Scenario 1')
-                ->setOwner($user)
-                ->setDescription('River Bank Filtration');
-
-            # THIS WELLS ARE THE RED AND RED DOTS IN THE LEFT IMAGE
-            $movedWells_sc1 = array(
-                array('A01', 21.03580, 105.78032, 4326, -4900),
-                array('A02', 21.03420, 105.78135, 4326, -4900),
-                array('A03', 21.03131, 105.77963, 4326, -4900),
-                array('A04', 20.98580, 105.80641, 4326, -4900),
-                array('A05', 20.98548, 105.81430, 4326, -4900),
-                array('A06', 20.98388, 105.81224, 4326, -4900),
-                array('A07', 20.98484, 105.81465, 4326, -4900),
-                array('A08', 20.96561, 105.85001, 4326, -4900),
-                array('A09', 20.96433, 105.84761, 4326, -4900),
-                array('A10', 20.96176, 105.85070, 4326, -4900)
+        $movedWells_sc1 = array(
+            array('A01', 21.03580, 105.78032, 4326, -4900),
+            array('A02', 21.03420, 105.78135, 4326, -4900),
+            array('A03', 21.03131, 105.77963, 4326, -4900),
+            array('A04', 20.98580, 105.80641, 4326, -4900),
+            array('A05', 20.98548, 105.81430, 4326, -4900),
+            array('A06', 20.98388, 105.81224, 4326, -4900),
+            array('A07', 20.98484, 105.81465, 4326, -4900),
+            array('A08', 20.96561, 105.85001, 4326, -4900),
+            array('A09', 20.96433, 105.84761, 4326, -4900),
+            array('A10', 20.96176, 105.85070, 4326, -4900)
+        );
+        $header = array('name', 'y', 'x', 'srid', 'pumpingrate');
+        foreach ($movedWells_sc1 as $row) {
+            $wellData = array_combine($header, $row);
+            $well = WellBoundary::createWithAllParams(
+                BoundaryId::generate(),
+                BoundaryName::fromString($wellData['name']),
+                BoundaryGeometry::fromPoint(new Point($wellData['x'], $wellData['y'], 4326)),
+                WellType::fromString(WellType::TYPE_SCENARIO_MOVED_WELL),
+                LayerNumber::fromInteger(4),
+                PumpingRate::fromValue($wellData['pumpingrate'])
             );
-            $header = array('name', 'y', 'x', 'srid', 'pumpingrate');
-            foreach ($movedWells_sc1 as $row) {
-                $well = array_combine($header, $row);
-                echo "Persisting " . $well['name'] . "\r\n";
-                $scenario_1->addEvent(new AddBoundaryEvent(
-                        WellBoundaryFactory::create()
-                            ->setOwner($user)
-                            ->setPublic($public)
-                            ->setName($well['name'])
-                            ->setWellType(WellBoundary::TYPE_SCENARIO_MOVED_WELL)
-                            ->setGeometry(new Point($well['x'], $well['y'], $well['srid']))
-                            ->setLayer($layer_4)
-                            ->addValue($propertyTypePumpingRate, PropertyValueFactory::create()->setValue($well['pumpingrate']))
-                    )
-                );
-            }
 
-            # THIS WELLS ARE THE RED AND YELLOW DOTS IN THE LEFT IMAGE
-            $newWells_sc1 = array(
-                array('A11', 21.08354, 105.81499, 4326, -4900),
-                array('A12', 21.08226, 105.81671, 4326, -4900),
-                array('A13', 21.04125, 105.85173, 4326, -4900),
-                array('A15', 21.03868, 105.85310, 4326, -4900),
-                array('A16', 21.00181, 105.87710, 4326, -4900),
-                array('A17', 21.03708, 105.85379, 4326, -4900),
-                array('A18', 21.03548, 105.85550, 4326, -4900),
-                array('A19', 21.03484, 105.85585, 4326, -4900),
-                array('A20', 20.98965, 105.89842, 4326, -4900),
-                array('A21', 20.98837, 105.90014, 4326, -4900),
-                array('A22', 20.98644, 105.89842, 4326, -4900)
-            );
-            $header = array('name', 'y', 'x', 'srid', 'pumpingrate');
-            foreach ($newWells_sc1 as $row) {
-                $well = array_combine($header, $row);
-                echo "Persisting " . $well['name'] . "\r\n";
-                $scenario_1->addEvent(new AddBoundaryEvent(
-                        WellBoundaryFactory::create()
-                            ->setOwner($user)
-                            ->setPublic($public)
-                            ->setName($well['name'])
-                            ->setWellType(WellBoundary::TYPE_SCENARIO_NEW_WELL)
-                            ->setGeometry(new Point($well['x'], $well['y'], $well['srid']))
-                            ->setLayer($layer_4)
-                            ->addValue($propertyTypePumpingRate, PropertyValueFactory::create()->setValue($well['pumpingrate']))
-                    )
-                );
-            }
-
-            echo "Loading heads from file\r\n";
-            $head = $this->loadHeadsFromFile(__DIR__ . "/scenario_1_head_layer_3.json");
-            for ($i = 0; $i < $model->getSoilModel()->getNumberOfGeologicalLayers(); $i++) {
-                $headsService->addHead($scenario_1, 0, $i, $head);
-            }
-
-            $entityManager->persist($scenario_1);
-
-            /** @var BoundaryModelObject $boundary */
-            foreach ($scenario_1->getBoundaries() as $boundary){
-                $boundary->setActiveCells($geoTools->getActiveCells($boundary, $model->getBoundingBox(), $model->getGridSize()));
-                $entityManager->persist($boundary);
-            }
-            $entityManager->flush();
-
-            // Add the second Scenario (InjectionWells)
-            $scenario_2 = ModelScenarioFactory::create($model)
-                ->setName('Scenario 2')
-                ->setOwner($user)
-                ->setDescription('Injection Wells');
-
-            # THIS WELLS ARE THE YELLOW DOTS IN THE RIGHT IMAGE
-            $newWells_sc2 = array(
-                array('B01', 21.002, 105.8415, 4326, -4900),
-                array('B02', 21.002, 105.8425, 4326, -4900),
-                array('B03', 21.002, 105.8435, 4326, -4900),
-                array('B04', 21.002, 105.8445, 4326, -4900),
-                array('B05', 21.002, 105.8455, 4326, -4900),
-                array('B06', 21.00271, 105.84653, 4326, -4900),
-                array('B07', 20.98292, 105.82872, 4326, -4900),
-                array('B08', 20.9826, 105.82975, 4326, -4900),
-                array('B09', 20.9826, 105.83113, 4326, -4900),
-                array('B10', 20.98164, 105.83216, 4326, -4900)
-            );
-            $header = array('name', 'y', 'x', 'srid', 'pumpingrate');
-            foreach ($newWells_sc2 as $row) {
-                $well = array_combine($header, $row);
-                echo "Persisting " . $well['name'] . "\r\n";
-                $scenario_2->addEvent(new AddBoundaryEvent(
-                        WellBoundaryFactory::create()
-                            ->setOwner($user)
-                            ->setPublic($public)
-                            ->setName($well['name'])
-                            ->setWellType(WellBoundary::TYPE_SCENARIO_NEW_WELL)
-                            ->setGeometry(new Point($well['x'], $well['y'], $well['srid']))
-                            ->setLayer($layer_4)
-                            ->addValue($propertyTypePumpingRate, PropertyValueFactory::create()->setValue($well['pumpingrate']))
-                    )
-                );
-            }
-
-            echo "Loading heads from file\r\n";
-            $head = $this->loadHeadsFromFile(__DIR__ . "/scenario_2_head_layer_3.json");
-            for ($i = 0; $i < $model->getSoilModel()->getNumberOfGeologicalLayers(); $i++) {
-                $headsService->addHead($scenario_2, 0, $i, $head);
-            }
-
-            $entityManager->persist($scenario_2);
-
-            /** @var BoundaryModelObject $boundary */
-            foreach ($scenario_2->getBoundaries() as $boundary){
-                $boundary->setActiveCells($geoTools->getActiveCells($boundary, $model->getBoundingBox(), $model->getGridSize()));
-                $entityManager->persist($boundary);
-            }
-
-            $entityManager->flush();
-
-
-            // Add the first Scenario (RiverBankFiltration)
-            $scenario_3 = ModelScenarioFactory::create($model)
-                ->setName('Scenario 3')
-                ->setOwner($user)
-                ->setDescription('River bank filtration and injection wells');
-
-            # THIS WELLS ARE THE RED AND RED DOTS IN THE LEFT IMAGE
-            $movedWells_sc3 = $movedWells_sc1;
-            $header = array('name', 'y', 'x', 'srid', 'pumpingrate');
-            foreach ($movedWells_sc3 as $row) {
-                $well = array_combine($header, $row);
-                echo "Persisting " . $well['name'] . "\r\n";
-                $scenario_3->addEvent(new AddBoundaryEvent(
-                        WellBoundaryFactory::create()
-                            ->setOwner($user)
-                            ->setPublic($public)
-                            ->setName($well['name'])
-                            ->setWellType(WellBoundary::TYPE_SCENARIO_MOVED_WELL)
-                            ->setGeometry(new Point($well['x'], $well['y'], $well['srid']))
-                            ->setLayer($layer_4)
-                            ->addValue($propertyTypePumpingRate, PropertyValueFactory::create()->setValue($well['pumpingrate']))
-                    )
-                );
-            }
-
-            # THIS WELLS ARE ALL YELLOW DOTS OG BOTH IMAGES
-            $newWells_sc3 = array_merge($newWells_sc1, $newWells_sc2);
-            $header = array('name', 'y', 'x', 'srid', 'pumpingrate');
-            foreach ($newWells_sc3 as $row) {
-                $well = array_combine($header, $row);
-                echo "Persisting " . $well['name'] . "\r\n";
-                $scenario_3->addEvent(new AddBoundaryEvent(
-                        WellBoundaryFactory::create()
-                            ->setOwner($user)
-                            ->setPublic($public)
-                            ->setName($well['name'])
-                            ->setWellType(WellBoundary::TYPE_SCENARIO_NEW_WELL)
-                            ->setGeometry(new Point($well['x'], $well['y'], $well['srid']))
-                            ->setLayer($layer_4)
-                            ->addValue($propertyTypePumpingRate, PropertyValueFactory::create()->setValue($well['pumpingrate']))
-                    )
-                );
-            }
-
-            $scenario_3->addEvent(new ChangeLayerValueEvent($layer_4, $propertyTypeHydraulicHead,
-                PropertyValueFactory::create()
-                    ->setRaster(RasterFactory::create()
-                        ->setBoundingBox($model->getBoundingBox())
-                        ->setGridSize($model->getGridSize())
-                        ->setData($this->loadHeadsFromFile(__DIR__ . "/scenario_3_head_layer_3.json"))
-                    )
-            ));
-
-            echo "Loading heads from file\r\n";
-            $head = $this->loadHeadsFromFile(__DIR__ . "/scenario_3_head_layer_3.json");
-            for ($i = 0; $i < $model->getSoilModel()->getNumberOfGeologicalLayers(); $i++) {
-                $headsService->addHead($scenario_3, 0, $i, $head);
-            }
-
-            /** @var BoundaryModelObject $boundary */
-            foreach ($scenario_3->getBoundaries() as $boundary){
-                $boundary->setActiveCells($geoTools->getActiveCells($boundary, $model->getBoundingBox(), $model->getGridSize()));
-                $entityManager->persist($boundary);
-            }
-
-            $entityManager->flush();
-            $entityManager->persist($scenario_3);
-            $entityManager->flush();
+            $commandBus->dispatch(AddBoundary::toScenario($ownerId, $modelId, $scenarioId, $well));
         }
 
-        return 1;
+        # THIS WELLS ARE THE RED AND YELLOW DOTS IN THE LEFT IMAGE
+        $newWells_sc1 = array(
+            array('A11', 21.08354, 105.81499, 4326, -4900),
+            array('A12', 21.08226, 105.81671, 4326, -4900),
+            array('A13', 21.04125, 105.85173, 4326, -4900),
+            array('A15', 21.03868, 105.85310, 4326, -4900),
+            array('A16', 21.00181, 105.87710, 4326, -4900),
+            array('A17', 21.03708, 105.85379, 4326, -4900),
+            array('A18', 21.03548, 105.85550, 4326, -4900),
+            array('A19', 21.03484, 105.85585, 4326, -4900),
+            array('A20', 20.98965, 105.89842, 4326, -4900),
+            array('A21', 20.98837, 105.90014, 4326, -4900),
+            array('A22', 20.98644, 105.89842, 4326, -4900)
+        );
+
+        $header = array('name', 'y', 'x', 'srid', 'pumpingrate');
+        foreach ($newWells_sc1 as $row) {
+            $wellData = array_combine($header, $row);
+
+            $well = WellBoundary::createWithAllParams(
+                BoundaryId::generate(),
+                BoundaryName::fromString($wellData['name']),
+                BoundaryGeometry::fromPoint(new Point($wellData['x'], $wellData['y'], 4326)),
+                WellType::fromString(WellType::TYPE_SCENARIO_NEW_WELL),
+                LayerNumber::fromInteger(4),
+                PumpingRate::fromValue($wellData['pumpingrate'])
+            );
+
+            $commandBus->dispatch(AddBoundary::toScenario($ownerId, $modelId, $scenarioId, $well));
+        }
+
+        /* Add Calculation */
+        $calculationId = ModflowId::generate();
+        $heads_S1L3 = $this->loadHeadsFromFile(__DIR__."/../DataFixtures/ES/Scenarios/Hanoi/data/scenario_1_head_layer_3.json");
+        $commandBus->dispatch(CreateModflowModelCalculation::byUserWithModelAndScenarioId($calculationId, $ownerId, $modelId, $scenarioId));
+        $commandBus->dispatch(AddResultToCalculation::to($calculationId,
+            CalculationResult::fromParameters(
+                TotalTime::fromInt(1095),
+                CalculationResultType::fromString(CalculationResultType::HEAD_TYPE),
+                CalculationResultData::from3dArray([$heads_S1L3, $heads_S1L3, $heads_S1L3, $heads_S1L3])
+            )
+        ));
+
+
+
+        /*
+         * Begin add Scenario 2
+         */
+        $scenarioId = ModflowId::generate();
+        $commandBus->dispatch(AddModflowScenario::from($ownerId, $modelId, $scenarioId));
+        $commandBus->dispatch(ChangeModflowModelName::forScenario($ownerId, $modelId, $scenarioId, ModflowModelName::fromString('Scenario 2')));
+        $commandBus->dispatch(ChangeModflowModelDescription::forScenario($ownerId, $modelId, $scenarioId, ModflowModelDescription::fromString('Injection wells')));
+
+        # THIS WELLS ARE THE YELLOW DOTS IN THE RIGHT IMAGE
+        $newWells_sc2 = array(
+            array('B01', 21.002, 105.8415, 4326, -4900),
+            array('B02', 21.002, 105.8425, 4326, -4900),
+            array('B03', 21.002, 105.8435, 4326, -4900),
+            array('B04', 21.002, 105.8445, 4326, -4900),
+            array('B05', 21.002, 105.8455, 4326, -4900),
+            array('B06', 21.00271, 105.84653, 4326, -4900),
+            array('B07', 20.98292, 105.82872, 4326, -4900),
+            array('B08', 20.9826, 105.82975, 4326, -4900),
+            array('B09', 20.9826, 105.83113, 4326, -4900),
+            array('B10', 20.98164, 105.83216, 4326, -4900)
+        );
+
+        $header = array('name', 'y', 'x', 'srid', 'pumpingrate');
+        foreach ($newWells_sc2 as $row) {
+            $wellData = array_combine($header, $row);
+
+            $well = WellBoundary::createWithAllParams(
+                BoundaryId::generate(),
+                BoundaryName::fromString($wellData['name']),
+                BoundaryGeometry::fromPoint(new Point($wellData['x'], $wellData['y'], 4326)),
+                WellType::fromString(WellType::TYPE_SCENARIO_NEW_WELL),
+                LayerNumber::fromInteger(4),
+                PumpingRate::fromValue($wellData['pumpingrate'])
+            );
+
+            $commandBus->dispatch(AddBoundary::toScenario($ownerId, $modelId, $scenarioId, $well));
+        }
+
+        $heads_S2L3 = $this->loadHeadsFromFile(__DIR__."/../DataFixtures/ES/Scenarios/Hanoi/data/scenario_2_head_layer_3.json");
+        $calculationId = ModflowId::generate();
+        $commandBus->dispatch(CreateModflowModelCalculation::byUserWithModelAndScenarioId($calculationId, $ownerId, $modelId, $scenarioId));
+        $commandBus->dispatch(AddResultToCalculation::to($calculationId,
+            CalculationResult::fromParameters(
+                TotalTime::fromInt(1095),
+                CalculationResultType::fromString(CalculationResultType::HEAD_TYPE),
+                CalculationResultData::from3dArray([$heads_S2L3, $heads_S2L3, $heads_S2L3, $heads_S2L3])
+            )
+        ));
+
+        /*
+        * Begin add Scenario 3
+        */
+        $scenarioId = ModflowId::generate();
+        $commandBus->dispatch(AddModflowScenario::from($ownerId, $modelId, $scenarioId));
+        $commandBus->dispatch(ChangeModflowModelName::forScenario($ownerId, $modelId, $scenarioId, ModflowModelName::fromString('Scenario 3')));
+        $commandBus->dispatch(ChangeModflowModelDescription::forScenario($ownerId, $modelId, $scenarioId, ModflowModelDescription::fromString('River bank filtration and injection wells.')));
+
+        $movedWells_sc3 = $movedWells_sc1;
+        $header = array('name', 'y', 'x', 'srid', 'pumpingrate');
+        foreach ($movedWells_sc3 as $row) {
+            $wellData = array_combine($header, $row);
+
+            $well = WellBoundary::createWithAllParams(
+                BoundaryId::generate(),
+                BoundaryName::fromString($wellData['name']),
+                BoundaryGeometry::fromPoint(new Point($wellData['x'], $wellData['y'], 4326)),
+                WellType::fromString(WellType::TYPE_SCENARIO_MOVED_WELL),
+                LayerNumber::fromInteger(4),
+                PumpingRate::fromValue($wellData['pumpingrate'])
+            );
+
+            $commandBus->dispatch(AddBoundary::toScenario($ownerId, $modelId, $scenarioId, $well));
+        }
+
+        # THIS WELLS ARE ALL YELLOW DOTS OG BOTH IMAGES
+        $newWells_sc3 = array_merge($newWells_sc1, $newWells_sc2);
+        $header = array('name', 'y', 'x', 'srid', 'pumpingrate');
+
+        foreach ($newWells_sc3 as $row) {
+            $wellData = array_combine($header, $row);
+
+            $well = WellBoundary::createWithAllParams(
+                BoundaryId::generate(),
+                BoundaryName::fromString($wellData['name']),
+                BoundaryGeometry::fromPoint(new Point($wellData['x'], $wellData['y'], 4326)),
+                WellType::fromString(WellType::TYPE_SCENARIO_NEW_WELL),
+                LayerNumber::fromInteger(4),
+                PumpingRate::fromValue($wellData['pumpingrate'])
+            );
+
+            $commandBus->dispatch(AddBoundary::toScenario($ownerId, $modelId, $scenarioId, $well));
+        }
+
+        $headsS3L3 = $this->loadHeadsFromFile(__DIR__."/../DataFixtures/ES/Scenarios/Hanoi/data/scenario_3_head_layer_3.json");
+        $calculationId = ModflowId::generate();
+        $commandBus->dispatch(CreateModflowModelCalculation::byUserWithModelAndScenarioId($calculationId, $ownerId, $modelId, $scenarioId));
+        $commandBus->dispatch(AddResultToCalculation::to($calculationId,
+            CalculationResult::fromParameters(
+                TotalTime::fromInt(120),
+                CalculationResultType::fromString(CalculationResultType::HEAD_TYPE),
+                CalculationResultData::from3dArray([$headsS3L3, $headsS3L3, $headsS3L3, $headsS3L3])
+            )
+        ));
+
+    }
+
+    public function loadUsers(UserManager $userManager): void
+    {
+
+        $userListHeads = array('username', 'email', 'password');
+        $userList = array(
+            array('inowas', 'inowas@inowas.com', 'inowas'),
+            array('ralf.junghanns', 'ralf.junghanns@tu-dresden.de', 'inowas'),
+            array('jana.ringleb', 'jana.ringleb@tu-dresden.de', 'inowas'),
+            array('jana.sallwey', 'jana.sallwey@tu-dresden.de', 'inowas'),
+            array('catalin.stefan', 'catalin.stefan@tu-dresden.de', 'inowas')
+        );
+
+        foreach ($userList as $item){
+            $item = array_combine($userListHeads, $item);
+            $user = $userManager->findUserByUsername($item['username']);
+            if (!$user) {
+                // Add new User
+                $user = $userManager->createUser();
+                $user->setUsername($item['username']);
+                $user->setEmail($item['email']);
+                $user->setPlainPassword($item['password']);
+                $user->setEnabled(true);
+                $userManager->updateUser($user);
+            }
+            $this->userIdList[] = UserId::fromString($user->getId()->toString());
+        }
+
+        $owner = $userManager->findUserByUsername('inowas');
+        $owner->addRole('ROLE_ADMIN');
+        $userManager->updateUser($owner);
+        $this->ownerId = UserId::fromString($userManager->findUserByUsername('inowas')->getId()->toString());
     }
 
     private function loadHeadsFromFile($filename){
@@ -728,7 +664,7 @@ class Hanoi extends LoadScenarioBase implements FixtureInterface, ContainerAware
             return FALSE;
         }
 
-        $headsJSON = file_get_contents($filename, FILE_USE_INCLUDE_PATH);
+        $headsJSON = file_get_contents($filename, true);
         $heads = json_decode($headsJSON, true);
 
         for ($iy = 0; $iy < count($heads); $iy++){
@@ -741,5 +677,4 @@ class Hanoi extends LoadScenarioBase implements FixtureInterface, ContainerAware
 
         return $heads;
     }
-
 }

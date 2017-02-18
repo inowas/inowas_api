@@ -94,6 +94,14 @@ class ModflowModelEventSourcingTest extends KernelTestCase
         $this->model_calculations_projector = static::$kernel->getContainer()->get('inowas.modflow_projection.model_calculations');
     }
 
+    public function test()
+    {
+        $commandBus = static::$kernel->getContainer()->get('prooph_service_bus.modflow_command_bus');
+        $ownerId = UserId::generate();
+        $modelId = ModflowId::generate();
+        $commandBus->dispatch(CreateModflowModel::byUserWithModelId($ownerId, $modelId));
+    }
+
     public function testModflowEventBus()
     {
         $ownerId = UserId::generate();
