@@ -47,7 +47,7 @@ use Inowas\Modflow\Model\UserId;
 use Inowas\Modflow\Model\WellBoundary;
 use Inowas\Modflow\Model\WellType;
 use Inowas\Modflow\Projection\CalculationsProjector;
-use Inowas\Modflow\Projection\ModelScenariosProjector;
+use Inowas\Modflow\Projection\ModelScenarioListProjector;
 use Inowas\ModflowBundle\Model\BoundingBox;
 use Prooph\EventStore\EventStore;
 use Prooph\ServiceBus\CommandBus;
@@ -68,7 +68,7 @@ class ModflowModelEventSourcingTest extends KernelTestCase
     /** @var  GeoTools */
     protected $geoTools;
 
-    /** @var  ModelScenariosProjector */
+    /** @var  ModelScenarioListProjector */
     protected $model_scenarios_projector;
 
     /** @var  CalculationsProjector */

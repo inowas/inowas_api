@@ -6,6 +6,7 @@ namespace Inowas\ModflowBundle\Command;
 
 use AppBundle\Model\BoundingBox;
 use AppBundle\Model\Point;
+use Doctrine\DBAL\Schema\Schema;
 use FOS\UserBundle\Doctrine\UserManager;
 use Inowas\Modflow\Model\AreaBoundary;
 use Inowas\Modflow\Model\BoundaryGeometry;
@@ -37,11 +38,12 @@ use Inowas\Modflow\Model\UserId;
 use Inowas\Modflow\Model\WellBoundary;
 use Inowas\Modflow\Model\WellType;
 use CrEOF\Spatial\PHP\Types\Geometry\Polygon;
+use Prooph\EventStore\Adapter\Doctrine\Schema\EventStoreSchema;
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
-class ModflowESCommand extends ContainerAwareCommand
+class ModflowEsMigrateCommand extends ContainerAwareCommand
 {
 
     /** @var  UserId */
@@ -52,11 +54,12 @@ class ModflowESCommand extends ContainerAwareCommand
         // Name and description for app/console command
         $this
             ->setName('inowas:es:migrate')
-            ->setDescription('Migrates');
+            ->setDescription('Migrates the Hanoi-Model to the Database');
     }
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
+        $this->createEventStreamTableIfNotExists('event_stream');
         $geoTools = $this->getContainer()->get('inowas.geotools');
 
         /** @var UserManager $userManager */
@@ -676,5 +679,25 @@ class ModflowESCommand extends ContainerAwareCommand
         }
 
         return $heads;
+    }
+
+    private function createEventStreamTableIfNotExists($tableName): void
+    {
+        $connection = $this->getContainer()->get('doctrine.dbal.default_connection');
+
+        if (in_array($tableName, $connection->getSchemaManager()->listTableNames())){
+            return;
+        }
+
+        $schema = new Schema();
+        if (class_exists('Prooph\EventStore\Adapter\Doctrine\Schema\EventStoreSchema')) {
+            EventStoreSchema::createSingleStream($schema, $tableName, true);
+        }
+
+        $queries = $schema->toSql($connection->getDatabasePlatform());
+
+        foreach ($queries as $query){
+            $connection->exec($query);
+        }
     }
 }

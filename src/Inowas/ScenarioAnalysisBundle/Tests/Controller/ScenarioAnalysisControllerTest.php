@@ -2,62 +2,63 @@
 
 namespace Inowas\ScenarioAnalysisBundle\Tests\Controller;
 
-use Doctrine\ORM\EntityManager;
 use FOS\UserBundle\Doctrine\UserManager;
 use Inowas\AppBundle\Model\User;
-use Inowas\ModflowBundle\Model\ModflowModel;
-use Inowas\ModflowBundle\Service\ModflowToolManager;
-use Inowas\ScenarioAnalysisBundle\Model\Scenario;
-use Inowas\ScenarioAnalysisBundle\Service\ScenarioAnalysisManager;
-use Inowas\ScenarioAnalysisBundle\Service\ScenarioManager;
+use Inowas\Modflow\Model\Command\AddModflowScenario;
+use Inowas\Modflow\Model\Command\ChangeModflowModelDescription;
+use Inowas\Modflow\Model\Command\ChangeModflowModelName;
+use Inowas\Modflow\Model\Command\CreateModflowModel;
+use Inowas\Modflow\Model\ModflowId;
+use Inowas\Modflow\Model\ModflowModelDescription;
+use Inowas\Modflow\Model\ModflowModelName;
+use Inowas\Modflow\Model\UserId;
+use Inowas\Modflow\Projection\ModelScenarioList\ModelScenarioFinder;
+use Inowas\Modflow\Projection\ProjectionInterface;
+use Prooph\ServiceBus\CommandBus;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
 class ScenarioAnalysisControllerTest extends WebTestCase
 {
-
-    /** @var  EntityManager */
-    protected $entityManager;
-
-    /** @var ModflowToolManager */
-    protected $modelManager;
-
-    /** @var ScenarioManager */
-    protected $scenarioManager;
-
-    /** @var ScenarioAnalysisManager */
-    protected $scenarioAnalysisManager;
-
     /** @var UserManager */
     protected $userManager;
 
     /** @var User */
     protected $user;
 
+    /** @var  CommandBus */
+    protected $commandBus;
+
+    /** @var  ProjectionInterface */
+    protected $projection;
+
+    /** @var  ModelScenarioFinder */
+    protected $modelScenarioFinder;
+
+    /** @var  ModflowId */
+    protected $modelId;
+
+    /** @var  User */
+    protected $userId;
+
     public function setUp()
     {
         self::bootKernel();
 
-        $this->modelManager = static::$kernel->getContainer()
-            ->get('inowas.modflow.toolmanager')
-        ;
-
-        $this->scenarioAnalysisManager = static::$kernel->getContainer()
-            ->get('inowas.scenarioanalysis.scenarioanalysismanager')
-        ;
-
-        $this->scenarioManager = static::$kernel->getContainer()
-            ->get('inowas.scenarioanalysis.scenariomanager')
-        ;
-
-        $this->entityManager = static::$kernel->getContainer()
-            ->get('doctrine.orm.default_entity_manager')
-        ;
-
         $this->userManager = static::$kernel->getContainer()
-            ->get('fos_user.user_manager')
-        ;
+            ->get('fos_user.user_manager');
+
+        $this->commandBus = static::$kernel->getContainer()
+            ->get('prooph_service_bus.modflow_command_bus');
+
+        $this->projection = static::$kernel->getContainer()
+            ->get('inowas.modflow_projection.model_scenarios');
+
+        /** @var ModelScenarioFinder modelScenarioFinder */
+        $this->modelScenarioFinder = static::$kernel->getContainer()
+            ->get('inowas.model_scenarios_finder');
 
         $this->user = $this->userManager->findUserByUsername('testUser');
+
         if(! $this->user instanceof User){
             $this->user = $this->userManager->createUser();
             $this->user->setUsername('testUser');
@@ -66,101 +67,56 @@ class ScenarioAnalysisControllerTest extends WebTestCase
             $this->user->setEnabled(true);
             $this->userManager->updateUser($this->user);
         }
+
+        $this->modelId = ModflowId::generate();
+        $scenarioId = ModflowId::generate();
+        $this->userId = UserId::fromString($this->user->getId()->toString());
+        $this->commandBus->dispatch(CreateModflowModel::byUserWithModelId($this->userId, $this->modelId));
+        $this->commandBus->dispatch(ChangeModflowModelName::forModflowModel($this->userId, $this->modelId, ModflowModelName::fromString('TestName')));
+        $this->commandBus->dispatch(ChangeModflowModelDescription::forModflowModel($this->userId, $this->modelId, ModflowModelDescription::fromString('TestDescription')));
+
+        $this->commandBus->dispatch(AddModflowScenario::from($this->userId, $this->modelId, $scenarioId));
+        $this->commandBus->dispatch(ChangeModflowModelName::forScenario($this->userId, $this->modelId, $scenarioId, ModflowModelName::fromString('Scenario_1')));
+        $this->commandBus->dispatch(ChangeModflowModelDescription::forScenario($this->userId, $this->modelId, $scenarioId, ModflowModelDescription::fromString('Scenario_Description_1')));
     }
 
-    public function testGetScenarioAnalysis(){
+    /**
+     * @test
+     */
+    public function it_loads_the_model_from_the_projection()
+    {
+        $this->assertCount(2, $this->modelScenarioFinder->findAll());
+        $this->assertCount(2, $this->modelScenarioFinder->findByBaseModelId($this->modelId));
+        $this->assertCount(2, $this->modelScenarioFinder->findByUserAndBaseModelId($this->userId, $this->modelId));
+    }
 
-        $model = $this->modelManager->createModel()->setName('TestModel')->setDescription('Description');
-        $this->modelManager->updateModel($model);
-
-        $scenarioAnalysis = $this->scenarioAnalysisManager->create($this->user, $model);
-        $scenario = $this->scenarioManager->create($model)->setName('TestScenarioName 1')->setDescription('TestScenarioDescription 1');
-        $scenarioAnalysis->addScenario($scenario);
-        $this->scenarioAnalysisManager->update($scenarioAnalysis);
-
-        $scenario = $this->scenarioManager->create($model)->setName('TestScenarioName 2')->setDescription('TestScenarioDescription 2');
-        $scenarioAnalysis->addScenario($scenario);
-        $this->scenarioAnalysisManager->update($scenarioAnalysis);
-
+    /**
+     * @test
+     */
+    public function it_receives_information_from_get_request()
+    {
         $client = static::createClient();
         $client->request(
             'GET',
-            sprintf('/api/scenarioanalysis/models/%s.json', $model->getId()->toString()),
+            sprintf('/api/scenarioanalysis/models/%s.json', $this->modelId->toString()),
             array(),
             array(),
             array('HTTP_X-AUTH-TOKEN' => $this->user->getApiKey())
         );
 
-        $this->assertEquals(200, $client->getResponse()->getStatusCode());
-        $response = $client->getResponse()->getContent();
-        $this->assertJson($response);
-        $response = json_decode($response);
-        $this->assertObjectHasAttribute('base_model', $response);
-        $this->assertObjectHasAttribute('id', $response->base_model);
-        $this->assertEquals($model->getId()->toString(), $response->base_model->id);
-        $this->assertObjectHasAttribute('name', $response->base_model);
-        $this->assertEquals($model->getName(), $response->base_model->name);
-        $this->assertObjectHasAttribute('description', $response->base_model);
-        $this->assertEquals($model->getDescription(), $response->base_model->description);
-        $this->assertObjectHasAttribute('scenarios', $response);
-        $this->assertCount(2, $response->scenarios);
-    }
-
-    public function testGetScenarioAnalysisByUserName(){
-
-        $model = $this->modelManager->createModel()->setName('TestModel')->setDescription('Description');
-        $this->modelManager->updateModel($model);
-
-        $scenarioAnalysis = $this->scenarioAnalysisManager->create($this->user, $model);
-        $scenario = $this->scenarioManager->create($model)->setName('TestScenarioName 1')->setDescription('TestScenarioDescription 1');
-        $scenarioAnalysis->addScenario($scenario);
-        $this->scenarioAnalysisManager->update($scenarioAnalysis);
-
-        $scenario = $this->scenarioManager->create($model)->setName('TestScenarioName 2')->setDescription('TestScenarioDescription 2');
-        $scenarioAnalysis->addScenario($scenario);
-        $this->scenarioAnalysisManager->update($scenarioAnalysis);
-
-        $client = static::createClient();
-        $client->request(
-            'GET',
-            sprintf('/api/scenarioanalysis/users/%s.json', $this->user->getUsername()),
-            array(),
-            array(),
-            array('HTTP_X-AUTH-TOKEN' => $this->user->getApiKey())
-        );
-
-        $this->assertEquals(200, $client->getResponse()->getStatusCode());
-        $response = $client->getResponse()->getContent();
-        $this->assertJson($response);
-        $response = json_decode($response);
-        $this->assertTrue(is_array($response));
-        $this->assertCount(1, $response);
-        $response = $response[0];
-        $this->assertObjectHasAttribute('base_model', $response);
-        $this->assertObjectHasAttribute('id', $response->base_model);
-        $this->assertObjectHasAttribute('scenarios', $response);
-        $this->assertCount(2, $response->scenarios);
+        $response = $client->getResponse();
+        dump($response->getContent());
+        $this->assertEquals(200, $response->getStatusCode());
     }
 
 
-    public function tearDown(){
-        $models = $this->modelManager->findAllModels();
-
-        /** @var ModflowModel $model */
-        foreach ($models as $model)
-        {
-            $scenarios = $this->scenarioManager->findByModelId($model->getId());
-
-            /** @var Scenario $scenario */
-            foreach ($scenarios as $scenario){
-                $this->scenarioManager->remove($scenario->getId());
-            }
-            $this->modelManager->removeModel($model);
-        }
-
+    public function tearDown()
+    {
         $users = $this->userManager->findUsers();
         foreach ($users as $user){
             $this->userManager->deleteUser($user);
         }
+
+        $this->projection->reset();
     }
 }

@@ -30,19 +30,19 @@ prooph_service_bus:
                     'Inowas\Modflow\Model\Event\ModflowModelWasCreated':
                         - 'inowas.modflow_projection.model_scenarios'
 
-                    'Inowas\Modflow\Model\Event\ModflowScenarioWasAdded':
-                        - 'inowas.modflow_projection.model_scenarios'
-
-                    'Inowas\Modflow\Model\Event\ModflowModelBoundingBoxWasChanged':
-                        - 'inowas.modflow_projection.model_scenarios'
-
                     'Inowas\Modflow\Model\Event\ModflowModelNameWasChanged':
                         - 'inowas.modflow_projection.model_scenarios'
 
                     'Inowas\Modflow\Model\Event\ModflowModelDescriptionWasChanged':
                         - 'inowas.modflow_projection.model_scenarios'
 
-                    'Inowas\Modflow\Model\Event\ModflowModelGridSizeWasChanged':
+                    'Inowas\Modflow\Model\Event\ModflowScenarioWasAdded':
+                        - 'inowas.modflow_projection.model_scenarios'
+
+                    'Inowas\Modflow\Model\Event\ModflowScenarioNameWasChanged':
+                        - 'inowas.modflow_projection.model_scenarios'
+
+                    'Inowas\Modflow\Model\Event\ModflowScenarioDescriptionWasChanged':
                         - 'inowas.modflow_projection.model_scenarios'
 
                     'Inowas\Modflow\Model\Event\ModflowCalculationWasAdded':
