@@ -29,6 +29,7 @@ class BoundaryListProjector implements ProjectionInterface
 
     public function __construct(Connection $connection) {
         $this->connection = $connection;
+        $this->connection->setFetchMode(\PDO::FETCH_ASSOC);
 
         $this->schema = new Schema();
         $table = $this->schema->createTable(Table::BOUNDARIES);
@@ -91,7 +92,6 @@ class BoundaryListProjector implements ProjectionInterface
         $stmt->bindValue(1, $event->baseModelId()->toString());
         $stmt->bindValue(2, $event->userId()->toString());
         $stmt->bindValue(3, '');
-        $stmt->execute();
         $stmt->execute();
         $boundaries = $stmt->fetchAll();
 

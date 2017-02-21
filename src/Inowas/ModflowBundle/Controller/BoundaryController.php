@@ -11,6 +11,8 @@ use FOS\RestBundle\Controller\Annotations\RequestParam;
 use FOS\RestBundle\Controller\FOSRestController;
 use FOS\RestBundle\Request\ParamFetcher;
 use FOS\RestBundle\View\View;
+use Inowas\Modflow\Model\ModflowId;
+use Inowas\Modflow\Model\UserId;
 use Inowas\ModflowBundle\Exception\InvalidArgumentException;
 use Inowas\ModflowBundle\Model\Boundary\Boundary;
 use Inowas\ModflowBundle\Model\Boundary\ConstantHeadBoundary;
@@ -20,11 +22,63 @@ use Inowas\ModflowBundle\Model\Boundary\RiverBoundary;
 use Inowas\ModflowBundle\Model\Boundary\WellBoundary;
 use JMS\Serializer\SerializationContext;
 use Nelmio\ApiDocBundle\Annotation\ApiDoc;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Validator\Constraints\Uuid;
 
 class BoundaryController extends FOSRestController
 {
+    /**
+     * Returns all boundaries specified by baseModelId
+     *
+     * @ApiDoc(
+     *   resource = true,
+     *   description = "Returns the boundary details by id.",
+     *   statusCodes = {
+     *     200 = "Returned when successful",
+     *     404 = "Returned when the model is not found"
+     *   }
+     * )
+     *
+     * @Rest\Get("/models/{baseModelId}")
+     * @param $baseModelId
+     * @return JsonResponse
+     */
+    public function getBoundaryListFromBaseModelAction($baseModelId)
+    {
+        $userId = UserId::fromString($this->getUser()->id()->toString());
+        $baseModelId = ModflowId::fromString($baseModelId);
+        $boundaries = $this->get('inowas.model_boundaries_finder')->findByUserAndBaseModelId($userId, $baseModelId);
+        return new JsonResponse($boundaries);
+    }
+
+    /**
+     * Returns all boundaries specified by baseModelId and scenarioId
+     *
+     * @ApiDoc(
+     *   resource = true,
+     *   description = "Returns the boundary details by id.",
+     *   statusCodes = {
+     *     200 = "Returned when successful",
+     *     404 = "Returned when the model is not found"
+     *   }
+     * )
+     *
+     * @Rest\Get("/models/{baseModelId}/scenarios/{scenarioId}")
+     * @param string $baseModelId
+     * @param string $scenarioId
+     * @return JsonResponse
+     */
+    public function getBoundaryListFromScenarioAction($baseModelId, $scenarioId = null)
+    {
+        $userId = UserId::fromString($this->getUser()->id()->toString());
+        $modelId = ModflowId::fromString($baseModelId);
+        $scenarioId = ModflowId::fromString($scenarioId);
+        $boundaries = $this->get('inowas.model_boundaries_finder')
+            ->findByUserAndBaseModelAndScenarioId($userId, $modelId, $scenarioId);
+        return new JsonResponse($boundaries);
+    }
+
     /**
      * Returns the boundary details specified by boundary-ID.
      *

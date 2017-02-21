@@ -37,7 +37,7 @@ class ScenarioAnalysisControllerTest extends WebTestCase
     /** @var  ModflowId */
     protected $modelId;
 
-    /** @var  User */
+    /** @var  UserId */
     protected $userId;
 
     public function setUp()
