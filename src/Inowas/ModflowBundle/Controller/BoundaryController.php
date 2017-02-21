@@ -40,13 +40,13 @@ class BoundaryController extends FOSRestController
      *   }
      * )
      *
-     * @Rest\Get("/models/{baseModelId}")
+     * @Rest\Get("/model/{baseModelId}")
      * @param $baseModelId
      * @return JsonResponse
      */
     public function getBoundaryListFromBaseModelAction($baseModelId)
     {
-        $userId = UserId::fromString($this->getUser()->id()->toString());
+        $userId = UserId::fromString($this->getUser()->getId()->toString());
         $baseModelId = ModflowId::fromString($baseModelId);
         $boundaries = $this->get('inowas.model_boundaries_finder')->findByUserAndBaseModelId($userId, $baseModelId);
         return new JsonResponse($boundaries);
@@ -64,14 +64,14 @@ class BoundaryController extends FOSRestController
      *   }
      * )
      *
-     * @Rest\Get("/models/{baseModelId}/scenarios/{scenarioId}")
+     * @Rest\Get("/model/{baseModelId}/scenario/{scenarioId}")
      * @param string $baseModelId
      * @param string $scenarioId
      * @return JsonResponse
      */
     public function getBoundaryListFromScenarioAction($baseModelId, $scenarioId = null)
     {
-        $userId = UserId::fromString($this->getUser()->id()->toString());
+        $userId = UserId::fromString($this->getUser()->getId()->toString());
         $modelId = ModflowId::fromString($baseModelId);
         $scenarioId = ModflowId::fromString($scenarioId);
         $boundaries = $this->get('inowas.model_boundaries_finder')

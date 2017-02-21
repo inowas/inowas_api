@@ -55,6 +55,12 @@ class BoundaryControllerEsTest extends WebTestCase
     /** @var  WellBoundary */
     private $well2;
 
+    /** @var  WellBoundary */
+    private $well3;
+
+    /** @var  WellBoundary */
+    private $well4;
+
     public function setUp()
     {
         self::bootKernel();
@@ -105,12 +111,33 @@ class BoundaryControllerEsTest extends WebTestCase
             LayerNumber::fromInteger(2),
             PumpingRates::create()
         );
+
+        $this->well3 = WellBoundary::createWithAllParams(
+            BoundaryId::generate(),
+            BoundaryName::fromString('Well3'),
+            BoundaryGeometry::fromPoint(new Point(2,3)),
+            WellType::fromString(WellType::TYPE_PUBLIC_WELL),
+            LayerNumber::fromInteger(2),
+            PumpingRates::create()
+        );
+
+        $this->well4 = WellBoundary::createWithAllParams(
+            BoundaryId::generate(),
+            BoundaryName::fromString('Well4'),
+            BoundaryGeometry::fromPoint(new Point(2,3)),
+            WellType::fromString(WellType::TYPE_PUBLIC_WELL),
+            LayerNumber::fromInteger(2),
+            PumpingRates::create()
+        );
+
         $this->commandBus->dispatch(AddBoundary::toBaseModel($this->userId, $this->baseModelId, $this->well1));
         $this->commandBus->dispatch(AddBoundary::toBaseModel($this->userId, $this->baseModelId, $this->well2));
 
         $this->commandBus->dispatch(AddModflowScenario::from($this->userId, $this->baseModelId, $this->scenarioId));
         $this->commandBus->dispatch(ChangeModflowModelName::forScenario($this->userId, $this->baseModelId, $this->scenarioId, ModflowModelName::fromString('Scenario_1')));
         $this->commandBus->dispatch(ChangeModflowModelDescription::forScenario($this->userId, $this->baseModelId, $this->scenarioId, ModflowModelDescription::fromString('Scenario_Description_1')));
+        $this->commandBus->dispatch(AddBoundary::toScenario($this->userId, $this->baseModelId, $this->scenarioId, $this->well3));
+        $this->commandBus->dispatch(AddBoundary::toBaseModel($this->userId, $this->baseModelId, $this->well4));
     }
 
     /**
@@ -123,8 +150,61 @@ class BoundaryControllerEsTest extends WebTestCase
     }
 
     /**
+     * @test
+     */
+    public function it_loads_the_boundaries_from_the_basemodel_controller()
+    {
+        $client = static::createClient();
+        $client->request(
+            'GET',
+            sprintf('/api/modflow/model/%s.json', $this->baseModelId->toString()),
+            array(),
+            array(),
+            array('HTTP_X-AUTH-TOKEN' => $this->user->getApiKey())
+        );
+
+        $response = $client->getResponse()->getContent();
+        $response = json_decode($response);
+        $this->assertCount(3, $response);
+        $well1 = $response[0];
+        $this->assertEquals('Well1', $well1->name);
+        $well2 = $response[1];
+        $this->assertEquals('Well2', $well2->name);
+        $well4 = $response[2];
+        $this->assertEquals('Well4', $well4->name);
+    }
+
+    /**
+     * @test
+     */
+    public function it_loads_the_boundaries_from_the_scenario_controller()
+    {
+        $client = static::createClient();
+        $client->request(
+            'GET',
+            sprintf('/api/modflow/model/%s/scenario/%s.json', $this->baseModelId->toString(), $this->scenarioId->toString()),
+            array(),
+            array(),
+            array('HTTP_X-AUTH-TOKEN' => $this->user->getApiKey())
+        );
+
+        $response = $client->getResponse()->getContent();
+        $response = json_decode($response);
+        $this->assertCount(3, $response);
+        $well1 = $response[0];
+        $this->assertEquals('Well1', $well1->name);
+        $well2 = $response[1];
+        $this->assertEquals('Well2', $well2->name);
+        $well3 = $response[2];
+        $this->assertEquals('Well3', $well3->name);
+    }
+
+    /**
      * {@inheritDoc}
      */
     public function tearDown()
-    {}
+    {
+        $user = $this->userManager->findUserByUsername($this->user->getUsername());
+        $this->userManager->deleteUser($user);
+    }
 }
