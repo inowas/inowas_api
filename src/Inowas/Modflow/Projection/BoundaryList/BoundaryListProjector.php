@@ -5,7 +5,6 @@ namespace Inowas\Modflow\Projection\BoundaryList;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Exception\TableNotFoundException;
 use Doctrine\DBAL\Schema\Schema;
-use Inowas\Modflow\Model\BoundaryGeometry;
 use Inowas\Modflow\Model\BoundaryId;
 use Inowas\Modflow\Model\BoundaryName;
 use Inowas\Modflow\Model\Event\BoundaryWasAdded;
@@ -34,14 +33,15 @@ class BoundaryListProjector implements ProjectionInterface
         $this->schema = new Schema();
         $table = $this->schema->createTable(Table::BOUNDARIES);
         $table->addColumn('id', 'integer', array("unsigned" => true, "autoincrement" => true));
+        $table->addColumn('boundary_id', 'string', ['length' => 36]);
+        $table->addColumn('type', 'string', ['length' => 255]);
         $table->addColumn('user_id', 'string', ['length' => 36]);
         $table->addColumn('base_model_id', 'string', ['length' => 36]);
         $table->addColumn('scenario_id', 'string', ['length' => 36]);
-        $table->addColumn('boundary_id', 'string', ['length' => 36]);
         $table->addColumn('name', 'string', ['length' => 255]);
-        $table->addColumn('type', 'string', ['length' => 255]);
-        $table->addColumn('geometry', 'text');
         $table->addColumn('metadata', 'text');
+        $table->addColumn('data', 'text', ['nullable' => true]);
+        $table->addColumn('geometry', 'text');
         $table->setPrimaryKey(['id']);
     }
 
@@ -96,31 +96,33 @@ class BoundaryListProjector implements ProjectionInterface
         $boundaries = $stmt->fetchAll();
 
         foreach ($boundaries as $boundary){
-            $this->addBoundaryToScenario(
+            $this->insertBoundary(
                 BoundaryId::fromString($boundary['boundary_id']),
                 UserId::fromString($boundary['user_id']),
                 ModflowId::fromString($boundary['base_model_id']),
-                $event->scenarioId(),
+                $event->scenarioId()->toString(),
                 BoundaryName::fromString($boundary['name']),
                 $boundary['geometry'],
                 $boundary['type'],
-                $boundary['metadata']
+                $boundary['metadata'],
+                $boundary['data']
             );
         }
     }
 
     public function onBoundaryWasAdded(BoundaryWasAdded $event)
     {
-        $this->connection->insert(Table::BOUNDARIES, array(
-            'boundary_id' => $event->boundary()->boundaryId()->toString(),
-            'user_id' => $event->userId()->toString(),
-            'base_model_id' => $event->modflowId()->toString(),
-            'scenario_id' => '',
-            'name' => $event->boundary()->name()->toString(),
-            'geometry' => $event->boundary()->geometry()->toJson(),
-            'type' => $event->boundary()->type(),
-            'metadata' => json_encode($event->boundary()->metadata())
-        ));
+        $this->insertBoundary(
+            $event->boundary()->boundaryId(),
+            $event->userId(),
+            $event->modflowId(),
+            '',
+            $event->boundary()->name(),
+            $event->boundary()->geometry()->toJson(),
+            $event->boundary()->type(),
+            json_encode($event->boundary()->metadata()),
+            $event->boundary()->dataToJson()
+        );
     }
 
     public function onBoundaryWasRemoved(BoundaryWasRemoved $event)
@@ -134,15 +136,16 @@ class BoundaryListProjector implements ProjectionInterface
 
     public function onBoundaryWasAddedToScenario(BoundaryWasAddedToScenario $event)
     {
-        $this->addBoundaryToScenario(
+        $this->insertBoundary(
             $event->boundary()->boundaryId(),
             $event->userId(),
             $event->modflowId(),
-            $event->scenarioId(),
+            $event->scenarioId()->toString(),
             $event->boundary()->name(),
             $event->boundary()->geometry()->toJson(),
             $event->boundary()->type(),
-            json_encode($event->boundary()->metadata())
+            json_encode($event->boundary()->metadata()),
+            $event->boundary()->dataToJson()
         );
     }
 
@@ -156,26 +159,28 @@ class BoundaryListProjector implements ProjectionInterface
         ));
     }
 
-    private function addBoundaryToScenario(
+    private function insertBoundary(
         BoundaryId $boundaryId,
         UserId $userId,
         ModflowId $baseModelId,
-        ModflowId $scenarioId,
+        string $scenarioId,
         BoundaryName $boundaryName,
         string $boundaryGeometry,
         string $boundaryType,
-        string $metadata
+        string $metadata,
+        string $data
     )
     {
         $this->connection->insert(Table::BOUNDARIES, array(
             'boundary_id' => $boundaryId->toString(),
             'user_id' => $userId->toString(),
             'base_model_id' => $baseModelId->toString(),
-            'scenario_id' => $scenarioId->toString(),
+            'scenario_id' => $scenarioId,
             'name' => $boundaryName->toString(),
             'geometry' => $boundaryGeometry,
             'type' => $boundaryType,
-            'metadata' => $metadata
+            'metadata' => $metadata,
+            'data' => $data
         ));
     }
 }

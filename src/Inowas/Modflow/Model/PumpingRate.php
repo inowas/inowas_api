@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Inowas\Modflow\Model;
 
-class PumpingRate
+class PumpingRate implements \JsonSerializable
 {
     /** @var float */
     private $value;
@@ -38,5 +38,23 @@ class PumpingRate
     public function dateTime(): ?\DateTimeImmutable
     {
         return $this->dateTime;
+    }
+
+    /**
+     * @return array
+     */
+    function jsonSerialize()
+    {
+        if ($this->dateTime instanceof \DateTimeImmutable){
+            return array(
+                'date_time' => $this->dateTime->format(DATE_ISO8601),
+                'value' => $this->value,
+            );
+        }
+
+        return array(
+            'date_time' => null,
+            'value' => $this->value
+        );
     }
 }

@@ -61,4 +61,9 @@ class WellBoundary extends AbstractModflowBoundary
             'well_type' => $this->wellType->type()
         ];
     }
+
+    public function dataToJson(): string
+    {
+        return json_encode($this->pumpingRates);
+    }
 }

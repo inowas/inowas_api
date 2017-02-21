@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Inowas\Modflow\Model;
 
-class PumpingRates
+class PumpingRates implements \JsonSerializable
 {
     /** @var array */
     private $values;
@@ -25,6 +25,14 @@ class PumpingRates
     }
 
     public function get(): array
+    {
+        return $this->values;
+    }
+
+    /**
+     * @return array
+     */
+    function jsonSerialize()
     {
         return $this->values;
     }

@@ -15,4 +15,6 @@ interface ModflowBoundary
     public function type(): string;
 
     public function metadata(): array;
+
+    public function dataToJson(): string;
 }

@@ -38,4 +38,12 @@ class AreaBoundary extends AbstractModflowBoundary
     {
         return [];
     }
+
+    /**
+     * @return string
+     */
+    public function dataToJson(): string
+    {
+        return "";
+    }
 }
