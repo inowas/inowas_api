@@ -7,20 +7,36 @@ namespace Inowas\Modflow\Model;
 class PumpingRate
 {
     /** @var float */
-    private $number;
+    private $value;
 
-    public static function fromValue(float $number): PumpingRate
+    /** @var  \DateTimeImmutable */
+    private $dateTime;
+
+    public static function fromDateTimeAndCubicMetersPerDay(\DateTimeImmutable $dateTime, float $value): PumpingRate
     {
-        return new self($number);
+        $self = new self();
+        $self->value = $value;
+        $self->dateTime = $dateTime;
+
+        return $self;
     }
 
-    private function __construct(float $number)
+    public static function fromCubicMetersPerDay(float $value): PumpingRate
     {
-        $this->number = $number;
+        $self = new self();
+        $self->value = $value;
+        $self->dateTime = null;
+
+        return $self;
     }
 
-    public function toFloat(): float
+    public function cubicMetersPerDay(): float
     {
-        return $this->number;
+        return $this->value;
+    }
+
+    public function dateTime(): ?\DateTimeImmutable
+    {
+        return $this->dateTime;
     }
 }

@@ -8,8 +8,8 @@ class WellBoundary extends AbstractModflowBoundary
     /** @var  LayerNumber */
     protected $layerNumber;
 
-    /** @var  PumpingRate */
-    protected $pumpingRate;
+    /** @var  PumpingRates */
+    protected $pumpingRates;
 
     /** @var  WellType */
     protected $wellType;
@@ -19,21 +19,19 @@ class WellBoundary extends AbstractModflowBoundary
         return new self($boundaryId);
     }
 
-
-
     public static function createWithAllParams(
         BoundaryId $boundaryId,
         BoundaryName $name,
         BoundaryGeometry $geometry,
         WellType $wellType,
         LayerNumber $layerNumber,
-        PumpingRate $pumpingRate
+        PumpingRates $pumpingRates
     ): WellBoundary
     {
         $self = new self($boundaryId, $name, $geometry);
         $self->layerNumber = $layerNumber;
         $self->wellType = $wellType;
-        $self->pumpingRate = $pumpingRate;
+        $self->pumpingRates = $pumpingRates;
         return $self;
     }
 
@@ -42,9 +40,9 @@ class WellBoundary extends AbstractModflowBoundary
         return $this->layerNumber;
     }
 
-    public function pumpingRate(): PumpingRate
+    public function pumpingRates(): PumpingRates
     {
-        return $this->pumpingRate;
+        return $this->pumpingRates;
     }
 
     public function wellType(): WellType

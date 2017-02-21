@@ -11,7 +11,7 @@ use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
-class ModflowEsTruncateCommand extends ContainerAwareCommand
+class ModflowEventStoreTruncateCommand extends ContainerAwareCommand
 {
 
     /** @var  UserId */

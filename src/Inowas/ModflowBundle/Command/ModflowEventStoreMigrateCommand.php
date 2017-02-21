@@ -32,6 +32,7 @@ use Inowas\Modflow\Model\ModflowModelGridSize;
 use Inowas\Modflow\Model\ModflowId;
 use Inowas\Modflow\Model\ModflowModelName;
 use Inowas\Modflow\Model\PumpingRate;
+use Inowas\Modflow\Model\PumpingRates;
 use Inowas\Modflow\Model\SoilModelId;
 use Inowas\Modflow\Model\TotalTime;
 use Inowas\Modflow\Model\UserId;
@@ -43,7 +44,7 @@ use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
-class ModflowEsMigrateCommand extends ContainerAwareCommand
+class ModflowEventStoreMigrateCommand extends ContainerAwareCommand
 {
 
     /** @var  UserId */
@@ -271,7 +272,7 @@ class ModflowEsMigrateCommand extends ContainerAwareCommand
                 BoundaryGeometry::fromPoint($geoTools->transformPoint(new Point($wellData['x'], $wellData['y'], 3857), 4326)),
                 WellType::fromString(WellType::TYPE_PUBLIC_WELL),
                 LayerNumber::fromInteger(4),
-                PumpingRate::fromValue($wellData['pumpingrate'])
+                PumpingRates::create()->add(PumpingRate::fromCubicMetersPerDay($wellData['pumpingrate']))
             );
 
             $commandBus->dispatch(AddBoundary::toBaseModel($ownerId, $modelId, $well));
@@ -299,7 +300,7 @@ class ModflowEsMigrateCommand extends ContainerAwareCommand
                 BoundaryGeometry::fromPoint(new Point($wellData['x'], $wellData['y'], 4326)),
                 WellType::fromString(WellType::TYPE_PUBLIC_WELL),
                 LayerNumber::fromInteger(4),
-                PumpingRate::fromValue($wellData['pumpingrate'])
+                PumpingRates::create()->add(PumpingRate::fromCubicMetersPerDay($wellData['pumpingrate']))
             );
 
             $commandBus->dispatch(AddBoundary::toBaseModel($ownerId, $modelId, $well));
@@ -424,13 +425,13 @@ class ModflowEsMigrateCommand extends ContainerAwareCommand
                 BoundaryGeometry::fromPoint($geoTools->transformPoint(new Point($wellData['x'], $wellData['y'], $wellData['srid']), 4326)),
                 WellType::fromString(WellType::TYPE_INDUSTRIAL_WELL),
                 LayerNumber::fromInteger(4),
-                PumpingRate::fromValue($wellData['pumpingrate'])
+                PumpingRates::create()->add(PumpingRate::fromCubicMetersPerDay($wellData['pumpingrate']))
             );
 
             $commandBus->dispatch(AddBoundary::toBaseModel($ownerId, $modelId, $well));
         }
 
-        $headsS0L3 = $this->loadHeadsFromFile(__DIR__."/../DataFixtures/ES/Scenarios/Hanoi/data/base_scenario_head_layer_3.json");
+        $headsS0L3 = $this->loadHeadsFromFile(__DIR__."/../DataFixtures/ES/Scenarios/Hanoi/data/base_scenario_head_layer.json");
         $calculationId = ModflowId::generate();
         $commandBus->dispatch(CreateModflowModelCalculation::byUserWithModelId($calculationId, $ownerId, $modelId));
         $commandBus->dispatch(AddResultToCalculation::to($calculationId,
@@ -470,7 +471,7 @@ class ModflowEsMigrateCommand extends ContainerAwareCommand
                 BoundaryGeometry::fromPoint(new Point($wellData['x'], $wellData['y'], 4326)),
                 WellType::fromString(WellType::TYPE_SCENARIO_MOVED_WELL),
                 LayerNumber::fromInteger(4),
-                PumpingRate::fromValue($wellData['pumpingrate'])
+                PumpingRates::create()->add(PumpingRate::fromCubicMetersPerDay($wellData['pumpingrate']))
             );
 
             $commandBus->dispatch(AddBoundary::toScenario($ownerId, $modelId, $scenarioId, $well));
@@ -501,7 +502,7 @@ class ModflowEsMigrateCommand extends ContainerAwareCommand
                 BoundaryGeometry::fromPoint(new Point($wellData['x'], $wellData['y'], 4326)),
                 WellType::fromString(WellType::TYPE_SCENARIO_NEW_WELL),
                 LayerNumber::fromInteger(4),
-                PumpingRate::fromValue($wellData['pumpingrate'])
+                PumpingRates::create()->add(PumpingRate::fromCubicMetersPerDay($wellData['pumpingrate']))
             );
 
             $commandBus->dispatch(AddBoundary::toScenario($ownerId, $modelId, $scenarioId, $well));
@@ -553,7 +554,7 @@ class ModflowEsMigrateCommand extends ContainerAwareCommand
                 BoundaryGeometry::fromPoint(new Point($wellData['x'], $wellData['y'], 4326)),
                 WellType::fromString(WellType::TYPE_SCENARIO_NEW_WELL),
                 LayerNumber::fromInteger(4),
-                PumpingRate::fromValue($wellData['pumpingrate'])
+                PumpingRates::create()->add(PumpingRate::fromCubicMetersPerDay($wellData['pumpingrate']))
             );
 
             $commandBus->dispatch(AddBoundary::toScenario($ownerId, $modelId, $scenarioId, $well));
@@ -589,7 +590,7 @@ class ModflowEsMigrateCommand extends ContainerAwareCommand
                 BoundaryGeometry::fromPoint(new Point($wellData['x'], $wellData['y'], 4326)),
                 WellType::fromString(WellType::TYPE_SCENARIO_MOVED_WELL),
                 LayerNumber::fromInteger(4),
-                PumpingRate::fromValue($wellData['pumpingrate'])
+                PumpingRates::create()->add(PumpingRate::fromCubicMetersPerDay($wellData['pumpingrate']))
             );
 
             $commandBus->dispatch(AddBoundary::toScenario($ownerId, $modelId, $scenarioId, $well));
@@ -608,7 +609,7 @@ class ModflowEsMigrateCommand extends ContainerAwareCommand
                 BoundaryGeometry::fromPoint(new Point($wellData['x'], $wellData['y'], 4326)),
                 WellType::fromString(WellType::TYPE_SCENARIO_NEW_WELL),
                 LayerNumber::fromInteger(4),
-                PumpingRate::fromValue($wellData['pumpingrate'])
+                PumpingRates::create()->add(PumpingRate::fromCubicMetersPerDay($wellData['pumpingrate']))
             );
 
             $commandBus->dispatch(AddBoundary::toScenario($ownerId, $modelId, $scenarioId, $well));
@@ -699,5 +700,45 @@ class ModflowEsMigrateCommand extends ContainerAwareCommand
         foreach ($queries as $query){
             $connection->exec($query);
         }
+    }
+
+    protected function loadRowsFromCsv($filename): array {
+        $header = null;
+        $rows = array();
+        if (($handle = fopen($filename, "r")) !== FALSE) {
+            while (($data = fgetcsv($handle, 1000, ";")) !== FALSE) {
+                if ($header == null){
+                    $header = $data;
+                    continue;
+                }
+
+                $rows[] = array_combine($header, $data);
+
+            }
+            fclose($handle);
+        }
+
+        return $rows;
+    }
+
+    protected function loadHeaderFromCsv($filename): array
+    {
+        $data = array();
+        if (($handle = fopen($filename, "r")) !== FALSE) {
+            $data = fgetcsv($handle, 1000, ";");
+            fclose($handle);
+        }
+
+        return $data;
+    }
+
+    protected function getDates(array $header): array{
+        $dates = array();
+        foreach ($header as $data){
+            if (explode(':', $data)[0] == 'date'){
+                $dates[] = $data;
+            }
+        }
+        return $dates;
     }
 }
