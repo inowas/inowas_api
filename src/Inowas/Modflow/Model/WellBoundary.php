@@ -35,6 +35,11 @@ class WellBoundary extends AbstractModflowBoundary
         return $self;
     }
 
+    public function type(): string
+    {
+        return 'well';
+    }
+
     public function layerNumber(): LayerNumber
     {
         return $this->layerNumber;
@@ -48,5 +53,12 @@ class WellBoundary extends AbstractModflowBoundary
     public function wellType(): WellType
     {
         return $this->wellType;
+    }
+
+    public function metadata(): array
+    {
+        return [
+            'well_type' => $this->wellType->type()
+        ];
     }
 }

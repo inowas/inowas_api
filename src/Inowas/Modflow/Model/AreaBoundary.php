@@ -22,4 +22,20 @@ class AreaBoundary extends AbstractModflowBoundary
     {
         return new self($this->boundaryId, $this->name, $geometry);
     }
+
+    /**
+     * @return string
+     */
+    public function type(): string
+    {
+        return 'area';
+    }
+
+    /**
+     * @return array
+     */
+    public function metadata(): array
+    {
+        return [];
+    }
 }

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Inowas\ModflowBundle\Command;
 
+use Inowas\Modflow\Model\ModflowId;
 use Inowas\Modflow\Model\UserId;
 use Inowas\Modflow\Projection\ProjectionInterface;
 use Prooph\EventStore\Stream\StreamName;
@@ -28,8 +29,10 @@ class ModflowProjectionCommand extends ContainerAwareCommand
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $projections = [];
+        $projections[] = $this->getContainer()->get('inowas.modflow_projection.boundaries');
         $projections[] = $this->getContainer()->get('inowas.modflow_projection.model_scenarios');
         $projections[] = $this->getContainer()->get('inowas.modflow_projection.model_calculations');
+
 
         /** @var ProjectionInterface $projection */
         foreach ($projections as $projection) {
