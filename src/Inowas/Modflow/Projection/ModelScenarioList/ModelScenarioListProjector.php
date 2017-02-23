@@ -5,6 +5,7 @@ namespace Inowas\Modflow\Projection\ModelScenarioList;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Exception\TableNotFoundException;
 use Doctrine\DBAL\Schema\Schema;
+use Inowas\Modflow\Model\Event\ModflowCalculationResultWasAdded;
 use Inowas\Modflow\Model\Event\ModflowModelDescriptionWasChanged;
 use Inowas\Modflow\Model\Event\ModflowModelNameWasChanged;
 use Inowas\Modflow\Model\Event\ModflowModelWasCreated;

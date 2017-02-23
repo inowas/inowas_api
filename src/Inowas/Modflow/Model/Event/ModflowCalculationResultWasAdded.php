@@ -19,6 +19,9 @@ class ModflowCalculationResultWasAdded extends AggregateChanged
     /** @var  CalculationResult */
     private $result;
 
+    /** @var  CalculationResultType $type */
+    protected $type;
+
     public static function to(ModflowId $calculationId, CalculationResult $result): ModflowCalculationResultWasAdded
     {
         $event = self::occur($calculationId->toString(),[

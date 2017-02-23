@@ -31,7 +31,7 @@ class ModflowProjectionCommand extends ContainerAwareCommand
         $projections = [];
         $projections[] = $this->getContainer()->get('inowas.modflow_projection.boundaries');
         $projections[] = $this->getContainer()->get('inowas.modflow_projection.model_scenarios');
-        $projections[] = $this->getContainer()->get('inowas.modflow_projection.model_calculations');
+        $projections[] = $this->getContainer()->get('inowas.modflow_projection.calculation_results');
 
 
         /** @var ProjectionInterface $projection */
@@ -40,7 +40,9 @@ class ModflowProjectionCommand extends ContainerAwareCommand
         }
 
         $eventBus = $this->getContainer()->get('prooph_service_bus.modflow_event_bus');
-        $eventIterator = $this->getContainer()->get('prooph_event_store.modflow_model_store')->loadEventsByMetadataFrom(new StreamName('event_stream'), []);
+        $eventIterator = $this->getContainer()
+            ->get('prooph_event_store.modflow_model_store')
+            ->replay([new StreamName('event_stream')]);
         $eventIterator->rewind();
 
         while ($eventIterator->valid()) {

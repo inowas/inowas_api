@@ -42,7 +42,7 @@ use Prooph\EventStore\Adapter\Doctrine\Schema\EventStoreSchema;
 use Symfony\Component\DependencyInjection\ContainerAwareInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
-ini_set('memory_limit', '1024M');
+ini_set('memory_limit', '2048M');
 
 class Hanoi implements ContainerAwareInterface, DataFixtureInterface
 {
@@ -187,14 +187,14 @@ class Hanoi implements ContainerAwareInterface, DataFixtureInterface
             for ($l=0; $l<=3; $l++){
                 $fileName = sprintf('%s/heads/heads_S0-T%s-L%s.json', __DIR__, $t, $l);
                 if (file_exists($fileName)){
-                    echo sprintf("Load head from totim=%s and Layer=%s\r\n", $t, $l);
+                    echo sprintf("Load head for baseScenario from totim=%s and Layer=%s, %s Memory usage\r\n", $t, $l, memory_get_usage());
                     $arr[$l] = $this->loadHeadsFromFile($fileName);
                     if ($l == 3){
                         $commandBus->dispatch(AddResultToCalculation::to($calculationId,
                             CalculationResult::fromParameters(
                                 TotalTime::fromInt($t),
                                 CalculationResultType::fromString(CalculationResultType::HEAD_TYPE),
-                                CalculationResultData::from3dArray($arr)
+                                CalculationResultData::from3dArray([])
                             )
                         ));
                         unset($arr);
@@ -278,7 +278,7 @@ class Hanoi implements ContainerAwareInterface, DataFixtureInterface
             for ($l=0; $l<=3; $l++){
                 $fileName = sprintf('%s/heads/heads_S1-T%s-L%s.json', __DIR__, $t, $l);
                 if (file_exists($fileName)){
-                    echo sprintf("Load head from totim=%s and Layer=%s\r\n", $t, $l);
+                    echo sprintf("Load head for Scenario1 from totim=%s and Layer=%s, %s Memory usage\r\n", $t, $l, memory_get_usage());
                     $arr[$l] = $this->loadHeadsFromFile($fileName);
                     if ($l == 3){
                         $commandBus->dispatch(AddResultToCalculation::to($calculationId,
@@ -341,7 +341,7 @@ class Hanoi implements ContainerAwareInterface, DataFixtureInterface
             for ($l=0; $l<=3; $l++){
                 $fileName = sprintf('%s/heads/heads_S2-T%s-L%s.json', __DIR__, $t, $l);
                 if (file_exists($fileName)){
-                    echo sprintf("Load head from totim=%s and Layer=%s\r\n", $t, $l);
+                    echo sprintf("Load head for Scenario2 from totim=%s and Layer=%s, %s Memory usage\r\n", $t, $l, memory_get_usage());
                     $arr[$l] = $this->loadHeadsFromFile($fileName);
                     if ($l == 3){
                         $commandBus->dispatch(AddResultToCalculation::to($calculationId,
@@ -410,7 +410,7 @@ class Hanoi implements ContainerAwareInterface, DataFixtureInterface
             for ($l=0; $l<=3; $l++){
                 $fileName = sprintf('%s/heads/heads_S3-T%s-L%s.json', __DIR__, $t, $l);
                 if (file_exists($fileName)){
-                    echo sprintf("Load head from totim=%s and Layer=%s\r\n", $t, $l);
+                    echo sprintf("Load head for Scenario3 from totim=%s and Layer=%s, %s Memory usage\r\n", $t, $l, memory_get_usage());
                     $arr[$l] = $this->loadHeadsFromFile($fileName);
                     if ($l == 3){
                         $commandBus->dispatch(AddResultToCalculation::to($calculationId,
@@ -470,6 +470,7 @@ class Hanoi implements ContainerAwareInterface, DataFixtureInterface
 
         $headsJSON = file_get_contents($filename, true);
         $heads = json_decode($headsJSON, true);
+
 
         for ($iy = 0; $iy < count($heads); $iy++){
             for ($ix = 0; $ix < count($heads[0]); $ix++){
