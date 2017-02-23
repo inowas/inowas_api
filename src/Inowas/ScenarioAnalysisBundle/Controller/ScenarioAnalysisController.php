@@ -4,7 +4,6 @@ namespace Inowas\ScenarioAnalysisBundle\Controller;
 
 use FOS\RestBundle\Controller\Annotations as Rest;
 use FOS\RestBundle\Controller\FOSRestController;
-use FOS\UserBundle\Model\UserInterface;
 use Inowas\Modflow\Model\ModflowId;
 use Inowas\Modflow\Model\UserId;
 use Inowas\ScenarioAnalysisBundle\Exception\InvalidArgumentException;
@@ -26,26 +25,22 @@ class ScenarioAnalysisController extends FOSRestController
      *   }
      * )
      *
-     * @Rest\Get("/models/{modelId}")
-     * @param $modelId
+     * @Rest\Get("/{baseModelId}")
+     * @param $baseModelId
      * @return JsonResponse
      * @throws InvalidUuidException
      * @throws InvalidArgumentException
      */
-    public function getScenariosAnalysisModelScenariosAction($modelId)
+    public function getScenariosAnalysisModelScenariosAction($baseModelId)
     {
-
-        if (! Uuid::isValid($modelId)){
+        if (! Uuid::isValid($baseModelId)){
             throw new InvalidUuidException();
         }
 
-        /** @var UserInterface $user */
-        $user = $this->getUser();
-
         return new JsonResponse($this->get('inowas.model_scenarios_finder')
             ->findByUserAndBaseModelId(
-                UserId::fromString($user->getId()->toString()),
-                ModflowId::fromString($modelId)
+                UserId::fromString($this->getUser()->getId()->toString()),
+                ModflowId::fromString($baseModelId)
             ));
     }
 }
