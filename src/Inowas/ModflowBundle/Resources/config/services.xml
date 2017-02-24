@@ -22,6 +22,9 @@
             <argument type="service" id="doctrine.orm.default_entity_manager"/>
         </service>
         <service id="inowas.flopy.packagemanager" class="Inowas\ModflowBundle\Service\FlopyPackageManager"/>
+        <service id="inowas.modflow.calculation_results_persister" class="Inowas\ModflowBundle\Service\CalculationResultsPersister">
+            <argument type="service" id="kernel"/>
+        </service>
 
         <service id="inowas.add_modflow_model_boundary_handler" class="Inowas\Modflow\Model\Handler\AddBoundaryHandler">
             <argument type="service" id="modflow_model_list" />
@@ -62,6 +65,7 @@
         </service>
         <service id="inowas.add_result_to_calculation_handler" class="Inowas\Modflow\Model\Handler\AddResultToCalculationHandler">
             <argument type="service" id="modflow_calculation_list" />
+            <argument type="service" id="inowas.modflow.calculation_results_persister" />
         </service>
     </services>
 </container>

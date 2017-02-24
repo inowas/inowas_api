@@ -11,7 +11,7 @@ use Inowas\Modflow\Model\AreaBoundary;
 use Inowas\Modflow\Model\BoundaryGeometry;
 use Inowas\Modflow\Model\BoundaryId;
 use Inowas\Modflow\Model\BoundaryName;
-use Inowas\Modflow\Model\CalculationResult;
+use Inowas\Modflow\Model\CalculationResultWithData;
 use Inowas\Modflow\Model\CalculationResultData;
 use Inowas\Modflow\Model\CalculationResultType;
 use Inowas\Modflow\Model\Command\AddBoundary;
@@ -142,6 +142,7 @@ class Hanoi implements ContainerAwareInterface, DataFixtureInterface
         $soilModelId = SoilModelId::generate();
         $commandBus->dispatch(ChangeModflowModelSoilmodelId::forModflowModel($modelId, $soilModelId));
 
+        /**
         $box = $geoTools->transformBoundingBox(new BoundingBox(578205, 594692, 2316000, 2333500, 32648), 4326);
         $boundingBox = ModflowModelBoundingBox::fromEPSG4326Coordinates($box->getXMin(), $box->getXMax(), $box->getYMin(), $box->getYMax());
         $commandBus->dispatch(ChangeModflowModelBoundingBox::forModflowModel($ownerId, $modelId, $boundingBox));
@@ -180,29 +181,31 @@ class Hanoi implements ContainerAwareInterface, DataFixtureInterface
             $commandBus->dispatch(AddBoundary::toBaseModel($ownerId, $modelId, $well));
         }
 
+        */
+
         $calculationId = ModflowId::generate();
         $commandBus->dispatch(CreateModflowModelCalculation::byUserWithModelId($calculationId, $ownerId, $modelId));
+
         for ($t=0; $t<=2000; $t++){
-            $arr = [];
             for ($l=0; $l<=3; $l++){
                 $fileName = sprintf('%s/heads/heads_S0-T%s-L%s.json', __DIR__, $t, $l);
                 if (file_exists($fileName)){
                     echo sprintf("Load head for baseScenario from totim=%s and Layer=%s, %s Memory usage\r\n", $t, $l, memory_get_usage());
-                    $arr[$l] = $this->loadHeadsFromFile($fileName);
-                    if ($l == 3){
-                        $commandBus->dispatch(AddResultToCalculation::to($calculationId,
-                            CalculationResult::fromParameters(
-                                TotalTime::fromInt($t),
-                                CalculationResultType::fromString(CalculationResultType::HEAD_TYPE),
-                                CalculationResultData::from3dArray([])
-                            )
-                        ));
-                        unset($arr);
-                    }
+                    $heads = $this->loadHeadsFromFile($fileName);
+                    $commandBus->dispatch(AddResultToCalculation::to($calculationId,
+                        CalculationResultWithData::fromParameters(
+                            CalculationResultType::fromString(CalculationResultType::HEAD_TYPE),
+                            TotalTime::fromInt($t),
+                            LayerNumber::fromInteger($l),
+                            CalculationResultData::from2dArray($heads)
+                        )
+                    ));
+
                 }
             }
         }
 
+        die();
         /*
          * Begin add Scenario 1
          */
@@ -278,11 +281,11 @@ class Hanoi implements ContainerAwareInterface, DataFixtureInterface
             for ($l=0; $l<=3; $l++){
                 $fileName = sprintf('%s/heads/heads_S1-T%s-L%s.json', __DIR__, $t, $l);
                 if (file_exists($fileName)){
-                    echo sprintf("Load head for Scenario1 from totim=%s and Layer=%s, %s Memory usage\r\n", $t, $l, memory_get_usage());
+                    echo sprintf("Load head for baseScenario from totim=%s and Layer=%s, %s Memory usage\r\n", $t, $l, memory_get_usage());
                     $arr[$l] = $this->loadHeadsFromFile($fileName);
                     if ($l == 3){
                         $commandBus->dispatch(AddResultToCalculation::to($calculationId,
-                            CalculationResult::fromParameters(
+                            CalculationResultWithData::fromParameters(
                                 TotalTime::fromInt($t),
                                 CalculationResultType::fromString(CalculationResultType::HEAD_TYPE),
                                 CalculationResultData::from3dArray($arr)
@@ -341,11 +344,11 @@ class Hanoi implements ContainerAwareInterface, DataFixtureInterface
             for ($l=0; $l<=3; $l++){
                 $fileName = sprintf('%s/heads/heads_S2-T%s-L%s.json', __DIR__, $t, $l);
                 if (file_exists($fileName)){
-                    echo sprintf("Load head for Scenario2 from totim=%s and Layer=%s, %s Memory usage\r\n", $t, $l, memory_get_usage());
+                    echo sprintf("Load head from totim=%s and Layer=%s\r\n", $t, $l);
                     $arr[$l] = $this->loadHeadsFromFile($fileName);
                     if ($l == 3){
                         $commandBus->dispatch(AddResultToCalculation::to($calculationId,
-                            CalculationResult::fromParameters(
+                            CalculationResultWithData::fromParameters(
                                 TotalTime::fromInt($t),
                                 CalculationResultType::fromString(CalculationResultType::HEAD_TYPE),
                                 CalculationResultData::from3dArray($arr)
@@ -410,11 +413,11 @@ class Hanoi implements ContainerAwareInterface, DataFixtureInterface
             for ($l=0; $l<=3; $l++){
                 $fileName = sprintf('%s/heads/heads_S3-T%s-L%s.json', __DIR__, $t, $l);
                 if (file_exists($fileName)){
-                    echo sprintf("Load head for Scenario3 from totim=%s and Layer=%s, %s Memory usage\r\n", $t, $l, memory_get_usage());
+                    echo sprintf("Load head from totim=%s and Layer=%s\r\n", $t, $l);
                     $arr[$l] = $this->loadHeadsFromFile($fileName);
                     if ($l == 3){
                         $commandBus->dispatch(AddResultToCalculation::to($calculationId,
-                            CalculationResult::fromParameters(
+                            CalculationResultWithData::fromParameters(
                                 TotalTime::fromInt($t),
                                 CalculationResultType::fromString(CalculationResultType::HEAD_TYPE),
                                 CalculationResultData::from3dArray($arr)

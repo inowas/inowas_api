@@ -4,7 +4,8 @@ declare(strict_types=1);
 
 namespace Inowas\ModflowBundle\Command;
 
-use Inowas\Modflow\Model\ModflowId;
+ini_set('memory_limit', '2048M');
+
 use Inowas\Modflow\Model\UserId;
 use Inowas\Modflow\Projection\ProjectionInterface;
 use Prooph\EventStore\Stream\StreamName;

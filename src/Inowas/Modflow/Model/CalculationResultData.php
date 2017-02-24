@@ -7,7 +7,7 @@ class CalculationResultData
     /** @var  array */
     private $data;
 
-    public static function from3dArray(array $data): CalculationResultData
+    public static function from2dArray(array $data): CalculationResultData
     {
         $self = new self();
         $self->data = $data;

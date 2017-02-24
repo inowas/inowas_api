@@ -37,9 +37,8 @@ class ModflowCalculationAggregate extends AggregateRoot
         return $self;
     }
 
-    public function addResult(CalculationResult $result)
+    public function addResult(CalculationResultWithFilename $result)
     {
-        #$this->mergeResult($result);
         $this->recordThat(ModflowCalculationResultWasAdded::to($this->calculationId(), $result));
     }
 
@@ -81,7 +80,7 @@ class ModflowCalculationAggregate extends AggregateRoot
         #$this->mergeResult($event->result());
     }
 
-    protected function mergeResult(CalculationResult $result): void
+    protected function mergeResult(CalculationResultWithData $result): void
     {
         #$this->results[$result->type()->toString()][$result->totalTime()->toTotalTime()] = $result->data();
     }

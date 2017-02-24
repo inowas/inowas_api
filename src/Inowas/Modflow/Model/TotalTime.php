@@ -14,7 +14,7 @@ class TotalTime
         return $self;
     }
 
-    public function toTotalTime(): int
+    public function toInteger(): int
     {
         return $this->totalTime;
     }

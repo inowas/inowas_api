@@ -6,7 +6,6 @@ use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Exception\TableNotFoundException;
 use Doctrine\DBAL\Schema\Schema;
 use Inowas\Modflow\Model\Event\ModflowCalculationResultWasAdded;
-use Inowas\Modflow\Model\Event\ModflowCalculationWasCreated;
 use Inowas\Modflow\Projection\ProjectionInterface;
 use Inowas\Modflow\Projection\Table;
 
@@ -30,7 +29,7 @@ class CalculationResultsProjector implements ProjectionInterface
         $table->addColumn('type', 'string', ['length' => 255]);
         $table->addColumn('totim', 'integer');
         $table->addColumn('layer', 'integer');
-        $table->addColumn('data', 'text');
+        $table->addColumn('filename', 'string', ['length' => 255]);
         $table->setPrimaryKey(['id']);
     }
 
@@ -68,13 +67,15 @@ class CalculationResultsProjector implements ProjectionInterface
         }
     }
 
-    public function onModflowCalculationWasCreated(ModflowCalculationWasCreated $event)
-    {
-        echo "--- TEST onModflowCalculationWasCreated CalculationResultsProjector ---\r\n";
-    }
-
     public function onModflowCalculationResultWasAdded(ModflowCalculationResultWasAdded $event)
     {
-        echo "--- TEST onModflowCalculationResultWasAdded CalculationResultsProjector ---\r\n";
+
+        $this->connection->insert(Table::CALCULATION_RESULTS, array(
+            'calculation_id' => $event->calculationId()->toString(),
+            'type' => $event->result()->type()->toString(),
+            'totim' => $event->result()->totalTime()->toInteger(),
+            'layer' => $event->result()->layerNumber()->toInteger(),
+            'filename' => $event->result()->filename()->toString()
+        ));
     }
 }

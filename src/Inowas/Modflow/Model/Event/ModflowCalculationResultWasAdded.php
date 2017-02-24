@@ -4,9 +4,10 @@ declare(strict_types=1);
 
 namespace Inowas\Modflow\Model\Event;
 
-use Inowas\Modflow\Model\CalculationResult;
-use Inowas\Modflow\Model\CalculationResultData;
+use Inowas\Common\FileName;
 use Inowas\Modflow\Model\CalculationResultType;
+use Inowas\Modflow\Model\CalculationResultWithFilename;
+use Inowas\Modflow\Model\LayerNumber;
 use Inowas\Modflow\Model\ModflowId;
 use Inowas\Modflow\Model\TotalTime;
 use Prooph\EventSourcing\AggregateChanged;
@@ -16,18 +17,19 @@ class ModflowCalculationResultWasAdded extends AggregateChanged
     /** @var  ModflowId */
     private $calculationId;
 
-    /** @var  CalculationResult */
+    /** @var  CalculationResultWithFilename */
     private $result;
 
     /** @var  CalculationResultType $type */
     protected $type;
 
-    public static function to(ModflowId $calculationId, CalculationResult $result): ModflowCalculationResultWasAdded
+    public static function to(ModflowId $calculationId, CalculationResultWithFilename $result): ModflowCalculationResultWasAdded
     {
         $event = self::occur($calculationId->toString(),[
-            'total_time' => $result->totalTime()->toTotalTime(),
             'type' => $result->type()->toString(),
-            'data' => $result->data()->toArray()
+            'total_time' => $result->totalTime()->toInteger(),
+            'layer' => $result->layerNumber()->toInteger(),
+            'filename' => $result->filename()->toString()
         ]);
 
         $event->result = $result;
@@ -43,14 +45,14 @@ class ModflowCalculationResultWasAdded extends AggregateChanged
         return $this->calculationId;
     }
 
-    public function result(): CalculationResult
+    public function result(): CalculationResultWithFilename
     {
         if ($this->result === null){
-
-            $this->result = CalculationResult::fromParameters(
-                TotalTime::fromInt($this->payload['total_time']),
+            $this->result = CalculationResultWithFilename::fromParameters(
                 CalculationResultType::fromString($this->payload['type']),
-                CalculationResultData::from3dArray($this->payload['data'])
+                TotalTime::fromInt($this->payload['total_time']),
+                LayerNumber::fromInteger($this->payload['layer']),
+                FileName::fromString($this->payload['filename'])
             );
         }
 
