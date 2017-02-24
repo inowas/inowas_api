@@ -48,6 +48,7 @@ prooph_service_bus:
                         - 'inowas.modflow_projection.model_scenarios'
 
                     'Inowas\Modflow\Model\Event\BoundaryWasAdded':
+                        - 'inowas.modflow_projection.model_scenarios'
                         - 'inowas.modflow_projection.boundaries'
                         - 'inowas.modflow_projection.calculation_results'
 
