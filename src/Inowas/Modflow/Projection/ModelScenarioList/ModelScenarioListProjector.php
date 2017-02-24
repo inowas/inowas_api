@@ -5,7 +5,7 @@ namespace Inowas\Modflow\Projection\ModelScenarioList;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Exception\TableNotFoundException;
 use Doctrine\DBAL\Schema\Schema;
-use Inowas\Modflow\Model\Event\ModflowCalculationResultWasAdded;
+use Inowas\Modflow\Model\Event\ModflowCalculationWasCreated;
 use Inowas\Modflow\Model\Event\ModflowModelDescriptionWasChanged;
 use Inowas\Modflow\Model\Event\ModflowModelNameWasChanged;
 use Inowas\Modflow\Model\Event\ModflowModelWasCreated;
@@ -24,7 +24,8 @@ class ModelScenarioListProjector implements ProjectionInterface
     /** @var Schema $schema */
     protected $schema;
 
-    public function __construct(Connection $connection) {
+    public function __construct(Connection $connection)
+    {
         $this->connection = $connection;
 
         $this->schema = new Schema();
@@ -32,6 +33,7 @@ class ModelScenarioListProjector implements ProjectionInterface
         $table->addColumn('user_id', 'string', ['length' => 36]);
         $table->addColumn('base_model_id', 'string', ['length' => 36]);
         $table->addColumn('scenario_id', 'string', ['length' => 36]);
+        $table->addColumn('calculation_id', 'string', ['length' => 36, 'notnull' => false]);
         $table->addColumn('name', 'string', ['length' => 255]);
         $table->addColumn('description', 'string', ['length' => 255]);
         $table->setPrimaryKey(['base_model_id', 'scenario_id']);
@@ -49,7 +51,8 @@ class ModelScenarioListProjector implements ProjectionInterface
         try {
             $queryArray = $this->schema->toDropSql($this->connection->getDatabasePlatform());
             $this->executeQueryArray($queryArray);
-        } catch (TableNotFoundException $e) {}
+        } catch (TableNotFoundException $e) {
+        }
     }
 
     public function truncateTable(): void
@@ -66,7 +69,7 @@ class ModelScenarioListProjector implements ProjectionInterface
 
     private function executeQueryArray(array $queries)
     {
-        foreach ($queries as $query){
+        foreach ($queries as $query) {
             $this->connection->executeQuery($query);
         }
     }
@@ -128,6 +131,21 @@ class ModelScenarioListProjector implements ProjectionInterface
                 'base_model_id' => $event->modflowId()->toString(),
                 'scenario_id' => $event->scenarioId()->toString()
             )
+        );
+    }
+
+    public function onModflowCalculationWasCreated(ModflowCalculationWasCreated $event){
+        $this->connection->update(Table::MODEL_SCENARIO_LIST,
+            array('calculation_id' => $event->calculationId()->toString()),
+            array(
+                'base_model_id' => $event->modflowModelId()->toString(),
+                'scenario_id' => ''
+            )
+        );
+
+        $this->connection->update(Table::MODEL_SCENARIO_LIST,
+            array('calculation_id' => $event->calculationId()->toString()),
+            array('scenario_id' => $event->modflowModelId()->toString())
         );
     }
 }

@@ -53,15 +53,18 @@ class CalculationResultsPersister
         $filename = $filename->toString();
 
         $name = explode('.', $filename)[0];
-        $type = CalculationResultType::fromString(explode('_', $name)[1]);
-        $totim = TotalTime::fromInt((int)explode('_', $name)[2]);
-        $layerNumber = LayerNumber::fromInteger((int)explode('_', $name)[3]);
+        $type = CalculationResultType::fromString(explode('_', $name)[0]);
+        $totim = TotalTime::fromInt((int)explode('_', $name)[1]);
+        $layerNumber = LayerNumber::fromInteger((int)explode('_', $name)[2]);
 
         if (! file_exists($this->getCalculationResultDataFolder($calculationId).'/'.$filename)){
-            throw new \Exception('File not found');
+            throw new \Exception(sprintf('File %s not found', $this->getCalculationResultDataFolder($calculationId).'/'.$filename));
         }
 
-        $data = CalculationResultData::from2dArray(json_decode($this->getCalculationResultDataFolder($calculationId).'/'.$filename));
+        $data = CalculationResultData::from2dArray(
+            json_decode(file_get_contents($this->getCalculationResultDataFolder($calculationId).'/'.$filename))
+        );
+
         return CalculationResultWithData::fromParameters(
             $type, $totim, $layerNumber, $data
         );
