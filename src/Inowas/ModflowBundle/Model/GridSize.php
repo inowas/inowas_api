@@ -12,6 +12,18 @@ class GridSize implements \JsonSerializable
     protected $nY;
 
     /**
+     * @param array $gridSizeArray
+     * @return GridSize
+     */
+    public static function fromArray(array $gridSizeArray): GridSize
+    {
+        $self = new self();
+        $self->nX = $gridSizeArray['n_x'];
+        $self->nY = $gridSizeArray['n_y'];
+        return $self;
+    }
+
+    /**
      * GridSize constructor.
      * @param int $nX
      * @param int $nY
@@ -76,6 +88,14 @@ class GridSize implements \JsonSerializable
      * @return mixed
      */
     public function jsonSerialize()
+    {
+        return array(
+            'n_x' => $this->getNX(),
+            'n_y' => $this->getNY()
+        );
+    }
+
+    public function toArray(): array
     {
         return array(
             'n_x' => $this->getNX(),

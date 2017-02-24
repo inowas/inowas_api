@@ -6,7 +6,7 @@ namespace Inowas\Modflow\Model;
 
 use Inowas\Modflow\Model\Exception\GridSizeOutOfRangeException;
 
-class ModflowModelGridSize
+class ModflowModelGridSize implements \JsonSerializable
 {
 
     private $nX;
@@ -25,6 +25,20 @@ class ModflowModelGridSize
         return new self($nX, $nY);
     }
 
+    public static function fromArray(array $gridSizeArray): ModflowModelGridSize
+    {
+        if (! array_key_exists('n_x', $gridSizeArray)) {
+            throw new \Exception();
+        }
+
+        if (! array_key_exists('n_y', $gridSizeArray))
+        {
+            throw new \Exception();
+        }
+
+        return new self($gridSizeArray['n_x'], $gridSizeArray['n_y']);
+    }
+
     private function __construct(int $nX, int $nY)
     {
         $this->nX = $nX;
@@ -39,5 +53,21 @@ class ModflowModelGridSize
     public function nY(): int
     {
         return $this->nY;
+    }
+
+    public function toArray()
+    {
+        return array(
+            'n_x' => $this->nX,
+            'n_y' => $this->nY,
+        );
+    }
+
+    /**
+     * @return mixed
+     */
+    function jsonSerialize()
+    {
+        return $this->toArray();
     }
 }

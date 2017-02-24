@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Inowas\Modflow\Model\Event;
 
 use Inowas\Modflow\Model\ModflowId;
+use Inowas\Modflow\Model\ModflowModelGridSize;
 use Inowas\Modflow\Model\SoilModelId;
 use Inowas\Modflow\Model\UserId;
 use Prooph\EventSourcing\AggregateChanged;
@@ -23,12 +24,22 @@ class ModflowCalculationWasCreated extends AggregateChanged
     /** @var  UserId */
     private $userId;
 
-    public static function fromModel(UserId $userId, ModflowId $calculationId, SoilModelId $soilModelId, ModflowId $modflowModelId): ModflowCalculationWasCreated
+    /** @var  ModflowModelGridSize */
+    private $gridSize;
+
+    public static function fromModel(
+        UserId $userId,
+        ModflowId $calculationId,
+        ModflowId $modflowModelId,
+        SoilModelId $soilModelId,
+        ModflowModelGridSize $gridSize
+    ): ModflowCalculationWasCreated
     {
         $event = self::occur($calculationId->toString(),[
             'user_id' => $userId->toString(),
             'modflowmodel_id' => $modflowModelId->toString(),
-            'soilmodel_id' => $soilModelId->toString()
+            'soilmodel_id' => $soilModelId->toString(),
+            'grid_size' => $gridSize->toArray()
         ]);
 
         $event->modflowModelId = $modflowModelId;
@@ -72,5 +83,14 @@ class ModflowCalculationWasCreated extends AggregateChanged
         }
 
         return $this->userId;
+    }
+
+    public function gridSize(): ModflowModelGridSize
+    {
+        if ($this->gridSize === null){
+            $this->gridSize = ModflowModelGridSize::fromArray($this->payload['grid_size']);
+        }
+
+        return $this->gridSize;
     }
 }

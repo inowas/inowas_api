@@ -22,18 +22,28 @@ class ModflowCalculationAggregate extends AggregateRoot
     /** @var  UserId */
     private $ownerId;
 
+    /** @var ModflowModelGridSize */
+    private $gridSize;
+
     /** @var  array */
     private $results;
 
-    public static function create(ModflowId $calculationId, ModflowId $modflowModelId, SoilModelId $soilModelId, UserId $userId): ModflowCalculationAggregate
+    public static function create(
+        ModflowId $calculationId,
+        ModflowId $modflowModelId,
+        SoilModelId $soilModelId,
+        UserId $userId,
+        ModflowModelGridSize $gridSize
+    ): ModflowCalculationAggregate
     {
         $self = new self();
         $self->calculationId = $calculationId;
         $self->modflowModelId = $modflowModelId;
         $self->soilModelId = $soilModelId;
         $self->ownerId = $userId;
+        $self->gridSize = $gridSize;
 
-        $self->recordThat(ModflowCalculationWasCreated::fromModel($userId, $calculationId, $soilModelId, $modflowModelId));
+        $self->recordThat(ModflowCalculationWasCreated::fromModel($userId, $calculationId, $modflowModelId, $soilModelId, $gridSize));
         return $self;
     }
 
@@ -62,6 +72,11 @@ class ModflowCalculationAggregate extends AggregateRoot
         return $this->ownerId;
     }
 
+    public function gridSize(): ModflowModelGridSize
+    {
+        return $this->gridSize;
+    }
+
     public function results(): array
     {
         return $this->results;
@@ -73,6 +88,7 @@ class ModflowCalculationAggregate extends AggregateRoot
         $this->modflowModelId = $event->modflowModelId();
         $this->soilModelId = $event->soilModelId();
         $this->ownerId = $event->userId();
+        $this->gridSize = $event->gridSize();
     }
 
     protected function whenModflowCalculationResultWasAdded(ModflowCalculationResultWasAdded $event): void

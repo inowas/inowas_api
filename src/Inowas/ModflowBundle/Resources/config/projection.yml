@@ -29,3 +29,8 @@ services:
         arguments:
           - '@doctrine.dbal.default_connection'
           - '@inowas.modflow.calculation_results_persister'
+
+    inowas.modflow_projection.calculation_list:
+        class: Inowas\Modflow\Projection\Calculation\CalculationListProjector
+        arguments:
+          - '@doctrine.dbal.default_connection'
