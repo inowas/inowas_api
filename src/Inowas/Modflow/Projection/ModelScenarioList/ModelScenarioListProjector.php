@@ -108,12 +108,14 @@ class ModelScenarioListProjector implements ProjectionInterface
 
     public function onModflowScenarioWasAdded(ModflowScenarioWasAdded $event): void
     {
-        $sql = sprintf("SELECT area_geometry FROM %s WHERE base_model_id = ? AND user_id = ?", Table::MODEL_SCENARIO_LIST);
+        $sql = sprintf("SELECT area_geometry, grid_size FROM %s WHERE base_model_id = ? AND user_id = ?", Table::MODEL_SCENARIO_LIST);
         $stmt = $this->connection->prepare($sql);
         $stmt->bindValue(1, $event->baseModelId()->toString());
         $stmt->bindValue(2, $event->userId()->toString());
         $stmt->execute();
-        $area_geometry = $stmt->fetchColumn();
+        $result = $stmt->fetchAll()[0];
+        $area_geometry = $result['area_geometry'];
+        $grid_size = $result['grid_size'];
 
         $this->connection->insert(Table::MODEL_SCENARIO_LIST, array(
             'user_id' => $event->userId()->toString(),
@@ -121,7 +123,8 @@ class ModelScenarioListProjector implements ProjectionInterface
             'scenario_id' => $event->scenarioId()->toString(),
             'name' => '',
             'description' => '',
-            'area_geometry' => $area_geometry
+            'area_geometry' => $area_geometry,
+            'grid_size' => $grid_size
         ));
     }
 
