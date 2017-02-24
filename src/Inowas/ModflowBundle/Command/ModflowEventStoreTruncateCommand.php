@@ -10,6 +10,7 @@ use Prooph\EventStore\Adapter\Doctrine\Schema\EventStoreSchema;
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\Filesystem\Filesystem;
 
 class ModflowEventStoreTruncateCommand extends ContainerAwareCommand
 {
@@ -22,13 +23,13 @@ class ModflowEventStoreTruncateCommand extends ContainerAwareCommand
         // Name and description for app/console command
         $this
             ->setName('inowas:es:truncate')
-            ->setDescription('Truncates the event-stream Database');
+            ->setDescription('Truncates the event-stream Database and cleans the local modflow-data folder');
     }
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $this->truncateEventStreamTable('event_stream');
-
+        $this->cleanDataFolder();
     }
 
     private function truncateEventStreamTable($tableName)
@@ -71,5 +72,14 @@ class ModflowEventStoreTruncateCommand extends ContainerAwareCommand
         foreach ($queries as $query){
             $connection->exec($query);
         }
+    }
+
+    private function cleanDataFolder(): void
+    {
+        $dataFolder = $this->getContainer()->getParameter('inowas.modflow.data_folder');
+        $fs = new Filesystem();
+        $fs->remove($dataFolder);
+        $fs->mkdir($dataFolder);
+        $fs->touch($dataFolder.'/.gitkeep');
     }
 }
