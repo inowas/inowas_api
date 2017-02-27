@@ -43,9 +43,9 @@ final class CreateModflowModelCalculationHandler
         $calculationId = $command->calculationId();
 
         if (is_null($command->scenarioId())){
-            $calculation = $modflowModel->createCalculationFromBaseModel($calculationId);
+            $calculation = $modflowModel->createCalculationFromBaseModel($calculationId, $command->startDateTime(), $command->endDateTime());
         } else {
-            $calculation = $modflowModel->createCalculationFromScenario($calculationId, $command->scenarioId());
+            $calculation = $modflowModel->createCalculationFromScenario($calculationId, $command->scenarioId(),  $command->startDateTime(), $command->endDateTime());
         }
 
         if ($calculation instanceof ModflowCalculationAggregate) {

@@ -7,6 +7,7 @@ use AppBundle\Model\Point;
 use Doctrine\DBAL\Schema\Schema;
 use FOS\UserBundle\Doctrine\UserManager;
 use Inowas\Common\DataFixtureInterface;
+use Inowas\Common\DateTime\DateTime;
 use Inowas\Modflow\Model\AreaBoundary;
 use Inowas\Modflow\Model\BoundaryGeometry;
 use Inowas\Modflow\Model\BoundaryId;
@@ -182,7 +183,9 @@ class Hanoi implements ContainerAwareInterface, DataFixtureInterface
         }
 
         $calculationId = ModflowId::generate();
-        $commandBus->dispatch(CreateModflowModelCalculation::byUserWithModelId($calculationId, $ownerId, $modelId));
+        $start = DateTime::fromDateTime(new \DateTime('2005-01-01'));
+        $end = DateTime::fromDateTime(new \DateTime('2007-12-31'));
+        $commandBus->dispatch(CreateModflowModelCalculation::byUserWithModelId($calculationId, $ownerId, $modelId, $start, $end));
         $this->loadResults(0, 2000, 4, 'S0', $calculationId, $commandBus);
 
         /*
@@ -253,7 +256,9 @@ class Hanoi implements ContainerAwareInterface, DataFixtureInterface
 
         /* Add Head Results */
         $calculationId = ModflowId::generate();
-        $commandBus->dispatch(CreateModflowModelCalculation::byUserWithModelAndScenarioId($calculationId, $ownerId, $modelId, $scenarioId));
+        $start = DateTime::fromDateTime(new \DateTime('2005-01-01'));
+        $end = DateTime::fromDateTime(new \DateTime('2007-12-31'));
+        $commandBus->dispatch(CreateModflowModelCalculation::byUserWithModelAndScenarioId($calculationId, $ownerId, $modelId, $scenarioId, $start, $end));
         $this->loadResults(0, 2000, 4, 'S1', $calculationId, $commandBus);
 
         /*
@@ -296,7 +301,9 @@ class Hanoi implements ContainerAwareInterface, DataFixtureInterface
 
         /* Add Head Results */
         $calculationId = ModflowId::generate();
-        $commandBus->dispatch(CreateModflowModelCalculation::byUserWithModelAndScenarioId($calculationId, $ownerId, $modelId, $scenarioId));
+        $start = DateTime::fromDateTime(new \DateTime('2005-01-01'));
+        $end = DateTime::fromDateTime(new \DateTime('2007-12-31'));
+        $commandBus->dispatch(CreateModflowModelCalculation::byUserWithModelAndScenarioId($calculationId, $ownerId, $modelId, $scenarioId, $start, $end));
         $this->loadResults(0, 2000, 4, 'S2', $calculationId, $commandBus);
 
         /*
@@ -345,7 +352,9 @@ class Hanoi implements ContainerAwareInterface, DataFixtureInterface
 
         /* Add Head Results */
         $calculationId = ModflowId::generate();
-        $commandBus->dispatch(CreateModflowModelCalculation::byUserWithModelAndScenarioId($calculationId, $ownerId, $modelId, $scenarioId));
+        $start = DateTime::fromDateTime(new \DateTime('2005-01-01'));
+        $end = DateTime::fromDateTime(new \DateTime('2007-12-31'));
+        $commandBus->dispatch(CreateModflowModelCalculation::byUserWithModelAndScenarioId($calculationId, $ownerId, $modelId, $scenarioId, $start, $end));
         $this->loadResults(0, 2000, 4, 'S3', $calculationId, $commandBus);
     }
 

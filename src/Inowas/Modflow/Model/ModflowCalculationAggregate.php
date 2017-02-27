@@ -3,6 +3,7 @@
 namespace Inowas\Modflow\Model;
 
 
+use Inowas\Common\DateTime\DateTime;
 use Inowas\Modflow\Model\Event\ModflowCalculationResultWasAdded;
 use Inowas\Modflow\Model\Event\ModflowCalculationWasCreated;
 use Prooph\EventSourcing\AggregateRoot;
@@ -28,12 +29,20 @@ class ModflowCalculationAggregate extends AggregateRoot
     /** @var  array */
     private $results;
 
+    /** @var  DateTime */
+    private $startDateTime;
+
+    /** @var  DateTime */
+    private $endDateTime;
+
     public static function create(
         ModflowId $calculationId,
         ModflowId $modflowModelId,
         SoilModelId $soilModelId,
         UserId $userId,
-        ModflowModelGridSize $gridSize
+        ModflowModelGridSize $gridSize,
+        DateTime $startDateTime,
+        DateTime $endDateTime
     ): ModflowCalculationAggregate
     {
         $self = new self();
@@ -42,8 +51,21 @@ class ModflowCalculationAggregate extends AggregateRoot
         $self->soilModelId = $soilModelId;
         $self->ownerId = $userId;
         $self->gridSize = $gridSize;
+        $self->startDateTime = $startDateTime;
+        $self->endDateTime = $endDateTime;
 
-        $self->recordThat(ModflowCalculationWasCreated::fromModel($userId, $calculationId, $modflowModelId, $soilModelId, $gridSize));
+        $self->recordThat(
+            ModflowCalculationWasCreated::fromModel(
+                $userId,
+                $calculationId,
+                $modflowModelId,
+                $soilModelId,
+                $gridSize,
+                $startDateTime,
+                $endDateTime
+            )
+        );
+
         return $self;
     }
 
@@ -82,6 +104,16 @@ class ModflowCalculationAggregate extends AggregateRoot
         return $this->results;
     }
 
+    public function startDateTime(): DateTime
+    {
+        return $this->startDateTime;
+    }
+
+    public function endDateTime(): DateTime
+    {
+        return $this->endDateTime;
+    }
+
     protected function whenModflowCalculationWasCreated(ModflowCalculationWasCreated $event): void
     {
         $this->calculationId = $event->calculationId();
@@ -89,6 +121,8 @@ class ModflowCalculationAggregate extends AggregateRoot
         $this->soilModelId = $event->soilModelId();
         $this->ownerId = $event->userId();
         $this->gridSize = $event->gridSize();
+        $this->startDateTime = $event->startDateTime();
+        $this->endDateTime = $event->endDateTime();
     }
 
     protected function whenModflowCalculationResultWasAdded(ModflowCalculationResultWasAdded $event): void

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Inowas\Modflow\Model\Event;
 
+use Inowas\Common\DateTime\DateTime;
 use Inowas\Modflow\Model\ModflowId;
 use Inowas\Modflow\Model\ModflowModelGridSize;
 use Inowas\Modflow\Model\SoilModelId;
@@ -27,19 +28,29 @@ class ModflowCalculationWasCreated extends AggregateChanged
     /** @var  ModflowModelGridSize */
     private $gridSize;
 
+    /** @var  DateTime */
+    private $startDateTime;
+
+    /** @var  DateTime */
+    private $endDateTime;
+
     public static function fromModel(
         UserId $userId,
         ModflowId $calculationId,
         ModflowId $modflowModelId,
         SoilModelId $soilModelId,
-        ModflowModelGridSize $gridSize
+        ModflowModelGridSize $gridSize,
+        DateTime $startDateTime,
+        DateTime $endDateTime
     ): ModflowCalculationWasCreated
     {
         $event = self::occur($calculationId->toString(),[
             'user_id' => $userId->toString(),
             'modflowmodel_id' => $modflowModelId->toString(),
             'soilmodel_id' => $soilModelId->toString(),
-            'grid_size' => $gridSize->toArray()
+            'grid_size' => $gridSize->toArray(),
+            'start_date_time' => $startDateTime->toAtom(),
+            'end_date_time' => $endDateTime->toAtom()
         ]);
 
         $event->modflowModelId = $modflowModelId;
@@ -92,5 +103,23 @@ class ModflowCalculationWasCreated extends AggregateChanged
         }
 
         return $this->gridSize;
+    }
+
+    public function startDateTime(): DateTime
+    {
+        if ($this->startDateTime === null){
+            $this->startDateTime = DateTime::fromAtom($this->payload['start_date_time']);
+        }
+
+        return $this->startDateTime;
+    }
+
+    public function endDateTime(): DateTime
+    {
+        if ($this->endDateTime === null){
+            $this->endDateTime = DateTime::fromAtom($this->payload['end_date_time']);
+        }
+
+        return $this->endDateTime;
     }
 }

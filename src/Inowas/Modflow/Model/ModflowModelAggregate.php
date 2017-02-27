@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Inowas\Modflow\Model;
 
+use Inowas\Common\DateTime\DateTime;
 use Inowas\Modflow\Model\Event\BoundaryWasAdded;
 use Inowas\Modflow\Model\Event\BoundaryWasAddedToScenario;
 use Inowas\Modflow\Model\Event\BoundaryWasRemoved;
@@ -81,15 +82,31 @@ class ModflowModelAggregate extends AggregateRoot
         return $self;
     }
 
-    public function createCalculationFromBaseModel(ModflowId $calculationId): ModflowCalculationAggregate
+    public function createCalculationFromBaseModel(ModflowId $calculationId, DateTime $start, DateTime $end): ModflowCalculationAggregate
     {
-        return ModflowCalculationAggregate::create($calculationId, $this->modflowId, $this->soilmodelId, $this->owner, $this->gridSize);
+        return ModflowCalculationAggregate::create(
+            $calculationId,
+            $this->modflowId,
+            $this->soilmodelId,
+            $this->owner,
+            $this->gridSize,
+            $start,
+            $end
+        );
     }
 
-    public function createCalculationFromScenario(ModflowId $calculationId, ModflowId $scenarioId): ?ModflowCalculationAggregate
+    public function createCalculationFromScenario(ModflowId $calculationId, ModflowId $scenarioId, DateTime $start, DateTime $end): ?ModflowCalculationAggregate
     {
-        if ($this->contains($scenarioId, $this->scenarios)){
-            return ModflowCalculationAggregate::create($calculationId, $scenarioId, $this->soilmodelId, $this->owner, $this->gridSize);
+        if ($this->contains($scenarioId, $this->scenarios)) {
+            return ModflowCalculationAggregate::create(
+                $calculationId,
+                $scenarioId,
+                $this->soilmodelId,
+                $this->owner,
+                $this->gridSize,
+                $start,
+                $end
+            );
         }
 
         return null;

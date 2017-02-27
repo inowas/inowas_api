@@ -76,7 +76,9 @@ class CalculationListProjector implements ProjectionInterface
             'model_id' => $event->modflowModelId()->toString(),
             'user_id' => $event->userId()->toString(),
             'soilmodel_id' => $event->soilModelId()->toString(),
-            'grid_size' => json_encode($event->gridSize())
+            'grid_size' => json_encode($event->gridSize()),
+            'date_time_start' => $event->startDateTime()->toAtom(),
+            'date_time_end' => $event->endDateTime()->toAtom()
         ));
     }
 }
