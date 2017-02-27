@@ -1,10 +1,11 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Inowas\Modflow\Projection\ModelScenarioList;
 
 use Doctrine\DBAL\Connection;
 use Inowas\Modflow\Model\ModflowId;
-use Inowas\Modflow\Model\UserId;
 use Inowas\Modflow\Projection\Table;
 
 class ModelDetailsFinder

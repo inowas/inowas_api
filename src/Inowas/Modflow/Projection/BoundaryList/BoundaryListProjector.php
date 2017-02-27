@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Inowas\Modflow\Projection\BoundaryList;
 
 use Doctrine\DBAL\Connection;
@@ -45,12 +47,7 @@ class BoundaryListProjector implements ProjectionInterface
         $table->addIndex(array('model_id'));
     }
 
-    public function onModflowModelWasCreated(ModflowModelWasCreated $event)
-    {
-
-    }
-
-    public function onModflowScenarioWasAdded(ModflowScenarioWasAdded $event)
+    public function onModflowScenarioWasAdded(ModflowScenarioWasAdded $event): void
     {
         $sql = sprintf("SELECT * FROM %s WHERE model_id = ?", Table::BOUNDARIES);
         $stmt = $this->connection->prepare($sql);
@@ -71,7 +68,7 @@ class BoundaryListProjector implements ProjectionInterface
         }
     }
 
-    public function onBoundaryWasAdded(BoundaryWasAdded $event)
+    public function onBoundaryWasAdded(BoundaryWasAdded $event): void
     {
         $this->insertBoundary(
             $event->modflowId(),
@@ -84,14 +81,14 @@ class BoundaryListProjector implements ProjectionInterface
         );
     }
 
-    public function onBoundaryWasRemoved(BoundaryWasRemoved $event)
+    public function onBoundaryWasRemoved(BoundaryWasRemoved $event): void
     {
         $this->connection->delete(Table::BOUNDARIES, array(
             'boundary_id' => $event->boundaryId()->toString()
         ));
     }
 
-    public function onModflowModelBoundaryWasUpdated(ModflowModelBoundaryWasUpdated $event)
+    public function onModflowModelBoundaryWasUpdated(ModflowModelBoundaryWasUpdated $event): void
     {
         $this->connection->delete(Table::BOUNDARIES, array(
             'boundary_id' => $event->boundary()->boundaryId()->toString(),
@@ -99,7 +96,7 @@ class BoundaryListProjector implements ProjectionInterface
         ));
     }
 
-    public function onBoundaryWasAddedToScenario(BoundaryWasAddedToScenario $event)
+    public function onBoundaryWasAddedToScenario(BoundaryWasAddedToScenario $event): void
     {
         $this->insertBoundary(
             $event->scenarioId(),
@@ -112,7 +109,7 @@ class BoundaryListProjector implements ProjectionInterface
         );
     }
 
-    public function onBoundaryWasRemovedFromScenario(BoundaryWasRemovedFromScenario $event)
+    public function onBoundaryWasRemovedFromScenario(BoundaryWasRemovedFromScenario $event): void
     {
         $this->connection->delete(Table::BOUNDARIES, array(
             'boundary_id' => $event->boundaryId()->toString(),
@@ -128,7 +125,7 @@ class BoundaryListProjector implements ProjectionInterface
         string $boundaryType,
         string $metadata,
         string $data
-    )
+    ): void
     {
         $this->connection->insert(Table::BOUNDARIES, array(
             'model_id' => $modelId->toString(),
@@ -168,7 +165,7 @@ class BoundaryListProjector implements ProjectionInterface
     }
 
 
-    private function executeQueryArray(array $queries)
+    private function executeQueryArray(array $queries): void
     {
         foreach ($queries as $query){
             $this->connection->executeQuery($query);

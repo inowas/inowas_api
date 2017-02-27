@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Inowas\Modflow\Projection\Calculation;
 
 use Doctrine\DBAL\Connection;
@@ -60,14 +62,14 @@ class CalculationResultsProjector implements ProjectionInterface
     }
 
 
-    private function executeQueryArray(array $queries)
+    private function executeQueryArray(array $queries): void
     {
         foreach ($queries as $query){
             $this->connection->executeQuery($query);
         }
     }
 
-    public function onModflowCalculationResultWasAdded(ModflowCalculationResultWasAdded $event)
+    public function onModflowCalculationResultWasAdded(ModflowCalculationResultWasAdded $event): void
     {
 
         $this->connection->insert(Table::CALCULATION_RESULTS, array(

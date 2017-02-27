@@ -1,16 +1,15 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Inowas\Modflow\Projection\Calculation;
 
 use Doctrine\DBAL\Connection;
 use Inowas\Common\FileName;
-use Inowas\Modflow\Model\CalculationResultData;
 use Inowas\Modflow\Model\CalculationResultType;
-use Inowas\Modflow\Model\CalculationResultWithData;
 use Inowas\Modflow\Model\LayerNumber;
 use Inowas\Modflow\Model\ModflowId;
 use Inowas\Modflow\Model\TotalTime;
-use Inowas\Modflow\Model\UserId;
 use Inowas\Modflow\Projection\Table;
 use Inowas\ModflowBundle\Service\CalculationResultsPersister;
 
