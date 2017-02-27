@@ -42,7 +42,7 @@ prooph_service_bus:
 
                     'Inowas\Modflow\Model\Event\ModflowScenarioWasAdded':
                         - 'inowas.modflow_projection.model_scenarios'
-                        - 'inowas.modflow_projection.boundaries'
+                        - 'inowas.modflow_projection.model_boundaries'
 
                     'Inowas\Modflow\Model\Event\ModflowScenarioNameWasChanged':
                         - 'inowas.modflow_projection.model_scenarios'
@@ -51,19 +51,19 @@ prooph_service_bus:
                         - 'inowas.modflow_projection.model_scenarios'
 
                     'Inowas\Modflow\Model\Event\BoundaryWasAdded':
-                        - 'inowas.modflow_projection.boundaries'
+                        - 'inowas.modflow_projection.model_boundaries'
                         - 'inowas.modflow_projection.calculation_results'
                         - 'inowas.modflow_projection.model_details'
 
                     'Inowas\Modflow\Model\Event\BoundaryWasAddedToScenario':
-                        - 'inowas.modflow_projection.boundaries'
+                        - 'inowas.modflow_projection.model_boundaries'
 
                     'Inowas\Modflow\Model\Event\BoundaryWasRemoved':
-                        - 'inowas.modflow_projection.boundaries'
+                        - 'inowas.modflow_projection.model_boundaries'
                         - 'inowas.modflow_projection.model_details'
 
                     'Inowas\Modflow\Model\Event\BoundaryWasRemovedFromScenario':
-                        - 'inowas.modflow_projection.boundaries'
+                        - 'inowas.modflow_projection.model_boundaries'
 
                     'Inowas\Modflow\Model\Event\ModflowCalculationWasCreated':
                         - 'inowas.modflow_projection.calculation_results'

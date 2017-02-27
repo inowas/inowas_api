@@ -3,8 +3,8 @@
 namespace Inowas\Modflow\Projection\BoundaryList;
 
 use Doctrine\DBAL\Connection;
+use Inowas\Modflow\Model\BoundaryId;
 use Inowas\Modflow\Model\ModflowId;
-use Inowas\Modflow\Model\UserId;
 use Inowas\Modflow\Projection\Table;
 
 class BoundaryFinder
@@ -17,26 +17,21 @@ class BoundaryFinder
         $this->connection->setFetchMode(\PDO::FETCH_OBJ);
     }
 
-    public function findByUserAndBaseModelId(UserId $userId, ModflowId $baseModelId)
+    public function findByModelId(ModflowId $modelId)
     {
         return $this->connection->fetchAll(
-            sprintf('SELECT boundary_id, name, geometry FROM %s WHERE base_model_id = :base_model_id AND user_id = :user_id AND scenario_id = :scenario_id', Table::BOUNDARIES),
-            [
-                'base_model_id' => $baseModelId->toString(),
-                'user_id' => $userId->toString(),
-                'scenario_id' => ''
-            ]
+            sprintf('SELECT boundary_id, name, geometry, metadata FROM %s WHERE model_id = :model_id', Table::BOUNDARIES),
+            ['model_id' => $modelId->toString()]
         );
     }
 
-    public function findByUserAndBaseModelAndScenarioId(UserId $userId, ModflowId $baseModelId, ModflowId $scenarioId)
+    public function findBoundaryById(ModflowId $modelId, BoundaryId $boundaryId)
     {
-        return $this->connection->fetchAll(
-            sprintf('SELECT boundary_id, name, geometry FROM %s WHERE base_model_id = :base_model_id AND user_id = :user_id AND scenario_id = :scenario_id', Table::BOUNDARIES),
+        return $this->connection->fetchAssoc(
+            sprintf('SELECT * FROM %s WHERE model_id = :model_id AND boundary_id = :boundary_id', Table::BOUNDARIES),
             [
-                'base_model_id' => $baseModelId->toString(),
-                'user_id' => $userId->toString(),
-                'scenario_id' => $scenarioId->toString()
+                'model_id' => $modelId->toString(),
+                'boundary_id' => $boundaryId->toString()
             ]
         );
     }

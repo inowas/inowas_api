@@ -28,7 +28,7 @@ class ModflowProjectionCommand extends ContainerAwareCommand
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $projections = [];
-        $projections[] = $this->getContainer()->get('inowas.modflow_projection.boundaries');
+        $projections[] = $this->getContainer()->get('inowas.modflow_projection.model_boundaries');
         $projections[] = $this->getContainer()->get('inowas.modflow_projection.model_scenarios');
         $projections[] = $this->getContainer()->get('inowas.modflow_projection.calculation_results');
         $projections[] = $this->getContainer()->get('inowas.modflow_projection.calculation_list');

@@ -85,21 +85,21 @@ class ScenarioAnalysisController extends FOSRestController
      *   }
      * )
      *
-     * @Rest\Get("/model/{modelId}")
+     * @Rest\Get("/model/{modelId}/boundaries")
      * @param $modelId
      * @return JsonResponse
      * @throws InvalidUuidException
      * @throws InvalidArgumentException
      */
-    public function getScenarioAnalysisModelBoundaries($modelId)
+    public function getScenarioAnalysisModelBoundariesAction($modelId)
     {
         if (! Uuid::isValid($modelId)){
             throw new InvalidUuidException();
         }
 
-        return new JsonResponse($this->get('inowas.modflow_projection.boundaries')
-            ->findByBaseModelId(
-                ModflowId::fromString($baseModelId)
+        return new JsonResponse($this->get('inowas.model_boundaries_finder')
+            ->findByModelId(
+                ModflowId::fromString($modelId)
             )
         );
     }
