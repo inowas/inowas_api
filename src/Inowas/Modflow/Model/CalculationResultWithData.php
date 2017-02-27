@@ -2,7 +2,7 @@
 
 namespace Inowas\Modflow\Model;
 
-class CalculationResultWithData
+class CalculationResultWithData implements \JsonSerializable
 {
 
     /** @var  CalculationResultType */
@@ -45,5 +45,18 @@ class CalculationResultWithData
     public function data(): CalculationResultData
     {
         return $this->data;
+    }
+
+    /**
+     * @return array
+     */
+    function jsonSerialize()
+    {
+        return array(
+            'type' => $this->type->toString(),
+            'layer' => $this->layerNumber->toInteger(),
+            'totim' => $this->totalTime->toInteger(),
+            'data' => $this->data->toArray()
+        );
     }
 }

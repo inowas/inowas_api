@@ -7,6 +7,7 @@ use FOS\RestBundle\Controller\FOSRestController;
 use Inowas\Modflow\Model\CalculationResultType;
 use Inowas\Modflow\Model\LayerNumber;
 use Inowas\Modflow\Model\ModflowId;
+use Inowas\Modflow\Model\TotalTime;
 use Inowas\Modflow\Model\UserId;
 use Inowas\ScenarioAnalysisBundle\Exception\InvalidArgumentException;
 use Inowas\ScenarioAnalysisBundle\Exception\InvalidUuidException;
@@ -190,6 +191,83 @@ class ScenarioAnalysisController extends FOSRestController
             'end_date' => $calculation['date_time_end'],
             'total_times' => $totalTimes
         ];
+
+        return new JsonResponse($result);
+    }
+
+    /**
+ * Get models last calculation result by modelId, type and layerNumber.
+ *
+ * @ApiDoc(
+ *   resource = true,
+ *   description = "Get models last calculation result by modelId, type and layerNumber.",
+ *   statusCodes = {
+ *     200 = "Returned when successful"
+ *   }
+ * )
+ *
+ * @Rest\Get("/model/{modelId}/calculation/result/type/{type}/layer/{layer}/totim/{totim}")
+ * @param $modelId
+ * @param $type
+ * @param $layer
+ * @param $totim
+ * @return JsonResponse
+ * @throws InvalidUuidException
+ * @throws InvalidArgumentException
+ */
+    public function getScenarioAnalysisResultByModelResultTypeAndLayerAction($modelId, $type, $layer, $totim)
+    {
+        if (! Uuid::isValid($modelId)){
+            throw new InvalidUuidException();
+        }
+
+        $calculation = $this->get('inowas.modflow_projection.calculation_list_finder')
+            ->findLastCalculationByModelId(ModflowId::fromString($modelId));
+
+        $result = $this->get('inowas.modflow_projection.calculation_results_finder')
+            ->findValue(
+                ModflowId::fromString($calculation['calculation_id']),
+                CalculationResultType::fromString($type),
+                LayerNumber::fromInteger((int)$layer),
+                TotalTime::fromInt((int)$totim)
+            );
+
+        return new JsonResponse($result);
+    }
+
+    /**
+     * Get calculation result by calculationId, type and layerNumber.
+     *
+     * @ApiDoc(
+     *   resource = true,
+     *   description = "Get models last calculation result by calculationId, type and layerNumber.",
+     *   statusCodes = {
+     *     200 = "Returned when successful"
+     *   }
+     * )
+     *
+     * @Rest\Get("/model/calculation/{calculationId}/result/type/{type}/layer/{layer}/totim/{totim}")
+     * @param $calculationId
+     * @param $type
+     * @param $layer
+     * @param $totim
+     * @return JsonResponse
+     * @throws InvalidUuidException
+     * @throws InvalidArgumentException
+     */
+    public function getScenarioAnalysisResultByCalculationResultTypeAndLayerAction($calculationId, $type, $layer, $totim)
+    {
+        if (! Uuid::isValid($calculationId)){
+            throw new InvalidUuidException();
+        }
+
+        $result = $this->get('inowas.modflow_projection.calculation_results_finder')
+            ->findValue(
+                ModflowId::fromString($calculationId),
+                CalculationResultType::fromString($type),
+                LayerNumber::fromInteger((int)$layer),
+                TotalTime::fromInt((int)$totim)
+            );
 
         return new JsonResponse($result);
     }
