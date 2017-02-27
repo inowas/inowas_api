@@ -29,4 +29,12 @@ class CalculationListFinder
             ['model_id' => $modelId->toString()]
         );
     }
+
+    public function findCalculationById(ModflowId $calculationId)
+    {
+        return $this->connection->fetchAssoc(
+            sprintf('SELECT * from %s WHERE calculation_id = :calculation_id ORDER BY id DESC LIMIT 1', Table::CALCULATION_LIST),
+            ['calculation_id' => $calculationId->toString()]
+        );
+    }
 }

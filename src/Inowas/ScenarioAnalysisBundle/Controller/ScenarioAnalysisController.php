@@ -107,7 +107,7 @@ class ScenarioAnalysisController extends FOSRestController
     }
 
     /**
-     * Get Times by CalculationId, Type and Layer.
+     * Get totalTimes of last calculation of model by modelId, type and layerNumber.
      *
      * @ApiDoc(
      *   resource = true,
@@ -140,6 +140,50 @@ class ScenarioAnalysisController extends FOSRestController
                 CalculationResultType::fromString($type),
                 LayerNumber::fromInteger((int)$layer)
         );
+
+        $result = [
+            'start_date' => $calculation['date_time_start'],
+            'end_date' => $calculation['date_time_end'],
+            'total_times' => $totalTimes
+        ];
+
+        return new JsonResponse($result);
+    }
+
+    /**
+     * Get totalTimes of calculation calculationId, type and layerNumber.
+     *
+     * @ApiDoc(
+     *   resource = true,
+     *   description = "Get totalTimes of calculation calculationId, Type and Layer.",
+     *   statusCodes = {
+     *     200 = "Returned when successful"
+     *   }
+     * )
+     *
+     * @Rest\Get("/model/calculation/{calculationId}/times/type/{type}/layer/{layer}")
+     * @param $calculationId
+     * @param $type
+     * @param $layer
+     * @return JsonResponse
+     * @throws InvalidUuidException
+     * @throws InvalidArgumentException
+     */
+    public function getScenarioAnalysisCalculationTimesByTypeAndLayerAction($calculationId, $type, $layer)
+    {
+        if (! Uuid::isValid($calculationId)){
+            throw new InvalidUuidException();
+        }
+
+        $calculation = $this->get('inowas.modflow_projection.calculation_list_finder')
+            ->findCalculationById(ModflowId::fromString($calculationId));
+
+        $totalTimes = $this->get('inowas.modflow_projection.calculation_results_finder')
+            ->findTimes(
+                ModflowId::fromString($calculation['calculation_id']),
+                CalculationResultType::fromString($type),
+                LayerNumber::fromInteger((int)$layer)
+            );
 
         $result = [
             'start_date' => $calculation['date_time_start'],
@@ -210,4 +254,6 @@ class ScenarioAnalysisController extends FOSRestController
 
         return new JsonResponse($layerValues);
     }
+
+
 }
