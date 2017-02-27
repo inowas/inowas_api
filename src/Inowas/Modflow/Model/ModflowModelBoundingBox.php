@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Inowas\Modflow\Model;
 
-class ModflowModelBoundingBox
+class ModflowModelBoundingBox implements \JsonSerializable
 {
     /** @var float */
     private $xMin;
@@ -76,4 +76,19 @@ class ModflowModelBoundingBox
     {
         return $this->srid;
     }
+
+    /**
+     * @return array
+     */
+    function jsonSerialize()
+    {
+        return array(
+            'x_min' => $this->xMin,
+            'x_max' => $this->xMax,
+            'y_min' => $this->yMin,
+            'y_max' => $this->yMax,
+            'srid' => $this->srid
+        );
+    }
 }
+

@@ -34,3 +34,8 @@ services:
         class: Inowas\Modflow\Projection\Calculation\CalculationListProjector
         arguments:
           - '@doctrine.dbal.default_connection'
+
+    inowas.modflow_projection.model_details:
+        class: Inowas\Modflow\Projection\ModelScenarioList\ModelDetailsProjector
+        arguments:
+          - '@doctrine.dbal.default_connection'

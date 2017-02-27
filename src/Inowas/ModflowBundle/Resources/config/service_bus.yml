@@ -28,13 +28,16 @@ prooph_service_bus:
                 type: 'prooph_service_bus.event_bus_router'
                 routes:
                     'Inowas\Modflow\Model\Event\ModflowModelWasCreated':
+                        - 'inowas.modflow_projection.model_details'
                         - 'inowas.modflow_projection.model_scenarios'
                         - 'inowas.modflow_projection.calculation_results'
 
                     'Inowas\Modflow\Model\Event\ModflowModelNameWasChanged':
+                        - 'inowas.modflow_projection.model_details'
                         - 'inowas.modflow_projection.model_scenarios'
 
                     'Inowas\Modflow\Model\Event\ModflowModelDescriptionWasChanged':
+                        - 'inowas.modflow_projection.model_details'
                         - 'inowas.modflow_projection.model_scenarios'
 
                     'Inowas\Modflow\Model\Event\ModflowScenarioWasAdded':
@@ -50,12 +53,14 @@ prooph_service_bus:
                     'Inowas\Modflow\Model\Event\BoundaryWasAdded':
                         - 'inowas.modflow_projection.boundaries'
                         - 'inowas.modflow_projection.calculation_results'
+                        - 'inowas.modflow_projection.model_details'
 
                     'Inowas\Modflow\Model\Event\BoundaryWasAddedToScenario':
                         - 'inowas.modflow_projection.boundaries'
 
                     'Inowas\Modflow\Model\Event\BoundaryWasRemoved':
                         - 'inowas.modflow_projection.boundaries'
+                        - 'inowas.modflow_projection.model_details'
 
                     'Inowas\Modflow\Model\Event\BoundaryWasRemovedFromScenario':
                         - 'inowas.modflow_projection.boundaries'
@@ -66,3 +71,9 @@ prooph_service_bus:
 
                     'Inowas\Modflow\Model\Event\ModflowCalculationResultWasAdded':
                         - 'inowas.modflow_projection.calculation_results'
+
+                    'Inowas\Modflow\Model\Event\ModflowModelBoundingBoxWasChanged':
+                        - 'inowas.modflow_projection.model_details'
+
+                    'Inowas\Modflow\Model\Event\ModflowModelGridSizeWasChanged':
+                        - 'inowas.modflow_projection.model_details'
