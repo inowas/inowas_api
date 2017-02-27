@@ -3,11 +3,6 @@ rest_scenario_analysis:
     resource: '@InowasScenarioAnalysisBundle/Controller/ScenarioAnalysisController.php'
     prefix:    /api/scenarioanalysis
 
-rest_scenario_analysis:
-    type: rest
-    resource: '@InowasScenarioAnalysisBundle/Controller/ScenarioAnalysisController.php'
-    prefix:    /api/scenarioanalysis
-
 rest_scenario_analysis_scenario:
     type: rest
     resource: '@InowasScenarioAnalysisBundle/Controller/ScenarioController.php'

@@ -19,7 +19,7 @@ class ModelDetailsFinder
 
     public function findByBaseModelId(ModflowId $modelId)
     {
-        return $this->connection->fetchAll(
+        return $this->connection->fetchAssoc(
             sprintf('SELECT * FROM %s WHERE model_id = :model_id', Table::MODEL_DETAILS),
             ['model_id' => $modelId->toString()]
         );

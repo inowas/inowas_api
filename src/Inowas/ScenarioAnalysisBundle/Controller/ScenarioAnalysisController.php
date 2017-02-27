@@ -43,4 +43,64 @@ class ScenarioAnalysisController extends FOSRestController
                 ModflowId::fromString($baseModelId)
             ));
     }
+
+    /**
+     * Get Modeldetails by baseModelId.
+     *
+     * @ApiDoc(
+     *   resource = true,
+     *   description = "Get Modeldetails by baseModelIs.",
+     *   statusCodes = {
+     *     200 = "Returned when successful"
+     *   }
+     * )
+     *
+     * @Rest\Get("/model/{baseModelId}")
+     * @param $baseModelId
+     * @return JsonResponse
+     * @throws InvalidUuidException
+     * @throws InvalidArgumentException
+     */
+    public function getScenarioAnalysisBaseModelDetailsAction($baseModelId)
+    {
+        if (! Uuid::isValid($baseModelId)){
+            throw new InvalidUuidException();
+        }
+
+        return new JsonResponse($this->get('inowas.modflow_projection.model_details_finder')
+            ->findByBaseModelId(
+                ModflowId::fromString($baseModelId)
+            )
+        );
+    }
+
+    /**
+     * Get Boundaries by modelId.
+     *
+     * @ApiDoc(
+     *   resource = true,
+     *   description = "Get Boundaries by modelId.",
+     *   statusCodes = {
+     *     200 = "Returned when successful"
+     *   }
+     * )
+     *
+     * @Rest\Get("/model/{modelId}")
+     * @param $modelId
+     * @return JsonResponse
+     * @throws InvalidUuidException
+     * @throws InvalidArgumentException
+     */
+    public function getScenarioAnalysisModelBoundaries($modelId)
+    {
+        if (! Uuid::isValid($modelId)){
+            throw new InvalidUuidException();
+        }
+
+        return new JsonResponse($this->get('inowas.modflow_projection.boundaries')
+            ->findByBaseModelId(
+                ModflowId::fromString($baseModelId)
+            )
+        );
+    }
 }
