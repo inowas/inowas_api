@@ -149,4 +149,65 @@ class ScenarioAnalysisController extends FOSRestController
 
         return new JsonResponse($result);
     }
+
+    /**
+     * Get Information about what results are available in which layer.
+     *
+     * @ApiDoc(
+     *   resource = true,
+     *   description = "Get Information about what results (heads, drawdowns, watertables) are available in which layer, by modelId",
+     *   statusCodes = {
+     *     200 = "Returned when successful"
+     *   }
+     * )
+     *
+     * @Rest\Get("/model/{modelId}/calculation/layervalues")
+     * @param $modelId
+     * @return JsonResponse
+     * @throws InvalidUuidException
+     * @throws InvalidArgumentException
+     */
+    public function getScenarioAnalysisModelCalculationLayerValuesAction($modelId)
+    {
+        if (! Uuid::isValid($modelId)){
+            throw new InvalidUuidException();
+        }
+
+        $calculation = $this->get('inowas.modflow_projection.calculation_list_finder')
+            ->findLastCalculationByModelId(ModflowId::fromString($modelId));
+
+        $layerValues = $this->get('inowas.modflow_projection.calculation_results_finder')
+            ->findLayerValues(ModflowId::fromString($calculation['calculation_id']));
+
+        return new JsonResponse($layerValues);
+    }
+
+    /**
+     * Get Information about what results are available in which layer.
+     *
+     * @ApiDoc(
+     *   resource = true,
+     *   description = "Get Information about what results (heads, drawdowns, watertables) are available in which layer, by calculationId",
+     *   statusCodes = {
+     *     200 = "Returned when successful"
+     *   }
+     * )
+     *
+     * @Rest\Get("/calculation/{calculationId}/layervalues")
+     * @param $calculationId
+     * @return JsonResponse
+     * @throws InvalidUuidException
+     * @throws InvalidArgumentException
+     */
+    public function getScenarioAnalysisCalculationLayerValuesAction($calculationId)
+    {
+        if (! Uuid::isValid($calculationId)){
+            throw new InvalidUuidException();
+        }
+
+        $layerValues = $this->get('inowas.modflow_projection.calculation_results_finder')
+            ->findLayerValues(ModflowId::fromString($calculationId));
+
+        return new JsonResponse($layerValues);
+    }
 }

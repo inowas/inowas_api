@@ -69,10 +69,7 @@ class CalculationResultsFinder
 
         $result = [];
         foreach ($rows as $row){
-
-            if (array_key_exists('type', $row) && array_key_exists('layer', $row)){
-                $result[] = [$row['type'] => $row['layer']];
-            }
+            $result[$row['layer']][] =  $row['type'];
         }
 
         return $result;
