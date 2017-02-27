@@ -4,6 +4,8 @@ namespace Inowas\ScenarioAnalysisBundle\Controller;
 
 use FOS\RestBundle\Controller\Annotations as Rest;
 use FOS\RestBundle\Controller\FOSRestController;
+use Inowas\Modflow\Model\CalculationResultType;
+use Inowas\Modflow\Model\LayerNumber;
 use Inowas\Modflow\Model\ModflowId;
 use Inowas\Modflow\Model\UserId;
 use Inowas\ScenarioAnalysisBundle\Exception\InvalidArgumentException;
@@ -102,5 +104,49 @@ class ScenarioAnalysisController extends FOSRestController
                 ModflowId::fromString($modelId)
             )
         );
+    }
+
+    /**
+     * Get Times by CalculationId, Type and Layer.
+     *
+     * @ApiDoc(
+     *   resource = true,
+     *   description = "Get Times by CalculationId, Type and Layer.",
+     *   statusCodes = {
+     *     200 = "Returned when successful"
+     *   }
+     * )
+     *
+     * @Rest\Get("/model/{modelId}/calculation/times/type/{type}/layer/{layer}")
+     * @param $modelId
+     * @param $type
+     * @param $layer
+     * @return JsonResponse
+     * @throws InvalidUuidException
+     * @throws InvalidArgumentException
+     */
+    public function getScenarioAnalysisModelCalculationTimesByTypeAndLayerAction($modelId, $type, $layer)
+    {
+        if (! Uuid::isValid($modelId)){
+            throw new InvalidUuidException();
+        }
+
+        $calculation = $this->get('inowas.modflow_projection.calculation_list_finder')
+            ->findLastCalculationByModelId(ModflowId::fromString($modelId));
+
+        $totalTimes = $this->get('inowas.modflow_projection.calculation_results_finder')
+            ->findTimes(
+                ModflowId::fromString($calculation['calculation_id']),
+                CalculationResultType::fromString($type),
+                LayerNumber::fromInteger((int)$layer)
+        );
+
+        $result = [
+            'start_date' => $calculation['date_time_start'],
+            'end_date' => $calculation['date_time_end'],
+            'total_times' => $totalTimes
+        ];
+
+        return new JsonResponse($result);
     }
 }

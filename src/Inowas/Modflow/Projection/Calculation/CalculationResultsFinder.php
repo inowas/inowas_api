@@ -28,6 +28,20 @@ class CalculationResultsFinder
         $this->persister = $persister;
     }
 
+    public function findTimesByModelId(ModflowId $modelId, CalculationResultType $type, LayerNumber $layerNumber)
+    {
+        $calculationId = $this->connection->fetchColumn(
+            sprintf('SELECT calculation_id from %s WHERE model_id = :model_id ORDER BY id DESC LIMIT 1', Table::CALCULATION_LIST),
+            ['model_id' => $modelId->toString()]
+        );
+
+        if ($calculationId == false){
+            return [];
+        }
+
+        return $this->findTimes(ModflowId::fromString($calculationId), $type, $layerNumber);
+    }
+
     public function findTimes(ModflowId $calculationId, CalculationResultType $type, LayerNumber $layerNumber): array
     {
         $rows = $this->connection->fetchAll(
@@ -38,7 +52,6 @@ class CalculationResultsFinder
                 'layer' => $layerNumber->toInteger()
             ]
         );
-
 
         $result = [];
         foreach ($rows as $row){

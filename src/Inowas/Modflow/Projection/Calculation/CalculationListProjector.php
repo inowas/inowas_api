@@ -24,12 +24,15 @@ class CalculationListProjector implements ProjectionInterface
 
         $this->schema = new Schema();
         $table = $this->schema->createTable(Table::CALCULATION_LIST);
+        $table->addColumn('id', 'integer', array("unsigned" => true, "autoincrement" => true));
         $table->addColumn('calculation_id', 'string', ['length' => 36]);
-        $table->addColumn('modflow_model_id', 'string', ['length' => 36]);
+        $table->addColumn('model_id', 'string', ['length' => 36]);
         $table->addColumn('user_id', 'string', ['length' => 36]);
         $table->addColumn('soilmodel_id', 'string', ['length' => 36]);
         $table->addColumn('grid_size', 'text');
-        $table->setPrimaryKey(['calculation_id']);
+        $table->addColumn('date_time_start', 'string', ['length' => 255, 'notnull' => false]);
+        $table->addColumn('date_time_end', 'string', ['length' => 255, 'notnull' => false]);
+        $table->setPrimaryKey(['id']);
     }
 
     public function createTable(): void
@@ -70,7 +73,7 @@ class CalculationListProjector implements ProjectionInterface
     {
         $this->connection->insert(Table::CALCULATION_LIST, array(
             'calculation_id' => $event->calculationId()->toString(),
-            'modflow_model_id' => $event->modflowModelId()->toString(),
+            'model_id' => $event->modflowModelId()->toString(),
             'user_id' => $event->userId()->toString(),
             'soilmodel_id' => $event->soilModelId()->toString(),
             'grid_size' => json_encode($event->gridSize())

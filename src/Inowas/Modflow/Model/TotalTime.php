@@ -2,7 +2,7 @@
 
 namespace Inowas\Modflow\Model;
 
-class TotalTime
+class TotalTime implements \JsonSerializable
 {
     /** @var int */
     private $totalTime;
@@ -17,5 +17,10 @@ class TotalTime
     public function toInteger(): int
     {
         return $this->totalTime;
+    }
+
+    function jsonSerialize()
+    {
+        return $this->toInteger();
     }
 }
