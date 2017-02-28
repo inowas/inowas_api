@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Inowas\ScenarioAnalysisBundle\Controller;
 
 use FOS\RestBundle\Controller\Annotations as Rest;
@@ -20,6 +22,32 @@ use Symfony\Component\HttpFoundation\Response;
 
 class ScenarioAnalysisController extends FOSRestController
 {
+
+    /**
+     * Get list of scenarioAnalysis-project by UserId.
+     *
+     * @ApiDoc(
+     *   resource = true,
+     *   description = "Get list of scenarioAnalysis-project by UserId.",
+     *   statusCodes = {
+     *     200 = "Returned when successful"
+     *   }
+     * )
+     *
+     * @Rest\Get("/user/{userId}")
+     * @param $userId
+     * @return JsonResponse
+     */
+    public function getScenarioAnalysisModelsByUserAction($userId): JsonResponse
+    {
+        $userId = UserId::fromString($userId);
+
+        return new JsonResponse(
+            $this->get('inowas.modflow_projection.model_details_finder')
+                ->findByBaseUserId($userId)
+        );
+    }
+
     /**
      * Get ScenarioAnalysis detail by BaseModelId.
      *
@@ -37,17 +65,18 @@ class ScenarioAnalysisController extends FOSRestController
      * @throws InvalidUuidException
      * @throws InvalidArgumentException
      */
-    public function getScenariosAnalysisModelScenariosAction($baseModelId)
+    public function getScenariosAnalysisModelScenariosAction($baseModelId): JsonResponse
     {
         if (! Uuid::isValid($baseModelId)){
             throw new InvalidUuidException();
         }
 
-        return new JsonResponse($this->get('inowas.model_scenarios_finder')
-            ->findByUserAndBaseModelId(
+        return new JsonResponse(
+            $this->get('inowas.model_scenarios_finder')->findByUserAndBaseModelId(
                 UserId::fromString($this->getUser()->getId()->toString()),
                 ModflowId::fromString($baseModelId)
-            ));
+            )
+        );
     }
 
     /**
@@ -383,9 +412,9 @@ class ScenarioAnalysisController extends FOSRestController
 
         $heatMap = new HeatMap();
         if ($paramFetcher->get('min') && $paramFetcher->get('max')){
-            $file = $heatMap->createWithAbsoluteLimits($result->data()->toArray(), $paramFetcher->get('min'), $paramFetcher->get('max'));
+            $file = $heatMap->createWithAbsoluteLimits($result->data()->toArray(), (float)$paramFetcher->get('min'), (float)$paramFetcher->get('max'));
         } else {
-            $file = $heatMap->createWithPercentileLimits($result->data()->toArray(), $paramFetcher->get('loper'), $paramFetcher->get('upper'));
+            $file = $heatMap->createWithPercentileLimits($result->data()->toArray(), (float)$paramFetcher->get('loper'), (float)$paramFetcher->get('upper'));
         }
 
         $response = new Response();
@@ -439,9 +468,9 @@ class ScenarioAnalysisController extends FOSRestController
 
         $heatMap = new HeatMap();
         if ($paramFetcher->get('min') && $paramFetcher->get('max')){
-            $file = $heatMap->createWithAbsoluteLimits($result->data()->toArray(), $paramFetcher->get('min'), $paramFetcher->get('max'));
+            $file = $heatMap->createWithAbsoluteLimits($result->data()->toArray(), (float)$paramFetcher->get('min'), (float)$paramFetcher->get('max'));
         } else {
-            $file = $heatMap->createWithPercentileLimits($result->data()->toArray(), $paramFetcher->get('loper'), $paramFetcher->get('upper'));
+            $file = $heatMap->createWithPercentileLimits($result->data()->toArray(), (float)$paramFetcher->get('loper'), (float)$paramFetcher->get('upper'));
         }
 
         $response = new Response();
