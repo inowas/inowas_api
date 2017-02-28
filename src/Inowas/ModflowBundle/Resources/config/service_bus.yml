@@ -41,8 +41,12 @@ prooph_service_bus:
                         - 'inowas.modflow_projection.model_scenarios'
 
                     'Inowas\Modflow\Model\Event\ModflowScenarioWasAdded':
+                        - 'inowas.modflow_projection.model_details'
                         - 'inowas.modflow_projection.model_scenarios'
                         - 'inowas.modflow_projection.model_boundaries'
+
+                    'Inowas\Modflow\Model\Event\ModflowScenarioWasRemoved':
+                        - 'inowas.modflow_projection.model_details'
 
                     'Inowas\Modflow\Model\Event\ModflowScenarioNameWasChanged':
                         - 'inowas.modflow_projection.model_scenarios'

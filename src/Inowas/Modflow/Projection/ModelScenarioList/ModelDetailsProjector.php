@@ -15,6 +15,8 @@ use Inowas\Modflow\Model\Event\ModflowModelDescriptionWasChanged;
 use Inowas\Modflow\Model\Event\ModflowModelGridSizeWasChanged;
 use Inowas\Modflow\Model\Event\ModflowModelNameWasChanged;
 use Inowas\Modflow\Model\Event\ModflowModelWasCreated;
+use Inowas\Modflow\Model\Event\ModflowScenarioWasAdded;
+use Inowas\Modflow\Model\Event\ModflowScenarioWasRemoved;
 use Inowas\Modflow\Projection\ProjectionInterface;
 use Inowas\Modflow\Projection\Table;
 
@@ -35,25 +37,31 @@ class ModelDetailsProjector implements ProjectionInterface
         $table = $this->schema->createTable(Table::MODEL_DETAILS);
         $table->addColumn('id', 'integer', array("unsigned" => true, "autoincrement" => true));
         $table->addColumn('model_id', 'string', ['length' => 36]);
+        $table->addColumn('user_id', 'string', ['length' => 36]);
         $table->addColumn('name', 'string', ['length' => 255]);
         $table->addColumn('description', 'string', ['length' => 255]);
         $table->addColumn('area', 'text', ['notnull' => false]);
         $table->addColumn('grid_size', 'text', ['notnull' => false]);
         $table->addColumn('bounding_box', 'text', ['notnull' => false]);
+        $table->addColumn('created_at', 'string', ['length' => 255, 'notnull' => false]);
+        $table->addColumn('nr_of_scenarios', 'integer');
         $table->setPrimaryKey(['id']);
         $table->addIndex(array('model_id'));
     }
 
-    public function onModflowModelWasCreated(ModflowModelWasCreated $event)
+    public function onModflowModelWasCreated(ModflowModelWasCreated $event): void
     {
         $this->connection->insert(Table::MODEL_DETAILS, array(
             'model_id' => $event->modflowModelId()->toString(),
+            'user_id' => $event->userId()->toString(),
             'name' => '',
-            'description' => ''
+            'description' => '',
+            'created_at' => date_format($event->createdAt(), DATE_ATOM),
+            'nr_of_scenarios' => 0
         ));
     }
 
-    public function onModflowModelNameWasChanged(ModflowModelNameWasChanged $event)
+    public function onModflowModelNameWasChanged(ModflowModelNameWasChanged $event): void
     {
         $this->connection->update(Table::MODEL_DETAILS,
             array('name' => $event->name()->toString()),
@@ -61,7 +69,7 @@ class ModelDetailsProjector implements ProjectionInterface
         );
     }
 
-    public function onModflowModelDescriptionWasChanged(ModflowModelDescriptionWasChanged $event)
+    public function onModflowModelDescriptionWasChanged(ModflowModelDescriptionWasChanged $event): void
     {
         $this->connection->update(Table::MODEL_DETAILS,
             array('description' => $event->description()->toString()),
@@ -69,7 +77,7 @@ class ModelDetailsProjector implements ProjectionInterface
         );
     }
 
-    public function onBoundaryWasAdded(BoundaryWasAdded $event)
+    public function onBoundaryWasAdded(BoundaryWasAdded $event): void
     {
         $boundary = $event->boundary();
         if ($boundary->type() == 'area') {
@@ -80,7 +88,7 @@ class ModelDetailsProjector implements ProjectionInterface
         }
     }
 
-    public function onModflowModelBoundaryWasUpdated(ModflowModelBoundaryWasUpdated $event)
+    public function onModflowModelBoundaryWasUpdated(ModflowModelBoundaryWasUpdated $event): void
     {
         $boundary = $event->boundary();
         if ($boundary->type() == 'area') {
@@ -91,12 +99,12 @@ class ModelDetailsProjector implements ProjectionInterface
         }
     }
 
-    public function onBoundaryWasRemoved(BoundaryWasRemoved $event)
+    public function onBoundaryWasRemoved(BoundaryWasRemoved $event): void
     {
         // @todo implement this
     }
 
-    public function onModflowModelBoundingBoxWasChanged(ModflowModelBoundingBoxWasChanged $event)
+    public function onModflowModelBoundingBoxWasChanged(ModflowModelBoundingBoxWasChanged $event): void
     {
         $this->connection->update(Table::MODEL_DETAILS,
             array('bounding_box' => json_encode($event->boundingBox())),
@@ -104,12 +112,48 @@ class ModelDetailsProjector implements ProjectionInterface
         );
     }
 
-    public function onModflowModelGridSizeWasChanged(ModflowModelGridSizeWasChanged $event)
+    public function onModflowModelGridSizeWasChanged(ModflowModelGridSizeWasChanged $event): void
     {
         $this->connection->update(Table::MODEL_DETAILS,
             array('grid_size' => json_encode($event->gridSize())),
             array('model_id' => $event->modflowModelId()->toString())
         );
+    }
+
+    public function onModflowScenarioWasAdded(ModflowScenarioWasAdded $event): void
+    {
+        $rows = $this->connection->fetchAll(
+            sprintf('SELECT id, nr_of_scenarios from %s WHERE model_id = :model_id', Table::MODEL_DETAILS),
+            ['model_id' => $event->baseModelId()->toString()]
+        );
+
+        foreach ($rows as $row){
+            $id = $row['id'];
+            $nrOfScenarios = $row['nr_of_scenarios'];
+
+            $this->connection->update(Table::MODEL_DETAILS,
+                array('nr_of_scenarios' => ++$nrOfScenarios),
+                array('id' => $id)
+            );
+        }
+    }
+
+    public function onModflowScenarioWasRemoved(ModflowScenarioWasRemoved $event): void
+    {
+        $rows = $this->connection->fetchAll(
+            sprintf('SELECT id, nr_of_scenarios from %s WHERE model_id = :model_id', Table::MODEL_DETAILS),
+            ['model_id' => $event->baseModelId()->toString()]
+        );
+
+        foreach ($rows as $row){
+            $id = $row['id'];
+            $nrOfScenarios = $row['nr_of_scenarios'];
+
+            $this->connection->update(Table::MODEL_DETAILS,
+                array('nr_of_scenarios' => --$nrOfScenarios),
+                array('id' => $id)
+            );
+        }
     }
 
     public function createTable(): void
