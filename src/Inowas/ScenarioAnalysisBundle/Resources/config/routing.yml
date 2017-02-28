@@ -17,8 +17,3 @@ rest_scenario_analysis_heads:
     type: rest
     resource: '@InowasScenarioAnalysisBundle/Controller/ScenarioHeadsController.php'
     prefix:    /api/scenarioanalysis
-
-rest_scenario_head_image:
-    type: rest
-    resource: '@InowasScenarioAnalysisBundle/Controller/ScenarioHeadsImageController.php'
-    prefix:    /image/scenarioanalysis
