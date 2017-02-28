@@ -8,6 +8,7 @@ use FOS\RestBundle\Controller\Annotations as Rest;
 use FOS\RestBundle\Controller\FOSRestController;
 use FOS\RestBundle\Request\ParamFetcher;
 use HeatMap\HeatMap;
+use Inowas\AppBundle\Model\User;
 use Inowas\Modflow\Model\CalculationResultType;
 use Inowas\Modflow\Model\LayerNumber;
 use Inowas\Modflow\Model\ModflowId;
@@ -22,6 +23,36 @@ use Symfony\Component\HttpFoundation\Response;
 
 class ScenarioAnalysisController extends FOSRestController
 {
+
+    /**
+     * Get list of my scenarioAnalysis-projects.
+     *
+     * @ApiDoc(
+     *   resource = true,
+     *   description = "Get list of my scenarioAnalysis-projects.",
+     *   statusCodes = {
+     *     200 = "Returned when successful"
+     *   }
+     * )
+     *
+     * @Rest\Get("/my/projects")
+     * @return JsonResponse
+     */
+    public function getScenarioAnalysisMyProjectsAction(): JsonResponse
+    {
+
+        $user = $this->getUser();
+
+        if ($user instanceof User && $user->getId()) {
+            $userId = UserId::fromString($this->getUser()->getId()->toString());
+            return new JsonResponse(
+                $this->get('inowas.modflow_projection.model_details_finder')
+                    ->findByBaseUserId($userId)
+            );
+        }
+
+        return new JsonResponse([]);
+    }
 
     /**
      * Get list of scenarioAnalysis-project by UserId.
