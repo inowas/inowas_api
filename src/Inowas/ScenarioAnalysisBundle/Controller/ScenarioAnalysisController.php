@@ -9,7 +9,9 @@ use FOS\RestBundle\Controller\FOSRestController;
 use FOS\RestBundle\Request\ParamFetcher;
 use HeatMap\HeatMap;
 use Inowas\AppBundle\Model\User;
+use Inowas\Modflow\Model\CalculationResultData;
 use Inowas\Modflow\Model\CalculationResultType;
+use Inowas\Modflow\Model\CalculationResultWithData;
 use Inowas\Modflow\Model\LayerNumber;
 use Inowas\Modflow\Model\ModflowId;
 use Inowas\Modflow\Model\TotalTime;
@@ -259,25 +261,25 @@ class ScenarioAnalysisController extends FOSRestController
     }
 
     /**
- * Get models last calculation result by modelId, type and layerNumber.
- *
- * @ApiDoc(
- *   resource = true,
- *   description = "Get models last calculation result by modelId, type and layerNumber.",
- *   statusCodes = {
- *     200 = "Returned when successful"
- *   }
- * )
- *
- * @Rest\Get("/model/{modelId}/calculation/result/type/{type}/layer/{layer}/totim/{totim}")
- * @param $modelId
- * @param $type
- * @param $layer
- * @param $totim
- * @return JsonResponse
- * @throws InvalidUuidException
- * @throws InvalidArgumentException
- */
+     * Get models latest calculation result by modelId, type and layerNumber.
+     *
+     * @ApiDoc(
+     *   resource = true,
+     *   description = "Get models latest calculation result by modelId, type and layerNumber.",
+     *   statusCodes = {
+     *     200 = "Returned when successful"
+     *   }
+     * )
+     *
+     * @Rest\Get("/model/{modelId}/calculation/result/type/{type}/layer/{layer}/totim/{totim}")
+     * @param $modelId
+     * @param $type
+     * @param $layer
+     * @param $totim
+     * @return JsonResponse
+     * @throws InvalidUuidException
+     * @throws InvalidArgumentException
+     */
     public function getScenarioAnalysisResultByModelResultTypeAndLayerAction($modelId, $type, $layer, $totim)
     {
         if (! Uuid::isValid($modelId)){
@@ -422,7 +424,7 @@ class ScenarioAnalysisController extends FOSRestController
      * @Rest\QueryParam(name="upper", requirements="\d+", default=95, description="Percentile spectrum max")
      * @Rest\QueryParam(name="loper", requirements="\d+", default=5, description="Percentile spectrum min")
      */
-    public function getScenarioAnalysisResultImageByModelIdIdTypeLayerAndTotimAction(ParamFetcher $paramFetcher, $modelId, $type, $layer, $totim): Response
+    public function getScenarioAnalysisResultImageByModelIdTypeLayerAndTotimAction(ParamFetcher $paramFetcher, $modelId, $type, $layer, $totim): Response
     {
 
         if (! Uuid::isValid($modelId)){
@@ -508,5 +510,152 @@ class ScenarioAnalysisController extends FOSRestController
         $response->headers->set('Content-Type', 'image/png');
         $response->setContent(file_get_contents($file));
         return $response;
+    }
+
+    /**
+     * Get difference of two models latest calculation result by modelIds, type and layerNumber.
+     *
+     * @ApiDoc(
+     *   resource = true,
+     *   description = "* Get difference of two models latest calculation result by modelIds, type and layerNumber.",
+     *   statusCodes = {
+     *     200 = "Returned when successful"
+     *   }
+     * )
+     *
+     * @Rest\Get("/result/difference/models/{modelIdFirstModel}/{modelIdSecondModel}/type/{type}/layer/{layer}/totim/{totim}")
+     * @param $modelIdFirstModel
+     * @param $modelIdSecondModel
+     * @param $type
+     * @param $layer
+     * @param $totim
+     * @return JsonResponse
+     * @throws InvalidUuidException
+     * @throws InvalidArgumentException
+     */
+    public function getScenarioAnalysisResultDifferenceByModelIdsTypeLayerAndTotimAction($modelIdFirstModel, $modelIdSecondModel, $type, $layer, $totim):JsonResponse
+    {
+        if (! Uuid::isValid($modelIdFirstModel)){
+            throw new InvalidUuidException();
+        }
+
+        $calculationFirstModel = $this->get('inowas.modflow_projection.calculation_list_finder')
+            ->findLastCalculationByModelId(ModflowId::fromString($modelIdFirstModel));
+
+        $resultFirstModel = $this->get('inowas.modflow_projection.calculation_results_finder')
+            ->findValue(
+                ModflowId::fromString($calculationFirstModel['calculation_id']),
+                CalculationResultType::fromString($type),
+                LayerNumber::fromInteger((int)$layer),
+                TotalTime::fromInt((int)$totim)
+            );
+
+        if (! Uuid::isValid($modelIdSecondModel)){
+            throw new InvalidUuidException();
+        }
+
+        $calculationSecondModel = $this->get('inowas.modflow_projection.calculation_list_finder')
+            ->findLastCalculationByModelId(ModflowId::fromString($modelIdSecondModel));
+
+        $resultSecondModel = $this->get('inowas.modflow_projection.calculation_results_finder')
+            ->findValue(
+                ModflowId::fromString($calculationSecondModel['calculation_id']),
+                CalculationResultType::fromString($type),
+                LayerNumber::fromInteger((int)$layer),
+                TotalTime::fromInt((int)$totim)
+            );
+
+        $result = $this->calculateDifferenceResults($resultFirstModel, $resultSecondModel);
+
+        return new JsonResponse($result);
+    }
+
+    /**
+     * Get difference of two calculation results by calculationIds, type and layerNumber.
+     *
+     * @ApiDoc(
+     *   resource = true,
+     *   description = "Get difference of two calculation results by calculationIds, type and layerNumber.",
+     *   statusCodes = {
+     *     200 = "Returned when successful"
+     *   }
+     * )
+     *
+     * @Rest\Get("/result/difference/calculations/{calculationIdFirstModel}/{calculationIdSecondModel}/type/{type}/layer/{layer}/totim/{totim}")
+     * @param $calculationIdFirstModel
+     * @param calculationIdSecondModel
+     * @param $type
+     * @param $layer
+     * @param $totim
+     * @return JsonResponse
+     * @throws InvalidUuidException
+     * @throws InvalidArgumentException
+     */
+    public function getScenarioAnalysisResultDifferenceByCalculationIdsTypeLayerAndTotimAction($calculationIdFirstModel, $calculationIdSecondModel, $type, $layer, $totim):JsonResponse
+    {
+        if (! Uuid::isValid($calculationIdFirstModel)){
+            throw new InvalidUuidException();
+        }
+
+        $resultFirstModel = $this->get('inowas.modflow_projection.calculation_results_finder')
+            ->findValue(
+                ModflowId::fromString($calculationIdFirstModel),
+                CalculationResultType::fromString($type),
+                LayerNumber::fromInteger((int)$layer),
+                TotalTime::fromInt((int)$totim)
+            );
+
+        if (! Uuid::isValid($calculationIdSecondModel)){
+            throw new InvalidUuidException();
+        }
+
+        $resultSecondModel = $this->get('inowas.modflow_projection.calculation_results_finder')
+            ->findValue(
+                ModflowId::fromString($calculationIdSecondModel),
+                CalculationResultType::fromString($type),
+                LayerNumber::fromInteger((int)$layer),
+                TotalTime::fromInt((int)$totim)
+            );
+
+        $result = $this->calculateDifferenceResults($resultFirstModel, $resultSecondModel);
+
+        return new JsonResponse($result);
+    }
+
+    private function calculateDifferenceResults(CalculationResultWithData $res1, CalculationResultWithData $res2): CalculationResultWithData
+    {
+        $arr1 = $res1->data()->toArray();
+        $arr2 = $res2->data()->toArray();
+        if (! (count($arr1) == count($arr2) && count($arr1[0]) == count($arr2[0]))){
+            throw new \Exception('Arrays not in the same range');
+        }
+
+        if ($res1->type()->toString() != $res2->type()->toString()) {
+            throw new \Exception('Type is not the same');
+        }
+
+        if ($res1->totalTime()->toInteger() != $res2->totalTime()->toInteger()) {
+            throw new \Exception('Type is not the same');
+        }
+
+        if ($res1->layerNumber()->toInteger() != $res2->layerNumber()->toInteger()) {
+            throw new \Exception('LayerNumber is not the same');
+        }
+
+        $result = [];
+        foreach ($arr1 as $rowNumber => $row){
+            foreach ($row as $colNumber => $value){
+                if (is_null($arr1[$rowNumber][$colNumber]) || is_null($arr2[$rowNumber][$colNumber])){
+                    $result[$rowNumber][$colNumber] = null;
+                    continue;
+                }
+
+                $result[$rowNumber][$colNumber] = round($arr1[$rowNumber][$colNumber] - $arr2[$rowNumber][$colNumber], 3);
+            }
+        }
+
+        return CalculationResultWithData::fromParameters(
+            $res1->type(), $res1->totalTime(), $res1->layerNumber(), CalculationResultData::from2dArray($result)
+        );
     }
 }
