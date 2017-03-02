@@ -7,19 +7,19 @@ prooph_service_bus:
                 type: 'prooph_service_bus.command_bus_router'
                 routes:
                     'Inowas\Modflow\Model\Command\AddBoundary': 'inowas.add_modflow_model_boundary_handler'
-                    'Inowas\Modflow\Model\Command\UpdateBoundary': 'inowas.update_modflow_model_boundary_handler'
+                    'Inowas\Modflow\Model\Command\AddCalculatedBudget': 'inowas.add_calculated_budget_handler'
+                    'Inowas\Modflow\Model\Command\AddCalculatedHead': 'inowas.add_calculated_head_handler'
+                    'Inowas\Modflow\Model\Command\AddModflowScenario': 'inowas.add_modflow_scenario_handler'
                     'Inowas\Modflow\Model\Command\ChangeModflowModelBoundingBox': 'inowas.change_modflow_model_bounding_box_handler'
                     'Inowas\Modflow\Model\Command\ChangeModflowModelDescription': 'inowas.change_modflow_model_description_handler'
                     'Inowas\Modflow\Model\Command\ChangeModflowModelGridSize': 'inowas.change_modflow_model_grid_size_handler'
                     'Inowas\Modflow\Model\Command\ChangeModflowModelName': 'inowas.change_modflow_model_name_handler'
                     'Inowas\Modflow\Model\Command\ChangeModflowModelSoilmodelId': 'inowas.change_modflow_model_soilmodel_id_handler'
                     'Inowas\Modflow\Model\Command\CreateModflowModel': 'inowas.create_modflow_model_handler'
-                    'Inowas\Modflow\Model\Command\AddModflowScenario': 'inowas.add_modflow_scenario_handler'
+                    'Inowas\Modflow\Model\Command\CreateModflowModelCalculation': 'inowas.create_modflow_calculation_handler'
                     'Inowas\Modflow\Model\Command\RemoveModflowScenario': 'inowas.remove_modflow_scenario_handler'
                     'Inowas\Modflow\Model\Command\RemoveBoundary': 'inowas.remove_modflow_model_boundary_handler'
-                    'Inowas\Modflow\Model\Command\CreateModflowModelCalculation': 'inowas.create_modflow_calculation_handler'
-                    'Inowas\Modflow\Model\Command\AddResultToCalculation': 'inowas.add_result_to_calculation_handler'
-
+                    'Inowas\Modflow\Model\Command\UpdateBoundary': 'inowas.update_modflow_model_boundary_handler'
     event_buses:
         modflow_event_bus:
             plugins:
@@ -73,7 +73,10 @@ prooph_service_bus:
                         - 'inowas.modflow_projection.calculation_results'
                         - 'inowas.modflow_projection.calculation_list'
 
-                    'Inowas\Modflow\Model\Event\ModflowCalculationResultWasAdded':
+                    'Inowas\Modflow\Model\Event\BudgetWasCalculated':
+                        - 'inowas.modflow_projection.calculation_budgets'
+
+                    'Inowas\Modflow\Model\Event\HeadWasCalculated':
                         - 'inowas.modflow_projection.calculation_results'
 
                     'Inowas\Modflow\Model\Event\ModflowModelBoundingBoxWasChanged':
@@ -81,3 +84,5 @@ prooph_service_bus:
 
                     'Inowas\Modflow\Model\Event\ModflowModelGridSizeWasChanged':
                         - 'inowas.modflow_projection.model_details'
+
+

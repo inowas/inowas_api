@@ -4,8 +4,11 @@ namespace Inowas\Modflow\Model;
 
 
 use Inowas\Common\DateTime\DateTime;
-use Inowas\Modflow\Model\Event\ModflowCalculationResultWasAdded;
-use Inowas\Modflow\Model\Event\ModflowCalculationWasCreated;
+use Inowas\Common\FileName;
+use Inowas\Common\LayerNumber;
+use Inowas\Modflow\Model\Event\BudgetWasCalculated;
+use Inowas\Modflow\Model\Event\HeadWasCalculated;
+use Inowas\Modflow\Model\Event\CalculationWasCreated;
 use Prooph\EventSourcing\AggregateRoot;
 
 class ModflowCalculationAggregate extends AggregateRoot
@@ -55,7 +58,7 @@ class ModflowCalculationAggregate extends AggregateRoot
         $self->endDateTime = $endDateTime;
 
         $self->recordThat(
-            ModflowCalculationWasCreated::fromModel(
+            CalculationWasCreated::fromModel(
                 $userId,
                 $calculationId,
                 $modflowModelId,
@@ -69,9 +72,14 @@ class ModflowCalculationAggregate extends AggregateRoot
         return $self;
     }
 
-    public function addResult(CalculationResultWithFilename $result)
+    public function addCalculatedHead(ResultType $type, TotalTime $totalTime, LayerNumber $layerNumber, FileName $fileName): void
     {
-        $this->recordThat(ModflowCalculationResultWasAdded::to($this->calculationId(), $result));
+        $this->recordThat(HeadWasCalculated::to($this->calculationId, $type, $totalTime, $layerNumber, $fileName));
+    }
+
+    public function addCalculatedBudget(TotalTime $totalTime, Budget $budget): void
+    {
+        $this->recordThat(BudgetWasCalculated::to($this->calculationId, $totalTime, $budget));
     }
 
     public function calculationId(): ModflowId
@@ -114,7 +122,7 @@ class ModflowCalculationAggregate extends AggregateRoot
         return $this->endDateTime;
     }
 
-    protected function whenModflowCalculationWasCreated(ModflowCalculationWasCreated $event): void
+    protected function whenCalculationWasCreated(CalculationWasCreated $event): void
     {
         $this->calculationId = $event->calculationId();
         $this->modflowModelId = $event->modflowModelId();
@@ -125,14 +133,14 @@ class ModflowCalculationAggregate extends AggregateRoot
         $this->endDateTime = $event->endDateTime();
     }
 
-    protected function whenModflowCalculationResultWasAdded(ModflowCalculationResultWasAdded $event): void
+    protected function whenHeadWasCalculated(HeadWasCalculated $event): void
     {
         #$this->mergeResult($event->result());
     }
 
-    protected function mergeResult(CalculationResultWithData $result): void
+    protected function whenBudgetWasCalculated(BudgetWasCalculated $event): void
     {
-        #$this->results[$result->type()->toString()][$result->totalTime()->toTotalTime()] = $result->data();
+
     }
 
     /**

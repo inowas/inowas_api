@@ -33,6 +33,7 @@ class ModflowProjectionCommand extends ContainerAwareCommand
         $projections[] = $this->getContainer()->get('inowas.modflow_projection.calculation_results');
         $projections[] = $this->getContainer()->get('inowas.modflow_projection.calculation_list');
         $projections[] = $this->getContainer()->get('inowas.modflow_projection.model_details');
+        $projections[] = $this->getContainer()->get('inowas.modflow_projection.calculation_budgets');
 
 
         /** @var ProjectionInterface $projection */

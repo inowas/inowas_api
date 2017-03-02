@@ -7,7 +7,7 @@ namespace Inowas\Modflow\Projection\Calculation;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Exception\TableNotFoundException;
 use Doctrine\DBAL\Schema\Schema;
-use Inowas\Modflow\Model\Event\ModflowCalculationWasCreated;
+use Inowas\Modflow\Model\Event\CalculationWasCreated;
 use Inowas\Modflow\Projection\ProjectionInterface;
 use Inowas\Modflow\Projection\Table;
 
@@ -71,7 +71,7 @@ class CalculationListProjector implements ProjectionInterface
         }
     }
 
-    public function onModflowCalculationWasCreated(ModflowCalculationWasCreated $event): void
+    public function onModflowCalculationWasCreated(CalculationWasCreated $event): void
     {
         $this->connection->insert(Table::CALCULATION_LIST, array(
             'calculation_id' => $event->calculationId()->toString(),

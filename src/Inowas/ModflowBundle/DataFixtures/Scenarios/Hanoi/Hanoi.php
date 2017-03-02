@@ -8,15 +8,17 @@ use Doctrine\DBAL\Schema\Schema;
 use FOS\UserBundle\Doctrine\UserManager;
 use Inowas\Common\DataFixtureInterface;
 use Inowas\Common\DateTime\DateTime;
+use Inowas\Common\LayerNumber;
 use Inowas\Modflow\Model\AreaBoundary;
 use Inowas\Modflow\Model\BoundaryGeometry;
 use Inowas\Modflow\Model\BoundaryId;
 use Inowas\Modflow\Model\BoundaryName;
-use Inowas\Modflow\Model\CalculationResultWithData;
-use Inowas\Modflow\Model\CalculationResultData;
-use Inowas\Modflow\Model\CalculationResultType;
+use Inowas\Modflow\Model\Budget;
+use Inowas\Modflow\Model\Command\AddCalculatedBudget;
+use Inowas\Modflow\Model\HeadData;
+use Inowas\Modflow\Model\ResultType;
 use Inowas\Modflow\Model\Command\AddBoundary;
-use Inowas\Modflow\Model\Command\AddResultToCalculation;
+use Inowas\Modflow\Model\Command\AddCalculatedHead;
 use Inowas\Modflow\Model\Command\ChangeModflowModelBoundingBox;
 use Inowas\Modflow\Model\Command\ChangeModflowModelDescription;
 use Inowas\Modflow\Model\Command\ChangeModflowModelGridSize;
@@ -25,7 +27,6 @@ use Inowas\Modflow\Model\Command\ChangeModflowModelSoilmodelId;
 use Inowas\Modflow\Model\Command\CreateModflowModel;
 use Inowas\Modflow\Model\Command\AddModflowScenario;
 use Inowas\Modflow\Model\Command\CreateModflowModelCalculation;
-use Inowas\Modflow\Model\LayerNumber;
 use Inowas\Modflow\Model\ModflowModelBoundingBox;
 use Inowas\Modflow\Model\ModflowModelDescription;
 use Inowas\Modflow\Model\ModflowModelGridSize;
@@ -86,8 +87,7 @@ class Hanoi implements ContainerAwareInterface, DataFixtureInterface
             $modelId,
             ModflowModelDescription::fromString(
                 'Application of managed aquifer recharge for maximization of water storage capacity in Hanoi.')
-        )
-        );
+        ));
 
         $area = AreaBoundary::create(BoundaryId::generate())
             ->setName(BoundaryName::fromString('Hanoi Area'))
@@ -186,8 +186,9 @@ class Hanoi implements ContainerAwareInterface, DataFixtureInterface
         $start = DateTime::fromDateTime(new \DateTime('2005-01-01'));
         $end = DateTime::fromDateTime(new \DateTime('2007-12-31'));
         $commandBus->dispatch(CreateModflowModelCalculation::byUserWithModelId($calculationId, $ownerId, $modelId, $start, $end));
-        $this->loadResults('heads', 0, 2000, 4, 'S0', $calculationId, $commandBus);
-        $this->loadResults('drawdown', 0, 2000, 4, 'S0', $calculationId, $commandBus);
+        $this->loadResultsWithLayer('heads', 0, 2000, 4, 'S0', $calculationId, $commandBus);
+        $this->loadResultsWithLayer('drawdown', 0, 2000, 4, 'S0', $calculationId, $commandBus);
+        $this->loadBudgets('budget', 0, 2000, 'S0', $calculationId, $commandBus);
 
         /*
          * Begin add Scenario 1
@@ -260,8 +261,9 @@ class Hanoi implements ContainerAwareInterface, DataFixtureInterface
         $start = DateTime::fromDateTime(new \DateTime('2005-01-01'));
         $end = DateTime::fromDateTime(new \DateTime('2007-12-31'));
         $commandBus->dispatch(CreateModflowModelCalculation::byUserWithModelAndScenarioId($calculationId, $ownerId, $modelId, $scenarioId, $start, $end));
-        $this->loadResults('heads', 0, 2000, 4, 'S1', $calculationId, $commandBus);
-        $this->loadResults('drawdown', 0, 2000, 4, 'S1', $calculationId, $commandBus);
+        $this->loadResultsWithLayer('heads', 0, 2000, 4, 'S1', $calculationId, $commandBus);
+        $this->loadResultsWithLayer('drawdown', 0, 2000, 4, 'S1', $calculationId, $commandBus);
+        $this->loadBudgets('budget', 0, 2000, 'S1', $calculationId, $commandBus);
 
         /*
          * Begin add Scenario 2
@@ -306,8 +308,9 @@ class Hanoi implements ContainerAwareInterface, DataFixtureInterface
         $start = DateTime::fromDateTime(new \DateTime('2005-01-01'));
         $end = DateTime::fromDateTime(new \DateTime('2007-12-31'));
         $commandBus->dispatch(CreateModflowModelCalculation::byUserWithModelAndScenarioId($calculationId, $ownerId, $modelId, $scenarioId, $start, $end));
-        $this->loadResults('heads', 0, 2000, 4, 'S2', $calculationId, $commandBus);
-        $this->loadResults('drawdown', 0, 2000, 4, 'S2', $calculationId, $commandBus);
+        $this->loadResultsWithLayer('heads', 0, 2000, 4, 'S2', $calculationId, $commandBus);
+        $this->loadResultsWithLayer('drawdown', 0, 2000, 4, 'S2', $calculationId, $commandBus);
+        $this->loadBudgets('budget', 0, 2000, 'S2', $calculationId, $commandBus);
 
         /*
         * Begin add Scenario 3
@@ -358,8 +361,9 @@ class Hanoi implements ContainerAwareInterface, DataFixtureInterface
         $start = DateTime::fromDateTime(new \DateTime('2005-01-01'));
         $end = DateTime::fromDateTime(new \DateTime('2007-12-31'));
         $commandBus->dispatch(CreateModflowModelCalculation::byUserWithModelAndScenarioId($calculationId, $ownerId, $modelId, $scenarioId, $start, $end));
-        $this->loadResults('heads', 0, 2000, 4, 'S3', $calculationId, $commandBus);
-        $this->loadResults('drawdown', 0, 2000, 4, 'S3', $calculationId, $commandBus);
+        $this->loadResultsWithLayer('heads', 0, 2000, 4, 'S3', $calculationId, $commandBus);
+        $this->loadResultsWithLayer('drawdown', 0, 2000, 4, 'S3', $calculationId, $commandBus);
+        $this->loadBudgets('budget', 0, 2000, 'S3', $calculationId, $commandBus);
     }
 
     public function loadUsers(UserManager $userManager): void
@@ -417,6 +421,19 @@ class Hanoi implements ContainerAwareInterface, DataFixtureInterface
         }
 
         return $heads;
+    }
+
+    private function loadBudgetFromFile($filename){
+
+        if (!file_exists($filename) || !is_readable($filename)) {
+            echo "File not found.\r\n";
+            return FALSE;
+        }
+
+        $json = file_get_contents($filename, true);
+        $budget = json_decode($json, true);
+
+        return $budget;
     }
 
     private function createEventStreamTableIfNotExists($tableName): void
@@ -479,14 +496,16 @@ class Hanoi implements ContainerAwareInterface, DataFixtureInterface
         return $dates;
     }
 
-    private function loadResults(string $type, int $t0, int $t1, int $layers, string $scenario, ModflowId $calculationId, CommandBus $commandBus)
+    private function loadResultsWithLayer(string $type, int $t0, int $t1, int $layers, string $scenario, ModflowId $calculationId, CommandBus $commandBus)
     {
         if ($type == 'heads'){
-            $calculationResultType = CalculationResultType::HEAD_TYPE;
-        } elseif ($type == 'drawdown'){
-            $calculationResultType = CalculationResultType::DRAWDOWN_TYPE;
+            $calculationResultType = ResultType::HEAD_TYPE;
+        } elseif ($type == 'drawdown') {
+            $calculationResultType = ResultType::DRAWDOWN_TYPE;
+        } elseif ($type == 'cBudget'){
+            $calculationResultType = ResultType::CUMULATIVE_BUDGET_TYPE;
         } else {
-            $calculationResultType = CalculationResultType::HEAD_TYPE;
+            $calculationResultType = ResultType::HEAD_TYPE;
         }
 
         for ($t=$t0; $t<=$t1; $t++){
@@ -495,16 +514,30 @@ class Hanoi implements ContainerAwareInterface, DataFixtureInterface
                 if (file_exists($fileName)){
                     echo sprintf("Load %s for %s from totim=%s and Layer=%s, %s Memory usage\r\n", $type, $scenario, $t, $l, memory_get_usage());
                     $heads = $this->loadHeadsFromFile($fileName);
-                    $commandBus->dispatch(AddResultToCalculation::to($calculationId,
-                        CalculationResultWithData::fromParameters(
-                            CalculationResultType::fromString($calculationResultType),
-                            TotalTime::fromInt($t),
-                            LayerNumber::fromInteger($l),
-                            CalculationResultData::from2dArray($heads)
-                        )
+                    $commandBus->dispatch(AddCalculatedHead::to(
+                        $calculationId,
+                        TotalTime::fromInt($t),
+                        ResultType::fromString($calculationResultType),
+                        HeadData::from2dArray($heads),
+                        LayerNumber::fromInteger($l)
                     ));
-
                 }
+            }
+        }
+    }
+
+    private function loadBudgets(string $type, int $t0, int $t1, string $scenario, ModflowId $calculationId, CommandBus $commandBus)
+    {
+        for ($t=$t0; $t<=$t1; $t++){
+            $fileName = sprintf('%s/%s/%s_%s-T%s.json', __DIR__, $type, $type, $scenario, $t);
+            if (file_exists($fileName)){
+                echo sprintf("Load Budgets for %s from totim=%s, %s Memory usage\r\n", $scenario, $t, memory_get_usage());
+                $budget = $this->loadBudgetFromFile($fileName);
+                $commandBus->dispatch(AddCalculatedBudget::to(
+                    $calculationId,
+                    TotalTime::fromInt($t),
+                    Budget::fromArray($budget)
+                ));
             }
         }
     }

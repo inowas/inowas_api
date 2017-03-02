@@ -9,9 +9,9 @@ use FOS\RestBundle\Controller\FOSRestController;
 use FOS\RestBundle\Request\ParamFetcher;
 use HeatMap\HeatMap;
 use Inowas\AppBundle\Model\User;
-use Inowas\Modflow\Model\CalculationResultData;
-use Inowas\Modflow\Model\CalculationResultType;
-use Inowas\Modflow\Model\CalculationResultWithData;
+use Inowas\Modflow\Model\HeadData;
+use Inowas\Modflow\Model\ResultType;
+use Inowas\Modflow\Model\CalculatedResult;
 use Inowas\Modflow\Model\ColumnNumber;
 use Inowas\Modflow\Model\LayerNumber;
 use Inowas\Modflow\Model\ModflowId;
@@ -205,7 +205,7 @@ class ScenarioAnalysisController extends FOSRestController
         $totalTimes = $this->get('inowas.modflow_projection.calculation_results_finder')
             ->findTimes(
                 ModflowId::fromString($calculation['calculation_id']),
-                CalculationResultType::fromString($type),
+                ResultType::fromString($type),
                 LayerNumber::fromInteger((int)$layer)
         );
 
@@ -249,7 +249,7 @@ class ScenarioAnalysisController extends FOSRestController
         $totalTimes = $this->get('inowas.modflow_projection.calculation_results_finder')
             ->findTimes(
                 ModflowId::fromString($calculation['calculation_id']),
-                CalculationResultType::fromString($type),
+                ResultType::fromString($type),
                 LayerNumber::fromInteger((int)$layer)
             );
 
@@ -294,7 +294,7 @@ class ScenarioAnalysisController extends FOSRestController
         $result = $this->get('inowas.modflow_projection.calculation_results_finder')
             ->findValue(
                 ModflowId::fromString($calculation['calculation_id']),
-                CalculationResultType::fromString($type),
+                ResultType::fromString($type),
                 LayerNumber::fromInteger((int)$layer),
                 TotalTime::fromInt((int)$totim)
             );
@@ -330,7 +330,7 @@ class ScenarioAnalysisController extends FOSRestController
         $result = $this->get('inowas.modflow_projection.calculation_results_finder')
             ->findValue(
                 ModflowId::fromString($calculationId),
-                CalculationResultType::fromString($type),
+                ResultType::fromString($type),
                 LayerNumber::fromInteger((int)$layer),
                 TotalTime::fromInt((int)$totim)
             );
@@ -439,7 +439,7 @@ class ScenarioAnalysisController extends FOSRestController
         $result = $this->get('inowas.modflow_projection.calculation_results_finder')
             ->findValue(
                 ModflowId::fromString($calculation['calculation_id']),
-                CalculationResultType::fromString($type),
+                ResultType::fromString($type),
                 LayerNumber::fromInteger((int)$layer),
                 TotalTime::fromInt((int)$totim)
             );
@@ -495,7 +495,7 @@ class ScenarioAnalysisController extends FOSRestController
         $result = $this->get('inowas.modflow_projection.calculation_results_finder')
             ->findValue(
                 ModflowId::fromString($calculationId),
-                CalculationResultType::fromString($type),
+                ResultType::fromString($type),
                 LayerNumber::fromInteger((int)$layer),
                 TotalTime::fromInt((int)$totim)
             );
@@ -547,7 +547,7 @@ class ScenarioAnalysisController extends FOSRestController
         $resultFirstModel = $this->get('inowas.modflow_projection.calculation_results_finder')
             ->findValue(
                 ModflowId::fromString($calculationFirstModel['calculation_id']),
-                CalculationResultType::fromString($type),
+                ResultType::fromString($type),
                 LayerNumber::fromInteger((int)$layer),
                 TotalTime::fromInt((int)$totim)
             );
@@ -562,7 +562,7 @@ class ScenarioAnalysisController extends FOSRestController
         $resultSecondModel = $this->get('inowas.modflow_projection.calculation_results_finder')
             ->findValue(
                 ModflowId::fromString($calculationSecondModel['calculation_id']),
-                CalculationResultType::fromString($type),
+                ResultType::fromString($type),
                 LayerNumber::fromInteger((int)$layer),
                 TotalTime::fromInt((int)$totim)
             );
@@ -602,7 +602,7 @@ class ScenarioAnalysisController extends FOSRestController
         $resultFirstModel = $this->get('inowas.modflow_projection.calculation_results_finder')
             ->findValue(
                 ModflowId::fromString($calculationIdFirstModel),
-                CalculationResultType::fromString($type),
+                ResultType::fromString($type),
                 LayerNumber::fromInteger((int)$layer),
                 TotalTime::fromInt((int)$totim)
             );
@@ -614,7 +614,7 @@ class ScenarioAnalysisController extends FOSRestController
         $resultSecondModel = $this->get('inowas.modflow_projection.calculation_results_finder')
             ->findValue(
                 ModflowId::fromString($calculationIdSecondModel),
-                CalculationResultType::fromString($type),
+                ResultType::fromString($type),
                 LayerNumber::fromInteger((int)$layer),
                 TotalTime::fromInt((int)$totim)
             );
@@ -653,7 +653,7 @@ class ScenarioAnalysisController extends FOSRestController
         }
 
         $modelId = ModflowId::fromString($modelId);
-        $type = CalculationResultType::fromString($type);
+        $type = ResultType::fromString($type);
         $layer = LayerNumber::fromInteger((int)$layer);
         $column = ColumnNumber::fromInteger((int)$nx);
         $row = RowNumber::fromInteger((int)$ny);
@@ -699,7 +699,7 @@ class ScenarioAnalysisController extends FOSRestController
         }
 
         $calculationId = ModflowId::fromString($calculationId);
-        $type = CalculationResultType::fromString($type);
+        $type = ResultType::fromString($type);
         $layer = LayerNumber::fromInteger((int)$layer);
         $column = ColumnNumber::fromInteger((int)$nx);
         $row = RowNumber::fromInteger((int)$ny);
@@ -710,7 +710,7 @@ class ScenarioAnalysisController extends FOSRestController
         return new JsonResponse($timesSeries);
     }
 
-    private function calculateDifferenceResults(CalculationResultWithData $res1, CalculationResultWithData $res2): CalculationResultWithData
+    private function calculateDifferenceResults(CalculatedResult $res1, CalculatedResult $res2): CalculatedResult
     {
         $arr1 = $res1->data()->toArray();
         $arr2 = $res2->data()->toArray();
@@ -742,8 +742,8 @@ class ScenarioAnalysisController extends FOSRestController
             }
         }
 
-        return CalculationResultWithData::fromParameters(
-            $res1->type(), $res1->totalTime(), $res1->layerNumber(), CalculationResultData::from2dArray($result)
+        return CalculatedResult::fromParameters(
+            $res1->type(), $res1->totalTime(), $res1->layerNumber(), HeadData::from2dArray($result)
         );
     }
 }

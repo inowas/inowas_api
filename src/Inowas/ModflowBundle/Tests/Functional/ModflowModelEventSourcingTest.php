@@ -13,11 +13,11 @@ use Inowas\Modflow\Model\AreaBoundary;
 use Inowas\Modflow\Model\BoundaryGeometry;
 use Inowas\Modflow\Model\BoundaryId;
 use Inowas\Modflow\Model\BoundaryName;
-use Inowas\Modflow\Model\CalculationResultWithData;
-use Inowas\Modflow\Model\CalculationResultData;
-use Inowas\Modflow\Model\CalculationResultType;
+use Inowas\Modflow\Model\CalculatedResult;
+use Inowas\Modflow\Model\HeadData;
+use Inowas\Modflow\Model\ResultType;
 use Inowas\Modflow\Model\Command\AddBoundary;
-use Inowas\Modflow\Model\Command\AddResultToCalculation;
+use Inowas\Modflow\Model\Command\AddCalculatedHead;
 use Inowas\Modflow\Model\Command\ChangeModflowModelBoundingBox;
 use Inowas\Modflow\Model\Command\ChangeModflowModelDescription;
 use Inowas\Modflow\Model\Command\ChangeModflowModelGridSize;
@@ -341,21 +341,21 @@ class ModflowModelEventSourcingTest extends KernelTestCase
         $this->assertEquals($ownerId, $calculation->ownerId());
         $this->assertEquals($soilmodelId, $calculation->soilModelId());
 
-        $calculationResult = CalculationResultWithData::fromParameters(
+        $calculationResult = CalculatedResult::fromParameters(
             TotalTime::fromInt(1),
-            CalculationResultType::fromString(CalculationResultType::HEAD_TYPE),
-            CalculationResultData::from3dArray([[[1,2,3]]])
+            ResultType::fromString(ResultType::HEAD_TYPE),
+            HeadData::from3dArray([[[1,2,3]]])
         );
-        $this->commandBus->dispatch(AddResultToCalculation::to($calculationId, $calculationResult));
+        $this->commandBus->dispatch(AddCalculatedHead::to($calculationId, $calculationResult));
 
         $headsS0L3 = $this->loadHeadsFromFile(__DIR__."/data/base_scenario_head_layer_3.json");
         $calculationId = ModflowId::generate();
         $this->commandBus->dispatch(CreateModflowModelCalculation::byUserWithModelId($calculationId, $ownerId, $modflowModelId));
-        $this->commandBus->dispatch(AddResultToCalculation::to($calculationId,
-            CalculationResultWithData::fromParameters(
+        $this->commandBus->dispatch(AddCalculatedHead::to($calculationId,
+            CalculatedResult::fromParameters(
                 TotalTime::fromInt(120),
-                CalculationResultType::fromString(CalculationResultType::HEAD_TYPE),
-                CalculationResultData::from3dArray([[], [], $headsS0L3, []])
+                ResultType::fromString(ResultType::HEAD_TYPE),
+                HeadData::from3dArray([[], [], $headsS0L3, []])
             )
         ));
 
@@ -364,11 +364,11 @@ class ModflowModelEventSourcingTest extends KernelTestCase
         $headsS1L3 = $this->loadHeadsFromFile(__DIR__."/data/scenario_1_head_layer_3.json");
         $calculationId = ModflowId::generate();
         $this->commandBus->dispatch(CreateModflowModelCalculation::byUserWithModelAndScenarioId($calculationId, $ownerId, $modflowModelId, $scenarioId));
-        $this->commandBus->dispatch(AddResultToCalculation::to($calculationId,
-            CalculationResultWithData::fromParameters(
+        $this->commandBus->dispatch(AddCalculatedHead::to($calculationId,
+            CalculatedResult::fromParameters(
                 TotalTime::fromInt(120),
-                CalculationResultType::fromString(CalculationResultType::HEAD_TYPE),
-                CalculationResultData::from3dArray([[], [], $headsS1L3, []])
+                ResultType::fromString(ResultType::HEAD_TYPE),
+                HeadData::from3dArray([[], [], $headsS1L3, []])
             )
         ));
 
@@ -377,11 +377,11 @@ class ModflowModelEventSourcingTest extends KernelTestCase
         $headsS2L3 = $this->loadHeadsFromFile(__DIR__."/data/scenario_2_head_layer_3.json");
         $calculationId = ModflowId::generate();
         $this->commandBus->dispatch(CreateModflowModelCalculation::byUserWithModelAndScenarioId($calculationId, $ownerId, $modflowModelId, $scenarioId));
-        $this->commandBus->dispatch(AddResultToCalculation::to($calculationId,
-            CalculationResultWithData::fromParameters(
+        $this->commandBus->dispatch(AddCalculatedHead::to($calculationId,
+            CalculatedResult::fromParameters(
                 TotalTime::fromInt(120),
-                CalculationResultType::fromString(CalculationResultType::HEAD_TYPE),
-                CalculationResultData::from3dArray([[], [], $headsS2L3, []])
+                ResultType::fromString(ResultType::HEAD_TYPE),
+                HeadData::from3dArray([[], [], $headsS2L3, []])
             )
         ));
 
@@ -390,11 +390,11 @@ class ModflowModelEventSourcingTest extends KernelTestCase
         $headsS3L3 = $this->loadHeadsFromFile(__DIR__."/data/scenario_3_head_layer_3.json");
         $calculationId = ModflowId::generate();
         $this->commandBus->dispatch(CreateModflowModelCalculation::byUserWithModelAndScenarioId($calculationId, $ownerId, $modflowModelId, $scenarioId));
-        $this->commandBus->dispatch(AddResultToCalculation::to($calculationId,
-            CalculationResultWithData::fromParameters(
+        $this->commandBus->dispatch(AddCalculatedHead::to($calculationId,
+            CalculatedResult::fromParameters(
                 TotalTime::fromInt(120),
-                CalculationResultType::fromString(CalculationResultType::HEAD_TYPE),
-                CalculationResultData::from3dArray([[], [], $headsS3L3, []])
+                ResultType::fromString(ResultType::HEAD_TYPE),
+                HeadData::from3dArray([[], [], $headsS3L3, []])
             )
         ));
 

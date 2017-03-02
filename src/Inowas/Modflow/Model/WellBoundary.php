@@ -1,6 +1,10 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Inowas\Modflow\Model;
+
+use Inowas\Common\LayerNumber;
 
 class WellBoundary extends AbstractModflowBoundary
 {

@@ -7,7 +7,7 @@ namespace Inowas\Modflow\Projection\Calculation;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Exception\TableNotFoundException;
 use Doctrine\DBAL\Schema\Schema;
-use Inowas\Modflow\Model\Event\ModflowCalculationResultWasAdded;
+use Inowas\Modflow\Model\Event\HeadWasCalculated;
 use Inowas\Modflow\Projection\ProjectionInterface;
 use Inowas\Modflow\Projection\Table;
 
@@ -69,15 +69,14 @@ class CalculationResultsProjector implements ProjectionInterface
         }
     }
 
-    public function onModflowCalculationResultWasAdded(ModflowCalculationResultWasAdded $event): void
+    public function onHeadWasCalculated(HeadWasCalculated $event): void
     {
-
         $this->connection->insert(Table::CALCULATION_RESULTS, array(
             'calculation_id' => $event->calculationId()->toString(),
-            'type' => $event->result()->type()->toString(),
-            'totim' => $event->result()->totalTime()->toInteger(),
-            'layer' => $event->result()->layerNumber()->toInteger(),
-            'filename' => $event->result()->filename()->toString()
+            'type' => $event->type()->toString(),
+            'totim' => $event->totalTime()->toInteger(),
+            'layer' => $event->layer()->toInteger(),
+            'filename' => $event->filename()->toString()
         ));
     }
 }

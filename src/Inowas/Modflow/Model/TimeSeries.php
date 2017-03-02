@@ -1,11 +1,17 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Inowas\Modflow\Model;
+
+use Inowas\Common\ColumnNumber;
+use Inowas\Common\LayerNumber;
+use Inowas\Common\RowNumber;
 
 class TimeSeries implements \JsonSerializable
 {
 
-    /** @var  CalculationResultType */
+    /** @var  ResultType */
     protected $type;
 
     /** @var  LayerNumber */
@@ -21,7 +27,7 @@ class TimeSeries implements \JsonSerializable
     protected $data;
 
     public static function fromParameters(
-        CalculationResultType $type,
+        ResultType $type,
         LayerNumber $layerNumber,
         RowNumber $row,
         ColumnNumber $column,
@@ -37,7 +43,7 @@ class TimeSeries implements \JsonSerializable
         return $self;
     }
 
-    public function type(): CalculationResultType
+    public function type(): ResultType
     {
         return $this->type;
     }
