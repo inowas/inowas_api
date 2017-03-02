@@ -12,8 +12,10 @@ use Inowas\AppBundle\Model\User;
 use Inowas\Modflow\Model\CalculationResultData;
 use Inowas\Modflow\Model\CalculationResultType;
 use Inowas\Modflow\Model\CalculationResultWithData;
+use Inowas\Modflow\Model\ColumnNumber;
 use Inowas\Modflow\Model\LayerNumber;
 use Inowas\Modflow\Model\ModflowId;
+use Inowas\Modflow\Model\RowNumber;
 use Inowas\Modflow\Model\TotalTime;
 use Inowas\Modflow\Model\UserId;
 use Inowas\ScenarioAnalysisBundle\Exception\InvalidArgumentException;
@@ -620,6 +622,92 @@ class ScenarioAnalysisController extends FOSRestController
         $result = $this->calculateDifferenceResults($resultFirstModel, $resultSecondModel);
 
         return new JsonResponse($result);
+    }
+
+    /**
+     * Get timeseries of latest calculation of model by modelId, type and layerNumber.
+     *
+     * @ApiDoc(
+     *   resource = true,
+     *   description = "Get difference of two calculation results by calculationIds, type and layerNumber.",
+     *   statusCodes = {
+     *     200 = "Returned when successful"
+     *   }
+     * )
+     *
+     * @Rest\Get("/result/timeseries/model/{modelId}/type/{type}/layer{layer}/nx/{nx}/ny/{ny}")
+     * api/scenarioanalysis.json
+     * @param $modelId
+     * @param $type
+     * @param $layer
+     * @param $nx
+     * @param $ny
+     * @return JsonResponse
+     * @throws InvalidUuidException
+     * @throws InvalidArgumentException
+     */
+    public function getScenarioAnalysisResultTimeseriesByModelIdTypeLayerNxNyAction($modelId, $type, $layer, $nx, $ny): JsonResponse
+    {
+        if (! Uuid::isValid($modelId)){
+            throw new InvalidUuidException();
+        }
+
+        $modelId = ModflowId::fromString($modelId);
+        $type = CalculationResultType::fromString($type);
+        $layer = LayerNumber::fromInteger((int)$layer);
+        $column = ColumnNumber::fromInteger((int)$nx);
+        $row = RowNumber::fromInteger((int)$ny);
+
+        $calculation = $this->get('inowas.modflow_projection.calculation_list_finder')
+            ->findLastCalculationByModelId($modelId);
+
+        $calculationId = ModflowId::fromString($calculation['calculation_id']);
+
+        $timesSeries = $this->get('inowas.modflow_projection.calculation_results_finder')
+            ->findTimeSeries($calculationId, $type, $layer, $column, $row);
+
+        return new JsonResponse($timesSeries);
+    }
+
+    /**
+     * Get timeseries of calculation by calculationId, type and layerNumber.
+     *
+     * @ApiDoc(
+     *   resource = true,
+     *   description = "Get difference of two calculation results by calculationIds, type and layerNumber.",
+     *   statusCodes = {
+     *     200 = "Returned when successful"
+     *   }
+     * )
+     *
+     * @Rest\Get("/result/timeseries/model/{modelId}/type/{type}/layer{layer}/nx/{nx}/ny/{ny}")
+     * api/scenarioanalysis.json
+     * @param $calculationId
+     * @param $type
+     * @param $layer
+     * @param $nx
+     * @param $ny
+     * @return JsonResponse
+     * @throws InvalidUuidException
+     * @throws InvalidArgumentException
+     */
+    public function getScenarioAnalysisResultTimeseriesByCalculationIdTypeLayerNxNyAction($calculationId, $type, $layer, $nx, $ny): JsonResponse
+    {
+
+        if (! Uuid::isValid($calculationId)){
+            throw new InvalidUuidException();
+        }
+
+        $calculationId = ModflowId::fromString($calculationId);
+        $type = CalculationResultType::fromString($type);
+        $layer = LayerNumber::fromInteger((int)$layer);
+        $column = ColumnNumber::fromInteger((int)$nx);
+        $row = RowNumber::fromInteger((int)$ny);
+
+        $timesSeries = $this->get('inowas.modflow_projection.calculation_results_finder')
+            ->findTimeSeries($calculationId, $type, $layer, $column, $row);
+
+        return new JsonResponse($timesSeries);
     }
 
     private function calculateDifferenceResults(CalculationResultWithData $res1, CalculationResultWithData $res2): CalculationResultWithData

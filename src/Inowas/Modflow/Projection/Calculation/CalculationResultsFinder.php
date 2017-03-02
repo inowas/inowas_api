@@ -7,8 +7,10 @@ namespace Inowas\Modflow\Projection\Calculation;
 use Doctrine\DBAL\Connection;
 use Inowas\Common\FileName;
 use Inowas\Modflow\Model\CalculationResultType;
+use Inowas\Modflow\Model\ColumnNumber;
 use Inowas\Modflow\Model\LayerNumber;
 use Inowas\Modflow\Model\ModflowId;
+use Inowas\Modflow\Model\RowNumber;
 use Inowas\Modflow\Model\TotalTime;
 use Inowas\Modflow\Projection\Table;
 use Inowas\ModflowBundle\Service\CalculationResultsPersister;
@@ -94,5 +96,25 @@ class CalculationResultsFinder
 
 
         return $this->persister->read($calculationId, FileName::fromString($filename));
+    }
+
+    public function findTimeSeries(ModflowId $calculationId, CalculationResultType $type, LayerNumber $layerNumber, ColumnNumber $nx, RowNumber $ny)
+    {
+        $rows = $this->connection->fetchAll(
+            sprintf('SELECT filename from %s WHERE calculation_id = :calculation_id AND type = :type AND layer = :layer', Table::CALCULATION_RESULTS),
+            [
+                'calculation_id' => $calculationId->toString(),
+                'type' => $type->toString(),
+                'layer' => $layerNumber->toInteger()
+            ]
+        );
+
+        $result = [];
+        foreach ($rows as $row){
+            $data = $this->persister->read($calculationId, FileName::fromString($row['filename']));
+            $result[$data->totalTime()->toInteger()] = $data->data()->toArray()[$ny->toInteger()][$nx->toInteger()];
+        }
+
+        return $result;
     }
 }
