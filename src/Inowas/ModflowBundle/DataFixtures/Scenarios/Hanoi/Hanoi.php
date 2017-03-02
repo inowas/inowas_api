@@ -186,7 +186,8 @@ class Hanoi implements ContainerAwareInterface, DataFixtureInterface
         $start = DateTime::fromDateTime(new \DateTime('2005-01-01'));
         $end = DateTime::fromDateTime(new \DateTime('2007-12-31'));
         $commandBus->dispatch(CreateModflowModelCalculation::byUserWithModelId($calculationId, $ownerId, $modelId, $start, $end));
-        $this->loadResults(0, 2000, 4, 'S0', $calculationId, $commandBus);
+        $this->loadResults('heads', 0, 2000, 4, 'S0', $calculationId, $commandBus);
+        $this->loadResults('drawdown', 0, 2000, 4, 'S0', $calculationId, $commandBus);
 
         /*
          * Begin add Scenario 1
@@ -259,7 +260,8 @@ class Hanoi implements ContainerAwareInterface, DataFixtureInterface
         $start = DateTime::fromDateTime(new \DateTime('2005-01-01'));
         $end = DateTime::fromDateTime(new \DateTime('2007-12-31'));
         $commandBus->dispatch(CreateModflowModelCalculation::byUserWithModelAndScenarioId($calculationId, $ownerId, $modelId, $scenarioId, $start, $end));
-        $this->loadResults(0, 2000, 4, 'S1', $calculationId, $commandBus);
+        $this->loadResults('heads', 0, 2000, 4, 'S1', $calculationId, $commandBus);
+        $this->loadResults('drawdown', 0, 2000, 4, 'S1', $calculationId, $commandBus);
 
         /*
          * Begin add Scenario 2
@@ -304,7 +306,8 @@ class Hanoi implements ContainerAwareInterface, DataFixtureInterface
         $start = DateTime::fromDateTime(new \DateTime('2005-01-01'));
         $end = DateTime::fromDateTime(new \DateTime('2007-12-31'));
         $commandBus->dispatch(CreateModflowModelCalculation::byUserWithModelAndScenarioId($calculationId, $ownerId, $modelId, $scenarioId, $start, $end));
-        $this->loadResults(0, 2000, 4, 'S2', $calculationId, $commandBus);
+        $this->loadResults('heads', 0, 2000, 4, 'S2', $calculationId, $commandBus);
+        $this->loadResults('drawdown', 0, 2000, 4, 'S2', $calculationId, $commandBus);
 
         /*
         * Begin add Scenario 3
@@ -355,7 +358,8 @@ class Hanoi implements ContainerAwareInterface, DataFixtureInterface
         $start = DateTime::fromDateTime(new \DateTime('2005-01-01'));
         $end = DateTime::fromDateTime(new \DateTime('2007-12-31'));
         $commandBus->dispatch(CreateModflowModelCalculation::byUserWithModelAndScenarioId($calculationId, $ownerId, $modelId, $scenarioId, $start, $end));
-        $this->loadResults(0, 2000, 4, 'S3', $calculationId, $commandBus);
+        $this->loadResults('heads', 0, 2000, 4, 'S3', $calculationId, $commandBus);
+        $this->loadResults('drawdown', 0, 2000, 4, 'S3', $calculationId, $commandBus);
     }
 
     public function loadUsers(UserManager $userManager): void
@@ -475,17 +479,25 @@ class Hanoi implements ContainerAwareInterface, DataFixtureInterface
         return $dates;
     }
 
-    private function loadResults(int $t0, int $t1, int $layers, string $scenario, ModflowId $calculationId, CommandBus $commandBus)
+    private function loadResults(string $type, int $t0, int $t1, int $layers, string $scenario, ModflowId $calculationId, CommandBus $commandBus)
     {
+        if ($type == 'heads'){
+            $calculationResultType = CalculationResultType::HEAD_TYPE;
+        } elseif ($type == 'drawdown'){
+            $calculationResultType = CalculationResultType::DRAWDOWN_TYPE;
+        } else {
+            $calculationResultType = CalculationResultType::HEAD_TYPE;
+        }
+
         for ($t=$t0; $t<=$t1; $t++){
             for ($l=0; $l<=$layers; $l++){
-                $fileName = sprintf('%s/heads/heads_%s-T%s-L%s.json', __DIR__, $scenario, $t, $l);
+                $fileName = sprintf('%s/%s/%s_%s-T%s-L%s.json', __DIR__, $type, $type, $scenario, $t, $l);
                 if (file_exists($fileName)){
-                    echo sprintf("Load head for %s from totim=%s and Layer=%s, %s Memory usage\r\n", $scenario, $t, $l, memory_get_usage());
+                    echo sprintf("Load %s for %s from totim=%s and Layer=%s, %s Memory usage\r\n", $type, $scenario, $t, $l, memory_get_usage());
                     $heads = $this->loadHeadsFromFile($fileName);
                     $commandBus->dispatch(AddResultToCalculation::to($calculationId,
                         CalculationResultWithData::fromParameters(
-                            CalculationResultType::fromString(CalculationResultType::HEAD_TYPE),
+                            CalculationResultType::fromString($calculationResultType),
                             TotalTime::fromInt($t),
                             LayerNumber::fromInteger($l),
                             CalculationResultData::from2dArray($heads)
