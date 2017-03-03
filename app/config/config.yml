@@ -194,8 +194,8 @@ inowas_pyprocessing:
     prefix:               "%python_prefix%"
     api_base_url:         "%api_base_url%"
     api_port:             "%api_port%"
-    data_folder:          "%kernel.root_dir%/../var/data"
-    temp_folder:          "%kernel.root_dir%/../var/tmp"
+    data_folder:          "%data_folder%"
+    temp_folder:          "%temp_folder%"
     pyprocessing_folder:  "%kernel.root_dir%/../py/pyprocessing"
     max_processes:        5
 

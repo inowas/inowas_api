@@ -11,4 +11,6 @@ parameters:
     mailer_password: null
     secret: travis_service_super_secret
     port: 80
+    data_folder: "%kernel.root_dir%/../var/data"
+    temp_folder: "%kernel.root_dir%/../var/tmp"
 
