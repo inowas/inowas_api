@@ -4,20 +4,20 @@ declare(strict_types=1);
 
 namespace Inowas\Modflow\Model\Event;
 
-use Inowas\Modflow\Model\Budget;
-use Inowas\Modflow\Model\ModflowId;
-use Inowas\Modflow\Model\TotalTime;
+use Inowas\Common\Calculation\Budget;
+use Inowas\Common\Id\ModflowId;
+use Inowas\Common\DateTime\TotalTime;
 use Prooph\EventSourcing\AggregateChanged;
 
 class BudgetWasCalculated extends AggregateChanged
 {
-    /** @var  ModflowId */
+    /** @var  \Inowas\Common\Id\ModflowId */
     private $calculationId;
 
-    /** @var  TotalTime */
+    /** @var  \Inowas\Common\DateTime\TotalTime */
     protected $totalTime;
 
-    /** @var  Budget */
+    /** @var  \Inowas\Common\Calculation\Budget */
     protected $budget;
 
     public static function to(

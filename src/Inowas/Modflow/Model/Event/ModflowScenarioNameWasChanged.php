@@ -4,25 +4,25 @@ declare(strict_types=1);
 
 namespace Inowas\Modflow\Model\Event;
 
-use Inowas\Modflow\Model\ModflowId;
-use Inowas\Modflow\Model\ModflowIdInterface;
+use Inowas\Common\Id\ModflowId;
+use Inowas\Common\Id\IdInterface;
 use Inowas\Modflow\Model\ModflowModelName;
-use Inowas\Modflow\Model\UserId;
+use Inowas\Common\Id\UserId;
 use Prooph\EventSourcing\AggregateChanged;
 
 class ModflowScenarioNameWasChanged extends AggregateChanged
 {
 
-    /** @var  ModflowIdInterface */
+    /** @var  IdInterface */
     private $modflowId;
 
-    /** @var  ModflowIdInterface */
+    /** @var  \Inowas\Common\Id\IdInterface */
     private $scenarioId;
 
     /** @var ModflowModelName */
     private $name;
 
-    /** @var  UserId */
+    /** @var  \Inowas\Common\Id\UserId */
     private $userId;
 
     public static function byUserWithName(UserId $userId, ModflowId $modflowId, ModflowId $scenarioId, ModflowModelName $name): ModflowScenarioNameWasChanged
@@ -43,7 +43,7 @@ class ModflowScenarioNameWasChanged extends AggregateChanged
         return $event;
     }
 
-    public function modflowId(): ModflowIdInterface
+    public function modflowId(): IdInterface
     {
         if ($this->modflowId === null){
             $this->modflowId = ModflowId::fromString($this->aggregateId());
@@ -52,7 +52,7 @@ class ModflowScenarioNameWasChanged extends AggregateChanged
         return $this->modflowId;
     }
 
-    public function scenarioId(): ModflowIdInterface
+    public function scenarioId(): IdInterface
     {
         if ($this->scenarioId === null){
             $this->scenarioId = ModflowId::fromString($this->payload['scenario_id']);

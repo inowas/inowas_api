@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace Inowas\ModflowBundle\Command;
 
-use Inowas\Modflow\Model\ResultType;
+use Inowas\Common\Calculation\ResultType;
 use Inowas\Modflow\Model\LayerNumber;
-use Inowas\Modflow\Model\ModflowId;
-use Inowas\Modflow\Model\TotalTime;
-use Inowas\Modflow\Model\UserId;
+use Inowas\Common\Id\ModflowId;
+use Inowas\Common\DateTime\TotalTime;
+use Inowas\Common\Id\UserId;
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;

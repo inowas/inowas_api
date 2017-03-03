@@ -2,7 +2,7 @@
 
 namespace Inowas\Modflow\Model\Exception;
 
-use Inowas\Modflow\Model\ModflowId;
+use Inowas\Common\Id\ModflowId;
 
 final class ModflowModelNotFoundException extends \InvalidArgumentException
 {

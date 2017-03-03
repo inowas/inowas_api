@@ -4,7 +4,7 @@ namespace Inowas\ModflowBundle\Model;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
-use Inowas\Modflow\Model\ModflowId;
+use Inowas\Common\Id\ModflowId;
 use Inowas\ModflowBundle\Model\Boundary\Boundary;
 use Inowas\ModflowBundle\Model\Boundary\StressPeriod;
 use Inowas\SoilmodelBundle\Model\Soilmodel;

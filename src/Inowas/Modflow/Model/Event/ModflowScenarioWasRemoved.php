@@ -4,21 +4,21 @@ declare(strict_types=1);
 
 namespace Inowas\Modflow\Model\Event;
 
-use Inowas\Modflow\Model\ModflowIdInterface;
-use Inowas\Modflow\Model\ModflowId;
-use Inowas\Modflow\Model\UserId;
+use Inowas\Common\Id\IdInterface;
+use Inowas\Common\Id\ModflowId;
+use Inowas\Common\Id\UserId;
 use Prooph\EventSourcing\AggregateChanged;
 
 class ModflowScenarioWasRemoved extends AggregateChanged
 {
 
-    /** @var  ModflowIdInterface */
+    /** @var  IdInterface */
     private $scenarioId;
 
-    /** @var  ModflowIdInterface */
+    /** @var  IdInterface */
     private $baseModelId;
 
-    /** @var  UserId */
+    /** @var  \Inowas\Common\Id\UserId */
     protected $userId;
 
     public static function from(UserId $userId, ModflowId $baseModelId, ModflowId $scenarioId): ModflowScenarioWasRemoved

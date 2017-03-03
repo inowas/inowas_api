@@ -8,10 +8,10 @@ use Inowas\Modflow\Model\Command\AddModflowScenario;
 use Inowas\Modflow\Model\Command\ChangeModflowModelDescription;
 use Inowas\Modflow\Model\Command\ChangeModflowModelName;
 use Inowas\Modflow\Model\Command\CreateModflowModel;
-use Inowas\Modflow\Model\ModflowId;
+use Inowas\Common\Id\ModflowId;
 use Inowas\Modflow\Model\ModflowModelDescription;
 use Inowas\Modflow\Model\ModflowModelName;
-use Inowas\Modflow\Model\UserId;
+use Inowas\Common\Id\UserId;
 use Inowas\Modflow\Projection\ModelScenarioList\ModelScenarioFinder;
 use Inowas\Modflow\Projection\ProjectionInterface;
 use Prooph\ServiceBus\CommandBus;
@@ -37,7 +37,7 @@ class ScenarioAnalysisControllerTest extends WebTestCase
     /** @var  ModflowId */
     protected $modelId;
 
-    /** @var  UserId */
+    /** @var  \Inowas\Common\Id\UserId */
     protected $userId;
 
     public function setUp()

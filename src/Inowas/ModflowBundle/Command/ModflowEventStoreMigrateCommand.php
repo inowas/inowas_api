@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Inowas\ModflowBundle\Command;
 
-use Inowas\Modflow\Model\UserId;
+use Inowas\Common\Id\UserId;
 use Inowas\ModflowBundle\DataFixtures\Scenarios\Hanoi\Hanoi;
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 use Symfony\Component\Console\Input\InputArgument;

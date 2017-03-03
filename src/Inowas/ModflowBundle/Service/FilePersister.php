@@ -2,12 +2,12 @@
 
 namespace Inowas\ModflowBundle\Service;
 
-use Inowas\Common\FileName;
-use Inowas\Common\LayerNumber;
-use Inowas\Modflow\Model\HeadData;
-use Inowas\Modflow\Model\ResultType;
-use Inowas\Modflow\Model\ModflowId;
-use Inowas\Modflow\Model\TotalTime;
+use Inowas\Common\FileSystem\FileName;
+use Inowas\Common\Grid\LayerNumber;
+use Inowas\Common\Calculation\HeadData;
+use Inowas\Common\Calculation\ResultType;
+use Inowas\Common\Id\ModflowId;
+use Inowas\Common\DateTime\TotalTime;
 use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\HttpKernel\KernelInterface;
 

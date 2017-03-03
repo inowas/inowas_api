@@ -5,13 +5,13 @@ declare(strict_types=1);
 namespace Inowas\Modflow\Projection\Calculation;
 
 use Doctrine\DBAL\Connection;
-use Inowas\Common\ColumnNumber;
-use Inowas\Common\FileName;
-use Inowas\Common\LayerNumber;
-use Inowas\Common\RowNumber;
-use Inowas\Modflow\Model\ResultType;
-use Inowas\Modflow\Model\ModflowId;
-use Inowas\Modflow\Model\TotalTime;
+use Inowas\Common\Grid\ColumnNumber;
+use Inowas\Common\FileSystem\FileName;
+use Inowas\Common\Grid\LayerNumber;
+use Inowas\Common\Grid\RowNumber;
+use Inowas\Common\Calculation\ResultType;
+use Inowas\Common\Id\ModflowId;
+use Inowas\Common\DateTime\TotalTime;
 use Inowas\Modflow\Projection\Table;
 use Inowas\ModflowBundle\Service\FilePersister;
 

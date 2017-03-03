@@ -9,13 +9,13 @@ ini_set('memory_limit', '1024M');
 use CrEOF\Spatial\PHP\Types\Geometry\Point;
 use CrEOF\Spatial\PHP\Types\Geometry\Polygon;
 use Inowas\GeoToolsBundle\Service\GeoTools;
-use Inowas\Modflow\Model\AreaBoundary;
-use Inowas\Modflow\Model\BoundaryGeometry;
-use Inowas\Modflow\Model\BoundaryId;
-use Inowas\Modflow\Model\BoundaryName;
+use Inowas\Common\Boundaries\AreaBoundary;
+use Inowas\Common\Geometry\Geometry;
+use Inowas\Common\Id\BoundaryId;
+use Inowas\Common\Boundaries\BoundaryName;
 use Inowas\Modflow\Model\CalculatedResult;
-use Inowas\Modflow\Model\HeadData;
-use Inowas\Modflow\Model\ResultType;
+use Inowas\Common\Calculation\HeadData;
+use Inowas\Common\Calculation\ResultType;
 use Inowas\Modflow\Model\Command\AddBoundary;
 use Inowas\Modflow\Model\Command\AddCalculatedHead;
 use Inowas\Modflow\Model\Command\ChangeModflowModelBoundingBox;
@@ -30,22 +30,22 @@ use Inowas\Modflow\Model\Command\RemoveBoundary;
 use Inowas\Modflow\Model\Command\UpdateBoundary;
 use Inowas\Modflow\Model\Event\ModflowModelWasCreated;
 use Inowas\Modflow\Model\LayerNumber;
-use Inowas\Modflow\Model\ModflowBoundary;
+use Inowas\Common\Boundaries\ModflowBoundary;
 use Inowas\Modflow\Model\ModflowCalculationAggregate;
 use Inowas\Modflow\Model\ModflowModelAggregate;
-use Inowas\Modflow\Model\ModflowModelBoundingBox;
+use Inowas\Common\Grid\BoundingBox;
 use Inowas\Modflow\Model\ModflowModelCalculationList;
 use Inowas\Modflow\Model\ModflowModelDescription;
-use Inowas\Modflow\Model\ModflowModelGridSize;
-use Inowas\Modflow\Model\ModflowId;
+use Inowas\Common\Grid\GridSize;
+use Inowas\Common\Id\ModflowId;
 use Inowas\Modflow\Model\ModflowModelList;
 use Inowas\Modflow\Model\ModflowModelName;
-use Inowas\Modflow\Model\PumpingRate;
-use Inowas\Modflow\Model\SoilModelId;
-use Inowas\Modflow\Model\TotalTime;
-use Inowas\Modflow\Model\UserId;
-use Inowas\Modflow\Model\WellBoundary;
-use Inowas\Modflow\Model\WellType;
+use Inowas\Common\Boundaries\PumpingRate;
+use Inowas\Common\Id\SoilModelId;
+use Inowas\Common\DateTime\TotalTime;
+use Inowas\Common\Id\UserId;
+use Inowas\Common\Boundaries\WellBoundary;
+use Inowas\Common\Boundaries\WellType;
 use Inowas\Modflow\Projection\CalculationsProjector;
 use Inowas\Modflow\Projection\ModelScenarioListProjector;
 use Inowas\ModflowBundle\Model\BoundingBox;
@@ -201,8 +201,8 @@ class ModflowModelEventSourcingTest extends KernelTestCase
         $areaId = BoundaryId::generate();
         $area = AreaBoundary::create($areaId);
         $this->commandBus->dispatch(AddBoundary::toBaseModel($ownerId, $modflowModelId, $area));
-        $this->commandBus->dispatch(ChangeModflowModelBoundingBox::forModflowModel($ownerId, $modflowModelId, ModflowModelBoundingBox::fromCoordinates(1, 2, 3, 4, 5)));
-        $this->commandBus->dispatch(ChangeModflowModelGridSize::forModflowModel($ownerId, $modflowModelId, ModflowModelGridSize::fromXY(50, 60)));
+        $this->commandBus->dispatch(ChangeModflowModelBoundingBox::forModflowModel($ownerId, $modflowModelId, BoundingBox::fromCoordinates(1, 2, 3, 4, 5)));
+        $this->commandBus->dispatch(ChangeModflowModelGridSize::forModflowModel($ownerId, $modflowModelId, GridSize::fromXY(50, 60)));
 
         $soilmodelId = SoilModelId::generate();
         $this->commandBus->dispatch(ChangeModflowModelSoilmodelId::forModflowModel($modflowModelId, $soilmodelId));
@@ -215,8 +215,8 @@ class ModflowModelEventSourcingTest extends KernelTestCase
         $this->assertEquals(ModflowModelName::fromString('MyNewModel'), $model->name());
         $this->assertEquals(ModflowModelDescription::fromString('MyNewModelDescription'), $model->description());
         $this->assertEquals($areaId, $model->area()->boundaryId());
-        $this->assertEquals(ModflowModelBoundingBox::fromCoordinates(1, 2, 3, 4, 5), $model->boundingBox());
-        $this->assertEquals(ModflowModelGridSize::fromXY(50, 60), $model->gridSize());
+        $this->assertEquals(BoundingBox::fromCoordinates(1, 2, 3, 4, 5), $model->boundingBox());
+        $this->assertEquals(GridSize::fromXY(50, 60), $model->gridSize());
         $this->assertEquals($soilmodelId, $model->soilmodelId());
 
         $baseModelWellId = BoundaryId::generate();
@@ -265,7 +265,7 @@ class ModflowModelEventSourcingTest extends KernelTestCase
         $scenario = $model->scenarios()[$scenarioId->toString()];
         $this->assertCount(2, $scenario->boundaries());
 
-        /** @var ModflowBoundary $well */
+        /** @var \Inowas\Common\Boundaries\ModflowBoundary $well */
         $well = $scenario->boundaries()[$scenarioWellId->toString()];
         $this->assertInstanceOf(WellBoundary::class, $well);
         $this->assertEquals($scenarioWellId, $well->boundaryId());
@@ -421,7 +421,7 @@ class ModflowModelEventSourcingTest extends KernelTestCase
 
         $area = AreaBoundary::create(BoundaryId::generate())
             ->setName(BoundaryName::fromString('Hanoi Area'))
-            ->setGeometry(BoundaryGeometry::fromPolygon(new Polygon(array(
+            ->setGeometry(Geometry::fromPolygon(new Polygon(array(
             array(
                 array(105.790767733626808, 21.094425932026443),
                 array(105.796959843400032, 21.093521487879368),
@@ -473,7 +473,7 @@ class ModflowModelEventSourcingTest extends KernelTestCase
         $this->commandBus->dispatch(AddBoundary::toBaseModel($ownerId, $modelId, $area));
 
         $box = $this->geoTools->transformBoundingBox(new BoundingBox(578205, 594692, 2316000, 2333500, 32648), 4326);
-        $boundingBox = ModflowModelBoundingBox::fromEPSG4326Coordinates(
+        $boundingBox = BoundingBox::fromEPSG4326Coordinates(
             $box->getXMin(),
             $box->getXMax(),
             $box->getYMin(),
@@ -481,7 +481,7 @@ class ModflowModelEventSourcingTest extends KernelTestCase
         );
 
         $this->commandBus->dispatch(ChangeModflowModelBoundingBox::forModflowModel($ownerId, $modelId, $boundingBox));
-        $this->commandBus->dispatch(ChangeModflowModelGridSize::forModflowModel($ownerId, $modelId, ModflowModelGridSize::fromXY(165, 175)));
+        $this->commandBus->dispatch(ChangeModflowModelGridSize::forModflowModel($ownerId, $modelId, GridSize::fromXY(165, 175)));
 
         $wells = [[23, 'LN11', 11788984.59457647800445557, 2389010.63655604887753725, -40, -70, 4320, -2135, 11788984.59, 2389010.64]];
 
@@ -491,7 +491,7 @@ class ModflowModelEventSourcingTest extends KernelTestCase
             $well = WellBoundary::createWithAllParams(
                 BoundaryId::generate(),
                 BoundaryName::fromString($wellData['name']),
-                BoundaryGeometry::fromPoint($this->geoTools->transformPoint(new Point($wellData['x'], $wellData['y'], 3857), 4326)),
+                Geometry::fromPoint($this->geoTools->transformPoint(new Point($wellData['x'], $wellData['y'], 3857), 4326)),
                 WellType::fromString(WellType::TYPE_PUBLIC_WELL),
                 LayerNumber::fromInteger(4),
                 PumpingRate::fromValue($wellData['pumpingrate'])
@@ -507,11 +507,11 @@ class ModflowModelEventSourcingTest extends KernelTestCase
         $this->assertEquals($area->boundaryId(), $model->area()->boundaryId());
         $this->assertInstanceOf(BoundaryName::class, $model->area()->name());
         $this->assertEquals('Hanoi Area', $model->area()->name()->toString());
-        $this->assertInstanceOf(BoundaryGeometry::class, $model->area()->geometry());
-        $this->assertInstanceOf(ModflowModelBoundingBox::class, $model->boundingBox());
+        $this->assertInstanceOf(Geometry::class, $model->area()->geometry());
+        $this->assertInstanceOf(BoundingBox::class, $model->boundingBox());
         $this->assertEquals($boundingBox, $model->boundingBox());
-        $this->assertInstanceOf(ModflowModelGridSize::class, $model->gridSize());
-        $this->assertEquals(ModflowModelGridSize::fromXY(165, 175), $model->gridSize());
+        $this->assertInstanceOf(GridSize::class, $model->gridSize());
+        $this->assertEquals(GridSize::fromXY(165, 175), $model->gridSize());
         $this->assertCount(1, $model->boundaries());
 
         /** @var WellBoundary $well */

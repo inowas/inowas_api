@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace Inowas\Modflow\Model\Event;
 
-use Inowas\Modflow\Model\ModflowModelGridSize;
-use Inowas\Modflow\Model\ModflowId;
-use Inowas\Modflow\Model\UserId;
+use Inowas\Common\Grid\GridSize;
+use Inowas\Common\Id\ModflowId;
+use Inowas\Common\Id\UserId;
 use Prooph\EventSourcing\AggregateChanged;
 
 class ModflowModelGridSizeWasChanged extends AggregateChanged
@@ -15,13 +15,13 @@ class ModflowModelGridSizeWasChanged extends AggregateChanged
     /** @var  ModflowId */
     private $modflowModelId;
 
-    /** @var ModflowModelGridSize */
+    /** @var GridSize */
     private $gridSize;
 
     /** @var  UserId */
     private $userId;
 
-    public static function withGridSize(UserId $userId, ModflowId $modflowModelId, ModflowModelGridSize $gridSize): ModflowModelGridSizeWasChanged
+    public static function withGridSize(UserId $userId, ModflowId $modflowModelId, GridSize $gridSize): ModflowModelGridSizeWasChanged
     {
         $event = self::occur(
             $modflowModelId->toString(), [
@@ -48,10 +48,10 @@ class ModflowModelGridSizeWasChanged extends AggregateChanged
         return $this->modflowModelId;
     }
 
-    public function gridSize(): ModflowModelGridSize
+    public function gridSize(): GridSize
     {
         if ($this->gridSize === null){
-            $this->gridSize = ModflowModelGridSize::fromXY($this->payload['grid_size']['nX'], $this->payload['grid_size']['nY']);
+            $this->gridSize = GridSize::fromXY($this->payload['grid_size']['nX'], $this->payload['grid_size']['nY']);
         }
 
         return $this->gridSize;

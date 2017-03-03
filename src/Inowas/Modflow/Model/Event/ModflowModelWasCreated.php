@@ -4,21 +4,21 @@ declare(strict_types=1);
 
 namespace Inowas\Modflow\Model\Event;
 
-use Inowas\Modflow\Model\ModflowIdInterface;
-use Inowas\Modflow\Model\ModflowId;
-use Inowas\Modflow\Model\UserId;
+use Inowas\Common\Id\IdInterface;
+use Inowas\Common\Id\ModflowId;
+use Inowas\Common\Id\UserId;
 use Prooph\EventSourcing\AggregateChanged;
 
 class ModflowModelWasCreated extends AggregateChanged
 {
 
-    /** @var  ModflowIdInterface */
+    /** @var  \Inowas\Common\Id\IdInterface */
     private $modflowModelId;
 
     /** @var  UserId */
     private $userId;
 
-    public static function byUserWithModflowId(UserId $userId, ModflowIdInterface $modflowModelId): ModflowModelWasCreated
+    public static function byUserWithModflowId(UserId $userId, IdInterface $modflowModelId): ModflowModelWasCreated
     {
         $event = self::occur($modflowModelId->toString(),[
             'user_id' => $userId->toString()
@@ -30,7 +30,7 @@ class ModflowModelWasCreated extends AggregateChanged
         return $event;
     }
 
-    public function modflowModelId(): ModflowIdInterface
+    public function modflowModelId(): IdInterface
     {
         if ($this->modflowModelId === null){
             $this->modflowModelId = ModflowId::fromString($this->aggregateId());

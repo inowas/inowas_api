@@ -3,9 +3,16 @@
 namespace Inowas\Modflow\Model;
 
 
+use Inowas\Common\Calculation\Budget;
+use Inowas\Common\Calculation\ResultType;
 use Inowas\Common\DateTime\DateTime;
-use Inowas\Common\FileName;
-use Inowas\Common\LayerNumber;
+use Inowas\Common\DateTime\TotalTime;
+use Inowas\Common\FileSystem\FileName;
+use Inowas\Common\Grid\GridSize;
+use Inowas\Common\Grid\LayerNumber;
+use Inowas\Common\Id\ModflowId;
+use Inowas\Common\Id\SoilModelId;
+use Inowas\Common\Id\UserId;
 use Inowas\Modflow\Model\Event\BudgetWasCalculated;
 use Inowas\Modflow\Model\Event\HeadWasCalculated;
 use Inowas\Modflow\Model\Event\CalculationWasCreated;
@@ -26,7 +33,7 @@ class ModflowCalculationAggregate extends AggregateRoot
     /** @var  UserId */
     private $ownerId;
 
-    /** @var ModflowModelGridSize */
+    /** @var GridSize */
     private $gridSize;
 
     /** @var  array */
@@ -43,7 +50,7 @@ class ModflowCalculationAggregate extends AggregateRoot
         ModflowId $modflowModelId,
         SoilModelId $soilModelId,
         UserId $userId,
-        ModflowModelGridSize $gridSize,
+        GridSize $gridSize,
         DateTime $startDateTime,
         DateTime $endDateTime
     ): ModflowCalculationAggregate
@@ -102,7 +109,7 @@ class ModflowCalculationAggregate extends AggregateRoot
         return $this->ownerId;
     }
 
-    public function gridSize(): ModflowModelGridSize
+    public function gridSize(): GridSize
     {
         return $this->gridSize;
     }

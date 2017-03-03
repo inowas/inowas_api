@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace Inowas\Modflow\Model\Command;
 
-use Inowas\Modflow\Model\Budget;
-use Inowas\Modflow\Model\ModflowId;
-use Inowas\Modflow\Model\TotalTime;
+use Inowas\Common\Calculation\Budget;
+use Inowas\Common\Id\ModflowId;
+use Inowas\Common\DateTime\TotalTime;
 use Prooph\Common\Messaging\Command;
 use Prooph\Common\Messaging\PayloadConstructable;
 use Prooph\Common\Messaging\PayloadTrait;

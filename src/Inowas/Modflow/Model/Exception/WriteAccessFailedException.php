@@ -2,7 +2,7 @@
 
 namespace Inowas\Modflow\Model\Exception;
 
-use Inowas\Modflow\Model\UserId;
+use Inowas\Common\Id\UserId;
 
 final class WriteAccessFailedException extends \InvalidArgumentException
 {

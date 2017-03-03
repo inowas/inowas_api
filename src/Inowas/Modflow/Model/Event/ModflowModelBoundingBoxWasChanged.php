@@ -4,24 +4,24 @@ declare(strict_types=1);
 
 namespace Inowas\Modflow\Model\Event;
 
-use Inowas\Modflow\Model\ModflowModelBoundingBox;
-use Inowas\Modflow\Model\ModflowId;
-use Inowas\Modflow\Model\UserId;
+use Inowas\Common\Grid\BoundingBox;
+use Inowas\Common\Id\ModflowId;
+use Inowas\Common\Id\UserId;
 use Prooph\EventSourcing\AggregateChanged;
 
 class ModflowModelBoundingBoxWasChanged extends AggregateChanged
 {
 
-    /** @var  ModflowId */
+    /** @var  \Inowas\Common\Id\ModflowId */
     private $modflowModelId;
 
-    /** @var ModflowModelBoundingBox */
+    /** @var \Inowas\Common\Grid\BoundingBox */
     private $boundingBox;
 
     /** @var  UserId */
     private $userId;
 
-    public static function withBoundingBox(UserId $userId, ModflowId $modflowModelId, ModflowModelBoundingBox $boundingBox): ModflowModelBoundingBoxWasChanged
+    public static function withBoundingBox(UserId $userId, ModflowId $modflowModelId, BoundingBox $boundingBox): ModflowModelBoundingBoxWasChanged
     {
         $event = self::occur(
             $modflowModelId->toString(), [
@@ -52,10 +52,10 @@ class ModflowModelBoundingBoxWasChanged extends AggregateChanged
         return $this->modflowModelId;
     }
 
-    public function boundingBox(): ModflowModelBoundingBox
+    public function boundingBox(): BoundingBox
     {
         if ($this->boundingBox === null){
-            $this->boundingBox = ModflowModelBoundingBox::fromCoordinates(
+            $this->boundingBox = BoundingBox::fromCoordinates(
                 $this->payload['bounding_box']['x_min'],
                 $this->payload['bounding_box']['x_max'],
                 $this->payload['bounding_box']['y_min'],

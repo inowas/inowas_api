@@ -4,7 +4,17 @@ declare(strict_types=1);
 
 namespace Inowas\Modflow\Model;
 
+use Inowas\Common\Boundaries\AbstractBoundary;
+use Inowas\Common\Boundaries\AreaBoundary;
+use Inowas\Common\Id\BoundaryId;
+use Inowas\Common\Boundaries\ModflowBoundary;
 use Inowas\Common\DateTime\DateTime;
+use Inowas\Common\Grid\BoundingBox;
+use Inowas\Common\Grid\GridSize;
+use Inowas\Common\Id\IdInterface;
+use Inowas\Common\Id\ModflowId;
+use Inowas\Common\Id\SoilModelId;
+use Inowas\Common\Id\UserId;
 use Inowas\Modflow\Model\Event\BoundaryWasAdded;
 use Inowas\Modflow\Model\Event\BoundaryWasAddedToScenario;
 use Inowas\Modflow\Model\Event\BoundaryWasRemoved;
@@ -43,13 +53,13 @@ class ModflowModelAggregate extends AggregateRoot
     /** @var ModflowModelDescription */
     protected $description;
 
-    /** @var ModflowModelGridSize */
+    /** @var GridSize */
     protected $gridSize;
 
-    /** @var ModflowModelBoundingBox  */
+    /** @var BoundingBox  */
     protected $boundingBox;
 
-    /** @var AbstractModflowBoundary */
+    /** @var AbstractBoundary */
     protected $area;
 
     /** @var SoilModelId */
@@ -191,7 +201,7 @@ class ModflowModelAggregate extends AggregateRoot
         }
     }
 
-    public function changeGridSize(UserId $userId, ModflowModelGridSize $gridSize)
+    public function changeGridSize(UserId $userId, GridSize $gridSize)
     {
         $this->gridSize = $gridSize;
         $this->recordThat(ModflowModelGridSizeWasChanged::withGridSize(
@@ -201,7 +211,7 @@ class ModflowModelAggregate extends AggregateRoot
         ));
     }
 
-    public function changeBoundingBox(UserId $userId, ModflowModelBoundingBox $boundingBox)
+    public function changeBoundingBox(UserId $userId, BoundingBox $boundingBox)
     {
         $this->boundingBox = $boundingBox;
         $this->recordThat(ModflowModelBoundingBoxWasChanged::withBoundingBox(
@@ -313,7 +323,7 @@ class ModflowModelAggregate extends AggregateRoot
         }
     }
 
-    private function contains(ModflowIdInterface $needle, array $haystack): bool
+    private function contains(IdInterface $needle, array $haystack): bool
     {
         return array_key_exists($needle->toString(), $haystack);
     }
@@ -349,17 +359,17 @@ class ModflowModelAggregate extends AggregateRoot
         return $this->description;
     }
 
-    public function gridSize(): ModflowModelGridSize
+    public function gridSize(): GridSize
     {
         return $this->gridSize;
     }
 
-    public function boundingBox(): ModflowModelBoundingBox
+    public function boundingBox(): BoundingBox
     {
         return $this->boundingBox;
     }
 
-    public function area(): AbstractModflowBoundary
+    public function area(): AbstractBoundary
     {
         return $this->area;
     }

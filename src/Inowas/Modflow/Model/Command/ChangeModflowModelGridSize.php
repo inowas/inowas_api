@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace Inowas\Modflow\Model\Command;
 
-use Inowas\Modflow\Model\ModflowModelGridSize;
-use Inowas\Modflow\Model\ModflowId;
-use Inowas\Modflow\Model\UserId;
+use Inowas\Common\Grid\GridSize;
+use Inowas\Common\Id\ModflowId;
+use Inowas\Common\Id\UserId;
 use Prooph\Common\Messaging\Command;
 use Prooph\Common\Messaging\PayloadConstructable;
 use Prooph\Common\Messaging\PayloadTrait;
@@ -16,7 +16,7 @@ class ChangeModflowModelGridSize extends Command implements PayloadConstructable
 
     use PayloadTrait;
 
-    public static function forModflowModel(UserId $userId, ModflowId $modelId, ModflowModelGridSize $gridSize): ChangeModflowModelGridSize
+    public static function forModflowModel(UserId $userId, ModflowId $modelId, GridSize $gridSize): ChangeModflowModelGridSize
     {
         return new self(
             [
@@ -36,9 +36,9 @@ class ChangeModflowModelGridSize extends Command implements PayloadConstructable
         return ModflowId::fromString($this->payload['modflow_model_id']);
     }
 
-    public function gridSize(): ModflowModelGridSize
+    public function gridSize(): GridSize
     {
-        return ModflowModelGridSize::fromXY(
+        return GridSize::fromXY(
             $this->payload['grid_size']['nX'],
             $this->payload['grid_size']['nY']
         );

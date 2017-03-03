@@ -4,25 +4,25 @@ declare(strict_types=1);
 
 namespace Inowas\Modflow\Model\Event;
 
-use Inowas\Modflow\Model\ModflowIdInterface;
-use Inowas\Modflow\Model\ModflowId;
+use Inowas\Common\Id\IdInterface;
+use Inowas\Common\Id\ModflowId;
 use Inowas\Modflow\Model\ScenarioId;
-use Inowas\Modflow\Model\UserId;
+use Inowas\Common\Id\UserId;
 use Prooph\EventSourcing\AggregateChanged;
 
 class ModflowScenarioWasAdded extends AggregateChanged
 {
 
-    /** @var  ModflowIdInterface */
+    /** @var  IdInterface */
     private $scenarioId;
 
-    /** @var  ModflowIdInterface */
+    /** @var  IdInterface */
     private $baseModelId;
 
-    /** @var  UserId */
+    /** @var  \Inowas\Common\Id\UserId */
     protected $userId;
 
-    public static function withId(UserId $userId, ModflowIdInterface $baseModelId, ModflowIdInterface $scenarioId): ModflowScenarioWasAdded
+    public static function withId(UserId $userId, IdInterface $baseModelId, IdInterface $scenarioId): ModflowScenarioWasAdded
     {
         $event = self::occur($baseModelId->toString(), [
             'basemodel_id' => $baseModelId->toString(),

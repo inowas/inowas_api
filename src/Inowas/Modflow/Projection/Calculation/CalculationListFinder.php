@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Inowas\Modflow\Projection\Calculation;
 
 use Doctrine\DBAL\Connection;
-use Inowas\Modflow\Model\ModflowId;
+use Inowas\Common\Id\ModflowId;
 use Inowas\Modflow\Projection\Table;
 use Inowas\ModflowBundle\Service\FilePersister;
 

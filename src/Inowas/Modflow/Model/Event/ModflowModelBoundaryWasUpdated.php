@@ -4,20 +4,20 @@ declare(strict_types=1);
 
 namespace Inowas\Modflow\Model\Event;
 
-use Inowas\Modflow\Model\ModflowBoundary;
-use Inowas\Modflow\Model\ModflowId;
-use Inowas\Modflow\Model\UserId;
+use Inowas\Common\Boundaries\ModflowBoundary;
+use Inowas\Common\Id\ModflowId;
+use Inowas\Common\Id\UserId;
 use Prooph\EventSourcing\AggregateChanged;
 
 class ModflowModelBoundaryWasUpdated extends AggregateChanged
 {
-    /** @var ModflowId */
+    /** @var \Inowas\Common\Id\ModflowId */
     private $modflowId;
 
     /** @var ModflowBoundary */
     private $boundary;
 
-    /** @var UserId */
+    /** @var \Inowas\Common\Id\UserId */
     private $userId;
 
     public static function ofBaseModel(

@@ -4,15 +4,15 @@ namespace AppBundle\Service;
 
 use AppBundle\Entity\ModelObject;
 use AppBundle\Entity\WellBoundary;
-use AppBundle\Model\ActiveCells;
 use AppBundle\Model\GeoJson\Feature;
 use AppBundle\Model\GeoJson\FeatureCollection;
 use AppBundle\Model\GeoJson\Polygon;
 use AppBundle\Model\GeoJson\Properties;
-use AppBundle\Model\BoundingBox;
-use AppBundle\Model\GridSize;
-use AppBundle\Model\Point;
 use Doctrine\ORM\EntityManager;
+use Inowas\Common\Geometry\Point;
+use Inowas\Common\Grid\ActiveCells;
+use Inowas\Common\Grid\BoundingBox;
+use Inowas\Common\Grid\GridSize;
 
 class GeoTools
 {
@@ -41,19 +41,19 @@ class GeoTools
             return $this->getActiveCellsFromPoint($boundingBox, $gridSize, $mo->getGeometry());
         }
 
-        $nx = $gridSize->getNX();
-        $ny = $gridSize->getNY();
-        $dx = ($boundingBox->getXMax()-$boundingBox->getXMin())/$nx;
-        $dy = ($boundingBox->getYMax()-$boundingBox->getYMin())/$ny;
-        $srid = $boundingBox->getSrid();
+        $nx = $gridSize->nX();
+        $ny = $gridSize->nY();
+        $dx = ($boundingBox->xMax()-$boundingBox->xMin())/$nx;
+        $dy = ($boundingBox->yMax()-$boundingBox->yMin())/$ny;
+        $srid = $boundingBox->srid();
 
         $activeCells = array();
         for ($iy = 0; $iy<$ny; $iy++){
             for ($ix = 0; $ix<$nx; $ix++){
-                $xMin = $boundingBox->getXMin()+$ix*$dx;
-                $xMax = $boundingBox->getXMin()+$ix*$dx+$dx;
-                $yMin = $boundingBox->getYMax()-$iy*$dy;
-                $yMax = $boundingBox->getYMax()-$iy*$dy-$dy;
+                $xMin = $boundingBox->xMin()+$ix*$dx;
+                $xMax = $boundingBox->xMin()+$ix*$dx+$dx;
+                $yMin = $boundingBox->yMax()-$iy*$dy;
+                $yMax = $boundingBox->yMax()-$iy*$dy-$dy;
 
                 if ($this->isActive($mo, $srid, $xMin, $xMax, $yMin, $yMax)){
                     $activeCells[$iy][$ix] = true;
@@ -73,8 +73,8 @@ class GeoTools
     public function setActiveCells(ModelObject $mo, BoundingBox $boundingBox, GridSize $gridSize){
 
         echo sprintf("Calculate active cells for Class: %s.\r\n", get_class($mo));
-        $activeCells = $this->getActiveCells($mo, $boundingBox, $gridSize);
-        $mo->setActiveCells($activeCells);
+        #$activeCells = $this->getActiveCells($mo, $boundingBox, $gridSize);
+        #$mo->setActiveCells($activeCells);
 
         return $mo;
     }
@@ -119,18 +119,18 @@ class GeoTools
             }
         }
 
-        $bb = new BoundingBox($xMin, $xMax, $yMin, $yMax, $srid);
+        $bb = BoundingBox::fromCoordinates($xMin, $xMax, $yMin, $yMax, $srid);
 
         return $this->transformBoundingBox($bb, 4326);
     }
 
     public function getGeoJsonGrid(BoundingBox $boundingBox, GridSize $gridSize, ActiveCells $activeCells)
     {
-        $nx = $gridSize->getNX();
-        $ny = $gridSize->getNY();
-        $dx = ($boundingBox->getXMax()-$boundingBox->getXMin())/$nx;
-        $dy = ($boundingBox->getYMax()-$boundingBox->getYMin())/$ny;
-        $activeCells = $activeCells->toArray();
+        $nx = $gridSize->nX();
+        $ny = $gridSize->nY();
+        $dx = ($boundingBox->xMax()-$boundingBox->xMin())/$nx;
+        $dy = ($boundingBox->yMax()-$boundingBox->yMin())/$ny;
+        $activeCells = $activeCells->cells();
 
         $featureCollection = new FeatureCollection();
 
@@ -139,10 +139,10 @@ class GeoTools
             for ($ix = 0; $ix<$nx; $ix++){
 
                 if (is_array($activeCells[$iy]) && key_exists($ix, $activeCells[$iy])){
-                    $xMin= $boundingBox->getXMin()+$ix*$dx;
-                    $xMax= $boundingBox->getXMin()+$ix*$dx+$dx;
-                    $yMin= $boundingBox->getYMax()-$iy*$dy-$dy;
-                    $yMax= $boundingBox->getYMax()-$iy*$dy;
+                    $xMin= $boundingBox->xMin()+$ix*$dx;
+                    $xMax= $boundingBox->xMin()+$ix*$dx+$dx;
+                    $yMin= $boundingBox->yMax()-$iy*$dy-$dy;
+                    $yMax= $boundingBox->yMax()-$iy*$dy;
                     $feature = new Feature($i);
                     $polygon = new Polygon();
                     $polygon->setCoordinates(array(
@@ -232,16 +232,16 @@ class GeoTools
 
     public function transformBoundingBox(BoundingBox $bb, $targetSrid)
     {
-        $lowerLeft = new Point($bb->getXMin(), $bb->getYMin(), $bb->getSrid());
-        $lowerRight = new Point($bb->getXMax(), $bb->getYMin(), $bb->getSrid());
-        $upperRight = new Point($bb->getXMax(), $bb->getYMax(), $bb->getSrid());
+        $lowerLeft = new Point($bb->xMin(), $bb->yMin(), $bb->srid());
+        #$lowerRight = new Point($bb->xMax(), $bb->yMin(), $bb->srid());
+        $upperRight = new Point($bb->xMax(), $bb->yMax(), $bb->srid());
 
         $transformedLowerLeft = $this->transformPoint($lowerLeft, $targetSrid);
         $transformedUpperRight = $this->transformPoint($upperRight, $targetSrid);
-        $dxInMeter = $this->calculateDistanceInMetersFromTwoPoints($lowerLeft, $lowerRight);
-        $dyInMeter = $this->calculateDistanceInMetersFromTwoPoints($lowerRight, $upperRight);
+        #$dxInMeter = $this->calculateDistanceInMetersFromTwoPoints($lowerLeft, $lowerRight);
+        #$dyInMeter = $this->calculateDistanceInMetersFromTwoPoints($lowerRight, $upperRight);
 
-        $bb = new BoundingBox(
+        $bb = BoundingBox::fromCoordinates(
             $transformedLowerLeft->getX(),
             $transformedUpperRight->getX(),
             $transformedLowerLeft->getY(),
@@ -249,31 +249,28 @@ class GeoTools
             $targetSrid
         );
 
-        $bb->setDXInMeters($dxInMeter);
-        $bb->setDYInMeters($dyInMeter);
-
         return $bb;
     }
 
     public function getGridCellFromPoint(BoundingBox $bb, GridSize $gz, Point $point)
     {
         // Transform Point to the same Coordinate System as BoundingBox
-        $point = $this->transformPoint($point, $bb->getSrid());
+        $point = $this->transformPoint($point, $bb->srid());
 
         // Check if point is inside of BoundingBox
-        if (!($point->getX() >= $bb->getXMin()
-            && $point->getX() <= $bb->getXMax()
-            && $point->getY() >= $bb->getYMin()
-            && $point->getY() <= $bb->getYMax())
+        if (!($point->getX() >= $bb->xMin()
+            && $point->getX() <= $bb->xMax()
+            && $point->getY() >= $bb->yMin()
+            && $point->getY() <= $bb->yMax())
         ) {
             return null;
         }
 
-        $dx = ($bb->getXMax() - $bb->getXMin()) / $gz->getNX();
-        $dy = ($bb->getYMax() - $bb->getYMin()) / $gz->getNY();
+        $dx = ($bb->xMax() - $bb->xMin()) / $gz->nX();
+        $dy = ($bb->yMax() - $bb->yMin()) / $gz->nY();
 
-        $col = (int)(floor(($point->getX() - $bb->getXMin()) / $dx));
-        $row = (int)($gz->getNY()-ceil(($point->getY() - $bb->getYMin()) / $dy));
+        $col = (int)(floor(($point->getX() - $bb->xMin()) / $dx));
+        $row = (int)($gz->nY()-ceil(($point->getY() - $bb->yMin()) / $dy));
 
         return array(
             "row" => $row,

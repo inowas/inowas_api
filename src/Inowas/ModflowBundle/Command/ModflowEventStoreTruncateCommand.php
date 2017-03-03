@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Inowas\ModflowBundle\Command;
 
 use Doctrine\DBAL\Schema\Schema;
-use Inowas\Modflow\Model\UserId;
+use Inowas\Common\Id\UserId;
 use Prooph\EventStore\Adapter\Doctrine\Schema\EventStoreSchema;
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 use Symfony\Component\Console\Input\InputInterface;

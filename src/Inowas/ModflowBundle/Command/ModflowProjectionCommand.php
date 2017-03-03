@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Inowas\ModflowBundle\Command;
 
-use Inowas\Modflow\Model\UserId;
+use Inowas\Common\Id\UserId;
 use Inowas\Modflow\Projection\ProjectionInterface;
 use Prooph\EventStore\Stream\StreamName;
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
@@ -14,7 +14,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 class ModflowProjectionCommand extends ContainerAwareCommand
 {
 
-    /** @var  UserId */
+    /** @var  \Inowas\Common\Id\UserId */
     protected $ownerId;
 
     protected function configure(): void

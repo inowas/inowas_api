@@ -4,21 +4,21 @@ declare(strict_types=1);
 
 namespace Inowas\Modflow\Model\Event;
 
-use Inowas\Modflow\Model\BoundaryId;
-use Inowas\Modflow\Model\ModflowId;
-use Inowas\Modflow\Model\UserId;
+use Inowas\Common\Id\BoundaryId;
+use Inowas\Common\Id\ModflowId;
+use Inowas\Common\Id\UserId;
 use Prooph\EventSourcing\AggregateChanged;
 
 class BoundaryWasRemovedFromScenario extends AggregateChanged
 {
 
-    /** @var ModflowId */
+    /** @var \Inowas\Common\Id\ModflowId */
     private $modflowId;
 
-    /** @var ModflowId */
+    /** @var \Inowas\Common\Id\ModflowId */
     private $scenarioId;
 
-    /** @var BoundaryId */
+    /** @var \Inowas\Common\Id\BoundaryId */
     private $boundaryId;
 
     /** @var UserId */

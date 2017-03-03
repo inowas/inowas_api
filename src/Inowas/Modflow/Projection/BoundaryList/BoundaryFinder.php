@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace Inowas\Modflow\Projection\BoundaryList;
 
 use Doctrine\DBAL\Connection;
-use Inowas\Modflow\Model\BoundaryId;
-use Inowas\Modflow\Model\ModflowId;
+use Inowas\Common\Id\BoundaryId;
+use Inowas\Common\Id\ModflowId;
 use Inowas\Modflow\Projection\Table;
 
 class BoundaryFinder

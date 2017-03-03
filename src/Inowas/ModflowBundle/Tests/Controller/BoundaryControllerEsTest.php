@@ -5,22 +5,22 @@ namespace Inowas\ModflowBundle\Tests\Controller;
 use CrEOF\Spatial\PHP\Types\Geometry\Point;
 use FOS\UserBundle\Doctrine\UserManager;
 use Inowas\AppBundle\Model\User;
-use Inowas\Modflow\Model\BoundaryGeometry;
-use Inowas\Modflow\Model\BoundaryId;
-use Inowas\Modflow\Model\BoundaryName;
+use Inowas\Common\Geometry\Geometry;
+use Inowas\Common\Id\BoundaryId;
+use Inowas\Common\Boundaries\BoundaryName;
 use Inowas\Modflow\Model\Command\AddBoundary;
 use Inowas\Modflow\Model\Command\AddModflowScenario;
 use Inowas\Modflow\Model\Command\ChangeModflowModelDescription;
 use Inowas\Modflow\Model\Command\ChangeModflowModelName;
 use Inowas\Modflow\Model\Command\CreateModflowModel;
 use Inowas\Modflow\Model\LayerNumber;
-use Inowas\Modflow\Model\ModflowId;
+use Inowas\Common\Id\ModflowId;
 use Inowas\Modflow\Model\ModflowModelDescription;
 use Inowas\Modflow\Model\ModflowModelName;
-use Inowas\Modflow\Model\PumpingRates;
-use Inowas\Modflow\Model\UserId;
-use Inowas\Modflow\Model\WellBoundary;
-use Inowas\Modflow\Model\WellType;
+use Inowas\Common\Boundaries\PumpingRates;
+use Inowas\Common\Id\UserId;
+use Inowas\Common\Boundaries\WellBoundary;
+use Inowas\Common\Boundaries\WellType;
 use Inowas\Modflow\Projection\BoundaryList\BoundaryFinder;
 use Prooph\ServiceBus\CommandBus;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
@@ -40,25 +40,25 @@ class BoundaryControllerEsTest extends WebTestCase
     /** @var  User */
     private $user;
 
-    /** @var  UserId */
+    /** @var  \Inowas\Common\Id\UserId */
     private $userId;
 
-    /** @var  ModflowId */
+    /** @var  \Inowas\Common\Id\ModflowId */
     private $baseModelId;
 
-    /** @var  ModflowId */
+    /** @var  \Inowas\Common\Id\ModflowId */
     private $scenarioId;
 
-    /** @var  WellBoundary */
+    /** @var  \Inowas\Common\Boundaries\WellBoundary */
     private $well1;
 
-    /** @var  WellBoundary */
+    /** @var  \Inowas\Common\Boundaries\WellBoundary */
     private $well2;
 
-    /** @var  WellBoundary */
+    /** @var  \Inowas\Common\Boundaries\WellBoundary */
     private $well3;
 
-    /** @var  WellBoundary */
+    /** @var  \Inowas\Common\Boundaries\WellBoundary */
     private $well4;
 
     public function setUp()
@@ -97,7 +97,7 @@ class BoundaryControllerEsTest extends WebTestCase
         $this->well1 = WellBoundary::createWithAllParams(
             BoundaryId::generate(),
             BoundaryName::fromString('Well1'),
-            BoundaryGeometry::fromPoint(new Point(1,2)),
+            Geometry::fromPoint(new Point(1,2)),
             WellType::fromString(WellType::TYPE_INDUSTRIAL_WELL),
             LayerNumber::fromInteger(1),
             PumpingRates::create()
@@ -106,7 +106,7 @@ class BoundaryControllerEsTest extends WebTestCase
         $this->well2 = WellBoundary::createWithAllParams(
             BoundaryId::generate(),
             BoundaryName::fromString('Well2'),
-            BoundaryGeometry::fromPoint(new Point(2,3)),
+            Geometry::fromPoint(new Point(2,3)),
             WellType::fromString(WellType::TYPE_PUBLIC_WELL),
             LayerNumber::fromInteger(2),
             PumpingRates::create()
@@ -115,7 +115,7 @@ class BoundaryControllerEsTest extends WebTestCase
         $this->well3 = WellBoundary::createWithAllParams(
             BoundaryId::generate(),
             BoundaryName::fromString('Well3'),
-            BoundaryGeometry::fromPoint(new Point(2,3)),
+            Geometry::fromPoint(new Point(2,3)),
             WellType::fromString(WellType::TYPE_PUBLIC_WELL),
             LayerNumber::fromInteger(2),
             PumpingRates::create()
@@ -124,7 +124,7 @@ class BoundaryControllerEsTest extends WebTestCase
         $this->well4 = WellBoundary::createWithAllParams(
             BoundaryId::generate(),
             BoundaryName::fromString('Well4'),
-            BoundaryGeometry::fromPoint(new Point(2,3)),
+            Geometry::fromPoint(new Point(2,3)),
             WellType::fromString(WellType::TYPE_PUBLIC_WELL),
             LayerNumber::fromInteger(2),
             PumpingRates::create()

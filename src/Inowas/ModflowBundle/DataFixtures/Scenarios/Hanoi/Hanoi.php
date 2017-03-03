@@ -2,21 +2,21 @@
 
 namespace Inowas\ModflowBundle\DataFixtures\Scenarios\Hanoi;
 
-use AppBundle\Model\BoundingBox;
-use AppBundle\Model\Point;
 use Doctrine\DBAL\Schema\Schema;
 use FOS\UserBundle\Doctrine\UserManager;
-use Inowas\Common\DataFixtureInterface;
+use Inowas\Common\Fixtures\DataFixtureInterface;
 use Inowas\Common\DateTime\DateTime;
-use Inowas\Common\LayerNumber;
-use Inowas\Modflow\Model\AreaBoundary;
-use Inowas\Modflow\Model\BoundaryGeometry;
-use Inowas\Modflow\Model\BoundaryId;
-use Inowas\Modflow\Model\BoundaryName;
-use Inowas\Modflow\Model\Budget;
+use Inowas\Common\Geometry\Point;
+use Inowas\Common\Geometry\Polygon;
+use Inowas\Common\Grid\LayerNumber;
+use Inowas\Common\Boundaries\AreaBoundary;
+use Inowas\Common\Geometry\Geometry;
+use Inowas\Common\Id\BoundaryId;
+use Inowas\Common\Boundaries\BoundaryName;
+use Inowas\Common\Calculation\Budget;
 use Inowas\Modflow\Model\Command\AddCalculatedBudget;
-use Inowas\Modflow\Model\HeadData;
-use Inowas\Modflow\Model\ResultType;
+use Inowas\Common\Calculation\HeadData;
+use Inowas\Common\Calculation\ResultType;
 use Inowas\Modflow\Model\Command\AddBoundary;
 use Inowas\Modflow\Model\Command\AddCalculatedHead;
 use Inowas\Modflow\Model\Command\ChangeModflowModelBoundingBox;
@@ -27,19 +27,18 @@ use Inowas\Modflow\Model\Command\ChangeModflowModelSoilmodelId;
 use Inowas\Modflow\Model\Command\CreateModflowModel;
 use Inowas\Modflow\Model\Command\AddModflowScenario;
 use Inowas\Modflow\Model\Command\CreateModflowModelCalculation;
-use Inowas\Modflow\Model\ModflowModelBoundingBox;
+use Inowas\Common\Grid\BoundingBox;
 use Inowas\Modflow\Model\ModflowModelDescription;
-use Inowas\Modflow\Model\ModflowModelGridSize;
-use Inowas\Modflow\Model\ModflowId;
+use Inowas\Common\Grid\GridSize;
+use Inowas\Common\Id\ModflowId;
 use Inowas\Modflow\Model\ModflowModelName;
-use Inowas\Modflow\Model\PumpingRate;
-use Inowas\Modflow\Model\PumpingRates;
-use Inowas\Modflow\Model\SoilModelId;
-use Inowas\Modflow\Model\TotalTime;
-use Inowas\Modflow\Model\UserId;
-use Inowas\Modflow\Model\WellBoundary;
-use Inowas\Modflow\Model\WellType;
-use CrEOF\Spatial\PHP\Types\Geometry\Polygon;
+use Inowas\Common\Boundaries\PumpingRate;
+use Inowas\Common\Boundaries\PumpingRates;
+use Inowas\Common\Id\SoilModelId;
+use Inowas\Common\DateTime\TotalTime;
+use Inowas\Common\Id\UserId;
+use Inowas\Common\Boundaries\WellBoundary;
+use Inowas\Common\Boundaries\WellType;
 use Prooph\EventStore\Adapter\Doctrine\Schema\EventStoreSchema;
 use Prooph\ServiceBus\CommandBus;
 use Symfony\Component\DependencyInjection\ContainerAwareInterface;
@@ -91,7 +90,7 @@ class Hanoi implements ContainerAwareInterface, DataFixtureInterface
 
         $area = AreaBoundary::create(BoundaryId::generate())
             ->setName(BoundaryName::fromString('Hanoi Area'))
-            ->setGeometry(BoundaryGeometry::fromPolygon(new Polygon(array(
+            ->setGeometry(Geometry::fromPolygon(new Polygon(array(
                 array(
                     array(105.790767733626808, 21.094425932026443),
                     array(105.796959843400032, 21.093521487879368),
@@ -144,10 +143,10 @@ class Hanoi implements ContainerAwareInterface, DataFixtureInterface
         $soilModelId = SoilModelId::generate();
         $commandBus->dispatch(ChangeModflowModelSoilmodelId::forModflowModel($modelId, $soilModelId));
 
-        $box = $geoTools->transformBoundingBox(new BoundingBox(578205, 594692, 2316000, 2333500, 32648), 4326);
-        $boundingBox = ModflowModelBoundingBox::fromEPSG4326Coordinates($box->getXMin(), $box->getXMax(), $box->getYMin(), $box->getYMax());
+        $box = $geoTools->transformBoundingBox(BoundingBox::fromCoordinates(578205, 594692, 2316000, 2333500, 32648), 4326);
+        $boundingBox = BoundingBox::fromEPSG4326Coordinates($box->xMin(), $box->xMax(), $box->yMin(), $box->yMax());
         $commandBus->dispatch(ChangeModflowModelBoundingBox::forModflowModel($ownerId, $modelId, $boundingBox));
-        $commandBus->dispatch(ChangeModflowModelGridSize::forModflowModel($ownerId, $modelId, ModflowModelGridSize::fromXY(165, 175)));
+        $commandBus->dispatch(ChangeModflowModelGridSize::forModflowModel($ownerId, $modelId, GridSize::fromXY(165, 175)));
 
         // Add Wells
         $fileName = __DIR__ . "/data/wells_basecase.csv";
@@ -172,7 +171,7 @@ class Hanoi implements ContainerAwareInterface, DataFixtureInterface
             $well = WellBoundary::createWithAllParams(
                 BoundaryId::generate(),
                 BoundaryName::fromString($well['Name']),
-                BoundaryGeometry::fromPoint($geoTools->transformPoint(new Point($well['x'], $well['y'], $well['srid']), 4326)),
+                Geometry::fromPoint($geoTools->transformPoint(new Point($well['x'], $well['y'], $well['srid']), 4326)),
                 WellType::fromString($well['type']),
                 LayerNumber::fromInteger((int)$well['layer']),
                 $pumpingRates
@@ -216,7 +215,7 @@ class Hanoi implements ContainerAwareInterface, DataFixtureInterface
             $well = WellBoundary::createWithAllParams(
                 BoundaryId::generate(),
                 BoundaryName::fromString($wellData['name']),
-                BoundaryGeometry::fromPoint(new Point($wellData['x'], $wellData['y'], 4326)),
+                Geometry::fromPoint(new Point($wellData['x'], $wellData['y'], 4326)),
                 WellType::fromString(WellType::TYPE_SCENARIO_MOVED_WELL),
                 LayerNumber::fromInteger(4),
                 PumpingRates::create()->add(PumpingRate::fromCubicMetersPerDay($wellData['pumpingrate']))
@@ -247,7 +246,7 @@ class Hanoi implements ContainerAwareInterface, DataFixtureInterface
             $well = WellBoundary::createWithAllParams(
                 BoundaryId::generate(),
                 BoundaryName::fromString($wellData['name']),
-                BoundaryGeometry::fromPoint(new Point($wellData['x'], $wellData['y'], 4326)),
+                Geometry::fromPoint(new Point($wellData['x'], $wellData['y'], 4326)),
                 WellType::fromString(WellType::TYPE_SCENARIO_NEW_WELL),
                 LayerNumber::fromInteger(4),
                 PumpingRates::create()->add(PumpingRate::fromCubicMetersPerDay($wellData['pumpingrate']))
@@ -294,7 +293,7 @@ class Hanoi implements ContainerAwareInterface, DataFixtureInterface
             $well = WellBoundary::createWithAllParams(
                 BoundaryId::generate(),
                 BoundaryName::fromString($wellData['name']),
-                BoundaryGeometry::fromPoint(new Point($wellData['x'], $wellData['y'], 4326)),
+                Geometry::fromPoint(new Point($wellData['x'], $wellData['y'], 4326)),
                 WellType::fromString(WellType::TYPE_SCENARIO_NEW_WELL),
                 LayerNumber::fromInteger(4),
                 PumpingRates::create()->add(PumpingRate::fromCubicMetersPerDay($wellData['pumpingrate']))
@@ -328,7 +327,7 @@ class Hanoi implements ContainerAwareInterface, DataFixtureInterface
             $well = WellBoundary::createWithAllParams(
                 BoundaryId::generate(),
                 BoundaryName::fromString($wellData['name']),
-                BoundaryGeometry::fromPoint(new Point($wellData['x'], $wellData['y'], 4326)),
+                Geometry::fromPoint(new Point($wellData['x'], $wellData['y'], 4326)),
                 WellType::fromString(WellType::TYPE_SCENARIO_MOVED_WELL),
                 LayerNumber::fromInteger(4),
                 PumpingRates::create()->add(PumpingRate::fromCubicMetersPerDay($wellData['pumpingrate']))
@@ -347,7 +346,7 @@ class Hanoi implements ContainerAwareInterface, DataFixtureInterface
             $well = WellBoundary::createWithAllParams(
                 BoundaryId::generate(),
                 BoundaryName::fromString($wellData['name']),
-                BoundaryGeometry::fromPoint(new Point($wellData['x'], $wellData['y'], 4326)),
+                Geometry::fromPoint(new Point($wellData['x'], $wellData['y'], 4326)),
                 WellType::fromString(WellType::TYPE_SCENARIO_NEW_WELL),
                 LayerNumber::fromInteger(4),
                 PumpingRates::create()->add(PumpingRate::fromCubicMetersPerDay($wellData['pumpingrate']))
@@ -502,8 +501,6 @@ class Hanoi implements ContainerAwareInterface, DataFixtureInterface
             $calculationResultType = ResultType::HEAD_TYPE;
         } elseif ($type == 'drawdown') {
             $calculationResultType = ResultType::DRAWDOWN_TYPE;
-        } elseif ($type == 'cBudget'){
-            $calculationResultType = ResultType::CUMULATIVE_BUDGET_TYPE;
         } else {
             $calculationResultType = ResultType::HEAD_TYPE;
         }
