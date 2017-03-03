@@ -35,6 +35,11 @@ services:
         arguments:
           - '@doctrine.dbal.default_connection'
 
+    inowas.modflow_projection.calculation_budgets_finder:
+        class: Inowas\Modflow\Projection\Calculation\CalculationBudgetFinder
+        arguments:
+          - '@doctrine.dbal.default_connection'
+
     inowas.modflow_projection.calculation_list:
         class: Inowas\Modflow\Projection\Calculation\CalculationListProjector
         arguments:

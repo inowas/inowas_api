@@ -69,7 +69,7 @@ prooph_service_bus:
                     'Inowas\Modflow\Model\Event\BoundaryWasRemovedFromScenario':
                         - 'inowas.modflow_projection.model_boundaries'
 
-                    'Inowas\Modflow\Model\Event\ModflowCalculationWasCreated':
+                    'Inowas\Modflow\Model\Event\CalculationWasCreated':
                         - 'inowas.modflow_projection.calculation_results'
                         - 'inowas.modflow_projection.calculation_list'
 

@@ -4,6 +4,7 @@ namespace Inowas\ModflowBundle\DataFixtures\Scenarios\Hanoi;
 
 use Doctrine\DBAL\Schema\Schema;
 use FOS\UserBundle\Doctrine\UserManager;
+use Inowas\Common\Calculation\BudgetType;
 use Inowas\Common\Fixtures\DataFixtureInterface;
 use Inowas\Common\DateTime\DateTime;
 use Inowas\Common\Geometry\Point;
@@ -187,7 +188,8 @@ class Hanoi implements ContainerAwareInterface, DataFixtureInterface
         $commandBus->dispatch(CreateModflowModelCalculation::byUserWithModelId($calculationId, $ownerId, $modelId, $start, $end));
         $this->loadResultsWithLayer('heads', 0, 2000, 4, 'S0', $calculationId, $commandBus);
         $this->loadResultsWithLayer('drawdown', 0, 2000, 4, 'S0', $calculationId, $commandBus);
-        $this->loadBudgets('budget', 0, 2000, 'S0', $calculationId, $commandBus);
+        $this->loadBudgets('cumulative', 0, 2000, 'S0', $calculationId, $commandBus);
+        $this->loadBudgets('incremental', 0, 2000, 'S0', $calculationId, $commandBus);
 
         /*
          * Begin add Scenario 1
@@ -262,7 +264,8 @@ class Hanoi implements ContainerAwareInterface, DataFixtureInterface
         $commandBus->dispatch(CreateModflowModelCalculation::byUserWithModelAndScenarioId($calculationId, $ownerId, $modelId, $scenarioId, $start, $end));
         $this->loadResultsWithLayer('heads', 0, 2000, 4, 'S1', $calculationId, $commandBus);
         $this->loadResultsWithLayer('drawdown', 0, 2000, 4, 'S1', $calculationId, $commandBus);
-        $this->loadBudgets('budget', 0, 2000, 'S1', $calculationId, $commandBus);
+        $this->loadBudgets('cumulative', 0, 2000, 'S1', $calculationId, $commandBus);
+        $this->loadBudgets('incremental', 0, 2000, 'S1', $calculationId, $commandBus);
 
         /*
          * Begin add Scenario 2
@@ -309,7 +312,8 @@ class Hanoi implements ContainerAwareInterface, DataFixtureInterface
         $commandBus->dispatch(CreateModflowModelCalculation::byUserWithModelAndScenarioId($calculationId, $ownerId, $modelId, $scenarioId, $start, $end));
         $this->loadResultsWithLayer('heads', 0, 2000, 4, 'S2', $calculationId, $commandBus);
         $this->loadResultsWithLayer('drawdown', 0, 2000, 4, 'S2', $calculationId, $commandBus);
-        $this->loadBudgets('budget', 0, 2000, 'S2', $calculationId, $commandBus);
+        $this->loadBudgets('cumulative', 0, 2000, 'S2', $calculationId, $commandBus);
+        $this->loadBudgets('incremental', 0, 2000, 'S2', $calculationId, $commandBus);
 
         /*
         * Begin add Scenario 3
@@ -362,7 +366,8 @@ class Hanoi implements ContainerAwareInterface, DataFixtureInterface
         $commandBus->dispatch(CreateModflowModelCalculation::byUserWithModelAndScenarioId($calculationId, $ownerId, $modelId, $scenarioId, $start, $end));
         $this->loadResultsWithLayer('heads', 0, 2000, 4, 'S3', $calculationId, $commandBus);
         $this->loadResultsWithLayer('drawdown', 0, 2000, 4, 'S3', $calculationId, $commandBus);
-        $this->loadBudgets('budget', 0, 2000, 'S3', $calculationId, $commandBus);
+        $this->loadBudgets('cumulative', 0, 2000, 'S3', $calculationId, $commandBus);
+        $this->loadBudgets('incremental', 0, 2000, 'S3', $calculationId, $commandBus);
     }
 
     public function loadUsers(UserManager $userManager): void
@@ -525,15 +530,28 @@ class Hanoi implements ContainerAwareInterface, DataFixtureInterface
 
     private function loadBudgets(string $type, int $t0, int $t1, string $scenario, ModflowId $calculationId, CommandBus $commandBus)
     {
+        if ($type == 'cumulative'){
+            $budgetType = BudgetType::fromString(BudgetType::CUMULATIVE_BUDGET);
+        }
+
+        if ($type == 'incremental'){
+            $budgetType = BudgetType::fromString(BudgetType::INCREMENTAL_BUDGET);
+        }
+
+        if (!isset($budgetType)){
+            return;
+        }
+
         for ($t=$t0; $t<=$t1; $t++){
-            $fileName = sprintf('%s/%s/%s_%s-T%s.json', __DIR__, $type, $type, $scenario, $t);
+            $fileName = sprintf('%s/budget/%s_budget_%s-T%s.json', __DIR__, $type, $scenario, $t);
             if (file_exists($fileName)){
-                echo sprintf("Load Budgets for %s from totim=%s, %s Memory usage\r\n", $scenario, $t, memory_get_usage());
+                echo sprintf("Load %s Budget for %s from totim=%s, %s Memory usage\r\n", $type, $scenario, $t, memory_get_usage());
                 $budget = $this->loadBudgetFromFile($fileName);
                 $commandBus->dispatch(AddCalculatedBudget::to(
                     $calculationId,
                     TotalTime::fromInt($t),
-                    Budget::fromArray($budget)
+                    Budget::fromArray($budget),
+                    $budgetType
                 ));
             }
         }

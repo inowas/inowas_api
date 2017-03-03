@@ -4,6 +4,7 @@ namespace Inowas\Modflow\Model;
 
 
 use Inowas\Common\Calculation\Budget;
+use Inowas\Common\Calculation\BudgetType;
 use Inowas\Common\Calculation\ResultType;
 use Inowas\Common\DateTime\DateTime;
 use Inowas\Common\DateTime\TotalTime;
@@ -84,9 +85,9 @@ class ModflowCalculationAggregate extends AggregateRoot
         $this->recordThat(HeadWasCalculated::to($this->calculationId, $type, $totalTime, $layerNumber, $fileName));
     }
 
-    public function addCalculatedBudget(TotalTime $totalTime, Budget $budget): void
+    public function addCalculatedBudget(TotalTime $totalTime, Budget $budget, BudgetType $budgetType): void
     {
-        $this->recordThat(BudgetWasCalculated::to($this->calculationId, $totalTime, $budget));
+        $this->recordThat(BudgetWasCalculated::to($this->calculationId, $totalTime, $budget, $budgetType));
     }
 
     public function calculationId(): ModflowId
@@ -141,14 +142,10 @@ class ModflowCalculationAggregate extends AggregateRoot
     }
 
     protected function whenHeadWasCalculated(HeadWasCalculated $event): void
-    {
-        #$this->mergeResult($event->result());
-    }
+    {}
 
     protected function whenBudgetWasCalculated(BudgetWasCalculated $event): void
-    {
-
-    }
+    {}
 
     /**
      * @return string

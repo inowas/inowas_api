@@ -9,13 +9,13 @@ use FOS\RestBundle\Controller\FOSRestController;
 use FOS\RestBundle\Request\ParamFetcher;
 use HeatMap\HeatMap;
 use Inowas\AppBundle\Model\User;
+use Inowas\Common\Calculation\BudgetType;
 use Inowas\Common\Calculation\HeadData;
 use Inowas\Common\Calculation\ResultType;
-use Inowas\Modflow\Model\CalculatedResult;
-use Inowas\Modflow\Model\ColumnNumber;
-use Inowas\Modflow\Model\LayerNumber;
+use Inowas\Common\Grid\ColumnNumber;
+use Inowas\Common\Grid\LayerNumber;
+use Inowas\Common\Grid\RowNumber;
 use Inowas\Common\Id\ModflowId;
-use Inowas\Modflow\Model\RowNumber;
 use Inowas\Common\DateTime\TotalTime;
 use Inowas\Common\Id\UserId;
 use Inowas\ScenarioAnalysisBundle\Exception\InvalidArgumentException;
@@ -436,7 +436,7 @@ class ScenarioAnalysisController extends FOSRestController
         $calculation = $this->get('inowas.modflow_projection.calculation_list_finder')
             ->findLastCalculationByModelId(ModflowId::fromString($modelId));
 
-        $result = $this->get('inowas.modflow_projection.calculation_results_finder')
+        $headData = $this->get('inowas.modflow_projection.calculation_results_finder')
             ->findValue(
                 ModflowId::fromString($calculation['calculation_id']),
                 ResultType::fromString($type),
@@ -447,9 +447,9 @@ class ScenarioAnalysisController extends FOSRestController
 
         $heatMap = new HeatMap();
         if ($paramFetcher->get('min') && $paramFetcher->get('max')){
-            $file = $heatMap->createWithAbsoluteLimits($result->data()->toArray(), (float)$paramFetcher->get('min'), (float)$paramFetcher->get('max'));
+            $file = $heatMap->createWithAbsoluteLimits($headData->toArray(), (float)$paramFetcher->get('min'), (float)$paramFetcher->get('max'));
         } else {
-            $file = $heatMap->createWithPercentileLimits($result->data()->toArray(), (float)$paramFetcher->get('loper'), (float)$paramFetcher->get('upper'));
+            $file = $heatMap->createWithPercentileLimits($headData->toArray(), (float)$paramFetcher->get('loper'), (float)$paramFetcher->get('upper'));
         }
 
         $response = new Response();
@@ -492,7 +492,7 @@ class ScenarioAnalysisController extends FOSRestController
             throw new InvalidUuidException();
         }
 
-        $result = $this->get('inowas.modflow_projection.calculation_results_finder')
+        $headData = $this->get('inowas.modflow_projection.calculation_results_finder')
             ->findValue(
                 ModflowId::fromString($calculationId),
                 ResultType::fromString($type),
@@ -503,9 +503,9 @@ class ScenarioAnalysisController extends FOSRestController
 
         $heatMap = new HeatMap();
         if ($paramFetcher->get('min') && $paramFetcher->get('max')){
-            $file = $heatMap->createWithAbsoluteLimits($result->data()->toArray(), (float)$paramFetcher->get('min'), (float)$paramFetcher->get('max'));
+            $file = $heatMap->createWithAbsoluteLimits($headData->toArray(), (float)$paramFetcher->get('min'), (float)$paramFetcher->get('max'));
         } else {
-            $file = $heatMap->createWithPercentileLimits($result->data()->toArray(), (float)$paramFetcher->get('loper'), (float)$paramFetcher->get('upper'));
+            $file = $heatMap->createWithPercentileLimits($headData->toArray(), (float)$paramFetcher->get('loper'), (float)$paramFetcher->get('upper'));
         }
 
         $response = new Response();
@@ -710,24 +710,79 @@ class ScenarioAnalysisController extends FOSRestController
         return new JsonResponse($timesSeries);
     }
 
-    private function calculateDifferenceResults(CalculatedResult $res1, CalculatedResult $res2): CalculatedResult
+    /**
+     * Returns the incremental/cumulative budget of the timestep from last calculation of model by modelId
+     *
+     * @ApiDoc(
+     *   resource = true,
+     *   description = "Returns the incremental/cumulative budget of the timestep from last calculation of model by modelId",
+     *   statusCodes = {
+     *     200 = "Returned when successful"
+     *   }
+     * )
+     *
+     * @Rest\Get("/model/{modelId}/calculation/budget/type/{type}/totim/{totim}")
+     * @param $modelId
+     * @param $type
+     * @param $totim
+     * @return JsonResponse
+     * @throws InvalidUuidException
+     * @throws InvalidArgumentException
+     */
+    public function getScenarioAnalysisModelCalculationBudgetAction($modelId, $type, $totim): JsonResponse
     {
-        $arr1 = $res1->data()->toArray();
-        $arr2 = $res2->data()->toArray();
+        $modelId = ModflowId::fromString($modelId);
+        $totim = TotalTime::fromInt((int)$totim);
+        $type = BudgetType::fromString($type);
+
+
+        $calculation = $this->get('inowas.modflow_projection.calculation_list_finder')->findLastCalculationByModelId($modelId);
+        $calculationId = ModflowId::fromString($calculation['calculation_id']);
+
+        $budget = $this->get('inowas.modflow_projection.calculation_budgets_finder')
+            ->findBudget($calculationId, $totim, $type);
+
+        return new JsonResponse($budget);
+    }
+
+    /**
+     * Returns the incremental/cumulative budget of the timestep from calculation by calculationId
+     *
+     * @ApiDoc(
+     *   resource = true,
+     *   description = "Returns the incremental/cumulative budget of the timestep from calculation by calculationId",
+     *   statusCodes = {
+     *     200 = "Returned when successful"
+     *   }
+     * )
+     *
+     * @Rest\Get("/calculation/{calculationId}/budget/type/{type}/totim/{totim}")
+     * @param $calculationId
+     * @param $type
+     * @param $totim
+     * @return JsonResponse
+     * @throws InvalidUuidException
+     * @throws InvalidArgumentException
+     */
+    public function getScenarioAnalysisCalculationBudgetAction($calculationId, $type, $totim): JsonResponse
+    {
+        $calculationId = ModflowId::fromString($calculationId);
+        $totim = TotalTime::fromInt((int)$totim);
+        $type = BudgetType::fromString($type);
+
+        $budget = $this->get('inowas.modflow_projection.calculation_budgets_finder')
+            ->findBudget($calculationId, $totim, $type);
+
+        return new JsonResponse($budget);
+    }
+
+    private function calculateDifferenceResults(HeadData $res1, HeadData $res2): HeadData
+    {
+        $arr1 = $res1->toArray();
+        $arr2 = $res2->toArray();
+
         if (! (count($arr1) == count($arr2) && count($arr1[0]) == count($arr2[0]))){
             throw new \Exception('Arrays not in the same range');
-        }
-
-        if ($res1->type()->toString() != $res2->type()->toString()) {
-            throw new \Exception('Type is not the same');
-        }
-
-        if ($res1->totalTime()->toInteger() != $res2->totalTime()->toInteger()) {
-            throw new \Exception('Type is not the same');
-        }
-
-        if ($res1->layerNumber()->toInteger() != $res2->layerNumber()->toInteger()) {
-            throw new \Exception('LayerNumber is not the same');
         }
 
         $result = [];
@@ -742,8 +797,6 @@ class ScenarioAnalysisController extends FOSRestController
             }
         }
 
-        return CalculatedResult::fromParameters(
-            $res1->type(), $res1->totalTime(), $res1->layerNumber(), HeadData::from2dArray($result)
-        );
+        return HeadData::from2dArray($result);
     }
 }

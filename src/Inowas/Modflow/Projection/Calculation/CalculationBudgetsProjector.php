@@ -8,7 +8,6 @@ use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Exception\TableNotFoundException;
 use Doctrine\DBAL\Schema\Schema;
 use Inowas\Modflow\Model\Event\BudgetWasCalculated;
-use Inowas\Modflow\Model\Event\HeadWasCalculated;
 use Inowas\Modflow\Projection\ProjectionInterface;
 use Inowas\Modflow\Projection\Table;
 
@@ -30,6 +29,7 @@ class CalculationBudgetsProjector implements ProjectionInterface
         $table->addColumn('id', 'integer', array("unsigned" => true, "autoincrement" => true));
         $table->addColumn('calculation_id', 'string', ['length' => 36]);
         $table->addColumn('totim', 'integer');
+        $table->addColumn('budget_type', 'string', ['length' => 36]);
         $table->addColumn('budget', 'text');
         $table->setPrimaryKey(['id']);
     }
@@ -72,7 +72,8 @@ class CalculationBudgetsProjector implements ProjectionInterface
         $this->connection->insert(Table::CALCULATION_BUDGETS, array(
             'calculation_id' => $event->calculationId()->toString(),
             'totim' => $event->totalTime()->toInteger(),
-            'budget' => json_encode($event->budget()->toArray())
+            'budget' => json_encode($event->budget()->toArray()),
+            'budget_type' => $event->type()->toString()
         ));
     }
 }

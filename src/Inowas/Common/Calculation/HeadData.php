@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Inowas\Common\Calculation;
 
-class HeadData
+class HeadData implements \JsonSerializable
 {
     /** @var  array */
     private $data;
@@ -17,6 +17,14 @@ class HeadData
     }
 
     public function toArray(): array
+    {
+        return $this->data;
+    }
+
+    /**
+     * @return mixed
+     */
+    function jsonSerialize()
     {
         return $this->data;
     }

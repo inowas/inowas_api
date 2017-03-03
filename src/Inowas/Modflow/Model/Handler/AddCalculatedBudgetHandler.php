@@ -28,6 +28,6 @@ final class AddCalculatedBudgetHandler
             throw ModflowCalculationNotFoundException::withId($command->calculationId());
         }
 
-        $calculation->addCalculatedBudget($command->totalTime(), $command->budget());
+        $calculation->addCalculatedBudget($command->totalTime(), $command->budget(), $command->type());
     }
 }

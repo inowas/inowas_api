@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Inowas\Modflow\Projection\Calculation;
 
 use Doctrine\DBAL\Connection;
+use Inowas\Common\Calculation\HeadData;
 use Inowas\Common\Grid\ColumnNumber;
 use Inowas\Common\FileSystem\FileName;
 use Inowas\Common\Grid\LayerNumber;
@@ -77,7 +78,7 @@ class CalculationResultsFinder
         return $result;
     }
 
-    public function findValue(ModflowId $calculationId, ResultType $type, LayerNumber $layerNumber, TotalTime $totalTime)
+    public function findValue(ModflowId $calculationId, ResultType $type, LayerNumber $layerNumber, TotalTime $totalTime): HeadData
     {
         $filename = $this->connection->fetchColumn(
 
@@ -94,11 +95,10 @@ class CalculationResultsFinder
             throw new \Exception();
         }
 
-
         return $this->persister->read($calculationId, FileName::fromString($filename));
     }
 
-    public function findTimeSeries(ModflowId $calculationId, ResultType $type, LayerNumber $layerNumber, ColumnNumber $nx, RowNumber $ny)
+    public function findTimeSeries(ModflowId $calculationId, ResultType $type, LayerNumber $layerNumber, ColumnNumber $nx, RowNumber $ny): array
     {
         $rows = $this->connection->fetchAll(
             sprintf('SELECT filename, totim from %s WHERE calculation_id = :calculation_id AND type = :type AND layer = :layer', Table::CALCULATION_RESULTS),

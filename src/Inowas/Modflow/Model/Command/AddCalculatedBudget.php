@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Inowas\Modflow\Model\Command;
 
 use Inowas\Common\Calculation\Budget;
+use Inowas\Common\Calculation\BudgetType;
 use Inowas\Common\Id\ModflowId;
 use Inowas\Common\DateTime\TotalTime;
 use Prooph\Common\Messaging\Command;
@@ -15,12 +16,13 @@ class AddCalculatedBudget extends Command implements PayloadConstructable
 {
     use PayloadTrait;
 
-    public static function to(ModflowId $calculationId, TotalTime $totalTime, Budget $budgetData): AddCalculatedBudget
+    public static function to(ModflowId $calculationId, TotalTime $totalTime, Budget $budgetData, BudgetType $budgetType): AddCalculatedBudget
     {
         $payload = [
             'calculation_id' => $calculationId->toString(),
             'totim' => $totalTime->toInteger(),
-            'data' => $budgetData->toArray()
+            'data' => $budgetData->toArray(),
+            'type' => $budgetType->toString()
         ];
 
         return new self($payload);
@@ -39,5 +41,10 @@ class AddCalculatedBudget extends Command implements PayloadConstructable
     public function budget(): Budget
     {
         return Budget::fromArray($this->payload['data']);
+    }
+
+    public function type(): BudgetType
+    {
+        return BudgetType::fromString($this->payload['type']);
     }
 }

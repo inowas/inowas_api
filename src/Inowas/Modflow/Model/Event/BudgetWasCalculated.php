@@ -5,30 +5,36 @@ declare(strict_types=1);
 namespace Inowas\Modflow\Model\Event;
 
 use Inowas\Common\Calculation\Budget;
+use Inowas\Common\Calculation\BudgetType;
 use Inowas\Common\Id\ModflowId;
 use Inowas\Common\DateTime\TotalTime;
 use Prooph\EventSourcing\AggregateChanged;
 
 class BudgetWasCalculated extends AggregateChanged
 {
-    /** @var  \Inowas\Common\Id\ModflowId */
+    /** @var ModflowId */
     private $calculationId;
 
-    /** @var  \Inowas\Common\DateTime\TotalTime */
+    /** @var  TotalTime */
     protected $totalTime;
 
-    /** @var  \Inowas\Common\Calculation\Budget */
+    /** @var  Budget */
     protected $budget;
+
+    /** @var  BudgetType */
+    protected $budgetType;
 
     public static function to(
         ModflowId $calculationId,
         TotalTime $totalTime,
-        Budget $budget
+        Budget $budget,
+        BudgetType $budgetType
     ): BudgetWasCalculated
     {
         $event = self::occur($calculationId->toString(),[
             'total_time' => $totalTime->toInteger(),
-            'budget' => $budget->toArray()
+            'budget' => $budget->toArray(),
+            'type' => $budgetType->toString()
         ]);
 
         return $event;
@@ -59,5 +65,14 @@ class BudgetWasCalculated extends AggregateChanged
         }
 
         return $this->budget;
+    }
+
+    public function type(): BudgetType
+    {
+        if ($this->budgetType === null) {
+            $this->budgetType = BudgetType::fromString($this->payload['type']);
+        }
+
+        return $this->budgetType;
     }
 }

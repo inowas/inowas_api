@@ -63,7 +63,6 @@ class CalculationListProjector implements ProjectionInterface
         $this->truncateTable();
     }
 
-
     private function executeQueryArray(array $queries): void
     {
         foreach ($queries as $query){
@@ -71,7 +70,7 @@ class CalculationListProjector implements ProjectionInterface
         }
     }
 
-    public function onModflowCalculationWasCreated(CalculationWasCreated $event): void
+    public function onCalculationWasCreated(CalculationWasCreated $event): void
     {
         $this->connection->insert(Table::CALCULATION_LIST, array(
             'calculation_id' => $event->calculationId()->toString(),
