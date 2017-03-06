@@ -22,7 +22,7 @@ class BoundaryFinder
     public function findByModelId(ModflowId $modelId)
     {
         return $this->connection->fetchAll(
-            sprintf('SELECT boundary_id, name, geometry, metadata FROM %s WHERE model_id = :model_id', Table::BOUNDARIES),
+            sprintf('SELECT boundary_id, type, name, geometry, metadata FROM %s WHERE model_id = :model_id', Table::BOUNDARIES),
             ['model_id' => $modelId->toString()]
         );
     }
