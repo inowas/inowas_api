@@ -116,6 +116,8 @@ class ScenarioAnalysisController extends FOSRestController
         }
 
         $baselModel = $baselModel[0];
+        $baselModel->area = json_decode($baselModel->area);
+
         $scenarios = $this->get('inowas.model_scenarios_finder')->findScenariosByUserAndBaseModelId(
             UserId::fromString($this->getUser()->getId()->toString()),
             ModflowId::fromString($baseModelId)
