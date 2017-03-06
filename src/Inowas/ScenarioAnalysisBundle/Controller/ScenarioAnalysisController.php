@@ -115,6 +115,7 @@ class ScenarioAnalysisController extends FOSRestController
             throw new InvalidArgumentException('BaseModelNotFound');
         }
 
+        $baselModel = $baselModel[0];
         $scenarios = $this->get('inowas.model_scenarios_finder')->findScenariosByUserAndBaseModelId(
             UserId::fromString($this->getUser()->getId()->toString()),
             ModflowId::fromString($baseModelId)
@@ -122,7 +123,7 @@ class ScenarioAnalysisController extends FOSRestController
 
         return new JsonResponse(
             [
-                'base_model' => $baselModel[0],
+                'base_model' => $baselModel,
                 'scenarios' => $scenarios
             ]
         );
