@@ -106,11 +106,25 @@ class ScenarioAnalysisController extends FOSRestController
             throw new InvalidUuidException();
         }
 
+        $baselModel = $this->get('inowas.model_scenarios_finder')->findBaseModelByUserAndId(
+            UserId::fromString($this->getUser()->getId()->toString()),
+            ModflowId::fromString($baseModelId)
+        );
+
+        if (! is_array($baselModel) || count($baselModel) != 1){
+            throw new InvalidArgumentException('BaseModelNotFound');
+        }
+
+        $scenarios = $this->get('inowas.model_scenarios_finder')->findScenariosByUserAndBaseModelId(
+            UserId::fromString($this->getUser()->getId()->toString()),
+            ModflowId::fromString($baseModelId)
+        );
+
         return new JsonResponse(
-            $this->get('inowas.model_scenarios_finder')->findByUserAndBaseModelId(
-                UserId::fromString($this->getUser()->getId()->toString()),
-                ModflowId::fromString($baseModelId)
-            )
+            [
+                'base_model' => $baselModel[0],
+                'scenarios' => $scenarios
+            ]
         );
     }
 
