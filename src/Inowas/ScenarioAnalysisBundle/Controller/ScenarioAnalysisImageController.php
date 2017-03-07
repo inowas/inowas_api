@@ -17,7 +17,7 @@ use Nelmio\ApiDocBundle\Annotation\ApiDoc as ApiDoc;
 use Ramsey\Uuid\Uuid;
 use Symfony\Component\HttpFoundation\Response;
 
-class ScenarioAnalysisImageControllerController extends FOSRestController
+class ScenarioAnalysisImageController extends FOSRestController
 {
     /**
      * Get calculation result as image by calculationId, type and layerNumber.
