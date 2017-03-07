@@ -2,3 +2,7 @@ rest_scenario_analysis:
     type: rest
     resource: '@InowasScenarioAnalysisBundle/Controller/ScenarioAnalysisController.php'
     prefix:    /api/scenarioanalysis
+
+    type: rest
+    resource: '@InowasScenarioAnalysisBundle/Controller/ScenarioAnalysisImageController.php.php'
+    prefix:    /image/scenarioanalysis
