@@ -64,8 +64,9 @@ class ScenarioAnalysisImageController extends FOSRestController
                 TotalTime::fromInt((int)$totim)
             );
 
-
-        $heatMap = new HeatMap();
+        #$spectrum = array('purple', 'red', 'yellow', 'lime', 'aqua', 'blue');
+        $spectrum = array('#800080', '#FF0000', '#FFFF00', '#00FF00', '#00FFFF', '#0000FF');
+        $heatMap = new HeatMap($spectrum);
         if ($paramFetcher->get('min') && $paramFetcher->get('max')){
             $file = $heatMap->createWithAbsoluteLimits($headData->toArray(), (float)$paramFetcher->get('min'), (float)$paramFetcher->get('max'));
         } else {
@@ -120,8 +121,9 @@ class ScenarioAnalysisImageController extends FOSRestController
                 TotalTime::fromInt((int)$totim)
             );
 
-
-        $heatMap = new HeatMap();
+        #$spectrum = array('purple', 'red', 'yellow', 'lime', 'aqua', 'blue');
+        $spectrum = array('#800080', '#FF0000', '#FFFF00', '#00FF00', '#00FFFF', '#0000FF');
+        $heatMap = new HeatMap($spectrum);
         if ($paramFetcher->get('min') && $paramFetcher->get('max')){
             $file = $heatMap->createWithAbsoluteLimits($headData->toArray(), (float)$paramFetcher->get('min'), (float)$paramFetcher->get('max'));
         } else {

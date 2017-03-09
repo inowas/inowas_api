@@ -403,7 +403,7 @@ class Hanoi implements ContainerAwareInterface, DataFixtureInterface
         $this->ownerId = UserId::fromString($userManager->findUserByUsername('inowas')->getId()->toString());
     }
 
-    private function loadHeadsFromFile($filename){
+    private function loadHeadsFromFile($filename, $invert = false){
 
         if (!file_exists($filename) || !is_readable($filename)) {
             echo "File not found.\r\n";
@@ -420,6 +420,10 @@ class Hanoi implements ContainerAwareInterface, DataFixtureInterface
                     $heads[$iy][$ix] = null;
                 } else {
                     $heads[$iy][$ix] = round($heads[$iy][$ix], 2);
+
+                    if ($invert) {
+                        $heads[$iy][$ix] = -$heads[$iy][$ix];
+                    }
                 }
             }
         }
@@ -515,7 +519,7 @@ class Hanoi implements ContainerAwareInterface, DataFixtureInterface
                 $fileName = sprintf('%s/%s/%s_%s-T%s-L%s.json', __DIR__, $type, $type, $scenario, $t, $l);
                 if (file_exists($fileName)){
                     echo sprintf("Load %s for %s from totim=%s and Layer=%s, %s Memory usage\r\n", $type, $scenario, $t, $l, memory_get_usage());
-                    $heads = $this->loadHeadsFromFile($fileName);
+                    $heads = $this->loadHeadsFromFile($fileName, $type=='drawdown');
                     $commandBus->dispatch(AddCalculatedHead::to(
                         $calculationId,
                         TotalTime::fromInt($t),
