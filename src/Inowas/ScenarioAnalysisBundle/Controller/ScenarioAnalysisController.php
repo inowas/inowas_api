@@ -56,6 +56,33 @@ class ScenarioAnalysisController extends FOSRestController
     }
 
     /**
+     * Get list of public scenarioAnalysis-projects.
+     *
+     * @ApiDoc(
+     *   resource = true,
+     *   description = "Get list of public scenarioAnalysis-projects.",
+     *   statusCodes = {
+     *     200 = "Returned when successful"
+     *   }
+     * )
+     *
+     * @Rest\Get("/public/projects")
+     * @return JsonResponse
+     */
+    public function getScenarioAnalysisPublicProjectsAction(): JsonResponse
+    {
+        $user = $this->getUser();
+        if (!$user instanceof User) {
+            return new JsonResponse([]);
+        }
+
+        return new JsonResponse(
+            $this->get('inowas.modflow_projection.model_details_finder')
+                ->findPublic()
+        );
+    }
+
+    /**
      * Get list of scenarioAnalysis-project by UserId.
      *
      * @ApiDoc(

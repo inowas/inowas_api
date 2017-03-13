@@ -34,4 +34,12 @@ class ModelDetailsFinder
             ['user_id' => $userId->toString()]
         );
     }
+
+    public function findPublic(): array
+    {
+        return $this->connection->fetchAll(
+            sprintf('SELECT * FROM %s WHERE public = :public', Table::MODEL_DETAILS),
+            ['public' => true]
+        );
+    }
 }

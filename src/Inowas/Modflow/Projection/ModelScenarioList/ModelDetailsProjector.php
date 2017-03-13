@@ -45,6 +45,7 @@ class ModelDetailsProjector implements ProjectionInterface
         $table->addColumn('bounding_box', 'text', ['notnull' => false]);
         $table->addColumn('created_at', 'string', ['length' => 255, 'notnull' => false]);
         $table->addColumn('nr_of_scenarios', 'integer');
+        $table->addColumn('public', 'boolean');
         $table->setPrimaryKey(['id']);
         $table->addIndex(array('model_id'));
     }
@@ -57,7 +58,8 @@ class ModelDetailsProjector implements ProjectionInterface
             'name' => '',
             'description' => '',
             'created_at' => date_format($event->createdAt(), DATE_ATOM),
-            'nr_of_scenarios' => 0
+            'nr_of_scenarios' => 0,
+            'public' => true
         ));
     }
 

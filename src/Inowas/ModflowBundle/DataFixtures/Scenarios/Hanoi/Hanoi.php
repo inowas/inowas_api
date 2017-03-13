@@ -376,6 +376,7 @@ class Hanoi implements ContainerAwareInterface, DataFixtureInterface
         $userListHeads = array('username', 'email', 'password');
         $userList = array(
             array('inowas', 'inowas@inowas.com', 'inowas'),
+            array('guest', 'guest@inowas.com', 'bmbf12zkxf'),
             array('ralf.junghanns', 'ralf.junghanns@tu-dresden.de', 'inowas'),
             array('jana.ringleb', 'jana.ringleb@tu-dresden.de', 'inowas'),
             array('jana.sallwey', 'jana.sallwey@tu-dresden.de', 'inowas'),
