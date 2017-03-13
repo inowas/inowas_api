@@ -38,7 +38,7 @@ class ModelScenarioFinder
     public function findBaseModelByUserAndId(UserId $userId, ModflowId $baseModelId)
     {
         return $this->connection->fetchAll(
-            sprintf('SELECT base_model_id as model_id, name, description, area, grid_size, bounding_box FROM %s WHERE base_model_id = :base_model_id AND user_id = :user_id AND scenario_id = :scenario_id ORDER BY id', Table::MODEL_SCENARIO_LIST),
+            sprintf('SELECT base_model_id as model_id, name, description, area, grid_size, bounding_box FROM %s WHERE base_model_id = :base_model_id AND user_id = :user_id c ORDER BY id', Table::MODEL_SCENARIO_LIST),
             [
                 'base_model_id' => $baseModelId->toString(),
                 'scenario_id' => '',
@@ -62,8 +62,11 @@ class ModelScenarioFinder
     public function findByBaseModelId(ModflowId $baseModelId)
     {
         return $this->connection->fetchAll(
-            sprintf('SELECT * FROM %s WHERE base_model_id = :base_model_id', Table::MODEL_SCENARIO_LIST),
-            ['base_model_id' => $baseModelId->toString()]
+            sprintf('SELECT * FROM %s WHERE base_model_id = :base_model_id AND scenario_id = :scenario_id', Table::MODEL_SCENARIO_LIST),
+            [
+                'base_model_id' => $baseModelId->toString(),
+                'scenario_id' => ''
+            ]
         );
     }
 
