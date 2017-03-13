@@ -66,4 +66,15 @@ class ModelScenarioFinder
             ['base_model_id' => $baseModelId->toString()]
         );
     }
+
+    public function findScenariosByBaseModelId(ModflowId $baseModelId)
+    {
+        return $this->connection->fetchAll(
+            sprintf('SELECT scenario_id as model_id, name, description FROM %s WHERE base_model_id = :base_model_id AND NOT scenario_id = :scenario_id ORDER BY id', Table::MODEL_SCENARIO_LIST),
+            [
+                'base_model_id' => $baseModelId->toString(),
+                'scenario_id' => ''
+            ]
+        );
+    }
 }
