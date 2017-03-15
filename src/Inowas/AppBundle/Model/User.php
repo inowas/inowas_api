@@ -10,6 +10,9 @@ class User extends BaseUser
     /** @var  Uuid */
     protected $id;
 
+    /** @var  string */
+    protected $name;
+
     /** @var  Uuid */
     protected $apiKey;
 
@@ -34,5 +37,11 @@ class User extends BaseUser
     public function getId(): Uuid
     {
         return $this->id;
+    }
+
+    public function setName(string $name): User
+    {
+        $this->name = $name;
+        return $this;
     }
 }

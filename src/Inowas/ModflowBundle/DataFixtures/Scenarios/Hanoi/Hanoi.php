@@ -373,23 +373,26 @@ class Hanoi implements ContainerAwareInterface, DataFixtureInterface
     public function loadUsers(UserManager $userManager): void
     {
 
-        $userListHeads = array('username', 'email', 'password');
+        $userListHeads = array('username', 'name', 'email', 'password');
         $userList = array(
-            array('inowas', 'inowas@inowas.com', 'inowas'),
-            array('guest', 'guest@inowas.com', '3BJ-w7v-BtP-xes'),
-            array('ralf.junghanns', 'ralf.junghanns@tu-dresden.de', 'inowas'),
-            array('jana.ringleb', 'jana.ringleb@tu-dresden.de', 'inowas'),
-            array('jana.sallwey', 'jana.sallwey@tu-dresden.de', 'inowas'),
-            array('catalin.stefan', 'catalin.stefan@tu-dresden.de', 'inowas')
+            array('inowas', 'inowas', 'inowas@inowas.com', '#inowas#'),
+            array('guest', 'guest', 'guest@inowas.com', '3BJ-w7v-BtP-xes'),
+            array('ralf.junghanns', 'Ralf Junghanns', 'ralf.junghanns@tu-dresden.de', '#inowas#'),
+            array('jana.glass', 'Jana Glass', 'jana.ringleb@tu-dresden.de', '#inowas#'),
+            array('jana.sallwey', 'Jana Sallwey', 'jana.sallwey@tu-dresden.de', '#inowas#'),
+            array('catalin.stefan', 'Catalin Stefan', 'catalin.stefan@tu-dresden.de', '#inowas#'),
+            array('martin.wudenka', 'Martin Wudenka', 'martin.wudenka@tu-dresden.de', '#inowas#')
         );
 
         foreach ($userList as $item){
             $item = array_combine($userListHeads, $item);
             $user = $userManager->findUserByUsername($item['username']);
             if (!$user) {
+
                 // Add new User
                 $user = $userManager->createUser();
                 $user->setUsername($item['username']);
+                $user->setName($item['name']);
                 $user->setEmail($item['email']);
                 $user->setPlainPassword($item['password']);
                 $user->setEnabled(true);
@@ -398,10 +401,10 @@ class Hanoi implements ContainerAwareInterface, DataFixtureInterface
             $this->userIdList[] = UserId::fromString($user->getId()->toString());
         }
 
-        $owner = $userManager->findUserByUsername('inowas');
+        $owner = $userManager->findUserByUsername('jana.glass');
         $owner->addRole('ROLE_ADMIN');
         $userManager->updateUser($owner);
-        $this->ownerId = UserId::fromString($userManager->findUserByUsername('inowas')->getId()->toString());
+        $this->ownerId = $owner->getId()->toString();
     }
 
     private function loadHeadsFromFile($filename, $invert = false){
