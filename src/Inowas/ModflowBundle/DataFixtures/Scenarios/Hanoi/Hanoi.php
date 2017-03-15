@@ -421,10 +421,10 @@ class Hanoi implements ContainerAwareInterface, DataFixtureInterface
 
         for ($iy = 0; $iy < count($heads); $iy++){
             for ($ix = 0; $ix < count($heads[0]); $ix++){
-                if ($heads[$iy][$ix] <= -9999){
+                if (abs($heads[$iy][$ix]) > 9999){
                     $heads[$iy][$ix] = null;
                 } else {
-                    $heads[$iy][$ix] = round($heads[$iy][$ix], 2);
+                    $heads[$iy][$ix] = round($heads[$iy][$ix], 3);
 
                     if ($invert) {
                         $heads[$iy][$ix] = -$heads[$iy][$ix];
