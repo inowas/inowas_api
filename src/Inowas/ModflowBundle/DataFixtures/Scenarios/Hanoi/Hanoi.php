@@ -44,6 +44,7 @@ use Prooph\EventStore\Adapter\Doctrine\Schema\EventStoreSchema;
 use Prooph\ServiceBus\CommandBus;
 use Symfony\Component\DependencyInjection\ContainerAwareInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
+use Symfony\Component\Validator\Constraints\Uuid;
 
 ini_set('memory_limit', '2048M');
 
@@ -78,7 +79,7 @@ class Hanoi implements ContainerAwareInterface, DataFixtureInterface
         $this->loadUsers($userManager);
 
         $commandBus = $this->container->get('prooph_service_bus.modflow_command_bus');
-        $ownerId = $this->ownerId;
+        $ownerId = UserId::fromString($this->ownerId);
         $modelId = ModflowId::generate();
         $commandBus->dispatch(CreateModflowModel::byUserWithModelId($ownerId, $modelId));
         $commandBus->dispatch(ChangeModflowModelName::forModflowModel($ownerId, $modelId, ModflowModelName::fromString('BaseModel INOWAS Hanoi')));
