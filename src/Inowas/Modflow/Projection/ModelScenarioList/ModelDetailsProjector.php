@@ -7,6 +7,8 @@ namespace Inowas\Modflow\Projection\ModelScenarioList;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Exception\TableNotFoundException;
 use Doctrine\DBAL\Schema\Schema;
+use Doctrine\ORM\EntityManager;
+use Inowas\AppBundle\Model\User;
 use Inowas\Modflow\Model\Event\BoundaryWasAdded;
 use Inowas\Modflow\Model\Event\BoundaryWasRemoved;
 use Inowas\Modflow\Model\Event\ModflowModelBoundaryWasUpdated;
@@ -26,18 +28,24 @@ class ModelDetailsProjector implements ProjectionInterface
     /** @var Connection $connection */
     protected $connection;
 
+
+    /** @var  EntityManager $entityManager */
+    protected $entityManager;
+
     /** @var Schema $schema */
     protected $schema;
 
-    public function __construct(Connection $connection)
+    public function __construct(Connection $connection, EntityManager $entityManager)
     {
         $this->connection = $connection;
+        $this->entityManager = $entityManager;
 
         $this->schema = new Schema();
         $table = $this->schema->createTable(Table::MODEL_DETAILS);
         $table->addColumn('id', 'integer', array("unsigned" => true, "autoincrement" => true));
         $table->addColumn('model_id', 'string', ['length' => 36]);
         $table->addColumn('user_id', 'string', ['length' => 36]);
+        $table->addColumn('user_name', 'string', ['length' => 255]);
         $table->addColumn('name', 'string', ['length' => 255]);
         $table->addColumn('description', 'string', ['length' => 255]);
         $table->addColumn('area', 'text', ['notnull' => false]);
@@ -55,6 +63,7 @@ class ModelDetailsProjector implements ProjectionInterface
         $this->connection->insert(Table::MODEL_DETAILS, array(
             'model_id' => $event->modflowModelId()->toString(),
             'user_id' => $event->userId()->toString(),
+            'user_name' => $this->getUserNameByUserId($event->userId()->toString()),
             'name' => '',
             'description' => '',
             'created_at' => date_format($event->createdAt(), DATE_ATOM),
@@ -189,5 +198,16 @@ class ModelDetailsProjector implements ProjectionInterface
         foreach ($queries as $query) {
             $this->connection->executeQuery($query);
         }
+    }
+
+    private function getUserNameByUserId(string $id): string
+    {
+        $username = '';
+        $user = $this->entityManager->getRepository('InowasAppBundle:User')->findOneBy(array('id' => $id));
+        if ($user instanceof User){
+            $username = $user->getName();
+        }
+
+        return $username;
     }
 }

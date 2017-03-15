@@ -7,8 +7,6 @@ namespace Inowas\Modflow\Projection\ModelScenarioList;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Exception\TableNotFoundException;
 use Doctrine\DBAL\Schema\Schema;
-use Doctrine\ORM\EntityManager;
-use Inowas\AppBundle\Model\User;
 use Inowas\Modflow\Model\Event\BoundaryWasAdded;
 use Inowas\Modflow\Model\Event\ModflowModelBoundaryWasUpdated;
 use Inowas\Modflow\Model\Event\ModflowModelBoundingBoxWasChanged;
@@ -28,22 +26,17 @@ class ModelScenarioListProjector implements ProjectionInterface
     /** @var Connection $connection */
     protected $connection;
 
-    /** @var  EntityManager $entityManager */
-    protected $entityManager;
-
     /** @var Schema $schema */
     protected $schema;
 
-    public function __construct(Connection $connection, EntityManager $entityManager)
+    public function __construct(Connection $connection)
     {
         $this->connection = $connection;
-        $this->entityManager = $entityManager;
 
         $this->schema = new Schema();
         $table = $this->schema->createTable(Table::MODEL_SCENARIO_LIST);
         $table->addColumn('id', 'integer', array("unsigned" => true, "autoincrement" => true));
         $table->addColumn('user_id', 'string', ['length' => 36]);
-        $table->addColumn('user_name', 'string', ['length' => 255]);
         $table->addColumn('base_model_id', 'string', ['length' => 36]);
         $table->addColumn('scenario_id', 'string', ['length' => 36]);
         $table->addColumn('name', 'string', ['length' => 255]);
@@ -93,7 +86,6 @@ class ModelScenarioListProjector implements ProjectionInterface
     {
         $this->connection->insert(Table::MODEL_SCENARIO_LIST, array(
             'user_id' => $event->userId()->toString(),
-            'user_name' => $this->getUserNameByUserId($event->userId()->toString()),
             'base_model_id' => $event->modflowModelId()->toString(),
             'scenario_id' => '',
             'name' => '',
@@ -121,7 +113,6 @@ class ModelScenarioListProjector implements ProjectionInterface
     {
         $this->connection->insert(Table::MODEL_SCENARIO_LIST, array(
             'user_id' => $event->userId()->toString(),
-            'user_name' => $this->getUserNameByUserId($event->userId()->toString()),
             'base_model_id' => $event->baseModelId()->toString(),
             'scenario_id' => $event->scenarioId()->toString(),
             'name' => '',
@@ -187,16 +178,5 @@ class ModelScenarioListProjector implements ProjectionInterface
             array('grid_size' => json_encode($event->gridSize())),
             array('base_model_id' => $event->modflowModelId()->toString())
         );
-    }
-
-    private function getUserNameByUserId(string $id): string
-    {
-        $username = '';
-        $user = $this->entityManager->getRepository('InowasAppBundle:User')->findOneBy(array('id' => $id));
-        if ($user instanceof User){
-            $username = $user->getUsername();
-        }
-
-        return $username;
     }
 }

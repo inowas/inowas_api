@@ -3,7 +3,6 @@ services:
         class: Inowas\Modflow\Projection\ModelScenarioList\ModelScenarioListProjector
         arguments:
           - '@doctrine.dbal.default_connection'
-          - '@doctrine.orm.default_entity_manager'
 
     inowas.model_scenarios_finder:
         class: Inowas\Modflow\Projection\ModelScenarioList\ModelScenarioFinder
@@ -55,6 +54,7 @@ services:
         class: Inowas\Modflow\Projection\ModelScenarioList\ModelDetailsProjector
         arguments:
           - '@doctrine.dbal.default_connection'
+          - '@doctrine.orm.default_entity_manager'
 
     inowas.modflow_projection.model_details_finder:
         class: Inowas\Modflow\Projection\ModelScenarioList\ModelDetailsFinder
