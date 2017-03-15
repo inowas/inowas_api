@@ -82,7 +82,7 @@ class Hanoi implements ContainerAwareInterface, DataFixtureInterface
         $ownerId = UserId::fromString($this->ownerId);
         $modelId = ModflowId::generate();
         $commandBus->dispatch(CreateModflowModel::byUserWithModelId($ownerId, $modelId));
-        $commandBus->dispatch(ChangeModflowModelName::forModflowModel($ownerId, $modelId, ModflowModelName::fromString('Base Scenario')));
+        $commandBus->dispatch(ChangeModflowModelName::forModflowModel($ownerId, $modelId, ModflowModelName::fromString('Base Scenario Hanoi 2005-2007')));
         $commandBus->dispatch(ChangeModflowModelDescription::forModflowModel(
             $ownerId,
             $modelId,
