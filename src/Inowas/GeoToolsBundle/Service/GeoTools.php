@@ -44,6 +44,11 @@ class GeoTools
             return null;
         };
 
+        $result = $this->connection->fetchAssoc(sprintf('SELECT ST_GeomFromText(\'%s\');', $areaPolygon->asText()));
+        $areaGeometry = $result['st_geomfromtext'];
+
+
+
         $dX = ($boundingBox->xMax()-$boundingBox->xMin())/$gridSize->nX();
         $dY = ($boundingBox->yMax()-$boundingBox->yMin())/$gridSize->nY();
 
@@ -61,12 +66,24 @@ class GeoTools
                     $boundingBox->yMax()-(($y+0.5)*$dY)
                 );
 
-                $activeCells[$x][$y] = $this->intersect($cellWkt, $areaPolygon->asText());
+                $activeCells[$x][$y] = $this->intersectWktGeometry($cellWkt, $areaGeometry);
                 unset($cellWkt);
             }
         }
 
         return \Inowas\Common\Grid\ActiveCells::fromArray($activeCells);
+    }
+
+    private function intersectWktGeometry(string $wkt, string $geometry){
+
+        $result = $this->connection->fetchAssoc(sprintf(
+                'SELECT ST_Intersects(ST_GeomFromText(\'%s\'), \'%s\'::geometry);',
+                $wkt,
+                $geometry
+            )
+        );
+
+        return $result['st_intersects'];
     }
 
     private function intersect(string $wkt1, string $wkt2){

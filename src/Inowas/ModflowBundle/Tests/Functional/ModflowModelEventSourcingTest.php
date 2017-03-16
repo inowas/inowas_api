@@ -8,12 +8,13 @@ ini_set('memory_limit', '1024M');
 
 use CrEOF\Spatial\PHP\Types\Geometry\Point;
 use CrEOF\Spatial\PHP\Types\Geometry\Polygon;
+use Inowas\Common\DateTime\DateTime;
+use Inowas\Common\Grid\BoundingBox;
 use Inowas\GeoToolsBundle\Service\GeoTools;
 use Inowas\Common\Boundaries\AreaBoundary;
 use Inowas\Common\Geometry\Geometry;
 use Inowas\Common\Id\BoundaryId;
 use Inowas\Common\Boundaries\BoundaryName;
-use Inowas\Modflow\Model\CalculatedResult;
 use Inowas\Common\Calculation\HeadData;
 use Inowas\Common\Calculation\ResultType;
 use Inowas\Modflow\Model\Command\AddBoundary;
@@ -29,11 +30,8 @@ use Inowas\Modflow\Model\Command\CreateModflowModelCalculation;
 use Inowas\Modflow\Model\Command\RemoveBoundary;
 use Inowas\Modflow\Model\Command\UpdateBoundary;
 use Inowas\Modflow\Model\Event\ModflowModelWasCreated;
-use Inowas\Modflow\Model\LayerNumber;
-use Inowas\Common\Boundaries\ModflowBoundary;
 use Inowas\Modflow\Model\ModflowCalculationAggregate;
 use Inowas\Modflow\Model\ModflowModelAggregate;
-use Inowas\Common\Grid\BoundingBox;
 use Inowas\Modflow\Model\ModflowModelCalculationList;
 use Inowas\Modflow\Model\ModflowModelDescription;
 use Inowas\Common\Grid\GridSize;
@@ -46,9 +44,8 @@ use Inowas\Common\DateTime\TotalTime;
 use Inowas\Common\Id\UserId;
 use Inowas\Common\Boundaries\WellBoundary;
 use Inowas\Common\Boundaries\WellType;
-use Inowas\Modflow\Projection\CalculationsProjector;
-use Inowas\Modflow\Projection\ModelScenarioListProjector;
-use Inowas\ModflowBundle\Model\BoundingBox;
+use Inowas\Modflow\Projection\Calculation\CalculationListProjector;
+use Inowas\Modflow\Projection\ModelScenarioList\ModelScenarioListProjector;
 use Prooph\EventStore\EventStore;
 use Prooph\ServiceBus\CommandBus;
 use Prooph\ServiceBus\EventBus;
@@ -71,7 +68,7 @@ class ModflowModelEventSourcingTest extends KernelTestCase
     /** @var  ModelScenarioListProjector */
     protected $model_scenarios_projector;
 
-    /** @var  CalculationsProjector */
+    /** @var  CalculationListProjector */
     protected $model_calculations_projector;
 
     /** @var ModflowModelList */
@@ -91,7 +88,7 @@ class ModflowModelEventSourcingTest extends KernelTestCase
         $this->calculationRepository = static::$kernel->getContainer()->get('modflow_calculation_list');
         $this->geoTools = static::$kernel->getContainer()->get('inowas.geotools.geotools');
         $this->model_scenarios_projector = static::$kernel->getContainer()->get('inowas.modflow_projection.model_scenarios');
-        $this->model_calculations_projector = static::$kernel->getContainer()->get('inowas.modflow_projection.model_calculations');
+        $this->model_calculations_projector = static::$kernel->getContainer()->get('inowas.modflow_projection.calculation_list');
     }
 
     public function test()
@@ -302,7 +299,10 @@ class ModflowModelEventSourcingTest extends KernelTestCase
         $this->assertEquals('testScenario', $well->test);
 
         $calculationId = ModflowId::generate();
-        $this->commandBus->dispatch(CreateModflowModelCalculation::byUserWithModelId($calculationId, $ownerId, $modflowModelId));
+        $start = DateTime::fromDateTime(new \DateTime('01.01.2015'));
+        $end = DateTime::fromDateTime(new \DateTime('01.01.2015'));
+        $this->commandBus->dispatch(CreateModflowModelCalculation::byUserWithModelId($calculationId, $ownerId, $modflowModelId, $start, $end));
+
         /** @var ModflowCalculationAggregate $calculation */
         $calculation = $this->calculationRepository->get($calculationId);
         $this->assertInstanceOf(ModflowCalculationAggregate::class, $calculation);
