@@ -6,6 +6,7 @@ namespace Inowas\Modflow\Model;
 
 use Inowas\Common\Boundaries\AbstractBoundary;
 use Inowas\Common\Boundaries\AreaBoundary;
+use Inowas\Common\Grid\ActiveCells;
 use Inowas\Common\Id\BoundaryId;
 use Inowas\Common\Boundaries\ModflowBoundary;
 use Inowas\Common\DateTime\DateTime;
@@ -15,6 +16,7 @@ use Inowas\Common\Id\IdInterface;
 use Inowas\Common\Id\ModflowId;
 use Inowas\Common\Id\SoilModelId;
 use Inowas\Common\Id\UserId;
+use Inowas\Modflow\Model\Event\ActiveCellsWereUpdated;
 use Inowas\Modflow\Model\Event\BoundaryWasAdded;
 use Inowas\Modflow\Model\Event\BoundaryWasAddedToScenario;
 use Inowas\Modflow\Model\Event\BoundaryWasRemoved;
@@ -323,6 +325,35 @@ class ModflowModelAggregate extends AggregateRoot
         }
     }
 
+    public function updateActiveCells(UserId $userId, BoundaryId $boundaryId, $boundaryType, ActiveCells $activeCells)
+    {
+        $this->recordThat(ActiveCellsWereUpdated::toBaseModel(
+            $userId,
+            $this->modflowId,
+            $boundaryId,
+            $boundaryType,
+            $activeCells
+        ));
+    }
+
+    public function findBoundaryById(BoundaryId $boundaryId): ?AbstractBoundary
+    {
+        if ($this->area->boundaryId()->sameValueAs($boundaryId)){
+            return $this->area;
+        }
+
+        if ($this->containsBoundary($boundaryId)){
+            return $this->boundaries[$boundaryId->toString()];
+        }
+
+        return null;
+    }
+
+    public function containsBoundary(BoundaryId $boundaryId): bool
+    {
+        return $this->contains($boundaryId, $this->boundaries);
+    }
+
     private function contains(IdInterface $needle, array $haystack): bool
     {
         return array_key_exists($needle->toString(), $haystack);
@@ -532,6 +563,9 @@ class ModflowModelAggregate extends AggregateRoot
             }
         }
     }
+
+    protected function whenActiveCellsWereUpdated(ActiveCellsWereUpdated $event)
+    {}
 
     private function createScenarioFromThis(UserId $userId, ModflowId $scenarioId): ModflowModelAggregate
     {

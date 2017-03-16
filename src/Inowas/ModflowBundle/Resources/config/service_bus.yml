@@ -10,6 +10,7 @@ prooph_service_bus:
                     'Inowas\Modflow\Model\Command\AddCalculatedBudget': 'inowas.add_calculated_budget_handler'
                     'Inowas\Modflow\Model\Command\AddCalculatedHead': 'inowas.add_calculated_head_handler'
                     'Inowas\Modflow\Model\Command\AddModflowScenario': 'inowas.add_modflow_scenario_handler'
+                    'Inowas\Modflow\Model\Command\CalculateActiveCells': 'inowas.calculate_active_cells_handler'
                     'Inowas\Modflow\Model\Command\ChangeModflowModelBoundingBox': 'inowas.change_modflow_model_bounding_box_handler'
                     'Inowas\Modflow\Model\Command\ChangeModflowModelDescription': 'inowas.change_modflow_model_description_handler'
                     'Inowas\Modflow\Model\Command\ChangeModflowModelGridSize': 'inowas.change_modflow_model_grid_size_handler'
@@ -27,6 +28,36 @@ prooph_service_bus:
             router:
                 type: 'prooph_service_bus.event_bus_router'
                 routes:
+                    'Inowas\Modflow\Model\Event\ActiveCellsWereUpdated':
+                        - 'inowas.modflow_projection.model_details'
+
+                    'Inowas\Modflow\Model\Event\BoundaryWasAdded':
+                        - 'inowas.modflow_projection.model_boundaries'
+                        - 'inowas.modflow_projection.calculation_results'
+                        - 'inowas.modflow_projection.model_details'
+                        - 'inowas.modflow_projection.model_scenarios'
+
+                    'Inowas\Modflow\Model\Event\BoundaryWasAddedToScenario':
+                        - 'inowas.modflow_projection.model_boundaries'
+
+                    'Inowas\Modflow\Model\Event\BoundaryWasRemoved':
+                        - 'inowas.modflow_projection.model_boundaries'
+                        - 'inowas.modflow_projection.model_details'
+                        - 'inowas.modflow_projection.model_scenarios'
+
+                    'Inowas\Modflow\Model\Event\BoundaryWasRemovedFromScenario':
+                        - 'inowas.modflow_projection.model_boundaries'
+
+                    'Inowas\Modflow\Model\Event\BudgetWasCalculated':
+                        - 'inowas.modflow_projection.calculation_budgets'
+
+                    'Inowas\Modflow\Model\Event\CalculationWasCreated':
+                        - 'inowas.modflow_projection.calculation_results'
+                        - 'inowas.modflow_projection.calculation_list'
+
+                    'Inowas\Modflow\Model\Event\HeadWasCalculated':
+                        - 'inowas.modflow_projection.calculation_results'
+
                     'Inowas\Modflow\Model\Event\ModflowModelWasCreated':
                         - 'inowas.modflow_projection.model_details'
                         - 'inowas.modflow_projection.model_scenarios'
@@ -55,33 +86,6 @@ prooph_service_bus:
                     'Inowas\Modflow\Model\Event\ModflowScenarioDescriptionWasChanged':
                         - 'inowas.modflow_projection.model_scenarios'
 
-                    'Inowas\Modflow\Model\Event\BoundaryWasAdded':
-                        - 'inowas.modflow_projection.model_boundaries'
-                        - 'inowas.modflow_projection.calculation_results'
-                        - 'inowas.modflow_projection.model_details'
-                        - 'inowas.modflow_projection.model_scenarios'
-
-                    'Inowas\Modflow\Model\Event\BoundaryWasAddedToScenario':
-                        - 'inowas.modflow_projection.model_boundaries'
-
-                    'Inowas\Modflow\Model\Event\BoundaryWasRemoved':
-                        - 'inowas.modflow_projection.model_boundaries'
-                        - 'inowas.modflow_projection.model_details'
-                        - 'inowas.modflow_projection.model_scenarios'
-
-                    'Inowas\Modflow\Model\Event\BoundaryWasRemovedFromScenario':
-                        - 'inowas.modflow_projection.model_boundaries'
-
-                    'Inowas\Modflow\Model\Event\CalculationWasCreated':
-                        - 'inowas.modflow_projection.calculation_results'
-                        - 'inowas.modflow_projection.calculation_list'
-
-                    'Inowas\Modflow\Model\Event\BudgetWasCalculated':
-                        - 'inowas.modflow_projection.calculation_budgets'
-
-                    'Inowas\Modflow\Model\Event\HeadWasCalculated':
-                        - 'inowas.modflow_projection.calculation_results'
-
                     'Inowas\Modflow\Model\Event\ModflowModelBoundingBoxWasChanged':
                         - 'inowas.modflow_projection.model_details'
                         - 'inowas.modflow_projection.model_scenarios'
@@ -89,5 +93,3 @@ prooph_service_bus:
                     'Inowas\Modflow\Model\Event\ModflowModelGridSizeWasChanged':
                         - 'inowas.modflow_projection.model_details'
                         - 'inowas.modflow_projection.model_scenarios'
-
-

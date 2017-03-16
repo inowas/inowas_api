@@ -33,6 +33,10 @@
         <service id="inowas.update_modflow_model_boundary_handler" class="Inowas\Modflow\Model\Handler\UpdateBoundaryHandler">
             <argument type="service" id="modflow_model_list" />
         </service>
+        <service id="inowas.calculate_active_cells_handler" class="Inowas\Modflow\Model\Handler\CalculateActiveCellsHandler">
+            <argument type="service" id="modflow_model_list" />
+            <argument type="service" id="inowas.geotools.geotools" />
+        </service>
         <service id="inowas.change_modflow_model_bounding_box_handler" class="Inowas\Modflow\Model\Handler\ChangeModflowModelBoundingBoxHandler">
             <argument type="service" id="modflow_model_list" />
         </service>

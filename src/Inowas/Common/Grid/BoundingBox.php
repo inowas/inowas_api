@@ -80,7 +80,7 @@ class BoundingBox implements \JsonSerializable
     /**
      * @return array
      */
-    function jsonSerialize()
+    public function jsonSerialize()
     {
         return array(
             'x_min' => $this->xMin,
@@ -88,6 +88,16 @@ class BoundingBox implements \JsonSerializable
             'y_min' => $this->yMin,
             'y_max' => $this->yMax,
             'srid' => $this->srid
+        );
+    }
+
+    public function toGeoJson(){
+        return sprintf('{"type":"Polygon", "coordinates":[[[%f,%f],[%f,%f],[%f,%f],[%f,%f],[%f,%f]]]}',
+            $this->xMin, $this->yMin,
+            $this->xMin, $this->yMax,
+            $this->xMax, $this->yMax,
+            $this->xMax, $this->yMin,
+            $this->xMin, $this->yMin
         );
     }
 }

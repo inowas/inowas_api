@@ -4,18 +4,25 @@ namespace Inowas\GeoToolsBundle\Service;
 
 use CrEOF\Spatial\PHP\Types\Geometry\Point;
 use CrEOF\Spatial\PHP\Types\Geometry\Polygon;
+use Doctrine\DBAL\Connection;
 use Doctrine\ORM\EntityManager;
+use Inowas\Common\Boundaries\AreaBoundary;
 use Inowas\ModflowBundle\Model\ActiveCells;
 use Inowas\ModflowBundle\Model\Boundary\WellBoundary;
 use Inowas\ModflowBundle\Model\BoundingBox;
 use Inowas\ModflowBundle\Model\GridSize;
 use Inowas\ModflowBundle\Model\ModelObject;
 
+ini_set('memory_limit', '500M');
+
 class GeoTools
 {
 
     /** @var  EntityManager */
     protected $entityManager;
+
+    /** @var  Connection */
+    protected $connection;
 
     /**
      * GeoTools constructor.
@@ -24,6 +31,54 @@ class GeoTools
     public function __construct(EntityManager $entityManager)
     {
         $this->entityManager = $entityManager;
+        $this->connection = $entityManager->getConnection();
+    }
+
+    public function getActiveCellsFromArea(AreaBoundary $area, \Inowas\Common\Grid\BoundingBox $boundingBox, \Inowas\Common\Grid\GridSize $gridSize): \Inowas\Common\Grid\ActiveCells
+    {
+        $areaPolygon = \geoPHP::load($area->geometry()->toJson(), 'json');
+        $boundingBoxPolygon = \geoPHP::load($boundingBox->toGeoJson(), 'json');
+
+        if(! $this->connection->fetchAssoc(sprintf('SELECT ST_Intersects(ST_GeomFromText(\'%s\'),ST_GeomFromText(\'%s\'));', $boundingBoxPolygon->asText(), $areaPolygon->asText()))){
+            // AREA DOES NOT INTERSECT WITH BOUNDINGBOX
+            return null;
+        };
+
+        $dX = ($boundingBox->xMax()-$boundingBox->xMin())/$gridSize->nX();
+        $dY = ($boundingBox->yMax()-$boundingBox->yMin())/$gridSize->nY();
+
+        $activeCells = [];
+        $nx = $gridSize->nX();
+        $ny = $gridSize->nY();
+
+        for ($x = 0; $x<$nx; $x++){
+            $activeCells[$x] = [];
+            for ($y = 0; $y<$ny; $y++){
+
+                $cellWkt = sprintf(
+                    'POINT (%f %f)',
+                    $boundingBox->xMin()+(($x+0.5)*$dX),
+                    $boundingBox->yMax()-(($y+0.5)*$dY)
+                );
+
+                $activeCells[$x][$y] = $this->intersect($cellWkt, $areaPolygon->asText());
+                unset($cellWkt);
+            }
+        }
+
+        return \Inowas\Common\Grid\ActiveCells::fromArray($activeCells);
+    }
+
+    private function intersect(string $wkt1, string $wkt2){
+
+        $result = $this->connection->fetchAssoc(sprintf(
+                'SELECT ST_Intersects(ST_GeomFromText(\'%s\'),ST_GeomFromText(\'%s\'));',
+                $wkt1,
+                $wkt2
+            )
+        );
+
+        return $result['st_intersects'];
     }
 
     /**

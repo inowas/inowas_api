@@ -9,6 +9,7 @@ use Doctrine\DBAL\Exception\TableNotFoundException;
 use Doctrine\DBAL\Schema\Schema;
 use Doctrine\ORM\EntityManager;
 use Inowas\AppBundle\Model\User;
+use Inowas\Modflow\Model\Event\ActiveCellsWereUpdated;
 use Inowas\Modflow\Model\Event\BoundaryWasAdded;
 use Inowas\Modflow\Model\Event\BoundaryWasRemoved;
 use Inowas\Modflow\Model\Event\ModflowModelBoundaryWasUpdated;
@@ -27,7 +28,6 @@ class ModelDetailsProjector implements ProjectionInterface
 
     /** @var Connection $connection */
     protected $connection;
-
 
     /** @var  EntityManager $entityManager */
     protected $entityManager;
@@ -49,6 +49,7 @@ class ModelDetailsProjector implements ProjectionInterface
         $table->addColumn('name', 'string', ['length' => 255]);
         $table->addColumn('description', 'string', ['length' => 255]);
         $table->addColumn('area', 'text', ['notnull' => false]);
+        $table->addColumn('active_cells', 'text', ['notnull' => false]);
         $table->addColumn('grid_size', 'text', ['notnull' => false]);
         $table->addColumn('bounding_box', 'text', ['notnull' => false]);
         $table->addColumn('created_at', 'string', ['length' => 255, 'notnull' => false]);
@@ -105,6 +106,16 @@ class ModelDetailsProjector implements ProjectionInterface
         if ($boundary->type() == 'area') {
             $this->connection->update(Table::MODEL_DETAILS,
                 array('area' => json_encode($boundary->geometry()->toJson())),
+                array('model_id' => $event->modflowId()->toString())
+            );
+        }
+    }
+
+    public function onActiveCellsWereUpdated(ActiveCellsWereUpdated $event): void
+    {
+        if ($event->type() === 'area'){
+            $this->connection->update(Table::MODEL_DETAILS,
+                array('active_cells' => json_encode($event->activeCells()->cells())),
                 array('model_id' => $event->modflowId()->toString())
             );
         }

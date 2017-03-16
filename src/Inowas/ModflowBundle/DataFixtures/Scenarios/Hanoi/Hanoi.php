@@ -20,6 +20,7 @@ use Inowas\Common\Calculation\HeadData;
 use Inowas\Common\Calculation\ResultType;
 use Inowas\Modflow\Model\Command\AddBoundary;
 use Inowas\Modflow\Model\Command\AddCalculatedHead;
+use Inowas\Modflow\Model\Command\CalculateActiveCells;
 use Inowas\Modflow\Model\Command\ChangeModflowModelBoundingBox;
 use Inowas\Modflow\Model\Command\ChangeModflowModelDescription;
 use Inowas\Modflow\Model\Command\ChangeModflowModelGridSize;
@@ -149,6 +150,9 @@ class Hanoi implements ContainerAwareInterface, DataFixtureInterface
         $boundingBox = BoundingBox::fromEPSG4326Coordinates($box->xMin(), $box->xMax(), $box->yMin(), $box->yMax());
         $commandBus->dispatch(ChangeModflowModelBoundingBox::forModflowModel($ownerId, $modelId, $boundingBox));
         $commandBus->dispatch(ChangeModflowModelGridSize::forModflowModel($ownerId, $modelId, GridSize::fromXY(165, 175)));
+
+        echo sprintf("Calculate active cells for Area with %s Memory usage\r\n", memory_get_usage());
+        $commandBus->dispatch(CalculateActiveCells::forModflowModel($ownerId, $modelId, $area->boundaryId()));
 
         // Add Wells
         $fileName = __DIR__ . "/data/wells_basecase.csv";
