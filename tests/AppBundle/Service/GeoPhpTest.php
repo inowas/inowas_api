@@ -8,6 +8,7 @@ use Inowas\Common\Boundaries\AreaBoundary;
 use Inowas\Common\Boundaries\BoundaryName;
 use Inowas\Common\Geometry\Geometry;
 use Inowas\Common\Geometry\Polygon;
+use Inowas\Common\Grid\ActiveCells;
 use Inowas\Common\Grid\BoundingBox;
 use Inowas\Common\Grid\GridSize;
 use Inowas\Common\Id\BoundaryId;
@@ -100,7 +101,7 @@ class GeoPhpTest extends WebTestCase
             21.100124603334
         );
 
-        $this->gridSize = GridSize::fromXY(165, 175);
+        $this->gridSize = GridSize::fromXY(10, 15);
     }
 
     public function testCreateWKTFromAreaGeometry() {
@@ -141,8 +142,8 @@ class GeoPhpTest extends WebTestCase
         $this->assertTrue($result['st_intersects']);
     }
 
-    public function testActiveCellsFromAreaWithGeoTools(){
+    public function testActiveCellsFromAreaWithGeoTools() {
         $result = $this->geoTools->getActiveCellsFromArea($this->area, $this->boundingBox, $this->gridSize);
-        var_dump($result);
+        $this->assertInstanceOf(ActiveCells::class, $result);
     }
 }
