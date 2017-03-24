@@ -19,6 +19,7 @@ use Inowas\Common\Storage\Storage;
 use Inowas\Soilmodel\Model\BoreLogId;
 use Inowas\Soilmodel\Model\BoreLogLocation;
 use Inowas\Soilmodel\Model\BoreLogName;
+use Inowas\Soilmodel\Model\Command\AddBoreLogToSoilmodel;
 use Inowas\Soilmodel\Model\Command\AddGeologicalLayerToSoilmodel;
 use Inowas\Soilmodel\Model\Command\AddHorizonToBoreLog;
 use Inowas\Soilmodel\Model\Command\ChangeSoilmodelDescription;
@@ -274,7 +275,7 @@ class HanoiSoilModel implements ContainerAwareInterface, DataFixtureInterface
                 )
             );
             $commandBus->dispatch(AddHorizonToBoreLog::byUserWithId($ownerId, $boreLogId, $horizon));
-
+            $commandBus->dispatch(AddBoreLogToSoilmodel::byUserWithId($ownerId, $soilModelId, $boreLogId));
         }
     }
 
@@ -334,5 +335,4 @@ class HanoiSoilModel implements ContainerAwareInterface, DataFixtureInterface
             $connection->exec($query);
         }
     }
-
 }
