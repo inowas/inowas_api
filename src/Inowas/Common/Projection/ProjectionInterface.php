@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Inowas\Modflow\Projection;
+namespace Inowas\Common\Projection;
 
 interface ProjectionInterface
 {

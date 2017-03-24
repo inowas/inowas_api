@@ -5,10 +5,10 @@ declare(strict_types=1);
 namespace Inowas\Modflow\Projection\ModelScenarioList;
 
 use Doctrine\DBAL\Connection;
-use Doctrine\DBAL\Exception\TableNotFoundException;
 use Doctrine\DBAL\Schema\Schema;
 use Doctrine\ORM\EntityManager;
 use Inowas\AppBundle\Model\User;
+use Inowas\Common\Projection\AbstractDoctrineConnectionProjector;
 use Inowas\Modflow\Model\Event\ActiveCellsWereUpdated;
 use Inowas\Modflow\Model\Event\BoundaryWasAdded;
 use Inowas\Modflow\Model\Event\BoundaryWasRemoved;
@@ -20,24 +20,17 @@ use Inowas\Modflow\Model\Event\ModflowModelNameWasChanged;
 use Inowas\Modflow\Model\Event\ModflowModelWasCreated;
 use Inowas\Modflow\Model\Event\ModflowScenarioWasAdded;
 use Inowas\Modflow\Model\Event\ModflowScenarioWasRemoved;
-use Inowas\Modflow\Projection\ProjectionInterface;
 use Inowas\Modflow\Projection\Table;
 
-class ModelDetailsProjector implements ProjectionInterface
+class ModelDetailsProjector extends AbstractDoctrineConnectionProjector
 {
-
-    /** @var Connection $connection */
-    protected $connection;
-
     /** @var  EntityManager $entityManager */
     protected $entityManager;
 
-    /** @var Schema $schema */
-    protected $schema;
-
     public function __construct(Connection $connection, EntityManager $entityManager)
     {
-        $this->connection = $connection;
+
+        parent::__construct($connection);
         $this->entityManager = $entityManager;
 
         $this->schema = new Schema();
@@ -175,39 +168,6 @@ class ModelDetailsProjector implements ProjectionInterface
                 array('nr_of_scenarios' => --$nrOfScenarios),
                 array('id' => $id)
             );
-        }
-    }
-
-    public function createTable(): void
-    {
-        $queryArray = $this->schema->toSql($this->connection->getDatabasePlatform());
-        $this->executeQueryArray($queryArray);
-    }
-
-    public function dropTable(): void
-    {
-        try {
-            $queryArray = $this->schema->toDropSql($this->connection->getDatabasePlatform());
-            $this->executeQueryArray($queryArray);
-        } catch (TableNotFoundException $e) {
-        }
-    }
-
-    public function truncateTable(): void
-    {
-        $this->dropTable();
-        $this->createTable();
-    }
-
-    public function reset(): void
-    {
-        $this->truncateTable();
-    }
-
-    private function executeQueryArray(array $queries)
-    {
-        foreach ($queries as $query) {
-            $this->connection->executeQuery($query);
         }
     }
 

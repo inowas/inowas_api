@@ -1,21 +1,27 @@
 prooph_event_store:
     stores:
         modflow_model_store:
-            adapter: 'prooph_event_store.doctrine_adapter.modflow_model_store'
+            adapter: 'prooph_event_store.doctrine_adapter.model_store'
             repositories:
                 modflow_model_list:
                     repository_class: 'Inowas\Modflow\Infrastructure\Repository\EventStoreModflowModelList'
                     aggregate_type: 'Inowas\Modflow\Model\ModflowModelAggregate'
                     aggregate_translator: 'prooph_event_sourcing.aggregate_translator'
-                    stream_name: 'modflow_model_event'
                 modflow_calculation_list:
                     repository_class: 'Inowas\Modflow\Infrastructure\Repository\EventStoreModflowCalculationList'
                     aggregate_type: 'Inowas\Modflow\Model\ModflowCalculationAggregate'
                     aggregate_translator: 'prooph_event_sourcing.aggregate_translator'
-                    stream_name: 'modflow_model_event'
+                soil_model_list:
+                    repository_class: 'Inowas\Soilmodel\Infrastructure\Repository\EventStoreSoilmodelList'
+                    aggregate_type: 'Inowas\Soilmodel\Model\SoilmodelAggregate'
+                    aggregate_translator: 'prooph_event_sourcing.aggregate_translator'
+                bore_log_list:
+                    repository_class: 'Inowas\Soilmodel\Infrastructure\Repository\EventStoreBoreLogList'
+                    aggregate_type: 'Inowas\Soilmodel\Model\BoreLogAggregate'
+                    aggregate_translator: 'prooph_event_sourcing.aggregate_translator'
 
 services:
-    prooph_event_store.doctrine_adapter.modflow_model_store:
+    prooph_event_store.doctrine_adapter.model_store:
         class: Prooph\EventStore\Adapter\Doctrine\DoctrineEventStoreAdapter
         arguments: ['@database_connection', '@prooph_event_store.message_factory', '@prooph_event_store.message_converter', '@prooph_event_store.payload_serializer', '%prooph_event_store.stream_table_map%']
 

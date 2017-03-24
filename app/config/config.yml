@@ -11,7 +11,6 @@ imports:
     - { resource: "@InowasModflowBundle/Resources/config/service_bus.yml" }
     - { resource: "@InowasModflowBundle/Resources/config/services.xml" }
 
-    - { resource: "@InowasSoilmodelBundle/Resources/config/event_store.yml"}
     - { resource: "@InowasSoilmodelBundle/Resources/config/projection.yml"}
     - { resource: "@InowasSoilmodelBundle/Resources/config/service_bus.yml"}
     - { resource: "@InowasSoilmodelBundle/Resources/config/services.yml"}

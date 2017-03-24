@@ -4,8 +4,7 @@ declare(strict_types=1);
 
 namespace Inowas\ModflowBundle\Command;
 
-use Inowas\Common\Id\UserId;
-use Inowas\Modflow\Projection\ProjectionInterface;
+use Inowas\Common\Projection\ProjectionInterface;
 use Prooph\EventStore\Stream\StreamName;
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 use Symfony\Component\Console\Input\InputInterface;
@@ -34,6 +33,7 @@ class ModflowProjectionCommand extends ContainerAwareCommand
         $projections[] = $this->getContainer()->get('inowas.modflow_projection.calculation_list');
         $projections[] = $this->getContainer()->get('inowas.modflow_projection.model_details');
         $projections[] = $this->getContainer()->get('inowas.modflow_projection.calculation_budgets');
+        $projections[] = $this->getContainer()->get('inowas.modflow_projection.soilmodel_list');
 
 
         /** @var ProjectionInterface $projection */
@@ -44,7 +44,7 @@ class ModflowProjectionCommand extends ContainerAwareCommand
         $eventBus = $this->getContainer()->get('prooph_service_bus.modflow_event_bus');
         $eventIterator = $this->getContainer()
             ->get('prooph_event_store.modflow_model_store')
-            ->replay([new StreamName('modflow_model_event_stream')]);
+            ->replay([new StreamName('event_stream')]);
         $eventIterator->rewind();
 
         while ($eventIterator->valid()) {

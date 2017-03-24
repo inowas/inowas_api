@@ -7,6 +7,7 @@ namespace Inowas\Modflow\Projection\ModelScenarioList;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Exception\TableNotFoundException;
 use Doctrine\DBAL\Schema\Schema;
+use Inowas\Common\Projection\AbstractDoctrineConnectionProjector;
 use Inowas\Modflow\Model\Event\BoundaryWasAdded;
 use Inowas\Modflow\Model\Event\ModflowModelBoundaryWasUpdated;
 use Inowas\Modflow\Model\Event\ModflowModelBoundingBoxWasChanged;
@@ -20,18 +21,13 @@ use Inowas\Modflow\Model\Event\ModflowScenarioWasAdded;
 use Inowas\Modflow\Projection\ProjectionInterface;
 use Inowas\Modflow\Projection\Table;
 
-class ModelScenarioListProjector implements ProjectionInterface
+class ModelScenarioListProjector extends AbstractDoctrineConnectionProjector
 {
-
-    /** @var Connection $connection */
-    protected $connection;
-
-    /** @var Schema $schema */
-    protected $schema;
 
     public function __construct(Connection $connection)
     {
-        $this->connection = $connection;
+
+        parent::__construct($connection);
 
         $this->schema = new Schema();
         $table = $this->schema->createTable(Table::MODEL_SCENARIO_LIST);
@@ -46,40 +42,6 @@ class ModelScenarioListProjector implements ProjectionInterface
         $table->addColumn('bounding_box', 'text', ['notnull' => false]);
         $table->setPrimaryKey(['id']);
         $table->addIndex(array('base_model_id'));
-    }
-
-    public function createTable(): void
-    {
-        $queryArray = $this->schema->toSql($this->connection->getDatabasePlatform());
-        $this->executeQueryArray($queryArray);
-
-    }
-
-    public function dropTable(): void
-    {
-        try {
-            $queryArray = $this->schema->toDropSql($this->connection->getDatabasePlatform());
-            $this->executeQueryArray($queryArray);
-        } catch (TableNotFoundException $e) {
-        }
-    }
-
-    public function truncateTable(): void
-    {
-        $this->dropTable();
-        $this->createTable();
-    }
-
-    public function reset(): void
-    {
-        $this->truncateTable();
-    }
-
-    private function executeQueryArray(array $queries)
-    {
-        foreach ($queries as $query) {
-            $this->connection->executeQuery($query);
-        }
     }
 
     public function onModflowModelWasCreated(ModflowModelWasCreated $event)

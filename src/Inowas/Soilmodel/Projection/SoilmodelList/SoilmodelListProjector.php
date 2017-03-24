@@ -3,22 +3,18 @@
 namespace Inowas\Soilmodel\Projection\SoilmodelList;
 
 use Doctrine\DBAL\Connection;
-use Doctrine\DBAL\Exception\TableNotFoundException;
 use Doctrine\DBAL\Schema\Schema;
+use Inowas\Common\Projection\AbstractDoctrineConnectionProjector;
 use Inowas\Soilmodel\Model\Event\SoilmodelWasCreated;
 use Inowas\Soilmodel\Projection\Table;
 
-class SoilmodelListProjector
+class SoilmodelListProjector extends AbstractDoctrineConnectionProjector
 {
-    /** @var Connection $connection */
-    protected $connection;
-
-    /** @var Schema $schema */
-    protected $schema;
 
     public function __construct(Connection $connection)
     {
-        $this->connection = $connection;
+
+        parent::__construct($connection);
 
         $this->schema = new Schema();
         $table = $this->schema->createTable(Table::SOILMODEL_LIST);
@@ -28,40 +24,6 @@ class SoilmodelListProjector
         $table->addColumn('name', 'string', ['length' => 255]);
         $table->addColumn('description', 'string', ['length' => 255]);
         $table->setPrimaryKey(['id']);
-    }
-
-    public function createTable(): void
-    {
-        $queryArray = $this->schema->toSql($this->connection->getDatabasePlatform());
-        $this->executeQueryArray($queryArray);
-
-    }
-
-    public function dropTable(): void
-    {
-        try {
-            $queryArray = $this->schema->toDropSql($this->connection->getDatabasePlatform());
-            $this->executeQueryArray($queryArray);
-        } catch (TableNotFoundException $e) {
-        }
-    }
-
-    public function truncateTable(): void
-    {
-        $this->dropTable();
-        $this->createTable();
-    }
-
-    public function reset(): void
-    {
-        $this->truncateTable();
-    }
-
-    private function executeQueryArray(array $queries)
-    {
-        foreach ($queries as $query) {
-            $this->connection->executeQuery($query);
-        }
     }
 
     public function onSoilmodelWasCreated(SoilmodelWasCreated $event): void
