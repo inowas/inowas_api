@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace Inowas\Soilmodel\Model\Event;
 
-use Inowas\Modflow\Model\SoilmodelName;
 use Inowas\Common\Id\UserId;
 use Inowas\Soilmodel\Model\SoilmodelId;
+use Inowas\Soilmodel\Model\SoilmodelName;
 use Prooph\EventSourcing\AggregateChanged;
 
 class SoilmodelNameWasChanged extends AggregateChanged

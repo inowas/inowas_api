@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Inowas\Modflow\Model;
+namespace Inowas\Soilmodel\Model;
 
-use Inowas\Common\Geometry\Point;
+use CrEOF\Spatial\PHP\Types\Geometry\Point;
 
 class BoreLogLocation
 {

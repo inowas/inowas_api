@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Inowas\Modflow\Model;
+namespace Inowas\Soilmodel\Model;
 
 class BoreLogName
 {

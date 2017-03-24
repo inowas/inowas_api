@@ -16,7 +16,7 @@ class AddGeologicalLayerToSoilmodel extends Command implements PayloadConstructa
 
     use PayloadTrait;
 
-    public static function byUserWithId(UserId $userId, SoilmodelId $id, GeologicalLayer $layer): AddGeologicalLayerToSoilmodel
+    public static function forSoilmodel(UserId $userId, SoilmodelId $id, GeologicalLayer $layer): AddGeologicalLayerToSoilmodel
     {
         return new self(
             [
