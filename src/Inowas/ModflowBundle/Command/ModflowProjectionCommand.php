@@ -44,7 +44,7 @@ class ModflowProjectionCommand extends ContainerAwareCommand
         $eventBus = $this->getContainer()->get('prooph_service_bus.modflow_event_bus');
         $eventIterator = $this->getContainer()
             ->get('prooph_event_store.modflow_model_store')
-            ->replay([new StreamName('event_stream')]);
+            ->replay([new StreamName('modflow_model_event_stream')]);
         $eventIterator->rewind();
 
         while ($eventIterator->valid()) {

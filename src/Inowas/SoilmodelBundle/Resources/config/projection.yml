@@ -1,0 +1,5 @@
+services:
+    inowas.projector.soilmodel_list:
+        class: Inowas\Soilmodel\Projection\SoilmodelList\SoilmodelListProjector
+        arguments:
+          - '@doctrine.dbal.default_connection'

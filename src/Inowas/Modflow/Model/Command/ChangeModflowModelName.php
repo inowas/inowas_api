@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace Inowas\Modflow\Model\Command;
 
 use Inowas\Common\Id\ModflowId;
-use Inowas\Modflow\Model\ModflowModelName;
 use Inowas\Common\Id\UserId;
+use Inowas\Modflow\Model\ModflowModelName;
 use Prooph\Common\Messaging\Command;
 use Prooph\Common\Messaging\PayloadConstructable;
 use Prooph\Common\Messaging\PayloadTrait;

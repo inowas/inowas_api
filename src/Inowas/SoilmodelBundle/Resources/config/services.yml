@@ -6,3 +6,59 @@ services:
     inowas.soilmodel.soilmodelservice:
         class: Inowas\SoilmodelBundle\Service\SoilmodelService
         arguments: ['@doctrine.orm.default_entity_manager', '@inowas.process.interpolation']
+
+    inowas.soilmodel.add_borelog_to_soilmodel.handler:
+        class: Inowas\Soilmodel\Model\Handler\AddBoreLogToSoilmodelHandler
+        arguments: ['@soil_model_list', '@bore_log_list']
+
+    inowas.soilmodel.add_geological_layer_to_soilmodel.handler:
+        class: Inowas\Soilmodel\Model\Handler\AddGeologicalLayerToSoilmodelHandler
+        arguments: ['@soil_model_list']
+
+    inowas.soilmodel.change_soilmodel_description.handler:
+        class: Inowas\Soilmodel\Model\Handler\ChangeSoilmodelDescriptionHandler
+        arguments: ['@soil_model_list']
+
+    inowas.soilmodel.change_soilmodel_name.handler:
+        class: Inowas\Soilmodel\Model\Handler\ChangeSoilmodelNameHandler
+        arguments: ['@soil_model_list']
+
+    inowas.soilmodel.create_soilmodel.handler:
+        class: Inowas\Soilmodel\Model\Handler\CreateSoilmodelHandler
+        arguments: ['@soil_model_list']
+
+    inowas.soilmodel.delete_soilmodel.handler:
+        class: Inowas\Soilmodel\Model\Handler\DeleteSoilmodelHandler
+        arguments: ['@soil_model_list']
+
+    inowas.soilmodel.remove_borelog_layer_from_soilmodel.handler:
+        class: Inowas\Soilmodel\Model\Handler\RemoveBoreLogFromSoilmodelHandler
+        arguments: ['@soil_model_list', '@bore_log_list']
+
+    inowas.soilmodel.remove_geological_layer_from_soilmodel.handler:
+        class: Inowas\Soilmodel\Model\Handler\RemoveGeologicalLayerFromSoilmodelHandler
+        arguments: ['@soil_model_list']
+
+    inowas.soilmodel.add_horizon_to_borelog.handler:
+        class: Inowas\Soilmodel\Model\Handler\AddHorizonToBoreLogHandler
+        arguments: ['@bore_log_list']
+
+    inowas.soilmodel.remove_horizon_from_borelog.handler:
+        class: Inowas\Soilmodel\Model\Handler\RemoveHorizonFromBoreLogHandler
+        arguments: ['@bore_log_list']
+
+    inowas.soilmodel.change_borelog_location.handler:
+        class: Inowas\Soilmodel\Model\Handler\ChangeBoreLogLocationHandler
+        arguments: ['@bore_log_list']
+
+    inowas.soilmodel.change_borelog_name.handler:
+        class: Inowas\Soilmodel\Model\Handler\ChangeBoreLogNameHandler
+        arguments: ['@bore_log_list']
+
+    inowas.soilmodel.create_borelog.handler:
+        class: Inowas\Soilmodel\Model\Handler\CreateBoreLogHandler
+        arguments: ['@bore_log_list']
+
+    inowas.soilmodel.delete_borelog.handler:
+        class: Inowas\Soilmodel\Model\Handler\DeleteBoreLogHandler
+        arguments: ['@bore_log_list']

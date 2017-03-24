@@ -1,0 +1,34 @@
+prooph_event_store:
+    stores:
+        soil_model_store:
+            adapter: 'prooph_event_store.doctrine_adapter.soil_model_store'
+            repositories:
+                soil_model_list:
+                    repository_class: 'Inowas\Soilmodel\Infrastructure\Repository\EventStoreSoilmodelList'
+                    aggregate_type: 'Inowas\Soilmodel\Model\SoilmodelAggregate'
+                    aggregate_translator: 'prooph_event_sourcing.aggregate_translator'
+                    stream_name: 'soil_model_event'
+                bore_log_list:
+                    repository_class: 'Inowas\Soilmodel\Infrastructure\Repository\EventStoreBoreLogList'
+                    aggregate_type: 'Inowas\Soilmodel\Model\BoreLogAggregate'
+                    aggregate_translator: 'prooph_event_sourcing.aggregate_translator'
+                    stream_name: 'soil_model_event'
+
+services:
+    prooph_event_store.doctrine_adapter.soil_model_store:
+        class: Prooph\EventStore\Adapter\Doctrine\DoctrineEventStoreAdapter
+        arguments: ['@database_connection', '@prooph_event_store.message_factory', '@prooph_event_store.message_converter', '@prooph_event_store.payload_serializer', '%prooph_event_store.stream_table_map%']
+
+    prooph_event_sourcing.aggregate_translator:
+        class: Prooph\EventSourcing\EventStoreIntegration\AggregateTranslator
+
+    prooph_event_store_bus_bridge.transaction_manager:
+        class: Prooph\EventStoreBusBridge\TransactionManager
+        tags:
+            - { name: 'prooph_event_store.soil_model_store.plugin' }
+
+    prooph_event_store_bus_bridge.todo_event_publisher:
+          class: Prooph\EventStoreBusBridge\EventPublisher
+          arguments: ['@prooph_service_bus.modflow_event_bus']
+          tags:
+            - { name: 'prooph_event_store.soil_model_store.plugin' }

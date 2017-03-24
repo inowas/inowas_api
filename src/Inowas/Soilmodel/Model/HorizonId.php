@@ -2,21 +2,22 @@
 
 declare(strict_types=1);
 
-namespace Inowas\Common\Id;
+namespace Inowas\Soilmodel\Model;
 
+use Inowas\Common\Id\IdInterface;
 use Ramsey\Uuid\Uuid;
 
-class SoilModelId implements IdInterface
+class HorizonId implements IdInterface
 {
     /** @var  Uuid */
     private $uuid;
 
-    public static function generate(): SoilModelId
+    public static function generate(): HorizonId
     {
         return new self(Uuid::uuid4());
     }
 
-    public static function fromString(string $id): SoilModelId
+    public static function fromString(string $id): HorizonId
     {
         return new self(Uuid::fromString($id));
     }

@@ -6,8 +6,8 @@ namespace Inowas\Modflow\Model\Event;
 
 use Inowas\Common\Id\ModflowId;
 use Inowas\Common\Id\IdInterface;
-use Inowas\Modflow\Model\ModflowModelName;
 use Inowas\Common\Id\UserId;
+use Inowas\Modflow\Model\ModflowModelName;
 use Prooph\EventSourcing\AggregateChanged;
 
 class ModflowScenarioNameWasChanged extends AggregateChanged

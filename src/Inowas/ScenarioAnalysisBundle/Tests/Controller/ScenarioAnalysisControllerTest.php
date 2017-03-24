@@ -9,8 +9,8 @@ use Inowas\Modflow\Model\Command\ChangeModflowModelDescription;
 use Inowas\Modflow\Model\Command\ChangeModflowModelName;
 use Inowas\Modflow\Model\Command\CreateModflowModel;
 use Inowas\Common\Id\ModflowId;
-use Inowas\Modflow\Model\ModflowModelDescription;
-use Inowas\Modflow\Model\ModflowModelName;
+use Inowas\Modflow\Model\SoilModelDescription;
+use Inowas\Modflow\Model\SoilmodelName;
 use Inowas\Common\Id\UserId;
 use Inowas\Modflow\Projection\ModelScenarioList\ModelScenarioFinder;
 use Inowas\Modflow\Projection\ProjectionInterface;
@@ -72,12 +72,12 @@ class ScenarioAnalysisControllerTest extends WebTestCase
         $scenarioId = ModflowId::generate();
         $this->userId = UserId::fromString($this->user->getId()->toString());
         $this->commandBus->dispatch(CreateModflowModel::byUserWithModelId($this->userId, $this->modelId));
-        $this->commandBus->dispatch(ChangeModflowModelName::forModflowModel($this->userId, $this->modelId, ModflowModelName::fromString('TestName')));
-        $this->commandBus->dispatch(ChangeModflowModelDescription::forModflowModel($this->userId, $this->modelId, ModflowModelDescription::fromString('TestDescription')));
+        $this->commandBus->dispatch(ChangeModflowModelName::forModflowModel($this->userId, $this->modelId, SoilmodelName::fromString('TestName')));
+        $this->commandBus->dispatch(ChangeModflowModelDescription::forModflowModel($this->userId, $this->modelId, SoilModelDescription::fromString('TestDescription')));
 
         $this->commandBus->dispatch(AddModflowScenario::from($this->userId, $this->modelId, $scenarioId));
-        $this->commandBus->dispatch(ChangeModflowModelName::forScenario($this->userId, $this->modelId, $scenarioId, ModflowModelName::fromString('Scenario_1')));
-        $this->commandBus->dispatch(ChangeModflowModelDescription::forScenario($this->userId, $this->modelId, $scenarioId, ModflowModelDescription::fromString('Scenario_Description_1')));
+        $this->commandBus->dispatch(ChangeModflowModelName::forScenario($this->userId, $this->modelId, $scenarioId, SoilmodelName::fromString('Scenario_1')));
+        $this->commandBus->dispatch(ChangeModflowModelDescription::forScenario($this->userId, $this->modelId, $scenarioId, SoilModelDescription::fromString('Scenario_Description_1')));
     }
 
     /**

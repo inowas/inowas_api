@@ -7,8 +7,8 @@ namespace Inowas\Modflow\Model\Event;
 use Inowas\Common\DateTime\DateTime;
 use Inowas\Common\Id\ModflowId;
 use Inowas\Common\Grid\GridSize;
-use Inowas\Common\Id\SoilModelId;
 use Inowas\Common\Id\UserId;
+use Inowas\Soilmodel\Model\SoilmodelId;
 use Prooph\EventSourcing\AggregateChanged;
 
 class CalculationWasCreated extends AggregateChanged
@@ -19,7 +19,7 @@ class CalculationWasCreated extends AggregateChanged
     /** @var  ModflowId */
     private $modflowModelId;
 
-    /** @var  \Inowas\Common\Id\SoilModelId */
+    /** @var  SoilmodelId */
     private $soilModelId;
 
     /** @var  \Inowas\Common\Id\UserId */
@@ -38,7 +38,7 @@ class CalculationWasCreated extends AggregateChanged
         UserId $userId,
         ModflowId $calculationId,
         ModflowId $modflowModelId,
-        SoilModelId $soilModelId,
+        SoilmodelId $soilModelId,
         GridSize $gridSize,
         DateTime $startDateTime,
         DateTime $endDateTime
@@ -79,10 +79,10 @@ class CalculationWasCreated extends AggregateChanged
         return $this->modflowModelId;
     }
 
-    public function soilModelId(): SoilModelId
+    public function soilModelId(): SoilmodelId
     {
         if ($this->soilModelId === null){
-            $this->soilModelId = SoilModelId::fromString($this->payload['soilmodel_id']);
+            $this->soilModelId = SoilmodelId::fromString($this->payload['soilmodel_id']);
         }
 
         return $this->soilModelId;

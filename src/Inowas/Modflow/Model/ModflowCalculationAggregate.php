@@ -12,11 +12,11 @@ use Inowas\Common\FileSystem\FileName;
 use Inowas\Common\Grid\GridSize;
 use Inowas\Common\Grid\LayerNumber;
 use Inowas\Common\Id\ModflowId;
-use Inowas\Common\Id\SoilModelId;
 use Inowas\Common\Id\UserId;
 use Inowas\Modflow\Model\Event\BudgetWasCalculated;
 use Inowas\Modflow\Model\Event\HeadWasCalculated;
 use Inowas\Modflow\Model\Event\CalculationWasCreated;
+use Inowas\Soilmodel\Model\SoilmodelId;
 use Prooph\EventSourcing\AggregateRoot;
 
 class ModflowCalculationAggregate extends AggregateRoot
@@ -28,7 +28,7 @@ class ModflowCalculationAggregate extends AggregateRoot
     /** @var ModflowId */
     private $modflowModelId;
 
-    /** @var SoilModelId */
+    /** @var SoilmodelId */
     private $soilModelId;
 
     /** @var  UserId */
@@ -49,7 +49,7 @@ class ModflowCalculationAggregate extends AggregateRoot
     public static function create(
         ModflowId $calculationId,
         ModflowId $modflowModelId,
-        SoilModelId $soilModelId,
+        SoilmodelId $soilModelId,
         UserId $userId,
         GridSize $gridSize,
         DateTime $startDateTime,
@@ -100,7 +100,7 @@ class ModflowCalculationAggregate extends AggregateRoot
         return $this->modflowModelId;
     }
 
-    public function soilModelId(): SoilModelId
+    public function soilModelId(): SoilmodelId
     {
         return $this->soilModelId;
     }

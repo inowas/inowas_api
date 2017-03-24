@@ -14,7 +14,6 @@ use Inowas\Common\Grid\BoundingBox;
 use Inowas\Common\Grid\GridSize;
 use Inowas\Common\Id\IdInterface;
 use Inowas\Common\Id\ModflowId;
-use Inowas\Common\Id\SoilModelId;
 use Inowas\Common\Id\UserId;
 use Inowas\Modflow\Model\Event\ActiveCellsWereUpdated;
 use Inowas\Modflow\Model\Event\BoundaryWasAdded;
@@ -33,6 +32,7 @@ use Inowas\Modflow\Model\Event\ModflowScenarioNameWasChanged;
 use Inowas\Modflow\Model\Event\ModflowScenarioWasAdded;
 use Inowas\Modflow\Model\Event\ModflowScenarioWasRemoved;
 use Inowas\Modflow\Model\Event\ScenarioBoundaryWasUpdated;
+use Inowas\Soilmodel\Model\SoilmodelId;
 use Prooph\EventSourcing\AggregateRoot;
 
 class ModflowModelAggregate extends AggregateRoot
@@ -64,7 +64,7 @@ class ModflowModelAggregate extends AggregateRoot
     /** @var AbstractBoundary */
     protected $area;
 
-    /** @var SoilModelId */
+    /** @var SoilmodelId */
     protected $soilmodelId;
 
     /** @var array  */
@@ -289,7 +289,7 @@ class ModflowModelAggregate extends AggregateRoot
         }
     }
 
-    public function changeSoilmodelId(SoilModelId $soilModelId): void
+    public function changeSoilmodelId(SoilmodelId $soilModelId): void
     {
         $this->soilmodelId = $soilModelId;
         $this->recordThat(ModflowModelSoilModelIdWasChanged::withSoilmodelId(
@@ -405,7 +405,7 @@ class ModflowModelAggregate extends AggregateRoot
         return $this->area;
     }
 
-    public function soilmodelId(): SoilModelId
+    public function soilmodelId(): SoilmodelId
     {
         return $this->soilmodelId;
     }

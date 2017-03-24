@@ -30,22 +30,21 @@ use Inowas\Modflow\Model\Command\CreateModflowModel;
 use Inowas\Modflow\Model\Command\AddModflowScenario;
 use Inowas\Modflow\Model\Command\CreateModflowModelCalculation;
 use Inowas\Common\Grid\BoundingBox;
-use Inowas\Modflow\Model\ModflowModelDescription;
 use Inowas\Common\Grid\GridSize;
 use Inowas\Common\Id\ModflowId;
+use Inowas\Modflow\Model\ModflowModelDescription;
 use Inowas\Modflow\Model\ModflowModelName;
 use Inowas\Common\Boundaries\PumpingRate;
 use Inowas\Common\Boundaries\PumpingRates;
-use Inowas\Common\Id\SoilModelId;
 use Inowas\Common\DateTime\TotalTime;
 use Inowas\Common\Id\UserId;
 use Inowas\Common\Boundaries\WellBoundary;
 use Inowas\Common\Boundaries\WellType;
+use Inowas\Soilmodel\Model\SoilmodelId;
 use Prooph\EventStore\Adapter\Doctrine\Schema\EventStoreSchema;
 use Prooph\ServiceBus\CommandBus;
 use Symfony\Component\DependencyInjection\ContainerAwareInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
-use Symfony\Component\Validator\Constraints\Uuid;
 
 ini_set('memory_limit', '2048M');
 
@@ -72,7 +71,7 @@ class Hanoi implements ContainerAwareInterface, DataFixtureInterface
 
     public function load()
     {
-        $this->createEventStreamTableIfNotExists('event_stream');
+        $this->createEventStreamTableIfNotExists('modflow_model_event_stream');
         $geoTools = $this->container->get('inowas.geotools');
 
         /** @var UserManager $userManager */
@@ -143,7 +142,7 @@ class Hanoi implements ContainerAwareInterface, DataFixtureInterface
             ), 4326)));
         $commandBus->dispatch(AddBoundary::toBaseModel($ownerId, $modelId, $area));
 
-        $soilModelId = SoilModelId::generate();
+        $soilModelId = SoilmodelId::generate();
         $commandBus->dispatch(ChangeModflowModelSoilmodelId::forModflowModel($modelId, $soilModelId));
 
         $box = $geoTools->transformBoundingBox(BoundingBox::fromCoordinates(578205, 594692, 2316000, 2333500, 32648), 4326);

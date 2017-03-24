@@ -15,8 +15,8 @@ use Inowas\Modflow\Model\Command\ChangeModflowModelName;
 use Inowas\Modflow\Model\Command\CreateModflowModel;
 use Inowas\Modflow\Model\LayerNumber;
 use Inowas\Common\Id\ModflowId;
-use Inowas\Modflow\Model\ModflowModelDescription;
-use Inowas\Modflow\Model\ModflowModelName;
+use Inowas\Modflow\Model\SoilModelDescription;
+use Inowas\Modflow\Model\SoilmodelName;
 use Inowas\Common\Boundaries\PumpingRates;
 use Inowas\Common\Id\UserId;
 use Inowas\Common\Boundaries\WellBoundary;
@@ -91,8 +91,8 @@ class BoundaryControllerEsTest extends WebTestCase
         $this->scenarioId = ModflowId::generate();
         $this->userId = UserId::fromString($this->user->getId()->toString());
         $this->commandBus->dispatch(CreateModflowModel::byUserWithModelId($this->userId, $this->baseModelId));
-        $this->commandBus->dispatch(ChangeModflowModelName::forModflowModel($this->userId, $this->baseModelId, ModflowModelName::fromString('TestName')));
-        $this->commandBus->dispatch(ChangeModflowModelDescription::forModflowModel($this->userId, $this->baseModelId, ModflowModelDescription::fromString('TestDescription')));
+        $this->commandBus->dispatch(ChangeModflowModelName::forModflowModel($this->userId, $this->baseModelId, SoilmodelName::fromString('TestName')));
+        $this->commandBus->dispatch(ChangeModflowModelDescription::forModflowModel($this->userId, $this->baseModelId, SoilModelDescription::fromString('TestDescription')));
 
         $this->well1 = WellBoundary::createWithAllParams(
             BoundaryId::generate(),
@@ -134,8 +134,8 @@ class BoundaryControllerEsTest extends WebTestCase
         $this->commandBus->dispatch(AddBoundary::toBaseModel($this->userId, $this->baseModelId, $this->well2));
 
         $this->commandBus->dispatch(AddModflowScenario::from($this->userId, $this->baseModelId, $this->scenarioId));
-        $this->commandBus->dispatch(ChangeModflowModelName::forScenario($this->userId, $this->baseModelId, $this->scenarioId, ModflowModelName::fromString('Scenario_1')));
-        $this->commandBus->dispatch(ChangeModflowModelDescription::forScenario($this->userId, $this->baseModelId, $this->scenarioId, ModflowModelDescription::fromString('Scenario_Description_1')));
+        $this->commandBus->dispatch(ChangeModflowModelName::forScenario($this->userId, $this->baseModelId, $this->scenarioId, SoilmodelName::fromString('Scenario_1')));
+        $this->commandBus->dispatch(ChangeModflowModelDescription::forScenario($this->userId, $this->baseModelId, $this->scenarioId, SoilModelDescription::fromString('Scenario_Description_1')));
         $this->commandBus->dispatch(AddBoundary::toScenario($this->userId, $this->baseModelId, $this->scenarioId, $this->well3));
         $this->commandBus->dispatch(AddBoundary::toBaseModel($this->userId, $this->baseModelId, $this->well4));
     }

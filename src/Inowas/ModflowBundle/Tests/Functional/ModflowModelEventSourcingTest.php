@@ -29,17 +29,17 @@ use Inowas\Modflow\Model\Command\AddModflowScenario;
 use Inowas\Modflow\Model\Command\CreateModflowModelCalculation;
 use Inowas\Modflow\Model\Command\RemoveBoundary;
 use Inowas\Modflow\Model\Command\UpdateBoundary;
-use Inowas\Modflow\Model\Event\ModflowModelWasCreated;
+use Inowas\Modflow\Model\Event\SoilmodelWasCreated;
 use Inowas\Modflow\Model\ModflowCalculationAggregate;
 use Inowas\Modflow\Model\ModflowModelAggregate;
 use Inowas\Modflow\Model\ModflowModelCalculationList;
-use Inowas\Modflow\Model\ModflowModelDescription;
+use Inowas\Modflow\Model\SoilModelDescription;
 use Inowas\Common\Grid\GridSize;
 use Inowas\Common\Id\ModflowId;
 use Inowas\Modflow\Model\ModflowModelList;
-use Inowas\Modflow\Model\ModflowModelName;
+use Inowas\Modflow\Model\SoilmodelName;
 use Inowas\Common\Boundaries\PumpingRate;
-use Inowas\Common\Id\SoilModelId;
+use Inowas\Common\Id\SoilmodelId;
 use Inowas\Common\DateTime\TotalTime;
 use Inowas\Common\Id\UserId;
 use Inowas\Common\Boundaries\WellBoundary;
@@ -103,7 +103,7 @@ class ModflowModelEventSourcingTest extends KernelTestCase
     {
         $ownerId = UserId::generate();
         $modflowModelId = ModflowId::generate();
-        $event = ModflowModelWasCreated::byUserWithModflowId(
+        $event = SoilmodelWasCreated::byUserWithModflowId(
             $ownerId,
             $modflowModelId
         );
@@ -139,21 +139,21 @@ class ModflowModelEventSourcingTest extends KernelTestCase
         $ownerId = UserId::generate();
         $modflowModelId = ModflowId::generate();
         $this->commandBus->dispatch(CreateModflowModel::byUserWithModelId($ownerId, $modflowModelId));
-        $this->commandBus->dispatch(ChangeModflowModelName::forModflowModel($ownerId, $modflowModelId, ModflowModelName::fromString('MyNewModel')));
-        $this->commandBus->dispatch(ChangeModflowModelDescription::forModflowModel($ownerId, $modflowModelId, ModflowModelDescription::fromString('MyNewModelDescription')));
+        $this->commandBus->dispatch(ChangeModflowModelName::forModflowModel($ownerId, $modflowModelId, SoilmodelName::fromString('MyNewModel')));
+        $this->commandBus->dispatch(ChangeModflowModelDescription::forModflowModel($ownerId, $modflowModelId, SoilModelDescription::fromString('MyNewModelDescription')));
 
         /** @var ModflowModelAggregate $model */
         $model = $this->modelRepository->get($modflowModelId);
-        $this->assertEquals(ModflowModelName::fromString('MyNewModel'), $model->name());
-        $this->assertEquals(ModflowModelDescription::fromString('MyNewModelDescription'), $model->description());
+        $this->assertEquals(SoilmodelName::fromString('MyNewModel'), $model->name());
+        $this->assertEquals(SoilModelDescription::fromString('MyNewModelDescription'), $model->description());
 
-        $this->commandBus->dispatch(ChangeModflowModelName::forModflowModel($ownerId, $modflowModelId, ModflowModelName::fromString('MyNewModelChanged')));
-        $this->commandBus->dispatch(ChangeModflowModelDescription::forModflowModel($ownerId, $modflowModelId, ModflowModelDescription::fromString('MyNewModelDescriptionChanged')));
+        $this->commandBus->dispatch(ChangeModflowModelName::forModflowModel($ownerId, $modflowModelId, SoilmodelName::fromString('MyNewModelChanged')));
+        $this->commandBus->dispatch(ChangeModflowModelDescription::forModflowModel($ownerId, $modflowModelId, SoilModelDescription::fromString('MyNewModelDescriptionChanged')));
 
         /** @var ModflowModelAggregate $model */
         $model = $this->modelRepository->get($modflowModelId);
-        $this->assertEquals(ModflowModelName::fromString('MyNewModelChanged'), $model->name());
-        $this->assertEquals(ModflowModelDescription::fromString('MyNewModelDescriptionChanged'), $model->description());
+        $this->assertEquals(SoilmodelName::fromString('MyNewModelChanged'), $model->name());
+        $this->assertEquals(SoilModelDescription::fromString('MyNewModelDescriptionChanged'), $model->description());
     }
 
     public function testChangeScenarioMetadata()
@@ -164,27 +164,27 @@ class ModflowModelEventSourcingTest extends KernelTestCase
         $this->commandBus->dispatch(CreateModflowModel::byUserWithModelId($ownerId, $modflowModelId));
         $this->commandBus->dispatch(AddModflowScenario::from($ownerId, $modflowModelId, $scenarioId));
 
-        $this->commandBus->dispatch(ChangeModflowModelName::forScenario($ownerId, $modflowModelId, $scenarioId, ModflowModelName::fromString('MyNewModel')));
-        $this->commandBus->dispatch(ChangeModflowModelDescription::forScenario($ownerId, $modflowModelId, $scenarioId, ModflowModelDescription::fromString('MyNewModelDescription')));
+        $this->commandBus->dispatch(ChangeModflowModelName::forScenario($ownerId, $modflowModelId, $scenarioId, SoilmodelName::fromString('MyNewModel')));
+        $this->commandBus->dispatch(ChangeModflowModelDescription::forScenario($ownerId, $modflowModelId, $scenarioId, SoilModelDescription::fromString('MyNewModelDescription')));
 
         /** @var ModflowModelAggregate $model */
         $model = $this->modelRepository->get($modflowModelId);
 
         /** @var ModflowModelAggregate $scenario */
         $scenario = $model->scenarios()[$scenarioId->toString()];
-        $this->assertEquals(ModflowModelName::fromString('MyNewModel'), $scenario->name());
-        $this->assertEquals(ModflowModelDescription::fromString('MyNewModelDescription'), $scenario->description());
+        $this->assertEquals(SoilmodelName::fromString('MyNewModel'), $scenario->name());
+        $this->assertEquals(SoilModelDescription::fromString('MyNewModelDescription'), $scenario->description());
 
-        $this->commandBus->dispatch(ChangeModflowModelName::forScenario($ownerId, $modflowModelId, $scenarioId, ModflowModelName::fromString('MyNewModelChanged')));
-        $this->commandBus->dispatch(ChangeModflowModelDescription::forScenario($ownerId, $modflowModelId, $scenarioId, ModflowModelDescription::fromString('MyNewModelDescriptionChanged')));
+        $this->commandBus->dispatch(ChangeModflowModelName::forScenario($ownerId, $modflowModelId, $scenarioId, SoilmodelName::fromString('MyNewModelChanged')));
+        $this->commandBus->dispatch(ChangeModflowModelDescription::forScenario($ownerId, $modflowModelId, $scenarioId, SoilModelDescription::fromString('MyNewModelDescriptionChanged')));
 
         /** @var ModflowModelAggregate $model */
         $model = $this->modelRepository->get($modflowModelId);
 
         /** @var ModflowModelAggregate $scenario */
         $scenario = $model->scenarios()[$scenarioId->toString()];
-        $this->assertEquals(ModflowModelName::fromString('MyNewModelChanged'), $scenario->name());
-        $this->assertEquals(ModflowModelDescription::fromString('MyNewModelDescriptionChanged'), $scenario->description());
+        $this->assertEquals(SoilmodelName::fromString('MyNewModelChanged'), $scenario->name());
+        $this->assertEquals(SoilModelDescription::fromString('MyNewModelDescriptionChanged'), $scenario->description());
     }
 
     public function testModflowModelCommands()
@@ -192,8 +192,8 @@ class ModflowModelEventSourcingTest extends KernelTestCase
         $ownerId = UserId::generate();
         $modflowModelId = ModflowId::generate();
         $this->commandBus->dispatch(CreateModflowModel::byUserWithModelId($ownerId, $modflowModelId));
-        $this->commandBus->dispatch(ChangeModflowModelName::forModflowModel($ownerId, $modflowModelId, ModflowModelName::fromString('MyNewModel')));
-        $this->commandBus->dispatch(ChangeModflowModelDescription::forModflowModel($ownerId, $modflowModelId, ModflowModelDescription::fromString('MyNewModelDescription')));
+        $this->commandBus->dispatch(ChangeModflowModelName::forModflowModel($ownerId, $modflowModelId, SoilmodelName::fromString('MyNewModel')));
+        $this->commandBus->dispatch(ChangeModflowModelDescription::forModflowModel($ownerId, $modflowModelId, SoilModelDescription::fromString('MyNewModelDescription')));
 
         $areaId = BoundaryId::generate();
         $area = AreaBoundary::create($areaId);
@@ -201,7 +201,7 @@ class ModflowModelEventSourcingTest extends KernelTestCase
         $this->commandBus->dispatch(ChangeModflowModelBoundingBox::forModflowModel($ownerId, $modflowModelId, BoundingBox::fromCoordinates(1, 2, 3, 4, 5)));
         $this->commandBus->dispatch(ChangeModflowModelGridSize::forModflowModel($ownerId, $modflowModelId, GridSize::fromXY(50, 60)));
 
-        $soilmodelId = SoilModelId::generate();
+        $soilmodelId = SoilmodelId::generate();
         $this->commandBus->dispatch(ChangeModflowModelSoilmodelId::forModflowModel($modflowModelId, $soilmodelId));
 
         /** @var ModflowModelAggregate $model */
@@ -209,8 +209,8 @@ class ModflowModelEventSourcingTest extends KernelTestCase
         $this->assertInstanceOf(ModflowModelAggregate::class, $model);
         $this->assertEquals($ownerId, $model->ownerId());
         $this->assertEquals($modflowModelId, $model->modflowModelId());
-        $this->assertEquals(ModflowModelName::fromString('MyNewModel'), $model->name());
-        $this->assertEquals(ModflowModelDescription::fromString('MyNewModelDescription'), $model->description());
+        $this->assertEquals(SoilmodelName::fromString('MyNewModel'), $model->name());
+        $this->assertEquals(SoilModelDescription::fromString('MyNewModelDescription'), $model->description());
         $this->assertEquals($areaId, $model->area()->boundaryId());
         $this->assertEquals(BoundingBox::fromCoordinates(1, 2, 3, 4, 5), $model->boundingBox());
         $this->assertEquals(GridSize::fromXY(50, 60), $model->gridSize());
@@ -410,11 +410,11 @@ class ModflowModelEventSourcingTest extends KernelTestCase
         $modelId = ModflowId::generate();
 
         $this->commandBus->dispatch(CreateModflowModel::byUserWithModelId($ownerId, $modelId));
-        $this->commandBus->dispatch(ChangeModflowModelName::forModflowModel($ownerId, $modelId, ModflowModelName::fromString('BaseModel INOWAS Hanoi')));
+        $this->commandBus->dispatch(ChangeModflowModelName::forModflowModel($ownerId, $modelId, SoilmodelName::fromString('BaseModel INOWAS Hanoi')));
         $this->commandBus->dispatch(ChangeModflowModelDescription::forModflowModel(
             $ownerId,
             $modelId,
-            ModflowModelDescription::fromString(
+            SoilModelDescription::fromString(
                 'Application of managed aquifer recharge for maximization of water storage capacity in Hanoi.'
             )
         ));

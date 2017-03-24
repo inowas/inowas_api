@@ -24,3 +24,4 @@ class ModflowModelName
         return $this->name;
     }
 }
+
