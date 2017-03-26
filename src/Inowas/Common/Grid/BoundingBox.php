@@ -31,6 +31,11 @@ class BoundingBox implements \JsonSerializable
         return new self($x1, $x2, $y1, $y2, $srid);
     }
 
+    public static function fromArray(array $bb): BoundingBox
+    {
+        return new self($bb['x_min'], $bb['x_max'], $bb['y_min'], $bb['y_max'], $bb['srid']);
+    }
+
     private function __construct($x1, $x2, $y1, $y2, $srid)
     {
         if ($x1 > $x2){
@@ -77,10 +82,7 @@ class BoundingBox implements \JsonSerializable
         return $this->srid;
     }
 
-    /**
-     * @return array
-     */
-    public function jsonSerialize()
+    public function toArray()
     {
         return array(
             'x_min' => $this->xMin,
@@ -89,6 +91,14 @@ class BoundingBox implements \JsonSerializable
             'y_max' => $this->yMax,
             'srid' => $this->srid
         );
+    }
+
+    /**
+     * @return array
+     */
+    public function jsonSerialize()
+    {
+        return $this->toArray();
     }
 
     public function toGeoJson(){

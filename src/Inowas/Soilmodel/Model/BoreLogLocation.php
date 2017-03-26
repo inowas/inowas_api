@@ -26,6 +26,11 @@ class BoreLogLocation
         return $this->point->toArray();
     }
 
+    public function toPoint(): Point
+    {
+        return $this->point;
+    }
+
     public static function fromArray(array $data): BoreLogLocation
     {
         // Expecting array[x,y] for point-data

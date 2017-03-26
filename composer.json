@@ -56,7 +56,8 @@
         "prooph/event-store-bus-bridge": "^2.0",
         "prooph/event-store-doctrine-adapter": "^3.3",
         "prooph/event-sourcing": "^4.0",
-        "beberlei/assert": "^2.7"
+        "beberlei/assert": "^2.7",
+        "php-amqplib/php-amqplib": "^2.6"
       
     },
     "require-dev": {

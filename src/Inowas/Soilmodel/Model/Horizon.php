@@ -64,4 +64,9 @@ class Horizon
 
         return $self;
     }
+
+    public function hTop(): HTop
+    {
+        return $this->hTop;
+    }
 }
