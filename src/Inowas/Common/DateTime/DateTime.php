@@ -26,6 +26,11 @@ class DateTime
         return date_format($this->dateTime, DATE_ATOM);
     }
 
+    public function toFormat(string $format): string
+    {
+        return $this->dateTime->format($format);
+    }
+
     private function __construct(\DateTimeImmutable $immutable)
     {
         $this->dateTime = $immutable;

@@ -2,14 +2,14 @@
 
 declare(strict_types=1);
 
-namespace Inowas\Common\Grid;
+namespace Inowas\Common\Modflow;
 
-class LayerNumber
+class UnitNumber
 {
     /** @var int */
     private $number;
 
-    public static function fromInteger(int $number): LayerNumber
+    public static function fromInteger(int $number): UnitNumber
     {
         return new self($number);
     }
@@ -22,10 +22,5 @@ class LayerNumber
     public function toInteger(): int
     {
         return $this->number;
-    }
-
-    public function sameAs(LayerNumber $other)
-    {
-        return ($other->toInteger() === $this->toInteger());
     }
 }
