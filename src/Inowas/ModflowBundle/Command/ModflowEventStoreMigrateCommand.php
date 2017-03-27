@@ -6,7 +6,6 @@ namespace Inowas\ModflowBundle\Command;
 
 use Inowas\Common\Id\UserId;
 use Inowas\ModflowBundle\DataFixtures\Scenarios\Hanoi\Hanoi;
-use Inowas\SoilmodelBundle\DataFixtures\HanoiSoilmodel\HanoiSoilModel;
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -36,17 +35,10 @@ class ModflowEventStoreMigrateCommand extends ContainerAwareCommand
 
         if (is_null($modelname)){
             $output->writeln("Possible Arguments are:");
-            $output->writeln("1 or hanoi-soilmodel for the hanoi-soilmodel");
-            $output->writeln("2 or hanoi for the hanoi-modflow-model");
+            $output->writeln("1 or hanoi for the hanoi-modflow-model");
         }
 
-        if ($modelname == 'hanoi-soilmodel' || intval($modelname) == 1){
-            $hanoi = new HanoiSoilModel();
-            $hanoi->setContainer($this->getContainer());
-            $hanoi->load();
-        }
-
-        if ($modelname == 'hanoi' || intval($modelname) == 2) {
+        if ($modelname == 'hanoi' || intval($modelname) == 1) {
             $hanoi = new Hanoi();
             $hanoi->setContainer($this->getContainer());
             $hanoi->load();

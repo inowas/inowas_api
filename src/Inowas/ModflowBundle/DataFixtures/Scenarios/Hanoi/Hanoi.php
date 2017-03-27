@@ -65,6 +65,7 @@ use Inowas\Soilmodel\Model\GeologicalLayerDescription;
 use Inowas\Soilmodel\Model\GeologicalLayerId;
 use Inowas\Soilmodel\Model\GeologicalLayerName;
 use Inowas\Soilmodel\Model\GeologicalLayerNumber;
+use Inowas\Soilmodel\Model\GeologicalLayerType;
 use Inowas\Soilmodel\Model\Horizon;
 use Inowas\Soilmodel\Model\HorizonId;
 use Inowas\Soilmodel\Model\SoilmodelDescription;
@@ -191,12 +192,19 @@ class Hanoi implements ContainerAwareInterface, DataFixtureInterface
         ];
 
         foreach ($layers as $key => $layer) {
+
+            $type = GeologicalLayerType::fromValue(GeologicalLayerType::TYPE_CONVERTIBLE);
+            if ($key == 3) {
+                $type = GeologicalLayerType::fromValue(GeologicalLayerType::TYPE_CONFINED);
+            }
+
             $commandBus->dispatch(
                 AddGeologicalLayerToSoilmodel::forSoilmodel(
                     $ownerId,
                     $soilModelId,
                     GeologicalLayer::fromParams(
                         GeologicalLayerId::generate(),
+                        $type,
                         GeologicalLayerNumber::fromInteger($key),
                         GeologicalLayerName::fromString($layer[0]),
                         GeologicalLayerDescription::fromString($layer[1])

@@ -9,6 +9,9 @@ class GeologicalLayer
     /** @var  GeologicalLayerId */
     protected $id;
 
+    /** @var  GeologicalLayerType */
+    protected $type;
+
     /** @var  GeologicalLayerNumber */
     protected $number;
 
@@ -24,6 +27,11 @@ class GeologicalLayer
     public function id(): GeologicalLayerId
     {
         return $this->id;
+    }
+
+    public function layerType(): GeologicalLayerType
+    {
+        return $this->type;
     }
 
     public function layerNumber(): GeologicalLayerNumber
@@ -50,6 +58,7 @@ class GeologicalLayer
     {
         $data = array(
             'id' => $this->id->toString(),
+            'type' => $this->type->toValue(),
             'number' => $this->number->toInteger(),
             'name' => $this->name->toString(),
             'description' => $this->description->toString(),
@@ -67,6 +76,7 @@ class GeologicalLayer
     {
         $self = new self();
         $self->id = GeologicalLayerId::fromString($layer['id']);
+        $self->type = GeologicalLayerType::fromValue($layer['type']);
         $self->number = GeologicalLayerNumber::fromInteger($layer['number']);
         $self->name = GeologicalLayerName::fromString($layer['name']);
         $self->description = GeologicalLayerDescription::fromString($layer['description']);
@@ -78,10 +88,11 @@ class GeologicalLayer
         return $self;
     }
 
-    public static function fromParams(GeologicalLayerId $id, GeologicalLayerNumber $number, GeologicalLayerName $name, GeologicalLayerDescription $description, ?GeologicalLayerValues $values = null): GeologicalLayer
+    public static function fromParams(GeologicalLayerId $id, GeologicalLayerType $type, GeologicalLayerNumber $number, GeologicalLayerName $name, GeologicalLayerDescription $description, ?GeologicalLayerValues $values = null): GeologicalLayer
     {
         $self = new self();
         $self->id = $id;
+        $self->type = $type;
         $self->number = $number;
         $self->name = $name;
         $self->description = $description;
@@ -97,12 +108,11 @@ class GeologicalLayer
     {
         $self = new self();
         $self->id = $this->id;
+        $self->type = $this->type;
         $self->number = $this->number;
         $self->name = $this->name;
         $self->description = $this->description;
         $self->values = $values;
         return $self;
     }
-
-
 }
