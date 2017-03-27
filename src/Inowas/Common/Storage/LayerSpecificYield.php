@@ -17,4 +17,9 @@ class LayerSpecificYield
     public function toArray(){
         return $this->values;
     }
+
+    public function identifier():string
+    {
+        return 'sy';
+    }
 }

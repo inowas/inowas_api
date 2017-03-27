@@ -12,4 +12,9 @@ class LayerKZ extends LayerConductivityValue
         $self->values = $values;
         return $self;
     }
+
+    public function identifier():string
+    {
+        return 'kz';
+    }
 }

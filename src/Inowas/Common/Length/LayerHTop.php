@@ -20,4 +20,9 @@ class LayerHTop
     {
         return $this->values;
     }
+
+    public function identifier():string
+    {
+        return 'hTop';
+    }
 }

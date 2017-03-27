@@ -60,3 +60,18 @@ services:
         class: Inowas\Modflow\Projection\ModelScenarioList\ModelDetailsFinder
         arguments:
           - '@doctrine.dbal.default_connection'
+
+    inowas.modflow_projection.layer_details:
+        class: Inowas\Soilmodel\Projection\LayerDetails\LayerDetailsProjector
+        arguments:
+          - '@doctrine.dbal.default_connection'
+
+    inowas.modflow_projection.layer_values:
+        class: Inowas\Soilmodel\Projection\LayerDetails\LayerValuesProjector
+        arguments:
+          - '@doctrine.dbal.default_connection'
+
+    inowas.modflow_projection.soilmodel_list:
+        class: Inowas\Soilmodel\Projection\SoilmodelList\SoilmodelListProjector
+        arguments:
+          - '@doctrine.dbal.default_connection'

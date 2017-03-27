@@ -23,6 +23,27 @@ class GeologicalLayerValues
     /** @var LayerStorage */
     private $storage;
 
+
+    public function hBottom(): LayerHBottom
+    {
+        return $this->hBottom;
+    }
+
+    public function hTop(): LayerHTop
+    {
+        return $this->hTop;
+    }
+
+    public function conductivity(): LayerConductivity
+    {
+        return $this->conductivity;
+    }
+
+    public function storage(): LayerStorage
+    {
+        return $this->storage;
+    }
+
     public static function fromParams(LayerHTop $hTop, LayerHBottom $hBot, LayerConductivity $conductivity, LayerStorage $storage): GeologicalLayerValues
     {
         $self = new self();

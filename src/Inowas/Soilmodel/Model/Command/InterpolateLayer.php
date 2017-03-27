@@ -6,8 +6,8 @@ namespace Inowas\Soilmodel\Model\Command;
 
 use Inowas\Common\Grid\BoundingBox;
 use Inowas\Common\Grid\GridSize;
-use Inowas\Common\Grid\LayerNumber;
 use Inowas\Common\Id\UserId;
+use Inowas\Soilmodel\Model\GeologicalLayerNumber;
 use Inowas\Soilmodel\Model\SoilmodelId;
 use Inowas\Soilmodel\Model\SoilmodelName;
 use Prooph\Common\Messaging\Command;
@@ -19,7 +19,7 @@ class InterpolateLayer extends Command implements PayloadConstructable
 
     use PayloadTrait;
 
-    public static function forSoilmodel(UserId $userId, SoilmodelId $soilmodelId, LayerNumber $number, BoundingBox $bb, GridSize $gs): InterpolateLayer
+    public static function forSoilmodel(UserId $userId, SoilmodelId $soilmodelId, GeologicalLayerNumber $number, BoundingBox $bb, GridSize $gs): InterpolateLayer
     {
         return new self(
             [
@@ -57,8 +57,8 @@ class InterpolateLayer extends Command implements PayloadConstructable
         return GridSize::fromArray($this->payload['grid_size']);
     }
 
-    public function layerNumber(): LayerNumber
+    public function layerNumber(): GeologicalLayerNumber
     {
-        return LayerNumber::fromInteger($this->payload['layer_number']);
+        return GeologicalLayerNumber::fromInteger($this->payload['layer_number']);
     }
 }

@@ -104,7 +104,7 @@ class SoilmodelAggregate extends AggregateRoot
         }
     }
 
-    public function updateGeologicalLayerValues(GeologicalLayerId $layerId, GeologicalLayerValues $values): void
+    public function updateGeologicalLayerValues(GeologicalLayerId $layerId, GeologicalLayerNumber $layerNumber, GeologicalLayerValues $values): void
     {
 
         if (! array_key_exists($layerId->toString(), $this->layers)){
@@ -114,7 +114,7 @@ class SoilmodelAggregate extends AggregateRoot
         /** @var GeologicalLayer $layer */
         $layer = $this->layers[$layerId->toString()];
         $this->layers[$layerId->toString()] = $layer->updateValues($values);
-        $this->recordThat(LayerValuesWereUpdated::forSoilmodelAndLayer($this->soilmodelId, $layerId, $values));
+        $this->recordThat(LayerValuesWereUpdated::forSoilmodelAndLayer($this->soilmodelId, $layerId, $layerNumber, $values));
     }
 
     protected function whenSoilmodelWasCreated(SoilmodelWasCreated $event): void

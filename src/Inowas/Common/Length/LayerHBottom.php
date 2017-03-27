@@ -20,4 +20,9 @@ class LayerHBottom
     {
         return $this->values;
     }
+
+    public function identifier():string
+    {
+        return 'hBot';
+    }
 }

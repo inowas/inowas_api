@@ -91,7 +91,7 @@ final class InterpolateLayerHandler
             $this->interpolateStorage($baseConfiguration, $boreLogs, $layer->layerNumber())
         );
 
-        $soilmodel->updateGeologicalLayerValues($layer->id(), $layerValues);
+        $soilmodel->updateGeologicalLayerValues($layer->id(), $command->layerNumber(), $layerValues);
     }
 
     private function interpolateHTop(InterpolationConfiguration $configuration, array $boreLogs, GeologicalLayerNumber $layerNumber): LayerHTop

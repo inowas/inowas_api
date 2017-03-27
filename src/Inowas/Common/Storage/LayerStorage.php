@@ -22,6 +22,16 @@ class LayerStorage
         return $self;
     }
 
+    public function ss(): LayerSpecificStorage
+    {
+        return $this->ss;
+    }
+
+    public function sy(): LayerSpecificYield
+    {
+        return $this->sy;
+    }
+
     public function toArray(): array
     {
         return array(

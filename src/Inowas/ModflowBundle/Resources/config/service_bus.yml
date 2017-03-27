@@ -21,6 +21,23 @@ prooph_service_bus:
                     'Inowas\Modflow\Model\Command\RemoveModflowScenario': 'inowas.remove_modflow_scenario_handler'
                     'Inowas\Modflow\Model\Command\RemoveBoundary': 'inowas.remove_modflow_model_boundary_handler'
                     'Inowas\Modflow\Model\Command\UpdateBoundary': 'inowas.update_modflow_model_boundary_handler'
+
+                    'Inowas\Soilmodel\Model\Command\AddBoreLogToSoilmodel': 'inowas.soilmodel.add_borelog_to_soilmodel.handler'
+                    'Inowas\Soilmodel\Model\Command\AddGeologicalLayerToSoilmodel': 'inowas.soilmodel.add_geological_layer_to_soilmodel.handler'
+                    'Inowas\Soilmodel\Model\Command\ChangeSoilmodelDescription': 'inowas.soilmodel.change_soilmodel_description.handler'
+                    'Inowas\Soilmodel\Model\Command\ChangeSoilmodelName': 'inowas.soilmodel.change_soilmodel_name.handler'
+                    'Inowas\Soilmodel\Model\Command\CreateSoilmodel': 'inowas.soilmodel.create_soilmodel.handler'
+                    'Inowas\Soilmodel\Model\Command\DeleteSoilmodel': 'inowas.soilmodel.delete_soilmodel.handler'
+                    'Inowas\Soilmodel\Model\Command\InterpolateLayer': 'inowas.soilmodel.interpolate_layer.handler'
+                    'Inowas\Soilmodel\Model\Command\RemoveBoreLogFromSoilmodel': 'inowas.soilmodel.remove_borelog_layer_from_soilmodel.handler'
+                    'Inowas\Soilmodel\Model\Command\RemoveGeologicalLayerFromSoilmodel': 'inowas.soilmodel.remove_geological_layer_from_soilmodel.handler'
+                    'Inowas\Soilmodel\Model\Command\AddHorizonToBoreLog': 'inowas.soilmodel.add_horizon_to_borelog.handler'
+                    'Inowas\Soilmodel\Model\Command\RemoveHorizonFromBoreLog': 'inowas.soilmodel.remove_horizon_from_borelog.handler'
+                    'Inowas\Soilmodel\Model\Command\ChangeBoreLogLocation': 'inowas.soilmodel.change_borelog_location.handler'
+                    'Inowas\Soilmodel\Model\Command\ChangeBoreLogName': 'inowas.soilmodel.change_borelog_name.handler'
+                    'Inowas\Soilmodel\Model\Command\CreateBoreLog': 'inowas.soilmodel.create_borelog.handler'
+                    'Inowas\Soilmodel\Model\Command\DeleteBoreLog': 'inowas.soilmodel.delete_borelog.handler'
+
     event_buses:
         modflow_event_bus:
             plugins:
@@ -93,3 +110,12 @@ prooph_service_bus:
                     'Inowas\Modflow\Model\Event\ModflowModelGridSizeWasChanged':
                         - 'inowas.modflow_projection.model_details'
                         - 'inowas.modflow_projection.model_scenarios'
+
+                    'Inowas\Soilmodel\Model\Event\SoilmodelWasCreated':
+                        - 'inowas.modflow_projection.soilmodel_list'
+
+                    'Inowas\Soilmodel\Model\Event\SoilmodelGeologicalLayerWasAdded':
+                        - 'inowas.modflow_projection.layer_details'
+
+                    'Inowas\Soilmodel\Model\Event\LayerValuesWereUpdated':
+                        - 'inowas.modflow_projection.layer_values'

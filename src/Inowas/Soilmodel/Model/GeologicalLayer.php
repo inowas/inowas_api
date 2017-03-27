@@ -26,6 +26,26 @@ class GeologicalLayer
         return $this->id;
     }
 
+    public function layerNumber(): GeologicalLayerNumber
+    {
+        return $this->number;
+    }
+
+    public function layerName(): GeologicalLayerName
+    {
+        return $this->name;
+    }
+
+    public function layerDescription(): GeologicalLayerDescription
+    {
+        return $this->description;
+    }
+
+    public function values(): GeologicalLayerValues
+    {
+        return $this->values;
+    }
+
     public function toArray(): array
     {
         $data = array(
@@ -49,7 +69,7 @@ class GeologicalLayer
         $self->id = GeologicalLayerId::fromString($layer['id']);
         $self->number = GeologicalLayerNumber::fromInteger($layer['number']);
         $self->name = GeologicalLayerName::fromString($layer['name']);
-        $self->description = GeologicalLayerName::fromString($layer['description']);
+        $self->description = GeologicalLayerDescription::fromString($layer['description']);
 
         if (! is_null($layer['values'])) {
             $self->values = GeologicalLayerValues::fromArray($layer['values']);
@@ -73,11 +93,6 @@ class GeologicalLayer
         return $self;
     }
 
-    public function layerNumber(): GeologicalLayerNumber
-    {
-        return $this->number;
-    }
-
     public function updateValues(GeologicalLayerValues $values): GeologicalLayer
     {
         $self = new self();
@@ -88,4 +103,6 @@ class GeologicalLayer
         $self->values = $values;
         return $self;
     }
+
+
 }
