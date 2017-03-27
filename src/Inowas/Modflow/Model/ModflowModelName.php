@@ -23,5 +23,31 @@ class ModflowModelName
     {
         return $this->name;
     }
-}
 
+    public function slugified(): string
+    {
+        // replace non letter or digits by -
+        $name = preg_replace('~[^\pL\d]+~u', '-', $this->name);
+
+        // transliterate
+        $name = iconv('utf-8', 'us-ascii//TRANSLIT', $name);
+
+        // remove unwanted characters
+        $name = preg_replace('~[^-\w]+~', '', $name);
+
+        // trim
+        $text = trim($text, '-');
+
+        // remove duplicate -
+        $name = preg_replace('~-+~', '-', $name);
+
+        // lowercase
+        $name = strtolower($name);
+
+        if (empty($name)) {
+            return 'n-a';
+        }
+
+        return $name;
+    }
+}
