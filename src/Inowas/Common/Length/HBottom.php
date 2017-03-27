@@ -2,7 +2,7 @@
 
 namespace Inowas\Common\Length;
 
-class HBottom extends Height
+class HBottom
 {
     private $heightInMillimeters;
 

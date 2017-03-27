@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Inowas\Common\Grid;
 
+use Inowas\Soilmodel\Model\GeologicalLayerNumber;
+
 class LayerNumber
 {
     /** @var int */
@@ -22,5 +24,10 @@ class LayerNumber
     public function toInteger(): int
     {
         return $this->number;
+    }
+
+    public function sameAs(GeologicalLayerNumber $other)
+    {
+        return ($other->toInteger() === $this->toInteger());
     }
 }

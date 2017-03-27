@@ -1,6 +1,6 @@
 <?php
 
-namespace Inowas\SoilmodelBundle\Service;
+namespace Inowas\Soilmodel\Interpolation;
 
 use Inowas\Common\Grid\BoundingBox;
 use Inowas\Common\Grid\GridSize;
@@ -26,7 +26,7 @@ class InterpolationResult
     /** @var  array */
     protected $result = [];
 
-    public static function fromInterpolation(Interpolation $interpolation, string $result): InterpolationResult
+    public static function fromInterpolation(InterpolationConfiguration $interpolation, string $result): InterpolationResult
     {
         $self = new self();
         $self->boundingBox = $interpolation->boundingBox();

@@ -5,18 +5,18 @@ namespace Inowas\Soilmodel\Tests\Model;
 use CrEOF\Spatial\PHP\Types\Geometry\Point;
 use Inowas\Common\Grid\BoundingBox;
 use Inowas\Common\Grid\GridSize;
+use Inowas\Soilmodel\Interpolation\InterpolationConfiguration;
+use Inowas\Soilmodel\Interpolation\InterpolationResult;
+use Inowas\Soilmodel\Interpolation\PyModellingInterpolation;
 use Inowas\SoilmodelBundle\Model\PointValue;
-use Inowas\SoilmodelBundle\Service\Interpolation;
-use Inowas\SoilmodelBundle\Service\InterpolationResult;
-use Inowas\SoilmodelBundle\Service\PyModellingInterpolationService;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
-class SoilModelInterpolationTest extends WebTestCase
+class InterpolationTest extends WebTestCase
 {
-    /** @var PyModellingInterpolationService */
+    /** @var PyModellingInterpolation */
     protected $interpolationService;
 
-    /** @var Interpolation */
+    /** @var InterpolationConfiguration */
     protected $interpolation;
 
     public function setUp(){
@@ -27,8 +27,8 @@ class SoilModelInterpolationTest extends WebTestCase
             ->get('inowas.soilmodel.interpolation_service')
         ;
 
-        $this->interpolation = new Interpolation();
-        $this->interpolation->addMethod(Interpolation::METHOD_GAUSSIAN);
+        $this->interpolation = new InterpolationConfiguration();
+        $this->interpolation->addMethod(InterpolationConfiguration::METHOD_GAUSSIAN);
         $this->interpolation->setGridSize(GridSize::fromXY(100, 100));
         $this->interpolation->setBoundingBox(BoundingBox::fromCoordinates(11775189.217654, 11789747.539231, 2385794.8345812, 2403506.4981163, 4835));
         $this->interpolation->addPointValue(new PointValue(new Point(11771882.34, 2392544.12), 3));

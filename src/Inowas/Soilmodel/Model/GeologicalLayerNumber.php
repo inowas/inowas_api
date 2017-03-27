@@ -24,4 +24,9 @@ class GeologicalLayerNumber
     {
         return $this->number;
     }
+
+    public function sameAs(GeologicalLayerNumber $layerNumber)
+    {
+        return $layerNumber->toInteger() === $this->toInteger();
+    }
 }

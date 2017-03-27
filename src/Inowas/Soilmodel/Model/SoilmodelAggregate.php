@@ -6,6 +6,7 @@ namespace Inowas\Soilmodel\Model;
 
 use Inowas\Common\Id\UserId;
 
+use Inowas\Soilmodel\Model\Event\LayerValuesWereUpdated;
 use Inowas\Soilmodel\Model\Event\SoilmodelBoreLogWasAdded;
 use Inowas\Soilmodel\Model\Event\SoilmodelBoreLogWasRemoved;
 use Inowas\Soilmodel\Model\Event\SoilmodelDescriptionWasChanged;
@@ -103,6 +104,19 @@ class SoilmodelAggregate extends AggregateRoot
         }
     }
 
+    public function updateGeologicalLayerValues(GeologicalLayerId $layerId, GeologicalLayerValues $values): void
+    {
+
+        if (! array_key_exists($layerId->toString(), $this->layers)){
+            return;
+        }
+
+        /** @var GeologicalLayer $layer */
+        $layer = $this->layers[$layerId->toString()];
+        $this->layers[$layerId->toString()] = $layer->updateValues($values);
+        $this->recordThat(LayerValuesWereUpdated::forSoilmodelAndLayer($this->soilmodelId, $layerId, $values));
+    }
+
     protected function whenSoilmodelWasCreated(SoilmodelWasCreated $event): void
     {
         $this->soilmodelId = $event->soilmodelId();
@@ -146,6 +160,12 @@ class SoilmodelAggregate extends AggregateRoot
         if (array_key_exists($event->layerId()->toString(), $this->layers)) {
             unset($this->layers[$event->layerId()->toString()]);
         }
+    }
+
+    protected function whenLayerValuesWereUpdated(LayerValuesWereUpdated $event): void
+    {
+        $layer = $this->layers[$event->layerId()->toString()];
+        $this->layers[$event->layerId()->toString()] = $layer->updateValues($event->values());
     }
 
     public function id(): SoilmodelId

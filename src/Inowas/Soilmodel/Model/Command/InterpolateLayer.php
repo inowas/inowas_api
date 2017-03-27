@@ -14,12 +14,12 @@ use Prooph\Common\Messaging\Command;
 use Prooph\Common\Messaging\PayloadConstructable;
 use Prooph\Common\Messaging\PayloadTrait;
 
-class InterpolateLayerValues extends Command implements PayloadConstructable
+class InterpolateLayer extends Command implements PayloadConstructable
 {
 
     use PayloadTrait;
 
-    public static function forSoilmodel(UserId $userId, SoilmodelId $soilmodelId, LayerNumber $number, BoundingBox $bb, GridSize $gs): InterpolateLayerValues
+    public static function forSoilmodel(UserId $userId, SoilmodelId $soilmodelId, LayerNumber $number, BoundingBox $bb, GridSize $gs): InterpolateLayer
     {
         return new self(
             [
@@ -52,7 +52,7 @@ class InterpolateLayerValues extends Command implements PayloadConstructable
         return BoundingBox::fromArray($this->payload['bounding_box']);
     }
 
-    public function gridSize(): BoundingBox
+    public function gridSize(): GridSize
     {
         return GridSize::fromArray($this->payload['grid_size']);
     }

@@ -1,12 +1,12 @@
 <?php
 
-namespace Inowas\SoilmodelBundle\Service;
+namespace Inowas\Soilmodel\Interpolation;
 
 use Inowas\Common\Grid\BoundingBox;
 use Inowas\Common\Grid\GridSize;
 use Inowas\SoilmodelBundle\Model\PointValue;
 
-class Interpolation
+class InterpolationConfiguration
 {
 
     const METHOD_GAUSSIAN = "gaussian";
@@ -24,7 +24,7 @@ class Interpolation
     /** @var  GridSize */
     protected $gridSize;
 
-    public function setBoundingBox(BoundingBox $bb): Interpolation
+    public function setBoundingBox(BoundingBox $bb): InterpolationConfiguration
     {
         $this->boundingBox = $bb;
         return $this;
@@ -35,7 +35,7 @@ class Interpolation
         return $this->boundingBox;
     }
 
-    public function setGridSize(GridSize $gz): Interpolation
+    public function setGridSize(GridSize $gz): InterpolationConfiguration
     {
         $this->gridSize = $gz;
         return $this;
@@ -46,7 +46,7 @@ class Interpolation
         return $this->gridSize;
     }
 
-    public function addMethod(string $method): Interpolation
+    public function addMethod(string $method): InterpolationConfiguration
     {
         $this->methods[] = $method;
         return $this;
@@ -57,7 +57,7 @@ class Interpolation
         return $this->methods;
     }
 
-    public function addPointValue(PointValue $pv): Interpolation
+    public function addPointValue(PointValue $pv): InterpolationConfiguration
     {
         $this->pointValues[] = $pv;
         return $this;

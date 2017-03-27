@@ -38,4 +38,14 @@ class Storage
 
         return $self;
     }
+
+    public function ss(): SpecificStorage
+    {
+        return $this->ss;
+    }
+
+    public function sy(): SpecificYield
+    {
+        return $this->sy;
+    }
 }

@@ -10,6 +10,9 @@ use Inowas\Common\Conductivity\KY;
 use Inowas\Common\Conductivity\KZ;
 use Inowas\Common\Fixtures\DataFixtureInterface;
 use Inowas\Common\Geometry\Point;
+use Inowas\Common\Grid\BoundingBox;
+use Inowas\Common\Grid\GridSize;
+use Inowas\Common\Grid\LayerNumber;
 use Inowas\Common\Id\UserId;
 use Inowas\Common\Length\HBottom;
 use Inowas\Common\Length\HTop;
@@ -26,6 +29,7 @@ use Inowas\Soilmodel\Model\Command\ChangeSoilmodelDescription;
 use Inowas\Soilmodel\Model\Command\ChangeSoilmodelName;
 use Inowas\Soilmodel\Model\Command\CreateBoreLog;
 use Inowas\Soilmodel\Model\Command\CreateSoilmodel;
+use Inowas\Soilmodel\Model\Command\InterpolateLayer;
 use Inowas\Soilmodel\Model\GeologicalLayer;
 use Inowas\Soilmodel\Model\GeologicalLayerDescription;
 use Inowas\Soilmodel\Model\GeologicalLayerId;
@@ -214,6 +218,7 @@ class HanoiSoilModel implements ContainerAwareInterface, DataFixtureInterface
 
             $horizon = Horizon::fromParams(
                 HorizonId::generate(),
+                GeologicalLayerNumber::fromInteger(0),
                 HTop::fromMeters($borehole['top']),
                 HBottom::fromMeters($borehole['bot_0']),
                 Conductivity::fromXYZinMPerDay(
@@ -230,6 +235,7 @@ class HanoiSoilModel implements ContainerAwareInterface, DataFixtureInterface
 
             $horizon = Horizon::fromParams(
                 HorizonId::generate(),
+                GeologicalLayerNumber::fromInteger(1),
                 HTop::fromMeters($borehole['bot_0']),
                 HBottom::fromMeters($borehole['bot_1']),
                 Conductivity::fromXYZinMPerDay(
@@ -246,6 +252,7 @@ class HanoiSoilModel implements ContainerAwareInterface, DataFixtureInterface
 
             $horizon = Horizon::fromParams(
                 HorizonId::generate(),
+                GeologicalLayerNumber::fromInteger(2),
                 HTop::fromMeters($borehole['bot_1']),
                 HBottom::fromMeters($borehole['bot_2']),
                 Conductivity::fromXYZinMPerDay(
@@ -262,6 +269,7 @@ class HanoiSoilModel implements ContainerAwareInterface, DataFixtureInterface
 
             $horizon = Horizon::fromParams(
                 HorizonId::generate(),
+                GeologicalLayerNumber::fromInteger(3),
                 HTop::fromMeters($borehole['bot_2']),
                 HBottom::fromMeters($borehole['bot_3']),
                 Conductivity::fromXYZinMPerDay(
@@ -277,6 +285,15 @@ class HanoiSoilModel implements ContainerAwareInterface, DataFixtureInterface
             $commandBus->dispatch(AddHorizonToBoreLog::byUserWithId($ownerId, $boreLogId, $horizon));
             $commandBus->dispatch(AddBoreLogToSoilmodel::byUserWithId($ownerId, $soilModelId, $boreLogId));
         }
+
+        $box = $geoTools->transformBoundingBox(BoundingBox::fromCoordinates(578205, 594692, 2316000, 2333500, 32648), 4326);
+        $boundingBox = BoundingBox::fromEPSG4326Coordinates($box->xMin(), $box->xMax(), $box->yMin(), $box->yMax());
+        $gridSize = GridSize::fromXY(100, 100);
+
+        $commandBus->dispatch(InterpolateLayer::forSoilmodel($ownerId, $soilModelId, LayerNumber::fromInteger(0), $boundingBox, $gridSize));
+        $commandBus->dispatch(InterpolateLayer::forSoilmodel($ownerId, $soilModelId, LayerNumber::fromInteger(1), $boundingBox, $gridSize));
+        $commandBus->dispatch(InterpolateLayer::forSoilmodel($ownerId, $soilModelId, LayerNumber::fromInteger(2), $boundingBox, $gridSize));
+        $commandBus->dispatch(InterpolateLayer::forSoilmodel($ownerId, $soilModelId, LayerNumber::fromInteger(3), $boundingBox, $gridSize));
     }
 
     public function loadUsers(UserManager $userManager): void

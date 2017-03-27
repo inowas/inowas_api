@@ -8,7 +8,7 @@ services:
         arguments: ['@doctrine.orm.default_entity_manager', '@inowas.process.interpolation']
 
     inowas.soilmodel.interpolation_service:
-        class: Inowas\SoilmodelBundle\Service\PyModellingInterpolationService
+        class: Inowas\Soilmodel\Interpolation\PyModellingInterpolation
         arguments: ['@inowas.amqp.stream.connection', 'rpc_interpolation_queue']
 
     inowas.amqp.stream.connection:
@@ -38,6 +38,10 @@ services:
     inowas.soilmodel.delete_soilmodel.handler:
         class: Inowas\Soilmodel\Model\Handler\DeleteSoilmodelHandler
         arguments: ['@soil_model_list']
+
+    inowas.soilmodel.interpolate_layer.handler:
+        class: Inowas\Soilmodel\Model\Handler\InterpolateLayerHandler
+        arguments: ['@soil_model_list', '@bore_log_list', '@inowas.soilmodel.interpolation_service']
 
     inowas.soilmodel.remove_borelog_layer_from_soilmodel.handler:
         class: Inowas\Soilmodel\Model\Handler\RemoveBoreLogFromSoilmodelHandler
@@ -70,3 +74,4 @@ services:
     inowas.soilmodel.delete_borelog.handler:
         class: Inowas\Soilmodel\Model\Handler\DeleteBoreLogHandler
         arguments: ['@bore_log_list']
+

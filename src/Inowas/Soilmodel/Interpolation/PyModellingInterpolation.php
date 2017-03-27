@@ -1,11 +1,11 @@
 <?php
 
-namespace Inowas\SoilmodelBundle\Service;
+namespace Inowas\Soilmodel\Interpolation;
 
 use PhpAmqpLib\Connection\AMQPStreamConnection;
 use PhpAmqpLib\Message\AMQPMessage;
 
-class PyModellingInterpolationService
+class PyModellingInterpolation implements Interpolation
 {
     
     private $channel;
@@ -46,7 +46,7 @@ class PyModellingInterpolationService
         return $this->response;
     }
 
-    public function interpolate(Interpolation $interpolation): InterpolationResult
+    public function interpolate(InterpolationConfiguration $interpolation): InterpolationResult
     {
         $result = $this->call($interpolation->toJson());
         $interpolationResult = InterpolationResult::fromInterpolation($interpolation, $result);

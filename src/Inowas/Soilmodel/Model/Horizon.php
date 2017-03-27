@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Inowas\Soilmodel\Model;
 
 use Inowas\Common\Conductivity\Conductivity;
+use Inowas\Common\Grid\LayerNumber;
 use Inowas\Common\Length\HBottom;
 use Inowas\Common\Length\HTop;
 use Inowas\Common\Storage\Storage;
@@ -26,6 +27,9 @@ class Horizon
     /** @var  Storage */
     protected $storage;
 
+    /** @var  GeologicalLayerNumber */
+    protected $layerNumber;
+
     public function id(): HorizonId
     {
         return $this->id;
@@ -35,6 +39,7 @@ class Horizon
     {
         return array(
             'id' => $this->id->toString(),
+            'layer_number' => $this->layerNumber->toInteger(),
             'h_top' => $this->hTop->toMeters(),
             'h_bot' => $this->hBot->toMeters(),
             'conductivity' => $this->conductivity->toArray(),
@@ -46,17 +51,19 @@ class Horizon
     {
         $self = new self();
         $self->id = HorizonId::fromString($data['id']);
+        $self->layerNumber = GeologicalLayerNumber::fromInteger($data['layer_number']);
         $self->hTop = HTop::fromMeters($data['h_top']);
-        $self->hBot = HTop::fromMeters($data['h_bot']);
+        $self->hBot = HBottom::fromMeters($data['h_bot']);
         $self->conductivity = Conductivity::fromArray($data['conductivity']);
         $self->storage = Storage::fromArray($data['storage']);
         return $self;
     }
 
-    public static function fromParams(HorizonId $id, HTop $hTop, HBottom $hBot, Conductivity $cond, Storage $storage): Horizon
+    public static function fromParams(HorizonId $id, GeologicalLayerNumber $layerNumber, HTop $hTop, HBottom $hBot, Conductivity $cond, Storage $storage): Horizon
     {
         $self = new self();
         $self->id = $id;
+        $self->layerNumber = $layerNumber;
         $self->hTop = $hTop;
         $self->hBot = $hBot;
         $self->conductivity = $cond;
@@ -68,5 +75,25 @@ class Horizon
     public function hTop(): HTop
     {
         return $this->hTop;
+    }
+
+    public function hBot(): HBottom
+    {
+        return $this->hBot;
+    }
+
+    public function conductivity(): Conductivity
+    {
+        return $this->conductivity;
+    }
+
+    public function storage(): Storage
+    {
+        return $this->storage;
+    }
+
+    public function layerNumber(): GeologicalLayerNumber
+    {
+        return $this->layerNumber;
     }
 }
