@@ -39,6 +39,26 @@ class LayerConductivity
         return $this->kz;
     }
 
+    public function ha(): LayerHA
+    {
+        $hani = [];
+        $kx = $this->kx()->toArray();
+        $ky = $this->ky()->toArray();
+        foreach ($kx as $iRow => $row) {
+            $hani[$iRow] = [];
+            foreach ($row as $iCol => $value) {
+                if ($kx[$iRow][$iCol] == 0){
+                    $hani[$iRow][$iCol] = 0;
+                    continue;
+                }
+
+                $hani[$iRow][$iCol] = $ky[$iRow][$iCol]/$kx[$iRow][$iCol];
+            }
+        }
+
+        return LayerHA::fromArray($hani);
+    }
+
     public function toArray(): array
     {
         return array(

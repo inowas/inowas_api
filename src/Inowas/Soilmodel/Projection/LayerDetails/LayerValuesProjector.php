@@ -34,6 +34,7 @@ class LayerValuesProjector extends AbstractDoctrineConnectionProjector
             $layerValues->conductivity()->kx()->identifier() => $layerValues->conductivity()->kx()->toArray(),
             $layerValues->conductivity()->ky()->identifier() => $layerValues->conductivity()->ky()->toArray(),
             $layerValues->conductivity()->kz()->identifier() => $layerValues->conductivity()->kz()->toArray(),
+            $layerValues->conductivity()->ha()->identifier() => $layerValues->conductivity()->ha()->toArray(),
             $layerValues->storage()->ss()->identifier() => $layerValues->storage()->ss()->toArray(),
             $layerValues->storage()->sy()->identifier() => $layerValues->storage()->sy()->toArray()
         );
