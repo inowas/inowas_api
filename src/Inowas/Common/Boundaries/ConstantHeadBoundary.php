@@ -4,14 +4,19 @@ declare(strict_types=1);
 
 namespace Inowas\Common\Boundaries;
 
+use Inowas\Common\Grid\ActiveCells;
 use Inowas\Common\Id\BoundaryId;
 
 class ConstantHeadBoundary extends AbstractBoundary
 {
-
     public static function create(BoundaryId $boundaryId): ConstantHeadBoundary
     {
         return new self($boundaryId);
+    }
+
+    public function setActiveCells(ActiveCells $activeCells): ConstantHeadBoundary
+    {
+        return new self($this->boundaryId, $this->name, $this->geometry, $activeCells);
     }
 
     /**

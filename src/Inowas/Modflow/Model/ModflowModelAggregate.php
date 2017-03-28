@@ -63,7 +63,7 @@ class ModflowModelAggregate extends AggregateRoot
     /** @var BoundingBox  */
     protected $boundingBox;
 
-    /** @var AbstractBoundary */
+    /** @var AreaBoundary */
     protected $area;
 
     /** @var SoilmodelId */
@@ -326,6 +326,16 @@ class ModflowModelAggregate extends AggregateRoot
 
     public function updateActiveCells(UserId $userId, BoundaryId $boundaryId, $boundaryType, ActiveCells $activeCells)
     {
+        if ($this->area->boundaryId()->sameValueAs($boundaryId)){
+            $this->area = $this->area->setActiveCells($activeCells);
+        }
+
+        if ($this->containsBoundary($boundaryId)){
+            /** @var AbstractBoundary $boundary */
+            $boundary = $this->boundaries[$boundaryId->toString()];
+            $boundary[$boundaryId->toString()] = $boundary->setActiveCells($activeCells);
+        }
+
         $this->recordThat(ActiveCellsWereUpdated::toBaseModel(
             $userId,
             $this->modflowId,

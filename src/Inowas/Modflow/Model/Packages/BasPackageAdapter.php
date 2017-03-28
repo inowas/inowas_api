@@ -15,8 +15,7 @@ class BasPackageAdapter
         ModflowModelAggregate $modflowModel,
         SoilmodelAggregate $soilmodel
     ){
-        return DisPackage::fromParams(
-            $modflowModel->name(),
+        return BasPackage::fromParams(
             null,
             null,
             null,

@@ -5,7 +5,9 @@ declare(strict_types=1);
 namespace Inowas\Common\Boundaries;
 
 use Inowas\Common\Geometry\Geometry;
+use Inowas\Common\Grid\ActiveCells;
 use Inowas\Common\Grid\LayerNumber;
+use Inowas\Common\Id\BoundaryId;
 
 class WellBoundary extends AbstractBoundary
 {
@@ -19,13 +21,13 @@ class WellBoundary extends AbstractBoundary
     /** @var  WellType */
     protected $wellType;
 
-    public static function create(\Inowas\Common\Id\BoundaryId $boundaryId): WellBoundary
+    public static function create(BoundaryId $boundaryId): WellBoundary
     {
         return new self($boundaryId);
     }
 
     public static function createWithAllParams(
-        \Inowas\Common\Id\BoundaryId $boundaryId,
+        BoundaryId $boundaryId,
         BoundaryName $name,
         Geometry $geometry,
         WellType $wellType,
@@ -38,6 +40,11 @@ class WellBoundary extends AbstractBoundary
         $self->wellType = $wellType;
         $self->pumpingRates = $pumpingRates;
         return $self;
+    }
+
+    public function setActiveCells(ActiveCells $activeCells): WellBoundary
+    {
+        return new self($this->boundaryId, $this->name, $this->geometry, $activeCells);
     }
 
     public function type(): string

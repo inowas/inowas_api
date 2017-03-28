@@ -4,15 +4,19 @@ declare(strict_types=1);
 
 namespace Inowas\Common\Boundaries;
 
+use Inowas\Common\Grid\ActiveCells;
 use Inowas\Common\Id\BoundaryId;
 
 class GeneralHeadHeadBoundary extends AbstractBoundary
 {
     public static function create(BoundaryId $boundaryId): GeneralHeadHeadBoundary
     {
-        $static = new self($boundaryId);
-        $static->boundaryId = $boundaryId;
-        return $static;
+        return new self($boundaryId);
+    }
+
+    public function setActiveCells(ActiveCells $activeCells): GeneralHeadHeadBoundary
+    {
+        return new self($this->boundaryId, $this->name, $this->geometry, $activeCells);
     }
 
     /**

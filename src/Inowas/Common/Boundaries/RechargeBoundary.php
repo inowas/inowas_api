@@ -4,15 +4,19 @@ declare(strict_types=1);
 
 namespace Inowas\Common\Boundaries;
 
+use Inowas\Common\Grid\ActiveCells;
 use Inowas\Common\Id\BoundaryId;
 
 class RechargeBoundary extends AbstractBoundary
 {
     public static function create(BoundaryId $boundaryId): RechargeBoundary
     {
-        $static = new self($boundaryId);
-        $static->boundaryId = $boundaryId;
-        return $static;
+        return new self($boundaryId);
+    }
+
+    public function setActiveCells(ActiveCells $activeCells): RechargeBoundary
+    {
+        return new self($this->boundaryId, $this->name, $this->geometry, $activeCells);
     }
 
     /**

@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Inowas\Common\Boundaries;
 
 use Inowas\Common\Geometry\Geometry;
+use Inowas\Common\Grid\ActiveCells;
 use Inowas\Common\Id\BoundaryId;
 
 abstract class AbstractBoundary implements ModflowBoundary
@@ -18,11 +19,15 @@ abstract class AbstractBoundary implements ModflowBoundary
     /** @var  Geometry */
     protected $geometry;
 
-    protected function __construct(BoundaryId $boundaryId, BoundaryName $name = null, Geometry $geometry = null)
+    /** @var  ActiveCells */
+    protected $activeCells;
+
+    protected function __construct(BoundaryId $boundaryId, BoundaryName $name = null, Geometry $geometry = null, ActiveCells $activeCells = null)
     {
         $this->boundaryId = $boundaryId;
         $this->name = $name;
         $this->geometry = $geometry;
+        $this->activeCells = $activeCells;
     }
 
     public function boundaryId(): BoundaryId
@@ -39,4 +44,11 @@ abstract class AbstractBoundary implements ModflowBoundary
     {
         return $this->geometry;
     }
+
+    public function activeCells(): ?ActiveCells
+    {
+        return $this->activeCells;
+    }
+
+    abstract public function setActiveCells(ActiveCells $activeCells);
 }

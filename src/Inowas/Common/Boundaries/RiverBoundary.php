@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Inowas\Common\Boundaries;
 
 use Inowas\Common\Geometry\Geometry;
+use Inowas\Common\Grid\ActiveCells;
 use Inowas\Common\Id\BoundaryId;
 
 class RiverBoundary extends AbstractBoundary
@@ -22,6 +23,11 @@ class RiverBoundary extends AbstractBoundary
     {
         $self = new self($boundaryId, $name, $geometry);
         return $self;
+    }
+
+    public function setActiveCells(ActiveCells $activeCells): RiverBoundary
+    {
+        return new self($this->boundaryId, $this->name, $this->geometry, $activeCells);
     }
 
     /**
