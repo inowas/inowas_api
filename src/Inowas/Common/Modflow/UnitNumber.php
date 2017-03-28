@@ -23,4 +23,9 @@ class UnitNumber
     {
         return $this->number;
     }
+
+    public function toValue(): int
+    {
+        return $this->number;
+    }
 }

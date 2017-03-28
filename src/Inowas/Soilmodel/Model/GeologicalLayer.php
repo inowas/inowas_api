@@ -9,7 +9,7 @@ class GeologicalLayer
     /** @var  GeologicalLayerId */
     protected $id;
 
-    /** @var  GeologicalLayerType */
+    /** @var  LayTyp */
     protected $type;
 
     /** @var  GeologicalLayerNumber */
@@ -29,7 +29,7 @@ class GeologicalLayer
         return $this->id;
     }
 
-    public function layerType(): GeologicalLayerType
+    public function layerType(): LayTyp
     {
         return $this->type;
     }
@@ -76,7 +76,7 @@ class GeologicalLayer
     {
         $self = new self();
         $self->id = GeologicalLayerId::fromString($layer['id']);
-        $self->type = GeologicalLayerType::fromValue($layer['type']);
+        $self->type = LayTyp::fromValue($layer['type']);
         $self->number = GeologicalLayerNumber::fromInteger($layer['number']);
         $self->name = GeologicalLayerName::fromString($layer['name']);
         $self->description = GeologicalLayerDescription::fromString($layer['description']);
@@ -88,7 +88,7 @@ class GeologicalLayer
         return $self;
     }
 
-    public static function fromParams(GeologicalLayerId $id, GeologicalLayerType $type, GeologicalLayerNumber $number, GeologicalLayerName $name, GeologicalLayerDescription $description, ?GeologicalLayerValues $values = null): GeologicalLayer
+    public static function fromParams(GeologicalLayerId $id, LayTyp $type, GeologicalLayerNumber $number, GeologicalLayerName $name, GeologicalLayerDescription $description, ?GeologicalLayerValues $values = null): GeologicalLayer
     {
         $self = new self();
         $self->id = $id;

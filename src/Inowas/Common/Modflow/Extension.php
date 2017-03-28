@@ -23,4 +23,9 @@ class Extension
     {
         return $this->extension;
     }
+
+    public function toValue(): string
+    {
+        return $this->extension;
+    }
 }
