@@ -9,10 +9,15 @@ use Inowas\Common\Calculation\ResultType;
 use Inowas\Common\DateTime\DateTime;
 use Inowas\Common\DateTime\TotalTime;
 use Inowas\Common\FileSystem\FileName;
+use Inowas\Common\Grid\BoundingBox;
+use Inowas\Common\Grid\DeltaCol;
+use Inowas\Common\Grid\DeltaRow;
 use Inowas\Common\Grid\GridSize;
 use Inowas\Common\Grid\LayerNumber;
 use Inowas\Common\Id\ModflowId;
 use Inowas\Common\Id\UserId;
+use Inowas\Common\Modflow\LengthUnit;
+use Inowas\Common\Modflow\TimeUnit;
 use Inowas\Modflow\Model\Event\BudgetWasCalculated;
 use Inowas\Modflow\Model\Event\HeadWasCalculated;
 use Inowas\Modflow\Model\Event\CalculationWasCreated;
@@ -37,8 +42,20 @@ class ModflowCalculationAggregate extends AggregateRoot
     /** @var GridSize */
     private $gridSize;
 
+    /** @var  BoundingBox */
+    private $boundingBox;
+
+    /** @var  ModflowModelStressperiods */
+    private $stressperiods;
+
     /** @var  array */
     private $results;
+
+    /** @var  TimeUnit */
+    private $timeUnit;
+
+    /** @var  LengthUnit */
+    private $lengthUnit;
 
     /** @var  DateTime */
     private $startDateTime;
@@ -51,7 +68,10 @@ class ModflowCalculationAggregate extends AggregateRoot
         ModflowId $modflowModelId,
         SoilmodelId $soilModelId,
         UserId $userId,
+        BoundingBox $boundingBox,
         GridSize $gridSize,
+        TimeUnit $timeUnit,
+        LengthUnit $lengthUnit,
         DateTime $startDateTime,
         DateTime $endDateTime
     ): ModflowCalculationAggregate
@@ -61,7 +81,10 @@ class ModflowCalculationAggregate extends AggregateRoot
         $self->modflowModelId = $modflowModelId;
         $self->soilModelId = $soilModelId;
         $self->ownerId = $userId;
+        $self->boundingBox = $boundingBox;
         $self->gridSize = $gridSize;
+        $self->lengthUnit = $lengthUnit;
+        $self->timeUnit = $timeUnit;
         $self->startDateTime = $startDateTime;
         $self->endDateTime = $endDateTime;
 
@@ -72,6 +95,9 @@ class ModflowCalculationAggregate extends AggregateRoot
                 $modflowModelId,
                 $soilModelId,
                 $gridSize,
+                $boundingBox,
+                $timeUnit,
+                $lengthUnit,
                 $startDateTime,
                 $endDateTime
             )
@@ -115,6 +141,26 @@ class ModflowCalculationAggregate extends AggregateRoot
         return $this->gridSize;
     }
 
+    public function boundingBox(): BoundingBox
+    {
+        return $this->boundingBox;
+    }
+
+    public function delCol(): DeltaCol
+    {
+        return DeltaCol::fromValue($this->boundingBox->dX()/$this->gridSize()->nX());
+    }
+
+    public function delRow(): DeltaRow
+    {
+        return DeltaRow::fromValue($this->boundingBox->dY()/$this->gridSize()->nY());
+    }
+
+    public function stressPeriods(): ModflowModelStressperiods
+    {
+        return $this->stressperiods;
+    }
+
     public function results(): array
     {
         return $this->results;
@@ -130,6 +176,16 @@ class ModflowCalculationAggregate extends AggregateRoot
         return $this->endDateTime;
     }
 
+    public function lengthUnit(): LengthUnit
+    {
+        return $this->lengthUnit;
+    }
+
+    public function timeUnit(): TimeUnit
+    {
+        return $this->timeUnit;
+    }
+
     protected function whenCalculationWasCreated(CalculationWasCreated $event): void
     {
         $this->calculationId = $event->calculationId();
@@ -137,6 +193,9 @@ class ModflowCalculationAggregate extends AggregateRoot
         $this->soilModelId = $event->soilModelId();
         $this->ownerId = $event->userId();
         $this->gridSize = $event->gridSize();
+        $this->boundingBox = $event->boundingBox();
+        $this->timeUnit = $event->timeUnit();
+        $this->lengthUnit = $event->lengthUnit();
         $this->startDateTime = $event->startDateTime();
         $this->endDateTime = $event->endDateTime();
     }

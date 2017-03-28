@@ -26,13 +26,7 @@ class ModflowModelBoundingBoxWasChanged extends AggregateChanged
         $event = self::occur(
             $modflowModelId->toString(), [
                 'user_id' => $userId->toString(),
-                'bounding_box' => [
-                    'x_min' => $boundingBox->xMin(),
-                    'x_max' => $boundingBox->xMax(),
-                    'y_min' => $boundingBox->yMin(),
-                    'y_max' => $boundingBox->yMax(),
-                    'srid' => $boundingBox->srid(),
-                ]
+                'bounding_box' => $boundingBox->toArray()
             ]
         );
 
@@ -55,13 +49,7 @@ class ModflowModelBoundingBoxWasChanged extends AggregateChanged
     public function boundingBox(): BoundingBox
     {
         if ($this->boundingBox === null){
-            $this->boundingBox = BoundingBox::fromCoordinates(
-                $this->payload['bounding_box']['x_min'],
-                $this->payload['bounding_box']['x_max'],
-                $this->payload['bounding_box']['y_min'],
-                $this->payload['bounding_box']['y_max'],
-                $this->payload['bounding_box']['srid']
-            );
+            $this->boundingBox = BoundingBox::fromArray($this->payload['bounding_box']);
         }
 
         return $this->boundingBox;

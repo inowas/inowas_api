@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Inowas\Common\Grid;
 
+use Inowas\Common\Geometry\Point;
+
 class BoundingBox implements \JsonSerializable
 {
     /** @var float */
@@ -21,22 +23,35 @@ class BoundingBox implements \JsonSerializable
     /** @var float */
     private $srid;
 
-    public static function fromEPSG4326Coordinates($x1, $x2, $y1, $y2): BoundingBox
+    /**
+     * DeltaX in meters
+     * @var  float
+     */
+    private $dX;
+
+    /**
+     * DeltaY in meters
+     * @var float
+     */
+    private $dY;
+
+
+    public static function fromEPSG4326Coordinates($x1, $x2, $y1, $y2, $dXinMeters, $dYinMeters): BoundingBox
     {
-        return new self($x1, $x2, $y1, $y2, 4326);
+        return new self($x1, $x2, $y1, $y2, 4326, $dXinMeters, $dYinMeters);
     }
 
-    public static function fromCoordinates($x1, $x2, $y1, $y2, $srid): BoundingBox
+    public static function fromCoordinates($x1, $x2, $y1, $y2, $srid, $dXinMeters = 0, $dYinMeters = 0): BoundingBox
     {
-        return new self($x1, $x2, $y1, $y2, $srid);
+        return new self($x1, $x2, $y1, $y2, $srid, $dXinMeters, $dYinMeters);
     }
 
     public static function fromArray(array $bb): BoundingBox
     {
-        return new self($bb['x_min'], $bb['x_max'], $bb['y_min'], $bb['y_max'], $bb['srid']);
+        return new self($bb['x_min'], $bb['x_max'], $bb['y_min'], $bb['y_max'], $bb['srid'], $bb['d_x'], $bb['d_y']);
     }
 
-    private function __construct($x1, $x2, $y1, $y2, $srid)
+    private function __construct($x1, $x2, $y1, $y2, $srid, $dX, $dY)
     {
         if ($x1 > $x2){
             $this->xMin = $x2;
@@ -55,6 +70,9 @@ class BoundingBox implements \JsonSerializable
         }
 
         $this->srid = $srid;
+
+        $this->dX = $dX;
+        $this->dY = $dY;
     }
 
     public function xMin(): float
@@ -82,6 +100,16 @@ class BoundingBox implements \JsonSerializable
         return $this->srid;
     }
 
+    public function dX(): float
+    {
+        return $this->dX;
+    }
+
+    public function dY(): float
+    {
+        return $this->dY;
+    }
+
     public function toArray()
     {
         return array(
@@ -89,7 +117,9 @@ class BoundingBox implements \JsonSerializable
             'x_max' => $this->xMax,
             'y_min' => $this->yMin,
             'y_max' => $this->yMax,
-            'srid' => $this->srid
+            'srid' => $this->srid,
+            'd_x' => $this->dX,
+            'd_y' => $this->dY,
         );
     }
 
@@ -110,5 +140,9 @@ class BoundingBox implements \JsonSerializable
             $this->xMin, $this->yMin
         );
     }
-}
 
+    public function upperLeft(): Point
+    {
+        return new Point($this->xMin, $this->yMax);
+    }
+}

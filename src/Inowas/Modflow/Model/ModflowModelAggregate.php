@@ -15,6 +15,8 @@ use Inowas\Common\Grid\GridSize;
 use Inowas\Common\Id\IdInterface;
 use Inowas\Common\Id\ModflowId;
 use Inowas\Common\Id\UserId;
+use Inowas\Common\Modflow\LengthUnit;
+use Inowas\Common\Modflow\TimeUnit;
 use Inowas\Modflow\Model\Event\ActiveCellsWereUpdated;
 use Inowas\Modflow\Model\Event\BoundaryWasAdded;
 use Inowas\Modflow\Model\Event\BoundaryWasAddedToScenario;
@@ -73,15 +75,6 @@ class ModflowModelAggregate extends AggregateRoot
     /** @var array */
     protected $scenarios;
 
-    #/** @var  \DateTime */
-    #protected $start;
-
-    #/** @var  \DateTime */
-    #protected $end;
-
-    #/** @var TimeUnit */
-    #protected $timeUnit;
-
     public static function create(UserId $userId, ModflowId $modflowId): ModflowModelAggregate
     {
         $self = new self();
@@ -94,20 +87,23 @@ class ModflowModelAggregate extends AggregateRoot
         return $self;
     }
 
-    public function createCalculationFromBaseModel(ModflowId $calculationId, DateTime $start, DateTime $end): ModflowCalculationAggregate
+    public function createCalculationFromBaseModel(ModflowId $calculationId, TimeUnit $timeUnit, LengthUnit $lengthUnit, DateTime $start, DateTime $end): ModflowCalculationAggregate
     {
         return ModflowCalculationAggregate::create(
             $calculationId,
             $this->modflowId,
             $this->soilmodelId,
             $this->owner,
+            $this->boundingBox,
             $this->gridSize,
+            $timeUnit,
+            $lengthUnit,
             $start,
             $end
         );
     }
 
-    public function createCalculationFromScenario(ModflowId $calculationId, ModflowId $scenarioId, DateTime $start, DateTime $end): ?ModflowCalculationAggregate
+    public function createCalculationFromScenario(ModflowId $calculationId, ModflowId $scenarioId, TimeUnit $timeUnit, LengthUnit $lengthUnit, DateTime $start, DateTime $end): ?ModflowCalculationAggregate
     {
         if ($this->contains($scenarioId, $this->scenarios)) {
             return ModflowCalculationAggregate::create(
@@ -115,7 +111,10 @@ class ModflowModelAggregate extends AggregateRoot
                 $scenarioId,
                 $this->soilmodelId,
                 $this->owner,
+                $this->boundingBox,
                 $this->gridSize,
+                $timeUnit,
+                $lengthUnit,
                 $start,
                 $end
             );

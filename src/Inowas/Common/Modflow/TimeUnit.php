@@ -7,6 +7,9 @@ namespace Inowas\Common\Modflow;
 class TimeUnit
 {
 
+    /** @var array $availableTimeUnits */
+    public $availableTimeUnits = array(1,2,3,4);
+
     const UNDEFINED = 0;
     const SECONDS = 1;
     const MINUTES = 2;

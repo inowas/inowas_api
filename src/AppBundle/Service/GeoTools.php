@@ -233,20 +233,22 @@ class GeoTools
     public function transformBoundingBox(BoundingBox $bb, $targetSrid)
     {
         $lowerLeft = new Point($bb->xMin(), $bb->yMin(), $bb->srid());
-        #$lowerRight = new Point($bb->xMax(), $bb->yMin(), $bb->srid());
+        $lowerRight = new Point($bb->xMax(), $bb->yMin(), $bb->srid());
         $upperRight = new Point($bb->xMax(), $bb->yMax(), $bb->srid());
 
         $transformedLowerLeft = $this->transformPoint($lowerLeft, $targetSrid);
         $transformedUpperRight = $this->transformPoint($upperRight, $targetSrid);
-        #$dxInMeter = $this->calculateDistanceInMetersFromTwoPoints($lowerLeft, $lowerRight);
-        #$dyInMeter = $this->calculateDistanceInMetersFromTwoPoints($lowerRight, $upperRight);
+        $dxInMeter = round($this->calculateDistanceInMetersFromTwoPoints($lowerLeft, $lowerRight));
+        $dyInMeter = round($this->calculateDistanceInMetersFromTwoPoints($lowerRight, $upperRight));
 
         $bb = BoundingBox::fromCoordinates(
             $transformedLowerLeft->getX(),
             $transformedUpperRight->getX(),
             $transformedLowerLeft->getY(),
             $transformedUpperRight->getY(),
-            $targetSrid
+            $targetSrid,
+            $dxInMeter,
+            $dyInMeter
         );
 
         return $bb;

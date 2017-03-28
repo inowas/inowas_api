@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Inowas\Modflow\Model\Handler;
 
+use Inowas\Common\Modflow\LengthUnit;
+use Inowas\Common\Modflow\TimeUnit;
 use Inowas\Modflow\Model\Command\CreateModflowModelCalculation;
 use Inowas\Modflow\Model\Exception\ModflowModelNotFoundException;
 use Inowas\Modflow\Model\ModflowCalculationAggregate;
@@ -33,6 +35,13 @@ final class CreateModflowModelCalculationHandler
 
     public function __invoke(CreateModflowModelCalculation $command)
     {
+
+        /**
+         * @TODO Fix this and get the units from the userProfile
+         */
+        $timeUnit = TimeUnit::fromValue(TimeUnit::DAYS);
+        $lengthUnit = LengthUnit::fromValue(LengthUnit::METERS);
+
         /** @var ModflowModelAggregate $modflowModel */
         $modflowModel = $this->modelList->get($command->modflowModelId());
 
@@ -43,9 +52,9 @@ final class CreateModflowModelCalculationHandler
         $calculationId = $command->calculationId();
 
         if (is_null($command->scenarioId())){
-            $calculation = $modflowModel->createCalculationFromBaseModel($calculationId, $command->startDateTime(), $command->endDateTime());
+            $calculation = $modflowModel->createCalculationFromBaseModel($calculationId, $timeUnit, $lengthUnit, $command->startDateTime(), $command->endDateTime());
         } else {
-            $calculation = $modflowModel->createCalculationFromScenario($calculationId, $command->scenarioId(),  $command->startDateTime(), $command->endDateTime());
+            $calculation = $modflowModel->createCalculationFromScenario($calculationId, $command->scenarioId(), $timeUnit, $lengthUnit, $command->startDateTime(), $command->endDateTime());
         }
 
         if ($calculation instanceof ModflowCalculationAggregate) {

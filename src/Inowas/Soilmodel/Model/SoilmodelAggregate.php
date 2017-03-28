@@ -4,8 +4,9 @@ declare(strict_types=1);
 
 namespace Inowas\Soilmodel\Model;
 
+use Inowas\Common\Grid\BottomElevation;
 use Inowas\Common\Id\UserId;
-
+use Inowas\Common\Length\HTop;
 use Inowas\Soilmodel\Model\Event\LayerValuesWereUpdated;
 use Inowas\Soilmodel\Model\Event\SoilmodelBoreLogWasAdded;
 use Inowas\Soilmodel\Model\Event\SoilmodelBoreLogWasRemoved;
@@ -203,6 +204,27 @@ class SoilmodelAggregate extends AggregateRoot
         return $this->layers;
     }
 
+    public function topElevation(): HTop
+    {
+        $topLayer = $this->layer(GeologicalLayerNumber::fromInteger(0));
+        return $topLayer->values()->hTop();
+    }
+
+    public function bottomElevation(): BottomElevation
+    {
+        $layers = $this->layers();
+        usort($layers, function ($a, $b){return $a->layerNumber()->toInteger() > $b->layerNumber()->toInteger();});
+
+        $hBot = [];
+
+        /** @var GeologicalLayer $layer */
+        foreach ($layers as $layer){
+            $hBot[] = $layer->values()->hBottom();
+        }
+
+        return BottomElevation::from3DArray($hBot);
+    }
+
     public function userHasWriteAccess(UserId $userId): bool
     {
         if ($userId->sameValueAs($this->owner)){
@@ -210,6 +232,18 @@ class SoilmodelAggregate extends AggregateRoot
         }
 
         return false;
+    }
+
+    private function layer(GeologicalLayerNumber $layerNumber): ?GeologicalLayer
+    {
+        /** @var GeologicalLayer $layer */
+        foreach ($this->layers() as $layer) {
+            if ($layer->layerNumber()->sameAs($layerNumber)) {
+                return $layer;
+            }
+        }
+
+        return null;
     }
 
     /**

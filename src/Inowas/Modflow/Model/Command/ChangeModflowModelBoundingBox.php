@@ -22,14 +22,7 @@ class ChangeModflowModelBoundingBox extends Command implements PayloadConstructa
             [
                 'user_id' => $userId->toString(),
                 'modflow_model_id' => $modelId->toString(),
-                'bounding_box' =>
-                    [
-                        'x_min' => $boundingBox->xMin(),
-                        'x_max' => $boundingBox->xMax(),
-                        'y_min' => $boundingBox->yMin(),
-                        'y_max' => $boundingBox->yMax(),
-                        'srid' => $boundingBox->srid()
-                    ]
+                'bounding_box' => $boundingBox->toArray()
             ]
         );
     }
@@ -41,13 +34,7 @@ class ChangeModflowModelBoundingBox extends Command implements PayloadConstructa
 
     public function boundingBox(): BoundingBox
     {
-        return BoundingBox::fromCoordinates(
-            $this->payload['bounding_box']['x_min'],
-            $this->payload['bounding_box']['x_max'],
-            $this->payload['bounding_box']['y_min'],
-            $this->payload['bounding_box']['y_max'],
-            $this->payload['bounding_box']['srid']
-        );
+        return BoundingBox::fromArray($this->payload['bounding_box']);
     }
 
     public function userId(): UserId

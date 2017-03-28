@@ -26,6 +26,22 @@ class DateTime
         return date_format($this->dateTime, DATE_ATOM);
     }
 
+    public function diff(DateTime $dateTime): \DateInterval
+    {
+        return $this->dateTime->diff($dateTime->toDateTimeImmutable());
+    }
+
+    public function toDateTime(): \DateTime
+    {
+        $dateTime = new \DateTime();
+        return $dateTime->setTimestamp($this->dateTime->getTimestamp());
+    }
+
+    public function toDateTimeImmutable(): \DateTimeImmutable
+    {
+        return $this->dateTime;
+    }
+
     public function toFormat(string $format): string
     {
         return $this->dateTime->format($format);

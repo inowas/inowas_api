@@ -173,7 +173,7 @@ class Hanoi implements ContainerAwareInterface, DataFixtureInterface
         $commandBus->dispatch(AddBoundary::toBaseModel($ownerId, $modelId, $area));
 
         $box = $geoTools->transformBoundingBox(BoundingBox::fromCoordinates(578205, 594692, 2316000, 2333500, 32648), 4326);
-        $boundingBox = BoundingBox::fromEPSG4326Coordinates($box->xMin(), $box->xMax(), $box->yMin(), $box->yMax());
+        $boundingBox = BoundingBox::fromEPSG4326Coordinates($box->xMin(), $box->xMax(), $box->yMin(), $box->yMax(), $box->dX(), $box->dY());
         $commandBus->dispatch(ChangeModflowModelBoundingBox::forModflowModel($ownerId, $modelId, $boundingBox));
 
         $gridSize = GridSize::fromXY(165, 175);
