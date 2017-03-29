@@ -3,18 +3,18 @@
 namespace Tests\Inowas\Modflow\Model\Packages;
 
 use Inowas\Common\DateTime\DateTime;
-use Inowas\Common\Geometry\Point;
 use Inowas\Common\Grid\BottomElevation;
+use Inowas\Common\Grid\BoundingBox;
 use Inowas\Common\Grid\ColumnNumber;
 use Inowas\Common\Grid\DeltaCol;
 use Inowas\Common\Grid\DeltaRow;
+use Inowas\Common\Grid\GridSize;
 use Inowas\Common\Grid\LayCbd;
 use Inowas\Common\Grid\LayerNumber;
 use Inowas\Common\Grid\Proj4String;
 use Inowas\Common\Grid\Rotation;
 use Inowas\Common\Grid\RowNumber;
 use Inowas\Common\Grid\TopElevation;
-use Inowas\Common\Grid\UpperLeftCoordinates;
 use Inowas\Common\Modflow\Extension;
 use Inowas\Common\Modflow\LengthUnit;
 use Inowas\Common\Modflow\NumberOfTimeSteps;
@@ -94,5 +94,30 @@ class DisPackageTest extends \PHPUnit_Framework_TestCase
         $newLengthUnit = LengthUnit::fromValue(LengthUnit::FEET);
         $disPackage = $disPackage->updateLengthUnit($newLengthUnit);
         $this->assertEquals($newLengthUnit, $disPackage->lenuni());
+    }
+
+    public function test_update_grid_parameters_units(){
+
+        /** @var DisPackage $disPackage */
+        $disPackage = DisPackage::fromDefaults();
+        $boundingBox = BoundingBox::fromCoordinates(1,2,3,4,4265, 700, 1200);
+        $gridSize = GridSize::fromXY(7, 12);
+        $disPackage = $disPackage->updateGridParameters($gridSize, $boundingBox);
+
+        $expectedNRow = RowNumber::fromInteger(12);
+        $expectedNCol = ColumnNumber::fromInteger(7);
+        $expectedDelR = DeltaRow::fromValue(100);
+        $expectedDelC = DeltaCol::fromValue(100);
+        $expectedXul = Xul::fromValue(1);
+        $expectedYul = Yul::fromValue(4);
+
+        $this->assertEquals($expectedNRow, $disPackage->nRow());
+        $this->assertEquals($expectedNCol, $disPackage->nCol());
+        $this->assertEquals($expectedDelR, $disPackage->delR());
+        $this->assertEquals($expectedDelC, $disPackage->delCol());
+        $this->assertEquals($expectedXul, $disPackage->xul());
+        $this->assertEquals($expectedYul, $disPackage->yul());
+        $json = json_encode($disPackage);
+        $this->assertJson($json);
     }
 }

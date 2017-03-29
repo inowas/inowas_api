@@ -6,9 +6,11 @@ namespace Inowas\Modflow\Model\Packages;
 
 use Inowas\Common\DateTime\DateTime;
 use Inowas\Common\Grid\BottomElevation;
+use Inowas\Common\Grid\BoundingBox;
 use Inowas\Common\Grid\ColumnNumber;
 use Inowas\Common\Grid\DeltaCol;
 use Inowas\Common\Grid\DeltaRow;
+use Inowas\Common\Grid\GridSize;
 use Inowas\Common\Grid\LayCbd;
 use Inowas\Common\Grid\LayerNumber;
 use Inowas\Common\Grid\Proj4String;
@@ -204,10 +206,9 @@ class DisPackage implements PackageInterface
 
     public static function fromArray(array $arr): DisPackage
     {
-
         $nlay = LayerNumber::fromInteger($arr['nlay']);
-        $ncol = ColumnNumber::fromInteger($arr['nrow']);
-        $nrow = RowNumber::fromInteger($arr['ncol']);
+        $nrow = RowNumber::fromInteger($arr['nrow']);
+        $ncol = ColumnNumber::fromInteger($arr['ncol']);
         $nper = TimePeriodsNumber::fromInteger($arr['nper']);
         $delr = DeltaRow::fromValue($arr['delr']);
         $delc = DeltaCol::fromValue($arr['delc']);
@@ -266,9 +267,50 @@ class DisPackage implements PackageInterface
         return self::fromArray($this->toArray());
     }
 
+    public function updateGridParameters(GridSize $gridSize, BoundingBox $boundingBox): DisPackage
+    {
+        $this->nRow = RowNumber::fromInteger($gridSize->nY());
+        $this->nCol = ColumnNumber::fromInteger($gridSize->nX());
+        $this->delR = DeltaRow::fromValue($boundingBox->dY()/$gridSize->nY());
+        $this->delC = DeltaCol::fromValue($boundingBox->dX()/$gridSize->nX());
+        $this->xul = Xul::fromValue($boundingBox->xMin());
+        $this->yul = Yul::fromValue($boundingBox->yMax());
+        return self::fromArray($this->toArray());
+    }
+
     public function type(): string
     {
         return $this->type;
+    }
+
+    public function nRow(): RowNumber
+    {
+        return $this->nRow;
+    }
+
+    public function nCol(): ColumnNumber
+    {
+        return $this->nCol;
+    }
+
+    public function delR(): DeltaRow
+    {
+        return $this->delR;
+    }
+
+    public function delCol(): DeltaCol
+    {
+        return $this->delC;
+    }
+
+    public function xul(): Xul
+    {
+        return $this->xul;
+    }
+
+    public function yul(): Yul
+    {
+        return $this->yul;
     }
 
     public function itmuni(): TimeUnit

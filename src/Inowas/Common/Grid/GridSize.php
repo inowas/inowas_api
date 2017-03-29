@@ -70,4 +70,9 @@ class GridSize implements \JsonSerializable
     {
         return $this->toArray();
     }
+
+    public function sameAs(GridSize $gridSize): bool
+    {
+        return (($this->nx() === $gridSize->nX()) && ($this->nY() === $gridSize->nY()));
+    }
 }

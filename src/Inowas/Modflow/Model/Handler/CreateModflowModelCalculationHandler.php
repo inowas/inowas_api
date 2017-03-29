@@ -8,7 +8,6 @@ use Inowas\Common\Modflow\LengthUnit;
 use Inowas\Common\Modflow\TimeUnit;
 use Inowas\Modflow\Model\Command\CreateModflowModelCalculation;
 use Inowas\Modflow\Model\Exception\ModflowModelNotFoundException;
-use Inowas\Modflow\Model\ModflowCalculationAggregate;
 use Inowas\Modflow\Model\ModflowModelCalculationList;
 use Inowas\Modflow\Model\ModflowModelList;
 use Inowas\Modflow\Model\ModflowModelAggregate;
@@ -35,13 +34,6 @@ final class CreateModflowModelCalculationHandler
 
     public function __invoke(CreateModflowModelCalculation $command)
     {
-
-        /**
-         * @TODO Fix this and get the units from the userProfile
-         */
-        $timeUnit = TimeUnit::fromValue(TimeUnit::DAYS);
-        $lengthUnit = LengthUnit::fromValue(LengthUnit::METERS);
-
         /** @var ModflowModelAggregate $modflowModel */
         $modflowModel = $this->modelList->get($command->modflowModelId());
 
@@ -50,16 +42,20 @@ final class CreateModflowModelCalculationHandler
         }
 
         $calculationId = $command->calculationId();
+        $calculation = $modflowModel->createCalculation($calculationId, $command->scenarioId());
+        $this->modelCalculationList->add($calculation);
 
-        if (is_null($command->scenarioId())){
-            $calculation = $modflowModel->createCalculationFromBaseModel($calculationId, $timeUnit, $lengthUnit, $command->startDateTime(), $command->endDateTime());
-        } else {
-            $calculation = $modflowModel->createCalculationFromScenario($calculationId, $command->scenarioId(), $timeUnit, $lengthUnit, $command->startDateTime(), $command->endDateTime());
-        }
+        /**
+         * @TODO
+         * Get the units from the userProfile
+         */
+        $timeUnit = TimeUnit::fromValue(TimeUnit::DAYS);
+        $lengthUnit = LengthUnit::fromValue(LengthUnit::METERS);
+        $startTime = $command->startDateTime();
+        $endTime = $command->endDateTime();
 
-        if ($calculation instanceof ModflowCalculationAggregate) {
-            $calculation->updateBoundingBox($modflowModel->boundingBox());
-            $this->modelCalculationList->add($calculation);
-        }
+        $calculation->updateGridParameters($modflowModel->gridSize(), $modflowModel->boundingBox());
+        $calculation->updateTimeUnit($timeUnit);
+        $calculation->updateLengthUnit($lengthUnit);
     }
 }

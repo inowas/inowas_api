@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Inowas\Soilmodel\Model;
 
+use Inowas\Common\Modflow\LayTyp;
+
 class GeologicalLayer
 {
     /** @var  GeologicalLayerId */

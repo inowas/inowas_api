@@ -9,14 +9,11 @@ use Inowas\Common\Boundaries\AreaBoundary;
 use Inowas\Common\Grid\ActiveCells;
 use Inowas\Common\Id\BoundaryId;
 use Inowas\Common\Boundaries\ModflowBoundary;
-use Inowas\Common\DateTime\DateTime;
 use Inowas\Common\Grid\BoundingBox;
 use Inowas\Common\Grid\GridSize;
 use Inowas\Common\Id\IdInterface;
 use Inowas\Common\Id\ModflowId;
 use Inowas\Common\Id\UserId;
-use Inowas\Common\Modflow\LengthUnit;
-use Inowas\Common\Modflow\TimeUnit;
 use Inowas\Modflow\Model\Event\ActiveCellsWereUpdated;
 use Inowas\Modflow\Model\Event\BoundaryWasAdded;
 use Inowas\Modflow\Model\Event\BoundaryWasAddedToScenario;
@@ -87,40 +84,19 @@ class ModflowModelAggregate extends AggregateRoot
         return $self;
     }
 
-    public function createCalculationFromBaseModel(ModflowId $calculationId, TimeUnit $timeUnit, LengthUnit $lengthUnit, DateTime $start, DateTime $end): ModflowCalculationAggregate
+    public function createCalculation(ModflowId $calculationId, ?ModflowId $scenarioId): ModflowCalculationAggregate
     {
-        return ModflowCalculationAggregate::create(
-            $calculationId,
-            $this->modflowId,
-            $this->soilmodelId,
-            $this->owner,
-            $this->boundingBox,
-            $this->gridSize,
-            $timeUnit,
-            $lengthUnit,
-            $start,
-            $end
-        );
-    }
-
-    public function createCalculationFromScenario(ModflowId $calculationId, ModflowId $scenarioId, TimeUnit $timeUnit, LengthUnit $lengthUnit, DateTime $start, DateTime $end): ?ModflowCalculationAggregate
-    {
-        if ($this->contains($scenarioId, $this->scenarios)) {
-            return ModflowCalculationAggregate::create(
-                $calculationId,
-                $scenarioId,
-                $this->soilmodelId,
-                $this->owner,
-                $this->boundingBox,
-                $this->gridSize,
-                $timeUnit,
-                $lengthUnit,
-                $start,
-                $end
-            );
+        $modelId = $scenarioId;
+        if (! $modelId instanceof ModflowId){
+            $modelId = $this->modflowId;
         }
 
-        return null;
+        return ModflowCalculationAggregate::create(
+            $calculationId,
+            $modelId,
+            $this->soilmodelId,
+            $this->owner
+        );
     }
 
     public function addScenario(UserId $userId, ModflowId $scenarioId): void

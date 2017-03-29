@@ -24,9 +24,6 @@ class CalculationListProjector extends AbstractDoctrineConnectionProjector
         $table->addColumn('model_id', 'string', ['length' => 36]);
         $table->addColumn('user_id', 'string', ['length' => 36]);
         $table->addColumn('soilmodel_id', 'string', ['length' => 36]);
-        $table->addColumn('grid_size', 'text');
-        $table->addColumn('date_time_start', 'string', ['length' => 255, 'notnull' => false]);
-        $table->addColumn('date_time_end', 'string', ['length' => 255, 'notnull' => false]);
         $table->setPrimaryKey(['id']);
     }
 
@@ -36,10 +33,7 @@ class CalculationListProjector extends AbstractDoctrineConnectionProjector
             'calculation_id' => $event->calculationId()->toString(),
             'model_id' => $event->modflowModelId()->toString(),
             'user_id' => $event->userId()->toString(),
-            'soilmodel_id' => $event->soilModelId()->toString(),
-            'grid_size' => json_encode($event->gridSize()),
-            'date_time_start' => $event->startDateTime()->toAtom(),
-            'date_time_end' => $event->endDateTime()->toAtom()
+            'soilmodel_id' => $event->soilModelId()->toString()
         ));
     }
 }

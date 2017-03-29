@@ -35,30 +35,39 @@ class Packages implements \JsonSerializable
 
     private function __construct(){}
 
-    public function updateTimeUnit(TimeUnit $timeUnit): bool
+    public function updateTimeUnit(TimeUnit $timeUnit)
     {
-        // The units are configured in the DisPackage
+        // The timeunit is configured in the DisPackage
         /** @var DisPackage $disPackage */
         $disPackage = $this->getPackage('dis');
-        $disPackage->updateTimeUnit($timeUnit);
-
+        $disPackage = $disPackage->updateTimeUnit($timeUnit);
+        $this->updatePackage($disPackage);
     }
 
-    public function updateLengthUnit(LengthUnit $lengthUnit): bool
+    public function updateLengthUnit(LengthUnit $lengthUnit)
     {
-        // The units are configured in the DisPackage
+        // The lengthunit is configured in the DisPackage
         /** @var DisPackage $disPackage */
         $disPackage = $this->getPackage('dis');
-        $disPackage->updateLengthUnit($lengthUnit);
-
+        $disPackage = $disPackage->updateLengthUnit($lengthUnit);
+        $this->updatePackage($disPackage);
     }
 
     public function updateGridParameters(GridSize $gridSize, BoundingBox $boundingBox)
     {
-
+        // The gridparameters are configured in the DisPackage
+        /** @var DisPackage $disPackage */
+        $disPackage = $this->getPackage('dis');
+        $disPackage = $disPackage->updateGridParameters($gridSize, $boundingBox);
+        $this->updatePackage($disPackage);
     }
 
     private function addPackage(PackageInterface $package): void
+    {
+        $this->packages[$package->type()] = $package;
+    }
+
+    private function updatePackage(PackageInterface $package): void
     {
         $this->packages[$package->type()] = $package;
     }

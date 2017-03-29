@@ -145,4 +145,17 @@ class BoundingBox implements \JsonSerializable
     {
         return new Point($this->xMin, $this->yMax);
     }
+
+    public function sameAs(BoundingBox $boundingBox): bool
+    {
+        return (
+            ($this->xMin() === $boundingBox->xMin()) &&
+            ($this->xMax() === $boundingBox->xMax()) &&
+            ($this->yMin() === $boundingBox->yMin()) &&
+            ($this->yMax() === $boundingBox->yMax()) &&
+            ($this->srid() === $boundingBox->srid()) &&
+            ($this->dX() === $boundingBox->dX()) &&
+            ($this->dY() === $boundingBox->dY())
+        );
+    }
 }
