@@ -26,20 +26,25 @@ class TimeUnit
         return $self;
     }
 
-    public static function fromValue($itmuni): TimeUnit
+    public static function fromValue(int $itmuni): TimeUnit
     {
         $self = new self();
         $self->itmuni = $itmuni;
         return $self;
     }
 
-    public function toValue()
+    public function toValue(): int
     {
         return $this->itmuni;
     }
 
-    public function toInt()
+    public function toInt(): int
     {
         return $this->itmuni;
+    }
+
+    public function sameAs(TimeUnit $timeUnit): bool
+    {
+        return $this->itmuni == $timeUnit->toInt();
     }
 }

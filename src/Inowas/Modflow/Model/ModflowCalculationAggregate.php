@@ -2,7 +2,6 @@
 
 namespace Inowas\Modflow\Model;
 
-
 use Inowas\Common\Calculation\Budget;
 use Inowas\Common\Calculation\BudgetType;
 use Inowas\Common\Calculation\ResultType;
@@ -21,13 +20,15 @@ use Inowas\Common\Modflow\TimeUnit;
 use Inowas\Modflow\Model\Event\BudgetWasCalculated;
 use Inowas\Modflow\Model\Event\HeadWasCalculated;
 use Inowas\Modflow\Model\Event\CalculationWasCreated;
+use Inowas\Modflow\Model\Event\LengthUnitWasUpdated;
+use Inowas\Modflow\Model\Event\TimeUnitWasUpdated;
 use Inowas\Modflow\Model\Packages\Packages;
 use Inowas\Soilmodel\Model\SoilmodelId;
 use Prooph\EventSourcing\AggregateRoot;
 
+
 class ModflowCalculationAggregate extends AggregateRoot
 {
-
     /** @var ModflowId */
     private $calculationId;
 
@@ -114,6 +115,16 @@ class ModflowCalculationAggregate extends AggregateRoot
     {
         $this->gridSize = $gridSize;
         $this->boundingBox = $boundingBox;
+    }
+
+    public function updateTimeUnit(TimeUnit $timeUnit): void
+    {
+        $this->packages->updateTimeUnit($timeUnit);
+    }
+
+    public function updateLengthUnit(LengthUnit $lengthUnit): void
+    {
+        $this->packages->updateLengthUnit($lengthUnit);
     }
 
     public function addCalculatedHead(ResultType $type, TotalTime $totalTime, LayerNumber $layerNumber, FileName $fileName): void
@@ -216,11 +227,21 @@ class ModflowCalculationAggregate extends AggregateRoot
         $this->packages = Packages::createFromDefaults();
     }
 
+    protected function whenBudgetWasCalculated(BudgetWasCalculated $event): void
+    {}
+
     protected function whenHeadWasCalculated(HeadWasCalculated $event): void
     {}
 
-    protected function whenBudgetWasCalculated(BudgetWasCalculated $event): void
-    {}
+    protected function whenLengthUnitWasUpdated(LengthUnitWasUpdated $event): void
+    {
+        $this->packages->updateLengthUnit($event->lengthUnit());
+    }
+
+    protected function whenTimeUnitWasUpdated(TimeUnitWasUpdated $event): void
+    {
+        $this->packages->updateLengthUnit($event->timeUnit());
+    }
 
     /**
      * @return string

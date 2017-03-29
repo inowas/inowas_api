@@ -35,11 +35,21 @@ class Packages implements \JsonSerializable
 
     private function __construct(){}
 
-    public function updateUnits(TimeUnit $timeUnit, LengthUnit $lengthUnit)
+    public function updateTimeUnit(TimeUnit $timeUnit): bool
     {
         // The units are configured in the DisPackage
         /** @var DisPackage $disPackage */
         $disPackage = $this->getPackage('dis');
+        $disPackage->updateTimeUnit($timeUnit);
+
+    }
+
+    public function updateLengthUnit(LengthUnit $lengthUnit): bool
+    {
+        // The units are configured in the DisPackage
+        /** @var DisPackage $disPackage */
+        $disPackage = $this->getPackage('dis');
+        $disPackage->updateLengthUnit($lengthUnit);
 
     }
 

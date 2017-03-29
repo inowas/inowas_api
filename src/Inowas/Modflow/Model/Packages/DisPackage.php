@@ -254,11 +254,15 @@ class DisPackage implements PackageInterface
         return $self;
     }
 
-    public function updateUnits(TimeUnit $timeUnit, LengthUnit $lengthUnit): DisPackage
+    public function updateTimeUnit(TimeUnit $timeUnit): DisPackage
     {
         $this->itmUni = $timeUnit;
-        $this->lenUni = $lengthUnit;
+        return self::fromArray($this->toArray());
+    }
 
+    public function updateLengthUnit(LengthUnit $lengthUnit): DisPackage
+    {
+        $this->lenUni = $lengthUnit;
         return self::fromArray($this->toArray());
     }
 

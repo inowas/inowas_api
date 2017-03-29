@@ -81,15 +81,18 @@ class DisPackageTest extends \PHPUnit_Framework_TestCase
     }
 
     public function test_update_time_length_units(){
+
+        /** @var DisPackage $disPackage */
         $disPackage = DisPackage::fromDefaults();
         $this->assertEquals(TimeUnit::fromValue(TimeUnit::DAYS), $disPackage->itmuni());
         $this->assertEquals(LengthUnit::fromValue(LengthUnit::METERS), $disPackage->lenuni());
 
         $newTimeUnit = TimeUnit::fromValue(TimeUnit::SECONDS);
-        $newLengthUnit = LengthUnit::fromValue(LengthUnit::FEET);
-        $disPackage->updateUnits($newTimeUnit, $newLengthUnit);
-
+        $disPackage = $disPackage->updateTimeUnit($newTimeUnit);
         $this->assertEquals($newTimeUnit, $disPackage->itmuni());
+
+        $newLengthUnit = LengthUnit::fromValue(LengthUnit::FEET);
+        $disPackage = $disPackage->updateLengthUnit($newLengthUnit);
         $this->assertEquals($newLengthUnit, $disPackage->lenuni());
     }
 }

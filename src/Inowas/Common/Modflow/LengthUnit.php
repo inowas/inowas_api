@@ -21,20 +21,25 @@ class LengthUnit
         return $self;
     }
 
-    public static function fromValue($lenuni): LengthUnit
+    public static function fromValue(int $lenuni): LengthUnit
     {
         $self = new self();
         $self->lenuni = $lenuni;
         return $self;
     }
 
-    public function toValue()
+    public function toValue(): int
     {
         return $this->lenuni;
     }
 
-    public function toInt()
+    public function toInt(): int
     {
         return $this->lenuni;
+    }
+
+    public function sameAs(LengthUnit $lengthUnit): bool
+    {
+        return $this->lenuni == $lengthUnit->toInt();
     }
 }
