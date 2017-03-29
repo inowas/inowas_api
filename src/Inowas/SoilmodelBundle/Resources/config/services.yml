@@ -39,8 +39,8 @@ services:
         class: Inowas\Soilmodel\Model\Handler\DeleteSoilmodelHandler
         arguments: ['@soil_model_list']
 
-    inowas.soilmodel.interpolate_layer.handler:
-        class: Inowas\Soilmodel\Model\Handler\InterpolateLayerHandler
+    inowas.soilmodel.interpolate_soilmodel.handler:
+        class: Inowas\Soilmodel\Model\Handler\InterpolateSoilmodelHandler
         arguments: ['@soil_model_list', '@bore_log_list', '@inowas.soilmodel.interpolation_service']
 
     inowas.soilmodel.remove_borelog_layer_from_soilmodel.handler:

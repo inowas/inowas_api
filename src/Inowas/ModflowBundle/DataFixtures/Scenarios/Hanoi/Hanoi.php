@@ -19,12 +19,12 @@ use Inowas\Common\Geometry\Geometry;
 use Inowas\Common\Id\BoundaryId;
 use Inowas\Common\Boundaries\BoundaryName;
 use Inowas\Common\Calculation\Budget;
-use Inowas\Common\Length\HBottom;
-use Inowas\Common\Length\HTop;
+use Inowas\Common\Soilmodel\HBottom;
+use Inowas\Common\Soilmodel\HTop;
 use Inowas\Common\Modflow\LayTyp;
-use Inowas\Common\Storage\SpecificStorage;
-use Inowas\Common\Storage\SpecificYield;
-use Inowas\Common\Storage\Storage;
+use Inowas\Common\Soilmodel\SpecificStorage;
+use Inowas\Common\Soilmodel\SpecificYield;
+use Inowas\Common\Soilmodel\Storage;
 use Inowas\Modflow\Model\Command\AddCalculatedBudget;
 use Inowas\Common\Calculation\HeadData;
 use Inowas\Common\Calculation\ResultType;
@@ -60,7 +60,7 @@ use Inowas\Soilmodel\Model\Command\ChangeSoilmodelDescription;
 use Inowas\Soilmodel\Model\Command\ChangeSoilmodelName;
 use Inowas\Soilmodel\Model\Command\CreateBoreLog;
 use Inowas\Soilmodel\Model\Command\CreateSoilmodel;
-use Inowas\Soilmodel\Model\Command\InterpolateLayer;
+use Inowas\Soilmodel\Model\Command\InterpolateSoilmodel;
 use Inowas\Soilmodel\Model\GeologicalLayer;
 use Inowas\Soilmodel\Model\GeologicalLayerDescription;
 use Inowas\Soilmodel\Model\GeologicalLayerId;
@@ -391,11 +391,8 @@ class Hanoi implements ContainerAwareInterface, DataFixtureInterface
             $commandBus->dispatch(AddBoreLogToSoilmodel::byUserWithId($ownerId, $soilModelId, $boreLogId));
         }
 
-        $commandBus->dispatch(InterpolateLayer::forSoilmodel($ownerId, $soilModelId, GeologicalLayerNumber::fromInteger(0), $boundingBox, $gridSize));
-        $commandBus->dispatch(InterpolateLayer::forSoilmodel($ownerId, $soilModelId, GeologicalLayerNumber::fromInteger(1), $boundingBox, $gridSize));
-        $commandBus->dispatch(InterpolateLayer::forSoilmodel($ownerId, $soilModelId, GeologicalLayerNumber::fromInteger(2), $boundingBox, $gridSize));
-        $commandBus->dispatch(InterpolateLayer::forSoilmodel($ownerId, $soilModelId, GeologicalLayerNumber::fromInteger(3), $boundingBox, $gridSize));
-
+        echo sprintf("Interpolate soilmodel with %s Memory usage\r\n", memory_get_usage());
+        $commandBus->dispatch(InterpolateSoilmodel::forSoilmodel($ownerId, $soilModelId, $boundingBox, $gridSize));
         echo sprintf("Calculate active cells for Area with %s Memory usage\r\n", memory_get_usage());
         $commandBus->dispatch(CalculateActiveCells::forModflowModel($ownerId, $modelId, $area->boundaryId()));
 

@@ -28,7 +28,7 @@ prooph_service_bus:
                     'Inowas\Soilmodel\Model\Command\ChangeSoilmodelName': 'inowas.soilmodel.change_soilmodel_name.handler'
                     'Inowas\Soilmodel\Model\Command\CreateSoilmodel': 'inowas.soilmodel.create_soilmodel.handler'
                     'Inowas\Soilmodel\Model\Command\DeleteSoilmodel': 'inowas.soilmodel.delete_soilmodel.handler'
-                    'Inowas\Soilmodel\Model\Command\InterpolateLayer': 'inowas.soilmodel.interpolate_layer.handler'
+                    'Inowas\Soilmodel\Model\Command\InterpolateSoilmodel': 'inowas.soilmodel.interpolate_soilmodel.handler'
                     'Inowas\Soilmodel\Model\Command\RemoveBoreLogFromSoilmodel': 'inowas.soilmodel.remove_borelog_layer_from_soilmodel.handler'
                     'Inowas\Soilmodel\Model\Command\RemoveGeologicalLayerFromSoilmodel': 'inowas.soilmodel.remove_geological_layer_from_soilmodel.handler'
                     'Inowas\Soilmodel\Model\Command\AddHorizonToBoreLog': 'inowas.soilmodel.add_horizon_to_borelog.handler'

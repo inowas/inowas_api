@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Inowas\Common\Storage;
+namespace Inowas\Common\Soilmodel;
 
 class Storage
 {
@@ -15,28 +15,28 @@ class Storage
 
     public static function fromParams(SpecificStorage $ss, SpecificYield $sy): Storage
     {
-        $self = new self();
-        $self->ss = $ss;
-        $self->sy = $sy;
+        return new self($ss, $sy);
+    }
 
-        return $self;
+    private function __construct(SpecificStorage $ss, SpecificYield $sy)
+    {
+        $this->ss = $ss;
+        $this->sy = $sy;
     }
 
     public function toArray(): array
     {
         return array(
-            'ss' => $this->ss->toFloat(),
-            'sy' => $this->sy->toFloat()
+            'ss' => $this->ss->toValue(),
+            'sy' => $this->sy->toValue()
         );
     }
 
     public static function fromArray(array $data): Storage
     {
-        $self = new self();
-        $self->ss = SpecificStorage::fromFloat($data['ss']);
-        $self->sy = SpecificYield::fromFloat($data['sy']);
-
-        return $self;
+        $ss = SpecificStorage::fromValue($data['ss']);
+        $sy = SpecificYield::fromValue($data['sy']);
+        return new self($ss, $sy);
     }
 
     public function ss(): SpecificStorage

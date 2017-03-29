@@ -13,6 +13,13 @@ class LayerKX extends LayerConductivityValue
         return $self;
     }
 
+    public static function fromValue($values): LayerKX
+    {
+        $self = new self();
+        $self->values = $values;
+        return $self;
+    }
+
     public function identifier():string
     {
         return 'kx';

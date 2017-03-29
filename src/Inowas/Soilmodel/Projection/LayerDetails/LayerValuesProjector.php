@@ -29,14 +29,14 @@ class LayerValuesProjector extends AbstractDoctrineConnectionProjector
     {
         $layerValues = $event->values();
         $values = array(
-            $layerValues->hTop()->identifier() => $layerValues->hTop()->toArray(),
-            $layerValues->hBottom()->identifier() => $layerValues->hBottom()->toArray(),
-            $layerValues->conductivity()->kx()->identifier() => $layerValues->conductivity()->kx()->toArray(),
-            $layerValues->conductivity()->ky()->identifier() => $layerValues->conductivity()->ky()->toArray(),
-            $layerValues->conductivity()->kz()->identifier() => $layerValues->conductivity()->kz()->toArray(),
-            $layerValues->conductivity()->ha()->identifier() => $layerValues->conductivity()->ha()->toArray(),
-            $layerValues->storage()->ss()->identifier() => $layerValues->storage()->ss()->toArray(),
-            $layerValues->storage()->sy()->identifier() => $layerValues->storage()->sy()->toArray()
+            $layerValues->hTop()->identifier() => $layerValues->hTop()->toValue(),
+            $layerValues->hBottom()->identifier() => $layerValues->hBottom()->toValue(),
+            $layerValues->conductivity()->kx()->identifier() => $layerValues->conductivity()->kx()->toValue(),
+            $layerValues->conductivity()->ky()->identifier() => $layerValues->conductivity()->ky()->toValue(),
+            $layerValues->conductivity()->kz()->identifier() => $layerValues->conductivity()->kz()->toValue(),
+            $layerValues->conductivity()->ha()->identifier() => $layerValues->conductivity()->ha()->toValue(),
+            $layerValues->storage()->ss()->identifier() => $layerValues->storage()->ss()->toValue(),
+            $layerValues->storage()->sy()->identifier() => $layerValues->storage()->sy()->toValue()
         );
 
         foreach ($values as $key => $value){

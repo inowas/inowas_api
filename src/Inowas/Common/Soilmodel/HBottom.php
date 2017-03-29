@@ -1,8 +1,8 @@
 <?php
 
-namespace Inowas\Common\Length;
+namespace Inowas\Common\Soilmodel;
 
-class HTop
+class HBottom
 {
     private $heightInMillimeters;
 

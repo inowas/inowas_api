@@ -37,7 +37,7 @@ class InterpolationResult
         return $self;
     }
 
-    public function result(): array
+    public function result()
     {
         return $this->result;
     }

@@ -6,7 +6,7 @@ namespace Inowas\Soilmodel\Model;
 
 use Inowas\Common\Grid\BottomElevation;
 use Inowas\Common\Id\UserId;
-use Inowas\Common\Length\HTop;
+use Inowas\Common\Soilmodel\HTop;
 use Inowas\Soilmodel\Model\Event\LayerValuesWereUpdated;
 use Inowas\Soilmodel\Model\Event\SoilmodelBoreLogWasAdded;
 use Inowas\Soilmodel\Model\Event\SoilmodelBoreLogWasRemoved;

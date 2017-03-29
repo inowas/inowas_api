@@ -1,8 +1,10 @@
 <?php
 
-namespace Inowas\Common\Length;
+declare(strict_types=1);
 
-class HBottom
+namespace Inowas\Common\Soilmodel;
+
+class HTop
 {
     private $heightInMillimeters;
 
@@ -14,6 +16,11 @@ class HBottom
     }
 
     public function toMeters(): float
+    {
+        return floatval($this->heightInMillimeters/1000);
+    }
+
+    public function toValue(): float
     {
         return floatval($this->heightInMillimeters/1000);
     }

@@ -5,31 +5,31 @@ declare(strict_types=1);
 namespace Inowas\Soilmodel\Model;
 
 use Inowas\Common\Conductivity\LayerConductivity;
-use Inowas\Common\Length\LayerHBottom;
-use Inowas\Common\Length\LayerHTop;
-use Inowas\Common\Storage\LayerStorage;
+use Inowas\Common\Soilmodel\BottomElevation;
+use Inowas\Common\Soilmodel\TopElevation;
+use Inowas\Common\Soilmodel\Storage;
 
 class GeologicalLayerValues
 {
-    /** @var LayerHBottom */
+    /** @var BottomElevation */
     private $hBottom;
 
-    /** @var LayerHTop */
+    /** @var TopElevation */
     private $hTop;
 
     /** @var LayerConductivity */
     private $conductivity;
 
-    /** @var LayerStorage */
+    /** @var Storage */
     private $storage;
 
 
-    public function hBottom(): LayerHBottom
+    public function hBottom(): BottomElevation
     {
         return $this->hBottom;
     }
 
-    public function hTop(): LayerHTop
+    public function hTop(): TopElevation
     {
         return $this->hTop;
     }
@@ -39,12 +39,12 @@ class GeologicalLayerValues
         return $this->conductivity;
     }
 
-    public function storage(): LayerStorage
+    public function storage(): Storage
     {
         return $this->storage;
     }
 
-    public static function fromParams(LayerHTop $hTop, LayerHBottom $hBot, LayerConductivity $conductivity, LayerStorage $storage): GeologicalLayerValues
+    public static function fromParams(TopElevation $hTop, BottomElevation $hBot, LayerConductivity $conductivity, Storage $storage): GeologicalLayerValues
     {
         $self = new self();
         $self->hTop = $hTop;
@@ -57,18 +57,18 @@ class GeologicalLayerValues
     public static function fromArray(array $data): GeologicalLayerValues
     {
         $self = new self();
-        $self->hTop = LayerHTop::fromArray($data['h_top']);
-        $self->hBottom = LayerHBottom::fromArray($data['h_bot']);
+        $self->hTop = TopElevation::fromValue($data['h_top']);
+        $self->hBottom = BottomElevation::fromValue($data['h_bot']);
         $self->conductivity = LayerConductivity::fromArray($data['conductivity']);
-        $self->storage = LayerStorage::fromArray($data['storage']);
+        $self->storage = Storage::fromArray($data['storage']);
         return $self;
     }
 
     public function toArray(): array
     {
         return array(
-            'h_top' => $this->hTop->toArray(),
-            'h_bot' => $this->hBottom->toArray(),
+            'h_top' => $this->hTop->toValue(),
+            'h_bot' => $this->hBottom->toValue(),
             'conductivity' => $this->conductivity->toArray(),
             'storage' => $this->storage->toArray()
         );

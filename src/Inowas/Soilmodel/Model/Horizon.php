@@ -6,9 +6,9 @@ namespace Inowas\Soilmodel\Model;
 
 use Inowas\Common\Conductivity\Conductivity;
 use Inowas\Common\Grid\LayerNumber;
-use Inowas\Common\Length\HBottom;
-use Inowas\Common\Length\HTop;
-use Inowas\Common\Storage\Storage;
+use Inowas\Common\Soilmodel\HBottom;
+use Inowas\Common\Soilmodel\HTop;
+use Inowas\Common\Soilmodel\Storage;
 
 class Horizon
 {

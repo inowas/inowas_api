@@ -7,25 +7,23 @@ namespace Inowas\Soilmodel\Model\Command;
 use Inowas\Common\Grid\BoundingBox;
 use Inowas\Common\Grid\GridSize;
 use Inowas\Common\Id\UserId;
-use Inowas\Soilmodel\Model\GeologicalLayerNumber;
 use Inowas\Soilmodel\Model\SoilmodelId;
 use Inowas\Soilmodel\Model\SoilmodelName;
 use Prooph\Common\Messaging\Command;
 use Prooph\Common\Messaging\PayloadConstructable;
 use Prooph\Common\Messaging\PayloadTrait;
 
-class InterpolateLayer extends Command implements PayloadConstructable
+class InterpolateSoilmodel extends Command implements PayloadConstructable
 {
 
     use PayloadTrait;
 
-    public static function forSoilmodel(UserId $userId, SoilmodelId $soilmodelId, GeologicalLayerNumber $number, BoundingBox $bb, GridSize $gs): InterpolateLayer
+    public static function forSoilmodel(UserId $userId, SoilmodelId $soilmodelId, BoundingBox $bb, GridSize $gs): InterpolateSoilmodel
     {
         return new self(
             [
                 'user_id' => $userId->toString(),
                 'soilmodel_id' => $soilmodelId->toString(),
-                'layer_number' => $number->toInteger(),
                 'bounding_box' => $bb->toArray(),
                 'grid_size' => $gs->toArray()
             ]
@@ -55,10 +53,5 @@ class InterpolateLayer extends Command implements PayloadConstructable
     public function gridSize(): GridSize
     {
         return GridSize::fromArray($this->payload['grid_size']);
-    }
-
-    public function layerNumber(): GeologicalLayerNumber
-    {
-        return GeologicalLayerNumber::fromInteger($this->payload['layer_number']);
     }
 }

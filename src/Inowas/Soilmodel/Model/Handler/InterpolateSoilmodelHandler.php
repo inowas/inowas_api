@@ -8,18 +8,19 @@ use Inowas\Common\Conductivity\LayerConductivity;
 use Inowas\Common\Conductivity\LayerKX;
 use Inowas\Common\Conductivity\LayerKY;
 use Inowas\Common\Conductivity\LayerKZ;
-use Inowas\Common\Length\LayerHBottom;
-use Inowas\Common\Length\LayerHTop;
-use Inowas\Common\Storage\LayerSpecificStorage;
-use Inowas\Common\Storage\LayerSpecificYield;
-use Inowas\Common\Storage\LayerStorage;
+use Inowas\Common\Grid\BoundingBox;
+use Inowas\Common\Grid\GridSize;
+use Inowas\Common\Soilmodel\BottomElevation;
+use Inowas\Common\Soilmodel\SpecificStorage;
+use Inowas\Common\Soilmodel\SpecificYield;
+use Inowas\Common\Soilmodel\Storage;
+use Inowas\Common\Soilmodel\TopElevation;
 use Inowas\Soilmodel\Interpolation\InterpolationConfiguration;
 use Inowas\Soilmodel\Interpolation\PyModellingInterpolation;
 use Inowas\Soilmodel\Model\BoreLogAggregate;
 use Inowas\Soilmodel\Model\BoreLogId;
 use Inowas\Soilmodel\Model\BoreLogList;
-use Inowas\Soilmodel\Model\Command\InterpolateLayer;
-use Inowas\Soilmodel\Model\Exception\LayerNotFoundException;
+use Inowas\Soilmodel\Model\Command\InterpolateSoilmodel;
 use Inowas\Soilmodel\Model\Exception\SoilmodelNotFoundException;
 use Inowas\Soilmodel\Model\Exception\WriteAccessFailedException;
 use Inowas\Soilmodel\Model\GeologicalLayer;
@@ -30,7 +31,7 @@ use Inowas\Soilmodel\Model\SoilmodelAggregate;
 use Inowas\Soilmodel\Model\SoilmodelList;
 use Inowas\SoilmodelBundle\Model\PointValue;
 
-final class InterpolateLayerHandler
+final class InterpolateSoilmodelHandler
 {
 
     /** @var  SoilmodelList */
@@ -42,6 +43,9 @@ final class InterpolateLayerHandler
     /** @var  PyModellingInterpolation */
     private $interpolation;
 
+    /** @var  SoilmodelAggregate */
+    private $soilmodel;
+
     public function __construct(SoilmodelList $soilmodelList, BoreLogList $boreLogList, PyModellingInterpolation $interpolation)
     {
         $this->boreLogList = $boreLogList;
@@ -49,38 +53,33 @@ final class InterpolateLayerHandler
         $this->soilmodelList = $soilmodelList;
     }
 
-    public function __invoke(InterpolateLayer $command)
+    public function __invoke(InterpolateSoilmodel $command)
     {
-        $soilmodel = $this->soilmodelList->get($command->soilmodelId());
-
-        if (! $soilmodel instanceof SoilmodelAggregate){
+        $this->soilmodel = $this->soilmodelList->get($command->soilmodelId());
+        if (! $this->soilmodel instanceof SoilmodelAggregate){
             throw SoilmodelNotFoundException::withSoilModelId($command->soilmodelId());
         }
 
-        if (! $soilmodel->userHasWriteAccess($command->userId())){
+        if (! $this->soilmodel->userHasWriteAccess($command->userId())){
             throw WriteAccessFailedException::withSoilModelAndUserId($command->soilmodelId(), $command->userId());
         }
 
         $layer = null;
         /** @var GeologicalLayer $l */
-        foreach ($soilmodel->layers() as $l){
-            if ($l->layerNumber()->toInteger() == $command->layerNumber()->toInteger()){
-                $layer = $l;
-            }
+        foreach ($this->soilmodel->layers() as $layer){
+            $this->interpolate($layer, $command->boundingBox(), $command->gridSize());
         }
+    }
 
-        if (! $layer instanceof GeologicalLayer){
-            throw LayerNotFoundException::withLayerNumber($command->layerNumber());
-        }
-
+    private function interpolate(GeologicalLayer $layer, BoundingBox $boundingBox, GridSize $gridSize){
         $baseConfiguration = new InterpolationConfiguration();
         $baseConfiguration->addMethod(InterpolationConfiguration::METHOD_GAUSSIAN);
         $baseConfiguration->addMethod(InterpolationConfiguration::METHOD_MEAN);
-        $baseConfiguration->setBoundingBox($command->boundingBox());
-        $baseConfiguration->setGridSize($command->gridSize());
+        $baseConfiguration->setBoundingBox($boundingBox);
+        $baseConfiguration->setGridSize($gridSize);
 
         $boreLogs = [];
-        foreach ($soilmodel->boreLogs() as $boreLogId => $value){
+        foreach ($this->soilmodel->boreLogs() as $boreLogId => $value){
             $boreLogs[] = $this->boreLogList->get(BoreLogId::fromString($boreLogId));
         }
 
@@ -91,10 +90,10 @@ final class InterpolateLayerHandler
             $this->interpolateStorage($baseConfiguration, $boreLogs, $layer->layerNumber())
         );
 
-        $soilmodel->updateGeologicalLayerValues($layer->id(), $command->layerNumber(), $layerValues);
+        $this->soilmodel->updateGeologicalLayerValues($layer->id(), $layer->layerNumber(), $layerValues);
     }
 
-    private function interpolateHTop(InterpolationConfiguration $configuration, array $boreLogs, GeologicalLayerNumber $layerNumber): LayerHTop
+    private function interpolateHTop(InterpolationConfiguration $configuration, array $boreLogs, GeologicalLayerNumber $layerNumber): TopElevation
     {
         $configuration = clone $configuration;
         /** @var BoreLogAggregate $boreLog */
@@ -109,10 +108,10 @@ final class InterpolateLayerHandler
         }
 
         $result = $this->interpolation->interpolate($configuration);
-        return LayerHTop::fromArray($result->result());
+        return TopElevation::fromValue($result->result());
     }
 
-    private function interpolateHBot(InterpolationConfiguration $configuration, array $boreLogs, GeologicalLayerNumber $layerNumber): LayerHBottom
+    private function interpolateHBot(InterpolationConfiguration $configuration, array $boreLogs, GeologicalLayerNumber $layerNumber): BottomElevation
     {
         $configuration = clone $configuration;
         /** @var BoreLogAggregate $boreLog */
@@ -127,7 +126,7 @@ final class InterpolateLayerHandler
         }
 
         $result = $this->interpolation->interpolate($configuration);
-        return LayerHBottom::fromArray($result->result());
+        return BottomElevation::fromValue($result->result());
     }
 
     private function interpolateConductivity(InterpolationConfiguration $configuration, array $boreLogs, GeologicalLayerNumber $layerNumber): LayerConductivity
@@ -155,13 +154,13 @@ final class InterpolateLayerHandler
         $resultKz = $this->interpolation->interpolate($kzConfiguration);
 
         return LayerConductivity::fromXYZinMPerDay(
-            LayerKX::fromArray($resultKx->result()),
-            LayerKY::fromArray($resultKy->result()),
-            LayerKZ::fromArray($resultKz->result())
+            LayerKX::fromValue($resultKx->result()),
+            LayerKY::fromValue($resultKy->result()),
+            LayerKZ::fromValue($resultKz->result())
         );
     }
 
-    private function interpolateStorage(InterpolationConfiguration $configuration, array $boreLogs, GeologicalLayerNumber $layerNumber): LayerStorage
+    private function interpolateStorage(InterpolationConfiguration $configuration, array $boreLogs, GeologicalLayerNumber $layerNumber): Storage
     {
         $ssConfiguration = clone $configuration;
         $syConfiguration = clone $configuration;
@@ -172,8 +171,8 @@ final class InterpolateLayerHandler
             /** @var Horizon $horizon */
             foreach ($boreLog->horizons() as $key => $horizon){
                 if ($horizon->layerNumber()->sameAs($layerNumber)){
-                    $ssConfiguration->addPointValue(new PointValue($point, $horizon->storage()->ss()->toFloat()));
-                    $syConfiguration->addPointValue(new PointValue($point, $horizon->storage()->sy()->toFloat()));
+                    $ssConfiguration->addPointValue(new PointValue($point, $horizon->storage()->ss()->toValue()));
+                    $syConfiguration->addPointValue(new PointValue($point, $horizon->storage()->sy()->toValue()));
                 }
             }
         }
@@ -181,9 +180,9 @@ final class InterpolateLayerHandler
         $resultSs = $this->interpolation->interpolate($ssConfiguration);
         $resultSy = $this->interpolation->interpolate($syConfiguration);
 
-        return LayerStorage::fromParams(
-            LayerSpecificStorage::fromArray($resultSs->result()),
-            LayerSpecificYield::fromArray($resultSy->result())
+        return Storage::fromParams(
+            SpecificStorage::fromValue($resultSs->result()),
+            SpecificYield::fromValue($resultSy->result())
         );
     }
 }
