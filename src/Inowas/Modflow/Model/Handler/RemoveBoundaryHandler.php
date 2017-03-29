@@ -39,6 +39,7 @@ final class RemoveBoundaryHandler
 
         if ($command->scenarioId()){
             $modflowModel->removeBoundaryFromScenario($command->userId(), $command->scenarioId(), $command->boundaryId());
+            return;
         }
 
         $modflowModel->removeBoundary($command->userId(), $command->boundaryId());

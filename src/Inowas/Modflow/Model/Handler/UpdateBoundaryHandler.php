@@ -40,6 +40,7 @@ final class UpdateBoundaryHandler
 
         if ($command->scenarioId()){
             $modflowModel->updateBoundaryOfScenario($command->userId(), $command->scenarioId(), $command->boundary());
+            return;
         }
 
         $modflowModel->updateBoundaryOfBaseModel($command->userId(), $command->boundary());
