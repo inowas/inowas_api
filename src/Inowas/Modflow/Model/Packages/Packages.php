@@ -2,6 +2,12 @@
 
 namespace Inowas\Modflow\Model\Packages;
 
+use Inowas\Common\Grid\BoundingBox;
+use Inowas\Common\Grid\GridSize;
+use Inowas\Common\Modflow\LengthUnit;
+use Inowas\Common\Modflow\TimeUnit;
+use Inowas\Modflow\Model\Exception\InvalidPackageNameException;
+
 class Packages implements \JsonSerializable
 {
     private $availablePackages = [
@@ -27,9 +33,61 @@ class Packages implements \JsonSerializable
         return $self;
     }
 
-    public function addPackage(PackageInterface $package): void
+    private function __construct(){}
+
+    public function updateUnits(TimeUnit $timeUnit, LengthUnit $lengthUnit)
+    {
+        // The units are configured in the DisPackage
+        /** @var DisPackage $disPackage */
+        $disPackage = $this->getPackage('dis');
+
+    }
+
+    public function updateGridParameters(GridSize $gridSize, BoundingBox $boundingBox)
+    {
+
+    }
+
+    private function addPackage(PackageInterface $package): void
     {
         $this->packages[$package->type()] = $package;
+    }
+
+    private function addPackageByName(string $packageName): void
+    {
+        if (! array_key_exists($packageName, $this->availablePackages)){
+            throw InvalidPackageNameException::withName($packageName, $this->availablePackages);
+        }
+
+        $class = $this->availablePackages[$packageName];
+        $this->addPackage($class::fromDefaults());
+    }
+
+    private function getPackageByName(string $packageName): PackageInterface
+    {
+        if (! $this->hasPackage($packageName)){
+            throw InvalidPackageNameException::withName($packageName, $this->availablePackages);
+        }
+
+        return $this->packages[$packageName];
+    }
+
+    private function getPackage(string $packageName): PackageInterface
+    {
+        if (! array_key_exists($packageName, $this->availablePackages)){
+            throw InvalidPackageNameException::withName($packageName, $this->availablePackages);
+        }
+
+        if (! $this->hasPackage($packageName)){
+            $this->addPackageByName($packageName);
+        }
+
+        return $this->getPackageByName($packageName);
+    }
+
+    private function hasPackage(string $packageName): bool
+    {
+        return array_key_exists($packageName, $this->packages);
     }
 
     /**

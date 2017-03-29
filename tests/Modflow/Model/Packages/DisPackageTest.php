@@ -24,12 +24,19 @@ use Inowas\Common\Modflow\TimePeriodsNumber;
 use Inowas\Common\Modflow\TimeStepMultiplier;
 use Inowas\Common\Modflow\TimeUnit;
 use Inowas\Common\Modflow\UnitNumber;
+use Inowas\Common\Modflow\Xul;
+use Inowas\Common\Modflow\Yul;
 use Inowas\Modflow\Model\Packages\DisPackage;
 
 
 class DisPackageTest extends \PHPUnit_Framework_TestCase
 {
-    public function test_create(){
+
+    public function setUp(){
+
+    }
+
+    public function test_create_from_params(){
 
         // DEFAULTS
         $nLay = LayerNumber::fromInteger(1);
@@ -49,7 +56,8 @@ class DisPackageTest extends \PHPUnit_Framework_TestCase
         $lenUni = LengthUnit::fromInt(LengthUnit::METERS);
         $extension = Extension::fromString('dis');
         $unitNumber = UnitNumber::fromInteger(11);
-        $upperLeftCoordinates = UpperLeftCoordinates::fromPoint(new Point(1,2));
+        $xul = Xul::fromValue(null);
+        $yul = Yul::fromValue(null);
         $rotation = Rotation::fromFloat(0.0);
         $proj4Str = Proj4String::fromString('EPSG:4326');
         $startDateTime = DateTime::fromDateTime(new \DateTime('1/1/1970'));
@@ -57,12 +65,31 @@ class DisPackageTest extends \PHPUnit_Framework_TestCase
         $disPackage = DisPackage::fromParams(
             $nLay, $nRow, $nCol, $nPer, $delR, $delC, $layCbd, $top,
             $botm, $perlen, $nstp, $tsMult, $steady, $itmUni, $lenUni,
-            $extension, $unitNumber, $upperLeftCoordinates, $rotation, $proj4Str, $startDateTime
+            $extension, $unitNumber, $xul, $yul, $rotation, $proj4Str, $startDateTime
         );
 
         $this->assertInstanceOf(DisPackage::class, $disPackage);
         $json = json_encode($disPackage);
         $this->assertJson($json);
-        var_dump($json);
+    }
+
+    public function test_create_from_defaults(){
+        $disPackage = DisPackage::fromDefaults();
+        $this->assertInstanceOf(DisPackage::class, $disPackage);
+        $json = json_encode($disPackage);
+        $this->assertJson($json);
+    }
+
+    public function test_update_time_length_units(){
+        $disPackage = DisPackage::fromDefaults();
+        $this->assertEquals(TimeUnit::fromValue(TimeUnit::DAYS), $disPackage->itmuni());
+        $this->assertEquals(LengthUnit::fromValue(LengthUnit::METERS), $disPackage->lenuni());
+
+        $newTimeUnit = TimeUnit::fromValue(TimeUnit::SECONDS);
+        $newLengthUnit = LengthUnit::fromValue(LengthUnit::FEET);
+        $disPackage->updateUnits($newTimeUnit, $newLengthUnit);
+
+        $this->assertEquals($newTimeUnit, $disPackage->itmuni());
+        $this->assertEquals($newLengthUnit, $disPackage->lenuni());
     }
 }

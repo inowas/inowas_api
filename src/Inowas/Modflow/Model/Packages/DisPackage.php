@@ -151,7 +151,6 @@ class DisPackage implements PackageInterface
         return $self;
     }
 
-
     public static function fromParams(
         LayerNumber $nlay,
         RowNumber $nrow,
@@ -207,27 +206,27 @@ class DisPackage implements PackageInterface
     {
 
         $nlay = LayerNumber::fromInteger($arr['nlay']);
-        $ncol = ColumnNumber::fromInteger($arr['nlay']);
-        $nrow = RowNumber::fromInteger($arr['nlay']);
-        $nper = TimePeriodsNumber::fromInteger($arr['nlay']);
-        $delr = DeltaRow::fromValue($arr['nlay']);
-        $delc = DeltaCol::fromValue($arr['nlay']);
-        $laycbd = LayCbd::fromValue($arr['nlay']);
-        $top = TopElevation::fromValue($arr['nlay']);
-        $botm = BottomElevation::fromValue($arr['nlay']);
-        $perlen = StressPeriodsLength::fromValue($arr['nlay']);
-        $nstp = NumberOfTimeSteps::fromInt($arr['nlay']);
-        $tsmult = TimeStepMultiplier::fromValue($arr['nlay']);
-        $steady = Steady::fromValue($arr['nlay']);
-        $itmuni = TimeUnit::fromInt($arr['nlay']);
-        $lenuni = LengthUnit::fromInt($arr['nlay']);
-        $extension = Extension::fromString($arr['nlay']);
-        $unitnumber = UnitNumber::fromInteger($arr['nlay']);
+        $ncol = ColumnNumber::fromInteger($arr['nrow']);
+        $nrow = RowNumber::fromInteger($arr['ncol']);
+        $nper = TimePeriodsNumber::fromInteger($arr['nper']);
+        $delr = DeltaRow::fromValue($arr['delr']);
+        $delc = DeltaCol::fromValue($arr['delc']);
+        $laycbd = LayCbd::fromValue($arr['laycbd']);
+        $top = TopElevation::fromValue($arr['top']);
+        $botm = BottomElevation::fromValue($arr['botm']);
+        $perlen = StressPeriodsLength::fromValue($arr['perlen']);
+        $nstp = NumberOfTimeSteps::fromInt($arr['nstp']);
+        $tsmult = TimeStepMultiplier::fromValue($arr['tsmult']);
+        $steady = Steady::fromValue($arr['steady']);
+        $itmuni = TimeUnit::fromInt($arr['itmuni']);
+        $lenuni = LengthUnit::fromInt($arr['lenuni']);
+        $extension = Extension::fromString($arr['extension']);
+        $unitnumber = UnitNumber::fromInteger($arr['unitnumber']);
         $xul = Xul::fromValue($arr['xul']);
         $yul = Yul::fromValue($arr['yul']);
-        $rotation = Rotation::fromFloat(0.0);
-        $proj4Str = Proj4String::fromString('EPSG:4326');
-        $startDateTime = DateTime::fromDateTime(new \DateTime('1/1/1970'));
+        $rotation = Rotation::fromFloat($arr['rotation']);
+        $proj4Str = Proj4String::fromString($arr['proj4_str']);
+        $startDateTime = DateTime::fromAtom($arr['start_datetime']);
 
         $self = new self();
         $self->nLay = $nlay;
@@ -255,9 +254,27 @@ class DisPackage implements PackageInterface
         return $self;
     }
 
+    public function updateUnits(TimeUnit $timeUnit, LengthUnit $lengthUnit): DisPackage
+    {
+        $this->itmUni = $timeUnit;
+        $this->lenUni = $lengthUnit;
+
+        return self::fromArray($this->toArray());
+    }
+
     public function type(): string
     {
         return $this->type;
+    }
+
+    public function itmuni(): TimeUnit
+    {
+        return $this->itmUni;
+    }
+
+    public function lenuni(): LengthUnit
+    {
+        return $this->lenUni;
     }
 
     public function toArray(): array

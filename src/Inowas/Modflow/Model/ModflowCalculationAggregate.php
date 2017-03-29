@@ -110,6 +110,12 @@ class ModflowCalculationAggregate extends AggregateRoot
         return $self;
     }
 
+    public function updateGridParameters(GridSize $gridSize, BoundingBox $boundingBox)
+    {
+        $this->gridSize = $gridSize;
+        $this->boundingBox = $boundingBox;
+    }
+
     public function addCalculatedHead(ResultType $type, TotalTime $totalTime, LayerNumber $layerNumber, FileName $fileName): void
     {
         $this->recordThat(HeadWasCalculated::to($this->calculationId, $type, $totalTime, $layerNumber, $fileName));

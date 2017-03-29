@@ -58,6 +58,7 @@ final class CreateModflowModelCalculationHandler
         }
 
         if ($calculation instanceof ModflowCalculationAggregate) {
+            $calculation->updateBoundingBox($modflowModel->boundingBox());
             $this->modelCalculationList->add($calculation);
         }
     }
