@@ -19,6 +19,11 @@ class Ipakcb
         return new self($value);
     }
 
+    public static function fromValue($value): Ipakcb
+    {
+        return new self($value);
+    }
+
     private function __construct(int $value)
     {
         $this->value = $value;

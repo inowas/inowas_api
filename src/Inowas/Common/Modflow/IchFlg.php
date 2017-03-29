@@ -20,9 +20,21 @@ class IchFlg
         return $self;
     }
 
+    public static function fromValue($ichflg): IchFlg
+    {
+        $self = new self();
+        $self->ichflg = $ichflg;
+        return $self;
+    }
+
     private function __construct(){}
 
-    public function toBool()
+    public function toBool(): bool
+    {
+        return $this->ichflg;
+    }
+
+    public function toValue(): bool
     {
         return $this->ichflg;
     }

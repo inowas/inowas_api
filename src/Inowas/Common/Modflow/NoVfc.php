@@ -21,6 +21,11 @@ class NoVfc
         return new self($value);
     }
 
+    public static function fromValue(bool $value): NoVfc
+    {
+        return new self($value);
+    }
+
     private function __construct(bool $value)
     {
         $this->value = $value;

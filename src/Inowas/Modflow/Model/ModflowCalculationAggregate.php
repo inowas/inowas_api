@@ -21,6 +21,7 @@ use Inowas\Common\Modflow\TimeUnit;
 use Inowas\Modflow\Model\Event\BudgetWasCalculated;
 use Inowas\Modflow\Model\Event\HeadWasCalculated;
 use Inowas\Modflow\Model\Event\CalculationWasCreated;
+use Inowas\Modflow\Model\Packages\Packages;
 use Inowas\Soilmodel\Model\SoilmodelId;
 use Prooph\EventSourcing\AggregateRoot;
 
@@ -62,6 +63,9 @@ class ModflowCalculationAggregate extends AggregateRoot
 
     /** @var  DateTime */
     private $endDateTime;
+
+    /** @var Packages */
+    private $packages;
 
     public static function create(
         ModflowId $calculationId,
@@ -186,6 +190,11 @@ class ModflowCalculationAggregate extends AggregateRoot
         return $this->timeUnit;
     }
 
+    public function packages(): Packages
+    {
+        return $this->packages;
+    }
+
     protected function whenCalculationWasCreated(CalculationWasCreated $event): void
     {
         $this->calculationId = $event->calculationId();
@@ -198,6 +207,7 @@ class ModflowCalculationAggregate extends AggregateRoot
         $this->lengthUnit = $event->lengthUnit();
         $this->startDateTime = $event->startDateTime();
         $this->endDateTime = $event->endDateTime();
+        $this->packages = Packages::createFromDefaults();
     }
 
     protected function whenHeadWasCalculated(HeadWasCalculated $event): void

@@ -19,6 +19,11 @@ class WetFct
         return new self($value);
     }
 
+    public static function fromValue($value): WetFct
+    {
+        return new self($value);
+    }
+
     private function __construct(float $value)
     {
         $this->value = $value;

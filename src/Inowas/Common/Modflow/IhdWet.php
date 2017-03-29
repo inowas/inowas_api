@@ -18,6 +18,11 @@ class IhdWet
         return new self($value);
     }
 
+    public static function fromValue(int $value): IhdWet
+    {
+        return new self($value);
+    }
+
     private function __construct(int $value)
     {
         $this->value = $value;

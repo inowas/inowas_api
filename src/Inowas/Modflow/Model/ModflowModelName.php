@@ -36,7 +36,7 @@ class ModflowModelName
         $name = preg_replace('~[^-\w]+~', '', $name);
 
         // trim
-        $text = trim($text, '-');
+        $name = trim($name, '-');
 
         // remove duplicate -
         $name = preg_replace('~-+~', '-', $name);

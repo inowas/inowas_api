@@ -1,5 +1,4 @@
 <?php
-
 /**
  * IBOUND—is the boundary variable. One value is read for every model cell.
  * Usually, these values are read a layer at a time; however, when the XSECTION

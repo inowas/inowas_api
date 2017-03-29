@@ -26,7 +26,7 @@ class ModflowVersion
             throw InvalidModflowVersionException::withVersion($version, $this->availableVersions);
         }
 
-        $this->$version = $version;
+        $this->version = $version;
     }
 
     public function toString(): string

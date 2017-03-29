@@ -42,6 +42,13 @@ class LayTyp
         return $self;
     }
 
+    public static function fromValue($value): LayTyp
+    {
+        $self = new self();
+        $self->type = $value;
+        return $self;
+    }
+
     public function toArray(): array
     {
         return $this->type;

@@ -19,6 +19,11 @@ class ThickStrt
         return new self($value);
     }
 
+    public static function fromValue(bool $value): ThickStrt
+    {
+        return new self($value);
+    }
+
     private function __construct(bool $value)
     {
         $this->value = $value;

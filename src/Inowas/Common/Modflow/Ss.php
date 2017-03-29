@@ -28,6 +28,13 @@ class Ss
         return $self;
     }
 
+    public static function fromValue($value): Ss
+    {
+        $self = new self();
+        $self->value = $value;
+        return $self;
+    }
+
     private function __construct(){}
 
     public function toValue()

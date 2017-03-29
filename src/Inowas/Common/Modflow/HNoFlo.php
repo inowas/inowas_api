@@ -22,9 +22,21 @@ class HNoFlo
         return $self;
     }
 
+    public static function fromValue($hnoFlo): HNoFlo
+    {
+        $self = new self();
+        $self->hnoFlo = $hnoFlo;
+        return $self;
+    }
+
     private function __construct(){}
 
-    public function toFloat()
+    public function toFloat(): float
+    {
+        return $this->hnoFlo;
+    }
+
+    public function toValue(): float
     {
         return $this->hnoFlo;
     }

@@ -22,6 +22,13 @@ class StoPer
         return $self;
     }
 
+    public static function fromValue($stoper): StoPer
+    {
+        $self = new self();
+        $self->stoper = $stoper;
+        return $self;
+    }
+
     public static function none(): StoPer
     {
         return new self();
@@ -29,12 +36,12 @@ class StoPer
 
     private function __construct(){}
 
-    public function toFloat()
+    public function toFloat(): float
     {
         return $this->stoper;
     }
 
-    public function value()
+    public function toValue()
     {
         return $this->stoper;
     }

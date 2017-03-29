@@ -26,6 +26,13 @@ class Sy
         return $self;
     }
 
+    public static function fromValue($value): Sy
+    {
+        $self = new self();
+        $self->value = $value;
+        return $self;
+    }
+
     private function __construct(){}
 
     public function toValue()

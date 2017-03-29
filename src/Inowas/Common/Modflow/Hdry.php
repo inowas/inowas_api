@@ -23,6 +23,11 @@ class Hdry
         return new self($value);
     }
 
+    public static function fromValue($value): Hdry
+    {
+        return new self($value);
+    }
+
     private function __construct(float $value)
     {
         $this->value = $value;

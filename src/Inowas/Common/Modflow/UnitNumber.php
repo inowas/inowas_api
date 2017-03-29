@@ -14,7 +14,12 @@ class UnitNumber
         return new self($number);
     }
 
-    private function __construct(int $number)
+    public static function fromValue($number): UnitNumber
+    {
+        return new self($number);
+    }
+
+    private function __construct($number)
     {
         $this->number = $number;
     }

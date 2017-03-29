@@ -21,6 +21,11 @@ class IWetIt
         return new self($value);
     }
 
+    public static function fromValue($value): IWetIt
+    {
+        return new self($value);
+    }
+
     private function __construct(int $value)
     {
         $this->value = $value;

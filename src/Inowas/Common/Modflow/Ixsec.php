@@ -20,9 +20,21 @@ class Ixsec
         return $self;
     }
 
+    public static function fromValue($ixsec): Ixsec
+    {
+        $self = new self();
+        $self->ixsec = $ixsec;
+        return $self;
+    }
+
     private function __construct(){}
 
-    public function toBool()
+    public function toBool(): bool
+    {
+        return $this->ixsec;
+    }
+
+    public function toValue(): bool
     {
         return $this->ixsec;
     }

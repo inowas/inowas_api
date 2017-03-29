@@ -17,6 +17,13 @@ class Extension
         return $self;
     }
 
+    public static function fromValue($extension): Extension
+    {
+        $self = new self();
+        $self->extension = $extension;
+        return $self;
+    }
+
     private function __construct(){}
 
     public function toString(): string

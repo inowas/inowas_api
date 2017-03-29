@@ -38,6 +38,13 @@ class LayAvg
         return $self;
     }
 
+    public static function fromValue($value): LayAvg
+    {
+        $self = new self();
+        $self->value = $value;
+        return $self;
+    }
+
     public function toArray(): array
     {
         return $this->value;

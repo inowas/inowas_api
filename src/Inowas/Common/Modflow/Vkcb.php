@@ -28,6 +28,13 @@ class Vkcb
         return $self;
     }
 
+    public static function fromValue($value): Vkcb
+    {
+        $self = new self();
+        $self->value = $value;
+        return $self;
+    }
+
     private function __construct(){}
 
     public function toValue()

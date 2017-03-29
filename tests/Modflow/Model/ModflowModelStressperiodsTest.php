@@ -1,12 +1,12 @@
 <?php
 
-namespace Inowas\Modflow\Model;
-
+namespace Tests\Inowas\Modflow\Model;
 
 use Inowas\Common\DateTime\DateTime;
 use Inowas\Common\DateTime\Stressperiod;
 use Inowas\Common\DateTime\TotalTime;
 use Inowas\Common\Modflow\TimeUnit;
+use Inowas\Modflow\Model\ModflowModelStressperiods;
 
 class ModflowModelStressperiodsTest extends \PHPUnit_Framework_TestCase
 {
