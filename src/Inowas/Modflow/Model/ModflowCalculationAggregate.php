@@ -18,6 +18,7 @@ use Inowas\Common\Id\UserId;
 use Inowas\Common\Modflow\LengthUnit;
 use Inowas\Common\Modflow\TimeUnit;
 use Inowas\Modflow\Model\Event\BudgetWasCalculated;
+use Inowas\Modflow\Model\Event\GridParameterWereUpdated;
 use Inowas\Modflow\Model\Event\HeadWasCalculated;
 use Inowas\Modflow\Model\Event\CalculationWasCreated;
 use Inowas\Modflow\Model\Event\LengthUnitWasUpdated;
@@ -101,6 +102,7 @@ class ModflowCalculationAggregate extends AggregateRoot
             $this->gridSize = $gridSize;
             $this->boundingBox = $boundingBox;
             $this->packages->updateGridParameters($gridSize, $boundingBox);
+            $this->recordThat(GridParameterWereUpdated::to($this->calculationId(), $gridSize, $boundingBox));
         }
     }
 
@@ -218,6 +220,13 @@ class ModflowCalculationAggregate extends AggregateRoot
 
     protected function whenBudgetWasCalculated(BudgetWasCalculated $event): void
     {}
+
+    protected function whenGridParameterWereUpdated(GridParameterWereUpdated $event): void
+    {
+        $this->boundingBox = $event->boundingBox();
+        $this->gridSize = $event->gridSize();
+        $this->packages->updateGridParameters($event->gridSize(), $event->boundingBox());
+    }
 
     protected function whenHeadWasCalculated(HeadWasCalculated $event): void
     {}
