@@ -393,6 +393,7 @@ class Hanoi implements ContainerAwareInterface, DataFixtureInterface
 
         echo sprintf("Interpolate soilmodel with %s Memory usage\r\n", memory_get_usage());
         $commandBus->dispatch(InterpolateSoilmodel::forSoilmodel($ownerId, $soilModelId, $boundingBox, $gridSize));
+
         echo sprintf("Calculate active cells for Area with %s Memory usage\r\n", memory_get_usage());
         $commandBus->dispatch(CalculateActiveCells::forModflowModel($ownerId, $modelId, $area->boundaryId()));
 

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Inowas\Modflow\Model\Handler;
 
+use Inowas\Common\Id\ModflowId;
 use Inowas\Common\Modflow\LengthUnit;
 use Inowas\Common\Modflow\TimeUnit;
 use Inowas\Modflow\Model\Command\CreateModflowModelCalculation;
@@ -35,12 +36,7 @@ final class CreateModflowModelCalculationHandler
     public function __invoke(CreateModflowModelCalculation $command)
     {
         /** @var ModflowModelAggregate $modflowModel */
-        $modflowModel = $this->modelList->get($command->modflowModelId());
-
-        if (!$modflowModel){
-            throw ModflowModelNotFoundException::withModelId($command->modflowModelId());
-        }
-
+        $modflowModel = $this->getModflowModel($command);
         $calculationId = $command->calculationId();
         $calculation = $modflowModel->createCalculation($calculationId, $command->scenarioId());
         $this->modelCalculationList->add($calculation);
@@ -57,5 +53,27 @@ final class CreateModflowModelCalculationHandler
         $calculation->updateGridParameters($modflowModel->gridSize(), $modflowModel->boundingBox());
         $calculation->updateTimeUnit($timeUnit);
         $calculation->updateLengthUnit($lengthUnit);
+        $calculation->updateStartDateTime($startTime);
+        $calculation->updateEndDateTime($endTime);
+    }
+
+    private function getModflowModel(CreateModflowModelCalculation $command): ModflowModelAggregate
+    {
+        /** @var ModflowModelAggregate $baseModel */
+        $baseModel = $this->modelList->get($command->modflowModelId());
+
+        if (!$baseModel instanceof ModflowModelAggregate){
+            throw ModflowModelNotFoundException::withModelId($command->modflowModelId());
+        }
+
+        if ($command->scenarioId() instanceof ModflowId) {
+            $scenario = $baseModel->findScenario($command->scenarioId());
+            if (! $scenario instanceof ModflowModelAggregate){
+                throw ModflowModelNotFoundException::withScenarioId($command->scenarioId(), $command->modflowModelId());
+            }
+            return $scenario;
+        }
+
+        return $baseModel;
     }
 }

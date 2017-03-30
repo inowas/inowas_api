@@ -10,4 +10,9 @@ final class ModflowModelNotFoundException extends \InvalidArgumentException
     {
         return new self(sprintf('ModflowModel with id %s cannot be found.', $modelId->toString()));
     }
+
+    public static function withScenarioId(ModflowId $baseModelId, ModflowId $scenarioId)
+    {
+        return new self(sprintf('ModflowScenario with id %s cannot be found in BaseModel with id %s.', $scenarioId->toString(), $baseModelId->toString()));
+    }
 }

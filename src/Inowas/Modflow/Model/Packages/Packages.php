@@ -2,6 +2,7 @@
 
 namespace Inowas\Modflow\Model\Packages;
 
+use Inowas\Common\DateTime\DateTime;
 use Inowas\Common\Grid\BoundingBox;
 use Inowas\Common\Grid\GridSize;
 use Inowas\Common\Modflow\LengthUnit;
@@ -59,6 +60,15 @@ class Packages implements \JsonSerializable
         /** @var DisPackage $disPackage */
         $disPackage = $this->getPackage('dis');
         $disPackage = $disPackage->updateGridParameters($gridSize, $boundingBox);
+        $this->updatePackage($disPackage);
+    }
+
+    public function updateStartDateTime(DateTime $start): void
+    {
+        // The StartDate is configured in the DisPackage
+        /** @var DisPackage $disPackage */
+        $disPackage = $this->getPackage('dis');
+        $disPackage = $disPackage->updateStartDateTime($start);
         $this->updatePackage($disPackage);
     }
 

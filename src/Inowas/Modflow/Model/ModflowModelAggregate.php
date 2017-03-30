@@ -405,6 +405,15 @@ class ModflowModelAggregate extends AggregateRoot
         return $this->scenarios;
     }
 
+    public function findScenario(ModflowId $scenarioId): ?ModflowModelAggregate
+    {
+        if ( $this->contains($scenarioId, $this->scenarios)) {
+            return $this->scenarios[$scenarioId->toString()];
+        }
+
+        return null;
+    }
+
     protected function whenModflowModelWasCreated(ModflowModelWasCreated $event)
     {
         $this->modflowId = $event->modflowModelId();

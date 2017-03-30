@@ -278,6 +278,12 @@ class DisPackage implements PackageInterface
         return self::fromArray($this->toArray());
     }
 
+    public function updateStartDateTime(DateTime $start): DisPackage
+    {
+        $this->startDateTime = $start;
+        return self::fromArray($this->toArray());
+    }
+
     public function type(): string
     {
         return $this->type;
