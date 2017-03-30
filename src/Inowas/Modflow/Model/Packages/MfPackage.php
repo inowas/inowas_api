@@ -51,7 +51,7 @@ class MfPackage implements PackageInterface
         $executableName = FileName::fromString('mf2005');
         $listUnit = ListUnit::fromInt(2);
         $modelWorkSpace = ModelWorkSpace::fromString('.');
-        $externalPath = ExternalPath::none();
+        $externalPath = ExternalPath::fromValue(null);
         $verbose = Verbose::fromBool(false);
 
         return new self($name, $fileExtension, $version, $executableName, $listUnit, $modelWorkSpace, $externalPath, $verbose);
@@ -79,7 +79,7 @@ class MfPackage implements PackageInterface
         $executableName = FileName::fromString($arr['exe_name']);
         $listUnit = ListUnit::fromInt($arr['listunit']);
         $modelWorkSpace = ModelWorkSpace::fromString($arr['model_ws']);
-        $externalPath = ExternalPath::fromString($arr['external_path']);
+        $externalPath = ExternalPath::fromValue($arr['external_path']);
         $verbose = Verbose::fromBool($arr['verbose']);
 
         return new self($name, $fileExtension, $version, $executableName, $listUnit, $modelWorkSpace, $externalPath, $verbose);
@@ -160,9 +160,39 @@ class MfPackage implements PackageInterface
             "exe_name" => $this->executableName->toString(),
             "listunit" => $this->listUnit->toInt(),
             "model_ws" => $this->modelWorkSpace->toString(),
-            "external_path" => $this->externalPath->toString(),
+            "external_path" => $this->externalPath->toValue(),
             "verbose" => $this->verbose->toBool()
         );
+    }
+
+    public function updateModelName(ModflowModelName $name): MfPackage
+    {
+        $this->modelname = $name;
+        return self::fromArray($this->toArray());
+    }
+
+    public function updateVersion(ModflowVersion $version): MfPackage
+    {
+        $this->version = $version;
+        return self::fromArray($this->toArray());
+    }
+
+    public function updateExecutableName(FileName $name): MfPackage
+    {
+        $this->executableName = $name;
+        return self::fromArray($this->toArray());
+    }
+
+    public function updateListUnit(ListUnit $listUnit): MfPackage
+    {
+        $this->listUnit = $listUnit;
+        return self::fromArray($this->toArray());
+    }
+
+    public function updateModelWorkSpace(ModelWorkSpace $workSpace): MfPackage
+    {
+        $this->modelWorkSpace = $workSpace;
+        return self::fromArray($this->toArray());
     }
 
     /**

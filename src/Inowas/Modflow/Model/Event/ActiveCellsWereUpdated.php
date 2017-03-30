@@ -40,7 +40,7 @@ class ActiveCellsWereUpdated extends AggregateChanged
             $modflowId->toString(), [
                 'user_id' => $userId->toString(),
                 'boundary_id' => $boundaryId->toString(),
-                'active_cells' => $activeCells->cells(),
+                'active_cells' => $activeCells->toArray(),
                 'boundary_type' => $type
             ]
         );

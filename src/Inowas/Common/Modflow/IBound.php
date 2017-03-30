@@ -14,6 +14,8 @@ declare(strict_types=1);
 
 namespace Inowas\Common\Modflow;
 
+use Inowas\Common\Grid\ActiveCells;
+
 class IBound
 {
     
@@ -24,6 +26,18 @@ class IBound
     {
         $self = new self();
         $self->ibound = $ibound;
+        return $self;
+    }
+
+    public static function fromActiveCellsAndNumberOfLayers(ActiveCells $activeCells, int $numberOfLayers): IBound
+    {
+        $self = new self();
+        $iBound = [];
+        for ($i=0; $i<$numberOfLayers; $i++){
+
+            $iBound[$i] = $activeCells->fullArray();
+        }
+        $self->ibound = $iBound;
         return $self;
     }
 

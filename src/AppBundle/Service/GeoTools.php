@@ -61,7 +61,7 @@ class GeoTools
             }
         }
 
-        return ActiveCells::fromArray($activeCells);
+        return ActiveCells::fromArrayAndGridSize($activeCells, $gridSize);
     }
 
     /**
@@ -79,13 +79,12 @@ class GeoTools
         return $mo;
     }
 
-    public function getActiveCellsFromPoint(BoundingBox $bb, GridSize $gz, Point $point){
-
+    public function getActiveCellsFromPoint(BoundingBox $bb, GridSize $gz, Point $point): ActiveCells
+    {
         $result = $this->getGridCellFromPoint($bb, $gz, $point);
-
         $cells = array();
-        $cells[$result['row']][$result['col']]=true;
-        return ActiveCells::fromArray($cells);
+        $cells[$result['row']][$result['col']] = true;
+        return ActiveCells::fromArrayAndGridSize($cells, $gz);
     }
 
     public function pointIntersectsWithArea($area, $x, $y, $srid){

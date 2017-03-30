@@ -9,15 +9,9 @@ class ExternalPath
     /** @var  string */
     private $externalPath;
 
-    public static function fromString(string $externalPath): ExternalPath
+    public static function fromValue(?string $externalPath): ExternalPath
     {
-        $self = new self($externalPath);
-        return $self;
-    }
-
-    public static function none(){
-        $self = new self();
-        return $self;
+        return new self($externalPath);
     }
 
     private function __construct(?string $externalPath = null)
@@ -25,7 +19,7 @@ class ExternalPath
         $this->externalPath = $externalPath;
     }
 
-    public function toString(): ?string
+    public function toValue(): ?string
     {
         return $this->externalPath;
     }

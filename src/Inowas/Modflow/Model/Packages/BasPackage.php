@@ -150,6 +150,18 @@ class BasPackage implements PackageInterface
         return $this->unitnumber;
     }
 
+    public function updateIBound(IBound $iBound): BasPackage
+    {
+        $this->iBound = $iBound;
+        return self::fromArray($this->toArray());
+    }
+
+    public function updateStrt(Strt $strt): BasPackage
+    {
+        $this->strt = $strt;
+        return self::fromArray($this->toArray());
+    }
+
     public function toArray(): array
     {
         return array(

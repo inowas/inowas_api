@@ -21,7 +21,7 @@ class MfPackageTest extends \PHPUnit_Framework_TestCase
         $executableName = FileName::fromString('mf2005');
         $listUnit = ListUnit::fromInt(2);
         $modelWorkSpace = ModelWorkSpace::fromString('.');
-        $externalPath = ExternalPath::none();
+        $externalPath = ExternalPath::fromValue(null);
         $verbose = Verbose::fromBool(false);
 
         $mfPackage = MfPackage::fromParams(

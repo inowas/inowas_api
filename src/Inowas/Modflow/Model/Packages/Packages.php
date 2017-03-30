@@ -1,13 +1,22 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Inowas\Modflow\Model\Packages;
 
 use Inowas\Common\DateTime\DateTime;
+use Inowas\Common\FileSystem\FileName;
+use Inowas\Common\FileSystem\ModelWorkSpace;
 use Inowas\Common\Grid\BoundingBox;
 use Inowas\Common\Grid\GridSize;
+use Inowas\Common\Modflow\IBound;
 use Inowas\Common\Modflow\LengthUnit;
+use Inowas\Common\Modflow\ListUnit;
+use Inowas\Common\Modflow\Strt;
 use Inowas\Common\Modflow\TimeUnit;
 use Inowas\Modflow\Model\Exception\InvalidPackageNameException;
+use Inowas\Modflow\Model\ModflowModelName;
+use Inowas\Modflow\Model\ModflowVersion;
 
 class Packages implements \JsonSerializable
 {
@@ -22,7 +31,7 @@ class Packages implements \JsonSerializable
 
     private $packages = [];
 
-    public static function createFromDefaults()
+    public static function createFromDefaults(): Packages
     {
         $self = new self();
         $self->selectedPackages = ['mf', 'bas', 'dis', 'lpf'];
@@ -36,7 +45,52 @@ class Packages implements \JsonSerializable
 
     private function __construct(){}
 
-    public function updateTimeUnit(TimeUnit $timeUnit)
+    public function updateModelName(ModflowModelName $name): void
+    {
+        // The executableName is configured in the MfPackage
+        /** @var MfPackage $mfPackage */
+        $mfPackage = $this->getPackage('mf');
+        $mfPackage = $mfPackage->updateModelName($name);
+        $this->updatePackage($mfPackage);
+    }
+
+    public function updateVersion(ModflowVersion $version): void
+    {
+        // The executableName is configured in the MfPackage
+        /** @var MfPackage $mfPackage */
+        $mfPackage = $this->getPackage('mf');
+        $mfPackage = $mfPackage->updateVersion($version);
+        $this->updatePackage($mfPackage);
+    }
+
+    public function updateExecutableName(FileName $name): void
+    {
+        // The executableName is configured in the MfPackage
+        /** @var MfPackage $mfPackage */
+        $mfPackage = $this->getPackage('mf');
+        $mfPackage = $mfPackage->updateExecutableName($name);
+        $this->updatePackage($mfPackage);
+    }
+
+    public function updateListUnit(ListUnit $listUnit): void
+    {
+        // The executableName is configured in the MfPackage
+        /** @var MfPackage $mfPackage */
+        $mfPackage = $this->getPackage('mf');
+        $mfPackage = $mfPackage->updateListUnit($listUnit);
+        $this->updatePackage($mfPackage);
+    }
+
+    public function updateModelWorkSpace(ModelWorkSpace $workSpace): void
+    {
+        // The executableName is configured in the MfPackage
+        /** @var MfPackage $mfPackage */
+        $mfPackage = $this->getPackage('mf');
+        $mfPackage = $mfPackage->updateModelWorkSpace($workSpace);
+        $this->updatePackage($mfPackage);
+    }
+
+    public function updateTimeUnit(TimeUnit $timeUnit): void
     {
         // The timeunit is configured in the DisPackage
         /** @var DisPackage $disPackage */
@@ -70,6 +124,24 @@ class Packages implements \JsonSerializable
         $disPackage = $this->getPackage('dis');
         $disPackage = $disPackage->updateStartDateTime($start);
         $this->updatePackage($disPackage);
+    }
+
+    public function updateIBound(IBound $iBound): void
+    {
+        // The Ibound is configured in the BasPackage
+        /** @var BasPackage $basPackage */
+        $basPackage = $this->getPackage('bas');
+        $basPackage = $basPackage->updateIBound($iBound);
+        $this->updatePackage($basPackage);
+    }
+
+    public function updateStrt(Strt $strt): void
+    {
+        // The Strt is configured in the BasPackage
+        /** @var BasPackage $basPackage */
+        $basPackage = $this->getPackage('bas');
+        $basPackage = $basPackage->updateStrt($strt);
+        $this->updatePackage($basPackage);
     }
 
     private function addPackage(PackageInterface $package): void

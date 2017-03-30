@@ -558,8 +558,19 @@ class ModflowModelAggregate extends AggregateRoot
         }
     }
 
-    protected function whenActiveCellsWereUpdated(ActiveCellsWereUpdated $event)
-    {}
+    protected function whenActiveCellsWereUpdated(ActiveCellsWereUpdated $event): void
+    {
+        if ($this->area->boundaryId()->sameValueAs($event->boundaryId())){
+            $this->area = $this->area->setActiveCells($event->activeCells());
+            return;
+        }
+
+        if ($this->containsBoundary($event->boundaryId())){
+            /** @var AbstractBoundary $boundary */
+            $boundary = $this->boundaries[$event->boundaryId()->toString()];
+            $boundary[$event->boundaryId()->toString()] = $boundary->setActiveCells($event->activeCells());
+        }
+    }
 
     private function createScenarioFromThis(UserId $userId, ModflowId $scenarioId): ModflowModelAggregate
     {

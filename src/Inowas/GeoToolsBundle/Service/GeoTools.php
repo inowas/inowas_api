@@ -65,7 +65,7 @@ class GeoTools
             }
         }
 
-        return ActiveCells::fromArray($activeCells);
+        return ActiveCells::fromArrayAndGridSize($activeCells, $gridSize);
     }
 
     private function intersectWktGeometry(string $wkt, string $geometry){
@@ -99,7 +99,7 @@ class GeoTools
 
         $cells = array();
         $cells[$result['row']][$result['col']]=true;
-        return ActiveCells::fromArray($cells);
+        return ActiveCells::fromArrayAndGridSize($cells, $gz);
     }
 
     public function getBoundingBoxFromPolygon(Polygon $polygon){
