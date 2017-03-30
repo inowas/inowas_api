@@ -4,13 +4,13 @@ declare(strict_types=1);
 
 namespace Inowas\Soilmodel\Model\Handler;
 
-use Inowas\Common\Conductivity\LayerConductivity;
-use Inowas\Common\Conductivity\LayerKX;
-use Inowas\Common\Conductivity\LayerKY;
-use Inowas\Common\Conductivity\LayerKZ;
 use Inowas\Common\Grid\BoundingBox;
 use Inowas\Common\Grid\GridSize;
 use Inowas\Common\Soilmodel\BottomElevation;
+use Inowas\Common\Soilmodel\Conductivity;
+use Inowas\Common\Soilmodel\HydraulicConductivityX;
+use Inowas\Common\Soilmodel\HydraulicConductivityY;
+use Inowas\Common\Soilmodel\HydraulicConductivityZ;
 use Inowas\Common\Soilmodel\SpecificStorage;
 use Inowas\Common\Soilmodel\SpecificYield;
 use Inowas\Common\Soilmodel\Storage;
@@ -108,7 +108,7 @@ final class InterpolateSoilmodelHandler
         }
 
         $result = $this->interpolation->interpolate($configuration);
-        return TopElevation::fromValue($result->result());
+        return TopElevation::fromLayerValue($result->result());
     }
 
     private function interpolateHBot(InterpolationConfiguration $configuration, array $boreLogs, GeologicalLayerNumber $layerNumber): BottomElevation
@@ -126,15 +126,14 @@ final class InterpolateSoilmodelHandler
         }
 
         $result = $this->interpolation->interpolate($configuration);
-        return BottomElevation::fromValue($result->result());
+        return BottomElevation::fromLayerValue($result->result());
     }
 
-    private function interpolateConductivity(InterpolationConfiguration $configuration, array $boreLogs, GeologicalLayerNumber $layerNumber): LayerConductivity
+    private function interpolateConductivity(InterpolationConfiguration $configuration, array $boreLogs, GeologicalLayerNumber $layerNumber): Conductivity
     {
         $kxConfiguration = clone $configuration;
         $kyConfiguration = clone $configuration;
         $kzConfiguration = clone $configuration;
-
 
         /** @var BoreLogAggregate $boreLog */
         foreach ($boreLogs as $boreLog) {
@@ -142,9 +141,9 @@ final class InterpolateSoilmodelHandler
             /** @var Horizon $horizon */
             foreach ($boreLog->horizons() as $key => $horizon){
                 if ($horizon->layerNumber()->sameAs($layerNumber)){
-                    $kxConfiguration->addPointValue(new PointValue($point, $horizon->conductivity()->kx()->mPerDay()));
-                    $kyConfiguration->addPointValue(new PointValue($point, $horizon->conductivity()->ky()->mPerDay()));
-                    $kzConfiguration->addPointValue(new PointValue($point, $horizon->conductivity()->kz()->mPerDay()));
+                    $kxConfiguration->addPointValue(new PointValue($point, $horizon->conductivity()->kx()->toValue()));
+                    $kyConfiguration->addPointValue(new PointValue($point, $horizon->conductivity()->ky()->toValue()));
+                    $kzConfiguration->addPointValue(new PointValue($point, $horizon->conductivity()->kz()->toValue()));
                 }
             }
         }
@@ -153,10 +152,10 @@ final class InterpolateSoilmodelHandler
         $resultKy = $this->interpolation->interpolate($kyConfiguration);
         $resultKz = $this->interpolation->interpolate($kzConfiguration);
 
-        return LayerConductivity::fromXYZinMPerDay(
-            LayerKX::fromValue($resultKx->result()),
-            LayerKY::fromValue($resultKy->result()),
-            LayerKZ::fromValue($resultKz->result())
+        return Conductivity::fromXYZinMPerDay(
+            HydraulicConductivityX::fromLayerValue($resultKx->result()),
+            HydraulicConductivityY::fromLayerValue($resultKy->result()),
+            HydraulicConductivityZ::fromLayerValue($resultKz->result())
         );
     }
 
@@ -181,8 +180,8 @@ final class InterpolateSoilmodelHandler
         $resultSy = $this->interpolation->interpolate($syConfiguration);
 
         return Storage::fromParams(
-            SpecificStorage::fromValue($resultSs->result()),
-            SpecificYield::fromValue($resultSy->result())
+            SpecificStorage::fromLayerValue($resultSs->result()),
+            SpecificYield::fromLayerValue($resultSy->result())
         );
     }
 }

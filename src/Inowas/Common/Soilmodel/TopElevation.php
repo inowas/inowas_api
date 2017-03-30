@@ -8,19 +8,35 @@ use Inowas\Common\Grid\LayerNumber;
 
 class TopElevation extends AbstractSoilproperty
 {
-    public static function fromFloat(float $value, ?LayerNumber $layer = null)
+
+    public static function fromPointValue($value): TopElevation
     {
-        return new self($value, $layer);
+        return new self($value);
     }
 
-    public static function from2DArray(array $value, ?LayerNumber $layer = null)
+
+    public static function fromLayerValue($value): TopElevation
     {
-        return new self($value, $layer);
+        return new self($value, true);
     }
 
-    public static function fromValue($value, ?LayerNumber $layer = null)
+
+    public static function fromLayerValueWithNumber($value, LayerNumber $layer): TopElevation
     {
-        return new self($value, $layer);
+        return new self($value, true, $layer);
+    }
+
+    public static function fromArray(array $arr): TopElevation
+    {
+        return new self($arr['value'], $arr['is_layer']);
+    }
+
+    public function toArray(): array
+    {
+        return array(
+            'value' => $this->value,
+            'is_layer' => $this->isLayer
+        );
     }
 
     public function identifier(): string

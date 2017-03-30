@@ -4,8 +4,7 @@ declare(strict_types=1);
 
 namespace Inowas\Soilmodel\Model;
 
-use Inowas\Common\Conductivity\Conductivity;
-use Inowas\Common\Grid\LayerNumber;
+use Inowas\Common\Soilmodel\Conductivity;
 use Inowas\Common\Soilmodel\HBottom;
 use Inowas\Common\Soilmodel\HTop;
 use Inowas\Common\Soilmodel\Storage;

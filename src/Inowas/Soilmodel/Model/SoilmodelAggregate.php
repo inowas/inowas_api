@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Inowas\Soilmodel\Model;
 
-use Inowas\Common\Grid\BottomElevation;
+use Inowas\Common\Modflow\Botm;
 use Inowas\Common\Id\UserId;
 use Inowas\Common\Soilmodel\HTop;
 use Inowas\Soilmodel\Model\Event\LayerValuesWereUpdated;
@@ -210,7 +210,7 @@ class SoilmodelAggregate extends AggregateRoot
         return $topLayer->values()->hTop();
     }
 
-    public function bottomElevation(): BottomElevation
+    public function bottomElevation(): Botm
     {
         $layers = $this->layers();
         usort($layers, function ($a, $b){return $a->layerNumber()->toInteger() > $b->layerNumber()->toInteger();});
@@ -222,7 +222,7 @@ class SoilmodelAggregate extends AggregateRoot
             $hBot[] = $layer->values()->hBottom();
         }
 
-        return BottomElevation::from3DArray($hBot);
+        return Botm::from3DArray($hBot);
     }
 
     public function userHasWriteAccess(UserId $userId): bool

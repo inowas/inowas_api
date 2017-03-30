@@ -8,22 +8,22 @@
  */
 declare(strict_types=1);
 
-namespace Inowas\Common\Grid;
+namespace Inowas\Common\Modflow;
 
-class TopElevation
+class Top
 {
 
     /** @var  array */
     protected $top;
 
-    public static function from2DArray(array $top): TopElevation
+    public static function from2DArray(array $top): Top
     {
         $self = new self();
         $self->top = $top;
         return $self;
     }
 
-    public static function fromValue($top): TopElevation
+    public static function fromValue($top): Top
     {
         $self = new self();
         $self->top = $top;

@@ -2,21 +2,21 @@
 
 declare(strict_types=1);
 
-namespace Inowas\Common\Conductivity;
+namespace Inowas\Common\Soilmodel;
 
-class LayerConductivity
+class Conductivity
 {
 
-    /** @var  LayerKX */
+    /** @var  HydraulicConductivityX */
     protected $kx;
 
-    /** @var  LayerKY */
+    /** @var  HydraulicConductivityY */
     protected $ky;
 
-    /** @var  LayerKZ */
+    /** @var  HydraulicConductivityZ */
     protected $kz;
 
-    public static function fromXYZinMPerDay(LayerKX $kx, LayerKY $ky, LayerKZ $kz){
+    public static function fromXYZinMPerDay(HydraulicConductivityX $kx, HydraulicConductivityY $ky, HydraulicConductivityZ $kz){
         $self = new self();
         $self->kx = $kx;
         $self->ky = $ky;
@@ -24,22 +24,22 @@ class LayerConductivity
         return $self;
     }
 
-    public function kx(): LayerKX
+    public function kx(): HydraulicConductivityX
     {
         return $this->kx;
     }
 
-    public function ky(): LayerKY
+    public function ky(): HydraulicConductivityY
     {
         return $this->ky;
     }
 
-    public function kz(): LayerKZ
+    public function kz(): HydraulicConductivityZ
     {
         return $this->kz;
     }
 
-    public function ha(): LayerHA
+    public function ha(): HydraulicAnisotropy
     {
         $hani = [];
         $kx = $this->kx()->toValue();
@@ -48,7 +48,7 @@ class LayerConductivity
         if (!is_array($kx) && !is_array($ky)){
 
             $hani = $kx/$ky;
-            return LayerHA::fromValue($hani);
+            return HydraulicAnisotropy::fromLayerValue($hani);
 
         } elseif (is_array($kx) && !is_array($ky)) {
 
@@ -64,7 +64,7 @@ class LayerConductivity
                 }
             }
 
-            return LayerHA::fromArray($hani);
+            return HydraulicAnisotropy::fromLayerValue($hani);
         } elseif (!is_array($kx) && is_array($ky)) {
             foreach ($ky as $iRow => $row) {
                 $hani[$iRow] = [];
@@ -78,7 +78,7 @@ class LayerConductivity
                 }
             }
 
-            return LayerHA::fromArray($hani);
+            return HydraulicAnisotropy::fromLayerValue($hani);
         } else {
             foreach ($kx as $iRow => $row) {
                 $hani[$iRow] = [];
@@ -92,25 +92,25 @@ class LayerConductivity
                 }
             }
 
-            return LayerHA::fromArray($hani);
+            return HydraulicAnisotropy::fromLayerValue($hani);
         }
     }
 
     public function toArray(): array
     {
         return array(
-            'kx' => $this->kx->toValue(),
-            'ky' => $this->ky->toValue(),
-            'kz' => $this->kz->toValue()
+            'kx' => $this->kx->toArray(),
+            'ky' => $this->ky->toArray(),
+            'kz' => $this->kz->toArray()
         );
     }
 
-    public static function fromArray(array $cond): LayerConductivity
+    public static function fromArray(array $cond): Conductivity
     {
         $self = new self();
-        $self->kx = LayerKX::fromValue($cond['kx']);
-        $self->ky = LayerKY::fromValue($cond['ky']);
-        $self->kz = LayerKZ::fromValue($cond['kz']);
+        $self->kx = HydraulicConductivityX::fromArray($cond['kx']);
+        $self->ky = HydraulicConductivityY::fromArray($cond['ky']);
+        $self->kz = HydraulicConductivityZ::fromArray($cond['kz']);
         return $self;
     }
 }

@@ -8,19 +8,33 @@ use Inowas\Common\Grid\LayerNumber;
 
 final class SpecificStorage extends AbstractSoilproperty
 {
-    public static function fromFloat(float $value, ?LayerNumber $layer = null)
+
+    public static function fromPointValue($value): SpecificStorage
     {
-        return new self($value, $layer);
+        return new self($value);
     }
 
-    public static function from2DArray(array $value, ?LayerNumber $layer = null)
+    public static function fromLayerValue($value): SpecificStorage
     {
-        return new self($value, $layer);
+        return new self($value, true);
     }
 
-    public static function fromValue($value, ?LayerNumber $layer = null)
+    public static function fromLayerValueWithNumber($value, LayerNumber $layer)
     {
-        return new self($value, $layer);
+        return new self($value, true, $layer);
+    }
+
+    public static function fromArray(array $arr): SpecificStorage
+    {
+        return new self($arr['value'], $arr['is_layer']);
+    }
+
+    public function toArray(): array
+    {
+        return array(
+            'value' => $this->value,
+            'is_layer' => $this->isLayer
+        );
     }
 
     public function identifier(): string

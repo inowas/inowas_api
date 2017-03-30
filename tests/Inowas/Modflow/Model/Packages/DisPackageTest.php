@@ -3,7 +3,7 @@
 namespace Tests\Inowas\Modflow\Model\Packages;
 
 use Inowas\Common\DateTime\DateTime;
-use Inowas\Common\Grid\BottomElevation;
+use Inowas\Common\Modflow\Botm;
 use Inowas\Common\Grid\BoundingBox;
 use Inowas\Common\Grid\ColumnNumber;
 use Inowas\Common\Grid\DeltaCol;
@@ -14,7 +14,7 @@ use Inowas\Common\Grid\LayerNumber;
 use Inowas\Common\Grid\Proj4String;
 use Inowas\Common\Grid\Rotation;
 use Inowas\Common\Grid\RowNumber;
-use Inowas\Common\Grid\TopElevation;
+use Inowas\Common\Modflow\Top;
 use Inowas\Common\Modflow\Extension;
 use Inowas\Common\Modflow\LengthUnit;
 use Inowas\Common\Modflow\NumberOfTimeSteps;
@@ -46,8 +46,8 @@ class DisPackageTest extends \PHPUnit_Framework_TestCase
         $delR = DeltaRow::fromValue(1.0);
         $delC = DeltaCol::fromValue(1.0);
         $layCbd = LayCbd::fromValue(0);
-        $top = TopElevation::fromValue(1.0);
-        $botm = BottomElevation::fromValue(0);
+        $top = Top::fromValue(1.0);
+        $botm = Botm::fromValue(0);
         $perlen = StressPeriodsLength::fromValue(1.0);
         $nstp = NumberOfTimeSteps::fromInt(1);
         $tsMult = TimeStepMultiplier::fromValue(1.0);

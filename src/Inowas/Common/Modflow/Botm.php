@@ -6,22 +6,22 @@
  */
 declare(strict_types=1);
 
-namespace Inowas\Common\Grid;
+namespace Inowas\Common\Modflow;
 
-class BottomElevation
+class Botm
 {
     
     /** @var  array */
     protected $botm;
 
-    public static function from3DArray(array $botm): BottomElevation
+    public static function from3DArray(array $botm): Botm
     {
         $self = new self();
         $self->botm = $botm;
         return $self;
     }
 
-    public static function fromValue($botm): BottomElevation
+    public static function fromValue($botm): Botm
     {
         $self = new self();
         $self->botm = $botm;

@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Inowas\Modflow\Model\Packages;
 
 use Inowas\Common\DateTime\DateTime;
-use Inowas\Common\Grid\BottomElevation;
+use Inowas\Common\Modflow\Botm;
 use Inowas\Common\Grid\BoundingBox;
 use Inowas\Common\Grid\ColumnNumber;
 use Inowas\Common\Grid\DeltaCol;
@@ -16,7 +16,7 @@ use Inowas\Common\Grid\LayerNumber;
 use Inowas\Common\Grid\Proj4String;
 use Inowas\Common\Grid\Rotation;
 use Inowas\Common\Grid\RowNumber;
-use Inowas\Common\Grid\TopElevation;
+use Inowas\Common\Modflow\Top;
 use Inowas\Common\Modflow\Extension;
 use Inowas\Common\Modflow\LengthUnit;
 use Inowas\Common\Modflow\NumberOfTimeSteps;
@@ -56,10 +56,10 @@ class DisPackage implements PackageInterface
     /** @var  LayCbd */
     protected $layCbd;
 
-    /** @var  TopElevation */
+    /** @var  Top */
     protected $top;
 
-    /** @var  BottomElevation */
+    /** @var  Botm */
     protected $botm;
 
     /** @var  StressPeriodsLength */
@@ -111,8 +111,8 @@ class DisPackage implements PackageInterface
         $delr = DeltaRow::fromValue(1.0);
         $delc = DeltaCol::fromValue(1.0);
         $laycbd = LayCbd::fromValue(0);
-        $top = TopElevation::fromValue(1.0);
-        $botm = BottomElevation::fromValue(0);
+        $top = Top::fromValue(1.0);
+        $botm = Botm::fromValue(0);
         $perlen = StressPeriodsLength::fromValue(1.0);
         $nstp = NumberOfTimeSteps::fromInt(1);
         $tsmult = TimeStepMultiplier::fromValue(1.0);
@@ -161,8 +161,8 @@ class DisPackage implements PackageInterface
         DeltaRow $delr,
         DeltaCol $delc,
         LayCbd $laycbd,
-        TopElevation $top,
-        BottomElevation $botm,
+        Top $top,
+        Botm $botm,
         StressPeriodsLength $perlen,
         NumberOfTimeSteps $nstp,
         TimeStepMultiplier $tsmult,
@@ -213,8 +213,8 @@ class DisPackage implements PackageInterface
         $delr = DeltaRow::fromValue($arr['delr']);
         $delc = DeltaCol::fromValue($arr['delc']);
         $laycbd = LayCbd::fromValue($arr['laycbd']);
-        $top = TopElevation::fromValue($arr['top']);
-        $botm = BottomElevation::fromValue($arr['botm']);
+        $top = Top::fromValue($arr['top']);
+        $botm = Botm::fromValue($arr['botm']);
         $perlen = StressPeriodsLength::fromValue($arr['perlen']);
         $nstp = NumberOfTimeSteps::fromInt($arr['nstp']);
         $tsmult = TimeStepMultiplier::fromValue($arr['tsmult']);

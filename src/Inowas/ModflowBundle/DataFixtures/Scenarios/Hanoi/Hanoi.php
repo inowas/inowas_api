@@ -5,10 +5,6 @@ namespace Inowas\ModflowBundle\DataFixtures\Scenarios\Hanoi;
 use Doctrine\DBAL\Schema\Schema;
 use FOS\UserBundle\Doctrine\UserManager;
 use Inowas\Common\Calculation\BudgetType;
-use Inowas\Common\Conductivity\Conductivity;
-use Inowas\Common\Conductivity\KX;
-use Inowas\Common\Conductivity\KY;
-use Inowas\Common\Conductivity\KZ;
 use Inowas\Common\Fixtures\DataFixtureInterface;
 use Inowas\Common\DateTime\DateTime;
 use Inowas\Common\Geometry\Point;
@@ -19,9 +15,13 @@ use Inowas\Common\Geometry\Geometry;
 use Inowas\Common\Id\BoundaryId;
 use Inowas\Common\Boundaries\BoundaryName;
 use Inowas\Common\Calculation\Budget;
+use Inowas\Common\Soilmodel\Conductivity;
 use Inowas\Common\Soilmodel\HBottom;
 use Inowas\Common\Soilmodel\HTop;
 use Inowas\Common\Modflow\LayTyp;
+use Inowas\Common\Soilmodel\HydraulicConductivityX;
+use Inowas\Common\Soilmodel\HydraulicConductivityY;
+use Inowas\Common\Soilmodel\HydraulicConductivityZ;
 use Inowas\Common\Soilmodel\SpecificStorage;
 use Inowas\Common\Soilmodel\SpecificYield;
 use Inowas\Common\Soilmodel\Storage;
@@ -327,13 +327,13 @@ class Hanoi implements ContainerAwareInterface, DataFixtureInterface
                 HTop::fromMeters($borehole['top']),
                 HBottom::fromMeters($borehole['bot_0']),
                 Conductivity::fromXYZinMPerDay(
-                    KX::fromMPerDay($borehole['kx_0']),
-                    KY::fromMPerDay($borehole['ky_0']),
-                    KZ::fromMPerDay($borehole['kz_0'])
+                    HydraulicConductivityX::fromPointValue($borehole['kx_0']),
+                    HydraulicConductivityY::fromPointValue($borehole['ky_0']),
+                    HydraulicConductivityZ::fromPointValue($borehole['kz_0'])
                 ),
                 Storage::fromParams(
-                    SpecificStorage::fromFloat(1e-5),
-                    SpecificYield::fromFloat(0.2)
+                    SpecificStorage::fromPointValue(1e-5),
+                    SpecificYield::fromPointValue(0.2)
                 )
             );
             $commandBus->dispatch(AddHorizonToBoreLog::byUserWithId($ownerId, $boreLogId, $horizon));
@@ -344,13 +344,13 @@ class Hanoi implements ContainerAwareInterface, DataFixtureInterface
                 HTop::fromMeters($borehole['bot_0']),
                 HBottom::fromMeters($borehole['bot_1']),
                 Conductivity::fromXYZinMPerDay(
-                    KX::fromMPerDay($borehole['kx_1']),
-                    KY::fromMPerDay($borehole['ky_1']),
-                    KZ::fromMPerDay($borehole['kz_1'])
+                    HydraulicConductivityX::fromPointValue($borehole['kx_1']),
+                    HydraulicConductivityY::fromPointValue($borehole['ky_1']),
+                    HydraulicConductivityZ::fromPointValue($borehole['kz_1'])
                 ),
                 Storage::fromParams(
-                    SpecificStorage::fromFloat(1e-5),
-                    SpecificYield::fromFloat(0.25)
+                    SpecificStorage::fromPointValue(1e-5),
+                    SpecificYield::fromPointValue(0.25)
                 )
             );
             $commandBus->dispatch(AddHorizonToBoreLog::byUserWithId($ownerId, $boreLogId, $horizon));
@@ -361,13 +361,13 @@ class Hanoi implements ContainerAwareInterface, DataFixtureInterface
                 HTop::fromMeters($borehole['bot_1']),
                 HBottom::fromMeters($borehole['bot_2']),
                 Conductivity::fromXYZinMPerDay(
-                    KX::fromMPerDay($borehole['kx_2']),
-                    KY::fromMPerDay($borehole['ky_2']),
-                    KZ::fromMPerDay($borehole['kz_2'])
+                    HydraulicConductivityX::fromPointValue($borehole['kx_2']),
+                    HydraulicConductivityY::fromPointValue($borehole['ky_2']),
+                    HydraulicConductivityZ::fromPointValue($borehole['kz_2'])
                 ),
                 Storage::fromParams(
-                    SpecificStorage::fromFloat(1e-5),
-                    SpecificYield::fromFloat(0.03)
+                    SpecificStorage::fromPointValue(1e-5),
+                    SpecificYield::fromPointValue(0.03)
                 )
             );
             $commandBus->dispatch(AddHorizonToBoreLog::byUserWithId($ownerId, $boreLogId, $horizon));
@@ -378,13 +378,13 @@ class Hanoi implements ContainerAwareInterface, DataFixtureInterface
                 HTop::fromMeters($borehole['bot_2']),
                 HBottom::fromMeters($borehole['bot_3']),
                 Conductivity::fromXYZinMPerDay(
-                    KX::fromMPerDay($borehole['kx_3']),
-                    KY::fromMPerDay($borehole['ky_3']),
-                    KZ::fromMPerDay($borehole['kz_3'])
+                    HydraulicConductivityX::fromPointValue($borehole['kx_3']),
+                    HydraulicConductivityY::fromPointValue($borehole['ky_3']),
+                    HydraulicConductivityZ::fromPointValue($borehole['kz_3'])
                 ),
                 Storage::fromParams(
-                    SpecificStorage::fromFloat(0.0004),
-                    SpecificYield::fromFloat(0.15)
+                    SpecificStorage::fromPointValue(0.0004),
+                    SpecificYield::fromPointValue(0.15)
                 )
             );
             $commandBus->dispatch(AddHorizonToBoreLog::byUserWithId($ownerId, $boreLogId, $horizon));

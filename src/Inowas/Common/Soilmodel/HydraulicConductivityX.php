@@ -6,27 +6,27 @@ namespace Inowas\Common\Soilmodel;
 
 use Inowas\Common\Grid\LayerNumber;
 
-final class SpecificYield extends AbstractSoilproperty
+class HydraulicConductivityX extends AbstractSoilproperty
 {
 
-    public static function fromPointValue($value): SpecificYield
+    public static function fromPointValue($value): HydraulicConductivityX
     {
         return new self($value);
     }
 
 
-    public static function fromLayerValue($value): SpecificYield
+    public static function fromLayerValue($value): HydraulicConductivityX
     {
         return new self($value, true);
     }
 
 
-    public static function fromLayerValueWithNumber($value, LayerNumber $layer): SpecificYield
+    public static function fromLayerValueWithNumber($value, LayerNumber $layer): HydraulicConductivityX
     {
         return new self($value, true, $layer);
     }
 
-    public static function fromArray(array $arr): SpecificYield
+    public static function fromArray(array $arr): HydraulicConductivityX
     {
         return new self($arr['value'], $arr['is_layer']);
     }
@@ -39,9 +39,8 @@ final class SpecificYield extends AbstractSoilproperty
         );
     }
 
-
     public function identifier(): string
-    {
-        return 'sy';
+        {
+            return 'kx';
     }
 }

@@ -27,15 +27,15 @@ class Storage
     public function toArray(): array
     {
         return array(
-            'ss' => $this->ss->toValue(),
-            'sy' => $this->sy->toValue()
+            'ss' => $this->ss->toArray(),
+            'sy' => $this->sy->toArray()
         );
     }
 
     public static function fromArray(array $data): Storage
     {
-        $ss = SpecificStorage::fromValue($data['ss']);
-        $sy = SpecificYield::fromValue($data['sy']);
+        $ss = SpecificStorage::fromArray($data['ss']);
+        $sy = SpecificYield::fromArray($data['sy']);
         return new self($ss, $sy);
     }
 
