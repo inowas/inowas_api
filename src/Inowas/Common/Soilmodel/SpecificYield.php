@@ -4,24 +4,27 @@ declare(strict_types=1);
 
 namespace Inowas\Common\Soilmodel;
 
-use Inowas\Common\Grid\LayerNumber;
+use Inowas\Soilmodel\Model\GeologicalLayerNumber;
 
 final class SpecificYield extends AbstractSoilproperty
 {
+
+    public static function create(): SpecificYield
+    {
+        return new self(null);
+    }
 
     public static function fromPointValue($value): SpecificYield
     {
         return new self($value);
     }
 
-
     public static function fromLayerValue($value): SpecificYield
     {
         return new self($value, true);
     }
 
-
-    public static function fromLayerValueWithNumber($value, LayerNumber $layer): SpecificYield
+    public static function fromLayerValueWithNumber($value, GeologicalLayerNumber $layer): SpecificYield
     {
         return new self($value, true, $layer);
     }
@@ -38,7 +41,6 @@ final class SpecificYield extends AbstractSoilproperty
             'is_layer' => $this->isLayer
         );
     }
-
 
     public function identifier(): string
     {

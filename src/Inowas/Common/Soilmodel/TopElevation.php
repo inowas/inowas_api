@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Inowas\Common\Soilmodel;
 
-use Inowas\Common\Grid\LayerNumber;
+use Inowas\Soilmodel\Model\GeologicalLayerNumber;
 
 class TopElevation extends AbstractSoilproperty
 {
@@ -21,7 +21,7 @@ class TopElevation extends AbstractSoilproperty
     }
 
 
-    public static function fromLayerValueWithNumber($value, LayerNumber $layer): TopElevation
+    public static function fromLayerValueWithNumber($value, GeologicalLayerNumber $layer): TopElevation
     {
         return new self($value, true, $layer);
     }

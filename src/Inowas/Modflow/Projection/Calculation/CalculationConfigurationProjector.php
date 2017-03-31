@@ -44,6 +44,8 @@ class CalculationConfigurationProjector extends AbstractDoctrineConnectionProjec
         ));
     }
 
+
+
     private function getConfigByCalculationId(ModflowId $calculationId): ?Packages
     {
         $result = $this->connection->fetchAssoc(

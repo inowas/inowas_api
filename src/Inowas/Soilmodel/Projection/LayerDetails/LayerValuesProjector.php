@@ -16,13 +16,11 @@ class LayerValuesProjector extends AbstractDoctrineConnectionProjector
 
         $this->schema = new Schema();
         $table = $this->schema->createTable(Table::LAYER_INTERPOLATIONS);
-        $table->addColumn('id', 'integer', array("unsigned" => true, "autoincrement" => true));
         $table->addColumn('soilmodel_id', 'string', ['length' => 36]);
         $table->addColumn('layer_id', 'string', ['length' => 36]);
         $table->addColumn('layer_number', 'integer');
         $table->addColumn('type', 'string', ['length' => 255]);
         $table->addColumn('values', 'text');
-        $table->setPrimaryKey(['id']);
     }
 
     public function onLayerValuesWereUpdated(LayerValuesWereUpdated $event): void

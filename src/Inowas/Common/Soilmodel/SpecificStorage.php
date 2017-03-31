@@ -4,10 +4,15 @@ declare(strict_types=1);
 
 namespace Inowas\Common\Soilmodel;
 
-use Inowas\Common\Grid\LayerNumber;
+use Inowas\Soilmodel\Model\GeologicalLayerNumber;
 
 final class SpecificStorage extends AbstractSoilproperty
 {
+
+    public static function create(): SpecificStorage
+    {
+        return new self(null);
+    }
 
     public static function fromPointValue($value): SpecificStorage
     {
@@ -19,7 +24,7 @@ final class SpecificStorage extends AbstractSoilproperty
         return new self($value, true);
     }
 
-    public static function fromLayerValueWithNumber($value, LayerNumber $layer)
+    public static function fromLayerValueWithNumber($value, GeologicalLayerNumber $layer)
     {
         return new self($value, true, $layer);
     }
