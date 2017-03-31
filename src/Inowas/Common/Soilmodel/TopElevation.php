@@ -9,6 +9,11 @@ use Inowas\Soilmodel\Model\GeologicalLayerNumber;
 class TopElevation extends AbstractSoilproperty
 {
 
+    public static function create(): TopElevation
+    {
+        return new self(null);
+    }
+
     public static function fromPointValue($value): TopElevation
     {
         return new self($value);

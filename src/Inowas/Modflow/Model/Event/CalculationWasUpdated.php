@@ -4,15 +4,11 @@ declare(strict_types=1);
 
 namespace Inowas\Modflow\Model\Event;
 
-use Inowas\Common\DateTime\DateTime;
 use Inowas\Common\Id\ModflowId;
 use Inowas\Common\Id\UserId;
-use Inowas\Common\Modflow\LengthUnit;
-use Inowas\Common\Modflow\TimeUnit;
-use Inowas\Soilmodel\Model\SoilmodelId;
 use Prooph\EventSourcing\AggregateChanged;
 
-class CalculationWasCreated extends AggregateChanged
+class CalculationWasUpdated extends AggregateChanged
 {
     /** @var  ModflowId */
     private $calculationId;
@@ -20,55 +16,29 @@ class CalculationWasCreated extends AggregateChanged
     /** @var  ModflowId */
     private $modflowModelId;
 
-    /** @var  SoilmodelId */
-    private $soilModelId;
-
     /** @var UserId */
     private $userId;
 
-    /** @var DateTime */
-    private $start;
-
-    /** @var DateTime */
-    private $end;
-
-    /** @var LengthUnit */
-    private $lengthUnit;
-
-    /** @var TimeUnit */
-    private $timeUnit;
+    private $payload;
 
 
     public static function fromModelWithProps(
         UserId $userId,
         ModflowId $calculationId,
         ModflowId $modflowModelId,
-        SoilmodelId $soilModelId,
-        DateTime $start,
-        DateTime $end,
-        LengthUnit $lengthUnit,
-        TimeUnit $timeUnit
-    ): CalculationWasCreated
+        $payload
+    ): CalculationWasUpdated
     {
         $event = self::occur($calculationId->toString(),[
             'user_id' => $userId->toString(),
             'modflowmodel_id' => $modflowModelId->toString(),
-            'soilmodel_id' => $soilModelId->toString(),
-            'start' => $start->toAtom(),
-            'end' => $end->toAtom(),
-            'length_unit' => $lengthUnit->toInt(),
-            'time_unit' => $timeUnit->toInt()
+            'payload' => serialize($payload)
         ]);
 
         $event->calculationId = $calculationId;
         $event->modflowModelId = $modflowModelId;
-        $event->soilModelId = $soilModelId;
         $event->userId = $userId;
-        $event->start = $start;
-        $event->end = $end;
-        $event->lengthUnit = $lengthUnit;
-        $event->timeUnit = $timeUnit;
-
+        $event->payload = $payload;
         return $event;
     }
 
@@ -90,13 +60,13 @@ class CalculationWasCreated extends AggregateChanged
         return $this->modflowModelId;
     }
 
-    public function soilModelId(): SoilmodelId
+    public function payload()
     {
-        if ($this->soilModelId === null){
-            $this->soilModelId = SoilmodelId::fromString($this->payload['soilmodel_id']);
+        if ($this->payload === null){
+            $this->payload = unserialize($this->payload['payload']);
         }
 
-        return $this->soilModelId;
+        return $this->payload;
     }
 
     public function userId(): UserId{
@@ -105,41 +75,5 @@ class CalculationWasCreated extends AggregateChanged
         }
 
         return $this->userId;
-    }
-
-    public function start(): DateTime
-    {
-        if ($this->start === null){
-            $this->start = DateTime::fromAtom($this->payload['start']);
-        }
-
-        return $this->start;
-    }
-
-    public function end(): DateTime
-    {
-        if ($this->end === null){
-            $this->end = DateTime::fromAtom($this->payload['end']);
-        }
-
-        return $this->end;
-    }
-
-    public function lengthUnit(): LengthUnit
-    {
-        if ($this->lengthUnit === null){
-            $this->lengthUnit = LengthUnit::fromInt($this->payload['length_unit']);
-        }
-
-        return $this->lengthUnit;
-    }
-
-    public function timeUnit(): TimeUnit
-    {
-        if ($this->timeUnit === null){
-            $this->timeUnit = TimeUnit::fromInt($this->payload['time_unit']);
-        }
-
-        return $this->timeUnit;
     }
 }

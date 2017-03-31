@@ -14,6 +14,7 @@ final class Table
     const CALCULATION_LIST = 'mf_projection_calculation_list';
     const CALCULATION_RESULTS = 'mf_projection_calculation_results';
     const CALCULATION_BUDGETS = 'mf_projection_calculation_budgets';
+    const MODEL_STRESS_PERIODS = 'mf_projection_model_stress_periods';
     const MODEL_DETAILS = 'mf_projection_model_details';
     const MODEL_SCENARIO_LIST = 'mf_projection_model_scenario_list';
 }
