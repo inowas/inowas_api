@@ -71,6 +71,7 @@ prooph_service_bus:
                     'Inowas\Modflow\Model\Event\CalculationWasCreated':
                         - 'inowas.modflow_projection.calculation_results'
                         - 'inowas.modflow_projection.calculation_list'
+                        - 'inowas.modflow_projection.calculation_config'
 
                     'Inowas\Modflow\Model\Event\HeadWasCalculated':
                         - 'inowas.modflow_projection.calculation_results'

@@ -232,7 +232,6 @@ class ModflowCalculationAggregate extends AggregateRoot
         $this->modflowModelId = $event->modflowModelId();
         $this->soilModelId = $event->soilModelId();
         $this->ownerId = $event->userId();
-        $this->packages = Packages::createFromDefaults();
     }
 
     protected function whenBudgetWasCalculated(BudgetWasCalculated $event): void

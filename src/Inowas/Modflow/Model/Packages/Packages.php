@@ -20,6 +20,19 @@ use Inowas\Modflow\Model\ModflowVersion;
 
 class Packages implements \JsonSerializable
 {
+    /** @var string  */
+    private $author = "";
+
+    /** @var string  */
+    private $project = "";
+
+    /** @var string  */
+    private $type = "flopy";
+
+    /** @var string  */
+    private $version = "3.2.6";
+
+    /** @var array */
     private $availablePackages = [
         'mf' => MfPackage::class,
         'bas' => BasPackage::class,
@@ -27,8 +40,10 @@ class Packages implements \JsonSerializable
         'lpf' => LpfPackage::class
     ];
 
+    /** @var array */
     private $selectedPackages = [];
 
+    /** @var array */
     private $packages = [];
 
     public static function createFromDefaults(): Packages
@@ -38,6 +53,27 @@ class Packages implements \JsonSerializable
         foreach ($self->selectedPackages as $packageName){
             $class = $self->availablePackages[$packageName];
             $self->addPackage($class::fromDefaults());
+        }
+
+        return $self;
+    }
+
+    public static function fromJson(string $json): Packages
+    {
+        $obj = json_decode($json);
+        $self = new self();
+        $self->author = $obj->author;
+        $self->project = $obj->project;
+        $self->type = $obj->type;
+        $self->version = $obj->version;
+        $self->selectedPackages = $obj->data->packages;
+        if (is_array($self->selectedPackages)) {
+            foreach ($self->selectedPackages as $selectedPackage){
+                if (array_key_exists($selectedPackage, $self->availablePackages)){
+                    $class = $self->availablePackages[$selectedPackage];
+                    $self->addPackage($class::fromArray((array)$obj->data->$selectedPackage));
+                }
+            }
         }
 
         return $self;
@@ -144,6 +180,16 @@ class Packages implements \JsonSerializable
         $this->updatePackage($basPackage);
     }
 
+    public function author(): string
+    {
+        return $this->author;
+    }
+
+    public function project(): string
+    {
+        return $this->project;
+    }
+
     private function addPackage(PackageInterface $package): void
     {
         $this->packages[$package->type()] = $package;
@@ -207,10 +253,10 @@ class Packages implements \JsonSerializable
         }
 
         return array(
-            "author" => "",
-            "project" => "",
-            "type" => "flopy",
-            "version" => "3.2.6",
+            "author" => $this->author,
+            "project" => $this->project,
+            "type" => $this->type,
+            "version" => $this->version,
             "data" => $packageData
         );
     }

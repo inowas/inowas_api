@@ -75,3 +75,8 @@ services:
         class: Inowas\Soilmodel\Projection\SoilmodelList\SoilmodelListProjector
         arguments:
           - '@doctrine.dbal.default_connection'
+
+    inowas.modflow_projection.calculation_config:
+        class: Inowas\Modflow\Projection\Calculation\CalculationConfigurationProjector
+        arguments:
+          - '@doctrine.dbal.default_connection'

@@ -36,6 +36,7 @@ class ModflowProjectionCommand extends ContainerAwareCommand
         $projections[] = $this->getContainer()->get('inowas.modflow_projection.soilmodel_list');
         $projections[] = $this->getContainer()->get('inowas.modflow_projection.layer_details');
         $projections[] = $this->getContainer()->get('inowas.modflow_projection.layer_values');
+        $projections[] = $this->getContainer()->get('inowas.modflow_projection.calculation_config');
 
 
         /** @var ProjectionInterface $projection */

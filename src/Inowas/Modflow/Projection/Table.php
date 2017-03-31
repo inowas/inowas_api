@@ -10,6 +10,7 @@ namespace Inowas\Modflow\Projection;
 final class Table
 {
     const BOUNDARIES = 'mf_projection_boundaries';
+    const CALCULATION_CONFIG = 'mf_projection_calculation_config';
     const CALCULATION_LIST = 'mf_projection_calculation_list';
     const CALCULATION_RESULTS = 'mf_projection_calculation_results';
     const CALCULATION_BUDGETS = 'mf_projection_calculation_budgets';
