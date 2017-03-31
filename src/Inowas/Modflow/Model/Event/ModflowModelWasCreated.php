@@ -21,7 +21,7 @@ class ModflowModelWasCreated extends AggregateChanged
     private $userId;
 
     /** @var  LengthUnit */
-    private $lengtUnit;
+    private $lengthUnit;
 
     /** @var  TimeUnit */
     private $timeUnit;
@@ -60,11 +60,11 @@ class ModflowModelWasCreated extends AggregateChanged
 
     public function lengthUnit(): LengthUnit
     {
-        if ($this->lengtUnit === null){
-            $this->lengtUnit = LengthUnit::fromInt($this->payload['length_unit']);
+        if ($this->lengthUnit === null){
+            $this->lengthUnit = LengthUnit::fromInt($this->payload['length_unit']);
         }
 
-        return $this->lengtUnit;
+        return $this->lengthUnit;
     }
 
     public function timeUnit(): TimeUnit

@@ -592,6 +592,8 @@ class ModflowModelAggregate extends AggregateRoot
         $self->area = unserialize(serialize($this->area));
         $self->soilmodelId = unserialize(serialize($this->soilmodelId));
         $self->boundaries = unserialize(serialize($this->boundaries));
+        $self->lengthUnit = unserialize(serialize($this->lengthUnit));
+        $self->timeUnit = unserialize(serialize($this->timeUnit));
         return $self;
     }
 
