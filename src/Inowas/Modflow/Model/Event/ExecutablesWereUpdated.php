@@ -5,24 +5,23 @@ declare(strict_types=1);
 namespace Inowas\Modflow\Model\Event;
 
 use Inowas\Common\Id\ModflowId;
-use Inowas\Common\Modflow\IBound;
 use Prooph\EventSourcing\AggregateChanged;
 
-class IBoundWasUpdated extends AggregateChanged
+class ExecutablesWereUpdated extends AggregateChanged
 {
     /** @var ModflowId */
     private $calculationId;
 
-    /** @var  IBound */
-    protected $iBound;
+    /** @var  array */
+    protected $executables;
 
     public static function to(
         ModflowId $calculationId,
-        IBound $iBound
-    ): IBoundWasUpdated
+        array $executables
+    ): ExecutablesWereUpdated
     {
         $event = self::occur($calculationId->toString(),[
-            'ibound' => $iBound->toValue()
+            'executables' => $executables
         ]);
 
         return $event;
@@ -37,12 +36,12 @@ class IBoundWasUpdated extends AggregateChanged
         return $this->calculationId;
     }
 
-    public function iBound(): IBound
+    public function executables(): array
     {
-        if ($this->iBound === null) {
-            $this->iBound = IBound::fromValue($this->payload['ibound']);
+        if ($this->executables === null) {
+            $this->executables = $this->payload['executables'];
         }
 
-        return $this->iBound;
+        return $this->executables;
     }
 }

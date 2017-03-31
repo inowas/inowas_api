@@ -8,26 +8,18 @@ use Inowas\Common\Calculation\ResultType;
 use Inowas\Common\DateTime\DateTime;
 use Inowas\Common\DateTime\TotalTime;
 use Inowas\Common\FileSystem\FileName;
-use Inowas\Common\Grid\BoundingBox;
-use Inowas\Common\Grid\GridSize;
 use Inowas\Common\Grid\LayerNumber;
 use Inowas\Common\Id\ModflowId;
 use Inowas\Common\Id\UserId;
-use Inowas\Common\Modflow\IBound;
 use Inowas\Common\Modflow\LengthUnit;
-use Inowas\Common\Modflow\Strt;
 use Inowas\Common\Modflow\TimeUnit;
 use Inowas\Modflow\Model\Event\BudgetWasCalculated;
 use Inowas\Modflow\Model\Event\EndDateTimeWasUpdated;
-use Inowas\Modflow\Model\Event\ExecutableNameWasUpdated;
-use Inowas\Modflow\Model\Event\GridParameterWereUpdated;
+use Inowas\Modflow\Model\Event\ExecutablesWereUpdated;
 use Inowas\Modflow\Model\Event\HeadWasCalculated;
 use Inowas\Modflow\Model\Event\CalculationWasCreated;
-use Inowas\Modflow\Model\Event\IBoundWasUpdated;
 use Inowas\Modflow\Model\Event\LengthUnitWasUpdated;
-use Inowas\Modflow\Model\Event\ModflowModelNameWasUpdated;
 use Inowas\Modflow\Model\Event\StartDateTimeWasUpdated;
-use Inowas\Modflow\Model\Event\StrtWasUpdated;
 use Inowas\Modflow\Model\Event\TimeUnitWasUpdated;
 use Inowas\Modflow\Model\Packages\Packages;
 use Inowas\Soilmodel\Model\SoilmodelId;
@@ -48,12 +40,6 @@ class ModflowCalculationAggregate extends AggregateRoot
     /** @var  UserId */
     private $ownerId;
 
-    /** @var GridSize */
-    private $gridSize;
-
-    /** @var  BoundingBox */
-    private $boundingBox;
-
     /** @var  TimeUnit */
     private $timeUnit;
 
@@ -73,7 +59,11 @@ class ModflowCalculationAggregate extends AggregateRoot
         ModflowId $calculationId,
         ModflowId $modflowModelId,
         SoilmodelId $soilModelId,
-        UserId $userId
+        UserId $userId,
+        DateTime $start,
+        DateTime $end,
+        TimeUnit $timeUnit,
+        LengthUnit $lengthUnit
     ): ModflowCalculationAggregate
     {
         $self = new self();
@@ -94,52 +84,9 @@ class ModflowCalculationAggregate extends AggregateRoot
         return $self;
     }
 
-    public function updateModelName(ModflowModelName $name): void
-    {
-        $this->packages->updateModelName($name);
-        $this->recordThat(ModflowModelNameWasUpdated::to($this->calculationId, $name));
-    }
-
-    public function updateExecutableName(FileName $name): void
-    {
-        $this->packages->updateExecutableName($name);
-        $this->recordThat(ExecutableNameWasUpdated::to($this->calculationId, $name));
-    }
-
-    public function updateGridParameters(GridSize $gridSize, BoundingBox $boundingBox)
-    {
-        if (is_null($this->gridSize) || (!$this->gridSize->sameAs($gridSize)) ||
-            is_null($this->boundingBox) || (!$this->boundingBox->sameAs($boundingBox))
-        ) {
-            $this->gridSize = $gridSize;
-            $this->boundingBox = $boundingBox;
-            $this->packages->updateGridParameters($gridSize, $boundingBox);
-            $this->recordThat(GridParameterWereUpdated::to($this->calculationId(), $gridSize, $boundingBox));
-        }
-    }
-
-    public function updateTimeUnit(TimeUnit $timeUnit): void
-    {
-        if (is_null($this->timeUnit) || (!$this->timeUnit->sameAs($timeUnit))) {
-            $this->timeUnit = $timeUnit;
-            $this->packages->updateTimeUnit($timeUnit);
-            $this->recordThat(TimeUnitWasUpdated::to($this->calculationId, $timeUnit));
-        }
-    }
-
-    public function updateLengthUnit(LengthUnit $lengthUnit): void
-    {
-        if (is_null($this->lengthUnit) || (!$this->lengthUnit->sameAs($lengthUnit))) {
-            $this->lengthUnit = $lengthUnit;
-            $this->packages->updateLengthUnit($lengthUnit);
-            $this->recordThat(LengthUnitWasUpdated::to($this->calculationId, $lengthUnit));
-        }
-    }
-
     public function updateStartDateTime(DateTime $start): void
     {
         $this->startDateTime = $start;
-        $this->packages->updateStartDateTime($start);
         $this->recordThat(StartDateTimeWasUpdated::to($this->calculationId, $start));
     }
 
@@ -149,16 +96,20 @@ class ModflowCalculationAggregate extends AggregateRoot
         $this->recordThat(EndDateTimeWasUpdated::to($this->calculationId, $end));
     }
 
-    public function updateIBound(IBound $iBound): void
+    public function updateLengthUnit(LengthUnit $lengthUnit): void
     {
-        $this->packages->updateIBound($iBound);
-        $this->recordThat(IBoundWasUpdated::to($this->calculationId, $iBound));
+        if (! $this->lengthUnit->sameAs($lengthUnit)){
+            $this->lengthUnit = $lengthUnit;
+            $this->recordThat(LengthUnitWasUpdated::to($this->calculationId, $lengthUnit));
+        }
     }
 
-    public function updateStrt(Strt $strt): void
+    public function updateTimeUnit(TimeUnit $timeUnit): void
     {
-        $this->packages->updateStrt($strt);
-        $this->recordThat(StrtWasUpdated::to($this->calculationId, $strt));
+        if (! $this->timeUnit->sameAs($timeUnit)){
+            $this->timeUnit = $timeUnit;
+            $this->recordThat(TimeUnitWasUpdated::to($this->calculationId, $timeUnit));
+        }
     }
 
     public function addCalculatedHead(ResultType $type, TotalTime $totalTime, LayerNumber $layerNumber, FileName $fileName): void
@@ -189,21 +140,6 @@ class ModflowCalculationAggregate extends AggregateRoot
     public function ownerId(): UserId
     {
         return $this->ownerId;
-    }
-
-    public function gridSize(): GridSize
-    {
-        return $this->gridSize;
-    }
-
-    public function boundingBox(): BoundingBox
-    {
-        return $this->boundingBox;
-    }
-
-    public function startDateTime(): DateTime
-    {
-        return $this->startDateTime;
     }
 
     public function endDateTime(): DateTime
@@ -238,13 +174,6 @@ class ModflowCalculationAggregate extends AggregateRoot
     {
     }
 
-    protected function whenGridParameterWereUpdated(GridParameterWereUpdated $event): void
-    {
-        $this->boundingBox = $event->boundingBox();
-        $this->gridSize = $event->gridSize();
-        $this->packages->updateGridParameters($event->gridSize(), $event->boundingBox());
-    }
-
     protected function whenHeadWasCalculated(HeadWasCalculated $event): void
     {
     }
@@ -270,26 +199,6 @@ class ModflowCalculationAggregate extends AggregateRoot
     protected function whenEndDateTimeWasUpdated(EndDateTimeWasUpdated $event): void
     {
         $this->endDateTime = $event->end();
-    }
-
-    protected function whenIBoundWasUpdated(IBoundWasUpdated $event): void
-    {
-        $this->packages->updateIBound($event->iBound());
-    }
-
-    protected function whenStrtWasUpdated(StrtWasUpdated $event): void
-    {
-        $this->packages->updateStrt($event->strt());
-    }
-
-    protected function whenModflowModelNameWasUpdated(ModflowModelNameWasUpdated $event): void
-    {
-        $this->packages->updateModelName($event->name());
-    }
-
-    protected function whenExecutableNameWasUpdated(ExecutableNameWasUpdated $event): void
-    {
-        $this->packages->updateExecutableName($event->name());
     }
 
     /**

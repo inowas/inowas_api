@@ -17,4 +17,18 @@ class PackagesTest extends \PHPUnit_Framework_TestCase
         $json = json_encode($packages);
         $this->assertJson($json);
     }
+
+    public function test_create_from_array(){
+        $packages = Packages::createFromDefaults();
+        $json = json_encode($packages);
+        $this->assertJson($json);
+
+        $obj = \json_decode($json);
+        $obj->author = "Ralf Junghanns";
+        $json = \json_encode($obj);
+
+        $packages = Packages::fromJson($json);
+        $this->assertInstanceOf(Packages::class, $packages);
+        $this->assertEquals( "Ralf Junghanns", $packages->author());
+    }
 }

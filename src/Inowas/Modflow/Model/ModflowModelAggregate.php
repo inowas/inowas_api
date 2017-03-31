@@ -14,6 +14,8 @@ use Inowas\Common\Grid\GridSize;
 use Inowas\Common\Id\IdInterface;
 use Inowas\Common\Id\ModflowId;
 use Inowas\Common\Id\UserId;
+use Inowas\Common\Modflow\LengthUnit;
+use Inowas\Common\Modflow\TimeUnit;
 use Inowas\Modflow\Model\Event\ActiveCellsWereUpdated;
 use Inowas\Modflow\Model\Event\BoundaryWasAdded;
 use Inowas\Modflow\Model\Event\BoundaryWasAddedToScenario;
@@ -72,31 +74,24 @@ class ModflowModelAggregate extends AggregateRoot
     /** @var array */
     protected $scenarios;
 
-    public static function create(UserId $userId, ModflowId $modflowId): ModflowModelAggregate
+    /** @var  LengthUnit */
+    protected $lengthUnit;
+
+    /** @var  TimeUnit */
+    protected $timeUnit;
+
+    public static function create(UserId $userId, ModflowId $modflowId, LengthUnit $lengthUnit, TimeUnit $timeUnit): ModflowModelAggregate
     {
         $self = new self();
         $self->modflowId = $modflowId;
         $self->owner = $userId;
         $self->scenarios = [];
         $self->boundaries = [];
+        $self->lengthUnit = $lengthUnit;
+        $self->timeUnit = $timeUnit;
 
-        $self->recordThat(ModflowModelWasCreated::byUserWithModflowId($userId, $modflowId));
+        $self->recordThat(ModflowModelWasCreated::byUserWithModflowIdAndUnits($userId, $modflowId, $lengthUnit, $timeUnit));
         return $self;
-    }
-
-    public function createCalculation(ModflowId $calculationId, ?ModflowId $scenarioId): ModflowCalculationAggregate
-    {
-        $modelId = $scenarioId;
-        if (! $modelId instanceof ModflowId){
-            $modelId = $this->modflowId;
-        }
-
-        return ModflowCalculationAggregate::create(
-            $calculationId,
-            $modelId,
-            $this->soilmodelId,
-            $this->owner
-        );
     }
 
     public function addScenario(UserId $userId, ModflowId $scenarioId): void
@@ -405,6 +400,16 @@ class ModflowModelAggregate extends AggregateRoot
         return $this->scenarios;
     }
 
+    public function lengthUnit(): LengthUnit
+    {
+        return $this->lengthUnit;
+    }
+
+    public function timeUnit(): TimeUnit
+    {
+        return $this->timeUnit;
+    }
+
     public function findScenario(ModflowId $scenarioId): ?ModflowModelAggregate
     {
         if ( $this->contains($scenarioId, $this->scenarios)) {
@@ -420,6 +425,8 @@ class ModflowModelAggregate extends AggregateRoot
         $this->owner = $event->userId();
         $this->boundaries = [];
         $this->scenarios = [];
+        $this->lengthUnit = $event->lengthUnit();
+        $this->timeUnit = $event->timeUnit();
     }
 
     protected function whenModflowScenarioWasAdded(ModflowScenarioWasAdded $event)
