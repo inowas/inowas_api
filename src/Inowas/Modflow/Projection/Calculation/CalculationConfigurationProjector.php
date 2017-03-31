@@ -30,12 +30,17 @@ class CalculationConfigurationProjector extends AbstractDoctrineConnectionProjec
 
     public function onCalculationWasCreated(CalculationWasCreated $event): void
     {
+        $packages = $this->getDefaultValues();
+        $packages->updateStartDateTime($event->start());
+        $packages->updateTimeUnit($event->timeUnit());
+        $packages->updateLengthUnit($event->lengthUnit());
+
         $this->connection->insert(Table::CALCULATION_CONFIG, array(
             'calculation_id' => $event->calculationId()->toString(),
             'modflow_model_id' => $event->modflowModelId()->toString(),
             'soilmodel_id' => $event->soilModelId()->toString(),
             'user_id' => $event->userId()->toString(),
-            'configuration' => json_encode($this->getDefaultValues())
+            'configuration' => json_encode($packages)
         ));
     }
 

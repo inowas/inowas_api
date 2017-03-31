@@ -15,7 +15,6 @@ use Inowas\Common\Modflow\LengthUnit;
 use Inowas\Common\Modflow\TimeUnit;
 use Inowas\Modflow\Model\Event\BudgetWasCalculated;
 use Inowas\Modflow\Model\Event\EndDateTimeWasUpdated;
-use Inowas\Modflow\Model\Event\ExecutablesWereUpdated;
 use Inowas\Modflow\Model\Event\HeadWasCalculated;
 use Inowas\Modflow\Model\Event\CalculationWasCreated;
 use Inowas\Modflow\Model\Event\LengthUnitWasUpdated;
@@ -62,8 +61,8 @@ class ModflowCalculationAggregate extends AggregateRoot
         UserId $userId,
         DateTime $start,
         DateTime $end,
-        TimeUnit $timeUnit,
-        LengthUnit $lengthUnit
+        LengthUnit $lengthUnit,
+        TimeUnit $timeUnit
     ): ModflowCalculationAggregate
     {
         $self = new self();
@@ -71,13 +70,21 @@ class ModflowCalculationAggregate extends AggregateRoot
         $self->modflowModelId = $modflowModelId;
         $self->soilModelId = $soilModelId;
         $self->ownerId = $userId;
+        $self->startDateTime = $start;
+        $self->endDateTime = $end;
+        $self->lengthUnit = $lengthUnit;
+        $self->timeUnit = $timeUnit;
 
         $self->recordThat(
-            CalculationWasCreated::fromModel(
+            CalculationWasCreated::fromModelWithProps(
                 $userId,
                 $calculationId,
                 $modflowModelId,
-                $soilModelId
+                $soilModelId,
+                $start,
+                $end,
+                $lengthUnit,
+                $timeUnit
             )
         );
 
@@ -168,6 +175,10 @@ class ModflowCalculationAggregate extends AggregateRoot
         $this->modflowModelId = $event->modflowModelId();
         $this->soilModelId = $event->soilModelId();
         $this->ownerId = $event->userId();
+        $this->startDateTime = $event->start();
+        $this->endDateTime = $event->end();
+        $this->lengthUnit = $event->lengthUnit();
+        $this->timeUnit = $event->timeUnit();
     }
 
     protected function whenBudgetWasCalculated(BudgetWasCalculated $event): void
