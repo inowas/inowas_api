@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace Inowas\Common\DateTime;
 
 
-use Inowas\Common\Modflow\NumberOfTimeSteps;
-use Inowas\Common\Modflow\TimeStepMultiplier;
+use Inowas\Common\Modflow\Nstp;
+use Inowas\Common\Modflow\Tsmult;
 use Inowas\Common\Modflow\TimeUnit;
 
 class StressperiodWithTimeSteps
@@ -23,18 +23,18 @@ class StressperiodWithTimeSteps
     /** @var  TotalTime */
     protected $totim;
 
-    /** @var  TimeStepMultiplier */
+    /** @var  Tsmult */
     protected $tsmult;
 
-    /** @var  NumberOfTimeSteps */
+    /** @var  Nstp */
     protected $nstp;
 
     public static function fromDateTime(
         DateTime $dateTime,
         DateTime $startTime,
         TimeUnit $timeUnit,
-        NumberOfTimeSteps $nstp,
-        TimeStepMultiplier $tsmult
+        Nstp $nstp,
+        Tsmult $tsmult
     ): StressperiodWithTimeSteps
     {
         $self = new self();
@@ -48,8 +48,8 @@ class StressperiodWithTimeSteps
 
     public static function fromTotim(
         TotalTime $totim,
-        NumberOfTimeSteps $nstp,
-        TimeStepMultiplier $tsmult
+        Nstp $nstp,
+        Tsmult $tsmult
     ): StressperiodWithTimeSteps
     {
         $self = new self();

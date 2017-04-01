@@ -19,11 +19,11 @@ use Inowas\Common\Grid\RowNumber;
 use Inowas\Common\Modflow\Top;
 use Inowas\Common\Modflow\Extension;
 use Inowas\Common\Modflow\LengthUnit;
-use Inowas\Common\Modflow\NumberOfTimeSteps;
+use Inowas\Common\Modflow\Nstp;
 use Inowas\Common\Modflow\Steady;
-use Inowas\Common\Modflow\StressPeriodsLength;
+use Inowas\Common\Modflow\Perlen;
 use Inowas\Common\Modflow\TimePeriodsNumber;
-use Inowas\Common\Modflow\TimeStepMultiplier;
+use Inowas\Common\Modflow\Tsmult;
 use Inowas\Common\Modflow\TimeUnit;
 use Inowas\Common\Modflow\UnitNumber;
 use Inowas\Common\Modflow\Xul;
@@ -62,13 +62,13 @@ class DisPackage implements PackageInterface
     /** @var  Botm */
     protected $botm;
 
-    /** @var  StressPeriodsLength */
+    /** @var  Perlen */
     protected $perlen;
 
-    /** @var  NumberOfTimeSteps */
+    /** @var  Nstp */
     protected $nstp;
 
-    /** @var  TimeStepMultiplier */
+    /** @var  Tsmult */
     protected $tsMult;
 
     /** @var  Steady */
@@ -113,9 +113,9 @@ class DisPackage implements PackageInterface
         $laycbd = LayCbd::fromValue(0);
         $top = Top::fromValue(1.0);
         $botm = Botm::fromValue(0);
-        $perlen = StressPeriodsLength::fromValue(1.0);
-        $nstp = NumberOfTimeSteps::fromInt(1);
-        $tsmult = TimeStepMultiplier::fromValue(1.0);
+        $perlen = Perlen::fromValue(1.0);
+        $nstp = Nstp::fromInt(1);
+        $tsmult = Tsmult::fromValue(1.0);
         $steady = Steady::fromValue(true);
         $itmuni = TimeUnit::fromInt(TimeUnit::DAYS);
         $lenuni = LengthUnit::fromInt(LengthUnit::METERS);
@@ -163,9 +163,9 @@ class DisPackage implements PackageInterface
         LayCbd $laycbd,
         Top $top,
         Botm $botm,
-        StressPeriodsLength $perlen,
-        NumberOfTimeSteps $nstp,
-        TimeStepMultiplier $tsmult,
+        Perlen $perlen,
+        Nstp $nstp,
+        Tsmult $tsmult,
         Steady $steady,
         TimeUnit $itmuni,
         LengthUnit $lenuni,
@@ -215,9 +215,9 @@ class DisPackage implements PackageInterface
         $laycbd = LayCbd::fromValue($arr['laycbd']);
         $top = Top::fromValue($arr['top']);
         $botm = Botm::fromValue($arr['botm']);
-        $perlen = StressPeriodsLength::fromValue($arr['perlen']);
-        $nstp = NumberOfTimeSteps::fromInt($arr['nstp']);
-        $tsmult = TimeStepMultiplier::fromValue($arr['tsmult']);
+        $perlen = Perlen::fromValue($arr['perlen']);
+        $nstp = Nstp::fromInt($arr['nstp']);
+        $tsmult = Tsmult::fromValue($arr['tsmult']);
         $steady = Steady::fromValue($arr['steady']);
         $itmuni = TimeUnit::fromInt($arr['itmuni']);
         $lenuni = LengthUnit::fromInt($arr['lenuni']);
@@ -281,6 +281,30 @@ class DisPackage implements PackageInterface
     public function updateStartDateTime(DateTime $start): DisPackage
     {
         $this->startDateTime = $start;
+        return self::fromArray($this->toArray());
+    }
+
+    public function updatePerlen(Perlen $perlen): DisPackage
+    {
+        $this->perlen = $perlen;
+        return self::fromArray($this->toArray());
+    }
+
+    public function updateNstp(Nstp $nstp): DisPackage
+    {
+        $this->nstp = $nstp;
+        return self::fromArray($this->toArray());
+    }
+
+    public function updateTsmult(Tsmult $tsmult): DisPackage
+    {
+        $this->tsMult = $tsmult;
+        return self::fromArray($this->toArray());
+    }
+
+    public function updateSteady(Steady $steady): DisPackage
+    {
+        $this->steady = $steady;
         return self::fromArray($this->toArray());
     }
 

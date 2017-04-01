@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Inowas\Modflow\Projection\ModelScenarioList;
 
 use Doctrine\DBAL\Connection;
-use Doctrine\DBAL\Exception\TableNotFoundException;
 use Doctrine\DBAL\Schema\Schema;
 use Inowas\Common\Projection\AbstractDoctrineConnectionProjector;
 use Inowas\Modflow\Model\Event\BoundaryWasAdded;
@@ -18,7 +17,6 @@ use Inowas\Modflow\Model\Event\ModflowModelWasCreated;
 use Inowas\Modflow\Model\Event\ModflowScenarioDescriptionWasChanged;
 use Inowas\Modflow\Model\Event\ModflowScenarioNameWasChanged;
 use Inowas\Modflow\Model\Event\ModflowScenarioWasAdded;
-use Inowas\Modflow\Projection\ProjectionInterface;
 use Inowas\Modflow\Projection\Table;
 
 class ModelScenarioListProjector extends AbstractDoctrineConnectionProjector

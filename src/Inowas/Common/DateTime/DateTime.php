@@ -51,4 +51,14 @@ class DateTime
     {
         $this->dateTime = $immutable;
     }
+
+    public function greaterOrEqualThen(DateTime $object)
+    {
+        return ($this->toAtom() >= $object->toAtom());
+    }
+
+    public function smallerOrEqualThen(DateTime $object)
+    {
+        return ($this->toAtom() <= $object->toAtom());
+    }
 }

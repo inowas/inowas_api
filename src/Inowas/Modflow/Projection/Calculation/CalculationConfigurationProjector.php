@@ -10,11 +10,19 @@ use Inowas\Common\Id\ModflowId;
 use Inowas\Common\Projection\AbstractDoctrineConnectionProjector;
 use Inowas\Modflow\Model\Event\CalculationWasCreated;
 use Inowas\Modflow\Model\Packages\Packages;
+use Inowas\Modflow\Model\Service\ModflowModelManager;
+use Inowas\Modflow\Model\Service\ModflowModelManagerInterface;
 use Inowas\Modflow\Projection\Table;
 
 class CalculationConfigurationProjector extends AbstractDoctrineConnectionProjector
 {
-    public function __construct(Connection $connection) {
+
+    /** @var  ModflowModelManager */
+    protected $modflowModelManager;
+
+    public function __construct(Connection $connection, ModflowModelManagerInterface $modelManager) {
+
+        $this->modflowModelManager = $modelManager;
 
         parent::__construct($connection);
 
@@ -35,6 +43,13 @@ class CalculationConfigurationProjector extends AbstractDoctrineConnectionProjec
         $packages->updateTimeUnit($event->timeUnit());
         $packages->updateLengthUnit($event->lengthUnit());
 
+        $stressPeriods = $this->modflowModelManager->getStressPeriods($event->modflowModelId(), $event->start(), $event->end());
+        $packages->updatePackageParameter('dis', 'perlen', $stressPeriods->perlen());
+        $packages->updatePackageParameter('dis', 'nstp', $stressPeriods->nstp());
+        $packages->updatePackageParameter('dis', 'tsmult', $stressPeriods->tsmult());
+        $packages->updatePackageParameter('dis', 'steady', $stressPeriods->steady());
+
+
         $this->connection->insert(Table::CALCULATION_CONFIG, array(
             'calculation_id' => $event->calculationId()->toString(),
             'modflow_model_id' => $event->modflowModelId()->toString(),
@@ -43,7 +58,6 @@ class CalculationConfigurationProjector extends AbstractDoctrineConnectionProjec
             'configuration' => json_encode($packages)
         ));
     }
-
 
 
     private function getConfigByCalculationId(ModflowId $calculationId): ?Packages

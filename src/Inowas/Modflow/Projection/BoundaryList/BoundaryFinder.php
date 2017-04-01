@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Inowas\Modflow\Projection\BoundaryList;
 
 use Doctrine\DBAL\Connection;
+use Inowas\Common\DateTime\DateTime;
 use Inowas\Common\Id\BoundaryId;
 use Inowas\Common\Id\ModflowId;
 use Inowas\Modflow\Projection\Table;
@@ -37,4 +38,32 @@ class BoundaryFinder
             ]
         );
     }
+
+    public function findStressPeriodDatesById(ModflowId $modelId): ?array
+    {
+        $boundaries = $this->connection->fetchAll(
+            sprintf('SELECT boundary_id, type, data FROM %s WHERE model_id = :model_id', Table::BOUNDARIES),
+            ['model_id' => $modelId->toString()]
+        );
+
+        if ($boundaries === false) {
+            return null;
+        }
+
+        $spDates = [];
+        foreach ($boundaries as $boundary){
+            $dataValues = \json_decode($boundary->data);
+            foreach ($dataValues as $dataValue){
+                $dateTimeAtom = DateTime::fromDateTime(new \DateTime($dataValue->date_time))->toAtom();
+                if (! in_array($dateTimeAtom, $spDates)) {
+                    $spDates[] = DateTime::fromAtom($dateTimeAtom);
+                }
+            }
+        }
+
+        sort($spDates);
+        return $spDates;
+    }
+
+
 }

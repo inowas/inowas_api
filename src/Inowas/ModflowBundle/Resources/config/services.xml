@@ -27,6 +27,10 @@
             <argument type="service" id="kernel"/>
         </service>
 
+        <service id="inowas.modflow.model.manager" class="Inowas\Modflow\Model\Service\ModflowModelManager">
+            <argument type="service" id="inowas.model_boundaries_finder"/>
+        </service>
+
         <service id="inowas.add_modflow_model_boundary_handler" class="Inowas\Modflow\Model\Handler\AddBoundaryHandler">
             <argument type="service" id="modflow_model_list" />
         </service>

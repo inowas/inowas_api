@@ -15,7 +15,6 @@ use Inowas\Common\Geometry\Geometry;
 use Inowas\Common\Id\BoundaryId;
 use Inowas\Common\Boundaries\BoundaryName;
 use Inowas\Common\Calculation\Budget;
-use Inowas\Common\Soilmodel\BottomElevation;
 use Inowas\Common\Soilmodel\Conductivity;
 use Inowas\Common\Soilmodel\HBottom;
 use Inowas\Common\Soilmodel\HTop;
@@ -396,9 +395,6 @@ class Hanoi implements ContainerAwareInterface, DataFixtureInterface
         echo sprintf("Interpolate soilmodel with %s Memory usage\r\n", memory_get_usage());
         $commandBus->dispatch(InterpolateSoilmodel::forSoilmodel($ownerId, $soilModelId, $boundingBox, $gridSize));
 
-        dump($this->container->get('inowas.soilmodel.layer_values_finder')->getValues($soilModelId, BottomElevation::create()));
-        die();
-
         echo sprintf("Calculate active cells for Area with %s Memory usage\r\n", memory_get_usage());
         $commandBus->dispatch(CalculateActiveCells::forModflowModel($ownerId, $modelId, $area->boundaryId()));
 
@@ -434,6 +430,12 @@ class Hanoi implements ContainerAwareInterface, DataFixtureInterface
             echo sprintf('Add Well %s to BaseModel'."\r\n", $well->name()->toString());
             $commandBus->dispatch(AddBoundary::toBaseModel($ownerId, $modelId, $well));
         }
+
+        $start = DateTime::fromDateTime(new \DateTime('2005-01-01'));
+        $end = DateTime::fromDateTime(new \DateTime('2007-12-31'));
+        $result = $this->container->get('inowas.modflow.model.manager')->getStressPeriods($modelId, $start, $end);
+        dump($result);
+        die();
 
         $calculationId = ModflowId::generate();
         $start = DateTime::fromDateTime(new \DateTime('2005-01-01'));

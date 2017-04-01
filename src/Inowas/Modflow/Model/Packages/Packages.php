@@ -15,6 +15,7 @@ use Inowas\Common\Modflow\ListUnit;
 use Inowas\Common\Modflow\Strt;
 use Inowas\Common\Modflow\TimeUnit;
 use Inowas\Modflow\Model\Exception\InvalidPackageNameException;
+use Inowas\Modflow\Model\Exception\InvalidPackageParameterUpdateMethodException;
 use Inowas\Modflow\Model\ModflowModelName;
 use Inowas\Modflow\Model\ModflowVersion;
 
@@ -178,6 +179,22 @@ class Packages implements \JsonSerializable
         $basPackage = $this->getPackage('bas');
         $basPackage = $basPackage->updateStrt($strt);
         $this->updatePackage($basPackage);
+    }
+
+    public function updatePackageParameter(string $packageName, string $parameterName, $value): void
+    {
+        if (! $this->hasPackage($packageName)){
+            throw InvalidPackageNameException::withName($packageName, $this->availablePackages);
+        }
+
+        $package = $this->getPackageByName($packageName);
+        $expectedMethod = 'update'.ucfirst($parameterName);
+        if (! method_exists($package, $expectedMethod)){
+            throw InvalidPackageParameterUpdateMethodException::withName($packageName, $expectedMethod);
+        }
+
+        $package = $package->$expectedMethod($value);
+        $this->updatePackage($package);
     }
 
     public function author(): string

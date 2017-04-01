@@ -7,18 +7,18 @@ declare(strict_types=1);
 
 namespace Inowas\Common\Modflow;
 
-class StressPeriodsLength
+class Perlen
 {
     protected $perlen;
 
-    public static function fromArray(array $perlen): StressPeriodsLength
+    public static function fromArray(array $perlen): Perlen
     {
         $self = new self();
         $self->perlen = $perlen;
         return $self;
     }
 
-    public static function fromValue($perlen): StressPeriodsLength
+    public static function fromValue($perlen): Perlen
     {
         $self = new self();
         $self->perlen = $perlen;

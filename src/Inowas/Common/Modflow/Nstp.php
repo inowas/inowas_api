@@ -7,25 +7,25 @@ declare(strict_types=1);
 
 namespace Inowas\Common\Modflow;
 
-class NumberOfTimeSteps
+class Nstp
 {
     protected $ntsp;
 
-    public static function fromArray(array $ntsp): NumberOfTimeSteps
+    public static function fromArray(array $ntsp): Nstp
     {
         $self = new self();
         $self->ntsp = $ntsp;
         return $self;
     }
 
-    public static function fromValue($ntsp): NumberOfTimeSteps
+    public static function fromValue($ntsp): Nstp
     {
         $self = new self();
         $self->ntsp = $ntsp;
         return $self;
     }
 
-    public static function fromInt(int $ntsp): NumberOfTimeSteps
+    public static function fromInt(int $ntsp): Nstp
     {
         $self = new self();
         $self->ntsp = (int)$ntsp;

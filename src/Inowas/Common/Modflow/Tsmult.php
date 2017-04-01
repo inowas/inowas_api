@@ -7,18 +7,18 @@ declare(strict_types=1);
 
 namespace Inowas\Common\Modflow;
 
-class TimeStepMultiplier
+class Tsmult
 {
     protected $tsmult;
 
-    public static function fromArray(array $tsmult): TimeStepMultiplier
+    public static function fromArray(array $tsmult): Tsmult
     {
         $self = new self();
         $self->tsmult = $tsmult;
         return $self;
     }
 
-    public static function fromValue($tsmult): TimeStepMultiplier
+    public static function fromValue($tsmult): Tsmult
     {
         $self = new self();
         $self->tsmult = $tsmult;

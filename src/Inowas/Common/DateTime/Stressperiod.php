@@ -5,9 +5,9 @@ declare(strict_types=1);
 namespace Inowas\Common\DateTime;
 
 
-use Inowas\Common\Modflow\NumberOfTimeSteps;
+use Inowas\Common\Modflow\Nstp;
 use Inowas\Common\Modflow\Steady;
-use Inowas\Common\Modflow\TimeStepMultiplier;
+use Inowas\Common\Modflow\Tsmult;
 use Inowas\Common\Modflow\TimeUnit;
 use Inowas\Modflow\Model\Exception\InvalidTimeUnitException;
 
@@ -25,10 +25,10 @@ class Stressperiod
     /** @var  TotalTime */
     protected $totim;
 
-    /** @var  TimeStepMultiplier */
+    /** @var  Tsmult */
     protected $tsmult;
 
-    /** @var  NumberOfTimeSteps */
+    /** @var  Nstp */
     protected $nstp;
 
     /** @var  Steady */
@@ -51,8 +51,8 @@ class Stressperiod
         DateTime $dateTime,
         DateTime $startTime,
         TimeUnit $timeUnit,
-        NumberOfTimeSteps $nstp,
-        TimeStepMultiplier $tsmult,
+        Nstp $nstp,
+        Tsmult $tsmult,
         Steady $steady
     ): Stressperiod
     {
@@ -66,7 +66,7 @@ class Stressperiod
         return $self;
     }
 
-    public static function fromTotimWithTs(TotalTime $totim, NumberOfTimeSteps $nstp, TimeStepMultiplier $tsmult, Steady $steady): Stressperiod
+    public static function fromTotimWithTs(TotalTime $totim, Nstp $nstp, Tsmult $tsmult, Steady $steady): Stressperiod
     {
         $self = new self();
         $self->totim = $totim;
@@ -106,18 +106,18 @@ class Stressperiod
         return $this->totim;
     }
 
-    public function nstp(): NumberOfTimeSteps
+    public function nstp(): Nstp
     {
         if ($this->nstp === null){
-            $this->nstp = NumberOfTimeSteps::fromInt(1);
+            $this->nstp = Nstp::fromInt(1);
         }
         return $this->nstp;
     }
 
-    public function tsMult(): TimeStepMultiplier
+    public function tsMult(): Tsmult
     {
         if ($this->tsmult === null){
-            $this->tsmult = TimeStepMultiplier::fromValue(1);
+            $this->tsmult = Tsmult::fromValue(1);
         }
         return $this->tsmult;
     }
