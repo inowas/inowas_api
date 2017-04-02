@@ -4,12 +4,12 @@ declare(strict_types=1);
 
 namespace Inowas\Common\Modflow;
 
-class TimePeriodsNumber
+class Nper
 {
     /** @var int */
     private $number;
 
-    public static function fromInteger(int $number): TimePeriodsNumber
+    public static function fromInteger(int $number): Nper
     {
         return new self($number);
     }
@@ -24,7 +24,7 @@ class TimePeriodsNumber
         return $this->number;
     }
 
-    public function sameAs(TimePeriodsNumber $other)
+    public function sameAs(Nper $other)
     {
         return ($other->toInteger() === $this->toInteger());
     }

@@ -22,7 +22,7 @@ use Inowas\Common\Modflow\LengthUnit;
 use Inowas\Common\Modflow\Nstp;
 use Inowas\Common\Modflow\Steady;
 use Inowas\Common\Modflow\Perlen;
-use Inowas\Common\Modflow\TimePeriodsNumber;
+use Inowas\Common\Modflow\Nper;
 use Inowas\Common\Modflow\Tsmult;
 use Inowas\Common\Modflow\TimeUnit;
 use Inowas\Common\Modflow\UnitNumber;
@@ -44,7 +44,7 @@ class DisPackage implements PackageInterface
     /** @var  ColumnNumber */
     protected $nCol;
 
-    /** @var  TimePeriodsNumber */
+    /** @var  Nper */
     protected $nPer;
 
     /** @var  DeltaRow */
@@ -107,7 +107,7 @@ class DisPackage implements PackageInterface
         $nlay = LayerNumber::fromInteger(1);
         $ncol = ColumnNumber::fromInteger(1);
         $nrow = RowNumber::fromInteger(1);
-        $nper = TimePeriodsNumber::fromInteger(1);
+        $nper = Nper::fromInteger(1);
         $delr = DeltaRow::fromValue(1.0);
         $delc = DeltaCol::fromValue(1.0);
         $laycbd = LayCbd::fromValue(0);
@@ -157,7 +157,7 @@ class DisPackage implements PackageInterface
         LayerNumber $nlay,
         RowNumber $nrow,
         ColumnNumber $ncol,
-        TimePeriodsNumber $nper,
+        Nper $nper,
         DeltaRow $delr,
         DeltaCol $delc,
         LayCbd $laycbd,
@@ -209,7 +209,7 @@ class DisPackage implements PackageInterface
         $nlay = LayerNumber::fromInteger($arr['nlay']);
         $nrow = RowNumber::fromInteger($arr['nrow']);
         $ncol = ColumnNumber::fromInteger($arr['ncol']);
-        $nper = TimePeriodsNumber::fromInteger($arr['nper']);
+        $nper = Nper::fromInteger($arr['nper']);
         $delr = DeltaRow::fromValue($arr['delr']);
         $delc = DeltaCol::fromValue($arr['delc']);
         $laycbd = LayCbd::fromValue($arr['laycbd']);
@@ -281,6 +281,12 @@ class DisPackage implements PackageInterface
     public function updateStartDateTime(DateTime $start): DisPackage
     {
         $this->startDateTime = $start;
+        return self::fromArray($this->toArray());
+    }
+
+    public function updateNper(Nper $nper): DisPackage
+    {
+        $this->nPer = $nper;
         return self::fromArray($this->toArray());
     }
 

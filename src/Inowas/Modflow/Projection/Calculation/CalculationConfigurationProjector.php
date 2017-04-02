@@ -48,6 +48,7 @@ class CalculationConfigurationProjector extends AbstractDoctrineConnectionProjec
         $packages->updatePackageParameter('dis', 'nstp', $stressPeriods->nstp());
         $packages->updatePackageParameter('dis', 'tsmult', $stressPeriods->tsmult());
         $packages->updatePackageParameter('dis', 'steady', $stressPeriods->steady());
+        $packages->updatePackageParameter('dis', 'nper', $stressPeriods->nper());
 
 
         $this->connection->insert(Table::CALCULATION_CONFIG, array(

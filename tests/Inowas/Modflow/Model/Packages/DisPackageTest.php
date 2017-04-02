@@ -20,7 +20,7 @@ use Inowas\Common\Modflow\LengthUnit;
 use Inowas\Common\Modflow\Nstp;
 use Inowas\Common\Modflow\Steady;
 use Inowas\Common\Modflow\Perlen;
-use Inowas\Common\Modflow\TimePeriodsNumber;
+use Inowas\Common\Modflow\Nper;
 use Inowas\Common\Modflow\Tsmult;
 use Inowas\Common\Modflow\TimeUnit;
 use Inowas\Common\Modflow\UnitNumber;
@@ -42,7 +42,7 @@ class DisPackageTest extends \PHPUnit_Framework_TestCase
         $nLay = LayerNumber::fromInteger(1);
         $nCol = ColumnNumber::fromInteger(1);
         $nRow = RowNumber::fromInteger(1);
-        $nPer = TimePeriodsNumber::fromInteger(1);
+        $nPer = Nper::fromInteger(1);
         $delR = DeltaRow::fromValue(1.0);
         $delC = DeltaCol::fromValue(1.0);
         $layCbd = LayCbd::fromValue(0);

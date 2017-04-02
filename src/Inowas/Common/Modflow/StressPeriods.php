@@ -62,4 +62,9 @@ final class StressPeriods
 
         return Steady::fromArray($arr);
     }
+
+    public function nper(): Nper
+    {
+        return Nper::fromInteger(count($this->stressperiods));
+    }
 }
