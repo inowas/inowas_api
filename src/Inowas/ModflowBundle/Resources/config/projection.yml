@@ -90,6 +90,12 @@ services:
         class: Inowas\Modflow\Projection\Calculation\CalculationConfigurationProjector
         arguments:
           - '@doctrine.dbal.default_connection'
+          - '@inowas.modflow.model.manager'
+
+    inowas.modflow_projection.calculation_configuration_finder:
+          class: Inowas\Modflow\Projection\Calculation\CalculationConfigurationFinder
+          arguments:
+            - '@doctrine.dbal.default_connection'
 
     inowas.modflow_projection.stress_periods:
         class: Inowas\Modflow\Projection\BoundaryList\StressPeriodsProjector

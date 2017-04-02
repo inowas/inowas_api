@@ -18,6 +18,7 @@ use Inowas\Modflow\Model\Exception\InvalidPackageNameException;
 use Inowas\Modflow\Model\Exception\InvalidPackageParameterUpdateMethodException;
 use Inowas\Modflow\Model\ModflowModelName;
 use Inowas\Modflow\Model\ModflowVersion;
+use Inowas\Soilmodel\Interpolation\FlopyConfiguration;
 
 class Packages implements \JsonSerializable
 {
@@ -259,7 +260,6 @@ class Packages implements \JsonSerializable
      */
     function jsonSerialize(): array
     {
-
         $packageData = [];
         $packageData['packages'] = $this->selectedPackages;
 
@@ -269,12 +269,14 @@ class Packages implements \JsonSerializable
             $packageData[$package->type()] = $package;
         }
 
-        return array(
+        $data = array(
             "author" => $this->author,
             "project" => $this->project,
             "type" => $this->type,
             "version" => $this->version,
             "data" => $packageData
         );
+
+        return FlopyConfiguration::fromData($data)->jsonSerialize();
     }
 }

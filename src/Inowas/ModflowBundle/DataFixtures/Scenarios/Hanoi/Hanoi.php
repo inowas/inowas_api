@@ -31,6 +31,7 @@ use Inowas\Common\Calculation\ResultType;
 use Inowas\Modflow\Model\Command\AddBoundary;
 use Inowas\Modflow\Model\Command\AddCalculatedHead;
 use Inowas\Modflow\Model\Command\CalculateActiveCells;
+use Inowas\Modflow\Model\Command\CalculateModflowModelCalculation;
 use Inowas\Modflow\Model\Command\ChangeModflowModelBoundingBox;
 use Inowas\Modflow\Model\Command\ChangeModflowModelDescription;
 use Inowas\Modflow\Model\Command\ChangeModflowModelGridSize;
@@ -191,6 +192,14 @@ class Hanoi implements ContainerAwareInterface, DataFixtureInterface
             ['Impervious Layer', 'Aquitard, clay, silt'],
             ['PCA', 'Confined aquifer, gravel, coarse and middle sand, lenses of silt and clay'],
         ];
+
+
+        $calculationId = ModflowId::generate();
+        $start = DateTime::fromDateTime(new \DateTime('2005-01-01'));
+        $end = DateTime::fromDateTime(new \DateTime('2007-12-31'));
+        $commandBus->dispatch(CreateModflowModelCalculation::byUserWithModelId($calculationId, $ownerId, $modelId, $start, $end));
+        $commandBus->dispatch(CalculateModflowModelCalculation::byUserWithModelId($ownerId, $calculationId, $modelId));
+        die();
 
         foreach ($layers as $key => $layer) {
 
@@ -404,7 +413,9 @@ class Hanoi implements ContainerAwareInterface, DataFixtureInterface
         $header = $this->loadHeaderFromCsv($fileName);
         $dates = $this->getDates($header);
 
-        foreach ($wells as $well){
+        foreach ($wells as $key => $well){
+
+            if ($key == 20){break;}
             $value = null;
             $pumpingRates = PumpingRates::create();
             foreach ($dates as $date){
@@ -431,16 +442,13 @@ class Hanoi implements ContainerAwareInterface, DataFixtureInterface
             $commandBus->dispatch(AddBoundary::toBaseModel($ownerId, $modelId, $well));
         }
 
-        $start = DateTime::fromDateTime(new \DateTime('2005-01-01'));
-        $end = DateTime::fromDateTime(new \DateTime('2007-12-31'));
-        $result = $this->container->get('inowas.modflow.model.manager')->getStressPeriods($modelId, $start, $end);
-        dump($result);
-        die();
-
         $calculationId = ModflowId::generate();
         $start = DateTime::fromDateTime(new \DateTime('2005-01-01'));
         $end = DateTime::fromDateTime(new \DateTime('2007-12-31'));
         $commandBus->dispatch(CreateModflowModelCalculation::byUserWithModelId($calculationId, $ownerId, $modelId, $start, $end));
+        $commandBus->dispatch(CalculateModflowModelCalculation::byUserWithModelId($ownerId, $calculationId, $modelId));
+
+
         $this->loadResultsWithLayer('heads', 0, 2000, 4, 'S0', $calculationId, $commandBus);
         $this->loadResultsWithLayer('drawdown', 0, 2000, 4, 'S0', $calculationId, $commandBus);
         $this->loadBudgets('cumulative', 0, 2000, 'S0', $calculationId, $commandBus);

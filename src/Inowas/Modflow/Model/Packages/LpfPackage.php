@@ -133,8 +133,8 @@ class LpfPackage implements PackageInterface
         $thickstrt = ThickStrt::fromBool(false);
         $nocvcorrection = NoCvCorrection::fromBool(false);
         $novfc = NoVfc::fromBool(false);
-        $extension = Extension::fromString('bas');
-        $unitnumber = UnitNumber::fromInteger(13);
+        $extension = Extension::fromString('lpf');
+        $unitnumber = UnitNumber::fromInteger(15);
 
         return new self(
             $laytyp, $layavg, $chani, $layvka,

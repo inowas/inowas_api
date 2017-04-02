@@ -216,7 +216,7 @@ class DisPackage implements PackageInterface
         $top = Top::fromValue($arr['top']);
         $botm = Botm::fromValue($arr['botm']);
         $perlen = Perlen::fromValue($arr['perlen']);
-        $nstp = Nstp::fromInt($arr['nstp']);
+        $nstp = Nstp::fromValue($arr['nstp']);
         $tsmult = Tsmult::fromValue($arr['tsmult']);
         $steady = Steady::fromValue($arr['steady']);
         $itmuni = TimeUnit::fromInt($arr['itmuni']);

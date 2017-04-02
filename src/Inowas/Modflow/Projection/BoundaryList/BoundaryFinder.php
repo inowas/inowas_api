@@ -52,7 +52,7 @@ class BoundaryFinder
 
         $spDates = [];
         foreach ($boundaries as $boundary){
-            $dataValues = \json_decode($boundary->data);
+            $dataValues = \json_decode($boundary['data']);
             foreach ($dataValues as $dataValue){
                 $dateTimeAtom = DateTime::fromDateTime(new \DateTime($dataValue->date_time))->toAtom();
                 if (! in_array($dateTimeAtom, $spDates)) {

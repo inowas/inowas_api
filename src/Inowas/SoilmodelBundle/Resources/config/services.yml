@@ -11,6 +11,10 @@ services:
         class: Inowas\Soilmodel\Interpolation\PyModellingInterpolation
         arguments: ['@inowas.amqp.stream.connection', 'rpc_interpolation_queue']
 
+    inowas.soilmodel.flopy_calculation_service:
+        class: Inowas\Soilmodel\Interpolation\PyModellingFlopyCalculation
+        arguments: ['@inowas.amqp.stream.connection', 'rpc_flopy_calculation_queue']
+
     inowas.amqp.stream.connection:
         class: PhpAmqpLib\Connection\AMQPStreamConnection
         arguments: ['localhost', 5672, 'guest', 'guest']
@@ -74,4 +78,3 @@ services:
     inowas.soilmodel.delete_borelog.handler:
         class: Inowas\Soilmodel\Model\Handler\DeleteBoreLogHandler
         arguments: ['@bore_log_list']
-
