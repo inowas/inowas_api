@@ -1,7 +1,10 @@
 <?php
 
-namespace Inowas\Common\Modflow;
+namespace Tests\Inowas\Common\Modflow;
 
+
+use Inowas\Common\Modflow\StressPeriodGridCellValue;
+use Inowas\Common\Modflow\WelStressPeriodData;
 
 class WelStressPeriodDataTest extends \PHPUnit_Framework_TestCase
 {
