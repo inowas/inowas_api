@@ -10,19 +10,19 @@ declare(strict_types=1);
 
 namespace Inowas\Common\Modflow;
 
-class HNoFlo
+class Hnoflo
 {
     /** @var float */
     protected $hnoFlo;
 
-    public static function fromFloat(float $hnoFlo): HNoFlo
+    public static function fromFloat(float $hnoFlo): Hnoflo
     {
         $self = new self();
         $self->hnoFlo = $hnoFlo;
         return $self;
     }
 
-    public static function fromValue($hnoFlo): HNoFlo
+    public static function fromValue($hnoFlo): Hnoflo
     {
         $self = new self();
         $self->hnoFlo = $hnoFlo;

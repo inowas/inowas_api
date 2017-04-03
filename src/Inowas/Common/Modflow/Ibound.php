@@ -16,20 +16,20 @@ namespace Inowas\Common\Modflow;
 
 use Inowas\Common\Grid\ActiveCells;
 
-class IBound
+class Ibound
 {
     
     /** @var  array */
     protected $ibound;
 
-    public static function from3DArray(array $ibound): IBound
+    public static function from3DArray(array $ibound): Ibound
     {
         $self = new self();
         $self->ibound = $ibound;
         return $self;
     }
 
-    public static function fromActiveCellsAndNumberOfLayers(ActiveCells $activeCells, int $numberOfLayers): IBound
+    public static function fromActiveCellsAndNumberOfLayers(ActiveCells $activeCells, int $numberOfLayers): Ibound
     {
         $self = new self();
         $iBound = [];
@@ -41,7 +41,7 @@ class IBound
         return $self;
     }
 
-    public static function fromValue($ibound): IBound
+    public static function fromValue($ibound): Ibound
     {
         $self = new self();
         $self->ibound = $ibound;

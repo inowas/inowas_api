@@ -23,7 +23,7 @@ use Inowas\Common\Modflow\Ss;
 use Inowas\Common\Modflow\StorageCoefficient;
 use Inowas\Common\Modflow\Sy;
 use Inowas\Common\Modflow\ThickStrt;
-use Inowas\Common\Modflow\UnitNumber;
+use Inowas\Common\Modflow\Unitnumber;
 use Inowas\Common\Modflow\Vka;
 use Inowas\Common\Modflow\Vkcb;
 use Inowas\Common\Modflow\WetDry;
@@ -103,7 +103,7 @@ class LpfPackage implements PackageInterface
     /** @var  Extension */
     protected $extension;
 
-    /** @var  UnitNumber */
+    /** @var  Unitnumber */
     protected $unitnumber;
 
     /**
@@ -134,7 +134,7 @@ class LpfPackage implements PackageInterface
         $nocvcorrection = NoCvCorrection::fromBool(false);
         $novfc = NoVfc::fromBool(false);
         $extension = Extension::fromString('lpf');
-        $unitnumber = UnitNumber::fromInteger(15);
+        $unitnumber = Unitnumber::fromInteger(15);
 
         return new self(
             $laytyp, $layavg, $chani, $layvka,
@@ -170,7 +170,7 @@ class LpfPackage implements PackageInterface
         NoCvCorrection $nocvcorrection,
         NoVfc $novfc,
         Extension $extension,
-        UnitNumber $unitnumber
+        Unitnumber $unitnumber
     ): LpfPackage
     {
         return new self(
@@ -208,7 +208,7 @@ class LpfPackage implements PackageInterface
         $nocvcorrection = NoCvCorrection::fromValue($arr["nocvcorrection"]);
         $novfc = NoVfc::fromValue($arr["novfc"]);
         $extension = Extension::fromValue($arr["extension"]);
-        $unitnumber = UnitNumber::fromValue($arr["unitnumber"]);
+        $unitnumber = Unitnumber::fromValue($arr["unitnumber"]);
 
         return new self(
             $laytyp, $layavg, $chani, $layvka,
@@ -249,7 +249,7 @@ class LpfPackage implements PackageInterface
         NoCvCorrection $noCvCorrection,
         NoVfc $noVfc,
         Extension $extension,
-        UnitNumber $unitNumber
+        Unitnumber $unitNumber
     )
     {
         $this->laytyp = $layTyp;

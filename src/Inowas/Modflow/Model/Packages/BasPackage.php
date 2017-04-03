@@ -5,13 +5,13 @@ declare(strict_types=1);
 namespace Inowas\Modflow\Model\Packages;
 
 use Inowas\Common\Modflow\Extension;
-use Inowas\Common\Modflow\HNoFlo;
-use Inowas\Common\Modflow\IBound;
+use Inowas\Common\Modflow\Hnoflo;
+use Inowas\Common\Modflow\Ibound;
 use Inowas\Common\Modflow\IchFlg;
 use Inowas\Common\Modflow\Ixsec;
-use Inowas\Common\Modflow\StoPer;
+use Inowas\Common\Modflow\Stoper;
 use Inowas\Common\Modflow\Strt;
-use Inowas\Common\Modflow\UnitNumber;
+use Inowas\Common\Modflow\Unitnumber;
 
 class BasPackage implements PackageInterface
 {
@@ -19,8 +19,8 @@ class BasPackage implements PackageInterface
     /** @var string  */
     protected $type = 'bas';
 
-    /** @var  IBound */
-    protected $iBound;
+    /** @var  Ibound */
+    protected $ibound;
 
     /** @var  Strt */
     protected $strt;
@@ -31,16 +31,16 @@ class BasPackage implements PackageInterface
     /** @var IchFlg */
     protected $ichflg;
 
-    /** @var StoPer */
+    /** @var Stoper */
     protected $stoper;
 
-    /** @var HNoFlo */
+    /** @var Hnoflo */
     protected $hnoflo;
 
     /** @var Extension */
     protected $extension;
 
-    /** @var UnitNumber  */
+    /** @var Unitnumber  */
     protected $unitnumber;
 
     public static function fromDefaults(): BasPackage
@@ -49,13 +49,13 @@ class BasPackage implements PackageInterface
         $strt = Strt::fromValue(1.0);
         $ixsec = Ixsec::fromBool(false);
         $ichflg = IchFlg::fromBool(false);
-        $stoper = StoPer::none();
-        $hnoflo = HNoFlo::fromFloat(-999.99);
+        $stoper = Stoper::none();
+        $hnoflo = Hnoflo::fromFloat(-999.99);
         $extension = Extension::fromString('bas');
-        $unitnumber = UnitNumber::fromInteger(13);
+        $unitnumber = Unitnumber::fromInteger(13);
 
         $self = new self();
-        $self->iBound = $iBound;
+        $self->ibound = $iBound;
         $self->strt = $strt;
         $self->ixsec = $ixsec;
         $self->ichflg = $ichflg;
@@ -67,18 +67,18 @@ class BasPackage implements PackageInterface
     }
 
     public static function fromParams(
-        IBound $iBound,
+        Ibound $ibound,
         Strt $strt,
         Ixsec $ixsec,
         IchFlg $ichFlg,
-        StoPer $stoPer,
-        HNoFlo $hnoFlo,
+        Stoper $stoPer,
+        Hnoflo $hnoFlo,
         Extension $extension,
-        UnitNumber $unitNumber
+        Unitnumber $unitNumber
     ): BasPackage
     {
         $self = new self();
-        $self->iBound = $iBound;
+        $self->ibound = $ibound;
         $self->strt = $strt;
         $self->ixsec = $ixsec;
         $self->ichflg = $ichFlg;
@@ -93,14 +93,14 @@ class BasPackage implements PackageInterface
     public static function fromArray(array $arr): BasPackage
     {
         $self = new self();
-        $self->iBound = IBound::fromValue($arr['ibound']);
+        $self->ibound = Ibound::fromValue($arr['ibound']);
         $self->strt = Strt::fromValue($arr['strt']);
         $self->ixsec = Ixsec::fromValue($arr['ixsec']);
         $self->ichflg = IchFlg::fromValue($arr['ichflg']);
-        $self->stoper = StoPer::fromValue($arr['stoper']);
-        $self->hnoflo = HNoFlo::fromFloat($arr['hnoflo']);
+        $self->stoper = Stoper::fromValue($arr['stoper']);
+        $self->hnoflo = Hnoflo::fromFloat($arr['hnoflo']);
         $self->extension = Extension::fromValue($arr['extension']);
-        $self->unitnumber = UnitNumber::fromValue($arr['unitnumber']);
+        $self->unitnumber = Unitnumber::fromValue($arr['unitnumber']);
 
         return $self;
     }
@@ -110,9 +110,9 @@ class BasPackage implements PackageInterface
         return $this->type;
     }
 
-    public function iBound(): IBound
+    public function iBound(): Ibound
     {
-        return $this->iBound;
+        return $this->ibound;
     }
 
     public function strt(): Strt
@@ -130,12 +130,12 @@ class BasPackage implements PackageInterface
         return $this->ichflg;
     }
 
-    public function stoper(): StoPer
+    public function stoper(): Stoper
     {
         return $this->stoper;
     }
 
-    public function hnoflo(): HNoFlo
+    public function hnoflo(): Hnoflo
     {
         return $this->hnoflo;
     }
@@ -145,27 +145,71 @@ class BasPackage implements PackageInterface
         return $this->extension;
     }
 
-    public function unitnumber(): UnitNumber
+    public function unitnumber(): Unitnumber
     {
         return $this->unitnumber;
     }
 
-    public function updateIBound(IBound $iBound): BasPackage
+    public function updateIBound(Ibound $iBound): BasPackage
     {
-        $this->iBound = $iBound;
-        return self::fromArray($this->toArray());
+        $package = self::fromArray($this->toArray());
+        $package->ibound = $iBound;
+        return $package;
     }
 
     public function updateStrt(Strt $strt): BasPackage
     {
-        $this->strt = $strt;
-        return self::fromArray($this->toArray());
+        $package = self::fromArray($this->toArray());
+        $package->strt = $strt;
+        return $package;
+    }
+
+    public function updateIxsec(Ixsec $ixsec): BasPackage
+    {
+        $package = self::fromArray($this->toArray());
+        $package->ixsec = $ixsec;
+        return $package;
+    }
+
+    public function updateIchflg(IchFlg $ichFlg): BasPackage
+    {
+        $package = self::fromArray($this->toArray());
+        $package->ichflg = $ichFlg;
+        return $package;
+    }
+
+    public function updateStoper(Stoper $stoper): BasPackage
+    {
+        $package = self::fromArray($this->toArray());
+        $package->stoper = $stoper;
+        return $package;
+    }
+
+    public function updateHnoflo(Hnoflo $hnoflo): BasPackage
+    {
+        $package = self::fromArray($this->toArray());
+        $package->hnoflo = $hnoflo;
+        return $package;
+    }
+
+    public function updateExtension(Extension $extension): BasPackage
+    {
+        $package = self::fromArray($this->toArray());
+        $package->extension = $extension;
+        return $package;
+    }
+
+    public function updateUnitnumber(Unitnumber $unitnumber): BasPackage
+    {
+        $package = self::fromArray($this->toArray());
+        $package->unitnumber = $unitnumber;
+        return $package;
     }
 
     public function toArray(): array
     {
         return array(
-            "ibound" => $this->iBound->toValue(),
+            "ibound" => $this->ibound->toValue(),
             "strt" => $this->strt->toValue(),
             "ixsec" => $this->ixsec->toValue(),
             "ichflg" => $this->ichflg->toValue(),

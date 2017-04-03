@@ -10,26 +10,26 @@ declare(strict_types=1);
 
 namespace Inowas\Common\Modflow;
 
-class StoPer
+class Stoper
 {
     /** @var null|float */
     protected $stoper;
 
-    public static function fromFloat(float $stoper): StoPer
+    public static function fromFloat(float $stoper): Stoper
     {
         $self = new self();
         $self->stoper = $stoper;
         return $self;
     }
 
-    public static function fromValue($stoper): StoPer
+    public static function fromValue($stoper): Stoper
     {
         $self = new self();
         $self->stoper = $stoper;
         return $self;
     }
 
-    public static function none(): StoPer
+    public static function none(): Stoper
     {
         return new self();
     }

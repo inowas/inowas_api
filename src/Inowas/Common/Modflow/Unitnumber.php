@@ -4,17 +4,17 @@ declare(strict_types=1);
 
 namespace Inowas\Common\Modflow;
 
-class UnitNumber
+class Unitnumber
 {
     /** @var int */
     private $number;
 
-    public static function fromInteger(int $number): UnitNumber
+    public static function fromInteger(int $number): Unitnumber
     {
         return new self($number);
     }
 
-    public static function fromValue($number): UnitNumber
+    public static function fromValue($number): Unitnumber
     {
         return new self($number);
     }

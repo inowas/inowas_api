@@ -9,7 +9,7 @@ use Inowas\Common\FileSystem\FileName;
 use Inowas\Common\FileSystem\ModelWorkSpace;
 use Inowas\Common\Grid\BoundingBox;
 use Inowas\Common\Grid\GridSize;
-use Inowas\Common\Modflow\IBound;
+use Inowas\Common\Modflow\Ibound;
 use Inowas\Common\Modflow\LengthUnit;
 use Inowas\Common\Modflow\ListUnit;
 use Inowas\Common\Modflow\Strt;
@@ -164,7 +164,7 @@ class Packages implements \JsonSerializable
         $this->updatePackage($disPackage);
     }
 
-    public function updateIBound(IBound $iBound): void
+    public function updateIBound(Ibound $iBound): void
     {
         // The Ibound is configured in the BasPackage
         /** @var BasPackage $basPackage */

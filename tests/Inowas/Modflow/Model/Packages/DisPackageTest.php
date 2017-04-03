@@ -23,7 +23,7 @@ use Inowas\Common\Modflow\Perlen;
 use Inowas\Common\Modflow\Nper;
 use Inowas\Common\Modflow\Tsmult;
 use Inowas\Common\Modflow\TimeUnit;
-use Inowas\Common\Modflow\UnitNumber;
+use Inowas\Common\Modflow\Unitnumber;
 use Inowas\Common\Modflow\Xul;
 use Inowas\Common\Modflow\Yul;
 use Inowas\Modflow\Model\Packages\DisPackage;
@@ -55,7 +55,7 @@ class DisPackageTest extends \PHPUnit_Framework_TestCase
         $itmUni = TimeUnit::fromInt(TimeUnit::DAYS);
         $lenUni = LengthUnit::fromInt(LengthUnit::METERS);
         $extension = Extension::fromString('dis');
-        $unitNumber = UnitNumber::fromInteger(11);
+        $unitNumber = Unitnumber::fromInteger(11);
         $xul = Xul::fromValue(null);
         $yul = Yul::fromValue(null);
         $rotation = Rotation::fromFloat(0.0);

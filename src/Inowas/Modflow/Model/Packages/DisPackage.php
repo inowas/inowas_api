@@ -25,7 +25,7 @@ use Inowas\Common\Modflow\Perlen;
 use Inowas\Common\Modflow\Nper;
 use Inowas\Common\Modflow\Tsmult;
 use Inowas\Common\Modflow\TimeUnit;
-use Inowas\Common\Modflow\UnitNumber;
+use Inowas\Common\Modflow\Unitnumber;
 use Inowas\Common\Modflow\Xul;
 use Inowas\Common\Modflow\Yul;
 
@@ -83,7 +83,7 @@ class DisPackage implements PackageInterface
     /** @var  Extension */
     protected $extension;
 
-    /** @var UnitNumber */
+    /** @var Unitnumber */
     protected $unitNumber;
 
     /** @var  Xul */
@@ -120,7 +120,7 @@ class DisPackage implements PackageInterface
         $itmuni = TimeUnit::fromInt(TimeUnit::DAYS);
         $lenuni = LengthUnit::fromInt(LengthUnit::METERS);
         $extension = Extension::fromString('dis');
-        $unitnumber = UnitNumber::fromInteger(11);
+        $unitnumber = Unitnumber::fromInteger(11);
         $xul = Xul::fromValue(null);
         $yul = Yul::fromValue(null);
         $rotation = Rotation::fromFloat(0.0);
@@ -170,7 +170,7 @@ class DisPackage implements PackageInterface
         TimeUnit $itmuni,
         LengthUnit $lenuni,
         Extension $extension,
-        UnitNumber $unitnumber,
+        Unitnumber $unitnumber,
         Xul $xul,
         Yul $yul,
         Rotation $rotation,
@@ -222,7 +222,7 @@ class DisPackage implements PackageInterface
         $itmuni = TimeUnit::fromInt($arr['itmuni']);
         $lenuni = LengthUnit::fromInt($arr['lenuni']);
         $extension = Extension::fromString($arr['extension']);
-        $unitnumber = UnitNumber::fromInteger($arr['unitnumber']);
+        $unitnumber = Unitnumber::fromInteger($arr['unitnumber']);
         $xul = Xul::fromValue($arr['xul']);
         $yul = Yul::fromValue($arr['yul']);
         $rotation = Rotation::fromFloat($arr['rotation']);
