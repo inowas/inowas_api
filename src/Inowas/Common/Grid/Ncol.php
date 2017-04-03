@@ -4,12 +4,12 @@ declare(strict_types=1);
 
 namespace Inowas\Common\Grid;
 
-class ColumnNumber
+class Ncol
 {
     /** @var int */
     private $number;
 
-    public static function fromInteger(int $number): ColumnNumber
+    public static function fromInteger(int $number): Ncol
     {
         return new self($number);
     }

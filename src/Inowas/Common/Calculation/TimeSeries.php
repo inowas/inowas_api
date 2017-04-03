@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace Inowas\Common\Calculation;
 
-use Inowas\Common\Grid\ColumnNumber;
+use Inowas\Common\Grid\Ncol;
 use Inowas\Common\Grid\LayerNumber;
-use Inowas\Common\Grid\RowNumber;
+use Inowas\Common\Grid\Nrow;
 use Inowas\Common\Calculation\ResultType;
 
 class TimeSeries implements \JsonSerializable
@@ -18,10 +18,10 @@ class TimeSeries implements \JsonSerializable
     /** @var  LayerNumber */
     protected $layer;
 
-    /** @var  RowNumber */
+    /** @var  Nrow */
     protected $row;
 
-    /** @var  ColumnNumber */
+    /** @var  Ncol */
     private $column;
 
     /** @var  TimeSeriesData */
@@ -30,8 +30,8 @@ class TimeSeries implements \JsonSerializable
     public static function fromParameters(
         ResultType $type,
         LayerNumber $layerNumber,
-        RowNumber $row,
-        ColumnNumber $column,
+        Nrow $row,
+        Ncol $column,
         TimeSeriesData $data
     ): TimeSeries
     {
@@ -54,12 +54,12 @@ class TimeSeries implements \JsonSerializable
         return $this->layer;
     }
 
-    public function row(): RowNumber
+    public function row(): Nrow
     {
         return $this->row;
     }
 
-    public function column(): ColumnNumber
+    public function column(): Ncol
     {
         return $this->column;
     }

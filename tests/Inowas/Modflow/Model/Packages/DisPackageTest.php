@@ -5,15 +5,15 @@ namespace Tests\Inowas\Modflow\Model\Packages;
 use Inowas\Common\DateTime\DateTime;
 use Inowas\Common\Modflow\Botm;
 use Inowas\Common\Grid\BoundingBox;
-use Inowas\Common\Grid\ColumnNumber;
-use Inowas\Common\Grid\DeltaCol;
-use Inowas\Common\Grid\DeltaRow;
+use Inowas\Common\Grid\Ncol;
+use Inowas\Common\Grid\Delc;
+use Inowas\Common\Grid\Delr;
 use Inowas\Common\Grid\GridSize;
-use Inowas\Common\Grid\LayCbd;
+use Inowas\Common\Grid\Laycbd;
 use Inowas\Common\Grid\LayerNumber;
-use Inowas\Common\Grid\Proj4String;
+use Inowas\Common\Grid\Proj4str;
 use Inowas\Common\Grid\Rotation;
-use Inowas\Common\Grid\RowNumber;
+use Inowas\Common\Grid\Nrow;
 use Inowas\Common\Modflow\Top;
 use Inowas\Common\Modflow\Extension;
 use Inowas\Common\Modflow\LengthUnit;
@@ -31,21 +31,16 @@ use Inowas\Modflow\Model\Packages\DisPackage;
 
 class DisPackageTest extends \PHPUnit_Framework_TestCase
 {
-
-    public function setUp(){
-
-    }
-
     public function test_create_from_params(){
 
         // DEFAULTS
         $nLay = LayerNumber::fromInteger(1);
-        $nCol = ColumnNumber::fromInteger(1);
-        $nRow = RowNumber::fromInteger(1);
+        $nCol = Ncol::fromInteger(1);
+        $nRow = Nrow::fromInteger(1);
         $nPer = Nper::fromInteger(1);
-        $delR = DeltaRow::fromValue(1.0);
-        $delC = DeltaCol::fromValue(1.0);
-        $layCbd = LayCbd::fromValue(0);
+        $delR = Delr::fromValue(1.0);
+        $delC = Delc::fromValue(1.0);
+        $layCbd = Laycbd::fromValue(0);
         $top = Top::fromValue(1.0);
         $botm = Botm::fromValue(0);
         $perlen = Perlen::fromValue(1.0);
@@ -59,7 +54,7 @@ class DisPackageTest extends \PHPUnit_Framework_TestCase
         $xul = Xul::fromValue(null);
         $yul = Yul::fromValue(null);
         $rotation = Rotation::fromFloat(0.0);
-        $proj4Str = Proj4String::fromString('EPSG:4326');
+        $proj4Str = Proj4str::fromString('EPSG:4326');
         $startDateTime = DateTime::fromDateTime(new \DateTime('1/1/1970'));
 
         $disPackage = DisPackage::fromParams(
@@ -104,10 +99,10 @@ class DisPackageTest extends \PHPUnit_Framework_TestCase
         $gridSize = GridSize::fromXY(7, 12);
         $disPackage = $disPackage->updateGridParameters($gridSize, $boundingBox);
 
-        $expectedNRow = RowNumber::fromInteger(12);
-        $expectedNCol = ColumnNumber::fromInteger(7);
-        $expectedDelR = DeltaRow::fromValue(100);
-        $expectedDelC = DeltaCol::fromValue(100);
+        $expectedNRow = Nrow::fromInteger(12);
+        $expectedNCol = Ncol::fromInteger(7);
+        $expectedDelR = Delr::fromValue(100);
+        $expectedDelC = Delc::fromValue(100);
         $expectedXul = Xul::fromValue(1);
         $expectedYul = Yul::fromValue(4);
 

@@ -10,11 +10,11 @@ declare(strict_types=1);
 
 namespace Inowas\Common\Grid;
 
-class LayCbd
+class Laycbd
 {
     protected $layCbd;
 
-    public static function fromArray(array $layCbd): LayCbd
+    public static function fromArray(array $layCbd): Laycbd
     {
         $self = new self();
         $arr = [];
@@ -25,7 +25,7 @@ class LayCbd
         return $self;
     }
 
-    public static function fromValue($layCbd): LayCbd
+    public static function fromValue($layCbd): Laycbd
     {
         $self = new self();
         $self->layCbd = $layCbd;

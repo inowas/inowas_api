@@ -10,9 +10,9 @@ use Inowas\AppBundle\Model\User;
 use Inowas\Common\Calculation\BudgetType;
 use Inowas\Common\Calculation\HeadData;
 use Inowas\Common\Calculation\ResultType;
-use Inowas\Common\Grid\ColumnNumber;
+use Inowas\Common\Grid\Ncol;
 use Inowas\Common\Grid\LayerNumber;
-use Inowas\Common\Grid\RowNumber;
+use Inowas\Common\Grid\Nrow;
 use Inowas\Common\Id\ModflowId;
 use Inowas\Common\DateTime\TotalTime;
 use Inowas\Common\Id\UserId;
@@ -579,8 +579,8 @@ class ScenarioAnalysisController extends FOSRestController
         $modelId = ModflowId::fromString($modelId);
         $type = ResultType::fromString($type);
         $layer = LayerNumber::fromInteger((int)$layer);
-        $column = ColumnNumber::fromInteger((int)$nx);
-        $row = RowNumber::fromInteger((int)$ny);
+        $column = Ncol::fromInteger((int)$nx);
+        $row = Nrow::fromInteger((int)$ny);
 
         $calculation = $this->get('inowas.modflow_projection.calculation_list_finder')
             ->findLastCalculationByModelId($modelId);
@@ -625,8 +625,8 @@ class ScenarioAnalysisController extends FOSRestController
         $calculationId = ModflowId::fromString($calculationId);
         $type = ResultType::fromString($type);
         $layer = LayerNumber::fromInteger((int)$layer);
-        $column = ColumnNumber::fromInteger((int)$nx);
-        $row = RowNumber::fromInteger((int)$ny);
+        $column = Ncol::fromInteger((int)$nx);
+        $row = Nrow::fromInteger((int)$ny);
 
         $timesSeries = $this->get('inowas.modflow_projection.calculation_results_finder')
             ->findTimeSeries($calculationId, $type, $layer, $column, $row);

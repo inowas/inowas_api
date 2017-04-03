@@ -4,12 +4,12 @@ declare(strict_types=1);
 
 namespace Inowas\Common\Grid;
 
-class Proj4String
+class Proj4str
 {
     /** @var string */
     private $proj4;
 
-    public static function fromString(string $proj4): Proj4String
+    public static function fromString(string $proj4): Proj4str
     {
         return new self($proj4);
     }

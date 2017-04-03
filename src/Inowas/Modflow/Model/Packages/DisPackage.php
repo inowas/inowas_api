@@ -5,17 +5,18 @@ declare(strict_types=1);
 namespace Inowas\Modflow\Model\Packages;
 
 use Inowas\Common\DateTime\DateTime;
+use Inowas\Common\Grid\Nlay;
 use Inowas\Common\Modflow\Botm;
 use Inowas\Common\Grid\BoundingBox;
-use Inowas\Common\Grid\ColumnNumber;
-use Inowas\Common\Grid\DeltaCol;
-use Inowas\Common\Grid\DeltaRow;
+use Inowas\Common\Grid\Ncol;
+use Inowas\Common\Grid\Delc;
+use Inowas\Common\Grid\Delr;
 use Inowas\Common\Grid\GridSize;
-use Inowas\Common\Grid\LayCbd;
+use Inowas\Common\Grid\Laycbd;
 use Inowas\Common\Grid\LayerNumber;
-use Inowas\Common\Grid\Proj4String;
+use Inowas\Common\Grid\Proj4str;
 use Inowas\Common\Grid\Rotation;
-use Inowas\Common\Grid\RowNumber;
+use Inowas\Common\Grid\Nrow;
 use Inowas\Common\Modflow\Top;
 use Inowas\Common\Modflow\Extension;
 use Inowas\Common\Modflow\LengthUnit;
@@ -35,26 +36,26 @@ class DisPackage implements PackageInterface
     /** @var string  */
     protected $type = 'dis';
 
-    /** @var  LayerNumber */
-    protected $nLay;
+    /** @var  Nlay */
+    protected $nlay;
 
-    /** @var  RowNumber */
-    protected $nRow;
+    /** @var  Nrow */
+    protected $nrow;
 
-    /** @var  ColumnNumber */
-    protected $nCol;
+    /** @var  Ncol */
+    protected $ncol;
 
     /** @var  Nper */
-    protected $nPer;
+    protected $nper;
 
-    /** @var  DeltaRow */
-    protected $delR;
+    /** @var  Delr */
+    protected $delr;
 
-    /** @var  DeltaCol */
-    protected $delC;
+    /** @var  Delc */
+    protected $delc;
 
-    /** @var  LayCbd */
-    protected $layCbd;
+    /** @var  Laycbd */
+    protected $laycbd;
 
     /** @var  Top */
     protected $top;
@@ -69,22 +70,22 @@ class DisPackage implements PackageInterface
     protected $nstp;
 
     /** @var  Tsmult */
-    protected $tsMult;
+    protected $tsmult;
 
     /** @var  Steady */
     protected $steady;
 
     /** @var  TimeUnit */
-    protected $itmUni;
+    protected $itmuni;
 
     /** @var  LengthUnit */
-    protected $lenUni;
+    protected $lenuni;
 
     /** @var  Extension */
     protected $extension;
 
     /** @var Unitnumber */
-    protected $unitNumber;
+    protected $unitnumber;
 
     /** @var  Xul */
     protected $xul;
@@ -95,8 +96,8 @@ class DisPackage implements PackageInterface
     /** @var  Rotation */
     protected $rotation;
 
-    /** @var  Proj4String */
-    protected $proj4Str;
+    /** @var  Proj4str */
+    protected $proj4str;
 
     /** @var  DateTime */
     protected $startDateTime;
@@ -105,12 +106,12 @@ class DisPackage implements PackageInterface
     {
         // DEFAULT
         $nlay = LayerNumber::fromInteger(1);
-        $ncol = ColumnNumber::fromInteger(1);
-        $nrow = RowNumber::fromInteger(1);
+        $ncol = Ncol::fromInteger(1);
+        $nrow = Nrow::fromInteger(1);
         $nper = Nper::fromInteger(1);
-        $delr = DeltaRow::fromValue(1.0);
-        $delc = DeltaCol::fromValue(1.0);
-        $laycbd = LayCbd::fromValue(0);
+        $delr = Delr::fromValue(1.0);
+        $delc = Delc::fromValue(1.0);
+        $laycbd = Laycbd::fromValue(0);
         $top = Top::fromValue(1.0);
         $botm = Botm::fromValue(0);
         $perlen = Perlen::fromValue(1.0);
@@ -124,43 +125,43 @@ class DisPackage implements PackageInterface
         $xul = Xul::fromValue(null);
         $yul = Yul::fromValue(null);
         $rotation = Rotation::fromFloat(0.0);
-        $proj4Str = Proj4String::fromString('EPSG:4326');
+        $proj4Str = Proj4str::fromString('EPSG:4326');
         $startDateTime = DateTime::fromDateTime(new \DateTime('1/1/1970'));
 
         $self = new self();
-        $self->nLay = $nlay;
-        $self->nRow = $nrow;
-        $self->nCol = $ncol;
-        $self->nPer = $nper;
-        $self->delR = $delr;
-        $self->delC = $delc;
-        $self->layCbd = $laycbd;
+        $self->nlay = $nlay;
+        $self->nrow = $nrow;
+        $self->ncol = $ncol;
+        $self->nper = $nper;
+        $self->delr = $delr;
+        $self->delc = $delc;
+        $self->laycbd = $laycbd;
         $self->top = $top;
         $self->botm = $botm;
         $self->perlen = $perlen;
         $self->nstp = $nstp;
-        $self->tsMult = $tsmult;
+        $self->tsmult = $tsmult;
         $self->steady = $steady;
-        $self->itmUni = $itmuni;
-        $self->lenUni = $lenuni;
+        $self->itmuni = $itmuni;
+        $self->lenuni = $lenuni;
         $self->extension = $extension;
-        $self->unitNumber = $unitnumber;
+        $self->unitnumber = $unitnumber;
         $self->xul = $xul;
         $self->yul = $yul;
         $self->rotation = $rotation;
-        $self->proj4Str = $proj4Str;
+        $self->proj4str = $proj4Str;
         $self->startDateTime = $startDateTime;
         return $self;
     }
 
     public static function fromParams(
         LayerNumber $nlay,
-        RowNumber $nrow,
-        ColumnNumber $ncol,
+        Nrow $nrow,
+        Ncol $ncol,
         Nper $nper,
-        DeltaRow $delr,
-        DeltaCol $delc,
-        LayCbd $laycbd,
+        Delr $delr,
+        Delc $delc,
+        Laycbd $laycbd,
         Top $top,
         Botm $botm,
         Perlen $perlen,
@@ -174,32 +175,32 @@ class DisPackage implements PackageInterface
         Xul $xul,
         Yul $yul,
         Rotation $rotation,
-        Proj4String $proj4Str,
+        Proj4str $proj4Str,
         DateTime $startDateTime
     ): DisPackage
     {
         $self = new self();
-        $self->nLay = $nlay;
-        $self->nRow = $nrow;
-        $self->nCol = $ncol;
-        $self->nPer = $nper;
-        $self->delR = $delr;
-        $self->delC = $delc;
-        $self->layCbd = $laycbd;
+        $self->nlay = $nlay;
+        $self->nrow = $nrow;
+        $self->ncol = $ncol;
+        $self->nper = $nper;
+        $self->delr = $delr;
+        $self->delc = $delc;
+        $self->laycbd = $laycbd;
         $self->top = $top;
         $self->botm = $botm;
         $self->perlen = $perlen;
         $self->nstp = $nstp;
-        $self->tsMult = $tsmult;
+        $self->tsmult = $tsmult;
         $self->steady = $steady;
-        $self->itmUni = $itmuni;
-        $self->lenUni = $lenuni;
+        $self->itmuni = $itmuni;
+        $self->lenuni = $lenuni;
         $self->extension = $extension;
-        $self->unitNumber = $unitnumber;
+        $self->unitnumber = $unitnumber;
         $self->xul = $xul;
         $self->yul = $yul;
         $self->rotation = $rotation;
-        $self->proj4Str = $proj4Str;
+        $self->proj4str = $proj4Str;
         $self->startDateTime = $startDateTime;
         return $self;
     }
@@ -207,12 +208,12 @@ class DisPackage implements PackageInterface
     public static function fromArray(array $arr): DisPackage
     {
         $nlay = LayerNumber::fromInteger($arr['nlay']);
-        $nrow = RowNumber::fromInteger($arr['nrow']);
-        $ncol = ColumnNumber::fromInteger($arr['ncol']);
+        $nrow = Nrow::fromInteger($arr['nrow']);
+        $ncol = Ncol::fromInteger($arr['ncol']);
         $nper = Nper::fromInteger($arr['nper']);
-        $delr = DeltaRow::fromValue($arr['delr']);
-        $delc = DeltaCol::fromValue($arr['delc']);
-        $laycbd = LayCbd::fromValue($arr['laycbd']);
+        $delr = Delr::fromValue($arr['delr']);
+        $delc = Delc::fromValue($arr['delc']);
+        $laycbd = Laycbd::fromValue($arr['laycbd']);
         $top = Top::fromValue($arr['top']);
         $botm = Botm::fromValue($arr['botm']);
         $perlen = Perlen::fromValue($arr['perlen']);
@@ -226,92 +227,199 @@ class DisPackage implements PackageInterface
         $xul = Xul::fromValue($arr['xul']);
         $yul = Yul::fromValue($arr['yul']);
         $rotation = Rotation::fromFloat($arr['rotation']);
-        $proj4Str = Proj4String::fromString($arr['proj4_str']);
+        $proj4Str = Proj4str::fromString($arr['proj4_str']);
         $startDateTime = DateTime::fromAtom($arr['start_datetime']);
 
         $self = new self();
-        $self->nLay = $nlay;
-        $self->nRow = $nrow;
-        $self->nCol = $ncol;
-        $self->nPer = $nper;
-        $self->delR = $delr;
-        $self->delC = $delc;
-        $self->layCbd = $laycbd;
+        $self->nlay = $nlay;
+        $self->nrow = $nrow;
+        $self->ncol = $ncol;
+        $self->nper = $nper;
+        $self->delr = $delr;
+        $self->delc = $delc;
+        $self->laycbd = $laycbd;
         $self->top = $top;
         $self->botm = $botm;
         $self->perlen = $perlen;
         $self->nstp = $nstp;
-        $self->tsMult = $tsmult;
+        $self->tsmult = $tsmult;
         $self->steady = $steady;
-        $self->itmUni = $itmuni;
-        $self->lenUni = $lenuni;
+        $self->itmuni = $itmuni;
+        $self->lenuni = $lenuni;
         $self->extension = $extension;
-        $self->unitNumber = $unitnumber;
+        $self->unitnumber = $unitnumber;
         $self->xul = $xul;
         $self->yul = $yul;
         $self->rotation = $rotation;
-        $self->proj4Str = $proj4Str;
+        $self->proj4str = $proj4Str;
         $self->startDateTime = $startDateTime;
         return $self;
     }
 
-    public function updateTimeUnit(TimeUnit $timeUnit): DisPackage
+    public function updateNlay(Nlay $nlay): DisPackage
     {
-        $this->itmUni = $timeUnit;
-        return self::fromArray($this->toArray());
+        $package = self::fromArray($this->toArray());
+        $package->nlay = $nlay;
+        return $package;
     }
 
-    public function updateLengthUnit(LengthUnit $lengthUnit): DisPackage
+    public function updateNrow(Nrow $nrow): DisPackage
     {
-        $this->lenUni = $lengthUnit;
-        return self::fromArray($this->toArray());
+        $package = self::fromArray($this->toArray());
+        $package->nrow = $nrow;
+        return $package;
     }
 
-    public function updateGridParameters(GridSize $gridSize, BoundingBox $boundingBox): DisPackage
+    public function updateNcol(Ncol $ncol): DisPackage
     {
-        $this->nRow = RowNumber::fromInteger($gridSize->nY());
-        $this->nCol = ColumnNumber::fromInteger($gridSize->nX());
-        $this->delR = DeltaRow::fromValue($boundingBox->dY()/$gridSize->nY());
-        $this->delC = DeltaCol::fromValue($boundingBox->dX()/$gridSize->nX());
-        $this->xul = Xul::fromValue($boundingBox->xMin());
-        $this->yul = Yul::fromValue($boundingBox->yMax());
-        return self::fromArray($this->toArray());
+        $package = self::fromArray($this->toArray());
+        $package->ncol = $ncol;
+        return $package;
     }
 
-    public function updateStartDateTime(DateTime $start): DisPackage
+    public function updateNper(NPer $nper): DisPackage
     {
-        $this->startDateTime = $start;
-        return self::fromArray($this->toArray());
+        $package = self::fromArray($this->toArray());
+        $package->nrow = $nper;
+        return $package;
     }
 
-    public function updateNper(Nper $nper): DisPackage
+    public function updateDelr(Delr $delr): DisPackage
     {
-        $this->nPer = $nper;
-        return self::fromArray($this->toArray());
+        $package = self::fromArray($this->toArray());
+        $package->delr = $delr;
+        return $package;
+    }
+
+    public function updateDelc(Delc $delc): DisPackage
+    {
+        $package = self::fromArray($this->toArray());
+        $package->delc = $delc;
+        return $package;
+    }
+
+    public function updateLaycbd(Laycbd $laycbd): DisPackage
+    {
+        $package = self::fromArray($this->toArray());
+        $package->laycbd = $laycbd;
+        return $package;
+    }
+
+    public function updateTop(Top $top): DisPackage
+    {
+        $package = self::fromArray($this->toArray());
+        $package->top = $top;
+        return $package;
+    }
+
+    public function updateBotm(Botm $botm): DisPackage
+    {
+        $package = self::fromArray($this->toArray());
+        $package->botm = $botm;
+        return $package;
     }
 
     public function updatePerlen(Perlen $perlen): DisPackage
     {
-        $this->perlen = $perlen;
-        return self::fromArray($this->toArray());
+        $package = self::fromArray($this->toArray());
+        $package->perlen = $perlen;
+        return $package;
     }
 
     public function updateNstp(Nstp $nstp): DisPackage
     {
-        $this->nstp = $nstp;
-        return self::fromArray($this->toArray());
+        $package = self::fromArray($this->toArray());
+        $package->nstp = $nstp;
+        return $package;
     }
 
     public function updateTsmult(Tsmult $tsmult): DisPackage
     {
-        $this->tsMult = $tsmult;
-        return self::fromArray($this->toArray());
+        $package = self::fromArray($this->toArray());
+        $package->tsmult = $tsmult;
+        return $package;
     }
 
     public function updateSteady(Steady $steady): DisPackage
     {
-        $this->steady = $steady;
-        return self::fromArray($this->toArray());
+        $package = self::fromArray($this->toArray());
+        $package->steady = $steady;
+        return $package;
+    }
+
+    public function updateTimeUnit(TimeUnit $timeUnit): DisPackage
+    {
+        $package = self::fromArray($this->toArray());
+        $package->itmuni = $timeUnit;
+        return $package;
+    }
+
+    public function updateLengthUnit(LengthUnit $lengthUnit): DisPackage
+    {
+        $package = self::fromArray($this->toArray());
+        $package->lenuni = $lengthUnit;
+        return $package;
+    }
+
+    public function updateExtension(Extension $extension): DisPackage
+    {
+        $package = self::fromArray($this->toArray());
+        $package->extension = $extension;
+        return $package;
+    }
+
+    public function updateUnitnumber(Unitnumber $unitnumber): DisPackage
+    {
+        $package = self::fromArray($this->toArray());
+        $package->unitnumber = $unitnumber;
+        return $package;
+    }
+
+    public function updateXul(Xul $xul): DisPackage
+    {
+        $package = self::fromArray($this->toArray());
+        $package->xul = $xul;
+        return $package;
+    }
+
+    public function updateYul(Yul $yul): DisPackage
+    {
+        $package = self::fromArray($this->toArray());
+        $package->yul = $yul;
+        return $package;
+    }
+
+    public function updateRotation(Rotation $rotation): DisPackage
+    {
+        $package = self::fromArray($this->toArray());
+        $package->rotation = $rotation;
+        return $package;
+    }
+
+    public function updateProj4str(Proj4str $proj4str): DisPackage
+    {
+        $package = self::fromArray($this->toArray());
+        $package->proj4str = $proj4str;
+        return $package;
+    }
+
+    public function updateStartDateTime(DateTime $datetime): DisPackage
+    {
+        $package = self::fromArray($this->toArray());
+        $package->startDateTime = $datetime;
+        return $package;
+    }
+
+    public function updateGridParameters(GridSize $gridSize, BoundingBox $boundingBox): DisPackage
+    {
+        $package = self::fromArray($this->toArray());
+        $package->nrow = Nrow::fromInteger($gridSize->nY());
+        $package->ncol = Ncol::fromInteger($gridSize->nX());
+        $package->delr = Delr::fromValue($boundingBox->dY()/$gridSize->nY());
+        $package->delc = Delc::fromValue($boundingBox->dX()/$gridSize->nX());
+        $package->xul = Xul::fromValue($boundingBox->xMin());
+        $package->yul = Yul::fromValue($boundingBox->yMax());
+        return $package;
     }
 
     public function type(): string
@@ -319,24 +427,24 @@ class DisPackage implements PackageInterface
         return $this->type;
     }
 
-    public function nRow(): RowNumber
+    public function nRow(): Nrow
     {
-        return $this->nRow;
+        return $this->nrow;
     }
 
-    public function nCol(): ColumnNumber
+    public function nCol(): Ncol
     {
-        return $this->nCol;
+        return $this->ncol;
     }
 
-    public function delR(): DeltaRow
+    public function delR(): Delr
     {
-        return $this->delR;
+        return $this->delr;
     }
 
-    public function delCol(): DeltaCol
+    public function delCol(): Delc
     {
-        return $this->delC;
+        return $this->delc;
     }
 
     public function xul(): Xul
@@ -351,38 +459,38 @@ class DisPackage implements PackageInterface
 
     public function itmuni(): TimeUnit
     {
-        return $this->itmUni;
+        return $this->itmuni;
     }
 
     public function lenuni(): LengthUnit
     {
-        return $this->lenUni;
+        return $this->lenuni;
     }
 
     public function toArray(): array
     {
         return array(
-            "nlay" => $this->nLay->toInteger(),
-            "nrow" => $this->nRow->toInteger(),
-            "ncol" => $this->nCol->toInteger(),
-            "nper" => $this->nPer->toInteger(),
-            "delr" => $this->delR->toValue(),
-            "delc" => $this->delC->toValue(),
-            "laycbd" => $this->layCbd->toValue(),
+            "nlay" => $this->nlay->toInteger(),
+            "nrow" => $this->nrow->toInteger(),
+            "ncol" => $this->ncol->toInteger(),
+            "nper" => $this->nper->toInteger(),
+            "delr" => $this->delr->toValue(),
+            "delc" => $this->delc->toValue(),
+            "laycbd" => $this->laycbd->toValue(),
             "top" => $this->top->toValue(),
             "botm" => $this->botm->toValue(),
             "perlen" => $this->perlen->toValue(),
             "nstp" => $this->nstp->toValue(),
-            "tsmult" => $this->tsMult->toValue(),
+            "tsmult" => $this->tsmult->toValue(),
             "steady" => $this->steady->toValue(),
-            "itmuni" => $this->itmUni->toInt(),
-            "lenuni" => $this->lenUni->toInt(),
+            "itmuni" => $this->itmuni->toInt(),
+            "lenuni" => $this->lenuni->toInt(),
             "extension" => $this->extension->toValue(),
-            "unitnumber" => $this->unitNumber->toValue(),
+            "unitnumber" => $this->unitnumber->toValue(),
             "xul" => $this->xul->toValue(),
             "yul" => $this->yul->toValue(),
             "rotation" => $this->rotation->toFloat(),
-            "proj4_str" => $this->proj4Str->toString(),
+            "proj4_str" => $this->proj4str->toString(),
             "start_datetime" => $this->startDateTime->toAtom()
         );
     }
