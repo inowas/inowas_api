@@ -7,9 +7,11 @@ use CrEOF\Spatial\PHP\Types\Geometry\Polygon;
 use Doctrine\DBAL\Connection;
 use Doctrine\ORM\EntityManager;
 use Inowas\Common\Boundaries\AreaBoundary;
+use Inowas\Common\Boundaries\WellBoundary;
 use Inowas\Common\Grid\ActiveCells;
 use Inowas\Common\Grid\BoundingBox;
 use Inowas\Common\Grid\GridSize;
+use Inowas\Common\Grid\LayerNumber;
 
 class GeoTools
 {
@@ -30,7 +32,7 @@ class GeoTools
         $this->connection = $entityManager->getConnection();
     }
 
-    public function getActiveCellsFromArea(AreaBoundary $area, BoundingBox $boundingBox, GridSize $gridSize): ActiveCells
+    public function getActiveCellsFromArea(AreaBoundary $area, BoundingBox $boundingBox, GridSize $gridSize): ?ActiveCells
     {
         $areaPolygon = \geoPHP::load($area->geometry()->toJson(), 'json');
         $boundingBoxPolygon = \geoPHP::load($boundingBox->toGeoJson(), 'json');
@@ -66,6 +68,37 @@ class GeoTools
         }
 
         return ActiveCells::fromArrayAndGridSize($activeCells, $gridSize);
+    }
+
+    public function getActiveCellsFromWell(WellBoundary $well, BoundingBox $boundingBox, GridSize $gridSize): ?ActiveCells
+    {
+        $wellPoint = \geoPHP::load($well->geometry()->toJson(), 'json');
+        $boundingBoxPolygon = \geoPHP::load($boundingBox->toGeoJson(), 'json');
+
+        if(! $this->connection->fetchAssoc(sprintf('SELECT ST_Intersects(ST_GeomFromText(\'%s\'),ST_GeomFromText(\'%s\'));', $boundingBoxPolygon->asText(), $wellPoint->asText()))){
+            // AREA DOES NOT INTERSECT WITH BOUNDINGBOX
+            return null;
+        };
+
+        $dX = ($boundingBox->xMax()-$boundingBox->xMin())/$gridSize->nX();
+        $dY = ($boundingBox->yMax()-$boundingBox->yMin())/$gridSize->nY();
+
+        $nx = $gridSize->nX();
+        $ny = $gridSize->nY();
+
+        for ($x = 0; $x<$nx; $x++) {
+            if (($boundingBox->xMin() + ($x * $dX) < $wellPoint->getX()) && ($boundingBox->xMin() + (($x+1) * $dX) > $wellPoint->getX())){
+                break;
+            }
+        }
+
+        for ($y = 0; $y<$ny; $y++) {
+            if (($boundingBox->yMax() - ($y*$dY) > $wellPoint->getY()) && ($boundingBox->yMax()-(($y+1)*$dY) < $wellPoint->getY())){
+                break;
+            }
+        };
+
+        return ActiveCells::fromArrayGridSizeAndLayer(array($y => array($x => true)), $gridSize, $well->layerNumber());
     }
 
     private function intersectWktGeometry(string $wkt, string $geometry){
@@ -224,66 +257,4 @@ class GeoTools
             "col" => $col
         );
     }
-
-
-    /*
-     *
-    public function pointIntersectsWithArea($area, $x, $y, $srid)
-    {
-        return $this->isActive($area, $srid, $x, $x, $y, $y);
-    }
-
-    public function getActiveCells(ModelObject $mo, BoundingBox $boundingBox, GridSize $gridSize)
-    {
-        if ($mo instanceof WellBoundary){
-            return $this->getActiveCellsFromPoint($boundingBox, $gridSize, $mo->getGeometry());
-        }
-
-        $nx = $gridSize->getNX();
-        $ny = $gridSize->getNY();
-        $dx = ($boundingBox->getXMax()-$boundingBox->getXMin())/$nx;
-        $dy = ($boundingBox->getYMax()-$boundingBox->getYMin())/$ny;
-        $srid = $boundingBox->getSrid();
-
-        $activeCells = array();
-        for ($iy = 0; $iy<$ny; $iy++){
-            for ($ix = 0; $ix<$nx; $ix++){
-                $xMin = $boundingBox->getXMin()+$ix*$dx;
-                $xMax = $boundingBox->getXMin()+$ix*$dx+$dx;
-                $yMin = $boundingBox->getYMax()-$iy*$dy;
-                $yMax = $boundingBox->getYMax()-$iy*$dy-$dy;
-
-                if ($this->isActive($mo, $srid, $xMin, $xMax, $yMin, $yMax)){
-                    $activeCells[$iy][$ix] = true;
-                }
-            }
-        }
-
-        return ActiveCells::fromArray($activeCells);
-    }
-
-    public function setActiveCells(ModelObject $mo, BoundingBox $boundingBox, GridSize $gridSize){
-
-        echo sprintf("Calculate active cells for Class: %s.\r\n", get_class($mo));
-        $activeCells = $this->getActiveCells($mo, $boundingBox, $gridSize);
-        $mo->setActiveCells($activeCells);
-
-        return $mo;
-    }
-
-    private function isActive(ModelObject $mo, int $srid, float $xMin, float $xMax, float $yMin, float $yMax)
-        {
-        $className = get_class($mo);
-        $query = $this->entityManager
-            ->createQuery(sprintf('SELECT ST_Intersects(ST_Envelope(ST_Makeline(ST_SetSRID(ST_POINT(:xMin, :yMin), %s), ST_SetSRID(ST_POINT(:xMax, :yMax), %s))), ST_Transform(a.geometry, %s)) FROM %s a WHERE a.id = :id', $srid, $srid, $srid, $className))
-            ->setParameter('id', $mo->getId()->toString())
-            ->setParameter('xMin', $xMin)
-            ->setParameter('xMax', $xMax)
-            ->setParameter('yMin', $yMin)
-            ->setParameter('yMax', $yMax)
-        ;
-
-        return $query->getSingleScalarResult();
-    }
-    */
 }

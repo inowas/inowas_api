@@ -15,20 +15,41 @@ class ActiveCells
     /** @var int  */
     private $ny;
 
-    public static function fromArrayAndGridSize(array $cells, GridSize $gridSize)
+    /** @var int */
+    private $layer;
+
+    public static function fromArrayAndGridSize(array $cells, GridSize $gridSize): ActiveCells
     {
         return new self($cells, $gridSize);
     }
 
-    public static function fromArray(array $arr){
+    public static function fromArrayGridSizeAndLayer(array $cells, GridSize $gridSize, LayerNumber $layer): ActiveCells
+    {
+        return new self($cells, $gridSize, $layer);
+    }
+
+    public static function fromArray(array $arr): ActiveCells
+    {
         $cells = $arr['cells'];
         $gridSize = GridSize::fromXY($arr['n_x'], $arr['n_y']);
+        $layerNumber = LayerNumber::fromInteger($arr['layer']);
+        return new self($cells, $gridSize, $layerNumber);
+    }
+
+    public static function fromObjectAndGridSize($obj, GridSize $gridSize): ActiveCells
+    {
+        $cells = array();
+        foreach ($obj as $row => $cols){
+            foreach ($cols as $col => $value){
+                $cells[intval($row)][intval($col)] = $value;
+            }
+        }
+
         return new self($cells, $gridSize);
     }
 
-    private function __construct(array $cells, GridSize $gridSize)
+    private function __construct(array $cells, GridSize $gridSize, ?LayerNumber $layerNumber = null)
     {
-
         foreach ($cells as $row => $cols){
             foreach ($cols as $col => $value){
                 if ($value !== 0){$value = 1;}
@@ -39,18 +60,11 @@ class ActiveCells
         $this->cells = $cells;
         $this->nx = $gridSize->nX();
         $this->ny = $gridSize->nY();
-    }
 
-    public static function fromObjectAndGridSize($obj, GridSize $gridSize)
-    {
-        $cells = array();
-        foreach ($obj as $row => $cols){
-            foreach ($cols as $col => $value){
-                $cells[intval($row)][intval($col)] = $value;
-            }
+        if (is_null($layerNumber)){
+            $layerNumber = LayerNumber::fromInteger(0);
         }
-
-        return new self($cells, $gridSize);
+        $this->layer = $layerNumber->toInteger();
     }
 
     public function cells(): array
@@ -83,7 +97,13 @@ class ActiveCells
         return array(
             'cells' => $this->cells,
             'n_x' => $this->nx,
-            'n_y' => $this->ny
+            'n_y' => $this->ny,
+            'layer' => $this->layer
         );
+    }
+
+    public function layer(): LayerNumber
+    {
+        return LayerNumber::fromInteger($this->layer);
     }
 }

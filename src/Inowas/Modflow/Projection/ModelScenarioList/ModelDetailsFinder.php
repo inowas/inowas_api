@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace Inowas\Modflow\Projection\ModelScenarioList;
 
 use Doctrine\DBAL\Connection;
+use Inowas\Common\Grid\BoundingBox;
+use Inowas\Common\Grid\GridSize;
 use Inowas\Common\Id\ModflowId;
 use Inowas\Common\Id\UserId;
 use Inowas\Modflow\Projection\Table;
@@ -25,6 +27,34 @@ class ModelDetailsFinder
             sprintf('SELECT * FROM %s WHERE model_id = :model_id', Table::MODEL_DETAILS),
             ['model_id' => $modelId->toString()]
         );
+    }
+
+    public function findBoundingBoxByBaseModelId(ModflowId $modelId): ?BoundingBox
+    {
+        $result =  $this->connection->fetchAssoc(
+            sprintf('SELECT bounding_box FROM %s WHERE model_id = :model_id', Table::MODEL_DETAILS),
+            ['model_id' => $modelId->toString()]
+        );
+
+        if ($result === false){
+            return null;
+        }
+
+        return BoundingBox::fromArray((array)json_decode($result['bounding_box']));
+    }
+
+    public function findGridSizeByBaseModelId(ModflowId $modelId): ?GridSize
+    {
+        $result = $this->connection->fetchAssoc(
+            sprintf('SELECT grid_size FROM %s WHERE model_id = :model_id', Table::MODEL_DETAILS),
+            ['model_id' => $modelId->toString()]
+        );
+
+        if ($result === false){
+            return null;
+        }
+
+        return GridSize::fromArray((array)json_decode($result['grid_size']));
     }
 
     public function findByBaseUserId(UserId $userId): array

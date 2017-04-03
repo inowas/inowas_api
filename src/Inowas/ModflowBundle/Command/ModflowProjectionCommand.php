@@ -37,7 +37,6 @@ class ModflowProjectionCommand extends ContainerAwareCommand
         $projections[] = $this->getContainer()->get('inowas.modflow_projection.layer_details');
         $projections[] = $this->getContainer()->get('inowas.modflow_projection.layer_values');
         $projections[] = $this->getContainer()->get('inowas.modflow_projection.calculation_config');
-        $projections[] = $this->getContainer()->get('inowas.modflow_projection.stress_periods');
 
         /** @var ProjectionInterface $projection */
         foreach ($projections as $projection) {

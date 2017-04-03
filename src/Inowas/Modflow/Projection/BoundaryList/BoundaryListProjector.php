@@ -6,9 +6,16 @@ namespace Inowas\Modflow\Projection\BoundaryList;
 
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Schema\Schema;
+use Inowas\Common\Boundaries\AreaBoundary;
+use Inowas\Common\Boundaries\ModflowBoundary;
+use Inowas\Common\Boundaries\WellBoundary;
+use Inowas\Common\Grid\ActiveCells;
+use Inowas\Common\Grid\BoundingBox;
+use Inowas\Common\Grid\GridSize;
 use Inowas\Common\Id\BoundaryId;
 use Inowas\Common\Boundaries\BoundaryName;
 use Inowas\Common\Projection\AbstractDoctrineConnectionProjector;
+use Inowas\GeoToolsBundle\Service\GeoTools;
 use Inowas\Modflow\Model\Event\BoundaryWasAdded;
 use Inowas\Modflow\Model\Event\BoundaryWasAddedToScenario;
 use Inowas\Modflow\Model\Event\BoundaryWasRemoved;
@@ -16,12 +23,22 @@ use Inowas\Modflow\Model\Event\BoundaryWasRemovedFromScenario;
 use Inowas\Modflow\Model\Event\ModflowModelBoundaryWasUpdated;
 use Inowas\Modflow\Model\Event\ModflowScenarioWasAdded;
 use Inowas\Common\Id\ModflowId;
+use Inowas\Modflow\Projection\ModelScenarioList\ModelDetailsFinder;
 use Inowas\Modflow\Projection\Table;
 
 class BoundaryListProjector extends AbstractDoctrineConnectionProjector
 {
 
-    public function __construct(Connection $connection) {
+    /** @var  GeoTools */
+    protected $geoTools;
+
+    /** @var  ModelDetailsFinder */
+    protected $modelDetailsFinder;
+
+    public function __construct(Connection $connection, GeoTools $geoTools, ModelDetailsFinder $modelDetailsFinder) {
+
+        $this->geoTools = $geoTools;
+        $this->modelDetailsFinder = $modelDetailsFinder;
 
         parent::__construct($connection);
 
@@ -35,6 +52,7 @@ class BoundaryListProjector extends AbstractDoctrineConnectionProjector
         $table->addColumn('metadata', 'text', ['notnull' => false]);
         $table->addColumn('geometry', 'text', ['notnull' => false]);
         $table->addColumn('data', 'text', ['notnull' => false]);
+        $table->addColumn('active_cells', 'text', ['notnull' => false]);
         $table->setPrimaryKey(['id']);
         $table->addIndex(array('model_id'));
     }
@@ -55,13 +73,18 @@ class BoundaryListProjector extends AbstractDoctrineConnectionProjector
                 $boundary['geometry'],
                 $boundary['type'],
                 $boundary['metadata'],
-                $boundary['data']
+                $boundary['data'],
+                $boundary['active_cells']
             );
         }
     }
 
     public function onBoundaryWasAdded(BoundaryWasAdded $event): void
     {
+        $gridSize = $this->modelDetailsFinder->findGridSizeByBaseModelId($event->modflowId());
+        $boundingBox = $this->modelDetailsFinder->findBoundingBoxByBaseModelId($event->modflowId());
+        $activeCells = json_encode($this->calculateActiveCells($event->boundary(), $boundingBox, $gridSize)->cells());
+
         $this->insertBoundary(
             $event->modflowId(),
             $event->boundary()->boundaryId(),
@@ -69,7 +92,8 @@ class BoundaryListProjector extends AbstractDoctrineConnectionProjector
             $event->boundary()->geometry()->toJson(),
             $event->boundary()->type(),
             json_encode($event->boundary()->metadata()),
-            $event->boundary()->dataToJson()
+            $event->boundary()->dataToJson(),
+            $activeCells
         );
     }
 
@@ -90,6 +114,10 @@ class BoundaryListProjector extends AbstractDoctrineConnectionProjector
 
     public function onBoundaryWasAddedToScenario(BoundaryWasAddedToScenario $event): void
     {
+        $gridSize = $this->modelDetailsFinder->findGridSizeByBaseModelId($event->scenarioId());
+        $boundingBox = $this->modelDetailsFinder->findBoundingBoxByBaseModelId($event->scenarioId());
+        $activeCells = json_encode($this->calculateActiveCells($event->boundary(), $boundingBox, $gridSize)->cells());
+
         $this->insertBoundary(
             $event->scenarioId(),
             $event->boundary()->boundaryId(),
@@ -97,7 +125,8 @@ class BoundaryListProjector extends AbstractDoctrineConnectionProjector
             $event->boundary()->geometry()->toJson(),
             $event->boundary()->type(),
             json_encode($event->boundary()->metadata()),
-            $event->boundary()->dataToJson()
+            $event->boundary()->dataToJson(),
+            $activeCells
         );
     }
 
@@ -116,7 +145,8 @@ class BoundaryListProjector extends AbstractDoctrineConnectionProjector
         string $boundaryGeometry,
         string $boundaryType,
         string $metadata,
-        string $data
+        string $data,
+        string $activeCells
     ): void
     {
         $this->connection->insert(Table::BOUNDARIES, array(
@@ -126,7 +156,30 @@ class BoundaryListProjector extends AbstractDoctrineConnectionProjector
             'geometry' => $boundaryGeometry,
             'type' => $boundaryType,
             'metadata' => $metadata,
-            'data' => $data
+            'data' => $data,
+            'active_cells' => $activeCells
         ));
+    }
+
+    private function calculateActiveCells(ModflowBoundary $boundary, ?BoundingBox $boundingBox, ?GridSize $gridSize): ?ActiveCells
+    {
+
+        if (! $boundingBox instanceof BoundingBox){
+            return null;
+        }
+
+        if (! $gridSize instanceof GridSize){
+            return null;
+        }
+
+        if ($boundary instanceof AreaBoundary) {
+            return $this->geoTools->getActiveCellsFromArea($boundary, $boundingBox, $gridSize);
+        }
+
+        if ($boundary instanceof WellBoundary) {
+            return $this->geoTools->getActiveCellsFromWell($boundary, $boundingBox, $gridSize);
+        }
+
+        return null;
     }
 }

@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Inowas\Modflow\Model\Packages;
 
-use Inowas\Common\FileSystem\ExternalPath;
+use Inowas\Common\FileSystem\Externalpath;
 use Inowas\Common\FileSystem\NameFileExtension;
 use Inowas\Common\FileSystem\FileName;
 use Inowas\Common\FileSystem\Modelworkspace;
@@ -38,7 +38,7 @@ class MfPackage implements PackageInterface
     /** @var Modelworkspace */
     protected $modelWorkSpace;
 
-    /** @var ExternalPath */
+    /** @var Externalpath */
     protected $externalPath;
 
     /** @var Verbose  */

@@ -54,7 +54,6 @@ prooph_service_bus:
                         - 'inowas.modflow_projection.calculation_results'
                         - 'inowas.modflow_projection.model_details'
                         - 'inowas.modflow_projection.model_scenarios'
-                        - 'inowas.modflow_projection.stress_periods'
 
                     'Inowas\Modflow\Model\Event\BoundaryWasAddedToScenario':
                         - 'inowas.modflow_projection.model_boundaries'
@@ -82,7 +81,6 @@ prooph_service_bus:
                         - 'inowas.modflow_projection.model_details'
                         - 'inowas.modflow_projection.model_scenarios'
                         - 'inowas.modflow_projection.calculation_results'
-                        - 'inowas.modflow_projection.stress_periods'
 
                     'Inowas\Modflow\Model\Event\ModflowModelNameWasChanged':
                         - 'inowas.modflow_projection.model_details'
