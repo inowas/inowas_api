@@ -4,12 +4,12 @@ declare(strict_types=1);
 
 namespace Inowas\Common\FileSystem;
 
-class ModelWorkSpace
+class Modelworkspace
 {
     /** @var  string */
     private $workSpace;
 
-    public static function fromString(string $workSpace): ModelWorkSpace
+    public static function fromString(string $workSpace): Modelworkspace
     {
         $self = new self($workSpace);
         return $self;

@@ -15,6 +15,7 @@ use Inowas\Common\Id\IdInterface;
 use Inowas\Common\Id\ModflowId;
 use Inowas\Common\Id\UserId;
 use Inowas\Common\Modflow\LengthUnit;
+use Inowas\Common\Modflow\Modelname;
 use Inowas\Common\Modflow\TimeUnit;
 use Inowas\Modflow\Model\Event\ActiveCellsWereUpdated;
 use Inowas\Modflow\Model\Event\BoundaryWasAdded;
@@ -50,7 +51,7 @@ class ModflowModelAggregate extends AggregateRoot
     /** @var  bool */
     protected $public;
 
-    /** @var ModflowModelName */
+    /** @var Modelname */
     protected $name;
 
     /** @var ModflowModelDescription */
@@ -113,12 +114,12 @@ class ModflowModelAggregate extends AggregateRoot
         }
     }
 
-    public function changeName(ModflowModelName $name): void
+    public function changeName(Modelname $name): void
     {
         $this->name = $name;
     }
 
-    public function changeBaseModelName(UserId $userId, ModflowModelName $name)
+    public function changeBaseModelName(UserId $userId, Modelname $name)
     {
         $this->name = $name;
         $this->recordThat(ModflowModelNameWasChanged::byUserWithName(
@@ -128,7 +129,7 @@ class ModflowModelAggregate extends AggregateRoot
         ));
     }
 
-    public function changeScenarioName(UserId $userId, ModflowId $scenarioId, ModflowModelName $name)
+    public function changeScenarioName(UserId $userId, ModflowId $scenarioId, Modelname $name)
     {
         if ($this->contains($scenarioId, $this->scenarios)) {
             /** @var ModflowModelAggregate $scenario */
@@ -354,10 +355,10 @@ class ModflowModelAggregate extends AggregateRoot
         return $this->owner;
     }
 
-    public function name(): ModflowModelName
+    public function name(): Modelname
     {
         if ($this->name === null){
-            $this->name = ModflowModelName::fromString('');
+            $this->name = Modelname::fromString('');
         }
         return $this->name;
     }
@@ -585,7 +586,7 @@ class ModflowModelAggregate extends AggregateRoot
         $self->baseModelId = $this->modflowId;
         $self->modflowId = $scenarioId;
         $self->owner = $userId;
-        $self->name = ModflowModelName::fromString('Scenario of '.$this->name()->toString());
+        $self->name = Modelname::fromString('Scenario of '.$this->name()->toString());
         $self->description = $this->description();
         $self->gridSize = unserialize(serialize($this->gridSize));
         $self->boundingBox = unserialize(serialize($this->boundingBox));

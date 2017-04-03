@@ -44,7 +44,7 @@ use Inowas\Common\Grid\BoundingBox;
 use Inowas\Common\Grid\GridSize;
 use Inowas\Common\Id\ModflowId;
 use Inowas\Modflow\Model\ModflowModelDescription;
-use Inowas\Modflow\Model\ModflowModelName;
+use Inowas\Common\Modflow\Modelname;
 use Inowas\Common\Boundaries\PumpingRate;
 use Inowas\Common\Boundaries\PumpingRates;
 use Inowas\Common\DateTime\TotalTime;
@@ -113,7 +113,7 @@ class Hanoi implements ContainerAwareInterface, DataFixtureInterface
         $ownerId = UserId::fromString($this->ownerId);
         $modelId = ModflowId::generate();
         $commandBus->dispatch(CreateModflowModel::byUserWithModelId($ownerId, $modelId));
-        $commandBus->dispatch(ChangeModflowModelName::forModflowModel($ownerId, $modelId, ModflowModelName::fromString('Base Scenario Hanoi 2005-2007')));
+        $commandBus->dispatch(ChangeModflowModelName::forModflowModel($ownerId, $modelId, Modelname::fromString('Base Scenario Hanoi 2005-2007')));
         $commandBus->dispatch(ChangeModflowModelDescription::forModflowModel(
             $ownerId,
             $modelId,
@@ -448,7 +448,7 @@ class Hanoi implements ContainerAwareInterface, DataFixtureInterface
          */
         $scenarioId = ModflowId::generate();
         $commandBus->dispatch(AddModflowScenario::from($ownerId, $modelId, $scenarioId));
-        $commandBus->dispatch(ChangeModflowModelName::forScenario($ownerId, $modelId, $scenarioId, ModflowModelName::fromString('Scenario 1')));
+        $commandBus->dispatch(ChangeModflowModelName::forScenario($ownerId, $modelId, $scenarioId, Modelname::fromString('Scenario 1')));
         $commandBus->dispatch(ChangeModflowModelDescription::forScenario($ownerId, $modelId, $scenarioId, ModflowModelDescription::fromString('Simulation of MAR type river bank filtration')));
 
         $movedWells_sc1 = array(
@@ -533,7 +533,7 @@ class Hanoi implements ContainerAwareInterface, DataFixtureInterface
          */
         $scenarioId = ModflowId::generate();
         $commandBus->dispatch(AddModflowScenario::from($ownerId, $modelId, $scenarioId));
-        $commandBus->dispatch(ChangeModflowModelName::forScenario($ownerId, $modelId, $scenarioId, ModflowModelName::fromString('Scenario 2')));
+        $commandBus->dispatch(ChangeModflowModelName::forScenario($ownerId, $modelId, $scenarioId, Modelname::fromString('Scenario 2')));
         $commandBus->dispatch(ChangeModflowModelDescription::forScenario($ownerId, $modelId, $scenarioId, ModflowModelDescription::fromString('Simulation of MAR type injection wells')));
 
         # THIS WELLS ARE THE YELLOW DOTS IN THE RIGHT IMAGE
@@ -587,7 +587,7 @@ class Hanoi implements ContainerAwareInterface, DataFixtureInterface
         */
         $scenarioId = ModflowId::generate();
         $commandBus->dispatch(AddModflowScenario::from($ownerId, $modelId, $scenarioId));
-        $commandBus->dispatch(ChangeModflowModelName::forScenario($ownerId, $modelId, $scenarioId, ModflowModelName::fromString('Scenario 3')));
+        $commandBus->dispatch(ChangeModflowModelName::forScenario($ownerId, $modelId, $scenarioId, Modelname::fromString('Scenario 3')));
         $commandBus->dispatch(ChangeModflowModelDescription::forScenario($ownerId, $modelId, $scenarioId, ModflowModelDescription::fromString('Combination of MAR types river bank filtration and injection wells.')));
 
         $movedWells_sc3 = $movedWells_sc1;

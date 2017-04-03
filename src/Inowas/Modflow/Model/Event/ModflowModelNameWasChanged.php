@@ -6,7 +6,7 @@ namespace Inowas\Modflow\Model\Event;
 
 use Inowas\Common\Id\ModflowId;
 use Inowas\Common\Id\IdInterface;
-use Inowas\Modflow\Model\ModflowModelName;
+use Inowas\Common\Modflow\Modelname;
 use Inowas\Common\Id\UserId;
 use Prooph\EventSourcing\AggregateChanged;
 
@@ -16,13 +16,13 @@ class ModflowModelNameWasChanged extends AggregateChanged
     /** @var  IdInterface */
     private $modflowId;
 
-    /** @var ModflowModelName */
+    /** @var Modelname */
     private $name;
 
     /** @var  \Inowas\Common\Id\UserId */
     private $userId;
 
-    public static function byUserWithName(UserId $userId, IdInterface $modflowId, ModflowModelName $name): ModflowModelNameWasChanged
+    public static function byUserWithName(UserId $userId, IdInterface $modflowId, Modelname $name): ModflowModelNameWasChanged
     {
         $event = self::occur(
             $modflowId->toString(), [
@@ -56,10 +56,10 @@ class ModflowModelNameWasChanged extends AggregateChanged
         return $this->userId;
     }
 
-    public function name(): ModflowModelName
+    public function name(): Modelname
     {
         if ($this->name === null){
-            $this->name = ModflowModelName::fromString($this->payload['name']);
+            $this->name = Modelname::fromString($this->payload['name']);
         }
 
         return $this->name;

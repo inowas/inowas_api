@@ -4,13 +4,13 @@ declare(strict_types=1);
 
 namespace Inowas\Common\FileSystem;
 
-class FileExtension
+class NameFileExtension
 {
 
     /** @var  string */
     private $extension;
 
-    public static function fromString(string $extension): FileExtension
+    public static function fromString(string $extension): NameFileExtension
     {
         $self = new self($extension);
         return $self;

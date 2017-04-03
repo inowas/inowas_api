@@ -5,13 +5,14 @@ declare(strict_types=1);
 namespace Inowas\Modflow\Model\Packages;
 
 use Inowas\Common\FileSystem\ExternalPath;
-use Inowas\Common\FileSystem\FileExtension;
+use Inowas\Common\FileSystem\NameFileExtension;
 use Inowas\Common\FileSystem\FileName;
-use Inowas\Common\FileSystem\ModelWorkSpace;
-use Inowas\Common\Modflow\ListUnit;
+use Inowas\Common\FileSystem\Modelworkspace;
+use Inowas\Common\Modflow\ExecutableName;
+use Inowas\Common\Modflow\Listunit;
 use Inowas\Common\Modflow\Verbose;
-use Inowas\Modflow\Model\ModflowModelName;
-use Inowas\Modflow\Model\ModflowVersion;
+use Inowas\Common\Modflow\Modelname;
+use Inowas\Modflow\Model\Version;
 
 class MfPackage implements PackageInterface
 {
@@ -19,38 +20,38 @@ class MfPackage implements PackageInterface
     /** @var string  */
     protected $type = 'mf';
 
-    /** @var  ModflowModelName */
+    /** @var  Modelname */
     protected $modelname;
 
-    /** @var  FileExtension */
+    /** @var  NameFileExtension */
     protected $nameFileExtension;
 
-    /** @var ModflowVersion */
+    /** @var Version */
     protected $version;
 
-    /** @var FileName */
+    /** @var ExecutableName */
     protected $executableName;
 
-    /** @var ListUnit  */
+    /** @var Listunit  */
     protected $listUnit;
 
-    /** @var ModelWorkSpace */
+    /** @var Modelworkspace */
     protected $modelWorkSpace;
 
     /** @var ExternalPath */
     protected $externalPath;
 
-    /** @var Verbose $verbose  */
+    /** @var Verbose  */
     protected $verbose;
 
     public static function fromDefaults()
     {
-        $name = ModflowModelName::fromString('testmodel');
-        $fileExtension = FileExtension::fromString('nam');
-        $version = ModflowVersion::fromString(ModflowVersion::MF2005);
+        $name = Modelname::fromString('testmodel');
+        $fileExtension = NameFileExtension::fromString('nam');
+        $version = Version::fromString(Version::MF2005);
         $executableName = FileName::fromString('mf2005');
-        $listUnit = ListUnit::fromInt(2);
-        $modelWorkSpace = ModelWorkSpace::fromString('.');
+        $listUnit = Listunit::fromInt(2);
+        $modelWorkSpace = Modelworkspace::fromString('.');
         $externalPath = ExternalPath::fromValue(null);
         $verbose = Verbose::fromBool(false);
 
@@ -58,12 +59,12 @@ class MfPackage implements PackageInterface
     }
 
     public static function fromParams(
-        ModflowModelName $name,
-        FileExtension $fileExtension,
-        ModflowVersion $version,
+        Modelname $name,
+        NameFileExtension $fileExtension,
+        Version $version,
         FileName $executableName,
-        ListUnit $listUnit,
-        ModelWorkSpace $modelWorkSpace,
+        Listunit $listUnit,
+        Modelworkspace $modelWorkSpace,
         ExternalPath $externalPath,
         Verbose $verbose
     ): MfPackage
@@ -73,12 +74,12 @@ class MfPackage implements PackageInterface
 
     public static function fromArray(array $arr): MfPackage
     {
-        $name = ModflowModelName::fromString($arr['modelname']);
-        $fileExtension = FileExtension::fromString($arr['namefile_ext']);
-        $version = ModflowVersion::fromString($arr['version']);
+        $name = Modelname::fromString($arr['modelname']);
+        $fileExtension = NameFileExtension::fromString($arr['namefile_ext']);
+        $version = Version::fromString($arr['version']);
         $executableName = FileName::fromString($arr['exe_name']);
-        $listUnit = ListUnit::fromInt($arr['listunit']);
-        $modelWorkSpace = ModelWorkSpace::fromString($arr['model_ws']);
+        $listUnit = Listunit::fromInt($arr['listunit']);
+        $modelWorkSpace = Modelworkspace::fromString($arr['model_ws']);
         $externalPath = ExternalPath::fromValue($arr['external_path']);
         $verbose = Verbose::fromBool($arr['verbose']);
 
@@ -86,12 +87,12 @@ class MfPackage implements PackageInterface
     }
 
     private function __construct(
-        ModflowModelName $name,
-        FileExtension $fileExtension,
-        ModflowVersion $version,
+        Modelname $name,
+        NameFileExtension $fileExtension,
+        Version $version,
         FileName $executableName,
-        ListUnit $listUnit,
-        ModelWorkSpace $modelWorkSpace,
+        Listunit $listUnit,
+        Modelworkspace $modelWorkSpace,
         ExternalPath $externalPath,
         Verbose $verbose
     )
@@ -111,17 +112,17 @@ class MfPackage implements PackageInterface
         return $this->type;
     }
 
-    public function modelname(): ModflowModelName
+    public function modelname(): Modelname
     {
         return $this->modelname;
     }
 
-    public function nameFileExtension(): FileExtension
+    public function nameFileExtension(): NameFileExtension
     {
         return $this->nameFileExtension;
     }
 
-    public function version(): ModflowVersion
+    public function version(): Version
     {
         return $this->version;
     }
@@ -131,12 +132,12 @@ class MfPackage implements PackageInterface
         return $this->executableName;
     }
 
-    public function listUnit(): ListUnit
+    public function listUnit(): Listunit
     {
         return $this->listUnit;
     }
 
-    public function modelWorkSpace(): ModelWorkSpace
+    public function modelWorkSpace(): Modelworkspace
     {
         return $this->modelWorkSpace;
     }
@@ -165,34 +166,60 @@ class MfPackage implements PackageInterface
         );
     }
 
-    public function updateModelName(ModflowModelName $name): MfPackage
+    public function updateModelname(Modelname $name): MfPackage
     {
-        $this->modelname = $name;
-        return self::fromArray($this->toArray());
+        $package = self::fromArray($this->toArray());
+        $package->modelname = $name;
+        return $package;
     }
 
-    public function updateVersion(ModflowVersion $version): MfPackage
+    public function updateNameFileExtension(NameFileExtension $extension): MfPackage
     {
-        $this->version = $version;
-        return self::fromArray($this->toArray());
+        $package = self::fromArray($this->toArray());
+        $package->nameFileExtension = $extension;
+        return $package;
     }
 
-    public function updateExecutableName(FileName $name): MfPackage
+    public function updateVersion(Version $version): MfPackage
     {
-        $this->executableName = $name;
-        return self::fromArray($this->toArray());
+        $package = self::fromArray($this->toArray());
+        $package->version = $version;
+        return $package;
     }
 
-    public function updateListUnit(ListUnit $listUnit): MfPackage
+    public function updateExecutableName(ExecutableName $executableName): MfPackage
     {
-        $this->listUnit = $listUnit;
-        return self::fromArray($this->toArray());
+        $package = self::fromArray($this->toArray());
+        $package->executableName = $executableName;
+        return $package;
     }
 
-    public function updateModelWorkSpace(ModelWorkSpace $workSpace): MfPackage
+    public function updateListunit(Listunit $listunit): MfPackage
     {
-        $this->modelWorkSpace = $workSpace;
-        return self::fromArray($this->toArray());
+        $package = self::fromArray($this->toArray());
+        $package->listUnit = $listunit;
+        return $package;
+    }
+
+    public function updateModelworkspace(Modelworkspace $modelworkspace): MfPackage
+    {
+        $package = self::fromArray($this->toArray());
+        $package->modelWorkSpace = $modelworkspace;
+        return $package;
+    }
+
+    public function updateExternalPath(ExternalPath $externalPath): MfPackage
+    {
+        $package = self::fromArray($this->toArray());
+        $package->externalPath = $externalPath;
+        return $package;
+    }
+
+    public function updateVerbose(Verbose $verbose): MfPackage
+    {
+        $package = self::fromArray($this->toArray());
+        $package->verbose = $verbose;
+        return $package;
     }
 
     /**

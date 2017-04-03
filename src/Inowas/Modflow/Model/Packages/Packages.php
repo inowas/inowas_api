@@ -6,18 +6,18 @@ namespace Inowas\Modflow\Model\Packages;
 
 use Inowas\Common\DateTime\DateTime;
 use Inowas\Common\FileSystem\FileName;
-use Inowas\Common\FileSystem\ModelWorkSpace;
+use Inowas\Common\FileSystem\Modelworkspace;
 use Inowas\Common\Grid\BoundingBox;
 use Inowas\Common\Grid\GridSize;
 use Inowas\Common\Modflow\Ibound;
 use Inowas\Common\Modflow\LengthUnit;
-use Inowas\Common\Modflow\ListUnit;
+use Inowas\Common\Modflow\Listunit;
 use Inowas\Common\Modflow\Strt;
 use Inowas\Common\Modflow\TimeUnit;
 use Inowas\Modflow\Model\Exception\InvalidPackageNameException;
 use Inowas\Modflow\Model\Exception\InvalidPackageParameterUpdateMethodException;
-use Inowas\Modflow\Model\ModflowModelName;
-use Inowas\Modflow\Model\ModflowVersion;
+use Inowas\Common\Modflow\Modelname;
+use Inowas\Modflow\Model\Version;
 use Inowas\Soilmodel\Interpolation\FlopyConfiguration;
 
 class Packages implements \JsonSerializable
@@ -83,7 +83,7 @@ class Packages implements \JsonSerializable
 
     private function __construct(){}
 
-    public function updateModelName(ModflowModelName $name): void
+    public function updateModelName(Modelname $name): void
     {
         // The executableName is configured in the MfPackage
         /** @var MfPackage $mfPackage */
@@ -92,7 +92,7 @@ class Packages implements \JsonSerializable
         $this->updatePackage($mfPackage);
     }
 
-    public function updateVersion(ModflowVersion $version): void
+    public function updateVersion(Version $version): void
     {
         // The executableName is configured in the MfPackage
         /** @var MfPackage $mfPackage */
@@ -110,7 +110,7 @@ class Packages implements \JsonSerializable
         $this->updatePackage($mfPackage);
     }
 
-    public function updateListUnit(ListUnit $listUnit): void
+    public function updateListUnit(Listunit $listUnit): void
     {
         // The executableName is configured in the MfPackage
         /** @var MfPackage $mfPackage */
@@ -119,7 +119,7 @@ class Packages implements \JsonSerializable
         $this->updatePackage($mfPackage);
     }
 
-    public function updateModelWorkSpace(ModelWorkSpace $workSpace): void
+    public function updateModelWorkSpace(Modelworkspace $workSpace): void
     {
         // The executableName is configured in the MfPackage
         /** @var MfPackage $mfPackage */

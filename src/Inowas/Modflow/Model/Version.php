@@ -6,7 +6,7 @@ namespace Inowas\Modflow\Model;
 
 use Inowas\Modflow\Model\Exception\InvalidModflowVersionException;
 
-class ModflowVersion
+class Version
 {
 
     const MF2005 = 'mf2005';
@@ -16,7 +16,7 @@ class ModflowVersion
     /** @var  string */
     private $version;
 
-    public static function fromString(string $version): ModflowVersion
+    public static function fromString(string $version): Version
     {
         return new self($version);
     }

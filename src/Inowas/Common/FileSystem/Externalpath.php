@@ -4,12 +4,12 @@ declare(strict_types=1);
 
 namespace Inowas\Common\FileSystem;
 
-class ExternalPath
+class Externalpath
 {
     /** @var  string */
     private $externalPath;
 
-    public static function fromValue(?string $externalPath): ExternalPath
+    public static function fromValue(?string $externalPath): Externalpath
     {
         return new self($externalPath);
     }
