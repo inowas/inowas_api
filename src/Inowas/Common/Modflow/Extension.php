@@ -17,6 +17,13 @@ class Extension
         return $self;
     }
 
+    public static function fromArray(array $extension): Extension
+    {
+        $self = new self();
+        $self->extension = $extension;
+        return $self;
+    }
+
     public static function fromValue($extension): Extension
     {
         $self = new self();
@@ -31,7 +38,7 @@ class Extension
         return $this->extension;
     }
 
-    public function toValue(): string
+    public function toValue()
     {
         return $this->extension;
     }

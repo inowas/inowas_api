@@ -6,7 +6,7 @@ namespace Inowas\Common\Modflow;
 
 class Unitnumber
 {
-    /** @var int */
+    /** @var array|int */
     private $number;
 
     public static function fromInteger(int $number): Unitnumber
@@ -19,6 +19,11 @@ class Unitnumber
         return new self($number);
     }
 
+    public static function fromArray(array $numbers): Unitnumber
+    {
+        return new self($numbers);
+    }
+
     private function __construct($number)
     {
         $this->number = $number;
@@ -29,7 +34,7 @@ class Unitnumber
         return $this->number;
     }
 
-    public function toValue(): int
+    public function toValue()
     {
         return $this->number;
     }
