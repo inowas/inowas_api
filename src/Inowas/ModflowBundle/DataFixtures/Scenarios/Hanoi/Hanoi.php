@@ -18,7 +18,7 @@ use Inowas\Common\Calculation\Budget;
 use Inowas\Common\Soilmodel\Conductivity;
 use Inowas\Common\Soilmodel\HBottom;
 use Inowas\Common\Soilmodel\HTop;
-use Inowas\Common\Modflow\LayTyp;
+use Inowas\Common\Modflow\Laytyp;
 use Inowas\Common\Soilmodel\HydraulicConductivityX;
 use Inowas\Common\Soilmodel\HydraulicConductivityY;
 use Inowas\Common\Soilmodel\HydraulicConductivityZ;
@@ -195,9 +195,9 @@ class Hanoi implements ContainerAwareInterface, DataFixtureInterface
 
         foreach ($layers as $key => $layer) {
 
-            $type = LayTyp::fromValue(LayTyp::TYPE_CONVERTIBLE);
+            $type = Laytyp::fromValue(Laytyp::TYPE_CONVERTIBLE);
             if ($key == 3) {
-                $type = LayTyp::fromValue(LayTyp::TYPE_CONFINED);
+                $type = Laytyp::fromValue(Laytyp::TYPE_CONFINED);
             }
 
             $commandBus->dispatch(

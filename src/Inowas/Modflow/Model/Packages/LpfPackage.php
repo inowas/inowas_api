@@ -5,48 +5,48 @@ declare(strict_types=1);
 namespace Inowas\Modflow\Model\Packages;
 
 use Inowas\Common\Modflow\Chani;
-use Inowas\Common\Modflow\ConstantCv;
+use Inowas\Common\Modflow\Constantcv;
 use Inowas\Common\Modflow\Extension;
 use Inowas\Common\Modflow\Hani;
 use Inowas\Common\Modflow\Hdry;
 use Inowas\Common\Modflow\Hk;
-use Inowas\Common\Modflow\IhdWet;
+use Inowas\Common\Modflow\Ihdwet;
 use Inowas\Common\Modflow\Ipakcb;
-use Inowas\Common\Modflow\IWetIt;
-use Inowas\Common\Modflow\LayAvg;
-use Inowas\Common\Modflow\LayTyp;
-use Inowas\Common\Modflow\LayVka;
-use Inowas\Common\Modflow\LayWet;
-use Inowas\Common\Modflow\NoCvCorrection;
-use Inowas\Common\Modflow\NoVfc;
+use Inowas\Common\Modflow\Iwetit;
+use Inowas\Common\Modflow\Layavg;
+use Inowas\Common\Modflow\Laytyp;
+use Inowas\Common\Modflow\Layvka;
+use Inowas\Common\Modflow\Laywet;
+use Inowas\Common\Modflow\Nocvcorrection;
+use Inowas\Common\Modflow\Novfc;
 use Inowas\Common\Modflow\Ss;
-use Inowas\Common\Modflow\StorageCoefficient;
+use Inowas\Common\Modflow\Storagecoefficient;
 use Inowas\Common\Modflow\Sy;
-use Inowas\Common\Modflow\ThickStrt;
+use Inowas\Common\Modflow\Thickstrt;
 use Inowas\Common\Modflow\Unitnumber;
 use Inowas\Common\Modflow\Vka;
 use Inowas\Common\Modflow\Vkcb;
-use Inowas\Common\Modflow\WetDry;
-use Inowas\Common\Modflow\WetFct;
+use Inowas\Common\Modflow\Wetdry;
+use Inowas\Common\Modflow\Wetfct;
 
 class LpfPackage implements PackageInterface
 {
     /** @var string  */
     protected $type = 'lpf';
 
-    /** @var  LayTyp */
+    /** @var  Laytyp */
     protected $laytyp;
 
-    /** @var  LayAvg */
+    /** @var  Layavg */
     protected $layavg;
 
     /** @var  Chani */
     protected $chani;
 
-    /** @var  LayVka */
+    /** @var  Layvka */
     protected $layvka;
 
-    /** @var  LayWet */
+    /** @var  Laywet */
     protected $laywet;
 
     /** @var  Ipakcb */
@@ -55,13 +55,13 @@ class LpfPackage implements PackageInterface
     /** @var  Hdry */
     protected $hdry;
 
-    /** @var  WetFct */
+    /** @var  Wetfct */
     protected $wetfct;
 
-    /** @var  IWetIt */
+    /** @var  Iwetit */
     protected $iwetit;
 
-    /** @var  IhdWet */
+    /** @var  Ihdwet */
     protected $ihdwet;
 
     /** @var  Hk */
@@ -82,22 +82,22 @@ class LpfPackage implements PackageInterface
     /** @var  Vkcb */
     protected $vkcb;
 
-    /** @var  WetDry */
+    /** @var  Wetdry */
     protected $wetdry;
 
-    /** @var  StorageCoefficient */
+    /** @var  Storagecoefficient */
     protected $storagecoefficient;
 
-    /** @var  ConstantCv */
+    /** @var  Constantcv */
     protected $constantcv;
 
-    /** @var  ThickStrt */
+    /** @var  Thickstrt */
     protected $thickstrt;
 
-    /** @var  NoCvCorrection */
+    /** @var  Nocvcorrection */
     protected $nocvcorrection;
 
-    /** @var  NoVfc */
+    /** @var  Novfc */
     protected $novfc;
 
     /** @var  Extension */
@@ -111,28 +111,28 @@ class LpfPackage implements PackageInterface
      */
     public static function fromDefaults(): LpfPackage
     {
-        $laytyp = LayTyp::fromInt(0);
-        $layavg = LayAvg::fromInt(0);
+        $laytyp = Laytyp::fromInt(0);
+        $layavg = Layavg::fromInt(0);
         $chani = Chani::fromFloat(1.0);
-        $layvka = LayVka::fromFloat(0);
-        $laywet = LayWet::fromFloat(0);
+        $layvka = Layvka::fromFloat(0);
+        $laywet = Laywet::fromFloat(0);
         $ipakcb = Ipakcb::fromInteger(53);
         $hdry = Hdry::fromFloat(-1E30);
-        $wetfct = WetFct::fromFloat(0.1);
-        $iwetit = IWetIt::fromInteger(1);
-        $ihdwet = IhdWet::fromInteger(0);
+        $wetfct = Wetfct::fromFloat(0.1);
+        $iwetit = Iwetit::fromInteger(1);
+        $ihdwet = Ihdwet::fromInteger(0);
         $hk = Hk::fromValue(1.0);
         $hani = Hani::fromValue(1.0);
         $vka = Vka::fromFloat(1.0);
         $ss = Ss::fromFloat(1e-5);
         $sy = Sy::fromFloat(0.15);
         $vkcb = Vkcb::fromFloat(0.0);
-        $wetdry = WetDry::fromFloat(-0.01);
-        $storagecoefficient = StorageCoefficient::fromBool(false);
-        $constantcv = ConstantCv::fromBool(false);
-        $thickstrt = ThickStrt::fromBool(false);
-        $nocvcorrection = NoCvCorrection::fromBool(false);
-        $novfc = NoVfc::fromBool(false);
+        $wetdry = Wetdry::fromFloat(-0.01);
+        $storagecoefficient = Storagecoefficient::fromBool(false);
+        $constantcv = Constantcv::fromBool(false);
+        $thickstrt = Thickstrt::fromBool(false);
+        $nocvcorrection = Nocvcorrection::fromBool(false);
+        $novfc = Novfc::fromBool(false);
         $extension = Extension::fromString('lpf');
         $unitnumber = Unitnumber::fromInteger(15);
 
@@ -147,28 +147,28 @@ class LpfPackage implements PackageInterface
     }
 
     public static function fromParams(
-        LayTyp $laytyp,
-        LayAvg $layavg,
+        Laytyp $laytyp,
+        Layavg $layavg,
         Chani $chani,
-        LayVka $layvka,
-        LayWet $laywet,
+        Layvka $layvka,
+        Laywet $laywet,
         Ipakcb $ipakcb,
         Hdry $hdry,
-        WetFct $wetfct,
-        IWetIt $iwetit,
-        IhdWet $ihdwet,
+        Wetfct $wetfct,
+        Iwetit $iwetit,
+        Ihdwet $ihdwet,
         Hk $hk,
         Hani $hani,
         Vka $vka,
         Ss $ss,
         Sy $sy,
         Vkcb $vkcb,
-        WetDry $wetdry,
-        StorageCoefficient $storagecoefficient,
-        ConstantCv $constantcv,
-        ThickStrt $thickstrt,
-        NoCvCorrection $nocvcorrection,
-        NoVfc $novfc,
+        Wetdry $wetdry,
+        Storagecoefficient $storagecoefficient,
+        Constantcv $constantcv,
+        Thickstrt $thickstrt,
+        Nocvcorrection $nocvcorrection,
+        Novfc $novfc,
         Extension $extension,
         Unitnumber $unitnumber
     ): LpfPackage
@@ -185,28 +185,28 @@ class LpfPackage implements PackageInterface
 
     public static function fromArray(array $arr): LpfPackage
     {
-        $laytyp = LayTyp::fromValue($arr["laytyp"]);
-        $layavg = LayAvg::fromValue($arr["layavg"]);
+        $laytyp = Laytyp::fromValue($arr["laytyp"]);
+        $layavg = Layavg::fromValue($arr["layavg"]);
         $chani = Chani::fromValue($arr["chani"]);
-        $layvka = LayVka::fromValue($arr["layvka"]);
-        $laywet = LayWet::fromValue($arr["laywet"]);
+        $layvka = Layvka::fromValue($arr["layvka"]);
+        $laywet = Laywet::fromValue($arr["laywet"]);
         $ipakcb = Ipakcb::fromValue($arr["ipakcb"]);
         $hdry = Hdry::fromValue($arr["hdry"]);
-        $wetfct = WetFct::fromValue($arr["wetfct"]);
-        $iwetit = IWetIt::fromValue($arr["iwetit"]);
-        $ihdwet = IhdWet::fromValue($arr["ihdwet"]);
+        $wetfct = Wetfct::fromValue($arr["wetfct"]);
+        $iwetit = Iwetit::fromValue($arr["iwetit"]);
+        $ihdwet = Ihdwet::fromValue($arr["ihdwet"]);
         $hk = Hk::fromValue($arr["hk"]);
         $hani = Hani::fromValue($arr["hani"]);
         $vka = Vka::fromValue($arr["vka"]);
         $ss = Ss::fromValue($arr["ss"]);
         $sy = Sy::fromValue($arr["sy"]);
         $vkcb = Vkcb::fromValue($arr["vkcb"]);
-        $wetdry = WetDry::fromValue($arr["wetdry"]);
-        $storagecoefficient = StorageCoefficient::fromValue($arr["storagecoefficient"]);
-        $constantcv = ConstantCv::fromValue($arr["constantcv"]);
-        $thickstrt = ThickStrt::fromValue($arr["thickstrt"]);
-        $nocvcorrection = NoCvCorrection::fromValue($arr["nocvcorrection"]);
-        $novfc = NoVfc::fromValue($arr["novfc"]);
+        $wetdry = Wetdry::fromValue($arr["wetdry"]);
+        $storagecoefficient = Storagecoefficient::fromValue($arr["storagecoefficient"]);
+        $constantcv = Constantcv::fromValue($arr["constantcv"]);
+        $thickstrt = Thickstrt::fromValue($arr["thickstrt"]);
+        $nocvcorrection = Nocvcorrection::fromValue($arr["nocvcorrection"]);
+        $novfc = Novfc::fromValue($arr["novfc"]);
         $extension = Extension::fromValue($arr["extension"]);
         $unitnumber = Unitnumber::fromValue($arr["unitnumber"]);
 
@@ -225,29 +225,197 @@ class LpfPackage implements PackageInterface
         return $this->type;
     }
 
+    public function updateLaytyp(Laytyp $laytyp): LpfPackage
+    {
+        $package = self::fromArray($this->toArray());
+        $package->laytyp = $laytyp;
+        return $package;
+    }
+
+    public function updateLayavg(Layavg $layavg): LpfPackage
+    {
+        $package = self::fromArray($this->toArray());
+        $package->laytyp = $layavg;
+        return $package;
+    }
+
+    public function updateChani(Chani $chani): LpfPackage
+    {
+        $package = self::fromArray($this->toArray());
+        $package->chani = $chani;
+        return $package;
+    }
+
+    public function updateLayvka(Layvka $layvka): LpfPackage
+    {
+        $package = self::fromArray($this->toArray());
+        $package->layvka = $layvka;
+        return $package;
+    }
+
+    public function updateLaywet(Laywet $laywet): LpfPackage
+    {
+        $package = self::fromArray($this->toArray());
+        $package->laywet = $laywet;
+        return $package;
+    }
+
+    public function updateIpakcb(Ipakcb $ipakcb): LpfPackage
+    {
+        $package = self::fromArray($this->toArray());
+        $package->ipakcb = $ipakcb;
+        return $package;
+    }
+
+    public function updateHdry(Hdry $hdry): LpfPackage
+    {
+        $package = self::fromArray($this->toArray());
+        $package->hdry = $hdry;
+        return $package;
+    }
+
+    public function updateWetfct(Wetfct $wetfct): LpfPackage
+    {
+        $package = self::fromArray($this->toArray());
+        $package->wetfct = $wetfct;
+        return $package;
+    }
+
+    public function updateIwetit(Iwetit $iwetit): LpfPackage
+    {
+        $package = self::fromArray($this->toArray());
+        $package->iwetit = $iwetit;
+        return $package;
+    }
+
+    public function updateIhdwet(Ihdwet $ihdwet): LpfPackage
+    {
+        $package = self::fromArray($this->toArray());
+        $package->ihdwet = $ihdwet;
+        return $package;
+    }
+
+    public function updateHk(Hk $hk): LpfPackage
+    {
+        $package = self::fromArray($this->toArray());
+        $package->hk = $hk;
+        return $package;
+    }
+
+    public function updateHani(Hani $hani): LpfPackage
+    {
+        $package = self::fromArray($this->toArray());
+        $package->hani = $hani;
+        return $package;
+    }
+
+    public function updateVka(Vka $vka): LpfPackage
+    {
+        $package = self::fromArray($this->toArray());
+        $package->vka = $vka;
+        return $package;
+    }
+
+    public function updateSs(Ss $ss): LpfPackage
+    {
+        $package = self::fromArray($this->toArray());
+        $package->ss = $ss;
+        return $package;
+    }
+
+    public function updateSy(Sy $sy): LpfPackage
+    {
+        $package = self::fromArray($this->toArray());
+        $package->sy = $sy;
+        return $package;
+    }
+
+    public function updateVkcb(Vkcb $vkcb): LpfPackage
+    {
+        $package = self::fromArray($this->toArray());
+        $package->vkcb = $vkcb;
+        return $package;
+    }
+
+    public function updateWetdry(Wetdry $wetdry): LpfPackage
+    {
+        $package = self::fromArray($this->toArray());
+        $package->wetdry = $wetdry;
+        return $package;
+    }
+
+    public function updateStoragecoefficient(Storagecoefficient $storagecoefficient): LpfPackage
+    {
+        $package = self::fromArray($this->toArray());
+        $package->storagecoefficient = $storagecoefficient;
+        return $package;
+    }
+
+    public function updateConstantcv(Constantcv $constantcv): LpfPackage
+    {
+        $package = self::fromArray($this->toArray());
+        $package->constantcv = $constantcv;
+        return $package;
+    }
+
+    public function updateThickstrt(Thickstrt $thickstrt): LpfPackage
+    {
+        $package = self::fromArray($this->toArray());
+        $package->thickstrt = $thickstrt;
+        return $package;
+    }
+
+    public function updateNocvcorrection(Nocvcorrection $nocvcorrection): LpfPackage
+    {
+        $package = self::fromArray($this->toArray());
+        $package->nocvcorrection = $nocvcorrection;
+        return $package;
+    }
+
+    public function updateNovfc(Novfc $novfc): LpfPackage
+    {
+        $package = self::fromArray($this->toArray());
+        $package->novfc = $novfc;
+        return $package;
+    }
+
+    public function updateExtension(Extension $extension): LpfPackage
+    {
+        $package = self::fromArray($this->toArray());
+        $package->extension = $extension;
+        return $package;
+    }
+
+    public function updateUnitnumber(Unitnumber $unitnumber): LpfPackage
+    {
+        $package = self::fromArray($this->toArray());
+        $package->unitnumber = $unitnumber;
+        return $package;
+    }
+
     private function __construct(
-        LayTyp $layTyp,
-        LayAvg $layAvg,
+        Laytyp $layTyp,
+        Layavg $layAvg,
         Chani $chani,
-        LayVka $layVka,
-        LayWet $layWet,
+        Layvka $layVka,
+        Laywet $layWet,
         Ipakcb $ipakcb,
         Hdry $hdry,
-        WetFct $wetFct,
-        IWetIt $iWetIt,
-        IhdWet $ihdWet,
+        Wetfct $wetFct,
+        Iwetit $iWetIt,
+        Ihdwet $ihdWet,
         Hk $hk,
         Hani $hani,
         Vka $vka,
         Ss $ss,
         Sy $sy,
         Vkcb $vkcb,
-        WetDry $wetDry,
-        StorageCoefficient $storageCoefficient,
-        ConstantCv $constantCv,
-        ThickStrt $thickStrt,
-        NoCvCorrection $noCvCorrection,
-        NoVfc $noVfc,
+        Wetdry $wetDry,
+        Storagecoefficient $storageCoefficient,
+        Constantcv $constantCv,
+        Thickstrt $thickStrt,
+        Nocvcorrection $noCvCorrection,
+        Novfc $noVfc,
         Extension $extension,
         Unitnumber $unitNumber
     )

@@ -9,25 +9,25 @@ declare(strict_types=1);
 
 namespace Inowas\Common\Modflow;
 
-class LayVka
+class Layvka
 {
     protected $layvka;
 
-    public static function fromArray(array $layvka): LayVka
+    public static function fromArray(array $layvka): Layvka
     {
         $self = new self();
         $self->layvka = $layvka;
         return $self;
     }
 
-    public static function fromFloat(float $layvka): LayVka
+    public static function fromFloat(float $layvka): Layvka
     {
         $self = new self();
         $self->layvka = $layvka;
         return $self;
     }
 
-    public static function fromValue($layvka): LayVka
+    public static function fromValue($layvka): Layvka
     {
         $self = new self();
         $self->layvka = $layvka;

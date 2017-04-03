@@ -9,26 +9,26 @@ declare(strict_types=1);
 
 namespace Inowas\Common\Modflow;
 
-class WetDry
+class Wetdry
 {
 
     protected $value;
 
-    public static function from3DArray(array $value): WetDry
+    public static function from3DArray(array $value): Wetdry
     {
         $self = new self();
         $self->value = $value;
         return $self;
     }
 
-    public static function fromFloat(float $value): WetDry
+    public static function fromFloat(float $value): Wetdry
     {
         $self = new self();
         $self->value = $value;
         return $self;
     }
 
-    public static function fromValue($value): WetDry
+    public static function fromValue($value): Wetdry
     {
         $self = new self();
         $self->value = $value;

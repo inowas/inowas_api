@@ -1,25 +1,25 @@
 <?php
 /**
- * thickstrt : boolean
- * indicates that layers having a negative LAYTYP are confined, and their
- * cell thickness for conductance calculations will be computed as
- * STRT-BOT rather than TOP-BOT. (default is False).
+ * nocvcorrection : boolean
+ * indicates that vertical conductance is not corrected when the vertical
+ * flow correction is applied.
+ * (default is False).
  */
 declare(strict_types=1);
 
 namespace Inowas\Common\Modflow;
 
-class ThickStrt
+class Nocvcorrection
 {
     /** @var bool */
     private $value;
 
-    public static function fromBool(bool $value): ThickStrt
+    public static function fromBool(bool $value): Nocvcorrection
     {
         return new self($value);
     }
 
-    public static function fromValue(bool $value): ThickStrt
+    public static function fromValue(bool $value): Nocvcorrection
     {
         return new self($value);
     }

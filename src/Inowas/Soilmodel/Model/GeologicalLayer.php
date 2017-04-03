@@ -4,14 +4,14 @@ declare(strict_types=1);
 
 namespace Inowas\Soilmodel\Model;
 
-use Inowas\Common\Modflow\LayTyp;
+use Inowas\Common\Modflow\Laytyp;
 
 class GeologicalLayer
 {
     /** @var  GeologicalLayerId */
     protected $id;
 
-    /** @var  LayTyp */
+    /** @var  Laytyp */
     protected $type;
 
     /** @var  GeologicalLayerNumber */
@@ -31,7 +31,7 @@ class GeologicalLayer
         return $this->id;
     }
 
-    public function layerType(): LayTyp
+    public function layerType(): Laytyp
     {
         return $this->type;
     }
@@ -78,7 +78,7 @@ class GeologicalLayer
     {
         $self = new self();
         $self->id = GeologicalLayerId::fromString($layer['id']);
-        $self->type = LayTyp::fromValue($layer['type']);
+        $self->type = Laytyp::fromValue($layer['type']);
         $self->number = GeologicalLayerNumber::fromInteger($layer['number']);
         $self->name = GeologicalLayerName::fromString($layer['name']);
         $self->description = GeologicalLayerDescription::fromString($layer['description']);
@@ -90,7 +90,7 @@ class GeologicalLayer
         return $self;
     }
 
-    public static function fromParams(GeologicalLayerId $id, LayTyp $type, GeologicalLayerNumber $number, GeologicalLayerName $name, GeologicalLayerDescription $description, ?GeologicalLayerValues $values = null): GeologicalLayer
+    public static function fromParams(GeologicalLayerId $id, Laytyp $type, GeologicalLayerNumber $number, GeologicalLayerName $name, GeologicalLayerDescription $description, ?GeologicalLayerValues $values = null): GeologicalLayer
     {
         $self = new self();
         $self->id = $id;

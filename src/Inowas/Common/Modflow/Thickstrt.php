@@ -1,26 +1,25 @@
 <?php
 /**
- * constantcv : boolean
- * indicates that vertical conductance for an unconfined cell is
- * computed from the cell thickness rather than the saturated thickness.
- * The CONSTANTCV option automatically invokes the NOCVCORRECTION
- * option. (default is False).
+ * thickstrt : boolean
+ * indicates that layers having a negative LAYTYP are confined, and their
+ * cell thickness for conductance calculations will be computed as
+ * STRT-BOT rather than TOP-BOT. (default is False).
  */
 declare(strict_types=1);
 
 namespace Inowas\Common\Modflow;
 
-class ConstantCv
+class Thickstrt
 {
     /** @var bool */
     private $value;
 
-    public static function fromBool(bool $value): ConstantCv
+    public static function fromBool(bool $value): Thickstrt
     {
         return new self($value);
     }
 
-    public static function fromValue(bool $value): ConstantCv
+    public static function fromValue(bool $value): Thickstrt
     {
         return new self($value);
     }

@@ -11,7 +11,7 @@ declare(strict_types=1);
 namespace Inowas\Common\Modflow;
 
 
-class LayAvg
+class Layavg
 {
 
     const TYPE_HARMONIC_MEAN = 0;
@@ -24,21 +24,21 @@ class LayAvg
     private function __construct()
     {}
 
-    public static function fromArray(array $value): LayAvg
+    public static function fromArray(array $value): Layavg
     {
         $self = new self();
         $self->value = $value;
         return $self;
     }
 
-    public static function fromInt(int $value): LayAvg
+    public static function fromInt(int $value): Layavg
     {
         $self = new self();
         $self->value = $value;
         return $self;
     }
 
-    public static function fromValue($value): LayAvg
+    public static function fromValue($value): Layavg
     {
         $self = new self();
         $self->value = $value;

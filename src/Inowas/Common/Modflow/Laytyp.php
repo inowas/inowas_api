@@ -15,7 +15,7 @@ declare(strict_types=1);
 namespace Inowas\Common\Modflow;
 
 
-class LayTyp
+class Laytyp
 {
 
     const TYPE_CONFINED = 0;
@@ -28,21 +28,21 @@ class LayTyp
     private function __construct()
     {}
 
-    public static function fromArray(array $value): LayTyp
+    public static function fromArray(array $value): Laytyp
     {
         $self = new self();
         $self->type = $value;
         return $self;
     }
 
-    public static function fromInt(int $value): LayTyp
+    public static function fromInt(int $value): Laytyp
     {
         $self = new self();
         $self->type = $value;
         return $self;
     }
 
-    public static function fromValue($value): LayTyp
+    public static function fromValue($value): Laytyp
     {
         $self = new self();
         $self->type = $value;

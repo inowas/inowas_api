@@ -1,24 +1,27 @@
 <?php
 /**
- * storagecoefficient : boolean
- * indicates that variable Ss and SS parameters are read as storage
- * coefficient rather than specific storage. (default is False).
+ * novfc : boolean
+ * turns off the vertical flow correction under dewatered conditions.
+ * This option turns off the vertical flow calculation described on p.
+ * 5-8 of USGS Techniques and Methods Report 6-A16 and the vertical
+ * conductance correction described on p. 5-18 of that report.
+ * (default is False).
  */
 declare(strict_types=1);
 
 namespace Inowas\Common\Modflow;
 
-class StorageCoefficient
+class Novfc
 {
     /** @var bool */
     private $value;
 
-    public static function fromBool(bool $value): StorageCoefficient
+    public static function fromBool(bool $value): Novfc
     {
         return new self($value);
     }
 
-    public static function fromValue(bool $value): StorageCoefficient
+    public static function fromValue(bool $value): Novfc
     {
         return new self($value);
     }

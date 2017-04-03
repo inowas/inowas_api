@@ -1,27 +1,24 @@
 <?php
 /**
- * iwetit : int
- * is the iteration interval for attempting to wet cells. Wetting is
- * attempted every IWETIT iteration. If using the PCG solver
- * (Hill, 1990), this applies to outer iterations, not inner iterations.
- * If IWETIT  less than or equal to 0, it is changed to 1.
- * (default is 1).
+ * ihdwet : int
+ * is a flag that determines which equation is used to define the
+ * initial head at cells that become wet. (default is 0)
  */
 declare(strict_types=1);
 
 namespace Inowas\Common\Modflow;
 
-class IWetIt
+class Ihdwet
 {
     /** @var int */
     private $value;
 
-    public static function fromInteger(int $value): IWetIt
+    public static function fromInteger(int $value): Ihdwet
     {
         return new self($value);
     }
 
-    public static function fromValue($value): IWetIt
+    public static function fromValue(int $value): Ihdwet
     {
         return new self($value);
     }

@@ -1,25 +1,24 @@
 <?php
 /**
- * nocvcorrection : boolean
- * indicates that vertical conductance is not corrected when the vertical
- * flow correction is applied.
- * (default is False).
+ * storagecoefficient : boolean
+ * indicates that variable Ss and SS parameters are read as storage
+ * coefficient rather than specific storage. (default is False).
  */
 declare(strict_types=1);
 
 namespace Inowas\Common\Modflow;
 
-class NoCvCorrection
+class Storagecoefficient
 {
     /** @var bool */
     private $value;
 
-    public static function fromBool(bool $value): NoCvCorrection
+    public static function fromBool(bool $value): Storagecoefficient
     {
         return new self($value);
     }
 
-    public static function fromValue(bool $value): NoCvCorrection
+    public static function fromValue(bool $value): Storagecoefficient
     {
         return new self($value);
     }

@@ -9,17 +9,17 @@ declare(strict_types=1);
 
 namespace Inowas\Common\Modflow;
 
-class WetFct
+class Wetfct
 {
     /** @var float */
     private $value;
 
-    public static function fromFloat(float $value): WetFct
+    public static function fromFloat(float $value): Wetfct
     {
         return new self($value);
     }
 
-    public static function fromValue($value): WetFct
+    public static function fromValue($value): Wetfct
     {
         return new self($value);
     }

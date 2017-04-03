@@ -9,25 +9,25 @@ declare(strict_types=1);
 
 namespace Inowas\Common\Modflow;
 
-class LayWet
+class Laywet
 {
     protected $laywet;
 
-    public static function fromArray(array $laywet): LayWet
+    public static function fromArray(array $laywet): Laywet
     {
         $self = new self();
         $self->laywet = $laywet;
         return $self;
     }
 
-    public static function fromFloat(float $laywet): LayWet
+    public static function fromFloat(float $laywet): Laywet
     {
         $self = new self();
         $self->laywet = $laywet;
         return $self;
     }
 
-    public static function fromValue($laywet): LayWet
+    public static function fromValue($laywet): Laywet
     {
         $self = new self();
         $self->laywet = $laywet;
