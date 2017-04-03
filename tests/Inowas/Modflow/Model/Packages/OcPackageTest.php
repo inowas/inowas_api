@@ -1,9 +1,9 @@
 <?php
 
-namespace Inowas\Modflow\Model\Packages;
-
+namespace Tests\Inowas\Modflow\Model\Packages;
 
 use Inowas\Common\Modflow\Ihedfm;
+use Inowas\Modflow\Model\Packages\OcPackage;
 
 class OcPackageTest extends \PHPUnit_Framework_TestCase
 {
