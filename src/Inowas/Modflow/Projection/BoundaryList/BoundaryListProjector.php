@@ -9,7 +9,6 @@ use Doctrine\DBAL\Schema\Schema;
 use Inowas\Common\Boundaries\AreaBoundary;
 use Inowas\Common\Boundaries\ModflowBoundary;
 use Inowas\Common\Boundaries\WellBoundary;
-use Inowas\Common\Grid\ActiveCells;
 use Inowas\Common\Grid\BoundingBox;
 use Inowas\Common\Grid\GridSize;
 use Inowas\Common\Id\BoundaryId;
@@ -83,7 +82,7 @@ class BoundaryListProjector extends AbstractDoctrineConnectionProjector
     {
         $gridSize = $this->modelDetailsFinder->findGridSizeByBaseModelId($event->modflowId());
         $boundingBox = $this->modelDetailsFinder->findBoundingBoxByBaseModelId($event->modflowId());
-        $activeCells = json_encode($this->calculateActiveCells($event->boundary(), $boundingBox, $gridSize)->cells());
+        $activeCells = json_encode($this->calculateActiveCells($event->boundary(), $boundingBox, $gridSize));
 
         $this->insertBoundary(
             $event->modflowId(),
@@ -116,7 +115,7 @@ class BoundaryListProjector extends AbstractDoctrineConnectionProjector
     {
         $gridSize = $this->modelDetailsFinder->findGridSizeByBaseModelId($event->scenarioId());
         $boundingBox = $this->modelDetailsFinder->findBoundingBoxByBaseModelId($event->scenarioId());
-        $activeCells = json_encode($this->calculateActiveCells($event->boundary(), $boundingBox, $gridSize)->cells());
+        $activeCells = json_encode($this->calculateActiveCells($event->boundary(), $boundingBox, $gridSize));
 
         $this->insertBoundary(
             $event->scenarioId(),
@@ -161,7 +160,7 @@ class BoundaryListProjector extends AbstractDoctrineConnectionProjector
         ));
     }
 
-    private function calculateActiveCells(ModflowBoundary $boundary, ?BoundingBox $boundingBox, ?GridSize $gridSize): ?ActiveCells
+    private function calculateActiveCells(ModflowBoundary $boundary, ?BoundingBox $boundingBox, ?GridSize $gridSize): ?array
     {
 
         if (! $boundingBox instanceof BoundingBox){
@@ -173,11 +172,11 @@ class BoundaryListProjector extends AbstractDoctrineConnectionProjector
         }
 
         if ($boundary instanceof AreaBoundary) {
-            return $this->geoTools->getActiveCellsFromArea($boundary, $boundingBox, $gridSize);
+            return $this->geoTools->getActiveCellsFromArea($boundary, $boundingBox, $gridSize)->layerData();
         }
 
         if ($boundary instanceof WellBoundary) {
-            return $this->geoTools->getActiveCellsFromWell($boundary, $boundingBox, $gridSize);
+            return $this->geoTools->getActiveCellsFromWell($boundary, $boundingBox, $gridSize)->cells();
         }
 
         return null;

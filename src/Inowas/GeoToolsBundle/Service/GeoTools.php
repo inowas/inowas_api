@@ -11,7 +11,6 @@ use Inowas\Common\Boundaries\WellBoundary;
 use Inowas\Common\Grid\ActiveCells;
 use Inowas\Common\Grid\BoundingBox;
 use Inowas\Common\Grid\GridSize;
-use Inowas\Common\Grid\LayerNumber;
 
 class GeoTools
 {

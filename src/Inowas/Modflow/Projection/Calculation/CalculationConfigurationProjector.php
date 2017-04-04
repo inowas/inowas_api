@@ -7,12 +7,16 @@ namespace Inowas\Modflow\Projection\Calculation;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Schema\Schema;
 use Inowas\Common\Id\ModflowId;
+use Inowas\Common\Modflow\Ibound;
+use Inowas\Common\Modflow\Strt;
 use Inowas\Common\Projection\AbstractDoctrineConnectionProjector;
 use Inowas\Modflow\Model\Event\CalculationWasCreated;
 use Inowas\Modflow\Model\Packages\Packages;
 use Inowas\Modflow\Model\Service\ModflowModelManager;
 use Inowas\Modflow\Model\Service\ModflowModelManagerInterface;
+use Inowas\Modflow\Model\Service\SoilmodelManagerInterface;
 use Inowas\Modflow\Projection\Table;
+use Inowas\SoilmodelBundle\Service\SoilmodelManager;
 
 class CalculationConfigurationProjector extends AbstractDoctrineConnectionProjector
 {
@@ -20,9 +24,17 @@ class CalculationConfigurationProjector extends AbstractDoctrineConnectionProjec
     /** @var  ModflowModelManager */
     protected $modflowModelManager;
 
-    public function __construct(Connection $connection, ModflowModelManagerInterface $modelManager) {
+    /** @var  SoilmodelManager */
+    protected $soilmodelManager;
+
+    public function __construct(
+        Connection $connection,
+        ModflowModelManagerInterface $modelManager,
+        SoilmodelManagerInterface $soilmodelManager
+    ) {
 
         $this->modflowModelManager = $modelManager;
+        $this->soilmodelManager = $soilmodelManager;
 
         parent::__construct($connection);
 
@@ -43,6 +55,26 @@ class CalculationConfigurationProjector extends AbstractDoctrineConnectionProjec
         $packages->updateTimeUnit($event->timeUnit());
         $packages->updateLengthUnit($event->lengthUnit());
 
+        /*
+         * Add PackageDetails for DisPackage
+         * Grid Properties
+         */
+        $gridSize = $this->modflowModelManager->getGridSize($event->modflowModelId());
+        $boundingBox = $this->modflowModelManager->getBoundingBox($event->modflowModelId());
+        $packages->updateGridParameters($gridSize, $boundingBox);
+
+        /*
+         * Add PackageDetails for DisPackage
+         * Layers and Elevations
+         */
+        $packages->updatePackageParameter('dis', 'nlay', $this->soilmodelManager->getNlay($event->soilModelId()));
+        $packages->updatePackageParameter('dis', 'top', $this->soilmodelManager->getTop($event->soilModelId()));
+        $packages->updatePackageParameter('dis', 'botm', $this->soilmodelManager->getBotm($event->soilModelId()));
+
+        /*
+         * Add PackageDetails for DisPackage
+         * StressPeriods
+         */
         $stressPeriods = $this->modflowModelManager->getStressPeriods($event->modflowModelId(), $event->start(), $event->end());
         $packages->updatePackageParameter('dis', 'perlen', $stressPeriods->perlen());
         $packages->updatePackageParameter('dis', 'nstp', $stressPeriods->nstp());
@@ -50,6 +82,22 @@ class CalculationConfigurationProjector extends AbstractDoctrineConnectionProjec
         $packages->updatePackageParameter('dis', 'steady', $stressPeriods->steady());
         $packages->updatePackageParameter('dis', 'nper', $stressPeriods->nper());
 
+        /*
+         * Add PackageDetails for BasPackage
+         * Ibound, Strt
+        */
+        $activeCells = $this->modflowModelManager->getAreaActiveCells($event->modflowModelId());
+        $iBound = Ibound::fromActiveCellsAndNumberOfLayers($activeCells, $this->soilmodelManager->getNlay($event->soilModelId())->toInteger());
+        $packages->updatePackageParameter('bas', 'ibound', $iBound);
+        $strt = Strt::fromTopAndNumberOfLayers($this->soilmodelManager->getTop($event->soilModelId()), $this->soilmodelManager->getNlay($event->soilModelId())->toInteger());
+        $packages->updatePackageParameter('bas', 'strt', $strt);
+
+        /*
+         * Add PackageDetails for LpfPackage
+         * LayTyp
+        */
+        $laytyp = $this->soilmodelManager->getLaytyp($event->soilModelId());
+        $packages->updatePackageParameter('lpf', 'laytyp', $laytyp);
 
         $this->connection->insert(Table::CALCULATION_CONFIG, array(
             'calculation_id' => $event->calculationId()->toString(),

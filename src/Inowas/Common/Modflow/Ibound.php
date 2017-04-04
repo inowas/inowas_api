@@ -31,11 +31,24 @@ class Ibound
 
     public static function fromActiveCellsAndNumberOfLayers(ActiveCells $activeCells, int $numberOfLayers): Ibound
     {
+        $arr = [];
+        foreach ($activeCells->fullArray() as $rowNumber => $row){
+            $arr[$rowNumber] = [];
+            foreach ($row as $colNumber => $value){
+                if ($value === false){
+                    $value = 0;
+                } else {
+                    $value = 1;
+                }
+
+                $arr[$rowNumber][$colNumber] = $value;
+            }
+        }
+
         $self = new self();
         $iBound = [];
         for ($i=0; $i<$numberOfLayers; $i++){
-
-            $iBound[$i] = $activeCells->fullArray();
+            $iBound[$i] = $arr;
         }
         $self->ibound = $iBound;
         return $self;

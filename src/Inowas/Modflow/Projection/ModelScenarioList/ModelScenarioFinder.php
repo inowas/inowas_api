@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace Inowas\Modflow\Projection\ModelScenarioList;
 
 use Doctrine\DBAL\Connection;
+use Inowas\Common\Grid\BoundingBox;
+use Inowas\Common\Grid\GridSize;
 use Inowas\Common\Id\ModflowId;
 use Inowas\Common\Id\UserId;
 use Inowas\Modflow\Projection\Table;
@@ -79,5 +81,53 @@ class ModelScenarioFinder
                 'scenario_id' => ''
             ]
         );
+    }
+
+    public function findBoundingBoxByModelId(ModflowId $modelId): ?BoundingBox
+    {
+        $baseModelId = $this->findBaseModelIdByModelId($modelId);
+        return $this->findBoundingBoxByBaseModelId($baseModelId);
+    }
+
+    public function findGridSizeByModelId(ModflowId $modelId): ?GridSize
+    {
+        $baseModelId = $this->findBaseModelIdByModelId($modelId);
+        return $this->findGridSizeByBaseModelId($baseModelId);
+    }
+
+    private function findBaseModelIdByModelId(ModflowId $modelId): ModflowId
+    {
+        $result =  $this->connection->fetchAssoc(
+            sprintf('SELECT base_model_id FROM %s WHERE base_model_id = :model_id OR scenario_id = :model_id', Table::MODEL_SCENARIO_LIST),
+            ['model_id' => $modelId->toString()]
+        );
+
+        return ModflowId::fromString($result['base_model_id']);
+    }
+
+    private function findGridSizeByBaseModelId(ModflowId $modelId): GridSize
+    {
+        $result =  $this->connection->fetchAssoc(
+            sprintf('SELECT grid_size FROM %s WHERE base_model_id = :model_id AND scenario_id = :scenario_id ORDER BY id', Table::MODEL_SCENARIO_LIST),
+            [
+                'model_id' => $modelId->toString(),
+                'scenario_id' => ''
+            ]
+        );
+
+        return GridSize::fromArray((array)json_decode($result['grid_size']));
+    }
+
+    private function findBoundingBoxByBaseModelId(ModflowId $modelId): BoundingBox
+    {
+        $result =  $this->connection->fetchAssoc(
+            sprintf('SELECT bounding_box FROM %s WHERE base_model_id = :model_id AND scenario_id = :scenario_id ORDER BY id', Table::MODEL_SCENARIO_LIST),
+            [
+                'model_id' => $modelId->toString(),
+                'scenario_id' => ''
+            ]
+        );
+
+        return BoundingBox::fromArray((array)json_decode($result['bounding_box']));
     }
 }

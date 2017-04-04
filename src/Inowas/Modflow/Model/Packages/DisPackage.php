@@ -280,7 +280,7 @@ class DisPackage implements PackageInterface
     public function updateNper(NPer $nper): DisPackage
     {
         $package = self::fromArray($this->toArray());
-        $package->nrow = $nper;
+        $package->nper = $nper;
         return $package;
     }
 

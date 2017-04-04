@@ -26,6 +26,18 @@ class Strt
         return $self;
     }
 
+    public static function fromTopAndNumberOfLayers(Top $top, int $numberOfLayers)
+    {
+        $strt = [];
+        for ($i=0; $i<$numberOfLayers; $i++){
+            $strt[$i] = $top->toValue();
+        }
+
+        $self = new self();
+        $self->strt = $strt;
+        return $self;
+    }
+
     public static function fromValue($strt): Strt
     {
         $self = new self();

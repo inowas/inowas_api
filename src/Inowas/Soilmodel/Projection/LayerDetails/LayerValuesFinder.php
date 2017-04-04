@@ -3,9 +3,11 @@
 namespace Inowas\Soilmodel\Projection\LayerDetails;
 
 use Doctrine\DBAL\Connection;
+use Inowas\Common\Grid\LayerNumber;
+use Inowas\Common\Grid\Nlay;
+use Inowas\Common\Modflow\Botm;
+use Inowas\Common\Modflow\Top;
 use Inowas\Common\Soilmodel\AbstractSoilproperty;
-use Inowas\Common\Soilmodel\BottomElevation;
-use Inowas\Common\Soilmodel\TopElevation;
 use Inowas\Soilmodel\Model\GeologicalLayerNumber;
 use Inowas\Soilmodel\Model\SoilmodelId;
 use Inowas\Soilmodel\Projection\Table;
@@ -21,7 +23,7 @@ class LayerValuesFinder
     }
 
 
-    public function getHtop(SoilmodelId $soilmodelId): ?TopElevation
+    public function getTop(SoilmodelId $soilmodelId): ?Top
     {
 
         $type = 'htop';
@@ -29,13 +31,36 @@ class LayerValuesFinder
 
         $result = $this->getValue($soilmodelId, $type, $layernumber);
         if (is_array($result) && array_key_exists('values', $result)){
-            return TopElevation::fromLayerValueWithNumber(
-                json_decode($result['values']),
-                GeologicalLayerNumber::fromInteger($layernumber)
+            return Top::from2DArray(
+                json_decode($result['values'])
             );
         }
 
         return null;
+    }
+
+    public function getBotm(SoilmodelId $soilmodelId): Botm
+    {
+        $type = 'hbot';
+        $layers = $this->getSortedLayerNumbers($soilmodelId);
+
+        /** @var LayerNumber $layer */
+
+        $botmArr = [];
+        foreach ($layers as $layer) {
+            $result = $this->getValue($soilmodelId, $type, $layer->toInteger());
+            if (is_array($result) && array_key_exists('values', $result)){
+                $botmArr[] = json_decode($result['values']);
+            }
+        }
+
+        return Botm::from3DArray($botmArr);
+    }
+
+    public function getNlay(SoilmodelId $soilmodelId): Nlay
+    {
+        $layers = $this->getSortedLayerNumbers($soilmodelId);
+        return Nlay::fromInteger(count($layers));
     }
 
     public function getValues(SoilmodelId $soilmodelId, AbstractSoilproperty $prop): ?AbstractSoilproperty
@@ -67,7 +92,7 @@ class LayerValuesFinder
     private function getValue(SoilmodelId $soilmodelId, string $type, $layernumber)
     {
         return $this->connection->fetchAssoc(
-            sprintf('SELECT * from %s WHERE soilmodel_id = :soilmodel_id AND layer_number = :layer_number AND type = :type ORDER BY id DESC LIMIT 1', Table::LAYER_INTERPOLATIONS),
+            sprintf('SELECT * from %s WHERE soilmodel_id = :soilmodel_id AND layer_number = :layer_number AND type = :type', Table::LAYER_INTERPOLATIONS),
             [
                 'soilmodel_id' => $soilmodelId->toString(),
                 'type' => $type,

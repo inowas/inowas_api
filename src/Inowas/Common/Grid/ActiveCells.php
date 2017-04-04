@@ -40,6 +40,12 @@ class ActiveCells
         return new self($layerData, [$layer->toInteger()], $gridSize);
     }
 
+    public static function fromFullArray(array $arr): ActiveCells
+    {
+        $gridSize = GridSize::fromXY(count($arr), count($arr[0]));
+        return new self($arr, [0], $gridSize);
+    }
+
     public static function fromArray(array $arr): ActiveCells
     {
         $layerData = $arr['data'];

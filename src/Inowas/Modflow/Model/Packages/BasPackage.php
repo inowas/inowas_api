@@ -45,7 +45,7 @@ class BasPackage implements PackageInterface
 
     public static function fromDefaults(): BasPackage
     {
-        $iBound =
+        $iBound = Ibound::fromValue(1);
         $strt = Strt::fromValue(1.0);
         $ixsec = Ixsec::fromBool(false);
         $ichflg = IchFlg::fromBool(false);

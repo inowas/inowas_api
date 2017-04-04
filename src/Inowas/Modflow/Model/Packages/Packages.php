@@ -164,23 +164,6 @@ class Packages implements \JsonSerializable
         $this->updatePackage($disPackage);
     }
 
-    public function updateIBound(Ibound $iBound): void
-    {
-        // The Ibound is configured in the BasPackage
-        /** @var BasPackage $basPackage */
-        $basPackage = $this->getPackage('bas');
-        $basPackage = $basPackage->updateIBound($iBound);
-        $this->updatePackage($basPackage);
-    }
-
-    public function updateStrt(Strt $strt): void
-    {
-        // The Strt is configured in the BasPackage
-        /** @var BasPackage $basPackage */
-        $basPackage = $this->getPackage('bas');
-        $basPackage = $basPackage->updateStrt($strt);
-        $this->updatePackage($basPackage);
-    }
 
     public function updatePackageParameter(string $packageName, string $parameterName, $value): void
     {

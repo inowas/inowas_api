@@ -6,8 +6,10 @@ namespace Inowas\Modflow\Projection\BoundaryList;
 
 use Doctrine\DBAL\Connection;
 use Inowas\Common\DateTime\DateTime;
+use Inowas\Common\Grid\ActiveCells;
 use Inowas\Common\Id\BoundaryId;
 use Inowas\Common\Id\ModflowId;
+use Inowas\Common\Modflow\Ibound;
 use Inowas\Modflow\Projection\Table;
 
 class BoundaryFinder
@@ -65,5 +67,16 @@ class BoundaryFinder
         return $spDates;
     }
 
+    public function findAreaActiveCells(ModflowId $modelId): ActiveCells
+    {
+        $result = $this->connection->fetchAssoc(
+            sprintf('SELECT active_cells FROM %s WHERE type =:type AND model_id = :model_id', Table::BOUNDARIES),
+            [
+                'model_id' => $modelId->toString(),
+                'type' => 'area'
+            ]
+        );
 
+        return ActiveCells::fromFullArray(json_decode($result['active_cells']));
+    }
 }

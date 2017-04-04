@@ -1,15 +1,21 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Inowas\Modflow\Model\Service;
 
 use Inowas\Common\DateTime\DateTime;
 use Inowas\Common\DateTime\TotalTime;
+use Inowas\Common\Grid\ActiveCells;
+use Inowas\Common\Grid\BoundingBox;
+use Inowas\Common\Grid\GridSize;
 use Inowas\Common\Id\ModflowId;
 use Inowas\Common\Modflow\StressPeriod;
 use Inowas\Common\Modflow\StressPeriods;
 use Inowas\Common\Modflow\TimeUnit;
 use Inowas\Modflow\Model\Exception\InvalidTimeUnitException;
 use Inowas\Modflow\Projection\BoundaryList\BoundaryFinder;
+use Inowas\Modflow\Projection\ModelScenarioList\ModelScenarioFinder;
 
 class ModflowModelManager implements ModflowModelManagerInterface
 {
@@ -17,8 +23,12 @@ class ModflowModelManager implements ModflowModelManagerInterface
     /** @var  BoundaryFinder */
     protected $boundaryFinder;
 
-    public function __construct(BoundaryFinder $boundaryFinder){
+    /** @var  ModelScenarioFinder */
+    protected $modelFinder;
+
+    public function __construct(BoundaryFinder $boundaryFinder, ModelScenarioFinder $modelFinder){
         $this->boundaryFinder = $boundaryFinder;
+        $this->modelFinder = $modelFinder;
     }
 
     public function findBoundaries(ModflowId $modelId): array
@@ -64,6 +74,21 @@ class ModflowModelManager implements ModflowModelManagerInterface
         }
 
         return $stressPeriods;
+    }
+
+    public function getAreaActiveCells(ModflowId $modflowId): ActiveCells
+    {
+        return $this->boundaryFinder->findAreaActiveCells($modflowId);
+    }
+
+    public function getBoundingBox(ModflowId $modflowId): BoundingBox
+    {
+        return $this->modelFinder->findBoundingBoxByModelId($modflowId);
+    }
+
+    public function getGridSize(ModflowId $modflowId): GridSize
+    {
+        return $this->modelFinder->findGridSizeByModelId($modflowId);
     }
 
     private function calculateTotims(array $bcDates, TimeUnit $timeUnit): array
