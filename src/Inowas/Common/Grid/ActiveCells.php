@@ -6,70 +6,97 @@ namespace Inowas\Common\Grid;
 
 class ActiveCells
 {
-    /** @var array  */
-    private $cells = [];
+    /**
+     * Represents an 2D-Array of the active cells of a layer
+     * @var array
+     */
+    private $layerData = [];
 
-    /** @var int  */
+    /**
+     * Represents the number of columns
+     * @var int
+     */
     private $nx;
 
-    /** @var int  */
+    /**
+     * Represents the number of rows
+     * @var int
+     */
     private $ny;
 
-    /** @var int */
-    private $layer;
+    /**
+     * Represents the affected layers as a list of int
+     * @var array
+     */
+    private $layers;
 
-    public static function fromArrayAndGridSize(array $cells, GridSize $gridSize): ActiveCells
+    public static function fromArrayAndGridSize(array $layerData, GridSize $gridSize): ActiveCells
     {
-        return new self($cells, $gridSize);
+        return new self($layerData, [0], $gridSize);
     }
 
-    public static function fromArrayGridSizeAndLayer(array $cells, GridSize $gridSize, LayerNumber $layer): ActiveCells
+    public static function fromArrayGridSizeAndLayer(array $layerData, GridSize $gridSize, LayerNumber $layer): ActiveCells
     {
-        return new self($cells, $gridSize, $layer);
+        return new self($layerData, [$layer->toInteger()], $gridSize);
     }
 
     public static function fromArray(array $arr): ActiveCells
     {
-        $cells = $arr['cells'];
+        $layerData = $arr['data'];
         $gridSize = GridSize::fromXY($arr['n_x'], $arr['n_y']);
-        $layerNumber = LayerNumber::fromInteger($arr['layer']);
-        return new self($cells, $gridSize, $layerNumber);
+        $layers = ($arr['layers']);
+        return new self($layerData, $gridSize, $layers);
     }
 
-    public static function fromObjectAndGridSize($obj, GridSize $gridSize): ActiveCells
+    private function __construct(array $layerData, array $layers, GridSize $gridSize)
     {
-        $cells = array();
-        foreach ($obj as $row => $cols){
+        foreach ($layerData as $row => $cols){
             foreach ($cols as $col => $value){
-                $cells[intval($row)][intval($col)] = $value;
+                $layerData[intval($row)][intval($col)] = (bool)$value;
             }
         }
 
-        return new self($cells, $gridSize);
-    }
-
-    private function __construct(array $cells, GridSize $gridSize, ?LayerNumber $layerNumber = null)
-    {
-        foreach ($cells as $row => $cols){
-            foreach ($cols as $col => $value){
-                if ($value !== 0){$value = 1;}
-                $cells[intval($row)][intval($col)] = $value;
-            }
-        }
-
-        $this->cells = $cells;
+        $this->layerData = $layerData;
         $this->nx = $gridSize->nX();
         $this->ny = $gridSize->nY();
-
-        if (is_null($layerNumber)){
-            $layerNumber = LayerNumber::fromInteger(0);
-        }
-        $this->layer = $layerNumber->toInteger();
+        $this->layers = $layers;
     }
 
+    /**
+     * This function returns the active cells in an element each cell
+     * [
+     *      [$layer, $row, $col],
+     *      [$layer, $row, $col],
+     *      [$layer, $row, $col],
+     *      ...
+     * ]
+     * @return array
+     *
+     */
     public function cells(): array
     {
-        return $this->cells;
+        $cells = [];
+        foreach ($this->layers as $layer) {
+            foreach ($this->layerData as $rowNumber => $row) {
+                foreach ($row as $colNumber => $isActive) {
+                    if ($isActive === 1 || $isActive === true) {
+                        $cells[] = [$layer, $rowNumber, $colNumber];
+                    }
+                }
+            }
+        }
+
+        return $cells;
+    }
+
+    public function layerData(): array
+    {
+        return $this->layerData;
+    }
+
+    public function layers(): array
+    {
+        return $this->layers;
     }
 
     public function fullArray(): array
@@ -78,13 +105,12 @@ class ActiveCells
         for ($iR=0; $iR<$this->ny; $iR++){
             $cells[$iR] = [];
             for ($iC=0; $iC<$this->nx; $iC++) {
-                $cells[$iR][$iC] = 0;
+                $cells[$iR][$iC] = false;
             }
         }
 
-        foreach ($this->cells as $row => $cols){
+        foreach ($this->layerData as $row => $cols){
             foreach ($cols as $col => $value){
-                if ($value !== 0){$value = 1;}
                 $cells[intval($row)][intval($col)] = $value;
             }
         }
@@ -95,15 +121,10 @@ class ActiveCells
     public function toArray(): array
     {
         return array(
-            'cells' => $this->cells,
+            'data' => $this->layerData,
             'n_x' => $this->nx,
             'n_y' => $this->ny,
-            'layer' => $this->layer
+            'layers' => $this->layers
         );
-    }
-
-    public function layer(): LayerNumber
-    {
-        return LayerNumber::fromInteger($this->layer);
     }
 }
