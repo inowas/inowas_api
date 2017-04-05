@@ -6,7 +6,6 @@ namespace Inowas\Modflow\Model\Packages;
 
 use Inowas\Common\Modflow\Extension;
 use Inowas\Common\Modflow\Ipakcb;
-use Inowas\Common\Modflow\OcStressPeriodData;
 use Inowas\Common\Modflow\Options;
 use Inowas\Common\Modflow\Unitnumber;
 
@@ -58,7 +57,7 @@ class WelPackage implements PackageInterface
     {
         $ipakcb = Ipakcb::fromInteger($arr['ipakcb']);
         $stressPeriodData = WelStressPeriodData::fromArray($arr['stress_period_data']);
-        $options = OcStressPeriodData::fromArray($arr['stress_period_data']);
+        $options = Options::fromValue(null);
         $extension = Extension::fromArray($arr['extension']);
         $unitnumber = Unitnumber::fromArray($arr['unitnumber']);
 

@@ -6,11 +6,8 @@ namespace Inowas\Modflow\Model\Packages;
 
 use Inowas\Common\Modflow\Extension;
 use Inowas\Common\Modflow\Ipakcb;
-use Inowas\Common\Modflow\OcStressPeriodData;
 use Inowas\Common\Modflow\Options;
-use Inowas\Modflow\Model\Packages\RivStressPeriodData;
 use Inowas\Common\Modflow\Unitnumber;
-use Inowas\Common\Modflow\WelStressPeriodData;
 
 class RivPackage implements PackageInterface
 {
@@ -47,20 +44,20 @@ class RivPackage implements PackageInterface
 
     public static function fromParams(
         Ipakcb $ipakcb,
-        WelStressPeriodData $welStressPeriodData,
+        RivStressPeriodData $stressPeriodData,
         Options $options,
         Extension $extension,
         Unitnumber $unitnumber
     ): RivPackage
     {
-        return new self($ipakcb, $welStressPeriodData, $options, $extension, $unitnumber);
+        return new self($ipakcb, $stressPeriodData, $options, $extension, $unitnumber);
     }
 
     public static function fromArray(array $arr): RivPackage
     {
         $ipakcb = Ipakcb::fromInteger($arr['ipakcb']);
-        $stressPeriodData = WelStressPeriodData::fromArray($arr['stress_period_data']);
-        $options = OcStressPeriodData::fromArray($arr['stress_period_data']);
+        $stressPeriodData = RivStressPeriodData::fromArray($arr['stress_period_data']);
+        $options = Options::fromValue(null);
         $extension = Extension::fromArray($arr['extension']);
         $unitnumber = Unitnumber::fromArray($arr['unitnumber']);
 
@@ -69,7 +66,7 @@ class RivPackage implements PackageInterface
 
     private function __construct(
         Ipakcb $ipakcb,
-        WelStressPeriodData $stressPeriodData,
+        RivStressPeriodData $stressPeriodData,
         Options $options,
         Extension $extension,
         Unitnumber $unitnumber
@@ -89,7 +86,7 @@ class RivPackage implements PackageInterface
         return $package;
     }
 
-    public function updateWelStressPeriodData(WelStressPeriodData $stressPeriodData): RivPackage
+    public function updateWelStressPeriodData(RivStressPeriodData $stressPeriodData): RivPackage
     {
         $package = self::fromArray($this->toArray());
         $package->stressPeriodData = $stressPeriodData;
