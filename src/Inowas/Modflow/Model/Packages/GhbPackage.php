@@ -9,16 +9,16 @@ use Inowas\Common\Modflow\Ipakcb;
 use Inowas\Common\Modflow\Options;
 use Inowas\Common\Modflow\Unitnumber;
 
-class RivPackage implements PackageInterface
+class GhbPackage implements PackageInterface
 {
 
     /** @var string  */
-    protected $type = 'riv';
+    protected $type = 'wel';
 
     /** @var  Ipakcb */
     protected $ipakcb;
 
-    /** @var  RivStressPeriodData */
+    /** @var  GhbStressPeriodData */
     protected $stressPeriodData;
 
     /** @var  Options */
@@ -34,29 +34,29 @@ class RivPackage implements PackageInterface
     public static function fromDefaults()
     {
         $ipakcb = Ipakcb::fromInteger(0);
-        $stressPeriodData = RivStressPeriodData::create();
+        $stressPeriodData = GhbStressPeriodData::create();
         $options = Options::fromValue(null);
-        $extension = Extension::fromString('riv');
-        $unitnumber = Unitnumber::fromInteger(18);
+        $extension = Extension::fromString('ghb');
+        $unitnumber = Unitnumber::fromInteger(23);
 
         return new self($ipakcb, $stressPeriodData, $options, $extension, $unitnumber);
     }
 
     public static function fromParams(
         Ipakcb $ipakcb,
-        RivStressPeriodData $stressPeriodData,
+        GhbStressPeriodData $GhbStressPeriodData,
         Options $options,
         Extension $extension,
         Unitnumber $unitnumber
-    ): RivPackage
+    ): GhbPackage
     {
-        return new self($ipakcb, $stressPeriodData, $options, $extension, $unitnumber);
+        return new self($ipakcb, $GhbStressPeriodData, $options, $extension, $unitnumber);
     }
 
-    public static function fromArray(array $arr): RivPackage
+    public static function fromArray(array $arr): GhbPackage
     {
         $ipakcb = Ipakcb::fromInteger($arr['ipakcb']);
-        $stressPeriodData = RivStressPeriodData::fromArray($arr['stress_period_data']);
+        $stressPeriodData = GhbStressPeriodData::fromArray($arr['stress_period_data']);
         $options = Options::fromValue(null);
         $extension = Extension::fromArray($arr['extension']);
         $unitnumber = Unitnumber::fromArray($arr['unitnumber']);
@@ -66,7 +66,7 @@ class RivPackage implements PackageInterface
 
     private function __construct(
         Ipakcb $ipakcb,
-        RivStressPeriodData $stressPeriodData,
+        GhbStressPeriodData $stressPeriodData,
         Options $options,
         Extension $extension,
         Unitnumber $unitnumber
@@ -79,35 +79,35 @@ class RivPackage implements PackageInterface
         $this->unitnumber = $unitnumber;
     }
 
-    public function updateIpakcb(Ipakcb $ipakcb): RivPackage
+    public function updateIpakcb(Ipakcb $ipakcb): GhbPackage
     {
         $package = self::fromArray($this->toArray());
         $package->ipakcb = $ipakcb;
         return $package;
     }
 
-    public function updateStressPeriodData(RivStressPeriodData $stressPeriodData): RivPackage
+    public function updateStressPeriodData(GhbStressPeriodData $stressPeriodData): GhbPackage
     {
         $package = self::fromArray($this->toArray());
         $package->stressPeriodData = $stressPeriodData;
         return $package;
     }
 
-    public function updateOptions(Options $options): RivPackage
+    public function updateOptions(Options $options): GhbPackage
     {
         $package = self::fromArray($this->toArray());
         $package->options = $options;
         return $package;
     }
 
-    public function updateExtension(Extension $extension): RivPackage
+    public function updateExtension(Extension $extension): GhbPackage
     {
         $package = self::fromArray($this->toArray());
         $package->extension = $extension;
         return $package;
     }
 
-    public function updateUnitnumber(Unitnumber $unitnumber): RivPackage
+    public function updateUnitnumber(Unitnumber $unitnumber): GhbPackage
     {
         $package = self::fromArray($this->toArray());
         $package->unitnumber = $unitnumber;

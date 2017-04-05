@@ -39,4 +39,16 @@ class Geometry
     {
         return $this->geometry->toJson();
     }
+
+    public static function fromJson(string $json): Geometry
+    {
+        // {"type":"Point","coordinates":[105.86406114811,20.963857515931]}
+        $obj = json_decode($json);
+        $type = strtolower($obj->type);
+        if ($type == 'point'){
+            return Geometry::fromPoint(new Point($obj->coordinates[0], $obj->coordinates[1]));
+        }
+
+        return null;
+    }
 }

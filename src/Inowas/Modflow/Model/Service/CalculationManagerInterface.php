@@ -10,14 +10,10 @@ use Inowas\Common\Grid\BoundingBox;
 use Inowas\Common\Grid\GridSize;
 use Inowas\Common\Id\ModflowId;
 use Inowas\Common\Modflow\StressPeriods;
-use Inowas\Common\Modflow\TimeUnit;
-use Inowas\Modflow\Model\Packages\WelStressPeriodData;
 
-interface ModflowModelManagerInterface
+interface CalculationManagerInterface extends ModflowModelManagerInterface, SoilmodelManagerInterface
 {
     public function findBoundaries(ModflowId $modflowModel): array;
-
-    public function findWelStressPeriodData(ModflowId $modflowId, StressPeriods $stressPeriods, DateTime $start, TimeUnit $timeUnit);
 
     public function getStressPeriods(ModflowId $modflowId, DateTime $start, DateTime $end): ?StressPeriods;
 

@@ -2,6 +2,8 @@
 
 namespace Tests\Inowas\Modflow\Model\Packages;
 
+use Inowas\Common\Grid\BoundingBox;
+use Inowas\Common\Grid\GridSize;
 use Inowas\Common\Modflow\TimeUnit;
 use Inowas\Modflow\Model\Packages\Packages;
 
@@ -50,12 +52,22 @@ class PackagesTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals(1, $obj->data->dis->itmuni);
     }
 
-    public function test_update_time_unit_with_update_param_function(){
+    public function test_update_time_unit_with_update_param_function()
+    {
         $packages = Packages::createFromDefaults();
         $packages->updatePackageParameter('dis', 'TimeUnit', TimeUnit::fromInt(TimeUnit::MINUTES));
         $json = json_encode($packages);
         $this->assertJson($json);
         $obj = \json_decode($json);
         $this->assertEquals(2, $obj->data->dis->itmuni);
+    }
+
+    public function test_gridsize_has_same_size_as_ibound(): void
+    {
+        $gridsize = GridSize::fromXY(40,50);
+        $boundingBox = BoundingBox::fromEPSG4326Coordinates(10,20,30,40,100,200);
+        $packages = Packages::createFromDefaults();
+        $packages->updateGridParameters($gridsize, $boundingBox);
+
     }
 }

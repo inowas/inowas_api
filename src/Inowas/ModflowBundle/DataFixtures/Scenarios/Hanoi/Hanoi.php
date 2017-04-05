@@ -124,8 +124,7 @@ class Hanoi implements ContainerAwareInterface, DataFixtureInterface
         $boundingBox = BoundingBox::fromEPSG4326Coordinates($box->xMin(), $box->xMax(), $box->yMin(), $box->yMax(), $box->dX(), $box->dY());
         $commandBus->dispatch(ChangeModflowModelBoundingBox::forModflowModel($ownerId, $modelId, $boundingBox));
 
-        #$gridSize = GridSize::fromXY(165, 175);
-        $gridSize = GridSize::fromXY(40, 50);
+        $gridSize = GridSize::fromXY(165, 175);
         $commandBus->dispatch(ChangeModflowModelGridSize::forModflowModel($ownerId, $modelId, $gridSize));
 
         $area = AreaBoundary::create(BoundaryId::generate())->setName(BoundaryName::fromString('Hanoi Area'))->setGeometry(Geometry::fromPolygon(new Polygon(array(
@@ -305,7 +304,7 @@ class Hanoi implements ContainerAwareInterface, DataFixtureInterface
             array('SC2_GU90', 11772988.05, 2386432.76, 5.43, -9.57, -38.06, -39.07, -65.97,10.0000, 10.0000, 1.0000, 20.0000, 20.0000, 2.0000, 0.0010, 0.0010, 0.0001, 40.0000, 40.0000, 4.0000)
         );
         $header = null;
-        foreach ($boreholes as $borehole) {
+        foreach ($boreholes as $key => $borehole) {
             if (is_null($header)) {
                 $header = $borehole;
                 continue;
@@ -402,7 +401,7 @@ class Hanoi implements ContainerAwareInterface, DataFixtureInterface
         $header = $this->loadHeaderFromCsv($fileName);
         $dates = $this->getDates($header);
 
-        foreach ($wells as $well){
+        foreach ($wells as $key => $well){
             $value = null;
             $pumpingRates = PumpingRates::create();
             foreach ($dates as $date){
@@ -421,7 +420,7 @@ class Hanoi implements ContainerAwareInterface, DataFixtureInterface
                 BoundaryName::fromString($well['Name']),
                 Geometry::fromPoint($geoTools->transformPoint(new Point($well['x'], $well['y'], $well['srid']), 4326)),
                 WellType::fromString($well['type']),
-                LayerNumber::fromInteger((int)$well['layer']),
+                LayerNumber::fromInteger((int)$well['layer']-1),
                 $pumpingRates
             );
 
@@ -433,7 +432,9 @@ class Hanoi implements ContainerAwareInterface, DataFixtureInterface
         $start = DateTime::fromDateTime(new \DateTime('2005-01-01'));
         $end = DateTime::fromDateTime(new \DateTime('2007-12-31'));
         $commandBus->dispatch(CreateModflowModelCalculation::byUserWithModelId($calculationId, $ownerId, $modelId, $start, $end));
-        #$commandBus->dispatch(CalculateModflowModelCalculation::byUserWithModelId($ownerId, $calculationId, $modelId));
+        $commandBus->dispatch(CalculateModflowModelCalculation::byUserWithModelId($ownerId, $calculationId, $modelId));
+
+        return 1;
 
         $this->loadResultsWithLayer('heads', 0, 2000, 4, 'S0', $calculationId, $commandBus);
         $this->loadResultsWithLayer('drawdown', 0, 2000, 4, 'S0', $calculationId, $commandBus);
@@ -468,7 +469,7 @@ class Hanoi implements ContainerAwareInterface, DataFixtureInterface
                 BoundaryName::fromString($wellData['name']),
                 Geometry::fromPoint(new Point($wellData['x'], $wellData['y'], 4326)),
                 WellType::fromString(WellType::TYPE_SCENARIO_MOVED_WELL),
-                LayerNumber::fromInteger(4),
+                LayerNumber::fromInteger(3),
                 PumpingRates::create()->add(
                     PumpingRate::fromDateTimeAndCubicMetersPerDay(
                         $start->toDateTimeImmutable(),
@@ -504,7 +505,7 @@ class Hanoi implements ContainerAwareInterface, DataFixtureInterface
                 BoundaryName::fromString($wellData['name']),
                 Geometry::fromPoint(new Point($wellData['x'], $wellData['y'], 4326)),
                 WellType::fromString(WellType::TYPE_SCENARIO_NEW_WELL),
-                LayerNumber::fromInteger(4),
+                LayerNumber::fromInteger(3),
                 PumpingRates::create()->add(
                     PumpingRate::fromDateTimeAndCubicMetersPerDay(
                         $start->toDateTimeImmutable(),
@@ -556,7 +557,7 @@ class Hanoi implements ContainerAwareInterface, DataFixtureInterface
                 BoundaryName::fromString($wellData['name']),
                 Geometry::fromPoint(new Point($wellData['x'], $wellData['y'], 4326)),
                 WellType::fromString(WellType::TYPE_SCENARIO_NEW_WELL),
-                LayerNumber::fromInteger(4),
+                LayerNumber::fromInteger(3),
                 PumpingRates::create()->add(
                     PumpingRate::fromDateTimeAndCubicMetersPerDay(
                         $start->toDateTimeImmutable(),
@@ -597,7 +598,7 @@ class Hanoi implements ContainerAwareInterface, DataFixtureInterface
                 BoundaryName::fromString($wellData['name']),
                 Geometry::fromPoint(new Point($wellData['x'], $wellData['y'], 4326)),
                 WellType::fromString(WellType::TYPE_SCENARIO_MOVED_WELL),
-                LayerNumber::fromInteger(4),
+                LayerNumber::fromInteger(3),
                 PumpingRates::create()->add(
                     PumpingRate::fromDateTimeAndCubicMetersPerDay(
                         $start->toDateTimeImmutable(),
@@ -620,7 +621,7 @@ class Hanoi implements ContainerAwareInterface, DataFixtureInterface
                 BoundaryName::fromString($wellData['name']),
                 Geometry::fromPoint(new Point($wellData['x'], $wellData['y'], 4326)),
                 WellType::fromString(WellType::TYPE_SCENARIO_NEW_WELL),
-                LayerNumber::fromInteger(4),
+                LayerNumber::fromInteger(3),
                 PumpingRates::create()->add(
                     PumpingRate::fromDateTimeAndCubicMetersPerDay(
                         $start->toDateTimeImmutable(),

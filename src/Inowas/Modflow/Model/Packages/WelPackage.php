@@ -13,7 +13,7 @@ class WelPackage implements PackageInterface
 {
 
     /** @var string  */
-    protected $type = 'oc';
+    protected $type = 'wel';
 
     /** @var  Ipakcb */
     protected $ipakcb;
@@ -37,7 +37,7 @@ class WelPackage implements PackageInterface
         $stressPeriodData = WelStressPeriodData::create();
         $options = Options::fromValue(null);
         $extension = Extension::fromString('wel');
-        $unitnumber = Unitnumber::fromInteger(11);
+        $unitnumber = Unitnumber::fromInteger(20);
 
         return new self($ipakcb, $stressPeriodData, $options, $extension, $unitnumber);
     }
@@ -58,8 +58,8 @@ class WelPackage implements PackageInterface
         $ipakcb = Ipakcb::fromInteger($arr['ipakcb']);
         $stressPeriodData = WelStressPeriodData::fromArray($arr['stress_period_data']);
         $options = Options::fromValue(null);
-        $extension = Extension::fromArray($arr['extension']);
-        $unitnumber = Unitnumber::fromArray($arr['unitnumber']);
+        $extension = Extension::fromValue($arr['extension']);
+        $unitnumber = Unitnumber::fromValue($arr['unitnumber']);
 
         return new self($ipakcb, $stressPeriodData, $options, $extension, $unitnumber);
     }
@@ -86,7 +86,7 @@ class WelPackage implements PackageInterface
         return $package;
     }
 
-    public function updateWelStressPeriodData(WelStressPeriodData $stressPeriodData): WelPackage
+    public function updateStressPeriodData(WelStressPeriodData $stressPeriodData): WelPackage
     {
         $package = self::fromArray($this->toArray());
         $package->stressPeriodData = $stressPeriodData;

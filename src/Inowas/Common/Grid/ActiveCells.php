@@ -16,13 +16,13 @@ class ActiveCells
      * Represents the number of columns
      * @var int
      */
-    private $nx;
+    private $nx = 0;
 
     /**
      * Represents the number of rows
      * @var int
      */
-    private $ny;
+    private $ny = 0;
 
     /**
      * Represents the affected layers as a list of int
@@ -48,23 +48,44 @@ class ActiveCells
 
     public static function fromArray(array $arr): ActiveCells
     {
-        $layerData = $arr['data'];
+        $layerData = (array)$arr['data'];
         $gridSize = GridSize::fromXY($arr['n_x'], $arr['n_y']);
-        $layers = ($arr['layers']);
-        return new self($layerData, $gridSize, $layers);
+        $layers = $arr['layers'];
+        return new self($layerData, $layers, $gridSize);
     }
 
-    private function __construct(array $layerData, array $layers, GridSize $gridSize)
+    public static function fromCells(array $arr): ActiveCells
     {
+        $layers = array();
+        $layerData = array();
+        foreach ($arr as $item){
+            $layers = array($item[0]);
+            $layerData[$item[1]] = array();
+            $layerData[$item[1]][$item[2]] = true;
+        }
+
+        return new self($layerData, $layers);
+    }
+
+    private function __construct(array $layerData, array $layers, ?GridSize $gridSize = null)
+    {
+        $data = array();
         foreach ($layerData as $row => $cols){
+            $data[$row] = array();
             foreach ($cols as $col => $value){
-                $layerData[intval($row)][intval($col)] = (bool)$value;
+                $data[$row][$col] = (bool)$value;
             }
         }
 
-        $this->layerData = $layerData;
-        $this->nx = $gridSize->nX();
-        $this->ny = $gridSize->nY();
+        $this->layerData = $data;
+
+        if ($gridSize instanceof GridSize)
+        {
+            $this->nx = $gridSize->nX();
+            $this->ny = $gridSize->nY();
+
+        }
+
         $this->layers = $layers;
     }
 
@@ -86,7 +107,7 @@ class ActiveCells
             foreach ($this->layerData as $rowNumber => $row) {
                 foreach ($row as $colNumber => $isActive) {
                     if ($isActive === 1 || $isActive === true) {
-                        $cells[] = [$layer, $rowNumber, $colNumber];
+                        $cells[] = [(int)$layer, (int)$rowNumber, (int)$colNumber];
                     }
                 }
             }

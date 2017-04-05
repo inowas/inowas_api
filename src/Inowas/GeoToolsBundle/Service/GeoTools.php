@@ -61,7 +61,7 @@ class GeoTools
                     $boundingBox->yMax()-(($y+0.5)*$dY)
                 );
 
-                $activeCells[$x][$y] = $this->intersectWktGeometry($cellWkt, $areaGeometry);
+                $activeCells[$y][$x] = $this->intersectWktGeometry($cellWkt, $areaGeometry);
                 unset($cellWkt);
             }
         }

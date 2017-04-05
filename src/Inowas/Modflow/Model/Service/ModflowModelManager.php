@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Inowas\Modflow\Model\Service;
 
+use Inowas\Common\Boundaries\PumpingRate;
+use Inowas\Common\Boundaries\WellBoundary;
 use Inowas\Common\DateTime\DateTime;
 use Inowas\Common\DateTime\TotalTime;
 use Inowas\Common\Grid\ActiveCells;
@@ -14,6 +16,8 @@ use Inowas\Common\Modflow\StressPeriod;
 use Inowas\Common\Modflow\StressPeriods;
 use Inowas\Common\Modflow\TimeUnit;
 use Inowas\Modflow\Model\Exception\InvalidTimeUnitException;
+use Inowas\Modflow\Model\Packages\WelStressPeriodData;
+use Inowas\Modflow\Model\Packages\WelStressPeriodGridCellValue;
 use Inowas\Modflow\Projection\BoundaryList\BoundaryFinder;
 use Inowas\Modflow\Projection\ModelScenarioList\ModelScenarioFinder;
 
@@ -36,13 +40,10 @@ class ModflowModelManager implements ModflowModelManagerInterface
         return $this->boundaryFinder->findByModelId($modelId);
     }
 
-    public function getStressPeriods(ModflowId $modflowId, DateTime $start, DateTime $end): ?StressPeriods
+    public function getStressPeriods(ModflowId $modflowId, DateTime $start, DateTime $end): StressPeriods
     {
+        /** @var array $bcDates */
         $bcDates = $this->boundaryFinder->findStressPeriodDatesById($modflowId);
-
-        if (is_null($bcDates)) {
-            return null;
-        }
 
         $bcDates[] = $start;
         $bcDates[] = $end;
@@ -89,6 +90,33 @@ class ModflowModelManager implements ModflowModelManagerInterface
     public function getGridSize(ModflowId $modflowId): GridSize
     {
         return $this->modelFinder->findGridSizeByModelId($modflowId);
+    }
+
+    public function findWelStressPeriodData(ModflowId $modflowId, StressPeriods $stressPeriods, DateTime $start, TimeUnit $timeUnit): WelStressPeriodData
+    {
+        $wspd = WelStressPeriodData::create();
+        $wells = $this->findWells($modflowId);
+
+        /** @var WellBoundary $well */
+        foreach ($wells as $well){
+            /** @var PumpingRate $pumpingRate */
+            foreach ($well->pumpingRates()->get() as $pumpingRate){
+                $cells = $well->activeCells()->cells();
+                if (count($cells)>0){
+                    $cell = $cells[0];
+                    $totim = $this->calculateTotim($start, DateTime::fromAtom($pumpingRate->dateTime()->format(DATE_ATOM)), $timeUnit);
+                    $sp = $stressPeriods->spNumberFromTotim($totim);
+                    $wspd->addGridCellValue(WelStressPeriodGridCellValue::fromParams($sp, $cell[0], $cell[1], $cell[2], $pumpingRate->cubicMetersPerDay()));
+                }
+            }
+        }
+
+        return $wspd;
+    }
+
+    private function findWells(ModflowId $modflowId): array
+    {
+        return $this->boundaryFinder->findWells($modflowId);
     }
 
     private function calculateTotims(array $bcDates, TimeUnit $timeUnit): array

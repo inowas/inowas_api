@@ -1,0 +1,11 @@
+<?php
+
+namespace Inowas\Modflow\Model\Exception;
+
+final class SqlQueryExceptionException extends \InvalidArgumentException
+{
+    public static function withClassName(string $className, string $functionName)
+    {
+        return new self(sprintf('A query went wrong in %s:%s.', $className, $functionName));
+    }
+}

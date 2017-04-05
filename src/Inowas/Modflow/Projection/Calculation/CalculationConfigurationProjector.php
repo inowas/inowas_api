@@ -6,6 +6,7 @@ namespace Inowas\Modflow\Projection\Calculation;
 
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Schema\Schema;
+use Inowas\Common\FileSystem\Modelworkspace;
 use Inowas\Common\Id\ModflowId;
 use Inowas\Common\Modflow\Ibound;
 use Inowas\Common\Modflow\Strt;
@@ -62,6 +63,7 @@ class CalculationConfigurationProjector extends AbstractDoctrineConnectionProjec
         $gridSize = $this->modflowModelManager->getGridSize($event->modflowModelId());
         $boundingBox = $this->modflowModelManager->getBoundingBox($event->modflowModelId());
         $packages->updateGridParameters($gridSize, $boundingBox);
+        $packages->updatePackageParameter('mf', 'modelworkspace', Modelworkspace::fromString($event->calculationId()->toString()));
 
         /*
          * Add PackageDetails for DisPackage
@@ -85,7 +87,7 @@ class CalculationConfigurationProjector extends AbstractDoctrineConnectionProjec
         /*
          * Add PackageDetails for BasPackage
          * Ibound, Strt
-        */
+         */
         $activeCells = $this->modflowModelManager->getAreaActiveCells($event->modflowModelId());
         $iBound = Ibound::fromActiveCellsAndNumberOfLayers($activeCells, $this->soilmodelManager->getNlay($event->soilModelId())->toInteger());
         $packages->updatePackageParameter('bas', 'ibound', $iBound);
@@ -94,10 +96,37 @@ class CalculationConfigurationProjector extends AbstractDoctrineConnectionProjec
 
         /*
          * Add PackageDetails for LpfPackage
-         * LayTyp
-        */
-        $laytyp = $this->soilmodelManager->getLaytyp($event->soilModelId());
-        $packages->updatePackageParameter('lpf', 'laytyp', $laytyp);
+         */
+        $packages->updatePackageParameter('lpf', 'laytyp', $this->soilmodelManager->getLaytyp($event->soilModelId()));
+        $packages->updatePackageParameter('lpf', 'layavg', $this->soilmodelManager->getLayavg($event->soilModelId()));
+        $packages->updatePackageParameter('lpf', 'chani', $this->soilmodelManager->getChani($event->soilModelId()));
+        $packages->updatePackageParameter('lpf', 'layvka', $this->soilmodelManager->getLayvka($event->soilModelId()));
+        $packages->updatePackageParameter('lpf', 'laywet', $this->soilmodelManager->getLaywet($event->soilModelId()));
+        $packages->updatePackageParameter('lpf', 'ipakcb', $this->soilmodelManager->getIpakcb($event->soilModelId()));
+        $packages->updatePackageParameter('lpf', 'hdry', $this->soilmodelManager->getHdry($event->soilModelId()));
+        $packages->updatePackageParameter('lpf', 'wetfct', $this->soilmodelManager->getWetfct($event->soilModelId()));
+        $packages->updatePackageParameter('lpf', 'iwetit', $this->soilmodelManager->getIwetit($event->soilModelId()));
+        $packages->updatePackageParameter('lpf', 'ihdwet', $this->soilmodelManager->getIhdwet($event->soilModelId()));
+        $packages->updatePackageParameter('lpf', 'hk', $this->soilmodelManager->getHk($event->soilModelId()));
+        $packages->updatePackageParameter('lpf', 'hani', $this->soilmodelManager->getHani($event->soilModelId()));
+        $packages->updatePackageParameter('lpf', 'vka', $this->soilmodelManager->getVka($event->soilModelId()));
+        $packages->updatePackageParameter('lpf', 'ss', $this->soilmodelManager->getSs($event->soilModelId()));
+        $packages->updatePackageParameter('lpf', 'sy', $this->soilmodelManager->getSy($event->soilModelId()));
+        $packages->updatePackageParameter('lpf', 'vkcb', $this->soilmodelManager->getVkcb($event->soilModelId()));
+        $packages->updatePackageParameter('lpf', 'wetdry', $this->soilmodelManager->getWetdry($event->soilModelId()));
+        $packages->updatePackageParameter('lpf', 'storagecoefficient', $this->soilmodelManager->getStoragecoefficient($event->soilModelId()));
+        $packages->updatePackageParameter('lpf', 'constantcv', $this->soilmodelManager->getConstantcv($event->soilModelId()));
+        $packages->updatePackageParameter('lpf', 'thickstrt', $this->soilmodelManager->getThickstrt($event->soilModelId()));
+        $packages->updatePackageParameter('lpf', 'nocvcorrection', $this->soilmodelManager->getNocvcorrection($event->soilModelId()));
+        $packages->updatePackageParameter('lpf', 'novfc', $this->soilmodelManager->getNovfc($event->soilModelId()));
+
+        /*
+         * Add PackageDetails for WelPackage
+         */
+        $welStressPeriodData = $this->modflowModelManager->findWelStressPeriodData($event->modflowModelId(), $stressPeriods, $event->start(), $event->timeUnit());
+        $packages->updatePackageParameter('wel', 'StressPeriodData', $welStressPeriodData);
+
+        echo json_encode($packages);
 
         $this->connection->insert(Table::CALCULATION_CONFIG, array(
             'calculation_id' => $event->calculationId()->toString(),

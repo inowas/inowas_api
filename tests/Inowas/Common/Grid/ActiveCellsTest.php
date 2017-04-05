@@ -67,4 +67,12 @@ class ActiveCellsTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals($arr, $activeCells->layerData());
         $this->assertCount(4, $arr);
     }
+
+    public function test_from_cells(): void
+    {
+        $json = '[[4,43,28]]';
+        $arr = json_decode($json);
+        $activeCells = ActiveCells::fromCells($arr);
+        $this->assertEquals($json, json_encode($activeCells->cells()));
+    }
 }

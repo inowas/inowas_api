@@ -172,11 +172,11 @@ class BoundaryListProjector extends AbstractDoctrineConnectionProjector
         }
 
         if ($boundary instanceof AreaBoundary) {
-            return $this->geoTools->getActiveCellsFromArea($boundary, $boundingBox, $gridSize)->layerData();
+            return $this->geoTools->getActiveCellsFromArea($boundary, $boundingBox, $gridSize)->toArray();
         }
 
         if ($boundary instanceof WellBoundary) {
-            return $this->geoTools->getActiveCellsFromWell($boundary, $boundingBox, $gridSize)->cells();
+            return $this->geoTools->getActiveCellsFromWell($boundary, $boundingBox, $gridSize)->toArray();
         }
 
         return null;

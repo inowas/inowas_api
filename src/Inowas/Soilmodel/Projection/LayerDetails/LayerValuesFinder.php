@@ -6,6 +6,9 @@ use Doctrine\DBAL\Connection;
 use Inowas\Common\Grid\LayerNumber;
 use Inowas\Common\Grid\Nlay;
 use Inowas\Common\Modflow\Botm;
+use Inowas\Common\Modflow\Hk;
+use Inowas\Common\Modflow\Ss;
+use Inowas\Common\Modflow\Sy;
 use Inowas\Common\Modflow\Top;
 use Inowas\Common\Soilmodel\AbstractSoilproperty;
 use Inowas\Soilmodel\Model\GeologicalLayerNumber;
@@ -44,9 +47,8 @@ class LayerValuesFinder
         $type = 'hbot';
         $layers = $this->getSortedLayerNumbers($soilmodelId);
 
-        /** @var LayerNumber $layer */
-
         $botmArr = [];
+        /** @var LayerNumber $layer */
         foreach ($layers as $layer) {
             $result = $this->getValue($soilmodelId, $type, $layer->toInteger());
             if (is_array($result) && array_key_exists('values', $result)){
@@ -55,6 +57,57 @@ class LayerValuesFinder
         }
 
         return Botm::from3DArray($botmArr);
+    }
+
+    public function getHk(SoilmodelId $soilmodelId): Hk
+    {
+        $type = 'kx';
+        $layers = $this->getSortedLayerNumbers($soilmodelId);
+
+        $kx = [];
+        /** @var LayerNumber $layer */
+        foreach ($layers as $layer) {
+            $result = $this->getValue($soilmodelId, $type, $layer->toInteger());
+            if (is_array($result) && array_key_exists('values', $result)){
+                $kx[] = json_decode($result['values']);
+            }
+        }
+
+        return Hk::from3DArray($kx);
+    }
+
+    public function getSs(SoilmodelId $soilmodelId): Ss
+    {
+        $type = 'ss';
+        $layers = $this->getSortedLayerNumbers($soilmodelId);
+
+        $ss = [];
+        /** @var LayerNumber $layer */
+        foreach ($layers as $layer) {
+            $result = $this->getValue($soilmodelId, $type, $layer->toInteger());
+            if (is_array($result) && array_key_exists('values', $result)){
+                $ss[] = json_decode($result['values']);
+            }
+        }
+
+        return Ss::from3DArray($ss);
+    }
+
+    public function getSy(SoilmodelId $soilmodelId): Sy
+    {
+        $type = 'sy';
+        $layers = $this->getSortedLayerNumbers($soilmodelId);
+
+        $sy = [];
+        /** @var LayerNumber $layer */
+        foreach ($layers as $layer) {
+            $result = $this->getValue($soilmodelId, $type, $layer->toInteger());
+            if (is_array($result) && array_key_exists('values', $result)){
+                $sy[] = json_decode($result['values']);
+            }
+        }
+
+        return Sy::from3DArray($sy);
     }
 
     public function getNlay(SoilmodelId $soilmodelId): Nlay

@@ -7,8 +7,10 @@ use Inowas\Common\Modflow\Botm;
 use Inowas\Common\Modflow\Chani;
 use Inowas\Common\Modflow\Constantcv;
 use Inowas\Common\Modflow\Hani;
+use Inowas\Common\Modflow\Hdry;
 use Inowas\Common\Modflow\Hk;
 use Inowas\Common\Modflow\Ihdwet;
+use Inowas\Common\Modflow\Ipakcb;
 use Inowas\Common\Modflow\Iwetit;
 use Inowas\Common\Modflow\Layavg;
 use Inowas\Common\Modflow\Laytyp;
@@ -42,6 +44,12 @@ interface SoilmodelManagerInterface
     public function getChani(SoilmodelId $soilmodelId): Chani;
 
     public function getLayvka(SoilmodelId $soilmodelId): Layvka;
+
+    public function getLaywet(SoilmodelId $soilmodelId): Laywet;
+
+    public function getIpakcb(SoilmodelId $soilmodelId): Ipakcb;
+
+    public function getHdry(SoilmodelId $soilmodelId): Hdry;
 
     public function getWetfct(SoilmodelId $soilmodelId): Wetfct;
 

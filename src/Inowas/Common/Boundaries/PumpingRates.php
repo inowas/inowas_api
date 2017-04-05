@@ -13,6 +13,19 @@ class PumpingRates implements \JsonSerializable
         return new self();
     }
 
+    public static function fromJson(string $json): PumpingRates
+    {
+        $values = json_decode($json);
+        $pumpingRates = array();
+        foreach ($values as $value){
+            $pumpingRates[] = PumpingRate::fromArray((array)$value);
+        }
+
+        $self = new self();
+        $self->values = $pumpingRates;
+        return $self;
+    }
+
     private function __construct()
     {
         $this->values = [];

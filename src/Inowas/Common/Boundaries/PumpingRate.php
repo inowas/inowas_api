@@ -45,16 +45,25 @@ class PumpingRate implements \JsonSerializable
      */
     function jsonSerialize()
     {
-        if ($this->dateTime instanceof \DateTimeImmutable){
-            return array(
-                'date_time' => $this->dateTime->format(DATE_ISO8601),
-                'value' => $this->value,
-            );
-        }
-
         return array(
-            'date_time' => null,
-            'value' => $this->value
+            'date_time' => $this->dateTime->format(DATE_ATOM),
+            'value' => $this->value,
         );
+    }
+
+    public function toArray(): array
+    {
+        return array(
+            'date_time' => $this->dateTime->format(DATE_ATOM),
+            'value' => $this->value,
+        );
+    }
+
+    public static function fromArray(array $arr): PumpingRate
+    {
+        $self = new self();
+        $self->dateTime = new \DateTimeImmutable($arr['date_time']);
+        $self->value = $arr['value'];
+        return $self;
     }
 }

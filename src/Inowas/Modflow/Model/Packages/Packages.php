@@ -5,14 +5,12 @@ declare(strict_types=1);
 namespace Inowas\Modflow\Model\Packages;
 
 use Inowas\Common\DateTime\DateTime;
-use Inowas\Common\FileSystem\FileName;
 use Inowas\Common\FileSystem\Modelworkspace;
 use Inowas\Common\Grid\BoundingBox;
 use Inowas\Common\Grid\GridSize;
-use Inowas\Common\Modflow\Ibound;
+use Inowas\Common\Modflow\ExecutableName;
 use Inowas\Common\Modflow\LengthUnit;
 use Inowas\Common\Modflow\Listunit;
-use Inowas\Common\Modflow\Strt;
 use Inowas\Common\Modflow\TimeUnit;
 use Inowas\Modflow\Model\Exception\InvalidPackageNameException;
 use Inowas\Modflow\Model\Exception\InvalidPackageParameterUpdateMethodException;
@@ -39,7 +37,10 @@ class Packages implements \JsonSerializable
         'mf' => MfPackage::class,
         'bas' => BasPackage::class,
         'dis' => DisPackage::class,
-        'lpf' => LpfPackage::class
+        'lpf' => LpfPackage::class,
+        'pcg' => PcgPackage::class,
+        'oc' => OcPackage::class,
+        'wel' => WelPackage::class
     ];
 
     /** @var array */
@@ -51,7 +52,7 @@ class Packages implements \JsonSerializable
     public static function createFromDefaults(): Packages
     {
         $self = new self();
-        $self->selectedPackages = ['mf', 'bas', 'dis', 'lpf'];
+        $self->selectedPackages = ['mf', 'dis', 'bas', 'lpf', 'pcg', 'oc'];
         foreach ($self->selectedPackages as $packageName){
             $class = $self->availablePackages[$packageName];
             $self->addPackage($class::fromDefaults());
@@ -101,7 +102,7 @@ class Packages implements \JsonSerializable
         $this->updatePackage($mfPackage);
     }
 
-    public function updateExecutableName(FileName $name): void
+    public function updateExecutableName(ExecutableName $name): void
     {
         // The executableName is configured in the MfPackage
         /** @var MfPackage $mfPackage */
@@ -164,11 +165,14 @@ class Packages implements \JsonSerializable
         $this->updatePackage($disPackage);
     }
 
-
     public function updatePackageParameter(string $packageName, string $parameterName, $value): void
     {
-        if (! $this->hasPackage($packageName)){
+        if (! $this->hasAvailablePackage($packageName)){
             throw InvalidPackageNameException::withName($packageName, $this->availablePackages);
+        }
+
+        if (! $this->hasPackage($packageName)){
+            $this->addPackageByName($packageName);
         }
 
         $package = $this->getPackageByName($packageName);
@@ -179,6 +183,19 @@ class Packages implements \JsonSerializable
 
         $package = $package->$expectedMethod($value);
         $this->updatePackage($package);
+    }
+
+    public function getPackage(string $packageName): PackageInterface
+    {
+        if (! array_key_exists($packageName, $this->availablePackages)){
+            throw InvalidPackageNameException::withName($packageName, $this->availablePackages);
+        }
+
+        if (! $this->hasPackage($packageName)){
+            $this->addPackageByName($packageName);
+        }
+
+        return $this->getPackageByName($packageName);
     }
 
     public function author(): string
@@ -209,6 +226,7 @@ class Packages implements \JsonSerializable
 
         $class = $this->availablePackages[$packageName];
         $this->addPackage($class::fromDefaults());
+        $this->selectedPackages[] = $packageName;
     }
 
     private function getPackageByName(string $packageName): PackageInterface
@@ -220,22 +238,14 @@ class Packages implements \JsonSerializable
         return $this->packages[$packageName];
     }
 
-    private function getPackage(string $packageName): PackageInterface
-    {
-        if (! array_key_exists($packageName, $this->availablePackages)){
-            throw InvalidPackageNameException::withName($packageName, $this->availablePackages);
-        }
-
-        if (! $this->hasPackage($packageName)){
-            $this->addPackageByName($packageName);
-        }
-
-        return $this->getPackageByName($packageName);
-    }
-
     private function hasPackage(string $packageName): bool
     {
         return array_key_exists($packageName, $this->packages);
+    }
+
+    private function hasAvailablePackage(string $packageName): bool
+    {
+        return array_key_exists($packageName, $this->availablePackages);
     }
 
     /**
@@ -245,6 +255,8 @@ class Packages implements \JsonSerializable
     {
         $packageData = [];
         $packageData['packages'] = $this->selectedPackages;
+        $packageData['write_input'] = true;
+        $packageData['run_model'] = true;
 
         foreach ($this->selectedPackages as $selectedPackage) {
             /** @var PackageInterface $package */

@@ -3,6 +3,8 @@
 namespace Inowas\Common\Modflow;
 
 
+use Inowas\Common\DateTime\TotalTime;
+
 final class StressPeriods
 {
 
@@ -66,5 +68,19 @@ final class StressPeriods
     public function nper(): Nper
     {
         return Nper::fromInteger(count($this->stressperiods));
+    }
+
+    public function spNumberFromTotim(TotalTime $totim): int
+    {
+        // @TODO SORTING?
+        $spNumber = 0;
+        /** @var StressPeriod $stressperiod */
+        foreach ($this->stressperiods as $key => $stressperiod){
+            if ($totim->toInteger() === $stressperiod->totimStart()){
+                $spNumber = $key;
+            }
+        }
+
+        return $spNumber;
     }
 }

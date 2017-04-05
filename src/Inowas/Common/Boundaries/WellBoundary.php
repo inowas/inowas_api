@@ -12,6 +12,8 @@ use Inowas\Common\Id\BoundaryId;
 class WellBoundary extends AbstractBoundary
 {
 
+    const TYPE = 'well';
+
     /** @var  LayerNumber */
     protected $layerNumber;
 
@@ -44,12 +46,16 @@ class WellBoundary extends AbstractBoundary
 
     public function setActiveCells(ActiveCells $activeCells): WellBoundary
     {
-        return new self($this->boundaryId, $this->name, $this->geometry, $activeCells);
+        $self = new self($this->boundaryId, $this->name, $this->geometry, $activeCells);
+        $self->layerNumber = $this->layerNumber;
+        $self->wellType = $this->wellType;
+        $self->pumpingRates = $this->pumpingRates;
+        return $self;
     }
 
     public function type(): string
     {
-        return 'well';
+        return self::TYPE;
     }
 
     public function layerNumber(): LayerNumber
@@ -69,7 +75,10 @@ class WellBoundary extends AbstractBoundary
 
     public function metadata(): array
     {
-        return ['well_type' => $this->wellType->type()];
+        return [
+            'well_type' => $this->wellType->type(),
+            'layer' => $this->layerNumber->toInteger()
+        ];
     }
 
     public function dataToJson(): string
