@@ -4,9 +4,13 @@ namespace Inowas\ModflowBundle\DataFixtures\Scenarios\Hanoi;
 
 use Doctrine\DBAL\Schema\Schema;
 use FOS\UserBundle\Doctrine\UserManager;
+use Inowas\Common\Boundaries\ObservationPoint;
+use Inowas\Common\Boundaries\ObservationPointName;
+use Inowas\Common\Boundaries\RiverStage;
 use Inowas\Common\Calculation\BudgetType;
 use Inowas\Common\Fixtures\DataFixtureInterface;
 use Inowas\Common\DateTime\DateTime;
+use Inowas\Common\Geometry\LineString;
 use Inowas\Common\Geometry\Point;
 use Inowas\Common\Geometry\Polygon;
 use Inowas\Common\Grid\LayerNumber;
@@ -15,6 +19,7 @@ use Inowas\Common\Geometry\Geometry;
 use Inowas\Common\Id\BoundaryId;
 use Inowas\Common\Boundaries\BoundaryName;
 use Inowas\Common\Calculation\Budget;
+use Inowas\Common\Id\ObservationPointId;
 use Inowas\Common\Soilmodel\Conductivity;
 use Inowas\Common\Soilmodel\HBottom;
 use Inowas\Common\Soilmodel\HTop;
@@ -50,6 +55,7 @@ use Inowas\Common\DateTime\TotalTime;
 use Inowas\Common\Id\UserId;
 use Inowas\Common\Boundaries\WellBoundary;
 use Inowas\Common\Boundaries\WellType;
+use Inowas\Common\Boundaries\RiverBoundary;
 use Inowas\Soilmodel\Model\BoreLogId;
 use Inowas\Soilmodel\Model\BoreLogLocation;
 use Inowas\Soilmodel\Model\BoreLogName;
@@ -427,6 +433,44 @@ class Hanoi implements ContainerAwareInterface, DataFixtureInterface
             echo sprintf('Add Well %s to BaseModel'."\r\n", $well->name()->toString());
             $commandBus->dispatch(AddBoundary::toBaseModel($ownerId, $modelId, $well));
         }
+
+        // Add River
+        $riverPoints = $this->loadRowsFromCsv(__DIR__ . "/river_geometry_basecase.csv");
+        foreach ($riverPoints as $key => $point){
+            $riverPoints[$key] = $geoTools->transformPoint(new Point($point['x'], $point['y'], $point['srid']), 4326);
+        }
+
+        /** @var RiverBoundary $river */
+        $river = RiverBoundary::createWithParams(
+            BoundaryId::generate(),
+            BoundaryName::fromString('Red River'),
+            Geometry::fromLineString(new LineString($riverPoints, 4326))
+        );
+
+        $observationPoints = $this->loadRowsFromCsv(__DIR__ . "/river_stages_basecase.csv");
+        $header = $this->loadHeaderFromCsv(__DIR__ . "/river_stages_basecase.csv");
+        $dates = $this->getDates($header);
+
+        foreach ($observationPoints as $op){
+            $observationPoint = ObservationPoint::fromIdNameAndGeometry(
+                ObservationPointId::generate(),
+                ObservationPointName::fromString($op['name']),
+                Geometry::fromPoint($geoTools->transformPoint(new Point($op['x'], $op['y'], $op['srid']), 4326))
+            );
+
+            foreach ($dates as $date){
+                if (is_numeric($op[$date])) {
+                    $observationPoint = $observationPoint->addRiverStage(
+                        RiverStage::fromDateTimeStageBotCond(
+                            new \DateTimeImmutable(explode(':', $date)[1]), $op[$date], 18, 0)
+                    );
+                }
+            }
+            echo sprintf("Add River-Boundary ObservationPoint %s.\r\n", $observationPoint->name()->toString());
+            $river = $river->addObservationPoint($observationPoint);
+        }
+
+        $commandBus->dispatch(AddBoundary::toBaseModel($ownerId, $modelId, $river));
 
         $calculationId = ModflowId::generate();
         $start = DateTime::fromDateTime(new \DateTime('2005-01-01'));

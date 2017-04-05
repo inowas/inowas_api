@@ -13,12 +13,15 @@ class RiverBoundary extends AbstractBoundary
 
     const TYPE = 'riv';
 
+    /** @var  array */
+    protected $observationPoints = [];
+
     public static function create(BoundaryId $boundaryId): RiverBoundary
     {
         return new self($boundaryId);
     }
 
-    public static function createWithIdNameAndGeometry(
+    public static function createWithParams(
         BoundaryId $boundaryId,
         BoundaryName $name,
         Geometry $geometry
@@ -30,7 +33,17 @@ class RiverBoundary extends AbstractBoundary
 
     public function setActiveCells(ActiveCells $activeCells): RiverBoundary
     {
-        return new self($this->boundaryId, $this->name, $this->geometry, $activeCells);
+        $self = new self($this->boundaryId, $this->name, $this->geometry, $activeCells);
+        $self->observationPoints = $this->observationPoints;
+        return $self;
+    }
+
+    public function addObservationPoint(ObservationPoint $point): RiverBoundary
+    {
+        $this->observationPoints[] = $point;
+        $self = new self($this->boundaryId, $this->name, $this->geometry, $this->activeCells);
+        $self->observationPoints = $this->observationPoints;
+        return $self;
     }
 
     /**
