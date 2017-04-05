@@ -1,13 +1,13 @@
 <?php
 
-namespace Inowas\Modflow\Model\Service;
+declare(strict_types=1);
 
+namespace Inowas\Modflow\Model\Service;
 
 use Inowas\Common\DateTime\DateTime;
 use Inowas\Common\Grid\ActiveCells;
 use Inowas\Common\Grid\BoundingBox;
 use Inowas\Common\Grid\GridSize;
-use Inowas\Common\Grid\LayerNumber;
 use Inowas\Common\Id\ModflowId;
 use Inowas\Common\Modflow\StressPeriods;
 

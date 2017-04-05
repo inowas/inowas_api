@@ -8,9 +8,11 @@ use Inowas\Common\Modflow\Extension;
 use Inowas\Common\Modflow\Ipakcb;
 use Inowas\Common\Modflow\OcStressPeriodData;
 use Inowas\Common\Modflow\Options;
+use Inowas\Modflow\Model\Packages\RivStressPeriodData;
 use Inowas\Common\Modflow\Unitnumber;
+use Inowas\Common\Modflow\WelStressPeriodData;
 
-class WelPackage implements PackageInterface
+class RivPackage implements PackageInterface
 {
 
     /** @var string  */
@@ -19,7 +21,7 @@ class WelPackage implements PackageInterface
     /** @var  Ipakcb */
     protected $ipakcb;
 
-    /** @var  WelStressPeriodData */
+    /** @var  RivStressPeriodData */
     protected $stressPeriodData;
 
     /** @var  Options */
@@ -35,10 +37,10 @@ class WelPackage implements PackageInterface
     public static function fromDefaults()
     {
         $ipakcb = Ipakcb::fromInteger(0);
-        $stressPeriodData = WelStressPeriodData::create();
+        $stressPeriodData = RivStressPeriodData::create();
         $options = Options::fromValue(null);
-        $extension = Extension::fromString('wel');
-        $unitnumber = Unitnumber::fromInteger(11);
+        $extension = Extension::fromString('riv');
+        $unitnumber = Unitnumber::fromInteger(18);
 
         return new self($ipakcb, $stressPeriodData, $options, $extension, $unitnumber);
     }
@@ -49,12 +51,12 @@ class WelPackage implements PackageInterface
         Options $options,
         Extension $extension,
         Unitnumber $unitnumber
-    ): WelPackage
+    ): RivPackage
     {
         return new self($ipakcb, $welStressPeriodData, $options, $extension, $unitnumber);
     }
 
-    public static function fromArray(array $arr): WelPackage
+    public static function fromArray(array $arr): RivPackage
     {
         $ipakcb = Ipakcb::fromInteger($arr['ipakcb']);
         $stressPeriodData = WelStressPeriodData::fromArray($arr['stress_period_data']);
@@ -80,35 +82,35 @@ class WelPackage implements PackageInterface
         $this->unitnumber = $unitnumber;
     }
 
-    public function updateIpakcb(Ipakcb $ipakcb): WelPackage
+    public function updateIpakcb(Ipakcb $ipakcb): RivPackage
     {
         $package = self::fromArray($this->toArray());
         $package->ipakcb = $ipakcb;
         return $package;
     }
 
-    public function updateWelStressPeriodData(WelStressPeriodData $stressPeriodData): WelPackage
+    public function updateWelStressPeriodData(WelStressPeriodData $stressPeriodData): RivPackage
     {
         $package = self::fromArray($this->toArray());
         $package->stressPeriodData = $stressPeriodData;
         return $package;
     }
 
-    public function updateOptions(Options $options): WelPackage
+    public function updateOptions(Options $options): RivPackage
     {
         $package = self::fromArray($this->toArray());
         $package->options = $options;
         return $package;
     }
 
-    public function updateExtension(Extension $extension): WelPackage
+    public function updateExtension(Extension $extension): RivPackage
     {
         $package = self::fromArray($this->toArray());
         $package->extension = $extension;
         return $package;
     }
 
-    public function updateUnitnumber(Unitnumber $unitnumber): WelPackage
+    public function updateUnitnumber(Unitnumber $unitnumber): RivPackage
     {
         $package = self::fromArray($this->toArray());
         $package->unitnumber = $unitnumber;

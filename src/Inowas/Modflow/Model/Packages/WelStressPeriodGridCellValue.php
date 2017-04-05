@@ -2,34 +2,42 @@
 
 declare(strict_types=1);
 
-namespace Inowas\Common\Modflow;
+namespace Inowas\Modflow\Model\Packages;
 
-class StressPeriodGridCellValue
+class WelStressPeriodGridCellValue
 {
     /** @var  int */
     protected $sp;
-    protected $lay;
-    protected $row;
-    protected $col;
-    protected $value;
 
-    public static function fromParams(int $sp, int $lay, int $row, int $col, float $value): StressPeriodGridCellValue
+    /** @var  int */
+    protected $lay;
+
+    /** @var  int */
+    protected $row;
+
+    /** @var  int */
+    protected $col;
+
+    /** @var  float */
+    protected $flux;
+
+    public static function fromParams(int $sp, int $lay, int $row, int $col, float $flux): WelStressPeriodGridCellValue
     {
-        return new self($sp, $lay, $row, $col, $value);
+        return new self($sp, $lay, $row, $col, $flux);
     }
 
-    private function __construct(int $sp, int $lay, int $row, int $col, float $value)
+    private function __construct(int $sp, int $lay, int $row, int $col, float $flux)
     {
         $this->sp = $sp;
         $this->lay = $lay;
         $this->row = $row;
         $this->col = $col;
-        $this->value = $value;
+        $this->flux = $flux;
     }
 
-    public static function fromArray(array $arr): StressPeriodGridCellValue
+    public static function fromArray(array $arr): WelStressPeriodGridCellValue
     {
-        return new self($arr['sp'], $arr['lay'], $arr['row'], $arr['col'], $arr['value']);
+        return new self($arr['sp'], $arr['lay'], $arr['row'], $arr['col'], $arr['flux']);
     }
 
     public function toArray(): array
@@ -39,7 +47,7 @@ class StressPeriodGridCellValue
             'lay' => $this->lay,
             'row' => $this->row,
             'col' => $this->col,
-            'value' => $this->value
+            'flux' => $this->flux
         );
     }
 
@@ -65,6 +73,6 @@ class StressPeriodGridCellValue
 
     public function value(): float
     {
-        return $this->value;
+        return $this->flux;
     }
 }

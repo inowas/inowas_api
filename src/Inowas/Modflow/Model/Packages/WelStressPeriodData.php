@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Inowas\Common\Modflow;
+namespace Inowas\Modflow\Model\Packages;
 
 class WelStressPeriodData implements \JsonSerializable
 {
@@ -21,7 +21,7 @@ class WelStressPeriodData implements \JsonSerializable
         return $self;
     }
 
-    public function addGridCellValue(StressPeriodGridCellValue $gridCellValue): WelStressPeriodData
+    public function addGridCellValue(WelStressPeriodGridCellValue $gridCellValue): WelStressPeriodData
     {
         $stressPeriod = $gridCellValue->stressPeriod();
         $layer = $gridCellValue->lay();
@@ -57,7 +57,7 @@ class WelStressPeriodData implements \JsonSerializable
     public function jsonSerialize(): array
     {
         return array(
-            "stress_periods_data" => $this->data
+            "stress_period_data" => $this->data
         );
     }
 }
