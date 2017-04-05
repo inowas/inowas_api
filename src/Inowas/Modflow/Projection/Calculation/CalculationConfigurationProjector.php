@@ -6,6 +6,11 @@ namespace Inowas\Modflow\Projection\Calculation;
 
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Schema\Schema;
+use Inowas\Common\Boundaries\ConstantHeadBoundary;
+use Inowas\Common\Boundaries\GeneralHeadHeadBoundary;
+use Inowas\Common\Boundaries\RechargeBoundary;
+use Inowas\Common\Boundaries\RiverBoundary;
+use Inowas\Common\Boundaries\WellBoundary;
 use Inowas\Common\FileSystem\Modelworkspace;
 use Inowas\Common\Id\ModflowId;
 use Inowas\Common\Modflow\Ibound;
@@ -123,9 +128,38 @@ class CalculationConfigurationProjector extends AbstractDoctrineConnectionProjec
         /*
          * Add PackageDetails for WelPackage
          */
-        if ($this->modflowModelManager->hasWells($event->modflowModelId())) {
+        if ($this->modflowModelManager->countModelBoundaries($event->modflowModelId(), WellBoundary::TYPE) > 0) {
+            echo "We have wells \r\n";
             $welStressPeriodData = $this->modflowModelManager->findWelStressPeriodData($event->modflowModelId(), $stressPeriods, $event->start(), $event->timeUnit());
             $packages->updatePackageParameter('wel', 'StressPeriodData', $welStressPeriodData);
+        }
+
+        /*
+         * Add PackageDetails for RchPackage
+         */
+        if ($this->modflowModelManager->countModelBoundaries($event->modflowModelId(), RechargeBoundary::TYPE) > 0) {
+            echo "We have recharge \r\n";
+        }
+
+        /*
+         * Add PackageDetails for RivPackage
+         */
+        if ($this->modflowModelManager->countModelBoundaries($event->modflowModelId(), RiverBoundary::TYPE) > 0) {
+            echo "We have river \r\n";
+        }
+
+        /*
+         * Add PackageDetails for GhbPackage
+         */
+        if ($this->modflowModelManager->countModelBoundaries($event->modflowModelId(), GeneralHeadHeadBoundary::TYPE) > 0) {
+            echo "We have general head \r\n";
+        }
+
+        /*
+         * Add PackageDetails for ChbPackage
+         */
+        if ($this->modflowModelManager->countModelBoundaries($event->modflowModelId(), ConstantHeadBoundary::TYPE) > 0) {
+            echo "We have constant head \r\n";
         }
 
         $this->connection->insert(Table::CALCULATION_CONFIG, array(

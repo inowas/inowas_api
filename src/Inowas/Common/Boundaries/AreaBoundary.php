@@ -10,6 +10,8 @@ use Inowas\Common\Id\BoundaryId;
 
 class AreaBoundary extends AbstractBoundary
 {
+    const TYPE = 'area';
+
     public static function create(BoundaryId $boundaryId): AreaBoundary
     {
         return new self($boundaryId);
@@ -32,7 +34,7 @@ class AreaBoundary extends AbstractBoundary
 
     public function type(): string
     {
-        return 'area';
+        return self::TYPE;
     }
 
     public function metadata(): array

@@ -17,7 +17,7 @@ interface ModflowModelManagerInterface
 {
     public function findBoundaries(ModflowId $modflowModel): array;
 
-    public function hasWells(ModflowId $modflowId): bool;
+    public function countModelBoundaries(ModflowId $modflowId, string $type): int;
 
     public function findWelStressPeriodData(ModflowId $modflowId, StressPeriods $stressPeriods, DateTime $start, TimeUnit $timeUnit): WelStressPeriodData;
 

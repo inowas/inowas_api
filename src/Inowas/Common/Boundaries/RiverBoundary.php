@@ -10,6 +10,9 @@ use Inowas\Common\Id\BoundaryId;
 
 class RiverBoundary extends AbstractBoundary
 {
+
+    const TYPE = 'riv';
+
     public static function create(BoundaryId $boundaryId): RiverBoundary
     {
         return new self($boundaryId);
@@ -35,7 +38,7 @@ class RiverBoundary extends AbstractBoundary
      */
     public function type(): string
     {
-        return 'riv';
+        return self::TYPE;
     }
 
     /**

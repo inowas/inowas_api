@@ -9,6 +9,8 @@ use Inowas\Common\Id\BoundaryId;
 
 class GeneralHeadHeadBoundary extends AbstractBoundary
 {
+    const TYPE = 'ghb';
+
     public static function create(BoundaryId $boundaryId): GeneralHeadHeadBoundary
     {
         return new self($boundaryId);
@@ -24,7 +26,7 @@ class GeneralHeadHeadBoundary extends AbstractBoundary
      */
     public function type(): string
     {
-        return 'ghb';
+        return self::TYPE;
     }
 
     /**

@@ -9,6 +9,8 @@ use Inowas\Common\Id\BoundaryId;
 
 class RechargeBoundary extends AbstractBoundary
 {
+    const TYPE = 'rch';
+
     public static function create(BoundaryId $boundaryId): RechargeBoundary
     {
         return new self($boundaryId);
@@ -24,7 +26,7 @@ class RechargeBoundary extends AbstractBoundary
      */
     public function type(): string
     {
-        return "rch";
+        return self::TYPE;
     }
 
     /**
