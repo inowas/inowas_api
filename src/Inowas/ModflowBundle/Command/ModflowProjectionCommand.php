@@ -10,6 +10,8 @@ use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
+ini_set('memory_limit', '2048M');
+
 class ModflowProjectionCommand extends ContainerAwareCommand
 {
 

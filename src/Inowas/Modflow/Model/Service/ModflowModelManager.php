@@ -92,6 +92,12 @@ class ModflowModelManager implements ModflowModelManagerInterface
         return $this->modelFinder->findGridSizeByModelId($modflowId);
     }
 
+    public function hasWells(ModflowId $modflowId): bool
+    {
+        return $this->boundaryFinder->hasWells($modflowId);
+    }
+
+
     public function findWelStressPeriodData(ModflowId $modflowId, StressPeriods $stressPeriods, DateTime $start, TimeUnit $timeUnit): WelStressPeriodData
     {
         $wspd = WelStressPeriodData::create();

@@ -123,10 +123,10 @@ class CalculationConfigurationProjector extends AbstractDoctrineConnectionProjec
         /*
          * Add PackageDetails for WelPackage
          */
-        $welStressPeriodData = $this->modflowModelManager->findWelStressPeriodData($event->modflowModelId(), $stressPeriods, $event->start(), $event->timeUnit());
-        $packages->updatePackageParameter('wel', 'StressPeriodData', $welStressPeriodData);
-
-        echo json_encode($packages);
+        if ($this->modflowModelManager->hasWells($event->modflowModelId())) {
+            $welStressPeriodData = $this->modflowModelManager->findWelStressPeriodData($event->modflowModelId(), $stressPeriods, $event->start(), $event->timeUnit());
+            $packages->updatePackageParameter('wel', 'StressPeriodData', $welStressPeriodData);
+        }
 
         $this->connection->insert(Table::CALCULATION_CONFIG, array(
             'calculation_id' => $event->calculationId()->toString(),

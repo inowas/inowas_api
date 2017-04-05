@@ -28,6 +28,23 @@ class BoundaryFinder
         $this->connection->setFetchMode(\PDO::FETCH_OBJ);
     }
 
+    public function hasWells(ModflowId $modelId): bool
+    {
+        $result = $this->connection->fetchAssoc(
+            sprintf('SELECT count(*) FROM %s WHERE model_id = :model_id AND type = :type', Table::BOUNDARIES),
+            [
+                'model_id' => $modelId->toString(),
+                'type' => WellBoundary::TYPE
+            ]
+        );
+
+        if ($result === false) {
+            throw SqlQueryExceptionException::withClassName(__CLASS__, __FUNCTION__);
+        }
+
+        return $result['count'] > 0;
+    }
+
     public function findWells(ModflowId $modelId): array
     {
         $rows = $this->connection->fetchAll(
