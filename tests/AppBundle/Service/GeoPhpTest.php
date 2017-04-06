@@ -98,10 +98,12 @@ class GeoPhpTest extends WebTestCase
             105.75218379342,
             105.91170436595,
             20.942793923555,
-            21.100124603334
+            21.100124603334,
+            0,
+            0
         );
 
-        $this->gridSize = GridSize::fromXY(10, 15);
+        $this->gridSize = GridSize::fromXY(160, 170);
     }
 
     public function testCreateWKTFromAreaGeometry() {
@@ -142,8 +144,34 @@ class GeoPhpTest extends WebTestCase
         $this->assertTrue($result['st_intersects']);
     }
 
-    public function testActiveCellsFromAreaWithGeoTools() {
+    public function test_calculate_active_cells_with_postgis(): void
+    {
+        $result = $this->geoTools->getActiveCellsFromArea($this->area, $this->boundingBox, $this->gridSize, false);
+        $this->assertInstanceOf(ActiveCells::class, $result);
+    }
+
+    public function test_integration_if_geos_is_available(): void
+    {
+        $this->assertTrue(\geoPHP::geosInstalled());
+        $areaPolygon = \geoPHP::load($this->area->geometry()->toJson(), 'json');
+        $this->assertEquals("GEOSGeometry", get_class($areaPolygon->geos()));
+    }
+
+    public function test_geos_point_on_surface(): void
+    {
+        $x = 105.833738284468225;
+        $y = 21.073871989488410;
+        $area = \geoPHP::load($this->area->geometry()->toJson(), 'json')->geos();
+        $point = \geoPHP::load(sprintf('POINT(%f %f)', $x, $y), 'wkt')->geos();
+        $this->assertTrue($area->covers($point));
+        $this->assertTrue($point->within($area));
+        $this->assertFalse($point->covers($area));
+    }
+
+    public function test_calculate_active_cells_with_geos(): void
+    {
         $result = $this->geoTools->getActiveCellsFromArea($this->area, $this->boundingBox, $this->gridSize);
         $this->assertInstanceOf(ActiveCells::class, $result);
     }
+
 }

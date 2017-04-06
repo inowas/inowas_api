@@ -7,6 +7,7 @@ use CrEOF\Spatial\PHP\Types\Geometry\Polygon;
 use Doctrine\DBAL\Connection;
 use Doctrine\ORM\EntityManager;
 use Inowas\Common\Boundaries\AreaBoundary;
+use Inowas\Common\Boundaries\RiverBoundary;
 use Inowas\Common\Boundaries\WellBoundary;
 use Inowas\Common\Grid\ActiveCells;
 use Inowas\Common\Grid\BoundingBox;
@@ -31,7 +32,26 @@ class GeoTools
         $this->connection = $entityManager->getConnection();
     }
 
-    public function getActiveCellsFromArea(AreaBoundary $area, BoundingBox $boundingBox, GridSize $gridSize): ?ActiveCells
+    public function getActiveCellsFromArea(AreaBoundary $area, BoundingBox $boundingBox, GridSize $gridSize, $tryWithGeos = true): ?ActiveCells
+    {
+        if ($tryWithGeos && \geoPHP::geosInstalled()){
+            return $this->getActiveCellsFromAreaWithGeos( $area,  $boundingBox,  $gridSize);
+        }
+
+        return $this->getActiveCellsFromAreaWithPostGis( $area,  $boundingBox,  $gridSize);
+    }
+
+    public function getActiveCellsFromRiver(RiverBoundary $area, BoundingBox $boundingBox, GridSize $gridSize): ?ActiveCells
+    {
+        if (\geoPHP::geosInstalled()){
+            return $this->getActiveCellsFromAreaWithGeos( $area,  $boundingBox,  $gridSize);
+        }
+
+        return $this->getActiveCellsFromAreaWithPostGis( $area,  $boundingBox,  $gridSize);
+    }
+
+
+    private function getActiveCellsFromAreaWithPostGis(AreaBoundary $area, BoundingBox $boundingBox, GridSize $gridSize): ?ActiveCells
     {
         $areaPolygon = \geoPHP::load($area->geometry()->toJson(), 'json');
         $boundingBoxPolygon = \geoPHP::load($boundingBox->toGeoJson(), 'json');
@@ -63,6 +83,33 @@ class GeoTools
 
                 $activeCells[$y][$x] = $this->intersectWktGeometry($cellWkt, $areaGeometry);
                 unset($cellWkt);
+            }
+        }
+
+        return ActiveCells::fromArrayAndGridSize($activeCells, $gridSize);
+    }
+
+    private function getActiveCellsFromAreaWithGeos(AreaBoundary $area, BoundingBox $boundingBox, GridSize $gridSize): ?ActiveCells
+    {
+        $areaPolygon = \geoPHP::load($area->geometry()->toJson(), 'json')->geos();
+        $boundingBoxPolygon = \geoPHP::load($boundingBox->toGeoJson(), 'json')->geos();
+
+        if (! $boundingBoxPolygon->intersects($areaPolygon)) {
+            return null;
+        }
+
+
+        $dX = ($boundingBox->xMax()-$boundingBox->xMin())/$gridSize->nX();
+        $dY = ($boundingBox->yMax()-$boundingBox->yMin())/$gridSize->nY();
+        $nx = $gridSize->nX();
+        $ny = $gridSize->nY();
+
+        $activeCells = [];
+        for ($x = 0; $x<$nx; $x++){
+            $activeCells[$x] = [];
+            for ($y = 0; $y<$ny; $y++){
+                $point = \geoPHP::load(sprintf('POINT (%f %f)', $boundingBox->xMin()+(($x+0.5)*$dX), $boundingBox->yMax()-(($y+0.5)*$dY)), 'wkt')->geos();
+                $activeCells[$y][$x] = $point->within($areaPolygon);
             }
         }
 
