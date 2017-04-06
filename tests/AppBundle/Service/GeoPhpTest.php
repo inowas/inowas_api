@@ -6,7 +6,9 @@ namespace Tests\AppBundle\Service;
 use Doctrine\DBAL\Connection;
 use Inowas\Common\Boundaries\AreaBoundary;
 use Inowas\Common\Boundaries\BoundaryName;
+use Inowas\Common\Boundaries\RiverBoundary;
 use Inowas\Common\Geometry\Geometry;
+use Inowas\Common\Geometry\LineString;
 use Inowas\Common\Geometry\Polygon;
 use Inowas\Common\Grid\ActiveCells;
 use Inowas\Common\Grid\BoundingBox;
@@ -20,6 +22,9 @@ class GeoPhpTest extends WebTestCase
 
     /** @var  AreaBoundary */
     protected $area;
+
+    /** @var  RiverBoundary */
+    protected $river;
 
     /** @var  BoundingBox */
     protected $boundingBox;
@@ -94,6 +99,21 @@ class GeoPhpTest extends WebTestCase
                 )
             ), 4326)));
 
+        $this->river = RiverBoundary::createWithParams(
+            BoundaryId::generate(),
+            BoundaryName::fromString('Red River'),
+            Geometry::fromLineString(new LineString(
+                array(
+                    array(105.790767733626808, 21.094425932026443),
+                    array(105.796959843400032, 21.093521487879368),
+                    array(105.802017060333782, 21.092234483652170),
+                    array(105.808084259744490, 21.090442258424751),
+                    array(105.812499379361824, 21.088745285770433),
+                    array(105.817189857772419, 21.086246452411380),
+                    array(105.821849880920155, 21.083084791161816),
+                    array(105.826206685192972, 21.080549811906632)
+                ), 4326)));
+
         $this->boundingBox = BoundingBox::fromEPSG4326Coordinates(
             105.75218379342,
             105.91170436595,
@@ -103,7 +123,7 @@ class GeoPhpTest extends WebTestCase
             0
         );
 
-        $this->gridSize = GridSize::fromXY(160, 170);
+        $this->gridSize = GridSize::fromXY(20, 30);
     }
 
     public function testCreateWKTFromAreaGeometry() {
@@ -135,7 +155,8 @@ class GeoPhpTest extends WebTestCase
         $this->assertTrue(array_key_exists('st_geomfromtext', $result));
     }
 
-    public function testIntersectAreaWithBoundingBox(){
+    public function test_intersect_area_with_bounding_box_on_postgis(): void
+    {
         $areaPolygon = \geoPHP::load($this->area->geometry()->toJson(), 'json');
         $boundingBoxPolygon = \geoPHP::load($this->boundingBox->toGeoJson(), 'json');
         $result = $this->connection->fetchAssoc(sprintf('SELECT ST_Intersects(ST_GeomFromText(\'%s\'),ST_GeomFromText(\'%s\'));', $boundingBoxPolygon->asText(), $areaPolygon->asText()));
@@ -168,10 +189,17 @@ class GeoPhpTest extends WebTestCase
         $this->assertFalse($point->covers($area));
     }
 
-    public function test_calculate_active_cells_with_geos(): void
+    public function test_calculate_area_active_cells_with_geos(): void
     {
-        $result = $this->geoTools->getActiveCellsFromArea($this->area, $this->boundingBox, $this->gridSize);
+        $result = $this->geoTools->getActiveCellsFromBoundaryWithGeos($this->area, $this->boundingBox, $this->gridSize);
         $this->assertInstanceOf(ActiveCells::class, $result);
+        $this->assertCount(184, $result->cells());
     }
 
+    public function test_calculate_river_active_cells_with_geos(): void
+    {
+        $result = $this->geoTools->getActiveCellsFromBoundaryWithGeos($this->river, $this->boundingBox, $this->gridSize);
+        $this->assertInstanceOf(ActiveCells::class, $result);
+        $this->assertCount(8, $result->cells());
+    }
 }
