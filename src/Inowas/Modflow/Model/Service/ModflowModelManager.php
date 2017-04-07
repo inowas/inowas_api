@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Inowas\Modflow\Model\Service;
 
-use Inowas\Common\Boundaries\PumpingRate;
+use Inowas\Common\Boundaries\WellDateTimeValue;
 use Inowas\Common\Boundaries\WellBoundary;
 use Inowas\Common\DateTime\DateTime;
 use Inowas\Common\DateTime\TotalTime;
@@ -104,14 +104,14 @@ class ModflowModelManager implements ModflowModelManagerInterface
 
         /** @var WellBoundary $well */
         foreach ($wells as $well){
-            /** @var PumpingRate $pumpingRate */
-            foreach ($well->pumpingRates()->get() as $pumpingRate){
+            /** @var WellDateTimeValue $pumpingRate */
+            foreach ($well->dateTimeValues() as $pumpingRate){
                 $cells = $well->activeCells()->cells();
                 if (count($cells)>0){
                     $cell = $cells[0];
                     $totim = $this->calculateTotim($start, DateTime::fromAtom($pumpingRate->dateTime()->format(DATE_ATOM)), $timeUnit);
                     $sp = $stressPeriods->spNumberFromTotim($totim);
-                    $wspd->addGridCellValue(WelStressPeriodGridCellValue::fromParams($sp, $cell[0], $cell[1], $cell[2], $pumpingRate->cubicMetersPerDay()));
+                    $wspd->addGridCellValue(WelStressPeriodGridCellValue::fromParams($sp, $cell[0], $cell[1], $cell[2], $pumpingRate->pumpingRate()));
                 }
             }
         }

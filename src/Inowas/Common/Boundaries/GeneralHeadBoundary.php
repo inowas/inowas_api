@@ -10,11 +10,11 @@ use Inowas\Common\Grid\ActiveCells;
 use Inowas\Common\Id\BoundaryId;
 use Inowas\Common\Id\ObservationPointId;
 
-class ConstantHeadBoundary extends AbstractBoundary
+class GeneralHeadBoundary extends AbstractBoundary
 {
-    const TYPE = 'chd';
+    const TYPE = 'ghb';
 
-    public static function create(BoundaryId $boundaryId): ConstantHeadBoundary
+    public static function create(BoundaryId $boundaryId): GeneralHeadBoundary
     {
         return new self($boundaryId);
     }
@@ -23,13 +23,13 @@ class ConstantHeadBoundary extends AbstractBoundary
         BoundaryId $boundaryId,
         BoundaryName $name,
         Geometry $geometry
-    ): ConstantHeadBoundary
+    ): GeneralHeadBoundary
     {
         $self = new self($boundaryId, $name, $geometry);
         return $self;
     }
 
-    public function addObservationPoint(ObservationPoint $point): ConstantHeadBoundary
+    public function addObservationPoint(ObservationPoint $point): GeneralHeadBoundary
     {
         $this->addOp($point);
         $self = new self($this->boundaryId, $this->name, $this->geometry, $this->activeCells);
@@ -37,19 +37,19 @@ class ConstantHeadBoundary extends AbstractBoundary
         return $self;
     }
 
-    public function addConstantHeadToObservationPoint(ObservationPointId $observationPointId, ConstantHeadDateTimeValue $chdTimeValue): ConstantHeadBoundary
+    public function addGeneralHeadValueToObservationPoint(ObservationPointId $observationPointId, GeneralHeadDateTimeValue $ghbDateTimeValue): GeneralHeadBoundary
     {
         if (! $this->hasOp($observationPointId)){
             throw ObservationPointNotFoundInBoundaryException::withIds($this->boundaryId, $observationPointId);
         }
 
-        $this->addDateTimeValue($chdTimeValue, $observationPointId);
+        $this->addDateTimeValue($ghbDateTimeValue, $observationPointId);
         $self = new self($this->boundaryId, $this->name, $this->geometry, $this->activeCells);
         $self->observationPoints = $this->observationPoints;
         return $self;
     }
 
-    public function setActiveCells(ActiveCells $activeCells): ConstantHeadBoundary
+    public function setActiveCells(ActiveCells $activeCells): GeneralHeadBoundary
     {
         return new self($this->boundaryId, $this->name, $this->geometry, $activeCells);
     }

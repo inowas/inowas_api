@@ -8,6 +8,7 @@ use Inowas\Common\Geometry\Geometry;
 use Inowas\Common\Grid\ActiveCells;
 use Inowas\Common\Grid\LayerNumber;
 use Inowas\Common\Id\BoundaryId;
+use Inowas\Common\Id\ObservationPointId;
 
 class WellBoundary extends AbstractBoundary
 {
@@ -17,9 +18,6 @@ class WellBoundary extends AbstractBoundary
     /** @var  LayerNumber */
     protected $layerNumber;
 
-    /** @var  PumpingRates */
-    protected $pumpingRates;
-
     /** @var  WellType */
     protected $wellType;
 
@@ -28,20 +26,48 @@ class WellBoundary extends AbstractBoundary
         return new self($boundaryId);
     }
 
-    public static function createWithAllParams(
+    public static function createWithParams(
         BoundaryId $boundaryId,
         BoundaryName $name,
         Geometry $geometry,
         WellType $wellType,
-        LayerNumber $layerNumber,
-        PumpingRates $pumpingRates
+        LayerNumber $layerNumber
     ): WellBoundary
     {
         $self = new self($boundaryId, $name, $geometry);
         $self->layerNumber = $layerNumber;
         $self->wellType = $wellType;
-        $self->pumpingRates = $pumpingRates;
+        $self->observationPoint = ObservationPoint::fromIdNameAndGeometry(
+            ObservationPointId::fromString($boundaryId->toString()),
+            ObservationPointName::fromString($name->toString()),
+            $geometry
+        );
         return $self;
+    }
+
+    public function addPumpingRate(WellDateTimeValue $pumpingRate): WellBoundary
+    {
+        // In case of well, the observationPointId is the boundaryId
+        $observationPointId = ObservationPointId::fromString($this->boundaryId->toString());
+        if (! $this->hasOp($observationPointId)) {
+            $this->addOp($this->createObservationPoint());
+        }
+
+        $this->addDateTimeValue($pumpingRate, $observationPointId);
+
+        $self = new self($this->boundaryId, $this->name, $this->geometry, $this->activeCells);
+        $self->layerNumber = $this->layerNumber;
+        $self->wellType = $this->wellType;
+        $self->observationPoints = $this->observationPoints;
+        return $self;
+    }
+
+    private function createObservationPoint(): ObservationPoint
+    {
+        return ObservationPoint::fromIdNameAndGeometry(
+            ObservationPointId::fromString($this->boundaryId->toString()),
+            ObservationPointName::fromString($this->name->toString())
+        );
     }
 
     public function setActiveCells(ActiveCells $activeCells): WellBoundary
@@ -49,7 +75,7 @@ class WellBoundary extends AbstractBoundary
         $self = new self($this->boundaryId, $this->name, $this->geometry, $activeCells);
         $self->layerNumber = $this->layerNumber;
         $self->wellType = $this->wellType;
-        $self->pumpingRates = $this->pumpingRates;
+        $self->observationPoints = $this->observationPoints;
         return $self;
     }
 
@@ -61,11 +87,6 @@ class WellBoundary extends AbstractBoundary
     public function layerNumber(): LayerNumber
     {
         return $this->layerNumber;
-    }
-
-    public function pumpingRates(): PumpingRates
-    {
-        return $this->pumpingRates;
     }
 
     public function wellType(): WellType
@@ -83,6 +104,13 @@ class WellBoundary extends AbstractBoundary
 
     public function dataToJson(): string
     {
-        return json_encode($this->pumpingRates);
+        return json_encode($this->observationPoints);
+    }
+
+    public function dateTimeValues(): array
+    {
+        /** @var ObservationPoint $observationPoint */
+        $observationPoint = $this->observationPoints[$this->boundaryId->toString()];
+        return $observationPoint->dateTimeValues();
     }
 }

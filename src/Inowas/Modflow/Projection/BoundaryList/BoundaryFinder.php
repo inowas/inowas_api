@@ -8,6 +8,7 @@ use Doctrine\DBAL\Connection;
 use Inowas\Common\Boundaries\BoundaryName;
 use Inowas\Common\Boundaries\PumpingRates;
 use Inowas\Common\Boundaries\WellBoundary;
+use Inowas\Common\Boundaries\WellDateTimeValue;
 use Inowas\Common\Boundaries\WellType;
 use Inowas\Common\DateTime\DateTime;
 use Inowas\Common\Geometry\Geometry;
@@ -48,25 +49,34 @@ class BoundaryFinder
     public function findWells(ModflowId $modelId): array
     {
         $rows = $this->connection->fetchAll(
-            sprintf('SELECT * FROM %s WHERE model_id = :model_id AND type = :type', Table::BOUNDARIES),
-            [
-                'model_id' => $modelId->toString(),
-                'type' => WellBoundary::TYPE
-            ]
+            sprintf('SELECT boundary_id, name, geometry, metadata, active_cells FROM %s WHERE model_id = :model_id AND type = :type', Table::BOUNDARIES),
+            ['model_id' => $modelId->toString(), 'type' => WellBoundary::TYPE]
         );
 
         $wells = array();
         foreach ($rows as $row) {
-            $well = WellBoundary::createWithAllParams(
+            $well = WellBoundary::createWithParams(
                 BoundaryId::fromString($row['boundary_id']),
                 BoundaryName::fromString($row['name']),
                 Geometry::fromJson($row['geometry']),
                 WellType::fromString(json_decode($row['metadata'])->well_type),
-                LayerNumber::fromInteger(json_decode($row['metadata'])->layer),
-                PumpingRates::fromJson($row['data'])
+                LayerNumber::fromInteger(json_decode($row['metadata'])->layer)
             )->setActiveCells(ActiveCells::fromArray((array)json_decode($row['active_cells'])));
 
             $wells[] = $well;
+        }
+
+        /** @var WellBoundary $well */
+        foreach ($wells as $wellKey => $well){
+            $result = $this->connection->fetchAssoc(
+                sprintf('SELECT data FROM %s WHERE observation_point_id = :observation_point_id', Table::BOUNDARY_VALUES),
+                ['observation_point_id' => $well->boundaryId()->toString()]
+            );
+
+            $data = json_decode($result['data']);
+            foreach ($data as $dateTimeValue) {
+                $wells[$wellKey] = $well->addPumpingRate(WellDateTimeValue::fromArray((array)$dateTimeValue));
+            }
         }
 
         return $wells;
@@ -94,7 +104,7 @@ class BoundaryFinder
     public function findStressPeriodDatesById(ModflowId $modelId): array
     {
         $boundaries = $this->connection->fetchAll(
-            sprintf('SELECT boundary_id, type, data FROM %s WHERE model_id = :model_id', Table::BOUNDARIES),
+            sprintf('SELECT data FROM %s WHERE model_id = :model_id', Table::BOUNDARY_VALUES),
             ['model_id' => $modelId->toString()]
         );
 

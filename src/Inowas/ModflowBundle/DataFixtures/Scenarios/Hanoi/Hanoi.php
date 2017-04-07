@@ -6,7 +6,8 @@ use Doctrine\DBAL\Schema\Schema;
 use FOS\UserBundle\Doctrine\UserManager;
 use Inowas\Common\Boundaries\ObservationPoint;
 use Inowas\Common\Boundaries\ObservationPointName;
-use Inowas\Common\Boundaries\RiverStage;
+use Inowas\Common\Boundaries\RiverDateTimeValue;
+use Inowas\Common\Boundaries\WellDateTimeValue;
 use Inowas\Common\Calculation\BudgetType;
 use Inowas\Common\Fixtures\DataFixtureInterface;
 use Inowas\Common\DateTime\DateTime;
@@ -49,8 +50,6 @@ use Inowas\Common\Grid\GridSize;
 use Inowas\Common\Id\ModflowId;
 use Inowas\Modflow\Model\ModflowModelDescription;
 use Inowas\Common\Modflow\Modelname;
-use Inowas\Common\Boundaries\PumpingRate;
-use Inowas\Common\Boundaries\PumpingRates;
 use Inowas\Common\DateTime\TotalTime;
 use Inowas\Common\Id\UserId;
 use Inowas\Common\Boundaries\WellBoundary;
@@ -398,22 +397,34 @@ class Hanoi implements ContainerAwareInterface, DataFixtureInterface
         echo sprintf("Interpolate soilmodel with %s Memory usage\r\n", memory_get_usage());
         $commandBus->dispatch(InterpolateSoilmodel::forSoilmodel($ownerId, $soilModelId, $boundingBox, $gridSize));
 
-        #echo sprintf("Calculate active cells for Area with %s Memory usage\r\n", memory_get_usage());
-        #$commandBus->dispatch(CalculateActiveCells::forModflowModel($ownerId, $modelId, $area->boundaryId()));
 
-        // Add Wells
+        /*
+         * Add Wells for the BaseScenario
+         */
         $fileName = __DIR__ . "/data/wells_basecase.csv";
         $wells = $this->loadRowsFromCsv($fileName);
         $header = $this->loadHeaderFromCsv($fileName);
         $dates = $this->getDates($header);
 
         foreach ($wells as $key => $well){
+
+            if ($key > 20){
+                break;
+            }
+
+            $wellBoundary = WellBoundary::createWithParams(
+                BoundaryId::generate(),
+                BoundaryName::fromString($well['Name']),
+                Geometry::fromPoint($geoTools->transformPoint(new Point($well['x'], $well['y'], $well['srid']), 4326)),
+                WellType::fromString($well['type']),
+                LayerNumber::fromInteger((int)$well['layer']-1)
+            );
+
             $value = null;
-            $pumpingRates = PumpingRates::create();
             foreach ($dates as $date){
                 if (is_numeric($well[$date])){
                     if ($well[$date] !== $value){
-                        $pumpingRates->add(PumpingRate::fromDateTimeAndCubicMetersPerDay(
+                        $wellBoundary->addPumpingRate(WellDateTimeValue::fromParams(
                             new \DateTimeImmutable(explode(':', $date)[1]), (float)$well[$date]
                         ));
                     }
@@ -421,21 +432,14 @@ class Hanoi implements ContainerAwareInterface, DataFixtureInterface
                 }
             }
 
-            $well = WellBoundary::createWithAllParams(
-                BoundaryId::generate(),
-                BoundaryName::fromString($well['Name']),
-                Geometry::fromPoint($geoTools->transformPoint(new Point($well['x'], $well['y'], $well['srid']), 4326)),
-                WellType::fromString($well['type']),
-                LayerNumber::fromInteger((int)$well['layer']-1),
-                $pumpingRates
-            );
-
-            echo sprintf('Add Well %s to BaseModel'."\r\n", $well->name()->toString());
-            $commandBus->dispatch(AddBoundary::toBaseModel($ownerId, $modelId, $well));
+            echo sprintf('Add Well %s to BaseModel'."\r\n", $wellBoundary->name()->toString());
+            $commandBus->dispatch(AddBoundary::toBaseModel($ownerId, $modelId, $wellBoundary));
         }
 
-        // Add River
-        $riverPoints = $this->loadRowsFromCsv(__DIR__ . "/river_geometry_basecase.csv");
+        /*
+         * Add River for the baseScenario
+         */
+        $riverPoints = $this->loadRowsFromCsv(__DIR__ . "/data/river_geometry_basecase.csv");
         foreach ($riverPoints as $key => $point){
             $riverPoints[$key] = $geoTools->transformPoint(new Point($point['x'], $point['y'], $point['srid']), 4326);
         }
@@ -447,8 +451,8 @@ class Hanoi implements ContainerAwareInterface, DataFixtureInterface
             Geometry::fromLineString(new LineString($riverPoints, 4326))
         );
 
-        $observationPoints = $this->loadRowsFromCsv(__DIR__ . "/river_stages_basecase.csv");
-        $header = $this->loadHeaderFromCsv(__DIR__ . "/river_stages_basecase.csv");
+        $observationPoints = $this->loadRowsFromCsv(__DIR__ . "/data/river_stages_basecase.csv");
+        $header = $this->loadHeaderFromCsv(__DIR__ . "/data/river_stages_basecase.csv");
         $dates = $this->getDates($header);
 
         foreach ($observationPoints as $op){
@@ -460,8 +464,8 @@ class Hanoi implements ContainerAwareInterface, DataFixtureInterface
 
             foreach ($dates as $date){
                 if (is_numeric($op[$date])) {
-                    $observationPoint = $observationPoint->addRiverStage(
-                        RiverStage::fromDateTimeStageBotCond(
+                    $observationPoint = $observationPoint->addDateTimeValue(
+                        RiverDateTimeValue::fromParams(
                             new \DateTimeImmutable(explode(':', $date)[1]), $op[$date], 18, 0)
                     );
                 }
@@ -476,7 +480,7 @@ class Hanoi implements ContainerAwareInterface, DataFixtureInterface
         $start = DateTime::fromDateTime(new \DateTime('2005-01-01'));
         $end = DateTime::fromDateTime(new \DateTime('2007-12-31'));
         $commandBus->dispatch(CreateModflowModelCalculation::byUserWithModelId($calculationId, $ownerId, $modelId, $start, $end));
-        $commandBus->dispatch(CalculateModflowModelCalculation::byUserWithModelId($ownerId, $calculationId, $modelId));
+        #$commandBus->dispatch(CalculateModflowModelCalculation::byUserWithModelId($ownerId, $calculationId, $modelId));
 
         return 1;
 
@@ -515,7 +519,7 @@ class Hanoi implements ContainerAwareInterface, DataFixtureInterface
                 WellType::fromString(WellType::TYPE_SCENARIO_MOVED_WELL),
                 LayerNumber::fromInteger(3),
                 PumpingRates::create()->add(
-                    PumpingRate::fromDateTimeAndCubicMetersPerDay(
+                    WellDateTimeValue::fromDateTimeAndCubicMetersPerDay(
                         $start->toDateTimeImmutable(),
                         $wellData['pumpingrate']
                     )
@@ -551,7 +555,7 @@ class Hanoi implements ContainerAwareInterface, DataFixtureInterface
                 WellType::fromString(WellType::TYPE_SCENARIO_NEW_WELL),
                 LayerNumber::fromInteger(3),
                 PumpingRates::create()->add(
-                    PumpingRate::fromDateTimeAndCubicMetersPerDay(
+                    WellDateTimeValue::fromDateTimeAndCubicMetersPerDay(
                         $start->toDateTimeImmutable(),
                         $wellData['pumpingrate'])
                 )
@@ -603,7 +607,7 @@ class Hanoi implements ContainerAwareInterface, DataFixtureInterface
                 WellType::fromString(WellType::TYPE_SCENARIO_NEW_WELL),
                 LayerNumber::fromInteger(3),
                 PumpingRates::create()->add(
-                    PumpingRate::fromDateTimeAndCubicMetersPerDay(
+                    WellDateTimeValue::fromDateTimeAndCubicMetersPerDay(
                         $start->toDateTimeImmutable(),
                         $wellData['pumpingrate'])
                 )
@@ -644,7 +648,7 @@ class Hanoi implements ContainerAwareInterface, DataFixtureInterface
                 WellType::fromString(WellType::TYPE_SCENARIO_MOVED_WELL),
                 LayerNumber::fromInteger(3),
                 PumpingRates::create()->add(
-                    PumpingRate::fromDateTimeAndCubicMetersPerDay(
+                    WellDateTimeValue::fromDateTimeAndCubicMetersPerDay(
                         $start->toDateTimeImmutable(),
                         $wellData['pumpingrate'])
                 )
@@ -667,7 +671,7 @@ class Hanoi implements ContainerAwareInterface, DataFixtureInterface
                 WellType::fromString(WellType::TYPE_SCENARIO_NEW_WELL),
                 LayerNumber::fromInteger(3),
                 PumpingRates::create()->add(
-                    PumpingRate::fromDateTimeAndCubicMetersPerDay(
+                    WellDateTimeValue::fromDateTimeAndCubicMetersPerDay(
                         $start->toDateTimeImmutable(),
                         $wellData['pumpingrate'])
                 )

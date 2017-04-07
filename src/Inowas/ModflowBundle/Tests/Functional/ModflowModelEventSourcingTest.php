@@ -38,7 +38,7 @@ use Inowas\Common\Grid\GridSize;
 use Inowas\Common\Id\ModflowId;
 use Inowas\Modflow\Model\ModflowModelList;
 use Inowas\Modflow\Model\SoilmodelName;
-use Inowas\Common\Boundaries\PumpingRate;
+use Inowas\Common\Boundaries\WellDateTimeValue;
 use Inowas\Common\Id\SoilmodelId;
 use Inowas\Common\DateTime\TotalTime;
 use Inowas\Common\Id\UserId;
@@ -494,7 +494,7 @@ class ModflowModelEventSourcingTest extends KernelTestCase
                 Geometry::fromPoint($this->geoTools->transformPoint(new Point($wellData['x'], $wellData['y'], 3857), 4326)),
                 WellType::fromString(WellType::TYPE_PUBLIC_WELL),
                 LayerNumber::fromInteger(4),
-                PumpingRate::fromValue($wellData['pumpingrate'])
+                WellDateTimeValue::fromValue($wellData['pumpingrate'])
             );
 
             $this->commandBus->dispatch(AddBoundary::toBaseModel($ownerId, $modelId, $well));

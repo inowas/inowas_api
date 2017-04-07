@@ -16,6 +16,11 @@ services:
           - '@inowas.geotools.geotools'
           - '@inowas.modflow_projection.model_details_finder'
 
+    inowas.modflow_projection.model_boundary_values:
+        class: Inowas\Modflow\Projection\BoundaryList\BoundaryValuesProjector
+        arguments:
+          - '@doctrine.dbal.default_connection'
+
     inowas.model_boundaries_finder:
         class: Inowas\Modflow\Projection\BoundaryList\BoundaryFinder
         arguments:

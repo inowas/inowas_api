@@ -17,6 +17,8 @@ interface ModflowBoundary
 
     public function geometry(): ?Geometry;
 
+    public function observationPoints(): array;
+
     public function type(): string;
 
     public function metadata(): array;

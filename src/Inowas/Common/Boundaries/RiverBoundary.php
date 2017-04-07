@@ -4,9 +4,11 @@ declare(strict_types=1);
 
 namespace Inowas\Common\Boundaries;
 
+use Inowas\Common\Exception\ObservationPointNotFoundInBoundaryException;
 use Inowas\Common\Geometry\Geometry;
 use Inowas\Common\Grid\ActiveCells;
 use Inowas\Common\Id\BoundaryId;
+use Inowas\Common\Id\ObservationPointId;
 
 class RiverBoundary extends AbstractBoundary
 {
@@ -31,6 +33,26 @@ class RiverBoundary extends AbstractBoundary
         return $self;
     }
 
+    public function addObservationPoint(ObservationPoint $point): RiverBoundary
+    {
+        $this->addOp($point);
+        $self = new self($this->boundaryId, $this->name, $this->geometry, $this->activeCells);
+        $self->observationPoints = $this->observationPoints;
+        return $self;
+    }
+
+    public function addRiverStageToObservationPoint(ObservationPointId $observationPointId, RiverDateTimeValue $riverStage): RiverBoundary
+    {
+        if (! $this->hasOp($observationPointId)){
+            throw ObservationPointNotFoundInBoundaryException::withIds($this->boundaryId, $observationPointId);
+        }
+
+        $this->addDateTimeValue($riverStage, $observationPointId);
+        $self = new self($this->boundaryId, $this->name, $this->geometry, $this->activeCells);
+        $self->observationPoints = $this->observationPoints;
+        return $self;
+    }
+
     public function setActiveCells(ActiveCells $activeCells): RiverBoundary
     {
         $self = new self($this->boundaryId, $this->name, $this->geometry, $activeCells);
@@ -38,35 +60,19 @@ class RiverBoundary extends AbstractBoundary
         return $self;
     }
 
-    public function addObservationPoint(ObservationPoint $point): RiverBoundary
-    {
-        $this->observationPoints[] = $point;
-        $self = new self($this->boundaryId, $this->name, $this->geometry, $this->activeCells);
-        $self->observationPoints = $this->observationPoints;
-        return $self;
-    }
 
-    /**
-     * @return string
-     */
     public function type(): string
     {
         return self::TYPE;
     }
 
-    /**
-     * @return array
-     */
     public function metadata(): array
     {
         return [];
     }
 
-    /**
-     * @return string
-     */
     public function dataToJson(): string
     {
-        return json_encode([]);
+        return json_encode($this->observationPoints);
     }
 }

@@ -8,6 +8,7 @@ use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Schema\Schema;
 use Inowas\Common\Boundaries\AreaBoundary;
 use Inowas\Common\Boundaries\ModflowBoundary;
+use Inowas\Common\Boundaries\RiverBoundary;
 use Inowas\Common\Boundaries\WellBoundary;
 use Inowas\Common\Grid\BoundingBox;
 use Inowas\Common\Grid\GridSize;
@@ -173,6 +174,10 @@ class BoundaryListProjector extends AbstractDoctrineConnectionProjector
 
         if ($boundary instanceof AreaBoundary) {
             return $this->geoTools->getActiveCellsFromArea($boundary, $boundingBox, $gridSize)->toArray();
+        }
+
+        if ($boundary instanceof RiverBoundary) {
+            return $this->geoTools->getActiveCellsFromRiver($boundary, $boundingBox, $gridSize)->toArray();
         }
 
         if ($boundary instanceof WellBoundary) {

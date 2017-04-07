@@ -7,7 +7,7 @@ namespace Inowas\Modflow\Projection\Calculation;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Schema\Schema;
 use Inowas\Common\Boundaries\ConstantHeadBoundary;
-use Inowas\Common\Boundaries\GeneralHeadHeadBoundary;
+use Inowas\Common\Boundaries\GeneralHeadBoundary;
 use Inowas\Common\Boundaries\RechargeBoundary;
 use Inowas\Common\Boundaries\RiverBoundary;
 use Inowas\Common\Boundaries\WellBoundary;
@@ -151,7 +151,7 @@ class CalculationConfigurationProjector extends AbstractDoctrineConnectionProjec
         /*
          * Add PackageDetails for GhbPackage
          */
-        if ($this->modflowModelManager->countModelBoundaries($event->modflowModelId(), GeneralHeadHeadBoundary::TYPE) > 0) {
+        if ($this->modflowModelManager->countModelBoundaries($event->modflowModelId(), GeneralHeadBoundary::TYPE) > 0) {
             echo "We have general head \r\n";
         }
 
