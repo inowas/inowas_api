@@ -6,8 +6,8 @@ namespace Inowas\Modflow\Model\Packages;
 
 class RchStressPeriodData implements \JsonSerializable
 {
-    /** @var null|array */
-    protected $data;
+    /** @var array */
+    protected $data = [];
 
     public static function create(): RchStressPeriodData
     {
@@ -46,7 +46,7 @@ class RchStressPeriodData implements \JsonSerializable
     public function jsonSerialize(): array
     {
         return array(
-            "stress_period_data" => $this->data
+            "stress_period_data" => (object)$this->data
         );
     }
 }

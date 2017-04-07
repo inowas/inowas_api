@@ -159,10 +159,12 @@ class CalculationConfigurationProjector extends AbstractDoctrineConnectionProjec
         }
 
         /*
-         * Add PackageDetails for ChbPackage
+         * Add PackageDetails for ChdPackage
          */
         if ($this->modflowModelManager->countModelBoundaries($event->modflowModelId(), ConstantHeadBoundary::TYPE) > 0) {
             echo "We have constant head \r\n";
+            $chdStressPeriodData = $this->modflowModelManager->findChdStressPeriodData($event->modflowModelId(), $stressPeriods, $event->start(), $event->timeUnit());
+            $packages->updatePackageParameter('chd', 'StressPeriodData', $chdStressPeriodData);
         }
 
         $this->connection->insert(Table::CALCULATION_CONFIG, array(

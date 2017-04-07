@@ -44,8 +44,8 @@ class ChdPackage implements PackageInterface
     public static function fromArray(array $arr): ChdPackage
     {
         $stressPeriodData = ChdStressPeriodData::fromArray($arr['stress_period_data']);
-        $extension = Extension::fromArray($arr['extension']);
-        $unitnumber = Unitnumber::fromArray($arr['unitnumber']);
+        $extension = Extension::fromValue($arr['extension']);
+        $unitnumber = Unitnumber::fromValue($arr['unitnumber']);
 
         return new self($stressPeriodData, $extension, $unitnumber);
     }
@@ -101,6 +101,10 @@ class ChdPackage implements PackageInterface
      */
     function jsonSerialize()
     {
-        return $this->toArray();
+        return array(
+            "stress_period_data" => (object)$this->stressPeriodData->toArray(),
+            "extension" => $this->extension->toValue(),
+            "unitnumber" => $this->unitnumber->toValue()
+        );
     }
 }

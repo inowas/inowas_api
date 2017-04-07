@@ -9,6 +9,7 @@ use Inowas\Common\Grid\BoundingBox;
 use Inowas\Common\Grid\GridSize;
 use Inowas\Common\Id\ModflowId;
 use Inowas\Common\Id\UserId;
+use Inowas\Common\Modflow\Modelname;
 use Inowas\Modflow\Projection\Table;
 
 class ModelScenarioFinder

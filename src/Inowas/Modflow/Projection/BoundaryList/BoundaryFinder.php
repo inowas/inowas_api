@@ -6,6 +6,8 @@ namespace Inowas\Modflow\Projection\BoundaryList;
 
 use Doctrine\DBAL\Connection;
 use Inowas\Common\Boundaries\BoundaryName;
+use Inowas\Common\Boundaries\ConstantHeadBoundary;
+use Inowas\Common\Boundaries\ConstantHeadDateTimeValue;
 use Inowas\Common\Boundaries\ObservationPoint;
 use Inowas\Common\Boundaries\ObservationPointName;
 use Inowas\Common\Boundaries\PumpingRates;
@@ -130,6 +132,51 @@ class BoundaryFinder
         }
 
         return $rivers;
+    }
+
+    public function findChdBoundaries(ModflowId $modelId): array
+    {
+        $rows = $this->connection->fetchAll(
+            sprintf('SELECT boundary_id, name, geometry, metadata, active_cells FROM %s WHERE model_id = :model_id AND type = :type', Table::BOUNDARIES),
+            ['model_id' => $modelId->toString(), 'type' => ConstantHeadBoundary::TYPE]
+        );
+
+        $constantHeadBoundaries = array();
+        foreach ($rows as $row) {
+            $constantHeadBoundary = ConstantHeadBoundary::createWithParams(
+                BoundaryId::fromString($row['boundary_id']),
+                BoundaryName::fromString($row['name']),
+                Geometry::fromJson($row['geometry'])
+            )->setActiveCells(ActiveCells::fromArray((array)json_decode($row['active_cells'])));
+
+            $constantHeadBoundaries[] = $constantHeadBoundary;
+        }
+
+        /** @var ConstantHeadBoundary $constantHeadBoundary */
+        foreach ($constantHeadBoundaries as $chdKey => $constantHeadBoundary){
+
+            $observationPoints = $this->connection->fetchAll(
+                sprintf('SELECT observation_point_id, observation_point_name, observation_point_geometry, data FROM %s WHERE boundary_id = :boundary_id', Table::BOUNDARY_VALUES),
+                ['boundary_id' => $constantHeadBoundary->boundaryId()->toString()]
+            );
+
+            foreach ($observationPoints as $observationPoint) {
+                $op = ObservationPoint::fromIdNameAndGeometry(
+                    ObservationPointId::fromString($observationPoint['observation_point_id']),
+                    ObservationPointName::fromString($observationPoint['observation_point_name']),
+                    Geometry::fromJson($observationPoint['observation_point_geometry'])
+                );
+
+                $constantHeadBoundary = $constantHeadBoundary->addObservationPoint($op);
+
+                $data = json_decode($observationPoint['data']);
+                foreach ($data as $dateTimeValue) {
+                    $constantHeadBoundaries[$chdKey] = $constantHeadBoundary->addConstantHeadToObservationPoint($op->id(), ConstantHeadDateTimeValue::fromArray((array)$dateTimeValue));
+                }
+            }
+        }
+
+        return $constantHeadBoundaries;
     }
 
     public function findByModelId(ModflowId $modelId)

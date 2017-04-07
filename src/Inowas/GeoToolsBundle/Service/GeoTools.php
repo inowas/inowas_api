@@ -8,6 +8,8 @@ use Doctrine\DBAL\Connection;
 use Doctrine\ORM\EntityManager;
 use Inowas\Common\Boundaries\AbstractBoundary;
 use Inowas\Common\Boundaries\AreaBoundary;
+use Inowas\Common\Boundaries\ConstantHeadBoundary;
+use Inowas\Common\Boundaries\GeneralHeadBoundary;
 use Inowas\Common\Boundaries\RiverBoundary;
 use Inowas\Common\Boundaries\WellBoundary;
 use Inowas\Common\Grid\ActiveCells;
@@ -39,21 +41,39 @@ class GeoTools
             return $this->getActiveCellsFromBoundaryWithGeos($area, $boundingBox, $gridSize);
         }
 
-        return $this->getActiveCellsFromAreaWithPostGis( $area,  $boundingBox,  $gridSize);
+        return $this->getActiveCellsFromBoundaryWithPostGis($area,  $boundingBox,  $gridSize);
     }
 
-    public function getActiveCellsFromRiver(RiverBoundary $area, BoundingBox $boundingBox, GridSize $gridSize): ?ActiveCells
+    public function getActiveCellsFromRiver(RiverBoundary $river, BoundingBox $boundingBox, GridSize $gridSize): ?ActiveCells
     {
         if (\geoPHP::geosInstalled()){
-            return $this->getActiveCellsFromBoundaryWithGeos( $area,  $boundingBox,  $gridSize);
+            return $this->getActiveCellsFromBoundaryWithGeos($river,  $boundingBox,  $gridSize);
         }
 
-        return null;
+        return $this->getActiveCellsFromBoundaryWithPostGis($river,  $boundingBox,  $gridSize);
     }
 
-    private function getActiveCellsFromAreaWithPostGis(AreaBoundary $area, BoundingBox $boundingBox, GridSize $gridSize): ?ActiveCells
+    public function getActiveCellsFromConstantHeadBoundary(ConstantHeadBoundary $chdBoundary, BoundingBox $boundingBox, GridSize $gridSize): ?ActiveCells
     {
-        $areaPolygon = \geoPHP::load($area->geometry()->toJson(), 'json');
+        if (\geoPHP::geosInstalled()){
+            return $this->getActiveCellsFromBoundaryWithGeos($chdBoundary,  $boundingBox,  $gridSize);
+        }
+
+        return $this->getActiveCellsFromBoundaryWithGeos($chdBoundary,  $boundingBox,  $gridSize);
+    }
+
+    public function getActiveCellsFromGeneralHeadBoundary(GeneralHeadBoundary $ghbBoundary, BoundingBox $boundingBox, GridSize $gridSize): ?ActiveCells
+    {
+        if (\geoPHP::geosInstalled()){
+            return $this->getActiveCellsFromBoundaryWithGeos($ghbBoundary,  $boundingBox,  $gridSize);
+        }
+
+        return $this->getActiveCellsFromBoundaryWithGeos($ghbBoundary,  $boundingBox,  $gridSize);
+    }
+
+    private function getActiveCellsFromBoundaryWithPostGis(AbstractBoundary $boundary, BoundingBox $boundingBox, GridSize $gridSize): ?ActiveCells
+    {
+        $areaPolygon = \geoPHP::load($boundary->geometry()->toJson(), 'json');
         $boundingBoxPolygon = \geoPHP::load($boundingBox->toGeoJson(), 'json');
 
         if(! $this->connection->fetchAssoc(sprintf('SELECT ST_Intersects(ST_GeomFromText(\'%s\'),ST_GeomFromText(\'%s\'));', $boundingBoxPolygon->asText(), $areaPolygon->asText()))){

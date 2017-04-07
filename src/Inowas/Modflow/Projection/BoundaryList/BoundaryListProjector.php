@@ -7,6 +7,8 @@ namespace Inowas\Modflow\Projection\BoundaryList;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Schema\Schema;
 use Inowas\Common\Boundaries\AreaBoundary;
+use Inowas\Common\Boundaries\ConstantHeadBoundary;
+use Inowas\Common\Boundaries\GeneralHeadBoundary;
 use Inowas\Common\Boundaries\ModflowBoundary;
 use Inowas\Common\Boundaries\RiverBoundary;
 use Inowas\Common\Boundaries\WellBoundary;
@@ -182,6 +184,14 @@ class BoundaryListProjector extends AbstractDoctrineConnectionProjector
 
         if ($boundary instanceof WellBoundary) {
             return $this->geoTools->getActiveCellsFromWell($boundary, $boundingBox, $gridSize)->toArray();
+        }
+
+        if ($boundary instanceof ConstantHeadBoundary) {
+            return $this->geoTools->getActiveCellsFromConstantHeadBoundary($boundary, $boundingBox, $gridSize)->toArray();
+        }
+
+        if ($boundary instanceof GeneralHeadBoundary) {
+            return $this->geoTools->getActiveCellsFromGeneralHeadBoundary($boundary, $boundingBox, $gridSize)->toArray();
         }
 
         return null;

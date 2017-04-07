@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Inowas\Modflow\Model\Service;
 
+use Inowas\Common\Boundaries\ConstantHeadBoundary;
+use Inowas\Common\Boundaries\ConstantHeadDateTimeValue;
 use Inowas\Common\Boundaries\ObservationPoint;
 use Inowas\Common\Boundaries\RiverBoundary;
 use Inowas\Common\Boundaries\RiverDateTimeValue;
@@ -19,6 +21,8 @@ use Inowas\Common\Modflow\StressPeriod;
 use Inowas\Common\Modflow\StressPeriods;
 use Inowas\Common\Modflow\TimeUnit;
 use Inowas\Modflow\Model\Exception\InvalidTimeUnitException;
+use Inowas\Modflow\Model\Packages\ChdStressPeriodData;
+use Inowas\Modflow\Model\Packages\ChdStressPeriodGridCellValue;
 use Inowas\Modflow\Model\Packages\RivStressPeriodData;
 use Inowas\Modflow\Model\Packages\RivStressPeriodGridCellValue;
 use Inowas\Modflow\Model\Packages\WelStressPeriodData;
@@ -152,6 +156,34 @@ class ModflowModelManager implements ModflowModelManagerInterface
         return $rivSpd;
     }
 
+    public function findChdStressPeriodData(ModflowId $modflowId, StressPeriods $stressPeriods, DateTime $start, TimeUnit $timeUnit): ChdStressPeriodData
+    {
+        $chdSpd = ChdStressPeriodData::create();
+        $chdBoundaries = $this->findChdBoundaries($modflowId);
+
+        /** @var ConstantHeadBoundary $chdBoundary */
+        foreach ($chdBoundaries as $chdBoundary){
+
+
+            /** @var ObservationPoint $observationPoint */
+            // Calculate without interpolation for the beginning
+            $observationPoint = array_values($chdBoundary->observationPoints())[0];
+            $dateTimeValues = $chdBoundary->dateTimeValues($observationPoint->id());
+
+            /** @var ConstantHeadDateTimeValue $dateTimeValue */
+            foreach ($dateTimeValues as $dateTimeValue) {
+                $cells = $chdBoundary->activeCells()->cells();
+                foreach ($cells as $cell) {
+                    $totim = $this->calculateTotim($start, DateTime::fromAtom($dateTimeValue->dateTime()->format(DATE_ATOM)), $timeUnit);
+                    $sp = $stressPeriods->spNumberFromTotim($totim);
+                    $chdSpd->addGridCellValue(ChdStressPeriodGridCellValue::fromParams($sp, $cell[0], $cell[1], $cell[2], $dateTimeValue->shead(), $dateTimeValue->ehead()));
+                }
+            }
+        }
+
+        return $chdSpd;
+    }
+
     private function findWells(ModflowId $modflowId): array
     {
         return $this->boundaryFinder->findWells($modflowId);
@@ -160,6 +192,11 @@ class ModflowModelManager implements ModflowModelManagerInterface
     private function findRivers(ModflowId $modflowId): array
     {
         return $this->boundaryFinder->findRivers($modflowId);
+    }
+
+    private function findChdBoundaries(ModflowId $modflowId): array
+    {
+        return $this->boundaryFinder->findChdBoundaries($modflowId);
     }
 
     private function calculateTotims(array $bcDates, TimeUnit $timeUnit): array

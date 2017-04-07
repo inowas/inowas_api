@@ -7,7 +7,7 @@ namespace Inowas\Modflow\Model\Packages;
 class WelStressPeriodData implements \JsonSerializable
 {
     /** @var array */
-    protected $data = array();
+    protected $data = [];
 
     public static function create(): WelStressPeriodData
     {

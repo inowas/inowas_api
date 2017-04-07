@@ -526,7 +526,7 @@ class Hanoi implements ContainerAwareInterface, DataFixtureInterface
         $start = DateTime::fromDateTime(new \DateTime('2005-01-01'));
         $end = DateTime::fromDateTime(new \DateTime('2007-12-31'));
         $commandBus->dispatch(CreateModflowModelCalculation::byUserWithModelId($calculationId, $ownerId, $modelId, $start, $end));
-        #$commandBus->dispatch(CalculateModflowModelCalculation::byUserWithModelId($ownerId, $calculationId, $modelId));
+        $commandBus->dispatch(CalculateModflowModelCalculation::byUserWithModelId($ownerId, $calculationId, $modelId));
 
         return 1;
 
