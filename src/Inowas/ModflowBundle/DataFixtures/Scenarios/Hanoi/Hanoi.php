@@ -4,6 +4,8 @@ namespace Inowas\ModflowBundle\DataFixtures\Scenarios\Hanoi;
 
 use Doctrine\DBAL\Schema\Schema;
 use FOS\UserBundle\Doctrine\UserManager;
+use Inowas\Common\Boundaries\ConstantHeadBoundary;
+use Inowas\Common\Boundaries\ConstantHeadDateTimeValue;
 use Inowas\Common\Boundaries\ObservationPoint;
 use Inowas\Common\Boundaries\ObservationPointName;
 use Inowas\Common\Boundaries\RiverDateTimeValue;
@@ -473,8 +475,51 @@ class Hanoi implements ContainerAwareInterface, DataFixtureInterface
             echo sprintf("Add River-Boundary ObservationPoint %s.\r\n", $observationPoint->name()->toString());
             $river = $river->addObservationPoint($observationPoint);
         }
-
         $commandBus->dispatch(AddBoundary::toBaseModel($ownerId, $modelId, $river));
+
+        /*
+         * Add ConstantHead for the baseScenario
+         */
+        $chdPoints = $this->loadRowsFromCsv(__DIR__ . "/data/chd_geometry_basecase.csv");
+        foreach ($chdPoints as $key => $point){
+            $chdPoints[$key] = $geoTools->transformPoint(new Point($point['x'], $point['y'], $point['srid']), 4326);
+        }
+
+
+        /** @var ConstantHeadBoundary $chdBoundary */
+        $chdBoundary = ConstantHeadBoundary::createWithParams(
+            BoundaryId::generate(),
+            BoundaryName::fromString('ChdBoundary'),
+            Geometry::fromLineString(new LineString($chdPoints, 4326))
+        );
+
+        $observationPoints = $this->loadRowsFromCsv(__DIR__ . "/data/chd_stages_basecase.csv");
+        $header = $this->loadHeaderFromCsv(__DIR__ . "/data/chd_stages_basecase.csv");
+        $dates = $this->getDates($header);
+
+        foreach ($observationPoints as $op){
+
+            $observationPointId = ObservationPointId::generate();
+            $observationPoint = ObservationPoint::fromIdNameAndGeometry(
+                $observationPointId,
+                ObservationPointName::fromString($op['name']),
+                Geometry::fromPoint($geoTools->transformPoint(new Point($op['x'], $op['y'], $op['srid']), 4326))
+            );
+
+            echo sprintf("Add Chd-Boundary ObservationPoint %s.\r\n", $observationPoint->name()->toString());
+            $chdBoundary = $chdBoundary->addObservationPoint($observationPoint);
+
+            foreach ($dates as $date) {
+                $chdBoundary = $chdBoundary->addConstantHeadToObservationPoint($observationPointId, ConstantHeadDateTimeValue::fromParams(
+                    new \DateTimeImmutable(explode(':', $date)[1]),
+                    $op[$date],
+                    $op[$date]
+                ));
+            }
+        }
+
+        echo sprintf("Add Chd-Boundary %s.\r\n", $chdBoundary->name()->toString());
+        $commandBus->dispatch(AddBoundary::toBaseModel($ownerId, $modelId, $chdBoundary));
 
         $calculationId = ModflowId::generate();
         $start = DateTime::fromDateTime(new \DateTime('2005-01-01'));
