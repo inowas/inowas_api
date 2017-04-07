@@ -135,6 +135,12 @@ class RivPackage implements PackageInterface
      */
     function jsonSerialize()
     {
-        return $this->toArray();
+        return array(
+            "ipakcb" => $this->ipakcb->toInteger(),
+            "stress_period_data" => (object)$this->stressPeriodData->toArray(),
+            "options" => $this->options->toValue(),
+            "extension" => $this->extension->toValue(),
+            "unitnumber" => $this->unitnumber->toValue()
+        );
     }
 }

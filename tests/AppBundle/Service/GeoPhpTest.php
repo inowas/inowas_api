@@ -169,6 +169,7 @@ class GeoPhpTest extends WebTestCase
     {
         $result = $this->geoTools->getActiveCellsFromArea($this->area, $this->boundingBox, $this->gridSize, false);
         $this->assertInstanceOf(ActiveCells::class, $result);
+        $this->assertCount(330, $result->cells());
     }
 
     public function test_integration_if_geos_is_available(): void
@@ -193,7 +194,15 @@ class GeoPhpTest extends WebTestCase
     {
         $result = $this->geoTools->getActiveCellsFromBoundaryWithGeos($this->area, $this->boundingBox, $this->gridSize);
         $this->assertInstanceOf(ActiveCells::class, $result);
-        $this->assertCount(184, $result->cells());
+        $this->assertCount(330, $result->cells());
+    }
+
+    public function test_calculate_active_cells_with_postgis_is_equal_to_calculate_active_cells_with_geos(): void
+    {
+        /** @var ActiveCells $postGisResult */
+        $postGisResult = $this->geoTools->getActiveCellsFromArea($this->area, $this->boundingBox, $this->gridSize, false);
+        $geosResult = $this->geoTools->getActiveCellsFromBoundaryWithGeos($this->area, $this->boundingBox, $this->gridSize);
+        $this->assertEquals($postGisResult, $geosResult);
     }
 
     public function test_calculate_river_active_cells_with_geos(): void

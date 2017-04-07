@@ -86,7 +86,7 @@ class RivStressPeriodData implements \JsonSerializable
     public function jsonSerialize(): array
     {
         return array(
-            "stress_period_data" => $this->data
+            "stress_period_data" => (object)$this->data
         );
     }
 }

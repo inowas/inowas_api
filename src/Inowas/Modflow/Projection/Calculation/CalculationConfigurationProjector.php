@@ -95,6 +95,10 @@ class CalculationConfigurationProjector extends AbstractDoctrineConnectionProjec
          */
         $activeCells = $this->modflowModelManager->getAreaActiveCells($event->modflowModelId());
         $iBound = Ibound::fromActiveCellsAndNumberOfLayers($activeCells, $this->soilmodelManager->getNlay($event->soilModelId())->toInteger());
+
+        dump(json_encode($iBound->toValue()));
+        die();
+
         $packages->updatePackageParameter('bas', 'ibound', $iBound);
         $strt = Strt::fromTopAndNumberOfLayers($this->soilmodelManager->getTop($event->soilModelId()), $this->soilmodelManager->getNlay($event->soilModelId())->toInteger());
         $packages->updatePackageParameter('bas', 'strt', $strt);
@@ -163,8 +167,6 @@ class CalculationConfigurationProjector extends AbstractDoctrineConnectionProjec
         if ($this->modflowModelManager->countModelBoundaries($event->modflowModelId(), ConstantHeadBoundary::TYPE) > 0) {
             echo "We have constant head \r\n";
         }
-
-        dump(json_encode($packages->getPackage('riv')));
 
         $this->connection->insert(Table::CALCULATION_CONFIG, array(
             'calculation_id' => $event->calculationId()->toString(),

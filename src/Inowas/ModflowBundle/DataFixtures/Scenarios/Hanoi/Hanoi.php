@@ -131,7 +131,7 @@ class Hanoi implements ContainerAwareInterface, DataFixtureInterface
         $boundingBox = BoundingBox::fromEPSG4326Coordinates($box->xMin(), $box->xMax(), $box->yMin(), $box->yMax(), $box->dX(), $box->dY());
         $commandBus->dispatch(ChangeModflowModelBoundingBox::forModflowModel($ownerId, $modelId, $boundingBox));
 
-        $gridSize = GridSize::fromXY(165, 175);
+        $gridSize = GridSize::fromXY(50, 60);
         $commandBus->dispatch(ChangeModflowModelGridSize::forModflowModel($ownerId, $modelId, $gridSize));
 
         $area = AreaBoundary::create(BoundaryId::generate())->setName(BoundaryName::fromString('Hanoi Area'))->setGeometry(Geometry::fromPolygon(new Polygon(array(
@@ -525,7 +525,7 @@ class Hanoi implements ContainerAwareInterface, DataFixtureInterface
         $start = DateTime::fromDateTime(new \DateTime('2005-01-01'));
         $end = DateTime::fromDateTime(new \DateTime('2007-12-31'));
         $commandBus->dispatch(CreateModflowModelCalculation::byUserWithModelId($calculationId, $ownerId, $modelId, $start, $end));
-        #$commandBus->dispatch(CalculateModflowModelCalculation::byUserWithModelId($ownerId, $calculationId, $modelId));
+        $commandBus->dispatch(CalculateModflowModelCalculation::byUserWithModelId($ownerId, $calculationId, $modelId));
 
         return 1;
 

@@ -71,14 +71,16 @@ class GeoTools
         $nx = $gridSize->nX();
         $ny = $gridSize->nY();
 
-        for ($x = 0; $x<$nx; $x++){
-            $activeCells[$x] = [];
-            for ($y = 0; $y<$ny; $y++){
+        for ($y = 0; $y<$ny; $y++){
+            $activeCells[$y] = [];
+            for ($x = 0; $x<$nx; $x++){
 
                 $cellWkt = sprintf(
-                    'POINT (%f %f)',
-                    $boundingBox->xMin()+(($x+0.5)*$dX),
-                    $boundingBox->yMax()-(($y+0.5)*$dY)
+                    'LINESTRING(%f %f, %f %f)',
+                    $boundingBox->xMin()+(($x)*$dX),
+                        $boundingBox->yMax()-(($y)*$dY),
+                        $boundingBox->xMin()+(($x+1)*$dX),
+                        $boundingBox->yMax()-(($y+1)*$dY)
                 );
 
                 $activeCells[$y][$x] = $this->intersectWktGeometry($cellWkt, $areaGeometry);
@@ -104,9 +106,9 @@ class GeoTools
         $ny = $gridSize->nY();
 
         $activeCells = [];
-        for ($x = 0; $x<$nx; $x++){
-            $activeCells[$x] = [];
-            for ($y = 0; $y<$ny; $y++){
+        for ($y = 0; $y<$ny; $y++){
+            $activeCells[$y] = [];
+            for ($x = 0; $x<$nx; $x++){
                 $bb = \geoPHP::load(sprintf('LINESTRING(%f %f, %f %f)', $boundingBox->xMin()+(($x)*$dX), $boundingBox->yMax()-(($y)*$dY), $boundingBox->xMin()+(($x+1)*$dX), $boundingBox->yMax()-(($y+1)*$dY)), 'wkt')->envelope()->geos();
                 $activeCells[$y][$x] = ($bb->intersects($boundary) || $bb->crosses($boundary));
             }
@@ -149,7 +151,7 @@ class GeoTools
     private function intersectWktGeometry(string $wkt, string $geometry){
 
         $result = $this->connection->fetchAssoc(sprintf(
-                'SELECT ST_Intersects(ST_GeomFromText(\'%s\'), \'%s\'::geometry);',
+                'SELECT ST_Intersects(ST_Envelope(ST_GeomFromText(\'%s\')), \'%s\'::geometry);',
                 $wkt,
                 $geometry
             )
