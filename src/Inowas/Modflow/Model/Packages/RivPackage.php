@@ -58,8 +58,8 @@ class RivPackage implements PackageInterface
         $ipakcb = Ipakcb::fromInteger($arr['ipakcb']);
         $stressPeriodData = RivStressPeriodData::fromArray($arr['stress_period_data']);
         $options = Options::fromValue(null);
-        $extension = Extension::fromArray($arr['extension']);
-        $unitnumber = Unitnumber::fromArray($arr['unitnumber']);
+        $extension = Extension::fromString($arr['extension']);
+        $unitnumber = Unitnumber::fromInteger($arr['unitnumber']);
 
         return new self($ipakcb, $stressPeriodData, $options, $extension, $unitnumber);
     }

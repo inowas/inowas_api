@@ -75,4 +75,11 @@ class RiverBoundary extends AbstractBoundary
     {
         return json_encode($this->observationPoints);
     }
+
+    public function dateTimeValues(ObservationPointId $observationPointId): array
+    {
+        /** @var ObservationPoint $observationPoint */
+        $observationPoint = $this->observationPoints[$observationPointId->toString()];
+        return $observationPoint->dateTimeValues();
+    }
 }

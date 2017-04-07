@@ -146,6 +146,8 @@ class CalculationConfigurationProjector extends AbstractDoctrineConnectionProjec
          */
         if ($this->modflowModelManager->countModelBoundaries($event->modflowModelId(), RiverBoundary::TYPE) > 0) {
             echo "We have river \r\n";
+            $rivStressPeriodData = $this->modflowModelManager->findRivStressPeriodData($event->modflowModelId(), $stressPeriods, $event->start(), $event->timeUnit());
+            $packages->updatePackageParameter('riv', 'StressPeriodData', $rivStressPeriodData);
         }
 
         /*
@@ -161,6 +163,8 @@ class CalculationConfigurationProjector extends AbstractDoctrineConnectionProjec
         if ($this->modflowModelManager->countModelBoundaries($event->modflowModelId(), ConstantHeadBoundary::TYPE) > 0) {
             echo "We have constant head \r\n";
         }
+
+        dump(json_encode($packages->getPackage('riv')));
 
         $this->connection->insert(Table::CALCULATION_CONFIG, array(
             'calculation_id' => $event->calculationId()->toString(),

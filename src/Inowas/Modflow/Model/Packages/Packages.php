@@ -40,6 +40,10 @@ class Packages implements \JsonSerializable
         'lpf' => LpfPackage::class,
         'pcg' => PcgPackage::class,
         'oc' => OcPackage::class,
+        'chd' => ChdPackage::class,
+        'ghb' => GhbPackage::class,
+        'rch' => RchPackage::class,
+        'riv' => RivPackage::class,
         'wel' => WelPackage::class
     ];
 

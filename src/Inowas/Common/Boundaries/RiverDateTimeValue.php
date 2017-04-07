@@ -13,7 +13,7 @@ class RiverDateTimeValue extends DateTimeValue
     private $stage;
 
     /** @var float */
-    private $botm;
+    private $rbot;
 
     /** @var float */
     private $cond;
@@ -25,7 +25,7 @@ class RiverDateTimeValue extends DateTimeValue
     {
         $self = new self();
         $self->stage = $stage;
-        $self->botm = $botm;
+        $self->rbot = $botm;
         $self->cond = $cond;
         $self->dateTime = $dateTime;
 
@@ -37,7 +37,7 @@ class RiverDateTimeValue extends DateTimeValue
         $self = new self();
         $self->dateTime = new \DateTimeImmutable($arr['date_time']);
         $self->stage = $arr['stage'];
-        $self->botm = $arr['botm'];
+        $self->rbot = $arr['rbot'];
         $self->cond = $arr['cond'];
         return $self;
     }
@@ -47,7 +47,7 @@ class RiverDateTimeValue extends DateTimeValue
         return array(
             'date_time' => $this->dateTime->format(DATE_ATOM),
             'stage' => $this->stage,
-            'botm' => $this->botm,
+            'rbot' => $this->rbot,
             'cond' => $this->cond
         );
     }
@@ -62,9 +62,9 @@ class RiverDateTimeValue extends DateTimeValue
         return $this->dateTime;
     }
 
-    public function botm(): float
+    public function rbot(): float
     {
-        return $this->botm;
+        return $this->rbot;
     }
 
     public function cond(): float
@@ -86,7 +86,7 @@ class RiverDateTimeValue extends DateTimeValue
     {
         return array(
             'stage' => $this->stage,
-            'botm' => $this->botm,
+            'rbot' => $this->rbot,
             'cond' => $this->cond
         );
     }

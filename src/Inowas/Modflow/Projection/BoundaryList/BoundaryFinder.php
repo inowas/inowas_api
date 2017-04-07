@@ -6,7 +6,11 @@ namespace Inowas\Modflow\Projection\BoundaryList;
 
 use Doctrine\DBAL\Connection;
 use Inowas\Common\Boundaries\BoundaryName;
+use Inowas\Common\Boundaries\ObservationPoint;
+use Inowas\Common\Boundaries\ObservationPointName;
 use Inowas\Common\Boundaries\PumpingRates;
+use Inowas\Common\Boundaries\RiverBoundary;
+use Inowas\Common\Boundaries\RiverDateTimeValue;
 use Inowas\Common\Boundaries\WellBoundary;
 use Inowas\Common\Boundaries\WellDateTimeValue;
 use Inowas\Common\Boundaries\WellType;
@@ -16,6 +20,7 @@ use Inowas\Common\Grid\ActiveCells;
 use Inowas\Common\Grid\LayerNumber;
 use Inowas\Common\Id\BoundaryId;
 use Inowas\Common\Id\ModflowId;
+use Inowas\Common\Id\ObservationPointId;
 use Inowas\Modflow\Model\Exception\SqlQueryExceptionException;
 use Inowas\Modflow\Projection\Table;
 
@@ -80,6 +85,51 @@ class BoundaryFinder
         }
 
         return $wells;
+    }
+
+    public function findRivers(ModflowId $modelId): array
+    {
+        $rows = $this->connection->fetchAll(
+            sprintf('SELECT boundary_id, name, geometry, metadata, active_cells FROM %s WHERE model_id = :model_id AND type = :type', Table::BOUNDARIES),
+            ['model_id' => $modelId->toString(), 'type' => RiverBoundary::TYPE]
+        );
+
+        $rivers = array();
+        foreach ($rows as $row) {
+            $river = RiverBoundary::createWithParams(
+                BoundaryId::fromString($row['boundary_id']),
+                BoundaryName::fromString($row['name']),
+                Geometry::fromJson($row['geometry'])
+            )->setActiveCells(ActiveCells::fromArray((array)json_decode($row['active_cells'])));
+
+            $rivers[] = $river;
+        }
+
+        /** @var RiverBoundary $river */
+        foreach ($rivers as $riverKey => $river){
+
+            $observationPoints = $this->connection->fetchAll(
+                sprintf('SELECT observation_point_id, observation_point_name, observation_point_geometry, data FROM %s WHERE boundary_id = :boundary_id', Table::BOUNDARY_VALUES),
+                ['boundary_id' => $river->boundaryId()->toString()]
+            );
+
+            foreach ($observationPoints as $observationPoint) {
+                $op = ObservationPoint::fromIdNameAndGeometry(
+                    ObservationPointId::fromString($observationPoint['observation_point_id']),
+                    ObservationPointName::fromString($observationPoint['observation_point_name']),
+                    Geometry::fromJson($observationPoint['observation_point_geometry'])
+                );
+
+                $river = $river->addObservationPoint($op);
+
+                $data = json_decode($observationPoint['data']);
+                foreach ($data as $dateTimeValue) {
+                    $rivers[$riverKey] = $river->addRiverStageToObservationPoint($op->id(), RiverDateTimeValue::fromArray((array)$dateTimeValue));
+                }
+            }
+        }
+
+        return $rivers;
     }
 
     public function findByModelId(ModflowId $modelId)

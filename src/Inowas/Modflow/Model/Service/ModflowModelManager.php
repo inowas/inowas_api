@@ -4,6 +4,9 @@ declare(strict_types=1);
 
 namespace Inowas\Modflow\Model\Service;
 
+use Inowas\Common\Boundaries\ObservationPoint;
+use Inowas\Common\Boundaries\RiverBoundary;
+use Inowas\Common\Boundaries\RiverDateTimeValue;
 use Inowas\Common\Boundaries\WellDateTimeValue;
 use Inowas\Common\Boundaries\WellBoundary;
 use Inowas\Common\DateTime\DateTime;
@@ -16,6 +19,8 @@ use Inowas\Common\Modflow\StressPeriod;
 use Inowas\Common\Modflow\StressPeriods;
 use Inowas\Common\Modflow\TimeUnit;
 use Inowas\Modflow\Model\Exception\InvalidTimeUnitException;
+use Inowas\Modflow\Model\Packages\RivStressPeriodData;
+use Inowas\Modflow\Model\Packages\RivStressPeriodGridCellValue;
 use Inowas\Modflow\Model\Packages\WelStressPeriodData;
 use Inowas\Modflow\Model\Packages\WelStressPeriodGridCellValue;
 use Inowas\Modflow\Projection\BoundaryList\BoundaryFinder;
@@ -119,9 +124,42 @@ class ModflowModelManager implements ModflowModelManagerInterface
         return $wspd;
     }
 
+    public function findRivStressPeriodData(ModflowId $modflowId, StressPeriods $stressPeriods, DateTime $start, TimeUnit $timeUnit): RivStressPeriodData
+    {
+        $rivSpd = RivStressPeriodData::create();
+        $rivers = $this->findRivers($modflowId);
+
+        /** @var RiverBoundary $river */
+        foreach ($rivers as $river){
+
+
+            /** @var ObservationPoint $observationPoint */
+            // Calculate without interpolation for the beginning
+            $observationPoint = array_values($river->observationPoints())[0];
+            $dateTimeValues = $river->dateTimeValues($observationPoint->id());
+
+            /** @var RiverDateTimeValue $dateTimeValue */
+            foreach ($dateTimeValues as $dateTimeValue) {
+                $cells = $river->activeCells()->cells();
+                foreach ($cells as $cell) {
+                    $totim = $this->calculateTotim($start, DateTime::fromAtom($dateTimeValue->dateTime()->format(DATE_ATOM)), $timeUnit);
+                    $sp = $stressPeriods->spNumberFromTotim($totim);
+                    $rivSpd->addGridCellValue(RivStressPeriodGridCellValue::fromParams($sp, $cell[0], $cell[1], $cell[2], $dateTimeValue->stage(), $dateTimeValue->cond(), $dateTimeValue->rbot()));
+                }
+            }
+        }
+
+        return $rivSpd;
+    }
+
     private function findWells(ModflowId $modflowId): array
     {
         return $this->boundaryFinder->findWells($modflowId);
+    }
+
+    private function findRivers(ModflowId $modflowId): array
+    {
+        return $this->boundaryFinder->findRivers($modflowId);
     }
 
     private function calculateTotims(array $bcDates, TimeUnit $timeUnit): array

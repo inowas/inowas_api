@@ -41,8 +41,8 @@ namespace Inowas\Modflow\Model\Packages;
 
 class RivStressPeriodData implements \JsonSerializable
 {
-    /** @var null|array */
-    protected $data;
+    /** @var array */
+    protected $data = [];
 
     public static function create(): RivStressPeriodData
     {
