@@ -96,9 +96,6 @@ class CalculationConfigurationProjector extends AbstractDoctrineConnectionProjec
         $activeCells = $this->modflowModelManager->getAreaActiveCells($event->modflowModelId());
         $iBound = Ibound::fromActiveCellsAndNumberOfLayers($activeCells, $this->soilmodelManager->getNlay($event->soilModelId())->toInteger());
 
-        dump(json_encode($iBound->toValue()));
-        die();
-
         $packages->updatePackageParameter('bas', 'ibound', $iBound);
         $strt = Strt::fromTopAndNumberOfLayers($this->soilmodelManager->getTop($event->soilModelId()), $this->soilmodelManager->getNlay($event->soilModelId())->toInteger());
         $packages->updatePackageParameter('bas', 'strt', $strt);
