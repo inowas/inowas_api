@@ -27,6 +27,10 @@ services:
         class: Inowas\Soilmodel\Model\Handler\AddGeologicalLayerToSoilmodelHandler
         arguments: ['@soil_model_list']
 
+    inowas.soilmodel.update_geological_layer_property.handler:
+        class: Inowas\Soilmodel\Model\Handler\UpdateGeologicalLayerPropertyHandler
+        arguments: ['@soil_model_list']
+
     inowas.soilmodel.change_soilmodel_description.handler:
         class: Inowas\Soilmodel\Model\Handler\ChangeSoilmodelDescriptionHandler
         arguments: ['@soil_model_list']

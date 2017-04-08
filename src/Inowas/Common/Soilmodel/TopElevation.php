@@ -9,6 +9,8 @@ use Inowas\Soilmodel\Model\GeologicalLayerNumber;
 class TopElevation extends AbstractSoilproperty
 {
 
+    const TYPE = 'htop';
+
     public static function create(): TopElevation
     {
         return new self(null);
@@ -46,6 +48,6 @@ class TopElevation extends AbstractSoilproperty
 
     public function identifier(): string
     {
-        return 'htop';
+        return self::TYPE;
     }
 }

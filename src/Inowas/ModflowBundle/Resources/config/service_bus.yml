@@ -38,6 +38,7 @@ prooph_service_bus:
                     'Inowas\Soilmodel\Model\Command\ChangeBoreLogName': 'inowas.soilmodel.change_borelog_name.handler'
                     'Inowas\Soilmodel\Model\Command\CreateBoreLog': 'inowas.soilmodel.create_borelog.handler'
                     'Inowas\Soilmodel\Model\Command\DeleteBoreLog': 'inowas.soilmodel.delete_borelog.handler'
+                    'Inowas\Soilmodel\Model\Command\UpdateGeologicalLayerProperty': 'inowas.soilmodel.update_geological_layer_property.handler'
 
     event_buses:
         modflow_event_bus:
@@ -121,4 +122,7 @@ prooph_service_bus:
                         - 'inowas.modflow_projection.layer_details'
 
                     'Inowas\Soilmodel\Model\Event\LayerValuesWereUpdated':
+                        - 'inowas.modflow_projection.layer_values'
+
+                    'Inowas\Soilmodel\Model\Event\LayerPropertyWasUpdated':
                         - 'inowas.modflow_projection.layer_values'

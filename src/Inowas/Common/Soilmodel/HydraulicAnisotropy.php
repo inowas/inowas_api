@@ -9,6 +9,8 @@ use Inowas\Soilmodel\Model\GeologicalLayerNumber;
 class HydraulicAnisotropy extends AbstractSoilproperty
 {
 
+    const TYPE = 'ha';
+
     public static function create(): HydraulicAnisotropy
     {
         return new self(null);
@@ -44,6 +46,6 @@ class HydraulicAnisotropy extends AbstractSoilproperty
 
     public function identifier(): string
         {
-            return 'ha';
+            return self::TYPE;
     }
 }

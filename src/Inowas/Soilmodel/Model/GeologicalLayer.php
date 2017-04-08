@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Inowas\Soilmodel\Model;
 
 use Inowas\Common\Modflow\Laytyp;
+use Inowas\Common\Soilmodel\AbstractSoilproperty;
 
 class GeologicalLayer
 {
@@ -99,8 +100,8 @@ class GeologicalLayer
         $self->name = $name;
         $self->description = $description;
 
-        if ($values instanceof GeologicalLayerValues){
-            $self->values = $values;
+        if (! $values instanceof GeologicalLayerValues){
+            $self->values = GeologicalLayerValues::fromDefault();
         }
 
         return $self;
@@ -115,6 +116,18 @@ class GeologicalLayer
         $self->name = $this->name;
         $self->description = $this->description;
         $self->values = $values;
+        return $self;
+    }
+
+    public function updateProperty(AbstractSoilproperty $property): GeologicalLayer
+    {
+        $self = new self();
+        $self->id = $this->id;
+        $self->type = $this->type;
+        $self->number = $this->number;
+        $self->name = $this->name;
+        $self->description = $this->description;
+        $self->values = $this->values->updateProperty($property);
         return $self;
     }
 }

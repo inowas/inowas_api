@@ -39,6 +39,13 @@ class Storage
         return new self($ss, $sy);
     }
 
+    public static function fromDefault(): Storage
+    {
+        $ss = SpecificStorage::fromLayerValue(1e-5);
+        $sy = SpecificYield::fromLayerValue(0.15);
+        return new self($ss, $sy);
+    }
+
     public function ss(): SpecificStorage
     {
         return $this->ss;
@@ -47,5 +54,19 @@ class Storage
     public function sy(): SpecificYield
     {
         return $this->sy;
+    }
+
+    public function updateSs(SpecificStorage $storage): Storage
+    {
+        $self = self::fromArray($this->toArray());
+        $self->ss = $storage;
+        return $self;
+    }
+
+    public function updateSy(SpecificYield $yield): Storage
+    {
+        $self = self::fromArray($this->toArray());
+        $self->sy = $yield;
+        return $self;
     }
 }

@@ -4,14 +4,13 @@ declare(strict_types=1);
 
 namespace Inowas\Soilmodel\Model\Handler;
 
+use Inowas\Soilmodel\Model\Command\UpdateGeologicalLayerProperty;
 use Inowas\Soilmodel\Model\Exception\SoilmodelNotFoundException;
 use Inowas\Soilmodel\Model\Exception\WriteAccessFailedException;
-use Inowas\Soilmodel\Model\Command\AddGeologicalLayerToSoilmodel;
-use Inowas\Soilmodel\Model\GeologicalLayerValues;
 use Inowas\Soilmodel\Model\SoilmodelAggregate;
 use Inowas\Soilmodel\Model\SoilmodelList;
 
-final class AddGeologicalLayerToSoilmodelHandler
+final class UpdateGeologicalLayerPropertyHandler
 {
 
     /** @var  SoilmodelList */
@@ -23,7 +22,7 @@ final class AddGeologicalLayerToSoilmodelHandler
         $this->soilmodelList = $soilmodelList;
     }
 
-    public function __invoke(AddGeologicalLayerToSoilmodel $command)
+    public function __invoke(UpdateGeologicalLayerProperty $command)
     {
         $soilmodel = $this->soilmodelList->get($command->soilmodelId());
 
@@ -35,7 +34,6 @@ final class AddGeologicalLayerToSoilmodelHandler
             throw WriteAccessFailedException::withSoilModelAndUserId($command->soilmodelId(), $command->userId());
         }
 
-        $soilmodel->addGeologicalLayer($command->userId(), $command->layer());
-        $soilmodel->updateGeologicalLayerValues($command->layer()->id(), $command->layer()->layerNumber(), GeologicalLayerValues::fromDefault());
+        $soilmodel->updateGeologicalLayerProperty($command->userId(), $command->layerId(), $command->property());
     }
 }

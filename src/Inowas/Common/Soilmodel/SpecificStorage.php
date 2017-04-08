@@ -9,6 +9,8 @@ use Inowas\Soilmodel\Model\GeologicalLayerNumber;
 final class SpecificStorage extends AbstractSoilproperty
 {
 
+    const TYPE = 'ss';
+
     public static function create(): SpecificStorage
     {
         return new self(null);
@@ -44,6 +46,6 @@ final class SpecificStorage extends AbstractSoilproperty
 
     public function identifier(): string
     {
-        return 'ss';
+        return self::TYPE;
     }
 }

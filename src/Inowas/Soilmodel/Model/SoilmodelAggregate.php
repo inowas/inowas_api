@@ -6,7 +6,9 @@ namespace Inowas\Soilmodel\Model;
 
 use Inowas\Common\Modflow\Botm;
 use Inowas\Common\Id\UserId;
+use Inowas\Common\Soilmodel\AbstractSoilproperty;
 use Inowas\Common\Soilmodel\HTop;
+use Inowas\Soilmodel\Model\Event\LayerPropertyWasUpdated;
 use Inowas\Soilmodel\Model\Event\LayerValuesWereUpdated;
 use Inowas\Soilmodel\Model\Event\SoilmodelBoreLogWasAdded;
 use Inowas\Soilmodel\Model\Event\SoilmodelBoreLogWasRemoved;
@@ -88,7 +90,6 @@ class SoilmodelAggregate extends AggregateRoot
            unset($this->boreLogs[$logId->toString()]);
             $this->recordThat(SoilmodelBoreLogWasRemoved::byUserWithId($userId, $this->soilmodelId, $logId));
         }
-
     }
 
     public function addGeologicalLayer(UserId $userId, GeologicalLayer $layer): void
@@ -103,6 +104,16 @@ class SoilmodelAggregate extends AggregateRoot
             unset($this->layers[$layer->id()->toString()]);
             $this->recordThat(SoilmodelGeologicalLayerWasRemoved::byUserWithId($userId, $this->soilmodelId, $layer->id()));
         }
+    }
+
+    public function updateGeologicalLayerProperty(UserId $userId, GeologicalLayerId $layerId, AbstractSoilproperty $property): void
+    {
+
+        if (! array_key_exists($layerId->toString(), $this->layers)){
+            return;
+        }
+
+        $this->recordThat(LayerPropertyWasUpdated::forSoilmodelAndLayer($userId, $this->soilmodelId, $layerId, $property));
     }
 
     public function updateGeologicalLayerValues(GeologicalLayerId $layerId, GeologicalLayerNumber $layerNumber, GeologicalLayerValues $values): void
@@ -161,6 +172,13 @@ class SoilmodelAggregate extends AggregateRoot
         if (array_key_exists($event->layerId()->toString(), $this->layers)) {
             unset($this->layers[$event->layerId()->toString()]);
         }
+    }
+
+    protected function whenLayerPropertyWasUpdated(LayerPropertyWasUpdated $event): void
+    {
+        /** GeologicalLayer $layer */
+        $layer = $this->layers[$event->layerId()->toString()];
+        $this->layers[$event->layerId()->toString()] = $layer->updateProperty($event->property());
     }
 
     protected function whenLayerValuesWereUpdated(LayerValuesWereUpdated $event): void

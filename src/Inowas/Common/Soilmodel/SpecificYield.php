@@ -9,6 +9,8 @@ use Inowas\Soilmodel\Model\GeologicalLayerNumber;
 final class SpecificYield extends AbstractSoilproperty
 {
 
+    const TYPE = 'sy';
+
     public static function create(): SpecificYield
     {
         return new self(null);
@@ -44,6 +46,6 @@ final class SpecificYield extends AbstractSoilproperty
 
     public function identifier(): string
     {
-        return 'sy';
+        return self::TYPE;
     }
 }

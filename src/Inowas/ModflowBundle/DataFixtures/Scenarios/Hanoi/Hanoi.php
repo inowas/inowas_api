@@ -23,6 +23,7 @@ use Inowas\Common\Id\BoundaryId;
 use Inowas\Common\Boundaries\BoundaryName;
 use Inowas\Common\Calculation\Budget;
 use Inowas\Common\Id\ObservationPointId;
+use Inowas\Common\Soilmodel\BottomElevation;
 use Inowas\Common\Soilmodel\Conductivity;
 use Inowas\Common\Soilmodel\HBottom;
 use Inowas\Common\Soilmodel\HTop;
@@ -33,6 +34,7 @@ use Inowas\Common\Soilmodel\HydraulicConductivityZ;
 use Inowas\Common\Soilmodel\SpecificStorage;
 use Inowas\Common\Soilmodel\SpecificYield;
 use Inowas\Common\Soilmodel\Storage;
+use Inowas\Common\Soilmodel\TopElevation;
 use Inowas\Modflow\Model\Command\AddCalculatedBudget;
 use Inowas\Common\Calculation\HeadData;
 use Inowas\Common\Calculation\ResultType;
@@ -68,6 +70,7 @@ use Inowas\Soilmodel\Model\Command\ChangeSoilmodelName;
 use Inowas\Soilmodel\Model\Command\CreateBoreLog;
 use Inowas\Soilmodel\Model\Command\CreateSoilmodel;
 use Inowas\Soilmodel\Model\Command\InterpolateSoilmodel;
+use Inowas\Soilmodel\Model\Command\UpdateGeologicalLayerProperty;
 use Inowas\Soilmodel\Model\GeologicalLayer;
 use Inowas\Soilmodel\Model\GeologicalLayerDescription;
 use Inowas\Soilmodel\Model\GeologicalLayerId;
@@ -197,26 +200,39 @@ class Hanoi implements ContainerAwareInterface, DataFixtureInterface
         ];
 
         foreach ($layers as $key => $layer) {
-
+            $layerId = GeologicalLayerId::generate();
             $type = Laytyp::fromValue(Laytyp::TYPE_CONVERTIBLE);
-            if ($key == 3) {
-                $type = Laytyp::fromValue(Laytyp::TYPE_CONFINED);
-            }
+            $layerNumber = GeologicalLayerNumber::fromInteger($key);
 
             $commandBus->dispatch(
                 AddGeologicalLayerToSoilmodel::forSoilmodel(
                     $ownerId,
                     $soilModelId,
                     GeologicalLayer::fromParams(
-                        GeologicalLayerId::generate(),
+                        $layerId,
                         $type,
-                        GeologicalLayerNumber::fromInteger($key),
+                        $layerNumber,
                         GeologicalLayerName::fromString($layer[0]),
                         GeologicalLayerDescription::fromString($layer[1])
                     )
                 )
             );
+
+            if ($key === 0) {
+                /* Load Top-Elevation for the first layer */
+                echo sprintf("Load top-elevation %s Memory usage\r\n", memory_get_usage());
+                $string = file_get_contents(__DIR__ . "/extracted/top.json");
+                $topElevation = TopElevation::fromLayerValue(json_decode($string, true));
+                $commandBus->dispatch(UpdateGeologicalLayerProperty::forSoilmodel($ownerId, $soilModelId, $layerId, $topElevation));
+            }
+
+            /* Load Bottom-Elevation for all layers */
+            echo sprintf("Load bottom-elevation %s Memory usage\r\n", memory_get_usage());
+            $string = file_get_contents(__DIR__ . "/extracted/botm.json");
+            $bottomElevation = BottomElevation::fromLayerValue(json_decode($string, true)[$layerNumber->toInteger()]);
+            $commandBus->dispatch(UpdateGeologicalLayerProperty::forSoilmodel($ownerId, $soilModelId, $layerId, $bottomElevation));
         }
+
         $boreholes = array(
             array('name', 'x', 'y', 'top', 'bot_0', 'bot_1', 'bot_2', 'bot_3', 'kx_0', 'ky_0', 'kz_0', 'kx_1', 'ky_1', 'kz_1', 'kx_2', 'ky_2', 'kz_2', 'kx_3', 'ky_3', 'kz_3'),
             array('SC2_GU1', 11771882.34, 2392544.12, 4.55, 3, -37.44, -38.45, -71.95,10.0000, 10.0000, 1.0000, 20.0000, 20.0000, 2.0000, 0.0010, 0.0010, 0.0001, 40.0000, 40.0000, 4.0000),
@@ -396,8 +412,8 @@ class Hanoi implements ContainerAwareInterface, DataFixtureInterface
             $commandBus->dispatch(AddBoreLogToSoilmodel::byUserWithId($ownerId, $soilModelId, $boreLogId));
         }
 
-        echo sprintf("Interpolate soilmodel with %s Memory usage\r\n", memory_get_usage());
-        $commandBus->dispatch(InterpolateSoilmodel::forSoilmodel($ownerId, $soilModelId, $boundingBox, $gridSize));
+        #echo sprintf("Interpolate soilmodel with %s Memory usage\r\n", memory_get_usage());
+        #$commandBus->dispatch(InterpolateSoilmodel::forSoilmodel($ownerId, $soilModelId, $boundingBox, $gridSize));
 
 
         /*

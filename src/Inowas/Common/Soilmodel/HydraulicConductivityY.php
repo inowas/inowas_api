@@ -9,6 +9,8 @@ use Inowas\Soilmodel\Model\GeologicalLayerNumber;
 class HydraulicConductivityY extends AbstractSoilproperty
 {
 
+    const TYPE = 'ky';
+
     public static function create(): HydraulicConductivityY
     {
         return new self(null);
@@ -43,7 +45,7 @@ class HydraulicConductivityY extends AbstractSoilproperty
     }
 
     public function identifier(): string
-        {
-            return 'ky';
+    {
+        return self::TYPE;
     }
 }

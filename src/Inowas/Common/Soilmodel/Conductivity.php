@@ -24,6 +24,15 @@ class Conductivity
         return $self;
     }
 
+    public static function fromDefault(): Conductivity
+    {
+        $self = new self();
+        $self->kx = HydraulicConductivityX::fromLayerValue(1);
+        $self->ky = HydraulicConductivityY::fromLayerValue(1);
+        $self->kz = HydraulicConductivityZ::fromLayerValue(1);
+        return $self;
+    }
+
     public function kx(): HydraulicConductivityX
     {
         return $this->kx;

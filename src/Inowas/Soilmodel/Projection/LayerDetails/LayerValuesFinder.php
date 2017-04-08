@@ -34,7 +34,7 @@ class LayerValuesFinder
 
         $result = $this->getValue($soilmodelId, $type, $layernumber);
         if (is_array($result) && array_key_exists('values', $result)){
-            return Top::from2DArray(
+            return Top::fromValue(
                 json_decode($result['values'])
             );
         }
@@ -56,7 +56,7 @@ class LayerValuesFinder
             }
         }
 
-        return Botm::from3DArray($botmArr);
+        return Botm::fromValue($botmArr);
     }
 
     public function getHk(SoilmodelId $soilmodelId): Hk
@@ -73,7 +73,7 @@ class LayerValuesFinder
             }
         }
 
-        return Hk::from3DArray($kx);
+        return Hk::fromValue($kx);
     }
 
     public function getSs(SoilmodelId $soilmodelId): Ss
@@ -90,7 +90,7 @@ class LayerValuesFinder
             }
         }
 
-        return Ss::from3DArray($ss);
+        return Ss::fromValue($ss);
     }
 
     public function getSy(SoilmodelId $soilmodelId): Sy
@@ -107,7 +107,7 @@ class LayerValuesFinder
             }
         }
 
-        return Sy::from3DArray($sy);
+        return Sy::fromValue($sy);
     }
 
     public function getNlay(SoilmodelId $soilmodelId): Nlay

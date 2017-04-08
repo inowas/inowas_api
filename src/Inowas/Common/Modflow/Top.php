@@ -13,7 +13,7 @@ namespace Inowas\Common\Modflow;
 class Top
 {
 
-    /** @var  array */
+    /** @var  float|array */
     protected $top;
 
     public static function from2DArray(array $top): Top

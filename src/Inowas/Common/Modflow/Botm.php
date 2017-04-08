@@ -8,6 +8,8 @@ declare(strict_types=1);
 
 namespace Inowas\Common\Modflow;
 
+use Inowas\Common\Exception\InvalidArrayDimensionException;
+
 class Botm
 {
     
@@ -16,9 +18,25 @@ class Botm
 
     public static function from3DArray(array $botm): Botm
     {
+        if (self::is3dArray($botm)){
+            throw InvalidArrayDimensionException::withExpectedDimensionAndValue(3, $botm);
+        }
+
         $self = new self();
         $self->botm = $botm;
         $self->autoRepair();
+        return $self;
+    }
+
+    public static function from2DArray(array $botm): Botm
+    {
+
+        if (self::is2dArray($botm)){
+            throw InvalidArrayDimensionException::withExpectedDimensionAndValue(3, $botm);
+        }
+
+        $self = new self();
+        $self->botm = $botm;
         return $self;
     }
 
@@ -41,14 +59,19 @@ class Botm
         return $this->botm;
     }
 
-    public function is3dArray(): bool
+    public function is3dArray($value): bool
     {
-        return (is_array($this->botm) && is_array($this->botm[0]) && is_array($this->botm[0][0]) && ! is_array($this->botm[0][0][0]));
+        return (is_array($value) && is_array($value[0]) && is_array($value[0][0]) && ! is_array($value[0][0][0]));
+    }
+
+    public function is2dArray($value): bool
+    {
+        return (is_array($value) && is_array($value[0]) && ! is_array($value[0][0]));
     }
 
     private function autoRepair(): bool
     {
-        if ($this->is3dArray()){
+        if ($this->is3dArray($this->botm)){
             return $this->exchangeTopValuesHigherThenBotmValues();
         }
 

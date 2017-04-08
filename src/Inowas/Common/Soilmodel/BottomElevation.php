@@ -9,6 +9,8 @@ use Inowas\Soilmodel\Model\GeologicalLayerNumber;
 class BottomElevation extends AbstractSoilproperty
 {
 
+    const TYPE = "hbot";
+
     public static function create(): BottomElevation
     {
         return new self(null);
@@ -44,6 +46,6 @@ class BottomElevation extends AbstractSoilproperty
 
     public function identifier(): string
         {
-            return 'hbot';
+            return self::TYPE;
     }
 }

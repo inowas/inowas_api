@@ -5,6 +5,7 @@ namespace Inowas\Soilmodel\Projection\LayerDetails;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Schema\Schema;
 use Inowas\Common\Projection\AbstractDoctrineConnectionProjector;
+use Inowas\Soilmodel\Model\Event\LayerPropertyWasUpdated;
 use Inowas\Soilmodel\Model\Event\LayerValuesWereUpdated;
 use Inowas\Soilmodel\Projection\Table;
 
@@ -21,6 +22,18 @@ class LayerValuesProjector extends AbstractDoctrineConnectionProjector
         $table->addColumn('layer_number', 'integer');
         $table->addColumn('type', 'string', ['length' => 255]);
         $table->addColumn('values', 'text');
+    }
+
+    public function onLayerPropertyWasUpdated(LayerPropertyWasUpdated $event): void
+    {
+        $this->connection->update(Table::LAYER_INTERPOLATIONS, array(
+            'values' => json_encode($event->property()->toValue())
+        ), array(
+                'soilmodel_id' => $event->soilmodelId()->toString(),
+                'layer_id' => $event->layerId()->toString(),
+                'type' => $event->property()->identifier(),
+            )
+        );
     }
 
     public function onLayerValuesWereUpdated(LayerValuesWereUpdated $event): void
