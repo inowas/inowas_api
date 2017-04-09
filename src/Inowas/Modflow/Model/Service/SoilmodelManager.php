@@ -28,20 +28,14 @@ use Inowas\Common\Modflow\Vkcb;
 use Inowas\Common\Modflow\Wetdry;
 use Inowas\Common\Modflow\Wetfct;
 use Inowas\Soilmodel\Model\SoilmodelId;
-use Inowas\Soilmodel\Projection\LayerDetails\LayerDetailsFinder;
 use Inowas\Soilmodel\Projection\LayerDetails\LayerValuesFinder;
 
 class SoilmodelManager implements SoilmodelManagerInterface
 {
-
-    /** @var  LayerDetailsFinder */
-    protected $layerDetailsFinder;
-
     /** @var  LayerValuesFinder */
     protected $layerValuesFinder;
 
-    public function __construct(LayerValuesFinder $layerValuesFinder, LayerDetailsFinder $layerDetailsFinder){
-        $this->layerDetailsFinder = $layerDetailsFinder;
+    public function __construct(LayerValuesFinder $layerValuesFinder){
         $this->layerValuesFinder = $layerValuesFinder;
     }
 
@@ -62,27 +56,27 @@ class SoilmodelManager implements SoilmodelManagerInterface
 
     public function getLaytyp(SoilmodelId $soilmodelId): Laytyp
     {
-        return $this->layerDetailsFinder->getLaytyp($soilmodelId);
+        return $this->layerValuesFinder->getLaytyp($soilmodelId);
     }
 
     public function getLayavg(SoilmodelId $soilmodelId): Layavg
     {
-        return Layavg::fromValue(0);
+        return $this->layerValuesFinder->getLayavg($soilmodelId);
     }
 
     public function getChani(SoilmodelId $soilmodelId): Chani
     {
-        return Chani::fromValue(1.0);
+        return $this->layerValuesFinder->getChani($soilmodelId);
     }
 
     public function getLayvka(SoilmodelId $soilmodelId): Layvka
     {
-        return Layvka::fromValue(0);
+        return $this->layerValuesFinder->getLayvka($soilmodelId);
     }
 
     public function getLaywet(SoilmodelId $soilmodelId): Laywet
     {
-        return Laywet::fromValue(0);
+        return $this->layerValuesFinder->getLaywet($soilmodelId);
     }
 
     public function getIpakcb(SoilmodelId $soilmodelId): Ipakcb
@@ -115,18 +109,16 @@ class SoilmodelManager implements SoilmodelManagerInterface
         return $this->layerValuesFinder->getHk($soilmodelId);
     }
 
-
     public function getHani(SoilmodelId $soilmodelId): Hani
     {
-        return Hani::fromValue(1.0);
+        return $this->layerValuesFinder->getHani($soilmodelId);
     }
 
 
     public function getVka(SoilmodelId $soilmodelId): Vka
     {
-        return Vka::fromValue(1.0);
+        return $this->layerValuesFinder->getVka($soilmodelId);
     }
-
 
     public function getSs(SoilmodelId $soilmodelId): Ss
     {

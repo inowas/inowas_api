@@ -18,7 +18,7 @@ class Botm
 
     public static function from3DArray(array $botm): Botm
     {
-        if (self::is3dArray($botm)){
+        if (! self::is3dArray($botm)){
             throw InvalidArrayDimensionException::withExpectedDimensionAndValue(3, $botm);
         }
 
@@ -31,7 +31,7 @@ class Botm
     public static function from2DArray(array $botm): Botm
     {
 
-        if (self::is2dArray($botm)){
+        if (! self::is2dArray($botm)){
             throw InvalidArrayDimensionException::withExpectedDimensionAndValue(3, $botm);
         }
 

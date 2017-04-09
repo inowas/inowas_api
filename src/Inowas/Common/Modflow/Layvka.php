@@ -4,6 +4,10 @@
  * a flag for each layer that indicates whether variable VKA is vertical
  * hydraulic conductivity or the ratio of horizontal to vertical
  * hydraulic conductivity.
+ *
+ * 0—indicates VKA is vertical hydraulic conductivity
+ * not 0—indicates VKA is the ratio of horizontal to vertical hydraulic conductivity,
+ * where the horizontal hydraulic conductivity is specified as HK in item 10.
  **/
 declare(strict_types=1);
 

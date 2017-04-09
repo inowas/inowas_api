@@ -28,6 +28,7 @@ use Inowas\Common\Soilmodel\Conductivity;
 use Inowas\Common\Soilmodel\HBottom;
 use Inowas\Common\Soilmodel\HTop;
 use Inowas\Common\Modflow\Laytyp;
+use Inowas\Common\Soilmodel\HydraulicAnisotropy;
 use Inowas\Common\Soilmodel\HydraulicConductivityX;
 use Inowas\Common\Soilmodel\HydraulicConductivityY;
 use Inowas\Common\Soilmodel\HydraulicConductivityZ;
@@ -35,6 +36,7 @@ use Inowas\Common\Soilmodel\SpecificStorage;
 use Inowas\Common\Soilmodel\SpecificYield;
 use Inowas\Common\Soilmodel\Storage;
 use Inowas\Common\Soilmodel\TopElevation;
+use Inowas\Common\Soilmodel\VerticalHydraulicConductivity;
 use Inowas\Modflow\Model\Command\AddCalculatedBudget;
 use Inowas\Common\Calculation\HeadData;
 use Inowas\Common\Calculation\ResultType;
@@ -69,7 +71,6 @@ use Inowas\Soilmodel\Model\Command\ChangeSoilmodelDescription;
 use Inowas\Soilmodel\Model\Command\ChangeSoilmodelName;
 use Inowas\Soilmodel\Model\Command\CreateBoreLog;
 use Inowas\Soilmodel\Model\Command\CreateSoilmodel;
-use Inowas\Soilmodel\Model\Command\InterpolateSoilmodel;
 use Inowas\Soilmodel\Model\Command\UpdateGeologicalLayerProperty;
 use Inowas\Soilmodel\Model\GeologicalLayer;
 use Inowas\Soilmodel\Model\GeologicalLayerDescription;
@@ -231,6 +232,35 @@ class Hanoi implements ContainerAwareInterface, DataFixtureInterface
             $string = file_get_contents(__DIR__ . "/extracted/botm.json");
             $bottomElevation = BottomElevation::fromLayerValue(json_decode($string, true)[$layerNumber->toInteger()]);
             $commandBus->dispatch(UpdateGeologicalLayerProperty::forSoilmodel($ownerId, $soilModelId, $layerId, $bottomElevation));
+
+            /* Load Hk for all layers */
+            echo sprintf("Load Hydraulic Conductivity. %s Memory usage\r\n", memory_get_usage());
+            $string = file_get_contents(__DIR__ . "/extracted/hk.json");
+            $hk = HydraulicConductivityX::fromLayerValue(json_decode($string, true)[$layerNumber->toInteger()]);
+            $commandBus->dispatch(UpdateGeologicalLayerProperty::forSoilmodel($ownerId, $soilModelId, $layerId, $hk));
+
+            /* Load Hydraulic Anisotropy for all layers */
+            echo sprintf("Load Hydraulic Anisotropy. %s Memory usage\r\n", memory_get_usage());
+            $ha = HydraulicAnisotropy::fromLayerValue(1.0);
+            $commandBus->dispatch(UpdateGeologicalLayerProperty::forSoilmodel($ownerId, $soilModelId, $layerId, $ha));
+
+            /* Load Vertical Conductivity for all layers */
+            echo sprintf("Load vertical Hydraulic Conductivity. %s Memory usage\r\n", memory_get_usage());
+            $string = file_get_contents(__DIR__ . "/extracted/vka.json");
+            $vka = VerticalHydraulicConductivity::fromLayerValue(json_decode($string, true)[$layerNumber->toInteger()]);
+            $commandBus->dispatch(UpdateGeologicalLayerProperty::forSoilmodel($ownerId, $soilModelId, $layerId, $vka));
+
+            /* Load Specific Storage for all layers */
+            echo sprintf("Load Specific Storage. %s Memory usage\r\n", memory_get_usage());
+            $string = file_get_contents(__DIR__ . "/extracted/ss.json");
+            $ss = SpecificStorage::fromLayerValue(json_decode($string, true)[$layerNumber->toInteger()]);
+            $commandBus->dispatch(UpdateGeologicalLayerProperty::forSoilmodel($ownerId, $soilModelId, $layerId, $ss));
+
+            /* Load Specific Yield for all layers */
+            echo sprintf("Load Specific Yield. %s Memory usage\r\n", memory_get_usage());
+            $string = file_get_contents(__DIR__ . "/extracted/sy.json");
+            $sy = SpecificYield::fromLayerValue(json_decode($string, true)[$layerNumber->toInteger()]);
+            $commandBus->dispatch(UpdateGeologicalLayerProperty::forSoilmodel($ownerId, $soilModelId, $layerId, $sy));
         }
 
         $boreholes = array(
@@ -424,11 +454,7 @@ class Hanoi implements ContainerAwareInterface, DataFixtureInterface
         $header = $this->loadHeaderFromCsv($fileName);
         $dates = $this->getDates($header);
 
-        foreach ($wells as $key => $well){
-
-            if ($key > 20){
-                break;
-            }
+        foreach ($wells as $key => $well) {
 
             $wellBoundary = WellBoundary::createWithParams(
                 BoundaryId::generate(),

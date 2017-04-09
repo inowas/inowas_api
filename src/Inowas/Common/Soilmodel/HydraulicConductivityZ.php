@@ -4,8 +4,6 @@ declare(strict_types=1);
 
 namespace Inowas\Common\Soilmodel;
 
-use Inowas\Soilmodel\Model\GeologicalLayerNumber;
-
 class HydraulicConductivityZ extends AbstractSoilproperty
 {
 
@@ -24,12 +22,6 @@ class HydraulicConductivityZ extends AbstractSoilproperty
     public static function fromLayerValue($value): HydraulicConductivityZ
     {
         return new self($value, true);
-    }
-
-
-    public static function fromLayerValueWithNumber($value, GeologicalLayerNumber $layer): HydraulicConductivityZ
-    {
-        return new self($value, true, $layer);
     }
 
     public static function fromArray(array $arr): HydraulicConductivityZ

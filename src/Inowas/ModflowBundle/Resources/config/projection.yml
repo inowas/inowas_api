@@ -68,16 +68,6 @@ services:
         arguments:
           - '@doctrine.dbal.default_connection'
 
-    inowas.modflow_projection.layer_details:
-        class: Inowas\Soilmodel\Projection\LayerDetails\LayerDetailsProjector
-        arguments:
-          - '@doctrine.dbal.default_connection'
-
-    inowas.soilmodel.layer_details_finder:
-        class: Inowas\Soilmodel\Projection\LayerDetails\LayerDetailsFinder
-        arguments:
-          - '@doctrine.dbal.default_connection'
-
     inowas.modflow_projection.layer_values:
         class: Inowas\Soilmodel\Projection\LayerDetails\LayerValuesProjector
         arguments:

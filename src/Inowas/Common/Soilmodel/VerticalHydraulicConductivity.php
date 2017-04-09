@@ -1,30 +1,33 @@
 <?php
-
+/*
+ * Vka, if 2D
+ * LayVka if float
+ */
 declare(strict_types=1);
 
 namespace Inowas\Common\Soilmodel;
 
-class HydraulicConductivityX extends AbstractSoilproperty
+class VerticalHydraulicConductivity extends AbstractSoilproperty
 {
 
-    const TYPE = 'kx';
+    const TYPE = 'vka';
 
-    public static function create(): HydraulicConductivityX
+    public static function create(): VerticalHydraulicConductivity
     {
         return new self(null);
     }
 
-    public static function fromPointValue($value): HydraulicConductivityX
+    public static function fromPointValue($value): VerticalHydraulicConductivity
     {
         return new self($value);
     }
 
-    public static function fromLayerValue($value): HydraulicConductivityX
+    public static function fromLayerValue($value): VerticalHydraulicConductivity
     {
         return new self($value, true);
     }
 
-    public static function fromArray(array $arr): HydraulicConductivityX
+    public static function fromArray(array $arr): VerticalHydraulicConductivity
     {
         return new self($arr['value'], $arr['is_layer']);
     }
@@ -38,7 +41,7 @@ class HydraulicConductivityX extends AbstractSoilproperty
     }
 
     public function identifier(): string
-        {
-            return self::TYPE;
+    {
+        return self::TYPE;
     }
 }

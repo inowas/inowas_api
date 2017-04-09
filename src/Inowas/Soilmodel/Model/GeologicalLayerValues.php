@@ -4,17 +4,32 @@ declare(strict_types=1);
 
 namespace Inowas\Soilmodel\Model;
 
+use Inowas\Common\Modflow\Layavg;
+use Inowas\Common\Modflow\Laytyp;
+use Inowas\Common\Modflow\Laywet;
 use Inowas\Common\Soilmodel\AbstractSoilproperty;
 use Inowas\Common\Soilmodel\BottomElevation;
 use Inowas\Common\Soilmodel\Conductivity;
+use Inowas\Common\Soilmodel\HydraulicAnisotropy;
+use Inowas\Common\Soilmodel\HydraulicConductivityX;
 use Inowas\Common\Soilmodel\SpecificStorage;
 use Inowas\Common\Soilmodel\SpecificYield;
 use Inowas\Common\Soilmodel\TopElevation;
 use Inowas\Common\Soilmodel\Storage;
+use Inowas\Common\Soilmodel\VerticalHydraulicConductivity;
 use Inowas\Soilmodel\Model\Exception\PropertyNotFoundException;
 
 class GeologicalLayerValues
 {
+    /** @var  Laytyp */
+    private $laytyp;
+
+    /** @var  Layavg */
+    private $layavg;
+
+    /** @var  Laywet */
+    private $laywet;
+
     /** @var BottomElevation */
     private $hBottom;
 
@@ -27,6 +42,20 @@ class GeologicalLayerValues
     /** @var Storage */
     private $storage;
 
+    public function laytyp(): Laytyp
+    {
+        return $this->laytyp;
+    }
+
+    public function layavg(): Layavg
+    {
+        return $this->layavg;
+    }
+
+    public function laywet(): Laywet
+    {
+        return $this->laywet;
+    }
 
     public function hBottom(): BottomElevation
     {
@@ -61,6 +90,9 @@ class GeologicalLayerValues
     public static function fromArray(array $data): GeologicalLayerValues
     {
         $self = new self();
+        $self->laytyp = Laytyp::fromValue($data['laytyp']);
+        $self->layavg = Layavg::fromValue($data['layavg']);
+        $self->laywet = Laywet::fromValue($data['laywet']);
         $self->hTop = TopElevation::fromArray($data['h_top']);
         $self->hBottom = BottomElevation::fromArray($data['h_bot']);
         $self->conductivity = Conductivity::fromArray($data['conductivity']);
@@ -71,6 +103,9 @@ class GeologicalLayerValues
     public static function fromDefault(): GeologicalLayerValues
     {
         $self = new self();
+        $self->laytyp = Laytyp::fromInt(Laytyp::TYPE_CONVERTIBLE);
+        $self->layavg = Layavg::fromInt(Layavg::TYPE_HARMONIC_MEAN);
+        $self->laywet = Laywet::fromFloat(0);
         $self->hTop = TopElevation::fromLayerValue(1);
         $self->hBottom = BottomElevation::fromLayerValue(1);
         $self->conductivity = Conductivity::fromDefault();
@@ -81,6 +116,9 @@ class GeologicalLayerValues
     public function toArray(): array
     {
         return array(
+            'laytyp' => $this->laytyp->toValue(),
+            'layavg' => $this->layavg->toValue(),
+            'laywet' => $this->laywet->toValue(),
             'h_top' => $this->hTop->toArray(),
             'h_bot' => $this->hBottom->toArray(),
             'conductivity' => $this->conductivity->toArray(),
@@ -96,6 +134,18 @@ class GeologicalLayerValues
 
         if ($property instanceof BottomElevation){
             return $this->updateHBot($property);
+        }
+
+        if ($property instanceof HydraulicConductivityX){
+            return $this->updateHydraulicConductivityX($property);
+        }
+
+        if ($property instanceof HydraulicAnisotropy){
+            return $this->updateHydraulicAnisotropy($property);
+        }
+
+        if ($property instanceof VerticalHydraulicConductivity){
+            return $this->updateVerticalHydraulicConductivity($property);
         }
 
         if ($property instanceof SpecificStorage){
@@ -120,6 +170,27 @@ class GeologicalLayerValues
     {
         $self = GeologicalLayerValues::fromArray($this->toArray());
         $self->hBottom = $hbot;
+        return $self;
+    }
+
+    private function updateHydraulicConductivityX(HydraulicConductivityX $hk): GeologicalLayerValues
+    {
+        $self = GeologicalLayerValues::fromArray($this->toArray());
+        $self->conductivity = $this->conductivity->updateHydraulicConductivityX($hk);
+        return $self;
+    }
+
+    private function updateHydraulicAnisotropy(HydraulicAnisotropy $hani): GeologicalLayerValues
+    {
+        $self = GeologicalLayerValues::fromArray($this->toArray());
+        $self->conductivity = $this->conductivity->updateHydraulicAnisotropy($hani);
+        return $self;
+    }
+
+    private function updateVerticalHydraulicConductivity(VerticalHydraulicConductivity $vka): GeologicalLayerValues
+    {
+        $self = GeologicalLayerValues::fromArray($this->toArray());
+        $self->conductivity = $this->conductivity->updateVerticalHydraulicConductivity($vka);
         return $self;
     }
 

@@ -21,6 +21,13 @@ class Vka
         return $self;
     }
 
+    public static function from2DArray(array $value): Vka
+    {
+        $self = new self();
+        $self->value = $value;
+        return $self;
+    }
+
     public static function fromValue($value): Vka
     {
         $self = new self();

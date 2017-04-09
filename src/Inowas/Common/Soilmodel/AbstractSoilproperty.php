@@ -7,6 +7,7 @@ use Inowas\Soilmodel\Model\GeologicalLayerNumber;
 abstract class AbstractSoilproperty
 {
 
+    /** @var array|float */
     protected $value;
 
     /** @var bool */
@@ -15,7 +16,6 @@ abstract class AbstractSoilproperty
     abstract public static function create();
     abstract public static function fromPointValue($value);
     abstract public static function fromLayerValue($value);
-    abstract public static function fromLayerValueWithNumber($value, GeologicalLayerNumber $layer);
     abstract public static function fromArray(array $arr);
     abstract public function identifier(): string;
 
@@ -51,5 +51,38 @@ abstract class AbstractSoilproperty
     public function isLayerValue(): bool
     {
         return ($this->isLayer === true);
+    }
+
+    public function sameDimensionAs($value): bool
+    {
+        if (is_numeric($this->value) && is_numeric($value)){
+            return true;
+        }
+
+        if ($this->is2DArray($this->value) && $this->is2DArray($value)) {
+            if (count($this->value) === count($value) && count($this->value[0]) === count($value[0])){
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    public function is2DArray($value = null): bool
+    {
+        if (is_null($value)){
+            $value = $this->value;
+        }
+
+        return (is_array($value) && is_array($value[0]) && !is_array($value[0][0]));
+    }
+
+    public function isNumeric($value = null): bool
+    {
+        if (is_null($value)){
+            $value = $this->value;
+        }
+
+        return is_numeric($value);
     }
 }

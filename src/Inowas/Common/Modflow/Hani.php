@@ -23,6 +23,13 @@ class Hani
         return $self;
     }
 
+    public static function from2DArray(array $value): Hani
+    {
+        $self = new self();
+        $self->value = $value;
+        return $self;
+    }
+
     public static function fromValue($value): Hani
     {
         $self = new self();

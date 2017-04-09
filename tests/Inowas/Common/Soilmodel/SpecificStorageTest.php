@@ -22,14 +22,4 @@ class SpecificStorageTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals($arr, $specificStorage->toValue());
         $this->assertEquals(true, $specificStorage->isLayerValue());
     }
-
-    public function test_store_an_array_value_with_layer_information(){
-        $arr = [[1,2,3],[2,4,6]];
-        $arr2 = [[2,3,4],[2,4,6]];
-        $specificStorage = SpecificStorage::fromLayerValueWithNumber($arr,GeologicalLayerNumber::fromInteger(0));
-        $copyOfSpecificStorage = $specificStorage->addLayerValue($arr2, GeologicalLayerNumber::fromInteger(1));
-        $this->assertInstanceOf(SpecificStorage::class, $copyOfSpecificStorage);
-        $this->assertEquals([$arr,$arr2], $copyOfSpecificStorage->toValue());
-        $this->assertEquals(true, $copyOfSpecificStorage->isLayerValue());
-    }
 }

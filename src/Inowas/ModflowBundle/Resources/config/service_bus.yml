@@ -119,7 +119,7 @@ prooph_service_bus:
                         - 'inowas.modflow_projection.soilmodel_list'
 
                     'Inowas\Soilmodel\Model\Event\SoilmodelGeologicalLayerWasAdded':
-                        - 'inowas.modflow_projection.layer_details'
+                        - 'inowas.modflow_projection.layer_values'
 
                     'Inowas\Soilmodel\Model\Event\LayerValuesWereUpdated':
                         - 'inowas.modflow_projection.layer_values'

@@ -34,7 +34,6 @@
 
         <service id="inowas.soilmodel.manager" class="Inowas\Modflow\Model\Service\SoilmodelManager">
             <argument type="service" id="inowas.soilmodel.layer_values_finder"/>
-            <argument type="service" id="inowas.soilmodel.layer_details_finder"/>
         </service>
 
         <service id="inowas.add_modflow_model_boundary_handler" class="Inowas\Modflow\Model\Handler\AddBoundaryHandler">
