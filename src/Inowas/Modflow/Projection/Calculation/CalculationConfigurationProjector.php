@@ -12,6 +12,7 @@ use Inowas\Common\Boundaries\RechargeBoundary;
 use Inowas\Common\Boundaries\RiverBoundary;
 use Inowas\Common\Boundaries\WellBoundary;
 use Inowas\Common\FileSystem\Modelworkspace;
+use Inowas\Common\Id\IdInterface;
 use Inowas\Common\Id\ModflowId;
 use Inowas\Common\Modflow\Ibound;
 use Inowas\Common\Modflow\Strt;
@@ -56,7 +57,7 @@ class CalculationConfigurationProjector extends AbstractDoctrineConnectionProjec
 
     public function onCalculationWasCreated(CalculationWasCreated $event): void
     {
-        $packages = $this->getDefaultValues();
+        $packages = $this->getDefaultValuesWithId($event->calculationId());
         $packages->updateStartDateTime($event->start());
         $packages->updateTimeUnit($event->timeUnit());
         $packages->updateLengthUnit($event->lengthUnit());
@@ -205,8 +206,8 @@ class CalculationConfigurationProjector extends AbstractDoctrineConnectionProjec
         return null;
     }
 
-    private function getDefaultValues(): Packages
+    private function getDefaultValuesWithId(IdInterface $id): Packages
     {
-        return Packages::createFromDefaults();
+        return Packages::createFromDefaultsWithId($id);
     }
 }

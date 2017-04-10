@@ -5,7 +5,7 @@ namespace Inowas\Soilmodel\Interpolation;
 use PhpAmqpLib\Connection\AMQPStreamConnection;
 use PhpAmqpLib\Message\AMQPMessage;
 
-class PyModellingFlopyCalculation implements FlopyCalculation
+class PyModellingFlopyReadData implements FlopyReadData
 {
     
     private $channel;
@@ -46,9 +46,9 @@ class PyModellingFlopyCalculation implements FlopyCalculation
         return $this->response;
     }
 
-    public function calculate(FlopyConfiguration $configuration)
+    public function readData(FlopyReadDataRequest $request)
     {
-        $result = $this->call(json_encode($configuration));
+        $result = $this->call(json_encode($request));
         return $result;
     }
 }

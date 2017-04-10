@@ -8,6 +8,7 @@ use Inowas\Common\DateTime\DateTime;
 use Inowas\Common\FileSystem\Modelworkspace;
 use Inowas\Common\Grid\BoundingBox;
 use Inowas\Common\Grid\GridSize;
+use Inowas\Common\Id\IdInterface;
 use Inowas\Common\Modflow\ExecutableName;
 use Inowas\Common\Modflow\LengthUnit;
 use Inowas\Common\Modflow\Listunit;
@@ -26,8 +27,11 @@ class Packages implements \JsonSerializable
     /** @var string  */
     private $project = "";
 
+    /** @var IdInterface  */
+    private $id;
+
     /** @var string  */
-    private $type = "flopy";
+    private $type = "flopy_calculation";
 
     /** @var string  */
     private $version = "3.2.6";
@@ -53,9 +57,10 @@ class Packages implements \JsonSerializable
     /** @var array */
     private $packages = [];
 
-    public static function createFromDefaults(): Packages
+    public static function createFromDefaultsWithId(IdInterface $id): Packages
     {
         $self = new self();
+        $self->id = $id;
         $self->selectedPackages = ['mf', 'dis', 'bas', 'lpf', 'pcg', 'oc'];
         foreach ($self->selectedPackages as $packageName){
             $class = $self->availablePackages[$packageName];
@@ -271,6 +276,7 @@ class Packages implements \JsonSerializable
         $data = array(
             "author" => $this->author,
             "project" => $this->project,
+            "id" => $this->id->toString(),
             "type" => $this->type,
             "version" => $this->version,
             "data" => $packageData

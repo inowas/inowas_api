@@ -11,18 +11,18 @@ class PackagesTest extends \PHPUnit_Framework_TestCase
 {
 
     public function test_create_from_defaults(){
-        $packages = Packages::createFromDefaults();
+        $packages = Packages::createFromDefaultsWithId();
         $this->assertInstanceOf(Packages::class, $packages);
     }
 
     public function test_serialize_packages(){
-        $packages = Packages::createFromDefaults();
+        $packages = Packages::createFromDefaultsWithId();
         $json = json_encode($packages);
         $this->assertJson($json);
     }
 
     public function test_create_from_array(){
-        $packages = Packages::createFromDefaults();
+        $packages = Packages::createFromDefaultsWithId();
         $json = json_encode($packages);
         $this->assertJson($json);
 
@@ -36,7 +36,7 @@ class PackagesTest extends \PHPUnit_Framework_TestCase
     }
 
     public function test_update_default_time_unit(){
-        $packages = Packages::createFromDefaults();
+        $packages = Packages::createFromDefaultsWithId();
         $json = json_encode($packages);
         $this->assertJson($json);
         $obj = \json_decode($json);
@@ -44,7 +44,7 @@ class PackagesTest extends \PHPUnit_Framework_TestCase
     }
 
     public function test_update_time_unit(){
-        $packages = Packages::createFromDefaults();
+        $packages = Packages::createFromDefaultsWithId();
         $packages->updateTimeUnit(TimeUnit::fromInt(TimeUnit::SECONDS));
         $json = json_encode($packages);
         $this->assertJson($json);
@@ -54,7 +54,7 @@ class PackagesTest extends \PHPUnit_Framework_TestCase
 
     public function test_update_time_unit_with_update_param_function()
     {
-        $packages = Packages::createFromDefaults();
+        $packages = Packages::createFromDefaultsWithId();
         $packages->updatePackageParameter('dis', 'TimeUnit', TimeUnit::fromInt(TimeUnit::MINUTES));
         $json = json_encode($packages);
         $this->assertJson($json);
@@ -66,7 +66,7 @@ class PackagesTest extends \PHPUnit_Framework_TestCase
     {
         $gridsize = GridSize::fromXY(40,50);
         $boundingBox = BoundingBox::fromEPSG4326Coordinates(10,20,30,40,100,200);
-        $packages = Packages::createFromDefaults();
+        $packages = Packages::createFromDefaultsWithId();
         $packages->updateGridParameters($gridsize, $boundingBox);
 
     }
