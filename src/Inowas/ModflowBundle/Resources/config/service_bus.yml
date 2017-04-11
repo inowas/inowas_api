@@ -82,6 +82,7 @@ prooph_service_bus:
 
                     'Inowas\Modflow\Model\Event\CalculationWasFinished':
                         - 'inowas.modflow_projection.calculation_config'
+                        - 'inowas.modflow_projection.calculation_results'
 
                     'Inowas\Modflow\Model\Event\CalculationWasQueued':
                         - 'inowas.modflow_projection.calculation_config'

@@ -46,18 +46,17 @@ class CalculationResultsFinder
 
     public function findTimes(ModflowId $calculationId, ResultType $type, LayerNumber $layerNumber): array
     {
-        $rows = $this->connection->fetchAll(
-            sprintf('SELECT DISTINCT totim from %s WHERE calculation_id = :calculation_id AND type = :type AND layer = :layer ORDER BY totim', Table::CALCULATION_RESULTS),
-            [
-                'calculation_id' => $calculationId->toString(),
-                'type' => $type->toString(),
-                'layer' => $layerNumber->toInteger()
-            ]
+
+        $row = $this->connection->fetchAssoc(
+            sprintf('SELECT * from %s WHERE calculation_id = :calculation_id', Table::CALCULATION_RESULTS),
+            ['calculation_id' => $calculationId->toString()]
         );
 
+
+        $totims = json_decode($row[$type->toString().'s']);
         $result = [];
-        foreach ($rows as $row){
-            $result[] = TotalTime::fromInt($row['totim']);
+        foreach ($totims as $totim){
+            $result[] = TotalTime::fromInt($totim);
         }
 
         return $result;
@@ -65,14 +64,24 @@ class CalculationResultsFinder
 
     public function findLayerValues(ModflowId $calculationId): array
     {
-        $rows = $this->connection->fetchAll(
-            sprintf('SELECT layer, type from %s WHERE calculation_id = :calculation_id GROUP BY type, layer ORDER BY type, layer', Table::CALCULATION_RESULTS),
+        $result = $this->connection->fetchAssoc(
+            sprintf('SELECT number_of_layers, heads, drawdowns from %s WHERE calculation_id = :calculation_id', Table::CALCULATION_RESULTS),
             ['calculation_id' => $calculationId->toString()]
         );
 
+        $numberOfLayers = $result['number_of_layers'];
+        $drawdowns = $result['drawdowns'];
+        $heads = $result['heads'];
+
         $result = [];
-        foreach ($rows as $row){
-            $result[$row['layer']][] =  $row['type'];
+        for ($l = 0; $l<$numberOfLayers; $l++) {
+            if (count($drawdowns)>0){
+                $result[$l][] =  ResultType::DRAWDOWN_TYPE;
+            }
+
+            if (count($heads)>0){
+                $result[$l][] =  ResultType::HEAD_TYPE;
+            }
         }
 
         return $result;

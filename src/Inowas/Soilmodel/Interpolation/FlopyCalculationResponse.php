@@ -17,13 +17,16 @@ class FlopyCalculationResponse
     protected $calculationId;
 
     /** @var  array */
-    protected $heads;
+    protected $budgets;
 
     /** @var  array */
     protected $drawdowns;
 
     /** @var  array */
-    protected $budgets;
+    protected $heads;
+
+    /** @var  int */
+    protected $numberOfLayers;
 
     public static function fromJson(string $json): FlopyCalculationResponse
     {
@@ -36,6 +39,7 @@ class FlopyCalculationResponse
             $self->budgets = $obj->budgets;
             $self->drawdowns = $obj->drawdowns;
             $self->heads = $obj->heads;
+            $self->numberOfLayers = $obj->number_of_layers;
         }
 
         return $self;
@@ -49,6 +53,7 @@ class FlopyCalculationResponse
         $self->budgets = $arr['budgets'];
         $self->drawdowns = $arr['drawdowns'];
         $self->heads = $arr['heads'];
+        $self->numberOfLayers = $arr['number_of_layers'];
         return $self;
     }
 
@@ -59,12 +64,33 @@ class FlopyCalculationResponse
             'calculation_id' => $this->calculationId->toString(),
             'budgets' => $this->budgets,
             'drawdowns' => $this->drawdowns,
-            'heads' => $this->heads
+            'heads' => $this->heads,
+            'number_of_layers' => $this->numberOfLayers
         );
     }
 
     public function calculationId(): ModflowId
     {
         return $this->calculationId;
+    }
+
+    public function budgets(): array
+    {
+        return $this->budgets;
+    }
+
+    public function drawdowns(): array
+    {
+        return $this->drawdowns;
+    }
+
+    public function heads(): array
+    {
+        return $this->heads;
+    }
+
+    public function numberOfLayers(): int
+    {
+        return $this->numberOfLayers;
     }
 }
