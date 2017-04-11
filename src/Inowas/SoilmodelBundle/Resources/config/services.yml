@@ -13,7 +13,7 @@ services:
 
     inowas.soilmodel.flopy_calculation_service:
         class: Inowas\Soilmodel\Interpolation\PyModellingFlopyCalculation
-        arguments: ['@inowas.amqp.stream.connection', 'rpc_flopy_calculation_queue']
+        arguments: ['@inowas.amqp.stream.connection', 'flopy_calculation_queue']
 
     inowas.soilmodel.flopy_read_data_service:
         class: Inowas\Soilmodel\Interpolation\PyModellingFlopyReadData
