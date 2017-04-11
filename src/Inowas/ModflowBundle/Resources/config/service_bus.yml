@@ -22,6 +22,7 @@ prooph_service_bus:
                     'Inowas\Modflow\Model\Command\RemoveModflowScenario': 'inowas.remove_modflow_scenario_handler'
                     'Inowas\Modflow\Model\Command\RemoveBoundary': 'inowas.remove_modflow_model_boundary_handler'
                     'Inowas\Modflow\Model\Command\UpdateBoundary': 'inowas.update_modflow_model_boundary_handler'
+                    'Inowas\Modflow\Model\Command\UpdateCalculationResults': 'inowas.update_calculation_results_handler'
 
                     'Inowas\Soilmodel\Model\Command\AddBoreLogToSoilmodel': 'inowas.soilmodel.add_borelog_to_soilmodel.handler'
                     'Inowas\Soilmodel\Model\Command\AddGeologicalLayerToSoilmodel': 'inowas.soilmodel.add_geological_layer_to_soilmodel.handler'
@@ -74,6 +75,15 @@ prooph_service_bus:
                     'Inowas\Modflow\Model\Event\CalculationWasCreated':
                         - 'inowas.modflow_projection.calculation_results'
                         - 'inowas.modflow_projection.calculation_list'
+                        - 'inowas.modflow_projection.calculation_config'
+
+                    'Inowas\Modflow\Model\Event\CalculationWasStarted':
+                        - 'inowas.modflow_projection.calculation_config'
+
+                    'Inowas\Modflow\Model\Event\CalculationWasFinished':
+                        - 'inowas.modflow_projection.calculation_config'
+
+                    'Inowas\Modflow\Model\Event\CalculationWasQueued':
                         - 'inowas.modflow_projection.calculation_config'
 
                     'Inowas\Modflow\Model\Event\HeadWasCalculated':

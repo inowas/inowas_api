@@ -15,6 +15,10 @@ services:
         class: Inowas\Soilmodel\Interpolation\PyModellingFlopyCalculation
         arguments: ['@inowas.amqp.stream.connection', 'flopy_calculation_queue']
 
+    inowas.soilmodel.flopy_calculation_listener_service:
+        class: Inowas\Soilmodel\Interpolation\PyModellingFlopyCalculationListener
+        arguments: ['@inowas.amqp.stream.connection', 'flopy_calculation_finished_queue']
+
     inowas.soilmodel.flopy_read_data_service:
         class: Inowas\Soilmodel\Interpolation\PyModellingFlopyReadData
         arguments: ['@inowas.amqp.stream.connection', 'rpc_flopy_read_data_queue']

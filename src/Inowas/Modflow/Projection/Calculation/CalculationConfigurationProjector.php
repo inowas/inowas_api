@@ -18,6 +18,9 @@ use Inowas\Common\Modflow\Ibound;
 use Inowas\Common\Modflow\Strt;
 use Inowas\Common\Projection\AbstractDoctrineConnectionProjector;
 use Inowas\Modflow\Model\Event\CalculationWasCreated;
+use Inowas\Modflow\Model\Event\CalculationWasFinished;
+use Inowas\Modflow\Model\Event\CalculationWasQueued;
+use Inowas\Modflow\Model\Event\CalculationWasStarted;
 use Inowas\Modflow\Model\Packages\Packages;
 use Inowas\Modflow\Model\Service\ModflowModelManager;
 use Inowas\Modflow\Model\Service\ModflowModelManagerInterface;
@@ -51,7 +54,10 @@ class CalculationConfigurationProjector extends AbstractDoctrineConnectionProjec
         $table->addColumn('modflow_model_id', 'string', ['length' => 36]);
         $table->addColumn('soilmodel_id', 'string', ['length' => 36]);
         $table->addColumn('user_id', 'string', ['length' => 36]);
-        $table->addColumn('configuration', 'text');
+        $table->addColumn('configuration', 'text', ['notnull' => false]);
+        $table->addColumn('configuration_hash', 'string', ['length' => 36, 'notnull' => false]);
+        $table->addColumn('configuration_state', 'integer', ['default' => 0]);
+        $table->addColumn('configuration_response', 'text', ['notnull' => false]);
         $table->setPrimaryKey(['calculation_id', 'modflow_model_id']);
     }
 
@@ -173,10 +179,37 @@ class CalculationConfigurationProjector extends AbstractDoctrineConnectionProjec
             'modflow_model_id' => $event->modflowModelId()->toString(),
             'soilmodel_id' => $event->soilModelId()->toString(),
             'user_id' => $event->userId()->toString(),
-            'configuration' => json_encode($packages)
+            'configuration' => json_encode($packages),
+            'configuration_hash' => md5(json_encode($packages))
         ));
     }
 
+    public function onCalculationWasQueued(CalculationWasQueued $event): void
+    {
+        $this->connection->update(Table::CALCULATION_CONFIG,
+            array('configuration_state' => 1),
+            array('calculation_id' => $event->calculationId()->toString())
+        );
+    }
+
+    public function onCalculationWasStarted(CalculationWasStarted $event): void
+    {
+        $this->connection->update(Table::CALCULATION_CONFIG,
+            array('configuration_state' => 2),
+            array('calculation_id' => $event->calculationId()->toString())
+        );
+    }
+
+    public function onCalculationWasFinished(CalculationWasFinished $event): void
+    {
+        $this->connection->update(Table::CALCULATION_CONFIG,
+            array(
+                'configuration_state' => 3,
+                'configuration_response' => json_encode($event->response()->toArray())
+            ),
+            array('calculation_id' => $event->calculationId()->toString())
+        );
+    }
 
     private function getConfigByCalculationId(ModflowId $calculationId): ?Packages
     {

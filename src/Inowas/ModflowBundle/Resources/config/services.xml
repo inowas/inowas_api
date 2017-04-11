@@ -89,5 +89,8 @@
         <service id="inowas.add_calculated_budget_handler" class="Inowas\Modflow\Model\Handler\AddCalculatedBudgetHandler">
             <argument type="service" id="modflow_calculation_list" />
         </service>
+        <service id="inowas.update_calculation_results_handler" class="Inowas\Modflow\Model\Handler\UpdateCalculationResultsHandler">
+            <argument type="service" id="modflow_calculation_list" />
+        </service>
     </services>
 </container>

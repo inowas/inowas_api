@@ -14,6 +14,9 @@ use Inowas\Common\Id\UserId;
 use Inowas\Common\Modflow\LengthUnit;
 use Inowas\Common\Modflow\TimeUnit;
 use Inowas\Modflow\Model\Event\BudgetWasCalculated;
+use Inowas\Modflow\Model\Event\CalculationWasFinished;
+use Inowas\Modflow\Model\Event\CalculationWasQueued;
+use Inowas\Modflow\Model\Event\CalculationWasStarted;
 use Inowas\Modflow\Model\Event\EndDateTimeWasUpdated;
 use Inowas\Modflow\Model\Event\HeadWasCalculated;
 use Inowas\Modflow\Model\Event\CalculationWasCreated;
@@ -21,6 +24,7 @@ use Inowas\Modflow\Model\Event\LengthUnitWasUpdated;
 use Inowas\Modflow\Model\Event\StartDateTimeWasUpdated;
 use Inowas\Modflow\Model\Event\TimeUnitWasUpdated;
 use Inowas\Modflow\Model\Packages\Packages;
+use Inowas\Soilmodel\Interpolation\FlopyCalculationResponse;
 use Inowas\Soilmodel\Model\SoilmodelId;
 use Prooph\EventSourcing\AggregateRoot;
 
@@ -129,6 +133,22 @@ class ModflowCalculationAggregate extends AggregateRoot
         $this->recordThat(BudgetWasCalculated::to($this->calculationId, $totalTime, $budget, $budgetType));
     }
 
+    public function calculationHasQueued(): void
+    {
+        $this->recordThat(CalculationWasQueued::withId($this->calculationId));
+    }
+
+    public function calculationHasStarted(): void
+    {
+        $this->recordThat(CalculationWasStarted::withId($this->calculationId));
+    }
+
+    public function calculationHasFinished(FlopyCalculationResponse $response): void
+    {
+        echo ("TEST");
+        $this->recordThat(CalculationWasFinished::withIdAndResponse($this->calculationId, $response));
+    }
+
     public function calculationId(): ModflowId
     {
         return $this->calculationId;
@@ -180,6 +200,15 @@ class ModflowCalculationAggregate extends AggregateRoot
         $this->lengthUnit = $event->lengthUnit();
         $this->timeUnit = $event->timeUnit();
     }
+
+    protected function whenCalculationWasQueued(CalculationWasQueued $event): void
+    {}
+
+    protected function whenCalculationWasStarted(CalculationWasStarted $event): void
+    {}
+
+    protected function whenCalculationWasFinished(CalculationWasFinished $event): void
+    {}
 
     protected function whenBudgetWasCalculated(BudgetWasCalculated $event): void
     {

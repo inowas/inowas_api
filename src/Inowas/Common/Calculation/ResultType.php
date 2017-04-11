@@ -8,7 +8,7 @@ class ResultType
 {
     const HEAD_TYPE = 'head';
     const DRAWDOWN_TYPE = 'drawdown';
-    const WATER_TABLE_TYPE = 'water_table';
+    const BUDGET_TYPE = 'budget';
 
     /** @var  string */
     private $type;

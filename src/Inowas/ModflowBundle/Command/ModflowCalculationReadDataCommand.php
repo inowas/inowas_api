@@ -13,8 +13,6 @@ use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
-ini_set('memory_limit', '2048M');
-
 class ModflowCalculationReadDataCommand extends ContainerAwareCommand
 {
     /** @var  \Inowas\Common\Id\UserId */

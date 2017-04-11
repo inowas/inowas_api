@@ -25,7 +25,6 @@ class ModflowEventStoreMigrateCommand extends ContainerAwareCommand
             ->setDescription('Migrates the Hanoi-Model to the Database')
             ->addArgument('model', InputArgument::OPTIONAL, 'The model which to load')
         ;
-
     }
 
     protected function execute(InputInterface $input, OutputInterface $output)
