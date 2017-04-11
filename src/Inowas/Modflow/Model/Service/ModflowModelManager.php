@@ -71,7 +71,7 @@ class ModflowModelManager implements ModflowModelManagerInterface
         $totims = $this->calculateTotims($dates, TimeUnit::fromInt(TimeUnit::DAYS));
         for ($i=1; $i < count($totims); $i++){
             $perlen = ($totims[$i]->toInteger())-($totims[$i-1]->toInteger());
-            $nstp = ($totims[$i]->toInteger())-($totims[$i-1]->toInteger());
+            $nstp = 1;
             $tsmult = 1;
             $steady = false;
             $stressPeriods->addStressPeriod(StressPeriod::create(

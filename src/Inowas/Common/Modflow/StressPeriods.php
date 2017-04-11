@@ -40,7 +40,6 @@ final class StressPeriods
             $arr[] = $stressperiod->nstp();
         }
 
-        return Nstp::fromInt(1);
         return Nstp::fromArray($arr);
     }
 

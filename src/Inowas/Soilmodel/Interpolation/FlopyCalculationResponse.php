@@ -69,6 +69,11 @@ class FlopyCalculationResponse
         );
     }
 
+    public function statusCode(): StatusCode
+    {
+        return $this->statusCode;
+    }
+
     public function calculationId(): ModflowId
     {
         return $this->calculationId;
