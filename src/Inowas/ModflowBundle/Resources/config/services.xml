@@ -32,6 +32,14 @@
             <argument type="service" id="inowas.model_scenarios_finder"/>
         </service>
 
+        <service id="inowas.geotools.geotools_factory" class="Inowas\GeoTools\Model\GeoToolsFactory">
+            <argument type="service" id="doctrine.orm.default_entity_manager"/>
+        </service>
+
+        <service id="inowas.geotools.geotools" class="Inowas\GeoTools\Model\GeoToolsFactory">
+            <factory service="inowas.geotools.geotools_factory" method="create"/>
+        </service>
+
         <service id="inowas.soilmodel.manager" class="Inowas\Modflow\Model\Service\SoilmodelManager">
             <argument type="service" id="inowas.soilmodel.layer_values_finder"/>
         </service>

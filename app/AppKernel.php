@@ -28,12 +28,9 @@ class AppKernel extends Kernel
             new Prooph\Bundle\EventStore\ProophEventStoreBundle(),
             new Prooph\Bundle\ServiceBus\ProophServiceBusBundle(),
             new Inowas\AppBundle\InowasAppBundle(),
-            new Inowas\PyprocessingBundle\InowasPyprocessingBundle(),
             new Inowas\SoilmodelBundle\InowasSoilmodelBundle(),
             new Inowas\ModflowBundle\InowasModflowBundle(),
-            new Inowas\GeoToolsBundle\InowasGeoToolsBundle(),
             new Inowas\ScenarioAnalysisBundle\InowasScenarioAnalysisBundle(),
-            new AppBundle\AppBundle()
         ];
 
         if (in_array($this->getEnvironment(), ['dev', 'test'], true)) {
