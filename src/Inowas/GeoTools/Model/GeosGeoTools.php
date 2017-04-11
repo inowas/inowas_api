@@ -2,23 +2,14 @@
 
 namespace Inowas\GeoTools\Model;
 
-use CrEOF\Spatial\PHP\Types\Geometry\Point;
-use CrEOF\Spatial\PHP\Types\Geometry\Polygon;
-use Doctrine\DBAL\Connection;
-use Doctrine\ORM\EntityManager;
 use Inowas\Common\Boundaries\AbstractBoundary;
-use Inowas\Common\Boundaries\AreaBoundary;
-use Inowas\Common\Boundaries\ConstantHeadBoundary;
-use Inowas\Common\Boundaries\GeneralHeadBoundary;
-use Inowas\Common\Boundaries\RiverBoundary;
-use Inowas\Common\Boundaries\WellBoundary;
-use Inowas\Common\Geometry\AbstractGeometry;
 use Inowas\Common\Geometry\Geometry;
+use Inowas\Common\Geometry\Point;
 use Inowas\Common\Geometry\Srid;
 use Inowas\Common\Grid\ActiveCells;
 use Inowas\Common\Grid\BoundingBox;
+use Inowas\Common\Grid\Distance;
 use Inowas\Common\Grid\GridSize;
-use Inowas\GeoToolsBundle\Model\GeoTools;
 
 class GeosGeoTools implements GeoTools
 {
@@ -51,9 +42,21 @@ class GeosGeoTools implements GeoTools
 
     public function getBoundingBox(Geometry $geometry): BoundingBox
     {
+        $srid = $geometry->srid();
         $geometry = \geoPHP::load($geometry->toJson(), 'json');
+        $geometry->setSRID($srid->toInteger());
         $bb = $geometry->getBBox();
-        return BoundingBox::fromArray($bb);
+
+        $dx = \geoPHP::load(sprintf('LINESTRING(%f %f, %f %f)', $bb['minx'], $bb['miny'], $bb['maxx'], $bb['miny'], 'wkt'))->greatCircleLength();
+        $dy = \geoPHP::load(sprintf('LINESTRING(%f %f, %f %f)', $bb['minx'], $bb['miny'], $bb['minx'], $bb['maxy'], 'wkt'))->greatCircleLength();
+
+        return BoundingBox::fromCoordinates($bb['minx'], $bb['maxx'], $bb['miny'], $bb['maxy'], $srid->toInteger(), $dx, $dy);
+    }
+
+    public function distanceInMeters(Point $pointA, Point $pointB): Distance
+    {
+        $distance = \geoPHP::load(sprintf('LINESTRING(%f %f, %f %f)', $pointA->getX(), $pointA->getY(), $pointB->getX(), $pointB->getY(), 'wkt'))->greatCircleLength();
+        return Distance::fromMeters($distance);
     }
 
     /*
@@ -61,17 +64,19 @@ class GeosGeoTools implements GeoTools
     {
         return BoundingBox::fromArray()
     }
+    */
 
+    /*
     public function projectGeometry(Geometry $geometry, Srid $target): Geometry
     {
+        $srid = $geometry->srid();
         $geometry = \geoPHP::load($geometry->toJson(), 'json');
-        $points = $geometry->getPoints();
+        $geometry->setSRID($srid->toInteger());
+        $point = $geometry->getPoints()[0];
 
-
-        foreach ($points as $point)
-        {
-            $point->project()
-        }
+        $geometry = $geometry->geos();
+        var_dump($geometry->project($point));
+        die();
     }
     */
 }

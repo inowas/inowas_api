@@ -9,12 +9,12 @@ class Srid
     /** @var  integer */
     private $srid;
 
-    public static function fromInt(int $srid): Srid
+    public static function fromInt(?int $srid): Srid
     {
         return new self($srid);
     }
 
-    private function __construct(int $srid)
+    private function __construct(?int $srid)
     {
         $this->srid = $srid;
     }

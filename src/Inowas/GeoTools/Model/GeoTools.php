@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Inowas\GeoToolsBundle\Model;
+namespace Inowas\GeoTools\Model;
 
 use Inowas\Common\Boundaries\AbstractBoundary;
 use Inowas\Common\Geometry\Geometry;
@@ -19,9 +19,9 @@ interface GeoTools
 
     public function getBoundingBox(Geometry $geometry): BoundingBox;
 
+    public function distanceInMeters(Point $pointA, Point $pointB): Distance;
+
     #public function projectBoundingBox(BoundingBox $geometry, Srid $target): BoundingBox;
 
     #public function projectGeometry(Geometry $geometry, Srid $target): Geometry;
-
-    #public function distanceInMeters(Point $pointA, Point $pointB): Distance;
 }
