@@ -6,7 +6,6 @@ namespace Inowas\Common\Geometry;
 
 class Geometry
 {
-    /** @var AbstractGeometry */
     private $geometry;
 
     public static function fromJson(string $json): Geometry
@@ -64,4 +63,8 @@ class Geometry
          return Srid::fromInt($this->geometry->getSrid());
     }
 
+    public function value()
+    {
+        return $this->geometry;
+    }
 }

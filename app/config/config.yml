@@ -3,7 +3,6 @@ imports:
     - { resource: security.yml }
     - { resource: services.yml }
     - { resource: "@InowasAppBundle/Resources/config/services.xml" }
-    - { resource: "@InowasGeoToolsBundle/Resources/config/services.xml" }
     - { resource: "@InowasScenarioAnalysisBundle/Resources/config/services.xml" }
 
     - { resource: "@InowasModflowBundle/Resources/config/event_store.yml" }
@@ -99,33 +98,10 @@ doctrine:
                 auto_mapping: true
                 naming_strategy: doctrine.orm.naming_strategy.underscore
                 mappings:
-                    AppBundle:
-                        type: xml
-                        prefix: AppBundle\Entity
                     InowasAppBundle:
                         type: xml
                         prefix: Inowas\AppBundle\Model
-                    InowasSoilmodelBundle:
-                        type: xml
-                        prefix: Inowas\SoilmodelBundle\Model
-                    InowasModflowBundle:
-                        type: xml
-                        prefix: Inowas\ModflowBundle\Model
-                    InowasScenarioAnalysisBundle:
-                        type: xml
-                        prefix: Inowas\ScenarioAnalysisBundle\Model
 
-                dql:
-                    numeric_functions:
-                        st_area:          CrEOF\Spatial\ORM\Query\AST\Functions\PostgreSql\STArea
-                        st_asgeojson:     CrEOF\Spatial\ORM\Query\AST\Functions\PostgreSql\STAsGeoJson
-                        st_envelope:      CrEOF\Spatial\ORM\Query\AST\Functions\PostgreSql\STEnvelope
-                        st_geomfromtext:  CrEOF\Spatial\ORM\Query\AST\Functions\PostgreSql\STGeomFromText
-                        st_intersects:    CrEOF\Spatial\ORM\Query\AST\Functions\PostgreSql\STIntersects
-                        st_makeline:      CrEOF\Spatial\ORM\Query\AST\Functions\PostgreSql\STMakeLine
-                        st_point:         CrEOF\Spatial\ORM\Query\AST\Functions\PostgreSql\STPoint
-                        st_setsrid:       CrEOF\Spatial\ORM\Query\AST\Functions\PostgreSql\STSetSRID
-                        st_transform:     CrEOF\Spatial\ORM\Query\AST\Functions\PostgreSql\STTransform
 
 # Swiftmailer Configuration
 swiftmailer:
@@ -192,16 +168,6 @@ jms_serializer:
             FOSUserBundle:
                 path: "%kernel.root_dir%/Resources/FOSUserBundle/serializer"
                 namespace_prefix: "FOS\\UserBundle"
-
-# Inowas configuration
-inowas_pyprocessing:
-    prefix:               "%python_prefix%"
-    api_base_url:         "%api_base_url%"
-    api_port:             "%api_port%"
-    data_folder:          "%data_folder%"
-    temp_folder:          "%temp_folder%"
-    pyprocessing_folder:  "%kernel.root_dir%/../py/pyprocessing"
-    max_processes:        5
 
 doctrine_migrations:
     dir_name: "%kernel.root_dir%/DoctrineMigrations"

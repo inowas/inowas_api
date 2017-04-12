@@ -9,14 +9,15 @@ ini_set('memory_limit', '1024M');
 use CrEOF\Spatial\PHP\Types\Geometry\Point;
 use CrEOF\Spatial\PHP\Types\Geometry\Polygon;
 use Inowas\Common\DateTime\DateTime;
+use Inowas\Common\Geometry\Srid;
 use Inowas\Common\Grid\BoundingBox;
-use Inowas\GeoToolsBundle\Service\GeoTools;
 use Inowas\Common\Boundaries\AreaBoundary;
 use Inowas\Common\Geometry\Geometry;
 use Inowas\Common\Id\BoundaryId;
 use Inowas\Common\Boundaries\BoundaryName;
 use Inowas\Common\Calculation\HeadData;
 use Inowas\Common\Calculation\ResultType;
+use Inowas\GeoTools\Model\GeoTools;
 use Inowas\Modflow\Model\Command\AddBoundary;
 use Inowas\Modflow\Model\Command\AddCalculatedHead;
 use Inowas\Modflow\Model\Command\ChangeModflowModelBoundingBox;
@@ -491,7 +492,7 @@ class ModflowModelEventSourcingTest extends KernelTestCase
             $well = WellBoundary::createWithAllParams(
                 BoundaryId::generate(),
                 BoundaryName::fromString($wellData['name']),
-                Geometry::fromPoint($this->geoTools->transformPoint(new Point($wellData['x'], $wellData['y'], 3857), 4326)),
+                Geometry::fromPoint($this->geoTools->projectPoint(new Point($wellData['x'], $wellData['y'], 3857), Srid::fromInt(4326))),
                 WellType::fromString(WellType::TYPE_PUBLIC_WELL),
                 LayerNumber::fromInteger(4),
                 WellDateTimeValue::fromValue($wellData['pumpingrate'])

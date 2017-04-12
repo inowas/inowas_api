@@ -16,6 +16,7 @@ use Inowas\Common\DateTime\DateTime;
 use Inowas\Common\Geometry\LineString;
 use Inowas\Common\Geometry\Point;
 use Inowas\Common\Geometry\Polygon;
+use Inowas\Common\Geometry\Srid;
 use Inowas\Common\Grid\LayerNumber;
 use Inowas\Common\Boundaries\AreaBoundary;
 use Inowas\Common\Geometry\Geometry;
@@ -23,6 +24,8 @@ use Inowas\Common\Id\BoundaryId;
 use Inowas\Common\Boundaries\BoundaryName;
 use Inowas\Common\Calculation\Budget;
 use Inowas\Common\Id\ObservationPointId;
+use Inowas\Common\Modflow\OcStressPeriod;
+use Inowas\Common\Modflow\OcStressPeriodData;
 use Inowas\Common\Soilmodel\BottomElevation;
 use Inowas\Common\Soilmodel\Conductivity;
 use Inowas\Common\Soilmodel\HBottom;
@@ -54,6 +57,7 @@ use Inowas\Modflow\Model\Command\CreateModflowModelCalculation;
 use Inowas\Common\Grid\BoundingBox;
 use Inowas\Common\Grid\GridSize;
 use Inowas\Common\Id\ModflowId;
+use Inowas\Modflow\Model\Command\UpdateCalculationPackageParameter;
 use Inowas\Modflow\Model\ModflowModelDescription;
 use Inowas\Common\Modflow\Modelname;
 use Inowas\Common\DateTime\TotalTime;
@@ -127,11 +131,10 @@ class Hanoi implements ContainerAwareInterface, DataFixtureInterface
         $commandBus->dispatch(ChangeModflowModelDescription::forModflowModel(
             $ownerId,
             $modelId,
-            ModflowModelDescription::fromString(
-                'Calibrated groundwater base model, 2005-2007.')
-        ));
+            ModflowModelDescription::fromString('Calibrated groundwater base model, 2005-2007.'))
+        );
 
-        $box = $geoTools->transformBoundingBox(BoundingBox::fromCoordinates(578205, 594692, 2316000, 2333500, 32648), 4326);
+        $box = $geoTools->projectBoundingBox(BoundingBox::fromCoordinates(578205, 594692, 2316000, 2333500, 32648), Srid::fromInt(4326));
         $boundingBox = BoundingBox::fromEPSG4326Coordinates($box->xMin(), $box->xMax(), $box->yMin(), $box->yMax(), $box->dX(), $box->dY());
         $commandBus->dispatch(ChangeModflowModelBoundingBox::forModflowModel($ownerId, $modelId, $boundingBox));
 
@@ -368,7 +371,8 @@ class Hanoi implements ContainerAwareInterface, DataFixtureInterface
 
             $boreLogId = BoreLogId::generate();
             $boreLogName = BoreLogName::fromString($borehole['name']);
-            $point = $geoTools->transformPoint(new Point($borehole['x'], $borehole['y'], 3857), 4326);
+
+            $point = $geoTools->projectPoint(new Point($borehole['x'], $borehole['y'], 3857), Srid::fromInt(4326));
             $boreLogLocation = BoreLogLocation::fromPoint(new Point($point->getX(), $point->getY()));
             $commandBus->dispatch(CreateBoreLog::byUser($ownerId, $boreLogId, $boreLogName, $boreLogLocation));
 
@@ -459,7 +463,7 @@ class Hanoi implements ContainerAwareInterface, DataFixtureInterface
             $wellBoundary = WellBoundary::createWithParams(
                 BoundaryId::generate(),
                 BoundaryName::fromString($well['Name']),
-                Geometry::fromPoint($geoTools->transformPoint(new Point($well['x'], $well['y'], $well['srid']), 4326)),
+                Geometry::fromPoint($geoTools->projectPoint(new Point($well['x'], $well['y'], $well['srid']), Srid::fromInt(4326))),
                 WellType::fromString($well['type']),
                 LayerNumber::fromInteger((int)$well['layer']-1)
             );
@@ -485,7 +489,7 @@ class Hanoi implements ContainerAwareInterface, DataFixtureInterface
          */
         $riverPoints = $this->loadRowsFromCsv(__DIR__ . "/data/river_geometry_basecase.csv");
         foreach ($riverPoints as $key => $point){
-            $riverPoints[$key] = $geoTools->transformPoint(new Point($point['x'], $point['y'], $point['srid']), 4326);
+            $riverPoints[$key] = $geoTools->projectPoint(new Point($point['x'], $point['y'], $point['srid']), Srid::fromInt(4326));
         }
 
         /** @var RiverBoundary $river */
@@ -503,7 +507,7 @@ class Hanoi implements ContainerAwareInterface, DataFixtureInterface
             $observationPoint = ObservationPoint::fromIdNameAndGeometry(
                 ObservationPointId::generate(),
                 ObservationPointName::fromString($op['name']),
-                Geometry::fromPoint($geoTools->transformPoint(new Point($op['x'], $op['y'], $op['srid']), 4326))
+                Geometry::fromPoint($geoTools->projectPoint(new Point($op['x'], $op['y'], $op['srid']), Srid::fromInt(4326)))
             );
 
             foreach ($dates as $date){
@@ -524,9 +528,8 @@ class Hanoi implements ContainerAwareInterface, DataFixtureInterface
          */
         $chdPoints = $this->loadRowsFromCsv(__DIR__ . "/data/chd_geometry_basecase.csv");
         foreach ($chdPoints as $key => $point){
-            $chdPoints[$key] = $geoTools->transformPoint(new Point($point['x'], $point['y'], $point['srid']), 4326);
+            $chdPoints[$key] = $geoTools->projectPoint(new Point($point['x'], $point['y'], $point['srid']), Srid::fromInt(4326));
         }
-
 
         /** @var ConstantHeadBoundary $chdBoundary */
         $chdBoundary = ConstantHeadBoundary::createWithParams(
@@ -545,7 +548,7 @@ class Hanoi implements ContainerAwareInterface, DataFixtureInterface
             $observationPoint = ObservationPoint::fromIdNameAndGeometry(
                 $observationPointId,
                 ObservationPointName::fromString($op['name']),
-                Geometry::fromPoint($geoTools->transformPoint(new Point($op['x'], $op['y'], $op['srid']), 4326))
+                Geometry::fromPoint($geoTools->projectPoint(new Point($op['x'], $op['y'], $op['srid']), Srid::fromInt(4326)))
             );
 
             echo sprintf("Add Chd-Boundary ObservationPoint %s.\r\n", $observationPoint->name()->toString());
@@ -563,19 +566,19 @@ class Hanoi implements ContainerAwareInterface, DataFixtureInterface
         echo sprintf("Add Chd-Boundary %s.\r\n", $chdBoundary->name()->toString());
         $commandBus->dispatch(AddBoundary::toBaseModel($ownerId, $modelId, $chdBoundary));
 
-
         $calculationId = ModflowId::generate();
         $start = DateTime::fromDateTime(new \DateTime('2005-01-01'));
         $end = DateTime::fromDateTime(new \DateTime('2007-12-31'));
         $commandBus->dispatch(CreateModflowModelCalculation::byUserWithModelId($calculationId, $ownerId, $modelId, $start, $end));
-        $commandBus->dispatch(CalculateModflowModelCalculation::byUserWithModelId($ownerId, $calculationId, $modelId));
 
-        return 1;
+        $ocStressPeriodData = OcStressPeriodData::create()->addStressPeriod(OcStressPeriod::fromParams(0,0, ['save head', 'save drawdown']));
+        $commandBus->dispatch(UpdateCalculationPackageParameter::byUserWithModelId($calculationId, $ownerId, $modelId, 'oc', 'ocStressPeriodData', $ocStressPeriodData));
+        #$commandBus->dispatch(CalculateModflowModelCalculation::byUserWithModelId($ownerId, $calculationId, $modelId));
 
-        $this->loadResultsWithLayer('heads', 0, 2000, 4, 'S0', $calculationId, $commandBus);
-        $this->loadResultsWithLayer('drawdown', 0, 2000, 4, 'S0', $calculationId, $commandBus);
-        $this->loadBudgets('cumulative', 0, 2000, 'S0', $calculationId, $commandBus);
-        $this->loadBudgets('incremental', 0, 2000, 'S0', $calculationId, $commandBus);
+        #$this->loadResultsWithLayer('heads', 0, 2000, 4, 'S0', $calculationId, $commandBus);
+        #$this->loadResultsWithLayer('drawdown', 0, 2000, 4, 'S0', $calculationId, $commandBus);
+        #$this->loadBudgets('cumulative', 0, 2000, 'S0', $calculationId, $commandBus);
+        #$this->loadBudgets('incremental', 0, 2000, 'S0', $calculationId, $commandBus);
 
         /*
          * Begin add Scenario 1
@@ -600,21 +603,23 @@ class Hanoi implements ContainerAwareInterface, DataFixtureInterface
         $header = array('name', 'y', 'x', 'srid', 'pumpingrate');
         foreach ($movedWells_sc1 as $row) {
             $wellData = array_combine($header, $row);
-            $well = WellBoundary::createWithAllParams(
+
+            $wellBoundary = WellBoundary::createWithParams(
                 BoundaryId::generate(),
                 BoundaryName::fromString($wellData['name']),
                 Geometry::fromPoint(new Point($wellData['x'], $wellData['y'], 4326)),
                 WellType::fromString(WellType::TYPE_SCENARIO_MOVED_WELL),
-                LayerNumber::fromInteger(3),
-                PumpingRates::create()->add(
-                    WellDateTimeValue::fromDateTimeAndCubicMetersPerDay(
-                        $start->toDateTimeImmutable(),
-                        $wellData['pumpingrate']
-                    )
+                LayerNumber::fromInteger(3)
+            );
+
+            $wellBoundary->addPumpingRate(
+                WellDateTimeValue::fromParams(
+                    $start->toDateTimeImmutable(),
+                    $wellData['pumpingrate']
                 )
             );
 
-            $commandBus->dispatch(AddBoundary::toScenario($ownerId, $modelId, $scenarioId, $well));
+            $commandBus->dispatch(AddBoundary::toScenario($ownerId, $modelId, $scenarioId, $wellBoundary));
         }
 
         # THIS WELLS ARE THE RED AND YELLOW DOTS IN THE LEFT IMAGE
@@ -636,31 +641,32 @@ class Hanoi implements ContainerAwareInterface, DataFixtureInterface
         foreach ($newWells_sc1 as $row) {
             $wellData = array_combine($header, $row);
 
-            $well = WellBoundary::createWithAllParams(
+            $wellBoundary = WellBoundary::createWithParams(
                 BoundaryId::generate(),
                 BoundaryName::fromString($wellData['name']),
                 Geometry::fromPoint(new Point($wellData['x'], $wellData['y'], 4326)),
                 WellType::fromString(WellType::TYPE_SCENARIO_NEW_WELL),
-                LayerNumber::fromInteger(3),
-                PumpingRates::create()->add(
-                    WellDateTimeValue::fromDateTimeAndCubicMetersPerDay(
-                        $start->toDateTimeImmutable(),
-                        $wellData['pumpingrate'])
-                )
+                LayerNumber::fromInteger(3)
             );
 
-            $commandBus->dispatch(AddBoundary::toScenario($ownerId, $modelId, $scenarioId, $well));
+            $wellBoundary->addPumpingRate(
+                WellDateTimeValue::fromParams(
+                    $start->toDateTimeImmutable(),
+                    $wellData['pumpingrate'])
+            );
+
+            $commandBus->dispatch(AddBoundary::toScenario($ownerId, $modelId, $scenarioId, $wellBoundary));
         }
 
         /* Add Head Results */
         $calculationId = ModflowId::generate();
         $commandBus->dispatch(CreateModflowModelCalculation::byUserWithModelAndScenarioId($calculationId, $ownerId, $modelId, $scenarioId, $start, $end));
-        $commandBus->dispatch(CalculateModflowModelCalculation::byUserWithModelId($ownerId, $calculationId, $scenarioId));
+        #$commandBus->dispatch(CalculateModflowModelCalculation::byUserWithModelId($ownerId, $calculationId, $scenarioId));
 
-        $this->loadResultsWithLayer('heads', 0, 2000, 4, 'S1', $calculationId, $commandBus);
-        $this->loadResultsWithLayer('drawdown', 0, 2000, 4, 'S1', $calculationId, $commandBus);
-        $this->loadBudgets('cumulative', 0, 2000, 'S1', $calculationId, $commandBus);
-        $this->loadBudgets('incremental', 0, 2000, 'S1', $calculationId, $commandBus);
+        #$this->loadResultsWithLayer('heads', 0, 2000, 4, 'S1', $calculationId, $commandBus);
+        #$this->loadResultsWithLayer('drawdown', 0, 2000, 4, 'S1', $calculationId, $commandBus);
+        #$this->loadBudgets('cumulative', 0, 2000, 'S1', $calculationId, $commandBus);
+        #$this->loadBudgets('incremental', 0, 2000, 'S1', $calculationId, $commandBus);
 
         /*
          * Begin add Scenario 2
@@ -688,20 +694,20 @@ class Hanoi implements ContainerAwareInterface, DataFixtureInterface
         foreach ($newWells_sc2 as $row) {
             $wellData = array_combine($header, $row);
 
-            $well = WellBoundary::createWithAllParams(
+            $wellBoundary = WellBoundary::createWithParams(
                 BoundaryId::generate(),
                 BoundaryName::fromString($wellData['name']),
                 Geometry::fromPoint(new Point($wellData['x'], $wellData['y'], 4326)),
                 WellType::fromString(WellType::TYPE_SCENARIO_NEW_WELL),
-                LayerNumber::fromInteger(3),
-                PumpingRates::create()->add(
-                    WellDateTimeValue::fromDateTimeAndCubicMetersPerDay(
-                        $start->toDateTimeImmutable(),
-                        $wellData['pumpingrate'])
-                )
+                LayerNumber::fromInteger(3)
             );
 
-            $commandBus->dispatch(AddBoundary::toScenario($ownerId, $modelId, $scenarioId, $well));
+            $wellBoundary->addPumpingRate(WellDateTimeValue::fromParams(
+                    $start->toDateTimeImmutable(),
+                    $wellData['pumpingrate'])
+            );
+
+            $commandBus->dispatch(AddBoundary::toScenario($ownerId, $modelId, $scenarioId, $wellBoundary));
         }
 
         /* Add Head Results */
@@ -711,10 +717,10 @@ class Hanoi implements ContainerAwareInterface, DataFixtureInterface
         $commandBus->dispatch(CreateModflowModelCalculation::byUserWithModelAndScenarioId($calculationId, $ownerId, $modelId, $scenarioId, $start, $end));
         #$commandBus->dispatch(CalculateModflowModelCalculation::byUserWithModelId($ownerId, $calculationId, $scenarioId));
 
-        $this->loadResultsWithLayer('heads', 0, 2000, 4, 'S2', $calculationId, $commandBus);
-        $this->loadResultsWithLayer('drawdown', 0, 2000, 4, 'S2', $calculationId, $commandBus);
-        $this->loadBudgets('cumulative', 0, 2000, 'S2', $calculationId, $commandBus);
-        $this->loadBudgets('incremental', 0, 2000, 'S2', $calculationId, $commandBus);
+        #$this->loadResultsWithLayer('heads', 0, 2000, 4, 'S2', $calculationId, $commandBus);
+        #$this->loadResultsWithLayer('drawdown', 0, 2000, 4, 'S2', $calculationId, $commandBus);
+        #$this->loadBudgets('cumulative', 0, 2000, 'S2', $calculationId, $commandBus);
+        #$this->loadBudgets('incremental', 0, 2000, 'S2', $calculationId, $commandBus);
 
         /*
         * Begin add Scenario 3
@@ -729,20 +735,20 @@ class Hanoi implements ContainerAwareInterface, DataFixtureInterface
         foreach ($movedWells_sc3 as $row) {
             $wellData = array_combine($header, $row);
 
-            $well = WellBoundary::createWithAllParams(
+            $wellBoundary = WellBoundary::createWithParams(
                 BoundaryId::generate(),
                 BoundaryName::fromString($wellData['name']),
                 Geometry::fromPoint(new Point($wellData['x'], $wellData['y'], 4326)),
                 WellType::fromString(WellType::TYPE_SCENARIO_MOVED_WELL),
-                LayerNumber::fromInteger(3),
-                PumpingRates::create()->add(
-                    WellDateTimeValue::fromDateTimeAndCubicMetersPerDay(
-                        $start->toDateTimeImmutable(),
-                        $wellData['pumpingrate'])
-                )
+                LayerNumber::fromInteger(3)
             );
 
-            $commandBus->dispatch(AddBoundary::toScenario($ownerId, $modelId, $scenarioId, $well));
+            $wellBoundary->addPumpingRate(WellDateTimeValue::fromParams(
+                $start->toDateTimeImmutable(),
+                $wellData['pumpingrate'])
+            );
+
+            $commandBus->dispatch(AddBoundary::toScenario($ownerId, $modelId, $scenarioId, $wellBoundary));
         }
 
         # THIS WELLS ARE ALL YELLOW DOTS OG BOTH IMAGES
@@ -752,20 +758,20 @@ class Hanoi implements ContainerAwareInterface, DataFixtureInterface
         foreach ($newWells_sc3 as $row) {
             $wellData = array_combine($header, $row);
 
-            $well = WellBoundary::createWithAllParams(
+            $wellBoundary = WellBoundary::createWithParams(
                 BoundaryId::generate(),
                 BoundaryName::fromString($wellData['name']),
                 Geometry::fromPoint(new Point($wellData['x'], $wellData['y'], 4326)),
                 WellType::fromString(WellType::TYPE_SCENARIO_NEW_WELL),
-                LayerNumber::fromInteger(3),
-                PumpingRates::create()->add(
-                    WellDateTimeValue::fromDateTimeAndCubicMetersPerDay(
-                        $start->toDateTimeImmutable(),
-                        $wellData['pumpingrate'])
-                )
+                LayerNumber::fromInteger(3)
             );
 
-            $commandBus->dispatch(AddBoundary::toScenario($ownerId, $modelId, $scenarioId, $well));
+            $wellBoundary->addPumpingRate(WellDateTimeValue::fromParams(
+                $start->toDateTimeImmutable(),
+                $wellData['pumpingrate'])
+            );
+
+            $commandBus->dispatch(AddBoundary::toScenario($ownerId, $modelId, $scenarioId, $wellBoundary));
         }
 
         /* Add Head Results */
@@ -775,10 +781,10 @@ class Hanoi implements ContainerAwareInterface, DataFixtureInterface
         $commandBus->dispatch(CreateModflowModelCalculation::byUserWithModelAndScenarioId($calculationId, $ownerId, $modelId, $scenarioId, $start, $end));
         #$commandBus->dispatch(CalculateModflowModelCalculation::byUserWithModelId($ownerId, $calculationId, $scenarioId));
 
-        $this->loadResultsWithLayer('heads', 0, 2000, 4, 'S3', $calculationId, $commandBus);
-        $this->loadResultsWithLayer('drawdown', 0, 2000, 4, 'S3', $calculationId, $commandBus);
-        $this->loadBudgets('cumulative', 0, 2000, 'S3', $calculationId, $commandBus);
-        $this->loadBudgets('incremental', 0, 2000, 'S3', $calculationId, $commandBus);
+        #$this->loadResultsWithLayer('heads', 0, 2000, 4, 'S3', $calculationId, $commandBus);
+        #$this->loadResultsWithLayer('drawdown', 0, 2000, 4, 'S3', $calculationId, $commandBus);
+        #$this->loadBudgets('cumulative', 0, 2000, 'S3', $calculationId, $commandBus);
+        #$this->loadBudgets('incremental', 0, 2000, 'S3', $calculationId, $commandBus);
     }
 
     public function loadUsers(UserManager $userManager): void

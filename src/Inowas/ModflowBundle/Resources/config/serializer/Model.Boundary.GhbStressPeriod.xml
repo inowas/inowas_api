@@ -1,7 +1,0 @@
-<?xml version="1.0" encoding="UTF-8" ?>
-<serializer>
-    <class name="Inowas\ModflowBundle\Model\Boundary\GhbStressPeriod">
-        <property name="stage" type="float" groups="details"/>
-        <property name="conductivity" type="float" groups="details"/>
-    </class>
-</serializer>

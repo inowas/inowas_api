@@ -1,6 +1,0 @@
-<?xml version="1.0" encoding="UTF-8" ?>
-<serializer>
-    <class name="Inowas\ModflowBundle\Model\Boundary\RchStressPeriod">
-        <property name="recharge" type="float" groups="details"/>
-    </class>
-</serializer>

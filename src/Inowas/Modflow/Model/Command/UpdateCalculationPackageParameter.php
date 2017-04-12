@@ -10,7 +10,7 @@ use Prooph\Common\Messaging\Command;
 use Prooph\Common\Messaging\PayloadConstructable;
 use Prooph\Common\Messaging\PayloadTrait;
 
-class UpdateModflowModelCalculation extends Command implements PayloadConstructable
+class UpdateCalculationPackageParameter extends Command implements PayloadConstructable
 {
 
     use PayloadTrait;
@@ -19,14 +19,18 @@ class UpdateModflowModelCalculation extends Command implements PayloadConstructa
         ModflowId $calculationId,
         UserId $userId,
         ModflowId $modelId,
+        string $packageName,
+        string $parameterName,
         $payload
-    ): UpdateModflowModelCalculation
+    ): UpdateCalculationPackageParameter
     {
         return new self(
             [
                 'user_id' => $userId->toString(),
                 'calculation_id' => $calculationId->toString(),
                 'modflow_model_id' => $modelId->toString(),
+                'package_name' => $packageName,
+                'parameter_name' => $parameterName,
                 'payload' => serialize($payload)
             ]
         );
@@ -37,14 +41,24 @@ class UpdateModflowModelCalculation extends Command implements PayloadConstructa
         return UserId::fromString($this->payload['user_id']);
     }
 
+    public function calculationId(): ModflowId
+    {
+        return ModflowId::fromString($this->payload['calculation_id']);
+    }
+
     public function modflowModelId(): ModflowId
     {
         return ModflowId::fromString($this->payload['modflow_model_id']);
     }
 
-    public function calculationId(): ModflowId
+    public function packageName(): string
     {
-        return ModflowId::fromString($this->payload['calculation_id']);
+        return $this->payload['package_name'];
+    }
+
+    public function parameterName(): string
+    {
+        return $this->payload['parameter_name'];
     }
 
     public function payload()

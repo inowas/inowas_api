@@ -22,6 +22,7 @@ prooph_service_bus:
                     'Inowas\Modflow\Model\Command\RemoveModflowScenario': 'inowas.remove_modflow_scenario_handler'
                     'Inowas\Modflow\Model\Command\RemoveBoundary': 'inowas.remove_modflow_model_boundary_handler'
                     'Inowas\Modflow\Model\Command\UpdateBoundary': 'inowas.update_modflow_model_boundary_handler'
+                    'Inowas\Modflow\Model\Command\UpdateCalculationPackageParameter': 'inowas.update_calculation_package_parameter_handler'
                     'Inowas\Modflow\Model\Command\UpdateCalculationResults': 'inowas.update_calculation_results_handler'
 
                     'Inowas\Soilmodel\Model\Command\AddBoreLogToSoilmodel': 'inowas.soilmodel.add_borelog_to_soilmodel.handler'

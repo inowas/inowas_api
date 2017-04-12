@@ -10,7 +10,6 @@ use Prooph\EventStore\Adapter\Doctrine\Schema\EventStoreSchema;
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
-use Symfony\Component\Filesystem\Filesystem;
 
 class ModflowEventStoreTruncateCommand extends ContainerAwareCommand
 {
@@ -76,10 +75,12 @@ class ModflowEventStoreTruncateCommand extends ContainerAwareCommand
 
     private function cleanDataFolder(): void
     {
+        /*
         $dataFolder = $this->getContainer()->getParameter('inowas.modflow.data_folder');
         $fs = new Filesystem();
         $fs->remove($dataFolder);
         $fs->mkdir($dataFolder);
         $fs->touch($dataFolder.'/.gitkeep');
+        */
     }
 }

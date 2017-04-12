@@ -20,7 +20,7 @@ class BoundingBox implements \JsonSerializable
     /** @var float */
     private $yMax;
 
-    /** @var float */
+    /** @var int */
     private $srid;
 
     /**
@@ -95,7 +95,7 @@ class BoundingBox implements \JsonSerializable
         return $this->yMax;
     }
 
-    public function srid(): float
+    public function srid(): int
     {
         return $this->srid;
     }

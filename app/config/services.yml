@@ -4,18 +4,6 @@
 #    inowas.modflow.data_folder:  ../py/pyprocessing/data/modflow
 
 services:
-    inowas.geotools:
-        class: AppBundle\Service\GeoTools
-        arguments: ['@doctrine.orm.default_entity_manager']
-
-    inowas.soilmodel:
-        class: AppBundle\Service\SoilModelService
-        arguments: ['@doctrine.orm.default_entity_manager', '@inowas.process.interpolation']
-
     app.token_authenticator:
-        class: AppBundle\Security\TokenAuthenticator
-        arguments: ['@doctrine.orm.entity_manager']
-
-#    service_name:
-#        class: AppBundle\Directory\ClassName
-#        arguments: ["@another_service_name", "plain_value", "%parameter_name%"]
+        class: Inowas\AppBundle\Security\TokenAuthenticator
+        arguments: ['@doctrine.orm.entity_manager', '@fos_user.user_manager']

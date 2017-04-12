@@ -28,7 +28,7 @@ class Packages implements \JsonSerializable
     private $project = "";
 
     /** @var IdInterface  */
-    private $id;
+    private $calculationId;
 
     /** @var string  */
     private $type = "flopy_calculation";
@@ -57,10 +57,10 @@ class Packages implements \JsonSerializable
     /** @var array */
     private $packages = [];
 
-    public static function createFromDefaultsWithId(IdInterface $id): Packages
+    public static function createFromDefaultsWithId(IdInterface $calculationId): Packages
     {
         $self = new self();
-        $self->id = $id;
+        $self->calculationId = $calculationId;
         $self->selectedPackages = ['mf', 'dis', 'bas', 'lpf', 'pcg', 'oc'];
         foreach ($self->selectedPackages as $packageName){
             $class = $self->availablePackages[$packageName];
@@ -217,6 +217,31 @@ class Packages implements \JsonSerializable
         return $this->project;
     }
 
+    public function jsonSerialize(): array
+    {
+        $packageData = [];
+        $packageData['packages'] = $this->selectedPackages;
+        $packageData['write_input'] = true;
+        $packageData['run_model'] = true;
+
+        foreach ($this->selectedPackages as $selectedPackage) {
+            /** @var PackageInterface $package */
+            $package = $this->packages[$selectedPackage];
+            $packageData[$package->type()] = $package;
+        }
+
+        $data = array(
+            "author" => $this->author,
+            "project" => $this->project,
+            "id" => $this->calculationId->toString(),
+            "type" => $this->type,
+            "version" => $this->version,
+            "data" => $packageData
+        );
+
+        return FlopyConfiguration::fromData($data)->jsonSerialize();
+    }
+
     private function addPackage(PackageInterface $package): void
     {
         $this->packages[$package->type()] = $package;
@@ -255,33 +280,5 @@ class Packages implements \JsonSerializable
     private function hasAvailablePackage(string $packageName): bool
     {
         return array_key_exists($packageName, $this->availablePackages);
-    }
-
-    /**
-     * @return array
-     */
-    function jsonSerialize(): array
-    {
-        $packageData = [];
-        $packageData['packages'] = $this->selectedPackages;
-        $packageData['write_input'] = true;
-        $packageData['run_model'] = true;
-
-        foreach ($this->selectedPackages as $selectedPackage) {
-            /** @var PackageInterface $package */
-            $package = $this->packages[$selectedPackage];
-            $packageData[$package->type()] = $package;
-        }
-
-        $data = array(
-            "author" => $this->author,
-            "project" => $this->project,
-            "id" => $this->id->toString(),
-            "type" => $this->type,
-            "version" => $this->version,
-            "data" => $packageData
-        );
-
-        return FlopyConfiguration::fromData($data)->jsonSerialize();
     }
 }

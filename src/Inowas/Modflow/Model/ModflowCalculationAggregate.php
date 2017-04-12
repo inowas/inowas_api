@@ -14,6 +14,7 @@ use Inowas\Common\Id\UserId;
 use Inowas\Common\Modflow\LengthUnit;
 use Inowas\Common\Modflow\TimeUnit;
 use Inowas\Modflow\Model\Event\BudgetWasCalculated;
+use Inowas\Modflow\Model\Event\CalculationPackageParameterWasUpdated;
 use Inowas\Modflow\Model\Event\CalculationWasFinished;
 use Inowas\Modflow\Model\Event\CalculationWasQueued;
 use Inowas\Modflow\Model\Event\CalculationWasStarted;
@@ -78,6 +79,7 @@ class ModflowCalculationAggregate extends AggregateRoot
         $self->endDateTime = $end;
         $self->lengthUnit = $lengthUnit;
         $self->timeUnit = $timeUnit;
+        $self->packages = Packages::createFromDefaultsWithId($calculationId);
 
         $self->recordThat(
             CalculationWasCreated::fromModelWithProps(
@@ -123,6 +125,19 @@ class ModflowCalculationAggregate extends AggregateRoot
         }
     }
 
+    public function updatePackageParameter(UserId $userId, string $packageName, string $parameterName, $parameterData): void
+    {
+        $this->packages->updatePackageParameter($packageName, $parameterName, $parameterData);
+
+        $this->recordThat(CalculationPackageParameterWasUpdated::withProps(
+            $userId,
+            $this->calculationId,
+            $packageName,
+            $parameterName,
+            $parameterData
+        ));
+    }
+
     public function addCalculatedHead(ResultType $type, TotalTime $totalTime, LayerNumber $layerNumber, FileName $fileName): void
     {
         $this->recordThat(HeadWasCalculated::to($this->calculationId, $type, $totalTime, $layerNumber, $fileName));
@@ -145,7 +160,6 @@ class ModflowCalculationAggregate extends AggregateRoot
 
     public function calculationHasFinished(FlopyCalculationResponse $response): void
     {
-        echo ("TEST");
         $this->recordThat(CalculationWasFinished::withIdAndResponse($this->calculationId, $response));
     }
 
@@ -189,6 +203,11 @@ class ModflowCalculationAggregate extends AggregateRoot
         return $this->packages;
     }
 
+    protected function whenCalculationPackageParameterWasUpdated(CalculationPackageParameterWasUpdated $event): void
+    {
+        $this->packages->updatePackageParameter($event->packageName(), $event->parameterName(), $event->parameterData());
+    }
+
     protected function whenCalculationWasCreated(CalculationWasCreated $event): void
     {
         $this->calculationId = $event->calculationId();
@@ -199,6 +218,7 @@ class ModflowCalculationAggregate extends AggregateRoot
         $this->endDateTime = $event->end();
         $this->lengthUnit = $event->lengthUnit();
         $this->timeUnit = $event->timeUnit();
+        $this->packages = Packages::createFromDefaultsWithId($event->calculationId());
     }
 
     protected function whenCalculationWasQueued(CalculationWasQueued $event): void
@@ -241,9 +261,6 @@ class ModflowCalculationAggregate extends AggregateRoot
         $this->endDateTime = $event->end();
     }
 
-    /**
-     * @return string
-     */
     protected function aggregateId(): string
     {
         return $this->calculationId->toString();

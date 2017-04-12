@@ -15,9 +15,10 @@ use Inowas\Common\Grid\BoundingBox;
 use Inowas\Common\Grid\Distance;
 use Inowas\Common\Grid\GridSize;
 use Inowas\Common\Id\BoundaryId;
-use Inowas\GeoTools\Model\GeosGeoTools;
+use Inowas\GeoTools\Model\GeoTools;
+use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
-class GeosGeoToolsTest extends \PHPUnit_Framework_TestCase
+class GeosGeoToolsTest extends WebTestCase
 {
 
     /** @var  AreaBoundary */
@@ -32,11 +33,15 @@ class GeosGeoToolsTest extends \PHPUnit_Framework_TestCase
     /** @var  GridSize */
     protected $gridSize;
 
-    /** @var  GeosGeoTools */
+    /** @var  GeoTools */
     protected $geoTools;
 
     public function setUp(): void
     {
+
+        self::bootKernel();
+        $em = static::$kernel->getContainer()->get('doctrine.orm.default_entity_manager');
+
         $this->area = AreaBoundary::create(BoundaryId::generate())
             ->setName(BoundaryName::fromString('Hanoi Area'))
             ->setGeometry(Geometry::fromPolygon(new Polygon(array(array(
@@ -93,7 +98,7 @@ class GeosGeoToolsTest extends \PHPUnit_Framework_TestCase
             0,
             0
         );
-        $this->geoTools = new GeosGeoTools();
+        $this->geoTools = new GeoTools($em);
         $this->gridSize = GridSize::fromXY(20, 30);
         $this->river = RiverBoundary::createWithParams(
             BoundaryId::generate(),

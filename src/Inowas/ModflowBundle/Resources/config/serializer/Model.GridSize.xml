@@ -1,8 +1,0 @@
-<?xml version="1.0" encoding="UTF-8" ?>
-<serializer>
-    <class name="Inowas\ModflowBundle\Model\GridSize">
-        <property name="nX" type="integer" groups="details"/>
-        <property name="nY" type="integer" groups="details"/>
-    </class>
-</serializer>
-
