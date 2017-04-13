@@ -28,6 +28,7 @@ class ModflowCalculationListenerCommand extends ContainerAwareCommand
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $callback = function($msg) {
+            echo ' [+] Submitting result metadata from calculation', "\n";
             $response = FlopyCalculationResponse::fromJson($msg->body);
             $msg->delivery_info['channel']->basic_ack($msg->delivery_info['delivery_tag']);
             $commandBus = $this->getContainer()->get('prooph_service_bus.modflow_command_bus');
