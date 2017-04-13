@@ -13,6 +13,10 @@ use Inowas\Common\Id\ObservationPointId;
 use Inowas\Common\Projection\AbstractDoctrineConnectionProjector;
 use Inowas\Modflow\Model\Event\BoundaryWasAdded;
 use Inowas\Common\Id\ModflowId;
+use Inowas\Modflow\Model\Event\BoundaryWasAddedToScenario;
+use Inowas\Modflow\Model\Event\BoundaryWasRemoved;
+use Inowas\Modflow\Model\Event\BoundaryWasRemovedFromScenario;
+use Inowas\Modflow\Model\Event\ModflowScenarioWasAdded;
 use Inowas\Modflow\Projection\Table;
 
 class BoundaryValuesProjector extends AbstractDoctrineConnectionProjector
@@ -49,6 +53,60 @@ class BoundaryValuesProjector extends AbstractDoctrineConnectionProjector
                 json_encode($observationPoint->dateTimeValues())
             );
         }
+    }
+
+    public function onBoundaryWasRemoved(BoundaryWasRemoved $event): void
+    {
+        $this->connection->delete(Table::BOUNDARY_VALUES, array(
+            'model_id' => $event->modflowId()->toString(),
+            'boundary_id' => $event->boundaryId()->toString()
+        ));
+    }
+
+    public function onModflowScenarioWasAdded(ModflowScenarioWasAdded $event): void
+    {
+        $sql = sprintf("SELECT * FROM %s WHERE model_id = ?", Table::BOUNDARY_VALUES);
+        $stmt = $this->connection->prepare($sql);
+        $stmt->bindValue(1, $event->baseModelId()->toString());
+        $stmt->execute();
+        $boundaries = $stmt->fetchAll();
+
+        foreach ($boundaries as $boundary){
+            $this->insertBoundary(
+                $event->scenarioId(),
+                BoundaryId::fromString($boundary['boundary_id']),
+                $boundary['boundary_type'],
+                ObservationPointId::fromString($boundary['observation_point_id']),
+                ObservationPointName::fromString($boundary['observation_point_name']),
+                $boundary['observation_point_geometry'],
+                $boundary['data']
+            );
+        }
+    }
+
+    public function onBoundaryWasAddedToScenario(BoundaryWasAddedToScenario $event): void
+    {
+        $boundary = $event->boundary();
+        /** @var ObservationPoint $observationPoint */
+        foreach ($boundary->observationPoints() as $observationPoint){
+            $this->insertBoundary(
+                $event->scenarioId(),
+                $boundary->boundaryId(),
+                $boundary->type(),
+                $observationPoint->id(),
+                $observationPoint->name(),
+                $observationPoint->geometryJson(),
+                json_encode($observationPoint->dateTimeValues())
+            );
+        }
+    }
+
+    public function onBoundaryWasRemovedFromScenario(BoundaryWasRemovedFromScenario $event): void
+    {
+        $this->connection->delete(Table::BOUNDARY_VALUES, array(
+            'model_id' => $event->scenarioId()->toString(),
+            'boundary_id' => $event->boundaryId()->toString()
+        ));
     }
 
     private function insertBoundary(
