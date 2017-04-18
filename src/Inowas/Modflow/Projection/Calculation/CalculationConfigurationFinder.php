@@ -43,4 +43,11 @@ class CalculationConfigurationFinder
 
         return FlopyConfiguration::fromData((array)json_decode($result['configuration']));
     }
+
+    public function findAll(): array
+    {
+        return $this->connection->fetchAll(
+            sprintf('SELECT * from %s', Table::CALCULATION_CONFIG)
+        );
+    }
 }

@@ -31,6 +31,15 @@ class ModflowCalculationCommand extends ContainerAwareCommand
     protected function execute(InputInterface $input, OutputInterface $output)
     {
 
+        if (! $input->getArgument('calculationId')){
+            $calculations = $this->getContainer()->get('inowas.modflow_projection.calculation_configuration_finder')->findAll();
+            foreach ($calculations as $calculation){
+                $output->writeln($calculation['calculation_id']);
+            }
+
+            return;
+        }
+
         $calculationId = ModflowId::fromString($input->getArgument('calculationId'));
         $calculationFinder = $this->getContainer()->get('inowas.modflow_projection.calculation_configuration_finder');
         $calculation = $calculationFinder->findCalculationConfiguration($calculationId);
