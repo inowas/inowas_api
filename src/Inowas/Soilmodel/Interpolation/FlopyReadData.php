@@ -6,5 +6,5 @@ namespace Inowas\Soilmodel\Interpolation;
 
 interface FlopyReadData
 {
-    public function readData(FlopyReadDataRequest $request);
+    public function read(FlopyReadDataRequest $request);
 }

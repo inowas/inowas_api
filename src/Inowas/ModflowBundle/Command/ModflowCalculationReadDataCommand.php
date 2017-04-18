@@ -39,7 +39,7 @@ class ModflowCalculationReadDataCommand extends ContainerAwareCommand
         $layerNumber = LayerNumber::fromInteger((int)$input->getArgument('layerNumber'));
 
         $flopyReadDataService = $this->getContainer()->get('inowas.soilmodel.flopy_read_data_service');
-        $response = $flopyReadDataService->readData(FlopyReadDataRequest::fromLayerdata(
+        $response = $flopyReadDataService->read(FlopyReadDataRequest::fromLayerdata(
             $calculationId, $dataType, $totalTime, $layerNumber));
 
         dump($response);

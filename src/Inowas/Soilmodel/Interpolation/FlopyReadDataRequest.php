@@ -2,6 +2,7 @@
 
 namespace Inowas\Soilmodel\Interpolation;
 
+use Inowas\Common\Calculation\ResultType;
 use Inowas\Common\DateTime\TotalTime;
 use Inowas\Common\Grid\LayerNumber;
 use Inowas\Common\Id\ModflowId;
@@ -20,7 +21,7 @@ class FlopyReadDataRequest implements \JsonSerializable
     /** @var \stdClass  */
     private $data;
 
-    public static function fromLayerdata(ModflowId $calculationId, string $dataType, TotalTime $totim, LayerNumber $layer): FlopyReadDataRequest
+    public static function fromLayerdata(ModflowId $calculationId, ResultType $dataType, TotalTime $totim, LayerNumber $layer): FlopyReadDataRequest
     {
         $arr = array();
         $arr['id'] = $calculationId->toString();
@@ -28,7 +29,7 @@ class FlopyReadDataRequest implements \JsonSerializable
         $arr['version'] = self::VERSION;
         $arr['request'] = (object)array(
             self::REQUEST_TYPE_LAYER_DATA => (object)array(
-                'type' => $dataType,
+                'type' => $dataType->toString(),
                 'totim' => $totim->toInteger(),
                 'layer' => $layer->toInteger()
             )

@@ -46,9 +46,8 @@ class PyModellingFlopyReadData implements FlopyReadData
         return $this->response;
     }
 
-    public function readData(FlopyReadDataRequest $request)
+    public function read(FlopyReadDataRequest $request): string
     {
-        $result = $this->call(json_encode($request));
-        return $result;
+        return $this->call(json_encode($request));
     }
 }

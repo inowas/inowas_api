@@ -14,20 +14,22 @@ use Inowas\Common\Calculation\ResultType;
 use Inowas\Common\Id\ModflowId;
 use Inowas\Common\DateTime\TotalTime;
 use Inowas\Modflow\Projection\Table;
-use Inowas\ModflowBundle\Service\FilePersister;
+use Inowas\Soilmodel\Interpolation\FlopyReadDataRequest;
+use Inowas\Soilmodel\Interpolation\FlopyReadDataResponse;
+use Inowas\Soilmodel\Interpolation\PyModellingFlopyReadData;
 
 class CalculationResultsFinder
 {
     /** @var Connection $connection */
     protected $connection;
 
-    /** @var  FilePersister */
-    protected $persister;
+    /** @var  PyModellingFlopyReadData */
+    protected $reader;
 
-    public function __construct(Connection $connection, FilePersister $persister) {
+    public function __construct(Connection $connection, PyModellingFlopyReadData $reader) {
         $this->connection = $connection;
         $this->connection->setFetchMode(\PDO::FETCH_ASSOC);
-        $this->persister = $persister;
+        $this->reader = $reader;
     }
 
     public function findTimesByModelId(ModflowId $modelId, ResultType $type, LayerNumber $layerNumber)
@@ -89,22 +91,15 @@ class CalculationResultsFinder
 
     public function findValue(ModflowId $calculationId, ResultType $type, LayerNumber $layerNumber, TotalTime $totalTime): HeadData
     {
-        $filename = $this->connection->fetchColumn(
-
-            sprintf('SELECT filename from %s WHERE calculation_id = :calculation_id AND type = :type AND layer = :layer AND totim = :totim', Table::CALCULATION_RESULTS),
-                [
-                    'calculation_id' => $calculationId->toString(),
-                    'type' => $type->toString(),
-                    'layer' => $layerNumber->toInteger(),
-                    'totim' => $totalTime->toInteger()
-                ]
+        $request = FlopyReadDataRequest::fromLayerdata(
+            $calculationId,
+            $type,
+            $totalTime,
+            $layerNumber
         );
 
-        if ($filename == false){
-            throw new \Exception();
-        }
-
-        return $this->persister->read($calculationId, FileName::fromString($filename));
+        $response = FlopyReadDataResponse::fromJson($this->reader->read($request));
+        return HeadData::from2dArray($response->data());
     }
 
     public function findTimeSeries(ModflowId $calculationId, ResultType $type, LayerNumber $layerNumber, Ncol $nx, Nrow $ny): array
