@@ -16,6 +16,8 @@
 /composer.phar
 composer.lock
 
+/supervisor/*.conf
+
 !/var/data
 /var/data/geoimage/*
 !/var/data/geoimage/.gitkeep
@@ -23,6 +25,4 @@ composer.lock
 !/var/data/modflow/.gitkeep
 !/var/tmp/.gitkeep
 tests/results
-
-/bin/phantomjs
 
