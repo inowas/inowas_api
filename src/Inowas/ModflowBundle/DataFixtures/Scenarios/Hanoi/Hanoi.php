@@ -514,7 +514,7 @@ class Hanoi implements ContainerAwareInterface, DataFixtureInterface
                 if (is_numeric($op[$date])) {
                     $observationPoint = $observationPoint->addDateTimeValue(
                         RiverDateTimeValue::fromParams(
-                            new \DateTimeImmutable(explode(':', $date)[1]), $op[$date], 18, 0)
+                            new \DateTimeImmutable(explode(':', $date)[1]), $op[$date], 0, 1500)
                     );
                 }
             }
