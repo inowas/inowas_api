@@ -43,7 +43,6 @@ class ScenarioAnalysisController extends FOSRestController
     {
 
         $user = $this->getUser();
-
         if ($user instanceof User && $user->getId()) {
             $userId = UserId::fromString($this->getUser()->getId()->toString());
             return new JsonResponse(
@@ -249,8 +248,8 @@ class ScenarioAnalysisController extends FOSRestController
         );
 
         $result = [
-            'start_date' => $calculation['date_time_start'],
-            'end_date' => $calculation['date_time_end'],
+            'start_date' => $calculation['start_date_atom'],
+            'end_date' => $calculation['end_date_atom'],
             'total_times' => $totalTimes
         ];
 

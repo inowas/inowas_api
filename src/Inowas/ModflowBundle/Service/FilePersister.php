@@ -18,7 +18,7 @@ class FilePersister
 
     public function  __construct(KernelInterface $kernel)
     {
-        $this->baseDataFolder= $kernel->getContainer()->getParameter('inowas.modflow.data_folder');
+        $this->baseDataFolder= $kernel->getContainer()->getParameter('data_folder');
     }
 
     public function persist(ModflowId $calculationId, ResultType $type, TotalTime $totalTime, LayerNumber $layerNumber, HeadData $headData, $fileType = 'json')

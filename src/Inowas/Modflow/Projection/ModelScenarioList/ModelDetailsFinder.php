@@ -59,10 +59,12 @@ class ModelDetailsFinder
 
     public function findByBaseUserId(UserId $userId): array
     {
-        return $this->connection->fetchAll(
+        $result = $this->connection->fetchAll(
             sprintf('SELECT * FROM %s WHERE user_id = :user_id', Table::MODEL_DETAILS),
             ['user_id' => $userId->toString()]
         );
+
+        return $result;
     }
 
     public function findPublic(): array
