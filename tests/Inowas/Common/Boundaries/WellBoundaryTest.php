@@ -2,8 +2,10 @@
 
 declare(strict_types=1);
 
-namespace Inowas\Common\Boundaries;
+namespace Tests\Inowas\Common\Boundaries;
 
+use Inowas\Common\Boundaries\WellBoundary;
+use Inowas\Common\Boundaries\WellDateTimeValue;
 use Inowas\Common\Id\BoundaryId;
 
 class WellBoundaryTest extends \PHPUnit_Framework_TestCase

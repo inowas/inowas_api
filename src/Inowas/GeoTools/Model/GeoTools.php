@@ -6,6 +6,7 @@ use Doctrine\DBAL\Connection;
 use Doctrine\ORM\EntityManager;
 use Inowas\Common\Boundaries\ModflowBoundary;
 use Inowas\Common\Geometry\Geometry;
+use Inowas\Common\Geometry\LineString;
 use Inowas\Common\Geometry\Point;
 use Inowas\Common\Geometry\Srid;
 use Inowas\Common\Grid\ActiveCells;
@@ -114,6 +115,29 @@ class GeoTools
         return new Point($result->coordinates[0], $result->coordinates[1], $target->toInteger());
     }
 
+    public function getDistanceOfTwoPointsOnALineString(LineString $lineString, Point $p1, Point $p2): Distance
+    {
+        $lineString = \geoPHP::load($lineString->toJson(),'json');
+        $p1 = \geoPHP::load($p1->toJson(),'json');
+        $p2 = \geoPHP::load($p2->toJson(),'json');
+
+        $query = $this->connection
+            ->prepare(sprintf("SELECT ST_Length(ST_LineSubstring(
+                            line,
+                            ST_LineLocatePoint(line, pta),
+                            ST_LineLocatePoint(line, ptb))::geography)
+                        FROM (
+                          SELECT
+                            ST_GeomFromText('%s')::geometry line, 
+                            ST_GeomFromText('%s')::geometry pta, 
+                            ST_GeomFromText('%s')::geometry ptb) AS data",
+                $lineString->asText(), $p1->asText(), $p2->asText()));
+
+        $query->execute();
+        $result = $query->fetch();
+        return Distance::fromMeters($result['st_length']);
+    }
+
     protected function updateBoundingBoxDistance(BoundingBox $bb): BoundingBox
     {
         $dx = \geoPHP::load(sprintf('LINESTRING(%f %f, %f %f)', $bb->xMin(), $bb->yMin(), $bb->xMax(), $bb->yMin(), 'wkt'))->greatCircleLength();
@@ -122,14 +146,14 @@ class GeoTools
         return BoundingBox::fromCoordinates($bb->xMin(), $bb->xMax(), $bb->yMin(), $bb->yMax(), $bb->srid(), $dx, $dy);
     }
 
-    private function getActiveCellsFromPoint(BoundingBox $bb, GridSize $gz, Point $point){
+    protected function getActiveCellsFromPoint(BoundingBox $bb, GridSize $gz, Point $point){
         $result = $this->getGridCellFromPoint($bb, $gz, $point);
         $cells = array();
         $cells[$result['row']][$result['col']]=true;
         return ActiveCells::fromArrayAndGridSize($cells, $gz);
     }
 
-    private function getGridCellFromPoint(BoundingBox $bb, GridSize $gz, Point $point)
+    protected function getGridCellFromPoint(BoundingBox $bb, GridSize $gz, Point $point)
     {
         // Transform Point to the same Coordinate System as BoundingBox
         $point = $this->projectPoint($point, Srid::fromInt($bb->srid()));

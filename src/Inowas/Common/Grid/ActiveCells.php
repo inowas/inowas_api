@@ -154,4 +154,9 @@ class ActiveCells
             'layers' => $this->layers
         );
     }
+
+    public function count(): int
+    {
+        return count($this->cells());
+    }
 }
