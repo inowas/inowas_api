@@ -33,6 +33,10 @@ abstract class AbstractBoundary implements ModflowBoundary
         $this->name = $name;
         $this->geometry = $geometry;
         $this->activeCells = $activeCells;
+
+        if (is_null($this->name)) {
+            $this->name = BoundaryName::fromString('');
+        }
     }
 
     abstract public function setActiveCells(ActiveCells $activeCells);
@@ -71,6 +75,15 @@ abstract class AbstractBoundary implements ModflowBoundary
     protected function hasOp(ObservationPointId $observationPointId): bool
     {
         return (array_key_exists($observationPointId->toString(), $this->observationPoints));
+    }
+
+    protected function getOp(ObservationPointId $observationPointId): ?ObservationPoint
+    {
+        if (! $this->hasOp($observationPointId)){
+            return null;
+        }
+
+        return $this->observationPoints[$observationPointId->toString()];
     }
 
     protected function addDateTimeValue(DateTimeValue $dateTimeValue, ObservationPointId $observationPointId)

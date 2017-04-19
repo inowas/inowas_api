@@ -86,4 +86,29 @@ class ObservationPoint implements \JsonSerializable
     {
         return $this->toArray();
     }
+
+    public function findValueByDateTime(\DateTimeImmutable $dateTime): ?DateTimeValue
+    {
+
+        $values = $this->dateTimeValues();
+        usort($values, function ($v1, $v2) {
+
+            /** @var $v1 WellDateTimeValue */
+            $dtV1 = $v1->dateTime();
+
+            /** @var $v2 WellDateTimeValue */
+            $dtV2 = $v2->dateTime();
+
+            return ($dtV1 < $dtV2) ? +1 : -1;
+        });
+
+        /** @var WellDateTimeValue $value */
+        foreach ($values as $value) {
+            if ($dateTime > $value->dateTime()){
+                return $value;
+            }
+        }
+
+        return null;
+    }
 }

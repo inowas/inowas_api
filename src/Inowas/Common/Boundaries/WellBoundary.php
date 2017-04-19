@@ -113,4 +113,18 @@ class WellBoundary extends AbstractBoundary
         $observationPoint = $this->observationPoints[$this->boundaryId->toString()];
         return $observationPoint->dateTimeValues();
     }
+
+    public function findValueByDateTime(\DateTimeImmutable $dateTime): WellDateTimeValue
+    {
+        /** @var ObservationPoint $op */
+        $op = $this->getOp(ObservationPointId::fromString($this->boundaryId->toString()));
+        $value = $op->findValueByDateTime($dateTime);
+
+
+        if ($value instanceof WellDateTimeValue){
+            return $value;
+        }
+
+        return WellDateTimeValue::fromParams($dateTime, 0);
+    }
 }

@@ -83,4 +83,9 @@ final class StressPeriods
 
         return $spNumber;
     }
+
+    public function stressperiods(): array
+    {
+        return $this->stressperiods;
+    }
 }

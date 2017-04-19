@@ -9,7 +9,6 @@ use Inowas\Common\Boundaries\ConstantHeadDateTimeValue;
 use Inowas\Common\Boundaries\ObservationPoint;
 use Inowas\Common\Boundaries\RiverBoundary;
 use Inowas\Common\Boundaries\RiverDateTimeValue;
-use Inowas\Common\Boundaries\WellDateTimeValue;
 use Inowas\Common\Boundaries\WellBoundary;
 use Inowas\Common\DateTime\DateTime;
 use Inowas\Common\DateTime\TotalTime;
@@ -111,15 +110,17 @@ class ModflowModelManager implements ModflowModelManagerInterface
         $wspd = WelStressPeriodData::create();
         $wells = $this->findWells($modflowId);
 
-        /** @var WellBoundary $well */
-        foreach ($wells as $well){
-            /** @var WellDateTimeValue $pumpingRate */
-            foreach ($well->dateTimeValues() as $pumpingRate){
+        /** @var StressPeriod $stressperiod */
+        foreach ($stressPeriods->stressperiods() as $stressperiod) {
+            $totim = TotalTime::fromInt($stressperiod->totimStart());
+            $sp = $stressPeriods->spNumberFromTotim($totim);
+
+            /** @var WellBoundary $well */
+            foreach ($wells as $well) {
                 $cells = $well->activeCells()->cells();
-                if (count($cells)>0){
+                if (count($cells)>0) {
                     $cell = $cells[0];
-                    $totim = $this->calculateTotim($start, DateTime::fromAtom($pumpingRate->dateTime()->format(DATE_ATOM)), $timeUnit);
-                    $sp = $stressPeriods->spNumberFromTotim($totim);
+                    $pumpingRate = $well->findValueByDateTime($this->calculateDateTimeFromTotim($start, $totim, $timeUnit));
                     $wspd->addGridCellValue(WelStressPeriodGridCellValue::fromParams($sp, $cell[0], $cell[1], $cell[2], $pumpingRate->pumpingRate()));
                 }
             }
@@ -231,6 +232,33 @@ class ModflowModelManager implements ModflowModelManagerInterface
 
         if ($timeUnit->toInt() === $timeUnit::DAYS){
             return TotalTime::fromInt((int)$diff->format("%a"));
+        }
+
+        throw InvalidTimeUnitException::withTimeUnitAndAvailableTimeUnits($timeUnit, $timeUnit->availableTimeUnits);
+    }
+
+    private function calculateDateTimeFromTotim(DateTime $start, TotalTime $totalTime, TimeUnit $timeUnit): \DateTimeImmutable
+    {
+        $dateTime = clone $start->toDateTime();
+
+        if ($timeUnit->toInt() === $timeUnit::SECONDS){
+            $dateTime->modify(sprintf('+%s seconds', $totalTime->toInteger()));
+            return \DateTimeImmutable::createFromMutable($dateTime);
+        }
+
+        if ($timeUnit->toInt() === $timeUnit::MINUTES){
+            $dateTime->modify(sprintf('+%s minutes', $totalTime->toInteger()));
+            return \DateTimeImmutable::createFromMutable($dateTime);
+        }
+
+        if ($timeUnit->toInt() === $timeUnit::HOURS){
+            $dateTime->modify(sprintf('+%s hours', $totalTime->toInteger()));
+            return \DateTimeImmutable::createFromMutable($dateTime);
+        }
+
+        if ($timeUnit->toInt() === $timeUnit::DAYS){
+            $dateTime->modify(sprintf('+%s days', $totalTime->toInteger()));
+            return \DateTimeImmutable::createFromMutable($dateTime);
         }
 
         throw InvalidTimeUnitException::withTimeUnitAndAvailableTimeUnits($timeUnit, $timeUnit->availableTimeUnits);

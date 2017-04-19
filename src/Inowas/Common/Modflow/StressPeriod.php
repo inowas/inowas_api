@@ -1,7 +1,8 @@
 <?php
 
-namespace Inowas\Common\Modflow;
+declare(strict_types=1);
 
+namespace Inowas\Common\Modflow;
 
 final class StressPeriod
 {

@@ -15,7 +15,6 @@ class WellDateTimeValue extends DateTimeValue
     /** @var  \DateTimeImmutable */
     private $dateTime;
 
-
     public static function fromParams(\DateTimeImmutable $dateTime, float $pumpingRate): WellDateTimeValue
     {
         $self = new self();
@@ -39,7 +38,6 @@ class WellDateTimeValue extends DateTimeValue
         return self::TYPE;
     }
 
-
     public function dateTime(): \DateTimeImmutable
     {
         return $this->dateTime;
@@ -58,18 +56,15 @@ class WellDateTimeValue extends DateTimeValue
         );
     }
 
-    function jsonSerialize()
-    {
-        return $this->toArray();
-    }
-
-    /**
-     * @return array
-     */
     public function values(): array
     {
         return array(
             'pumping_rate' => $this->pumpingRate
         );
+    }
+
+    public function jsonSerialize()
+    {
+        return $this->toArray();
     }
 }
