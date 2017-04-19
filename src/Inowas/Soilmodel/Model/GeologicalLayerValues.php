@@ -80,6 +80,9 @@ class GeologicalLayerValues
     public static function fromParams(TopElevation $hTop, BottomElevation $hBot, Conductivity $conductivity, Storage $storage): GeologicalLayerValues
     {
         $self = new self();
+        $self->laytyp = Laytyp::fromInt(Laytyp::TYPE_CONVERTIBLE);
+        $self->layavg = Layavg::fromInt(Layavg::TYPE_HARMONIC_MEAN);
+        $self->laywet = Laywet::fromFloat(0);
         $self->hTop = $hTop;
         $self->hBottom = $hBot;
         $self->conductivity = $conductivity;

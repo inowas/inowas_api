@@ -8,7 +8,6 @@ use CrEOF\Spatial\PHP\Types\Geometry\Polygon;
 use Doctrine\Common\DataFixtures\FixtureInterface;
 use Doctrine\Common\Persistence\ObjectManager;
 use Inowas\AppBundle\DataFixtures\Modflow\LoadScenarioBase;
-use Inowas\GeoToolsBundle\Service\GeoTools;
 use Inowas\ModflowBundle\Model\AreaFactory;
 use Inowas\ModflowBundle\Model\Boundary\Boundary;
 use Inowas\ModflowBundle\Model\Boundary\GeneralHeadBoundary;
@@ -20,10 +19,8 @@ use Inowas\ModflowBundle\Model\Boundary\WellBoundary;
 use Inowas\ModflowBundle\Model\BoundaryFactory;
 use Inowas\ModflowBundle\Model\BoundingBox;
 use Inowas\ModflowBundle\Model\GridSize;
-use Inowas\ModflowBundle\Model\Modflow;
 use Inowas\ModflowBundle\Model\ModflowModel;
 use Inowas\ModflowBundle\Model\StressPeriodFactory;
-use Inowas\PyprocessingBundle\Service\Interpolation;
 use Inowas\SoilmodelBundle\Factory\BoreHoleFactory;
 use Inowas\SoilmodelBundle\Factory\LayerFactory;
 use Inowas\SoilmodelBundle\Model\BoreHole;
@@ -34,7 +31,7 @@ use Inowas\SoilmodelBundle\Model\PropertyValue;
 use Symfony\Component\DependencyInjection\ContainerAwareInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
-class RioPrimeroBaseModelDataFixture extends LoadScenarioBase implements FixtureInterface, ContainerAwareInterface
+class RioPrimero extends LoadScenarioBase implements FixtureInterface, ContainerAwareInterface
 {
 
     /**
@@ -60,8 +57,7 @@ class RioPrimeroBaseModelDataFixture extends LoadScenarioBase implements Fixture
     {
         $this->loadUsers($this->container->get('fos_user.user_manager'));
 
-        /** @var GeoTools $geoTools */
-        $geoTools = $this->container->get('inowas.geotools.geotools');
+        $geoTools = $this->container->get('inowas.geotools');
 
         // Add the SoilModel
         $soilModelManager = $this->container->get('inowas.soilmodel.soilmodelmanager');

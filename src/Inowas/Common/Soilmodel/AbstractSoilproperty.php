@@ -4,7 +4,7 @@ namespace Inowas\Common\Soilmodel;
 
 use Inowas\Soilmodel\Model\GeologicalLayerNumber;
 
-abstract class AbstractSoilproperty
+abstract class AbstractSoilproperty implements \JsonSerializable
 {
 
     /** @var array|float */
@@ -84,5 +84,10 @@ abstract class AbstractSoilproperty
         }
 
         return is_numeric($value);
+    }
+
+    public function jsonSerialize()
+    {
+        return $this->value;
     }
 }

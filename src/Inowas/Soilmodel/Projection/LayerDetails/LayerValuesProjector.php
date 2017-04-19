@@ -125,11 +125,13 @@ class LayerValuesProjector extends AbstractDoctrineConnectionProjector
             'chani' => $event->values()->conductivity()->chani()->toValue(),
             'layvka' => $event->values()->conductivity()->layVka()->toValue(),
             'laywet' => $event->values()->laywet()->toValue(),
-            'hk' => $event->values()->conductivity()->hk()->toValue(),
-            'hani' => $event->values()->conductivity()->hani()->toValue(),
-            'vka' => $event->values()->conductivity()->vka()->toValue(),
-            'ss' => $event->values()->storage()->ss()->toValue(),
-            'sy' => $event->values()->storage()->sy()->toValue()
+            'hk' => json_encode($event->values()->conductivity()->hk()->toValue()),
+            'hani' => json_encode($event->values()->conductivity()->hani()->toValue()),
+            'vka' => json_encode($event->values()->conductivity()->vka()->toValue()),
+            'ss' => json_encode($event->values()->storage()->ss()->toValue()),
+            'sy' => json_encode($event->values()->storage()->sy()->toValue()),
+            'top' => json_encode($event->values()->hTop()),
+            'botm' => json_encode($event->values()->hBottom()),
         ), array(
             'soilmodel_id' => $event->soilmodelId()->toString(),
             'layer_id' => $event->layerId()->toString())

@@ -6,6 +6,7 @@ namespace Inowas\ModflowBundle\Command;
 
 use Inowas\Common\Id\UserId;
 use Inowas\ModflowBundle\DataFixtures\Scenarios\Hanoi\Hanoi;
+use Inowas\ModflowBundle\DataFixtures\Scenarios\RioPrimero\RioPrimero;
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -34,13 +35,20 @@ class ModflowEventStoreMigrateCommand extends ContainerAwareCommand
 
         if (is_null($modelname)){
             $output->writeln("Possible Arguments are:");
-            $output->writeln("1 or hanoi for the hanoi-modflow-model");
+            $output->writeln("1 or Hanoi for the hanoi-modflow-model");
+            $output->writeln("2 or Rio Primero for the hanoi-modflow-model");
         }
 
-        if ($modelname == 'hanoi' || intval($modelname) == 1) {
+        if ($modelname == 'Hanoi' || intval($modelname) == 1) {
             $hanoi = new Hanoi();
             $hanoi->setContainer($this->getContainer());
             $hanoi->load();
+        }
+
+        if ($modelname == 'Rio Primero' || intval($modelname) == 2) {
+            $rioPrimero = new RioPrimero();
+            $rioPrimero->setContainer($this->getContainer());
+            $rioPrimero->load();
         }
     }
 }

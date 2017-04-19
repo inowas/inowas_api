@@ -2,7 +2,6 @@
 
 namespace Inowas\ModflowBundle\DataFixtures\Scenarios\Hanoi;
 
-use Doctrine\DBAL\Schema\Schema;
 use FOS\UserBundle\Doctrine\UserManager;
 use Inowas\Common\Boundaries\ConstantHeadBoundary;
 use Inowas\Common\Boundaries\ConstantHeadDateTimeValue;
@@ -11,7 +10,6 @@ use Inowas\Common\Boundaries\ObservationPointName;
 use Inowas\Common\Boundaries\RiverDateTimeValue;
 use Inowas\Common\Boundaries\WellDateTimeValue;
 use Inowas\Common\Calculation\BudgetType;
-use Inowas\Common\Fixtures\DataFixtureInterface;
 use Inowas\Common\DateTime\DateTime;
 use Inowas\Common\Geometry\LineString;
 use Inowas\Common\Geometry\Point;
@@ -65,6 +63,7 @@ use Inowas\Common\Id\UserId;
 use Inowas\Common\Boundaries\WellBoundary;
 use Inowas\Common\Boundaries\WellType;
 use Inowas\Common\Boundaries\RiverBoundary;
+use Inowas\ModflowBundle\DataFixtures\Scenarios\LoadScenarioBase;
 use Inowas\Soilmodel\Model\BoreLogId;
 use Inowas\Soilmodel\Model\BoreLogLocation;
 use Inowas\Soilmodel\Model\BoreLogName;
@@ -86,42 +85,17 @@ use Inowas\Soilmodel\Model\HorizonId;
 use Inowas\Soilmodel\Model\SoilmodelDescription;
 use Inowas\Soilmodel\Model\SoilmodelId;
 use Inowas\Soilmodel\Model\SoilmodelName;
-use Prooph\EventStore\Adapter\Doctrine\Schema\EventStoreSchema;
 use Prooph\ServiceBus\CommandBus;
-use Symfony\Component\DependencyInjection\ContainerAwareInterface;
-use Symfony\Component\DependencyInjection\ContainerInterface;
 
 ini_set('memory_limit', '2048M');
 
-class Hanoi implements ContainerAwareInterface, DataFixtureInterface
+class Hanoi extends LoadScenarioBase
 {
-    /**
-     * @var ContainerInterface
-     */
-    private $container;
-
-    /** @var  UserId */
-    private $ownerId;
-
-    /** @var  array */
-    protected $userIdList;
-
-    /**
-     * {@inheritDoc}
-     */
-    public function setContainer(ContainerInterface $container = null)
-    {
-        $this->container = $container;
-    }
-
     public function load()
     {
-        $this->createEventStreamTableIfNotExists('event_stream');
+        $this->loadUsers($this->container->get('fos_user.user_manager'));
         $geoTools = $this->container->get('inowas.geotools');
-
-        /** @var UserManager $userManager */
-        $userManager = $this->container->get('fos_user.user_manager');
-        $this->loadUsers($userManager);
+        $this->createEventStreamTableIfNotExists('event_stream');
 
         $commandBus = $this->container->get('prooph_service_bus.modflow_command_bus');
         $ownerId = UserId::fromString($this->ownerId);
@@ -141,7 +115,9 @@ class Hanoi implements ContainerAwareInterface, DataFixtureInterface
         $gridSize = GridSize::fromXY(165, 175);
         $commandBus->dispatch(ChangeModflowModelGridSize::forModflowModel($ownerId, $modelId, $gridSize));
 
-        $area = AreaBoundary::create(BoundaryId::generate())->setName(BoundaryName::fromString('Hanoi Area'))->setGeometry(Geometry::fromPolygon(new Polygon(array(
+        $area = AreaBoundary::create(BoundaryId::generate());
+        $area = $area->setName(BoundaryName::fromString('Hanoi Area'));
+        $area = $area->setGeometry(Geometry::fromPolygon(new Polygon(array(
             array(
                 array(105.790767733626808, 21.094425932026443),
                 array(105.796959843400032, 21.093521487879368),
@@ -472,7 +448,7 @@ class Hanoi implements ContainerAwareInterface, DataFixtureInterface
             foreach ($dates as $date){
                 if (is_numeric($well[$date])){
                     if ($well[$date] !== $value){
-                        $wellBoundary->addPumpingRate(WellDateTimeValue::fromParams(
+                        $wellBoundary = $wellBoundary->addPumpingRate(WellDateTimeValue::fromParams(
                             new \DateTimeImmutable(explode(':', $date)[1]), (float)$well[$date]
                         ));
                     }
@@ -603,7 +579,6 @@ class Hanoi implements ContainerAwareInterface, DataFixtureInterface
         $header = array('name', 'y', 'x', 'srid', 'pumpingrate');
         foreach ($movedWells_sc1 as $row) {
             $wellData = array_combine($header, $row);
-
             $wellBoundary = WellBoundary::createWithParams(
                 BoundaryId::generate(),
                 BoundaryName::fromString($wellData['name']),
@@ -611,14 +586,12 @@ class Hanoi implements ContainerAwareInterface, DataFixtureInterface
                 WellType::fromString(WellType::TYPE_SCENARIO_MOVED_WELL),
                 LayerNumber::fromInteger(3)
             );
-
-            $wellBoundary->addPumpingRate(
+            $wellBoundary = $wellBoundary->addPumpingRate(
                 WellDateTimeValue::fromParams(
                     $start->toDateTimeImmutable(),
                     $wellData['pumpingrate']
                 )
             );
-
             $commandBus->dispatch(AddBoundary::toScenario($ownerId, $modelId, $scenarioId, $wellBoundary));
         }
 
@@ -636,11 +609,9 @@ class Hanoi implements ContainerAwareInterface, DataFixtureInterface
             array('A21', 20.98837, 105.90014, 4326, -4900),
             array('A22', 20.98644, 105.89842, 4326, -4900)
         );
-
         $header = array('name', 'y', 'x', 'srid', 'pumpingrate');
         foreach ($newWells_sc1 as $row) {
             $wellData = array_combine($header, $row);
-
             $wellBoundary = WellBoundary::createWithParams(
                 BoundaryId::generate(),
                 BoundaryName::fromString($wellData['name']),
@@ -648,13 +619,11 @@ class Hanoi implements ContainerAwareInterface, DataFixtureInterface
                 WellType::fromString(WellType::TYPE_SCENARIO_NEW_WELL),
                 LayerNumber::fromInteger(3)
             );
-
-            $wellBoundary->addPumpingRate(
+            $wellBoundary = $wellBoundary->addPumpingRate(
                 WellDateTimeValue::fromParams(
                     $start->toDateTimeImmutable(),
                     $wellData['pumpingrate'])
             );
-
             $commandBus->dispatch(AddBoundary::toScenario($ownerId, $modelId, $scenarioId, $wellBoundary));
         }
 
@@ -689,11 +658,9 @@ class Hanoi implements ContainerAwareInterface, DataFixtureInterface
             array('B09', 20.9826, 105.83113, 4326, -4900),
             array('B10', 20.98164, 105.83216, 4326, -4900)
         );
-
         $header = array('name', 'y', 'x', 'srid', 'pumpingrate');
         foreach ($newWells_sc2 as $row) {
             $wellData = array_combine($header, $row);
-
             $wellBoundary = WellBoundary::createWithParams(
                 BoundaryId::generate(),
                 BoundaryName::fromString($wellData['name']),
@@ -701,12 +668,9 @@ class Hanoi implements ContainerAwareInterface, DataFixtureInterface
                 WellType::fromString(WellType::TYPE_SCENARIO_NEW_WELL),
                 LayerNumber::fromInteger(3)
             );
-
-            $wellBoundary->addPumpingRate(WellDateTimeValue::fromParams(
+            $wellBoundary = $wellBoundary->addPumpingRate(WellDateTimeValue::fromParams(
                     $start->toDateTimeImmutable(),
-                    $wellData['pumpingrate'])
-            );
-
+                    $wellData['pumpingrate']));
             $commandBus->dispatch(AddBoundary::toScenario($ownerId, $modelId, $scenarioId, $wellBoundary));
         }
 
@@ -734,7 +698,6 @@ class Hanoi implements ContainerAwareInterface, DataFixtureInterface
         $header = array('name', 'y', 'x', 'srid', 'pumpingrate');
         foreach ($movedWells_sc3 as $row) {
             $wellData = array_combine($header, $row);
-
             $wellBoundary = WellBoundary::createWithParams(
                 BoundaryId::generate(),
                 BoundaryName::fromString($wellData['name']),
@@ -742,22 +705,17 @@ class Hanoi implements ContainerAwareInterface, DataFixtureInterface
                 WellType::fromString(WellType::TYPE_SCENARIO_MOVED_WELL),
                 LayerNumber::fromInteger(3)
             );
-
-            $wellBoundary->addPumpingRate(WellDateTimeValue::fromParams(
+            $wellBoundary = $wellBoundary->addPumpingRate(WellDateTimeValue::fromParams(
                 $start->toDateTimeImmutable(),
-                $wellData['pumpingrate'])
-            );
-
+                $wellData['pumpingrate']));
             $commandBus->dispatch(AddBoundary::toScenario($ownerId, $modelId, $scenarioId, $wellBoundary));
         }
 
         # THIS WELLS ARE ALL YELLOW DOTS OG BOTH IMAGES
         $newWells_sc3 = array_merge($newWells_sc1, $newWells_sc2);
         $header = array('name', 'y', 'x', 'srid', 'pumpingrate');
-
         foreach ($newWells_sc3 as $row) {
             $wellData = array_combine($header, $row);
-
             $wellBoundary = WellBoundary::createWithParams(
                 BoundaryId::generate(),
                 BoundaryName::fromString($wellData['name']),
@@ -765,12 +723,9 @@ class Hanoi implements ContainerAwareInterface, DataFixtureInterface
                 WellType::fromString(WellType::TYPE_SCENARIO_NEW_WELL),
                 LayerNumber::fromInteger(3)
             );
-
-            $wellBoundary->addPumpingRate(WellDateTimeValue::fromParams(
+            $wellBoundary = $wellBoundary->addPumpingRate(WellDateTimeValue::fromParams(
                 $start->toDateTimeImmutable(),
-                $wellData['pumpingrate'])
-            );
-
+                $wellData['pumpingrate']));
             $commandBus->dispatch(AddBoundary::toScenario($ownerId, $modelId, $scenarioId, $wellBoundary));
         }
 
@@ -787,44 +742,7 @@ class Hanoi implements ContainerAwareInterface, DataFixtureInterface
         #$this->loadBudgets('incremental', 0, 2000, 'S3', $calculationId, $commandBus);
     }
 
-    public function loadUsers(UserManager $userManager): void
-    {
-
-        $userListHeads = array('username', 'name', 'email', 'password');
-        $userList = array(
-            array('inowas', 'inowas', 'inowas@inowas.com', '#inowas#'),
-            array('guest', 'guest', 'guest@inowas.com', '3BJ-w7v-BtP-xes'),
-            array('ralf.junghanns', 'Ralf Junghanns', 'ralf.junghanns@tu-dresden.de', '#inowas#'),
-            array('jana.glass', 'Jana Glass', 'jana.ringleb@tu-dresden.de', '#inowas#'),
-            array('jana.sallwey', 'Jana Sallwey', 'jana.sallwey@tu-dresden.de', '#inowas#'),
-            array('catalin.stefan', 'Catalin Stefan', 'catalin.stefan@tu-dresden.de', '#inowas#'),
-            array('martin.wudenka', 'Martin Wudenka', 'martin.wudenka@tu-dresden.de', '#inowas#')
-        );
-
-        foreach ($userList as $item){
-            $item = array_combine($userListHeads, $item);
-            $user = $userManager->findUserByUsername($item['username']);
-            if (!$user) {
-
-                // Add new User
-                $user = $userManager->createUser();
-                $user->setUsername($item['username']);
-                $user->setName($item['name']);
-                $user->setEmail($item['email']);
-                $user->setPlainPassword($item['password']);
-                $user->setEnabled(true);
-                $userManager->updateUser($user);
-            }
-            $this->userIdList[] = UserId::fromString($user->getId()->toString());
-        }
-
-        $owner = $userManager->findUserByUsername('jana.glass');
-        $owner->addRole('ROLE_ADMIN');
-        $userManager->updateUser($owner);
-        $this->ownerId = $owner->getId()->toString();
-    }
-
-    private function loadHeadsFromFile($filename, $invert = false){
+    protected function loadHeadsFromFile($filename, $invert = false){
 
         if (!file_exists($filename) || !is_readable($filename)) {
             echo "File not found.\r\n";
@@ -852,7 +770,7 @@ class Hanoi implements ContainerAwareInterface, DataFixtureInterface
         return $heads;
     }
 
-    private function loadBudgetFromFile($filename){
+    protected function loadBudgetFromFile($filename){
 
         if (!file_exists($filename) || !is_readable($filename)) {
             echo "File not found.\r\n";
@@ -863,26 +781,6 @@ class Hanoi implements ContainerAwareInterface, DataFixtureInterface
         $budget = json_decode($json, true);
 
         return $budget;
-    }
-
-    private function createEventStreamTableIfNotExists($tableName): void
-    {
-        $connection = $this->container->get('doctrine.dbal.default_connection');
-
-        if (in_array($tableName, $connection->getSchemaManager()->listTableNames())){
-            return;
-        }
-
-        $schema = new Schema();
-        if (class_exists('Prooph\EventStore\Adapter\Doctrine\Schema\EventStoreSchema')) {
-            EventStoreSchema::createSingleStream($schema, $tableName, true);
-        }
-
-        $queries = $schema->toSql($connection->getDatabasePlatform());
-
-        foreach ($queries as $query){
-            $connection->exec($query);
-        }
     }
 
     protected function loadRowsFromCsv($filename): array {
@@ -925,7 +823,7 @@ class Hanoi implements ContainerAwareInterface, DataFixtureInterface
         return $dates;
     }
 
-    private function loadResultsWithLayer(string $type, int $t0, int $t1, int $layers, string $scenario, ModflowId $calculationId, CommandBus $commandBus)
+    protected function loadResultsWithLayer(string $type, int $t0, int $t1, int $layers, string $scenario, ModflowId $calculationId, CommandBus $commandBus)
     {
         if ($type == 'heads'){
             $calculationResultType = ResultType::HEAD_TYPE;
@@ -953,7 +851,7 @@ class Hanoi implements ContainerAwareInterface, DataFixtureInterface
         }
     }
 
-    private function loadBudgets(string $type, int $t0, int $t1, string $scenario, ModflowId $calculationId, CommandBus $commandBus)
+    protected function loadBudgets(string $type, int $t0, int $t1, string $scenario, ModflowId $calculationId, CommandBus $commandBus)
     {
         if ($type == 'cumulative'){
             $budgetType = BudgetType::fromString(BudgetType::CUMULATIVE_BUDGET);
