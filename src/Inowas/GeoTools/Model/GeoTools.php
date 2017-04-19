@@ -32,7 +32,10 @@ class GeoTools
             return $this->getActiveCellsFromPoint($boundingBox, $gridSize, $boundary->geometry()->value());
         }
 
+        /** @var \Polygon $boundingBoxPolygon */
         $boundary = \geoPHP::load($boundary->geometry()->toJson(), 'json')->geos();
+
+        /** @var \Polygon $boundingBoxPolygon */
         $boundingBoxPolygon = \geoPHP::load($boundingBox->toGeoJson(), 'json')->geos();
 
         if (! $boundingBoxPolygon->intersects($boundary)) {
@@ -48,6 +51,7 @@ class GeoTools
         for ($y = 0; $y<$ny; $y++){
             $activeCells[$y] = [];
             for ($x = 0; $x<$nx; $x++){
+                /** @var \Polygon $bb */
                 $bb = \geoPHP::load(sprintf('LINESTRING(%f %f, %f %f)', $boundingBox->xMin()+(($x)*$dX), $boundingBox->yMax()-(($y)*$dY), $boundingBox->xMin()+(($x+1)*$dX), $boundingBox->yMax()-(($y+1)*$dY)), 'wkt')->envelope()->geos();
                 $activeCells[$y][$x] = ($bb->intersects($boundary) || $bb->crosses($boundary));
             }
@@ -121,6 +125,22 @@ class GeoTools
         $p1 = \geoPHP::load($p1->toJson(),'json');
         $p2 = \geoPHP::load($p2->toJson(),'json');
 
+        $distanceInMeters = $this->getDistanceOfTwoPointsOnALineStringInGeoPhpFormat($lineString, $p1, $p2);
+        return Distance::fromMeters($distanceInMeters);
+    }
+
+    public function getDistanceOfPointFromLineStringStartPoint(LineString $lineString, Point $p2): Distance
+    {
+        $lineString = \geoPHP::load($lineString->toJson(),'json');
+        $p1 = $lineString->startPoint();
+        $p2 = \geoPHP::load($p2->toJson(),'json');
+
+        $distanceInMeters = $this->getDistanceOfTwoPointsOnALineStringInGeoPhpFormat($lineString, $p1, $p2);
+        return Distance::fromMeters($distanceInMeters);
+    }
+
+    protected function getDistanceOfTwoPointsOnALineStringInGeoPhpFormat(\LineString $lineString, \Point $p1, \Point $p2): float
+    {
         $query = $this->connection
             ->prepare(sprintf("SELECT ST_Length(ST_LineSubstring(
                             line,
@@ -135,7 +155,7 @@ class GeoTools
 
         $query->execute();
         $result = $query->fetch();
-        return Distance::fromMeters($result['st_length']);
+        return $result['st_length'];
     }
 
     protected function updateBoundingBoxDistance(BoundingBox $bb): BoundingBox
