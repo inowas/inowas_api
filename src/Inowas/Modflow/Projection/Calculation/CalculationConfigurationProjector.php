@@ -240,7 +240,6 @@ class CalculationConfigurationProjector extends AbstractDoctrineConnectionProjec
          * Add PackageDetails for WelPackage
          */
         if ($this->modflowModelManager->countModelBoundaries($modflowModelId, WellBoundary::TYPE) > 0) {
-            echo "We have wells \r\n";
             $welStressPeriodData = $this->modflowModelManager->findWelStressPeriodData($modflowModelId, $stressPeriods, $start, $timeUnit);
             $packages->updatePackageParameter('wel', 'StressPeriodData', $welStressPeriodData);
         }
@@ -249,14 +248,12 @@ class CalculationConfigurationProjector extends AbstractDoctrineConnectionProjec
          * Add PackageDetails for RchPackage
          */
         if ($this->modflowModelManager->countModelBoundaries($modflowModelId, RechargeBoundary::TYPE) > 0) {
-            echo "We have recharge \r\n";
         }
 
         /*
          * Add PackageDetails for RivPackage
          */
         if ($this->modflowModelManager->countModelBoundaries($modflowModelId, RiverBoundary::TYPE) > 0) {
-            echo "We have river \r\n";
             $rivStressPeriodData = $this->modflowModelManager->findRivStressPeriodData($modflowModelId, $stressPeriods, $start, $timeUnit);
             $packages->updatePackageParameter('riv', 'StressPeriodData', $rivStressPeriodData);
         }
@@ -265,14 +262,14 @@ class CalculationConfigurationProjector extends AbstractDoctrineConnectionProjec
          * Add PackageDetails for GhbPackage
          */
         if ($this->modflowModelManager->countModelBoundaries($modflowModelId, GeneralHeadBoundary::TYPE) > 0) {
-            echo "We have general head \r\n";
+            $ghbStressPeriodData = $this->modflowModelManager->findGhbStressPeriodData($modflowModelId, $stressPeriods, $start, $timeUnit);
+            $packages->updatePackageParameter('ghb', 'StressPeriodData', $ghbStressPeriodData);
         }
 
         /*
          * Add PackageDetails for ChdPackage
          */
         if ($this->modflowModelManager->countModelBoundaries($modflowModelId, ConstantHeadBoundary::TYPE) > 0) {
-            echo "We have constant head \r\n";
             $chdStressPeriodData = $this->modflowModelManager->findChdStressPeriodData($modflowModelId, $stressPeriods, $start, $timeUnit);
             $packages->updatePackageParameter('chd', 'StressPeriodData', $chdStressPeriodData);
         }

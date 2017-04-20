@@ -185,6 +185,7 @@ class Packages implements \JsonSerializable
         }
 
         $package = $this->getPackageByName($packageName);
+
         $expectedMethod = 'update'.ucfirst($parameterName);
         if (! method_exists($package, $expectedMethod)){
             throw InvalidPackageParameterUpdateMethodException::withName($packageName, $expectedMethod);
@@ -254,10 +255,10 @@ class Packages implements \JsonSerializable
 
     private function addPackageByName(string $packageName): void
     {
-        if (! array_key_exists($packageName, $this->availablePackages)){
+        if (! $this->hasAvailablePackage($packageName)) {
             throw InvalidPackageNameException::withName($packageName, $this->availablePackages);
         }
-
+        
         $class = $this->availablePackages[$packageName];
         $this->addPackage($class::fromDefaults());
         $this->selectedPackages[] = $packageName;
@@ -265,7 +266,7 @@ class Packages implements \JsonSerializable
 
     private function getPackageByName(string $packageName): PackageInterface
     {
-        if (! $this->hasPackage($packageName)){
+        if (! $this->hasAvailablePackage($packageName)){
             throw InvalidPackageNameException::withName($packageName, $this->availablePackages);
         }
 

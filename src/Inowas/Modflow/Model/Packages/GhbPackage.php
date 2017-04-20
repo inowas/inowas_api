@@ -13,7 +13,7 @@ class GhbPackage implements PackageInterface
 {
 
     /** @var string  */
-    protected $type = 'wel';
+    protected $type = 'ghb';
 
     /** @var  Ipakcb */
     protected $ipakcb;
@@ -58,8 +58,8 @@ class GhbPackage implements PackageInterface
         $ipakcb = Ipakcb::fromInteger($arr['ipakcb']);
         $stressPeriodData = GhbStressPeriodData::fromArray($arr['stress_period_data']);
         $options = Options::fromValue(null);
-        $extension = Extension::fromArray($arr['extension']);
-        $unitnumber = Unitnumber::fromArray($arr['unitnumber']);
+        $extension = Extension::fromValue($arr['extension']);
+        $unitnumber = Unitnumber::fromValue($arr['unitnumber']);
 
         return new self($ipakcb, $stressPeriodData, $options, $extension, $unitnumber);
     }

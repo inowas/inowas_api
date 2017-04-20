@@ -68,4 +68,11 @@ class GeneralHeadBoundary extends AbstractBoundary
     {
         return json_encode([]);
     }
+
+    public function dateTimeValues(ObservationPointId $observationPointId): array
+    {
+        /** @var ObservationPoint $observationPoint */
+        $observationPoint = $this->observationPoints[$observationPointId->toString()];
+        return $observationPoint->dateTimeValues();
+    }
 }

@@ -6,6 +6,8 @@ namespace Inowas\Modflow\Model\Service;
 
 use Inowas\Common\Boundaries\ConstantHeadBoundary;
 use Inowas\Common\Boundaries\ConstantHeadDateTimeValue;
+use Inowas\Common\Boundaries\GeneralHeadBoundary;
+use Inowas\Common\Boundaries\GeneralHeadDateTimeValue;
 use Inowas\Common\Boundaries\ObservationPoint;
 use Inowas\Common\Boundaries\RiverBoundary;
 use Inowas\Common\Boundaries\RiverDateTimeValue;
@@ -22,6 +24,8 @@ use Inowas\Common\Modflow\TimeUnit;
 use Inowas\Modflow\Model\Exception\InvalidTimeUnitException;
 use Inowas\Modflow\Model\Packages\ChdStressPeriodData;
 use Inowas\Modflow\Model\Packages\ChdStressPeriodGridCellValue;
+use Inowas\Modflow\Model\Packages\GhbStressPeriodData;
+use Inowas\Modflow\Model\Packages\GhbStressPeriodGridCellValue;
 use Inowas\Modflow\Model\Packages\RivStressPeriodData;
 use Inowas\Modflow\Model\Packages\RivStressPeriodGridCellValue;
 use Inowas\Modflow\Model\Packages\WelStressPeriodData;
@@ -185,6 +189,33 @@ class ModflowModelManager implements ModflowModelManagerInterface
         return $chdSpd;
     }
 
+    public function findGhbStressPeriodData(ModflowId $modflowId, StressPeriods $stressPeriods, DateTime $start, TimeUnit $timeUnit): GhbStressPeriodData
+    {
+        $ghbSpd = GhbStressPeriodData::create();
+        $ghbBoundaries = $this->findGhbBoundaries($modflowId);
+
+        /** @var GeneralHeadBoundary $ghbBoundary */
+        foreach ($ghbBoundaries as $ghbBoundary) {
+
+            /** @var ObservationPoint $observationPoint */
+            // Calculate without interpolation for the beginning
+            $observationPoint = array_values($ghbBoundary->observationPoints())[0];
+            $dateTimeValues = $ghbBoundary->dateTimeValues($observationPoint->id());
+
+            /** @var GeneralHeadDateTimeValue $dateTimeValue */
+            foreach ($dateTimeValues as $dateTimeValue) {
+                $cells = $ghbBoundary->activeCells()->cells();
+                foreach ($cells as $cell) {
+                    $totim = $this->calculateTotim($start, DateTime::fromAtom($dateTimeValue->dateTime()->format(DATE_ATOM)), $timeUnit);
+                    $sp = $stressPeriods->spNumberFromTotim($totim);
+                    $ghbSpd->addGridCellValue(GhbStressPeriodGridCellValue::fromParams($sp, $cell[0], $cell[1], $cell[2], $dateTimeValue->stage(), $dateTimeValue->cond()));
+                }
+            }
+        }
+
+        return $ghbSpd;
+    }
+
     private function findWells(ModflowId $modflowId): array
     {
         return $this->boundaryFinder->findWells($modflowId);
@@ -198,6 +229,11 @@ class ModflowModelManager implements ModflowModelManagerInterface
     private function findChdBoundaries(ModflowId $modflowId): array
     {
         return $this->boundaryFinder->findChdBoundaries($modflowId);
+    }
+
+    private function findGhbBoundaries(ModflowId $modflowId): array
+    {
+        return $this->boundaryFinder->findGhbBoundaries($modflowId);
     }
 
     private function calculateTotims(array $bcDates, TimeUnit $timeUnit): array

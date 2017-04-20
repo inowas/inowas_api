@@ -430,50 +430,6 @@ class ModflowModelEventSourcingTest extends EventSourcingBaseTest
         $this->assertContains([0,  8, 10, -7000], $dataForSecondStressPeriod);
     }
 
-    public function test_create_steady_calculation_from_model_with_riv_boundary_with_one_observationpoint(): void
-    {
-        $ownerId = UserId::generate();
-        $modelId = ModflowId::generate();
-        $this->createModelWithSoilmodel($ownerId, $modelId);
-
-        $riverBoundary = $this->createRiverBoundaryWithObservationPoint();
-        $this->commandBus->dispatch(AddBoundary::toBaseModel($ownerId, $modelId, $riverBoundary));
-
-        $calculationId = ModflowId::generate();
-        $this->commandBus->dispatch(CreateModflowModelCalculation::byUserWithModelId(
-            $calculationId,
-            $ownerId,
-            $modelId,
-            DateTime::fromDateTime(new \DateTime('2015-01-01')),
-            DateTime::fromDateTime(new \DateTime('2015-01-31'))
-        ));
-
-        $stressperiods = StressPeriods::create();
-        $stressperiods->addStressPeriod(StressPeriod::create(0, 1,1,1,true));
-        $this->commandBus->dispatch(UpdateCalculationStressperiods::byUserWithCalculationId($ownerId, $calculationId, $stressperiods));
-
-        $activeCells = $this->container->get('inowas.model_boundaries_finder')->findBoundaryActiveCells($modelId, $riverBoundary->boundaryId());
-        $numberOfActiveCells = count($activeCells->cells());
-
-        $config = $this->container->get('inowas.modflow_projection.calculation_configuration_finder')->getConfigurationJson($calculationId);
-
-        $this->assertJson($config);
-        $obj = json_decode($config);
-        $this->assertEquals($calculationId->toString(), $obj->id);
-        $this->assertEquals('flopy_calculation', $obj->type);
-        $this->assertObjectHasAttribute('data', $obj);
-        $data = $obj->data;
-        $this->assertObjectHasAttribute('packages', $data);
-        $this->assertContains('riv', $data->packages);
-        $riv =  $data->riv;
-        $this->assertObjectHasAttribute('stress_period_data', $riv);
-        $stressperiodData = (array)$riv->stress_period_data;
-        $this->assertCount(1, $stressperiodData);
-
-        $dataForFirstStressPeriod = array_values($stressperiodData)[0];
-        $this->assertCount($numberOfActiveCells, $dataForFirstStressPeriod);
-    }
-
     public function test_create_steady_calculation_from_model_with_chd_boundary_with_one_observationpoint(): void
     {
         $ownerId = UserId::generate();
@@ -600,6 +556,50 @@ class ModflowModelEventSourcingTest extends EventSourcingBaseTest
         $rch =  $data->rch;
         $this->assertObjectHasAttribute('stress_period_data', $rch);
         $stressperiodData = (array)$rch->stress_period_data;
+        $this->assertCount(1, $stressperiodData);
+
+        $dataForFirstStressPeriod = array_values($stressperiodData)[0];
+        $this->assertCount($numberOfActiveCells, $dataForFirstStressPeriod);
+    }
+
+    public function test_create_steady_calculation_from_model_with_riv_boundary_with_one_observationpoint(): void
+    {
+        $ownerId = UserId::generate();
+        $modelId = ModflowId::generate();
+        $this->createModelWithSoilmodel($ownerId, $modelId);
+
+        $riverBoundary = $this->createRiverBoundaryWithObservationPoint();
+        $this->commandBus->dispatch(AddBoundary::toBaseModel($ownerId, $modelId, $riverBoundary));
+
+        $calculationId = ModflowId::generate();
+        $this->commandBus->dispatch(CreateModflowModelCalculation::byUserWithModelId(
+            $calculationId,
+            $ownerId,
+            $modelId,
+            DateTime::fromDateTime(new \DateTime('2015-01-01')),
+            DateTime::fromDateTime(new \DateTime('2015-01-31'))
+        ));
+
+        $stressperiods = StressPeriods::create();
+        $stressperiods->addStressPeriod(StressPeriod::create(0, 1,1,1,true));
+        $this->commandBus->dispatch(UpdateCalculationStressperiods::byUserWithCalculationId($ownerId, $calculationId, $stressperiods));
+
+        $activeCells = $this->container->get('inowas.model_boundaries_finder')->findBoundaryActiveCells($modelId, $riverBoundary->boundaryId());
+        $numberOfActiveCells = count($activeCells->cells());
+
+        $config = $this->container->get('inowas.modflow_projection.calculation_configuration_finder')->getConfigurationJson($calculationId);
+
+        $this->assertJson($config);
+        $obj = json_decode($config);
+        $this->assertEquals($calculationId->toString(), $obj->id);
+        $this->assertEquals('flopy_calculation', $obj->type);
+        $this->assertObjectHasAttribute('data', $obj);
+        $data = $obj->data;
+        $this->assertObjectHasAttribute('packages', $data);
+        $this->assertContains('riv', $data->packages);
+        $riv =  $data->riv;
+        $this->assertObjectHasAttribute('stress_period_data', $riv);
+        $stressperiodData = (array)$riv->stress_period_data;
         $this->assertCount(1, $stressperiodData);
 
         $dataForFirstStressPeriod = array_values($stressperiodData)[0];

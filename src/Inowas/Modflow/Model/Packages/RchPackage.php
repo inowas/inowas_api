@@ -15,7 +15,7 @@ class RchPackage implements PackageInterface
 {
 
     /** @var string  */
-    protected $type = 'wel';
+    protected $type = 'rch';
 
     /** @var  Ipakcb */
     protected $ipakcb;
