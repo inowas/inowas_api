@@ -236,4 +236,17 @@ class BoundaryFinder
 
         return ActiveCells::fromArray((array)json_decode($result['active_cells']));
     }
+
+    public function findBoundaryActiveCells(ModflowId $modelId, BoundaryId $boundaryId): ActiveCells
+    {
+        $result = $this->connection->fetchAssoc(
+            sprintf('SELECT active_cells FROM %s WHERE boundary_id =:boundary_id AND model_id = :model_id', Table::BOUNDARIES),
+            [
+                'model_id' => $modelId->toString(),
+                'boundary_id' => $boundaryId->toString()
+            ]
+        );
+
+        return ActiveCells::fromArray((array)json_decode($result['active_cells']));
+    }
 }

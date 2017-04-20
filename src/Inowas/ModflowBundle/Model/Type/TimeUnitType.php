@@ -25,7 +25,7 @@ class TimeUnitType extends IntegerType
         }
 
         /** @var TimeUnit $value */
-        return $value->toNative();
+        return $value->toInt();
     }
 
     /**
@@ -37,7 +37,7 @@ class TimeUnitType extends IntegerType
             return null;
         }
 
-        return TimeUnit::fromNative($value);
+        return TimeUnit::fromInt($value);
     }
 
     /**

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Inowas\ModflowBundle\Model;
 
 use Inowas\ModflowBundle\Exception\InvalidArgumentException;
@@ -60,7 +62,7 @@ class TimeUnit
      * @param int $value
      * @return TimeUnit
      */
-    public static function fromNative(int $value){
+    public static function fromInt(int $value){
         $instance = new self;
         $instance->unit = $value;
         return $instance;
@@ -85,10 +87,8 @@ class TimeUnit
         throw new InvalidArgumentException(sprintf('Internal unit %s in not matching output-string.', $this->unit));
     }
 
-    /**
-     * @return int
-     */
-    public function toNative(){
+    public function toInt(): int
+    {
         return $this->unit;
     }
 }
