@@ -104,7 +104,7 @@ class ObservationPoint implements \JsonSerializable
 
         /** @var WellDateTimeValue $value */
         foreach ($values as $value) {
-            if ($dateTime > $value->dateTime()){
+            if ($dateTime >= $value->dateTime()){
                 return $value;
             }
         }

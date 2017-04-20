@@ -59,12 +59,12 @@ class Botm
         return $this->botm;
     }
 
-    public function is3dArray($value): bool
+    public static function is3dArray($value): bool
     {
         return (is_array($value) && is_array($value[0]) && is_array($value[0][0]) && ! is_array($value[0][0][0]));
     }
 
-    public function is2dArray($value): bool
+    public static function is2dArray($value): bool
     {
         return (is_array($value) && is_array($value[0]) && ! is_array($value[0][0]));
     }

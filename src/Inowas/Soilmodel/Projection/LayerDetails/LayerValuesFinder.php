@@ -140,7 +140,7 @@ class LayerValuesFinder
             }
         }
 
-        return Botm::from3DArray($botmArr);
+        return Botm::fromValue($botmArr);
     }
 
     public function getHk(SoilmodelId $soilmodelId): Hk

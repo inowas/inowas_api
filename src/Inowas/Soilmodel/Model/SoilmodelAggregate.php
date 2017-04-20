@@ -106,6 +106,15 @@ class SoilmodelAggregate extends AggregateRoot
         }
     }
 
+    public function getGeologicalLayer(GeologicalLayerId $id): ?GeologicalLayer
+    {
+        if (array_key_exists($id->toString(), $this->layers)){
+            return $this->layers[$id->toString()];
+        }
+
+        return null;
+    }
+
     public function updateGeologicalLayerProperty(UserId $userId, GeologicalLayerId $layerId, AbstractSoilproperty $property): void
     {
 
@@ -176,7 +185,7 @@ class SoilmodelAggregate extends AggregateRoot
 
     protected function whenLayerPropertyWasUpdated(LayerPropertyWasUpdated $event): void
     {
-        /** GeologicalLayer $layer */
+        /** @var GeologicalLayer $layer */
         $layer = $this->layers[$event->layerId()->toString()];
         $this->layers[$event->layerId()->toString()] = $layer->updateProperty($event->property());
     }

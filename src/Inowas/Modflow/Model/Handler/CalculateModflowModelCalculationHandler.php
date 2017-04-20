@@ -25,7 +25,7 @@ final class CalculateModflowModelCalculationHandler
 
     public function __invoke(CalculateModflowModelCalculation $command)
     {
-        $calculation = $this->calculationFinder->findCalculationConfiguration($command->calculationId());
+        $calculation = $this->calculationFinder->getFlopyCalculation($command->calculationId());
 
         if ($calculation) {
             $this->flopyCalculation->calculate($calculation);

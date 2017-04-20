@@ -88,4 +88,9 @@ final class StressPeriods
     {
         return $this->stressperiods;
     }
+
+    public function toArray(): array
+    {
+        return $this->stressperiods;
+    }
 }

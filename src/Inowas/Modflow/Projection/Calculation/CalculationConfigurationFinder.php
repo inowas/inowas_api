@@ -30,7 +30,7 @@ class CalculationConfigurationFinder
         return ModflowId::fromString($result['modflow_model_id']);
     }
 
-    public function findCalculationConfiguration(ModflowId $calculationId): ?FlopyConfiguration
+    public function getFlopyCalculation(ModflowId $calculationId): ?FlopyConfiguration
     {
         $result = $this->connection->fetchAssoc(
             sprintf('SELECT configuration from %s WHERE calculation_id = :calculation_id', Table::CALCULATION_CONFIG),
@@ -42,6 +42,20 @@ class CalculationConfigurationFinder
         }
 
         return FlopyConfiguration::fromData((array)json_decode($result['configuration']));
+    }
+
+    public function getConfigurationJson(ModflowId $calculationId): ?string
+    {
+        $result = $this->connection->fetchAssoc(
+            sprintf('SELECT configuration from %s WHERE calculation_id = :calculation_id', Table::CALCULATION_CONFIG),
+            ['calculation_id' => $calculationId->toString()]
+        );
+
+        if ($result == false){
+            return null;
+        }
+
+        return $result['configuration'];
     }
 
     public function findAll(): array

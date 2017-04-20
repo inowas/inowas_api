@@ -8,6 +8,7 @@ use Inowas\Common\DateTime\DateTime;
 use Inowas\Common\Id\ModflowId;
 use Inowas\Common\Id\UserId;
 use Inowas\Common\Modflow\LengthUnit;
+use Inowas\Common\Modflow\StressPeriods;
 use Inowas\Common\Modflow\TimeUnit;
 use Inowas\Soilmodel\Model\SoilmodelId;
 use Prooph\EventSourcing\AggregateChanged;
@@ -38,6 +39,8 @@ class CalculationWasCreated extends AggregateChanged
     /** @var TimeUnit */
     private $timeUnit;
 
+    /** @var  StressPeriods */
+    private $stressPeriods;
 
     public static function fromModelWithProps(
         UserId $userId,
@@ -47,7 +50,8 @@ class CalculationWasCreated extends AggregateChanged
         DateTime $start,
         DateTime $end,
         LengthUnit $lengthUnit,
-        TimeUnit $timeUnit
+        TimeUnit $timeUnit,
+        StressPeriods $stressPeriods
     ): CalculationWasCreated
     {
         $event = self::occur($calculationId->toString(),[
@@ -57,7 +61,8 @@ class CalculationWasCreated extends AggregateChanged
             'start' => $start->toAtom(),
             'end' => $end->toAtom(),
             'length_unit' => $lengthUnit->toInt(),
-            'time_unit' => $timeUnit->toInt()
+            'time_unit' => $timeUnit->toInt(),
+            'stress_periods' => serialize($stressPeriods)
         ]);
 
         $event->calculationId = $calculationId;
@@ -68,6 +73,7 @@ class CalculationWasCreated extends AggregateChanged
         $event->end = $end;
         $event->lengthUnit = $lengthUnit;
         $event->timeUnit = $timeUnit;
+        $event->stressPeriods = $stressPeriods;
 
         return $event;
     }
@@ -141,5 +147,14 @@ class CalculationWasCreated extends AggregateChanged
         }
 
         return $this->timeUnit;
+    }
+
+    public function stressPeriods(): StressPeriods
+    {
+        if (is_null($this->stressPeriods)){
+            $this->stressPeriods = unserialize($this->payload['stress_periods']);
+        }
+
+        return $this->stressPeriods;
     }
 }

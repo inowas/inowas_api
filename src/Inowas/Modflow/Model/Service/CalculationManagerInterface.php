@@ -15,7 +15,7 @@ interface CalculationManagerInterface extends ModflowModelManagerInterface, Soil
 {
     public function findBoundaries(ModflowId $modflowModel): array;
 
-    public function getStressPeriods(ModflowId $modflowId, DateTime $start, DateTime $end): ?StressPeriods;
+    public function calculateStressPeriods(ModflowId $modflowId, DateTime $start, DateTime $end): ?StressPeriods;
 
     public function getBoundingBox(ModflowId $modflowId): ?BoundingBox;
 

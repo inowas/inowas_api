@@ -5,12 +5,14 @@ declare(strict_types=1);
 namespace Inowas\Modflow\Model\Handler;
 
 use Inowas\Common\Id\ModflowId;
+use Inowas\Common\Modflow\StressPeriods;
 use Inowas\Modflow\Model\Command\CreateModflowModelCalculation;
 use Inowas\Modflow\Model\Exception\ModflowModelNotFoundException;
 use Inowas\Modflow\Model\ModflowCalculationAggregate;
 use Inowas\Modflow\Model\ModflowModelCalculationList;
 use Inowas\Modflow\Model\ModflowModelList;
 use Inowas\Modflow\Model\ModflowModelAggregate;
+use Inowas\Modflow\Model\Service\ModflowModelManager;
 use Inowas\Soilmodel\Model\SoilmodelList;
 
 final class CreateModflowModelCalculationHandler
@@ -25,17 +27,28 @@ final class CreateModflowModelCalculationHandler
     /** @var  SoilmodelList */
     private $soilmodelList;
 
-    public function __construct(ModflowModelList $modelList, SoilmodelList $soilmodelList, ModflowModelCalculationList $modelCalculationList)
-    {
+    /** @var  ModflowModelManager */
+    private $modflowModelManager;
+
+    public function __construct(
+        ModflowModelList $modelList,
+        SoilmodelList $soilmodelList,
+        ModflowModelCalculationList $modelCalculationList,
+        ModflowModelManager $modflowModelManager
+    ) {
         $this->modelCalculationList = $modelCalculationList;
         $this->modelList = $modelList;
         $this->soilmodelList = $soilmodelList;
+        $this->modflowModelManager = $modflowModelManager;
     }
 
     public function __invoke(CreateModflowModelCalculation $command)
     {
         /** @var ModflowModelAggregate $modflowModel */
         $modflowModel = $this->getModflowModel($command);
+
+        /** @var StressPeriods $stressPeriods */
+        $stressPeriods = $this->modflowModelManager->calculateStressPeriods($modflowModel->modflowModelId(), $command->startDateTime(), $command->endDateTime());
 
         $calculation = ModflowCalculationAggregate::create(
             $command->calculationId(),
@@ -45,7 +58,8 @@ final class CreateModflowModelCalculationHandler
             $command->startDateTime(),
             $command->endDateTime(),
             $modflowModel->lengthUnit(),
-            $modflowModel->timeUnit()
+            $modflowModel->timeUnit(),
+            $stressPeriods
         );
 
         $this->modelCalculationList->add($calculation);

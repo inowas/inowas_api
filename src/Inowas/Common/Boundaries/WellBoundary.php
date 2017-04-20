@@ -120,7 +120,6 @@ class WellBoundary extends AbstractBoundary
         $op = $this->getOp(ObservationPointId::fromString($this->boundaryId->toString()));
         $value = $op->findValueByDateTime($dateTime);
 
-
         if ($value instanceof WellDateTimeValue){
             return $value;
         }

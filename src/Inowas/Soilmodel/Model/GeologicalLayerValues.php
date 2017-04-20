@@ -72,9 +72,34 @@ class GeologicalLayerValues
         return $this->conductivity;
     }
 
+    public function hydraulicConductivityX(): HydraulicConductivityX
+    {
+        return $this->conductivity->hydraulicConductivityX();
+    }
+
+    public function hydraulicAnisotropy(): HydraulicAnisotropy
+    {
+        return $this->conductivity->hydraulicAnisotropy();
+    }
+
+    public function verticalHydraulicConductivity(): VerticalHydraulicConductivity
+    {
+        return $this->conductivity->verticalHydraulicConductivity();
+    }
+
     public function storage(): Storage
     {
         return $this->storage;
+    }
+
+    public function specificStorage(): SpecificStorage
+    {
+        return $this->storage->ss();
+    }
+
+    public function specificYield(): SpecificYield
+    {
+        return $this->storage->sy();
     }
 
     public static function fromParams(TopElevation $hTop, BottomElevation $hBot, Conductivity $conductivity, Storage $storage): GeologicalLayerValues

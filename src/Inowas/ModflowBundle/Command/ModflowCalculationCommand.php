@@ -42,7 +42,7 @@ class ModflowCalculationCommand extends ContainerAwareCommand
 
         $calculationId = ModflowId::fromString($input->getArgument('calculationId'));
         $calculationFinder = $this->getContainer()->get('inowas.modflow_projection.calculation_configuration_finder');
-        $calculation = $calculationFinder->findCalculationConfiguration($calculationId);
+        $calculation = $calculationFinder->getFlopyCalculation($calculationId);
 
         if ($calculation) {
             $flopyCalculation = $this->getContainer()->get('inowas.soilmodel.flopy_calculation_service');

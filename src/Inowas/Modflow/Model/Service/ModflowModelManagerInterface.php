@@ -21,7 +21,7 @@ interface ModflowModelManagerInterface
 
     public function findWelStressPeriodData(ModflowId $modflowId, StressPeriods $stressPeriods, DateTime $start, TimeUnit $timeUnit): WelStressPeriodData;
 
-    public function getStressPeriods(ModflowId $modflowId, DateTime $start, DateTime $end): ?StressPeriods;
+    public function calculateStressPeriods(ModflowId $modflowId, DateTime $start, DateTime $end): ?StressPeriods;
 
     public function getBoundingBox(ModflowId $modflowId): ?BoundingBox;
 
