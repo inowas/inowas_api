@@ -244,6 +244,8 @@ class BoundaryFinder
 
     public function findStressPeriodDatesById(ModflowId $modelId): array
     {
+        $this->connection->setFetchMode(\PDO::FETCH_ASSOC);
+
         $boundaries = $this->connection->fetchAll(
             sprintf('SELECT data FROM %s WHERE model_id = :model_id', Table::BOUNDARY_VALUES),
             ['model_id' => $modelId->toString()]
@@ -255,7 +257,7 @@ class BoundaryFinder
 
         $spDates = [];
         foreach ($boundaries as $boundary){
-            $dataValues = \json_decode($boundary['data']);
+            $dataValues = json_decode($boundary['data']);
             foreach ($dataValues as $dataValue){
                 $dateTimeAtom = DateTime::fromDateTime(new \DateTime($dataValue->date_time))->toAtom();
                 if (! in_array($dateTimeAtom, $spDates)) {
