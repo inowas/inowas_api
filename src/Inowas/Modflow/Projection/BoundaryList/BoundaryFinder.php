@@ -332,4 +332,23 @@ class BoundaryFinder
 
         return ActiveCells::fromArray((array)json_decode($result['active_cells']));
     }
+
+    public function getBoundaryIdsByName(ModflowId $modflowId, BoundaryName $boundaryName): array
+    {
+        $this->connection->setFetchMode(\PDO::FETCH_ASSOC);
+        $rows = $this->connection->fetchAll(
+            sprintf('SELECT boundary_id FROM %s WHERE name =:boundary_name AND model_id = :model_id', Table::BOUNDARIES),
+            [
+                'model_id' => $modflowId->toString(),
+                'boundary_name' => $boundaryName->toString()
+            ]
+        );
+
+        $result = [];
+        foreach ($rows as $row){
+            $result[] = BoundaryId::fromString($row['boundary_id']);
+        }
+
+        return $result;
+    }
 }

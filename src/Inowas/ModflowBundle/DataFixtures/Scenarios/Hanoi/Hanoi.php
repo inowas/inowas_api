@@ -2,7 +2,6 @@
 
 namespace Inowas\ModflowBundle\DataFixtures\Scenarios\Hanoi;
 
-use FOS\UserBundle\Doctrine\UserManager;
 use Inowas\Common\Boundaries\ConstantHeadBoundary;
 use Inowas\Common\Boundaries\ConstantHeadDateTimeValue;
 use Inowas\Common\Boundaries\ObservationPoint;
@@ -55,6 +54,7 @@ use Inowas\Modflow\Model\Command\CreateModflowModelCalculation;
 use Inowas\Common\Grid\BoundingBox;
 use Inowas\Common\Grid\GridSize;
 use Inowas\Common\Id\ModflowId;
+use Inowas\Modflow\Model\Command\UpdateBoundaryGeometry;
 use Inowas\Modflow\Model\Command\UpdateCalculationPackageParameter;
 use Inowas\Modflow\Model\ModflowModelDescription;
 use Inowas\Common\Modflow\Modelname;
@@ -425,7 +425,6 @@ class Hanoi extends LoadScenarioBase
         #echo sprintf("Interpolate soilmodel with %s Memory usage\r\n", memory_get_usage());
         #$commandBus->dispatch(InterpolateSoilmodel::forSoilmodel($ownerId, $soilModelId, $boundingBox, $gridSize));
 
-
         /*
          * Add Wells for the BaseScenario
          */
@@ -564,70 +563,30 @@ class Hanoi extends LoadScenarioBase
         $commandBus->dispatch(ChangeModflowModelName::forScenario($ownerId, $modelId, $scenarioId, Modelname::fromString('Scenario 1')));
         $commandBus->dispatch(ChangeModflowModelDescription::forScenario($ownerId, $modelId, $scenarioId, ModflowModelDescription::fromString('Simulation of MAR type river bank filtration')));
 
-        $movedWells_sc1 = array(
-            array('A01', 21.03580, 105.78032, 4326, -4900),
-            array('A02', 21.03420, 105.78135, 4326, -4900),
-            array('A03', 21.03131, 105.77963, 4326, -4900),
-            array('A04', 20.98580, 105.80641, 4326, -4900),
-            array('A05', 20.98548, 105.81430, 4326, -4900),
-            array('A06', 20.98388, 105.81224, 4326, -4900),
-            array('A07', 20.98484, 105.81465, 4326, -4900),
-            array('A08', 20.96561, 105.85001, 4326, -4900),
-            array('A09', 20.96433, 105.84761, 4326, -4900),
-            array('A10', 20.96176, 105.85070, 4326, -4900)
+        $boundariesFinder = $this->container->get('inowas.model_boundaries_finder');
+        $rbfRelocatedWellNamesAndGeometry = array(
+            'H07_6' => $geoTools->projectPoint(new Point(588637, 2326840, 32648), Srid::fromInt(4326)),
+            'H10_6' => $geoTools->projectPoint(new Point(589150, 2326214, 32648), Srid::fromInt(4326)),
+            'H11_8' => $geoTools->projectPoint(new Point(593446, 2321044, 32648), Srid::fromInt(4326)),
+            'H19_6' => $geoTools->projectPoint(new Point(589050, 2326431, 32648), Srid::fromInt(4326)),
+            'H2_1'  => $geoTools->projectPoint(new Point(584451, 2331823, 32648), Srid::fromInt(4326)),
+            'H2_8'  => $geoTools->projectPoint(new Point(593249, 2321333, 32648), Srid::fromInt(4326)),
+            'H5_1'  => $geoTools->projectPoint(new Point(588440, 2327043, 32648), Srid::fromInt(4326)),
+            'H8_6'  => $geoTools->projectPoint(new Point(588829, 2326631, 32648), Srid::fromInt(4326)),
+            'H8_8'  => $geoTools->projectPoint(new Point(593443, 2321233, 32648), Srid::fromInt(4326)),
+            'H9_1'  => $geoTools->projectPoint(new Point(584649, 2331729, 32648), Srid::fromInt(4326))
         );
-        $header = array('name', 'y', 'x', 'srid', 'pumpingrate');
-        foreach ($movedWells_sc1 as $row) {
-            $wellData = array_combine($header, $row);
-            $wellBoundary = WellBoundary::createWithParams(
-                BoundaryId::generate(),
-                BoundaryName::fromString($wellData['name']),
-                Geometry::fromPoint(new Point($wellData['x'], $wellData['y'], 4326)),
-                WellType::fromString(WellType::TYPE_SCENARIO_MOVED_WELL),
-                LayerNumber::fromInteger(3)
-            );
-            $wellBoundary = $wellBoundary->addPumpingRate(
-                WellDateTimeValue::fromParams(
-                    $start->toDateTimeImmutable(),
-                    $wellData['pumpingrate']
-                )
-            );
-            $commandBus->dispatch(AddBoundary::toScenario($ownerId, $modelId, $scenarioId, $wellBoundary));
+        foreach ($rbfRelocatedWellNamesAndGeometry as $name => $geometry) {
+            /** @var BoundaryId[] $boundaryIds */
+            $boundaryIds = $boundariesFinder->getBoundaryIdsByName($scenarioId, BoundaryName::fromString($name));
+            if (count($boundaryIds)==0){continue;}
+            echo sprintf("Move Well %s.\r\n", $name);
+            $boundaryId = $boundaryIds[0];
+            $geometry = Geometry::fromPoint($geometry);
+            $commandBus->dispatch(UpdateBoundaryGeometry::ofScenario($ownerId, $modelId, $scenarioId, $boundaryId, $geometry));
         }
 
-        # THIS WELLS ARE THE RED AND YELLOW DOTS IN THE LEFT IMAGE
-        $newWells_sc1 = array(
-            array('A11', 21.08354, 105.81499, 4326, -4900),
-            array('A12', 21.08226, 105.81671, 4326, -4900),
-            array('A13', 21.04125, 105.85173, 4326, -4900),
-            array('A15', 21.03868, 105.85310, 4326, -4900),
-            array('A16', 21.00181, 105.87710, 4326, -4900),
-            array('A17', 21.03708, 105.85379, 4326, -4900),
-            array('A18', 21.03548, 105.85550, 4326, -4900),
-            array('A19', 21.03484, 105.85585, 4326, -4900),
-            array('A20', 20.98965, 105.89842, 4326, -4900),
-            array('A21', 20.98837, 105.90014, 4326, -4900),
-            array('A22', 20.98644, 105.89842, 4326, -4900)
-        );
-        $header = array('name', 'y', 'x', 'srid', 'pumpingrate');
-        foreach ($newWells_sc1 as $row) {
-            $wellData = array_combine($header, $row);
-            $wellBoundary = WellBoundary::createWithParams(
-                BoundaryId::generate(),
-                BoundaryName::fromString($wellData['name']),
-                Geometry::fromPoint(new Point($wellData['x'], $wellData['y'], 4326)),
-                WellType::fromString(WellType::TYPE_SCENARIO_NEW_WELL),
-                LayerNumber::fromInteger(3)
-            );
-            $wellBoundary = $wellBoundary->addPumpingRate(
-                WellDateTimeValue::fromParams(
-                    $start->toDateTimeImmutable(),
-                    $wellData['pumpingrate'])
-            );
-            $commandBus->dispatch(AddBoundary::toScenario($ownerId, $modelId, $scenarioId, $wellBoundary));
-        }
-
-        /* Add Head Results */
+        /* Create Calculation and Calculate */
         $calculationId = ModflowId::generate();
         $commandBus->dispatch(CreateModflowModelCalculation::byUserWithModelAndScenarioId($calculationId, $ownerId, $modelId, $scenarioId, $start, $end));
         $commandBus->dispatch(CalculateModflowModelCalculation::byUserWithModelId($ownerId, $calculationId, $scenarioId));
@@ -641,27 +600,28 @@ class Hanoi extends LoadScenarioBase
         $commandBus->dispatch(ChangeModflowModelDescription::forScenario($ownerId, $modelId, $scenarioId, ModflowModelDescription::fromString('Simulation of MAR type injection wells')));
 
         # THIS WELLS ARE THE YELLOW DOTS IN THE RIGHT IMAGE
-        $newWells_sc2 = array(
-            array('B01', 21.002, 105.8415, 4326, -4900),
-            array('B02', 21.002, 105.8425, 4326, -4900),
-            array('B03', 21.002, 105.8435, 4326, -4900),
-            array('B04', 21.002, 105.8445, 4326, -4900),
-            array('B05', 21.002, 105.8455, 4326, -4900),
-            array('B06', 21.00271, 105.84653, 4326, -4900),
-            array('B07', 20.98292, 105.82872, 4326, -4900),
-            array('B08', 20.9826, 105.82975, 4326, -4900),
-            array('B09', 20.9826, 105.83113, 4326, -4900),
-            array('B10', 20.98164, 105.83216, 4326, -4900)
+        $infiltrationWells = array(
+            array('I_01', 585948, 2320333, 32648, 4000),
+            array('I_02', 586348, 2319933, 32648, 4000),
+            array('I_03', 586248, 2320033, 32648, 4000),
+            array('I_04', 586148, 2320133, 32648, 4000),
+            array('I_05', 586048, 2320233, 32648, 4000),
+            array('I_06', 587648, 2322533, 32648, 4000),
+            array('I_07', 587748, 2322533, 32648, 4000),
+            array('I_08', 587848, 2322533, 32648, 4000),
+            array('I_09', 587948, 2322533, 32648, 4000),
+            array('I_10', 588048, 2322533, 32648, 4000)
         );
+
         $header = array('name', 'y', 'x', 'srid', 'pumpingrate');
-        foreach ($newWells_sc2 as $row) {
+        foreach ($infiltrationWells as $row) {
             $wellData = array_combine($header, $row);
             $wellBoundary = WellBoundary::createWithParams(
                 BoundaryId::generate(),
                 BoundaryName::fromString($wellData['name']),
-                Geometry::fromPoint(new Point($wellData['x'], $wellData['y'], 4326)),
+                Geometry::fromPoint($geoTools->projectPoint(new Point($wellData['x'], $wellData['y'], $wellData['srid']), Srid::fromInt(4326))),
                 WellType::fromString(WellType::TYPE_SCENARIO_NEW_WELL),
-                LayerNumber::fromInteger(3)
+                LayerNumber::fromInteger(1)
             );
             $wellBoundary = $wellBoundary->addPumpingRate(WellDateTimeValue::fromParams(
                     $start->toDateTimeImmutable(),
@@ -669,7 +629,7 @@ class Hanoi extends LoadScenarioBase
             $commandBus->dispatch(AddBoundary::toScenario($ownerId, $modelId, $scenarioId, $wellBoundary));
         }
 
-        /* Add Head Results */
+        /* Calculation */
         $calculationId = ModflowId::generate();
         $start = DateTime::fromDateTime(new \DateTime('2005-01-01'));
         $end = DateTime::fromDateTime(new \DateTime('2007-12-31'));
@@ -677,41 +637,45 @@ class Hanoi extends LoadScenarioBase
         $commandBus->dispatch(CalculateModflowModelCalculation::byUserWithModelId($ownerId, $calculationId, $scenarioId));
 
         /*
-        * Begin add Scenario 3
-        */
+         * Begin add Scenario 3
+         */
         $scenarioId = ModflowId::generate();
         $commandBus->dispatch(AddModflowScenario::from($ownerId, $modelId, $scenarioId));
         $commandBus->dispatch(ChangeModflowModelName::forScenario($ownerId, $modelId, $scenarioId, Modelname::fromString('Scenario 3')));
         $commandBus->dispatch(ChangeModflowModelDescription::forScenario($ownerId, $modelId, $scenarioId, ModflowModelDescription::fromString('Combination of MAR types river bank filtration and injection wells.')));
 
-        $movedWells_sc3 = $movedWells_sc1;
-        $header = array('name', 'y', 'x', 'srid', 'pumpingrate');
-        foreach ($movedWells_sc3 as $row) {
-            $wellData = array_combine($header, $row);
-            $wellBoundary = WellBoundary::createWithParams(
-                BoundaryId::generate(),
-                BoundaryName::fromString($wellData['name']),
-                Geometry::fromPoint(new Point($wellData['x'], $wellData['y'], 4326)),
-                WellType::fromString(WellType::TYPE_SCENARIO_MOVED_WELL),
-                LayerNumber::fromInteger(3)
-            );
-            $wellBoundary = $wellBoundary->addPumpingRate(WellDateTimeValue::fromParams(
-                $start->toDateTimeImmutable(),
-                $wellData['pumpingrate']));
-            $commandBus->dispatch(AddBoundary::toScenario($ownerId, $modelId, $scenarioId, $wellBoundary));
+        $boundariesFinder = $this->container->get('inowas.model_boundaries_finder');
+        $rbfRelocatedWellNamesAndGeometry = array(
+            'H07_6' => $geoTools->projectPoint(new Point(588637, 2326840, 32648), Srid::fromInt(4326)),
+            'H10_6' => $geoTools->projectPoint(new Point(589150, 2326214, 32648), Srid::fromInt(4326)),
+            'H11_8' => $geoTools->projectPoint(new Point(593446, 2321044, 32648), Srid::fromInt(4326)),
+            'H19_6' => $geoTools->projectPoint(new Point(589050, 2326431, 32648), Srid::fromInt(4326)),
+            'H2_1'  => $geoTools->projectPoint(new Point(584451, 2331823, 32648), Srid::fromInt(4326)),
+            'H2_8'  => $geoTools->projectPoint(new Point(593249, 2321333, 32648), Srid::fromInt(4326)),
+            'H5_1'  => $geoTools->projectPoint(new Point(588440, 2327043, 32648), Srid::fromInt(4326)),
+            'H8_6'  => $geoTools->projectPoint(new Point(588829, 2326631, 32648), Srid::fromInt(4326)),
+            'H8_8'  => $geoTools->projectPoint(new Point(593443, 2321233, 32648), Srid::fromInt(4326)),
+            'H9_1'  => $geoTools->projectPoint(new Point(584649, 2331729, 32648), Srid::fromInt(4326))
+        );
+        foreach ($rbfRelocatedWellNamesAndGeometry as $name => $geometry) {
+            /** @var BoundaryId[] $boundaryIds */
+            $boundaryIds = $boundariesFinder->getBoundaryIdsByName($scenarioId, BoundaryName::fromString($name));
+            if (count($boundaryIds)==0){continue;}
+            echo sprintf("Move Well %s.\r\n", $name);
+            $boundaryId = $boundaryIds[0];
+            $geometry = Geometry::fromPoint($geometry);
+            $commandBus->dispatch(UpdateBoundaryGeometry::ofScenario($ownerId, $modelId, $scenarioId, $boundaryId, $geometry));
         }
 
-        # THIS WELLS ARE ALL YELLOW DOTS OG BOTH IMAGES
-        $newWells_sc3 = array_merge($newWells_sc1, $newWells_sc2);
         $header = array('name', 'y', 'x', 'srid', 'pumpingrate');
-        foreach ($newWells_sc3 as $row) {
+        foreach ($infiltrationWells as $row) {
             $wellData = array_combine($header, $row);
             $wellBoundary = WellBoundary::createWithParams(
                 BoundaryId::generate(),
                 BoundaryName::fromString($wellData['name']),
-                Geometry::fromPoint(new Point($wellData['x'], $wellData['y'], 4326)),
+                Geometry::fromPoint($geoTools->projectPoint(new Point($wellData['x'], $wellData['y'], $wellData['srid']), Srid::fromInt(4326))),
                 WellType::fromString(WellType::TYPE_SCENARIO_NEW_WELL),
-                LayerNumber::fromInteger(3)
+                LayerNumber::fromInteger(1)
             );
             $wellBoundary = $wellBoundary->addPumpingRate(WellDateTimeValue::fromParams(
                 $start->toDateTimeImmutable(),
