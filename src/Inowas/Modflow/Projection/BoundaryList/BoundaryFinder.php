@@ -12,6 +12,8 @@ use Inowas\Common\Boundaries\GeneralHeadBoundary;
 use Inowas\Common\Boundaries\GeneralHeadDateTimeValue;
 use Inowas\Common\Boundaries\ObservationPoint;
 use Inowas\Common\Boundaries\ObservationPointName;
+use Inowas\Common\Boundaries\RechargeBoundary;
+use Inowas\Common\Boundaries\RechargeDateTimeValue;
 use Inowas\Common\Boundaries\RiverBoundary;
 use Inowas\Common\Boundaries\RiverDateTimeValue;
 use Inowas\Common\Boundaries\WellBoundary;
@@ -52,6 +54,41 @@ class BoundaryFinder
         }
 
         return (int)$result['count'];
+    }
+
+    public function findRecharge(ModflowId $modelId): array
+    {
+        $rows = $this->connection->fetchAll(
+            sprintf('SELECT boundary_id, name, geometry, metadata, active_cells FROM %s WHERE model_id = :model_id AND type = :type', Table::BOUNDARIES),
+            ['model_id' => $modelId->toString(), 'type' => RechargeBoundary::TYPE]
+        );
+
+
+        $recharges = array();
+        foreach ($rows as $row) {
+            $recharge = RechargeBoundary::createWithParams(
+                BoundaryId::fromString($row['boundary_id']),
+                BoundaryName::fromString($row['name']),
+                Geometry::fromJson($row['geometry'])
+            )->setActiveCells(ActiveCells::fromArray((array)json_decode($row['active_cells'])));
+
+            $recharges[] = $recharge;
+        }
+
+        /** @var RechargeBoundary $recharge */
+        foreach ($recharges as $rechargeKey => $recharge){
+            $result = $this->connection->fetchAssoc(
+                sprintf('SELECT data FROM %s WHERE observation_point_id = :observation_point_id', Table::BOUNDARY_VALUES),
+                ['observation_point_id' => $recharge->boundaryId()->toString()]
+            );
+
+            $data = json_decode($result['data']);
+            foreach ($data as $dateTimeValue) {
+                $recharges[$rechargeKey] = $recharge->addRecharge(RechargeDateTimeValue::fromArray((array)$dateTimeValue));
+            }
+        }
+
+        return $recharges;
     }
 
     public function findWells(ModflowId $modelId): array

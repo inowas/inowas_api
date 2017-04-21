@@ -21,7 +21,7 @@ class RchStressPeriodData implements \JsonSerializable
         return $self;
     }
 
-    public function addGridCellValue(RchStressPeriodValue $value): RchStressPeriodData
+    public function addStressPeriodValue(RchStressPeriodValue $value): RchStressPeriodData
     {
         $stressPeriod = $value->stressPeriod();
         $rech = $value->rech();
@@ -34,7 +34,7 @@ class RchStressPeriodData implements \JsonSerializable
             $this->data[$stressPeriod] = array();
         }
 
-        $this->data[$stressPeriod] = $rech;
+        $this->data[$stressPeriod] = $rech->toValue();
         return $this;
     }
 
@@ -46,7 +46,7 @@ class RchStressPeriodData implements \JsonSerializable
     public function jsonSerialize(): array
     {
         return array(
-            "stress_period_data" => (object)$this->data
+            "stress_period_data" => $this->data
         );
     }
 }

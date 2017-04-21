@@ -34,17 +34,25 @@ class RechargeDateTimeValue extends DateTimeValue
 
     private function __construct(){}
 
+    public function rechargeRate(): float
+    {
+        return $this->rechargeRate;
+    }
+
     public function type(): string
     {
         return self::TYPE;
     }
-
 
     public function dateTime(): \DateTimeImmutable
     {
         return $this->dateTime;
     }
 
+    public function jsonSerialize(): array
+    {
+        return $this->toArray();
+    }
 
     public function toArray(): array
     {
@@ -54,14 +62,6 @@ class RechargeDateTimeValue extends DateTimeValue
         );
     }
 
-    function jsonSerialize()
-    {
-        return $this->toArray();
-    }
-
-    /**
-     * @return array
-     */
     public function values(): array
     {
         return array(

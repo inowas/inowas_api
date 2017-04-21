@@ -248,6 +248,8 @@ class CalculationConfigurationProjector extends AbstractDoctrineConnectionProjec
          * Add PackageDetails for RchPackage
          */
         if ($this->modflowModelManager->countModelBoundaries($modflowModelId, RechargeBoundary::TYPE) > 0) {
+            $rchStressPeriodData = $this->modflowModelManager->findRchStressPeriodData($modflowModelId, $stressPeriods, $start, $timeUnit);
+            $packages->updatePackageParameter('rch', 'StressPeriodData', $rchStressPeriodData);
         }
 
         /*

@@ -40,7 +40,7 @@ class RchPackage implements PackageInterface
     {
         $ipakcb = Ipakcb::fromInteger(0);
         $nrchop = Nrchop::highestActiveCell();
-        $stressPeriodData = RchStressPeriodData::create()->addGridCellValue(RchStressPeriodValue::fromParams(0, Rech::fromFloat(1e-3)));
+        $stressPeriodData = RchStressPeriodData::create()->addStressPeriodValue(RchStressPeriodValue::fromParams(0, Rech::fromFloat(1e-3)));
         $irch = Irch::fromInteger(0);
         $extension = Extension::fromString('rch');
         $unitnumber = Unitnumber::fromInteger(19);
@@ -66,8 +66,8 @@ class RchPackage implements PackageInterface
         $nrchop = Nrchop::fromInteger($arr['nrchop']);
         $stressPeriodData = RchStressPeriodData::fromArray($arr['stress_period_data']);
         $irch = Irch::fromValue($arr['irch']);
-        $extension = Extension::fromArray($arr['extension']);
-        $unitnumber = Unitnumber::fromArray($arr['unitnumber']);
+        $extension = Extension::fromValue($arr['extension']);
+        $unitnumber = Unitnumber::fromValue($arr['unitnumber']);
 
         return new self($ipakcb, $nrchop, $stressPeriodData, $irch, $extension, $unitnumber);
     }
@@ -148,11 +148,15 @@ class RchPackage implements PackageInterface
         );
     }
 
-    /**
-     * @return array
-     */
-    function jsonSerialize()
+    public function jsonSerialize(): array
     {
-        return $this->toArray();
+        return array(
+            "ipakcb" => $this->ipakcb->toInteger(),
+            "nrchop" => $this->nrchop->toInteger(),
+            "stress_period_data" => (object)$this->stressPeriodData->toArray(),
+            "irch" => $this->irch->toValue(),
+            "extension" => $this->extension->toValue(),
+            "unitnumber" => $this->unitnumber->toValue()
+        );
     }
 }

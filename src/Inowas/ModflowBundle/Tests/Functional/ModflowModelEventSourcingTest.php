@@ -532,9 +532,6 @@ class ModflowModelEventSourcingTest extends EventSourcingBaseTest
         $stressperiods->addStressPeriod(StressPeriod::create(0, 1,1,1,true));
         $this->commandBus->dispatch(UpdateCalculationStressperiods::byUserWithCalculationId($ownerId, $calculationId, $stressperiods));
 
-        $activeCells = $this->container->get('inowas.model_boundaries_finder')->findBoundaryActiveCells($modelId, $rchBoundary->boundaryId());
-        $numberOfActiveCells = count($activeCells->cells());
-
         $config = $this->container->get('inowas.modflow_projection.calculation_configuration_finder')->getConfigurationJson($calculationId);
 
         $this->assertJson($config);
@@ -550,8 +547,10 @@ class ModflowModelEventSourcingTest extends EventSourcingBaseTest
         $stressperiodData = (array)$rch->stress_period_data;
         $this->assertCount(1, $stressperiodData);
 
-        $dataForFirstStressPeriod = array_values($stressperiodData)[0];
-        $this->assertCount($numberOfActiveCells, $dataForFirstStressPeriod);
+        $stressperiodDataFirstStressPeriod = array_values($stressperiodData)[0];
+        $this->assertCount(40, $stressperiodDataFirstStressPeriod);
+        $this->assertCount(75, $stressperiodDataFirstStressPeriod[0]);
+        $this->assertEquals(0.000329, $stressperiodDataFirstStressPeriod[0][23]);
     }
 
     public function test_create_steady_calculation_from_model_with_riv_boundary_with_one_observationpoint(): void

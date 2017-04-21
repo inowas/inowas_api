@@ -9,6 +9,7 @@ use Inowas\Common\Boundaries\ConstantHeadDateTimeValue;
 use Inowas\Common\Boundaries\GeneralHeadBoundary;
 use Inowas\Common\Boundaries\GeneralHeadDateTimeValue;
 use Inowas\Common\Boundaries\ObservationPoint;
+use Inowas\Common\Boundaries\RechargeBoundary;
 use Inowas\Common\Boundaries\RiverBoundary;
 use Inowas\Common\Boundaries\RiverDateTimeValue;
 use Inowas\Common\Boundaries\WellBoundary;
@@ -18,6 +19,7 @@ use Inowas\Common\Grid\ActiveCells;
 use Inowas\Common\Grid\BoundingBox;
 use Inowas\Common\Grid\GridSize;
 use Inowas\Common\Id\ModflowId;
+use Inowas\Common\Modflow\Rech;
 use Inowas\Common\Modflow\StressPeriod;
 use Inowas\Common\Modflow\StressPeriods;
 use Inowas\Common\Modflow\TimeUnit;
@@ -26,6 +28,8 @@ use Inowas\Modflow\Model\Packages\ChdStressPeriodData;
 use Inowas\Modflow\Model\Packages\ChdStressPeriodGridCellValue;
 use Inowas\Modflow\Model\Packages\GhbStressPeriodData;
 use Inowas\Modflow\Model\Packages\GhbStressPeriodGridCellValue;
+use Inowas\Modflow\Model\Packages\RchStressPeriodData;
+use Inowas\Modflow\Model\Packages\RchStressPeriodValue;
 use Inowas\Modflow\Model\Packages\RivStressPeriodData;
 use Inowas\Modflow\Model\Packages\RivStressPeriodGridCellValue;
 use Inowas\Modflow\Model\Packages\WelStressPeriodData;
@@ -109,67 +113,14 @@ class ModflowModelManager implements ModflowModelManagerInterface
         return $this->boundaryFinder->countModelBoundaries($modflowId, $type);
     }
 
-    public function findWelStressPeriodData(ModflowId $modflowId, StressPeriods $stressPeriods, DateTime $start, TimeUnit $timeUnit): WelStressPeriodData
-    {
-        $wspd = WelStressPeriodData::create();
-        $wells = $this->findWells($modflowId);
-
-        /** @var StressPeriod $stressperiod */
-        foreach ($stressPeriods->stressperiods() as $stressperiod) {
-            $totim = TotalTime::fromInt($stressperiod->totimStart());
-            $sp = $stressPeriods->spNumberFromTotim($totim);
-
-            /** @var WellBoundary $well */
-            foreach ($wells as $well) {
-                $cells = $well->activeCells()->cells();
-                if (count($cells)>0) {
-                    $cell = $cells[0];
-                    $pumpingRate = $well->findValueByDateTime($this->calculateDateTimeFromTotim($start, $totim, $timeUnit));
-                    $wspd->addGridCellValue(WelStressPeriodGridCellValue::fromParams($sp, $cell[0], $cell[1], $cell[2], $pumpingRate->pumpingRate()));
-                }
-            }
-        }
-
-        return $wspd;
-    }
-
-    public function findRivStressPeriodData(ModflowId $modflowId, StressPeriods $stressPeriods, DateTime $start, TimeUnit $timeUnit): RivStressPeriodData
-    {
-        $rivSpd = RivStressPeriodData::create();
-        $rivers = $this->findRivers($modflowId);
-
-        /** @var RiverBoundary $river */
-        foreach ($rivers as $river){
-
-
-            /** @var ObservationPoint $observationPoint */
-            // Calculate without interpolation for the beginning
-            $observationPoint = array_values($river->observationPoints())[0];
-            $dateTimeValues = $river->dateTimeValues($observationPoint->id());
-
-            /** @var RiverDateTimeValue $dateTimeValue */
-            foreach ($dateTimeValues as $dateTimeValue) {
-                $cells = $river->activeCells()->cells();
-                foreach ($cells as $cell) {
-                    $totim = $this->calculateTotim($start, DateTime::fromAtom($dateTimeValue->dateTime()->format(DATE_ATOM)), $timeUnit);
-                    $sp = $stressPeriods->spNumberFromTotim($totim);
-                    $rivSpd->addGridCellValue(RivStressPeriodGridCellValue::fromParams($sp, $cell[0], $cell[1], $cell[2], $dateTimeValue->stage(), $dateTimeValue->cond(), $dateTimeValue->rbot()));
-                }
-            }
-        }
-
-        return $rivSpd;
-    }
-
     public function findChdStressPeriodData(ModflowId $modflowId, StressPeriods $stressPeriods, DateTime $start, TimeUnit $timeUnit): ChdStressPeriodData
     {
         $chdSpd = ChdStressPeriodData::create();
-        $chdBoundaries = $this->findChdBoundaries($modflowId);
 
-        /** @var ConstantHeadBoundary $chdBoundary */
-        foreach ($chdBoundaries as $chdBoundary){
+        /** @var ConstantHeadBoundary[] $chdBoundaries */
+        $chdBoundaries = $this->boundaryFinder->findChdBoundaries($modflowId);
 
-
+        foreach ($chdBoundaries as $chdBoundary) {
             /** @var ObservationPoint $observationPoint */
             // Calculate without interpolation for the beginning
             $observationPoint = array_values($chdBoundary->observationPoints())[0];
@@ -192,9 +143,10 @@ class ModflowModelManager implements ModflowModelManagerInterface
     public function findGhbStressPeriodData(ModflowId $modflowId, StressPeriods $stressPeriods, DateTime $start, TimeUnit $timeUnit): GhbStressPeriodData
     {
         $ghbSpd = GhbStressPeriodData::create();
-        $ghbBoundaries = $this->findGhbBoundaries($modflowId);
 
-        /** @var GeneralHeadBoundary $ghbBoundary */
+        /** @var GeneralHeadBoundary[] $ghbBoundaries */
+        $ghbBoundaries = $this->boundaryFinder->findGhbBoundaries($modflowId);
+
         foreach ($ghbBoundaries as $ghbBoundary) {
 
             /** @var ObservationPoint $observationPoint */
@@ -216,24 +168,91 @@ class ModflowModelManager implements ModflowModelManagerInterface
         return $ghbSpd;
     }
 
-    private function findWells(ModflowId $modflowId): array
+    public function findRchStressPeriodData(ModflowId $modflowId, StressPeriods $stressPeriods, DateTime $start, TimeUnit $timeUnit): RchStressPeriodData
     {
-        return $this->boundaryFinder->findWells($modflowId);
+        $rchSpd = RchStressPeriodData::create();
+
+        /** @var RechargeBoundary[] $recharges */
+        $recharges = $this->boundaryFinder->findRecharge($modflowId);
+
+        /** @var StressPeriod $stressperiod */
+        foreach ($stressPeriods->stressperiods() as $stressperiod) {
+            $totim = TotalTime::fromInt($stressperiod->totimStart());
+            $sp = $stressPeriods->spNumberFromTotim($totim);
+
+            $rech = 0;
+            foreach ($recharges as $recharge) {
+                $cells = $recharge->activeCells()->fullArray();
+                $rechargeValue = $recharge->findValueByDateTime($this->calculateDateTimeFromTotim($start, $totim, $timeUnit));
+
+                $rech = [];
+                foreach ($cells as $rowKey => $row){
+                    $rech[$rowKey] = [];
+                    foreach ($row as $colKey => $value){
+                        $rech[$rowKey][$colKey] = 0;
+                        if ($value === true){
+                            $rech[$rowKey][$colKey] = $rechargeValue->rechargeRate();
+                        }
+                    }
+                }
+            }
+
+            $rchSpd->addStressPeriodValue(RchStressPeriodValue::fromParams($sp, Rech::fromValue($rech)));
+        }
+
+        return $rchSpd;
     }
 
-    private function findRivers(ModflowId $modflowId): array
+    public function findRivStressPeriodData(ModflowId $modflowId, StressPeriods $stressPeriods, DateTime $start, TimeUnit $timeUnit): RivStressPeriodData
     {
-        return $this->boundaryFinder->findRivers($modflowId);
+        $rivSpd = RivStressPeriodData::create();
+
+        /** @var RiverBoundary[] $rivers */
+        $rivers = $this->boundaryFinder->findRivers($modflowId);
+
+        foreach ($rivers as $river){
+            /** @var ObservationPoint $observationPoint */
+            // Calculate without interpolation for the beginning
+            $observationPoint = array_values($river->observationPoints())[0];
+            $dateTimeValues = $river->dateTimeValues($observationPoint->id());
+
+            /** @var RiverDateTimeValue $dateTimeValue */
+            foreach ($dateTimeValues as $dateTimeValue) {
+                $cells = $river->activeCells()->cells();
+                foreach ($cells as $cell) {
+                    $totim = $this->calculateTotim($start, DateTime::fromAtom($dateTimeValue->dateTime()->format(DATE_ATOM)), $timeUnit);
+                    $sp = $stressPeriods->spNumberFromTotim($totim);
+                    $rivSpd->addGridCellValue(RivStressPeriodGridCellValue::fromParams($sp, $cell[0], $cell[1], $cell[2], $dateTimeValue->stage(), $dateTimeValue->cond(), $dateTimeValue->rbot()));
+                }
+            }
+        }
+
+        return $rivSpd;
     }
 
-    private function findChdBoundaries(ModflowId $modflowId): array
+    public function findWelStressPeriodData(ModflowId $modflowId, StressPeriods $stressPeriods, DateTime $start, TimeUnit $timeUnit): WelStressPeriodData
     {
-        return $this->boundaryFinder->findChdBoundaries($modflowId);
-    }
+        $wspd = WelStressPeriodData::create();
 
-    private function findGhbBoundaries(ModflowId $modflowId): array
-    {
-        return $this->boundaryFinder->findGhbBoundaries($modflowId);
+        /** @var WellBoundary[] $wells */
+        $wells = $this->boundaryFinder->findWells($modflowId);
+
+        /** @var StressPeriod $stressperiod */
+        foreach ($stressPeriods->stressperiods() as $stressperiod) {
+            $totim = TotalTime::fromInt($stressperiod->totimStart());
+            $sp = $stressPeriods->spNumberFromTotim($totim);
+
+            foreach ($wells as $well) {
+                $cells = $well->activeCells()->cells();
+                if (count($cells)>0) {
+                    $cell = $cells[0];
+                    $pumpingRate = $well->findValueByDateTime($this->calculateDateTimeFromTotim($start, $totim, $timeUnit));
+                    $wspd->addGridCellValue(WelStressPeriodGridCellValue::fromParams($sp, $cell[0], $cell[1], $cell[2], $pumpingRate->pumpingRate()));
+                }
+            }
+        }
+
+        return $wspd;
     }
 
     private function calculateTotims(array $bcDates, TimeUnit $timeUnit): array
@@ -249,8 +268,12 @@ class ModflowModelManager implements ModflowModelManagerInterface
 
     private function calculateTotim(DateTime $start, DateTime $dateTime, TimeUnit $timeUnit): TotalTime
     {
+        /** @var \DateTime $start */
         $start = clone $start->toDateTime();
+
+        /** @var \DateTime $dateTime */
         $dateTime = clone $dateTime->toDateTime();
+
         $dateTime->modify('+1 day');
         $diff = $start->diff($dateTime);
 

@@ -13,15 +13,21 @@ class Geometry
         /*
          * {"type":"Point","coordinates":[105.86406114811,20.963857515931]}
          * {"type":"LineString","coordinates":[[105.78304910628,21.093961475741],[105.79076773351,21.094425931588]]}"
+         * {"type":"Polygon","coordinates":[[[-63.65,-31.31],[-63.65,-31.36],[-63.58,-31.36],[-63.58,-31.31],[-63.65,-31.31]]]}"
          */
         $obj = json_decode($json);
         $type = strtolower($obj->type);
+
         if ($type == 'point'){
             return Geometry::fromPoint(new Point($obj->coordinates[0], $obj->coordinates[1]));
         }
 
-        if ($type == 'linestring' || $type == 'polygon'){
+        if ($type == 'linestring'){
             return Geometry::fromLineString(new LineString($obj->coordinates));
+        }
+
+        if ($type == 'polygon'){
+            return Geometry::fromPolygon(new Polygon($obj->coordinates));
         }
 
         return null;

@@ -37,11 +37,6 @@ class WellBoundary extends AbstractBoundary
         $self = new self($boundaryId, $name, $geometry);
         $self->layerNumber = $layerNumber;
         $self->wellType = $wellType;
-        $self->observationPoint = ObservationPoint::fromIdNameAndGeometry(
-            ObservationPointId::fromString($boundaryId->toString()),
-            ObservationPointName::fromString($name->toString()),
-            $geometry
-        );
         return $self;
     }
 
@@ -66,7 +61,8 @@ class WellBoundary extends AbstractBoundary
     {
         return ObservationPoint::fromIdNameAndGeometry(
             ObservationPointId::fromString($this->boundaryId->toString()),
-            ObservationPointName::fromString($this->name->toString())
+            ObservationPointName::fromString($this->name->toString()),
+            $this->geometry
         );
     }
 

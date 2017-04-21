@@ -284,7 +284,6 @@ class EventSourcingBaseTest extends KernelTestCase
             3.29e-4
         ));
 
-
         return $rchBoundary;
     }
 

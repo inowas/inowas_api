@@ -56,36 +56,47 @@ class RechargeBoundary extends AbstractBoundary
         return new self($this->boundaryId, $this->name, $geometry, $this->activeCells);
     }
 
-
-    /**
-     * @return string
-     */
     public function type(): string
     {
         return self::TYPE;
     }
 
-    /**
-     * @return array
-     */
     public function metadata(): array
     {
         return [];
     }
 
-    /**
-     * @return string
-     */
     public function dataToJson(): string
     {
-        return json_encode([]);
+        return json_encode($this->observationPoints);
+    }
+
+    public function dateTimeValues(): array
+    {
+        /** @var ObservationPoint $observationPoint */
+        $observationPoint = $this->observationPoints[$this->boundaryId->toString()];
+        return $observationPoint->dateTimeValues();
     }
 
     private function createObservationPoint(): ObservationPoint
     {
         return ObservationPoint::fromIdNameAndGeometry(
             ObservationPointId::fromString($this->boundaryId->toString()),
-            ObservationPointName::fromString($this->name->toString())
+            ObservationPointName::fromString($this->name->toString()),
+            $this->geometry
         );
+    }
+
+    public function findValueByDateTime(\DateTimeImmutable $dateTime): RechargeDateTimeValue
+    {
+        /** @var ObservationPoint $op */
+        $op = $this->getOp(ObservationPointId::fromString($this->boundaryId->toString()));
+        $value = $op->findValueByDateTime($dateTime);
+
+        if ($value instanceof RechargeDateTimeValue){
+            return $value;
+        }
+
+        return RechargeDateTimeValue::fromParams($dateTime, 0);
     }
 }
