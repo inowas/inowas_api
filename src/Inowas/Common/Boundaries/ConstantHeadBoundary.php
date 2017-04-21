@@ -80,4 +80,18 @@ class ConstantHeadBoundary extends AbstractBoundary
         $observationPoint = $this->observationPoints[$observationPointId->toString()];
         return $observationPoint->dateTimeValues();
     }
+
+    public function findValueByDateTime(\DateTimeImmutable $dateTime): ?ConstantHeadDateTimeValue
+    {
+        /** @var ObservationPoint $op */
+        #$op = $this->getOp(ObservationPointId::fromString($this->boundaryId->toString()));
+        $op = array_values($this->observationPoints)[0];
+        $value = $op->findValueByDateTime($dateTime);
+
+        if ($value instanceof ConstantHeadDateTimeValue){
+            return $value;
+        }
+
+        return null;
+    }
 }

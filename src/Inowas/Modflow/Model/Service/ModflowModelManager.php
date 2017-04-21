@@ -120,19 +120,20 @@ class ModflowModelManager implements ModflowModelManagerInterface
         /** @var ConstantHeadBoundary[] $chdBoundaries */
         $chdBoundaries = $this->boundaryFinder->findChdBoundaries($modflowId);
 
-        foreach ($chdBoundaries as $chdBoundary) {
-            /** @var ObservationPoint $observationPoint */
-            // Calculate without interpolation for the beginning
-            $observationPoint = array_values($chdBoundary->observationPoints())[0];
-            $dateTimeValues = $chdBoundary->dateTimeValues($observationPoint->id());
+        /** @var StressPeriod $stressperiod */
+        foreach ($stressPeriods->stressperiods() as $stressperiod) {
+            $totim = TotalTime::fromInt($stressperiod->totimStart());
+            $sp = $stressPeriods->spNumberFromTotim($totim);
 
-            /** @var ConstantHeadDateTimeValue $dateTimeValue */
-            foreach ($dateTimeValues as $dateTimeValue) {
+            foreach ($chdBoundaries as $chdBoundary) {
                 $cells = $chdBoundary->activeCells()->cells();
-                foreach ($cells as $cell) {
-                    $totim = $this->calculateTotim($start, DateTime::fromAtom($dateTimeValue->dateTime()->format(DATE_ATOM)), $timeUnit);
-                    $sp = $stressPeriods->spNumberFromTotim($totim);
-                    $chdSpd->addGridCellValue(ChdStressPeriodGridCellValue::fromParams($sp, $cell[0], $cell[1], $cell[2], $dateTimeValue->shead(), $dateTimeValue->ehead()));
+                if (count($cells)>0) {
+                    foreach ($cells as $cell){
+                        $dateTimeValue = $chdBoundary->findValueByDateTime($this->calculateDateTimeFromTotim($start, $totim, $timeUnit));
+                        if ($dateTimeValue instanceof ConstantHeadDateTimeValue){
+                            $chdSpd->addGridCellValue(ChdStressPeriodGridCellValue::fromParams($sp, $cell[0], $cell[1], $cell[2], $dateTimeValue->shead(), $dateTimeValue->ehead()));
+                        }
+                    }
                 }
             }
         }
@@ -147,20 +148,20 @@ class ModflowModelManager implements ModflowModelManagerInterface
         /** @var GeneralHeadBoundary[] $ghbBoundaries */
         $ghbBoundaries = $this->boundaryFinder->findGhbBoundaries($modflowId);
 
-        foreach ($ghbBoundaries as $ghbBoundary) {
+        /** @var StressPeriod $stressperiod */
+        foreach ($stressPeriods->stressperiods() as $stressperiod) {
+            $totim = TotalTime::fromInt($stressperiod->totimStart());
+            $sp = $stressPeriods->spNumberFromTotim($totim);
 
-            /** @var ObservationPoint $observationPoint */
-            // Calculate without interpolation for the beginning
-            $observationPoint = array_values($ghbBoundary->observationPoints())[0];
-            $dateTimeValues = $ghbBoundary->dateTimeValues($observationPoint->id());
-
-            /** @var GeneralHeadDateTimeValue $dateTimeValue */
-            foreach ($dateTimeValues as $dateTimeValue) {
+            foreach ($ghbBoundaries as $ghbBoundary) {
                 $cells = $ghbBoundary->activeCells()->cells();
-                foreach ($cells as $cell) {
-                    $totim = $this->calculateTotim($start, DateTime::fromAtom($dateTimeValue->dateTime()->format(DATE_ATOM)), $timeUnit);
-                    $sp = $stressPeriods->spNumberFromTotim($totim);
-                    $ghbSpd->addGridCellValue(GhbStressPeriodGridCellValue::fromParams($sp, $cell[0], $cell[1], $cell[2], $dateTimeValue->stage(), $dateTimeValue->cond()));
+                if (count($cells)>0) {
+                    foreach ($cells as $cell){
+                        $dateTimeValue = $ghbBoundary->findValueByDateTime($this->calculateDateTimeFromTotim($start, $totim, $timeUnit));
+                        if ($dateTimeValue instanceof GeneralHeadDateTimeValue){
+                            $ghbSpd->addGridCellValue(GhbStressPeriodGridCellValue::fromParams($sp, $cell[0], $cell[1], $cell[2], $dateTimeValue->stage(), $dateTimeValue->cond()));
+                        }
+                    }
                 }
             }
         }
@@ -210,19 +211,20 @@ class ModflowModelManager implements ModflowModelManagerInterface
         /** @var RiverBoundary[] $rivers */
         $rivers = $this->boundaryFinder->findRivers($modflowId);
 
-        foreach ($rivers as $river){
-            /** @var ObservationPoint $observationPoint */
-            // Calculate without interpolation for the beginning
-            $observationPoint = array_values($river->observationPoints())[0];
-            $dateTimeValues = $river->dateTimeValues($observationPoint->id());
+        /** @var StressPeriod $stressperiod */
+        foreach ($stressPeriods->stressperiods() as $stressperiod) {
+            $totim = TotalTime::fromInt($stressperiod->totimStart());
+            $sp = $stressPeriods->spNumberFromTotim($totim);
 
-            /** @var RiverDateTimeValue $dateTimeValue */
-            foreach ($dateTimeValues as $dateTimeValue) {
+            foreach ($rivers as $river) {
                 $cells = $river->activeCells()->cells();
-                foreach ($cells as $cell) {
-                    $totim = $this->calculateTotim($start, DateTime::fromAtom($dateTimeValue->dateTime()->format(DATE_ATOM)), $timeUnit);
-                    $sp = $stressPeriods->spNumberFromTotim($totim);
-                    $rivSpd->addGridCellValue(RivStressPeriodGridCellValue::fromParams($sp, $cell[0], $cell[1], $cell[2], $dateTimeValue->stage(), $dateTimeValue->cond(), $dateTimeValue->rbot()));
+                if (count($cells)>0) {
+                    foreach ($cells as $cell){
+                        $dateTimeValue = $river->findValueByDateTime($this->calculateDateTimeFromTotim($start, $totim, $timeUnit));
+                        if ($dateTimeValue instanceof RiverDateTimeValue){
+                            $rivSpd->addGridCellValue(RivStressPeriodGridCellValue::fromParams($sp, $cell[0], $cell[1], $cell[2], $dateTimeValue->stage(), $dateTimeValue->cond(), $dateTimeValue->rbot()));
+                        }
+                    }
                 }
             }
         }
