@@ -32,6 +32,11 @@ class AreaBoundary extends AbstractBoundary
         return new self($this->boundaryId, $this->name, $this->geometry, $activeCells);
     }
 
+    public function updateGeometry(Geometry $geometry): AreaBoundary
+    {
+        return new self($this->boundaryId, $this->name, $geometry, $this->activeCells);
+    }
+
     public function type(): string
     {
         return self::TYPE;

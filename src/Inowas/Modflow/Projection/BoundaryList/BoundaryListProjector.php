@@ -17,7 +17,7 @@ use Inowas\Modflow\Model\Event\BoundaryWasAdded;
 use Inowas\Modflow\Model\Event\BoundaryWasAddedToScenario;
 use Inowas\Modflow\Model\Event\BoundaryWasRemoved;
 use Inowas\Modflow\Model\Event\BoundaryWasRemovedFromScenario;
-use Inowas\Modflow\Model\Event\ModflowModelBoundaryWasUpdated;
+use Inowas\Modflow\Model\Event\BoundaryWasUpdated;
 use Inowas\Modflow\Model\Event\ModflowScenarioWasAdded;
 use Inowas\Common\Id\ModflowId;
 use Inowas\Modflow\Projection\ModelScenarioList\ModelDetailsFinder;
@@ -101,9 +101,20 @@ class BoundaryListProjector extends AbstractDoctrineConnectionProjector
         ));
     }
 
-    public function onModflowModelBoundaryWasUpdated(ModflowModelBoundaryWasUpdated $event): void
+    public function onBoundaryWasUpdated(BoundaryWasUpdated $event): void
     {
-        $this->connection->delete(Table::BOUNDARIES, array(
+        $gridSize = $this->modelDetailsFinder->findGridSizeByBaseModelId($event->modflowId());
+        $boundingBox = $this->modelDetailsFinder->findBoundingBoxByBaseModelId($event->modflowId());
+        $activeCells = json_encode($this->calculateActiveCells($event->boundary(), $boundingBox, $gridSize));
+
+        $this->connection->update(Table::BOUNDARIES, array(
+            'name' => $event->boundary()->name()->toString(),
+            'geometry' => $event->boundary()->geometry()->toJson(),
+            'type' => $event->boundary()->type(),
+            'metadata' => json_encode($event->boundary()->metadata()),
+            'data' => $event->boundary()->dataToJson(),
+            'active_cells' => $activeCells
+        ), array(
             'boundary_id' => $event->boundary()->boundaryId()->toString(),
             'model_id' => $event->modflowId()->toString()
         ));

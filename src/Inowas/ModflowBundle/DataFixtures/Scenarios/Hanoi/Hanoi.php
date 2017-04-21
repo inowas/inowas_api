@@ -632,11 +632,6 @@ class Hanoi extends LoadScenarioBase
         $commandBus->dispatch(CreateModflowModelCalculation::byUserWithModelAndScenarioId($calculationId, $ownerId, $modelId, $scenarioId, $start, $end));
         $commandBus->dispatch(CalculateModflowModelCalculation::byUserWithModelId($ownerId, $calculationId, $scenarioId));
 
-        #$this->loadResultsWithLayer('heads', 0, 2000, 4, 'S1', $calculationId, $commandBus);
-        #$this->loadResultsWithLayer('drawdown', 0, 2000, 4, 'S1', $calculationId, $commandBus);
-        #$this->loadBudgets('cumulative', 0, 2000, 'S1', $calculationId, $commandBus);
-        #$this->loadBudgets('incremental', 0, 2000, 'S1', $calculationId, $commandBus);
-
         /*
          * Begin add Scenario 2
          */
@@ -680,11 +675,6 @@ class Hanoi extends LoadScenarioBase
         $end = DateTime::fromDateTime(new \DateTime('2007-12-31'));
         $commandBus->dispatch(CreateModflowModelCalculation::byUserWithModelAndScenarioId($calculationId, $ownerId, $modelId, $scenarioId, $start, $end));
         $commandBus->dispatch(CalculateModflowModelCalculation::byUserWithModelId($ownerId, $calculationId, $scenarioId));
-
-        #$this->loadResultsWithLayer('heads', 0, 2000, 4, 'S2', $calculationId, $commandBus);
-        #$this->loadResultsWithLayer('drawdown', 0, 2000, 4, 'S2', $calculationId, $commandBus);
-        #$this->loadBudgets('cumulative', 0, 2000, 'S2', $calculationId, $commandBus);
-        #$this->loadBudgets('incremental', 0, 2000, 'S2', $calculationId, $commandBus);
 
         /*
         * Begin add Scenario 3
@@ -735,11 +725,6 @@ class Hanoi extends LoadScenarioBase
         $end = DateTime::fromDateTime(new \DateTime('2007-12-31'));
         $commandBus->dispatch(CreateModflowModelCalculation::byUserWithModelAndScenarioId($calculationId, $ownerId, $modelId, $scenarioId, $start, $end));
         $commandBus->dispatch(CalculateModflowModelCalculation::byUserWithModelId($ownerId, $calculationId, $scenarioId));
-
-        #$this->loadResultsWithLayer('heads', 0, 2000, 4, 'S3', $calculationId, $commandBus);
-        #$this->loadResultsWithLayer('drawdown', 0, 2000, 4, 'S3', $calculationId, $commandBus);
-        #$this->loadBudgets('cumulative', 0, 2000, 'S3', $calculationId, $commandBus);
-        #$this->loadBudgets('incremental', 0, 2000, 'S3', $calculationId, $commandBus);
     }
 
     protected function loadHeadsFromFile($filename, $invert = false){

@@ -54,6 +54,11 @@ class GeneralHeadBoundary extends AbstractBoundary
         return new self($this->boundaryId, $this->name, $this->geometry, $activeCells);
     }
 
+    public function updateGeometry(Geometry $geometry): GeneralHeadBoundary
+    {
+        return new self($this->boundaryId, $this->name, $geometry, $this->activeCells);
+    }
+
     public function type(): string
     {
         return self::TYPE;

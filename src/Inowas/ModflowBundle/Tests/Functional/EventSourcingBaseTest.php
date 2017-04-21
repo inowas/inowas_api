@@ -17,6 +17,9 @@ use Inowas\Common\Boundaries\RechargeBoundary;
 use Inowas\Common\Boundaries\RechargeDateTimeValue;
 use Inowas\Common\Boundaries\RiverBoundary;
 use Inowas\Common\Boundaries\RiverDateTimeValue;
+use Inowas\Common\Boundaries\WellBoundary;
+use Inowas\Common\Boundaries\WellDateTimeValue;
+use Inowas\Common\Boundaries\WellType;
 use Inowas\Common\Geometry\Geometry;
 use Inowas\Common\Geometry\LineString;
 use Inowas\Common\Geometry\Point;
@@ -24,6 +27,7 @@ use Inowas\Common\Geometry\Polygon;
 use Inowas\Common\Geometry\Srid;
 use Inowas\Common\Grid\BoundingBox;
 use Inowas\Common\Grid\GridSize;
+use Inowas\Common\Grid\LayerNumber;
 use Inowas\Common\Id\BoundaryId;
 use Inowas\Common\Id\ModflowId;
 use Inowas\Common\Id\ObservationPointId;
@@ -256,7 +260,7 @@ class EventSourcingBaseTest extends KernelTestCase
         return $ghbBoundary;
     }
 
-    protected function createRechargeBoundaryWithObservationPoint(): RechargeBoundary
+    protected function createRechargeBoundary(): RechargeBoundary
     {
         $boundaryId = BoundaryId::generate();
         $rchBoundary = RechargeBoundary::createWithParams(
@@ -391,5 +395,21 @@ class EventSourcingBaseTest extends KernelTestCase
         ));
 
         return $riverBoundary;
+    }
+
+    protected function createWellBoundary(): WellBoundary
+    {
+        $boundaryId = BoundaryId::generate();
+        $wellBoundary = WellBoundary::createWithParams(
+            $boundaryId,
+            BoundaryName::fromString('Test Well 1'),
+            Geometry::fromPoint(new Point(-63.671125, -31.325009, 4326)),
+            WellType::fromString(WellType::TYPE_INDUSTRIAL_WELL),
+            LayerNumber::fromInteger(0)
+        );
+
+        $wellBoundary = $wellBoundary->addPumpingRate(WellDateTimeValue::fromParams(new \DateTimeImmutable('2015-01-01'), -5000));
+
+        return $wellBoundary;
     }
 }

@@ -51,6 +51,12 @@ class RechargeBoundary extends AbstractBoundary
         return new self($this->boundaryId, $this->name, $this->geometry, $activeCells);
     }
 
+    public function updateGeometry(Geometry $geometry): RechargeBoundary
+    {
+        return new self($this->boundaryId, $this->name, $geometry, $this->activeCells);
+    }
+
+
     /**
      * @return string
      */

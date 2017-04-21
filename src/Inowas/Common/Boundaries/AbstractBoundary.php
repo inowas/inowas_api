@@ -41,6 +41,8 @@ abstract class AbstractBoundary implements ModflowBoundary
 
     abstract public function setActiveCells(ActiveCells $activeCells);
 
+    abstract public function updateGeometry(Geometry $geometry);
+
     public function boundaryId(): BoundaryId
     {
         return $this->boundaryId;

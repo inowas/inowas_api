@@ -11,6 +11,8 @@ interface ModflowBoundary
 {
     public static function create(BoundaryId $boundaryId);
 
+    public function updateGeometry(Geometry $geometry);
+
     public function boundaryId(): BoundaryId;
 
     public function name(): ?BoundaryName;

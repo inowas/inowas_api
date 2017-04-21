@@ -27,7 +27,6 @@ class GeoTools
 
     public function calculateActiveCells(ModflowBoundary $boundary, BoundingBox $boundingBox, GridSize $gridSize): ActiveCells
     {
-
         if ($boundary->geometry()->value() instanceof Point) {
             return $this->getActiveCellsFromPoint($boundingBox, $gridSize, $boundary->geometry()->value());
         }

@@ -4,13 +4,13 @@ declare(strict_types=1);
 
 namespace Inowas\Modflow\Model\Handler;
 
-use Inowas\Modflow\Model\Command\UpdateBoundary;
+use Inowas\Modflow\Model\Command\UpdateBoundaryGeometry;
 use Inowas\Modflow\Model\Exception\ModflowModelNotFoundException;
 use Inowas\Modflow\Model\Exception\WriteAccessFailedException;
 use Inowas\Modflow\Model\ModflowModelList;
 use Inowas\Modflow\Model\ModflowModelAggregate;
 
-final class UpdateBoundaryHandler
+final class UpdateBoundaryGeometryHandler
 {
 
     /** @var  ModflowModelList */
@@ -24,7 +24,7 @@ final class UpdateBoundaryHandler
         $this->modelList = $modelList;
     }
 
-    public function __invoke(UpdateBoundary $command)
+    public function __invoke(UpdateBoundaryGeometry $command)
     {
         /** @var ModflowModelAggregate $modflowModel */
         $modflowModel = $this->modelList->get($command->baseModelId());
@@ -37,11 +37,12 @@ final class UpdateBoundaryHandler
             throw WriteAccessFailedException::withUserAndOwner($command->userId(), $modflowModel->ownerId());
         }
 
-        if ($command->scenarioId()){
-            $modflowModel->updateBoundaryOfScenario($command->userId(), $command->scenarioId(), $command->boundary());
+        if (is_null($command->scenarioId())) {
+            $modflowModel->updateBoundaryGeometryOfBaseModel($command->userId(), $command->boundaryId(), $command->geometry());
             return;
         }
 
-        $modflowModel->updateBoundaryOfBaseModel($command->userId(), $command->boundary());
+        $modflowModel->updateBoundaryGeometryOfScenario($command->userId(), $command->scenarioId(), $command->boundaryId(), $command->geometry());
+
     }
 }

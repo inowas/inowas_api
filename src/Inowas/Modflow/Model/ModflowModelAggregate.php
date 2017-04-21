@@ -6,6 +6,7 @@ namespace Inowas\Modflow\Model;
 
 use Inowas\Common\Boundaries\AbstractBoundary;
 use Inowas\Common\Boundaries\AreaBoundary;
+use Inowas\Common\Geometry\Geometry;
 use Inowas\Common\Grid\ActiveCells;
 use Inowas\Common\Id\BoundaryId;
 use Inowas\Common\Boundaries\ModflowBoundary;
@@ -22,7 +23,7 @@ use Inowas\Modflow\Model\Event\BoundaryWasAdded;
 use Inowas\Modflow\Model\Event\BoundaryWasAddedToScenario;
 use Inowas\Modflow\Model\Event\BoundaryWasRemoved;
 use Inowas\Modflow\Model\Event\BoundaryWasRemovedFromScenario;
-use Inowas\Modflow\Model\Event\ModflowModelBoundaryWasUpdated;
+use Inowas\Modflow\Model\Event\BoundaryWasUpdated;
 use Inowas\Modflow\Model\Event\ModflowModelBoundingBoxWasChanged;
 use Inowas\Modflow\Model\Event\ModflowModelDescriptionWasChanged;
 use Inowas\Modflow\Model\Event\ModflowModelGridSizeWasChanged;
@@ -33,7 +34,6 @@ use Inowas\Modflow\Model\Event\ModflowScenarioDescriptionWasChanged;
 use Inowas\Modflow\Model\Event\ModflowScenarioNameWasChanged;
 use Inowas\Modflow\Model\Event\ModflowScenarioWasAdded;
 use Inowas\Modflow\Model\Event\ModflowScenarioWasRemoved;
-use Inowas\Modflow\Model\Event\ScenarioBoundaryWasUpdated;
 use Inowas\Soilmodel\Model\SoilmodelId;
 use Prooph\EventSourcing\AggregateRoot;
 
@@ -234,7 +234,24 @@ class ModflowModelAggregate extends AggregateRoot
     {
         if ($this->contains($boundary->boundaryId(), $this->boundaries)) {
             $this->updateBoundary($boundary);
-            $this->recordThat(ModflowModelBoundaryWasUpdated::ofBaseModel(
+            $this->recordThat(BoundaryWasUpdated::byUserWithModelId(
+                $userId,
+                $this->modflowId,
+                $boundary
+            ));
+        }
+    }
+
+    public function updateBoundaryGeometryOfBaseModel(UserId $userId, BoundaryId $boundaryId, Geometry $geometry): void
+    {
+        if ($this->contains($boundaryId, $this->boundaries)) {
+
+            /** @var ModflowBoundary $boundary */
+            $boundary = $this->boundaries[$boundaryId->toString()];
+            $boundary = $boundary->updateGeometry($geometry);
+
+            $this->updateBoundary($boundary);
+            $this->recordThat(BoundaryWasUpdated::byUserWithModelId(
                 $userId,
                 $this->modflowId,
                 $boundary
@@ -249,14 +266,31 @@ class ModflowModelAggregate extends AggregateRoot
             $scenario = $this->scenarios[$scenarioId->toString()];
             if ($scenario->contains($boundary->boundaryId(), $scenario->boundaries())){
                 $scenario->updateBoundary($boundary);
+                $this->recordThat(BoundaryWasUpdated::byUserWithModelId(
+                    $userId,
+                    $scenarioId,
+                    $boundary
+                ));
             }
+        }
+    }
 
-            $this->recordThat(ScenarioBoundaryWasUpdated::ofScenario(
-                $userId,
-                $this->modflowId,
-                $scenarioId,
-                $boundary
-            ));
+    public function updateBoundaryGeometryOfScenario(UserId $userId, ModflowId $scenarioId, BoundaryId $boundaryId, Geometry $geometry): void
+    {
+        if ($this->contains($scenarioId, $this->scenarios)){
+            /** @var ModflowModelAggregate $scenario */
+            $scenario = $this->scenarios[$scenarioId->toString()];
+            if ($scenario->contains($boundaryId, $scenario->boundaries())){
+                $boundary = $scenario->boundaries()[$boundaryId->toString()];
+                $boundary = $boundary->updateGeometry($geometry);
+                $scenario->updateBoundary($boundary);
+
+                $this->recordThat(BoundaryWasUpdated::byUserWithModelId(
+                    $userId,
+                    $scenarioId,
+                    $boundary
+                ));
+            }
         }
     }
 
@@ -499,6 +533,7 @@ class ModflowModelAggregate extends AggregateRoot
     protected function whenBoundaryWasAdded(BoundaryWasAdded $event)
     {
         $boundary = $event->boundary();
+
         if ($boundary instanceof AreaBoundary){
             $this->area = $boundary;
             return;
@@ -509,15 +544,23 @@ class ModflowModelAggregate extends AggregateRoot
         }
     }
 
-    protected function whenModflowModelBoundaryWasUpdated(ModflowModelBoundaryWasUpdated $event)
+    protected function whenBoundaryWasUpdated(BoundaryWasUpdated $event)
     {
         $boundary = $event->boundary();
+
         if ($boundary instanceof AreaBoundary){
             $this->area = $boundary;
             return;
         }
 
-        $this->boundaries[$boundary->boundaryId()->toString()] = $event->boundary();
+        if ($this->modflowModelId()->toString() === $event->modflowId()->toString()){
+            $this->boundaries[$boundary->boundaryId()->toString()] = $boundary;
+        }
+
+        if ($this->contains($event->modflowId(), $this->scenarios)) {
+            $scenario = $this->scenarios[$event->modflowId()->toString()];
+            $scenario->boundaries[$boundary->boundaryId()->toString()] = $boundary;
+        }
     }
 
     protected function whenBoundaryWasAddedToScenario(BoundaryWasAddedToScenario $event)
@@ -532,19 +575,6 @@ class ModflowModelAggregate extends AggregateRoot
             if (! $this->contains($boundary->boundaryId(), $scenario->boundaries)){
                 $scenario->boundaries[$boundary->boundaryId()->toString()] = $boundary;
             }
-        }
-    }
-
-    protected function whenScenarioBoundaryWasUpdated(ScenarioBoundaryWasUpdated $event)
-    {
-        $boundary = $event->boundary();
-        if ($boundary instanceof AreaBoundary){
-            return;
-        }
-
-        if ($this->contains($event->scenarioId(), $this->scenarios)){
-            $scenario = $this->scenarios[$event->scenarioId()->toString()];
-            $scenario->boundaries[$boundary->boundaryId()->toString()] = $event->boundary();
         }
     }
 

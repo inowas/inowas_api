@@ -22,6 +22,7 @@ prooph_service_bus:
                     'Inowas\Modflow\Model\Command\RemoveModflowScenario': 'inowas.remove_modflow_scenario_handler'
                     'Inowas\Modflow\Model\Command\RemoveBoundary': 'inowas.remove_modflow_model_boundary_handler'
                     'Inowas\Modflow\Model\Command\UpdateBoundary': 'inowas.update_modflow_model_boundary_handler'
+                    'Inowas\Modflow\Model\Command\UpdateBoundaryGeometry': 'inowas.update_modflow_model_boundary_geometry_handler'
 
                     'Inowas\Modflow\Model\Command\UpdateCalculationPackageParameter': 'inowas.update_calculation_package_parameter_handler'
                     'Inowas\Modflow\Model\Command\UpdateCalculationStressperiods': 'inowas.update_calculation_stress_periods_handler'
@@ -55,17 +56,18 @@ prooph_service_bus:
                         - 'inowas.modflow_projection.model_details'
 
                     'Inowas\Modflow\Model\Event\BoundaryWasAdded':
-                        - 'inowas.modflow_projection.calculation_results'
                         - 'inowas.modflow_projection.model_boundaries'
                         - 'inowas.modflow_projection.model_boundary_values'
                         - 'inowas.modflow_projection.model_details'
                         - 'inowas.modflow_projection.model_scenarios'
 
-                    'Inowas\Modflow\Model\Event\BoundaryWasAddedToScenario':
+                    'Inowas\Modflow\Model\Event\BoundaryWasRemoved':
                         - 'inowas.modflow_projection.model_boundaries'
                         - 'inowas.modflow_projection.model_boundary_values'
+                        - 'inowas.modflow_projection.model_details'
+                        - 'inowas.modflow_projection.model_scenarios'
 
-                    'Inowas\Modflow\Model\Event\BoundaryWasRemoved':
+                    'Inowas\Modflow\Model\Event\BoundaryWasUpdated':
                         - 'inowas.modflow_projection.model_boundaries'
                         - 'inowas.modflow_projection.model_boundary_values'
                         - 'inowas.modflow_projection.model_details'

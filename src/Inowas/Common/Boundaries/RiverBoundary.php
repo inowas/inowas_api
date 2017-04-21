@@ -60,6 +60,12 @@ class RiverBoundary extends AbstractBoundary
         return $self;
     }
 
+    public function updateGeometry(Geometry $geometry): RiverBoundary
+    {
+        $self = new self($this->boundaryId, $this->name, $geometry, $this->activeCells);
+        $self->observationPoints = $this->observationPoints;
+        return $self;
+    }
 
     public function type(): string
     {

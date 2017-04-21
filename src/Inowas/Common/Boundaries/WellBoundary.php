@@ -79,6 +79,15 @@ class WellBoundary extends AbstractBoundary
         return $self;
     }
 
+    public function updateGeometry(Geometry $geometry): WellBoundary
+    {
+        $self = new self($this->boundaryId, $this->name, $geometry, $this->activeCells);
+        $self->layerNumber = $this->layerNumber;
+        $self->wellType = $this->wellType;
+        $self->observationPoints = $this->observationPoints;
+        return $self;
+    }
+
     public function type(): string
     {
         return self::TYPE;

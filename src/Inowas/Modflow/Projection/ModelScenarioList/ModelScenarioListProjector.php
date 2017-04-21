@@ -8,7 +8,7 @@ use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Schema\Schema;
 use Inowas\Common\Projection\AbstractDoctrineConnectionProjector;
 use Inowas\Modflow\Model\Event\BoundaryWasAdded;
-use Inowas\Modflow\Model\Event\ModflowModelBoundaryWasUpdated;
+use Inowas\Modflow\Model\Event\BoundaryWasUpdated;
 use Inowas\Modflow\Model\Event\ModflowModelBoundingBoxWasChanged;
 use Inowas\Modflow\Model\Event\ModflowModelDescriptionWasChanged;
 use Inowas\Modflow\Model\Event\ModflowModelGridSizeWasChanged;
@@ -113,7 +113,7 @@ class ModelScenarioListProjector extends AbstractDoctrineConnectionProjector
         }
     }
 
-    public function onModflowModelBoundaryWasUpdated(ModflowModelBoundaryWasUpdated $event): void
+    public function onModflowModelBoundaryWasUpdated(BoundaryWasUpdated $event): void
     {
         $boundary = $event->boundary();
         if ($boundary->type() == 'area') {
