@@ -24,17 +24,11 @@ use Inowas\Common\Id\ObservationPointId;
 use Inowas\Common\Modflow\OcStressPeriod;
 use Inowas\Common\Modflow\OcStressPeriodData;
 use Inowas\Common\Soilmodel\BottomElevation;
-use Inowas\Common\Soilmodel\Conductivity;
-use Inowas\Common\Soilmodel\HBottom;
-use Inowas\Common\Soilmodel\HTop;
 use Inowas\Common\Modflow\Laytyp;
 use Inowas\Common\Soilmodel\HydraulicAnisotropy;
 use Inowas\Common\Soilmodel\HydraulicConductivityX;
-use Inowas\Common\Soilmodel\HydraulicConductivityY;
-use Inowas\Common\Soilmodel\HydraulicConductivityZ;
 use Inowas\Common\Soilmodel\SpecificStorage;
 use Inowas\Common\Soilmodel\SpecificYield;
-use Inowas\Common\Soilmodel\Storage;
 use Inowas\Common\Soilmodel\TopElevation;
 use Inowas\Common\Soilmodel\VerticalHydraulicConductivity;
 use Inowas\Modflow\Model\Command\AddCalculatedBudget;
@@ -64,15 +58,9 @@ use Inowas\Common\Boundaries\WellBoundary;
 use Inowas\Common\Boundaries\WellType;
 use Inowas\Common\Boundaries\RiverBoundary;
 use Inowas\ModflowBundle\DataFixtures\Scenarios\LoadScenarioBase;
-use Inowas\Soilmodel\Model\BoreLogId;
-use Inowas\Soilmodel\Model\BoreLogLocation;
-use Inowas\Soilmodel\Model\BoreLogName;
-use Inowas\Soilmodel\Model\Command\AddBoreLogToSoilmodel;
 use Inowas\Soilmodel\Model\Command\AddGeologicalLayerToSoilmodel;
-use Inowas\Soilmodel\Model\Command\AddHorizonToBoreLog;
 use Inowas\Soilmodel\Model\Command\ChangeSoilmodelDescription;
 use Inowas\Soilmodel\Model\Command\ChangeSoilmodelName;
-use Inowas\Soilmodel\Model\Command\CreateBoreLog;
 use Inowas\Soilmodel\Model\Command\CreateSoilmodel;
 use Inowas\Soilmodel\Model\Command\UpdateGeologicalLayerProperty;
 use Inowas\Soilmodel\Model\GeologicalLayer;
@@ -80,8 +68,6 @@ use Inowas\Soilmodel\Model\GeologicalLayerDescription;
 use Inowas\Soilmodel\Model\GeologicalLayerId;
 use Inowas\Soilmodel\Model\GeologicalLayerName;
 use Inowas\Soilmodel\Model\GeologicalLayerNumber;
-use Inowas\Soilmodel\Model\Horizon;
-use Inowas\Soilmodel\Model\HorizonId;
 use Inowas\Soilmodel\Model\SoilmodelDescription;
 use Inowas\Soilmodel\Model\SoilmodelId;
 use Inowas\Soilmodel\Model\SoilmodelName;
@@ -566,7 +552,7 @@ class Hanoi extends LoadScenarioBase
 
         $boundariesFinder = $this->container->get('inowas.model_boundaries_finder');
         $rbfRelocatedWellNamesAndGeometry = array(
-            'H07_6 ' => $geoTools->projectPoint(new Point(588637, 2326840, 32648), Srid::fromInt(4326)),
+            'H07_6' => $geoTools->projectPoint(new Point(588637, 2326840, 32648), Srid::fromInt(4326)),
             'H10_6' => $geoTools->projectPoint(new Point(589150, 2326214, 32648), Srid::fromInt(4326)),
             'H11_8' => $geoTools->projectPoint(new Point(593446, 2321044, 32648), Srid::fromInt(4326)),
             'H19_6' => $geoTools->projectPoint(new Point(589050, 2326431, 32648), Srid::fromInt(4326)),
@@ -601,6 +587,7 @@ class Hanoi extends LoadScenarioBase
         $commandBus->dispatch(ChangeModflowModelDescription::forScenario($ownerId, $modelId, $scenarioId, ModflowModelDescription::fromString('Simulation of MAR type injection wells')));
 
         # THIS WELLS ARE THE YELLOW DOTS IN THE RIGHT IMAGE
+        $header = array('name', 'x', 'y', 'srid', 'pumpingrate');
         $infiltrationWells = array(
             array('I_01', 585948, 2320333, 32648, 4000),
             array('I_02', 586348, 2319933, 32648, 4000),
@@ -613,8 +600,6 @@ class Hanoi extends LoadScenarioBase
             array('I_09', 587948, 2322533, 32648, 4000),
             array('I_10', 588048, 2322533, 32648, 4000)
         );
-
-        $header = array('name', 'y', 'x', 'srid', 'pumpingrate');
         foreach ($infiltrationWells as $row) {
             $wellData = array_combine($header, $row);
             $wellBoundary = WellBoundary::createWithParams(
@@ -668,7 +653,7 @@ class Hanoi extends LoadScenarioBase
             $commandBus->dispatch(UpdateBoundaryGeometry::ofScenario($ownerId, $modelId, $scenarioId, $boundaryId, $geometry));
         }
 
-        $header = array('name', 'y', 'x', 'srid', 'pumpingrate');
+        $header = array('name', 'x', 'y', 'srid', 'pumpingrate');
         foreach ($infiltrationWells as $row) {
             $wellData = array_combine($header, $row);
             $wellBoundary = WellBoundary::createWithParams(
