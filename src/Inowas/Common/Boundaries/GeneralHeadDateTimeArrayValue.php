@@ -4,21 +4,21 @@ declare(strict_types=1);
 
 namespace Inowas\Common\Boundaries;
 
-class GeneralHeadDateTimeValue extends DateTimeValue
+class GeneralHeadDateTimeArrayValue extends DateTimeValue
 {
 
     const TYPE = "ghb";
 
-    /** @var float */
+    /** @var array */
     private $stage;
 
-    /** @var float */
+    /** @var array */
     private $cond;
 
     /** @var  \DateTimeImmutable */
     private $dateTime;
 
-    public static function fromParams(\DateTimeImmutable $dateTime, float $stage, float $cond): GeneralHeadDateTimeValue
+    public static function fromParams(\DateTimeImmutable $dateTime, array $stage, array $cond): GeneralHeadDateTimeArrayValue
     {
         $self = new self();
         $self->stage = $stage;
@@ -28,7 +28,7 @@ class GeneralHeadDateTimeValue extends DateTimeValue
         return $self;
     }
 
-    public static function fromArray(array $arr): GeneralHeadDateTimeValue
+    public static function fromArray(array $arr): GeneralHeadDateTimeArrayValue
     {
         $self = new self();
         $self->dateTime = new \DateTimeImmutable($arr['date_time']);
@@ -56,12 +56,12 @@ class GeneralHeadDateTimeValue extends DateTimeValue
         return $this->dateTime;
     }
 
-    public function cond(): float
+    public function cond(): array
     {
         return $this->cond;
     }
 
-    public function stage(): float
+    public function stage(): array
     {
         return $this->stage;
     }

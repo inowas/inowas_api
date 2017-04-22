@@ -32,6 +32,7 @@ use Inowas\Modflow\Model\Packages\RchStressPeriodData;
 use Inowas\Modflow\Model\Packages\RchStressPeriodValue;
 use Inowas\Modflow\Model\Packages\RivStressPeriodData;
 use Inowas\Modflow\Model\Packages\RivStressPeriodGridCellValue;
+use Inowas\Modflow\Model\Packages\StressPeriodDataGenerator;
 use Inowas\Modflow\Model\Packages\WelStressPeriodData;
 use Inowas\Modflow\Model\Packages\WelStressPeriodGridCellValue;
 use Inowas\Modflow\Projection\BoundaryList\BoundaryFinder;
@@ -143,30 +144,14 @@ class ModflowModelManager implements ModflowModelManagerInterface
 
     public function findGhbStressPeriodData(ModflowId $modflowId, StressPeriods $stressPeriods, DateTime $start, TimeUnit $timeUnit): GhbStressPeriodData
     {
-        $ghbSpd = GhbStressPeriodData::create();
+        $gridSize = $this->getGridSize($modflowId);
+        $boundingBox = $this->getBoundingBox($modflowId);
 
         /** @var GeneralHeadBoundary[] $ghbBoundaries */
         $ghbBoundaries = $this->boundaryFinder->findGhbBoundaries($modflowId);
+        $stressPeriodDataGenerator = new StressPeriodDataGenerator();
+        return $stressPeriodDataGenerator->fromGeneralHeadBoundaries($ghbBoundaries, $stressPeriods, $gridSize, $boundingBox, $start, $timeUnit);
 
-        /** @var StressPeriod $stressperiod */
-        foreach ($stressPeriods->stressperiods() as $stressperiod) {
-            $totim = TotalTime::fromInt($stressperiod->totimStart());
-            $sp = $stressPeriods->spNumberFromTotim($totim);
-
-            foreach ($ghbBoundaries as $ghbBoundary) {
-                $cells = $ghbBoundary->activeCells()->cells();
-                if (count($cells)>0) {
-                    foreach ($cells as $cell){
-                        $dateTimeValue = $ghbBoundary->findValueByDateTime($this->calculateDateTimeFromTotim($start, $totim, $timeUnit));
-                        if ($dateTimeValue instanceof GeneralHeadDateTimeValue){
-                            $ghbSpd->addGridCellValue(GhbStressPeriodGridCellValue::fromParams($sp, $cell[0], $cell[1], $cell[2], $dateTimeValue->stage(), $dateTimeValue->cond()));
-                        }
-                    }
-                }
-            }
-        }
-
-        return $ghbSpd;
     }
 
     public function findRchStressPeriodData(ModflowId $modflowId, StressPeriods $stressPeriods, DateTime $start, TimeUnit $timeUnit): RchStressPeriodData

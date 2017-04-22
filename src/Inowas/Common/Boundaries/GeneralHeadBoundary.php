@@ -96,4 +96,17 @@ class GeneralHeadBoundary extends AbstractBoundary
 
         return null;
     }
+
+    public function findValueByDateTimeAndObservationPointId(\DateTimeImmutable $dateTime, ObservationPointId $observationPointId): ?GeneralHeadDateTimeValue
+    {
+        /** @var ObservationPoint $op */
+        $op = $this->getOp($observationPointId);
+        $value = $op->findValueByDateTime($dateTime);
+
+        if ($value instanceof GeneralHeadDateTimeValue){
+            return $value;
+        }
+
+        return null;
+    }
 }
