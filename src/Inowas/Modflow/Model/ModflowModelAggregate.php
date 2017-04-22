@@ -234,7 +234,7 @@ class ModflowModelAggregate extends AggregateRoot
     {
         if ($this->contains($boundary->boundaryId(), $this->boundaries)) {
             $this->updateBoundary($boundary);
-            $this->recordThat(BoundaryWasUpdated::byUserWithModelId(
+            $this->recordThat(BoundaryWasUpdated::byUserWithBaseModelId(
                 $userId,
                 $this->modflowId,
                 $boundary
@@ -251,7 +251,7 @@ class ModflowModelAggregate extends AggregateRoot
             $boundary = $boundary->updateGeometry($geometry);
 
             $this->updateBoundary($boundary);
-            $this->recordThat(BoundaryWasUpdated::byUserWithModelId(
+            $this->recordThat(BoundaryWasUpdated::byUserWithBaseModelId(
                 $userId,
                 $this->modflowId,
                 $boundary
@@ -266,8 +266,9 @@ class ModflowModelAggregate extends AggregateRoot
             $scenario = $this->scenarios[$scenarioId->toString()];
             if ($scenario->contains($boundary->boundaryId(), $scenario->boundaries())){
                 $scenario->updateBoundary($boundary);
-                $this->recordThat(BoundaryWasUpdated::byUserWithModelId(
+                $this->recordThat(BoundaryWasUpdated::byUserWithBasemodelAndScenarioId(
                     $userId,
+                    ModflowId::fromString($this->aggregateId()),
                     $scenarioId,
                     $boundary
                 ));
@@ -278,15 +279,18 @@ class ModflowModelAggregate extends AggregateRoot
     public function updateBoundaryGeometryOfScenario(UserId $userId, ModflowId $scenarioId, BoundaryId $boundaryId, Geometry $geometry): void
     {
         if ($this->contains($scenarioId, $this->scenarios)){
+
             /** @var ModflowModelAggregate $scenario */
             $scenario = $this->scenarios[$scenarioId->toString()];
             if ($scenario->contains($boundaryId, $scenario->boundaries())){
+                /** @var ModflowBoundary $boundary */
                 $boundary = $scenario->boundaries()[$boundaryId->toString()];
                 $boundary = $boundary->updateGeometry($geometry);
                 $scenario->updateBoundary($boundary);
 
-                $this->recordThat(BoundaryWasUpdated::byUserWithModelId(
+                $this->recordThat(BoundaryWasUpdated::byUserWithBasemodelAndScenarioId(
                     $userId,
+                    ModflowId::fromString($this->aggregateId()),
                     $scenarioId,
                     $boundary
                 ));
@@ -553,12 +557,12 @@ class ModflowModelAggregate extends AggregateRoot
             return;
         }
 
-        if ($this->modflowModelId()->toString() === $event->modflowId()->toString()){
+        if ($this->modflowModelId()->toString() === $event->modelId()->toString()){
             $this->boundaries[$boundary->boundaryId()->toString()] = $boundary;
         }
 
-        if ($this->contains($event->modflowId(), $this->scenarios)) {
-            $scenario = $this->scenarios[$event->modflowId()->toString()];
+        if ($this->contains($event->modelId(), $this->scenarios)) {
+            $scenario = $this->scenarios[$event->modelId()->toString()];
             $scenario->boundaries[$boundary->boundaryId()->toString()] = $boundary;
         }
     }

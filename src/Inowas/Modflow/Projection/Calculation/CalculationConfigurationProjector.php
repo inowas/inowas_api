@@ -276,6 +276,7 @@ class CalculationConfigurationProjector extends AbstractDoctrineConnectionProjec
             $packages->updatePackageParameter('chd', 'StressPeriodData', $chdStressPeriodData);
         }
 
+
         return $packages;
     }
 

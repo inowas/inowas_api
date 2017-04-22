@@ -11,41 +11,82 @@ use Prooph\EventSourcing\AggregateChanged;
 
 class BoundaryWasUpdated extends AggregateChanged
 {
-    /** @var \Inowas\Common\Id\ModflowId */
-    private $modflowId;
+    /** @var ModflowId */
+    private $baseModelId;
 
     /** @var ModflowBoundary */
     private $boundary;
 
-    /** @var \Inowas\Common\Id\UserId */
+    /** @var UserId */
     private $userId;
 
-    public static function byUserWithModelId(
+    /** @var  ModflowId */
+    private $scenarioId;
+
+    public static function byUserWithBaseModelId(
         UserId $userId,
-        ModflowId $modflowId,
+        ModflowId $baseModelId,
         ModflowBoundary $boundary
     ): BoundaryWasUpdated
     {
         $event = self::occur(
-            $modflowId->toString(), [
+            $baseModelId->toString(), [
                 'user_id' => $userId->toString(),
+                'basemodel_id' => $baseModelId->toString(),
                 'boundary' => serialize($boundary)
             ]
         );
 
-        $event->modflowId = $modflowId;
+        $event->userId = $userId;
+        $event->baseModelId = $baseModelId;
         $event->boundary = $boundary;
 
         return $event;
     }
 
-    public function modflowId(): ModflowId
+    public static function byUserWithBasemodelAndScenarioId(
+        UserId $userId,
+        ModflowId $baseModelId,
+        ModflowId $scenarioId,
+        ModflowBoundary $boundary
+    ): BoundaryWasUpdated
     {
-        if ($this->modflowId === null){
-            $this->modflowId = ModflowId::fromString($this->aggregateId());
+        $event = self::occur(
+            $baseModelId->toString(), [
+                'user_id' => $userId->toString(),
+                'basemodel_id' => $baseModelId->toString(),
+                'scenario_id' => $scenarioId->toString(),
+                'boundary' => serialize($boundary)
+            ]
+        );
+
+        $event->boundary = $boundary;
+        $event->baseModelId = $baseModelId;
+        $event->scenarioId = $scenarioId;
+        $event->userId = $userId;
+
+        return $event;
+    }
+
+    public function baseModelId(): ModflowId
+    {
+        if ($this->baseModelId === null){
+            $this->baseModelId = ModflowId::fromString($this->aggregateId());
         }
 
-        return $this->modflowId;
+        return $this->baseModelId;
+    }
+
+    public function modelId(): ModflowId
+    {
+        if ($this->scenarioId === null){
+            if (array_key_exists('scenario_id', $this->payload)){
+                $this->scenarioId = ModflowId::fromString($this->payload['scenario_id']);
+                return $this->scenarioId;
+            }
+        }
+
+        return $this->baseModelId();
     }
 
     public function boundary(): ModflowBoundary

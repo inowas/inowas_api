@@ -4,12 +4,11 @@ declare(strict_types=1);
 
 namespace Inowas\ModflowBundle\Tests\Functional;
 
+use Inowas\Common\Boundaries\ObservationPoint;
 use Inowas\Common\DateTime\DateTime;
 use Inowas\Common\Geometry\Point;
-use Inowas\Common\Geometry\Polygon;
 use Inowas\Common\Geometry\Srid;
 use Inowas\Common\Grid\BoundingBox;
-use Inowas\Common\Boundaries\AreaBoundary;
 use Inowas\Common\Geometry\Geometry;
 use Inowas\Common\Grid\LayerNumber;
 use Inowas\Common\Id\BoundaryId;
@@ -28,6 +27,7 @@ use Inowas\Common\Soilmodel\SpecificYield;
 use Inowas\Common\Soilmodel\TopElevation;
 use Inowas\Common\Soilmodel\VerticalHydraulicConductivity;
 use Inowas\Modflow\Model\Command\AddBoundary;
+use Inowas\Modflow\Model\Command\AddModflowScenario;
 use Inowas\Modflow\Model\Command\ChangeModflowModelBoundingBox;
 use Inowas\Modflow\Model\Command\ChangeModflowModelGridSize;
 use Inowas\Modflow\Model\Command\ChangeModflowModelName;
@@ -113,26 +113,13 @@ class ModflowModelEventSourcingTest extends EventSourcingBaseTest
         $modelId = ModflowId::generate();
         $this->createModelWithNameBoundingBoxAndGridSize($ownerId, $modelId);
 
-        $areaId = BoundaryId::generate();
-        $area = AreaBoundary::create($areaId);
-        $area = $area->setName(BoundaryName::fromString('Rio Primero Area'));
-        $area = $area->setGeometry(Geometry::fromPolygon(new Polygon(
-            array(
-                array(
-                    array(-63.65, -31.31),
-                    array(-63.65, -31.36),
-                    array(-63.58, -31.36),
-                    array(-63.58, -31.31),
-                    array(-63.65, -31.31)
-                )
-            ), 4326
-        )));
+        $area = $this->createAreaBoundary();
 
         $this->commandBus->dispatch(AddBoundary::toBaseModel($ownerId, $modelId, $area));
         $activeCells = $this->container->get('inowas.model_boundaries_finder')->findAreaActiveCells($modelId);
         $this->assertCount(1610, $activeCells->cells());
 
-        $activeCells = $this->container->get('inowas.model_boundaries_finder')->findBoundaryActiveCells($modelId, $areaId);
+        $activeCells = $this->container->get('inowas.model_boundaries_finder')->findBoundaryActiveCells($modelId, $area->boundaryId());
         $this->assertCount(1610, $activeCells->cells());
     }
 
@@ -595,6 +582,83 @@ class ModflowModelEventSourcingTest extends EventSourcingBaseTest
 
         $dataForFirstStressPeriod = array_values($stressperiodData)[0];
         $this->assertCount($numberOfActiveCells, $dataForFirstStressPeriod);
+    }
+
+    public function test_create_scenario_from_basemodel_with_all_boundary_types(): void
+    {
+        $ownerId = UserId::generate();
+        $modelId = ModflowId::generate();
+        $this->createModelWithNameBoundingBoxAndGridSize($ownerId, $modelId);
+
+        $this->commandBus->dispatch(AddBoundary::toBaseModel($ownerId, $modelId, $this->createAreaBoundary()));
+        $this->commandBus->dispatch(AddBoundary::toBaseModel($ownerId, $modelId, $this->createConstantHeadBoundaryWithObservationPoint()));
+        $this->commandBus->dispatch(AddBoundary::toBaseModel($ownerId, $modelId, $this->createGeneralHeadBoundaryWithObservationPoint()));
+        $this->commandBus->dispatch(AddBoundary::toBaseModel($ownerId, $modelId, $this->createRechargeBoundary()));
+        $this->commandBus->dispatch(AddBoundary::toBaseModel($ownerId, $modelId, $this->createRiverBoundaryWithObservationPoint()));
+        $this->commandBus->dispatch(AddBoundary::toBaseModel($ownerId, $modelId, $this->createWellBoundary()));
+
+        $baseModelBoundaries = $this->container->get('inowas.model_boundaries_finder')->findByModelId($modelId);
+        $this->assertCount(6, $baseModelBoundaries);
+
+        $scenarioId = ModflowId::generate();
+        $this->commandBus->dispatch(AddModflowScenario::from($ownerId, $modelId, $scenarioId));
+        $scenarioBoundaries = $this->container->get('inowas.model_boundaries_finder')->findByModelId($scenarioId);
+        $this->assertCount(6, $scenarioBoundaries);
+        $this->assertEquals(sort($baseModelBoundaries), sort($scenarioBoundaries));
+    }
+
+    public function test_add_well_to_scenario_from_basemodel_with_all_other_boundary_types(): void
+    {
+        $ownerId = UserId::generate();
+        $modelId = ModflowId::generate();
+        $this->createModelWithNameBoundingBoxAndGridSize($ownerId, $modelId);
+
+        $this->commandBus->dispatch(AddBoundary::toBaseModel($ownerId, $modelId, $this->createAreaBoundary()));
+        $this->commandBus->dispatch(AddBoundary::toBaseModel($ownerId, $modelId, $this->createConstantHeadBoundaryWithObservationPoint()));
+        $this->commandBus->dispatch(AddBoundary::toBaseModel($ownerId, $modelId, $this->createGeneralHeadBoundaryWithObservationPoint()));
+        $this->commandBus->dispatch(AddBoundary::toBaseModel($ownerId, $modelId, $this->createRechargeBoundary()));
+        $this->commandBus->dispatch(AddBoundary::toBaseModel($ownerId, $modelId, $this->createRiverBoundaryWithObservationPoint()));
+
+        $scenarioId = ModflowId::generate();
+        $this->commandBus->dispatch(AddModflowScenario::from($ownerId, $modelId, $scenarioId));
+        $this->commandBus->dispatch(AddBoundary::toScenario($ownerId, $modelId, $scenarioId, $this->createWellBoundary()));
+        $scenarioBoundaries = $this->container->get('inowas.model_boundaries_finder')->findByModelId($scenarioId);
+        $this->assertCount(6, $scenarioBoundaries);
+    }
+
+    public function test_move_well_of_scenario_from_basemodel_with_all_boundary_types(): void
+    {
+        $ownerId = UserId::generate();
+        $modelId = ModflowId::generate();
+        $this->createModelWithNameBoundingBoxAndGridSize($ownerId, $modelId);
+
+        $this->commandBus->dispatch(AddBoundary::toBaseModel($ownerId, $modelId, $this->createAreaBoundary()));
+        $this->commandBus->dispatch(AddBoundary::toBaseModel($ownerId, $modelId, $this->createConstantHeadBoundaryWithObservationPoint()));
+        $this->commandBus->dispatch(AddBoundary::toBaseModel($ownerId, $modelId, $this->createGeneralHeadBoundaryWithObservationPoint()));
+        $this->commandBus->dispatch(AddBoundary::toBaseModel($ownerId, $modelId, $this->createRechargeBoundary()));
+        $this->commandBus->dispatch(AddBoundary::toBaseModel($ownerId, $modelId, $this->createRiverBoundaryWithObservationPoint()));
+        $this->commandBus->dispatch(AddBoundary::toBaseModel($ownerId, $modelId, $well = $this->createWellBoundary()));
+
+        $scenarioId = ModflowId::generate();
+        $this->commandBus->dispatch(AddModflowScenario::from($ownerId, $modelId, $scenarioId));
+
+        $newGeometry = Geometry::fromPoint(new Point(-63.659952, -31.330144, 4326));
+        $this->commandBus->dispatch(UpdateBoundaryGeometry::ofScenario($ownerId, $modelId, $scenarioId, $well->boundaryId(), $newGeometry));
+        $scenarioBoundaries = $this->container->get('inowas.model_boundaries_finder')->findByModelId($scenarioId);
+        $this->assertCount(6, $scenarioBoundaries);
+
+        /** @var WellBoundary[] $wells */
+        $wells = $this->container->get('inowas.model_boundaries_finder')->findWells($scenarioId);
+        $this->assertCount(1, $wells);
+
+        $well = $wells[0];
+        $this->assertEquals($newGeometry, $well->geometry());
+        $this->assertEquals([[0,12,17]], $well->activeCells()->cells());
+
+        $observationPoints = $well->observationPoints();
+        /** @var ObservationPoint $observationPoint */
+        $observationPoint = array_values($observationPoints)[0];
+        $this->assertEquals($newGeometry, $observationPoint->geometry());
     }
 
     public function test_that_moving_a_well_changes_active_cells(): void

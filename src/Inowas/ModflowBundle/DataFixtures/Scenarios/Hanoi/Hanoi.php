@@ -242,6 +242,7 @@ class Hanoi extends LoadScenarioBase
             $commandBus->dispatch(UpdateGeologicalLayerProperty::forSoilmodel($ownerId, $soilModelId, $layerId, $sy));
         }
 
+        /*
         $boreholes = array(
             array('name', 'x', 'y', 'top', 'bot_0', 'bot_1', 'bot_2', 'bot_3', 'kx_0', 'ky_0', 'kz_0', 'kx_1', 'ky_1', 'kz_1', 'kx_2', 'ky_2', 'kz_2', 'kx_3', 'ky_3', 'kz_3'),
             array('SC2_GU1', 11771882.34, 2392544.12, 4.55, 3, -37.44, -38.45, -71.95,10.0000, 10.0000, 1.0000, 20.0000, 20.0000, 2.0000, 0.0010, 0.0010, 0.0001, 40.0000, 40.0000, 4.0000),
@@ -421,7 +422,7 @@ class Hanoi extends LoadScenarioBase
             $commandBus->dispatch(AddHorizonToBoreLog::byUserWithId($ownerId, $boreLogId, $horizon));
             $commandBus->dispatch(AddBoreLogToSoilmodel::byUserWithId($ownerId, $soilModelId, $boreLogId));
         }
-
+        */
         #echo sprintf("Interpolate soilmodel with %s Memory usage\r\n", memory_get_usage());
         #$commandBus->dispatch(InterpolateSoilmodel::forSoilmodel($ownerId, $soilModelId, $boundingBox, $gridSize));
 
@@ -565,7 +566,7 @@ class Hanoi extends LoadScenarioBase
 
         $boundariesFinder = $this->container->get('inowas.model_boundaries_finder');
         $rbfRelocatedWellNamesAndGeometry = array(
-            'H07_6' => $geoTools->projectPoint(new Point(588637, 2326840, 32648), Srid::fromInt(4326)),
+            'H07_6 ' => $geoTools->projectPoint(new Point(588637, 2326840, 32648), Srid::fromInt(4326)),
             'H10_6' => $geoTools->projectPoint(new Point(589150, 2326214, 32648), Srid::fromInt(4326)),
             'H11_8' => $geoTools->projectPoint(new Point(593446, 2321044, 32648), Srid::fromInt(4326)),
             'H19_6' => $geoTools->projectPoint(new Point(589050, 2326431, 32648), Srid::fromInt(4326)),

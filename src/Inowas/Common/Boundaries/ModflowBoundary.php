@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Inowas\Common\Boundaries;
 
 use Inowas\Common\Geometry\Geometry;
+use Inowas\Common\Grid\ActiveCells;
 use Inowas\Common\Id\BoundaryId;
 
 interface ModflowBoundary
@@ -26,4 +27,6 @@ interface ModflowBoundary
     public function metadata(): array;
 
     public function dataToJson(): string;
+
+    public function setActiveCells(ActiveCells $activeCells);
 }

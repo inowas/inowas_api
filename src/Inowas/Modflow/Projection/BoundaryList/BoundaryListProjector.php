@@ -7,6 +7,7 @@ namespace Inowas\Modflow\Projection\BoundaryList;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Schema\Schema;
 use Inowas\Common\Boundaries\ModflowBoundary;
+use Inowas\Common\Grid\ActiveCells;
 use Inowas\Common\Grid\BoundingBox;
 use Inowas\Common\Grid\GridSize;
 use Inowas\Common\Id\BoundaryId;
@@ -48,8 +49,8 @@ class BoundaryListProjector extends AbstractDoctrineConnectionProjector
         $table->addColumn('name', 'string', ['length' => 255]);
         $table->addColumn('metadata', 'text', ['notnull' => false]);
         $table->addColumn('geometry', 'text', ['notnull' => false]);
-        $table->addColumn('data', 'text', ['notnull' => false]);
         $table->addColumn('active_cells', 'text', ['notnull' => false]);
+        $table->addColumn('boundary', 'text', ['notnull' => false]);
         $table->setPrimaryKey(['id']);
         $table->addIndex(array('model_id'));
     }
@@ -70,8 +71,8 @@ class BoundaryListProjector extends AbstractDoctrineConnectionProjector
                 $boundary['geometry'],
                 $boundary['type'],
                 $boundary['metadata'],
-                $boundary['data'],
-                $boundary['active_cells']
+                $boundary['active_cells'],
+                $boundary['boundary']
             );
         }
     }
@@ -80,7 +81,11 @@ class BoundaryListProjector extends AbstractDoctrineConnectionProjector
     {
         $gridSize = $this->modelDetailsFinder->findGridSizeByBaseModelId($event->modflowId());
         $boundingBox = $this->modelDetailsFinder->findBoundingBoxByBaseModelId($event->modflowId());
-        $activeCells = json_encode($this->calculateActiveCells($event->boundary(), $boundingBox, $gridSize));
+        $activeCells = $this->calculateActiveCells($event->boundary(), $boundingBox, $gridSize);
+
+        /** @var ModflowBoundary $boundary */
+        $boundary = $event->boundary();
+        $boundary = $boundary->setActiveCells($activeCells);
 
         $this->insertBoundary(
             $event->modflowId(),
@@ -89,8 +94,8 @@ class BoundaryListProjector extends AbstractDoctrineConnectionProjector
             $event->boundary()->geometry()->toJson(),
             $event->boundary()->type(),
             json_encode($event->boundary()->metadata()),
-            $event->boundary()->dataToJson(),
-            $activeCells
+            json_encode($activeCells->toArray()),
+            base64_encode(serialize($boundary))
         );
     }
 
@@ -103,20 +108,24 @@ class BoundaryListProjector extends AbstractDoctrineConnectionProjector
 
     public function onBoundaryWasUpdated(BoundaryWasUpdated $event): void
     {
-        $gridSize = $this->modelDetailsFinder->findGridSizeByBaseModelId($event->modflowId());
-        $boundingBox = $this->modelDetailsFinder->findBoundingBoxByBaseModelId($event->modflowId());
-        $activeCells = json_encode($this->calculateActiveCells($event->boundary(), $boundingBox, $gridSize));
+        $gridSize = $this->modelDetailsFinder->findGridSizeByBaseModelId($event->baseModelId());
+        $boundingBox = $this->modelDetailsFinder->findBoundingBoxByBaseModelId($event->baseModelId());
+        $activeCells = $this->calculateActiveCells($event->boundary(), $boundingBox, $gridSize);
+
+        /** @var ModflowBoundary $boundary */
+        $boundary = $event->boundary();
+        $boundary = $boundary->setActiveCells($activeCells);
 
         $this->connection->update(Table::BOUNDARIES, array(
             'name' => $event->boundary()->name()->toString(),
             'geometry' => $event->boundary()->geometry()->toJson(),
             'type' => $event->boundary()->type(),
             'metadata' => json_encode($event->boundary()->metadata()),
-            'data' => $event->boundary()->dataToJson(),
-            'active_cells' => $activeCells
+            'active_cells' => json_encode($activeCells->toArray()),
+            'boundary' => base64_encode(serialize($boundary))
         ), array(
             'boundary_id' => $event->boundary()->boundaryId()->toString(),
-            'model_id' => $event->modflowId()->toString()
+            'model_id' => $event->modelId()->toString()
         ));
     }
 
@@ -124,7 +133,11 @@ class BoundaryListProjector extends AbstractDoctrineConnectionProjector
     {
         $gridSize = $this->modelDetailsFinder->findGridSizeByBaseModelId($event->modflowId());
         $boundingBox = $this->modelDetailsFinder->findBoundingBoxByBaseModelId($event->modflowId());
-        $activeCells = json_encode($this->calculateActiveCells($event->boundary(), $boundingBox, $gridSize));
+        $activeCells = $this->calculateActiveCells($event->boundary(), $boundingBox, $gridSize);
+
+        /** @var ModflowBoundary $boundary */
+        $boundary = $event->boundary();
+        $boundary = $boundary->setActiveCells($activeCells);
 
         $this->insertBoundary(
             $event->scenarioId(),
@@ -133,8 +146,8 @@ class BoundaryListProjector extends AbstractDoctrineConnectionProjector
             $event->boundary()->geometry()->toJson(),
             $event->boundary()->type(),
             json_encode($event->boundary()->metadata()),
-            $event->boundary()->dataToJson(),
-            $activeCells
+            json_encode($activeCells->toArray()),
+            base64_encode(serialize($boundary))
         );
     }
 
@@ -153,8 +166,8 @@ class BoundaryListProjector extends AbstractDoctrineConnectionProjector
         string $boundaryGeometry,
         string $boundaryType,
         string $metadata,
-        string $data,
-        string $activeCells
+        string $activeCells,
+        string $boundary
     ): void
     {
         $this->connection->insert(Table::BOUNDARIES, array(
@@ -164,13 +177,13 @@ class BoundaryListProjector extends AbstractDoctrineConnectionProjector
             'geometry' => $boundaryGeometry,
             'type' => $boundaryType,
             'metadata' => $metadata,
-            'data' => $data,
-            'active_cells' => $activeCells
+            'active_cells' => $activeCells,
+            'boundary' => $boundary
         ));
     }
 
-    private function calculateActiveCells(ModflowBoundary $boundary, BoundingBox $boundingBox, GridSize $gridSize): array
+    private function calculateActiveCells(ModflowBoundary $boundary, BoundingBox $boundingBox, GridSize $gridSize): ActiveCells
     {
-        return $this->geoTools->calculateActiveCells($boundary, $boundingBox, $gridSize)->toArray();
+        return $this->geoTools->calculateActiveCells($boundary, $boundingBox, $gridSize);
     }
 }

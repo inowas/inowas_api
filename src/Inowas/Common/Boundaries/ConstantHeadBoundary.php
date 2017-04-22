@@ -51,7 +51,9 @@ class ConstantHeadBoundary extends AbstractBoundary
 
     public function setActiveCells(ActiveCells $activeCells): ConstantHeadBoundary
     {
-        return new self($this->boundaryId, $this->name, $this->geometry, $activeCells);
+        $self = new self($this->boundaryId, $this->name, $this->geometry, $activeCells);
+        $self->observationPoints = $this->observationPoints;
+        return $self;
     }
 
     public function updateGeometry(Geometry $geometry): ConstantHeadBoundary

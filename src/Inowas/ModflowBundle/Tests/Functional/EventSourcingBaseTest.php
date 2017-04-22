@@ -199,6 +199,26 @@ class EventSourcingBaseTest extends KernelTestCase
 
     }
 
+    protected function createAreaBoundary(): AreaBoundary
+    {
+        $areaId = BoundaryId::generate();
+        $area = AreaBoundary::create($areaId);
+        $area = $area->setName(BoundaryName::fromString('Rio Primero Area'));
+        $area = $area->setGeometry(Geometry::fromPolygon(new Polygon(
+            array(
+                array(
+                    array(-63.65, -31.31),
+                    array(-63.65, -31.36),
+                    array(-63.58, -31.36),
+                    array(-63.58, -31.31),
+                    array(-63.65, -31.31)
+                )
+            ), 4326
+        )));
+
+        return $area;
+    }
+
     protected function createConstantHeadBoundaryWithObservationPoint(): ConstantHeadBoundary
     {
         $boundaryId = BoundaryId::generate();

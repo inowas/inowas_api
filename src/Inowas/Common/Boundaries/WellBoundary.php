@@ -80,6 +80,11 @@ class WellBoundary extends AbstractBoundary
         $self = new self($this->boundaryId, $this->name, $geometry, $this->activeCells);
         $self->layerNumber = $this->layerNumber;
         $self->wellType = $this->wellType;
+
+        /** @var ObservationPoint $observationPoint */
+        $observationPoint = array_values($this->observationPoints)[0];
+        $changedObservationPoint = ObservationPoint::fromIdNameAndGeometry($observationPoint->id(), $observationPoint->name(), $geometry);
+        $this->observationPoints[$changedObservationPoint->id()->toString()] = $changedObservationPoint;
         $self->observationPoints = $this->observationPoints;
         return $self;
     }
