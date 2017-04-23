@@ -573,4 +573,22 @@ class GeosGeoToolsTest extends WebTestCase
             array_values($this->river->observationPoints())[0]->geometry()->value(),
             array_values($this->river->observationPoints())[1]->geometry()->value());
     }
+
+    public function test_get_closest_point_to_line_string(): void
+    {
+        $linestring = new LineString(array(
+                array(105.90, 20.96),
+                array(105.89, 20.95),
+                array(105.88, 20.95),
+                array(105.87, 20.94)
+        ), 4326);
+
+        $point = new Point(105.885, 20.955, 4326);
+
+        $point = $this->geoTools->getClosestPointOnLineString($linestring, $point);
+        $this->assertInstanceOf(Point::class, $point);
+        $this->assertEquals(105.885, $point->getX());
+        $this->assertEquals(20.95, $point->getY());
+        $this->assertEquals(4326, $point->getSrid());
+    }
 }

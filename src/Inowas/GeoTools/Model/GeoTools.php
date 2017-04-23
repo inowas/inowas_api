@@ -138,6 +138,30 @@ class GeoTools
         return Distance::fromMeters($distanceInMeters);
     }
 
+    public function getClosestPointOnLineString(LineString $lineString, Point $point)
+    {
+        if ($lineString->getSrid() != $point->getSrid()){
+            // @todo do something (convert, or throw an exception)
+        }
+
+        $srid = $point->getSrid();
+
+
+        $point = \geoPHP::load($point->toJson(),'json');
+        $lineString = \geoPHP::load($lineString->toJson(),'json');
+
+        $query = $this->connection->prepare(sprintf(
+            "SELECT ST_AsText(ST_ClosestPoint(ST_GeomFromText('%s'), ST_GeomFromText('%s'))) AS ptwkt;",
+                $lineString->asText(),
+                $point->asText())
+        );
+
+        $query->execute();
+        $result = $query->fetch();
+        $point = \geoPHP::load($result['ptwkt'], 'wkt');
+        return new Point($point->getX(), $point->getY(), $srid);
+    }
+
     protected function getDistanceOfTwoPointsOnALineStringInGeoPhpFormat(\LineString $lineString, \Point $p1, \Point $p2): float
     {
         $query = $this->connection
