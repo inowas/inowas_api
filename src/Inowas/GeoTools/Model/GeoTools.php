@@ -162,6 +162,40 @@ class GeoTools
         return new Point($point->getX(), $point->getY(), $srid);
     }
 
+    public function cutLinestringBetweenPoints(LineString $lineString, array $points): array
+    {
+        foreach ($points as $point){
+            if (! $point instanceof Point){
+                // @todo do something
+            }
+        }
+
+        $lineStringPoints =  $lineString->getPoints();
+        $points[] = $lineStringPoints[0];
+        $points[] = $lineStringPoints[count($lineStringPoints)-1];
+
+        $pointsWithAbsolutePositionOnLineString = array();
+        foreach ($points as $point) {
+            $point = $this->getClosestPointOnLineString($lineString, $point);
+            $distance = $this->getDistanceOfPointFromLineStringStartPoint($lineString, $point);
+            $pointsWithAbsolutePositionOnLineString[] = ['point' => $point, 'distance' => $distance->inMeters()];
+        }
+
+        usort($pointsWithAbsolutePositionOnLineString, function ($item1, $item2) {
+            return $item1['distance'] <=> $item2['distance'];
+        });
+
+        return $pointsWithAbsolutePositionOnLineString;
+    }
+
+    public function pointIsOnLineString(LineString $lineString, Point $point): bool
+    {
+        $lineString = \geoPHP::load($lineString->toJson(), 'json')->geos();
+        $point = \geoPHP::load($point->toJson(), 'json')->geos();
+
+        return $lineString->contains($point);
+    }
+
     protected function getDistanceOfTwoPointsOnALineStringInGeoPhpFormat(\LineString $lineString, \Point $p1, \Point $p2): float
     {
         $query = $this->connection
