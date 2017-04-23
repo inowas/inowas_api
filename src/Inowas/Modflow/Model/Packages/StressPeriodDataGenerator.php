@@ -21,8 +21,12 @@ class StressPeriodDataGenerator
 
     public function __construct(){}
 
-    public function fromGeneralHeadBoundaries(array $ghbBoundaries, StressPeriods $stressPeriods, GridSize $gridSize, BoundingBox $boundingBox, DateTime $start, TimeUnit $timeUnit): GhbStressPeriodData
+    public function fromGeneralHeadBoundaries(array $ghbBoundaries, StressPeriods $stressPeriods, GridSize $gridSize, BoundingBox $boundingBox): GhbStressPeriodData
     {
+
+        $start = $stressPeriods->start();
+        $timeUnit = $stressPeriods->timeUnit();
+
         $ghbSpd = GhbStressPeriodData::create();
         /** @var StressPeriod $stressperiod */
         foreach ($stressPeriods->stressperiods() as $stressperiod) {

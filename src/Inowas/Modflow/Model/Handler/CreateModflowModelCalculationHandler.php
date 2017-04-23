@@ -48,7 +48,7 @@ final class CreateModflowModelCalculationHandler
         $modflowModel = $this->getModflowModel($command);
 
         /** @var StressPeriods $stressPeriods */
-        $stressPeriods = $this->modflowModelManager->calculateStressPeriods($modflowModel->modflowModelId(), $command->startDateTime(), $command->endDateTime());
+        $stressPeriods = $this->modflowModelManager->calculateStressPeriods($modflowModel->modflowModelId(), $command->startDateTime(), $command->endDateTime(), $modflowModel->timeUnit());
 
         $calculation = ModflowCalculationAggregate::create(
             $command->calculationId(),

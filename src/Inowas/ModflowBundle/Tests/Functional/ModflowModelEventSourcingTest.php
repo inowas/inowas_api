@@ -306,16 +306,20 @@ class ModflowModelEventSourcingTest extends EventSourcingBaseTest
         $wellBoundary = $wellBoundary->addPumpingRate(WellDateTimeValue::fromParams(new \DateTimeImmutable('2015-01-01'), -2000));
         $this->commandBus->dispatch(AddBoundary::toBaseModel($ownerId, $modelId, $wellBoundary));
 
+        $start = DateTime::fromDateTime(new \DateTime('2015-01-01'));
+        $end = DateTime::fromDateTime(new \DateTime('2015-01-31'));
+        $timeUnit = TimeUnit::fromInt(TimeUnit::DAYS);
+
         $calculationId = ModflowId::generate();
         $this->commandBus->dispatch(CreateModflowModelCalculation::byUserWithModelId(
             $calculationId,
             $ownerId,
             $modelId,
-            DateTime::fromDateTime(new \DateTime('2015-01-01')),
-            DateTime::fromDateTime(new \DateTime('2015-01-31'))
+            $start,
+            $end
         ));
 
-        $stressperiods = StressPeriods::create();
+        $stressperiods = StressPeriods::create($start, $end, $timeUnit);
         $stressperiods->addStressPeriod(StressPeriod::create(0, 1,1,1,true));
         $this->commandBus->dispatch(UpdateCalculationStressperiods::byUserWithCalculationId($ownerId, $calculationId, $stressperiods));
 
@@ -369,16 +373,20 @@ class ModflowModelEventSourcingTest extends EventSourcingBaseTest
         $wellBoundary = $wellBoundary->addPumpingRate(WellDateTimeValue::fromParams(new \DateTimeImmutable('2015-01-01'), -2000));
         $this->commandBus->dispatch(AddBoundary::toBaseModel($ownerId, $modelId, $wellBoundary));
 
+        $start = DateTime::fromDateTime(new \DateTime('2015-01-01'));
+        $end = DateTime::fromDateTime(new \DateTime('2015-01-31'));
+        $timeUnit = TimeUnit::fromInt(TimeUnit::DAYS);
+
         $calculationId = ModflowId::generate();
         $this->commandBus->dispatch(CreateModflowModelCalculation::byUserWithModelId(
             $calculationId,
             $ownerId,
             $modelId,
-            DateTime::fromDateTime(new \DateTime('2015-01-01')),
-            DateTime::fromDateTime(new \DateTime('2015-01-31'))
+            $start,
+            $end
         ));
 
-        $stressperiods = StressPeriods::create();
+        $stressperiods = StressPeriods::create($start, $end, $timeUnit);
         $stressperiods->addStressPeriod(StressPeriod::create(0, 1,1,1,true));
         $this->commandBus->dispatch(UpdateCalculationStressperiods::byUserWithCalculationId($ownerId, $calculationId, $stressperiods));
 
@@ -418,16 +426,20 @@ class ModflowModelEventSourcingTest extends EventSourcingBaseTest
         $chdBoundary = $this->createConstantHeadBoundaryWithObservationPoint();
         $this->commandBus->dispatch(AddBoundary::toBaseModel($ownerId, $modelId, $chdBoundary));
 
+        $start = DateTime::fromDateTime(new \DateTime('2015-01-01'));
+        $end = DateTime::fromDateTime(new \DateTime('2015-01-31'));
+        $timeUnit = TimeUnit::fromInt(TimeUnit::DAYS);
+
         $calculationId = ModflowId::generate();
         $this->commandBus->dispatch(CreateModflowModelCalculation::byUserWithModelId(
             $calculationId,
             $ownerId,
             $modelId,
-            DateTime::fromDateTime(new \DateTime('2015-01-01')),
-            DateTime::fromDateTime(new \DateTime('2015-01-31'))
+            $start,
+            $end
         ));
 
-        $stressperiods = StressPeriods::create();
+        $stressperiods = StressPeriods::create($start, $end, $timeUnit);
         $stressperiods->addStressPeriod(StressPeriod::create(0, 1,1,1,true));
         $this->commandBus->dispatch(UpdateCalculationStressperiods::byUserWithCalculationId($ownerId, $calculationId, $stressperiods));
 
@@ -462,16 +474,20 @@ class ModflowModelEventSourcingTest extends EventSourcingBaseTest
         $ghbBoundary = $this->createGeneralHeadBoundaryWithObservationPoint();
         $this->commandBus->dispatch(AddBoundary::toBaseModel($ownerId, $modelId, $ghbBoundary));
 
+        $start = DateTime::fromDateTime(new \DateTime('2015-01-01'));
+        $end = DateTime::fromDateTime(new \DateTime('2015-01-31'));
+        $timeUnit = TimeUnit::fromInt(TimeUnit::DAYS);
+
         $calculationId = ModflowId::generate();
         $this->commandBus->dispatch(CreateModflowModelCalculation::byUserWithModelId(
             $calculationId,
             $ownerId,
             $modelId,
-            DateTime::fromDateTime(new \DateTime('2015-01-01')),
-            DateTime::fromDateTime(new \DateTime('2015-01-31'))
+            $start,
+            $end
         ));
 
-        $stressperiods = StressPeriods::create();
+        $stressperiods = StressPeriods::create($start, $end, $timeUnit);
         $stressperiods->addStressPeriod(StressPeriod::create(0, 1,1,1,true));
         $this->commandBus->dispatch(UpdateCalculationStressperiods::byUserWithCalculationId($ownerId, $calculationId, $stressperiods));
 
@@ -506,16 +522,20 @@ class ModflowModelEventSourcingTest extends EventSourcingBaseTest
         $rchBoundary = $this->createRechargeBoundary();
         $this->commandBus->dispatch(AddBoundary::toBaseModel($ownerId, $modelId, $rchBoundary));
 
+        $start = DateTime::fromDateTime(new \DateTime('2015-01-01'));
+        $end = DateTime::fromDateTime(new \DateTime('2015-01-31'));
+        $timeUnit = TimeUnit::fromInt(TimeUnit::DAYS);
+
         $calculationId = ModflowId::generate();
         $this->commandBus->dispatch(CreateModflowModelCalculation::byUserWithModelId(
             $calculationId,
             $ownerId,
             $modelId,
-            DateTime::fromDateTime(new \DateTime('2015-01-01')),
-            DateTime::fromDateTime(new \DateTime('2015-01-31'))
+            $start,
+            $end
         ));
 
-        $stressperiods = StressPeriods::create();
+        $stressperiods = StressPeriods::create($start, $end, $timeUnit);
         $stressperiods->addStressPeriod(StressPeriod::create(0, 1,1,1,true));
         $this->commandBus->dispatch(UpdateCalculationStressperiods::byUserWithCalculationId($ownerId, $calculationId, $stressperiods));
 
@@ -549,16 +569,20 @@ class ModflowModelEventSourcingTest extends EventSourcingBaseTest
         $riverBoundary = $this->createRiverBoundaryWithObservationPoint();
         $this->commandBus->dispatch(AddBoundary::toBaseModel($ownerId, $modelId, $riverBoundary));
 
+        $start = DateTime::fromDateTime(new \DateTime('2015-01-01'));
+        $end = DateTime::fromDateTime(new \DateTime('2015-01-31'));
+        $timeUnit = TimeUnit::fromInt(TimeUnit::DAYS);
+
         $calculationId = ModflowId::generate();
         $this->commandBus->dispatch(CreateModflowModelCalculation::byUserWithModelId(
             $calculationId,
             $ownerId,
             $modelId,
-            DateTime::fromDateTime(new \DateTime('2015-01-01')),
-            DateTime::fromDateTime(new \DateTime('2015-01-31'))
+            $start,
+            $end
         ));
 
-        $stressperiods = StressPeriods::create();
+        $stressperiods = StressPeriods::create($start, $end, $timeUnit);
         $stressperiods->addStressPeriod(StressPeriod::create(0, 1,1,1,true));
         $this->commandBus->dispatch(UpdateCalculationStressperiods::byUserWithCalculationId($ownerId, $calculationId, $stressperiods));
 

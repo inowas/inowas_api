@@ -7,8 +7,6 @@ namespace Inowas\Modflow\Model\Service;
 use Inowas\Common\Boundaries\ConstantHeadBoundary;
 use Inowas\Common\Boundaries\ConstantHeadDateTimeValue;
 use Inowas\Common\Boundaries\GeneralHeadBoundary;
-use Inowas\Common\Boundaries\GeneralHeadDateTimeValue;
-use Inowas\Common\Boundaries\ObservationPoint;
 use Inowas\Common\Boundaries\RechargeBoundary;
 use Inowas\Common\Boundaries\RiverBoundary;
 use Inowas\Common\Boundaries\RiverDateTimeValue;
@@ -27,7 +25,6 @@ use Inowas\Modflow\Model\Exception\InvalidTimeUnitException;
 use Inowas\Modflow\Model\Packages\ChdStressPeriodData;
 use Inowas\Modflow\Model\Packages\ChdStressPeriodGridCellValue;
 use Inowas\Modflow\Model\Packages\GhbStressPeriodData;
-use Inowas\Modflow\Model\Packages\GhbStressPeriodGridCellValue;
 use Inowas\Modflow\Model\Packages\RchStressPeriodData;
 use Inowas\Modflow\Model\Packages\RchStressPeriodValue;
 use Inowas\Modflow\Model\Packages\RivStressPeriodData;
@@ -57,40 +54,11 @@ class ModflowModelManager implements ModflowModelManagerInterface
         return $this->boundaryFinder->findByModelId($modelId);
     }
 
-    public function calculateStressPeriods(ModflowId $modflowId, DateTime $start, DateTime $end): StressPeriods
+    public function calculateStressPeriods(ModflowId $modflowId, DateTime $start, DateTime $end, TimeUnit $timeUnit): StressPeriods
     {
-        /** @var array $bcDates */
-        $bcDates = $this->boundaryFinder->findStressPeriodDatesById($modflowId);
-
-        $bcDates[] = $start;
-        $bcDates[] = $end;
-
-        $dates = [];
-        /** @var DateTime $bcDate */
-        foreach ($bcDates as $bcDate){
-            if ($bcDate->greaterOrEqualThen($start) && $bcDate->smallerOrEqualThen($end)){
-                if (! in_array($bcDate, $dates)){
-                    $dates[] = $bcDate;
-                }
-            }
-        }
-
-        $stressPeriods = StressPeriods::create();
-        $totims = $this->calculateTotims($dates, TimeUnit::fromInt(TimeUnit::DAYS));
-        for ($i=1; $i < count($totims); $i++){
-            $perlen = ($totims[$i]->toInteger())-($totims[$i-1]->toInteger());
-            $nstp = 1;
-            $tsmult = 1;
-            $steady = false;
-            $stressPeriods->addStressPeriod(StressPeriod::create(
-                $totims[$i-1]->toInteger(),
-                $perlen,
-                $nstp,
-                $tsmult,
-                $steady
-            ));
-        }
-
+        /** @var DateTime[] $bcDates */
+        $dates = $this->boundaryFinder->findStressPeriodDatesById($modflowId);
+        $stressPeriods = StressPeriods::createFromDates($dates, $start, $end, $timeUnit);
         return $stressPeriods;
     }
 
@@ -142,7 +110,7 @@ class ModflowModelManager implements ModflowModelManagerInterface
         return $chdSpd;
     }
 
-    public function findGhbStressPeriodData(ModflowId $modflowId, StressPeriods $stressPeriods, DateTime $start, TimeUnit $timeUnit): GhbStressPeriodData
+    public function findGhbStressPeriodData(ModflowId $modflowId, StressPeriods $stressPeriods): GhbStressPeriodData
     {
         $gridSize = $this->getGridSize($modflowId);
         $boundingBox = $this->getBoundingBox($modflowId);
@@ -150,8 +118,7 @@ class ModflowModelManager implements ModflowModelManagerInterface
         /** @var GeneralHeadBoundary[] $ghbBoundaries */
         $ghbBoundaries = $this->boundaryFinder->findGhbBoundaries($modflowId);
         $stressPeriodDataGenerator = new StressPeriodDataGenerator();
-        return $stressPeriodDataGenerator->fromGeneralHeadBoundaries($ghbBoundaries, $stressPeriods, $gridSize, $boundingBox, $start, $timeUnit);
-
+        return $stressPeriodDataGenerator->fromGeneralHeadBoundaries($ghbBoundaries, $stressPeriods, $gridSize, $boundingBox);
     }
 
     public function findRchStressPeriodData(ModflowId $modflowId, StressPeriods $stressPeriods, DateTime $start, TimeUnit $timeUnit): RchStressPeriodData
@@ -240,47 +207,6 @@ class ModflowModelManager implements ModflowModelManagerInterface
         }
 
         return $wspd;
-    }
-
-    private function calculateTotims(array $bcDates, TimeUnit $timeUnit): array
-    {
-        $totims = [];
-        $start = $bcDates[0];
-        foreach ($bcDates as $bcDate){
-            $totims[] = $this->calculateTotim($start, $bcDate, $timeUnit);
-        }
-
-        return $totims;
-    }
-
-    private function calculateTotim(DateTime $start, DateTime $dateTime, TimeUnit $timeUnit): TotalTime
-    {
-        /** @var \DateTime $start */
-        $start = clone $start->toDateTime();
-
-        /** @var \DateTime $dateTime */
-        $dateTime = clone $dateTime->toDateTime();
-
-        $dateTime->modify('+1 day');
-        $diff = $start->diff($dateTime);
-
-        if ($timeUnit->toInt() === $timeUnit::SECONDS){
-            return TotalTime::fromInt($dateTime->getTimestamp() - $start->getTimestamp());
-        }
-
-        if ($timeUnit->toInt() === $timeUnit::MINUTES){
-            return TotalTime::fromInt((int)(($dateTime->getTimestamp() - $start->getTimestamp())/60));
-        }
-
-        if ($timeUnit->toInt() === $timeUnit::HOURS){
-            return TotalTime::fromInt((int)(($dateTime->getTimestamp() - $start->getTimestamp())/60/60));
-        }
-
-        if ($timeUnit->toInt() === $timeUnit::DAYS){
-            return TotalTime::fromInt((int)$diff->format("%a"));
-        }
-
-        throw InvalidTimeUnitException::withTimeUnitAndAvailableTimeUnits($timeUnit, $timeUnit->availableTimeUnits);
     }
 
     private function calculateDateTimeFromTotim(DateTime $start, TotalTime $totalTime, TimeUnit $timeUnit): \DateTimeImmutable
