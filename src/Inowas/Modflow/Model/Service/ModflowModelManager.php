@@ -110,7 +110,7 @@ class ModflowModelManager implements ModflowModelManagerInterface
         return $chdSpd;
     }
 
-    public function findGhbStressPeriodData(ModflowId $modflowId, StressPeriods $stressPeriods): GhbStressPeriodData
+    public function generateGhbStressPeriodData(ModflowId $modflowId, StressPeriods $stressPeriods): GhbStressPeriodData
     {
         $gridSize = $this->getGridSize($modflowId);
         $boundingBox = $this->getBoundingBox($modflowId);

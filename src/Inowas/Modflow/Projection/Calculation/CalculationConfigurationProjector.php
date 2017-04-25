@@ -264,7 +264,7 @@ class CalculationConfigurationProjector extends AbstractDoctrineConnectionProjec
          * Add PackageDetails for GhbPackage
          */
         if ($this->modflowModelManager->countModelBoundaries($modflowModelId, GeneralHeadBoundary::TYPE) > 0) {
-            $ghbStressPeriodData = $this->modflowModelManager->findGhbStressPeriodData($modflowModelId, $stressPeriods, $start, $timeUnit);
+            $ghbStressPeriodData = $this->modflowModelManager->generateGhbStressPeriodData($modflowModelId, $stressPeriods, $start, $timeUnit);
             $packages->updatePackageParameter('ghb', 'StressPeriodData', $ghbStressPeriodData);
         }
 

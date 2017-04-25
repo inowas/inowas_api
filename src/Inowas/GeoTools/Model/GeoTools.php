@@ -4,7 +4,7 @@ namespace Inowas\GeoTools\Model;
 
 use Doctrine\DBAL\Connection;
 use Doctrine\ORM\EntityManager;
-use Inowas\Common\Boundaries\GridCellDateTimeValue;
+use Inowas\Common\Boundaries\GridCellDateTimeValues;
 use Inowas\Common\Boundaries\ModflowBoundary;
 use Inowas\Common\Boundaries\ObservationPoint;
 use Inowas\Common\Geometry\Geometry;
@@ -160,7 +160,7 @@ class GeoTools
 
     }
 
-    public function getClosestPointOnLineString(LineString $lineString, Point $point)
+    public function getClosestPointOnLineString(LineString $lineString, Point $point): Point
     {
         if ($lineString->getSrid() != $point->getSrid()){
             // @todo do something (convert, or throw an exception)
@@ -240,7 +240,7 @@ class GeoTools
         return $substringsWithObservationPoints;
     }
 
-    public function calculateGridCellDateTimeValues(LineString $lineString, array $observationPoints, ActiveCells $activeCells, BoundingBox $boundingBox, GridSize $gridSize): array
+    public function interpolateGridCellDateTimeValuesFromLinestringAndObservationPoints(LineString $lineString, array $observationPoints, ActiveCells $activeCells, BoundingBox $boundingBox, GridSize $gridSize): array
     {
         // @todo Cut Linestring with boundingBox
         // Cut Linestring into sectors between ObservationPoints
@@ -256,6 +256,7 @@ class GeoTools
             $column = $activeCell[2];
             $activeCellCenter = $this->getPointFromGridCell($boundingBox, $gridSize, $row, $column);
             $closestPoint = $this->getClosestPointOnLineString($lineString, $activeCellCenter);
+            $dateTimeValues = [];
 
             foreach ($sectors as $sector){
                 if ($this->pointIsOnLineString($sector->linestring(), $closestPoint)) {
@@ -283,11 +284,14 @@ class GeoTools
                             $interpolatedDateTimeArrayValue[] = $interpolatedValue;
                         }
 
-                        $gridCellDateTimeValues[] = GridCellDateTimeValue::fromParams($layer, $row, $column, $dateTimeClassName::fromArrayValues($interpolatedDateTimeArrayValue));
+                        $dateTimeValues[] = $dateTimeClassName::fromArrayValues($interpolatedDateTimeArrayValue);
                     }
+
                     break;
                 }
             }
+
+            $gridCellDateTimeValues[] = GridCellDateTimeValues::fromParams($layer, $row, $column, $dateTimeValues);
         }
 
         return $gridCellDateTimeValues;

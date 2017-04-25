@@ -29,4 +29,6 @@ interface ModflowBoundary
     public function dataToJson(): string;
 
     public function setActiveCells(ActiveCells $activeCells);
+
+    public function activeCells(): ?ActiveCells;
 }

@@ -29,8 +29,11 @@
             <argument type="service" id="inowas.model_boundaries_finder"/>
             <argument type="service" id="inowas.model_scenarios_finder"/>
         </service>
+        <service id="inowas.modflow.stressperiod_data_generator" class="Inowas\Modflow\Model\Service\StressPeriodDataGenerator">
+            <argument type="service" id="inowas.geotools"/>
+        </service>
         <service id="inowas.geotools" class="Inowas\GeoTools\Model\GeoTools">
-            <argument type="service" id="doctrine.orm.entity_manager"/>
+            <argument type="service" id="doctrine.orm.default_entity_manager"/>
         </service>
         <service id="inowas.soilmodel.manager" class="Inowas\Modflow\Model\Service\SoilmodelManager">
             <argument type="service" id="inowas.soilmodel.layer_values_finder"/>

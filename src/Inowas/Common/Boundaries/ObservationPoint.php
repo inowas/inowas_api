@@ -93,16 +93,16 @@ class ObservationPoint implements \JsonSerializable
         $values = $this->dateTimeValues();
         usort($values, function ($v1, $v2) {
 
-            /** @var $v1 WellDateTimeValue */
+            /** @var $v1 DateTimeValue */
             $dtV1 = $v1->dateTime();
 
-            /** @var $v2 WellDateTimeValue */
+            /** @var $v2 DateTimeValue */
             $dtV2 = $v2->dateTime();
 
             return ($dtV1 < $dtV2) ? +1 : -1;
         });
 
-        /** @var WellDateTimeValue $value */
+        /** @var DateTimeValue $value */
         foreach ($values as $value) {
             if ($dateTime >= $value->dateTime()){
                 return $value;

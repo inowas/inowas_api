@@ -43,7 +43,6 @@ class GeosGeoToolsTest extends WebTestCase
 
     public function setUp(): void
     {
-
         self::bootKernel();
         $em = static::$kernel->getContainer()->get('doctrine.orm.default_entity_manager');
 
@@ -164,6 +163,14 @@ class GeosGeoToolsTest extends WebTestCase
             new \DateTimeImmutable('2015-01-01'), 15, 10, 1500)
         );
 
+        $this->river = $this->river->addRiverStageToObservationPoint($opId1, RiverDateTimeValue::fromParams(
+            new \DateTimeImmutable('2015-02-01'), 15, 10, 1510)
+        );
+
+        $this->river = $this->river->addRiverStageToObservationPoint($opId1, RiverDateTimeValue::fromParams(
+            new \DateTimeImmutable('2015-03-01'), 15, 10, 1520)
+        );
+
         $opId2 = ObservationPointId::generate();
         $this->river = $this->river->addObservationPoint(
             ObservationPoint::fromIdNameAndGeometry(
@@ -177,6 +184,14 @@ class GeosGeoToolsTest extends WebTestCase
             new \DateTimeImmutable('2015-01-01'), 10, 5, 1000)
         );
 
+        $this->river = $this->river->addRiverStageToObservationPoint($opId2, RiverDateTimeValue::fromParams(
+            new \DateTimeImmutable('2015-02-01'), 10, 5, 1010)
+        );
+
+        $this->river = $this->river->addRiverStageToObservationPoint($opId2, RiverDateTimeValue::fromParams(
+            new \DateTimeImmutable('2015-03-01'), 10, 5, 1020)
+        );
+
         $opId3 = ObservationPointId::generate();
         $this->river = $this->river->addObservationPoint(
             ObservationPoint::fromIdNameAndGeometry(
@@ -188,6 +203,14 @@ class GeosGeoToolsTest extends WebTestCase
 
         $this->river = $this->river->addRiverStageToObservationPoint($opId3, RiverDateTimeValue::fromParams(
             new \DateTimeImmutable('2015-01-01'), 5, 0, 500)
+        );
+
+        $this->river = $this->river->addRiverStageToObservationPoint($opId3, RiverDateTimeValue::fromParams(
+            new \DateTimeImmutable('2015-02-01'), 5, 0, 510)
+        );
+
+        $this->river = $this->river->addRiverStageToObservationPoint($opId3, RiverDateTimeValue::fromParams(
+            new \DateTimeImmutable('2015-03-01'), 5, 0, 520)
         );
     }
 
@@ -527,53 +550,6 @@ class GeosGeoToolsTest extends WebTestCase
         $this->assertEquals(16001, round($this->geoTools->getDistanceOfPointFromLineStringStartPoint($lineString, $point2)->inMeters()));
     }
 
-    public function test_river_interpolation(): void
-    {
-        $this->assertInstanceOf(RiverBoundary::class, $this->river);
-        $this->river = $this->river->setActiveCells($this->geoTools->calculateActiveCells($this->river, $this->boundingBox, $this->gridSize));
-
-        /*
-         * Expected active cells
-         *
-         * [_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_]
-         * [_,_,_,X,X,X,X,X,_,_,_,_,_,_,_,_,_,_,_,_]
-         * [_,_,_,_,_,_,_,X,X,_,_,_,_,_,_,_,_,_,_,_]
-         * [_,_,_,_,_,_,_,_,X,X,_,_,_,_,_,_,_,_,_,_]
-         * [_,_,_,_,_,_,_,_,_,X,X,_,_,_,_,_,_,_,_,_]
-         * [_,_,_,_,_,_,_,_,_,_,X,_,_,_,_,_,_,_,_,_]
-         * [_,_,_,_,_,_,_,_,_,_,X,X,_,_,_,_,_,_,_,_]
-         * [_,_,_,_,_,_,_,_,_,_,_,X,_,_,_,_,_,_,_,_]
-         * [_,_,_,_,_,_,_,_,_,_,_,X,X,_,_,_,_,_,_,_]
-         * [_,_,_,_,_,_,_,_,_,_,_,_,X,_,_,_,_,_,_,_]
-         * [_,_,_,_,_,_,_,_,_,_,_,_,X,X,_,_,_,_,_,_]
-         * [_,_,_,_,_,_,_,_,_,_,_,_,_,X,_,_,_,_,_,_]
-         * [_,_,_,_,_,_,_,_,_,_,_,_,_,X,_,_,_,_,_,_]
-         * [_,_,_,_,_,_,_,_,_,_,_,_,_,X,X,_,_,_,_,_]
-         * [_,_,_,_,_,_,_,_,_,_,_,_,_,_,X,_,_,_,_,_]
-         * [_,_,_,_,_,_,_,_,_,_,_,_,_,_,X,_,_,_,_,_]
-         * [_,_,_,_,_,_,_,_,_,_,_,_,_,_,X,X,_,_,_,_]
-         * [_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,X,_,_,_,_]
-         * [_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,X,X,X,_,_]
-         * [_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,X,X,_]
-         * [_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,X,_]
-         * [_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,X,X]
-         * [_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,X]
-         * [_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,X]
-         * [_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,X,X]
-         * [_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,X,_]
-         * [_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,X,X,_]
-         * [_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,X,_,_]
-         * [_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,X,X,_,_]
-         * [_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,X,X,_,_,_]
-         */
-
-        $this->assertEquals(49, $this->river->activeCells()->count());
-        $this->geoTools->getDistanceOfTwoPointsOnALineString(
-            $this->river->geometry()->value(),
-            array_values($this->river->observationPoints())[0]->geometry()->value(),
-            array_values($this->river->observationPoints())[1]->geometry()->value());
-    }
-
     public function test_get_closest_point_to_line_string(): void
     {
         $linestring = new LineString(array(
@@ -671,13 +647,46 @@ class GeosGeoToolsTest extends WebTestCase
         $this->assertEquals(0.45, round($relativeDistance,2));
     }
 
-    public function test_calculate_grid_cell_date_time_values(): void
+    public function test_calculate_grid_cell_date_time_values_of_river_boundary(): void
     {
         $observationPoints = $this->river->observationPoints();
-
         $activeCells = $this->geoTools->calculateActiveCells($this->river, $this->boundingBox, $this->gridSize);
+        /*
+         * Expected active cells
+         *
+         * [_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_]
+         * [_,_,_,X,X,X,X,X,_,_,_,_,_,_,_,_,_,_,_,_]
+         * [_,_,_,_,_,_,_,X,X,_,_,_,_,_,_,_,_,_,_,_]
+         * [_,_,_,_,_,_,_,_,X,X,_,_,_,_,_,_,_,_,_,_]
+         * [_,_,_,_,_,_,_,_,_,X,X,_,_,_,_,_,_,_,_,_]
+         * [_,_,_,_,_,_,_,_,_,_,X,_,_,_,_,_,_,_,_,_]
+         * [_,_,_,_,_,_,_,_,_,_,X,X,_,_,_,_,_,_,_,_]
+         * [_,_,_,_,_,_,_,_,_,_,_,X,_,_,_,_,_,_,_,_]
+         * [_,_,_,_,_,_,_,_,_,_,_,X,X,_,_,_,_,_,_,_]
+         * [_,_,_,_,_,_,_,_,_,_,_,_,X,_,_,_,_,_,_,_]
+         * [_,_,_,_,_,_,_,_,_,_,_,_,X,X,_,_,_,_,_,_]
+         * [_,_,_,_,_,_,_,_,_,_,_,_,_,X,_,_,_,_,_,_]
+         * [_,_,_,_,_,_,_,_,_,_,_,_,_,X,_,_,_,_,_,_]
+         * [_,_,_,_,_,_,_,_,_,_,_,_,_,X,X,_,_,_,_,_]
+         * [_,_,_,_,_,_,_,_,_,_,_,_,_,_,X,_,_,_,_,_]
+         * [_,_,_,_,_,_,_,_,_,_,_,_,_,_,X,_,_,_,_,_]
+         * [_,_,_,_,_,_,_,_,_,_,_,_,_,_,X,X,_,_,_,_]
+         * [_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,X,_,_,_,_]
+         * [_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,X,X,X,_,_]
+         * [_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,X,X,_]
+         * [_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,X,_]
+         * [_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,X,X]
+         * [_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,X]
+         * [_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,X]
+         * [_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,X,X]
+         * [_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,X,_]
+         * [_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,X,X,_]
+         * [_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,X,_,_]
+         * [_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,X,X,_,_]
+         * [_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,X,X,_,_,_]
+         */
 
-        $result = $this->geoTools->calculateGridCellDateTimeValues(
+        $result = $this->geoTools->interpolateGridCellDateTimeValuesFromLinestringAndObservationPoints(
             $this->river->geometry()->value(),
             $observationPoints,
             $activeCells,
