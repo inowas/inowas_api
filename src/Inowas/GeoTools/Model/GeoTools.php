@@ -4,9 +4,12 @@ namespace Inowas\GeoTools\Model;
 
 use Doctrine\DBAL\Connection;
 use Doctrine\ORM\EntityManager;
+use Inowas\Common\Boundaries\GridCellDateTimeValue;
 use Inowas\Common\Boundaries\ModflowBoundary;
+use Inowas\Common\Boundaries\ObservationPoint;
 use Inowas\Common\Geometry\Geometry;
 use Inowas\Common\Geometry\LineString;
+use Inowas\Common\Geometry\LineStringWithObservationPoints;
 use Inowas\Common\Geometry\Point;
 use Inowas\Common\Geometry\Srid;
 use Inowas\Common\Grid\ActiveCells;
@@ -138,6 +141,25 @@ class GeoTools
         return Distance::fromMeters($distanceInMeters);
     }
 
+    public function getRelativeDistanceOfPointOnLineString(LineString $lineString, Point $point): float
+    {
+        $lineString = \geoPHP::load($lineString->toJson(),'json');
+        $point = \geoPHP::load($point->toJson(),'json');
+
+        $query = $this->connection
+            ->prepare(sprintf(
+                "SELECT ST_LineLocatePoint(ST_GeomFromText('%s')::geometry, ST_GeomFromText('%s')::geometry);",
+                    $lineString->asText(),
+                    $point->asText()
+                )
+            );
+
+        $query->execute();
+        $result = $query->fetch();
+        return $result['st_linelocatepoint'];
+
+    }
+
     public function getClosestPointOnLineString(LineString $lineString, Point $point)
     {
         if ($lineString->getSrid() != $point->getSrid()){
@@ -145,61 +167,160 @@ class GeoTools
         }
 
         $srid = $point->getSrid();
-
-
         $point = \geoPHP::load($point->toJson(),'json');
-        $lineString = \geoPHP::load($lineString->toJson(),'json');
+        $point->setSRID($srid);
 
-        $query = $this->connection->prepare(sprintf(
-            "SELECT ST_AsText(ST_ClosestPoint(ST_GeomFromText('%s'), ST_GeomFromText('%s'))) AS ptwkt;",
+        $lineString = \geoPHP::load($lineString->toJson(),'json');
+        $point->setSRID($srid);
+
+        $result = $this->executeQuery(
+            sprintf(
+            "SELECT ST_AsText(
+                        ST_ClosestPoint(
+                            ST_GeomFromText('%s')::geometry, 
+                            ST_GeomFromText('%s')::geometry
+                        )
+                    ) AS ptwkt;",
                 $lineString->asText(),
                 $point->asText())
         );
 
-        $query->execute();
-        $result = $query->fetch();
         $point = \geoPHP::load($result['ptwkt'], 'wkt');
+        $point->setSRID($srid);
         return new Point($point->getX(), $point->getY(), $srid);
     }
 
-    public function cutLinestringBetweenPoints(LineString $lineString, array $points): array
+    /**
+     * @param LineString $lineString
+     * @param ObservationPoint[] $observationPoints
+     * @return array
+     */
+    public function cutLinestringBetweenObservationPoints(LineString $lineString, array $observationPoints): array
     {
-        foreach ($points as $point){
-            if (! $point instanceof Point){
+        foreach ($observationPoints as $observationPoint){
+            if (! $observationPoint instanceof ObservationPoint){
                 // @todo do something
+                return null;
             }
         }
 
-        $lineStringPoints =  $lineString->getPoints();
-        $points[] = $lineStringPoints[0];
-        $points[] = $lineStringPoints[count($lineStringPoints)-1];
+        $points = [];
+        $distances = [];
+        foreach ($observationPoints as $observationPoint) {
 
-        $pointsWithAbsolutePositionOnLineString = array();
-        foreach ($points as $point) {
-            $point = $this->getClosestPointOnLineString($lineString, $point);
-            $distance = $this->getDistanceOfPointFromLineStringStartPoint($lineString, $point);
-            $pointsWithAbsolutePositionOnLineString[] = ['point' => $point, 'distance' => $distance->inMeters()];
+            $point = $observationPoint->geometry()->value();
+            if (! $point instanceof Point){
+                // @todo do something
+                return null;
+            }
+
+            $closestPoint = $this->getClosestPointOnLineString($lineString, $point);
+            $distance = $this->getDistanceOfPointFromLineStringStartPoint($lineString, $closestPoint);
+            $points[] = $point;
+            $closesPoints[] = $closestPoint;
+            $distances[] = $distance->inMeters();
         }
 
-        usort($pointsWithAbsolutePositionOnLineString, function ($item1, $item2) {
-            return $item1['distance'] <=> $item2['distance'];
-        });
+        /* Sort by distance  */
+        array_multisort($distances, $points);
 
-        return $pointsWithAbsolutePositionOnLineString;
+        /* Calculate Substrings */
+        $substringsWithObservationPoints = array();
+        foreach ($observationPoints as $key => $observationPoint) {
+            if ($key === 0){continue;}
+            $startPoint = $observationPoints[$key-1]->geometry()->value();
+            $endPoint = $observationPoints[$key]->geometry()->value();
+            $substringsWithObservationPoints[] = LineStringWithObservationPoints::create(
+                $this->getSubstringOfLinestring($lineString, $startPoint, $endPoint),
+                $observationPoints[$key-1],
+                $observationPoints[$key]
+            );
+        }
+
+        return $substringsWithObservationPoints;
+    }
+
+    public function calculateGridCellDateTimeValues(LineString $lineString, array $observationPoints, ActiveCells $activeCells, BoundingBox $boundingBox, GridSize $gridSize): array
+    {
+        // @todo Cut Linestring with boundingBox
+        // Cut Linestring into sectors between ObservationPoints
+        /** @var LineStringWithObservationPoints[] $sectors */
+        $observationPoints = array_values($observationPoints);
+        $sectors = $this->cutLinestringBetweenObservationPoints($lineString, $observationPoints);
+
+        $gridCellDateTimeValues = array();
+        foreach ($activeCells->cells() as $activeCell) {
+
+            $layer = $activeCell[0];
+            $row = $activeCell[1];
+            $column = $activeCell[2];
+            $activeCellCenter = $this->getPointFromGridCell($boundingBox, $gridSize, $row, $column);
+            $closestPoint = $this->getClosestPointOnLineString($lineString, $activeCellCenter);
+
+            foreach ($sectors as $sector){
+                if ($this->pointIsOnLineString($sector->linestring(), $closestPoint)) {
+                    $factor = $this->getRelativeDistanceOfPointOnLineString($sector->linestring(), $closestPoint);
+                    $dateTimes = $sector->getDateTimes();
+
+                    /** @var \DateTimeImmutable $dateTime */
+                    foreach ($dateTimes as $dateTime){
+                        $startValue = $sector->start()->findValueByDateTime($dateTime);
+                        $endValue = $sector->end()->findValueByDateTime($dateTime);
+
+                        $dateTimeClassName = get_class($startValue);
+
+                        if (! $dateTimeClassName === get_class($endValue)){
+                            // @todo throw something?!
+                            continue;
+                        }
+
+                        $startArrayValues = $startValue->toArrayValues();
+                        $endArrayValues = $endValue->toArrayValues();
+
+                        $interpolatedDateTimeArrayValue = [$dateTime->format(DATE_ATOM)];
+                        for ($i=1; $i<count($startArrayValues); $i++){
+                            $interpolatedValue = $startArrayValues[$i] + (($endArrayValues[$i]-$startArrayValues[$i])*$factor);
+                            $interpolatedDateTimeArrayValue[] = $interpolatedValue;
+                        }
+
+                        $gridCellDateTimeValues[] = GridCellDateTimeValue::fromParams($layer, $row, $column, $dateTimeClassName::fromArrayValues($interpolatedDateTimeArrayValue));
+                    }
+                    break;
+                }
+            }
+        }
+
+        return $gridCellDateTimeValues;
     }
 
     public function pointIsOnLineString(LineString $lineString, Point $point): bool
     {
-        $lineString = \geoPHP::load($lineString->toJson(), 'json')->geos();
-        $point = \geoPHP::load($point->toJson(), 'json')->geos();
+        $lineString = \geoPHP::load($lineString->toJson(), 'json');
+        $point = \geoPHP::load($point->toJson(), 'json');
 
-        return $lineString->contains($point);
+        $geosLineString = $lineString->geos();
+        $geosPoint = $point->geos();
+
+        if ($geosLineString->contains($geosPoint) || $geosLineString->touches($geosPoint) || $geosLineString->intersects($geosPoint)){
+            return true;
+        }
+
+        $result = $this->executeQuery(sprintf("SELECT ST_DWithin(
+            ST_GeomFromText('%s')::geometry,
+            ST_GeomFromText('%s')::geometry,
+            0.0001
+            )",
+            $lineString->asText(),
+            $point->asText()
+        ));
+
+        return $result['st_dwithin'];
     }
 
     protected function getDistanceOfTwoPointsOnALineStringInGeoPhpFormat(\LineString $lineString, \Point $p1, \Point $p2): float
     {
-        $query = $this->connection
-            ->prepare(sprintf("SELECT ST_Length(ST_LineSubstring(
+        $result = $this->executeQuery(
+            sprintf("SELECT ST_Length(ST_LineSubstring(
                             line,
                             ST_LineLocatePoint(line, pta),
                             ST_LineLocatePoint(line, ptb))::geography)
@@ -208,11 +329,42 @@ class GeoTools
                             ST_GeomFromText('%s')::geometry line, 
                             ST_GeomFromText('%s')::geometry pta, 
                             ST_GeomFromText('%s')::geometry ptb) AS data",
-                $lineString->asText(), $p1->asText(), $p2->asText()));
+                $lineString->asText(), $p1->asText(), $p2->asText())
+        );
 
-        $query->execute();
-        $result = $query->fetch();
         return $result['st_length'];
+    }
+
+    protected function getSubstringOfLinestring(LineString $lineString, Point $start, Point $end): LineString
+    {
+
+        $srid =$lineString->getSrid();
+
+        $start = \geoPHP::load($start->toJson(),'json');
+        $start->setSRID($lineString->getSrid());
+
+        $end = \geoPHP::load($end->toJson(),'json');
+        $end->setSRID($lineString->getSrid());
+
+        $lineString = \geoPHP::load($lineString->toJson(),'json');
+        $end->setSRID($lineString->getSrid());
+
+        $result = $this->executeQuery(
+            sprintf("SELECT ST_AsText(ST_LineSubstring(
+                line,
+                ST_LineLocatePoint(line, pta),
+                ST_LineLocatePoint(line, ptb))::geography)
+            FROM (
+              SELECT
+                ST_GeomFromText('%s')::geometry line, 
+                ST_GeomFromText('%s')::geometry pta, 
+                ST_GeomFromText('%s')::geometry ptb) AS data",
+            $lineString->asText(), $start->asText(), $end->asText()));
+
+        $geometry = \geoPHP::load($result['st_astext'], 'wkt');
+        $lineString =  new LineString($geometry->asArray());
+        $lineString->setSrid($srid);
+        return $lineString;
     }
 
     protected function updateBoundingBoxDistance(BoundingBox $bb): BoundingBox
@@ -250,5 +402,25 @@ class GeoTools
             "row" => $row,
             "col" => $col
         );
+    }
+
+    protected function getPointFromGridCell(BoundingBox $bb, GridSize $gz, int $row, int $column): Point
+    {
+        $srid = $bb->srid();
+        $dx = ($bb->xMax() - $bb->xMin()) / $gz->nX();
+        $dy = ($bb->yMax() - $bb->yMin()) / $gz->nY();
+
+        $x =  $bb->xMin() + ($column+0.5)*$dx;
+        $y =  $bb->yMin() + ($row+0.5)*$dy;
+
+        return new Point($x, $y, $srid);
+    }
+
+    protected function executeQuery(string $query): array
+    {
+        $query = $this->connection
+            ->prepare($query);
+        $query->execute();
+        return $query->fetch();
     }
 }

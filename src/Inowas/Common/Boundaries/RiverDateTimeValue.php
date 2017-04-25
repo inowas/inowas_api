@@ -23,23 +23,22 @@ class RiverDateTimeValue extends DateTimeValue
 
     public static function fromParams(\DateTimeImmutable $dateTime, float $stage, float $botm, float $cond): RiverDateTimeValue
     {
-        $self = new self();
-        $self->stage = $stage;
-        $self->rbot = $botm;
-        $self->cond = $cond;
-        $self->dateTime = $dateTime;
-
-        return $self;
+        return new self($dateTime, $stage, $botm, $cond);
     }
 
     public static function fromArray(array $arr): RiverDateTimeValue
     {
-        $self = new self();
-        $self->dateTime = new \DateTimeImmutable($arr['date_time']);
-        $self->stage = $arr['stage'];
-        $self->rbot = $arr['rbot'];
-        $self->cond = $arr['cond'];
-        return $self;
+        return new self(new \DateTimeImmutable($arr['date_time']), $arr['stage'], $arr['rbot'], $arr['cond']);
+    }
+
+    public static function fromArrayValues(array $arr): RiverDateTimeValue
+    {
+        return new self(new \DateTimeImmutable($arr[0]), $arr[1], $arr[2], $arr[3]);
+    }
+
+    public function toArrayValues(): array
+    {
+        return array($this->dateTime->format(DATE_ATOM), $this->stage, $this->rbot, $this->cond);
     }
 
     public function toArray(): array
@@ -50,6 +49,14 @@ class RiverDateTimeValue extends DateTimeValue
             'rbot' => $this->rbot,
             'cond' => $this->cond
         );
+    }
+
+    private function __construct(\DateTimeImmutable $dateTime, float $stage, float $botm, float $cond)
+    {
+        $this->stage = $stage;
+        $this->rbot = $botm;
+        $this->cond = $cond;
+        $this->dateTime = $dateTime;
     }
 
     public function jsonSerialize()

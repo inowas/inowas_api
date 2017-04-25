@@ -592,7 +592,15 @@ class GeosGeoToolsTest extends WebTestCase
         $this->assertEquals(4326, $point->getSrid());
     }
 
-    public function test_cut_linestring_between_points(): void
+    public function test_special_edge_case_get_closest_point_on_line_string_should_be_on_line(): void
+    {
+        $point = new Point(105.835932094, 20.976882237507, 4326);
+        $linestring = $this->river->geometry()->value();
+        $interpolatedPoint = $this->geoTools->getClosestPointOnLineString($linestring, $point);
+        $this->assertTrue($this->geoTools->pointIsOnLineString($linestring, $interpolatedPoint));
+    }
+
+    public function test_cut_linestring_in_sectors_between_observation_points(): void
     {
         $linestring = new LineString(
             array(
@@ -638,14 +646,46 @@ class GeosGeoToolsTest extends WebTestCase
             ), 4326);
 
         $points = array(
-            new Point(105.78, 21.09, 4326),
-            new Point(105.82, 21.08, 4326),
-            new Point(105.90, 20.99, 4326),
-            new Point(105.88, 20.95, 4326),
+            ObservationPoint::fromIdNameAndGeometry(ObservationPointId::generate(), ObservationPointName::fromString('OP1'), Geometry::fromPoint(new Point(105.78, 21.09, 4326))),
+            ObservationPoint::fromIdNameAndGeometry(ObservationPointId::generate(), ObservationPointName::fromString('OP2'), Geometry::fromPoint(new Point(105.82, 21.08, 4326))),
+            ObservationPoint::fromIdNameAndGeometry(ObservationPointId::generate(), ObservationPointName::fromString('OP3'), Geometry::fromPoint(new Point(105.90, 20.99, 4326))),
+            ObservationPoint::fromIdNameAndGeometry(ObservationPointId::generate(), ObservationPointName::fromString('OP4'), Geometry::fromPoint(new Point(105.88, 20.95, 4326)))
         );
 
-        $linestringArray = $this->geoTools->cutLinestringBetweenPoints($linestring, $points);
-        dump($linestringArray);
+        $linestringArray = $this->geoTools->cutLinestringBetweenObservationPoints($linestring, $points);
+        $this->assertCount(3, $linestringArray);
+    }
+
+    public function test_get_relative_distance_of_point_on_linestring(): void
+    {
+        $linestring = new LineString(array(
+            array(105.90, 20.96),
+            array(105.89, 20.95),
+            array(105.88, 20.95),
+            array(105.87, 20.94)
+        ), 4326);
+
+        $point = new Point(105.887, 20.955, 4326);
+
+        $relativeDistance = $this->geoTools->getRelativeDistanceOfPointOnLineString($linestring, $point);
+        $this->assertEquals(0.45, round($relativeDistance,2));
+    }
+
+    public function test_calculate_grid_cell_date_time_values(): void
+    {
+        $observationPoints = $this->river->observationPoints();
+
+        $activeCells = $this->geoTools->calculateActiveCells($this->river, $this->boundingBox, $this->gridSize);
+
+        $result = $this->geoTools->calculateGridCellDateTimeValues(
+            $this->river->geometry()->value(),
+            $observationPoints,
+            $activeCells,
+            $this->boundingBox,
+            $this->gridSize
+        );
+
+        $this->assertCount(count($activeCells->cells()), $result);
     }
 
     public function test_point_is_on_linestring(): void
@@ -659,5 +699,10 @@ class GeosGeoToolsTest extends WebTestCase
 
         $this->assertFalse($this->geoTools->pointIsOnLineString($linestring, new Point(105.885, 20.955, 4326)));
         $this->assertTrue($this->geoTools->pointIsOnLineString($linestring, new Point(105.885, 20.95, 4326)));
+        $this->assertTrue($this->geoTools->pointIsOnLineString($linestring, new Point(105.90, 20.96, 4326)));
+        $this->assertTrue($this->geoTools->pointIsOnLineString($linestring, new Point(105.89, 20.95, 4326)));
+        $this->assertTrue($this->geoTools->pointIsOnLineString($linestring, new Point(105.88, 20.95, 4326)));
+        $this->assertTrue($this->geoTools->pointIsOnLineString($linestring, new Point(105.87, 20.94, 4326)));
+        $this->assertFalse($this->geoTools->pointIsOnLineString($linestring, new Point(105.869, 20.94, 4326)));
     }
 }

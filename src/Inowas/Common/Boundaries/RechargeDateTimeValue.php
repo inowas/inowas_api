@@ -18,21 +18,23 @@ class RechargeDateTimeValue extends DateTimeValue
 
     public static function fromParams(\DateTimeImmutable $dateTime, float $rechargeRate): RechargeDateTimeValue
     {
-        $self = new self();
-        $self->dateTime = $dateTime;
-        $self->rechargeRate = $rechargeRate;
-        return $self;
+        return new self($dateTime, $rechargeRate);
     }
 
     public static function fromArray(array $arr): RechargeDateTimeValue
     {
-        $self = new self();
-        $self->dateTime = new \DateTimeImmutable($arr['date_time']);
-        $self->rechargeRate = $arr['recharge_rate'];
-        return $self;
+        return new self(new \DateTimeImmutable($arr['date_time']), $arr['recharge_rate']);
     }
 
-    private function __construct(){}
+    public static function fromArrayValues(array $arr): RechargeDateTimeValue
+    {
+        return new self(new \DateTimeImmutable($arr[0]), $arr[1]);
+    }
+
+    private function __construct(\DateTimeImmutable $dateTime, float $rechargeRate) {
+        $this->dateTime = $dateTime;
+        $this->rechargeRate = $rechargeRate;
+    }
 
     public function rechargeRate(): float
     {
@@ -59,6 +61,14 @@ class RechargeDateTimeValue extends DateTimeValue
         return array(
             'date_time' => $this->dateTime->format(DATE_ATOM),
             'recharge_rate' => $this->rechargeRate
+        );
+    }
+
+    public function toArrayValues(): array
+    {
+        return array(
+            $this->dateTime->format(DATE_ATOM),
+            $this->rechargeRate
         );
     }
 
