@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Inowas\ModflowBundle\Tests\Functional;
+namespace Tests\Inowas\ModflowBundle\Functional;
 
 use Doctrine\DBAL\Connection;
 use Inowas\Common\Boundaries\AreaBoundary;

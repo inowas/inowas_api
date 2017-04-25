@@ -6,7 +6,6 @@ namespace Inowas\Common\Boundaries;
 
 class RiverDateTimeValue extends DateTimeValue
 {
-
     const TYPE = "riv";
 
     /** @var float */
@@ -36,9 +35,12 @@ class RiverDateTimeValue extends DateTimeValue
         return new self(new \DateTimeImmutable($arr[0]), $arr[1], $arr[2], $arr[3]);
     }
 
-    public function toArrayValues(): array
+    private function __construct(\DateTimeImmutable $dateTime, float $stage, float $botm, float $cond)
     {
-        return array($this->dateTime->format(DATE_ATOM), $this->stage, $this->rbot, $this->cond);
+        $this->stage = $stage;
+        $this->rbot = $botm;
+        $this->cond = $cond;
+        $this->dateTime = $dateTime;
     }
 
     public function toArray(): array
@@ -51,12 +53,9 @@ class RiverDateTimeValue extends DateTimeValue
         );
     }
 
-    private function __construct(\DateTimeImmutable $dateTime, float $stage, float $botm, float $cond)
+    public function toArrayValues(): array
     {
-        $this->stage = $stage;
-        $this->rbot = $botm;
-        $this->cond = $cond;
-        $this->dateTime = $dateTime;
+        return array($this->dateTime->format(DATE_ATOM), $this->stage, $this->rbot, $this->cond);
     }
 
     public function jsonSerialize()

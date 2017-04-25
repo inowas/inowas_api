@@ -20,21 +20,24 @@ class ConstantHeadDateTimeValue extends DateTimeValue
 
     public static function fromParams(\DateTimeImmutable $dateTime, float $shead, float $ehead): ConstantHeadDateTimeValue
     {
-        $self = new self();
-        $self->shead = $shead;
-        $self->ehead = $ehead;
-        $self->dateTime = $dateTime;
-
-        return $self;
+        return new self($dateTime, $shead, $ehead);
     }
 
     public static function fromArray(array $arr): ConstantHeadDateTimeValue
     {
-        $self = new self();
-        $self->dateTime = new \DateTimeImmutable($arr['date_time']);
-        $self->shead = $arr['shead'];
-        $self->ehead = $arr['ehead'];
-        return $self;
+        return new self(new \DateTimeImmutable($arr['date_time']), $arr['shead'], $arr['ehead']);
+    }
+
+    public static function fromArrayValues(array $arr): ConstantHeadDateTimeValue
+    {
+        return new self(new \DateTimeImmutable($arr[0]), $arr[1], $arr[2]);
+    }
+
+    private function __construct(\DateTimeImmutable $dateTime, float $shead, float $ehead)
+    {
+        $this->dateTime = $dateTime;
+        $this->shead = $shead;
+        $this->ehead = $ehead;
     }
 
     public function toArray(): array
@@ -44,6 +47,11 @@ class ConstantHeadDateTimeValue extends DateTimeValue
             'shead' => $this->shead,
             'ehead' => $this->ehead
         );
+    }
+
+    public function toArrayValues(): array
+    {
+        return array($this->dateTime->format(DATE_ATOM), $this->shead, $this->ehead);
     }
 
     public function jsonSerialize()

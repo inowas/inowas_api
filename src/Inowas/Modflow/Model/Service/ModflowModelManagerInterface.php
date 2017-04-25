@@ -19,7 +19,7 @@ interface ModflowModelManagerInterface
 
     public function countModelBoundaries(ModflowId $modflowId, string $type): int;
 
-    public function findWelStressPeriodData(ModflowId $modflowId, StressPeriods $stressPeriods, DateTime $start, TimeUnit $timeUnit): WelStressPeriodData;
+    public function generateWelStressPeriodData(ModflowId $modflowId, StressPeriods $stressPeriods): WelStressPeriodData;
 
     public function calculateStressPeriods(ModflowId $modflowId, DateTime $start, DateTime $end, TimeUnit $timeUnit): ?StressPeriods;
 

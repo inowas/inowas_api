@@ -28,6 +28,7 @@
         <service id="inowas.modflow.model.manager" class="Inowas\Modflow\Model\Service\ModflowModelManager">
             <argument type="service" id="inowas.model_boundaries_finder"/>
             <argument type="service" id="inowas.model_scenarios_finder"/>
+            <argument type="service" id="inowas.modflow.stressperiod_data_generator"/>
         </service>
         <service id="inowas.modflow.stressperiod_data_generator" class="Inowas\Modflow\Model\Service\StressPeriodDataGenerator">
             <argument type="service" id="inowas.geotools"/>

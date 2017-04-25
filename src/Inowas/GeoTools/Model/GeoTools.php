@@ -204,7 +204,6 @@ class GeoTools
             }
         }
 
-        $points = [];
         $distances = [];
         foreach ($observationPoints as $observationPoint) {
 
@@ -216,13 +215,11 @@ class GeoTools
 
             $closestPoint = $this->getClosestPointOnLineString($lineString, $point);
             $distance = $this->getDistanceOfPointFromLineStringStartPoint($lineString, $closestPoint);
-            $points[] = $point;
-            $closesPoints[] = $closestPoint;
             $distances[] = $distance->inMeters();
         }
 
         /* Sort by distance  */
-        array_multisort($distances, $points);
+        array_multisort($distances, $observationPoints);
 
         /* Calculate Substrings */
         $substringsWithObservationPoints = array();
@@ -341,7 +338,6 @@ class GeoTools
 
     protected function getSubstringOfLinestring(LineString $lineString, Point $start, Point $end): LineString
     {
-
         $srid =$lineString->getSrid();
 
         $start = \geoPHP::load($start->toJson(),'json');

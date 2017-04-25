@@ -17,21 +17,23 @@ class WellDateTimeValue extends DateTimeValue
 
     public static function fromParams(\DateTimeImmutable $dateTime, float $pumpingRate): WellDateTimeValue
     {
-        $self = new self();
-        $self->dateTime = $dateTime;
-        $self->pumpingRate = $pumpingRate;
-        return $self;
+        return new self($dateTime, $pumpingRate);
     }
 
     public static function fromArray(array $arr): WellDateTimeValue
     {
-        $self = new self();
-        $self->dateTime = new \DateTimeImmutable($arr['date_time']);
-        $self->pumpingRate = $arr['pumping_rate'];
-        return $self;
+        return new self(new \DateTimeImmutable($arr['date_time']), $arr['pumping_rate']);
     }
 
-    private function __construct(){}
+    public static function fromArrayValues(array $arr): WellDateTimeValue
+    {
+        return new self(new \DateTimeImmutable($arr[0]), $arr[1]);
+    }
+
+    private function __construct(\DateTimeImmutable $dateTime, float $pumpingRate){
+        $this->dateTime = $dateTime;
+        $this->pumpingRate = $pumpingRate;
+    }
 
     public function type(): string
     {
@@ -54,6 +56,11 @@ class WellDateTimeValue extends DateTimeValue
             'date_time' => $this->dateTime->format(DATE_ATOM),
             'pumping_rate' => $this->pumpingRate
         );
+    }
+
+    public function toArrayValues(): array
+    {
+        return array($this->dateTime->format(DATE_ATOM), $this->pumpingRate);
     }
 
     public function values(): array

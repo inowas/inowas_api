@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Tests\Inowas\GeoTools;
+namespace Tests\Inowas\GeoTools\Model;
 
 use Inowas\Common\Boundaries\AreaBoundary;
 use Inowas\Common\Boundaries\BoundaryName;
@@ -23,7 +23,7 @@ use Inowas\Common\Id\ObservationPointId;
 use Inowas\GeoTools\Model\GeoTools;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
-class GeosGeoToolsTest extends WebTestCase
+class GeoToolsTest extends WebTestCase
 {
 
     /** @var  AreaBoundary */
@@ -622,8 +622,8 @@ class GeosGeoToolsTest extends WebTestCase
             ), 4326);
 
         $points = array(
-            ObservationPoint::fromIdNameAndGeometry(ObservationPointId::generate(), ObservationPointName::fromString('OP1'), Geometry::fromPoint(new Point(105.78, 21.09, 4326))),
             ObservationPoint::fromIdNameAndGeometry(ObservationPointId::generate(), ObservationPointName::fromString('OP2'), Geometry::fromPoint(new Point(105.82, 21.08, 4326))),
+            ObservationPoint::fromIdNameAndGeometry(ObservationPointId::generate(), ObservationPointName::fromString('OP1'), Geometry::fromPoint(new Point(105.78, 21.09, 4326))),
             ObservationPoint::fromIdNameAndGeometry(ObservationPointId::generate(), ObservationPointName::fromString('OP3'), Geometry::fromPoint(new Point(105.90, 20.99, 4326))),
             ObservationPoint::fromIdNameAndGeometry(ObservationPointId::generate(), ObservationPointName::fromString('OP4'), Geometry::fromPoint(new Point(105.88, 20.95, 4326)))
         );

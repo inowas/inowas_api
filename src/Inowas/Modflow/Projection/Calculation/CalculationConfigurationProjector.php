@@ -240,7 +240,7 @@ class CalculationConfigurationProjector extends AbstractDoctrineConnectionProjec
          * Add PackageDetails for WelPackage
          */
         if ($this->modflowModelManager->countModelBoundaries($modflowModelId, WellBoundary::TYPE) > 0) {
-            $welStressPeriodData = $this->modflowModelManager->findWelStressPeriodData($modflowModelId, $stressPeriods, $start, $timeUnit);
+            $welStressPeriodData = $this->modflowModelManager->generateWelStressPeriodData($modflowModelId, $stressPeriods);
             $packages->updatePackageParameter('wel', 'StressPeriodData', $welStressPeriodData);
         }
 
@@ -248,7 +248,7 @@ class CalculationConfigurationProjector extends AbstractDoctrineConnectionProjec
          * Add PackageDetails for RchPackage
          */
         if ($this->modflowModelManager->countModelBoundaries($modflowModelId, RechargeBoundary::TYPE) > 0) {
-            $rchStressPeriodData = $this->modflowModelManager->findRchStressPeriodData($modflowModelId, $stressPeriods, $start, $timeUnit);
+            $rchStressPeriodData = $this->modflowModelManager->generateRchStressPeriodData($modflowModelId, $stressPeriods);
             $packages->updatePackageParameter('rch', 'StressPeriodData', $rchStressPeriodData);
         }
 
@@ -256,7 +256,7 @@ class CalculationConfigurationProjector extends AbstractDoctrineConnectionProjec
          * Add PackageDetails for RivPackage
          */
         if ($this->modflowModelManager->countModelBoundaries($modflowModelId, RiverBoundary::TYPE) > 0) {
-            $rivStressPeriodData = $this->modflowModelManager->findRivStressPeriodData($modflowModelId, $stressPeriods, $start, $timeUnit);
+            $rivStressPeriodData = $this->modflowModelManager->generateRivStressPeriodData($modflowModelId, $stressPeriods);
             $packages->updatePackageParameter('riv', 'StressPeriodData', $rivStressPeriodData);
         }
 
@@ -264,7 +264,7 @@ class CalculationConfigurationProjector extends AbstractDoctrineConnectionProjec
          * Add PackageDetails for GhbPackage
          */
         if ($this->modflowModelManager->countModelBoundaries($modflowModelId, GeneralHeadBoundary::TYPE) > 0) {
-            $ghbStressPeriodData = $this->modflowModelManager->generateGhbStressPeriodData($modflowModelId, $stressPeriods, $start, $timeUnit);
+            $ghbStressPeriodData = $this->modflowModelManager->generateGhbStressPeriodData($modflowModelId, $stressPeriods);
             $packages->updatePackageParameter('ghb', 'StressPeriodData', $ghbStressPeriodData);
         }
 
@@ -272,7 +272,7 @@ class CalculationConfigurationProjector extends AbstractDoctrineConnectionProjec
          * Add PackageDetails for ChdPackage
          */
         if ($this->modflowModelManager->countModelBoundaries($modflowModelId, ConstantHeadBoundary::TYPE) > 0) {
-            $chdStressPeriodData = $this->modflowModelManager->findChdStressPeriodData($modflowModelId, $stressPeriods, $start, $timeUnit);
+            $chdStressPeriodData = $this->modflowModelManager->generateChdStressPeriodData($modflowModelId, $stressPeriods);
             $packages->updatePackageParameter('chd', 'StressPeriodData', $chdStressPeriodData);
         }
 

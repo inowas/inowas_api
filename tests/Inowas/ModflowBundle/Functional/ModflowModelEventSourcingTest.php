@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Inowas\ModflowBundle\Tests\Functional;
+namespace Tests\Inowas\ModflowBundle\Functional;
 
 use Inowas\Common\Boundaries\ObservationPoint;
 use Inowas\Common\DateTime\DateTime;

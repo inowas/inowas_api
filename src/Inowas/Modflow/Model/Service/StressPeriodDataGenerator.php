@@ -4,24 +4,39 @@ declare(strict_types=1);
 
 namespace Inowas\Modflow\Model\Service;
 
+use Inowas\Common\Boundaries\ConstantHeadBoundary;
+use Inowas\Common\Boundaries\ConstantHeadDateTimeValue;
 use Inowas\Common\Boundaries\DateTimeValue;
 use Inowas\Common\Boundaries\GeneralHeadBoundary;
 use Inowas\Common\Boundaries\GeneralHeadDateTimeValue;
 use Inowas\Common\Boundaries\GridCellDateTimeValues;
 use Inowas\Common\Boundaries\ModflowBoundary;
 use Inowas\Common\Boundaries\ObservationPoint;
+use Inowas\Common\Boundaries\RechargeBoundary;
+use Inowas\Common\Boundaries\RiverBoundary;
+use Inowas\Common\Boundaries\RiverDateTimeValue;
+use Inowas\Common\Boundaries\WellBoundary;
 use Inowas\Common\DateTime\DateTime;
 use Inowas\Common\DateTime\TotalTime;
 use Inowas\Common\Geometry\LineString;
 use Inowas\Common\Grid\BoundingBox;
 use Inowas\Common\Grid\GridSize;
+use Inowas\Common\Modflow\Rech;
 use Inowas\Common\Modflow\StressPeriod;
 use Inowas\Common\Modflow\StressPeriods;
 use Inowas\Common\Modflow\TimeUnit;
 use Inowas\GeoTools\Model\GeoTools;
 use Inowas\Modflow\Model\Exception\InvalidTimeUnitException;
+use Inowas\Modflow\Model\Packages\ChdStressPeriodData;
+use Inowas\Modflow\Model\Packages\ChdStressPeriodGridCellValue;
 use Inowas\Modflow\Model\Packages\GhbStressPeriodData;
 use Inowas\Modflow\Model\Packages\GhbStressPeriodGridCellValue;
+use Inowas\Modflow\Model\Packages\RchStressPeriodData;
+use Inowas\Modflow\Model\Packages\RchStressPeriodValue;
+use Inowas\Modflow\Model\Packages\RivStressPeriodData;
+use Inowas\Modflow\Model\Packages\RivStressPeriodGridCellValue;
+use Inowas\Modflow\Model\Packages\WelStressPeriodData;
+use Inowas\Modflow\Model\Packages\WelStressPeriodGridCellValue;
 
 class StressPeriodDataGenerator
 {
@@ -33,24 +48,43 @@ class StressPeriodDataGenerator
         $this->geoTools = $geoTools;
     }
 
+    public function fromConstantHeadBoundaries(array $chdBoundaries, StressPeriods $stressPeriods, GridSize $gridSize, BoundingBox $boundingBox): ChdStressPeriodData
+    {
+        $startTime = $stressPeriods->start();
+        $timeUnit = $stressPeriods->timeUnit();
+
+        $chdSpd = ChdStressPeriodData::create();
+        /** @var ConstantHeadBoundary $chdBoundary */
+        foreach ($chdBoundaries as $chdBoundary) {
+            if (! $chdBoundary instanceof ConstantHeadBoundary) {
+                continue;
+            }
+
+            /** @var GridCellDateTimeValues[] $gridCellDateTimeValues */
+            $gridCellDateTimeValues = $this->calculateGridCellDateTimeValues($chdBoundary, $gridSize, $boundingBox);
+            foreach ($gridCellDateTimeValues as $gridCellDateTimeValue) {
+
+                /** @var StressPeriod $stressperiod */
+                foreach ($stressPeriods->stressperiods() as $stressperiod) {
+                    $totim = TotalTime::fromInt($stressperiod->totimStart());
+                    $sp = $stressPeriods->spNumberFromTotim($totim);
+                    $dateTimeValue = $gridCellDateTimeValue->findValueByDateTime($this->calculateDateTimeFromTotim($startTime, $totim, $timeUnit));
+                    if ($dateTimeValue instanceof ConstantHeadDateTimeValue){
+                        $chdSpd->addGridCellValue(ChdStressPeriodGridCellValue::fromParams($sp, $gridCellDateTimeValue->layer(), $gridCellDateTimeValue->row(), $gridCellDateTimeValue->column(),$dateTimeValue->shead(), $dateTimeValue->ehead()));
+                    }
+                }
+            }
+        }
+
+        return $chdSpd;
+    }
+
     public function fromGeneralHeadBoundaries(array $ghbBoundaries, StressPeriods $stressPeriods, GridSize $gridSize, BoundingBox $boundingBox): GhbStressPeriodData
     {
         $startTime = $stressPeriods->start();
         $timeUnit = $stressPeriods->timeUnit();
 
         $ghbSpd = GhbStressPeriodData::create();
-        foreach ($ghbBoundaries as $ghbBoundary) {
-            if (!$ghbBoundary instanceof GeneralHeadBoundary) {
-                continue;
-            }
-
-            /** @var StressPeriod $stressperiod */
-            foreach ($stressPeriods->stressperiods() as $stressperiod) {
-                $totim = TotalTime::fromInt($stressperiod->totimStart());
-                $sp = $stressPeriods->spNumberFromTotim($totim);
-            }
-        }
-
         /** @var GeneralHeadBoundary $ghbBoundary */
         foreach ($ghbBoundaries as $ghbBoundary) {
             if (! $ghbBoundary instanceof GeneralHeadBoundary) {
@@ -59,8 +93,9 @@ class StressPeriodDataGenerator
 
             /** @var GridCellDateTimeValues[] $gridCellDateTimeValues */
             $gridCellDateTimeValues = $this->calculateGridCellDateTimeValues($ghbBoundary, $gridSize, $boundingBox);
-
             foreach ($gridCellDateTimeValues as $gridCellDateTimeValue) {
+
+                /** @var StressPeriod $stressperiod */
                 foreach ($stressPeriods->stressperiods() as $stressperiod) {
                     $totim = TotalTime::fromInt($stressperiod->totimStart());
                     $sp = $stressPeriods->spNumberFromTotim($totim);
@@ -75,7 +110,106 @@ class StressPeriodDataGenerator
         return $ghbSpd;
     }
 
-    private function calculateGridCellDateTimeValues(ModflowBoundary $boundary, GridSize $gridSize, BoundingBox $boundingBox): array
+    public function fromRiverBoundaries(array $rivBoundaries, StressPeriods $stressPeriods, GridSize $gridSize, BoundingBox $boundingBox): RivStressPeriodData
+    {
+        $startTime = $stressPeriods->start();
+        $timeUnit = $stressPeriods->timeUnit();
+
+        $rivSpd = RivStressPeriodData::create();
+
+        /** @var RiverBoundary $rivBoundary */
+        foreach ($rivBoundaries as $rivBoundary) {
+            if (! $rivBoundary instanceof RiverBoundary) {
+                continue;
+            }
+
+            /** @var GridCellDateTimeValues[] $gridCellDateTimeValues */
+            $gridCellDateTimeValues = $this->calculateGridCellDateTimeValues($rivBoundary, $gridSize, $boundingBox);
+            foreach ($gridCellDateTimeValues as $gridCellDateTimeValue) {
+
+                /** @var StressPeriod $stressperiod */
+                foreach ($stressPeriods->stressperiods() as $stressperiod) {
+                    $totim = TotalTime::fromInt($stressperiod->totimStart());
+                    $sp = $stressPeriods->spNumberFromTotim($totim);
+                    $dateTimeValue = $gridCellDateTimeValue->findValueByDateTime($this->calculateDateTimeFromTotim($startTime, $totim, $timeUnit));
+                    if ($dateTimeValue instanceof RiverDateTimeValue){
+                        $rivSpd->addGridCellValue(RivStressPeriodGridCellValue::fromParams($sp, $gridCellDateTimeValue->layer(), $gridCellDateTimeValue->row(), $gridCellDateTimeValue->column(),$dateTimeValue->stage(), $dateTimeValue->cond(), $dateTimeValue->rbot()));
+                    }
+                }
+            }
+        }
+
+        return $rivSpd;
+    }
+
+    public function fromRechargeBoundaries(array $rchBoundaries, StressPeriods $stressPeriods): RchStressPeriodData
+    {
+        $startTime = $stressPeriods->start();
+        $timeUnit = $stressPeriods->timeUnit();
+
+        $rchSpd = RchStressPeriodData::create();
+
+        /** @var RechargeBoundary $rivBoundary */
+        foreach ($rchBoundaries as $rchBoundary) {
+            if (! $rchBoundary instanceof RechargeBoundary) {
+                continue;
+            }
+
+            /** @var StressPeriod $stressperiod */
+            foreach ($stressPeriods->stressperiods() as $stressperiod) {
+                $totim = TotalTime::fromInt($stressperiod->totimStart());
+                $sp = $stressPeriods->spNumberFromTotim($totim);
+
+                $cells = $rchBoundary->activeCells()->fullArray();
+                $rechargeValue = $rchBoundary->findValueByDateTime($this->calculateDateTimeFromTotim($startTime, $totim, $timeUnit));
+                $rech = [];
+                foreach ($cells as $rowKey => $row){
+                    $rech[$rowKey] = [];
+                    foreach ($row as $colKey => $value){
+                        $rech[$rowKey][$colKey] = 0;
+                        if ($value === true){
+                            $rech[$rowKey][$colKey] = $rechargeValue->rechargeRate();
+                        }
+                    }
+                }
+
+                $rchSpd->addStressPeriodValue(RchStressPeriodValue::fromParams($sp, Rech::fromValue($rech)));
+            }
+        }
+
+        return $rchSpd;
+    }
+
+    public function fromWellBoundaries(array $wellBoundaries, StressPeriods $stressPeriods): WelStressPeriodData
+    {
+        $startTime = $stressPeriods->start();
+        $timeUnit = $stressPeriods->timeUnit();
+
+        $wspd = WelStressPeriodData::create();
+
+        /** @var WellBoundary[] $wellBoundary */
+        foreach ($wellBoundaries as $wellBoundary){
+            if (! $wellBoundary instanceof WellBoundary){
+                continue;
+            }
+
+            /** @var StressPeriod $stressperiod */
+            foreach ($stressPeriods->stressperiods() as $stressperiod) {
+                $totim = TotalTime::fromInt($stressperiod->totimStart());
+                $sp = $stressPeriods->spNumberFromTotim($totim);
+                $cells = $wellBoundary->activeCells()->cells();
+                if (count($cells)>0){
+                    $cell = $cells[0];
+                    $pumpingRate = $wellBoundary->findValueByDateTime($this->calculateDateTimeFromTotim($startTime, $totim, $timeUnit));
+                    $wspd->addGridCellValue(WelStressPeriodGridCellValue::fromParams($sp, $cell[0], $cell[1], $cell[2], $pumpingRate->pumpingRate()));
+                }
+            }
+        }
+
+        return $wspd;
+    }
+
+    protected function calculateGridCellDateTimeValues(ModflowBoundary $boundary, GridSize $gridSize, BoundingBox $boundingBox): array
     {
         $gridCellDateTimeValues = [];
         $observationPoints = $boundary->observationPoints();
@@ -95,9 +229,7 @@ class StressPeriodDataGenerator
             $cells = $boundary->activeCells()->cells();
 
             foreach ($cells as $cell){
-                foreach ($dateTimeValues as $dateTimeValue){
-                    $gridCellDateTimeValues[] = GridCellDateTimeValues::fromParams($cell[0], $cell[1], $cell[2], $dateTimeValue);
-                }
+                $gridCellDateTimeValues[] = GridCellDateTimeValues::fromParams($cell[0], $cell[1], $cell[2], $dateTimeValues);
             }
         }
 

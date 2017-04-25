@@ -20,21 +20,24 @@ class GeneralHeadDateTimeValue extends DateTimeValue
 
     public static function fromParams(\DateTimeImmutable $dateTime, float $stage, float $cond): GeneralHeadDateTimeValue
     {
-        $self = new self();
-        $self->stage = $stage;
-        $self->cond = $cond;
-        $self->dateTime = $dateTime;
-
-        return $self;
+        return new self($dateTime, $stage, $cond);
     }
 
     public static function fromArray(array $arr): GeneralHeadDateTimeValue
     {
-        $self = new self();
-        $self->dateTime = new \DateTimeImmutable($arr['date_time']);
-        $self->stage = $arr['stage'];
-        $self->cond = $arr['cond'];
-        return $self;
+        return new self(new \DateTimeImmutable($arr['date_time']), $arr['stage'], $arr['cond']);
+    }
+
+    public static function fromArrayValues(array $arr): GeneralHeadDateTimeValue
+    {
+        return new self(new \DateTimeImmutable($arr[0]), $arr[1], $arr[2]);
+    }
+
+    private function __construct(\DateTimeImmutable $dateTime, float $stage, float $cond)
+    {
+        $this->dateTime = $dateTime;
+        $this->stage = $stage;
+        $this->cond = $cond;
     }
 
     public function toArray(): array
@@ -44,6 +47,11 @@ class GeneralHeadDateTimeValue extends DateTimeValue
             'stage' => $this->stage,
             'cond' => $this->cond
         );
+    }
+
+    public function toArrayValues(): array
+    {
+        return array($this->dateTime->format(DATE_ATOM), $this->stage, $this->cond);
     }
 
     public function jsonSerialize()
