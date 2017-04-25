@@ -10,6 +10,8 @@ use Inowas\Common\Boundaries\ObservationPoint;
 use Inowas\Common\Boundaries\ObservationPointName;
 use Inowas\Common\Boundaries\RiverBoundary;
 use Inowas\Common\Boundaries\RiverDateTimeValue;
+use Inowas\Common\Boundaries\WellBoundary;
+use Inowas\Common\Boundaries\WellType;
 use Inowas\Common\Geometry\Geometry;
 use Inowas\Common\Geometry\LineString;
 use Inowas\Common\Geometry\Point;
@@ -18,6 +20,7 @@ use Inowas\Common\Grid\ActiveCells;
 use Inowas\Common\Grid\BoundingBox;
 use Inowas\Common\Grid\Distance;
 use Inowas\Common\Grid\GridSize;
+use Inowas\Common\Grid\LayerNumber;
 use Inowas\Common\Id\BoundaryId;
 use Inowas\Common\Id\ObservationPointId;
 use Inowas\GeoTools\Model\GeoTools;
@@ -31,6 +34,9 @@ class GeoToolsTest extends WebTestCase
 
     /** @var  RiverBoundary */
     protected $river;
+
+    /** @var  WellBoundary */
+    protected $well;
 
     /** @var  BoundingBox */
     protected $boundingBox;
@@ -212,6 +218,14 @@ class GeoToolsTest extends WebTestCase
         $this->river = $this->river->addRiverStageToObservationPoint($opId3, RiverDateTimeValue::fromParams(
             new \DateTimeImmutable('2015-03-01'), 5, 0, 520)
         );
+
+        $this->well = WellBoundary::createWithParams(
+            BoundaryId::generate(),
+            BoundaryName::fromString('Well 1'),
+            Geometry::fromPoint(new Point(105.78304910628,21.093961475741, 4326)),
+            WellType::fromString(WellType::TYPE_INDUSTRIAL_WELL),
+            LayerNumber::fromInteger(2)
+        );
     }
 
     public function testCreateWKTFromAreaGeometry(): void
@@ -233,6 +247,14 @@ class GeoToolsTest extends WebTestCase
         $result = $this->geoTools->calculateActiveCells($this->area, $this->boundingBox, $this->gridSize);
         $this->assertInstanceOf(ActiveCells::class, $result);
         $this->assertCount(330, $result->cells());
+    }
+
+    public function test_calculate_active_cells_of_well_with_layer_data(): void
+    {
+        $result = $this->geoTools->calculateActiveCells($this->well, $this->boundingBox, $this->gridSize);
+        $this->assertInstanceOf(ActiveCells::class, $result);
+        $this->assertCount(1, $result->cells());
+        $this->assertEquals($result->cells()[0], [2,1,3]);
     }
 
     public function test_integration_if_geos_is_available(): void

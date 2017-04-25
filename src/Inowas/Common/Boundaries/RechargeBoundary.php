@@ -43,6 +43,7 @@ class RechargeBoundary extends AbstractBoundary
 
         $self = new self($this->boundaryId, $this->name, $this->geometry, $this->activeCells);
         $self->observationPoints = $this->observationPoints;
+        $self->affectedLayers = $this->affectedLayers;
         return $self;
     }
 
@@ -50,12 +51,16 @@ class RechargeBoundary extends AbstractBoundary
     {
         $self = new self($this->boundaryId, $this->name, $this->geometry, $activeCells);
         $self->observationPoints = $this->observationPoints;
+        $self->affectedLayers = $this->affectedLayers;
         return $self;
     }
 
     public function updateGeometry(Geometry $geometry): RechargeBoundary
     {
-        return new self($this->boundaryId, $this->name, $geometry, $this->activeCells);
+        $self = new self($this->boundaryId, $this->name, $geometry, $this->activeCells);
+        $self->observationPoints = $this->observationPoints;
+        $self->affectedLayers = $this->affectedLayers;
+        return $self;
     }
 
     public function type(): string

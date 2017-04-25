@@ -7,6 +7,7 @@ namespace Inowas\Common\Boundaries;
 use Inowas\Common\Exception\ObservationPointNotFoundInBoundaryException;
 use Inowas\Common\Geometry\Geometry;
 use Inowas\Common\Grid\ActiveCells;
+use Inowas\Common\Grid\AffectedLayers;
 use Inowas\Common\Id\BoundaryId;
 use Inowas\Common\Id\ObservationPointId;
 
@@ -22,10 +23,12 @@ class GeneralHeadBoundary extends AbstractBoundary
     public static function createWithParams(
         BoundaryId $boundaryId,
         BoundaryName $name,
-        Geometry $geometry
+        Geometry $geometry,
+        AffectedLayers $affectedLayers
     ): GeneralHeadBoundary
     {
         $self = new self($boundaryId, $name, $geometry);
+        $self->affectedLayers = $affectedLayers;
         return $self;
     }
 
@@ -33,6 +36,7 @@ class GeneralHeadBoundary extends AbstractBoundary
     {
         $this->addOp($point);
         $self = new self($this->boundaryId, $this->name, $this->geometry, $this->activeCells);
+        $self->affectedLayers = $this->affectedLayers;
         $self->observationPoints = $this->observationPoints;
         return $self;
     }
@@ -45,6 +49,7 @@ class GeneralHeadBoundary extends AbstractBoundary
 
         $this->addDateTimeValue($ghbDateTimeValue, $observationPointId);
         $self = new self($this->boundaryId, $this->name, $this->geometry, $this->activeCells);
+        $self->affectedLayers = $this->affectedLayers;
         $self->observationPoints = $this->observationPoints;
         return $self;
     }
@@ -52,13 +57,17 @@ class GeneralHeadBoundary extends AbstractBoundary
     public function setActiveCells(ActiveCells $activeCells): GeneralHeadBoundary
     {
         $self = new self($this->boundaryId, $this->name, $this->geometry, $activeCells);
+        $self->affectedLayers = $this->affectedLayers;
         $self->observationPoints = $this->observationPoints;
         return $self;
     }
 
     public function updateGeometry(Geometry $geometry): GeneralHeadBoundary
     {
-        return new self($this->boundaryId, $this->name, $geometry, $this->activeCells);
+        $self = new self($this->boundaryId, $this->name, $geometry, $this->activeCells);
+        $self->affectedLayers = $this->affectedLayers;
+        $self->observationPoints = $this->observationPoints;
+        return $self;
     }
 
     public function type(): string

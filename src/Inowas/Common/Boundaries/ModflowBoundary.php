@@ -6,6 +6,7 @@ namespace Inowas\Common\Boundaries;
 
 use Inowas\Common\Geometry\Geometry;
 use Inowas\Common\Grid\ActiveCells;
+use Inowas\Common\Grid\AffectedLayers;
 use Inowas\Common\Id\BoundaryId;
 
 interface ModflowBoundary
@@ -31,4 +32,6 @@ interface ModflowBoundary
     public function setActiveCells(ActiveCells $activeCells);
 
     public function activeCells(): ?ActiveCells;
+
+    public function affectedLayers(): AffectedLayers;
 }

@@ -7,6 +7,8 @@ namespace Inowas\Common\Boundaries;
 use Inowas\Common\Exception\ObservationPointNotFoundInBoundaryException;
 use Inowas\Common\Geometry\Geometry;
 use Inowas\Common\Grid\ActiveCells;
+use Inowas\Common\Grid\AffectedLayers;
+use Inowas\Common\Grid\LayerNumber;
 use Inowas\Common\Id\BoundaryId;
 use Inowas\Common\Id\ObservationPointId;
 
@@ -24,6 +26,9 @@ abstract class AbstractBoundary implements ModflowBoundary
     /** @var  ActiveCells */
     protected $activeCells;
 
+    /** @var  AffectedLayers */
+    protected $affectedLayers;
+
     /** @var array  */
     protected $observationPoints = [];
 
@@ -33,6 +38,7 @@ abstract class AbstractBoundary implements ModflowBoundary
         $this->name = $name;
         $this->geometry = $geometry;
         $this->activeCells = $activeCells;
+        $this->affectedLayers = AffectedLayers::createWithLayerNumber(LayerNumber::fromInteger(0));
 
         if (is_null($this->name)) {
             $this->name = BoundaryName::fromString('');
@@ -43,14 +49,19 @@ abstract class AbstractBoundary implements ModflowBoundary
 
     abstract public function updateGeometry(Geometry $geometry);
 
+    public function activeCells(): ?ActiveCells
+    {
+        return $this->activeCells;
+    }
+
+    public function affectedLayers(): AffectedLayers
+    {
+        return $this->affectedLayers;
+    }
+
     public function boundaryId(): BoundaryId
     {
         return $this->boundaryId;
-    }
-
-    public function name(): ?BoundaryName
-    {
-        return $this->name;
     }
 
     public function geometry(): ?Geometry
@@ -58,9 +69,9 @@ abstract class AbstractBoundary implements ModflowBoundary
         return $this->geometry;
     }
 
-    public function activeCells(): ?ActiveCells
+    public function name(): ?BoundaryName
     {
-        return $this->activeCells;
+        return $this->name;
     }
 
     public function observationPoints(): array

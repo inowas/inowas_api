@@ -35,12 +35,12 @@ class GeoTools
         }
 
         /** @var \Polygon $boundingBoxPolygon */
-        $boundary = \geoPHP::load($boundary->geometry()->toJson(), 'json')->geos();
+        $boundaryGeometry = \geoPHP::load($boundary->geometry()->toJson(), 'json')->geos();
 
         /** @var \Polygon $boundingBoxPolygon */
         $boundingBoxPolygon = \geoPHP::load($boundingBox->toGeoJson(), 'json')->geos();
 
-        if (! $boundingBoxPolygon->intersects($boundary)) {
+        if (! $boundingBoxPolygon->intersects($boundaryGeometry)) {
             return ActiveCells::fromCells(array());
         }
 
@@ -55,11 +55,11 @@ class GeoTools
             for ($x = 0; $x<$nx; $x++){
                 /** @var \Polygon $bb */
                 $bb = \geoPHP::load(sprintf('LINESTRING(%f %f, %f %f)', $boundingBox->xMin()+(($x)*$dX), $boundingBox->yMax()-(($y)*$dY), $boundingBox->xMin()+(($x+1)*$dX), $boundingBox->yMax()-(($y+1)*$dY)), 'wkt')->envelope()->geos();
-                $activeCells[$y][$x] = ($bb->intersects($boundary) || $bb->crosses($boundary));
+                $activeCells[$y][$x] = ($bb->intersects($boundaryGeometry) || $bb->crosses($boundaryGeometry));
             }
         }
 
-        return ActiveCells::fromArrayAndGridSize($activeCells, $gridSize);
+        return ActiveCells::fromArrayGridSizeAndLayer($activeCells, $gridSize, $boundary->affectedLayers());
     }
 
     public function getBoundingBox(Geometry $geometry): BoundingBox

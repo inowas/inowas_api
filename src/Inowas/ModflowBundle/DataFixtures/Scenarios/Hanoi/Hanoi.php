@@ -14,6 +14,7 @@ use Inowas\Common\Geometry\LineString;
 use Inowas\Common\Geometry\Point;
 use Inowas\Common\Geometry\Polygon;
 use Inowas\Common\Geometry\Srid;
+use Inowas\Common\Grid\AffectedLayers;
 use Inowas\Common\Grid\LayerNumber;
 use Inowas\Common\Boundaries\AreaBoundary;
 use Inowas\Common\Geometry\Geometry;
@@ -427,7 +428,7 @@ class Hanoi extends LoadScenarioBase
                 BoundaryName::fromString($well['Name']),
                 Geometry::fromPoint($geoTools->projectPoint(new Point($well['x'], $well['y'], $well['srid']), Srid::fromInt(4326))),
                 WellType::fromString($well['type']),
-                LayerNumber::fromInteger((int)$well['layer']-1)
+                AffectedLayers::createWithLayerNumber(LayerNumber::fromInteger((int)$well['layer']-1))
             );
 
             $value = null;
@@ -497,7 +498,12 @@ class Hanoi extends LoadScenarioBase
         $chdBoundary = ConstantHeadBoundary::createWithParams(
             BoundaryId::generate(),
             BoundaryName::fromString('ChdBoundary'),
-            Geometry::fromLineString(new LineString($chdPoints, 4326))
+            Geometry::fromLineString(new LineString($chdPoints, 4326)),
+            AffectedLayers::createWithLayerNumbers(array(
+                LayerNumber::fromInteger(2),
+                    LayerNumber::fromInteger(3)
+                )
+            )
         );
 
         $observationPoints = $this->loadRowsFromCsv(__DIR__ . "/data/chd_stages_basecase.csv");
@@ -607,7 +613,7 @@ class Hanoi extends LoadScenarioBase
                 BoundaryName::fromString($wellData['name']),
                 Geometry::fromPoint($geoTools->projectPoint(new Point($wellData['x'], $wellData['y'], $wellData['srid']), Srid::fromInt(4326))),
                 WellType::fromString(WellType::TYPE_SCENARIO_NEW_WELL),
-                LayerNumber::fromInteger(1)
+                AffectedLayers::createWithLayerNumber(LayerNumber::fromInteger(1))
             );
             $wellBoundary = $wellBoundary->addPumpingRate(WellDateTimeValue::fromParams(
                     $start->toDateTimeImmutable(),
@@ -661,7 +667,7 @@ class Hanoi extends LoadScenarioBase
                 BoundaryName::fromString($wellData['name']),
                 Geometry::fromPoint($geoTools->projectPoint(new Point($wellData['x'], $wellData['y'], $wellData['srid']), Srid::fromInt(4326))),
                 WellType::fromString(WellType::TYPE_SCENARIO_NEW_WELL),
-                LayerNumber::fromInteger(1)
+                AffectedLayers::createWithLayerNumber(LayerNumber::fromInteger(1))
             );
             $wellBoundary = $wellBoundary->addPumpingRate(WellDateTimeValue::fromParams(
                 $start->toDateTimeImmutable(),

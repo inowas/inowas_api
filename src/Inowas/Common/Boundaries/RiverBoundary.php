@@ -38,6 +38,7 @@ class RiverBoundary extends AbstractBoundary
         $this->addOp($point);
         $self = new self($this->boundaryId, $this->name, $this->geometry, $this->activeCells);
         $self->observationPoints = $this->observationPoints;
+        $self->affectedLayers = $this->affectedLayers;
         return $self;
     }
 
@@ -50,6 +51,7 @@ class RiverBoundary extends AbstractBoundary
         $this->addDateTimeValue($riverStage, $observationPointId);
         $self = new self($this->boundaryId, $this->name, $this->geometry, $this->activeCells);
         $self->observationPoints = $this->observationPoints;
+        $self->affectedLayers = $this->affectedLayers;
         return $self;
     }
 
@@ -57,6 +59,7 @@ class RiverBoundary extends AbstractBoundary
     {
         $self = new self($this->boundaryId, $this->name, $this->geometry, $activeCells);
         $self->observationPoints = $this->observationPoints;
+        $self->affectedLayers = $this->affectedLayers;
         return $self;
     }
 
@@ -64,6 +67,7 @@ class RiverBoundary extends AbstractBoundary
     {
         $self = new self($this->boundaryId, $this->name, $geometry, $this->activeCells);
         $self->observationPoints = $this->observationPoints;
+        $self->affectedLayers = $this->affectedLayers;
         return $self;
     }
 

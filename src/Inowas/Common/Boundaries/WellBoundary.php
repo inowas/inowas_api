@@ -6,7 +6,7 @@ namespace Inowas\Common\Boundaries;
 
 use Inowas\Common\Geometry\Geometry;
 use Inowas\Common\Grid\ActiveCells;
-use Inowas\Common\Grid\LayerNumber;
+use Inowas\Common\Grid\AffectedLayers;
 use Inowas\Common\Id\BoundaryId;
 use Inowas\Common\Id\ObservationPointId;
 
@@ -14,9 +14,6 @@ class WellBoundary extends AbstractBoundary
 {
 
     const TYPE = 'well';
-
-    /** @var  LayerNumber */
-    protected $layerNumber;
 
     /** @var  WellType */
     protected $wellType;
@@ -31,12 +28,12 @@ class WellBoundary extends AbstractBoundary
         BoundaryName $name,
         Geometry $geometry,
         WellType $wellType,
-        LayerNumber $layerNumber
+        AffectedLayers $affectedLayers
     ): WellBoundary
     {
         $self = new self($boundaryId, $name, $geometry);
-        $self->layerNumber = $layerNumber;
         $self->wellType = $wellType;
+        $self->affectedLayers = $affectedLayers;
         return $self;
     }
 
@@ -51,9 +48,10 @@ class WellBoundary extends AbstractBoundary
         $this->addDateTimeValue($pumpingRate, $observationPointId);
 
         $self = new self($this->boundaryId, $this->name, $this->geometry, $this->activeCells);
-        $self->layerNumber = $this->layerNumber;
+        $self->affectedLayers = $this->affectedLayers;
         $self->wellType = $this->wellType;
         $self->observationPoints = $this->observationPoints;
+        $self->affectedLayers = $this->affectedLayers;
         return $self;
     }
 
@@ -69,16 +67,16 @@ class WellBoundary extends AbstractBoundary
     public function setActiveCells(ActiveCells $activeCells): WellBoundary
     {
         $self = new self($this->boundaryId, $this->name, $this->geometry, $activeCells);
-        $self->layerNumber = $this->layerNumber;
         $self->wellType = $this->wellType;
         $self->observationPoints = $this->observationPoints;
+        $self->affectedLayers = $this->affectedLayers;
         return $self;
     }
 
     public function updateGeometry(Geometry $geometry): WellBoundary
     {
         $self = new self($this->boundaryId, $this->name, $geometry, $this->activeCells);
-        $self->layerNumber = $this->layerNumber;
+        $self->affectedLayers = $this->affectedLayers;
         $self->wellType = $this->wellType;
 
         /** @var ObservationPoint $observationPoint */
@@ -86,17 +84,13 @@ class WellBoundary extends AbstractBoundary
         $changedObservationPoint = ObservationPoint::fromIdNameAndGeometry($observationPoint->id(), $observationPoint->name(), $geometry);
         $this->observationPoints[$changedObservationPoint->id()->toString()] = $changedObservationPoint;
         $self->observationPoints = $this->observationPoints;
+        $self->affectedLayers = $this->affectedLayers;
         return $self;
     }
 
     public function type(): string
     {
         return self::TYPE;
-    }
-
-    public function layerNumber(): LayerNumber
-    {
-        return $this->layerNumber;
     }
 
     public function wellType(): WellType
@@ -108,7 +102,7 @@ class WellBoundary extends AbstractBoundary
     {
         return [
             'well_type' => $this->wellType->type(),
-            'layer' => $this->layerNumber->toInteger()
+            'layer' => $this->affectedLayers->toArray()
         ];
     }
 

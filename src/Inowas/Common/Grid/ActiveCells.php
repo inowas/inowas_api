@@ -35,9 +35,14 @@ class ActiveCells
         return new self($layerData, [0], $gridSize);
     }
 
-    public static function fromArrayGridSizeAndLayer(array $layerData, GridSize $gridSize, LayerNumber $layer): ActiveCells
+    public static function fromArrayGridSizeAndLayer(array $layerData, GridSize $gridSize, AffectedLayers $layers): ActiveCells
     {
-        return new self($layerData, [$layer->toInteger()], $gridSize);
+        return new self($layerData, $layers->toArray(), $gridSize);
+    }
+
+    public static function fromArrayGridSizeAndLayers(array $layerData, GridSize $gridSize, array $layers): ActiveCells
+    {
+        return new self($layerData, $layers, $gridSize);
     }
 
     public static function fromFullArray(array $arr): ActiveCells
