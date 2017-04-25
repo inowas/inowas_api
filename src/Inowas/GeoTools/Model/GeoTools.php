@@ -42,6 +42,13 @@ class GeoTools
             return ActiveCells::fromCells(array());
         }
 
+        if ($geometry->value() instanceof Point){
+            $gridCell = $this->getGridCellFromPoint($boundingBox, $gridSize, $geometry->value());
+            $activeCells = [];
+            $activeCells[$gridCell['row']][$gridCell['col']] = true;
+            return ActiveCells::fromArrayGridSizeAndLayer($activeCells, $gridSize, $boundary->affectedLayers());
+        }
+
         $dX = ($boundingBox->xMax()-$boundingBox->xMin())/$gridSize->nX();
         $dY = ($boundingBox->yMax()-$boundingBox->yMin())/$gridSize->nY();
         $nx = $gridSize->nX();
@@ -377,9 +384,11 @@ class GeoTools
         $dx = ($bb->xMax() - $bb->xMin()) / $gz->nX();
         $dy = ($bb->yMax() - $bb->yMin()) / $gz->nY();
 
-        $x = floor(($point->getX() - $bb->xMin()) / $dx);
-        $y = $gz->nY()-1 - floor(($point->getY()-$bb->yMin()) / $dy);
+        $x = ceil(($point->getX() - $bb->xMin()) / $dx);
+        $y = $gz->nY() - floor(($point->getY()-$bb->yMin()) / $dy);
 
+        if ($y != 0){$y = $y-1;}
+        if ($x != 0){$x = $x-1;}
 
         return array(
             "row" => $y,

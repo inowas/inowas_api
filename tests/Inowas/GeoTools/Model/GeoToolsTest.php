@@ -6,6 +6,8 @@ namespace Tests\Inowas\GeoTools\Model;
 
 use Inowas\Common\Boundaries\AreaBoundary;
 use Inowas\Common\Boundaries\BoundaryName;
+use Inowas\Common\Boundaries\ConstantHeadBoundary;
+use Inowas\Common\Boundaries\ConstantHeadDateTimeValue;
 use Inowas\Common\Boundaries\ObservationPoint;
 use Inowas\Common\Boundaries\ObservationPointName;
 use Inowas\Common\Boundaries\RiverBoundary;
@@ -16,7 +18,9 @@ use Inowas\Common\Geometry\Geometry;
 use Inowas\Common\Geometry\LineString;
 use Inowas\Common\Geometry\Point;
 use Inowas\Common\Geometry\Polygon;
+use Inowas\Common\Geometry\Srid;
 use Inowas\Common\Grid\ActiveCells;
+use Inowas\Common\Grid\AffectedLayers;
 use Inowas\Common\Grid\BoundingBox;
 use Inowas\Common\Grid\Distance;
 use Inowas\Common\Grid\GridSize;
@@ -224,7 +228,7 @@ class GeoToolsTest extends WebTestCase
             BoundaryName::fromString('Well 1'),
             Geometry::fromPoint(new Point(105.78304910628,21.093961475741, 4326)),
             WellType::fromString(WellType::TYPE_INDUSTRIAL_WELL),
-            LayerNumber::fromInteger(2)
+            AffectedLayers::createWithLayerNumber(LayerNumber::fromInteger(2))
         );
     }
 
@@ -255,6 +259,132 @@ class GeoToolsTest extends WebTestCase
         $this->assertInstanceOf(ActiveCells::class, $result);
         $this->assertCount(1, $result->cells());
         $this->assertEquals($result->cells()[0], [2,1,3]);
+    }
+
+    public function test_calculate_active_cells_for_point(): void
+    {
+
+        $boundingBox = $this->geoTools->projectBoundingBox(BoundingBox::fromCoordinates(100, 101, 20, 21.5, 4326), Srid::fromInt(4326));
+        $gridSize = GridSize::fromXY(10, 15);
+
+        $pointsAffectedLayers = array(
+            [new Point(100, 20, 4326), AffectedLayers::createWithLayerNumber(LayerNumber::fromInteger(0))],
+            [new Point(101, 20, 4326), AffectedLayers::createWithLayerNumber(LayerNumber::fromInteger(0))],
+            [new Point(101, 21.5, 4326), AffectedLayers::createWithLayerNumber(LayerNumber::fromInteger(0))],
+            [new Point(101, 21.45, 4326), AffectedLayers::createWithLayerNumber(LayerNumber::fromInteger(0))],
+            [new Point(100, 21.5, 4326), AffectedLayers::createWithLayerNumber(LayerNumber::fromInteger(0))],
+            [new Point(100, 20, 4326), AffectedLayers::createWithLayerNumber(LayerNumber::fromInteger(1))]
+        );
+
+        $expected = array(
+            [[0, 14,  0]],
+            [[0, 14,  9]],
+            [[0,  0,  9]],
+            [[0,  0,  9]],
+            [[0,  0,  0]],
+            [[1, 14,  0]],
+        );
+
+        foreach ($pointsAffectedLayers as $key => $pointsAffectedLayer) {
+
+            $activeCells = $this->geoTools->calculateActiveCells(
+                WellBoundary::createWithParams(
+                    BoundaryId::generate(),
+                    BoundaryName::fromString(''),
+                    Geometry::fromPoint($pointsAffectedLayer[0]),
+                    WellType::fromString(WellType::TYPE_INDUSTRIAL_WELL),
+                    $pointsAffectedLayer[1]
+                ),
+                $boundingBox,
+                $gridSize
+            );
+
+            $this->assertEquals($expected[$key], $activeCells->cells());
+        }
+    }
+
+    public function test_calculate_center_from_grid_cell(): void
+    {
+        $boundingBox = $this->geoTools->projectBoundingBox(BoundingBox::fromCoordinates(100, 101, 20, 22, 4326), Srid::fromInt(4326));
+        $gridSize = GridSize::fromXY(10, 20);
+
+        $inputs = [
+            [0, 0],
+            [19, 9]
+        ];
+
+        $expected = [
+            new Point(100.05, 21.95, 4326),
+            new Point(100.95, 20.05, 4326),
+        ];
+
+        foreach ($inputs as $key => $input){
+            $result = $this->geoTools->getPointFromGridCell($boundingBox, $gridSize, $input[0], $input[1]);
+            $this->assertEquals($expected[$key], $result);
+        }
+    }
+
+    public function test_chd_boundary(): void
+    {
+        $boundingBox = $this->geoTools->projectBoundingBox(BoundingBox::fromCoordinates(100, 101, 20, 21.5, 4326), Srid::fromInt(4326));
+        $gridSize = GridSize::fromXY(10, 15);
+        $chdPoints = array(
+            new Point(100.01, 20.01, 4326),
+            new Point(100.01, 21.25, 4326),
+            new Point(100.01, 21.49, 4326),
+            new Point(100.45, 21.49, 4326),
+            new Point(100.99, 21.49, 4326),
+            new Point(100.99, 21.25, 4326),
+            new Point(100.99, 20.01, 4326)
+        );
+
+        /** @var ConstantHeadBoundary $chdBoundary */
+        $chdBoundary = ConstantHeadBoundary::createWithParams(
+            BoundaryId::generate(),
+            BoundaryName::fromString('ChdBoundary'),
+            Geometry::fromLineString(new LineString($chdPoints, 4326)),
+            AffectedLayers::createWithLayerNumbers(array(
+                    LayerNumber::fromInteger(1)
+                )
+            )
+        );
+
+        $observationPointData = array(
+            array('OP1', 100.01, 20.05, 4326, 1, 10, 100),
+            array('OP2', 100.01, 21.45, 4326, 2, 20, 200),
+            array('OP3', 100.99, 21.45, 4326, 3, 30, 300),
+            array('OP4', 100.99, 20.05, 4326, 4, 40, 400)
+        );
+
+        foreach ($observationPointData as $opd){
+            $observationPointId = ObservationPointId::generate();
+            $observationPoint = ObservationPoint::fromIdNameAndGeometry(
+                $observationPointId,
+                ObservationPointName::fromString($opd[0]),
+                Geometry::fromPoint($this->geoTools->projectPoint(new Point($opd[1], $opd[2], $opd[3]), Srid::fromInt(4326)))
+            );
+
+            $chdBoundary = $chdBoundary->addObservationPoint($observationPoint);
+            $chdBoundary = $chdBoundary->addConstantHeadToObservationPoint(
+                $observationPointId,
+                ConstantHeadDateTimeValue::fromParams(
+                    new \DateTimeImmutable('2005-01-01'),
+                    $opd[4],
+                    $opd[4]
+                )
+            );
+        }
+
+        $activeCells = $this->geoTools->calculateActiveCells($chdBoundary, $boundingBox, $gridSize);
+        $result = $this->geoTools->interpolateGridCellDateTimeValuesFromLinestringAndObservationPoints(
+            $chdBoundary->geometry()->value(),
+            $chdBoundary->observationPoints(),
+            $activeCells,
+            $boundingBox,
+            $gridSize
+        );
+
+        $this->assertCount(38, $result);
     }
 
     public function test_integration_if_geos_is_available(): void
