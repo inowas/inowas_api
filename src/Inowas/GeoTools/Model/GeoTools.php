@@ -30,12 +30,10 @@ class GeoTools
 
     public function calculateActiveCells(ModflowBoundary $boundary, BoundingBox $boundingBox, GridSize $gridSize): ActiveCells
     {
-        if ($boundary->geometry()->value() instanceof Point) {
-            return $this->getActiveCellsFromPoint($boundingBox, $gridSize, $boundary->geometry()->value());
-        }
+        $geometry = $boundary->geometry();
 
         /** @var \Polygon $boundingBoxPolygon */
-        $boundaryGeometry = \geoPHP::load($boundary->geometry()->toJson(), 'json')->geos();
+        $boundaryGeometry = \geoPHP::load($geometry->toJson(), 'json')->geos();
 
         /** @var \Polygon $boundingBoxPolygon */
         $boundingBoxPolygon = \geoPHP::load($boundingBox->toGeoJson(), 'json')->geos();
@@ -157,7 +155,6 @@ class GeoTools
         $query->execute();
         $result = $query->fetch();
         return $result['st_linelocatepoint'];
-
     }
 
     public function getClosestPointOnLineString(LineString $lineString, Point $point): Point
@@ -174,18 +171,13 @@ class GeoTools
         $point->setSRID($srid);
 
         $result = $this->executeQuery(
-            sprintf(
-            "SELECT ST_AsText(
-                        ST_ClosestPoint(
-                            ST_GeomFromText('%s')::geometry, 
-                            ST_GeomFromText('%s')::geometry
-                        )
-                    ) AS ptwkt;",
+            sprintf("SELECT ST_AsText(ST_ClosestPoint(line, pt)) AS cp_line_pt
+                    FROM (SELECT '%s'::geometry as line, '%s'::geometry as pt) AS foo;",
                 $lineString->asText(),
                 $point->asText())
         );
 
-        $point = \geoPHP::load($result['ptwkt'], 'wkt');
+        $point = \geoPHP::load($result['cp_line_pt'], 'wkt');
         $point->setSRID($srid);
         return new Point($point->getX(), $point->getY(), $srid);
     }
@@ -255,7 +247,7 @@ class GeoTools
             $closestPoint = $this->getClosestPointOnLineString($lineString, $activeCellCenter);
             $dateTimeValues = [];
 
-            foreach ($sectors as $sector){
+            foreach ($sectors as $key => $sector){
                 if ($this->pointIsOnLineString($sector->linestring(), $closestPoint)) {
                     $factor = $this->getRelativeDistanceOfPointOnLineString($sector->linestring(), $closestPoint);
                     $dateTimes = $sector->getDateTimes();
@@ -375,43 +367,34 @@ class GeoTools
         return BoundingBox::fromCoordinates($bb->xMin(), $bb->xMax(), $bb->yMin(), $bb->yMax(), $bb->srid(), $dx, $dy);
     }
 
-    protected function getActiveCellsFromPoint(BoundingBox $bb, GridSize $gz, Point $point){
-        $result = $this->getGridCellFromPoint($bb, $gz, $point);
-        $cells = array();
-        $cells[$result['row']][$result['col']]=true;
-        return ActiveCells::fromArrayAndGridSize($cells, $gz);
-    }
-
     protected function getGridCellFromPoint(BoundingBox $bb, GridSize $gz, Point $point)
     {
+
+        // Todo !! Implement with tests
         // Transform Point to the same Coordinate System as BoundingBox
         $point = $this->projectPoint($point, Srid::fromInt($bb->srid()));
-        // Check if point is inside of BoundingBox
-        if (!($point->getX() >= $bb->xMin()
-            && $point->getX() <= $bb->xMax()
-            && $point->getY() >= $bb->yMin()
-            && $point->getY() <= $bb->yMax())
-        ) {
-            return null;
-        }
+
         $dx = ($bb->xMax() - $bb->xMin()) / $gz->nX();
         $dy = ($bb->yMax() - $bb->yMin()) / $gz->nY();
-        $col = (int)(floor(($point->getX() - $bb->xMin()) / $dx));
-        $row = (int)($gz->nY()-ceil(($point->getY() - $bb->yMin()) / $dy));
+
+        $x = floor(($point->getX() - $bb->xMin()) / $dx);
+        $y = $gz->nY()-1 - floor(($point->getY()-$bb->yMin()) / $dy);
+
+
         return array(
-            "row" => $row,
-            "col" => $col
+            "row" => $y,
+            "col" => $x
         );
     }
 
-    protected function getPointFromGridCell(BoundingBox $bb, GridSize $gz, int $row, int $column): Point
+    public function getPointFromGridCell(BoundingBox $bb, GridSize $gz, int $row, int $column): Point
     {
         $srid = $bb->srid();
         $dx = ($bb->xMax() - $bb->xMin()) / $gz->nX();
         $dy = ($bb->yMax() - $bb->yMin()) / $gz->nY();
 
         $x =  $bb->xMin() + ($column+0.5)*$dx;
-        $y =  $bb->yMin() + ($row+0.5)*$dy;
+        $y =  $bb->yMax() - ($row+0.5)*$dy;
 
         return new Point($x, $y, $srid);
     }
