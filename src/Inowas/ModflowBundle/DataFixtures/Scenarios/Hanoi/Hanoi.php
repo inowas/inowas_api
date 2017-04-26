@@ -22,6 +22,7 @@ use Inowas\Common\Id\BoundaryId;
 use Inowas\Common\Boundaries\BoundaryName;
 use Inowas\Common\Calculation\Budget;
 use Inowas\Common\Id\ObservationPointId;
+use Inowas\Common\Modflow\Laywet;
 use Inowas\Common\Modflow\OcStressPeriod;
 use Inowas\Common\Modflow\OcStressPeriodData;
 use Inowas\Common\Soilmodel\BottomElevation;
@@ -530,23 +531,17 @@ class Hanoi extends LoadScenarioBase
                 ));
             }
         }
-
         echo sprintf("Add Chd-Boundary %s.\r\n", $chdBoundary->name()->toString());
         $commandBus->dispatch(AddBoundary::toBaseModel($ownerId, $modelId, $chdBoundary));
 
+        $calculationList = [];
         $calculationId = ModflowId::generate();
         $start = DateTime::fromDateTime(new \DateTime('2005-01-01'));
         $end = DateTime::fromDateTime(new \DateTime('2007-12-31'));
         $commandBus->dispatch(CreateModflowModelCalculation::byUserWithModelId($calculationId, $ownerId, $modelId, $start, $end));
+        $calculationList[] = [$calculationId, $ownerId, $modelId];
 
-        $ocStressPeriodData = OcStressPeriodData::create()->addStressPeriod(OcStressPeriod::fromParams(0,0, ['save head', 'save drawdown']));
-        $commandBus->dispatch(UpdateCalculationPackageParameter::byUserWithModelId($calculationId, $ownerId, $modelId, 'oc', 'ocStressPeriodData', $ocStressPeriodData));
-        $commandBus->dispatch(CalculateModflowModelCalculation::byUserWithModelId($ownerId, $calculationId, $modelId));
-
-        #$this->loadResultsWithLayer('heads', 0, 2000, 4, 'S0', $calculationId, $commandBus);
-        #$this->loadResultsWithLayer('drawdown', 0, 2000, 4, 'S0', $calculationId, $commandBus);
-        #$this->loadBudgets('cumulative', 0, 2000, 'S0', $calculationId, $commandBus);
-        #$this->loadBudgets('incremental', 0, 2000, 'S0', $calculationId, $commandBus);
+        /* ------- */
 
         /*
          * Begin add Scenario 1
@@ -582,7 +577,7 @@ class Hanoi extends LoadScenarioBase
         /* Create Calculation and Calculate */
         $calculationId = ModflowId::generate();
         $commandBus->dispatch(CreateModflowModelCalculation::byUserWithModelAndScenarioId($calculationId, $ownerId, $modelId, $scenarioId, $start, $end));
-        $commandBus->dispatch(CalculateModflowModelCalculation::byUserWithModelId($ownerId, $calculationId, $scenarioId));
+        $calculationList[] = [$calculationId, $ownerId, $scenarioId];
 
         /*
          * Begin add Scenario 2
@@ -626,7 +621,7 @@ class Hanoi extends LoadScenarioBase
         $start = DateTime::fromDateTime(new \DateTime('2005-01-01'));
         $end = DateTime::fromDateTime(new \DateTime('2007-12-31'));
         $commandBus->dispatch(CreateModflowModelCalculation::byUserWithModelAndScenarioId($calculationId, $ownerId, $modelId, $scenarioId, $start, $end));
-        $commandBus->dispatch(CalculateModflowModelCalculation::byUserWithModelId($ownerId, $calculationId, $scenarioId));
+        $calculationList[] = [$calculationId, $ownerId, $scenarioId];
 
         /*
          * Begin add Scenario 3
@@ -680,7 +675,14 @@ class Hanoi extends LoadScenarioBase
         $start = DateTime::fromDateTime(new \DateTime('2005-01-01'));
         $end = DateTime::fromDateTime(new \DateTime('2007-12-31'));
         $commandBus->dispatch(CreateModflowModelCalculation::byUserWithModelAndScenarioId($calculationId, $ownerId, $modelId, $scenarioId, $start, $end));
-        $commandBus->dispatch(CalculateModflowModelCalculation::byUserWithModelId($ownerId, $calculationId, $scenarioId));
+        $calculationList[] = [$calculationId, $ownerId, $scenarioId];
+
+        foreach ($calculationList as $calculation) {
+            $ocStressPeriodData = OcStressPeriodData::create()->addStressPeriod(OcStressPeriod::fromParams(0,0, ['save head', 'save drawdown']));
+            $commandBus->dispatch(UpdateCalculationPackageParameter::byUserWithModelId($calculation[0], $calculation[1], $calculation[2], 'oc', 'ocStressPeriodData', $ocStressPeriodData));
+            $commandBus->dispatch(UpdateCalculationPackageParameter::byUserWithModelId($calculation[0], $calculation[1], $calculation[2], 'lpf', 'layWet', Laywet::fromFloat(1)));
+            $commandBus->dispatch(CalculateModflowModelCalculation::byUserWithModelId($calculation[1], $calculation[0], $calculation[2]));
+        }
     }
 
     protected function loadHeadsFromFile($filename, $invert = false){
