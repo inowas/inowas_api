@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Inowas\Modflow\Model\Packages;
 
-class GhbStressPeriodData implements \JsonSerializable
+class GhbStressPeriodData extends AbstractStressPeriodData
 {
     /** @var array */
     protected $data = [];
@@ -40,17 +40,5 @@ class GhbStressPeriodData implements \JsonSerializable
 
         $this->data[$stressPeriod][] = [$layer, $row, $column, $stage, $cond];
         return $this;
-    }
-
-    public function toArray(): array
-    {
-        return $this->data;
-    }
-
-    public function jsonSerialize(): array
-    {
-        return array(
-            "stress_period_data" => (object)$this->data
-        );
     }
 }

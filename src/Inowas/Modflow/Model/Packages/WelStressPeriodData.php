@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Inowas\Modflow\Model\Packages;
 
-class WelStressPeriodData implements \JsonSerializable
+class WelStressPeriodData extends AbstractStressPeriodData
 {
     /** @var array */
     protected $data = [];
@@ -47,17 +47,5 @@ class WelStressPeriodData implements \JsonSerializable
 
         $this->data[$stressPeriod][] = [$layer, $row, $column, $value];
         return $this;
-    }
-
-    public function toArray(): array
-    {
-        return $this->data;
-    }
-
-    public function jsonSerialize(): array
-    {
-        return array(
-            "stress_period_data" => $this->data
-        );
     }
 }

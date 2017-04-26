@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Inowas\Modflow\Model\Packages;
 
-class RchStressPeriodData implements \JsonSerializable
+class RchStressPeriodData extends AbstractStressPeriodData
 {
     /** @var array */
     protected $data = [];
@@ -36,17 +36,5 @@ class RchStressPeriodData implements \JsonSerializable
 
         $this->data[$stressPeriod] = $rech->toValue();
         return $this;
-    }
-
-    public function toArray(): array
-    {
-        return $this->data;
-    }
-
-    public function jsonSerialize(): array
-    {
-        return array(
-            "stress_period_data" => $this->data
-        );
     }
 }
