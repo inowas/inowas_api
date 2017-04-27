@@ -20,6 +20,7 @@ use Inowas\Common\Geometry\Geometry;
 use Inowas\Common\Id\BoundaryId;
 use Inowas\Common\Boundaries\BoundaryName;
 use Inowas\Common\Id\ObservationPointId;
+use Inowas\Common\Modflow\ExecutableName;
 use Inowas\Common\Modflow\Laywet;
 use Inowas\Common\Modflow\Nstp;
 use Inowas\Common\Modflow\OcStressPeriod;
@@ -350,6 +351,9 @@ class HanoiBaseModelOnly extends LoadScenarioBase
         $commandBus->dispatch(CreateModflowModelCalculation::byUserWithModelId($calculationId, $ownerId, $modelId, $start, $end));
 
         echo sprintf("Dispatch UpdateCalculationPackageParameter %s.\r\n", $calculationId->toString());
+        $commandBus->dispatch(UpdateCalculationPackageParameter::byUserWithModelId($calculationId, $ownerId, $modelId, 'mf', 'executableName', ExecutableName::fromString('mfnwt')));
+
+        echo sprintf("Dispatch UpdateCalculationPackageParameter %s.\r\n", $calculationId->toString());
         $ocStressPeriodData = OcStressPeriodData::create()->addStressPeriod(OcStressPeriod::fromParams(0, 0, ['save head', 'save drawdown']));
         $commandBus->dispatch(UpdateCalculationPackageParameter::byUserWithModelId($calculationId, $ownerId, $modelId, 'oc', 'ocStressPeriodData', $ocStressPeriodData));
 
@@ -372,6 +376,9 @@ class HanoiBaseModelOnly extends LoadScenarioBase
 
         echo sprintf("Dispatch CreateModflowModelCalculation %s.\r\n", $calculationId->toString());
         $commandBus->dispatch(CreateModflowModelCalculation::byUserWithModelId($calculationId, $ownerId, $modelId, $start, $end));
+
+        echo sprintf("Dispatch UpdateCalculationPackageParameter %s.\r\n", $calculationId->toString());
+        $commandBus->dispatch(UpdateCalculationPackageParameter::byUserWithModelId($calculationId, $ownerId, $modelId, 'mf', 'executableName', ExecutableName::fromString('mfnwt')));
 
         echo sprintf("Dispatch UpdateCalculationPackageParameter %s.\r\n", $calculationId->toString());
         $ocStressPeriodData = OcStressPeriodData::create()->addStressPeriod(OcStressPeriod::fromParams(0, 0, ['save head', 'save drawdown']));
