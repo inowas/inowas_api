@@ -25,6 +25,7 @@ use Inowas\Common\Geometry\LineString;
 use Inowas\Common\Geometry\Point;
 use Inowas\Common\Geometry\Polygon;
 use Inowas\Common\Geometry\Srid;
+use Inowas\Common\Grid\AffectedLayers;
 use Inowas\Common\Grid\BoundingBox;
 use Inowas\Common\Grid\GridSize;
 use Inowas\Common\Grid\LayerNumber;
@@ -230,7 +231,8 @@ class EventSourcingBaseTest extends KernelTestCase
             Geometry::fromLineString(new LineString(array(
                 array(-63.687336, -31.313615),
                 array(-63.569260, -31.313615)
-            ), 4326))
+            ), 4326)),
+            AffectedLayers::createWithLayerNumber(LayerNumber::fromInteger(0))
         );
 
         $observationPointId = ObservationPointId::generate();
@@ -261,7 +263,8 @@ class EventSourcingBaseTest extends KernelTestCase
             Geometry::fromLineString(new LineString(array(
                 array(-63.687336, -31.313615),
                 array(-63.569260, -31.313615)
-            ), 4326))
+            ), 4326)),
+            AffectedLayers::createWithLayerNumber(LayerNumber::fromInteger(0))
         );
 
         $observationPointId = ObservationPointId::generate();
@@ -424,7 +427,7 @@ class EventSourcingBaseTest extends KernelTestCase
             BoundaryName::fromString('Test Well 1'),
             Geometry::fromPoint(new Point(-63.671125, -31.325009, 4326)),
             WellType::fromString(WellType::TYPE_INDUSTRIAL_WELL),
-            LayerNumber::fromInteger(0)
+            AffectedLayers::createWithLayerNumber(LayerNumber::fromInteger(0))
         );
 
         $wellBoundary = $wellBoundary->addPumpingRate(WellDateTimeValue::fromParams(new \DateTimeImmutable('2015-01-01'), -5000));

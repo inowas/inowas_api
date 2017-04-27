@@ -64,7 +64,7 @@ class RchPackage implements PackageInterface
     {
         $ipakcb = Ipakcb::fromInteger($arr['ipakcb']);
         $nrchop = Nrchop::fromInteger($arr['nrchop']);
-        $stressPeriodData = RchStressPeriodData::fromArray($arr['stress_period_data']);
+        $stressPeriodData = RchStressPeriodData::fromArray((array)$arr['stress_period_data']);
         $irch = Irch::fromValue($arr['irch']);
         $extension = Extension::fromValue($arr['extension']);
         $unitnumber = Unitnumber::fromValue($arr['unitnumber']);

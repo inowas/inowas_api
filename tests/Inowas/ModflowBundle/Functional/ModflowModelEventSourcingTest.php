@@ -8,12 +8,14 @@ use Inowas\Common\Boundaries\ObservationPoint;
 use Inowas\Common\DateTime\DateTime;
 use Inowas\Common\Geometry\Point;
 use Inowas\Common\Geometry\Srid;
+use Inowas\Common\Grid\AffectedLayers;
 use Inowas\Common\Grid\BoundingBox;
 use Inowas\Common\Geometry\Geometry;
 use Inowas\Common\Grid\LayerNumber;
 use Inowas\Common\Id\BoundaryId;
 use Inowas\Common\Boundaries\BoundaryName;
 use Inowas\Common\Modflow\Laytyp;
+use Inowas\Common\Modflow\Laywet;
 use Inowas\Common\Modflow\LengthUnit;
 use Inowas\Common\Modflow\Modelname;
 use Inowas\Common\Modflow\StressPeriod;
@@ -34,6 +36,7 @@ use Inowas\Modflow\Model\Command\ChangeModflowModelName;
 use Inowas\Modflow\Model\Command\CreateModflowModel;
 use Inowas\Modflow\Model\Command\CreateModflowModelCalculation;
 use Inowas\Modflow\Model\Command\UpdateBoundaryGeometry;
+use Inowas\Modflow\Model\Command\UpdateCalculationPackageParameter;
 use Inowas\Modflow\Model\Command\UpdateCalculationStressperiods;
 use Inowas\Modflow\Model\Event\ModflowModelWasCreated;
 use Inowas\Modflow\Model\ModflowModelAggregate;
@@ -288,7 +291,7 @@ class ModflowModelEventSourcingTest extends EventSourcingBaseTest
             BoundaryName::fromString('Test Well 1'),
             Geometry::fromPoint(new Point(-63.671125, -31.325009, 4326)),
             WellType::fromString(WellType::TYPE_INDUSTRIAL_WELL),
-            LayerNumber::fromInteger(0)
+            AffectedLayers::createWithLayerNumber(LayerNumber::fromInteger(0))
         );
 
         $wellBoundary = $wellBoundary->addPumpingRate(WellDateTimeValue::fromParams(new \DateTimeImmutable('2015-01-01'), -5000));
@@ -300,7 +303,7 @@ class ModflowModelEventSourcingTest extends EventSourcingBaseTest
             BoundaryName::fromString('Test Well 2'),
             Geometry::fromPoint(new Point(-63.659952, -31.330144, 4326)),
             WellType::fromString(WellType::TYPE_INDUSTRIAL_WELL),
-            LayerNumber::fromInteger(0)
+            AffectedLayers::createWithLayerNumber(LayerNumber::fromInteger(0))
         );
 
         $wellBoundary = $wellBoundary->addPumpingRate(WellDateTimeValue::fromParams(new \DateTimeImmutable('2015-01-01'), -2000));
@@ -355,7 +358,7 @@ class ModflowModelEventSourcingTest extends EventSourcingBaseTest
             BoundaryName::fromString('Test Well 1'),
             Geometry::fromPoint(new Point(-63.671125, -31.325009, 4326)),
             WellType::fromString(WellType::TYPE_INDUSTRIAL_WELL),
-            LayerNumber::fromInteger(0)
+            AffectedLayers::createWithLayerNumber(LayerNumber::fromInteger(0))
         );
 
         $wellBoundary = $wellBoundary->addPumpingRate(WellDateTimeValue::fromParams(new \DateTimeImmutable('2015-01-01'), -5000));
@@ -367,7 +370,7 @@ class ModflowModelEventSourcingTest extends EventSourcingBaseTest
             BoundaryName::fromString('Test Well 2'),
             Geometry::fromPoint(new Point(-63.671126, -31.325010, 4326)),
             WellType::fromString(WellType::TYPE_INDUSTRIAL_WELL),
-            LayerNumber::fromInteger(0)
+            AffectedLayers::createWithLayerNumber(LayerNumber::fromInteger(0))
         );
 
         $wellBoundary = $wellBoundary->addPumpingRate(WellDateTimeValue::fromParams(new \DateTimeImmutable('2015-01-01'), -2000));
@@ -606,6 +609,74 @@ class ModflowModelEventSourcingTest extends EventSourcingBaseTest
 
         $dataForFirstStressPeriod = array_values($stressperiodData)[0];
         $this->assertCount($numberOfActiveCells, $dataForFirstStressPeriod);
+    }
+
+    public function test_update_calculation_packages_lpf_layTyp(): void
+    {
+        $ownerId = UserId::generate();
+        $modelId = ModflowId::generate();
+        $this->createModelWithSoilmodel($ownerId, $modelId);
+
+        $start = DateTime::fromDateTime(new \DateTime('2015-01-01'));
+        $end = DateTime::fromDateTime(new \DateTime('2015-01-31'));
+
+        $calculationId = ModflowId::generate();
+        $this->commandBus->dispatch(CreateModflowModelCalculation::byUserWithModelId(
+            $calculationId,
+            $ownerId,
+            $modelId,
+            $start,
+            $end
+        ));
+
+        $this->commandBus->dispatch(UpdateCalculationPackageParameter::byUserWithModelId($calculationId, $ownerId, $modelId, 'lpf','layTyp', Laytyp::fromArray(array(1))));
+
+        $config = $this->container->get('inowas.modflow_projection.calculation_configuration_finder')->getConfigurationJson($calculationId);
+        $this->assertJson($config);
+        $obj = json_decode($config);
+        $this->assertEquals($calculationId->toString(), $obj->id);
+        $this->assertEquals('flopy_calculation', $obj->type);
+        $this->assertObjectHasAttribute('data', $obj);
+        $data = $obj->data;
+        $this->assertObjectHasAttribute('packages', $data);
+        $this->assertContains('lpf', $data->packages);
+        $lpf =  $data->lpf;
+        $this->assertObjectHasAttribute('laytyp', $lpf);
+        $this->assertEquals([1], $lpf->laytyp);
+    }
+
+    public function test_update_calculation_packages_lpf_laywet(): void
+    {
+        $ownerId = UserId::generate();
+        $modelId = ModflowId::generate();
+        $this->createModelWithSoilmodel($ownerId, $modelId);
+
+        $start = DateTime::fromDateTime(new \DateTime('2015-01-01'));
+        $end = DateTime::fromDateTime(new \DateTime('2015-01-31'));
+
+        $calculationId = ModflowId::generate();
+        $this->commandBus->dispatch(CreateModflowModelCalculation::byUserWithModelId(
+            $calculationId,
+            $ownerId,
+            $modelId,
+            $start,
+            $end
+        ));
+
+        $this->commandBus->dispatch(UpdateCalculationPackageParameter::byUserWithModelId($calculationId, $ownerId, $modelId, 'lpf','layWet', Laywet::fromArray(array(1))));
+
+        $config = $this->container->get('inowas.modflow_projection.calculation_configuration_finder')->getConfigurationJson($calculationId);
+        $this->assertJson($config);
+        $obj = json_decode($config);
+        $this->assertEquals($calculationId->toString(), $obj->id);
+        $this->assertEquals('flopy_calculation', $obj->type);
+        $this->assertObjectHasAttribute('data', $obj);
+        $data = $obj->data;
+        $this->assertObjectHasAttribute('packages', $data);
+        $this->assertContains('lpf', $data->packages);
+        $lpf =  $data->lpf;
+        $this->assertObjectHasAttribute('laywet', $lpf);
+        $this->assertEquals([1], $lpf->laywet);
     }
 
     public function test_create_scenario_from_basemodel_with_all_boundary_types(): void

@@ -21,6 +21,7 @@ use Inowas\Common\Modflow\StressPeriods;
 use Inowas\Common\Modflow\Strt;
 use Inowas\Common\Modflow\TimeUnit;
 use Inowas\Common\Projection\AbstractDoctrineConnectionProjector;
+use Inowas\Modflow\Model\Event\CalculationPackageParameterWasUpdated;
 use Inowas\Modflow\Model\Event\CalculationStressperiodsWereUpdated;
 use Inowas\Modflow\Model\Event\CalculationWasCreated;
 use Inowas\Modflow\Model\Event\CalculationWasFinished;
@@ -99,9 +100,8 @@ class CalculationConfigurationProjector extends AbstractDoctrineConnectionProjec
 
     public function onCalculationStressperiodsWereUpdated(CalculationStressperiodsWereUpdated $event): void
     {
-
         $result = $this->connection->fetchAssoc(
-            sprintf('SELECT * from %s WHERE calculation_id = :calculation_id', Table::CALCULATION_CONFIG),
+            sprintf('SELECT modflow_model_id, soilmodel_id, start, time_unit, length_unit from %s WHERE calculation_id = :calculation_id', Table::CALCULATION_CONFIG),
             ['calculation_id' => $event->calculationId()->toString()]
         );
 
@@ -138,6 +138,13 @@ class CalculationConfigurationProjector extends AbstractDoctrineConnectionProjec
         );
     }
 
+    public function onCalculationPackageParameterWasUpdated(CalculationPackageParameterWasUpdated $event): void
+    {
+        $packages = $this->getSavedOrDefaultPackagesById($event->calculationId());
+        $packages->updatePackageParameter($event->packageName(), $event->parameterName(), $event->parameterData());
+        $this->storePackages($event->calculationId(), $packages);
+    }
+
     public function onCalculationWasQueued(CalculationWasQueued $event): void
     {
         $this->connection->update(Table::CALCULATION_CONFIG,
@@ -167,7 +174,8 @@ class CalculationConfigurationProjector extends AbstractDoctrineConnectionProjec
 
     private function calculatePackages(ModflowId $calculationId, ModflowId $modflowModelId, SoilmodelId $soilmodelId, DateTime $start, TimeUnit $timeUnit, LengthUnit $lengthUnit, StressPeriods $stressPeriods): Packages
     {
-        $packages = $this->getDefaultValuesWithId($calculationId);
+        $packages = $this->getSavedOrDefaultPackagesById($calculationId);
+
         $packages->updateStartDateTime($start);
         $packages->updateTimeUnit($timeUnit);
         $packages->updateLengthUnit($lengthUnit);
@@ -276,12 +284,37 @@ class CalculationConfigurationProjector extends AbstractDoctrineConnectionProjec
             $packages->updatePackageParameter('chd', 'StressPeriodData', $chdStressPeriodData);
         }
 
-
         return $packages;
     }
 
     private function getDefaultValuesWithId(IdInterface $id): Packages
     {
         return Packages::createFromDefaultsWithId($id);
+    }
+
+    private function getSavedOrDefaultPackagesById(IdInterface $id): Packages
+    {
+        $result = $this->connection->fetchAssoc(
+            sprintf('SELECT configuration from %s WHERE calculation_id = :calculation_id', Table::CALCULATION_CONFIG),
+            ['calculation_id' => $id->toString()]
+        );
+
+        if (null === $result['configuration']){
+            return $this->getDefaultValuesWithId($id);
+        }
+
+        return Packages::fromJson($result['configuration']);
+    }
+
+    private function storePackages(IdInterface $calculationId, Packages $packages): void
+    {
+        $this->connection->update(Table::CALCULATION_CONFIG, array(
+            'configuration' => json_encode($packages),
+            'configuration_hash' => md5(json_encode($packages)),
+            'configuration_state' => 0,
+            'configuration_response' => ""
+        ), array(
+                'calculation_id' => $calculationId->toString()
+        ));
     }
 }

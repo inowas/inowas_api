@@ -9,6 +9,7 @@ use Inowas\Common\FileSystem\Modelworkspace;
 use Inowas\Common\Grid\BoundingBox;
 use Inowas\Common\Grid\GridSize;
 use Inowas\Common\Id\IdInterface;
+use Inowas\Common\Id\ModflowId;
 use Inowas\Common\Modflow\ExecutableName;
 use Inowas\Common\Modflow\LengthUnit;
 use Inowas\Common\Modflow\Listunit;
@@ -74,6 +75,7 @@ class Packages implements \JsonSerializable
     {
         $obj = json_decode($json);
         $self = new self();
+        $self->calculationId = ModflowId::fromString($obj->id);
         $self->author = $obj->author;
         $self->project = $obj->project;
         $self->type = $obj->type;

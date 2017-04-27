@@ -56,7 +56,7 @@ class RivPackage implements PackageInterface
     public static function fromArray(array $arr): RivPackage
     {
         $ipakcb = Ipakcb::fromInteger($arr['ipakcb']);
-        $stressPeriodData = RivStressPeriodData::fromArray($arr['stress_period_data']);
+        $stressPeriodData = RivStressPeriodData::fromArray((array)$arr['stress_period_data']);
         $options = Options::fromValue(null);
         $extension = Extension::fromString($arr['extension']);
         $unitnumber = Unitnumber::fromInteger($arr['unitnumber']);

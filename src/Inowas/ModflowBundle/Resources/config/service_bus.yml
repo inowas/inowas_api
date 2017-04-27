@@ -84,6 +84,9 @@ prooph_service_bus:
                     'Inowas\Modflow\Model\Event\BudgetWasCalculated':
                         - 'inowas.modflow_projection.calculation_budgets'
 
+                    'Inowas\Modflow\Model\Event\CalculationPackageParameterWasUpdated':
+                      - 'inowas.modflow_projection.calculation_config'
+
                     'Inowas\Modflow\Model\Event\CalculationStressperiodsWereUpdated':
                       - 'inowas.modflow_projection.calculation_config'
 

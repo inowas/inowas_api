@@ -22,7 +22,6 @@ use Inowas\Common\Id\BoundaryId;
 use Inowas\Common\Boundaries\BoundaryName;
 use Inowas\Common\Calculation\Budget;
 use Inowas\Common\Id\ObservationPointId;
-use Inowas\Common\Modflow\ExecutableName;
 use Inowas\Common\Modflow\Laywet;
 use Inowas\Common\Modflow\OcStressPeriod;
 use Inowas\Common\Modflow\OcStressPeriodData;
@@ -681,8 +680,8 @@ class Hanoi extends LoadScenarioBase
         foreach ($calculationList as $calculation) {
             $ocStressPeriodData = OcStressPeriodData::create()->addStressPeriod(OcStressPeriod::fromParams(0,0, ['save head', 'save drawdown']));
             $commandBus->dispatch(UpdateCalculationPackageParameter::byUserWithModelId($calculation[0], $calculation[1], $calculation[2], 'oc', 'ocStressPeriodData', $ocStressPeriodData));
+            $commandBus->dispatch(UpdateCalculationPackageParameter::byUserWithModelId($calculation[0], $calculation[1], $calculation[2], 'lpf', 'layTyp', Laytyp::fromInt(1)));
             $commandBus->dispatch(UpdateCalculationPackageParameter::byUserWithModelId($calculation[0], $calculation[1], $calculation[2], 'lpf', 'layWet', Laywet::fromFloat(1)));
-            $commandBus->dispatch(UpdateCalculationPackageParameter::byUserWithModelId($calculation[0], $calculation[1], $calculation[2], 'mf', 'executableName', ExecutableName::fromString('mfnwt')));
             $commandBus->dispatch(CalculateModflowModelCalculation::byUserWithModelId($calculation[1], $calculation[0], $calculation[2]));
         }
     }

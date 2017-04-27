@@ -56,7 +56,7 @@ class WelPackage implements PackageInterface
     public static function fromArray(array $arr): WelPackage
     {
         $ipakcb = Ipakcb::fromInteger($arr['ipakcb']);
-        $stressPeriodData = WelStressPeriodData::fromArray($arr['stress_period_data']);
+        $stressPeriodData = WelStressPeriodData::fromArray((array)$arr['stress_period_data']);
         $options = Options::fromValue(null);
         $extension = Extension::fromValue($arr['extension']);
         $unitnumber = Unitnumber::fromValue($arr['unitnumber']);

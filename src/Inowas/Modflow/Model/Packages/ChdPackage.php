@@ -43,7 +43,7 @@ class ChdPackage implements PackageInterface
 
     public static function fromArray(array $arr): ChdPackage
     {
-        $stressPeriodData = ChdStressPeriodData::fromArray($arr['stress_period_data']);
+        $stressPeriodData = ChdStressPeriodData::fromArray((array)$arr['stress_period_data']);
         $extension = Extension::fromValue($arr['extension']);
         $unitnumber = Unitnumber::fromValue($arr['unitnumber']);
 
