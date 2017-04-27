@@ -22,6 +22,8 @@ if [ $OS=="Debian" ]; then
         configfilename=$programname.conf
         echo "[program:$programname]" > $configfilename
         echo "command=$DIR/$filename" >> $configfilename
+        echo "stopsignal=KILL" >> $configfilename
+        echo "killasgroup=true" >> $configfilename
         echo "autostart=true" >> $configfilename
         echo "autorestart=true" >> $configfilename
         echo "stderr_logfile=/var/log/supervisor/$programname.err.log" >> $configfilename
@@ -38,4 +40,3 @@ if [ $OS=="Debian" ]; then
 
     service supervisor start
 fi
-
