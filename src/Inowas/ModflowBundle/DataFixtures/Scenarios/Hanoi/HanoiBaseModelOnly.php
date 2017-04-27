@@ -239,13 +239,13 @@ class HanoiBaseModelOnly extends LoadScenarioBase
                 BoundaryName::fromString($well['Name']),
                 Geometry::fromPoint($geoTools->projectPoint(new Point($well['x'], $well['y'], $well['srid']), Srid::fromInt(4326))),
                 WellType::fromString($well['type']),
-                AffectedLayers::createWithLayerNumber(LayerNumber::fromInteger((int)$well['layer']-1))
+                AffectedLayers::createWithLayerNumber(LayerNumber::fromInteger((int)$well['layer'] - 1))
             );
 
             $value = null;
-            foreach ($dates as $date){
-                if (is_numeric($well[$date])){
-                    if ($well[$date] !== $value){
+            foreach ($dates as $date) {
+                if (is_numeric($well[$date])) {
+                    if ($well[$date] !== $value) {
                         $wellBoundary = $wellBoundary->addPumpingRate(WellDateTimeValue::fromParams(
                             new \DateTimeImmutable(explode(':', $date)[1]), (float)$well[$date]
                         ));
@@ -254,7 +254,7 @@ class HanoiBaseModelOnly extends LoadScenarioBase
                 }
             }
 
-            echo sprintf('Add Well %s to BaseModel'."\r\n", $wellBoundary->name()->toString());
+            echo sprintf('Add Well %s to BaseModel' . "\r\n", $wellBoundary->name()->toString());
             $commandBus->dispatch(AddBoundary::toBaseModel($ownerId, $modelId, $wellBoundary));
         }
 
@@ -262,7 +262,7 @@ class HanoiBaseModelOnly extends LoadScenarioBase
          * Add River for the baseScenario
          */
         $riverPoints = $this->loadRowsFromCsv(__DIR__ . "/data/river_geometry_basecase.csv");
-        foreach ($riverPoints as $key => $point){
+        foreach ($riverPoints as $key => $point) {
             $riverPoints[$key] = $geoTools->projectPoint(new Point($point['x'], $point['y'], $point['srid']), Srid::fromInt(4326));
         }
 
@@ -277,14 +277,14 @@ class HanoiBaseModelOnly extends LoadScenarioBase
         $header = $this->loadHeaderFromCsv(__DIR__ . "/data/river_stages_basecase.csv");
         $dates = $this->getDates($header);
 
-        foreach ($observationPoints as $op){
+        foreach ($observationPoints as $op) {
             $observationPoint = ObservationPoint::fromIdNameAndGeometry(
                 ObservationPointId::generate(),
                 ObservationPointName::fromString($op['name']),
                 Geometry::fromPoint($geoTools->projectPoint(new Point($op['x'], $op['y'], $op['srid']), Srid::fromInt(4326)))
             );
 
-            foreach ($dates as $date){
+            foreach ($dates as $date) {
                 if (is_numeric($op[$date])) {
                     $observationPoint = $observationPoint->addDateTimeValue(
                         RiverDateTimeValue::fromParams(
@@ -301,7 +301,7 @@ class HanoiBaseModelOnly extends LoadScenarioBase
          * Add ConstantHead for the baseScenario
          */
         $chdPoints = $this->loadRowsFromCsv(__DIR__ . "/data/chd_geometry_basecase.csv");
-        foreach ($chdPoints as $key => $point){
+        foreach ($chdPoints as $key => $point) {
             $chdPoints[$key] = $geoTools->projectPoint(new Point($point['x'], $point['y'], $point['srid']), Srid::fromInt(4326));
         }
 
@@ -311,7 +311,7 @@ class HanoiBaseModelOnly extends LoadScenarioBase
             BoundaryName::fromString('ChdBoundary'),
             Geometry::fromLineString(new LineString($chdPoints, 4326)),
             AffectedLayers::createWithLayerNumbers(array(
-                LayerNumber::fromInteger(2),
+                    LayerNumber::fromInteger(2),
                     LayerNumber::fromInteger(3)
                 )
             )
@@ -321,7 +321,7 @@ class HanoiBaseModelOnly extends LoadScenarioBase
         $header = $this->loadHeaderFromCsv(__DIR__ . "/data/chd_stages_basecase.csv");
         $dates = $this->getDates($header);
 
-        foreach ($observationPoints as $op){
+        foreach ($observationPoints as $op) {
 
             $observationPointId = ObservationPointId::generate();
             $observationPoint = ObservationPoint::fromIdNameAndGeometry(
@@ -343,16 +343,17 @@ class HanoiBaseModelOnly extends LoadScenarioBase
         }
         echo sprintf("Add Chd-Boundary %s.\r\n", $chdBoundary->name()->toString());
         $commandBus->dispatch(AddBoundary::toBaseModel($ownerId, $modelId, $chdBoundary));
-        
+
         $calculationId = ModflowId::generate();
         $start = DateTime::fromDateTime(new \DateTime('2005-01-01'));
         $end = DateTime::fromDateTime(new \DateTime('2007-12-31'));
         $commandBus->dispatch(CreateModflowModelCalculation::byUserWithModelId($calculationId, $ownerId, $modelId, $start, $end));
-        $ocStressPeriodData = OcStressPeriodData::create()->addStressPeriod(OcStressPeriod::fromParams(0,0, ['save head', 'save drawdown']));
+        $ocStressPeriodData = OcStressPeriodData::create()->addStressPeriod(OcStressPeriod::fromParams(0, 0, ['save head', 'save drawdown']));
         $commandBus->dispatch(UpdateCalculationPackageParameter::byUserWithModelId($calculationId, $ownerId, $modelId, 'oc', 'ocStressPeriodData', $ocStressPeriodData));
         $commandBus->dispatch(UpdateCalculationPackageParameter::byUserWithModelId($calculationId, $ownerId, $modelId, 'lpf', 'layTyp', Laytyp::fromInt(1)));
         $commandBus->dispatch(UpdateCalculationPackageParameter::byUserWithModelId($calculationId, $ownerId, $modelId, 'lpf', 'layWet', Laywet::fromFloat(1)));
 
         echo sprintf("Dispatch CalculateModflowModelCalculation %s.\r\n", $calculationId->toString());
         $commandBus->dispatch(CalculateModflowModelCalculation::byUserWithModelId($ownerId, $calculationId, $modelId));
+    }
 }
