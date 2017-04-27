@@ -24,7 +24,6 @@ use Inowas\Common\Modflow\Laywet;
 use Inowas\Common\Modflow\Nstp;
 use Inowas\Common\Modflow\OcStressPeriod;
 use Inowas\Common\Modflow\OcStressPeriodData;
-use Inowas\Common\Modflow\Perlen;
 use Inowas\Common\Soilmodel\BottomElevation;
 use Inowas\Common\Modflow\Laytyp;
 use Inowas\Common\Soilmodel\HydraulicAnisotropy;
@@ -46,7 +45,6 @@ use Inowas\Modflow\Model\Command\CreateModflowModelCalculation;
 use Inowas\Common\Grid\BoundingBox;
 use Inowas\Common\Grid\GridSize;
 use Inowas\Common\Id\ModflowId;
-use Inowas\Modflow\Model\Command\UpdateBoundaryGeometry;
 use Inowas\Modflow\Model\Command\UpdateCalculationPackageParameter;
 use Inowas\Modflow\Model\ModflowModelDescription;
 use Inowas\Common\Modflow\Modelname;
@@ -347,11 +345,46 @@ class HanoiBaseModelOnly extends LoadScenarioBase
         $calculationId = ModflowId::generate();
         $start = DateTime::fromDateTime(new \DateTime('2005-01-01'));
         $end = DateTime::fromDateTime(new \DateTime('2007-12-31'));
+
+        echo sprintf("Dispatch CreateModflowModelCalculation %s.\r\n", $calculationId->toString());
         $commandBus->dispatch(CreateModflowModelCalculation::byUserWithModelId($calculationId, $ownerId, $modelId, $start, $end));
+
+        echo sprintf("Dispatch UpdateCalculationPackageParameter %s.\r\n", $calculationId->toString());
         $ocStressPeriodData = OcStressPeriodData::create()->addStressPeriod(OcStressPeriod::fromParams(0, 0, ['save head', 'save drawdown']));
         $commandBus->dispatch(UpdateCalculationPackageParameter::byUserWithModelId($calculationId, $ownerId, $modelId, 'oc', 'ocStressPeriodData', $ocStressPeriodData));
+
+        echo sprintf("Dispatch UpdateCalculationPackageParameter %s.\r\n", $calculationId->toString());
         $commandBus->dispatch(UpdateCalculationPackageParameter::byUserWithModelId($calculationId, $ownerId, $modelId, 'lpf', 'layTyp', Laytyp::fromInt(1)));
+
+        echo sprintf("Dispatch UpdateCalculationPackageParameter %s.\r\n", $calculationId->toString());
         $commandBus->dispatch(UpdateCalculationPackageParameter::byUserWithModelId($calculationId, $ownerId, $modelId, 'lpf', 'layWet', Laywet::fromFloat(1)));
+
+        echo sprintf("Dispatch CalculateModflowModelCalculation %s.\r\n", $calculationId->toString());
+        $commandBus->dispatch(CalculateModflowModelCalculation::byUserWithModelId($ownerId, $calculationId, $modelId));
+
+        $scenarioId = ModflowId::generate();
+        echo sprintf("Dispatch AddModflowScenario %s.\r\n", $scenarioId->toString());
+        $commandBus->dispatch(AddModflowScenario::from($ownerId, $modelId, $scenarioId));
+
+        $calculationId = ModflowId::generate();
+        $start = DateTime::fromDateTime(new \DateTime('2005-01-01'));
+        $end = DateTime::fromDateTime(new \DateTime('2007-12-31'));
+
+        echo sprintf("Dispatch CreateModflowModelCalculation %s.\r\n", $calculationId->toString());
+        $commandBus->dispatch(CreateModflowModelCalculation::byUserWithModelId($calculationId, $ownerId, $modelId, $start, $end));
+
+        echo sprintf("Dispatch UpdateCalculationPackageParameter %s.\r\n", $calculationId->toString());
+        $ocStressPeriodData = OcStressPeriodData::create()->addStressPeriod(OcStressPeriod::fromParams(0, 0, ['save head', 'save drawdown']));
+        $commandBus->dispatch(UpdateCalculationPackageParameter::byUserWithModelId($calculationId, $ownerId, $modelId, 'oc', 'ocStressPeriodData', $ocStressPeriodData));
+
+        echo sprintf("Dispatch UpdateCalculationPackageParameter %s.\r\n", $calculationId->toString());
+        $commandBus->dispatch(UpdateCalculationPackageParameter::byUserWithModelId($calculationId, $ownerId, $modelId, 'lpf', 'layTyp', Laytyp::fromInt(1)));
+
+        echo sprintf("Dispatch UpdateCalculationPackageParameter %s.\r\n", $calculationId->toString());
+        $commandBus->dispatch(UpdateCalculationPackageParameter::byUserWithModelId($calculationId, $ownerId, $modelId, 'lpf', 'layWet', Laywet::fromFloat(1)));
+
+        echo sprintf("Dispatch UpdateCalculationPackageParameter %s.\r\n", $calculationId->toString());
+        $commandBus->dispatch(UpdateCalculationPackageParameter::byUserWithModelId($calculationId, $ownerId, $modelId, 'dis', 'nstp', Nstp::fromInt(10)));
 
         echo sprintf("Dispatch CalculateModflowModelCalculation %s.\r\n", $calculationId->toString());
         $commandBus->dispatch(CalculateModflowModelCalculation::byUserWithModelId($ownerId, $calculationId, $modelId));
