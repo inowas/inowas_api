@@ -21,13 +21,14 @@ use Inowas\Common\Modflow\StressPeriods;
 use Inowas\Common\Modflow\Strt;
 use Inowas\Common\Modflow\TimeUnit;
 use Inowas\Common\Projection\AbstractDoctrineConnectionProjector;
+use Inowas\Modflow\Model\Event\CalculationFlowPackageWasChanged;
 use Inowas\Modflow\Model\Event\CalculationPackageParameterWasUpdated;
 use Inowas\Modflow\Model\Event\CalculationStressperiodsWereUpdated;
 use Inowas\Modflow\Model\Event\CalculationWasCreated;
 use Inowas\Modflow\Model\Event\CalculationWasFinished;
 use Inowas\Modflow\Model\Event\CalculationWasQueued;
 use Inowas\Modflow\Model\Event\CalculationWasStarted;
-use Inowas\Modflow\Model\Packages\Packages;
+use Inowas\Modflow\Model\ModflowConfiguration;
 use Inowas\Modflow\Model\Service\ModflowModelManager;
 use Inowas\Modflow\Model\Service\ModflowModelManagerInterface;
 use Inowas\Modflow\Model\Service\SoilmodelManagerInterface;
@@ -48,7 +49,8 @@ class CalculationConfigurationProjector extends AbstractDoctrineConnectionProjec
         Connection $connection,
         ModflowModelManagerInterface $modelManager,
         SoilmodelManagerInterface $soilmodelManager
-    ) {
+    )
+    {
 
         $this->modflowModelManager = $modelManager;
         $this->soilmodelManager = $soilmodelManager;
@@ -64,7 +66,7 @@ class CalculationConfigurationProjector extends AbstractDoctrineConnectionProjec
         $table->addColumn('start', 'string');
         $table->addColumn('time_unit', 'integer');
         $table->addColumn('length_unit', 'integer');
-        $table->addColumn('stress_periods', 'string');
+        $table->addColumn('stress_periods', 'text', ['notnull' => false]);
         $table->addColumn('configuration', 'text', ['notnull' => false]);
         $table->addColumn('configuration_hash', 'string', ['length' => 36, 'notnull' => false]);
         $table->addColumn('configuration_state', 'integer', ['default' => 0]);
@@ -92,7 +94,7 @@ class CalculationConfigurationProjector extends AbstractDoctrineConnectionProjec
             'start' => $event->start()->toAtom(),
             'time_unit' => $event->timeUnit()->toInt(),
             'length_unit' => $event->lengthUnit()->toInt(),
-            'stress_periods' => serialize($event->stressPeriods()),
+            'stress_periods' => $this->serialize($event->stressPeriods()),
             'configuration' => json_encode($packages),
             'configuration_hash' => md5(json_encode($packages))
         ));
@@ -111,7 +113,7 @@ class CalculationConfigurationProjector extends AbstractDoctrineConnectionProjec
         $timeUnit = TimeUnit::fromInt($result['time_unit']);
         $lengthUnit = LengthUnit::fromInt($result['length_unit']);
 
-        $packages = $this->calculatePackages(
+        $configuration = $this->calculatePackages(
             $event->calculationId(),
             $modflowModelId,
             $soilModelId,
@@ -126,23 +128,69 @@ class CalculationConfigurationProjector extends AbstractDoctrineConnectionProjec
             'time_unit' => $timeUnit->toInt(),
             'length_unit' => $lengthUnit->toInt(),
             'stress_periods' => serialize($event->stressPeriods()),
-            'configuration' => json_encode($packages),
-            'configuration_hash' => md5(json_encode($packages)),
+            'configuration' => json_encode($configuration),
+            'configuration_hash' => md5(json_encode($configuration)),
             'configuration_state' => 0,
             'configuration_response' => ""
         ), array(
-            'calculation_id' => $event->calculationId()->toString(),
-            'modflow_model_id' => $modflowModelId->toString(),
-            'soilmodel_id' => $soilModelId->toString(),
-            'user_id' => $event->userId()->toString())
+                'calculation_id' => $event->calculationId()->toString(),
+                'modflow_model_id' => $modflowModelId->toString(),
+                'soilmodel_id' => $soilModelId->toString(),
+                'user_id' => $event->userId()->toString())
         );
     }
 
     public function onCalculationPackageParameterWasUpdated(CalculationPackageParameterWasUpdated $event): void
     {
-        $packages = $this->getSavedOrDefaultPackagesById($event->calculationId());
-        $packages->updatePackageParameter($event->packageName(), $event->parameterName(), $event->parameterData());
-        $this->storePackages($event->calculationId(), $packages);
+        $configuration = $this->getSavedOrDefaultConfigurationById($event->calculationId());
+        $configuration->updatePackageParameter($event->packageName(), $event->parameterName(), $event->parameterData());
+        $this->storeConfiguration($event->calculationId(), $configuration);
+    }
+
+    public function onCalculationFlowPackageWasChanged(CalculationFlowPackageWasChanged $event): void
+    {
+        $configuration = $this->getSavedOrDefaultConfigurationById($event->calculationId());
+        $configuration->changeFlowPackage($event->packageName());
+        $this->storeConfiguration($event->calculationId(), $configuration);
+
+        $result = $this->connection->fetchAssoc(
+            sprintf('SELECT modflow_model_id, soilmodel_id, start, stress_periods, time_unit, length_unit from %s WHERE calculation_id = :calculation_id', Table::CALCULATION_CONFIG),
+            ['calculation_id' => $event->calculationId()->toString()]
+        );
+
+        $modflowModelId = ModflowId::fromString($result['modflow_model_id']);
+        $soilModelId = SoilmodelId::fromString($result['soilmodel_id']);
+        $stressPeriods = $this->unserialize($result['stress_periods']);
+        $start = DateTime::fromAtom($result['start']);
+        $timeUnit = TimeUnit::fromInt($result['time_unit']);
+        $lengthUnit = LengthUnit::fromInt($result['length_unit']);
+
+        $configuration = $this->calculatePackages(
+            $event->calculationId(),
+            $modflowModelId,
+            $soilModelId,
+            $start,
+            $timeUnit,
+            $lengthUnit,
+            $stressPeriods
+        );
+
+        $this->connection->update(Table::CALCULATION_CONFIG, array(
+            'start' => $start->toAtom(),
+            'time_unit' => $timeUnit->toInt(),
+            'length_unit' => $lengthUnit->toInt(),
+            'stress_periods' => $this->serialize($stressPeriods),
+            'configuration' => json_encode($configuration),
+            'configuration_hash' => md5(json_encode($configuration)),
+            'configuration_state' => 0,
+            'configuration_response' => ""
+        ), array(
+                'calculation_id' => $event->calculationId()->toString(),
+                'modflow_model_id' => $modflowModelId->toString(),
+                'user_id' => $event->userId()->toString())
+        );
+
+        $this->storeConfiguration($event->calculationId(), $configuration);
     }
 
     public function onCalculationWasQueued(CalculationWasQueued $event): void
@@ -172,13 +220,13 @@ class CalculationConfigurationProjector extends AbstractDoctrineConnectionProjec
         );
     }
 
-    private function calculatePackages(ModflowId $calculationId, ModflowId $modflowModelId, SoilmodelId $soilmodelId, DateTime $start, TimeUnit $timeUnit, LengthUnit $lengthUnit, StressPeriods $stressPeriods): Packages
+    private function calculatePackages(ModflowId $calculationId, ModflowId $modflowModelId, SoilmodelId $soilmodelId, DateTime $start, TimeUnit $timeUnit, LengthUnit $lengthUnit, StressPeriods $stressPeriods): ModflowConfiguration
     {
-        $packages = $this->getSavedOrDefaultPackagesById($calculationId);
+        $configuration = $this->getSavedOrDefaultConfigurationById($calculationId);
 
-        $packages->updateStartDateTime($start);
-        $packages->updateTimeUnit($timeUnit);
-        $packages->updateLengthUnit($lengthUnit);
+        $configuration->updateStartDateTime($start);
+        $configuration->updateTimeUnit($timeUnit);
+        $configuration->updateLengthUnit($lengthUnit);
 
         /*
          * Add PackageDetails for DisPackage
@@ -186,26 +234,26 @@ class CalculationConfigurationProjector extends AbstractDoctrineConnectionProjec
          */
         $gridSize = $this->modflowModelManager->getGridSize($modflowModelId);
         $boundingBox = $this->modflowModelManager->getBoundingBox($modflowModelId);
-        $packages->updateGridParameters($gridSize, $boundingBox);
-        $packages->updatePackageParameter('mf', 'modelworkspace', Modelworkspace::fromString($calculationId->toString()));
+        $configuration->updateGridParameters($gridSize, $boundingBox);
+        $configuration->updatePackageParameter('mf', 'modelworkspace', Modelworkspace::fromString($calculationId->toString()));
 
         /*
          * Add PackageDetails for DisPackage
          * Layers and Elevations
          */
-        $packages->updatePackageParameter('dis', 'nlay', $this->soilmodelManager->getNlay($soilmodelId));
-        $packages->updatePackageParameter('dis', 'top', $this->soilmodelManager->getTop($soilmodelId));
-        $packages->updatePackageParameter('dis', 'botm', $this->soilmodelManager->getBotm($soilmodelId));
+        $configuration->updatePackageParameter('dis', 'nlay', $this->soilmodelManager->getNlay($soilmodelId));
+        $configuration->updatePackageParameter('dis', 'top', $this->soilmodelManager->getTop($soilmodelId));
+        $configuration->updatePackageParameter('dis', 'botm', $this->soilmodelManager->getBotm($soilmodelId));
 
         /*
          * Add PackageDetails for DisPackage
          * StressPeriods
          */
-        $packages->updatePackageParameter('dis', 'perlen', $stressPeriods->perlen());
-        $packages->updatePackageParameter('dis', 'nstp', $stressPeriods->nstp());
-        $packages->updatePackageParameter('dis', 'tsmult', $stressPeriods->tsmult());
-        $packages->updatePackageParameter('dis', 'steady', $stressPeriods->steady());
-        $packages->updatePackageParameter('dis', 'nper', $stressPeriods->nper());
+        $configuration->updatePackageParameter('dis', 'perlen', $stressPeriods->perlen());
+        $configuration->updatePackageParameter('dis', 'nstp', $stressPeriods->nstp());
+        $configuration->updatePackageParameter('dis', 'tsmult', $stressPeriods->tsmult());
+        $configuration->updatePackageParameter('dis', 'steady', $stressPeriods->steady());
+        $configuration->updatePackageParameter('dis', 'nper', $stressPeriods->nper());
 
         /*
          * Add PackageDetails for BasPackage
@@ -214,42 +262,64 @@ class CalculationConfigurationProjector extends AbstractDoctrineConnectionProjec
         $activeCells = $this->modflowModelManager->getAreaActiveCells($modflowModelId);
         $iBound = Ibound::fromActiveCellsAndNumberOfLayers($activeCells, $this->soilmodelManager->getNlay($soilmodelId)->toInteger());
 
-        $packages->updatePackageParameter('bas', 'ibound', $iBound);
+        $configuration->updatePackageParameter('bas', 'ibound', $iBound);
         $strt = Strt::fromTopAndNumberOfLayers($this->soilmodelManager->getTop($soilmodelId), $this->soilmodelManager->getNlay($soilmodelId)->toInteger());
-        $packages->updatePackageParameter('bas', 'strt', $strt);
+        $configuration->updatePackageParameter('bas', 'strt', $strt);
 
         /*
-         * Add PackageDetails for LpfPackage
+         * Add PackageDetails for LpfPackage if set
          */
-        $packages->updatePackageParameter('lpf', 'laytyp', $this->soilmodelManager->getLaytyp($soilmodelId));
-        $packages->updatePackageParameter('lpf', 'layavg', $this->soilmodelManager->getLayavg($soilmodelId));
-        $packages->updatePackageParameter('lpf', 'chani', $this->soilmodelManager->getChani($soilmodelId));
-        $packages->updatePackageParameter('lpf', 'layvka', $this->soilmodelManager->getLayvka($soilmodelId));
-        $packages->updatePackageParameter('lpf', 'laywet', $this->soilmodelManager->getLaywet($soilmodelId));
-        $packages->updatePackageParameter('lpf', 'ipakcb', $this->soilmodelManager->getIpakcb($soilmodelId));
-        $packages->updatePackageParameter('lpf', 'hdry', $this->soilmodelManager->getHdry($soilmodelId));
-        $packages->updatePackageParameter('lpf', 'wetfct', $this->soilmodelManager->getWetfct($soilmodelId));
-        $packages->updatePackageParameter('lpf', 'iwetit', $this->soilmodelManager->getIwetit($soilmodelId));
-        $packages->updatePackageParameter('lpf', 'ihdwet', $this->soilmodelManager->getIhdwet($soilmodelId));
-        $packages->updatePackageParameter('lpf', 'hk', $this->soilmodelManager->getHk($soilmodelId));
-        $packages->updatePackageParameter('lpf', 'hani', $this->soilmodelManager->getHani($soilmodelId));
-        $packages->updatePackageParameter('lpf', 'vka', $this->soilmodelManager->getVka($soilmodelId));
-        $packages->updatePackageParameter('lpf', 'ss', $this->soilmodelManager->getSs($soilmodelId));
-        $packages->updatePackageParameter('lpf', 'sy', $this->soilmodelManager->getSy($soilmodelId));
-        $packages->updatePackageParameter('lpf', 'vkcb', $this->soilmodelManager->getVkcb($soilmodelId));
-        $packages->updatePackageParameter('lpf', 'wetdry', $this->soilmodelManager->getWetdry($soilmodelId));
-        $packages->updatePackageParameter('lpf', 'storagecoefficient', $this->soilmodelManager->getStoragecoefficient($soilmodelId));
-        $packages->updatePackageParameter('lpf', 'constantcv', $this->soilmodelManager->getConstantcv($soilmodelId));
-        $packages->updatePackageParameter('lpf', 'thickstrt', $this->soilmodelManager->getThickstrt($soilmodelId));
-        $packages->updatePackageParameter('lpf', 'nocvcorrection', $this->soilmodelManager->getNocvcorrection($soilmodelId));
-        $packages->updatePackageParameter('lpf', 'novfc', $this->soilmodelManager->getNovfc($soilmodelId));
+        if ($configuration->flowPackageName() == 'lpf') {
+            $configuration->updatePackageParameter('lpf', 'laytyp', $this->soilmodelManager->getLaytyp($soilmodelId));
+            $configuration->updatePackageParameter('lpf', 'layavg', $this->soilmodelManager->getLayavg($soilmodelId));
+            $configuration->updatePackageParameter('lpf', 'chani', $this->soilmodelManager->getChani($soilmodelId));
+            $configuration->updatePackageParameter('lpf', 'layvka', $this->soilmodelManager->getLayvka($soilmodelId));
+            $configuration->updatePackageParameter('lpf', 'laywet', $this->soilmodelManager->getLaywet($soilmodelId));
+            $configuration->updatePackageParameter('lpf', 'ipakcb', $this->soilmodelManager->getIpakcb($soilmodelId));
+            $configuration->updatePackageParameter('lpf', 'hdry', $this->soilmodelManager->getHdry($soilmodelId));
+            $configuration->updatePackageParameter('lpf', 'wetfct', $this->soilmodelManager->getWetfct($soilmodelId));
+            $configuration->updatePackageParameter('lpf', 'iwetit', $this->soilmodelManager->getIwetit($soilmodelId));
+            $configuration->updatePackageParameter('lpf', 'ihdwet', $this->soilmodelManager->getIhdwet($soilmodelId));
+            $configuration->updatePackageParameter('lpf', 'hk', $this->soilmodelManager->getHk($soilmodelId));
+            $configuration->updatePackageParameter('lpf', 'hani', $this->soilmodelManager->getHani($soilmodelId));
+            $configuration->updatePackageParameter('lpf', 'vka', $this->soilmodelManager->getVka($soilmodelId));
+            $configuration->updatePackageParameter('lpf', 'ss', $this->soilmodelManager->getSs($soilmodelId));
+            $configuration->updatePackageParameter('lpf', 'sy', $this->soilmodelManager->getSy($soilmodelId));
+            $configuration->updatePackageParameter('lpf', 'vkcb', $this->soilmodelManager->getVkcb($soilmodelId));
+            $configuration->updatePackageParameter('lpf', 'wetdry', $this->soilmodelManager->getWetdry($soilmodelId));
+            $configuration->updatePackageParameter('lpf', 'storagecoefficient', $this->soilmodelManager->getStoragecoefficient($soilmodelId));
+            $configuration->updatePackageParameter('lpf', 'constantcv', $this->soilmodelManager->getConstantcv($soilmodelId));
+            $configuration->updatePackageParameter('lpf', 'thickstrt', $this->soilmodelManager->getThickstrt($soilmodelId));
+            $configuration->updatePackageParameter('lpf', 'nocvcorrection', $this->soilmodelManager->getNocvcorrection($soilmodelId));
+            $configuration->updatePackageParameter('lpf', 'novfc', $this->soilmodelManager->getNovfc($soilmodelId));
+        }
+
+        /*
+         * Add PackageDetails for LpfPackage if set
+         */
+        if ($configuration->flowPackageName() == 'upw') {
+            $configuration->updatePackageParameter('upw', 'laytyp', $this->soilmodelManager->getLaytyp($soilmodelId));
+            $configuration->updatePackageParameter('upw', 'layavg', $this->soilmodelManager->getLayavg($soilmodelId));
+            $configuration->updatePackageParameter('upw', 'chani', $this->soilmodelManager->getChani($soilmodelId));
+            $configuration->updatePackageParameter('upw', 'layvka', $this->soilmodelManager->getLayvka($soilmodelId));
+            $configuration->updatePackageParameter('upw', 'laywet', $this->soilmodelManager->getLaywet($soilmodelId));
+            $configuration->updatePackageParameter('upw', 'ipakcb', $this->soilmodelManager->getIpakcb($soilmodelId));
+            $configuration->updatePackageParameter('upw', 'hdry', $this->soilmodelManager->getHdry($soilmodelId));
+            $configuration->updatePackageParameter('upw', 'iphdry', $this->soilmodelManager->getIphdry($soilmodelId));
+            $configuration->updatePackageParameter('upw', 'hk', $this->soilmodelManager->getHk($soilmodelId));
+            $configuration->updatePackageParameter('upw', 'hani', $this->soilmodelManager->getHani($soilmodelId));
+            $configuration->updatePackageParameter('upw', 'vka', $this->soilmodelManager->getVka($soilmodelId));
+            $configuration->updatePackageParameter('upw', 'ss', $this->soilmodelManager->getSs($soilmodelId));
+            $configuration->updatePackageParameter('upw', 'sy', $this->soilmodelManager->getSy($soilmodelId));
+            $configuration->updatePackageParameter('upw', 'vkcb', $this->soilmodelManager->getVkcb($soilmodelId));
+        }
 
         /*
          * Add PackageDetails for WelPackage
          */
         if ($this->modflowModelManager->countModelBoundaries($modflowModelId, WellBoundary::TYPE) > 0) {
             $welStressPeriodData = $this->modflowModelManager->generateWelStressPeriodData($modflowModelId, $stressPeriods);
-            $packages->updatePackageParameter('wel', 'StressPeriodData', $welStressPeriodData);
+            $configuration->updatePackageParameter('wel', 'StressPeriodData', $welStressPeriodData);
         }
 
         /*
@@ -257,7 +327,7 @@ class CalculationConfigurationProjector extends AbstractDoctrineConnectionProjec
          */
         if ($this->modflowModelManager->countModelBoundaries($modflowModelId, RechargeBoundary::TYPE) > 0) {
             $rchStressPeriodData = $this->modflowModelManager->generateRchStressPeriodData($modflowModelId, $stressPeriods);
-            $packages->updatePackageParameter('rch', 'StressPeriodData', $rchStressPeriodData);
+            $configuration->updatePackageParameter('rch', 'StressPeriodData', $rchStressPeriodData);
         }
 
         /*
@@ -265,7 +335,7 @@ class CalculationConfigurationProjector extends AbstractDoctrineConnectionProjec
          */
         if ($this->modflowModelManager->countModelBoundaries($modflowModelId, RiverBoundary::TYPE) > 0) {
             $rivStressPeriodData = $this->modflowModelManager->generateRivStressPeriodData($modflowModelId, $stressPeriods);
-            $packages->updatePackageParameter('riv', 'StressPeriodData', $rivStressPeriodData);
+            $configuration->updatePackageParameter('riv', 'StressPeriodData', $rivStressPeriodData);
         }
 
         /*
@@ -273,7 +343,7 @@ class CalculationConfigurationProjector extends AbstractDoctrineConnectionProjec
          */
         if ($this->modflowModelManager->countModelBoundaries($modflowModelId, GeneralHeadBoundary::TYPE) > 0) {
             $ghbStressPeriodData = $this->modflowModelManager->generateGhbStressPeriodData($modflowModelId, $stressPeriods);
-            $packages->updatePackageParameter('ghb', 'StressPeriodData', $ghbStressPeriodData);
+            $configuration->updatePackageParameter('ghb', 'StressPeriodData', $ghbStressPeriodData);
         }
 
         /*
@@ -281,40 +351,50 @@ class CalculationConfigurationProjector extends AbstractDoctrineConnectionProjec
          */
         if ($this->modflowModelManager->countModelBoundaries($modflowModelId, ConstantHeadBoundary::TYPE) > 0) {
             $chdStressPeriodData = $this->modflowModelManager->generateChdStressPeriodData($modflowModelId, $stressPeriods);
-            $packages->updatePackageParameter('chd', 'StressPeriodData', $chdStressPeriodData);
+            $configuration->updatePackageParameter('chd', 'StressPeriodData', $chdStressPeriodData);
         }
 
-        return $packages;
+        return $configuration;
     }
 
-    private function getDefaultValuesWithId(IdInterface $id): Packages
+    private function getDefaultValuesWithId(IdInterface $id): ModflowConfiguration
     {
-        return Packages::createFromDefaultsWithId($id);
+        return ModflowConfiguration::createFromDefaultsWithId($id);
     }
 
-    private function getSavedOrDefaultPackagesById(IdInterface $id): Packages
+    private function getSavedOrDefaultConfigurationById(IdInterface $id): ModflowConfiguration
     {
         $result = $this->connection->fetchAssoc(
             sprintf('SELECT configuration from %s WHERE calculation_id = :calculation_id', Table::CALCULATION_CONFIG),
             ['calculation_id' => $id->toString()]
         );
 
-        if (null === $result['configuration']){
+        if (null === $result['configuration']) {
             return $this->getDefaultValuesWithId($id);
         }
 
-        return Packages::fromJson($result['configuration']);
+        return ModflowConfiguration::fromJson($result['configuration']);
     }
 
-    private function storePackages(IdInterface $calculationId, Packages $packages): void
+    private function storeConfiguration(IdInterface $calculationId, ModflowConfiguration $configuration): void
     {
         $this->connection->update(Table::CALCULATION_CONFIG, array(
-            'configuration' => json_encode($packages),
-            'configuration_hash' => md5(json_encode($packages)),
+            'configuration' => json_encode($configuration),
+            'configuration_hash' => md5(json_encode($configuration)),
             'configuration_state' => 0,
             'configuration_response' => ""
         ), array(
-                'calculation_id' => $calculationId->toString()
+            'calculation_id' => $calculationId->toString()
         ));
+    }
+
+    private function serialize($object): string
+    {
+        return base64_encode(serialize($object));
+    }
+
+    private function unserialize(string $string)
+    {
+        return unserialize(base64_decode($string));
     }
 }

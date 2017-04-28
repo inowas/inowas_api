@@ -24,6 +24,7 @@ prooph_service_bus:
                     'Inowas\Modflow\Model\Command\UpdateBoundary': 'inowas.update_modflow_model_boundary_handler'
                     'Inowas\Modflow\Model\Command\UpdateBoundaryGeometry': 'inowas.update_modflow_model_boundary_geometry_handler'
 
+                    'Inowas\Modflow\Model\Command\ChangeFlowPackage': 'inowas.change_calculation_flow_package_handler'
                     'Inowas\Modflow\Model\Command\UpdateCalculationPackageParameter': 'inowas.update_calculation_package_parameter_handler'
                     'Inowas\Modflow\Model\Command\UpdateCalculationStressperiods': 'inowas.update_calculation_stress_periods_handler'
                     'Inowas\Modflow\Model\Command\UpdateCalculationResults': 'inowas.update_calculation_results_handler'
@@ -85,6 +86,9 @@ prooph_service_bus:
                         - 'inowas.modflow_projection.calculation_budgets'
 
                     'Inowas\Modflow\Model\Event\CalculationPackageParameterWasUpdated':
+                      - 'inowas.modflow_projection.calculation_config'
+
+                    'Inowas\Modflow\Model\Event\CalculationFlowPackageWasChanged':
                       - 'inowas.modflow_projection.calculation_config'
 
                     'Inowas\Modflow\Model\Event\CalculationStressperiodsWereUpdated':

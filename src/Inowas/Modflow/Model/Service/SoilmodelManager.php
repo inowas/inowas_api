@@ -11,6 +11,7 @@ use Inowas\Common\Modflow\Hdry;
 use Inowas\Common\Modflow\Hk;
 use Inowas\Common\Modflow\Ihdwet;
 use Inowas\Common\Modflow\Ipakcb;
+use Inowas\Common\Modflow\Iphdry;
 use Inowas\Common\Modflow\Iwetit;
 use Inowas\Common\Modflow\Layavg;
 use Inowas\Common\Modflow\Laytyp;
@@ -89,6 +90,11 @@ class SoilmodelManager implements SoilmodelManagerInterface
         return Hdry::fromValue(-1e30);
     }
 
+    public function getIphdry(SoilmodelId $soilmodelId): Iphdry
+    {
+        return Iphdry::fromInt(1);
+    }
+
     public function getWetfct(SoilmodelId $soilmodelId): Wetfct
     {
         return Wetfct::fromValue(0.1);
@@ -124,7 +130,6 @@ class SoilmodelManager implements SoilmodelManagerInterface
     {
         return $this->layerValuesFinder->getSs($soilmodelId);
     }
-
 
     public function getSy(SoilmodelId $soilmodelId): Sy
     {

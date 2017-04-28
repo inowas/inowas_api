@@ -2,7 +2,6 @@
 
 namespace Inowas\Modflow\Model;
 
-use Inowas\AppBundle\Model\User;
 use Inowas\Common\Calculation\Budget;
 use Inowas\Common\Calculation\BudgetType;
 use Inowas\Common\Calculation\ResultType;
@@ -13,9 +12,11 @@ use Inowas\Common\Grid\LayerNumber;
 use Inowas\Common\Id\ModflowId;
 use Inowas\Common\Id\UserId;
 use Inowas\Common\Modflow\LengthUnit;
+use Inowas\Common\Modflow\PackageName;
 use Inowas\Common\Modflow\StressPeriods;
 use Inowas\Common\Modflow\TimeUnit;
 use Inowas\Modflow\Model\Event\BudgetWasCalculated;
+use Inowas\Modflow\Model\Event\CalculationFlowPackageWasChanged;
 use Inowas\Modflow\Model\Event\CalculationPackageParameterWasUpdated;
 use Inowas\Modflow\Model\Event\CalculationStressperiodsWereUpdated;
 use Inowas\Modflow\Model\Event\CalculationWasFinished;
@@ -27,7 +28,6 @@ use Inowas\Modflow\Model\Event\CalculationWasCreated;
 use Inowas\Modflow\Model\Event\LengthUnitWasUpdated;
 use Inowas\Modflow\Model\Event\StartDateTimeWasUpdated;
 use Inowas\Modflow\Model\Event\TimeUnitWasUpdated;
-use Inowas\Modflow\Model\Packages\Packages;
 use Inowas\Soilmodel\Interpolation\FlopyCalculationResponse;
 use Inowas\Soilmodel\Model\SoilmodelId;
 use Prooph\EventSourcing\AggregateRoot;
@@ -62,8 +62,8 @@ class ModflowCalculationAggregate extends AggregateRoot
     /** @var  StressPeriods */
     private $stressPeriods;
 
-    /** @var Packages */
-    private $packages;
+    /** @var ModflowConfiguration */
+    private $configuration;
 
     public static function create(
         ModflowId $calculationId,
@@ -87,7 +87,7 @@ class ModflowCalculationAggregate extends AggregateRoot
         $self->lengthUnit = $lengthUnit;
         $self->timeUnit = $timeUnit;
         $self->stressPeriods = $stressPeriods;
-        $self->packages = Packages::createFromDefaultsWithId($calculationId);
+        $self->configuration = ModflowConfiguration::createFromDefaultsWithId($calculationId);
 
         $self->recordThat(
             CalculationWasCreated::fromModelWithProps(
@@ -140,9 +140,22 @@ class ModflowCalculationAggregate extends AggregateRoot
         $this->recordThat(CalculationStressperiodsWereUpdated::withProps($userId, $this->calculationId, $stressPeriods));
     }
 
+    public function changeFlowPackage(UserId $userId, PackageName $packageName): void
+    {
+        if ($this->configuration->flowPackageName() !== $packageName->toString()){
+            $this->configuration->changeFlowPackage($packageName);
+
+            $this->recordThat(CalculationFlowPackageWasChanged::to(
+                $userId,
+                $this->calculationId,
+                $packageName
+            ));
+        }
+    }
+
     public function updatePackageParameter(UserId $userId, string $packageName, string $parameterName, $parameterData): void
     {
-        $this->packages->updatePackageParameter($packageName, $parameterName, $parameterData);
+        $this->configuration->updatePackageParameter($packageName, $parameterName, $parameterData);
 
         $this->recordThat(CalculationPackageParameterWasUpdated::withProps(
             $userId,
@@ -213,14 +226,19 @@ class ModflowCalculationAggregate extends AggregateRoot
         return $this->timeUnit;
     }
 
-    public function packages(): Packages
+    public function packages(): ModflowConfiguration
     {
-        return $this->packages;
+        return $this->configuration;
     }
 
     protected function whenCalculationPackageParameterWasUpdated(CalculationPackageParameterWasUpdated $event): void
     {
-        $this->packages->updatePackageParameter($event->packageName(), $event->parameterName(), $event->parameterData());
+        $this->configuration->updatePackageParameter($event->packageName(), $event->parameterName(), $event->parameterData());
+    }
+
+    protected function whenCalculationFlowPackageWasChanged(CalculationFlowPackageWasChanged $event): void
+    {
+        $this->configuration->changeFlowPackage($event->packageName());
     }
 
     protected function whenCalculationWasCreated(CalculationWasCreated $event): void
@@ -233,7 +251,7 @@ class ModflowCalculationAggregate extends AggregateRoot
         $this->endDateTime = $event->end();
         $this->lengthUnit = $event->lengthUnit();
         $this->timeUnit = $event->timeUnit();
-        $this->packages = Packages::createFromDefaultsWithId($event->calculationId());
+        $this->configuration = ModflowConfiguration::createFromDefaultsWithId($event->calculationId());
     }
 
     protected function whenCalculationStressperiodsWereUpdated(CalculationStressperiodsWereUpdated $event): void
@@ -261,19 +279,19 @@ class ModflowCalculationAggregate extends AggregateRoot
     protected function whenLengthUnitWasUpdated(LengthUnitWasUpdated $event): void
     {
         $this->lengthUnit = $event->lengthUnit();
-        $this->packages->updateLengthUnit($event->lengthUnit());
+        $this->configuration->updateLengthUnit($event->lengthUnit());
     }
 
     protected function whenTimeUnitWasUpdated(TimeUnitWasUpdated $event): void
     {
         $this->timeUnit = $event->timeUnit();
-        $this->packages->updateTimeUnit($event->timeUnit());
+        $this->configuration->updateTimeUnit($event->timeUnit());
     }
 
     protected function whenStartDateTimeWasUpdated(StartDateTimeWasUpdated $event): void
     {
         $this->startDateTime = $event->start();
-        $this->packages->updateStartDateTime($event->start());
+        $this->configuration->updateStartDateTime($event->start());
     }
 
     protected function whenEndDateTimeWasUpdated(EndDateTimeWasUpdated $event): void

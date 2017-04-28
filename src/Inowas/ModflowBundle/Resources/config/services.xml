@@ -100,6 +100,9 @@
         <service id="inowas.update_calculation_results_handler" class="Inowas\Modflow\Model\Handler\UpdateCalculationResultsHandler">
             <argument type="service" id="modflow_calculation_list" />
         </service>
+        <service id="inowas.change_calculation_flow_package_handler" class="Inowas\Modflow\Model\Handler\ChangeFlowPackageHandler">
+            <argument type="service" id="modflow_calculation_list" />
+        </service>
         <service id="inowas.update_calculation_package_parameter_handler" class="Inowas\Modflow\Model\Handler\UpdateCalculationPackageParameterHandler">
             <argument type="service" id="modflow_calculation_list" />
         </service>

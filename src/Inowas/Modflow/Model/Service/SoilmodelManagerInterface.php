@@ -11,6 +11,7 @@ use Inowas\Common\Modflow\Hdry;
 use Inowas\Common\Modflow\Hk;
 use Inowas\Common\Modflow\Ihdwet;
 use Inowas\Common\Modflow\Ipakcb;
+use Inowas\Common\Modflow\Iphdry;
 use Inowas\Common\Modflow\Iwetit;
 use Inowas\Common\Modflow\Layavg;
 use Inowas\Common\Modflow\Laytyp;
@@ -50,6 +51,8 @@ interface SoilmodelManagerInterface
     public function getIpakcb(SoilmodelId $soilmodelId): Ipakcb;
 
     public function getHdry(SoilmodelId $soilmodelId): Hdry;
+
+    public function getIphdry(SoilmodelId $soilmodelId): Iphdry;
 
     public function getWetfct(SoilmodelId $soilmodelId): Wetfct;
 

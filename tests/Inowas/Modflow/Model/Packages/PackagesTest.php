@@ -5,24 +5,24 @@ namespace Tests\Inowas\Modflow\Model\Packages;
 use Inowas\Common\Grid\BoundingBox;
 use Inowas\Common\Grid\GridSize;
 use Inowas\Common\Modflow\TimeUnit;
-use Inowas\Modflow\Model\Packages\Packages;
+use Inowas\Modflow\Model\Packages\ModflowConfiguration;
 
 class PackagesTest extends \PHPUnit_Framework_TestCase
 {
 
     public function test_create_from_defaults(){
-        $packages = Packages::createFromDefaultsWithId();
-        $this->assertInstanceOf(Packages::class, $packages);
+        $packages = ModflowConfiguration::createFromDefaultsWithId();
+        $this->assertInstanceOf(ModflowConfiguration::class, $packages);
     }
 
     public function test_serialize_packages(){
-        $packages = Packages::createFromDefaultsWithId();
+        $packages = ModflowConfiguration::createFromDefaultsWithId();
         $json = json_encode($packages);
         $this->assertJson($json);
     }
 
     public function test_create_from_array(){
-        $packages = Packages::createFromDefaultsWithId();
+        $packages = ModflowConfiguration::createFromDefaultsWithId();
         $json = json_encode($packages);
         $this->assertJson($json);
 
@@ -30,13 +30,13 @@ class PackagesTest extends \PHPUnit_Framework_TestCase
         $obj->author = "Ralf Junghanns";
         $json = \json_encode($obj);
 
-        $packages = Packages::fromJson($json);
-        $this->assertInstanceOf(Packages::class, $packages);
+        $packages = ModflowConfiguration::fromJson($json);
+        $this->assertInstanceOf(ModflowConfiguration::class, $packages);
         $this->assertEquals( "Ralf Junghanns", $packages->author());
     }
 
     public function test_update_default_time_unit(){
-        $packages = Packages::createFromDefaultsWithId();
+        $packages = ModflowConfiguration::createFromDefaultsWithId();
         $json = json_encode($packages);
         $this->assertJson($json);
         $obj = \json_decode($json);
@@ -44,7 +44,7 @@ class PackagesTest extends \PHPUnit_Framework_TestCase
     }
 
     public function test_update_time_unit(){
-        $packages = Packages::createFromDefaultsWithId();
+        $packages = ModflowConfiguration::createFromDefaultsWithId();
         $packages->updateTimeUnit(TimeUnit::fromInt(TimeUnit::SECONDS));
         $json = json_encode($packages);
         $this->assertJson($json);
@@ -54,7 +54,7 @@ class PackagesTest extends \PHPUnit_Framework_TestCase
 
     public function test_update_time_unit_with_update_param_function()
     {
-        $packages = Packages::createFromDefaultsWithId();
+        $packages = ModflowConfiguration::createFromDefaultsWithId();
         $packages->updatePackageParameter('dis', 'TimeUnit', TimeUnit::fromInt(TimeUnit::MINUTES));
         $json = json_encode($packages);
         $this->assertJson($json);
@@ -66,7 +66,7 @@ class PackagesTest extends \PHPUnit_Framework_TestCase
     {
         $gridsize = GridSize::fromXY(40,50);
         $boundingBox = BoundingBox::fromEPSG4326Coordinates(10,20,30,40,100,200);
-        $packages = Packages::createFromDefaultsWithId();
+        $packages = ModflowConfiguration::createFromDefaultsWithId();
         $packages->updateGridParameters($gridsize, $boundingBox);
 
     }
