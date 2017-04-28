@@ -55,6 +55,7 @@ use Inowas\Common\Id\UserId;
 use Inowas\Common\Boundaries\WellBoundary;
 use Inowas\Common\Boundaries\WellType;
 use Inowas\Common\Boundaries\RiverBoundary;
+use Inowas\Modflow\Model\Version;
 use Inowas\ModflowBundle\DataFixtures\Scenarios\LoadScenarioBase;
 use Inowas\Soilmodel\Model\Command\AddGeologicalLayerToSoilmodel;
 use Inowas\Soilmodel\Model\Command\ChangeSoilmodelDescription;
@@ -359,10 +360,10 @@ class HanoiBaseModelOnly extends LoadScenarioBase
         $commandBus->dispatch(UpdateCalculationPackageParameter::byUserWithModelId($calculationId, $ownerId, $modelId, 'upw', 'layTyp', Laytyp::fromInt(1)));
 
         echo sprintf("Dispatch UpdateCalculationPackageParameter %s.\r\n", $calculationId->toString());
-        $commandBus->dispatch(UpdateCalculationPackageParameter::byUserWithModelId($calculationId, $ownerId, $modelId, 'upw', 'layWet', Laywet::fromFloat(1)));
+        $commandBus->dispatch(UpdateCalculationPackageParameter::byUserWithModelId($calculationId, $ownerId, $modelId, 'mf', 'executableName', ExecutableName::fromString('mfnwt')));
 
         echo sprintf("Dispatch UpdateCalculationPackageParameter %s.\r\n", $calculationId->toString());
-        $commandBus->dispatch(UpdateCalculationPackageParameter::byUserWithModelId($calculationId, $ownerId, $modelId, 'mf', 'executableName', ExecutableName::fromString('mfnwt')));
+        $commandBus->dispatch(UpdateCalculationPackageParameter::byUserWithModelId($calculationId, $ownerId, $modelId, 'mf', 'version', Version::fromString('mfnwt')));
 
         echo sprintf("Dispatch UpdateCalculationPackageParameter %s.\r\n", $calculationId->toString());
         $ocStressPeriodData = OcStressPeriodData::create()->addStressPeriod(OcStressPeriod::fromParams(0, 0, ['save head', 'save drawdown']));

@@ -36,8 +36,9 @@ class ModflowEventStoreMigrateCommand extends ContainerAwareCommand
 
         if (is_null($modelname)){
             $output->writeln("Possible Arguments are:");
-            $output->writeln("1 or Hanoi for the hanoi-modflow-model");
-            $output->writeln("2 or Rio Primero for the hanoi-modflow-model");
+            $output->writeln("1 or HanoiBaseModel for the Hanoi BaseModel");
+            $output->writeln("2 or Hanoi for the hanoi-modflow-model");
+            $output->writeln("3 or Rio Primero for the hanoi-modflow-model");
         }
 
         if ($modelname == 'Hanoi Basemodel' || intval($modelname) == 1) {
