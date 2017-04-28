@@ -11,7 +11,7 @@ class Version
 
     const MF2005 = 'mf2005';
 
-    protected $availableVersions = array('mf2005');
+    protected $availableVersions = array('mf2005', 'mfnwt');
 
     /** @var  string */
     private $version;

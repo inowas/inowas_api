@@ -49,6 +49,7 @@ use Inowas\Common\Boundaries\WellDateTimeValue;
 use Inowas\Common\Id\UserId;
 use Inowas\Common\Boundaries\WellBoundary;
 use Inowas\Common\Boundaries\WellType;
+use Inowas\Modflow\Model\Version;
 use Inowas\Soilmodel\Model\Command\AddGeologicalLayerToSoilmodel;
 use Inowas\Soilmodel\Model\Command\ChangeSoilmodelDescription;
 use Inowas\Soilmodel\Model\Command\ChangeSoilmodelName;
@@ -715,6 +716,40 @@ class ModflowModelEventSourcingTest extends EventSourcingBaseTest
         $upw = $data->upw;
         $this->assertObjectHasAttribute('iphdry', $upw);
         $this->assertEquals(2, $upw->iphdry);
+    }
+
+    public function test_change_calculation_package_mf_version(): void
+    {
+        $ownerId = UserId::generate();
+        $modelId = ModflowId::generate();
+        $this->createModelWithSoilmodel($ownerId, $modelId);
+
+        $start = DateTime::fromDateTime(new \DateTime('2015-01-01'));
+        $end = DateTime::fromDateTime(new \DateTime('2015-01-31'));
+
+        $calculationId = ModflowId::generate();
+        $this->commandBus->dispatch(CreateModflowModelCalculation::byUserWithModelId(
+            $calculationId,
+            $ownerId,
+            $modelId,
+            $start,
+            $end
+        ));
+
+        $this->commandBus->dispatch(UpdateCalculationPackageParameter::byUserWithModelId($calculationId, $ownerId, $modelId, 'mf', 'version', Version::fromString('mfnwt')));
+
+        $config = $this->container->get('inowas.modflow_projection.calculation_configuration_finder')->getConfigurationJson($calculationId);
+        $this->assertJson($config);
+        $obj = json_decode($config);
+        $this->assertEquals($calculationId->toString(), $obj->id);
+        $this->assertEquals('flopy_calculation', $obj->type);
+        $this->assertObjectHasAttribute('data', $obj);
+        $data = $obj->data;
+        $this->assertObjectHasAttribute('packages', $data);
+        $this->assertContains('mf', $data->packages);
+        $mf = $data->mf;
+        $this->assertObjectHasAttribute('version', $mf);
+        $this->assertEquals('mfnwt', $mf->version);
     }
 
     public function test_create_scenario_from_basemodel_with_all_boundary_types(): void
