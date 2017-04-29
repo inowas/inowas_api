@@ -14,7 +14,6 @@ use Inowas\Common\Geometry\Geometry;
 use Inowas\Common\Grid\LayerNumber;
 use Inowas\Common\Id\BoundaryId;
 use Inowas\Common\Boundaries\BoundaryName;
-use Inowas\Common\Modflow\Iphdry;
 use Inowas\Common\Modflow\Laytyp;
 use Inowas\Common\Modflow\Laywet;
 use Inowas\Common\Modflow\LengthUnit;
