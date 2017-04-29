@@ -20,9 +20,6 @@ use Inowas\Common\Geometry\Geometry;
 use Inowas\Common\Id\BoundaryId;
 use Inowas\Common\Boundaries\BoundaryName;
 use Inowas\Common\Id\ObservationPointId;
-use Inowas\Common\Modflow\ExecutableName;
-use Inowas\Common\Modflow\Laywet;
-use Inowas\Common\Modflow\Nstp;
 use Inowas\Common\Modflow\OcStressPeriod;
 use Inowas\Common\Modflow\OcStressPeriodData;
 use Inowas\Common\Modflow\PackageName;
@@ -43,7 +40,6 @@ use Inowas\Modflow\Model\Command\ChangeModflowModelGridSize;
 use Inowas\Modflow\Model\Command\ChangeModflowModelName;
 use Inowas\Modflow\Model\Command\ChangeModflowModelSoilmodelId;
 use Inowas\Modflow\Model\Command\CreateModflowModel;
-use Inowas\Modflow\Model\Command\AddModflowScenario;
 use Inowas\Modflow\Model\Command\CreateModflowModelCalculation;
 use Inowas\Common\Grid\BoundingBox;
 use Inowas\Common\Grid\GridSize;
@@ -55,7 +51,6 @@ use Inowas\Common\Id\UserId;
 use Inowas\Common\Boundaries\WellBoundary;
 use Inowas\Common\Boundaries\WellType;
 use Inowas\Common\Boundaries\RiverBoundary;
-use Inowas\Modflow\Model\Version;
 use Inowas\ModflowBundle\DataFixtures\Scenarios\LoadScenarioBase;
 use Inowas\Soilmodel\Model\Command\AddGeologicalLayerToSoilmodel;
 use Inowas\Soilmodel\Model\Command\ChangeSoilmodelDescription;
@@ -358,12 +353,6 @@ class HanoiBaseModelOnly extends LoadScenarioBase
 
         echo sprintf("Dispatch UpdateCalculationPackageParameter %s.\r\n", $calculationId->toString());
         $commandBus->dispatch(UpdateCalculationPackageParameter::byUserWithModelId($calculationId, $ownerId, $modelId, 'upw', 'layTyp', Laytyp::fromInt(1)));
-
-        echo sprintf("Dispatch UpdateCalculationPackageParameter %s.\r\n", $calculationId->toString());
-        $commandBus->dispatch(UpdateCalculationPackageParameter::byUserWithModelId($calculationId, $ownerId, $modelId, 'mf', 'executableName', ExecutableName::fromString('mfnwt')));
-
-        echo sprintf("Dispatch UpdateCalculationPackageParameter %s.\r\n", $calculationId->toString());
-        $commandBus->dispatch(UpdateCalculationPackageParameter::byUserWithModelId($calculationId, $ownerId, $modelId, 'mf', 'version', Version::fromString('mfnwt')));
 
         echo sprintf("Dispatch UpdateCalculationPackageParameter %s.\r\n", $calculationId->toString());
         $ocStressPeriodData = OcStressPeriodData::create()->addStressPeriod(OcStressPeriod::fromParams(0, 0, ['save head', 'save drawdown']));
