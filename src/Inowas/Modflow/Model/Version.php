@@ -10,6 +10,7 @@ class Version
 {
 
     const MF2005 = 'mf2005';
+    const MFNWT = 'mfnwt';
 
     protected $availableVersions = array('mf2005', 'mfnwt');
 

@@ -24,6 +24,7 @@ use Inowas\Modflow\Model\Packages\DisPackage;
 use Inowas\Modflow\Model\Packages\GhbPackage;
 use Inowas\Modflow\Model\Packages\LpfPackage;
 use Inowas\Modflow\Model\Packages\MfPackage;
+use Inowas\Modflow\Model\Packages\NwtPackage;
 use Inowas\Modflow\Model\Packages\OcPackage;
 use Inowas\Modflow\Model\Packages\PackageInterface;
 use Inowas\Modflow\Model\Packages\PcgPackage;
@@ -57,6 +58,7 @@ class ModflowConfiguration implements \JsonSerializable
         'dis' => DisPackage::class,
         'lpf' => LpfPackage::class,
         'pcg' => PcgPackage::class,
+        'nwt' => NwtPackage::class,
         'oc' => OcPackage::class,
         'chd' => ChdPackage::class,
         'ghb' => GhbPackage::class,
@@ -70,6 +72,12 @@ class ModflowConfiguration implements \JsonSerializable
     private $availableFlowPackages = [
         'lpf' => LpfPackage::class,
         'upw' => UpwPackage::class
+    ];
+
+    /** @var array */
+    private $availableSolverPackages = [
+        'pcg' => PcgPackage::class,
+        'nwt' => NwtPackage::class
     ];
 
     /** @var array */
@@ -217,20 +225,6 @@ class ModflowConfiguration implements \JsonSerializable
         $this->updatePackage($package);
     }
 
-    public function selectFlowPackage(string $packageName): void
-    {
-        if (! $this->flowPackageIsAvailable($packageName)){
-            throw InvalidPackageNameException::withName($packageName, $this->availableFlowPackages);
-        }
-
-        if ($this->packageIsSelected($packageName)){
-            return;
-        }
-
-
-
-    }
-
     public function getPackage(string $packageName): PackageInterface
     {
         if (! array_key_exists($packageName, $this->availablePackages)){
@@ -249,6 +243,11 @@ class ModflowConfiguration implements \JsonSerializable
         return $this->selectedPackages[3];
     }
 
+    public function solverPackageName(): string
+    {
+        return $this->selectedPackages[4];
+    }
+
     public function changeFlowPackage(PackageName $packageName): void
     {
         $packageName = $packageName->toString();
@@ -261,11 +260,40 @@ class ModflowConfiguration implements \JsonSerializable
         }
 
         $this->removePackageByName($this->flowPackageName());
-
         $class = $this->availablePackages[$packageName];
         $this->addPackage($class::fromDefaults());
-
         $this->selectedPackages[3] = $packageName;
+
+        if ($packageName == 'upw'){
+            $this->updateExecutableName(ExecutableName::fromString('mfnwt'));
+            $this->updateVersion(Version::fromString(Version::MFNWT));
+            $this->changeSolverPackage(PackageName::fromString('nwt'));
+            return;
+        }
+
+        if ($packageName == 'lpf'){
+            $this->updateExecutableName(ExecutableName::fromString('mf2005'));
+            $this->updateVersion(Version::fromString(Version::MF2005));
+            $this->changeSolverPackage(PackageName::fromString('pcg'));
+            return;
+        }
+    }
+
+    public function changeSolverPackage(PackageName $packageName): void
+    {
+        $packageName = $packageName->toString();
+        if (! $this->solverPackageIsAvailable($packageName)){
+            throw InvalidPackageNameException::withName($packageName, $this->availableFlowPackages);
+        }
+
+        if ($this->solverPackageName() == $packageName) {
+            return;
+        }
+
+        $this->removePackageByName($this->solverPackageName());
+        $class = $this->availablePackages[$packageName];
+        $this->addPackage($class::fromDefaults());
+        $this->selectedPackages[4] = $packageName;
     }
 
     public function author(): string
@@ -308,7 +336,7 @@ class ModflowConfiguration implements \JsonSerializable
         $this->packages[$package->type()] = $package;
     }
 
-    private function removePackageByName(string $packageName){
+    private function removePackageByName(string $packageName) {
         $package = $this->getPackageByName($packageName);
         unset($this->packages[$package->type()]);
     }
@@ -348,13 +376,13 @@ class ModflowConfiguration implements \JsonSerializable
         return array_key_exists($packageName, $this->availablePackages);
     }
 
-    private function isFlowPackage(string $packageName): bool
+    private function flowPackageIsAvailable(string $packageName): bool
     {
         return array_key_exists($packageName, $this->availableFlowPackages);
     }
 
-    private function flowPackageIsAvailable(string $packageName): bool
+    private function solverPackageIsAvailable(string $packageName): bool
     {
-        return array_key_exists($packageName, $this->availableFlowPackages);
+        return array_key_exists($packageName, $this->availableSolverPackages);
     }
 }

@@ -702,7 +702,6 @@ class ModflowModelEventSourcingTest extends EventSourcingBaseTest
         ));
 
         $this->commandBus->dispatch(ChangeFlowPackage::byUserWithCalculationId($ownerId, $calculationId, PackageName::fromString('upw')));
-        $this->commandBus->dispatch(UpdateCalculationPackageParameter::byUserWithModelId($calculationId, $ownerId, $modelId, 'upw', 'iphdry', Iphdry::fromInt(2)));
 
         $config = $this->container->get('inowas.modflow_projection.calculation_configuration_finder')->getConfigurationJson($calculationId);
         $this->assertJson($config);
@@ -712,10 +711,8 @@ class ModflowModelEventSourcingTest extends EventSourcingBaseTest
         $this->assertObjectHasAttribute('data', $obj);
         $data = $obj->data;
         $this->assertObjectHasAttribute('packages', $data);
+        $this->assertContains('nwt', $data->packages);
         $this->assertContains('upw', $data->packages);
-        $upw = $data->upw;
-        $this->assertObjectHasAttribute('iphdry', $upw);
-        $this->assertEquals(2, $upw->iphdry);
     }
 
     public function test_change_calculation_package_mf_version(): void
