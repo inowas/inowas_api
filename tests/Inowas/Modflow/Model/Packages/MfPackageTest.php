@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Tests\Inowas\Modflow\Model\Packages;
 
 use Inowas\Common\FileSystem\Externalpath;
@@ -51,7 +53,6 @@ class MfPackageTest extends \PHPUnit_Framework_TestCase
         $mfPackage = MfPackage::fromDefaults();
         $mfPackage = $mfPackage->updateModelname(Modelname::fromString('modelnametest2'));
         $obj = json_decode(json_encode($mfPackage));
-        var_dump($obj);
         $this->assertEquals('modelnametest2', $obj->modelname);
     }
 }
