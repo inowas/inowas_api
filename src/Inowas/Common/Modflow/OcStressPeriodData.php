@@ -43,6 +43,7 @@ class OcStressPeriodData implements \JsonSerializable
 
     public function jsonSerialize()
     {
-        $this->toArray();
+        return (object)array("stress_period_data" => $this->data);
     }
 }
+
