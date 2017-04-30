@@ -105,7 +105,7 @@ class ModelDetailsProjector extends AbstractDoctrineConnectionProjector
     {
         $this->connection->update(Table::MODEL_DETAILS,
             array('bounding_box' => json_encode($event->boundingBox())),
-            array('model_id' => $event->modflowModelId()->toString())
+            array('model_id' => $event->modflowId()->toString())
         );
     }
 
@@ -113,7 +113,7 @@ class ModelDetailsProjector extends AbstractDoctrineConnectionProjector
     {
         $this->connection->update(Table::MODEL_DETAILS,
             array('grid_size' => json_encode($event->gridSize())),
-            array('model_id' => $event->modflowModelId()->toString())
+            array('model_id' => $event->modflowId()->toString())
         );
     }
 

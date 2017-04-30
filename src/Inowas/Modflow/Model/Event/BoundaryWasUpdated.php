@@ -77,7 +77,7 @@ class BoundaryWasUpdated extends AggregateChanged
         return $this->baseModelId;
     }
 
-    public function modelId(): ModflowId
+    public function modflowId(): ModflowId
     {
         if ($this->scenarioId === null){
             if (array_key_exists('scenario_id', $this->payload)){

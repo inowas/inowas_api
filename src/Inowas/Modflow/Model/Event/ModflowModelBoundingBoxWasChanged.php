@@ -37,7 +37,7 @@ class ModflowModelBoundingBoxWasChanged extends AggregateChanged
         return $event;
     }
 
-    public function modflowModelId(): ModflowId
+    public function modflowId(): ModflowId
     {
         if ($this->modflowModelId === null){
             $this->modflowModelId = ModflowId::fromString($this->aggregateId());

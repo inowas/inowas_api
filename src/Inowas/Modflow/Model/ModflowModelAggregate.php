@@ -557,12 +557,12 @@ class ModflowModelAggregate extends AggregateRoot
             return;
         }
 
-        if ($this->modflowModelId()->toString() === $event->modelId()->toString()){
+        if ($this->modflowModelId()->toString() === $event->modflowId()->toString()){
             $this->boundaries[$boundary->boundaryId()->toString()] = $boundary;
         }
 
-        if ($this->contains($event->modelId(), $this->scenarios)) {
-            $scenario = $this->scenarios[$event->modelId()->toString()];
+        if ($this->contains($event->modflowId(), $this->scenarios)) {
+            $scenario = $this->scenarios[$event->modflowId()->toString()];
             $scenario->boundaries[$boundary->boundaryId()->toString()] = $boundary;
         }
     }

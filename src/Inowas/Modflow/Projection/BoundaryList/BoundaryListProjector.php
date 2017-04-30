@@ -125,7 +125,7 @@ class BoundaryListProjector extends AbstractDoctrineConnectionProjector
             'boundary' => base64_encode(serialize($boundary))
         ), array(
             'boundary_id' => $event->boundary()->boundaryId()->toString(),
-            'model_id' => $event->modelId()->toString()
+            'model_id' => $event->modflowId()->toString()
         ));
     }
 

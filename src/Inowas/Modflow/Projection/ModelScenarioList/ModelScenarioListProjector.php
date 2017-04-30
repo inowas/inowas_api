@@ -128,7 +128,7 @@ class ModelScenarioListProjector extends AbstractDoctrineConnectionProjector
     {
         $this->connection->update(Table::MODEL_SCENARIO_LIST,
             array('bounding_box' => json_encode($event->boundingBox())),
-            array('base_model_id' => $event->modflowModelId()->toString())
+            array('base_model_id' => $event->modflowId()->toString())
         );
     }
 
@@ -136,7 +136,7 @@ class ModelScenarioListProjector extends AbstractDoctrineConnectionProjector
     {
         $this->connection->update(Table::MODEL_SCENARIO_LIST,
             array('grid_size' => json_encode($event->gridSize())),
-            array('base_model_id' => $event->modflowModelId()->toString())
+            array('base_model_id' => $event->modflowId()->toString())
         );
     }
 }

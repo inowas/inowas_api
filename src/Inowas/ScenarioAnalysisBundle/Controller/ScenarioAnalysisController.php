@@ -129,7 +129,7 @@ class ScenarioAnalysisController extends FOSRestController
             throw new InvalidUuidException();
         }
 
-        $baselModel = $this->get('inowas.model_scenarios_finder')->findByBaseModelId(
+        $baselModel = $this->get('inowas.model_scenarios_finder')->findBaseModelById(
             ModflowId::fromString($baseModelId)
         );
 

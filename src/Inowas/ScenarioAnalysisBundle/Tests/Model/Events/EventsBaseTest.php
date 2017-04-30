@@ -8,7 +8,7 @@ use Inowas\ModflowBundle\Model\ModflowModelFactory;
 use Inowas\ScenarioAnalysisBundle\Factory\ScenarioFactory;
 use Inowas\ScenarioAnalysisBundle\Model\Scenario;
 
-class EventsBaseTest extends \PHPUnit_Framework_TestCase
+abstract class EventsBaseTest extends \PHPUnit_Framework_TestCase
 {
     /** @var  ModflowModel */
     protected $model;

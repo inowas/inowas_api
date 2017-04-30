@@ -13,7 +13,7 @@ class User extends BaseUser
     /** @var  string */
     protected $name;
 
-    /** @var  Uuid */
+    /** @var  string */
     protected $apiKey;
 
     public function __construct()
@@ -24,9 +24,9 @@ class User extends BaseUser
     }
 
     /**
-     * @return Uuid
+     * @return string
      */
-    public function getApiKey()
+    public function getApiKey(): string
     {
         return $this->apiKey;
     }
@@ -47,6 +47,9 @@ class User extends BaseUser
 
     public function getName(): string
     {
+        if (null === $this->name){
+            $this->name = "";
+        }
         return $this->name;
     }
 }
