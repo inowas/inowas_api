@@ -5,8 +5,6 @@ declare(strict_types=1);
 namespace Inowas\ModflowBundle\Command;
 
 use Inowas\Common\Id\ModflowId;
-use Inowas\Common\Id\UserId;
-use Inowas\Modflow\Model\Command\CalculateModflowModelCalculation;
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -35,6 +33,22 @@ class ModflowCalculationCommand extends ContainerAwareCommand
             $calculations = $this->getContainer()->get('inowas.modflow_projection.calculation_configuration_finder')->findAll();
             foreach ($calculations as $calculation){
                 $output->writeln($calculation['calculation_id']);
+            }
+
+            return;
+        }
+
+        if ($input->getArgument('calculationId') == 'all'){
+            $calculations = $this->getContainer()->get('inowas.modflow_projection.calculation_configuration_finder')->findAll();
+
+            foreach ($calculations as $calculation){
+                $calculationId = ModflowId::fromString($calculation['calculation_id']);
+                $output->writeln(sprintf('Calculating Calculation with id: ', $calculationId->toString()));
+                $calculationFinder = $this->getContainer()->get('inowas.modflow_projection.calculation_configuration_finder');
+                $calculation = $calculationFinder->getFlopyCalculation($calculationId);
+                $flopyCalculation = $this->getContainer()->get('inowas.soilmodel.flopy_calculation_service');
+                $flopyCalculation->calculate($calculation);
+
             }
 
             return;
