@@ -23,6 +23,7 @@ use Inowas\Common\Id\ObservationPointId;
 use Inowas\Common\Modflow\Laywet;
 use Inowas\Common\Modflow\OcStressPeriod;
 use Inowas\Common\Modflow\OcStressPeriodData;
+use Inowas\Common\Modflow\PackageName;
 use Inowas\Common\Soilmodel\BottomElevation;
 use Inowas\Common\Modflow\Laytyp;
 use Inowas\Common\Soilmodel\HydraulicAnisotropy;
@@ -33,6 +34,7 @@ use Inowas\Common\Soilmodel\TopElevation;
 use Inowas\Common\Soilmodel\VerticalHydraulicConductivity;
 use Inowas\Modflow\Model\Command\AddBoundary;
 use Inowas\Modflow\Model\Command\CalculateModflowModelCalculation;
+use Inowas\Modflow\Model\Command\ChangeFlowPackage;
 use Inowas\Modflow\Model\Command\ChangeModflowModelBoundingBox;
 use Inowas\Modflow\Model\Command\ChangeModflowModelDescription;
 use Inowas\Modflow\Model\Command\ChangeModflowModelGridSize;
@@ -671,10 +673,10 @@ class Hanoi extends LoadScenarioBase
 
         foreach ($calculationList as $calculation) {
             $ocStressPeriodData = OcStressPeriodData::create()->addStressPeriod(OcStressPeriod::fromParams(0,0, ['save head', 'save drawdown']));
-            $commandBus->dispatch(UpdateCalculationPackageParameter::byUserWithModelId($calculation[0], $calculation[1], $calculation[2], 'oc', 'ocStressPeriodData', $ocStressPeriodData));
-            $commandBus->dispatch(UpdateCalculationPackageParameter::byUserWithModelId($calculation[0], $calculation[1], $calculation[2], 'lpf', 'layTyp', Laytyp::fromInt(1)));
-            $commandBus->dispatch(UpdateCalculationPackageParameter::byUserWithModelId($calculation[0], $calculation[1], $calculation[2], 'lpf', 'layWet', Laywet::fromFloat(1)));
             $commandBus->dispatch(CalculateModflowModelCalculation::byUserWithModelId($calculation[1], $calculation[0], $calculation[2]));
+            $commandBus->dispatch(ChangeFlowPackage::byUserWithCalculationId($calculation[1], $calculation[0], PackageName::fromString('upw')));
+            $commandBus->dispatch(UpdateCalculationPackageParameter::byUserWithModelId($calculationId, $ownerId, $modelId, 'upw', 'layTyp', Laytyp::fromInt(1)));
+            $commandBus->dispatch(UpdateCalculationPackageParameter::byUserWithModelId($calculation[0], $calculation[1], $calculation[2], 'oc', 'ocStressPeriodData', $ocStressPeriodData));
         }
     }
 }
