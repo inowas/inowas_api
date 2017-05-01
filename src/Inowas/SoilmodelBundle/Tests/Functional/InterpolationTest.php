@@ -123,8 +123,10 @@ class InterpolationTest extends WebTestCase
         $this->interpolation->addPointValue(new PointValue(new Point(11772988.05, 2386432.76), -9.57));
     }
 
-
-    public function testInterpolation()
+    /**
+     * @group messaging-integration-tests
+     */
+    public function test_the_interpolation()
     {
         /** @var InterpolationResult $result */
         $result = $this->interpolationService->interpolate($this->interpolation);
