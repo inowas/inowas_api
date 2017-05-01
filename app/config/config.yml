@@ -3,7 +3,6 @@ imports:
     - { resource: security.yml }
     - { resource: services.yml }
     - { resource: "@InowasAppBundle/Resources/config/services.xml" }
-    - { resource: "@InowasScenarioAnalysisBundle/Resources/config/services.xml" }
 
     - { resource: "@InowasModflowBundle/Resources/config/event_store.yml" }
     - { resource: "@InowasModflowBundle/Resources/config/projection.yml" }

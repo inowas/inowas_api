@@ -1,6 +1,6 @@
 <?php
 
-namespace Inowas\ScenarioAnalysisBundle\Tests\Controller;
+namespace Tests\Inowas\ScenarioAnalysisBundle\Controller;
 
 use FOS\UserBundle\Doctrine\UserManager;
 use Inowas\AppBundle\Model\User;
@@ -52,6 +52,8 @@ class ScenarioAnalysisControllerTest extends WebTestCase
 
         $this->projection = static::$kernel->getContainer()
             ->get('inowas.modflow_projection.model_scenarios');
+
+        $this->projection->reset();
 
         /** @var ModelScenarioFinder modelScenarioFinder */
         $this->modelScenarioFinder = static::$kernel->getContainer()
@@ -113,7 +115,5 @@ class ScenarioAnalysisControllerTest extends WebTestCase
         foreach ($users as $user){
             $this->userManager->deleteUser($user);
         }
-
-        $this->projection->reset();
     }
 }
