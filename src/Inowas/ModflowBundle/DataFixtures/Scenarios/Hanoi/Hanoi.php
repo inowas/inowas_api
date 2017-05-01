@@ -20,7 +20,6 @@ use Inowas\Common\Geometry\Geometry;
 use Inowas\Common\Id\BoundaryId;
 use Inowas\Common\Boundaries\BoundaryName;
 use Inowas\Common\Id\ObservationPointId;
-use Inowas\Common\Modflow\Laywet;
 use Inowas\Common\Modflow\OcStressPeriod;
 use Inowas\Common\Modflow\OcStressPeriodData;
 use Inowas\Common\Modflow\PackageName;
@@ -672,11 +671,12 @@ class Hanoi extends LoadScenarioBase
         $calculationList[] = [$calculationId, $ownerId, $scenarioId];
 
         foreach ($calculationList as $calculation) {
-            $ocStressPeriodData = OcStressPeriodData::create()->addStressPeriod(OcStressPeriod::fromParams(0,0, ['save head', 'save drawdown']));
-            $commandBus->dispatch(CalculateModflowModelCalculation::byUserWithModelId($calculation[1], $calculation[0], $calculation[2]));
             $commandBus->dispatch(ChangeFlowPackage::byUserWithCalculationId($calculation[1], $calculation[0], PackageName::fromString('upw')));
             $commandBus->dispatch(UpdateCalculationPackageParameter::byUserWithModelId($calculationId, $ownerId, $modelId, 'upw', 'layTyp', Laytyp::fromInt(1)));
+
+            $ocStressPeriodData = OcStressPeriodData::create()->addStressPeriod(OcStressPeriod::fromParams(0,0, ['save head', 'save drawdown']));
             $commandBus->dispatch(UpdateCalculationPackageParameter::byUserWithModelId($calculation[0], $calculation[1], $calculation[2], 'oc', 'ocStressPeriodData', $ocStressPeriodData));
+            $commandBus->dispatch(CalculateModflowModelCalculation::byUserWithModelId($calculation[1], $calculation[0], $calculation[2]));
         }
     }
 }
