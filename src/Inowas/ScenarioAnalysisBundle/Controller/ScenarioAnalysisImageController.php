@@ -233,7 +233,7 @@ class ScenarioAnalysisImageController extends FOSRestController
                     continue;
                 }
 
-                $result[$rowNumber][$colNumber] = round($arr2[$rowNumber][$colNumber] - $arr1[$rowNumber][$colNumber], 3);
+                $result[$rowNumber][$colNumber] = round($arr1[$rowNumber][$colNumber] - $arr2[$rowNumber][$colNumber], 3);
             }
         }
 
