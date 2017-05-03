@@ -6,8 +6,8 @@ namespace Inowas\ModflowCalculation\Infrastructure\Projection\Calculation;
 
 use Doctrine\DBAL\Connection;
 use Inowas\Common\Calculation\HeadData;
+use Inowas\Common\Calculation\TimeSeriesData;
 use Inowas\Common\Grid\Ncol;
-use Inowas\Common\FileSystem\FileName;
 use Inowas\Common\Grid\LayerNumber;
 use Inowas\Common\Grid\Nrow;
 use Inowas\Common\Calculation\ResultType;
@@ -91,7 +91,7 @@ class CalculationResultsFinder
 
     public function findValue(ModflowId $calculationId, ResultType $type, LayerNumber $layerNumber, TotalTime $totalTime): HeadData
     {
-        $request = ModflowCalculationReadDataRequest::fromLayerdata(
+        $request = ModflowCalculationReadDataRequest::forLayerData(
             $calculationId,
             $type,
             $totalTime,
@@ -102,23 +102,18 @@ class CalculationResultsFinder
         return HeadData::from2dArray($response->data());
     }
 
-    public function findTimeSeries(ModflowId $calculationId, ResultType $type, LayerNumber $layerNumber, Ncol $nx, Nrow $ny): array
+    public function findTimeSeries(ModflowId $calculationId, ResultType $type, LayerNumber $layerNumber, Nrow $ny, Ncol $nx): TimeSeriesData
     {
-        $rows = $this->connection->fetchAll(
-            sprintf('SELECT filename, totim from %s WHERE calculation_id = :calculation_id AND type = :type AND layer = :layer', Table::CALCULATION_RESULTS),
-            [
-                'calculation_id' => $calculationId->toString(),
-                'type' => $type->toString(),
-                'layer' => $layerNumber->toInteger()
-            ]
+
+        $request = ModflowCalculationReadDataRequest::forTimeSeries(
+            $calculationId,
+            $type,
+            $layerNumber,
+            $ny,
+            $nx
         );
 
-        $result = [];
-        foreach ($rows as $row){
-            $data = $this->persister->read($calculationId, FileName::fromString($row['filename']));
-            $result[$row['totim']] = $data->toArray()[$ny->toInteger()][$nx->toInteger()];
-        }
-
-        return $result;
+        $response = ModflowCalculationReadDataResponse::fromJson($this->reader->read($request));
+        return TimeSeriesData::fromArray($response->data());
     }
 }

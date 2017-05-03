@@ -48,7 +48,7 @@ class AMQPModflowCalculationReadData implements ModflowCalculationReadData
         return $this->response;
     }
 
-    public function read(\Inowas\ModflowCalculation\Model\ModflowCalculationReadDataRequest $request): string
+    public function read(ModflowCalculationReadDataRequest $request): string
     {
         return $this->call(json_encode($request));
     }

@@ -5,6 +5,8 @@ namespace Inowas\ModflowCalculation\Model;
 use Inowas\Common\Calculation\ResultType;
 use Inowas\Common\DateTime\TotalTime;
 use Inowas\Common\Grid\LayerNumber;
+use Inowas\Common\Grid\Ncol;
+use Inowas\Common\Grid\Nrow;
 use Inowas\Common\Id\ModflowId;
 
 class ModflowCalculationReadDataRequest implements \JsonSerializable
@@ -21,7 +23,7 @@ class ModflowCalculationReadDataRequest implements \JsonSerializable
     /** @var \stdClass  */
     private $data;
 
-    public static function fromLayerdata(ModflowId $calculationId, ResultType $dataType, TotalTime $totim, LayerNumber $layer): ModflowCalculationReadDataRequest
+    public static function forLayerData(ModflowId $calculationId, ResultType $dataType, TotalTime $totim, LayerNumber $layer): ModflowCalculationReadDataRequest
     {
         $arr = array();
         $arr['id'] = $calculationId->toString();
@@ -32,6 +34,26 @@ class ModflowCalculationReadDataRequest implements \JsonSerializable
                 'type' => $dataType->toString(),
                 'totim' => $totim->toInteger(),
                 'layer' => $layer->toInteger()
+            )
+        );
+
+        $self = new self();
+        $self->data = (object)$arr;
+        return $self;
+    }
+
+    public static function forTimeSeries(ModflowId $calculationId, ResultType $dataType, LayerNumber $layer, Nrow $ny, Ncol $nx): ModflowCalculationReadDataRequest
+    {
+        $arr = array();
+        $arr['id'] = $calculationId->toString();
+        $arr['type'] = 'flopy_read_data';
+        $arr['version'] = self::VERSION;
+        $arr['request'] = (object)array(
+            self::REQUEST_TYPE_TIME_SERIES => (object)array(
+                'type' => $dataType->toString(),
+                'layer' => $layer->toInteger(),
+                'row' => $ny->toInteger(),
+                'column' => $nx->toInteger()
             )
         );
 

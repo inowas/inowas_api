@@ -39,7 +39,7 @@ class ModflowCalculationReadDataCommand extends ContainerAwareCommand
         $layerNumber = LayerNumber::fromInteger((int)$input->getArgument('layerNumber'));
 
         $flopyReadDataService = $this->getContainer()->get('inowas.calculation.amqp_flopy_calculation_read_data');
-        $response = $flopyReadDataService->read(ModflowCalculationReadDataRequest::fromLayerdata(
+        $response = $flopyReadDataService->read(ModflowCalculationReadDataRequest::forLayerData(
             $calculationId, $dataType, $totalTime, $layerNumber));
 
         dump($response);
