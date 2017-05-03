@@ -6,16 +6,12 @@ namespace Inowas\ModflowCalculation\Infrastructure\Projection\Calculation;
 
 use Doctrine\DBAL\Connection;
 use Inowas\Common\Id\ModflowId;
-use Inowas\ModflowModel\Infrastructure\Projection\Table;
-use Inowas\ModflowBundle\Service\ConfigurationPersister;
+use Inowas\ModflowCalculation\Infrastructure\Projection\Table;
 
 class CalculationListFinder
 {
     /** @var Connection $connection */
     protected $connection;
-
-    /** @var  ConfigurationPersister */
-    protected $persister;
 
     public function __construct(Connection $connection) {
         $this->connection = $connection;
