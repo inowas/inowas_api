@@ -1,9 +1,0 @@
-rest_scenario_analysis_api:
-    type: rest
-    resource: '@InowasScenarioAnalysisBundle/Controller/ScenarioAnalysisController.php'
-    prefix:    /api/scenarioanalysis
-
-rest_scenario_analysis_image:
-    type: rest
-    resource: '@InowasScenarioAnalysisBundle/Controller/ScenarioAnalysisImageController.php'
-    prefix:    /image/scenarioanalysis

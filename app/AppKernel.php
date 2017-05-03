@@ -29,8 +29,7 @@ class AppKernel extends Kernel
             new Prooph\Bundle\ServiceBus\ProophServiceBusBundle(),
             new Inowas\AppBundle\InowasAppBundle(),
             new Inowas\SoilmodelBundle\InowasSoilmodelBundle(),
-            new Inowas\ModflowBundle\InowasModflowBundle(),
-            new Inowas\ScenarioAnalysisBundle\InowasScenarioAnalysisBundle(),
+            new Inowas\ModflowBundle\InowasModflowBundle()
         ];
 
         if (in_array($this->getEnvironment(), ['dev', 'test'], true)) {

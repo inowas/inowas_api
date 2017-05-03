@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Inowas\ScenarioAnalysisBundle\Controller;
+namespace Inowas\ModflowBundle\Controller;
 
 use FOS\RestBundle\Controller\Annotations as Rest;
 use FOS\RestBundle\Controller\FOSRestController;
@@ -13,7 +13,7 @@ use Inowas\Common\Calculation\ResultType;
 use Inowas\Common\Grid\LayerNumber;
 use Inowas\Common\Id\ModflowId;
 use Inowas\Common\DateTime\TotalTime;
-use Inowas\ScenarioAnalysisBundle\Exception\InvalidUuidException;
+use Inowas\ModflowBundle\Exception\InvalidUuidException;
 use Nelmio\ApiDocBundle\Annotation\ApiDoc as ApiDoc;
 use Ramsey\Uuid\Uuid;
 use Symfony\Component\HttpFoundation\Response;

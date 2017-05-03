@@ -1,6 +1,6 @@
 <?php
 
-namespace Inowas\ScenarioAnalysisBundle\Exception;
+namespace Inowas\ModflowBundle\Exception;
 
 
 class InvalidUuidException extends \Exception{}

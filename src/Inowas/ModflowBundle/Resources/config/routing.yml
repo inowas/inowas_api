@@ -37,3 +37,14 @@ rest_modflow_calculation:
     type: rest
     resource: '@InowasModflowBundle/Controller/CalculationsController.php'
     prefix:    /api/modflow
+
+rest_scenario_analysis_api:
+    type: rest
+    resource: '@InowasModflowBundle/Controller/ScenarioAnalysisController.php'
+    prefix:    /api/scenarioanalysis
+
+rest_scenario_analysis_image:
+    type: rest
+    resource: '@InowasModflowBundle/Controller/ScenarioAnalysisImageController.php'
+    prefix:    /image/scenarioanalysis
+
