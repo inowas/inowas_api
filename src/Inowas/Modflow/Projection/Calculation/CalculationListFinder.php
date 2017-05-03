@@ -7,14 +7,14 @@ namespace Inowas\Modflow\Projection\Calculation;
 use Doctrine\DBAL\Connection;
 use Inowas\Common\Id\ModflowId;
 use Inowas\Modflow\Projection\Table;
-use Inowas\ModflowBundle\Service\FilePersister;
+use Inowas\ModflowBundle\Service\ConfigurationPersister;
 
 class CalculationListFinder
 {
     /** @var Connection $connection */
     protected $connection;
 
-    /** @var  FilePersister */
+    /** @var  ConfigurationPersister */
     protected $persister;
 
     public function __construct(Connection $connection) {

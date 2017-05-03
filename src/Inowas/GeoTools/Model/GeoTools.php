@@ -1,9 +1,10 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Inowas\GeoTools\Model;
 
 use Doctrine\DBAL\Connection;
-use Doctrine\ORM\EntityManager;
 use Inowas\Common\Boundaries\GridCellDateTimeValues;
 use Inowas\Common\Boundaries\ModflowBoundary;
 use Inowas\Common\Boundaries\ObservationPoint;
@@ -19,13 +20,12 @@ use Inowas\Common\Grid\GridSize;
 
 class GeoTools
 {
-
     /** @var Connection */
     protected $connection;
 
-    public function __construct(EntityManager $em)
+    public function __construct(Connection $connection)
     {
-        $this->connection = $em->getConnection();
+        $this->connection = $connection;
     }
 
     public function calculateActiveCells(ModflowBoundary $boundary, BoundingBox $boundingBox, GridSize $gridSize): ActiveCells
@@ -161,7 +161,7 @@ class GeoTools
 
         $query->execute();
         $result = $query->fetch();
-        return $result['st_linelocatepoint'];
+        return (float)$result['st_linelocatepoint'];
     }
 
     public function getClosestPointOnLineString(LineString $lineString, Point $point): Point
@@ -332,7 +332,7 @@ class GeoTools
                 $lineString->asText(), $p1->asText(), $p2->asText())
         );
 
-        return $result['st_length'];
+        return (float)$result['st_length'];
     }
 
     protected function getSubstringOfLinestring(LineString $lineString, Point $start, Point $end): LineString

@@ -54,7 +54,7 @@ class GeoToolsTest extends WebTestCase
     public function setUp(): void
     {
         self::bootKernel();
-        $em = static::$kernel->getContainer()->get('doctrine.orm.default_entity_manager');
+        $this->geoTools = static::$kernel->getContainer()->get('inowas.geotools.geotools_service');
 
         $this->area = AreaBoundary::create(BoundaryId::generate())
             ->setName(BoundaryName::fromString('Hanoi Area'))
@@ -112,7 +112,7 @@ class GeoToolsTest extends WebTestCase
             0,
             0
         );
-        $this->geoTools = new GeoTools($em);
+
         $this->gridSize = GridSize::fromXY(20, 30);
         $this->river = RiverBoundary::createWithParams(
             BoundaryId::generate(),

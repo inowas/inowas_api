@@ -1,0 +1,4 @@
+services:
+    inowas.geotools.geotools_service:
+        class: Inowas\GeoTools\Model\GeoTools
+        arguments: ['@doctrine.dbal.default_connection']

@@ -8,6 +8,7 @@ imports:
     - { resource: "@InowasModflowBundle/Resources/config/projection.yml" }
     - { resource: "@InowasModflowBundle/Resources/config/service_bus.yml" }
     - { resource: "@InowasModflowBundle/Resources/config/services.xml" }
+    - { resource: "@InowasModflowBundle/Resources/config/geotools_services.yml" }
     - { resource: "@InowasModflowBundle/Resources/config/soilmodel_services.yml" }
 
 # Put parameters here that don't need to change on each machine where the app is deployed
@@ -67,19 +68,6 @@ doctrine:
             point:                        CrEOF\Spatial\DBAL\Types\Geometry\PointType
             polygon:                      CrEOF\Spatial\DBAL\Types\Geometry\PolygonType
             linestring:                   CrEOF\Spatial\DBAL\Types\Geometry\LineStringType
-
-            active_cells:                 Inowas\ModflowBundle\Model\Type\ActiveCellsType
-            bounding_box:                 Inowas\ModflowBundle\Model\Type\BoundingBoxType
-            calculation_properties:       Inowas\ModflowBundle\Model\Type\CalculationPropertiesType
-            grid_size:                    Inowas\ModflowBundle\Model\Type\GridSizeType
-            time_unit:                    Inowas\ModflowBundle\Model\Type\TimeUnitType
-
-            chd_stress_period:            Inowas\ModflowBundle\Model\Type\ChdStressPeriodsType
-            ghb_stress_period:            Inowas\ModflowBundle\Model\Type\GhbStressPeriodsType
-            rch_stress_period:            Inowas\ModflowBundle\Model\Type\RchStressPeriodsType
-            riv_stress_period:            Inowas\ModflowBundle\Model\Type\RivStressPeriodsType
-            wel_stress_period:            Inowas\ModflowBundle\Model\Type\WelStressPeriodsType
-
             uuid:                         Ramsey\Uuid\Doctrine\UuidType
 
     orm:

@@ -13,7 +13,7 @@ services:
         class: Inowas\Modflow\Projection\BoundaryList\BoundaryListProjector
         arguments:
           - '@doctrine.dbal.default_connection'
-          - '@inowas.geotools'
+          - '@inowas.geotools.geotools_service'
           - '@inowas.modflow_projection.model_details_finder'
 
     inowas.modflow_projection.model_boundary_values:

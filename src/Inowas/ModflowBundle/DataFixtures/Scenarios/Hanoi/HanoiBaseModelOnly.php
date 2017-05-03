@@ -73,7 +73,7 @@ class HanoiBaseModelOnly extends LoadScenarioBase
     public function load()
     {
         $this->loadUsers($this->container->get('fos_user.user_manager'));
-        $geoTools = $this->container->get('inowas.geotools');
+        $geoTools = $this->container->get('inowas.geotools.geotools_service');
         $this->createEventStreamTableIfNotExists('event_stream');
 
         $commandBus = $this->container->get('prooph_service_bus.modflow_command_bus');
