@@ -35,7 +35,7 @@ class ModflowCalculationListenerCommand extends ContainerAwareCommand
             $commandBus->dispatch(UpdateCalculationResults::withResponse($response->calculationId(), $response));
         };
 
-        $listener = $this->getContainer()->get('inowas.calculation.amqp_flopy_calculation_listener');
+        $listener = $this->getContainer()->get('inowas.modflowcalculation.amqp_flopy_calculation_listener');
         $listener->listen($callback);
     }
 }
