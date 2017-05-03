@@ -1,8 +1,4 @@
 services:
-    inowas.soilmodel.soilmodelmanager:
-        class: Inowas\SoilmodelBundle\Service\SoilmodelManager
-        arguments: ['@doctrine.orm.default_entity_manager']
-
     inowas.soilmodel.interpolation_service:
         class: Inowas\Soilmodel\Interpolation\PyModellingInterpolation
         arguments: ['@inowas.amqp.stream.connection', 'rpc_interpolation_queue']

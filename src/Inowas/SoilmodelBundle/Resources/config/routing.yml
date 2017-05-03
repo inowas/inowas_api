@@ -1,4 +1,0 @@
-#rest_modflow_area:
-#    type: rest
-#    resource: '@InowasModflowBundle/Controller/AreaController.php'
-#    prefix:    /api/modflow

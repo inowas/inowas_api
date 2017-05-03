@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Inowas\ScenarioAnalysisBundle\Controller;
+namespace Inowas\ModflowBundle\Controller;
 
 use FOS\RestBundle\Controller\Annotations as Rest;
 use FOS\RestBundle\Controller\FOSRestController;

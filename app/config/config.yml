@@ -8,11 +8,7 @@ imports:
     - { resource: "@InowasModflowBundle/Resources/config/projection.yml" }
     - { resource: "@InowasModflowBundle/Resources/config/service_bus.yml" }
     - { resource: "@InowasModflowBundle/Resources/config/services.xml" }
-
-    - { resource: "@InowasSoilmodelBundle/Resources/config/projection.yml"}
-    - { resource: "@InowasSoilmodelBundle/Resources/config/service_bus.yml"}
-    - { resource: "@InowasSoilmodelBundle/Resources/config/services.yml"}
-    - { resource: "@InowasSoilmodelBundle/Resources/config/routing.yml"}
+    - { resource: "@InowasModflowBundle/Resources/config/soilmodel_services.yml" }
 
 # Put parameters here that don't need to change on each machine where the app is deployed
 # http://symfony.com/doc/current/best_practices/configuration.html#application-related-configuration
@@ -84,9 +80,6 @@ doctrine:
             riv_stress_period:            Inowas\ModflowBundle\Model\Type\RivStressPeriodsType
             wel_stress_period:            Inowas\ModflowBundle\Model\Type\WelStressPeriodsType
 
-            property_type:                Inowas\SoilmodelBundle\Type\PropertyTypeType
-            soilmodel_property_type:      Inowas\SoilmodelBundle\Type\PropertyTypeType
-            soilmodel_property_value:     Inowas\SoilmodelBundle\Type\PropertyValueType
             uuid:                         Ramsey\Uuid\Doctrine\UuidType
 
     orm:

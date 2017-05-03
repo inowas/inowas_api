@@ -28,7 +28,6 @@ class AppKernel extends Kernel
             new Prooph\Bundle\EventStore\ProophEventStoreBundle(),
             new Prooph\Bundle\ServiceBus\ProophServiceBusBundle(),
             new Inowas\AppBundle\InowasAppBundle(),
-            new Inowas\SoilmodelBundle\InowasSoilmodelBundle(),
             new Inowas\ModflowBundle\InowasModflowBundle()
         ];
 

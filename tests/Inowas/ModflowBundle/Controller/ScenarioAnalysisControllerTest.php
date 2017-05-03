@@ -1,6 +1,6 @@
 <?php
 
-namespace Tests\Inowas\ScenarioAnalysisBundle\Controller;
+namespace Tests\Inowas\ModflowBundle\Controller;
 
 use FOS\UserBundle\Doctrine\UserManager;
 use Inowas\AppBundle\Model\User;
