@@ -29,16 +29,15 @@ class ModflowProjectionCommand extends ContainerAwareCommand
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $projections = [];
-        $projections[] = $this->getContainer()->get('inowas.modflow_projection.model_boundaries');
-        $projections[] = $this->getContainer()->get('inowas.modflow_projection.model_boundary_values');
-        $projections[] = $this->getContainer()->get('inowas.modflow_projection.model_scenarios');
-        $projections[] = $this->getContainer()->get('inowas.modflow_projection.calculation_results');
-        $projections[] = $this->getContainer()->get('inowas.modflow_projection.calculation_list');
-        $projections[] = $this->getContainer()->get('inowas.modflow_projection.model_details');
-        $projections[] = $this->getContainer()->get('inowas.modflow_projection.calculation_budgets');
-        $projections[] = $this->getContainer()->get('inowas.modflow_projection.soilmodel_list');
-        $projections[] = $this->getContainer()->get('inowas.modflow_projection.layer_values');
-        $projections[] = $this->getContainer()->get('inowas.modflow_projection.calculation_config');
+        $projections[] = $this->getContainer()->get('inowas.modflowmodel.model_boundaries_projector');
+        $projections[] = $this->getContainer()->get('inowas.modflowmodel.model_boundary_values_projector');
+        $projections[] = $this->getContainer()->get('inowas.modflowmodel.model_scenarios_projector');
+        $projections[] = $this->getContainer()->get('inowas.modflowcalculation.calculation_results_projector');
+        $projections[] = $this->getContainer()->get('inowas.modflowcalculation.calculation_list_projector');
+        $projections[] = $this->getContainer()->get('inowas.modflowmodel.model_details_projector');
+        $projections[] = $this->getContainer()->get('inowas.soilmodel.soilmodel_list_projector');
+        $projections[] = $this->getContainer()->get('inowas.soilmodel.layer_values_projector');
+        $projections[] = $this->getContainer()->get('inowas.modflowcalculation.calculation_configuration_projector');
 
         /** @var ProjectionInterface $projection */
         foreach ($projections as $projection) {

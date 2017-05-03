@@ -15,18 +15,18 @@ use Inowas\Common\Soilmodel\SpecificStorage;
 use Inowas\Common\Soilmodel\SpecificYield;
 use Inowas\Common\Soilmodel\Storage;
 use Inowas\Common\Soilmodel\TopElevation;
-use Inowas\Soilmodel\Interpolation\InterpolationConfiguration;
-use Inowas\Soilmodel\Interpolation\PyModellingInterpolation;
+use Inowas\Soilmodel\Model\LayerInterpolationConfiguration;
+use Inowas\Soilmodel\Service\AMQPLayerInterpolation;
 use Inowas\Soilmodel\Model\BoreLogAggregate;
-use Inowas\Soilmodel\Model\BoreLogId;
+use Inowas\Common\Soilmodel\BoreLogId;
 use Inowas\Soilmodel\Model\BoreLogList;
 use Inowas\Soilmodel\Model\Command\InterpolateSoilmodel;
 use Inowas\Soilmodel\Model\Exception\SoilmodelNotFoundException;
 use Inowas\Soilmodel\Model\Exception\WriteAccessFailedException;
-use Inowas\Soilmodel\Model\GeologicalLayer;
-use Inowas\Soilmodel\Model\GeologicalLayerNumber;
-use Inowas\Soilmodel\Model\GeologicalLayerValues;
-use Inowas\Soilmodel\Model\Horizon;
+use Inowas\Common\Soilmodel\GeologicalLayer;
+use Inowas\Common\Soilmodel\GeologicalLayerNumber;
+use Inowas\Common\Soilmodel\GeologicalLayerValues;
+use Inowas\Common\Soilmodel\Horizon;
 use Inowas\Soilmodel\Model\SoilmodelAggregate;
 use Inowas\Soilmodel\Model\SoilmodelList;
 use Inowas\SoilmodelBundle\Model\PointValue;
@@ -40,13 +40,13 @@ final class InterpolateSoilmodelHandler
     /** @var  BoreLogList */
     private $boreLogList;
 
-    /** @var  PyModellingInterpolation */
+    /** @var  AMQPLayerInterpolation */
     private $interpolation;
 
     /** @var  SoilmodelAggregate */
     private $soilmodel;
 
-    public function __construct(SoilmodelList $soilmodelList, BoreLogList $boreLogList, PyModellingInterpolation $interpolation)
+    public function __construct(SoilmodelList $soilmodelList, BoreLogList $boreLogList, AMQPLayerInterpolation $interpolation)
     {
         $this->boreLogList = $boreLogList;
         $this->interpolation = $interpolation;
@@ -65,16 +65,16 @@ final class InterpolateSoilmodelHandler
         }
 
         $layer = null;
-        /** @var GeologicalLayer $l */
+        /** @var \Inowas\Common\Soilmodel\GeologicalLayer $l */
         foreach ($this->soilmodel->layers() as $layer){
             $this->interpolate($layer, $command->boundingBox(), $command->gridSize());
         }
     }
 
     private function interpolate(GeologicalLayer $layer, BoundingBox $boundingBox, GridSize $gridSize){
-        $baseConfiguration = new InterpolationConfiguration();
-        $baseConfiguration->addMethod(InterpolationConfiguration::METHOD_GAUSSIAN);
-        $baseConfiguration->addMethod(InterpolationConfiguration::METHOD_MEAN);
+        $baseConfiguration = new LayerInterpolationConfiguration();
+        $baseConfiguration->addMethod(LayerInterpolationConfiguration::METHOD_GAUSSIAN);
+        $baseConfiguration->addMethod(LayerInterpolationConfiguration::METHOD_MEAN);
         $baseConfiguration->setBoundingBox($boundingBox);
         $baseConfiguration->setGridSize($gridSize);
 
@@ -93,7 +93,7 @@ final class InterpolateSoilmodelHandler
         $this->soilmodel->updateGeologicalLayerValues($layer->id(), $layer->layerNumber(), $layerValues);
     }
 
-    private function interpolateHTop(InterpolationConfiguration $configuration, array $boreLogs, GeologicalLayerNumber $layerNumber): TopElevation
+    private function interpolateHTop(LayerInterpolationConfiguration $configuration, array $boreLogs, GeologicalLayerNumber $layerNumber): TopElevation
     {
         $configuration = clone $configuration;
         /** @var BoreLogAggregate $boreLog */
@@ -111,7 +111,7 @@ final class InterpolateSoilmodelHandler
         return TopElevation::fromLayerValue($result->result());
     }
 
-    private function interpolateHBot(InterpolationConfiguration $configuration, array $boreLogs, GeologicalLayerNumber $layerNumber): BottomElevation
+    private function interpolateHBot(LayerInterpolationConfiguration $configuration, array $boreLogs, GeologicalLayerNumber $layerNumber): BottomElevation
     {
         $configuration = clone $configuration;
         /** @var BoreLogAggregate $boreLog */
@@ -129,7 +129,7 @@ final class InterpolateSoilmodelHandler
         return BottomElevation::fromLayerValue($result->result());
     }
 
-    private function interpolateConductivity(InterpolationConfiguration $configuration, array $boreLogs, GeologicalLayerNumber $layerNumber): Conductivity
+    private function interpolateConductivity(LayerInterpolationConfiguration $configuration, array $boreLogs, GeologicalLayerNumber $layerNumber): Conductivity
     {
         $kxConfiguration = clone $configuration;
         $kyConfiguration = clone $configuration;
@@ -159,7 +159,7 @@ final class InterpolateSoilmodelHandler
         );
     }
 
-    private function interpolateStorage(InterpolationConfiguration $configuration, array $boreLogs, GeologicalLayerNumber $layerNumber): Storage
+    private function interpolateStorage(LayerInterpolationConfiguration $configuration, array $boreLogs, GeologicalLayerNumber $layerNumber): Storage
     {
         $ssConfiguration = clone $configuration;
         $syConfiguration = clone $configuration;

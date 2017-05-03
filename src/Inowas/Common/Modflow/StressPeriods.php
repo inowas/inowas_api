@@ -6,7 +6,7 @@ namespace Inowas\Common\Modflow;
 
 use Inowas\Common\DateTime\DateTime;
 use Inowas\Common\DateTime\TotalTime;
-use Inowas\Modflow\Model\Exception\InvalidTimeUnitException;
+use Inowas\ModflowModel\Model\Exception\InvalidTimeUnitException;
 
 final class StressPeriods
 {

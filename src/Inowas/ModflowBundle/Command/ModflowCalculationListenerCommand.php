@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Inowas\ModflowBundle\Command;
 
-use Inowas\Modflow\Model\Command\UpdateCalculationResults;
-use Inowas\Soilmodel\Interpolation\FlopyCalculationResponse;
+use Inowas\ModflowCalculation\Model\Command\UpdateCalculationResults;
+use Inowas\ModflowCalculation\Model\ModflowCalculationResponse;
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -29,13 +29,13 @@ class ModflowCalculationListenerCommand extends ContainerAwareCommand
     {
         $callback = function($msg) {
             echo ' [+] Submitting result metadata from calculation', "\n";
-            $response = FlopyCalculationResponse::fromJson($msg->body);
+            $response = ModflowCalculationResponse::fromJson($msg->body);
             $msg->delivery_info['channel']->basic_ack($msg->delivery_info['delivery_tag']);
             $commandBus = $this->getContainer()->get('prooph_service_bus.modflow_command_bus');
             $commandBus->dispatch(UpdateCalculationResults::withResponse($response->calculationId(), $response));
         };
 
-        $listener = $this->getContainer()->get('inowas.soilmodel.flopy_calculation_listener_service');
+        $listener = $this->getContainer()->get('inowas.calculation.amqp_flopy_calculation_listener');
         $listener->listen($callback);
     }
 }

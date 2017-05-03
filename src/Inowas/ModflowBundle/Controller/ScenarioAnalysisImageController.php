@@ -54,10 +54,10 @@ class ScenarioAnalysisImageController extends FOSRestController
             throw new InvalidUuidException();
         }
 
-        $calculation = $this->get('inowas.modflow_projection.calculation_list_finder')
+        $calculation = $this->get('inowas.modflowcalculation.calculation_list_finder')
             ->findLastCalculationByModelId(ModflowId::fromString($modelId));
 
-        $headData = $this->get('inowas.modflow_projection.calculation_results_finder')
+        $headData = $this->get('inowas.modflowcalculation.calculation_results_finder')
             ->findValue(
                 ModflowId::fromString($calculation['calculation_id']),
                 ResultType::fromString($type),
@@ -114,7 +114,7 @@ class ScenarioAnalysisImageController extends FOSRestController
             throw new InvalidUuidException();
         }
 
-        $headData = $this->get('inowas.modflow_projection.calculation_results_finder')
+        $headData = $this->get('inowas.modflowcalculation.calculation_results_finder')
             ->findValue(
                 ModflowId::fromString($calculationId),
                 ResultType::fromString($type),
@@ -177,10 +177,10 @@ class ScenarioAnalysisImageController extends FOSRestController
         }
 
 
-        $calculation1 = $this->get('inowas.modflow_projection.calculation_list_finder')
+        $calculation1 = $this->get('inowas.modflowcalculation.calculation_list_finder')
             ->findLastCalculationByModelId(ModflowId::fromString($modelId1));
 
-        $headData1 = $this->get('inowas.modflow_projection.calculation_results_finder')
+        $headData1 = $this->get('inowas.modflowcalculation.calculation_results_finder')
             ->findValue(
                 ModflowId::fromString($calculation1['calculation_id']),
                 ResultType::fromString($type),
@@ -188,10 +188,10 @@ class ScenarioAnalysisImageController extends FOSRestController
                 TotalTime::fromInt((int)$totim)
             );
 
-        $calculation2 = $this->get('inowas.modflow_projection.calculation_list_finder')
+        $calculation2 = $this->get('inowas.modflowcalculation.calculation_list_finder')
             ->findLastCalculationByModelId(ModflowId::fromString($modelId2));
 
-        $headData2 = $this->get('inowas.modflow_projection.calculation_results_finder')
+        $headData2 = $this->get('inowas.modflowcalculation.calculation_results_finder')
             ->findValue(
                 ModflowId::fromString($calculation2['calculation_id']),
                 ResultType::fromString($type),

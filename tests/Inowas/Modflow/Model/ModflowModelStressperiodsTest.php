@@ -6,7 +6,7 @@ use Inowas\Common\DateTime\DateTime;
 use Inowas\Common\DateTime\Stressperiod;
 use Inowas\Common\DateTime\TotalTime;
 use Inowas\Common\Modflow\TimeUnit;
-use Inowas\Modflow\Model\ModflowModelStressperiods;
+use Inowas\ModflowModel\Model\Packages\ModflowModelStressperiods;
 
 class ModflowModelStressperiodsTest extends \PHPUnit_Framework_TestCase
 {

@@ -3,7 +3,7 @@
 namespace Tests\Inowas\Modflow\Model\Packages;
 
 use Inowas\Common\Modflow\Mxiter;
-use Inowas\Modflow\Model\Packages\PcgPackage;
+use Inowas\ModflowModel\Model\Packages\PcgPackage;
 
 class PcgPackageTest extends \PHPUnit_Framework_TestCase
 {

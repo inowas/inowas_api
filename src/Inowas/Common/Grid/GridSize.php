@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Inowas\Common\Grid;
 
-use Inowas\Modflow\Model\Exception\GridSizeOutOfRangeException;
+use Inowas\ModflowModel\Model\Exception\GridSizeOutOfRangeException;
 
 class GridSize implements \JsonSerializable
 {

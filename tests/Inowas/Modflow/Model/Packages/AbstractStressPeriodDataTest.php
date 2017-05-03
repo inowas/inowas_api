@@ -3,8 +3,8 @@
 namespace Tests\Inowas\Modflow\Model\Packages;
 
 
-use Inowas\Modflow\Model\Packages\ChdStressPeriodData;
-use Inowas\Modflow\Model\Packages\ChdStressPeriodGridCellValue;
+use Inowas\ModflowModel\Model\Packages\ChdStressPeriodData;
+use Inowas\ModflowModel\Model\Packages\ChdStressPeriodGridCellValue;
 
 class AbstractStressPeriodDataTest extends \PHPUnit_Framework_TestCase
 {

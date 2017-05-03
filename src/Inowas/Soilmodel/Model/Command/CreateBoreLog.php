@@ -5,9 +5,9 @@ declare(strict_types=1);
 namespace Inowas\Soilmodel\Model\Command;
 
 use Inowas\Common\Id\UserId;
-use Inowas\Soilmodel\Model\BoreLogId;
-use Inowas\Soilmodel\Model\BoreLogLocation;
-use Inowas\Soilmodel\Model\BoreLogName;
+use Inowas\Common\Soilmodel\BoreLogId;
+use Inowas\Common\Soilmodel\BoreLogLocation;
+use Inowas\Common\Soilmodel\BoreLogName;
 use Prooph\Common\Messaging\Command;
 use Prooph\Common\Messaging\PayloadConstructable;
 use Prooph\Common\Messaging\PayloadTrait;

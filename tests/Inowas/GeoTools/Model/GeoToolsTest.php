@@ -27,7 +27,7 @@ use Inowas\Common\Grid\GridSize;
 use Inowas\Common\Grid\LayerNumber;
 use Inowas\Common\Id\BoundaryId;
 use Inowas\Common\Id\ObservationPointId;
-use Inowas\GeoTools\Model\GeoTools;
+use Inowas\GeoTools\Service\GeoTools;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
 class GeoToolsTest extends WebTestCase

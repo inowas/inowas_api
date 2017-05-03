@@ -1,4 +1,0 @@
-services:
-    inowas.caclculatin.configuration_persister:
-        class: Inowas\Modflow\Infrastructure\Persister\ConfigurationPersister
-        arguments: ['%data_folder%']

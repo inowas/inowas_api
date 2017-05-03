@@ -10,7 +10,7 @@ use Inowas\Common\Modflow\Ixsec;
 use Inowas\Common\Modflow\Stoper;
 use Inowas\Common\Modflow\Strt;
 use Inowas\Common\Modflow\Unitnumber;
-use Inowas\Modflow\Model\Packages\BasPackage;
+use Inowas\ModflowModel\Model\Packages\BasPackage;
 
 class BasPackageTest extends \PHPUnit_Framework_TestCase
 {

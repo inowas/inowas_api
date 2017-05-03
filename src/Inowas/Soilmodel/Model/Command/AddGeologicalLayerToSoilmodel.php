@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace Inowas\Soilmodel\Model\Command;
 
 use Inowas\Common\Id\UserId;
-use Inowas\Soilmodel\Model\GeologicalLayer;
-use Inowas\Soilmodel\Model\SoilmodelId;
+use Inowas\Common\Soilmodel\GeologicalLayer;
+use Inowas\Common\Soilmodel\SoilmodelId;
 use Prooph\Common\Messaging\Command;
 use Prooph\Common\Messaging\PayloadConstructable;
 use Prooph\Common\Messaging\PayloadTrait;

@@ -19,7 +19,7 @@ class Botm
     public static function from3DArray(array $botm): Botm
     {
         if (! self::is3dArray($botm)){
-            throw InvalidArrayDimensionException::withExpectedDimensionAndValue(3, $botm);
+            throw InvalidArrayDimensionException::withExpectedDimensionAndValue(3);
         }
 
         $self = new self();
@@ -32,7 +32,7 @@ class Botm
     {
 
         if (! self::is2dArray($botm)){
-            throw InvalidArrayDimensionException::withExpectedDimensionAndValue(3, $botm);
+            throw InvalidArrayDimensionException::withExpectedDimensionAndValue(3);
         }
 
         $self = new self();

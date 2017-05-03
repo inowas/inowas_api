@@ -3,7 +3,7 @@
 namespace Inowas\Soilmodel\Model\Exception;
 
 use Inowas\Common\Id\UserId;
-use Inowas\Soilmodel\Model\SoilmodelId;
+use Inowas\Common\Soilmodel\SoilmodelId;
 
 final class PropertyNotFoundException extends \InvalidArgumentException
 {

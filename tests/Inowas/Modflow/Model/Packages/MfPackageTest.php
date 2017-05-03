@@ -11,8 +11,8 @@ use Inowas\Common\FileSystem\Modelworkspace;
 use Inowas\Common\Modflow\Listunit;
 use Inowas\Common\Modflow\Verbose;
 use Inowas\Common\Modflow\Modelname;
-use Inowas\Modflow\Model\Version;
-use Inowas\Modflow\Model\Packages\MfPackage;
+use Inowas\Common\Modflow\Version;
+use Inowas\ModflowModel\Model\Packages\MfPackage;
 
 class MfPackageTest extends \PHPUnit_Framework_TestCase
 {

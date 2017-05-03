@@ -7,7 +7,7 @@ namespace Inowas\Soilmodel\Model\Handler;
 use Inowas\Soilmodel\Model\Exception\SoilmodelNotFoundException;
 use Inowas\Soilmodel\Model\Exception\WriteAccessFailedException;
 use Inowas\Soilmodel\Model\Command\AddGeologicalLayerToSoilmodel;
-use Inowas\Soilmodel\Model\GeologicalLayerValues;
+use Inowas\Common\Soilmodel\GeologicalLayerValues;
 use Inowas\Soilmodel\Model\SoilmodelAggregate;
 use Inowas\Soilmodel\Model\SoilmodelList;
 

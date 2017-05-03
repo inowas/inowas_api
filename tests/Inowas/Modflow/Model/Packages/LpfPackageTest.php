@@ -2,7 +2,7 @@
 
 namespace Tests\Inowas\Modflow\Model\Packages;
 
-use Inowas\Modflow\Model\Packages\LpfPackage;
+use Inowas\ModflowModel\Model\Packages\LpfPackage;
 
 class LpfPackageTest extends \PHPUnit_Framework_TestCase
 {

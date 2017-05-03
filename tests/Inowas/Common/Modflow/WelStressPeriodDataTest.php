@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Tests\Inowas\Common\Modflow;
 
-use Inowas\Modflow\Model\Packages\WelStressPeriodData;
-use Inowas\Modflow\Model\Packages\WelStressPeriodGridCellValue;
+use Inowas\ModflowModel\Model\Packages\WelStressPeriodData;
+use Inowas\ModflowModel\Model\Packages\WelStressPeriodGridCellValue;
 
 class WelStressPeriodDataTest extends \PHPUnit_Framework_TestCase
 {

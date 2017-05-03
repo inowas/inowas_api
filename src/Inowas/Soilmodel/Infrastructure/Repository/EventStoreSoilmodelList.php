@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Inowas\Soilmodel\Infrastructure\Repository;
 
 use Inowas\Soilmodel\Model\SoilmodelAggregate;
-use Inowas\Soilmodel\Model\SoilmodelId;
+use Inowas\Common\Soilmodel\SoilmodelId;
 use Inowas\Soilmodel\Model\SoilmodelList;
 use Prooph\EventStore\Aggregate\AggregateRepository;
 

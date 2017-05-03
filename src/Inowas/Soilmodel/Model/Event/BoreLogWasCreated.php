@@ -5,15 +5,15 @@ declare(strict_types=1);
 namespace Inowas\Soilmodel\Model\Event;
 
 use Inowas\Common\Id\UserId;
-use Inowas\Soilmodel\Model\BoreLogId;
-use Inowas\Soilmodel\Model\BoreLogLocation;
-use Inowas\Soilmodel\Model\BoreLogName;
+use Inowas\Common\Soilmodel\BoreLogId;
+use Inowas\Common\Soilmodel\BoreLogLocation;
+use Inowas\Common\Soilmodel\BoreLogName;
 use Prooph\EventSourcing\AggregateChanged;
 
 class BoreLogWasCreated extends AggregateChanged
 {
 
-    /** @var  BoreLogId */
+    /** @var  \Inowas\Common\Soilmodel\BoreLogId */
     private $boreLogId;
 
     /** @var  UserId */
@@ -22,7 +22,7 @@ class BoreLogWasCreated extends AggregateChanged
     /** @var  BoreLogName */
     private $name;
 
-    /** @var  BoreLogLocation */
+    /** @var  \Inowas\Common\Soilmodel\BoreLogLocation */
     private $location;
 
     public static function byUserWithId(UserId $userId, BoreLogId $boreLogId, BoreLogName $name, BoreLogLocation $location): BoreLogWasCreated

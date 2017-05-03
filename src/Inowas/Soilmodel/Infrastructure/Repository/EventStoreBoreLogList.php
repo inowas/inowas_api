@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Inowas\Soilmodel\Infrastructure\Repository;
 
 use Inowas\Soilmodel\Model\BoreLogAggregate;
-use Inowas\Soilmodel\Model\BoreLogId;
+use Inowas\Common\Soilmodel\BoreLogId;
 use Inowas\Soilmodel\Model\BoreLogList;
 
 use Prooph\EventStore\Aggregate\AggregateRepository;

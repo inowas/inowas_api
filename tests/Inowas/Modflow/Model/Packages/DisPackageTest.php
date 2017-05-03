@@ -26,7 +26,7 @@ use Inowas\Common\Modflow\TimeUnit;
 use Inowas\Common\Modflow\Unitnumber;
 use Inowas\Common\Modflow\Xul;
 use Inowas\Common\Modflow\Yul;
-use Inowas\Modflow\Model\Packages\DisPackage;
+use Inowas\ModflowModel\Model\Packages\DisPackage;
 
 
 class DisPackageTest extends \PHPUnit_Framework_TestCase

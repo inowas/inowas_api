@@ -2,7 +2,7 @@
 
 namespace Inowas\Soilmodel\Model\Exception;
 
-use Inowas\Soilmodel\Model\BoreLogId;
+use Inowas\Common\Soilmodel\BoreLogId;
 
 final class BoreLogNotFoundException extends \InvalidArgumentException
 {

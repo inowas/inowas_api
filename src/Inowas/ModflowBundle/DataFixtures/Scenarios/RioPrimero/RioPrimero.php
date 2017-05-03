@@ -12,6 +12,7 @@ use Inowas\Common\Geometry\Geometry;
 use Inowas\Common\Geometry\Point;
 use Inowas\Common\Geometry\Polygon;
 use Inowas\Common\Geometry\Srid;
+use Inowas\Common\Grid\AffectedLayers;
 use Inowas\Common\Grid\BoundingBox;
 use Inowas\Common\Grid\GridSize;
 use Inowas\Common\Grid\LayerNumber;
@@ -20,6 +21,7 @@ use Inowas\Common\Id\ModflowId;
 use Inowas\Common\Id\UserId;
 use Inowas\Common\Modflow\Laytyp;
 use Inowas\Common\Modflow\Modelname;
+use Inowas\Common\Modflow\ModflowModelDescription;
 use Inowas\Common\Soilmodel\Conductivity;
 use Inowas\Common\Soilmodel\HBottom;
 use Inowas\Common\Soilmodel\HTop;
@@ -29,20 +31,18 @@ use Inowas\Common\Soilmodel\HydraulicConductivityZ;
 use Inowas\Common\Soilmodel\SpecificStorage;
 use Inowas\Common\Soilmodel\SpecificYield;
 use Inowas\Common\Soilmodel\Storage;
-use Inowas\Modflow\Model\Command\AddBoundary;
-use Inowas\Modflow\Model\Command\CalculateModflowModelCalculation;
-use Inowas\Modflow\Model\Command\ChangeModflowModelBoundingBox;
-use Inowas\Modflow\Model\Command\ChangeModflowModelDescription;
-use Inowas\Modflow\Model\Command\ChangeModflowModelGridSize;
-use Inowas\Modflow\Model\Command\ChangeModflowModelName;
-use Inowas\Modflow\Model\Command\ChangeModflowModelSoilmodelId;
-use Inowas\Modflow\Model\Command\CreateModflowModel;
-use Inowas\Modflow\Model\Command\CreateModflowModelCalculation;
-use Inowas\Modflow\Model\ModflowModelDescription;
+use Inowas\ModflowCalculation\Model\Command\CreateModflowModelCalculation;
+use Inowas\ModflowModel\Model\Command\AddBoundary;
+use Inowas\ModflowModel\Model\Command\ChangeModflowModelBoundingBox;
+use Inowas\ModflowModel\Model\Command\ChangeModflowModelDescription;
+use Inowas\ModflowModel\Model\Command\ChangeModflowModelGridSize;
+use Inowas\ModflowModel\Model\Command\ChangeModflowModelName;
+use Inowas\ModflowModel\Model\Command\ChangeModflowModelSoilmodelId;
+use Inowas\ModflowModel\Model\Command\CreateModflowModel;
 use Inowas\ModflowBundle\DataFixtures\Scenarios\LoadScenarioBase;
-use Inowas\Soilmodel\Model\BoreLogId;
-use Inowas\Soilmodel\Model\BoreLogLocation;
-use Inowas\Soilmodel\Model\BoreLogName;
+use Inowas\Common\Soilmodel\BoreLogId;
+use Inowas\Common\Soilmodel\BoreLogLocation;
+use Inowas\Common\Soilmodel\BoreLogName;
 use Inowas\Soilmodel\Model\Command\AddBoreLogToSoilmodel;
 use Inowas\Soilmodel\Model\Command\AddGeologicalLayerToSoilmodel;
 use Inowas\Soilmodel\Model\Command\AddHorizonToBoreLog;
@@ -51,16 +51,16 @@ use Inowas\Soilmodel\Model\Command\ChangeSoilmodelName;
 use Inowas\Soilmodel\Model\Command\CreateBoreLog;
 use Inowas\Soilmodel\Model\Command\CreateSoilmodel;
 use Inowas\Soilmodel\Model\Command\InterpolateSoilmodel;
-use Inowas\Soilmodel\Model\GeologicalLayer;
-use Inowas\Soilmodel\Model\GeologicalLayerDescription;
-use Inowas\Soilmodel\Model\GeologicalLayerId;
-use Inowas\Soilmodel\Model\GeologicalLayerName;
-use Inowas\Soilmodel\Model\GeologicalLayerNumber;
-use Inowas\Soilmodel\Model\Horizon;
-use Inowas\Soilmodel\Model\HorizonId;
-use Inowas\Soilmodel\Model\SoilmodelDescription;
-use Inowas\Soilmodel\Model\SoilmodelId;
-use Inowas\Soilmodel\Model\SoilmodelName;
+use Inowas\Common\Soilmodel\GeologicalLayer;
+use Inowas\Common\Soilmodel\GeologicalLayerDescription;
+use Inowas\Common\Soilmodel\GeologicalLayerId;
+use Inowas\Common\Soilmodel\GeologicalLayerName;
+use Inowas\Common\Soilmodel\GeologicalLayerNumber;
+use Inowas\Common\Soilmodel\Horizon;
+use Inowas\Common\Soilmodel\HorizonId;
+use Inowas\Common\Soilmodel\SoilmodelDescription;
+use Inowas\Common\Soilmodel\SoilmodelId;
+use Inowas\Common\Soilmodel\SoilmodelName;
 
 class RioPrimero extends LoadScenarioBase
 {
@@ -209,7 +209,8 @@ class RioPrimero extends LoadScenarioBase
                 BoundaryName::fromString($data['name']),
                 Geometry::fromPoint($data['point']),
                 WellType::fromString($data['type']),
-                LayerNumber::fromInteger($data['layer'])
+                AffectedLayers::createWithLayerNumber(LayerNumber::fromInteger($data['layer']))
+
             );
 
             echo sprintf("Add well with name %s.\r\n", $data['name']);

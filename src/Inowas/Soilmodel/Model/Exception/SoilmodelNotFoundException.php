@@ -2,7 +2,7 @@
 
 namespace Inowas\Soilmodel\Model\Exception;
 
-use Inowas\Soilmodel\Model\SoilmodelId;
+use Inowas\Common\Soilmodel\SoilmodelId;
 
 final class SoilmodelNotFoundException extends \InvalidArgumentException
 {

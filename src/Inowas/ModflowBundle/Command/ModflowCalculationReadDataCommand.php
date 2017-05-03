@@ -7,7 +7,7 @@ namespace Inowas\ModflowBundle\Command;
 use Inowas\Common\DateTime\TotalTime;
 use Inowas\Common\Grid\LayerNumber;
 use Inowas\Common\Id\ModflowId;
-use Inowas\Soilmodel\Interpolation\FlopyReadDataRequest;
+use Inowas\ModflowCalculation\Model\ModflowCalculationReadDataRequest;
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -38,8 +38,8 @@ class ModflowCalculationReadDataCommand extends ContainerAwareCommand
         $totalTime = TotalTime::fromInt((int)$input->getArgument('totalTime'));
         $layerNumber = LayerNumber::fromInteger((int)$input->getArgument('layerNumber'));
 
-        $flopyReadDataService = $this->getContainer()->get('inowas.soilmodel.flopy_read_data_service');
-        $response = $flopyReadDataService->read(FlopyReadDataRequest::fromLayerdata(
+        $flopyReadDataService = $this->getContainer()->get('inowas.calculation.amqp_flopy_calculation_read_data');
+        $response = $flopyReadDataService->read(ModflowCalculationReadDataRequest::fromLayerdata(
             $calculationId, $dataType, $totalTime, $layerNumber));
 
         dump($response);

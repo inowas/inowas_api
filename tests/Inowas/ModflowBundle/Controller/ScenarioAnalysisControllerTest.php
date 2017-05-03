@@ -1,19 +1,21 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Tests\Inowas\ModflowBundle\Controller;
 
 use FOS\UserBundle\Doctrine\UserManager;
 use Inowas\AppBundle\Model\User;
 use Inowas\Common\Modflow\Modelname;
+use Inowas\Common\Modflow\ModflowModelDescription;
 use Inowas\Common\Projection\ProjectionInterface;
-use Inowas\Modflow\Model\Command\AddModflowScenario;
-use Inowas\Modflow\Model\Command\ChangeModflowModelDescription;
-use Inowas\Modflow\Model\Command\ChangeModflowModelName;
-use Inowas\Modflow\Model\Command\CreateModflowModel;
+use Inowas\ModflowModel\Infrastructure\Projection\ModelScenarioList\ModelScenarioFinder;
+use Inowas\ModflowModel\Model\Command\AddModflowScenario;
+use Inowas\ModflowModel\Model\Command\ChangeModflowModelDescription;
+use Inowas\ModflowModel\Model\Command\ChangeModflowModelName;
+use Inowas\ModflowModel\Model\Command\CreateModflowModel;
 use Inowas\Common\Id\ModflowId;
 use Inowas\Common\Id\UserId;
-use Inowas\Modflow\Model\ModflowModelDescription;
-use Inowas\Modflow\Projection\ModelScenarioList\ModelScenarioFinder;
 use Prooph\ServiceBus\CommandBus;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
@@ -51,13 +53,13 @@ class ScenarioAnalysisControllerTest extends WebTestCase
             ->get('prooph_service_bus.modflow_command_bus');
 
         $this->projection = static::$kernel->getContainer()
-            ->get('inowas.modflow_projection.model_scenarios');
+            ->get('inowas.modflowmodel.model_scenarios_projector');
 
         $this->projection->reset();
 
         /** @var ModelScenarioFinder modelScenarioFinder */
         $this->modelScenarioFinder = static::$kernel->getContainer()
-            ->get('inowas.model_scenarios_finder');
+            ->get('inowas.modflowmodel.scenarios_finder');
 
         $this->user = $this->userManager->findUserByUsername('testUser');
 

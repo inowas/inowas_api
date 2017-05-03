@@ -5,14 +5,14 @@ declare(strict_types=1);
 namespace Inowas\Soilmodel\Model\Event;
 
 use Inowas\Common\Id\UserId;
-use Inowas\Soilmodel\Model\SoilmodelDescription;
-use Inowas\Soilmodel\Model\SoilmodelId;
+use Inowas\Common\Soilmodel\SoilmodelDescription;
+use Inowas\Common\Soilmodel\SoilmodelId;
 use Prooph\EventSourcing\AggregateChanged;
 
 class SoilmodelDescriptionWasChanged extends AggregateChanged
 {
 
-    /** @var  SoilmodelId */
+    /** @var  \Inowas\Common\Soilmodel\SoilmodelId */
     private $soilmodelId;
 
     /** @var SoilmodelDescription */

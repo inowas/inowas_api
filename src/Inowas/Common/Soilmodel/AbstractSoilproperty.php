@@ -2,7 +2,7 @@
 
 namespace Inowas\Common\Soilmodel;
 
-use Inowas\Soilmodel\Model\GeologicalLayerNumber;
+use Inowas\Common\Soilmodel\GeologicalLayerNumber;
 
 abstract class AbstractSoilproperty implements \JsonSerializable
 {

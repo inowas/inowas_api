@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace Inowas\Soilmodel\Model\Event;
 
-use Inowas\Soilmodel\Model\GeologicalLayerId;
-use Inowas\Soilmodel\Model\GeologicalLayerNumber;
-use Inowas\Soilmodel\Model\GeologicalLayerValues;
-use Inowas\Soilmodel\Model\SoilmodelId;
+use Inowas\Common\Soilmodel\GeologicalLayerId;
+use Inowas\Common\Soilmodel\GeologicalLayerNumber;
+use Inowas\Common\Soilmodel\GeologicalLayerValues;
+use Inowas\Common\Soilmodel\SoilmodelId;
 use Prooph\EventSourcing\AggregateChanged;
 
 class LayerValuesWereUpdated extends AggregateChanged
@@ -16,13 +16,13 @@ class LayerValuesWereUpdated extends AggregateChanged
     /** @var  SoilmodelId */
     private $soilmodelId;
 
-    /** @var  GeologicalLayerId $layerId */
+    /** @var  \Inowas\Common\Soilmodel\GeologicalLayerId $layerId */
     private $layerId;
 
     /** @var  GeologicalLayerNumber $layerNumber */
     private $layerNumber;
 
-    /** @var  GeologicalLayerValues $values */
+    /** @var  \Inowas\Common\Soilmodel\GeologicalLayerValues $values */
     private $values;
 
     public static function forSoilmodelAndLayer(SoilmodelId $soilmodelId, GeologicalLayerId $layerId, GeologicalLayerNumber $layerNumber, GeologicalLayerValues $values): LayerValuesWereUpdated

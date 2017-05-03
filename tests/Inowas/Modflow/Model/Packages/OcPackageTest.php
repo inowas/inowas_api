@@ -3,7 +3,7 @@
 namespace Tests\Inowas\Modflow\Model\Packages;
 
 use Inowas\Common\Modflow\Ihedfm;
-use Inowas\Modflow\Model\Packages\OcPackage;
+use Inowas\ModflowModel\Model\Packages\OcPackage;
 
 class OcPackageTest extends \PHPUnit_Framework_TestCase
 {

@@ -46,7 +46,7 @@ class ModflowCalculationCommand extends ContainerAwareCommand
                 $output->writeln(sprintf('Calculating Calculation with id: %s', $calculationId->toString()));
                 $calculationFinder = $this->getContainer()->get('inowas.modflow_projection.calculation_configuration_finder');
                 $calculation = $calculationFinder->getFlopyCalculation($calculationId);
-                $flopyCalculation = $this->getContainer()->get('inowas.soilmodel.flopy_calculation_service');
+                $flopyCalculation = $this->getContainer()->get('inowas.calculation.amqp_flopy_calculation');
                 $flopyCalculation->calculate($calculation);
 
             }
@@ -59,7 +59,7 @@ class ModflowCalculationCommand extends ContainerAwareCommand
         $calculation = $calculationFinder->getFlopyCalculation($calculationId);
 
         if ($calculation) {
-            $flopyCalculation = $this->getContainer()->get('inowas.soilmodel.flopy_calculation_service');
+            $flopyCalculation = $this->getContainer()->get('inowas.calculation.amqp_flopy_calculation');
             $flopyCalculation->calculate($calculation);
         }
     }

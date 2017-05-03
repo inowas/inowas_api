@@ -46,7 +46,7 @@ class ScenarioAnalysisController extends FOSRestController
         if ($user instanceof User && $user->getId()) {
             $userId = UserId::fromString($this->getUser()->getId()->toString());
             return new JsonResponse(
-                $this->get('inowas.modflow_projection.model_details_finder')
+                $this->get('inowas.modflowmodel.details_finder')
                     ->findByBaseUserId($userId)
             );
         }
@@ -76,8 +76,7 @@ class ScenarioAnalysisController extends FOSRestController
         }
 
         return new JsonResponse(
-            $this->get('inowas.modflow_projection.model_details_finder')
-                ->findPublic()
+            $this->get('inowas.modflowmodel.details_finder')->findPublic()
         );
     }
 
@@ -101,7 +100,7 @@ class ScenarioAnalysisController extends FOSRestController
         $userId = UserId::fromString($userId);
 
         return new JsonResponse(
-            $this->get('inowas.modflow_projection.model_details_finder')
+            $this->get('inowas.modflowmodel.details_finder')
                 ->findByBaseUserId($userId)
         );
     }
@@ -129,7 +128,7 @@ class ScenarioAnalysisController extends FOSRestController
             throw new InvalidUuidException();
         }
 
-        $baselModel = $this->get('inowas.model_scenarios_finder')->findBaseModelById(
+        $baselModel = $this->get('inowas.modflowmodel.scenarios_finder')->findBaseModelById(
             ModflowId::fromString($baseModelId)
         );
 
@@ -140,7 +139,7 @@ class ScenarioAnalysisController extends FOSRestController
         $baselModel = $baselModel[0];
         $baselModel->area = json_decode($baselModel->area);
 
-        $scenarios = $this->get('inowas.model_scenarios_finder')->findScenariosByBaseModelId(
+        $scenarios = $this->get('inowas.modflowmodel.scenarios_finder')->findScenariosByBaseModelId(
             ModflowId::fromString($baseModelId)
         );
 
@@ -175,7 +174,7 @@ class ScenarioAnalysisController extends FOSRestController
             throw new InvalidUuidException();
         }
 
-        return new JsonResponse($this->get('inowas.modflow_projection.model_details_finder')
+        return new JsonResponse($this->get('inowas.modflowmodel.details_finder')
             ->findByBaseModelId(
                 ModflowId::fromString($baseModelId)
             )
@@ -205,7 +204,7 @@ class ScenarioAnalysisController extends FOSRestController
             throw new InvalidUuidException();
         }
 
-        return new JsonResponse($this->get('inowas.model_boundaries_finder')
+        return new JsonResponse($this->get('inowas.modflowmodel.boundaries_finder')
             ->findByModelId(
                 ModflowId::fromString($modelId)
             )
@@ -237,10 +236,10 @@ class ScenarioAnalysisController extends FOSRestController
             throw new InvalidUuidException();
         }
 
-        $calculation = $this->get('inowas.modflow_projection.calculation_list_finder')
+        $calculation = $this->get('inowas.modflowcalculation.calculation_list_finder')
             ->findLastCalculationByModelId(ModflowId::fromString($modelId));
 
-        $totalTimes = $this->get('inowas.modflow_projection.calculation_results_finder')
+        $totalTimes = $this->get('inowas.modflowcalculation.calculation_results_finder')
             ->findTimes(
                 ModflowId::fromString($calculation['calculation_id']),
                 ResultType::fromString($type),
@@ -281,10 +280,10 @@ class ScenarioAnalysisController extends FOSRestController
             throw new InvalidUuidException();
         }
 
-        $calculation = $this->get('inowas.modflow_projection.calculation_list_finder')
+        $calculation = $this->get('inowas.modflowcalculation.calculation_list_finder')
             ->findCalculationById(ModflowId::fromString($calculationId));
 
-        $totalTimes = $this->get('inowas.modflow_projection.calculation_results_finder')
+        $totalTimes = $this->get('inowas.modflowcalculation.calculation_results_finder')
             ->findTimes(
                 ModflowId::fromString($calculation['calculation_id']),
                 ResultType::fromString($type),
@@ -326,10 +325,10 @@ class ScenarioAnalysisController extends FOSRestController
             throw new InvalidUuidException();
         }
 
-        $calculation = $this->get('inowas.modflow_projection.calculation_list_finder')
+        $calculation = $this->get('inowas.modflowcalculation.calculation_list_finder')
             ->findLastCalculationByModelId(ModflowId::fromString($modelId));
 
-        $result = $this->get('inowas.modflow_projection.calculation_results_finder')
+        $result = $this->get('inowas.modflowcalculation.calculation_results_finder')
             ->findValue(
                 ModflowId::fromString($calculation['calculation_id']),
                 ResultType::fromString($type),
@@ -365,7 +364,7 @@ class ScenarioAnalysisController extends FOSRestController
             throw new InvalidUuidException();
         }
 
-        $result = $this->get('inowas.modflow_projection.calculation_results_finder')
+        $result = $this->get('inowas.modflowcalculation.calculation_results_finder')
             ->findValue(
                 ModflowId::fromString($calculationId),
                 ResultType::fromString($type),
@@ -399,10 +398,10 @@ class ScenarioAnalysisController extends FOSRestController
             throw new InvalidUuidException();
         }
 
-        $calculation = $this->get('inowas.modflow_projection.calculation_list_finder')
+        $calculation = $this->get('inowas.modflowcalculation.calculation_list_finder')
             ->findLastCalculationByModelId(ModflowId::fromString($modelId));
 
-        $layerValues = $this->get('inowas.modflow_projection.calculation_results_finder')
+        $layerValues = $this->get('inowas.modflowcalculation.calculation_results_finder')
             ->findLayerValues(ModflowId::fromString($calculation['calculation_id']));
 
         return new JsonResponse($layerValues);
@@ -431,7 +430,7 @@ class ScenarioAnalysisController extends FOSRestController
             throw new InvalidUuidException();
         }
 
-        $layerValues = $this->get('inowas.modflow_projection.calculation_results_finder')
+        $layerValues = $this->get('inowas.modflowcalculation.calculation_results_finder')
             ->findLayerValues(ModflowId::fromString($calculationId));
 
         return new JsonResponse($layerValues);
@@ -464,10 +463,10 @@ class ScenarioAnalysisController extends FOSRestController
             throw new InvalidUuidException();
         }
 
-        $calculationFirstModel = $this->get('inowas.modflow_projection.calculation_list_finder')
+        $calculationFirstModel = $this->get('inowas.modflowcalculation.calculation_list_finder')
             ->findLastCalculationByModelId(ModflowId::fromString($modelIdFirstModel));
 
-        $resultFirstModel = $this->get('inowas.modflow_projection.calculation_results_finder')
+        $resultFirstModel = $this->get('inowas.modflowcalculation.calculation_results_finder')
             ->findValue(
                 ModflowId::fromString($calculationFirstModel['calculation_id']),
                 ResultType::fromString($type),
@@ -479,10 +478,10 @@ class ScenarioAnalysisController extends FOSRestController
             throw new InvalidUuidException();
         }
 
-        $calculationSecondModel = $this->get('inowas.modflow_projection.calculation_list_finder')
+        $calculationSecondModel = $this->get('inowas.modflowcalculation.calculation_list_finder')
             ->findLastCalculationByModelId(ModflowId::fromString($modelIdSecondModel));
 
-        $resultSecondModel = $this->get('inowas.modflow_projection.calculation_results_finder')
+        $resultSecondModel = $this->get('inowas.modflowcalculation.calculation_results_finder')
             ->findValue(
                 ModflowId::fromString($calculationSecondModel['calculation_id']),
                 ResultType::fromString($type),
@@ -522,7 +521,7 @@ class ScenarioAnalysisController extends FOSRestController
             throw new InvalidUuidException();
         }
 
-        $resultFirstModel = $this->get('inowas.modflow_projection.calculation_results_finder')
+        $resultFirstModel = $this->get('inowas.modflowcalculation.calculation_results_finder')
             ->findValue(
                 ModflowId::fromString($calculationIdFirstModel),
                 ResultType::fromString($type),
@@ -534,7 +533,7 @@ class ScenarioAnalysisController extends FOSRestController
             throw new InvalidUuidException();
         }
 
-        $resultSecondModel = $this->get('inowas.modflow_projection.calculation_results_finder')
+        $resultSecondModel = $this->get('inowas.modflowcalculation.calculation_results_finder')
             ->findValue(
                 ModflowId::fromString($calculationIdSecondModel),
                 ResultType::fromString($type),
@@ -581,12 +580,12 @@ class ScenarioAnalysisController extends FOSRestController
         $column = Ncol::fromInteger((int)$nx);
         $row = Nrow::fromInteger((int)$ny);
 
-        $calculation = $this->get('inowas.modflow_projection.calculation_list_finder')
+        $calculation = $this->get('inowas.modflowcalculation.calculation_list_finder')
             ->findLastCalculationByModelId($modelId);
 
         $calculationId = ModflowId::fromString($calculation['calculation_id']);
 
-        $timesSeries = $this->get('inowas.modflow_projection.calculation_results_finder')
+        $timesSeries = $this->get('inowas.modflowcalculation.calculation_results_finder')
             ->findTimeSeries($calculationId, $type, $layer, $column, $row);
 
         return new JsonResponse($timesSeries);
@@ -627,7 +626,7 @@ class ScenarioAnalysisController extends FOSRestController
         $column = Ncol::fromInteger((int)$nx);
         $row = Nrow::fromInteger((int)$ny);
 
-        $timesSeries = $this->get('inowas.modflow_projection.calculation_results_finder')
+        $timesSeries = $this->get('inowas.modflowcalculation.calculation_results_finder')
             ->findTimeSeries($calculationId, $type, $layer, $column, $row);
 
         return new JsonResponse($timesSeries);
@@ -659,13 +658,15 @@ class ScenarioAnalysisController extends FOSRestController
         $type = BudgetType::fromString($type);
 
 
-        $calculation = $this->get('inowas.modflow_projection.calculation_list_finder')->findLastCalculationByModelId($modelId);
+        $calculation = $this->get('inowas.modflowcalculation.calculation_list_finder')->findLastCalculationByModelId($modelId);
         $calculationId = ModflowId::fromString($calculation['calculation_id']);
 
+        /* TODO Read budgets from calculation */
+        /*
         $budget = $this->get('inowas.modflow_projection.calculation_budgets_finder')
             ->findBudget($calculationId, $totim, $type);
-
-        return new JsonResponse($budget);
+        */
+        return new JsonResponse($budget="");
     }
 
     /**
@@ -693,10 +694,12 @@ class ScenarioAnalysisController extends FOSRestController
         $totim = TotalTime::fromInt((int)$totim);
         $type = BudgetType::fromString($type);
 
+        /* TODO Read budgets from calculation */
+        /*
         $budget = $this->get('inowas.modflow_projection.calculation_budgets_finder')
             ->findBudget($calculationId, $totim, $type);
-
-        return new JsonResponse($budget);
+        */
+        return new JsonResponse($budget="");
     }
 
     private function calculateDifferenceResults(HeadData $res1, HeadData $res2): HeadData

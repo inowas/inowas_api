@@ -3,7 +3,7 @@
 namespace Tests\Inowas\Common\Soilmodel;
 
 use Inowas\Common\Soilmodel\SpecificStorage;
-use Inowas\Soilmodel\Model\GeologicalLayerNumber;
+use Inowas\Common\Soilmodel\GeologicalLayerNumber;
 
 class SpecificStorageTest extends \PHPUnit_Framework_TestCase
 {

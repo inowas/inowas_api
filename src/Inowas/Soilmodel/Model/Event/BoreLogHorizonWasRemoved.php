@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace Inowas\Soilmodel\Model\Event;
 
 use Inowas\Common\Id\UserId;
-use Inowas\Soilmodel\Model\BoreLogId;
-use Inowas\Soilmodel\Model\HorizonId;
+use Inowas\Common\Soilmodel\BoreLogId;
+use Inowas\Common\Soilmodel\HorizonId;
 use Prooph\EventSourcing\AggregateChanged;
 
 class BoreLogHorizonWasRemoved extends AggregateChanged

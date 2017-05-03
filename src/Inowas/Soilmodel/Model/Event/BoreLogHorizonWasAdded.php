@@ -5,20 +5,20 @@ declare(strict_types=1);
 namespace Inowas\Soilmodel\Model\Event;
 
 use Inowas\Common\Id\UserId;
-use Inowas\Soilmodel\Model\BoreLogId;
-use Inowas\Soilmodel\Model\Horizon;
+use Inowas\Common\Soilmodel\BoreLogId;
+use Inowas\Common\Soilmodel\Horizon;
 use Prooph\EventSourcing\AggregateChanged;
 
 class BoreLogHorizonWasAdded extends AggregateChanged
 {
 
-    /** @var  BoreLogId */
+    /** @var  \Inowas\Common\Soilmodel\BoreLogId */
     private $boreLogId;
 
     /** @var  UserId */
     private $userId;
 
-    /** @var  Horizon */
+    /** @var  \Inowas\Common\Soilmodel\Horizon */
     private $horizon;
 
     public static function byUserWithHorizon(UserId $userId, BoreLogId $boreLogId, Horizon $horizon): BoreLogHorizonWasAdded

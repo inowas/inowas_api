@@ -5,6 +5,10 @@ declare(strict_types=1);
 namespace Inowas\Soilmodel\Model;
 
 use Inowas\Common\Id\UserId;
+use Inowas\Common\Soilmodel\BoreLogId;
+use Inowas\Common\Soilmodel\BoreLogLocation;
+use Inowas\Common\Soilmodel\BoreLogName;
+use Inowas\Common\Soilmodel\Horizon;
 use Inowas\Soilmodel\Model\Event\BoreLogHorizonWasAdded;
 use Inowas\Soilmodel\Model\Event\BoreLogHorizonWasRemoved;
 use Inowas\Soilmodel\Model\Event\BoreLogLocationWasChanged;

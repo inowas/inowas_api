@@ -9,7 +9,7 @@ use Inowas\Common\Modflow\Nstp;
 use Inowas\Common\Modflow\Steady;
 use Inowas\Common\Modflow\Tsmult;
 use Inowas\Common\Modflow\TimeUnit;
-use Inowas\Modflow\Model\Exception\InvalidTimeUnitException;
+use Inowas\ModflowModel\Model\Exception\InvalidTimeUnitException;
 
 class Stressperiod
 {

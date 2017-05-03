@@ -5,13 +5,13 @@ declare(strict_types=1);
 namespace Inowas\Soilmodel\Model\Event;
 
 use Inowas\Common\Id\UserId;
-use Inowas\Soilmodel\Model\BoreLogId;
+use Inowas\Common\Soilmodel\BoreLogId;
 use Prooph\EventSourcing\AggregateChanged;
 
 class BoreLogWasDeleted extends AggregateChanged
 {
 
-    /** @var  BoreLogId */
+    /** @var  \Inowas\Common\Soilmodel\BoreLogId */
     private $boreLogId;
 
     /** @var  UserId */

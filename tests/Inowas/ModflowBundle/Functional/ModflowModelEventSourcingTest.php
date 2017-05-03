@@ -22,6 +22,7 @@ use Inowas\Common\Modflow\PackageName;
 use Inowas\Common\Modflow\StressPeriod;
 use Inowas\Common\Modflow\StressPeriods;
 use Inowas\Common\Modflow\TimeUnit;
+use Inowas\Common\Modflow\Version;
 use Inowas\Common\Soilmodel\BottomElevation;
 use Inowas\Common\Soilmodel\HydraulicAnisotropy;
 use Inowas\Common\Soilmodel\HydraulicConductivityX;
@@ -29,40 +30,39 @@ use Inowas\Common\Soilmodel\SpecificStorage;
 use Inowas\Common\Soilmodel\SpecificYield;
 use Inowas\Common\Soilmodel\TopElevation;
 use Inowas\Common\Soilmodel\VerticalHydraulicConductivity;
-use Inowas\Modflow\Model\Command\AddBoundary;
-use Inowas\Modflow\Model\Command\AddModflowScenario;
-use Inowas\Modflow\Model\Command\ChangeFlowPackage;
-use Inowas\Modflow\Model\Command\ChangeModflowModelBoundingBox;
-use Inowas\Modflow\Model\Command\ChangeModflowModelGridSize;
-use Inowas\Modflow\Model\Command\ChangeModflowModelName;
-use Inowas\Modflow\Model\Command\CreateModflowModel;
-use Inowas\Modflow\Model\Command\CreateModflowModelCalculation;
-use Inowas\Modflow\Model\Command\UpdateBoundaryGeometry;
-use Inowas\Modflow\Model\Command\UpdateCalculationPackageParameter;
-use Inowas\Modflow\Model\Command\UpdateCalculationStressperiods;
-use Inowas\Modflow\Model\Event\ModflowModelWasCreated;
-use Inowas\Modflow\Model\ModflowModelAggregate;
+use Inowas\ModflowModel\Model\Command\AddBoundary;
+use Inowas\ModflowModel\Model\Command\AddModflowScenario;
+use Inowas\ModflowCalculation\Model\Command\ChangeFlowPackage;
+use Inowas\ModflowModel\Model\Command\ChangeModflowModelBoundingBox;
+use Inowas\ModflowModel\Model\Command\ChangeModflowModelGridSize;
+use Inowas\ModflowModel\Model\Command\ChangeModflowModelName;
+use Inowas\ModflowModel\Model\Command\CreateModflowModel;
+use Inowas\ModflowCalculation\Model\Command\CreateModflowModelCalculation;
+use Inowas\ModflowModel\Model\Command\UpdateBoundaryGeometry;
+use Inowas\ModflowCalculation\Model\Command\UpdateCalculationPackageParameter;
+use Inowas\ModflowCalculation\Model\Command\UpdateCalculationStressperiods;
+use Inowas\ModflowModel\Model\Event\ModflowModelWasCreated;
+use Inowas\ModflowModel\Model\ModflowModelAggregate;
 use Inowas\Common\Grid\GridSize;
 use Inowas\Common\Id\ModflowId;
 use Inowas\Common\Boundaries\WellDateTimeValue;
 use Inowas\Common\Id\UserId;
 use Inowas\Common\Boundaries\WellBoundary;
 use Inowas\Common\Boundaries\WellType;
-use Inowas\Modflow\Model\Version;
 use Inowas\Soilmodel\Model\Command\AddGeologicalLayerToSoilmodel;
 use Inowas\Soilmodel\Model\Command\ChangeSoilmodelDescription;
 use Inowas\Soilmodel\Model\Command\ChangeSoilmodelName;
 use Inowas\Soilmodel\Model\Command\CreateSoilmodel;
 use Inowas\Soilmodel\Model\Command\UpdateGeologicalLayerProperty;
-use Inowas\Soilmodel\Model\GeologicalLayer;
-use Inowas\Soilmodel\Model\GeologicalLayerDescription;
-use Inowas\Soilmodel\Model\GeologicalLayerId;
-use Inowas\Soilmodel\Model\GeologicalLayerName;
-use Inowas\Soilmodel\Model\GeologicalLayerNumber;
+use Inowas\Common\Soilmodel\GeologicalLayer;
+use Inowas\Common\Soilmodel\GeologicalLayerDescription;
+use Inowas\Common\Soilmodel\GeologicalLayerId;
+use Inowas\Common\Soilmodel\GeologicalLayerName;
+use Inowas\Common\Soilmodel\GeologicalLayerNumber;
 use Inowas\Soilmodel\Model\SoilmodelAggregate;
-use Inowas\Soilmodel\Model\SoilmodelDescription;
-use Inowas\Soilmodel\Model\SoilmodelId;
-use Inowas\Soilmodel\Model\SoilmodelName;
+use Inowas\Common\Soilmodel\SoilmodelDescription;
+use Inowas\Common\Soilmodel\SoilmodelId;
+use Inowas\Common\Soilmodel\SoilmodelName;
 
 class ModflowModelEventSourcingTest extends EventSourcingBaseTest
 {
@@ -122,10 +122,10 @@ class ModflowModelEventSourcingTest extends EventSourcingBaseTest
         $area = $this->createAreaBoundary();
 
         $this->commandBus->dispatch(AddBoundary::toBaseModel($ownerId, $modelId, $area));
-        $activeCells = $this->container->get('inowas.model_boundaries_finder')->findAreaActiveCells($modelId);
+        $activeCells = $this->container->get('inowas.modflowmodel.boundaries_finder')->findAreaActiveCells($modelId);
         $this->assertCount(1610, $activeCells->cells());
 
-        $activeCells = $this->container->get('inowas.model_boundaries_finder')->findBoundaryActiveCells($modelId, $area->boundaryId());
+        $activeCells = $this->container->get('inowas.modflowmodel.boundaries_finder')->findBoundaryActiveCells($modelId, $area->boundaryId());
         $this->assertCount(1610, $activeCells->cells());
     }
 
@@ -138,7 +138,7 @@ class ModflowModelEventSourcingTest extends EventSourcingBaseTest
         $wellBoundary = $this->createWellBoundary();
         $this->commandBus->dispatch(AddBoundary::toBaseModel($ownerId, $modelId, $wellBoundary));
 
-        $activeCells = $this->container->get('inowas.model_boundaries_finder')->findBoundaryActiveCells($modelId, $wellBoundary->boundaryId());
+        $activeCells = $this->container->get('inowas.modflowmodel.boundaries_finder')->findBoundaryActiveCells($modelId, $wellBoundary->boundaryId());
         $this->assertCount(1, $activeCells->cells());
         $this->assertEquals([[0, 8, 10]], $activeCells->cells());
     }
@@ -224,7 +224,7 @@ class ModflowModelEventSourcingTest extends EventSourcingBaseTest
             /** @var SoilmodelAggregate $soilmodel */
             $soilmodel = $this->container->get('soil_model_list')->getAggregateRoot($soilModelId->toString());
 
-            /** @var GeologicalLayer $layer */
+            /** @var \Inowas\Common\Soilmodel\GeologicalLayer $layer */
             $layer = $soilmodel->getGeologicalLayer($geologicalLayerId);
             $this->assertEquals($property['value'], $layer->values()->{$getter}());
         }
@@ -239,7 +239,7 @@ class ModflowModelEventSourcingTest extends EventSourcingBaseTest
         $riverBoundary = $this->createRiverBoundaryWithObservationPoint();
         $this->commandBus->dispatch(AddBoundary::toBaseModel($ownerId, $modelId, $riverBoundary));
 
-        $activeCells = $this->container->get('inowas.model_boundaries_finder')->findBoundaryActiveCells($modelId, $riverBoundary->boundaryId());
+        $activeCells = $this->container->get('inowas.modflowmodel.boundaries_finder')->findBoundaryActiveCells($modelId, $riverBoundary->boundaryId());
         $this->assertCount(135, $activeCells->cells());
     }
 
@@ -252,7 +252,7 @@ class ModflowModelEventSourcingTest extends EventSourcingBaseTest
         $chdBoundary = $this->createConstantHeadBoundaryWithObservationPoint();
         $this->commandBus->dispatch(AddBoundary::toBaseModel($ownerId, $modelId, $chdBoundary));
 
-        $activeCells = $this->container->get('inowas.model_boundaries_finder')->findBoundaryActiveCells($modelId, $chdBoundary->boundaryId());
+        $activeCells = $this->container->get('inowas.modflowmodel.boundaries_finder')->findBoundaryActiveCells($modelId, $chdBoundary->boundaryId());
         $this->assertCount(75, $activeCells->cells());
     }
 
@@ -265,7 +265,7 @@ class ModflowModelEventSourcingTest extends EventSourcingBaseTest
         $ghbBoundary = $this->createGeneralHeadBoundaryWithObservationPoint();
 
         $this->commandBus->dispatch(AddBoundary::toBaseModel($ownerId, $modelId, $ghbBoundary));
-        $activeCells = $this->container->get('inowas.model_boundaries_finder')->findBoundaryActiveCells($modelId, $ghbBoundary->boundaryId());
+        $activeCells = $this->container->get('inowas.modflowmodel.boundaries_finder')->findBoundaryActiveCells($modelId, $ghbBoundary->boundaryId());
         $this->assertCount(75, $activeCells->cells());
     }
 
@@ -278,7 +278,7 @@ class ModflowModelEventSourcingTest extends EventSourcingBaseTest
         $rchBoundary = $this->createRechargeBoundary();
 
         $this->commandBus->dispatch(AddBoundary::toBaseModel($ownerId, $modelId, $rchBoundary));
-        $activeCells = $this->container->get('inowas.model_boundaries_finder')->findBoundaryActiveCells($modelId, $rchBoundary->boundaryId());
+        $activeCells = $this->container->get('inowas.modflowmodel.boundaries_finder')->findBoundaryActiveCells($modelId, $rchBoundary->boundaryId());
         $this->assertCount(1610, $activeCells->cells());
     }
 
@@ -329,7 +329,7 @@ class ModflowModelEventSourcingTest extends EventSourcingBaseTest
         $stressperiods->addStressPeriod(StressPeriod::create(0, 1,1,1,true));
         $this->commandBus->dispatch(UpdateCalculationStressperiods::byUserWithCalculationId($ownerId, $calculationId, $stressperiods));
 
-        $config = $this->container->get('inowas.modflow_projection.calculation_configuration_finder')->getConfigurationJson($calculationId);
+        $config = $this->container->get('inowas.modflowcalculation.calculation_configuration_finder')->getConfigurationJson($calculationId);
 
         $this->assertJson($config);
         $obj = json_decode($config);
@@ -399,7 +399,7 @@ class ModflowModelEventSourcingTest extends EventSourcingBaseTest
         $stressperiods->addStressPeriod(StressPeriod::create(1, 100,1,1,false));
         $this->commandBus->dispatch(UpdateCalculationStressperiods::byUserWithCalculationId($ownerId, $calculationId, $stressperiods));
 
-        $config = $this->container->get('inowas.modflow_projection.calculation_configuration_finder')->getConfigurationJson($calculationId);
+        $config = $this->container->get('inowas.modflowcalculation.calculation_configuration_finder')->getConfigurationJson($calculationId);
 
         $this->assertJson($config);
         $obj = json_decode($config);
@@ -449,10 +449,10 @@ class ModflowModelEventSourcingTest extends EventSourcingBaseTest
         $stressperiods->addStressPeriod(StressPeriod::create(0, 1,1,1,true));
         $this->commandBus->dispatch(UpdateCalculationStressperiods::byUserWithCalculationId($ownerId, $calculationId, $stressperiods));
 
-        $activeCells = $this->container->get('inowas.model_boundaries_finder')->findBoundaryActiveCells($modelId, $chdBoundary->boundaryId());
+        $activeCells = $this->container->get('inowas.modflowmodel.boundaries_finder')->findBoundaryActiveCells($modelId, $chdBoundary->boundaryId());
         $numberOfActiveCells = count($activeCells->cells());
 
-        $config = $this->container->get('inowas.modflow_projection.calculation_configuration_finder')->getConfigurationJson($calculationId);
+        $config = $this->container->get('inowas.modflowcalculation.calculation_configuration_finder')->getConfigurationJson($calculationId);
 
         $this->assertJson($config);
         $obj = json_decode($config);
@@ -497,10 +497,10 @@ class ModflowModelEventSourcingTest extends EventSourcingBaseTest
         $stressperiods->addStressPeriod(StressPeriod::create(0, 1,1,1,true));
         $this->commandBus->dispatch(UpdateCalculationStressperiods::byUserWithCalculationId($ownerId, $calculationId, $stressperiods));
 
-        $activeCells = $this->container->get('inowas.model_boundaries_finder')->findBoundaryActiveCells($modelId, $ghbBoundary->boundaryId());
+        $activeCells = $this->container->get('inowas.modflowmodel.boundaries_finder')->findBoundaryActiveCells($modelId, $ghbBoundary->boundaryId());
         $numberOfActiveCells = count($activeCells->cells());
 
-        $config = $this->container->get('inowas.modflow_projection.calculation_configuration_finder')->getConfigurationJson($calculationId);
+        $config = $this->container->get('inowas.modflowcalculation.calculation_configuration_finder')->getConfigurationJson($calculationId);
 
         $this->assertJson($config);
         $obj = json_decode($config);
@@ -545,7 +545,7 @@ class ModflowModelEventSourcingTest extends EventSourcingBaseTest
         $stressperiods->addStressPeriod(StressPeriod::create(0, 1,1,1,true));
         $this->commandBus->dispatch(UpdateCalculationStressperiods::byUserWithCalculationId($ownerId, $calculationId, $stressperiods));
 
-        $config = $this->container->get('inowas.modflow_projection.calculation_configuration_finder')->getConfigurationJson($calculationId);
+        $config = $this->container->get('inowas.modflowcalculation.calculation_configuration_finder')->getConfigurationJson($calculationId);
 
         $this->assertJson($config);
         $obj = json_decode($config);
@@ -592,10 +592,10 @@ class ModflowModelEventSourcingTest extends EventSourcingBaseTest
         $stressperiods->addStressPeriod(StressPeriod::create(0, 1,1,1,true));
         $this->commandBus->dispatch(UpdateCalculationStressperiods::byUserWithCalculationId($ownerId, $calculationId, $stressperiods));
 
-        $activeCells = $this->container->get('inowas.model_boundaries_finder')->findBoundaryActiveCells($modelId, $riverBoundary->boundaryId());
+        $activeCells = $this->container->get('inowas.modflowmodel.boundaries_finder')->findBoundaryActiveCells($modelId, $riverBoundary->boundaryId());
         $numberOfActiveCells = count($activeCells->cells());
 
-        $config = $this->container->get('inowas.modflow_projection.calculation_configuration_finder')->getConfigurationJson($calculationId);
+        $config = $this->container->get('inowas.modflowcalculation.calculation_configuration_finder')->getConfigurationJson($calculationId);
 
         $this->assertJson($config);
         $obj = json_decode($config);
@@ -634,7 +634,7 @@ class ModflowModelEventSourcingTest extends EventSourcingBaseTest
 
         $this->commandBus->dispatch(UpdateCalculationPackageParameter::byUserWithModelId($calculationId, $ownerId, $modelId, 'lpf','layTyp', Laytyp::fromArray(array(1))));
 
-        $config = $this->container->get('inowas.modflow_projection.calculation_configuration_finder')->getConfigurationJson($calculationId);
+        $config = $this->container->get('inowas.modflowcalculation.calculation_configuration_finder')->getConfigurationJson($calculationId);
         $this->assertJson($config);
         $obj = json_decode($config);
         $this->assertEquals($calculationId->toString(), $obj->id);
@@ -668,7 +668,7 @@ class ModflowModelEventSourcingTest extends EventSourcingBaseTest
 
         $this->commandBus->dispatch(UpdateCalculationPackageParameter::byUserWithModelId($calculationId, $ownerId, $modelId, 'lpf','layWet', Laywet::fromArray(array(1))));
 
-        $config = $this->container->get('inowas.modflow_projection.calculation_configuration_finder')->getConfigurationJson($calculationId);
+        $config = $this->container->get('inowas.modflowcalculation.calculation_configuration_finder')->getConfigurationJson($calculationId);
         $this->assertJson($config);
         $obj = json_decode($config);
         $this->assertEquals($calculationId->toString(), $obj->id);
@@ -702,7 +702,7 @@ class ModflowModelEventSourcingTest extends EventSourcingBaseTest
 
         $this->commandBus->dispatch(ChangeFlowPackage::byUserWithCalculationId($ownerId, $calculationId, PackageName::fromString('upw')));
 
-        $config = $this->container->get('inowas.modflow_projection.calculation_configuration_finder')->getConfigurationJson($calculationId);
+        $config = $this->container->get('inowas.modflowcalculation.calculation_configuration_finder')->getConfigurationJson($calculationId);
         $this->assertJson($config);
         $obj = json_decode($config);
         $this->assertEquals($calculationId->toString(), $obj->id);
@@ -734,7 +734,7 @@ class ModflowModelEventSourcingTest extends EventSourcingBaseTest
 
         $this->commandBus->dispatch(UpdateCalculationPackageParameter::byUserWithModelId($calculationId, $ownerId, $modelId, 'mf', 'version', Version::fromString('mfnwt')));
 
-        $config = $this->container->get('inowas.modflow_projection.calculation_configuration_finder')->getConfigurationJson($calculationId);
+        $config = $this->container->get('inowas.modflowcalculation.calculation_configuration_finder')->getConfigurationJson($calculationId);
         $this->assertJson($config);
         $obj = json_decode($config);
         $this->assertEquals($calculationId->toString(), $obj->id);
@@ -761,12 +761,12 @@ class ModflowModelEventSourcingTest extends EventSourcingBaseTest
         $this->commandBus->dispatch(AddBoundary::toBaseModel($ownerId, $modelId, $this->createRiverBoundaryWithObservationPoint()));
         $this->commandBus->dispatch(AddBoundary::toBaseModel($ownerId, $modelId, $this->createWellBoundary()));
 
-        $baseModelBoundaries = $this->container->get('inowas.model_boundaries_finder')->findByModelId($modelId);
+        $baseModelBoundaries = $this->container->get('inowas.modflowmodel.boundaries_finder')->findByModelId($modelId);
         $this->assertCount(6, $baseModelBoundaries);
 
         $scenarioId = ModflowId::generate();
         $this->commandBus->dispatch(AddModflowScenario::from($ownerId, $modelId, $scenarioId));
-        $scenarioBoundaries = $this->container->get('inowas.model_boundaries_finder')->findByModelId($scenarioId);
+        $scenarioBoundaries = $this->container->get('inowas.modflowmodel.boundaries_finder')->findByModelId($scenarioId);
         $this->assertCount(6, $scenarioBoundaries);
         $this->assertEquals(sort($baseModelBoundaries), sort($scenarioBoundaries));
     }
@@ -786,7 +786,7 @@ class ModflowModelEventSourcingTest extends EventSourcingBaseTest
         $scenarioId = ModflowId::generate();
         $this->commandBus->dispatch(AddModflowScenario::from($ownerId, $modelId, $scenarioId));
         $this->commandBus->dispatch(AddBoundary::toScenario($ownerId, $modelId, $scenarioId, $this->createWellBoundary()));
-        $scenarioBoundaries = $this->container->get('inowas.model_boundaries_finder')->findByModelId($scenarioId);
+        $scenarioBoundaries = $this->container->get('inowas.modflowmodel.boundaries_finder')->findByModelId($scenarioId);
         $this->assertCount(6, $scenarioBoundaries);
     }
 
@@ -808,11 +808,11 @@ class ModflowModelEventSourcingTest extends EventSourcingBaseTest
 
         $newGeometry = Geometry::fromPoint(new Point(-63.659952, -31.330144, 4326));
         $this->commandBus->dispatch(UpdateBoundaryGeometry::ofScenario($ownerId, $modelId, $scenarioId, $well->boundaryId(), $newGeometry));
-        $scenarioBoundaries = $this->container->get('inowas.model_boundaries_finder')->findByModelId($scenarioId);
+        $scenarioBoundaries = $this->container->get('inowas.modflowmodel.boundaries_finder')->findByModelId($scenarioId);
         $this->assertCount(6, $scenarioBoundaries);
 
         /** @var WellBoundary[] $wells */
-        $wells = $this->container->get('inowas.model_boundaries_finder')->findWells($scenarioId);
+        $wells = $this->container->get('inowas.modflowmodel.boundaries_finder')->findWells($scenarioId);
         $this->assertCount(1, $wells);
 
         $well = $wells[0];
@@ -834,14 +834,14 @@ class ModflowModelEventSourcingTest extends EventSourcingBaseTest
         $wellBoundary = $this->createWellBoundary();
         $this->commandBus->dispatch(AddBoundary::toBaseModel($ownerId, $modelId, $wellBoundary));
 
-        $activeCells = $this->container->get('inowas.model_boundaries_finder')->findBoundaryActiveCells($modelId, $wellBoundary->boundaryId());
+        $activeCells = $this->container->get('inowas.modflowmodel.boundaries_finder')->findBoundaryActiveCells($modelId, $wellBoundary->boundaryId());
         $this->assertCount(1, $activeCells->cells());
         $this->assertEquals([[0,8,10]], $activeCells->cells());
 
         $newGeometry = Geometry::fromPoint(new Point(-63.659952, -31.330144, 4326));
         $this->commandBus->dispatch(UpdateBoundaryGeometry::ofBaseModel($ownerId, $modelId, $wellBoundary->boundaryId(), $newGeometry));
 
-        $activeCells = $this->container->get('inowas.model_boundaries_finder')->findBoundaryActiveCells($modelId, $wellBoundary->boundaryId());
+        $activeCells = $this->container->get('inowas.modflowmodel.boundaries_finder')->findBoundaryActiveCells($modelId, $wellBoundary->boundaryId());
         $this->assertCount(1, $activeCells->cells());
         $this->assertEquals([[0,12,17]], $activeCells->cells());
     }

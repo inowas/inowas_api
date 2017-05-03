@@ -35,6 +35,7 @@ use Inowas\Common\Id\ObservationPointId;
 use Inowas\Common\Id\UserId;
 use Inowas\Common\Modflow\Laytyp;
 use Inowas\Common\Modflow\Modelname;
+use Inowas\Common\Modflow\ModflowModelDescription;
 use Inowas\Common\Soilmodel\BottomElevation;
 use Inowas\Common\Soilmodel\HydraulicAnisotropy;
 use Inowas\Common\Soilmodel\HydraulicConductivityX;
@@ -42,14 +43,13 @@ use Inowas\Common\Soilmodel\SpecificStorage;
 use Inowas\Common\Soilmodel\SpecificYield;
 use Inowas\Common\Soilmodel\TopElevation;
 use Inowas\Common\Soilmodel\VerticalHydraulicConductivity;
-use Inowas\Modflow\Model\Command\AddBoundary;
-use Inowas\Modflow\Model\Command\ChangeModflowModelBoundingBox;
-use Inowas\Modflow\Model\Command\ChangeModflowModelDescription;
-use Inowas\Modflow\Model\Command\ChangeModflowModelGridSize;
-use Inowas\Modflow\Model\Command\ChangeModflowModelName;
-use Inowas\Modflow\Model\Command\ChangeModflowModelSoilmodelId;
-use Inowas\Modflow\Model\Command\CreateModflowModel;
-use Inowas\Modflow\Model\ModflowModelDescription;
+use Inowas\ModflowModel\Model\Command\AddBoundary;
+use Inowas\ModflowModel\Model\Command\ChangeModflowModelBoundingBox;
+use Inowas\ModflowModel\Model\Command\ChangeModflowModelDescription;
+use Inowas\ModflowModel\Model\Command\ChangeModflowModelGridSize;
+use Inowas\ModflowModel\Model\Command\ChangeModflowModelName;
+use Inowas\ModflowModel\Model\Command\ChangeModflowModelSoilmodelId;
+use Inowas\ModflowModel\Model\Command\CreateModflowModel;
 use Inowas\ModflowBundle\Command\ModflowEventStoreTruncateCommand;
 use Inowas\ModflowBundle\Command\ModflowProjectionCommand;
 use Inowas\Soilmodel\Model\Command\AddGeologicalLayerToSoilmodel;
@@ -57,14 +57,14 @@ use Inowas\Soilmodel\Model\Command\ChangeSoilmodelDescription;
 use Inowas\Soilmodel\Model\Command\ChangeSoilmodelName;
 use Inowas\Soilmodel\Model\Command\CreateSoilmodel;
 use Inowas\Soilmodel\Model\Command\UpdateGeologicalLayerProperty;
-use Inowas\Soilmodel\Model\GeologicalLayer;
-use Inowas\Soilmodel\Model\GeologicalLayerDescription;
-use Inowas\Soilmodel\Model\GeologicalLayerId;
-use Inowas\Soilmodel\Model\GeologicalLayerName;
-use Inowas\Soilmodel\Model\GeologicalLayerNumber;
-use Inowas\Soilmodel\Model\SoilmodelDescription;
-use Inowas\Soilmodel\Model\SoilmodelId;
-use Inowas\Soilmodel\Model\SoilmodelName;
+use Inowas\Common\Soilmodel\GeologicalLayer;
+use Inowas\Common\Soilmodel\GeologicalLayerDescription;
+use Inowas\Common\Soilmodel\GeologicalLayerId;
+use Inowas\Common\Soilmodel\GeologicalLayerName;
+use Inowas\Common\Soilmodel\GeologicalLayerNumber;
+use Inowas\Common\Soilmodel\SoilmodelDescription;
+use Inowas\Common\Soilmodel\SoilmodelId;
+use Inowas\Common\Soilmodel\SoilmodelName;
 use Prooph\EventStore\EventStore;
 use Prooph\ServiceBus\CommandBus;
 use Prooph\ServiceBus\EventBus;
@@ -169,14 +169,14 @@ abstract class EventSourcingBaseTest extends KernelTestCase
         )));
         $this->commandBus->dispatch(AddBoundary::toBaseModel($ownerId, $modelId, $area));
 
-        /** @var SoilmodelId $soilModelId */
+        /** @var \Inowas\Common\Soilmodel\SoilmodelId $soilModelId */
         $soilModelId = SoilmodelId::generate();
         $this->commandBus->dispatch(ChangeModflowModelSoilmodelId::forModflowModel($modelId, $soilModelId));
         $this->commandBus->dispatch(CreateSoilmodel::byUserWithModelId($ownerId, $soilModelId));
         $this->commandBus->dispatch(ChangeSoilmodelName::forSoilmodel($ownerId, $soilModelId, SoilmodelName::fromString('SoilModel Río Primero')));
         $this->commandBus->dispatch(ChangeSoilmodelDescription::forSoilmodel($ownerId, $soilModelId, SoilmodelDescription::fromString('SoilModel for Río Primero Area')));
 
-        /** @var GeologicalLayerId $layerId */
+        /** @var \Inowas\Common\Soilmodel\GeologicalLayerId $layerId */
         $layerId = GeologicalLayerId::generate();
         $this->commandBus->dispatch(AddGeologicalLayerToSoilmodel::forSoilmodel(
             $ownerId,
