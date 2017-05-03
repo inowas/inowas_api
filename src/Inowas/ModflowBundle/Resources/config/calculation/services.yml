@@ -4,15 +4,15 @@ services:
         arguments: ['%data_folder%']
 
     inowas.modflowcalculation.amqp_flopy_calculation:
-        class: Inowas\ModflowCalculation\Service\AMQPFlopyCalculation
+        class: Inowas\ModflowCalculation\Service\AMQPModflowCalculation
         arguments: ['@inowas.amqp.stream.connection', 'flopy_calculation_queue']
 
     inowas.modflowcalculation.amqp_flopy_calculation_listener:
-        class: Inowas\ModflowCalculation\Service\AMQPFlopyCalculationListener
+        class: Inowas\ModflowCalculation\Service\AMQPModflowCalculationListener
         arguments: ['@inowas.amqp.stream.connection', 'flopy_calculation_finished_queue']
 
     inowas.modflowcalculation.amqp_flopy_calculation_read_data:
-        class: Inowas\ModflowCalculation\Service\AMQPFlopyCalculationReadData
+        class: Inowas\ModflowCalculation\Service\AMQPModflowCalculationReadData
         arguments: ['@inowas.amqp.stream.connection', 'rpc_flopy_read_data_queue']
 
     inowas.modflowcalculation.calculation_configuration_finder:

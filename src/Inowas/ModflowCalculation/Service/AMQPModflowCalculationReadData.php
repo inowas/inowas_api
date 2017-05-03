@@ -7,7 +7,7 @@ use Inowas\ModflowCalculation\Model\ModflowCalculationReadDataRequest;
 use PhpAmqpLib\Connection\AMQPStreamConnection;
 use PhpAmqpLib\Message\AMQPMessage;
 
-class AMQPModflowCalculationCalculationReadData implements ModflowCalculationReadData
+class AMQPModflowCalculationReadData implements ModflowCalculationReadData
 {
     
     private $channel;

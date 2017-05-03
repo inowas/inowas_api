@@ -13,20 +13,20 @@ use Inowas\Common\Grid\Nrow;
 use Inowas\Common\Calculation\ResultType;
 use Inowas\Common\Id\ModflowId;
 use Inowas\Common\DateTime\TotalTime;
-use Inowas\ModflowModel\Infrastructure\Projection\Table;
+use Inowas\ModflowCalculation\Infrastructure\Projection\Table;
 use Inowas\ModflowCalculation\Model\ModflowCalculationReadDataRequest;
 use Inowas\ModflowCalculation\Model\ModflowCalculationReadDataResponse;
-use Inowas\ModflowCalculation\Service\AMQPModflowCalculationCalculationReadData;
+use Inowas\ModflowCalculation\Service\AMQPModflowCalculationReadData;
 
 class CalculationResultsFinder
 {
     /** @var Connection $connection */
     protected $connection;
 
-    /** @var  \Inowas\ModflowCalculation\Model\\Inowas\ModflowCalculation\Service\AMQPFlopyCalculationReadData */
+    /** @var  AMQPModflowCalculationReadData */
     protected $reader;
 
-    public function __construct(Connection $connection, AMQPModflowCalculationCalculationReadData $reader) {
+    public function __construct(Connection $connection, AMQPModflowCalculationReadData $reader) {
         $this->connection = $connection;
         $this->connection->setFetchMode(\PDO::FETCH_ASSOC);
         $this->reader = $reader;
