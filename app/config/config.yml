@@ -3,13 +3,8 @@ imports:
     - { resource: security.yml }
     - { resource: services.yml }
     - { resource: "@InowasAppBundle/Resources/config/services.xml" }
+    - { resource: "@InowasModflowBundle/Resources/config/config.yml" }
 
-    - { resource: "@InowasModflowBundle/Resources/config/event_store.yml" }
-    - { resource: "@InowasModflowBundle/Resources/config/projection.yml" }
-    - { resource: "@InowasModflowBundle/Resources/config/service_bus.yml" }
-    - { resource: "@InowasModflowBundle/Resources/config/services.xml" }
-    - { resource: "@InowasModflowBundle/Resources/config/geotools_services.yml" }
-    - { resource: "@InowasModflowBundle/Resources/config/soilmodel_services.yml" }
 
 # Put parameters here that don't need to change on each machine where the app is deployed
 # http://symfony.com/doc/current/best_practices/configuration.html#application-related-configuration
