@@ -586,7 +586,7 @@ class ScenarioAnalysisController extends FOSRestController
         $calculationId = ModflowId::fromString($calculation['calculation_id']);
 
         $timesSeries = $this->get('inowas.modflowcalculation.calculation_results_finder')
-            ->findTimeSeries($calculationId, $type, $layer, $column, $row);
+            ->findTimeSeries($calculationId, $type, $layer, $row, $column);
 
         return new JsonResponse($timesSeries);
     }
@@ -627,7 +627,7 @@ class ScenarioAnalysisController extends FOSRestController
         $row = Nrow::fromInteger((int)$ny);
 
         $timesSeries = $this->get('inowas.modflowcalculation.calculation_results_finder')
-            ->findTimeSeries($calculationId, $type, $layer, $column, $row);
+            ->findTimeSeries($calculationId, $type, $layer, $row, $column);
 
         return new JsonResponse($timesSeries);
     }
