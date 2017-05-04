@@ -8,7 +8,7 @@ addons:
 
 before_script:
   - sudo apt-get update
-  - sudo build/install_geos.travis.sh
+  - sudo ./build/install_geos.travis.sh
   - sed -i 's/git@github.com:/https:\/\/github.com\//' .gitmodules
   - git submodule update --init --recursive
   - cp app/config/parameters.yml.travis app/config/parameters.yml
