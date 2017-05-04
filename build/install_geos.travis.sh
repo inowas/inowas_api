@@ -1,9 +1,7 @@
 #!/usr/bin/env bash
 
 sudo apt-get remove 'libgeos.*'
-sudo apt-get remove 'postgresql.*'
 sudo apt-get autoremove
-sudo apt-get install postgresql-server-dev-9.4 postgis postgresql-9.4-postgis
 
 wget https://github.com/libgeos/libgeos/archive/$VERSION.tar.gz
 tar zxf $VERSION.tar.gz
