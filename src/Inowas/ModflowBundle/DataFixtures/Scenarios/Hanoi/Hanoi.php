@@ -544,7 +544,7 @@ class Hanoi extends LoadScenarioBase
         $commandBus->dispatch(ChangeModflowModelName::forScenario($ownerId, $modelId, $scenarioId, Modelname::fromString('Scenario 1')));
         $commandBus->dispatch(ChangeModflowModelDescription::forScenario($ownerId, $modelId, $scenarioId, ModflowModelDescription::fromString('Simulation of MAR type river bank filtration')));
 
-        $boundariesFinder = $this->container->get('inowas.model_boundaries_finder');
+        $boundariesFinder = $this->container->get('inowas.modflowmodel.boundaries_finder');
         $rbfRelocatedWellNamesAndGeometry = array(
             'H07_6' => $geoTools->projectPoint(new Point(588637, 2326840, 32648), Srid::fromInt(4326)),
             'H10_6' => $geoTools->projectPoint(new Point(589150, 2326214, 32648), Srid::fromInt(4326)),
@@ -624,7 +624,7 @@ class Hanoi extends LoadScenarioBase
         $commandBus->dispatch(ChangeModflowModelName::forScenario($ownerId, $modelId, $scenarioId, Modelname::fromString('Scenario 3')));
         $commandBus->dispatch(ChangeModflowModelDescription::forScenario($ownerId, $modelId, $scenarioId, ModflowModelDescription::fromString('Combination of MAR types river bank filtration and injection wells.')));
 
-        $boundariesFinder = $this->container->get('inowas.model_boundaries_finder');
+        $boundariesFinder = $this->container->get('inowas.modflowmodel.boundaries_finder');
         $rbfRelocatedWellNamesAndGeometry = array(
             'H07_6' => $geoTools->projectPoint(new Point(588637, 2326840, 32648), Srid::fromInt(4326)),
             'H10_6' => $geoTools->projectPoint(new Point(589150, 2326214, 32648), Srid::fromInt(4326)),
