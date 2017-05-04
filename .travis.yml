@@ -23,8 +23,6 @@ before_script:
   - psql -U postgres -c "create role travis_ci_user WITH PASSWORD 'travis' LOGIN SUPERUSER;" -U postgres
   - psql -U postgres -c "create extension postgis;"
   - psql -U postgres -c "create extension postgis_topology;"
-  - psql -U postgres travis_ci_db_test < "create extension postgis;"
-  - psql -U postgres travis_ci_db_test < "create extension postgis_topology;"
   - bin/console doctrine:database:create --env=test
   - php bin/console doctrine:schema:create --env=test
   - php bin/console inowas:es:schema:create --env=test
