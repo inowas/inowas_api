@@ -15,10 +15,10 @@ before_script:
   - composer dump-autoload -o
   - psql -c "create role travis_ci_user WITH PASSWORD 'travis' LOGIN SUPERUSER;" -U postgres
   - bin/console doctrine:database:create --env=test
-  - psql travis_ci_db_test < "build/sql/structure.sql"
+  - bin/console inowas:postgis:install --env=test
   - php bin/console doctrine:schema:create --env=test
-  - php bin/console inowas:es:schema:create
-  - php bin/console inowas:projections:reset
+  - php bin/console inowas:es:schema:create --env=test
+  - php bin/console inowas:projections:reset --env=test
 
 script:
   - mkdir -p build/logs
