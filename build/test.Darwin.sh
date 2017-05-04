@@ -1,17 +1,9 @@
 #!/usr/bin/env bash
 
-ROOTDIR=.
-SQL_DIR=$ROOTDIR/build/sql
-
-cd $ROOTDIR
 bin/console doctrine:database:drop --force --env=test
 bin/console doctrine:database:create --env=test
-psql inowas_test < "$SQL_DIR"/structure.sql
+bin/console inowas:postgis:install --env=test
 bin/console doctrine:schema:create --env=test
 bin/console inowas:es:schema:create --env=test
 bin/console inowas:projections:reset --env=test
-
-DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
-
-cd $ROOTDIR
-./vendor/bin/phpunit
+bin/phpunit
