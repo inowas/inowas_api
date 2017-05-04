@@ -28,15 +28,20 @@ class ModflowCalculationReadDataResponse
         $self = new self();
         $self->statusCode = StatusCode::fromInt((int)$obj->status_code);
 
-        $timeSeries = [];
-        $data = $obj->response;
-        foreach ($data as $dataSet){
-            $key = (int)$dataSet[0];
-            $value = (float)$dataSet[1];
-            $timeSeries[$key] = $value;
+        if (property_exists($obj->request,'timeseries')) {
+            $timeSeries = [];
+            $data = $obj->response;
+            foreach ($data as $dataSet){
+                $key = (int)$dataSet[0];
+                $value = (float)$dataSet[1];
+                $timeSeries[$key] = $value;
+            }
+
+            $self->data = $timeSeries;
+            return $self;
         }
 
-        $self->data = $timeSeries;
+        $self->data = $obj->response;
         return $self;
     }
 
