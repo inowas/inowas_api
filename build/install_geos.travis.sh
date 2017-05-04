@@ -1,7 +1,6 @@
 #!/usr/bin/env bash
 
 sudo apt-get remove 'libgeos.*'
-sudo apt-get autoremove
 
 wget https://github.com/libgeos/libgeos/archive/$VERSION.tar.gz
 tar zxf $VERSION.tar.gz
