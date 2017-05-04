@@ -51,7 +51,7 @@ use Inowas\ModflowModel\Model\Command\ChangeModflowModelName;
 use Inowas\ModflowModel\Model\Command\ChangeModflowModelSoilmodelId;
 use Inowas\ModflowModel\Model\Command\CreateModflowModel;
 use Inowas\ModflowBundle\Command\ModflowEventStoreTruncateCommand;
-use Inowas\ModflowBundle\Command\ModflowProjectionCommand;
+use Inowas\ModflowBundle\Command\ModflowProjectionsResetCommand;
 use Inowas\Soilmodel\Model\Command\AddGeologicalLayerToSoilmodel;
 use Inowas\Soilmodel\Model\Command\ChangeSoilmodelDescription;
 use Inowas\Soilmodel\Model\Command\ChangeSoilmodelName;
@@ -98,7 +98,7 @@ abstract class EventSourcingBaseTest extends KernelTestCase
 
         $application = new Application(static::$kernel);
         $application->add(new ModflowEventStoreTruncateCommand());
-        $application->add(new ModflowProjectionCommand());
+        $application->add(new ModflowProjectionsResetCommand());
 
         $command = $application->find('inowas:es:truncate');
         $commandTester = new CommandTester($command);

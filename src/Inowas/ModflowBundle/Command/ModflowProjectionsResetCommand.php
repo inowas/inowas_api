@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Inowas\ModflowBundle\Command;
 
+use Inowas\Common\Id\UserId;
 use Inowas\Common\Projection\ProjectionInterface;
 use Prooph\EventStore\Stream\StreamName;
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
@@ -12,10 +13,10 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 ini_set('memory_limit', '2048M');
 
-class ModflowProjectionCommand extends ContainerAwareCommand
+class ModflowProjectionsResetCommand extends ContainerAwareCommand
 {
 
-    /** @var  \Inowas\Common\Id\UserId */
+    /** @var  UserId */
     protected $ownerId;
 
     protected function configure(): void
