@@ -21,10 +21,7 @@ class HeadData implements \JsonSerializable
         return $this->data;
     }
 
-    /**
-     * @return mixed
-     */
-    function jsonSerialize()
+    public function jsonSerialize(): array
     {
         return $this->data;
     }

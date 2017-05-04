@@ -104,7 +104,6 @@ class CalculationResultsFinder
 
     public function findTimeSeries(ModflowId $calculationId, ResultType $type, LayerNumber $layerNumber, Nrow $ny, Ncol $nx): TimeSeriesData
     {
-
         $request = ModflowCalculationReadDataRequest::forTimeSeries(
             $calculationId,
             $type,

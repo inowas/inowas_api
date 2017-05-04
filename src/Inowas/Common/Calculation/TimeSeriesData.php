@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Inowas\Common\Calculation;
 
-class TimeSeriesData
+class TimeSeriesData implements \JsonSerializable
 {
     /** @var  array */
     private $data;
@@ -17,6 +17,11 @@ class TimeSeriesData
     }
 
     public function toArray(): array
+    {
+        return $this->data;
+    }
+
+    public function jsonSerialize(): array
     {
         return $this->data;
     }

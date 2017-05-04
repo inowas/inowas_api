@@ -6,7 +6,7 @@ namespace Inowas\ModflowBundle\DataFixtures\Scenarios;
 
 use Doctrine\DBAL\Schema\Schema;
 use FOS\UserBundle\Model\UserManager;
-use Inowas\Common\Calculation\Budget;
+use Inowas\Common\Calculation\BudgetData;
 use Inowas\Common\Calculation\BudgetType;
 use Inowas\Common\Calculation\HeadData;
 use Inowas\Common\Calculation\ResultType;
@@ -232,7 +232,7 @@ abstract class LoadScenarioBase implements ContainerAwareInterface, DataFixtureI
                 $commandBus->dispatch(AddCalculatedBudget::to(
                     $calculationId,
                     TotalTime::fromInt($t),
-                    Budget::fromArray($budget),
+                    BudgetData::fromArray($budget),
                     $budgetType
                 ));
             }

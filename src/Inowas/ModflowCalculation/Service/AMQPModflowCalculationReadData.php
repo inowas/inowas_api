@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Inowas\ModflowCalculation\Service;
 
 use Inowas\ModflowCalculation\Model\ModflowCalculationReadData;
