@@ -8,4 +8,4 @@ cd $DIR/../
 php bin/console inowas:es:schema:create
 php bin/console inowas:es:truncate
 php bin/console inowas:projections:reset
-php bin/console inowas:es:migrate 1
+php bin/console inowas:es:migrate 2
