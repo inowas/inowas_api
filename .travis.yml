@@ -8,12 +8,10 @@ env:
 
 addons:
   postgresql: "9.4"
-  apt:
-      packages:
-        - postgresql-9.4-postgis-2.2
 
 before_script:
   - sudo apt-get update
+  - sudo apt-get install postgresql-server-dev-9.4 postgis postgresql-9.4-postgis-2.2
   - if [[ $ENGINE = GEOS34 ]]; then ENGINE=GEOS; VERSION=3.4.2 bash build/install_geos.travis.sh; fi;
   - sed -i 's/git@github.com:/https:\/\/github.com\//' .gitmodules
   - git submodule update --init --recursive
