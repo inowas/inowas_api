@@ -1,7 +1,7 @@
 language: php
 
 php:
-  - '7.0'
+  - '7.1'
 
 addons:
   postgresql: "9.4"
@@ -20,10 +20,10 @@ before_script:
 
 script:
   - mkdir -p build/logs
-  - phpunit --coverage-clover build/logs/clover.xml
+  - php bin/phpunit --coverage-clover build/logs/clover.xml
 
 after_script:
- - php vendor/bin/coveralls -v
+  - php bin/coveralls -v
 
 # Handle git submodules yourself
 git:

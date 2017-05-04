@@ -58,13 +58,6 @@ doctrine:
                 password: "%database_password%"
                 charset:  UTF8
 
-        types:
-            geometry:                     CrEOF\Spatial\DBAL\Types\GeometryType
-            point:                        CrEOF\Spatial\DBAL\Types\Geometry\PointType
-            polygon:                      CrEOF\Spatial\DBAL\Types\Geometry\PolygonType
-            linestring:                   CrEOF\Spatial\DBAL\Types\Geometry\LineStringType
-            uuid:                         Ramsey\Uuid\Doctrine\UuidType
-
     orm:
         auto_generate_proxy_classes: "%kernel.debug%"
         entity_managers:
