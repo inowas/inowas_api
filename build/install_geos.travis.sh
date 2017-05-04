@@ -4,7 +4,6 @@ sudo apt-get update
 sudo apt-get remove 'libgeos.*'
 sudo apt-get autoremove
 
-VERSION=3.4.2
 wget https://github.com/libgeos/libgeos/archive/$VERSION.tar.gz
 tar zxf $VERSION.tar.gz
 cd libgeos-$VERSION

@@ -3,11 +3,16 @@ language: php
 php:
   - '7.1'
 
+env:
+  - ENGINE=GEOS34
+
+
 addons:
   postgresql: "9.4"
 
 before_script:
   - sudo apt-get update
+  - if [[ $ENGINE = GEOS34 ]]; then ENGINE=GEOS; VERSION=3.4.3 bash build/install_geos.travis.sh; fi;
   - sudo ./build/install_geos.travis.sh
   - sed -i 's/git@github.com:/https:\/\/github.com\//' .gitmodules
   - git submodule update --init --recursive
