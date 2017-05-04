@@ -7,10 +7,10 @@ env:
   - ENGINE=GEOS34
 
 addons:
-    postgresql: "9.5"
+    postgresql: "9.4"
     apt:
       packages:
-      - postgresql-9.5-postgis-2.3
+      - postgresql-9.4-postgis-2.3
 
 before_script:
   - sudo apt-get update
@@ -20,9 +20,9 @@ before_script:
   - cp app/config/parameters.yml.travis app/config/parameters.yml
   - composer install
   - composer dump-autoload -o
-  - psql -U postgres -c "create role travis_ci_user WITH PASSWORD 'travis' LOGIN SUPERUSER;" -U postgres
-  - psql -U postgres travis_ci_db_test < "create extension postgis;"
-  - psql -U postgres travis_ci_db_test < "create extension postgis_topology;"
+  - psql -U postgres -c "create role travis_ci_user WITH PASSWORD 'travis' LOGIN SUPERUSER;"
+  - psql -U postgres -c "create extension postgis;" travis_ci_db_test
+  - psql -U postgres -c "create extension postgis_topology;" travis_ci_db_test
   - bin/console doctrine:database:create --env=test
   - php bin/console doctrine:schema:create --env=test
   - php bin/console inowas:es:schema:create --env=test
