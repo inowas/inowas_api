@@ -1,0 +1,20 @@
+imports:
+    - { resource: common/services.yml }
+
+    - { resource: eventStore/event_store.yml }
+    - { resource: serviceBus/service_bus.yml }
+
+    - { resource: calculation/commandHandler.yml }
+    - { resource: calculation/projections.yml }
+    - { resource: calculation/services.yml }
+
+    - { resource: geoTools/services.yml }
+
+    - { resource: modflowModel/commandHandler.yml }
+    - { resource: modflowModel/projections.yml }
+    - { resource: modflowModel/services.yml }
+
+    - { resource: soilmodel/commandHandler.yml }
+    - { resource: soilmodel/projections.yml }
+    - { resource: soilmodel/services.yml }
+

@@ -1,0 +1,11 @@
+services:
+    inowas.soilmodel.soilmodel_list_projector:
+        class: Inowas\Soilmodel\Infrastructure\Projection\SoilmodelList\SoilmodelProjector
+        arguments:
+            - '@doctrine.dbal.default_connection'
+
+    inowas.soilmodel.layer_values_projector:
+        class: Inowas\Soilmodel\Infrastructure\Projection\LayerDetails\LayerProjector
+        arguments:
+          - '@doctrine.dbal.default_connection'
+

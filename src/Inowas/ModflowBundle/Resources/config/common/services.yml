@@ -1,0 +1,4 @@
+services:
+    inowas.amqp.stream.connection:
+        class: PhpAmqpLib\Connection\AMQPStreamConnection
+        arguments: ['localhost', 5672, 'guest', 'guest']

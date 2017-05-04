@@ -38,4 +38,11 @@
             </exclude>
         </whitelist>
     </filter>
+
+    <groups>
+        <exclude>
+            <group>messaging-integration-tests</group>
+        </exclude>
+    </groups>
+
 </phpunit>

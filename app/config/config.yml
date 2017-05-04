@@ -2,7 +2,9 @@ imports:
     - { resource: parameters.yml }
     - { resource: security.yml }
     - { resource: services.yml }
-    - { resource: "@InowasPyprocessingBundle/Resources/config/services.yml" }
+    - { resource: "@InowasAppBundle/Resources/config/services.xml" }
+    - { resource: "@InowasModflowBundle/Resources/config/config.yml" }
+
 
 # Put parameters here that don't need to change on each machine where the app is deployed
 # http://symfony.com/doc/current/best_practices/configuration.html#application-related-configuration
@@ -34,6 +36,8 @@ framework:
     fragments:       ~
     http_method_override: true
     assets: ~
+    serializer:
+        enabled: true
 
 # Twig Configuration
 twig:
@@ -43,53 +47,32 @@ twig:
 # Doctrine Configuration
 doctrine:
     dbal:
-        driver:   pdo_pgsql
-        host:     "%database_host%"
-        port:     "%database_port%"
-        dbname:   "%database_name%"
-        user:     "%database_user%"
-        password: "%database_password%"
-        charset:  UTF8
-        # if using pdo_sqlite as your database driver:
-        #   1. add the path in parameters.yml
-        #     e.g. database_path: "%kernel.root_dir%/data/data.db3"
-        #   2. Uncomment database_path in parameters.yml.dist
-        #   3. Uncomment next line:
-        #     path:     "%database_path%"
+        default_connection: default
+        connections:
+            default:
+                driver:   pdo_pgsql
+                host:     "%database_host%"
+                port:     "%database_port%"
+                dbname:   "%database_name%"
+                user:     "%database_user%"
+                password: "%database_password%"
+                charset:  UTF8
 
         types:
-            geometry:                     CrEOF\Spatial\DBAL\Types\GeometryType
-            point:                        CrEOF\Spatial\DBAL\Types\Geometry\PointType
-            polygon:                      CrEOF\Spatial\DBAL\Types\Geometry\PolygonType
-            linestring:                   CrEOF\Spatial\DBAL\Types\Geometry\LineStringType
-            active_cells:                 AppBundle\Type\ActiveCellsType
-            bounding_box:                 AppBundle\Type\BoundingBoxType
-            grid_size:                    AppBundle\Type\GridSizeType
-            property_type:                AppBundle\Type\PropertyTypeType
-            chd_stress_periods:           AppBundle\Type\ChdStressPeriodsType
-            flopy_calculation_properties: AppBundle\Type\FlopyCalculationPropertiesType
-            ghb_stress_periods:           AppBundle\Type\GhbStressPeriodsType
-            rch_stress_periods:           AppBundle\Type\RchStressPeriodsType
-            riv_stress_periods:           AppBundle\Type\RivStressPeriodsType
-            wel_stress_periods:           AppBundle\Type\WelStressPeriodsType
             uuid:                         Ramsey\Uuid\Doctrine\UuidType
 
     orm:
         auto_generate_proxy_classes: "%kernel.debug%"
-        naming_strategy: doctrine.orm.naming_strategy.underscore
-        auto_mapping: true
+        entity_managers:
+            default:
+                connection: default
+                auto_mapping: true
+                naming_strategy: doctrine.orm.naming_strategy.underscore
+                mappings:
+                    InowasAppBundle:
+                        type: xml
+                        prefix: Inowas\AppBundle\Model
 
-        dql:
-            numeric_functions:
-                st_area:          CrEOF\Spatial\ORM\Query\AST\Functions\PostgreSql\STArea
-                st_asgeojson:     CrEOF\Spatial\ORM\Query\AST\Functions\PostgreSql\STAsGeoJson
-                st_envelope:      CrEOF\Spatial\ORM\Query\AST\Functions\PostgreSql\STEnvelope
-                st_geomfromtext:  CrEOF\Spatial\ORM\Query\AST\Functions\PostgreSql\STGeomFromText
-                st_intersects:    CrEOF\Spatial\ORM\Query\AST\Functions\PostgreSql\STIntersects
-                st_makeline:      CrEOF\Spatial\ORM\Query\AST\Functions\PostgreSql\STMakeLine
-                st_point:         CrEOF\Spatial\ORM\Query\AST\Functions\PostgreSql\STPoint
-                st_setsrid:       CrEOF\Spatial\ORM\Query\AST\Functions\PostgreSql\STSetSRID
-                st_transform:     CrEOF\Spatial\ORM\Query\AST\Functions\PostgreSql\STTransform
 
 # Swiftmailer Configuration
 swiftmailer:
@@ -99,11 +82,17 @@ swiftmailer:
     password:  "%mailer_password%"
     spool:     { type: memory }
 
+# FOS UserBundle Configuration
 fos_user:
     db_driver: orm
     firewall_name: main
-    user_class: AppBundle\Entity\User
+    user_class: Inowas\AppBundle\Model\User
+    from_email:
+        address: you@example.com
+        sender_name: You
 
+
+# FOS RestBundle Configuration
 fos_rest:
     view:
         view_response_listener: true
@@ -113,8 +102,37 @@ fos_rest:
 
     param_fetcher_listener: true
 
+# Nelmio apiDoc configuration
 nelmio_api_doc: ~
 
+# Nelmio cors configuration
+nelmio_cors:
+        defaults:
+            allow_credentials: false
+            allow_origin: []
+            allow_headers: []
+            allow_methods: []
+            expose_headers: []
+            max_age: 0
+            hosts: []
+            origin_regex: false
+        paths:
+            '^/api/':
+                allow_credentials: true
+                allow_origin: ['*']
+                allow_headers: ['Origin', 'X-AUTH-TOKEN', 'Content-Type', 'Accept']
+                allow_methods: ['POST', 'PUT', 'GET', 'DELETE']
+                expose_headers: []
+                max_age: 3600
+            '^/':
+                origin_regex: true
+                allow_origin: ['^http://localhost:[0-9]+']
+                allow_headers: ['X-Custom-Auth']
+                allow_methods: ['POST', 'PUT', 'GET', 'DELETE']
+                max_age: 3600
+                hosts: ['^api\.']
+
+# JMS Serializer configuration
 jms_serializer:
     metadata:
         directories:
@@ -122,10 +140,8 @@ jms_serializer:
                 path: "%kernel.root_dir%/Resources/FOSUserBundle/serializer"
                 namespace_prefix: "FOS\\UserBundle"
 
-inowas_pyprocessing:
-    prefix:               "python"
-    api_base_url:         "http://localhost/api"
-    data_folder:          "%kernel.root_dir%/../var/data"
-    temp_folder:          "%kernel.root_dir%/../var/tmp"
-    pyprocessing_folder:  "%kernel.root_dir%/../py/pyprocessing"
-    max_processes:    5
+doctrine_migrations:
+    dir_name: "%kernel.root_dir%/DoctrineMigrations"
+    namespace: Inowas\Migrations
+    table_name: migration_versions
+    name: Inowas Migrations

@@ -1,0 +1,34 @@
+services:
+    inowas.modflowcalculation.calculate_modflow_calculation_handler:
+        class: Inowas\ModflowCalculation\Model\Handler\CalculateModflowModelCalculationHandler
+        arguments:
+            - '@inowas.modflowcalculation.calculation_configuration_finder'
+            - '@inowas.modflowcalculation.amqp_flopy_calculation'
+
+    inowas.modflowcalculation.create_modflow_calculation_handler:
+        class: Inowas\ModflowCalculation\Model\Handler\CreateModflowModelCalculationHandler
+        arguments:
+            - '@modflow_model_list'
+            - '@soil_model_list'
+            - '@modflow_calculation_list'
+            - '@inowas.modflowmodel.manager'
+
+    inowas.modflowcalculation.change_calculation_flow_package_handler:
+        class: Inowas\ModflowCalculation\Model\Handler\ChangeFlowPackageHandler
+        arguments:
+            - '@modflow_calculation_list'
+
+    inowas.modflowcalculation.update_calculation_package_parameter_handler:
+        class: Inowas\ModflowCalculation\Model\Handler\UpdateCalculationPackageParameterHandler
+        arguments:
+            - '@modflow_calculation_list'
+
+    inowas.modflowcalculation.update_calculation_results_handler:
+        class: Inowas\ModflowCalculation\Model\Handler\UpdateCalculationResultsHandler
+        arguments:
+            - '@modflow_calculation_list'
+
+    inowas.modflowcalculation.update_calculation_stress_periods_handler:
+        class: Inowas\ModflowCalculation\Model\Handler\UpdateCalculationStressperiodsHandler
+        arguments:
+            - '@modflow_calculation_list'

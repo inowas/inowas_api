@@ -1,0 +1,13 @@
+services:
+    inowas.soilmodel.interpolation_service:
+        class: Inowas\Soilmodel\Service\AMQPLayerInterpolation
+        arguments: ['@inowas.amqp.stream.connection', 'rpc_interpolation_queue']
+
+    inowas.soilmodel.manager:
+        class: Inowas\Soilmodel\Service\SoilmodelManager
+        arguments: ['@inowas.soilmodel.layer_values_finder']
+
+    inowas.soilmodel.layer_values_finder:
+        class: Inowas\Soilmodel\Infrastructure\Projection\LayerDetails\LayerFinder
+        arguments:
+            - '@doctrine.dbal.default_connection'

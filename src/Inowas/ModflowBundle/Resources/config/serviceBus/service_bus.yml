@@ -1,0 +1,162 @@
+prooph_service_bus:
+    command_buses:
+        modflow_command_bus:
+            plugins:
+                - 'prooph_event_store_bus_bridge.transaction_manager'
+            router:
+                type: 'prooph_service_bus.command_bus_router'
+                routes:
+                    # ModflowCalculation Commands and CommandHandlers
+                    'Inowas\ModflowCalculation\Model\Command\CalculateModflowModelCalculation': 'inowas.modflowcalculation.calculate_modflow_calculation_handler'
+                    'Inowas\ModflowCalculation\Model\Command\CreateModflowModelCalculation': 'inowas.modflowcalculation.create_modflow_calculation_handler'
+                    'Inowas\ModflowCalculation\Model\Command\ChangeFlowPackage': 'inowas.modflowcalculation.change_calculation_flow_package_handler'
+                    'Inowas\ModflowCalculation\Model\Command\UpdateCalculationPackageParameter': 'inowas.modflowcalculation.update_calculation_package_parameter_handler'
+                    'Inowas\ModflowCalculation\Model\Command\UpdateCalculationResults': 'inowas.modflowcalculation.update_calculation_results_handler'
+                    'Inowas\ModflowCalculation\Model\Command\UpdateCalculationStressperiods': 'inowas.modflowcalculation.update_calculation_stress_periods_handler'
+
+                    # ModflowmodelAggregate Commands and CommandHandlers
+                    'Inowas\ModflowModel\Model\Command\AddBoundary': 'inowas.modflowmodel.add_modflow_model_boundary_handler'
+                    'Inowas\ModflowModel\Model\Command\AddModflowScenario': 'inowas.modflowmodel.add_modflow_scenario_handler'
+                    'Inowas\ModflowModel\Model\Command\CalculateActiveCells': 'inowas.modflowmodel.calculate_active_cells_handler'
+                    'Inowas\ModflowModel\Model\Command\ChangeModflowModelBoundingBox': 'inowas.modflowmodel.change_modflow_model_bounding_box_handler'
+                    'Inowas\ModflowModel\Model\Command\ChangeModflowModelDescription': 'inowas.modflowmodel.change_modflow_model_description_handler'
+                    'Inowas\ModflowModel\Model\Command\ChangeModflowModelGridSize': 'inowas.modflowmodel.change_modflow_model_grid_size_handler'
+                    'Inowas\ModflowModel\Model\Command\ChangeModflowModelName': 'inowas.modflowmodel.change_modflow_model_name_handler'
+                    'Inowas\ModflowModel\Model\Command\ChangeModflowModelSoilmodelId': 'inowas.modflowmodel.change_modflow_model_soilmodel_id_handler'
+                    'Inowas\ModflowModel\Model\Command\CreateModflowModel': 'inowas.modflowmodel.create_modflow_model_handler'
+                    'Inowas\ModflowModel\Model\Command\RemoveBoundary': 'inowas.modflowmodel.remove_modflow_model_boundary_handler'
+                    'Inowas\ModflowModel\Model\Command\RemoveModflowScenario': 'inowas.modflowmodel.remove_modflow_scenario_handler'
+                    'Inowas\ModflowModel\Model\Command\UpdateBoundary': 'inowas.modflowmodel.update_modflow_model_boundary_handler'
+                    'Inowas\ModflowModel\Model\Command\UpdateBoundaryGeometry': 'inowas.modflowmodel.update_modflow_model_boundary_geometry_handler'
+
+                    # SoilmodelAggregate Commands and CommandHandlers
+                    'Inowas\Soilmodel\Model\Command\AddBoreLogToSoilmodel': 'inowas.soilmodel.add_borelog_to_soilmodel.handler'
+                    'Inowas\Soilmodel\Model\Command\AddGeologicalLayerToSoilmodel': 'inowas.soilmodel.add_geological_layer_to_soilmodel.handler'
+                    'Inowas\Soilmodel\Model\Command\ChangeSoilmodelDescription': 'inowas.soilmodel.change_soilmodel_description.handler'
+                    'Inowas\Soilmodel\Model\Command\ChangeSoilmodelName': 'inowas.soilmodel.change_soilmodel_name.handler'
+                    'Inowas\Soilmodel\Model\Command\CreateSoilmodel': 'inowas.soilmodel.create_soilmodel.handler'
+                    'Inowas\Soilmodel\Model\Command\DeleteSoilmodel': 'inowas.soilmodel.delete_soilmodel.handler'
+                    'Inowas\Soilmodel\Model\Command\InterpolateSoilmodel': 'inowas.soilmodel.interpolate_soilmodel.handler'
+                    'Inowas\Soilmodel\Model\Command\RemoveBoreLogFromSoilmodel': 'inowas.soilmodel.remove_borelog_layer_from_soilmodel.handler'
+                    'Inowas\Soilmodel\Model\Command\RemoveGeologicalLayerFromSoilmodel': 'inowas.soilmodel.remove_geological_layer_from_soilmodel.handler'
+
+                    # BorelogAggregate Commands and CommandHandlers
+                    'Inowas\Soilmodel\Model\Command\AddHorizonToBoreLog': 'inowas.soilmodel.add_horizon_to_borelog.handler'
+                    'Inowas\Soilmodel\Model\Command\RemoveHorizonFromBoreLog': 'inowas.soilmodel.remove_horizon_from_borelog.handler'
+                    'Inowas\Soilmodel\Model\Command\ChangeBoreLogLocation': 'inowas.soilmodel.change_borelog_location.handler'
+                    'Inowas\Soilmodel\Model\Command\ChangeBoreLogName': 'inowas.soilmodel.change_borelog_name.handler'
+                    'Inowas\Soilmodel\Model\Command\CreateBoreLog': 'inowas.soilmodel.create_borelog.handler'
+                    'Inowas\Soilmodel\Model\Command\DeleteBoreLog': 'inowas.soilmodel.delete_borelog.handler'
+                    'Inowas\Soilmodel\Model\Command\UpdateGeologicalLayerProperty': 'inowas.soilmodel.update_geological_layer_property.handler'
+
+    event_buses:
+        modflow_event_bus:
+            plugins:
+                - 'prooph_service_bus.on_event_invoke_strategy'
+            router:
+                type: 'prooph_service_bus.event_bus_router'
+                routes:
+                    'Inowas\ModflowCalculation\Model\Event\CalculationFlowPackageWasChanged':
+                        - 'inowas.modflowcalculation.calculation_configuration_projector'
+
+                    'Inowas\ModflowCalculation\Model\Event\CalculationPackageParameterWasUpdated':
+                        - 'inowas.modflowcalculation.calculation_configuration_projector'
+
+                    'Inowas\ModflowCalculation\Model\Event\CalculationStressperiodsWereUpdated':
+                        - 'inowas.modflowcalculation.calculation_configuration_projector'
+
+                    'Inowas\ModflowCalculation\Model\Event\CalculationWasCreated':
+                        - 'inowas.modflowcalculation.calculation_configuration_projector'
+                        - 'inowas.modflowcalculation.calculation_list_projector'
+                        - 'inowas.modflowcalculation.calculation_results_projector'
+
+                    'Inowas\ModflowCalculation\Model\Event\CalculationWasFinished':
+                        - 'inowas.modflowcalculation.calculation_configuration_projector'
+                        - 'inowas.modflowcalculation.calculation_results_projector'
+
+                    'Inowas\ModflowCalculation\Model\Event\CalculationWasQueued':
+                        - 'inowas.modflowcalculation.calculation_configuration_projector'
+
+                    'Inowas\ModflowCalculation\Model\Event\CalculationWasStarted':
+                        - 'inowas.modflowcalculation.calculation_configuration_projector'
+
+
+
+                    'Inowas\ModflowModel\Model\Event\ActiveCellsWereUpdated':
+                        - 'inowas.modflowmodel.model_details_projector'
+
+                    'Inowas\ModflowModel\Model\Event\BoundaryWasAdded':
+                        - 'inowas.modflowmodel.model_boundaries_projector'
+                        - 'inowas.modflowmodel.model_boundary_values_projector'
+                        - 'inowas.modflowmodel.model_details_projector'
+                        - 'inowas.modflowmodel.model_scenarios_projector'
+
+                    'Inowas\ModflowModel\Model\Event\BoundaryWasAddedToScenario':
+                        - 'inowas.modflowmodel.model_boundaries_projector'
+                        - 'inowas.modflowmodel.model_boundary_values_projector'
+
+                    'Inowas\ModflowModel\Model\Event\BoundaryWasRemoved':
+                        - 'inowas.modflowmodel.model_boundaries_projector'
+                        - 'inowas.modflowmodel.model_boundary_values_projector'
+                        - 'inowas.modflowmodel.model_details_projector'
+                        - 'inowas.modflowmodel.model_scenarios_projector'
+
+                    'Inowas\ModflowModel\Model\Event\BoundaryWasUpdated':
+                        - 'inowas.modflowmodel.model_boundaries_projector'
+                        - 'inowas.modflowmodel.model_boundary_values_projector'
+                        - 'inowas.modflowmodel.model_details_projector'
+                        - 'inowas.modflowmodel.model_scenarios_projector'
+
+                    'Inowas\ModflowModel\Model\Event\BoundaryWasRemovedFromScenario':
+                        - 'inowas.modflowmodel.model_boundaries_projector'
+                        - 'inowas.modflowmodel.model_boundary_values_projector'
+
+                    'Inowas\ModflowModel\Model\Event\ModflowModelWasCreated':
+                        - 'inowas.modflowmodel.model_details_projector'
+                        - 'inowas.modflowmodel.model_scenarios_projector'
+                        - 'inowas.modflowcalculation.calculation_results_projector'
+
+                    'Inowas\ModflowModel\Model\Event\ModflowModelNameWasChanged':
+                        - 'inowas.modflowmodel.model_details_projector'
+                        - 'inowas.modflowmodel.model_scenarios_projector'
+
+                    'Inowas\ModflowModel\Model\Event\ModflowModelDescriptionWasChanged':
+                        - 'inowas.modflowmodel.model_details_projector'
+                        - 'inowas.modflowmodel.model_scenarios_projector'
+
+                    'Inowas\ModflowModel\Model\Event\ModflowScenarioWasAdded':
+                        - 'inowas.modflowmodel.model_details_projector'
+                        - 'inowas.modflowmodel.model_scenarios_projector'
+                        - 'inowas.modflowmodel.model_boundaries_projector'
+                        - 'inowas.modflowmodel.model_boundary_values_projector'
+
+                    'Inowas\ModflowModel\Model\Event\ModflowScenarioWasRemoved':
+                        - 'inowas.modflowmodel.model_details_projector'
+                        - 'inowas.modflowmodel.model_scenarios_projector'
+
+                    'Inowas\ModflowModel\Model\Event\ModflowScenarioNameWasChanged':
+                        - 'inowas.modflowmodel.model_scenarios_projector'
+
+                    'Inowas\ModflowModel\Model\Event\ModflowScenarioDescriptionWasChanged':
+                        - 'inowas.modflowmodel.model_scenarios_projector'
+
+                    'Inowas\ModflowModel\Model\Event\ModflowModelBoundingBoxWasChanged':
+                        - 'inowas.modflowmodel.model_details_projector'
+                        - 'inowas.modflowmodel.model_scenarios_projector'
+
+                    'Inowas\ModflowModel\Model\Event\ModflowModelGridSizeWasChanged':
+                        - 'inowas.modflowmodel.model_details_projector'
+                        - 'inowas.modflowmodel.model_scenarios_projector'
+
+
+                    'Inowas\Soilmodel\Model\Event\SoilmodelWasCreated':
+                        - 'inowas.soilmodel.soilmodel_list_projector'
+
+                    'Inowas\Soilmodel\Model\Event\SoilmodelGeologicalLayerWasAdded':
+                        - 'inowas.soilmodel.layer_values_projector'
+
+                    'Inowas\Soilmodel\Model\Event\LayerValuesWereUpdated':
+                        - 'inowas.soilmodel.layer_values_projector'
+
+                    'Inowas\Soilmodel\Model\Event\LayerPropertyWasUpdated':
+                        - 'inowas.soilmodel.layer_values_projector'

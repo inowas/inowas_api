@@ -15,16 +15,20 @@ class AppKernel extends Kernel
             new Symfony\Bundle\SwiftmailerBundle\SwiftmailerBundle(),
             new Doctrine\Bundle\DoctrineBundle\DoctrineBundle(),
             new Doctrine\Bundle\FixturesBundle\DoctrineFixturesBundle(),
+            new Doctrine\Bundle\MigrationsBundle\DoctrineMigrationsBundle(),
             new Sensio\Bundle\FrameworkExtraBundle\SensioFrameworkExtraBundle(),
-            new FOS\RestBundle\FOSRestBundle(),
             new FOS\UserBundle\FOSUserBundle(),
+            new FOS\RestBundle\FOSRestBundle(),
             new JMS\SerializerBundle\JMSSerializerBundle(),
             new JMS\AopBundle\JMSAopBundle(),
             new JMS\SecurityExtraBundle\JMSSecurityExtraBundle(),
             new JMS\DiExtraBundle\JMSDiExtraBundle($this),
             new Nelmio\ApiDocBundle\NelmioApiDocBundle(),
-            new Inowas\PyprocessingBundle\InowasPyprocessingBundle(),
-            new AppBundle\AppBundle(),
+            new Nelmio\CorsBundle\NelmioCorsBundle(),
+            new Prooph\Bundle\EventStore\ProophEventStoreBundle(),
+            new Prooph\Bundle\ServiceBus\ProophServiceBusBundle(),
+            new Inowas\AppBundle\InowasAppBundle(),
+            new Inowas\ModflowBundle\InowasModflowBundle()
         ];
 
         if (in_array($this->getEnvironment(), ['dev', 'test'], true)) {

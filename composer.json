@@ -6,6 +6,10 @@
     "autoload": {
         "psr-4": {
             "AppBundle\\": "src/AppBundle/",
+            "Inowas\\Flopy\\": "src/Inowas/Flopy",
+            "Inowas\\Soilmodel\\": "src/Inowas/SoilmodelBundle",
+            "Inowas\\ModflowBundle\\": "src/Inowas/ModflowBundle",
+            "Inowas\\GeoToolsBundle\\": "src/Inowas/GeoToolsBundle",
             "Inowas\\": "src/Inowas/"
         },
         "classmap": [
@@ -19,7 +23,7 @@
         }
     },
     "require": {
-        "php": ">=7.0.0",
+        "php": ">=7.1.0",
         "symfony/symfony": "3.1.*",
         "doctrine/orm": "^2.5",
         "doctrine/doctrine-bundle": "^1.6",
@@ -31,7 +35,6 @@
         "symfony/process": "^3.0",
         "incenteev/composer-parameter-handler": "^2.0",
         "friendsofsymfony/user-bundle": "~2.0@dev",
-        "phpunit/phpunit": "^4.8",
         "doctrine/doctrine-fixtures-bundle": "^2.3",
         "jms/serializer-bundle": "^1.1",
         "nelmio/api-doc-bundle": "^2.11",
@@ -41,8 +44,20 @@
         "creof/doctrine2-spatial": "^1.1",
         "ramsey/uuid-doctrine": "^1.2",
         "sensiolabs/ansi-to-html": "^1.1",
-        "jakoch/phantomjs-installer": "^2.1",
-        "rabbl/heatmap": "^1.0"
+        "symfony/serializer": "^3.1",
+        "phpunit/phpunit": "^5.6",
+        "phayes/geophp": "^1.2",
+        "nelmio/cors-bundle": "^1.4",
+        "mattketmo/uuid-2x-bridge": "^1.0",
+        "prooph/event-store-symfony-bundle": "^0.2.2",
+        "prooph/service-bus-symfony-bundle": "^0.3.0",
+        "doctrine/doctrine-migrations-bundle": "^1.2",
+        "prooph/event-store-bus-bridge": "^2.0",
+        "prooph/event-store-doctrine-adapter": "^3.3",
+        "prooph/event-sourcing": "^4.0",
+        "beberlei/assert": "^2.7",
+        "php-amqplib/php-amqplib": "^2.6",
+        "rabbl/heatmap": "^1.1"
       
     },
     "require-dev": {
@@ -50,17 +65,18 @@
         "satooshi/php-coveralls": "dev-master",
         "sensio/generator-bundle": "^3.0",
         "symfony/phpunit-bridge": "^2.7",
-        "mi-schi/phpmd-symfony2": "^2.1"
+        "phpstan/phpstan": "^0.6.4"
     },
     "scripts": {
+        "test": "phpunit",
+        "test-messaging": "phpunit --group messaging-integration-tests",
         "post-install-cmd": [
             "Incenteev\\ParameterHandler\\ScriptHandler::buildParameters",
             "Sensio\\Bundle\\DistributionBundle\\Composer\\ScriptHandler::buildBootstrap",
             "Sensio\\Bundle\\DistributionBundle\\Composer\\ScriptHandler::clearCache",
             "Sensio\\Bundle\\DistributionBundle\\Composer\\ScriptHandler::installAssets",
             "Sensio\\Bundle\\DistributionBundle\\Composer\\ScriptHandler::installRequirementsFile",
-            "Sensio\\Bundle\\DistributionBundle\\Composer\\ScriptHandler::prepareDeploymentTarget",
-            "PhantomInstaller\\Installer::installPhantomJS"
+            "Sensio\\Bundle\\DistributionBundle\\Composer\\ScriptHandler::prepareDeploymentTarget"
         ],
         "post-update-cmd": [
             "Incenteev\\ParameterHandler\\ScriptHandler::buildParameters",
@@ -68,14 +84,13 @@
             "Sensio\\Bundle\\DistributionBundle\\Composer\\ScriptHandler::clearCache",
             "Sensio\\Bundle\\DistributionBundle\\Composer\\ScriptHandler::installAssets",
             "Sensio\\Bundle\\DistributionBundle\\Composer\\ScriptHandler::installRequirementsFile",
-            "Sensio\\Bundle\\DistributionBundle\\Composer\\ScriptHandler::prepareDeploymentTarget",
-            "PhantomInstaller\\Installer::installPhantomJS"
+            "Sensio\\Bundle\\DistributionBundle\\Composer\\ScriptHandler::prepareDeploymentTarget"
         ]
     },
     "config": {
         "bin-dir": "bin",
         "platform": {
-            "php": "7.0.7"
+            "php": "7.1.0"
         }
     },
     "extra": {

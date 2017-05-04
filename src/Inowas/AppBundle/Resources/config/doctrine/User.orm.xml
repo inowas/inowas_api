@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<doctrine-mapping
+    xmlns="http://doctrine-project.org/schemas/orm/doctrine-mapping"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://doctrine-project.org/schemas/orm/doctrine-mapping
+        http://doctrine-project.org/schemas/orm/doctrine-mapping.xsd">
+
+    <entity name="Inowas\AppBundle\Model\User" table="app_users">
+
+        <indexes>
+            <index name="idx_users_id" columns="id"/>
+        </indexes>
+
+        <unique-constraints>
+            <unique-constraint columns="id" name="uc_users_id"/>
+        </unique-constraints>
+
+        <id name="id" type="uuid" column="id"/>
+        <field name="name" column="name" type="string" length="255" nullable="true"/>
+        <field name="apiKey" column="api_key" type="uuid" />
+
+    </entity>
+</doctrine-mapping>

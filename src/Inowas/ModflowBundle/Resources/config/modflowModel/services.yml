@@ -1,0 +1,23 @@
+services:
+    inowas.modflowmodel.manager:
+        class: Inowas\ModflowModel\Service\ModflowModelManager
+        arguments:
+            - '@inowas.modflowmodel.boundaries_finder'
+            - '@inowas.modflowmodel.scenarios_finder'
+            - '@inowas.modflowcalculation.stressperiod_data_generator'
+
+    inowas.modflowmodel.boundaries_finder:
+        class: Inowas\ModflowModel\Infrastructure\Projection\BoundaryList\BoundaryFinder
+        arguments:
+          - '@doctrine.dbal.default_connection'
+
+    inowas.modflowmodel.scenarios_finder:
+        class: Inowas\ModflowModel\Infrastructure\Projection\ModelScenarioList\ModelScenarioFinder
+        arguments:
+          - '@doctrine.dbal.default_connection'
+
+    inowas.modflowmodel.details_finder:
+        class: Inowas\ModflowModel\Infrastructure\Projection\ModelScenarioList\ModelDetailsFinder
+        arguments:
+          - '@doctrine.dbal.default_connection'
+
