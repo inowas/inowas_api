@@ -11,9 +11,10 @@ bin/console doctrine:database:drop --force --env=test
 DBNAME=$(bin/console doctrine:database:create --env=test | grep -Po '".*?"')
 su postgres -c "psql $DBNAME < "$SQL_DIR"/structure.sql"
 bin/console doctrine:schema:create --env=test
+bin/console inowas:es:schema:create --env=test
+bin/console inowas:projections:reset --env=test
 
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
-$DIR/loadTestFixtures.sh
 
 cd $ROOTDIR
 ./vendor/bin/phpunit --exclude-group integration_tests
