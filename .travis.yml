@@ -8,6 +8,12 @@ addons:
 
 before_script:
   - sudo apt-get update
+  - sudo apt-get install libgeos-3.4.2 php7.1-dev
+  - git clone https://git.osgeo.org/gogs/geos/php-geos.git
+  - cd php-geos
+  - ./autogen.sh
+  - ./configure
+  - make
   - sed -i 's/git@github.com:/https:\/\/github.com\//' .gitmodules
   - git submodule update --init --recursive
   - cp app/config/parameters.yml.travis app/config/parameters.yml
