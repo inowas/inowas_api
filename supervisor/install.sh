@@ -16,12 +16,20 @@ if [ $OS=="Debian" ]; then
 
     rm -rf *.conf
 
+    if [ $# -eq 0 ]; then
+        DATA_FOLDER="/tmp/data"
+    else
+        DATA_FOLDER=$1
+    fi
+
+    echo $DATA_FOLDER
+
     for filename in inowas_*.sh; do
         echo $filename
         programname=$(sed 's/\.[^.]*$//' <<< "$filename")
         configfilename=$programname.conf
         echo "[program:$programname]" > $configfilename
-        echo "command=$DIR/$filename" >> $configfilename
+        echo "command=$DIR/$filename $DATA_FOLDER" >> $configfilename
         echo "stopsignal=KILL" >> $configfilename
         echo "killasgroup=true" >> $configfilename
         echo "autostart=true" >> $configfilename
