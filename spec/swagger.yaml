@@ -1,0 +1,101 @@
+swagger: '2.0'
+info:
+  description: >-
+    This is the Inowas-Server Api Documentation.
+  version: 1.0.0
+  title: Inowas DSS Backend
+  contact:
+    email: ralf.junghanns@gtu-dresden.de
+  license:
+    name: MIT
+    url: 'https://opensource.org/licenses/MIT'
+host: api.inowas.hydro.tu-dresden.de
+basePath: /api
+tags:
+  - name: user
+    description: Everything about the users
+  - name: modflowmodel
+    description: Everything to build a ModflowModel (T03)
+  - name: scenarioanalysis
+    description: The ScenarioAnalysis Tool (T07)
+schemes:
+  - https
+paths:
+  /users/credentials:
+    post:
+      tags:
+        - user
+      summary: Get the API-Key of the user from credentials
+      description: ''
+      operationId: getApiKey
+      consumes:
+        - application/x-www-form-urlencoded
+      produces:
+        - application/json
+      parameters:
+        - name: username
+          in: formData
+          description: The users Username
+          required: true
+          type: string
+        - name: password
+          in: formData
+          description: The users Password
+          required: true
+          type: string
+      responses:
+        '200':
+          description: successful operation
+          schema:
+            type: object
+            properties:
+              api_key:
+                type: "string"
+        '400':
+          description: Invalid username/password supplied
+
+  /scenarioanalysis/my/projects:
+    get:
+      tags:
+        - scenarioanalysis
+      summary: Returns the list of ScenarioAnalysis Projects from the User
+      produces:
+        - application/json
+      responses:
+        '200':
+          description: successful operation
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/ScenarioAnalysis'
+      security:
+        - api_key: []
+
+  /scenarioanalysis/public/projects:
+    get:
+      tags:
+        - scenarioanalysis
+      summary: Returns the list of ScenarioAnalysis Projects from the User
+      produces:
+        - application/json
+      responses:
+        '200':
+          description: successful operation
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/ScenarioAnalysis'
+      security:
+        - api_key: []
+
+securityDefinitions:
+  api_key:
+    type: apiKey
+    name: X-AUTH-TOKEN
+    in: header
+definitions:
+  ScenarioAnalysis:
+    type: object
+    properties:
+      model_id:
+        type: "string"
