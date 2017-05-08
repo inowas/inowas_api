@@ -20,6 +20,8 @@ if [ $OS=="Debian" ]; then
         DATA_FOLDER="/tmp/data"
     else
         DATA_FOLDER=$1
+        mkdir -p $DATA_FOLDER
+        chmod 0664 $DATA_FOLDER
     fi
 
     echo $DATA_FOLDER
