@@ -40,3 +40,6 @@ git:
 
 sudo: required
 dist: trusty
+
+notifications:
+    slack: inowas:aYWjRSnYz2k5hvnbRbCeM5Gq
