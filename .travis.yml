@@ -14,7 +14,7 @@ addons:
 
 before_script:
   - sudo apt-get update
-  - if [[ $ENGINE = GEOS34 ]]; then ENGINE=GEOS; VERSION=3.4.2 bash build/install_geos.travis.sh; fi;
+  - bash ./build/build.geos.travis.sh
   - sed -i 's/git@github.com:/https:\/\/github.com\//' .gitmodules
   - git submodule update --init --recursive
   - cp app/config/parameters.yml.travis app/config/parameters.yml
