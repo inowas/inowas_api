@@ -53,6 +53,25 @@ paths:
         400:
           description: "Invalid username/password supplied"
 
+  /modflowmodels/my/projects:
+      get:
+        tags:
+          - "modflowmodel"
+        summary: "Returns the list of ModflowModel Projects from the User"
+        description: ''
+        operationId: "modflowModelMyProjects"
+        produces:
+          - application/json
+        responses:
+          '200':
+            description: "successful operation"
+            schema:
+              type: "array"
+              items:
+                $ref: '#/definitions/ModflowModelListItem'
+        security:
+          - api_key: []
+
   /modflowmodels:
     post:
       tags:
@@ -201,7 +220,7 @@ definitions:
         type: "array"
         items:
           type: "string"
-  ModflowModelOverview:
+  ModflowModelListItem:
     type: "object"
     properties:
       id:
