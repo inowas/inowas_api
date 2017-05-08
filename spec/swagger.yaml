@@ -1,73 +1,142 @@
 swagger: '2.0'
 info:
-  description: >-
-    This is the Inowas-Server Api Documentation.
-  version: 1.0.0
-  title: Inowas DSS Backend
+  description: "This is the Inowas-Server Api Documentation."
+  version: "1.0.0"
+  title: "Inowas DSS Backend"
   contact:
-    email: ralf.junghanns@gtu-dresden.de
+    email: "ralf.junghanns@gtu-dresden.de"
   license:
-    name: MIT
-    url: 'https://opensource.org/licenses/MIT'
-host: api.inowas.hydro.tu-dresden.de
-basePath: /api
+    name: "MIT"
+    url: "https://opensource.org/licenses/MIT"
+host: "api.inowas.hydro.tu-dresden.de"
+basePath: "/api"
 tags:
-  - name: user
-    description: Everything about the users
-  - name: modflowmodel
-    description: Everything to build a ModflowModel (T03)
-  - name: scenarioanalysis
-    description: The ScenarioAnalysis Tool (T07)
+  - name: "user"
+    description: "Everything about the users"
+  - name: "modflowmodel"
+    description: "Everything to build a ModflowModel (T03)"
+  - name: "scenarioanalysis"
+    description: "The ScenarioAnalysis Tool (T07)"
 schemes:
-  - https
+  - "https"
 paths:
   /users/credentials:
     post:
       tags:
-        - user
-      summary: Get the API-Key of the user from credentials
+        - "user"
+      summary: "Get the API-Key of the user from credentials"
       description: ''
-      operationId: getApiKey
+      operationId: "getApiKey"
       consumes:
-        - application/x-www-form-urlencoded
+        - "application/x-www-form-urlencoded"
       produces:
-        - application/json
+        - "application/json"
       parameters:
-        - name: username
-          in: formData
-          description: The users Username
+        - name: "username"
+          in: "formData"
+          description: "The users Username"
           required: true
-          type: string
-        - name: password
-          in: formData
-          description: The users Password
+          type: "string"
+        - name: "password"
+          in: "formData"
+          description: "The users Password"
           required: true
-          type: string
+          type: "string"
       responses:
-        '200':
-          description: successful operation
+        200:
+          description: "successful operation"
           schema:
-            type: object
+            type: "object"
             properties:
               api_key:
                 type: "string"
-        '400':
-          description: Invalid username/password supplied
+        400:
+          description: "Invalid username/password supplied"
+
+  /modflowmodels:
+    post:
+      tags:
+        - "modflowmodel"
+      summary: "Creates a new modflowmodel"
+      description: ''
+      operationId: "addModflowModel"
+      consumes:
+        - "application/json"
+      produces:
+        - "application/json"
+      parameters:
+        - in: "body"
+          name: "body"
+          description: "ModflowModelObject that needs to be added"
+          required: true
+          schema:
+            type: "object"
+            properties:
+              name:
+                type: "string"
+                example: "Hanoi 2005-2007"
+              description:
+                type: "string"
+                example: "ModflowModel of Hanoi Area 2005-2007"
+              area_geometry:
+                type: "object"
+                $ref: '#/definitions/Geometry'
+              grid_size:
+                type: "object"
+                $ref: '#/definitions/GridSize'
+      responses:
+        '302':
+          description: "Redirect response"
+          headers:
+            Location:
+              type: "string"
+        '405':
+          description: "Invalid input"
+
+      security:
+        - api_key: []
+
+  /modflowmodels/{id}:
+    get:
+      tags:
+        - "modflowmodel"
+      summary: "Find ModflowModel by ID"
+      description: "Returns a single ModflowModel"
+      operationId: "getModflowModelById"
+      produces:
+        - "application/json"
+      parameters:
+        - name: "id"
+          in: "path"
+          description: "ID of ModflowModel to return"
+          required: true
+          type: "string"
+      responses:
+        200:
+          description: "successful operation"
+          schema:
+            $ref: '#/definitions/ModflowModelDetails'
+        400:
+          description: "Invalid ID supplied"
+        404:
+          description: "ModflowModel not found"
+      security:
+      - api_key: []
 
   /scenarioanalysis/my/projects:
     get:
       tags:
-        - scenarioanalysis
-      summary: Returns the list of ScenarioAnalysis Projects from the User
+        - "scenarioanalysis"
+      summary: "Returns the list of ScenarioAnalysis Projects from the User"
       description: ''
-      operationId: scenarioAnalysisMyProjects
+      operationId: "scenarioAnalysisMyProjects"
       produces:
         - application/json
       responses:
         '200':
-          description: successful operation
+          description: "successful operation"
           schema:
-            type: array
+            type: "array"
             items:
               $ref: '#/definitions/ScenarioAnalysis'
       security:
@@ -76,17 +145,17 @@ paths:
   /scenarioanalysis/public/projects:
     get:
       tags:
-        - scenarioanalysis
-      summary: Returns the list of ScenarioAnalysis Projects from the User
+        - "scenarioanalysis"
+      summary: "Returns the list of ScenarioAnalysis Projects from the User"
       description: ''
-      operationId: scenarioAnalysisPublicProjects
+      operationId: "scenarioAnalysisPublicProjects"
       produces:
-        - application/json
+        - "application/json"
       responses:
         '200':
-          description: successful operation
+          description: "successful operation"
           schema:
-            type: array
+            type: "array"
             items:
               $ref: '#/definitions/ScenarioAnalysis'
       security:
@@ -95,16 +164,74 @@ paths:
 # SECURITY
 securityDefinitions:
   api_key:
-    type: apiKey
-    name: X-AUTH-TOKEN
-    in: header
+    type: "apiKey"
+    name: "X-AUTH-TOKEN"
+    in: "header"
 
 # MODELS
 definitions:
-  ScenarioAnalysis:
-    type: object
+  ModflowModelDetails:
+    type: "object"
     properties:
-      scenario_analysis_id:
+      id:
+        type: "string"
+        example: "fbc2b2fd-9b39-4277-a6cd-cf1bd20f07c3"
+      user_id:
+        type: "string"
+        example: "4716f088-8651-43be-b3b9-815da7bfd0f3"
+      user_name:
+        type: "string"
+        example: "John Doe"
+      name:
+        type: "string"
+        example: "Hanoi 2005-2007"
+      description:
+        type: "string"
+        example: "ModflowModel of Hanoi Area 2005-2007"
+      area_geometry:
+        type: "object"
+        $ref: '#/definitions/Geometry'
+      grid_size:
+        type: "object"
+        $ref: '#/definitions/GridSize'
+      bounding_box:
+        type: "object"
+        $ref: '#/definitions/BoundingBox'
+      boundaries:
+        type: "array"
+        items:
+          type: "string"
+  ModflowModelOverview:
+    type: "object"
+    properties:
+      id:
+        type: "string"
+        example: "fbc2b2fd-9b39-4277-a6cd-cf1bd20f07c3"
+      user_id:
+        type: "string"
+        example: "4716f088-8651-43be-b3b9-815da7bfd0f3"
+      user_name:
+        type: "string"
+        example: "John Doe"
+      name:
+        type: "string"
+        example: "Hanoi 2005-2007"
+      description:
+        type: "string"
+        example: "ModflowModel of Hanoi Area 2005-2007"
+      area_geometry:
+        type: "object"
+        $ref: '#/definitions/Geometry'
+      grid_size:
+        type: "object"
+        $ref: '#/definitions/GridSize'
+      bounding_box:
+        type: "object"
+        $ref: '#/definitions/BoundingBox'
+  ScenarioAnalysis:
+    type: "object"
+    properties:
+      id:
         type: "string"
         example: "fbc2b2fd-9b39-4277-a6cd-cf1bd20f07c3"
       user_id:
@@ -120,13 +247,13 @@ definitions:
         type: "string"
         example: "ScenarioAnalysis of Hanoi Area 2005-2007"
       area_geometry:
-        type: object
+        type: "object"
         $ref: '#/definitions/Geometry'
       grid_size:
-        type: object
+        type: "object"
         $ref: '#/definitions/GridSize'
       bounding_box:
-        type: object
+        type: "object"
         $ref: '#/definitions/BoundingBox'
       created_at:
         type: "string"
@@ -139,14 +266,14 @@ definitions:
         items:
           type: "string"
         example:
-          - fbc2b2fd-9b39-4277-a6cd-cf1bd20f07c3
-          - fbc2b2fd-9b39-4277-a6cd-cf1bd20f07c3
-          - fbc2b2fd-9b39-4277-a6cd-cf1bd20f07c3
+          - "fbc2b2fd-9b39-4277-a6cd-cf1bd20f07c3"
+          - "fbc2b2fd-9b39-4277-a6cd-cf1bd20f07c3"
+          - "fbc2b2fd-9b39-4277-a6cd-cf1bd20f07c3"
       public:
         type: "boolean"
         example: true
   Geometry:
-    type: object
+    type: "object"
     properties:
       type:
         type: "string"
@@ -161,12 +288,16 @@ definitions:
       coordinates:
         - 12.1
           10.2
-        - 12.1
+        - 12.2
           10.2
+        - 12.2
+          10.1
+        - 12.1
+          10.1
         - 12.1
           10.2
   BoundingBox:
-    type: object
+    type: "object"
     properties:
       x_min:
         type: "number"
@@ -183,20 +314,20 @@ definitions:
       d_y:
         type: "number"
     example:
-      x_min: 105.75297728806
-      x_max: 105.91074365467
-      y_min: 20.942021243028
-      y_max: 21.100903658646
-      srid: 4326
-      d_x: 16402.405392946475
-      d_y: 17686.774655707854
+      x_min: "105.75297728806"
+      x_max: "105.91074365467"
+      y_min: "20.942021243028"
+      y_max: "21.100903658646"
+      srid: "4326"
+      d_x: "16402.405392946475"
+      d_y: "17686.774655707854"
   GridSize:
-    type: object
+    type: "object"
     properties:
       n_x:
         type: "integer"
       n_y:
         type: "integer"
     example:
-      n_x: 100
-      n_y: 120
+      n_x: "100"
+      n_y: "120"
