@@ -15,6 +15,8 @@ tags:
     description: "Everything about the users"
   - name: "modflowmodel"
     description: "Everything to build a ModflowModel (T03)"
+  - name: "soilmodel"
+    description: "Everything to build a Soilmodel (T03)"
   - name: "scenarioanalysis"
     description: "The ScenarioAnalysis Tool (T07)"
 schemes:
@@ -393,6 +395,55 @@ paths:
       security:
         - api_key: []
 
+  /soilmodels/{id}:
+    get:
+      tags:
+        - "soilmodel"
+      summary: "Returns the soilmodelDetails by SoilmodelId"
+      description: ''
+      operationId: "getSoilmodelById"
+      produces:
+        - "application/json"
+      parameters:
+        - name: "id"
+          in: "path"
+          description: "ID of soilmodel to return"
+          required: true
+          type: "string"
+      responses:
+        '200':
+          description: "successful operation"
+          schema:
+            type: "object"
+            $ref: '#/definitions/Soilmodel'
+      security:
+        - api_key: []
+
+  /soilmodels/{id}/layers:
+    get:
+      tags:
+        - "soilmodel"
+      summary: "Returns the layers list"
+      description: ''
+      operationId: "getSoilmodelById"
+      produces:
+        - "application/json"
+      parameters:
+        - name: "id"
+          in: "path"
+          description: "ID of soilmodel to return"
+          required: true
+          type: "string"
+      responses:
+        '200':
+          description: "successful operation"
+          schema:
+            type: "object"
+            $ref: '#/definitions/Soilmodel'
+      security:
+        - api_key: []
+
+
   /scenarioanalysis/my/projects:
     get:
       tags:
@@ -570,6 +621,98 @@ definitions:
             - "12.01"
             - "10.7"
             - "1000"
+  Soilmodel:
+    type: "object"
+    properties:
+      id:
+        type: "string"
+        example: "32d97bf4-3935-44c2-9b8b-1a2e5a581c9f"
+      user_id:
+        type: "string"
+        example: "a538039b-c676-4ea9-9a2d-61210e42bc06"
+      name:
+        type: "string"
+        example: "Soilmodel Hanoi Area"
+      description:
+        type: "string"
+        example: "Description Soilmodel Hanoi Area"
+      layers:
+        type: "array"
+        items:
+          type: "object"
+          $ref: '#/definitions/SoilmodelLayerListItem'
+      borelogs:
+        type: "array"
+        items:
+          type: "object"
+          $ref: '#/definitions/SoilmodelBoreLogListItem'
+      public:
+        type: "boolean"
+        example: true
+
+  SoilmodelLayerListItem:
+    type: "object"
+    properties:
+      id:
+        type: "string"
+        example: "2c6dd0c1-dfea-481c-b808-a6cc699f04fb"
+      name:
+        type: "string"
+        example: "Top-Layer"
+      description:
+        type: "string"
+        example: "Top-Layer Description"
+      number:
+        type: "integer"
+        example: 0
+  SoilmodelLayerDetails:
+    type: "object"
+    properties:
+      id:
+        type: "string"
+        example: "2c6dd0c1-dfea-481c-b808-a6cc699f04fb"
+      name:
+        type: "string"
+        example: "Top-Layer"
+      description:
+        type: "string"
+        example: "Top-Layer Description"
+      number:
+        type: "integer"
+        example: 0
+      values:
+        type: "object"
+        $ref: '#/definitions/SoilmodelLayerValues'
+
+  SoilmodelLayerValues:
+    type: "object"
+    properties:
+      laytyp:
+        type: "string"
+        enum: ['confined', 'convertible']
+        example: "convertible"
+      layavg:
+        type: "string"
+        enum: ['harmonic', 'logarithmic', 'arithmetic']
+        example: "harmonic"
+      laywet:
+        type: "string"
+        enum: ['active', 'inactive']
+        example: "inactive"
+      top:
+        type: "array"
+        example: "1"
+      botm:
+        type: "array"
+
+  SoilmodelBoreLogListItem:
+    type: "object"
+    properties:
+      id:
+        type: "string"
+        example: "573efe5d-8dfd-4acf-9da5-fe628099913f"
+
+
   ScenarioAnalysis:
     type: "object"
     properties:
@@ -754,4 +897,17 @@ definitions:
     type: "string"
     enum: ["polygon", "linestring", "point"]
     default: "polygon"
-
+  LayerValue:
+    type: "number"
+    example: 1.1
+  LayerValues:
+    type: "array"
+    items:
+      type: "array"
+      items:
+        type: "number"
+    example:
+      - [1.1, 2.2, 3.3, 4.4, 5.5]
+      - [1.1, 2.2, 3.3, 4.4, 5.5]
+      - [1.1, 2.2, 3.3, 4.4, 5.5]
+      - [1.1, 2.2, 3.3, 4.4, 5.5]
