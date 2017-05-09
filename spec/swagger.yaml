@@ -53,26 +53,24 @@ paths:
         400:
           description: "Invalid username/password supplied"
 
-  /modflowmodels/my/projects:
-      get:
-        tags:
-          - "modflowmodel"
-        summary: "Returns the list of ModflowModel Projects from the User"
-        description: ''
-        operationId: "modflowModelMyProjects"
-        produces:
-          - application/json
-        responses:
-          '200':
-            description: "successful operation"
-            schema:
-              type: "array"
-              items:
-                $ref: '#/definitions/ModflowModelListItem'
-        security:
-          - api_key: []
-
   /modflowmodels:
+    get:
+      tags:
+        - "modflowmodel"
+      summary: "Returns the list of ModflowModel Projects from the User"
+      description: ''
+      operationId: "modflowModelMyProjects"
+      produces:
+        - "application/json"
+      responses:
+        '200':
+          description: "successful operation"
+          schema:
+            type: "array"
+            items:
+              $ref: '#/definitions/ModflowModelListItem'
+      security:
+        - api_key: []
     post:
       tags:
         - "modflowmodel"
@@ -126,7 +124,7 @@ paths:
       tags:
         - "modflowmodel"
       summary: "Find ModflowModel by ID"
-      description: "Returns a single ModflowModel"
+      description: "Returns a single ModflowModel with ModelDetails"
       operationId: "getModflowModelById"
       produces:
         - "application/json"
@@ -137,13 +135,13 @@ paths:
           required: true
           type: "string"
       responses:
-        200:
+        '200':
           description: "successful operation"
           schema:
             $ref: '#/definitions/ModflowModelDetails'
-        400:
+        '400':
           description: "Invalid ID supplied"
-        404:
+        '404':
           description: "ModflowModel not found"
       security:
       - api_key: []
@@ -191,6 +189,207 @@ paths:
         '405':
           description: "Invalid input"
 
+      security:
+        - api_key: []
+
+  /modflowmodels/{id}/boundaries:
+    get:
+      tags:
+        - "modflowmodel"
+      summary: "Get boundary-list from model by ID"
+      description: "Returns a list of all boundaries with ids, types, names, geometry"
+      operationId: "getModflowModelBoundaryList"
+      produces:
+        - "application/json"
+      parameters:
+        - name: "id"
+          in: "path"
+          description: "ID of ModflowModel"
+          required: true
+          type: "string"
+      responses:
+        '200':
+          description: "successful operation"
+          schema:
+            type: "object"
+            $ref: '#/definitions/ModflowModelBoundaryListItem'
+      security:
+        - api_key: []
+    post:
+      tags:
+        - "modflowmodel"
+      summary: "Add a boundary to modflowmodel by id"
+      description: "Adds a boundary with name, type, geometry to a modflowmodel"
+      operationId: "addModflowModelBoundary"
+      consumes:
+        - "application/json"
+      produces:
+        - "application/json"
+      parameters:
+        - name: "id"
+          in: "path"
+          description: "ID of ModflowModel"
+          required: true
+          type: "string"
+        - in: "body"
+          name: "body"
+          description: "Boundary that needs to be added"
+          required: true
+          schema:
+            type: "object"
+            $ref: '#/definitions/ModflowModelBoundaryListItem'
+      responses:
+        '302':
+          description: "Redirect response"
+          headers:
+            Location:
+              type: "string"
+        '405':
+          description: "Invalid input"
+      security:
+        - api_key: []
+
+  /modflowmodel/{id}/boundaries/{bid}:
+    get:
+      tags:
+        - "modflowmodel"
+      summary: "Get boundary by modelId and BoundaryId"
+      description: "Returns the details of a boundary with id, type, name, geometry, metadata, observationpoints and observationPointValues"
+      operationId: "getModflowModelBoundary"
+      produces:
+        - "application/json"
+      parameters:
+        - name: "id"
+          in: "path"
+          description: "ID of ModflowModel"
+          required: true
+          type: "string"
+        - name: "bid"
+          in: "path"
+          description: "ID of ModflowModelBoundary"
+          required: true
+          type: "string"
+      responses:
+        '200':
+          description: "successful operation"
+          schema:
+            type: "object"
+            $ref: '#/definitions/ModflowModelBoundaryDetails'
+      security:
+        - api_key: []
+    put:
+      tags:
+        - "modflowmodel"
+      summary: "Update boundary by modflowModelId and boundaryId"
+      description: "Updates a boundary with name, type, geometry"
+      operationId: "updateModflowModelBoundary"
+      consumes:
+        - "application/json"
+      produces:
+        - "application/json"
+      parameters:
+        - name: "id"
+          in: "path"
+          description: "ID of ModflowModel"
+          required: true
+          type: "string"
+        - name: "bid"
+          in: "path"
+          description: "ID of ModflowModelBoundary"
+          required: true
+          type: "string"
+        - in: "body"
+          name: "body"
+          description: "Boundary that needs to be added"
+          required: true
+          schema:
+            type: "object"
+            $ref: '#/definitions/ModflowModelBoundaryListItem'
+      responses:
+        '302':
+          description: "Redirect response"
+          headers:
+            Location:
+              type: "string"
+        '405':
+          description: "Invalid input"
+      security:
+        - api_key: []
+
+  /modflowmodel/{id}/boundaries/{bid}/observationpoints/{oid}:
+    get:
+      tags:
+        - "modflowmodel"
+      summary: "Get observationpoint and values by modflowmodelId, boundaryId and observationPointId"
+      description: "Returns the observationPoint details"
+      operationId: "getModflowModelBoundaryObservationPointValue"
+      produces:
+        - "application/json"
+      parameters:
+        - name: "id"
+          in: "path"
+          description: "ID of ModflowModel"
+          required: true
+          type: "string"
+        - name: "bid"
+          in: "path"
+          description: "ID of ModflowModelBoundary"
+          required: true
+          type: "string"
+        - name: "oid"
+          in: "path"
+          description: "ID of ModflowModelBoundaryObservationPoint"
+          required: true
+          type: "string"
+      responses:
+        '200':
+          description: "successful operation"
+          schema:
+            type: "object"
+            $ref: '#/definitions/ModflowModelBoundaryObservationPoint'
+      security:
+        - api_key: []
+    put:
+      tags:
+        - "modflowmodel"
+      summary: "Update observationpoint values by modflowmodelId, boundaryId and observationPointId"
+      description: "Updates and return an redirect to the getter"
+      operationId: "updateModflowModelBoundaryObservationPointValue"
+      consumes:
+        - "application/json"
+      produces:
+        - "application/json"
+      parameters:
+        - name: "id"
+          in: "path"
+          description: "ID of ModflowModel"
+          required: true
+          type: "string"
+        - name: "bid"
+          in: "path"
+          description: "ID of ModflowModelBoundary"
+          required: true
+          type: "string"
+        - name: "oid"
+          in: "path"
+          description: "ID of ModflowModelBoundaryObservationPoint"
+          required: true
+          type: "string"
+        - in: "body"
+          name: "body"
+          description: "ObservationPointObject that needs to be updated"
+          required: true
+          schema:
+            type: "object"
+            $ref: '#/definitions/ModflowModelBoundaryObservationPoint'
+      responses:
+        '302':
+          description: "Redirect response"
+          headers:
+            Location:
+              type: "string"
+        '405':
+          description: "Invalid input"
       security:
         - api_key: []
 
@@ -261,7 +460,7 @@ definitions:
         example: "ModflowModel of Hanoi Area 2005-2007"
       area_geometry:
         type: "object"
-        $ref: '#/definitions/Geometry'
+        $ref: '#/definitions/PolygonGeometry'
       time_unit:
         type: "object"
         $ref: '#/definitions/TimeUnit'
@@ -278,7 +477,6 @@ definitions:
         type: "array"
         items:
           type: "string"
-
   ModflowModelListItem:
     type: "object"
     properties:
@@ -299,13 +497,79 @@ definitions:
         example: "ModflowModel of Hanoi Area 2005-2007"
       area_geometry:
         type: "object"
-        $ref: '#/definitions/Geometry'
+        $ref: '#/definitions/PolygonGeometry'
       grid_size:
         type: "object"
         $ref: '#/definitions/GridSize'
       bounding_box:
         type: "object"
         $ref: '#/definitions/BoundingBox'
+  ModflowModelBoundaryListItem:
+    type: "object"
+    properties:
+      id:
+        type: "string"
+        example: "fbc2b2fd-9b39-4277-a6cd-cf1bd20f07c3"
+      name:
+        type: "string"
+        example: "Well 123"
+      type:
+        type: "object"
+        $ref: '#/definitions/BoundaryType'
+      geometry:
+        type: "object"
+        $ref: '#/definitions/Geometry'
+      metadata:
+        type: "array"
+  ModflowModelBoundaryDetails:
+    type: "object"
+    properties:
+      id:
+        type: "string"
+        example: "fbc2b2fd-9b39-4277-a6cd-cf1bd20f07c3"
+      name:
+        type: "string"
+        example: "Well 123"
+      type:
+        type: "object"
+        $ref: '#/definitions/BoundaryType'
+      geometry:
+        type: "object"
+        $ref: '#/definitions/Geometry'
+      metadata:
+        type: "array"
+  ModflowModelBoundaryObservationPoint:
+    type: "object"
+    properties:
+      id:
+        type: "string"
+        example: "b69b8575-9501-44d4-af75-7e5cb353ff16"
+      name:
+        type: "string"
+        example: "RH 48"
+      geometry:
+        type: "object"
+        $ref: "#/definitions/PointGeometry"
+      values_description:
+        type: "array"
+        items:
+          type: "string"
+        example:
+          - "date_time"
+          - "stage"
+          - "bottom"
+          - "conductivity"
+      values:
+        type: "array"
+        items:
+          type: "array"
+          items:
+            type: "string"
+          example:
+            - "2005-08-15T00:00:00+00:00"
+            - "12.01"
+            - "10.7"
+            - "1000"
   ScenarioAnalysis:
     type: "object"
     properties:
@@ -350,13 +614,20 @@ definitions:
       public:
         type: "boolean"
         example: true
+  BoundaryType:
+    type: "string"
+    enum: ["wel", "rch", "chd", "ghb"]
+    default: "wel"
   Geometry:
     type: "object"
     properties:
       type:
-        type: "string"
+        type: "object"
+        $ref: '#/definitions/GeometryType'
       coordinates:
         type: "array"
+        minItems: 2
+        maxItems: 2
         items:
           type: "array"
           items:
@@ -372,6 +643,77 @@ definitions:
           10.1
         - 12.1
           10.1
+        - 12.1
+          10.2
+  LineStringGeometry:
+    type: "object"
+    properties:
+      type:
+        type: "object"
+        $ref: '#/definitions/GeometryType'
+      coordinates:
+        type: "array"
+        minItems: 2
+        maxItems: 2
+        items:
+          type: "array"
+          items:
+            type: "number"
+    example:
+      type: "linestring"
+      coordinates:
+        - 12.1
+          10.2
+        - 12.2
+          10.2
+        - 12.2
+          10.1
+        - 12.1
+          10.1
+  PolygonGeometry:
+    type: "object"
+    properties:
+      type:
+        type: "object"
+        $ref: '#/definitions/GeometryType'
+      coordinates:
+        type: "array"
+        minItems: 2
+        maxItems: 2
+        items:
+          type: "array"
+          items:
+            type: "number"
+    example:
+      type: "polygon"
+      coordinates:
+        - 12.1
+          10.2
+        - 12.2
+          10.2
+        - 12.2
+          10.1
+        - 12.1
+          10.1
+        - 12.1
+          10.2
+  PointGeometry:
+    type: "object"
+    properties:
+      type:
+        type: "object"
+        $ref: '#/definitions/GeometryType'
+      coordinates:
+        type: "array"
+        minItems: 1
+        maxItems: 1
+        items:
+          type: "array"
+          items:
+            type: "number"
+    example:
+      type: "point"
+      coordinates:
         - 12.1
           10.2
   BoundingBox:
@@ -408,3 +750,8 @@ definitions:
     type: "string"
     enum: ["cm", "m", "ft"]
     default: "m"
+  GeometryType:
+    type: "string"
+    enum: ["polygon", "linestring", "point"]
+    default: "polygon"
+
