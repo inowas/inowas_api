@@ -103,6 +103,13 @@ paths:
               grid_size:
                 type: "object"
                 $ref: '#/definitions/GridSize'
+              time_unit:
+                type: "object"
+                $ref: '#/definitions/TimeUnit'
+              length_unit:
+                type: "object"
+                $ref: '#/definitions/LengthUnit'
+
       responses:
         '302':
           description: "Redirect response"
@@ -111,7 +118,6 @@ paths:
               type: "string"
         '405':
           description: "Invalid input"
-
       security:
         - api_key: []
 
@@ -141,6 +147,52 @@ paths:
           description: "ModflowModel not found"
       security:
       - api_key: []
+    put:
+      tags:
+        - "modflowmodel"
+      summary: "Updates data of existing ModflowModel"
+      description: ''
+      operationId: "updateModflowModel"
+      consumes:
+        - "application/json"
+      produces:
+        - "application/json"
+      parameters:
+        - name: "id"
+          in: "path"
+          description: "ID of ModflowModel to update"
+          required: true
+          type: "string"
+        - in: "body"
+          name: "body"
+          description: "ModflowModelObject that needs to be added"
+          required: true
+          schema:
+            type: "object"
+            properties:
+              name:
+                type: "string"
+                example: "Hanoi 2005-2007"
+              description:
+                type: "string"
+                example: "ModflowModel of Hanoi Area 2005-2007"
+              area_geometry:
+                type: "object"
+                $ref: '#/definitions/Geometry'
+              grid_size:
+                type: "object"
+                $ref: '#/definitions/GridSize'
+      responses:
+        '302':
+          description: "Redirect response"
+          headers:
+            Location:
+              type: "string"
+        '405':
+          description: "Invalid input"
+
+      security:
+        - api_key: []
 
   /scenarioanalysis/my/projects:
     get:
@@ -210,6 +262,12 @@ definitions:
       area_geometry:
         type: "object"
         $ref: '#/definitions/Geometry'
+      time_unit:
+        type: "object"
+        $ref: '#/definitions/TimeUnit'
+      lenth_unit:
+        type: "object"
+        $ref: '#/definitions/LengthUnit'
       grid_size:
         type: "object"
         $ref: '#/definitions/GridSize'
@@ -220,6 +278,7 @@ definitions:
         type: "array"
         items:
           type: "string"
+
   ModflowModelListItem:
     type: "object"
     properties:
@@ -326,20 +385,11 @@ definitions:
         type: "number"
       y_max:
         type: "number"
-      srid:
-        type: "integer"
-      d_x:
-        type: "number"
-      d_y:
-        type: "number"
     example:
       x_min: "105.75297728806"
       x_max: "105.91074365467"
       y_min: "20.942021243028"
       y_max: "21.100903658646"
-      srid: "4326"
-      d_x: "16402.405392946475"
-      d_y: "17686.774655707854"
   GridSize:
     type: "object"
     properties:
@@ -350,3 +400,11 @@ definitions:
     example:
       n_x: "100"
       n_y: "120"
+  TimeUnit:
+    type: "string"
+    enum: ["sec", "min", "h", "d", "yr"]
+    default: "d"
+  LengthUnit:
+    type: "string"
+    enum: ["cm", "m", "ft"]
+    default: "m"
