@@ -18,7 +18,7 @@ tags:
   - name: "soilmodel"
     description: "Everything to build a Soilmodel (T03)"
   - name: "scenarioanalysis"
-    description: "The ScenarioAnalysis Tool (T07)"
+    description: "The ScenarioAnalyses Tool (T07)"
 schemes:
   - "https"
 paths:
@@ -448,9 +448,9 @@ paths:
     get:
       tags:
         - "scenarioanalysis"
-      summary: "Returns the list of ScenarioAnalysis Projects from the User"
+      summary: "Returns the list of ScenarioAnalyses Projects from the User"
       description: ''
-      operationId: "scenarioAnalysisMyProjects"
+      operationId: "scenarioAnalysesMyProjects"
       produces:
         - application/json
       responses:
@@ -459,7 +459,7 @@ paths:
           schema:
             type: "array"
             items:
-              $ref: '#/definitions/ScenarioAnalysis'
+              $ref: '#/definitions/ScenarioAnalyses'
       security:
         - api_key: []
 
@@ -467,9 +467,9 @@ paths:
     get:
       tags:
         - "scenarioanalysis"
-      summary: "Returns the list of ScenarioAnalysis Projects from the User"
+      summary: "Returns the list of ScenarioAnalyses Projects from the User"
       description: ''
-      operationId: "scenarioAnalysisPublicProjects"
+      operationId: "scenarioAnalysesPublicProjects"
       produces:
         - "application/json"
       responses:
@@ -478,7 +478,7 @@ paths:
           schema:
             type: "array"
             items:
-              $ref: '#/definitions/ScenarioAnalysis'
+              $ref: '#/definitions/ScenarioAnalyses'
       security:
         - api_key: []
 
@@ -713,7 +713,7 @@ definitions:
         example: "573efe5d-8dfd-4acf-9da5-fe628099913f"
 
 
-  ScenarioAnalysis:
+  ScenarioAnalyses:
     type: "object"
     properties:
       id:
