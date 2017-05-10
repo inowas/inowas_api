@@ -109,7 +109,6 @@ paths:
               length_unit:
                 type: "object"
                 $ref: '#/definitions/LengthUnit'
-
       responses:
         '302':
           description: "Redirect response"
@@ -177,10 +176,8 @@ paths:
                 type: "string"
                 example: "ModflowModel of Hanoi Area 2005-2007"
               area_geometry:
-                type: "object"
                 $ref: '#/definitions/Geometry'
               grid_size:
-                type: "object"
                 $ref: '#/definitions/GridSize'
       responses:
         '302':
@@ -190,7 +187,6 @@ paths:
               type: "string"
         '405':
           description: "Invalid input"
-
       security:
         - api_key: []
 
@@ -213,7 +209,6 @@ paths:
         '200':
           description: "successful operation"
           schema:
-            type: "object"
             $ref: '#/definitions/ModflowModelBoundaryListItem'
       security:
         - api_key: []
@@ -238,7 +233,6 @@ paths:
           description: "Boundary that needs to be added"
           required: true
           schema:
-            type: "object"
             $ref: '#/definitions/ModflowModelBoundaryListItem'
       responses:
         '302':
@@ -251,7 +245,7 @@ paths:
       security:
         - api_key: []
 
-  /modflowmodel/{id}/boundaries/{bid}:
+  /modflowmodels/{id}/boundaries/{bid}:
     get:
       tags:
         - "modflowmodel"
@@ -275,7 +269,6 @@ paths:
         '200':
           description: "successful operation"
           schema:
-            type: "object"
             $ref: '#/definitions/ModflowModelBoundaryDetails'
       security:
         - api_key: []
@@ -305,7 +298,6 @@ paths:
           description: "Boundary that needs to be added"
           required: true
           schema:
-            type: "object"
             $ref: '#/definitions/ModflowModelBoundaryListItem'
       responses:
         '302':
@@ -318,7 +310,7 @@ paths:
       security:
         - api_key: []
 
-  /modflowmodel/{id}/boundaries/{bid}/observationpoints/{oid}:
+  /modflowmodels/{id}/boundaries/{bid}/observationpoints/{oid}:
     get:
       tags:
         - "modflowmodel"
@@ -347,7 +339,6 @@ paths:
         '200':
           description: "successful operation"
           schema:
-            type: "object"
             $ref: '#/definitions/ModflowModelBoundaryObservationPoint'
       security:
         - api_key: []
@@ -382,7 +373,6 @@ paths:
           description: "ObservationPointObject that needs to be updated"
           required: true
           schema:
-            type: "object"
             $ref: '#/definitions/ModflowModelBoundaryObservationPoint'
       responses:
         '302':
@@ -414,7 +404,6 @@ paths:
         '200':
           description: "successful operation"
           schema:
-            type: "object"
             $ref: '#/definitions/Soilmodel'
       security:
         - api_key: []
@@ -425,7 +414,7 @@ paths:
         - "soilmodel"
       summary: "Returns the layers list"
       description: ''
-      operationId: "getSoilmodelById"
+      operationId: "getSoilmodelLayersById"
       produces:
         - "application/json"
       parameters:
@@ -438,13 +427,199 @@ paths:
         '200':
           description: "successful operation"
           schema:
-            type: "object"
+            $ref: '#/definitions/Soilmodel'
+      security:
+        - api_key: []
+    post:
+      tags:
+        - "soilmodel"
+      summary: "Adds a new layer"
+      description: ''
+      operationId: "addSoilmodelLayers"
+      produces:
+        - "application/json"
+      parameters:
+        - name: "id"
+          in: "path"
+          description: "ID of soilmodel to return"
+          required: true
+          type: "string"
+      responses:
+        '200':
+          description: "successful operation"
+          schema:
             $ref: '#/definitions/Soilmodel'
       security:
         - api_key: []
 
+  /soilmodels/{id}/layers/{lid}:
+    get:
+      tags:
+        - "soilmodel"
+      summary: "Returns details of an existing layer"
+      description: ""
+      operationId: "getSoilmodelLayerDetails"
+      produces:
+        - "application/json"
+      parameters:
+        - name: "id"
+          in: "path"
+          description: "Id if the soilmodel"
+          required: true
+          type: "string"
+        - name: "lid"
+          in: "path"
+          description: "Layer-Id if the soilmodelLayer"
+          required: true
+          type: "string"
+      responses:
+        '200':
+          description: "successful operation"
+          schema:
+            $ref: '#/definitions/SoilmodelLayerDetails'
+        '404':
+          description: "Not found"
+      security:
+        - api_key: []
+    put:
+      tags:
+        - "soilmodel"
+      summary: "Updates details of an existing layer"
+      description: ""
+      operationId: "updateSoilmodelLayerDetails"
+      consumes:
+        - "application/json"
+      produces:
+        - "application/json"
+      parameters:
+        - name: "id"
+          in: "path"
+          description: "Id if the soilmodel"
+          required: true
+          type: "string"
+        - name: "lid"
+          in: "path"
+          description: "Layer-Id if the soilmodelLayer"
+          required: true
+          type: "string"
+        - name: "body"
+          in: "body"
+          description: "Layervalues that will be updated"
+          required: true
+          schema:
+            properties:
+              name:
+                type: "string"
+                example: "Top-Layer"
+              description:
+                type: "string"
+                example: "Top-Layer Description"
+      responses:
+        '302':
+          description: "Redirect response"
+          headers:
+            Location:
+              type: "string"
+        '405':
+          description: "Invalid input"
+      security:
+        - api_key: []
+    delete:
+      tags:
+        - "soilmodel"
+      summary: "Delete existing layer"
+      description: ""
+      operationId: "deleteSoilmodelLayer"
+      produces:
+        - "application/json"
+      parameters:
+        - name: "id"
+          in: "path"
+          description: "Id if the soilmodel"
+          required: true
+          type: "string"
+        - name: "lid"
+          in: "path"
+          description: "Layer-Id if the soilmodelLayer"
+          required: true
+          type: "string"
+      responses:
+        '201':
+          description: "successful operation"
+          headers:
+            Location:
+              type: "string"
+        '404':
+          description: "source not found"
+      security:
+        - api_key: []
 
-  /scenarioanalysis/my/projects:
+  /soilmodels/{id}/layers/{lid}/values:
+    get:
+      tags:
+        - "soilmodel"
+      summary: "Returns values of an existing layer"
+      description: ""
+      operationId: "getSoilmodelLayerValues"
+      produces:
+        - "application/json"
+      parameters:
+        - name: "id"
+          in: "path"
+          description: "Id if the soilmodel"
+          required: true
+          type: "string"
+        - name: "lid"
+          in: "path"
+          description: "Layer-Id if the soilmodelLayer"
+          required: true
+          type: "string"
+      responses:
+        '200':
+          description: "successful operation"
+          schema:
+            $ref: '#/definitions/SoilmodelLayerValues'
+      security:
+        - api_key: []
+    put:
+      tags:
+        - "soilmodel"
+      summary: "Updates data of an existing layer"
+      description: ""
+      operationId: "updateSoilmodelLayerValues"
+      consumes:
+        - "application/json"
+      produces:
+        - "application/json"
+      parameters:
+        - name: "id"
+          in: "path"
+          description: "Id if the soilmodel"
+          required: true
+          type: "string"
+        - name: "lid"
+          in: "path"
+          description: "Layer-Id if the soilmodelLayer"
+          required: true
+          type: "string"
+        - name: "body"
+          in: "body"
+          description: "Layervalues that will be updated"
+          required: true
+          schema:
+            $ref: '#/definitions/SoilmodelLayerValues'
+      responses:
+        '302':
+          description: "Redirect response"
+          headers:
+            Location:
+              type: "string"
+        '405':
+          description: "Invalid input"
+      security:
+        - api_key: []
+
+  /scenarioanalyses/my/projects:
     get:
       tags:
         - "scenarioanalysis"
@@ -452,7 +627,7 @@ paths:
       description: ''
       operationId: "scenarioAnalysesMyProjects"
       produces:
-        - application/json
+        - "application/json"
       responses:
         '200':
           description: "successful operation"
@@ -463,7 +638,7 @@ paths:
       security:
         - api_key: []
 
-  /scenarioanalysis/public/projects:
+  /scenarioanalyses/public/projects:
     get:
       tags:
         - "scenarioanalysis"
@@ -510,19 +685,14 @@ definitions:
         type: "string"
         example: "ModflowModel of Hanoi Area 2005-2007"
       area_geometry:
-        type: "object"
         $ref: '#/definitions/PolygonGeometry'
       time_unit:
-        type: "object"
         $ref: '#/definitions/TimeUnit'
       lenth_unit:
-        type: "object"
         $ref: '#/definitions/LengthUnit'
       grid_size:
-        type: "object"
         $ref: '#/definitions/GridSize'
       bounding_box:
-        type: "object"
         $ref: '#/definitions/BoundingBox'
       boundaries:
         type: "array"
@@ -547,13 +717,10 @@ definitions:
         type: "string"
         example: "ModflowModel of Hanoi Area 2005-2007"
       area_geometry:
-        type: "object"
         $ref: '#/definitions/PolygonGeometry'
       grid_size:
-        type: "object"
         $ref: '#/definitions/GridSize'
       bounding_box:
-        type: "object"
         $ref: '#/definitions/BoundingBox'
   ModflowModelBoundaryListItem:
     type: "object"
@@ -565,10 +732,8 @@ definitions:
         type: "string"
         example: "Well 123"
       type:
-        type: "object"
         $ref: '#/definitions/BoundaryType'
       geometry:
-        type: "object"
         $ref: '#/definitions/Geometry'
       metadata:
         type: "array"
@@ -582,10 +747,8 @@ definitions:
         type: "string"
         example: "Well 123"
       type:
-        type: "object"
         $ref: '#/definitions/BoundaryType'
       geometry:
-        type: "object"
         $ref: '#/definitions/Geometry'
       metadata:
         type: "array"
@@ -599,7 +762,6 @@ definitions:
         type: "string"
         example: "RH 48"
       geometry:
-        type: "object"
         $ref: "#/definitions/PointGeometry"
       values_description:
         type: "array"
@@ -639,17 +801,14 @@ definitions:
       layers:
         type: "array"
         items:
-          type: "object"
           $ref: '#/definitions/SoilmodelLayerListItem'
       borelogs:
         type: "array"
         items:
-          type: "object"
           $ref: '#/definitions/SoilmodelBoreLogListItem'
       public:
         type: "boolean"
         example: true
-
   SoilmodelLayerListItem:
     type: "object"
     properties:
@@ -666,24 +825,11 @@ definitions:
         type: "integer"
         example: 0
   SoilmodelLayerDetails:
-    type: "object"
+    allOf:
+      - $ref: "#/definitions/SoilmodelLayerListItem"
     properties:
-      id:
-        type: "string"
-        example: "2c6dd0c1-dfea-481c-b808-a6cc699f04fb"
-      name:
-        type: "string"
-        example: "Top-Layer"
-      description:
-        type: "string"
-        example: "Top-Layer Description"
-      number:
-        type: "integer"
-        example: 0
       values:
-        type: "object"
-        $ref: '#/definitions/SoilmodelLayerValues'
-
+        $ref:  '#/definitions/SoilmodelLayerValues'
   SoilmodelLayerValues:
     type: "object"
     properties:
@@ -700,19 +846,27 @@ definitions:
         enum: ['active', 'inactive']
         example: "inactive"
       top:
-        type: "array"
-        example: "1"
+        $ref: "#/definitions/LayerValue"
       botm:
-        type: "array"
-
+        $ref: "#/definitions/LayerValue"
+      hk:
+        $ref: "#/definitions/LayerValue"
+      hani:
+        $ref: "#/definitions/LayerValue"
+      vka:
+        $ref: "#/definitions/LayerValue"
+      ss:
+        $ref: "#/definitions/LayerValue"
+      sy:
+        $ref: "#/definitions/LayerValue"
+  LayerValue:
+    type: object
   SoilmodelBoreLogListItem:
     type: "object"
     properties:
       id:
         type: "string"
         example: "573efe5d-8dfd-4acf-9da5-fe628099913f"
-
-
   ScenarioAnalyses:
     type: "object"
     properties:
@@ -732,13 +886,10 @@ definitions:
         type: "string"
         example: "ScenarioAnalysis of Hanoi Area 2005-2007"
       area_geometry:
-        type: "object"
         $ref: '#/definitions/Geometry'
       grid_size:
-        type: "object"
         $ref: '#/definitions/GridSize'
       bounding_box:
-        type: "object"
         $ref: '#/definitions/BoundingBox'
       created_at:
         type: "string"
@@ -765,7 +916,6 @@ definitions:
     type: "object"
     properties:
       type:
-        type: "object"
         $ref: '#/definitions/GeometryType'
       coordinates:
         type: "array"
@@ -792,7 +942,6 @@ definitions:
     type: "object"
     properties:
       type:
-        type: "object"
         $ref: '#/definitions/GeometryType'
       coordinates:
         type: "array"
@@ -817,7 +966,6 @@ definitions:
     type: "object"
     properties:
       type:
-        type: "object"
         $ref: '#/definitions/GeometryType'
       coordinates:
         type: "array"
@@ -844,7 +992,6 @@ definitions:
     type: "object"
     properties:
       type:
-        type: "object"
         $ref: '#/definitions/GeometryType'
       coordinates:
         type: "array"
@@ -897,17 +1044,4 @@ definitions:
     type: "string"
     enum: ["polygon", "linestring", "point"]
     default: "polygon"
-  LayerValue:
-    type: "number"
-    example: 1.1
-  LayerValues:
-    type: "array"
-    items:
-      type: "array"
-      items:
-        type: "number"
-    example:
-      - [1.1, 2.2, 3.3, 4.4, 5.5]
-      - [1.1, 2.2, 3.3, 4.4, 5.5]
-      - [1.1, 2.2, 3.3, 4.4, 5.5]
-      - [1.1, 2.2, 3.3, 4.4, 5.5]
+
