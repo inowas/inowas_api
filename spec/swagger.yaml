@@ -98,16 +98,12 @@ paths:
                 type: "string"
                 example: "ModflowModel of Hanoi Area 2005-2007"
               area_geometry:
-                type: "object"
                 $ref: '#/definitions/Geometry'
               grid_size:
-                type: "object"
                 $ref: '#/definitions/GridSize'
               time_unit:
-                type: "object"
                 $ref: '#/definitions/TimeUnit'
               length_unit:
-                type: "object"
                 $ref: '#/definitions/LengthUnit'
       responses:
         '302':
@@ -619,7 +615,7 @@ paths:
       security:
         - api_key: []
 
-  /scenarioanalyses/my/projects:
+  /scenarioanalyses:
     get:
       tags:
         - "scenarioanalysis"
@@ -637,8 +633,35 @@ paths:
               $ref: '#/definitions/ScenarioAnalyses'
       security:
         - api_key: []
+    post:
+      tags:
+        - "scenarioanalysis"
+      summary: "Creates a scenarioanalysis from ModflowModelId"
+      description: "Creates a scenarioanalysis from ModflowModelId"
+      operationId: "createScenarioAnalysisFromModflowModel"
+      produces:
+        - "application/json"
+      parameters:
+        - name: "body"
+          in: "body"
+          description: "ModflowModelId"
+          required: true
+          schema:
+            type: "object"
+            properties:
+              id:
+                type: "string"
+                example: "d9e7b1fa-7372-4822-972d-4657c73fc2b2"
+      responses:
+        '302':
+          description: "Redirect response"
+          headers:
+            Location:
+              type: "string"
+        '405':
+          description: "Invalid input"
 
-  /scenarioanalyses/public/projects:
+  /scenarioanalyses/public:
     get:
       tags:
         - "scenarioanalysis"
@@ -909,7 +932,6 @@ definitions:
         type: "boolean"
         example: true
   BoundaryType:
-    type: "string"
     enum: ["wel", "rch", "chd", "ghb"]
     default: "wel"
   Geometry:
@@ -1044,4 +1066,3 @@ definitions:
     type: "string"
     enum: ["polygon", "linestring", "point"]
     default: "polygon"
-
