@@ -27,4 +27,9 @@ class ScenarioAnalysisFinder
 
         return $row;
     }
+
+    public function findAll(): array
+    {
+        return $this->connection->fetchAll(sprintf('SELECT * FROM %s', Table::SCENARIO_ANALYSIS_LIST));
+    }
 }

@@ -4,11 +4,9 @@ declare(strict_types=1);
 
 namespace Inowas\ModflowModel\Model;
 
-use Inowas\Common\Boundaries\AbstractBoundary;
 use Inowas\Common\Boundaries\Area;
 use Inowas\Common\Geometry\Geometry;
 use Inowas\Common\Geometry\Polygon;
-use Inowas\Common\Grid\ActiveCells;
 use Inowas\Common\Id\BoundaryId;
 use Inowas\Common\Boundaries\ModflowBoundary;
 use Inowas\Common\Grid\BoundingBox;
@@ -20,7 +18,6 @@ use Inowas\Common\Modflow\Modelname;
 use Inowas\Common\Modflow\ModflowModelDescription;
 use Inowas\Common\Modflow\TimeUnit;
 use Inowas\Common\Soilmodel\SoilmodelId;
-use Inowas\ModflowModel\Model\Event\ActiveCellsWereUpdated;
 use Inowas\ModflowModel\Model\Event\AreaGeometryWasUpdated;
 use Inowas\ModflowModel\Model\Event\BoundaryGeometryWasUpdated;
 use Inowas\ModflowModel\Model\Event\BoundaryWasAdded;
@@ -29,6 +26,7 @@ use Inowas\ModflowModel\Model\Event\BoundaryWasUpdated;
 use Inowas\ModflowModel\Model\Event\BoundingBoxWasChanged;
 use Inowas\ModflowModel\Model\Event\DescriptionWasChanged;
 use Inowas\ModflowModel\Model\Event\GridSizeWasChanged;
+use Inowas\ModflowModel\Model\Event\ModflowModelWasCloned;
 use Inowas\ModflowModel\Model\Event\NameWasChanged;
 use Inowas\ModflowModel\Model\Event\SoilModelIdWasChanged;
 use Inowas\ModflowModel\Model\Event\ModflowModelWasCreated;
@@ -72,7 +70,7 @@ class ModflowModelAggregate extends AggregateRoot
     /** @var  TimeUnit */
     protected $timeUnit;
 
-    public static function create(ModflowId $modflowId, UserId $userId,  Area $area, GridSize $gridSize, BoundingBox $boundingBox, LengthUnit $lengthUnit, TimeUnit $timeUnit): ModflowModelAggregate
+    public static function create(ModflowId $modflowId, UserId $userId, Area $area, GridSize $gridSize, BoundingBox $boundingBox, LengthUnit $lengthUnit, TimeUnit $timeUnit): ModflowModelAggregate
     {
         $self = new self();
         $self->modflowId = $modflowId;
@@ -88,19 +86,32 @@ class ModflowModelAggregate extends AggregateRoot
         return $self;
     }
 
-    public function createCopyWithNewIdAndUserId(ModflowId $modflowId, UserId $userId): ModflowModelAggregate
+    public static function cloneWithIdUserAndAggregate(ModflowId $newModelId, UserId $newUserId, ModflowModelAggregate $model): ModflowModelAggregate
     {
         $self = new self();
-        $self->modflowId = $modflowId;
-        $self->owner = $userId;
-        $self->area = $this->area;
-        $self->gridSize = $this->gridSize;
-        $self->boundingBox = $this->boundingBox;
-        $self->lengthUnit = $this->lengthUnit;
-        $self->timeUnit = $this->timeUnit;
-        $self->boundaries = $this->boundaries;
+        $self->modflowId = $newModelId;
+        $self->owner = $newUserId;
+        $self->area = $model->area();
+        $self->boundaries = $model->boundaries();
+        $self->gridSize = $model->gridSize();
+        $self->boundingBox = $model->boundingBox();
+        $self->lengthUnit = $model->lengthUnit();
+        $self->timeUnit = $model->timeUnit();
+        $self->boundaries = $model->boundaries();
 
-        $self->recordThat(ModflowModelWasCreated::withParameters($modflowId, $userId, $this->area, $this->boundaries, $this->gridSize, $this->boundingBox, $this->lengthUnit, $this->timeUnit));
+        $self->recordThat(ModflowModelWasCloned::fromModelAndUserWithParamaters(
+            $model->modflowModelId(),
+            $model->ownerId(),
+            $self->modflowId,
+            $self->owner,
+            $self->area,
+            $self->boundaries,
+            $self->gridSize,
+            $self->boundingBox,
+            $self->lengthUnit,
+            $self->timeUnit
+        ));
+
         return $self;
     }
 
@@ -166,10 +177,8 @@ class ModflowModelAggregate extends AggregateRoot
 
     public function addBoundaryToModel(UserId $userId, ModflowBoundary $boundary): void
     {
-        if (! array_key_exists($boundary->boundaryId()->toString(), $this->boundaries())){
-
-            $this->boundaries[$boundary->boundaryId()->toString()] = true;
-
+        if (! in_array($boundary->boundaryId()->toString(), $this->boundaries)){
+            $this->boundaries[] = $boundary->boundaryId()->toString();
             $this->recordThat(BoundaryWasAdded::to(
                 $this->modflowId,
                 $userId,
@@ -180,10 +189,7 @@ class ModflowModelAggregate extends AggregateRoot
 
     public function updateBoundary(UserId $userId, ModflowBoundary $boundary): void
     {
-        if (array_key_exists($boundary->boundaryId()->toString(), $this->boundaries())) {
-
-            $this->boundaries[$boundary->boundaryId()->toString()] = true;
-
+        if (in_array($boundary->boundaryId()->toString(), $this->boundaries)){
             $this->recordThat(BoundaryWasUpdated::byUserWithBaseModelId(
                 $userId,
                 $this->modflowId,
@@ -194,7 +200,7 @@ class ModflowModelAggregate extends AggregateRoot
 
     public function updateBoundaryGeometry(UserId $userId, BoundaryId $boundaryId, Geometry $geometry): void
     {
-        if (array_key_exists($boundaryId->toString(), $this->boundaries())) {
+        if (in_array($boundaryId->toString(), $this->boundaries)) {
             $this->recordThat(BoundaryGeometryWasUpdated::of(
                 $this->modflowId,
                 $userId,
@@ -215,35 +221,14 @@ class ModflowModelAggregate extends AggregateRoot
 
     public function removeBoundary(UserId $userId, BoundaryId $boundaryId)
     {
-        if (array_key_exists($boundaryId->toString(), $this->boundaries())) {
-            unset($this->boundaries[$boundaryId->toString()]);
+        if (in_array($boundaryId->toString(), $this->boundaries())) {
+            $this->boundaries = array_diff($this->boundaries, [$boundaryId->toString()]);
             $this->recordThat(BoundaryWasRemoved::withBoundaryId(
                 $userId,
                 $this->modflowId,
                 $boundaryId
             ));
         }
-    }
-
-    public function updateActiveCells(UserId $userId, BoundaryId $boundaryId, string $boundaryType, ActiveCells $activeCells)
-    {
-        if ($this->area->boundaryId()->sameValueAs($boundaryId)){
-            $this->area = $this->area->setActiveCells($activeCells);
-        }
-
-        if (array_key_exists($boundaryId->toString(), $this->boundaries())){
-            /** @var AbstractBoundary $boundary */
-            $boundary = $this->boundaries[$boundaryId->toString()];
-            $boundary[$boundaryId->toString()] = $boundary->setActiveCells($activeCells);
-        }
-
-        $this->recordThat(ActiveCellsWereUpdated::ofBoundary(
-            $userId,
-            $this->modflowId,
-            $boundaryId,
-            $boundaryType,
-            $activeCells
-        ));
     }
 
     public function modflowModelId(): ModflowId
@@ -319,6 +304,18 @@ class ModflowModelAggregate extends AggregateRoot
         $this->timeUnit = $event->timeUnit();
     }
 
+    protected function whenModflowModelWasCloned(ModflowModelWasCloned $event): void
+    {
+        $this->modflowId = $event->modelId();
+        $this->owner = $event->userId();
+        $this->area = $event->area();
+        $this->boundaries = $event->boundaries();
+        $this->gridSize = $event->gridSize();
+        $this->boundingBox = $event->boundingBox();
+        $this->lengthUnit = $event->lengthUnit();
+        $this->timeUnit = $event->timeUnit();
+    }
+
     protected function whenAreaGeometryWasUpdated(AreaGeometryWasUpdated $event): void
     {
         $this->area = $this->area->updateGeometry($event->geometry());
@@ -359,36 +356,18 @@ class ModflowModelAggregate extends AggregateRoot
 
     protected function whenBoundaryWasAdded(BoundaryWasAdded $event): void
     {
-        $boundary = $event->boundary();
-        $this->boundaries[$boundary->boundaryId()->toString()] = $boundary;
+        $this->boundaries[] = $event->boundary()->boundaryId()->toString();
     }
 
     protected function whenBoundaryWasUpdated(BoundaryWasUpdated $event): void
-    {
-        $boundary = $event->boundary();
-        $this->boundaries[$boundary->boundaryId()->toString()] = $boundary;
-    }
+    {}
 
     protected function whenBoundaryGeometryWasUpdated(BoundaryGeometryWasUpdated $event): void
-    {
-
-    }
+    {}
 
     protected function whenBoundaryWasRemoved(BoundaryWasRemoved $event): void
     {
-        unset($this->boundaries[$event->boundaryId()->toString()]);
-    }
-
-
-    protected function whenActiveCellsWereUpdated(ActiveCellsWereUpdated $event): void
-    {
-        if ($this->area->boundaryId()->sameValueAs($event->boundaryId())){
-            $this->area = $this->area->setActiveCells($event->activeCells());
-            return;
-        }
-
-        $boundary = $this->boundaries[$event->boundaryId()->toString()];
-        $boundary[$event->boundaryId()->toString()] = $boundary->setActiveCells($event->activeCells());
+        $this->boundaries = array_diff($this->boundaries, [$event->boundaryId()->toString()]);
     }
 
     protected function aggregateId(): string

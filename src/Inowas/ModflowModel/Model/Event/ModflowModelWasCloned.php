@@ -13,8 +13,13 @@ use Inowas\Common\Modflow\LengthUnit;
 use Inowas\Common\Modflow\TimeUnit;
 use Prooph\EventSourcing\AggregateChanged;
 
-class ModflowModelWasCreated extends AggregateChanged
+class ModflowModelWasCloned extends AggregateChanged
 {
+    /** @var ModflowId */
+    private $baseModelId;
+
+    /** @var UserId */
+    private $baseModelUserId;
 
     /** @var ModflowId */
     private $modelId;
@@ -40,9 +45,22 @@ class ModflowModelWasCreated extends AggregateChanged
     /** @var  TimeUnit */
     private $timeUnit;
 
-    public static function withParameters(ModflowId $modflowId, UserId $userId, Area $area, array $boundaries, GridSize $gridSize, BoundingBox $boundingBox, LengthUnit $lengthUnit, TimeUnit $timeUnit): ModflowModelWasCreated
+    public static function fromModelAndUserWithParamaters(
+        ModflowId $baseModelId,
+        UserId $baseModelUserId,
+        ModflowId $modflowId,
+        UserId $userId,
+        Area $area,
+        array $boundaries,
+        GridSize $gridSize,
+        BoundingBox $boundingBox,
+        LengthUnit $lengthUnit,
+        TimeUnit $timeUnit
+    ): ModflowModelWasCloned
     {
         $event = self::occur($modflowId->toString(),[
+            'basemodel_id' => $baseModelId->toString(),
+            'basemodel_user_id' => $baseModelUserId->toString(),
             'user_id' => $userId->toString(),
             'area' => serialize($area),
             'grid_size' => $gridSize->toArray(),
@@ -52,6 +70,8 @@ class ModflowModelWasCreated extends AggregateChanged
             'boundaries' => $boundaries
         ]);
 
+        $event->baseModelId = $baseModelId;
+        $event->baseModelUserId = $baseModelUserId;
         $event->modelId = $modflowId;
         $event->userId = $userId;
         $event->area = $area;
@@ -62,6 +82,26 @@ class ModflowModelWasCreated extends AggregateChanged
 
         return $event;
     }
+
+
+    public function baseModelId(): ModflowId
+    {
+        if ($this->baseModelId === null){
+            $this->baseModelId = ModflowId::fromString($this->payload['basemodel_id']);
+        }
+
+        return $this->baseModelId;
+    }
+
+    public function baseModelUSerId(): UserId
+    {
+        if ($this->baseModelUserId === null){
+            $this->baseModelUserId = ModflowId::fromString($this->payload['basemodel_user_id']);
+        }
+
+        return $this->baseModelUserId;
+    }
+
 
     public function modelId(): ModflowId
     {

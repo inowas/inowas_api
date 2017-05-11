@@ -18,6 +18,7 @@ use Inowas\ModflowModel\Model\Event\BoundaryWasUpdated;
 use Inowas\Common\Id\ModflowId;
 use Inowas\ModflowModel\Infrastructure\Projection\ModelList\ModelFinder;
 use Inowas\ModflowModel\Infrastructure\Projection\Table;
+use Inowas\ModflowModel\Model\Event\ModflowModelWasCloned;
 
 class BoundaryListProjector extends AbstractDoctrineConnectionProjector
 {
@@ -40,7 +41,6 @@ class BoundaryListProjector extends AbstractDoctrineConnectionProjector
 
         $this->schema = new Schema();
         $table = $this->schema->createTable(Table::BOUNDARIES);
-        $table->addColumn('id', 'integer', array("unsigned" => true, "autoincrement" => true));
         $table->addColumn('model_id', 'string', ['length' => 36]);
         $table->addColumn('boundary_id', 'string', ['length' => 36]);
         $table->addColumn('type', 'string', ['length' => 255]);
@@ -49,8 +49,62 @@ class BoundaryListProjector extends AbstractDoctrineConnectionProjector
         $table->addColumn('geometry', 'text', ['notnull' => false]);
         $table->addColumn('active_cells', 'text', ['notnull' => false]);
         $table->addColumn('boundary', 'text', ['notnull' => false]);
-        $table->setPrimaryKey(['id']);
-        $table->addIndex(array('model_id'));
+        $table->addIndex(array('model_id', 'boundary_id'));
+    }
+
+    public function onModflowModelWasCloned(ModflowModelWasCloned $event): void
+    {
+        foreach ($event->boundaries() as $boundary) {
+            $this->cloneBoundaryWithNewModelIdAndNewUserId(
+                BoundaryId::fromString($boundary),
+                $event->baseModelId(),
+                $event->modelId()
+            );
+        }
+    }
+
+    private function cloneBoundaryWithNewModelIdAndNewUserId(BoundaryId $boundaryId, ModflowId $baseModelId, ModflowId $newModelId): void
+    {
+        $result = $this->connection->fetchAssoc(
+            sprintf('SELECT type, name, metadata, geometry, active_cells, boundary FROM %s WHERE model_id = :model_id AND boundary_id = :boundary_id', Table::BOUNDARIES),
+            ['model_id' => $baseModelId->toString(), 'boundary_id' => $boundaryId->toString()]
+        );
+
+        if ($result === false){
+            return;
+        }
+
+        $res = $this->connection->fetchAssoc(
+            sprintf('SELECT count(*) FROM %s WHERE model_id = :model_id AND boundary_id = :boundary_id', Table::BOUNDARIES),
+            ['model_id' => $newModelId->toString(), 'boundary_id' => $boundaryId->toString()]
+        );
+
+        if ($res['count'] == 0) {
+            $this->connection->insert(Table::BOUNDARIES, array(
+                'model_id' => $newModelId->toString(),
+                'boundary_id' => $boundaryId->toString(),
+                'name' => $result['name'],
+                'geometry' => $result['geometry'],
+                'type' => $result['type'],
+                'metadata' => $result['metadata'],
+                'active_cells' => $result['active_cells'],
+                'boundary' => $result['boundary']
+            ));
+            return;
+        }
+
+        $this->connection->update(Table::BOUNDARIES, array(
+            'name' => $result['name'],
+            'geometry' => $result['geometry'],
+            'type' => $result['type'],
+            'metadata' => $result['metadata'],
+            'active_cells' => $result['active_cells'],
+            'boundary' => $result['boundary']
+        ),array(
+            'model_id' => $newModelId->toString(),
+            'boundary_id' => $boundaryId->toString()
+            )
+        );
     }
 
     public function onBoundaryWasAdded(BoundaryWasAdded $event): void

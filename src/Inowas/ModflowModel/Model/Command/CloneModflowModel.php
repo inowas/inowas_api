@@ -10,17 +10,17 @@ use Prooph\Common\Messaging\Command;
 use Prooph\Common\Messaging\PayloadConstructable;
 use Prooph\Common\Messaging\PayloadTrait;
 
-class CopyModflowModel extends Command implements PayloadConstructable
+class CloneModflowModel extends Command implements PayloadConstructable
 {
 
     use PayloadTrait;
 
-    public static function fromBaseModel(UserId $userId, ModflowId $baseModel, ModflowId $newModel): CopyModflowModel
+    public static function fromBaseModel(ModflowId $baseModelId, UserId $userId, ModflowId $newModelId): CloneModflowModel
     {
         return new self([
+            'basemodel_id' => $baseModelId->toString(),
             'user_id' => $userId->toString(),
-            'base_model_id' => $baseModel->toString(),
-            'new_model_id' => $newModel->toString()
+            'new_model_id' => $newModelId->toString()
         ]);
     }
 
@@ -31,7 +31,7 @@ class CopyModflowModel extends Command implements PayloadConstructable
 
     public function baseModelId(): ModflowId
     {
-        return ModflowId::fromString($this->payload['base_model_id']);
+        return ModflowId::fromString($this->payload['basemodel_id']);
     }
 
     public function newModelId(): ModflowId

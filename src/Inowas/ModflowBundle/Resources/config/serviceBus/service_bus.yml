@@ -21,6 +21,7 @@ prooph_service_bus:
                     'Inowas\ModflowModel\Model\Command\ChangeModflowModelGridSize': 'inowas.modflowmodel.change_modflow_model_grid_size_handler'
                     'Inowas\ModflowModel\Model\Command\ChangeModflowModelName': 'inowas.modflowmodel.change_modflow_model_name_handler'
                     'Inowas\ModflowModel\Model\Command\ChangeModflowModelSoilmodelId': 'inowas.modflowmodel.change_modflow_model_soilmodel_id_handler'
+                    'Inowas\ModflowModel\Model\Command\CloneModflowModel': 'inowas.modflowmodel.clone_modflow_model_handler'
                     'Inowas\ModflowModel\Model\Command\CreateModflowModel': 'inowas.modflowmodel.create_modflow_model_handler'
                     'Inowas\ModflowModel\Model\Command\RemoveBoundary': 'inowas.modflowmodel.remove_modflow_model_boundary_handler'
                     'Inowas\ModflowModel\Model\Command\UpdateAreaGeometry': 'inowas.modflowmodel.update_modflow_model_area_geometry_handler'
@@ -28,7 +29,9 @@ prooph_service_bus:
                     'Inowas\ModflowModel\Model\Command\UpdateBoundaryGeometry': 'inowas.modflowmodel.update_modflow_model_boundary_geometry_handler'
 
                     # ScenarioAnalysis Commands and CommandHandlers
+                    'Inowas\ScenarioAnalysis\Model\Command\AddScenario': 'inowas.scenarioanalysis.add_scenario_handler'
                     'Inowas\ScenarioAnalysis\Model\Command\CreateScenarioAnalysis': 'inowas.scenarioanalysis.create_scenarioanalysis_handler'
+                    'Inowas\ScenarioAnalysis\Model\Command\RemoveScenario': 'inowas.scenarioanalysis.remove_scenario_handler'
 
                     # SoilmodelAggregate Commands and CommandHandlers
                     'Inowas\Soilmodel\Model\Command\AddBoreLogToSoilmodel': 'inowas.soilmodel.add_borelog_to_soilmodel.handler'
@@ -112,6 +115,12 @@ prooph_service_bus:
                         - 'inowas.modflowmodel.model_details_projector'
                         - 'inowas.modflowcalculation.calculation_results_projector'
 
+                    'Inowas\ModflowModel\Model\Event\ModflowModelWasCloned':
+                        - 'inowas.modflowcalculation.calculation_results_projector'
+                        - 'inowas.modflowmodel.model_boundaries_projector'
+                        - 'inowas.modflowmodel.model_boundary_values_projector'
+                        - 'inowas.modflowmodel.model_details_projector'
+
                     'Inowas\ModflowModel\Model\Event\ModflowModelNameWasChanged':
                         - 'inowas.modflowmodel.model_details_projector'
 
@@ -119,7 +128,13 @@ prooph_service_bus:
                         - 'inowas.modflowmodel.model_details_projector'
 
 
+                    'Inowas\ScenarioAnalysis\Model\Event\ScenarioWasAdded':
+                        - 'inowas.scenarioanalysis.scenarioanalysis_list_projector'
+
                     'Inowas\ScenarioAnalysis\Model\Event\ScenarioAnalysisWasCreated':
+                        - 'inowas.scenarioanalysis.scenarioanalysis_list_projector'
+
+                    'Inowas\ScenarioAnalysis\Model\Event\ScenarioWasRemoved':
                         - 'inowas.scenarioanalysis.scenarioanalysis_list_projector'
 
 

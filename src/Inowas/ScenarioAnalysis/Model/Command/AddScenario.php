@@ -11,16 +11,17 @@ use Prooph\Common\Messaging\Command;
 use Prooph\Common\Messaging\PayloadConstructable;
 use Prooph\Common\Messaging\PayloadTrait;
 
-class CreateScenarioAnalysis extends Command implements PayloadConstructable
+class AddScenario extends Command implements PayloadConstructable
 {
 
     use PayloadTrait;
 
-    public static function withBaseModelId(ScenarioAnalysisId $scenarioAnalysisId, UserId $userId, ModflowId $scenarioId): CreateScenarioAnalysis
+    public static function withBaseModelId(ScenarioAnalysisId $scenarioAnalysisId, UserId $userId, ModflowId $baseModelId, ModflowId $scenarioId): AddScenario
     {
         return new self([
             'scenarioanalysis_id' => $scenarioAnalysisId->toString(),
             'user_id' => $userId->toString(),
+            'basemodel_id' => $baseModelId->toString(),
             'scenario_id' => $scenarioId->toString()
         ]);
     }
@@ -33,6 +34,11 @@ class CreateScenarioAnalysis extends Command implements PayloadConstructable
     public function userId(): UserId
     {
         return UserId::fromString($this->payload['user_id']);
+    }
+
+    public function baseModelId(): ModflowId
+    {
+        return ModflowId::fromString($this->payload['basemodel_id']);
     }
 
     public function scenarioId(): ModflowId

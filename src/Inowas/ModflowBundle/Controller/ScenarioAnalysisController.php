@@ -46,7 +46,7 @@ class ScenarioAnalysisController extends FOSRestController
         if ($user instanceof User && $user->getId()) {
             $userId = UserId::fromString($this->getUser()->getId()->toString());
             return new JsonResponse(
-                $this->get('inowas.modflowmodel.details_finder')
+                $this->get('inowas.modflowmodel.model_finder')
                     ->findByBaseUserId($userId)
             );
         }
@@ -76,7 +76,7 @@ class ScenarioAnalysisController extends FOSRestController
         }
 
         return new JsonResponse(
-            $this->get('inowas.modflowmodel.details_finder')->findPublic()
+            $this->get('inowas.modflowmodel.model_finder')->findPublic()
         );
     }
 
@@ -100,7 +100,7 @@ class ScenarioAnalysisController extends FOSRestController
         $userId = UserId::fromString($userId);
 
         return new JsonResponse(
-            $this->get('inowas.modflowmodel.details_finder')
+            $this->get('inowas.modflowmodel.model_finder')
                 ->findByBaseUserId($userId)
         );
     }
@@ -128,7 +128,7 @@ class ScenarioAnalysisController extends FOSRestController
             throw new InvalidUuidException();
         }
 
-        $baselModel = $this->get('inowas.modflowmodel.scenarios_finder')->findBaseModelById(
+        $baselModel = $this->get('inowas.scenarioanalysis.scenarioanalysis_finder')->findBaseModelById(
             ModflowId::fromString($baseModelId)
         );
 
@@ -139,7 +139,7 @@ class ScenarioAnalysisController extends FOSRestController
         $baselModel = $baselModel[0];
         $baselModel->area = json_decode($baselModel->area);
 
-        $scenarios = $this->get('inowas.modflowmodel.scenarios_finder')->findScenariosByBaseModelId(
+        $scenarios = $this->get('inowas.scenarioanalysis.scenarioanalysis_finder')->findScenariosByBaseModelId(
             ModflowId::fromString($baseModelId)
         );
 
@@ -174,7 +174,7 @@ class ScenarioAnalysisController extends FOSRestController
             throw new InvalidUuidException();
         }
 
-        return new JsonResponse($this->get('inowas.modflowmodel.details_finder')
+        return new JsonResponse($this->get('inowas.modflowmodel.model_finder')
             ->findByBaseModelId(
                 ModflowId::fromString($baseModelId)
             )

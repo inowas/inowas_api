@@ -23,6 +23,10 @@ services:
         class: Inowas\ModflowModel\Model\Handler\ChangeModflowModelSoilmodelIdHandler
         arguments: ['@modflow_model_list']
 
+    inowas.modflowmodel.clone_modflow_model_handler:
+        class: Inowas\ModflowModel\Model\Handler\CloneModflowModelHandler
+        arguments: ['@modflow_model_list']
+
     inowas.modflowmodel.create_modflow_model_handler:
         class: Inowas\ModflowModel\Model\Handler\CreateModflowModelHandler
         arguments:

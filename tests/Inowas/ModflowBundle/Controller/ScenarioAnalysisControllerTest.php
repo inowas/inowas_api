@@ -6,16 +6,23 @@ namespace Tests\Inowas\ModflowBundle\Controller;
 
 use FOS\UserBundle\Doctrine\UserManager;
 use Inowas\AppBundle\Model\User;
+use Inowas\Common\Boundaries\Area;
+use Inowas\Common\Boundaries\BoundaryName;
+use Inowas\Common\Geometry\Polygon;
+use Inowas\Common\Grid\GridSize;
+use Inowas\Common\Id\BoundaryId;
 use Inowas\Common\Modflow\Modelname;
 use Inowas\Common\Modflow\ModflowModelDescription;
 use Inowas\Common\Projection\ProjectionInterface;
-use Inowas\ModflowModel\Infrastructure\Projection\ModelList\ModelScenarioFinder;
-use Inowas\ModflowModel\Model\Command\AddModflowScenario;
 use Inowas\ModflowModel\Model\Command\ChangeModflowModelDescription;
 use Inowas\ModflowModel\Model\Command\ChangeModflowModelName;
 use Inowas\ModflowModel\Model\Command\CreateModflowModel;
 use Inowas\Common\Id\ModflowId;
 use Inowas\Common\Id\UserId;
+use Inowas\ScenarioAnalysis\Infrastructure\Projection\ScenarioAnalysisFinder;
+use Inowas\ScenarioAnalysis\Model\Command\AddScenario;
+use Inowas\ScenarioAnalysis\Model\Command\CreateScenarioAnalysis;
+use Inowas\ScenarioAnalysis\Model\ScenarioAnalysisId;
 use Prooph\ServiceBus\CommandBus;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
@@ -33,14 +40,20 @@ class ScenarioAnalysisControllerTest extends WebTestCase
     /** @var  ProjectionInterface */
     protected $projection;
 
-    /** @var  ModelScenarioFinder */
+    /** @var  ScenarioAnalysisFinder */
     protected $modelScenarioFinder;
 
     /** @var  ModflowId */
     protected $modelId;
 
-    /** @var  \Inowas\Common\Id\UserId */
+    /** @var  UserId */
     protected $userId;
+
+    /** @var  ScenarioAnalysisId */
+    protected $scenarioAnalysisId;
+
+    /** @var  ModflowId */
+    protected $scenarioId;
 
     public function setUp()
     {
@@ -53,13 +66,13 @@ class ScenarioAnalysisControllerTest extends WebTestCase
             ->get('prooph_service_bus.modflow_command_bus');
 
         $this->projection = static::$kernel->getContainer()
-            ->get('inowas.modflowmodel.model_scenarios_projector');
+            ->get('inowas.scenarioanalysis.scenarioanalysis_list_projector');
 
         $this->projection->reset();
 
-        /** @var ModelScenarioFinder modelScenarioFinder */
+        /** @var ScenarioAnalysisFinder modelScenarioFinder */
         $this->modelScenarioFinder = static::$kernel->getContainer()
-            ->get('inowas.modflowmodel.scenarios_finder');
+            ->get('inowas.scenarioanalysis.scenarioanalysis_finder');
 
         $this->user = $this->userManager->findUserByUsername('testUser');
 
@@ -73,15 +86,19 @@ class ScenarioAnalysisControllerTest extends WebTestCase
         }
 
         $this->modelId = ModflowId::generate();
-        $scenarioId = ModflowId::generate();
+
         $this->userId = UserId::fromString($this->user->getId()->toString());
-        $this->commandBus->dispatch(CreateModflowModel::newWithId($this->userId, $this->modelId));
+        $this->commandBus->dispatch(CreateModflowModel::newWithId($this->userId, $this->modelId, $this->getArea(), GridSize::fromXY(10,20)));
         $this->commandBus->dispatch(ChangeModflowModelName::forModflowModel($this->userId, $this->modelId, Modelname::fromString('TestName')));
         $this->commandBus->dispatch(ChangeModflowModelDescription::forModflowModel($this->userId, $this->modelId, ModflowModelDescription::fromString('TestDescription')));
 
-        $this->commandBus->dispatch(AddModflowScenario::from($this->userId, $this->modelId, $scenarioId));
-        $this->commandBus->dispatch(ChangeModflowModelName::forScenario($this->userId, $this->modelId, $scenarioId, Modelname::fromString('Scenario_1')));
-        $this->commandBus->dispatch(ChangeModflowModelDescription::forScenario($this->userId, $this->modelId, $scenarioId, ModflowModelDescription::fromString('Scenario_Description_1')));
+        $this->scenarioAnalysisId = ScenarioAnalysisId::generate();
+        $this->commandBus->dispatch(CreateScenarioAnalysis::withBaseModelId($this->scenarioAnalysisId, $this->userId, $this->modelId));
+
+        $this->scenarioId = ModflowId::generate();
+        $this->commandBus->dispatch(AddScenario::withBaseModelId($this->scenarioAnalysisId, $this->userId, $this->modelId, $this->scenarioId));
+        $this->commandBus->dispatch(ChangeModflowModelName::forModflowModel($this->userId, $this->scenarioId, Modelname::fromString('Scenario_1')));
+        $this->commandBus->dispatch(ChangeModflowModelDescription::forModflowModel($this->userId, $this->scenarioId, ModflowModelDescription::fromString('Scenario_Description_1')));
     }
 
     /**
@@ -89,8 +106,13 @@ class ScenarioAnalysisControllerTest extends WebTestCase
      */
     public function it_loads_the_model_from_the_projection()
     {
-        $this->assertCount(2, $this->modelScenarioFinder->findAll());
-        $this->assertCount(1, $this->modelScenarioFinder->findBaseModelById($this->modelId));
+        $result = $this->modelScenarioFinder->findAll();
+        $this->assertCount(1, $result);
+        $firstResult = $result[0];
+        $this->assertArrayHasKey('scenarios', $firstResult);
+        $scenarios = json_decode($firstResult['scenarios']);
+        $this->assertCount(1, $scenarios);
+        $this->assertEquals($this->scenarioId->toString(), $scenarios[0]);
     }
 
     /**
@@ -117,5 +139,20 @@ class ScenarioAnalysisControllerTest extends WebTestCase
         foreach ($users as $user){
             $this->userManager->deleteUser($user);
         }
+    }
+
+    private function getArea(): Area
+    {
+        return Area::create(
+            BoundaryId::generate(),
+            BoundaryName::fromString('Rio Primero Area'),
+            new Polygon(array(array(
+                array(-63.65, -31.31),
+                array(-63.65, -31.36),
+                array(-63.58, -31.36),
+                array(-63.58, -31.31),
+                array(-63.65, -31.31)
+            )), 4326)
+        );
     }
 }

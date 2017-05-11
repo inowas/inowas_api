@@ -21,6 +21,7 @@ use Inowas\ModflowModel\Model\Event\AreaGeometryWasUpdated;
 use Inowas\ModflowModel\Model\Event\BoundingBoxWasChanged;
 use Inowas\ModflowModel\Model\Event\DescriptionWasChanged;
 use Inowas\ModflowModel\Model\Event\GridSizeWasChanged;
+use Inowas\ModflowModel\Model\Event\ModflowModelWasCloned;
 use Inowas\ModflowModel\Model\Event\NameWasChanged;
 use Inowas\ModflowModel\Model\Event\ModflowModelWasCreated;
 use Inowas\ModflowModel\Infrastructure\Projection\Table;
@@ -58,6 +59,29 @@ class ModelProjector extends AbstractDoctrineConnectionProjector
     }
 
     public function onModflowModelWasCreated(ModflowModelWasCreated $event): void
+    {
+
+        $area = $event->area();
+        $gridSize = $event->gridSize();
+        $boundingBox = $event->boundingBox();
+        $activeCells = $this->geoTools->calculateActiveCellsFromArea($area, $boundingBox, $gridSize);
+
+        $this->connection->insert(Table::MODEL_DETAILS, array(
+            'model_id' => $event->modelId()->toString(),
+            'user_id' => $event->userId()->toString(),
+            'user_name' => $this->getUserNameByUserId($event->userId()->toString()),
+            'name' => '',
+            'description' => '',
+            'area' => $event->area()->geometry()->toJson(),
+            'grid_size' => json_encode($event->gridSize()),
+            'bounding_box' => json_encode($event->boundingBox()),
+            'active_cells' => json_encode($activeCells->toArray()),
+            'created_at' => date_format($event->createdAt(), DATE_ATOM),
+            'public' => true
+        ));
+    }
+
+    public function onModflowModelWasCloned(ModflowModelWasCloned $event): void
     {
 
         $area = $event->area();

@@ -101,4 +101,11 @@ class ModelFinder
             ['public' => true]
         );
     }
+
+    public function findAll(): array
+    {
+        return $this->connection->fetchAll(
+            sprintf('SELECT * FROM %s', Table::MODEL_DETAILS)
+        );
+    }
 }

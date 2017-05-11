@@ -4,28 +4,24 @@ declare(strict_types=1);
 
 namespace Inowas\ModflowModel\Model\Handler;
 
-use Inowas\Common\Modflow\LengthUnit;
-use Inowas\Common\Modflow\TimeUnit;
-use Inowas\GeoTools\Service\GeoTools;
-use Inowas\ModflowModel\Model\Command\CopyModflowModel;
-use Inowas\ModflowModel\Model\Command\CreateModflowModel;
+use Inowas\ModflowModel\Model\Command\CloneModflowModel;
 use Inowas\ModflowModel\Model\Exception\ModflowModelNotFoundException;
 use Inowas\ModflowModel\Model\ModflowModelList;
 use Inowas\ModflowModel\Model\ModflowModelAggregate;
 
-final class CopyModflowModelHandler
+final class CloneModflowModelHandler
 {
 
     /** @var  ModflowModelList */
     private $modelList;
 
 
-    public function __construct(ModflowModelList $modelList, GeoTools $geoTools)
+    public function __construct(ModflowModelList $modelList)
     {
         $this->modelList = $modelList;
     }
 
-    public function __invoke(CopyModflowModel $command)
+    public function __invoke(CloneModflowModel $command)
     {
 
         $modflowModel = $this->modelList->get($command->baseModelId());
@@ -35,7 +31,7 @@ final class CopyModflowModelHandler
         }
 
         /** @var ModflowModelAggregate $modflowModel */
-        $newModel = $modflowModel->createCopyWithNewIdAndUserId($command->newModelId(), $command->userId());
+        $newModel = ModflowModelAggregate::cloneWithIdUserAndAggregate($command->newModelId(), $command->userId(), $modflowModel);
         $this->modelList->add($newModel);
     }
 }
