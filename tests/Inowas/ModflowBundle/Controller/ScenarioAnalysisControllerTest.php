@@ -9,7 +9,7 @@ use Inowas\AppBundle\Model\User;
 use Inowas\Common\Modflow\Modelname;
 use Inowas\Common\Modflow\ModflowModelDescription;
 use Inowas\Common\Projection\ProjectionInterface;
-use Inowas\ModflowModel\Infrastructure\Projection\ModelScenarioList\ModelScenarioFinder;
+use Inowas\ModflowModel\Infrastructure\Projection\ModelList\ModelScenarioFinder;
 use Inowas\ModflowModel\Model\Command\AddModflowScenario;
 use Inowas\ModflowModel\Model\Command\ChangeModflowModelDescription;
 use Inowas\ModflowModel\Model\Command\ChangeModflowModelName;
@@ -75,7 +75,7 @@ class ScenarioAnalysisControllerTest extends WebTestCase
         $this->modelId = ModflowId::generate();
         $scenarioId = ModflowId::generate();
         $this->userId = UserId::fromString($this->user->getId()->toString());
-        $this->commandBus->dispatch(CreateModflowModel::byUserWithModelId($this->userId, $this->modelId));
+        $this->commandBus->dispatch(CreateModflowModel::newWithId($this->userId, $this->modelId));
         $this->commandBus->dispatch(ChangeModflowModelName::forModflowModel($this->userId, $this->modelId, Modelname::fromString('TestName')));
         $this->commandBus->dispatch(ChangeModflowModelDescription::forModflowModel($this->userId, $this->modelId, ModflowModelDescription::fromString('TestDescription')));
 

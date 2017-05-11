@@ -4,20 +4,19 @@ declare(strict_types=1);
 
 namespace Inowas\ModflowModel\Model\Handler;
 
-use Inowas\ModflowModel\Model\Command\RemoveModflowScenario;
+use Inowas\ModflowModel\Model\Command\UpdateAreaGeometry;
 use Inowas\ModflowModel\Model\Exception\ModflowModelNotFoundException;
 use Inowas\ModflowModel\Model\Exception\WriteAccessFailedException;
-use Inowas\ModflowModel\Model\ModflowModelAggregate;
 use Inowas\ModflowModel\Model\ModflowModelList;
+use Inowas\ModflowModel\Model\ModflowModelAggregate;
 
-final class RemoveModflowScenarioHandler
+final class UpdateAreaGeometryHandler
 {
 
     /** @var  ModflowModelList */
     private $modelList;
 
     /**
-     * CreateModflowScenarioHandler constructor.
      * @param ModflowModelList $modelList
      */
     public function __construct(ModflowModelList $modelList)
@@ -25,19 +24,19 @@ final class RemoveModflowScenarioHandler
         $this->modelList = $modelList;
     }
 
-    public function __invoke(RemoveModflowScenario $command)
+    public function __invoke(UpdateAreaGeometry $command)
     {
         /** @var ModflowModelAggregate $modflowModel */
-        $modflowModel = $this->modelList->get($command->baseModelId());
+        $modflowModel = $this->modelList->get($command->modelId());
 
         if (!$modflowModel){
-            throw ModflowModelNotFoundException::withModelId($command->baseModelId());
+            throw ModflowModelNotFoundException::withModelId($command->modelId());
         }
 
         if (! $modflowModel->ownerId()->sameValueAs($command->userId())){
             throw WriteAccessFailedException::withUserAndOwner($command->userId(), $modflowModel->ownerId());
         }
 
-        $modflowModel->removeScenario($command->userId(), $command->scenarioId());
+        $modflowModel->updateAreaGeometry($command->userId(), $command->geometry());
     }
 }

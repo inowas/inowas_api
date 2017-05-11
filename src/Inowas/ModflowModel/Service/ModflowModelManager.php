@@ -17,13 +17,13 @@ use Inowas\Common\Id\ModflowId;
 use Inowas\Common\Modflow\StressPeriods;
 use Inowas\Common\Modflow\TimeUnit;
 use Inowas\ModflowCalculation\Service\StressPeriodDataGenerator;
+use Inowas\ModflowModel\Infrastructure\Projection\ModelList\ModelFinder;
 use Inowas\ModflowModel\Model\Packages\ChdStressPeriodData;
 use Inowas\ModflowModel\Model\Packages\GhbStressPeriodData;
 use Inowas\ModflowModel\Model\Packages\RchStressPeriodData;
 use Inowas\ModflowModel\Model\Packages\RivStressPeriodData;
 use Inowas\ModflowModel\Model\Packages\WelStressPeriodData;
 use Inowas\ModflowModel\Infrastructure\Projection\BoundaryList\BoundaryFinder;
-use Inowas\ModflowModel\Infrastructure\Projection\ModelScenarioList\ModelScenarioFinder;
 
 class ModflowModelManager implements ModflowModelManagerInterface
 {
@@ -31,13 +31,13 @@ class ModflowModelManager implements ModflowModelManagerInterface
     /** @var  BoundaryFinder */
     protected $boundaryFinder;
 
-    /** @var  ModelScenarioFinder */
+    /** @var  ModelFinder */
     protected $modelFinder;
 
     /** @var  StressPeriodDataGenerator */
     protected $stressPeriodDataGenerator;
 
-    public function __construct(BoundaryFinder $boundaryFinder, ModelScenarioFinder $modelFinder, StressPeriodDataGenerator $stressPeriodDataGenerator){
+    public function __construct(BoundaryFinder $boundaryFinder, ModelFinder $modelFinder, StressPeriodDataGenerator $stressPeriodDataGenerator){
         $this->boundaryFinder = $boundaryFinder;
         $this->modelFinder = $modelFinder;
         $this->stressPeriodDataGenerator = $stressPeriodDataGenerator;
@@ -58,17 +58,17 @@ class ModflowModelManager implements ModflowModelManagerInterface
 
     public function getAreaActiveCells(ModflowId $modflowId): ActiveCells
     {
-        return $this->boundaryFinder->findAreaActiveCells($modflowId);
+        return $this->modelFinder->findAreaActiveCells($modflowId);
     }
 
     public function getBoundingBox(ModflowId $modflowId): BoundingBox
     {
-        return $this->modelFinder->findBoundingBoxByModelId($modflowId);
+        return $this->modelFinder->findBoundingBoxByModflowModelId($modflowId);
     }
 
     public function getGridSize(ModflowId $modflowId): GridSize
     {
-        return $this->modelFinder->findGridSizeByModelId($modflowId);
+        return $this->modelFinder->findGridSizeByModflowModelId($modflowId);
     }
 
     public function countModelBoundaries(ModflowId $modflowId, string $type): int

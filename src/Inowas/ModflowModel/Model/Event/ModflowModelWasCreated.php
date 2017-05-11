@@ -4,6 +4,9 @@ declare(strict_types=1);
 
 namespace Inowas\ModflowModel\Model\Event;
 
+use Inowas\Common\Boundaries\Area;
+use Inowas\Common\Grid\BoundingBox;
+use Inowas\Common\Grid\GridSize;
 use Inowas\Common\Id\IdInterface;
 use Inowas\Common\Id\ModflowId;
 use Inowas\Common\Id\UserId;
@@ -15,10 +18,22 @@ class ModflowModelWasCreated extends AggregateChanged
 {
 
     /** @var ModflowId */
-    private $modflowModelId;
+    private $modelId;
 
-    /** @var  UserId */
+    /** @var UserId */
     private $userId;
+
+    /** @var Area */
+    private $area;
+
+    /** @var array */
+    private $boundaries;
+
+    /** @var  GridSize */
+    private $gridSize;
+
+    /** @var  BoundingBox */
+    private $boundingBox;
 
     /** @var  LengthUnit */
     private $lengthUnit;
@@ -26,27 +41,72 @@ class ModflowModelWasCreated extends AggregateChanged
     /** @var  TimeUnit */
     private $timeUnit;
 
-    public static function byUserWithModflowIdAndUnits(UserId $userId, IdInterface $modflowModelId, LengthUnit $lengthUnit, TimeUnit $timeUnit): ModflowModelWasCreated
+    public static function withParameters(ModflowId $modflowId, UserId $userId, Area $area, array $boundaries, GridSize $gridSize, BoundingBox $boundingBox, LengthUnit $lengthUnit, TimeUnit $timeUnit): ModflowModelWasCreated
     {
-        $event = self::occur($modflowModelId->toString(),[
+        $event = self::occur($modflowId->toString(),[
             'user_id' => $userId->toString(),
+            'area' => serialize($area),
+            'grid_size' => $gridSize->toArray(),
+            'bounding_box' => $boundingBox->toArray(),
             'length_unit' => $lengthUnit->toInt(),
-            'time_unit' => $timeUnit->toInt()
+            'time_unit' => $timeUnit->toInt(),
+            'boundaries' => $boundaries
         ]);
 
-        $event->modflowModelId = $modflowModelId;
+        $event->modelId = $modflowId;
         $event->userId = $userId;
+        $event->area = $area;
+        $event->gridSize = $gridSize;
+        $event->boundingBox = $boundingBox;
+        $event->lengthUnit = $lengthUnit;
+        $event->timeUnit = $timeUnit;
 
         return $event;
     }
 
-    public function modflowModelId(): IdInterface
+    public function modelId(): ModflowId
     {
-        if ($this->modflowModelId === null){
-            $this->modflowModelId = ModflowId::fromString($this->aggregateId());
+        if ($this->modelId === null){
+            $this->modelId = ModflowId::fromString($this->aggregateId());
         }
 
-        return $this->modflowModelId;
+        return $this->modelId;
+    }
+
+    public function area(): Area
+    {
+        if ($this->area === null){
+            $this->area = unserialize($this->payload['area']);
+        }
+
+        return $this->area;
+    }
+
+    public function boundaries(): array
+    {
+        if ($this->boundaries === null) {
+            $this->boundaries = $this->payload['boundaries'];
+        }
+
+        return $this->boundaries;
+    }
+
+    public function gridSize(): GridSize
+    {
+        if ($this->gridSize === null){
+            $this->gridSize = GridSize::fromArray($this->payload['grid_size']);
+        }
+
+        return $this->gridSize;
+    }
+
+    public function boundingBox(): BoundingBox
+    {
+        if ($this->boundingBox === null){
+            $this->boundingBox = BoundingBox::fromArray($this->payload['bounding_box']);
+        }
+
+        return $this->boundingBox;
     }
 
     public function userId(): UserId

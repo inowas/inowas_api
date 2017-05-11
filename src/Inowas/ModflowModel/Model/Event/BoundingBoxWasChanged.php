@@ -9,7 +9,7 @@ use Inowas\Common\Id\ModflowId;
 use Inowas\Common\Id\UserId;
 use Prooph\EventSourcing\AggregateChanged;
 
-class ModflowModelBoundingBoxWasChanged extends AggregateChanged
+class BoundingBoxWasChanged extends AggregateChanged
 {
 
     /** @var  ModflowId */
@@ -21,7 +21,7 @@ class ModflowModelBoundingBoxWasChanged extends AggregateChanged
     /** @var  UserId */
     private $userId;
 
-    public static function withBoundingBox(UserId $userId, ModflowId $modflowModelId, BoundingBox $boundingBox): ModflowModelBoundingBoxWasChanged
+    public static function withBoundingBox(UserId $userId, ModflowId $modflowModelId, BoundingBox $boundingBox): BoundingBoxWasChanged
     {
         $event = self::occur(
             $modflowModelId->toString(), [

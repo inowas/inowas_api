@@ -6,9 +6,9 @@ namespace Inowas\ScenarioAnalysis\Model;
 
 use Inowas\Common\Id\ModflowId;
 use Inowas\Common\Id\UserId;
-use Inowas\ModflowModel\Model\Event\ScenarioAnalysisWasCreated;
 use Inowas\ScenarioAnalysis\Model\Event\ScenarioAnalysisDescriptionWasChanged;
 use Inowas\ScenarioAnalysis\Model\Event\ScenarioAnalysisNameWasChanged;
+use Inowas\ScenarioAnalysis\Model\Event\ScenarioAnalysisWasCreated;
 use Inowas\ScenarioAnalysis\Model\Event\ScenarioWasAdded;
 use Inowas\ScenarioAnalysis\Model\Event\ScenarioWasRemoved;
 use Prooph\EventSourcing\AggregateRoot;

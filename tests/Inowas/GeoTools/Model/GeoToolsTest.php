@@ -248,14 +248,14 @@ class GeoToolsTest extends WebTestCase
 
     public function test_calculate_active_cells(): void
     {
-        $result = $this->geoTools->calculateActiveCells($this->area, $this->boundingBox, $this->gridSize);
+        $result = $this->geoTools->calculateActiveCellsFromBoundary($this->area, $this->boundingBox, $this->gridSize);
         $this->assertInstanceOf(ActiveCells::class, $result);
         $this->assertCount(330, $result->cells());
     }
 
     public function test_calculate_active_cells_of_well_with_layer_data(): void
     {
-        $result = $this->geoTools->calculateActiveCells($this->well, $this->boundingBox, $this->gridSize);
+        $result = $this->geoTools->calculateActiveCellsFromBoundary($this->well, $this->boundingBox, $this->gridSize);
         $this->assertInstanceOf(ActiveCells::class, $result);
         $this->assertCount(1, $result->cells());
         $this->assertEquals($result->cells()[0], [2,1,3]);
@@ -287,7 +287,7 @@ class GeoToolsTest extends WebTestCase
 
         foreach ($pointsAffectedLayers as $key => $pointsAffectedLayer) {
 
-            $activeCells = $this->geoTools->calculateActiveCells(
+            $activeCells = $this->geoTools->calculateActiveCellsFromBoundary(
                 WellBoundary::createWithParams(
                     BoundaryId::generate(),
                     BoundaryName::fromString(''),
@@ -375,7 +375,7 @@ class GeoToolsTest extends WebTestCase
             );
         }
 
-        $activeCells = $this->geoTools->calculateActiveCells($chdBoundary, $boundingBox, $gridSize);
+        $activeCells = $this->geoTools->calculateActiveCellsFromBoundary($chdBoundary, $boundingBox, $gridSize);
         $result = $this->geoTools->interpolateGridCellDateTimeValuesFromLinestringAndObservationPoints(
             $chdBoundary->geometry()->value(),
             $chdBoundary->observationPoints(),
@@ -407,7 +407,7 @@ class GeoToolsTest extends WebTestCase
 
     public function test_calculate_river_active_cells_with_geos(): void
     {
-        $result = $this->geoTools->calculateActiveCells($this->river, $this->boundingBox, $this->gridSize);
+        $result = $this->geoTools->calculateActiveCellsFromBoundary($this->river, $this->boundingBox, $this->gridSize);
         $this->assertInstanceOf(ActiveCells::class, $result);
         $this->assertCount(49, $result->cells());
     }
@@ -802,7 +802,7 @@ class GeoToolsTest extends WebTestCase
     public function test_calculate_grid_cell_date_time_values_of_river_boundary(): void
     {
         $observationPoints = $this->river->observationPoints();
-        $activeCells = $this->geoTools->calculateActiveCells($this->river, $this->boundingBox, $this->gridSize);
+        $activeCells = $this->geoTools->calculateActiveCellsFromBoundary($this->river, $this->boundingBox, $this->gridSize);
         /*
          * Expected active cells
          *

@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Inowas\ModflowModel\Model\Handler;
 
 use Inowas\ModflowModel\Model\Command\ChangeModflowModelBoundingBox;
-use Inowas\ModflowModel\Model\Exception\ChangePropertyInScenarioNotPossibleException;
 use Inowas\ModflowModel\Model\Exception\ModflowModelNotFoundException;
 use Inowas\ModflowModel\Model\Exception\WriteAccessFailedException;
 use Inowas\ModflowModel\Model\ModflowModelList;

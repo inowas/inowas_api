@@ -4,24 +4,28 @@ declare(strict_types=1);
 
 namespace Inowas\ModflowModel\Model\Command;
 
-use Inowas\Common\Id\BoundaryId;
+use Inowas\Common\Geometry\Polygon;
 use Inowas\Common\Id\ModflowId;
 use Inowas\Common\Id\UserId;
 use Prooph\Common\Messaging\Command;
 use Prooph\Common\Messaging\PayloadConstructable;
 use Prooph\Common\Messaging\PayloadTrait;
 
-class RemoveBoundary extends Command implements PayloadConstructable
+class UpdateAreaGeometry extends Command implements PayloadConstructable
 {
 
     use PayloadTrait;
 
-    public static function fromBaseModel(UserId $userId, ModflowId $baseModelId, BoundaryId $boundaryId): RemoveBoundary
+    public static function of(
+        UserId $userId,
+        ModflowId $modelId,
+        Polygon $polygon
+    ): UpdateAreaGeometry
     {
         $payload = [
             'user_id' => $userId->toString(),
-            'basemodel_id' => $baseModelId->toString(),
-            'boundary_id' => $boundaryId->toString()
+            'model_id' => $modelId->toString(),
+            'geometry' => serialize($polygon)
         ];
 
         return new self($payload);
@@ -32,13 +36,13 @@ class RemoveBoundary extends Command implements PayloadConstructable
         return UserId::fromString($this->payload['user_id']);
     }
 
-    public function baseModelId(): ModflowId
+    public function modelId(): ModflowId
     {
-        return ModflowId::fromString($this->payload['basemodel_id']);
+        return ModflowId::fromString($this->payload['model_id']);
     }
 
-    public function boundaryId(): BoundaryId
+    public function geometry(): Polygon
     {
-        return BoundaryId::fromString($this->payload['boundary_id']);
+        return unserialize($this->payload['geometry']);
     }
 }

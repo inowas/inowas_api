@@ -45,10 +45,26 @@ class BoundaryFinder
         return (int)$result['count'];
     }
 
+    public function findBoundaries(ModflowId $modelId): array
+    {
+        $rows = $this->connection->fetchAll(
+            sprintf('SELECT boundary FROM %s WHERE model_id = :model_id', Table::BOUNDARIES),
+            ['model_id' => $modelId->toString()]
+        );
+
+        $boundaries = array();
+        foreach ($rows as $row) {
+            $boundary = unserialize(base64_decode($row['boundary']));
+            $boundaries[] = $boundary;
+        }
+
+        return $boundaries;
+    }
+
     public function findRecharge(ModflowId $modelId): array
     {
         $rows = $this->connection->fetchAll(
-            sprintf('SELECT boundary_id, boundary FROM %s WHERE model_id = :model_id AND type = :type', Table::BOUNDARIES),
+            sprintf('SELECT boundary FROM %s WHERE model_id = :model_id AND type = :type', Table::BOUNDARIES),
             ['model_id' => $modelId->toString(), 'type' => RechargeBoundary::TYPE]
         );
 
@@ -170,19 +186,6 @@ class BoundaryFinder
 
         sort($spDates);
         return $spDates;
-    }
-
-    public function findAreaActiveCells(ModflowId $modelId): ActiveCells
-    {
-        $result = $this->connection->fetchAssoc(
-            sprintf('SELECT active_cells FROM %s WHERE type =:type AND model_id = :model_id', Table::BOUNDARIES),
-            [
-                'model_id' => $modelId->toString(),
-                'type' => 'area'
-            ]
-        );
-
-        return ActiveCells::fromArray((array)json_decode($result['active_cells']));
     }
 
     public function findBoundaryActiveCells(ModflowId $modelId, BoundaryId $boundaryId): ActiveCells

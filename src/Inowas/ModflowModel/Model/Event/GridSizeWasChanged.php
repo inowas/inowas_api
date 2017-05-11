@@ -4,40 +4,42 @@ declare(strict_types=1);
 
 namespace Inowas\ModflowModel\Model\Event;
 
+use Inowas\Common\Grid\GridSize;
 use Inowas\Common\Id\ModflowId;
 use Inowas\Common\Id\UserId;
-use Inowas\Common\Modflow\ModflowModelDescription;
 use Prooph\EventSourcing\AggregateChanged;
 
-class ModflowModelDescriptionWasChanged extends AggregateChanged
+class GridSizeWasChanged extends AggregateChanged
 {
 
     /** @var  ModflowId */
     private $modflowModelId;
 
-    /** @var ModflowModelDescription */
-    private $description;
+    /** @var GridSize */
+    private $gridSize;
 
-    /** @var  UserId */
+    /** @var UserId */
     private $userId;
 
-    public static function withDescription(UserId $userId, ModflowId $modflowModelId, ModflowModelDescription $description): ModflowModelDescriptionWasChanged
+    public static function withGridSize(UserId $userId, ModflowId $modflowModelId, GridSize $gridSize): GridSizeWasChanged
     {
         $event = self::occur(
             $modflowModelId->toString(), [
                 'user_id' => $userId->toString(),
-                'description' => $description->toString()
+                'grid_size' => [
+                    'nX' => $gridSize->nX(),
+                    'nY' => $gridSize->nY()
+                ]
             ]
         );
 
         $event->modflowModelId = $modflowModelId;
-        $event->description = $description;
-        $event->userId = $userId;
+        $event->gridSize = $gridSize;
 
         return $event;
     }
 
-    public function modflowModelId(): ModflowId
+    public function modflowId(): ModflowId
     {
         if ($this->modflowModelId === null){
             $this->modflowModelId = ModflowId::fromString($this->aggregateId());
@@ -46,13 +48,13 @@ class ModflowModelDescriptionWasChanged extends AggregateChanged
         return $this->modflowModelId;
     }
 
-    public function description(): ModflowModelDescription
+    public function gridSize(): GridSize
     {
-        if ($this->description === null){
-            $this->description = ModflowModelDescription::fromString($this->payload['description']);
+        if ($this->gridSize === null){
+            $this->gridSize = GridSize::fromXY($this->payload['grid_size']['nX'], $this->payload['grid_size']['nY']);
         }
 
-        return $this->description;
+        return $this->gridSize;
     }
 
     public function userId(): UserId

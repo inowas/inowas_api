@@ -37,11 +37,6 @@ final class ChangeModflowModelNameHandler
             throw WriteAccessFailedException::withUserAndOwner($command->userId(), $modflowModel->ownerId());
         }
 
-        if ($command->scenarioId()) {
-            $modflowModel->changeScenarioName($command->userId(), $command->scenarioId(), $command->name());
-            return;
-        }
-
-        $modflowModel->changeBaseModelName($command->userId(), $command->name());
+        $modflowModel->changeModelName($command->userId(), $command->name());
     }
 }

@@ -75,7 +75,7 @@ class RioPrimero extends LoadScenarioBase
         $commandBus = $this->container->get('prooph_service_bus.modflow_command_bus');
         $ownerId = UserId::fromString($this->ownerId);
         $modelId = ModflowId::generate();
-        $commandBus->dispatch(CreateModflowModel::byUserWithModelId($ownerId, $modelId));
+        $commandBus->dispatch(CreateModflowModel::newWithId($ownerId, $modelId));
         $commandBus->dispatch(ChangeModflowModelName::forModflowModel($ownerId, $modelId, Modelname::fromString('Rio Primero Base Model')));
         $commandBus->dispatch(ChangeModflowModelDescription::forModflowModel(
             $ownerId,
@@ -103,7 +103,7 @@ class RioPrimero extends LoadScenarioBase
                 )
             ), 4326
         )));
-        $commandBus->dispatch(AddBoundary::toBaseModel($ownerId, $modelId, $area));
+        $commandBus->dispatch(AddBoundary::to($ownerId, $modelId, $area));
 
         $soilModelId = SoilmodelId::generate();
         $commandBus->dispatch(ChangeModflowModelSoilmodelId::forModflowModel($modelId, $soilModelId));
@@ -215,7 +215,7 @@ class RioPrimero extends LoadScenarioBase
 
             echo sprintf("Add well with name %s.\r\n", $data['name']);
             $wellBoundary = $wellBoundary->addPumpingRate(WellDateTimeValue::fromParams($data['date'], $data['pumpingRate']));
-            $commandBus->dispatch(AddBoundary::toBaseModel($ownerId, $modelId, $wellBoundary));
+            $commandBus->dispatch(AddBoundary::to($ownerId, $modelId, $wellBoundary));
         }
 
         /* Add Head Results */

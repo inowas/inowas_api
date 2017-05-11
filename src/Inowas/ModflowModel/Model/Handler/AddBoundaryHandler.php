@@ -27,21 +27,16 @@ final class AddBoundaryHandler
     public function __invoke(AddBoundary $command)
     {
         /** @var ModflowModelAggregate $modflowModel */
-        $modflowModel = $this->modelList->get($command->baseModelId());
+        $modflowModel = $this->modelList->get($command->modelId());
 
         if (!$modflowModel){
-            throw ModflowModelNotFoundException::withModelId($command->baseModelId());
+            throw ModflowModelNotFoundException::withModelId($command->modelId());
         }
 
         if (! $modflowModel->ownerId()->sameValueAs($command->userId())){
             throw WriteAccessFailedException::withUserAndOwner($command->userId(), $modflowModel->ownerId());
         }
 
-        if ($command->scenarioId()){
-            $modflowModel->addBoundaryToScenario($command->userId(), $command->scenarioId(), $command->boundary());
-            return;
-        }
-
-        $modflowModel->addBoundaryToBaseModel($command->userId(), $command->boundary());
+        $modflowModel->addBoundaryToModel($command->userId(), $command->boundary());
     }
 }

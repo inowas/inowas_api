@@ -11,6 +11,10 @@ prooph_event_store:
                     repository_class: 'Inowas\ModflowModel\Infrastructure\Repository\EventStoreModflowModelList'
                     aggregate_type: 'Inowas\ModflowModel\Model\ModflowModelAggregate'
                     aggregate_translator: 'prooph_event_sourcing.aggregate_translator'
+                scenarioanalysis_list:
+                    repository_class: 'Inowas\ScenarioAnalysis\Infrastructure\Repository\EventStoreScenarioAnalysisList'
+                    aggregate_type: 'Inowas\ScenarioAnalysis\Model\ScenarioAnalysisAggregate'
+                    aggregate_translator: 'prooph_event_sourcing.aggregate_translator'
                 soil_model_list:
                     repository_class: 'Inowas\Soilmodel\Infrastructure\Repository\EventStoreSoilmodelList'
                     aggregate_type: 'Inowas\Soilmodel\Model\SoilmodelAggregate'

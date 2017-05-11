@@ -31,23 +31,6 @@ class UpdateBoundary extends Command implements PayloadConstructable
         return new self($payload);
     }
 
-    public static function ofScenario(
-        UserId $userId,
-        ModflowId $baseModelId,
-        ModflowId $scenarioId,
-        ModflowBoundary $boundary
-    ): UpdateBoundary
-    {
-        $payload = [
-            'user_id' => $userId->toString(),
-            'basemodel_id' => $baseModelId->toString(),
-            'scenario_id' => $scenarioId->toString(),
-            'boundary' => serialize($boundary)
-        ];
-
-        return new self($payload);
-    }
-
     public function boundary(): ModflowBoundary
     {
         return unserialize($this->payload['boundary']);
@@ -61,14 +44,5 @@ class UpdateBoundary extends Command implements PayloadConstructable
     public function userId(): UserId
     {
         return UserId::fromString($this->payload['user_id']);
-    }
-
-    public function scenarioId(): ?ModflowId
-    {
-        if (array_key_exists('scenario_id', $this->payload)){
-            return ModflowId::fromString($this->payload['scenario_id']);
-        }
-
-        return null;
     }
 }

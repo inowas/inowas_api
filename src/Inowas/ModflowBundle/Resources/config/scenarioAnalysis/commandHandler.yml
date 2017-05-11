@@ -1,0 +1,4 @@
+services:
+    inowas.scenarioanalysis.create_scenarioanalysis_handler:
+        class: Inowas\ScenarioAnalysis\Model\Handler\CreateScenarioAnalysisHandler
+        arguments: ['@scenarioanalysis_list']

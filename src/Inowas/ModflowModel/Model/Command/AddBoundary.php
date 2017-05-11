@@ -16,32 +16,15 @@ class AddBoundary extends Command implements PayloadConstructable
 
     use PayloadTrait;
 
-    public static function toBaseModel(
+    public static function to(
+        ModflowId $modelId,
         UserId $userId,
-        ModflowId $baseModelId,
         ModflowBoundary $boundary
     ): AddBoundary
     {
         $payload = [
+            'model_id' => $modelId->toString(),
             'user_id' => $userId->toString(),
-            'basemodel_id' => $baseModelId->toString(),
-            'boundary' => serialize($boundary)
-        ];
-
-        return new self($payload);
-    }
-
-    public static function toScenario(
-        UserId $userId,
-        ModflowId $baseModelId,
-        ModflowId $scenarioId,
-        ModflowBoundary $boundary
-    ): AddBoundary
-    {
-        $payload = [
-            'user_id' => $userId->toString(),
-            'basemodel_id' => $baseModelId->toString(),
-            'scenario_id' => $scenarioId->toString(),
             'boundary' => serialize($boundary)
         ];
 
@@ -53,22 +36,13 @@ class AddBoundary extends Command implements PayloadConstructable
         return unserialize($this->payload['boundary']);
     }
 
-    public function baseModelId(): ModflowId
+    public function modelId(): ModflowId
     {
-        return ModflowId::fromString($this->payload['basemodel_id']);
+        return ModflowId::fromString($this->payload['model_id']);
     }
 
     public function userId(): UserId
     {
         return UserId::fromString($this->payload['user_id']);
-    }
-
-    public function scenarioId(): ?ModflowId
-    {
-        if (array_key_exists('scenario_id', $this->payload)){
-            return ModflowId::fromString($this->payload['scenario_id']);
-        }
-
-        return null;
     }
 }

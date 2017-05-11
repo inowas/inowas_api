@@ -2,16 +2,19 @@
 
 declare(strict_types=1);
 
-namespace Inowas\ModflowModel\Infrastructure\Projection\ModelScenarioList;
+namespace Inowas\ModflowModel\Infrastructure\Projection\ModelList;
 
 use Doctrine\DBAL\Connection;
+use Inowas\Common\Geometry\Geometry;
+use Inowas\Common\Geometry\Polygon;
+use Inowas\Common\Grid\ActiveCells;
 use Inowas\Common\Grid\BoundingBox;
 use Inowas\Common\Grid\GridSize;
 use Inowas\Common\Id\ModflowId;
 use Inowas\Common\Id\UserId;
 use Inowas\ModflowModel\Infrastructure\Projection\Table;
 
-class ModelDetailsFinder
+class ModelFinder
 {
     /** @var Connection $connection */
     protected $connection;
@@ -29,7 +32,31 @@ class ModelDetailsFinder
         );
     }
 
-    public function findBoundingBoxByBaseModelId(ModflowId $modelId): ?BoundingBox
+    public function findAreaActiveCells(ModflowId $modelId): ActiveCells
+    {
+        $result =  $this->connection->fetchAssoc(
+            sprintf('SELECT active_cells FROM %s WHERE model_id = :model_id', Table::MODEL_DETAILS),
+            ['model_id' => $modelId->toString()]
+        );
+
+        return ActiveCells::fromArray((array)json_decode($result['active_cells']));
+    }
+
+    public function findAreaGeometryByModflowModelId(ModflowId $modelId): Polygon
+    {
+        $result =  $this->connection->fetchAssoc(
+            sprintf('SELECT area FROM %s WHERE model_id = :model_id', Table::MODEL_DETAILS),
+            ['model_id' => $modelId->toString()]
+        );
+
+        if ($result === false){
+            return null;
+        }
+
+        return Geometry::fromJson($result['area'])->value();
+    }
+
+    public function findBoundingBoxByModflowModelId(ModflowId $modelId): BoundingBox
     {
         $result =  $this->connection->fetchAssoc(
             sprintf('SELECT bounding_box FROM %s WHERE model_id = :model_id', Table::MODEL_DETAILS),
@@ -43,7 +70,7 @@ class ModelDetailsFinder
         return BoundingBox::fromArray((array)json_decode($result['bounding_box']));
     }
 
-    public function findGridSizeByBaseModelId(ModflowId $modelId): ?GridSize
+    public function findGridSizeByModflowModelId(ModflowId $modelId): GridSize
     {
         $result = $this->connection->fetchAssoc(
             sprintf('SELECT grid_size FROM %s WHERE model_id = :model_id', Table::MODEL_DETAILS),

@@ -81,7 +81,7 @@ class Hanoi extends LoadScenarioBase
         $commandBus = $this->container->get('prooph_service_bus.modflow_command_bus');
         $ownerId = UserId::fromString($this->ownerId);
         $modelId = ModflowId::generate();
-        $commandBus->dispatch(CreateModflowModel::byUserWithModelId($ownerId, $modelId));
+        $commandBus->dispatch(CreateModflowModel::newWithId($ownerId, $modelId));
         $commandBus->dispatch(ChangeModflowModelName::forModflowModel($ownerId, $modelId, Modelname::fromString('Base Scenario Hanoi 2005-2007')));
         $commandBus->dispatch(ChangeModflowModelDescription::forModflowModel(
             $ownerId,
@@ -146,7 +146,7 @@ class Hanoi extends LoadScenarioBase
                 array(105.790767733626808, 21.094425932026443)
             )
         ), 4326)));
-        $commandBus->dispatch(AddBoundary::toBaseModel($ownerId, $modelId, $area));
+        $commandBus->dispatch(AddBoundary::to($ownerId, $modelId, $area));
 
         $soilModelId = SoilmodelId::generate();
         $commandBus->dispatch(ChangeModflowModelSoilmodelId::forModflowModel($modelId, $soilModelId));
@@ -438,7 +438,7 @@ class Hanoi extends LoadScenarioBase
             }
 
             echo sprintf('Add Well %s to BaseModel'."\r\n", $wellBoundary->name()->toString());
-            $commandBus->dispatch(AddBoundary::toBaseModel($ownerId, $modelId, $wellBoundary));
+            $commandBus->dispatch(AddBoundary::to($ownerId, $modelId, $wellBoundary));
         }
 
         /*
@@ -478,7 +478,7 @@ class Hanoi extends LoadScenarioBase
             echo sprintf("Add River-Boundary ObservationPoint %s.\r\n", $observationPoint->name()->toString());
             $river = $river->addObservationPoint($observationPoint);
         }
-        $commandBus->dispatch(AddBoundary::toBaseModel($ownerId, $modelId, $river));
+        $commandBus->dispatch(AddBoundary::to($ownerId, $modelId, $river));
 
         /*
          * Add ConstantHead for the baseScenario
@@ -525,7 +525,7 @@ class Hanoi extends LoadScenarioBase
             }
         }
         echo sprintf("Add Chd-Boundary %s.\r\n", $chdBoundary->name()->toString());
-        $commandBus->dispatch(AddBoundary::toBaseModel($ownerId, $modelId, $chdBoundary));
+        $commandBus->dispatch(AddBoundary::to($ownerId, $modelId, $chdBoundary));
 
         $calculationList = [];
         $calculationId = ModflowId::generate();

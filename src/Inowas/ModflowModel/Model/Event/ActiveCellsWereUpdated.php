@@ -28,7 +28,7 @@ class ActiveCellsWereUpdated extends AggregateChanged
     /** @var  string */
     private $type;
 
-    public static function toBaseModel(
+    public static function ofBoundary(
         UserId $userId,
         ModflowId $modflowId,
         BoundaryId $boundaryId,

@@ -37,11 +37,6 @@ final class UpdateBoundaryHandler
             throw WriteAccessFailedException::withUserAndOwner($command->userId(), $modflowModel->ownerId());
         }
 
-        if ($command->scenarioId()){
-            $modflowModel->updateBoundaryOfScenario($command->userId(), $command->scenarioId(), $command->boundary());
-            return;
-        }
-
-        $modflowModel->updateBoundaryOfBaseModel($command->userId(), $command->boundary());
+        $modflowModel->updateBoundary($command->userId(), $command->boundary());
     }
 }

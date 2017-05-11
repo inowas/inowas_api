@@ -8,7 +8,6 @@ use Inowas\Common\Exception\ObservationPointNotFoundInBoundaryException;
 use Inowas\Common\Geometry\Geometry;
 use Inowas\Common\Grid\ActiveCells;
 use Inowas\Common\Grid\AffectedLayers;
-use Inowas\Common\Grid\LayerNumber;
 use Inowas\Common\Id\BoundaryId;
 use Inowas\Common\Id\ObservationPointId;
 

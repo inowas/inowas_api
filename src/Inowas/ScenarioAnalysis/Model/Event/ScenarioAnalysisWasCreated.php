@@ -2,13 +2,10 @@
 
 declare(strict_types=1);
 
-namespace Inowas\ModflowModel\Model\Event;
+namespace Inowas\ScenarioAnalysis\Model\Event;
 
-use Inowas\Common\Id\IdInterface;
 use Inowas\Common\Id\ModflowId;
 use Inowas\Common\Id\UserId;
-use Inowas\Common\Modflow\LengthUnit;
-use Inowas\Common\Modflow\TimeUnit;
 use Inowas\ScenarioAnalysis\Model\ScenarioAnalysisId;
 use Prooph\EventSourcing\AggregateChanged;
 
@@ -43,7 +40,7 @@ class ScenarioAnalysisWasCreated extends AggregateChanged
             $this->scenarioAnalysisId = ScenarioAnalysisId::fromString($this->aggregateId());
         }
 
-        return $this->scenarioAnalysisId();
+        return $this->scenarioAnalysisId;
     }
 
     public function baseModelId(): ModflowId

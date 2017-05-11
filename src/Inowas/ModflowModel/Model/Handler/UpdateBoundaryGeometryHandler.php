@@ -37,12 +37,6 @@ final class UpdateBoundaryGeometryHandler
             throw WriteAccessFailedException::withUserAndOwner($command->userId(), $modflowModel->ownerId());
         }
 
-        if (is_null($command->scenarioId())) {
-            $modflowModel->updateBoundaryGeometryOfBaseModel($command->userId(), $command->boundaryId(), $command->geometry());
-            return;
-        }
-
-        $modflowModel->updateBoundaryGeometryOfScenario($command->userId(), $command->scenarioId(), $command->boundaryId(), $command->geometry());
-
+        $modflowModel->updateBoundaryGeometry($command->userId(), $command->boundaryId(), $command->geometry());
     }
 }

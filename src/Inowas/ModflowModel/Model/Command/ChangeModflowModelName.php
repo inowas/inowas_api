@@ -27,18 +27,6 @@ class ChangeModflowModelName extends Command implements PayloadConstructable
         );
     }
 
-    public static function forScenario(UserId $userId, ModflowId $modelId, ModflowId $scenarioId, Modelname $modelName): ChangeModflowModelName
-    {
-        return new self(
-            [
-                'user_id' => $userId->toString(),
-                'modflow_model_id' => $modelId->toString(),
-                'scenario_id' => $scenarioId->toString(),
-                'name' => $modelName->toString()
-            ]
-        );
-    }
-
     public function userId(): UserId
     {
         return UserId::fromString($this->payload['user_id']);
@@ -52,14 +40,5 @@ class ChangeModflowModelName extends Command implements PayloadConstructable
     public function name(): Modelname
     {
         return Modelname::fromString($this->payload['name']);
-    }
-
-    public function scenarioId(): ?ModflowId
-    {
-        if (array_key_exists('scenario_id', $this->payload)){
-            return ModflowId::fromString($this->payload['scenario_id']);
-        }
-
-        return null;
     }
 }

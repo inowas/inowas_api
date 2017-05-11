@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Tests\Inowas\ModflowBundle\Functional;
 
 use Doctrine\DBAL\Connection;
-use Inowas\Common\Boundaries\AreaBoundary;
+use Inowas\Common\Boundaries\Area;
 use Inowas\Common\Boundaries\BoundaryName;
 use Inowas\Common\Boundaries\ConstantHeadBoundary;
 use Inowas\Common\Boundaries\ConstantHeadDateTimeValue;
@@ -43,7 +43,6 @@ use Inowas\Common\Soilmodel\SpecificStorage;
 use Inowas\Common\Soilmodel\SpecificYield;
 use Inowas\Common\Soilmodel\TopElevation;
 use Inowas\Common\Soilmodel\VerticalHydraulicConductivity;
-use Inowas\ModflowModel\Model\Command\AddBoundary;
 use Inowas\ModflowModel\Model\Command\ChangeModflowModelBoundingBox;
 use Inowas\ModflowModel\Model\Command\ChangeModflowModelDescription;
 use Inowas\ModflowModel\Model\Command\ChangeModflowModelGridSize;
@@ -116,29 +115,40 @@ abstract class EventSourcingBaseTest extends KernelTestCase
     }
 
     /* HELPERS */
-    protected function createModelWithNameBoundingBoxAndGridSize(UserId $ownerId, ModflowId $modelId): void
+    protected function createModelWithName(UserId $ownerId, ModflowId $modelId): void
     {
-        $this->commandBus->dispatch(CreateModflowModel::byUserWithModelId($ownerId, $modelId));
+        $gridSize = GridSize::fromXY(75, 40);
+        $this->commandBus->dispatch(CreateModflowModel::newWithId($ownerId, $modelId, $this->createArea(), $gridSize));
         $this->commandBus->dispatch(ChangeModflowModelName::forModflowModel($ownerId,$modelId, Modelname::fromString('TestModel')));
 
-        $box = $this->container->get('inowas.geotools.geotools_service')->projectBoundingBox(BoundingBox::fromCoordinates(-63.687336, -63.569260, -31.367449, -31.313615, 4326), Srid::fromInt(4326));
-        $boundingBox = BoundingBox::fromEPSG4326Coordinates($box->xMin(), $box->xMax(), $box->yMin(), $box->yMax(), $box->dX(), $box->dY());
-        $this->commandBus->dispatch(ChangeModflowModelBoundingBox::forModflowModel($ownerId, $modelId, $boundingBox));
-
-        $gridSize = GridSize::fromXY(75, 40);
-        $this->commandBus->dispatch(ChangeModflowModelGridSize::forModflowModel($ownerId, $modelId, $gridSize));
     }
 
     protected function createSoilmodel(UserId $ownerId, SoilmodelId $soilmodelId): void
     {
-        $this->commandBus->dispatch(CreateSoilmodel::byUserWithModelId($ownerId, $soilmodelId));
+                $this->commandBus->dispatch(CreateSoilmodel::byUserWithModelId($ownerId, $soilmodelId));
         $this->commandBus->dispatch(ChangeSoilmodelName::forSoilmodel($ownerId, $soilmodelId, SoilmodelName::fromString('testSoilmodel')));
         $this->commandBus->dispatch(ChangeSoilmodelDescription::forSoilmodel($ownerId, $soilmodelId, SoilmodelDescription::fromString('testSoilmodelDescription')));
     }
 
     protected function createModelWithSoilmodel(UserId $ownerId, ModflowId $modelId): void
     {
-        $this->commandBus->dispatch(CreateModflowModel::byUserWithModelId($ownerId, $modelId));
+
+        $area = Area::create(
+            BoundaryId::generate(),
+            BoundaryName::fromString('Rio Primero Area'),
+            new Polygon(array(array(
+                array(-63.687336, -31.313615),
+                array(-63.687336, -31.367449),
+                array(-63.569260, -31.367449),
+                array(-63.569260, -31.313615),
+                array(-63.687336, -31.313615)
+            )), 4326)
+        );
+
+        $gridSize = GridSize::fromXY(75, 40);
+
+
+        $this->commandBus->dispatch(CreateModflowModel::newWithId($ownerId, $modelId, $area, $gridSize));
         $this->commandBus->dispatch(ChangeModflowModelName::forModflowModel($ownerId, $modelId, Modelname::fromString('Rio Primero Base Model')));
         $this->commandBus->dispatch(ChangeModflowModelDescription::forModflowModel(
             $ownerId,
@@ -153,23 +163,7 @@ abstract class EventSourcingBaseTest extends KernelTestCase
         $gridSize = GridSize::fromXY(75, 40);
         $this->commandBus->dispatch(ChangeModflowModelGridSize::forModflowModel($ownerId, $modelId, $gridSize));
 
-        /** @var AreaBoundary $area */
-        $area = AreaBoundary::create(BoundaryId::generate());
-        $area = $area->setName(BoundaryName::fromString('Rio Primero Area'));
-        $area = $area->setGeometry(Geometry::fromPolygon(new Polygon(
-            array(
-                array(
-                    array(-63.687336, -31.313615),
-                    array(-63.687336, -31.367449),
-                    array(-63.569260, -31.367449),
-                    array(-63.569260, -31.313615),
-                    array(-63.687336, -31.313615)
-                )
-            ), 4326
-        )));
-        $this->commandBus->dispatch(AddBoundary::toBaseModel($ownerId, $modelId, $area));
-
-        /** @var \Inowas\Common\Soilmodel\SoilmodelId $soilModelId */
+        /** @var SoilmodelId $soilModelId */
         $soilModelId = SoilmodelId::generate();
         $this->commandBus->dispatch(ChangeModflowModelSoilmodelId::forModflowModel($modelId, $soilModelId));
         $this->commandBus->dispatch(CreateSoilmodel::byUserWithModelId($ownerId, $soilModelId));
@@ -200,22 +194,20 @@ abstract class EventSourcingBaseTest extends KernelTestCase
 
     }
 
-    protected function createAreaBoundary(): AreaBoundary
+    protected function createArea(): Area
     {
-        $areaId = BoundaryId::generate();
-        $area = AreaBoundary::create($areaId);
-        $area = $area->setName(BoundaryName::fromString('Rio Primero Area'));
-        $area = $area->setGeometry(Geometry::fromPolygon(new Polygon(
-            array(
-                array(
-                    array(-63.65, -31.31),
-                    array(-63.65, -31.36),
-                    array(-63.58, -31.36),
-                    array(-63.58, -31.31),
-                    array(-63.65, -31.31)
-                )
-            ), 4326
-        )));
+
+        $area = Area::create(
+            BoundaryId::generate(),
+            BoundaryName::fromString('Rio Primero Area'),
+            new Polygon(array(array(
+                array(-63.65, -31.31),
+                array(-63.65, -31.36),
+                array(-63.58, -31.36),
+                array(-63.58, -31.31),
+                array(-63.65, -31.31)
+            )), 4326)
+        );
 
         return $area;
     }
@@ -292,11 +284,11 @@ abstract class EventSourcingBaseTest extends KernelTestCase
             Geometry::fromPolygon(new Polygon(
                 array(
                     array(
-                        array(-63.65, -31.31),
-                        array(-63.65, -31.36),
-                        array(-63.58, -31.36),
-                        array(-63.58, -31.31),
-                        array(-63.65, -31.31)
+                        array(-63.64, -31.32),
+                        array(-63.64, -31.35),
+                        array(-63.59, -31.35),
+                        array(-63.59, -31.32),
+                        array(-63.64, -31.32)
                     )
                 ), 4326
             ))
@@ -425,7 +417,7 @@ abstract class EventSourcingBaseTest extends KernelTestCase
         $wellBoundary = WellBoundary::createWithParams(
             $boundaryId,
             BoundaryName::fromString('Test Well 1'),
-            Geometry::fromPoint(new Point(-63.671125, -31.325009, 4326)),
+            Geometry::fromPoint(new Point(-63.60, -31.32, 4326)),
             WellType::fromString(WellType::TYPE_INDUSTRIAL_WELL),
             AffectedLayers::createWithLayerNumber(LayerNumber::fromInteger(0))
         );
