@@ -272,12 +272,43 @@ paths:
           description: "Boundary not found"
       security:
         - api_key: []
+
+  /modflowmodels/{id}/boundaries/{bid}/name:
+    get:
+      tags:
+        - "modflowmodel"
+      summary: "Get boundaryName by modelId and BoundaryId"
+      description: "Returns the boundaryName"
+      operationId: "getModflowModelBoundaryName"
+      produces:
+        - "application/json"
+      parameters:
+        - name: "id"
+          in: "path"
+          description: "ID of ModflowModel"
+          required: true
+          type: "string"
+        - name: "bid"
+          in: "path"
+          description: "ID of ModflowModelBoundary"
+          required: true
+          type: "string"
+      responses:
+        '200':
+          description: "successful operation"
+          schema:
+            $ref: '#/definitions/BoundaryName'
+
+        '404':
+          description: "Boundary not found"
+      security:
+        - api_key: []
     put:
       tags:
         - "modflowmodel"
-      summary: "Update boundary by modflowModelId and boundaryId"
+      summary: "Update boundaryGeometry with modflowModelId and boundaryId"
       description: "Updates a boundary with name, type, geometry, observationpoints and observationpointvalues. All params are optional. All given parameters will be updated."
-      operationId: "updateModflowModelBoundary"
+      operationId: "updateModflowModelBoundaryName"
       consumes:
         - "application/json"
       produces:
@@ -295,10 +326,10 @@ paths:
           type: "string"
         - in: "body"
           name: "body"
-          description: "Boundary that needs to be added"
+          description: "Boundary geometry"
           required: true
           schema:
-            $ref: '#/definitions/ModflowModelBoundaryListItem'
+            $ref: '#/definitions/BoundaryName'
       responses:
         '302':
           description: "Redirect response"
@@ -310,8 +341,122 @@ paths:
       security:
         - api_key: []
 
+  /modflowmodels/{id}/boundaries/{bid}/geometry:
+    get:
+      tags:
+        - "modflowmodel"
+      summary: "Get boundaryGeometry by modelId and BoundaryId"
+      description: "Returns the boundaryGeometry"
+      operationId: "getModflowModelBoundaryGeometry"
+      produces:
+        - "application/json"
+      parameters:
+        - name: "id"
+          in: "path"
+          description: "ID of ModflowModel"
+          required: true
+          type: "string"
+        - name: "bid"
+          in: "path"
+          description: "ID of ModflowModelBoundary"
+          required: true
+          type: "string"
+      responses:
+        '200':
+          description: "successful operation"
+          schema:
+            $ref: '#/definitions/Geometry'
+        '404':
+          description: "Boundary not found"
+      security:
+        - api_key: []
+    put:
+      tags:
+        - "modflowmodel"
+      summary: "Update boundaryGeometry with modflowModelId and boundaryId"
+      description: "Updates a boundary with name, type, geometry, observationpoints and observationpointvalues. All params are optional. All given parameters will be updated."
+      operationId: "updateModflowModelBoundaryGeometry"
+      consumes:
+        - "application/json"
+      produces:
+        - "application/json"
+      parameters:
+        - name: "id"
+          in: "path"
+          description: "ID of ModflowModel"
+          required: true
+          type: "string"
+        - name: "bid"
+          in: "path"
+          description: "ID of ModflowModelBoundary"
+          required: true
+          type: "string"
+        - in: "body"
+          name: "body"
+          description: "Boundary geometry"
+          required: true
+          schema:
+            $ref: '#/definitions/Geometry'
+      responses:
+        '302':
+          description: "Redirect response"
+          headers:
+            Location:
+              type: "string"
+        '422':
+          description: "Invalid input"
+      security:
+        - api_key: []
+
+  /modflowmodels/{id}/boundaries/{bid}/observationpoints:
+    post:
+      tags:
+        - "modflowmodel"
+      summary: "Creates a new observationPoint"
+      description: "Creates a new observationPoint."
+      operationId: "addeObservationPointToBoundary"
+      consumes:
+        - "application/json"
+      produces:
+        - "application/json"
+      parameters:
+        - name: "id"
+          in: "path"
+          description: "ID of ModflowModel"
+          required: true
+          type: "string"
+        - name: "bid"
+          in: "path"
+          description: "ID of ModflowModelBoundary"
+          required: true
+          type: "string"
+        - in: "body"
+          name: "body"
+          description: "ObservationPointName and Geometry"
+          required: true
+          schema:
+            type: "object"
+            properties:
+              name:
+                type: "string"
+                example: "NewObservationPoint"
+              geometry:
+                $ref: '#/definitions/PointGeometry'
+
+      responses:
+        '302':
+          description: "Redirect response"
+          headers:
+            Location:
+              type: "string"
+        '422':
+          description: "Invalid input"
+      security:
+        - api_key: []
+
+
   /modflowmodels/{id}/boundaries/{bid}/observationpoints/{oid}:
-   get:
+    get:
       tags:
         - "modflowmodel"
       summary: "Get observationpoint with observationpointvalues ids."
@@ -346,12 +491,49 @@ paths:
           description: "Invalid input"
       security:
         - api_key: []
-   put:
+
+  /modflowmodels/{id}/boundaries/{bid}/observationpoints/{oid}/name:
+    get:
       tags:
         - "modflowmodel"
-      summary: "Update observationpoint with observationpointvalues ids."
-      description: "Updates the observationpointValues"
-      operationId: "putModflowModelBoundaryObservationPoint"
+      summary: "Get observationPointName."
+      description: "Returns observationPointName"
+      operationId: "getModflowModelBoundaryObservationPointName"
+      produces:
+        - "application/json"
+      parameters:
+        - name: "id"
+          in: "path"
+          description: "ID of ModflowModel"
+          required: true
+          type: "string"
+        - name: "bid"
+          in: "path"
+          description: "ID of ModflowModelBoundary"
+          required: true
+          type: "string"
+        - name: "oid"
+          in: "path"
+          description: "ID of ModflowModelBoundaryObservationpoint"
+          required: true
+          type: "string"
+      responses:
+        '200':
+          description: "successful operation"
+          schema:
+            $ref: '#/definitions/ObservationPointName'
+        '404':
+          description: "Not found"
+        '422':
+          description: "Invalid input"
+      security:
+        - api_key: []
+    put:
+      tags:
+        - "modflowmodel"
+      summary: "Update observationpointName."
+      description: "Updates the observationpointName"
+      operationId: "putModflowModelBoundaryObservationPointName"
       consumes:
         - "application/json"
       produces:
@@ -377,7 +559,165 @@ paths:
           description: "Boundary that needs to be added"
           required: true
           schema:
-            $ref: '#/definitions/ModflowModelBoundaryObservationPoint'
+            $ref: '#/definitions/ObservationPointName'
+      responses:
+        '302':
+          description: "Redirect response"
+          headers:
+            Location:
+              type: "string"
+        '422':
+          description: "Invalid input"
+      security:
+        - api_key: []
+
+  /modflowmodels/{id}/boundaries/{bid}/observationpoints/{oid}/geometry:
+    get:
+      tags:
+        - "modflowmodel"
+      summary: "Get observationPointName."
+      description: "Returns observationPointName"
+      operationId: "getModflowModelBoundaryObservationPointGeometry"
+      produces:
+        - "application/json"
+      parameters:
+        - name: "id"
+          in: "path"
+          description: "ID of ModflowModel"
+          required: true
+          type: "string"
+        - name: "bid"
+          in: "path"
+          description: "ID of ModflowModelBoundary"
+          required: true
+          type: "string"
+        - name: "oid"
+          in: "path"
+          description: "ID of ModflowModelBoundaryObservationpoint"
+          required: true
+          type: "string"
+      responses:
+        '200':
+          description: "successful operation"
+          schema:
+            $ref: '#/definitions/PointGeometry'
+        '404':
+          description: "Not found"
+        '422':
+          description: "Invalid input"
+      security:
+        - api_key: []
+    put:
+      tags:
+        - "modflowmodel"
+      summary: "Update observationpointName."
+      description: "Updates the observationpointName"
+      operationId: "putModflowModelBoundaryObservationPointGeometry"
+      consumes:
+        - "application/json"
+      produces:
+        - "application/json"
+      parameters:
+        - name: "id"
+          in: "path"
+          description: "ID of ModflowModel"
+          required: true
+          type: "string"
+        - name: "bid"
+          in: "path"
+          description: "ID of ModflowModelBoundary"
+          required: true
+          type: "string"
+        - name: "oid"
+          in: "path"
+          description: "ID of ModflowModelBoundaryObservationpoint"
+          required: true
+          type: "string"
+        - in: "body"
+          name: "body"
+          description: "Boundary that needs to be added"
+          required: true
+          schema:
+            $ref: '#/definitions/PointGeometry'
+      responses:
+        '302':
+          description: "Redirect response"
+          headers:
+            Location:
+              type: "string"
+        '422':
+          description: "Invalid input"
+      security:
+        - api_key: []
+
+  /modflowmodels/{id}/boundaries/{bid}/observationpoints/{oid}/values:
+    get:
+      tags:
+        - "modflowmodel"
+      summary: "Get observationPointName."
+      description: "Returns observationPointName"
+      operationId: "getModflowModelBoundaryObservationPointValues"
+      produces:
+        - "application/json"
+      parameters:
+        - name: "id"
+          in: "path"
+          description: "ID of ModflowModel"
+          required: true
+          type: "string"
+        - name: "bid"
+          in: "path"
+          description: "ID of ModflowModelBoundary"
+          required: true
+          type: "string"
+        - name: "oid"
+          in: "path"
+          description: "ID of ModflowModelBoundaryObservationpoint"
+          required: true
+          type: "string"
+      responses:
+        '200':
+          description: "successful operation"
+          schema:
+            $ref: '#/definitions/ObservationPointValuesWithDescription'
+        '404':
+          description: "Not found"
+        '422':
+          description: "Invalid input"
+      security:
+        - api_key: []
+    put:
+      tags:
+        - "modflowmodel"
+      summary: "Update observationpointName."
+      description: "Updates the observationpointName"
+      operationId: "putModflowModelBoundaryObservationPointValues"
+      consumes:
+        - "application/json"
+      produces:
+        - "application/json"
+      parameters:
+        - name: "id"
+          in: "path"
+          description: "ID of ModflowModel"
+          required: true
+          type: "string"
+        - name: "bid"
+          in: "path"
+          description: "ID of ModflowModelBoundary"
+          required: true
+          type: "string"
+        - name: "oid"
+          in: "path"
+          description: "ID of ModflowModelBoundaryObservationpoint"
+          required: true
+          type: "string"
+        - in: "body"
+          name: "body"
+          description: "Boundary that needs to be added"
+          required: true
+          schema:
+            $ref: '#/definitions/ObservationPointValues'
       responses:
         '302':
           description: "Redirect response"
@@ -788,7 +1128,6 @@ definitions:
         properties:
           well_type:
             $ref: '#/definitions/WellType'
-
   ModflowModelBoundaryDetails:
     type: "object"
     properties:
@@ -808,7 +1147,6 @@ definitions:
         type: "array"
         items:
           $ref: '#/definitions/ModflowModelBoundaryObservationPoint'
-
   ModflowModelBoundaryObservationPoint:
     type: "object"
     properties:
@@ -821,25 +1159,36 @@ definitions:
       geometry:
         $ref: "#/definitions/PointGeometry"
       values_description:
-        type: "array"
-        items:
-          type: "string"
-        example:
-          - "date_time"
-          - "stage"
-          - "bottom"
-          - "conductivity"
+        $ref: '#/definitions/ObservationPointValuesDescription'
       values:
-        type: "array"
-        items:
-          type: "array"
-          items:
-            type: "string"
-          example:
-            - "2005-08-15T00:00:00+00:00"
-            - "12.01"
-            - "10.7"
-            - "1000"
+        $ref: '#/definitions/ObservationPointValues'
+  ObservationPointValuesWithDescription:
+    type: "object"
+    properties:
+      values_description:
+        $ref: '#/definitions/ObservationPointValuesDescription'
+      values:
+        $ref: '#/definitions/ObservationPointValues'
+  ObservationPointValuesDescription:
+    type: "array"
+    items:
+      type: "string"
+    example:
+      - "date_time"
+      - "stage"
+      - "bottom"
+      - "conductivity"
+  ObservationPointValues:
+    type: "array"
+    items:
+      type: "array"
+      items:
+        type: "string"
+      example:
+        - "2005-08-15T00:00:00+00:00"
+        - "12.01"
+        - "10.7"
+        - "1000"
   Soilmodel:
     type: "object"
     properties:
@@ -1083,6 +1432,18 @@ definitions:
       x_max: "105.91074365467"
       y_min: "20.942021243028"
       y_max: "21.100903658646"
+  BoundaryName:
+    type: "object"
+    properties:
+      name:
+        type: "string"
+        example: "BoundaryName"
+  ObservationPointName:
+    type: "object"
+    properties:
+      name:
+        type: "string"
+        example: "ObservationPointName"
   GridSize:
     type: "object"
     properties:
