@@ -276,7 +276,7 @@ paths:
       tags:
         - "modflowmodel"
       summary: "Update boundary by modflowModelId and boundaryId"
-      description: "Updates a boundary with name, type, geometry"
+      description: "Updates a boundary with name, type, geometry, observationpoints and observationpointvalues. All params are optional. All given parameters will be updated."
       operationId: "updateModflowModelBoundary"
       consumes:
         - "application/json"
@@ -298,7 +298,86 @@ paths:
           description: "Boundary that needs to be added"
           required: true
           schema:
-            $ref: '#/definitions/ModflowModelBoundaryDetails'
+            $ref: '#/definitions/ModflowModelBoundaryListItem'
+      responses:
+        '302':
+          description: "Redirect response"
+          headers:
+            Location:
+              type: "string"
+        '422':
+          description: "Invalid input"
+      security:
+        - api_key: []
+
+  /modflowmodels/{id}/boundaries/{bid}/observationpoints/{oid}:
+   get:
+      tags:
+        - "modflowmodel"
+      summary: "Get observationpoint with observationpointvalues ids."
+      description: "Returns observationpoints and observationPointValues"
+      operationId: "getModflowModelBoundaryObservationPoint"
+      produces:
+        - "application/json"
+      parameters:
+        - name: "id"
+          in: "path"
+          description: "ID of ModflowModel"
+          required: true
+          type: "string"
+        - name: "bid"
+          in: "path"
+          description: "ID of ModflowModelBoundary"
+          required: true
+          type: "string"
+        - name: "oid"
+          in: "path"
+          description: "ID of ModflowModelBoundaryObservationpoint"
+          required: true
+          type: "string"
+      responses:
+        '200':
+          description: "successful operation"
+          schema:
+            $ref: '#/definitions/ModflowModelBoundaryObservationPoint'
+        '404':
+          description: "ObservationPoint not found"
+        '422':
+          description: "Invalid input"
+      security:
+        - api_key: []
+   put:
+      tags:
+        - "modflowmodel"
+      summary: "Update observationpoint with observationpointvalues ids."
+      description: "Updates the observationpointValues"
+      operationId: "putModflowModelBoundaryObservationPoint"
+      consumes:
+        - "application/json"
+      produces:
+        - "application/json"
+      parameters:
+        - name: "id"
+          in: "path"
+          description: "ID of ModflowModel"
+          required: true
+          type: "string"
+        - name: "bid"
+          in: "path"
+          description: "ID of ModflowModelBoundary"
+          required: true
+          type: "string"
+        - name: "oid"
+          in: "path"
+          description: "ID of ModflowModelBoundaryObservationpoint"
+          required: true
+          type: "string"
+        - in: "body"
+          name: "body"
+          description: "Boundary that needs to be added"
+          required: true
+          schema:
+            $ref: '#/definitions/ModflowModelBoundaryObservationPoint'
       responses:
         '302':
           description: "Redirect response"
