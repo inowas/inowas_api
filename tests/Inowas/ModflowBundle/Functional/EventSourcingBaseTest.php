@@ -125,7 +125,7 @@ abstract class EventSourcingBaseTest extends KernelTestCase
 
     protected function createSoilmodel(UserId $ownerId, SoilmodelId $soilmodelId): void
     {
-                $this->commandBus->dispatch(CreateSoilmodel::byUserWithModelId($ownerId, $soilmodelId));
+        $this->commandBus->dispatch(CreateSoilmodel::byUserWithModelId($ownerId, $soilmodelId));
         $this->commandBus->dispatch(ChangeSoilmodelName::forSoilmodel($ownerId, $soilmodelId, SoilmodelName::fromString('testSoilmodel')));
         $this->commandBus->dispatch(ChangeSoilmodelDescription::forSoilmodel($ownerId, $soilmodelId, SoilmodelDescription::fromString('testSoilmodelDescription')));
     }

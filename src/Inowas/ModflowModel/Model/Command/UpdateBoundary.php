@@ -16,7 +16,7 @@ class UpdateBoundary extends Command implements PayloadConstructable
 
     use PayloadTrait;
 
-    public static function ofBaseModel(
+    public static function byUserAndModel(
         UserId $userId,
         ModflowId $baseModelId,
         ModflowBoundary $boundary

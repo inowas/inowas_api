@@ -24,7 +24,7 @@ class ModelFinder
         $this->connection->setFetchMode(\PDO::FETCH_OBJ);
     }
 
-    public function findByBaseModelId(ModflowId $modelId): array
+    public function findByModelId(ModflowId $modelId): array
     {
         return $this->connection->fetchAssoc(
             sprintf('SELECT * FROM %s WHERE model_id = :model_id', Table::MODEL_DETAILS),

@@ -4,8 +4,6 @@ declare(strict_types=1);
 
 namespace Inowas\ModflowModel\Model\Handler;
 
-use Inowas\Common\Modflow\LengthUnit;
-use Inowas\Common\Modflow\TimeUnit;
 use Inowas\GeoTools\Service\GeoTools;
 use Inowas\ModflowModel\Model\Command\CreateModflowModel;
 use Inowas\ModflowModel\Model\ModflowModelList;
@@ -28,12 +26,6 @@ final class CreateModflowModelHandler
 
     public function __invoke(CreateModflowModel $command)
     {
-        /**
-         * @TODO Retrieve Units from UserProfile
-         */
-        $lengthUnit = LengthUnit::fromInt(LengthUnit::METERS);
-        $timeUnit = TimeUnit::fromInt(TimeUnit::DAYS);
-
         $boundingBox = $this->geoTools->getBoundingBoxFromPolygon($command->area()->geometry());
 
         $modflowModel = ModflowModelAggregate::create(
@@ -42,8 +34,8 @@ final class CreateModflowModelHandler
             $command->area(),
             $command->gridSize(),
             $boundingBox,
-            $lengthUnit,
-            $timeUnit
+            $command->lengthUnit(),
+            $command->timeUnit()
         );
 
         $this->modelList->add($modflowModel);

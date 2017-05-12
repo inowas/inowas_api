@@ -111,7 +111,7 @@ paths:
           headers:
             Location:
               type: "string"
-        '405':
+        '422':
           description: "Invalid input"
       security:
         - api_key: []
@@ -146,7 +146,7 @@ paths:
       tags:
         - "modflowmodel"
       summary: "Updates data of existing ModflowModel"
-      description: ''
+      description: 'Only send the fields which have changed.'
       operationId: "updateModflowModel"
       consumes:
         - "application/json"
@@ -181,7 +181,7 @@ paths:
           headers:
             Location:
               type: "string"
-        '405':
+        '422':
           description: "Invalid input"
       security:
         - api_key: []
@@ -205,7 +205,9 @@ paths:
         '200':
           description: "successful operation"
           schema:
-            $ref: '#/definitions/ModflowModelBoundaryListItem'
+            type: array
+            items:
+              $ref: '#/definitions/ModflowModelBoundaryListItem'
       security:
         - api_key: []
     post:
@@ -229,14 +231,14 @@ paths:
           description: "Boundary that needs to be added"
           required: true
           schema:
-            $ref: '#/definitions/ModflowModelBoundaryListItem'
+            $ref: '#/definitions/ModflowModelBoundarySubmitItem'
       responses:
         '302':
           description: "Redirect response"
           headers:
             Location:
               type: "string"
-        '405':
+        '422':
           description: "Invalid input"
       security:
         - api_key: []
@@ -246,7 +248,7 @@ paths:
       tags:
         - "modflowmodel"
       summary: "Get boundary by modelId and BoundaryId"
-      description: "Returns the details of a boundary with id, type, name, geometry, metadata, observationpoints and observationPointValues"
+      description: "Returns all details of a boundary with id, type, name, geometry, metadata, observationpoints and observationPointValues"
       operationId: "getModflowModelBoundary"
       produces:
         - "application/json"
@@ -266,6 +268,8 @@ paths:
           description: "successful operation"
           schema:
             $ref: '#/definitions/ModflowModelBoundaryDetails'
+        '404':
+          description: "Boundary not found"
       security:
         - api_key: []
     put:
@@ -294,89 +298,14 @@ paths:
           description: "Boundary that needs to be added"
           required: true
           schema:
-            $ref: '#/definitions/ModflowModelBoundaryListItem'
+            $ref: '#/definitions/ModflowModelBoundaryDetails'
       responses:
         '302':
           description: "Redirect response"
           headers:
             Location:
               type: "string"
-        '405':
-          description: "Invalid input"
-      security:
-        - api_key: []
-
-  /modflowmodels/{id}/boundaries/{bid}/observationpoints/{oid}:
-    get:
-      tags:
-        - "modflowmodel"
-      summary: "Get observationpoint and values by modflowmodelId, boundaryId and observationPointId"
-      description: "Returns the observationPoint details"
-      operationId: "getModflowModelBoundaryObservationPointValue"
-      produces:
-        - "application/json"
-      parameters:
-        - name: "id"
-          in: "path"
-          description: "ID of ModflowModel"
-          required: true
-          type: "string"
-        - name: "bid"
-          in: "path"
-          description: "ID of ModflowModelBoundary"
-          required: true
-          type: "string"
-        - name: "oid"
-          in: "path"
-          description: "ID of ModflowModelBoundaryObservationPoint"
-          required: true
-          type: "string"
-      responses:
-        '200':
-          description: "successful operation"
-          schema:
-            $ref: '#/definitions/ModflowModelBoundaryObservationPoint'
-      security:
-        - api_key: []
-    put:
-      tags:
-        - "modflowmodel"
-      summary: "Update observationpoint values by modflowmodelId, boundaryId and observationPointId"
-      description: "Updates and return an redirect to the getter"
-      operationId: "updateModflowModelBoundaryObservationPointValue"
-      consumes:
-        - "application/json"
-      produces:
-        - "application/json"
-      parameters:
-        - name: "id"
-          in: "path"
-          description: "ID of ModflowModel"
-          required: true
-          type: "string"
-        - name: "bid"
-          in: "path"
-          description: "ID of ModflowModelBoundary"
-          required: true
-          type: "string"
-        - name: "oid"
-          in: "path"
-          description: "ID of ModflowModelBoundaryObservationPoint"
-          required: true
-          type: "string"
-        - in: "body"
-          name: "body"
-          description: "ObservationPointObject that needs to be updated"
-          required: true
-          schema:
-            $ref: '#/definitions/ModflowModelBoundaryObservationPoint'
-      responses:
-        '302':
-          description: "Redirect response"
-          headers:
-            Location:
-              type: "string"
-        '405':
+        '422':
           description: "Invalid input"
       security:
         - api_key: []
@@ -516,7 +445,7 @@ paths:
           headers:
             Location:
               type: "string"
-        '405':
+        '422':
           description: "Invalid input"
       security:
         - api_key: []
@@ -610,7 +539,7 @@ paths:
           headers:
             Location:
               type: "string"
-        '405':
+        '422':
           description: "Invalid input"
       security:
         - api_key: []
@@ -658,7 +587,7 @@ paths:
           headers:
             Location:
               type: "string"
-        '405':
+        '422':
           description: "Invalid input"
 
   /scenarioanalyses/public:
@@ -760,6 +689,27 @@ definitions:
         $ref: '#/definitions/Geometry'
       metadata:
         type: "array"
+  ModflowModelBoundarySubmitItem:
+    type: "object"
+    properties:
+      name:
+        type: "string"
+        example: "Well 123"
+      type:
+        $ref: '#/definitions/BoundaryType'
+      geometry:
+        $ref: '#/definitions/Geometry'
+      affected_layers:
+        type: "array"
+        items:
+          type: "integer"
+          example: 0
+      metadata:
+        type: "object"
+        properties:
+          well_type:
+            $ref: '#/definitions/WellType'
+
   ModflowModelBoundaryDetails:
     type: "object"
     properties:
@@ -775,6 +725,11 @@ definitions:
         $ref: '#/definitions/Geometry'
       metadata:
         type: "array"
+      observation_points:
+        type: "array"
+        items:
+          $ref: '#/definitions/ModflowModelBoundaryObservationPoint'
+
   ModflowModelBoundaryObservationPoint:
     type: "object"
     properties:
@@ -932,8 +887,13 @@ definitions:
         type: "boolean"
         example: true
   BoundaryType:
-    enum: ["wel", "rch", "chd", "ghb"]
+    type: "string"
+    enum: ["chd", "ghb", "rch", "riv", "wel"]
     default: "wel"
+  WellType:
+    type: "string"
+    enum: ["prw", "puw", "ow", "iw", "smw", "sniw", "snifw", "snpw", "snw", "srw"]
+    default: "puw"
   Geometry:
     type: "object"
     properties:

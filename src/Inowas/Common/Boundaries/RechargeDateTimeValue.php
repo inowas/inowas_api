@@ -51,24 +51,11 @@ class RechargeDateTimeValue extends DateTimeValue
         return $this->dateTime;
     }
 
-    public function jsonSerialize(): array
-    {
-        return $this->toArray();
-    }
-
     public function toArray(): array
     {
         return array(
             'date_time' => $this->dateTime->format(DATE_ATOM),
             'recharge_rate' => $this->rechargeRate
-        );
-    }
-
-    public function toArrayValues(): array
-    {
-        return array(
-            $this->dateTime->format(DATE_ATOM),
-            $this->rechargeRate
         );
     }
 

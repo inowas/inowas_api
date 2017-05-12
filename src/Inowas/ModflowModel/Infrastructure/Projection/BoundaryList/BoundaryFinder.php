@@ -8,6 +8,7 @@ use Doctrine\DBAL\Connection;
 use Inowas\Common\Boundaries\BoundaryName;
 use Inowas\Common\Boundaries\ConstantHeadBoundary;
 use Inowas\Common\Boundaries\GeneralHeadBoundary;
+use Inowas\Common\Boundaries\ModflowBoundary;
 use Inowas\Common\Boundaries\RechargeBoundary;
 use Inowas\Common\Boundaries\RiverBoundary;
 use Inowas\Common\Boundaries\WellBoundary;
@@ -23,7 +24,8 @@ class BoundaryFinder
     /** @var Connection $connection */
     protected $connection;
 
-    public function __construct(Connection $connection) {
+    public function __construct(Connection $connection)
+    {
         $this->connection = $connection;
         $this->connection->setFetchMode(\PDO::FETCH_OBJ);
     }
@@ -141,23 +143,29 @@ class BoundaryFinder
         return $generalHeadBoundaries;
     }
 
-    public function findByModelId(ModflowId $modelId)
+    public function findByModelId(ModflowId $modelId): array
     {
         return $this->connection->fetchAll(
-            sprintf('SELECT boundary_id, type, name, geometry, metadata FROM %s WHERE model_id = :model_id', Table::BOUNDARIES),
+            sprintf('SELECT boundary_id, name, type, geometry, metadata FROM %s WHERE model_id = :model_id', Table::BOUNDARIES),
             ['model_id' => $modelId->toString()]
         );
     }
 
-    public function findBoundaryById(ModflowId $modelId, BoundaryId $boundaryId)
+    public function getBoundaryById(ModflowId $modelId, BoundaryId $boundaryId): ?ModflowBoundary
     {
-        return $this->connection->fetchAssoc(
-            sprintf('SELECT * FROM %s WHERE model_id = :model_id AND boundary_id = :boundary_id', Table::BOUNDARIES),
+        $row = $this->connection->fetchAssoc(
+            sprintf('SELECT boundary FROM %s WHERE model_id = :model_id AND boundary_id = :boundary_id', Table::BOUNDARIES),
             [
                 'model_id' => $modelId->toString(),
                 'boundary_id' => $boundaryId->toString()
             ]
         );
+
+        if ($row === false) {
+            return null;
+        }
+
+        return unserialize(base64_decode($row['boundary']));
     }
 
     public function findStressPeriodDatesById(ModflowId $modelId): array
@@ -177,7 +185,7 @@ class BoundaryFinder
         foreach ($boundaries as $boundary){
             $dataValues = json_decode($boundary['data']);
             foreach ($dataValues as $dataValue){
-                $dateTimeAtom = DateTime::fromDateTime(new \DateTime($dataValue->date_time))->toAtom();
+                $dateTimeAtom = DateTime::fromDateTime(new \DateTime($dataValue[0]))->toAtom();
                 if (! in_array($dateTimeAtom, $spDates)) {
                     $spDates[] = DateTime::fromAtom($dateTimeAtom);
                 }
@@ -192,10 +200,7 @@ class BoundaryFinder
     {
         $result = $this->connection->fetchAssoc(
             sprintf('SELECT active_cells FROM %s WHERE boundary_id =:boundary_id AND model_id = :model_id', Table::BOUNDARIES),
-            [
-                'model_id' => $modelId->toString(),
-                'boundary_id' => $boundaryId->toString()
-            ]
+            ['model_id' => $modelId->toString(), 'boundary_id' => $boundaryId->toString()]
         );
 
         return ActiveCells::fromArray((array)json_decode($result['active_cells']));

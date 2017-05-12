@@ -16,7 +16,7 @@ class AddScenario extends Command implements PayloadConstructable
 
     use PayloadTrait;
 
-    public static function withBaseModelId(ScenarioAnalysisId $scenarioAnalysisId, UserId $userId, ModflowId $baseModelId, ModflowId $scenarioId): AddScenario
+    public static function byUserwithBaseModelAndScenarioId(ScenarioAnalysisId $scenarioAnalysisId, UserId $userId, ModflowId $baseModelId, ModflowId $scenarioId): AddScenario
     {
         return new self([
             'scenarioanalysis_id' => $scenarioAnalysisId->toString(),

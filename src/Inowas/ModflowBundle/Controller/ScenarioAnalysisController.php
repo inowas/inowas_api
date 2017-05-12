@@ -175,7 +175,7 @@ class ScenarioAnalysisController extends FOSRestController
         }
 
         return new JsonResponse($this->get('inowas.modflowmodel.model_finder')
-            ->findByBaseModelId(
+            ->findByModelId(
                 ModflowId::fromString($baseModelId)
             )
         );

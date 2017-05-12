@@ -82,9 +82,22 @@ class ObservationPoint implements \JsonSerializable
         );
     }
 
-    public function jsonSerialize()
+    public function jsonSerialize(): array
     {
-        return $this->toArray();
+        $valuesDescription = [];
+        if (count($this->dateTimeValues()) > 0) {
+            /** @var DateTimeValue $dateTimeValue */
+            $dateTimeValue = $this->dateTimeValues[0];
+            $valuesDescription = $dateTimeValue->valuesDescription();
+        }
+
+        return array(
+            'id' => $this->id->toString(),
+            'name' => $this->name()->toString(),
+            'geometry' => $this->geometryArray(),
+            'values_description' => $valuesDescription,
+            'values' => $this->dateTimeValues
+        );
     }
 
     public function findValueByDateTime(\DateTimeImmutable $dateTime): ?DateTimeValue

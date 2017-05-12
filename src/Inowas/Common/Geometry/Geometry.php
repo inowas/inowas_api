@@ -4,8 +4,9 @@ declare(strict_types=1);
 
 namespace Inowas\Common\Geometry;
 
-class Geometry
+class Geometry implements \JsonSerializable
 {
+    /** @var  AbstractGeometry */
     private $geometry;
 
     public static function fromJson(string $json): Geometry
@@ -18,15 +19,15 @@ class Geometry
         $obj = json_decode($json);
         $type = strtolower($obj->type);
 
-        if ($type == 'point'){
+        if ($type == 'point') {
             return Geometry::fromPoint(new Point($obj->coordinates[0], $obj->coordinates[1]));
         }
 
-        if ($type == 'linestring'){
+        if ($type == 'linestring') {
             return Geometry::fromLineString(new LineString($obj->coordinates));
         }
 
-        if ($type == 'polygon'){
+        if ($type == 'polygon') {
             return Geometry::fromPolygon(new Polygon($obj->coordinates));
         }
 
@@ -45,6 +46,26 @@ class Geometry
         $self = new self();
         $self->geometry = $lineString;
         return $self;
+    }
+
+    public static function fromArray(array $arr): Geometry
+    {
+        $type = strtolower($arr['type']);
+        $coordinates = $arr['coordinates'];
+
+        if ($type == 'point') {
+            return Geometry::fromPoint(new Point($coordinates));
+        }
+
+        if ($type == 'linestring') {
+            return Geometry::fromLineString(new LineString($coordinates));
+        }
+
+        if ($type == 'polygon') {
+            return Geometry::fromPolygon(new Polygon($coordinates));
+        }
+
+        return null;
     }
 
     public static function fromPoint(Point $point): Geometry
@@ -72,5 +93,13 @@ class Geometry
     public function value()
     {
         return $this->geometry;
+    }
+
+    public function jsonSerialize()
+    {
+        return [
+            'type' => $this->geometry->getType(),
+            'coordinates' => $this->geometry->toArray()
+        ];
     }
 }

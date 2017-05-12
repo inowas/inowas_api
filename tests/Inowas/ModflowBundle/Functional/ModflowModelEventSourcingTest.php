@@ -794,7 +794,7 @@ class ModflowModelEventSourcingTest extends EventSourcingBaseTest
         $this->createModelWithName($ownerId, $modelId);
 
         $scenarioAnalysisId = ScenarioAnalysisId::generate();
-        $this->commandBus->dispatch(CreateScenarioAnalysis::withBaseModelId($scenarioAnalysisId, $ownerId, $modelId));
+        $this->commandBus->dispatch(CreateScenarioAnalysis::byUserwithBaseModel($scenarioAnalysisId, $ownerId, $modelId));
         $scenarioAnalysis = $this->container->get('inowas.scenarioanalysis.scenarioanalysis_finder')->findScenarioAnalysis($scenarioAnalysisId);
         $this->assertEquals($scenarioAnalysisId->toString(), $scenarioAnalysis['scenario_analysis_id']);
         $this->assertEquals($ownerId->toString(), $scenarioAnalysis['user_id']);
@@ -823,7 +823,7 @@ class ModflowModelEventSourcingTest extends EventSourcingBaseTest
         $this->assertCount(5, $baseModelBoundaries);
 
         $scenarioAnalysisId = ScenarioAnalysisId::generate();
-        $this->commandBus->dispatch(CreateScenarioAnalysis::withBaseModelId($scenarioAnalysisId, $ownerId, $modelId));
+        $this->commandBus->dispatch(CreateScenarioAnalysis::byUserwithBaseModel($scenarioAnalysisId, $ownerId, $modelId));
         $scenarioAnalysis = $this->container->get('inowas.scenarioanalysis.scenarioanalysis_finder')->findScenarioAnalysis($scenarioAnalysisId);
         $this->assertEquals($scenarioAnalysisId->toString(), $scenarioAnalysis['scenario_analysis_id']);
         $this->assertEquals($ownerId->toString(), $scenarioAnalysis['user_id']);
@@ -850,10 +850,10 @@ class ModflowModelEventSourcingTest extends EventSourcingBaseTest
         $this->assertCount(4, $modelBoundaries);
 
         $scenarioAnalysisId = ScenarioAnalysisId::generate();
-        $this->commandBus->dispatch(CreateScenarioAnalysis::withBaseModelId($scenarioAnalysisId, $ownerId, $modelId));
+        $this->commandBus->dispatch(CreateScenarioAnalysis::byUserwithBaseModel($scenarioAnalysisId, $ownerId, $modelId));
 
         $scenarioId = ModflowId::generate();
-        $this->commandBus->dispatch(AddScenario::withBaseModelId($scenarioAnalysisId, $ownerId, $modelId, $scenarioId));
+        $this->commandBus->dispatch(AddScenario::byUserwithBaseModelAndScenarioId($scenarioAnalysisId, $ownerId, $modelId, $scenarioId));
         $this->commandBus->dispatch(AddBoundary::to($scenarioId, $ownerId, $this->createWellBoundary()));
         $scenarioBoundaries = $this->container->get('inowas.modflowmodel.boundaries_finder')->findByModelId($scenarioId);
         $this->assertCount(5, $scenarioBoundaries);
@@ -872,10 +872,10 @@ class ModflowModelEventSourcingTest extends EventSourcingBaseTest
         $this->commandBus->dispatch(AddBoundary::to($modelId, $ownerId, $well = $this->createWellBoundary()));
 
         $scenarioAnalysisId = ScenarioAnalysisId::generate();
-        $this->commandBus->dispatch(CreateScenarioAnalysis::withBaseModelId($scenarioAnalysisId, $ownerId, $modelId));
+        $this->commandBus->dispatch(CreateScenarioAnalysis::byUserwithBaseModel($scenarioAnalysisId, $ownerId, $modelId));
 
         $scenarioId = ModflowId::generate();
-        $this->commandBus->dispatch(AddScenario::withBaseModelId($scenarioAnalysisId, $ownerId, $modelId, $scenarioId));
+        $this->commandBus->dispatch(AddScenario::byUserwithBaseModelAndScenarioId($scenarioAnalysisId, $ownerId, $modelId, $scenarioId));
 
         $newGeometry = Geometry::fromPoint(new Point(-63.6, -31.32, 4326));
         $this->commandBus->dispatch(UpdateBoundaryGeometry::ofBaseModel($ownerId, $scenarioId, $well->boundaryId(), $newGeometry));

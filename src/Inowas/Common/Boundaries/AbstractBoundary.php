@@ -74,15 +74,31 @@ abstract class AbstractBoundary implements ModflowBoundary
         return $this->name;
     }
 
+    public function updateName(BoundaryName $boundaryName): void
+    {
+        $this->name = BoundaryName::fromString($boundaryName->toString());
+    }
+
     public function observationPoints(): array
     {
         return $this->observationPoints;
     }
 
-    protected function addOp(ObservationPoint $point)
+    public function getObservationPoint(ObservationPointId $id): ?ObservationPoint
+    {
+        return $this->getOp($id);
+    }
+
+    public function updateObservationPoint(ObservationPoint $op): void
+    {
+        if ($this->hasOp($op->id())){
+            $this->addOrUpdateOp($op);
+        }
+    }
+
+    protected function addOrUpdateOp(ObservationPoint $point): void
     {
         $this->observationPoints[$point->id()->toString()] = $point;
-        return $this;
     }
 
     protected function hasOp(ObservationPointId $observationPointId): bool

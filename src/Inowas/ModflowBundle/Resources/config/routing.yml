@@ -1,3 +1,8 @@
+rest_modflowmodel_api:
+    type: rest
+    resource: '@InowasModflowBundle/Controller/ModflowModelController.php'
+    prefix:    /api
+
 rest_scenario_analysis_api:
     type: rest
     resource: '@InowasModflowBundle/Controller/ScenarioAnalysisController.php'

@@ -34,7 +34,7 @@ class GeneralHeadBoundary extends AbstractBoundary
 
     public function addObservationPoint(ObservationPoint $point): GeneralHeadBoundary
     {
-        $this->addOp($point);
+        $this->addOrUpdateOp($point);
         $self = new self($this->boundaryId, $this->name, $this->geometry, $this->activeCells);
         $self->affectedLayers = $this->affectedLayers;
         $self->observationPoints = $this->observationPoints;
