@@ -454,7 +454,6 @@ paths:
       security:
         - api_key: []
 
-
   /modflowmodels/{id}/boundaries/{bid}/observationpoints/{oid}:
     get:
       tags:
