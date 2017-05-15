@@ -142,12 +142,41 @@ paths:
           description: "ModflowModel not found"
       security:
       - api_key: []
+
+  /modflowmodels/{id}/name:
+    get:
+      tags:
+        - "modflowmodel"
+      summary: "Find ModflowModelName by id"
+      description: "Returns the name of the ModflowModel by id"
+      operationId: "getModflowModelNameById"
+      produces:
+        - "application/json"
+      parameters:
+        - name: "id"
+          in: "path"
+          description: "Id of ModflowModel"
+          required: true
+          type: "string"
+      responses:
+        '200':
+          description: "successful operation"
+          schema:
+            type: "object"
+            properties:
+              name:
+                type: "string"
+                example: "The name of the model"
+        '404':
+          description: "ModflowModel not found"
+      security:
+      - api_key: []
     put:
       tags:
         - "modflowmodel"
-      summary: "Updates data of existing ModflowModel"
-      description: 'Only send the fields which have changed.'
-      operationId: "updateModflowModel"
+      summary: "Updates the name of an existing ModflowModel"
+      description: "Updates the name of an existing ModflowModel"
+      operationId: "updateModflowModelName"
       consumes:
         - "application/json"
       produces:
@@ -155,26 +184,320 @@ paths:
       parameters:
         - name: "id"
           in: "path"
-          description: "ID of ModflowModel to update"
+          description: "ID of ModflowModel"
           required: true
           type: "string"
         - in: "body"
           name: "body"
-          description: "ModflowModelObject that needs to be added"
+          description: "ModflowModelName"
           required: true
           schema:
             type: "object"
             properties:
               name:
                 type: "string"
-                example: "Hanoi 2005-2007"
+                example: "The name of the model"
+      responses:
+        '302':
+          description: "Redirect response"
+          headers:
+            Location:
+              type: "string"
+        '422':
+          description: "Invalid input"
+      security:
+        - api_key: []
+
+  /modflowmodels/{id}/description:
+    get:
+      tags:
+        - "modflowmodel"
+      summary: "Find ModflowModelDescription by id"
+      description: "Returns the description of the ModflowModel by id"
+      operationId: "getModflowModelDescriptionById"
+      produces:
+        - "application/json"
+      parameters:
+        - name: "id"
+          in: "path"
+          description: "Id of ModflowModel"
+          required: true
+          type: "string"
+      responses:
+        '200':
+          description: "successful operation"
+          schema:
+            type: "object"
+            properties:
               description:
                 type: "string"
-                example: "ModflowModel of Hanoi Area 2005-2007"
-              area_geometry:
-                $ref: '#/definitions/Geometry'
-              grid_size:
-                $ref: '#/definitions/GridSize'
+                example: "The description of the model"
+        '404':
+          description: "ModflowModel not found"
+      security:
+      - api_key: []
+    put:
+      tags:
+        - "modflowmodel"
+      summary: "Updates the description of an existing ModflowModel"
+      description: "Updates the name of an existing ModflowModel"
+      operationId: "updateModflowModelDescription"
+      consumes:
+        - "application/json"
+      produces:
+        - "application/json"
+      parameters:
+        - name: "id"
+          in: "path"
+          description: "Id of ModflowModel to update"
+          required: true
+          type: "string"
+        - in: "body"
+          name: "body"
+          description: "ModflowModelDescription"
+          required: true
+          schema:
+            type: "object"
+            properties:
+              description:
+                type: "string"
+                example: "The description of the model"
+      responses:
+        '302':
+          description: "Redirect response"
+          headers:
+            Location:
+              type: "string"
+        '422':
+          description: "Invalid input"
+      security:
+        - api_key: []
+
+  /modflowmodels/{id}/geometry:
+    get:
+      tags:
+        - "modflowmodel"
+      summary: "Find the area geometry by modflowmodel id"
+      description: "Returns the area geometry of the ModflowModel by id"
+      operationId: "getModflowModelGeometry"
+      produces:
+        - "application/json"
+      parameters:
+        - name: "id"
+          in: "path"
+          description: "Id of ModflowModel"
+          required: true
+          type: "string"
+      responses:
+        '200':
+          description: "successful operation"
+          schema:
+            $ref: "#/definitions/PolygonGeometry"
+        '404':
+          description: "ModflowModel not found"
+      security:
+      - api_key: []
+    put:
+      tags:
+        - "modflowmodel"
+      summary: "Updates the area geometry of a modflowmodel by modflowmodel id"
+      description: "Updates the area geometry of a modflowmodel by modflowmodel id"
+      operationId: "updateModflowModelGeometry"
+      consumes:
+        - "application/json"
+      produces:
+        - "application/json"
+      parameters:
+        - name: "id"
+          in: "path"
+          description: "Id of ModflowModel to update"
+          required: true
+          type: "string"
+        - in: "body"
+          name: "body"
+          description: "AreaGeometry"
+          required: true
+          schema:
+            $ref: "#/definitions/PolygonGeometry"
+      responses:
+        '302':
+          description: "Redirect response"
+          headers:
+            Location:
+              type: "string"
+        '422':
+          description: "Invalid input"
+      security:
+        - api_key: []
+
+  /modflowmodels/{id}/boundingbox:
+    get:
+      tags:
+        - "modflowmodel"
+      summary: "Get the boundingBox of a modflowModel"
+      description: "Get the boundingBox of a modflowModel by id"
+      operationId: "getModflowModelBoundingBox"
+      produces:
+        - "application/json"
+      parameters:
+        - name: "id"
+          in: "path"
+          description: "Id of ModflowModel"
+          required: true
+          type: "string"
+      responses:
+        '200':
+          description: "successful operation"
+          schema:
+            $ref: "#/definitions/BoundingBox"
+        '404':
+          description: "ModflowModel not found"
+      security:
+      - api_key: []
+    put:
+      tags:
+        - "modflowmodel"
+      summary: "Updates the boundingBox of a modflowModel"
+      description: "Updates the boundingBox of a modflowModel"
+      operationId: "updateModflowModelBoundingBox"
+      consumes:
+        - "application/json"
+      produces:
+        - "application/json"
+      parameters:
+        - name: "id"
+          in: "path"
+          description: "Id of ModflowModel to update"
+          required: true
+          type: "string"
+        - in: "body"
+          name: "body"
+          description: "BoundingBox"
+          required: true
+          schema:
+            $ref: "#/definitions/BoundingBox"
+      responses:
+        '302':
+          description: "Redirect response"
+          headers:
+            Location:
+              type: "string"
+        '422':
+          description: "Invalid input"
+      security:
+        - api_key: []
+
+  /modflowmodels/{id}/gridsize:
+    get:
+      tags:
+        - "modflowmodel"
+      summary: "Get the gridSize of a modflowModel"
+      description: "Get the gridSize of a modflowModel by id"
+      operationId: "getModflowModelGridSize"
+      produces:
+        - "application/json"
+      parameters:
+        - name: "id"
+          in: "path"
+          description: "Id of ModflowModel"
+          required: true
+          type: "string"
+      responses:
+        '200':
+          description: "successful operation"
+          schema:
+            $ref: "#/definitions/GridSize"
+        '404':
+          description: "ModflowModel not found"
+      security:
+      - api_key: []
+    put:
+      tags:
+        - "modflowmodel"
+      summary: "Updates the gridSize of a modflowModel"
+      description: "Updates the gridSize of a modflowModel"
+      operationId: "updateModflowModelGridSize"
+      consumes:
+        - "application/json"
+      produces:
+        - "application/json"
+      parameters:
+        - name: "id"
+          in: "path"
+          description: "Id of ModflowModel to update"
+          required: true
+          type: "string"
+        - in: "body"
+          name: "body"
+          description: "Gridsize"
+          required: true
+          schema:
+            $ref: "#/definitions/GridSize"
+      responses:
+        '302':
+          description: "Redirect response"
+          headers:
+            Location:
+              type: "string"
+        '422':
+          description: "Invalid input"
+      security:
+        - api_key: []
+
+  /modflowmodels/{id}/soilmodel:
+    get:
+      tags:
+        - "modflowmodel"
+      summary: "Get the soilmodel id of a modflowModel"
+      description: "Get the soilmodel id of a modflowModel"
+      operationId: "getModflowModelSoilmodelId"
+      produces:
+        - "application/json"
+      parameters:
+        - name: "id"
+          in: "path"
+          description: "Id of ModflowModel"
+          required: true
+          type: "string"
+      responses:
+        '200':
+          description: "successful operation"
+          schema:
+            type: "object"
+            properties:
+              soilmodel_id:
+                type: "string"
+                example: "03f5a3e6-04c0-4fda-bfd4-b48d571cd233"
+        '404':
+          description: "ModflowModel not found"
+      security:
+      - api_key: []
+    put:
+      tags:
+        - "modflowmodel"
+      summary: "Updates the gridSize of a modflowModel"
+      description: "Updates the gridSize of a modflowModel"
+      operationId: "updateModflowModelSoilmodelId"
+      consumes:
+        - "application/json"
+      produces:
+        - "application/json"
+      parameters:
+        - name: "id"
+          in: "path"
+          description: "Id of ModflowModel to update"
+          required: true
+          type: "string"
+        - in: "body"
+          name: "body"
+          description: "SoilmodelId"
+          required: true
+          schema:
+            type: "object"
+            properties:
+              soilmodel_id:
+                type: "string"
+                example: "03f5a3e6-04c0-4fda-bfd4-b48d571cd233"
       responses:
         '302':
           description: "Redirect response"
