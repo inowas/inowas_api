@@ -4,13 +4,14 @@ declare(strict_types=1);
 
 namespace Inowas\ModflowModel\Model\Handler;
 
-use Inowas\ModflowModel\Model\Command\UpdateAreaGeometry;
+use Inowas\ModflowModel\Model\Command\UpdateBoundary;
+use Inowas\ModflowModel\Model\Command\UpdateLengthUnit;
 use Inowas\ModflowModel\Model\Exception\ModflowModelNotFoundException;
 use Inowas\ModflowModel\Model\Exception\WriteAccessFailedException;
 use Inowas\ModflowModel\Model\ModflowModelList;
 use Inowas\ModflowModel\Model\ModflowModelAggregate;
 
-final class UpdateAreaGeometryHandler
+final class UpdateTimeUnitHandler
 {
 
     /** @var  ModflowModelList */
@@ -24,7 +25,7 @@ final class UpdateAreaGeometryHandler
         $this->modelList = $modelList;
     }
 
-    public function __invoke(UpdateAreaGeometry $command)
+    public function __invoke(UpdateLengthUnit $command)
     {
         /** @var ModflowModelAggregate $modflowModel */
         $modflowModel = $this->modelList->get($command->modelId());
@@ -37,6 +38,7 @@ final class UpdateAreaGeometryHandler
             throw WriteAccessFailedException::withUserAndOwner($command->userId(), $modflowModel->ownerId());
         }
 
-        $modflowModel->changeAreaGeometry($command->userId(), $command->geometry());
+
+        $modflowModel->updateBoundary($command->userId(), $command->boundary());
     }
 }

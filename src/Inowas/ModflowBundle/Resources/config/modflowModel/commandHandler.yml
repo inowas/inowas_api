@@ -33,18 +33,22 @@ services:
           - '@modflow_model_list'
           - '@inowas.geotools.geotools_service'
 
-    inowas.modflowmodel.remove_modflow_model_boundary_handler:
+    inowas.modflowmodel.remove_boundary_handler:
         class: Inowas\ModflowModel\Model\Handler\RemoveBoundaryHandler
         arguments: ['@modflow_model_list']
 
-    inowas.modflowmodel.update_modflow_model_area_geometry_handler:
+    inowas.modflowmodel.update_area_geometry_handler:
         class: Inowas\ModflowModel\Model\Handler\UpdateAreaGeometryHandler
-        arguments: ['@modflow_model_list']
-
-    inowas.modflowmodel.update_modflow_model_boundary_handler:
-        class: Inowas\ModflowModel\Model\Handler\UpdateBoundaryHandler
         arguments: ['@modflow_model_list']
 
     inowas.modflowmodel.update_modflow_model_boundary_geometry_handler:
         class: Inowas\ModflowModel\Model\Handler\UpdateBoundaryGeometryHandler
+        arguments: ['@modflow_model_list']
+
+    inowas.modflowmodel.update_length_unit_handler:
+        class: Inowas\ModflowModel\Model\Handler\UpdateLengthUnitHandler
+        arguments: ['@modflow_model_list']
+
+    inowas.modflowmodel.update_time_unit_handler:
+        class: Inowas\ModflowModel\Model\Handler\UpdateTimeUnitHandler
         arguments: ['@modflow_model_list']

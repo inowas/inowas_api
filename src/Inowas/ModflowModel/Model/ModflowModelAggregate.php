@@ -22,14 +22,15 @@ use Inowas\ModflowModel\Model\Event\AreaGeometryWasUpdated;
 use Inowas\ModflowModel\Model\Event\BoundaryGeometryWasUpdated;
 use Inowas\ModflowModel\Model\Event\BoundaryWasAdded;
 use Inowas\ModflowModel\Model\Event\BoundaryWasRemoved;
-use Inowas\ModflowModel\Model\Event\BoundaryWasUpdated;
 use Inowas\ModflowModel\Model\Event\BoundingBoxWasChanged;
 use Inowas\ModflowModel\Model\Event\DescriptionWasChanged;
 use Inowas\ModflowModel\Model\Event\GridSizeWasChanged;
+use Inowas\ModflowModel\Model\Event\LengthUnitWasUpdated;
 use Inowas\ModflowModel\Model\Event\ModflowModelWasCloned;
 use Inowas\ModflowModel\Model\Event\NameWasChanged;
 use Inowas\ModflowModel\Model\Event\SoilModelIdWasChanged;
 use Inowas\ModflowModel\Model\Event\ModflowModelWasCreated;
+use Inowas\ModflowModel\Model\Event\TimeUnitWasUpdated;
 use Prooph\EventSourcing\AggregateRoot;
 
 class ModflowModelAggregate extends AggregateRoot
@@ -115,11 +116,6 @@ class ModflowModelAggregate extends AggregateRoot
         return $self;
     }
 
-    public function changeName(Modelname $name): void
-    {
-        $this->name = $name;
-    }
-
     public function changeModelName(UserId $userId, Modelname $name)
     {
         $this->name = $name;
@@ -128,11 +124,6 @@ class ModflowModelAggregate extends AggregateRoot
             $this->modflowId,
             $this->name
         ));
-    }
-
-    public function changeDescription(ModflowModelDescription $description): void
-    {
-        $this->description = $description;
     }
 
     public function changeModelDescription(UserId $userId, ModflowModelDescription $description)
@@ -145,13 +136,13 @@ class ModflowModelAggregate extends AggregateRoot
         );
     }
 
-    public function changeGridSize(UserId $userId, GridSize $gridSize)
+    public function changeAreaGeometry(UserId $userId, Polygon $polygon)
     {
-        $this->gridSize = $gridSize;
-        $this->recordThat(GridSizeWasChanged::withGridSize(
-            $userId,
+        $this->area = $this->area->updateGeometry($polygon);
+        $this->recordThat(AreaGeometryWasUpdated::of(
             $this->modflowId,
-            $this->gridSize
+            $userId,
+            $polygon
         ));
     }
 
@@ -165,13 +156,38 @@ class ModflowModelAggregate extends AggregateRoot
         ));
     }
 
-    public function updateAreaGeometry(UserId $userId, Polygon $polygon)
+    public function changeDescription(ModflowModelDescription $description): void
     {
-        $this->area = $this->area->updateGeometry($polygon);
-        $this->recordThat(AreaGeometryWasUpdated::of(
-            $this->modflowId,
+        $this->description = $description;
+    }
+
+    public function changeGridSize(UserId $userId, GridSize $gridSize)
+    {
+        $this->gridSize = $gridSize;
+        $this->recordThat(GridSizeWasChanged::withGridSize(
             $userId,
-            $polygon
+            $this->modflowId,
+            $this->gridSize
+        ));
+    }
+
+    public function updateLengthUnit(UserId $userId, LengthUnit $lengthUnit)
+    {
+        $this->lengthUnit = $lengthUnit;
+        $this->recordThat(LengthUnitWasUpdated::withUnit(
+            $userId,
+            $this->modflowId,
+            $this->lengthUnit
+        ));
+    }
+
+    public function updateTimeUnit(UserId $userId, TimeUnit $timeUnit)
+    {
+        $this->timeUnit = $timeUnit;
+        $this->recordThat(TimeUnitWasUpdated::withUnit(
+            $userId,
+            $this->modflowId,
+            $this->timeUnit
         ));
     }
 
@@ -182,17 +198,6 @@ class ModflowModelAggregate extends AggregateRoot
             $this->recordThat(BoundaryWasAdded::to(
                 $this->modflowId,
                 $userId,
-                $boundary
-            ));
-        }
-    }
-
-    public function updateBoundary(UserId $userId, ModflowBoundary $boundary): void
-    {
-        if (in_array($boundary->boundaryId()->toString(), $this->boundaries)){
-            $this->recordThat(BoundaryWasUpdated::byUserWithBaseModelId(
-                $userId,
-                $this->modflowId,
                 $boundary
             ));
         }
@@ -349,6 +354,16 @@ class ModflowModelAggregate extends AggregateRoot
         }
     }
 
+    protected function whenLengthUnitWasUpdated(LengthUnitWasUpdated $event): void
+    {
+        $this->lengthUnit = $event->lengthUnit();
+    }
+
+    protected function whenTimeUnitWasUpdated(TimeUnitWasUpdated $event): void
+    {
+        $this->timeUnit = $event->timeUnit();
+    }
+
     protected function whenSoilModelIdWasChanged(SoilModelIdWasChanged $event): void
     {
         $this->soilmodelId = $event->soilModelId();
@@ -358,9 +373,6 @@ class ModflowModelAggregate extends AggregateRoot
     {
         $this->boundaries[] = $event->boundary()->boundaryId()->toString();
     }
-
-    protected function whenBoundaryWasUpdated(BoundaryWasUpdated $event): void
-    {}
 
     protected function whenBoundaryGeometryWasUpdated(BoundaryGeometryWasUpdated $event): void
     {}
