@@ -52,17 +52,18 @@ class Geometry implements \JsonSerializable
     {
         $type = strtolower($arr['type']);
         $coordinates = $arr['coordinates'];
+        $srid = $arr['srid'];
 
         if ($type == 'point') {
-            return Geometry::fromPoint(new Point($coordinates));
+            return Geometry::fromPoint(new Point($coordinates, $srid));
         }
 
         if ($type == 'linestring') {
-            return Geometry::fromLineString(new LineString($coordinates));
+            return Geometry::fromLineString(new LineString($coordinates, $srid));
         }
 
         if ($type == 'polygon') {
-            return Geometry::fromPolygon(new Polygon($coordinates));
+            return Geometry::fromPolygon(new Polygon($coordinates, $srid));
         }
 
         return null;
@@ -77,7 +78,11 @@ class Geometry implements \JsonSerializable
 
     public function toArray()
     {
-        return $this->geometry->toArray();
+        return [
+            'type' => $this->geometry->getType(),
+            'coordinates' => $this->geometry->toArray(),
+            'srid' => $this->geometry->getSrid()
+        ];
     }
 
     public function toJson()
@@ -99,7 +104,8 @@ class Geometry implements \JsonSerializable
     {
         return [
             'type' => $this->geometry->getType(),
-            'coordinates' => $this->geometry->toArray()
+            'coordinates' => $this->geometry->toArray(),
+            'srid' => $this->geometry->getSrid()
         ];
     }
 }

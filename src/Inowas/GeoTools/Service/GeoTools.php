@@ -48,7 +48,7 @@ class GeoTools
 
     }
 
-    private function calculateActiveCellsFromGeometryAndAffectedLayers(Geometry $geometry, AffectedLayers $affectedLayers, BoundingBox $boundingBox, GridSize $gridSize): ActiveCells
+    public function calculateActiveCellsFromGeometryAndAffectedLayers(Geometry $geometry, AffectedLayers $affectedLayers, BoundingBox $boundingBox, GridSize $gridSize): ActiveCells
     {
         /** @var \Polygon $boundingBoxPolygon */
         $boundaryGeometry = \geoPHP::load($geometry->toJson(), 'json')->geos();

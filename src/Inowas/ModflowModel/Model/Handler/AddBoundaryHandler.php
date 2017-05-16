@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Inowas\ModflowModel\Model\Handler;
 
+use Inowas\GeoTools\Service\GeoTools;
 use Inowas\ModflowModel\Model\Command\AddBoundary;
 use Inowas\ModflowModel\Model\Exception\ModflowModelNotFoundException;
 use Inowas\ModflowModel\Model\Exception\WriteAccessFailedException;
@@ -16,11 +17,17 @@ final class AddBoundaryHandler
     /** @var  ModflowModelList */
     private $modelList;
 
+    /** @var  GeoTools */
+    private $geoTools;
+
     /**
+     * AddBoundaryHandler constructor.
      * @param ModflowModelList $modelList
+     * @param GeoTools $geoTools
      */
-    public function __construct(ModflowModelList $modelList)
+    public function __construct(ModflowModelList $modelList, GeoTools $geoTools)
     {
+        $this->geoTools = $geoTools;
         $this->modelList = $modelList;
     }
 

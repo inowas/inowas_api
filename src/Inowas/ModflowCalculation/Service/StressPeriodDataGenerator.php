@@ -146,21 +146,23 @@ class StressPeriodDataGenerator
     {
         $startTime = $stressPeriods->start();
         $timeUnit = $stressPeriods->timeUnit();
-
         $rchSpd = RchStressPeriodData::create();
 
-        /** @var RechargeBoundary $rivBoundary */
+        /** @var RechargeBoundary $rchBoundary */
         foreach ($rchBoundaries as $rchBoundary) {
             if (! $rchBoundary instanceof RechargeBoundary) {
                 continue;
             }
+
+            $activeCells = $rchBoundary->activeCells();
+
 
             /** @var StressPeriod $stressperiod */
             foreach ($stressPeriods->stressperiods() as $stressperiod) {
                 $totim = TotalTime::fromInt($stressperiod->totimStart());
                 $sp = $stressPeriods->spNumberFromTotim($totim);
 
-                $cells = $rchBoundary->activeCells()->fullArray();
+                $cells = $activeCells->fullArray();
                 $rechargeValue = $rchBoundary->findValueByDateTime($this->calculateDateTimeFromTotim($startTime, $totim, $timeUnit));
                 $rech = [];
                 foreach ($cells as $rowKey => $row){

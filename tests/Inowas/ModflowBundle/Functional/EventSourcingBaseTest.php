@@ -120,7 +120,6 @@ abstract class EventSourcingBaseTest extends KernelTestCase
         $gridSize = GridSize::fromXY(75, 40);
         $this->commandBus->dispatch(CreateModflowModel::newWithId($ownerId, $modelId, $this->createArea(), $gridSize));
         $this->commandBus->dispatch(ChangeModflowModelName::forModflowModel($ownerId,$modelId, Modelname::fromString('TestModel')));
-
     }
 
     protected function createSoilmodel(UserId $ownerId, SoilmodelId $soilmodelId): void

@@ -45,7 +45,7 @@ class ModflowModelWasCloned extends AggregateChanged
     /** @var  TimeUnit */
     private $timeUnit;
 
-    public static function fromModelAndUserWithParamaters(
+    public static function fromModelAndUserWithParameters(
         ModflowId $baseModelId,
         UserId $baseModelUserId,
         ModflowId $modflowId,

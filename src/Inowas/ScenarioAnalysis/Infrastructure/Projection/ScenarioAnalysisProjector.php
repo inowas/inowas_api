@@ -46,8 +46,8 @@ class ScenarioAnalysisProjector extends AbstractDoctrineConnectionProjector
     public function onScenarioAnalysisWasCreated(ScenarioAnalysisWasCreated $event)
     {
         $areaGeometry = $this->modelFinder->findAreaGeometryByModflowModelId($event->baseModelId());
-        $boundingBox = $this->modelFinder->findBoundingBoxByModflowModelId($event->baseModelId());
-        $gridSize = $this->modelFinder->findGridSizeByModflowModelId($event->baseModelId());
+        $boundingBox = $this->modelFinder->getBoundingBoxByModflowModelId($event->baseModelId());
+        $gridSize = $this->modelFinder->getGridSizeByModflowModelId($event->baseModelId());
 
         $this->connection->insert(Table::SCENARIO_ANALYSIS_LIST, array(
             'scenario_analysis_id' => $event->scenarioAnalysisId()->toString(),

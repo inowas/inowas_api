@@ -9,18 +9,10 @@ use Inowas\AppBundle\Model\User;
 use Inowas\Common\Boundaries\Area;
 use Inowas\Common\Boundaries\BoundaryName;
 use Inowas\Common\Boundaries\ConstantHeadBoundary;
-use Inowas\Common\Boundaries\ConstantHeadDateTimeValue;
 use Inowas\Common\Boundaries\GeneralHeadBoundary;
-use Inowas\Common\Boundaries\GeneralHeadDateTimeValue;
-use Inowas\Common\Boundaries\ModflowBoundary;
-use Inowas\Common\Boundaries\ObservationPoint;
-use Inowas\Common\Boundaries\ObservationPointName;
 use Inowas\Common\Boundaries\RechargeBoundary;
-use Inowas\Common\Boundaries\RechargeDateTimeValue;
 use Inowas\Common\Boundaries\RiverBoundary;
-use Inowas\Common\Boundaries\RiverDateTimeValue;
 use Inowas\Common\Boundaries\WellBoundary;
-use Inowas\Common\Boundaries\WellDateTimeValue;
 use Inowas\Common\Boundaries\WellType;
 use Inowas\Common\Geometry\Geometry;
 use Inowas\Common\Geometry\Polygon;
@@ -28,7 +20,6 @@ use Inowas\Common\Grid\AffectedLayers;
 use Inowas\Common\Grid\GridSize;
 use Inowas\Common\Id\BoundaryId;
 use Inowas\Common\Id\ModflowId;
-use Inowas\Common\Id\ObservationPointId;
 use Inowas\Common\Id\UserId;
 use Inowas\Common\Modflow\LengthUnit;
 use Inowas\Common\Modflow\Modelname;
@@ -40,7 +31,6 @@ use Inowas\ModflowModel\Model\Command\ChangeModflowModelGridSize;
 use Inowas\ModflowModel\Model\Command\ChangeModflowModelName;
 use Inowas\ModflowModel\Model\Command\CreateModflowModel;
 use Inowas\ModflowModel\Model\Command\UpdateAreaGeometry;
-use Inowas\ModflowModel\Model\Command\UpdateBoundary;
 use Nelmio\ApiDocBundle\Annotation\ApiDoc;
 use Symfony\Component\BrowserKit\Request;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -395,112 +385,12 @@ class ModflowModelController extends InowasRestController
     {
         $modelId = ModflowId::fromString($id);
         $boundaryId = BoundaryId::fromString($bid);
-        $boundary = $this->get('inowas.modflowmodel.boundaries_finder')->getBoundaryById($modelId, $boundaryId);
+        $boundaryDetails = $this->get('inowas.modflowmodel.boundaries_finder')->getBoundaryDetails($modelId, $boundaryId);
 
-        if (! $boundary instanceof ModflowBoundary){
+        if (false === $boundaryDetails){
             return new Response(sprintf('Boundary with id %s in Model with id %s not found.', $boundaryId, $modelId), 404);
         }
 
-        return new JsonResponse([
-            "id" => $boundary->boundaryId()->toString(),
-            "name" => $boundary->name()->toString(),
-            "type" => $boundary->type(),
-            "geometry" => $boundary->geometry(),
-            "metadata" => $boundary->metadata(),
-            "observation_points" => $boundary->observationPoints()
-        ]);
-    }
-
-    /**
-     * Update boundary by modflowModelId and boundaryId.
-     *
-     * @ApiDoc(
-     *   resource = true,
-     *   description = "Returns all boundary details with observationpoints and values.",
-     *   statusCodes = {
-     *     200 = "Returned when successful"
-     *   }
-     * )
-     *
-     * @param string $id
-     * @param string $bid
-     * @param Request $request
-     * @Rest\Put("modflowmodels/{id}/boundaries/{bid}")
-     * @return Response
-     */
-    public function putModflowModelBoundaryAction(string $id, string $bid, Request $request): Response
-    {
-        $modelId = ModflowId::fromString($id);
-        $boundaryId = BoundaryId::fromString($bid);
-        $userId = UserId::fromString($this->getUser()->getId()->toString());
-
-        $content = $this->getContentAsArray($request);
-        $commandBus = $this->get('prooph_service_bus.modflow_command_bus');
-        $boundary = $this->get('inowas.modflowmodel.boundaries_finder')->getBoundaryById($modelId, $boundaryId);
-
-        if (! $boundary instanceof ModflowBoundary){
-            return new Response(sprintf('Boundary with id %s in Model with id %s not found.', $boundaryId, $modelId), 404);
-        }
-
-        if (array_key_exists('name', $content)){
-            $boundary = $boundary->updateName(BoundaryName::fromString($content['name']));
-        }
-
-        if (array_key_exists('geometry', $content)){
-            $boundary = $boundary->updateGeometry(Geometry::fromArray($content['geometry']));
-        }
-
-        if (array_key_exists('observation_points', $content)){
-
-            $observationPoints = $content['observation_points'];
-            foreach ($observationPoints as $observationPointData){
-                $id = ObservationPointId::fromString($observationPointData['id']);
-
-                $oldObservationPoint = $boundary->getObservationPoint($id);
-                if (! $oldObservationPoint instanceof ObservationPoint){
-                    continue;
-                }
-
-                $newObservationPoint = ObservationPoint::fromIdNameAndGeometry(
-                    $id,
-                    ObservationPointName::fromString($observationPointData['name']),
-                    Geometry::fromArray($observationPointData['geometry'])
-                );
-
-                foreach ($observationPointData['values'] as $value){
-                    switch ($boundary->type()){
-                        case "chd":
-                            $newObservationPoint = $newObservationPoint->addDateTimeValue(ConstantHeadDateTimeValue::fromArray($value));
-                            break;
-
-                        case "ghb":
-                            $newObservationPoint = $newObservationPoint->addDateTimeValue(GeneralHeadDateTimeValue::fromArray($value));
-                            break;
-
-                        case "rch":
-                            $newObservationPoint = $newObservationPoint->addDateTimeValue(RechargeDateTimeValue::fromArray($value));
-                            break;
-
-                        case "riv":
-                            $newObservationPoint = $newObservationPoint->addDateTimeValue(RiverDateTimeValue::fromArray($value));
-                            break;
-
-                        case "well":
-                            $newObservationPoint = $newObservationPoint->addDateTimeValue(WellDateTimeValue::fromArray($value));
-                            break;
-
-                    }
-                }
-
-                $boundary->updateObservationPoint($newObservationPoint);
-            }
-        }
-
-        $commandBus->dispatch(UpdateBoundary::byUserAndModel($userId, $modelId, $boundary));
-
-        return new RedirectResponse(
-            $this->generateUrl('get_modflow_model_boundary', array('id' => $modelId->toString(), 'bid' => $boundaryId->toString())),
-            302
-        );
+        return new JsonResponse($boundaryDetails);
     }
 }

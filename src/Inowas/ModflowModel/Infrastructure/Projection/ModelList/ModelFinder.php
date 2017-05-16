@@ -7,7 +7,6 @@ namespace Inowas\ModflowModel\Infrastructure\Projection\ModelList;
 use Doctrine\DBAL\Connection;
 use Inowas\Common\Geometry\Geometry;
 use Inowas\Common\Geometry\Polygon;
-use Inowas\Common\Grid\ActiveCells;
 use Inowas\Common\Grid\BoundingBox;
 use Inowas\Common\Grid\GridSize;
 use Inowas\Common\Id\ModflowId;
@@ -32,16 +31,6 @@ class ModelFinder
         );
     }
 
-    public function findAreaActiveCells(ModflowId $modelId): ActiveCells
-    {
-        $result =  $this->connection->fetchAssoc(
-            sprintf('SELECT active_cells FROM %s WHERE model_id = :model_id', Table::MODEL_DETAILS),
-            ['model_id' => $modelId->toString()]
-        );
-
-        return ActiveCells::fromArray((array)json_decode($result['active_cells']));
-    }
-
     public function findAreaGeometryByModflowModelId(ModflowId $modelId): Polygon
     {
         $result =  $this->connection->fetchAssoc(
@@ -56,7 +45,7 @@ class ModelFinder
         return Geometry::fromJson($result['area'])->value();
     }
 
-    public function findBoundingBoxByModflowModelId(ModflowId $modelId): BoundingBox
+    public function getBoundingBoxByModflowModelId(ModflowId $modelId): BoundingBox
     {
         $result =  $this->connection->fetchAssoc(
             sprintf('SELECT bounding_box FROM %s WHERE model_id = :model_id', Table::MODEL_DETAILS),
@@ -70,7 +59,7 @@ class ModelFinder
         return BoundingBox::fromArray((array)json_decode($result['bounding_box']));
     }
 
-    public function findGridSizeByModflowModelId(ModflowId $modelId): GridSize
+    public function getGridSizeByModflowModelId(ModflowId $modelId): GridSize
     {
         $result = $this->connection->fetchAssoc(
             sprintf('SELECT grid_size FROM %s WHERE model_id = :model_id', Table::MODEL_DETAILS),

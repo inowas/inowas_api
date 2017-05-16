@@ -47,7 +47,7 @@ class Area
         return new self($this->boundaryId, $this->name, $polygon, $this->activeCells);
     }
 
-    public function setActiveCells(ActiveCells $activeCells): Area
+    public function updateActiveCells(ActiveCells $activeCells): Area
     {
         return new self($this->boundaryId, $this->name, $this->polygon, $activeCells);
     }

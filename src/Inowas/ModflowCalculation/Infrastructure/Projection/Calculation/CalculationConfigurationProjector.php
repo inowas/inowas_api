@@ -255,6 +255,7 @@ class CalculationConfigurationProjector extends AbstractDoctrineConnectionProjec
         $configuration->updatePackageParameter('dis', 'steady', $stressPeriods->steady());
         $configuration->updatePackageParameter('dis', 'nper', $stressPeriods->nper());
 
+
         /*
          * Add PackageDetails for BasPackage
          * Ibound, Strt

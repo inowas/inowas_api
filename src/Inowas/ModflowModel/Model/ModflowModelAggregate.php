@@ -21,6 +21,7 @@ use Inowas\Common\Modflow\Modelname;
 use Inowas\Common\Modflow\ModflowModelDescription;
 use Inowas\Common\Modflow\TimeUnit;
 use Inowas\Common\Soilmodel\SoilmodelId;
+use Inowas\ModflowModel\Model\Event\AreaActiveCellsWereUpdated;
 use Inowas\ModflowModel\Model\Event\AreaGeometryWasUpdated;
 use Inowas\ModflowModel\Model\Event\BoundaryActiveCellsWereUpdated;
 use Inowas\ModflowModel\Model\Event\BoundaryAffectedLayersWereUpdated;
@@ -107,7 +108,7 @@ class ModflowModelAggregate extends AggregateRoot
         $self->timeUnit = $model->timeUnit();
         $self->boundaries = $model->boundaries();
 
-        $self->recordThat(ModflowModelWasCloned::fromModelAndUserWithParamaters(
+        $self->recordThat(ModflowModelWasCloned::fromModelAndUserWithParameters(
             $model->modflowModelId(),
             $model->ownerId(),
             $self->modflowId,
@@ -208,6 +209,16 @@ class ModflowModelAggregate extends AggregateRoot
                 $boundary
             ));
         }
+    }
+
+    public function updateAreaActiveCells(UserId $userId, ActiveCells $activeCells): void
+    {
+        $this->recordThat(AreaActiveCellsWereUpdated::byUserAndModel(
+            $userId,
+            $this->modflowId,
+            $activeCells
+        ));
+
     }
 
     public function updateBoundaryActiveCells(UserId $userId, BoundaryId $boundaryId, ActiveCells $activeCells): void
@@ -352,28 +363,9 @@ class ModflowModelAggregate extends AggregateRoot
         return $this->timeUnit;
     }
 
-    protected function whenModflowModelWasCreated(ModflowModelWasCreated $event): void
+    protected function whenAreaActiveCellsWereUpdated(AreaActiveCellsWereUpdated $event): void
     {
-        $this->modflowId = $event->modelId();
-        $this->owner = $event->userId();
-        $this->area = $event->area();
-        $this->boundaries = $event->boundaries();
-        $this->gridSize = $event->gridSize();
-        $this->boundingBox = $event->boundingBox();
-        $this->lengthUnit = $event->lengthUnit();
-        $this->timeUnit = $event->timeUnit();
-    }
-
-    protected function whenModflowModelWasCloned(ModflowModelWasCloned $event): void
-    {
-        $this->modflowId = $event->modelId();
-        $this->owner = $event->userId();
-        $this->area = $event->area();
-        $this->boundaries = $event->boundaries();
-        $this->gridSize = $event->gridSize();
-        $this->boundingBox = $event->boundingBox();
-        $this->lengthUnit = $event->lengthUnit();
-        $this->timeUnit = $event->timeUnit();
+        $this->area = $this->area->updateActiveCells($event->activeCells());
     }
 
     protected function whenAreaGeometryWasUpdated(AreaGeometryWasUpdated $event): void
@@ -381,10 +373,35 @@ class ModflowModelAggregate extends AggregateRoot
         $this->area = $this->area->updateGeometry($event->geometry());
     }
 
-    protected function whenNameWasChanged(NameWasChanged $event): void
+    protected function whenBoundaryActiveCellsWereUpdated(BoundaryActiveCellsWereUpdated $event): void
+    {}
+
+    protected function whenBoundaryAffectedLayersWereUpdated(BoundaryAffectedLayersWereUpdated $event): void
+    {}
+
+    protected function whenBoundaryGeometryWasUpdated(BoundaryGeometryWasUpdated $event): void
+    {}
+
+    protected function whenBoundaryMetadataWasUpdated(BoundaryMetadataWasUpdated $event): void
+    {}
+
+    protected function whenBoundaryNameWasUpdated(BoundaryNameWasUpdated $event): void
+    {}
+
+    protected function whenBoundaryWasAdded(BoundaryWasAdded $event): void
+    {
+        $this->boundaries[] = $event->boundary()->boundaryId()->toString();
+    }
+
+    protected function whenBoundaryWasRemoved(BoundaryWasRemoved $event): void
+    {
+        $this->boundaries = array_diff($this->boundaries, [$event->boundaryId()->toString()]);
+    }
+
+    protected function whenBoundingBoxWasChanged(BoundingBoxWasChanged $event): void
     {
         if ($event->userId()->sameValueAs($this->ownerId())){
-            $this->name = $event->name();
+            $this->boundingBox = $event->boundingBox();
         }
     }
 
@@ -402,21 +419,40 @@ class ModflowModelAggregate extends AggregateRoot
         }
     }
 
-    protected function whenBoundingBoxWasChanged(BoundingBoxWasChanged $event): void
-    {
-        if ($event->userId()->sameValueAs($this->ownerId())){
-            $this->boundingBox = $event->boundingBox();
-        }
-    }
-
     protected function whenLengthUnitWasUpdated(LengthUnitWasUpdated $event): void
     {
         $this->lengthUnit = $event->lengthUnit();
     }
 
-    protected function whenTimeUnitWasUpdated(TimeUnitWasUpdated $event): void
+    protected function whenModflowModelWasCloned(ModflowModelWasCloned $event): void
     {
+        $this->modflowId = $event->modelId();
+        $this->owner = $event->userId();
+        $this->area = $event->area();
+        $this->boundaries = $event->boundaries();
+        $this->gridSize = $event->gridSize();
+        $this->boundingBox = $event->boundingBox();
+        $this->lengthUnit = $event->lengthUnit();
         $this->timeUnit = $event->timeUnit();
+    }
+
+    protected function whenModflowModelWasCreated(ModflowModelWasCreated $event): void
+    {
+        $this->modflowId = $event->modelId();
+        $this->owner = $event->userId();
+        $this->area = $event->area();
+        $this->boundaries = $event->boundaries();
+        $this->gridSize = $event->gridSize();
+        $this->boundingBox = $event->boundingBox();
+        $this->lengthUnit = $event->lengthUnit();
+        $this->timeUnit = $event->timeUnit();
+    }
+
+    protected function whenNameWasChanged(NameWasChanged $event): void
+    {
+        if ($event->userId()->sameValueAs($this->ownerId())){
+            $this->name = $event->name();
+        }
     }
 
     protected function whenSoilModelIdWasChanged(SoilModelIdWasChanged $event): void
@@ -424,29 +460,9 @@ class ModflowModelAggregate extends AggregateRoot
         $this->soilmodelId = $event->soilModelId();
     }
 
-    protected function whenBoundaryWasAdded(BoundaryWasAdded $event): void
+    protected function whenTimeUnitWasUpdated(TimeUnitWasUpdated $event): void
     {
-        $this->boundaries[] = $event->boundary()->boundaryId()->toString();
-    }
-
-    protected function whenBoundaryActiveCellsWasUpdated(BoundaryActiveCellsWereUpdated $event): void
-    {}
-
-    protected function whenBoundaryAffectedLayersWasUpdated(BoundaryAffectedLayersWereUpdated $event): void
-    {}
-
-    protected function whenBoundaryGeometryWasUpdated(BoundaryGeometryWasUpdated $event): void
-    {}
-
-    protected function whenBoundaryMetadataWasUpdated(BoundaryMetadataWasUpdated $event): void
-    {}
-
-    protected function whenBoundaryNameWasUpdated(BoundaryNameWasUpdated $event): void
-    {}
-
-    protected function whenBoundaryWasRemoved(BoundaryWasRemoved $event): void
-    {
-        $this->boundaries = array_diff($this->boundaries, [$event->boundaryId()->toString()]);
+        $this->timeUnit = $event->timeUnit();
     }
 
     protected function aggregateId(): string

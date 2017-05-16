@@ -39,7 +39,7 @@ class UpdateBoundaryGeometry extends Command implements PayloadConstructable
         return UserId::fromString($this->payload['user_id']);
     }
 
-    public function baseModelId(): ModflowId
+    public function modelId(): ModflowId
     {
         return ModflowId::fromString($this->payload['basemodel_id']);
     }
