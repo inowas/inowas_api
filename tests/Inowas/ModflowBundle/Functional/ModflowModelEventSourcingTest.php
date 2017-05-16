@@ -811,7 +811,7 @@ class ModflowModelEventSourcingTest extends EventSourcingBaseTest
         $this->createModelWithName($ownerId, $modelId);
 
         $scenarioAnalysisId = ScenarioAnalysisId::generate();
-        $this->commandBus->dispatch(CreateScenarioAnalysis::byUserwithBaseModel($scenarioAnalysisId, $ownerId, $modelId));
+        $this->commandBus->dispatch(CreateScenarioAnalysis::byUserWithBaseModel($scenarioAnalysisId, $ownerId, $modelId));
         $scenarioAnalysis = $this->container->get('inowas.scenarioanalysis.scenarioanalysis_finder')->findScenarioAnalysis($scenarioAnalysisId);
         $this->assertEquals($scenarioAnalysisId->toString(), $scenarioAnalysis['scenario_analysis_id']);
         $this->assertEquals($ownerId->toString(), $scenarioAnalysis['user_id']);
@@ -840,7 +840,7 @@ class ModflowModelEventSourcingTest extends EventSourcingBaseTest
         $this->assertCount(5, $baseModelBoundaries);
 
         $scenarioAnalysisId = ScenarioAnalysisId::generate();
-        $this->commandBus->dispatch(CreateScenarioAnalysis::byUserwithBaseModel($scenarioAnalysisId, $ownerId, $modelId));
+        $this->commandBus->dispatch(CreateScenarioAnalysis::byUserWithBaseModel($scenarioAnalysisId, $ownerId, $modelId));
         $scenarioAnalysis = $this->container->get('inowas.scenarioanalysis.scenarioanalysis_finder')->findScenarioAnalysis($scenarioAnalysisId);
         $this->assertEquals($scenarioAnalysisId->toString(), $scenarioAnalysis['scenario_analysis_id']);
         $this->assertEquals($ownerId->toString(), $scenarioAnalysis['user_id']);
@@ -867,7 +867,7 @@ class ModflowModelEventSourcingTest extends EventSourcingBaseTest
         $this->assertCount(4, $modelBoundaries);
 
         $scenarioAnalysisId = ScenarioAnalysisId::generate();
-        $this->commandBus->dispatch(CreateScenarioAnalysis::byUserwithBaseModel($scenarioAnalysisId, $ownerId, $modelId));
+        $this->commandBus->dispatch(CreateScenarioAnalysis::byUserWithBaseModel($scenarioAnalysisId, $ownerId, $modelId));
 
         $scenarioId = ModflowId::generate();
         $this->commandBus->dispatch(AddScenario::byUserWithBaseModelAndScenarioId($scenarioAnalysisId, $ownerId, $modelId, $scenarioId));
@@ -889,13 +889,13 @@ class ModflowModelEventSourcingTest extends EventSourcingBaseTest
         $this->commandBus->dispatch(AddBoundary::to($modelId, $ownerId, $well = $this->createWellBoundary()));
 
         $scenarioAnalysisId = ScenarioAnalysisId::generate();
-        $this->commandBus->dispatch(CreateScenarioAnalysis::byUserwithBaseModel($scenarioAnalysisId, $ownerId, $modelId));
+        $this->commandBus->dispatch(CreateScenarioAnalysis::byUserWithBaseModel($scenarioAnalysisId, $ownerId, $modelId));
 
         $scenarioId = ModflowId::generate();
         $this->commandBus->dispatch(AddScenario::byUserWithBaseModelAndScenarioId($scenarioAnalysisId, $ownerId, $modelId, $scenarioId));
 
         $newGeometry = Geometry::fromPoint(new Point(-63.6, -31.32, 4326));
-        $this->commandBus->dispatch(UpdateBoundaryGeometry::ofBaseModel($ownerId, $scenarioId, $well->boundaryId(), $newGeometry));
+        $this->commandBus->dispatch(UpdateBoundaryGeometry::byUser($ownerId, $scenarioId, $well->boundaryId(), $newGeometry));
         $scenarioBoundaries = $this->container->get('inowas.modflowmodel.boundaries_finder')->findByModelId($scenarioId);
         $this->assertCount(5, $scenarioBoundaries);
 
@@ -927,7 +927,7 @@ class ModflowModelEventSourcingTest extends EventSourcingBaseTest
         $this->assertEquals([[0,4,55]], $activeCells->cells());
 
         $newGeometry = Geometry::fromPoint(new Point(-63.659952, -31.330144, 4326));
-        $this->commandBus->dispatch(UpdateBoundaryGeometry::ofBaseModel($ownerId, $modelId, $wellBoundary->boundaryId(), $newGeometry));
+        $this->commandBus->dispatch(UpdateBoundaryGeometry::byUser($ownerId, $modelId, $wellBoundary->boundaryId(), $newGeometry));
 
         $activeCells = $this->container->get('inowas.modflowmodel.boundaries_finder')->findBoundaryActiveCells($modelId, $wellBoundary->boundaryId());
         $this->assertCount(1, $activeCells->cells());

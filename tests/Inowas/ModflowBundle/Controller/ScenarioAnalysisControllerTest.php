@@ -93,7 +93,7 @@ class ScenarioAnalysisControllerTest extends WebTestCase
         $this->commandBus->dispatch(ChangeModflowModelDescription::forModflowModel($this->userId, $this->modelId, ModflowModelDescription::fromString('TestDescription')));
 
         $this->scenarioAnalysisId = ScenarioAnalysisId::generate();
-        $this->commandBus->dispatch(CreateScenarioAnalysis::byUserwithBaseModel($this->scenarioAnalysisId, $this->userId, $this->modelId));
+        $this->commandBus->dispatch(CreateScenarioAnalysis::byUserWithBaseModel($this->scenarioAnalysisId, $this->userId, $this->modelId));
 
         $this->scenarioId = ModflowId::generate();
         $this->commandBus->dispatch(AddScenario::byUserWithBaseModelAndScenarioId($this->scenarioAnalysisId, $this->userId, $this->modelId, $this->scenarioId));

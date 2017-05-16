@@ -116,7 +116,6 @@ class ModflowModelController extends InowasRestController
         $areaGeometry = new Polygon($content['area_geometry']['coordinates'], 4326);
         $area = Area::create(BoundaryId::generate(), BoundaryName::fromString($name->toString().' Area'), $areaGeometry);
 
-
         $gridSize = GridSize::fromXY($content['grid_size']['n_x'], $content['grid_size']['n_y']);
         $timeUnit = TimeUnit::fromString($content['time_unit']);
         $lengthUnit = LengthUnit::fromString($content['length_unit']);

@@ -23,7 +23,7 @@ final class CreateScenarioAnalysisHandler
         $scenarioAnalysis = ScenarioAnalysisAggregate::create(
             $command->scenarioAnalysisId(),
             $command->userId(),
-            $command->scenarioId()
+            $command->baseModelId()
         );
 
         $this->scenarioAnalysisList->add($scenarioAnalysis);

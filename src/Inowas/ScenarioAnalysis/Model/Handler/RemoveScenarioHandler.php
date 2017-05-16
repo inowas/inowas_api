@@ -36,6 +36,6 @@ final class RemoveScenarioHandler
             throw ScenarioAnalysisNotFoundException::withId($command->scenarioAnalysisId());
         }
 
-        $scenarioAnalysis->removeScenario($command->userId(), $command->scenarioId());
+        $scenarioAnalysis->removeScenario($command->userId(), $command->baseModelId());
     }
 }

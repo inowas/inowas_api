@@ -2,6 +2,7 @@
 
 namespace Inowas\ModflowBundle\DataFixtures\Scenarios\Hanoi;
 
+use Inowas\Common\Boundaries\Area;
 use Inowas\Common\Boundaries\ConstantHeadBoundary;
 use Inowas\Common\Boundaries\ConstantHeadDateTimeValue;
 use Inowas\Common\Boundaries\ObservationPoint;
@@ -15,15 +16,16 @@ use Inowas\Common\Geometry\Polygon;
 use Inowas\Common\Geometry\Srid;
 use Inowas\Common\Grid\AffectedLayers;
 use Inowas\Common\Grid\LayerNumber;
-use Inowas\Common\Boundaries\AreaBoundary;
 use Inowas\Common\Geometry\Geometry;
 use Inowas\Common\Id\BoundaryId;
 use Inowas\Common\Boundaries\BoundaryName;
 use Inowas\Common\Id\ObservationPointId;
+use Inowas\Common\Modflow\LengthUnit;
 use Inowas\Common\Modflow\ModflowModelDescription;
 use Inowas\Common\Modflow\OcStressPeriod;
 use Inowas\Common\Modflow\OcStressPeriodData;
 use Inowas\Common\Modflow\PackageName;
+use Inowas\Common\Modflow\TimeUnit;
 use Inowas\Common\Soilmodel\BottomElevation;
 use Inowas\Common\Modflow\Laytyp;
 use Inowas\Common\Soilmodel\HydraulicAnisotropy;
@@ -37,11 +39,9 @@ use Inowas\ModflowCalculation\Model\Command\CalculateModflowModelCalculation;
 use Inowas\ModflowCalculation\Model\Command\ChangeFlowPackage;
 use Inowas\ModflowModel\Model\Command\ChangeModflowModelBoundingBox;
 use Inowas\ModflowModel\Model\Command\ChangeModflowModelDescription;
-use Inowas\ModflowModel\Model\Command\ChangeModflowModelGridSize;
 use Inowas\ModflowModel\Model\Command\ChangeModflowModelName;
 use Inowas\ModflowModel\Model\Command\ChangeModflowModelSoilmodelId;
 use Inowas\ModflowModel\Model\Command\CreateModflowModel;
-use Inowas\ModflowModel\Model\Command\AddModflowScenario;
 use Inowas\ModflowCalculation\Model\Command\CreateModflowModelCalculation;
 use Inowas\Common\Grid\BoundingBox;
 use Inowas\Common\Grid\GridSize;
@@ -54,6 +54,9 @@ use Inowas\Common\Boundaries\WellBoundary;
 use Inowas\Common\Boundaries\WellType;
 use Inowas\Common\Boundaries\RiverBoundary;
 use Inowas\ModflowBundle\DataFixtures\Scenarios\LoadScenarioBase;
+use Inowas\ScenarioAnalysis\Model\Command\AddScenario;
+use Inowas\ScenarioAnalysis\Model\Command\CreateScenarioAnalysis;
+use Inowas\ScenarioAnalysis\Model\ScenarioAnalysisId;
 use Inowas\Soilmodel\Model\Command\AddGeologicalLayerToSoilmodel;
 use Inowas\Soilmodel\Model\Command\ChangeSoilmodelDescription;
 use Inowas\Soilmodel\Model\Command\ChangeSoilmodelName;
@@ -81,24 +84,7 @@ class Hanoi extends LoadScenarioBase
         $commandBus = $this->container->get('prooph_service_bus.modflow_command_bus');
         $ownerId = UserId::fromString($this->ownerId);
         $modelId = ModflowId::generate();
-        $commandBus->dispatch(CreateModflowModel::newWithId($ownerId, $modelId));
-        $commandBus->dispatch(ChangeModflowModelName::forModflowModel($ownerId, $modelId, Modelname::fromString('Base Scenario Hanoi 2005-2007')));
-        $commandBus->dispatch(ChangeModflowModelDescription::forModflowModel(
-            $ownerId,
-            $modelId,
-            ModflowModelDescription::fromString('Calibrated groundwater base model, 2005-2007.'))
-        );
-
-        $box = $geoTools->projectBoundingBox(BoundingBox::fromCoordinates(578205, 594692, 2316000, 2333500, 32648), Srid::fromInt(4326));
-        $boundingBox = BoundingBox::fromEPSG4326Coordinates($box->xMin(), $box->xMax(), $box->yMin(), $box->yMax(), $box->dX(), $box->dY());
-        $commandBus->dispatch(ChangeModflowModelBoundingBox::forModflowModel($ownerId, $modelId, $boundingBox));
-
-        $gridSize = GridSize::fromXY(165, 175);
-        $commandBus->dispatch(ChangeModflowModelGridSize::forModflowModel($ownerId, $modelId, $gridSize));
-
-        $area = AreaBoundary::create(BoundaryId::generate());
-        $area = $area->setName(BoundaryName::fromString('Hanoi Area'));
-        $area = $area->setGeometry(Geometry::fromPolygon(new Polygon(array(
+        $area = Area::create(BoundaryId::generate(), BoundaryName::fromString('Hanoi Area'), new Polygon(array(
             array(
                 array(105.790767733626808, 21.094425932026443),
                 array(105.796959843400032, 21.093521487879368),
@@ -145,8 +131,18 @@ class Hanoi extends LoadScenarioBase
                 array(105.783049106327312, 21.093961473086512),
                 array(105.790767733626808, 21.094425932026443)
             )
-        ), 4326)));
-        $commandBus->dispatch(AddBoundary::to($ownerId, $modelId, $area));
+        ), 4326));
+        $gridSize = GridSize::fromXY(165, 175);
+        $commandBus->dispatch(CreateModflowModel::newWithIdAndUnits($ownerId, $modelId, $area, $gridSize, TimeUnit::fromString(TimeUnit::DAYS), LengthUnit::fromString(LengthUnit::METERS)));
+        $commandBus->dispatch(ChangeModflowModelName::forModflowModel($ownerId, $modelId, Modelname::fromString('Base Scenario Hanoi 2005-2007')));
+        $commandBus->dispatch(ChangeModflowModelDescription::forModflowModel(
+            $ownerId,
+            $modelId,
+            ModflowModelDescription::fromString('Calibrated groundwater base model, 2005-2007.')));
+
+        $box = $geoTools->projectBoundingBox(BoundingBox::fromCoordinates(578205, 594692, 2316000, 2333500, 32648), Srid::fromInt(4326));
+        $boundingBox = BoundingBox::fromEPSG4326Coordinates($box->xMin(), $box->xMax(), $box->yMin(), $box->yMax(), $box->dX(), $box->dY());
+        $commandBus->dispatch(ChangeModflowModelBoundingBox::forModflowModel($ownerId, $modelId, $boundingBox));
 
         $soilModelId = SoilmodelId::generate();
         $commandBus->dispatch(ChangeModflowModelSoilmodelId::forModflowModel($modelId, $soilModelId));
@@ -438,7 +434,7 @@ class Hanoi extends LoadScenarioBase
             }
 
             echo sprintf('Add Well %s to BaseModel'."\r\n", $wellBoundary->name()->toString());
-            $commandBus->dispatch(AddBoundary::to($ownerId, $modelId, $wellBoundary));
+            $commandBus->dispatch(AddBoundary::to($modelId, $ownerId, $wellBoundary));
         }
 
         /*
@@ -478,7 +474,7 @@ class Hanoi extends LoadScenarioBase
             echo sprintf("Add River-Boundary ObservationPoint %s.\r\n", $observationPoint->name()->toString());
             $river = $river->addObservationPoint($observationPoint);
         }
-        $commandBus->dispatch(AddBoundary::to($ownerId, $modelId, $river));
+        $commandBus->dispatch(AddBoundary::to($modelId, $ownerId, $river));
 
         /*
          * Add ConstantHead for the baseScenario
@@ -525,7 +521,7 @@ class Hanoi extends LoadScenarioBase
             }
         }
         echo sprintf("Add Chd-Boundary %s.\r\n", $chdBoundary->name()->toString());
-        $commandBus->dispatch(AddBoundary::to($ownerId, $modelId, $chdBoundary));
+        $commandBus->dispatch(AddBoundary::to($modelId, $ownerId, $chdBoundary));
 
         $calculationList = [];
         $calculationId = ModflowId::generate();
@@ -539,10 +535,13 @@ class Hanoi extends LoadScenarioBase
         /*
          * Begin add Scenario 1
          */
+        $scenarioAnalysisId = ScenarioAnalysisId::generate();
+        $commandBus->dispatch(CreateScenarioAnalysis::byUserWithBaseModel($scenarioAnalysisId, $ownerId, $modelId));
+
         $scenarioId = ModflowId::generate();
-        $commandBus->dispatch(AddModflowScenario::from($ownerId, $modelId, $scenarioId));
-        $commandBus->dispatch(ChangeModflowModelName::forScenario($ownerId, $modelId, $scenarioId, Modelname::fromString('Scenario 1')));
-        $commandBus->dispatch(ChangeModflowModelDescription::forScenario($ownerId, $modelId, $scenarioId, ModflowModelDescription::fromString('Simulation of MAR type river bank filtration')));
+        $commandBus->dispatch(AddScenario::byUserWithBaseModelAndScenarioId($scenarioAnalysisId, $ownerId, $modelId, $scenarioId));
+        $commandBus->dispatch(ChangeModflowModelName::forModflowModel($ownerId, $scenarioId, Modelname::fromString('Scenario 1')));
+        $commandBus->dispatch(ChangeModflowModelDescription::forModflowModel($ownerId, $scenarioId, ModflowModelDescription::fromString('Simulation of MAR type river bank filtration')));
 
         $boundariesFinder = $this->container->get('inowas.modflowmodel.boundaries_finder');
         $rbfRelocatedWellNamesAndGeometry = array(
@@ -564,21 +563,21 @@ class Hanoi extends LoadScenarioBase
             echo sprintf("Move Well %s.\r\n", $name);
             $boundaryId = $boundaryIds[0];
             $geometry = Geometry::fromPoint($geometry);
-            $commandBus->dispatch(UpdateBoundaryGeometry::ofScenario($ownerId, $modelId, $scenarioId, $boundaryId, $geometry));
+            $commandBus->dispatch(UpdateBoundaryGeometry::byUser($ownerId, $scenarioId, $boundaryId, $geometry));
         }
 
         /* Create Calculation and Calculate */
         $calculationId = ModflowId::generate();
-        $commandBus->dispatch(CreateModflowModelCalculation::byUserWithModelAndScenarioId($calculationId, $ownerId, $modelId, $scenarioId, $start, $end));
+        $commandBus->dispatch(CreateModflowModelCalculation::byUserWithModelId($calculationId, $ownerId, $scenarioId, $start, $end));
         $calculationList[] = [$calculationId, $ownerId, $scenarioId];
 
         /*
          * Begin add Scenario 2
          */
         $scenarioId = ModflowId::generate();
-        $commandBus->dispatch(AddModflowScenario::from($ownerId, $modelId, $scenarioId));
-        $commandBus->dispatch(ChangeModflowModelName::forScenario($ownerId, $modelId, $scenarioId, Modelname::fromString('Scenario 2')));
-        $commandBus->dispatch(ChangeModflowModelDescription::forScenario($ownerId, $modelId, $scenarioId, ModflowModelDescription::fromString('Simulation of MAR type injection wells')));
+        $commandBus->dispatch(AddScenario::byUserWithBaseModelAndScenarioId($scenarioAnalysisId, $ownerId, $modelId, $scenarioId));
+        $commandBus->dispatch(ChangeModflowModelName::forModflowModel($ownerId, $scenarioId, Modelname::fromString('Scenario 2')));
+        $commandBus->dispatch(ChangeModflowModelDescription::forModflowModel($ownerId, $scenarioId, ModflowModelDescription::fromString('Simulation of MAR type injection wells')));
 
         # THIS WELLS ARE THE YELLOW DOTS IN THE RIGHT IMAGE
         $header = array('name', 'x', 'y', 'srid', 'pumpingrate');
@@ -606,23 +605,23 @@ class Hanoi extends LoadScenarioBase
             $wellBoundary = $wellBoundary->addPumpingRate(WellDateTimeValue::fromParams(
                     $start->toDateTimeImmutable(),
                     $wellData['pumpingrate']));
-            $commandBus->dispatch(AddBoundary::toScenario($ownerId, $modelId, $scenarioId, $wellBoundary));
+            $commandBus->dispatch(AddBoundary::to($scenarioId, $ownerId, $wellBoundary));
         }
 
         /* Calculation */
         $calculationId = ModflowId::generate();
         $start = DateTime::fromDateTime(new \DateTime('2005-01-01'));
         $end = DateTime::fromDateTime(new \DateTime('2007-12-31'));
-        $commandBus->dispatch(CreateModflowModelCalculation::byUserWithModelAndScenarioId($calculationId, $ownerId, $modelId, $scenarioId, $start, $end));
+        $commandBus->dispatch(CreateModflowModelCalculation::byUserWithModelId($calculationId, $ownerId, $scenarioId, $start, $end));
         $calculationList[] = [$calculationId, $ownerId, $scenarioId];
 
         /*
          * Begin add Scenario 3
          */
         $scenarioId = ModflowId::generate();
-        $commandBus->dispatch(AddModflowScenario::from($ownerId, $modelId, $scenarioId));
-        $commandBus->dispatch(ChangeModflowModelName::forScenario($ownerId, $modelId, $scenarioId, Modelname::fromString('Scenario 3')));
-        $commandBus->dispatch(ChangeModflowModelDescription::forScenario($ownerId, $modelId, $scenarioId, ModflowModelDescription::fromString('Combination of MAR types river bank filtration and injection wells.')));
+        $commandBus->dispatch(AddScenario::byUserWithBaseModelAndScenarioId($scenarioAnalysisId, $ownerId, $modelId, $scenarioId));
+        $commandBus->dispatch(ChangeModflowModelName::forModflowModel($ownerId, $scenarioId, Modelname::fromString('Scenario 3')));
+        $commandBus->dispatch(ChangeModflowModelDescription::forModflowModel($ownerId, $scenarioId, ModflowModelDescription::fromString('Combination of MAR types river bank filtration and injection wells')));
 
         $boundariesFinder = $this->container->get('inowas.modflowmodel.boundaries_finder');
         $rbfRelocatedWellNamesAndGeometry = array(
@@ -644,7 +643,7 @@ class Hanoi extends LoadScenarioBase
             echo sprintf("Move Well %s.\r\n", $name);
             $boundaryId = $boundaryIds[0];
             $geometry = Geometry::fromPoint($geometry);
-            $commandBus->dispatch(UpdateBoundaryGeometry::ofScenario($ownerId, $modelId, $scenarioId, $boundaryId, $geometry));
+            $commandBus->dispatch(UpdateBoundaryGeometry::byUser($ownerId, $scenarioId, $boundaryId, $geometry));
         }
 
         $header = array('name', 'x', 'y', 'srid', 'pumpingrate');
@@ -660,14 +659,14 @@ class Hanoi extends LoadScenarioBase
             $wellBoundary = $wellBoundary->addPumpingRate(WellDateTimeValue::fromParams(
                 $start->toDateTimeImmutable(),
                 $wellData['pumpingrate']));
-            $commandBus->dispatch(AddBoundary::toScenario($ownerId, $modelId, $scenarioId, $wellBoundary));
+            $commandBus->dispatch(AddBoundary::to($scenarioId, $ownerId, $wellBoundary));
         }
 
         /* Add Head Results */
         $calculationId = ModflowId::generate();
         $start = DateTime::fromDateTime(new \DateTime('2005-01-01'));
         $end = DateTime::fromDateTime(new \DateTime('2007-12-31'));
-        $commandBus->dispatch(CreateModflowModelCalculation::byUserWithModelAndScenarioId($calculationId, $ownerId, $modelId, $scenarioId, $start, $end));
+        $commandBus->dispatch(CreateModflowModelCalculation::byUserWithModelId($calculationId, $ownerId, $scenarioId, $start, $end));
         $calculationList[] = [$calculationId, $ownerId, $scenarioId];
 
         foreach ($calculationList as $calculation) {
