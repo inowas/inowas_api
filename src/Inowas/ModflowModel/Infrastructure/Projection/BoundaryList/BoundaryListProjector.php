@@ -10,6 +10,8 @@ use Inowas\Common\Boundaries\ObservationPoint;
 use Inowas\Common\Projection\AbstractDoctrineConnectionProjector;
 use Inowas\ModflowModel\Model\Event\BoundaryAffectedLayersWereUpdated;
 use Inowas\ModflowModel\Model\Event\BoundaryGeometryWasUpdated;
+use Inowas\ModflowModel\Model\Event\BoundaryMetadataWasUpdated;
+use Inowas\ModflowModel\Model\Event\BoundaryNameWasUpdated;
 use Inowas\ModflowModel\Model\Event\BoundaryWasAdded;
 use Inowas\ModflowModel\Model\Event\BoundaryWasRemoved;
 use Inowas\ModflowModel\Infrastructure\Projection\Table;
@@ -61,8 +63,25 @@ class BoundaryListProjector extends AbstractDoctrineConnectionProjector
         ));
     }
 
-    // BoundaryMetadataWasUpdated
-    // BoundaryNameWasUpdated
+    public function onBoundaryMetadataWasUpdated(BoundaryMetadataWasUpdated $event): void
+    {
+        $this->connection->update(Table::BOUNDARY_LIST, array(
+            'metadata' => json_encode($event->metadata()),
+        ), array(
+            'boundary_id' => $event->boundaryId()->toString(),
+            'model_id' => $event->modflowModelId()->toString()
+        ));
+    }
+
+    public function onBoundaryNameWasUpdated(BoundaryNameWasUpdated $event): void
+    {
+        $this->connection->update(Table::BOUNDARY_LIST, array(
+            'name' => $event->boundaryName()->toString(),
+        ), array(
+            'boundary_id' => $event->boundaryId()->toString(),
+            'model_id' => $event->modflowModelId()->toString()
+        ));
+    }
 
     public function onBoundaryWasAdded(BoundaryWasAdded $event): void
     {

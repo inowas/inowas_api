@@ -69,10 +69,10 @@ class BoundaryNameWasUpdated extends AggregateChanged
         return $this->userId;
     }
 
-    public function boundaryName(): array
+    public function boundaryName(): BoundaryName
     {
         if ($this->boundaryName === null){
-            $this->boundaryName = $this->payload['boundary_name'];
+            $this->boundaryName = BoundaryName::fromString($this->payload['boundary_name']);
         }
 
         return $this->boundaryName;
