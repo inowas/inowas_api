@@ -88,8 +88,8 @@ class ModelProjector extends AbstractDoctrineConnectionProjector
         $this->connection->insert(Table::MODEL_DETAILS, array(
             'model_id' => $event->modelId()->toString(),
             'user_id' => $event->userId()->toString(),
-            'soilmodel_id' => SoilmodelId::generate(),
             'user_name' => $this->getUserNameByUserId($event->userId()->toString()),
+            'soilmodel_id' => SoilmodelId::generate()->toString(),
             'name' => '',
             'description' => '',
             'area' => $event->area()->geometry()->toJson(),
@@ -113,6 +113,7 @@ class ModelProjector extends AbstractDoctrineConnectionProjector
                 'model_id' => $event->modelId()->toString(),
                 'user_id' => $event->userId()->toString(),
                 'user_name' => $this->getUserNameByUserId($event->userId()->toString()),
+                'soilmodel_id' => $row['soilmodel_id'],
                 'name' => $row['name'],
                 'description' => $row['description'],
                 'area' => $row['area'],
