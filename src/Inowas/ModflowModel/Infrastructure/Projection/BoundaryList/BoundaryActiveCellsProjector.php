@@ -168,19 +168,8 @@ class BoundaryActiveCellsProjector extends AbstractDoctrineConnectionProjector
 
     public function onModflowModelWasCloned(ModflowModelWasCloned $event): void
     {
-        $sql = sprintf("SELECT * FROM %s WHERE model_id = ?", Table::BOUNDARY_ACTIVE_CELLS);
-        $stmt = $this->connection->prepare($sql);
-        $stmt->bindValue(1, $event->baseModelId()->toString());
-        $stmt->execute();
-        $boundaries = $stmt->fetchAll();
-
-        foreach ($boundaries as $boundary){
-            $this->connection->insert(Table::BOUNDARY_ACTIVE_CELLS, array(
-                'model_id' => $event->modelId()->toString(),
-                'boundary_id' => $boundary['boundary_id'],
-                'active_cells' => $boundary['active_cells'],
-            ));
-        }
+        $this->cloneArea($event->baseModelId(), $event->modelId());
+        $this->cloneBoundaries($event->baseModelId(), $event->modelId());
     }
 
     public function onModflowModelWasCreated(ModflowModelWasCreated $event): void
@@ -232,5 +221,42 @@ class BoundaryActiveCellsProjector extends AbstractDoctrineConnectionProjector
             'model_id' => $modelId->toString(),
             'boundary_id' => $modelId->toString(),
         ));
+    }
+
+    private function cloneArea(ModflowId $baseModelId, ModflowId $modelId): void
+    {
+        $result = $this->connection->fetchAssoc(
+            sprintf('SELECT * FROM %s WHERE model_id = :model_id AND boundary_id = :boundary_id', Table::BOUNDARY_ACTIVE_CELLS),
+            ['model_id' => $baseModelId->toString(), 'boundary_id' => $baseModelId->toString()]
+        );
+
+        if ($result === false){
+            return;
+        }
+
+        $this->connection->insert(Table::BOUNDARY_ACTIVE_CELLS, array(
+            'model_id' => $modelId->toString(),
+            'boundary_id' => $modelId->toString(),
+            'active_cells' => $result['active_cells'],
+        ));
+    }
+
+    private function cloneBoundaries(ModflowId $baseModelId, ModflowId $modelId){
+
+        $rows = $this->connection->fetchAll(sprintf('SELECT * FROM %s WHERE model_id = :model_id AND NOT boundary_id = :boundary_id', Table::BOUNDARY_ACTIVE_CELLS),
+            ['model_id' => $baseModelId->toString(), 'boundary_id' => $baseModelId->toString()]
+        );
+
+        if ($rows === false){
+            return;
+        }
+
+        foreach ($rows as $row){
+            $this->connection->insert(Table::BOUNDARY_ACTIVE_CELLS, array(
+                'model_id' => $modelId->toString(),
+                'boundary_id' => $row['boundary_id'],
+                'active_cells' => $row['active_cells'],
+            ));
+        }
     }
 }

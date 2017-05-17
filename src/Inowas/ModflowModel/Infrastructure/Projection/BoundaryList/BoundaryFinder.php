@@ -385,10 +385,7 @@ class BoundaryFinder
         $this->connection->setFetchMode(\PDO::FETCH_ASSOC);
         $rows = $this->connection->fetchAll(
             sprintf('SELECT boundary_id FROM %s WHERE name =:boundary_name AND model_id = :model_id', Table::BOUNDARY_LIST),
-            [
-                'model_id' => $modflowId->toString(),
-                'boundary_name' => $boundaryName->toString()
-            ]
+            ['model_id' => $modflowId->toString(), 'boundary_name' => $boundaryName->toString()]
         );
 
         $result = [];
