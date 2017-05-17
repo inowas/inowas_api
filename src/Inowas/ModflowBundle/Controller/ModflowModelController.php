@@ -828,12 +828,12 @@ class ModflowModelController extends InowasRestController
 
         $response = array();
         foreach ($boundaries as $boundary){
-            $response[] = (object)[
-                'id' => $boundary->id,
-                'name' => $boundary->name,
-                'type' => $boundary->type,
-                'geometry' => json_decode($boundary->geometry),
-                'metadata' => json_decode($boundary->metadata)
+            $response[] = [
+                'id' => $boundary['id'],
+                'name' => $boundary['name'],
+                'type' => $boundary['type'],
+                'geometry' => json_decode($boundary['geometry']),
+                'metadata' => json_decode($boundary['metadata'])
             ];
         }
 

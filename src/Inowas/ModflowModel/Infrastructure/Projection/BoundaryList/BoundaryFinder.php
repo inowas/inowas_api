@@ -292,8 +292,9 @@ class BoundaryFinder
 
     public function findByModelId(ModflowId $modelId): array
     {
+        $this->connection->setFetchMode(\PDO::FETCH_ASSOC);
         return $this->connection->fetchAll(
-            sprintf('SELECT boundary_id, name, type, geometry, metadata FROM %s WHERE model_id = :model_id', Table::BOUNDARY_LIST),
+            sprintf('SELECT boundary_id as id, name, type, geometry, metadata FROM %s WHERE model_id = :model_id', Table::BOUNDARY_LIST),
             ['model_id' => $modelId->toString()]
         );
     }
@@ -311,7 +312,6 @@ class BoundaryFinder
     public function findStressPeriodDatesById(ModflowId $modelId): array
     {
         $this->connection->setFetchMode(\PDO::FETCH_ASSOC);
-
         $boundaries = $this->connection->fetchAll(
             sprintf('SELECT data FROM %s WHERE model_id = :model_id', Table::BOUNDARY_OBSERVATION_POINTS),
             ['model_id' => $modelId->toString()]
