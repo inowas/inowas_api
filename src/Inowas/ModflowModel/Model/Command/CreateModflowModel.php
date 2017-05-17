@@ -36,7 +36,7 @@ class CreateModflowModel extends Command implements PayloadConstructable
         return new self(
             [
                 'user_id' => $userId->toString(),
-                'modflow_model_id' => $modelId->toString(),
+                'modflowmodel_id' => $modelId->toString(),
                 'area' => serialize($area),
                 'grid_size' => $gridSize->toArray(),
                 'time_unit' => $timeUnit->toValue(),
