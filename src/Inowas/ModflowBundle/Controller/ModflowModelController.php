@@ -50,7 +50,7 @@ class ModflowModelController extends InowasRestController
      *   }
      * )
      *
-     * @Rest\Get("modflowmodels")
+     * @Rest\Get("/modflowmodels")
      * @return JsonResponse
      */
     public function getModflowModelsAction(): JsonResponse
@@ -79,7 +79,7 @@ class ModflowModelController extends InowasRestController
      *   }
      * )
      *
-     * @Rest\Get("modflowmodels/public")
+     * @Rest\Get("/modflowmodels/public")
      * @return JsonResponse
      */
     public function getPublicModflowModelsAction(): JsonResponse
@@ -143,7 +143,7 @@ class ModflowModelController extends InowasRestController
      * )
      *
      * @param string $id
-     * @Rest\Get("modflowmodels/{id}")
+     * @Rest\Get("/modflowmodels/{id}")
      * @return JsonResponse
      */
     public function getModflowModelAction(string $id): JsonResponse
@@ -167,7 +167,7 @@ class ModflowModelController extends InowasRestController
      *
      * @param string $id
      * @param Request $request
-     * @Rest\Put("modflowmodels/{id}")
+     * @Rest\Put("/modflowmodels/{id}")
      * @return RedirectResponse
      */
     public function putModflowModelAction(string $id, Request $request): RedirectResponse
@@ -217,7 +217,7 @@ class ModflowModelController extends InowasRestController
      * )
      *
      * @param string $id
-     * @Rest\Get("modflowmodels/{id}/boundaries")
+     * @Rest\Get("/modflowmodels/{id}/boundaries")
      * @return JsonResponse
      */
     public function getModflowModelBoundariesAction(string $id): JsonResponse
@@ -252,7 +252,7 @@ class ModflowModelController extends InowasRestController
      *
      * @param string $id
      * @param Request $request
-     * @Rest\Post("modflowmodels/{id}/boundaries")
+     * @Rest\Post("/modflowmodels/{id}/boundaries")
      * @return Response
      */
     public function postModflowModelBoundariesAction(string $id, Request $request): Response
@@ -377,7 +377,7 @@ class ModflowModelController extends InowasRestController
      *
      * @param string $id
      * @param string $bid
-     * @Rest\Get("modflowmodels/{id}/boundaries/{bid}")
+     * @Rest\Get("/modflowmodels/{id}/boundaries/{bid}")
      * @return Response
      */
     public function getModflowModelBoundaryAction(string $id, string $bid): Response
