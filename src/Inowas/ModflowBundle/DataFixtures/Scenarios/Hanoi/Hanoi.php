@@ -145,7 +145,7 @@ class Hanoi extends LoadScenarioBase
         $commandBus->dispatch(ChangeModflowModelBoundingBox::forModflowModel($ownerId, $modelId, $boundingBox));
 
         $soilModelId = SoilmodelId::generate();
-        $commandBus->dispatch(ChangeModflowModelSoilmodelId::forModflowModel($modelId, $soilModelId));
+        $commandBus->dispatch(ChangeModflowModelSoilmodelId::forModflowModel($ownerId, $modelId, $soilModelId));
         $commandBus->dispatch(CreateSoilmodel::byUserWithModelId($ownerId, $soilModelId));
         $commandBus->dispatch(ChangeSoilmodelName::forSoilmodel($ownerId, $soilModelId, SoilmodelName::fromString('Hanoi-Area')));
         $commandBus->dispatch(ChangeSoilmodelDescription::forSoilmodel($ownerId, $soilModelId, SoilmodelDescription::fromString('Soilmodel for Hanoi-Area')));

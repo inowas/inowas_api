@@ -16,7 +16,6 @@ use Inowas\Common\Boundaries\WellBoundary;
 use Inowas\Common\Boundaries\WellType;
 use Inowas\Common\Geometry\Geometry;
 use Inowas\Common\Geometry\Polygon;
-use Inowas\Common\Geometry\Srid;
 use Inowas\Common\Grid\AffectedLayers;
 use Inowas\Common\Grid\BoundingBox;
 use Inowas\Common\Grid\GridSize;
@@ -27,11 +26,13 @@ use Inowas\Common\Modflow\LengthUnit;
 use Inowas\Common\Modflow\Modelname;
 use Inowas\Common\Modflow\ModflowModelDescription;
 use Inowas\Common\Modflow\TimeUnit;
+use Inowas\Common\Soilmodel\SoilmodelId;
 use Inowas\ModflowModel\Model\Command\AddBoundary;
 use Inowas\ModflowModel\Model\Command\ChangeModflowModelBoundingBox;
 use Inowas\ModflowModel\Model\Command\ChangeModflowModelDescription;
 use Inowas\ModflowModel\Model\Command\ChangeModflowModelGridSize;
 use Inowas\ModflowModel\Model\Command\ChangeModflowModelName;
+use Inowas\ModflowModel\Model\Command\ChangeModflowModelSoilmodelId;
 use Inowas\ModflowModel\Model\Command\CreateModflowModel;
 use Inowas\ModflowModel\Model\Command\UpdateAreaGeometry;
 use Nelmio\ApiDocBundle\Annotation\ApiDoc;
@@ -556,6 +557,86 @@ class ModflowModelController extends InowasRestController
 
         $response = new RedirectResponse(
             $this->generateUrl('get_modflow_model_grid_size', array('id' => $modelId->toString())),
+            302
+        );
+
+        return $response;
+    }
+
+    /**
+     * Get soilmodelId of modflow model by id.
+     *
+     * @ApiDoc(
+     *   resource = true,
+     *   description = "Get soilmodelId of modflow model by id.",
+     *   statusCodes = {
+     *     200 = "Returned when successful"
+     *   }
+     * )
+     *
+     * @param string $id
+     * @Rest\Get("/modflowmodels/{id}/soilmodel")
+     * @return JsonResponse
+     */
+    public function getSoilModelIdAction(string $id): JsonResponse
+    {
+        if (! Uuid::isValid($id)) {
+            return InowasJsonInvalidUuidResponse::withId($id);
+        }
+
+        $modelId = ModflowId::fromString($id);
+        $soilModelId = $this->get('inowas.modflowmodel.model_finder')->getSoilmodelIdByModelId($modelId);
+
+        if (! $soilModelId instanceof SoilmodelId) {
+            return new InowasJsonNotFoundResponse(sprintf('Model with id %s not found.', $modelId->toString()));
+        }
+
+        return new JsonResponse(['soilmodel_id' => $soilModelId->toString()]);
+    }
+
+    /**
+     * Update soilmodelId of modflow model by id.
+     *
+     * @ApiDoc(
+     *   resource = true,
+     *   description = "Update soilmodelId of modflow model by id.",
+     *   statusCodes = {
+     *     200 = "Returned when successful"
+     *   }
+     * )
+     *
+     * @param Request $request
+     * @param string $id
+     * @Rest\Put("/modflowmodels/{id}/soilmodel")
+     * @return Response
+     */
+    public function putSoilModelIdAction(Request $request, string $id)
+    {
+        if (! Uuid::isValid($id)) {
+            return InowasJsonInvalidUuidResponse::withId($id);
+        }
+
+        $modelId = ModflowId::fromString($id);
+
+        $content = $this->getContentAsArray($request);
+        if (! array_key_exists('soilmodel_id', $content)) {
+            return InowasJsonInvalidInputResponse::withMessage('Expected key \'soilmodel_id\' not found.');
+        }
+
+        $soilmodelId = SoilmodelId::fromString($content['soilmodel_id']);
+
+        /** @var User $user */
+        $user = $this->getUser();
+        $userId = UserId::fromString($user->getId()->toString());
+
+        if (! $this->get('inowas.modflowmodel.model_finder')->userHasWriteAccessToModel($userId, $modelId)){
+            return InowasJsonWriteAccessDeniedResponse::withMessage(sprintf('User with Id %s does not have write access to ModflowModel %s.', $userId->toString(), $modelId->toString()));
+        }
+
+        $this->get('prooph_service_bus.modflow_command_bus')->dispatch(ChangeModflowModelSoilmodelId::forModflowModel($userId, $modelId, $soilmodelId));
+
+        $response = new RedirectResponse(
+            $this->generateUrl('get_soil_model_id', array('id' => $modelId->toString())),
             302
         );
 

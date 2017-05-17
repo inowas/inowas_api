@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Inowas\ModflowModel\Model\Event;
 
 use Inowas\Common\Id\ModflowId;
+use Inowas\Common\Id\UserId;
 use Inowas\Common\Soilmodel\SoilmodelId;
 use Prooph\EventSourcing\AggregateChanged;
 
@@ -14,12 +15,17 @@ class SoilModelIdWasChanged extends AggregateChanged
     /** @var ModflowId */
     private $modflowModelId;
 
+    /** @var SoilmodelId */
     private $soilmodelId;
 
-    public static function withSoilmodelId(ModflowId $modflowModelId, SoilmodelId $soilModelId): SoilModelIdWasChanged
+    /** @var UserId */
+    private $userId;
+
+    public static function withSoilmodelId(UserId $userId, ModflowId $modflowModelId, SoilmodelId $soilModelId): SoilModelIdWasChanged
     {
         $event = self::occur(
             $modflowModelId->toString(), [
+                'user_id' => $userId->toString(),
                 'soilmodel_id' => $soilModelId->toString()
             ]
         );
@@ -28,6 +34,15 @@ class SoilModelIdWasChanged extends AggregateChanged
         $event->soilmodelId = $soilModelId;
 
         return $event;
+    }
+
+    public function userId(): UserId
+    {
+        if ($this->userId === null) {
+            $this->userId = UserId::fromString($this->payload['user_id']);
+        }
+
+        return $this->userId;
     }
 
     public function modflowModelId(): ModflowId

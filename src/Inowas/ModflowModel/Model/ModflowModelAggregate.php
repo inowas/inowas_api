@@ -284,10 +284,11 @@ class ModflowModelAggregate extends AggregateRoot
         }
     }
 
-    public function changeSoilmodelId(SoilmodelId $soilModelId): void
+    public function changeSoilmodelId(UserId $userId, SoilmodelId $soilModelId): void
     {
         $this->soilmodelId = $soilModelId;
         $this->recordThat(SoilModelIdWasChanged::withSoilmodelId(
+            $userId,
             $this->modflowId,
             $this->soilmodelId
         ));
