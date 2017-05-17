@@ -26,7 +26,7 @@ final class ChangeModflowModelDescriptionHandler
 
     public function __invoke(ChangeModflowModelDescription $command)
     {
-        /** @var ModflowModelAggregate $modflowModel */
+                /** @var ModflowModelAggregate $modflowModel */
         $modflowModel = $this->modelList->get($command->modflowModelId());
 
         if (!$modflowModel){

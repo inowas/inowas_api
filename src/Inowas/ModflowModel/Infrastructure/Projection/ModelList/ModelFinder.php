@@ -11,6 +11,9 @@ use Inowas\Common\Grid\BoundingBox;
 use Inowas\Common\Grid\GridSize;
 use Inowas\Common\Id\ModflowId;
 use Inowas\Common\Id\UserId;
+use Inowas\Common\Modflow\Modelname;
+use Inowas\Common\Modflow\ModflowModelDescription;
+use Inowas\Common\Soilmodel\SoilmodelId;
 use Inowas\ModflowModel\Infrastructure\Projection\Table;
 
 class ModelFinder
@@ -23,7 +26,7 @@ class ModelFinder
         $this->connection->setFetchMode(\PDO::FETCH_OBJ);
     }
 
-    public function findAreaGeometryByModflowModelId(ModflowId $modelId): Polygon
+    public function getAreaGeometryByModflowModelId(ModflowId $modelId): ?Geometry
     {
         $result =  $this->connection->fetchAssoc(
             sprintf('SELECT area FROM %s WHERE model_id = :model_id', Table::MODEL_DETAILS),
@@ -34,10 +37,15 @@ class ModelFinder
             return null;
         }
 
-        return Geometry::fromJson($result['area'])->value();
+        return Geometry::fromJson($result['area']);
     }
 
-    public function getBoundingBoxByModflowModelId(ModflowId $modelId): BoundingBox
+    public function getAreaPolygonByModflowModelId(ModflowId $modelId): ?Polygon
+    {
+        return $this->getAreaGeometryByModflowModelId($modelId)->value();
+    }
+
+    public function getBoundingBoxByModflowModelId(ModflowId $modelId): ?BoundingBox
     {
         $result =  $this->connection->fetchAssoc(
             sprintf('SELECT bounding_box FROM %s WHERE model_id = :model_id', Table::MODEL_DETAILS),
@@ -51,7 +59,7 @@ class ModelFinder
         return BoundingBox::fromArray((array)json_decode($result['bounding_box']));
     }
 
-    public function getGridSizeByModflowModelId(ModflowId $modelId): GridSize
+    public function getGridSizeByModflowModelId(ModflowId $modelId): ?GridSize
     {
         $result = $this->connection->fetchAssoc(
             sprintf('SELECT grid_size FROM %s WHERE model_id = :model_id', Table::MODEL_DETAILS),
@@ -65,7 +73,67 @@ class ModelFinder
         return GridSize::fromArray((array)json_decode($result['grid_size']));
     }
 
-    public function findModelDetailsByModelId(ModflowId $modelId): array
+    public function getModelNameByModelId(ModflowId $modelId): ?Modelname
+    {
+        $this->connection->setFetchMode(\PDO::FETCH_ASSOC);
+        $result = $this->connection->fetchAssoc(
+            sprintf('SELECT name FROM %s WHERE model_id = :model_id', Table::MODEL_DETAILS),
+            ['model_id' => $modelId->toString()]
+        );
+
+        if ($result === false){
+            return null;
+        }
+
+        return Modelname::fromString($result['name']);
+    }
+
+    public function getModelDescriptionByModelId(ModflowId $modelId): ?ModflowModelDescription
+    {
+        $this->connection->setFetchMode(\PDO::FETCH_ASSOC);
+        $result = $this->connection->fetchAssoc(
+            sprintf('SELECT description FROM %s WHERE model_id = :model_id', Table::MODEL_DETAILS),
+            ['model_id' => $modelId->toString()]
+        );
+
+        if ($result === false){
+            return null;
+        }
+
+        return ModflowModelDescription::fromString($result['description']);
+    }
+
+    public function getSoilmodelIdByModelId(ModflowId $modelId): ?SoilmodelId
+    {
+        $this->connection->setFetchMode(\PDO::FETCH_ASSOC);
+        $result = $this->connection->fetchAssoc(
+            sprintf('SELECT soilmodel_id FROM %s WHERE model_id = :model_id', Table::MODEL_DETAILS),
+            ['model_id' => $modelId->toString()]
+        );
+
+        if ($result === false){
+            return null;
+        }
+
+        return SoilmodelId::fromString($result['soilmodel_id']);
+    }
+
+    public function userHasWriteAccessToModel(UserId $userId, ModflowId $modelId): bool
+    {
+        $this->connection->setFetchMode(\PDO::FETCH_ASSOC);
+        $result = $this->connection->fetchAssoc(
+            sprintf('SELECT count(*) FROM %s WHERE model_id = :model_id AND user_id = :user_id', Table::MODEL_DETAILS),
+            ['model_id' => $modelId->toString(), 'user_id' => $userId->toString()]
+        );
+
+        if ($result['count'] > 0){
+            return true;
+        }
+
+        return false;
+    }
+
+    public function getModelDetailsByModelId(ModflowId $modelId): array
     {
         $this->connection->setFetchMode(\PDO::FETCH_ASSOC);
         $result = $this->connection->fetchAssoc(

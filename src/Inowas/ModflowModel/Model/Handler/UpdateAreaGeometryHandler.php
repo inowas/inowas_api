@@ -48,11 +48,5 @@ final class UpdateAreaGeometryHandler
         }
 
         $modflowModel->changeAreaGeometry($command->userId(), $command->geometry());
-
-        $gridSize = $modflowModel->gridSize();
-        $boundingBox = $modflowModel->boundingBox();
-        $area = Area::create(BoundaryId::generate(), BoundaryName::fromString(''), $command->geometry());
-        $activeCells = $this->geoTools->calculateActiveCellsFromArea($area, $boundingBox, $gridSize);
-        $modflowModel->updateAreaActiveCells($command->userId(), $activeCells);
     }
 }

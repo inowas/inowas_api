@@ -7,7 +7,9 @@ services:
 
     inowas.modflowmodel.change_modflow_model_bounding_box_handler:
         class: Inowas\ModflowModel\Model\Handler\ChangeModflowModelBoundingBoxHandler
-        arguments: ['@modflow_model_list']
+        arguments:
+          - '@modflow_model_list'
+          - '@inowas.geotools.geotools_service'
 
     inowas.modflowmodel.change_modflow_model_description_handler:
         class: Inowas\ModflowModel\Model\Handler\ChangeModflowModelDescriptionHandler

@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Inowas\ModflowModel\Model\Handler;
 
+use Inowas\Common\Geometry\Srid;
+use Inowas\GeoTools\Service\GeoTools;
 use Inowas\ModflowModel\Model\Command\ChangeModflowModelBoundingBox;
 use Inowas\ModflowModel\Model\Exception\ModflowModelNotFoundException;
 use Inowas\ModflowModel\Model\Exception\WriteAccessFailedException;
@@ -16,12 +18,18 @@ final class ChangeModflowModelBoundingBoxHandler
     /** @var  ModflowModelList */
     private $modelList;
 
+    /** @var  GeoTools */
+    private $geoTools;
+
     /**
+     * ChangeModflowModelBoundingBoxHandler constructor.
      * @param ModflowModelList $modelList
+     * @param GeoTools $geoTools
      */
-    public function __construct(ModflowModelList $modelList)
+    public function __construct(ModflowModelList $modelList, GeoTools $geoTools)
     {
         $this->modelList = $modelList;
+        $this->geoTools = $geoTools;
     }
 
     public function __invoke(ChangeModflowModelBoundingBox $command)
@@ -37,6 +45,7 @@ final class ChangeModflowModelBoundingBoxHandler
             throw WriteAccessFailedException::withUserAndOwner($command->userId(), $modflowModel->ownerId());
         }
 
-        $modflowModel->changeBoundingBox($command->userId(), $command->boundingBox());
+        $boundingBox = $this->geoTools->projectBoundingBox($command->boundingBox(), Srid::fromInt(4326));
+        $modflowModel->changeBoundingBox($command->userId(), $boundingBox);
     }
 }

@@ -6,6 +6,8 @@ namespace Inowas\Common\Geometry;
 
 class Srid
 {
+    const DEFAULT = 4326;
+
     /** @var  integer */
     private $srid;
 
@@ -21,6 +23,10 @@ class Srid
 
     public function toInteger(): int
     {
+        if (null === $this->srid){
+            $this->srid = self::DEFAULT;
+        }
+
         return $this->srid;
     }
 }

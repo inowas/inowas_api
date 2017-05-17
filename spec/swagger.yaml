@@ -8,8 +8,8 @@ info:
   license:
     name: "MIT"
     url: "https://opensource.org/licenses/MIT"
-host: "localhost:8080"
 #host: "api.inowas.hydro.tu-dresden.de"
+host: "localhost:8080"
 basePath: "/api"
 tags:
   - name: "user"
@@ -314,7 +314,10 @@ paths:
         '200':
           description: "successful operation"
           schema:
-            $ref: "#/definitions/PolygonGeometry"
+            type: "object"
+            properties:
+              area_geometry:
+                $ref: "#/definitions/PolygonGeometry"
         '404':
           description: "ModflowModel not found"
       security:
@@ -340,7 +343,10 @@ paths:
           description: "AreaGeometry"
           required: true
           schema:
-            $ref: "#/definitions/PolygonGeometry"
+            type: "object"
+            properties:
+              area_geometry:
+                $ref: "#/definitions/PolygonGeometry"
       responses:
         '302':
           description: "Redirect response"
@@ -371,7 +377,10 @@ paths:
         '200':
           description: "successful operation"
           schema:
-            $ref: "#/definitions/BoundingBox"
+            type: "object"
+            properties:
+              bounding_box:
+                $ref: "#/definitions/BoundingBox"
         '404':
           description: "ModflowModel not found"
       security:
@@ -397,7 +406,10 @@ paths:
           description: "BoundingBox"
           required: true
           schema:
-            $ref: "#/definitions/BoundingBox"
+            type: "object"
+            properties:
+              bounding_box:
+                $ref: "#/definitions/BoundingBox"
       responses:
         '302':
           description: "Redirect response"
@@ -428,7 +440,10 @@ paths:
         '200':
           description: "successful operation"
           schema:
-            $ref: "#/definitions/GridSize"
+            type: "object"
+            properties:
+              grid_size:
+                $ref: "#/definitions/GridSize"
         '404':
           description: "ModflowModel not found"
       security:
@@ -454,7 +469,10 @@ paths:
           description: "Gridsize"
           required: true
           schema:
-            $ref: "#/definitions/GridSize"
+            type: "object"
+            properties:
+              grid_size:
+                $ref: "#/definitions/GridSize"
       responses:
         '302':
           description: "Redirect response"
@@ -1412,24 +1430,12 @@ definitions:
         $ref: '#/definitions/GridSize'
       bounding_box:
         $ref: '#/definitions/BoundingBox'
-      boundaries:
-        type: "array"
-        items:
-          type: "string"
-        example:
-          - "aa8c63c5-f431-4ab9-bb67-9fbb436b5833"
-          - "2a4fe239-1d5b-4d47-aec9-e57af2f8897f"
-          - "d86296d2-417a-41dc-bc41-7258f53c85e9"
-          - "9da28c06-ca13-42f6-a8fc-f00804ef1693"
-          - "e32cd328-05b4-4b92-94db-b754d7bb1f38"
-          - "19ac8a86-3c77-4afc-b4ed-80d728599fcf"
       created_at:
         type: "string"
         example: "2017-05-17T09:32:41+00:00"
       public:
         type: "boolean"
         example: true
-
   ModflowModelListItem:
     type: "object"
     properties:

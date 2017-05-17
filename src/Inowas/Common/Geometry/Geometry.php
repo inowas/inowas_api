@@ -92,7 +92,10 @@ class Geometry implements \JsonSerializable
 
     public function srid(): Srid
     {
-         return Srid::fromInt($this->geometry->getSrid());
+        if (null === $this->geometry->getSrid()){
+            Srid::fromInt(4326);
+        }
+        return Srid::fromInt($this->geometry->getSrid());
     }
 
     public function value()
@@ -105,7 +108,7 @@ class Geometry implements \JsonSerializable
         return [
             'type' => $this->geometry->getType(),
             'coordinates' => $this->geometry->toArray(),
-            'srid' => $this->geometry->getSrid()
+            'srid' => $this->srid()->toInteger()
         ];
     }
 }

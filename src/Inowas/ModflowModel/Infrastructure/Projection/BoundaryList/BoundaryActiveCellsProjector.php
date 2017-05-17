@@ -8,8 +8,10 @@ use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Schema\Schema;
 use Inowas\Common\Geometry\Geometry;
 use Inowas\Common\Grid\ActiveCells;
+use Inowas\Common\Grid\AffectedLayers;
 use Inowas\Common\Grid\BoundingBox;
 use Inowas\Common\Grid\GridSize;
+use Inowas\Common\Grid\LayerNumber;
 use Inowas\Common\Id\BoundaryId;
 use Inowas\Common\Id\ModflowId;
 use Inowas\Common\Projection\AbstractDoctrineConnectionProjector;
@@ -67,14 +69,14 @@ class BoundaryActiveCellsProjector extends AbstractDoctrineConnectionProjector
 
     public function onAreaGeometryWasUpdated(AreaGeometryWasUpdated $event): void
     {
-        $affectedLayers = $this->boundaryFinder->findAreaActiveCells($event->modelId())->affectedLayers();
+        $affectedLayers = AffectedLayers::createWithLayerNumber(LayerNumber::fromInteger(0));
         $boundingBox = $this->modelFinder->getBoundingBoxByModflowModelId($event->modelId());
         $geometry = Geometry::fromPolygon($event->geometry());
         $gridSize = $this->modelFinder->getGridSizeByModflowModelId($event->modelId());
         $activeCells = $this->geoTools->calculateActiveCellsFromGeometryAndAffectedLayers($geometry, $affectedLayers, $boundingBox, $gridSize);
 
         $this->connection->update(Table::BOUNDARY_ACTIVE_CELLS, array(
-            'active_cells' => $activeCells
+            'active_cells' => json_encode($activeCells->toArray())
         ), array(
             'model_id' => $event->modelId()->toString(),
             'boundary_id' => $event->modelId()->toString(),
@@ -211,9 +213,8 @@ class BoundaryActiveCellsProjector extends AbstractDoctrineConnectionProjector
                 'boundary_id' => $boundaryId->toString(),
             ));
         }
-
-        $areaGeometry = Geometry::fromPolygon($this->modelFinder->findAreaGeometryByModflowModelId($modelId));
-        $areaAffectedLayers = $this->boundaryFinder->findAreaActiveCells($modelId)->affectedLayers();
+        $areaGeometry = Geometry::fromPolygon($this->modelFinder->getAreaPolygonByModflowModelId($modelId));
+        $areaAffectedLayers = AffectedLayers::createWithLayerNumber(LayerNumber::fromInteger(0));
         $areaNewActiveCells = $this->geoTools->calculateActiveCellsFromGeometryAndAffectedLayers($areaGeometry, $areaAffectedLayers, $boundingBox, $gridSize);
         $this->connection->update(Table::BOUNDARY_ACTIVE_CELLS, array(
             'active_cells' => json_encode($areaNewActiveCells->toArray())
@@ -221,6 +222,7 @@ class BoundaryActiveCellsProjector extends AbstractDoctrineConnectionProjector
             'model_id' => $modelId->toString(),
             'boundary_id' => $modelId->toString(),
         ));
+
     }
 
     private function cloneArea(ModflowId $baseModelId, ModflowId $modelId): void
