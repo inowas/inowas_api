@@ -241,8 +241,8 @@ class BoundaryActiveCellsProjector extends AbstractDoctrineConnectionProjector
         ));
     }
 
-    private function cloneBoundaries(ModflowId $baseModelId, ModflowId $modelId){
-
+    private function cloneBoundaries(ModflowId $baseModelId, ModflowId $modelId): void
+    {
         $rows = $this->connection->fetchAll(sprintf('SELECT * FROM %s WHERE model_id = :model_id AND NOT boundary_id = :boundary_id', Table::BOUNDARY_ACTIVE_CELLS),
             ['model_id' => $baseModelId->toString(), 'boundary_id' => $baseModelId->toString()]
         );
