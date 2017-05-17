@@ -24,7 +24,7 @@ class CreateModflowModel extends Command implements PayloadConstructable
         return new self(
             [
                 'user_id' => $userId->toString(),
-                'modflow_model_id' => $modelId->toString(),
+                'modflowmodel_id' => $modelId->toString(),
                 'area' => serialize($area),
                 'grid_size' => $gridSize->toArray()
             ]
@@ -52,7 +52,7 @@ class CreateModflowModel extends Command implements PayloadConstructable
 
     public function modflowModelId(): ModflowId
     {
-        return ModflowId::fromString($this->payload['modflow_model_id']);
+        return ModflowId::fromString($this->payload['modflowmodel_id']);
     }
 
     public function area(): Area

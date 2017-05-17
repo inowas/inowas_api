@@ -11,6 +11,7 @@ use Inowas\Common\Id\ModflowId;
 use Inowas\Common\Id\UserId;
 use Inowas\Common\Modflow\LengthUnit;
 use Inowas\Common\Modflow\TimeUnit;
+use Inowas\Common\Soilmodel\SoilmodelId;
 use Prooph\EventSourcing\AggregateChanged;
 
 class ModflowModelWasCreated extends AggregateChanged
@@ -21,6 +22,9 @@ class ModflowModelWasCreated extends AggregateChanged
 
     /** @var UserId */
     private $userId;
+
+    /** @var SoilmodelId */
+    private $soilmodelId;
 
     /** @var Area */
     private $area;
@@ -40,10 +44,11 @@ class ModflowModelWasCreated extends AggregateChanged
     /** @var  TimeUnit */
     private $timeUnit;
 
-    public static function withParameters(ModflowId $modflowId, UserId $userId, Area $area, array $boundaries, GridSize $gridSize, BoundingBox $boundingBox, LengthUnit $lengthUnit, TimeUnit $timeUnit): ModflowModelWasCreated
+    public static function withParameters(ModflowId $modflowId, UserId $userId, SoilmodelId $soilmodelId, Area $area, array $boundaries, GridSize $gridSize, BoundingBox $boundingBox, LengthUnit $lengthUnit, TimeUnit $timeUnit): ModflowModelWasCreated
     {
         $event = self::occur($modflowId->toString(),[
             'user_id' => $userId->toString(),
+            'soilmodel_id' => $soilmodelId->toString(),
             'area' => serialize($area),
             'grid_size' => $gridSize->toArray(),
             'bounding_box' => $boundingBox->toArray(),
@@ -70,6 +75,15 @@ class ModflowModelWasCreated extends AggregateChanged
         }
 
         return $this->modelId;
+    }
+
+    public function soilmodelId(): SoilmodelId
+    {
+        if ($this->soilmodelId === null){
+            $this->soilmodelId = SoilmodelId::fromString($this->payload['soilmodel_id']);
+        }
+
+        return $this->soilmodelId;
     }
 
     public function area(): Area

@@ -79,11 +79,12 @@ class ModflowModelAggregate extends AggregateRoot
     /** @var  TimeUnit */
     protected $timeUnit;
 
-    public static function create(ModflowId $modflowId, UserId $userId, Area $area, GridSize $gridSize, BoundingBox $boundingBox, LengthUnit $lengthUnit, TimeUnit $timeUnit): ModflowModelAggregate
+    public static function create(ModflowId $modflowId, UserId $userId, SoilmodelId $soilmodelId, Area $area, GridSize $gridSize, BoundingBox $boundingBox, LengthUnit $lengthUnit, TimeUnit $timeUnit): ModflowModelAggregate
     {
         $self = new self();
         $self->modflowId = $modflowId;
         $self->owner = $userId;
+        $self->soilmodelId = $soilmodelId;
         $self->area = $area;
         $self->gridSize = $gridSize;
         $self->boundingBox = $boundingBox;
@@ -91,7 +92,7 @@ class ModflowModelAggregate extends AggregateRoot
         $self->timeUnit = $timeUnit;
         $self->boundaries = [];
 
-        $self->recordThat(ModflowModelWasCreated::withParameters($modflowId, $userId, $area, [], $gridSize, $boundingBox, $lengthUnit, $timeUnit));
+        $self->recordThat(ModflowModelWasCreated::withParameters($modflowId, $userId, $soilmodelId, $area, [], $gridSize, $boundingBox, $lengthUnit, $timeUnit));
         return $self;
     }
 
@@ -100,6 +101,7 @@ class ModflowModelAggregate extends AggregateRoot
         $self = new self();
         $self->modflowId = $newModelId;
         $self->owner = $newUserId;
+        $self->soilmodelId = $model->soilmodelId();
         $self->area = $model->area();
         $self->boundaries = $model->boundaries();
         $self->gridSize = $model->gridSize();
@@ -113,6 +115,7 @@ class ModflowModelAggregate extends AggregateRoot
             $model->ownerId(),
             $self->modflowId,
             $self->owner,
+            $self->soilmodelId,
             $self->area,
             $self->boundaries,
             $self->gridSize,
@@ -429,7 +432,8 @@ class ModflowModelAggregate extends AggregateRoot
         $this->modflowId = $event->modelId();
         $this->owner = $event->userId();
         $this->area = $event->area();
-        $this->boundaries = $event->boundaries();
+        $this->soilmodelId = $event->soilmodelId();
+        $this->boundaries = $event->boundaryIds();
         $this->gridSize = $event->gridSize();
         $this->boundingBox = $event->boundingBox();
         $this->lengthUnit = $event->lengthUnit();
@@ -440,6 +444,7 @@ class ModflowModelAggregate extends AggregateRoot
     {
         $this->modflowId = $event->modelId();
         $this->owner = $event->userId();
+        $this->soilmodelId = $event->soilmodelId();
         $this->area = $event->area();
         $this->boundaries = $event->boundaries();
         $this->gridSize = $event->gridSize();

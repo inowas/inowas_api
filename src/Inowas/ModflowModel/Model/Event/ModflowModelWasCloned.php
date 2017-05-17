@@ -11,6 +11,7 @@ use Inowas\Common\Id\ModflowId;
 use Inowas\Common\Id\UserId;
 use Inowas\Common\Modflow\LengthUnit;
 use Inowas\Common\Modflow\TimeUnit;
+use Inowas\Common\Soilmodel\SoilmodelId;
 use Prooph\EventSourcing\AggregateChanged;
 
 class ModflowModelWasCloned extends AggregateChanged
@@ -29,6 +30,9 @@ class ModflowModelWasCloned extends AggregateChanged
 
     /** @var Area */
     private $area;
+
+    /** @var SoilmodelId */
+    private $soilmodelId;
 
     /** @var array */
     private $boundaries;
@@ -50,6 +54,7 @@ class ModflowModelWasCloned extends AggregateChanged
         UserId $baseModelUserId,
         ModflowId $modflowId,
         UserId $userId,
+        SoilmodelId $soilmodelId,
         Area $area,
         array $boundaries,
         GridSize $gridSize,
@@ -63,6 +68,7 @@ class ModflowModelWasCloned extends AggregateChanged
             'basemodel_user_id' => $baseModelUserId->toString(),
             'user_id' => $userId->toString(),
             'area' => serialize($area),
+            'soilmodel_id' => $soilmodelId->toString(),
             'grid_size' => $gridSize->toArray(),
             'bounding_box' => $boundingBox->toArray(),
             'length_unit' => $lengthUnit->toInt(),
@@ -75,6 +81,7 @@ class ModflowModelWasCloned extends AggregateChanged
         $event->modelId = $modflowId;
         $event->userId = $userId;
         $event->area = $area;
+        $event->soilmodelId = $soilmodelId;
         $event->gridSize = $gridSize;
         $event->boundingBox = $boundingBox;
         $event->lengthUnit = $lengthUnit;
@@ -93,7 +100,7 @@ class ModflowModelWasCloned extends AggregateChanged
         return $this->baseModelId;
     }
 
-    public function baseModelUSerId(): UserId
+    public function baseModelUserId(): UserId
     {
         if ($this->baseModelUserId === null){
             $this->baseModelUserId = ModflowId::fromString($this->payload['basemodel_user_id']);
@@ -101,7 +108,6 @@ class ModflowModelWasCloned extends AggregateChanged
 
         return $this->baseModelUserId;
     }
-
 
     public function modelId(): ModflowId
     {
@@ -121,7 +127,16 @@ class ModflowModelWasCloned extends AggregateChanged
         return $this->area;
     }
 
-    public function boundaries(): array
+    public function soilmodelId(): SoilmodelId
+    {
+        if ($this->soilmodelId === null){
+            $this->soilmodelId = SoilmodelId::fromString($this->payload['soilmodel_id']);
+        }
+
+        return $this->soilmodelId;
+    }
+
+    public function boundaryIds(): array
     {
         if ($this->boundaries === null) {
             $this->boundaries = $this->payload['boundaries'];

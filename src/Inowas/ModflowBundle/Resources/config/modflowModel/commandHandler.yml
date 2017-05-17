@@ -34,6 +34,7 @@ services:
         arguments:
           - '@modflow_model_list'
           - '@inowas.geotools.geotools_service'
+          - '@prooph_service_bus.modflow_command_bus'
 
     inowas.modflowmodel.remove_boundary_handler:
         class: Inowas\ModflowModel\Model\Handler\RemoveBoundaryHandler

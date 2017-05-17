@@ -116,7 +116,7 @@ class BoundaryListProjector extends AbstractDoctrineConnectionProjector
 
     public function onModflowModelWasCloned(ModflowModelWasCloned $event): void
     {
-        foreach ($event->boundaries() as $boundaryId) {
+        foreach ($event->boundaryIds() as $boundaryId) {
             $result = $this->connection->fetchAssoc(
                 sprintf('SELECT * FROM %s WHERE model_id = :model_id AND boundary_id = :boundary_id', Table::BOUNDARY_LIST),
                 ['model_id' => $event->baseModelId()->toString(), 'boundary_id' => $boundaryId]
