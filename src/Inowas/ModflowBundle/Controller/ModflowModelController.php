@@ -35,12 +35,15 @@ use Inowas\ModflowModel\Model\Command\ChangeModflowModelName;
 use Inowas\ModflowModel\Model\Command\ChangeModflowModelSoilmodelId;
 use Inowas\ModflowModel\Model\Command\CreateModflowModel;
 use Inowas\ModflowModel\Model\Command\UpdateAreaGeometry;
+use Inowas\ModflowModel\Model\Command\UpdateLengthUnit;
+use Inowas\ModflowModel\Model\Command\UpdateTimeUnit;
 use Nelmio\ApiDocBundle\Annotation\ApiDoc;
 use Ramsey\Uuid\Uuid;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Validator\Constraints\Time;
 
 class ModflowModelController extends InowasRestController
 {
@@ -637,6 +640,166 @@ class ModflowModelController extends InowasRestController
 
         $response = new RedirectResponse(
             $this->generateUrl('get_soil_model_id', array('id' => $modelId->toString())),
+            302
+        );
+
+        return $response;
+    }
+
+    /**
+     * Get lengthUnit of modflow model by id.
+     *
+     * @ApiDoc(
+     *   resource = true,
+     *   description = "Get lengthUnit of modflow model by id.",
+     *   statusCodes = {
+     *     200 = "Returned when successful"
+     *   }
+     * )
+     *
+     * @param string $id
+     * @Rest\Get("/modflowmodels/{id}/lengthunit")
+     * @return JsonResponse
+     */
+    public function getLengthUnitAction(string $id): JsonResponse
+    {
+        if (! Uuid::isValid($id)) {
+            return InowasJsonInvalidUuidResponse::withId($id);
+        }
+
+        $modelId = ModflowId::fromString($id);
+        $lengthUnit = $this->get('inowas.modflowmodel.model_finder')->getLengthUnitByModelId($modelId);
+
+        if (! $lengthUnit instanceof LengthUnit) {
+            return new InowasJsonNotFoundResponse(sprintf('Model with id %s not found.', $modelId->toString()));
+        }
+
+        return new JsonResponse(['length_unit' => $lengthUnit->toInt()]);
+    }
+
+    /**
+     * Update soilmodelId of modflow model by id.
+     *
+     * @ApiDoc(
+     *   resource = true,
+     *   description = "Update soilmodelId of modflow model by id.",
+     *   statusCodes = {
+     *     200 = "Returned when successful"
+     *   }
+     * )
+     *
+     * @param Request $request
+     * @param string $id
+     * @Rest\Put("/modflowmodels/{id}/lengthunit")
+     * @return Response
+     */
+    public function putLengthUnitAction(Request $request, string $id)
+    {
+        if (! Uuid::isValid($id)) {
+            return InowasJsonInvalidUuidResponse::withId($id);
+        }
+
+        $modelId = ModflowId::fromString($id);
+
+        $content = $this->getContentAsArray($request);
+        if (! array_key_exists('length_unit', $content)) {
+            return InowasJsonInvalidInputResponse::withMessage('Expected key \'length_unit\' not found.');
+        }
+
+        $lengthUnit = LengthUnit::fromInt((int)$content['length_unit']);
+
+        /** @var User $user */
+        $user = $this->getUser();
+        $userId = UserId::fromString($user->getId()->toString());
+
+        if (! $this->get('inowas.modflowmodel.model_finder')->userHasWriteAccessToModel($userId, $modelId)){
+            return InowasJsonWriteAccessDeniedResponse::withMessage(sprintf('User with Id %s does not have write access to ModflowModel %s.', $userId->toString(), $modelId->toString()));
+        }
+
+        $this->get('prooph_service_bus.modflow_command_bus')->dispatch(UpdateLengthUnit::byUserAndModel($userId, $modelId, $lengthUnit));
+
+        $response = new RedirectResponse(
+            $this->generateUrl('get_length_unit', array('id' => $modelId->toString())),
+            302
+        );
+
+        return $response;
+    }
+
+    /**
+     * Get soilmodelId of modflow model by id.
+     *
+     * @ApiDoc(
+     *   resource = true,
+     *   description = "Get soilmodelId of modflow model by id.",
+     *   statusCodes = {
+     *     200 = "Returned when successful"
+     *   }
+     * )
+     *
+     * @param string $id
+     * @Rest\Get("/modflowmodels/{id}/timeunit")
+     * @return JsonResponse
+     */
+    public function getTimeUnitAction(string $id): JsonResponse
+    {
+        if (! Uuid::isValid($id)) {
+            return InowasJsonInvalidUuidResponse::withId($id);
+        }
+
+        $modelId = ModflowId::fromString($id);
+        $timeUnit = $this->get('inowas.modflowmodel.model_finder')->getTimeUnitByModelId($modelId);
+
+        if (! $timeUnit instanceof TimeUnit) {
+            return new InowasJsonNotFoundResponse(sprintf('Model with id %s not found.', $modelId->toString()));
+        }
+
+        return new JsonResponse(['time_unit' => $timeUnit->toInt()]);
+    }
+
+    /**
+     * Update soilmodelId of modflow model by id.
+     *
+     * @ApiDoc(
+     *   resource = true,
+     *   description = "Update soilmodelId of modflow model by id.",
+     *   statusCodes = {
+     *     200 = "Returned when successful"
+     *   }
+     * )
+     *
+     * @param Request $request
+     * @param string $id
+     * @Rest\Put("/modflowmodels/{id}/timeunit")
+     * @return Response
+     */
+    public function putTimeUnitAction(Request $request, string $id)
+    {
+        if (! Uuid::isValid($id)) {
+            return InowasJsonInvalidUuidResponse::withId($id);
+        }
+
+        $modelId = ModflowId::fromString($id);
+
+        $content = $this->getContentAsArray($request);
+        if (! array_key_exists('time_unit', $content)) {
+            return InowasJsonInvalidInputResponse::withMessage('Expected key \'time_unit\' not found.');
+        }
+
+        $timeUnit = TimeUnit::fromInt((int)$content['time_unit']);
+
+        /** @var User $user */
+        $user = $this->getUser();
+        $userId = UserId::fromString($user->getId()->toString());
+
+        if (! $this->get('inowas.modflowmodel.model_finder')->userHasWriteAccessToModel($userId, $modelId)){
+            return InowasJsonWriteAccessDeniedResponse::withMessage(sprintf('User with Id %s does not have write access to ModflowModel %s.', $userId->toString(), $modelId->toString()));
+        }
+
+        $this->get('prooph_service_bus.modflow_command_bus')->dispatch(UpdateTimeUnit::byUserAndModel($userId, $modelId, $timeUnit));
+
+        $response = new RedirectResponse(
+            $this->generateUrl('get_time_unit', array('id' => $modelId->toString())),
             302
         );
 

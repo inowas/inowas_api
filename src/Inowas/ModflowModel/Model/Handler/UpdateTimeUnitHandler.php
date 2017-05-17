@@ -6,6 +6,7 @@ namespace Inowas\ModflowModel\Model\Handler;
 
 use Inowas\ModflowModel\Model\Command\UpdateBoundary;
 use Inowas\ModflowModel\Model\Command\UpdateLengthUnit;
+use Inowas\ModflowModel\Model\Command\UpdateTimeUnit;
 use Inowas\ModflowModel\Model\Exception\ModflowModelNotFoundException;
 use Inowas\ModflowModel\Model\Exception\WriteAccessFailedException;
 use Inowas\ModflowModel\Model\ModflowModelList;
@@ -25,7 +26,7 @@ final class UpdateTimeUnitHandler
         $this->modelList = $modelList;
     }
 
-    public function __invoke(UpdateLengthUnit $command)
+    public function __invoke(UpdateTimeUnit $command)
     {
         /** @var ModflowModelAggregate $modflowModel */
         $modflowModel = $this->modelList->get($command->modelId());
@@ -38,7 +39,6 @@ final class UpdateTimeUnitHandler
             throw WriteAccessFailedException::withUserAndOwner($command->userId(), $modflowModel->ownerId());
         }
 
-
-        $modflowModel->updateBoundary($command->userId(), $command->boundary());
+        $modflowModel->updateTimeUnit($command->userId(), $command->timeUnit());
     }
 }

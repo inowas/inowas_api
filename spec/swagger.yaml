@@ -549,6 +549,133 @@ paths:
       security:
         - api_key: []
 
+  /modflowmodels/{id}/lengthunit:
+      get:
+        tags:
+          - "modflowmodel"
+        summary: "Get the lengthUnit of a modflowModel"
+        description: "Get the lengthUnit of a modflowModel"
+        operationId: "getModflowModelLengthUnit"
+        produces:
+          - "application/json"
+        parameters:
+          - name: "id"
+            in: "path"
+            description: "Id of ModflowModel"
+            required: true
+            type: "string"
+        responses:
+          '200':
+            description: "successful operation"
+            schema:
+              type: "object"
+              properties:
+                length_unit:
+                  $ref: '#/definitions/LengthUnit'
+
+          '404':
+            description: "ModflowModel not found"
+        security:
+        - api_key: []
+      put:
+        tags:
+          - "modflowmodel"
+        summary: "Updates the lengthUnit of a modflowModel"
+        description: "Updates the lengthUnit of a modflowModel"
+        operationId: "updateModflowModelLengthUnit"
+        consumes:
+          - "application/json"
+        produces:
+          - "application/json"
+        parameters:
+          - name: "id"
+            in: "path"
+            description: "Id of ModflowModel to update"
+            required: true
+            type: "string"
+          - in: "body"
+            name: "body"
+            description: "SoilmodelId"
+            required: true
+            schema:
+              type: "object"
+              properties:
+                length_unit:
+                  $ref: '#/definitions/LengthUnit'
+        responses:
+          '302':
+            description: "Redirect response"
+            headers:
+              Location:
+                type: "string"
+          '422':
+            description: "Invalid input"
+        security:
+          - api_key: []
+
+  /modflowmodels/{id}/timeunit:
+    get:
+      tags:
+        - "modflowmodel"
+      summary: "Get the timeUnit of a modflowModel"
+      description: "Get the timeUnit id of a modflowModel"
+      operationId: "getModflowModelTimeUnit"
+      produces:
+        - "application/json"
+      parameters:
+        - name: "id"
+          in: "path"
+          description: "Id of ModflowModel"
+          required: true
+          type: "string"
+      responses:
+        '200':
+          description: "successful operation"
+          schema:
+            type: "object"
+            properties:
+              time_unit:
+                $ref: '#/definitions/TimeUnit'
+        '404':
+          description: "ModflowModel not found"
+      security:
+      - api_key: []
+    put:
+      tags:
+        - "modflowmodel"
+      summary: "Updates the timeUnit of a modflowModel"
+      description: "Updates the timeUnit of a modflowModel"
+      operationId: "updateModflowModelTimeUnit"
+      consumes:
+        - "application/json"
+      produces:
+        - "application/json"
+      parameters:
+        - name: "id"
+          in: "path"
+          description: "Id of ModflowModel to update"
+          required: true
+          type: "string"
+        - in: "body"
+          name: "body"
+          description: "SoilmodelId"
+          required: true
+          schema:
+            type: "object"
+            properties:
+              time_unit:
+                $ref: '#/definitions/TimeUnit'
+      responses:
+        '302':
+          description: "Redirect response"
+          headers:
+            Location:
+              type: "string"
+        '422':
+          description: "Invalid input"
+      security:
+        - api_key: []
+
   /modflowmodels/{id}/boundaries:
     get:
       tags:

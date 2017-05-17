@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Inowas\ModflowModel\Model\Handler;
 
-use Inowas\ModflowModel\Model\Command\UpdateBoundary;
 use Inowas\ModflowModel\Model\Command\UpdateLengthUnit;
 use Inowas\ModflowModel\Model\Exception\ModflowModelNotFoundException;
 use Inowas\ModflowModel\Model\Exception\WriteAccessFailedException;
@@ -38,7 +37,6 @@ final class UpdateLengthUnitHandler
             throw WriteAccessFailedException::withUserAndOwner($command->userId(), $modflowModel->ownerId());
         }
 
-
-        $modflowModel->updateBoundary($command->userId(), $command->boundary());
+        $modflowModel->updateLengthUnit($command->userId(), $command->lengthUnit());
     }
 }

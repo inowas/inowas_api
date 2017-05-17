@@ -11,8 +11,10 @@ use Inowas\Common\Grid\BoundingBox;
 use Inowas\Common\Grid\GridSize;
 use Inowas\Common\Id\ModflowId;
 use Inowas\Common\Id\UserId;
+use Inowas\Common\Modflow\LengthUnit;
 use Inowas\Common\Modflow\Modelname;
 use Inowas\Common\Modflow\ModflowModelDescription;
+use Inowas\Common\Modflow\TimeUnit;
 use Inowas\Common\Soilmodel\SoilmodelId;
 use Inowas\ModflowModel\Infrastructure\Projection\Table;
 
@@ -116,6 +118,36 @@ class ModelFinder
         }
 
         return SoilmodelId::fromString($result['soilmodel_id']);
+    }
+
+    public function getLengthUnitByModelId(ModflowId $modelId): ?LengthUnit
+    {
+        $this->connection->setFetchMode(\PDO::FETCH_ASSOC);
+        $result = $this->connection->fetchAssoc(
+            sprintf('SELECT length_unit FROM %s WHERE model_id = :model_id', Table::MODEL_DETAILS),
+            ['model_id' => $modelId->toString()]
+        );
+
+        if ($result === false){
+            return null;
+        }
+
+        return LengthUnit::fromInt($result['length_unit']);
+    }
+
+    public function getTimeUnitByModelId(ModflowId $modelId): ?TimeUnit
+    {
+        $this->connection->setFetchMode(\PDO::FETCH_ASSOC);
+        $result = $this->connection->fetchAssoc(
+            sprintf('SELECT time_unit FROM %s WHERE model_id = :model_id', Table::MODEL_DETAILS),
+            ['model_id' => $modelId->toString()]
+        );
+
+        if ($result === false){
+            return null;
+        }
+
+        return TimeUnit::fromInt($result['time_unit']);
     }
 
     public function userHasWriteAccessToModel(UserId $userId, ModflowId $modelId): bool
