@@ -75,20 +75,36 @@ class ModelFinder
 
     public function findByBaseUserId(UserId $userId): array
     {
-        $result = $this->connection->fetchAll(
-            sprintf('SELECT * FROM %s WHERE user_id = :user_id', Table::MODEL_DETAILS),
+        $this->connection->setFetchMode(\PDO::FETCH_ASSOC);
+        $rows = $this->connection->fetchAll(
+            sprintf('SELECT model_id AS id, user_id, soilmodel_id, user_name, name, description, area as area_geometry, grid_size, bounding_box, created_at, public FROM %s WHERE user_id = :user_id', Table::MODEL_DETAILS),
             ['user_id' => $userId->toString()]
         );
 
-        return $result;
+        foreach ($rows as $key => $row){
+            $rows[$key]['area_geometry'] = json_decode($row['area_geometry'], true);
+            $rows[$key]['grid_size'] = json_decode($row['grid_size'], true);
+            $rows[$key]['bounding_box'] = json_decode($row['bounding_box'], true);
+        }
+
+        return $rows;
     }
 
     public function findPublic(): array
     {
-        return $this->connection->fetchAll(
-            sprintf('SELECT * FROM %s WHERE public = :public', Table::MODEL_DETAILS),
+        $this->connection->setFetchMode(\PDO::FETCH_ASSOC);
+        $rows = $this->connection->fetchAll(
+            sprintf('SELECT model_id AS id, user_id, soilmodel_id, user_name, name, description, area as area_geometry, grid_size, bounding_box, created_at, public FROM %s WHERE public = :public', Table::MODEL_DETAILS),
             ['public' => true]
         );
+
+        foreach ($rows as $key => $row){
+            $rows[$key]['area_geometry'] = json_decode($row['area_geometry'], true);
+            $rows[$key]['grid_size'] = json_decode($row['grid_size'], true);
+            $rows[$key]['bounding_box'] = json_decode($row['bounding_box'], true);
+        }
+
+        return $rows;
     }
 
     public function findAll(): array
