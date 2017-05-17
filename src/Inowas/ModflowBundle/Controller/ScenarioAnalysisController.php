@@ -47,7 +47,7 @@ class ScenarioAnalysisController extends FOSRestController
             $userId = UserId::fromString($this->getUser()->getId()->toString());
             return new JsonResponse(
                 $this->get('inowas.modflowmodel.model_finder')
-                    ->findByBaseUserId($userId)
+                    ->findModelsByBaseUserId($userId)
             );
         }
 
@@ -76,7 +76,7 @@ class ScenarioAnalysisController extends FOSRestController
         }
 
         return new JsonResponse(
-            $this->get('inowas.modflowmodel.model_finder')->findPublic()
+            $this->get('inowas.modflowmodel.model_finder')->findPublicModels()
         );
     }
 
@@ -101,7 +101,7 @@ class ScenarioAnalysisController extends FOSRestController
 
         return new JsonResponse(
             $this->get('inowas.modflowmodel.model_finder')
-                ->findByBaseUserId($userId)
+                ->findModelsByBaseUserId($userId)
         );
     }
 
@@ -175,7 +175,7 @@ class ScenarioAnalysisController extends FOSRestController
         }
 
         return new JsonResponse($this->get('inowas.modflowmodel.model_finder')
-            ->findByModelId(
+            ->findModelDetailsByModelId(
                 ModflowId::fromString($baseModelId)
             )
         );

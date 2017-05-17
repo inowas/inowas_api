@@ -23,14 +23,6 @@ class ModelFinder
         $this->connection->setFetchMode(\PDO::FETCH_OBJ);
     }
 
-    public function findByModelId(ModflowId $modelId): array
-    {
-        return $this->connection->fetchAssoc(
-            sprintf('SELECT * FROM %s WHERE model_id = :model_id', Table::MODEL_DETAILS),
-            ['model_id' => $modelId->toString()]
-        );
-    }
-
     public function findAreaGeometryByModflowModelId(ModflowId $modelId): Polygon
     {
         $result =  $this->connection->fetchAssoc(
@@ -73,7 +65,26 @@ class ModelFinder
         return GridSize::fromArray((array)json_decode($result['grid_size']));
     }
 
-    public function findByBaseUserId(UserId $userId): array
+    public function findModelDetailsByModelId(ModflowId $modelId): array
+    {
+        $this->connection->setFetchMode(\PDO::FETCH_ASSOC);
+        $result = $this->connection->fetchAssoc(
+            sprintf('SELECT model_id AS id, user_id, soilmodel_id, user_name, name, description, area as area_geometry, length_unit, time_unit, grid_size, bounding_box, created_at, public FROM %s WHERE model_id = :model_id', Table::MODEL_DETAILS),
+            ['model_id' => $modelId->toString()]
+        );
+
+        if ($result === false){
+            return [];
+        }
+
+        $result['area_geometry'] = json_decode($result['area_geometry'], true);
+        $result['grid_size'] = json_decode($result['grid_size'], true);
+        $result['bounding_box'] = json_decode($result['bounding_box'], true);
+
+        return $result;
+    }
+
+    public function findModelsByBaseUserId(UserId $userId): array
     {
         $this->connection->setFetchMode(\PDO::FETCH_ASSOC);
         $rows = $this->connection->fetchAll(
@@ -90,7 +101,7 @@ class ModelFinder
         return $rows;
     }
 
-    public function findPublic(): array
+    public function findPublicModels(): array
     {
         $this->connection->setFetchMode(\PDO::FETCH_ASSOC);
         $rows = $this->connection->fetchAll(

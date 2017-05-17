@@ -14,11 +14,13 @@ use Inowas\ModflowModel\Model\Event\AreaGeometryWasUpdated;
 use Inowas\ModflowModel\Model\Event\BoundingBoxWasChanged;
 use Inowas\ModflowModel\Model\Event\DescriptionWasChanged;
 use Inowas\ModflowModel\Model\Event\GridSizeWasChanged;
+use Inowas\ModflowModel\Model\Event\LengthUnitWasUpdated;
 use Inowas\ModflowModel\Model\Event\ModflowModelWasCloned;
 use Inowas\ModflowModel\Model\Event\NameWasChanged;
 use Inowas\ModflowModel\Model\Event\ModflowModelWasCreated;
 use Inowas\ModflowModel\Infrastructure\Projection\Table;
 use Inowas\ModflowModel\Model\Event\SoilModelIdWasChanged;
+use Inowas\ModflowModel\Model\Event\TimeUnitWasUpdated;
 
 class ModelProjector extends AbstractDoctrineConnectionProjector
 {
@@ -42,6 +44,8 @@ class ModelProjector extends AbstractDoctrineConnectionProjector
         $table->addColumn('area', 'text', ['notnull' => false]);
         $table->addColumn('grid_size', 'text', ['notnull' => false]);
         $table->addColumn('bounding_box', 'text', ['notnull' => false]);
+        $table->addColumn('time_unit', 'integer');
+        $table->addColumn('length_unit', 'integer');
         $table->addColumn('created_at', 'string', ['length' => 255, 'notnull' => false]);
         $table->addColumn('public', 'boolean');
         $table->setPrimaryKey(['id']);
@@ -95,6 +99,8 @@ class ModelProjector extends AbstractDoctrineConnectionProjector
             'area' => $event->area()->geometry()->toJson(),
             'grid_size' => json_encode($event->gridSize()),
             'bounding_box' => json_encode($event->boundingBox()),
+            'time_unit' => $event->timeUnit()->toInt(),
+            'length_unit' => $event->lengthUnit()->toInt(),
             'created_at' => date_format($event->createdAt(), DATE_ATOM),
             'public' => true
         ));
@@ -119,10 +125,28 @@ class ModelProjector extends AbstractDoctrineConnectionProjector
                 'area' => $row['area'],
                 'grid_size' => $row['grid_size'],
                 'bounding_box' => $row['bounding_box'],
+                'time_unit' => $row['time_unit'],
+                'length_unit' => $row['length_unit'],
                 'created_at' => date_format($event->createdAt(), DATE_ATOM),
                 'public' => true
             ));
         }
+    }
+
+    public function onLengthUnitWasUpdated(LengthUnitWasUpdated $event): void
+    {
+        $this->connection->update(Table::MODEL_DETAILS,
+            array('length_unit' => $event->lengthUnit()->toInt()),
+            array('model_id' => $event->modflowId()->toString())
+        );
+    }
+
+    public function onTimeUnitWasUpdated(TimeUnitWasUpdated $event): void
+    {
+        $this->connection->update(Table::MODEL_DETAILS,
+            array('time_unit' => $event->timeUnit()->toInt()),
+            array('model_id' => $event->modflowId()->toString())
+        );
     }
 
     public function onNameWasChanged(NameWasChanged $event): void

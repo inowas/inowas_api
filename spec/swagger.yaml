@@ -8,7 +8,8 @@ info:
   license:
     name: "MIT"
     url: "https://opensource.org/licenses/MIT"
-host: "api.inowas.hydro.tu-dresden.de"
+host: "localhost:8080"
+#host: "api.inowas.hydro.tu-dresden.de"
 basePath: "/api"
 tags:
   - name: "user"
@@ -20,7 +21,8 @@ tags:
   - name: "scenarioanalysis"
     description: "The ScenarioAnalyses Tool (T07)"
 schemes:
-  - "https"
+  - "http"
+  #- "https"
 paths:
   /users/credentials:
     post:
@@ -52,6 +54,7 @@ paths:
             properties:
               api_key:
                 type: "string"
+                example: "0246afce-5078-4e24-b5d1-5c3bfdd2ce9"
         400:
           description: "Invalid username/password supplied"
 
@@ -98,7 +101,7 @@ paths:
                 type: "string"
                 example: "ModflowModel of Hanoi Area 2005-2007"
               area_geometry:
-                $ref: '#/definitions/Geometry'
+                $ref: '#/definitions/PolygonGeometry'
               grid_size:
                 $ref: '#/definitions/GridSize'
               time_unit:
@@ -113,6 +116,25 @@ paths:
               type: "string"
         '422':
           description: "Invalid input"
+      security:
+        - api_key: []
+
+  /modflowmodels/public:
+    get:
+      tags:
+        - "modflowmodel"
+      summary: "Returns the list of all public ModflowModel Projects"
+      description: ''
+      operationId: "modflowModelPublicProjects"
+      produces:
+        - "application/json"
+      responses:
+        '200':
+          description: "successful operation"
+          schema:
+            type: "array"
+            items:
+              $ref: '#/definitions/ModflowModelListItem'
       security:
         - api_key: []
 
@@ -1368,6 +1390,9 @@ definitions:
       user_id:
         type: "string"
         example: "4716f088-8651-43be-b3b9-815da7bfd0f3"
+      soilmodel_id:
+        type: "string"
+        example: "4716f088-8651-43be-b3b9-815da7bfd0f3"
       user_name:
         type: "string"
         example: "John Doe"
@@ -1379,10 +1404,10 @@ definitions:
         example: "ModflowModel of Hanoi Area 2005-2007"
       area_geometry:
         $ref: '#/definitions/PolygonGeometry'
-      time_unit:
-        $ref: '#/definitions/TimeUnit'
       lenth_unit:
         $ref: '#/definitions/LengthUnit'
+      time_unit:
+        $ref: '#/definitions/TimeUnit'
       grid_size:
         $ref: '#/definitions/GridSize'
       bounding_box:
@@ -1391,6 +1416,20 @@ definitions:
         type: "array"
         items:
           type: "string"
+        example:
+          - "aa8c63c5-f431-4ab9-bb67-9fbb436b5833"
+          - "2a4fe239-1d5b-4d47-aec9-e57af2f8897f"
+          - "d86296d2-417a-41dc-bc41-7258f53c85e9"
+          - "9da28c06-ca13-42f6-a8fc-f00804ef1693"
+          - "e32cd328-05b4-4b92-94db-b754d7bb1f38"
+          - "19ac8a86-3c77-4afc-b4ed-80d728599fcf"
+      created_at:
+        type: "string"
+        example: "2017-05-17T09:32:41+00:00"
+      public:
+        type: "boolean"
+        example: true
+
   ModflowModelListItem:
     type: "object"
     properties:
@@ -1398,6 +1437,9 @@ definitions:
         type: "string"
         example: "fbc2b2fd-9b39-4277-a6cd-cf1bd20f07c3"
       user_id:
+        type: "string"
+        example: "4716f088-8651-43be-b3b9-815da7bfd0f3"
+      soilmodel_id:
         type: "string"
         example: "4716f088-8651-43be-b3b9-815da7bfd0f3"
       user_name:
@@ -1660,16 +1702,22 @@ definitions:
     example:
       type: "polygon"
       coordinates:
-        - 12.1
-          10.2
-        - 12.2
-          10.2
-        - 12.2
-          10.1
-        - 12.1
-          10.1
-        - 12.1
-          10.2
+        -
+          -
+            - 12.1
+            - 10.2
+          -
+           - 12.2
+           - 10.2
+          -
+            - 12.2
+            - 10.1
+          -
+            - 12.1
+            - 10.1
+          -
+            - 12.1
+            - 10.2
   LineStringGeometry:
     type: "object"
     properties:
@@ -1686,14 +1734,21 @@ definitions:
     example:
       type: "linestring"
       coordinates:
-        - 12.1
-          10.2
-        - 12.2
-          10.2
-        - 12.2
-          10.1
-        - 12.1
-          10.1
+        -
+          - 12.1
+          - 10.2
+        -
+         - 12.2
+         - 10.2
+        -
+          - 12.2
+          - 10.1
+        -
+          - 12.1
+          - 10.1
+        -
+          - 12.1
+          - 10.2
   PolygonGeometry:
     type: "object"
     properties:
@@ -1701,25 +1756,31 @@ definitions:
         $ref: '#/definitions/GeometryType'
       coordinates:
         type: "array"
-        minItems: 2
-        maxItems: 2
         items:
           type: "array"
+          minItems: 2
+          maxItems: 2
           items:
             type: "number"
     example:
       type: "polygon"
       coordinates:
-        - 12.1
-          10.2
-        - 12.2
-          10.2
-        - 12.2
-          10.1
-        - 12.1
-          10.1
-        - 12.1
-          10.2
+        -
+          -
+            - 12.1
+            - 10.2
+          -
+           - 12.2
+           - 10.2
+          -
+            - 12.2
+            - 10.1
+          -
+            - 12.1
+            - 10.1
+          -
+            - 12.1
+            - 10.2
   PointGeometry:
     type: "object"
     properties:
@@ -1736,8 +1797,9 @@ definitions:
     example:
       type: "point"
       coordinates:
-        - 12.1
-          10.2
+        -
+          - 12.1
+          - 10.2
   BoundingBox:
     type: "object"
     properties:
@@ -1750,10 +1812,10 @@ definitions:
       y_max:
         type: "number"
     example:
-      x_min: "105.75297728806"
-      x_max: "105.91074365467"
-      y_min: "20.942021243028"
-      y_max: "21.100903658646"
+      x_min: 105.75
+      x_max: 105.91
+      y_min: 20.942
+      y_max: 21.100
   BoundaryName:
     type: "object"
     properties:
@@ -1774,16 +1836,18 @@ definitions:
       n_y:
         type: "integer"
     example:
-      n_x: "100"
-      n_y: "120"
+      n_x: 100
+      n_y: 120
   TimeUnit:
-    type: "string"
-    enum: ["sec", "min", "h", "d", "yr"]
-    default: "d"
+    description: "0: undefined, 1: seconds, 2: minutes, 3: hours, 4: days, 5: years"
+    type: "integer"
+    enum: [0, 1, 2, 3, 4, 5]
+    default: 4
   LengthUnit:
-    type: "string"
-    enum: ["cm", "m", "ft"]
-    default: "m"
+    description: "0: undefined, 1: feet, 2: meters, 3: centimeters"
+    type: "integer"
+    enum: [0, 1, 2, 3]
+    default: 2
   GeometryType:
     type: "string"
     enum: ["polygon", "linestring", "point"]

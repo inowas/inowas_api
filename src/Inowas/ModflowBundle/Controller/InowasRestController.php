@@ -6,7 +6,7 @@ namespace Inowas\ModflowBundle\Controller;
 
 use FOS\RestBundle\Controller\FOSRestController;
 use Inowas\ModflowBundle\Exception\BadRequestHttpException;
-use Symfony\Component\BrowserKit\Request;
+use Symfony\Component\HttpFoundation\Request;
 
 class InowasRestController extends FOSRestController
 {

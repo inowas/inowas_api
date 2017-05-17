@@ -32,9 +32,9 @@ use Inowas\ModflowModel\Model\Command\ChangeModflowModelName;
 use Inowas\ModflowModel\Model\Command\CreateModflowModel;
 use Inowas\ModflowModel\Model\Command\UpdateAreaGeometry;
 use Nelmio\ApiDocBundle\Annotation\ApiDoc;
-use Symfony\Component\BrowserKit\Request;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\RedirectResponse;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
 class ModflowModelController extends InowasRestController
@@ -64,7 +64,7 @@ class ModflowModelController extends InowasRestController
         $userId = UserId::fromString($this->getUser()->getId()->toString());
 
         return new JsonResponse(
-            $this->get('inowas.modflowmodel.model_finder')->findByBaseUserId($userId)
+            $this->get('inowas.modflowmodel.model_finder')->findModelsByBaseUserId($userId)
         );
     }
 
@@ -85,7 +85,7 @@ class ModflowModelController extends InowasRestController
     public function getPublicModflowModelsAction(): JsonResponse
     {
         return new JsonResponse(
-            $this->get('inowas.modflowmodel.model_finder')->findPublic()
+            $this->get('inowas.modflowmodel.model_finder')->findPublicModels()
         );
     }
 
@@ -106,6 +106,7 @@ class ModflowModelController extends InowasRestController
      */
     public function postModflowModelsAction(Request $request): RedirectResponse
     {
+
         $content = $this->getContentAsArray($request);
 
         $userId = UserId::fromString($this->getUser()->getId()->toString());
@@ -116,9 +117,9 @@ class ModflowModelController extends InowasRestController
         $areaGeometry = new Polygon($content['area_geometry']['coordinates'], 4326);
         $area = Area::create(BoundaryId::generate(), BoundaryName::fromString($name->toString().' Area'), $areaGeometry);
 
-        $gridSize = GridSize::fromXY($content['grid_size']['n_x'], $content['grid_size']['n_y']);
-        $timeUnit = TimeUnit::fromString($content['time_unit']);
-        $lengthUnit = LengthUnit::fromString($content['length_unit']);
+        $gridSize = GridSize::fromXY((int)$content['grid_size']['n_x'], (int)$content['grid_size']['n_y']);
+        $timeUnit = TimeUnit::fromInt((int)$content['time_unit']);
+        $lengthUnit = LengthUnit::fromInt((int)$content['length_unit']);
 
         $commandBus = $this->get('prooph_service_bus.modflow_command_bus');
         $commandBus->dispatch(CreateModflowModel::newWithIdAndUnits($userId, $modflowModelId, $area, $gridSize, $timeUnit, $lengthUnit));
@@ -150,7 +151,7 @@ class ModflowModelController extends InowasRestController
     {
         $modelId = ModflowId::fromString($id);
         return new JsonResponse(
-            $this->get('inowas.modflowmodel.model_finder')->findByModelId($modelId)
+            $this->get('inowas.modflowmodel.model_finder')->findModelDetailsByModelId($modelId)
         );
     }
 
