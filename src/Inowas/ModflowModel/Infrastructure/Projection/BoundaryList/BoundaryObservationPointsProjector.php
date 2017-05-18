@@ -28,7 +28,8 @@ class BoundaryObservationPointsProjector extends AbstractDoctrineConnectionProje
         $table->addColumn('observation_point_id', 'string', ['length' => 36]);
         $table->addColumn('observation_point_name', 'string', ['length' => 255]);
         $table->addColumn('observation_point_geometry', 'text', ['notnull' => false]);
-        $table->addColumn('data', 'text', ['notnull' => false]);
+        $table->addColumn('values_description', 'text', ['notnull' => false]);
+        $table->addColumn('values', 'text', ['notnull' => false]);
         $table->addIndex(array('model_id'));
     }
 
@@ -43,7 +44,8 @@ class BoundaryObservationPointsProjector extends AbstractDoctrineConnectionProje
                 'observation_point_id' => $observationPoint->id()->toString(),
                 'observation_point_name' => $observationPoint->name()->toString(),
                 'observation_point_geometry' => json_encode($observationPoint->geometry()->toArray()),
-                'data' => json_encode($observationPoint->dateTimeValues())
+                'values_description' => json_encode($observationPoint->dateTimeValuesDescription()),
+                'values' => json_encode($observationPoint->dateTimeValues())
             ));
         }
     }
@@ -73,7 +75,8 @@ class BoundaryObservationPointsProjector extends AbstractDoctrineConnectionProje
                 'observation_point_id' => $boundary['observation_point_id'],
                 'observation_point_name' => $boundary['observation_point_name'],
                 'observation_point_geometry' => $boundary['observation_point_geometry'],
-                'data' => $boundary['data']
+                'values_description' => $boundary['values_description'],
+                'values' => $boundary['values']
             ));
         }
     }

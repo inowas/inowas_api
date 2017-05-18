@@ -3,6 +3,11 @@ rest_modflowmodel_api:
     resource: '@InowasModflowBundle/Controller/ModflowModelController.php'
     prefix:    /api
 
+rest_modflowmodel_boundary_api:
+    type: rest
+    resource: '@InowasModflowBundle/Controller/ModflowModelBoundaryController.php'
+    prefix:    /api
+
 rest_scenario_analysis_api:
     type: rest
     resource: '@InowasModflowBundle/Controller/ScenarioAnalysisController.php'
@@ -12,4 +17,3 @@ rest_scenario_analysis_image:
     type: rest
     resource: '@InowasModflowBundle/Controller/ScenarioAnalysisImageController.php'
     prefix:    /image/scenarioanalysis
-

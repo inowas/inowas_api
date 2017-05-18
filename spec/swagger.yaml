@@ -703,8 +703,8 @@ paths:
     post:
       tags:
         - "modflowmodel"
-      summary: "Add a boundary to modflowmodel by id"
-      description: "Adds a boundary with name, type, geometry to a modflowmodel"
+      summary: "Add a boundary with metadata to modflowmodel by id"
+      description: "Adds a boundary with name, type, geometry, affected layers to a modflowmodel"
       operationId: "addModflowModelBoundary"
       consumes:
         - "application/json"
@@ -787,7 +787,10 @@ paths:
         '200':
           description: "successful operation"
           schema:
-            $ref: '#/definitions/BoundaryName'
+            type: "object"
+            properties:
+              name:
+                $ref: '#/definitions/BoundaryName'
 
         '404':
           description: "Boundary not found"
@@ -819,7 +822,10 @@ paths:
           description: "Boundary geometry"
           required: true
           schema:
-            $ref: '#/definitions/BoundaryName'
+            type: "object"
+            properties:
+              name:
+                $ref: '#/definitions/BoundaryName'
       responses:
         '302':
           description: "Redirect response"
@@ -855,7 +861,10 @@ paths:
         '200':
           description: "successful operation"
           schema:
-            $ref: '#/definitions/Geometry'
+            type: "object"
+            properties:
+              geometry:
+                $ref: '#/definitions/Geometry'
         '404':
           description: "Boundary not found"
       security:
@@ -886,7 +895,10 @@ paths:
           description: "Boundary geometry"
           required: true
           schema:
-            $ref: '#/definitions/Geometry'
+            type: "object"
+            properties:
+              geometry:
+                $ref: '#/definitions/Geometry'
       responses:
         '302':
           description: "Redirect response"
@@ -1547,7 +1559,7 @@ definitions:
       description:
         type: "string"
         example: "ModflowModel of Hanoi Area 2005-2007"
-      area_geometry:
+      geometry:
         $ref: '#/definitions/PolygonGeometry'
       lenth_unit:
         $ref: '#/definitions/LengthUnit'
@@ -1584,7 +1596,7 @@ definitions:
       description:
         type: "string"
         example: "ModflowModel of Hanoi Area 2005-2007"
-      area_geometry:
+      geometry:
         $ref: '#/definitions/PolygonGeometry'
       grid_size:
         $ref: '#/definitions/GridSize'
@@ -1603,8 +1615,11 @@ definitions:
         $ref: '#/definitions/BoundaryType'
       geometry:
         $ref: '#/definitions/Geometry'
+      affected_layers:
+        $ref: '#/definitions/AffectedLayers'
       metadata:
-        type: "array"
+        $ref: '#/definitions/MetaData'
+
   ModflowModelBoundarySubmitItem:
     type: "object"
     properties:
@@ -1616,15 +1631,9 @@ definitions:
       geometry:
         $ref: '#/definitions/Geometry'
       affected_layers:
-        type: "array"
-        items:
-          type: "integer"
-          example: 0
+        $ref: '#/definitions/AffectedLayers'
       metadata:
-        type: "object"
-        properties:
-          well_type:
-            $ref: '#/definitions/WellType'
+        $ref: '#/definitions/MetaData'
   ModflowModelBoundaryDetails:
     type: "object"
     properties:
@@ -1638,8 +1647,10 @@ definitions:
         $ref: '#/definitions/BoundaryType'
       geometry:
         $ref: '#/definitions/Geometry'
+      affected_layers:
+        $ref: '#/definitions/AffectedLayers'
       metadata:
-        type: "array"
+        $ref: '#/definitions/MetaData'
       observation_points:
         type: "array"
         items:
@@ -1788,7 +1799,7 @@ definitions:
       description:
         type: "string"
         example: "ScenarioAnalysis of Hanoi Area 2005-2007"
-      area_geometry:
+      geometry:
         $ref: '#/definitions/Geometry'
       grid_size:
         $ref: '#/definitions/GridSize'
@@ -1815,6 +1826,19 @@ definitions:
     type: "string"
     enum: ["chd", "ghb", "rch", "riv", "wel"]
     default: "wel"
+  AffectedLayers:
+    type: "array"
+    items:
+      type: "integer"
+    example:
+      - 0
+      - 1
+      - 3
+  MetaData:
+    type: "object"
+    properties:
+      well_type:
+        $ref: '#/definitions/WellType'
   WellType:
     type: "string"
     enum: ["prw", "puw", "ow", "iw", "smw", "sniw", "snifw", "snpw", "snw", "srw"]
@@ -1950,11 +1974,8 @@ definitions:
       y_min: 20.942
       y_max: 21.100
   BoundaryName:
-    type: "object"
-    properties:
-      name:
-        type: "string"
-        example: "BoundaryName"
+    type: "string"
+    example: "BoundaryName"
   ObservationPointName:
     type: "object"
     properties:

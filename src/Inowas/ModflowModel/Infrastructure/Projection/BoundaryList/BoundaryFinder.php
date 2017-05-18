@@ -86,11 +86,11 @@ class BoundaryFinder
             );
 
             $result = $this->connection->fetchAssoc(
-                sprintf('SELECT data FROM %s WHERE model_id = :model_id AND boundary_id = :boundary_id', Table::BOUNDARY_OBSERVATION_POINTS),
+                sprintf('SELECT values FROM %s WHERE model_id = :model_id AND boundary_id = :boundary_id', Table::BOUNDARY_OBSERVATION_POINTS),
                 ['model_id' => $modelId->toString(), 'boundary_id' => $boundaryId->toString()]
             );
 
-            foreach (json_decode($result['data']) as $arrayValues){
+            foreach (json_decode($result['values']) as $arrayValues){
                 $recharge->addRecharge(RechargeDateTimeValue::fromArrayValues($arrayValues));
             }
 
@@ -125,11 +125,11 @@ class BoundaryFinder
             );
 
             $result = $this->connection->fetchAssoc(
-                sprintf('SELECT data FROM %s WHERE model_id = :model_id AND boundary_id = :boundary_id', Table::BOUNDARY_OBSERVATION_POINTS),
+                sprintf('SELECT values FROM %s WHERE model_id = :model_id AND boundary_id = :boundary_id', Table::BOUNDARY_OBSERVATION_POINTS),
                 ['model_id' => $modelId->toString(), 'boundary_id' => $boundaryId->toString()]
             );
 
-            foreach (json_decode($result['data']) as $arrayValues){
+            foreach (json_decode($result['values']) as $arrayValues){
                 $well->addPumpingRate(WellDateTimeValue::fromArrayValues($arrayValues));
             }
 
@@ -163,7 +163,7 @@ class BoundaryFinder
             );
 
             $results = $this->connection->fetchAll(
-                sprintf('SELECT observation_point_id AS id, observation_point_name AS name, observation_point_geometry AS geometry, data as data  FROM %s WHERE model_id = :model_id AND boundary_id = :boundary_id', Table::BOUNDARY_OBSERVATION_POINTS),
+                sprintf('SELECT observation_point_id AS id, observation_point_name AS name, observation_point_geometry AS geometry, values as values  FROM %s WHERE model_id = :model_id AND boundary_id = :boundary_id', Table::BOUNDARY_OBSERVATION_POINTS),
                 ['model_id' => $modelId->toString(), 'boundary_id' => $boundaryId->toString()]
             );
 
@@ -175,7 +175,7 @@ class BoundaryFinder
                 );
 
                 $river->addObservationPoint($op);
-                foreach (json_decode($result['data']) as $arrayValues){
+                foreach (json_decode($result['values']) as $arrayValues){
                     $river->addRiverStageToObservationPoint($op->id(), RiverDateTimeValue::fromArrayValues($arrayValues));
                 }
             }
@@ -212,7 +212,7 @@ class BoundaryFinder
             );
 
             $results = $this->connection->fetchAll(
-                sprintf('SELECT observation_point_id AS id, observation_point_name AS name, observation_point_geometry AS geometry, data as data  FROM %s WHERE model_id = :model_id AND boundary_id = :boundary_id', Table::BOUNDARY_OBSERVATION_POINTS),
+                sprintf('SELECT observation_point_id AS id, observation_point_name AS name, observation_point_geometry AS geometry, values as values  FROM %s WHERE model_id = :model_id AND boundary_id = :boundary_id', Table::BOUNDARY_OBSERVATION_POINTS),
                 ['model_id' => $modelId->toString(), 'boundary_id' => $boundaryId->toString()]
             );
 
@@ -224,7 +224,7 @@ class BoundaryFinder
                 );
 
                 $constantHeadBoundary->addObservationPoint($op);
-                foreach (json_decode($result['data']) as $arrayValues){
+                foreach (json_decode($result['values']) as $arrayValues){
                     $constantHeadBoundary->addConstantHeadToObservationPoint($op->id(), ConstantHeadDateTimeValue::fromArrayValues($arrayValues));
                 }
             }
@@ -260,7 +260,7 @@ class BoundaryFinder
             );
 
             $results = $this->connection->fetchAll(
-                sprintf('SELECT observation_point_id AS id, observation_point_name AS name, observation_point_geometry AS geometry, data as data  FROM %s WHERE model_id = :model_id AND boundary_id = :boundary_id', Table::BOUNDARY_OBSERVATION_POINTS),
+                sprintf('SELECT observation_point_id AS id, observation_point_name AS name, observation_point_geometry AS geometry, values as values  FROM %s WHERE model_id = :model_id AND boundary_id = :boundary_id', Table::BOUNDARY_OBSERVATION_POINTS),
                 ['model_id' => $modelId->toString(), 'boundary_id' => $boundaryId->toString()]
             );
 
@@ -272,7 +272,7 @@ class BoundaryFinder
                 );
 
                 $generalHeadBoundary->addObservationPoint($op);
-                foreach (json_decode($result['data']) as $arrayValues){
+                foreach (json_decode($result['values']) as $arrayValues){
                     $generalHeadBoundary->addGeneralHeadValueToObservationPoint($op->id(), GeneralHeadDateTimeValue::fromArrayValues($arrayValues));
                 }
             }
@@ -294,26 +294,135 @@ class BoundaryFinder
     {
         $this->connection->setFetchMode(\PDO::FETCH_ASSOC);
         return $this->connection->fetchAll(
-            sprintf('SELECT boundary_id as id, name, type, geometry, metadata FROM %s WHERE model_id = :model_id', Table::BOUNDARY_LIST),
+            sprintf('SELECT boundary_id as id, name, type, geometry, metadata, affected_layers FROM %s WHERE model_id = :model_id', Table::BOUNDARY_LIST),
             ['model_id' => $modelId->toString()]
         );
     }
 
     public function getBoundaryDetails(ModflowId $modelId, BoundaryId $boundaryId): ?array
     {
-        $row = $this->connection->fetchAssoc(
+        $result = $this->connection->fetchAssoc(
             sprintf('SELECT boundary_id AS id, name AS name, type AS type, geometry as geometry, metadata as metadata, observation_point_ids as observation_point_ids FROM %s WHERE model_id = :model_id AND boundary_id = :boundary_id', Table::BOUNDARY_LIST),
             ['model_id' => $modelId->toString(), 'boundary_id' => $boundaryId->toString()]
         );
 
-        return $row;
+        if ($result === false){
+            return null;
+        }
+
+        $result['observation_points'] = [];
+        foreach ($result['observation_point_ids'] as $observationPointId){
+
+            $observationPointId = ObservationPointId::fromString($observationPointId);
+            $opResult = $this->getBoundaryObservationPointDetails($modelId, $boundaryId, $observationPointId);
+
+            if (null === $opResult){
+                continue;
+            }
+
+            $result['observation_points'] = $opResult;
+        }
+
+        unset($result['observation_point_ids']);
+        return $result;
+    }
+
+    public function getBoundaryName(ModflowId $modelId, BoundaryId $boundaryId): ?BoundaryName
+    {
+        $result = $this->connection->fetchAssoc(
+            sprintf('SELECT name FROM %s WHERE model_id = :model_id AND boundary_id = :boundary_id', Table::BOUNDARY_LIST),
+            ['model_id' => $modelId->toString(), 'boundary_id' => $boundaryId->toString()]
+        );
+
+        if ($result === false){
+            return null;
+        }
+
+        return BoundaryName::fromString($result['name']);
+    }
+
+    public function getBoundaryGeometry(ModflowId $modelId, BoundaryId $boundaryId): ?Geometry
+    {
+        $result = $this->connection->fetchAssoc(
+            sprintf('SELECT geometry FROM %s WHERE boundary_id =:boundary_id AND model_id = :model_id', Table::BOUNDARY_LIST),
+            ['model_id' => $modelId->toString(), 'boundary_id' => $boundaryId->toString()]
+        );
+
+        if ($result === false){
+            return null;
+        }
+
+        return Geometry::fromArray(json_decode($result['geometry'], true));
+    }
+
+    public function getBoundaryObservationPointDetails(ModflowId $modelId, BoundaryId $boundaryId, ObservationPointId $observationPointId): ?array
+    {
+        $result = $this->connection->fetchAssoc(
+            sprintf('SELECT observation_point_id as id, observation_point_name as name, observation_point_geometry as geometry, values_description, values FROM %s WHERE model_id = :model_id AND boundary_id = :boundary_id AND observation_point_id = observation_point_id', Table::BOUNDARY_OBSERVATION_POINTS),
+            ['model_id' => $modelId->toString(), 'boundary_id' => $boundaryId->toString(), 'observation_point_id' => $observationPointId->toString()]
+        );
+
+        if (null === $result){
+            return null;
+        }
+
+        $result['geometry'] = json_decode($result['geometry']);
+        $result['values_description'] = json_decode($result['values_description']);
+        $result['values'] = json_decode($result['values']);
+        return $result;
+    }
+
+    public function getBoundaryObservationPointName(ModflowId $modelId, BoundaryId $boundaryId, ObservationPointId $observationPointId): ?ObservationPointName
+    {
+        $result = $this->connection->fetchAssoc(
+            sprintf('SELECT observation_point_name as name FROM %s WHERE model_id = :model_id AND boundary_id = :boundary_id AND observation_point_id = observation_point_id', Table::BOUNDARY_OBSERVATION_POINTS),
+            ['model_id' => $modelId->toString(), 'boundary_id' => $boundaryId->toString(), 'observation_point_id' => $observationPointId->toString()]
+        );
+
+        if (null === $result){
+            return null;
+        }
+
+
+        return ObservationPointName::fromString($result['name']);
+    }
+
+    public function getBoundaryObservationPointGeometry(ModflowId $modelId, BoundaryId $boundaryId, ObservationPointId $observationPointId): ?Geometry
+    {
+        $result = $this->connection->fetchAssoc(
+            sprintf('SELECT observation_point_geometry as geometry FROM %s WHERE model_id = :model_id AND boundary_id = :boundary_id AND observation_point_id = observation_point_id', Table::BOUNDARY_OBSERVATION_POINTS),
+            ['model_id' => $modelId->toString(), 'boundary_id' => $boundaryId->toString(), 'observation_point_id' => $observationPointId->toString()]
+        );
+
+        if (null === $result){
+            return null;
+        }
+
+        return Geometry::fromArray(json_decode($result['geometry']));
+    }
+
+    public function getBoundaryObservationPointValues(ModflowId $modelId, BoundaryId $boundaryId, ObservationPointId $observationPointId): ?array
+    {
+        $result = $this->connection->fetchAssoc(
+            sprintf('SELECT values_description, values FROM %s WHERE model_id = :model_id AND boundary_id = :boundary_id AND observation_point_id = observation_point_id', Table::BOUNDARY_OBSERVATION_POINTS),
+            ['model_id' => $modelId->toString(), 'boundary_id' => $boundaryId->toString(), 'observation_point_id' => $observationPointId->toString()]
+        );
+
+        if (null === $result){
+            return null;
+        }
+
+        return array(
+            'values_description' => json_decode($result['values_description']),
+            'values' => json_decode($result['values'])
+        );
     }
 
     public function findStressPeriodDatesById(ModflowId $modelId): array
     {
         $this->connection->setFetchMode(\PDO::FETCH_ASSOC);
         $boundaries = $this->connection->fetchAll(
-            sprintf('SELECT data FROM %s WHERE model_id = :model_id', Table::BOUNDARY_OBSERVATION_POINTS),
+            sprintf('SELECT values FROM %s WHERE model_id = :model_id', Table::BOUNDARY_OBSERVATION_POINTS),
             ['model_id' => $modelId->toString()]
         );
 
@@ -323,7 +432,7 @@ class BoundaryFinder
 
         $spDates = [];
         foreach ($boundaries as $boundary){
-            $dataValues = json_decode($boundary['data']);
+            $dataValues = json_decode($boundary['values']);
             foreach ($dataValues as $dataValue){
                 $dateTimeAtom = DateTime::fromDateTime(new \DateTime($dataValue[0]))->toAtom();
                 if (! in_array($dateTimeAtom, $spDates)) {
@@ -354,20 +463,6 @@ class BoundaryFinder
         );
 
         return ActiveCells::fromArray(json_decode($result['active_cells'], true));
-    }
-
-    public function getBoundaryGeometry(ModflowId $modelId, BoundaryId $boundaryId): ?Geometry
-    {
-        $result = $this->connection->fetchAssoc(
-            sprintf('SELECT geometry FROM %s WHERE boundary_id =:boundary_id AND model_id = :model_id', Table::BOUNDARY_LIST),
-            ['model_id' => $modelId->toString(), 'boundary_id' => $boundaryId->toString()]
-        );
-
-        if ($result === false){
-            return null;
-        }
-
-        return Geometry::fromArray(json_decode($result['geometry'], true));
     }
 
     public function getAffectedLayersByModelAndBoundary(ModflowId $modelId, BoundaryId $boundaryId): AffectedLayers

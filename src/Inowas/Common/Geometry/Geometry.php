@@ -52,7 +52,12 @@ class Geometry implements \JsonSerializable
     {
         $type = strtolower($arr['type']);
         $coordinates = $arr['coordinates'];
-        $srid = $arr['srid'];
+
+        $srid = null;
+        if (array_key_exists('srid', $arr)){
+            $srid = $arr['srid'];
+        }
+
 
         if ($type == 'point') {
             return Geometry::fromPoint(new Point($coordinates, $srid));

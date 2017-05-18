@@ -72,6 +72,17 @@ class ObservationPoint implements \JsonSerializable
         return $this->dateTimeValues;
     }
 
+    public function dateTimeValuesDescription(): array
+    {
+        if (count($this->dateTimeValues()) > 0) {
+            /** @var DateTimeValue $dateTimeValue */
+            $dateTimeValue = $this->dateTimeValues[0];
+            return $dateTimeValue->valuesDescription();
+        }
+
+        return [];
+    }
+
     public function toArray(): array
     {
         return array(
