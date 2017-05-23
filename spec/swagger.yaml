@@ -14,6 +14,8 @@ basePath: "/api"
 tags:
   - name: "user"
     description: "Everything about the users"
+  - name: "calculation"
+    description: "Everything to calculate a ModflowModel"
   - name: "modflowmodel"
     description: "Everything to build a ModflowModel (T03)"
   - name: "soilmodel"
@@ -58,6 +60,45 @@ paths:
         400:
           description: "Invalid username/password supplied"
 
+  # Calculation
+  /calculations:
+    post:
+      tags:
+        - "calculation"
+      summary: "Creates a new Calculation"
+      description: "Creates a new Calculation"
+      operationId: "createCalculation"
+      consumes:
+        - "application/json"
+      produces:
+        - "application/json"
+      parameters:
+        - in: "body"
+          name: "body"
+          description: "Details to create the calculation"
+          required: true
+          schema:
+            type: "object"
+            properties:
+              model_id:
+                type: "string"
+                example: "e5bd7155-e207-4d17-8ac0-b52d651ea4b3"
+              start_date_time:
+                type: "string"
+                example: "2005-08-15T00:00:00+00:00"
+              end_date_time:
+                type: "string"
+                example: "2007-08-15T00:00:00+00:00"
+      responses:
+        '302':
+          description: "Redirect response"
+          headers:
+            Location:
+              type: "string"
+        '422':
+          description: "Invalid input"
+      security:
+        - api_key: []
   /modflowmodels:
     get:
       tags:
@@ -2738,6 +2779,7 @@ paths:
               $ref: '#/definitions/ScenarioAnalyses'
       security:
         - api_key: []
+
 
 # SECURITY
 securityDefinitions:
