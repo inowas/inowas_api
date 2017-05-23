@@ -60,7 +60,7 @@ paths:
         400:
           description: "Invalid username/password supplied"
 
-  # Calculation
+  # Modflow Calculation
   /calculations:
     post:
       tags:
@@ -99,6 +99,62 @@ paths:
           description: "Invalid input"
       security:
         - api_key: []
+
+  /calculations/{id}:
+    get:
+      tags:
+        - "calculation"
+      summary: "Get calculation details by id"
+      description: "Returns the calculation details of a calculation by id"
+      operationId: "getCalculationById"
+      produces:
+        - "application/json"
+      parameters:
+        - name: "id"
+          in: "path"
+          description: "Id of Calculation to return"
+          required: true
+          type: "string"
+      responses:
+        '200':
+          description: "successful operation"
+          schema:
+            $ref: '#/definitions/CalculationDetails'
+        '400':
+          description: "Invalid ID supplied"
+        '404':
+          description: "ModflowModel not found"
+      security:
+      - api_key: []
+
+  /calculations/{id}/times:
+    get:
+      tags:
+        - "calculation"
+      summary: "Get calculation times by calculation id"
+      description: "Returns the startDate, endDate and a list of total times by calculationId"
+      operationId: "getCalculationTimesById"
+      produces:
+        - "application/json"
+      parameters:
+        - name: "id"
+          in: "path"
+          description: "Id of Calculation to return"
+          required: true
+          type: "string"
+      responses:
+        '200':
+          description: "successful operation"
+          schema:
+            $ref: '#/definitions/CalculationTimes'
+        '400':
+          description: "Invalid ID supplied"
+        '404':
+          description: "ModflowModel not found"
+      security:
+      - api_key: []
+
+  # ModflowModel
   /modflowmodels:
     get:
       tags:
@@ -2790,6 +2846,48 @@ securityDefinitions:
 
 # MODELS
 definitions:
+  CalculationDetails:
+    type: "object"
+    properties:
+      id:
+        type: "string"
+        example: "b6b35e17-0bea-4a7b-86cd-bb3c70704a4c"
+      model_id:
+        type: "string"
+        example: "1a5de69d-01a5-4ba4-9746-fbc60b201de2"
+      soilmodel_id:
+        type: "string"
+        example: "5925bf17-3df7-4685-b4bd-47b3a57f5101"
+      user_id:
+        type: "string"
+        example: "34fe45c3-75fd-491e-a7c8-68646ca0a5e2"
+      state:
+        $ref: '#/definitions/CalculationState'
+  CalculationTimes:
+    type: "object"
+    properties:
+      start_date_time:
+        type: "string"
+        example: "2005-08-15T00:00:00+00:00"
+      end_date_time:
+        type: "string"
+        example: "2015-08-15T00:00:00+00:00"
+      total_times:
+        type: "array"
+        items:
+          type: "integer"
+        example:
+          -
+            - 10
+            - 15
+            - 20
+            - 25
+            - 30
+  CalculationState:
+    description: "0: new/created, 1: queued, 2: started, 3: finished"
+    type: "integer"
+    enum: [0, 1, 2, 3]
+    default: 0
   ModflowModelDetails:
     type: "object"
     properties:
