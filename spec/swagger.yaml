@@ -1499,46 +1499,43 @@ paths:
         - api_key: []
 
   /soilmodels/{id}/layers:
-    get:
-      tags:
-        - "soilmodel"
-      summary: "Returns the layers list"
-      description: ''
-      operationId: "getSoilmodelLayersById"
-      produces:
-        - "application/json"
-      parameters:
-        - name: "id"
-          in: "path"
-          description: "ID of soilmodel to return"
-          required: true
-          type: "string"
-      responses:
-        '200':
-          description: "successful operation"
-          schema:
-            $ref: '#/definitions/Soilmodel'
-      security:
-        - api_key: []
     post:
       tags:
         - "soilmodel"
       summary: "Adds a new layer"
       description: ''
-      operationId: "addSoilmodelLayers"
+      operationId: "addSoilmodelLayer"
+      consumes:
+        - "application/json"
       produces:
         - "application/json"
       parameters:
         - name: "id"
           in: "path"
-          description: "ID of soilmodel to return"
+          description: "ID of Soilmodel"
           required: true
           type: "string"
-      responses:
-        '200':
-          description: "successful operation"
+        - in: "body"
+          name: "body"
+          description: "LayerDetails to create the new Layer"
+          required: true
           schema:
-            $ref: '#/definitions/Soilmodel'
+            type: "object"
+            properties:
+              name:
+                type: "string"
+                example: "Layer name"
+              description:
+                type: "string"
+                example: "Layer Description"
+      responses:
+        '302':
+          description: "Redirect response"
+          headers:
+            Location:
+              type: "string"
+        '422':
+          description: "Invalid input"
       security:
         - api_key: []
 
@@ -1644,13 +1641,13 @@ paths:
       security:
         - api_key: []
 
-  /soilmodels/{id}/layers/{lid}/values:
+  /soilmodels/{id}/layers/{lid}/name:
     get:
       tags:
         - "soilmodel"
-      summary: "Returns values of an existing layer"
+      summary: "Returns name of an existing layer by id"
       description: ""
-      operationId: "getSoilmodelLayerValues"
+      operationId: "getSoilmodelLayerName"
       produces:
         - "application/json"
       parameters:
@@ -1668,15 +1665,15 @@ paths:
         '200':
           description: "successful operation"
           schema:
-            $ref: '#/definitions/SoilmodelLayerValues'
+            $ref: '#/definitions/SoilmodelLayerName'
       security:
         - api_key: []
     put:
       tags:
         - "soilmodel"
-      summary: "Updates data of an existing layer"
+      summary: "Updates name of an existing layer"
       description: ""
-      operationId: "updateSoilmodelLayerValues"
+      operationId: "updateSoilmodelLayerName"
       consumes:
         - "application/json"
       produces:
@@ -1684,7 +1681,7 @@ paths:
       parameters:
         - name: "id"
           in: "path"
-          description: "Id if the soilmodel"
+          description: "Id of the soilmodel"
           required: true
           type: "string"
         - name: "lid"
@@ -1697,7 +1694,7 @@ paths:
           description: "Layervalues that will be updated"
           required: true
           schema:
-            $ref: '#/definitions/SoilmodelLayerValues'
+            $ref: '#/definitions/SoilmodelLayerName'
       responses:
         '302':
           description: "Redirect response"
@@ -1985,9 +1982,13 @@ definitions:
   SoilmodelLayerDetails:
     allOf:
       - $ref: "#/definitions/SoilmodelLayerListItem"
+      - $ref: "#/definitions/SoilmodelLayerValues"
+  SoilmodelLayerName:
+    type: "object"
     properties:
-      values:
-        $ref:  '#/definitions/SoilmodelLayerValues'
+      name:
+        type: "string"
+        example: "LayerName"
   SoilmodelLayerValues:
     type: "object"
     properties:
