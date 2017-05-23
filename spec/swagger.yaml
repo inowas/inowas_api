@@ -1680,49 +1680,6 @@ paths:
           description: "Not found"
       security:
         - api_key: []
-    put:
-      tags:
-        - "soilmodel"
-      summary: "Updates details of an existing layer"
-      description: ""
-      operationId: "updateSoilmodelLayerDetails"
-      consumes:
-        - "application/json"
-      produces:
-        - "application/json"
-      parameters:
-        - name: "id"
-          in: "path"
-          description: "Id if the soilmodel"
-          required: true
-          type: "string"
-        - name: "lid"
-          in: "path"
-          description: "Layer-Id if the soilmodelLayer"
-          required: true
-          type: "string"
-        - name: "body"
-          in: "body"
-          description: "Layervalues that will be updated"
-          required: true
-          schema:
-            properties:
-              name:
-                type: "string"
-                example: "Top-Layer"
-              description:
-                type: "string"
-                example: "Top-Layer Description"
-      responses:
-        '302':
-          description: "Redirect response"
-          headers:
-            Location:
-              type: "string"
-        '422':
-          description: "Invalid input"
-      security:
-        - api_key: []
     delete:
       tags:
         - "soilmodel"
