@@ -763,13 +763,13 @@ paths:
       security:
         - api_key: []
 
-  /modflowmodels/{id}/boundaries/{bid}/name:
+  /modflowmodels/{id}/boundaries/{bid}/activecells:
     get:
       tags:
         - "modflowmodel"
-      summary: "Get boundaryName by modelId and BoundaryId"
-      description: "Returns the boundaryName"
-      operationId: "getModflowModelBoundaryName"
+      summary: "Get activeCells by modelId and BoundaryId"
+      description: "Returns the activeCells"
+      operationId: "getModflowModelActiveCells"
       produces:
         - "application/json"
       parameters:
@@ -789,9 +789,8 @@ paths:
           schema:
             type: "object"
             properties:
-              name:
-                $ref: '#/definitions/BoundaryName'
-
+              active_cells:
+                $ref: '#/definitions/ActiveCellsWithCellValues'
         '404':
           description: "Boundary not found"
       security:
@@ -799,9 +798,9 @@ paths:
     put:
       tags:
         - "modflowmodel"
-      summary: "Update boundaryGeometry with modflowModelId and boundaryId"
-      description: "Updates a boundary with name, type, geometry, observationpoints and observationpointvalues. All params are optional. All given parameters will be updated."
-      operationId: "updateModflowModelBoundaryName"
+      summary: "Update activeCells with modflowModelId and boundaryId"
+      description: "Updates the activeCells of a boundary."
+      operationId: "updateModflowModelBoundaryActiveCells"
       consumes:
         - "application/json"
       produces:
@@ -819,13 +818,86 @@ paths:
           type: "string"
         - in: "body"
           name: "body"
-          description: "Boundary geometry"
+          description: "Boundary activeCells"
           required: true
           schema:
             type: "object"
             properties:
-              name:
-                $ref: '#/definitions/BoundaryName'
+              active_cells:
+                $ref: '#/definitions/ActiveCellsWithCellValues'
+      responses:
+        '302':
+          description: "Redirect response"
+          headers:
+            Location:
+              type: "string"
+        '422':
+          description: "Invalid input"
+      security:
+        - api_key: []
+
+  /modflowmodels/{id}/boundaries/{bid}/affectedlayers:
+    get:
+      tags:
+        - "modflowmodel"
+      summary: "Get affectedLayers by modelId and BoundaryId"
+      description: "Returns the affectedLayers"
+      operationId: "getModflowModelAffectedLayers"
+      produces:
+        - "application/json"
+      parameters:
+        - name: "id"
+          in: "path"
+          description: "ID of ModflowModel"
+          required: true
+          type: "string"
+        - name: "bid"
+          in: "path"
+          description: "ID of ModflowModelBoundary"
+          required: true
+          type: "string"
+      responses:
+        '200':
+          description: "successful operation"
+          schema:
+            type: "object"
+            properties:
+              affected_layers:
+                $ref: '#/definitions/AffectedLayers'
+        '404':
+          description: "Boundary not found"
+      security:
+        - api_key: []
+    put:
+      tags:
+        - "modflowmodel"
+      summary: "Update affectedLayers with modflowModelId and boundaryId"
+      description: "Updates the affectedLayers of a boundary."
+      operationId: "updateModflowModelBoundaryAffectedLayers"
+      consumes:
+        - "application/json"
+      produces:
+        - "application/json"
+      parameters:
+        - name: "id"
+          in: "path"
+          description: "ID of ModflowModel"
+          required: true
+          type: "string"
+        - name: "bid"
+          in: "path"
+          description: "ID of ModflowModelBoundary"
+          required: true
+          type: "string"
+        - in: "body"
+          name: "body"
+          description: "Boundary affectedLayers"
+          required: true
+          schema:
+            type: "object"
+            properties:
+              affected_layers:
+                $ref: '#/definitions/AffectedLayers'
       responses:
         '302':
           description: "Redirect response"
@@ -873,7 +945,7 @@ paths:
       tags:
         - "modflowmodel"
       summary: "Update boundaryGeometry with modflowModelId and boundaryId"
-      description: "Updates a boundary with name, type, geometry, observationpoints and observationpointvalues. All params are optional. All given parameters will be updated."
+      description: "Update boundaryGeometry with modflowModelId and boundaryId."
       operationId: "updateModflowModelBoundaryGeometry"
       consumes:
         - "application/json"
@@ -910,13 +982,87 @@ paths:
       security:
         - api_key: []
 
+  /modflowmodels/{id}/boundaries/{bid}/name:
+    get:
+      tags:
+        - "modflowmodel"
+      summary: "Get boundaryName by modelId and BoundaryId"
+      description: "Returns the boundaryName"
+      operationId: "getModflowModelBoundaryName"
+      produces:
+        - "application/json"
+      parameters:
+        - name: "id"
+          in: "path"
+          description: "ID of ModflowModel"
+          required: true
+          type: "string"
+        - name: "bid"
+          in: "path"
+          description: "ID of ModflowModelBoundary"
+          required: true
+          type: "string"
+      responses:
+        '200':
+          description: "successful operation"
+          schema:
+            type: "object"
+            properties:
+              name:
+                $ref: '#/definitions/BoundaryName'
+
+        '404':
+          description: "Boundary not found"
+      security:
+        - api_key: []
+    put:
+      tags:
+        - "modflowmodel"
+      summary: "Update boundaryGeometry with modflowModelId and boundaryId"
+      description: "Updates the name of a boundary."
+      operationId: "updateModflowModelBoundaryName"
+      consumes:
+        - "application/json"
+      produces:
+        - "application/json"
+      parameters:
+        - name: "id"
+          in: "path"
+          description: "ID of ModflowModel"
+          required: true
+          type: "string"
+        - name: "bid"
+          in: "path"
+          description: "ID of ModflowModelBoundary"
+          required: true
+          type: "string"
+        - in: "body"
+          name: "body"
+          description: "Boundary geometry"
+          required: true
+          schema:
+            type: "object"
+            properties:
+              name:
+                $ref: '#/definitions/BoundaryName'
+      responses:
+        '302':
+          description: "Redirect response"
+          headers:
+            Location:
+              type: "string"
+        '422':
+          description: "Invalid input"
+      security:
+        - api_key: []
+
   /modflowmodels/{id}/boundaries/{bid}/observationpoints:
     post:
       tags:
         - "modflowmodel"
       summary: "Creates a new observationPoint"
       description: "Creates a new observationPoint."
-      operationId: "addeObservationPointToBoundary"
+      operationId: "addObservationPointToBoundary"
       consumes:
         - "application/json"
       produces:
@@ -960,7 +1106,7 @@ paths:
     get:
       tags:
         - "modflowmodel"
-      summary: "Get observationpoint with observationpointvalues ids."
+      summary: "Get observationpoint details with modelId, BoundaryId and observationPointId."
       description: "Returns observationpoints and observationPointValues"
       operationId: "getModflowModelBoundaryObservationPoint"
       produces:
@@ -1834,6 +1980,23 @@ definitions:
       - 0
       - 1
       - 3
+  ActiveCellsWithCellValues:
+    type: "array"
+    items:
+      type: "array"
+      items:
+        type: "number"
+    example:
+      -
+        - 0
+        - 1
+        - 3
+        - 1.01
+      -
+        - 0
+        - 1
+        - 4
+        - 2.01
   MetaData:
     type: "object"
     properties:
@@ -2006,3 +2169,4 @@ definitions:
     type: "string"
     enum: ["polygon", "linestring", "point"]
     default: "polygon"
+^
