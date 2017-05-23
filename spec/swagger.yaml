@@ -505,7 +505,7 @@ paths:
           schema:
             type: "object"
             properties:
-              active_cells:
+              layer_active_cells:
                 $ref: '#/definitions/ActiveCellsWithLayerValues'
         '404':
           description: "Boundary not found"
@@ -534,7 +534,7 @@ paths:
           schema:
             type: "object"
             properties:
-              active_cells:
+              layer_active_cells:
                 $ref: '#/definitions/ActiveCellsWithLayerValues'
       responses:
         '302':
@@ -2072,7 +2072,6 @@ definitions:
         items:
           description: "value"
           type: "number"
-
     example:
       -
       -
