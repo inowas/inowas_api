@@ -1911,6 +1911,769 @@ paths:
       security:
         - api_key: []
 
+  /soilmodels/{id}/layers/{lid}/laytyp:
+    get:
+      tags:
+        - "soilmodel"
+      summary: "Returns laytyp of an existing layer by id"
+      description: ""
+      operationId: "getSoilmodelLayerLaytyp"
+      produces:
+        - "application/json"
+      parameters:
+        - name: "id"
+          in: "path"
+          description: "Id if the soilmodel"
+          required: true
+          type: "string"
+        - name: "lid"
+          in: "path"
+          description: "Layer-Id if the soilmodelLayer"
+          required: true
+          type: "string"
+      responses:
+        '200':
+          description: "successful operation"
+          schema:
+            $ref: '#/definitions/Laytyp'
+      security:
+        - api_key: []
+    put:
+      tags:
+        - "soilmodel"
+      summary: "Updates laytyp of an existing layer"
+      description: ""
+      operationId: "updateSoilmodelLayerLaytyp"
+      consumes:
+        - "application/json"
+      produces:
+        - "application/json"
+      parameters:
+        - name: "id"
+          in: "path"
+          description: "Id of the soilmodel"
+          required: true
+          type: "string"
+        - name: "lid"
+          in: "path"
+          description: "Layer-Id if the soilmodelLayer"
+          required: true
+          type: "string"
+        - name: "body"
+          in: "body"
+          description: "Layervalues that will be updated"
+          required: true
+          schema:
+            $ref: '#/definitions/Laytyp'
+      responses:
+        '302':
+          description: "Redirect response"
+          headers:
+            Location:
+              type: "string"
+        '422':
+          description: "Invalid input"
+      security:
+        - api_key: []
+
+  /soilmodels/{id}/layers/{lid}/active:
+    get:
+      tags:
+        - "soilmodel"
+      summary: "Returns is_active-value of an existing layer by id"
+      description: ""
+      operationId: "getSoilmodelLayerActive"
+      produces:
+        - "application/json"
+      parameters:
+        - name: "id"
+          in: "path"
+          description: "Id if the soilmodel"
+          required: true
+          type: "string"
+        - name: "lid"
+          in: "path"
+          description: "Layer-Id if the soilmodelLayer"
+          required: true
+          type: "string"
+      responses:
+        '200':
+          description: "successful operation"
+          schema:
+            type: "object"
+            properties:
+              active:
+                $ref: '#/definitions/LayerIsActive'
+      security:
+        - api_key: []
+    put:
+      tags:
+        - "soilmodel"
+      summary: "Updates is_active-value of an existing layer by id"
+      description: ""
+      operationId: "updateSoilmodelLayerActive"
+      consumes:
+        - "application/json"
+      produces:
+        - "application/json"
+      parameters:
+        - name: "id"
+          in: "path"
+          description: "Id of the soilmodel"
+          required: true
+          type: "string"
+        - name: "lid"
+          in: "path"
+          description: "Layer-Id if the soilmodelLayer"
+          required: true
+          type: "string"
+        - name: "body"
+          in: "body"
+          description: "Layervalues that will be updated"
+          required: true
+          schema:
+            type: "object"
+            properties:
+              active:
+                $ref: '#/definitions/LayerIsActive'
+      responses:
+        '302':
+          description: "Redirect response"
+          headers:
+            Location:
+              type: "string"
+        '422':
+          description: "Invalid input"
+      security:
+        - api_key: []
+
+  /soilmodels/{id}/layers/{lid}/layavg:
+    get:
+      tags:
+        - "soilmodel"
+      summary: "Returns layavg of an existing layer by id"
+      description: ""
+      operationId: "getSoilmodelLayerLayavg"
+      produces:
+        - "application/json"
+      parameters:
+        - name: "id"
+          in: "path"
+          description: "Id if the soilmodel"
+          required: true
+          type: "string"
+        - name: "lid"
+          in: "path"
+          description: "Layer-Id if the soilmodelLayer"
+          required: true
+          type: "string"
+      responses:
+        '200':
+          description: "successful operation"
+          schema:
+            $ref: '#/definitions/Layavg'
+      security:
+        - api_key: []
+    put:
+      tags:
+        - "soilmodel"
+      summary: "Updates layavg of an existing layer"
+      description: ""
+      operationId: "updateSoilmodelLayerLayavg"
+      consumes:
+        - "application/json"
+      produces:
+        - "application/json"
+      parameters:
+        - name: "id"
+          in: "path"
+          description: "Id of the soilmodel"
+          required: true
+          type: "string"
+        - name: "lid"
+          in: "path"
+          description: "Layer-Id if the soilmodelLayer"
+          required: true
+          type: "string"
+        - name: "body"
+          in: "body"
+          description: "Layervalues that will be updated"
+          required: true
+          schema:
+            $ref: '#/definitions/Layavg'
+      responses:
+        '302':
+          description: "Redirect response"
+          headers:
+            Location:
+              type: "string"
+        '422':
+          description: "Invalid input"
+      security:
+        - api_key: []
+
+  /soilmodels/{id}/layers/{lid}/laywet:
+    get:
+      tags:
+        - "soilmodel"
+      summary: "Returns laywet of an existing layer by id"
+      description: ""
+      operationId: "getSoilmodelLayerLaywet"
+      produces:
+        - "application/json"
+      parameters:
+        - name: "id"
+          in: "path"
+          description: "Id if the soilmodel"
+          required: true
+          type: "string"
+        - name: "lid"
+          in: "path"
+          description: "Layer-Id if the soilmodelLayer"
+          required: true
+          type: "string"
+      responses:
+        '200':
+          description: "successful operation"
+          schema:
+            $ref: '#/definitions/Laywet'
+      security:
+        - api_key: []
+    put:
+      tags:
+        - "soilmodel"
+      summary: "Updates laywet of an existing layer"
+      description: ""
+      operationId: "updateSoilmodelLayerLaywet"
+      consumes:
+        - "application/json"
+      produces:
+        - "application/json"
+      parameters:
+        - name: "id"
+          in: "path"
+          description: "Id of the soilmodel"
+          required: true
+          type: "string"
+        - name: "lid"
+          in: "path"
+          description: "Layer-Id if the soilmodelLayer"
+          required: true
+          type: "string"
+        - name: "body"
+          in: "body"
+          description: "Layervalues that will be updated"
+          required: true
+          schema:
+            $ref: '#/definitions/Laywet'
+      responses:
+        '302':
+          description: "Redirect response"
+          headers:
+            Location:
+              type: "string"
+        '422':
+          description: "Invalid input"
+      security:
+        - api_key: []
+
+  /soilmodels/{id}/layers/{lid}/top:
+    get:
+      tags:
+        - "soilmodel"
+      summary: "Returns top-values of an existing layer by id"
+      description: ""
+      operationId: "getSoilmodelLayerTop"
+      produces:
+        - "application/json"
+      parameters:
+        - name: "id"
+          in: "path"
+          description: "Id if the soilmodel"
+          required: true
+          type: "string"
+        - name: "lid"
+          in: "path"
+          description: "Layer-Id if the soilmodelLayer"
+          required: true
+          type: "string"
+      responses:
+        '200':
+          description: "successful operation"
+          schema:
+            type: "object"
+            properties:
+              top:
+                $ref: '#/definitions/LayerValue'
+      security:
+        - api_key: []
+    put:
+      tags:
+        - "soilmodel"
+      summary: "Updates top-values of an existing layer"
+      description: ""
+      operationId: "updateSoilmodelLayerTop"
+      consumes:
+        - "application/json"
+      produces:
+        - "application/json"
+      parameters:
+        - name: "id"
+          in: "path"
+          description: "Id of the soilmodel"
+          required: true
+          type: "string"
+        - name: "lid"
+          in: "path"
+          description: "Layer-Id if the soilmodelLayer"
+          required: true
+          type: "string"
+        - name: "body"
+          in: "body"
+          description: "Layervalues that will be updated"
+          required: true
+          schema:
+            type: "object"
+            properties:
+              top:
+                $ref: '#/definitions/LayerValue'
+      responses:
+        '302':
+          description: "Redirect response"
+          headers:
+            Location:
+              type: "string"
+        '422':
+          description: "Invalid input"
+      security:
+        - api_key: []
+
+  /soilmodels/{id}/layers/{lid}/botm:
+    get:
+      tags:
+        - "soilmodel"
+      summary: "Returns botm-values of an existing layer by id"
+      description: ""
+      operationId: "getSoilmodelLayerBotm"
+      produces:
+        - "application/json"
+      parameters:
+        - name: "id"
+          in: "path"
+          description: "Id if the soilmodel"
+          required: true
+          type: "string"
+        - name: "lid"
+          in: "path"
+          description: "Layer-Id if the soilmodelLayer"
+          required: true
+          type: "string"
+      responses:
+        '200':
+          description: "successful operation"
+          schema:
+            type: "object"
+            properties:
+              botm:
+                $ref: '#/definitions/LayerValue'
+      security:
+        - api_key: []
+    put:
+      tags:
+        - "soilmodel"
+      summary: "Updates botm-values of an existing layer"
+      description: ""
+      operationId: "updateSoilmodelLayerBotm"
+      consumes:
+        - "application/json"
+      produces:
+        - "application/json"
+      parameters:
+        - name: "id"
+          in: "path"
+          description: "Id of the soilmodel"
+          required: true
+          type: "string"
+        - name: "lid"
+          in: "path"
+          description: "Layer-Id if the soilmodelLayer"
+          required: true
+          type: "string"
+        - name: "body"
+          in: "body"
+          description: "Layervalues that will be updated"
+          required: true
+          schema:
+            type: "object"
+            properties:
+              botm:
+                $ref: '#/definitions/LayerValue'
+      responses:
+        '302':
+          description: "Redirect response"
+          headers:
+            Location:
+              type: "string"
+        '422':
+          description: "Invalid input"
+      security:
+        - api_key: []
+
+  /soilmodels/{id}/layers/{lid}/hk:
+    get:
+      tags:
+        - "soilmodel"
+      summary: "Returns hydraulic conductivity (kx) of an existing layer by id"
+      description: ""
+      operationId: "getSoilmodelLayerHk"
+      produces:
+        - "application/json"
+      parameters:
+        - name: "id"
+          in: "path"
+          description: "Id if the soilmodel"
+          required: true
+          type: "string"
+        - name: "lid"
+          in: "path"
+          description: "Layer-Id if the soilmodelLayer"
+          required: true
+          type: "string"
+      responses:
+        '200':
+          description: "successful operation"
+          schema:
+            type: "object"
+            properties:
+              hk:
+                $ref: '#/definitions/LayerValue'
+      security:
+        - api_key: []
+    put:
+      tags:
+        - "soilmodel"
+      summary: "Updates hydraulic conductivity (kx) of an existing layer by id"
+      description: ""
+      operationId: "updateSoilmodelLayerHk"
+      consumes:
+        - "application/json"
+      produces:
+        - "application/json"
+      parameters:
+        - name: "id"
+          in: "path"
+          description: "Id of the soilmodel"
+          required: true
+          type: "string"
+        - name: "lid"
+          in: "path"
+          description: "Layer-Id if the soilmodelLayer"
+          required: true
+          type: "string"
+        - name: "body"
+          in: "body"
+          description: "Layervalues that will be updated"
+          required: true
+          schema:
+            type: "object"
+            properties:
+              hk:
+                $ref: '#/definitions/LayerValue'
+      responses:
+        '302':
+          description: "Redirect response"
+          headers:
+            Location:
+              type: "string"
+        '422':
+          description: "Invalid input"
+      security:
+        - api_key: []
+
+  /soilmodels/{id}/layers/{lid}/hani:
+    get:
+      tags:
+        - "soilmodel"
+      summary: "Returns horizontal anisotropy (hani) of an existing layer by id"
+      description: ""
+      operationId: "getSoilmodelLayerHani"
+      produces:
+        - "application/json"
+      parameters:
+        - name: "id"
+          in: "path"
+          description: "Id if the soilmodel"
+          required: true
+          type: "string"
+        - name: "lid"
+          in: "path"
+          description: "Layer-Id if the soilmodelLayer"
+          required: true
+          type: "string"
+      responses:
+        '200':
+          description: "successful operation"
+          schema:
+            type: "object"
+            properties:
+              hani:
+                $ref: '#/definitions/LayerValue'
+      security:
+        - api_key: []
+    put:
+      tags:
+        - "soilmodel"
+      summary: "Updates horizontal anisotropy (hani) of an existing layer by id"
+      description: ""
+      operationId: "updateSoilmodelLayerHani"
+      consumes:
+        - "application/json"
+      produces:
+        - "application/json"
+      parameters:
+        - name: "id"
+          in: "path"
+          description: "Id of the soilmodel"
+          required: true
+          type: "string"
+        - name: "lid"
+          in: "path"
+          description: "Layer-Id if the soilmodelLayer"
+          required: true
+          type: "string"
+        - name: "body"
+          in: "body"
+          description: "Layervalues that will be updated"
+          required: true
+          schema:
+            type: "object"
+            properties:
+              hani:
+                $ref: '#/definitions/LayerValue'
+      responses:
+        '302':
+          description: "Redirect response"
+          headers:
+            Location:
+              type: "string"
+        '422':
+          description: "Invalid input"
+      security:
+        - api_key: []
+
+  /soilmodels/{id}/layers/{lid}/vka:
+    get:
+      tags:
+        - "soilmodel"
+      summary: "Returns vertical anisotropy (vka) of an existing layer by id"
+      description: ""
+      operationId: "getSoilmodelLayerVka"
+      produces:
+        - "application/json"
+      parameters:
+        - name: "id"
+          in: "path"
+          description: "Id if the soilmodel"
+          required: true
+          type: "string"
+        - name: "lid"
+          in: "path"
+          description: "Layer-Id if the soilmodelLayer"
+          required: true
+          type: "string"
+      responses:
+        '200':
+          description: "successful operation"
+          schema:
+            type: "object"
+            properties:
+              vka:
+                $ref: '#/definitions/LayerValue'
+      security:
+        - api_key: []
+    put:
+      tags:
+        - "soilmodel"
+      summary: "Updates vertical anisotropy (vka) of an existing layer by id"
+      description: ""
+      operationId: "updateSoilmodelLayerVka"
+      consumes:
+        - "application/json"
+      produces:
+        - "application/json"
+      parameters:
+        - name: "id"
+          in: "path"
+          description: "Id of the soilmodel"
+          required: true
+          type: "string"
+        - name: "lid"
+          in: "path"
+          description: "Layer-Id if the soilmodelLayer"
+          required: true
+          type: "string"
+        - name: "body"
+          in: "body"
+          description: "Layervalues that will be updated"
+          required: true
+          schema:
+            type: "object"
+            properties:
+              vka:
+                $ref: '#/definitions/LayerValue'
+      responses:
+        '302':
+          description: "Redirect response"
+          headers:
+            Location:
+              type: "string"
+        '422':
+          description: "Invalid input"
+      security:
+        - api_key: []
+
+  /soilmodels/{id}/layers/{lid}/ss:
+    get:
+      tags:
+        - "soilmodel"
+      summary: "Returns specific-storage-values (ss) of an existing layer by id"
+      description: ""
+      operationId: "getSoilmodelLayerSs"
+      produces:
+        - "application/json"
+      parameters:
+        - name: "id"
+          in: "path"
+          description: "Id if the soilmodel"
+          required: true
+          type: "string"
+        - name: "lid"
+          in: "path"
+          description: "Layer-Id if the soilmodelLayer"
+          required: true
+          type: "string"
+      responses:
+        '200':
+          description: "successful operation"
+          schema:
+            type: "object"
+            properties:
+              ss:
+                $ref: '#/definitions/LayerValue'
+      security:
+        - api_key: []
+    put:
+      tags:
+        - "soilmodel"
+      summary: "Updates specific-storage-values (ss) of an existing layer by id"
+      description: ""
+      operationId: "updateSoilmodelLayerSs"
+      consumes:
+        - "application/json"
+      produces:
+        - "application/json"
+      parameters:
+        - name: "id"
+          in: "path"
+          description: "Id of the soilmodel"
+          required: true
+          type: "string"
+        - name: "lid"
+          in: "path"
+          description: "Layer-Id if the soilmodelLayer"
+          required: true
+          type: "string"
+        - name: "body"
+          in: "body"
+          description: "Layervalues that will be updated"
+          required: true
+          schema:
+            type: "object"
+            properties:
+              ss:
+                $ref: '#/definitions/LayerValue'
+      responses:
+        '302':
+          description: "Redirect response"
+          headers:
+            Location:
+              type: "string"
+        '422':
+          description: "Invalid input"
+      security:
+        - api_key: []
+
+  /soilmodels/{id}/layers/{lid}/sy:
+    get:
+      tags:
+        - "soilmodel"
+      summary: "Returns specific-yield-values (sy) of an existing layer by id"
+      description: ""
+      operationId: "getSoilmodelLayerSy"
+      produces:
+        - "application/json"
+      parameters:
+        - name: "id"
+          in: "path"
+          description: "Id if the soilmodel"
+          required: true
+          type: "string"
+        - name: "lid"
+          in: "path"
+          description: "Layer-Id if the soilmodelLayer"
+          required: true
+          type: "string"
+      responses:
+        '200':
+          description: "successful operation"
+          schema:
+            type: "object"
+            properties:
+              sy:
+                $ref: '#/definitions/LayerValue'
+      security:
+        - api_key: []
+    put:
+      tags:
+        - "soilmodel"
+      summary: "Updates specific-yield-values (sy) of an existing layer by id"
+      description: ""
+      operationId: "updateSoilmodelLayerSy"
+      consumes:
+        - "application/json"
+      produces:
+        - "application/json"
+      parameters:
+        - name: "id"
+          in: "path"
+          description: "Id of the soilmodel"
+          required: true
+          type: "string"
+        - name: "lid"
+          in: "path"
+          description: "Layer-Id if the soilmodelLayer"
+          required: true
+          type: "string"
+        - name: "body"
+          in: "body"
+          description: "Layervalues that will be updated"
+          required: true
+          schema:
+            type: "object"
+            properties:
+              sy:
+                $ref: '#/definitions/LayerValue'
+      responses:
+        '302':
+          description: "Redirect response"
+          headers:
+            Location:
+              type: "string"
+        '422':
+          description: "Invalid input"
+      security:
+        - api_key: []
+
   /scenarioanalyses:
     get:
       tags:
@@ -2216,9 +2979,7 @@ definitions:
     type: "object"
     properties:
       laytyp:
-        type: "string"
-        enum: ['confined', 'convertible']
-        example: "convertible"
+        $ref: '#/definitions/Laytyp'
       layavg:
         type: "string"
         enum: ['harmonic', 'logarithmic', 'arithmetic']
@@ -2243,9 +3004,50 @@ definitions:
         $ref: "#/definitions/LayerValue"
   LayerValue:
     type: "object"
+    description: "Represents a number or a 2D-Array of the layer, if both is set (not null), the 2D array will be taken"
+    properties:
+      value:
+        type: "number"
+        example: 1.1
+      values:
+        type: "array"
+        items:
+          type: "array"
+          items:
+            type: "number"
+        example:
+          -
+            -
+              - 1.1
+              - 1.1
+              - 1.1
+              - 1.1
+              - 1.1
+            -
+              - 2.1
+              - 2.1
+              - 2.1
+              - 2.1
+              - 2.1
+          -
+              -
+                - 1.1
+                - 1.1
+                - 1.1
+                - 1.1
+                - 1.1
+              -
+                - 2.1
+                - 2.1
+                - 2.1
+                - 2.1
+                - 2.1
   LayerNumber:
     type: "integer"
     example: 0
+  LayerIsActive:
+    type: "boolean"
+    example: true
   SoilmodelBoreLogListItem:
     type: "object"
     properties:
@@ -2549,3 +3351,18 @@ definitions:
     type: "string"
     enum: ["polygon", "linestring", "point"]
     default: "polygon"
+  Laytyp:
+    description: "0: confined, >0 convertible, <0 convertible unless the THICKSTRT is in effect"
+    type: "integer"
+    enum: [-1, 0, 1]
+    default: 0
+  Layavg:
+    description: "0: harmonic mean, 1: is logarithmic mean, 2: is arithmetic mean of saturated thickness and logarithmic mean of hydraulic conductivity"
+    type: "integer"
+    enum: [0, 1, 2]
+    default: 0
+  Laywet:
+    description: "0: indicates wetting is inactive, 1: indicates wetting is active"
+    type: integer
+    enum: [0, 1]
+    default: 0
