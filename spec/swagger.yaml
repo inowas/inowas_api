@@ -1498,6 +1498,116 @@ paths:
       security:
         - api_key: []
 
+  /soilmodels/{id}/name:
+    get:
+      tags:
+        - "soilmodel"
+      summary: "Returns name of the soilmodel by id"
+      description: ""
+      operationId: "getSoilmodelName"
+      produces:
+        - "application/json"
+      parameters:
+        - name: "id"
+          in: "path"
+          description: "Id if the soilmodel"
+          required: true
+          type: "string"
+      responses:
+        '200':
+          description: "successful operation"
+          schema:
+            $ref: '#/definitions/SoilmodelName'
+      security:
+        - api_key: []
+    put:
+      tags:
+        - "soilmodel"
+      summary: "Updates name of a soilmodel"
+      description: ""
+      operationId: "updateSoilmodelName"
+      consumes:
+        - "application/json"
+      produces:
+        - "application/json"
+      parameters:
+        - name: "id"
+          in: "path"
+          description: "Id of the soilmodel"
+          required: true
+          type: "string"
+        - name: "body"
+          in: "body"
+          description: "Layervalues that will be updated"
+          required: true
+          schema:
+            $ref: '#/definitions/SoilmodelName'
+      responses:
+        '302':
+          description: "Redirect response"
+          headers:
+            Location:
+              type: "string"
+        '422':
+          description: "Invalid input"
+      security:
+        - api_key: []
+
+  /soilmodels/{id}/description:
+    get:
+      tags:
+        - "soilmodel"
+      summary: "Returns description of the soilmodel by id"
+      description: ""
+      operationId: "getSoilmodelName"
+      produces:
+        - "application/json"
+      parameters:
+        - name: "id"
+          in: "path"
+          description: "Id if the soilmodel"
+          required: true
+          type: "string"
+      responses:
+        '200':
+          description: "successful operation"
+          schema:
+            $ref: '#/definitions/SoilmodelDescription'
+      security:
+        - api_key: []
+    put:
+      tags:
+        - "soilmodel"
+      summary: "Updates description of a soilmodel"
+      description: ""
+      operationId: "updateSoilmodelDescription"
+      consumes:
+        - "application/json"
+      produces:
+        - "application/json"
+      parameters:
+        - name: "id"
+          in: "path"
+          description: "Id of the soilmodel"
+          required: true
+          type: "string"
+        - name: "body"
+          in: "body"
+          description: "Value that will be updated"
+          required: true
+          schema:
+            $ref: '#/definitions/SoilmodelDescription'
+      responses:
+        '302':
+          description: "Redirect response"
+          headers:
+            Location:
+              type: "string"
+        '422':
+          description: "Invalid input"
+      security:
+        - api_key: []
+
   /soilmodels/{id}/layers:
     post:
       tags:
@@ -2048,6 +2158,18 @@ definitions:
     allOf:
       - $ref: "#/definitions/SoilmodelLayerListItem"
       - $ref: "#/definitions/SoilmodelLayerValues"
+  SoilmodelName:
+    type: "object"
+    properties:
+      name:
+        type: "string"
+        example: "SoilmodelName"
+  SoilmodelDescription:
+    type: "object"
+    properties:
+      description:
+        type: "string"
+        example: "SoilmodelDescription"
   SoilmodelLayerName:
     type: "object"
     properties:
