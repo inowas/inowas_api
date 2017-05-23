@@ -1439,6 +1439,7 @@ paths:
       security:
         - api_key: []
 
+  # Soilmodel
   /soilmodels:
     post:
       tags:
@@ -1559,7 +1560,7 @@ paths:
         - "soilmodel"
       summary: "Returns description of the soilmodel by id"
       description: ""
-      operationId: "getSoilmodelName"
+      operationId: "getSoilmodelDescription"
       produces:
         - "application/json"
       parameters:
@@ -1608,6 +1609,7 @@ paths:
       security:
         - api_key: []
 
+  # Soilmodel Layers
   /soilmodels/{id}/layers:
     post:
       tags:
@@ -1870,6 +1872,77 @@ paths:
           required: true
           schema:
             $ref: '#/definitions/SoilmodelLayerDescription'
+      responses:
+        '302':
+          description: "Redirect response"
+          headers:
+            Location:
+              type: "string"
+        '422':
+          description: "Invalid input"
+      security:
+        - api_key: []
+
+  /soilmodels/{id}/layers/{lid}/number:
+    get:
+      tags:
+        - "soilmodel"
+      summary: "Returns layerNumber of an existing layer by id"
+      description: ""
+      operationId: "getSoilmodelLayerLayerNumber"
+      produces:
+        - "application/json"
+      parameters:
+        - name: "id"
+          in: "path"
+          description: "Id if the soilmodel"
+          required: true
+          type: "string"
+        - name: "lid"
+          in: "path"
+          description: "Layer-Id if the soilmodelLayer"
+          required: true
+          type: "string"
+      responses:
+        '200':
+          description: "successful operation"
+          schema:
+            type: "object"
+            properties:
+              layer_number:
+                $ref: '#/definitions/LayerNumber'
+      security:
+        - api_key: []
+    put:
+      tags:
+        - "soilmodel"
+      summary: "Updates layerNumber of an existing layer"
+      description: ""
+      operationId: "updateSoilmodelLayerNumber"
+      consumes:
+        - "application/json"
+      produces:
+        - "application/json"
+      parameters:
+        - name: "id"
+          in: "path"
+          description: "Id of the soilmodel"
+          required: true
+          type: "string"
+        - name: "lid"
+          in: "path"
+          description: "Layer-Id if the soilmodelLayer"
+          required: true
+          type: "string"
+        - name: "body"
+          in: "body"
+          description: "Layervalues that will be updated"
+          required: true
+          schema:
+            type: "object"
+            properties:
+              layer_number:
+                $ref: '#/definitions/LayerNumber'
       responses:
         '302':
           description: "Redirect response"
@@ -2212,7 +2285,10 @@ definitions:
       sy:
         $ref: "#/definitions/LayerValue"
   LayerValue:
-    type: object
+    type: "object"
+  LayerNumber:
+    type: "integer"
+    example: 0
   SoilmodelBoreLogListItem:
     type: "object"
     properties:
@@ -2289,7 +2365,6 @@ definitions:
         - 1
         - 4
         - 2.01
-
   ActiveCellsWithLayerValues:
     description: "layers"
     type: "array"
