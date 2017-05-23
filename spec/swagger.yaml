@@ -1706,6 +1706,71 @@ paths:
       security:
         - api_key: []
 
+  /soilmodels/{id}/layers/{lid}/description:
+    get:
+      tags:
+        - "soilmodel"
+      summary: "Returns description of an existing layer by id"
+      description: ""
+      operationId: "getSoilmodelLayerDescription"
+      produces:
+        - "application/json"
+      parameters:
+        - name: "id"
+          in: "path"
+          description: "Id if the soilmodel"
+          required: true
+          type: "string"
+        - name: "lid"
+          in: "path"
+          description: "Layer-Id if the soilmodelLayer"
+          required: true
+          type: "string"
+      responses:
+        '200':
+          description: "successful operation"
+          schema:
+            $ref: '#/definitions/SoilmodelLayerDescription'
+      security:
+        - api_key: []
+    put:
+      tags:
+        - "soilmodel"
+      summary: "Updates description of an existing layer"
+      description: ""
+      operationId: "updateSoilmodelLayerDescription"
+      consumes:
+        - "application/json"
+      produces:
+        - "application/json"
+      parameters:
+        - name: "id"
+          in: "path"
+          description: "Id of the soilmodel"
+          required: true
+          type: "string"
+        - name: "lid"
+          in: "path"
+          description: "Layer-Id if the soilmodelLayer"
+          required: true
+          type: "string"
+        - name: "body"
+          in: "body"
+          description: "Layervalues that will be updated"
+          required: true
+          schema:
+            $ref: '#/definitions/SoilmodelLayerDescription'
+      responses:
+        '302':
+          description: "Redirect response"
+          headers:
+            Location:
+              type: "string"
+        '422':
+          description: "Invalid input"
+      security:
+        - api_key: []
+
   /scenarioanalyses:
     get:
       tags:
@@ -1989,6 +2054,12 @@ definitions:
       name:
         type: "string"
         example: "LayerName"
+  SoilmodelLayerDescription:
+    type: "object"
+    properties:
+      name:
+        type: "string"
+        example: "LayerDescription"
   SoilmodelLayerValues:
     type: "object"
     properties:
