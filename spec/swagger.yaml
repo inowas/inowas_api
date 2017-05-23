@@ -484,6 +484,69 @@ paths:
       security:
         - api_key: []
 
+  /modflowmodels/{id}/activecells:
+    get:
+      tags:
+        - "modflowmodel"
+      summary: "Get activeCells by modelId"
+      description: "Returns the activeCells"
+      operationId: "getModflowModelActiveCells"
+      produces:
+        - "application/json"
+      parameters:
+        - name: "id"
+          in: "path"
+          description: "ID of ModflowModel"
+          required: true
+          type: "string"
+      responses:
+        '200':
+          description: "successful operation"
+          schema:
+            type: "object"
+            properties:
+              active_cells:
+                $ref: '#/definitions/ActiveCellsWithLayerValues'
+        '404':
+          description: "Boundary not found"
+      security:
+        - api_key: []
+    put:
+      tags:
+        - "modflowmodel"
+      summary: "Update activeCells with modflowModelId"
+      description: "Updates the activeCells the model area."
+      operationId: "updateModflowModelActiveCells"
+      consumes:
+        - "application/json"
+      produces:
+        - "application/json"
+      parameters:
+        - name: "id"
+          in: "path"
+          description: "ID of ModflowModel"
+          required: true
+          type: "string"
+        - in: "body"
+          name: "body"
+          description: "Boundary activeCells"
+          required: true
+          schema:
+            type: "object"
+            properties:
+              active_cells:
+                $ref: '#/definitions/ActiveCellsWithLayerValues'
+      responses:
+        '302':
+          description: "Redirect response"
+          headers:
+            Location:
+              type: "string"
+        '422':
+          description: "Invalid input"
+      security:
+        - api_key: []
+
   /modflowmodels/{id}/soilmodel:
     get:
       tags:
@@ -769,7 +832,7 @@ paths:
         - "modflowmodel"
       summary: "Get activeCells by modelId and BoundaryId"
       description: "Returns the activeCells"
-      operationId: "getModflowModelActiveCells"
+      operationId: "getModflowModelBoundaryActiveCells"
       produces:
         - "application/json"
       parameters:
@@ -1765,7 +1828,6 @@ definitions:
         $ref: '#/definitions/AffectedLayers'
       metadata:
         $ref: '#/definitions/MetaData'
-
   ModflowModelBoundarySubmitItem:
     type: "object"
     properties:
@@ -1997,6 +2059,63 @@ definitions:
         - 1
         - 4
         - 2.01
+
+  ActiveCellsWithLayerValues:
+    description: "layers"
+    type: "array"
+    items:
+      description: "rows"
+      type: "array"
+      items:
+        description: "columns"
+        type: "array"
+        items:
+          description: "value"
+          type: "number"
+
+    example:
+      -
+      -
+      -
+        -
+          -
+            - 0
+            - 1
+            - 1.1
+            - 0
+            - 0
+          -
+            - 0
+            - 1
+            - 1.1
+            - 0
+            - 0
+        -
+          -
+            - 0
+            - 1
+            - 1.1
+            - 0
+            - 0
+          -
+            - 0
+            - 1
+            - 1.1
+            - 0
+            - 0
+        -
+          -
+            - 0
+            - 1
+            - 1.1
+            - 0
+            - 0
+          -
+            - 0
+            - 1
+            - 1.1
+            - 0
+            - 0
   MetaData:
     type: "object"
     properties:
@@ -2169,4 +2288,3 @@ definitions:
     type: "string"
     enum: ["polygon", "linestring", "point"]
     default: "polygon"
-^
