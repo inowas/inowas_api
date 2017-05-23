@@ -1439,6 +1439,42 @@ paths:
       security:
         - api_key: []
 
+  /soilmodels:
+    post:
+      tags:
+        - "soilmodel"
+      summary: "Creates a new soilmodel"
+      description: ''
+      operationId: "createSoilmodel"
+      consumes:
+        - "application/json"
+      produces:
+        - "application/json"
+      parameters:
+        - in: "body"
+          name: "body"
+          description: "SoilmodelDetails to create Soilmodel"
+          required: true
+          schema:
+            type: "object"
+            properties:
+              name:
+                type: "string"
+                example: "Soilmodel Hanoi Area"
+              description:
+                type: "string"
+                example: "Description Soilmodel Hanoi Area"
+      responses:
+        '302':
+          description: "Redirect response"
+          headers:
+            Location:
+              type: "string"
+        '422':
+          description: "Invalid input"
+      security:
+        - api_key: []
+
   /soilmodels/{id}:
     get:
       tags:
