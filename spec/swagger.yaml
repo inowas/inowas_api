@@ -127,7 +127,98 @@ paths:
       security:
       - api_key: []
 
-  /calculations/{id}/times:
+  /calculations/{id}/calculate:
+    post:
+      tags:
+        - "calculation"
+      summary: "Send calculate command"
+      description: "Send calculate command"
+      operationId: "postCalculateCalculationById"
+      parameters:
+        - name: "id"
+          in: "path"
+          description: "Id of Calculation to return"
+          required: true
+          type: "string"
+      responses:
+        '302':
+          description: "Redirect response to GET /calculations/{id}"
+          headers:
+            Location:
+              type: "string"
+      security:
+        - api_key: []
+
+  /calculations/{id}/stressperiods:
+    get:
+      tags:
+        - "calculation"
+      summary: "Get calculation details by id"
+      description: "Returns the calculation details of a calculation by id"
+      operationId: "getCalculationStressperiodsById"
+      produces:
+        - "application/json"
+      parameters:
+        - name: "id"
+          in: "path"
+          description: "Id of Calculation to return"
+          required: true
+          type: "string"
+      responses:
+        '200':
+          description: "successful operation"
+          schema:
+            type: "array"
+            items:
+              $ref: '#/definitions/CalculationStressPeriod'
+            example:
+              - { "totim_start": 0, "perlen": 1, "nstp": 4, "tsmult": 1, "steady": true }
+              - { "totim_start": 1, "perlen": 11, "nstp": 2, "tsmult": 1, "steady": false }
+              - { "totim_start": 24, "perlen": 12, "nstp": 1, "tsmult": 1, "steady":false }
+        '400':
+          description: "Invalid ID supplied"
+        '404':
+          description: "ModflowModel not found"
+      security:
+      - api_key: []
+
+    put:
+      tags:
+        - "calculation"
+      summary: "Update stressperiods of a calculation by id"
+      description: "Update stressperiods of a calculation by id"
+      operationId: "updateCalculationStressperiodsById"
+      parameters:
+        - name: "id"
+          in: "path"
+          description: "ID of Calculation"
+          required: true
+          type: "string"
+        - in: "body"
+          name: "body"
+          description: "StressperiodsList"
+          required: true
+          schema:
+            type: "array"
+            items:
+              $ref: '#/definitions/CalculationStressPeriod'
+            example:
+              - { "totim_start": 0, "perlen": 1, "nstp": 4, "tsmult": 1, "steady": true }
+              - { "totim_start": 1, "perlen": 11, "nstp": 2, "tsmult": 1, "steady": false }
+              - { "totim_start": 24, "perlen": 12, "nstp": 1, "tsmult": 1, "steady":false }
+
+      responses:
+        '302':
+          description: "Redirect response to GET /calculations/{id}/stressperiods"
+          headers:
+            Location:
+              type: "string"
+        '422':
+          description: "Invalid input"
+      security:
+        - api_key: []
+
+  /calculations/{id}/results/times:
     get:
       tags:
         - "calculation"
@@ -154,7 +245,7 @@ paths:
       security:
       - api_key: []
 
-  /calculations/{id}/layervalues:
+  /calculations/{id}/results/layervalues:
     get:
       tags:
         - "calculation"
@@ -223,54 +314,54 @@ paths:
       security:
       - api_key: []
 
-  /calculations/{id}/difference/{id2}/types/{type}/layers/{layer}/totims/{totim}:
-                       get:
-                         tags:
-                           - "calculation"
-                         summary: "Get calculation result difference by two calculationIds, type and layerNumber"
-                         description: "Returns the calculation result difference by two calculationIds, type and layerNumber"
-                         operationId: "getCalculationDifferenceByIdTypeLayerTotim"
-                         produces:
-                           - "application/json"
-                         parameters:
-                           - name: "id"
-                             in: "path"
-                             description: "Id of calculation"
-                             required: true
-                             type: "string"
-                           - name: "id2"
-                             in: "path"
-                             description: "Id of calculation which will be calculated as difference"
-                             required: true
-                             type: "string"
-                           - name: "type"
-                             in: "path"
-                             description: "Type of result"
-                             required: true
-                             type: "string"
-                           - name: "layer"
-                             in: "path"
-                             description: "Layernumber"
-                             required: true
-                             type: "string"
-                           - name: "totim"
-                             in: "path"
-                             description: "Total time"
-                             required: true
-                             type: "integer"
-                         responses:
-                           '200':
-                             description: "successful operation"
-                             schema:
-                               $ref: '#/definitions/CalculationHeadResult'
-                           '400':
-                             description: "Invalid ID supplied"
-                           '404':
-                             description: "ModflowModel not found"
-                         security:
-                         - api_key: []
+  /calculations/{id}/results/differences/{id2}/types/{type}/layers/{layer}/totims/{totim}:
+    get:
+     tags:
+       - "calculation"
+     summary: "Get calculation result difference by two calculationIds, type and layerNumber"
+     description: "Returns the calculation result difference by two calculationIds, type and layerNumber"
+     operationId: "getCalculationDifferenceByIdTypeLayerTotim"
+     produces:
+       - "application/json"
+     parameters:
+       - name: "id"
+         in: "path"
+         description: "Id of calculation"
+         required: true
+         type: "string"
+       - name: "id2"
+         in: "path"
+         description: "Id of calculation which will be calculated as difference"
+         required: true
+         type: "string"
+       - name: "type"
+         in: "path"
+         description: "Type of result"
+         required: true
+         type: "string"
+       - name: "layer"
+         in: "path"
+         description: "Layernumber"
+         required: true
+         type: "string"
+       - name: "totim"
+         in: "path"
+         description: "Total time"
+         required: true
+         type: "integer"
+     responses:
+       '200':
+         description: "successful operation"
+         schema:
+           $ref: '#/definitions/CalculationHeadResult'
+       '400':
+         description: "Invalid ID supplied"
+       '404':
+         description: "ModflowModel not found"
+     security:
+     - api_key: []
 
-  /calculations/{id}/timeseries/types/{type}/layers/{layer}/x/{x}/y/{y}:
+  /calculations/{id}/results/timeseries/types/{type}/layers/{layer}/x/{x}/y/{y}:
     get:
       tags:
         - "calculation"
@@ -460,8 +551,6 @@ paths:
       description: "Updates the name of an existing ModflowModel"
       operationId: "updateModflowModelName"
       consumes:
-        - "application/json"
-      produces:
         - "application/json"
       parameters:
         - name: "id"
@@ -3093,6 +3182,31 @@ definitions:
     type: "integer"
     enum: [0, 1, 2, 3]
     default: 0
+  CalculationStressPeriod:
+    title: "CalculationStressPeriod"
+    type: "object"
+    properties:
+      totim_start:
+        description: "Start total time"
+        type: "integer"
+        example: 0
+      perlen:
+        description: "Period length of stressperiod"
+        type: "integer"
+        example: 12
+      nstp:
+        description: "Number of timesteps"
+        type: "integer"
+        example: 4
+      tsmult:
+        description: "Timestep multiplier"
+        type: "number"
+        example: 1.0
+      steady:
+        description: "Stressperiod is steady state or not"
+        type: "boolean"
+        example: true
+
   ModflowModelDetails:
     title: "ModflowModelDetails"
     type: "object"
