@@ -223,6 +223,53 @@ paths:
       security:
       - api_key: []
 
+  /calculations/{id}/difference/{id2}/types/{type}/layers/{layer}/totims/{totim}:
+    get:
+      tags:
+        - "calculation"
+      summary: "Get calculation result difference by two calculationIds, type and layerNumber"
+      description: "Returns the calculation result difference by two calculationIds, type and layerNumber"
+      operationId: "getCalculationDifferenceByIdTypeLayerTotim"
+      produces:
+        - "application/json"
+      parameters:
+        - name: "id"
+          in: "path"
+          description: "Id of calculation"
+          required: true
+          type: "string"
+        - name: "id2"
+          in: "path"
+          description: "Id of calculation which will be calculated as difference"
+          required: true
+          type: "string"
+        - name: "type"
+          in: "path"
+          description: "Type of result"
+          required: true
+          type: "string"
+        - name: "layer"
+          in: "path"
+          description: "Layernumber"
+          required: true
+          type: "string"
+        - name: "totim"
+          in: "path"
+          description: "Total time"
+          required: true
+          type: "integer"
+      responses:
+        '200':
+          description: "successful operation"
+          schema:
+            $ref: '#/definitions/CalculationHeadResult'
+        '400':
+          description: "Invalid ID supplied"
+        '404':
+          description: "ModflowModel not found"
+      security:
+      - api_key: []
+
   # ModflowModel
   /modflowmodels:
     get:
