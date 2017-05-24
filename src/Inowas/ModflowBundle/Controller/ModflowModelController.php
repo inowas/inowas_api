@@ -54,6 +54,7 @@ class ModflowModelController extends InowasRestController
      */
     public function getModflowModelsAction(): JsonResponse
     {
+        $this->assertUserIsLoggedInCorrectly();
         $user = $this->getUser();
 
         if (! $user instanceof User) {
@@ -83,6 +84,8 @@ class ModflowModelController extends InowasRestController
      */
     public function getPublicModflowModelsAction(): JsonResponse
     {
+        $this->assertUserIsLoggedInCorrectly();
+
         return new JsonResponse(
             $this->get('inowas.modflowmodel.model_finder')->findPublicModels()
         );
@@ -107,16 +110,25 @@ class ModflowModelController extends InowasRestController
     {
         $content = $this->getContentAsArray($request);
         $userId = UserId::fromString($this->getUser()->getId()->toString());
-
         $modelId = ModflowId::generate();
+
+        $this->assertContainsKey('name', $content);
         $name = Modelname::fromString($content['name']);
+
+        $this->assertContainsKey('description', $content);
         $description = ModflowModelDescription::fromString($content['description']);
 
-        $areaGeometry = new Polygon($content['geometry']['coordinates'], 4326);
+        $this->assertContainsKey('area_geometry', $content);
+        $areaGeometry = new Polygon($content['area_geometry']['coordinates'], 4326);
         $area = Area::create(BoundaryId::generate(), BoundaryName::fromString($name->toString().' Area'), $areaGeometry);
 
+        $this->assertContainsKey('grid_size', $content);
         $gridSize = GridSize::fromXY((int)$content['grid_size']['n_x'], (int)$content['grid_size']['n_y']);
+
+        $this->assertContainsKey('time_unit', $content);
         $timeUnit = TimeUnit::fromInt((int)$content['time_unit']);
+
+        $this->assertContainsKey('length_unit', $content);
         $lengthUnit = LengthUnit::fromInt((int)$content['length_unit']);
 
         $commandBus = $this->get('prooph_service_bus.modflow_command_bus');

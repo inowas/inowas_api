@@ -68,11 +68,11 @@ use Prooph\EventStore\EventStore;
 use Prooph\ServiceBus\CommandBus;
 use Prooph\ServiceBus\EventBus;
 use Symfony\Bundle\FrameworkBundle\Console\Application;
-use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
+use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Symfony\Component\Console\Tester\CommandTester;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
-abstract class EventSourcingBaseTest extends KernelTestCase
+abstract class EventSourcingBaseTest extends WebTestCase
 {
 
     /** @var  ContainerInterface */
@@ -89,7 +89,6 @@ abstract class EventSourcingBaseTest extends KernelTestCase
 
     /** @var  Connection */
     protected $connection;
-
 
     public function setUp(): void
     {
