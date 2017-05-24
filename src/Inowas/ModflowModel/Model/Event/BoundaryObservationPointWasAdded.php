@@ -4,31 +4,33 @@ declare(strict_types=1);
 
 namespace Inowas\ModflowModel\Model\Event;
 
-use Inowas\Common\Boundaries\ModflowBoundary;
 use Inowas\Common\Boundaries\ObservationPoint;
 use Inowas\Common\Id\BoundaryId;
 use Inowas\Common\Id\ModflowId;
 use Inowas\Common\Id\UserId;
 use Prooph\EventSourcing\AggregateChanged;
 
-class ObservationPointWasAdded extends AggregateChanged
+class BoundaryObservationPointWasAdded extends AggregateChanged
 {
 
     /** @var ModflowId */
     private $modflowId;
 
-    /** @var ModflowBoundary */
-    private $boundary;
-
     /** @var UserId */
     private $userId;
 
-    public static function to(
-        ModflowId $modflowId,
+    /** @var BoundaryId */
+    private $boundaryId;
+
+    /** @var ObservationPoint */
+    private $observationPoint;
+
+    public static function byUserWithModflowAndBoundaryId(
         UserId $userId,
+        ModflowId $modflowId,
         BoundaryId $boundaryId,
         ObservationPoint $observationPoint
-    ): ObservationPointWasAdded
+    ): BoundaryObservationPointWasAdded
     {
         $event = self::occur(
             $modflowId->toString(), [
@@ -40,7 +42,7 @@ class ObservationPointWasAdded extends AggregateChanged
 
         $event->modflowId = $modflowId;
         $event->boundaryId = $boundaryId;
-        $event->onservationPoint = $observationPoint;
+        $event->observationPoint = $observationPoint;
 
         return $event;
     }
@@ -54,13 +56,13 @@ class ObservationPointWasAdded extends AggregateChanged
         return $this->modflowId;
     }
 
-    public function boundary(): ModflowBoundary
+    public function boundaryId(): BoundaryId
     {
-        if ($this->boundary === null){
-            $this->boundary = unserialize($this->payload['boundary']);
+        if ($this->boundaryId === null){
+            $this->boundaryId = BoundaryId::fromString($this->payload['boundary_id']);
         }
 
-        return $this->boundary;
+        return $this->boundaryId;
     }
 
     public function userId(): UserId
@@ -70,5 +72,14 @@ class ObservationPointWasAdded extends AggregateChanged
         }
 
         return $this->userId;
+    }
+
+    public function observationPoint(): ObservationPoint
+    {
+        if ($this->observationPoint === null){
+            $this->observationPoint = unserialize($this->payload['observationpoint']);
+        }
+
+        return $this->observationPoint();
     }
 }

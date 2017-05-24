@@ -6,6 +6,7 @@ namespace Inowas\ModflowModel\Model;
 
 use Inowas\Common\Boundaries\Area;
 use Inowas\Common\Boundaries\BoundaryName;
+use Inowas\Common\Boundaries\ObservationPoint;
 use Inowas\Common\Geometry\Geometry;
 use Inowas\Common\Geometry\Polygon;
 use Inowas\Common\Grid\ActiveCells;
@@ -28,6 +29,7 @@ use Inowas\ModflowModel\Model\Event\BoundaryAffectedLayersWereUpdated;
 use Inowas\ModflowModel\Model\Event\BoundaryGeometryWasUpdated;
 use Inowas\ModflowModel\Model\Event\BoundaryMetadataWasUpdated;
 use Inowas\ModflowModel\Model\Event\BoundaryNameWasUpdated;
+use Inowas\ModflowModel\Model\Event\BoundaryObservationPointWasAdded;
 use Inowas\ModflowModel\Model\Event\BoundaryWasAdded;
 use Inowas\ModflowModel\Model\Event\BoundaryWasRemoved;
 use Inowas\ModflowModel\Model\Event\BoundingBoxWasChanged;
@@ -214,6 +216,18 @@ class ModflowModelAggregate extends AggregateRoot
         }
     }
 
+    public function addBoundaryObservationPoint(UserId $userId, BoundaryId $boundaryId, ObservationPoint $observationPoint): void
+    {
+        if (in_array($boundaryId->toString(), $this->boundaries)) {
+            $this->recordThat(BoundaryObservationPointWasAdded::byUserWithModflowAndBoundaryId(
+                $userId,
+                $this->modflowId,
+                $boundaryId,
+                $observationPoint
+            ));
+        }
+    }
+
     public function updateAreaActiveCells(UserId $userId, ActiveCells $activeCells): void
     {
         $this->recordThat(AreaActiveCellsWereUpdated::byUserAndModel(
@@ -390,6 +404,9 @@ class ModflowModelAggregate extends AggregateRoot
     {}
 
     protected function whenBoundaryNameWasUpdated(BoundaryNameWasUpdated $event): void
+    {}
+
+    protected function whenBoundaryObservationPointWasAdded(BoundaryObservationPointWasAdded $event): void
     {}
 
     protected function whenBoundaryWasAdded(BoundaryWasAdded $event): void

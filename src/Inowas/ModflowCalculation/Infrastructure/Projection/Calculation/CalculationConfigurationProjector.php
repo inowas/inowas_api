@@ -69,8 +69,8 @@ class CalculationConfigurationProjector extends AbstractDoctrineConnectionProjec
         $table->addColumn('stress_periods', 'text', ['notnull' => false]);
         $table->addColumn('configuration', 'text', ['notnull' => false]);
         $table->addColumn('configuration_hash', 'string', ['length' => 36, 'notnull' => false]);
-        $table->addColumn('configuration_state', 'integer', ['default' => 0]);
-        $table->addColumn('configuration_response', 'text', ['notnull' => false]);
+        $table->addColumn('calculation_state', 'integer', ['default' => 0]);
+        $table->addColumn('calculation_response', 'text', ['notnull' => false]);
         $table->setPrimaryKey(['calculation_id', 'modflow_model_id']);
     }
 
@@ -130,8 +130,8 @@ class CalculationConfigurationProjector extends AbstractDoctrineConnectionProjec
             'stress_periods' => serialize($event->stressPeriods()),
             'configuration' => json_encode($configuration),
             'configuration_hash' => md5(json_encode($configuration)),
-            'configuration_state' => 0,
-            'configuration_response' => ""
+            'calculation_state' => 0,
+            'calculation_response' => ""
         ), array(
                 'calculation_id' => $event->calculationId()->toString(),
                 'modflow_model_id' => $modflowModelId->toString(),
@@ -182,8 +182,8 @@ class CalculationConfigurationProjector extends AbstractDoctrineConnectionProjec
             'stress_periods' => $this->serialize($stressPeriods),
             'configuration' => json_encode($configuration),
             'configuration_hash' => md5(json_encode($configuration)),
-            'configuration_state' => 0,
-            'configuration_response' => ""
+            'calculation_state' => 0,
+            'calculation_response' => ""
         ), array(
                 'calculation_id' => $event->calculationId()->toString(),
                 'modflow_model_id' => $modflowModelId->toString(),
@@ -196,7 +196,7 @@ class CalculationConfigurationProjector extends AbstractDoctrineConnectionProjec
     public function onCalculationWasQueued(CalculationWasQueued $event): void
     {
         $this->connection->update(Table::CALCULATION_CONFIG,
-            array('configuration_state' => 1),
+            array('calculation_state' => 1),
             array('calculation_id' => $event->calculationId()->toString())
         );
     }
@@ -204,7 +204,7 @@ class CalculationConfigurationProjector extends AbstractDoctrineConnectionProjec
     public function onCalculationWasStarted(CalculationWasStarted $event): void
     {
         $this->connection->update(Table::CALCULATION_CONFIG,
-            array('configuration_state' => 2),
+            array('calculation_state' => 2),
             array('calculation_id' => $event->calculationId()->toString())
         );
     }
@@ -213,8 +213,8 @@ class CalculationConfigurationProjector extends AbstractDoctrineConnectionProjec
     {
         $this->connection->update(Table::CALCULATION_CONFIG,
             array(
-                'configuration_state' => 3,
-                'configuration_response' => json_encode($event->response()->toArray())
+                'calculation_state' => 3,
+                'calculation_response' => json_encode($event->response()->toArray())
             ),
             array('calculation_id' => $event->calculationId()->toString())
         );
@@ -382,8 +382,8 @@ class CalculationConfigurationProjector extends AbstractDoctrineConnectionProjec
         $this->connection->update(Table::CALCULATION_CONFIG, array(
             'configuration' => json_encode($configuration),
             'configuration_hash' => md5(json_encode($configuration)),
-            'configuration_state' => 0,
-            'configuration_response' => ""
+            'calculation_state' => 0,
+            'calculation_response' => ""
         ), array(
             'calculation_id' => $calculationId->toString()
         ));

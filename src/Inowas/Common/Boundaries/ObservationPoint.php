@@ -22,7 +22,7 @@ class ObservationPoint implements \JsonSerializable
     /** @var  array */
     protected $dateTimeValues = [];
 
-    public static function fromIdNameAndGeometry(ObservationPointId $id, ObservationPointName $name, ?Geometry $geometry = null): ObservationPoint
+    public static function fromIdNameAndGeometry(ObservationPointId $id, ObservationPointName $name, Geometry $geometry): ObservationPoint
     {
         return new self($id, $name, $geometry);
     }

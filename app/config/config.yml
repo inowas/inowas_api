@@ -96,11 +96,15 @@ fos_user:
 fos_rest:
     view:
         view_response_listener: true
-
     routing_loader:
         default_format: json
-
     param_fetcher_listener: true
+    exception:
+        enabled: true
+        codes:
+            'Inowas\ModflowModel\Model\Exception\ModflowModelNotFoundException': HTTP_NOT_FOUND
+        messages:
+            'Inowas\ModflowModel\Model\Exception\ModflowModelNotFoundException': true
 
 # Nelmio apiDoc configuration
 nelmio_api_doc: ~

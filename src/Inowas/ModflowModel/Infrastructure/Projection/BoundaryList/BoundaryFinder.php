@@ -6,6 +6,7 @@ namespace Inowas\ModflowModel\Infrastructure\Projection\BoundaryList;
 
 use Doctrine\DBAL\Connection;
 use Inowas\Common\Boundaries\BoundaryName;
+use Inowas\Common\Boundaries\BoundaryType;
 use Inowas\Common\Boundaries\ConstantHeadBoundary;
 use Inowas\Common\Boundaries\ConstantHeadDateTimeValue;
 use Inowas\Common\Boundaries\GeneralHeadBoundary;
@@ -416,6 +417,20 @@ class BoundaryFinder
             'values_description' => json_decode($result['values_description']),
             'values' => json_decode($result['values'])
         );
+    }
+
+    public function getBoundaryType(ModflowId $modelId, BoundaryId $boundaryId): ?BoundaryType
+    {
+        $result = $this->connection->fetchAssoc(
+            sprintf('SELECT type FROM %s WHERE model_id = :model_id AND boundary_id = :boundary_id', Table::BOUNDARY_LIST),
+            ['model_id' => $modelId->toString(), 'boundary_id' => $boundaryId->toString()]
+        );
+
+        if ($result === false){
+            return null;
+        }
+
+        return BoundaryType::fromString($result['type']);
     }
 
     public function findStressPeriodDatesById(ModflowId $modelId): array

@@ -10,20 +10,20 @@ use Inowas\Common\Boundaries\BoundaryName;
 use Inowas\Common\Boundaries\BoundaryType;
 use Inowas\Common\Boundaries\ConstantHeadBoundary;
 use Inowas\Common\Boundaries\GeneralHeadBoundary;
-use Inowas\Common\Boundaries\ObservationPoint;
 use Inowas\Common\Boundaries\ObservationPointName;
 use Inowas\Common\Boundaries\RechargeBoundary;
 use Inowas\Common\Boundaries\RiverBoundary;
 use Inowas\Common\Boundaries\WellBoundary;
 use Inowas\Common\Boundaries\WellType;
 use Inowas\Common\Geometry\Geometry;
+use Inowas\Common\Geometry\Point;
 use Inowas\Common\Grid\AffectedLayers;
 use Inowas\Common\Id\BoundaryId;
 use Inowas\Common\Id\ModflowId;
 use Inowas\Common\Id\ObservationPointId;
 use Inowas\Common\Id\UserId;
 use Inowas\ModflowModel\Model\Command\AddBoundary;
-use Inowas\ModflowModel\Model\Command\AddObservationPointToBoundary;
+use Inowas\ModflowModel\Model\Command\CreateObservationPoint;
 use Inowas\ModflowModel\Model\Command\UpdateBoundaryGeometry;
 use Inowas\ModflowModel\Model\Command\UpdateBoundaryName;
 use Nelmio\ApiDocBundle\Annotation\ApiDoc;
@@ -424,11 +424,11 @@ class ModflowModelBoundaryController extends InowasRestController
     }
 
     /**
-     * Update boundary geometry by modflow model id and boundary id.
+     * Create observation point on a boundary with modflowModelId and boundaryId.
      *
      * @ApiDoc(
      *   resource = true,
-     *   description = "Update boundary geometry by modflow model id and boundary id.",
+     *   description = "Create observation point on a boundary with modflowModelId and boundaryId.",
      *   statusCodes = {
      *     200 = "Returned when successful"
      *   }
@@ -467,7 +467,11 @@ class ModflowModelBoundaryController extends InowasRestController
         }
 
         $geometry = Geometry::fromArray($content['geometry']);
+        $point = $geometry->value();
 
+        if (! $point instanceof Point) {
+            return InowasJsonInvalidInputResponse::withMessage(sprintf('Expected geometry is point. Found %s', $content['geometry']));
+        }
 
         /** @var User $user */
         $user = $this->getUser();
@@ -478,12 +482,16 @@ class ModflowModelBoundaryController extends InowasRestController
         }
 
         $observationPointId = ObservationPointId::generate();
-        $observationPoint = ObservationPoint::fromIdNameAndGeometry($observationPointId, $name, $geometry);
-
-        $this->get('prooph_service_bus.modflow_command_bus')->dispatch(AddObservationPointToBoundary::byUserModelIdBoundaryId($userId, $modelId, $boundaryId, $observationPoint));
+        $this->get('prooph_service_bus.modflow_command_bus')->dispatch(
+            CreateObservationPoint::byUserModelIdBoundaryId($userId, $modelId, $boundaryId, $observationPointId, $name, $geometry));
 
         return new RedirectResponse(
-            $this->generateUrl('get_modflow_model_boundary_geometry', array('id' => $modelId->toString(), 'bid' => $boundaryId->toString())),
+            $this->generateUrl('get_modflow_model_boundary_observation_point_details', array(
+                'id' => $modelId->toString(),
+                'bid' => $boundaryId->toString(),
+                'oid' => $observationPointId->toString(),
+                )
+            ),
             302
         );
     }

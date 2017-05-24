@@ -4,23 +4,29 @@ declare(strict_types=1);
 
 namespace Inowas\Common\Calculation;
 
-class BudgetType
+class CalculationState
 {
-    const CUMULATIVE_BUDGET = 'cumulative';
-    const INCREMENTAL_BUDGET = 'incremental';
+    const CREATED = 0;
+    const QUEUED = 1;
+    const STARTED = 2;
+    const FINISHED = 3;
 
-    /** @var  string */
-    private $type;
+    /** @var  int */
+    private $state;
 
-    public static function fromString(string $type): BudgetType
+    public static function fromInt(int $state): CalculationState
     {
-        $self = new self();
-        $self->type = $type;
-        return $self;
+        return new self($state);
     }
 
-    public function toString(): string
+    private function __construct(int $state)
     {
-        return $this->type;
+        $this->state = $state;
+    }
+
+
+    public function toInt(): int
+    {
+        return $this->state;
     }
 }
