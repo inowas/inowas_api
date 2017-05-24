@@ -17,12 +17,12 @@ before_script:
   - bash ./build/build.geos.travis.sh
   - sed -i 's/git@github.com:/https:\/\/github.com\//' .gitmodules
   - git submodule update --init --recursive
+  - cp app/config/parameters.yml.travis app/config/parameters.yml
   - psql -U postgres -c "CREATE ROLE travis_ci_user WITH PASSWORD 'travis' LOGIN SUPERUSER;"
   - psql -U postgres -c "CREATE DATABASE travis_ci_db;"
   - psql -U postgres -c "GRANT ALL PRIVILEGES ON DATABASE travis_ci_db TO travis_ci_user;"
   - composer install
   - composer dump-autoload -o
-  - cp app/config/parameters.yml.travis app/config/parameters.yml
   - bin/console doctrine:database:create --env=test
   - bin/console inowas:postgis:install --env=test
   - php bin/console doctrine:schema:create --env=test
