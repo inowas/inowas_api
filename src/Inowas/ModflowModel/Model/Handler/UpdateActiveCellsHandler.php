@@ -4,13 +4,13 @@ declare(strict_types=1);
 
 namespace Inowas\ModflowModel\Model\Handler;
 
-use Inowas\ModflowModel\Model\Command\UpdateBoundaryActiveCells;
+use Inowas\ModflowModel\Model\Command\UpdateActiveCells;
 use Inowas\ModflowModel\Model\Exception\ModflowModelNotFoundException;
 use Inowas\ModflowModel\Model\Exception\WriteAccessFailedException;
 use Inowas\ModflowModel\Model\ModflowModelList;
 use Inowas\ModflowModel\Model\ModflowModelAggregate;
 
-final class UpdateBoundaryActiveCellsHandler
+final class UpdateActiveCellsHandler
 {
 
     /** @var  ModflowModelList */
@@ -24,7 +24,7 @@ final class UpdateBoundaryActiveCellsHandler
         $this->modelList = $modelList;
     }
 
-    public function __invoke(UpdateBoundaryActiveCells $command)
+    public function __invoke(UpdateActiveCells $command)
     {
         /** @var ModflowModelAggregate $modflowModel */
         $modflowModel = $this->modelList->get($command->modelId());
@@ -35,6 +35,11 @@ final class UpdateBoundaryActiveCellsHandler
 
         if (! $modflowModel->ownerId()->sameValueAs($command->userId())){
             throw WriteAccessFailedException::withUserAndOwner($command->userId(), $modflowModel->ownerId());
+        }
+
+        if ($command->isArea()) {
+            $modflowModel->updateAreaActiveCells($command->userId(), $command->activeCells());
+            return;
         }
 
         $modflowModel->updateBoundaryActiveCells($command->userId(), $command->boundaryId(), $command->activeCells());

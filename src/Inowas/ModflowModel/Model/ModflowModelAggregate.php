@@ -235,7 +235,6 @@ class ModflowModelAggregate extends AggregateRoot
             $this->modflowId,
             $activeCells
         ));
-
     }
 
     public function updateBoundaryActiveCells(UserId $userId, BoundaryId $boundaryId, ActiveCells $activeCells): void

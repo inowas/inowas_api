@@ -48,8 +48,8 @@ services:
           - '@modflow_model_list'
           - '@inowas.geotools.geotools_service'
 
-    inowas.modflowmodel.update_boundary_active_cells_handler:
-        class: Inowas\ModflowModel\Model\Handler\UpdateBoundaryActiveCellsHandler
+    inowas.modflowmodel.update_active_cells_handler:
+        class: Inowas\ModflowModel\Model\Handler\UpdateActiveCellsHandler
         arguments: ['@modflow_model_list']
 
     inowas.modflowmodel.update_boundary_affected_layers_handler:

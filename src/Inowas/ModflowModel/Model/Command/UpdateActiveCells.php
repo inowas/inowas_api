@@ -12,22 +12,38 @@ use Prooph\Common\Messaging\Command;
 use Prooph\Common\Messaging\PayloadConstructable;
 use Prooph\Common\Messaging\PayloadTrait;
 
-class UpdateBoundaryActiveCells extends Command implements PayloadConstructable
+class UpdateActiveCells extends Command implements PayloadConstructable
 {
 
     use PayloadTrait;
 
-    public static function byUserModelAndBoundary(
+    public static function ofModelBoundary(
         UserId $userId,
         ModflowId $modelId,
         BoundaryId $boundaryId,
         ActiveCells $activeCells
-    ): UpdateBoundaryActiveCells
+    ): UpdateActiveCells
     {
         $payload = [
             'user_id' => $userId->toString(),
             'model_id' => $modelId->toString(),
             'boundary_id' => $boundaryId->toString(),
+            'active_cells' => $activeCells->toArray()
+        ];
+
+        return new self($payload);
+    }
+
+    public static function ofModelArea(
+        UserId $userId,
+        ModflowId $modelId,
+        ActiveCells $activeCells
+    ): UpdateActiveCells
+    {
+        $payload = [
+            'user_id' => $userId->toString(),
+            'model_id' => $modelId->toString(),
+            'boundary_id' => $modelId->toString(),
             'active_cells' => $activeCells->toArray()
         ];
 
@@ -52,5 +68,10 @@ class UpdateBoundaryActiveCells extends Command implements PayloadConstructable
     public function activeCells(): ActiveCells
     {
         return ActiveCells::fromArray($this->payload['active_cells']);
+    }
+
+    public function isArea(): bool
+    {
+        return $this->modelId()->sameValueAs($this->boundaryId());
     }
 }

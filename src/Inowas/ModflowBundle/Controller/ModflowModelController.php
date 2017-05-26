@@ -9,6 +9,7 @@ use Inowas\Common\Boundaries\Area;
 use Inowas\Common\Boundaries\BoundaryName;
 use Inowas\Common\Geometry\Geometry;
 use Inowas\Common\Geometry\Polygon;
+use Inowas\Common\Grid\ActiveCells;
 use Inowas\Common\Grid\BoundingBox;
 use Inowas\Common\Grid\GridSize;
 use Inowas\Common\Id\BoundaryId;
@@ -26,6 +27,7 @@ use Inowas\ModflowModel\Model\Command\ChangeModflowModelName;
 use Inowas\ModflowModel\Model\Command\ChangeModflowModelSoilmodelId;
 use Inowas\ModflowModel\Model\Command\CreateModflowModel;
 use Inowas\ModflowModel\Model\Command\UpdateAreaGeometry;
+use Inowas\ModflowModel\Model\Command\UpdateActiveCells;
 use Inowas\ModflowModel\Model\Command\UpdateLengthUnit;
 use Inowas\ModflowModel\Model\Command\UpdateTimeUnit;
 use Nelmio\ApiDocBundle\Annotation\ApiDoc;
@@ -501,6 +503,72 @@ class ModflowModelController extends InowasRestController
 
         $response = new RedirectResponse(
             $this->generateUrl('get_modflow_model_grid_size', array('id' => $modelId->toString())),
+            302
+        );
+
+        return $response;
+    }
+
+    /**
+     * Get ActiveCells of modflow model by id.
+     *
+     * @ApiDoc(
+     *   resource = true,
+     *   description = "Get ActiveCells of modflow model by id.",
+     *   statusCodes = {
+     *     200 = "Returned when successful"
+     *   }
+     * )
+     *
+     * @param string $id
+     * @Rest\Get("/modflowmodels/{id}/activecells")
+     * @return JsonResponse
+     */
+    public function getModflowModelActiveCellsAction(string $id): JsonResponse
+    {
+        $this->assertUuidIsValid($id);
+        $modelId = ModflowId::fromString($id);
+        $activeCells = $this->get('inowas.modflowmodel.boundaries_finder')->findAreaActiveCells($modelId);
+
+        if (! $activeCells instanceof ActiveCells) {
+            throw NotFoundException::withMessage(sprintf(
+                'ModflowModel with id: \'%s\' not found.', $modelId->toString()
+            ));
+        }
+
+        return new JsonResponse(['active_cells' => $activeCells->fullArray()]);
+    }
+
+    /**
+     * Update ActiveCells of modflow model by id.
+     *
+     * @ApiDoc(
+     *   resource = true,
+     *   description = "Update ActiveCells of modflow model by id.",
+     *   statusCodes = {
+     *     200 = "Returned when successful"
+     *   }
+     * )
+     *
+     * @param Request $request
+     * @param string $id
+     * @Rest\Put("/modflowmodels/{id}/activecells")
+     * @return Response
+     */
+    public function putModflowModelActiveCellsAction(Request $request, string $id)
+    {
+        $userId = $this->getUserId();
+        $this->assertUuidIsValid($id);
+        $modelId = ModflowId::fromString($id);
+
+        $content = $this->getContentAsArray($request);
+        $this->assertContainsKey('active_cells', $content);
+
+        $activeCells = ActiveCells::fromFullArray($content['active_cells']);
+        $this->get('prooph_service_bus.modflow_command_bus')->dispatch(UpdateActiveCells::ofModelArea($userId, $modelId, $activeCells));
+
+        $response = new RedirectResponse(
+            $this->generateUrl('get_modflow_model_active_cells', array('id' => $modelId->toString())),
             302
         );
 
