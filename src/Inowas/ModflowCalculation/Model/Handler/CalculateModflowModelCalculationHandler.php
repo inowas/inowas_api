@@ -7,9 +7,14 @@ namespace Inowas\ModflowCalculation\Model\Handler;
 use Inowas\ModflowCalculation\Model\Command\CalculateModflowModelCalculation;
 use Inowas\ModflowCalculation\Infrastructure\Projection\Calculation\CalculationConfigurationFinder;
 use Inowas\ModflowCalculation\Model\ModflowCalculation;
+use Inowas\ModflowCalculation\Model\ModflowCalculationAggregate;
+use Inowas\ModflowCalculation\Model\ModflowCalculationList;
 
 final class CalculateModflowModelCalculationHandler
 {
+
+    /** @var ModflowCalculationList $calculationList */
+    private $calculationList;
 
     /** @var  CalculationConfigurationFinder */
     private $calculationFinder;
@@ -17,18 +22,24 @@ final class CalculateModflowModelCalculationHandler
     /** @var  ModflowCalculation */
     private $modflowCalculation;
 
-    public function __construct(CalculationConfigurationFinder $calculationFinder, ModflowCalculation $flopyCalculation)
+
+    public function __construct(ModflowCalculationList $calculationList, CalculationConfigurationFinder $calculationFinder, ModflowCalculation $flopyCalculation)
     {
+        $this->calculationList = $calculationList;
         $this->calculationFinder = $calculationFinder;
         $this->modflowCalculation = $flopyCalculation;
     }
 
     public function __invoke(CalculateModflowModelCalculation $command)
     {
-        $calculation = $this->calculationFinder->getFlopyCalculation($command->calculationId());
+        /** @var ModflowCalculationAggregate $calculation */
+        $calculation = $this->calculationList->get($command->calculationId());
 
         if ($calculation) {
-            $this->modflowCalculation->calculate($calculation);
+            $calculation->calculationHasQueued();
+            $calculationConfiguration = $this->calculationFinder->getCalculationConfiguration($command->calculationId());
+            $this->modflowCalculation->calculate($calculationConfiguration);
+            $calculation->calculationHasStarted();
         }
     }
 }

@@ -9,6 +9,6 @@ use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 class NotFoundException extends NotFoundHttpException
 {
     public static function withMessage(string $message){
-        return new self($message, 404);
+        return new self($message, null, 404);
     }
 }

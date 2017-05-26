@@ -48,7 +48,7 @@ class CalculationConfigurationFinder
         return StressPeriods::createFromArray(json_decode($result['stress_periods'], true));
     }
 
-    public function getFlopyCalculation(ModflowId $calculationId): ?ModflowCalculationConfigurationRequest
+    public function getCalculationConfiguration(ModflowId $calculationId): ?ModflowCalculationConfigurationRequest
     {
         $result = $this->connection->fetchAssoc(
             sprintf('SELECT configuration from %s WHERE calculation_id = :calculation_id', Table::CALCULATION_CONFIG),

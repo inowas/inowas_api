@@ -60,7 +60,7 @@ class ModflowCalculationController extends InowasRestController
         $commandBus->dispatch(CreateModflowModelCalculation::byUserWithModelId($calculationId, $userId, $modelId, $startDateTime, $endDateTime));
 
         return new RedirectResponse(
-            $this->generateUrl('get_calculation_details', array('id' => $modelId->toString())),
+            $this->generateUrl('get_calculation_details', array('id' => $calculationId->toString())),
             302
         );
     }

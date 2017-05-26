@@ -27,9 +27,9 @@ class CalculationListProjector extends AbstractDoctrineConnectionProjector
         $table->addColumn('model_id', 'string', ['length' => 36]);
         $table->addColumn('user_id', 'string', ['length' => 36]);
         $table->addColumn('soilmodel_id', 'string', ['length' => 36]);
-        $table->addColumn('start_date', 'string');
-        $table->addColumn('end_date', 'string');
-        $table->addColumn('state', 'integer', ['default' => 0]);
+        $table->addColumn('start_date_time', 'string');
+        $table->addColumn('end_date_time', 'string');
+        $table->addColumn('calculation_state', 'integer', ['default' => 0]);
         $table->setPrimaryKey(['calculation_id']);
     }
 
@@ -40,15 +40,15 @@ class CalculationListProjector extends AbstractDoctrineConnectionProjector
             'model_id' => $event->modflowModelId()->toString(),
             'user_id' => $event->userId()->toString(),
             'soilmodel_id' => $event->soilModelId()->toString(),
-            'start_date' => $event->start()->toAtom(),
-            'end_date' => $event->end()->toAtom()
+            'start_date_time' => $event->start()->toAtom(),
+            'end_date_time' => $event->end()->toAtom()
         ));
     }
 
     public function onCalculationWasQueued(CalculationWasQueued $event): void
     {
         $this->connection->update(Table::CALCULATION_LIST, array(
-            'state' => CalculationState::QUEUED
+            'calculation_state' => CalculationState::QUEUED
         ), array(
             'calculation_id' => $event->calculationId()->toString()
         ));
@@ -57,7 +57,7 @@ class CalculationListProjector extends AbstractDoctrineConnectionProjector
     public function onCalculationWasStarted(CalculationWasStarted $event): void
     {
         $this->connection->update(Table::CALCULATION_LIST, array(
-            'state' => CalculationState::STARTED
+            'calculation_state' => CalculationState::STARTED
         ), array(
             'calculation_id' => $event->calculationId()->toString()
         ));
@@ -66,7 +66,7 @@ class CalculationListProjector extends AbstractDoctrineConnectionProjector
     public function onCalculationWasFinished(CalculationWasFinished $event): void
     {
         $this->connection->update(Table::CALCULATION_LIST, array(
-            'state' => CalculationState::FINISHED
+            'calculation_state' => CalculationState::FINISHED
         ), array(
             'calculation_id' => $event->calculationId()->toString()
         ));

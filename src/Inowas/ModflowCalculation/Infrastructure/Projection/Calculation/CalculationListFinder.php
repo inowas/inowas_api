@@ -18,18 +18,24 @@ class CalculationListFinder
         $this->connection->setFetchMode(\PDO::FETCH_ASSOC);
     }
 
-    public function findLastCalculationByModelId(ModflowId $modelId)
+    public function findCalculationsByModelId(ModflowId $modelId): ?array
     {
-        return $this->connection->fetchAssoc(
-            sprintf('SELECT * from %s WHERE model_id = :model_id ORDER BY id DESC LIMIT 1', Table::CALCULATION_LIST),
+        $result = $this->connection->fetchAll(
+            sprintf('SELECT calculation_id from %s WHERE model_id = :model_id', Table::CALCULATION_LIST),
             ['model_id' => $modelId->toString()]
         );
+
+        if ($result === false){
+            return null;
+        }
+
+        return $result;
     }
 
     public function findCalculationById(ModflowId $calculationId): ?array
     {
         $result = $this->connection->fetchAssoc(
-            sprintf('SELECT calculation_id AS id, model_id, soilmodel_id, user_id, state, start_date_time, end_date_time from %s WHERE calculation_id = :calculation_id ORDER BY id DESC LIMIT 1', Table::CALCULATION_LIST),
+            sprintf('SELECT calculation_id AS id, model_id, soilmodel_id, user_id, calculation_state as state, start_date_time, end_date_time from %s WHERE calculation_id = :calculation_id ORDER BY id DESC LIMIT 1', Table::CALCULATION_LIST),
             ['calculation_id' => $calculationId->toString()]
         );
 

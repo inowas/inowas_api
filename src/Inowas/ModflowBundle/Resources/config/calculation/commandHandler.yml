@@ -2,6 +2,7 @@ services:
     inowas.modflowcalculation.calculate_modflow_calculation_handler:
         class: Inowas\ModflowCalculation\Model\Handler\CalculateModflowModelCalculationHandler
         arguments:
+            - '@modflow_calculation_list'
             - '@inowas.modflowcalculation.calculation_configuration_finder'
             - '@inowas.modflowcalculation.amqp_flopy_calculation'
 
