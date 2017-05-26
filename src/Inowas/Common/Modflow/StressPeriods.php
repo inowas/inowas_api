@@ -92,12 +92,15 @@ final class StressPeriods implements \JsonSerializable
             TimeUnit::fromInt($arr['time_unit'])
         );
 
-        foreach ($arr as $stressPeriodData) {
-            if (! StressPeriod::isValidArray($stressPeriodData)) {
+        $stressPeriods = $arr['stress_periods'];
+
+        foreach ($stressPeriods as $stressPeriod) {
+
+            if (! StressPeriod::isValidArray($stressPeriod)) {
                 continue;
             }
 
-            $stressPeriod = StressPeriod::createFromArray($stressPeriodData);
+            $stressPeriod = StressPeriod::createFromArray($stressPeriod);
             $self->addStressPeriod($stressPeriod);
         }
 
