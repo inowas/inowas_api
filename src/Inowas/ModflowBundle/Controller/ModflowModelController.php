@@ -352,8 +352,7 @@ class ModflowModelController extends InowasRestController
 
         $content = $this->getContentAsArray($request);
         $this->assertContainsKey('geometry', $content);
-        $this->assertContainsKey('type', $content['geometry']);
-        $this->assertContainsKey('coordinates', $content['geometry']);
+        $this->assertGeometryIsValid($content['geometry']);
 
         $polygon = new Polygon($content['geometry']['coordinates']);
         $this->get('prooph_service_bus.modflow_command_bus')->dispatch(UpdateAreaGeometry::of($userId, $modelId, $polygon));

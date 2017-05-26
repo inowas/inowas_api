@@ -291,13 +291,20 @@ class BoundaryFinder
         return $generalHeadBoundaries;
     }
 
-    public function findByModelId(ModflowId $modelId): array
+    public function findBoundariesByModelId(ModflowId $modelId): ?array
     {
         $this->connection->setFetchMode(\PDO::FETCH_ASSOC);
-        return $this->connection->fetchAll(
+
+        $result = $this->connection->fetchAll(
             sprintf('SELECT boundary_id as id, name, type, geometry, metadata, affected_layers FROM %s WHERE model_id = :model_id', Table::BOUNDARY_LIST),
             ['model_id' => $modelId->toString()]
         );
+
+        if (false === $result) {
+            return null;
+        }
+
+        return $result;
     }
 
     public function getBoundaryDetails(ModflowId $modelId, BoundaryId $boundaryId): ?array

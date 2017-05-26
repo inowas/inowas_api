@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Inowas\ModflowBundle\Controller;
 
 use FOS\RestBundle\Controller\Annotations as Rest;
-use Inowas\AppBundle\Model\User;
 use Inowas\Common\Boundaries\BoundaryName;
 use Inowas\Common\Boundaries\BoundaryType;
 use Inowas\Common\Boundaries\ConstantHeadBoundary;
@@ -21,13 +20,13 @@ use Inowas\Common\Grid\AffectedLayers;
 use Inowas\Common\Id\BoundaryId;
 use Inowas\Common\Id\ModflowId;
 use Inowas\Common\Id\ObservationPointId;
-use Inowas\Common\Id\UserId;
+use Inowas\ModflowBundle\Exception\InvalidArgumentException;
+use Inowas\ModflowBundle\Exception\NotFoundException;
 use Inowas\ModflowModel\Model\Command\AddBoundary;
 use Inowas\ModflowModel\Model\Command\CreateObservationPoint;
 use Inowas\ModflowModel\Model\Command\UpdateBoundaryGeometry;
 use Inowas\ModflowModel\Model\Command\UpdateBoundaryName;
 use Nelmio\ApiDocBundle\Annotation\ApiDoc;
-use Ramsey\Uuid\Uuid;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -52,12 +51,17 @@ class ModflowModelBoundaryController extends InowasRestController
      */
     public function getModflowModelBoundariesAction(string $id): JsonResponse
     {
-        if (! Uuid::isValid($id)) {
-            return InowasJsonInvalidUuidResponse::withId($id);
-        }
+        $this->assertUserIsLoggedInCorrectly();
 
+        $this->assertUuidIsValid($id);
         $modelId = ModflowId::fromString($id);
-        $boundaries = $this->get('inowas.modflowmodel.boundaries_finder')->findByModelId($modelId);
+
+        $boundaries = $this->get('inowas.modflowmodel.boundaries_finder')->findBoundariesByModelId($modelId);
+        if (null === $boundaries) {
+            throw NotFoundException::withMessage(sprintf(
+                'ModflowModel with id: \'%s\' not found.', $modelId->toString()
+            ));
+        }
 
         $response = array();
         foreach ($boundaries as $boundary){
@@ -92,30 +96,20 @@ class ModflowModelBoundaryController extends InowasRestController
      */
     public function postModflowModelBoundariesAction(string $id, Request $request): Response
     {
-        if (! Uuid::isValid($id)) {
-            return InowasJsonInvalidUuidResponse::withId($id);
-        }
+        $userId = $this->getUserId();
 
+        $this->assertUuidIsValid($id);
         $modelId = ModflowId::fromString($id);
-        $userId = UserId::fromString($this->getUser()->getId()->toString());
 
         $content = $this->getContentAsArray($request);
-        if (! array_key_exists('name', $content)) {
-            return InowasJsonInvalidInputResponse::withMessage('Expected key \'name\' not found.');
-        }
-
+        $this->assertContainsKey('name', $content);
         $name = BoundaryName::fromString($content['name']);
 
-        if (! array_key_exists('type', $content)) {
-            return InowasJsonInvalidInputResponse::withMessage('Expected key \'type\' not found.');
-        }
-
+        $this->assertContainsKey('type', $content);
         $type = BoundaryType::fromString($content['type']);
 
-        if (! array_key_exists('geometry', $content)) {
-            return InowasJsonInvalidInputResponse::withMessage('Expected key \'geometry\' not found.');
-        }
-
+        $this->assertContainsKey('geometry', $content);
+        $this->assertGeometryIsValid($content['geometry']);
         $geometry = Geometry::fromArray($content['geometry']);
 
         $boundaryId = BoundaryId::generate();
@@ -123,10 +117,7 @@ class ModflowModelBoundaryController extends InowasRestController
         switch ($type->toString()) {
             case BoundaryType::CONSTANT_HEAD:
 
-                if (! array_key_exists('affected_layers', $content)) {
-                    return InowasJsonInvalidInputResponse::withMessage('Expected key \'affected_layers\' not found.');
-                }
-
+                $this->assertContainsKey('affected_layers', $content);
                 $affectedLayers = AffectedLayers::fromArray($content['affected_layers']);
 
                 $boundary = ConstantHeadBoundary::createWithParams(
@@ -139,10 +130,7 @@ class ModflowModelBoundaryController extends InowasRestController
 
             case BoundaryType::GENERAL_HEAD:
 
-                if (! array_key_exists('affected_layers', $content)) {
-                    return InowasJsonInvalidInputResponse::withMessage('Expected key \'affected_layers\' not found.');
-                }
-
+                $this->assertContainsKey('affected_layers', $content);
                 $affectedLayers = AffectedLayers::fromArray($content['affected_layers']);
 
                 $boundary = GeneralHeadBoundary::createWithParams(
@@ -171,24 +159,12 @@ class ModflowModelBoundaryController extends InowasRestController
 
             case BoundaryType::WELL:
 
-                if (! array_key_exists('affected_layers', $content)) {
-                    return InowasJsonInvalidInputResponse::withMessage('Expected key \'affected_layers\' not found.');
-                }
-
+                $this->assertContainsKey('affected_layers', $content);
                 $affectedLayers = AffectedLayers::fromArray($content['affected_layers']);
-
-                if (! array_key_exists('metadata', $content)) {
-                    return InowasJsonInvalidInputResponse::withMessage('Expected key \'metadata\' not found.');
-                }
-
+                $this->assertContainsKey('metadata', $content);
                 $metadata = $content['metadata'];
-
-                if (! array_key_exists('well_type', $metadata)) {
-                    return InowasJsonInvalidInputResponse::withMessage('Expected key \'well_type\' not found in metadata.');
-                }
-
+                $this->assertContainsKey('well_type', $content);
                 $wellType = WellType::fromString($metadata['well_type']);
-
 
                 $boundary = WellBoundary::createWithParams(
                     $boundaryId,
@@ -202,10 +178,9 @@ class ModflowModelBoundaryController extends InowasRestController
         }
 
         if (null === $boundary){
-            return InowasJsonInvalidInputResponse::withMessage(
+            throw InvalidArgumentException::withMessage(
                 sprintf('BoundaryType %s not known', $type->toString())
             );
-
         }
 
         $commandBus = $this->get('prooph_service_bus.modflow_command_bus');
@@ -235,22 +210,18 @@ class ModflowModelBoundaryController extends InowasRestController
      */
     public function getModflowModelBoundaryAction(string $id, string $bid): Response
     {
-        if (! Uuid::isValid($id)) {
-            return InowasJsonInvalidUuidResponse::withId($id);
-        }
-
+        $this->assertUuidIsValid($id);
         $modelId = ModflowId::fromString($id);
 
-        if (! Uuid::isValid($bid)) {
-            return InowasJsonInvalidUuidResponse::withId($bid);
-        }
-
+        $this->assertUuidIsValid($bid);
         $boundaryId = BoundaryId::fromString($bid);
 
         $boundaryDetails = $this->get('inowas.modflowmodel.boundaries_finder')->getBoundaryDetails($modelId, $boundaryId);
 
         if (null === $boundaryDetails){
-            return InowasJsonNotFoundResponse::withMessage(sprintf('Boundary with id %s in Model with id %s not found.', $boundaryId, $modelId));
+            throw NotFoundException::withMessage(sprintf(
+                'ModflowModel with id: \'%s\' and BoundaryId \'%s\' not found.', $modelId->toString(), $boundaryId->toString()
+            ));
         }
 
         return new JsonResponse($boundaryDetails);
@@ -274,12 +245,18 @@ class ModflowModelBoundaryController extends InowasRestController
      */
     public function getModflowModelBoundaryNameAction(string $id, string $bid): Response
     {
+        $this->assertUuidIsValid($id);
         $modelId = ModflowId::fromString($id);
+
+        $this->assertUuidIsValid($bid);
         $boundaryId = BoundaryId::fromString($bid);
+
         $boundaryName = $this->get('inowas.modflowmodel.boundaries_finder')->getBoundaryName($modelId, $boundaryId);
 
         if (! $boundaryName instanceof BoundaryName){
-            return InowasJsonNotFoundResponse::withMessage(sprintf('Boundary with id %s in Model with id %s not found.', $boundaryId, $modelId));
+            throw NotFoundException::withMessage(sprintf(
+                'ModflowModel with id: \'%s\' and BoundaryId \'%s\' not found.', $modelId->toString(), $boundaryId->toString()
+            ));
         }
 
         return new JsonResponse(['name' => $boundaryName]);
@@ -304,33 +281,17 @@ class ModflowModelBoundaryController extends InowasRestController
      */
     public function putModflowModelBoundaryNameAction(string $id, string $bid, Request $request): Response
     {
-        if (! Uuid::isValid($id)) {
-            return InowasJsonInvalidUuidResponse::withId($id);
-        }
+        $userId = $this->getUserId();
 
+        $this->assertUuidIsValid($id);
         $modelId = ModflowId::fromString($id);
 
-        if (! Uuid::isValid($bid)) {
-            return InowasJsonInvalidUuidResponse::withId($id);
-        }
-
+        $this->assertUuidIsValid($bid);
         $boundaryId = BoundaryId::fromString($bid);
 
         $content = $this->getContentAsArray($request);
-        if (! array_key_exists('name', $content)){
-            return InowasJsonInvalidInputResponse::withMessage('Expected key \'name\' not found.');
-        }
-
+        $this->assertContainsKey( 'name', $content);
         $boundaryName = BoundaryName::fromString($content['name']);
-
-        /** @var User $user */
-        $user = $this->getUser();
-        $userId = UserId::fromString($user->getId()->toString());
-
-        if (! $this->get('inowas.modflowmodel.model_finder')->userHasWriteAccessToModel($userId, $modelId)){
-            return InowasJsonWriteAccessDeniedResponse::withMessage(sprintf('User with Id %s does not have write access to ModflowModel %s.', $userId->toString(), $modelId->toString()));
-        }
-
 
         $this->get('prooph_service_bus.modflow_command_bus')->dispatch(UpdateBoundaryName::byUserModelAndBoundary($userId, $modelId, $boundaryId, $boundaryName));
 
@@ -358,12 +319,18 @@ class ModflowModelBoundaryController extends InowasRestController
      */
     public function getModflowModelBoundaryGeometryAction(string $id, string $bid): Response
     {
+        $this->assertUuidIsValid($id);
         $modelId = ModflowId::fromString($id);
+
+        $this->assertUuidIsValid($bid);
         $boundaryId = BoundaryId::fromString($bid);
+
         $geometry = $this->get('inowas.modflowmodel.boundaries_finder')->getBoundaryGeometry($modelId, $boundaryId);
 
         if (null === $geometry){
-            return InowasJsonNotFoundResponse::withMessage(sprintf('Boundary with id %s in Model with id %s not found.', $boundaryId, $modelId));
+            throw NotFoundException::withMessage(sprintf(
+                'ModflowModel with id: \'%s\' and BoundaryId \'%s\' not found.', $modelId->toString(), $boundaryId->toString()
+            ));
         }
 
         return new JsonResponse(['geometry' => $geometry]);
@@ -388,32 +355,18 @@ class ModflowModelBoundaryController extends InowasRestController
      */
     public function putModflowModelBoundaryGeometryAction(string $id, string $bid, Request $request): Response
     {
-        if (! Uuid::isValid($id)) {
-            return InowasJsonInvalidUuidResponse::withId($id);
-        }
+        $userId = $this->getUserId();
 
+        $this->assertUuidIsValid($id);
         $modelId = ModflowId::fromString($id);
 
-        if (! Uuid::isValid($bid)) {
-            return InowasJsonInvalidUuidResponse::withId($id);
-        }
-
+        $this->assertUuidIsValid($bid);
         $boundaryId = BoundaryId::fromString($bid);
 
         $content = $this->getContentAsArray($request);
-        if (! array_key_exists('geometry', $content)){
-            return InowasJsonInvalidInputResponse::withMessage('Expected key \'geometry\' not found.');
-        }
-
+        $this->assertContainsKey('geometry', $content);
+        $this->assertGeometryIsValid($content['geometry']);
         $geometry = Geometry::fromArray($content['geometry']);
-
-        /** @var User $user */
-        $user = $this->getUser();
-        $userId = UserId::fromString($user->getId()->toString());
-
-        if (! $this->get('inowas.modflowmodel.model_finder')->userHasWriteAccessToModel($userId, $modelId)){
-            return InowasJsonWriteAccessDeniedResponse::withMessage(sprintf('User with Id %s does not have write access to ModflowModel %s.', $userId->toString(), $modelId->toString()));
-        }
 
         $this->get('prooph_service_bus.modflow_command_bus')->dispatch(UpdateBoundaryGeometry::byUser($userId, $modelId, $boundaryId, $geometry));
 
@@ -442,43 +395,25 @@ class ModflowModelBoundaryController extends InowasRestController
      */
     public function postModflowModelBoundaryObservationPointAction(string $id, string $bid, Request $request): Response
     {
-        if (! Uuid::isValid($id)) {
-            return InowasJsonInvalidUuidResponse::withId($id);
-        }
+        $userId = $this->getUserId();
 
+        $this->assertUuidIsValid($id);
         $modelId = ModflowId::fromString($id);
 
-        if (! Uuid::isValid($bid)) {
-            return InowasJsonInvalidUuidResponse::withId($id);
-        }
-
+        $this->assertUuidIsValid($bid);
         $boundaryId = BoundaryId::fromString($bid);
 
         $content = $this->getContentAsArray($request);
-
-        if (! array_key_exists('name', $content)){
-            return InowasJsonInvalidInputResponse::withMessage('Expected key \'name\' not found.');
-        }
-
+        $this->assertContainsKey('name', $content);
         $name = ObservationPointName::fromString($content['name']);
 
-        if (! array_key_exists('geometry', $content)){
-            return InowasJsonInvalidInputResponse::withMessage('Expected key \'geometry\' not found.');
-        }
-
+        $this->assertContainsKey('geometry', $content);
+        $this->assertGeometryIsValid($content['geometry']);
         $geometry = Geometry::fromArray($content['geometry']);
         $point = $geometry->value();
 
         if (! $point instanceof Point) {
-            return InowasJsonInvalidInputResponse::withMessage(sprintf('Expected geometry is point. Found %s', $content['geometry']));
-        }
-
-        /** @var User $user */
-        $user = $this->getUser();
-        $userId = UserId::fromString($user->getId()->toString());
-
-        if (! $this->get('inowas.modflowmodel.model_finder')->userHasWriteAccessToModel($userId, $modelId)){
-            return InowasJsonWriteAccessDeniedResponse::withMessage(sprintf('User with Id %s does not have write access to ModflowModel %s.', $userId->toString(), $modelId->toString()));
+            throw InvalidArgumentException::withMessage(sprintf('Expected geometry is point. Found %s', $content['geometry']));
         }
 
         $observationPointId = ObservationPointId::generate();
@@ -515,34 +450,24 @@ class ModflowModelBoundaryController extends InowasRestController
      */
     public function getModflowModelBoundaryObservationPointDetailsAction(string $id, string $bid, string $oid): Response
     {
-        if (! Uuid::isValid($id)) {
-            return InowasJsonInvalidUuidResponse::withId($id);
-        }
-
+        $this->assertUuidIsValid($id);
         $modelId = ModflowId::fromString($id);
 
-        if (! Uuid::isValid($bid)) {
-            return InowasJsonInvalidUuidResponse::withId($bid);
-        }
-
+        $this->assertUuidIsValid($bid);
         $boundaryId = BoundaryId::fromString($bid);
 
-        if (! Uuid::isValid($oid)) {
-            return InowasJsonInvalidUuidResponse::withId($oid);
-        }
-
+        $this->assertUuidIsValid($oid);
         $observationPointId = ObservationPointId::fromString($oid);
+
         $observationPointDetails = $this->get('inowas.modflowmodel.boundaries_finder')->getBoundaryObservationPointDetails($modelId, $boundaryId, $observationPointId);
 
         if (null === $observationPointDetails){
-            return InowasJsonNotFoundResponse::withMessage(
-                sprintf(
-                    'ObservationPoint with Id %s Boundary with id %s in Model with id %s not found.',
-                    $observationPointId->toString(),
-                    $boundaryId->toString(),
-                    $modelId->toString()
-                )
-            );
+            throw NotFoundException::withMessage(sprintf(
+                'ModflowModel with id: \'%s\' and BoundaryId: \'%s\' and ObservationPointId: %s not found.',
+                $modelId->toString(),
+                $boundaryId->toString(),
+                $observationPointId->toString()
+            ));
         }
 
         return new JsonResponse($observationPointDetails);
@@ -567,34 +492,24 @@ class ModflowModelBoundaryController extends InowasRestController
      */
     public function getModflowModelBoundaryObservationPointNameAction(string $id, string $bid, string $oid): Response
     {
-        if (! Uuid::isValid($id)) {
-            return InowasJsonInvalidUuidResponse::withId($id);
-        }
-
+        $this->assertUuidIsValid($id);
         $modelId = ModflowId::fromString($id);
 
-        if (! Uuid::isValid($bid)) {
-            return InowasJsonInvalidUuidResponse::withId($bid);
-        }
-
+        $this->assertUuidIsValid($bid);
         $boundaryId = BoundaryId::fromString($bid);
 
-        if (! Uuid::isValid($oid)) {
-            return InowasJsonInvalidUuidResponse::withId($oid);
-        }
-
+        $this->assertUuidIsValid($oid);
         $observationPointId = ObservationPointId::fromString($oid);
+
         $name = $this->get('inowas.modflowmodel.boundaries_finder')->getBoundaryObservationPointName($modelId, $boundaryId, $observationPointId);
 
         if (! $name instanceof ObservationPointName){
-            return InowasJsonNotFoundResponse::withMessage(
-                sprintf(
-                    'ObservationPoint with Id %s Boundary with id %s in Model with id %s not found.',
-                    $observationPointId->toString(),
-                    $boundaryId->toString(),
-                    $modelId->toString()
-                )
-            );
+            throw NotFoundException::withMessage(sprintf(
+                'ModflowModel with id: \'%s\' and BoundaryId: \'%s\' and ObservationPointId: %s not found.',
+                $modelId->toString(),
+                $boundaryId->toString(),
+                $observationPointId->toString()
+            ));
         }
 
         return new JsonResponse(['name' => $name]);
@@ -619,34 +534,24 @@ class ModflowModelBoundaryController extends InowasRestController
      */
     public function getModflowModelBoundaryObservationPointGeometryAction(string $id, string $bid, string $oid): Response
     {
-        if (! Uuid::isValid($id)) {
-            return InowasJsonInvalidUuidResponse::withId($id);
-        }
-
+        $this->assertUuidIsValid($id);
         $modelId = ModflowId::fromString($id);
 
-        if (! Uuid::isValid($bid)) {
-            return InowasJsonInvalidUuidResponse::withId($bid);
-        }
-
+        $this->assertUuidIsValid($bid);
         $boundaryId = BoundaryId::fromString($bid);
 
-        if (! Uuid::isValid($oid)) {
-            return InowasJsonInvalidUuidResponse::withId($oid);
-        }
-
+        $this->assertUuidIsValid($oid);
         $observationPointId = ObservationPointId::fromString($oid);
+
         $geometry = $this->get('inowas.modflowmodel.boundaries_finder')->getBoundaryObservationPointGeometry($modelId, $boundaryId, $observationPointId);
 
         if (! $geometry instanceof Geometry){
-            return InowasJsonNotFoundResponse::withMessage(
-                sprintf(
-                    'ObservationPoint with Id %s Boundary with id %s in Model with id %s not found.',
-                    $observationPointId->toString(),
-                    $boundaryId->toString(),
-                    $modelId->toString()
-                )
-            );
+            throw NotFoundException::withMessage(sprintf(
+                'ModflowModel with id: \'%s\' and BoundaryId: \'%s\' and ObservationPointId: %s not found.',
+                $modelId->toString(),
+                $boundaryId->toString(),
+                $observationPointId->toString()
+            ));
         }
 
         return new JsonResponse(['geometry' => $geometry->toArray()]);
@@ -671,34 +576,24 @@ class ModflowModelBoundaryController extends InowasRestController
      */
     public function getModflowModelBoundaryObservationPointValuesAction(string $id, string $bid, string $oid): Response
     {
-        if (! Uuid::isValid($id)) {
-            return InowasJsonInvalidUuidResponse::withId($id);
-        }
-
+        $this->assertUuidIsValid($id);
         $modelId = ModflowId::fromString($id);
 
-        if (! Uuid::isValid($bid)) {
-            return InowasJsonInvalidUuidResponse::withId($bid);
-        }
-
+        $this->assertUuidIsValid($bid);
         $boundaryId = BoundaryId::fromString($bid);
 
-        if (! Uuid::isValid($oid)) {
-            return InowasJsonInvalidUuidResponse::withId($oid);
-        }
-
+        $this->assertUuidIsValid($oid);
         $observationPointId = ObservationPointId::fromString($oid);
+
         $values = $this->get('inowas.modflowmodel.boundaries_finder')->getBoundaryObservationPointValues($modelId, $boundaryId, $observationPointId);
 
         if (null === $values){
-            return InowasJsonNotFoundResponse::withMessage(
-                sprintf(
-                    'ObservationPoint with Id %s Boundary with id %s in Model with id %s not found.',
-                    $observationPointId->toString(),
-                    $boundaryId->toString(),
-                    $modelId->toString()
-                )
-            );
+            throw NotFoundException::withMessage(sprintf(
+                'ModflowModel with id: \'%s\' and BoundaryId: \'%s\' and ObservationPointId: %s not found.',
+                $modelId->toString(),
+                $boundaryId->toString(),
+                $observationPointId->toString()
+            ));
         }
 
         return new JsonResponse($values);

@@ -45,7 +45,7 @@ class ModflowModelManager implements ModflowModelManagerInterface
 
     public function findBoundaries(ModflowId $modelId): array
     {
-        return $this->boundaryFinder->findByModelId($modelId);
+        return $this->boundaryFinder->findBoundariesByModelId($modelId);
     }
 
     public function calculateStressPeriods(ModflowId $modflowId, DateTime $start, DateTime $end, TimeUnit $timeUnit): StressPeriods

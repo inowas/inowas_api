@@ -836,7 +836,7 @@ class ModflowModelEventSourcingTest extends EventSourcingBaseTest
         $this->commandBus->dispatch(AddBoundary::to($modelId, $ownerId, $this->createRiverBoundaryWithObservationPoint()));
         $this->commandBus->dispatch(AddBoundary::to($modelId, $ownerId, $this->createWellBoundary()));
 
-        $baseModelBoundaries = $this->container->get('inowas.modflowmodel.boundaries_finder')->findByModelId($modelId);
+        $baseModelBoundaries = $this->container->get('inowas.modflowmodel.boundaries_finder')->findBoundariesByModelId($modelId);
         $this->assertCount(5, $baseModelBoundaries);
 
         $scenarioAnalysisId = ScenarioAnalysisId::generate();
@@ -863,7 +863,7 @@ class ModflowModelEventSourcingTest extends EventSourcingBaseTest
         $this->commandBus->dispatch(AddBoundary::to($modelId, $ownerId, $this->createGeneralHeadBoundaryWithObservationPoint()));
         $this->commandBus->dispatch(AddBoundary::to($modelId, $ownerId, $this->createRechargeBoundary()));
         $this->commandBus->dispatch(AddBoundary::to($modelId, $ownerId, $this->createRiverBoundaryWithObservationPoint()));
-        $modelBoundaries = $this->container->get('inowas.modflowmodel.boundaries_finder')->findByModelId($modelId);
+        $modelBoundaries = $this->container->get('inowas.modflowmodel.boundaries_finder')->findBoundariesByModelId($modelId);
         $this->assertCount(4, $modelBoundaries);
 
         $scenarioAnalysisId = ScenarioAnalysisId::generate();
@@ -872,7 +872,7 @@ class ModflowModelEventSourcingTest extends EventSourcingBaseTest
         $scenarioId = ModflowId::generate();
         $this->commandBus->dispatch(AddScenario::byUserWithBaseModelAndScenarioId($scenarioAnalysisId, $ownerId, $modelId, $scenarioId));
         $this->commandBus->dispatch(AddBoundary::to($scenarioId, $ownerId, $this->createWellBoundary()));
-        $scenarioBoundaries = $this->container->get('inowas.modflowmodel.boundaries_finder')->findByModelId($scenarioId);
+        $scenarioBoundaries = $this->container->get('inowas.modflowmodel.boundaries_finder')->findBoundariesByModelId($scenarioId);
         $this->assertCount(5, $scenarioBoundaries);
     }
 
@@ -896,7 +896,7 @@ class ModflowModelEventSourcingTest extends EventSourcingBaseTest
 
         $newGeometry = Geometry::fromPoint(new Point(-63.6, -31.32, 4326));
         $this->commandBus->dispatch(UpdateBoundaryGeometry::byUser($ownerId, $scenarioId, $well->boundaryId(), $newGeometry));
-        $scenarioBoundaries = $this->container->get('inowas.modflowmodel.boundaries_finder')->findByModelId($scenarioId);
+        $scenarioBoundaries = $this->container->get('inowas.modflowmodel.boundaries_finder')->findBoundariesByModelId($scenarioId);
         $this->assertCount(5, $scenarioBoundaries);
 
         /** @var WellBoundary[] $wells */

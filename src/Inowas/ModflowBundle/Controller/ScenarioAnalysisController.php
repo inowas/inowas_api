@@ -205,7 +205,7 @@ class ScenarioAnalysisController extends FOSRestController
         }
 
         return new JsonResponse($this->get('inowas.modflowmodel.boundaries_finder')
-            ->findByModelId(
+            ->findBoundariesByModelId(
                 ModflowId::fromString($modelId)
             )
         );

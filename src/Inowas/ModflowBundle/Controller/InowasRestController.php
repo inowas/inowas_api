@@ -6,6 +6,7 @@ namespace Inowas\ModflowBundle\Controller;
 
 use FOS\RestBundle\Controller\FOSRestController;
 use Inowas\AppBundle\Model\User;
+use Inowas\Common\Geometry\Geometry;
 use Inowas\Common\Id\UserId;
 use Inowas\ModflowBundle\Exception\InvalidArgumentException;
 use Inowas\ModflowBundle\Exception\InvalidUuidException;
@@ -52,9 +53,16 @@ class InowasRestController extends FOSRestController
         }
     }
 
+    protected function assertGeometryIsValid(array $geometry): void
+    {
+        if (! Geometry::isValid($geometry)) {
+            throw InvalidArgumentException::withMessage(sprintf('The geometry array is not valid.'));
+        }
+    }
+
     protected function getUserId(): UserId
     {
-        $user = $this->getUser();
+                $user = $this->getUser();
         if (! $user instanceof User){
             throw UserNotAuthenticatedException::withMessage(sprintf(
                 'Something went wrong with the authentication. User is not authenticated. Please check your credentials.'

@@ -9,6 +9,8 @@ class Geometry implements \JsonSerializable
     /** @var  AbstractGeometry */
     private $geometry;
 
+    public static $availableTypes = ['point', 'linestring', 'polygon'];
+
     public static function fromJson(string $json): Geometry
     {
         /*
@@ -79,6 +81,27 @@ class Geometry implements \JsonSerializable
         $self = new self();
         $self->geometry = $point;
         return $self;
+    }
+
+    public static function isValid(array $arr): bool
+    {
+        if (! array_key_exists('type', $arr)) {
+            return false;
+        }
+
+        if (! in_array(strtolower($arr['type']), self::$availableTypes)) {
+            return false;
+        }
+
+        if (! array_key_exists('coordinates', $arr)) {
+            return false;
+        }
+
+        if (! is_array($arr['coordinates'])) {
+            return false;
+        }
+
+        return true;
     }
 
     public function toArray()
