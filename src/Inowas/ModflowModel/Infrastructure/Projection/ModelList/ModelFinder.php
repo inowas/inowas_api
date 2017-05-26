@@ -165,7 +165,7 @@ class ModelFinder
         return false;
     }
 
-    public function getModelDetailsByModelId(ModflowId $modelId): array
+    public function getModelDetailsByModelId(ModflowId $modelId): ?array
     {
         $this->connection->setFetchMode(\PDO::FETCH_ASSOC);
         $result = $this->connection->fetchAssoc(
@@ -174,7 +174,7 @@ class ModelFinder
         );
 
         if ($result === false){
-            return [];
+            return null;
         }
 
         $result['area_geometry'] = json_decode($result['area_geometry'], true);

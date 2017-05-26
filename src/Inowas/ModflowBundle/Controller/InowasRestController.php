@@ -5,9 +5,12 @@ declare(strict_types=1);
 namespace Inowas\ModflowBundle\Controller;
 
 use FOS\RestBundle\Controller\FOSRestController;
-use Inowas\AppBundle\Exception\AuthenticationException;
 use Inowas\AppBundle\Model\User;
+use Inowas\Common\Id\UserId;
 use Inowas\ModflowBundle\Exception\InvalidArgumentException;
+use Inowas\ModflowBundle\Exception\InvalidUuidException;
+use Inowas\ModflowBundle\Exception\UserNotAuthenticatedException;
+use Ramsey\Uuid\Uuid;
 use Symfony\Component\HttpFoundation\Request;
 
 class InowasRestController extends FOSRestController
@@ -27,9 +30,16 @@ class InowasRestController extends FOSRestController
     {
         $user = $this->getUser();
         if (! $user instanceof User){
-            throw AuthenticationException::withMessage(sprintf(
-                'Something went wrong with the authentication. Please check your credentials.'
+            throw UserNotAuthenticatedException::withMessage(sprintf(
+                'Something went wrong with the authentication. User is not authenticated. Please check your credentials.'
             ));
+        }
+    }
+
+    protected function assertUuidIsValid(string $id): void
+    {
+        if (! Uuid::isValid($id)){
+            throw InvalidUuidException::withId($id);
         }
     }
 
@@ -40,5 +50,17 @@ class InowasRestController extends FOSRestController
                 'Expected key \'%s\' not found in submitted data. Submitted keys are: %s.', $key, implode(", ", array_keys($content))
             ));
         }
+    }
+
+    protected function getUserId(): UserId
+    {
+        $user = $this->getUser();
+        if (! $user instanceof User){
+            throw UserNotAuthenticatedException::withMessage(sprintf(
+                'Something went wrong with the authentication. User is not authenticated. Please check your credentials.'
+            ));
+        }
+
+        return UserId::fromString($this->getUser()->getId()->toString());
     }
 }

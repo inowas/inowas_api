@@ -101,8 +101,14 @@ fos_rest:
         enabled: true
         codes:
             'Inowas\ModflowBundle\Exception\InvalidArgumentException': 422
+            'Inowas\ModflowBundle\Exception\InvalidUuidException': 422
+            'Inowas\ModflowBundle\Exception\NotFoundException': 404
+            'Inowas\ModflowBundle\Exception\UserNotAuthenticatedException': 304
         messages:
             'Inowas\ModflowBundle\Exception\InvalidArgumentException': true
+            'Inowas\ModflowBundle\Exception\InvalidUuidException': true
+            'Inowas\ModflowBundle\Exception\NotFoundException': true
+            'Inowas\ModflowBundle\Exception\UserNotAuthenticatedException': true
 
 # Nelmio apiDoc configuration
 nelmio_api_doc: ~

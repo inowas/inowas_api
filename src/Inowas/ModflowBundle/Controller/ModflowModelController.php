@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Inowas\ModflowBundle\Controller;
 
 use FOS\RestBundle\Controller\Annotations as Rest;
-use Inowas\AppBundle\Model\User;
 use Inowas\Common\Boundaries\Area;
 use Inowas\Common\Boundaries\BoundaryName;
 use Inowas\Common\Geometry\Geometry;
@@ -14,12 +13,12 @@ use Inowas\Common\Grid\BoundingBox;
 use Inowas\Common\Grid\GridSize;
 use Inowas\Common\Id\BoundaryId;
 use Inowas\Common\Id\ModflowId;
-use Inowas\Common\Id\UserId;
 use Inowas\Common\Modflow\LengthUnit;
 use Inowas\Common\Modflow\Modelname;
 use Inowas\Common\Modflow\ModflowModelDescription;
 use Inowas\Common\Modflow\TimeUnit;
 use Inowas\Common\Soilmodel\SoilmodelId;
+use Inowas\ModflowBundle\Exception\NotFoundException;
 use Inowas\ModflowModel\Model\Command\ChangeModflowModelBoundingBox;
 use Inowas\ModflowModel\Model\Command\ChangeModflowModelDescription;
 use Inowas\ModflowModel\Model\Command\ChangeModflowModelGridSize;
@@ -30,7 +29,6 @@ use Inowas\ModflowModel\Model\Command\UpdateAreaGeometry;
 use Inowas\ModflowModel\Model\Command\UpdateLengthUnit;
 use Inowas\ModflowModel\Model\Command\UpdateTimeUnit;
 use Nelmio\ApiDocBundle\Annotation\ApiDoc;
-use Ramsey\Uuid\Uuid;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -54,17 +52,8 @@ class ModflowModelController extends InowasRestController
      */
     public function getModflowModelsAction(): JsonResponse
     {
-        $this->assertUserIsLoggedInCorrectly();
-        $user = $this->getUser();
-
-        if (! $user instanceof User) {
-            return new JsonResponse([]);
-        }
-
-        $userId = UserId::fromString($this->getUser()->getId()->toString());
-
         return new JsonResponse(
-            $this->get('inowas.modflowmodel.model_finder')->findModelsByBaseUserId($userId)
+            $this->get('inowas.modflowmodel.model_finder')->findModelsByBaseUserId($this->getUserId())
         );
     }
 
@@ -109,7 +98,8 @@ class ModflowModelController extends InowasRestController
     public function postModflowModelsAction(Request $request): RedirectResponse
     {
         $content = $this->getContentAsArray($request);
-        $userId = UserId::fromString($this->getUser()->getId()->toString());
+
+        $userId = $this->getUserId();
         $modelId = ModflowId::generate();
 
         $this->assertContainsKey('name', $content);
@@ -159,14 +149,17 @@ class ModflowModelController extends InowasRestController
      */
     public function getModflowModelAction(string $id): JsonResponse
     {
-        if (! Uuid::isValid($id)) {
-            return InowasJsonInvalidUuidResponse::withId($id);
+        $this->assertUuidIsValid($id);
+        $modelId = ModflowId::fromString($id);
+        $details = $this->get('inowas.modflowmodel.model_finder')->getModelDetailsByModelId($modelId);
+
+        if (null === $details) {
+            throw NotFoundException::withMessage(sprintf(
+                'ModflowModel with id: \'%s\' not found.', $modelId->toString()
+            ));
         }
 
-        $modelId = ModflowId::fromString($id);
-        return new JsonResponse(
-            $this->get('inowas.modflowmodel.model_finder')->getModelDetailsByModelId($modelId)
-        );
+        return new JsonResponse($details);
     }
 
     /**
@@ -186,20 +179,17 @@ class ModflowModelController extends InowasRestController
      */
     public function getModflowModelNameAction(string $id): JsonResponse
     {
-        if (! Uuid::isValid($id)) {
-            return InowasJsonInvalidUuidResponse::withId($id);
-        }
-
+        $this->assertUuidIsValid($id);
         $modelId = ModflowId::fromString($id);
         $name = $this->get('inowas.modflowmodel.model_finder')->getModelNameByModelId($modelId);
 
         if (! $name instanceof Modelname) {
-            return new InowasJsonNotFoundResponse(sprintf('Model with id %s not found.', $modelId->toString()));
+            throw NotFoundException::withMessage(sprintf(
+                'ModflowModel with id: \'%s\' not found.', $modelId->toString()
+            ));
         }
 
-        return new JsonResponse([
-            'name' => $name->toString()
-        ]);
+        return new JsonResponse(['name' => $name->toString()]);
     }
 
     /**
@@ -220,27 +210,15 @@ class ModflowModelController extends InowasRestController
      */
     public function putModflowModelNameAction(Request $request, string $id)
     {
-        if (! Uuid::isValid($id)) {
-            return InowasJsonInvalidUuidResponse::withId($id);
-        }
+        $userId = $this->getUserId();
 
+        $this->assertUuidIsValid($id);
         $modelId = ModflowId::fromString($id);
 
-
         $content = $this->getContentAsArray($request);
-        if (! array_key_exists('name', $content)){
-            return InowasJsonInvalidInputResponse::withMessage('Expected key \'name\' not found.');
-        }
-
-        /** @var User $user */
-        $user = $this->getUser();
-        $userId = UserId::fromString($user->getId()->toString());
-
-        if (! $this->get('inowas.modflowmodel.model_finder')->userHasWriteAccessToModel($userId, $modelId)){
-            return InowasJsonWriteAccessDeniedResponse::withMessage(sprintf('User with Id %s does not have write access to ModflowModel %s.', $userId->toString(), $modelId->toString()));
-        }
-
+        $this->assertContainsKey('name', $content);
         $name = Modelname::fromString($content['name']);
+
         $this->get('prooph_service_bus.modflow_command_bus')->dispatch(ChangeModflowModelName::forModflowModel($userId, $modelId, $name));
 
         return new RedirectResponse(
@@ -266,14 +244,18 @@ class ModflowModelController extends InowasRestController
      */
     public function getModflowModelDescriptionAction(string $id): JsonResponse
     {
-        if (! Uuid::isValid($id)) {
-            return InowasJsonInvalidUuidResponse::withId($id);
+        $this->assertUuidIsValid($id);
+        $modelId = ModflowId::fromString($id);
+
+        $description = $this->get('inowas.modflowmodel.model_finder')->getModelDescriptionByModelId($modelId);
+
+        if (! $description instanceof ModflowModelDescription) {
+            throw NotFoundException::withMessage(sprintf(
+                'ModflowModel with id: \'%s\' not found.', $modelId->toString()
+            ));
         }
 
-        $modelId = ModflowId::fromString($id);
-        return new JsonResponse([
-            'description' => $this->get('inowas.modflowmodel.model_finder')->getModelDescriptionByModelId($modelId)->toString()
-        ]);
+        return new JsonResponse(['description' => $description->toString()]);
     }
 
     /**
@@ -294,26 +276,14 @@ class ModflowModelController extends InowasRestController
      */
     public function putModflowModelDescriptionAction(Request $request, string $id)
     {
-        if (! Uuid::isValid($id)) {
-            return InowasJsonInvalidUuidResponse::withId($id);
-        }
+        $userId = $this->getUserId();
 
+        $this->assertUuidIsValid($id);
         $modelId = ModflowId::fromString($id);
 
-
         $content = $this->getContentAsArray($request);
-        if (! array_key_exists('description', $content)){
-            return InowasJsonInvalidInputResponse::withMessage('Expected key \'description\' not found.');
-        }
+        $this->assertContainsKey('description', $content);
         $description = ModflowModelDescription::fromString($content['description']);
-
-        /** @var User $user */
-        $user = $this->getUser();
-        $userId = UserId::fromString($user->getId()->toString());
-
-        if (! $this->get('inowas.modflowmodel.model_finder')->userHasWriteAccessToModel($userId, $modelId)){
-            return InowasJsonWriteAccessDeniedResponse::withMessage(sprintf('User with Id %s does not have write access to ModflowModel %s.', $userId->toString(), $modelId->toString()));
-        }
 
         $this->get('prooph_service_bus.modflow_command_bus')->dispatch(ChangeModflowModelDescription::forModflowModel($userId, $modelId, $description));
 
@@ -342,15 +312,14 @@ class ModflowModelController extends InowasRestController
      */
     public function getModflowModelGeometryAction(string $id): JsonResponse
     {
-        if (! Uuid::isValid($id)) {
-            return InowasJsonInvalidUuidResponse::withId($id);
-        }
-
+        $this->assertUuidIsValid($id);
         $modelId = ModflowId::fromString($id);
         $geometry = $this->get('inowas.modflowmodel.model_finder')->getAreaGeometryByModflowModelId($modelId);
 
         if (! $geometry instanceof Geometry) {
-            return new JsonResponse([]);
+            throw NotFoundException::withMessage(sprintf(
+                'ModflowModel with id: \'%s\' not found.', $modelId->toString()
+            ));
         }
 
         return new JsonResponse(['geometry' => $geometry]);
@@ -374,29 +343,17 @@ class ModflowModelController extends InowasRestController
      */
     public function putModflowModelGeometryAction(Request $request, string $id)
     {
-        if (! Uuid::isValid($id)) {
-            return InowasJsonInvalidUuidResponse::withId($id);
-        }
+        $userId = $this->getUserId();
 
+        $this->assertUuidIsValid($id);
         $modelId = ModflowId::fromString($id);
 
-
         $content = $this->getContentAsArray($request);
-        if (! array_key_exists('geometry', $content)){
-            return InowasJsonInvalidInputResponse::withMessage('Expected key \'geometry\' not found.');
-        }
+        $this->assertContainsKey('geometry', $content);
+        $this->assertContainsKey('type', $content['geometry']);
+        $this->assertContainsKey('coordinates', $content['geometry']);
 
         $polygon = new Polygon($content['geometry']['coordinates']);
-
-
-        /** @var User $user */
-        $user = $this->getUser();
-        $userId = UserId::fromString($user->getId()->toString());
-
-        if (! $this->get('inowas.modflowmodel.model_finder')->userHasWriteAccessToModel($userId, $modelId)){
-            return InowasJsonWriteAccessDeniedResponse::withMessage(sprintf('User with Id %s does not have write access to ModflowModel %s.', $userId->toString(), $modelId->toString()));
-        }
-
         $this->get('prooph_service_bus.modflow_command_bus')->dispatch(UpdateAreaGeometry::of($userId, $modelId, $polygon));
 
         $response = new RedirectResponse(
@@ -424,12 +381,18 @@ class ModflowModelController extends InowasRestController
      */
     public function getModflowModelBoundingBoxAction(string $id): JsonResponse
     {
-        if (! Uuid::isValid($id)) {
-            return InowasJsonInvalidUuidResponse::withId($id);
+        $this->assertUuidIsValid($id);
+        $modelId = ModflowId::fromString($id);
+
+        $boundingBox = $this->get('inowas.modflowmodel.model_finder')->getBoundingBoxByModflowModelId($modelId);
+
+        if (! $boundingBox instanceof BoundingBox) {
+            throw NotFoundException::withMessage(sprintf(
+                'ModflowModel with id: \'%s\' not found.', $modelId->toString()
+            ));
         }
 
-        $modelId = ModflowId::fromString($id);
-        return new JsonResponse(['bounding_box' => $this->get('inowas.modflowmodel.model_finder')->getBoundingBoxByModflowModelId($modelId)]);
+        return new JsonResponse(['bounding_box' => $boundingBox]);
     }
 
     /**
@@ -450,16 +413,13 @@ class ModflowModelController extends InowasRestController
      */
     public function putModflowModelBoundingBoxAction(Request $request, string $id)
     {
-        if (! Uuid::isValid($id)) {
-            return InowasJsonInvalidUuidResponse::withId($id);
-        }
+        $userId = $this->getUserId();
 
+        $this->assertUuidIsValid($id);
         $modelId = ModflowId::fromString($id);
 
         $content = $this->getContentAsArray($request);
-        if (! array_key_exists('bounding_box', $content)){
-            return InowasJsonInvalidInputResponse::withMessage('Expected key \'bounding_box\' not found.');
-        }
+        $this->assertContainsKey('bounding_box', $content);
 
         $boundingBox = BoundingBox::fromCoordinates(
             $content['bounding_box']['x_min'],
@@ -470,14 +430,6 @@ class ModflowModelController extends InowasRestController
             0,
             0
         );
-
-        /** @var User $user */
-        $user = $this->getUser();
-        $userId = UserId::fromString($user->getId()->toString());
-
-        if (! $this->get('inowas.modflowmodel.model_finder')->userHasWriteAccessToModel($userId, $modelId)){
-            return InowasJsonWriteAccessDeniedResponse::withMessage(sprintf('User with Id %s does not have write access to ModflowModel %s.', $userId->toString(), $modelId->toString()));
-        }
 
         $this->get('prooph_service_bus.modflow_command_bus')->dispatch(ChangeModflowModelBoundingBox::forModflowModel($userId, $modelId, $boundingBox));
 
@@ -506,15 +458,14 @@ class ModflowModelController extends InowasRestController
      */
     public function getModflowModelGridSizeAction(string $id): JsonResponse
     {
-        if (! Uuid::isValid($id)) {
-            return InowasJsonInvalidUuidResponse::withId($id);
-        }
-
+        $this->assertUuidIsValid($id);
         $modelId = ModflowId::fromString($id);
         $gridSize = $this->get('inowas.modflowmodel.model_finder')->getGridSizeByModflowModelId($modelId);
 
         if (! $gridSize instanceof GridSize) {
-            return new InowasJsonNotFoundResponse(sprintf('Model with id %s not found.', $modelId->toString()));
+            throw NotFoundException::withMessage(sprintf(
+                'ModflowModel with id: \'%s\' not found.', $modelId->toString()
+            ));
         }
 
         return new JsonResponse(['grid_size' => $gridSize]);
@@ -538,27 +489,14 @@ class ModflowModelController extends InowasRestController
      */
     public function putModflowModelGridSizeAction(Request $request, string $id)
     {
-        if (! Uuid::isValid($id)) {
-            return InowasJsonInvalidUuidResponse::withId($id);
-        }
-
+        $userId = $this->getUserId();
+        $this->assertUuidIsValid($id);
         $modelId = ModflowId::fromString($id);
 
         $content = $this->getContentAsArray($request);
-        if (! array_key_exists('grid_size', $content)) {
-            return InowasJsonInvalidInputResponse::withMessage('Expected key \'grid_size\' not found.');
-        }
+        $this->assertContainsKey('grid_size', $content);
 
         $gridSize = GridSize::fromXY($content['grid_size']['n_x'], $content['grid_size']['n_y']);
-
-        /** @var User $user */
-        $user = $this->getUser();
-        $userId = UserId::fromString($user->getId()->toString());
-
-        if (! $this->get('inowas.modflowmodel.model_finder')->userHasWriteAccessToModel($userId, $modelId)){
-            return InowasJsonWriteAccessDeniedResponse::withMessage(sprintf('User with Id %s does not have write access to ModflowModel %s.', $userId->toString(), $modelId->toString()));
-        }
-
         $this->get('prooph_service_bus.modflow_command_bus')->dispatch(ChangeModflowModelGridSize::forModflowModel($userId, $modelId, $gridSize));
 
         $response = new RedirectResponse(
@@ -586,15 +524,14 @@ class ModflowModelController extends InowasRestController
      */
     public function getSoilModelIdAction(string $id): JsonResponse
     {
-        if (! Uuid::isValid($id)) {
-            return InowasJsonInvalidUuidResponse::withId($id);
-        }
-
+        $this->assertUuidIsValid($id);
         $modelId = ModflowId::fromString($id);
         $soilModelId = $this->get('inowas.modflowmodel.model_finder')->getSoilmodelIdByModelId($modelId);
 
         if (! $soilModelId instanceof SoilmodelId) {
-            return new InowasJsonNotFoundResponse(sprintf('Model with id %s not found.', $modelId->toString()));
+            throw NotFoundException::withMessage(sprintf(
+                'ModflowModel with id: \'%s\' not found.', $modelId->toString()
+            ));
         }
 
         return new JsonResponse(['soilmodel_id' => $soilModelId->toString()]);
@@ -618,27 +555,14 @@ class ModflowModelController extends InowasRestController
      */
     public function putSoilModelIdAction(Request $request, string $id)
     {
-        if (! Uuid::isValid($id)) {
-            return InowasJsonInvalidUuidResponse::withId($id);
-        }
-
+        $userId = $this->getUserId();
+        $this->assertUuidIsValid($id);
         $modelId = ModflowId::fromString($id);
 
         $content = $this->getContentAsArray($request);
-        if (! array_key_exists('soilmodel_id', $content)) {
-            return InowasJsonInvalidInputResponse::withMessage('Expected key \'soilmodel_id\' not found.');
-        }
+        $this->assertContainsKey('soilmodel_id', $content);
 
         $soilmodelId = SoilmodelId::fromString($content['soilmodel_id']);
-
-        /** @var User $user */
-        $user = $this->getUser();
-        $userId = UserId::fromString($user->getId()->toString());
-
-        if (! $this->get('inowas.modflowmodel.model_finder')->userHasWriteAccessToModel($userId, $modelId)){
-            return InowasJsonWriteAccessDeniedResponse::withMessage(sprintf('User with Id %s does not have write access to ModflowModel %s.', $userId->toString(), $modelId->toString()));
-        }
-
         $this->get('prooph_service_bus.modflow_command_bus')->dispatch(ChangeModflowModelSoilmodelId::forModflowModel($userId, $modelId, $soilmodelId));
 
         $response = new RedirectResponse(
@@ -666,15 +590,14 @@ class ModflowModelController extends InowasRestController
      */
     public function getLengthUnitAction(string $id): JsonResponse
     {
-        if (! Uuid::isValid($id)) {
-            return InowasJsonInvalidUuidResponse::withId($id);
-        }
-
+        $this->assertUuidIsValid($id);
         $modelId = ModflowId::fromString($id);
         $lengthUnit = $this->get('inowas.modflowmodel.model_finder')->getLengthUnitByModelId($modelId);
 
         if (! $lengthUnit instanceof LengthUnit) {
-            return new InowasJsonNotFoundResponse(sprintf('Model with id %s not found.', $modelId->toString()));
+            throw NotFoundException::withMessage(sprintf(
+                'ModflowModel with id: \'%s\' not found.', $modelId->toString()
+            ));
         }
 
         return new JsonResponse(['length_unit' => $lengthUnit->toInt()]);
@@ -698,26 +621,15 @@ class ModflowModelController extends InowasRestController
      */
     public function putLengthUnitAction(Request $request, string $id)
     {
-        if (! Uuid::isValid($id)) {
-            return InowasJsonInvalidUuidResponse::withId($id);
-        }
+        $userId = $this->getUserId();
 
+        $this->assertUuidIsValid($id);
         $modelId = ModflowId::fromString($id);
 
         $content = $this->getContentAsArray($request);
-        if (! array_key_exists('length_unit', $content)) {
-            return InowasJsonInvalidInputResponse::withMessage('Expected key \'length_unit\' not found.');
-        }
+        $this->assertContainsKey('length_unit', $content);
 
         $lengthUnit = LengthUnit::fromInt((int)$content['length_unit']);
-
-        /** @var User $user */
-        $user = $this->getUser();
-        $userId = UserId::fromString($user->getId()->toString());
-
-        if (! $this->get('inowas.modflowmodel.model_finder')->userHasWriteAccessToModel($userId, $modelId)){
-            return InowasJsonWriteAccessDeniedResponse::withMessage(sprintf('User with Id %s does not have write access to ModflowModel %s.', $userId->toString(), $modelId->toString()));
-        }
 
         $this->get('prooph_service_bus.modflow_command_bus')->dispatch(UpdateLengthUnit::byUserAndModel($userId, $modelId, $lengthUnit));
 
@@ -746,15 +658,14 @@ class ModflowModelController extends InowasRestController
      */
     public function getTimeUnitAction(string $id): JsonResponse
     {
-        if (! Uuid::isValid($id)) {
-            return InowasJsonInvalidUuidResponse::withId($id);
-        }
-
+        $this->assertUuidIsValid($id);
         $modelId = ModflowId::fromString($id);
         $timeUnit = $this->get('inowas.modflowmodel.model_finder')->getTimeUnitByModelId($modelId);
 
         if (! $timeUnit instanceof TimeUnit) {
-            return new InowasJsonNotFoundResponse(sprintf('Model with id %s not found.', $modelId->toString()));
+            throw NotFoundException::withMessage(sprintf(
+                'ModflowModel with id: \'%s\' not found.', $modelId->toString()
+            ));
         }
 
         return new JsonResponse(['time_unit' => $timeUnit->toInt()]);
@@ -778,27 +689,15 @@ class ModflowModelController extends InowasRestController
      */
     public function putTimeUnitAction(Request $request, string $id)
     {
-        if (! Uuid::isValid($id)) {
-            return InowasJsonInvalidUuidResponse::withId($id);
-        }
+        $userId = $this->getUserId();
 
+        $this->assertUuidIsValid($id);
         $modelId = ModflowId::fromString($id);
 
         $content = $this->getContentAsArray($request);
-        if (! array_key_exists('time_unit', $content)) {
-            return InowasJsonInvalidInputResponse::withMessage('Expected key \'time_unit\' not found.');
-        }
+        $this->assertContainsKey('time_unit', $content);
 
         $timeUnit = TimeUnit::fromInt((int)$content['time_unit']);
-
-        /** @var User $user */
-        $user = $this->getUser();
-        $userId = UserId::fromString($user->getId()->toString());
-
-        if (! $this->get('inowas.modflowmodel.model_finder')->userHasWriteAccessToModel($userId, $modelId)){
-            return InowasJsonWriteAccessDeniedResponse::withMessage(sprintf('User with Id %s does not have write access to ModflowModel %s.', $userId->toString(), $modelId->toString()));
-        }
-
         $this->get('prooph_service_bus.modflow_command_bus')->dispatch(UpdateTimeUnit::byUserAndModel($userId, $modelId, $timeUnit));
 
         $response = new RedirectResponse(
