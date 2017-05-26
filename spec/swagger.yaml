@@ -153,8 +153,8 @@ paths:
     get:
       tags:
         - "calculation"
-      summary: "Get calculation details by id"
-      description: "Returns the calculation details of a calculation by id"
+      summary: "Get stressperiods by calculationId"
+      description: "Returns the stressperiods of a calculation by id"
       operationId: "getCalculationStressperiodsById"
       produces:
         - "application/json"
@@ -168,13 +168,7 @@ paths:
         '200':
           description: "successful operation"
           schema:
-            type: "array"
-            items:
-              $ref: '#/definitions/CalculationStressPeriod'
-            example:
-              - { "totim_start": 0, "perlen": 1, "nstp": 4, "tsmult": 1, "steady": true }
-              - { "totim_start": 1, "perlen": 11, "nstp": 2, "tsmult": 1, "steady": false }
-              - { "totim_start": 24, "perlen": 12, "nstp": 1, "tsmult": 1, "steady":false }
+            $ref: '#/definitions/CalculationStressPeriods'
         '400':
           description: "Invalid ID supplied"
         '404':
@@ -199,13 +193,7 @@ paths:
           description: "StressperiodsList"
           required: true
           schema:
-            type: "array"
-            items:
-              $ref: '#/definitions/CalculationStressPeriod'
-            example:
-              - { "totim_start": 0, "perlen": 1, "nstp": 4, "tsmult": 1, "steady": true }
-              - { "totim_start": 1, "perlen": 11, "nstp": 2, "tsmult": 1, "steady": false }
-              - { "totim_start": 24, "perlen": 12, "nstp": 1, "tsmult": 1, "steady":false }
+            $ref: '#/definitions/CalculationStressPeriods'
 
       responses:
         '302':
@@ -3115,6 +3103,12 @@ definitions:
         example: "34fe45c3-75fd-491e-a7c8-68646ca0a5e2"
       state:
         $ref: '#/definitions/CalculationState'
+      start_date_time:
+        type: "string"
+        example: "2005-08-15T00:00:00+00:00"
+      end_date_time:
+        type: "string"
+        example: "2015-08-15T00:00:00+00:00"
   CalculationTimes:
     type: "object"
     properties:
@@ -3182,6 +3176,27 @@ definitions:
     type: "integer"
     enum: [0, 1, 2, 3]
     default: 0
+
+  CalculationStressPeriods:
+    title: "CalculationStressPeriods"
+    type: "object"
+    properties:
+      start_date_time:
+        type: "string"
+        example: "2005-08-15T00:00:00+00:00"
+      end_date_time:
+        type: "string"
+        example: "2015-08-15T00:00:00+00:00"
+      time_unit:
+        $ref: '#/definitions/TimeUnit'
+      stress_periods:
+        type: "array"
+        items:
+          $ref: '#/definitions/CalculationStressPeriod'
+        example:
+          - { "totim_start": 0, "perlen": 1, "nstp": 4, "tsmult": 1, "steady": true }
+          - { "totim_start": 1, "perlen": 11, "nstp": 2, "tsmult": 1, "steady": false }
+          - { "totim_start": 24, "perlen": 12, "nstp": 1, "tsmult": 1, "steady":false }
   CalculationStressPeriod:
     title: "CalculationStressPeriod"
     type: "object"

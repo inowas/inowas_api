@@ -94,7 +94,7 @@ class CalculationConfigurationProjector extends AbstractDoctrineConnectionProjec
             'start' => $event->start()->toAtom(),
             'time_unit' => $event->timeUnit()->toInt(),
             'length_unit' => $event->lengthUnit()->toInt(),
-            'stress_periods' => $this->serialize($event->stressPeriods()),
+            'stress_periods' => json_encode($event->stressPeriods()),
             'configuration' => json_encode($packages),
             'configuration_hash' => md5(json_encode($packages))
         ));
@@ -127,7 +127,7 @@ class CalculationConfigurationProjector extends AbstractDoctrineConnectionProjec
             'start' => $start->toAtom(),
             'time_unit' => $timeUnit->toInt(),
             'length_unit' => $lengthUnit->toInt(),
-            'stress_periods' => serialize($event->stressPeriods()),
+            'stress_periods' => json_encode($event->stressPeriods()),
             'configuration' => json_encode($configuration),
             'configuration_hash' => md5(json_encode($configuration)),
             'calculation_state' => 0,
@@ -160,7 +160,7 @@ class CalculationConfigurationProjector extends AbstractDoctrineConnectionProjec
 
         $modflowModelId = ModflowId::fromString($result['modflow_model_id']);
         $soilModelId = SoilmodelId::fromString($result['soilmodel_id']);
-        $stressPeriods = $this->unserialize($result['stress_periods']);
+        $stressPeriods = StressPeriods::createFromArray(json_decode($result['stress_periods'], true));
         $start = DateTime::fromAtom($result['start']);
         $timeUnit = TimeUnit::fromInt($result['time_unit']);
         $lengthUnit = LengthUnit::fromInt($result['length_unit']);
@@ -179,7 +179,7 @@ class CalculationConfigurationProjector extends AbstractDoctrineConnectionProjec
             'start' => $start->toAtom(),
             'time_unit' => $timeUnit->toInt(),
             'length_unit' => $lengthUnit->toInt(),
-            'stress_periods' => $this->serialize($stressPeriods),
+            'stress_periods' => json_encode($stressPeriods),
             'configuration' => json_encode($configuration),
             'configuration_hash' => md5(json_encode($configuration)),
             'calculation_state' => 0,
@@ -387,15 +387,5 @@ class CalculationConfigurationProjector extends AbstractDoctrineConnectionProjec
         ), array(
             'calculation_id' => $calculationId->toString()
         ));
-    }
-
-    private function serialize($object): string
-    {
-        return base64_encode(serialize($object));
-    }
-
-    private function unserialize(string $string)
-    {
-        return unserialize(base64_decode($string));
     }
 }

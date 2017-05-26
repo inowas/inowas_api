@@ -357,6 +357,6 @@ class HanoiBaseModelOnly extends LoadScenarioBase
         $commandBus->dispatch(UpdateCalculationPackageParameter::byUserWithModelId($calculationId, $ownerId, $modelId, 'oc', 'ocStressPeriodData', $ocStressPeriodData));
 
         echo sprintf("Dispatch CalculateModflowModelCalculation %s.\r\n", $calculationId->toString());
-        $commandBus->dispatch(CalculateModflowModelCalculation::byUserWithModelId($ownerId, $calculationId, $modelId));
+        $commandBus->dispatch(CalculateModflowModelCalculation::byUserWithCalculationId($ownerId, $calculationId));
     }
 }

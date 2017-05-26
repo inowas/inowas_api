@@ -675,7 +675,7 @@ class Hanoi extends LoadScenarioBase
 
             $ocStressPeriodData = OcStressPeriodData::create()->addStressPeriod(OcStressPeriod::fromParams(0,0, ['save head', 'save drawdown']));
             $commandBus->dispatch(UpdateCalculationPackageParameter::byUserWithModelId($calculation[0], $calculation[1], $calculation[2], 'oc', 'ocStressPeriodData', $ocStressPeriodData));
-            $commandBus->dispatch(CalculateModflowModelCalculation::byUserWithModelId($calculation[1], $calculation[0], $calculation[2]));
+            $commandBus->dispatch(CalculateModflowModelCalculation::byUserWithCalculationId($calculation[1], $calculation[0]));
         }
     }
 }

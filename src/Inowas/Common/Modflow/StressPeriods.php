@@ -8,7 +8,7 @@ use Inowas\Common\DateTime\DateTime;
 use Inowas\Common\DateTime\TotalTime;
 use Inowas\ModflowModel\Model\Exception\InvalidTimeUnitException;
 
-final class StressPeriods
+final class StressPeriods implements \JsonSerializable
 {
     /** @var array  */
     private $stressperiods = [];
@@ -79,6 +79,26 @@ final class StressPeriods
                 $tsmult,
                 $steady
             ));
+        }
+
+        return $self;
+    }
+
+    public static function createFromArray(array $arr): StressPeriods
+    {
+        $self = new self(
+            DateTime::fromAtom($arr['start_date_time']),
+            DateTime::fromAtom($arr['end_date_time']),
+            TimeUnit::fromInt($arr['time_unit'])
+        );
+
+        foreach ($arr as $stressPeriodData) {
+            if (! StressPeriod::isValidArray($stressPeriodData)) {
+                continue;
+            }
+
+            $stressPeriod = StressPeriod::createFromArray($stressPeriodData);
+            $self->addStressPeriod($stressPeriod);
         }
 
         return $self;
@@ -165,7 +185,12 @@ final class StressPeriods
 
     public function toArray(): array
     {
-        return $this->stressperiods;
+        return array(
+            "start_date_time" => $this->start->toAtom(),
+            "end_date_time" => $this->end->toAtom(),
+            "time_unit" => $this->timeUnit->toInt(),
+            "stress_periods" => $this->stressperiods
+        );
     }
 
     public function timeUnit(): TimeUnit
@@ -181,6 +206,11 @@ final class StressPeriods
     public function end(): DateTime
     {
         return $this->end;
+    }
+
+    public function jsonSerialize(): array
+    {
+        return $this->toArray();
     }
 
     private function calculateTotim(DateTime $dateTime): TotalTime
@@ -215,35 +245,5 @@ final class StressPeriods
 
         throw InvalidTimeUnitException::withTimeUnitAndAvailableTimeUnits($timeUnit, $timeUnit->availableTimeUnits);
     }
-
-    private function calculateDateTime(TotalTime $totalTime): \DateTimeImmutable
-    {
-        /** @var \DateTime $dateTime */
-        $dateTime = clone $this->start->toDateTime();
-
-        /** @var TimeUnit $timeUnit */
-        $timeUnit = $this->timeUnit;
-
-        if ($timeUnit->toInt() === $timeUnit::SECONDS){
-            $dateTime->modify(sprintf('+%s seconds', $totalTime->toInteger()));
-            return \DateTimeImmutable::createFromMutable($dateTime);
-        }
-
-        if ($timeUnit->toInt() === $timeUnit::MINUTES){
-            $dateTime->modify(sprintf('+%s minutes', $totalTime->toInteger()));
-            return \DateTimeImmutable::createFromMutable($dateTime);
-        }
-
-        if ($timeUnit->toInt() === $timeUnit::HOURS){
-            $dateTime->modify(sprintf('+%s hours', $totalTime->toInteger()));
-            return \DateTimeImmutable::createFromMutable($dateTime);
-        }
-
-        if ($timeUnit->toInt() === $timeUnit::DAYS){
-            $dateTime->modify(sprintf('+%s days', $totalTime->toInteger()));
-            return \DateTimeImmutable::createFromMutable($dateTime);
-        }
-
-        throw InvalidTimeUnitException::withTimeUnitAndAvailableTimeUnits($timeUnit, $timeUnit->availableTimeUnits);
-    }
 }
+
