@@ -115,7 +115,7 @@ class CalculationResultsFinder
         return LayerValues::fromArray($result);
     }
 
-    public function findValue(ModflowId $calculationId, ResultType $type, LayerNumber $layerNumber, TotalTime $totalTime): HeadData
+    public function findHeadValue(ModflowId $calculationId, ResultType $type, LayerNumber $layerNumber, TotalTime $totalTime): HeadData
     {
         $request = ModflowCalculationReadDataRequest::forLayerData(
             $calculationId,
@@ -126,6 +126,31 @@ class CalculationResultsFinder
 
         $response = ModflowCalculationReadDataResponse::fromJson($this->reader->read($request));
         return HeadData::from2dArray($response->data());
+    }
+
+    public function findHeadDifference(ModflowId $calculationId, ModflowId $calculationId2, ResultType $type, LayerNumber $layerNumber, TotalTime $totalTime): HeadData
+    {
+        $request = ModflowCalculationReadDataRequest::forLayerData(
+            $calculationId,
+            $type,
+            $totalTime,
+            $layerNumber
+        );
+
+        $response = ModflowCalculationReadDataResponse::fromJson($this->reader->read($request));
+        $result1 = HeadData::from2dArray($response->data());
+
+        $request = ModflowCalculationReadDataRequest::forLayerData(
+            $calculationId2,
+            $type,
+            $totalTime,
+            $layerNumber
+        );
+
+        $response = ModflowCalculationReadDataResponse::fromJson($this->reader->read($request));
+        $result2 = HeadData::from2dArray($response->data());
+
+        return $this->calculateDifferenceResults($result1, $result2);
     }
 
     public function findTimeSeries(ModflowId $calculationId, ResultType $type, LayerNumber $layerNumber, Nrow $ny, Ncol $nx): TimeSeriesData
@@ -140,5 +165,29 @@ class CalculationResultsFinder
 
         $response = ModflowCalculationReadDataResponse::fromJson($this->reader->read($request));
         return TimeSeriesData::fromArray($response->data());
+    }
+
+    private function calculateDifferenceResults(HeadData $res1, HeadData $res2): HeadData
+    {
+        $arr1 = $res1->toArray();
+        $arr2 = $res2->toArray();
+
+        if (! (count($arr1) == count($arr2) && count($arr1[0]) == count($arr2[0]))){
+            throw new \Exception('Arrays not in the same range');
+        }
+
+        $result = [];
+        foreach ($arr1 as $rowNumber => $row){
+            foreach ($row as $colNumber => $value){
+                if (is_null($arr1[$rowNumber][$colNumber]) || is_null($arr2[$rowNumber][$colNumber])){
+                    $result[$rowNumber][$colNumber] = null;
+                    continue;
+                }
+
+                $result[$rowNumber][$colNumber] = round($arr1[$rowNumber][$colNumber] - $arr2[$rowNumber][$colNumber], 3);
+            }
+        }
+
+        return HeadData::from2dArray($result);
     }
 }

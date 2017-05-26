@@ -106,8 +106,8 @@ class DisPackage implements PackageInterface
     {
         // DEFAULT
         $nlay = LayerNumber::fromInteger(1);
-        $ncol = Ncol::fromInteger(1);
-        $nrow = Nrow::fromInteger(1);
+        $ncol = Ncol::fromInt(1);
+        $nrow = Nrow::fromInt(1);
         $nper = Nper::fromInteger(1);
         $delr = Delr::fromValue(1.0);
         $delc = Delc::fromValue(1.0);
@@ -208,8 +208,8 @@ class DisPackage implements PackageInterface
     public static function fromArray(array $arr): DisPackage
     {
         $nlay = LayerNumber::fromInteger($arr['nlay']);
-        $nrow = Nrow::fromInteger($arr['nrow']);
-        $ncol = Ncol::fromInteger($arr['ncol']);
+        $nrow = Nrow::fromInt($arr['nrow']);
+        $ncol = Ncol::fromInt($arr['ncol']);
         $nper = Nper::fromInteger($arr['nper']);
         $delr = Delr::fromValue($arr['delr']);
         $delc = Delc::fromValue($arr['delc']);
@@ -413,8 +413,8 @@ class DisPackage implements PackageInterface
     public function updateGridParameters(GridSize $gridSize, BoundingBox $boundingBox): DisPackage
     {
         $package = self::fromArray($this->toArray());
-        $package->nrow = Nrow::fromInteger($gridSize->nY());
-        $package->ncol = Ncol::fromInteger($gridSize->nX());
+        $package->nrow = Nrow::fromInt($gridSize->nY());
+        $package->ncol = Ncol::fromInt($gridSize->nX());
         $package->delr = Delr::fromValue($boundingBox->dY()/$gridSize->nY());
         $package->delc = Delc::fromValue($boundingBox->dX()/$gridSize->nX());
         $package->xul = Xul::fromValue($boundingBox->xMin());

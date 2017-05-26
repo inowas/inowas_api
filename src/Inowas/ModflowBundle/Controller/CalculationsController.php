@@ -5,7 +5,12 @@ declare(strict_types=1);
 namespace Inowas\ModflowBundle\Controller;
 
 use FOS\RestBundle\Controller\Annotations as Rest;
+use Inowas\Common\Calculation\ResultType;
 use Inowas\Common\DateTime\DateTime;
+use Inowas\Common\DateTime\TotalTime;
+use Inowas\Common\Grid\LayerNumber;
+use Inowas\Common\Grid\Ncol;
+use Inowas\Common\Grid\Nrow;
 use Inowas\Common\Id\ModflowId;
 use Inowas\Common\Modflow\LayerValues;
 use Inowas\Common\Modflow\StressPeriods;
@@ -254,5 +259,124 @@ class CalculationsController extends InowasRestController
         }
 
         return new JsonResponse($layerValues);
+    }
+
+    /**
+     * Get calculation headValues by calculationId.
+     *
+     * @ApiDoc(
+     *   resource = true,
+     *   description = "Returns the calculation headValues of a calculation by id, resultType, layerNumber, totalTime.",
+     *   statusCodes = {
+     *     200 = "Returned when successful"
+     *   }
+     * )
+     *
+     * @param string $id
+     * @param string $type
+     * @param string $layer
+     * @param string $totim
+     * @Rest\Get("/calculations/{id}/results/types/{type}/layers/{layer}/totims/{totim}")
+     * @return JsonResponse
+     */
+    public function getCalculationHeadResultsByTypeLayerAndTotim(string $id, string $type, string $layer, string $totim): JsonResponse
+    {
+        $this->assertUuidIsValid($id);
+        $calculationId = ModflowId::fromString($id);
+
+        $type = ResultType::fromString($type);
+        $layerNumber = LayerNumber::fromInteger((int)$layer);
+        $totim = TotalTime::fromInt((int)$totim);
+
+        $headValue = $this->get('inowas.modflowcalculation.calculation_results_finder')->findHeadValue(
+            $calculationId,
+            $type,
+            $layerNumber,
+            $totim
+        );
+
+        return new JsonResponse($headValue);
+    }
+
+    /**
+     * Get calculation headValues difference by calculationIds.
+     *
+     * @ApiDoc(
+     *   resource = true,
+     *   description = "Returns the calculation headValues difference of two calculations by ids, resultType, layerNumber, totalTime.",
+     *   statusCodes = {
+     *     200 = "Returned when successful"
+     *   }
+     * )
+     *
+     * @param string $id
+     * @param string $id2
+     * @param string $type
+     * @param string $layer
+     * @param string $totim
+     * @Rest\Get("/calculations/{id}/results/difference/{id2}/types/{type}/layers/{layer}/totims/{totim}")
+     * @return JsonResponse
+     */
+    public function getCalculationHeadResultsDifferenceByTypeLayerAndTotim(string $id, string $id2, string $type, string $layer, string $totim): JsonResponse
+    {
+        $this->assertUuidIsValid($id);
+        $calculationId = ModflowId::fromString($id);
+
+        $this->assertUuidIsValid($id2);
+        $calculationId2 = ModflowId::fromString($id2);
+
+        $type = ResultType::fromString($type);
+        $layerNumber = LayerNumber::fromInteger((int)$layer);
+        $totim = TotalTime::fromInt((int)$totim);
+
+        $headValue = $this->get('inowas.modflowcalculation.calculation_results_finder')->findHeadDifference(
+            $calculationId,
+            $calculationId2,
+            $type,
+            $layerNumber,
+            $totim
+        );
+
+        return new JsonResponse($headValue);
+    }
+
+    /**
+     * Get calculation timeseries by calculationId.
+     *
+     * @ApiDoc(
+     *   resource = true,
+     *   description = "Returns the calculation headValues of a calculation by id, resultType, layerNumber, totalTime.",
+     *   statusCodes = {
+     *     200 = "Returned when successful"
+     *   }
+     * )
+     *
+     * @param string $id
+     * @param string $type
+     * @param string $layer
+     * @param string $x
+     * @param string $y
+     * @Rest\Get("/calculations/{id}/results/timeseries/types/{type}/layers/{layer}/x/{x}/y/{y}")
+     * @return JsonResponse
+     */
+    public function getCalculationTimeseriesByTypeLayerXAndY(string $id, string $type, string $layer, string $x, string $y): JsonResponse
+    {
+        $this->assertUuidIsValid($id);
+        $calculationId = ModflowId::fromString($id);
+
+        $type = ResultType::fromString($type);
+        $layerNumber = LayerNumber::fromInteger((int)$layer);
+        $nCol = Ncol::fromInt((int)$x);
+        $nRow = Nrow::fromInt((int)$y);
+
+        $timeSeriesData = $this->get('inowas.modflowcalculation.calculation_results_finder')->findTimeSeries(
+            $calculationId,
+            $type,
+            $layerNumber,
+            $nRow,
+            $nCol
+        );
+
+        return new JsonResponse($timeSeriesData);
     }
 }

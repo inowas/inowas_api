@@ -58,7 +58,7 @@ class ScenarioAnalysisImageController extends FOSRestController
             ->findLastCalculationByModelId(ModflowId::fromString($modelId));
 
         $headData = $this->get('inowas.modflowcalculation.calculation_results_finder')
-            ->findValue(
+            ->findHeadValue(
                 ModflowId::fromString($calculation['calculation_id']),
                 ResultType::fromString($type),
                 LayerNumber::fromInteger((int)$layer),
@@ -115,7 +115,7 @@ class ScenarioAnalysisImageController extends FOSRestController
         }
 
         $headData = $this->get('inowas.modflowcalculation.calculation_results_finder')
-            ->findValue(
+            ->findHeadValue(
                 ModflowId::fromString($calculationId),
                 ResultType::fromString($type),
                 LayerNumber::fromInteger((int)$layer),
@@ -181,7 +181,7 @@ class ScenarioAnalysisImageController extends FOSRestController
             ->findLastCalculationByModelId(ModflowId::fromString($modelId1));
 
         $headData1 = $this->get('inowas.modflowcalculation.calculation_results_finder')
-            ->findValue(
+            ->findHeadValue(
                 ModflowId::fromString($calculation1['calculation_id']),
                 ResultType::fromString($type),
                 LayerNumber::fromInteger((int)$layer),
@@ -192,7 +192,7 @@ class ScenarioAnalysisImageController extends FOSRestController
             ->findLastCalculationByModelId(ModflowId::fromString($modelId2));
 
         $headData2 = $this->get('inowas.modflowcalculation.calculation_results_finder')
-            ->findValue(
+            ->findHeadValue(
                 ModflowId::fromString($calculation2['calculation_id']),
                 ResultType::fromString($type),
                 LayerNumber::fromInteger((int)$layer),

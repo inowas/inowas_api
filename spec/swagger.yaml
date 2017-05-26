@@ -353,8 +353,8 @@ paths:
     get:
       tags:
         - "calculation"
-      summary: "Get calculation result difference by two calculationIds, type and layerNumber"
-      description: "Returns the calculation result difference by two calculationIds, type and layerNumber"
+      summary: "Get calculation result timeseries."
+      description: "Returns the calculation result timeseries by calculationId, type, layerNumber and cell-x, cell-y"
       operationId: "getCalculationTimeSeriesByIdTypeLayerXY"
       produces:
         - "application/json"

@@ -9,7 +9,7 @@ class Nrow
     /** @var int */
     private $number;
 
-    public static function fromInteger(int $number): Nrow
+    public static function fromInt(int $number): Nrow
     {
         return new self($number);
     }
