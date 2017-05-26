@@ -3115,9 +3115,8 @@ definitions:
       start_date_time:
         type: "string"
         example: "2005-08-15T00:00:00+00:00"
-      end_date_time:
-        type: "string"
-        example: "2015-08-15T00:00:00+00:00"
+      time_unit:
+        $ref: '#/definitions/TimeUnit'
       total_times:
         type: "array"
         items:

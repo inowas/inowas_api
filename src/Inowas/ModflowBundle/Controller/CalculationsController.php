@@ -6,8 +6,10 @@ namespace Inowas\ModflowBundle\Controller;
 
 use FOS\RestBundle\Controller\Annotations as Rest;
 use Inowas\Common\DateTime\DateTime;
+use Inowas\Common\DateTime\TotalTime;
 use Inowas\Common\Id\ModflowId;
 use Inowas\Common\Modflow\StressPeriods;
+use Inowas\Common\Modflow\TotalTimes;
 use Inowas\ModflowBundle\Exception\NotFoundException;
 use Inowas\ModflowCalculation\Model\Command\CalculateModflowModelCalculation;
 use Inowas\ModflowCalculation\Model\Command\CreateModflowModelCalculation;
@@ -190,5 +192,36 @@ class CalculationsController extends InowasRestController
             $this->generateUrl('get_calculation_stressperiods', array('id' => $calculationId->toString())),
             302
         );
+    }
+
+    /**
+     * Get calculation result times by calculationId.
+     *
+     * @ApiDoc(
+     *   resource = true,
+     *   description = "Returns the calculation result times of a calculation by id.",
+     *   statusCodes = {
+     *     200 = "Returned when successful"
+     *   }
+     * )
+     *
+     * @param string $id
+     * @Rest\Get("/calculations/{id}/results/times")
+     * @return JsonResponse
+     */
+    public function getCalculationResultsTimesAction(string $id): JsonResponse
+    {
+        $this->assertUuidIsValid($id);
+        $calculationId = ModflowId::fromString($id);
+
+        $totalTimes = $this->get('inowas.modflowcalculation.calculation_configuration_finder')->getTotalTimesFromCalculationById($calculationId);
+
+        if (! $totalTimes instanceof TotalTimes) {
+            throw NotFoundException::withMessage(sprintf(
+                'Calculation with id: \'%s\' not found.', $calculationId->toString()
+            ));
+        }
+
+        return new JsonResponse($totalTimes);
     }
 }
