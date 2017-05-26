@@ -1,6 +1,6 @@
 rest_calculation_api:
     type: rest
-    resource: '@InowasModflowBundle/Controller/CalculationsController.php'
+    resource: '@InowasModflowBundle/Controller/ModflowCalculationController.php'
     prefix:    /api
 
 rest_modflowmodel_api:

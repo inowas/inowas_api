@@ -9,7 +9,7 @@ use Inowas\AppBundle\Model\User;
 use Inowas\Common\Id\ModflowId;
 use Inowas\Common\Id\UserId;
 use Ramsey\Uuid\Uuid;
-use Tests\Inowas\ModflowBundle\Functional\EventSourcingBaseTest;
+use Tests\Inowas\ModflowBundle\EventSourcingBaseTest;
 
 class ModflowModelControllerTest extends EventSourcingBaseTest
 {

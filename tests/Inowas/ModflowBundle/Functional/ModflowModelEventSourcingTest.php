@@ -65,6 +65,7 @@ use Inowas\Soilmodel\Model\SoilmodelAggregate;
 use Inowas\Common\Soilmodel\SoilmodelDescription;
 use Inowas\Common\Soilmodel\SoilmodelId;
 use Inowas\Common\Soilmodel\SoilmodelName;
+use Tests\Inowas\ModflowBundle\EventSourcingBaseTest;
 
 class ModflowModelEventSourcingTest extends EventSourcingBaseTest
 {
