@@ -6,8 +6,8 @@ namespace Inowas\ModflowBundle\Controller;
 
 use FOS\RestBundle\Controller\Annotations as Rest;
 use Inowas\Common\DateTime\DateTime;
-use Inowas\Common\DateTime\TotalTime;
 use Inowas\Common\Id\ModflowId;
+use Inowas\Common\Modflow\LayerValues;
 use Inowas\Common\Modflow\StressPeriods;
 use Inowas\Common\Modflow\TotalTimes;
 use Inowas\ModflowBundle\Exception\NotFoundException;
@@ -214,7 +214,7 @@ class CalculationsController extends InowasRestController
         $this->assertUuidIsValid($id);
         $calculationId = ModflowId::fromString($id);
 
-        $totalTimes = $this->get('inowas.modflowcalculation.calculation_configuration_finder')->getTotalTimesFromCalculationById($calculationId);
+        $totalTimes = $this->get('inowas.modflowcalculation.calculation_results_finder')->getTotalTimesFromCalculationById($calculationId);
 
         if (! $totalTimes instanceof TotalTimes) {
             throw NotFoundException::withMessage(sprintf(
@@ -223,5 +223,36 @@ class CalculationsController extends InowasRestController
         }
 
         return new JsonResponse($totalTimes);
+    }
+
+    /**
+     * Get calculation layerValues by calculationId.
+     *
+     * @ApiDoc(
+     *   resource = true,
+     *   description = "Returns the calculation layerValues of a calculation by id.",
+     *   statusCodes = {
+     *     200 = "Returned when successful"
+     *   }
+     * )
+     *
+     * @param string $id
+     * @Rest\Get("/calculations/{id}/results/layervalues")
+     * @return JsonResponse
+     */
+    public function getCalculationResultsLayerValuesAction(string $id): JsonResponse
+    {
+        $this->assertUuidIsValid($id);
+        $calculationId = ModflowId::fromString($id);
+
+        $layerValues = $this->get('inowas.modflowcalculation.calculation_results_finder')->findLayerValues($calculationId);
+
+        if (! $layerValues instanceof LayerValues) {
+            throw NotFoundException::withMessage(sprintf(
+                'Calculation with id: \'%s\' not found.', $calculationId->toString()
+            ));
+        }
+
+        return new JsonResponse($layerValues);
     }
 }
