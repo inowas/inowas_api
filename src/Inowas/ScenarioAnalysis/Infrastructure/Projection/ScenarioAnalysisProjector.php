@@ -4,9 +4,11 @@ declare(strict_types=1);
 
 namespace Inowas\ScenarioAnalysis\Infrastructure\Projection;
 
-
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Schema\Schema;
+use Doctrine\ORM\EntityManager;
+use Inowas\AppBundle\Model\User;
+use Inowas\Common\Id\UserId;
 use Inowas\Common\Projection\AbstractDoctrineConnectionProjector;
 use Inowas\ModflowModel\Infrastructure\Projection\ModelList\ModelFinder;
 use Inowas\ScenarioAnalysis\Model\Event\ScenarioAnalysisDescriptionWasChanged;
@@ -21,9 +23,13 @@ class ScenarioAnalysisProjector extends AbstractDoctrineConnectionProjector
     /** @var  ModelFinder */
     private $modelFinder;
 
-    public function __construct(Connection $connection, ModelFinder $modelFinder)
+    /** @var  EntityManager */
+    private $entityManager;
+
+    public function __construct(Connection $connection, ModelFinder $modelFinder, EntityManager $entityManager)
     {
 
+        $this->entityManager = $entityManager;
         $this->modelFinder = $modelFinder;
 
         parent::__construct($connection);
@@ -32,6 +38,7 @@ class ScenarioAnalysisProjector extends AbstractDoctrineConnectionProjector
         $table = $this->schema->createTable(Table::SCENARIO_ANALYSIS_LIST);
         $table->addColumn('scenario_analysis_id', 'string', ['length' => 36]);
         $table->addColumn('user_id', 'string', ['length' => 36]);
+        $table->addColumn('user_name', 'string', ['length' => 255]);
         $table->addColumn('base_model_id', 'string', ['length' => 36]);
         $table->addColumn('name', 'string', ['length' => 255]);
         $table->addColumn('description', 'string', ['length' => 255]);
@@ -39,6 +46,8 @@ class ScenarioAnalysisProjector extends AbstractDoctrineConnectionProjector
         $table->addColumn('grid_size', 'text');
         $table->addColumn('bounding_box', 'text');
         $table->addColumn('scenarios', 'text');
+        $table->addColumn('created_at', 'string', ['length' => 255, 'notnull' => false]);
+        $table->addColumn('public', 'boolean');
         $table->setPrimaryKey(['scenario_analysis_id']);
         $table->addIndex(array('base_model_id'));
     }
@@ -52,13 +61,16 @@ class ScenarioAnalysisProjector extends AbstractDoctrineConnectionProjector
         $this->connection->insert(Table::SCENARIO_ANALYSIS_LIST, array(
             'scenario_analysis_id' => $event->scenarioAnalysisId()->toString(),
             'user_id' => $event->userId()->toString(),
+            'user_name' => $this->getUserNameByUserId($event->userId()),
             'base_model_id' => $event->baseModelId()->toString(),
             'name' => '',
             'description' => '',
             'area' => $areaGeometry->toJson(),
             'grid_size' => json_encode($gridSize),
             'bounding_box' => json_encode($boundingBox),
-            'scenarios' => json_encode([])
+            'scenarios' => json_encode([]),
+            'created_at' => date_format($event->createdAt(), DATE_ATOM),
+            'public' => true
         ));
     }
 
@@ -108,5 +120,16 @@ class ScenarioAnalysisProjector extends AbstractDoctrineConnectionProjector
             array('scenarios' => json_encode($scenarios)),
             array('scenario_analysis_id' => $event->scenarioAnalysisId()->toString())
         );
+    }
+
+    private function getUserNameByUserId(UserId $id): string
+    {
+        $username = '';
+        $user = $this->entityManager->getRepository('InowasAppBundle:User')->findOneBy(array('id' => $id->toString()));
+        if ($user instanceof User){
+            $username = $user->getName();
+        }
+
+        return $username;
     }
 }

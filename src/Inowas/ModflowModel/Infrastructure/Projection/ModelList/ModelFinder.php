@@ -169,7 +169,7 @@ class ModelFinder
     {
         $this->connection->setFetchMode(\PDO::FETCH_ASSOC);
         $result = $this->connection->fetchAssoc(
-            sprintf('SELECT model_id AS id, user_id, soilmodel_id, user_name, name, description, area as area_geometry, length_unit, time_unit, grid_size, bounding_box, created_at, public FROM %s WHERE model_id = :model_id', Table::MODEL_DETAILS),
+            sprintf('SELECT model_id AS id, user_id, soilmodel_id, user_name, name, description, area as geometry, length_unit, time_unit, grid_size, bounding_box, created_at, public FROM %s WHERE model_id = :model_id', Table::MODEL_DETAILS),
             ['model_id' => $modelId->toString()]
         );
 
@@ -177,7 +177,7 @@ class ModelFinder
             return null;
         }
 
-        $result['area_geometry'] = json_decode($result['area_geometry'], true);
+        $result['geometry'] = json_decode($result['geometry'], true);
         $result['grid_size'] = json_decode($result['grid_size'], true);
         $result['bounding_box'] = json_decode($result['bounding_box'], true);
 
@@ -188,12 +188,12 @@ class ModelFinder
     {
         $this->connection->setFetchMode(\PDO::FETCH_ASSOC);
         $rows = $this->connection->fetchAll(
-            sprintf('SELECT model_id AS id, user_id, soilmodel_id, user_name, name, description, area as area_geometry, grid_size, bounding_box, created_at, public FROM %s WHERE user_id = :user_id', Table::MODEL_DETAILS),
+            sprintf('SELECT model_id AS id, user_id, soilmodel_id, user_name, name, description, area as geometry, grid_size, bounding_box, created_at, public FROM %s WHERE user_id = :user_id', Table::MODEL_DETAILS),
             ['user_id' => $userId->toString()]
         );
 
         foreach ($rows as $key => $row){
-            $rows[$key]['area_geometry'] = json_decode($row['area_geometry'], true);
+            $rows[$key]['geometry'] = json_decode($row['geometry'], true);
             $rows[$key]['grid_size'] = json_decode($row['grid_size'], true);
             $rows[$key]['bounding_box'] = json_decode($row['bounding_box'], true);
         }
@@ -205,12 +205,12 @@ class ModelFinder
     {
         $this->connection->setFetchMode(\PDO::FETCH_ASSOC);
         $rows = $this->connection->fetchAll(
-            sprintf('SELECT model_id AS id, user_id, soilmodel_id, user_name, name, description, area as area_geometry, grid_size, bounding_box, created_at, public FROM %s WHERE public = :public', Table::MODEL_DETAILS),
+            sprintf('SELECT model_id AS id, user_id, soilmodel_id, user_name, name, description, area as geometry, grid_size, bounding_box, created_at, public FROM %s WHERE public = :public', Table::MODEL_DETAILS),
             ['public' => true]
         );
 
         foreach ($rows as $key => $row){
-            $rows[$key]['area_geometry'] = json_decode($row['area_geometry'], true);
+            $rows[$key]['geometry'] = json_decode($row['geometry'], true);
             $rows[$key]['grid_size'] = json_decode($row['grid_size'], true);
             $rows[$key]['bounding_box'] = json_decode($row['bounding_box'], true);
         }

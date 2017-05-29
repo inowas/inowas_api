@@ -21,4 +21,4 @@ rest_modflowmodel_boundary_api:
 rest_scenario_analysis_api:
     type: rest
     resource: '@InowasModflowBundle/Controller/ScenarioAnalysisController.php'
-    prefix:    /v2/scenarioanalysis
+    prefix:    /v2

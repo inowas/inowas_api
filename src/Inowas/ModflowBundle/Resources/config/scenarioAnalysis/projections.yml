@@ -9,3 +9,4 @@ services:
         arguments:
             - '@doctrine.dbal.default_connection'
             - '@inowas.modflowmodel.model_finder'
+            - '@doctrine.orm.default_entity_manager'

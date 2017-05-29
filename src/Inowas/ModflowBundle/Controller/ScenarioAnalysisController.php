@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Inowas\ModflowBundle\Controller;
 
 use FOS\RestBundle\Controller\Annotations as Rest;
-use FOS\RestBundle\Controller\FOSRestController;
 use Inowas\AppBundle\Model\User;
 use Inowas\Common\Calculation\BudgetType;
 use Inowas\Common\Calculation\HeadData;
@@ -22,7 +21,7 @@ use Nelmio\ApiDocBundle\Annotation\ApiDoc as ApiDoc;
 use Ramsey\Uuid\Uuid;
 use Symfony\Component\HttpFoundation\JsonResponse;
 
-class ScenarioAnalysisController extends FOSRestController
+class ScenarioAnalysisController extends InowasRestController
 {
 
     /**
@@ -36,22 +35,35 @@ class ScenarioAnalysisController extends FOSRestController
      *   }
      * )
      *
-     * @Rest\Get("/my/projects")
+     * @Rest\Get("/scenarioanalyses")
      * @return JsonResponse
      */
-    public function getScenarioAnalysisMyProjectsAction(): JsonResponse
+    public function getMyScenarioAnalysisProjectsAction(): JsonResponse
     {
+        $userId = $this->getUserId();
+        $result = $this->get('inowas.scenarioanalysis.scenarioanalysis_finder')->findScenarioAnalysesByUserId($userId);
+        return new JsonResponse($result);
+    }
 
-        $user = $this->getUser();
-        if ($user instanceof User && $user->getId()) {
-            $userId = UserId::fromString($this->getUser()->getId()->toString());
-            return new JsonResponse(
-                $this->get('inowas.modflowmodel.model_finder')
-                    ->findModelsByBaseUserId($userId)
-            );
-        }
-
-        return new JsonResponse([]);
+    /**
+     * Get list of all public scenarioAnalysis-projects.
+     *
+     * @ApiDoc(
+     *   resource = true,
+     *   description = "Get list of all public scenarioAnalysis-projects.",
+     *   statusCodes = {
+     *     200 = "Returned when successful"
+     *   }
+     * )
+     *
+     * @Rest\Get("/scenarioanalyses/public")
+     * @return JsonResponse
+     */
+    public function getPublicScenarioAnalysisProjectsAction(): JsonResponse
+    {
+        $userId = $this->getUserId();
+        $result = $this->get('inowas.scenarioanalysis.scenarioanalysis_finder')->findScenarioAnalysesByUserId($userId);
+        return new JsonResponse($result);
     }
 
     /**

@@ -813,7 +813,7 @@ class ModflowModelEventSourcingTest extends EventSourcingBaseTest
 
         $scenarioAnalysisId = ScenarioAnalysisId::generate();
         $this->commandBus->dispatch(CreateScenarioAnalysis::byUserWithBaseModel($scenarioAnalysisId, $ownerId, $modelId));
-        $scenarioAnalysis = $this->container->get('inowas.scenarioanalysis.scenarioanalysis_finder')->findScenarioAnalysis($scenarioAnalysisId);
+        $scenarioAnalysis = $this->container->get('inowas.scenarioanalysis.scenarioanalysis_finder')->findScenarioAnalysisById($scenarioAnalysisId);
         $this->assertEquals($scenarioAnalysisId->toString(), $scenarioAnalysis['scenario_analysis_id']);
         $this->assertEquals($ownerId->toString(), $scenarioAnalysis['user_id']);
         $this->assertEquals($modelId->toString(), $scenarioAnalysis['base_model_id']);
@@ -842,7 +842,7 @@ class ModflowModelEventSourcingTest extends EventSourcingBaseTest
 
         $scenarioAnalysisId = ScenarioAnalysisId::generate();
         $this->commandBus->dispatch(CreateScenarioAnalysis::byUserWithBaseModel($scenarioAnalysisId, $ownerId, $modelId));
-        $scenarioAnalysis = $this->container->get('inowas.scenarioanalysis.scenarioanalysis_finder')->findScenarioAnalysis($scenarioAnalysisId);
+        $scenarioAnalysis = $this->container->get('inowas.scenarioanalysis.scenarioanalysis_finder')->findScenarioAnalysisById($scenarioAnalysisId);
         $this->assertEquals($scenarioAnalysisId->toString(), $scenarioAnalysis['scenario_analysis_id']);
         $this->assertEquals($ownerId->toString(), $scenarioAnalysis['user_id']);
         $this->assertEquals($modelId->toString(), $scenarioAnalysis['base_model_id']);
