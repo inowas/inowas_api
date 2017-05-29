@@ -34,6 +34,7 @@ class ScenarioAnalysisFinder
             $results[$key]['geometry'] = json_decode($row['geometry'], true);
             $results[$key]['grid_size'] = json_decode($row['grid_size'], true);
             $results[$key]['bounding_box'] = json_decode($row['bounding_box'], true);
+            $results[$key]['scenario_ids'] = json_decode($row['scenario_ids'], true);
         }
 
         return $results;
@@ -53,6 +54,7 @@ class ScenarioAnalysisFinder
             $results[$key]['geometry'] = json_decode($row['geometry'], true);
             $results[$key]['grid_size'] = json_decode($row['grid_size'], true);
             $results[$key]['bounding_box'] = json_decode($row['bounding_box'], true);
+            $results[$key]['scenario_ids'] = json_decode($row['scenario_ids'], true);
         }
 
         return $results;

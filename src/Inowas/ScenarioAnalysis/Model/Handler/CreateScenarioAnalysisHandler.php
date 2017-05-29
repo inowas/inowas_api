@@ -26,6 +26,9 @@ final class CreateScenarioAnalysisHandler
             $command->baseModelId()
         );
 
+        $scenarioAnalysis->changeName($command->userId(), $command->name());
+        $scenarioAnalysis->changeDescription($command->userId(), $command->description());
+
         $this->scenarioAnalysisList->add($scenarioAnalysis);
     }
 }

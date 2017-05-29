@@ -41,7 +41,7 @@ class ScenarioAnalysisDescriptionWasChanged extends AggregateChanged
             $this->scenarioAnalysisId = ScenarioAnalysisId::fromString($this->aggregateId());
         }
 
-        return $this->scenarioAnalysisId();
+        return $this->scenarioAnalysisId;
     }
 
     public function userId(): UserId
@@ -59,6 +59,6 @@ class ScenarioAnalysisDescriptionWasChanged extends AggregateChanged
             $this->description = ScenarioAnalysisDescription::fromString($this->payload['description']);
         }
 
-        return $this->description();
+        return $this->description;
     }
 }

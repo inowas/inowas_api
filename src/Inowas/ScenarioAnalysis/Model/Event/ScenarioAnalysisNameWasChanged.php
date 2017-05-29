@@ -41,7 +41,7 @@ class ScenarioAnalysisNameWasChanged extends AggregateChanged
             $this->scenarioAnalysisId = ScenarioAnalysisId::fromString($this->aggregateId());
         }
 
-        return $this->scenarioAnalysisId();
+        return $this->scenarioAnalysisId;
     }
 
     public function userId(): UserId

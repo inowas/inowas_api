@@ -9,7 +9,9 @@ use Inowas\AppBundle\Model\User;
 use Inowas\Common\Id\ModflowId;
 use Inowas\Common\Id\UserId;
 use Inowas\ScenarioAnalysis\Model\Command\CreateScenarioAnalysis;
+use Inowas\ScenarioAnalysis\Model\ScenarioAnalysisDescription;
 use Inowas\ScenarioAnalysis\Model\ScenarioAnalysisId;
+use Inowas\ScenarioAnalysis\Model\ScenarioAnalysisName;
 use Tests\Inowas\ModflowBundle\EventSourcingBaseTest;
 
 class ScenarioAnalysisControllerTest extends EventSourcingBaseTest
@@ -59,7 +61,13 @@ class ScenarioAnalysisControllerTest extends EventSourcingBaseTest
         $this->createModelWithName($userId, $modelId);
 
         $scenarioAnalysisId = ScenarioAnalysisId::generate();
-        $this->commandBus->dispatch(CreateScenarioAnalysis::byUserWithBaseModel($scenarioAnalysisId, $userId, $modelId));
+        $this->commandBus->dispatch(CreateScenarioAnalysis::byUserWithBaseModelNameAndDescription(
+            $scenarioAnalysisId,
+            $userId,
+            $modelId,
+            ScenarioAnalysisName::fromString('TestName'),
+            ScenarioAnalysisDescription::fromString('TestDescription')
+        ));
 
         $client = static::createClient();
         $client->request(
@@ -84,7 +92,9 @@ class ScenarioAnalysisControllerTest extends EventSourcingBaseTest
         $this->assertTrue(array_key_exists('user_name', $saDetails));
         $this->assertEquals($username, $saDetails['user_name']);
         $this->assertTrue(array_key_exists('name', $saDetails));
+        $this->assertEquals('TestName', $saDetails['name']);
         $this->assertTrue(array_key_exists('description', $saDetails));
+        $this->assertEquals('TestDescription', $saDetails['description']);
         $this->assertTrue(array_key_exists('geometry', $saDetails));
         $this->assertTrue(array_key_exists('grid_size', $saDetails));
         $this->assertTrue(array_key_exists('bounding_box', $saDetails));
@@ -107,7 +117,13 @@ class ScenarioAnalysisControllerTest extends EventSourcingBaseTest
         $this->createModelWithName($userId, $modelId);
 
         $scenarioAnalysisId = ScenarioAnalysisId::generate();
-        $this->commandBus->dispatch(CreateScenarioAnalysis::byUserWithBaseModel($scenarioAnalysisId, $userId, $modelId));
+        $this->commandBus->dispatch(CreateScenarioAnalysis::byUserWithBaseModelNameAndDescription(
+            $scenarioAnalysisId,
+            $userId,
+            $modelId,
+            ScenarioAnalysisName::fromString('TestName'),
+            ScenarioAnalysisDescription::fromString('TestDescription')
+        ));
 
         $client = static::createClient();
         $client->request(

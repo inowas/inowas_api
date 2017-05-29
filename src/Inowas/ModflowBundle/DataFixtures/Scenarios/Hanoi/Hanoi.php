@@ -56,7 +56,9 @@ use Inowas\Common\Boundaries\RiverBoundary;
 use Inowas\ModflowBundle\DataFixtures\Scenarios\LoadScenarioBase;
 use Inowas\ScenarioAnalysis\Model\Command\AddScenario;
 use Inowas\ScenarioAnalysis\Model\Command\CreateScenarioAnalysis;
+use Inowas\ScenarioAnalysis\Model\ScenarioAnalysisDescription;
 use Inowas\ScenarioAnalysis\Model\ScenarioAnalysisId;
+use Inowas\ScenarioAnalysis\Model\ScenarioAnalysisName;
 use Inowas\Soilmodel\Model\Command\AddGeologicalLayerToSoilmodel;
 use Inowas\Soilmodel\Model\Command\ChangeSoilmodelDescription;
 use Inowas\Soilmodel\Model\Command\ChangeSoilmodelName;
@@ -536,7 +538,13 @@ class Hanoi extends LoadScenarioBase
          * Begin add Scenario 1
          */
         $scenarioAnalysisId = ScenarioAnalysisId::generate();
-        $commandBus->dispatch(CreateScenarioAnalysis::byUserWithBaseModel($scenarioAnalysisId, $ownerId, $modelId));
+        $commandBus->dispatch(CreateScenarioAnalysis::byUserWithBaseModelNameAndDescription(
+            $scenarioAnalysisId,
+            $ownerId,
+            $modelId,
+            ScenarioAnalysisName::fromString('ScenarioAnalysis: Hanoi 2005-2007'),
+            ScenarioAnalysisDescription::fromString('ScenarioAnalysis: Hanoi 2005-2007')
+        ));
 
         $scenarioId = ModflowId::generate();
         $commandBus->dispatch(AddScenario::byUserWithBaseModelAndScenarioId($scenarioAnalysisId, $ownerId, $modelId, $scenarioId));

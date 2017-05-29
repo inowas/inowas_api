@@ -163,6 +163,13 @@ prooph_service_bus:
                     'Inowas\ModflowModel\Model\Event\TimeUnitWasUpdated':
                         - 'inowas.modflowmodel.model_details_projector'
 
+                    # ScenarioAnalysis
+                    'Inowas\ScenarioAnalysis\Model\Event\ScenarioAnalysisDescriptionWasChanged':
+                        - 'inowas.scenarioanalysis.scenarioanalysis_list_projector'
+
+                    'Inowas\ScenarioAnalysis\Model\Event\ScenarioAnalysisNameWasChanged':
+                        - 'inowas.scenarioanalysis.scenarioanalysis_list_projector'
+
                     'Inowas\ScenarioAnalysis\Model\Event\ScenarioWasAdded':
                         - 'inowas.scenarioanalysis.scenarioanalysis_list_projector'
 
