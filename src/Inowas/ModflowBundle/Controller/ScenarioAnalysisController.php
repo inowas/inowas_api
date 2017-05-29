@@ -58,7 +58,7 @@ class ScenarioAnalysisController extends InowasRestController
      * @Rest\Get("/scenarioanalyses/public")
      * @return JsonResponse
      */
-    public function getPublicScenarioAnalysesPublicProjects(): JsonResponse
+    public function getPublicScenarioAnalysesAction(): JsonResponse
     {
         $result = $this->get('inowas.scenarioanalysis.scenarioanalysis_finder')->findPublicScenarioAnalyses();
         return new JsonResponse($result);
