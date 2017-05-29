@@ -3,6 +3,11 @@ rest_calculation_api:
     resource: '@InowasModflowBundle/Controller/ModflowCalculationController.php'
     prefix:    /api
 
+rest_calculation_image_api:
+    type: rest
+    resource: '@InowasModflowBundle/Controller/ModflowCalculationImageController.php'
+    prefix:    /image
+
 rest_modflowmodel_api:
     type: rest
     resource: '@InowasModflowBundle/Controller/ModflowModelController.php'
