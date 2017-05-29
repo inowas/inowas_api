@@ -828,10 +828,10 @@ class ModflowModelEventSourcingTest extends EventSourcingBaseTest
         $this->assertEquals($modelId->toString(), $scenarioAnalysis['base_model_id']);
         $this->assertEquals("TestName", $scenarioAnalysis['name']);
         $this->assertEquals("TestDescription", $scenarioAnalysis['description']);
-        $this->assertEquals('{"type":"Polygon","coordinates":[[[-63.65,-31.31],[-63.65,-31.36],[-63.58,-31.36],[-63.58,-31.31],[-63.65,-31.31]]]}', $scenarioAnalysis['geometry']);
-        $this->assertEquals('{"n_x":75,"n_y":40}', $scenarioAnalysis['grid_size']);
-        $this->assertEquals('{"x_min":-63.65,"x_max":-63.58,"y_min":-31.36,"y_max":-31.31,"srid":4326,"d_x":6654.011417877915,"d_y":5565.974539664423}', $scenarioAnalysis['bounding_box']);
-        $this->assertEquals('[]', $scenarioAnalysis['scenario_ids']);
+        $this->assertEquals(json_decode('{"type":"Polygon","coordinates":[[[-63.65,-31.31],[-63.65,-31.36],[-63.58,-31.36],[-63.58,-31.31],[-63.65,-31.31]]]}', true), $scenarioAnalysis['geometry']);
+        $this->assertEquals(json_decode('{"n_x":75,"n_y":40}', true), $scenarioAnalysis['grid_size']);
+        $this->assertEquals(json_decode('{"x_min":-63.65,"x_max":-63.58,"y_min":-31.36,"y_max":-31.31,"srid":4326,"d_x":6654.011417877915,"d_y":5565.974539664423}', true), $scenarioAnalysis['bounding_box']);
+        $this->assertEquals(array(), $scenarioAnalysis['scenario_ids']);
     }
 
     public function test_create_scenarioanalysis_from_basemodel_with_all_boundary_types(): void
@@ -864,10 +864,10 @@ class ModflowModelEventSourcingTest extends EventSourcingBaseTest
         $this->assertEquals($modelId->toString(), $scenarioAnalysis['base_model_id']);
         $this->assertEquals("TestName", $scenarioAnalysis['name']);
         $this->assertEquals("TestDescription", $scenarioAnalysis['description']);
-        $this->assertEquals('{"type":"Polygon","coordinates":[[[-63.65,-31.31],[-63.65,-31.36],[-63.58,-31.36],[-63.58,-31.31],[-63.65,-31.31]]]}', $scenarioAnalysis['geometry']);
-        $this->assertEquals('{"n_x":75,"n_y":40}', $scenarioAnalysis['grid_size']);
-        $this->assertEquals('{"x_min":-63.65,"x_max":-63.58,"y_min":-31.36,"y_max":-31.31,"srid":4326,"d_x":6654.011417877915,"d_y":5565.974539664423}', $scenarioAnalysis['bounding_box']);
-        $this->assertEquals('[]', $scenarioAnalysis['scenario_ids']);
+        $this->assertEquals(json_decode('{"type":"Polygon","coordinates":[[[-63.65,-31.31],[-63.65,-31.36],[-63.58,-31.36],[-63.58,-31.31],[-63.65,-31.31]]]}', true), $scenarioAnalysis['geometry']);
+        $this->assertEquals(json_decode('{"n_x":75,"n_y":40}', true), $scenarioAnalysis['grid_size']);
+        $this->assertEquals(json_decode('{"x_min":-63.65,"x_max":-63.58,"y_min":-31.36,"y_max":-31.31,"srid":4326,"d_x":6654.011417877915,"d_y":5565.974539664423}', true), $scenarioAnalysis['bounding_box']);
+        $this->assertEquals(array(), $scenarioAnalysis['scenario_ids']);
     }
 
     public function test_add_well_to_scenario_from_basemodel_with_all_other_boundary_types(): void

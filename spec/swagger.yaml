@@ -3026,7 +3026,7 @@ paths:
           schema:
             type: "array"
             items:
-              $ref: '#/definitions/ScenarioAnalyses'
+              $ref: '#/definitions/ScenarioAnalysis'
       security:
         - api_key: []
     post:
@@ -3072,10 +3072,32 @@ paths:
           schema:
             type: "array"
             items:
-              $ref: '#/definitions/ScenarioAnalyses'
+              $ref: '#/definitions/ScenarioAnalysis'
       security:
         - api_key: []
 
+  /scenarioanalyses/{id}:
+    get:
+      tags:
+        - "scenarioanalysis"
+      summary: "Returns the scenarioAnalysis details by id"
+      description: 'Returns the scenarioAnalysis details by id'
+      operationId: "scenarioAnalysesMyProjects"
+      produces:
+        - "application/json"
+      parameters:
+        - name: "id"
+          in: "path"
+          description: "Id of ScenarioAnalysis to return"
+          required: true
+          type: "string"
+      responses:
+        '200':
+          description: "successful operation"
+          schema:
+            $ref: '#/definitions/ScenarioAnalysis'
+      security:
+        - api_key: []
 
 # SECURITY
 securityDefinitions:
@@ -3175,7 +3197,6 @@ definitions:
     type: "integer"
     enum: [0, 1, 2, 3]
     default: 0
-
   CalculationStressPeriods:
     title: "CalculationStressPeriods"
     type: "object"
@@ -3220,7 +3241,6 @@ definitions:
         description: "Stressperiod is steady state or not"
         type: "boolean"
         example: true
-
   ModflowModelDetails:
     title: "ModflowModelDetails"
     type: "object"
@@ -3548,7 +3568,7 @@ definitions:
       id:
         type: "string"
         example: "573efe5d-8dfd-4acf-9da5-fe628099913f"
-  ScenarioAnalyses:
+  ScenarioAnalysis:
     title: "ScenarioAnalyses"
     type: "object"
     properties:

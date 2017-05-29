@@ -71,6 +71,11 @@ class ScenarioAnalysisFinder
             return null;
         }
 
+        $result['geometry'] = json_decode($result['geometry'], true);
+        $result['grid_size'] = json_decode($result['grid_size'], true);
+        $result['bounding_box'] = json_decode($result['bounding_box'], true);
+        $result['scenario_ids'] = json_decode($result['scenario_ids'], true);
+
         return $result;
     }
 
