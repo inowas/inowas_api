@@ -59,37 +59,10 @@ class ScenarioAnalysisController extends InowasRestController
      * @Rest\Get("/scenarioanalyses/public")
      * @return JsonResponse
      */
-    public function getPublicScenarioAnalysisProjectsAction(): JsonResponse
-    {
-        $userId = $this->getUserId();
-        $result = $this->get('inowas.scenarioanalysis.scenarioanalysis_finder')->findScenarioAnalysesByUserId($userId);
-        return new JsonResponse($result);
-    }
-
-    /**
-     * Get list of public scenarioAnalysis-projects.
-     *
-     * @ApiDoc(
-     *   resource = true,
-     *   description = "Get list of public scenarioAnalysis-projects.",
-     *   statusCodes = {
-     *     200 = "Returned when successful"
-     *   }
-     * )
-     *
-     * @Rest\Get("/public/projects")
-     * @return JsonResponse
-     */
     public function getScenarioAnalysisPublicProjectsAction(): JsonResponse
     {
-        $user = $this->getUser();
-        if (!$user instanceof User) {
-            return new JsonResponse([]);
-        }
-
-        return new JsonResponse(
-            $this->get('inowas.modflowmodel.model_finder')->findPublicModels()
-        );
+        $result = $this->get('inowas.scenarioanalysis.scenarioanalysis_finder')->findPublicScenarioAnalyses();
+        return new JsonResponse($result);
     }
 
     /**
