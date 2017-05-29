@@ -3606,18 +3606,18 @@ definitions:
       user_id:
         type: "string"
         example: "4716f088-8651-43be-b3b9-815da7bfd0f3"
-      user_name:
-        type: "string"
-        example: "John Doe"
       name:
         type: "string"
         example: "Hanoi 2005-2007"
       description:
         type: "string"
         example: "ScenarioAnalysis of Hanoi Area 2005-2007"
-      created_at:
-        type: "string"
-        example: "2017-05-08T08:03:42+00:00"
+      geometry:
+        $ref: '#/definitions/Geometry'
+      grid_size:
+        $ref: '#/definitions/GridSize'
+      bounding_box:
+        $ref: '#/definitions/BoundingBox'
       base_model:
         type: "object"
         properties:
@@ -3630,12 +3630,6 @@ definitions:
           description:
             type: "string"
             example: "MyBaseModelDescription"
-          geometry:
-            $ref: '#/definitions/Geometry'
-          grid_size:
-            $ref: '#/definitions/GridSize'
-          bounding_box:
-            $ref: '#/definitions/BoundingBox'
       scenarios:
         type: "array"
         items:
@@ -3654,6 +3648,9 @@ definitions:
       public:
         type: "boolean"
         example: true
+      created_at:
+        type: "string"
+        example: "2017-05-08T08:03:42+00:00"
   BoundaryType:
     title: "BoundaryType"
     type: "string"

@@ -6,23 +6,34 @@ namespace Inowas\ScenarioAnalysis\Model\Command;
 
 use Inowas\Common\Id\ModflowId;
 use Inowas\Common\Id\UserId;
+use Inowas\Common\Modflow\ModelName;
+use Inowas\Common\Modflow\ModelDescription;
 use Inowas\ScenarioAnalysis\Model\ScenarioAnalysisId;
 use Prooph\Common\Messaging\Command;
 use Prooph\Common\Messaging\PayloadConstructable;
 use Prooph\Common\Messaging\PayloadTrait;
 
-class AddScenario extends Command implements PayloadConstructable
+class CreateScenario extends Command implements PayloadConstructable
 {
 
     use PayloadTrait;
 
-    public static function byUserWithBaseModelAndScenarioId(ScenarioAnalysisId $scenarioAnalysisId, UserId $userId, ModflowId $baseModelId, ModflowId $scenarioId): AddScenario
+    public static function byUserWithBaseModelAndScenarioId(
+        ScenarioAnalysisId $scenarioAnalysisId,
+        UserId $userId,
+        ModflowId $baseModelId,
+        ModflowId $scenarioId,
+        ModelName $name,
+        ModelDescription $description
+    ): CreateScenario
     {
         return new self([
             'scenarioanalysis_id' => $scenarioAnalysisId->toString(),
             'user_id' => $userId->toString(),
             'basemodel_id' => $baseModelId->toString(),
-            'scenario_id' => $scenarioId->toString()
+            'scenario_id' => $scenarioId->toString(),
+            'name' => $name->toString(),
+            'description' => $description->toString()
         ]);
     }
 
@@ -44,5 +55,15 @@ class AddScenario extends Command implements PayloadConstructable
     public function scenarioId(): ModflowId
     {
         return ModflowId::fromString($this->payload['scenario_id']);
+    }
+
+    public function name(): ModelName
+    {
+        return ModelName::fromString($this->payload['name']);
+    }
+
+    public function description(): ModelDescription
+    {
+        return ModelDescription::fromString($this->payload['description']);
     }
 }

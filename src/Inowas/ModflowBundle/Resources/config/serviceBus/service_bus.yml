@@ -34,7 +34,7 @@ prooph_service_bus:
                     'Inowas\ModflowModel\Model\Command\UpdateTimeUnit': 'inowas.modflowmodel.update_time_unit_handler'
 
                     # ScenarioAnalysis Commands and CommandHandlers
-                    'Inowas\ScenarioAnalysis\Model\Command\AddScenario': 'inowas.scenarioanalysis.add_scenario_handler'
+                    'Inowas\ScenarioAnalysis\Model\Command\CreateScenario': 'inowas.scenarioanalysis.create_scenario_handler'
                     'Inowas\ScenarioAnalysis\Model\Command\CreateScenarioAnalysis': 'inowas.scenarioanalysis.create_scenarioanalysis_handler'
                     'Inowas\ScenarioAnalysis\Model\Command\RemoveScenario': 'inowas.scenarioanalysis.remove_scenario_handler'
 
@@ -170,16 +170,19 @@ prooph_service_bus:
                     'Inowas\ScenarioAnalysis\Model\Event\ScenarioAnalysisNameWasChanged':
                         - 'inowas.scenarioanalysis.scenarioanalysis_list_projector'
 
-                    'Inowas\ScenarioAnalysis\Model\Event\ScenarioWasAdded':
+                    'Inowas\ScenarioAnalysis\Model\Event\ScenarioWasCreated':
                         - 'inowas.scenarioanalysis.scenarioanalysis_list_projector'
+                        - 'inowas.scenarioanalysis.scenario_list_projector'
 
                     'Inowas\ScenarioAnalysis\Model\Event\ScenarioAnalysisWasCreated':
                         - 'inowas.scenarioanalysis.scenarioanalysis_list_projector'
+                        - 'inowas.scenarioanalysis.scenario_list_projector'
 
                     'Inowas\ScenarioAnalysis\Model\Event\ScenarioWasRemoved':
                         - 'inowas.scenarioanalysis.scenarioanalysis_list_projector'
+                        - 'inowas.scenarioanalysis.scenario_list_projector'
 
-
+                    # Soilmodel
                     'Inowas\Soilmodel\Model\Event\SoilmodelWasCreated':
                         - 'inowas.soilmodel.soilmodel_list_projector'
 

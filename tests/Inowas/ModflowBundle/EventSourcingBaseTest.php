@@ -34,8 +34,8 @@ use Inowas\Common\Id\ModflowId;
 use Inowas\Common\Id\ObservationPointId;
 use Inowas\Common\Id\UserId;
 use Inowas\Common\Modflow\Laytyp;
-use Inowas\Common\Modflow\Modelname;
-use Inowas\Common\Modflow\ModflowModelDescription;
+use Inowas\Common\Modflow\ModelName;
+use Inowas\Common\Modflow\ModelDescription;
 use Inowas\Common\Soilmodel\BottomElevation;
 use Inowas\Common\Soilmodel\HydraulicAnisotropy;
 use Inowas\Common\Soilmodel\HydraulicConductivityX;
@@ -51,6 +51,11 @@ use Inowas\ModflowModel\Model\Command\ChangeModflowModelSoilmodelId;
 use Inowas\ModflowModel\Model\Command\CreateModflowModel;
 use Inowas\ModflowBundle\Command\ModflowEventStoreTruncateCommand;
 use Inowas\ModflowBundle\Command\ModflowProjectionsResetCommand;
+use Inowas\ScenarioAnalysis\Model\Command\CreateScenario;
+use Inowas\ScenarioAnalysis\Model\Command\CreateScenarioAnalysis;
+use Inowas\ScenarioAnalysis\Model\ScenarioAnalysisDescription;
+use Inowas\ScenarioAnalysis\Model\ScenarioAnalysisId;
+use Inowas\ScenarioAnalysis\Model\ScenarioAnalysisName;
 use Inowas\Soilmodel\Model\Command\AddGeologicalLayerToSoilmodel;
 use Inowas\Soilmodel\Model\Command\ChangeSoilmodelDescription;
 use Inowas\Soilmodel\Model\Command\ChangeSoilmodelName;
@@ -118,7 +123,8 @@ abstract class EventSourcingBaseTest extends WebTestCase
     {
         $gridSize = GridSize::fromXY(75, 40);
         $this->commandBus->dispatch(CreateModflowModel::newWithId($ownerId, $modelId, $this->createArea(), $gridSize));
-        $this->commandBus->dispatch(ChangeModflowModelName::forModflowModel($ownerId,$modelId, Modelname::fromString('TestModel')));
+        $this->commandBus->dispatch(ChangeModflowModelName::forModflowModel($ownerId, $modelId, ModelName::fromString('TestModel')));
+        $this->commandBus->dispatch(ChangeModflowModelDescription::forModflowModel($ownerId, $modelId, ModelDescription::fromString('TestModelDescription')));
     }
 
     protected function createSoilmodel(UserId $ownerId, SoilmodelId $soilmodelId): void
@@ -147,11 +153,11 @@ abstract class EventSourcingBaseTest extends WebTestCase
 
 
         $this->commandBus->dispatch(CreateModflowModel::newWithId($ownerId, $modelId, $area, $gridSize));
-        $this->commandBus->dispatch(ChangeModflowModelName::forModflowModel($ownerId, $modelId, Modelname::fromString('Rio Primero Base Model')));
+        $this->commandBus->dispatch(ChangeModflowModelName::forModflowModel($ownerId, $modelId, ModelName::fromString('Rio Primero Base Model')));
         $this->commandBus->dispatch(ChangeModflowModelDescription::forModflowModel(
             $ownerId,
             $modelId,
-            ModflowModelDescription::fromString('Base Model for the scenario analysis 2020 Rio Primero.'))
+            ModelDescription::fromString('Base Model for the scenario analysis 2020 Rio Primero.'))
         );
 
         $box = $this->container->get('inowas.geotools.geotools_service')->projectBoundingBox(BoundingBox::fromCoordinates(-63.687336, -63.569260, -31.367449, -31.313615, 4326), Srid::fromInt(4326));
@@ -423,5 +429,21 @@ abstract class EventSourcingBaseTest extends WebTestCase
         $wellBoundary = $wellBoundary->addPumpingRate(WellDateTimeValue::fromParams(new \DateTimeImmutable('2015-01-01'), -5000));
 
         return $wellBoundary;
+    }
+    
+    protected function createScenarioAnalysis(ScenarioAnalysisId $id, UserId $ownerId, ModflowId $modelId, ScenarioAnalysisName $name, ScenarioAnalysisDescription $description): void
+    {
+        $this->commandBus->dispatch(CreateScenarioAnalysis::byUserWithBaseModelNameAndDescription(
+            $id,
+            $ownerId,
+            $modelId,
+            $name,
+            $description
+        ));
+    }
+
+    protected function createScenario(ScenarioAnalysisId $id, UserId $owner, ModflowId $modelId, ModflowId $scenarioId, ModelName $name, ModelDescription $description): void
+    {
+        $this->commandBus->dispatch(CreateScenario::byUserWithBaseModelAndScenarioId($id, $owner, $modelId, $scenarioId, $name, $description));
     }
 }

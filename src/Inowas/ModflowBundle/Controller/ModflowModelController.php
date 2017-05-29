@@ -15,8 +15,8 @@ use Inowas\Common\Grid\GridSize;
 use Inowas\Common\Id\BoundaryId;
 use Inowas\Common\Id\ModflowId;
 use Inowas\Common\Modflow\LengthUnit;
-use Inowas\Common\Modflow\Modelname;
-use Inowas\Common\Modflow\ModflowModelDescription;
+use Inowas\Common\Modflow\ModelName;
+use Inowas\Common\Modflow\ModelDescription;
 use Inowas\Common\Modflow\TimeUnit;
 use Inowas\Common\Soilmodel\SoilmodelId;
 use Inowas\ModflowBundle\Exception\NotFoundException;
@@ -105,10 +105,10 @@ class ModflowModelController extends InowasRestController
         $modelId = ModflowId::generate();
 
         $this->assertContainsKey('name', $content);
-        $name = Modelname::fromString($content['name']);
+        $name = ModelName::fromString($content['name']);
 
         $this->assertContainsKey('description', $content);
-        $description = ModflowModelDescription::fromString($content['description']);
+        $description = ModelDescription::fromString($content['description']);
 
         $this->assertContainsKey('area_geometry', $content);
         $areaGeometry = new Polygon($content['area_geometry']['coordinates'], 4326);
@@ -185,7 +185,7 @@ class ModflowModelController extends InowasRestController
         $modelId = ModflowId::fromString($id);
         $name = $this->get('inowas.modflowmodel.model_finder')->getModelNameByModelId($modelId);
 
-        if (! $name instanceof Modelname) {
+        if (! $name instanceof ModelName) {
             throw NotFoundException::withMessage(sprintf(
                 'ModflowModel with id: \'%s\' not found.', $modelId->toString()
             ));
@@ -219,7 +219,7 @@ class ModflowModelController extends InowasRestController
 
         $content = $this->getContentAsArray($request);
         $this->assertContainsKey('name', $content);
-        $name = Modelname::fromString($content['name']);
+        $name = ModelName::fromString($content['name']);
 
         $this->get('prooph_service_bus.modflow_command_bus')->dispatch(ChangeModflowModelName::forModflowModel($userId, $modelId, $name));
 
@@ -251,7 +251,7 @@ class ModflowModelController extends InowasRestController
 
         $description = $this->get('inowas.modflowmodel.model_finder')->getModelDescriptionByModelId($modelId);
 
-        if (! $description instanceof ModflowModelDescription) {
+        if (! $description instanceof ModelDescription) {
             throw NotFoundException::withMessage(sprintf(
                 'ModflowModel with id: \'%s\' not found.', $modelId->toString()
             ));
@@ -285,7 +285,7 @@ class ModflowModelController extends InowasRestController
 
         $content = $this->getContentAsArray($request);
         $this->assertContainsKey('description', $content);
-        $description = ModflowModelDescription::fromString($content['description']);
+        $description = ModelDescription::fromString($content['description']);
 
         $this->get('prooph_service_bus.modflow_command_bus')->dispatch(ChangeModflowModelDescription::forModflowModel($userId, $modelId, $description));
 

@@ -20,8 +20,8 @@ use Inowas\Common\Id\BoundaryId;
 use Inowas\Common\Id\ModflowId;
 use Inowas\Common\Id\UserId;
 use Inowas\Common\Modflow\Laytyp;
-use Inowas\Common\Modflow\Modelname;
-use Inowas\Common\Modflow\ModflowModelDescription;
+use Inowas\Common\Modflow\ModelName;
+use Inowas\Common\Modflow\ModelDescription;
 use Inowas\Common\Soilmodel\Conductivity;
 use Inowas\Common\Soilmodel\HBottom;
 use Inowas\Common\Soilmodel\HTop;
@@ -76,11 +76,11 @@ class RioPrimero extends LoadScenarioBase
         $ownerId = UserId::fromString($this->ownerId);
         $modelId = ModflowId::generate();
         $commandBus->dispatch(CreateModflowModel::newWithId($ownerId, $modelId));
-        $commandBus->dispatch(ChangeModflowModelName::forModflowModel($ownerId, $modelId, Modelname::fromString('Rio Primero Base Model')));
+        $commandBus->dispatch(ChangeModflowModelName::forModflowModel($ownerId, $modelId, ModelName::fromString('Rio Primero Base Model')));
         $commandBus->dispatch(ChangeModflowModelDescription::forModflowModel(
             $ownerId,
             $modelId,
-            ModflowModelDescription::fromString('Base Model for the scenario analysis 2020 Rio Primero.'))
+            ModelDescription::fromString('Base Model for the scenario analysis 2020 Rio Primero.'))
         );
 
         $box = $geoTools->projectBoundingBox(BoundingBox::fromCoordinates(-63.687336, -63.569260, -31.367449, -31.313615, 4326), Srid::fromInt(4326));

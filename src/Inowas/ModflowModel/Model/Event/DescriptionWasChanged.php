@@ -6,7 +6,7 @@ namespace Inowas\ModflowModel\Model\Event;
 
 use Inowas\Common\Id\ModflowId;
 use Inowas\Common\Id\UserId;
-use Inowas\Common\Modflow\ModflowModelDescription;
+use Inowas\Common\Modflow\ModelDescription;
 use Prooph\EventSourcing\AggregateChanged;
 
 class DescriptionWasChanged extends AggregateChanged
@@ -15,13 +15,13 @@ class DescriptionWasChanged extends AggregateChanged
     /** @var  ModflowId */
     private $modflowModelId;
 
-    /** @var ModflowModelDescription */
+    /** @var ModelDescription */
     private $description;
 
     /** @var  UserId */
     private $userId;
 
-    public static function withDescription(UserId $userId, ModflowId $modflowModelId, ModflowModelDescription $description): DescriptionWasChanged
+    public static function withDescription(UserId $userId, ModflowId $modflowModelId, ModelDescription $description): DescriptionWasChanged
     {
         $event = self::occur(
             $modflowModelId->toString(), [
@@ -46,10 +46,10 @@ class DescriptionWasChanged extends AggregateChanged
         return $this->modflowModelId;
     }
 
-    public function description(): ModflowModelDescription
+    public function description(): ModelDescription
     {
         if ($this->description === null){
-            $this->description = ModflowModelDescription::fromString($this->payload['description']);
+            $this->description = ModelDescription::fromString($this->payload['description']);
         }
 
         return $this->description;

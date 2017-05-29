@@ -86,7 +86,7 @@ class ScenarioAnalysisController extends InowasRestController
     {
         $this->assertUuidIsValid($id);
         $scenarioAnalysisId = ScenarioAnalysisId::fromString($id);
-        $scenarioAnalysis = $this->get('inowas.scenarioanalysis.scenarioanalysis_finder')->findScenarioAnalysisById($scenarioAnalysisId);
+        $scenarioAnalysis = $this->get('inowas.scenarioanalysis.scenarioanalysis_finder')->findScenarioAnalysisDetailsById($scenarioAnalysisId);
 
         if (null === $scenarioAnalysis){
             throw NotFoundException::withMessage(sprintf('ScenarioAnalysis with id %s was not found.', $scenarioAnalysisId->toString()));

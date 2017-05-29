@@ -5,13 +5,13 @@ declare(strict_types=1);
 namespace Inowas\ScenarioAnalysis\Model\Handler;
 
 use Inowas\ModflowModel\Model\Command\CloneModflowModel;
-use Inowas\ScenarioAnalysis\Model\Command\AddScenario;
+use Inowas\ScenarioAnalysis\Model\Command\CreateScenario;
 use Inowas\ScenarioAnalysis\Model\Exception\ScenarioAnalysisNotFoundException;
 use Inowas\ScenarioAnalysis\Model\ScenarioAnalysisAggregate;
 use Inowas\ScenarioAnalysis\Model\ScenarioAnalysisList;
 use Prooph\ServiceBus\CommandBus;
 
-final class AddScenarioHandler
+final class CreateScenarioHandler
 {
 
     /** @var ScenarioAnalysisList  */
@@ -26,7 +26,7 @@ final class AddScenarioHandler
         $this->commandBus = $commandBus;
     }
 
-    public function __invoke(AddScenario $command)
+    public function __invoke(CreateScenario $command)
     {
         /** @var ScenarioAnalysisAggregate $scenarioAnalysis */
         $scenarioAnalysis = $this->scenarioAnalysisList->get($command->scenarioAnalysisId());
@@ -36,6 +36,12 @@ final class AddScenarioHandler
         }
 
         $this->commandBus->dispatch(CloneModflowModel::fromBaseModel($command->baseModelId(), $command->userId(), $command->scenarioId()));
-        $scenarioAnalysis->addScenario($command->userId(), $command->scenarioId());
+        $scenarioAnalysis->createScenario(
+            $command->userId(),
+            $command->scenarioId(),
+            $command->baseModelId(),
+            $command->name(),
+            $command->description()
+        );
     }
 }

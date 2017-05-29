@@ -20,7 +20,7 @@ use Inowas\Common\Geometry\Geometry;
 use Inowas\Common\Id\BoundaryId;
 use Inowas\Common\Boundaries\BoundaryName;
 use Inowas\Common\Id\ObservationPointId;
-use Inowas\Common\Modflow\ModflowModelDescription;
+use Inowas\Common\Modflow\ModelDescription;
 use Inowas\Common\Modflow\OcStressPeriod;
 use Inowas\Common\Modflow\OcStressPeriodData;
 use Inowas\Common\Modflow\PackageName;
@@ -45,7 +45,7 @@ use Inowas\Common\Grid\BoundingBox;
 use Inowas\Common\Grid\GridSize;
 use Inowas\Common\Id\ModflowId;
 use Inowas\ModflowCalculation\Model\Command\UpdateCalculationPackageParameter;
-use Inowas\Common\Modflow\Modelname;
+use Inowas\Common\Modflow\ModelName;
 use Inowas\Common\Id\UserId;
 use Inowas\Common\Boundaries\WellBoundary;
 use Inowas\Common\Boundaries\WellType;
@@ -133,11 +133,11 @@ class HanoiBaseModelOnly extends LoadScenarioBase
         );
         $gridSize = GridSize::fromXY(165, 175);
         $commandBus->dispatch(CreateModflowModel::newWithId($ownerId, $modelId, $area, $gridSize));
-        $commandBus->dispatch(ChangeModflowModelName::forModflowModel($ownerId, $modelId, Modelname::fromString('Base Scenario Hanoi 2005-2007')));
+        $commandBus->dispatch(ChangeModflowModelName::forModflowModel($ownerId, $modelId, ModelName::fromString('Base Scenario Hanoi 2005-2007')));
         $commandBus->dispatch(ChangeModflowModelDescription::forModflowModel(
             $ownerId,
             $modelId,
-            ModflowModelDescription::fromString('Calibrated groundwater base model, 2005-2007.'))
+            ModelDescription::fromString('Calibrated groundwater base model, 2005-2007.'))
         );
 
         $box = $geoTools->projectBoundingBox(BoundingBox::fromCoordinates(578205, 594692, 2316000, 2333500, 32648), Srid::fromInt(4326));

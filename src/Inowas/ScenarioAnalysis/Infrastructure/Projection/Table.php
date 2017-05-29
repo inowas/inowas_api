@@ -10,4 +10,5 @@ namespace Inowas\ScenarioAnalysis\Infrastructure\Projection;
 final class Table
 {
     const SCENARIO_ANALYSIS_LIST = 'mf_projection_scenarioanalysis_list';
+    const SCENARIO_LIST = 'mf_projection_scenario_list';
 }

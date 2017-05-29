@@ -4,12 +4,12 @@ declare(strict_types=1);
 
 namespace Inowas\Common\Modflow;
 
-class Modelname
+class ModelName
 {
     /** @var  string */
     private $name;
 
-    public static function fromString(string $name): Modelname
+    public static function fromString(string $name): ModelName
     {
         return new self($name);
     }

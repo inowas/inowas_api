@@ -12,8 +12,8 @@ use Inowas\Common\Grid\GridSize;
 use Inowas\Common\Id\ModflowId;
 use Inowas\Common\Id\UserId;
 use Inowas\Common\Modflow\LengthUnit;
-use Inowas\Common\Modflow\Modelname;
-use Inowas\Common\Modflow\ModflowModelDescription;
+use Inowas\Common\Modflow\ModelName;
+use Inowas\Common\Modflow\ModelDescription;
 use Inowas\Common\Modflow\TimeUnit;
 use Inowas\Common\Soilmodel\SoilmodelId;
 use Inowas\ModflowModel\Infrastructure\Projection\Table;
@@ -75,7 +75,7 @@ class ModelFinder
         return GridSize::fromArray((array)json_decode($result['grid_size']));
     }
 
-    public function getModelNameByModelId(ModflowId $modelId): ?Modelname
+    public function getModelNameByModelId(ModflowId $modelId): ?ModelName
     {
         $this->connection->setFetchMode(\PDO::FETCH_ASSOC);
         $result = $this->connection->fetchAssoc(
@@ -87,10 +87,10 @@ class ModelFinder
             return null;
         }
 
-        return Modelname::fromString($result['name']);
+        return ModelName::fromString($result['name']);
     }
 
-    public function getModelDescriptionByModelId(ModflowId $modelId): ?ModflowModelDescription
+    public function getModelDescriptionByModelId(ModflowId $modelId): ?ModelDescription
     {
         $this->connection->setFetchMode(\PDO::FETCH_ASSOC);
         $result = $this->connection->fetchAssoc(
@@ -102,7 +102,7 @@ class ModelFinder
             return null;
         }
 
-        return ModflowModelDescription::fromString($result['description']);
+        return ModelDescription::fromString($result['description']);
     }
 
     public function getSoilmodelIdByModelId(ModflowId $modelId): ?SoilmodelId

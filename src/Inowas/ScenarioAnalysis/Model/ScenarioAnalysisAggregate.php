@@ -6,10 +6,12 @@ namespace Inowas\ScenarioAnalysis\Model;
 
 use Inowas\Common\Id\ModflowId;
 use Inowas\Common\Id\UserId;
+use Inowas\Common\Modflow\ModelDescription;
+use Inowas\Common\Modflow\ModelName;
 use Inowas\ScenarioAnalysis\Model\Event\ScenarioAnalysisDescriptionWasChanged;
 use Inowas\ScenarioAnalysis\Model\Event\ScenarioAnalysisNameWasChanged;
 use Inowas\ScenarioAnalysis\Model\Event\ScenarioAnalysisWasCreated;
-use Inowas\ScenarioAnalysis\Model\Event\ScenarioWasAdded;
+use Inowas\ScenarioAnalysis\Model\Event\ScenarioWasCreated;
 use Inowas\ScenarioAnalysis\Model\Event\ScenarioWasRemoved;
 use Prooph\EventSourcing\AggregateRoot;
 
@@ -37,25 +39,27 @@ class ScenarioAnalysisAggregate extends AggregateRoot
     /** @var array */
     protected $scenarios;
 
-    public static function create(ScenarioAnalysisId $scenarioAnalysisId, UserId $userId, ModflowId $modflowId): ScenarioAnalysisAggregate
+    public static function create(ScenarioAnalysisId $scenarioAnalysisId, UserId $userId, ModflowId $modflowId, ScenarioAnalysisName $name, ScenarioAnalysisDescription $description): ScenarioAnalysisAggregate
     {
         $self = new self();
         $self->baseModelId = $modflowId;
         $self->ownerId = $userId;
+        $self->name = $name;
+        $self->description = $description;
         $self->scenarios = [];
 
-        $self->recordThat(ScenarioAnalysisWasCreated::byUserWithId($scenarioAnalysisId, $userId, $modflowId));
+        $self->recordThat(ScenarioAnalysisWasCreated::byUserWithId($scenarioAnalysisId, $userId, $modflowId, $name, $description));
         return $self;
     }
 
-    public function addScenario(UserId $userId, ModflowId $scenarioId): void
+    public function createScenario(UserId $userId, ModflowId $scenarioId, ModflowId $baseModelId, ModelName $name, ModelDescription $description): void
     {
         if (in_array($scenarioId->toString(), $this->scenarios)){
             return;
         }
 
         $this->scenarios[] = $scenarioId->toString();
-        $this->recordThat(ScenarioWasAdded::to($this->id, $userId, $scenarioId));
+        $this->recordThat(ScenarioWasCreated::from($this->id, $userId, $scenarioId, $baseModelId, $name, $description));
     }
 
     public function removeScenario(UserId $userId, ModflowId $scenarioId): void
@@ -120,10 +124,12 @@ class ScenarioAnalysisAggregate extends AggregateRoot
         $this->id = $event->scenarioAnalysisId();
         $this->baseModelId = $event->baseModelId();
         $this->ownerId = $event->userId();
+        $this->name = $event->name();
+        $this->description = $event->description();
         $this->scenarios = [];
     }
 
-    protected function whenScenarioWasAdded(ScenarioWasAdded $event): void
+    protected function whenScenarioWasCreated(ScenarioWasCreated $event): void
     {
         $this->scenarios[] = $event->scenarioId()->toString();
     }

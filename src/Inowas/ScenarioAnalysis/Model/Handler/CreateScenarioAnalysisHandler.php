@@ -23,11 +23,10 @@ final class CreateScenarioAnalysisHandler
         $scenarioAnalysis = ScenarioAnalysisAggregate::create(
             $command->scenarioAnalysisId(),
             $command->userId(),
-            $command->baseModelId()
+            $command->baseModelId(),
+            $command->name(),
+            $command->description()
         );
-
-        $scenarioAnalysis->changeName($command->userId(), $command->name());
-        $scenarioAnalysis->changeDescription($command->userId(), $command->description());
 
         $this->scenarioAnalysisList->add($scenarioAnalysis);
     }

@@ -18,8 +18,8 @@ use Inowas\Common\Grid\GridSize;
 use Inowas\Common\Id\ModflowId;
 use Inowas\Common\Id\UserId;
 use Inowas\Common\Modflow\LengthUnit;
-use Inowas\Common\Modflow\Modelname;
-use Inowas\Common\Modflow\ModflowModelDescription;
+use Inowas\Common\Modflow\ModelName;
+use Inowas\Common\Modflow\ModelDescription;
 use Inowas\Common\Modflow\TimeUnit;
 use Inowas\Common\Soilmodel\SoilmodelId;
 use Inowas\ModflowModel\Model\Event\AreaActiveCellsWereUpdated;
@@ -54,10 +54,10 @@ class ModflowModelAggregate extends AggregateRoot
     /** @var  bool */
     protected $public;
 
-    /** @var Modelname */
+    /** @var ModelName */
     protected $name;
 
-    /** @var ModflowModelDescription */
+    /** @var ModelDescription */
     protected $description;
 
     /** @var GridSize */
@@ -129,7 +129,7 @@ class ModflowModelAggregate extends AggregateRoot
         return $self;
     }
 
-    public function changeModelName(UserId $userId, Modelname $name)
+    public function changeModelName(UserId $userId, ModelName $name)
     {
         $this->name = $name;
         $this->recordThat(NameWasChanged::byUserWithName(
@@ -139,7 +139,7 @@ class ModflowModelAggregate extends AggregateRoot
         ));
     }
 
-    public function changeModelDescription(UserId $userId, ModflowModelDescription $description)
+    public function changeModelDescription(UserId $userId, ModelDescription $description)
     {
         $this->description = $description;
         $this->recordThat(DescriptionWasChanged::withDescription(
@@ -169,7 +169,7 @@ class ModflowModelAggregate extends AggregateRoot
         ));
     }
 
-    public function changeDescription(ModflowModelDescription $description): void
+    public function changeDescription(ModelDescription $description): void
     {
         $this->description = $description;
     }
@@ -329,18 +329,18 @@ class ModflowModelAggregate extends AggregateRoot
         return $this->owner;
     }
 
-    public function name(): Modelname
+    public function name(): ModelName
     {
         if ($this->name === null){
-            $this->name = Modelname::fromString('');
+            $this->name = ModelName::fromString('');
         }
         return $this->name;
     }
 
-    public function description(): ModflowModelDescription
+    public function description(): ModelDescription
     {
         if ($this->description === null){
-            $this->description = ModflowModelDescription::fromString('');
+            $this->description = ModelDescription::fromString('');
         }
         return $this->description;
     }

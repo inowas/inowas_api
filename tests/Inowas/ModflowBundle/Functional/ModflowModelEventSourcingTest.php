@@ -16,7 +16,8 @@ use Inowas\Common\Id\BoundaryId;
 use Inowas\Common\Boundaries\BoundaryName;
 use Inowas\Common\Modflow\Laytyp;
 use Inowas\Common\Modflow\Laywet;
-use Inowas\Common\Modflow\Modelname;
+use Inowas\Common\Modflow\ModelDescription;
+use Inowas\Common\Modflow\ModelName;
 use Inowas\Common\Modflow\PackageName;
 use Inowas\Common\Modflow\StressPeriod;
 use Inowas\Common\Modflow\StressPeriods;
@@ -48,8 +49,6 @@ use Inowas\Common\Boundaries\WellDateTimeValue;
 use Inowas\Common\Id\UserId;
 use Inowas\Common\Boundaries\WellBoundary;
 use Inowas\Common\Boundaries\WellType;
-use Inowas\ScenarioAnalysis\Model\Command\AddScenario;
-use Inowas\ScenarioAnalysis\Model\Command\CreateScenarioAnalysis;
 use Inowas\ScenarioAnalysis\Model\ScenarioAnalysisDescription;
 use Inowas\ScenarioAnalysis\Model\ScenarioAnalysisId;
 use Inowas\ScenarioAnalysis\Model\ScenarioAnalysisName;
@@ -91,7 +90,7 @@ class ModflowModelEventSourcingTest extends EventSourcingBaseTest
         $event = NameWasChanged::byUserWithName(
             $ownerId,
             $modflowModelId,
-            Modelname::fromString('newName')
+            ModelName::fromString('newName')
         );
 
         $this->eventBus->dispatch($event);
@@ -121,7 +120,7 @@ class ModflowModelEventSourcingTest extends EventSourcingBaseTest
         $area = $this->createArea();
         $gridSize = GridSize::fromXY(75, 40);
         $this->commandBus->dispatch(CreateModflowModel::newWithId($ownerId, $modelId, $area, $gridSize));
-        $this->commandBus->dispatch(ChangeModflowModelName::forModflowModel($ownerId,$modelId, Modelname::fromString('TestModel')));
+        $this->commandBus->dispatch(ChangeModflowModelName::forModflowModel($ownerId,$modelId, ModelName::fromString('TestModel')));
 
         $box = $this->container->get('inowas.geotools.geotools_service')->projectBoundingBox(BoundingBox::fromCoordinates(-63.687336, -63.569260, -31.367449, -31.313615, 4326), Srid::fromInt(4326));
         $boundingBox = BoundingBox::fromEPSG4326Coordinates($box->xMin(), $box->xMax(), $box->yMin(), $box->yMax(), $box->dX(), $box->dY());
@@ -133,7 +132,7 @@ class ModflowModelEventSourcingTest extends EventSourcingBaseTest
         /** @var ModflowModelAggregate $model */
         $model = $this->container->get('modflow_model_list')->get($modelId);
         $this->assertInstanceOf(ModflowModelAggregate::class, $model);
-        $this->assertEquals(Modelname::fromString('TestModel'), $model->name());
+        $this->assertEquals(ModelName::fromString('TestModel'), $model->name());
         $this->assertEquals($gridSize, $model->gridSize());
         $this->assertEquals($boundingBox, $model->boundingBox());
     }
@@ -814,24 +813,16 @@ class ModflowModelEventSourcingTest extends EventSourcingBaseTest
         $this->createModelWithName($ownerId, $modelId);
 
         $scenarioAnalysisId = ScenarioAnalysisId::generate();
-        $this->commandBus->dispatch(CreateScenarioAnalysis::byUserWithBaseModelNameAndDescription(
-            $scenarioAnalysisId,
-            $ownerId,
-            $modelId,
-            ScenarioAnalysisName::fromString('TestName'),
-            ScenarioAnalysisDescription::fromString('TestDescription')
-        ));
+        $this->createScenarioAnalysis($scenarioAnalysisId, $ownerId, $modelId, ScenarioAnalysisName::fromString('TestName'), ScenarioAnalysisDescription::fromString('TestDescription'));
 
-        $scenarioAnalysis = $this->container->get('inowas.scenarioanalysis.scenarioanalysis_finder')->findScenarioAnalysisById($scenarioAnalysisId);
+        $scenarioAnalysis = $this->container->get('inowas.scenarioanalysis.scenarioanalysis_finder')->findScenarioAnalysisDetailsById($scenarioAnalysisId);
         $this->assertEquals($scenarioAnalysisId->toString(), $scenarioAnalysis['id']);
         $this->assertEquals($ownerId->toString(), $scenarioAnalysis['user_id']);
-        $this->assertEquals($modelId->toString(), $scenarioAnalysis['base_model_id']);
         $this->assertEquals("TestName", $scenarioAnalysis['name']);
         $this->assertEquals("TestDescription", $scenarioAnalysis['description']);
         $this->assertEquals(json_decode('{"type":"Polygon","coordinates":[[[-63.65,-31.31],[-63.65,-31.36],[-63.58,-31.36],[-63.58,-31.31],[-63.65,-31.31]]]}', true), $scenarioAnalysis['geometry']);
         $this->assertEquals(json_decode('{"n_x":75,"n_y":40}', true), $scenarioAnalysis['grid_size']);
         $this->assertEquals(json_decode('{"x_min":-63.65,"x_max":-63.58,"y_min":-31.36,"y_max":-31.31,"srid":4326,"d_x":6654.011417877915,"d_y":5565.974539664423}', true), $scenarioAnalysis['bounding_box']);
-        $this->assertEquals(array(), $scenarioAnalysis['scenario_ids']);
     }
 
     public function test_create_scenarioanalysis_from_basemodel_with_all_boundary_types(): void
@@ -850,24 +841,16 @@ class ModflowModelEventSourcingTest extends EventSourcingBaseTest
         $this->assertCount(5, $baseModelBoundaries);
 
         $scenarioAnalysisId = ScenarioAnalysisId::generate();
-        $this->commandBus->dispatch(CreateScenarioAnalysis::byUserWithBaseModelNameAndDescription(
-            $scenarioAnalysisId,
-            $ownerId,
-            $modelId,
-            ScenarioAnalysisName::fromString('TestName'),
-            ScenarioAnalysisDescription::fromString('TestDescription')
-        ));
+        $this->createScenarioAnalysis($scenarioAnalysisId, $ownerId, $modelId, ScenarioAnalysisName::fromString('TestName'), ScenarioAnalysisDescription::fromString('TestDescription'));
 
-        $scenarioAnalysis = $this->container->get('inowas.scenarioanalysis.scenarioanalysis_finder')->findScenarioAnalysisById($scenarioAnalysisId);
+        $scenarioAnalysis = $this->container->get('inowas.scenarioanalysis.scenarioanalysis_finder')->findScenarioAnalysisDetailsById($scenarioAnalysisId);
         $this->assertEquals($scenarioAnalysisId->toString(), $scenarioAnalysis['id']);
         $this->assertEquals($ownerId->toString(), $scenarioAnalysis['user_id']);
-        $this->assertEquals($modelId->toString(), $scenarioAnalysis['base_model_id']);
         $this->assertEquals("TestName", $scenarioAnalysis['name']);
         $this->assertEquals("TestDescription", $scenarioAnalysis['description']);
         $this->assertEquals(json_decode('{"type":"Polygon","coordinates":[[[-63.65,-31.31],[-63.65,-31.36],[-63.58,-31.36],[-63.58,-31.31],[-63.65,-31.31]]]}', true), $scenarioAnalysis['geometry']);
         $this->assertEquals(json_decode('{"n_x":75,"n_y":40}', true), $scenarioAnalysis['grid_size']);
         $this->assertEquals(json_decode('{"x_min":-63.65,"x_max":-63.58,"y_min":-31.36,"y_max":-31.31,"srid":4326,"d_x":6654.011417877915,"d_y":5565.974539664423}', true), $scenarioAnalysis['bounding_box']);
-        $this->assertEquals(array(), $scenarioAnalysis['scenario_ids']);
     }
 
     public function test_add_well_to_scenario_from_basemodel_with_all_other_boundary_types(): void
@@ -884,16 +867,10 @@ class ModflowModelEventSourcingTest extends EventSourcingBaseTest
         $this->assertCount(4, $modelBoundaries);
 
         $scenarioAnalysisId = ScenarioAnalysisId::generate();
-        $this->commandBus->dispatch(CreateScenarioAnalysis::byUserWithBaseModelNameAndDescription(
-            $scenarioAnalysisId,
-            $ownerId,
-            $modelId,
-            ScenarioAnalysisName::fromString('TestName'),
-            ScenarioAnalysisDescription::fromString('TestDescription')
-        ));
+        $this->createScenarioAnalysis($scenarioAnalysisId, $ownerId, $modelId, ScenarioAnalysisName::fromString('TestName'), ScenarioAnalysisDescription::fromString('TestDescription'));
 
         $scenarioId = ModflowId::generate();
-        $this->commandBus->dispatch(AddScenario::byUserWithBaseModelAndScenarioId($scenarioAnalysisId, $ownerId, $modelId, $scenarioId));
+        $this->createScenario($scenarioAnalysisId, $ownerId, $modelId, $scenarioId, ModelName::fromString('TestScenarioName'), ModelDescription::fromString('TestScenarioDescription'));
         $this->commandBus->dispatch(AddBoundary::to($scenarioId, $ownerId, $this->createWellBoundary()));
         $scenarioBoundaries = $this->container->get('inowas.modflowmodel.boundaries_finder')->findBoundariesByModelId($scenarioId);
         $this->assertCount(5, $scenarioBoundaries);
@@ -912,16 +889,10 @@ class ModflowModelEventSourcingTest extends EventSourcingBaseTest
         $this->commandBus->dispatch(AddBoundary::to($modelId, $ownerId, $well = $this->createWellBoundary()));
 
         $scenarioAnalysisId = ScenarioAnalysisId::generate();
-        $this->commandBus->dispatch(CreateScenarioAnalysis::byUserWithBaseModelNameAndDescription(
-            $scenarioAnalysisId,
-            $ownerId,
-            $modelId,
-            ScenarioAnalysisName::fromString('TestName'),
-            ScenarioAnalysisDescription::fromString('TestDescription')
-        ));
+        $this->createScenarioAnalysis($scenarioAnalysisId, $ownerId, $modelId, ScenarioAnalysisName::fromString('TestName'), ScenarioAnalysisDescription::fromString('TestDescription'));
 
         $scenarioId = ModflowId::generate();
-        $this->commandBus->dispatch(AddScenario::byUserWithBaseModelAndScenarioId($scenarioAnalysisId, $ownerId, $modelId, $scenarioId));
+        $this->createScenario($scenarioAnalysisId, $ownerId, $modelId, $scenarioId, ModelName::fromString('TestScenarioName'), ModelDescription::fromString('TestScenarioDescription'));
 
         $newGeometry = Geometry::fromPoint(new Point(-63.6, -31.32, 4326));
         $this->commandBus->dispatch(UpdateBoundaryGeometry::byUser($ownerId, $scenarioId, $well->boundaryId(), $newGeometry));

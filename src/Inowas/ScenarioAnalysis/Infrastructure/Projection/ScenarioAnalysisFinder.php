@@ -22,7 +22,7 @@ class ScenarioAnalysisFinder
     public function findScenarioAnalysesByUserId(UserId $userId): array
     {
         $results = $this->connection->fetchAll(
-            sprintf('SELECT scenario_analysis_id as id, user_id, user_name, base_model_id, name, description, area as geometry, grid_size, bounding_box, scenarios as scenario_ids, created_at, public FROM %s WHERE user_id = :user_id', Table::SCENARIO_ANALYSIS_LIST),
+            sprintf('SELECT scenario_analysis_id as id, user_id, user_name, base_model_id, name, description, geometry, grid_size, bounding_box, created_at, public FROM %s WHERE user_id = :user_id', Table::SCENARIO_ANALYSIS_LIST),
             ['user_id' => $userId->toString()]
         );
 
@@ -34,7 +34,6 @@ class ScenarioAnalysisFinder
             $results[$key]['geometry'] = json_decode($row['geometry'], true);
             $results[$key]['grid_size'] = json_decode($row['grid_size'], true);
             $results[$key]['bounding_box'] = json_decode($row['bounding_box'], true);
-            $results[$key]['scenario_ids'] = json_decode($row['scenario_ids'], true);
         }
 
         return $results;
@@ -43,7 +42,7 @@ class ScenarioAnalysisFinder
     public function findPublicScenarioAnalyses(): array
     {
         $results = $this->connection->fetchAll(
-            sprintf('SELECT scenario_analysis_id as id, user_id, user_name, base_model_id, name, description, area as geometry, grid_size, bounding_box, scenarios as scenario_ids, created_at, public FROM %s WHERE public = true', Table::SCENARIO_ANALYSIS_LIST)
+            sprintf('SELECT scenario_analysis_id as id, user_id, user_name, base_model_id, name, description, geometry, grid_size, bounding_box, created_at, public FROM %s WHERE public = true', Table::SCENARIO_ANALYSIS_LIST)
         );
 
         if ($results === false) {
@@ -54,16 +53,15 @@ class ScenarioAnalysisFinder
             $results[$key]['geometry'] = json_decode($row['geometry'], true);
             $results[$key]['grid_size'] = json_decode($row['grid_size'], true);
             $results[$key]['bounding_box'] = json_decode($row['bounding_box'], true);
-            $results[$key]['scenario_ids'] = json_decode($row['scenario_ids'], true);
         }
 
         return $results;
     }
 
-    public function findScenarioAnalysisById(ScenarioAnalysisId $scenarioAnalysisId): ?array
+    public function findScenarioAnalysisDetailsById(ScenarioAnalysisId $scenarioAnalysisId): ?array
     {
         $result = $this->connection->fetchAssoc(
-            sprintf('SELECT scenario_analysis_id as id, user_id, user_name, base_model_id, name, description, area as geometry, grid_size, bounding_box, scenarios as scenario_ids, created_at, public FROM %s WHERE scenario_analysis_id = :scenario_analysis_id', Table::SCENARIO_ANALYSIS_LIST),
+            sprintf('SELECT scenario_analysis_id as id, user_id, name, description, geometry, grid_size, bounding_box, created_at, public FROM %s WHERE scenario_analysis_id = :scenario_analysis_id', Table::SCENARIO_ANALYSIS_LIST),
             ['scenario_analysis_id' => $scenarioAnalysisId->toString()]
         );
 
@@ -74,7 +72,28 @@ class ScenarioAnalysisFinder
         $result['geometry'] = json_decode($result['geometry'], true);
         $result['grid_size'] = json_decode($result['grid_size'], true);
         $result['bounding_box'] = json_decode($result['bounding_box'], true);
-        $result['scenario_ids'] = json_decode($result['scenario_ids'], true);
+
+        $baseModel = $this->connection->fetchAssoc(
+            sprintf('SELECT scenario_id as id, name, description FROM %s WHERE scenario_analysis_id = :scenario_analysis_id AND is_base_model = true', Table::SCENARIO_LIST),
+            ['scenario_analysis_id' => $scenarioAnalysisId->toString()]
+        );
+
+        if ($baseModel === false) {
+            return null;
+        }
+
+        $result['base_model'] = $baseModel;
+
+        $scenarios = $this->connection->fetchAll(
+            sprintf('SELECT scenario_id as id, name, description FROM %s WHERE scenario_analysis_id = :scenario_analysis_id AND is_scenario = true', Table::SCENARIO_LIST),
+            ['scenario_analysis_id' => $scenarioAnalysisId->toString()]
+        );
+
+        if ($scenarios === false) {
+            $scenarios = array();
+        }
+
+        $result['scenarios'] = $scenarios;
 
         return $result;
     }
