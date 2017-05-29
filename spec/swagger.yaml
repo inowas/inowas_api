@@ -3578,6 +3578,9 @@ definitions:
       user_id:
         type: "string"
         example: "4716f088-8651-43be-b3b9-815da7bfd0f3"
+      base_model_id:
+        type: "string"
+        example: "fbc2b2fd-9b39-4277-a6cd-cf1bd20f07c3"
       user_name:
         type: "string"
         example: "John Doe"
