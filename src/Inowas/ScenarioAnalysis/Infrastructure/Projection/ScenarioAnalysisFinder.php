@@ -60,15 +60,15 @@ class ScenarioAnalysisFinder
         return $results;
     }
 
-    public function findScenarioAnalysisById(ScenarioAnalysisId $scenarioAnalysisId): array
+    public function findScenarioAnalysisById(ScenarioAnalysisId $scenarioAnalysisId): ?array
     {
         $result = $this->connection->fetchAssoc(
-            sprintf('SELECT * FROM %s WHERE scenario_analysis_id = :scenario_analysis_id', Table::SCENARIO_ANALYSIS_LIST),
+            sprintf('SELECT scenario_analysis_id as id, user_id, user_name, base_model_id, name, description, area as geometry, grid_size, bounding_box, scenarios as scenario_ids, created_at, public FROM %s WHERE scenario_analysis_id = :scenario_analysis_id', Table::SCENARIO_ANALYSIS_LIST),
             ['scenario_analysis_id' => $scenarioAnalysisId->toString()]
         );
 
         if ($result === false) {
-            $result = [];
+            return null;
         }
 
         return $result;

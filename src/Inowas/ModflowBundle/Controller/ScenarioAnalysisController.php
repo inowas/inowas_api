@@ -13,9 +13,10 @@ use Inowas\Common\Grid\LayerNumber;
 use Inowas\Common\Grid\Nrow;
 use Inowas\Common\Id\ModflowId;
 use Inowas\Common\DateTime\TotalTime;
-use Inowas\Common\Id\UserId;
 use Inowas\ModflowBundle\Exception\InvalidArgumentException;
 use Inowas\ModflowBundle\Exception\InvalidUuidException;
+use Inowas\ModflowBundle\Exception\NotFoundException;
+use Inowas\ScenarioAnalysis\Model\ScenarioAnalysisId;
 use Nelmio\ApiDocBundle\Annotation\ApiDoc as ApiDoc;
 use Ramsey\Uuid\Uuid;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -65,74 +66,33 @@ class ScenarioAnalysisController extends InowasRestController
     }
 
     /**
-     * Get list of scenarioAnalysis-project by UserId.
+     * Get ScenarioAnalysis details by ScenarioAnalysisId.
      *
      * @ApiDoc(
      *   resource = true,
-     *   description = "Get list of scenarioAnalysis-project by UserId.",
+     *   description = "Get ScenarioAnalysis details by ScenarioAnalysisId.",
      *   statusCodes = {
      *     200 = "Returned when successful"
      *   }
      * )
      *
-     * @Rest\Get("/user/{userId}")
-     * @param $userId
-     * @return JsonResponse
-     */
-    public function getScenarioAnalysisModelsByUserAction($userId): JsonResponse
-    {
-        $userId = UserId::fromString($userId);
-
-        return new JsonResponse(
-            $this->get('inowas.modflowmodel.model_finder')
-                ->findModelsByBaseUserId($userId)
-        );
-    }
-
-    /**
-     * Get ScenarioAnalysis detail by BaseModelId.
-     *
-     * @ApiDoc(
-     *   resource = true,
-     *   description = "Get ScenarioAnalysis details from current user and basemodelId.",
-     *   statusCodes = {
-     *     200 = "Returned when successful"
-     *   }
-     * )
-     *
-     * @Rest\Get("/{baseModelId}")
-     * @param $baseModelId
+     * @Rest\Get("/scenarioanalyses/{id}")
+     * @param $id
      * @return JsonResponse
      * @throws InvalidUuidException
      * @throws InvalidArgumentException
      */
-    public function getScenariosAnalysisModelScenariosAction($baseModelId): JsonResponse
+    public function getScenariosAnalysisModelScenariosAction(string $id): JsonResponse
     {
-        if (! Uuid::isValid($baseModelId)){
-            throw new InvalidUuidException();
+        $this->assertUuidIsValid($id);
+        $scenarioAnalysisId = ScenarioAnalysisId::fromString($id);
+        $scenarioAnalysis = $this->get('inowas.scenarioanalysis.scenarioanalysis_finder')->findScenarioAnalysisById($scenarioAnalysisId);
+
+        if (null === $scenarioAnalysis){
+            throw NotFoundException::withMessage(sprintf('ScenarioAnalysis with id %s was not found.', $scenarioAnalysisId->toString()));
         }
 
-        $baselModel = $this->get('inowas.scenarioanalysis.scenarioanalysis_finder')->findBaseModelById(
-            ModflowId::fromString($baseModelId)
-        );
-
-        if (! is_array($baselModel) || count($baselModel) != 1){
-            throw new InvalidArgumentException('BaseModelNotFound');
-        }
-
-        $baselModel = $baselModel[0];
-        $baselModel->area = json_decode($baselModel->area);
-
-        $scenarios = $this->get('inowas.scenarioanalysis.scenarioanalysis_finder')->findScenariosByBaseModelId(
-            ModflowId::fromString($baseModelId)
-        );
-
-        return new JsonResponse(
-            [
-                'base_model' => $baselModel,
-                'scenarios' => $scenarios
-            ]
-        );
+        return new JsonResponse($scenarioAnalysis);
     }
 
     /**

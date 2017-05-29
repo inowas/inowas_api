@@ -158,5 +158,56 @@ class ScenarioAnalysisControllerTest extends EventSourcingBaseTest
         $this->assertTrue(array_key_exists('public', $saDetails));
     }
 
+    /**
+     * @test
+     */
+    public function it_scenario_analysis_by_id(): void
+    {
+        $userId = UserId::fromString($this->user->getId()->toString());
+        $apiKey = $this->user->getApiKey();
+        $username = $this->user->getName();
+
+        $modelId = ModflowId::generate();
+        $this->createModelWithName($userId, $modelId);
+
+        $scenarioAnalysisId = ScenarioAnalysisId::generate();
+        $this->commandBus->dispatch(CreateScenarioAnalysis::byUserWithBaseModelNameAndDescription(
+            $scenarioAnalysisId,
+            $userId,
+            $modelId,
+            ScenarioAnalysisName::fromString('TestName'),
+            ScenarioAnalysisDescription::fromString('TestDescription')
+        ));
+
+        $client = static::createClient();
+        $client->request(
+            'GET',
+            sprintf('/v2/scenarioanalyses/%s', $scenarioAnalysisId->toString()),
+            array(),
+            array(),
+            array('HTTP_X-AUTH-TOKEN' => $apiKey)
+        );
+
+        $response = $client->getResponse();
+        $this->assertEquals(200, $response->getStatusCode());
+        $saDetails = json_decode($response->getContent(), true);
+
+        $this->assertTrue(array_key_exists('id', $saDetails));
+        $this->assertEquals($scenarioAnalysisId->toString(), $saDetails['id']);
+        $this->assertTrue(array_key_exists('user_id', $saDetails));
+        $this->assertEquals($userId->toString(), $saDetails['user_id']);
+        $this->assertTrue(array_key_exists('user_name', $saDetails));
+        $this->assertEquals($username, $saDetails['user_name']);
+        $this->assertTrue(array_key_exists('name', $saDetails));
+        $this->assertTrue(array_key_exists('description', $saDetails));
+        $this->assertTrue(array_key_exists('geometry', $saDetails));
+        $this->assertTrue(array_key_exists('grid_size', $saDetails));
+        $this->assertTrue(array_key_exists('bounding_box', $saDetails));
+        $this->assertTrue(array_key_exists('created_at', $saDetails));
+        $this->assertTrue(array_key_exists('scenario_ids', $saDetails));
+        $this->assertTrue(array_key_exists('base_model_id', $saDetails));
+        $this->assertTrue(array_key_exists('public', $saDetails));
+    }
+
 
 }
