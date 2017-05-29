@@ -1,3 +1,4 @@
 rest_app_user:
     type: rest
     resource: Inowas\AppBundle\Controller\UserController
+    prefix:    /v2

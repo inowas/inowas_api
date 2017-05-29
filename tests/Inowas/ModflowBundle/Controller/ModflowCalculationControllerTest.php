@@ -65,7 +65,7 @@ class ModflowCalculationControllerTest extends EventSourcingBaseTest
         $client = static::createClient();
         $client->request(
             'POST',
-            '/api/calculations',
+            '/v2/calculations',
             array(),
             array(),
             array('HTTP_X-AUTH-TOKEN' => $apiKey),
@@ -73,6 +73,7 @@ class ModflowCalculationControllerTest extends EventSourcingBaseTest
         );
 
         $response = $client->getResponse();
+
         $this->assertEquals(302, $response->getStatusCode());
         $client->followRedirect();
         $response = $client->getResponse();
@@ -100,7 +101,7 @@ class ModflowCalculationControllerTest extends EventSourcingBaseTest
         $client = static::createClient();
         $client->request(
             'GET',
-            sprintf('/api/calculations/%s', $calculationId->toString()),
+            sprintf('/v2/calculations/%s', $calculationId->toString()),
             array(),
             array(),
             array('HTTP_X-AUTH-TOKEN' => $apiKey)
@@ -144,7 +145,7 @@ class ModflowCalculationControllerTest extends EventSourcingBaseTest
         $client = static::createClient();
         $client->request(
             'POST',
-            sprintf('/api/calculations/%s/calculate', $calculationId->toString()),
+            sprintf('/v2/calculations/%s/calculate', $calculationId->toString()),
             array(),
             array(),
             array('HTTP_X-AUTH-TOKEN' => $apiKey)
@@ -162,7 +163,7 @@ class ModflowCalculationControllerTest extends EventSourcingBaseTest
         $client = static::createClient();
         $client->request(
             'GET',
-            '/api/modflowmodels',
+            '/v2/modflowmodels',
             array(),
             array(),
             array('HTTP_X-AUTH-TOKEN' => Uuid::uuid4()->toString())
@@ -188,7 +189,7 @@ class ModflowCalculationControllerTest extends EventSourcingBaseTest
         $client = static::createClient();
         $client->request(
             'GET',
-            '/api/modflowmodels',
+            '/v2/modflowmodels',
             array(),
             array(),
             array('HTTP_X-AUTH-TOKEN' => $apiKey)
@@ -223,7 +224,7 @@ class ModflowCalculationControllerTest extends EventSourcingBaseTest
         $client = static::createClient();
         $client->request(
             'GET',
-            '/api/modflowmodels/public',
+            '/v2/modflowmodels/public',
             array(),
             array(),
             array('HTTP_X-AUTH-TOKEN' => $apiKey)
@@ -267,7 +268,7 @@ class ModflowCalculationControllerTest extends EventSourcingBaseTest
         $client = static::createClient();
         $client->request(
             'POST',
-            '/api/modflowmodels',
+            '/v2/modflowmodels',
             array(),
             array(),
             array('CONTENT_TYPE' => 'application/json', 'HTTP_X-AUTH-TOKEN' => $apiKey),
@@ -307,7 +308,7 @@ class ModflowCalculationControllerTest extends EventSourcingBaseTest
         $client = static::createClient();
         $client->request(
             'POST',
-            '/api/modflowmodels',
+            '/v2/modflowmodels',
             array(),
             array(),
             array('CONTENT_TYPE' => 'application/json', 'HTTP_X-AUTH-TOKEN' => $apiKey),

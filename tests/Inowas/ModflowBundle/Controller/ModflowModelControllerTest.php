@@ -53,7 +53,7 @@ class ModflowModelControllerTest extends EventSourcingBaseTest
         $client = static::createClient();
         $client->request(
             'GET',
-            '/api/modflowmodels',
+            '/v2/modflowmodels',
             array(),
             array(),
             array()
@@ -72,7 +72,7 @@ class ModflowModelControllerTest extends EventSourcingBaseTest
         $client = static::createClient();
         $client->request(
             'GET',
-            '/api/modflowmodels',
+            '/v2/modflowmodels',
             array(),
             array(),
             array('HTTP_X-AUTH-TOKEN' => Uuid::uuid4()->toString())
@@ -98,7 +98,7 @@ class ModflowModelControllerTest extends EventSourcingBaseTest
         $client = static::createClient();
         $client->request(
             'GET',
-            '/api/modflowmodels',
+            '/v2/modflowmodels',
             array(),
             array(),
             array('HTTP_X-AUTH-TOKEN' => $apiKey)
@@ -133,7 +133,7 @@ class ModflowModelControllerTest extends EventSourcingBaseTest
         $client = static::createClient();
         $client->request(
             'GET',
-            '/api/modflowmodels/public',
+            '/v2/modflowmodels/public',
             array(),
             array(),
             array('HTTP_X-AUTH-TOKEN' => $apiKey)
@@ -177,7 +177,7 @@ class ModflowModelControllerTest extends EventSourcingBaseTest
         $client = static::createClient();
         $client->request(
             'POST',
-            '/api/modflowmodels',
+            '/v2/modflowmodels',
             array(),
             array(),
             array('CONTENT_TYPE' => 'application/json', 'HTTP_X-AUTH-TOKEN' => $apiKey),
@@ -217,7 +217,7 @@ class ModflowModelControllerTest extends EventSourcingBaseTest
         $client = static::createClient();
         $client->request(
             'POST',
-            '/api/modflowmodels',
+            '/v2/modflowmodels',
             array(),
             array(),
             array('CONTENT_TYPE' => 'application/json', 'HTTP_X-AUTH-TOKEN' => $apiKey),

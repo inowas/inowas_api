@@ -15,13 +15,13 @@ security:
 
     firewalls:
         credentials:
-            pattern: ^/api/users/credentials
+            pattern: ^/v2/users/credentials
             security: false
         apidoc:
             pattern: ^/api/doc
             security: false
         api:
-            pattern: ^/api
+            pattern: ^/v2
             guard:
                 authenticators:
                     - inowas.app.token_authenticator

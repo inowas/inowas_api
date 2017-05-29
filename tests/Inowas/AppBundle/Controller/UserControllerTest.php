@@ -44,7 +44,7 @@ class UserControllerTest extends WebTestCase
         $client = static::createClient();
         $client->request(
             'POST',
-            '/api/users/credentials.json',
+            '/v2/users/credentials.json',
             array(
                 'username' => $this->user->getUsername(),
                 'password' => 'testUserPassword'
@@ -63,7 +63,7 @@ class UserControllerTest extends WebTestCase
         $client = static::createClient();
         $client->request(
             'POST',
-            '/api/users/credentials.json',
+            '/v2/users/credentials.json',
             array(
                 'username' => $this->user->getUsername(),
                 'password' => 'sadkjfh'
