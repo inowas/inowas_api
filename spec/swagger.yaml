@@ -3026,7 +3026,7 @@ paths:
           schema:
             type: "array"
             items:
-              $ref: '#/definitions/ScenarioAnalysis'
+              $ref: '#/definitions/ScenarioAnalysisListItem'
       security:
         - api_key: []
     post:
@@ -3072,7 +3072,7 @@ paths:
           schema:
             type: "array"
             items:
-              $ref: '#/definitions/ScenarioAnalysis'
+              $ref: '#/definitions/ScenarioAnalysisDetails'
       security:
         - api_key: []
 
@@ -3082,7 +3082,7 @@ paths:
         - "scenarioanalysis"
       summary: "Returns the scenarioAnalysis details by id"
       description: 'Returns the scenarioAnalysis details by id'
-      operationId: "scenarioAnalysesMyProjects"
+      operationId: "getScenarioAnalysisById"
       produces:
         - "application/json"
       parameters:
@@ -3095,7 +3095,7 @@ paths:
         '200':
           description: "successful operation"
           schema:
-            $ref: '#/definitions/ScenarioAnalysis'
+            $ref: '#/definitions/ScenarioAnalysisDetails'
       security:
         - api_key: []
 
@@ -3568,8 +3568,8 @@ definitions:
       id:
         type: "string"
         example: "573efe5d-8dfd-4acf-9da5-fe628099913f"
-  ScenarioAnalysis:
-    title: "ScenarioAnalyses"
+  ScenarioAnalysisListItem:
+    title: "ScenarioAnalysisListItem"
     type: "object"
     properties:
       id:
@@ -3587,26 +3587,67 @@ definitions:
       description:
         type: "string"
         example: "ScenarioAnalysis of Hanoi Area 2005-2007"
-      geometry:
-        $ref: '#/definitions/Geometry'
-      grid_size:
-        $ref: '#/definitions/GridSize'
-      bounding_box:
-        $ref: '#/definitions/BoundingBox'
       created_at:
         type: "string"
         example: "2017-05-08T08:03:42+00:00"
-      base_model_id:
+      public:
+        type: "boolean"
+        example: true
+  ScenarioAnalysisDetails:
+    title: "ScenarioAnalysisDetails"
+    type: "object"
+    properties:
+      id:
         type: "string"
         example: "fbc2b2fd-9b39-4277-a6cd-cf1bd20f07c3"
-      scenario_ids:
+      user_id:
+        type: "string"
+        example: "4716f088-8651-43be-b3b9-815da7bfd0f3"
+      user_name:
+        type: "string"
+        example: "John Doe"
+      name:
+        type: "string"
+        example: "Hanoi 2005-2007"
+      description:
+        type: "string"
+        example: "ScenarioAnalysis of Hanoi Area 2005-2007"
+      created_at:
+        type: "string"
+        example: "2017-05-08T08:03:42+00:00"
+      base_model:
+        type: "object"
+        properties:
+          id:
+            type: "string"
+            example: "fbc2b2fd-9b39-4277-a6cd-cf1bd20f07c3"
+          name:
+            type: "string"
+            example: "MyBaseModelName"
+          description:
+            type: "string"
+            example: "MyBaseModelDescription"
+          geometry:
+            $ref: '#/definitions/Geometry'
+          grid_size:
+            $ref: '#/definitions/GridSize'
+          bounding_box:
+            $ref: '#/definitions/BoundingBox'
+      scenarios:
         type: "array"
         items:
-          type: "string"
+          type: "object"
+          properties:
+            name:
+              type: "string"
+              example: "ScenarioName"
+            description:
+              type: "string"
+              example: "ScenarioDescription"
         example:
-          - "fbc2b2fd-9b39-4277-a6cd-cf1bd20f07c3"
-          - "fbc2b2fd-9b39-4277-a6cd-cf1bd20f07c3"
-          - "fbc2b2fd-9b39-4277-a6cd-cf1bd20f07c3"
+          - { "id": "fbc2b2fd-9b39-4277-a6cd-cf1bd20f07c3", "name": "ScenarioName", "description": "ScenarioDescription" }
+          - { "id": "fbc2b2fd-9b39-4277-a6cd-cf1bd20f07c3", "name": "ScenarioName", "description": "ScenarioDescription" }
+          - { "id": "fbc2b2fd-9b39-4277-a6cd-cf1bd20f07c3", "name": "ScenarioName", "description": "ScenarioDescription" }
       public:
         type: "boolean"
         example: true
