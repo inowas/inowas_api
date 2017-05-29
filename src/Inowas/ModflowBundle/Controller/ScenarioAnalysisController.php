@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Inowas\ModflowBundle\Controller;
 
 use FOS\RestBundle\Controller\Annotations as Rest;
-use Inowas\AppBundle\Model\User;
 use Inowas\Common\Calculation\BudgetType;
 use Inowas\Common\Calculation\HeadData;
 use Inowas\Common\Calculation\ResultType;
@@ -38,7 +37,7 @@ class ScenarioAnalysisController extends InowasRestController
      * @Rest\Get("/scenarioanalyses")
      * @return JsonResponse
      */
-    public function getMyScenarioAnalysisProjectsAction(): JsonResponse
+    public function getMyScenarioAnalysesAction(): JsonResponse
     {
         $userId = $this->getUserId();
         $result = $this->get('inowas.scenarioanalysis.scenarioanalysis_finder')->findScenarioAnalysesByUserId($userId);
@@ -59,7 +58,7 @@ class ScenarioAnalysisController extends InowasRestController
      * @Rest\Get("/scenarioanalyses/public")
      * @return JsonResponse
      */
-    public function getScenarioAnalysisPublicProjectsAction(): JsonResponse
+    public function getPublicScenarioAnalysesPublicProjects(): JsonResponse
     {
         $result = $this->get('inowas.scenarioanalysis.scenarioanalysis_finder')->findPublicScenarioAnalyses();
         return new JsonResponse($result);

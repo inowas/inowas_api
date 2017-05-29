@@ -8,9 +8,9 @@ info:
   license:
     name: "MIT"
     url: "https://opensource.org/licenses/MIT"
-#host: "api.inowas.hydro.tu-dresden.de"
-host: "localhost:8080"
-basePath: "/api"
+host: "modflow.railsdev.de"
+#host: "localhost:8080"
+basePath: "/v2"
 tags:
   - name: "user"
     description: "Everything about the users"
@@ -24,7 +24,7 @@ tags:
     description: "The ScenarioAnalyses Tool (T07)"
 schemes:
   - "http"
-  #- "https"
+  - "https"
 paths:
   /users/credentials:
     post:
@@ -3245,7 +3245,7 @@ definitions:
         example: "ModflowModel of Hanoi Area 2005-2007"
       geometry:
         $ref: '#/definitions/PolygonGeometry'
-      lenth_unit:
+      length_unit:
         $ref: '#/definitions/LengthUnit'
       time_unit:
         $ref: '#/definitions/TimeUnit'
