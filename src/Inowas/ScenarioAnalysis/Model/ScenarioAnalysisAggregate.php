@@ -39,16 +39,16 @@ class ScenarioAnalysisAggregate extends AggregateRoot
     /** @var array */
     protected $scenarios;
 
-    public static function create(ScenarioAnalysisId $scenarioAnalysisId, UserId $userId, ModflowId $modflowId, ScenarioAnalysisName $name, ScenarioAnalysisDescription $description): ScenarioAnalysisAggregate
+    public static function create(ScenarioAnalysisId $scenarioAnalysisId, UserId $userId, ModflowId $baseModelId, ModflowId $baseModelCalculationId, ScenarioAnalysisName $name, ScenarioAnalysisDescription $description): ScenarioAnalysisAggregate
     {
         $self = new self();
-        $self->baseModelId = $modflowId;
+        $self->baseModelId = $baseModelId;
         $self->ownerId = $userId;
         $self->name = $name;
         $self->description = $description;
         $self->scenarios = [];
 
-        $self->recordThat(ScenarioAnalysisWasCreated::byUserWithId($scenarioAnalysisId, $userId, $modflowId, $name, $description));
+        $self->recordThat(ScenarioAnalysisWasCreated::byUserWithId($scenarioAnalysisId, $userId, $baseModelId, $baseModelCalculationId, $name, $description));
         return $self;
     }
 

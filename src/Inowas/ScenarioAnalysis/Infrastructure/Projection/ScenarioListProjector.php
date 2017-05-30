@@ -43,7 +43,6 @@ class ScenarioListProjector extends AbstractDoctrineConnectionProjector
 
     public function onScenarioAnalysisWasCreated(ScenarioAnalysisWasCreated $event)
     {
-
         $baseModelName = $this->modelFinder->getModelNameByModelId($event->baseModelId());
         $baseModelDescription = $this->modelFinder->getModelDescriptionByModelId($event->baseModelId());
 
@@ -54,6 +53,7 @@ class ScenarioListProjector extends AbstractDoctrineConnectionProjector
             'user_id' => $event->userId()->toString(),
             'name' => $baseModelName->toString(),
             'description' => $baseModelDescription->toString(),
+            'calculation_id' => $event->baseModelCalculationId()->toString(),
             'is_base_model' => 1,
             'is_scenario' => 0,
             'created_at' => date_format($event->createdAt(), DATE_ATOM),

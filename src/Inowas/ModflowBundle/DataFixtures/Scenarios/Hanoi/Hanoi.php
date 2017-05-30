@@ -535,17 +535,21 @@ class Hanoi extends LoadScenarioBase
         /* ------- */
 
         /*
-         * Begin add Scenario 1
+         * Create ScenarioAnalysis from BaseModel
          */
         $scenarioAnalysisId = ScenarioAnalysisId::generate();
         $commandBus->dispatch(CreateScenarioAnalysis::byUserWithBaseModelNameAndDescription(
             $scenarioAnalysisId,
             $ownerId,
             $modelId,
+            $calculationId,
             ScenarioAnalysisName::fromString('ScenarioAnalysis: Hanoi 2005-2007'),
             ScenarioAnalysisDescription::fromString('ScenarioAnalysis: Hanoi 2005-2007')
         ));
 
+        /*
+        * Begin add Scenario 1
+        */
         $scenarioId = ModflowId::generate();
         $commandBus->dispatch(CreateScenario::byUserWithBaseModelAndScenarioId(
             $scenarioAnalysisId,

@@ -431,12 +431,13 @@ abstract class EventSourcingBaseTest extends WebTestCase
         return $wellBoundary;
     }
     
-    protected function createScenarioAnalysis(ScenarioAnalysisId $id, UserId $ownerId, ModflowId $modelId, ScenarioAnalysisName $name, ScenarioAnalysisDescription $description): void
+    protected function createScenarioAnalysis(ScenarioAnalysisId $id, UserId $ownerId, ModflowId $modelId, ModflowId $calculationId, ScenarioAnalysisName $name, ScenarioAnalysisDescription $description): void
     {
         $this->commandBus->dispatch(CreateScenarioAnalysis::byUserWithBaseModelNameAndDescription(
             $id,
             $ownerId,
             $modelId,
+            $calculationId,
             $name,
             $description
         ));

@@ -24,6 +24,7 @@ final class CreateScenarioAnalysisHandler
             $command->scenarioAnalysisId(),
             $command->userId(),
             $command->baseModelId(),
+            $command->baseModelCalculationId(),
             $command->name(),
             $command->description()
         );

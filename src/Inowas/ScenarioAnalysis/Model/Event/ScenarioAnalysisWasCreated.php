@@ -20,6 +20,9 @@ class ScenarioAnalysisWasCreated extends AggregateChanged
     /** @var ModflowId */
     private $baseModelId;
 
+    /** @var ModflowId */
+    private $baseModelCalculationId;
+
     /** @var  UserId */
     private $userId;
 
@@ -29,20 +32,21 @@ class ScenarioAnalysisWasCreated extends AggregateChanged
     /** @var ScenarioAnalysisDescription */
     private $description;
 
-
-    public static function byUserWithId(ScenarioAnalysisId $id, UserId $userId, ModflowId $baseModelId, ScenarioAnalysisName $name, ScenarioAnalysisDescription $description): ScenarioAnalysisWasCreated
+    public static function byUserWithId(ScenarioAnalysisId $id, UserId $userId, ModflowId $baseModelId, ModflowId $baseModelCalculationId, ScenarioAnalysisName $name, ScenarioAnalysisDescription $description): ScenarioAnalysisWasCreated
     {
         $event = self::occur($id->toString(),[
             'basemodel_id' => $baseModelId->toString(),
+            'basemodel_calculation_id' => $baseModelCalculationId->toString(),
             'user_id' => $userId->toString(),
             'name' => $name->toString(),
-            'description' => $description->toString()
+            'description' => $description->toString(),
         ]);
 
         $event->baseModelId = $baseModelId;
         $event->userId = $userId;
         $event->name = $name;
         $event->description = $description;
+        $event->baseModelCalculationId = $baseModelCalculationId;
 
         return $event;
     }
@@ -90,5 +94,14 @@ class ScenarioAnalysisWasCreated extends AggregateChanged
         }
 
         return $this->description;
+    }
+
+    public function baseModelCalculationId(): ModflowId
+    {
+        if ($this->baseModelCalculationId === null){
+            $this->baseModelCalculationId = ModflowId::fromString($this->payload['basemodel_calculation_id']);
+        }
+
+        return $this->baseModelCalculationId;
     }
 }

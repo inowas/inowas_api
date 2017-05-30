@@ -66,10 +66,12 @@ class ScenarioAnalysisControllerTest extends EventSourcingBaseTest
         $this->createModelWithName($userId, $modelId);
 
         $scenarioAnalysisId = ScenarioAnalysisId::generate();
+        $calculationId = ModflowId::generate();
         $this->commandBus->dispatch(CreateScenarioAnalysis::byUserWithBaseModelNameAndDescription(
             $scenarioAnalysisId,
             $userId,
             $modelId,
+            $calculationId,
             ScenarioAnalysisName::fromString('TestName'),
             ScenarioAnalysisDescription::fromString('TestDescription')
         ));
@@ -121,10 +123,12 @@ class ScenarioAnalysisControllerTest extends EventSourcingBaseTest
         $this->createModelWithName($userId, $modelId);
 
         $scenarioAnalysisId = ScenarioAnalysisId::generate();
+        $calculationId = ModflowId::generate();
         $this->commandBus->dispatch(CreateScenarioAnalysis::byUserWithBaseModelNameAndDescription(
             $scenarioAnalysisId,
             $userId,
             $modelId,
+            $calculationId,
             ScenarioAnalysisName::fromString('TestName'),
             ScenarioAnalysisDescription::fromString('TestDescription')
         ));
@@ -173,21 +177,14 @@ class ScenarioAnalysisControllerTest extends EventSourcingBaseTest
         $this->createModelWithName($userId, $modelId);
 
         $scenarioAnalysisId = ScenarioAnalysisId::generate();
+        $baseModelCalculationId = ModflowId::generate();
         $this->commandBus->dispatch(CreateScenarioAnalysis::byUserWithBaseModelNameAndDescription(
             $scenarioAnalysisId,
             $userId,
             $modelId,
+            $baseModelCalculationId,
             ScenarioAnalysisName::fromString('TestName'),
             ScenarioAnalysisDescription::fromString('TestDescription')
-        ));
-
-        $baseModelCalculationId = ModflowId::generate();
-        $this->commandBus->dispatch(CreateModflowModelCalculation::byUserWithModelId(
-            $baseModelCalculationId,
-            $userId,
-            $modelId,
-            DateTime::fromDateTime(new \DateTime('2010-01-01')),
-            DateTime::fromDateTime(new \DateTime('2015-01-01'))
         ));
 
         $scenarioId = ModflowId::generate();

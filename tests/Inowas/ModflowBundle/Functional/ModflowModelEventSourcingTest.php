@@ -824,7 +824,8 @@ class ModflowModelEventSourcingTest extends EventSourcingBaseTest
         $this->createModelWithName($ownerId, $modelId);
 
         $scenarioAnalysisId = ScenarioAnalysisId::generate();
-        $this->createScenarioAnalysis($scenarioAnalysisId, $ownerId, $modelId, ScenarioAnalysisName::fromString('TestName'), ScenarioAnalysisDescription::fromString('TestDescription'));
+        $calculationId = ModflowId::generate();
+        $this->createScenarioAnalysis($scenarioAnalysisId, $ownerId, $modelId, $calculationId, ScenarioAnalysisName::fromString('TestName'), ScenarioAnalysisDescription::fromString('TestDescription'));
 
         $scenarioAnalysis = $this->container->get('inowas.scenarioanalysis.scenarioanalysis_finder')->findScenarioAnalysisDetailsById($scenarioAnalysisId);
         $this->assertEquals($scenarioAnalysisId->toString(), $scenarioAnalysis['id']);
@@ -852,7 +853,8 @@ class ModflowModelEventSourcingTest extends EventSourcingBaseTest
         $this->assertCount(5, $baseModelBoundaries);
 
         $scenarioAnalysisId = ScenarioAnalysisId::generate();
-        $this->createScenarioAnalysis($scenarioAnalysisId, $ownerId, $modelId, ScenarioAnalysisName::fromString('TestName'), ScenarioAnalysisDescription::fromString('TestDescription'));
+        $calculationId = ModflowId::generate();
+        $this->createScenarioAnalysis($scenarioAnalysisId, $ownerId, $modelId, $calculationId, ScenarioAnalysisName::fromString('TestName'), ScenarioAnalysisDescription::fromString('TestDescription'));
 
         $scenarioAnalysis = $this->container->get('inowas.scenarioanalysis.scenarioanalysis_finder')->findScenarioAnalysisDetailsById($scenarioAnalysisId);
         $this->assertEquals($scenarioAnalysisId->toString(), $scenarioAnalysis['id']);
@@ -878,7 +880,8 @@ class ModflowModelEventSourcingTest extends EventSourcingBaseTest
         $this->assertCount(4, $modelBoundaries);
 
         $scenarioAnalysisId = ScenarioAnalysisId::generate();
-        $this->createScenarioAnalysis($scenarioAnalysisId, $ownerId, $modelId, ScenarioAnalysisName::fromString('TestName'), ScenarioAnalysisDescription::fromString('TestDescription'));
+        $calculationId = ModflowId::generate();
+        $this->createScenarioAnalysis($scenarioAnalysisId, $ownerId, $modelId, $calculationId, ScenarioAnalysisName::fromString('TestName'), ScenarioAnalysisDescription::fromString('TestDescription'));
 
         $scenarioId = ModflowId::generate();
         $this->createScenario($scenarioAnalysisId, $ownerId, $modelId, $scenarioId, ModelName::fromString('TestScenarioName'), ModelDescription::fromString('TestScenarioDescription'));
@@ -900,7 +903,8 @@ class ModflowModelEventSourcingTest extends EventSourcingBaseTest
         $this->commandBus->dispatch(AddBoundary::to($modelId, $ownerId, $well = $this->createWellBoundary()));
 
         $scenarioAnalysisId = ScenarioAnalysisId::generate();
-        $this->createScenarioAnalysis($scenarioAnalysisId, $ownerId, $modelId, ScenarioAnalysisName::fromString('TestName'), ScenarioAnalysisDescription::fromString('TestDescription'));
+        $calculationId = ModflowId::generate();
+        $this->createScenarioAnalysis($scenarioAnalysisId, $ownerId, $modelId, $calculationId, ScenarioAnalysisName::fromString('TestName'), ScenarioAnalysisDescription::fromString('TestDescription'));
 
         $scenarioId = ModflowId::generate();
         $this->createScenario($scenarioAnalysisId, $ownerId, $modelId, $scenarioId, ModelName::fromString('TestScenarioName'), ModelDescription::fromString('TestScenarioDescription'));

@@ -22,6 +22,7 @@ class CreateScenarioAnalysis extends Command implements PayloadConstructable
         ScenarioAnalysisId $scenarioAnalysisId,
         UserId $userId,
         ModflowId $baseModelId,
+        ModflowId $baseModelCalculationId,
         ScenarioAnalysisName $name,
         ScenarioAnalysisDescription $description
     ): CreateScenarioAnalysis
@@ -30,6 +31,7 @@ class CreateScenarioAnalysis extends Command implements PayloadConstructable
             'scenarioanalysis_id' => $scenarioAnalysisId->toString(),
             'user_id' => $userId->toString(),
             'basemodel_id' => $baseModelId->toString(),
+            'basemodel_calculation_id' => $baseModelCalculationId->toString(),
             'name' => $name->toString(),
             'description' => $description->toString()
         ]);
@@ -58,5 +60,10 @@ class CreateScenarioAnalysis extends Command implements PayloadConstructable
     public function description(): ScenarioAnalysisDescription
     {
         return ScenarioAnalysisDescription::fromString($this->payload['description']);
+    }
+
+    public function baseModelCalculationId(): ModflowId
+    {
+        return ModflowId::fromString($this->payload['basemodel_calculation_id']);
     }
 }
