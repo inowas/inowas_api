@@ -198,17 +198,6 @@ class ModflowModelEventSourcingTest extends EventSourcingBaseTest
         $this->assertEquals(SoilmodelDescription::fromString('testSoilmodelDescription'), $soilmodel->description());
     }
 
-    public function test_create_soilmodel_with_one_default_layer(): void
-    {
-        $ownerId = UserId::generate();
-        $soilModelId = SoilmodelId::generate();
-        $this->createSoilmodel($ownerId, $soilModelId);
-
-        /** @var SoilmodelAggregate $soilmodel */
-        $soilmodel = $this->container->get('soil_model_list')->getAggregateRoot($soilModelId->toString());
-        $this->assertCount(1, $soilmodel->layers());
-    }
-
     public function test_add_layer_to_soilmodel(): void
     {
         $ownerId = UserId::generate();
@@ -228,7 +217,7 @@ class ModflowModelEventSourcingTest extends EventSourcingBaseTest
 
         /** @var SoilmodelAggregate $soilmodel */
         $soilmodel = $this->container->get('soil_model_list')->getAggregateRoot($soilModelId->toString());
-        $this->assertCount(2, $soilmodel->layers());
+        $this->assertCount(1, $soilmodel->layers());
         $this->assertEquals($layer, $soilmodel->getGeologicalLayer($geologicalLayerId));
     }
 
@@ -331,6 +320,37 @@ class ModflowModelEventSourcingTest extends EventSourcingBaseTest
         $this->commandBus->dispatch(AddBoundary::to($modelId, $ownerId, $rchBoundary));
         $activeCells = $this->container->get('inowas.modflowmodel.boundaries_finder')->findBoundaryActiveCells($modelId, $rchBoundary->boundaryId());
         $this->assertCount(1430, $activeCells->cells());
+    }
+
+    public function test_create_steady_calculation_check_dis_package(): void
+    {
+        $ownerId = UserId::generate();
+        $modelId = ModflowId::generate();
+        $this->createModelWithSoilmodel($ownerId, $modelId);
+        $start = DateTime::fromDateTime(new \DateTime('2015-01-01'));
+        $end = DateTime::fromDateTime(new \DateTime('2015-01-31'));
+
+        $calculationId = ModflowId::generate();
+        $this->commandBus->dispatch(CreateModflowModelCalculation::byUserWithModelId(
+            $calculationId,
+            $ownerId,
+            $modelId,
+            $start,
+            $end
+        ));
+
+        $config = $this->container->get('inowas.modflowcalculation.calculation_configuration_finder')->getConfigurationJson($calculationId);
+
+        $this->assertJson($config);
+        $obj = json_decode($config);
+        $this->assertEquals($calculationId->toString(), $obj->id);
+        $this->assertEquals('flopy_calculation', $obj->type);
+        $this->assertObjectHasAttribute('data', $obj);
+        $data = $obj->data;
+        $this->assertObjectHasAttribute('packages', $data);
+        $this->assertContains('dis', $data->packages);
+        $dis =  $data->dis;
+        $this->assertObjectHasAttribute('top', $dis);
     }
 
     public function test_create_steady_calculation_from_model_with_two_well_boundaries(): void

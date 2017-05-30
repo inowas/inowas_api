@@ -4,11 +4,18 @@ declare(strict_types=1);
 
 namespace Inowas\ModflowModel\Model\Handler;
 
+use Inowas\Common\Modflow\Laytyp;
+use Inowas\Common\Soilmodel\GeologicalLayer;
+use Inowas\Common\Soilmodel\GeologicalLayerDescription;
+use Inowas\Common\Soilmodel\GeologicalLayerId;
+use Inowas\Common\Soilmodel\GeologicalLayerName;
+use Inowas\Common\Soilmodel\GeologicalLayerNumber;
 use Inowas\Common\Soilmodel\SoilmodelId;
 use Inowas\GeoTools\Service\GeoTools;
 use Inowas\ModflowModel\Model\Command\CreateModflowModel;
 use Inowas\ModflowModel\Model\ModflowModelList;
 use Inowas\ModflowModel\Model\ModflowModelAggregate;
+use Inowas\Soilmodel\Model\Command\AddGeologicalLayerToSoilmodel;
 use Inowas\Soilmodel\Model\Command\CreateSoilmodel;
 use Prooph\ServiceBus\CommandBus;
 
@@ -40,6 +47,17 @@ final class CreateModflowModelHandler
             $command->userId(),
             $soilmodelId
         ));
+
+        $geologicalLayer = GeologicalLayer::fromParams(
+            GeologicalLayerId::generate(),
+            Laytyp::fromInt(Laytyp::TYPE_CONFINED),
+            GeologicalLayerNumber::fromInteger(0),
+            GeologicalLayerName::fromString('Layer 1'),
+            GeologicalLayerDescription::fromString('Layer 1'),
+            null
+        );
+
+        $this->commandBus->dispatch(AddGeologicalLayerToSoilmodel::forSoilmodel($command->userId(), $soilmodelId, $geologicalLayer));
 
         $modflowModel = ModflowModelAggregate::create(
             $command->modflowModelId(),

@@ -30,6 +30,9 @@ class ModflowCalculationListenerCommand extends ContainerAwareCommand
         $callback = function($msg) {
             echo ' [+] Submitting result metadata from calculation', "\n";
             $response = ModflowCalculationResponse::fromJson($msg->body);
+
+            echo $msg->body;
+
             $msg->delivery_info['channel']->basic_ack($msg->delivery_info['delivery_tag']);
             $commandBus = $this->getContainer()->get('prooph_service_bus.modflow_command_bus');
             $commandBus->dispatch(UpdateCalculationResults::withResponse($response->calculationId(), $response));
