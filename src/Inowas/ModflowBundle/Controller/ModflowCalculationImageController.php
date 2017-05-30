@@ -44,7 +44,7 @@ class ModflowCalculationImageController extends InowasRestController
      * @Rest\QueryParam(name="upper", requirements="\d+", default=95, description="Percentile spectrum max")
      * @Rest\QueryParam(name="loper", requirements="\d+", default=5, description="Percentile spectrum min")
      */
-    public function getCalculationImageHeadResultsByTypeLayerAndTotim(ParamFetcher $paramFetcher, string $id, string $type, string $layer, string $totim): Response
+    public function getCalculationImageHeadResultsByTypeLayerAndTotimAction(ParamFetcher $paramFetcher, string $id, string $type, string $layer, string $totim): Response
     {
 
         $this->assertUuidIsValid($id);
