@@ -73,7 +73,7 @@ class ScenarioAnalysisFinder
         $result['base_model'] = $baseModel;
 
         $scenarios = $this->connection->fetchAll(
-            sprintf('SELECT scenario_id as id, name, description, calculation_id FROM %s WHERE scenario_analysis_id = :scenario_analysis_id AND is_scenario = true', Table::SCENARIO_LIST),
+            sprintf('SELECT scenario_id as id, name, description, calculation_id FROM %s WHERE scenario_analysis_id = :scenario_analysis_id AND is_scenario = true ORDER BY created_at', Table::SCENARIO_LIST),
             ['scenario_analysis_id' => $scenarioAnalysisId->toString()]
         );
 
