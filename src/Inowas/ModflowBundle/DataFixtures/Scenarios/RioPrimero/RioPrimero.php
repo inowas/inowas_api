@@ -2,7 +2,7 @@
 
 namespace Inowas\ModflowBundle\DataFixtures\Scenarios\RioPrimero;
 
-use Inowas\Common\Boundaries\AreaBoundary;
+use Inowas\Common\Boundaries\Area;
 use Inowas\Common\Boundaries\BoundaryName;
 use Inowas\Common\Boundaries\WellBoundary;
 use Inowas\Common\Boundaries\WellDateTimeValue;
@@ -20,8 +20,8 @@ use Inowas\Common\Id\BoundaryId;
 use Inowas\Common\Id\ModflowId;
 use Inowas\Common\Id\UserId;
 use Inowas\Common\Modflow\Laytyp;
-use Inowas\Common\Modflow\ModelName;
-use Inowas\Common\Modflow\ModelDescription;
+use Inowas\Common\Modflow\LengthUnit;
+use Inowas\Common\Modflow\TimeUnit;
 use Inowas\Common\Soilmodel\Conductivity;
 use Inowas\Common\Soilmodel\HBottom;
 use Inowas\Common\Soilmodel\HTop;
@@ -34,9 +34,6 @@ use Inowas\Common\Soilmodel\Storage;
 use Inowas\ModflowCalculation\Model\Command\CreateModflowModelCalculation;
 use Inowas\ModflowModel\Model\Command\AddBoundary;
 use Inowas\ModflowModel\Model\Command\ChangeModflowModelBoundingBox;
-use Inowas\ModflowModel\Model\Command\ChangeModflowModelDescription;
-use Inowas\ModflowModel\Model\Command\ChangeModflowModelGridSize;
-use Inowas\ModflowModel\Model\Command\ChangeModflowModelName;
 use Inowas\ModflowModel\Model\Command\ChangeModflowModelSoilmodelId;
 use Inowas\ModflowModel\Model\Command\CreateModflowModel;
 use Inowas\ModflowBundle\DataFixtures\Scenarios\LoadScenarioBase;
@@ -75,38 +72,39 @@ class RioPrimero extends LoadScenarioBase
         $commandBus = $this->container->get('prooph_service_bus.modflow_command_bus');
         $ownerId = UserId::fromString($this->ownerId);
         $modelId = ModflowId::generate();
-        $commandBus->dispatch(CreateModflowModel::newWithId($ownerId, $modelId));
-        $commandBus->dispatch(ChangeModflowModelName::forModflowModel($ownerId, $modelId, ModelName::fromString('Rio Primero Base Model')));
-        $commandBus->dispatch(ChangeModflowModelDescription::forModflowModel(
+
+        $area = Area::create(
+            BoundaryId::generate(),
+            BoundaryName::fromString('Rio Primero Area'),
+            new Polygon(
+                array(
+                    array(
+                        array(-63.687336, -31.313615),
+                        array(-63.687336, -31.367449),
+                        array(-63.569260, -31.367449),
+                        array(-63.569260, -31.313615),
+                        array(-63.687336, -31.313615)
+                    )
+                ), 4326
+            ));
+
+        $gridSize = GridSize::fromXY(75, 40);
+
+        $commandBus->dispatch(CreateModflowModel::newWithIdAndUnits(
             $ownerId,
             $modelId,
-            ModelDescription::fromString('Base Model for the scenario analysis 2020 Rio Primero.'))
-        );
+            $area,
+            $gridSize,
+            TimeUnit::fromInt(TimeUnit::DAYS),
+            LengthUnit::fromInt(LengthUnit::METERS)
+        ));
 
         $box = $geoTools->projectBoundingBox(BoundingBox::fromCoordinates(-63.687336, -63.569260, -31.367449, -31.313615, 4326), Srid::fromInt(4326));
         $boundingBox = BoundingBox::fromEPSG4326Coordinates($box->xMin(), $box->xMax(), $box->yMin(), $box->yMax(), $box->dX(), $box->dY());
         $commandBus->dispatch(ChangeModflowModelBoundingBox::forModflowModel($ownerId, $modelId, $boundingBox));
 
-        $gridSize = GridSize::fromXY(75, 40);
-        $commandBus->dispatch(ChangeModflowModelGridSize::forModflowModel($ownerId, $modelId, $gridSize));
-
-        $area = AreaBoundary::create(BoundaryId::generate());
-        $area = $area->setName(BoundaryName::fromString('Rio Primero Area'));
-        $area = $area->setGeometry(Geometry::fromPolygon(new Polygon(
-            array(
-                array(
-                    array(-63.687336, -31.313615),
-                    array(-63.687336, -31.367449),
-                    array(-63.569260, -31.367449),
-                    array(-63.569260, -31.313615),
-                    array(-63.687336, -31.313615)
-                )
-            ), 4326
-        )));
-        $commandBus->dispatch(AddBoundary::to($ownerId, $modelId, $area));
-
         $soilModelId = SoilmodelId::generate();
-        $commandBus->dispatch(ChangeModflowModelSoilmodelId::forModflowModel($modelId, $soilModelId));
+        $commandBus->dispatch(ChangeModflowModelSoilmodelId::forModflowModel($ownerId, $modelId, $soilModelId));
         $commandBus->dispatch(CreateSoilmodel::byUserWithModelId($ownerId, $soilModelId));
         $commandBus->dispatch(ChangeSoilmodelName::forSoilmodel($ownerId, $soilModelId, SoilmodelName::fromString('SoilModel Río Primero')));
         $commandBus->dispatch(ChangeSoilmodelDescription::forSoilmodel($ownerId, $soilModelId, SoilmodelDescription::fromString('SoilModel for Río Primero Area')));
@@ -215,7 +213,7 @@ class RioPrimero extends LoadScenarioBase
 
             echo sprintf("Add well with name %s.\r\n", $data['name']);
             $wellBoundary = $wellBoundary->addPumpingRate(WellDateTimeValue::fromParams($data['date'], $data['pumpingRate']));
-            $commandBus->dispatch(AddBoundary::to($ownerId, $modelId, $wellBoundary));
+            $commandBus->dispatch(AddBoundary::to($modelId, $ownerId, $wellBoundary));
         }
 
         /* Add Head Results */
