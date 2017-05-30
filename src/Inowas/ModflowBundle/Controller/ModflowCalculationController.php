@@ -279,7 +279,7 @@ class ModflowCalculationController extends InowasRestController
      * @Rest\Get("/calculations/{id}/results/types/{type}/layers/{layer}/totims/{totim}")
      * @return JsonResponse
      */
-    public function getCalculationHeadResultsByTypeLayerAndTotim(string $id, string $type, string $layer, string $totim): JsonResponse
+    public function getCalculationHeadResultsByTypeLayerAndTotimAction(string $id, string $type, string $layer, string $totim): JsonResponse
     {
         $this->assertUuidIsValid($id);
         $calculationId = ModflowId::fromString($id);
@@ -317,7 +317,7 @@ class ModflowCalculationController extends InowasRestController
      * @Rest\Get("/calculations/{id}/results/difference/{id2}/types/{type}/layers/{layer}/totims/{totim}")
      * @return JsonResponse
      */
-    public function getCalculationHeadResultsDifferenceByTypeLayerAndTotim(string $id, string $id2, string $type, string $layer, string $totim): JsonResponse
+    public function getCalculationHeadResultsDifferenceByTypeLayerAndTotimAction(string $id, string $id2, string $type, string $layer, string $totim): JsonResponse
     {
         $this->assertUuidIsValid($id);
         $calculationId = ModflowId::fromString($id);
@@ -359,7 +359,7 @@ class ModflowCalculationController extends InowasRestController
      * @Rest\Get("/calculations/{id}/results/timeseries/types/{type}/layers/{layer}/x/{x}/y/{y}")
      * @return JsonResponse
      */
-    public function getCalculationTimeseriesByTypeLayerXAndY(string $id, string $type, string $layer, string $x, string $y): JsonResponse
+    public function getCalculationTimeseriesByTypeLayerXAndYAction(string $id, string $type, string $layer, string $x, string $y): JsonResponse
     {
         $this->assertUuidIsValid($id);
         $calculationId = ModflowId::fromString($id);
