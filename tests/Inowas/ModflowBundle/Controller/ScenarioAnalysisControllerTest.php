@@ -102,9 +102,6 @@ class ScenarioAnalysisControllerTest extends EventSourcingBaseTest
         $this->assertEquals('TestName', $saDetails['name']);
         $this->assertTrue(array_key_exists('description', $saDetails));
         $this->assertEquals('TestDescription', $saDetails['description']);
-        $this->assertTrue(array_key_exists('geometry', $saDetails));
-        $this->assertTrue(array_key_exists('grid_size', $saDetails));
-        $this->assertTrue(array_key_exists('bounding_box', $saDetails));
         $this->assertTrue(array_key_exists('created_at', $saDetails));
         $this->assertTrue(array_key_exists('base_model_id', $saDetails));
         $this->assertTrue(array_key_exists('public', $saDetails));
@@ -157,9 +154,6 @@ class ScenarioAnalysisControllerTest extends EventSourcingBaseTest
         $this->assertEquals($username, $saDetails['user_name']);
         $this->assertTrue(array_key_exists('name', $saDetails));
         $this->assertTrue(array_key_exists('description', $saDetails));
-        $this->assertTrue(array_key_exists('geometry', $saDetails));
-        $this->assertTrue(array_key_exists('grid_size', $saDetails));
-        $this->assertTrue(array_key_exists('bounding_box', $saDetails));
         $this->assertTrue(array_key_exists('created_at', $saDetails));
         $this->assertTrue(array_key_exists('base_model_id', $saDetails));
         $this->assertTrue(array_key_exists('public', $saDetails));

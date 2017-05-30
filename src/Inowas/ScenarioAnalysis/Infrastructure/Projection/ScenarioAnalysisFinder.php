@@ -22,18 +22,12 @@ class ScenarioAnalysisFinder
     public function findScenarioAnalysesByUserId(UserId $userId): array
     {
         $results = $this->connection->fetchAll(
-            sprintf('SELECT scenario_analysis_id as id, user_id, user_name, base_model_id, name, description, geometry, grid_size, bounding_box, created_at, public FROM %s WHERE user_id = :user_id', Table::SCENARIO_ANALYSIS_LIST),
+            sprintf('SELECT scenario_analysis_id as id, user_id, user_name, base_model_id, name, description, created_at, public FROM %s WHERE user_id = :user_id', Table::SCENARIO_ANALYSIS_LIST),
             ['user_id' => $userId->toString()]
         );
 
         if ($results === false) {
             $results = [];
-        }
-
-        foreach ($results as $key => $row){
-            $results[$key]['geometry'] = json_decode($row['geometry'], true);
-            $results[$key]['grid_size'] = json_decode($row['grid_size'], true);
-            $results[$key]['bounding_box'] = json_decode($row['bounding_box'], true);
         }
 
         return $results;
@@ -42,17 +36,11 @@ class ScenarioAnalysisFinder
     public function findPublicScenarioAnalyses(): array
     {
         $results = $this->connection->fetchAll(
-            sprintf('SELECT scenario_analysis_id as id, user_id, user_name, base_model_id, name, description, geometry, grid_size, bounding_box, created_at, public FROM %s WHERE public = true', Table::SCENARIO_ANALYSIS_LIST)
+            sprintf('SELECT scenario_analysis_id as id, user_id, user_name, base_model_id, name, description, created_at, public FROM %s WHERE public = true', Table::SCENARIO_ANALYSIS_LIST)
         );
 
         if ($results === false) {
             $results = [];
-        }
-
-        foreach ($results as $key => $row){
-            $results[$key]['geometry'] = json_decode($row['geometry'], true);
-            $results[$key]['grid_size'] = json_decode($row['grid_size'], true);
-            $results[$key]['bounding_box'] = json_decode($row['bounding_box'], true);
         }
 
         return $results;
