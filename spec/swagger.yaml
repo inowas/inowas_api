@@ -3072,7 +3072,7 @@ paths:
           schema:
             type: "array"
             items:
-              $ref: '#/definitions/ScenarioAnalysisDetails'
+              $ref: '#/definitions/ScenarioAnalysisListItem'
       security:
         - api_key: []
 
