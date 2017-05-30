@@ -53,7 +53,7 @@ class CalculationResultsFinder
     public function getTotalTimesFromCalculationById(ModflowId $calculationId): ?TotalTimes
     {
         $result = $this->connection->fetchAssoc(
-            sprintf('SELECT start as start_date_time, time_unit, heads, drawdowns from %s WHERE calculation_id = :calculation_id', Table::CALCULATION_RESULTS),
+            sprintf('SELECT start_date_time, time_unit, heads, drawdowns from %s WHERE calculation_id = :calculation_id', Table::CALCULATION_RESULTS),
             ['calculation_id' => $calculationId->toString()]
         );
 
