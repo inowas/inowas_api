@@ -198,7 +198,18 @@ class ModflowModelEventSourcingTest extends EventSourcingBaseTest
         $this->assertEquals(SoilmodelDescription::fromString('testSoilmodelDescription'), $soilmodel->description());
     }
 
-    public function test_add_layers_to_soilmodel_aggregate(): void
+    public function test_create_soilmodel_with_one_default_layer(): void
+    {
+        $ownerId = UserId::generate();
+        $soilModelId = SoilmodelId::generate();
+        $this->createSoilmodel($ownerId, $soilModelId);
+
+        /** @var SoilmodelAggregate $soilmodel */
+        $soilmodel = $this->container->get('soil_model_list')->getAggregateRoot($soilModelId->toString());
+        $this->assertCount(1, $soilmodel->layers());
+    }
+
+    public function test_add_layer_to_soilmodel(): void
     {
         $ownerId = UserId::generate();
         $soilModelId = SoilmodelId::generate();
@@ -217,7 +228,7 @@ class ModflowModelEventSourcingTest extends EventSourcingBaseTest
 
         /** @var SoilmodelAggregate $soilmodel */
         $soilmodel = $this->container->get('soil_model_list')->getAggregateRoot($soilModelId->toString());
-        $this->assertCount(1, $soilmodel->layers());
+        $this->assertCount(2, $soilmodel->layers());
         $this->assertEquals($layer, $soilmodel->getGeologicalLayer($geologicalLayerId));
     }
 

@@ -42,10 +42,8 @@ final class CreateModflowModelCalculationHandler
 
     public function __invoke(CreateModflowModelCalculation $command)
     {
-
         /** @var ModflowModelAggregate $modflowModel */
         $modflowModel = $this->modflowModelList->get($command->modflowModelId());
-
 
         /** @var StressPeriods $stressPeriods */
         $stressPeriods = $this->modflowModelManager->calculateStressPeriods($modflowModel->modflowModelId(), $command->startDateTime(), $command->endDateTime(), $modflowModel->timeUnit());

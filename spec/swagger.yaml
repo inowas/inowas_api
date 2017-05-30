@@ -3630,21 +3630,30 @@ definitions:
           description:
             type: "string"
             example: "MyBaseModelDescription"
+          calculation_id:
+            type: "string"
+            example: "fbc2b2fd-9b39-4277-a6cd-cf1bd20f07c3"
       scenarios:
         type: "array"
         items:
           type: "object"
           properties:
+            id:
+              type: "string"
+              example: "fbc2b2fd-9b39-4277-a6cd-cf1bd20f07c3"
             name:
               type: "string"
               example: "ScenarioName"
             description:
               type: "string"
               example: "ScenarioDescription"
+            calculation_id:
+              type: "string"
+              example: "fbc2b2fd-9b39-4277-a6cd-cf1bd20f07c3"
         example:
-          - { "id": "fbc2b2fd-9b39-4277-a6cd-cf1bd20f07c3", "name": "ScenarioName", "description": "ScenarioDescription" }
-          - { "id": "fbc2b2fd-9b39-4277-a6cd-cf1bd20f07c3", "name": "ScenarioName", "description": "ScenarioDescription" }
-          - { "id": "fbc2b2fd-9b39-4277-a6cd-cf1bd20f07c3", "name": "ScenarioName", "description": "ScenarioDescription" }
+          - { "id": "fbc2b2fd-9b39-4277-a6cd-cf1bd20f07c3", "name": "ScenarioName", "description": "ScenarioDescription", "calculation_id": "fbc2b2fd-9b39-4277-a6cd-cf1bd20f07c3" }
+          - { "id": "fbc2b2fd-9b39-4277-a6cd-cf1bd20f07c3", "name": "ScenarioName", "description": "ScenarioDescription", "calculation_id": "fbc2b2fd-9b39-4277-a6cd-cf1bd20f07c3" }
+          - { "id": "fbc2b2fd-9b39-4277-a6cd-cf1bd20f07c3", "name": "ScenarioName", "description": "ScenarioDescription", "calculation_id": "fbc2b2fd-9b39-4277-a6cd-cf1bd20f07c3" }
       public:
         type: "boolean"
         example: true

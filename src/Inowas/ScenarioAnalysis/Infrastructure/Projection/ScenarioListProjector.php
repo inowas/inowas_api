@@ -7,6 +7,7 @@ namespace Inowas\ScenarioAnalysis\Infrastructure\Projection;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Schema\Schema;
 use Inowas\Common\Projection\AbstractDoctrineConnectionProjector;
+use Inowas\ModflowCalculation\Model\Event\CalculationWasCreated;
 use Inowas\ModflowModel\Infrastructure\Projection\ModelList\ModelFinder;
 use Inowas\ScenarioAnalysis\Model\Event\ScenarioAnalysisWasCreated;
 use Inowas\ScenarioAnalysis\Model\Event\ScenarioWasCreated;
@@ -35,6 +36,7 @@ class ScenarioListProjector extends AbstractDoctrineConnectionProjector
         $table->addColumn('is_base_model', 'boolean', ['default' => false]);
         $table->addColumn('is_scenario', 'boolean', ['default' => false]);
         $table->addColumn('created_at', 'string', ['length' => 255, 'notnull' => false]);
+        $table->addColumn('calculation_id', 'string', ['length' => 36, 'notnull' => false]);
         $table->setPrimaryKey(['scenario_id']);
         $table->addIndex(array('scenario_analysis_id', 'base_model_id'));
     }
@@ -77,6 +79,14 @@ class ScenarioListProjector extends AbstractDoctrineConnectionProjector
     {
         $this->connection->delete(Table::SCENARIO_LIST,
             array('scenario_id' => $event->scenarioId()->toString(), 'scenario_analysis_id' => $event->scenarioAnalysisId()->toString())
+        );
+    }
+
+    public function onCalculationWasCreated(CalculationWasCreated $event): void
+    {
+        $this->connection->update(Table::SCENARIO_LIST,
+            array('calculation_id' => $event->calculationId()->toString()),
+            array('scenario_id' => $event->modflowModelId()->toString())
         );
     }
 }

@@ -6,10 +6,12 @@ namespace Tests\Inowas\ModflowBundle\Controller;
 
 use FOS\UserBundle\Doctrine\UserManager;
 use Inowas\AppBundle\Model\User;
+use Inowas\Common\DateTime\DateTime;
 use Inowas\Common\Id\ModflowId;
 use Inowas\Common\Id\UserId;
 use Inowas\Common\Modflow\ModelDescription;
 use Inowas\Common\Modflow\ModelName;
+use Inowas\ModflowCalculation\Model\Command\CreateModflowModelCalculation;
 use Inowas\ScenarioAnalysis\Model\Command\CreateScenario;
 use Inowas\ScenarioAnalysis\Model\Command\CreateScenarioAnalysis;
 use Inowas\ScenarioAnalysis\Model\ScenarioAnalysisDescription;
@@ -179,6 +181,15 @@ class ScenarioAnalysisControllerTest extends EventSourcingBaseTest
             ScenarioAnalysisDescription::fromString('TestDescription')
         ));
 
+        $baseModelCalculationId = ModflowId::generate();
+        $this->commandBus->dispatch(CreateModflowModelCalculation::byUserWithModelId(
+            $baseModelCalculationId,
+            $userId,
+            $modelId,
+            DateTime::fromDateTime(new \DateTime('2010-01-01')),
+            DateTime::fromDateTime(new \DateTime('2015-01-01'))
+        ));
+
         $scenarioId = ModflowId::generate();
         $this->commandBus->dispatch(CreateScenario::byUserWithBaseModelAndScenarioId(
             $scenarioAnalysisId,
@@ -187,6 +198,15 @@ class ScenarioAnalysisControllerTest extends EventSourcingBaseTest
             $scenarioId,
             ModelName::fromString('TestScenarioName'),
             ModelDescription::fromString('TestScenarioDescription')
+        ));
+
+        $scenarioCalculationId = ModflowId::generate();
+        $this->commandBus->dispatch(CreateModflowModelCalculation::byUserWithModelId(
+            $scenarioCalculationId,
+            $userId,
+            $scenarioId,
+            DateTime::fromDateTime(new \DateTime('2010-01-01')),
+            DateTime::fromDateTime(new \DateTime('2015-01-01'))
         ));
 
         $client = static::createClient();
@@ -217,11 +237,13 @@ class ScenarioAnalysisControllerTest extends EventSourcingBaseTest
         $this->assertEquals($modelId->toString(), $saDetails['base_model']['id']);
         $this->assertEquals('TestModel', $saDetails['base_model']['name']);
         $this->assertEquals('TestModelDescription', $saDetails['base_model']['description']);
+        $this->assertEquals($baseModelCalculationId->toString(), $saDetails['base_model']['calculation_id']);
         $this->assertTrue(array_key_exists('scenarios', $saDetails));
         $this->assertCount(1, $saDetails['scenarios']);
         $this->assertEquals($scenarioId->toString(), $saDetails['scenarios'][0]['id']);
         $this->assertEquals('TestScenarioName', $saDetails['scenarios'][0]['name']);
         $this->assertEquals('TestScenarioDescription', $saDetails['scenarios'][0]['description']);
+        $this->assertEquals($scenarioCalculationId->toString(), $saDetails['scenarios'][0]['calculation_id']);
         $this->assertTrue(array_key_exists('created_at', $saDetails));
         $this->assertTrue(array_key_exists('public', $saDetails));
     }

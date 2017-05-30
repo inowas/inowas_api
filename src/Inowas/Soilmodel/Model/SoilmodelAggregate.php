@@ -12,10 +12,10 @@ use Inowas\Common\Soilmodel\GeologicalLayer;
 use Inowas\Common\Soilmodel\GeologicalLayerId;
 use Inowas\Common\Soilmodel\GeologicalLayerNumber;
 use Inowas\Common\Soilmodel\GeologicalLayerValues;
-use Inowas\Common\Soilmodel\HTop;
 use Inowas\Common\Soilmodel\SoilmodelDescription;
 use Inowas\Common\Soilmodel\SoilmodelId;
 use Inowas\Common\Soilmodel\SoilmodelName;
+use Inowas\Common\Soilmodel\TopElevation;
 use Inowas\Soilmodel\Model\Event\LayerPropertyWasUpdated;
 use Inowas\Soilmodel\Model\Event\LayerValuesWereUpdated;
 use Inowas\Soilmodel\Model\Event\SoilmodelBoreLogWasAdded;
@@ -239,7 +239,7 @@ class SoilmodelAggregate extends AggregateRoot
         return $this->layers;
     }
 
-    public function topElevation(): HTop
+    public function topElevation(): TopElevation
     {
         $topLayer = $this->layer(GeologicalLayerNumber::fromInteger(0));
         return $topLayer->values()->hTop();

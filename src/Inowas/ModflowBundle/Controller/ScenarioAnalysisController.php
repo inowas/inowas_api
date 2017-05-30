@@ -82,7 +82,7 @@ class ScenarioAnalysisController extends InowasRestController
      * @throws InvalidUuidException
      * @throws InvalidArgumentException
      */
-    public function getScenariosAnalysisModelScenariosAction(string $id): JsonResponse
+    public function getScenariosAnalysisDetailsAction(string $id): JsonResponse
     {
         $this->assertUuidIsValid($id);
         $scenarioAnalysisId = ScenarioAnalysisId::fromString($id);
@@ -93,36 +93,6 @@ class ScenarioAnalysisController extends InowasRestController
         }
 
         return new JsonResponse($scenarioAnalysis);
-    }
-
-    /**
-     * Get Modeldetails by baseModelId.
-     *
-     * @ApiDoc(
-     *   resource = true,
-     *   description = "Get Modeldetails by baseModelIs.",
-     *   statusCodes = {
-     *     200 = "Returned when successful"
-     *   }
-     * )
-     *
-     * @Rest\Get("/model/{baseModelId}")
-     * @param $baseModelId
-     * @return JsonResponse
-     * @throws InvalidUuidException
-     * @throws InvalidArgumentException
-     */
-    public function getScenarioAnalysisBaseModelDetailsAction($baseModelId)
-    {
-        if (! Uuid::isValid($baseModelId)){
-            throw new InvalidUuidException();
-        }
-
-        return new JsonResponse($this->get('inowas.modflowmodel.model_finder')
-            ->getModelDetailsByModelId(
-                ModflowId::fromString($baseModelId)
-            )
-        );
     }
 
     /**
