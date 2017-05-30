@@ -314,7 +314,7 @@ class ModflowCalculationController extends InowasRestController
      * @param string $type
      * @param string $layer
      * @param string $totim
-     * @Rest\Get("/calculations/{id}/results/difference/{id2}/types/{type}/layers/{layer}/totims/{totim}")
+     * @Rest\Get("/calculations/{id}/results/differences/{id2}/types/{type}/layers/{layer}/totims/{totim}")
      * @return JsonResponse
      */
     public function getCalculationHeadResultsDifferenceByTypeLayerAndTotimAction(string $id, string $id2, string $type, string $layer, string $totim): JsonResponse
