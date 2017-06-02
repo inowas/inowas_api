@@ -18,5 +18,6 @@ parameters:
 
     rabbit_mq_host: 'rabbitmq'
     rabbit_mq_port: 5672
-    rabbit_mq_user: 'guest'
-    rabbit_mq_password: 'guest'
+    rabbit_mq_user: 'user'
+    rabbit_mq_password: 'password'
+    rabbit_mq_vhost: 'vhost'
