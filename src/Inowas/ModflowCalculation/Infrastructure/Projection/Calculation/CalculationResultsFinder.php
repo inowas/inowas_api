@@ -36,18 +36,18 @@ class CalculationResultsFinder
         $this->reader = $reader;
     }
 
-    public function findTimesByModelId(ModflowId $modelId, ResultType $type, LayerNumber $layerNumber)
+    public function findTimesByModelId(ModflowId $modelId, ResultType $type): array
     {
         $calculationId = $this->connection->fetchColumn(
             sprintf('SELECT calculation_id from %s WHERE model_id = :model_id ORDER BY id DESC LIMIT 1', Table::CALCULATION_LIST),
             ['model_id' => $modelId->toString()]
         );
 
-        if ($calculationId == false){
+        if ($calculationId === false){
             return [];
         }
 
-        return $this->findTimes(ModflowId::fromString($calculationId), $type, $layerNumber);
+        return $this->findTimes(ModflowId::fromString($calculationId), $type);
     }
 
     public function getTotalTimesFromCalculationById(ModflowId $calculationId): ?TotalTimes
@@ -72,7 +72,7 @@ class CalculationResultsFinder
         return TotalTimes::create($startDateTime, $timeUnit, $times);
     }
 
-    public function findTimes(ModflowId $calculationId, ResultType $type, LayerNumber $layerNumber): array
+    public function findTimes(ModflowId $calculationId, ResultType $type): array
     {
 
         $row = $this->connection->fetchAssoc(
@@ -102,6 +102,7 @@ class CalculationResultsFinder
         $heads = $result['heads'];
 
         $result = [];
+
         for ($l = 0; $l<$numberOfLayers; $l++) {
             if (count($drawdowns)>0){
                 $result[$l][] =  ResultType::DRAWDOWN_TYPE;
@@ -115,6 +116,13 @@ class CalculationResultsFinder
         return LayerValues::fromArray($result);
     }
 
+    /** @noinspection MoreThanThreeArgumentsInspection
+     * @param ModflowId $calculationId
+     * @param ResultType $type
+     * @param LayerNumber $layerNumber
+     * @param TotalTime $totalTime
+     * @return HeadData
+     */
     public function findHeadValue(ModflowId $calculationId, ResultType $type, LayerNumber $layerNumber, TotalTime $totalTime): HeadData
     {
         $request = ModflowCalculationReadDataRequest::forLayerData(
@@ -128,6 +136,14 @@ class CalculationResultsFinder
         return HeadData::from2dArray($response->data());
     }
 
+    /** @noinspection MoreThanThreeArgumentsInspection
+     * @param ModflowId $calculationId
+     * @param ModflowId $calculationId2
+     * @param ResultType $type
+     * @param LayerNumber $layerNumber
+     * @param TotalTime $totalTime
+     * @return HeadData
+     */
     public function findHeadDifference(ModflowId $calculationId, ModflowId $calculationId2, ResultType $type, LayerNumber $layerNumber, TotalTime $totalTime): HeadData
     {
         $request = ModflowCalculationReadDataRequest::forLayerData(
@@ -153,6 +169,14 @@ class CalculationResultsFinder
         return $this->calculateDifferenceResults($result1, $result2);
     }
 
+    /** @noinspection MoreThanThreeArgumentsInspection
+     * @param ModflowId $calculationId
+     * @param ResultType $type
+     * @param LayerNumber $layerNumber
+     * @param Nrow $ny
+     * @param Ncol $nx
+     * @return TimeSeriesData
+     */
     public function findTimeSeries(ModflowId $calculationId, ResultType $type, LayerNumber $layerNumber, Nrow $ny, Ncol $nx): TimeSeriesData
     {
         $request = ModflowCalculationReadDataRequest::forTimeSeries(
@@ -172,14 +196,15 @@ class CalculationResultsFinder
         $arr1 = $res1->toArray();
         $arr2 = $res2->toArray();
 
-        if (! (count($arr1) == count($arr2) && count($arr1[0]) == count($arr2[0]))){
-            throw new \Exception('Arrays not in the same range');
+        if (! (count($arr1) === count($arr2) && count($arr1[0]) === count($arr2[0]))){
+            throw new \RuntimeException('Arrays not in the same range');
         }
 
         $result = [];
+        /** @var array $row */
         foreach ($arr1 as $rowNumber => $row){
             foreach ($row as $colNumber => $value){
-                if (is_null($arr1[$rowNumber][$colNumber]) || is_null($arr2[$rowNumber][$colNumber])){
+                if (null === $arr1[$rowNumber][$colNumber] || null === $arr2[$rowNumber][$colNumber]){
                     $result[$rowNumber][$colNumber] = null;
                     continue;
                 }

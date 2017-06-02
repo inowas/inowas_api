@@ -69,6 +69,15 @@
     },
     "scripts": {
         "test": "phpunit",
+        "test-docker": [
+            "./bin/console doctrine:database:drop --env=test --force --if-exists",
+            "./bin/console doctrine:database:create --env=test",
+            "./bin/console inowas:postgis:install --env=test",
+            "./bin/console doctrine:schema:create --env=test",
+            "./bin/console inowas:es:schema:create --env=test",
+            "./bin/console inowas:projections:reset --env=test",
+            "phpunit"
+        ],
         "test-messaging": "phpunit --group messaging-integration-tests",
         "post-install-cmd": [
             "Incenteev\\ParameterHandler\\ScriptHandler::buildParameters",

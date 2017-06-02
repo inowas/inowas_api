@@ -220,6 +220,17 @@ class CalculationConfigurationProjector extends AbstractDoctrineConnectionProjec
         );
     }
 
+    /** @noinspection MoreThanThreeArgumentsInspection */
+    /**
+     * @param ModflowId $calculationId
+     * @param ModflowId $modflowModelId
+     * @param SoilmodelId $soilmodelId
+     * @param DateTime $start
+     * @param TimeUnit $timeUnit
+     * @param LengthUnit $lengthUnit
+     * @param StressPeriods $stressPeriods
+     * @return ModflowCalculationConfiguration
+     */
     private function calculatePackages(ModflowId $calculationId, ModflowId $modflowModelId, SoilmodelId $soilmodelId, DateTime $start, TimeUnit $timeUnit, LengthUnit $lengthUnit, StressPeriods $stressPeriods): ModflowCalculationConfiguration
     {
         $configuration = $this->getSavedOrDefaultConfigurationById($calculationId);
@@ -270,7 +281,7 @@ class CalculationConfigurationProjector extends AbstractDoctrineConnectionProjec
         /*
          * Add PackageDetails for LpfPackage if set
          */
-        if ($configuration->flowPackageName() == 'lpf') {
+        if ($configuration->flowPackageName() === 'lpf') {
             $configuration->updatePackageParameter('lpf', 'laytyp', $this->soilmodelManager->getLaytyp($soilmodelId));
             $configuration->updatePackageParameter('lpf', 'layavg', $this->soilmodelManager->getLayavg($soilmodelId));
             $configuration->updatePackageParameter('lpf', 'chani', $this->soilmodelManager->getChani($soilmodelId));
@@ -298,7 +309,7 @@ class CalculationConfigurationProjector extends AbstractDoctrineConnectionProjec
         /*
          * Add PackageDetails for LpfPackage if set
          */
-        if ($configuration->flowPackageName() == 'upw') {
+        if ($configuration->flowPackageName() === 'upw') {
             $configuration->updatePackageParameter('upw', 'laytyp', $this->soilmodelManager->getLaytyp($soilmodelId));
             $configuration->updatePackageParameter('upw', 'layavg', $this->soilmodelManager->getLayavg($soilmodelId));
             $configuration->updatePackageParameter('upw', 'chani', $this->soilmodelManager->getChani($soilmodelId));

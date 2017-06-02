@@ -5,11 +5,8 @@ declare(strict_types=1);
 namespace Inowas\ModflowCalculation\Infrastructure\Projection\Calculation;
 
 use Doctrine\DBAL\Connection;
-use Inowas\Common\DateTime\DateTime;
 use Inowas\Common\Id\ModflowId;
 use Inowas\Common\Modflow\StressPeriods;
-use Inowas\Common\Modflow\TimeUnit;
-use Inowas\Common\Modflow\TotalTimes;
 use Inowas\ModflowCalculation\Infrastructure\Projection\Table;
 use Inowas\ModflowCalculation\Model\ModflowCalculationConfigurationRequest;
 

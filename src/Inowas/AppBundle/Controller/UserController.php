@@ -34,7 +34,7 @@ class UserController extends FOSRestController
      *
      * @return JsonResponse
      */
-    public function getUserCredentialsAction(ParamFetcher $paramFetcher)
+    public function getUserCredentialsAction(ParamFetcher $paramFetcher): JsonResponse
     {
         $username = $paramFetcher->get('username');
         $password = $paramFetcher->get('password');

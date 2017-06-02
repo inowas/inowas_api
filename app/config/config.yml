@@ -54,7 +54,7 @@ doctrine:
         user:     "%database_user%"
         password: "%database_password%"
         charset:  UTF8
-        server_version: 9.4
+        server_version: 9.6
 
         types:
             uuid: Ramsey\Uuid\Doctrine\UuidType
