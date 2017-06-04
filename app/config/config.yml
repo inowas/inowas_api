@@ -138,7 +138,7 @@ nelmio_cors:
             allow_headers: ['X-Custom-Auth']
             allow_methods: ['POST', 'PUT', 'GET', 'DELETE']
             max_age: 3600
-            hosts: ['^api\.']
+            hosts: ['^v2\.']
 
 # JMS Serializer configuration
 jms_serializer:
