@@ -18,6 +18,8 @@ tags:
     description: "Everything to calculate a ModflowModel"
   - name: "modflowmodel"
     description: "Everything to build a ModflowModel (T03)"
+  - name: "project"
+    description: "Project-specific"
   - name: "soilmodel"
     description: "Everything to build a Soilmodel (T03)"
   - name: "scenarioanalysis"
@@ -59,6 +61,87 @@ paths:
                 example: "0246afce-5078-4e24-b5d1-5c3bfdd2ce9"
         400:
           description: "Invalid username/password supplied"
+
+  /users/profile:
+    get:
+      tags:
+        - "user"
+      summary: "Returns profile-data of the user"
+      description: ''
+      operationId: "getUserProfile"
+      produces:
+        - "application/json"
+      responses:
+        '200':
+          description: "successful operation"
+          schema:
+            $ref: '#/definitions/UserProfile'
+      security:
+        - api_key: []
+    put:
+      tags:
+        - "user"
+      summary: "Updates profile-data of the user"
+      description: ''
+      operationId: "updateUserProfile"
+      consumes:
+        - "application/json"
+      produces:
+        - "application/json"
+      parameters:
+        - in: "body"
+          name: "body"
+          description: "Details of the user-data"
+          required: true
+          schema:
+             $ref: '#/definitions/UserProfile'
+      responses:
+        '302':
+          description: "Redirect response to /users/profile"
+          headers:
+            Location:
+              type: "string"
+        '422':
+          description: "Invalid input"
+      security:
+        - api_key: []
+
+  /projects:
+    get:
+      tags:
+        - "project"
+      summary: "Returns the list of all projects from the user"
+      description: ''
+      operationId: "myProjects"
+      produces:
+        - "application/json"
+      responses:
+        '200':
+          description: "successful operation"
+          schema:
+            type: "array"
+            items:
+              $ref: '#/definitions/ProjectListItem'
+      security:
+        - api_key: []
+  /projects/public:
+    get:
+      tags:
+        - "project"
+      summary: "Returns the list of all public projects"
+      description: ''
+      operationId: "publicProjects"
+      produces:
+        - "application/json"
+      responses:
+        '200':
+          description: "successful operation"
+          schema:
+            type: "array"
+            items:
+              $ref: '#/definitions/ProjectListItem'
+      security:
+        - api_key: []
 
   # Modflow Calculation
   /calculations:
@@ -3099,6 +3182,44 @@ paths:
       security:
         - api_key: []
 
+  /scenarioanalyses/{id}/clone:
+    post:
+      tags:
+        - "scenarioanalysis"
+      summary: "Makes a copy of the scenarioAnalysis with the specified id"
+      description: 'Makes a copy of the scenarioAnalysis by id with the new user credentials'
+      operationId: "copyScenarioAnalysisById"
+      consumes:
+        - "application/json"
+      produces:
+        - "application/json"
+      parameters:
+        - name: "id"
+          in: "path"
+          description: "Id of ScenarioAnalysis to return"
+          required: true
+          type: "string"
+        - in: "body"
+          name: "body"
+          description: "Details of the user-data"
+          required: true
+          schema:
+            type: "object"
+            properties:
+              id:
+                type: "string"
+                example: "44d1a46e-547c-4b55-91e3-e43494e14221"
+      responses:
+        '302':
+          description: "Redirect response to /scenarioanalyses/{id}"
+          headers:
+            Location:
+              type: "string"
+        '422':
+          description: "Invalid input"
+      security:
+        - api_key: []
+
 # SECURITY
 securityDefinitions:
   api_key:
@@ -3108,6 +3229,18 @@ securityDefinitions:
 
 # MODELS
 definitions:
+  UserProfile:
+    type: "object"
+    properties:
+      user_name:
+        type: "string"
+        example: "my.user.name"
+      name:
+        type: "string"
+        example: "John Doe"
+      email:
+        type: "string"
+        example: "john.doe@inowas.com"
   CalculationDetails:
     type: "object"
     properties:
@@ -3378,6 +3511,31 @@ definitions:
         $ref: '#/definitions/ObservationPointValuesDescription'
       values:
         $ref: '#/definitions/ObservationPointValues'
+  ProjectListItem:
+      title: "ProjectListItem"
+      type: "object"
+      properties:
+        id:
+          type: "string"
+          example: "fbc2b2fd-9b39-4277-a6cd-cf1bd20f07c3"
+        name:
+          type: "string"
+          example: "Hanoi 2005-2007"
+        project:
+          type: "string"
+          example: "INOWAS"
+        application:
+          type: "string"
+          example: "T03"
+        created_at:
+          type: "string"
+          example: "2017-05-17T09:32:41+00:00"
+        user_name:
+          type: "string"
+          example: "John Doe"
+        public:
+          type: "boolean"
+          example: true
   ObservationPointValuesWithDescription:
     title: "ObservationPointValuesWithDescription"
     type: "object"
