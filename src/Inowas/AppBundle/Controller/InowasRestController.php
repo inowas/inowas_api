@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Inowas\ModflowBundle\Controller;
+namespace Inowas\AppBundle\Controller;
 
 use FOS\RestBundle\Controller\FOSRestController;
 use Inowas\AppBundle\Model\User;
@@ -56,6 +56,12 @@ class InowasRestController extends FOSRestController
     protected function containsKey(string $key, array $content): bool
     {
         return array_key_exists($key, $content);
+    }
+
+    protected function getValueByKey(string $key, array $content): string
+    {
+        $this->assertContainsKey($key, $content);
+        return $content['$key'];
     }
 
     protected function assertGeometryIsValid(array $geometry): void

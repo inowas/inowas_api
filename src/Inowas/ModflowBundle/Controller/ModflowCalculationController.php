@@ -40,6 +40,8 @@ class ModflowCalculationController extends InowasRestController
      * @Rest\Post("/calculations")
      * @param Request $request
      * @return RedirectResponse
+     * @throws \Prooph\ServiceBus\Exception\CommandDispatchException
+     * @throws \InvalidArgumentException
      */
     public function postCalculationsAction(Request $request): RedirectResponse
     {
