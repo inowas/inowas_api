@@ -62,7 +62,7 @@ class InowasRestController extends FOSRestController
 
     protected function getUserId(): UserId
     {
-                $user = $this->getUser();
+        $user = $this->getUser();
         if (! $user instanceof User){
             throw UserNotAuthenticatedException::withMessage(sprintf(
                 'Something went wrong with the authentication. User is not authenticated. Please check your credentials.'

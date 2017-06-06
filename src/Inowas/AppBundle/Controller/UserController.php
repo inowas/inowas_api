@@ -7,6 +7,7 @@ use FOS\RestBundle\Controller\Annotations\RequestParam;
 use FOS\RestBundle\Controller\FOSRestController;
 use FOS\RestBundle\Request\ParamFetcher;
 use Inowas\AppBundle\Model\User;
+use Inowas\ModflowBundle\Exception\UserNotAuthenticatedException;
 use Nelmio\ApiDocBundle\Annotation\ApiDoc;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpKernel\Exception\HttpException;
@@ -33,6 +34,7 @@ class UserController extends FOSRestController
      * @RequestParam(name="password", nullable=false, strict=true, description="Password")
      *
      * @return JsonResponse
+     * @throws \RuntimeException
      */
     public function getUserCredentialsAction(ParamFetcher $paramFetcher): JsonResponse
     {
@@ -53,5 +55,41 @@ class UserController extends FOSRestController
         $data->api_key = $user->getApiKey();
 
         return new JsonResponse($data);
+    }
+
+    /**
+     * Returns the userprofile for the user.
+     *
+     * @ApiDoc(
+     *   resource = true,
+     *   description = "Returns the api-key of the user.",
+     *   statusCodes = {
+     *     200 = "Returned when successful",
+     *     404 = "Returned when the model is not found"
+     *   }
+     * )
+     *
+     * @Post("/users/profile")
+     *
+     * @return JsonResponse
+     * @throws \Inowas\ModflowBundle\Exception\UserNotAuthenticatedException
+     * @throws \LogicException
+     */
+    public function getUserProfileAction(): JsonResponse
+    {
+        /** @var User $user */
+        $user = $this->getUser();
+        if (! $user instanceof User){
+            throw UserNotAuthenticatedException::withMessage(sprintf(
+                'Something went wrong with the authentication. User is not authenticated. Please check your credentials.'
+            ));
+        }
+
+        $response = array();
+        $response['user_name'] = $user->getUsername();
+        $response['name'] = $user->getName();
+        $response['email'] = $user->getEmail();
+
+        return new JsonResponse($response);
     }
 }
