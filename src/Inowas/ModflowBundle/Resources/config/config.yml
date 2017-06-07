@@ -14,6 +14,9 @@ imports:
     - { resource: modflowModel/projections.yml }
     - { resource: modflowModel/services.yml }
 
+    - { resource: projects/projections.yml }
+    - { resource: projects/services.yml }
+
     - { resource: scenarioAnalysis/commandHandler.yml }
     - { resource: scenarioAnalysis/projections.yml }
     - { resource: scenarioAnalysis/services.yml }

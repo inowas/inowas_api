@@ -1,0 +1,5 @@
+services:
+    inowas.projects.projects_finder:
+        class: Inowas\Project\Infrastructure\Projection\ProjectsFinder
+        arguments:
+          - '@doctrine.dbal.default_connection'

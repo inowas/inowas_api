@@ -18,6 +18,11 @@ rest_modflowmodel_boundary_api:
     resource: '@InowasModflowBundle/Controller/ModflowModelBoundaryController.php'
     prefix:    /v2
 
+rest_project_api:
+    type: rest
+    resource: '@InowasModflowBundle/Controller/ProjectController.php'
+    prefix:    /v2
+
 rest_scenario_analysis_api:
     type: rest
     resource: '@InowasModflowBundle/Controller/ScenarioAnalysisController.php'

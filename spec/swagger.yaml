@@ -8,7 +8,8 @@ info:
   license:
     name: "MIT"
     url: "https://opensource.org/licenses/MIT"
-host: "modflow.railsdev.de"
+host: "api.inowas.hydro.tu-dresden.de"
+#host: "modflow.railsdev.de"
 #host: "localhost:8080"
 basePath: "/v2"
 tags:
@@ -3615,18 +3616,24 @@ definitions:
         name:
           type: "string"
           example: "Hanoi 2005-2007"
+        description:
+          type: "string"
+          example: "Description of Hanoi 2005-2007"
         project:
           type: "string"
           example: "INOWAS"
         application:
           type: "string"
-          example: "T03"
-        created_at:
+          example: "A03"
+        user_id:
           type: "string"
-          example: "2017-05-17T09:32:41+00:00"
+          example: "c72b3f0b-80cb-46d0-817a-d62a84b0cfb1"
         user_name:
           type: "string"
           example: "John Doe"
+        created_at:
+          type: "string"
+          example: "2017-05-17T09:32:41+00:00"
         public:
           type: "boolean"
           example: true

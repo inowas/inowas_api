@@ -166,9 +166,11 @@ prooph_service_bus:
 
                     # ScenarioAnalysis
                     'Inowas\ScenarioAnalysis\Model\Event\ScenarioAnalysisDescriptionWasChanged':
+                        - 'inowas.project.projects_projector'
                         - 'inowas.scenarioanalysis.scenarioanalysis_list_projector'
 
                     'Inowas\ScenarioAnalysis\Model\Event\ScenarioAnalysisNameWasChanged':
+                        - 'inowas.project.projects_projector'
                         - 'inowas.scenarioanalysis.scenarioanalysis_list_projector'
 
                     'Inowas\ScenarioAnalysis\Model\Event\ScenarioWasCreated':
@@ -176,6 +178,7 @@ prooph_service_bus:
                         - 'inowas.scenarioanalysis.scenario_list_projector'
 
                     'Inowas\ScenarioAnalysis\Model\Event\ScenarioAnalysisWasCreated':
+                        - 'inowas.project.projects_projector'
                         - 'inowas.scenarioanalysis.scenarioanalysis_list_projector'
                         - 'inowas.scenarioanalysis.scenario_list_projector'
 

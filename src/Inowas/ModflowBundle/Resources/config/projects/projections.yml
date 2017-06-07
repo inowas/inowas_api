@@ -1,0 +1,6 @@
+services:
+    inowas.project.projects_projector:
+        class: Inowas\Project\Infrastructure\Projection\ProjectsProjector
+        arguments:
+          - '@doctrine.dbal.default_connection'
+          - '@doctrine.orm.default_entity_manager'
