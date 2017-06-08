@@ -12,6 +12,9 @@ use Inowas\Common\Id\UserId;
 use Inowas\Common\Modflow\ModelDescription;
 use Inowas\Common\Modflow\ModelName;
 use Inowas\ModflowCalculation\Model\Command\CreateModflowModelCalculation;
+use Inowas\ModflowModel\Model\Command\AddBoundary;
+use Inowas\ModflowModel\Model\Command\ChangeModflowModelDescription;
+use Inowas\ModflowModel\Model\Command\ChangeModflowModelName;
 use Inowas\ScenarioAnalysis\Model\Command\CreateScenario;
 use Inowas\ScenarioAnalysis\Model\Command\CreateScenarioAnalysis;
 use Inowas\ScenarioAnalysis\Model\ScenarioAnalysisDescription;
@@ -63,15 +66,18 @@ class ScenarioAnalysisControllerTest extends EventSourcingBaseTest
         $username = $this->user->getName();
 
         $modelId = ModflowId::generate();
-        $this->createModelWithName($userId, $modelId);
+        $this->createModelWithSoilmodel($userId, $modelId);
+
+        $calculationId = ModflowId::generate();
+        $start = DateTime::fromDateTime(new \DateTime('2010-01-01'));
+        $end = DateTime::fromDateTime(new \DateTime('2015-01-01'));
+        $this->createCalculation($calculationId, $userId, $modelId, $start, $end);
 
         $scenarioAnalysisId = ScenarioAnalysisId::generate();
-        $calculationId = ModflowId::generate();
         $this->commandBus->dispatch(CreateScenarioAnalysis::byUserWithBaseModelNameAndDescription(
             $scenarioAnalysisId,
             $userId,
             $modelId,
-            $calculationId,
             ScenarioAnalysisName::fromString('TestName'),
             ScenarioAnalysisDescription::fromString('TestDescription')
         ));
@@ -117,15 +123,18 @@ class ScenarioAnalysisControllerTest extends EventSourcingBaseTest
         $username = $this->user->getName();
 
         $modelId = ModflowId::generate();
-        $this->createModelWithName($userId, $modelId);
+        $this->createModelWithSoilmodel($userId, $modelId);
+
+        $calculationId = ModflowId::generate();
+        $start = DateTime::fromDateTime(new \DateTime('2010-01-01'));
+        $end = DateTime::fromDateTime(new \DateTime('2015-01-01'));
+        $this->createCalculation($calculationId, $userId, $modelId, $start, $end);
 
         $scenarioAnalysisId = ScenarioAnalysisId::generate();
-        $calculationId = ModflowId::generate();
         $this->commandBus->dispatch(CreateScenarioAnalysis::byUserWithBaseModelNameAndDescription(
             $scenarioAnalysisId,
             $userId,
             $modelId,
-            $calculationId,
             ScenarioAnalysisName::fromString('TestName'),
             ScenarioAnalysisDescription::fromString('TestDescription')
         ));
@@ -162,21 +171,27 @@ class ScenarioAnalysisControllerTest extends EventSourcingBaseTest
     /**
      * @test
      */
-    public function it_scenario_analysis_by_id(): void
+    public function it_adds_multiple_scenarios_to_scenario_analysis_by_id(): void
     {
         $userId = UserId::fromString($this->user->getId()->toString());
         $apiKey = $this->user->getApiKey();
 
         $modelId = ModflowId::generate();
-        $this->createModelWithName($userId, $modelId);
+        $this->createModelWithSoilmodel($userId, $modelId);
+
+        $this->commandBus->dispatch(ChangeModflowModelName::forModflowModel($userId, $modelId, ModelName::fromString('TestModel')));
+        $this->commandBus->dispatch(ChangeModflowModelDescription::forModflowModel($userId, $modelId, ModelDescription::fromString('TestModelDescription')));
+
+        $baseModelCalculationId = ModflowId::generate();
+        $start = DateTime::fromDateTime(new \DateTime('2010-01-01'));
+        $end = DateTime::fromDateTime(new \DateTime('2015-01-01'));
+        $this->createCalculation($baseModelCalculationId, $userId, $modelId, $start, $end);
 
         $scenarioAnalysisId = ScenarioAnalysisId::generate();
-        $baseModelCalculationId = ModflowId::generate();
         $this->commandBus->dispatch(CreateScenarioAnalysis::byUserWithBaseModelNameAndDescription(
             $scenarioAnalysisId,
             $userId,
             $modelId,
-            $baseModelCalculationId,
             ScenarioAnalysisName::fromString('TestName'),
             ScenarioAnalysisDescription::fromString('TestDescription')
         ));
@@ -237,5 +252,46 @@ class ScenarioAnalysisControllerTest extends EventSourcingBaseTest
         $this->assertEquals($scenarioCalculationId->toString(), $saDetails['scenarios'][0]['calculation_id']);
         $this->assertTrue(array_key_exists('created_at', $saDetails));
         $this->assertTrue(array_key_exists('public', $saDetails));
+    }
+
+    /**
+     * @test
+     */
+    public function it_clones_a_scenario_analysis(): void
+    {
+        $userId = UserId::fromString($this->user->getId()->toString());
+        $apiKey = $this->user->getApiKey();
+
+        $modelId = ModflowId::generate();
+        $this->createModelWithSoilmodel($userId, $modelId);
+        $this->commandBus->dispatch(AddBoundary::to($modelId, $userId, $this->createRechargeBoundary()));
+        $this->commandBus->dispatch(AddBoundary::to($modelId, $userId, $this->createRiverBoundaryWithObservationPoint()));
+        $this->commandBus->dispatch(AddBoundary::to($modelId, $userId, $this->createWellBoundary()));
+
+        $calculationId = ModflowId::generate();
+        $start = DateTime::fromDateTime(new \DateTime('2010-01-01'));
+        $end = DateTime::fromDateTime(new \DateTime('2015-01-01'));
+        $this->createCalculation($calculationId, $userId, $modelId, $start, $end);
+
+        $scenarioAnalysisId = ScenarioAnalysisId::generate();
+        $this->commandBus->dispatch(CreateScenarioAnalysis::byUserWithBaseModelNameAndDescription(
+            $scenarioAnalysisId,
+            $userId,
+            $modelId,
+            ScenarioAnalysisName::fromString('TestName'),
+            ScenarioAnalysisDescription::fromString('TestDescription')
+        ));
+
+        $client = static::createClient();
+        $client->request(
+            'POST',
+            sprintf('/v2/scenarioanalyses/%s/clone', $scenarioAnalysisId->toString()),
+            array(),
+            array(),
+            array('HTTP_X-AUTH-TOKEN' => $apiKey)
+        );
+
+        $response = $client->getResponse();
+        $this->assertEquals(302, $response->getStatusCode());
     }
 }

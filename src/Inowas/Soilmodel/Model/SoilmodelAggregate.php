@@ -24,6 +24,7 @@ use Inowas\Soilmodel\Model\Event\SoilmodelDescriptionWasChanged;
 use Inowas\Soilmodel\Model\Event\SoilmodelGeologicalLayerWasAdded;
 use Inowas\Soilmodel\Model\Event\SoilmodelGeologicalLayerWasRemoved;
 use Inowas\Soilmodel\Model\Event\SoilmodelNameWasChanged;
+use Inowas\Soilmodel\Model\Event\SoilmodelWasCloned;
 use Inowas\Soilmodel\Model\Event\SoilmodelWasCreated;
 use Inowas\Soilmodel\Model\Event\SoilmodelWasDeleted;
 use Prooph\EventSourcing\AggregateRoot;
@@ -58,12 +59,37 @@ class SoilmodelAggregate extends AggregateRoot
         $self->soilmodelId = $soilmodelId;
         $self->owner = $userId;
         $self->public = true;
-        $self->name = SoilmodelName::fromString("");
-        $self->description = SoilmodelDescription::fromString("");
+        $self->name = SoilmodelName::fromString('');
+        $self->description = SoilmodelDescription::fromString('');
         $self->boreLogs = [];
         $self->layers = [];
 
         $self->recordThat(SoilmodelWasCreated::byUserWithId($userId, $soilmodelId));
+        return $self;
+    }
+
+    public static function clone(UserId $userId, SoilmodelId $newId, SoilmodelAggregate $soilmodel): SoilmodelAggregate
+    {
+        $self = new self();
+        $self->soilmodelId = $newId;
+        $self->owner = $userId;
+        $self->public = true;
+        $self->name = $soilmodel->name();
+        $self->description = $soilmodel->description();
+        $self->boreLogs = [];
+        $self->layers = $soilmodel->layers();
+
+        $self->recordThat(SoilmodelWasCloned::byUserWithIds(
+            $newId,
+            $soilmodel->id(),
+            $userId,
+            $self->public,
+            $self->name(),
+            $self->description(),
+            $self->boreLogs(),
+            $self->layers()
+        ));
+
         return $self;
     }
 
@@ -150,8 +176,22 @@ class SoilmodelAggregate extends AggregateRoot
     {
         $this->soilmodelId = $event->soilmodelId();
         $this->owner = $event->userId();
+        $this->name = SoilmodelName::fromString('');
+        $this->description = SoilmodelDescription::fromString('');
+        $this->public = true;
         $this->boreLogs = [];
         $this->layers = [];
+    }
+
+    protected function whenSoilmodelWasCloned(SoilmodelWasCloned $event): void
+    {
+        $this->soilmodelId = $event->soilmodelId();
+        $this->owner = $event->userId();
+        $this->public = $event->isPublic();
+        $this->name = $event->name();
+        $this->description = $event->description();
+        $this->boreLogs = $event->borelogs();
+        $this->layers = $event->layers();
     }
 
     protected function whenSoilmodelWasDeleted(SoilmodelWasDeleted $event): void

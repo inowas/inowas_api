@@ -16,6 +16,7 @@ use Inowas\Common\Grid\GridSize;
 use Inowas\Common\Id\ModflowId;
 use Inowas\Common\Modflow\StressPeriods;
 use Inowas\Common\Modflow\TimeUnit;
+use Inowas\Common\Soilmodel\SoilmodelId;
 use Inowas\ModflowCalculation\Service\StressPeriodDataGenerator;
 use Inowas\ModflowModel\Infrastructure\Projection\ModelList\ModelFinder;
 use Inowas\ModflowModel\Model\Packages\ChdStressPeriodData;
@@ -48,12 +49,16 @@ class ModflowModelManager implements ModflowModelManagerInterface
         return $this->boundaryFinder->findBoundariesByModelId($modelId);
     }
 
+    public function getSoilmodelIdByModelId(ModflowId $modflowId): ?SoilmodelId
+    {
+        return $this->modelFinder->getSoilmodelIdByModelId($modflowId);
+    }
+
     public function calculateStressPeriods(ModflowId $modflowId, DateTime $start, DateTime $end, TimeUnit $timeUnit): StressPeriods
     {
         /** @var DateTime[] $bcDates */
         $dates = $this->boundaryFinder->findStressPeriodDatesById($modflowId);
-        $stressPeriods = StressPeriods::createFromDates($dates, $start, $end, $timeUnit);
-        return $stressPeriods;
+        return StressPeriods::createFromDates($dates, $start, $end, $timeUnit);
     }
 
     public function getAreaActiveCells(ModflowId $modflowId): ActiveCells

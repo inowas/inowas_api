@@ -20,6 +20,7 @@ use Inowas\Common\Boundaries\RiverDateTimeValue;
 use Inowas\Common\Boundaries\WellBoundary;
 use Inowas\Common\Boundaries\WellDateTimeValue;
 use Inowas\Common\Boundaries\WellType;
+use Inowas\Common\DateTime\DateTime;
 use Inowas\Common\Geometry\Geometry;
 use Inowas\Common\Geometry\LineString;
 use Inowas\Common\Geometry\Point;
@@ -43,6 +44,7 @@ use Inowas\Common\Soilmodel\SpecificStorage;
 use Inowas\Common\Soilmodel\SpecificYield;
 use Inowas\Common\Soilmodel\TopElevation;
 use Inowas\Common\Soilmodel\VerticalHydraulicConductivity;
+use Inowas\ModflowCalculation\Model\Command\CreateModflowModelCalculation;
 use Inowas\ModflowModel\Model\Command\ChangeModflowModelBoundingBox;
 use Inowas\ModflowModel\Model\Command\ChangeModflowModelDescription;
 use Inowas\ModflowModel\Model\Command\ChangeModflowModelGridSize;
@@ -196,6 +198,25 @@ abstract class EventSourcingBaseTest extends WebTestCase
         $this->commandBus->dispatch(UpdateGeologicalLayerProperty::forSoilmodel($ownerId, $soilModelId, $layerId, SpecificStorage::fromLayerValue(1e-5)));
         $this->commandBus->dispatch(UpdateGeologicalLayerProperty::forSoilmodel($ownerId, $soilModelId, $layerId, SpecificYield::fromLayerValue(0.15)));
 
+    }
+
+
+    /** @noinspection MoreThanThreeArgumentsInspection
+     * @param ModflowId $calculationId
+     * @param UserId $userId
+     * @param ModflowId $modelId
+     * @param DateTime $start
+     * @param DateTime $end
+     */
+    protected function createCalculation(ModflowId $calculationId, UserId $userId, ModflowId $modelId, DateTime $start, DateTime $end): void
+    {
+        $this->commandBus->dispatch(CreateModflowModelCalculation::byUserWithModelId(
+            $calculationId,
+            $userId,
+            $modelId,
+            $start,
+            $end
+        ));
     }
 
     protected function createArea(): Area
@@ -437,7 +458,6 @@ abstract class EventSourcingBaseTest extends WebTestCase
             $id,
             $ownerId,
             $modelId,
-            $calculationId,
             $name,
             $description
         ));

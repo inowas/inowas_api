@@ -8,6 +8,7 @@ prooph_service_bus:
                 routes:
                     # ModflowCalculation Commands and CommandHandlers
                     'Inowas\ModflowCalculation\Model\Command\CalculateModflowModelCalculation': 'inowas.modflowcalculation.calculate_modflow_calculation_handler'
+                    'Inowas\ModflowCalculation\Model\Command\CloneModflowModelCalculation': 'inowas.modflowcalculation.clone_modflow_calculation_handler'
                     'Inowas\ModflowCalculation\Model\Command\CreateModflowModelCalculation': 'inowas.modflowcalculation.create_modflow_calculation_handler'
                     'Inowas\ModflowCalculation\Model\Command\ChangeFlowPackage': 'inowas.modflowcalculation.change_calculation_flow_package_handler'
                     'Inowas\ModflowCalculation\Model\Command\UpdateCalculationPackageParameter': 'inowas.modflowcalculation.update_calculation_package_parameter_handler'
@@ -34,6 +35,7 @@ prooph_service_bus:
                     'Inowas\ModflowModel\Model\Command\UpdateTimeUnit': 'inowas.modflowmodel.update_time_unit_handler'
 
                     # ScenarioAnalysis Commands and CommandHandlers
+                    'Inowas\ScenarioAnalysis\Model\Command\CloneScenarioAnalysis': 'inowas.scenarioanalysis.clone_scenarioanalysis_handler'
                     'Inowas\ScenarioAnalysis\Model\Command\CreateScenario': 'inowas.scenarioanalysis.create_scenario_handler'
                     'Inowas\ScenarioAnalysis\Model\Command\CreateScenarioAnalysis': 'inowas.scenarioanalysis.create_scenarioanalysis_handler'
                     'Inowas\ScenarioAnalysis\Model\Command\RemoveScenario': 'inowas.scenarioanalysis.remove_scenario_handler'
@@ -43,6 +45,7 @@ prooph_service_bus:
                     'Inowas\Soilmodel\Model\Command\AddGeologicalLayerToSoilmodel': 'inowas.soilmodel.add_geological_layer_to_soilmodel.handler'
                     'Inowas\Soilmodel\Model\Command\ChangeSoilmodelDescription': 'inowas.soilmodel.change_soilmodel_description.handler'
                     'Inowas\Soilmodel\Model\Command\ChangeSoilmodelName': 'inowas.soilmodel.change_soilmodel_name.handler'
+                    'Inowas\Soilmodel\Model\Command\CloneSoilmodel': 'inowas.soilmodel.clone_soilmodel.handler'
                     'Inowas\Soilmodel\Model\Command\CreateSoilmodel': 'inowas.soilmodel.create_soilmodel.handler'
                     'Inowas\Soilmodel\Model\Command\DeleteSoilmodel': 'inowas.soilmodel.delete_soilmodel.handler'
                     'Inowas\Soilmodel\Model\Command\InterpolateSoilmodel': 'inowas.soilmodel.interpolate_soilmodel.handler'
@@ -173,7 +176,16 @@ prooph_service_bus:
                         - 'inowas.project.projects_projector'
                         - 'inowas.scenarioanalysis.scenarioanalysis_list_projector'
 
+                    'Inowas\ScenarioAnalysis\Model\Event\ScenarioWasCloned':
+                        - 'inowas.scenarioanalysis.scenarioanalysis_list_projector'
+                        - 'inowas.scenarioanalysis.scenario_list_projector'
+
                     'Inowas\ScenarioAnalysis\Model\Event\ScenarioWasCreated':
+                        - 'inowas.scenarioanalysis.scenarioanalysis_list_projector'
+                        - 'inowas.scenarioanalysis.scenario_list_projector'
+
+                    'Inowas\ScenarioAnalysis\Model\Event\ScenarioAnalysisWasCloned':
+                        - 'inowas.project.projects_projector'
                         - 'inowas.scenarioanalysis.scenarioanalysis_list_projector'
                         - 'inowas.scenarioanalysis.scenario_list_projector'
 
@@ -187,6 +199,10 @@ prooph_service_bus:
                         - 'inowas.scenarioanalysis.scenario_list_projector'
 
                     # Soilmodel
+                    'Inowas\Soilmodel\Model\Event\SoilmodelWasCloned':
+                        - 'inowas.soilmodel.soilmodel_list_projector'
+                        - 'inowas.soilmodel.layer_values_projector'
+
                     'Inowas\Soilmodel\Model\Event\SoilmodelWasCreated':
                         - 'inowas.soilmodel.soilmodel_list_projector'
 

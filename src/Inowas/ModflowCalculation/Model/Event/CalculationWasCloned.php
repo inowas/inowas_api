@@ -10,20 +10,22 @@ use Inowas\Common\Id\UserId;
 use Inowas\Common\Modflow\LengthUnit;
 use Inowas\Common\Modflow\StressPeriods;
 use Inowas\Common\Modflow\TimeUnit;
-
 use Prooph\EventSourcing\AggregateChanged;
 
 /** @noinspection LongInheritanceChainInspection */
-class CalculationWasCreated extends AggregateChanged
+class CalculationWasCloned extends AggregateChanged
 {
-    /** @var  ModflowId */
-    private $calculationId;
-
-    /** @var  ModflowId */
-    private $modflowModelId;
-
     /** @var UserId */
     private $userId;
+
+    /** @var ModflowId */
+    private $calculationId;
+
+    /** @var ModflowId */
+    private $fromCalculationId;
+
+    /** @var ModflowId */
+    private $modflowmodelId;
 
     /** @var DateTime */
     private $start;
@@ -37,33 +39,42 @@ class CalculationWasCreated extends AggregateChanged
     /** @var TimeUnit */
     private $timeUnit;
 
-    /** @var  StressPeriods */
+    /** @var StressPeriods */
     private $stressPeriods;
+
 
     /** @noinspection MoreThanThreeArgumentsInspection
      * @param UserId $userId
-     * @param ModflowId $calculationId
+     * @param ModflowId $oldCalculationId
+     * @param ModflowId $newCalculationId
      * @param ModflowId $modflowModelId
      * @param DateTime $start
      * @param DateTime $end
      * @param LengthUnit $lengthUnit
      * @param TimeUnit $timeUnit
      * @param StressPeriods $stressPeriods
-     * @return CalculationWasCreated
+     * @return CalculationWasCloned
+     * @internal param ModflowId $oldModelId
+     * @internal param ModflowCalculationConfiguration $configuration
+     * @internal param ModflowId $calculationId
+     * @internal param ModflowId $modflowModelId
+     * @internal param SoilmodelId $soilModelId
      */
-    public static function fromModelWithProps(
+    public static function byUserWithIds(
         UserId $userId,
-        ModflowId $calculationId,
+        ModflowId $oldCalculationId,
+        ModflowId $newCalculationId,
         ModflowId $modflowModelId,
         DateTime $start,
         DateTime $end,
         LengthUnit $lengthUnit,
         TimeUnit $timeUnit,
         StressPeriods $stressPeriods
-    ): CalculationWasCreated
+    ): CalculationWasCloned
     {
-        $event = self::occur($calculationId->toString(),[
+        $event = self::occur($newCalculationId->toString(),[
             'user_id' => $userId->toString(),
+            'from_calculation_id' => $oldCalculationId->toString(),
             'modflowmodel_id' => $modflowModelId->toString(),
             'start' => $start->toAtom(),
             'end' => $end->toAtom(),
@@ -72,9 +83,10 @@ class CalculationWasCreated extends AggregateChanged
             'stress_periods' => serialize($stressPeriods)
         ]);
 
-        $event->calculationId = $calculationId;
-        $event->modflowModelId = $modflowModelId;
+        $event->calculationId = $newCalculationId;
         $event->userId = $userId;
+        $event->fromCalculationId = $oldCalculationId;
+        $event->modflowmodelId = $modflowModelId;
         $event->start = $start;
         $event->end = $end;
         $event->lengthUnit = $lengthUnit;
@@ -93,21 +105,30 @@ class CalculationWasCreated extends AggregateChanged
         return $this->calculationId;
     }
 
-    public function modflowmodelId(): ModflowId
-    {
-        if ($this->modflowModelId === null){
-            $this->modflowModelId = ModflowId::fromString($this->payload['modflowmodel_id']);
-        }
-
-        return $this->modflowModelId;
-    }
-
     public function userId(): UserId{
         if ($this->userId === null){
             $this->userId = UserId::fromString($this->payload['user_id']);
         }
 
         return $this->userId;
+    }
+
+    public function fromCalculationId(): ModflowId
+    {
+        if ($this->fromCalculationId === null){
+            $this->fromCalculationId = ModflowId::fromString($this->payload['from_calculation_id']);
+        }
+
+        return $this->fromCalculationId;
+    }
+
+    public function modflowmodelId(): ModflowId
+    {
+        if ($this->modflowmodelId === null){
+            $this->modflowmodelId = ModflowId::fromString($this->payload['modflowmodel_id']);
+        }
+
+        return $this->modflowmodelId;
     }
 
     public function start(): DateTime
@@ -148,7 +169,7 @@ class CalculationWasCreated extends AggregateChanged
 
     public function stressPeriods(): StressPeriods
     {
-        if (null === $this->stressPeriods){
+        if (null === $this->stressPeriods) {
             $this->stressPeriods = unserialize($this->payload['stress_periods'], [StressPeriods::class, DateTime::class]);
         }
 

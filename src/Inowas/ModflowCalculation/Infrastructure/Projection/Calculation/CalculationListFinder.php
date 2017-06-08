@@ -32,6 +32,20 @@ class CalculationListFinder
         return $result;
     }
 
+    public function findLastCalculationByModelId(ModflowId $modelId): ?ModflowId
+    {
+        $result = $this->connection->fetchAssoc(
+            sprintf('SELECT calculation_id from %s WHERE model_id = :model_id ORDER BY created_at DESC LIMIT 1', Table::CALCULATION_LIST),
+            ['model_id' => $modelId->toString()]
+        );
+
+        if ($result === false){
+            return null;
+        }
+
+        return ModflowId::fromString($result['calculation_id']);
+    }
+
     public function findCalculationById(ModflowId $calculationId): ?array
     {
         $result = $this->connection->fetchAssoc(

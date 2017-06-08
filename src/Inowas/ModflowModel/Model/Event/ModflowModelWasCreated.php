@@ -64,6 +64,7 @@ class ModflowModelWasCreated extends AggregateChanged
         $event->boundingBox = $boundingBox;
         $event->lengthUnit = $lengthUnit;
         $event->timeUnit = $timeUnit;
+        $event->soilmodelId = $soilmodelId;
 
         return $event;
     }

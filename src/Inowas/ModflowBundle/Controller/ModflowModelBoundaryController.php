@@ -48,6 +48,7 @@ class ModflowModelBoundaryController extends InowasRestController
      * @param string $id
      * @Rest\Get("/modflowmodels/{id}/boundaries")
      * @return JsonResponse
+     * @throws \Inowas\ModflowBundle\Exception\NotFoundException
      */
     public function getModflowModelBoundariesAction(string $id): JsonResponse
     {
@@ -93,6 +94,9 @@ class ModflowModelBoundaryController extends InowasRestController
      * @param Request $request
      * @Rest\Post("/modflowmodels/{id}/boundaries")
      * @return Response
+     * @throws \Inowas\ModflowBundle\Exception\InvalidArgumentException
+     * @throws \Prooph\ServiceBus\Exception\CommandDispatchException
+     * @throws \InvalidArgumentException
      */
     public function postModflowModelBoundariesAction(string $id, Request $request): Response
     {
@@ -207,6 +211,7 @@ class ModflowModelBoundaryController extends InowasRestController
      * @param string $bid
      * @Rest\Get("/modflowmodels/{id}/boundaries/{bid}")
      * @return Response
+     * @throws \Inowas\ModflowBundle\Exception\NotFoundException
      */
     public function getModflowModelBoundaryAction(string $id, string $bid): Response
     {
@@ -242,6 +247,7 @@ class ModflowModelBoundaryController extends InowasRestController
      * @param string $bid
      * @Rest\Get("/modflowmodels/{id}/boundaries/{bid}/name")
      * @return Response
+     * @throws \Inowas\ModflowBundle\Exception\NotFoundException
      */
     public function getModflowModelBoundaryNameAction(string $id, string $bid): Response
     {
@@ -278,6 +284,8 @@ class ModflowModelBoundaryController extends InowasRestController
      * @param Request $request
      * @Rest\Put("/modflowmodels/{id}/boundaries/{bid}/name")
      * @return Response
+     * @throws \Prooph\ServiceBus\Exception\CommandDispatchException
+     * @throws \InvalidArgumentException
      */
     public function putModflowModelBoundaryNameAction(string $id, string $bid, Request $request): Response
     {
@@ -316,6 +324,7 @@ class ModflowModelBoundaryController extends InowasRestController
      * @param string $bid
      * @Rest\Get("/modflowmodels/{id}/boundaries/{bid}/geometry")
      * @return Response
+     * @throws \Inowas\ModflowBundle\Exception\NotFoundException
      */
     public function getModflowModelBoundaryGeometryAction(string $id, string $bid): Response
     {
@@ -352,6 +361,8 @@ class ModflowModelBoundaryController extends InowasRestController
      * @param Request $request
      * @Rest\Put("/modflowmodels/{id}/boundaries/{bid}/geometry")
      * @return Response
+     * @throws \Prooph\ServiceBus\Exception\CommandDispatchException
+     * @throws \InvalidArgumentException
      */
     public function putModflowModelBoundaryGeometryAction(string $id, string $bid, Request $request): Response
     {
@@ -392,6 +403,9 @@ class ModflowModelBoundaryController extends InowasRestController
      * @param Request $request
      * @Rest\Post("/modflowmodels/{id}/boundaries/{bid}/observationpoints")
      * @return Response
+     * @throws \Inowas\ModflowBundle\Exception\InvalidArgumentException
+     * @throws \Prooph\ServiceBus\Exception\CommandDispatchException
+     * @throws \InvalidArgumentException
      */
     public function postModflowModelBoundaryObservationPointAction(string $id, string $bid, Request $request): Response
     {
@@ -447,6 +461,7 @@ class ModflowModelBoundaryController extends InowasRestController
      * @param string $oid
      * @Rest\Get("/modflowmodels/{id}/boundaries/{bid}/observationpoints/{oid}")
      * @return Response
+     * @throws \Inowas\ModflowBundle\Exception\NotFoundException
      */
     public function getModflowModelBoundaryObservationPointDetailsAction(string $id, string $bid, string $oid): Response
     {
@@ -489,6 +504,7 @@ class ModflowModelBoundaryController extends InowasRestController
      * @param string $oid
      * @Rest\Get("/modflowmodels/{id}/boundaries/{bid}/observationpoints/{oid}/name")
      * @return Response
+     * @throws \Inowas\ModflowBundle\Exception\NotFoundException
      */
     public function getModflowModelBoundaryObservationPointNameAction(string $id, string $bid, string $oid): Response
     {
@@ -531,6 +547,7 @@ class ModflowModelBoundaryController extends InowasRestController
      * @param string $oid
      * @Rest\Get("/modflowmodels/{id}/boundaries/{bid}/observationpoints/{oid}/geometry")
      * @return Response
+     * @throws \Inowas\ModflowBundle\Exception\NotFoundException
      */
     public function getModflowModelBoundaryObservationPointGeometryAction(string $id, string $bid, string $oid): Response
     {
@@ -573,6 +590,7 @@ class ModflowModelBoundaryController extends InowasRestController
      * @param string $oid
      * @Rest\Get("/modflowmodels/{id}/boundaries/{bid}/observationpoints/{oid}/values")
      * @return Response
+     * @throws \Inowas\ModflowBundle\Exception\NotFoundException
      */
     public function getModflowModelBoundaryObservationPointValuesAction(string $id, string $bid, string $oid): Response
     {

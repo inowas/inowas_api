@@ -11,6 +11,7 @@ use Inowas\ScenarioAnalysis\Model\ScenarioAnalysisList;
 final class CreateScenarioAnalysisHandler
 {
 
+    /** @var ScenarioAnalysisList **/
     private $scenarioAnalysisList;
 
     public function __construct(ScenarioAnalysisList $scenarioAnalysisList)
@@ -24,7 +25,6 @@ final class CreateScenarioAnalysisHandler
             $command->scenarioAnalysisId(),
             $command->userId(),
             $command->baseModelId(),
-            $command->baseModelCalculationId(),
             $command->name(),
             $command->description()
         );

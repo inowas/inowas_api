@@ -10,6 +10,7 @@ use Inowas\Common\Modflow\ModelDescription;
 use Inowas\Common\Modflow\ModelName;
 use Inowas\ScenarioAnalysis\Model\Event\ScenarioAnalysisDescriptionWasChanged;
 use Inowas\ScenarioAnalysis\Model\Event\ScenarioAnalysisNameWasChanged;
+use Inowas\ScenarioAnalysis\Model\Event\ScenarioAnalysisWasCloned;
 use Inowas\ScenarioAnalysis\Model\Event\ScenarioAnalysisWasCreated;
 use Inowas\ScenarioAnalysis\Model\Event\ScenarioWasCreated;
 use Inowas\ScenarioAnalysis\Model\Event\ScenarioWasRemoved;
@@ -39,19 +40,66 @@ class ScenarioAnalysisAggregate extends AggregateRoot
     /** @var array */
     protected $scenarios;
 
-    public static function create(ScenarioAnalysisId $scenarioAnalysisId, UserId $userId, ModflowId $baseModelId, ModflowId $baseModelCalculationId, ScenarioAnalysisName $name, ScenarioAnalysisDescription $description): ScenarioAnalysisAggregate
+    /** @noinspection MoreThanThreeArgumentsInspection
+     * @param ScenarioAnalysisId $id
+     * @param UserId $userId
+     * @param ModflowId $baseModelId
+     * @param ScenarioAnalysisName $name
+     * @param ScenarioAnalysisDescription $description
+     * @return ScenarioAnalysisAggregate
+     */
+    public static function create(ScenarioAnalysisId $id, UserId $userId, ModflowId $baseModelId, ScenarioAnalysisName $name, ScenarioAnalysisDescription $description): ScenarioAnalysisAggregate
     {
         $self = new self();
+        $self->id = $id;
         $self->baseModelId = $baseModelId;
         $self->ownerId = $userId;
         $self->name = $name;
         $self->description = $description;
         $self->scenarios = [];
 
-        $self->recordThat(ScenarioAnalysisWasCreated::byUserWithId($scenarioAnalysisId, $userId, $baseModelId, $baseModelCalculationId, $name, $description));
+        $self->recordThat(ScenarioAnalysisWasCreated::byUserWithId($id, $userId, $baseModelId, $name, $description));
         return $self;
     }
 
+    /** @noinspection MoreThanThreeArgumentsInspection
+     * @param ScenarioAnalysisId $fromId
+     * @param ScenarioAnalysisId $id
+     * @param UserId $userId
+     * @param ModflowId $baseModelId
+     * @param array $scenarios
+     * @param ScenarioAnalysisAggregate $scenarioAnalysis
+     * @return ScenarioAnalysisAggregate
+     */
+    public static function cloneWithIdUserIdAndAggregate(ScenarioAnalysisId $fromId, ScenarioAnalysisId $id, UserId $userId, ModflowId $baseModelId, array $scenarios, ScenarioAnalysisAggregate $scenarioAnalysis): ScenarioAnalysisAggregate
+    {
+        $self = new self();
+        $self->id = $id;
+        $self->ownerId = $userId;
+        $self->baseModelId = $baseModelId;
+        $self->name = $scenarioAnalysis->name();
+        $self->description = $scenarioAnalysis->description();
+        $self->scenarios = $scenarios;
+
+        $self->recordThat(ScenarioAnalysisWasCloned::byUserWithId(
+            $fromId,
+            $id,
+            $userId,
+            $baseModelId,
+            $self->name,
+            $self->description,
+            $scenarios
+        ));
+        return $self;
+    }
+
+    /** @noinspection MoreThanThreeArgumentsInspection
+     * @param UserId $userId
+     * @param ModflowId $scenarioId
+     * @param ModflowId $baseModelId
+     * @param ModelName $name
+     * @param ModelDescription $description
+     */
     public function createScenario(UserId $userId, ModflowId $scenarioId, ModflowId $baseModelId, ModelName $name, ModelDescription $description): void
     {
         if (in_array($scenarioId->toString(), $this->scenarios)){
@@ -127,6 +175,16 @@ class ScenarioAnalysisAggregate extends AggregateRoot
         $this->name = $event->name();
         $this->description = $event->description();
         $this->scenarios = [];
+    }
+
+    protected function whenScenarioAnalysisWasCloned(ScenarioAnalysisWasCloned $event): void
+    {
+        $this->id = $event->scenarioAnalysisId();
+        $this->baseModelId = $event->baseModelId();
+        $this->ownerId = $event->userId();
+        $this->name = $event->name();
+        $this->description = $event->description();
+        $this->scenarios = $event->scenarios();
     }
 
     protected function whenScenarioWasCreated(ScenarioWasCreated $event): void

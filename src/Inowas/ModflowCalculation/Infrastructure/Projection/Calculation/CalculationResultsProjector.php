@@ -24,9 +24,9 @@ class CalculationResultsProjector extends AbstractDoctrineConnectionProjector
         $table->addColumn('calculation_id', 'string', ['length' => 36]);
         $table->addColumn('start_date_time', 'string');
         $table->addColumn('time_unit', 'integer');
-        $table->addColumn('heads', 'text', ['default' => "[]"]);
-        $table->addColumn('budgets', 'text', ['default' => "[]"]);
-        $table->addColumn('drawdowns', 'text', ['default' => "[]"]);
+        $table->addColumn('heads', 'text', ['default' => '[]']);
+        $table->addColumn('budgets', 'text', ['default' => '[]']);
+        $table->addColumn('drawdowns', 'text', ['default' => '[]']);
         $table->addColumn('number_of_layers', 'integer', ['default' => 0]);
         $table->setPrimaryKey(['calculation_id']);
     }
@@ -64,10 +64,6 @@ class CalculationResultsProjector extends AbstractDoctrineConnectionProjector
             ['calculation_id' => $calculationId->toString()]
         );
 
-        if ($result['count'] === 1){
-            return true;
-        }
-
-        return false;
+        return $result['count'] === 1;
     }
 }

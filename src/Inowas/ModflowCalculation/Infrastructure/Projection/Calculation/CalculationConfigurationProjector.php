@@ -51,7 +51,6 @@ class CalculationConfigurationProjector extends AbstractDoctrineConnectionProjec
         SoilmodelManagerInterface $soilmodelManager
     )
     {
-
         $this->modflowModelManager = $modelManager;
         $this->soilmodelManager = $soilmodelManager;
 
@@ -76,10 +75,13 @@ class CalculationConfigurationProjector extends AbstractDoctrineConnectionProjec
 
     public function onCalculationWasCreated(CalculationWasCreated $event): void
     {
+
+        $soilmodelId = $this->modflowModelManager->getSoilmodelIdByModelId($event->modflowmodelId());
+
         $packages = $this->calculatePackages(
             $event->calculationId(),
-            $event->modflowModelId(),
-            $event->soilModelId(),
+            $event->modflowmodelId(),
+            $soilmodelId,
             $event->start(),
             $event->timeUnit(),
             $event->lengthUnit(),
@@ -88,8 +90,8 @@ class CalculationConfigurationProjector extends AbstractDoctrineConnectionProjec
 
         $this->connection->insert(Table::CALCULATION_CONFIG, array(
             'calculation_id' => $event->calculationId()->toString(),
-            'modflow_model_id' => $event->modflowModelId()->toString(),
-            'soilmodel_id' => $event->soilModelId()->toString(),
+            'modflow_model_id' => $event->modflowmodelId()->toString(),
+            'soilmodel_id' => $soilmodelId->toString(),
             'user_id' => $event->userId()->toString(),
             'start' => $event->start()->toAtom(),
             'time_unit' => $event->timeUnit()->toInt(),
@@ -131,7 +133,7 @@ class CalculationConfigurationProjector extends AbstractDoctrineConnectionProjec
             'configuration' => json_encode($configuration),
             'configuration_hash' => md5(json_encode($configuration)),
             'calculation_state' => 0,
-            'calculation_response' => ""
+            'calculation_response' => ''
         ), array(
                 'calculation_id' => $event->calculationId()->toString(),
                 'modflow_model_id' => $modflowModelId->toString(),
@@ -183,7 +185,7 @@ class CalculationConfigurationProjector extends AbstractDoctrineConnectionProjec
             'configuration' => json_encode($configuration),
             'configuration_hash' => md5(json_encode($configuration)),
             'calculation_state' => 0,
-            'calculation_response' => ""
+            'calculation_response' => ''
         ), array(
                 'calculation_id' => $event->calculationId()->toString(),
                 'modflow_model_id' => $modflowModelId->toString(),
@@ -394,7 +396,7 @@ class CalculationConfigurationProjector extends AbstractDoctrineConnectionProjec
             'configuration' => json_encode($configuration),
             'configuration_hash' => md5(json_encode($configuration)),
             'calculation_state' => 0,
-            'calculation_response' => ""
+            'calculation_response' => ''
         ), array(
             'calculation_id' => $calculationId->toString()
         ));

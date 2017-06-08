@@ -16,6 +16,11 @@ class DateTime
         return new self($dateTimeImmutable);
     }
 
+    public static function fromDateTimeImmutable(\DateTimeImmutable $dateTimeImmutable): DateTime
+    {
+        return new self($dateTimeImmutable);
+    }
+
     public static function fromAtom(string $dateTimeAtom): DateTime
     {
         return new self(\DateTimeImmutable::createFromFormat(DATE_ATOM, $dateTimeAtom));

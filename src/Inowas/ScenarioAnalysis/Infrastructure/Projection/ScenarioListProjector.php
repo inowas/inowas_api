@@ -7,6 +7,7 @@ namespace Inowas\ScenarioAnalysis\Infrastructure\Projection;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Schema\Schema;
 use Inowas\Common\Projection\AbstractDoctrineConnectionProjector;
+use Inowas\ModflowCalculation\Infrastructure\Projection\Calculation\CalculationListFinder;
 use Inowas\ModflowCalculation\Model\Event\CalculationWasCreated;
 use Inowas\ModflowModel\Infrastructure\Projection\ModelList\ModelFinder;
 use Inowas\ScenarioAnalysis\Model\Event\ScenarioAnalysisWasCreated;
@@ -16,11 +17,15 @@ use Inowas\ScenarioAnalysis\Model\Event\ScenarioWasRemoved;
 class ScenarioListProjector extends AbstractDoctrineConnectionProjector
 {
 
+    /** @var  CalculationListFinder */
+    private $calculationFinder;
+
     /** @var  ModelFinder */
     private $modelFinder;
 
-    public function __construct(Connection $connection, ModelFinder $modelFinder)
+    public function __construct(Connection $connection, ModelFinder $modelFinder, CalculationListFinder $calculationFinder)
     {
+        $this->calculationFinder = $calculationFinder;
         $this->modelFinder = $modelFinder;
 
         parent::__construct($connection);
@@ -41,10 +46,11 @@ class ScenarioListProjector extends AbstractDoctrineConnectionProjector
         $table->addIndex(array('scenario_analysis_id', 'base_model_id'));
     }
 
-    public function onScenarioAnalysisWasCreated(ScenarioAnalysisWasCreated $event)
+    public function onScenarioAnalysisWasCreated(ScenarioAnalysisWasCreated $event): void
     {
         $baseModelName = $this->modelFinder->getModelNameByModelId($event->baseModelId());
         $baseModelDescription = $this->modelFinder->getModelDescriptionByModelId($event->baseModelId());
+        $calculationId = $this->calculationFinder->findLastCalculationByModelId($event->baseModelId());
 
         $this->connection->insert(Table::SCENARIO_LIST, array(
             'scenario_id' => $event->baseModelId()->toString(),
@@ -53,7 +59,7 @@ class ScenarioListProjector extends AbstractDoctrineConnectionProjector
             'user_id' => $event->userId()->toString(),
             'name' => $baseModelName->toString(),
             'description' => $baseModelDescription->toString(),
-            'calculation_id' => $event->baseModelCalculationId()->toString(),
+            'calculation_id' => $calculationId->toString(),
             'is_base_model' => 1,
             'is_scenario' => 0,
             'created_at' => date_format($event->createdAt(), DATE_ATOM),
@@ -86,7 +92,7 @@ class ScenarioListProjector extends AbstractDoctrineConnectionProjector
     {
         $this->connection->update(Table::SCENARIO_LIST,
             array('calculation_id' => $event->calculationId()->toString()),
-            array('scenario_id' => $event->modflowModelId()->toString())
+            array('scenario_id' => $event->modflowmodelId()->toString())
         );
     }
 }

@@ -31,7 +31,7 @@ class ModelFinder
     public function getAreaGeometryByModflowModelId(ModflowId $modelId): ?Geometry
     {
         $result =  $this->connection->fetchAssoc(
-            sprintf('SELECT area FROM %s WHERE model_id = :model_id', Table::MODEL_DETAILS),
+            sprintf('SELECT area FROM %s WHERE model_id = :model_id', Table::MODFLOWMODELS_LIST),
             ['model_id' => $modelId->toString()]
         );
 
@@ -50,7 +50,7 @@ class ModelFinder
     public function getBoundingBoxByModflowModelId(ModflowId $modelId): ?BoundingBox
     {
         $result =  $this->connection->fetchAssoc(
-            sprintf('SELECT bounding_box FROM %s WHERE model_id = :model_id', Table::MODEL_DETAILS),
+            sprintf('SELECT bounding_box FROM %s WHERE model_id = :model_id', Table::MODFLOWMODELS_LIST),
             ['model_id' => $modelId->toString()]
         );
 
@@ -64,7 +64,7 @@ class ModelFinder
     public function getGridSizeByModflowModelId(ModflowId $modelId): ?GridSize
     {
         $result = $this->connection->fetchAssoc(
-            sprintf('SELECT grid_size FROM %s WHERE model_id = :model_id', Table::MODEL_DETAILS),
+            sprintf('SELECT grid_size FROM %s WHERE model_id = :model_id', Table::MODFLOWMODELS_LIST),
             ['model_id' => $modelId->toString()]
         );
 
@@ -79,7 +79,7 @@ class ModelFinder
     {
         $this->connection->setFetchMode(\PDO::FETCH_ASSOC);
         $result = $this->connection->fetchAssoc(
-            sprintf('SELECT name FROM %s WHERE model_id = :model_id', Table::MODEL_DETAILS),
+            sprintf('SELECT name FROM %s WHERE model_id = :model_id', Table::MODFLOWMODELS_LIST),
             ['model_id' => $modelId->toString()]
         );
 
@@ -94,7 +94,7 @@ class ModelFinder
     {
         $this->connection->setFetchMode(\PDO::FETCH_ASSOC);
         $result = $this->connection->fetchAssoc(
-            sprintf('SELECT description FROM %s WHERE model_id = :model_id', Table::MODEL_DETAILS),
+            sprintf('SELECT description FROM %s WHERE model_id = :model_id', Table::MODFLOWMODELS_LIST),
             ['model_id' => $modelId->toString()]
         );
 
@@ -109,7 +109,7 @@ class ModelFinder
     {
         $this->connection->setFetchMode(\PDO::FETCH_ASSOC);
         $result = $this->connection->fetchAssoc(
-            sprintf('SELECT soilmodel_id FROM %s WHERE model_id = :model_id', Table::MODEL_DETAILS),
+            sprintf('SELECT soilmodel_id FROM %s WHERE model_id = :model_id', Table::MODFLOWMODELS_LIST),
             ['model_id' => $modelId->toString()]
         );
 
@@ -124,7 +124,7 @@ class ModelFinder
     {
         $this->connection->setFetchMode(\PDO::FETCH_ASSOC);
         $result = $this->connection->fetchAssoc(
-            sprintf('SELECT length_unit FROM %s WHERE model_id = :model_id', Table::MODEL_DETAILS),
+            sprintf('SELECT length_unit FROM %s WHERE model_id = :model_id', Table::MODFLOWMODELS_LIST),
             ['model_id' => $modelId->toString()]
         );
 
@@ -139,7 +139,7 @@ class ModelFinder
     {
         $this->connection->setFetchMode(\PDO::FETCH_ASSOC);
         $result = $this->connection->fetchAssoc(
-            sprintf('SELECT time_unit FROM %s WHERE model_id = :model_id', Table::MODEL_DETAILS),
+            sprintf('SELECT time_unit FROM %s WHERE model_id = :model_id', Table::MODFLOWMODELS_LIST),
             ['model_id' => $modelId->toString()]
         );
 
@@ -154,7 +154,7 @@ class ModelFinder
     {
         $this->connection->setFetchMode(\PDO::FETCH_ASSOC);
         $result = $this->connection->fetchAssoc(
-            sprintf('SELECT count(*) FROM %s WHERE model_id = :model_id AND user_id = :user_id', Table::MODEL_DETAILS),
+            sprintf('SELECT count(*) FROM %s WHERE model_id = :model_id AND user_id = :user_id', Table::MODFLOWMODELS_LIST),
             ['model_id' => $modelId->toString(), 'user_id' => $userId->toString()]
         );
 
@@ -169,7 +169,7 @@ class ModelFinder
     {
         $this->connection->setFetchMode(\PDO::FETCH_ASSOC);
         $result = $this->connection->fetchAssoc(
-            sprintf('SELECT model_id AS id, user_id, soilmodel_id, user_name, name, description, area as geometry, length_unit, time_unit, grid_size, bounding_box, created_at, public FROM %s WHERE model_id = :model_id', Table::MODEL_DETAILS),
+            sprintf('SELECT model_id AS id, user_id, soilmodel_id, user_name, name, description, area as geometry, length_unit, time_unit, grid_size, bounding_box, created_at, public FROM %s WHERE model_id = :model_id', Table::MODFLOWMODELS_LIST),
             ['model_id' => $modelId->toString()]
         );
 
@@ -188,7 +188,7 @@ class ModelFinder
     {
         $this->connection->setFetchMode(\PDO::FETCH_ASSOC);
         $rows = $this->connection->fetchAll(
-            sprintf('SELECT model_id AS id, user_id, soilmodel_id, user_name, name, description, area as geometry, grid_size, bounding_box, created_at, public FROM %s WHERE user_id = :user_id', Table::MODEL_DETAILS),
+            sprintf('SELECT model_id AS id, user_id, soilmodel_id, user_name, name, description, area as geometry, grid_size, bounding_box, created_at, public FROM %s WHERE user_id = :user_id', Table::MODFLOWMODELS_LIST),
             ['user_id' => $userId->toString()]
         );
 
@@ -205,7 +205,7 @@ class ModelFinder
     {
         $this->connection->setFetchMode(\PDO::FETCH_ASSOC);
         $rows = $this->connection->fetchAll(
-            sprintf('SELECT model_id AS id, user_id, soilmodel_id, user_name, name, description, area as geometry, grid_size, bounding_box, created_at, public FROM %s WHERE public = :public', Table::MODEL_DETAILS),
+            sprintf('SELECT model_id AS id, user_id, soilmodel_id, user_name, name, description, area as geometry, grid_size, bounding_box, created_at, public FROM %s WHERE public = :public', Table::MODFLOWMODELS_LIST),
             ['public' => true]
         );
 
@@ -221,7 +221,7 @@ class ModelFinder
     public function findAll(): array
     {
         return $this->connection->fetchAll(
-            sprintf('SELECT * FROM %s', Table::MODEL_DETAILS)
+            sprintf('SELECT * FROM %s', Table::MODFLOWMODELS_LIST)
         );
     }
 }

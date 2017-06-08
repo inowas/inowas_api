@@ -6,6 +6,7 @@ namespace Tests\Inowas\ModflowBundle\Controller;
 
 use FOS\UserBundle\Doctrine\UserManager;
 use Inowas\AppBundle\Model\User;
+use Inowas\Common\DateTime\DateTime;
 use Inowas\Common\Id\ModflowId;
 use Inowas\Common\Id\UserId;
 use Inowas\ScenarioAnalysis\Model\Command\CreateScenarioAnalysis;
@@ -22,6 +23,9 @@ class ProjectControllerTest extends EventSourcingBaseTest
     /** @var User */
     protected $user;
 
+    /** @var User */
+    protected $anotherUser;
+
     public function setUp(): void
     {
         parent::setUp();
@@ -34,7 +38,6 @@ class ProjectControllerTest extends EventSourcingBaseTest
         $user = $this->userManager->findUserByUsername('testUser');
 
         if(! $user instanceof User){
-
             /** @var User $user */
             $user = $this->userManager->createUser();
             $user->setUsername('testUser');
@@ -46,6 +49,21 @@ class ProjectControllerTest extends EventSourcingBaseTest
         }
 
         $this->user = $user;
+
+        $anotherUser = $this->userManager->findUserByUsername('anotherTestUser');
+        if(! $anotherUser instanceof User) {
+            // Create AnotherUser
+            /** @var User $anotherUser */
+            $anotherUser = $this->userManager->createUser();
+            $anotherUser->setUsername('anotherTestUser');
+            $anotherUser->setName('anotherTestUserName');
+            $anotherUser->setEmail('anotherTestUser@testUser.com');
+            $anotherUser->setPlainPassword('anotherTestUserPassword');
+            $anotherUser->setEnabled(true);
+            $this->userManager->updateUser($anotherUser);
+        }
+
+        $this->anotherUser = $anotherUser;
     }
 
     /**
@@ -58,15 +76,18 @@ class ProjectControllerTest extends EventSourcingBaseTest
         $username = $this->user->getName();
 
         $modelId = ModflowId::generate();
-        $this->createModelWithName($userId, $modelId);
+        $this->createModelWithSoilmodel($userId, $modelId);
+
+        $calculationId = ModflowId::generate();
+        $start = DateTime::fromDateTime(new \DateTime('2010-01-01'));
+        $end = DateTime::fromDateTime(new \DateTime('2015-01-01'));
+        $this->createCalculation($calculationId, $userId, $modelId, $start, $end);
 
         $scenarioAnalysisId = ScenarioAnalysisId::generate();
-        $calculationId = ModflowId::generate();
         $this->commandBus->dispatch(CreateScenarioAnalysis::byUserWithBaseModelNameAndDescription(
             $scenarioAnalysisId,
             $userId,
             $modelId,
-            $calculationId,
             ScenarioAnalysisName::fromString('TestName'),
             ScenarioAnalysisDescription::fromString('TestDescription')
         ));
@@ -113,15 +134,18 @@ class ProjectControllerTest extends EventSourcingBaseTest
         $username = $this->user->getName();
 
         $modelId = ModflowId::generate();
-        $this->createModelWithName($userId, $modelId);
+        $this->createModelWithSoilmodel($userId, $modelId);
+
+        $calculationId = ModflowId::generate();
+        $start = DateTime::fromDateTime(new \DateTime('2010-01-01'));
+        $end = DateTime::fromDateTime(new \DateTime('2015-01-01'));
+        $this->createCalculation($calculationId, $userId, $modelId, $start, $end);
 
         $scenarioAnalysisId = ScenarioAnalysisId::generate();
-        $calculationId = ModflowId::generate();
         $this->commandBus->dispatch(CreateScenarioAnalysis::byUserWithBaseModelNameAndDescription(
             $scenarioAnalysisId,
             $userId,
             $modelId,
-            $calculationId,
             ScenarioAnalysisName::fromString('TestName'),
             ScenarioAnalysisDescription::fromString('TestDescription')
         ));
@@ -156,5 +180,40 @@ class ProjectControllerTest extends EventSourcingBaseTest
         $this->assertEquals($username, $saDetails['user_name']);
         $this->assertTrue(array_key_exists('created_at', $saDetails));
         $this->assertTrue(array_key_exists('public', $saDetails));
+    }
+
+    /**
+     * @test
+     */
+    public function it_clones_a_project_with_new_user(): void
+    {
+        $userId = UserId::fromString($this->user->getId()->toString());
+        $modelId = ModflowId::generate();
+        $this->createModelWithSoilmodel($userId, $modelId);
+
+        $calculationId = ModflowId::generate();
+        $start = DateTime::fromDateTime(new \DateTime('2015-01-01'));
+        $end = DateTime::fromDateTime(new \DateTime('2015-01-31'));
+        $this->createCalculation($calculationId, $userId, $modelId, $start, $end);
+
+        $scenarioAnalysisId = ScenarioAnalysisId::generate();
+        $this->commandBus->dispatch(CreateScenarioAnalysis::byUserWithBaseModelNameAndDescription(
+            $scenarioAnalysisId,
+            $userId,
+            $modelId,
+            ScenarioAnalysisName::fromString('TestName'),
+            ScenarioAnalysisDescription::fromString('TestDescription')
+        ));
+
+        $client = static::createClient();
+        $client->request(
+            'POST',
+            sprintf('/v2/projects/%s/clone', $scenarioAnalysisId->toString()),
+            array(),
+            array(),
+            array('HTTP_X-AUTH-TOKEN' => $this->anotherUser->getApiKey())
+        );
+
+        $response = $client->getResponse();
     }
 }

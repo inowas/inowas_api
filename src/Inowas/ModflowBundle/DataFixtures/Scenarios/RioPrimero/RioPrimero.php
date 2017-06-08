@@ -22,52 +22,42 @@ use Inowas\Common\Id\UserId;
 use Inowas\Common\Modflow\Laytyp;
 use Inowas\Common\Modflow\LengthUnit;
 use Inowas\Common\Modflow\TimeUnit;
-use Inowas\Common\Soilmodel\Conductivity;
-use Inowas\Common\Soilmodel\HBottom;
-use Inowas\Common\Soilmodel\HTop;
+use Inowas\Common\Soilmodel\BottomElevation;
+use Inowas\Common\Soilmodel\HydraulicAnisotropy;
 use Inowas\Common\Soilmodel\HydraulicConductivityX;
-use Inowas\Common\Soilmodel\HydraulicConductivityY;
-use Inowas\Common\Soilmodel\HydraulicConductivityZ;
 use Inowas\Common\Soilmodel\SpecificStorage;
 use Inowas\Common\Soilmodel\SpecificYield;
-use Inowas\Common\Soilmodel\Storage;
+use Inowas\Common\Soilmodel\TopElevation;
+use Inowas\Common\Soilmodel\VerticalHydraulicConductivity;
+use Inowas\ModflowCalculation\Model\Command\CalculateModflowModelCalculation;
 use Inowas\ModflowCalculation\Model\Command\CreateModflowModelCalculation;
 use Inowas\ModflowModel\Model\Command\AddBoundary;
 use Inowas\ModflowModel\Model\Command\ChangeModflowModelBoundingBox;
 use Inowas\ModflowModel\Model\Command\ChangeModflowModelSoilmodelId;
 use Inowas\ModflowModel\Model\Command\CreateModflowModel;
 use Inowas\ModflowBundle\DataFixtures\Scenarios\LoadScenarioBase;
-use Inowas\Common\Soilmodel\BoreLogId;
-use Inowas\Common\Soilmodel\BoreLogLocation;
-use Inowas\Common\Soilmodel\BoreLogName;
-use Inowas\Soilmodel\Model\Command\AddBoreLogToSoilmodel;
 use Inowas\Soilmodel\Model\Command\AddGeologicalLayerToSoilmodel;
-use Inowas\Soilmodel\Model\Command\AddHorizonToBoreLog;
 use Inowas\Soilmodel\Model\Command\ChangeSoilmodelDescription;
 use Inowas\Soilmodel\Model\Command\ChangeSoilmodelName;
-use Inowas\Soilmodel\Model\Command\CreateBoreLog;
 use Inowas\Soilmodel\Model\Command\CreateSoilmodel;
-use Inowas\Soilmodel\Model\Command\InterpolateSoilmodel;
 use Inowas\Common\Soilmodel\GeologicalLayer;
 use Inowas\Common\Soilmodel\GeologicalLayerDescription;
 use Inowas\Common\Soilmodel\GeologicalLayerId;
 use Inowas\Common\Soilmodel\GeologicalLayerName;
 use Inowas\Common\Soilmodel\GeologicalLayerNumber;
-use Inowas\Common\Soilmodel\Horizon;
-use Inowas\Common\Soilmodel\HorizonId;
 use Inowas\Common\Soilmodel\SoilmodelDescription;
 use Inowas\Common\Soilmodel\SoilmodelId;
 use Inowas\Common\Soilmodel\SoilmodelName;
+use Inowas\Soilmodel\Model\Command\UpdateGeologicalLayerProperty;
 
 class RioPrimero extends LoadScenarioBase
 {
 
-    public function load()
+    public function load(): void
     {
         $this->loadUsers($this->container->get('fos_user.user_manager'));
         $geoTools = $this->container->get('inowas.geotools.geotools_service');
         $this->createEventStreamTableIfNotExists('event_stream');
-
 
         $commandBus = $this->container->get('prooph_service_bus.modflow_command_bus');
         $ownerId = UserId::fromString($this->ownerId);
@@ -128,8 +118,17 @@ class RioPrimero extends LoadScenarioBase
                     )
                 )
             );
+
+            $commandBus->dispatch(UpdateGeologicalLayerProperty::forSoilmodel($ownerId, $soilModelId, $layerId, TopElevation::fromLayerValue(430)));
+            $commandBus->dispatch(UpdateGeologicalLayerProperty::forSoilmodel($ownerId, $soilModelId, $layerId, BottomElevation::fromLayerValue(360)));
+            $commandBus->dispatch(UpdateGeologicalLayerProperty::forSoilmodel($ownerId, $soilModelId, $layerId, HydraulicConductivityX::fromLayerValue(10)));
+            $commandBus->dispatch(UpdateGeologicalLayerProperty::forSoilmodel($ownerId, $soilModelId, $layerId, HydraulicAnisotropy::fromLayerValue(1)));
+            $commandBus->dispatch(UpdateGeologicalLayerProperty::forSoilmodel($ownerId, $soilModelId, $layerId, VerticalHydraulicConductivity::fromLayerValue(1)));
+            $commandBus->dispatch(UpdateGeologicalLayerProperty::forSoilmodel($ownerId, $soilModelId, $layerId, SpecificStorage::fromLayerValue(1e-5)));
+            $commandBus->dispatch(UpdateGeologicalLayerProperty::forSoilmodel($ownerId, $soilModelId, $layerId, SpecificYield::fromLayerValue(0.15)));
         }
 
+        /*
         $boreHoles = array(
             array('point', 'name', 'top', 'bot'),
             array(new Point(-63.64698, -31.32741, 4326), 'GP1', 465, 392),
@@ -145,7 +144,7 @@ class RioPrimero extends LoadScenarioBase
 
         $header = null;
         foreach ($boreHoles as $borehole) {
-            if (is_null($header)) {
+            if (null === $header) {
                 $header = $borehole;
                 continue;
             }
@@ -179,6 +178,8 @@ class RioPrimero extends LoadScenarioBase
 
         echo sprintf("Interpolate soilmodel with %s Memory usage\r\n", memory_get_usage());
         $commandBus->dispatch(InterpolateSoilmodel::forSoilmodel($ownerId, $soilModelId, $boundingBox, $gridSize));
+        */
+
 
         /*
          * Add Wells for the BaseScenario
@@ -196,7 +197,7 @@ class RioPrimero extends LoadScenarioBase
 
         $header = null;
         foreach ($wells as $data){
-            if (is_null($header)){
+            if (null === $header){
                 $header = $data;
                 continue;
             }
@@ -221,8 +222,6 @@ class RioPrimero extends LoadScenarioBase
         $start = DateTime::fromDateTime(new \DateTime('2005-01-01'));
         $end = DateTime::fromDateTime(new \DateTime('2005-12-31'));
         $commandBus->dispatch(CreateModflowModelCalculation::byUserWithModelId($calculationId, $ownerId, $modelId, $start, $end));
-        #$commandBus->dispatch(CalculateModflowModelCalculation::byUserWithModelId($ownerId, $calculationId, $modelId));
-
-        return 1;
+        $commandBus->dispatch(CalculateModflowModelCalculation::byUserWithCalculationId($ownerId, $calculationId));
     }
 }

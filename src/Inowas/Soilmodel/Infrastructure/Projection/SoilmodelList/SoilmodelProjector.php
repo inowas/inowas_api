@@ -5,6 +5,7 @@ namespace Inowas\Soilmodel\Infrastructure\Projection\SoilmodelList;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Schema\Schema;
 use Inowas\Common\Projection\AbstractDoctrineConnectionProjector;
+use Inowas\Soilmodel\Model\Event\SoilmodelWasCloned;
 use Inowas\Soilmodel\Model\Event\SoilmodelWasCreated;
 use Inowas\Soilmodel\Infrastructure\Projection\Table;
 
@@ -33,6 +34,16 @@ class SoilmodelProjector extends AbstractDoctrineConnectionProjector
             'soilmodel_id' => $event->soilmodelId()->toString(),
             'name' => '',
             'description' => ''
+        ));
+    }
+
+    public function onSoilmodelWasCloned(SoilmodelWasCloned $event): void
+    {
+        $this->connection->insert(Table::SOILMODEL_LIST, array(
+            'user_id' => $event->userId()->toString(),
+            'soilmodel_id' => $event->soilmodelId()->toString(),
+            'name' => $event->name()->toString(),
+            'description' => $event->description()->toString()
         ));
     }
 }

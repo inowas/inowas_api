@@ -21,7 +21,7 @@ class BoundaryObservationPointsProjector extends AbstractDoctrineConnectionProje
         parent::__construct($connection);
 
         $this->schema = new Schema();
-        $table = $this->schema->createTable(Table::BOUNDARY_OBSERVATION_POINTS);
+        $table = $this->schema->createTable(Table::BOUNDARY_OBSERVATION_POINT_VALUES);
         $table->addColumn('model_id', 'string', ['length' => 36]);
         $table->addColumn('boundary_id', 'string', ['length' => 36]);
         $table->addColumn('boundary_type', 'string', ['length' => 255]);
@@ -37,7 +37,7 @@ class BoundaryObservationPointsProjector extends AbstractDoctrineConnectionProje
     {
         /** @var ObservationPoint $observationPoint */
         foreach ($event->boundary()->observationPoints() as $observationPoint) {
-            $this->connection->insert(Table::BOUNDARY_OBSERVATION_POINTS, array(
+            $this->connection->insert(Table::BOUNDARY_OBSERVATION_POINT_VALUES, array(
                 'model_id' => $event->modflowId()->toString(),
                 'boundary_id' => $event->boundary()->boundaryId()->toString(),
                 'boundary_type' => $event->boundary()->type(),
@@ -52,7 +52,7 @@ class BoundaryObservationPointsProjector extends AbstractDoctrineConnectionProje
 
     public function onBoundaryWasRemoved(BoundaryWasRemoved $event): void
     {
-        $this->connection->delete(Table::BOUNDARY_OBSERVATION_POINTS, array(
+        $this->connection->delete(Table::BOUNDARY_OBSERVATION_POINT_VALUES, array(
             'model_id' => $event->modflowId()->toString(),
             'boundary_id' => $event->boundaryId()->toString()
         ));
@@ -61,14 +61,14 @@ class BoundaryObservationPointsProjector extends AbstractDoctrineConnectionProje
     public function onModflowModelWasCloned(ModflowModelWasCloned $event): void
     {
 
-        $sql = sprintf("SELECT * FROM %s WHERE model_id = ?", Table::BOUNDARY_OBSERVATION_POINTS);
+        $sql = sprintf("SELECT * FROM %s WHERE model_id = ?", Table::BOUNDARY_OBSERVATION_POINT_VALUES);
         $stmt = $this->connection->prepare($sql);
         $stmt->bindValue(1, $event->baseModelId()->toString());
         $stmt->execute();
         $boundaries = $stmt->fetchAll();
 
         foreach ($boundaries as $boundary) {
-            $this->connection->insert(Table::BOUNDARY_OBSERVATION_POINTS, array(
+            $this->connection->insert(Table::BOUNDARY_OBSERVATION_POINT_VALUES, array(
                 'model_id' => $event->modelId()->toString(),
                 'boundary_id' => $boundary['boundary_id'],
                 'boundary_type' => $boundary['boundary_type'],

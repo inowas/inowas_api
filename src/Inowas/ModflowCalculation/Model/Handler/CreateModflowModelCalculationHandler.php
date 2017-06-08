@@ -11,7 +11,6 @@ use Inowas\ModflowCalculation\Model\ModflowCalculationList;
 use Inowas\ModflowModel\Model\ModflowModelList;
 use Inowas\ModflowModel\Model\ModflowModelAggregate;
 use Inowas\ModflowModel\Service\ModflowModelManager;
-use Inowas\Soilmodel\Model\SoilmodelList;
 
 final class CreateModflowModelCalculationHandler
 {
@@ -22,21 +21,16 @@ final class CreateModflowModelCalculationHandler
     /** @var  ModflowCalculationList */
     private $modelCalculationList;
 
-    /** @var  SoilmodelList */
-    private $soilmodelList;
-
     /** @var  ModflowModelManager */
     private $modflowModelManager;
 
     public function __construct(
         ModflowModelList $modflowModelList,
-        SoilmodelList $soilmodelList,
         ModflowCalculationList $modelCalculationList,
         ModflowModelManager $modflowModelManager
     ) {
         $this->modelCalculationList = $modelCalculationList;
         $this->modflowModelList = $modflowModelList;
-        $this->soilmodelList = $soilmodelList;
         $this->modflowModelManager = $modflowModelManager;
     }
 
@@ -51,7 +45,6 @@ final class CreateModflowModelCalculationHandler
         $calculation = ModflowCalculationAggregate::create(
             $command->calculationId(),
             $modflowModel->modflowModelId(),
-            $modflowModel->soilmodelId(),
             $modflowModel->ownerId(),
             $command->startDateTime(),
             $command->endDateTime(),

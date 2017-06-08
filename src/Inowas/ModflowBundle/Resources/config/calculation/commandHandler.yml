@@ -6,11 +6,15 @@ services:
             - '@inowas.modflowcalculation.calculation_configuration_finder'
             - '@inowas.modflowcalculation.amqp_flopy_calculation'
 
+    inowas.modflowcalculation.clone_modflow_calculation_handler:
+        class: Inowas\ModflowCalculation\Model\Handler\CloneModflowModelCalculationHandler
+        arguments:
+            - '@modflow_calculation_list'
+
     inowas.modflowcalculation.create_modflow_calculation_handler:
         class: Inowas\ModflowCalculation\Model\Handler\CreateModflowModelCalculationHandler
         arguments:
             - '@modflow_model_list'
-            - '@soil_model_list'
             - '@modflow_calculation_list'
             - '@inowas.modflowmodel.manager'
 

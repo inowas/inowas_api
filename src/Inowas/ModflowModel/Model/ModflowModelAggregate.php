@@ -98,12 +98,12 @@ class ModflowModelAggregate extends AggregateRoot
         return $self;
     }
 
-    public static function cloneWithIdUserAndAggregate(ModflowId $newModelId, UserId $newUserId, ModflowModelAggregate $model): ModflowModelAggregate
+    public static function cloneWithIdUserSoilmodelIdAndAggregate(ModflowId $newModelId, UserId $newUserId, SoilmodelId $soilmodelId, ModflowModelAggregate $model): ModflowModelAggregate
     {
         $self = new self();
         $self->modflowId = $newModelId;
         $self->owner = $newUserId;
-        $self->soilmodelId = $model->soilmodelId();
+        $self->soilmodelId = $soilmodelId;
         $self->area = $model->area();
         $self->boundaries = $model->boundaries();
         $self->gridSize = $model->gridSize();
@@ -129,7 +129,7 @@ class ModflowModelAggregate extends AggregateRoot
         return $self;
     }
 
-    public function changeModelName(UserId $userId, ModelName $name)
+    public function changeModelName(UserId $userId, ModelName $name): void
     {
         $this->name = $name;
         $this->recordThat(NameWasChanged::byUserWithName(
@@ -139,7 +139,7 @@ class ModflowModelAggregate extends AggregateRoot
         ));
     }
 
-    public function changeModelDescription(UserId $userId, ModelDescription $description)
+    public function changeModelDescription(UserId $userId, ModelDescription $description): void
     {
         $this->description = $description;
         $this->recordThat(DescriptionWasChanged::withDescription(
@@ -149,7 +149,7 @@ class ModflowModelAggregate extends AggregateRoot
         );
     }
 
-    public function changeAreaGeometry(UserId $userId, Polygon $polygon)
+    public function changeAreaGeometry(UserId $userId, Polygon $polygon): void
     {
         $this->area = $this->area->updateGeometry($polygon);
         $this->recordThat(AreaGeometryWasUpdated::of(

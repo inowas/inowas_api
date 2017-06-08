@@ -30,6 +30,7 @@ use Inowas\Common\Soilmodel\SpecificStorage;
 use Inowas\Common\Soilmodel\SpecificYield;
 use Inowas\Common\Soilmodel\TopElevation;
 use Inowas\Common\Soilmodel\VerticalHydraulicConductivity;
+use Inowas\ModflowCalculation\Model\Command\CloneModflowModelCalculation;
 use Inowas\ModflowModel\Model\Command\AddBoundary;
 use Inowas\ModflowCalculation\Model\Command\ChangeFlowPackage;
 use Inowas\ModflowModel\Model\Command\ChangeModflowModelBoundingBox;
@@ -55,6 +56,7 @@ use Inowas\ScenarioAnalysis\Model\ScenarioAnalysisName;
 use Inowas\Soilmodel\Model\Command\AddGeologicalLayerToSoilmodel;
 use Inowas\Soilmodel\Model\Command\ChangeSoilmodelDescription;
 use Inowas\Soilmodel\Model\Command\ChangeSoilmodelName;
+use Inowas\Soilmodel\Model\Command\CloneSoilmodel;
 use Inowas\Soilmodel\Model\Command\CreateSoilmodel;
 use Inowas\Soilmodel\Model\Command\UpdateGeologicalLayerProperty;
 use Inowas\Common\Soilmodel\GeologicalLayer;
@@ -841,10 +843,14 @@ class ModflowModelEventSourcingTest extends EventSourcingBaseTest
     {
         $ownerId = UserId::generate();
         $modelId = ModflowId::generate();
-        $this->createModelWithName($ownerId, $modelId);
+        $this->createModelWithSoilmodel($ownerId, $modelId);
+
+        $calculationId = ModflowId::generate();
+        $start = DateTime::fromDateTime(new \DateTime('2015-01-01'));
+        $end = DateTime::fromDateTime(new \DateTime('2015-01-31'));
+        $this->createCalculation($calculationId, $ownerId, $modelId, $start, $end);
 
         $scenarioAnalysisId = ScenarioAnalysisId::generate();
-        $calculationId = ModflowId::generate();
         $this->createScenarioAnalysis($scenarioAnalysisId, $ownerId, $modelId, $calculationId, ScenarioAnalysisName::fromString('TestName'), ScenarioAnalysisDescription::fromString('TestDescription'));
 
         $scenarioAnalysis = $this->container->get('inowas.scenarioanalysis.scenarioanalysis_finder')->findScenarioAnalysisDetailsById($scenarioAnalysisId);
@@ -852,9 +858,9 @@ class ModflowModelEventSourcingTest extends EventSourcingBaseTest
         $this->assertEquals($ownerId->toString(), $scenarioAnalysis['user_id']);
         $this->assertEquals("TestName", $scenarioAnalysis['name']);
         $this->assertEquals("TestDescription", $scenarioAnalysis['description']);
-        $this->assertEquals(json_decode('{"type":"Polygon","coordinates":[[[-63.65,-31.31],[-63.65,-31.36],[-63.58,-31.36],[-63.58,-31.31],[-63.65,-31.31]]]}', true), $scenarioAnalysis['geometry']);
+        $this->assertEquals(json_decode('{"type":"Polygon","coordinates":[[[-63.687336,-31.313615],[-63.687336,-31.367449],[-63.56926,-31.367449],[-63.56926,-31.313615],[-63.687336,-31.313615]]]}', true), $scenarioAnalysis['geometry']);
         $this->assertEquals(json_decode('{"n_x":75,"n_y":40}', true), $scenarioAnalysis['grid_size']);
-        $this->assertEquals(json_decode('{"x_min":-63.65,"x_max":-63.58,"y_min":-31.36,"y_max":-31.31,"srid":4326,"d_x":6654.011417877915,"d_y":5565.974539664423}', true), $scenarioAnalysis['bounding_box']);
+        $this->assertEquals(json_decode('{"x_min":-63.687336,"x_max":-63.56926,"y_min":-31.367449,"y_max":-31.313615,"srid":4326,"d_x":11223.096698287049,"d_y":5992.773467366025}', true), $scenarioAnalysis['bounding_box']);
     }
 
     public function test_create_scenarioanalysis_from_basemodel_with_all_boundary_types(): void
@@ -872,8 +878,12 @@ class ModflowModelEventSourcingTest extends EventSourcingBaseTest
         $baseModelBoundaries = $this->container->get('inowas.modflowmodel.boundaries_finder')->findBoundariesByModelId($modelId);
         $this->assertCount(5, $baseModelBoundaries);
 
-        $scenarioAnalysisId = ScenarioAnalysisId::generate();
         $calculationId = ModflowId::generate();
+        $start = DateTime::fromDateTime(new \DateTime('2015-01-01'));
+        $end = DateTime::fromDateTime(new \DateTime('2015-01-31'));
+        $this->createCalculation($calculationId, $ownerId, $modelId, $start, $end);
+
+        $scenarioAnalysisId = ScenarioAnalysisId::generate();
         $this->createScenarioAnalysis($scenarioAnalysisId, $ownerId, $modelId, $calculationId, ScenarioAnalysisName::fromString('TestName'), ScenarioAnalysisDescription::fromString('TestDescription'));
 
         $scenarioAnalysis = $this->container->get('inowas.scenarioanalysis.scenarioanalysis_finder')->findScenarioAnalysisDetailsById($scenarioAnalysisId);
@@ -899,8 +909,12 @@ class ModflowModelEventSourcingTest extends EventSourcingBaseTest
         $modelBoundaries = $this->container->get('inowas.modflowmodel.boundaries_finder')->findBoundariesByModelId($modelId);
         $this->assertCount(4, $modelBoundaries);
 
-        $scenarioAnalysisId = ScenarioAnalysisId::generate();
         $calculationId = ModflowId::generate();
+        $start = DateTime::fromDateTime(new \DateTime('2015-01-01'));
+        $end = DateTime::fromDateTime(new \DateTime('2015-01-31'));
+        $this->createCalculation($calculationId, $ownerId, $modelId, $start, $end);
+
+        $scenarioAnalysisId = ScenarioAnalysisId::generate();
         $this->createScenarioAnalysis($scenarioAnalysisId, $ownerId, $modelId, $calculationId, ScenarioAnalysisName::fromString('TestName'), ScenarioAnalysisDescription::fromString('TestDescription'));
 
         $scenarioId = ModflowId::generate();
@@ -922,8 +936,12 @@ class ModflowModelEventSourcingTest extends EventSourcingBaseTest
         $this->commandBus->dispatch(AddBoundary::to($modelId, $ownerId, $this->createRiverBoundaryWithObservationPoint()));
         $this->commandBus->dispatch(AddBoundary::to($modelId, $ownerId, $well = $this->createWellBoundary()));
 
-        $scenarioAnalysisId = ScenarioAnalysisId::generate();
         $calculationId = ModflowId::generate();
+        $start = DateTime::fromDateTime(new \DateTime('2015-01-01'));
+        $end = DateTime::fromDateTime(new \DateTime('2015-01-31'));
+        $this->createCalculation($calculationId, $ownerId, $modelId, $start, $end);
+
+        $scenarioAnalysisId = ScenarioAnalysisId::generate();
         $this->createScenarioAnalysis($scenarioAnalysisId, $ownerId, $modelId, $calculationId, ScenarioAnalysisName::fromString('TestName'), ScenarioAnalysisDescription::fromString('TestDescription'));
 
         $scenarioId = ModflowId::generate();
@@ -967,5 +985,39 @@ class ModflowModelEventSourcingTest extends EventSourcingBaseTest
         $activeCells = $this->container->get('inowas.modflowmodel.boundaries_finder')->findBoundaryActiveCells($modelId, $wellBoundary->boundaryId());
         $this->assertCount(1, $activeCells->cells());
         $this->assertEquals([[0,12,17]], $activeCells->cells());
+    }
+
+    public function test_clone_soilmodel(): void
+    {
+        $ownerId = UserId::generate();
+        $modelId = ModflowId::generate();
+        $this->createModelWithSoilmodel($ownerId, $modelId);
+
+        $soilmodelId = $this->container->get('inowas.modflowmodel.model_finder')->getSoilmodelIdByModelId($modelId);
+        $this->container->get('inowas.soilmodel.layer_values_finder')->getNlay($soilmodelId);
+        $this->assertEquals(1, $this->container->get('inowas.soilmodel.layer_values_finder')->getNlay($soilmodelId)->toInteger());
+
+        $newSoilModelId = SoilmodelId::generate();
+        $this->commandBus->dispatch(CloneSoilmodel::byUserWithModelId($newSoilModelId, $ownerId, $soilmodelId));
+
+        $this->container->get('inowas.soilmodel.layer_values_finder')->getNlay($newSoilModelId);
+        $this->assertEquals(1, $this->container->get('inowas.soilmodel.layer_values_finder')->getNlay($soilmodelId)->toInteger());
+    }
+
+    public function test_clone_calculation(): void
+    {
+        $ownerId = UserId::generate();
+        $modelId = ModflowId::generate();
+        $this->createModelWithSoilmodel($ownerId, $modelId);
+
+        $calculationId = ModflowId::generate();
+        $start = DateTime::fromDateTime(new \DateTime('2015-01-01'));
+        $end = DateTime::fromDateTime(new \DateTime('2015-01-31'));
+        $this->createCalculation($calculationId, $ownerId, $modelId, $start, $end);
+
+        $newCalculationId = ModflowId::generate();
+        $this->commandBus->dispatch(CloneModflowModelCalculation::byUserWithModelId(
+            $ownerId, $calculationId, $newCalculationId, $modelId, $modelId
+        ));
     }
 }

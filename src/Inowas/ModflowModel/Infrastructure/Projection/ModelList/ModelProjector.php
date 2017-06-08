@@ -33,7 +33,7 @@ class ModelProjector extends AbstractDoctrineConnectionProjector
         $this->entityManager = $entityManager;
 
         $this->schema = new Schema();
-        $table = $this->schema->createTable(Table::MODEL_DETAILS);
+        $table = $this->schema->createTable(Table::MODFLOWMODELS_LIST);
         $table->addColumn('id', 'integer', array("unsigned" => true, "autoincrement" => true));
         $table->addColumn('model_id', 'string', ['length' => 36]);
         $table->addColumn('user_id', 'string', ['length' => 36]);
@@ -54,7 +54,7 @@ class ModelProjector extends AbstractDoctrineConnectionProjector
 
     public function onAreaGeometryWasUpdated(AreaGeometryWasUpdated $event): void
     {
-        $this->connection->update(Table::MODEL_DETAILS, array(
+        $this->connection->update(Table::MODFLOWMODELS_LIST, array(
             'area' => $event->geometry()->toJson(),
         ),
             array('model_id' => $event->modelId()->toString())
@@ -63,7 +63,7 @@ class ModelProjector extends AbstractDoctrineConnectionProjector
 
     public function onBoundingBoxWasChanged(BoundingBoxWasChanged $event): void
     {
-        $this->connection->update(Table::MODEL_DETAILS, array(
+        $this->connection->update(Table::MODFLOWMODELS_LIST, array(
             'bounding_box' => json_encode($event->boundingBox()),
         ),
             array('model_id' => $event->modflowId()->toString())
@@ -72,7 +72,7 @@ class ModelProjector extends AbstractDoctrineConnectionProjector
 
     public function onDescriptionWasChanged(DescriptionWasChanged $event): void
     {
-        $this->connection->update(Table::MODEL_DETAILS,
+        $this->connection->update(Table::MODFLOWMODELS_LIST,
             array('description' => $event->description()->toString()),
             array('model_id' => $event->modflowModelId()->toString())
         );
@@ -80,7 +80,7 @@ class ModelProjector extends AbstractDoctrineConnectionProjector
 
     public function onGridSizeWasChanged(GridSizeWasChanged $event): void
     {
-        $this->connection->update(Table::MODEL_DETAILS, array(
+        $this->connection->update(Table::MODFLOWMODELS_LIST, array(
             'grid_size' => json_encode($event->gridSize())
         ),
             array('model_id' => $event->modflowId()->toString())
@@ -89,11 +89,11 @@ class ModelProjector extends AbstractDoctrineConnectionProjector
 
     public function onModflowModelWasCreated(ModflowModelWasCreated $event): void
     {
-        $this->connection->insert(Table::MODEL_DETAILS, array(
+        $this->connection->insert(Table::MODFLOWMODELS_LIST, array(
             'model_id' => $event->modelId()->toString(),
             'user_id' => $event->userId()->toString(),
             'user_name' => $this->getUserNameByUserId($event->userId()->toString()),
-            'soilmodel_id' => SoilmodelId::generate()->toString(),
+            'soilmodel_id' => $event->soilmodelId()->toString(),
             'name' => '',
             'description' => '',
             'area' => $event->area()->geometry()->toJson(),
@@ -110,12 +110,12 @@ class ModelProjector extends AbstractDoctrineConnectionProjector
     {
 
         $rows = $this->connection->fetchAll(
-            sprintf('SELECT * FROM %s WHERE model_id = :model_id', Table::MODEL_DETAILS),
+            sprintf('SELECT * FROM %s WHERE model_id = :model_id', Table::MODFLOWMODELS_LIST),
             ['model_id' => $event->baseModelId()->toString()]
         );
 
         foreach ($rows as $row){
-            $this->connection->insert(Table::MODEL_DETAILS, array(
+            $this->connection->insert(Table::MODFLOWMODELS_LIST, array(
                 'model_id' => $event->modelId()->toString(),
                 'user_id' => $event->userId()->toString(),
                 'user_name' => $this->getUserNameByUserId($event->userId()->toString()),
@@ -135,7 +135,7 @@ class ModelProjector extends AbstractDoctrineConnectionProjector
 
     public function onLengthUnitWasUpdated(LengthUnitWasUpdated $event): void
     {
-        $this->connection->update(Table::MODEL_DETAILS,
+        $this->connection->update(Table::MODFLOWMODELS_LIST,
             array('length_unit' => $event->lengthUnit()->toInt()),
             array('model_id' => $event->modflowId()->toString())
         );
@@ -143,7 +143,7 @@ class ModelProjector extends AbstractDoctrineConnectionProjector
 
     public function onTimeUnitWasUpdated(TimeUnitWasUpdated $event): void
     {
-        $this->connection->update(Table::MODEL_DETAILS,
+        $this->connection->update(Table::MODFLOWMODELS_LIST,
             array('time_unit' => $event->timeUnit()->toInt()),
             array('model_id' => $event->modflowId()->toString())
         );
@@ -151,7 +151,7 @@ class ModelProjector extends AbstractDoctrineConnectionProjector
 
     public function onNameWasChanged(NameWasChanged $event): void
     {
-        $this->connection->update(Table::MODEL_DETAILS,
+        $this->connection->update(Table::MODFLOWMODELS_LIST,
             array('name' => $event->name()->toString()),
             array('model_id' => $event->modflowId()->toString())
         );
@@ -159,7 +159,7 @@ class ModelProjector extends AbstractDoctrineConnectionProjector
 
     public function onSoilModelIdWasChanged(SoilModelIdWasChanged $event): void
     {
-        $this->connection->update(Table::MODEL_DETAILS,
+        $this->connection->update(Table::MODFLOWMODELS_LIST,
             array('soilmodel_id' => $event->soilModelId()->toString()),
             array('model_id' => $event->modflowModelId()->toString())
         );

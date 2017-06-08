@@ -18,6 +18,15 @@ class CreateScenario extends Command implements PayloadConstructable
 
     use PayloadTrait;
 
+    /** @noinspection MoreThanThreeArgumentsInspection
+     * @param ScenarioAnalysisId $scenarioAnalysisId
+     * @param UserId $userId
+     * @param ModflowId $baseModelId
+     * @param ModflowId $scenarioId
+     * @param ModelName $name
+     * @param ModelDescription $description
+     * @return CreateScenario
+     */
     public static function byUserWithBaseModelAndScenarioId(
         ScenarioAnalysisId $scenarioAnalysisId,
         UserId $userId,

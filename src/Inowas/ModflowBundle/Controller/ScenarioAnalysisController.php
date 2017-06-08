@@ -8,10 +8,13 @@ use FOS\RestBundle\Controller\Annotations as Rest;
 use Inowas\ModflowBundle\Exception\InvalidArgumentException;
 use Inowas\ModflowBundle\Exception\InvalidUuidException;
 use Inowas\ModflowBundle\Exception\NotFoundException;
+use Inowas\ScenarioAnalysis\Model\Command\CloneScenarioAnalysis;
 use Inowas\ScenarioAnalysis\Model\ScenarioAnalysisId;
 use Nelmio\ApiDocBundle\Annotation\ApiDoc as ApiDoc;
 use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\RedirectResponse;
 
+/** @noinspection LongInheritanceChainInspection */
 class ScenarioAnalysisController extends InowasRestController
 {
 
@@ -70,6 +73,7 @@ class ScenarioAnalysisController extends InowasRestController
      * @Rest\Get("/scenarioanalyses/{id}")
      * @param $id
      * @return JsonResponse
+     * @throws \Inowas\ModflowBundle\Exception\NotFoundException
      * @throws InvalidUuidException
      * @throws InvalidArgumentException
      */
@@ -84,5 +88,37 @@ class ScenarioAnalysisController extends InowasRestController
         }
 
         return new JsonResponse($scenarioAnalysis);
+    }
+
+    /**
+     * Clone ScenarioAnalysis by ScenarioAnalysisId.
+     *
+     * @ApiDoc(
+     *   resource = true,
+     *   description = "Clone ScenarioAnalysis by ScenarioAnalysisId.",
+     *   statusCodes = {
+     *     200 = "Returned when successful"
+     *   }
+     * )
+     *
+     * @Rest\Post("/scenarioanalyses/{id}/clone")
+     * @param $id
+     * @return RedirectResponse
+     * @throws \InvalidArgumentException
+     * @throws \Prooph\ServiceBus\Exception\CommandDispatchException
+     * @throws InvalidUuidException
+     * @throws InvalidArgumentException
+     */
+    public function postScenariosAnalysisCloneAction(string $id): RedirectResponse
+    {
+        $userId = $this->getUserId();
+        $this->assertUuidIsValid($id);
+        $scenarioAnalysisId = ScenarioAnalysisId::fromString($id);
+        $this->get('prooph_service_bus.modflow_command_bus')->dispatch(CloneScenarioAnalysis::byUserWithId($userId, $scenarioAnalysisId));
+
+        return new RedirectResponse(
+            $this->generateUrl('get_my_projects'),
+            302
+        );
     }
 }

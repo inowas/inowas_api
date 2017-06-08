@@ -13,6 +13,7 @@ use Inowas\Common\Projection\AbstractDoctrineConnectionProjector;
 use Inowas\ModflowModel\Infrastructure\Projection\ModelList\ModelFinder;
 use Inowas\ScenarioAnalysis\Model\Event\ScenarioAnalysisDescriptionWasChanged;
 use Inowas\ScenarioAnalysis\Model\Event\ScenarioAnalysisNameWasChanged;
+use Inowas\ScenarioAnalysis\Model\Event\ScenarioAnalysisWasCloned;
 use Inowas\ScenarioAnalysis\Model\Event\ScenarioAnalysisWasCreated;
 
 class ScenarioAnalysisProjector extends AbstractDoctrineConnectionProjector
@@ -49,7 +50,7 @@ class ScenarioAnalysisProjector extends AbstractDoctrineConnectionProjector
         $table->addIndex(array('base_model_id'));
     }
 
-    public function onScenarioAnalysisWasCreated(ScenarioAnalysisWasCreated $event)
+    public function onScenarioAnalysisWasCreated(ScenarioAnalysisWasCreated $event): void
     {
         $areaGeometry = $this->modelFinder->getAreaPolygonByModflowModelId($event->baseModelId());
         $boundingBox = $this->modelFinder->getBoundingBoxByModflowModelId($event->baseModelId());
@@ -70,7 +71,33 @@ class ScenarioAnalysisProjector extends AbstractDoctrineConnectionProjector
         ));
     }
 
-    public function onScenarioAnalysisNameWasChanged(ScenarioAnalysisNameWasChanged $event)
+    public function onScenarioAnalysisWasCloned(ScenarioAnalysisWasCloned $event): void
+    {
+        $result = $this->connection->fetchAssoc(
+            sprintf('SELECT geometry, grid_size, bounding_box from %s WHERE scenario_analysis_id = :scenario_analysis_id', Table::SCENARIO_ANALYSIS_LIST),
+            ['scenario_analysis_id' => $event->fromScenarioAnalysisId()->toString()]
+        );
+
+        if ($result === false){
+            return;
+        }
+
+        $this->connection->insert(Table::SCENARIO_ANALYSIS_LIST, array(
+            'scenario_analysis_id' => $event->scenarioAnalysisId()->toString(),
+            'user_id' => $event->userId()->toString(),
+            'user_name' => $this->getUserNameByUserId($event->userId()),
+            'name' => $event->name()->toString(),
+            'description' => $event->description()->toString(),
+            'base_model_id' => $event->baseModelId()->toString(),
+            'geometry' => $result['geometry'],
+            'grid_size' => $result['grid_size'],
+            'bounding_box' => $result['bounding_box'],
+            'created_at' => date_format($event->createdAt(), DATE_ATOM),
+            'public' => true
+        ));
+    }
+
+    public function onScenarioAnalysisNameWasChanged(ScenarioAnalysisNameWasChanged $event): void
     {
         $this->connection->update(Table::SCENARIO_ANALYSIS_LIST,
             array('name' => $event->name()->toString()),
@@ -78,7 +105,7 @@ class ScenarioAnalysisProjector extends AbstractDoctrineConnectionProjector
         );
     }
 
-    public function onScenarioAnalysisDescriptionWasChanged(ScenarioAnalysisDescriptionWasChanged $event)
+    public function onScenarioAnalysisDescriptionWasChanged(ScenarioAnalysisDescriptionWasChanged $event): void
     {
         $this->connection->update(Table::SCENARIO_ANALYSIS_LIST,
             array('description' => $event->description()->toString()),

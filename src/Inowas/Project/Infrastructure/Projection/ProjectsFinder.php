@@ -6,6 +6,7 @@ namespace Inowas\Project\Infrastructure\Projection;
 
 use Doctrine\DBAL\Connection;
 use Inowas\Common\Id\UserId;
+use Inowas\Project\Model\ProjectId;
 
 class ProjectsFinder
 {
@@ -42,5 +43,19 @@ class ProjectsFinder
         }
 
         return $results;
+    }
+
+    public function findById(ProjectId $id): ?array
+    {
+        $result = $this->connection->fetchAssoc(
+            sprintf('SELECT id, name, description, project, application, created_at, user_id, user_name, created_at, public FROM %s WHERE id = :id', Table::PROJECT_LIST),
+            ['id' => $id->toString()]
+        );
+
+        if ($result === false) {
+            return null;
+        }
+
+        return $result;
     }
 }

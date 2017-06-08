@@ -36,6 +36,7 @@ use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
+/** @noinspection LongInheritanceChainInspection */
 class ModflowModelController extends InowasRestController
 {
     /**
@@ -96,6 +97,8 @@ class ModflowModelController extends InowasRestController
      * @Rest\Post("/modflowmodels")
      * @param Request $request
      * @return RedirectResponse
+     * @throws \InvalidArgumentException
+     * @throws \Prooph\ServiceBus\Exception\CommandDispatchException
      */
     public function postModflowModelsAction(Request $request): RedirectResponse
     {
@@ -148,6 +151,7 @@ class ModflowModelController extends InowasRestController
      * @param string $id
      * @Rest\Get("/modflowmodels/{id}")
      * @return JsonResponse
+     * @throws \Inowas\ModflowBundle\Exception\NotFoundException
      */
     public function getModflowModelAction(string $id): JsonResponse
     {
@@ -178,6 +182,7 @@ class ModflowModelController extends InowasRestController
      * @param string $id
      * @Rest\Get("/modflowmodels/{id}/name")
      * @return JsonResponse
+     * @throws \Inowas\ModflowBundle\Exception\NotFoundException
      */
     public function getModflowModelNameAction(string $id): JsonResponse
     {
@@ -209,8 +214,10 @@ class ModflowModelController extends InowasRestController
      * @param string $id
      * @Rest\Put("/modflowmodels/{id}/name")
      * @return Response
+     * @throws \Prooph\ServiceBus\Exception\CommandDispatchException
+     * @throws \InvalidArgumentException
      */
-    public function putModflowModelNameAction(Request $request, string $id)
+    public function putModflowModelNameAction(Request $request, string $id): Response
     {
         $userId = $this->getUserId();
 
@@ -243,6 +250,7 @@ class ModflowModelController extends InowasRestController
      * @param string $id
      * @Rest\Get("/modflowmodels/{id}/description")
      * @return JsonResponse
+     * @throws \Inowas\ModflowBundle\Exception\NotFoundException
      */
     public function getModflowModelDescriptionAction(string $id): JsonResponse
     {
@@ -275,8 +283,10 @@ class ModflowModelController extends InowasRestController
      * @param string $id
      * @Rest\Put("/modflowmodels/{id}/description")
      * @return Response
+     * @throws \Prooph\ServiceBus\Exception\CommandDispatchException
+     * @throws \InvalidArgumentException
      */
-    public function putModflowModelDescriptionAction(Request $request, string $id)
+    public function putModflowModelDescriptionAction(Request $request, string $id): Response
     {
         $userId = $this->getUserId();
 
@@ -311,6 +321,7 @@ class ModflowModelController extends InowasRestController
      * @param string $id
      * @Rest\Get("/modflowmodels/{id}/geometry")
      * @return JsonResponse
+     * @throws \Inowas\ModflowBundle\Exception\NotFoundException
      */
     public function getModflowModelGeometryAction(string $id): JsonResponse
     {
@@ -342,8 +353,10 @@ class ModflowModelController extends InowasRestController
      * @param string $id
      * @Rest\Put("/modflowmodels/{id}/geometry")
      * @return Response
+     * @throws \Prooph\ServiceBus\Exception\CommandDispatchException
+     * @throws \InvalidArgumentException
      */
-    public function putModflowModelGeometryAction(Request $request, string $id)
+    public function putModflowModelGeometryAction(Request $request, string $id): Response
     {
         $userId = $this->getUserId();
 
@@ -379,6 +392,7 @@ class ModflowModelController extends InowasRestController
      * @param string $id
      * @Rest\Get("/modflowmodels/{id}/boundingbox")
      * @return JsonResponse
+     * @throws \Inowas\ModflowBundle\Exception\NotFoundException
      */
     public function getModflowModelBoundingBoxAction(string $id): JsonResponse
     {
@@ -411,8 +425,10 @@ class ModflowModelController extends InowasRestController
      * @param string $id
      * @Rest\Put("/modflowmodels/{id}/boundingbox")
      * @return Response
+     * @throws \Prooph\ServiceBus\Exception\CommandDispatchException
+     * @throws \InvalidArgumentException
      */
-    public function putModflowModelBoundingBoxAction(Request $request, string $id)
+    public function putModflowModelBoundingBoxAction(Request $request, string $id): Response
     {
         $userId = $this->getUserId();
 
@@ -456,6 +472,7 @@ class ModflowModelController extends InowasRestController
      * @param string $id
      * @Rest\Get("/modflowmodels/{id}/gridsize")
      * @return JsonResponse
+     * @throws \Inowas\ModflowBundle\Exception\NotFoundException
      */
     public function getModflowModelGridSizeAction(string $id): JsonResponse
     {
@@ -487,8 +504,10 @@ class ModflowModelController extends InowasRestController
      * @param string $id
      * @Rest\Put("/modflowmodels/{id}/gridsize")
      * @return Response
+     * @throws \Prooph\ServiceBus\Exception\CommandDispatchException
+     * @throws \InvalidArgumentException
      */
-    public function putModflowModelGridSizeAction(Request $request, string $id)
+    public function putModflowModelGridSizeAction(Request $request, string $id): Response
     {
         $userId = $this->getUserId();
         $this->assertUuidIsValid($id);
@@ -522,6 +541,7 @@ class ModflowModelController extends InowasRestController
      * @param string $id
      * @Rest\Get("/modflowmodels/{id}/activecells")
      * @return JsonResponse
+     * @throws \Inowas\ModflowBundle\Exception\NotFoundException
      */
     public function getModflowModelActiveCellsAction(string $id): JsonResponse
     {
@@ -553,8 +573,10 @@ class ModflowModelController extends InowasRestController
      * @param string $id
      * @Rest\Put("/modflowmodels/{id}/activecells")
      * @return Response
+     * @throws \Prooph\ServiceBus\Exception\CommandDispatchException
+     * @throws \InvalidArgumentException
      */
-    public function putModflowModelActiveCellsAction(Request $request, string $id)
+    public function putModflowModelActiveCellsAction(Request $request, string $id): Response
     {
         $userId = $this->getUserId();
         $this->assertUuidIsValid($id);
@@ -588,6 +610,7 @@ class ModflowModelController extends InowasRestController
      * @param string $id
      * @Rest\Get("/modflowmodels/{id}/soilmodel")
      * @return JsonResponse
+     * @throws \Inowas\ModflowBundle\Exception\NotFoundException
      */
     public function getSoilModelIdAction(string $id): JsonResponse
     {
@@ -619,8 +642,10 @@ class ModflowModelController extends InowasRestController
      * @param string $id
      * @Rest\Put("/modflowmodels/{id}/soilmodel")
      * @return Response
+     * @throws \Prooph\ServiceBus\Exception\CommandDispatchException
+     * @throws \InvalidArgumentException
      */
-    public function putSoilModelIdAction(Request $request, string $id)
+    public function putSoilModelIdAction(Request $request, string $id): Response
     {
         $userId = $this->getUserId();
         $this->assertUuidIsValid($id);
@@ -654,6 +679,7 @@ class ModflowModelController extends InowasRestController
      * @param string $id
      * @Rest\Get("/modflowmodels/{id}/lengthunit")
      * @return JsonResponse
+     * @throws \Inowas\ModflowBundle\Exception\NotFoundException
      */
     public function getLengthUnitAction(string $id): JsonResponse
     {
@@ -685,8 +711,10 @@ class ModflowModelController extends InowasRestController
      * @param string $id
      * @Rest\Put("/modflowmodels/{id}/lengthunit")
      * @return Response
+     * @throws \Prooph\ServiceBus\Exception\CommandDispatchException
+     * @throws \InvalidArgumentException
      */
-    public function putLengthUnitAction(Request $request, string $id)
+    public function putLengthUnitAction(Request $request, string $id): Response
     {
         $userId = $this->getUserId();
 
@@ -722,6 +750,7 @@ class ModflowModelController extends InowasRestController
      * @param string $id
      * @Rest\Get("/modflowmodels/{id}/timeunit")
      * @return JsonResponse
+     * @throws \Inowas\ModflowBundle\Exception\NotFoundException
      */
     public function getTimeUnitAction(string $id): JsonResponse
     {
@@ -753,8 +782,10 @@ class ModflowModelController extends InowasRestController
      * @param string $id
      * @Rest\Put("/modflowmodels/{id}/timeunit")
      * @return Response
+     * @throws \Prooph\ServiceBus\Exception\CommandDispatchException
+     * @throws \InvalidArgumentException
      */
-    public function putTimeUnitAction(Request $request, string $id)
+    public function putTimeUnitAction(Request $request, string $id): Response
     {
         $userId = $this->getUserId();
 

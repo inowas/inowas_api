@@ -11,8 +11,12 @@ use Inowas\ScenarioAnalysis\Model\ScenarioAnalysisId;
 use Inowas\ScenarioAnalysis\Model\ScenarioAnalysisName;
 use Prooph\EventSourcing\AggregateChanged;
 
-class ScenarioAnalysisWasCreated extends AggregateChanged
+/** @noinspection LongInheritanceChainInspection */
+class ScenarioAnalysisWasCloned extends AggregateChanged
 {
+
+    /** @var  ScenarioAnalysisId */
+    private $fromScenarioAnalysisId;
 
     /** @var  ScenarioAnalysisId */
     private $scenarioAnalysisId;
@@ -29,27 +33,38 @@ class ScenarioAnalysisWasCreated extends AggregateChanged
     /** @var ScenarioAnalysisDescription */
     private $description;
 
+    /** @var array */
+    private $scenarios;
+
+
     /** @noinspection MoreThanThreeArgumentsInspection
+     * @param ScenarioAnalysisId $fromId
      * @param ScenarioAnalysisId $id
      * @param UserId $userId
      * @param ModflowId $baseModelId
      * @param ScenarioAnalysisName $name
      * @param ScenarioAnalysisDescription $description
-     * @return ScenarioAnalysisWasCreated
+     * @param array $scenarios
+     * @return ScenarioAnalysisWasCloned
      */
-    public static function byUserWithId(ScenarioAnalysisId $id, UserId $userId, ModflowId $baseModelId, ScenarioAnalysisName $name, ScenarioAnalysisDescription $description): ScenarioAnalysisWasCreated
+    public static function byUserWithId(ScenarioAnalysisId $fromId, ScenarioAnalysisId $id, UserId $userId, ModflowId $baseModelId, ScenarioAnalysisName $name, ScenarioAnalysisDescription $description, array $scenarios): ScenarioAnalysisWasCloned
     {
         $event = self::occur($id->toString(),[
-            'basemodel_id' => $baseModelId->toString(),
+            'from_id' => $fromId->toString(),
             'user_id' => $userId->toString(),
+            'basemodel_id' => $baseModelId->toString(),
             'name' => $name->toString(),
             'description' => $description->toString(),
+            'scenarios' => $scenarios,
         ]);
 
-        $event->baseModelId = $baseModelId;
+        $event->fromScenarioAnalysisId = $fromId;
+        $event->scenarioAnalysisId = $id;
         $event->userId = $userId;
+        $event->baseModelId = $baseModelId;
         $event->name = $name;
         $event->description = $description;
+        $event->scenarios = $scenarios;
 
         return $event;
     }
@@ -63,13 +78,13 @@ class ScenarioAnalysisWasCreated extends AggregateChanged
         return $this->scenarioAnalysisId;
     }
 
-    public function baseModelId(): ModflowId
+    public function fromScenarioAnalysisId(): ScenarioAnalysisId
     {
-        if ($this->baseModelId === null){
-            $this->baseModelId = ModflowId::fromString($this->payload['basemodel_id']);
+        if ($this->fromScenarioAnalysisId === null){
+            $this->fromScenarioAnalysisId = ScenarioAnalysisId::fromString($this->payload['from_id']);
         }
 
-        return $this->baseModelId;
+        return $this->fromScenarioAnalysisId;
     }
 
     public function userId(): UserId
@@ -79,6 +94,15 @@ class ScenarioAnalysisWasCreated extends AggregateChanged
         }
 
         return $this->userId;
+    }
+
+    public function baseModelId(): ModflowId
+    {
+        if ($this->baseModelId === null){
+            $this->baseModelId = ModflowId::fromString($this->payload['basemodel_id']);
+        }
+
+        return $this->baseModelId;
     }
 
     public function name(): ScenarioAnalysisName
@@ -97,5 +121,14 @@ class ScenarioAnalysisWasCreated extends AggregateChanged
         }
 
         return $this->description;
+    }
+
+    public function scenarios(): array
+    {
+        if ($this->scenarios === null){
+            $this->scenarios = $this->payload['scenarios'];
+        }
+
+        return $this->scenarios;
     }
 }
