@@ -542,7 +542,6 @@ class Hanoi extends LoadScenarioBase
             $scenarioAnalysisId,
             $ownerId,
             $modelId,
-            $calculationId,
             ScenarioAnalysisName::fromString('ScenarioAnalysis: Hanoi 2005-2007'),
             ScenarioAnalysisDescription::fromString('ScenarioAnalysis: Hanoi 2005-2007')
         ));

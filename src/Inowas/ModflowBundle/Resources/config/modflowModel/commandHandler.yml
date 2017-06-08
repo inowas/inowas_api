@@ -31,6 +31,7 @@ services:
         class: Inowas\ModflowModel\Model\Handler\CloneModflowModelHandler
         arguments:
           - '@modflow_model_list'
+          - '@inowas.modflowcalculation.calculation_list_finder'
           - '@prooph_service_bus.modflow_command_bus'
 
     inowas.modflowmodel.create_modflow_model_handler:

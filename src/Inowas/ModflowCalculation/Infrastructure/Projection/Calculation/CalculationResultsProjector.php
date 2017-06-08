@@ -9,6 +9,7 @@ use Doctrine\DBAL\Schema\Schema;
 use Inowas\Common\Id\ModflowId;
 use Inowas\Common\Projection\AbstractDoctrineConnectionProjector;
 use Inowas\ModflowCalculation\Infrastructure\Projection\Table;
+use Inowas\ModflowCalculation\Model\Event\CalculationWasCloned;
 use Inowas\ModflowCalculation\Model\Event\CalculationWasCreated;
 use Inowas\ModflowCalculation\Model\Event\CalculationWasFinished;
 
@@ -32,6 +33,15 @@ class CalculationResultsProjector extends AbstractDoctrineConnectionProjector
     }
 
     public function onCalculationWasCreated(CalculationWasCreated $event): void
+    {
+        $this->connection->insert(Table::CALCULATION_RESULTS, array(
+            'calculation_id' => $event->calculationId()->toString(),
+            'start_date_time' => $event->start()->toAtom(),
+            'time_unit' => $event->timeUnit()->toInt()
+        ));
+    }
+
+    public function onCalculationWasCloned(CalculationWasCloned $event): void
     {
         $this->connection->insert(Table::CALCULATION_RESULTS, array(
             'calculation_id' => $event->calculationId()->toString(),

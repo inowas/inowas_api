@@ -987,6 +987,24 @@ class ModflowModelEventSourcingTest extends EventSourcingBaseTest
         $this->assertEquals([[0,12,17]], $activeCells->cells());
     }
 
+    public function test_clone_modflow_model_clones_soilmodel_and_calculation(): void
+    {
+        $ownerId = UserId::generate();
+        $modelId = ModflowId::generate();
+        $this->createModelWithSoilmodel($ownerId, $modelId);
+
+        $calculationId = ModflowId::generate();
+        $start = DateTime::fromDateTime(new \DateTime('2015-01-01'));
+        $end = DateTime::fromDateTime(new \DateTime('2015-01-31'));
+        $this->createCalculation($calculationId, $ownerId, $modelId, $start, $end);
+
+        /** @var SoilmodelId $soilmodelId */
+        $soilmodelId = $this->container->get('modflow_model_list')->getAggregateRoot($modelId->toString())->soilmodelId();
+
+        $newModelId = ModflowId::generate();
+        $this->commandBus->dispatch(CloneModflowModel::fromBaseModel($modelId, $ownerId, $newModelId));
+    }
+
     public function test_clone_soilmodel(): void
     {
         $ownerId = UserId::generate();

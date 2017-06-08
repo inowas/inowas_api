@@ -159,7 +159,7 @@ class ModflowModelAggregate extends AggregateRoot
         ));
     }
 
-    public function changeBoundingBox(UserId $userId, BoundingBox $boundingBox)
+    public function changeBoundingBox(UserId $userId, BoundingBox $boundingBox): void
     {
         $this->boundingBox = $boundingBox;
         $this->recordThat(BoundingBoxWasChanged::withBoundingBox(
@@ -174,7 +174,7 @@ class ModflowModelAggregate extends AggregateRoot
         $this->description = $description;
     }
 
-    public function changeGridSize(UserId $userId, GridSize $gridSize)
+    public function changeGridSize(UserId $userId, GridSize $gridSize): void
     {
         $this->gridSize = $gridSize;
         $this->recordThat(GridSizeWasChanged::withGridSize(
@@ -184,7 +184,7 @@ class ModflowModelAggregate extends AggregateRoot
         ));
     }
 
-    public function updateLengthUnit(UserId $userId, LengthUnit $lengthUnit)
+    public function updateLengthUnit(UserId $userId, LengthUnit $lengthUnit): void
     {
         $this->lengthUnit = $lengthUnit;
         $this->recordThat(LengthUnitWasUpdated::withUnit(
@@ -194,7 +194,7 @@ class ModflowModelAggregate extends AggregateRoot
         ));
     }
 
-    public function updateTimeUnit(UserId $userId, TimeUnit $timeUnit)
+    public function updateTimeUnit(UserId $userId, TimeUnit $timeUnit): void
     {
         $this->timeUnit = $timeUnit;
         $this->recordThat(TimeUnitWasUpdated::withUnit(
@@ -307,7 +307,7 @@ class ModflowModelAggregate extends AggregateRoot
         ));
     }
 
-    public function removeBoundary(UserId $userId, BoundaryId $boundaryId)
+    public function removeBoundary(UserId $userId, BoundaryId $boundaryId): void
     {
         if (in_array($boundaryId->toString(), $this->boundaries())) {
             $this->boundaries = array_diff($this->boundaries, [$boundaryId->toString()]);

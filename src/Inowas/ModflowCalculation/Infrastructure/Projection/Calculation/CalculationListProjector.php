@@ -10,12 +10,12 @@ use Inowas\Common\Calculation\CalculationState;
 use Inowas\Common\DateTime\DateTime;
 use Inowas\Common\Projection\AbstractDoctrineConnectionProjector;
 use Inowas\ModflowCalculation\Infrastructure\Projection\Table;
+use Inowas\ModflowCalculation\Model\Event\CalculationWasCloned;
 use Inowas\ModflowCalculation\Model\Event\CalculationWasCreated;
 use Inowas\ModflowCalculation\Model\Event\CalculationWasFinished;
 use Inowas\ModflowCalculation\Model\Event\CalculationWasQueued;
 use Inowas\ModflowCalculation\Model\Event\CalculationWasStarted;
 use Inowas\ModflowModel\Infrastructure\Projection\ModelList\ModelFinder;
-use Inowas\ModflowModel\Service\ModflowModelManager;
 
 class CalculationListProjector extends AbstractDoctrineConnectionProjector
 {
@@ -43,6 +43,21 @@ class CalculationListProjector extends AbstractDoctrineConnectionProjector
     }
 
     public function onCalculationWasCreated(CalculationWasCreated $event): void
+    {
+        $soilmodelId = $this->modelFinder->getSoilmodelIdByModelId($event->modflowmodelId());
+
+        $this->connection->insert(Table::CALCULATION_LIST, array(
+            'calculation_id' => $event->calculationId()->toString(),
+            'model_id' => $event->modflowmodelId()->toString(),
+            'user_id' => $event->userId()->toString(),
+            'soilmodel_id' => $soilmodelId->toString(),
+            'start_date_time' => $event->start()->toAtom(),
+            'end_date_time' => $event->end()->toAtom(),
+            'created_at' => DateTime::fromDateTimeImmutable($event->createdAt())->toAtom()
+        ));
+    }
+
+    public function onCalculationWasCloned(CalculationWasCloned $event): void
     {
         $soilmodelId = $this->modelFinder->getSoilmodelIdByModelId($event->modflowmodelId());
 

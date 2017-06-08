@@ -4,7 +4,10 @@ declare(strict_types=1);
 
 namespace Inowas\ModflowModel\Model\Handler;
 
+use Inowas\Common\Id\ModflowId;
 use Inowas\Common\Soilmodel\SoilmodelId;
+use Inowas\ModflowCalculation\Infrastructure\Projection\Calculation\CalculationListFinder;
+use Inowas\ModflowCalculation\Model\Command\CloneModflowModelCalculation;
 use Inowas\ModflowModel\Model\Command\CloneModflowModel;
 use Inowas\ModflowModel\Model\Exception\ModflowModelNotFoundException;
 use Inowas\ModflowModel\Model\ModflowModelList;
@@ -18,12 +21,16 @@ final class CloneModflowModelHandler
     /** @var  CommandBus */
     private $commandBus;
 
+    /** @var  CalculationListFinder */
+    private $calculationFinder;
+
     /** @var  ModflowModelList */
     private $modelList;
 
-    public function __construct(ModflowModelList $modelList, CommandBus $commandBus)
+    public function __construct(ModflowModelList $modelList, CalculationListFinder $calculationFinder, CommandBus $commandBus)
     {
         $this->commandBus = $commandBus;
+        $this->calculationFinder = $calculationFinder;
         $this->modelList = $modelList;
     }
 
@@ -37,7 +44,12 @@ final class CloneModflowModelHandler
         }
 
         $newSoilModelId = SoilmodelId::generate();
+        dump($newSoilModelId->toString());
         $this->commandBus->dispatch(CloneSoilmodel::byUserWithModelId($newSoilModelId, $command->userId(), $modflowModel->soilmodelId()));
+
+        $oldCalculationId = $this->calculationFinder->findLastCalculationByModelId($modflowModel->modflowModelId());
+        $newCalculationId = ModflowId::generate();
+        $this->commandBus->dispatch(CloneModflowModelCalculation::byUserWithModelId($command->userId(),$oldCalculationId, $newCalculationId, $command->baseModelId(), $command->newModelId()));
 
         /** @var ModflowModelAggregate $modflowModel */
         $newModel = ModflowModelAggregate::cloneWithIdUserSoilmodelIdAndAggregate($command->newModelId(), $command->userId(), $newSoilModelId, $modflowModel);

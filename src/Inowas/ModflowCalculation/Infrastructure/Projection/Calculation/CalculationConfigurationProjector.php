@@ -22,6 +22,7 @@ use Inowas\Common\Modflow\Strt;
 use Inowas\Common\Modflow\TimeUnit;
 use Inowas\Common\Projection\AbstractDoctrineConnectionProjector;
 use Inowas\ModflowCalculation\Infrastructure\Projection\Table;
+use Inowas\ModflowCalculation\Model\Event\CalculationWasCloned;
 use Inowas\ModflowCalculation\Model\ModflowCalculationConfiguration;
 use Inowas\ModflowCalculation\Model\Event\CalculationFlowPackageWasChanged;
 use Inowas\ModflowCalculation\Model\Event\CalculationPackageParameterWasUpdated;
@@ -99,6 +100,34 @@ class CalculationConfigurationProjector extends AbstractDoctrineConnectionProjec
             'stress_periods' => json_encode($event->stressPeriods()),
             'configuration' => json_encode($packages),
             'configuration_hash' => md5(json_encode($packages))
+        ));
+    }
+
+    public function onCalculationWasCloned(CalculationWasCloned $event): void
+    {
+
+        $result = $this->connection->fetchAssoc(
+            sprintf('SELECT * from %s WHERE calculation_id = :calculation_id', Table::CALCULATION_CONFIG),
+            ['calculation_id' => $event->fromCalculationId()->toString()]
+        );
+
+        if ($result === false) {
+            return;
+        }
+
+        $soilmodelId = $this->modflowModelManager->getSoilmodelIdByModelId($event->modflowmodelId());
+
+        $this->connection->insert(Table::CALCULATION_CONFIG, array(
+            'calculation_id' => $event->calculationId()->toString(),
+            'modflow_model_id' => $event->modflowmodelId()->toString(),
+            'soilmodel_id' => $soilmodelId->toString(),
+            'user_id' => $event->userId()->toString(),
+            'start' => $result['start'],
+            'time_unit' => $result['time_unit'],
+            'length_unit' => $result['length_unit'],
+            'stress_periods' => $result['stress_periods'],
+            'configuration' => $result['configuration'],
+            'configuration_hash' => $result['configuration_hash']
         ));
     }
 

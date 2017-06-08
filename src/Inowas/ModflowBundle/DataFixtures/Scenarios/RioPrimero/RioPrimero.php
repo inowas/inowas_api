@@ -21,6 +21,8 @@ use Inowas\Common\Id\ModflowId;
 use Inowas\Common\Id\UserId;
 use Inowas\Common\Modflow\Laytyp;
 use Inowas\Common\Modflow\LengthUnit;
+use Inowas\Common\Modflow\ModelDescription;
+use Inowas\Common\Modflow\ModelName;
 use Inowas\Common\Modflow\TimeUnit;
 use Inowas\Common\Soilmodel\BottomElevation;
 use Inowas\Common\Soilmodel\HydraulicAnisotropy;
@@ -36,6 +38,11 @@ use Inowas\ModflowModel\Model\Command\ChangeModflowModelBoundingBox;
 use Inowas\ModflowModel\Model\Command\ChangeModflowModelSoilmodelId;
 use Inowas\ModflowModel\Model\Command\CreateModflowModel;
 use Inowas\ModflowBundle\DataFixtures\Scenarios\LoadScenarioBase;
+use Inowas\ScenarioAnalysis\Model\Command\CreateScenario;
+use Inowas\ScenarioAnalysis\Model\Command\CreateScenarioAnalysis;
+use Inowas\ScenarioAnalysis\Model\ScenarioAnalysisDescription;
+use Inowas\ScenarioAnalysis\Model\ScenarioAnalysisId;
+use Inowas\ScenarioAnalysis\Model\ScenarioAnalysisName;
 use Inowas\Soilmodel\Model\Command\AddGeologicalLayerToSoilmodel;
 use Inowas\Soilmodel\Model\Command\ChangeSoilmodelDescription;
 use Inowas\Soilmodel\Model\Command\ChangeSoilmodelName;
@@ -217,11 +224,79 @@ class RioPrimero extends LoadScenarioBase
             $commandBus->dispatch(AddBoundary::to($modelId, $ownerId, $wellBoundary));
         }
 
-        /* Add Head Results */
+        /* Create calculation and calculate */
         $calculationId = ModflowId::generate();
         $start = DateTime::fromDateTime(new \DateTime('2005-01-01'));
         $end = DateTime::fromDateTime(new \DateTime('2005-12-31'));
         $commandBus->dispatch(CreateModflowModelCalculation::byUserWithModelId($calculationId, $ownerId, $modelId, $start, $end));
+        $commandBus->dispatch(CalculateModflowModelCalculation::byUserWithCalculationId($ownerId, $calculationId));
+
+        /*
+         * Create ScenarioAnalysis from BaseModel
+         */
+        $scenarioAnalysisId = ScenarioAnalysisId::generate();
+        $commandBus->dispatch(CreateScenarioAnalysis::byUserWithBaseModelNameAndDescription(
+            $scenarioAnalysisId,
+            $ownerId,
+            $modelId,
+            ScenarioAnalysisName::fromString('ScenarioAnalysis: Rio Primero 2020'),
+            ScenarioAnalysisDescription::fromString('ScenarioAnalysis: Rio Primero 2020')
+        ));
+
+        /*
+         * Begin add Scenario 1
+         */
+        $scenarioId = ModflowId::generate();
+        $commandBus->dispatch(CreateScenario::byUserWithBaseModelAndScenarioId(
+            $scenarioAnalysisId,
+            $ownerId,
+            $modelId,
+            $scenarioId,
+            ModelName::fromString('Scenario 0: Rio Primero 2020'),
+            ModelDescription::fromString('Future Prediction for the year 2020'))
+        );
+
+        $wells = array(
+            array('name', 'point', 'type', 'layer', 'date', 'pumpingRate'),
+            array('Irrigation Well 6', new Point(-63.65101, -31.33516, 4326), WellType::TYPE_INDUSTRIAL_WELL, 0, new \DateTimeImmutable('2015-01-01'), -5000),
+            array('Irrigation Well 7', new Point(-63.64792, -31.33546, 4326), WellType::TYPE_INDUSTRIAL_WELL, 0, new \DateTimeImmutable('2015-01-01'), -5000),
+            array('Irrigation Well 8', new Point(-63.66714, -31.34513, 4326), WellType::TYPE_INDUSTRIAL_WELL, 0, new \DateTimeImmutable('2015-01-01'), -5000),
+            array('Irrigation Well 9', new Point(-63.6644, -31.34513, 4326), WellType::TYPE_INDUSTRIAL_WELL, 0, new \DateTimeImmutable('2015-01-01'), -5000),
+            array('Irrigation Well 10', new Point(-63.60363, -31.32578, 4326), WellType::TYPE_INDUSTRIAL_WELL, 0, new \DateTimeImmutable('2015-01-01'), -5000),
+            array('Irrigation Well 11', new Point(-63.59367, -31.35803, 4326), WellType::TYPE_INDUSTRIAL_WELL, 0, new \DateTimeImmutable('2015-01-01'), -5000),
+            array('Irrigation Well 12', new Point(-63.60123, -31.32578, 4326), WellType::TYPE_INDUSTRIAL_WELL, 0, new \DateTimeImmutable('2015-01-01'), -5000),
+            array('Irrigation Well 13', new Point(-63.58852, -31.35803, 4326), WellType::TYPE_INDUSTRIAL_WELL, 0, new \DateTimeImmutable('2015-01-01'), -5000),
+            array('Public Well 3', new Point(-63.62383, -31.34, 4326), WellType::TYPE_PUBLIC_WELL, 0, new \DateTimeImmutable('2015-01-01'), -5000),
+            array('Public Well 4', new Point(-63.6216, -31.34162, 4326), WellType::TYPE_PUBLIC_WELL, 0, new \DateTimeImmutable('2015-01-01'), -5000),
+        );
+
+        $header = null;
+        foreach ($wells as $data){
+            if (null === $header){
+                $header = $data;
+                continue;
+            }
+
+            $data = array_combine($header, $data);
+            $wellBoundary = WellBoundary::createWithParams(
+                BoundaryId::generate(),
+                BoundaryName::fromString($data['name']),
+                Geometry::fromPoint($data['point']),
+                WellType::fromString($data['type']),
+                AffectedLayers::createWithLayerNumber(LayerNumber::fromInteger($data['layer']))
+
+            );
+
+            echo sprintf("Add well with name %s.\r\n", $data['name']);
+            $wellBoundary = $wellBoundary->addPumpingRate(WellDateTimeValue::fromParams($data['date'], $data['pumpingRate']));
+            $commandBus->dispatch(AddBoundary::to($scenarioId, $ownerId, $wellBoundary));
+        }
+
+        /* Create calculation and calculate */
+        $calculationId = ModflowId::generate();
+        $start = DateTime::fromDateTime(new \DateTime('2005-01-01'));
+        $end = DateTime::fromDateTime(new \DateTime('2005-12-31'));
+        $commandBus->dispatch(CreateModflowModelCalculation::byUserWithModelId($calculationId, $ownerId, $scenarioId, $start, $end));
         $commandBus->dispatch(CalculateModflowModelCalculation::byUserWithCalculationId($ownerId, $calculationId));
     }
 }

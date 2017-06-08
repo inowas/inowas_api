@@ -9,7 +9,6 @@ use Doctrine\DBAL\Schema\Schema;
 use Doctrine\ORM\EntityManager;
 use Inowas\AppBundle\Model\User;
 use Inowas\Common\Projection\AbstractDoctrineConnectionProjector;
-use Inowas\Common\Soilmodel\SoilmodelId;
 use Inowas\ModflowModel\Model\Event\AreaGeometryWasUpdated;
 use Inowas\ModflowModel\Model\Event\BoundingBoxWasChanged;
 use Inowas\ModflowModel\Model\Event\DescriptionWasChanged;
@@ -34,7 +33,7 @@ class ModelProjector extends AbstractDoctrineConnectionProjector
 
         $this->schema = new Schema();
         $table = $this->schema->createTable(Table::MODFLOWMODELS_LIST);
-        $table->addColumn('id', 'integer', array("unsigned" => true, "autoincrement" => true));
+        $table->addColumn('id', 'integer', array('unsigned' => true, 'autoincrement' => true));
         $table->addColumn('model_id', 'string', ['length' => 36]);
         $table->addColumn('user_id', 'string', ['length' => 36]);
         $table->addColumn('soilmodel_id', 'string', ['length' => 36, 'notnull' => false]);
@@ -119,7 +118,7 @@ class ModelProjector extends AbstractDoctrineConnectionProjector
                 'model_id' => $event->modelId()->toString(),
                 'user_id' => $event->userId()->toString(),
                 'user_name' => $this->getUserNameByUserId($event->userId()->toString()),
-                'soilmodel_id' => $row['soilmodel_id'],
+                'soilmodel_id' => $event->soilmodelId()->toString(),
                 'name' => $row['name'],
                 'description' => $row['description'],
                 'area' => $row['area'],
