@@ -40,7 +40,7 @@ abstract class AbstractBoundary implements ModflowBoundary
         $this->activeCells = $activeCells;
         $this->affectedLayers = AffectedLayers::createWithLayerNumber(LayerNumber::fromInteger(0));
 
-        if (is_null($this->name)) {
+        if (null === $this->name) {
             $this->name = BoundaryName::fromString('');
         }
     }

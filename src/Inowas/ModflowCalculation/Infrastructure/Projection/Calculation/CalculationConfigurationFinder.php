@@ -8,6 +8,7 @@ use Doctrine\DBAL\Connection;
 use Inowas\Common\Id\ModflowId;
 use Inowas\Common\Modflow\StressPeriods;
 use Inowas\ModflowCalculation\Infrastructure\Projection\Table;
+use Inowas\ModflowCalculation\Model\ModflowCalculationConfiguration;
 use Inowas\ModflowCalculation\Model\ModflowCalculationConfigurationRequest;
 
 class CalculationConfigurationFinder
@@ -52,7 +53,7 @@ class CalculationConfigurationFinder
             ['calculation_id' => $calculationId->toString()]
         );
 
-        if ($result == false){
+        if ($result === false){
             return null;
         }
 
@@ -66,11 +67,25 @@ class CalculationConfigurationFinder
             ['calculation_id' => $calculationId->toString()]
         );
 
-        if ($result == false){
+        if ($result === false){
             return null;
         }
 
         return $result['configuration'];
+    }
+
+    public function getConfigurationByModelId(ModflowId $modelId): ?ModflowCalculationConfiguration
+    {
+        $result = $this->connection->fetchAssoc(
+            sprintf('SELECT configuration from %s WHERE modflow_model_id = :modflow_model_id', Table::CALCULATION_CONFIG),
+            ['modflow_model_id' => $modelId->toString()]
+        );
+
+        if (false === $result) {
+            return null;
+        }
+
+        return ModflowCalculationConfiguration::fromJson($result['configuration']);
     }
 
     public function findAll(): array

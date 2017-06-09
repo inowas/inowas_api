@@ -7,7 +7,7 @@ namespace Inowas\Common\Boundaries;
 class GeneralHeadDateTimeValue extends DateTimeValue
 {
 
-    const TYPE = "ghb";
+    const TYPE = 'ghb';
 
     /** @var float */
     private $stage;

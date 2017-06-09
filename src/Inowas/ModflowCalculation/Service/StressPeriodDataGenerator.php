@@ -48,6 +48,13 @@ class StressPeriodDataGenerator
         $this->geoTools = $geoTools;
     }
 
+    /** @noinspection MoreThanThreeArgumentsInspection
+     * @param array $chdBoundaries
+     * @param StressPeriods $stressPeriods
+     * @param GridSize $gridSize
+     * @param BoundingBox $boundingBox
+     * @return ChdStressPeriodData
+     */
     public function fromConstantHeadBoundaries(array $chdBoundaries, StressPeriods $stressPeriods, GridSize $gridSize, BoundingBox $boundingBox): ChdStressPeriodData
     {
         $startTime = $stressPeriods->start();
@@ -79,6 +86,13 @@ class StressPeriodDataGenerator
         return $chdSpd;
     }
 
+    /** @noinspection MoreThanThreeArgumentsInspection
+     * @param array $ghbBoundaries
+     * @param StressPeriods $stressPeriods
+     * @param GridSize $gridSize
+     * @param BoundingBox $boundingBox
+     * @return GhbStressPeriodData
+     */
     public function fromGeneralHeadBoundaries(array $ghbBoundaries, StressPeriods $stressPeriods, GridSize $gridSize, BoundingBox $boundingBox): GhbStressPeriodData
     {
         $startTime = $stressPeriods->start();
@@ -101,7 +115,7 @@ class StressPeriodDataGenerator
                     $sp = $stressPeriods->spNumberFromTotim($totim);
                     $dateTimeValue = $gridCellDateTimeValue->findValueByDateTime($this->calculateDateTimeFromTotim($startTime, $totim, $timeUnit));
                     if ($dateTimeValue instanceof GeneralHeadDateTimeValue){
-                        $ghbSpd->addGridCellValue(GhbStressPeriodGridCellValue::fromParams($sp, $gridCellDateTimeValue->layer(), $gridCellDateTimeValue->row(), $gridCellDateTimeValue->column(),$dateTimeValue->cond(), $dateTimeValue->stage()));
+                        $ghbSpd->addGridCellValue(GhbStressPeriodGridCellValue::fromParams($sp, $gridCellDateTimeValue->layer(), $gridCellDateTimeValue->row(), $gridCellDateTimeValue->column(), $dateTimeValue->stage(), $dateTimeValue->cond()));
                     }
                 }
             }
@@ -110,6 +124,13 @@ class StressPeriodDataGenerator
         return $ghbSpd;
     }
 
+    /** @noinspection MoreThanThreeArgumentsInspection
+     * @param array $rivBoundaries
+     * @param StressPeriods $stressPeriods
+     * @param GridSize $gridSize
+     * @param BoundingBox $boundingBox
+     * @return RivStressPeriodData
+     */
     public function fromRiverBoundaries(array $rivBoundaries, StressPeriods $stressPeriods, GridSize $gridSize, BoundingBox $boundingBox): RivStressPeriodData
     {
         $startTime = $stressPeriods->start();
@@ -216,11 +237,11 @@ class StressPeriodDataGenerator
         $gridCellDateTimeValues = [];
         $observationPoints = $boundary->observationPoints();
 
-        if (count($observationPoints) == 0) {
+        if (count($observationPoints) === 0) {
             throw new \Exception();
         }
 
-        if (count($observationPoints) == 1) {
+        if (count($observationPoints) === 1) {
             // no interpolation is necessary
 
             /** @var ObservationPoint $observationPoint */
