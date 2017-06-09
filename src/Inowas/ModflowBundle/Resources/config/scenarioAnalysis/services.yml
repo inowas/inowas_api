@@ -1,1 +1,6 @@
 services:
+    inowas.scenarioanalysis.create_scenario_process_manager:
+        class: Inowas\ScenarioAnalysis\Infrastructure\ProcessManager\CreateScenarioProcessManager
+        arguments:
+            - '@prooph_service_bus.modflow_command_bus'
+            - '@inowas.modflowmodel.model_finder'

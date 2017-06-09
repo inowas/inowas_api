@@ -1,4 +1,10 @@
 services:
+    inowas.modflowcalculation.update_calculation_process_manager:
+        class: Inowas\ModflowCalculation\Infrastructure\ProcessManager\UpdateModflowCalculationProcessManager
+        arguments:
+          - '@prooph_service_bus.modflow_command_bus'
+          - '@inowas.modflowcalculation.calculation_list_finder'
+
     inowas.modflowcalculation.configuration_persister:
         class: Inowas\ModflowCalculation\Service\ConfigurationPersister
         arguments: ['%data_folder%']

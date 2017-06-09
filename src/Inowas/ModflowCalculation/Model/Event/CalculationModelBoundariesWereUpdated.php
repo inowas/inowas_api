@@ -4,14 +4,12 @@ declare(strict_types=1);
 
 namespace Inowas\ModflowCalculation\Model\Event;
 
-use Inowas\Common\DateTime\DateTime;
 use Inowas\Common\Id\ModflowId;
 use Inowas\Common\Id\UserId;
-use Inowas\Common\Modflow\StressPeriods;
 use Prooph\EventSourcing\AggregateChanged;
 
 /** @noinspection LongInheritanceChainInspection */
-class CalculationStressperiodsWereUpdated extends AggregateChanged
+class CalculationModelBoundariesWereUpdated extends AggregateChanged
 {
     /** @var  ModflowId */
     private $calculationId;
@@ -19,23 +17,17 @@ class CalculationStressperiodsWereUpdated extends AggregateChanged
     /** @var  UserId */
     private $userId;
 
-    /** @var  StressPeriods */
-    private $stressPeriods;
-
     public static function withProps(
         UserId $userId,
-        ModflowId $calculationId,
-        StressPeriods $stressPeriods
-    ): CalculationStressperiodsWereUpdated
+        ModflowId $calculationId
+    ): CalculationModelBoundariesWereUpdated
     {
         $event = self::occur($calculationId->toString(),[
-            'user_id' => $userId->toString(),
-            'stressperiods' => serialize($stressPeriods)
+            'user_id' => $userId->toString()
         ]);
 
         $event->userId = $userId;
         $event->calculationId = $calculationId;
-        $event->stressPeriods = $stressPeriods;
         return $event;
     }
 
@@ -55,13 +47,5 @@ class CalculationStressperiodsWereUpdated extends AggregateChanged
         }
 
         return $this->userId;
-    }
-
-    public function stressPeriods(): StressPeriods
-    {
-        if ($this->stressPeriods === null){
-            $this->stressPeriods = unserialize($this->payload['stressperiods'], [StressPeriods::class, DateTime::class]);
-        }
-        return $this->stressPeriods;
     }
 }

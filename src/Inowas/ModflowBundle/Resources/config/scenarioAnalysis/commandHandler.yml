@@ -10,7 +10,6 @@ services:
         class: Inowas\ScenarioAnalysis\Model\Handler\CreateScenarioHandler
         arguments:
           - '@scenarioanalysis_list'
-          - '@prooph_service_bus.modflow_command_bus'
 
     inowas.scenarioanalysis.create_scenarioanalysis_handler:
         class: Inowas\ScenarioAnalysis\Model\Handler\CreateScenarioAnalysisHandler

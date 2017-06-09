@@ -23,6 +23,8 @@ use Inowas\Common\Modflow\Laytyp;
 use Inowas\Common\Modflow\LengthUnit;
 use Inowas\Common\Modflow\ModelDescription;
 use Inowas\Common\Modflow\ModelName;
+use Inowas\Common\Modflow\StressPeriod;
+use Inowas\Common\Modflow\StressPeriods;
 use Inowas\Common\Modflow\TimeUnit;
 use Inowas\Common\Soilmodel\BottomElevation;
 use Inowas\Common\Soilmodel\HydraulicAnisotropy;
@@ -33,6 +35,7 @@ use Inowas\Common\Soilmodel\TopElevation;
 use Inowas\Common\Soilmodel\VerticalHydraulicConductivity;
 use Inowas\ModflowCalculation\Model\Command\CalculateModflowModelCalculation;
 use Inowas\ModflowCalculation\Model\Command\CreateModflowModelCalculation;
+use Inowas\ModflowCalculation\Model\Command\UpdateCalculationStressperiods;
 use Inowas\ModflowModel\Model\Command\AddBoundary;
 use Inowas\ModflowModel\Model\Command\ChangeModflowModelBoundingBox;
 use Inowas\ModflowModel\Model\Command\ChangeModflowModelSoilmodelId;
@@ -226,10 +229,15 @@ class RioPrimero extends LoadScenarioBase
 
         /* Create calculation and calculate */
         $calculationId = ModflowId::generate();
-        $start = DateTime::fromDateTime(new \DateTime('2005-01-01'));
-        $end = DateTime::fromDateTime(new \DateTime('2005-12-31'));
+        $start = DateTime::fromDateTime(new \DateTime('2015-01-01'));
+        $end = DateTime::fromDateTime(new \DateTime('2015-12-31'));
         $commandBus->dispatch(CreateModflowModelCalculation::byUserWithModelId($calculationId, $ownerId, $modelId, $start, $end));
-        $commandBus->dispatch(CalculateModflowModelCalculation::byUserWithCalculationId($ownerId, $calculationId));
+
+        $stressperiods = StressPeriods::create($start, $end, TimeUnit::fromInt(TimeUnit::DAYS));
+        $stressperiods->addStressPeriod(StressPeriod::create(0, 365,1,1,true));
+        $commandBus->dispatch(UpdateCalculationStressperiods::byUserWithCalculationId($ownerId, $calculationId, $stressperiods));
+
+        #$commandBus->dispatch(CalculateModflowModelCalculation::byUserWithCalculationId($ownerId, $calculationId));
 
         /*
          * Create ScenarioAnalysis from BaseModel
@@ -244,17 +252,18 @@ class RioPrimero extends LoadScenarioBase
         ));
 
         /*
-         * Begin add Scenario 1
+         * Begin add Scenario 0
          */
-        $scenarioId = ModflowId::generate();
+        $scenarioId0 = ModflowId::generate();
         $commandBus->dispatch(CreateScenario::byUserWithBaseModelAndScenarioId(
             $scenarioAnalysisId,
             $ownerId,
             $modelId,
-            $scenarioId,
+            $scenarioId0,
             ModelName::fromString('Scenario 0: Rio Primero 2020'),
             ModelDescription::fromString('Future Prediction for the year 2020'))
         );
+
 
         $wells = array(
             array('name', 'point', 'type', 'layer', 'date', 'pumpingRate'),
@@ -284,7 +293,67 @@ class RioPrimero extends LoadScenarioBase
                 Geometry::fromPoint($data['point']),
                 WellType::fromString($data['type']),
                 AffectedLayers::createWithLayerNumber(LayerNumber::fromInteger($data['layer']))
+            );
 
+            echo sprintf("Add well with name %s.\r\n", $data['name']);
+            $wellBoundary = $wellBoundary->addPumpingRate(WellDateTimeValue::fromParams($data['date'], $data['pumpingRate']));
+            $commandBus->dispatch(AddBoundary::to($scenarioId0, $ownerId, $wellBoundary));
+        }
+
+        /* Create calculation and calculate */
+        $calculationId = ModflowId::generate();
+        $start = DateTime::fromDateTime(new \DateTime('2015-01-01'));
+        $end = DateTime::fromDateTime(new \DateTime('2015-12-31'));
+        $commandBus->dispatch(CreateModflowModelCalculation::byUserWithModelId($calculationId, $ownerId, $scenarioId0, $start, $end));
+
+        $stressperiods = StressPeriods::create($start, $end, TimeUnit::fromInt(TimeUnit::DAYS));
+        $stressperiods->addStressPeriod(StressPeriod::create(0, 365,1,1,true));
+        $commandBus->dispatch(UpdateCalculationStressperiods::byUserWithCalculationId($ownerId, $calculationId, $stressperiods));
+
+        #$commandBus->dispatch(CalculateModflowModelCalculation::byUserWithCalculationId($ownerId, $calculationId));
+
+        /*
+         * Begin add Scenario 1
+         */
+        $scenarioId = ModflowId::generate();
+        $commandBus->dispatch(CreateScenario::byUserWithBaseModelAndScenarioId(
+            $scenarioAnalysisId,
+            $ownerId,
+            $scenarioId,
+            $scenarioId,
+            ModelName::fromString('Scenario 1: River bank filtration'),
+            ModelDescription::fromString('Move the wells next to the river'))
+        );
+
+
+        $wells = array(
+            array('name', 'point', 'type', 'layer', 'date', 'pumpingRate'),
+            array('Irrigation Well 6', new Point(-63.65101, -31.33516, 4326), WellType::TYPE_INDUSTRIAL_WELL, 0, new \DateTimeImmutable('2015-01-01'), -5000),
+            array('Irrigation Well 7', new Point(-63.64792, -31.33546, 4326), WellType::TYPE_INDUSTRIAL_WELL, 0, new \DateTimeImmutable('2015-01-01'), -5000),
+            array('Irrigation Well 8', new Point(-63.66714, -31.34513, 4326), WellType::TYPE_INDUSTRIAL_WELL, 0, new \DateTimeImmutable('2015-01-01'), -5000),
+            array('Irrigation Well 9', new Point(-63.6644, -31.34513, 4326), WellType::TYPE_INDUSTRIAL_WELL, 0, new \DateTimeImmutable('2015-01-01'), -5000),
+            array('Irrigation Well 10', new Point(-63.60363, -31.32578, 4326), WellType::TYPE_INDUSTRIAL_WELL, 0, new \DateTimeImmutable('2015-01-01'), -5000),
+            array('Irrigation Well 11', new Point(-63.59367, -31.35803, 4326), WellType::TYPE_INDUSTRIAL_WELL, 0, new \DateTimeImmutable('2015-01-01'), -5000),
+            array('Irrigation Well 12', new Point(-63.60123, -31.32578, 4326), WellType::TYPE_INDUSTRIAL_WELL, 0, new \DateTimeImmutable('2015-01-01'), -5000),
+            array('Irrigation Well 13', new Point(-63.58852, -31.35803, 4326), WellType::TYPE_INDUSTRIAL_WELL, 0, new \DateTimeImmutable('2015-01-01'), -5000),
+            array('Public Well 3', new Point(-63.62383, -31.34, 4326), WellType::TYPE_PUBLIC_WELL, 0, new \DateTimeImmutable('2015-01-01'), -5000),
+            array('Public Well 4', new Point(-63.6216, -31.34162, 4326), WellType::TYPE_PUBLIC_WELL, 0, new \DateTimeImmutable('2015-01-01'), -5000),
+        );
+
+        $header = null;
+        foreach ($wells as $data){
+            if (null === $header){
+                $header = $data;
+                continue;
+            }
+
+            $data = array_combine($header, $data);
+            $wellBoundary = WellBoundary::createWithParams(
+                BoundaryId::generate(),
+                BoundaryName::fromString($data['name']),
+                Geometry::fromPoint($data['point']),
+                WellType::fromString($data['type']),
+                AffectedLayers::createWithLayerNumber(LayerNumber::fromInteger($data['layer']))
             );
 
             echo sprintf("Add well with name %s.\r\n", $data['name']);
@@ -294,9 +363,14 @@ class RioPrimero extends LoadScenarioBase
 
         /* Create calculation and calculate */
         $calculationId = ModflowId::generate();
-        $start = DateTime::fromDateTime(new \DateTime('2005-01-01'));
-        $end = DateTime::fromDateTime(new \DateTime('2005-12-31'));
+        $start = DateTime::fromDateTime(new \DateTime('2015-01-01'));
+        $end = DateTime::fromDateTime(new \DateTime('2015-12-31'));
         $commandBus->dispatch(CreateModflowModelCalculation::byUserWithModelId($calculationId, $ownerId, $scenarioId, $start, $end));
-        $commandBus->dispatch(CalculateModflowModelCalculation::byUserWithCalculationId($ownerId, $calculationId));
+
+        $stressperiods = StressPeriods::create($start, $end, TimeUnit::fromInt(TimeUnit::DAYS));
+        $stressperiods->addStressPeriod(StressPeriod::create(0, 365,1,1,true));
+        $commandBus->dispatch(UpdateCalculationStressperiods::byUserWithCalculationId($ownerId, $calculationId, $stressperiods));
+
+        #$commandBus->dispatch(CalculateModflowModelCalculation::byUserWithCalculationId($ownerId, $calculationId));
     }
 }

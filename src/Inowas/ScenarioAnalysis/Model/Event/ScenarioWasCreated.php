@@ -11,6 +11,7 @@ use Inowas\Common\Modflow\ModelName;
 use Inowas\ScenarioAnalysis\Model\ScenarioAnalysisId;
 use Prooph\EventSourcing\AggregateChanged;
 
+/** @noinspection LongInheritanceChainInspection */
 class ScenarioWasCreated extends AggregateChanged
 {
 
@@ -32,6 +33,15 @@ class ScenarioWasCreated extends AggregateChanged
     /** @var  ModelDescription */
     protected $description;
 
+    /** @noinspection MoreThanThreeArgumentsInspection
+     * @param ScenarioAnalysisId $id
+     * @param UserId $userId
+     * @param ModflowId $scenarioId
+     * @param ModflowId $baseModelId
+     * @param ModelName $name
+     * @param ModelDescription $description
+     * @return ScenarioWasCreated
+     */
     public static function from(ScenarioAnalysisId $id, UserId $userId, ModflowId $scenarioId, ModflowId $baseModelId, ModelName $name, ModelDescription $description): ScenarioWasCreated
     {
         $event = self::occur($id->toString(), [

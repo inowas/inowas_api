@@ -22,6 +22,7 @@ use Inowas\Common\Modflow\Strt;
 use Inowas\Common\Modflow\TimeUnit;
 use Inowas\Common\Projection\AbstractDoctrineConnectionProjector;
 use Inowas\ModflowCalculation\Infrastructure\Projection\Table;
+use Inowas\ModflowCalculation\Model\Event\CalculationModelBoundariesWereUpdated;
 use Inowas\ModflowCalculation\Model\Event\CalculationWasCloned;
 use Inowas\ModflowCalculation\Model\ModflowCalculationConfiguration;
 use Inowas\ModflowCalculation\Model\Event\CalculationFlowPackageWasChanged;
@@ -131,6 +132,81 @@ class CalculationConfigurationProjector extends AbstractDoctrineConnectionProjec
         ));
     }
 
+    public function onCalculationFlowPackageWasChanged(CalculationFlowPackageWasChanged $event): void
+    {
+        $configuration = $this->getSavedOrDefaultConfigurationById($event->calculationId());
+        $configuration->changeFlowPackage($event->packageName());
+        $this->storeConfiguration($event->calculationId(), $configuration);
+
+        // Do we need this?
+        // ToDo
+        $result = $this->connection->fetchAssoc(
+            sprintf('SELECT modflow_model_id, soilmodel_id, start, stress_periods, time_unit, length_unit from %s WHERE calculation_id = :calculation_id', Table::CALCULATION_CONFIG),
+            ['calculation_id' => $event->calculationId()->toString()]
+        );
+
+        $modflowModelId = ModflowId::fromString($result['modflow_model_id']);
+        $soilModelId = SoilmodelId::fromString($result['soilmodel_id']);
+        $stressPeriods = StressPeriods::createFromArray(json_decode($result['stress_periods'], true));
+        $start = DateTime::fromAtom($result['start']);
+        $timeUnit = TimeUnit::fromInt($result['time_unit']);
+        $lengthUnit = LengthUnit::fromInt($result['length_unit']);
+
+        $configuration = $this->calculatePackages(
+            $event->calculationId(),
+            $modflowModelId,
+            $soilModelId,
+            $start,
+            $timeUnit,
+            $lengthUnit,
+            $stressPeriods
+        );
+
+        $this->connection->update(Table::CALCULATION_CONFIG, array(
+            'start' => $start->toAtom(),
+            'time_unit' => $timeUnit->toInt(),
+            'length_unit' => $lengthUnit->toInt(),
+            'stress_periods' => json_encode($stressPeriods),
+            'configuration' => json_encode($configuration),
+            'configuration_hash' => md5(json_encode($configuration)),
+            'calculation_state' => 0,
+            'calculation_response' => ''
+        ), array(
+                'calculation_id' => $event->calculationId()->toString(),
+                'modflow_model_id' => $modflowModelId->toString(),
+                'user_id' => $event->userId()->toString())
+        );
+
+        $this->storeConfiguration($event->calculationId(), $configuration);
+    }
+
+    public function onCalculationModelBoundariesWereUpdated(CalculationModelBoundariesWereUpdated $event): void
+    {
+        $result = $this->connection->fetchAssoc(
+            sprintf('SELECT modflow_model_id, soilmodel_id, start, stress_periods, time_unit, length_unit from %s WHERE calculation_id = :calculation_id', Table::CALCULATION_CONFIG),
+            ['calculation_id' => $event->calculationId()->toString()]
+        );
+
+        $modflowModelId = ModflowId::fromString($result['modflow_model_id']);
+        $soilModelId = SoilmodelId::fromString($result['soilmodel_id']);
+        $stressPeriods = StressPeriods::createFromArray(json_decode($result['stress_periods'], true));
+        $start = DateTime::fromAtom($result['start']);
+        $timeUnit = TimeUnit::fromInt($result['time_unit']);
+        $lengthUnit = LengthUnit::fromInt($result['length_unit']);
+
+        $configuration = $this->calculatePackages(
+            $event->calculationId(),
+            $modflowModelId,
+            $soilModelId,
+            $start,
+            $timeUnit,
+            $lengthUnit,
+            $stressPeriods
+        );
+
+        $this->storeConfiguration($event->calculationId(), $configuration);
+    }
+
     public function onCalculationStressperiodsWereUpdated(CalculationStressperiodsWereUpdated $event): void
     {
         $result = $this->connection->fetchAssoc(
@@ -175,52 +251,6 @@ class CalculationConfigurationProjector extends AbstractDoctrineConnectionProjec
     {
         $configuration = $this->getSavedOrDefaultConfigurationById($event->calculationId());
         $configuration->updatePackageParameter($event->packageName(), $event->parameterName(), $event->parameterData());
-        $this->storeConfiguration($event->calculationId(), $configuration);
-    }
-
-    public function onCalculationFlowPackageWasChanged(CalculationFlowPackageWasChanged $event): void
-    {
-        $configuration = $this->getSavedOrDefaultConfigurationById($event->calculationId());
-        $configuration->changeFlowPackage($event->packageName());
-        $this->storeConfiguration($event->calculationId(), $configuration);
-
-        $result = $this->connection->fetchAssoc(
-            sprintf('SELECT modflow_model_id, soilmodel_id, start, stress_periods, time_unit, length_unit from %s WHERE calculation_id = :calculation_id', Table::CALCULATION_CONFIG),
-            ['calculation_id' => $event->calculationId()->toString()]
-        );
-
-        $modflowModelId = ModflowId::fromString($result['modflow_model_id']);
-        $soilModelId = SoilmodelId::fromString($result['soilmodel_id']);
-        $stressPeriods = StressPeriods::createFromArray(json_decode($result['stress_periods'], true));
-        $start = DateTime::fromAtom($result['start']);
-        $timeUnit = TimeUnit::fromInt($result['time_unit']);
-        $lengthUnit = LengthUnit::fromInt($result['length_unit']);
-
-        $configuration = $this->calculatePackages(
-            $event->calculationId(),
-            $modflowModelId,
-            $soilModelId,
-            $start,
-            $timeUnit,
-            $lengthUnit,
-            $stressPeriods
-        );
-
-        $this->connection->update(Table::CALCULATION_CONFIG, array(
-            'start' => $start->toAtom(),
-            'time_unit' => $timeUnit->toInt(),
-            'length_unit' => $lengthUnit->toInt(),
-            'stress_periods' => json_encode($stressPeriods),
-            'configuration' => json_encode($configuration),
-            'configuration_hash' => md5(json_encode($configuration)),
-            'calculation_state' => 0,
-            'calculation_response' => ''
-        ), array(
-                'calculation_id' => $event->calculationId()->toString(),
-                'modflow_model_id' => $modflowModelId->toString(),
-                'user_id' => $event->userId()->toString())
-        );
-
         $this->storeConfiguration($event->calculationId(), $configuration);
     }
 

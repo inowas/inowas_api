@@ -37,3 +37,8 @@ services:
         class: Inowas\ModflowCalculation\Model\Handler\UpdateCalculationStressperiodsHandler
         arguments:
             - '@modflow_calculation_list'
+
+    inowas.modflowcalculation.update_calculation_with_changed_boundaries_handler:
+        class: Inowas\ModflowCalculation\Model\Handler\UpdateCalculationWithChangedBoundariesHandler
+        arguments:
+            - '@modflow_calculation_list'

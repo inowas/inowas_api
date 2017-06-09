@@ -41,6 +41,18 @@ services:
           - '@inowas.geotools.geotools_service'
           - '@prooph_service_bus.modflow_command_bus'
 
+    inowas.modflowmodel.create_observation_point_handler:
+        class: Inowas\ModflowModel\Model\Handler\CreateObservationPointHandler
+        arguments:
+          - '@modflow_model_list'
+          - '@inowas.modflowmodel.boundaries_finder'
+          - '@inowas.geotools.geotools_service'
+
+    inowas.modflowmodel.finish_editing_boundaries_handler:
+        class: Inowas\ModflowModel\Model\Handler\FinishEditingBoundariesHandler
+        arguments:
+          - '@modflow_model_list'
+
     inowas.modflowmodel.remove_boundary_handler:
         class: Inowas\ModflowModel\Model\Handler\RemoveBoundaryHandler
         arguments: ['@modflow_model_list']

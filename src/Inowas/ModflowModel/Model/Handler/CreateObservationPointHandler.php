@@ -29,9 +29,6 @@ final class CreateObservationPointHandler
     /** @var BoundaryFinder */
     private $boundaryFinder;
 
-    /** @var GeoTools */
-    private $geoTools;
-
     /**
      * CreateObservationPointHandler constructor.
      * @param ModflowModelList $modelList

@@ -14,6 +14,7 @@ prooph_service_bus:
                     'Inowas\ModflowCalculation\Model\Command\UpdateCalculationPackageParameter': 'inowas.modflowcalculation.update_calculation_package_parameter_handler'
                     'Inowas\ModflowCalculation\Model\Command\UpdateCalculationResults': 'inowas.modflowcalculation.update_calculation_results_handler'
                     'Inowas\ModflowCalculation\Model\Command\UpdateCalculationStressperiods': 'inowas.modflowcalculation.update_calculation_stress_periods_handler'
+                    'Inowas\ModflowCalculation\Model\Command\UpdateCalculationWithChangedBoundaries': 'inowas.modflowcalculation.update_calculation_with_changed_boundaries_handler'
 
                     # ModflowmodelAggregate Commands and CommandHandlers
                     'Inowas\ModflowModel\Model\Command\AddBoundary': 'inowas.modflowmodel.add_modflow_model_boundary_handler'
@@ -24,8 +25,10 @@ prooph_service_bus:
                     'Inowas\ModflowModel\Model\Command\ChangeModflowModelSoilmodelId': 'inowas.modflowmodel.change_modflow_model_soilmodel_id_handler'
                     'Inowas\ModflowModel\Model\Command\CloneModflowModel': 'inowas.modflowmodel.clone_modflow_model_handler'
                     'Inowas\ModflowModel\Model\Command\CreateModflowModel': 'inowas.modflowmodel.create_modflow_model_handler'
-                    'Inowas\ModflowModel\Model\Command\UpdateActiveCells': 'inowas.modflowmodel.update_active_cells_handler'
+                    'Inowas\ModflowModel\Model\Command\CreateObservationPoint': 'inowas.modflowmodel.create_observation_point_handler'
+                    'Inowas\ModflowModel\Model\Command\FinishEditingBoundaries': 'inowas.modflowmodel.finish_editing_boundaries_handler'
                     'Inowas\ModflowModel\Model\Command\RemoveBoundary': 'inowas.modflowmodel.remove_boundary_handler'
+                    'Inowas\ModflowModel\Model\Command\UpdateActiveCells': 'inowas.modflowmodel.update_active_cells_handler'
                     'Inowas\ModflowModel\Model\Command\UpdateAreaGeometry': 'inowas.modflowmodel.update_area_geometry_handler'
                     'Inowas\ModflowModel\Model\Command\UpdateBoundaryAffectedLayers': 'inowas.modflowmodel.update_boundary_affected_layers_handler'
                     'Inowas\ModflowModel\Model\Command\UpdateBoundaryGeometry': 'inowas.modflowmodel.update_boundary_geometry_handler'
@@ -69,6 +72,9 @@ prooph_service_bus:
                 type: 'prooph_service_bus.event_bus_router'
                 routes:
                     'Inowas\ModflowCalculation\Model\Event\CalculationFlowPackageWasChanged':
+                        - 'inowas.modflowcalculation.calculation_configuration_projector'
+
+                    'Inowas\ModflowCalculation\Model\Event\CalculationModelBoundariesWereUpdated':
                         - 'inowas.modflowcalculation.calculation_configuration_projector'
 
                     'Inowas\ModflowCalculation\Model\Event\CalculationPackageParameterWasUpdated':
@@ -145,6 +151,9 @@ prooph_service_bus:
                     'Inowas\ModflowModel\Model\Event\DescriptionWasChanged':
                         - 'inowas.modflowmodel.model_details_projector'
 
+                    'Inowas\ModflowModel\Model\Event\EditingBoundariesWasFinished':
+                        - 'inowas.modflowcalculation.update_calculation_process_manager'
+
                     'Inowas\ModflowModel\Model\Event\GridSizeWasChanged':
                         - 'inowas.modflowmodel.model_boundaries_active_cells_projector'
                         - 'inowas.modflowmodel.model_details_projector'
@@ -187,6 +196,7 @@ prooph_service_bus:
                         - 'inowas.scenarioanalysis.scenario_list_projector'
 
                     'Inowas\ScenarioAnalysis\Model\Event\ScenarioWasCreated':
+                        - 'inowas.scenarioanalysis.create_scenario_process_manager'
                         - 'inowas.scenarioanalysis.scenarioanalysis_list_projector'
                         - 'inowas.scenarioanalysis.scenario_list_projector'
 

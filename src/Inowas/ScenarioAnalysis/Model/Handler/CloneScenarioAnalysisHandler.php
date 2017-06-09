@@ -6,6 +6,7 @@ namespace Inowas\ScenarioAnalysis\Model\Handler;
 
 use Inowas\Common\Id\ModflowId;
 use Inowas\Common\Id\UserId;
+use Inowas\Common\Soilmodel\SoilmodelId;
 use Inowas\ModflowModel\Model\Command\CloneModflowModel;
 use Inowas\ScenarioAnalysis\Model\Command\CloneScenarioAnalysis;
 use Inowas\ScenarioAnalysis\Model\Exception\ScenarioAnalysisNotFoundException;
@@ -37,15 +38,18 @@ final class CloneScenarioAnalysisHandler
 
         $baseModelId = $scenarioAnalysis->baseModelId();
         $clonedBaseModelId = ModflowId::generate();
+        $soilmodelId = SoilmodelId::generate();
+        $newCalculationId = ModflowId::generate();
         $userId = $command->userId();
-        $this->cloneModel($clonedBaseModelId, $userId, $baseModelId);
+        $this->cloneModelAndSoilmodel($clonedBaseModelId, $userId, $baseModelId, $soilmodelId, $newCalculationId);
 
         $scenarios = $scenarioAnalysis->scenarios();
         $clonedScenarios = array();
         foreach ($scenarios as $scenario){
             $originalId = ModflowId::fromString($scenario);
             $cloneId = ModflowId::generate();
-            $this->cloneModel($cloneId, $userId, $originalId);
+            $newCalculationId = ModflowId::generate();
+            $this->cloneModelWithoutSoilmodel($cloneId, $userId, $originalId, $soilmodelId, $newCalculationId);
             $clonedScenarios[] = $cloneId->toString();
         }
 
@@ -61,11 +65,37 @@ final class CloneScenarioAnalysisHandler
         $this->scenarioAnalysisList->add($scenarioAnalysis);
     }
 
-    private function cloneModel(ModflowId $cloneId, UserId $userId, ModflowId $originalId): void
+    /** @noinspection MoreThanThreeArgumentsInspection
+     * @param ModflowId $cloneId
+     * @param UserId $userId
+     * @param ModflowId $originalId
+     * @param SoilmodelId $newSoilmodelId
+     * @param ModflowId $newCalculationId
+     * @throws \Prooph\ServiceBus\Exception\CommandDispatchException
+     */
+    private function cloneModelAndSoilmodel(ModflowId $cloneId, UserId $userId, ModflowId $originalId, SoilmodelId $newSoilmodelId, ModflowId $newCalculationId): void
     {
-        $this->commandBus->dispatch(CloneModflowModel::fromBaseModel($originalId, $userId, $cloneId));
-        #$originalModel = $this->modelList->get($originalId);
-        #$clonedModel = ModflowModelAggregate::cloneWithIdUserAndAggregate($cloneId, $userId, $originalModel);
-        #$this->modelList->add($clonedModel);
+        $this->commandBus->dispatch(CloneModflowModel::byIdAndCloneSoilmodel(
+            $originalId,
+            $userId,
+            $cloneId,
+            $newSoilmodelId,
+            $newCalculationId
+        ));
+    }
+
+    /** @noinspection MoreThanThreeArgumentsInspection
+     * @param ModflowId $cloneId
+     * @param UserId $userId
+     * @param ModflowId $originalId
+     * @param SoilmodelId $existingSoilmodelId
+     * @param ModflowId $newCalculationId
+     * @throws \Prooph\ServiceBus\Exception\CommandDispatchException
+     */
+    private function cloneModelWithoutSoilmodel(ModflowId $cloneId, UserId $userId, ModflowId $originalId, SoilmodelId $existingSoilmodelId, ModflowId $newCalculationId): void
+    {
+        $this->commandBus->dispatch(CloneModflowModel::byIdWithExistingSoilmodel(
+            $originalId, $userId, $cloneId, $existingSoilmodelId, $newCalculationId
+        ));
     }
 }

@@ -12,6 +12,7 @@ use Inowas\Common\Modflow\PackageName;
 use Inowas\Common\Modflow\StressPeriods;
 use Inowas\Common\Modflow\TimeUnit;
 use Inowas\ModflowCalculation\Model\Event\CalculationFlowPackageWasChanged;
+use Inowas\ModflowCalculation\Model\Event\CalculationModelBoundariesWereUpdated;
 use Inowas\ModflowCalculation\Model\Event\CalculationPackageParameterWasUpdated;
 use Inowas\ModflowCalculation\Model\Event\CalculationStressperiodsWereUpdated;
 use Inowas\ModflowCalculation\Model\Event\CalculationWasCloned;
@@ -138,6 +139,11 @@ class ModflowCalculationAggregate extends AggregateRoot
         );
 
         return $self;
+    }
+
+    public function updateWithChangedBoundaries(UserId $userId): void
+    {
+        $this->recordThat(CalculationModelBoundariesWereUpdated::withProps($userId, $this->calculationId));
     }
 
     public function updateStartDateTime(DateTime $start): void
@@ -304,6 +310,9 @@ class ModflowCalculationAggregate extends AggregateRoot
     {
         $this->stressPeriods = $event->stressPeriods();
     }
+
+    protected function whenCalculationModelBoundariesWereUpdated(CalculationModelBoundariesWereUpdated $event): void
+    {}
 
     protected function whenCalculationWasQueued(CalculationWasQueued $event): void
     {}

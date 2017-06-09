@@ -34,6 +34,7 @@ use Inowas\ModflowModel\Model\Event\BoundaryWasAdded;
 use Inowas\ModflowModel\Model\Event\BoundaryWasRemoved;
 use Inowas\ModflowModel\Model\Event\BoundingBoxWasChanged;
 use Inowas\ModflowModel\Model\Event\DescriptionWasChanged;
+use Inowas\ModflowModel\Model\Event\EditingBoundariesWasFinished;
 use Inowas\ModflowModel\Model\Event\GridSizeWasChanged;
 use Inowas\ModflowModel\Model\Event\LengthUnitWasUpdated;
 use Inowas\ModflowModel\Model\Event\ModflowModelWasCloned;
@@ -181,6 +182,14 @@ class ModflowModelAggregate extends AggregateRoot
             $userId,
             $this->modflowId,
             $this->gridSize
+        ));
+    }
+
+    public function finishEditingBoundaries(UserId $userId): void
+    {
+        $this->recordThat(EditingBoundariesWasFinished::byUser(
+            $userId,
+            $this->modflowId
         ));
     }
 
@@ -431,6 +440,9 @@ class ModflowModelAggregate extends AggregateRoot
             $this->description = $event->description();
         }
     }
+
+    protected function whenEditingBoundariesWasFinished(EditingBoundariesWasFinished $event): void
+    {}
 
     protected function whenGridSizeWasChanged(GridSizeWasChanged $event): void
     {
