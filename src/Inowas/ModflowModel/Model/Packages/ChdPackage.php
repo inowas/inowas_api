@@ -23,7 +23,7 @@ class ChdPackage implements PackageInterface
     protected $unitnumber;
 
 
-    public static function fromDefaults()
+    public static function fromDefaults(): ChdPackage
     {
         $stressPeriodData = ChdStressPeriodData::create();
         $extension = Extension::fromString('chd');
@@ -75,7 +75,7 @@ class ChdPackage implements PackageInterface
         return $package;
     }
 
-    public function updateUnitnumber(Unitnumber $unitnumber): WelPackage
+    public function updateUnitnumber(Unitnumber $unitnumber): ChdPackage
     {
         $package = self::fromArray($this->toArray());
         $package->unitnumber = $unitnumber;
@@ -90,21 +90,21 @@ class ChdPackage implements PackageInterface
     public function toArray(): array
     {
         return array(
-            "stress_period_data" => $this->stressPeriodData->toArray(),
-            "extension" => $this->extension->toValue(),
-            "unitnumber" => $this->unitnumber->toValue()
+            'stress_period_data' => $this->stressPeriodData->toArray(),
+            'extension' => $this->extension->toValue(),
+            'unitnumber' => $this->unitnumber->toValue()
         );
     }
 
     /**
      * @return array
      */
-    function jsonSerialize()
+    public function jsonSerialize(): array
     {
         return array(
-            "stress_period_data" => (object)$this->stressPeriodData->toArray(),
-            "extension" => $this->extension->toValue(),
-            "unitnumber" => $this->unitnumber->toValue()
+            'stress_period_data' => (object)$this->stressPeriodData->toArray(),
+            'extension' => $this->extension->toValue(),
+            'unitnumber' => $this->unitnumber->toValue()
         );
     }
 }

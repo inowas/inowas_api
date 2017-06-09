@@ -21,6 +21,15 @@ class WelStressPeriodGridCellValue
     /** @var  float */
     protected $flux;
 
+
+    /** @noinspection MoreThanThreeArgumentsInspection
+     * @param int $sp
+     * @param int $lay
+     * @param int $row
+     * @param int $col
+     * @param float $flux
+     * @return WelStressPeriodGridCellValue
+     */
     public static function fromParams(int $sp, int $lay, int $row, int $col, float $flux): WelStressPeriodGridCellValue
     {
         return new self($sp, $lay, $row, $col, $flux);

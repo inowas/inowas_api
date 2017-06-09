@@ -37,13 +37,14 @@ class ModflowModelStressperiods
         $perlen=[];
         $totims = $this->uniqueTotalTimes();
         usort($totims, function($a, $b) {
-            if ($a == $b) {
+            if ($a === $b) {
                 return 0;
             }
             return ($a < $b) ? -1 : 1;
         });
 
-        for ($i = 1; $i < count($totims); $i++){
+        $count = count($totims);
+        for ($i = 1; $i < $count; $i++){
             $perlen[] = ($totims[$i] - $totims[$i-1]);
         }
 

@@ -66,6 +66,18 @@ class BasPackage implements PackageInterface
         return $self;
     }
 
+
+    /** @noinspection MoreThanThreeArgumentsInspection
+     * @param Ibound $ibound
+     * @param Strt $strt
+     * @param Ixsec $ixsec
+     * @param IchFlg $ichFlg
+     * @param Stoper $stoPer
+     * @param Hnoflo $hnoFlo
+     * @param Extension $extension
+     * @param Unitnumber $unitNumber
+     * @return BasPackage
+     */
     public static function fromParams(
         Ibound $ibound,
         Strt $strt,
@@ -209,21 +221,21 @@ class BasPackage implements PackageInterface
     public function toArray(): array
     {
         return array(
-            "ibound" => $this->ibound->toValue(),
-            "strt" => $this->strt->toValue(),
-            "ixsec" => $this->ixsec->toValue(),
-            "ichflg" => $this->ichflg->toValue(),
-            "stoper" => $this->stoper->toValue(),
-            "hnoflo" => $this->hnoflo->toValue(),
-            "extension" => $this->extension->toValue(),
-            "unitnumber" => $this->unitnumber->toValue()
+            'ibound' => $this->ibound->toValue(),
+            'strt' => $this->strt->toValue(),
+            'ixsec' => $this->ixsec->toValue(),
+            'ichflg' => $this->ichflg->toValue(),
+            'stoper' => $this->stoper->toValue(),
+            'hnoflo' => $this->hnoflo->toValue(),
+            'extension' => $this->extension->toValue(),
+            'unitnumber' => $this->unitnumber->toValue()
         );
     }
 
     /**
      * @return array
      */
-    function jsonSerialize()
+    public function jsonSerialize(): array
     {
         return $this->toArray();
     }

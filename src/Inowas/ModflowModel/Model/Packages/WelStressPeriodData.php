@@ -6,8 +6,6 @@ namespace Inowas\ModflowModel\Model\Packages;
 
 class WelStressPeriodData extends AbstractStressPeriodData
 {
-    /** @var array */
-    protected $data = [];
 
     public static function create(): WelStressPeriodData
     {
@@ -39,11 +37,13 @@ class WelStressPeriodData extends AbstractStressPeriodData
 
         // This checks if there are yet cells with value and aggregates them
         foreach ($this->data[$stressPeriod] as &$data) {
-            if ($data[0] == $layer && $data[1] == $row && $data[2] == $column){
+            if ($data[0] === $layer && $data[1] === $row && $data[2] === $column){
                 $data[3] += $value;
                 return $this;
             }
         }
+
+        unset($data);
 
         $this->data[$stressPeriod][] = [$layer, $row, $column, $value];
         return $this;

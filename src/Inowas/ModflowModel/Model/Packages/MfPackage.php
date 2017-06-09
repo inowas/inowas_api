@@ -44,7 +44,7 @@ class MfPackage implements PackageInterface
     /** @var Verbose  */
     protected $verbose;
 
-    public static function fromDefaults()
+    public static function fromDefaults(): MfPackage
     {
         $name = ModelName::fromString('testmodel');
         $fileExtension = NameFileExtension::fromString('nam');
@@ -58,6 +58,18 @@ class MfPackage implements PackageInterface
         return new self($name, $fileExtension, $version, $executableName, $listUnit, $modelWorkSpace, $externalPath, $verbose);
     }
 
+
+    /** @noinspection MoreThanThreeArgumentsInspection
+     * @param ModelName $name
+     * @param NameFileExtension $fileExtension
+     * @param Version $version
+     * @param FileName $executableName
+     * @param Listunit $listUnit
+     * @param Modelworkspace $modelWorkSpace
+     * @param Externalpath $externalPath
+     * @param Verbose $verbose
+     * @return MfPackage
+     */
     public static function fromParams(
         ModelName $name,
         NameFileExtension $fileExtension,
@@ -155,14 +167,14 @@ class MfPackage implements PackageInterface
     public function toArray(): array
     {
         return array(
-            "modelname" => $this->modelname->slugified(),
-            "namefile_ext" => $this->nameFileExtension->toString(),
-            "version" => $this->version->toString(),
-            "exe_name" => $this->executableName->toString(),
-            "listunit" => $this->listUnit->toInt(),
-            "model_ws" => $this->modelWorkSpace->toString(),
-            "external_path" => $this->externalPath->toValue(),
-            "verbose" => $this->verbose->toBool()
+            'modelname' => $this->modelname->slugified(),
+            'namefile_ext' => $this->nameFileExtension->toString(),
+            'version' => $this->version->toString(),
+            'exe_name' => $this->executableName->toString(),
+            'listunit' => $this->listUnit->toInt(),
+            'model_ws' => $this->modelWorkSpace->toString(),
+            'external_path' => $this->externalPath->toValue(),
+            'verbose' => $this->verbose->toBool()
         );
     }
 
@@ -225,7 +237,7 @@ class MfPackage implements PackageInterface
     /**
      * @return array
      */
-    function jsonSerialize()
+    public function jsonSerialize(): array
     {
         return $this->toArray();
     }

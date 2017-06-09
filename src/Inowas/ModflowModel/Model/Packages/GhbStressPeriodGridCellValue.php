@@ -24,6 +24,15 @@ class GhbStressPeriodGridCellValue
     /** @var  float */
     protected $cond;
 
+    /** @noinspection MoreThanThreeArgumentsInspection
+     * @param int $sp
+     * @param int $lay
+     * @param int $row
+     * @param int $col
+     * @param float $stage
+     * @param float $cond
+     * @return GhbStressPeriodGridCellValue
+     */
     public static function fromParams(int $sp, int $lay, int $row, int $col, float $stage, float $cond): GhbStressPeriodGridCellValue
     {
         return new self($sp, $lay, $row, $col, $stage, $cond);

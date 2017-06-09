@@ -41,8 +41,6 @@ namespace Inowas\ModflowModel\Model\Packages;
 
 class RivStressPeriodData extends AbstractStressPeriodData
 {
-    /** @var array */
-    protected $data = [];
 
     public static function create(): RivStressPeriodData
     {

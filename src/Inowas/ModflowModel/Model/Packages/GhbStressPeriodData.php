@@ -6,8 +6,6 @@ namespace Inowas\ModflowModel\Model\Packages;
 
 class GhbStressPeriodData extends AbstractStressPeriodData
 {
-    /** @var array */
-    protected $data = [];
 
     public static function create(): GhbStressPeriodData
     {

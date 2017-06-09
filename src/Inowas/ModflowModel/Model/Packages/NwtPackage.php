@@ -194,6 +194,44 @@ class NwtPackage implements PackageInterface
         );
     }
 
+
+    /** @noinspection MoreThanThreeArgumentsInspection
+     * @param Headtol $headtol
+     * @param Fluxtol $fluxtol
+     * @param Maxiterout $maxiterout
+     * @param Thickfact $thickfact
+     * @param Linmeth $linmeth
+     * @param Iprnwt $iprnwt
+     * @param Ibotavg $ibotavg
+     * @param NwtOptions $options
+     * @param NwtContinue $continue
+     * @param Dbdtheta $dbdtheta
+     * @param Dbdkappa $dbdkappa
+     * @param Dbdgamma $dbdgamma
+     * @param Momfact $momfact
+     * @param Backflag $backflag
+     * @param Maxbackiter $maxbackiter
+     * @param Backtol $backtol
+     * @param Backreduce $backreduce
+     * @param Maxinner $maxitinner
+     * @param Ilumethod $ilumethod
+     * @param Levfill $levfill
+     * @param Stoptol $stoptol
+     * @param Msdr $msdr
+     * @param Iacl $iacl
+     * @param Norder $norder
+     * @param Level $level
+     * @param North $north
+     * @param Iredsys $iredsys
+     * @param Rrctools $rrctols
+     * @param Idroptol $idroptol
+     * @param Epsrn $epsrn
+     * @param Hclosexmd $hclosexmd
+     * @param Mxiterxmd $mxiterxmd
+     * @param Extension $extension
+     * @param Unitnumber $unitnumber
+     * @return NwtPackage
+     */
     public static function fromParams(
         Headtol $headtol, Fluxtol $fluxtol, Maxiterout $maxiterout, Thickfact $thickfact, Linmeth $linmeth,
         Iprnwt $iprnwt, Ibotavg $ibotavg, NwtOptions $options, NwtContinue $continue, Dbdtheta $dbdtheta,

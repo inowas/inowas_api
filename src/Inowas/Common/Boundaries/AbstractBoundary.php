@@ -103,7 +103,7 @@ abstract class AbstractBoundary implements ModflowBoundary
 
     protected function hasOp(ObservationPointId $observationPointId): bool
     {
-        return (array_key_exists($observationPointId->toString(), $this->observationPoints));
+        return array_key_exists($observationPointId->toString(), $this->observationPoints);
     }
 
     protected function getOp(ObservationPointId $observationPointId): ?ObservationPoint

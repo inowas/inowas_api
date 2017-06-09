@@ -23,7 +23,7 @@ abstract class AbstractStressPeriodData implements \JsonSerializable
         $this->removeSuccessiveStressperiodData();
 
         return array(
-            "stress_period_data" => (object)$this->data
+            'stress_period_data' => (object)$this->data
         );
     }
 
@@ -31,7 +31,7 @@ abstract class AbstractStressPeriodData implements \JsonSerializable
     {
         $data = [];
         foreach ($this->data as $key => $spData) {
-            if ($key == 0){
+            if ($key === 0){
                 $data[$key] = $spData;
                 continue;
             }

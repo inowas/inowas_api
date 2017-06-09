@@ -49,7 +49,7 @@ class OcPackage implements PackageInterface
     protected $unitnumber;
 
 
-    public static function fromDefaults()
+    public static function fromDefaults(): OcPackage
     {
         $ihedfm = Ihedfm::fromInteger(0);
         $iddnfm = Iddnfm::fromInteger(0);
@@ -60,10 +60,20 @@ class OcPackage implements PackageInterface
         $extension = Extension::fromArray(['oc', 'hds', 'ddn', 'cbc']);
         $unitnumber = Unitnumber::fromArray([14, 51, 52, 53]);
 
-
         return new self($ihedfm, $iddnfm, $chedfm, $cddnfm, $cboufm, $stressPeriodData, $extension, $unitnumber);
     }
 
+    /** @noinspection MoreThanThreeArgumentsInspection
+     * @param Ihedfm $ihedfm
+     * @param Iddnfm $iddnfm
+     * @param Chedfm $chedfm
+     * @param Cddnfm $cddnfm
+     * @param Cboufm $cboufm
+     * @param OcStressPeriodData $stressPeriodData
+     * @param Extension $extension
+     * @param Unitnumber $unitnumber
+     * @return OcPackage
+     */
     public static function fromParams(
         Ihedfm $ihedfm,
         Iddnfm $iddnfm,
@@ -184,21 +194,21 @@ class OcPackage implements PackageInterface
     public function toArray(): array
     {
         return array(
-            "ihedfm" => $this->ihedfm->toInteger(),
-            "iddnfm" => $this->iddnfm->toInteger(),
-            "chedfm" => $this->chedfm->toValue(),
-            "cddnfm" => $this->cddnfm->toValue(),
-            "cboufm" => $this->cboufm->toValue(),
-            "stress_period_data" => $this->stressPeriodData->toArray(),
-            "extension" => $this->extension->toValue(),
-            "unitnumber" => $this->unitnumber->toValue()
+            'ihedfm' => $this->ihedfm->toInteger(),
+            'iddnfm' => $this->iddnfm->toInteger(),
+            'chedfm' => $this->chedfm->toValue(),
+            'cddnfm' => $this->cddnfm->toValue(),
+            'cboufm' => $this->cboufm->toValue(),
+            'stress_period_data' => $this->stressPeriodData->toArray(),
+            'extension' => $this->extension->toValue(),
+            'unitnumber' => $this->unitnumber->toValue()
         );
     }
 
     /**
      * @return array
      */
-    function jsonSerialize()
+    public function jsonSerialize(): array
     {
         return $this->toArray();
     }

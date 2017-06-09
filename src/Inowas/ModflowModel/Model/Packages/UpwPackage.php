@@ -104,6 +104,25 @@ class UpwPackage implements PackageInterface
         );
     }
 
+    /** @noinspection MoreThanThreeArgumentsInspection
+     * @param Laytyp $laytyp
+     * @param Layavg $layavg
+     * @param Chani $chani
+     * @param Layvka $layvka
+     * @param Laywet $laywet
+     * @param Ipakcb $ipakcb
+     * @param Hdry $hdry
+     * @param Iphdry $iphdry
+     * @param Hk $hk
+     * @param Hani $hani
+     * @param Vka $vka
+     * @param Ss $ss
+     * @param Sy $sy
+     * @param Vkcb $vkcb
+     * @param Extension $extension
+     * @param Unitnumber $unitnumber
+     * @return UpwPackage
+     */
     public static function fromParams(
         Laytyp $laytyp,
         Layavg $layavg,
@@ -133,22 +152,22 @@ class UpwPackage implements PackageInterface
 
     public static function fromArray(array $arr): UpwPackage
     {
-        $laytyp = Laytyp::fromValue($arr["laytyp"]);
-        $layavg = Layavg::fromValue($arr["layavg"]);
-        $chani = Chani::fromValue($arr["chani"]);
-        $layvka = Layvka::fromValue($arr["layvka"]);
-        $laywet = Laywet::fromValue($arr["laywet"]);
-        $ipakcb = Ipakcb::fromValue($arr["ipakcb"]);
-        $hdry = Hdry::fromValue($arr["hdry"]);
-        $iphdry = Iphdry::fromValue($arr["iphdry"]);
-        $hk = Hk::fromValue($arr["hk"]);
-        $hani = Hani::fromValue($arr["hani"]);
-        $vka = Vka::fromValue($arr["vka"]);
-        $ss = Ss::fromValue($arr["ss"]);
-        $sy = Sy::fromValue($arr["sy"]);
-        $vkcb = Vkcb::fromValue($arr["vkcb"]);
-        $extension = Extension::fromValue($arr["extension"]);
-        $unitnumber = Unitnumber::fromValue($arr["unitnumber"]);
+        $laytyp = Laytyp::fromValue($arr['laytyp']);
+        $layavg = Layavg::fromValue($arr['layavg']);
+        $chani = Chani::fromValue($arr['chani']);
+        $layvka = Layvka::fromValue($arr['layvka']);
+        $laywet = Laywet::fromValue($arr['laywet']);
+        $ipakcb = Ipakcb::fromValue($arr['ipakcb']);
+        $hdry = Hdry::fromValue($arr['hdry']);
+        $iphdry = Iphdry::fromValue($arr['iphdry']);
+        $hk = Hk::fromValue($arr['hk']);
+        $hani = Hani::fromValue($arr['hani']);
+        $vka = Vka::fromValue($arr['vka']);
+        $ss = Ss::fromValue($arr['ss']);
+        $sy = Sy::fromValue($arr['sy']);
+        $vkcb = Vkcb::fromValue($arr['vkcb']);
+        $extension = Extension::fromValue($arr['extension']);
+        $unitnumber = Unitnumber::fromValue($arr['unitnumber']);
 
         return new self(
             $laytyp, $layavg, $chani, $layvka,
@@ -315,29 +334,29 @@ class UpwPackage implements PackageInterface
     public function toArray(): array
     {
         return array(
-            "laytyp" => $this->laytyp->toValue(),
-            "layavg" => $this->layavg->toValue(),
-            "chani" => $this->chani->toValue(),
-            "layvka" => $this->layvka->toValue(),
-            "laywet" => $this->laywet->toValue(),
-            "ipakcb" => $this->ipakcb->toValue(),
-            "hdry" => $this->hdry->toValue(),
-            "iphdry" => $this->iphdry->toValue(),
-            "hk" => $this->hk->toValue(),
-            "hani" => $this->hani->toValue(),
-            "vka" => $this->vka->toValue(),
-            "ss" => $this->ss->toValue(),
-            "sy" => $this->sy->toValue(),
-            "vkcb" => $this->vkcb->toValue(),
-            "extension" => $this->extension->toValue(),
-            "unitnumber" => $this->unitnumber->toValue()
+            'laytyp' => $this->laytyp->toValue(),
+            'layavg' => $this->layavg->toValue(),
+            'chani' => $this->chani->toValue(),
+            'layvka' => $this->layvka->toValue(),
+            'laywet' => $this->laywet->toValue(),
+            'ipakcb' => $this->ipakcb->toValue(),
+            'hdry' => $this->hdry->toValue(),
+            'iphdry' => $this->iphdry->toValue(),
+            'hk' => $this->hk->toValue(),
+            'hani' => $this->hani->toValue(),
+            'vka' => $this->vka->toValue(),
+            'ss' => $this->ss->toValue(),
+            'sy' => $this->sy->toValue(),
+            'vkcb' => $this->vkcb->toValue(),
+            'extension' => $this->extension->toValue(),
+            'unitnumber' => $this->unitnumber->toValue()
         );
     }
 
     /**
      * @return array
      */
-    function jsonSerialize()
+    public function jsonSerialize(): array
     {
         return $this->toArray();
     }
