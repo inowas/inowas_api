@@ -30,7 +30,7 @@ class ModflowCalculationResponse
 
     public static function fromJson(string $json): ModflowCalculationResponse
     {
-        $obj = \GuzzleHttp\json_decode($json);
+        $obj = json_decode($json);  
         $self = new self();
         $self->statusCode = StatusCode::fromInt((int)$obj->status_code);
         $self->calculationId = ModflowId::fromString($obj->id);
