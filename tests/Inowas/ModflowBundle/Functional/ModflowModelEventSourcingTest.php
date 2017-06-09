@@ -1083,6 +1083,10 @@ class ModflowModelEventSourcingTest extends EventSourcingBaseTest
         ));
     }
 
+    /**
+     * @test
+     * @group messaging-integration-tests
+     */
     public function test_update_calculation_when_finished_editing_boundaries(): void
     {
         $ownerId = UserId::generate();

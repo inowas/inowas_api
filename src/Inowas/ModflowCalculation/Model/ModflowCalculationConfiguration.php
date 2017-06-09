@@ -123,6 +123,11 @@ class ModflowCalculationConfiguration implements \JsonSerializable
 
     private function __construct(){}
 
+    public function updateCalculationId(ModflowId $calculationId): void
+    {
+        $this->calculationId = $calculationId;
+    }
+
     public function updateModelName(ModelName $name): void
     {
         // The executableName is configured in the MfPackage

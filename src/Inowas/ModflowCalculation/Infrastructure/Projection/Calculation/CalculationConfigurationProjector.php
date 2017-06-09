@@ -130,6 +130,10 @@ class CalculationConfigurationProjector extends AbstractDoctrineConnectionProjec
             'configuration' => $result['configuration'],
             'configuration_hash' => $result['configuration_hash']
         ));
+
+        $configuration = $this->getSavedOrDefaultConfigurationById($event->calculationId());
+        $configuration->updateCalculationId($event->calculationId());
+        $this->storeConfiguration($event->calculationId(), $configuration);
     }
 
     public function onCalculationFlowPackageWasChanged(CalculationFlowPackageWasChanged $event): void
