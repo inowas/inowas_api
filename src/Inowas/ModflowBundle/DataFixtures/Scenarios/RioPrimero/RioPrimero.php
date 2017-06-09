@@ -41,6 +41,7 @@ use Inowas\Common\Soilmodel\SpecificStorage;
 use Inowas\Common\Soilmodel\SpecificYield;
 use Inowas\Common\Soilmodel\TopElevation;
 use Inowas\Common\Soilmodel\VerticalHydraulicConductivity;
+use Inowas\ModflowCalculation\Model\Command\CalculateModflowModelCalculation;
 use Inowas\ModflowCalculation\Model\Command\CreateModflowModelCalculation;
 use Inowas\ModflowCalculation\Model\Command\UpdateCalculationStressperiods;
 use Inowas\ModflowModel\Model\Command\AddBoundary;
@@ -48,6 +49,7 @@ use Inowas\ModflowModel\Model\Command\ChangeModflowModelBoundingBox;
 use Inowas\ModflowModel\Model\Command\ChangeModflowModelSoilmodelId;
 use Inowas\ModflowModel\Model\Command\CreateModflowModel;
 use Inowas\ModflowBundle\DataFixtures\Scenarios\LoadScenarioBase;
+use Inowas\ModflowModel\Model\Command\FinishEditingBoundaries;
 use Inowas\ScenarioAnalysis\Model\Command\CreateScenario;
 use Inowas\ScenarioAnalysis\Model\Command\CreateScenarioAnalysis;
 use Inowas\ScenarioAnalysis\Model\ScenarioAnalysisDescription;
@@ -422,7 +424,7 @@ class RioPrimero extends LoadScenarioBase
         $stressperiods->addStressPeriod(StressPeriod::create(0, 1,1,1,true));
         $stressperiods->addStressPeriod(StressPeriod::create(1, 365,365,1,false));
         $commandBus->dispatch(UpdateCalculationStressperiods::byUserWithCalculationId($ownerId, $calculationId, $stressperiods));
-        #$commandBus->dispatch(CalculateModflowModelCalculation::byUserWithCalculationId($ownerId, $calculationId));
+        $commandBus->dispatch(CalculateModflowModelCalculation::byUserWithCalculationId($ownerId, $calculationId));
 
         /*
          * Create ScenarioAnalysis from BaseModel
@@ -484,7 +486,7 @@ class RioPrimero extends LoadScenarioBase
             $commandBus->dispatch(AddBoundary::to($scenarioId, $ownerId, $wellBoundary));
         }
 
-        #$commandBus->dispatch(FinishEditingBoundaries::to($scenarioId, $ownerId));
+        $commandBus->dispatch(FinishEditingBoundaries::to($scenarioId, $ownerId));
 
         /*
          * Begin add Scenario 1
@@ -534,6 +536,6 @@ class RioPrimero extends LoadScenarioBase
             $commandBus->dispatch(AddBoundary::to($scenarioId, $ownerId, $wellBoundary));
         }
 
-        #$commandBus->dispatch(FinishEditingBoundaries::to($scenarioId, $ownerId));
+        $commandBus->dispatch(FinishEditingBoundaries::to($scenarioId, $ownerId));
     }
 }
