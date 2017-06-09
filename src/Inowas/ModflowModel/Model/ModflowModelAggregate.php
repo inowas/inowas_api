@@ -82,11 +82,26 @@ class ModflowModelAggregate extends AggregateRoot
     /** @var  TimeUnit */
     protected $timeUnit;
 
-    public static function create(ModflowId $modflowId, UserId $userId, SoilmodelId $soilmodelId, Area $area, GridSize $gridSize, BoundingBox $boundingBox, LengthUnit $lengthUnit, TimeUnit $timeUnit): ModflowModelAggregate
+    /** @noinspection MoreThanThreeArgumentsInspection
+     * @param ModflowId $modflowId
+     * @param UserId $userId
+     * @param ModelName $name
+     * @param ModelDescription $description
+     * @param SoilmodelId $soilmodelId
+     * @param Area $area
+     * @param GridSize $gridSize
+     * @param BoundingBox $boundingBox
+     * @param LengthUnit $lengthUnit
+     * @param TimeUnit $timeUnit
+     * @return ModflowModelAggregate
+     */
+    public static function create(ModflowId $modflowId, UserId $userId, ModelName $name, ModelDescription $description, SoilmodelId $soilmodelId, Area $area, GridSize $gridSize, BoundingBox $boundingBox, LengthUnit $lengthUnit, TimeUnit $timeUnit): ModflowModelAggregate
     {
         $self = new self();
         $self->modflowId = $modflowId;
         $self->owner = $userId;
+        $self->name = $name;
+        $self->description = $description;
         $self->soilmodelId = $soilmodelId;
         $self->area = $area;
         $self->gridSize = $gridSize;
@@ -95,15 +110,38 @@ class ModflowModelAggregate extends AggregateRoot
         $self->timeUnit = $timeUnit;
         $self->boundaries = [];
 
-        $self->recordThat(ModflowModelWasCreated::withParameters($modflowId, $userId, $soilmodelId, $area, [], $gridSize, $boundingBox, $lengthUnit, $timeUnit));
+        $self->recordThat(ModflowModelWasCreated::withParameters(
+            $self->modflowId,
+            $self->owner,
+            $self->name,
+            $self->description,
+            $self->soilmodelId,
+            $self->area,
+            $self->boundaries,
+            $self->gridSize,
+            $self->boundingBox,
+            $self->lengthUnit,
+            $self->timeUnit)
+        );
+
         return $self;
     }
 
+
+    /** @noinspection MoreThanThreeArgumentsInspection
+     * @param ModflowId $newModelId
+     * @param UserId $newUserId
+     * @param SoilmodelId $soilmodelId
+     * @param ModflowModelAggregate $model
+     * @return ModflowModelAggregate
+     */
     public static function cloneWithIdUserSoilmodelIdAndAggregate(ModflowId $newModelId, UserId $newUserId, SoilmodelId $soilmodelId, ModflowModelAggregate $model): ModflowModelAggregate
     {
         $self = new self();
         $self->modflowId = $newModelId;
         $self->owner = $newUserId;
+        $self->name = $model->name;
+        $self->description = $model->description;
         $self->soilmodelId = $soilmodelId;
         $self->area = $model->area();
         $self->boundaries = $model->boundaries();
@@ -118,6 +156,8 @@ class ModflowModelAggregate extends AggregateRoot
             $model->ownerId(),
             $self->modflowId,
             $self->owner,
+            $self->name,
+            $self->description,
             $self->soilmodelId,
             $self->area,
             $self->boundaries,
@@ -473,6 +513,8 @@ class ModflowModelAggregate extends AggregateRoot
     {
         $this->modflowId = $event->modelId();
         $this->owner = $event->userId();
+        $this->name = $event->name();
+        $this->description = $event->description();
         $this->soilmodelId = $event->soilmodelId();
         $this->area = $event->area();
         $this->boundaries = $event->boundaries();

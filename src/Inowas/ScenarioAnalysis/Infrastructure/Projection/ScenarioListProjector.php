@@ -8,6 +8,7 @@ use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Schema\Schema;
 use Inowas\Common\Projection\AbstractDoctrineConnectionProjector;
 use Inowas\ModflowCalculation\Infrastructure\Projection\Calculation\CalculationListFinder;
+use Inowas\ModflowCalculation\Model\Event\CalculationWasCloned;
 use Inowas\ModflowCalculation\Model\Event\CalculationWasCreated;
 use Inowas\ModflowModel\Infrastructure\Projection\ModelList\ModelFinder;
 use Inowas\ScenarioAnalysis\Model\Event\ScenarioAnalysisWasCreated;
@@ -89,6 +90,14 @@ class ScenarioListProjector extends AbstractDoctrineConnectionProjector
     }
 
     public function onCalculationWasCreated(CalculationWasCreated $event): void
+    {
+        $this->connection->update(Table::SCENARIO_LIST,
+            array('calculation_id' => $event->calculationId()->toString()),
+            array('scenario_id' => $event->modflowmodelId()->toString())
+        );
+    }
+
+    public function onCalculationWasCloned(CalculationWasCloned $event): void
     {
         $this->connection->update(Table::SCENARIO_LIST,
             array('calculation_id' => $event->calculationId()->toString()),

@@ -127,9 +127,9 @@ class ModflowModelController extends InowasRestController
         $lengthUnit = LengthUnit::fromInt((int)$content['length_unit']);
 
         $commandBus = $this->get('prooph_service_bus.modflow_command_bus');
-        $commandBus->dispatch(CreateModflowModel::newWithIdAndUnits($userId, $modelId, $area, $gridSize, $timeUnit, $lengthUnit));
-        $commandBus->dispatch(ChangeModflowModelName::forModflowModel($userId, $modelId, $name));
-        $commandBus->dispatch(ChangeModflowModelDescription::forModflowModel($userId, $modelId, $description));
+        $commandBus->dispatch(CreateModflowModel::newWithIdNameDescriptionAndUnits(
+            $userId, $modelId, $name, $description, $area, $gridSize, $timeUnit, $lengthUnit
+        ));
 
         return new RedirectResponse(
             $this->generateUrl('get_modflow_model', array('id' => $modelId->toString())),

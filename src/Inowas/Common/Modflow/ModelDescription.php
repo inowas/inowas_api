@@ -7,20 +7,20 @@ namespace Inowas\Common\Modflow;
 class ModelDescription
 {
     /** @var string */
-    private $name;
+    private $description;
 
-    public static function fromString(string $name): ModelDescription
+    public static function fromString(string $description): ModelDescription
     {
-        return new self($name);
+        return new self($description);
     }
 
-    private function __construct(string $name)
+    private function __construct(string $description)
     {
-        $this->name = $name;
+        $this->description = $description;
     }
 
     public function toString(): string
     {
-        return $this->name;
+        return $this->description;
     }
 }

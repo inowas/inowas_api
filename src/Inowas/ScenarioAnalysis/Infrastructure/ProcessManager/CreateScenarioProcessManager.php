@@ -6,6 +6,8 @@ namespace Inowas\ScenarioAnalysis\Infrastructure\ProcessManager;
 
 use Inowas\Common\Id\ModflowId;
 use Inowas\ModflowModel\Infrastructure\Projection\ModelList\ModelFinder;
+use Inowas\ModflowModel\Model\Command\ChangeModflowModelDescription;
+use Inowas\ModflowModel\Model\Command\ChangeModflowModelName;
 use Inowas\ModflowModel\Model\Command\CloneModflowModel;
 use Inowas\ScenarioAnalysis\Model\Event\ScenarioWasCreated;
 use Prooph\ServiceBus\CommandBus;
@@ -36,5 +38,8 @@ final class CreateScenarioProcessManager
             $existingSoilmodelId,
             $newCalculationId
         ));
+
+        $this->commandBus->dispatch(ChangeModflowModelName::forModflowModel($event->userId(), $event->scenarioId(), $event->name()));
+        $this->commandBus->dispatch(ChangeModflowModelDescription::forModflowModel($event->userId(), $event->scenarioId(), $event->description()));
     }
 }

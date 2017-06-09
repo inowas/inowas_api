@@ -10,10 +10,13 @@ use Inowas\Common\Grid\GridSize;
 use Inowas\Common\Id\ModflowId;
 use Inowas\Common\Id\UserId;
 use Inowas\Common\Modflow\LengthUnit;
+use Inowas\Common\Modflow\ModelDescription;
+use Inowas\Common\Modflow\ModelName;
 use Inowas\Common\Modflow\TimeUnit;
 use Inowas\Common\Soilmodel\SoilmodelId;
 use Prooph\EventSourcing\AggregateChanged;
 
+/** @noinspection LongInheritanceChainInspection */
 class ModflowModelWasCloned extends AggregateChanged
 {
     /** @var ModflowId */
@@ -27,6 +30,12 @@ class ModflowModelWasCloned extends AggregateChanged
 
     /** @var UserId */
     private $userId;
+
+    /** @var ModelName */
+    private $name;
+
+    /** @var ModelDescription */
+    private $description;
 
     /** @var Area */
     private $area;
@@ -49,11 +58,29 @@ class ModflowModelWasCloned extends AggregateChanged
     /** @var  TimeUnit */
     private $timeUnit;
 
+    /** @noinspection MoreThanThreeArgumentsInspection
+     * @param ModflowId $baseModelId
+     * @param UserId $baseModelUserId
+     * @param ModflowId $modflowId
+     * @param UserId $userId
+     * @param ModelName $name
+     * @param ModelDescription $description
+     * @param SoilmodelId $soilmodelId
+     * @param Area $area
+     * @param array $boundaries
+     * @param GridSize $gridSize
+     * @param BoundingBox $boundingBox
+     * @param LengthUnit $lengthUnit
+     * @param TimeUnit $timeUnit
+     * @return ModflowModelWasCloned
+     */
     public static function fromModelAndUserWithParameters(
         ModflowId $baseModelId,
         UserId $baseModelUserId,
         ModflowId $modflowId,
         UserId $userId,
+        ModelName $name,
+        ModelDescription $description,
         SoilmodelId $soilmodelId,
         Area $area,
         array $boundaries,
@@ -67,6 +94,8 @@ class ModflowModelWasCloned extends AggregateChanged
             'basemodel_id' => $baseModelId->toString(),
             'basemodel_user_id' => $baseModelUserId->toString(),
             'user_id' => $userId->toString(),
+            'name' => $name->toString(),
+            'description' => $description->toString(),
             'area' => serialize($area),
             'soilmodel_id' => $soilmodelId->toString(),
             'grid_size' => $gridSize->toArray(),
@@ -80,6 +109,8 @@ class ModflowModelWasCloned extends AggregateChanged
         $event->baseModelUserId = $baseModelUserId;
         $event->modelId = $modflowId;
         $event->userId = $userId;
+        $event->name = $name;
+        $event->description = $description;
         $event->area = $area;
         $event->soilmodelId = $soilmodelId;
         $event->gridSize = $gridSize;
@@ -118,10 +149,28 @@ class ModflowModelWasCloned extends AggregateChanged
         return $this->modelId;
     }
 
+    public function name(): ModelName
+    {
+        if ($this->name === null) {
+            $this->name = ModelName::fromString($this->payload['name']);
+        }
+
+        return $this->name;
+    }
+
+    public function description(): ModelDescription
+    {
+        if ($this->description === null) {
+            $this->description = ModelDescription::fromString($this->payload['description']);
+        }
+
+        return $this->description;
+    }
+
     public function area(): Area
     {
         if ($this->area === null){
-            $this->area = unserialize($this->payload['area']);
+            $this->area = unserialize($this->payload['area'], [Area::class]);
         }
 
         return $this->area;

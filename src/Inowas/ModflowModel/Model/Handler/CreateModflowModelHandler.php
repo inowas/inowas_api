@@ -62,6 +62,8 @@ final class CreateModflowModelHandler
         $modflowModel = ModflowModelAggregate::create(
             $command->modflowModelId(),
             $command->userId(),
+            $command->name(),
+            $command->description(),
             $soilmodelId,
             $command->area(),
             $command->gridSize(),
