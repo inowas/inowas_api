@@ -422,7 +422,7 @@ class RioPrimero extends LoadScenarioBase
 
         $stressperiods = StressPeriods::create($start, $end, TimeUnit::fromInt(TimeUnit::DAYS));
         $stressperiods->addStressPeriod(StressPeriod::create(0, 1,1,1,true));
-        $stressperiods->addStressPeriod(StressPeriod::create(1, 365,365,1,false));
+        $stressperiods->addStressPeriod(StressPeriod::create(1, 365,12,1,false));
         $commandBus->dispatch(UpdateCalculationStressperiods::byUserWithCalculationId($ownerId, $calculationId, $stressperiods));
         $commandBus->dispatch(CalculateModflowModelCalculation::byUserWithCalculationId($ownerId, $calculationId));
 
