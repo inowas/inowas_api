@@ -1,26 +1,26 @@
 <?php
 
-namespace Inowas\Project\Model;
+namespace Inowas\Tool\Model;
 
-final class ApplicationType
+final class ToolType
 {
 
-    const MODEL_SETUP = 'A03';
-    const SCENARIOANALYSIS = 'A07';
+    const MODEL_SETUP = 'T03';
+    const SCENARIOANALYSIS = 'T07';
 
     public static $availableTypes = array(
-        'A03', 'A07'
+        'T03', 'T07'
     );
 
     /** @var  string */
     private $type;
 
-    public static function isValid(ApplicationType $type): bool
+    public static function isValid($type): bool
     {
-        return in_array($type->toString(), self::$availableTypes, true);
+        return in_array($type, self::$availableTypes, true);
     }
 
-    public static function fromString(string $type): ApplicationType
+    public static function fromString(string $type): ToolType
     {
         return new self($type);
     }
@@ -37,7 +37,7 @@ final class ApplicationType
 
     public function sameAs($value): bool
     {
-        if (! $value instanceof ApplicationType){
+        if (! $value instanceof ToolType){
             return false;
         }
 

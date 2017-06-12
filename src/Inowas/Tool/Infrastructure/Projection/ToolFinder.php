@@ -2,14 +2,14 @@
 
 declare(strict_types=1);
 
-namespace Inowas\Project\Infrastructure\Projection;
+namespace Inowas\Tool\Infrastructure\Projection;
 
 use Doctrine\DBAL\Connection;
 use Inowas\Common\Id\UserId;
-use Inowas\Project\Model\ApplicationType;
-use Inowas\Project\Model\ProjectId;
+use Inowas\Tool\Model\ToolType;
+use Inowas\Tool\Model\ToolId;
 
-class ProjectsFinder
+class ToolFinder
 {
     /** @var Connection $connection */
     protected $connection;
@@ -22,7 +22,21 @@ class ProjectsFinder
     public function findPublic(): array
     {
         $results = $this->connection->fetchAll(
-            sprintf('SELECT id, name, description, project, application, created_at, user_id, user_name, created_at, public FROM %s WHERE public = true', Table::PROJECT_LIST)
+            sprintf('SELECT id, name, description, project, application, tool, created_at, user_id, user_name, created_at, public FROM %s WHERE public = true', Table::PROJECT_LIST)
+        );
+
+        if ($results === false) {
+            $results = [];
+        }
+
+        return $results;
+    }
+
+    public function findPublicByType(ToolType $toolType): array
+    {
+        $results = $this->connection->fetchAll(
+            sprintf('SELECT id, name, description, project, application, tool, created_at, user_id, user_name, created_at, public FROM %s WHERE public = true AND tool = :tool', Table::PROJECT_LIST),
+            ['tool' => $toolType->toString()]
         );
 
         if ($results === false) {
@@ -35,7 +49,7 @@ class ProjectsFinder
     public function findByUserId(UserId $userId): array
     {
         $results = $this->connection->fetchAll(
-            sprintf('SELECT id, name, description, project, application, created_at, user_id, user_name, created_at, public FROM %s WHERE user_id = :user_id', Table::PROJECT_LIST),
+            sprintf('SELECT id, name, description, project, application, tool, created_at, user_id, user_name, created_at, public FROM %s WHERE user_id = :user_id', Table::PROJECT_LIST),
             ['user_id' => $userId->toString()]
         );
 
@@ -46,10 +60,10 @@ class ProjectsFinder
         return $results;
     }
 
-    public function findById(ProjectId $id): ?array
+    public function findById(ToolId $id): ?array
     {
         $result = $this->connection->fetchAssoc(
-            sprintf('SELECT id, name, description, project, application, created_at, user_id, user_name, created_at, public FROM %s WHERE id = :id', Table::PROJECT_LIST),
+            sprintf('SELECT id, name, description, project, application, tool, created_at, user_id, user_name, created_at, public FROM %s WHERE id = :id', Table::PROJECT_LIST),
             ['id' => $id->toString()]
         );
 
@@ -60,10 +74,24 @@ class ProjectsFinder
         return $result;
     }
 
-    public function getApplicationTypeById(ProjectId $id): ?ApplicationType
+    public function findByUserIdAndType(UserId $userId, ToolType $toolType): array
+    {
+        $results = $this->connection->fetchAll(
+            sprintf('SELECT id, name, description, project, application, tool, created_at, user_id, user_name, created_at, public FROM %s WHERE user_id = :user_id AND tool = :tool', Table::PROJECT_LIST),
+            ['user_id' => $userId->toString(), 'tool' => $toolType->toString()]
+        );
+
+        if ($results === false) {
+            $results = [];
+        }
+
+        return $results;
+    }
+
+    public function getToolTypeById(ToolId $id): ?ToolType
     {
         $result = $this->connection->fetchAssoc(
-            sprintf('SELECT application FROM %s WHERE id = :id', Table::PROJECT_LIST),
+            sprintf('SELECT tool FROM %s WHERE id = :id', Table::PROJECT_LIST),
             ['id' => $id->toString()]
         );
 
@@ -71,10 +99,10 @@ class ProjectsFinder
             return null;
         }
 
-        return ApplicationType::fromString($result['application']);
+        return ToolType::fromString($result['application']);
     }
 
-    public function isPublic(ProjectId $projectId): bool
+    public function isPublic(ToolId $projectId): bool
     {
         $result = $this->connection->fetchAssoc(
             sprintf('SELECT public FROM %s WHERE id = :id', Table::PROJECT_LIST),
@@ -88,7 +116,7 @@ class ProjectsFinder
         return $result['public'];
     }
 
-    public function isProjectOwner(ProjectId $projectId, UserId $userId): bool
+    public function isToolOwner(ToolId $projectId, UserId $userId): bool
     {
         $result = $this->connection->fetchAssoc(
             sprintf('SELECT count(user_id) FROM %s WHERE id = :id AND user_id = :user_id', Table::PROJECT_LIST),
@@ -98,7 +126,7 @@ class ProjectsFinder
         return $result['count'] > 0;
     }
 
-    public function canBeClonedByUser(ProjectId $projectId, UserId $userId): bool
+    public function canBeClonedByUser(ToolId $projectId, UserId $userId): bool
     {
         $result = $this->connection->fetchAssoc(
             sprintf('SELECT count(user_id) FROM %s WHERE (id = :id AND user_id = :user_id) OR (id = :id AND public = :public)', Table::PROJECT_LIST),

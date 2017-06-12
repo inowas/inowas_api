@@ -19,7 +19,7 @@ tags:
     description: "Everything to calculate a ModflowModel"
   - name: "modflowmodel"
     description: "Everything to build a ModflowModel (T03)"
-  - name: "project"
+  - name: "tool"
     description: "Project-specific"
   - name: "soilmodel"
     description: "Everything to build a Soilmodel (T03)"
@@ -107,13 +107,13 @@ paths:
       security:
         - api_key: []
 
-  /projects:
+  /tools:
     get:
       tags:
-        - "project"
-      summary: "Returns the list of all projects from the user"
+        - "tool"
+      summary: "Returns the list of all tools from the user"
       description: ''
-      operationId: "myProjects"
+      operationId: "myTools"
       produces:
         - "application/json"
       responses:
@@ -122,17 +122,17 @@ paths:
           schema:
             type: "array"
             items:
-              $ref: '#/definitions/ProjectListItem'
+              $ref: '#/definitions/ToolListItem'
       security:
         - api_key: []
-
-  /projects/public:
+        
+  /tools/{type}:
     get:
       tags:
-        - "project"
-      summary: "Returns the list of all public projects"
+        - "tool"
+      summary: "Returns the list of all tools by type from the user"
       description: ''
-      operationId: "publicProjects"
+      operationId: "myToolsByType"
       produces:
         - "application/json"
       responses:
@@ -141,26 +141,45 @@ paths:
           schema:
             type: "array"
             items:
-              $ref: '#/definitions/ProjectListItem'
+              $ref: '#/definitions/ToolListItem'
+      security:
+        - api_key: []        
+
+  /tools/{type}/public:
+    get:
+      tags:
+        - "tool"
+      summary: "Returns the list of all public tools by type"
+      description: ''
+      operationId: "publicToolsByType"
+      produces:
+        - "application/json"
+      responses:
+        '200':
+          description: "successful operation"
+          schema:
+            type: "array"
+            items:
+              $ref: '#/definitions/ToolListItem'
       security:
         - api_key: []
 
-  /projects/{id}/clone:
+  /tools/{id}/clone:
     post:
       tags:
-        - "project"
-      summary: "Makes a copy of a project with the specified id and the credentials of the current user."
-      description: "Makes a copy of a project with the specified id and the credentials of the current user."
+        - "tool"
+      summary: "Makes a copy of a tool with the specified id and the credentials of the current user."
+      description: "Makes a copy of a tool with the specified id and the credentials of the current user."
       operationId: "cloneProjectWithNewUserCredentialsByProjectId"
       parameters:
         - name: "id"
           in: "path"
-          description: "Id of the project ro clone"
+          description: "Id of the tool ro clone"
           required: true
           type: "string"
       responses:
         '302':
-          description: "Redirect response to /projects"
+          description: "Redirect response to /tools"
           headers:
             Location:
               type: "string"
@@ -3606,8 +3625,8 @@ definitions:
         $ref: '#/definitions/ObservationPointValuesDescription'
       values:
         $ref: '#/definitions/ObservationPointValues'
-  ProjectListItem:
-      title: "ProjectListItem"
+  ToolListItem:
+      title: "ToolListItem"
       type: "object"
       properties:
         id:
@@ -3625,6 +3644,9 @@ definitions:
         application:
           type: "string"
           example: "A03"
+        tool:
+          type: "string"
+          example: "T07"
         user_id:
           type: "string"
           example: "c72b3f0b-80cb-46d0-817a-d62a84b0cfb1"

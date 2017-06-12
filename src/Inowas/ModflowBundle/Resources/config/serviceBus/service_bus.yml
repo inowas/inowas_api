@@ -184,11 +184,11 @@ prooph_service_bus:
 
                     # ScenarioAnalysis
                     'Inowas\ScenarioAnalysis\Model\Event\ScenarioAnalysisDescriptionWasChanged':
-                        - 'inowas.project.projects_projector'
+                        - 'inowas.tool.tools_projector'
                         - 'inowas.scenarioanalysis.scenarioanalysis_list_projector'
 
                     'Inowas\ScenarioAnalysis\Model\Event\ScenarioAnalysisNameWasChanged':
-                        - 'inowas.project.projects_projector'
+                        - 'inowas.tool.tools_projector'
                         - 'inowas.scenarioanalysis.scenarioanalysis_list_projector'
 
                     'Inowas\ScenarioAnalysis\Model\Event\ScenarioWasCloned':
@@ -201,13 +201,13 @@ prooph_service_bus:
                         - 'inowas.scenarioanalysis.scenario_list_projector'
 
                     'Inowas\ScenarioAnalysis\Model\Event\ScenarioAnalysisWasCloned':
-                        - 'inowas.project.projects_projector'
+                        - 'inowas.tool.tools_projector'
                         - 'inowas.scenarioanalysis.clone_scenario_analysis_process_manager'
                         - 'inowas.scenarioanalysis.scenario_list_projector'
                         - 'inowas.scenarioanalysis.scenarioanalysis_list_projector'
 
                     'Inowas\ScenarioAnalysis\Model\Event\ScenarioAnalysisWasCreated':
-                        - 'inowas.project.projects_projector'
+                        - 'inowas.tool.tools_projector'
                         - 'inowas.scenarioanalysis.scenarioanalysis_list_projector'
                         - 'inowas.scenarioanalysis.scenario_list_projector'
 

@@ -20,7 +20,7 @@ rest_modflowmodel_boundary_api:
 
 rest_project_api:
     type: rest
-    resource: '@InowasModflowBundle/Controller/ProjectController.php'
+    resource: '@InowasModflowBundle/Controller/ToolController.php'
     prefix:    /v2
 
 rest_scenario_analysis_api:

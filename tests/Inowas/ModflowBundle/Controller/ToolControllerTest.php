@@ -15,7 +15,7 @@ use Inowas\ScenarioAnalysis\Model\ScenarioAnalysisId;
 use Inowas\ScenarioAnalysis\Model\ScenarioAnalysisName;
 use Tests\Inowas\ModflowBundle\EventSourcingBaseTest;
 
-class ProjectControllerTest extends EventSourcingBaseTest
+class ToolControllerTest extends EventSourcingBaseTest
 {
     /** @var UserManager */
     protected $userManager;
@@ -69,7 +69,7 @@ class ProjectControllerTest extends EventSourcingBaseTest
     /**
      * @test
      */
-    public function it_returns_the_project_list_from_the_user(): void
+    public function it_returns_the_overall_tool_list_from_the_user(): void
     {
         $userId = UserId::fromString($this->user->getId()->toString());
         $apiKey = $this->user->getApiKey();
@@ -95,7 +95,7 @@ class ProjectControllerTest extends EventSourcingBaseTest
         $client = static::createClient();
         $client->request(
             'GET',
-            '/v2/projects',
+            '/v2/tools',
             array(),
             array(),
             array('HTTP_X-AUTH-TOKEN' => $apiKey)
@@ -116,6 +116,7 @@ class ProjectControllerTest extends EventSourcingBaseTest
         $this->assertEquals('TestDescription', $saDetails['description']);
         $this->assertTrue(array_key_exists('project', $saDetails));
         $this->assertTrue(array_key_exists('application', $saDetails));
+        $this->assertTrue(array_key_exists('tool', $saDetails));
         $this->assertTrue(array_key_exists('user_id', $saDetails));
         $this->assertEquals($userId->toString(), $saDetails['user_id']);
         $this->assertTrue(array_key_exists('user_name', $saDetails));
@@ -153,7 +154,7 @@ class ProjectControllerTest extends EventSourcingBaseTest
         $client = static::createClient();
         $client->request(
             'GET',
-            '/v2/projects/public',
+            '/v2/tools/T07/public',
             array(),
             array(),
             array('HTTP_X-AUTH-TOKEN' => $apiKey)
@@ -174,6 +175,7 @@ class ProjectControllerTest extends EventSourcingBaseTest
         $this->assertEquals('TestDescription', $saDetails['description']);
         $this->assertTrue(array_key_exists('project', $saDetails));
         $this->assertTrue(array_key_exists('application', $saDetails));
+        $this->assertTrue(array_key_exists('tool', $saDetails));
         $this->assertTrue(array_key_exists('user_id', $saDetails));
         $this->assertEquals($userId->toString(), $saDetails['user_id']);
         $this->assertTrue(array_key_exists('user_name', $saDetails));
@@ -208,7 +210,7 @@ class ProjectControllerTest extends EventSourcingBaseTest
         $client = static::createClient();
         $client->request(
             'POST',
-            sprintf('/v2/projects/%s/clone', $scenarioAnalysisId->toString()),
+            sprintf('/v2/tools/%s/clone', $scenarioAnalysisId->toString()),
             array(),
             array(),
             array('HTTP_X-AUTH-TOKEN' => $this->anotherUser->getApiKey())
