@@ -117,7 +117,7 @@ class ScenarioAnalysisController extends InowasRestController
         $this->get('prooph_service_bus.modflow_command_bus')->dispatch(CloneScenarioAnalysis::byUserWithId($userId, $scenarioAnalysisId));
 
         return new RedirectResponse(
-            $this->generateUrl('get_my_projects'),
+            $this->generateUrl('get_my_tools'),
             302
         );
     }
@@ -149,7 +149,7 @@ class ScenarioAnalysisController extends InowasRestController
         $this->get('prooph_service_bus.modflow_command_bus')->dispatch(CloneScenarioAnalysis::byUserWithId($userId, $scenarioAnalysisId));
 
         return new RedirectResponse(
-            $this->generateUrl('get_my_projects'),
+            $this->generateUrl('get_my_tools'),
             302
         );
     }

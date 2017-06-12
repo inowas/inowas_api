@@ -154,7 +154,7 @@ class ToolController extends InowasRestController
         }
 
         return new RedirectResponse(
-            $this->generateUrl('get_my_projects'),
+            $this->generateUrl('get_my_tools'),
             302
         );
     }
