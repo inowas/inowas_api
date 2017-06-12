@@ -36,7 +36,7 @@ final class CloneScenarioAnalysisHandler
         $numberOfScenarios = count($scenarioAnalysis->scenarios());
 
         for ($i = 0; $i < $numberOfScenarios; $i++) {
-            $clonedScenarios[] = ModflowId::generate();
+            $clonedScenarios[] = ModflowId::generate()->toString();
         }
 
         $scenarioAnalysis = ScenarioAnalysisAggregate::cloneWithIdUserIdAndAggregate(

@@ -13,6 +13,7 @@ use Inowas\ModflowCalculation\Model\Event\CalculationWasCreated;
 use Inowas\ModflowModel\Infrastructure\Projection\ModelList\ModelFinder;
 use Inowas\ScenarioAnalysis\Model\Event\ScenarioAnalysisWasCloned;
 use Inowas\ScenarioAnalysis\Model\Event\ScenarioAnalysisWasCreated;
+use Inowas\ScenarioAnalysis\Model\Event\ScenarioWasCloned;
 use Inowas\ScenarioAnalysis\Model\Event\ScenarioWasCreated;
 use Inowas\ScenarioAnalysis\Model\Event\ScenarioWasRemoved;
 
@@ -70,11 +71,67 @@ class ScenarioListProjector extends AbstractDoctrineConnectionProjector
 
     public function onScenarioAnalysisWasCloned(ScenarioAnalysisWasCloned $event): void
     {
-        // TODO
-        // COPY CONTENT OF ALL LINES
-        // What to do with the calculation id?
-        // Should be left empty
 
+        $rows = $this->connection->fetchAll(
+            sprintf('SELECT * FROM %s WHERE scenario_analysis_id=:scenario_analysis_id AND is_base_model = TRUE', Table::SCENARIO_LIST),
+            ['scenario_analysis_id' => $event->fromScenarioAnalysisId()->toString()]
+        );
+
+        if (false === $rows){
+            return;
+        }
+
+        foreach ($rows as $row){
+            $this->connection->insert(Table::SCENARIO_LIST, array(
+                'scenario_id' => $event->baseModelId()->toString(),
+                'base_model_id' => $event->baseModelId()->toString(),
+                'scenario_analysis_id' => $event->scenarioAnalysisId()->toString(),
+                'user_id' => $event->userId()->toString(),
+                'name' => $row['name'],
+                'description' => $row['description'],
+                'is_base_model' => 1,
+                'is_scenario' => 0,
+                'created_at' => date_format($event->createdAt(), DATE_ATOM),
+            ));
+        }
+
+        $rows = $this->connection->fetchAll(
+            sprintf('SELECT * FROM %s WHERE scenario_analysis_id=:scenario_analysis_id AND is_scenario = TRUE', Table::SCENARIO_LIST),
+            ['scenario_analysis_id' => $event->fromScenarioAnalysisId()->toString()]
+        );
+
+        if (false === $rows){
+            return;
+        }
+
+        foreach ($rows as $key => $row){
+            $this->connection->insert(Table::SCENARIO_LIST, array(
+                'scenario_id' => $event->scenarios()[$key],
+                'base_model_id' => $event->baseModelId()->toString(),
+                'scenario_analysis_id' => $event->scenarioAnalysisId()->toString(),
+                'user_id' => $event->userId()->toString(),
+                'name' => $row['name'],
+                'description' => $row['description'],
+                'is_base_model' => 0,
+                'is_scenario' => 1,
+                'created_at' => date_format($event->createdAt(), DATE_ATOM),
+            ));
+        }
+    }
+
+    public function onScenarioWasCloned(ScenarioWasCloned $event): void
+    {
+        $this->connection->insert(Table::SCENARIO_LIST, array(
+            'scenario_id' => $event->scenarioId()->toString(),
+            'base_model_id' => $event->baseModelId()->toString(),
+            'scenario_analysis_id' => $event->scenarioAnalysisId()->toString(),
+            'user_id' => $event->userId()->toString(),
+            'name' => $event->name()->toString(),
+            'description' => $event->description()->toString(),
+            'is_base_model' => 0,
+            'is_scenario' => 1,
+            'created_at' => date_format($event->createdAt(), DATE_ATOM),
+        ));
     }
 
     public function onScenarioWasCreated(ScenarioWasCreated $event): void

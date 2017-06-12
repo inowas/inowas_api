@@ -42,9 +42,10 @@ final class CloneScenarioAnalysisProcessManager
         $this->commandBus->dispatch(CloneModflowModel::byIdAndCloneSoilmodel($basemodelId, $userId, $newModelId, $newSoilModelId, $newCalculationId));
 
         // -> CLONE SCENARIOS WITH NEW IDS AND USER WITHOUT SOILMODEL
-        foreach ($originalScenarioAnalysis->scenarios() as $scenario){
+        $newScenarioIds = $event->scenarios();
+        foreach ($originalScenarioAnalysis->scenarios() as $key => $scenario){
             $scenarioId = ModflowId::fromString($scenario);
-            $newScenarioId = ModflowId::generate();
+            $newScenarioId = ModflowId::fromString($newScenarioIds[$key]);
             $newCalculationId = ModflowId::generate();
             $this->commandBus->dispatch(CloneModflowModel::byIdWithExistingSoilmodel($scenarioId, $userId, $newScenarioId, $newSoilModelId, $newCalculationId));
         }
