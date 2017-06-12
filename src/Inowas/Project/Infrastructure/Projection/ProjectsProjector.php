@@ -12,6 +12,7 @@ use Inowas\Common\Id\UserId;
 use Inowas\Common\Projection\AbstractDoctrineConnectionProjector;
 use Inowas\ScenarioAnalysis\Model\Event\ScenarioAnalysisDescriptionWasChanged;
 use Inowas\ScenarioAnalysis\Model\Event\ScenarioAnalysisNameWasChanged;
+use Inowas\ScenarioAnalysis\Model\Event\ScenarioAnalysisWasCloned;
 use Inowas\ScenarioAnalysis\Model\Event\ScenarioAnalysisWasCreated;
 
 class ProjectsProjector extends AbstractDoctrineConnectionProjector
@@ -42,6 +43,21 @@ class ProjectsProjector extends AbstractDoctrineConnectionProjector
     }
 
     public function onScenarioAnalysisWasCreated(ScenarioAnalysisWasCreated $event): void
+    {
+        $this->connection->insert(Table::PROJECT_LIST, array(
+            'id' => $event->scenarioAnalysisId()->toString(),
+            'name' => $event->name()->toString(),
+            'description' => $event->description()->toString(),
+            'project' => '',
+            'application' => 'A07',
+            'user_id' => $event->userId()->toString(),
+            'user_name' => $this->getUserNameByUserId($event->userId()),
+            'created_at' => date_format($event->createdAt(), DATE_ATOM),
+            'public' => true
+        ));
+    }
+
+    public function onScenarioAnalysisWasCloned(ScenarioAnalysisWasCloned $event): void
     {
         $this->connection->insert(Table::PROJECT_LIST, array(
             'id' => $event->scenarioAnalysisId()->toString(),

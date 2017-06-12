@@ -22,7 +22,7 @@ class AMQPModflowCalculationReadData implements ModflowCalculationReadData
     {
         $this->routingKey = $routingKey;
         $this->channel = $connection->channel();
-        list($this->callback_queue, ,) = $this->channel->queue_declare("", false, false, true, false);
+        list($this->callback_queue, ,) = $this->channel->queue_declare('', false, false, true, false);
         $this->channel->basic_consume(
             $this->callback_queue, '', false, false, false, false,
             array($this, 'on_response'));

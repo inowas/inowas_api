@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Inowas\ModflowModel\Model\Handler;
 
 use Inowas\ModflowCalculation\Infrastructure\Projection\Calculation\CalculationListFinder;
+use Inowas\ModflowCalculation\Model\Command\CalculateModflowModelCalculation;
 use Inowas\ModflowCalculation\Model\Command\CloneModflowModelCalculation;
 use Inowas\ModflowModel\Model\Command\CloneModflowModel;
 use Inowas\ModflowModel\Model\Exception\ModflowModelNotFoundException;
@@ -45,20 +46,21 @@ final class CloneModflowModelHandler
         $oldCalculationId = $this->calculationFinder->findLastCalculationByModelId($modflowModel->modflowModelId());
 
         $this->commandBus->dispatch(CloneModflowModelCalculation::byUserWithModelId($command->userId(), $oldCalculationId, $command->newCalculationId(), $command->baseModelId(), $command->newModelId()));
+        $this->commandBus->dispatch(CalculateModflowModelCalculation::byUserWithCalculationId($command->userId(), $command->newCalculationId()));
 
         // Clone the soilmodel and model if set
         if ($command->cloneSoilmodel()) {
-            $this->commandBus->dispatch(CloneSoilmodel::byUserWithModelId($command->soilModelId(), $command->userId(), $modflowModel->soilmodelId()));
+            $this->commandBus->dispatch(CloneSoilmodel::byUserWithModelId($command->soilmodelId(), $command->userId(), $modflowModel->soilmodelId()));
 
             /** @var ModflowModelAggregate $modflowModel */
-            $newModel = ModflowModelAggregate::cloneWithIdUserSoilmodelIdAndAggregate($command->newModelId(), $command->userId(), $command->soilModelId(), $modflowModel);
+            $newModel = ModflowModelAggregate::cloneWithIdUserSoilmodelIdAndAggregate($command->newModelId(), $command->userId(), $command->soilmodelId(), $modflowModel);
             $this->modelList->add($newModel);
             return;
         }
 
         // Clone with old soilmodel-id if new soilmodel-id not set.
         /** @var ModflowModelAggregate $modflowModel */
-        $newModel = ModflowModelAggregate::cloneWithIdUserSoilmodelIdAndAggregate($command->newModelId(), $command->userId(), $modflowModel->soilmodelId(), $modflowModel);
+        $newModel = ModflowModelAggregate::cloneWithIdUserSoilmodelIdAndAggregate($command->newModelId(), $command->userId(), $command->soilmodelId(), $modflowModel);
         $this->modelList->add($newModel);
     }
 }

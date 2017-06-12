@@ -170,6 +170,7 @@ class ScenarioAnalysisControllerTest extends EventSourcingBaseTest
 
     /**
      * @test
+     * @group messaging-integration-tests
      */
     public function it_adds_multiple_scenarios_to_scenario_analysis_by_id(): void
     {
@@ -256,6 +257,7 @@ class ScenarioAnalysisControllerTest extends EventSourcingBaseTest
 
     /**
      * @test
+     * @group messaging-integration-tests
      */
     public function it_clones_a_scenario_analysis(): void
     {
@@ -280,6 +282,16 @@ class ScenarioAnalysisControllerTest extends EventSourcingBaseTest
             $modelId,
             ScenarioAnalysisName::fromString('TestName'),
             ScenarioAnalysisDescription::fromString('TestDescription')
+        ));
+
+        $scenarioId = ModflowId::generate();
+        $this->commandBus->dispatch(CreateScenario::byUserWithBaseModelAndScenarioId(
+            $scenarioAnalysisId,
+            $userId,
+            $modelId,
+            $scenarioId,
+            ModelName::fromString('Scenario1Name'),
+            ModelDescription::fromString('Scenario1Description')
         ));
 
         $client = static::createClient();

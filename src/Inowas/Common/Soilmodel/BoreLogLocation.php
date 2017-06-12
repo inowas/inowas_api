@@ -4,7 +4,8 @@ declare(strict_types=1);
 
 namespace Inowas\Common\Soilmodel;
 
-use CrEOF\Spatial\PHP\Types\Geometry\Point;
+
+use Inowas\Common\Geometry\Point;
 
 class BoreLogLocation
 {
@@ -35,7 +36,6 @@ class BoreLogLocation
     {
         // Expecting array[x,y] for point-data
         $point = new Point($data[0], $data[1]);
-        $self = new self($point);
-        return $self;
+        return new self($point);
     }
 }

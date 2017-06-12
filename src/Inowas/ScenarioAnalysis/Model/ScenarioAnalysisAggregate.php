@@ -90,6 +90,7 @@ class ScenarioAnalysisAggregate extends AggregateRoot
             $self->description,
             $scenarios
         ));
+
         return $self;
     }
 

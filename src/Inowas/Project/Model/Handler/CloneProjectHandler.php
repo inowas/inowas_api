@@ -21,7 +21,7 @@ final class CloneProjectHandler
 
     public function __invoke(CloneProject $command)
     {
-        $project = $this->projectsFinder->findById($command->projectId()->toString());
+        $project = $this->projectsFinder->findById($command->projectId());
 
         if (null === $project){
             throw NotFoundException::withMessage(sprintf(

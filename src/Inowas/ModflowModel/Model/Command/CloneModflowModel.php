@@ -69,7 +69,7 @@ class CloneModflowModel extends Command implements PayloadConstructable
         return ModflowId::fromString($this->payload['new_model_id']);
     }
 
-    public function soilModelId(): SoilmodelId
+    public function soilmodelId(): SoilmodelId
     {
         if ($this->cloneSoilmodel()) {
             return SoilmodelId::fromString($this->payload['new_soilmodel_id']);

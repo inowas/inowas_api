@@ -821,6 +821,9 @@ class ModflowModelEventSourcingTest extends EventSourcingBaseTest
         $this->assertEquals('mfnwt', $mf->version);
     }
 
+    /**
+     * @group messaging-integration-tests
+     */
     public function test_create_clone_modflow_model(): void
     {
         $modelId = ModflowId::generate();
@@ -904,6 +907,9 @@ class ModflowModelEventSourcingTest extends EventSourcingBaseTest
         $this->assertEquals(json_decode('{"x_min":-63.65,"x_max":-63.58,"y_min":-31.36,"y_max":-31.31,"srid":4326,"d_x":6654.011417877915,"d_y":5565.974539664423}', true), $scenarioAnalysis['bounding_box']);
     }
 
+    /**
+     * @group messaging-integration-tests
+     */
     public function test_add_well_to_scenario_from_basemodel_with_all_other_boundary_types(): void
     {
         $ownerId = UserId::generate();
@@ -932,6 +938,9 @@ class ModflowModelEventSourcingTest extends EventSourcingBaseTest
         $this->assertCount(5, $scenarioBoundaries);
     }
 
+    /**
+     * @group messaging-integration-tests
+     */
     public function test_move_well_of_scenario_from_basemodel_with_all_boundary_types(): void
     {
         $ownerId = UserId::generate();
@@ -995,6 +1004,9 @@ class ModflowModelEventSourcingTest extends EventSourcingBaseTest
         $this->assertEquals([[0,12,17]], $activeCells->cells());
     }
 
+    /**
+     * @group messaging-integration-tests
+     */
     public function test_clone_modflowmodel_clones_soilmodel_and_calculation(): void
     {
         $ownerId = UserId::generate();
@@ -1023,6 +1035,9 @@ class ModflowModelEventSourcingTest extends EventSourcingBaseTest
         $this->assertNotNull($this->container->get('inowas.soilmodel.layer_values_finder')->getNlay($newSoilmodelId));
     }
 
+    /**
+     * @group messaging-integration-tests
+     */
     public function test_clone_modflowmodel_without_soilmodel_option(): void
     {
         $ownerId = UserId::generate();

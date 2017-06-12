@@ -24,6 +24,7 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 
+/** @noinspection LongInheritanceChainInspection */
 class ModflowCalculationController extends InowasRestController
 {
     /**

@@ -11,6 +11,7 @@ use Inowas\ModflowCalculation\Infrastructure\Projection\Calculation\CalculationL
 use Inowas\ModflowCalculation\Model\Event\CalculationWasCloned;
 use Inowas\ModflowCalculation\Model\Event\CalculationWasCreated;
 use Inowas\ModflowModel\Infrastructure\Projection\ModelList\ModelFinder;
+use Inowas\ScenarioAnalysis\Model\Event\ScenarioAnalysisWasCloned;
 use Inowas\ScenarioAnalysis\Model\Event\ScenarioAnalysisWasCreated;
 use Inowas\ScenarioAnalysis\Model\Event\ScenarioWasCreated;
 use Inowas\ScenarioAnalysis\Model\Event\ScenarioWasRemoved;
@@ -65,6 +66,15 @@ class ScenarioListProjector extends AbstractDoctrineConnectionProjector
             'is_scenario' => 0,
             'created_at' => date_format($event->createdAt(), DATE_ATOM),
         ));
+    }
+
+    public function onScenarioAnalysisWasCloned(ScenarioAnalysisWasCloned $event): void
+    {
+        // TODO
+        // COPY CONTENT OF ALL LINES
+        // What to do with the calculation id?
+        // Should be left empty
+
     }
 
     public function onScenarioWasCreated(ScenarioWasCreated $event): void

@@ -55,7 +55,7 @@ class ScenarioAnalysisWasCloned extends AggregateChanged
             'basemodel_id' => $baseModelId->toString(),
             'name' => $name->toString(),
             'description' => $description->toString(),
-            'scenarios' => $scenarios,
+            'scenarios' => json_encode($scenarios),
         ]);
 
         $event->fromScenarioAnalysisId = $fromId;
@@ -126,7 +126,7 @@ class ScenarioAnalysisWasCloned extends AggregateChanged
     public function scenarios(): array
     {
         if ($this->scenarios === null){
-            $this->scenarios = $this->payload['scenarios'];
+            $this->scenarios = json_decode($this->payload['scenarios']);
         }
 
         return $this->scenarios;
