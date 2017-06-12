@@ -135,6 +135,12 @@ paths:
       operationId: "myToolsByType"
       produces:
         - "application/json"
+      parameters:
+        - name: "type"
+          in: "path"
+          description: "Tool Type to show"
+          required: true
+          type: "string"
       responses:
         '200':
           description: "successful operation"
@@ -143,7 +149,7 @@ paths:
             items:
               $ref: '#/definitions/ToolListItem'
       security:
-        - api_key: []        
+        - api_key: []
 
   /tools/{type}/public:
     get:
@@ -154,6 +160,12 @@ paths:
       operationId: "publicToolsByType"
       produces:
         - "application/json"
+      parameters:
+        - name: "type"
+          in: "path"
+          description: "Tool Type to show"
+          required: true
+          type: "string"
       responses:
         '200':
           description: "successful operation"
