@@ -8,6 +8,7 @@ use Inowas\Common\Boundaries\ObservationPoint;
 use Inowas\Common\DateTime\DateTime;
 use Inowas\Common\Geometry\Point;
 use Inowas\Common\Geometry\Srid;
+use Inowas\Common\Grid\ActiveCells;
 use Inowas\Common\Grid\AffectedLayers;
 use Inowas\Common\Grid\BoundingBox;
 use Inowas\Common\Geometry\Geometry;
@@ -867,8 +868,8 @@ class ModflowModelEventSourcingTest extends EventSourcingBaseTest
         $scenarioAnalysis = $this->container->get('inowas.scenarioanalysis.scenarioanalysis_finder')->findScenarioAnalysisDetailsById($scenarioAnalysisId);
         $this->assertEquals($scenarioAnalysisId->toString(), $scenarioAnalysis['id']);
         $this->assertEquals($ownerId->toString(), $scenarioAnalysis['user_id']);
-        $this->assertEquals("TestName", $scenarioAnalysis['name']);
-        $this->assertEquals("TestDescription", $scenarioAnalysis['description']);
+        $this->assertEquals('TestName', $scenarioAnalysis['name']);
+        $this->assertEquals('TestDescription', $scenarioAnalysis['description']);
         $this->assertEquals(json_decode('{"type":"Polygon","coordinates":[[[-63.687336,-31.313615],[-63.687336,-31.367449],[-63.56926,-31.367449],[-63.56926,-31.313615],[-63.687336,-31.313615]]]}', true), $scenarioAnalysis['geometry']);
         $this->assertEquals(json_decode('{"n_x":75,"n_y":40}', true), $scenarioAnalysis['grid_size']);
         $this->assertEquals(json_decode('{"x_min":-63.687336,"x_max":-63.56926,"y_min":-31.367449,"y_max":-31.313615,"srid":4326,"d_x":11223.096698287049,"d_y":5992.773467366025}', true), $scenarioAnalysis['bounding_box']);
@@ -900,8 +901,8 @@ class ModflowModelEventSourcingTest extends EventSourcingBaseTest
         $scenarioAnalysis = $this->container->get('inowas.scenarioanalysis.scenarioanalysis_finder')->findScenarioAnalysisDetailsById($scenarioAnalysisId);
         $this->assertEquals($scenarioAnalysisId->toString(), $scenarioAnalysis['id']);
         $this->assertEquals($ownerId->toString(), $scenarioAnalysis['user_id']);
-        $this->assertEquals("TestName", $scenarioAnalysis['name']);
-        $this->assertEquals("TestDescription", $scenarioAnalysis['description']);
+        $this->assertEquals('TestName', $scenarioAnalysis['name']);
+        $this->assertEquals('TestDescription', $scenarioAnalysis['description']);
         $this->assertEquals(json_decode('{"type":"Polygon","coordinates":[[[-63.65,-31.31],[-63.65,-31.36],[-63.58,-31.36],[-63.58,-31.31],[-63.65,-31.31]]]}', true), $scenarioAnalysis['geometry']);
         $this->assertEquals(json_decode('{"n_x":75,"n_y":40}', true), $scenarioAnalysis['grid_size']);
         $this->assertEquals(json_decode('{"x_min":-63.65,"x_max":-63.58,"y_min":-31.36,"y_max":-31.31,"srid":4326,"d_x":6654.011417877915,"d_y":5565.974539664423}', true), $scenarioAnalysis['bounding_box']);
@@ -975,7 +976,10 @@ class ModflowModelEventSourcingTest extends EventSourcingBaseTest
 
         $well = $wells[0];
         $this->assertEquals($newGeometry, $well->geometry());
-        $this->assertEquals([[0,8,53]], $well->activeCells()->cells());
+
+        $activeCells = $well->activeCells();
+        $this->assertInstanceOf(ActiveCells::class, $activeCells);
+        $this->assertEquals([[0,8,53]], $activeCells->cells());
 
         $observationPoints = $well->observationPoints();
         /** @var ObservationPoint $observationPoint */
@@ -1099,7 +1103,6 @@ class ModflowModelEventSourcingTest extends EventSourcingBaseTest
     }
 
     /**
-     * @test
      * @group messaging-integration-tests
      */
     public function test_update_calculation_when_finished_editing_boundaries(): void
