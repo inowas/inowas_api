@@ -5,8 +5,11 @@ declare(strict_types=1);
 namespace Inowas\ModflowBundle\Controller;
 
 use FOS\RestBundle\Controller\Annotations as Rest;
+use Inowas\ModflowBundle\Exception\AccessDeniedException;
+use Inowas\ModflowBundle\Exception\InvalidArgumentException;
 use Inowas\ModflowBundle\Exception\NotFoundException;
-use Inowas\Project\Model\Command\CloneProject;
+use Inowas\ModflowBundle\Exception\UserNotAuthenticatedException;
+use Inowas\Project\Model\ApplicationType;
 use Inowas\Project\Model\ProjectId;
 use Inowas\ScenarioAnalysis\Model\Command\CloneScenarioAnalysis;
 use Inowas\ScenarioAnalysis\Model\ScenarioAnalysisId;
@@ -73,6 +76,8 @@ class ProjectController extends InowasRestController
      * @Rest\Post("/projects/{id}/clone")
      * @param string $id
      * @return RedirectResponse
+     * @throws \Inowas\ModflowBundle\Exception\AccessDeniedException
+     * @throws \Inowas\ModflowBundle\Exception\InvalidArgumentException
      * @throws \Prooph\ServiceBus\Exception\CommandDispatchException
      * @throws \InvalidArgumentException
      * @throws NotFoundException
@@ -84,11 +89,45 @@ class ProjectController extends InowasRestController
         $this->assertUuidIsValid($id);
         $projectId = ProjectId::fromString($id);
 
-        // Here we should check which type of project it is
-        // Or move this functionality to the handler
-        $this->get('prooph_service_bus.modflow_command_bus')->dispatch(CloneScenarioAnalysis::byUserWithId(
-            $userId, ScenarioAnalysisId::fromString($projectId->toString())
-        ));
+        $projectsFinder = $this->get('inowas.projects.projects_finder');
+
+        /** @var ApplicationType $applicationType */
+        $applicationType = $projectsFinder->getApplicationTypeById($projectId);
+
+        if (!$applicationType instanceof ApplicationType) {
+            throw InvalidArgumentException::withMessage(sprintf(
+                'The project with id %s was not found', $projectId->toString()
+            ));
+        }
+
+        if (!$applicationType instanceof ApplicationType) {
+            throw InvalidArgumentException::withMessage(sprintf(
+                'The project with id %s was not found', $projectId->toString()
+            ));
+        }
+
+        if (!ApplicationType::isValid($applicationType)) {
+            throw InvalidArgumentException::withMessage(sprintf(
+                'The ApplicationType %s is not valid. Available types are: %s',
+                $applicationType->toString(),
+                implode(', ', ApplicationType::$availableTypes)
+            ));
+        }
+
+        if (! $projectsFinder->canBeClonedByUser($projectId, $userId)){
+            throw AccessDeniedException::withMessage(sprintf(
+                'Access denied to clone Project with id %s.',
+                $projectId->toString()
+            ));
+        }
+
+        switch ($applicationType->toString()) {
+            case ApplicationType::SCENARIOANALYSIS:
+                $this->get('prooph_service_bus.modflow_command_bus')->dispatch(CloneScenarioAnalysis::byUserWithId(
+                    $userId, ScenarioAnalysisId::fromString($projectId->toString())
+                ));
+                break;
+        }
 
         return new RedirectResponse(
             $this->generateUrl('get_my_projects'),

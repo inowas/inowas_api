@@ -8,6 +8,6 @@ class UserNotAuthenticatedException extends \Exception
 {
     public static function withMessage(string $message): UserNotAuthenticatedException
     {
-        return new self($message, 304);
+        return new self($message, 401);
     }
 }

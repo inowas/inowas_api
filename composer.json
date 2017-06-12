@@ -76,7 +76,8 @@
             "./bin/console doctrine:schema:create --env=test",
             "./bin/console inowas:es:schema:create --env=test",
             "./bin/console inowas:projections:reset --env=test",
-            "phpunit"
+            "phpunit",
+            "phpunit --group messaging-integration-tests"
         ],
         "test-messaging": "phpunit --group messaging-integration-tests",
         "post-install-cmd": [

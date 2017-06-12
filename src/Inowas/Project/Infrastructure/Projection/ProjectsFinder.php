@@ -6,6 +6,7 @@ namespace Inowas\Project\Infrastructure\Projection;
 
 use Doctrine\DBAL\Connection;
 use Inowas\Common\Id\UserId;
+use Inowas\Project\Model\ApplicationType;
 use Inowas\Project\Model\ProjectId;
 
 class ProjectsFinder
@@ -57,5 +58,53 @@ class ProjectsFinder
         }
 
         return $result;
+    }
+
+    public function getApplicationTypeById(ProjectId $id): ?ApplicationType
+    {
+        $result = $this->connection->fetchAssoc(
+            sprintf('SELECT application FROM %s WHERE id = :id', Table::PROJECT_LIST),
+            ['id' => $id->toString()]
+        );
+
+        if ($result === false) {
+            return null;
+        }
+
+        return ApplicationType::fromString($result['application']);
+    }
+
+    public function isPublic(ProjectId $projectId): bool
+    {
+        $result = $this->connection->fetchAssoc(
+            sprintf('SELECT public FROM %s WHERE id = :id', Table::PROJECT_LIST),
+            ['id' => $projectId->toString()]
+        );
+
+        if ($result === false) {
+            return false;
+        }
+
+        return $result['public'];
+    }
+
+    public function isProjectOwner(ProjectId $projectId, UserId $userId): bool
+    {
+        $result = $this->connection->fetchAssoc(
+            sprintf('SELECT count(user_id) FROM %s WHERE id = :id AND user_id = :user_id', Table::PROJECT_LIST),
+            ['id' => $projectId->toString(), 'user_id' => $userId->toString()]
+        );
+
+        return $result['count'] > 0;
+    }
+
+    public function canBeClonedByUser(ProjectId $projectId, UserId $userId): bool
+    {
+        $result = $this->connection->fetchAssoc(
+            sprintf('SELECT count(user_id) FROM %s WHERE (id = :id AND user_id = :user_id) OR (id = :id AND public = :public)', Table::PROJECT_LIST),
+            ['id' => $projectId->toString(), 'user_id' => $userId->toString(), 'public' => true]
+        );
+
+        return $result['count'] > 0;
     }
 }

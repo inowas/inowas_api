@@ -100,11 +100,13 @@ fos_rest:
     exception:
         enabled: true
         codes:
+            'Inowas\ModflowBundle\Exception\UserNotAuthenticatedException': 401
+            'Inowas\ModflowBundle\Exception\AccessDeniedException': 403
+            'Inowas\ModflowBundle\Exception\NotFoundException': 404
             'Inowas\ModflowBundle\Exception\InvalidArgumentException': 422
             'Inowas\ModflowBundle\Exception\InvalidUuidException': 422
-            'Inowas\ModflowBundle\Exception\NotFoundException': 404
-            'Inowas\ModflowBundle\Exception\UserNotAuthenticatedException': 304
         messages:
+            'Inowas\ModflowBundle\Exception\AccessDeniedException': true
             'Inowas\ModflowBundle\Exception\InvalidArgumentException': true
             'Inowas\ModflowBundle\Exception\InvalidUuidException': true
             'Inowas\ModflowBundle\Exception\NotFoundException': true
