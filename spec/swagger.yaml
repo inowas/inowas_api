@@ -3277,44 +3277,13 @@ paths:
       security:
         - api_key: []
 
-  /scenarioanalyses/{id}/scenario/{sid}:
-    delete:
-      tags:
-        - "scenarioanalysis"
-      summary: "Deletes a scenario by scenarioanalysisId, ModelId"
-      description: 'Deletes a scenario by scenarioanalysisId, ModelId'
-      operationId: "deleteScenarioByIdAndScenarioAnalysisId"
-      produces:
-        - "application/json"
-      parameters:
-        - name: "id"
-          in: "path"
-          description: "Id of ScenarioAnalysis to return"
-          required: true
-          type: "string"
-        - name: "sid"
-          in: "path"
-          description: "Id scenario"
-          required: true
-          type: "string"
-      responses:
-        '302':
-          description: "Redirect response to /scenarioanalyses/{sid}"
-          headers:
-            Location:
-              type: "string"
-        '422':
-          description: "Invalid input"
-      security:
-        - api_key: []
-
-  /scenarioanalyses/{id}/scenario:
+  /scenarioanalyses/{id}/scenario/{sid}/clone:
     post:
       tags:
         - "scenarioanalysis"
-      summary: "Makes a copy of the scenarioAnalysis with the specified id"
-      description: 'Makes a copy of the scenarioAnalysis by id with the new user credentials'
-      operationId: "createScenarioById"
+      summary: "Makes a copy of the scenario with the specified id"
+      description: 'Makes a copy of the scenario by id with the specified id'
+      operationId: "createScenarioByIdAndScenarioAnalysisId"
       consumes:
         - "application/json"
       produces:
@@ -3338,6 +3307,37 @@ paths:
       responses:
         '302':
           description: "Redirect response to /scenarioanalyses/{id}"
+          headers:
+            Location:
+              type: "string"
+        '422':
+          description: "Invalid input"
+      security:
+        - api_key: []
+
+  /scenarioanalyses/{id}/scenario/{sid}:
+    delete:
+      tags:
+        - "scenarioanalysis"
+      summary: "Deletes a scenario by scenarioanalysisId, ModelId"
+      description: 'Deletes a scenario by scenarioanalysisId, ModelId'
+      operationId: "deleteScenarioByIdAndScenarioAnalysisId"
+      produces:
+        - "application/json"
+      parameters:
+        - name: "id"
+          in: "path"
+          description: "Id of ScenarioAnalysis to return"
+          required: true
+          type: "string"
+        - name: "sid"
+          in: "path"
+          description: "Id scenario"
+          required: true
+          type: "string"
+      responses:
+        '302':
+          description: "Redirect response to /scenarioanalyses/{sid}"
           headers:
             Location:
               type: "string"

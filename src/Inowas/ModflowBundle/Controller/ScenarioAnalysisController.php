@@ -121,4 +121,36 @@ class ScenarioAnalysisController extends InowasRestController
             302
         );
     }
+
+    /**
+     * Clone Scenario by ScenarioAnalysisId and ScenarioId.
+     *
+     * @ApiDoc(
+     *   resource = true,
+     *   description = "Clone Scenario by ScenarioAnalysisId and ScenarioId.",
+     *   statusCodes = {
+     *     302 = "Returned when successful"
+     *   }
+     * )
+     *
+     * @Rest\Post("/scenarioanalyses/{id}/scenarios/{sid}/clone")
+     * @param $id
+     * @return RedirectResponse
+     * @throws \InvalidArgumentException
+     * @throws \Prooph\ServiceBus\Exception\CommandDispatchException
+     * @throws InvalidUuidException
+     * @throws InvalidArgumentException
+     */
+    public function postCloneScenarioAction(string $id): RedirectResponse
+    {
+        $userId = $this->getUserId();
+        $this->assertUuidIsValid($id);
+        $scenarioAnalysisId = ScenarioAnalysisId::fromString($id);
+        $this->get('prooph_service_bus.modflow_command_bus')->dispatch(CloneScenarioAnalysis::byUserWithId($userId, $scenarioAnalysisId));
+
+        return new RedirectResponse(
+            $this->generateUrl('get_my_projects'),
+            302
+        );
+    }
 }

@@ -29,7 +29,7 @@ class ToolProjector extends AbstractDoctrineConnectionProjector
         parent::__construct($connection);
 
         $this->schema = new Schema();
-        $table = $this->schema->createTable(Table::PROJECT_LIST);
+        $table = $this->schema->createTable(Table::TOOL_LIST);
         $table->addColumn('id', 'string', ['length' => 36]);
         $table->addColumn('name', 'string', ['length' => 255, 'default' => '']);
         $table->addColumn('description', 'string', ['length' => 255, 'default' => '']);
@@ -45,7 +45,7 @@ class ToolProjector extends AbstractDoctrineConnectionProjector
 
     public function onScenarioAnalysisWasCreated(ScenarioAnalysisWasCreated $event): void
     {
-        $this->connection->insert(Table::PROJECT_LIST, array(
+        $this->connection->insert(Table::TOOL_LIST, array(
             'id' => $event->scenarioAnalysisId()->toString(),
             'name' => $event->name()->toString(),
             'description' => $event->description()->toString(),
@@ -61,7 +61,7 @@ class ToolProjector extends AbstractDoctrineConnectionProjector
 
     public function onScenarioAnalysisWasCloned(ScenarioAnalysisWasCloned $event): void
     {
-        $this->connection->insert(Table::PROJECT_LIST, array(
+        $this->connection->insert(Table::TOOL_LIST, array(
             'id' => $event->scenarioAnalysisId()->toString(),
             'name' => $event->name()->toString(),
             'description' => $event->description()->toString(),
@@ -77,7 +77,7 @@ class ToolProjector extends AbstractDoctrineConnectionProjector
 
     public function onScenarioAnalysisNameWasChanged(ScenarioAnalysisNameWasChanged $event): void
     {
-        $this->connection->update(Table::PROJECT_LIST,
+        $this->connection->update(Table::TOOL_LIST,
             array('name' => $event->name()->toString()),
             array('id' => $event->scenarioAnalysisId()->toString())
         );
@@ -85,7 +85,7 @@ class ToolProjector extends AbstractDoctrineConnectionProjector
 
     public function onScenarioAnalysisDescriptionWasChanged(ScenarioAnalysisDescriptionWasChanged $event):void
     {
-        $this->connection->update(Table::PROJECT_LIST,
+        $this->connection->update(Table::TOOL_LIST,
             array('description' => $event->description()->toString()),
             array('id' => $event->scenarioAnalysisId()->toString())
         );

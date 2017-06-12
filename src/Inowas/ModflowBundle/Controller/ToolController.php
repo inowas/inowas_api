@@ -138,12 +138,6 @@ class ToolController extends InowasRestController
             ));
         }
 
-        if (!$toolType instanceof ToolType) {
-            throw InvalidArgumentException::withMessage(sprintf(
-                'The project with id %s was not found', $projectId->toString()
-            ));
-        }
-
         if (! $projectsFinder->canBeClonedByUser($projectId, $userId)){
             throw AccessDeniedException::withMessage(sprintf(
                 'Access denied to clone Project with id %s.',
