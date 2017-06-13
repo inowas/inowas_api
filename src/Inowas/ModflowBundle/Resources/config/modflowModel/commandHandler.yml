@@ -48,6 +48,11 @@ services:
           - '@inowas.modflowmodel.boundaries_finder'
           - '@inowas.geotools.geotools_service'
 
+    inowas.modflowmodel.delete_modflow_model_handler:
+        class: Inowas\ModflowModel\Model\Handler\DeleteModflowModelHandler
+        arguments:
+          - '@modflow_model_list'
+
     inowas.modflowmodel.finish_editing_boundaries_handler:
         class: Inowas\ModflowModel\Model\Handler\FinishEditingBoundariesHandler
         arguments:

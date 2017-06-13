@@ -198,7 +198,7 @@ class ScenarioAnalysisControllerTest extends EventSourcingBaseTest
         ));
 
         $scenarioId = ModflowId::generate();
-        $this->commandBus->dispatch(CreateScenario::byUserWithBaseModelAndScenarioId(
+        $this->commandBus->dispatch(CreateScenario::byUserWithBaseModelAndScenarioIdAndName(
             $scenarioAnalysisId,
             $userId,
             $modelId,
@@ -285,7 +285,7 @@ class ScenarioAnalysisControllerTest extends EventSourcingBaseTest
         ));
 
         $scenarioId = ModflowId::generate();
-        $this->commandBus->dispatch(CreateScenario::byUserWithBaseModelAndScenarioId(
+        $this->commandBus->dispatch(CreateScenario::byUserWithBaseModelAndScenarioIdAndName(
             $scenarioAnalysisId,
             $userId,
             $modelId,

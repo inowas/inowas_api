@@ -28,7 +28,6 @@ final class CloneScenarioAnalysisProcessManager
 
     public function onScenarioAnalysisWasCloned(ScenarioAnalysisWasCloned $event): void
     {
-
         // GET ORIGINAL SCENARIOANALYSIS
         /** @var ScenarioAnalysisAggregate $originalScenarioAnalysis */
         $originalScenarioAnalysis = $this->list->get($event->fromScenarioAnalysisId());

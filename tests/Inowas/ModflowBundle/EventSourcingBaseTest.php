@@ -465,6 +465,6 @@ abstract class EventSourcingBaseTest extends WebTestCase
 
     protected function createScenario(ScenarioAnalysisId $id, UserId $owner, ModflowId $modelId, ModflowId $scenarioId, ModelName $name, ModelDescription $description): void
     {
-        $this->commandBus->dispatch(CreateScenario::byUserWithBaseModelAndScenarioId($id, $owner, $modelId, $scenarioId, $name, $description));
+        $this->commandBus->dispatch(CreateScenario::byUserWithBaseModelAndScenarioIdAndName($id, $owner, $modelId, $scenarioId, $name, $description));
     }
 }

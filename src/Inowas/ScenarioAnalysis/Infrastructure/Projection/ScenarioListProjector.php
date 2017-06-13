@@ -8,13 +8,11 @@ use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Schema\Schema;
 use Inowas\Common\Projection\AbstractDoctrineConnectionProjector;
 use Inowas\ModflowCalculation\Infrastructure\Projection\Calculation\CalculationListFinder;
-use Inowas\ModflowCalculation\Model\Event\CalculationWasCloned;
-use Inowas\ModflowCalculation\Model\Event\CalculationWasCreated;
 use Inowas\ModflowModel\Infrastructure\Projection\ModelList\ModelFinder;
+use Inowas\ModflowModel\Model\Event\ModflowModelWasCloned;
 use Inowas\ScenarioAnalysis\Model\Event\ScenarioAnalysisWasCloned;
 use Inowas\ScenarioAnalysis\Model\Event\ScenarioAnalysisWasCreated;
 use Inowas\ScenarioAnalysis\Model\Event\ScenarioAnalysisWasDeleted;
-use Inowas\ScenarioAnalysis\Model\Event\ScenarioWasCloned;
 use Inowas\ScenarioAnalysis\Model\Event\ScenarioWasCreated;
 use Inowas\ScenarioAnalysis\Model\Event\ScenarioWasDeleted;
 
@@ -124,21 +122,6 @@ class ScenarioListProjector extends AbstractDoctrineConnectionProjector
         );
     }
 
-    public function onScenarioWasCloned(ScenarioWasCloned $event): void
-    {
-        $this->connection->insert(Table::SCENARIO_LIST, array(
-            'scenario_id' => $event->scenarioId()->toString(),
-            'base_model_id' => $event->baseModelId()->toString(),
-            'scenario_analysis_id' => $event->scenarioAnalysisId()->toString(),
-            'user_id' => $event->userId()->toString(),
-            'name' => $event->name()->toString(),
-            'description' => $event->description()->toString(),
-            'is_base_model' => 0,
-            'is_scenario' => 1,
-            'created_at' => date_format($event->createdAt(), DATE_ATOM),
-        ));
-    }
-
     public function onScenarioWasCreated(ScenarioWasCreated $event): void
     {
         $this->connection->insert(Table::SCENARIO_LIST, array(
@@ -154,29 +137,22 @@ class ScenarioListProjector extends AbstractDoctrineConnectionProjector
         ));
     }
 
-    public function onScenarioWasRemoved(ScenarioWasDeleted $event): void
+    public function onScenarioWasDeleted(ScenarioWasDeleted $event): void
     {
         $this->connection->delete(Table::SCENARIO_LIST,
             [
                 'scenario_id' => $event->scenarioId()->toString(),
-                'scenario_analysis_id' => $event->scenarioAnalysisId()->toString()
+                'scenario_analysis_id' => $event->scenarioAnalysisId()->toString(),
+                'user_id' => $event->userId()->toString()
             ]
         );
     }
 
-    public function onCalculationWasCreated(CalculationWasCreated $event): void
+    public function onModflowModelWasCloned(ModflowModelWasCloned $event): void
     {
         $this->connection->update(Table::SCENARIO_LIST,
             array('calculation_id' => $event->calculationId()->toString()),
-            array('scenario_id' => $event->modflowmodelId()->toString())
-        );
-    }
-
-    public function onCalculationWasCloned(CalculationWasCloned $event): void
-    {
-        $this->connection->update(Table::SCENARIO_LIST,
-            array('calculation_id' => $event->calculationId()->toString()),
-            array('scenario_id' => $event->modflowmodelId()->toString())
+            array('scenario_id' => $event->modelId()->toString())
         );
     }
 }

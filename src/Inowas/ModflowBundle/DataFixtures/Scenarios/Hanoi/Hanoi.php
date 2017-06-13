@@ -550,7 +550,7 @@ class Hanoi extends LoadScenarioBase
         * Begin add Scenario 1
         */
         $scenarioId = ModflowId::generate();
-        $commandBus->dispatch(CreateScenario::byUserWithBaseModelAndScenarioId(
+        $commandBus->dispatch(CreateScenario::byUserWithBaseModelAndScenarioIdAndName(
             $scenarioAnalysisId,
             $ownerId,
             $modelId,
@@ -590,7 +590,7 @@ class Hanoi extends LoadScenarioBase
          * Begin add Scenario 2
          */
         $scenarioId = ModflowId::generate();
-        $commandBus->dispatch(CreateScenario::byUserWithBaseModelAndScenarioId(
+        $commandBus->dispatch(CreateScenario::byUserWithBaseModelAndScenarioIdAndName(
             $scenarioAnalysisId,
             $ownerId,
             $modelId,
@@ -639,7 +639,7 @@ class Hanoi extends LoadScenarioBase
          * Begin add Scenario 3
          */
         $scenarioId = ModflowId::generate();
-        $commandBus->dispatch(CreateScenario::byUserWithBaseModelAndScenarioId(
+        $commandBus->dispatch(CreateScenario::byUserWithBaseModelAndScenarioIdAndName(
             $scenarioAnalysisId,
             $ownerId,
             $modelId,

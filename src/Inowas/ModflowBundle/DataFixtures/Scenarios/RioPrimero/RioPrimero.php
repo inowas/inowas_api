@@ -36,22 +36,11 @@ use Inowas\Common\Modflow\OcStressPeriodData;
 use Inowas\Common\Modflow\StressPeriod;
 use Inowas\Common\Modflow\StressPeriods;
 use Inowas\Common\Modflow\TimeUnit;
-use Inowas\Common\Soilmodel\BoreLogId;
-use Inowas\Common\Soilmodel\BoreLogLocation;
-use Inowas\Common\Soilmodel\BoreLogName;
 use Inowas\Common\Soilmodel\BottomElevation;
-use Inowas\Common\Soilmodel\Conductivity;
-use Inowas\Common\Soilmodel\HBottom;
-use Inowas\Common\Soilmodel\Horizon;
-use Inowas\Common\Soilmodel\HorizonId;
-use Inowas\Common\Soilmodel\HTop;
 use Inowas\Common\Soilmodel\HydraulicAnisotropy;
 use Inowas\Common\Soilmodel\HydraulicConductivityX;
-use Inowas\Common\Soilmodel\HydraulicConductivityY;
-use Inowas\Common\Soilmodel\HydraulicConductivityZ;
 use Inowas\Common\Soilmodel\SpecificStorage;
 use Inowas\Common\Soilmodel\SpecificYield;
-use Inowas\Common\Soilmodel\Storage;
 use Inowas\Common\Soilmodel\TopElevation;
 use Inowas\Common\Soilmodel\VerticalHydraulicConductivity;
 use Inowas\ModflowCalculation\Model\Command\CalculateModflowModelCalculation;
@@ -69,12 +58,9 @@ use Inowas\ScenarioAnalysis\Model\Command\CreateScenarioAnalysis;
 use Inowas\ScenarioAnalysis\Model\ScenarioAnalysisDescription;
 use Inowas\ScenarioAnalysis\Model\ScenarioAnalysisId;
 use Inowas\ScenarioAnalysis\Model\ScenarioAnalysisName;
-use Inowas\Soilmodel\Model\Command\AddBoreLogToSoilmodel;
 use Inowas\Soilmodel\Model\Command\AddGeologicalLayerToSoilmodel;
-use Inowas\Soilmodel\Model\Command\AddHorizonToBoreLog;
 use Inowas\Soilmodel\Model\Command\ChangeSoilmodelDescription;
 use Inowas\Soilmodel\Model\Command\ChangeSoilmodelName;
-use Inowas\Soilmodel\Model\Command\CreateBoreLog;
 use Inowas\Soilmodel\Model\Command\CreateSoilmodel;
 use Inowas\Common\Soilmodel\GeologicalLayer;
 use Inowas\Common\Soilmodel\GeologicalLayerDescription;
@@ -84,7 +70,6 @@ use Inowas\Common\Soilmodel\GeologicalLayerNumber;
 use Inowas\Common\Soilmodel\SoilmodelDescription;
 use Inowas\Common\Soilmodel\SoilmodelId;
 use Inowas\Common\Soilmodel\SoilmodelName;
-use Inowas\Soilmodel\Model\Command\InterpolateSoilmodel;
 use Inowas\Soilmodel\Model\Command\UpdateGeologicalLayerProperty;
 
 class RioPrimero extends LoadScenarioBase
@@ -168,6 +153,7 @@ class RioPrimero extends LoadScenarioBase
             $commandBus->dispatch(UpdateGeologicalLayerProperty::forSoilmodel($ownerId, $soilModelId, $layerId, SpecificYield::fromLayerValue(0.2)));
         }
 
+        /*
         $boreHoles = array(
             array('point', 'name', 'top', 'bot'),
             array(new Point(-63.64698, -31.32741, 4326), 'GP1', 465, 392),
@@ -202,10 +188,10 @@ class RioPrimero extends LoadScenarioBase
                 GeologicalLayerNumber::fromInteger(0),
                 HTop::fromMeters($borehole['top']),
                 HBottom::fromMeters($borehole['bot']),
-                Conductivity::fromXYZinMPerDay(
+                Conductivity::fromParams(
                     HydraulicConductivityX::fromPointValue(10),
-                    HydraulicConductivityY::fromPointValue(10),
-                    HydraulicConductivityZ::fromPointValue(1)
+                    HydraulicAnisotropy::fromPointValue(1),
+                    VerticalHydraulicConductivity::fromPointValue(10)
                 ),
                 Storage::fromParams(
                     SpecificStorage::fromPointValue(1e-5),
@@ -217,6 +203,7 @@ class RioPrimero extends LoadScenarioBase
 
         echo sprintf("Interpolate soilmodel with %s Memory usage\r\n", memory_get_usage());
         $commandBus->dispatch(InterpolateSoilmodel::forSoilmodel($ownerId, $soilModelId, $boundingBox, $gridSize));
+        */
 
         /*
          * Add GeneralHeadBoundaries
@@ -460,7 +447,7 @@ class RioPrimero extends LoadScenarioBase
          * Begin add Scenario 0
          */
         $scenarioId = ModflowId::generate();
-        $commandBus->dispatch(CreateScenario::byUserWithBaseModelAndScenarioId(
+        $commandBus->dispatch(CreateScenario::byUserWithBaseModelAndScenarioIdAndName(
             $scenarioAnalysisId,
             $ownerId,
             $baseModelId,
@@ -510,7 +497,7 @@ class RioPrimero extends LoadScenarioBase
          * Begin add Scenario 1
          */
         $scenarioId = ModflowId::generate();
-        $commandBus->dispatch(CreateScenario::byUserWithBaseModelAndScenarioId(
+        $commandBus->dispatch(CreateScenario::byUserWithBaseModelAndScenarioIdAndName(
             $scenarioAnalysisId,
             $ownerId,
             $baseModelId,

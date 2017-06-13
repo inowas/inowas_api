@@ -5,10 +5,16 @@ declare(strict_types=1);
 namespace Inowas\ModflowBundle\Controller;
 
 use FOS\RestBundle\Controller\Annotations as Rest;
+use Inowas\Common\Id\ModflowId;
+use Inowas\Common\Modflow\ModelDescription;
+use Inowas\Common\Modflow\ModelName;
 use Inowas\ModflowBundle\Exception\InvalidArgumentException;
 use Inowas\ModflowBundle\Exception\InvalidUuidException;
 use Inowas\ModflowBundle\Exception\NotFoundException;
+use Inowas\ScenarioAnalysis\Model\Command\CloneScenario;
 use Inowas\ScenarioAnalysis\Model\Command\CloneScenarioAnalysis;
+use Inowas\ScenarioAnalysis\Model\Command\CreateScenario;
+use Inowas\ScenarioAnalysis\Model\Command\DeleteScenario;
 use Inowas\ScenarioAnalysis\Model\ScenarioAnalysisId;
 use Nelmio\ApiDocBundle\Annotation\ApiDoc as ApiDoc;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -134,22 +140,34 @@ class ScenarioAnalysisController extends InowasRestController
      * )
      *
      * @Rest\Post("/scenarioanalyses/{id}/scenarios/{sid}/clone")
-     * @param $id
+     * @param string $id
+     * @param string $sid
      * @return RedirectResponse
      * @throws \InvalidArgumentException
      * @throws \Prooph\ServiceBus\Exception\CommandDispatchException
-     * @throws InvalidUuidException
-     * @throws InvalidArgumentException
      */
-    public function postCloneScenarioAction(string $id): RedirectResponse
+    public function postCloneScenarioAction(string $id, string $sid): RedirectResponse
     {
         $userId = $this->getUserId();
         $this->assertUuidIsValid($id);
         $scenarioAnalysisId = ScenarioAnalysisId::fromString($id);
-        #$this->get('prooph_service_bus.modflow_command_bus')->dispatch(Clone::byUserWithId($userId, $scenarioAnalysisId));
+
+        $this->assertUuidIsValid($sid);
+        $baseScenarioId = ModflowId::fromString($sid);
+        $newScenarioId = ModflowId::generate();
+
+        $this->get('prooph_service_bus.modflow_command_bus')->dispatch(
+            CreateScenario::byUserWithBaseModelAndScenarioIdAndPrefix(
+                $scenarioAnalysisId,
+                $userId,
+                $baseScenarioId,
+                $newScenarioId,
+                'Copy of '
+            )
+        );
 
         return new RedirectResponse(
-            $this->generateUrl('get_my_tools'),
+            $this->generateUrl('get_scenarios_analysis_details', array( 'id' => $id )),
             302
         );
     }
@@ -166,23 +184,26 @@ class ScenarioAnalysisController extends InowasRestController
      * )
      *
      * @Rest\Delete("/scenarioanalyses/{id}/scenarios/{sid}")
-     * @param $id
+     * @param string $id
+     * @param string $sid
      * @return RedirectResponse
      * @throws \InvalidArgumentException
      * @throws \Prooph\ServiceBus\Exception\CommandDispatchException
-     * @throws InvalidUuidException
-     * @throws InvalidArgumentException
      */
-    public function deleteScenarioAction(string $id): RedirectResponse
+    public function deleteScenarioAction(string $id, string $sid): RedirectResponse
     {
         $userId = $this->getUserId();
         $this->assertUuidIsValid($id);
         $scenarioAnalysisId = ScenarioAnalysisId::fromString($id);
-        $this->get('prooph_service_bus.modflow_command_bus')->dispatch(CloneScenarioAnalysis::byUserWithId($userId, $scenarioAnalysisId));
+
+        $this->assertUuidIsValid($sid);
+        $scenarioId = ModflowId::fromString($sid);
+
+        $this->get('prooph_service_bus.modflow_command_bus')->dispatch(DeleteScenario::byUserWithIds($scenarioAnalysisId, $userId, $scenarioId));
 
         return new RedirectResponse(
-            $this->generateUrl('get_my_tools'),
-            302
+            $this->generateUrl('get_scenarios_analysis_details', array( 'id' => $id )),
+            303
         );
     }
 }

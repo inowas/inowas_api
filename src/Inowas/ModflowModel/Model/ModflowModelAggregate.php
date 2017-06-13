@@ -38,6 +38,7 @@ use Inowas\ModflowModel\Model\Event\EditingBoundariesWasFinished;
 use Inowas\ModflowModel\Model\Event\GridSizeWasChanged;
 use Inowas\ModflowModel\Model\Event\LengthUnitWasUpdated;
 use Inowas\ModflowModel\Model\Event\ModflowModelWasCloned;
+use Inowas\ModflowModel\Model\Event\ModflowModelWasDeleted;
 use Inowas\ModflowModel\Model\Event\NameWasChanged;
 use Inowas\ModflowModel\Model\Event\SoilModelIdWasChanged;
 use Inowas\ModflowModel\Model\Event\ModflowModelWasCreated;
@@ -195,6 +196,14 @@ class ModflowModelAggregate extends AggregateRoot
         ));
 
         return $self;
+    }
+
+    public function deleteModel(UserId $userId): void
+    {
+        $this->recordThat(ModflowModelWasDeleted::byUserWitModelId(
+            $this->modflowId,
+            $userId
+        ));
     }
 
     public function changeModelName(UserId $userId, ModelName $name): void
@@ -532,6 +541,8 @@ class ModflowModelAggregate extends AggregateRoot
     {
         $this->modflowId = $event->modelId();
         $this->owner = $event->userId();
+        $this->name = $event->name();
+        $this->description = $event->description();
         $this->area = $event->area();
         $this->soilmodelId = $event->soilmodelId();
         $this->boundaries = $event->boundaryIds();
@@ -539,7 +550,7 @@ class ModflowModelAggregate extends AggregateRoot
         $this->boundingBox = $event->boundingBox();
         $this->lengthUnit = $event->lengthUnit();
         $this->timeUnit = $event->timeUnit();
-
+        $this->calculationId = $event->calculationId();
     }
 
     protected function whenModflowModelWasCreated(ModflowModelWasCreated $event): void
@@ -557,6 +568,9 @@ class ModflowModelAggregate extends AggregateRoot
         $this->timeUnit = $event->timeUnit();
         $this->calculationId = $event->calculationId();
     }
+
+    protected function whenModflowModelWasDeleted(ModflowModelWasDeleted $event): void
+    {}
 
     protected function whenNameWasChanged(NameWasChanged $event): void
     {

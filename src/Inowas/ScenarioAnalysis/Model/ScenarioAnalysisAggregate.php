@@ -12,6 +12,7 @@ use Inowas\ScenarioAnalysis\Model\Event\ScenarioAnalysisDescriptionWasChanged;
 use Inowas\ScenarioAnalysis\Model\Event\ScenarioAnalysisNameWasChanged;
 use Inowas\ScenarioAnalysis\Model\Event\ScenarioAnalysisWasCloned;
 use Inowas\ScenarioAnalysis\Model\Event\ScenarioAnalysisWasCreated;
+use Inowas\ScenarioAnalysis\Model\Event\ScenarioAnalysisWasDeleted;
 use Inowas\ScenarioAnalysis\Model\Event\ScenarioWasCreated;
 use Inowas\ScenarioAnalysis\Model\Event\ScenarioWasDeleted;
 use Prooph\EventSourcing\AggregateRoot;
@@ -94,6 +95,11 @@ class ScenarioAnalysisAggregate extends AggregateRoot
         return $self;
     }
 
+    public function delete(UserId $userId): void
+    {
+        $this->recordThat(ScenarioAnalysisWasDeleted::byUser($this->id, $userId));
+    }
+
     /** @noinspection MoreThanThreeArgumentsInspection
      * @param UserId $userId
      * @param ModflowId $scenarioId
@@ -103,7 +109,7 @@ class ScenarioAnalysisAggregate extends AggregateRoot
      */
     public function createScenario(UserId $userId, ModflowId $scenarioId, ModflowId $baseModelId, ModelName $name, ModelDescription $description): void
     {
-        if (in_array($scenarioId->toString(), $this->scenarios)){
+        if (in_array($scenarioId->toString(), $this->scenarios, true)){
             return;
         }
 
@@ -111,9 +117,9 @@ class ScenarioAnalysisAggregate extends AggregateRoot
         $this->recordThat(ScenarioWasCreated::from($this->id, $userId, $scenarioId, $baseModelId, $name, $description));
     }
 
-    public function removeScenario(UserId $userId, ModflowId $scenarioId): void
+    public function deleteScenario(UserId $userId, ModflowId $scenarioId): void
     {
-        if (! in_array($scenarioId->toString(), $this->scenarios)){
+        if (! in_array($scenarioId->toString(), $this->scenarios, true)){
             return;
         }
 
@@ -188,12 +194,15 @@ class ScenarioAnalysisAggregate extends AggregateRoot
         $this->scenarios = $event->scenarios();
     }
 
+    protected function whenScenarioAnalysisWasDeleted(ScenarioAnalysisWasDeleted $event): void
+    {}
+
     protected function whenScenarioWasCreated(ScenarioWasCreated $event): void
     {
         $this->scenarios[] = $event->scenarioId()->toString();
     }
 
-    protected function whenScenarioWasRemoved(ScenarioWasDeleted $event): void
+    protected function whenScenarioWasDeleted(ScenarioWasDeleted $event): void
     {
         $this->scenarios = array_diff($this->scenarios, [$event->scenarioId()->toString()]);
     }

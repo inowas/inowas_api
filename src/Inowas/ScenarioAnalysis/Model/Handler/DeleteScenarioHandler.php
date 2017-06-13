@@ -4,24 +4,24 @@ declare(strict_types=1);
 
 namespace Inowas\ScenarioAnalysis\Model\Handler;
 
-use Inowas\ScenarioAnalysis\Model\Command\CreateScenarioAnalysis;
+use Inowas\ScenarioAnalysis\Model\Command\DeleteScenario;
 use Inowas\ScenarioAnalysis\Model\Exception\ScenarioAnalysisNotFoundException;
 use Inowas\ScenarioAnalysis\Model\ScenarioAnalysisAggregate;
 use Inowas\ScenarioAnalysis\Model\ScenarioAnalysisList;
-use Prooph\ServiceBus\CommandBus;
 
-final class CloneScenarioHandler
+final class DeleteScenarioHandler
 {
 
     /** @var ScenarioAnalysisList  */
     private $scenarioAnalysisList;
+
 
     public function __construct(ScenarioAnalysisList $scenarioAnalysisList)
     {
         $this->scenarioAnalysisList = $scenarioAnalysisList;
     }
 
-    public function __invoke(CreateScenarioAnalysis $command)
+    public function __invoke(DeleteScenario $command)
     {
 
         /** @var ScenarioAnalysisAggregate $scenarioAnalysis */
@@ -31,6 +31,6 @@ final class CloneScenarioHandler
             throw ScenarioAnalysisNotFoundException::withId($command->scenarioAnalysisId());
         }
 
-        $scenarioAnalysis->removeScenario($command->userId(), $command->baseModelId());
+        $scenarioAnalysis->deleteScenario($command->userId(), $command->scenarioId());
     }
 }

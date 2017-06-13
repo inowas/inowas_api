@@ -6,7 +6,10 @@ namespace Inowas\ScenarioAnalysis\Infrastructure\Projection;
 
 
 use Doctrine\DBAL\Connection;
+use Inowas\Common\Id\ModflowId;
 use Inowas\Common\Id\UserId;
+use Inowas\Common\Modflow\ModelDescription;
+use Inowas\Common\Modflow\ModelName;
 use Inowas\ScenarioAnalysis\Model\ScenarioAnalysisId;
 
 class ScenarioAnalysisFinder
@@ -84,6 +87,36 @@ class ScenarioAnalysisFinder
         $result['scenarios'] = $scenarios;
 
         return $result;
+    }
+
+    public function getScenarioNameById(ModflowId $modflowId): ?ModelName
+    {
+        $result = $this->connection->fetchAssoc(
+            sprintf('SELECT name FROM %s WHERE scenario_id = :scenario_id', Table::SCENARIO_LIST),
+            ['scenario_id' => $modflowId->toString()]
+        );
+
+
+        if ($result === false) {
+            return null;
+        }
+
+        return ModelName::fromString($result['name']);
+    }
+
+    public function getScenarioDescriptionById(ModflowId $modflowId): ?ModelDescription
+    {
+        $result = $this->connection->fetchAssoc(
+            sprintf('SELECT description FROM %s WHERE scenario_id = :scenario_id', Table::SCENARIO_LIST),
+            ['scenario_id' => $modflowId->toString()]
+        );
+
+
+        if ($result === false) {
+            return null;
+        }
+
+        return ModelDescription::fromString($result['description']);
     }
 
     public function findAll(): array

@@ -14,6 +14,7 @@ use Inowas\ScenarioAnalysis\Model\Event\ScenarioAnalysisDescriptionWasChanged;
 use Inowas\ScenarioAnalysis\Model\Event\ScenarioAnalysisNameWasChanged;
 use Inowas\ScenarioAnalysis\Model\Event\ScenarioAnalysisWasCloned;
 use Inowas\ScenarioAnalysis\Model\Event\ScenarioAnalysisWasCreated;
+use Inowas\ScenarioAnalysis\Model\Event\ScenarioAnalysisWasDeleted;
 
 class ToolProjector extends AbstractDoctrineConnectionProjector
 {
@@ -73,6 +74,14 @@ class ToolProjector extends AbstractDoctrineConnectionProjector
             'created_at' => date_format($event->createdAt(), DATE_ATOM),
             'public' => true
         ));
+    }
+
+    public function onScenarioAnalysisWasDeleted(ScenarioAnalysisWasDeleted $event): void
+    {
+        $this->connection->delete(
+            Table::TOOL_LIST,
+            array('id' => $event->scenarioAnalysisId()->toString(), 'user_id' => $event->userId()->toString())
+        );
     }
 
     public function onScenarioAnalysisNameWasChanged(ScenarioAnalysisNameWasChanged $event): void

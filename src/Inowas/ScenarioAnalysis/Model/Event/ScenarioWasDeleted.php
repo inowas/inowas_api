@@ -41,7 +41,7 @@ class ScenarioWasDeleted extends AggregateChanged
             $this->scenarioAnalysisId = ScenarioAnalysisId::fromString($this->aggregateId());
         }
 
-        return $this->scenarioAnalysisId();
+        return $this->scenarioAnalysisId;
     }
 
     public function scenarioId(): ModflowId

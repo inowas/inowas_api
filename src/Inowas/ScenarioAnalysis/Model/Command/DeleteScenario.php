@@ -6,22 +6,34 @@ namespace Inowas\ScenarioAnalysis\Model\Command;
 
 use Inowas\Common\Id\ModflowId;
 use Inowas\Common\Id\UserId;
+use Inowas\Common\Modflow\ModelName;
+use Inowas\Common\Modflow\ModelDescription;
 use Inowas\ScenarioAnalysis\Model\ScenarioAnalysisId;
 use Prooph\Common\Messaging\Command;
 use Prooph\Common\Messaging\PayloadConstructable;
 use Prooph\Common\Messaging\PayloadTrait;
 
-class RemoveScenario extends Command implements PayloadConstructable
+class DeleteScenario extends Command implements PayloadConstructable
 {
 
     use PayloadTrait;
 
-    public static function withBaseModelId(ScenarioAnalysisId $scenarioAnalysisId, UserId $userId, ModflowId $modflowId): RemoveScenario
+    /** @noinspection MoreThanThreeArgumentsInspection
+     * @param ScenarioAnalysisId $scenarioAnalysisId
+     * @param UserId $userId
+     * @param ModflowId $scenarioId
+     * @return DeleteScenario
+     */
+    public static function byUserWithIds(
+        ScenarioAnalysisId $scenarioAnalysisId,
+        UserId $userId,
+        ModflowId $scenarioId
+    ): DeleteScenario
     {
         return new self([
             'scenarioanalysis_id' => $scenarioAnalysisId->toString(),
             'user_id' => $userId->toString(),
-            'modflowmodel_id' => $modflowId->toString()
+            'scenario_id' => $scenarioId->toString()
         ]);
     }
 
@@ -35,8 +47,8 @@ class RemoveScenario extends Command implements PayloadConstructable
         return UserId::fromString($this->payload['user_id']);
     }
 
-    public function modflowModelId(): ModflowId
+    public function scenarioId(): ModflowId
     {
-        return ModflowId::fromString($this->payload['modflowmodel_id']);
+        return ModflowId::fromString($this->payload['scenario_id']);
     }
 }

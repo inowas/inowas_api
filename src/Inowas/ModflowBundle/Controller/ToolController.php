@@ -9,6 +9,7 @@ use Inowas\ModflowBundle\Exception\AccessDeniedException;
 use Inowas\ModflowBundle\Exception\InvalidArgumentException;
 use Inowas\ModflowBundle\Exception\NotFoundException;
 use Inowas\ScenarioAnalysis\Model\Command\CloneScenarioAnalysis;
+use Inowas\ScenarioAnalysis\Model\Command\DeleteScenarioAnalysis;
 use Inowas\ScenarioAnalysis\Model\ScenarioAnalysisId;
 use Inowas\Tool\Model\ToolId;
 use Inowas\Tool\Model\ToolType;
@@ -156,6 +157,61 @@ class ToolController extends InowasRestController
         return new RedirectResponse(
             $this->generateUrl('get_my_tools'),
             302
+        );
+    }
+
+    /**
+     * Delete tool by id and user.
+     *
+     * @ApiDoc(
+     *   resource = true,
+     *   description = "Delete tool by id and user.",
+     *   statusCodes = {
+     *     200 = "Returned when successful"
+     *   }
+     * )
+     *
+     * @Rest\Delete("/tools/{id}")
+     * @param string $id
+     * @return RedirectResponse
+     * @throws \Inowas\ModflowBundle\Exception\AccessDeniedException
+     * @throws \Inowas\ModflowBundle\Exception\InvalidArgumentException
+     * @throws \Prooph\ServiceBus\Exception\CommandDispatchException
+     * @throws \InvalidArgumentException
+     * @throws NotFoundException
+     */
+    public function deleteToolByIdAction(string $id): RedirectResponse
+    {
+        $userId = $this->getUserId();
+
+        $this->assertUuidIsValid($id);
+        $toolId = ToolId::fromString($id);
+
+        $toolFinder = $this->get('inowas.tool.tools_finder');
+
+        /** @var ToolType $toolType */
+        $toolType = $toolFinder->getToolTypeById($toolId);
+
+        if (!$toolType instanceof ToolType) {
+            throw InvalidArgumentException::withMessage(sprintf(
+                'The project with id %s was not found', $toolId->toString()
+            ));
+        }
+
+        switch ($toolType->toString()) {
+            case ToolType::SCENARIOANALYSIS:
+                $this->get('prooph_service_bus.modflow_command_bus')->dispatch(
+                    DeleteScenarioAnalysis::byUserWithId(
+                        $userId,
+                        ScenarioAnalysisId::fromString($toolId->toString())
+                    )
+                );
+                break;
+        }
+
+        return new RedirectResponse(
+            $this->generateUrl('get_my_tools'),
+            303
         );
     }
 }

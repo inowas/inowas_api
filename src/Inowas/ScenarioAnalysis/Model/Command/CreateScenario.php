@@ -27,7 +27,7 @@ class CreateScenario extends Command implements PayloadConstructable
      * @param ModelDescription $description
      * @return CreateScenario
      */
-    public static function byUserWithBaseModelAndScenarioId(
+    public static function byUserWithBaseModelAndScenarioIdAndName(
         ScenarioAnalysisId $scenarioAnalysisId,
         UserId $userId,
         ModflowId $baseModelId,
@@ -43,6 +43,31 @@ class CreateScenario extends Command implements PayloadConstructable
             'scenario_id' => $scenarioId->toString(),
             'name' => $name->toString(),
             'description' => $description->toString()
+        ]);
+    }
+
+    /** @noinspection MoreThanThreeArgumentsInspection
+     * @param ScenarioAnalysisId $scenarioAnalysisId
+     * @param UserId $userId
+     * @param ModflowId $baseModelId
+     * @param ModflowId $scenarioId
+     * @param string $prefix
+     * @return CreateScenario
+     */
+    public static function byUserWithBaseModelAndScenarioIdAndPrefix(
+        ScenarioAnalysisId $scenarioAnalysisId,
+        UserId $userId,
+        ModflowId $baseModelId,
+        ModflowId $scenarioId,
+        string $prefix
+    ): CreateScenario
+    {
+        return new self([
+            'scenarioanalysis_id' => $scenarioAnalysisId->toString(),
+            'user_id' => $userId->toString(),
+            'basemodel_id' => $baseModelId->toString(),
+            'scenario_id' => $scenarioId->toString(),
+            'prefix' => $prefix
         ]);
     }
 
@@ -68,11 +93,30 @@ class CreateScenario extends Command implements PayloadConstructable
 
     public function name(): ModelName
     {
-        return ModelName::fromString($this->payload['name']);
+        if (array_key_exists('name', $this->payload)) {
+            return ModelName::fromString($this->payload['name']);
+        }
+
+        return ModelName::fromString($this->payload['']);
     }
 
     public function description(): ModelDescription
     {
+        if (array_key_exists('description', $this->payload)) {
+            return ModelDescription::fromString($this->payload['description']);
+        }
+
         return ModelDescription::fromString($this->payload['description']);
     }
+
+    public function hasPrefix(): bool
+    {
+        return array_key_exists('prefix', $this->payload);
+    }
+
+    public function prefix(): string
+    {
+        return $this->payload['prefix'];
+    }
+
 }

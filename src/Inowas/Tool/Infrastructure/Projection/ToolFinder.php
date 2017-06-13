@@ -102,11 +102,11 @@ class ToolFinder
         return ToolType::fromString($result['tool']);
     }
 
-    public function isPublic(ToolId $projectId): bool
+    public function isPublic(ToolId $toolId): bool
     {
         $result = $this->connection->fetchAssoc(
             sprintf('SELECT public FROM %s WHERE id = :id', Table::TOOL_LIST),
-            ['id' => $projectId->toString()]
+            ['id' => $toolId->toString()]
         );
 
         if ($result === false) {
@@ -116,23 +116,28 @@ class ToolFinder
         return $result['public'];
     }
 
-    public function isToolOwner(ToolId $projectId, UserId $userId): bool
+    public function isToolOwner(ToolId $toolId, UserId $userId): bool
     {
         $result = $this->connection->fetchAssoc(
             sprintf('SELECT count(user_id) FROM %s WHERE id = :id AND user_id = :user_id', Table::TOOL_LIST),
-            ['id' => $projectId->toString(), 'user_id' => $userId->toString()]
+            ['id' => $toolId->toString(), 'user_id' => $userId->toString()]
         );
 
         return $result['count'] > 0;
     }
 
-    public function canBeClonedByUser(ToolId $projectId, UserId $userId): bool
+    public function canBeClonedByUser(ToolId $toolId, UserId $userId): bool
     {
         $result = $this->connection->fetchAssoc(
             sprintf('SELECT count(user_id) FROM %s WHERE (id = :id AND user_id = :user_id) OR (id = :id AND public = :public)', Table::TOOL_LIST),
-            ['id' => $projectId->toString(), 'user_id' => $userId->toString(), 'public' => true]
+            ['id' => $toolId->toString(), 'user_id' => $userId->toString(), 'public' => true]
         );
 
         return $result['count'] > 0;
+    }
+
+    public function canBeDeletedByUser(ToolId $toolId, UserId $userId): bool
+    {
+        return $this->isToolOwner($toolId, $userId);
     }
 }

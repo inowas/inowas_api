@@ -16,3 +16,9 @@ services:
         arguments:
             - '@prooph_service_bus.modflow_command_bus'
             - '@inowas.modflowmodel.model_finder'
+
+    inowas.scenarioanalysis.delete_scenario_analysis_process_manager:
+        class: Inowas\ScenarioAnalysis\Infrastructure\ProcessManager\DeleteScenarioAnalysisProcessManager
+        arguments:
+            - '@prooph_service_bus.modflow_command_bus'
+            - '@scenarioanalysis_list'

@@ -26,6 +26,7 @@ prooph_service_bus:
                     'Inowas\ModflowModel\Model\Command\CloneModflowModel': 'inowas.modflowmodel.clone_modflow_model_handler'
                     'Inowas\ModflowModel\Model\Command\CreateModflowModel': 'inowas.modflowmodel.create_modflow_model_handler'
                     'Inowas\ModflowModel\Model\Command\CreateObservationPoint': 'inowas.modflowmodel.create_observation_point_handler'
+                    'Inowas\ModflowModel\Model\Command\DeleteModflowModel': 'inowas.modflowmodel.delete_modflow_model_handler'
                     'Inowas\ModflowModel\Model\Command\FinishEditingBoundaries': 'inowas.modflowmodel.finish_editing_boundaries_handler'
                     'Inowas\ModflowModel\Model\Command\RemoveBoundary': 'inowas.modflowmodel.remove_boundary_handler'
                     'Inowas\ModflowModel\Model\Command\UpdateActiveCells': 'inowas.modflowmodel.update_active_cells_handler'
@@ -41,7 +42,8 @@ prooph_service_bus:
                     'Inowas\ScenarioAnalysis\Model\Command\CloneScenarioAnalysis': 'inowas.scenarioanalysis.clone_scenarioanalysis_handler'
                     'Inowas\ScenarioAnalysis\Model\Command\CreateScenario': 'inowas.scenarioanalysis.create_scenario_handler'
                     'Inowas\ScenarioAnalysis\Model\Command\CreateScenarioAnalysis': 'inowas.scenarioanalysis.create_scenarioanalysis_handler'
-                    'Inowas\ScenarioAnalysis\Model\Command\RemoveScenario': 'inowas.scenarioanalysis.remove_scenario_handler'
+                    'Inowas\ScenarioAnalysis\Model\Command\DeleteScenarioAnalysis': 'inowas.scenarioanalysis.delete_scenarioanalysis_handler'
+                    'Inowas\ScenarioAnalysis\Model\Command\DeleteScenario': 'inowas.scenarioanalysis.delete_scenario_handler'
 
                     # SoilmodelAggregate Commands and CommandHandlers
                     'Inowas\Soilmodel\Model\Command\AddBoreLogToSoilmodel': 'inowas.soilmodel.add_borelog_to_soilmodel.handler'
@@ -87,13 +89,11 @@ prooph_service_bus:
                         - 'inowas.modflowcalculation.calculation_configuration_projector'
                         - 'inowas.modflowcalculation.calculation_list_projector'
                         - 'inowas.modflowcalculation.calculation_results_projector'
-                        - 'inowas.scenarioanalysis.scenario_list_projector'
 
                     'Inowas\ModflowCalculation\Model\Event\CalculationWasCreated':
                         - 'inowas.modflowcalculation.calculation_configuration_projector'
                         - 'inowas.modflowcalculation.calculation_list_projector'
                         - 'inowas.modflowcalculation.calculation_results_projector'
-                        - 'inowas.scenarioanalysis.scenario_list_projector'
 
                     'Inowas\ModflowCalculation\Model\Event\CalculationWasFinished':
                         - 'inowas.modflowcalculation.calculation_configuration_projector'
@@ -167,8 +167,14 @@ prooph_service_bus:
                         - 'inowas.modflowmodel.model_boundaries_list_projector'
                         - 'inowas.modflowmodel.model_boundaries_values_projector'
                         - 'inowas.modflowmodel.model_details_projector'
+                        - 'inowas.scenarioanalysis.scenario_list_projector'
 
                     'Inowas\ModflowModel\Model\Event\ModflowModelWasCreated':
+                        - 'inowas.modflowmodel.model_boundaries_active_cells_projector'
+                        - 'inowas.modflowmodel.model_details_projector'
+                        - 'inowas.modflowcalculation.calculation_results_projector'
+
+                    'Inowas\ModflowModel\Model\Event\ModflowModelWasDeleted':
                         - 'inowas.modflowmodel.model_boundaries_active_cells_projector'
                         - 'inowas.modflowmodel.model_details_projector'
                         - 'inowas.modflowcalculation.calculation_results_projector'
@@ -191,7 +197,20 @@ prooph_service_bus:
                         - 'inowas.tool.tools_projector'
                         - 'inowas.scenarioanalysis.scenarioanalysis_list_projector'
 
-                    'Inowas\ScenarioAnalysis\Model\Event\ScenarioWasCloned':
+                    'Inowas\ScenarioAnalysis\Model\Event\ScenarioAnalysisWasCloned':
+                        - 'inowas.scenarioanalysis.clone_scenario_analysis_process_manager'
+                        - 'inowas.scenarioanalysis.scenario_list_projector'
+                        - 'inowas.scenarioanalysis.scenarioanalysis_list_projector'
+                        - 'inowas.tool.tools_projector'
+
+                    'Inowas\ScenarioAnalysis\Model\Event\ScenarioAnalysisWasCreated':
+                        - 'inowas.tool.tools_projector'
+                        - 'inowas.scenarioanalysis.scenarioanalysis_list_projector'
+                        - 'inowas.scenarioanalysis.scenario_list_projector'
+
+                    'Inowas\ScenarioAnalysis\Model\Event\ScenarioAnalysisWasDeleted':
+                        - 'inowas.scenarioanalysis.delete_scenario_analysis_process_manager'
+                        - 'inowas.tool.tools_projector'
                         - 'inowas.scenarioanalysis.scenarioanalysis_list_projector'
                         - 'inowas.scenarioanalysis.scenario_list_projector'
 
@@ -200,14 +219,7 @@ prooph_service_bus:
                         - 'inowas.scenarioanalysis.scenarioanalysis_list_projector'
                         - 'inowas.scenarioanalysis.scenario_list_projector'
 
-                    'Inowas\ScenarioAnalysis\Model\Event\ScenarioAnalysisWasCloned':
-                        - 'inowas.tool.tools_projector'
-                        - 'inowas.scenarioanalysis.clone_scenario_analysis_process_manager'
-                        - 'inowas.scenarioanalysis.scenario_list_projector'
-                        - 'inowas.scenarioanalysis.scenarioanalysis_list_projector'
-
-                    'Inowas\ScenarioAnalysis\Model\Event\ScenarioAnalysisWasCreated':
-                        - 'inowas.tool.tools_projector'
+                    'Inowas\ScenarioAnalysis\Model\Event\ScenarioWasDeleted':
                         - 'inowas.scenarioanalysis.scenarioanalysis_list_projector'
                         - 'inowas.scenarioanalysis.scenario_list_projector'
 

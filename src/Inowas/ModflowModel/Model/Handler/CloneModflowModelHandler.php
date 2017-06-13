@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Inowas\ModflowModel\Model\Handler;
 
 use Inowas\ModflowCalculation\Infrastructure\Projection\Calculation\CalculationListFinder;
+use Inowas\ModflowCalculation\Model\Command\CalculateModflowModelCalculation;
 use Inowas\ModflowCalculation\Model\Command\CloneModflowModelCalculation;
 use Inowas\ModflowModel\Model\Command\CloneModflowModel;
 use Inowas\ModflowModel\Model\Exception\ModflowModelNotFoundException;
@@ -18,6 +19,7 @@ final class CloneModflowModelHandler
 
     /** @var  CommandBus */
     private $commandBus;
+
 
     /** @var  ModflowModelList */
     private $modelList;
@@ -40,8 +42,9 @@ final class CloneModflowModelHandler
         // Let's clone the modflowCalculation first with the new calculationId
         $oldCalculationId = $modflowModel->calculationId();
         $this->commandBus->dispatch(CloneModflowModelCalculation::byUserWithModelId($command->userId(), $oldCalculationId, $command->newCalculationId(), $command->baseModelId(), $command->newModelId()));
+        $this->commandBus->dispatch(CalculateModflowModelCalculation::byUserWithCalculationId($command->userId(), $command->newCalculationId()));
 
-        // Clone the soilmodel and model if necessary
+        // Clone the soilmodel and model if set
         if ($command->cloneSoilmodel()) {
             $this->commandBus->dispatch(CloneSoilmodel::byUserWithModelId($command->soilmodelId(), $command->userId(), $modflowModel->soilmodelId()));
         }
@@ -54,7 +57,6 @@ final class CloneModflowModelHandler
             $command->newCalculationId(),
             $modflowModel
         );
-
         $this->modelList->add($newModel);
     }
 }
