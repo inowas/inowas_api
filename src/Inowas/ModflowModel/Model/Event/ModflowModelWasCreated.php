@@ -53,6 +53,9 @@ class ModflowModelWasCreated extends AggregateChanged
     /** @var  TimeUnit */
     private $timeUnit;
 
+    /** @var  ModflowId */
+    protected $calculationId;
+
     /** @noinspection MoreThanThreeArgumentsInspection
      * @param ModflowId $modflowId
      * @param UserId $userId
@@ -65,9 +68,23 @@ class ModflowModelWasCreated extends AggregateChanged
      * @param BoundingBox $boundingBox
      * @param LengthUnit $lengthUnit
      * @param TimeUnit $timeUnit
+     * @param ModflowId $calculationId
      * @return ModflowModelWasCreated
      */
-    public static function withParameters(ModflowId $modflowId, UserId $userId, ModelName $name, ModelDescription $description, SoilmodelId $soilmodelId, Area $area, array $boundaries, GridSize $gridSize, BoundingBox $boundingBox, LengthUnit $lengthUnit, TimeUnit $timeUnit): ModflowModelWasCreated
+    public static function withParameters(
+        ModflowId $modflowId,
+        UserId $userId,
+        ModelName $name,
+        ModelDescription $description,
+        SoilmodelId $soilmodelId,
+        Area $area,
+        array $boundaries,
+        GridSize $gridSize,
+        BoundingBox $boundingBox,
+        LengthUnit $lengthUnit,
+        TimeUnit $timeUnit,
+        ModflowId $calculationId
+    ): ModflowModelWasCreated
     {
         $event = self::occur($modflowId->toString(),[
             'user_id' => $userId->toString(),
@@ -79,7 +96,8 @@ class ModflowModelWasCreated extends AggregateChanged
             'bounding_box' => $boundingBox->toArray(),
             'length_unit' => $lengthUnit->toInt(),
             'time_unit' => $timeUnit->toInt(),
-            'boundaries' => $boundaries
+            'boundaries' => $boundaries,
+            'calculation_id' => $calculationId->toString()
         ]);
 
         $event->modelId = $modflowId;
@@ -90,6 +108,7 @@ class ModflowModelWasCreated extends AggregateChanged
         $event->lengthUnit = $lengthUnit;
         $event->timeUnit = $timeUnit;
         $event->soilmodelId = $soilmodelId;
+        $event->calculationId = $calculationId;
 
         return $event;
     }
@@ -191,5 +210,14 @@ class ModflowModelWasCreated extends AggregateChanged
         }
 
         return $this->timeUnit;
+    }
+
+    public function calculationId(): ModflowId
+    {
+        if ($this->calculationId === null){
+            $this->calculationId = ModflowId::fromString($this->payload['calculation_id']);
+        }
+
+        return $this->calculationId;
     }
 }

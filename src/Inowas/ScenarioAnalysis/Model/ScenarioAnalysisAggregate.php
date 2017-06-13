@@ -13,7 +13,7 @@ use Inowas\ScenarioAnalysis\Model\Event\ScenarioAnalysisNameWasChanged;
 use Inowas\ScenarioAnalysis\Model\Event\ScenarioAnalysisWasCloned;
 use Inowas\ScenarioAnalysis\Model\Event\ScenarioAnalysisWasCreated;
 use Inowas\ScenarioAnalysis\Model\Event\ScenarioWasCreated;
-use Inowas\ScenarioAnalysis\Model\Event\ScenarioWasRemoved;
+use Inowas\ScenarioAnalysis\Model\Event\ScenarioWasDeleted;
 use Prooph\EventSourcing\AggregateRoot;
 
 class ScenarioAnalysisAggregate extends AggregateRoot
@@ -118,7 +118,7 @@ class ScenarioAnalysisAggregate extends AggregateRoot
         }
 
         $this->scenarios = array_diff($this->scenarios, [$scenarioId->toString()]);
-        $this->recordThat(ScenarioWasRemoved::from($this->id, $userId, $scenarioId));
+        $this->recordThat(ScenarioWasDeleted::from($this->id, $userId, $scenarioId));
     }
 
     public function changeName(UserId $userId, ScenarioAnalysisName $name): void
@@ -193,7 +193,7 @@ class ScenarioAnalysisAggregate extends AggregateRoot
         $this->scenarios[] = $event->scenarioId()->toString();
     }
 
-    protected function whenScenarioWasRemoved(ScenarioWasRemoved $event): void
+    protected function whenScenarioWasRemoved(ScenarioWasDeleted $event): void
     {
         $this->scenarios = array_diff($this->scenarios, [$event->scenarioId()->toString()]);
     }

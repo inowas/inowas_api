@@ -36,7 +36,8 @@ class ModelProjector extends AbstractDoctrineConnectionProjector
         $table->addColumn('id', 'integer', array('unsigned' => true, 'autoincrement' => true));
         $table->addColumn('model_id', 'string', ['length' => 36]);
         $table->addColumn('user_id', 'string', ['length' => 36]);
-        $table->addColumn('soilmodel_id', 'string', ['length' => 36, 'notnull' => false]);
+        $table->addColumn('soilmodel_id', 'string', ['length' => 36]);
+        $table->addColumn('calculation_id', 'string', ['length' => 36]);
         $table->addColumn('user_name', 'string', ['length' => 255]);
         $table->addColumn('name', 'string', ['length' => 255]);
         $table->addColumn('description', 'string', ['length' => 255]);
@@ -93,6 +94,7 @@ class ModelProjector extends AbstractDoctrineConnectionProjector
             'user_id' => $event->userId()->toString(),
             'user_name' => $this->getUserNameByUserId($event->userId()->toString()),
             'soilmodel_id' => $event->soilmodelId()->toString(),
+            'calculation_id' => $event->calculationId()->toString(),
             'name' => $event->name()->toString(),
             'description' => $event->description()->toString(),
             'area' => $event->area()->geometry()->toJson(),
@@ -119,6 +121,7 @@ class ModelProjector extends AbstractDoctrineConnectionProjector
                 'user_id' => $event->userId()->toString(),
                 'user_name' => $this->getUserNameByUserId($event->userId()->toString()),
                 'soilmodel_id' => $event->soilmodelId()->toString(),
+                'calculation_id' => $event->calculationId()->toString(),
                 'name' => $event->name()->toString(),
                 'description' => $event->description()->toString(),
                 'area' => $row['area'],

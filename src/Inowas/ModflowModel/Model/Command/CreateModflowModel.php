@@ -90,6 +90,44 @@ class CreateModflowModel extends Command implements PayloadConstructable
         );
     }
 
+    /** @noinspection MoreThanThreeArgumentsInspection
+     * @param UserId $userId
+     * @param ModflowId $modelId
+     * @param ModelName $name
+     * @param ModelDescription $description
+     * @param Area $area
+     * @param GridSize $gridSize
+     * @param TimeUnit $timeUnit
+     * @param LengthUnit $lengthUnit
+     * @param ModflowId $calculationId
+     * @return CreateModflowModel
+     */
+    public static function newWithIdNameDescriptionUnitsAndCalculationId(
+        UserId $userId,
+        ModflowId $modelId,
+        ModelName $name,
+        ModelDescription $description,
+        Area $area,
+        GridSize $gridSize,
+        TimeUnit $timeUnit,
+        LengthUnit $lengthUnit,
+        ModflowId $calculationId
+    ): CreateModflowModel
+    {
+        return new self(
+            [
+                'user_id' => $userId->toString(),
+                'modflowmodel_id' => $modelId->toString(),
+                'name' => $name->toString(),
+                'description' => $description->toString(),
+                'area' => serialize($area),
+                'grid_size' => $gridSize->toArray(),
+                'time_unit' => $timeUnit->toValue(),
+                'length_unit' => $lengthUnit->toValue(),
+                'calculation_id' => $calculationId->toString()
+            ]
+        );
+    }
 
 
     public function userId(): UserId
@@ -146,5 +184,14 @@ class CreateModflowModel extends Command implements PayloadConstructable
         }
 
         return LengthUnit::fromValue($this->payload['length_unit']);
+    }
+
+    public function calculationId(): ?ModflowId
+    {
+        if (! array_key_exists('calculation_id', $this->payload)){
+            return null;
+        }
+
+        return ModflowId::fromString($this->payload['calculation_id']);
     }
 }

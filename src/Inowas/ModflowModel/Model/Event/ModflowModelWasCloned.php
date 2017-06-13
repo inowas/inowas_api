@@ -58,6 +58,9 @@ class ModflowModelWasCloned extends AggregateChanged
     /** @var  TimeUnit */
     private $timeUnit;
 
+    /** @var  ModflowId */
+    protected $calculationId;
+
     /** @noinspection MoreThanThreeArgumentsInspection
      * @param ModflowId $baseModelId
      * @param UserId $baseModelUserId
@@ -72,6 +75,7 @@ class ModflowModelWasCloned extends AggregateChanged
      * @param BoundingBox $boundingBox
      * @param LengthUnit $lengthUnit
      * @param TimeUnit $timeUnit
+     * @param ModflowId $calculationId
      * @return ModflowModelWasCloned
      */
     public static function fromModelAndUserWithParameters(
@@ -87,7 +91,8 @@ class ModflowModelWasCloned extends AggregateChanged
         GridSize $gridSize,
         BoundingBox $boundingBox,
         LengthUnit $lengthUnit,
-        TimeUnit $timeUnit
+        TimeUnit $timeUnit,
+        ModflowId $calculationId
     ): ModflowModelWasCloned
     {
         $event = self::occur($modflowId->toString(),[
@@ -102,7 +107,8 @@ class ModflowModelWasCloned extends AggregateChanged
             'bounding_box' => $boundingBox->toArray(),
             'length_unit' => $lengthUnit->toInt(),
             'time_unit' => $timeUnit->toInt(),
-            'boundaries' => $boundaries
+            'boundaries' => $boundaries,
+            'calculation_id' => $calculationId->toString()
         ]);
 
         $event->baseModelId = $baseModelId;
@@ -117,6 +123,7 @@ class ModflowModelWasCloned extends AggregateChanged
         $event->boundingBox = $boundingBox;
         $event->lengthUnit = $lengthUnit;
         $event->timeUnit = $timeUnit;
+        $event->calculationId = $calculationId;
 
         return $event;
     }
@@ -237,5 +244,14 @@ class ModflowModelWasCloned extends AggregateChanged
         }
 
         return $this->timeUnit;
+    }
+
+    public function calculationId(): ModflowId
+    {
+        if ($this->calculationId === null){
+            $this->calculationId = ModflowId::fromString($this->payload['calculation_id']);
+        }
+
+        return $this->calculationId;
     }
 }

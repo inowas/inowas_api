@@ -99,6 +99,7 @@ class RioPrimero extends LoadScenarioBase
         $commandBus = $this->container->get('prooph_service_bus.modflow_command_bus');
         $ownerId = UserId::fromString($this->ownerId);
         $baseModelId = ModflowId::generate();
+        $calculationId = ModflowId::generate();
 
         $area = Area::create(
             BoundaryId::generate(),
@@ -116,7 +117,7 @@ class RioPrimero extends LoadScenarioBase
             ));
         $gridSize = GridSize::fromXY(75, 40);
 
-        $commandBus->dispatch(CreateModflowModel::newWithIdNameDescriptionAndUnits(
+        $commandBus->dispatch(CreateModflowModel::newWithIdNameDescriptionUnitsAndCalculationId(
             $ownerId,
             $baseModelId,
             ModelName::fromString('BaseModel Rio Primero 2015'),
@@ -124,7 +125,8 @@ class RioPrimero extends LoadScenarioBase
             $area,
             $gridSize,
             TimeUnit::fromInt(TimeUnit::DAYS),
-            LengthUnit::fromInt(LengthUnit::METERS)
+            LengthUnit::fromInt(LengthUnit::METERS),
+            $calculationId
         ));
 
         $box = $geoTools->projectBoundingBox(BoundingBox::fromCoordinates(-63.687336, -63.569260, -31.367449, -31.313615, 4326), Srid::fromInt(4326));
@@ -429,8 +431,8 @@ class RioPrimero extends LoadScenarioBase
             $commandBus->dispatch(AddBoundary::to($baseModelId, $ownerId, $wellBoundary));
         }
 
+
         /* Create calculation and calculate */
-        $calculationId = ModflowId::generate();
         $start = DateTime::fromDateTime(new \DateTime('2015-01-01'));
         $end = DateTime::fromDateTime(new \DateTime('2015-12-31'));
         $commandBus->dispatch(CreateModflowModelCalculation::byUserWithModelId($calculationId, $ownerId, $baseModelId, $start, $end));

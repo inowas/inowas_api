@@ -120,6 +120,21 @@ class ModelFinder
         return SoilmodelId::fromString($result['soilmodel_id']);
     }
 
+    public function getCalculationIdByModelId(ModflowId $modelId): ?ModflowId
+    {
+        $this->connection->setFetchMode(\PDO::FETCH_ASSOC);
+        $result = $this->connection->fetchAssoc(
+            sprintf('SELECT calculation_id FROM %s WHERE model_id = :model_id', Table::MODFLOWMODELS_LIST),
+            ['model_id' => $modelId->toString()]
+        );
+
+        if ($result === false){
+            return null;
+        }
+
+        return ModflowId::fromString($result['calculation_id']);
+    }
+
     public function getLengthUnitByModelId(ModflowId $modelId): ?LengthUnit
     {
         $this->connection->setFetchMode(\PDO::FETCH_ASSOC);

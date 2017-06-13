@@ -18,4 +18,3 @@ services:
         class: Inowas\ScenarioAnalysis\Model\Handler\RemoveScenarioHandler
         arguments:
           - '@scenarioanalysis_list'
-          - '@prooph_service_bus.modflow_command_bus'

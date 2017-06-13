@@ -13,22 +13,19 @@ use Inowas\ModflowCalculation\Model\Event\CalculationWasCreated;
 use Inowas\ModflowModel\Infrastructure\Projection\ModelList\ModelFinder;
 use Inowas\ScenarioAnalysis\Model\Event\ScenarioAnalysisWasCloned;
 use Inowas\ScenarioAnalysis\Model\Event\ScenarioAnalysisWasCreated;
+use Inowas\ScenarioAnalysis\Model\Event\ScenarioAnalysisWasDeleted;
 use Inowas\ScenarioAnalysis\Model\Event\ScenarioWasCloned;
 use Inowas\ScenarioAnalysis\Model\Event\ScenarioWasCreated;
-use Inowas\ScenarioAnalysis\Model\Event\ScenarioWasRemoved;
+use Inowas\ScenarioAnalysis\Model\Event\ScenarioWasDeleted;
 
 class ScenarioListProjector extends AbstractDoctrineConnectionProjector
 {
-
-    /** @var  CalculationListFinder */
-    private $calculationFinder;
 
     /** @var  ModelFinder */
     private $modelFinder;
 
     public function __construct(Connection $connection, ModelFinder $modelFinder, CalculationListFinder $calculationFinder)
     {
-        $this->calculationFinder = $calculationFinder;
         $this->modelFinder = $modelFinder;
 
         parent::__construct($connection);
@@ -53,7 +50,7 @@ class ScenarioListProjector extends AbstractDoctrineConnectionProjector
     {
         $baseModelName = $this->modelFinder->getModelNameByModelId($event->baseModelId());
         $baseModelDescription = $this->modelFinder->getModelDescriptionByModelId($event->baseModelId());
-        $calculationId = $this->calculationFinder->findLastCalculationByModelId($event->baseModelId());
+        $calculationId = $this->modelFinder->getCalculationIdByModelId($event->baseModelId());
 
         $this->connection->insert(Table::SCENARIO_LIST, array(
             'scenario_id' => $event->baseModelId()->toString(),
@@ -119,6 +116,14 @@ class ScenarioListProjector extends AbstractDoctrineConnectionProjector
         }
     }
 
+    public function onScenarioAnalysisWasDeleted(ScenarioAnalysisWasDeleted $event): void
+    {
+        $this->connection->delete(
+            Table::SCENARIO_LIST,
+            ['scenario_analysis_id' => $event->scenarioAnalysisId()->toString()]
+        );
+    }
+
     public function onScenarioWasCloned(ScenarioWasCloned $event): void
     {
         $this->connection->insert(Table::SCENARIO_LIST, array(
@@ -149,10 +154,13 @@ class ScenarioListProjector extends AbstractDoctrineConnectionProjector
         ));
     }
 
-    public function onScenarioWasRemoved(ScenarioWasRemoved $event): void
+    public function onScenarioWasRemoved(ScenarioWasDeleted $event): void
     {
         $this->connection->delete(Table::SCENARIO_LIST,
-            array('scenario_id' => $event->scenarioId()->toString(), 'scenario_analysis_id' => $event->scenarioAnalysisId()->toString())
+            [
+                'scenario_id' => $event->scenarioId()->toString(),
+                'scenario_analysis_id' => $event->scenarioAnalysisId()->toString()
+            ]
         );
     }
 

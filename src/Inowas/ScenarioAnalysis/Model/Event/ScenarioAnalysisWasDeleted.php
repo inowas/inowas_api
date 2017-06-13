@@ -6,29 +6,32 @@ namespace Inowas\ScenarioAnalysis\Model\Event;
 
 use Inowas\Common\Id\ModflowId;
 use Inowas\Common\Id\UserId;
+use Inowas\ScenarioAnalysis\Model\ScenarioAnalysisDescription;
 use Inowas\ScenarioAnalysis\Model\ScenarioAnalysisId;
+use Inowas\ScenarioAnalysis\Model\ScenarioAnalysisName;
 use Prooph\EventSourcing\AggregateChanged;
 
-class ScenarioWasRemoved extends AggregateChanged
+/** @noinspection LongInheritanceChainInspection */
+class ScenarioAnalysisWasDeleted extends AggregateChanged
 {
 
     /** @var  ScenarioAnalysisId */
     private $scenarioAnalysisId;
 
-    /** @var  ModflowId */
-    private $scenarioId;
-
     /** @var  UserId */
-    protected $userId;
+    private $userId;
 
-    public static function from(ScenarioAnalysisId $id, UserId $userId, ModflowId $scenarioId): ScenarioWasRemoved
+    /** @noinspection MoreThanThreeArgumentsInspection
+     * @param ScenarioAnalysisId $id
+     * @param UserId $userId
+     * @return ScenarioAnalysisWasDeleted
+     */
+    public static function byUserWithId(ScenarioAnalysisId $id, UserId $userId): ScenarioAnalysisWasDeleted
     {
-        $event = self::occur($id->toString(), [
-            'scenario_id' => $scenarioId->toString(),
-            'user_id' => $userId->toString(),
+        $event = self::occur($id->toString(),[
+            'user_id' => $userId->toString()
         ]);
 
-        $event->scenarioId = $scenarioId;
         $event->userId = $userId;
 
         return $event;
@@ -40,16 +43,7 @@ class ScenarioWasRemoved extends AggregateChanged
             $this->scenarioAnalysisId = ScenarioAnalysisId::fromString($this->aggregateId());
         }
 
-        return $this->scenarioAnalysisId();
-    }
-
-    public function scenarioId(): ModflowId
-    {
-        if ($this->scenarioId === null){
-            $this->scenarioId = ModflowId::fromString($this->payload['scenario_id']);
-        }
-
-        return $this->scenarioId;
+        return $this->scenarioAnalysisId;
     }
 
     public function userId(): UserId

@@ -11,12 +11,12 @@ use Prooph\Common\Messaging\Command;
 use Prooph\Common\Messaging\PayloadConstructable;
 use Prooph\Common\Messaging\PayloadTrait;
 
-class DeleteScenario extends Command implements PayloadConstructable
+class RemoveScenario extends Command implements PayloadConstructable
 {
 
     use PayloadTrait;
 
-    public static function withBaseModelId(ScenarioAnalysisId $scenarioAnalysisId, UserId $userId, ModflowId $modflowId): DeleteScenario
+    public static function withBaseModelId(ScenarioAnalysisId $scenarioAnalysisId, UserId $userId, ModflowId $modflowId): RemoveScenario
     {
         return new self([
             'scenarioanalysis_id' => $scenarioAnalysisId->toString(),

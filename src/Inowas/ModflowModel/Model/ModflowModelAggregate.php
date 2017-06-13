@@ -82,6 +82,9 @@ class ModflowModelAggregate extends AggregateRoot
     /** @var  TimeUnit */
     protected $timeUnit;
 
+    /** @var  ModflowId */
+    protected $calculationId;
+
     /** @noinspection MoreThanThreeArgumentsInspection
      * @param ModflowId $modflowId
      * @param UserId $userId
@@ -93,9 +96,22 @@ class ModflowModelAggregate extends AggregateRoot
      * @param BoundingBox $boundingBox
      * @param LengthUnit $lengthUnit
      * @param TimeUnit $timeUnit
+     * @param ModflowId $calculationId
      * @return ModflowModelAggregate
      */
-    public static function create(ModflowId $modflowId, UserId $userId, ModelName $name, ModelDescription $description, SoilmodelId $soilmodelId, Area $area, GridSize $gridSize, BoundingBox $boundingBox, LengthUnit $lengthUnit, TimeUnit $timeUnit): ModflowModelAggregate
+    public static function create(
+        ModflowId $modflowId,
+        UserId $userId,
+        ModelName $name,
+        ModelDescription $description,
+        SoilmodelId $soilmodelId,
+        Area $area,
+        GridSize $gridSize,
+        BoundingBox $boundingBox,
+        LengthUnit $lengthUnit,
+        TimeUnit $timeUnit,
+        ModflowId $calculationId
+    ): ModflowModelAggregate
     {
         $self = new self();
         $self->modflowId = $modflowId;
@@ -109,6 +125,7 @@ class ModflowModelAggregate extends AggregateRoot
         $self->lengthUnit = $lengthUnit;
         $self->timeUnit = $timeUnit;
         $self->boundaries = [];
+        $self->calculationId = $calculationId;
 
         $self->recordThat(ModflowModelWasCreated::withParameters(
             $self->modflowId,
@@ -121,8 +138,9 @@ class ModflowModelAggregate extends AggregateRoot
             $self->gridSize,
             $self->boundingBox,
             $self->lengthUnit,
-            $self->timeUnit)
-        );
+            $self->timeUnit,
+            $self->calculationId
+        ));
 
         return $self;
     }
@@ -132,10 +150,17 @@ class ModflowModelAggregate extends AggregateRoot
      * @param ModflowId $newModelId
      * @param UserId $newUserId
      * @param SoilmodelId $soilmodelId
+     * @param ModflowId $calculationId
      * @param ModflowModelAggregate $model
      * @return ModflowModelAggregate
      */
-    public static function cloneWithIdUserSoilmodelIdAndAggregate(ModflowId $newModelId, UserId $newUserId, SoilmodelId $soilmodelId, ModflowModelAggregate $model): ModflowModelAggregate
+    public static function cloneWithIdUserSoilmodelCalculationIdAndAggregate(
+        ModflowId $newModelId,
+        UserId $newUserId,
+        SoilmodelId $soilmodelId,
+        ModflowId $calculationId,
+        ModflowModelAggregate $model
+    ): ModflowModelAggregate
     {
         $self = new self();
         $self->modflowId = $newModelId;
@@ -150,6 +175,7 @@ class ModflowModelAggregate extends AggregateRoot
         $self->lengthUnit = $model->lengthUnit();
         $self->timeUnit = $model->timeUnit();
         $self->boundaries = $model->boundaries();
+        $self->calculationId = $calculationId;
 
         $self->recordThat(ModflowModelWasCloned::fromModelAndUserWithParameters(
             $model->modflowModelId(),
@@ -164,7 +190,8 @@ class ModflowModelAggregate extends AggregateRoot
             $self->gridSize,
             $self->boundingBox,
             $self->lengthUnit,
-            $self->timeUnit
+            $self->timeUnit,
+            $self->calculationId
         ));
 
         return $self;
@@ -429,6 +456,11 @@ class ModflowModelAggregate extends AggregateRoot
         return $this->timeUnit;
     }
 
+    public function calculationId(): ModflowId
+    {
+        return $this->calculationId;
+    }
+
     protected function whenAreaActiveCellsWereUpdated(AreaActiveCellsWereUpdated $event): void
     {
         $this->area = $this->area->updateActiveCells($event->activeCells());
@@ -507,6 +539,7 @@ class ModflowModelAggregate extends AggregateRoot
         $this->boundingBox = $event->boundingBox();
         $this->lengthUnit = $event->lengthUnit();
         $this->timeUnit = $event->timeUnit();
+
     }
 
     protected function whenModflowModelWasCreated(ModflowModelWasCreated $event): void
@@ -522,6 +555,7 @@ class ModflowModelAggregate extends AggregateRoot
         $this->boundingBox = $event->boundingBox();
         $this->lengthUnit = $event->lengthUnit();
         $this->timeUnit = $event->timeUnit();
+        $this->calculationId = $event->calculationId();
     }
 
     protected function whenNameWasChanged(NameWasChanged $event): void
