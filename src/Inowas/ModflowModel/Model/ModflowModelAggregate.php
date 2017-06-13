@@ -291,7 +291,7 @@ class ModflowModelAggregate extends AggregateRoot
 
     public function addBoundaryToModel(UserId $userId, ModflowBoundary $boundary): void
     {
-        if (! in_array($boundary->boundaryId()->toString(), $this->boundaries)){
+        if (! in_array($boundary->boundaryId()->toString(), $this->boundaries, true)){
             $this->boundaries[] = $boundary->boundaryId()->toString();
             $this->recordThat(BoundaryWasAdded::to(
                 $this->modflowId,
@@ -303,7 +303,7 @@ class ModflowModelAggregate extends AggregateRoot
 
     public function addBoundaryObservationPoint(UserId $userId, BoundaryId $boundaryId, ObservationPoint $observationPoint): void
     {
-        if (in_array($boundaryId->toString(), $this->boundaries)) {
+        if (in_array($boundaryId->toString(), $this->boundaries, true)) {
             $this->recordThat(BoundaryObservationPointWasAdded::byUserWithModflowAndBoundaryId(
                 $userId,
                 $this->modflowId,

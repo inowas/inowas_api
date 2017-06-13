@@ -36,10 +36,10 @@ final class CalculateModflowModelCalculationHandler
         $calculation = $this->calculationList->get($command->calculationId());
 
         if ($calculation) {
-            $calculation->calculationHasQueued();
+            #$calculation->calculationHasQueued();
             $calculationConfiguration = $this->calculationFinder->getCalculationConfiguration($command->calculationId());
             $this->modflowCalculation->calculate($calculationConfiguration);
-            $calculation->calculationHasStarted();
+            #$calculation->calculationHasStarted();
         }
     }
 }

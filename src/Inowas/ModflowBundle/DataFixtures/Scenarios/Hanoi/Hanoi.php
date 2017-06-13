@@ -38,14 +38,13 @@ use Inowas\ModflowModel\Model\Command\AddBoundary;
 use Inowas\ModflowCalculation\Model\Command\CalculateModflowModelCalculation;
 use Inowas\ModflowCalculation\Model\Command\ChangeFlowPackage;
 use Inowas\ModflowModel\Model\Command\ChangeModflowModelBoundingBox;
-use Inowas\ModflowModel\Model\Command\ChangeModflowModelDescription;
-use Inowas\ModflowModel\Model\Command\ChangeModflowModelName;
 use Inowas\ModflowModel\Model\Command\ChangeModflowModelSoilmodelId;
 use Inowas\ModflowModel\Model\Command\CreateModflowModel;
 use Inowas\ModflowCalculation\Model\Command\CreateModflowModelCalculation;
 use Inowas\Common\Grid\BoundingBox;
 use Inowas\Common\Grid\GridSize;
 use Inowas\Common\Id\ModflowId;
+use Inowas\ModflowModel\Model\Command\FinishEditingBoundaries;
 use Inowas\ModflowModel\Model\Command\UpdateBoundaryGeometry;
 use Inowas\ModflowCalculation\Model\Command\UpdateCalculationPackageParameter;
 use Inowas\Common\Modflow\ModelName;
@@ -77,7 +76,7 @@ ini_set('memory_limit', '2048M');
 
 class Hanoi extends LoadScenarioBase
 {
-    public function load()
+    public function load(): void
     {
         $this->loadUsers($this->container->get('fos_user.user_manager'));
         $geoTools = $this->container->get('inowas.geotools.geotools_service');
@@ -86,6 +85,8 @@ class Hanoi extends LoadScenarioBase
         $commandBus = $this->container->get('prooph_service_bus.modflow_command_bus');
         $ownerId = UserId::fromString($this->ownerId);
         $modelId = ModflowId::generate();
+        $calculationId = ModflowId::generate();
+
         $area = Area::create(BoundaryId::generate(), BoundaryName::fromString('Hanoi Area'), new Polygon(array(
             array(
                 array(105.790767733626808, 21.094425932026443),
@@ -135,12 +136,18 @@ class Hanoi extends LoadScenarioBase
             )
         ), 4326));
         $gridSize = GridSize::fromXY(165, 175);
-        $commandBus->dispatch(CreateModflowModel::newWithIdAndUnits($ownerId, $modelId, $area, $gridSize, TimeUnit::fromString(TimeUnit::DAYS), LengthUnit::fromString(LengthUnit::METERS)));
-        $commandBus->dispatch(ChangeModflowModelName::forModflowModel($ownerId, $modelId, ModelName::fromString('Base Scenario Hanoi 2005-2007')));
-        $commandBus->dispatch(ChangeModflowModelDescription::forModflowModel(
+
+        $commandBus->dispatch(CreateModflowModel::newWithIdNameDescriptionUnitsAndCalculationId(
             $ownerId,
             $modelId,
-            ModelDescription::fromString('Calibrated groundwater base model, 2005-2007.')));
+            ModelName::fromString('Base Scenario Hanoi 2005-2007'),
+            ModelDescription::fromString('Calibrated groundwater base model, 2005-2007.'),
+            $area,
+            $gridSize,
+            TimeUnit::fromInt(TimeUnit::DAYS),
+            LengthUnit::fromInt(LengthUnit::METERS),
+            $calculationId
+        ));
 
         $box = $geoTools->projectBoundingBox(BoundingBox::fromCoordinates(578205, 594692, 2316000, 2333500, 32648), Srid::fromInt(4326));
         $boundingBox = BoundingBox::fromEPSG4326Coordinates($box->xMin(), $box->xMax(), $box->yMin(), $box->yMax(), $box->dX(), $box->dY());
@@ -180,20 +187,20 @@ class Hanoi extends LoadScenarioBase
             if ($key === 0) {
                 /* Load Top-Elevation for the first layer */
                 echo sprintf("Load top-elevation %s Memory usage\r\n", memory_get_usage());
-                $string = file_get_contents(__DIR__ . "/extracted/top.json");
+                $string = file_get_contents(__DIR__ . '/extracted/top.json');
                 $topElevation = TopElevation::fromLayerValue(json_decode($string, true));
                 $commandBus->dispatch(UpdateGeologicalLayerProperty::forSoilmodel($ownerId, $soilModelId, $layerId, $topElevation));
             }
 
             /* Load Bottom-Elevation for all layers */
             echo sprintf("Load bottom-elevation %s Memory usage\r\n", memory_get_usage());
-            $string = file_get_contents(__DIR__ . "/extracted/botm.json");
+            $string = file_get_contents(__DIR__ . '/extracted/botm.json');
             $bottomElevation = BottomElevation::fromLayerValue(json_decode($string, true)[$layerNumber->toInteger()]);
             $commandBus->dispatch(UpdateGeologicalLayerProperty::forSoilmodel($ownerId, $soilModelId, $layerId, $bottomElevation));
 
             /* Load Hk for all layers */
             echo sprintf("Load Hydraulic Conductivity. %s Memory usage\r\n", memory_get_usage());
-            $string = file_get_contents(__DIR__ . "/extracted/hk.json");
+            $string = file_get_contents(__DIR__ . '/extracted/hk.json');
             $hk = HydraulicConductivityX::fromLayerValue(json_decode($string, true)[$layerNumber->toInteger()]);
             $commandBus->dispatch(UpdateGeologicalLayerProperty::forSoilmodel($ownerId, $soilModelId, $layerId, $hk));
 
@@ -204,19 +211,19 @@ class Hanoi extends LoadScenarioBase
 
             /* Load Vertical Conductivity for all layers */
             echo sprintf("Load vertical Hydraulic Conductivity. %s Memory usage\r\n", memory_get_usage());
-            $string = file_get_contents(__DIR__ . "/extracted/vka.json");
+            $string = file_get_contents(__DIR__ . '/extracted/vka.json');
             $vka = VerticalHydraulicConductivity::fromLayerValue(json_decode($string, true)[$layerNumber->toInteger()]);
             $commandBus->dispatch(UpdateGeologicalLayerProperty::forSoilmodel($ownerId, $soilModelId, $layerId, $vka));
 
             /* Load Specific Storage for all layers */
             echo sprintf("Load Specific Storage. %s Memory usage\r\n", memory_get_usage());
-            $string = file_get_contents(__DIR__ . "/extracted/ss.json");
+            $string = file_get_contents(__DIR__ . '/extracted/ss.json');
             $ss = SpecificStorage::fromLayerValue(json_decode($string, true)[$layerNumber->toInteger()]);
             $commandBus->dispatch(UpdateGeologicalLayerProperty::forSoilmodel($ownerId, $soilModelId, $layerId, $ss));
 
             /* Load Specific Yield for all layers */
             echo sprintf("Load Specific Yield. %s Memory usage\r\n", memory_get_usage());
-            $string = file_get_contents(__DIR__ . "/extracted/sy.json");
+            $string = file_get_contents(__DIR__ . '/extracted/sy.json');
             $sy = SpecificYield::fromLayerValue(json_decode($string, true)[$layerNumber->toInteger()]);
             $commandBus->dispatch(UpdateGeologicalLayerProperty::forSoilmodel($ownerId, $soilModelId, $layerId, $sy));
         }
@@ -408,16 +415,18 @@ class Hanoi extends LoadScenarioBase
         /*
          * Add Wells for the BaseScenario
          */
-        $fileName = __DIR__ . "/data/wells_basecase.csv";
+        $fileName = __DIR__ . '/data/wells_basecase.csv';
         $wells = $this->loadRowsFromCsv($fileName);
         $header = $this->loadHeaderFromCsv($fileName);
         $dates = $this->getDates($header);
 
         foreach ($wells as $key => $well) {
 
+            $boundaryName = BoundaryName::fromString($well['Name']);
+
             $wellBoundary = WellBoundary::createWithParams(
                 BoundaryId::generate(),
-                BoundaryName::fromString($well['Name']),
+                $boundaryName,
                 Geometry::fromPoint($geoTools->projectPoint(new Point($well['x'], $well['y'], $well['srid']), Srid::fromInt(4326))),
                 WellType::fromString($well['type']),
                 AffectedLayers::createWithLayerNumber(LayerNumber::fromInteger((int)$well['layer']-1))
@@ -435,14 +444,14 @@ class Hanoi extends LoadScenarioBase
                 }
             }
 
-            echo sprintf('Add Well %s to BaseModel'."\r\n", $wellBoundary->name()->toString());
+            echo sprintf('Add Well %s to BaseModel'."\r\n", $boundaryName->toString());
             $commandBus->dispatch(AddBoundary::to($modelId, $ownerId, $wellBoundary));
         }
 
         /*
          * Add River for the baseScenario
          */
-        $riverPoints = $this->loadRowsFromCsv(__DIR__ . "/data/river_geometry_basecase.csv");
+        $riverPoints = $this->loadRowsFromCsv(__DIR__ . '/data/river_geometry_basecase.csv');
         foreach ($riverPoints as $key => $point){
             $riverPoints[$key] = $geoTools->projectPoint(new Point($point['x'], $point['y'], $point['srid']), Srid::fromInt(4326));
         }
@@ -454,8 +463,8 @@ class Hanoi extends LoadScenarioBase
             Geometry::fromLineString(new LineString($riverPoints, 4326))
         );
 
-        $observationPoints = $this->loadRowsFromCsv(__DIR__ . "/data/river_stages_basecase.csv");
-        $header = $this->loadHeaderFromCsv(__DIR__ . "/data/river_stages_basecase.csv");
+        $observationPoints = $this->loadRowsFromCsv(__DIR__ . '/data/river_stages_basecase.csv');
+        $header = $this->loadHeaderFromCsv(__DIR__ . '/data/river_stages_basecase.csv');
         $dates = $this->getDates($header);
 
         foreach ($observationPoints as $op){
@@ -481,15 +490,17 @@ class Hanoi extends LoadScenarioBase
         /*
          * Add ConstantHead for the baseScenario
          */
-        $chdPoints = $this->loadRowsFromCsv(__DIR__ . "/data/chd_geometry_basecase.csv");
+        $chdPoints = $this->loadRowsFromCsv(__DIR__ . '/data/chd_geometry_basecase.csv');
         foreach ($chdPoints as $key => $point){
             $chdPoints[$key] = $geoTools->projectPoint(new Point($point['x'], $point['y'], $point['srid']), Srid::fromInt(4326));
         }
 
+        $boundaryName = BoundaryName::fromString('ChdBoundary');
+
         /** @var ConstantHeadBoundary $chdBoundary */
         $chdBoundary = ConstantHeadBoundary::createWithParams(
             BoundaryId::generate(),
-            BoundaryName::fromString('ChdBoundary'),
+            $boundaryName,
             Geometry::fromLineString(new LineString($chdPoints, 4326)),
             AffectedLayers::createWithLayerNumbers(array(
                 LayerNumber::fromInteger(2),
@@ -498,8 +509,8 @@ class Hanoi extends LoadScenarioBase
             )
         );
 
-        $observationPoints = $this->loadRowsFromCsv(__DIR__ . "/data/chd_stages_basecase.csv");
-        $header = $this->loadHeaderFromCsv(__DIR__ . "/data/chd_stages_basecase.csv");
+        $observationPoints = $this->loadRowsFromCsv(__DIR__ . '/data/chd_stages_basecase.csv');
+        $header = $this->loadHeaderFromCsv(__DIR__ . '/data/chd_stages_basecase.csv');
         $dates = $this->getDates($header);
 
         foreach ($observationPoints as $op){
@@ -522,15 +533,18 @@ class Hanoi extends LoadScenarioBase
                 ));
             }
         }
-        echo sprintf("Add Chd-Boundary %s.\r\n", $chdBoundary->name()->toString());
+        echo sprintf("Add Chd-Boundary %s.\r\n", $boundaryName->toString());
         $commandBus->dispatch(AddBoundary::to($modelId, $ownerId, $chdBoundary));
 
-        $calculationList = [];
-        $calculationId = ModflowId::generate();
         $start = DateTime::fromDateTime(new \DateTime('2005-01-01'));
         $end = DateTime::fromDateTime(new \DateTime('2007-12-31'));
         $commandBus->dispatch(CreateModflowModelCalculation::byUserWithModelId($calculationId, $ownerId, $modelId, $start, $end));
-        $calculationList[] = [$calculationId, $ownerId, $modelId];
+        $commandBus->dispatch(ChangeFlowPackage::byUserWithCalculationId($ownerId, $calculationId, PackageName::fromString('upw')));
+        $commandBus->dispatch(UpdateCalculationPackageParameter::byUserWithModelId($calculationId, $ownerId, $modelId, 'upw', 'layTyp', Laytyp::fromInt(1)));
+
+        $ocStressPeriodData = OcStressPeriodData::create()->addStressPeriod(OcStressPeriod::fromParams(0,0, ['save head', 'save drawdown']));
+        $commandBus->dispatch(UpdateCalculationPackageParameter::byUserWithModelId($calculationId, $ownerId, $modelId, 'oc', 'ocStressPeriodData', $ocStressPeriodData));
+        $commandBus->dispatch(CalculateModflowModelCalculation::byUserWithCalculationId($ownerId, $calculationId));
 
         /* ------- */
 
@@ -558,6 +572,7 @@ class Hanoi extends LoadScenarioBase
             ModelName::fromString('Scenario 1'),
             ModelDescription::fromString('Simulation of MAR type river bank filtration'))
         );
+
         $boundariesFinder = $this->container->get('inowas.modflowmodel.boundaries_finder');
         $rbfRelocatedWellNamesAndGeometry = array(
             'H07_6' => $geoTools->projectPoint(new Point(588637, 2326840, 32648), Srid::fromInt(4326)),
@@ -571,20 +586,18 @@ class Hanoi extends LoadScenarioBase
             'H8_8'  => $geoTools->projectPoint(new Point(593443, 2321233, 32648), Srid::fromInt(4326)),
             'H9_1'  => $geoTools->projectPoint(new Point(584649, 2331729, 32648), Srid::fromInt(4326))
         );
+
         foreach ($rbfRelocatedWellNamesAndGeometry as $name => $geometry) {
             /** @var BoundaryId[] $boundaryIds */
             $boundaryIds = $boundariesFinder->getBoundaryIdsByName($scenarioId, BoundaryName::fromString($name));
-            if (count($boundaryIds)==0){continue;}
+            if (count($boundaryIds) === 0){continue;}
             echo sprintf("Move Well %s.\r\n", $name);
             $boundaryId = $boundaryIds[0];
             $geometry = Geometry::fromPoint($geometry);
             $commandBus->dispatch(UpdateBoundaryGeometry::byUser($ownerId, $scenarioId, $boundaryId, $geometry));
         }
 
-        /* Create Calculation and Calculate */
-        $calculationId = ModflowId::generate();
-        $commandBus->dispatch(CreateModflowModelCalculation::byUserWithModelId($calculationId, $ownerId, $scenarioId, $start, $end));
-        $calculationList[] = [$calculationId, $ownerId, $scenarioId];
+        $commandBus->dispatch(FinishEditingBoundaries::to($scenarioId, $ownerId));
 
         /*
          * Begin add Scenario 2
@@ -628,12 +641,7 @@ class Hanoi extends LoadScenarioBase
             $commandBus->dispatch(AddBoundary::to($scenarioId, $ownerId, $wellBoundary));
         }
 
-        /* Calculation */
-        $calculationId = ModflowId::generate();
-        $start = DateTime::fromDateTime(new \DateTime('2005-01-01'));
-        $end = DateTime::fromDateTime(new \DateTime('2007-12-31'));
-        $commandBus->dispatch(CreateModflowModelCalculation::byUserWithModelId($calculationId, $ownerId, $scenarioId, $start, $end));
-        $calculationList[] = [$calculationId, $ownerId, $scenarioId];
+        $commandBus->dispatch(FinishEditingBoundaries::to($scenarioId, $ownerId));
 
         /*
          * Begin add Scenario 3
@@ -664,7 +672,7 @@ class Hanoi extends LoadScenarioBase
         foreach ($rbfRelocatedWellNamesAndGeometry as $name => $geometry) {
             /** @var BoundaryId[] $boundaryIds */
             $boundaryIds = $boundariesFinder->getBoundaryIdsByName($scenarioId, BoundaryName::fromString($name));
-            if (count($boundaryIds)==0){continue;}
+            if (count($boundaryIds)===0){continue;}
             echo sprintf("Move Well %s.\r\n", $name);
             $boundaryId = $boundaryIds[0];
             $geometry = Geometry::fromPoint($geometry);
@@ -687,20 +695,6 @@ class Hanoi extends LoadScenarioBase
             $commandBus->dispatch(AddBoundary::to($scenarioId, $ownerId, $wellBoundary));
         }
 
-        /* Add Head Results */
-        $calculationId = ModflowId::generate();
-        $start = DateTime::fromDateTime(new \DateTime('2005-01-01'));
-        $end = DateTime::fromDateTime(new \DateTime('2007-12-31'));
-        $commandBus->dispatch(CreateModflowModelCalculation::byUserWithModelId($calculationId, $ownerId, $scenarioId, $start, $end));
-        $calculationList[] = [$calculationId, $ownerId, $scenarioId];
-
-        foreach ($calculationList as $calculation) {
-            $commandBus->dispatch(ChangeFlowPackage::byUserWithCalculationId($calculation[1], $calculation[0], PackageName::fromString('upw')));
-            $commandBus->dispatch(UpdateCalculationPackageParameter::byUserWithModelId($calculationId, $ownerId, $modelId, 'upw', 'layTyp', Laytyp::fromInt(1)));
-
-            $ocStressPeriodData = OcStressPeriodData::create()->addStressPeriod(OcStressPeriod::fromParams(0,0, ['save head', 'save drawdown']));
-            $commandBus->dispatch(UpdateCalculationPackageParameter::byUserWithModelId($calculation[0], $calculation[1], $calculation[2], 'oc', 'ocStressPeriodData', $ocStressPeriodData));
-            $commandBus->dispatch(CalculateModflowModelCalculation::byUserWithCalculationId($calculation[1], $calculation[0]));
-        }
+        $commandBus->dispatch(FinishEditingBoundaries::to($scenarioId, $ownerId));
     }
 }

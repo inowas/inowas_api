@@ -33,17 +33,28 @@ use Inowas\Common\Modflow\ModelDescription;
 use Inowas\Common\Modflow\ModelName;
 use Inowas\Common\Modflow\OcStressPeriod;
 use Inowas\Common\Modflow\OcStressPeriodData;
+use Inowas\Common\Modflow\PackageName;
 use Inowas\Common\Modflow\StressPeriod;
 use Inowas\Common\Modflow\StressPeriods;
 use Inowas\Common\Modflow\TimeUnit;
+use Inowas\Common\Soilmodel\BoreLogId;
+use Inowas\Common\Soilmodel\BoreLogLocation;
+use Inowas\Common\Soilmodel\BoreLogName;
 use Inowas\Common\Soilmodel\BottomElevation;
+use Inowas\Common\Soilmodel\Conductivity;
+use Inowas\Common\Soilmodel\HBottom;
+use Inowas\Common\Soilmodel\Horizon;
+use Inowas\Common\Soilmodel\HorizonId;
+use Inowas\Common\Soilmodel\HTop;
 use Inowas\Common\Soilmodel\HydraulicAnisotropy;
 use Inowas\Common\Soilmodel\HydraulicConductivityX;
 use Inowas\Common\Soilmodel\SpecificStorage;
 use Inowas\Common\Soilmodel\SpecificYield;
+use Inowas\Common\Soilmodel\Storage;
 use Inowas\Common\Soilmodel\TopElevation;
 use Inowas\Common\Soilmodel\VerticalHydraulicConductivity;
 use Inowas\ModflowCalculation\Model\Command\CalculateModflowModelCalculation;
+use Inowas\ModflowCalculation\Model\Command\ChangeFlowPackage;
 use Inowas\ModflowCalculation\Model\Command\CreateModflowModelCalculation;
 use Inowas\ModflowCalculation\Model\Command\UpdateCalculationPackageParameter;
 use Inowas\ModflowCalculation\Model\Command\UpdateCalculationStressperiods;
@@ -58,9 +69,12 @@ use Inowas\ScenarioAnalysis\Model\Command\CreateScenarioAnalysis;
 use Inowas\ScenarioAnalysis\Model\ScenarioAnalysisDescription;
 use Inowas\ScenarioAnalysis\Model\ScenarioAnalysisId;
 use Inowas\ScenarioAnalysis\Model\ScenarioAnalysisName;
+use Inowas\Soilmodel\Model\Command\AddBoreLogToSoilmodel;
 use Inowas\Soilmodel\Model\Command\AddGeologicalLayerToSoilmodel;
+use Inowas\Soilmodel\Model\Command\AddHorizonToBoreLog;
 use Inowas\Soilmodel\Model\Command\ChangeSoilmodelDescription;
 use Inowas\Soilmodel\Model\Command\ChangeSoilmodelName;
+use Inowas\Soilmodel\Model\Command\CreateBoreLog;
 use Inowas\Soilmodel\Model\Command\CreateSoilmodel;
 use Inowas\Common\Soilmodel\GeologicalLayer;
 use Inowas\Common\Soilmodel\GeologicalLayerDescription;
@@ -70,6 +84,7 @@ use Inowas\Common\Soilmodel\GeologicalLayerNumber;
 use Inowas\Common\Soilmodel\SoilmodelDescription;
 use Inowas\Common\Soilmodel\SoilmodelId;
 use Inowas\Common\Soilmodel\SoilmodelName;
+use Inowas\Soilmodel\Model\Command\InterpolateSoilmodel;
 use Inowas\Soilmodel\Model\Command\UpdateGeologicalLayerProperty;
 
 class RioPrimero extends LoadScenarioBase
@@ -153,7 +168,6 @@ class RioPrimero extends LoadScenarioBase
             $commandBus->dispatch(UpdateGeologicalLayerProperty::forSoilmodel($ownerId, $soilModelId, $layerId, SpecificYield::fromLayerValue(0.2)));
         }
 
-        /*
         $boreHoles = array(
             array('point', 'name', 'top', 'bot'),
             array(new Point(-63.64698, -31.32741, 4326), 'GP1', 465, 392),
@@ -203,7 +217,6 @@ class RioPrimero extends LoadScenarioBase
 
         echo sprintf("Interpolate soilmodel with %s Memory usage\r\n", memory_get_usage());
         $commandBus->dispatch(InterpolateSoilmodel::forSoilmodel($ownerId, $soilModelId, $boundingBox, $gridSize));
-        */
 
         /*
          * Add GeneralHeadBoundaries
@@ -423,9 +436,23 @@ class RioPrimero extends LoadScenarioBase
         $start = DateTime::fromDateTime(new \DateTime('2015-01-01'));
         $end = DateTime::fromDateTime(new \DateTime('2015-12-31'));
         $commandBus->dispatch(CreateModflowModelCalculation::byUserWithModelId($calculationId, $ownerId, $baseModelId, $start, $end));
+        $commandBus->dispatch(ChangeFlowPackage::byUserWithCalculationId($ownerId, $calculationId, PackageName::fromString('upw')));
 
         $stressperiods = StressPeriods::create($start, $end, TimeUnit::fromInt(TimeUnit::DAYS));
-        $stressperiods->addStressPeriod(StressPeriod::create(0, 365,1,1,true));
+        $stressperiods->addStressPeriod(StressPeriod::create(0, 30,1,1,true));
+        $stressperiods->addStressPeriod(StressPeriod::create(31, 30,1,1,false));
+        $stressperiods->addStressPeriod(StressPeriod::create(61, 30,1,1,false));
+        $stressperiods->addStressPeriod(StressPeriod::create(91, 30,1,1,false));
+        $stressperiods->addStressPeriod(StressPeriod::create(121, 30,1,1,false));
+        $stressperiods->addStressPeriod(StressPeriod::create(151, 30,1,1,false));
+        $stressperiods->addStressPeriod(StressPeriod::create(181, 30,1,1,false));
+        $stressperiods->addStressPeriod(StressPeriod::create(211, 30,1,1,false));
+        $stressperiods->addStressPeriod(StressPeriod::create(241, 30,1,1,false));
+        $stressperiods->addStressPeriod(StressPeriod::create(271, 30,1,1,false));
+        $stressperiods->addStressPeriod(StressPeriod::create(301, 30,1,1,false));
+        $stressperiods->addStressPeriod(StressPeriod::create(331, 30,1,1,false));
+        $stressperiods->addStressPeriod(StressPeriod::create(361, 30,1,1,false));
+
         $commandBus->dispatch(UpdateCalculationStressperiods::byUserWithCalculationId($ownerId, $calculationId, $stressperiods));
         $ocStressPeriodData = OcStressPeriodData::create()->addStressPeriod(OcStressPeriod::fromParams(0,0, ['save head', 'save drawdown']));
         $commandBus->dispatch(UpdateCalculationPackageParameter::byUserWithModelId($calculationId, $ownerId, $baseModelId, 'oc', 'ocStressPeriodData', $ocStressPeriodData));

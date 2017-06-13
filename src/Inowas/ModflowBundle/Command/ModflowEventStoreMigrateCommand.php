@@ -34,26 +34,26 @@ class ModflowEventStoreMigrateCommand extends ContainerAwareCommand
 
         $modelname =  $input->getArgument('model');
 
-        if (is_null($modelname)){
-            $output->writeln("Possible Arguments are:");
-            $output->writeln("1 or HanoiBaseModel for the Hanoi BaseModel");
-            $output->writeln("2 or Hanoi for the hanoi-modflow-model");
-            $output->writeln("3 or Rio Primero for the hanoi-modflow-model");
+        if (null === $modelname){
+            $output->writeln('Possible Arguments are:');
+            $output->writeln('1 or HanoiBaseModel for the Hanoi BaseModel');
+            $output->writeln('2 or Hanoi for the hanoi-modflow-model');
+            $output->writeln('3 or Rio Primero for the hanoi-modflow-model');
         }
 
-        if ($modelname == 'Hanoi Basemodel' || intval($modelname) == 1) {
+        if ($modelname === 'Hanoi Basemodel only' || (int)$modelname === 1) {
             $hanoi = new HanoiBaseModelOnly();
             $hanoi->setContainer($this->getContainer());
             $hanoi->load();
         }
 
-        if ($modelname == 'Hanoi' || intval($modelname) == 2) {
+        if ($modelname === 'Hanoi Basemodel with Scenarios' || (int)$modelname === 2) {
             $hanoi = new Hanoi();
             $hanoi->setContainer($this->getContainer());
             $hanoi->load();
         }
 
-        if ($modelname == 'Rio Primero' || intval($modelname) == 3) {
+        if ($modelname === 'Rio Primero' || (int)$modelname === 3) {
             $rioPrimero = new RioPrimero();
             $rioPrimero->setContainer($this->getContainer());
             $rioPrimero->load();

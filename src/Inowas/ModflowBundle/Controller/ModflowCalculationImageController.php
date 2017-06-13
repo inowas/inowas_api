@@ -37,6 +37,8 @@ class ModflowCalculationImageController extends InowasRestController
      * @param $layer
      * @param $totim
      * @return Response
+     * @throws \UnexpectedValueException
+     * @throws \InvalidArgumentException
      * @throws InvalidUuidException
      *
      * @Rest\QueryParam(name="max", default=null, description="Value of the spectrum maximum")
@@ -50,13 +52,16 @@ class ModflowCalculationImageController extends InowasRestController
         $this->assertUuidIsValid($id);
         $calculationId = ModflowId::fromString($id);
 
-        $type = ResultType::fromString($type);
+        /** @var ResultType $resultType */
+        $resultType = ResultType::fromString($type);
         $layerNumber = LayerNumber::fromInteger((int)$layer);
+
+        /** @var TotalTime $totim */
         $totim = TotalTime::fromInt((int)$totim);
 
         $headData = $this->get('inowas.modflowcalculation.calculation_results_finder')->findHeadValue(
             $calculationId,
-            $type,
+            $resultType,
             $layerNumber,
             $totim
         );
@@ -89,7 +94,7 @@ class ModflowCalculationImageController extends InowasRestController
      *   }
      * )
      *
-     * @Rest\Route("/calculations/{id}/results/difference/{id2}/types/{type}/layers/{layer}/totims/{totim}", methods={"GET"}, requirements={"_format"="png"})
+     * @Rest\Route("/calculations/{id}/results/differences/{id2}/types/{type}/layers/{layer}/totims/{totim}", methods={"GET"}, requirements={"_format"="png"})
      *
      * @param ParamFetcher $paramFetcher
      * @param $id
@@ -98,6 +103,8 @@ class ModflowCalculationImageController extends InowasRestController
      * @param $layer
      * @param $totim
      * @return Response
+     * @throws \UnexpectedValueException
+     * @throws \InvalidArgumentException
      * @throws InvalidUuidException
      *
      * @Rest\QueryParam(name="max", default=null, description="Value of the spectrum maximum")
