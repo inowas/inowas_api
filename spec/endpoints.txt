@@ -1,0 +1,24 @@
+/users/credentials
+    * getApiKey
+
+/modflowmodels
+    * get list of my models
+    * get list of public models
+    * add modflowModel
+
+/modflowmodels/{id}
+    * get modelDetails
+    * put modelDetails
+
+/modflowmodels/{id}/boundaries
+    * get boundaryList
+    * add boundary
+
+/modflowmodels/{id}/boundaries/{bid}
+    * get boundaryDetails
+    * update boundaryDetails
+
+
+
+
+

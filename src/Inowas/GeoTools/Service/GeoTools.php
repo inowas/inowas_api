@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Inowas\GeoTools\Service;
 
 use Doctrine\DBAL\Connection;
+use Inowas\Common\Boundaries\Area;
 use Inowas\Common\Boundaries\GridCellDateTimeValues;
 use Inowas\Common\Boundaries\ModflowBoundary;
 use Inowas\Common\Boundaries\ObservationPoint;
@@ -12,11 +13,14 @@ use Inowas\Common\Geometry\Geometry;
 use Inowas\Common\Geometry\LineString;
 use Inowas\Common\Geometry\LineStringWithObservationPoints;
 use Inowas\Common\Geometry\Point;
+use Inowas\Common\Geometry\Polygon;
 use Inowas\Common\Geometry\Srid;
 use Inowas\Common\Grid\ActiveCells;
+use Inowas\Common\Grid\AffectedLayers;
 use Inowas\Common\Grid\BoundingBox;
 use Inowas\Common\Grid\Distance;
 use Inowas\Common\Grid\GridSize;
+use Inowas\Common\Grid\LayerNumber;
 
 class GeoTools
 {
@@ -28,10 +32,24 @@ class GeoTools
         $this->connection = $connection;
     }
 
-    public function calculateActiveCells(ModflowBoundary $boundary, BoundingBox $boundingBox, GridSize $gridSize): ActiveCells
+    public function calculateActiveCellsFromArea(Area $area, BoundingBox $boundingBox, GridSize $gridSize): ActiveCells
+    {
+        $geometry = Geometry::fromPolygon($area->geometry());
+        $affectedLayers = AffectedLayers::createWithLayerNumber(LayerNumber::fromInteger(0));
+
+        return $this->calculateActiveCellsFromGeometryAndAffectedLayers($geometry, $affectedLayers, $boundingBox, $gridSize);
+    }
+
+    public function calculateActiveCellsFromBoundary(ModflowBoundary $boundary, BoundingBox $boundingBox, GridSize $gridSize): ActiveCells
     {
         $geometry = $boundary->geometry();
+        $affectedLayers = $boundary->affectedLayers();
+        return $this->calculateActiveCellsFromGeometryAndAffectedLayers($geometry, $affectedLayers, $boundingBox, $gridSize);
 
+    }
+
+    public function calculateActiveCellsFromGeometryAndAffectedLayers(Geometry $geometry, AffectedLayers $affectedLayers, BoundingBox $boundingBox, GridSize $gridSize): ActiveCells
+    {
         /** @var \Polygon $boundingBoxPolygon */
         $boundaryGeometry = \geoPHP::load($geometry->toJson(), 'json')->geos();
 
@@ -46,7 +64,7 @@ class GeoTools
             $gridCell = $this->getGridCellFromPoint($boundingBox, $gridSize, $geometry->value());
             $activeCells = [];
             $activeCells[$gridCell['row']][$gridCell['col']] = true;
-            return ActiveCells::fromArrayGridSizeAndLayer($activeCells, $gridSize, $boundary->affectedLayers());
+            return ActiveCells::fromArrayGridSizeAndLayer($activeCells, $gridSize, $affectedLayers);
         }
 
         $dX = ($boundingBox->xMax()-$boundingBox->xMin())/$gridSize->nX();
@@ -64,13 +82,22 @@ class GeoTools
             }
         }
 
-        return ActiveCells::fromArrayGridSizeAndLayer($activeCells, $gridSize, $boundary->affectedLayers());
+        return ActiveCells::fromArrayGridSizeAndLayer($activeCells, $gridSize, $affectedLayers);
     }
 
     public function getBoundingBox(Geometry $geometry): BoundingBox
     {
-        $srid = $geometry->srid();
-        $geometry = \geoPHP::load($geometry->toJson(), 'json');
+        return $this->getBoundingBoxFromJson($geometry->toJson(), $geometry->srid());
+    }
+
+    public function getBoundingBoxFromPolygon(Polygon $polygon): BoundingBox
+    {
+        return $this->getBoundingBoxFromJson($polygon->toJson(), Srid::fromInt($polygon->getSrid()));
+    }
+
+    private function getBoundingBoxFromJson(string $json, Srid $srid): BoundingBox
+    {
+        $geometry = \geoPHP::load($json, 'json');
         $geometry->setSRID($srid->toInteger());
         $bb = $geometry->getBBox();
 

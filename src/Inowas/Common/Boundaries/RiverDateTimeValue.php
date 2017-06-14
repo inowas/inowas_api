@@ -53,16 +53,6 @@ class RiverDateTimeValue extends DateTimeValue
         );
     }
 
-    public function toArrayValues(): array
-    {
-        return array($this->dateTime->format(DATE_ATOM), $this->stage, $this->rbot, $this->cond);
-    }
-
-    public function jsonSerialize()
-    {
-        return $this->toArray();
-    }
-
     public function dateTime(): \DateTimeImmutable
     {
         return $this->dateTime;

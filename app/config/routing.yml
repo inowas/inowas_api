@@ -10,4 +10,3 @@ InowasModflowBundle:
 
 InowasAppBundle:
     resource: "@InowasAppBundle/Resources/config/routing.yml"
-    prefix:    /api

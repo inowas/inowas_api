@@ -121,6 +121,11 @@ class ActiveCells
         return $cells;
     }
 
+    public function gridSize(): GridSize
+    {
+        return GridSize::fromXY($this->nx, $this->ny);
+    }
+
     public function layerData(): array
     {
         return $this->layerData;
@@ -129,6 +134,11 @@ class ActiveCells
     public function layers(): array
     {
         return $this->layers;
+    }
+
+    public function affectedLayers(): AffectedLayers
+    {
+        return AffectedLayers::fromArray($this->layers);
     }
 
     public function fullArray(): array

@@ -12,11 +12,24 @@ abstract class DateTimeValue implements \JsonSerializable
 
     abstract public function toArray(): array;
 
-    abstract public function toArrayValues(): array;
-
     abstract public function dateTime(): \DateTimeImmutable;
 
     abstract public function values(): array;
 
     abstract public function type(): string;
+
+    public function jsonSerialize(): array
+    {
+        return $this->toArrayValues();
+    }
+
+    public function toArrayValues(): array
+    {
+        return array_values($this->toArray());
+    }
+
+    public function valuesDescription(): array
+    {
+        return array_keys($this->toArray());
+    }
 }

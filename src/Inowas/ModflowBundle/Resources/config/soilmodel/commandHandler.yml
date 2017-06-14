@@ -16,6 +16,10 @@ services:
         class: Inowas\Soilmodel\Model\Handler\ChangeSoilmodelNameHandler
         arguments: ['@soil_model_list']
 
+    inowas.soilmodel.clone_soilmodel.handler:
+        class: Inowas\Soilmodel\Model\Handler\CloneSoilmodelHandler
+        arguments: ['@soil_model_list']
+
     inowas.soilmodel.create_soilmodel.handler:
         class: Inowas\Soilmodel\Model\Handler\CreateSoilmodelHandler
         arguments: ['@soil_model_list']

@@ -1,0 +1,126 @@
+<?php
+
+declare(strict_types=1);
+
+namespace Inowas\ScenarioAnalysis\Infrastructure\Projection;
+
+
+use Doctrine\DBAL\Connection;
+use Inowas\Common\Id\ModflowId;
+use Inowas\Common\Id\UserId;
+use Inowas\Common\Modflow\ModelDescription;
+use Inowas\Common\Modflow\ModelName;
+use Inowas\ScenarioAnalysis\Model\ScenarioAnalysisId;
+
+class ScenarioAnalysisFinder
+{
+    /** @var Connection $connection */
+    protected $connection;
+
+    public function __construct(Connection $connection) {
+        $this->connection = $connection;
+        $this->connection->setFetchMode(\PDO::FETCH_ASSOC);
+    }
+
+    public function findScenarioAnalysesByUserId(UserId $userId): array
+    {
+        $results = $this->connection->fetchAll(
+            sprintf('SELECT scenario_analysis_id as id, user_id, user_name, base_model_id, name, description, created_at, public FROM %s WHERE user_id = :user_id', Table::SCENARIO_ANALYSIS_LIST),
+            ['user_id' => $userId->toString()]
+        );
+
+        if ($results === false) {
+            $results = [];
+        }
+
+        return $results;
+    }
+
+    public function findPublicScenarioAnalyses(): array
+    {
+        $results = $this->connection->fetchAll(
+            sprintf('SELECT scenario_analysis_id as id, user_id, user_name, base_model_id, name, description, created_at, public FROM %s WHERE public = true', Table::SCENARIO_ANALYSIS_LIST)
+        );
+
+        if ($results === false) {
+            $results = [];
+        }
+
+        return $results;
+    }
+
+    public function findScenarioAnalysisDetailsById(ScenarioAnalysisId $scenarioAnalysisId): ?array
+    {
+        $result = $this->connection->fetchAssoc(
+            sprintf('SELECT scenario_analysis_id as id, user_id, name, description, geometry, grid_size, bounding_box, created_at, public FROM %s WHERE scenario_analysis_id = :scenario_analysis_id', Table::SCENARIO_ANALYSIS_LIST),
+            ['scenario_analysis_id' => $scenarioAnalysisId->toString()]
+        );
+
+        if ($result === false) {
+            return null;
+        }
+
+        $result['geometry'] = json_decode($result['geometry'], true);
+        $result['grid_size'] = json_decode($result['grid_size'], true);
+        $result['bounding_box'] = json_decode($result['bounding_box'], true);
+
+        $baseModel = $this->connection->fetchAssoc(
+            sprintf('SELECT scenario_id as id, name, description, calculation_id FROM %s WHERE scenario_analysis_id = :scenario_analysis_id AND is_base_model = true', Table::SCENARIO_LIST),
+            ['scenario_analysis_id' => $scenarioAnalysisId->toString()]
+        );
+
+        if ($baseModel === false) {
+            return null;
+        }
+
+        $result['base_model'] = $baseModel;
+
+        $scenarios = $this->connection->fetchAll(
+            sprintf('SELECT scenario_id as id, name, description, calculation_id FROM %s WHERE scenario_analysis_id = :scenario_analysis_id AND is_scenario = true ORDER BY created_at', Table::SCENARIO_LIST),
+            ['scenario_analysis_id' => $scenarioAnalysisId->toString()]
+        );
+
+        if ($scenarios === false) {
+            $scenarios = array();
+        }
+
+        $result['scenarios'] = $scenarios;
+
+        return $result;
+    }
+
+    public function getScenarioNameById(ModflowId $modflowId): ?ModelName
+    {
+        $result = $this->connection->fetchAssoc(
+            sprintf('SELECT name FROM %s WHERE scenario_id = :scenario_id', Table::SCENARIO_LIST),
+            ['scenario_id' => $modflowId->toString()]
+        );
+
+
+        if ($result === false) {
+            return null;
+        }
+
+        return ModelName::fromString($result['name']);
+    }
+
+    public function getScenarioDescriptionById(ModflowId $modflowId): ?ModelDescription
+    {
+        $result = $this->connection->fetchAssoc(
+            sprintf('SELECT description FROM %s WHERE scenario_id = :scenario_id', Table::SCENARIO_LIST),
+            ['scenario_id' => $modflowId->toString()]
+        );
+
+
+        if ($result === false) {
+            return null;
+        }
+
+        return ModelDescription::fromString($result['description']);
+    }
+
+    public function findAll(): array
+    {
+        return $this->connection->fetchAll(sprintf('SELECT * FROM %s', Table::SCENARIO_ANALYSIS_LIST));
+    }
+}

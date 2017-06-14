@@ -58,20 +58,10 @@ class WellDateTimeValue extends DateTimeValue
         );
     }
 
-    public function toArrayValues(): array
-    {
-        return array($this->dateTime->format(DATE_ATOM), $this->pumpingRate);
-    }
-
     public function values(): array
     {
         return array(
             'pumping_rate' => $this->pumpingRate
         );
-    }
-
-    public function jsonSerialize()
-    {
-        return $this->toArray();
     }
 }

@@ -10,9 +10,10 @@ use Inowas\Common\Id\UserId;
 use Inowas\Common\Modflow\LengthUnit;
 use Inowas\Common\Modflow\StressPeriods;
 use Inowas\Common\Modflow\TimeUnit;
-use Inowas\Common\Soilmodel\SoilmodelId;
+
 use Prooph\EventSourcing\AggregateChanged;
 
+/** @noinspection LongInheritanceChainInspection */
 class CalculationWasCreated extends AggregateChanged
 {
     /** @var  ModflowId */
@@ -20,9 +21,6 @@ class CalculationWasCreated extends AggregateChanged
 
     /** @var  ModflowId */
     private $modflowModelId;
-
-    /** @var  \Inowas\Common\Soilmodel\SoilmodelId */
-    private $soilModelId;
 
     /** @var UserId */
     private $userId;
@@ -42,11 +40,21 @@ class CalculationWasCreated extends AggregateChanged
     /** @var  StressPeriods */
     private $stressPeriods;
 
+    /** @noinspection MoreThanThreeArgumentsInspection
+     * @param UserId $userId
+     * @param ModflowId $calculationId
+     * @param ModflowId $modflowModelId
+     * @param DateTime $start
+     * @param DateTime $end
+     * @param LengthUnit $lengthUnit
+     * @param TimeUnit $timeUnit
+     * @param StressPeriods $stressPeriods
+     * @return CalculationWasCreated
+     */
     public static function fromModelWithProps(
         UserId $userId,
         ModflowId $calculationId,
         ModflowId $modflowModelId,
-        SoilmodelId $soilModelId,
         DateTime $start,
         DateTime $end,
         LengthUnit $lengthUnit,
@@ -57,7 +65,6 @@ class CalculationWasCreated extends AggregateChanged
         $event = self::occur($calculationId->toString(),[
             'user_id' => $userId->toString(),
             'modflowmodel_id' => $modflowModelId->toString(),
-            'soilmodel_id' => $soilModelId->toString(),
             'start' => $start->toAtom(),
             'end' => $end->toAtom(),
             'length_unit' => $lengthUnit->toInt(),
@@ -67,7 +74,6 @@ class CalculationWasCreated extends AggregateChanged
 
         $event->calculationId = $calculationId;
         $event->modflowModelId = $modflowModelId;
-        $event->soilModelId = $soilModelId;
         $event->userId = $userId;
         $event->start = $start;
         $event->end = $end;
@@ -87,22 +93,13 @@ class CalculationWasCreated extends AggregateChanged
         return $this->calculationId;
     }
 
-    public function modflowModelId(): ModflowId
+    public function modflowmodelId(): ModflowId
     {
         if ($this->modflowModelId === null){
             $this->modflowModelId = ModflowId::fromString($this->payload['modflowmodel_id']);
         }
 
         return $this->modflowModelId;
-    }
-
-    public function soilModelId(): SoilmodelId
-    {
-        if ($this->soilModelId === null){
-            $this->soilModelId = SoilmodelId::fromString($this->payload['soilmodel_id']);
-        }
-
-        return $this->soilModelId;
     }
 
     public function userId(): UserId{
@@ -151,8 +148,8 @@ class CalculationWasCreated extends AggregateChanged
 
     public function stressPeriods(): StressPeriods
     {
-        if (is_null($this->stressPeriods)){
-            $this->stressPeriods = unserialize($this->payload['stress_periods']);
+        if (null === $this->stressPeriods){
+            $this->stressPeriods = unserialize($this->payload['stress_periods'], [StressPeriods::class, DateTime::class]);
         }
 
         return $this->stressPeriods;

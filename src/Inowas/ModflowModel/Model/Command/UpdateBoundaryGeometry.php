@@ -17,7 +17,7 @@ class UpdateBoundaryGeometry extends Command implements PayloadConstructable
 
     use PayloadTrait;
 
-    public static function ofBaseModel(
+    public static function byUser(
         UserId $userId,
         ModflowId $baseModelId,
         BoundaryId $boundaryId,
@@ -27,25 +27,6 @@ class UpdateBoundaryGeometry extends Command implements PayloadConstructable
         $payload = [
             'user_id' => $userId->toString(),
             'basemodel_id' => $baseModelId->toString(),
-            'boundary_id' => $boundaryId->toString(),
-            'geometry' => serialize($geometry)
-        ];
-
-        return new self($payload);
-    }
-
-    public static function ofScenario(
-        UserId $userId,
-        ModflowId $baseModelId,
-        ModflowId $scenarioId,
-        BoundaryId $boundaryId,
-        Geometry $geometry
-    ): UpdateBoundaryGeometry
-    {
-        $payload = [
-            'user_id' => $userId->toString(),
-            'basemodel_id' => $baseModelId->toString(),
-            'scenario_id' => $scenarioId->toString(),
             'boundary_id' => $boundaryId->toString(),
             'geometry' => serialize($geometry)
         ];
@@ -58,18 +39,9 @@ class UpdateBoundaryGeometry extends Command implements PayloadConstructable
         return UserId::fromString($this->payload['user_id']);
     }
 
-    public function baseModelId(): ModflowId
+    public function modelId(): ModflowId
     {
         return ModflowId::fromString($this->payload['basemodel_id']);
-    }
-
-    public function scenarioId(): ?ModflowId
-    {
-        if (array_key_exists('scenario_id', $this->payload)){
-            return ModflowId::fromString($this->payload['scenario_id']);
-        }
-
-        return null;
     }
 
     public function boundaryId(): BoundaryId

@@ -28,7 +28,8 @@ class Conductivity
     /** @var VerticalHydraulicConductivity */
     protected $vka;
 
-    public static function fromParams(HydraulicConductivityX $kx, HydraulicAnisotropy $hydraulicAnisotropy, VerticalHydraulicConductivity $verticalHydraulicConductivity){
+    public static function fromParams(HydraulicConductivityX $kx, HydraulicAnisotropy $hydraulicAnisotropy, VerticalHydraulicConductivity $verticalHydraulicConductivity): Conductivity
+    {
         $self = new self();
         $self->hk = $kx;
         $self->hani = $hydraulicAnisotropy;

@@ -18,7 +18,7 @@ use Inowas\Common\Modflow\TimeUnit;
 use Inowas\Common\Modflow\Version;
 use Inowas\ModflowModel\Model\Exception\InvalidPackageNameException;
 use Inowas\ModflowModel\Model\Exception\InvalidPackageParameterUpdateMethodException;
-use Inowas\Common\Modflow\Modelname;
+use Inowas\Common\Modflow\ModelName;
 use Inowas\ModflowModel\Model\Packages\BasPackage;
 use Inowas\ModflowModel\Model\Packages\ChdPackage;
 use Inowas\ModflowModel\Model\Packages\DisPackage;
@@ -37,19 +37,19 @@ use Inowas\ModflowModel\Model\Packages\WelPackage;
 class ModflowCalculationConfiguration implements \JsonSerializable
 {
     /** @var string  */
-    private $author = "";
+    private $author = '';
 
     /** @var string  */
-    private $project = "";
+    private $project = '';
 
     /** @var IdInterface  */
     private $calculationId;
 
     /** @var string  */
-    private $type = "flopy_calculation";
+    private $type = 'flopy_calculation';
 
     /** @var string  */
-    private $version = "3.2.6";
+    private $version = '3.2.6';
 
     /** @var array */
     private $availablePackages = [
@@ -123,12 +123,17 @@ class ModflowCalculationConfiguration implements \JsonSerializable
 
     private function __construct(){}
 
-    public function updateModelName(Modelname $name): void
+    public function updateCalculationId(ModflowId $calculationId): void
+    {
+        $this->calculationId = $calculationId;
+    }
+
+    public function updateModelName(ModelName $name): void
     {
         // The executableName is configured in the MfPackage
         /** @var MfPackage $mfPackage */
         $mfPackage = $this->getPackage('mf');
-        $mfPackage = $mfPackage->updateModelName($name);
+        $mfPackage = $mfPackage->updateModelname($name);
         $this->updatePackage($mfPackage);
     }
 
@@ -155,7 +160,7 @@ class ModflowCalculationConfiguration implements \JsonSerializable
         // The executableName is configured in the MfPackage
         /** @var MfPackage $mfPackage */
         $mfPackage = $this->getPackage('mf');
-        $mfPackage = $mfPackage->updateListUnit($listUnit);
+        $mfPackage = $mfPackage->updateListunit($listUnit);
         $this->updatePackage($mfPackage);
     }
 
@@ -164,7 +169,7 @@ class ModflowCalculationConfiguration implements \JsonSerializable
         // The executableName is configured in the MfPackage
         /** @var MfPackage $mfPackage */
         $mfPackage = $this->getPackage('mf');
-        $mfPackage = $mfPackage->updateModelWorkSpace($workSpace);
+        $mfPackage = $mfPackage->updateModelworkspace($workSpace);
         $this->updatePackage($mfPackage);
     }
 
@@ -177,7 +182,7 @@ class ModflowCalculationConfiguration implements \JsonSerializable
         $this->updatePackage($disPackage);
     }
 
-    public function updateLengthUnit(LengthUnit $lengthUnit)
+    public function updateLengthUnit(LengthUnit $lengthUnit): void
     {
         // The lengthunit is configured in the DisPackage
         /** @var DisPackage $disPackage */
@@ -186,7 +191,7 @@ class ModflowCalculationConfiguration implements \JsonSerializable
         $this->updatePackage($disPackage);
     }
 
-    public function updateGridParameters(GridSize $gridSize, BoundingBox $boundingBox)
+    public function updateGridParameters(GridSize $gridSize, BoundingBox $boundingBox): void
     {
         // The gridparameters are configured in the DisPackage
         /** @var DisPackage $disPackage */
@@ -223,6 +228,26 @@ class ModflowCalculationConfiguration implements \JsonSerializable
 
         $package = $package->$expectedMethod($value);
         $this->updatePackage($package);
+    }
+
+    public function canUpdatePackageParameter(string $packageName, string $parameterName): bool
+    {
+        if (! $this->packageIsAvailable($packageName)){
+            throw InvalidPackageNameException::withName($packageName, $this->availablePackages);
+        }
+
+        if (! $this->packageIsSelected($packageName)){
+            $this->addPackageByName($packageName);
+        }
+
+        $package = $this->getPackageByName($packageName);
+
+        $expectedMethod = 'update'.ucfirst($parameterName);
+        if (! method_exists($package, $expectedMethod)){
+            throw InvalidPackageParameterUpdateMethodException::withName($packageName, $expectedMethod);
+        }
+
+        return true;
     }
 
     public function getPackage(string $packageName): PackageInterface
@@ -320,12 +345,12 @@ class ModflowCalculationConfiguration implements \JsonSerializable
         }
 
         $data = array(
-            "author" => $this->author,
-            "project" => $this->project,
-            "id" => $this->calculationId->toString(),
-            "type" => $this->type,
-            "version" => $this->version,
-            "data" => $packageData
+            'author' => $this->author,
+            'project' => $this->project,
+            'id' => $this->calculationId->toString(),
+            'type' => $this->type,
+            'version' => $this->version,
+            'data' => $packageData
         );
 
         return ModflowCalculationConfigurationRequest::fromData($data)->jsonSerialize();
@@ -336,7 +361,8 @@ class ModflowCalculationConfiguration implements \JsonSerializable
         $this->packages[$package->type()] = $package;
     }
 
-    private function removePackageByName(string $packageName) {
+    private function removePackageByName(string $packageName): void
+    {
         $package = $this->getPackageByName($packageName);
         unset($this->packages[$package->type()]);
     }

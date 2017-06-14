@@ -3,6 +3,7 @@ services:
         class: Inowas\ModflowCalculation\Infrastructure\Projection\Calculation\CalculationListProjector
         arguments:
           - '@doctrine.dbal.default_connection'
+          - '@inowas.modflowmodel.model_finder'
 
     inowas.modflowcalculation.calculation_results_projector:
         class: Inowas\ModflowCalculation\Infrastructure\Projection\Calculation\CalculationResultsProjector

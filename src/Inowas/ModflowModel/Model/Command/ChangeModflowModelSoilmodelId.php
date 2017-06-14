@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Inowas\ModflowModel\Model\Command;
 
 use Inowas\Common\Id\ModflowId;
+use Inowas\Common\Id\UserId;
 use Inowas\Common\Soilmodel\SoilmodelId;
 use Prooph\Common\Messaging\Command;
 use Prooph\Common\Messaging\PayloadConstructable;
@@ -15,14 +16,20 @@ class ChangeModflowModelSoilmodelId extends Command implements PayloadConstructa
 
     use PayloadTrait;
 
-    public static function forModflowModel(ModflowId $modelId, SoilmodelId $soilModelId): ChangeModflowModelSoilmodelId
+    public static function forModflowModel(UserId $userId, ModflowId $modelId, SoilmodelId $soilModelId): ChangeModflowModelSoilmodelId
     {
         return new self(
             [
+                'user_id' => $userId->toString(),
                 'modflow_model_id' => $modelId->toString(),
                 'soilmodel_id' => $soilModelId->toString()
             ]
         );
+    }
+
+    public function userId(): UserId
+    {
+        return UserId::fromString($this->payload['user_id']);
     }
 
     public function modflowModelId(): ModflowId

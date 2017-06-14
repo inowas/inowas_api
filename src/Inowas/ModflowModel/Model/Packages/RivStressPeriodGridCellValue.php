@@ -27,6 +27,17 @@ class RivStressPeriodGridCellValue
     /** @var  float */
     protected $rbot;
 
+
+    /** @noinspection MoreThanThreeArgumentsInspection
+     * @param int $sp
+     * @param int $lay
+     * @param int $row
+     * @param int $col
+     * @param float $stage
+     * @param float $cond
+     * @param float $rbot
+     * @return RivStressPeriodGridCellValue
+     */
     public static function fromParams(int $sp, int $lay, int $row, int $col, float $stage, float $cond, float $rbot): RivStressPeriodGridCellValue
     {
         return new self($sp, $lay, $row, $col, $stage, $cond, $rbot);

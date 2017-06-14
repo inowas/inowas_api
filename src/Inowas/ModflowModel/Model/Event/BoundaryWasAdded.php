@@ -21,9 +21,9 @@ class BoundaryWasAdded extends AggregateChanged
     /** @var UserId */
     private $userId;
 
-    public static function toBaseModel(
-        UserId $userId,
+    public static function to(
         ModflowId $modflowId,
+        UserId $userId,
         ModflowBoundary $boundary
     ): BoundaryWasAdded
     {

@@ -36,7 +36,7 @@ class RechargeBoundary extends AbstractBoundary
         // In case of rechargeBoundary, the observationPointId is the boundaryId
         $observationPointId = ObservationPointId::fromString($this->boundaryId->toString());
         if (! $this->hasOp($observationPointId)) {
-            $this->addOp($this->createObservationPoint());
+            $this->addOrUpdateOp($this->createObservationPoint());
         }
 
         $this->addDateTimeValue($rechargeRate, $observationPointId);

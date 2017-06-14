@@ -40,6 +40,13 @@ class AffectedLayers
         return $self;
     }
 
+    public static function fromArray(array $layers): AffectedLayers
+    {
+        $self = new self();
+        $self->layers = $layers;
+        return $self;
+    }
+
     private function __construct(){}
 
     public function addLayerNumber(LayerNumber $layerNumber)

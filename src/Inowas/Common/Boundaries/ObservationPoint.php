@@ -22,7 +22,7 @@ class ObservationPoint implements \JsonSerializable
     /** @var  array */
     protected $dateTimeValues = [];
 
-    public static function fromIdNameAndGeometry(ObservationPointId $id, ObservationPointName $name, ?Geometry $geometry = null): ObservationPoint
+    public static function fromIdNameAndGeometry(ObservationPointId $id, ObservationPointName $name, Geometry $geometry): ObservationPoint
     {
         return new self($id, $name, $geometry);
     }
@@ -72,6 +72,17 @@ class ObservationPoint implements \JsonSerializable
         return $this->dateTimeValues;
     }
 
+    public function dateTimeValuesDescription(): array
+    {
+        if (count($this->dateTimeValues()) > 0) {
+            /** @var DateTimeValue $dateTimeValue */
+            $dateTimeValue = $this->dateTimeValues[0];
+            return $dateTimeValue->valuesDescription();
+        }
+
+        return [];
+    }
+
     public function toArray(): array
     {
         return array(
@@ -82,9 +93,22 @@ class ObservationPoint implements \JsonSerializable
         );
     }
 
-    public function jsonSerialize()
+    public function jsonSerialize(): array
     {
-        return $this->toArray();
+        $valuesDescription = [];
+        if (count($this->dateTimeValues()) > 0) {
+            /** @var DateTimeValue $dateTimeValue */
+            $dateTimeValue = $this->dateTimeValues[0];
+            $valuesDescription = $dateTimeValue->valuesDescription();
+        }
+
+        return array(
+            'id' => $this->id->toString(),
+            'name' => $this->name()->toString(),
+            'geometry' => $this->geometryArray(),
+            'values_description' => $valuesDescription,
+            'values' => $this->dateTimeValues
+        );
     }
 
     public function findValueByDateTime(\DateTimeImmutable $dateTime): ?DateTimeValue

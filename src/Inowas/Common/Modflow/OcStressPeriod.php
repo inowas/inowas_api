@@ -62,7 +62,7 @@ class OcStressPeriod implements \JsonSerializable
         return $self;
     }
 
-    function jsonSerialize(): array
+    public function jsonSerialize(): array
     {
         return array(
             'stressPeriod' => $this->stressPeriod,

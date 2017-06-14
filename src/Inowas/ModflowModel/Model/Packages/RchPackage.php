@@ -35,8 +35,7 @@ class RchPackage implements PackageInterface
     /** @var  Unitnumber */
     protected $unitnumber;
 
-
-    public static function fromDefaults()
+    public static function fromDefaults(): RchPackage
     {
         $ipakcb = Ipakcb::fromInteger(0);
         $nrchop = Nrchop::highestActiveCell();
@@ -48,6 +47,15 @@ class RchPackage implements PackageInterface
         return new self($ipakcb, $nrchop, $stressPeriodData, $irch, $extension, $unitnumber);
     }
 
+    /** @noinspection MoreThanThreeArgumentsInspection
+     * @param Ipakcb $ipakcb
+     * @param Nrchop $nrchop
+     * @param RchStressPeriodData $stressPeriodData
+     * @param Irch $irch
+     * @param Extension $extension
+     * @param Unitnumber $unitnumber
+     * @return RchPackage
+     */
     public static function fromParams(
         Ipakcb $ipakcb,
         Nrchop $nrchop,
@@ -139,24 +147,24 @@ class RchPackage implements PackageInterface
     public function toArray(): array
     {
         return array(
-            "ipakcb" => $this->ipakcb->toInteger(),
-            "nrchop" => $this->nrchop->toInteger(),
-            "stress_period_data" => $this->stressPeriodData->toArray(),
-            "irch" => $this->irch->toValue(),
-            "extension" => $this->extension->toValue(),
-            "unitnumber" => $this->unitnumber->toValue()
+            'ipakcb' => $this->ipakcb->toInteger(),
+            'nrchop' => $this->nrchop->toInteger(),
+            'stress_period_data' => $this->stressPeriodData->toArray(),
+            'irch' => $this->irch->toValue(),
+            'extension' => $this->extension->toValue(),
+            'unitnumber' => $this->unitnumber->toValue()
         );
     }
 
     public function jsonSerialize(): array
     {
         return array(
-            "ipakcb" => $this->ipakcb->toInteger(),
-            "nrchop" => $this->nrchop->toInteger(),
-            "stress_period_data" => (object)$this->stressPeriodData->toArray(),
-            "irch" => $this->irch->toValue(),
-            "extension" => $this->extension->toValue(),
-            "unitnumber" => $this->unitnumber->toValue()
+            'ipakcb' => $this->ipakcb->toInteger(),
+            'nrchop' => $this->nrchop->toInteger(),
+            'stress_period_data' => (object)$this->stressPeriodData->toArray(),
+            'irch' => $this->irch->toValue(),
+            'extension' => $this->extension->toValue(),
+            'unitnumber' => $this->unitnumber->toValue()
         );
     }
 }

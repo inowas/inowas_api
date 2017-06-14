@@ -35,7 +35,7 @@ class RiverBoundary extends AbstractBoundary
 
     public function addObservationPoint(ObservationPoint $point): RiverBoundary
     {
-        $this->addOp($point);
+        $this->addOrUpdateOp($point);
         $self = new self($this->boundaryId, $this->name, $this->geometry, $this->activeCells);
         $self->observationPoints = $this->observationPoints;
         $self->affectedLayers = $this->affectedLayers;

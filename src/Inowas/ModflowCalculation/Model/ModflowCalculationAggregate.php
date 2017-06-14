@@ -12,8 +12,10 @@ use Inowas\Common\Modflow\PackageName;
 use Inowas\Common\Modflow\StressPeriods;
 use Inowas\Common\Modflow\TimeUnit;
 use Inowas\ModflowCalculation\Model\Event\CalculationFlowPackageWasChanged;
+use Inowas\ModflowCalculation\Model\Event\CalculationModelBoundariesWereUpdated;
 use Inowas\ModflowCalculation\Model\Event\CalculationPackageParameterWasUpdated;
 use Inowas\ModflowCalculation\Model\Event\CalculationStressperiodsWereUpdated;
+use Inowas\ModflowCalculation\Model\Event\CalculationWasCloned;
 use Inowas\ModflowCalculation\Model\Event\CalculationWasFinished;
 use Inowas\ModflowCalculation\Model\Event\CalculationWasQueued;
 use Inowas\ModflowCalculation\Model\Event\CalculationWasStarted;
@@ -22,7 +24,6 @@ use Inowas\ModflowCalculation\Model\Event\CalculationWasCreated;
 use Inowas\ModflowCalculation\Model\Event\LengthUnitWasUpdated;
 use Inowas\ModflowCalculation\Model\Event\StartDateTimeWasUpdated;
 use Inowas\ModflowCalculation\Model\Event\TimeUnitWasUpdated;
-use Inowas\Common\Soilmodel\SoilmodelId;
 use Prooph\EventSourcing\AggregateRoot;
 
 class ModflowCalculationAggregate extends AggregateRoot
@@ -32,9 +33,6 @@ class ModflowCalculationAggregate extends AggregateRoot
 
     /** @var ModflowId */
     private $modflowModelId;
-
-    /** @var SoilmodelId */
-    private $soilModelId;
 
     /** @var  UserId */
     private $ownerId;
@@ -57,10 +55,20 @@ class ModflowCalculationAggregate extends AggregateRoot
     /** @var ModflowCalculationConfiguration */
     private $configuration;
 
+    /** @noinspection MoreThanThreeArgumentsInspection
+     * @param ModflowId $calculationId
+     * @param ModflowId $modflowModelId
+     * @param UserId $userId
+     * @param DateTime $start
+     * @param DateTime $end
+     * @param LengthUnit $lengthUnit
+     * @param TimeUnit $timeUnit
+     * @param StressPeriods $stressPeriods
+     * @return ModflowCalculationAggregate
+     */
     public static function create(
         ModflowId $calculationId,
         ModflowId $modflowModelId,
-        SoilmodelId $soilModelId,
         UserId $userId,
         DateTime $start,
         DateTime $end,
@@ -72,7 +80,6 @@ class ModflowCalculationAggregate extends AggregateRoot
         $self = new self();
         $self->calculationId = $calculationId;
         $self->modflowModelId = $modflowModelId;
-        $self->soilModelId = $soilModelId;
         $self->ownerId = $userId;
         $self->startDateTime = $start;
         $self->endDateTime = $end;
@@ -86,7 +93,6 @@ class ModflowCalculationAggregate extends AggregateRoot
                 $userId,
                 $calculationId,
                 $modflowModelId,
-                $soilModelId,
                 $start,
                 $end,
                 $lengthUnit,
@@ -96,6 +102,48 @@ class ModflowCalculationAggregate extends AggregateRoot
         );
 
         return $self;
+    }
+
+    /** @noinspection MoreThanThreeArgumentsInspection
+     * @param ModflowId $newCalculationId
+     * @param ModflowId $newModelId
+     * @param UserId $userId
+     * @param ModflowCalculationAggregate $calculation
+     * @return ModflowCalculationAggregate
+     */
+    public static function clone(ModflowId $newCalculationId, ModflowId $newModelId, UserId $userId, ModflowCalculationAggregate $calculation): ModflowCalculationAggregate
+    {
+        $self = new self();
+        $self->calculationId = $newCalculationId;
+        $self->modflowModelId = $newModelId;
+        $self->ownerId = $userId;
+        $self->startDateTime = $calculation->startDateTime();
+        $self->endDateTime = $calculation->endDateTime();
+        $self->lengthUnit = $calculation->lengthUnit();
+        $self->timeUnit = $calculation->timeUnit();
+        $self->stressPeriods = $calculation->stressPeriods();
+        $self->configuration = $calculation->configuration;
+
+        $self->recordThat(
+            CalculationWasCloned::byUserWithIds(
+                $self->ownerId,
+                $calculation->calculationId(),
+                $self->calculationId,
+                $self->modflowModelId,
+                $self->startDateTime,
+                $self->endDateTime,
+                $self->lengthUnit,
+                $self->timeUnit,
+                $self->stressPeriods
+            )
+        );
+
+        return $self;
+    }
+
+    public function updateWithChangedBoundaries(UserId $userId): void
+    {
+        $this->recordThat(CalculationModelBoundariesWereUpdated::withProps($userId, $this->calculationId));
     }
 
     public function updateStartDateTime(DateTime $start): void
@@ -145,17 +193,23 @@ class ModflowCalculationAggregate extends AggregateRoot
         }
     }
 
+    /** @noinspection MoreThanThreeArgumentsInspection
+     * @param UserId $userId
+     * @param string $packageName
+     * @param string $parameterName
+     * @param $parameterData
+     */
     public function updatePackageParameter(UserId $userId, string $packageName, string $parameterName, $parameterData): void
     {
-        $this->configuration->updatePackageParameter($packageName, $parameterName, $parameterData);
-
-        $this->recordThat(CalculationPackageParameterWasUpdated::withProps(
-            $userId,
-            $this->calculationId,
-            $packageName,
-            $parameterName,
-            $parameterData
-        ));
+        if ($this->configuration->canUpdatePackageParameter($packageName, $parameterName)){
+            $this->recordThat(CalculationPackageParameterWasUpdated::withProps(
+                $userId,
+                $this->calculationId,
+                $packageName,
+                $parameterName,
+                $parameterData
+            ));
+        }
     }
 
     public function calculationHasQueued(): void
@@ -183,14 +237,14 @@ class ModflowCalculationAggregate extends AggregateRoot
         return $this->modflowModelId;
     }
 
-    public function soilModelId(): SoilmodelId
-    {
-        return $this->soilModelId;
-    }
-
     public function ownerId(): UserId
     {
         return $this->ownerId;
+    }
+
+    public function startDateTime(): DateTime
+    {
+        return $this->startDateTime;
     }
 
     public function endDateTime(): DateTime
@@ -208,15 +262,18 @@ class ModflowCalculationAggregate extends AggregateRoot
         return $this->timeUnit;
     }
 
+    public function stressPeriods(): StressPeriods
+    {
+        return $this->stressPeriods;
+    }
+
     public function packages(): ModflowCalculationConfiguration
     {
         return $this->configuration;
     }
 
     protected function whenCalculationPackageParameterWasUpdated(CalculationPackageParameterWasUpdated $event): void
-    {
-        $this->configuration->updatePackageParameter($event->packageName(), $event->parameterName(), $event->parameterData());
-    }
+    {}
 
     protected function whenCalculationFlowPackageWasChanged(CalculationFlowPackageWasChanged $event): void
     {
@@ -226,13 +283,26 @@ class ModflowCalculationAggregate extends AggregateRoot
     protected function whenCalculationWasCreated(CalculationWasCreated $event): void
     {
         $this->calculationId = $event->calculationId();
-        $this->modflowModelId = $event->modflowModelId();
-        $this->soilModelId = $event->soilModelId();
+        $this->modflowModelId = $event->modflowmodelId();
         $this->ownerId = $event->userId();
         $this->startDateTime = $event->start();
         $this->endDateTime = $event->end();
         $this->lengthUnit = $event->lengthUnit();
         $this->timeUnit = $event->timeUnit();
+        $this->stressPeriods = $event->stressPeriods();
+        $this->configuration = ModflowCalculationConfiguration::createFromDefaultsWithId($event->calculationId());
+    }
+
+    protected function whenCalculationWasCloned(CalculationWasCloned $event): void
+    {
+        $this->calculationId = $event->calculationId();
+        $this->modflowModelId = $event->modflowmodelId();
+        $this->ownerId = $event->userId();
+        $this->startDateTime = $event->start();
+        $this->endDateTime = $event->end();
+        $this->lengthUnit = $event->lengthUnit();
+        $this->timeUnit = $event->timeUnit();
+        $this->stressPeriods = $event->stressPeriods();
         $this->configuration = ModflowCalculationConfiguration::createFromDefaultsWithId($event->calculationId());
     }
 
@@ -240,6 +310,9 @@ class ModflowCalculationAggregate extends AggregateRoot
     {
         $this->stressPeriods = $event->stressPeriods();
     }
+
+    protected function whenCalculationModelBoundariesWereUpdated(CalculationModelBoundariesWereUpdated $event): void
+    {}
 
     protected function whenCalculationWasQueued(CalculationWasQueued $event): void
     {}

@@ -10,7 +10,6 @@ use Inowas\Soilmodel\Model\SoilmodelList;
 
 final class CreateSoilmodelHandler
 {
-
     /** @var  SoilmodelList */
     private $soilmodelList;
 

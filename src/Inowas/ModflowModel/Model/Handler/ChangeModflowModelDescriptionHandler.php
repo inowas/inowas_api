@@ -26,7 +26,7 @@ final class ChangeModflowModelDescriptionHandler
 
     public function __invoke(ChangeModflowModelDescription $command)
     {
-        /** @var ModflowModelAggregate $modflowModel */
+                /** @var ModflowModelAggregate $modflowModel */
         $modflowModel = $this->modelList->get($command->modflowModelId());
 
         if (!$modflowModel){
@@ -37,11 +37,6 @@ final class ChangeModflowModelDescriptionHandler
             throw WriteAccessFailedException::withUserAndOwner($command->userId(), $modflowModel->ownerId());
         }
 
-        if ($command->scenarioId()) {
-            $modflowModel->changeScenarioDescription($command->userId(), $command->scenarioId(), $command->description());
-            return;
-        }
-
-        $modflowModel->changeBaseModelDescription($command->userId(), $command->description());
+        $modflowModel->changeModelDescription($command->userId(), $command->description());
     }
 }

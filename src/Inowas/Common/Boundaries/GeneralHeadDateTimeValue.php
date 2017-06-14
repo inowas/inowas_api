@@ -7,7 +7,7 @@ namespace Inowas\Common\Boundaries;
 class GeneralHeadDateTimeValue extends DateTimeValue
 {
 
-    const TYPE = "ghb";
+    const TYPE = 'ghb';
 
     /** @var float */
     private $stage;
@@ -47,16 +47,6 @@ class GeneralHeadDateTimeValue extends DateTimeValue
             'stage' => $this->stage,
             'cond' => $this->cond
         );
-    }
-
-    public function toArrayValues(): array
-    {
-        return array($this->dateTime->format(DATE_ATOM), $this->stage, $this->cond);
-    }
-
-    public function jsonSerialize()
-    {
-        return $this->toArray();
     }
 
     public function dateTime(): \DateTimeImmutable

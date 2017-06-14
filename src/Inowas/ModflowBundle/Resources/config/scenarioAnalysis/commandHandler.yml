@@ -1,0 +1,26 @@
+services:
+    inowas.scenarioanalysis.create_scenarioanalysis_handler:
+        class: Inowas\ScenarioAnalysis\Model\Handler\CreateScenarioAnalysisHandler
+        arguments:
+          - '@scenarioanalysis_list'
+
+    inowas.scenarioanalysis.clone_scenarioanalysis_handler:
+        class: Inowas\ScenarioAnalysis\Model\Handler\CloneScenarioAnalysisHandler
+        arguments:
+          - '@scenarioanalysis_list'
+
+    inowas.scenarioanalysis.delete_scenarioanalysis_handler:
+        class: Inowas\ScenarioAnalysis\Model\Handler\DeleteScenarioAnalysisHandler
+        arguments:
+         - '@scenarioanalysis_list'
+
+    inowas.scenarioanalysis.create_scenario_handler:
+        class: Inowas\ScenarioAnalysis\Model\Handler\CreateScenarioHandler
+        arguments:
+          - '@scenarioanalysis_list'
+          - '@inowas.scenarioanalysis.scenarioanalysis_finder'
+
+    inowas.scenarioanalysis.delete_scenario_handler:
+        class: Inowas\ScenarioAnalysis\Model\Handler\DeleteScenarioHandler
+        arguments:
+          - '@scenarioanalysis_list'

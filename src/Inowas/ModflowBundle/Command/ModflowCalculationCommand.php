@@ -45,7 +45,7 @@ class ModflowCalculationCommand extends ContainerAwareCommand
                 $calculationId = ModflowId::fromString($calculation['calculation_id']);
                 $output->writeln(sprintf('Calculating Calculation with id: %s', $calculationId->toString()));
                 $calculationFinder = $this->getContainer()->get('inowas.modflowcalculation.calculation_configuration_finder');
-                $calculation = $calculationFinder->getFlopyCalculation($calculationId);
+                $calculation = $calculationFinder->getCalculationConfiguration($calculationId);
                 $flopyCalculation = $this->getContainer()->get('inowas.modflowcalculation.amqp_flopy_calculation');
                 $flopyCalculation->calculate($calculation);
 
@@ -56,7 +56,7 @@ class ModflowCalculationCommand extends ContainerAwareCommand
 
         $calculationId = ModflowId::fromString($input->getArgument('calculationId'));
         $calculationFinder = $this->getContainer()->get('inowas.modflowcalculation.calculation_configuration_finder');
-        $calculation = $calculationFinder->getFlopyCalculation($calculationId);
+        $calculation = $calculationFinder->getCalculationConfiguration($calculationId);
 
         if ($calculation) {
             $flopyCalculation = $this->getContainer()->get('inowas.modflowcalculation.amqp_flopy_calculation');

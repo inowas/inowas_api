@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Inowas\ModflowCalculation\Model\Command;
 
+use Inowas\Common\DateTime\DateTime;
 use Inowas\Common\Id\ModflowId;
 use Inowas\Common\Id\UserId;
 use Inowas\Common\Modflow\StressPeriods;
@@ -43,6 +44,6 @@ class UpdateCalculationStressperiods extends Command implements PayloadConstruct
 
     public function stressPeriods()
     {
-        return unserialize($this->payload['stress_periods']);
+        return unserialize($this->payload['stress_periods'], [StressPeriods::class, DateTime::class]);
     }
 }

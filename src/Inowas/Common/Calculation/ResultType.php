@@ -13,15 +13,24 @@ class ResultType
     /** @var  string */
     private $type;
 
-    public static function fromString(string $type): ResultType
+    /**
+     * @param string $resultType
+     * @return ResultType
+     */
+    public static function fromString(string $resultType): ResultType
     {
         $self = new self();
-        $self->type = $type;
+        $self->type = $resultType;
         return $self;
     }
 
     public function toString(): string
     {
         return $this->type;
+    }
+
+    public function sameAs(ResultType $other): bool
+    {
+        return $this->toString() === $other->toString();
     }
 }

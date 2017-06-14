@@ -93,6 +93,23 @@ class PcgPackage implements PackageInterface
         );
     }
 
+    /** @noinspection MoreThanThreeArgumentsInspection
+     * @param Mxiter $mxiter
+     * @param Iter1 $iter1
+     * @param Npcond $npcond
+     * @param Hclose $hclose
+     * @param Rclose $rclose
+     * @param Relax $relax
+     * @param Nbpol $nbpol
+     * @param Iprpcg $iprpcg
+     * @param Mutpcg $mutpcg
+     * @param Damp $damp
+     * @param Dampt $dampt
+     * @param Ihcofadd $ihcofadd
+     * @param Extension $extension
+     * @param Unitnumber $unitnumber
+     * @return PcgPackage
+     */
     public static function fromParams(
         Mxiter $mxiter,
         Iter1 $iter1,
@@ -300,7 +317,7 @@ class PcgPackage implements PackageInterface
     /**
      * @return array
      */
-    function jsonSerialize()
+    public function jsonSerialize(): array
     {
         return $this->toArray();
     }

@@ -1,0 +1,6 @@
+services:
+    inowas.tool.tools_projector:
+        class: Inowas\Tool\Infrastructure\Projection\ToolProjector
+        arguments:
+          - '@doctrine.dbal.default_connection'
+          - '@doctrine.orm.default_entity_manager'

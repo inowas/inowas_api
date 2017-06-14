@@ -15,17 +15,15 @@ class CalculateModflowModelCalculation extends Command implements PayloadConstru
 
     use PayloadTrait;
 
-    public static function byUserWithModelId(
+    public static function byUserWithCalculationId(
         UserId $userId,
-        ModflowId $calculationId,
-        ModflowId $modelId
+        ModflowId $calculationId
     ): CalculateModflowModelCalculation
     {
         return new self(
             [
                 'user_id' => $userId->toString(),
-                'calculation_id' => $calculationId->toString(),
-                'modflow_model_id' => $modelId->toString()
+                'calculation_id' => $calculationId->toString()
             ]
         );
     }
@@ -33,11 +31,6 @@ class CalculateModflowModelCalculation extends Command implements PayloadConstru
     public function userId(): UserId
     {
         return UserId::fromString($this->payload['user_id']);
-    }
-
-    public function modflowModelId(): ModflowId
-    {
-        return ModflowId::fromString($this->payload['modflow_model_id']);
     }
 
     public function calculationId(): ModflowId

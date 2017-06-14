@@ -7,10 +7,10 @@ env:
   - ENGINE=GEOS34
 
 addons:
-    postgresql: "9.4"
+    postgresql: "9.6"
     apt:
       packages:
-      - postgresql-9.4-postgis-2.3
+      - postgresql-9.6-postgis-2.3
 
 before_script:
   - sudo apt-get update
@@ -18,9 +18,9 @@ before_script:
   - sed -i 's/git@github.com:/https:\/\/github.com\//' .gitmodules
   - git submodule update --init --recursive
   - cp app/config/parameters.yml.travis app/config/parameters.yml
+  - psql -U postgres -c "CREATE ROLE travis_ci_user WITH PASSWORD 'travis' LOGIN SUPERUSER;"
   - composer install
   - composer dump-autoload -o
-  - psql -U postgres -c "create role travis_ci_user WITH PASSWORD 'travis' LOGIN SUPERUSER;"
   - bin/console doctrine:database:create --env=test
   - bin/console inowas:postgis:install --env=test
   - php bin/console doctrine:schema:create --env=test

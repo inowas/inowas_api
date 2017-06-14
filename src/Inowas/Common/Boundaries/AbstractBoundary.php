@@ -40,7 +40,7 @@ abstract class AbstractBoundary implements ModflowBoundary
         $this->activeCells = $activeCells;
         $this->affectedLayers = AffectedLayers::createWithLayerNumber(LayerNumber::fromInteger(0));
 
-        if (is_null($this->name)) {
+        if (null === $this->name) {
             $this->name = BoundaryName::fromString('');
         }
     }
@@ -74,20 +74,36 @@ abstract class AbstractBoundary implements ModflowBoundary
         return $this->name;
     }
 
+    public function updateName(BoundaryName $boundaryName): void
+    {
+        $this->name = BoundaryName::fromString($boundaryName->toString());
+    }
+
     public function observationPoints(): array
     {
         return $this->observationPoints;
     }
 
-    protected function addOp(ObservationPoint $point)
+    public function getObservationPoint(ObservationPointId $id): ?ObservationPoint
+    {
+        return $this->getOp($id);
+    }
+
+    public function updateObservationPoint(ObservationPoint $op): void
+    {
+        if ($this->hasOp($op->id())){
+            $this->addOrUpdateOp($op);
+        }
+    }
+
+    protected function addOrUpdateOp(ObservationPoint $point): void
     {
         $this->observationPoints[$point->id()->toString()] = $point;
-        return $this;
     }
 
     protected function hasOp(ObservationPointId $observationPointId): bool
     {
-        return (array_key_exists($observationPointId->toString(), $this->observationPoints));
+        return array_key_exists($observationPointId->toString(), $this->observationPoints);
     }
 
     protected function getOp(ObservationPointId $observationPointId): ?ObservationPoint

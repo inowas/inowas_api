@@ -13,7 +13,7 @@ class CalculationWasFinished extends AggregateChanged
     /** @var  ModflowId */
     private $calculationId;
 
-    /** @var  \Inowas\ModflowCalculation\Model\ModflowCalculationResponse */
+    /** @var  ModflowCalculationResponse */
     protected $response;
 
     public static function withIdAndResponse(

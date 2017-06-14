@@ -5,24 +5,23 @@ declare(strict_types=1);
 namespace Inowas\ModflowBundle\Controller;
 
 use FOS\RestBundle\Controller\Annotations as Rest;
-use FOS\RestBundle\Controller\FOSRestController;
-use Inowas\AppBundle\Model\User;
-use Inowas\Common\Calculation\BudgetType;
-use Inowas\Common\Calculation\HeadData;
-use Inowas\Common\Calculation\ResultType;
-use Inowas\Common\Grid\Ncol;
-use Inowas\Common\Grid\LayerNumber;
-use Inowas\Common\Grid\Nrow;
 use Inowas\Common\Id\ModflowId;
-use Inowas\Common\DateTime\TotalTime;
-use Inowas\Common\Id\UserId;
+use Inowas\Common\Modflow\ModelDescription;
+use Inowas\Common\Modflow\ModelName;
 use Inowas\ModflowBundle\Exception\InvalidArgumentException;
 use Inowas\ModflowBundle\Exception\InvalidUuidException;
+use Inowas\ModflowBundle\Exception\NotFoundException;
+use Inowas\ScenarioAnalysis\Model\Command\CloneScenario;
+use Inowas\ScenarioAnalysis\Model\Command\CloneScenarioAnalysis;
+use Inowas\ScenarioAnalysis\Model\Command\CreateScenario;
+use Inowas\ScenarioAnalysis\Model\Command\DeleteScenario;
+use Inowas\ScenarioAnalysis\Model\ScenarioAnalysisId;
 use Nelmio\ApiDocBundle\Annotation\ApiDoc as ApiDoc;
-use Ramsey\Uuid\Uuid;
 use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\RedirectResponse;
 
-class ScenarioAnalysisController extends FOSRestController
+/** @noinspection LongInheritanceChainInspection */
+class ScenarioAnalysisController extends InowasRestController
 {
 
     /**
@@ -36,693 +35,175 @@ class ScenarioAnalysisController extends FOSRestController
      *   }
      * )
      *
-     * @Rest\Get("/my/projects")
+     * @Rest\Get("/scenarioanalyses")
      * @return JsonResponse
      */
-    public function getScenarioAnalysisMyProjectsAction(): JsonResponse
+    public function getMyScenarioAnalysesAction(): JsonResponse
     {
-
-        $user = $this->getUser();
-        if ($user instanceof User && $user->getId()) {
-            $userId = UserId::fromString($this->getUser()->getId()->toString());
-            return new JsonResponse(
-                $this->get('inowas.modflowmodel.details_finder')
-                    ->findByBaseUserId($userId)
-            );
-        }
-
-        return new JsonResponse([]);
+        $userId = $this->getUserId();
+        $result = $this->get('inowas.scenarioanalysis.scenarioanalysis_finder')->findScenarioAnalysesByUserId($userId);
+        return new JsonResponse($result);
     }
 
     /**
-     * Get list of public scenarioAnalysis-projects.
+     * Get list of all public scenarioAnalysis-projects.
      *
      * @ApiDoc(
      *   resource = true,
-     *   description = "Get list of public scenarioAnalysis-projects.",
+     *   description = "Get list of all public scenarioAnalysis-projects.",
      *   statusCodes = {
      *     200 = "Returned when successful"
      *   }
      * )
      *
-     * @Rest\Get("/public/projects")
+     * @Rest\Get("/scenarioanalyses/public")
      * @return JsonResponse
      */
-    public function getScenarioAnalysisPublicProjectsAction(): JsonResponse
+    public function getPublicScenarioAnalysesAction(): JsonResponse
     {
-        $user = $this->getUser();
-        if (!$user instanceof User) {
-            return new JsonResponse([]);
-        }
-
-        return new JsonResponse(
-            $this->get('inowas.modflowmodel.details_finder')->findPublic()
-        );
+        $result = $this->get('inowas.scenarioanalysis.scenarioanalysis_finder')->findPublicScenarioAnalyses();
+        return new JsonResponse($result);
     }
 
     /**
-     * Get list of scenarioAnalysis-project by UserId.
+     * Get ScenarioAnalysis details by ScenarioAnalysisId.
      *
      * @ApiDoc(
      *   resource = true,
-     *   description = "Get list of scenarioAnalysis-project by UserId.",
+     *   description = "Get ScenarioAnalysis details by ScenarioAnalysisId.",
      *   statusCodes = {
      *     200 = "Returned when successful"
      *   }
      * )
      *
-     * @Rest\Get("/user/{userId}")
-     * @param $userId
+     * @Rest\Get("/scenarioanalyses/{id}")
+     * @param $id
      * @return JsonResponse
-     */
-    public function getScenarioAnalysisModelsByUserAction($userId): JsonResponse
-    {
-        $userId = UserId::fromString($userId);
-
-        return new JsonResponse(
-            $this->get('inowas.modflowmodel.details_finder')
-                ->findByBaseUserId($userId)
-        );
-    }
-
-    /**
-     * Get ScenarioAnalysis detail by BaseModelId.
-     *
-     * @ApiDoc(
-     *   resource = true,
-     *   description = "Get ScenarioAnalysis details from current user and basemodelId.",
-     *   statusCodes = {
-     *     200 = "Returned when successful"
-     *   }
-     * )
-     *
-     * @Rest\Get("/{baseModelId}")
-     * @param $baseModelId
-     * @return JsonResponse
+     * @throws \Inowas\ModflowBundle\Exception\NotFoundException
      * @throws InvalidUuidException
      * @throws InvalidArgumentException
      */
-    public function getScenariosAnalysisModelScenariosAction($baseModelId): JsonResponse
+    public function getScenariosAnalysisDetailsAction(string $id): JsonResponse
     {
-        if (! Uuid::isValid($baseModelId)){
-            throw new InvalidUuidException();
+        $this->assertUuidIsValid($id);
+        $scenarioAnalysisId = ScenarioAnalysisId::fromString($id);
+        $scenarioAnalysis = $this->get('inowas.scenarioanalysis.scenarioanalysis_finder')->findScenarioAnalysisDetailsById($scenarioAnalysisId);
+
+        if (null === $scenarioAnalysis){
+            throw NotFoundException::withMessage(sprintf('ScenarioAnalysis with id %s was not found.', $scenarioAnalysisId->toString()));
         }
 
-        $baselModel = $this->get('inowas.modflowmodel.scenarios_finder')->findBaseModelById(
-            ModflowId::fromString($baseModelId)
-        );
-
-        if (! is_array($baselModel) || count($baselModel) != 1){
-            throw new InvalidArgumentException('BaseModelNotFound');
-        }
-
-        $baselModel = $baselModel[0];
-        $baselModel->area = json_decode($baselModel->area);
-
-        $scenarios = $this->get('inowas.modflowmodel.scenarios_finder')->findScenariosByBaseModelId(
-            ModflowId::fromString($baseModelId)
-        );
-
-        return new JsonResponse(
-            [
-                'base_model' => $baselModel,
-                'scenarios' => $scenarios
-            ]
-        );
+        return new JsonResponse($scenarioAnalysis);
     }
 
     /**
-     * Get Modeldetails by baseModelId.
+     * Clone ScenarioAnalysis by ScenarioAnalysisId.
      *
      * @ApiDoc(
      *   resource = true,
-     *   description = "Get Modeldetails by baseModelIs.",
+     *   description = "Clone ScenarioAnalysis by ScenarioAnalysisId.",
      *   statusCodes = {
      *     200 = "Returned when successful"
      *   }
      * )
      *
-     * @Rest\Get("/model/{baseModelId}")
-     * @param $baseModelId
-     * @return JsonResponse
+     * @Rest\Post("/scenarioanalyses/{id}/clone")
+     * @param $id
+     * @return RedirectResponse
+     * @throws \InvalidArgumentException
+     * @throws \Prooph\ServiceBus\Exception\CommandDispatchException
      * @throws InvalidUuidException
      * @throws InvalidArgumentException
      */
-    public function getScenarioAnalysisBaseModelDetailsAction($baseModelId)
+    public function postScenariosAnalysisCloneAction(string $id): RedirectResponse
     {
-        if (! Uuid::isValid($baseModelId)){
-            throw new InvalidUuidException();
-        }
+        $userId = $this->getUserId();
+        $this->assertUuidIsValid($id);
+        $scenarioAnalysisId = ScenarioAnalysisId::fromString($id);
+        $this->get('prooph_service_bus.modflow_command_bus')->dispatch(CloneScenarioAnalysis::byUserWithId($userId, $scenarioAnalysisId));
 
-        return new JsonResponse($this->get('inowas.modflowmodel.details_finder')
-            ->findByBaseModelId(
-                ModflowId::fromString($baseModelId)
+        return new RedirectResponse(
+            $this->generateUrl('get_my_tools'),
+            302
+        );
+    }
+
+    /**
+     * Clone Scenario by ScenarioAnalysisId and ScenarioId.
+     *
+     * @ApiDoc(
+     *   resource = true,
+     *   description = "Clone Scenario by ScenarioAnalysisId and ScenarioId.",
+     *   statusCodes = {
+     *     302 = "Returned when successful"
+     *   }
+     * )
+     *
+     * @Rest\Post("/scenarioanalyses/{id}/scenarios/{sid}/clone")
+     * @param string $id
+     * @param string $sid
+     * @return RedirectResponse
+     * @throws \InvalidArgumentException
+     * @throws \Prooph\ServiceBus\Exception\CommandDispatchException
+     */
+    public function postCloneScenarioAction(string $id, string $sid): RedirectResponse
+    {
+        $userId = $this->getUserId();
+        $this->assertUuidIsValid($id);
+        $scenarioAnalysisId = ScenarioAnalysisId::fromString($id);
+
+        $this->assertUuidIsValid($sid);
+        $baseScenarioId = ModflowId::fromString($sid);
+        $newScenarioId = ModflowId::generate();
+
+        $this->get('prooph_service_bus.modflow_command_bus')->dispatch(
+            CreateScenario::byUserWithBaseModelAndScenarioIdAndPrefix(
+                $scenarioAnalysisId,
+                $userId,
+                $baseScenarioId,
+                $newScenarioId,
+                'Copy of '
             )
         );
-    }
 
-    /**
-     * Get Boundaries by modelId.
-     *
-     * @ApiDoc(
-     *   resource = true,
-     *   description = "Get Boundaries by modelId.",
-     *   statusCodes = {
-     *     200 = "Returned when successful"
-     *   }
-     * )
-     *
-     * @Rest\Get("/model/{modelId}/boundaries")
-     * @param $modelId
-     * @return JsonResponse
-     * @throws InvalidUuidException
-     * @throws InvalidArgumentException
-     */
-    public function getScenarioAnalysisModelBoundariesAction($modelId)
-    {
-        if (! Uuid::isValid($modelId)){
-            throw new InvalidUuidException();
-        }
-
-        return new JsonResponse($this->get('inowas.modflowmodel.boundaries_finder')
-            ->findByModelId(
-                ModflowId::fromString($modelId)
-            )
+        return new RedirectResponse(
+            $this->generateUrl('get_scenarios_analysis_details', array( 'id' => $id )),
+            302
         );
     }
 
     /**
-     * Get totalTimes of last calculation of model by modelId, type and layerNumber.
+     * Clone Scenario by ScenarioAnalysisId and ScenarioId.
      *
      * @ApiDoc(
      *   resource = true,
-     *   description = "Get Times by CalculationId, Type and Layer.",
+     *   description = "Clone Scenario by ScenarioAnalysisId and ScenarioId.",
      *   statusCodes = {
-     *     200 = "Returned when successful"
+     *     302 = "Returned when successful"
      *   }
      * )
      *
-     * @Rest\Get("/model/{modelId}/calculation/times/type/{type}/layer/{layer}")
-     * @param $modelId
-     * @param $type
-     * @param $layer
-     * @return JsonResponse
-     * @throws InvalidUuidException
-     * @throws InvalidArgumentException
+     * @Rest\Delete("/scenarioanalyses/{id}/scenarios/{sid}")
+     * @param string $id
+     * @param string $sid
+     * @return RedirectResponse
+     * @throws \InvalidArgumentException
+     * @throws \Prooph\ServiceBus\Exception\CommandDispatchException
      */
-    public function getScenarioAnalysisModelCalculationTimesByTypeAndLayerAction($modelId, $type, $layer)
+    public function deleteScenarioAction(string $id, string $sid): RedirectResponse
     {
-        if (! Uuid::isValid($modelId)){
-            throw new InvalidUuidException();
-        }
+        $userId = $this->getUserId();
+        $this->assertUuidIsValid($id);
+        $scenarioAnalysisId = ScenarioAnalysisId::fromString($id);
 
-        $calculation = $this->get('inowas.modflowcalculation.calculation_list_finder')
-            ->findLastCalculationByModelId(ModflowId::fromString($modelId));
+        $this->assertUuidIsValid($sid);
+        $scenarioId = ModflowId::fromString($sid);
 
-        $totalTimes = $this->get('inowas.modflowcalculation.calculation_results_finder')
-            ->findTimes(
-                ModflowId::fromString($calculation['calculation_id']),
-                ResultType::fromString($type),
-                LayerNumber::fromInteger((int)$layer)
+        $this->get('prooph_service_bus.modflow_command_bus')->dispatch(DeleteScenario::byUserWithIds($scenarioAnalysisId, $userId, $scenarioId));
+
+        return new RedirectResponse(
+            $this->generateUrl('get_scenarios_analysis_details', array( 'id' => $id )),
+            303
         );
-
-        $result = [
-            'start_date' => $calculation['start_date_atom'],
-            'end_date' => $calculation['end_date_atom'],
-            'total_times' => $totalTimes
-        ];
-
-        return new JsonResponse($result);
-    }
-
-    /**
-     * Get totalTimes of calculation calculationId, type and layerNumber.
-     *
-     * @ApiDoc(
-     *   resource = true,
-     *   description = "Get totalTimes of calculation calculationId, Type and Layer.",
-     *   statusCodes = {
-     *     200 = "Returned when successful"
-     *   }
-     * )
-     *
-     * @Rest\Get("/model/calculation/{calculationId}/times/type/{type}/layer/{layer}")
-     * @param $calculationId
-     * @param $type
-     * @param $layer
-     * @return JsonResponse
-     * @throws InvalidUuidException
-     * @throws InvalidArgumentException
-     */
-    public function getScenarioAnalysisCalculationTimesByTypeAndLayerAction($calculationId, $type, $layer)
-    {
-        if (! Uuid::isValid($calculationId)){
-            throw new InvalidUuidException();
-        }
-
-        $calculation = $this->get('inowas.modflowcalculation.calculation_list_finder')
-            ->findCalculationById(ModflowId::fromString($calculationId));
-
-        $totalTimes = $this->get('inowas.modflowcalculation.calculation_results_finder')
-            ->findTimes(
-                ModflowId::fromString($calculation['calculation_id']),
-                ResultType::fromString($type),
-                LayerNumber::fromInteger((int)$layer)
-            );
-
-        $result = [
-            'start_date' => $calculation['date_time_start'],
-            'end_date' => $calculation['date_time_end'],
-            'total_times' => $totalTimes
-        ];
-
-        return new JsonResponse($result);
-    }
-
-    /**
-     * Get models latest calculation result by modelId, type and layerNumber.
-     *
-     * @ApiDoc(
-     *   resource = true,
-     *   description = "Get models latest calculation result by modelId, type and layerNumber.",
-     *   statusCodes = {
-     *     200 = "Returned when successful"
-     *   }
-     * )
-     *
-     * @Rest\Get("/model/{modelId}/calculation/result/type/{type}/layer/{layer}/totim/{totim}")
-     * @param $modelId
-     * @param $type
-     * @param $layer
-     * @param $totim
-     * @return JsonResponse
-     * @throws InvalidUuidException
-     * @throws InvalidArgumentException
-     */
-    public function getScenarioAnalysisResultByModelResultTypeAndLayerAction($modelId, $type, $layer, $totim)
-    {
-        if (! Uuid::isValid($modelId)){
-            throw new InvalidUuidException();
-        }
-
-        $calculation = $this->get('inowas.modflowcalculation.calculation_list_finder')
-            ->findLastCalculationByModelId(ModflowId::fromString($modelId));
-
-        $result = $this->get('inowas.modflowcalculation.calculation_results_finder')
-            ->findValue(
-                ModflowId::fromString($calculation['calculation_id']),
-                ResultType::fromString($type),
-                LayerNumber::fromInteger((int)$layer),
-                TotalTime::fromInt((int)$totim)
-            );
-
-        return new JsonResponse($result);
-    }
-
-    /**
-     * Get calculation result by calculationId, type and layerNumber.
-     *
-     * @ApiDoc(
-     *   resource = true,
-     *   description = "Get models last calculation result by calculationId, type and layerNumber.",
-     *   statusCodes = {
-     *     200 = "Returned when successful"
-     *   }
-     * )
-     *
-     * @Rest\Route("/model/calculation/{calculationId}/result/type/{type}/layer/{layer}/totim/{totim}", methods={"GET"}, requirements={"_format"="json"})
-     * @param $calculationId
-     * @param $type
-     * @param $layer
-     * @param $totim
-     * @return JsonResponse
-     * @throws InvalidUuidException
-     */
-    public function getScenarioAnalysisResultByCalculationResultTypeAndLayerAction($calculationId, $type, $layer, $totim)
-    {
-        if (! Uuid::isValid($calculationId)){
-            throw new InvalidUuidException();
-        }
-
-        $result = $this->get('inowas.modflowcalculation.calculation_results_finder')
-            ->findValue(
-                ModflowId::fromString($calculationId),
-                ResultType::fromString($type),
-                LayerNumber::fromInteger((int)$layer),
-                TotalTime::fromInt((int)$totim)
-            );
-
-        return new JsonResponse($result);
-    }
-
-    /**
-     * Get Information about what results are available in which layer.
-     *
-     * @ApiDoc(
-     *   resource = true,
-     *   description = "Get Information about what results (heads, drawdowns, watertables) are available in which layer, by modelId",
-     *   statusCodes = {
-     *     200 = "Returned when successful"
-     *   }
-     * )
-     *
-     * @Rest\Get("/model/{modelId}/calculation/layervalues")
-     * @param $modelId
-     * @return JsonResponse
-     * @throws InvalidUuidException
-     * @throws InvalidArgumentException
-     */
-    public function getScenarioAnalysisModelCalculationLayerValuesAction($modelId)
-    {
-        if (! Uuid::isValid($modelId)){
-            throw new InvalidUuidException();
-        }
-
-        $calculation = $this->get('inowas.modflowcalculation.calculation_list_finder')
-            ->findLastCalculationByModelId(ModflowId::fromString($modelId));
-
-        $layerValues = $this->get('inowas.modflowcalculation.calculation_results_finder')
-            ->findLayerValues(ModflowId::fromString($calculation['calculation_id']));
-
-        return new JsonResponse($layerValues);
-    }
-
-    /**
-     * Get Information about what results are available in which layer.
-     *
-     * @ApiDoc(
-     *   resource = true,
-     *   description = "Get Information about what results (heads, drawdowns, watertables) are available in which layer, by calculationId",
-     *   statusCodes = {
-     *     200 = "Returned when successful"
-     *   }
-     * )
-     *
-     * @Rest\Get("/calculation/{calculationId}/layervalues")
-     * @param $calculationId
-     * @return JsonResponse
-     * @throws InvalidUuidException
-     * @throws InvalidArgumentException
-     */
-    public function getScenarioAnalysisCalculationLayerValuesAction($calculationId)
-    {
-        if (! Uuid::isValid($calculationId)){
-            throw new InvalidUuidException();
-        }
-
-        $layerValues = $this->get('inowas.modflowcalculation.calculation_results_finder')
-            ->findLayerValues(ModflowId::fromString($calculationId));
-
-        return new JsonResponse($layerValues);
-    }
-
-    /**
-     * Get difference of two models latest calculation result by modelIds, type and layerNumber.
-     *
-     * @ApiDoc(
-     *   resource = true,
-     *   description = "* Get difference of two models latest calculation result by modelIds, type and layerNumber.",
-     *   statusCodes = {
-     *     200 = "Returned when successful"
-     *   }
-     * )
-     *
-     * @Rest\Get("/result/difference/models/{modelIdFirstModel}/{modelIdSecondModel}/type/{type}/layer/{layer}/totim/{totim}")
-     * @param $modelIdFirstModel
-     * @param $modelIdSecondModel
-     * @param $type
-     * @param $layer
-     * @param $totim
-     * @return JsonResponse
-     * @throws InvalidUuidException
-     * @throws InvalidArgumentException
-     */
-    public function getScenarioAnalysisResultDifferenceByModelIdsTypeLayerAndTotimAction($modelIdFirstModel, $modelIdSecondModel, $type, $layer, $totim):JsonResponse
-    {
-        if (! Uuid::isValid($modelIdFirstModel)){
-            throw new InvalidUuidException();
-        }
-
-        $calculationFirstModel = $this->get('inowas.modflowcalculation.calculation_list_finder')
-            ->findLastCalculationByModelId(ModflowId::fromString($modelIdFirstModel));
-
-        $resultFirstModel = $this->get('inowas.modflowcalculation.calculation_results_finder')
-            ->findValue(
-                ModflowId::fromString($calculationFirstModel['calculation_id']),
-                ResultType::fromString($type),
-                LayerNumber::fromInteger((int)$layer),
-                TotalTime::fromInt((int)$totim)
-            );
-
-        if (! Uuid::isValid($modelIdSecondModel)){
-            throw new InvalidUuidException();
-        }
-
-        $calculationSecondModel = $this->get('inowas.modflowcalculation.calculation_list_finder')
-            ->findLastCalculationByModelId(ModflowId::fromString($modelIdSecondModel));
-
-        $resultSecondModel = $this->get('inowas.modflowcalculation.calculation_results_finder')
-            ->findValue(
-                ModflowId::fromString($calculationSecondModel['calculation_id']),
-                ResultType::fromString($type),
-                LayerNumber::fromInteger((int)$layer),
-                TotalTime::fromInt((int)$totim)
-            );
-
-        $result = $this->calculateDifferenceResults($resultFirstModel, $resultSecondModel);
-
-        return new JsonResponse($result);
-    }
-
-    /**
-     * Get difference of two calculation results by calculationIds, type and layerNumber.
-     *
-     * @ApiDoc(
-     *   resource = true,
-     *   description = "Get difference of two calculation results by calculationIds, type and layerNumber.",
-     *   statusCodes = {
-     *     200 = "Returned when successful"
-     *   }
-     * )
-     *
-     * @Rest\Get("/result/difference/calculations/{calculationIdFirstModel}/{calculationIdSecondModel}/type/{type}/layer/{layer}/totim/{totim}")
-     * @param $calculationIdFirstModel
-     * @param calculationIdSecondModel
-     * @param $type
-     * @param $layer
-     * @param $totim
-     * @return JsonResponse
-     * @throws InvalidUuidException
-     * @throws InvalidArgumentException
-     */
-    public function getScenarioAnalysisResultDifferenceByCalculationIdsTypeLayerAndTotimAction($calculationIdFirstModel, $calculationIdSecondModel, $type, $layer, $totim):JsonResponse
-    {
-        if (! Uuid::isValid($calculationIdFirstModel)){
-            throw new InvalidUuidException();
-        }
-
-        $resultFirstModel = $this->get('inowas.modflowcalculation.calculation_results_finder')
-            ->findValue(
-                ModflowId::fromString($calculationIdFirstModel),
-                ResultType::fromString($type),
-                LayerNumber::fromInteger((int)$layer),
-                TotalTime::fromInt((int)$totim)
-            );
-
-        if (! Uuid::isValid($calculationIdSecondModel)){
-            throw new InvalidUuidException();
-        }
-
-        $resultSecondModel = $this->get('inowas.modflowcalculation.calculation_results_finder')
-            ->findValue(
-                ModflowId::fromString($calculationIdSecondModel),
-                ResultType::fromString($type),
-                LayerNumber::fromInteger((int)$layer),
-                TotalTime::fromInt((int)$totim)
-            );
-
-        $result = $this->calculateDifferenceResults($resultFirstModel, $resultSecondModel);
-
-        return new JsonResponse($result);
-    }
-
-    /**
-     * Get timeseries of latest calculation of model by modelId, type and layerNumber.
-     *
-     * @ApiDoc(
-     *   resource = true,
-     *   description = "Get difference of two calculation results by calculationIds, type and layerNumber.",
-     *   statusCodes = {
-     *     200 = "Returned when successful"
-     *   }
-     * )
-     *
-     * @Rest\Get("/result/timeseries/model/{modelId}/type/{type}/layer{layer}/nx/{nx}/ny/{ny}")
-     * api/scenarioanalysis.json
-     * @param $modelId
-     * @param $type
-     * @param $layer
-     * @param $nx
-     * @param $ny
-     * @return JsonResponse
-     * @throws InvalidUuidException
-     * @throws InvalidArgumentException
-     */
-    public function getScenarioAnalysisResultTimeseriesByModelIdTypeLayerNxNyAction($modelId, $type, $layer, $nx, $ny): JsonResponse
-    {
-        if (! Uuid::isValid($modelId)){
-            throw new InvalidUuidException();
-        }
-
-        $modelId = ModflowId::fromString($modelId);
-        $type = ResultType::fromString($type);
-        $layer = LayerNumber::fromInteger((int)$layer);
-        $column = Ncol::fromInteger((int)$nx);
-        $row = Nrow::fromInteger((int)$ny);
-
-        $calculation = $this->get('inowas.modflowcalculation.calculation_list_finder')
-            ->findLastCalculationByModelId($modelId);
-
-        $calculationId = ModflowId::fromString($calculation['calculation_id']);
-
-        $timesSeries = $this->get('inowas.modflowcalculation.calculation_results_finder')
-            ->findTimeSeries($calculationId, $type, $layer, $row, $column);
-
-        return new JsonResponse($timesSeries);
-    }
-
-    /**
-     * Get timeseries of calculation by calculationId, type and layerNumber.
-     *
-     * @ApiDoc(
-     *   resource = true,
-     *   description = "Get difference of two calculation results by calculationIds, type and layerNumber.",
-     *   statusCodes = {
-     *     200 = "Returned when successful"
-     *   }
-     * )
-     *
-     * @Rest\Get("/result/timeseries/model/{modelId}/type/{type}/layer{layer}/nx/{nx}/ny/{ny}")
-     * api/scenarioanalysis.json
-     * @param $calculationId
-     * @param $type
-     * @param $layer
-     * @param $nx
-     * @param $ny
-     * @return JsonResponse
-     * @throws InvalidUuidException
-     * @throws InvalidArgumentException
-     */
-    public function getScenarioAnalysisResultTimeseriesByCalculationIdTypeLayerNxNyAction($calculationId, $type, $layer, $nx, $ny): JsonResponse
-    {
-
-        if (! Uuid::isValid($calculationId)){
-            throw new InvalidUuidException();
-        }
-
-        $calculationId = ModflowId::fromString($calculationId);
-        $type = ResultType::fromString($type);
-        $layer = LayerNumber::fromInteger((int)$layer);
-        $column = Ncol::fromInteger((int)$nx);
-        $row = Nrow::fromInteger((int)$ny);
-
-        $timesSeries = $this->get('inowas.modflowcalculation.calculation_results_finder')
-            ->findTimeSeries($calculationId, $type, $layer, $row, $column);
-
-        return new JsonResponse($timesSeries);
-    }
-
-    /**
-     * Returns the incremental/cumulative budget of the timestep from last calculation of model by modelId
-     *
-     * @ApiDoc(
-     *   resource = true,
-     *   description = "Returns the incremental/cumulative budget of the timestep from last calculation of model by modelId",
-     *   statusCodes = {
-     *     200 = "Returned when successful"
-     *   }
-     * )
-     *
-     * @Rest\Get("/model/{modelId}/calculation/budget/type/{type}/totim/{totim}")
-     * @param $modelId
-     * @param $type
-     * @param $totim
-     * @return JsonResponse
-     * @throws InvalidUuidException
-     * @throws InvalidArgumentException
-     */
-    public function getScenarioAnalysisModelCalculationBudgetAction($modelId, $type, $totim): JsonResponse
-    {
-        $modelId = ModflowId::fromString($modelId);
-        $totim = TotalTime::fromInt((int)$totim);
-        $type = BudgetType::fromString($type);
-
-
-        $calculation = $this->get('inowas.modflowcalculation.calculation_list_finder')->findLastCalculationByModelId($modelId);
-        $calculationId = ModflowId::fromString($calculation['calculation_id']);
-
-        /* TODO Read budgets from calculation */
-        /*
-        $budget = $this->get('inowas.modflow_projection.calculation_budgets_finder')
-            ->findBudget($calculationId, $totim, $type);
-        */
-        return new JsonResponse($budget="");
-    }
-
-    /**
-     * Returns the incremental/cumulative budget of the timestep from calculation by calculationId
-     *
-     * @ApiDoc(
-     *   resource = true,
-     *   description = "Returns the incremental/cumulative budget of the timestep from calculation by calculationId",
-     *   statusCodes = {
-     *     200 = "Returned when successful"
-     *   }
-     * )
-     *
-     * @Rest\Get("/calculation/{calculationId}/budget/type/{type}/totim/{totim}")
-     * @param $calculationId
-     * @param $type
-     * @param $totim
-     * @return JsonResponse
-     * @throws InvalidUuidException
-     * @throws InvalidArgumentException
-     */
-    public function getScenarioAnalysisCalculationBudgetAction($calculationId, $type, $totim): JsonResponse
-    {
-        $calculationId = ModflowId::fromString($calculationId);
-        $totim = TotalTime::fromInt((int)$totim);
-        $type = BudgetType::fromString($type);
-
-        /* TODO Read budgets from calculation */
-        /*
-        $budget = $this->get('inowas.modflow_projection.calculation_budgets_finder')
-            ->findBudget($calculationId, $totim, $type);
-        */
-        return new JsonResponse($budget="");
-    }
-
-    private function calculateDifferenceResults(HeadData $res1, HeadData $res2): HeadData
-    {
-        $arr1 = $res1->toArray();
-        $arr2 = $res2->toArray();
-
-        if (! (count($arr1) == count($arr2) && count($arr1[0]) == count($arr2[0]))){
-            throw new \Exception('Arrays not in the same range');
-        }
-
-        $result = [];
-        foreach ($arr1 as $rowNumber => $row){
-            foreach ($row as $colNumber => $value){
-                if (is_null($arr1[$rowNumber][$colNumber]) || is_null($arr2[$rowNumber][$colNumber])){
-                    $result[$rowNumber][$colNumber] = null;
-                    continue;
-                }
-
-                $result[$rowNumber][$colNumber] = round($arr1[$rowNumber][$colNumber] - $arr2[$rowNumber][$colNumber], 3);
-            }
-        }
-
-        return HeadData::from2dArray($result);
     }
 }

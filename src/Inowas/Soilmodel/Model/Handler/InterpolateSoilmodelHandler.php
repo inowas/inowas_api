@@ -6,6 +6,7 @@ namespace Inowas\Soilmodel\Model\Handler;
 
 use Inowas\Common\Grid\BoundingBox;
 use Inowas\Common\Grid\GridSize;
+use Inowas\Common\Interpolation\PointValue;
 use Inowas\Common\Soilmodel\BottomElevation;
 use Inowas\Common\Soilmodel\Conductivity;
 use Inowas\Common\Soilmodel\HydraulicConductivityX;
@@ -29,7 +30,7 @@ use Inowas\Common\Soilmodel\GeologicalLayerValues;
 use Inowas\Common\Soilmodel\Horizon;
 use Inowas\Soilmodel\Model\SoilmodelAggregate;
 use Inowas\Soilmodel\Model\SoilmodelList;
-use Inowas\SoilmodelBundle\Model\PointValue;
+
 
 final class InterpolateSoilmodelHandler
 {
@@ -71,7 +72,8 @@ final class InterpolateSoilmodelHandler
         }
     }
 
-    private function interpolate(GeologicalLayer $layer, BoundingBox $boundingBox, GridSize $gridSize){
+    private function interpolate(GeologicalLayer $layer, BoundingBox $boundingBox, GridSize $gridSize): void
+    {
         $baseConfiguration = new LayerInterpolationConfiguration();
         $baseConfiguration->addMethod(LayerInterpolationConfiguration::METHOD_GAUSSIAN);
         $baseConfiguration->addMethod(LayerInterpolationConfiguration::METHOD_MEAN);

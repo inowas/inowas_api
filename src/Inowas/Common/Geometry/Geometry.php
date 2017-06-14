@@ -4,9 +4,12 @@ declare(strict_types=1);
 
 namespace Inowas\Common\Geometry;
 
-class Geometry
+class Geometry implements \JsonSerializable
 {
+    /** @var  AbstractGeometry */
     private $geometry;
+
+    public static $availableTypes = ['point', 'linestring', 'polygon'];
 
     public static function fromJson(string $json): Geometry
     {
@@ -18,15 +21,15 @@ class Geometry
         $obj = json_decode($json);
         $type = strtolower($obj->type);
 
-        if ($type == 'point'){
+        if ($type == 'point') {
             return Geometry::fromPoint(new Point($obj->coordinates[0], $obj->coordinates[1]));
         }
 
-        if ($type == 'linestring'){
+        if ($type == 'linestring') {
             return Geometry::fromLineString(new LineString($obj->coordinates));
         }
 
-        if ($type == 'polygon'){
+        if ($type == 'polygon') {
             return Geometry::fromPolygon(new Polygon($obj->coordinates));
         }
 
@@ -47,6 +50,32 @@ class Geometry
         return $self;
     }
 
+    public static function fromArray(array $arr): Geometry
+    {
+        $type = strtolower($arr['type']);
+        $coordinates = $arr['coordinates'];
+
+        $srid = null;
+        if (array_key_exists('srid', $arr)){
+            $srid = $arr['srid'];
+        }
+
+
+        if ($type == 'point') {
+            return Geometry::fromPoint(new Point($coordinates, $srid));
+        }
+
+        if ($type == 'linestring') {
+            return Geometry::fromLineString(new LineString($coordinates, $srid));
+        }
+
+        if ($type == 'polygon') {
+            return Geometry::fromPolygon(new Polygon($coordinates, $srid));
+        }
+
+        return null;
+    }
+
     public static function fromPoint(Point $point): Geometry
     {
         $self = new self();
@@ -54,9 +83,34 @@ class Geometry
         return $self;
     }
 
+    public static function isValid(array $arr): bool
+    {
+        if (! array_key_exists('type', $arr)) {
+            return false;
+        }
+
+        if (! in_array(strtolower($arr['type']), self::$availableTypes)) {
+            return false;
+        }
+
+        if (! array_key_exists('coordinates', $arr)) {
+            return false;
+        }
+
+        if (! is_array($arr['coordinates'])) {
+            return false;
+        }
+
+        return true;
+    }
+
     public function toArray()
     {
-        return $this->geometry->toArray();
+        return [
+            'type' => $this->geometry->getType(),
+            'coordinates' => $this->geometry->toArray(),
+            'srid' => $this->geometry->getSrid()
+        ];
     }
 
     public function toJson()
@@ -66,11 +120,23 @@ class Geometry
 
     public function srid(): Srid
     {
-         return Srid::fromInt($this->geometry->getSrid());
+        if (null === $this->geometry->getSrid()){
+            Srid::fromInt(4326);
+        }
+        return Srid::fromInt($this->geometry->getSrid());
     }
 
     public function value()
     {
         return $this->geometry;
+    }
+
+    public function jsonSerialize()
+    {
+        return [
+            'type' => $this->geometry->getType(),
+            'coordinates' => $this->geometry->toArray(),
+            'srid' => $this->srid()->toInteger()
+        ];
     }
 }

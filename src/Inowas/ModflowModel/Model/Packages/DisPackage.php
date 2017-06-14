@@ -106,8 +106,8 @@ class DisPackage implements PackageInterface
     {
         // DEFAULT
         $nlay = LayerNumber::fromInteger(1);
-        $ncol = Ncol::fromInteger(1);
-        $nrow = Nrow::fromInteger(1);
+        $ncol = Ncol::fromInt(1);
+        $nrow = Nrow::fromInt(1);
         $nper = Nper::fromInteger(1);
         $delr = Delr::fromValue(1.0);
         $delc = Delc::fromValue(1.0);
@@ -154,6 +154,32 @@ class DisPackage implements PackageInterface
         return $self;
     }
 
+
+    /** @noinspection MoreThanThreeArgumentsInspection
+     * @param LayerNumber $nlay
+     * @param Nrow $nrow
+     * @param Ncol $ncol
+     * @param Nper $nper
+     * @param Delr $delr
+     * @param Delc $delc
+     * @param Laycbd $laycbd
+     * @param Top $top
+     * @param Botm $botm
+     * @param Perlen $perlen
+     * @param Nstp $nstp
+     * @param Tsmult $tsmult
+     * @param Steady $steady
+     * @param TimeUnit $itmuni
+     * @param LengthUnit $lenuni
+     * @param Extension $extension
+     * @param Unitnumber $unitnumber
+     * @param Xul $xul
+     * @param Yul $yul
+     * @param Rotation $rotation
+     * @param Proj4str $proj4Str
+     * @param DateTime $startDateTime
+     * @return DisPackage
+     */
     public static function fromParams(
         LayerNumber $nlay,
         Nrow $nrow,
@@ -208,8 +234,8 @@ class DisPackage implements PackageInterface
     public static function fromArray(array $arr): DisPackage
     {
         $nlay = LayerNumber::fromInteger($arr['nlay']);
-        $nrow = Nrow::fromInteger($arr['nrow']);
-        $ncol = Ncol::fromInteger($arr['ncol']);
+        $nrow = Nrow::fromInt($arr['nrow']);
+        $ncol = Ncol::fromInt($arr['ncol']);
         $nper = Nper::fromInteger($arr['nper']);
         $delr = Delr::fromValue($arr['delr']);
         $delc = Delc::fromValue($arr['delc']);
@@ -413,8 +439,8 @@ class DisPackage implements PackageInterface
     public function updateGridParameters(GridSize $gridSize, BoundingBox $boundingBox): DisPackage
     {
         $package = self::fromArray($this->toArray());
-        $package->nrow = Nrow::fromInteger($gridSize->nY());
-        $package->ncol = Ncol::fromInteger($gridSize->nX());
+        $package->nrow = Nrow::fromInt($gridSize->nY());
+        $package->ncol = Ncol::fromInt($gridSize->nX());
         $package->delr = Delr::fromValue($boundingBox->dY()/$gridSize->nY());
         $package->delc = Delc::fromValue($boundingBox->dX()/$gridSize->nX());
         $package->xul = Xul::fromValue($boundingBox->xMin());
@@ -470,35 +496,35 @@ class DisPackage implements PackageInterface
     public function toArray(): array
     {
         return array(
-            "nlay" => $this->nlay->toInteger(),
-            "nrow" => $this->nrow->toInteger(),
-            "ncol" => $this->ncol->toInteger(),
-            "nper" => $this->nper->toInteger(),
-            "delr" => $this->delr->toValue(),
-            "delc" => $this->delc->toValue(),
-            "laycbd" => $this->laycbd->toValue(),
-            "top" => $this->top->toValue(),
-            "botm" => $this->botm->toValue(),
-            "perlen" => $this->perlen->toValue(),
-            "nstp" => $this->nstp->toValue(),
-            "tsmult" => $this->tsmult->toValue(),
-            "steady" => $this->steady->toValue(),
-            "itmuni" => $this->itmuni->toInt(),
-            "lenuni" => $this->lenuni->toInt(),
-            "extension" => $this->extension->toValue(),
-            "unitnumber" => $this->unitnumber->toValue(),
-            "xul" => $this->xul->toValue(),
-            "yul" => $this->yul->toValue(),
-            "rotation" => $this->rotation->toFloat(),
-            "proj4_str" => $this->proj4str->toString(),
-            "start_datetime" => $this->startDateTime->toAtom()
+            'nlay' => $this->nlay->toInteger(),
+            'nrow' => $this->nrow->toInteger(),
+            'ncol' => $this->ncol->toInteger(),
+            'nper' => $this->nper->toInteger(),
+            'delr' => $this->delr->toValue(),
+            'delc' => $this->delc->toValue(),
+            'laycbd' => $this->laycbd->toValue(),
+            'top' => $this->top->toValue(),
+            'botm' => $this->botm->toValue(),
+            'perlen' => $this->perlen->toValue(),
+            'nstp' => $this->nstp->toValue(),
+            'tsmult' => $this->tsmult->toValue(),
+            'steady' => $this->steady->toValue(),
+            'itmuni' => $this->itmuni->toInt(),
+            'lenuni' => $this->lenuni->toInt(),
+            'extension' => $this->extension->toValue(),
+            'unitnumber' => $this->unitnumber->toValue(),
+            'xul' => $this->xul->toValue(),
+            'yul' => $this->yul->toValue(),
+            'rotation' => $this->rotation->toFloat(),
+            'proj4_str' => $this->proj4str->toString(),
+            'start_datetime' => $this->startDateTime->toAtom()
         );
     }
 
     /**
      * @return array
      */
-    function jsonSerialize()
+    public function jsonSerialize(): array
     {
         return $this->toArray();
     }

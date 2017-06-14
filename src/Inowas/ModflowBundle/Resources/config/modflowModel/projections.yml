@@ -1,23 +1,24 @@
 services:
-    inowas.modflowmodel.model_scenarios_projector:
-        class: Inowas\ModflowModel\Infrastructure\Projection\ModelScenarioList\ModelScenarioListProjector
+    inowas.modflowmodel.model_boundaries_active_cells_projector:
+        class: Inowas\ModflowModel\Infrastructure\Projection\BoundaryList\BoundaryActiveCellsProjector
         arguments:
           - '@doctrine.dbal.default_connection'
+          - '@inowas.modflowmodel.model_finder'
+          - '@inowas.modflowmodel.boundaries_finder'
+          - '@inowas.geotools.geotools_service'
 
-    inowas.modflowmodel.model_boundaries_projector:
+    inowas.modflowmodel.model_boundaries_list_projector:
         class: Inowas\ModflowModel\Infrastructure\Projection\BoundaryList\BoundaryListProjector
         arguments:
           - '@doctrine.dbal.default_connection'
-          - '@inowas.geotools.geotools_service'
-          - '@inowas.modflowmodel.details_finder'
 
-    inowas.modflowmodel.model_boundary_values_projector:
-        class: Inowas\ModflowModel\Infrastructure\Projection\BoundaryList\BoundaryValuesProjector
+    inowas.modflowmodel.model_boundaries_values_projector:
+        class: Inowas\ModflowModel\Infrastructure\Projection\BoundaryList\BoundaryObservationPointsProjector
         arguments:
           - '@doctrine.dbal.default_connection'
 
     inowas.modflowmodel.model_details_projector:
-        class: Inowas\ModflowModel\Infrastructure\Projection\ModelScenarioList\ModelDetailsProjector
+        class: Inowas\ModflowModel\Infrastructure\Projection\ModelList\ModelProjector
         arguments:
           - '@doctrine.dbal.default_connection'
           - '@doctrine.orm.default_entity_manager'

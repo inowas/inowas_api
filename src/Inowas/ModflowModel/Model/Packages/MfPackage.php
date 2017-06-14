@@ -11,7 +11,7 @@ use Inowas\Common\FileSystem\Modelworkspace;
 use Inowas\Common\Modflow\ExecutableName;
 use Inowas\Common\Modflow\Listunit;
 use Inowas\Common\Modflow\Verbose;
-use Inowas\Common\Modflow\Modelname;
+use Inowas\Common\Modflow\ModelName;
 use Inowas\Common\Modflow\Version;
 
 class MfPackage implements PackageInterface
@@ -20,7 +20,7 @@ class MfPackage implements PackageInterface
     /** @var string  */
     protected $type = 'mf';
 
-    /** @var  Modelname */
+    /** @var  ModelName */
     protected $modelname;
 
     /** @var  NameFileExtension */
@@ -44,9 +44,9 @@ class MfPackage implements PackageInterface
     /** @var Verbose  */
     protected $verbose;
 
-    public static function fromDefaults()
+    public static function fromDefaults(): MfPackage
     {
-        $name = Modelname::fromString('testmodel');
+        $name = ModelName::fromString('testmodel');
         $fileExtension = NameFileExtension::fromString('nam');
         $version = Version::fromString(Version::MF2005);
         $executableName = FileName::fromString('mf2005');
@@ -58,8 +58,20 @@ class MfPackage implements PackageInterface
         return new self($name, $fileExtension, $version, $executableName, $listUnit, $modelWorkSpace, $externalPath, $verbose);
     }
 
+
+    /** @noinspection MoreThanThreeArgumentsInspection
+     * @param ModelName $name
+     * @param NameFileExtension $fileExtension
+     * @param Version $version
+     * @param FileName $executableName
+     * @param Listunit $listUnit
+     * @param Modelworkspace $modelWorkSpace
+     * @param Externalpath $externalPath
+     * @param Verbose $verbose
+     * @return MfPackage
+     */
     public static function fromParams(
-        Modelname $name,
+        ModelName $name,
         NameFileExtension $fileExtension,
         Version $version,
         FileName $executableName,
@@ -74,7 +86,7 @@ class MfPackage implements PackageInterface
 
     public static function fromArray(array $arr): MfPackage
     {
-        $name = Modelname::fromString($arr['modelname']);
+        $name = ModelName::fromString($arr['modelname']);
         $fileExtension = NameFileExtension::fromString($arr['namefile_ext']);
         $version = Version::fromString($arr['version']);
         $executableName = FileName::fromString($arr['exe_name']);
@@ -87,7 +99,7 @@ class MfPackage implements PackageInterface
     }
 
     private function __construct(
-        Modelname $name,
+        ModelName $name,
         NameFileExtension $fileExtension,
         Version $version,
         FileName $executableName,
@@ -112,7 +124,7 @@ class MfPackage implements PackageInterface
         return $this->type;
     }
 
-    public function modelname(): Modelname
+    public function modelname(): ModelName
     {
         return $this->modelname;
     }
@@ -155,18 +167,18 @@ class MfPackage implements PackageInterface
     public function toArray(): array
     {
         return array(
-            "modelname" => $this->modelname->slugified(),
-            "namefile_ext" => $this->nameFileExtension->toString(),
-            "version" => $this->version->toString(),
-            "exe_name" => $this->executableName->toString(),
-            "listunit" => $this->listUnit->toInt(),
-            "model_ws" => $this->modelWorkSpace->toString(),
-            "external_path" => $this->externalPath->toValue(),
-            "verbose" => $this->verbose->toBool()
+            'modelname' => $this->modelname->slugified(),
+            'namefile_ext' => $this->nameFileExtension->toString(),
+            'version' => $this->version->toString(),
+            'exe_name' => $this->executableName->toString(),
+            'listunit' => $this->listUnit->toInt(),
+            'model_ws' => $this->modelWorkSpace->toString(),
+            'external_path' => $this->externalPath->toValue(),
+            'verbose' => $this->verbose->toBool()
         );
     }
 
-    public function updateModelname(Modelname $name): MfPackage
+    public function updateModelname(ModelName $name): MfPackage
     {
         $package = self::fromArray($this->toArray());
         $package->modelname = $name;
@@ -225,7 +237,7 @@ class MfPackage implements PackageInterface
     /**
      * @return array
      */
-    function jsonSerialize()
+    public function jsonSerialize(): array
     {
         return $this->toArray();
     }

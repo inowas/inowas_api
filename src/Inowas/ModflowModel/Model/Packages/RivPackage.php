@@ -30,8 +30,7 @@ class RivPackage implements PackageInterface
     /** @var  Unitnumber */
     protected $unitnumber;
 
-
-    public static function fromDefaults()
+    public static function fromDefaults(): RivPackage
     {
         $ipakcb = Ipakcb::fromInteger(0);
         $stressPeriodData = RivStressPeriodData::create();
@@ -42,6 +41,14 @@ class RivPackage implements PackageInterface
         return new self($ipakcb, $stressPeriodData, $options, $extension, $unitnumber);
     }
 
+    /** @noinspection MoreThanThreeArgumentsInspection
+     * @param Ipakcb $ipakcb
+     * @param RivStressPeriodData $stressPeriodData
+     * @param Options $options
+     * @param Extension $extension
+     * @param Unitnumber $unitnumber
+     * @return RivPackage
+     */
     public static function fromParams(
         Ipakcb $ipakcb,
         RivStressPeriodData $stressPeriodData,
@@ -122,25 +129,25 @@ class RivPackage implements PackageInterface
     public function toArray(): array
     {
         return array(
-            "ipakcb" => $this->ipakcb->toInteger(),
-            "stress_period_data" => $this->stressPeriodData->toArray(),
-            "options" => $this->options->toValue(),
-            "extension" => $this->extension->toValue(),
-            "unitnumber" => $this->unitnumber->toValue()
+            'ipakcb' => $this->ipakcb->toInteger(),
+            'stress_period_data' => $this->stressPeriodData->toArray(),
+            'options' => $this->options->toValue(),
+            'extension' => $this->extension->toValue(),
+            'unitnumber' => $this->unitnumber->toValue()
         );
     }
 
     /**
      * @return array
      */
-    function jsonSerialize()
+    public function jsonSerialize(): array
     {
         return array(
-            "ipakcb" => $this->ipakcb->toInteger(),
-            "stress_period_data" => (object)$this->stressPeriodData->toArray(),
-            "options" => $this->options->toValue(),
-            "extension" => $this->extension->toValue(),
-            "unitnumber" => $this->unitnumber->toValue()
+            'ipakcb' => $this->ipakcb->toInteger(),
+            'stress_period_data' => (object)$this->stressPeriodData->toArray(),
+            'options' => $this->options->toValue(),
+            'extension' => $this->extension->toValue(),
+            'unitnumber' => $this->unitnumber->toValue()
         );
     }
 }

@@ -261,7 +261,7 @@ class LayerFinder
     private function getValue(SoilmodelId $soilmodelId, string $type, $layernumber)
     {
         return $this->connection->fetchAssoc(
-            sprintf('SELECT %s from %s WHERE soilmodel_id = :soilmodel_id AND layer_number = :layer_number', $type, Table::LAYER_INTERPOLATIONS),
+            sprintf('SELECT %s from %s WHERE soilmodel_id = :soilmodel_id AND layer_number = :layer_number', $type, Table::LAYER_DETAILS),
             [
                 'soilmodel_id' => $soilmodelId->toString(),
                 'type' => $type,
@@ -273,7 +273,7 @@ class LayerFinder
     private function getSortedLayerNumbers(SoilmodelId $soilmodelId): array
     {
         $rows = $this->connection->fetchAll(
-            sprintf('SELECT DISTINCT layer_number from %s WHERE soilmodel_id = :soilmodel_id ORDER BY layer_number', Table::LAYER_INTERPOLATIONS),
+            sprintf('SELECT DISTINCT layer_number from %s WHERE soilmodel_id = :soilmodel_id ORDER BY layer_number', Table::LAYER_DETAILS),
             ['soilmodel_id' => $soilmodelId->toString()]
         );
 

@@ -8,7 +8,6 @@ use Inowas\Common\Exception\ObservationPointNotFoundInBoundaryException;
 use Inowas\Common\Geometry\Geometry;
 use Inowas\Common\Grid\ActiveCells;
 use Inowas\Common\Grid\AffectedLayers;
-use Inowas\Common\Grid\LayerNumber;
 use Inowas\Common\Id\BoundaryId;
 use Inowas\Common\Id\ObservationPointId;
 
@@ -35,7 +34,7 @@ class ConstantHeadBoundary extends AbstractBoundary
 
     public function addObservationPoint(ObservationPoint $point): ConstantHeadBoundary
     {
-        $this->addOp($point);
+        $this->addOrUpdateOp($point);
         $self = new self($this->boundaryId, $this->name, $this->geometry, $this->activeCells);
         $self->affectedLayers = $this->affectedLayers;
         $self->observationPoints = $this->observationPoints;

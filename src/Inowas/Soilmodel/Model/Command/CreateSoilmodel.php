@@ -17,12 +17,7 @@ class CreateSoilmodel extends Command implements PayloadConstructable
 
     public static function byUserWithModelId(UserId $userId, SoilmodelId $id): CreateSoilmodel
     {
-        return new self(
-            [
-                'user_id' => $userId->toString(),
-                'soilmodel_id' => $id->toString()
-            ]
-        );
+        return new self(['user_id' => $userId->toString(), 'soilmodel_id' => $id->toString()]);
     }
 
     public function userId(): UserId

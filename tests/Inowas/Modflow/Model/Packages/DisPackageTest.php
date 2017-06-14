@@ -35,8 +35,8 @@ class DisPackageTest extends \PHPUnit_Framework_TestCase
 
         // DEFAULTS
         $nLay = LayerNumber::fromInteger(1);
-        $nCol = Ncol::fromInteger(1);
-        $nRow = Nrow::fromInteger(1);
+        $nCol = Ncol::fromInt(1);
+        $nRow = Nrow::fromInt(1);
         $nPer = Nper::fromInteger(1);
         $delR = Delr::fromValue(1.0);
         $delC = Delc::fromValue(1.0);
@@ -99,8 +99,8 @@ class DisPackageTest extends \PHPUnit_Framework_TestCase
         $gridSize = GridSize::fromXY(7, 12);
         $disPackage = $disPackage->updateGridParameters($gridSize, $boundingBox);
 
-        $expectedNRow = Nrow::fromInteger(12);
-        $expectedNCol = Ncol::fromInteger(7);
+        $expectedNRow = Nrow::fromInt(12);
+        $expectedNCol = Ncol::fromInt(7);
         $expectedDelR = Delr::fromValue(100);
         $expectedDelC = Delc::fromValue(100);
         $expectedXul = Xul::fromValue(1);

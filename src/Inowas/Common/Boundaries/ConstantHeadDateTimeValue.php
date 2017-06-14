@@ -49,16 +49,6 @@ class ConstantHeadDateTimeValue extends DateTimeValue
         );
     }
 
-    public function toArrayValues(): array
-    {
-        return array($this->dateTime->format(DATE_ATOM), $this->shead, $this->ehead);
-    }
-
-    public function jsonSerialize()
-    {
-        return $this->toArray();
-    }
-
     public function dateTime(): \DateTimeImmutable
     {
         return $this->dateTime;

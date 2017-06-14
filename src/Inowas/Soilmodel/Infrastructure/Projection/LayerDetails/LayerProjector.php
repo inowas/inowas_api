@@ -16,6 +16,7 @@ use Inowas\Soilmodel\Model\Event\LayerPropertyWasUpdated;
 use Inowas\Soilmodel\Model\Event\LayerValuesWereUpdated;
 use Inowas\Soilmodel\Model\Event\SoilmodelGeologicalLayerWasAdded;
 use Inowas\Soilmodel\Infrastructure\Projection\Table;
+use Inowas\Soilmodel\Model\Event\SoilmodelWasCloned;
 
 class LayerProjector extends AbstractDoctrineConnectionProjector
 {
@@ -24,7 +25,7 @@ class LayerProjector extends AbstractDoctrineConnectionProjector
         parent::__construct($connection);
 
         $this->schema = new Schema();
-        $table = $this->schema->createTable(Table::LAYER_INTERPOLATIONS);
+        $table = $this->schema->createTable(Table::LAYER_DETAILS);
         $table->addColumn('soilmodel_id', 'string', ['length' => 36]);
         $table->addColumn('layer_id', 'string', ['length' => 36]);
         $table->addColumn('layer_number', 'integer');
@@ -44,10 +45,43 @@ class LayerProjector extends AbstractDoctrineConnectionProjector
         $table->addColumn('sy', 'text', ['notnull' => false]);
     }
 
+    public function onSoilmodelWasCloned(SoilmodelWasCloned $event): void
+    {
+        $layers = $this->connection->fetchAll(
+            sprintf('SELECT * from %s WHERE soilmodel_id=:soilmodel_id', Table::LAYER_DETAILS),
+            ['soilmodel_id' => $event->fromId()->toString()]
+        );
+
+        if ($layers === false) {
+            return;
+        }
+
+        foreach ($layers as $layer){
+            $this->connection->insert(Table::LAYER_DETAILS, array(
+                'soilmodel_id' => $event->soilmodelId()->toString(),
+                'layer_id' => $layer['layer_id'],
+                'layer_number' => $layer['layer_number'],
+                'name' => $layer['name'],
+                'description' => $layer['description'],
+                'laytyp' => $layer['laytyp'],
+                'layavg' => $layer['layavg'],
+                'chani' => $layer['chani'],
+                'layvka' => $layer['layvka'],
+                'laywet' => $layer['laywet'],
+                'top' => $layer['top'],
+                'botm' => $layer['botm'],
+                'hk' => $layer['hk'],
+                'hani' => $layer['hani'],
+                'vka' => $layer['vka'],
+                'ss' => $layer['ss'],
+                'sy' => $layer['sy']
+            ));
+        }
+    }
 
     public function onSoilmodelGeologicalLayerWasAdded(SoilmodelGeologicalLayerWasAdded $event): void
     {
-        $this->connection->insert(Table::LAYER_INTERPOLATIONS, array(
+        $this->connection->insert(Table::LAYER_DETAILS, array(
             'soilmodel_id' => $event->soilmodelId()->toString(),
             'layer_id' => $event->layer()->id()->toString(),
             'layer_number' => $event->layer()->layerNumber()->toInteger(),
@@ -61,7 +95,7 @@ class LayerProjector extends AbstractDoctrineConnectionProjector
     {
         $property = $event->property();
         if ($property instanceof BottomElevation) {
-            $this->connection->update(Table::LAYER_INTERPOLATIONS, array(
+            $this->connection->update(Table::LAYER_DETAILS, array(
                 'botm' => json_encode($property->toValue())
             ), array(
                     'soilmodel_id' => $event->soilmodelId()->toString(),
@@ -69,7 +103,7 @@ class LayerProjector extends AbstractDoctrineConnectionProjector
             );
         }
         if ($property instanceof HydraulicAnisotropy) {
-            $this->connection->update(Table::LAYER_INTERPOLATIONS, array(
+            $this->connection->update(Table::LAYER_DETAILS, array(
                 'hani' => json_encode($property->toValue())
             ), array(
                     'soilmodel_id' => $event->soilmodelId()->toString(),
@@ -77,7 +111,7 @@ class LayerProjector extends AbstractDoctrineConnectionProjector
             );
         }
         if ($property instanceof HydraulicConductivityX) {
-            $this->connection->update(Table::LAYER_INTERPOLATIONS, array(
+            $this->connection->update(Table::LAYER_DETAILS, array(
                 'hk' => json_encode($property->toValue())
             ), array(
                     'soilmodel_id' => $event->soilmodelId()->toString(),
@@ -85,7 +119,7 @@ class LayerProjector extends AbstractDoctrineConnectionProjector
             );
         }
         if ($property instanceof SpecificStorage) {
-            $this->connection->update(Table::LAYER_INTERPOLATIONS, array(
+            $this->connection->update(Table::LAYER_DETAILS, array(
                 'ss' => json_encode($property->toValue())
             ), array(
                     'soilmodel_id' => $event->soilmodelId()->toString(),
@@ -93,7 +127,7 @@ class LayerProjector extends AbstractDoctrineConnectionProjector
             );
         }
         if ($property instanceof SpecificYield) {
-            $this->connection->update(Table::LAYER_INTERPOLATIONS, array(
+            $this->connection->update(Table::LAYER_DETAILS, array(
                 'sy' => json_encode($property->toValue())
             ), array(
                     'soilmodel_id' => $event->soilmodelId()->toString(),
@@ -101,7 +135,7 @@ class LayerProjector extends AbstractDoctrineConnectionProjector
             );
         }
         if ($property instanceof TopElevation) {
-            $this->connection->update(Table::LAYER_INTERPOLATIONS, array(
+            $this->connection->update(Table::LAYER_DETAILS, array(
                 'top' => json_encode($property->toValue())
             ), array(
                     'soilmodel_id' => $event->soilmodelId()->toString(),
@@ -109,7 +143,7 @@ class LayerProjector extends AbstractDoctrineConnectionProjector
             );
         }
         if ($property instanceof VerticalHydraulicConductivity) {
-            $this->connection->update(Table::LAYER_INTERPOLATIONS, array(
+            $this->connection->update(Table::LAYER_DETAILS, array(
                 'vka' => json_encode($property->toValue())
             ), array(
                     'soilmodel_id' => $event->soilmodelId()->toString(),
@@ -120,7 +154,7 @@ class LayerProjector extends AbstractDoctrineConnectionProjector
 
     public function onLayerValuesWereUpdated(LayerValuesWereUpdated $event): void
     {
-        $this->connection->update(Table::LAYER_INTERPOLATIONS, array(
+        $this->connection->update(Table::LAYER_DETAILS, array(
             'layavg' => $event->values()->layavg()->toInt(),
             'chani' => $event->values()->conductivity()->chani()->toValue(),
             'layvka' => $event->values()->conductivity()->layVka()->toValue(),

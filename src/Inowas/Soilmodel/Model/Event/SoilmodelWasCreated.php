@@ -8,6 +8,7 @@ use Inowas\Common\Id\UserId;
 use Inowas\Common\Soilmodel\SoilmodelId;
 use Prooph\EventSourcing\AggregateChanged;
 
+/** @noinspection LongInheritanceChainInspection */
 class SoilmodelWasCreated extends AggregateChanged
 {
 

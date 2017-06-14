@@ -4,11 +4,13 @@ declare(strict_types=1);
 
 namespace Inowas\ModflowCalculation\Model\Event;
 
+use Inowas\Common\DateTime\DateTime;
 use Inowas\Common\Id\ModflowId;
 use Inowas\Common\Id\UserId;
 use Inowas\Common\Modflow\StressPeriods;
 use Prooph\EventSourcing\AggregateChanged;
 
+/** @noinspection LongInheritanceChainInspection */
 class CalculationStressperiodsWereUpdated extends AggregateChanged
 {
     /** @var  ModflowId */
@@ -58,7 +60,7 @@ class CalculationStressperiodsWereUpdated extends AggregateChanged
     public function stressPeriods(): StressPeriods
     {
         if ($this->stressPeriods === null){
-            $this->stressPeriods = unserialize($this->payload['stressperiods']);
+            $this->stressPeriods = unserialize($this->payload['stressperiods'], [StressPeriods::class, DateTime::class]);
         }
         return $this->stressPeriods;
     }

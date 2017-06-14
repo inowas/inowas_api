@@ -9,7 +9,7 @@ class Ncol
     /** @var int */
     private $number;
 
-    public static function fromInteger(int $number): Ncol
+    public static function fromInt(int $number): Ncol
     {
         return new self($number);
     }

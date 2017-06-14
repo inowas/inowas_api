@@ -10,4 +10,9 @@ final class CalculationNotFoundException extends \InvalidArgumentException
     {
         return new self(sprintf('Calculation with id %s cannot be found.', $id->toString()));
     }
+
+    public static function withModelId(ModflowId $id): CalculationNotFoundException
+    {
+        return new self(sprintf('Calculation with ModelId id %s cannot be found.', $id->toString()));
+    }
 }

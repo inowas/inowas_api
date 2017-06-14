@@ -24,4 +24,9 @@ class PackageName
     {
         return $this->packageName;
     }
+
+    public function __toString(): string
+    {
+        return $this->packageName;
+    }
 }

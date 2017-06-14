@@ -1,10 +1,29 @@
+rest_calculation_api:
+    type: rest
+    resource: '@InowasModflowBundle/Controller/ModflowCalculationController.php'
+    prefix:    /v2
+
+rest_calculation_image_api:
+    type: rest
+    resource: '@InowasModflowBundle/Controller/ModflowCalculationImageController.php'
+    prefix:    /image
+
+rest_modflowmodel_api:
+    type: rest
+    resource: '@InowasModflowBundle/Controller/ModflowModelController.php'
+    prefix:    /v2
+
+rest_modflowmodel_boundary_api:
+    type: rest
+    resource: '@InowasModflowBundle/Controller/ModflowModelBoundaryController.php'
+    prefix:    /v2
+
+rest_project_api:
+    type: rest
+    resource: '@InowasModflowBundle/Controller/ToolController.php'
+    prefix:    /v2
+
 rest_scenario_analysis_api:
     type: rest
     resource: '@InowasModflowBundle/Controller/ScenarioAnalysisController.php'
-    prefix:    /api/scenarioanalysis
-
-rest_scenario_analysis_image:
-    type: rest
-    resource: '@InowasModflowBundle/Controller/ScenarioAnalysisImageController.php'
-    prefix:    /image/scenarioanalysis
-
+    prefix:    /v2

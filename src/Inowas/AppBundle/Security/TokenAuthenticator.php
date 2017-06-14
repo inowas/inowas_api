@@ -195,7 +195,7 @@ class TokenAuthenticator extends AbstractGuardAuthenticator
     {
         $data = array(
             // you might translate this message
-            'message' => 'Authentication Required'
+            'message' => 'Authentication Header Required'
         );
 
         return new JsonResponse($data, 401);

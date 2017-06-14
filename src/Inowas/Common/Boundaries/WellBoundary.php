@@ -42,7 +42,13 @@ class WellBoundary extends AbstractBoundary
         // In case of well, the observationPointId is the boundaryId
         $observationPointId = ObservationPointId::fromString($this->boundaryId->toString());
         if (! $this->hasOp($observationPointId)) {
-            $this->addOp($this->createObservationPoint());
+            $this->addOrUpdateOp(
+                ObservationPoint::fromIdNameAndGeometry(
+                    ObservationPointId::fromString($this->boundaryId->toString()),
+                    ObservationPointName::fromString($this->name->toString()),
+                    $this->geometry
+                )
+            );
         }
 
         $this->addDateTimeValue($pumpingRate, $observationPointId);
@@ -53,15 +59,6 @@ class WellBoundary extends AbstractBoundary
         $self->observationPoints = $this->observationPoints;
         $self->affectedLayers = $this->affectedLayers;
         return $self;
-    }
-
-    private function createObservationPoint(): ObservationPoint
-    {
-        return ObservationPoint::fromIdNameAndGeometry(
-            ObservationPointId::fromString($this->boundaryId->toString()),
-            ObservationPointName::fromString($this->name->toString()),
-            $this->geometry
-        );
     }
 
     public function setActiveCells(ActiveCells $activeCells): WellBoundary

@@ -24,6 +24,15 @@ class ChdStressPeriodGridCellValue
     /** @var  float */
     protected $ehead;
 
+    /** @noinspection MoreThanThreeArgumentsInspection
+     * @param int $sp
+     * @param int $lay
+     * @param int $row
+     * @param int $col
+     * @param float $shead
+     * @param float $ehead
+     * @return ChdStressPeriodGridCellValue
+     */
     public static function fromParams(int $sp, int $lay, int $row, int $col, float $shead, float $ehead): ChdStressPeriodGridCellValue
     {
         return new self($sp, $lay, $row, $col, $shead, $ehead);

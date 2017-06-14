@@ -35,27 +35,6 @@ class CreateModflowModelCalculation extends Command implements PayloadConstructa
         );
     }
 
-    public static function byUserWithModelAndScenarioId(
-        ModflowId $calculationId,
-        UserId $userId,
-        ModflowId $modelId,
-        ModflowId $scenarioId,
-        DateTime $startDateTime,
-        DateTime $endDateTime
-    ): CreateModflowModelCalculation
-    {
-        return new self(
-            [
-                'user_id' => $userId->toString(),
-                'calculation_id' => $calculationId->toString(),
-                'modflow_model_id' => $modelId->toString(),
-                'scenario_id' => $scenarioId->toString(),
-                'start_date_time' => $startDateTime->toAtom(),
-                'end_date_time' => $endDateTime->toAtom()
-            ]
-        );
-    }
-
     public function userId(): UserId
     {
         return UserId::fromString($this->payload['user_id']);
@@ -69,15 +48,6 @@ class CreateModflowModelCalculation extends Command implements PayloadConstructa
     public function calculationId(): ModflowId
     {
         return ModflowId::fromString($this->payload['calculation_id']);
-    }
-
-    public function scenarioId(): ?ModflowId
-    {
-        if (array_key_exists('scenario_id', $this->payload)){
-            return ModflowId::fromString($this->payload['scenario_id']);
-        }
-
-        return null;
     }
 
     public function startDateTime(): DateTime

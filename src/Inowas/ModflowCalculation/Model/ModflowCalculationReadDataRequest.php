@@ -62,7 +62,7 @@ class ModflowCalculationReadDataRequest implements \JsonSerializable
         return $self;
     }
 
-    function jsonSerialize(): \stdClass
+    public function jsonSerialize(): \stdClass
     {
         return $this->data;
     }
