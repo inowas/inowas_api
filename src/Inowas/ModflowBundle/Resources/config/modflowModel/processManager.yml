@@ -1,0 +1,18 @@
+services:
+    inowas.modflowmodel.create_modflow_model_process_manager:
+        class: Inowas\ModflowModel\Infrastructure\ProcessManager\CreateModflowModelProcessManager
+        arguments:
+          - '@prooph_service_bus.modflow_command_bus'
+          - '@soil_model_list'
+
+    inowas.modflowmodel.clone_modflow_model_process_manager:
+        class: Inowas\ModflowModel\Infrastructure\ProcessManager\CloneModflowModelProcessManager
+        arguments:
+          - '@prooph_service_bus.modflow_command_bus'
+          - '@modflow_model_list'
+
+    inowas.modflowmodel.modflow_packages_process_manager:
+        class: Inowas\ModflowModel\Infrastructure\ProcessManager\ModflowPackagesProcessManager
+        arguments:
+          - '@prooph_service_bus.modflow_command_bus'
+          - '@inowas.modflowmodel.modflow_packages_manager'

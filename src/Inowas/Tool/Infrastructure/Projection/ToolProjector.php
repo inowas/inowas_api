@@ -29,8 +29,8 @@ class ToolProjector extends AbstractDoctrineConnectionProjector
 
         parent::__construct($connection);
 
-        $this->schema = new Schema();
-        $table = $this->schema->createTable(Table::TOOL_LIST);
+        $schema = new Schema();
+        $table = $schema->createTable(Table::TOOL_LIST);
         $table->addColumn('id', 'string', ['length' => 36]);
         $table->addColumn('name', 'string', ['length' => 255, 'default' => '']);
         $table->addColumn('description', 'string', ['length' => 255, 'default' => '']);
@@ -42,6 +42,7 @@ class ToolProjector extends AbstractDoctrineConnectionProjector
         $table->addColumn('user_name', 'string', ['length' => 255]);
         $table->addColumn('public', 'boolean');
         $table->setPrimaryKey(['id']);
+        $this->addSchema($schema);
     }
 
     public function onScenarioAnalysisWasCreated(ScenarioAnalysisWasCreated $event): void

@@ -6,15 +6,14 @@ namespace Tests\Inowas\ModflowBundle\Controller;
 
 use FOS\UserBundle\Doctrine\UserManager;
 use Inowas\AppBundle\Model\User;
-use Inowas\Common\DateTime\DateTime;
 use Inowas\Common\Id\ModflowId;
 use Inowas\Common\Id\UserId;
 use Inowas\Common\Modflow\ModelDescription;
 use Inowas\Common\Modflow\ModelName;
-use Inowas\ModflowCalculation\Model\Command\CreateModflowModelCalculation;
 use Inowas\ModflowModel\Model\Command\AddBoundary;
-use Inowas\ModflowModel\Model\Command\ChangeModflowModelDescription;
-use Inowas\ModflowModel\Model\Command\ChangeModflowModelName;
+use Inowas\ModflowModel\Model\Command\CalculateModflowModel;
+use Inowas\ModflowModel\Model\Command\ChangeDescription;
+use Inowas\ModflowModel\Model\Command\ChangeName;
 use Inowas\ScenarioAnalysis\Model\Command\CreateScenario;
 use Inowas\ScenarioAnalysis\Model\Command\CreateScenarioAnalysis;
 use Inowas\ScenarioAnalysis\Model\ScenarioAnalysisDescription;
@@ -67,11 +66,7 @@ class ScenarioAnalysisControllerTest extends EventSourcingBaseTest
 
         $modelId = ModflowId::generate();
         $this->createModelWithSoilmodel($userId, $modelId);
-
-        $calculationId = ModflowId::generate();
-        $start = DateTime::fromDateTime(new \DateTime('2010-01-01'));
-        $end = DateTime::fromDateTime(new \DateTime('2015-01-01'));
-        $this->createCalculation($calculationId, $userId, $modelId, $start, $end);
+        $this->addStressperiods($userId, $modelId);
 
         $scenarioAnalysisId = ScenarioAnalysisId::generate();
         $this->commandBus->dispatch(CreateScenarioAnalysis::byUserWithBaseModelNameAndDescription(
@@ -124,11 +119,7 @@ class ScenarioAnalysisControllerTest extends EventSourcingBaseTest
 
         $modelId = ModflowId::generate();
         $this->createModelWithSoilmodel($userId, $modelId);
-
-        $calculationId = ModflowId::generate();
-        $start = DateTime::fromDateTime(new \DateTime('2010-01-01'));
-        $end = DateTime::fromDateTime(new \DateTime('2015-01-01'));
-        $this->createCalculation($calculationId, $userId, $modelId, $start, $end);
+        $this->addStressperiods($userId, $modelId);
 
         $scenarioAnalysisId = ScenarioAnalysisId::generate();
         $this->commandBus->dispatch(CreateScenarioAnalysis::byUserWithBaseModelNameAndDescription(
@@ -170,7 +161,6 @@ class ScenarioAnalysisControllerTest extends EventSourcingBaseTest
 
     /**
      * @test
-     * @group messaging-integration-tests
      */
     public function it_adds_multiple_scenarios_to_scenario_analysis_by_id(): void
     {
@@ -179,14 +169,11 @@ class ScenarioAnalysisControllerTest extends EventSourcingBaseTest
 
         $modelId = ModflowId::generate();
         $this->createModelWithSoilmodel($userId, $modelId);
+        $this->addStressperiods($userId, $modelId);
 
-        $this->commandBus->dispatch(ChangeModflowModelName::forModflowModel($userId, $modelId, ModelName::fromString('TestModel')));
-        $this->commandBus->dispatch(ChangeModflowModelDescription::forModflowModel($userId, $modelId, ModelDescription::fromString('TestModelDescription')));
-
-        $baseModelCalculationId = ModflowId::generate();
-        $start = DateTime::fromDateTime(new \DateTime('2010-01-01'));
-        $end = DateTime::fromDateTime(new \DateTime('2015-01-01'));
-        $this->createCalculation($baseModelCalculationId, $userId, $modelId, $start, $end);
+        $this->commandBus->dispatch(ChangeName::forModflowModel($userId, $modelId, ModelName::fromString('TestModel')));
+        $this->commandBus->dispatch(ChangeDescription::forModflowModel($userId, $modelId, ModelDescription::fromString('TestModelDescription')));
+        $this->addStressperiods($userId, $modelId);
 
         $scenarioAnalysisId = ScenarioAnalysisId::generate();
         $this->commandBus->dispatch(CreateScenarioAnalysis::byUserWithBaseModelNameAndDescription(
@@ -208,13 +195,7 @@ class ScenarioAnalysisControllerTest extends EventSourcingBaseTest
         ));
 
         $scenarioCalculationId = ModflowId::generate();
-        $this->commandBus->dispatch(CreateModflowModelCalculation::byUserWithModelId(
-            $scenarioCalculationId,
-            $userId,
-            $scenarioId,
-            DateTime::fromDateTime(new \DateTime('2010-01-01')),
-            DateTime::fromDateTime(new \DateTime('2015-01-01'))
-        ));
+        $this->commandBus->dispatch(CalculateModflowModel::forModflowModel($userId, $scenarioId));
 
         $client = static::createClient();
         $client->request(
@@ -226,6 +207,7 @@ class ScenarioAnalysisControllerTest extends EventSourcingBaseTest
         );
 
         $response = $client->getResponse();
+        dump($response->getContent());
         $this->assertEquals(200, $response->getStatusCode());
         $saDetails = json_decode($response->getContent(), true);
 
@@ -234,9 +216,9 @@ class ScenarioAnalysisControllerTest extends EventSourcingBaseTest
         $this->assertTrue(array_key_exists('user_id', $saDetails));
         $this->assertEquals($userId->toString(), $saDetails['user_id']);
         $this->assertTrue(array_key_exists('name', $saDetails));
-        $this->assertEquals("TestName", $saDetails['name']);
+        $this->assertEquals('TestName', $saDetails['name']);
         $this->assertTrue(array_key_exists('description', $saDetails));
-        $this->assertEquals("TestDescription", $saDetails['description']);
+        $this->assertEquals('TestDescription', $saDetails['description']);
         $this->assertTrue(array_key_exists('geometry', $saDetails));
         $this->assertTrue(array_key_exists('grid_size', $saDetails));
         $this->assertTrue(array_key_exists('bounding_box', $saDetails));
@@ -244,7 +226,6 @@ class ScenarioAnalysisControllerTest extends EventSourcingBaseTest
         $this->assertEquals($modelId->toString(), $saDetails['base_model']['id']);
         $this->assertEquals('TestModel', $saDetails['base_model']['name']);
         $this->assertEquals('TestModelDescription', $saDetails['base_model']['description']);
-        $this->assertEquals($baseModelCalculationId->toString(), $saDetails['base_model']['calculation_id']);
         $this->assertTrue(array_key_exists('scenarios', $saDetails));
         $this->assertCount(1, $saDetails['scenarios']);
         $this->assertEquals($scenarioId->toString(), $saDetails['scenarios'][0]['id']);
@@ -257,7 +238,6 @@ class ScenarioAnalysisControllerTest extends EventSourcingBaseTest
 
     /**
      * @test
-     * @group messaging-integration-tests
      */
     public function it_clones_a_scenario_analysis(): void
     {
@@ -269,11 +249,7 @@ class ScenarioAnalysisControllerTest extends EventSourcingBaseTest
         $this->commandBus->dispatch(AddBoundary::to($modelId, $userId, $this->createRechargeBoundary()));
         $this->commandBus->dispatch(AddBoundary::to($modelId, $userId, $this->createRiverBoundaryWithObservationPoint()));
         $this->commandBus->dispatch(AddBoundary::to($modelId, $userId, $this->createWellBoundary()));
-
-        $calculationId = ModflowId::generate();
-        $start = DateTime::fromDateTime(new \DateTime('2010-01-01'));
-        $end = DateTime::fromDateTime(new \DateTime('2015-01-01'));
-        $this->createCalculation($calculationId, $userId, $modelId, $start, $end);
+        $this->addStressperiods($userId, $modelId);
 
         $scenarioAnalysisId = ScenarioAnalysisId::generate();
         $this->commandBus->dispatch(CreateScenarioAnalysis::byUserWithBaseModelNameAndDescription(

@@ -149,7 +149,7 @@ class RchPackage implements PackageInterface
         return array(
             'ipakcb' => $this->ipakcb->toInteger(),
             'nrchop' => $this->nrchop->toInteger(),
-            'stress_period_data' => $this->stressPeriodData->toArray(),
+            'stress_period_data' => (object)$this->stressPeriodData->toArray(),
             'irch' => $this->irch->toValue(),
             'extension' => $this->extension->toValue(),
             'unitnumber' => $this->unitnumber->toValue()
@@ -158,13 +158,6 @@ class RchPackage implements PackageInterface
 
     public function jsonSerialize(): array
     {
-        return array(
-            'ipakcb' => $this->ipakcb->toInteger(),
-            'nrchop' => $this->nrchop->toInteger(),
-            'stress_period_data' => (object)$this->stressPeriodData->toArray(),
-            'irch' => $this->irch->toValue(),
-            'extension' => $this->extension->toValue(),
-            'unitnumber' => $this->unitnumber->toValue()
-        );
+        return $this->toArray();
     }
 }

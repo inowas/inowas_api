@@ -21,8 +21,8 @@ use Inowas\Common\Id\BoundaryId;
 use Inowas\Common\Boundaries\BoundaryName;
 use Inowas\Common\Id\ObservationPointId;
 use Inowas\Common\Modflow\ModelDescription;
-use Inowas\Common\Modflow\OcStressPeriod;
-use Inowas\Common\Modflow\OcStressPeriodData;
+use Inowas\ModflowModel\Model\Packages\OcStressPeriod;
+use Inowas\ModflowModel\Model\Packages\OcStressPeriodData;
 use Inowas\Common\Modflow\PackageName;
 use Inowas\Common\Soilmodel\BottomElevation;
 use Inowas\Common\Modflow\Laytyp;
@@ -35,12 +35,12 @@ use Inowas\Common\Soilmodel\VerticalHydraulicConductivity;
 use Inowas\ModflowModel\Model\Command\AddBoundary;
 use Inowas\ModflowCalculation\Model\Command\CalculateModflowModelCalculation;
 use Inowas\ModflowCalculation\Model\Command\ChangeFlowPackage;
-use Inowas\ModflowModel\Model\Command\ChangeModflowModelBoundingBox;
-use Inowas\ModflowModel\Model\Command\ChangeModflowModelDescription;
-use Inowas\ModflowModel\Model\Command\ChangeModflowModelName;
-use Inowas\ModflowModel\Model\Command\ChangeModflowModelSoilmodelId;
+use Inowas\ModflowModel\Model\Command\ChangeBoundingBox;
+use Inowas\ModflowModel\Model\Command\ChangeDescription;
+use Inowas\ModflowModel\Model\Command\ChangeName;
+use Inowas\ModflowModel\Model\Command\ChangeSoilmodelId;
 use Inowas\ModflowModel\Model\Command\CreateModflowModel;
-use Inowas\ModflowCalculation\Model\Command\CreateModflowModelCalculation;
+use Inowas\ModflowCalculation\Model\Command\CalculateModflowCalculation;
 use Inowas\Common\Grid\BoundingBox;
 use Inowas\Common\Grid\GridSize;
 use Inowas\Common\Id\ModflowId;
@@ -133,8 +133,8 @@ class HanoiBaseModelOnly extends LoadScenarioBase
         );
         $gridSize = GridSize::fromXY(165, 175);
         $commandBus->dispatch(CreateModflowModel::newWithId($ownerId, $modelId, $area, $gridSize));
-        $commandBus->dispatch(ChangeModflowModelName::forModflowModel($ownerId, $modelId, ModelName::fromString('Base Scenario Hanoi 2005-2007')));
-        $commandBus->dispatch(ChangeModflowModelDescription::forModflowModel(
+        $commandBus->dispatch(ChangeName::forModflowModel($ownerId, $modelId, ModelName::fromString('Base Scenario Hanoi 2005-2007')));
+        $commandBus->dispatch(ChangeDescription::forModflowModel(
             $ownerId,
             $modelId,
             ModelDescription::fromString('Calibrated groundwater base model, 2005-2007.'))
@@ -142,10 +142,10 @@ class HanoiBaseModelOnly extends LoadScenarioBase
 
         $box = $geoTools->projectBoundingBox(BoundingBox::fromCoordinates(578205, 594692, 2316000, 2333500, 32648), Srid::fromInt(4326));
         $boundingBox = BoundingBox::fromEPSG4326Coordinates($box->xMin(), $box->xMax(), $box->yMin(), $box->yMax(), $box->dX(), $box->dY());
-        $commandBus->dispatch(ChangeModflowModelBoundingBox::forModflowModel($ownerId, $modelId, $boundingBox));
+        $commandBus->dispatch(ChangeBoundingBox::forModflowModel($ownerId, $modelId, $boundingBox));
 
         $soilModelId = SoilmodelId::generate();
-        $commandBus->dispatch(ChangeModflowModelSoilmodelId::forModflowModel($ownerId, $modelId, $soilModelId));
+        $commandBus->dispatch(ChangeSoilmodelId::forModflowModel($ownerId, $modelId, $soilModelId));
         $commandBus->dispatch(CreateSoilmodel::byUserWithModelId($ownerId, $soilModelId));
         $commandBus->dispatch(ChangeSoilmodelName::forSoilmodel($ownerId, $soilModelId, SoilmodelName::fromString('Hanoi-Area')));
         $commandBus->dispatch(ChangeSoilmodelDescription::forSoilmodel($ownerId, $soilModelId, SoilmodelDescription::fromString('Soilmodel for Hanoi-Area')));
@@ -344,7 +344,7 @@ class HanoiBaseModelOnly extends LoadScenarioBase
         $end = DateTime::fromDateTime(new \DateTime('2007-12-31'));
 
         echo sprintf("Dispatch CreateModflowModelCalculation %s.\r\n", $calculationId->toString());
-        $commandBus->dispatch(CreateModflowModelCalculation::byUserWithModelId($calculationId, $ownerId, $modelId, $start, $end));
+        $commandBus->dispatch(CalculateModflowCalculation::byUserWithModelId($calculationId, $ownerId, $modelId, $start, $end));
 
         echo sprintf("Dispatch ChangeFlowPackage to Upw %s.\r\n", $calculationId->toString());
         $commandBus->dispatch(ChangeFlowPackage::byUserWithCalculationId($ownerId, $calculationId, PackageName::fromString('upw')));

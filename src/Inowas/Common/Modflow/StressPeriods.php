@@ -34,6 +34,17 @@ final class StressPeriods implements \JsonSerializable
     }
 
     /**
+     * @return StressPeriods
+     */
+    public static function createDefault(): StressPeriods
+    {
+        $start = DateTime::fromDateTime(new \DateTime('2010-01-01'));
+        $end = DateTime::fromDateTime(new \DateTime('2015-12-31'));
+        $timeUnit = TimeUnit::fromInt(TimeUnit::DAYS);
+        return new self($start, $end, $timeUnit);
+    }
+
+    /**
      * @param DateTime[] $allDates
      * @param DateTime $start
      * @param DateTime $end
@@ -66,8 +77,9 @@ final class StressPeriods implements \JsonSerializable
             $totalTimes[] = $self->calculateTotim($date);
         }
 
-        for ($i=1; $i < count($totalTimes); $i++){
-            $perlen = ($totalTimes[$i]->toInteger())-($totalTimes[$i-1]->toInteger());
+        $numberOfTotalTimes = count($totalTimes);
+        for ($i=1; $i < $numberOfTotalTimes; $i++){
+            $perlen = $totalTimes[$i]->toInteger()-$totalTimes[$i-1]->toInteger();
             $nstp = 1;
             $tsmult = 1;
             $steady = false;
@@ -107,6 +119,11 @@ final class StressPeriods implements \JsonSerializable
         return $self;
     }
 
+    public static function createFromJson(string $json): StressPeriods
+    {
+        return self::createFromArray(json_decode($json, true));
+    }
+
     private function __construct(DateTime $start, DateTime $end, TimeUnit $timeUnit) {
         $this->start = $start;
         $this->end = $end;
@@ -116,6 +133,11 @@ final class StressPeriods implements \JsonSerializable
     public function addStressPeriod(StressPeriod $stressPeriod): void
     {
         $this->stressperiods[] = $stressPeriod;
+    }
+
+    public function addInitialSteadyStressPeriod(): void
+    {
+        // TODO !!!
     }
 
     public function perlen(): Perlen
@@ -189,10 +211,10 @@ final class StressPeriods implements \JsonSerializable
     public function toArray(): array
     {
         return array(
-            "start_date_time" => $this->start->toAtom(),
-            "end_date_time" => $this->end->toAtom(),
-            "time_unit" => $this->timeUnit->toInt(),
-            "stress_periods" => $this->stressperiods
+            'start_date_time' => $this->start->toAtom(),
+            'end_date_time' => $this->end->toAtom(),
+            'time_unit' => $this->timeUnit->toInt(),
+            'stress_periods' => $this->stressperiods
         );
     }
 
@@ -243,10 +265,14 @@ final class StressPeriods implements \JsonSerializable
         }
 
         if ($timeUnit->toInt() === $timeUnit::DAYS){
-            return TotalTime::fromInt((int)$diff->format("%a"));
+            return TotalTime::fromInt((int)$diff->format('%a'));
         }
 
         throw InvalidTimeUnitException::withTimeUnitAndAvailableTimeUnits($timeUnit, $timeUnit->availableTimeUnits);
     }
-}
 
+    public function toJson(): string
+    {
+        return json_encode($this);
+    }
+}

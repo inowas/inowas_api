@@ -11,8 +11,6 @@ use Inowas\Common\Modflow\Compact;
 use Inowas\Common\Modflow\Extension;
 use Inowas\Common\Modflow\Iddnfm;
 use Inowas\Common\Modflow\Ihedfm;
-use Inowas\Common\Modflow\OcStressPeriod;
-use Inowas\Common\Modflow\OcStressPeriodData;
 use Inowas\Common\Modflow\Unitnumber;
 
 class OcPackage implements PackageInterface

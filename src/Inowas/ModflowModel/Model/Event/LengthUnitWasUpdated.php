@@ -45,7 +45,7 @@ class LengthUnitWasUpdated extends AggregateChanged
         return $this->lengthUnit;
     }
 
-    public function modflowId(): ModflowId
+    public function modelId(): ModflowId
     {
         if ($this->modflowModelId === null){
             $this->modflowModelId = ModflowId::fromString($this->aggregateId());

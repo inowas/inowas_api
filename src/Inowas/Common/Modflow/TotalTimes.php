@@ -31,9 +31,9 @@ final class TotalTimes implements \JsonSerializable
     public function jsonSerialize(): array
     {
         return array(
-            "start_date_time" => $this->start->toAtom(),
-            "time_unit" => $this->timeUnit->toInt(),
-            "total_times" => $this->totalTimes
+            'start_date_time' => $this->start->toAtom(),
+            'time_unit' => $this->timeUnit->toInt(),
+            'total_times' => $this->totalTimes
         );
     }
 }

@@ -49,12 +49,13 @@ class BoundaryActiveCellsProjector extends AbstractDoctrineConnectionProjector
         $this->geoTools = $geoTools;
         $this->modelFinder = $modelFinder;
 
-        $this->schema = new Schema();
-        $table = $this->schema->createTable(Table::BOUNDARY_ACTIVE_CELLS);
+        $schema = new Schema();
+        $table = $schema->createTable(Table::BOUNDARY_ACTIVE_CELLS);
         $table->addColumn('model_id', 'string', ['length' => 36]);
         $table->addColumn('boundary_id', 'string', ['length' => 36]);
         $table->addColumn('active_cells', 'text', ['notnull' => false]);
         $table->addIndex(array('model_id', 'boundary_id'));
+        $this->addSchema($schema);
     }
 
     public function onAreaActiveCellsWereUpdated(AreaActiveCellsWereUpdated $event): void
@@ -176,9 +177,9 @@ class BoundaryActiveCellsProjector extends AbstractDoctrineConnectionProjector
 
     public function onModflowModelWasCreated(ModflowModelWasCreated $event): void
     {
-        $area = $event->area();
-        $boundingBox = $event->boundingBox();
-        $gridSize = $event->gridSize();
+        $area = $this->modelFinder->getAreaByModflowModelId($event->modelId());
+        $boundingBox = $this->modelFinder->getBoundingBoxByModflowModelId($event->modelId());
+        $gridSize = $this->modelFinder->getGridSizeByModflowModelId($event->modelId());
         $activeCells = $this->geoTools->calculateActiveCellsFromArea($area, $boundingBox, $gridSize);
 
         $this->connection->insert(Table::BOUNDARY_ACTIVE_CELLS, array(
@@ -188,11 +189,11 @@ class BoundaryActiveCellsProjector extends AbstractDoctrineConnectionProjector
         ));
     }
 
-    private function updateActiveCellsWithBoundingBoxOrGridsize(ModflowId $modelId, BoundingBox $boundingBox, GridSize $gridSize)
+    private function updateActiveCellsWithBoundingBoxOrGridsize(ModflowId $modelId, BoundingBox $boundingBox, GridSize $gridSize): void
     {
 
         $rows = $this->connection->fetchAll(sprintf('SELECT * FROM %s WHERE model_id = :model_id', Table::BOUNDARY_ACTIVE_CELLS),
-            array("model_id" => $modelId->toString())
+            array('model_id' => $modelId->toString())
         );
 
         foreach ($rows as $row){

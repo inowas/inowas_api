@@ -14,10 +14,10 @@ use Inowas\Common\Grid\ActiveCells;
 use Inowas\Common\Grid\BoundingBox;
 use Inowas\Common\Grid\GridSize;
 use Inowas\Common\Id\ModflowId;
+use Inowas\Common\Modflow\LengthUnit;
 use Inowas\Common\Modflow\StressPeriods;
 use Inowas\Common\Modflow\TimeUnit;
 use Inowas\Common\Soilmodel\SoilmodelId;
-use Inowas\ModflowCalculation\Service\StressPeriodDataGenerator;
 use Inowas\ModflowModel\Infrastructure\Projection\ModelList\ModelFinder;
 use Inowas\ModflowModel\Model\Packages\ChdStressPeriodData;
 use Inowas\ModflowModel\Model\Packages\GhbStressPeriodData;
@@ -26,7 +26,7 @@ use Inowas\ModflowModel\Model\Packages\RivStressPeriodData;
 use Inowas\ModflowModel\Model\Packages\WelStressPeriodData;
 use Inowas\ModflowModel\Infrastructure\Projection\BoundaryList\BoundaryFinder;
 
-class ModflowModelManager implements ModflowModelManagerInterface
+class ModflowModelManager
 {
 
     /** @var  BoundaryFinder */
@@ -52,6 +52,21 @@ class ModflowModelManager implements ModflowModelManagerInterface
     public function getSoilmodelIdByModelId(ModflowId $modflowId): ?SoilmodelId
     {
         return $this->modelFinder->getSoilmodelIdByModelId($modflowId);
+    }
+
+    public function getTimeUnitByModelId(ModflowId $modflowId): TimeUnit
+    {
+        return $this->modelFinder->getTimeUnitByModelId($modflowId);
+    }
+
+    public function getLengthUnitByModelId(ModflowId $modflowId): LengthUnit
+    {
+        return $this->modelFinder->getLengthUnitByModelId($modflowId);
+    }
+
+    public function getStressPeriodsByModelId(ModflowId $modflowId): StressPeriods
+    {
+        return $this->modelFinder->getStressPeriodsByModelId($modflowId);
     }
 
     public function calculateStressPeriods(ModflowId $modflowId, DateTime $start, DateTime $end, TimeUnit $timeUnit): StressPeriods

@@ -27,8 +27,8 @@ class BoundaryListProjector extends AbstractDoctrineConnectionProjector
 
         parent::__construct($connection);
 
-        $this->schema = new Schema();
-        $table = $this->schema->createTable(Table::BOUNDARY_LIST);
+        $schema = new Schema();
+        $table = $schema->createTable(Table::BOUNDARY_LIST);
         $table->addColumn('model_id', 'string', ['length' => 36]);
         $table->addColumn('boundary_id', 'string', ['length' => 36]);
         $table->addColumn('type', 'string', ['length' => 255]);
@@ -38,6 +38,7 @@ class BoundaryListProjector extends AbstractDoctrineConnectionProjector
         $table->addColumn('affected_layers', 'text', ['notnull' => false]);
         $table->addColumn('observation_point_ids', 'text', ['notnull' => false]);
         $table->addIndex(array('model_id', 'boundary_id'));
+        $this->addSchema($schema);
     }
 
     public function onBoundaryAffectedLayersWereUpdated(BoundaryAffectedLayersWereUpdated $event): void
@@ -49,8 +50,6 @@ class BoundaryListProjector extends AbstractDoctrineConnectionProjector
             'boundary_id' => $event->boundaryId()->toString(),
             'model_id' => $event->modflowModelId()->toString()
         ));
-
-        return;
     }
 
     public function onBoundaryGeometryWasUpdated(BoundaryGeometryWasUpdated $event): void

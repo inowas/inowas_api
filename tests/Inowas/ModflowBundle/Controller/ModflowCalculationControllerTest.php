@@ -6,10 +6,8 @@ namespace Tests\Inowas\ModflowBundle\Controller;
 
 use FOS\UserBundle\Doctrine\UserManager;
 use Inowas\AppBundle\Model\User;
-use Inowas\Common\DateTime\DateTime;
 use Inowas\Common\Id\ModflowId;
 use Inowas\Common\Id\UserId;
-use Inowas\ModflowCalculation\Model\Command\CreateModflowModelCalculation;
 use Ramsey\Uuid\Uuid;
 use Tests\Inowas\ModflowBundle\EventSourcingBaseTest;
 
@@ -48,111 +46,42 @@ class ModflowCalculationControllerTest extends EventSourcingBaseTest
     }
 
     /**
-     * @test
-     */
-    public function it_creates_a_new_calculation_with_a_given_modflow_model(): void
-    {
-        $userId = UserId::fromString($this->user->getId()->toString());
-        $apiKey = $this->user->getApiKey();
-        $modflowId = ModflowId::generate();
-        $this->createModelWithSoilmodel($userId, $modflowId);
-
-        $body = new \stdClass;
-        $body->model_id = $modflowId->toString();
-        $body->start_date_time = DateTime::fromDateTime(new \DateTime('2005-01-01'))->toAtom();
-        $body->end_date_time = DateTime::fromDateTime(new \DateTime('2007-12-31'))->toAtom();
-
-        $client = static::createClient();
-        $client->request(
-            'POST',
-            '/v2/calculations',
-            array(),
-            array(),
-            array('HTTP_X-AUTH-TOKEN' => $apiKey),
-            json_encode($body)
-        );
-
-        $response = $client->getResponse();
-
-        $this->assertEquals(302, $response->getStatusCode());
-        $client->followRedirect();
-        $response = $client->getResponse();
-        $this->assertEquals(200, $response->getStatusCode());
-
-        $calculations = $this->container->get('inowas.modflowcalculation.calculation_list_finder')->findCalculationsByModelId($modflowId);
-        $this->assertCount(1, $calculations);
-    }
-
-    /**
-     * @test
-     */
-    public function it_returns_calculation_details_by_calculation_id(): void
-    {
-        $userId = UserId::fromString($this->user->getId()->toString());
-        $apiKey = $this->user->getApiKey();
-        $modflowId = ModflowId::generate();
-        $this->createModelWithSoilmodel($userId, $modflowId);
-
-        $calculationId = ModflowId::generate();
-        $startDateTime = DateTime::fromDateTime(new \DateTime('2005-01-01'));
-        $endDateTime = DateTime::fromDateTime(new \DateTime('2007-12-31'));
-        $this->commandBus->dispatch(CreateModflowModelCalculation::byUserWithModelId($calculationId, $userId, $modflowId, $startDateTime, $endDateTime));
-
-        $client = static::createClient();
-        $client->request(
-            'GET',
-            sprintf('/v2/calculations/%s', $calculationId->toString()),
-            array(),
-            array(),
-            array('HTTP_X-AUTH-TOKEN' => $apiKey)
-        );
-
-        $response = $client->getResponse();
-        $this->assertEquals(200, $response->getStatusCode());
-        $this->assertJson($response->getContent());
-        $response = json_decode($response->getContent(), true);
-        $this->assertArrayHasKey('id', $response);
-        $this->assertEquals($calculationId->toString(), $response['id']);
-        $this->assertArrayHasKey('model_id', $response);
-        $this->assertEquals($modflowId->toString(), $response['model_id']);
-        $this->assertArrayHasKey('soilmodel_id', $response);
-        $this->assertArrayHasKey('user_id', $response);
-        $this->assertEquals($userId->toString(), $response['user_id']);
-        $this->assertArrayHasKey('state', $response);
-        $this->assertEquals(0, $response['state']);
-        $this->assertArrayHasKey('start_date_time', $response);
-        $this->assertEquals($startDateTime, DateTime::fromAtom($response['start_date_time']));
-        $this->assertArrayHasKey('end_date_time', $response);
-        $this->assertEquals($endDateTime, DateTime::fromAtom($response['end_date_time']));
-    }
-
-    /**
-     * @test
      * @group messaging-integration-tests
      */
-    public function it_calculates_calculation_id(): void
+    public function it_calculates_a_model_and_redirects_to_model_calculation_details(): void
     {
         $userId = UserId::fromString($this->user->getId()->toString());
         $apiKey = $this->user->getApiKey();
         $modflowId = ModflowId::generate();
         $this->createModelWithSoilmodel($userId, $modflowId);
 
-        $calculationId = ModflowId::generate();
-        $startDateTime = DateTime::fromDateTime(new \DateTime('2005-01-01'));
-        $endDateTime = DateTime::fromDateTime(new \DateTime('2007-12-31'));
-        $this->commandBus->dispatch(CreateModflowModelCalculation::byUserWithModelId($calculationId, $userId, $modflowId, $startDateTime, $endDateTime));
-
         $client = static::createClient();
         $client->request(
             'POST',
-            sprintf('/v2/calculations/%s/calculate', $calculationId->toString()),
+            sprintf('/v2/modflowmodels/%s/calculate', $modflowId->toString()),
             array(),
             array(),
             array('HTTP_X-AUTH-TOKEN' => $apiKey)
         );
 
         $response = $client->getResponse();
-        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertEquals(302, $response->getStatusCode());
+        $this->assertEquals(true, $response->isRedirect(
+            sprintf('/v2/modflowmodels/%s/calculation', $modflowId->toString())
+        ));
+
+        $client->followRedirect();
+        $response = $client->getResponse();
+
+        $json = $response->getContent();
+        $this->assertJson($json);
+        $arr = json_decode($json, true);
+
+        $this->assertArrayHasKey('calculation_id', $arr);
+        $this->assertArrayHasKey('state', $arr);
+        $this->assertArrayHasKey('message', $arr);
+        $this->assertArrayHasKey('times', $arr);
+        $this->assertArrayHasKey('layer_values', $arr);
     }
 
     /**
@@ -184,7 +113,7 @@ class ModflowCalculationControllerTest extends EventSourcingBaseTest
         $username = $this->user->getName();
 
         $modelId = ModflowId::generate();
-        $this->createModelWithName($userId, $modelId);
+        $this->createModelWithSoilmodel($userId, $modelId);
 
         $client = static::createClient();
         $client->request(
@@ -219,7 +148,7 @@ class ModflowCalculationControllerTest extends EventSourcingBaseTest
         $username = $this->user->getName();
 
         $modelId = ModflowId::generate();
-        $this->createModelWithName($userId, $modelId);
+        $this->createModelWithSoilmodel($userId, $modelId);
 
         $client = static::createClient();
         $client->request(
@@ -254,10 +183,10 @@ class ModflowCalculationControllerTest extends EventSourcingBaseTest
         $username = $this->user->getName();
 
         $body = new \stdClass();
-        $body->name = "Hanoi 2005-2007";
-        $body->description = "ModflowModel of Hanoi Area 2005-2007";
+        $body->name = 'Hanoi 2005-2007';
+        $body->description = 'ModflowModel of Hanoi Area 2005-2007';
         $body->area_geometry = new \stdClass();
-        $body->area_geometry->type = "polygon";
+        $body->area_geometry->type = 'polygon';
         $body->area_geometry->coordinates = [[[12.1, 10.2], [12.2, 10.2], [12.2, 10.1], [12.1, 10.1], [12.1, 10.2]]];
         $body->grid_size = new \stdClass();
         $body->grid_size->n_x = 100;
@@ -295,9 +224,9 @@ class ModflowCalculationControllerTest extends EventSourcingBaseTest
     {
         $apiKey = $this->user->getApiKey();
         $body = new \stdClass();
-        $body->description = "ModflowModel of Hanoi Area 2005-2007";
+        $body->description = 'ModflowModel of Hanoi Area 2005-2007';
         $body->area_geometry = new \stdClass();
-        $body->area_geometry->type = "polygon";
+        $body->area_geometry->type = 'polygon';
         $body->area_geometry->coordinates = [[[12.1, 10.2], [12.2, 10.2], [12.2, 10.1], [12.1, 10.1], [12.1, 10.2]]];
         $body->grid_size = new \stdClass();
         $body->grid_size->n_x = 100;

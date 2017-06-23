@@ -31,16 +31,16 @@ class ModflowEventStoreTruncateCommand extends ContainerAwareCommand
         $this->cleanDataFolder();
     }
 
-    private function truncateEventStreamTable($tableName)
+    private function truncateEventStreamTable($tableName): void
     {
         $this->dropEventStreamTable($tableName);
         $this->createEventStreamTableIfNotExists($tableName);
     }
 
-    private function dropEventStreamTable($tableName)
+    private function dropEventStreamTable($tableName): void
     {
         $connection = $this->getContainer()->get('doctrine.dbal.default_connection');
-        if (! in_array($tableName, $connection->getSchemaManager()->listTableNames())){
+        if (! in_array($tableName, $connection->getSchemaManager()->listTableNames(), true)){
             return;
         }
 
@@ -57,12 +57,12 @@ class ModflowEventStoreTruncateCommand extends ContainerAwareCommand
     {
         $connection = $this->getContainer()->get('doctrine.dbal.default_connection');
 
-        if (in_array($tableName, $connection->getSchemaManager()->listTableNames())){
+        if (in_array($tableName, $connection->getSchemaManager()->listTableNames(), true)){
             return;
         }
 
         $schema = new Schema();
-        if (class_exists('Prooph\EventStore\Adapter\Doctrine\Schema\EventStoreSchema')) {
+        if (class_exists(EventStoreSchema::class)) {
             EventStoreSchema::createSingleStream($schema, $tableName, true);
         }
 

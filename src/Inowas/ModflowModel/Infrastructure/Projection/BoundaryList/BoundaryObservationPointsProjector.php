@@ -20,8 +20,8 @@ class BoundaryObservationPointsProjector extends AbstractDoctrineConnectionProje
 
         parent::__construct($connection);
 
-        $this->schema = new Schema();
-        $table = $this->schema->createTable(Table::BOUNDARY_OBSERVATION_POINT_VALUES);
+        $schema = new Schema();
+        $table = $schema->createTable(Table::BOUNDARY_OBSERVATION_POINT_VALUES);
         $table->addColumn('model_id', 'string', ['length' => 36]);
         $table->addColumn('boundary_id', 'string', ['length' => 36]);
         $table->addColumn('boundary_type', 'string', ['length' => 255]);
@@ -31,6 +31,7 @@ class BoundaryObservationPointsProjector extends AbstractDoctrineConnectionProje
         $table->addColumn('values_description', 'text', ['notnull' => false]);
         $table->addColumn('values', 'text', ['notnull' => false]);
         $table->addIndex(array('model_id'));
+        $this->addSchema($schema);
     }
 
     public function onBoundaryWasAdded(BoundaryWasAdded $event): void
@@ -61,7 +62,7 @@ class BoundaryObservationPointsProjector extends AbstractDoctrineConnectionProje
     public function onModflowModelWasCloned(ModflowModelWasCloned $event): void
     {
 
-        $sql = sprintf("SELECT * FROM %s WHERE model_id = ?", Table::BOUNDARY_OBSERVATION_POINT_VALUES);
+        $sql = sprintf('SELECT * FROM %s WHERE model_id = ?', Table::BOUNDARY_OBSERVATION_POINT_VALUES);
         $stmt = $this->connection->prepare($sql);
         $stmt->bindValue(1, $event->baseModelId()->toString());
         $stmt->execute();

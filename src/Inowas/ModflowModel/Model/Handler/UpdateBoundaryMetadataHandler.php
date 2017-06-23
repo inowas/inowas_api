@@ -33,8 +33,8 @@ final class UpdateBoundaryMetadataHandler
             throw ModflowModelNotFoundException::withModelId($command->modelId());
         }
 
-        if (! $modflowModel->ownerId()->sameValueAs($command->userId())){
-            throw WriteAccessFailedException::withUserAndOwner($command->userId(), $modflowModel->ownerId());
+        if (! $modflowModel->userId()->sameValueAs($command->userId())){
+            throw WriteAccessFailedException::withUserAndOwner($command->userId(), $modflowModel->userId());
         }
 
         $modflowModel->updateBoundaryMetaData($command->userId(), $command->boundaryId(), $command->boundaryMetadata());

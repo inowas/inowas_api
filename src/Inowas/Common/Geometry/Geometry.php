@@ -21,15 +21,15 @@ class Geometry implements \JsonSerializable
         $obj = json_decode($json);
         $type = strtolower($obj->type);
 
-        if ($type == 'point') {
+        if ($type === 'point') {
             return Geometry::fromPoint(new Point($obj->coordinates[0], $obj->coordinates[1]));
         }
 
-        if ($type == 'linestring') {
+        if ($type === 'linestring') {
             return Geometry::fromLineString(new LineString($obj->coordinates));
         }
 
-        if ($type == 'polygon') {
+        if ($type === 'polygon') {
             return Geometry::fromPolygon(new Polygon($obj->coordinates));
         }
 
@@ -61,15 +61,15 @@ class Geometry implements \JsonSerializable
         }
 
 
-        if ($type == 'point') {
+        if ($type === 'point') {
             return Geometry::fromPoint(new Point($coordinates, $srid));
         }
 
-        if ($type == 'linestring') {
+        if ($type === 'linestring') {
             return Geometry::fromLineString(new LineString($coordinates, $srid));
         }
 
-        if ($type == 'polygon') {
+        if ($type === 'polygon') {
             return Geometry::fromPolygon(new Polygon($coordinates, $srid));
         }
 

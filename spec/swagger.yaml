@@ -201,151 +201,6 @@ paths:
         - api_key: []
 
   # Modflow Calculation
-  /calculations:
-    post:
-      tags:
-        - "calculation"
-      summary: "Creates a new Calculation"
-      description: "Creates a new Calculation"
-      operationId: "createCalculation"
-      consumes:
-        - "application/json"
-      produces:
-        - "application/json"
-      parameters:
-        - in: "body"
-          name: "body"
-          description: "Details to create the calculation"
-          required: true
-          schema:
-            type: "object"
-            properties:
-              model_id:
-                type: "string"
-                example: "e5bd7155-e207-4d17-8ac0-b52d651ea4b3"
-              start_date_time:
-                type: "string"
-                example: "2005-08-15T00:00:00+00:00"
-              end_date_time:
-                type: "string"
-                example: "2007-08-15T00:00:00+00:00"
-      responses:
-        '302':
-          description: "Redirect response"
-          headers:
-            Location:
-              type: "string"
-        '422':
-          description: "Invalid input"
-      security:
-        - api_key: []
-
-  /calculations/{id}:
-    get:
-      tags:
-        - "calculation"
-      summary: "Get calculation details by id"
-      description: "Returns the calculation details of a calculation by id"
-      operationId: "getCalculationById"
-      produces:
-        - "application/json"
-      parameters:
-        - name: "id"
-          in: "path"
-          description: "Id of Calculation to return"
-          required: true
-          type: "string"
-      responses:
-        '200':
-          description: "successful operation"
-          schema:
-            $ref: '#/definitions/CalculationDetails'
-        '400':
-          description: "Invalid ID supplied"
-        '404':
-          description: "ModflowModel not found"
-      security:
-      - api_key: []
-
-  /calculations/{id}/calculate:
-    post:
-      tags:
-        - "calculation"
-      summary: "Send calculate command"
-      description: "Send calculate command"
-      operationId: "postCalculateCalculationById"
-      parameters:
-        - name: "id"
-          in: "path"
-          description: "Id of Calculation to return"
-          required: true
-          type: "string"
-      responses:
-        '302':
-          description: "Redirect response to GET /calculations/{id}"
-          headers:
-            Location:
-              type: "string"
-      security:
-        - api_key: []
-
-  /calculations/{id}/stressperiods:
-    get:
-      tags:
-        - "calculation"
-      summary: "Get stressperiods by calculationId"
-      description: "Returns the stressperiods of a calculation by id"
-      operationId: "getCalculationStressperiodsById"
-      produces:
-        - "application/json"
-      parameters:
-        - name: "id"
-          in: "path"
-          description: "Id of Calculation to return"
-          required: true
-          type: "string"
-      responses:
-        '200':
-          description: "successful operation"
-          schema:
-            $ref: '#/definitions/CalculationStressPeriods'
-        '400':
-          description: "Invalid ID supplied"
-        '404':
-          description: "ModflowModel not found"
-      security:
-      - api_key: []
-
-    put:
-      tags:
-        - "calculation"
-      summary: "Update stressperiods of a calculation by id"
-      description: "Update stressperiods of a calculation by id"
-      operationId: "updateCalculationStressperiodsById"
-      parameters:
-        - name: "id"
-          in: "path"
-          description: "ID of Calculation"
-          required: true
-          type: "string"
-        - in: "body"
-          name: "body"
-          description: "StressperiodsList"
-          required: true
-          schema:
-            $ref: '#/definitions/CalculationStressPeriods'
-
-      responses:
-        '302':
-          description: "Redirect response to GET /calculations/{id}/stressperiods"
-          headers:
-            Location:
-              type: "string"
-        '422':
-          description: "Invalid input"
-      security:
-        - api_key: []
-
   /calculations/{id}/results/times:
     get:
       tags:
@@ -1216,6 +1071,59 @@ paths:
       security:
         - api_key: []
 
+  # ModflowModel Calculation
+  /modflowmodels/{id}/calculation:
+    get:
+      tags:
+        - "modflowmodel"
+      summary: "Returns details of the last calculation by modflowModelId"
+      description: ''
+      operationId: "modflowModelCalculation"
+      produces:
+        - "application/json"
+      parameters:
+        - name: "id"
+          in: "path"
+          description: "Id of ModflowModel"
+          required: true
+          type: "string"
+      responses:
+        '200':
+          description: "successful operation"
+          schema:
+            type: "array"
+            items:
+              $ref: '#/definitions/CalculationDetails'
+      security:
+        - api_key: []
+
+  /modflowmodels/{id}/calculate:
+    post:
+      tags:
+        - "modflowmodel"
+      summary: "Calculates the modflowmodel"
+      description: ''
+      operationId: "calculateModflowModel"
+      produces:
+        - "application/json"
+      parameters:
+        - name: "id"
+          in: "path"
+          description: "Id of ModflowModel"
+          required: true
+          type: "string"
+      responses:
+        '302':
+          description: "Redirect response to /modflowmodels/{id}/calculation"
+          headers:
+            Location:
+              type: "string"
+        '422':
+          description: "Invalid input"
+      security:
+        - api_key: []
+
+  # ModflowModel Boundaries
   /modflowmodels/{id}/boundaries:
     get:
       tags:
@@ -2086,7 +1994,7 @@ paths:
       security:
         - api_key: []
 
-  # Soilmodel Layers
+  # SoilmodelLayers
   /soilmodels/{id}/layers:
     post:
       tags:
@@ -3294,6 +3202,11 @@ paths:
           description: "Id of ScenarioAnalysis"
           required: true
           type: "string"
+        - name: "sid"
+          in: "path"
+          description: "Id of Scenario"
+          required: true
+          type: "string"
         - in: "body"
           name: "body"
           description: "Id of the base_model or scenario to clone"
@@ -3367,29 +3280,33 @@ definitions:
       email:
         type: "string"
         example: "john.doe@inowas.com"
+
+  # CalculationObjects
+  CalculationId:
+    title: "CalculationId"
+    description: "The MD5-Hashed Package configuration"
+    type: "string"
+    example: "2a14061f5bbccbdbb3ea9704f2540202"
+  CalculationState:
+    title: "CalculationState"
+    description: "0: new, 1: queued, 2: started, 3: finished successful, 4: finished with errors"
+    type: integer
+    enum: [0, 1, 2, 3, 4]
+    default: 0
   CalculationDetails:
     type: "object"
     properties:
-      id:
-        type: "string"
-        example: "b6b35e17-0bea-4a7b-86cd-bb3c70704a4c"
-      model_id:
-        type: "string"
-        example: "1a5de69d-01a5-4ba4-9746-fbc60b201de2"
-      soilmodel_id:
-        type: "string"
-        example: "5925bf17-3df7-4685-b4bd-47b3a57f5101"
-      user_id:
-        type: "string"
-        example: "34fe45c3-75fd-491e-a7c8-68646ca0a5e2"
+      calculation_id:
+        $ref: '#/definitions/CalculationId'
       state:
         $ref: '#/definitions/CalculationState'
-      start_date_time:
+      message:
         type: "string"
-        example: "2005-08-15T00:00:00+00:00"
-      end_date_time:
-        type: "string"
-        example: "2015-08-15T00:00:00+00:00"
+        example: "This could be an error-message"
+      times:
+        $ref: '#/definitions/CalculationTimes'
+      layer_values:
+        $ref: '#/definitions/CalculationLayerValues'
   CalculationTimes:
     type: "object"
     properties:
@@ -3408,7 +3325,7 @@ definitions:
     description: "LayerNumber"
     type: "array"
     items:
-      description: "ResultTypes"
+      description: "LayerValues"
       type: "array"
       items:
         type: "string"
@@ -3450,12 +3367,6 @@ definitions:
         items:
           type: "number"
         example: [10.5, 15.5, 20.5, 25.5, 30.5]
-  CalculationState:
-    title: "CalculationState"
-    description: "0: new/created, 1: queued, 2: started, 3: finished"
-    type: "integer"
-    enum: [0, 1, 2, 3]
-    default: 0
   CalculationStressPeriods:
     title: "CalculationStressPeriods"
     type: "object"
@@ -3500,6 +3411,8 @@ definitions:
         description: "Stressperiod is steady state or not"
         type: "boolean"
         example: true
+
+  # ModflowModelObjects
   ModflowModelDetails:
     title: "ModflowModelDetails"
     type: "object"
@@ -3532,6 +3445,8 @@ definitions:
         $ref: '#/definitions/GridSize'
       bounding_box:
         $ref: '#/definitions/BoundingBox'
+      calculation_id:
+        $ref: '#/definitions/CalculationId'
       created_at:
         type: "string"
         example: "2017-05-17T09:32:41+00:00"
@@ -3566,6 +3481,8 @@ definitions:
         $ref: '#/definitions/GridSize'
       bounding_box:
         $ref: '#/definitions/BoundingBox'
+      calculation_id:
+        $ref: '#/definitions/CalculationId'
   ModflowModelBoundaryListItem:
     title: "ModflowModelBoundaryListItem"
     type: "object"
@@ -3941,12 +3858,11 @@ definitions:
               type: "string"
               example: "ScenarioDescription"
             calculation_id:
-              type: "string"
-              example: "fbc2b2fd-9b39-4277-a6cd-cf1bd20f07c3"
+              $ref: '#/definitions/CalculationId'
         example:
-          - { "id": "fbc2b2fd-9b39-4277-a6cd-cf1bd20f07c3", "name": "ScenarioName", "description": "ScenarioDescription", "calculation_id": "fbc2b2fd-9b39-4277-a6cd-cf1bd20f07c3" }
-          - { "id": "fbc2b2fd-9b39-4277-a6cd-cf1bd20f07c3", "name": "ScenarioName", "description": "ScenarioDescription", "calculation_id": "fbc2b2fd-9b39-4277-a6cd-cf1bd20f07c3" }
-          - { "id": "fbc2b2fd-9b39-4277-a6cd-cf1bd20f07c3", "name": "ScenarioName", "description": "ScenarioDescription", "calculation_id": "fbc2b2fd-9b39-4277-a6cd-cf1bd20f07c3" }
+          - { "id": "fbc2b2fd-9b39-4277-a6cd-cf1bd20f07c3", "name": "ScenarioName", "description": "ScenarioDescription", "calculation_id": "2a14061f5bbccbdbb3ea9704f2540202" }
+          - { "id": "fbc2b2fd-9b39-4277-a6cd-cf1bd20f07c3", "name": "ScenarioName", "description": "ScenarioDescription", "calculation_id": "2a14061f5bbccbdbb3ea9704f2540202" }
+          - { "id": "fbc2b2fd-9b39-4277-a6cd-cf1bd20f07c3", "name": "ScenarioName", "description": "ScenarioDescription", "calculation_id": "2a14061f5bbccbdbb3ea9704f2540202" }
       public:
         type: "boolean"
         example: true

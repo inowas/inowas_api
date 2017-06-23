@@ -8,9 +8,13 @@ use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Schema\Schema;
 use Doctrine\ORM\EntityManager;
 use Inowas\AppBundle\Model\User;
+use Inowas\Common\Modflow\LengthUnit;
+use Inowas\Common\Modflow\StressPeriods;
+use Inowas\Common\Modflow\TimeUnit;
 use Inowas\Common\Projection\AbstractDoctrineConnectionProjector;
 use Inowas\ModflowModel\Model\Event\AreaGeometryWasUpdated;
 use Inowas\ModflowModel\Model\Event\BoundingBoxWasChanged;
+use Inowas\ModflowModel\Model\Event\CalculationIdWasChanged;
 use Inowas\ModflowModel\Model\Event\DescriptionWasChanged;
 use Inowas\ModflowModel\Model\Event\GridSizeWasChanged;
 use Inowas\ModflowModel\Model\Event\LengthUnitWasUpdated;
@@ -18,7 +22,8 @@ use Inowas\ModflowModel\Model\Event\ModflowModelWasCloned;
 use Inowas\ModflowModel\Model\Event\NameWasChanged;
 use Inowas\ModflowModel\Model\Event\ModflowModelWasCreated;
 use Inowas\ModflowModel\Infrastructure\Projection\Table;
-use Inowas\ModflowModel\Model\Event\SoilModelIdWasChanged;
+use Inowas\ModflowModel\Model\Event\SoilModelWasChanged;
+use Inowas\ModflowModel\Model\Event\StressPeriodsWereUpdated;
 use Inowas\ModflowModel\Model\Event\TimeUnitWasUpdated;
 
 class ModelProjector extends AbstractDoctrineConnectionProjector
@@ -31,25 +36,25 @@ class ModelProjector extends AbstractDoctrineConnectionProjector
         parent::__construct($connection);
         $this->entityManager = $entityManager;
 
-        $this->schema = new Schema();
-        $table = $this->schema->createTable(Table::MODFLOWMODELS_LIST);
-        $table->addColumn('id', 'integer', array('unsigned' => true, 'autoincrement' => true));
+        $schema = new Schema();
+        $table = $schema->createTable(Table::MODFLOWMODELS_LIST);
         $table->addColumn('model_id', 'string', ['length' => 36]);
         $table->addColumn('user_id', 'string', ['length' => 36]);
+        $table->addColumn('user_name', 'string', ['length' => 255, 'default' => '']);
         $table->addColumn('soilmodel_id', 'string', ['length' => 36]);
-        $table->addColumn('calculation_id', 'string', ['length' => 36]);
-        $table->addColumn('user_name', 'string', ['length' => 255]);
-        $table->addColumn('name', 'string', ['length' => 255]);
-        $table->addColumn('description', 'string', ['length' => 255]);
+        $table->addColumn('name', 'string', ['length' => 255, 'default' => '']);
+        $table->addColumn('description', 'string', ['length' => 255, 'default' => '']);
         $table->addColumn('area', 'text', ['notnull' => false]);
         $table->addColumn('grid_size', 'text', ['notnull' => false]);
         $table->addColumn('bounding_box', 'text', ['notnull' => false]);
         $table->addColumn('time_unit', 'integer');
         $table->addColumn('length_unit', 'integer');
+        $table->addColumn('stressperiods', 'text', ['notnull' => false]);
+        $table->addColumn('calculation_id', 'string', ['length' => 36, 'notnull' => false]);
         $table->addColumn('created_at', 'string', ['length' => 255, 'notnull' => false]);
         $table->addColumn('public', 'boolean');
-        $table->setPrimaryKey(['id']);
-        $table->addIndex(array('model_id'));
+        $table->setPrimaryKey(['model_id']);
+        $this->addSchema($schema);
     }
 
     public function onAreaGeometryWasUpdated(AreaGeometryWasUpdated $event): void
@@ -67,6 +72,16 @@ class ModelProjector extends AbstractDoctrineConnectionProjector
             'bounding_box' => json_encode($event->boundingBox()),
         ),
             array('model_id' => $event->modflowId()->toString())
+        );
+    }
+
+
+    public function onCalculationIdWasChanged(CalculationIdWasChanged $event): void
+    {
+        $this->connection->update(Table::MODFLOWMODELS_LIST, array(
+            'calculation_id' => $event->calculationId()->toString()
+        ),
+            array('model_id' => $event->modelId()->toString())
         );
     }
 
@@ -89,19 +104,21 @@ class ModelProjector extends AbstractDoctrineConnectionProjector
 
     public function onModflowModelWasCreated(ModflowModelWasCreated $event): void
     {
+
+        $defaultTimeUnit = TimeUnit::fromInt(TimeUnit::DAYS);
+        $defaultLengthUnit = LengthUnit::fromInt(LengthUnit::METERS);
+
         $this->connection->insert(Table::MODFLOWMODELS_LIST, array(
             'model_id' => $event->modelId()->toString(),
             'user_id' => $event->userId()->toString(),
             'user_name' => $this->getUserNameByUserId($event->userId()->toString()),
             'soilmodel_id' => $event->soilmodelId()->toString(),
-            'calculation_id' => $event->calculationId()->toString(),
-            'name' => $event->name()->toString(),
-            'description' => $event->description()->toString(),
-            'area' => $event->area()->geometry()->toJson(),
+            'area' => $event->polygon()->toJson(),
             'grid_size' => json_encode($event->gridSize()),
             'bounding_box' => json_encode($event->boundingBox()),
-            'time_unit' => $event->timeUnit()->toInt(),
-            'length_unit' => $event->lengthUnit()->toInt(),
+            'time_unit' => $defaultTimeUnit->toInt(),
+            'length_unit' => $defaultLengthUnit->toInt(),
+            'stressperiods' => StressPeriods::createDefault()->toJson(),
             'created_at' => date_format($event->createdAt(), DATE_ATOM),
             'public' => true
         ));
@@ -121,14 +138,14 @@ class ModelProjector extends AbstractDoctrineConnectionProjector
                 'user_id' => $event->userId()->toString(),
                 'user_name' => $this->getUserNameByUserId($event->userId()->toString()),
                 'soilmodel_id' => $event->soilmodelId()->toString(),
-                'calculation_id' => $event->calculationId()->toString(),
-                'name' => $event->name()->toString(),
-                'description' => $event->description()->toString(),
+                'name' => $row['name'],
+                'description' => $row['description'],
                 'area' => $row['area'],
                 'grid_size' => $row['grid_size'],
                 'bounding_box' => $row['bounding_box'],
                 'time_unit' => $row['time_unit'],
                 'length_unit' => $row['length_unit'],
+                'stressperiods' => $row['stressperiods'],
                 'created_at' => date_format($event->createdAt(), DATE_ATOM),
                 'public' => true
             ));
@@ -139,7 +156,7 @@ class ModelProjector extends AbstractDoctrineConnectionProjector
     {
         $this->connection->update(Table::MODFLOWMODELS_LIST,
             array('length_unit' => $event->lengthUnit()->toInt()),
-            array('model_id' => $event->modflowId()->toString())
+            array('model_id' => $event->modelId()->toString())
         );
     }
 
@@ -147,7 +164,7 @@ class ModelProjector extends AbstractDoctrineConnectionProjector
     {
         $this->connection->update(Table::MODFLOWMODELS_LIST,
             array('time_unit' => $event->timeUnit()->toInt()),
-            array('model_id' => $event->modflowId()->toString())
+            array('model_id' => $event->modelId()->toString())
         );
     }
 
@@ -159,11 +176,19 @@ class ModelProjector extends AbstractDoctrineConnectionProjector
         );
     }
 
-    public function onSoilModelIdWasChanged(SoilModelIdWasChanged $event): void
+    public function onSoilModelWasChanged(SoilModelWasChanged $event): void
     {
         $this->connection->update(Table::MODFLOWMODELS_LIST,
             array('soilmodel_id' => $event->soilModelId()->toString()),
             array('model_id' => $event->modflowModelId()->toString())
+        );
+    }
+
+    public function onStressPeriodsWereUpdated(StressPeriodsWereUpdated $event): void
+    {
+        $this->connection->update(Table::MODFLOWMODELS_LIST,
+            array('stressperiods' => $event->stressPeriods()->toJson()),
+            array('model_id' => $event->modelId()->toString())
         );
     }
 

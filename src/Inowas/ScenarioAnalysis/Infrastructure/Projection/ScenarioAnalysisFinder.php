@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Inowas\ScenarioAnalysis\Infrastructure\Projection;
 
-
 use Doctrine\DBAL\Connection;
 use Inowas\Common\Id\ModflowId;
 use Inowas\Common\Id\UserId;

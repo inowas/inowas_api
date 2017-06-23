@@ -130,7 +130,7 @@ class RivPackage implements PackageInterface
     {
         return array(
             'ipakcb' => $this->ipakcb->toInteger(),
-            'stress_period_data' => $this->stressPeriodData->toArray(),
+            'stress_period_data' => (object)$this->stressPeriodData->toArray(),
             'options' => $this->options->toValue(),
             'extension' => $this->extension->toValue(),
             'unitnumber' => $this->unitnumber->toValue()
@@ -142,12 +142,6 @@ class RivPackage implements PackageInterface
      */
     public function jsonSerialize(): array
     {
-        return array(
-            'ipakcb' => $this->ipakcb->toInteger(),
-            'stress_period_data' => (object)$this->stressPeriodData->toArray(),
-            'options' => $this->options->toValue(),
-            'extension' => $this->extension->toValue(),
-            'unitnumber' => $this->unitnumber->toValue()
-        );
+        return $this->toArray();
     }
 }

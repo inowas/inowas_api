@@ -53,10 +53,7 @@ class ModflowModelControllerTest extends EventSourcingBaseTest
         $client = static::createClient();
         $client->request(
             'GET',
-            '/v2/modflowmodels',
-            array(),
-            array(),
-            array()
+            '/v2/modflowmodels'
         );
 
         $response = $client->getResponse();
@@ -93,7 +90,7 @@ class ModflowModelControllerTest extends EventSourcingBaseTest
         $username = $this->user->getName();
 
         $modelId = ModflowId::generate();
-        $this->createModelWithName($userId, $modelId);
+        $this->createModelWithSoilmodel($userId, $modelId);
 
         $client = static::createClient();
         $client->request(
@@ -128,7 +125,7 @@ class ModflowModelControllerTest extends EventSourcingBaseTest
         $username = $this->user->getName();
 
         $modelId = ModflowId::generate();
-        $this->createModelWithName($userId, $modelId);
+        $this->createModelWithSoilmodel($userId, $modelId);
 
         $client = static::createClient();
         $client->request(
@@ -163,10 +160,10 @@ class ModflowModelControllerTest extends EventSourcingBaseTest
         $username = $this->user->getName();
 
         $body = new \stdClass();
-        $body->name = "Hanoi 2005-2007";
-        $body->description = "ModflowModel of Hanoi Area 2005-2007";
+        $body->name = 'Hanoi 2005-2007';
+        $body->description = 'ModflowModel of Hanoi Area 2005-2007';
         $body->area_geometry = new \stdClass();
-        $body->area_geometry->type = "polygon";
+        $body->area_geometry->type = 'polygon';
         $body->area_geometry->coordinates = [[[12.1, 10.2], [12.2, 10.2], [12.2, 10.1], [12.1, 10.1], [12.1, 10.2]]];
         $body->grid_size = new \stdClass();
         $body->grid_size->n_x = 100;
@@ -204,9 +201,9 @@ class ModflowModelControllerTest extends EventSourcingBaseTest
     {
         $apiKey = $this->user->getApiKey();
         $body = new \stdClass();
-        $body->description = "ModflowModel of Hanoi Area 2005-2007";
+        $body->description = 'ModflowModel of Hanoi Area 2005-2007';
         $body->area_geometry = new \stdClass();
-        $body->area_geometry->type = "polygon";
+        $body->area_geometry->type = 'polygon';
         $body->area_geometry->coordinates = [[[12.1, 10.2], [12.2, 10.2], [12.2, 10.1], [12.1, 10.1], [12.1, 10.2]]];
         $body->grid_size = new \stdClass();
         $body->grid_size->n_x = 100;

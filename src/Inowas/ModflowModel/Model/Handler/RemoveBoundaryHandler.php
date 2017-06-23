@@ -33,8 +33,8 @@ final class RemoveBoundaryHandler
             throw ModflowModelNotFoundException::withModelId($command->baseModelId());
         }
 
-        if (! $modflowModel->ownerId()->sameValueAs($command->userId())){
-            throw WriteAccessFailedException::withUserAndOwner($command->userId(), $modflowModel->ownerId());
+        if (! $modflowModel->userId()->sameValueAs($command->userId())){
+            throw WriteAccessFailedException::withUserAndOwner($command->userId(), $modflowModel->userId());
         }
 
         $modflowModel->removeBoundary($command->userId(), $command->boundaryId());

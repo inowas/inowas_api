@@ -40,10 +40,10 @@ final class AddBoundaryHandler
             throw ModflowModelNotFoundException::withModelId($command->modelId());
         }
 
-        if (! $modflowModel->ownerId()->sameValueAs($command->userId())){
-            throw WriteAccessFailedException::withUserAndOwner($command->userId(), $modflowModel->ownerId());
+        if (! $modflowModel->userId()->sameValueAs($command->userId())){
+            throw WriteAccessFailedException::withUserAndOwner($command->userId(), $modflowModel->userId());
         }
 
-        $modflowModel->addBoundaryToModel($command->userId(), $command->boundary());
+        $modflowModel->addBoundary($command->userId(), $command->boundary());
     }
 }

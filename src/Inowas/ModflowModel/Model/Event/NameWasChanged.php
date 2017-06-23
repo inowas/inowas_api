@@ -10,6 +10,7 @@ use Inowas\Common\Modflow\ModelName;
 use Inowas\Common\Id\UserId;
 use Prooph\EventSourcing\AggregateChanged;
 
+/** @noinspection LongInheritanceChainInspection */
 class NameWasChanged extends AggregateChanged
 {
 
@@ -34,7 +35,6 @@ class NameWasChanged extends AggregateChanged
         $event->userId = $userId;
         $event->modflowId = $modflowId;
         $event->name = $name;
-
         return $event;
     }
 

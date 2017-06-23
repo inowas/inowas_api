@@ -49,8 +49,8 @@ final class CreateObservationPointHandler
             throw ModflowModelNotFoundException::withModelId($command->modelId());
         }
 
-        if (! $modflowModel->ownerId()->sameValueAs($command->userId())){
-            throw WriteAccessFailedException::withUserAndOwner($command->userId(), $modflowModel->ownerId());
+        if (! $modflowModel->userId()->sameValueAs($command->userId())){
+            throw WriteAccessFailedException::withUserAndOwner($command->userId(), $modflowModel->userId());
         }
 
         $observationPoint = ObservationPoint::fromIdNameAndGeometry($command->observationPointId(), $command->observationPointName(), $command->geometry());

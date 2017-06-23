@@ -30,13 +30,11 @@ class ModflowProjectionsResetCommand extends ContainerAwareCommand
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $projections = [];
-        $projections[] = $this->getContainer()->get('inowas.modflowmodel.model_boundaries_active_cells_projector');
-        $projections[] = $this->getContainer()->get('inowas.modflowmodel.model_boundaries_list_projector');
-        $projections[] = $this->getContainer()->get('inowas.modflowmodel.model_boundaries_values_projector');
-        $projections[] = $this->getContainer()->get('inowas.modflowcalculation.calculation_configuration_projector');
-        $projections[] = $this->getContainer()->get('inowas.modflowcalculation.calculation_list_projector');
-        $projections[] = $this->getContainer()->get('inowas.modflowcalculation.calculation_results_projector');
-        $projections[] = $this->getContainer()->get('inowas.modflowmodel.model_details_projector');
+        $projections[] = $this->getContainer()->get('inowas.modflowmodel.boundary_active_cells_projector');
+        $projections[] = $this->getContainer()->get('inowas.modflowmodel.boundary_list_projector');
+        $projections[] = $this->getContainer()->get('inowas.modflowmodel.boundary_observation_points_projector');
+        $projections[] = $this->getContainer()->get('inowas.modflowmodel.calculation_results_projector');
+        $projections[] = $this->getContainer()->get('inowas.modflowmodel.model_projector');
         $projections[] = $this->getContainer()->get('inowas.tool.tools_projector');
         $projections[] = $this->getContainer()->get('inowas.scenarioanalysis.scenarioanalysis_list_projector');
         $projections[] = $this->getContainer()->get('inowas.scenarioanalysis.scenario_list_projector');

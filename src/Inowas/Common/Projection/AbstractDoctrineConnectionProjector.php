@@ -10,11 +10,10 @@ use Doctrine\DBAL\Schema\Schema;
 
 abstract class AbstractDoctrineConnectionProjector implements ProjectionInterface
 {
+    /** @var Schema[] */
+    protected $schemas = [];
 
-    /** @var Schema $schema */
-    protected $schema;
-
-    /** @var Schema $schema */
+    /** @var Connection $connection */
     protected $connection;
 
     public function __construct(Connection $connection)
@@ -23,37 +22,60 @@ abstract class AbstractDoctrineConnectionProjector implements ProjectionInterfac
         $this->connection->setFetchMode(\PDO::FETCH_ASSOC);
     }
 
-    public function createTable(): void
+    public function createTables(): void
     {
-        $queryArray = $this->schema->toSql($this->connection->getDatabasePlatform());
-        $this->executeQueryArray($queryArray);
-
+        /** @var Schema $schema */
+        foreach ($this->schemas as $schema) {
+            $this->createTable($schema);
+        }
     }
 
-    public function dropTable(): void
+    public function dropTables(): void
+    {
+        /** @var Schema $schema */
+        foreach ($this->schemas as $schema) {
+            $this->dropTable($schema);
+        }
+    }
+
+    public function truncateTables(): void
+    {
+        /** @var Schema $schema */
+        foreach ($this->schemas as $schema) {
+            $this->dropTable($schema);
+            $this->createTable($schema);
+        }
+    }
+
+    public function reset(): void
+    {
+        $this->truncateTables();
+    }
+
+    private function createTable(Schema $schema): void
+    {
+        $queryArray = $schema->toSql($this->connection->getDatabasePlatform());
+        $this->executeQueryArray($queryArray);
+    }
+
+    private function dropTable(Schema $schema): void
     {
         try {
-            $queryArray = $this->schema->toDropSql($this->connection->getDatabasePlatform());
+            $queryArray = $schema->toDropSql($this->connection->getDatabasePlatform());
             $this->executeQueryArray($queryArray);
         } catch (TableNotFoundException $e) {
         }
     }
 
-    public function truncateTable(): void
-    {
-        $this->dropTable();
-        $this->createTable();
-    }
-
-    public function reset(): void
-    {
-        $this->truncateTable();
-    }
-
-    private function executeQueryArray(array $queries)
+    private function executeQueryArray(array $queries): void
     {
         foreach ($queries as $query) {
             $this->connection->executeQuery($query);
         }
+    }
+
+    protected function addSchema(Schema $schema): void
+    {
+        $this->schemas[] = $schema;
     }
 }

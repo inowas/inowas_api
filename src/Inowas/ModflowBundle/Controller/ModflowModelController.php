@@ -5,14 +5,11 @@ declare(strict_types=1);
 namespace Inowas\ModflowBundle\Controller;
 
 use FOS\RestBundle\Controller\Annotations as Rest;
-use Inowas\Common\Boundaries\Area;
-use Inowas\Common\Boundaries\BoundaryName;
 use Inowas\Common\Geometry\Geometry;
 use Inowas\Common\Geometry\Polygon;
 use Inowas\Common\Grid\ActiveCells;
 use Inowas\Common\Grid\BoundingBox;
 use Inowas\Common\Grid\GridSize;
-use Inowas\Common\Id\BoundaryId;
 use Inowas\Common\Id\ModflowId;
 use Inowas\Common\Modflow\LengthUnit;
 use Inowas\Common\Modflow\ModelName;
@@ -20,11 +17,12 @@ use Inowas\Common\Modflow\ModelDescription;
 use Inowas\Common\Modflow\TimeUnit;
 use Inowas\Common\Soilmodel\SoilmodelId;
 use Inowas\ModflowBundle\Exception\NotFoundException;
-use Inowas\ModflowModel\Model\Command\ChangeModflowModelBoundingBox;
-use Inowas\ModflowModel\Model\Command\ChangeModflowModelDescription;
-use Inowas\ModflowModel\Model\Command\ChangeModflowModelGridSize;
-use Inowas\ModflowModel\Model\Command\ChangeModflowModelName;
-use Inowas\ModflowModel\Model\Command\ChangeModflowModelSoilmodelId;
+use Inowas\ModflowModel\Model\Command\CalculateModflowModel;
+use Inowas\ModflowModel\Model\Command\ChangeBoundingBox;
+use Inowas\ModflowModel\Model\Command\ChangeDescription;
+use Inowas\ModflowModel\Model\Command\ChangeGridSize;
+use Inowas\ModflowModel\Model\Command\ChangeName;
+use Inowas\ModflowModel\Model\Command\ChangeSoilmodelId;
 use Inowas\ModflowModel\Model\Command\CreateModflowModel;
 use Inowas\ModflowModel\Model\Command\UpdateAreaGeometry;
 use Inowas\ModflowModel\Model\Command\UpdateActiveCells;
@@ -114,8 +112,7 @@ class ModflowModelController extends InowasRestController
         $description = ModelDescription::fromString($content['description']);
 
         $this->assertContainsKey('area_geometry', $content);
-        $areaGeometry = new Polygon($content['area_geometry']['coordinates'], 4326);
-        $area = Area::create(BoundaryId::generate(), BoundaryName::fromString($name->toString().' Area'), $areaGeometry);
+        $polygon = new Polygon($content['area_geometry']['coordinates'], 4326);
 
         $this->assertContainsKey('grid_size', $content);
         $gridSize = GridSize::fromXY((int)$content['grid_size']['n_x'], (int)$content['grid_size']['n_y']);
@@ -127,8 +124,8 @@ class ModflowModelController extends InowasRestController
         $lengthUnit = LengthUnit::fromInt((int)$content['length_unit']);
 
         $commandBus = $this->get('prooph_service_bus.modflow_command_bus');
-        $commandBus->dispatch(CreateModflowModel::newWithIdNameDescriptionAndUnits(
-            $userId, $modelId, $name, $description, $area, $gridSize, $timeUnit, $lengthUnit
+        $commandBus->dispatch(CreateModflowModel::newWithAllParams(
+            $userId, $modelId, $name, $description, $polygon, $gridSize, $timeUnit, $lengthUnit, SoilmodelId::generate()
         ));
 
         return new RedirectResponse(
@@ -228,7 +225,7 @@ class ModflowModelController extends InowasRestController
         $this->assertContainsKey('name', $content);
         $name = ModelName::fromString($content['name']);
 
-        $this->get('prooph_service_bus.modflow_command_bus')->dispatch(ChangeModflowModelName::forModflowModel($userId, $modelId, $name));
+        $this->get('prooph_service_bus.modflow_command_bus')->dispatch(ChangeName::forModflowModel($userId, $modelId, $name));
 
         return new RedirectResponse(
             $this->generateUrl('get_modflow_model', array('id' => $modelId->toString())),
@@ -297,7 +294,7 @@ class ModflowModelController extends InowasRestController
         $this->assertContainsKey('description', $content);
         $description = ModelDescription::fromString($content['description']);
 
-        $this->get('prooph_service_bus.modflow_command_bus')->dispatch(ChangeModflowModelDescription::forModflowModel($userId, $modelId, $description));
+        $this->get('prooph_service_bus.modflow_command_bus')->dispatch(ChangeDescription::forModflowModel($userId, $modelId, $description));
 
         $response = new RedirectResponse(
             $this->generateUrl('get_modflow_model_description', array('id' => $modelId->toString())),
@@ -443,12 +440,10 @@ class ModflowModelController extends InowasRestController
             $content['bounding_box']['x_max'],
             $content['bounding_box']['y_min'],
             $content['bounding_box']['y_max'],
-            4326,
-            0,
-            0
+            4326
         );
 
-        $this->get('prooph_service_bus.modflow_command_bus')->dispatch(ChangeModflowModelBoundingBox::forModflowModel($userId, $modelId, $boundingBox));
+        $this->get('prooph_service_bus.modflow_command_bus')->dispatch(ChangeBoundingBox::forModflowModel($userId, $modelId, $boundingBox));
 
         $response = new RedirectResponse(
             $this->generateUrl('get_modflow_model_bounding_box', array('id' => $modelId->toString())),
@@ -457,6 +452,78 @@ class ModflowModelController extends InowasRestController
 
         return $response;
     }
+
+    /**
+     * Update description of modflow model by id.
+     *
+     * @ApiDoc(
+     *   resource = true,
+     *   description = "Update description of modflow model by id.",
+     *   statusCodes = {
+     *     302 = "Redirect to /modflowmodels/{id}/calculation"
+     *   }
+     * )
+     *
+     * @Rest\Post("/modflowmodels/{id}/calculate")
+     * @param string $id
+     * @return RedirectResponse
+     * @throws \InvalidArgumentException
+     * @throws \Symfony\Component\DependencyInjection\Exception\ServiceNotFoundException
+     * @throws \Prooph\ServiceBus\Exception\CommandDispatchException
+     * @throws \Symfony\Component\DependencyInjection\Exception\ServiceCircularReferenceException
+     */
+    public function postModflowModelCalculateAction(string $id): RedirectResponse
+    {
+        $userId = $this->getUserId();
+
+        $this->assertUuidIsValid($id);
+        $modelId = ModflowId::fromString($id);
+
+        $this->container->get('prooph_service_bus.modflow_command_bus')->dispatch(
+            CalculateModflowModel::forModflowModel($userId, $modelId)
+        );
+
+        $response = new RedirectResponse(
+            $this->generateUrl('get_modflow_model_calculation', array('id' => $modelId->toString())),
+            302
+        );
+
+        return $response;
+    }
+
+    /**
+     * Get details of last calculation of modflow model by id.
+     *
+     * @ApiDoc(
+     *   resource = true,
+     *   description = "Get details of last calculation of modflow model by id.",
+     *   statusCodes = {
+     *     200 = "Returned when successful"
+     *   }
+     * )
+     *
+     * @param string $id
+     * @Rest\Get("/modflowmodels/{id}/calculation")
+     * @return JsonResponse
+     * @throws NotFoundException
+     */
+    public function getModflowModelCalculationAction(string $id): JsonResponse
+    {
+        $this->assertUuidIsValid($id);
+        $modelId = ModflowId::fromString($id);
+
+        $calculationId = $this->get('inowas.modflowmodel.model_finder')->getCalculationIdByModelId($modelId);
+        $calculationDetails = $this->get('inowas.modflowmodel.calculation_results_finder')->getCalculationDetailsById($calculationId);
+
+        if (! is_array($calculationDetails)) {
+            throw NotFoundException::withMessage(sprintf(
+                'ModflowModel with id: \'%s\' not found.', $modelId->toString()
+            ));
+        }
+
+        return new JsonResponse($calculationDetails);
+    }
+
 
     /**
      * Get gridSize of modflow model by id.
@@ -517,7 +584,7 @@ class ModflowModelController extends InowasRestController
         $this->assertContainsKey('grid_size', $content);
 
         $gridSize = GridSize::fromXY($content['grid_size']['n_x'], $content['grid_size']['n_y']);
-        $this->get('prooph_service_bus.modflow_command_bus')->dispatch(ChangeModflowModelGridSize::forModflowModel($userId, $modelId, $gridSize));
+        $this->get('prooph_service_bus.modflow_command_bus')->dispatch(ChangeGridSize::forModflowModel($userId, $modelId, $gridSize));
 
         $response = new RedirectResponse(
             $this->generateUrl('get_modflow_model_grid_size', array('id' => $modelId->toString())),
@@ -547,7 +614,7 @@ class ModflowModelController extends InowasRestController
     {
         $this->assertUuidIsValid($id);
         $modelId = ModflowId::fromString($id);
-        $activeCells = $this->get('inowas.modflowmodel.boundaries_finder')->findAreaActiveCells($modelId);
+        $activeCells = $this->get('inowas.modflowmodel.boundary_finder')->findAreaActiveCells($modelId);
 
         if (! $activeCells instanceof ActiveCells) {
             throw NotFoundException::withMessage(sprintf(
@@ -655,7 +722,7 @@ class ModflowModelController extends InowasRestController
         $this->assertContainsKey('soilmodel_id', $content);
 
         $soilmodelId = SoilmodelId::fromString($content['soilmodel_id']);
-        $this->get('prooph_service_bus.modflow_command_bus')->dispatch(ChangeModflowModelSoilmodelId::forModflowModel($userId, $modelId, $soilmodelId));
+        $this->get('prooph_service_bus.modflow_command_bus')->dispatch(ChangeSoilmodelId::forModflowModel($userId, $modelId, $soilmodelId));
 
         $response = new RedirectResponse(
             $this->generateUrl('get_soil_model_id', array('id' => $modelId->toString())),

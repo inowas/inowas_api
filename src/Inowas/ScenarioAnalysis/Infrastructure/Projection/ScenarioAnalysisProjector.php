@@ -34,8 +34,8 @@ class ScenarioAnalysisProjector extends AbstractDoctrineConnectionProjector
 
         parent::__construct($connection);
 
-        $this->schema = new Schema();
-        $table = $this->schema->createTable(Table::SCENARIO_ANALYSIS_LIST);
+        $schema = new Schema();
+        $table = $schema->createTable(Table::SCENARIO_ANALYSIS_LIST);
         $table->addColumn('scenario_analysis_id', 'string', ['length' => 36]);
         $table->addColumn('base_model_id', 'string', ['length' => 36]);
         $table->addColumn('user_id', 'string', ['length' => 36]);
@@ -49,6 +49,7 @@ class ScenarioAnalysisProjector extends AbstractDoctrineConnectionProjector
         $table->addColumn('public', 'boolean');
         $table->setPrimaryKey(['scenario_analysis_id']);
         $table->addIndex(array('base_model_id'));
+        $this->addSchema($schema);
     }
 
     public function onScenarioAnalysisWasCreated(ScenarioAnalysisWasCreated $event): void

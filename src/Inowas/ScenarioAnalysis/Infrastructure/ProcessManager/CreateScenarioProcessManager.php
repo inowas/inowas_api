@@ -4,42 +4,31 @@ declare(strict_types=1);
 
 namespace Inowas\ScenarioAnalysis\Infrastructure\ProcessManager;
 
-use Inowas\Common\Id\ModflowId;
-use Inowas\ModflowModel\Infrastructure\Projection\ModelList\ModelFinder;
-use Inowas\ModflowModel\Model\Command\ChangeModflowModelDescription;
-use Inowas\ModflowModel\Model\Command\ChangeModflowModelName;
+use Inowas\ModflowModel\Model\Command\ChangeDescription;
+use Inowas\ModflowModel\Model\Command\ChangeName;
 use Inowas\ModflowModel\Model\Command\CloneModflowModel;
 use Inowas\ScenarioAnalysis\Model\Event\ScenarioWasCreated;
 use Prooph\ServiceBus\CommandBus;
 
 final class CreateScenarioProcessManager
 {
-
-    /** @var  ModelFinder */
-    private $modelFinder;
-
     /** @var  CommandBus */
     private $commandBus;
 
-    public function __construct(CommandBus $commandBus, ModelFinder $modelFinder) {
+    public function __construct(CommandBus $commandBus) {
         $this->commandBus = $commandBus;
-        $this->modelFinder = $modelFinder;
     }
 
     public function onScenarioWasCreated(ScenarioWasCreated $event): void
     {
-        $existingSoilmodelId = $this->modelFinder->getSoilmodelIdByModelId($event->baseModelId());
-        $newCalculationId = ModflowId::generate();
 
-        $this->commandBus->dispatch(CloneModflowModel::byIdWithExistingSoilmodel(
+        $this->commandBus->dispatch(CloneModflowModel::byIdWithoutSoilmodel(
             $event->baseModelId(),
             $event->userId(),
-            $event->scenarioId(),
-            $existingSoilmodelId,
-            $newCalculationId
+            $event->scenarioId()
         ));
 
-        $this->commandBus->dispatch(ChangeModflowModelName::forModflowModel($event->userId(), $event->scenarioId(), $event->name()));
-        $this->commandBus->dispatch(ChangeModflowModelDescription::forModflowModel($event->userId(), $event->scenarioId(), $event->description()));
+        $this->commandBus->dispatch(ChangeName::forModflowModel($event->userId(), $event->scenarioId(), $event->name()));
+        $this->commandBus->dispatch(ChangeDescription::forModflowModel($event->userId(), $event->scenarioId(), $event->description()));
     }
 }

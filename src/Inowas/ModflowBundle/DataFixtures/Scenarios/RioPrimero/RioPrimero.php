@@ -2,7 +2,6 @@
 
 namespace Inowas\ModflowBundle\DataFixtures\Scenarios\RioPrimero;
 
-use Inowas\Common\Boundaries\Area;
 use Inowas\Common\Boundaries\BoundaryName;
 use Inowas\Common\Boundaries\GeneralHeadBoundary;
 use Inowas\Common\Boundaries\GeneralHeadDateTimeValue;
@@ -31,9 +30,10 @@ use Inowas\Common\Modflow\Laytyp;
 use Inowas\Common\Modflow\LengthUnit;
 use Inowas\Common\Modflow\ModelDescription;
 use Inowas\Common\Modflow\ModelName;
-use Inowas\Common\Modflow\OcStressPeriod;
-use Inowas\Common\Modflow\OcStressPeriodData;
+use Inowas\ModflowModel\Model\Packages\OcStressPeriod;
+use Inowas\ModflowModel\Model\Packages\OcStressPeriodData;
 use Inowas\Common\Modflow\PackageName;
+use Inowas\Common\Modflow\ParameterName;
 use Inowas\Common\Modflow\StressPeriod;
 use Inowas\Common\Modflow\StressPeriods;
 use Inowas\Common\Modflow\TimeUnit;
@@ -53,17 +53,15 @@ use Inowas\Common\Soilmodel\SpecificYield;
 use Inowas\Common\Soilmodel\Storage;
 use Inowas\Common\Soilmodel\TopElevation;
 use Inowas\Common\Soilmodel\VerticalHydraulicConductivity;
-use Inowas\ModflowCalculation\Model\Command\CalculateModflowModelCalculation;
-use Inowas\ModflowCalculation\Model\Command\ChangeFlowPackage;
-use Inowas\ModflowCalculation\Model\Command\CreateModflowModelCalculation;
-use Inowas\ModflowCalculation\Model\Command\UpdateCalculationPackageParameter;
-use Inowas\ModflowCalculation\Model\Command\UpdateCalculationStressperiods;
 use Inowas\ModflowModel\Model\Command\AddBoundary;
-use Inowas\ModflowModel\Model\Command\ChangeModflowModelBoundingBox;
-use Inowas\ModflowModel\Model\Command\ChangeModflowModelSoilmodelId;
+use Inowas\ModflowModel\Model\Command\CalculateModflowModel;
+use Inowas\ModflowModel\Model\Command\ChangeBoundingBox;
+use Inowas\ModflowModel\Model\Command\ChangeFlowPackage;
+use Inowas\ModflowModel\Model\Command\ChangeSoilmodelId;
 use Inowas\ModflowModel\Model\Command\CreateModflowModel;
 use Inowas\ModflowBundle\DataFixtures\Scenarios\LoadScenarioBase;
-use Inowas\ModflowModel\Model\Command\FinishEditingBoundaries;
+use Inowas\ModflowModel\Model\Command\UpdateModflowPackageParameter;
+use Inowas\ModflowModel\Model\Command\UpdateStressPeriods;
 use Inowas\ScenarioAnalysis\Model\Command\CreateScenario;
 use Inowas\ScenarioAnalysis\Model\Command\CreateScenarioAnalysis;
 use Inowas\ScenarioAnalysis\Model\ScenarioAnalysisDescription;
@@ -99,42 +97,35 @@ class RioPrimero extends LoadScenarioBase
         $commandBus = $this->container->get('prooph_service_bus.modflow_command_bus');
         $ownerId = UserId::fromString($this->ownerId);
         $baseModelId = ModflowId::generate();
-        $calculationId = ModflowId::generate();
 
-        $area = Area::create(
-            BoundaryId::generate(),
-            BoundaryName::fromString('Rio Primero Area'),
-            new Polygon(
-                array(
-                    array(
-                        array(-63.687336, -31.313615),
-                        array(-63.687336, -31.367449),
-                        array(-63.569260, -31.367449),
-                        array(-63.569260, -31.313615),
-                        array(-63.687336, -31.313615)
-                    )
-                ), 4326
-            ));
+        $polygon = new Polygon([[
+                        [-63.687336, -31.313615],
+                        [-63.687336, -31.367449],
+                        [-63.569260, -31.367449],
+                        [-63.569260, -31.313615],
+                        [-63.687336, -31.313615]
+                    ]], 4326);
         $gridSize = GridSize::fromXY(75, 40);
 
-        $commandBus->dispatch(CreateModflowModel::newWithIdNameDescriptionUnitsAndCalculationId(
+        $soilModelId = SoilmodelId::generate();
+        $commandBus->dispatch(CreateModflowModel::newWithAllParams(
             $ownerId,
             $baseModelId,
             ModelName::fromString('BaseModel Rio Primero 2015'),
             ModelDescription::fromString('BaseModel Rio Primero 2015'),
-            $area,
+            $polygon,
             $gridSize,
             TimeUnit::fromInt(TimeUnit::DAYS),
             LengthUnit::fromInt(LengthUnit::METERS),
-            $calculationId
+            $soilModelId
         ));
 
         $box = $geoTools->projectBoundingBox(BoundingBox::fromCoordinates(-63.687336, -63.569260, -31.367449, -31.313615, 4326), Srid::fromInt(4326));
         $boundingBox = BoundingBox::fromEPSG4326Coordinates($box->xMin(), $box->xMax(), $box->yMin(), $box->yMax(), $box->dX(), $box->dY());
-        $commandBus->dispatch(ChangeModflowModelBoundingBox::forModflowModel($ownerId, $baseModelId, $boundingBox));
+        $commandBus->dispatch(ChangeBoundingBox::forModflowModel($ownerId, $baseModelId, $boundingBox));
 
         $soilModelId = SoilmodelId::generate();
-        $commandBus->dispatch(ChangeModflowModelSoilmodelId::forModflowModel($ownerId, $baseModelId, $soilModelId));
+        $commandBus->dispatch(ChangeSoilmodelId::forModflowModel($ownerId, $baseModelId, $soilModelId));
         $commandBus->dispatch(CreateSoilmodel::byUserWithModelId($ownerId, $soilModelId));
         $commandBus->dispatch(ChangeSoilmodelName::forSoilmodel($ownerId, $soilModelId, SoilmodelName::fromString('SoilModel Río Primero')));
         $commandBus->dispatch(ChangeSoilmodelDescription::forSoilmodel($ownerId, $soilModelId, SoilmodelDescription::fromString('SoilModel for Río Primero Area')));
@@ -431,13 +422,9 @@ class RioPrimero extends LoadScenarioBase
             $commandBus->dispatch(AddBoundary::to($baseModelId, $ownerId, $wellBoundary));
         }
 
-
         /* Create calculation and calculate */
         $start = DateTime::fromDateTime(new \DateTime('2015-01-01'));
         $end = DateTime::fromDateTime(new \DateTime('2015-12-31'));
-        $commandBus->dispatch(CreateModflowModelCalculation::byUserWithModelId($calculationId, $ownerId, $baseModelId, $start, $end));
-        $commandBus->dispatch(ChangeFlowPackage::byUserWithCalculationId($ownerId, $calculationId, PackageName::fromString('upw')));
-
         $stressperiods = StressPeriods::create($start, $end, TimeUnit::fromInt(TimeUnit::DAYS));
         $stressperiods->addStressPeriod(StressPeriod::create(0, 30,1,1,true));
         $stressperiods->addStressPeriod(StressPeriod::create(31, 30,1,1,false));
@@ -453,10 +440,12 @@ class RioPrimero extends LoadScenarioBase
         $stressperiods->addStressPeriod(StressPeriod::create(331, 30,1,1,false));
         $stressperiods->addStressPeriod(StressPeriod::create(361, 30,1,1,false));
 
-        $commandBus->dispatch(UpdateCalculationStressperiods::byUserWithCalculationId($ownerId, $calculationId, $stressperiods));
+        $commandBus->dispatch(UpdateStressPeriods::of($ownerId, $baseModelId, $stressperiods));
+        $commandBus->dispatch(ChangeFlowPackage::forModflowModel($ownerId, $baseModelId, PackageName::fromString('upw')));
         $ocStressPeriodData = OcStressPeriodData::create()->addStressPeriod(OcStressPeriod::fromParams(0,0, ['save head', 'save drawdown']));
-        $commandBus->dispatch(UpdateCalculationPackageParameter::byUserWithModelId($calculationId, $ownerId, $baseModelId, 'oc', 'ocStressPeriodData', $ocStressPeriodData));
-        $commandBus->dispatch(CalculateModflowModelCalculation::byUserWithCalculationId($ownerId, $calculationId));
+
+        $commandBus->dispatch(UpdateModflowPackageParameter::byUserModelIdAndPackageData($ownerId, $baseModelId, PackageName::fromString('oc'), ParameterName::fromString('ocStressPeriodData'), $ocStressPeriodData));
+        $commandBus->dispatch(CalculateModflowModel::forModflowModel($ownerId, $baseModelId));
 
         /*
          * Create ScenarioAnalysis from BaseModel
@@ -518,7 +507,7 @@ class RioPrimero extends LoadScenarioBase
             $commandBus->dispatch(AddBoundary::to($scenarioId, $ownerId, $wellBoundary));
         }
 
-        $commandBus->dispatch(FinishEditingBoundaries::to($scenarioId, $ownerId));
+        $commandBus->dispatch(CalculateModflowModel::forModflowModel($ownerId, $baseModelId));
 
         /*
          * Begin add Scenario 1
@@ -568,6 +557,6 @@ class RioPrimero extends LoadScenarioBase
             $commandBus->dispatch(AddBoundary::to($scenarioId, $ownerId, $wellBoundary));
         }
 
-        $commandBus->dispatch(FinishEditingBoundaries::to($scenarioId, $ownerId));
+        $commandBus->dispatch(CalculateModflowModel::forModflowModel($ownerId, $scenarioId));
     }
 }

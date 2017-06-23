@@ -4,8 +4,6 @@ declare(strict_types=1);
 
 namespace Inowas\ModflowModel\Model\Handler;
 
-use Inowas\ModflowModel\Model\Command\UpdateBoundary;
-use Inowas\ModflowModel\Model\Command\UpdateLengthUnit;
 use Inowas\ModflowModel\Model\Command\UpdateTimeUnit;
 use Inowas\ModflowModel\Model\Exception\ModflowModelNotFoundException;
 use Inowas\ModflowModel\Model\Exception\WriteAccessFailedException;
@@ -35,8 +33,8 @@ final class UpdateTimeUnitHandler
             throw ModflowModelNotFoundException::withModelId($command->modelId());
         }
 
-        if (! $modflowModel->ownerId()->sameValueAs($command->userId())){
-            throw WriteAccessFailedException::withUserAndOwner($command->userId(), $modflowModel->ownerId());
+        if (! $modflowModel->userId()->sameValueAs($command->userId())){
+            throw WriteAccessFailedException::withUserAndOwner($command->userId(), $modflowModel->userId());
         }
 
         $modflowModel->updateTimeUnit($command->userId(), $command->timeUnit());

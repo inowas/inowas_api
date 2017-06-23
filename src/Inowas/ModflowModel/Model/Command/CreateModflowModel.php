@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Inowas\ModflowModel\Model\Command;
 
-use Inowas\Common\Boundaries\Area;
+use Inowas\Common\Geometry\Polygon;
 use Inowas\Common\Grid\GridSize;
 use Inowas\Common\Id\ModflowId;
 use Inowas\Common\Id\UserId;
@@ -12,6 +12,7 @@ use Inowas\Common\Modflow\LengthUnit;
 use Inowas\Common\Modflow\ModelDescription;
 use Inowas\Common\Modflow\ModelName;
 use Inowas\Common\Modflow\TimeUnit;
+use Inowas\Common\Soilmodel\SoilmodelId;
 use Prooph\Common\Messaging\Command;
 use Prooph\Common\Messaging\PayloadConstructable;
 use Prooph\Common\Messaging\PayloadTrait;
@@ -24,94 +25,25 @@ class CreateModflowModel extends Command implements PayloadConstructable
     /** @noinspection MoreThanThreeArgumentsInspection
      * @param UserId $userId
      * @param ModflowId $modelId
-     * @param Area $area
-     * @param GridSize $gridSize
-     * @return CreateModflowModel
-     */
-    public static function newWithId(UserId $userId, ModflowId $modelId, Area $area, GridSize $gridSize): CreateModflowModel
-    {
-        return new self(
-            [
-                'user_id' => $userId->toString(),
-                'modflowmodel_id' => $modelId->toString(),
-                'area' => serialize($area),
-                'grid_size' => $gridSize->toArray()
-            ]
-        );
-    }
-
-    /** @noinspection MoreThanThreeArgumentsInspection
-     * @param UserId $userId
-     * @param ModflowId $modelId
-     * @param Area $area
-     * @param GridSize $gridSize
-     * @param TimeUnit $timeUnit
-     * @param LengthUnit $lengthUnit
-     * @return CreateModflowModel
-     */
-    public static function newWithIdAndUnits(UserId $userId, ModflowId $modelId, Area $area, GridSize $gridSize, TimeUnit $timeUnit, LengthUnit $lengthUnit): CreateModflowModel
-    {
-        return new self(
-            [
-                'user_id' => $userId->toString(),
-                'modflowmodel_id' => $modelId->toString(),
-                'area' => serialize($area),
-                'grid_size' => $gridSize->toArray(),
-                'time_unit' => $timeUnit->toValue(),
-                'length_unit' => $lengthUnit->toValue()
-            ]
-        );
-    }
-
-    /** @noinspection MoreThanThreeArgumentsInspection
-     * @param UserId $userId
-     * @param ModflowId $modelId
      * @param ModelName $name
      * @param ModelDescription $description
-     * @param Area $area
+     * @param Polygon $polygon
      * @param GridSize $gridSize
      * @param TimeUnit $timeUnit
      * @param LengthUnit $lengthUnit
+     * @param SoilmodelId $soilmodelId
      * @return CreateModflowModel
      */
-    public static function newWithIdNameDescriptionAndUnits(UserId $userId, ModflowId $modelId, ModelName $name, ModelDescription $description, Area $area, GridSize $gridSize, TimeUnit $timeUnit, LengthUnit $lengthUnit): CreateModflowModel
-    {
-        return new self(
-            [
-                'user_id' => $userId->toString(),
-                'modflowmodel_id' => $modelId->toString(),
-                'name' => $name->toString(),
-                'description' => $description->toString(),
-                'area' => serialize($area),
-                'grid_size' => $gridSize->toArray(),
-                'time_unit' => $timeUnit->toValue(),
-                'length_unit' => $lengthUnit->toValue()
-            ]
-        );
-    }
-
-    /** @noinspection MoreThanThreeArgumentsInspection
-     * @param UserId $userId
-     * @param ModflowId $modelId
-     * @param ModelName $name
-     * @param ModelDescription $description
-     * @param Area $area
-     * @param GridSize $gridSize
-     * @param TimeUnit $timeUnit
-     * @param LengthUnit $lengthUnit
-     * @param ModflowId $calculationId
-     * @return CreateModflowModel
-     */
-    public static function newWithIdNameDescriptionUnitsAndCalculationId(
+    public static function newWithAllParams(
         UserId $userId,
         ModflowId $modelId,
         ModelName $name,
         ModelDescription $description,
-        Area $area,
+        Polygon $polygon,
         GridSize $gridSize,
         TimeUnit $timeUnit,
         LengthUnit $lengthUnit,
-        ModflowId $calculationId
+        SoilmodelId $soilmodelId
     ): CreateModflowModel
     {
         return new self(
@@ -120,11 +52,11 @@ class CreateModflowModel extends Command implements PayloadConstructable
                 'modflowmodel_id' => $modelId->toString(),
                 'name' => $name->toString(),
                 'description' => $description->toString(),
-                'area' => serialize($area),
+                'polygon' => $polygon->toJson(),
                 'grid_size' => $gridSize->toArray(),
                 'time_unit' => $timeUnit->toValue(),
                 'length_unit' => $lengthUnit->toValue(),
-                'calculation_id' => $calculationId->toString()
+                'soilmodel_id' => $soilmodelId->toString()
             ]
         );
     }
@@ -135,32 +67,24 @@ class CreateModflowModel extends Command implements PayloadConstructable
         return UserId::fromString($this->payload['user_id']);
     }
 
-    public function modflowModelId(): ModflowId
+    public function modelId(): ModflowId
     {
         return ModflowId::fromString($this->payload['modflowmodel_id']);
     }
 
     public function name(): ModelName
     {
-        if (array_key_exists('name', $this->payload)) {
-            return ModelName::fromString($this->payload['name']);
-        }
-
-        return ModelName::fromString('');
+        return ModelName::fromString($this->payload['name']);
     }
 
     public function description(): ModelDescription
     {
-        if (array_key_exists('description', $this->payload)) {
-            return ModelDescription::fromString($this->payload['description']);
-        }
-
-        return ModelDescription::fromString('');
+        return ModelDescription::fromString($this->payload['description']);
     }
 
-    public function area(): Area
+    public function polygon(): Polygon
     {
-        return unserialize($this->payload['area'], [Area::class]);
+        return Polygon::fromJson($this->payload['polygon']);
     }
 
     public function gridSize(): GridSize
@@ -170,28 +94,16 @@ class CreateModflowModel extends Command implements PayloadConstructable
 
     public function timeUnit(): TimeUnit
     {
-        if (! array_key_exists('time_unit', $this->payload)){
-            return TimeUnit::fromInt(TimeUnit::DAYS);
-        }
-
-        return TimeUnit::fromValue($this->payload['time_unit']);
+        return TimeUnit::fromInt(TimeUnit::DAYS);
     }
 
     public function lengthUnit(): LengthUnit
     {
-        if (! array_key_exists('length_unit', $this->payload)){
-            return LengthUnit::fromInt(LengthUnit::METERS);
-        }
-
-        return LengthUnit::fromValue($this->payload['length_unit']);
+        return LengthUnit::fromInt(LengthUnit::METERS);
     }
 
-    public function calculationId(): ?ModflowId
+    public function soilmodelId(): SoilmodelId
     {
-        if (! array_key_exists('calculation_id', $this->payload)){
-            return null;
-        }
-
-        return ModflowId::fromString($this->payload['calculation_id']);
+        return SoilmodelId::fromString($this->payload['soilmodel_id']);
     }
 }
