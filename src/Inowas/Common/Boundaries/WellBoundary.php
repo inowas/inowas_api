@@ -13,7 +13,7 @@ use Inowas\Common\Id\ObservationPointId;
 class WellBoundary extends AbstractBoundary
 {
 
-    const TYPE = 'well';
+    const TYPE = 'wel';
 
     /** @var  WellType */
     protected $wellType;
