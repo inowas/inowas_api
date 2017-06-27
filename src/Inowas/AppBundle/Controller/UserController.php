@@ -146,6 +146,6 @@ class UserController extends InowasRestController
 
         $this->get('fos_user.user_manager')->updateUser($user);
 
-        return new RedirectResponse($this->generateUrl('get_calculation_details'), 302);
+        return new RedirectResponse($this->generateUrl('get_user_profile'), 303);
     }
 }
