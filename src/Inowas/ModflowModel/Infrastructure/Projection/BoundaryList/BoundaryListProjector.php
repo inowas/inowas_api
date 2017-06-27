@@ -36,7 +36,7 @@ class BoundaryListProjector extends AbstractDoctrineConnectionProjector
         $table->addColumn('metadata', 'text', ['notnull' => false]);
         $table->addColumn('geometry', 'text', ['notnull' => false]);
         $table->addColumn('affected_layers', 'text', ['notnull' => false]);
-        $table->addColumn('observation_point_ids', 'text', ['notnull' => false]);
+        $table->addColumn('observation_point_ids', 'text', ['notnull' => false, 'default' => '[]']);
         $table->addIndex(array('model_id', 'boundary_id'));
         $this->addSchema($schema);
     }
@@ -101,8 +101,6 @@ class BoundaryListProjector extends AbstractDoctrineConnectionProjector
             'observation_point_ids' => json_encode($observationPointIds),
             'affected_layers' => json_encode($event->boundary()->affectedLayers()->toArray()),
         ));
-
-        return;
     }
 
     public function onBoundaryWasRemoved(BoundaryWasRemoved $event): void

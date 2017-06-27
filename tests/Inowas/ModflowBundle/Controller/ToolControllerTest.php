@@ -6,7 +6,6 @@ namespace Tests\Inowas\ModflowBundle\Controller;
 
 use FOS\UserBundle\Doctrine\UserManager;
 use Inowas\AppBundle\Model\User;
-use Inowas\Common\DateTime\DateTime;
 use Inowas\Common\Id\ModflowId;
 use Inowas\Common\Id\UserId;
 use Inowas\ScenarioAnalysis\Model\Command\CreateScenarioAnalysis;
@@ -78,11 +77,6 @@ class ToolControllerTest extends EventSourcingBaseTest
         $modelId = ModflowId::generate();
         $this->createModelWithSoilmodel($userId, $modelId);
 
-        $calculationId = ModflowId::generate();
-        $start = DateTime::fromDateTime(new \DateTime('2010-01-01'));
-        $end = DateTime::fromDateTime(new \DateTime('2015-01-01'));
-        $this->createCalculation($calculationId, $userId, $modelId, $start, $end);
-
         $scenarioAnalysisId = ScenarioAnalysisId::generate();
         $this->commandBus->dispatch(CreateScenarioAnalysis::byUserWithBaseModelNameAndDescription(
             $scenarioAnalysisId,
@@ -137,11 +131,6 @@ class ToolControllerTest extends EventSourcingBaseTest
         $modelId = ModflowId::generate();
         $this->createModelWithSoilmodel($userId, $modelId);
 
-        $calculationId = ModflowId::generate();
-        $start = DateTime::fromDateTime(new \DateTime('2010-01-01'));
-        $end = DateTime::fromDateTime(new \DateTime('2015-01-01'));
-        $this->createCalculation($calculationId, $userId, $modelId, $start, $end);
-
         $scenarioAnalysisId = ScenarioAnalysisId::generate();
         $this->commandBus->dispatch(CreateScenarioAnalysis::byUserWithBaseModelNameAndDescription(
             $scenarioAnalysisId,
@@ -193,11 +182,6 @@ class ToolControllerTest extends EventSourcingBaseTest
         $modelId = ModflowId::generate();
         $this->createModelWithSoilmodel($userId, $modelId);
 
-        $calculationId = ModflowId::generate();
-        $start = DateTime::fromDateTime(new \DateTime('2015-01-01'));
-        $end = DateTime::fromDateTime(new \DateTime('2015-01-31'));
-        $this->createCalculation($calculationId, $userId, $modelId, $start, $end);
-
         $scenarioAnalysisId = ScenarioAnalysisId::generate();
         $this->commandBus->dispatch(CreateScenarioAnalysis::byUserWithBaseModelNameAndDescription(
             $scenarioAnalysisId,
@@ -217,5 +201,7 @@ class ToolControllerTest extends EventSourcingBaseTest
         );
 
         $response = $client->getResponse();
+        $this->assertEquals(302, $response->getStatusCode());
+
     }
 }

@@ -14,3 +14,8 @@ services:
         class: Inowas\Soilmodel\Infrastructure\Projection\LayerDetails\LayerFinder
         arguments:
             - '@doctrine.dbal.default_connection'
+
+    inowas.soilmodel.soil_model_finder:
+        class: Inowas\Soilmodel\Infrastructure\Projection\SoilmodelList\SoilmodelFinder
+        arguments:
+            - '@doctrine.dbal.default_connection'

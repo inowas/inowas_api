@@ -30,17 +30,17 @@ class ModflowPackagesProcessManager
 
     public function onFlowPackageWasChanged(FlowPackageWasChanged $event): void
     {
-        $packages = $this->packagesManager->loadByModelId($event->modelId());
+        $packages = $this->packagesManager->getPackagesByModelId($event->modelId());
         $packages->changeFlowPackage($event->packageName());
-        $calculationId = $this->packagesManager->save($packages);
+        $calculationId = $this->packagesManager->savePackages($packages);
         $this->commandBus->dispatch(UpdateCalculationId::withId($event->modelId(), $calculationId));
     }
 
     public function onLengthUnitWasUpdated(LengthUnitWasUpdated $event): void
     {
-        $packages = $this->packagesManager->loadByModelId($event->modelId());
+        $packages = $this->packagesManager->getPackagesByModelId($event->modelId());
         $packages->updateLengthUnit($event->lengthUnit());
-        $calculationId = $this->packagesManager->save($packages);
+        $calculationId = $this->packagesManager->savePackages($packages);
         $this->commandBus->dispatch(UpdateCalculationId::withId($event->modelId(), $calculationId));
     }
 
@@ -58,29 +58,29 @@ class ModflowPackagesProcessManager
 
     public function onSoilModelWasChanged(SoilModelWasChanged $event): void
     {
-        $calculationId = $this->packagesManager->recalculateAfterSoilmodelWasChanged($event->modflowModelId(), $event->soilModelId());
+        $calculationId = $this->packagesManager->recalculateSoilmodel($event->modflowModelId(), $event->soilModelId());
         $this->commandBus->dispatch(UpdateCalculationId::withId($event->modflowModelId(), $calculationId));
     }
 
     public function onStressPeriodsWereUpdated(StressPeriodsWereUpdated $event): void
     {
-        $calculationId = $this->packagesManager->recalculateAfterStressperiodsWereChanged($event->modelId(), $event->stressPeriods());
+        $calculationId = $this->packagesManager->recalculateStressperiods($event->modelId(), $event->stressPeriods());
         $this->commandBus->dispatch(UpdateCalculationId::withId($event->modelId(), $calculationId));
     }
 
     public function onTimeUnitWasUpdated(TimeUnitWasUpdated $event): void
     {
-        $packages = $this->packagesManager->loadByModelId($event->modelId());
+        $packages = $this->packagesManager->getPackagesByModelId($event->modelId());
         $packages->updateTimeUnit($event->timeUnit());
-        $calculationId = $this->packagesManager->save($packages);
+        $calculationId = $this->packagesManager->savePackages($packages);
         $this->commandBus->dispatch(UpdateCalculationId::withId($event->modelId(), $calculationId));
     }
 
     public function onModflowPackageParameterWasUpdated(ModflowPackageParameterWasUpdated $event): void
     {
-        $packages = $this->packagesManager->loadByModelId($event->modelId());
+        $packages = $this->packagesManager->getPackagesByModelId($event->modelId());
         $packages->updatePackageParameter($event->packageName()->toString(), $event->parameterName()->toString(), $event->parameterData());
-        $calculationId = $this->packagesManager->save($packages);
+        $calculationId = $this->packagesManager->savePackages($packages);
         $this->commandBus->dispatch(UpdateCalculationId::withId($event->modelId(), $calculationId));
     }
 }

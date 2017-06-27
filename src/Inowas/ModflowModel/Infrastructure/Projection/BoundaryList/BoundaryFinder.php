@@ -318,8 +318,14 @@ class BoundaryFinder
             return null;
         }
 
-        $result['observation_points'] = [];
-        foreach ($result['observation_point_ids'] as $observationPointId){
+        $observationPointIds = json_decode($result['observation_point_ids']);
+
+        if (! is_array($observationPointIds)) {
+            return null;
+        }
+
+        $observationPoints = [];
+        foreach ($observationPointIds as $observationPointId) {
 
             $observationPointId = ObservationPointId::fromString($observationPointId);
             $opResult = $this->getBoundaryObservationPointDetails($modelId, $boundaryId, $observationPointId);
@@ -328,8 +334,12 @@ class BoundaryFinder
                 continue;
             }
 
-            $result['observation_points'] = $opResult;
+            $observationPoints[] = $opResult;
         }
+
+        $result['geometry'] = json_decode($result['geometry'], true);
+        $result['metadata'] = json_decode($result['metadata'], true);
+        $result['observation_points'] = $observationPoints;
 
         unset($result['observation_point_ids']);
         return $result;

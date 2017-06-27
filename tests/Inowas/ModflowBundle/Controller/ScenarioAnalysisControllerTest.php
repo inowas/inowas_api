@@ -66,7 +66,7 @@ class ScenarioAnalysisControllerTest extends EventSourcingBaseTest
 
         $modelId = ModflowId::generate();
         $this->createModelWithSoilmodel($userId, $modelId);
-        $this->addStressperiods($userId, $modelId);
+        $this->addSteadyStressperiod($userId, $modelId);
 
         $scenarioAnalysisId = ScenarioAnalysisId::generate();
         $this->commandBus->dispatch(CreateScenarioAnalysis::byUserWithBaseModelNameAndDescription(
@@ -119,7 +119,7 @@ class ScenarioAnalysisControllerTest extends EventSourcingBaseTest
 
         $modelId = ModflowId::generate();
         $this->createModelWithSoilmodel($userId, $modelId);
-        $this->addStressperiods($userId, $modelId);
+        $this->addSteadyStressperiod($userId, $modelId);
 
         $scenarioAnalysisId = ScenarioAnalysisId::generate();
         $this->commandBus->dispatch(CreateScenarioAnalysis::byUserWithBaseModelNameAndDescription(
@@ -169,11 +169,11 @@ class ScenarioAnalysisControllerTest extends EventSourcingBaseTest
 
         $modelId = ModflowId::generate();
         $this->createModelWithSoilmodel($userId, $modelId);
-        $this->addStressperiods($userId, $modelId);
+        $this->addSteadyStressperiod($userId, $modelId);
 
         $this->commandBus->dispatch(ChangeName::forModflowModel($userId, $modelId, ModelName::fromString('TestModel')));
         $this->commandBus->dispatch(ChangeDescription::forModflowModel($userId, $modelId, ModelDescription::fromString('TestModelDescription')));
-        $this->addStressperiods($userId, $modelId);
+        $this->addSteadyStressperiod($userId, $modelId);
 
         $scenarioAnalysisId = ScenarioAnalysisId::generate();
         $this->commandBus->dispatch(CreateScenarioAnalysis::byUserWithBaseModelNameAndDescription(
@@ -194,8 +194,6 @@ class ScenarioAnalysisControllerTest extends EventSourcingBaseTest
             ModelDescription::fromString('TestScenarioDescription')
         ));
 
-        $scenarioCalculationId = ModflowId::generate();
-        $this->commandBus->dispatch(CalculateModflowModel::forModflowModel($userId, $scenarioId));
 
         $client = static::createClient();
         $client->request(
@@ -207,7 +205,7 @@ class ScenarioAnalysisControllerTest extends EventSourcingBaseTest
         );
 
         $response = $client->getResponse();
-        dump($response->getContent());
+
         $this->assertEquals(200, $response->getStatusCode());
         $saDetails = json_decode($response->getContent(), true);
 
@@ -231,7 +229,7 @@ class ScenarioAnalysisControllerTest extends EventSourcingBaseTest
         $this->assertEquals($scenarioId->toString(), $saDetails['scenarios'][0]['id']);
         $this->assertEquals('TestScenarioName', $saDetails['scenarios'][0]['name']);
         $this->assertEquals('TestScenarioDescription', $saDetails['scenarios'][0]['description']);
-        $this->assertEquals($scenarioCalculationId->toString(), $saDetails['scenarios'][0]['calculation_id']);
+        $this->assertTrue(array_key_exists('calculation_id', $saDetails['scenarios'][0]));
         $this->assertTrue(array_key_exists('created_at', $saDetails));
         $this->assertTrue(array_key_exists('public', $saDetails));
     }
@@ -249,7 +247,7 @@ class ScenarioAnalysisControllerTest extends EventSourcingBaseTest
         $this->commandBus->dispatch(AddBoundary::to($modelId, $userId, $this->createRechargeBoundary()));
         $this->commandBus->dispatch(AddBoundary::to($modelId, $userId, $this->createRiverBoundaryWithObservationPoint()));
         $this->commandBus->dispatch(AddBoundary::to($modelId, $userId, $this->createWellBoundary()));
-        $this->addStressperiods($userId, $modelId);
+        $this->addSteadyStressperiod($userId, $modelId);
 
         $scenarioAnalysisId = ScenarioAnalysisId::generate();
         $this->commandBus->dispatch(CreateScenarioAnalysis::byUserWithBaseModelNameAndDescription(

@@ -55,9 +55,9 @@ final class CalculateModflowModelHandler
             throw WriteAccessFailedException::withUserAndOwner($command->userId(), $modflowModel->userId());
         }
 
-        $calculationId = $this->packagesManager->recalculateModelAndSave($modflowModel->modflowModelId());
+        $calculationId = $this->packagesManager->recalculate($modflowModel->modflowModelId());
         $modflowModel->updateCalculationId($calculationId);
-        $packages = $this->packagesManager->load($calculationId);
+        $packages = $this->packagesManager->getPackages($calculationId);
 
         $request = CalculationRequest::fromParams($command->modflowModelId(), $calculationId, $packages);
         $this->calculator->calculate($request);

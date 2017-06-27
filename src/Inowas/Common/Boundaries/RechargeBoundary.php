@@ -27,8 +27,7 @@ class RechargeBoundary extends AbstractBoundary
         Geometry $geometry
     ): RechargeBoundary
     {
-        $self = new self($boundaryId, $name, $geometry);
-        return $self;
+        return new self($boundaryId, $name, $geometry);
     }
 
     public function addRecharge(RechargeDateTimeValue $rechargeRate): RechargeBoundary

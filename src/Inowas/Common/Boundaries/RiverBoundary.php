@@ -15,9 +15,6 @@ class RiverBoundary extends AbstractBoundary
 
     const TYPE = 'riv';
 
-    /** @var  array */
-    protected $observationPoints = [];
-
     public static function create(BoundaryId $boundaryId): RiverBoundary
     {
         return new self($boundaryId);
@@ -29,8 +26,7 @@ class RiverBoundary extends AbstractBoundary
         Geometry $geometry
     ): RiverBoundary
     {
-        $self = new self($boundaryId, $name, $geometry);
-        return $self;
+        return new self($boundaryId, $name, $geometry);
     }
 
     public function addObservationPoint(ObservationPoint $point): RiverBoundary

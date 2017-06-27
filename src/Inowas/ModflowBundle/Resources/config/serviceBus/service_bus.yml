@@ -13,7 +13,7 @@ prooph_service_bus:
                     'Inowas\ModflowModel\Model\Command\ChangeBoundingBox': '@inowas.modflowmodel.change_bounding_box_handler'
                     'Inowas\ModflowModel\Model\Command\ChangeDescription': '@inowas.modflowmodel.change_description_handler'
                     'Inowas\ModflowModel\Model\Command\ChangeFlowPackage': '@inowas.modflowmodel.change_flow_package_handler'
-                    'Inowas\ModflowModel\Model\Command\ChangeModflowModelGridSize': '@inowas.modflowmodel.change_grid_size_handler'
+                    'Inowas\ModflowModel\Model\Command\ChangeGridSize': '@inowas.modflowmodel.change_grid_size_handler'
                     'Inowas\ModflowModel\Model\Command\ChangeName': '@inowas.modflowmodel.change_name_handler'
                     'Inowas\ModflowModel\Model\Command\ChangeSoilmodelId': '@inowas.modflowmodel.change_soilmodel_id_handler'
                     'Inowas\ModflowModel\Model\Command\CloneModflowModel': '@inowas.modflowmodel.clone_modflow_model_handler'
@@ -140,6 +140,7 @@ prooph_service_bus:
                         - '@inowas.modflowmodel.boundary_active_cells_projector'
                         - '@inowas.modflowmodel.boundary_list_projector'
                         - '@inowas.modflowmodel.boundary_observation_points_projector'
+                        - '@inowas.modflowmodel.clone_modflow_model_process_manager'
                         - '@inowas.modflowmodel.model_projector'
                         - '@inowas.modflowmodel.modflow_packages_process_manager'
 

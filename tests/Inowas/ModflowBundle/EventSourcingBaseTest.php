@@ -48,6 +48,7 @@ use Inowas\Common\Soilmodel\SpecificStorage;
 use Inowas\Common\Soilmodel\SpecificYield;
 use Inowas\Common\Soilmodel\TopElevation;
 use Inowas\Common\Soilmodel\VerticalHydraulicConductivity;
+use Inowas\ModflowModel\Model\AMQP\CalculationRequest;
 use Inowas\ModflowModel\Model\Command\ChangeBoundingBox;
 use Inowas\ModflowModel\Model\Command\CreateModflowModel;
 use Inowas\ModflowBundle\Command\ModflowEventStoreTruncateCommand;
@@ -181,7 +182,28 @@ abstract class EventSourcingBaseTest extends WebTestCase
         $box = $this->container->get('inowas.geotools.geotools_service')->projectBoundingBox(BoundingBox::fromCoordinates(-63.687336, -63.569260, -31.367449, -31.313615, 4326), Srid::fromInt(4326));
         $boundingBox = BoundingBox::fromEPSG4326Coordinates($box->xMin(), $box->xMax(), $box->yMin(), $box->yMax(), $box->dX(), $box->dY());
         $this->commandBus->dispatch(ChangeBoundingBox::forModflowModel($ownerId, $modelId, $boundingBox));
-        $this->addStressperiods($ownerId, $modelId);
+        $this->addSteadyStressperiod($ownerId, $modelId);
+    }
+
+    protected function createSteadyCalculation(UserId $ownerId, ModflowId $modelId): void
+    {
+        $stressPeriods = StressPeriods::create(
+            DateTime::fromDateTime(new \DateTime('2015-01-01')),
+            DateTime::fromDateTime(new \DateTime('2015-01-31')),
+            TimeUnit::fromInt(TimeUnit::DAYS)
+        );
+
+        $stressPeriods->addStressPeriod(StressPeriod::create(0, 365, 1, 1, true));
+        $this->commandBus->dispatch(UpdateStressPeriods::of($ownerId, $modelId, $stressPeriods));
+    }
+
+    protected function recalculateAndCreateJsonCalculationRequest(ModflowId $modelId): string
+    {
+        $packagesManager = $this->container->get('inowas.modflowmodel.modflow_packages_manager');
+        $calculationId = $packagesManager->recalculate($modelId);
+        $packages = $packagesManager->getPackages($calculationId);
+        $request = CalculationRequest::fromParams($modelId, $calculationId, $packages);
+        return json_encode($request);
     }
 
     protected function createArea(): Area
@@ -200,6 +222,17 @@ abstract class EventSourcingBaseTest extends WebTestCase
         );
 
         return $area;
+    }
+
+    protected function createPolygon(): Polygon
+    {
+        return new Polygon([[
+            [-63.65, -31.31],
+            [-63.65, -31.36],
+            [-63.58, -31.36],
+            [-63.58, -31.31],
+            [-63.65, -31.31]
+        ]], 4326);
     }
 
     protected function createConstantHeadBoundaryWithObservationPoint(): ConstantHeadBoundary
@@ -433,7 +466,29 @@ abstract class EventSourcingBaseTest extends WebTestCase
         $this->commandBus->dispatch(CreateScenario::byUserWithBaseModelAndScenarioIdAndName($id, $owner, $modelId, $scenarioId, $name, $description));
     }
 
-    protected function addStressperiods(UserId $user, ModflowId $modelId): void
+    protected function createModelWithName(UserId $userId, ModflowId $modelId): void
+    {
+        $modelName = ModelName::fromString('TestModel444');
+        $modelDescription = ModelDescription::fromString('TestModelDescription444');
+
+        $polygon = $this->createPolygon();
+        $gridSize = GridSize::fromXY(75, 40);
+        $this->commandBus->dispatch(
+            CreateModflowModel::newWithAllParams(
+                $userId,
+                $modelId,
+                $modelName,
+                $modelDescription,
+                $polygon,
+                $gridSize,
+                TimeUnit::fromInt(1),
+                LengthUnit::fromInt(2),
+                SoilmodelId::generate()
+            )
+        );
+    }
+
+    protected function addSteadyStressperiod(UserId $user, ModflowId $modelId): void
     {
         $start = DateTime::fromDateTime(new \DateTime('2015-01-01'));
         $end = DateTime::fromDateTime(new \DateTime('2015-12-31'));

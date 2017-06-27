@@ -41,17 +41,10 @@ class ModflowPackagesManager
         $this->soilmodelManager = $soilmodelManager;
     }
 
-    public function load(CalculationId $calculationId): ModflowPackages
+    public function createFromDefaultsAndSave(): CalculationId
     {
-        return $this->modflowPackagePersister->load($calculationId);
-    }
-
-    public function loadByModelId(ModflowId $modelId): ModflowPackages
-    {
-        /** @var ModflowModelAggregate $model */
-        $model = $this->modflowModelList->get($modelId);
-        $calculationId = $model->calculationId();
-        return $this->modflowPackagePersister->load($calculationId);
+        $packages = ModflowPackages::createFromDefaults();
+        return $this->savePackages($packages);
     }
 
     public function getCalculationId(ModflowId $modelId): CalculationId
@@ -61,31 +54,39 @@ class ModflowPackagesManager
         return $model->calculationId();
     }
 
-    public function save(ModflowPackages $packages): CalculationId
+    public function getPackages(CalculationId $calculationId): ModflowPackages
     {
-        return $this->modflowPackagePersister->save($packages);
+        return $this->modflowPackagePersister->load($calculationId);
     }
 
-    public function createFromDefaultsAndSave(): CalculationId
+    public function getPackagesByModelId(ModflowId $modelId): ModflowPackages
     {
-        $packages = ModflowPackages::createFromDefaults();
-        return $this->save($packages);
+        /** @var ModflowModelAggregate $model */
+        $model = $this->modflowModelList->get($modelId);
+        $calculationId = $model->calculationId();
+        return $this->modflowPackagePersister->load($calculationId);
     }
 
-    public function recalculateModelAndSave(ModflowId $modelId): CalculationId
+    public function recalculateBoundaries(ModflowId $modelId): CalculationId
+    {
+        $stressPeriods = $this->modflowModelManager->getStressPeriodsByModelId($modelId);
+        return $this->recalculateStressperiods($modelId, $stressPeriods);
+    }
+
+    public function recalculate(ModflowId $modelId): CalculationId
     {
         /** @var ModflowModelAggregate $model */
         $model = $this->modflowModelList->get($modelId);
         $calculationId = $model->calculationId();
         $packages = $this->modflowPackagePersister->load($calculationId);
         $packages = $this->calculateAllPackages($modelId, $packages);
-        return $this->save($packages);
+        return $this->savePackages($packages);
     }
 
-    public function recalculateAfterSoilmodelWasChanged(ModflowId $modelId, SoilmodelId $soilmodelId): CalculationId
+    public function recalculateSoilmodel(ModflowId $modelId, SoilmodelId $soilmodelId): CalculationId
     {
 
-        $packages = $this->loadByModelId($modelId);
+        $packages = $this->getPackagesByModelId($modelId);
 
         /*
          * Add PackageDetails for DisPackage
@@ -156,12 +157,12 @@ class ModflowPackagesManager
             $packages->updatePackageParameter('upw', 'vkcb', $this->soilmodelManager->getVkcb($soilmodelId));
         }
 
-        return $this->save($packages);
+        return $this->savePackages($packages);
     }
 
-    public function recalculateAfterStressperiodsWereChanged(ModflowId $modelId, StressPeriods $stressPeriods): CalculationId
+    public function recalculateStressperiods(ModflowId $modelId, StressPeriods $stressPeriods): CalculationId
     {
-        $packages = $this->loadByModelId($modelId);
+        $packages = $this->getPackagesByModelId($modelId);
         $packages->updateStartDateTime($stressPeriods->start());
         $packages->updateTimeUnit($stressPeriods->timeUnit());
 
@@ -211,13 +212,12 @@ class ModflowPackagesManager
             $packages->updatePackageParameter('chd', 'StressPeriodData', $chdStressPeriodData);
         }
 
-        return $this->save($packages);
+        return $this->savePackages($packages);
     }
 
-    public function recalculateAfterBoundariesWereChanged(ModflowId $modelId): CalculationId
+    public function savePackages(ModflowPackages $packages): CalculationId
     {
-        $stressPeriods = $this->modflowModelManager->getStressPeriodsByModelId($modelId);
-        return $this->recalculateAfterStressperiodsWereChanged($modelId, $stressPeriods);
+        return $this->modflowPackagePersister->save($packages);
     }
 
     private function calculateAllPackages(ModflowId $modelId, ModflowPackages $packages): ModflowPackages
@@ -298,7 +298,7 @@ class ModflowPackagesManager
         }
 
         /*
-         * Add PackageDetails for LpfPackage if set
+         * Add PackageDetails for UpwPackage if set
          */
         if ($packages->flowPackageName() === 'upw') {
             $packages->updatePackageParameter('upw', 'laytyp', $this->soilmodelManager->getLaytyp($soilmodelId));

@@ -310,6 +310,11 @@ class ModflowPackages implements \JsonSerializable
         return $packageData;
     }
 
+    public function isSelected(PackageName $name): bool
+    {
+        return $this->packageIsSelected($name->toString());
+    }
+
     private function addPackage(PackageInterface $package): void
     {
         $this->packages[$package->type()] = $package;
@@ -331,7 +336,7 @@ class ModflowPackages implements \JsonSerializable
         if (! $this->packageIsAvailable($packageName)) {
             throw InvalidPackageNameException::withName($packageName, $this->availablePackages);
         }
-        
+
         $class = $this->availablePackages[$packageName];
         $this->addPackage($class::fromDefaults());
         $this->selectedPackages[] = $packageName;
