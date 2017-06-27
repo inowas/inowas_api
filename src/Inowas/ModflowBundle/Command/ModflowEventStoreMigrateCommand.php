@@ -6,7 +6,6 @@ namespace Inowas\ModflowBundle\Command;
 
 use Inowas\Common\Id\UserId;
 use Inowas\ModflowBundle\DataFixtures\Scenarios\Hanoi\Hanoi;
-use Inowas\ModflowBundle\DataFixtures\Scenarios\Hanoi\HanoiBaseModelOnly;
 use Inowas\ModflowBundle\DataFixtures\Scenarios\RioPrimero\RioPrimero;
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 use Symfony\Component\Console\Input\InputArgument;
@@ -36,24 +35,17 @@ class ModflowEventStoreMigrateCommand extends ContainerAwareCommand
 
         if (null === $modelname){
             $output->writeln('Possible Arguments are:');
-            $output->writeln('1 or HanoiBaseModel for the Hanoi BaseModel');
-            $output->writeln('2 or Hanoi for the hanoi-modflow-model');
-            $output->writeln('3 or Rio Primero for the hanoi-modflow-model');
+            $output->writeln('1 or Hanoi for the hanoi-modflow-model');
+            $output->writeln('2 or Rio Primero for the hanoi-modflow-model');
         }
 
-        if ($modelname === 'Hanoi Basemodel only' || (int)$modelname === 1) {
-            $hanoi = new HanoiBaseModelOnly();
-            $hanoi->setContainer($this->getContainer());
-            $hanoi->load();
-        }
-
-        if ($modelname === 'Hanoi Basemodel with Scenarios' || (int)$modelname === 2) {
+        if ($modelname === 'Hanoi Basemodel with Scenarios' || (int)$modelname === 1) {
             $hanoi = new Hanoi();
             $hanoi->setContainer($this->getContainer());
             $hanoi->load();
         }
 
-        if ($modelname === 'Rio Primero' || (int)$modelname === 3) {
+        if ($modelname === 'Rio Primero' || (int)$modelname === 2) {
             $rioPrimero = new RioPrimero();
             $rioPrimero->setContainer($this->getContainer());
             $rioPrimero->load();
