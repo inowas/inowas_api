@@ -59,6 +59,8 @@ final class CalculateModflowModelHandler
         $modflowModel->updateCalculationId($calculationId);
         $packages = $this->packagesManager->getPackages($calculationId);
 
+
+
         $request = CalculationRequest::fromParams($command->modflowModelId(), $calculationId, $packages);
         $this->calculator->calculate($request);
         $modflowModel->calculationWasStarted($calculationId);

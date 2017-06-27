@@ -75,7 +75,6 @@ class ModelProjector extends AbstractDoctrineConnectionProjector
         );
     }
 
-
     public function onCalculationIdWasChanged(CalculationIdWasChanged $event): void
     {
         $this->connection->update(Table::MODFLOWMODELS_LIST, array(
@@ -99,6 +98,14 @@ class ModelProjector extends AbstractDoctrineConnectionProjector
             'grid_size' => json_encode($event->gridSize())
         ),
             array('model_id' => $event->modflowId()->toString())
+        );
+    }
+
+    public function onLengthUnitWasUpdated(LengthUnitWasUpdated $event): void
+    {
+        $this->connection->update(Table::MODFLOWMODELS_LIST,
+            array('length_unit' => $event->lengthUnit()->toInt()),
+            array('model_id' => $event->modelId()->toString())
         );
     }
 
@@ -152,11 +159,11 @@ class ModelProjector extends AbstractDoctrineConnectionProjector
         }
     }
 
-    public function onLengthUnitWasUpdated(LengthUnitWasUpdated $event): void
+    public function onNameWasChanged(NameWasChanged $event): void
     {
         $this->connection->update(Table::MODFLOWMODELS_LIST,
-            array('length_unit' => $event->lengthUnit()->toInt()),
-            array('model_id' => $event->modelId()->toString())
+            array('name' => $event->name()->toString()),
+            array('model_id' => $event->modflowId()->toString())
         );
     }
 
@@ -165,14 +172,6 @@ class ModelProjector extends AbstractDoctrineConnectionProjector
         $this->connection->update(Table::MODFLOWMODELS_LIST,
             array('time_unit' => $event->timeUnit()->toInt()),
             array('model_id' => $event->modelId()->toString())
-        );
-    }
-
-    public function onNameWasChanged(NameWasChanged $event): void
-    {
-        $this->connection->update(Table::MODFLOWMODELS_LIST,
-            array('name' => $event->name()->toString()),
-            array('model_id' => $event->modflowId()->toString())
         );
     }
 

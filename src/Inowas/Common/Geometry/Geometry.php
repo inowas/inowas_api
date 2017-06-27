@@ -89,7 +89,7 @@ class Geometry implements \JsonSerializable
             return false;
         }
 
-        if (! in_array(strtolower($arr['type']), self::$availableTypes)) {
+        if (! in_array(strtolower($arr['type']), self::$availableTypes, true)) {
             return false;
         }
 
@@ -104,7 +104,7 @@ class Geometry implements \JsonSerializable
         return true;
     }
 
-    public function toArray()
+    public function toArray(): array
     {
         return [
             'type' => $this->geometry->getType(),
@@ -113,7 +113,7 @@ class Geometry implements \JsonSerializable
         ];
     }
 
-    public function toJson()
+    public function toJson():string
     {
         return $this->geometry->toJson();
     }

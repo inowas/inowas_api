@@ -333,7 +333,7 @@ class ModflowModelAggregate extends AggregateRoot
 
     public function updateCalculationId(CalculationId $calculationId): void
     {
-        if (! $this->calculationId->toString() !== $calculationId->toString()){
+        if ($this->calculationId->toString() !== $calculationId->toString()){
             $this->calculationId = $calculationId;
             $this->recordThat(CalculationIdWasChanged::withId($this->modelId, $calculationId));
         }
