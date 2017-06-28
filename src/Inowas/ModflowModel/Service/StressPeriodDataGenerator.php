@@ -184,7 +184,7 @@ class StressPeriodDataGenerator
                 $totim = TotalTime::fromInt($stressperiod->totimStart());
                 $sp = $stressPeriods->spNumberFromTotim($totim);
 
-                $cells = $activeCells->fullArray();
+                $cells = $activeCells->to2DArray();
                 $rechargeValue = $rchBoundary->findValueByDateTime($this->calculateDateTimeFromTotim($startTime, $totim, $timeUnit));
                 $rech = [];
                 foreach ($cells as $rowKey => $row){

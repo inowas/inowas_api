@@ -10,7 +10,7 @@ class ActiveCells
      * Represents an 2D-Array of the active cells of a layer
      * @var array
      */
-    private $layerData = [];
+    private $layerData;
 
     /**
      * Represents the number of columns
@@ -45,11 +45,12 @@ class ActiveCells
         return new self($layerData, $layers, $gridSize);
     }
 
-    public static function fromFullArray(array $arr): ActiveCells
+    public static function from2DArray(array $arr): ActiveCells
     {
         $gridSize = GridSize::fromXY(count($arr), count($arr[0]));
         return new self($arr, [0], $gridSize);
     }
+
 
     public static function fromArray(array $arr): ActiveCells
     {
@@ -88,7 +89,6 @@ class ActiveCells
         {
             $this->nx = $gridSize->nX();
             $this->ny = $gridSize->nY();
-
         }
 
         $this->layers = $layers;
@@ -141,7 +141,7 @@ class ActiveCells
         return AffectedLayers::fromArray($this->layers);
     }
 
-    public function fullArray(): array
+    public function to2DArray(): array
     {
         $cells = [];
         for ($iR=0; $iR<$this->ny; $iR++){
@@ -153,7 +153,7 @@ class ActiveCells
 
         foreach ($this->layerData as $row => $cols){
             foreach ($cols as $col => $value){
-                $cells[intval($row)][intval($col)] = $value;
+                $cells[(int)$row][(int)$col] = $value;
             }
         }
 

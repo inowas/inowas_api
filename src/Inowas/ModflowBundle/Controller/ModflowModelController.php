@@ -500,7 +500,7 @@ class ModflowModelController extends InowasRestController
             ));
         }
 
-        return new JsonResponse(['active_cells' => $activeCells->fullArray()]);
+        return new JsonResponse(['active_cells' => $activeCells->to2DArray()]);
     }
 
     /**
@@ -530,7 +530,7 @@ class ModflowModelController extends InowasRestController
         $content = $this->getContentAsArray($request);
         $this->assertContainsKey('active_cells', $content);
 
-        $activeCells = ActiveCells::fromFullArray($content['active_cells']);
+        $activeCells = ActiveCells::from2DArray($content['active_cells']);
         $this->get('prooph_service_bus.modflow_command_bus')->dispatch(UpdateActiveCells::ofModelArea($userId, $modelId, $activeCells));
 
         return new RedirectResponse(
