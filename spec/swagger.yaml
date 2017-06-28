@@ -201,6 +201,31 @@ paths:
         - api_key: []
 
   # Modflow Calculation
+  /calculations/{id}:
+      get:
+        tags:
+          - "calculation"
+        summary: "Get calculation times by calculation id"
+        description: "Returns the startDate, endDate and a list of total times by calculationId"
+        operationId: "getCalculationTimesById"
+        produces:
+          - "application/json"
+        parameters:
+          - name: "id"
+            in: "path"
+            description: "Id of Calculation to return"
+            required: true
+            type: "string"
+        responses:
+          '200':
+            description: "successful operation"
+            schema:
+              $ref: '#/definitions/CalculationDetails'
+          '404':
+            description: "Calculation not found"
+        security:
+        - api_key: []
+
   /calculations/{id}/results/times:
     get:
       tags:
@@ -687,44 +712,6 @@ paths:
       security:
         - api_key: []
 
-  /modflowmodels/{id}/soilmodel:
-    put:
-      tags:
-        - "modflowmodel"
-      summary: "Updates the soilmodelId of a modflowModel"
-      description: "Updates the soilmodelId of a modflowModel"
-      operationId: "updateModflowModelSoilmodelId"
-      consumes:
-        - "application/json"
-      produces:
-        - "application/json"
-      parameters:
-        - name: "id"
-          in: "path"
-          description: "Id of ModflowModel to update"
-          required: true
-          type: "string"
-        - in: "body"
-          name: "body"
-          description: "SoilmodelId"
-          required: true
-          schema:
-            type: "object"
-            properties:
-              soilmodel_id:
-                type: "string"
-                example: "03f5a3e6-04c0-4fda-bfd4-b48d571cd233"
-      responses:
-        '303':
-          description: "Redirect response to GET /modflowmodels/{id}"
-          headers:
-            Location:
-              type: "string"
-        '422':
-          description: "Invalid input"
-      security:
-        - api_key: []
-
   /modflowmodels/{id}/lengthunit:
       put:
         tags:
@@ -852,14 +839,14 @@ paths:
       security:
         - api_key: []
 
-  # ModflowModel Calculation
-  /modflowmodels/{id}/calculation:
+  # ModflowModel Soilmodel
+  /modflowmodels/{id}/soilmodel:
     get:
       tags:
         - "modflowmodel"
-      summary: "Returns details of the last calculation by modflowModelId"
-      description: ''
-      operationId: "modflowModelCalculation"
+      summary: "Returns details of the soilmodel of a modflowModel"
+      description: "Returns details of the soilmodel of a modflowModel"
+      operationId: "getModflowModelSoilmodel"
       produces:
         - "application/json"
       parameters:
@@ -869,12 +856,36 @@ paths:
           required: true
           type: "string"
       responses:
-        '200':
-          description: "successful operation"
-          schema:
-            type: "array"
-            items:
-              $ref: '#/definitions/CalculationDetails'
+        '302':
+          description: "Redirect response to GET /soilmodels/{soilmodelId}"
+          headers:
+            Location:
+              type: "string"
+      security:
+        - api_key: []
+
+  # ModflowModel Calculation
+  /modflowmodels/{id}/calculation:
+    get:
+      tags:
+        - "modflowmodel"
+      summary: "Returns details of the last calculation by modflowModelId"
+      description: "Returns details of the last calculation by modflowModelId"
+      operationId: "getModflowModelCalculation"
+      produces:
+        - "application/json"
+      parameters:
+        - name: "id"
+          in: "path"
+          description: "Id of ModflowModel"
+          required: true
+          type: "string"
+      responses:
+        '302':
+          description: "Redirect response to GET /calculations/{calculationId}"
+          headers:
+            Location:
+              type: "string"
       security:
         - api_key: []
 

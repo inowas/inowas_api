@@ -23,6 +23,11 @@ rest_project_api:
     resource: '@InowasModflowBundle/Controller/ToolController.php'
     prefix:    /v2
 
+rest_soilmodel_api:
+    type: rest
+    resource: '@InowasModflowBundle/Controller/SoilmodelController.php'
+    prefix:    /v2
+
 rest_scenario_analysis_api:
     type: rest
     resource: '@InowasModflowBundle/Controller/ScenarioAnalysisController.php'

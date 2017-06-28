@@ -399,42 +399,6 @@ class ModflowModelController extends InowasRestController
     }
 
     /**
-     * Update soilmodelId of modflow model by id.
-     *
-     * @ApiDoc(
-     *   resource = true,
-     *   description = "Update soilmodelId of modflow model by id.",
-     *   statusCodes = {
-     *     200 = "Returned when successful"
-     *   }
-     * )
-     *
-     * @param Request $request
-     * @param string $id
-     * @Rest\Put("/modflowmodels/{id}/soilmodel")
-     * @return RedirectResponse
-     * @throws \Prooph\ServiceBus\Exception\CommandDispatchException
-     * @throws \InvalidArgumentException
-     */
-    public function putSoilModelIdAction(Request $request, string $id): RedirectResponse
-    {
-        $userId = $this->getUserId();
-        $this->assertUuidIsValid($id);
-        $modelId = ModflowId::fromString($id);
-
-        $content = $this->getContentAsArray($request);
-        $this->assertContainsKey('soilmodel_id', $content);
-
-        $soilmodelId = SoilmodelId::fromString($content['soilmodel_id']);
-        $this->get('prooph_service_bus.modflow_command_bus')->dispatch(ChangeSoilmodelId::forModflowModel($userId, $modelId, $soilmodelId));
-
-        return new RedirectResponse(
-            $this->generateUrl('get_modflow_model', array('id' => $modelId->toString())),
-            303
-        );
-    }
-
-    /**
      * Update lengthUnit of modflowModel by id.
      *
      * @ApiDoc(
@@ -471,7 +435,8 @@ class ModflowModelController extends InowasRestController
         );
     }
 
-    # Active Cells can be changed
+
+    /* Active Cells */
     /**
      * Get ActiveCells of modflow model by id.
      *
@@ -539,6 +504,7 @@ class ModflowModelController extends InowasRestController
         );
     }
 
+    /* Calculation */
     /**
      * Calculate the model.
      *
@@ -576,6 +542,7 @@ class ModflowModelController extends InowasRestController
 
         return $response;
     }
+
     /**
      * Get details of last calculation of modflow model by id.
      *
@@ -589,23 +556,89 @@ class ModflowModelController extends InowasRestController
      *
      * @param string $id
      * @Rest\Get("/modflowmodels/{id}/calculation")
-     * @return JsonResponse
+     * @return RedirectResponse
+     * @throws \InvalidArgumentException
      * @throws NotFoundException
      */
-    public function getModflowModelCalculationAction(string $id): JsonResponse
+    public function getModflowModelCalculationAction(string $id): RedirectResponse
     {
         $this->assertUuidIsValid($id);
         $modelId = ModflowId::fromString($id);
-
         $calculationId = $this->get('inowas.modflowmodel.model_finder')->getCalculationIdByModelId($modelId);
-        $calculationDetails = $this->get('inowas.modflowmodel.calculation_results_finder')->getCalculationDetailsById($calculationId);
 
-        if (! is_array($calculationDetails)) {
-            throw NotFoundException::withMessage(sprintf(
-                'ModflowModel with id: \'%s\' not found.', $modelId->toString()
-            ));
-        }
+        return new RedirectResponse(
+            $this->generateUrl('get_calculation_details', array('id' => $calculationId->toString())),
+            302
+        );
+    }
 
-        return new JsonResponse($calculationDetails);
+    /* Soilmodel */
+    /**
+     * Get soilmodel details of modflowModel by id.
+     *
+     * @ApiDoc(
+     *   resource = true,
+     *   description = "Get soilmodel details of modflowModel by id.",
+     *   statusCodes = {
+     *     200 = "Returned when successful"
+     *   }
+     * )
+     *
+     * @param string $id
+     * @Rest\Get("/modflowmodels/{id}/soilmodel")
+     * @return RedirectResponse
+     * @throws \Symfony\Component\DependencyInjection\Exception\ServiceNotFoundException
+     * @throws \Symfony\Component\DependencyInjection\Exception\ServiceCircularReferenceException
+     * @throws \Prooph\ServiceBus\Exception\CommandDispatchException
+     * @throws \InvalidArgumentException
+     */
+    public function getSoilModelAction(string $id): RedirectResponse
+    {
+        $userId = $this->getUserId();
+        $this->assertUuidIsValid($id);
+        $modelId = ModflowId::fromString($id);
+
+        $soilmodelId = $this->container->get('inowas.modflowmodel.model_finder')->getSoilmodelIdByModelId($modelId);
+
+        return new RedirectResponse(
+            $this->generateUrl('get_soilmodel', array('id' => $soilmodelId->toString())),
+            302
+        );
+    }
+
+    /**
+     * Update soilmodelId of modflow model by id.
+     *
+     * @ApiDoc(
+     *   resource = true,
+     *   description = "Update soilmodelId of modflow model by id.",
+     *   statusCodes = {
+     *     200 = "Returned when successful"
+     *   }
+     * )
+     *
+     * @param Request $request
+     * @param string $id
+     * @Rest\Put("/modflowmodels/{id}/soilmodel")
+     * @return RedirectResponse
+     * @throws \Prooph\ServiceBus\Exception\CommandDispatchException
+     * @throws \InvalidArgumentException
+     */
+    public function putSoilModelIdAction(Request $request, string $id): RedirectResponse
+    {
+        $userId = $this->getUserId();
+        $this->assertUuidIsValid($id);
+        $modelId = ModflowId::fromString($id);
+
+        $content = $this->getContentAsArray($request);
+        $this->assertContainsKey('soilmodel_id', $content);
+
+        $soilmodelId = SoilmodelId::fromString($content['soilmodel_id']);
+        $this->get('prooph_service_bus.modflow_command_bus')->dispatch(ChangeSoilmodelId::forModflowModel($userId, $modelId, $soilmodelId));
+
+        return new RedirectResponse(
+            $this->generateUrl('get_modflow_model', array('id' => $modelId->toString())),
+            303
+        );
     }
 }

@@ -24,6 +24,34 @@ class ModflowCalculationController extends InowasRestController
 {
 
     /**
+     * Get details of last calculation of modflow model by id.
+     *
+     * @ApiDoc(
+     *   resource = true,
+     *   description = "Get details of last calculation of modflow model by id.",
+     *   statusCodes = {
+     *     200 = "Returned when successful"
+     *   }
+     * )
+     *
+     * @param string $id
+     * @Rest\Get("/calculations/{id}")
+     * @return JsonResponse
+     * @throws NotFoundException
+     */
+    public function getCalculationDetailsAction(string $id): JsonResponse
+    {
+        $calculationId = CalculationId::fromString($id);
+        $calculationDetails = $this->get('inowas.modflowmodel.calculation_results_finder')->getCalculationDetailsById($calculationId);
+
+        if (! is_array($calculationDetails)) {
+            throw NotFoundException::withMessage(sprintf('Calculation with id: \'%s\' not found.', $id));
+        }
+
+        return new JsonResponse($calculationDetails);
+    }
+
+    /**
      * Get calculation result times by calculationId.
      *
      * @ApiDoc(

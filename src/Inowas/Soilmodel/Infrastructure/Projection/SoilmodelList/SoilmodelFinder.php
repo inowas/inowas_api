@@ -3,6 +3,7 @@
 namespace Inowas\Soilmodel\Infrastructure\Projection\SoilmodelList;
 
 use Doctrine\DBAL\Connection;
+use Inowas\Common\Soilmodel\SoilmodelId;
 use Inowas\Soilmodel\Infrastructure\Projection\Table;
 
 class SoilmodelFinder
@@ -23,4 +24,19 @@ class SoilmodelFinder
 
         return (int)$result['count'];
     }
+
+
+    public function getDetailsBySoilmodelId(SoilmodelId $id): ?array
+    {
+
+        /* Todo: Implement this */
+
+        $result = $this->connection->fetchAssoc(
+            sprintf('SELECT count(*) FROM %s;', Table::SOILMODEL_LIST)
+        );
+
+        return array();
+    }
+
+
 }
