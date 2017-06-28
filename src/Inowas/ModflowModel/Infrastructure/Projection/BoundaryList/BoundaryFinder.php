@@ -310,7 +310,7 @@ class BoundaryFinder
     public function getBoundaryDetails(ModflowId $modelId, BoundaryId $boundaryId): ?array
     {
         $result = $this->connection->fetchAssoc(
-            sprintf('SELECT boundary_id AS id, name AS name, type AS type, geometry as geometry, metadata as metadata, observation_point_ids as observation_point_ids FROM %s WHERE model_id = :model_id AND boundary_id = :boundary_id', Table::BOUNDARY_LIST),
+            sprintf('SELECT boundary_id AS id, name AS name, type AS type, affected_layers, geometry as geometry, metadata as metadata, observation_point_ids as observation_point_ids FROM %s WHERE model_id = :model_id AND boundary_id = :boundary_id', Table::BOUNDARY_LIST),
             ['model_id' => $modelId->toString(), 'boundary_id' => $boundaryId->toString()]
         );
 
@@ -337,6 +337,7 @@ class BoundaryFinder
             $observationPoints[] = $opResult;
         }
 
+        $result['affected_layers'] = json_decode($result['affected_layers']);
         $result['geometry'] = json_decode($result['geometry'], true);
         $result['metadata'] = json_decode($result['metadata'], true);
         $result['observation_points'] = $observationPoints;

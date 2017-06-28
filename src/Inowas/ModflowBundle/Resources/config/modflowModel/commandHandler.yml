@@ -92,6 +92,7 @@ services:
         class: Inowas\ModflowModel\Model\Handler\UpdateActiveCellsHandler
         arguments:
           - '@modflow_model_list'
+          - '@inowas.modflowmodel.boundary_finder'
 
     inowas.modflowmodel.update_boundary_affected_layers_handler:
         class: Inowas\ModflowModel\Model\Handler\UpdateBoundaryAffectedLayersHandler

@@ -556,14 +556,12 @@ paths:
           description: "Invalid input"
       security:
         - api_key: []
-
-  /modflowmodels/{id}/name:
-    put:
+    delete:
       tags:
         - "modflowmodel"
-      summary: "Updates the name of an existing ModflowModel"
-      description: "Updates the name of an existing ModflowModel"
-      operationId: "updateModflowModelName"
+      summary: "Updates the modflowmodel in one call"
+      description: "Updates the modflowmodel-details in one call, parameter are not obligatory"
+      operationId: "updateModflowModel"
       consumes:
         - "application/json"
       parameters:
@@ -572,298 +570,9 @@ paths:
           description: "ID of ModflowModel"
           required: true
           type: "string"
-        - in: "body"
-          name: "body"
-          description: "ModflowModelName"
-          required: true
-          schema:
-            type: "object"
-            properties:
-              name:
-                type: "string"
-                example: "The name of the model"
       responses:
-        '303':
-          description: "Redirect response to GET /modflowmodels/{id}"
-          headers:
-            Location:
-              type: "string"
-        '422':
-          description: "Invalid input"
-      security:
-        - api_key: []
-
-  /modflowmodels/{id}/description:
-    put:
-      tags:
-        - "modflowmodel"
-      summary: "Updates the description of an existing ModflowModel"
-      description: "Updates the name of an existing ModflowModel"
-      operationId: "updateModflowModelDescription"
-      consumes:
-        - "application/json"
-      produces:
-        - "application/json"
-      parameters:
-        - name: "id"
-          in: "path"
-          description: "Id of ModflowModel to update"
-          required: true
-          type: "string"
-        - in: "body"
-          name: "body"
-          description: "ModflowModelDescription"
-          required: true
-          schema:
-            type: "object"
-            properties:
-              description:
-                type: "string"
-                example: "The description of the model"
-      responses:
-        '303':
-          description: "Redirect response to GET /modflowmodels/{id}"
-          headers:
-            Location:
-              type: "string"
-        '422':
-          description: "Invalid input"
-      security:
-        - api_key: []
-
-  /modflowmodels/{id}/geometry:
-    put:
-      tags:
-        - "modflowmodel"
-      summary: "Updates the area geometry of a modflowmodel by modflowmodel id"
-      description: "Updates the area geometry of a modflowmodel by modflowmodel id"
-      operationId: "updateModflowModelGeometry"
-      consumes:
-        - "application/json"
-      produces:
-        - "application/json"
-      parameters:
-        - name: "id"
-          in: "path"
-          description: "Id of ModflowModel to update"
-          required: true
-          type: "string"
-        - in: "body"
-          name: "body"
-          description: "AreaGeometry"
-          required: true
-          schema:
-            type: "object"
-            properties:
-              geometry:
-                $ref: "#/definitions/PolygonGeometry"
-      responses:
-        '303':
-          description: "Redirect response to GET /modflowmodels/{id}"
-          headers:
-            Location:
-              type: "string"
-        '422':
-          description: "Invalid input"
-      security:
-        - api_key: []
-
-  /modflowmodels/{id}/boundingbox:
-    put:
-      tags:
-        - "modflowmodel"
-      summary: "Updates the boundingBox of a modflowModel"
-      description: "Updates the boundingBox of a modflowModel"
-      operationId: "updateModflowModelBoundingBox"
-      consumes:
-        - "application/json"
-      produces:
-        - "application/json"
-      parameters:
-        - name: "id"
-          in: "path"
-          description: "Id of ModflowModel to update"
-          required: true
-          type: "string"
-        - in: "body"
-          name: "body"
-          description: "BoundingBox"
-          required: true
-          schema:
-            type: "object"
-            properties:
-              bounding_box:
-                $ref: "#/definitions/BoundingBox"
-      responses:
-        '303':
-          description: "Redirect response to GET /modflowmodels/{id}"
-          headers:
-            Location:
-              type: "string"
-        '422':
-          description: "Invalid input"
-      security:
-        - api_key: []
-
-  /modflowmodels/{id}/gridsize:
-    put:
-      tags:
-        - "modflowmodel"
-      summary: "Updates the gridSize of a modflowModel"
-      description: "Updates the gridSize of a modflowModel"
-      operationId: "updateModflowModelGridSize"
-      consumes:
-        - "application/json"
-      produces:
-        - "application/json"
-      parameters:
-        - name: "id"
-          in: "path"
-          description: "Id of ModflowModel to update"
-          required: true
-          type: "string"
-        - in: "body"
-          name: "body"
-          description: "Gridsize"
-          required: true
-          schema:
-            type: "object"
-            properties:
-              grid_size:
-                $ref: "#/definitions/GridSize"
-      responses:
-        '303':
-          description: "Redirect response to GET /modflowmodels/{id}"
-          headers:
-            Location:
-              type: "string"
-        '422':
-          description: "Invalid input"
-      security:
-        - api_key: []
-
-  /modflowmodels/{id}/lengthunit:
-      put:
-        tags:
-          - "modflowmodel"
-        summary: "Updates the lengthUnit of a modflowModel"
-        description: "Updates the lengthUnit of a modflowModel"
-        operationId: "updateModflowModelLengthUnit"
-        consumes:
-          - "application/json"
-        produces:
-          - "application/json"
-        parameters:
-          - name: "id"
-            in: "path"
-            description: "Id of ModflowModel to update"
-            required: true
-            type: "string"
-          - in: "body"
-            name: "body"
-            description: "SoilmodelId"
-            required: true
-            schema:
-              type: "object"
-              properties:
-                length_unit:
-                  $ref: '#/definitions/LengthUnit'
-        responses:
-          '303':
-            description: "Redirect response to GET /modflowmodels/{id}"
-            headers:
-              Location:
-                type: "string"
-          '422':
-            description: "Invalid input"
-        security:
-          - api_key: []
-
-  /modflowmodels/{id}/timeunit:
-    put:
-      tags:
-        - "modflowmodel"
-      summary: "Updates the timeUnit of a modflowModel"
-      description: "Updates the timeUnit of a modflowModel"
-      operationId: "updateModflowModelTimeUnit"
-      consumes:
-        - "application/json"
-      produces:
-        - "application/json"
-      parameters:
-        - name: "id"
-          in: "path"
-          description: "Id of ModflowModel to update"
-          required: true
-          type: "string"
-        - in: "body"
-          name: "body"
-          description: "SoilmodelId"
-          required: true
-          schema:
-            type: "object"
-            properties:
-              time_unit:
-                $ref: '#/definitions/TimeUnit'
-      responses:
-        '303':
-          description: "Redirect response to GET /modflowmodels/{id}"
-          headers:
-            Location:
-              type: "string"
-        '422':
-          description: "Invalid input"
-      security:
-        - api_key: []
-
-  /modflowmodels/{id}/activecells:
-    get:
-      tags:
-        - "modflowmodel"
-      summary: "Returns the active cells of the model"
-      description: ''
-      operationId: "getModflowModelActiveCells"
-      produces:
-        - "application/json"
-      parameters:
-        - name: "id"
-          in: "path"
-          description: "Id of ModflowModel"
-          required: true
-          type: "string"
-      responses:
-        '200':
-          description: "successful operation"
-          schema:
-            $ref: '#/definitions/ModelActiveCells'
-      security:
-        - api_key: []
-    put:
-      tags:
-        - "modflowmodel"
-      summary: "Update activeCells with modflowModelId"
-      description: "Updates the activeCells the model area."
-      operationId: "updateModflowModelActiveCells"
-      consumes:
-        - "application/json"
-      parameters:
-        - name: "id"
-          in: "path"
-          description: "ID of ModflowModel"
-          required: true
-          type: "string"
-        - in: "body"
-          name: "body"
-          description: "Boundary activeCells"
-          required: true
-          schema:
-            $ref: '#/definitions/ModelActiveCells'
-      responses:
-        '303':
-          description: "Redirect response to GET /modflowmodels/{id}/activecells"
-          headers:
-            Location:
-              type: "string"
+        '201':
+          description: "Successful operation"
         '422':
           description: "Invalid input"
       security:
@@ -1032,6 +741,40 @@ paths:
           description: "Boundary not found"
       security:
         - api_key: []
+    put:
+      tags:
+        - "modflowmodel"
+      summary: "Update boundary details"
+      description: "Update boundary details"
+      operationId: "updateModflowModelBoundary"
+      consumes:
+        - "application/json"
+      produces:
+        - "application/json"
+      parameters:
+        - name: "id"
+          in: "path"
+          description: "ID of ModflowModel"
+          required: true
+          type: "string"
+        - name: "bid"
+          in: "path"
+          description: "ID of ModflowModelBoundary"
+          required: true
+          type: "string"
+        - in: "body"
+          name: "body"
+          description: "Boundary details"
+          required: true
+          schema:
+            $ref: '#/definitions/ModflowModelBoundarySubmitDetails'
+      responses:
+        '303':
+          description: "Redirect to GET /modflowmodels/{id}/boundaries/{bid}"
+        '404':
+          description: "Boundary not found"
+      security:
+        - api_key: []
 
   /modflowmodels/{id}/boundaries/{bid}/activecells:
     get:
@@ -1107,37 +850,6 @@ paths:
         - api_key: []
 
   /modflowmodels/{id}/boundaries/{bid}/affectedlayers:
-    get:
-      tags:
-        - "modflowmodel"
-      summary: "Get affectedLayers by modelId and BoundaryId"
-      description: "Returns the affectedLayers"
-      operationId: "getModflowModelAffectedLayers"
-      produces:
-        - "application/json"
-      parameters:
-        - name: "id"
-          in: "path"
-          description: "ID of ModflowModel"
-          required: true
-          type: "string"
-        - name: "bid"
-          in: "path"
-          description: "ID of ModflowModelBoundary"
-          required: true
-          type: "string"
-      responses:
-        '200':
-          description: "successful operation"
-          schema:
-            type: "object"
-            properties:
-              affected_layers:
-                $ref: '#/definitions/AffectedLayers'
-        '404':
-          description: "Boundary not found"
-      security:
-        - api_key: []
     put:
       tags:
         - "modflowmodel"
@@ -1170,7 +882,7 @@ paths:
                 $ref: '#/definitions/AffectedLayers'
       responses:
         '302':
-          description: "Redirect response"
+          description: "Redirect to GET /modflowmodels/{id}/boundaries/{bid}"
           headers:
             Location:
               type: "string"
@@ -1180,37 +892,6 @@ paths:
         - api_key: []
 
   /modflowmodels/{id}/boundaries/{bid}/geometry:
-    get:
-      tags:
-        - "modflowmodel"
-      summary: "Get boundaryGeometry by modelId and BoundaryId"
-      description: "Returns the boundaryGeometry"
-      operationId: "getModflowModelBoundaryGeometry"
-      produces:
-        - "application/json"
-      parameters:
-        - name: "id"
-          in: "path"
-          description: "ID of ModflowModel"
-          required: true
-          type: "string"
-        - name: "bid"
-          in: "path"
-          description: "ID of ModflowModelBoundary"
-          required: true
-          type: "string"
-      responses:
-        '200':
-          description: "successful operation"
-          schema:
-            type: "object"
-            properties:
-              geometry:
-                $ref: '#/definitions/Geometry'
-        '404':
-          description: "Boundary not found"
-      security:
-        - api_key: []
     put:
       tags:
         - "modflowmodel"
@@ -1243,7 +924,7 @@ paths:
                 $ref: '#/definitions/Geometry'
       responses:
         '302':
-          description: "Redirect response"
+          description: "Redirect to GET /modflowmodels/{id}/boundaries/{bid}"
           headers:
             Location:
               type: "string"
@@ -1253,38 +934,6 @@ paths:
         - api_key: []
 
   /modflowmodels/{id}/boundaries/{bid}/name:
-    get:
-      tags:
-        - "modflowmodel"
-      summary: "Get boundaryName by modelId and BoundaryId"
-      description: "Returns the boundaryName"
-      operationId: "getModflowModelBoundaryName"
-      produces:
-        - "application/json"
-      parameters:
-        - name: "id"
-          in: "path"
-          description: "ID of ModflowModel"
-          required: true
-          type: "string"
-        - name: "bid"
-          in: "path"
-          description: "ID of ModflowModelBoundary"
-          required: true
-          type: "string"
-      responses:
-        '200':
-          description: "successful operation"
-          schema:
-            type: "object"
-            properties:
-              name:
-                $ref: '#/definitions/BoundaryName'
-
-        '404':
-          description: "Boundary not found"
-      security:
-        - api_key: []
     put:
       tags:
         - "modflowmodel"
@@ -1317,7 +966,7 @@ paths:
                 $ref: '#/definitions/BoundaryName'
       responses:
         '302':
-          description: "Redirect response"
+          description: "Redirect to GET /modflowmodels/{id}/boundaries/{bid}"
           headers:
             Location:
               type: "string"
@@ -1397,13 +1046,35 @@ paths:
           description: "ID of ModflowModelBoundaryObservationpoint"
           required: true
           type: "string"
+    delete:
+      tags:
+        - "modflowmodel"
+      summary: "Delete observationpoint from boundary."
+      description: "Delete observationpoint from boundary."
+      operationId: "deleteModflowModelBoundaryObservationPoint"
+      produces:
+        - "application/json"
+      parameters:
+        - name: "id"
+          in: "path"
+          description: "ID of ModflowModel"
+          required: true
+          type: "string"
+        - name: "bid"
+          in: "path"
+          description: "ID of ModflowModelBoundary"
+          required: true
+          type: "string"
+        - name: "oid"
+          in: "path"
+          description: "ID of ModflowModelBoundaryObservationpoint"
+          required: true
+          type: "string"
       responses:
-        '200':
-          description: "successful operation"
-          schema:
-            $ref: '#/definitions/ModflowModelBoundaryObservationPoint'
+        '201':
+          description: "Successful operation"
         '404':
-          description: "ObservationPoint not found"
+          description: "Not found"
         '422':
           description: "Invalid input"
       security:
@@ -3259,6 +2930,8 @@ definitions:
         example: "ModflowModel of Hanoi Area 2005-2007"
       geometry:
         $ref: '#/definitions/PolygonGeometry'
+      active_cells:
+        $ref: '#/definitions/ModelActiveCells'
       length_unit:
         $ref: '#/definitions/LengthUnit'
       time_unit:
@@ -3290,6 +2963,8 @@ definitions:
         example: "ModflowModel of Hanoi Area 2005-2007"
       geometry:
         $ref: '#/definitions/PolygonGeometry'
+      active_cells:
+        $ref: '#/definitions/ModelActiveCells'
       length_unit:
         $ref: '#/definitions/LengthUnit'
       time_unit:
@@ -3298,6 +2973,7 @@ definitions:
         $ref: '#/definitions/GridSize'
       bounding_box:
         $ref: '#/definitions/BoundingBox'
+
   ModflowModelListItem:
     title: "ModflowModelListItem"
     type: "object"
@@ -3342,8 +3018,6 @@ definitions:
         $ref: '#/definitions/BoundaryType'
       geometry:
         $ref: '#/definitions/Geometry'
-      affected_layers:
-        $ref: '#/definitions/AffectedLayers'
       metadata:
         $ref: '#/definitions/MetaData'
   ModflowModelBoundarySubmitItem:
@@ -3383,6 +3057,19 @@ definitions:
         type: "array"
         items:
           $ref: '#/definitions/ModflowModelBoundaryObservationPoint'
+  ModflowModelBoundarySubmitDetails:
+    title: "ModflowModelBoundaryDetails"
+    type: "object"
+    properties:
+      name:
+        type: "string"
+        example: "Well 123"
+      geometry:
+        $ref: '#/definitions/Geometry'
+      affected_layers:
+        $ref: '#/definitions/AffectedLayers'
+      metadata:
+        $ref: '#/definitions/MetaData'
   ModflowModelBoundaryObservationPoint:
     title: "ModflowModelBoundaryObservationPoint"
     type: "object"

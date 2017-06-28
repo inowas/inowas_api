@@ -70,7 +70,7 @@ class UpdateActiveCells extends Command implements PayloadConstructable
         return ActiveCells::fromArray($this->payload['active_cells']);
     }
 
-    public function isArea(): bool
+    public function isModelArea(): bool
     {
         return $this->modelId()->sameValueAs($this->boundaryId());
     }

@@ -32,6 +32,7 @@ use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
+/** @noinspection LongInheritanceChainInspection */
 class ModflowModelBoundaryController extends InowasRestController
 {
     /**
@@ -64,16 +65,13 @@ class ModflowModelBoundaryController extends InowasRestController
             ));
         }
 
-        $response = array();
-        foreach ($boundaries as $boundary){
-            $response[] = [
-                'id' => $boundary['id'],
-                'name' => $boundary['name'],
-                'type' => $boundary['type'],
-                'geometry' => json_decode($boundary['geometry']),
-                'affected_layers' => json_decode($boundary['affected_layers']),
-                'metadata' => json_decode($boundary['metadata'])
-            ];
+        $response = [];
+        foreach ($boundaries as $boundary) {
+            $boundary['geometry'] = json_decode($boundary['geometry']);
+            $boundary['affected_layers'] = json_decode($boundary['affected_layers']);
+            $boundary['metadata'] = json_decode($boundary['metadata']);
+
+            $response[] = $boundary;
         }
 
         return new JsonResponse($response);

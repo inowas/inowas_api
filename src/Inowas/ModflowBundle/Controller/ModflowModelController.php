@@ -23,6 +23,7 @@ use Inowas\ModflowModel\Model\Command\ChangeGridSize;
 use Inowas\ModflowModel\Model\Command\ChangeName;
 use Inowas\ModflowModel\Model\Command\ChangeSoilmodelId;
 use Inowas\ModflowModel\Model\Command\CreateModflowModel;
+use Inowas\ModflowModel\Model\Command\DeleteModflowModel;
 use Inowas\ModflowModel\Model\Command\UpdateAreaGeometry;
 use Inowas\ModflowModel\Model\Command\UpdateActiveCells;
 use Inowas\ModflowModel\Model\Command\UpdateLengthUnit;
@@ -82,8 +83,6 @@ class ModflowModelController extends InowasRestController
     }
 
     # MODEL-CREATION AND MODIFICATION
-    # A put request for all ModelDetails could be added
-
     /**
      * Create and add a new modflow model
      *
@@ -242,345 +241,44 @@ class ModflowModelController extends InowasRestController
             $this->get('prooph_service_bus.modflow_command_bus')->dispatch(ChangeSoilmodelId::forModflowModel($userId, $modelId, $soilmodelId));
         }
 
-        return new RedirectResponse(
-            $this->generateUrl('get_modflow_model', array('id' => $modelId->toString())),
-            303
-        );
-    }
-
-    /**
-     * Update name of modflow model by id.
-     *
-     * @ApiDoc(
-     *   resource = true,
-     *   description = "Update name of modflow model by id.",
-     *   statusCodes = {
-     *     200 = "Returned when successful"
-     *   }
-     * )
-     *
-     * @param Request $request
-     * @param string $id
-     * @Rest\Put("/modflowmodels/{id}/name")
-     * @return RedirectResponse|Response
-     * @throws \Prooph\ServiceBus\Exception\CommandDispatchException
-     * @throws \InvalidArgumentException
-     */
-    public function putModflowModelNameAction(Request $request, string $id): RedirectResponse
-    {
-        $userId = $this->getUserId();
-
-        $this->assertUuidIsValid($id);
-        $modelId = ModflowId::fromString($id);
-
-        $content = $this->getContentAsArray($request);
-        $this->assertContainsKey('name', $content);
-        $name = ModelName::fromString($content['name']);
-
-        $this->get('prooph_service_bus.modflow_command_bus')->dispatch(ChangeName::forModflowModel($userId, $modelId, $name));
-
-        return new RedirectResponse(
-            $this->generateUrl('get_modflow_model', array('id' => $modelId->toString())),
-            303
-        );
-    }
-
-    /**
-     * Update description of modflow model by id.
-     *
-     * @ApiDoc(
-     *   resource = true,
-     *   description = "Update description of modflow model by id.",
-     *   statusCodes = {
-     *     200 = "Returned when successful"
-     *   }
-     * )
-     *
-     * @param Request $request
-     * @param string $id
-     * @return RedirectResponse|Response
-     * @throws \Prooph\ServiceBus\Exception\CommandDispatchException
-     * @throws \InvalidArgumentException
-     * @Rest\Put("/modflowmodels/{id}/description")
-     */
-    public function putModflowModelDescriptionAction(Request $request, string $id): RedirectResponse
-    {
-        $userId = $this->getUserId();
-
-        $this->assertUuidIsValid($id);
-        $modelId = ModflowId::fromString($id);
-
-        $content = $this->getContentAsArray($request);
-        $this->assertContainsKey('description', $content);
-        $description = ModelDescription::fromString($content['description']);
-
-        $this->get('prooph_service_bus.modflow_command_bus')->dispatch(ChangeDescription::forModflowModel($userId, $modelId, $description));
-
-        return new RedirectResponse(
-            $this->generateUrl('get_modflow_model', array('id' => $modelId->toString())),
-            303
-        );
-    }
-
-    /**
-     * Update area geometry of modflow model by id.
-     *
-     * @ApiDoc(
-     *   resource = true,
-     *   description = "Update area geometry of modflow model by id.",
-     *   statusCodes = {
-     *     200 = "Returned when successful"
-     *   }
-     * )
-     *
-     * @param Request $request
-     * @param string $id
-     * @Rest\Put("/modflowmodels/{id}/geometry")
-     * @return RedirectResponse
-     * @throws \Prooph\ServiceBus\Exception\CommandDispatchException
-     * @throws \InvalidArgumentException
-     */
-    public function putModflowModelGeometryAction(Request $request, string $id): RedirectResponse
-    {
-        $userId = $this->getUserId();
-
-        $this->assertUuidIsValid($id);
-        $modelId = ModflowId::fromString($id);
-
-        $content = $this->getContentAsArray($request);
-        $this->assertContainsKey('geometry', $content);
-        $this->assertGeometryIsValid($content['geometry']);
-
-        $polygon = new Polygon($content['geometry']['coordinates']);
-        $this->get('prooph_service_bus.modflow_command_bus')->dispatch(UpdateAreaGeometry::of($userId, $modelId, $polygon));
-
-        return new RedirectResponse(
-            $this->generateUrl('get_modflow_model', array('id' => $modelId->toString())),
-            303
-        );
-    }
-
-    /**
-     * Update boundingBox of modflow model by id.
-     *
-     * @ApiDoc(
-     *   resource = true,
-     *   description = "Update boundingBox of modflow model by id.",
-     *   statusCodes = {
-     *     200 = "Returned when successful"
-     *   }
-     * )
-     *
-     * @param Request $request
-     * @param string $id
-     * @Rest\Put("/modflowmodels/{id}/boundingbox")
-     * @return RedirectResponse
-     * @throws \Prooph\ServiceBus\Exception\CommandDispatchException
-     * @throws \InvalidArgumentException
-     */
-    public function putModflowModelBoundingBoxAction(Request $request, string $id): RedirectResponse
-    {
-        $userId = $this->getUserId();
-
-        $this->assertUuidIsValid($id);
-        $modelId = ModflowId::fromString($id);
-
-        $content = $this->getContentAsArray($request);
-        $this->assertContainsKey('bounding_box', $content);
-
-        $boundingBox = BoundingBox::fromCoordinates(
-            $content['bounding_box']['x_min'],
-            $content['bounding_box']['x_max'],
-            $content['bounding_box']['y_min'],
-            $content['bounding_box']['y_max'],
-            4326
-        );
-
-        $this->get('prooph_service_bus.modflow_command_bus')->dispatch(ChangeBoundingBox::forModflowModel($userId, $modelId, $boundingBox));
-
-        return new RedirectResponse(
-            $this->generateUrl('get_modflow_model', array('id' => $modelId->toString())),
-            303
-        );
-    }
-
-    /**
-     * Update gridSize of modflow model by id.
-     *
-     * @ApiDoc(
-     *   resource = true,
-     *   description = "Update gridSize of modflow model by id.",
-     *   statusCodes = {
-     *     200 = "Returned when successful"
-     *   }
-     * )
-     *
-     * @param Request $request
-     * @param string $id
-     * @Rest\Put("/modflowmodels/{id}/gridsize")
-     * @return RedirectResponse
-     * @throws \Prooph\ServiceBus\Exception\CommandDispatchException
-     * @throws \InvalidArgumentException
-     */
-    public function putModflowModelGridSizeAction(Request $request, string $id): RedirectResponse
-    {
-        $userId = $this->getUserId();
-        $this->assertUuidIsValid($id);
-        $modelId = ModflowId::fromString($id);
-
-        $content = $this->getContentAsArray($request);
-        $this->assertContainsKey('grid_size', $content);
-
-        $gridSize = GridSize::fromXY($content['grid_size']['n_x'], $content['grid_size']['n_y']);
-        $this->get('prooph_service_bus.modflow_command_bus')->dispatch(ChangeGridSize::forModflowModel($userId, $modelId, $gridSize));
-
-        return new RedirectResponse(
-            $this->generateUrl('get_modflow_model', array('id' => $modelId->toString())),
-            303
-        );
-    }
-
-    /**
-     * Update timeUnit of modflowModel by id.
-     *
-     * @ApiDoc(
-     *   resource = true,
-     *   description = "Update timeUnit of modflowModel by id.",
-     *   statusCodes = {
-     *     200 = "Returned when successful"
-     *   }
-     * )
-     *
-     * @param Request $request
-     * @param string $id
-     * @Rest\Put("/modflowmodels/{id}/lengthunit")
-     * @return RedirectResponse
-     * @throws \Prooph\ServiceBus\Exception\CommandDispatchException
-     * @throws \InvalidArgumentException
-     */
-    public function putLengthUnitAction(Request $request, string $id): RedirectResponse
-    {
-        $userId = $this->getUserId();
-
-        $this->assertUuidIsValid($id);
-        $modelId = ModflowId::fromString($id);
-
-        $content = $this->getContentAsArray($request);
-        $this->assertContainsKey('length_unit', $content);
-
-        $lengthUnit = LengthUnit::fromInt((int)$content['length_unit']);
-
-        $this->get('prooph_service_bus.modflow_command_bus')->dispatch(UpdateLengthUnit::byUserAndModel($userId, $modelId, $lengthUnit));
-
-        return new RedirectResponse(
-            $this->generateUrl('get_modflow_model', array('id' => $modelId->toString())),
-            303
-        );
-    }
-
-    /**
-     * Update timeUnit of modflowModel by id.
-     *
-     * @ApiDoc(
-     *   resource = true,
-     *   description = "Update timeUnit of modflowModel by id.",
-     *   statusCodes = {
-     *     200 = "Returned when successful"
-     *   }
-     * )
-     *
-     * @param Request $request
-     * @param string $id
-     * @Rest\Put("/modflowmodels/{id}/timeunit")
-     * @return RedirectResponse
-     * @throws \Prooph\ServiceBus\Exception\CommandDispatchException
-     * @throws \InvalidArgumentException
-     */
-    public function putTimeUnitAction(Request $request, string $id): RedirectResponse
-    {
-        $userId = $this->getUserId();
-
-        $this->assertUuidIsValid($id);
-        $modelId = ModflowId::fromString($id);
-
-        $content = $this->getContentAsArray($request);
-        $this->assertContainsKey('time_unit', $content);
-
-        $timeUnit = TimeUnit::fromInt((int)$content['time_unit']);
-        $this->get('prooph_service_bus.modflow_command_bus')->dispatch(UpdateTimeUnit::byUserAndModel($userId, $modelId, $timeUnit));
-
-        return new RedirectResponse(
-            $this->generateUrl('get_modflow_model', array('id' => $modelId->toString())),
-            303
-        );
-    }
-
-    /* Active Cells */
-    /**
-     * Get ActiveCells of modflow model by id.
-     *
-     * @ApiDoc(
-     *   resource = true,
-     *   description = "Get ActiveCells of modflow model by id.",
-     *   statusCodes = {
-     *     200 = "Returned when successful"
-     *   }
-     * )
-     *
-     * @param string $id
-     * @Rest\Get("/modflowmodels/{id}/activecells")
-     * @return JsonResponse
-     * @throws \Inowas\ModflowBundle\Exception\NotFoundException
-     */
-    public function getModflowModelActiveCellsAction(string $id): JsonResponse
-    {
-        $this->assertUuidIsValid($id);
-        $modelId = ModflowId::fromString($id);
-        $activeCells = $this->get('inowas.modflowmodel.boundary_finder')->findAreaActiveCells($modelId);
-
-        if (! $activeCells instanceof ActiveCells) {
-            throw NotFoundException::withMessage(sprintf(
-                'ModflowModel with id: \'%s\' not found.', $modelId->toString()
-            ));
+        if ($this->containsKey('active_cells', $content)) {
+            $activeCells = ActiveCells::from2DArray($content['active_cells']);
+            $this->get('prooph_service_bus.modflow_command_bus')->dispatch(UpdateActiveCells::ofModelArea($userId, $modelId, $activeCells));
         }
 
-        return new JsonResponse(['active_cells' => $activeCells->to2DArray()]);
+        return new RedirectResponse(
+            $this->generateUrl('get_modflow_model', array('id' => $modelId->toString())),
+            303
+        );
     }
 
     /**
-     * Update ActiveCells of modflow model by id.
+     * Delete a modflow-model.
      *
      * @ApiDoc(
      *   resource = true,
-     *   description = "Update ActiveCells of modflow model by id.",
+     *   description = "Get details of modflow model by id.",
      *   statusCodes = {
      *     200 = "Returned when successful"
      *   }
      * )
      *
-     * @param Request $request
      * @param string $id
-     * @Rest\Put("/modflowmodels/{id}/activecells")
-     * @return RedirectResponse
-     * @throws \Prooph\ServiceBus\Exception\CommandDispatchException
+     * @Rest\Delete("/modflowmodels/{id}")
+     * @return Response
      * @throws \InvalidArgumentException
+     * @throws \Prooph\ServiceBus\Exception\CommandDispatchException
+     * @throws \Inowas\ModflowBundle\Exception\NotFoundException
      */
-    public function putModflowModelActiveCellsAction(Request $request, string $id): RedirectResponse
+    public function deleteModflowModelAction(string $id): Response
     {
         $userId = $this->getUserId();
         $this->assertUuidIsValid($id);
         $modelId = ModflowId::fromString($id);
 
-        $content = $this->getContentAsArray($request);
-        $this->assertContainsKey('active_cells', $content);
+        $this->get('prooph_service_bus.modflow_command_bus')->dispatch(DeleteModflowModel::byIdAndUser($modelId, $userId));
 
-        $activeCells = ActiveCells::from2DArray($content['active_cells']);
-        $this->get('prooph_service_bus.modflow_command_bus')->dispatch(UpdateActiveCells::ofModelArea($userId, $modelId, $activeCells));
-
-        return new RedirectResponse(
-            $this->generateUrl('get_modflow_model_active_cells', array('id' => $modelId->toString())),
-            303
-        );
+        return new Response('', 201);
     }
 
     /* Calculation */
@@ -673,7 +371,6 @@ class ModflowModelController extends InowasRestController
      */
     public function getSoilModelAction(string $id): RedirectResponse
     {
-        $userId = $this->getUserId();
         $this->assertUuidIsValid($id);
         $modelId = ModflowId::fromString($id);
 
@@ -682,42 +379,6 @@ class ModflowModelController extends InowasRestController
         return new RedirectResponse(
             $this->generateUrl('get_soilmodel', array('id' => $soilmodelId->toString())),
             302
-        );
-    }
-
-    /**
-     * Update soilmodelId of modflow model by id.
-     *
-     * @ApiDoc(
-     *   resource = true,
-     *   description = "Update soilmodelId of modflow model by id.",
-     *   statusCodes = {
-     *     200 = "Returned when successful"
-     *   }
-     * )
-     *
-     * @param Request $request
-     * @param string $id
-     * @Rest\Put("/modflowmodels/{id}/soilmodel")
-     * @return RedirectResponse
-     * @throws \Prooph\ServiceBus\Exception\CommandDispatchException
-     * @throws \InvalidArgumentException
-     */
-    public function putSoilModelIdAction(Request $request, string $id): RedirectResponse
-    {
-        $userId = $this->getUserId();
-        $this->assertUuidIsValid($id);
-        $modelId = ModflowId::fromString($id);
-
-        $content = $this->getContentAsArray($request);
-        $this->assertContainsKey('soilmodel_id', $content);
-
-        $soilmodelId = SoilmodelId::fromString($content['soilmodel_id']);
-        $this->get('prooph_service_bus.modflow_command_bus')->dispatch(ChangeSoilmodelId::forModflowModel($userId, $modelId, $soilmodelId));
-
-        return new RedirectResponse(
-            $this->generateUrl('get_modflow_model', array('id' => $modelId->toString())),
-            303
         );
     }
 }

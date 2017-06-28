@@ -174,4 +174,9 @@ class ActiveCells
     {
         return count($this->cells());
     }
+
+    public function sameAs(ActiveCells $activeCells): bool
+    {
+        return $this->toArray() === $activeCells->toArray();
+    }
 }
