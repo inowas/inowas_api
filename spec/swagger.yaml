@@ -207,7 +207,7 @@ paths:
           - "calculation"
         summary: "Get calculation times by calculation id"
         description: "Returns the startDate, endDate and a list of total times by calculationId"
-        operationId: "getCalculationTimesById"
+        operationId: "getCalculationDetails"
         produces:
           - "application/json"
         parameters:
@@ -526,6 +526,36 @@ paths:
           description: "ModflowModel not found"
       security:
       - api_key: []
+    put:
+      tags:
+        - "modflowmodel"
+      summary: "Updates the modflowmodel in one call"
+      description: "Updates the modflowmodel-details in one call, parameter are not obligatory"
+      operationId: "updateModflowModel"
+      consumes:
+        - "application/json"
+      parameters:
+        - name: "id"
+          in: "path"
+          description: "ID of ModflowModel"
+          required: true
+          type: "string"
+        - in: "body"
+          name: "body"
+          description: "ModflowModelDetails"
+          required: true
+          schema:
+            $ref: '#/definitions/ModflowModelUpdateDetails'
+      responses:
+        '303':
+          description: "Redirect response to GET /modflowmodels/{id}"
+          headers:
+            Location:
+              type: "string"
+        '422':
+          description: "Invalid input"
+      security:
+        - api_key: []
 
   /modflowmodels/{id}/name:
     put:
@@ -3245,6 +3275,29 @@ definitions:
       public:
         type: "boolean"
         example: true
+  ModflowModelUpdateDetails:
+    title: "ModflowModelDetails"
+    type: "object"
+    properties:
+      soilmodel_id:
+        type: "string"
+        example: "4716f088-8651-43be-b3b9-815da7bfd0f3"
+      name:
+        type: "string"
+        example: "Hanoi 2005-2007"
+      description:
+        type: "string"
+        example: "ModflowModel of Hanoi Area 2005-2007"
+      geometry:
+        $ref: '#/definitions/PolygonGeometry'
+      length_unit:
+        $ref: '#/definitions/LengthUnit'
+      time_unit:
+        $ref: '#/definitions/TimeUnit'
+      grid_size:
+        $ref: '#/definitions/GridSize'
+      bounding_box:
+        $ref: '#/definitions/BoundingBox'
   ModflowModelListItem:
     title: "ModflowModelListItem"
     type: "object"

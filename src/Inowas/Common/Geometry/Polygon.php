@@ -28,4 +28,9 @@ class Polygon extends BasePolygon
             'coordinates' => $this->toArray(),
         ));
     }
+
+    public function sameAs(Polygon $polygon): bool
+    {
+        return $polygon->toArray() === $this->toArray();
+    }
 }

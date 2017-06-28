@@ -23,4 +23,9 @@ class ModelDescription
     {
         return $this->description;
     }
+
+    public function sameAs(ModelDescription $description): bool
+    {
+        return $this->toString() === $description->toString();
+    }
 }

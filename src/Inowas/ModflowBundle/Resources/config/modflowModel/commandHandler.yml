@@ -23,11 +23,13 @@ services:
         arguments:
           - '@modflow_model_list'
           - '@inowas.geotools.geotools_service'
+          - '@inowas.modflowmodel.model_finder'
 
     inowas.modflowmodel.change_description_handler:
         class: Inowas\ModflowModel\Model\Handler\ChangeDescriptionHandler
         arguments:
           - '@modflow_model_list'
+          - '@inowas.modflowmodel.model_finder'
 
     inowas.modflowmodel.change_flow_package_handler:
         class: Inowas\ModflowModel\Model\Handler\ChangeFlowPackageHandler
@@ -38,16 +40,19 @@ services:
         class: Inowas\ModflowModel\Model\Handler\ChangeGridSizeHandler
         arguments:
           - '@modflow_model_list'
+          - '@inowas.modflowmodel.model_finder'
 
     inowas.modflowmodel.change_name_handler:
         class: Inowas\ModflowModel\Model\Handler\ChangeNameHandler
         arguments:
           - '@modflow_model_list'
+          - '@inowas.modflowmodel.model_finder'
 
     inowas.modflowmodel.change_soilmodel_id_handler:
         class: Inowas\ModflowModel\Model\Handler\ChangeSoilmodelIdHandler
         arguments:
           - '@modflow_model_list'
+          - '@inowas.modflowmodel.model_finder'
 
     inowas.modflowmodel.clone_modflow_model_handler:
         class: Inowas\ModflowModel\Model\Handler\CloneModflowModelHandler
@@ -72,11 +77,6 @@ services:
         arguments:
           - '@modflow_model_list'
 
-    inowas.modflowmodel.finish_editing_boundaries_handler:
-        class: Inowas\ModflowModel\Model\Handler\FinishEditingBoundariesHandler
-        arguments:
-          - '@modflow_model_list'
-
     inowas.modflowmodel.remove_boundary_handler:
         class: Inowas\ModflowModel\Model\Handler\RemoveBoundaryHandler
         arguments:
@@ -86,7 +86,7 @@ services:
         class: Inowas\ModflowModel\Model\Handler\UpdateAreaGeometryHandler
         arguments:
           - '@modflow_model_list'
-          - '@inowas.geotools.geotools_service'
+          - '@inowas.modflowmodel.model_finder'
 
     inowas.modflowmodel.update_active_cells_handler:
         class: Inowas\ModflowModel\Model\Handler\UpdateActiveCellsHandler
@@ -129,6 +129,7 @@ services:
         class: Inowas\ModflowModel\Model\Handler\UpdateLengthUnitHandler
         arguments:
           - '@modflow_model_list'
+          - '@inowas.modflowmodel.model_finder'
 
     inowas.modflowmodel.update_modflow_package_parameter_handler:
         class: Inowas\ModflowModel\Model\Handler\UpdateModflowPackageParameterHandler
@@ -144,3 +145,4 @@ services:
         class: Inowas\ModflowModel\Model\Handler\UpdateTimeUnitHandler
         arguments:
           - '@modflow_model_list'
+          - '@inowas.modflowmodel.model_finder'

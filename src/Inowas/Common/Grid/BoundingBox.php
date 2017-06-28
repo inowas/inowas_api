@@ -152,10 +152,7 @@ class BoundingBox implements \JsonSerializable
             ($this->xMin() === $boundingBox->xMin()) &&
             ($this->xMax() === $boundingBox->xMax()) &&
             ($this->yMin() === $boundingBox->yMin()) &&
-            ($this->yMax() === $boundingBox->yMax()) &&
-            ($this->srid() === $boundingBox->srid()) &&
-            ($this->dX() === $boundingBox->dX()) &&
-            ($this->dY() === $boundingBox->dY())
+            ($this->yMax() === $boundingBox->yMax())
         );
     }
 }

@@ -169,6 +169,86 @@ class ModflowModelController extends InowasRestController
     }
 
     /**
+     * Update details of modflow model by id.
+     *
+     * @ApiDoc(
+     *   resource = true,
+     *   description = "Update details of modflow model by id.",
+     *   statusCodes = {
+     *     200 = "Returned when successful"
+     *   }
+     * )
+     *
+     * @param Request $request
+     * @param string $id
+     * @return RedirectResponse
+     * @throws \InvalidArgumentException
+     * @throws \Prooph\ServiceBus\Exception\CommandDispatchException
+     * @Rest\Put("/modflowmodels/{id}")
+     */
+    public function putModflowModelAction(Request $request, string $id): RedirectResponse
+    {
+        $userId = $this->getUserId();
+        $this->assertUuidIsValid($id);
+        $modelId = ModflowId::fromString($id);
+
+        $content = $this->getContentAsArray($request);
+
+        if ($this->containsKey('name', $content)) {
+            $name = ModelName::fromString($content['name']);
+            $this->get('prooph_service_bus.modflow_command_bus')->dispatch(ChangeName::forModflowModel($userId, $modelId, $name));
+        }
+
+        if ($this->containsKey('description', $content)) {
+            $description = ModelDescription::fromString($content['description']);
+            $this->get('prooph_service_bus.modflow_command_bus')->dispatch(ChangeDescription::forModflowModel($userId, $modelId, $description));
+        }
+
+        if ($this->containsKey('geometry', $content)){
+            $this->assertGeometryIsValid($content['geometry']);
+            $polygon = new Polygon($content['geometry']['coordinates']);
+            $this->get('prooph_service_bus.modflow_command_bus')->dispatch(UpdateAreaGeometry::of($userId, $modelId, $polygon));
+        }
+
+        if ($this->containsKey('bounding_box', $content)){
+            $boundingBox = BoundingBox::fromCoordinates(
+                $content['bounding_box']['x_min'],
+                $content['bounding_box']['x_max'],
+                $content['bounding_box']['y_min'],
+                $content['bounding_box']['y_max'],
+                4326
+            );
+
+            $this->get('prooph_service_bus.modflow_command_bus')->dispatch(ChangeBoundingBox::forModflowModel($userId, $modelId, $boundingBox));
+        }
+
+        if ($this->containsKey('grid_size', $content)) {
+            $gridSize = GridSize::fromXY($content['grid_size']['n_x'], $content['grid_size']['n_y']);
+            $this->get('prooph_service_bus.modflow_command_bus')->dispatch(ChangeGridSize::forModflowModel($userId, $modelId, $gridSize));
+        }
+
+        if ($this->containsKey('length_unit', $content)) {
+            $lengthUnit = LengthUnit::fromInt((int)$content['length_unit']);
+            $this->get('prooph_service_bus.modflow_command_bus')->dispatch(UpdateLengthUnit::byUserAndModel($userId, $modelId, $lengthUnit));
+        }
+
+        if ($this->containsKey('time_unit', $content)) {
+            $timeUnit = TimeUnit::fromInt((int)$content['time_unit']);
+            $this->get('prooph_service_bus.modflow_command_bus')->dispatch(UpdateTimeUnit::byUserAndModel($userId, $modelId, $timeUnit));
+        }
+
+        if ($this->containsKey('soilmodel_id', $content)) {
+            $soilmodelId = SoilmodelId::fromString($content['soilmodel_id']);
+            $this->get('prooph_service_bus.modflow_command_bus')->dispatch(ChangeSoilmodelId::forModflowModel($userId, $modelId, $soilmodelId));
+        }
+
+        return new RedirectResponse(
+            $this->generateUrl('get_modflow_model', array('id' => $modelId->toString())),
+            303
+        );
+    }
+
+    /**
      * Update name of modflow model by id.
      *
      * @ApiDoc(
@@ -399,11 +479,11 @@ class ModflowModelController extends InowasRestController
     }
 
     /**
-     * Update lengthUnit of modflowModel by id.
+     * Update timeUnit of modflowModel by id.
      *
      * @ApiDoc(
      *   resource = true,
-     *   description = "Update lengthUnit of modflowModel by id.",
+     *   description = "Update timeUnit of modflowModel by id.",
      *   statusCodes = {
      *     200 = "Returned when successful"
      *   }
@@ -434,7 +514,6 @@ class ModflowModelController extends InowasRestController
             303
         );
     }
-
 
     /* Active Cells */
     /**

@@ -50,4 +50,9 @@ class ModelName
 
         return $name;
     }
+
+    public function sameAs(ModelName $object): bool
+    {
+        return $this->toString() === $object->toString();
+    }
 }

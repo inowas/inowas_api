@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Inowas\ModflowModel\Model\Handler;
 
+use Inowas\ModflowModel\Infrastructure\Projection\ModelList\ModelFinder;
 use Inowas\ModflowModel\Model\Command\ChangeGridSize;
 use Inowas\ModflowModel\Model\Exception\ModflowModelNotFoundException;
 use Inowas\ModflowModel\Model\Exception\WriteAccessFailedException;
@@ -13,14 +14,19 @@ use Inowas\ModflowModel\Model\ModflowModelAggregate;
 final class ChangeGridSizeHandler
 {
 
+    /** @var  ModelFinder */
+    private $modelFinder;
+
     /** @var  ModflowModelList */
     private $modelList;
 
     /**
      * @param ModflowModelList $modelList
+     * @param ModelFinder $modelFinder
      */
-    public function __construct(ModflowModelList $modelList)
+    public function __construct(ModflowModelList $modelList, ModelFinder $modelFinder)
     {
+        $this->modelFinder = $modelFinder;
         $this->modelList = $modelList;
     }
 
@@ -37,6 +43,10 @@ final class ChangeGridSizeHandler
             throw WriteAccessFailedException::withUserAndOwner($command->userId(), $modflowModel->userId());
         }
 
-        $modflowModel->changeGridSize($command->userId(), $command->gridSize());
+        $gridSize = $this->modelFinder->getGridSizeByModflowModelId($command->modflowModelId());
+
+        if (! $gridSize->sameAs($command->gridSize())){
+            $modflowModel->changeGridSize($command->userId(), $command->gridSize());
+        }
     }
 }
