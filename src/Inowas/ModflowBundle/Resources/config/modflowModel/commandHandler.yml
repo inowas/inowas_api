@@ -69,8 +69,8 @@ services:
         class: Inowas\ModflowModel\Model\Handler\CreateObservationPointHandler
         arguments:
           - '@modflow_model_list'
-          - '@inowas.modflowmodel.boundary_finder'
-          - '@inowas.geotools.geotools_service'
+          - '@inowas.modflowmodel.boundary_manager'
+          - '@inowas.modflowmodel.manager'
 
     inowas.modflowmodel.delete_modflow_model_handler:
         class: Inowas\ModflowModel\Model\Handler\DeleteModflowModelHandler
@@ -92,7 +92,7 @@ services:
         class: Inowas\ModflowModel\Model\Handler\UpdateActiveCellsHandler
         arguments:
           - '@modflow_model_list'
-          - '@inowas.modflowmodel.boundary_finder'
+          - '@inowas.modflowmodel.boundary_manager'
 
     inowas.modflowmodel.update_boundary_affected_layers_handler:
         class: Inowas\ModflowModel\Model\Handler\UpdateBoundaryAffectedLayersHandler
@@ -103,8 +103,6 @@ services:
         class: Inowas\ModflowModel\Model\Handler\UpdateBoundaryGeometryHandler
         arguments:
           - '@modflow_model_list'
-          - '@inowas.geotools.geotools_service'
-          - '@inowas.modflowmodel.boundary_finder'
 
     inowas.modflowmodel.update_boundary_metadata_handler:
         class: Inowas\ModflowModel\Model\Handler\UpdateBoundaryMetadataHandler

@@ -20,9 +20,6 @@ use Inowas\ModflowModel\Model\Event\ModflowModelWasCloned;
 class BoundaryListProjector extends AbstractDoctrineConnectionProjector
 {
 
-    /** @var  BoundaryFinder */
-    protected $boundaryFinder;
-
     public function __construct(Connection $connection) {
 
         parent::__construct($connection);

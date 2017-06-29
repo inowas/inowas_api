@@ -3,14 +3,12 @@ services:
         class: Inowas\ModflowModel\Infrastructure\Projection\BoundaryList\BoundaryActiveCellsProjector
         arguments:
           - '@doctrine.dbal.default_connection'
-          - '@inowas.modflowmodel.model_finder'
-          - '@inowas.modflowmodel.boundary_finder'
-          - '@inowas.geotools.geotools_service'
 
     inowas.modflowmodel.boundary_finder:
         class: Inowas\ModflowModel\Infrastructure\Projection\BoundaryList\BoundaryFinder
         arguments:
           - '@doctrine.dbal.default_connection'
+        public: false
 
     inowas.modflowmodel.boundary_list_projector:
         class: Inowas\ModflowModel\Infrastructure\Projection\BoundaryList\BoundaryListProjector

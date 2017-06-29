@@ -580,7 +580,7 @@ class Hanoi extends LoadScenarioBase
             ModelDescription::fromString('Simulation of MAR type river bank filtration'))
         );
 
-        $boundariesFinder = $this->container->get('inowas.modflowmodel.boundary_finder');
+        $boundariesFinder = $this->container->get('inowas.modflowmodel.boundary_manager');
         $rbfRelocatedWellNamesAndGeometry = array(
             'H07_6' => $geoTools->projectPoint(new Point(588637, 2326840, 32648), Srid::fromInt(4326)),
             'H10_6' => $geoTools->projectPoint(new Point(589150, 2326214, 32648), Srid::fromInt(4326)),
@@ -669,7 +669,7 @@ class Hanoi extends LoadScenarioBase
             ModelDescription::fromString('Combination of MAR types river bank filtration and injection wells'))
         );
 
-        $boundariesFinder = $this->container->get('inowas.modflowmodel.boundary_finder');
+        $boundariesFinder = $this->container->get('inowas.modflowmodel.boundary_manager');
         $rbfRelocatedWellNamesAndGeometry = array(
             'H07_6' => $geoTools->projectPoint(new Point(588637, 2326840, 32648), Srid::fromInt(4326)),
             'H10_6' => $geoTools->projectPoint(new Point(589150, 2326214, 32648), Srid::fromInt(4326)),

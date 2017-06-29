@@ -45,7 +45,6 @@ class GeoTools
         $geometry = $boundary->geometry();
         $affectedLayers = $boundary->affectedLayers();
         return $this->calculateActiveCellsFromGeometryAndAffectedLayers($geometry, $affectedLayers, $boundingBox, $gridSize);
-
     }
 
     public function calculateActiveCellsFromGeometryAndAffectedLayers(Geometry $geometry, AffectedLayers $affectedLayers, BoundingBox $boundingBox, GridSize $gridSize): ActiveCells
@@ -124,9 +123,7 @@ class GeoTools
             $bottomRight->getX(),
             $topLeft->getY(),
             $bottomRight->getY(),
-            $target->toInteger(),
-            0,
-            0)
+            $target->toInteger())
         ;
 
         return $this->updateBoundingBoxDistance($bb);

@@ -6,17 +6,9 @@ namespace Inowas\ModflowModel\Infrastructure\Projection\BoundaryList;
 
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Schema\Schema;
-use Inowas\Common\Geometry\Geometry;
-use Inowas\Common\Grid\ActiveCells;
-use Inowas\Common\Grid\AffectedLayers;
-use Inowas\Common\Grid\BoundingBox;
-use Inowas\Common\Grid\GridSize;
-use Inowas\Common\Grid\LayerNumber;
 use Inowas\Common\Id\BoundaryId;
 use Inowas\Common\Id\ModflowId;
 use Inowas\Common\Projection\AbstractDoctrineConnectionProjector;
-use Inowas\GeoTools\Service\GeoTools;
-use Inowas\ModflowModel\Infrastructure\Projection\ModelList\ModelFinder;
 use Inowas\ModflowModel\Model\Event\AreaActiveCellsWereUpdated;
 use Inowas\ModflowModel\Model\Event\AreaGeometryWasUpdated;
 use Inowas\ModflowModel\Model\Event\BoundaryActiveCellsWereUpdated;
@@ -32,28 +24,16 @@ use Inowas\ModflowModel\Model\Event\ModflowModelWasCreated;
 
 class BoundaryActiveCellsProjector extends AbstractDoctrineConnectionProjector
 {
-    /** @var  BoundaryFinder */
-    private $boundaryFinder;
 
-    /** @var  GeoTools */
-    private $geoTools;
-
-    /** @var  ModelFinder */
-    private $modelFinder;
-
-    public function __construct(Connection $connection, ModelFinder $modelFinder, BoundaryFinder $boundaryFinder, GeoTools $geoTools) {
+    public function __construct(Connection $connection) {
 
         parent::__construct($connection);
-
-        $this->boundaryFinder = $boundaryFinder;
-        $this->geoTools = $geoTools;
-        $this->modelFinder = $modelFinder;
 
         $schema = new Schema();
         $table = $schema->createTable(Table::BOUNDARY_ACTIVE_CELLS);
         $table->addColumn('model_id', 'string', ['length' => 36]);
         $table->addColumn('boundary_id', 'string', ['length' => 36]);
-        $table->addColumn('active_cells', 'text', ['notnull' => false]);
+        $table->addColumn('active_cells', 'text', ['notnull' => false, 'default' => null]);
         $table->addIndex(array('model_id', 'boundary_id'));
         $this->addSchema($schema);
     }
@@ -61,7 +41,7 @@ class BoundaryActiveCellsProjector extends AbstractDoctrineConnectionProjector
     public function onAreaActiveCellsWereUpdated(AreaActiveCellsWereUpdated $event): void
     {
         $this->connection->update(Table::BOUNDARY_ACTIVE_CELLS, array(
-            'active_cells' => $event->activeCells()
+            'active_cells' => json_encode($event->activeCells()->toArray())
         ), array (
             'model_id' => $event->modflowId()->toString(),
             'boundary_id' => $event->modflowId()->toString()
@@ -70,14 +50,8 @@ class BoundaryActiveCellsProjector extends AbstractDoctrineConnectionProjector
 
     public function onAreaGeometryWasUpdated(AreaGeometryWasUpdated $event): void
     {
-        $affectedLayers = AffectedLayers::createWithLayerNumber(LayerNumber::fromInteger(0));
-        $boundingBox = $this->modelFinder->getBoundingBoxByModflowModelId($event->modelId());
-        $geometry = Geometry::fromPolygon($event->geometry());
-        $gridSize = $this->modelFinder->getGridSizeByModflowModelId($event->modelId());
-        $activeCells = $this->geoTools->calculateActiveCellsFromGeometryAndAffectedLayers($geometry, $affectedLayers, $boundingBox, $gridSize);
-
         $this->connection->update(Table::BOUNDARY_ACTIVE_CELLS, array(
-            'active_cells' => json_encode($activeCells->toArray())
+            'active_cells' => null
         ), array(
             'model_id' => $event->modelId()->toString(),
             'boundary_id' => $event->modelId()->toString(),
@@ -87,7 +61,7 @@ class BoundaryActiveCellsProjector extends AbstractDoctrineConnectionProjector
     public function onBoundaryActiveCellsWereUpdated(BoundaryActiveCellsWereUpdated $event): void
     {
         $this->connection->update(Table::BOUNDARY_ACTIVE_CELLS, array(
-            'active_cells' => json_encode($event->activeCells())
+            'active_cells' => json_encode($event->activeCells()->toArray())
         ), array (
             'model_id' => $event->modelId()->toString(),
             'boundary_id' => $event->boundaryId()->toString()
@@ -96,19 +70,8 @@ class BoundaryActiveCellsProjector extends AbstractDoctrineConnectionProjector
 
     public function onBoundaryAffectedLayersWereUpdated(BoundaryAffectedLayersWereUpdated $event): void
     {
-        $result = $this->connection->fetchAssoc(
-            sprintf('SELECT active_cells from %s WHERE model_id = :model_id AND boundary_id = :boundary_id', Table::BOUNDARY_ACTIVE_CELLS),
-            ['model_id' => $event->modflowModelId()->toString(), 'boundary_id' => $event->boundaryId()->toString()]);
-
-        if ($result === false){
-            return;
-        }
-
-        $activeCells = ActiveCells::fromArray(json_decode($result['active_cells']));
-        $updatedActiveCells = ActiveCells::fromArrayGridSizeAndLayer($activeCells->layerData(), $activeCells->gridSize(), $event->affectedLayers());
-
         $this->connection->update(Table::BOUNDARY_ACTIVE_CELLS, array(
-            'active_cells' => json_encode($updatedActiveCells->toArray())
+            'active_cells' => null
         ), array(
             'model_id' => $event->modflowModelId()->toString(),
             'boundary_id' => $event->boundaryId()->toString(),
@@ -117,14 +80,8 @@ class BoundaryActiveCellsProjector extends AbstractDoctrineConnectionProjector
 
     public function onBoundaryGeometryWasUpdated(BoundaryGeometryWasUpdated $event): void
     {
-        $affectedLayers = $this->boundaryFinder->getAffectedLayersByModelAndBoundary($event->modflowModelId(), $event->boundaryId());
-        $boundingBox = $this->modelFinder->getBoundingBoxByModflowModelId($event->modflowModelId());
-        $geometry = $event->geometry();
-        $gridSize = $this->modelFinder->getGridSizeByModflowModelId($event->modflowModelId());
-        $activeCells = $this->geoTools->calculateActiveCellsFromGeometryAndAffectedLayers($geometry, $affectedLayers, $boundingBox, $gridSize);
-
         $this->connection->update(Table::BOUNDARY_ACTIVE_CELLS, array(
-            'active_cells' => json_encode($activeCells->toArray())
+            'active_cells' => null
         ), array(
             'model_id' => $event->modflowModelId()->toString(),
             'boundary_id' => $event->boundaryId()->toString(),
@@ -133,15 +90,10 @@ class BoundaryActiveCellsProjector extends AbstractDoctrineConnectionProjector
 
     public function onBoundaryWasAdded(BoundaryWasAdded $event): void
     {
-        $boundary = $event->boundary();
-        $boundingBox = $this->modelFinder->getBoundingBoxByModflowModelId($event->modflowId());
-        $gridSize = $this->modelFinder->getGridSizeByModflowModelId($event->modflowId());
-        $activeCells = $this->geoTools->calculateActiveCellsFromBoundary($boundary, $boundingBox, $gridSize);
-
         $this->connection->insert(Table::BOUNDARY_ACTIVE_CELLS, array(
             'model_id' => $event->modflowId()->toString(),
             'boundary_id' => $event->boundary()->boundaryId()->toString(),
-            'active_cells' => json_encode($activeCells->toArray())
+            'active_cells' => null
         ));
     }
 
@@ -155,18 +107,12 @@ class BoundaryActiveCellsProjector extends AbstractDoctrineConnectionProjector
 
     public function onBoundingBoxWasChanged(BoundingBoxWasChanged $event): void
     {
-        $modelId = $event->modflowId();
-        $boundingBox = $event->boundingBox();
-        $gridSize = $this->modelFinder->getGridSizeByModflowModelId($event->modflowId());
-        $this->updateActiveCellsWithBoundingBoxOrGridsize($modelId, $boundingBox, $gridSize);
+        $this->updateActiveCellsWithBoundingBoxOrGridsize($event->modflowId());
     }
 
     public function onGridSizeWasChanged(GridSizeWasChanged $event): void
     {
-        $modelId = $event->modflowId();
-        $gridSize = $event->gridSize();
-        $boundingBox = $this->modelFinder->getBoundingBoxByModflowModelId($event->modflowId());
-        $this->updateActiveCellsWithBoundingBoxOrGridsize($modelId, $boundingBox, $gridSize);
+        $this->updateActiveCellsWithBoundingBoxOrGridsize($event->modflowId());
     }
 
     public function onModflowModelWasCloned(ModflowModelWasCloned $event): void
@@ -177,48 +123,32 @@ class BoundaryActiveCellsProjector extends AbstractDoctrineConnectionProjector
 
     public function onModflowModelWasCreated(ModflowModelWasCreated $event): void
     {
-        $boundingBox = $this->modelFinder->getBoundingBoxByModflowModelId($event->modelId());
-        $gridSize = $this->modelFinder->getGridSizeByModflowModelId($event->modelId());
-        $area = $this->modelFinder->getAreaByModflowModelId($event->modelId());
-        $activeCells = $this->geoTools->calculateActiveCellsFromArea($area, $boundingBox, $gridSize);
-
         $this->connection->insert(Table::BOUNDARY_ACTIVE_CELLS, array(
             'model_id' => $event->modelId()->toString(),
             'boundary_id' => $event->modelId()->toString(),
-            'active_cells' => json_encode($activeCells->toArray())
+            'active_cells' => null
         ));
     }
 
-    private function updateActiveCellsWithBoundingBoxOrGridsize(ModflowId $modelId, BoundingBox $boundingBox, GridSize $gridSize): void
+    private function updateActiveCellsWithBoundingBoxOrGridsize(ModflowId $modelId): void
     {
-
         $rows = $this->connection->fetchAll(sprintf('SELECT * FROM %s WHERE model_id = :model_id', Table::BOUNDARY_ACTIVE_CELLS),
             array('model_id' => $modelId->toString())
         );
 
         foreach ($rows as $row){
             $boundaryId = BoundaryId::fromString($row['boundary_id']);
-            $geometry = $this->boundaryFinder->getBoundaryGeometry($modelId, $boundaryId);
-
-            if (null === $geometry){
-                continue;
-            }
-
-            $affectedLayers = $this->boundaryFinder->getAffectedLayersByModelAndBoundary($modelId, $boundaryId);
-            $newActiveCells = $this->geoTools->calculateActiveCellsFromGeometryAndAffectedLayers($geometry, $affectedLayers, $boundingBox, $gridSize);
 
             $this->connection->update(Table::BOUNDARY_ACTIVE_CELLS, array(
-                'active_cells' => json_encode($newActiveCells->toArray())
+                'active_cells' => null
             ), array(
                 'model_id' => $modelId->toString(),
                 'boundary_id' => $boundaryId->toString(),
             ));
         }
-        $areaGeometry = Geometry::fromPolygon($this->modelFinder->getAreaPolygonByModflowModelId($modelId));
-        $areaAffectedLayers = AffectedLayers::createWithLayerNumber(LayerNumber::fromInteger(0));
-        $areaNewActiveCells = $this->geoTools->calculateActiveCellsFromGeometryAndAffectedLayers($areaGeometry, $areaAffectedLayers, $boundingBox, $gridSize);
+
         $this->connection->update(Table::BOUNDARY_ACTIVE_CELLS, array(
-            'active_cells' => json_encode($areaNewActiveCells->toArray())
+            'active_cells' => null
         ), array(
             'model_id' => $modelId->toString(),
             'boundary_id' => $modelId->toString(),

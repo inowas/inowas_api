@@ -4,40 +4,41 @@ declare(strict_types=1);
 
 namespace Inowas\ModflowModel\Model\Handler;
 
-use Inowas\Common\Boundaries\BoundaryType;
-use Inowas\Common\Boundaries\ConstantHeadDateTimeValue;
-use Inowas\Common\Boundaries\DateTimeValue;
-use Inowas\Common\Boundaries\GeneralHeadDateTimeValue;
+use Inowas\Common\Boundaries\DateTimeValueFactory;
 use Inowas\Common\Boundaries\ObservationPoint;
-use Inowas\Common\Boundaries\RechargeDateTimeValue;
-use Inowas\Common\Boundaries\RiverDateTimeValue;
-use Inowas\Common\Boundaries\WellDateTimeValue;
-use Inowas\GeoTools\Service\GeoTools;
-use Inowas\ModflowModel\Infrastructure\Projection\BoundaryList\BoundaryFinder;
+use Inowas\Common\DateTime\DateTime;
+use Inowas\Common\Modflow\StressPeriods;
 use Inowas\ModflowModel\Model\Command\CreateObservationPoint;
 use Inowas\ModflowModel\Model\Exception\ModflowModelNotFoundException;
 use Inowas\ModflowModel\Model\Exception\WriteAccessFailedException;
 use Inowas\ModflowModel\Model\ModflowModelList;
 use Inowas\ModflowModel\Model\ModflowModelAggregate;
+use Inowas\ModflowModel\Service\BoundaryManager;
+use Inowas\ModflowModel\Service\ModflowModelManager;
 
 final class CreateObservationPointHandler
 {
 
+    /** @var BoundaryManager */
+    private $boundaryManager;
+
     /** @var  ModflowModelList */
     private $modelList;
 
-    /** @var BoundaryFinder */
-    private $boundaryFinder;
+    /** @var  ModflowModelManager */
+    private $modelManager;
 
     /**
      * CreateObservationPointHandler constructor.
      * @param ModflowModelList $modelList
-     * @param BoundaryFinder $boundaryFinder
-     * @param GeoTools $geoTools
+     * @param BoundaryManager $boundaryManager
+     * @param ModflowModelManager $modelManager
      */
-    public function __construct(ModflowModelList $modelList, BoundaryFinder $boundaryFinder, GeoTools $geoTools)
+    public function __construct(ModflowModelList $modelList, BoundaryManager $boundaryManager, ModflowModelManager $modelManager)
     {
+        $this->boundaryManager = $boundaryManager;
         $this->modelList = $modelList;
+        $this->modelManager = $modelManager;
     }
 
     public function __invoke(CreateObservationPoint $command)
@@ -54,34 +55,15 @@ final class CreateObservationPointHandler
         }
 
         $observationPoint = ObservationPoint::fromIdNameAndGeometry($command->observationPointId(), $command->observationPointName(), $command->geometry());
-        $boundaryType = $this->boundaryFinder->getBoundaryType($command->modelId(), $command->boundaryId());
+        $boundaryType = $this->boundaryManager->getBoundaryType($command->modelId(), $command->boundaryId());
 
-        $startDate = new \DateTimeImmutable('2000-01-01');
-        $dateTimeValue = null;
-        switch ($boundaryType->toString()) {
-            case (BoundaryType::CONSTANT_HEAD):
-                $dateTimeValue = ConstantHeadDateTimeValue::fromParams($startDate, 0,0);
-                break;
-            case (BoundaryType::GENERAL_HEAD):
-                $dateTimeValue = GeneralHeadDateTimeValue::fromParams($startDate, 0,0);
-                break;
-            case (BoundaryType::RECHARGE):
-                $dateTimeValue = RechargeDateTimeValue::fromParams($startDate, 0);
-                break;
-            case (BoundaryType::RIVER):
-                $dateTimeValue = RiverDateTimeValue::fromParams($startDate, 0,0, 0);
-                break;
-            case (BoundaryType::WELL):
-                $dateTimeValue = WellDateTimeValue::fromParams($startDate, 0);
-                break;
+        $startDate = DateTime::fromDateTimeImmutable(new \DateTimeImmutable('2000-01-01'));
+        $stressPeriods = $this->modelManager->getStressPeriodsByModelId($command->modelId());
+        if ($stressPeriods instanceof StressPeriods) {
+            $startDate = $stressPeriods->start();
         }
 
-        if (! $dateTimeValue instanceof DateTimeValue) {
-            // Todo
-            throw new \Exception();
-        }
-
+        $dateTimeValue = DateTimeValueFactory::create($boundaryType, $startDate);
         $observationPoint->addDateTimeValue($dateTimeValue);
-        $modflowModel->updateBoundaryActiveCells($command->userId(), $command->boundaryId(), $command->activeCells());
     }
 }

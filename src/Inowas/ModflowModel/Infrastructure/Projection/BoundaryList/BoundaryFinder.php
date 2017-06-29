@@ -56,11 +56,11 @@ class BoundaryFinder
 
     }
 
-    public function getNumberOfModelBoundariesByType(ModflowId $modelId, string $type): int
+    public function getNumberOfModelBoundariesByType(ModflowId $modelId, BoundaryType $type): int
     {
         $result = $this->connection->fetchAssoc(
             sprintf('SELECT count(*) FROM %s WHERE model_id = :model_id AND type = :type', Table::BOUNDARY_LIST),
-            ['model_id' => $modelId->toString(), 'type' => $type]
+            ['model_id' => $modelId->toString(), 'type' => $type->toString()]
         );
 
         if ($result === false) {
@@ -68,135 +68,6 @@ class BoundaryFinder
         }
 
         return (int)$result['count'];
-    }
-
-    public function findRechargeBoundaries(ModflowId $modelId): array
-    {
-        $rows = $this->connection->fetchAll(
-            sprintf('SELECT boundary_id, name, geometry, affected_layers, metadata FROM %s WHERE model_id = :model_id AND type = :type', Table::BOUNDARY_LIST),
-            ['model_id' => $modelId->toString(), 'type' => RechargeBoundary::TYPE]
-        );
-
-        $recharges = array();
-        foreach ($rows as $row) {
-            $boundaryId = BoundaryId::fromString($row['boundary_id']);
-            $recharge = RechargeBoundary::createWithParams(
-                $boundaryId,
-                BoundaryName::fromString($row['name']),
-                Geometry::fromArray(json_decode($row['geometry'], true)),
-                AffectedLayers::fromArray(json_decode($row['affected_layers'], true)),
-                BoundaryMetadata::fromArray(json_decode($row['metadata'], true))
-            );
-
-            $result = $this->connection->fetchAssoc(
-                sprintf('SELECT values FROM %s WHERE model_id = :model_id AND boundary_id = :boundary_id', Table::BOUNDARY_OBSERVATION_POINT_VALUES),
-                ['model_id' => $modelId->toString(), 'boundary_id' => $boundaryId->toString()]
-            );
-
-            foreach (json_decode($result['values']) as $arrayValues){
-                $recharge->addRecharge(RechargeDateTimeValue::fromArrayValues($arrayValues));
-            }
-
-            $result = $this->connection->fetchAssoc(
-                sprintf('SELECT active_cells FROM %s WHERE model_id = :model_id AND boundary_id = :boundary_id', Table::BOUNDARY_ACTIVE_CELLS),
-                ['model_id' => $modelId->toString(), 'boundary_id' => $boundaryId->toString()]
-            );
-
-            $activeCells = ActiveCells::fromArray(json_decode($result['active_cells'], true));
-            $recharge = $recharge->setActiveCells($activeCells);
-            $recharges[] = $recharge;
-        }
-        return $recharges;
-    }
-
-    public function findWellBoundaries(ModflowId $modelId): array
-    {
-        $rows = $this->connection->fetchAll(
-            sprintf('SELECT boundary_id as id, name, geometry, metadata, affected_layers FROM %s WHERE model_id = :model_id AND type = :type', Table::BOUNDARY_LIST),
-            ['model_id' => $modelId->toString(), 'type' => WellBoundary::TYPE]
-        );
-
-        $wells = array();
-        foreach ($rows as $row) {
-            $boundaryId = BoundaryId::fromString($row['id']);
-            $well = WellBoundary::createWithParams(
-                $boundaryId,
-                BoundaryName::fromString($row['name']),
-                Geometry::fromArray(json_decode($row['geometry'], true)),
-                AffectedLayers::fromArray(json_decode($row['affected_layers'], true)),
-                BoundaryMetadata::fromArray(json_decode($row['metadata'], true))
-            );
-
-            $result = $this->connection->fetchAssoc(
-                sprintf('SELECT values FROM %s WHERE model_id = :model_id AND boundary_id = :boundary_id', Table::BOUNDARY_OBSERVATION_POINT_VALUES),
-                ['model_id' => $modelId->toString(), 'boundary_id' => $boundaryId->toString()]
-            );
-
-            foreach (json_decode($result['values']) as $arrayValues){
-                $well->addPumpingRate(WellDateTimeValue::fromArrayValues($arrayValues));
-            }
-
-            $result = $this->connection->fetchAssoc(
-                sprintf('SELECT active_cells FROM %s WHERE model_id = :model_id AND boundary_id = :boundary_id', Table::BOUNDARY_ACTIVE_CELLS),
-                ['model_id' => $modelId->toString(), 'boundary_id' => $boundaryId->toString()]
-            );
-
-            $activeCells = ActiveCells::fromArray(json_decode($result['active_cells'], true));
-            $well = $well->setActiveCells($activeCells);
-            $wells[] = $well;
-        }
-
-        return $wells;
-    }
-
-    public function findRiverBoundaries(ModflowId $modelId): array
-    {
-        $rows = $this->connection->fetchAll(
-            sprintf('SELECT boundary_id as id, name, geometry, affected_layers, metadata FROM %s WHERE model_id = :model_id AND type = :type', Table::BOUNDARY_LIST),
-            ['model_id' => $modelId->toString(), 'type' => RiverBoundary::TYPE]
-        );
-
-        $rivers = array();
-        foreach ($rows as $row) {
-            $boundaryId = BoundaryId::fromString($row['id']);
-            $river = RiverBoundary::createWithParams(
-                $boundaryId,
-                BoundaryName::fromString($row['name']),
-                Geometry::fromArray(json_decode($row['geometry'], true)),
-                AffectedLayers::fromArray(json_decode($row['affected_layers'], true)),
-                BoundaryMetadata::fromArray(json_decode($row['metadata'], true))
-            );
-
-            $results = $this->connection->fetchAll(
-                sprintf('SELECT observation_point_id AS id, observation_point_name AS name, observation_point_geometry AS geometry, values as values  FROM %s WHERE model_id = :model_id AND boundary_id = :boundary_id', Table::BOUNDARY_OBSERVATION_POINT_VALUES),
-                ['model_id' => $modelId->toString(), 'boundary_id' => $boundaryId->toString()]
-            );
-
-            foreach ($results as $result){
-                $op = ObservationPoint::fromIdNameAndGeometry(
-                    ObservationPointId::fromString($result['id']),
-                    ObservationPointName::fromString($result['name']),
-                    Geometry::fromArray(json_decode($result['geometry'], true))
-                );
-
-                $river->addObservationPoint($op);
-                foreach (json_decode($result['values']) as $arrayValues){
-                    $river->addRiverStageToObservationPoint($op->id(), RiverDateTimeValue::fromArrayValues($arrayValues));
-                }
-            }
-
-            $result = $this->connection->fetchAssoc(
-                sprintf('SELECT active_cells FROM %s WHERE model_id = :model_id AND boundary_id = :boundary_id', Table::BOUNDARY_ACTIVE_CELLS),
-                ['model_id' => $modelId->toString(), 'boundary_id' => $boundaryId->toString()]
-            );
-
-            $activeCells = ActiveCells::fromArray(json_decode($result['active_cells'], true));
-            $river = $river->setActiveCells($activeCells);
-
-            $rivers[] = $river;
-        }
-
-        return $rivers;
     }
 
     public function findConstantHeadBoundaries(ModflowId $modelId): array
@@ -235,13 +106,6 @@ class BoundaryFinder
                 }
             }
 
-            $result = $this->connection->fetchAssoc(
-                sprintf('SELECT active_cells FROM %s WHERE model_id = :model_id AND boundary_id = :boundary_id', Table::BOUNDARY_ACTIVE_CELLS),
-                ['model_id' => $modelId->toString(), 'boundary_id' => $boundaryId->toString()]
-            );
-
-            $activeCells = ActiveCells::fromArray(json_decode($result['active_cells'], true));
-            $constantHeadBoundary = $constantHeadBoundary->setActiveCells($activeCells);
             $constantHeadBoundaries[] = $constantHeadBoundary;
         }
 
@@ -284,17 +148,117 @@ class BoundaryFinder
                 }
             }
 
-            $result = $this->connection->fetchAssoc(
-                sprintf('SELECT active_cells FROM %s WHERE model_id = :model_id AND boundary_id = :boundary_id', Table::BOUNDARY_ACTIVE_CELLS),
-                ['model_id' => $modelId->toString(), 'boundary_id' => $boundaryId->toString()]
-            );
-
-            $activeCells = ActiveCells::fromArray(json_decode($result['active_cells'], true));
-            $generalHeadBoundary = $generalHeadBoundary->setActiveCells($activeCells);
             $generalHeadBoundaries[] = $generalHeadBoundary;
         }
 
         return $generalHeadBoundaries;
+    }
+
+    public function findRechargeBoundaries(ModflowId $modelId): array
+    {
+        $rows = $this->connection->fetchAll(
+            sprintf('SELECT boundary_id, name, geometry, affected_layers, metadata FROM %s WHERE model_id = :model_id AND type = :type', Table::BOUNDARY_LIST),
+            ['model_id' => $modelId->toString(), 'type' => RechargeBoundary::TYPE]
+        );
+
+        $recharges = array();
+        foreach ($rows as $row) {
+            $boundaryId = BoundaryId::fromString($row['boundary_id']);
+            $recharge = RechargeBoundary::createWithParams(
+                $boundaryId,
+                BoundaryName::fromString($row['name']),
+                Geometry::fromArray(json_decode($row['geometry'], true)),
+                AffectedLayers::fromArray(json_decode($row['affected_layers'], true)),
+                BoundaryMetadata::fromArray(json_decode($row['metadata'], true))
+            );
+
+            $result = $this->connection->fetchAssoc(
+                sprintf('SELECT values FROM %s WHERE model_id = :model_id AND boundary_id = :boundary_id', Table::BOUNDARY_OBSERVATION_POINT_VALUES),
+                ['model_id' => $modelId->toString(), 'boundary_id' => $boundaryId->toString()]
+            );
+
+            foreach (json_decode($result['values']) as $arrayValues){
+                $recharge->addRecharge(RechargeDateTimeValue::fromArrayValues($arrayValues));
+            }
+
+            $recharges[] = $recharge;
+        }
+        return $recharges;
+    }
+
+    public function findRiverBoundaries(ModflowId $modelId): array
+    {
+        $rows = $this->connection->fetchAll(
+            sprintf('SELECT boundary_id as id, name, geometry, affected_layers, metadata FROM %s WHERE model_id = :model_id AND type = :type', Table::BOUNDARY_LIST),
+            ['model_id' => $modelId->toString(), 'type' => RiverBoundary::TYPE]
+        );
+
+        $rivers = array();
+        foreach ($rows as $row) {
+            $boundaryId = BoundaryId::fromString($row['id']);
+            $river = RiverBoundary::createWithParams(
+                $boundaryId,
+                BoundaryName::fromString($row['name']),
+                Geometry::fromArray(json_decode($row['geometry'], true)),
+                AffectedLayers::fromArray(json_decode($row['affected_layers'], true)),
+                BoundaryMetadata::fromArray(json_decode($row['metadata'], true))
+            );
+
+            $results = $this->connection->fetchAll(
+                sprintf('SELECT observation_point_id AS id, observation_point_name AS name, observation_point_geometry AS geometry, values as values  FROM %s WHERE model_id = :model_id AND boundary_id = :boundary_id', Table::BOUNDARY_OBSERVATION_POINT_VALUES),
+                ['model_id' => $modelId->toString(), 'boundary_id' => $boundaryId->toString()]
+            );
+
+            foreach ($results as $result){
+                $op = ObservationPoint::fromIdNameAndGeometry(
+                    ObservationPointId::fromString($result['id']),
+                    ObservationPointName::fromString($result['name']),
+                    Geometry::fromArray(json_decode($result['geometry'], true))
+                );
+
+                $river->addObservationPoint($op);
+                foreach (json_decode($result['values']) as $arrayValues){
+                    $river->addRiverStageToObservationPoint($op->id(), RiverDateTimeValue::fromArrayValues($arrayValues));
+                }
+            }
+
+            $rivers[] = $river;
+        }
+
+        return $rivers;
+    }
+
+    public function findWellBoundaries(ModflowId $modelId): array
+    {
+        $rows = $this->connection->fetchAll(
+            sprintf('SELECT boundary_id as id, name, geometry, metadata, affected_layers FROM %s WHERE model_id = :model_id AND type = :type', Table::BOUNDARY_LIST),
+            ['model_id' => $modelId->toString(), 'type' => WellBoundary::TYPE]
+        );
+
+        $wells = array();
+        foreach ($rows as $row) {
+            $boundaryId = BoundaryId::fromString($row['id']);
+            $well = WellBoundary::createWithParams(
+                $boundaryId,
+                BoundaryName::fromString($row['name']),
+                Geometry::fromArray(json_decode($row['geometry'], true)),
+                AffectedLayers::fromArray(json_decode($row['affected_layers'], true)),
+                BoundaryMetadata::fromArray(json_decode($row['metadata'], true))
+            );
+
+            $result = $this->connection->fetchAssoc(
+                sprintf('SELECT values FROM %s WHERE model_id = :model_id AND boundary_id = :boundary_id', Table::BOUNDARY_OBSERVATION_POINT_VALUES),
+                ['model_id' => $modelId->toString(), 'boundary_id' => $boundaryId->toString()]
+            );
+
+            foreach (json_decode($result['values']) as $arrayValues){
+                $well->addPumpingRate(WellDateTimeValue::fromArrayValues($arrayValues));
+            }
+
+            $wells[] = $well;
+        }
+
+        return $wells;
     }
 
     public function findBoundariesByModelId(ModflowId $modelId): ?array
@@ -483,24 +447,48 @@ class BoundaryFinder
         return $spDates;
     }
 
-    public function findAreaActiveCells(ModflowId $modelId): ActiveCells
+    public function findAreaActiveCells(ModflowId $modelId): ?ActiveCells
     {
         $result = $this->connection->fetchAssoc(
             sprintf('SELECT active_cells FROM %s WHERE boundary_id =:boundary_id AND model_id = :model_id', Table::BOUNDARY_ACTIVE_CELLS),
             ['model_id' => $modelId->toString(), 'boundary_id' => $modelId->toString()]
         );
 
-        return ActiveCells::fromArray((array)json_decode($result['active_cells']));
+        if (null === $result['active_cells']){
+            return null;
+        }
+
+        return ActiveCells::fromArray(json_decode($result['active_cells'], true));
     }
 
-    public function findBoundaryActiveCells(ModflowId $modelId, BoundaryId $boundaryId): ActiveCells
+    public function updateAreaActiveCells(ModflowId $modelId, ActiveCells $activeCells): void
+    {
+        $boundaryId = BoundaryId::fromString($modelId->toString());
+        $this->updateBoundaryActiveCells($modelId, $boundaryId, $activeCells);
+    }
+
+    public function findBoundaryActiveCells(ModflowId $modelId, BoundaryId $boundaryId): ?ActiveCells
     {
         $result = $this->connection->fetchAssoc(
             sprintf('SELECT active_cells FROM %s WHERE boundary_id =:boundary_id AND model_id = :model_id', Table::BOUNDARY_ACTIVE_CELLS),
             ['model_id' => $modelId->toString(), 'boundary_id' => $boundaryId->toString()]
         );
 
+        if (null === $result['active_cells']){
+            return null;
+        }
+
         return ActiveCells::fromArray(json_decode($result['active_cells'], true));
+    }
+
+    public function updateBoundaryActiveCells(ModflowId $modelId, BoundaryId $boundaryId, ActiveCells $activeCells): void
+    {
+        $this->connection->update(Table::BOUNDARY_ACTIVE_CELLS, array(
+            'active_cells' => json_encode($activeCells->toArray())
+        ), array(
+            'model_id' => $modelId->toString(),
+            'boundary_id' => $boundaryId->toString(),
+        ));
     }
 
     public function getAffectedLayersByModelAndBoundary(ModflowId $modelId, BoundaryId $boundaryId): AffectedLayers

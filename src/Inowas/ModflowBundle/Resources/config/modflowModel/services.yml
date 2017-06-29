@@ -17,10 +17,17 @@ services:
             - '@inowas.amqp.stream.connection'
             - '%rabbit_mq_read_data_queue%'
 
+    inowas.modflowmodel.boundary_manager:
+        class: Inowas\ModflowModel\Service\BoundaryManager
+        arguments:
+            - '@inowas.modflowmodel.model_finder'
+            - '@inowas.modflowmodel.boundary_finder'
+            - '@inowas.geotools.geotools_service'
+
     inowas.modflowmodel.manager:
         class: Inowas\ModflowModel\Service\ModflowModelManager
         arguments:
-            - '@inowas.modflowmodel.boundary_finder'
+            - '@inowas.modflowmodel.boundary_manager'
             - '@inowas.modflowmodel.model_finder'
             - '@inowas.modflowmodel.stressperiod_data_generator'
 
@@ -36,6 +43,7 @@ services:
         class: Inowas\ModflowModel\Service\ModflowPackagesPersister
         arguments:
             - '%data_folder%'
+        public: false
 
     inowas.modflowmodel.stressperiod_data_generator:
         class: Inowas\ModflowModel\Service\StressPeriodDataGenerator

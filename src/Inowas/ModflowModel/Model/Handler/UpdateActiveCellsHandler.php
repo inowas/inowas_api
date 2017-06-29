@@ -4,29 +4,29 @@ declare(strict_types=1);
 
 namespace Inowas\ModflowModel\Model\Handler;
 
-use Inowas\ModflowModel\Infrastructure\Projection\BoundaryList\BoundaryFinder;
 use Inowas\ModflowModel\Model\Command\UpdateActiveCells;
 use Inowas\ModflowModel\Model\Exception\ModflowModelNotFoundException;
 use Inowas\ModflowModel\Model\Exception\WriteAccessFailedException;
 use Inowas\ModflowModel\Model\ModflowModelList;
 use Inowas\ModflowModel\Model\ModflowModelAggregate;
+use Inowas\ModflowModel\Service\BoundaryManager;
 
 final class UpdateActiveCellsHandler
 {
 
-    /** @var  BoundaryFinder */
-    private $boundaryFinder;
+    /** @var  BoundaryManager */
+    private $boundaryManager;
 
     /** @var  ModflowModelList */
     private $modelList;
 
     /**
      * @param ModflowModelList $modelList
-     * @param BoundaryFinder $boundaryFinder
+     * @param BoundaryManager $boundaryManager
      */
-    public function __construct(ModflowModelList $modelList, BoundaryFinder $boundaryFinder)
+    public function __construct(ModflowModelList $modelList, BoundaryManager $boundaryManager)
     {
-        $this->boundaryFinder = $boundaryFinder;
+        $this->$boundaryManager = $boundaryManager;
         $this->modelList = $modelList;
     }
 
@@ -44,14 +44,14 @@ final class UpdateActiveCellsHandler
         }
 
         if ($command->isModelArea()) {
-            $currentActiveCells = $this->boundaryFinder->findAreaActiveCells($command->modelId());
+            $currentActiveCells = $this->boundaryManager->getAreaActiveCells($command->modelId());
             if (! $currentActiveCells->sameAs($command->activeCells())){
                 $modflowModel->updateAreaActiveCells($command->userId(), $command->activeCells());
             }
             return;
         }
 
-        $currentActiveCells = $this->boundaryFinder->findBoundaryActiveCells($command->modelId(), $command->boundaryId());
+        $currentActiveCells = $this->boundaryManager->getBoundaryActiveCells($command->modelId(), $command->boundaryId());
         if (! $currentActiveCells->sameAs($command->activeCells())){
             $modflowModel->updateBoundaryActiveCells($command->userId(), $command->boundaryId(), $command->activeCells());
         }

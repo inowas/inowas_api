@@ -4,8 +4,6 @@ declare(strict_types=1);
 
 namespace Inowas\ModflowModel\Model\Handler;
 
-use Inowas\GeoTools\Service\GeoTools;
-use Inowas\ModflowModel\Infrastructure\Projection\BoundaryList\BoundaryFinder;
 use Inowas\ModflowModel\Model\Command\UpdateBoundaryGeometry;
 use Inowas\ModflowModel\Model\Exception\ModflowModelNotFoundException;
 use Inowas\ModflowModel\Model\Exception\WriteAccessFailedException;
@@ -18,23 +16,13 @@ final class UpdateBoundaryGeometryHandler
     /** @var  ModflowModelList */
     private $modelList;
 
-    /** @var  GeoTools */
-    private $geoTools;
-
-    /** @var  BoundaryFinder */
-    private $boundaryFinder;
-
     /**
      * UpdateBoundaryGeometryHandler constructor.
      * @param ModflowModelList $modelList
-     * @param GeoTools $geoTools
-     * @param BoundaryFinder $boundaryFinder
      */
-    public function __construct(ModflowModelList $modelList, GeoTools $geoTools, BoundaryFinder $boundaryFinder)
+    public function __construct(ModflowModelList $modelList)
     {
         $this->modelList = $modelList;
-        $this->geoTools = $geoTools;
-        $this->boundaryFinder = $boundaryFinder;
     }
 
     public function __invoke(UpdateBoundaryGeometry $command)
