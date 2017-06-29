@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Tests\Inowas\GeoTools\Model;
 
 use Inowas\Common\Boundaries\Area;
+use Inowas\Common\Boundaries\BoundaryMetadata;
 use Inowas\Common\Boundaries\BoundaryName;
 use Inowas\Common\Boundaries\ConstantHeadBoundary;
 use Inowas\Common\Boundaries\ConstantHeadDateTimeValue;
@@ -161,7 +162,10 @@ class GeoToolsTest extends WebTestCase
                     array(105.89605227284,20.959195014837),
                     array(105.88686516674,20.950138231278),
                     array(105.87790127463,20.947208016218)
-                ), 4326)));
+                ), 4326)),
+            AffectedLayers::fromArray([0]),
+            BoundaryMetadata::fromArray([])
+        );
 
         $opId1 = ObservationPointId::generate();
         $this->river = $this->river->addObservationPoint(
@@ -230,8 +234,8 @@ class GeoToolsTest extends WebTestCase
             BoundaryId::generate(),
             BoundaryName::fromString('Well 1'),
             Geometry::fromPoint(new Point(105.78304910628,21.093961475741, 4326)),
-            WellType::fromString(WellType::TYPE_INDUSTRIAL_WELL),
-            AffectedLayers::createWithLayerNumber(LayerNumber::fromInteger(2))
+            AffectedLayers::createWithLayerNumber(LayerNumber::fromInteger(2)),
+            BoundaryMetadata::fromArray(['well_type' => WellType::fromString(WellType::TYPE_PUBLIC_WELL)])
         );
     }
 
@@ -295,8 +299,8 @@ class GeoToolsTest extends WebTestCase
                     BoundaryId::generate(),
                     BoundaryName::fromString(''),
                     Geometry::fromPoint($pointsAffectedLayer[0]),
-                    WellType::fromString(WellType::TYPE_INDUSTRIAL_WELL),
-                    $pointsAffectedLayer[1]
+                    $pointsAffectedLayer[1],
+                    BoundaryMetadata::fromArray(['well_type' => WellType::fromString(WellType::TYPE_PUBLIC_WELL)])
                 ),
                 $boundingBox,
                 $gridSize
@@ -346,10 +350,8 @@ class GeoToolsTest extends WebTestCase
             BoundaryId::generate(),
             BoundaryName::fromString('ChdBoundary'),
             Geometry::fromLineString(new LineString($chdPoints, 4326)),
-            AffectedLayers::createWithLayerNumbers(array(
-                    LayerNumber::fromInteger(1)
-                )
-            )
+            AffectedLayers::fromArray([1]),
+            BoundaryMetadata::fromArray([])
         );
 
         $observationPointData = array(

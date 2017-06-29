@@ -8,7 +8,6 @@ use Inowas\Common\Exception\ObservationPointNotFoundInBoundaryException;
 use Inowas\Common\Geometry\Geometry;
 use Inowas\Common\Grid\ActiveCells;
 use Inowas\Common\Grid\AffectedLayers;
-use Inowas\Common\Grid\LayerNumber;
 use Inowas\Common\Id\BoundaryId;
 use Inowas\Common\Id\ObservationPointId;
 
@@ -23,31 +22,64 @@ abstract class AbstractBoundary implements ModflowBoundary
     /** @var  Geometry */
     protected $geometry;
 
-    /** @var  ActiveCells */
-    protected $activeCells;
-
     /** @var  AffectedLayers */
     protected $affectedLayers;
+
+    /** @var  BoundaryMetadata */
+    protected $metadata;
+
+    /** @var  ActiveCells */
+    protected $activeCells;
 
     /** @var array  */
     protected $observationPoints = [];
 
-    protected function __construct(BoundaryId $boundaryId, BoundaryName $name = null, Geometry $geometry = null, ?ActiveCells $activeCells = null)
+    abstract protected function self(): ModflowBoundary;
+
+    protected function __construct(BoundaryId $boundaryId, BoundaryName $name, Geometry $geometry, AffectedLayers $affectedLayers, BoundaryMetadata $metadata)
     {
         $this->boundaryId = $boundaryId;
         $this->name = $name;
         $this->geometry = $geometry;
-        $this->activeCells = $activeCells;
-        $this->affectedLayers = AffectedLayers::createWithLayerNumber(LayerNumber::fromInteger(0));
-
-        if (null === $this->name) {
-            $this->name = BoundaryName::fromString('');
-        }
+        $this->affectedLayers = $affectedLayers;
+        $this->metadata = $metadata;
     }
 
-    abstract public function setActiveCells(ActiveCells $activeCells);
+    public function updateName(BoundaryName $boundaryName): ModflowBoundary
+    {
+        $this->name = $boundaryName;
+        return $this->self();
+    }
 
-    abstract public function updateGeometry(Geometry $geometry);
+    public function updateGeometry(Geometry $geometry): ModflowBoundary
+    {
+        $this->geometry = $geometry;
+        return $this->self();
+    }
+
+    public function updateAffectedLayers(AffectedLayers $affectedLayers): ModflowBoundary
+    {
+        $this->affectedLayers = $affectedLayers;
+        return $this->self();
+    }
+
+    public function updateMetadata(BoundaryMetadata $metadata): ModflowBoundary
+    {
+        $this->metadata = $metadata;
+        return $this->self();
+    }
+
+    public function setActiveCells(ActiveCells $activeCells): ModflowBoundary
+    {
+        $this->activeCells = $activeCells;
+        return $this->self();
+    }
+
+    public function addObservationPoint(ObservationPoint $point): ModflowBoundary
+    {
+        $this->addOrUpdateOp($point);
+        return $this->self();
+    }
 
     public function activeCells(): ?ActiveCells
     {
@@ -74,9 +106,13 @@ abstract class AbstractBoundary implements ModflowBoundary
         return $this->name;
     }
 
-    public function updateName(BoundaryName $boundaryName): void
+    public function metadata(): BoundaryMetadata
     {
-        $this->name = BoundaryName::fromString($boundaryName->toString());
+        if (null === $this->metadata){
+            $this->metadata = BoundaryMetadata::fromArray([]);
+        }
+
+        return $this->metadata;
     }
 
     public function observationPoints(): array
@@ -94,6 +130,13 @@ abstract class AbstractBoundary implements ModflowBoundary
         if ($this->hasOp($op->id())){
             $this->addOrUpdateOp($op);
         }
+    }
+
+    public function dateTimeValues(ObservationPointId $observationPointId): array
+    {
+        /** @var ObservationPoint $observationPoint */
+        $observationPoint = $this->observationPoints[$observationPointId->toString()];
+        return $observationPoint->dateTimeValues();
     }
 
     protected function addOrUpdateOp(ObservationPoint $point): void

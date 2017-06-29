@@ -10,14 +10,14 @@ class AffectedLayers
     /** @var int[] */
     private $layers = [];
 
-    public static function createWithLayerNumber(LayerNumber $layerNumber)
+    public static function createWithLayerNumber(LayerNumber $layerNumber): AffectedLayers
     {
         $self = new self();
         $self->layers = [$layerNumber->toInteger()];
         return $self;
     }
 
-    public static function createWithLayerNumbers(array $layerNumbers)
+    public static function createWithLayerNumbers(array $layerNumbers): AffectedLayers
     {
 
         if (count($layerNumbers) === 0){

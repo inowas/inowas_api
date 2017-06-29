@@ -6,7 +6,6 @@ namespace Inowas\Common\Boundaries;
 
 use Inowas\Common\Exception\ObservationPointNotFoundInBoundaryException;
 use Inowas\Common\Geometry\Geometry;
-use Inowas\Common\Grid\ActiveCells;
 use Inowas\Common\Grid\AffectedLayers;
 use Inowas\Common\Id\BoundaryId;
 use Inowas\Common\Id\ObservationPointId;
@@ -15,81 +14,38 @@ class ConstantHeadBoundary extends AbstractBoundary
 {
     const TYPE = 'chd';
 
-    public static function create(BoundaryId $boundaryId): ConstantHeadBoundary
-    {
-        return new self($boundaryId);
-    }
-
+    /** @noinspection MoreThanThreeArgumentsInspection
+     * @param BoundaryId $boundaryId
+     * @param BoundaryName $name
+     * @param Geometry $geometry
+     * @param AffectedLayers $affectedLayers
+     * @param BoundaryMetadata $metadata
+     * @return ConstantHeadBoundary
+     */
     public static function createWithParams(
         BoundaryId $boundaryId,
         BoundaryName $name,
         Geometry $geometry,
-        AffectedLayers $affectedLayers
+        AffectedLayers $affectedLayers,
+        BoundaryMetadata $metadata
     ): ConstantHeadBoundary
     {
-        $self = new self($boundaryId, $name, $geometry);
-        $self->affectedLayers = $affectedLayers;
-        return $self;
+        return new self($boundaryId, $name, $geometry, $affectedLayers, $metadata);
     }
 
-    public function addObservationPoint(ObservationPoint $point): ConstantHeadBoundary
+    public function type(): BoundaryType
     {
-        $this->addOrUpdateOp($point);
-        $self = new self($this->boundaryId, $this->name, $this->geometry, $this->activeCells);
-        $self->affectedLayers = $this->affectedLayers;
-        $self->observationPoints = $this->observationPoints;
-        return $self;
+        return BoundaryType::fromString($this::TYPE);
     }
 
-    public function addConstantHeadToObservationPoint(ObservationPointId $observationPointId, ConstantHeadDateTimeValue $chdTimeValue): ConstantHeadBoundary
+    public function addConstantHeadToObservationPoint(ObservationPointId $observationPointId, ConstantHeadDateTimeValue $chdTimeValue): ModflowBoundary
     {
         if (! $this->hasOp($observationPointId)){
             throw ObservationPointNotFoundInBoundaryException::withIds($this->boundaryId, $observationPointId);
         }
 
         $this->addDateTimeValue($chdTimeValue, $observationPointId);
-        $self = new self($this->boundaryId, $this->name, $this->geometry, $this->activeCells);
-        $self->affectedLayers = $this->affectedLayers;
-        $self->observationPoints = $this->observationPoints;
-        return $self;
-    }
-
-    public function setActiveCells(ActiveCells $activeCells): ConstantHeadBoundary
-    {
-        $self = new self($this->boundaryId, $this->name, $this->geometry, $activeCells);
-        $self->affectedLayers = $this->affectedLayers;
-        $self->observationPoints = $this->observationPoints;
-        return $self;
-    }
-
-    public function updateGeometry(Geometry $geometry): ConstantHeadBoundary
-    {
-        $self = new self($this->boundaryId, $this->name, $geometry, $this->activeCells);
-        $self->affectedLayers = $this->affectedLayers;
-        $self->observationPoints = $this->observationPoints;
-        return $self;
-    }
-
-    public function type(): string
-    {
-        return self::TYPE;
-    }
-
-    public function metadata(): array
-    {
-        return [];
-    }
-
-    public function dataToJson(): string
-    {
-        return json_encode([]);
-    }
-
-    public function dateTimeValues(ObservationPointId $observationPointId): array
-    {
-        /** @var ObservationPoint $observationPoint */
-        $observationPoint = $this->observationPoints[$observationPointId->toString()];
-        return $observationPoint->dateTimeValues();
+        return $this->self();
     }
 
     public function findValueByDateTime(\DateTimeImmutable $dateTime): ?ConstantHeadDateTimeValue
@@ -104,5 +60,13 @@ class ConstantHeadBoundary extends AbstractBoundary
         }
 
         return null;
+    }
+
+    protected function self(): ModflowBoundary
+    {
+        $self = new self($this->boundaryId, $this->name, $this->geometry, $this->affectedLayers, $this->metadata);
+        $self->activeCells = $this->activeCells;
+        $self->observationPoints = $this->observationPoints;
+        return $self;
     }
 }

@@ -41,7 +41,7 @@ class BoundaryObservationPointsProjector extends AbstractDoctrineConnectionProje
             $this->connection->insert(Table::BOUNDARY_OBSERVATION_POINT_VALUES, array(
                 'model_id' => $event->modflowId()->toString(),
                 'boundary_id' => $event->boundary()->boundaryId()->toString(),
-                'boundary_type' => $event->boundary()->type(),
+                'boundary_type' => $event->boundary()->type()->toString(),
                 'observation_point_id' => $observationPoint->id()->toString(),
                 'observation_point_name' => $observationPoint->name()->toString(),
                 'observation_point_geometry' => json_encode($observationPoint->geometry()->toArray()),

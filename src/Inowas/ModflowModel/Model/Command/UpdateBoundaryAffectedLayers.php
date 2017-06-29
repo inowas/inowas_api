@@ -17,6 +17,13 @@ class UpdateBoundaryAffectedLayers extends Command implements PayloadConstructab
 
     use PayloadTrait;
 
+    /** @noinspection MoreThanThreeArgumentsInspection
+     * @param UserId $userId
+     * @param ModflowId $modelId
+     * @param BoundaryId $boundaryId
+     * @param AffectedLayers $affectedLayers
+     * @return UpdateBoundaryAffectedLayers
+     */
     public static function byUserModelAndBoundary(
         UserId $userId,
         ModflowId $modelId,

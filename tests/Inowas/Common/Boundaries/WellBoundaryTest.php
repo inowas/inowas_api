@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Tests\Inowas\Common\Boundaries;
 
+use Inowas\Common\Boundaries\BoundaryMetadata;
 use Inowas\Common\Boundaries\BoundaryName;
 use Inowas\Common\Boundaries\WellBoundary;
 use Inowas\Common\Boundaries\WellDateTimeValue;
@@ -29,8 +30,8 @@ class WellBoundaryTest extends \PHPUnit_Framework_TestCase
             $boundaryId,
             BoundaryName::fromString('WellName'),
             Geometry::fromPoint(new Point(10, 12)),
-            WellType::fromString(WellType::TYPE_PUBLIC_WELL),
-            AffectedLayers::createWithLayerNumber(LayerNumber::fromInteger(0))
+            AffectedLayers::createWithLayerNumber(LayerNumber::fromInteger(0)),
+            BoundaryMetadata::fromArray(array('well_type' => WellType::fromString(WellType::TYPE_PUBLIC_WELL)))
         );
         $wb = $wb->addPumpingRate(WellDateTimeValue::fromParams(
             new \DateTimeImmutable('2015-01-01'),

@@ -11,7 +11,6 @@ use Inowas\Common\Id\UserId;
 use Inowas\Common\Modflow\ModelDescription;
 use Inowas\Common\Modflow\ModelName;
 use Inowas\ModflowModel\Model\Command\AddBoundary;
-use Inowas\ModflowModel\Model\Command\CalculateModflowModel;
 use Inowas\ModflowModel\Model\Command\ChangeDescription;
 use Inowas\ModflowModel\Model\Command\ChangeName;
 use Inowas\ScenarioAnalysis\Model\Command\CreateScenario;

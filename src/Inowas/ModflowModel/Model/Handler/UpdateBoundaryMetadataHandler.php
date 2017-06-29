@@ -37,6 +37,6 @@ final class UpdateBoundaryMetadataHandler
             throw WriteAccessFailedException::withUserAndOwner($command->userId(), $modflowModel->userId());
         }
 
-        $modflowModel->updateBoundaryMetaData($command->userId(), $command->boundaryId(), $command->boundaryMetadata());
+        $modflowModel->updateBoundaryMetaData($command->userId(), $command->boundaryId(), $command->metadata());
     }
 }

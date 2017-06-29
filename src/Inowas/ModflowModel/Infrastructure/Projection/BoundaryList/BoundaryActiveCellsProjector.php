@@ -177,9 +177,9 @@ class BoundaryActiveCellsProjector extends AbstractDoctrineConnectionProjector
 
     public function onModflowModelWasCreated(ModflowModelWasCreated $event): void
     {
-        $area = $this->modelFinder->getAreaByModflowModelId($event->modelId());
         $boundingBox = $this->modelFinder->getBoundingBoxByModflowModelId($event->modelId());
         $gridSize = $this->modelFinder->getGridSizeByModflowModelId($event->modelId());
+        $area = $this->modelFinder->getAreaByModflowModelId($event->modelId());
         $activeCells = $this->geoTools->calculateActiveCellsFromArea($area, $boundingBox, $gridSize);
 
         $this->connection->insert(Table::BOUNDARY_ACTIVE_CELLS, array(

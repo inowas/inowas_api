@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Inowas\ModflowModel\Infrastructure\Projection\BoundaryList;
 
 use Doctrine\DBAL\Connection;
+use Inowas\Common\Boundaries\BoundaryMetadata;
 use Inowas\Common\Boundaries\BoundaryName;
 use Inowas\Common\Boundaries\BoundaryType;
 use Inowas\Common\Boundaries\ConstantHeadBoundary;
@@ -19,7 +20,6 @@ use Inowas\Common\Boundaries\RiverBoundary;
 use Inowas\Common\Boundaries\RiverDateTimeValue;
 use Inowas\Common\Boundaries\WellBoundary;
 use Inowas\Common\Boundaries\WellDateTimeValue;
-use Inowas\Common\Boundaries\WellType;
 use Inowas\Common\DateTime\DateTime;
 use Inowas\Common\Geometry\Geometry;
 use Inowas\Common\Grid\ActiveCells;
@@ -73,7 +73,7 @@ class BoundaryFinder
     public function findRechargeBoundaries(ModflowId $modelId): array
     {
         $rows = $this->connection->fetchAll(
-            sprintf('SELECT boundary_id, name, geometry FROM %s WHERE model_id = :model_id AND type = :type', Table::BOUNDARY_LIST),
+            sprintf('SELECT boundary_id, name, geometry, affected_layers, metadata FROM %s WHERE model_id = :model_id AND type = :type', Table::BOUNDARY_LIST),
             ['model_id' => $modelId->toString(), 'type' => RechargeBoundary::TYPE]
         );
 
@@ -83,7 +83,9 @@ class BoundaryFinder
             $recharge = RechargeBoundary::createWithParams(
                 $boundaryId,
                 BoundaryName::fromString($row['name']),
-                Geometry::fromArray(json_decode($row['geometry'], true))
+                Geometry::fromArray(json_decode($row['geometry'], true)),
+                AffectedLayers::fromArray(json_decode($row['affected_layers'], true)),
+                BoundaryMetadata::fromArray(json_decode($row['metadata'], true))
             );
 
             $result = $this->connection->fetchAssoc(
@@ -121,8 +123,8 @@ class BoundaryFinder
                 $boundaryId,
                 BoundaryName::fromString($row['name']),
                 Geometry::fromArray(json_decode($row['geometry'], true)),
-                WellType::fromString(json_decode($row['metadata'], true)['well_type']),
-                AffectedLayers::fromArray(json_decode($row['affected_layers'], true))
+                AffectedLayers::fromArray(json_decode($row['affected_layers'], true)),
+                BoundaryMetadata::fromArray(json_decode($row['metadata'], true))
             );
 
             $result = $this->connection->fetchAssoc(
@@ -150,7 +152,7 @@ class BoundaryFinder
     public function findRiverBoundaries(ModflowId $modelId): array
     {
         $rows = $this->connection->fetchAll(
-            sprintf('SELECT boundary_id as id, name, geometry FROM %s WHERE model_id = :model_id AND type = :type', Table::BOUNDARY_LIST),
+            sprintf('SELECT boundary_id as id, name, geometry, affected_layers, metadata FROM %s WHERE model_id = :model_id AND type = :type', Table::BOUNDARY_LIST),
             ['model_id' => $modelId->toString(), 'type' => RiverBoundary::TYPE]
         );
 
@@ -160,7 +162,9 @@ class BoundaryFinder
             $river = RiverBoundary::createWithParams(
                 $boundaryId,
                 BoundaryName::fromString($row['name']),
-                Geometry::fromArray(json_decode($row['geometry'], true))
+                Geometry::fromArray(json_decode($row['geometry'], true)),
+                AffectedLayers::fromArray(json_decode($row['affected_layers'], true)),
+                BoundaryMetadata::fromArray(json_decode($row['metadata'], true))
             );
 
             $results = $this->connection->fetchAll(
@@ -198,7 +202,7 @@ class BoundaryFinder
     public function findConstantHeadBoundaries(ModflowId $modelId): array
     {
         $rows = $this->connection->fetchAll(
-            sprintf('SELECT boundary_id as id, name, geometry, affected_layers FROM %s WHERE model_id = :model_id AND type = :type', Table::BOUNDARY_LIST),
+            sprintf('SELECT boundary_id as id, name, geometry, affected_layers, metadata FROM %s WHERE model_id = :model_id AND type = :type', Table::BOUNDARY_LIST),
             ['model_id' => $modelId->toString(), 'type' => ConstantHeadBoundary::TYPE]
         );
 
@@ -209,7 +213,8 @@ class BoundaryFinder
                 $boundaryId,
                 BoundaryName::fromString($row['name']),
                 Geometry::fromArray(json_decode($row['geometry'], true)),
-                AffectedLayers::fromArray(json_decode($row['affected_layers'], true))
+                AffectedLayers::fromArray(json_decode($row['affected_layers'], true)),
+                BoundaryMetadata::fromArray(json_decode($row['metadata'], true))
             );
 
             $results = $this->connection->fetchAll(
@@ -246,7 +251,7 @@ class BoundaryFinder
     public function findGeneralHeadBoundaries(ModflowId $modelId): array
     {
         $rows = $this->connection->fetchAll(
-            sprintf('SELECT boundary_id as id, name, geometry, affected_layers FROM %s WHERE model_id = :model_id AND type = :type', Table::BOUNDARY_LIST),
+            sprintf('SELECT boundary_id as id, name, geometry, affected_layers, metadata FROM %s WHERE model_id = :model_id AND type = :type', Table::BOUNDARY_LIST),
             ['model_id' => $modelId->toString(), 'type' => GeneralHeadBoundary::TYPE]
         );
 
@@ -257,7 +262,8 @@ class BoundaryFinder
                 $boundaryId,
                 BoundaryName::fromString($row['name']),
                 Geometry::fromArray(json_decode($row['geometry'], true)),
-                AffectedLayers::fromArray(json_decode($row['affected_layers'], true))
+                AffectedLayers::fromArray(json_decode($row['affected_layers'], true)),
+                BoundaryMetadata::fromArray(json_decode($row['metadata'], true))
             );
 
             $results = $this->connection->fetchAll(
@@ -341,8 +347,8 @@ class BoundaryFinder
         $result['geometry'] = json_decode($result['geometry'], true);
         $result['metadata'] = json_decode($result['metadata'], true);
         $result['observation_points'] = $observationPoints;
+        $result['active_cells'] = $this->findBoundaryActiveCells($modelId, $boundaryId);
 
-        unset($result['observation_point_ids']);
         return $result;
     }
 
@@ -401,7 +407,6 @@ class BoundaryFinder
         if (null === $result){
             return null;
         }
-
 
         return ObservationPointName::fromString($result['name']);
     }

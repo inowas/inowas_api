@@ -17,6 +17,7 @@ class CalculateStressPeriods extends Command implements PayloadConstructable
 
     use PayloadTrait;
 
+    /** @noinspection MoreThanThreeArgumentsInspection */
     public static function forModflowModel(UserId $userId, ModflowId $modelId, DateTime $start, DateTime $end, TimeUnit $timeUnit): CalculateStressPeriods
     {
         return new self(

@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Inowas\Common\Boundaries;
 
 use Inowas\Common\Geometry\Geometry;
-use Inowas\Common\Grid\ActiveCells;
+use Inowas\Common\Grid\AffectedLayers;
 use Inowas\Common\Id\BoundaryId;
 use Inowas\Common\Id\ObservationPointId;
 
@@ -16,21 +16,31 @@ class RechargeBoundary extends AbstractBoundary
     /** @var  ObservationPoint */
     protected $observationPoint;
 
-    public static function create(BoundaryId $boundaryId): RechargeBoundary
-    {
-        return new self($boundaryId);
-    }
-
+    /** @noinspection MoreThanThreeArgumentsInspection
+     * @param BoundaryId $boundaryId
+     * @param BoundaryName $name
+     * @param Geometry $geometry
+     * @param AffectedLayers $affectedLayers
+     * @param BoundaryMetadata $metadata
+     * @return RechargeBoundary
+     */
     public static function createWithParams(
         BoundaryId $boundaryId,
         BoundaryName $name,
-        Geometry $geometry
+        Geometry $geometry,
+        AffectedLayers $affectedLayers,
+        BoundaryMetadata $metadata
     ): RechargeBoundary
     {
-        return new self($boundaryId, $name, $geometry);
+        return new self($boundaryId, $name, $geometry, $affectedLayers, $metadata);
     }
 
-    public function addRecharge(RechargeDateTimeValue $rechargeRate): RechargeBoundary
+    public function type(): BoundaryType
+    {
+        return BoundaryType::fromString($this::TYPE);
+    }
+
+    public function addRecharge(RechargeDateTimeValue $rechargeRate): ModflowBoundary
     {
         // In case of rechargeBoundary, the observationPointId is the boundaryId
         $observationPointId = ObservationPointId::fromString($this->boundaryId->toString());
@@ -39,49 +49,7 @@ class RechargeBoundary extends AbstractBoundary
         }
 
         $this->addDateTimeValue($rechargeRate, $observationPointId);
-
-        $self = new self($this->boundaryId, $this->name, $this->geometry, $this->activeCells);
-        $self->observationPoints = $this->observationPoints;
-        $self->affectedLayers = $this->affectedLayers;
-        return $self;
-    }
-
-    public function setActiveCells(ActiveCells $activeCells): RechargeBoundary
-    {
-        $self = new self($this->boundaryId, $this->name, $this->geometry, $activeCells);
-        $self->observationPoints = $this->observationPoints;
-        $self->affectedLayers = $this->affectedLayers;
-        return $self;
-    }
-
-    public function updateGeometry(Geometry $geometry): RechargeBoundary
-    {
-        $self = new self($this->boundaryId, $this->name, $geometry, $this->activeCells);
-        $self->observationPoints = $this->observationPoints;
-        $self->affectedLayers = $this->affectedLayers;
-        return $self;
-    }
-
-    public function type(): string
-    {
-        return self::TYPE;
-    }
-
-    public function metadata(): array
-    {
-        return [];
-    }
-
-    public function dataToJson(): string
-    {
-        return json_encode($this->observationPoints);
-    }
-
-    public function dateTimeValues(): array
-    {
-        /** @var ObservationPoint $observationPoint */
-        $observationPoint = $this->observationPoints[$this->boundaryId->toString()];
-        return $observationPoint->dateTimeValues();
+        return $this->self();
     }
 
     private function createObservationPoint(): ObservationPoint
@@ -104,5 +72,13 @@ class RechargeBoundary extends AbstractBoundary
         }
 
         return RechargeDateTimeValue::fromParams($dateTime, 0);
+    }
+
+    protected function self(): ModflowBoundary
+    {
+        $self = new self($this->boundaryId, $this->name, $this->geometry, $this->affectedLayers, $this->metadata);
+        $self->activeCells = $this->activeCells;
+        $self->observationPoints = $this->observationPoints;
+        return $self;
     }
 }

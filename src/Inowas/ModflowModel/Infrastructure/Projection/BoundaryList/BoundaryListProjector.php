@@ -65,7 +65,7 @@ class BoundaryListProjector extends AbstractDoctrineConnectionProjector
     public function onBoundaryMetadataWasUpdated(BoundaryMetadataWasUpdated $event): void
     {
         $this->connection->update(Table::BOUNDARY_LIST, array(
-            'metadata' => json_encode($event->metadata()),
+            'metadata' => json_encode($event->metadata()->toArray()),
         ), array(
             'boundary_id' => $event->boundaryId()->toString(),
             'model_id' => $event->modflowModelId()->toString()
@@ -96,7 +96,7 @@ class BoundaryListProjector extends AbstractDoctrineConnectionProjector
             'boundary_id' => $event->boundary()->boundaryId()->toString(),
             'name' => $event->boundary()->name()->toString(),
             'geometry' => json_encode($event->boundary()->geometry()->toArray()),
-            'type' => $event->boundary()->type(),
+            'type' => $event->boundary()->type()->toString(),
             'metadata' => json_encode($event->boundary()->metadata()),
             'observation_point_ids' => json_encode($observationPointIds),
             'affected_layers' => json_encode($event->boundary()->affectedLayers()->toArray()),

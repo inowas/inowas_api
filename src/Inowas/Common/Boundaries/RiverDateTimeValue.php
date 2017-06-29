@@ -6,7 +6,7 @@ namespace Inowas\Common\Boundaries;
 
 class RiverDateTimeValue extends DateTimeValue
 {
-    const TYPE = "riv";
+    const TYPE = 'riv';
 
     /** @var float */
     private $stage;
@@ -19,7 +19,9 @@ class RiverDateTimeValue extends DateTimeValue
 
     /** @var  \DateTimeImmutable */
     private $dateTime;
+    /** @noinspection PhpDocSignatureInspection */
 
+    /** @noinspection MoreThanThreeArgumentsInspection */
     public static function fromParams(\DateTimeImmutable $dateTime, float $stage, float $botm, float $cond): RiverDateTimeValue
     {
         return new self($dateTime, $stage, $botm, $cond);

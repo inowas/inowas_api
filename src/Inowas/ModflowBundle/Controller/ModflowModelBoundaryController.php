@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Inowas\ModflowBundle\Controller;
 
 use FOS\RestBundle\Controller\Annotations as Rest;
+use Inowas\Common\Boundaries\BoundaryMetadata;
 use Inowas\Common\Boundaries\BoundaryName;
 use Inowas\Common\Boundaries\BoundaryType;
 use Inowas\Common\Boundaries\ConstantHeadBoundary;
@@ -16,6 +17,7 @@ use Inowas\Common\Boundaries\WellBoundary;
 use Inowas\Common\Boundaries\WellType;
 use Inowas\Common\Geometry\Geometry;
 use Inowas\Common\Geometry\Point;
+use Inowas\Common\Grid\ActiveCells;
 use Inowas\Common\Grid\AffectedLayers;
 use Inowas\Common\Id\BoundaryId;
 use Inowas\Common\Id\ModflowId;
@@ -24,7 +26,10 @@ use Inowas\ModflowBundle\Exception\InvalidArgumentException;
 use Inowas\ModflowBundle\Exception\NotFoundException;
 use Inowas\ModflowModel\Model\Command\AddBoundary;
 use Inowas\ModflowModel\Model\Command\CreateObservationPoint;
+use Inowas\ModflowModel\Model\Command\UpdateActiveCells;
+use Inowas\ModflowModel\Model\Command\UpdateBoundaryAffectedLayers;
 use Inowas\ModflowModel\Model\Command\UpdateBoundaryGeometry;
+use Inowas\ModflowModel\Model\Command\UpdateBoundaryMetadata;
 use Inowas\ModflowModel\Model\Command\UpdateBoundaryName;
 use Nelmio\ApiDocBundle\Annotation\ApiDoc;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -114,14 +119,17 @@ class ModflowModelBoundaryController extends InowasRestController
         $this->assertGeometryIsValid($content['geometry']);
         $geometry = Geometry::fromArray($content['geometry']);
 
+        $this->assertContainsKey('affected_layers', $content);
+        $affectedLayers = AffectedLayers::fromArray($content['affected_layers']);
+
+        $this->assertContainsKey('metadata', $content);
+        $metadata = BoundaryMetadata::fromArray($content['metadata']);
+
+
         $boundaryId = BoundaryId::generate();
         $boundary = null;
         switch ($type->toString()) {
             case BoundaryType::CONSTANT_HEAD:
-
-                $this->assertContainsKey('affected_layers', $content);
-                $affectedLayers = AffectedLayers::fromArray($content['affected_layers']);
-
                 $boundary = ConstantHeadBoundary::createWithParams(
                     $boundaryId,
                     $name,
@@ -131,10 +139,6 @@ class ModflowModelBoundaryController extends InowasRestController
                 break;
 
             case BoundaryType::GENERAL_HEAD:
-
-                $this->assertContainsKey('affected_layers', $content);
-                $affectedLayers = AffectedLayers::fromArray($content['affected_layers']);
-
                 $boundary = GeneralHeadBoundary::createWithParams(
                     $boundaryId,
                     $name,
@@ -160,19 +164,10 @@ class ModflowModelBoundaryController extends InowasRestController
                 break;
 
             case BoundaryType::WELL:
-
-                $this->assertContainsKey('affected_layers', $content);
-                $affectedLayers = AffectedLayers::fromArray($content['affected_layers']);
-                $this->assertContainsKey('metadata', $content);
-                $metadata = $content['metadata'];
-                $this->assertContainsKey('well_type', $content);
-                $wellType = WellType::fromString($metadata['well_type']);
-
                 $boundary = WellBoundary::createWithParams(
                     $boundaryId,
                     $name,
                     $geometry,
-                    $wellType,
                     $affectedLayers
                 );
 
@@ -228,6 +223,70 @@ class ModflowModelBoundaryController extends InowasRestController
         }
 
         return new JsonResponse($boundaryDetails);
+    }
+
+    /**
+     * Create a new Boundary with name, type, geometry.
+     *
+     * @ApiDoc(
+     *   resource = true,
+     *   description = "Create a new Boundary with name, type, geometry.",
+     *   statusCodes = {
+     *     200 = "Returned when successful"
+     *   }
+     * )
+     *
+     * @param string $id
+     * @param string $bid
+     * @param Request $request
+     * @return Response
+     * @throws \InvalidArgumentException
+     * @throws \Prooph\ServiceBus\Exception\CommandDispatchException
+     * @Rest\Put("/modflowmodels/{id}/boundaries/{bid}")
+     */
+    public function putModflowModelBoundariesAction(string $id, string $bid, Request $request): Response
+    {
+        $userId = $this->getUserId();
+        $this->assertUuidIsValid($id);
+        $modelId = ModflowId::fromString($id);
+
+        $this->assertUuidIsValid($bid);
+        $boundaryId = BoundaryId::fromString($bid);
+
+        $commandBus = $this->get('prooph_service_bus.modflow_command_bus');
+
+        $content = $this->getContentAsArray($request);
+
+        if ($this->containsKey('name', $content)) {
+            $name = BoundaryName::fromString($content['name']);
+            $commandBus->dispatch(UpdateBoundaryName::byUserModelAndBoundary($userId, $modelId, $boundaryId, $name));
+        }
+
+        if ($this->containsKey('geometry', $content)) {
+            $this->assertGeometryIsValid($content['geometry']);
+            $geometry = Geometry::fromArray($content['geometry']);
+            $commandBus->dispatch(UpdateBoundaryGeometry::byUser($userId, $modelId, $boundaryId, $geometry));
+        }
+
+        if ($this->containsKey('active_cells', $content)) {
+            $activeCells = ActiveCells::fromCells($content['active_cells']);
+            $commandBus->dispatch(UpdateActiveCells::ofModelBoundary($userId, $modelId, $boundaryId, $activeCells));
+        }
+
+        if ($this->containsKey('affected_layers', $content)) {
+            $affectedLayers = AffectedLayers::fromArray($content['affected_layers']);
+            $commandBus->dispatch(UpdateBoundaryAffectedLayers::byUserModelAndBoundary($userId, $modelId, $boundaryId, $affectedLayers));
+        }
+
+        if ($this->containsKey('metadata', $content)) {
+            $metadata = BoundaryMetadata::fromArray($content['metadata']);
+            $commandBus->dispatch(UpdateBoundaryMetadata::byUserModelAndBoundary($userId, $modelId, $boundaryId, $metadata));
+        }
+
+        return new RedirectResponse(
+            $this->generateUrl('get_modflow_model_boundary', array('id' => $modelId->toString(), 'bid' => $boundaryId->toString())),
+            302
+        );
     }
 
     /**

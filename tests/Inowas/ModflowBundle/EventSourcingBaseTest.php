@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Tests\Inowas\ModflowBundle;
 
 use Doctrine\DBAL\Connection;
-use Inowas\Common\Boundaries\Area;
+use Inowas\Common\Boundaries\BoundaryMetadata;
 use Inowas\Common\Boundaries\BoundaryName;
 use Inowas\Common\Boundaries\ConstantHeadBoundary;
 use Inowas\Common\Boundaries\ConstantHeadDateTimeValue;
@@ -206,24 +206,6 @@ abstract class EventSourcingBaseTest extends WebTestCase
         return json_encode($request);
     }
 
-    protected function createArea(): Area
-    {
-
-        $area = Area::create(
-            BoundaryId::generate(),
-            BoundaryName::fromString('Rio Primero Area'),
-            new Polygon(array(array(
-                array(-63.65, -31.31),
-                array(-63.65, -31.36),
-                array(-63.58, -31.36),
-                array(-63.58, -31.31),
-                array(-63.65, -31.31)
-            )), 4326)
-        );
-
-        return $area;
-    }
-
     protected function createPolygon(): Polygon
     {
         return new Polygon([[
@@ -247,7 +229,8 @@ abstract class EventSourcingBaseTest extends WebTestCase
                 array(-63.687336, -31.313615),
                 array(-63.569260, -31.313615)
             ), 4326)),
-            AffectedLayers::createWithLayerNumber(LayerNumber::fromInteger(0))
+            AffectedLayers::createWithLayerNumber(LayerNumber::fromInteger(0)),
+            BoundaryMetadata::fromArray([])
         );
 
         $observationPointId = ObservationPointId::generate();
@@ -279,7 +262,8 @@ abstract class EventSourcingBaseTest extends WebTestCase
                 array(-63.687336, -31.313615),
                 array(-63.569260, -31.313615)
             ), 4326)),
-            AffectedLayers::createWithLayerNumber(LayerNumber::fromInteger(0))
+            AffectedLayers::createWithLayerNumber(LayerNumber::fromInteger(0)),
+            BoundaryMetadata::fromArray([])
         );
 
         $observationPointId = ObservationPointId::generate();
@@ -314,7 +298,9 @@ abstract class EventSourcingBaseTest extends WebTestCase
                         array(-63.64, -31.32)
                     )
                 ), 4326
-            ))
+            )),
+            AffectedLayers::fromArray([0]),
+            BoundaryMetadata::fromArray([])
         );
 
         $rchBoundary = $rchBoundary->addRecharge(RechargeDateTimeValue::fromParams(
@@ -413,7 +399,9 @@ abstract class EventSourcingBaseTest extends WebTestCase
                 array(-63.575305938721,-31.33296491207),
                 array(-63.572559356689,-31.332231777991),
                 array(-63.569641113281,-31.331205380684)
-            ), 4326))
+            ), 4326)),
+            AffectedLayers::fromArray([0]),
+            BoundaryMetadata::fromArray([])
         );
 
         $observationPointId = ObservationPointId::generate();
@@ -441,8 +429,8 @@ abstract class EventSourcingBaseTest extends WebTestCase
             $boundaryId,
             BoundaryName::fromString('Test Well 1'),
             Geometry::fromPoint(new Point(-63.60, -31.32, 4326)),
-            WellType::fromString(WellType::TYPE_INDUSTRIAL_WELL),
-            AffectedLayers::createWithLayerNumber(LayerNumber::fromInteger(0))
+            AffectedLayers::createWithLayerNumber(LayerNumber::fromInteger(0)),
+            BoundaryMetadata::fromArray(['well_type' => WellType::fromString(WellType::TYPE_INDUSTRIAL_WELL)])
         );
 
         $wellBoundary = $wellBoundary->addPumpingRate(WellDateTimeValue::fromParams(new \DateTimeImmutable('2015-01-01'), -5000));

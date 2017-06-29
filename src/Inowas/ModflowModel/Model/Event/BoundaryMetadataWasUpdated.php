@@ -4,11 +4,13 @@ declare(strict_types=1);
 
 namespace Inowas\ModflowModel\Model\Event;
 
+use Inowas\Common\Boundaries\BoundaryMetadata;
 use Inowas\Common\Id\BoundaryId;
 use Inowas\Common\Id\ModflowId;
 use Inowas\Common\Id\UserId;
 use Prooph\EventSourcing\AggregateChanged;
 
+/** @noinspection LongInheritanceChainInspection */
 class BoundaryMetadataWasUpdated extends AggregateChanged
 {
 
@@ -21,22 +23,29 @@ class BoundaryMetadataWasUpdated extends AggregateChanged
     /** @var BoundaryId */
     private $boundaryId;
 
-    /** @var array */
-    private $metadata;
+    /** @var BoundaryMetadata */
+    private $boundaryMetadata;
 
-    public static function of(ModflowId $modflowModelId, UserId $userId, BoundaryId $boundaryId, array $metadata): BoundaryMetadataWasUpdated
+    /** @noinspection MoreThanThreeArgumentsInspection
+     * @param ModflowId $modflowModelId
+     * @param UserId $userId
+     * @param BoundaryId $boundaryId
+     * @param BoundaryMetadata $metadata
+     * @return BoundaryMetadataWasUpdated
+     */
+    public static function of(ModflowId $modflowModelId, UserId $userId, BoundaryId $boundaryId, BoundaryMetadata $metadata): BoundaryMetadataWasUpdated
     {
         $event = self::occur(
             $modflowModelId->toString(), [
                 'user_id' => $userId->toString(),
                 'boundary_id' => $boundaryId->toString(),
-                'metadata' => $metadata
+                'metadata' => $metadata->toArray()
             ]
         );
 
-        $event->modflowModelId = $modflowModelId;
         $event->boundaryId = $boundaryId;
-        $event->metadata = $metadata;
+        $event->boundaryMetadata = $metadata;
+        $event->modflowModelId = $modflowModelId;
 
         return $event;
     }
@@ -68,12 +77,12 @@ class BoundaryMetadataWasUpdated extends AggregateChanged
         return $this->userId;
     }
 
-    public function metadata(): array
+    public function metadata(): BoundaryMetadata
     {
-        if ($this->metadata === null){
-            $this->metadata = $this->payload['metadata'];
+        if ($this->boundaryMetadata === null){
+            $this->boundaryMetadata = BoundaryMetadata::fromArray($this->payload['metadata']);
         }
 
-        return $this->metadata;
+        return $this->boundaryMetadata;
     }
 }

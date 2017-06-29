@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Inowas\ModflowModel\Model;
 
+use Inowas\Common\Boundaries\BoundaryMetadata;
 use Inowas\Common\Boundaries\BoundaryName;
 use Inowas\Common\Boundaries\ObservationPoint;
 use Inowas\Common\Geometry\Geometry;
@@ -307,7 +308,7 @@ class ModflowModelAggregate extends AggregateRoot
         }
     }
 
-    public function updateBoundaryMetaData(UserId $userId, BoundaryId $boundaryId, array $metadata): void
+    public function updateBoundaryMetaData(UserId $userId, BoundaryId $boundaryId, BoundaryMetadata $metadata): void
     {
         if (in_array($boundaryId->toString(), $this->boundaries, true)) {
             $this->recordThat(BoundaryMetadataWasUpdated::of(

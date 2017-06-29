@@ -12,7 +12,22 @@ use Inowas\Common\Id\ObservationPointId;
 
 interface ModflowBoundary
 {
-    public static function create(BoundaryId $boundaryId);
+    /** @noinspection ReturnTypeCanBeDeclaredInspection */
+    /** @noinspection MoreThanThreeArgumentsInspection
+     * @param BoundaryId $boundaryId
+     * @param BoundaryName $name
+     * @param Geometry $geometry
+     * @param AffectedLayers $affectedLayers
+     * @param BoundaryMetadata $metadata
+     * @return ModflowBoundary
+     */
+    public static function createWithParams(
+        BoundaryId $boundaryId,
+        BoundaryName $name,
+        Geometry $geometry,
+        AffectedLayers $affectedLayers,
+        BoundaryMetadata $metadata
+    );
 
     public function updateGeometry(Geometry $geometry);
 
@@ -30,15 +45,13 @@ interface ModflowBoundary
 
     public function getObservationPoint(ObservationPointId $id): ?ObservationPoint;
 
-    public function type(): string;
-
-    public function metadata(): array;
-
-    public function dataToJson(): string;
+    public function type(): BoundaryType;
 
     public function setActiveCells(ActiveCells $activeCells);
 
+    public function affectedLayers(): AffectedLayers;
+
     public function activeCells(): ?ActiveCells;
 
-    public function affectedLayers(): AffectedLayers;
+    public function metadata(): BoundaryMetadata;
 }

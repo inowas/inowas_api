@@ -7,7 +7,7 @@ namespace Inowas\Common\Boundaries;
 class ConstantHeadDateTimeValue extends DateTimeValue
 {
 
-    const TYPE = "chd";
+    const TYPE = 'chd';
 
     /** @var  \DateTimeImmutable */
     private $dateTime;
