@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Inowas\Common\Boundaries;
 
-use Inowas\Common\Geometry\Geometry;
+use Inowas\Common\Geometry\Point;
 use Inowas\Common\Id\ObservationPointId;
 
 class ObservationPoint implements \JsonSerializable
@@ -13,31 +13,42 @@ class ObservationPoint implements \JsonSerializable
     /** @var  ObservationPointId */
     protected $id;
 
-    /** @var  Geometry */
+    /** @var  Point */
     protected $geometry;
 
     /** @var  ObservationPointName */
     protected $name;
 
+    /** @var  BoundaryType */
+    protected $type;
+
     /** @var  array */
     protected $dateTimeValues = [];
 
-    public static function fromIdNameAndGeometry(ObservationPointId $id, ObservationPointName $name, Geometry $geometry): ObservationPoint
+    /** @noinspection MoreThanThreeArgumentsInspection
+     * @param ObservationPointId $id
+     * @param BoundaryType $type
+     * @param ObservationPointName $name
+     * @param Point $geometry
+     * @return ObservationPoint
+     */
+    public static function fromIdTypeNameAndGeometry(ObservationPointId $id, BoundaryType $type, ObservationPointName $name, Point $geometry): ObservationPoint
     {
-        return new self($id, $name, $geometry);
+        return new self($id, $type, $name, $geometry);
     }
 
-    private function __construct(ObservationPointId $id, ObservationPointName $name, ?Geometry $geometry = null)
+    private function __construct(ObservationPointId $id, BoundaryType $type, ObservationPointName $name, Point $geometry)
     {
         $this->id = $id;
         $this->name = $name;
         $this->geometry = $geometry;
+        $this->type = $type;
     }
 
     public function addDateTimeValue(DateTimeValue $dateTimeValue): ObservationPoint
     {
         $this->dateTimeValues[] = $dateTimeValue;
-        $self = new self($this->id, $this->name, $this->geometry);
+        $self = new self($this->id, $this->type, $this->name, $this->geometry);
         $self->dateTimeValues = $this->dateTimeValues;
         return $self;
     }
@@ -47,19 +58,14 @@ class ObservationPoint implements \JsonSerializable
         return $this->id;
     }
 
-    public function geometry(): ?Geometry
+    public function type(): BoundaryType
+    {
+        return $this->type;
+    }
+
+    public function geometry(): Point
     {
         return $this->geometry;
-    }
-
-    public function geometryArray(): ?array
-    {
-        return ($this->geometry instanceof Geometry) ? $this->geometry->toArray() : null;
-    }
-
-    public function geometryJson(): string
-    {
-        return ($this->geometry instanceof Geometry) ? $this->geometry->toJson() : "{}";
     }
 
     public function name(): ObservationPointName
@@ -88,7 +94,7 @@ class ObservationPoint implements \JsonSerializable
         return array(
             'id' => $this->id->toString(),
             'name' => $this->name()->toString(),
-            'geometry' => $this->geometryArray(),
+            'geometry' => $this->geometry->toArray(),
             'date_time_values' => $this->dateTimeValues
         );
     }
@@ -105,7 +111,7 @@ class ObservationPoint implements \JsonSerializable
         return array(
             'id' => $this->id->toString(),
             'name' => $this->name()->toString(),
-            'geometry' => $this->geometryArray(),
+            'geometry' => $this->geometry->toArray(),
             'values_description' => $valuesDescription,
             'values' => $this->dateTimeValues
         );

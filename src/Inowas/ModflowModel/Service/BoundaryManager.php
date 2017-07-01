@@ -144,6 +144,11 @@ class BoundaryManager
         return $this->boundaryFinder->getBoundaryType($modelId, $boundaryId);
     }
 
+    public function getBoundaryTypeByBoundaryId(BoundaryId $boundaryId): ?BoundaryType
+    {
+        return $this->boundaryFinder->getBoundaryTypeByBoundaryId($boundaryId);
+    }
+
     public function findStressPeriodDatesById(ModflowId $modelId): array
     {
         return $this->boundaryFinder->findStressPeriodDatesById($modelId);
@@ -156,7 +161,12 @@ class BoundaryManager
 
     public function getBoundaryIdsByName(ModflowId $modflowId, BoundaryName $boundaryName): array
     {
-        return $this->boundaryFinder->getBoundaryIdsByName( $modflowId,  $boundaryName);
+        return $this->boundaryFinder->getBoundaryIdsByName($modflowId, $boundaryName);
+    }
+
+    public function getBoundaryIds(ModflowId $modflowId): array
+    {
+        return $this->boundaryFinder->getBoundaryIds($modflowId);
     }
 
     private function calculateAreaActiveCells(ModflowId $modelId): ActiveCells

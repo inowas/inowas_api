@@ -10,6 +10,7 @@ services:
         arguments:
           - '@prooph_service_bus.modflow_command_bus'
           - '@modflow_model_list'
+          - '@inowas.modflowmodel.boundary_manager'
 
     inowas.modflowmodel.modflow_packages_process_manager:
         class: Inowas\ModflowModel\Infrastructure\ProcessManager\ModflowPackagesProcessManager

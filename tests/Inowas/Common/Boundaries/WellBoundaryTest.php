@@ -31,8 +31,9 @@ class WellBoundaryTest extends \PHPUnit_Framework_TestCase
             BoundaryName::fromString('WellName'),
             Geometry::fromPoint(new Point(10, 12)),
             AffectedLayers::createWithLayerNumber(LayerNumber::fromInteger(0)),
-            BoundaryMetadata::fromArray(array('well_type' => WellType::fromString(WellType::TYPE_PUBLIC_WELL)))
+            BoundaryMetadata::create()->addWellType(WellType::fromString(WellType::TYPE_PUBLIC_WELL))
         );
+
         $wb = $wb->addPumpingRate(WellDateTimeValue::fromParams(
             new \DateTimeImmutable('2015-01-01'),
             1100

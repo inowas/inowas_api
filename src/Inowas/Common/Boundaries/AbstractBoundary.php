@@ -96,7 +96,7 @@ abstract class AbstractBoundary implements ModflowBoundary
         return $this->boundaryId;
     }
 
-    public function geometry(): ?Geometry
+    public function geometry(): Geometry
     {
         return $this->geometry;
     }
@@ -109,7 +109,7 @@ abstract class AbstractBoundary implements ModflowBoundary
     public function metadata(): BoundaryMetadata
     {
         if (null === $this->metadata){
-            $this->metadata = BoundaryMetadata::fromArray([]);
+            $this->metadata = BoundaryMetadata::create();
         }
 
         return $this->metadata;

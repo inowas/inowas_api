@@ -1,4 +1,7 @@
 services:
+    inowas.modflowmodel.blackhole_projector:
+        class: Inowas\ModflowModel\Infrastructure\Projection\Blackhole\BlackholeProjector
+
     inowas.modflowmodel.boundary_active_cells_projector:
         class: Inowas\ModflowModel\Infrastructure\Projection\BoundaryList\BoundaryActiveCellsProjector
         arguments:

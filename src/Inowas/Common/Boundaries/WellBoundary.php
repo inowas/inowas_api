@@ -44,10 +44,11 @@ class WellBoundary extends AbstractBoundary
         $observationPointId = ObservationPointId::fromString($this->boundaryId->toString());
         if (! $this->hasOp($observationPointId)) {
             $this->addOrUpdateOp(
-                ObservationPoint::fromIdNameAndGeometry(
+                ObservationPoint::fromIdTypeNameAndGeometry(
                     ObservationPointId::fromString($this->boundaryId->toString()),
+                    $this->type(),
                     ObservationPointName::fromString($this->name->toString()),
-                    $this->geometry
+                    $this->geometry->getPoint()
                 )
             );
         }
@@ -60,7 +61,13 @@ class WellBoundary extends AbstractBoundary
     {
         /** @var ObservationPoint $observationPoint */
         $observationPoint = array_values($this->observationPoints)[0];
-        $changedObservationPoint = ObservationPoint::fromIdNameAndGeometry($observationPoint->id(), $observationPoint->name(), $geometry);
+        $changedObservationPoint = ObservationPoint::fromIdTypeNameAndGeometry(
+            $observationPoint->id(),
+            $this->type(),
+            $observationPoint->name(),
+            $geometry->getPoint()
+        );
+
         $this->observationPoints[$changedObservationPoint->id()->toString()] = $changedObservationPoint;
 
         return $this->self();

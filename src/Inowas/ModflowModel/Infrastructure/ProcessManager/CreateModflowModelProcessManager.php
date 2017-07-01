@@ -8,7 +8,7 @@ use Inowas\Common\Soilmodel\GeologicalLayerDescription;
 use Inowas\Common\Soilmodel\GeologicalLayerId;
 use Inowas\Common\Soilmodel\GeologicalLayerName;
 use Inowas\Common\Soilmodel\GeologicalLayerNumber;
-use Inowas\ModflowModel\Model\Event\ModflowModelWasCreated;
+use Inowas\ModflowModel\Model\Event\ModflowModel\ModflowModelWasCreated;
 use Inowas\Soilmodel\Model\Command\AddGeologicalLayerToSoilmodel;
 use Inowas\Soilmodel\Model\Command\CreateSoilmodel;
 use Inowas\Soilmodel\Model\SoilmodelAggregate;

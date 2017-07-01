@@ -19,13 +19,13 @@ use Inowas\Common\Id\ModflowId;
 use Inowas\Common\Id\ObservationPointId;
 use Inowas\ModflowBundle\Exception\InvalidArgumentException;
 use Inowas\ModflowBundle\Exception\NotFoundException;
-use Inowas\ModflowModel\Model\Command\AddBoundary;
-use Inowas\ModflowModel\Model\Command\CreateObservationPoint;
-use Inowas\ModflowModel\Model\Command\UpdateActiveCells;
-use Inowas\ModflowModel\Model\Command\UpdateBoundaryAffectedLayers;
-use Inowas\ModflowModel\Model\Command\UpdateBoundaryGeometry;
-use Inowas\ModflowModel\Model\Command\UpdateBoundaryMetadata;
-use Inowas\ModflowModel\Model\Command\UpdateBoundaryName;
+use Inowas\ModflowModel\Model\Command\Boundary\AddBoundary;
+use Inowas\ModflowModel\Model\Command\Boundary\AddBoundaryObservationPoint;
+use Inowas\ModflowModel\Model\Command\Boundary\UpdateBoundaryActiveCells;
+use Inowas\ModflowModel\Model\Command\Boundary\UpdateBoundaryAffectedLayers;
+use Inowas\ModflowModel\Model\Command\Boundary\UpdateBoundaryGeometry;
+use Inowas\ModflowModel\Model\Command\Boundary\UpdateBoundaryMetadata;
+use Inowas\ModflowModel\Model\Command\Boundary\UpdateBoundaryName;
 use Nelmio\ApiDocBundle\Annotation\ApiDoc;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\RedirectResponse;
@@ -118,7 +118,7 @@ class ModflowModelBoundaryController extends InowasRestController
             $affectedLayers = AffectedLayers::fromArray($content['affected_layers']);
         }
 
-        $metadata = BoundaryMetadata::fromArray([]);
+        $metadata = BoundaryMetadata::create();
         if ($this->containsKey('metadata', $content) && is_array($content['metadata'])){
             $metadata = BoundaryMetadata::fromArray($content['metadata']);
         }
@@ -216,7 +216,7 @@ class ModflowModelBoundaryController extends InowasRestController
 
         if ($this->containsKey('active_cells', $content)) {
             $activeCells = ActiveCells::fromCells($content['active_cells']);
-            $commandBus->dispatch(UpdateActiveCells::ofModelBoundary($userId, $modelId, $boundaryId, $activeCells));
+            $commandBus->dispatch(UpdateBoundaryActiveCells::withIds($userId, $modelId, $boundaryId, $activeCells));
         }
 
         if ($this->containsKey('affected_layers', $content)) {
@@ -271,16 +271,15 @@ class ModflowModelBoundaryController extends InowasRestController
 
         $this->assertContainsKey('geometry', $content);
         $this->assertGeometryIsValid($content['geometry']);
-        $geometry = Geometry::fromArray($content['geometry']);
-        $point = $geometry->value();
+        $geometry = Point::fromArray($content['geometry']);
 
-        if (! $point instanceof Point) {
+        if (! $geometry instanceof Point) {
             throw InvalidArgumentException::withMessage(sprintf('Expected geometry is point. Found %s', $content['geometry']));
         }
 
         $observationPointId = ObservationPointId::generate();
         $this->get('prooph_service_bus.modflow_command_bus')->dispatch(
-            CreateObservationPoint::byUserModelIdBoundaryId($userId, $modelId, $boundaryId, $observationPointId, $name, $geometry));
+            AddBoundaryObservationPoint::byUserModelIdBoundaryId($userId, $modelId, $boundaryId, $observationPointId, $name, $geometry));
 
         return new RedirectResponse(
             $this->generateUrl('get_modflow_model_boundary_observation_point_details', array(

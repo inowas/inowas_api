@@ -6,11 +6,12 @@ namespace Inowas\ModflowModel\Infrastructure\Projection\BoundaryList;
 
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Schema\Schema;
-use Inowas\Common\Boundaries\ObservationPoint;
+use Inowas\Common\Geometry\Geometry;
 use Inowas\Common\Projection\AbstractDoctrineConnectionProjector;
-use Inowas\ModflowModel\Model\Event\BoundaryWasAdded;
-use Inowas\ModflowModel\Model\Event\BoundaryWasRemoved;
-use Inowas\ModflowModel\Model\Event\ModflowModelWasCloned;
+use Inowas\ModflowModel\Model\Event\Boundary\BoundaryObservationPointWasAdded;
+use Inowas\ModflowModel\Model\Event\Boundary\BoundaryObservationPointWasUpdated;
+use Inowas\ModflowModel\Model\Event\Boundary\BoundaryWasCloned;
+use Inowas\ModflowModel\Model\Event\Boundary\BoundaryWasRemoved;
 use Inowas\ModflowModel\Infrastructure\Projection\Table;
 
 class BoundaryObservationPointsProjector extends AbstractDoctrineConnectionProjector
@@ -22,31 +23,73 @@ class BoundaryObservationPointsProjector extends AbstractDoctrineConnectionProje
 
         $schema = new Schema();
         $table = $schema->createTable(Table::BOUNDARY_OBSERVATION_POINT_VALUES);
-        $table->addColumn('model_id', 'string', ['length' => 36]);
         $table->addColumn('boundary_id', 'string', ['length' => 36]);
-        $table->addColumn('boundary_type', 'string', ['length' => 255]);
+        $table->addColumn('boundary_type', 'string', ['length' => 10]);
         $table->addColumn('observation_point_id', 'string', ['length' => 36]);
         $table->addColumn('observation_point_name', 'string', ['length' => 255]);
         $table->addColumn('observation_point_geometry', 'text', ['notnull' => false]);
         $table->addColumn('values_description', 'text', ['notnull' => false]);
-        $table->addColumn('values', 'text', ['notnull' => false]);
-        $table->addIndex(array('model_id'));
+        $table->addColumn('values', 'text', ['notnull' => false, 'default' => '[]']);
+        $table->addIndex(array('boundary_id'));
         $this->addSchema($schema);
     }
 
-    public function onBoundaryWasAdded(BoundaryWasAdded $event): void
+    public function onBoundaryObservationPointWasAdded(BoundaryObservationPointWasAdded $event): void
     {
-        /** @var ObservationPoint $observationPoint */
-        foreach ($event->boundary()->observationPoints() as $observationPoint) {
-            $this->connection->insert(Table::BOUNDARY_OBSERVATION_POINT_VALUES, array(
-                'model_id' => $event->modflowId()->toString(),
-                'boundary_id' => $event->boundary()->boundaryId()->toString(),
-                'boundary_type' => $event->boundary()->type()->toString(),
-                'observation_point_id' => $observationPoint->id()->toString(),
+        $observationPoint = $event->observationPoint();
+        $observationPointGeometry = $observationPoint->geometry();
+
+        $this->connection->insert(Table::BOUNDARY_OBSERVATION_POINT_VALUES, array(
+            'boundary_id' => $event->boundaryId()->toString(),
+            'boundary_type' => $observationPoint->type()->toString(),
+            'observation_point_id' => $observationPoint->id()->toString(),
+            'observation_point_name' => $observationPoint->name()->toString(),
+            'observation_point_geometry' => json_encode(Geometry::fromPoint($observationPointGeometry)),
+            'values_description' => json_encode($observationPoint->dateTimeValuesDescription()),
+            'values' => json_encode($observationPoint->dateTimeValues())
+        ));
+    }
+
+    public function onBoundaryObservationPointWasUpdated(BoundaryObservationPointWasUpdated $event): void
+    {
+        $observationPoint = $event->observationPoint();
+        $observationPointGeometry = $observationPoint->geometry();
+
+        $this->connection->update(Table::BOUNDARY_OBSERVATION_POINT_VALUES,
+            array(
                 'observation_point_name' => $observationPoint->name()->toString(),
-                'observation_point_geometry' => json_encode($observationPoint->geometry()->toArray()),
+                'observation_point_geometry' => json_encode(Geometry::fromPoint($observationPointGeometry)),
                 'values_description' => json_encode($observationPoint->dateTimeValuesDescription()),
                 'values' => json_encode($observationPoint->dateTimeValues())
+            ), array(
+                'boundary_id' => $event->boundaryId()->toString(),
+                'observation_point_id' => $observationPoint->id()->toString()
+            )
+        );
+    }
+
+    public function onBoundaryWasCloned(BoundaryWasCloned $event): void
+    {
+        $this->connection->setFetchMode(\PDO::FETCH_ASSOC);
+
+        $rows = $this->connection->fetchAll(
+            sprintf('SELECT * FROM %s WHERE boundary_id = :boundary_id', Table::BOUNDARY_OBSERVATION_POINT_VALUES),
+            array('boundary_id' => $event->fromBoundary()->toString())
+        );
+
+        if ($rows === false) {
+            return;
+        }
+
+        foreach ($rows as $row) {
+            $this->connection->insert(Table::BOUNDARY_OBSERVATION_POINT_VALUES, array(
+                'boundary_id' => $event->boundaryId()->toString(),
+                'boundary_type' => $row['boundary_type'],
+                'observation_point_id' => $row['observation_point_id'],
+                'observation_point_name' => $row['observation_point_name'],
+                'observation_point_geometry' => $row['observation_point_geometry'],
+                'values_description' => $row['values_description'],
+                'values' => $row['values']
             ));
         }
     }
@@ -54,31 +97,7 @@ class BoundaryObservationPointsProjector extends AbstractDoctrineConnectionProje
     public function onBoundaryWasRemoved(BoundaryWasRemoved $event): void
     {
         $this->connection->delete(Table::BOUNDARY_OBSERVATION_POINT_VALUES, array(
-            'model_id' => $event->modflowId()->toString(),
             'boundary_id' => $event->boundaryId()->toString()
         ));
-    }
-
-    public function onModflowModelWasCloned(ModflowModelWasCloned $event): void
-    {
-
-        $sql = sprintf('SELECT * FROM %s WHERE model_id = ?', Table::BOUNDARY_OBSERVATION_POINT_VALUES);
-        $stmt = $this->connection->prepare($sql);
-        $stmt->bindValue(1, $event->baseModelId()->toString());
-        $stmt->execute();
-        $boundaries = $stmt->fetchAll();
-
-        foreach ($boundaries as $boundary) {
-            $this->connection->insert(Table::BOUNDARY_OBSERVATION_POINT_VALUES, array(
-                'model_id' => $event->modelId()->toString(),
-                'boundary_id' => $boundary['boundary_id'],
-                'boundary_type' => $boundary['boundary_type'],
-                'observation_point_id' => $boundary['observation_point_id'],
-                'observation_point_name' => $boundary['observation_point_name'],
-                'observation_point_geometry' => $boundary['observation_point_geometry'],
-                'values_description' => $boundary['values_description'],
-                'values' => $boundary['values']
-            ));
-        }
     }
 }

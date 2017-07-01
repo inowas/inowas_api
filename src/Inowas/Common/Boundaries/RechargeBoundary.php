@@ -54,10 +54,11 @@ class RechargeBoundary extends AbstractBoundary
 
     private function createObservationPoint(): ObservationPoint
     {
-        return ObservationPoint::fromIdNameAndGeometry(
+        return ObservationPoint::fromIdTypeNameAndGeometry(
             ObservationPointId::fromString($this->boundaryId->toString()),
+            $this->type(),
             ObservationPointName::fromString($this->name->toString()),
-            $this->geometry
+            $this->geometry->getPointFromPolygon()
         );
     }
 

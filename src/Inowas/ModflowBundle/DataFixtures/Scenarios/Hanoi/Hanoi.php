@@ -3,6 +3,7 @@
 namespace Inowas\ModflowBundle\DataFixtures\Scenarios\Hanoi;
 
 use Inowas\Common\Boundaries\BoundaryMetadata;
+use Inowas\Common\Boundaries\BoundaryType;
 use Inowas\Common\Boundaries\ConstantHeadBoundary;
 use Inowas\Common\Boundaries\ConstantHeadDateTimeValue;
 use Inowas\Common\Boundaries\ObservationPoint;
@@ -23,11 +24,11 @@ use Inowas\Common\Id\ObservationPointId;
 use Inowas\Common\Modflow\LengthUnit;
 use Inowas\Common\Modflow\ModelDescription;
 use Inowas\Common\Modflow\ParameterName;
-use Inowas\ModflowModel\Model\Command\CalculateModflowModel;
-use Inowas\ModflowModel\Model\Command\CalculateStressPeriods;
-use Inowas\ModflowModel\Model\Command\ChangeBoundingBox;
-use Inowas\ModflowModel\Model\Command\ChangeFlowPackage;
-use Inowas\ModflowModel\Model\Command\UpdateModflowPackageParameter;
+use Inowas\ModflowModel\Model\Command\ModflowModel\CalculateModflowModel;
+use Inowas\ModflowModel\Model\Command\ModflowModel\CalculateStressPeriods;
+use Inowas\ModflowModel\Model\Command\ModflowModel\ChangeBoundingBox;
+use Inowas\ModflowModel\Model\Command\ModflowModel\ChangeFlowPackage;
+use Inowas\ModflowModel\Model\Command\ModflowModel\UpdateModflowPackageParameter;
 use Inowas\ModflowModel\Model\Packages\OcStressPeriod;
 use Inowas\ModflowModel\Model\Packages\OcStressPeriodData;
 use Inowas\Common\Modflow\PackageName;
@@ -40,12 +41,12 @@ use Inowas\Common\Soilmodel\SpecificStorage;
 use Inowas\Common\Soilmodel\SpecificYield;
 use Inowas\Common\Soilmodel\TopElevation;
 use Inowas\Common\Soilmodel\VerticalHydraulicConductivity;
-use Inowas\ModflowModel\Model\Command\AddBoundary;
-use Inowas\ModflowModel\Model\Command\CreateModflowModel;
+use Inowas\ModflowModel\Model\Command\Boundary\AddBoundary;
+use Inowas\ModflowModel\Model\Command\ModflowModel\CreateModflowModel;
 use Inowas\Common\Grid\BoundingBox;
 use Inowas\Common\Grid\GridSize;
 use Inowas\Common\Id\ModflowId;
-use Inowas\ModflowModel\Model\Command\UpdateBoundaryGeometry;
+use Inowas\ModflowModel\Model\Command\Boundary\UpdateBoundaryGeometry;
 use Inowas\Common\Modflow\ModelName;
 use Inowas\Common\Id\UserId;
 use Inowas\Common\Boundaries\WellBoundary;
@@ -426,7 +427,7 @@ class Hanoi extends LoadScenarioBase
                 $boundaryName,
                 Geometry::fromPoint($geoTools->projectPoint(new Point($well['x'], $well['y'], $well['srid']), Srid::fromInt(4326))),
                 AffectedLayers::createWithLayerNumber(LayerNumber::fromInteger((int)$well['layer']-1)),
-                BoundaryMetadata::fromArray(['wel_type' => $well['type']])
+                BoundaryMetadata::create()->addWellType(WellType::fromString($well['type']))
             );
 
             $value = null;
@@ -459,7 +460,7 @@ class Hanoi extends LoadScenarioBase
             BoundaryName::fromString('Red River'),
             Geometry::fromLineString(new LineString($riverPoints, 4326)),
             AffectedLayers::fromArray([0]),
-            BoundaryMetadata::fromArray([])
+            BoundaryMetadata::create()
         );
 
         $observationPoints = $this->loadRowsFromCsv(__DIR__ . '/data/river_stages_basecase.csv');
@@ -467,10 +468,11 @@ class Hanoi extends LoadScenarioBase
         $dates = $this->getDates($header);
 
         foreach ($observationPoints as $op){
-            $observationPoint = ObservationPoint::fromIdNameAndGeometry(
+            $observationPoint = ObservationPoint::fromIdTypeNameAndGeometry(
                 ObservationPointId::generate(),
+                BoundaryType::fromString(BoundaryType::RIVER),
                 ObservationPointName::fromString($op['name']),
-                Geometry::fromPoint($geoTools->projectPoint(new Point($op['x'], $op['y'], $op['srid']), Srid::fromInt(4326)))
+                $geoTools->projectPoint(new Point($op['x'], $op['y'], $op['srid']), Srid::fromInt(4326))
             );
 
             foreach ($dates as $date){
@@ -502,7 +504,7 @@ class Hanoi extends LoadScenarioBase
             $boundaryName,
             Geometry::fromLineString(new LineString($chdPoints, 4326)),
             AffectedLayers::fromArray(array(2, 3)),
-            BoundaryMetadata::fromArray([])
+            BoundaryMetadata::create()
         );
 
         $observationPoints = $this->loadRowsFromCsv(__DIR__ . '/data/chd_stages_basecase.csv');
@@ -512,10 +514,11 @@ class Hanoi extends LoadScenarioBase
         foreach ($observationPoints as $op){
 
             $observationPointId = ObservationPointId::generate();
-            $observationPoint = ObservationPoint::fromIdNameAndGeometry(
+            $observationPoint = ObservationPoint::fromIdTypeNameAndGeometry(
                 $observationPointId,
+                BoundaryType::fromString(BoundaryType::CONSTANT_HEAD),
                 ObservationPointName::fromString($op['name']),
-                Geometry::fromPoint($geoTools->projectPoint(new Point($op['x'], $op['y'], $op['srid']), Srid::fromInt(4326)))
+                $geoTools->projectPoint(new Point($op['x'], $op['y'], $op['srid']), Srid::fromInt(4326))
             );
 
             echo sprintf("Add Chd-Boundary ObservationPoint %s.\r\n", $observationPoint->name()->toString());
@@ -643,12 +646,14 @@ class Hanoi extends LoadScenarioBase
                 BoundaryName::fromString($wellData['name']),
                 Geometry::fromPoint($geoTools->projectPoint(new Point($wellData['x'], $wellData['y'], $wellData['srid']), Srid::fromInt(4326))),
                 AffectedLayers::createWithLayerNumber(LayerNumber::fromInteger(1)),
-                BoundaryMetadata::fromArray(['well_type' => WellType::TYPE_SCENARIO_NEW_WELL])
+                BoundaryMetadata::create()->addWellType(WellType::fromString(WellType::TYPE_SCENARIO_NEW_WELL))
             );
 
             $wellBoundary = $wellBoundary->addPumpingRate(WellDateTimeValue::fromParams(
                     $start->toDateTimeImmutable(),
                     $wellData['pumpingrate']));
+
+            echo sprintf("Add Well %s.\r\n", $wellData['name']);
             $commandBus->dispatch(AddBoundary::to($scenarioId, $ownerId, $wellBoundary));
         }
 
@@ -700,7 +705,7 @@ class Hanoi extends LoadScenarioBase
                 BoundaryName::fromString($wellData['name']),
                 Geometry::fromPoint($geoTools->projectPoint(new Point($wellData['x'], $wellData['y'], $wellData['srid']), Srid::fromInt(4326))),
                 AffectedLayers::createWithLayerNumber(LayerNumber::fromInteger(1)),
-                BoundaryMetadata::fromArray(['well_type' => WellType::TYPE_SCENARIO_NEW_WELL])
+                BoundaryMetadata::create()->addWellType(WellType::fromString(WellType::TYPE_SCENARIO_NEW_WELL))
             );
 
             $wellBoundary = $wellBoundary->addPumpingRate(WellDateTimeValue::fromParams(

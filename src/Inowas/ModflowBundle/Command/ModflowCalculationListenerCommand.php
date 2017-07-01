@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Inowas\ModflowBundle\Command;
 
 use Inowas\ModflowModel\Model\AMQP\CalculationResponse;
-use Inowas\ModflowModel\Model\Command\UpdateCalculationResults;
+use Inowas\ModflowModel\Model\Command\ModflowModel\UpdateCalculationResults;
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -34,7 +34,7 @@ class ModflowCalculationListenerCommand extends ContainerAwareCommand
             try {
                 $response = CalculationResponse::fromJson($msg->body);
                 $commandBus = $this->getContainer()->get('prooph_service_bus.modflow_command_bus');
-                $commandBus->dispatch(UpdateCalculationResults::withResponse($response));
+                $commandBus->dispatch(\Inowas\ModflowModel\Model\Command\ModflowModel\UpdateCalculationResults::withResponse($response));
             } catch (\Exception $exception) {
                 echo sprintf($exception->getMessage());
             }

@@ -8,7 +8,7 @@ use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Schema\Schema;
 use Inowas\Common\Projection\AbstractDoctrineConnectionProjector;
 use Inowas\ModflowModel\Infrastructure\Projection\ModelList\ModelFinder;
-use Inowas\ModflowModel\Model\Event\CalculationIdWasChanged;
+use Inowas\ModflowModel\Model\Event\ModflowModel\CalculationIdWasChanged;
 use Inowas\ScenarioAnalysis\Model\Event\ScenarioAnalysisWasCloned;
 use Inowas\ScenarioAnalysis\Model\Event\ScenarioAnalysisWasCreated;
 use Inowas\ScenarioAnalysis\Model\Event\ScenarioAnalysisWasDeleted;

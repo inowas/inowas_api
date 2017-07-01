@@ -2,9 +2,12 @@
 
 namespace Inowas\ModflowModel\Infrastructure\ProcessManager;
 
-use Inowas\ModflowModel\Model\Event\ModflowModelWasCloned;
+use Inowas\Common\Id\BoundaryId;
+use Inowas\ModflowModel\Model\Command\Boundary\CloneBoundary;
+use Inowas\ModflowModel\Model\Event\ModflowModel\ModflowModelWasCloned;
 use Inowas\ModflowModel\Model\ModflowModelAggregate;
 use Inowas\ModflowModel\Model\ModflowModelList;
+use Inowas\ModflowModel\Service\BoundaryManager;
 use Inowas\Soilmodel\Model\Command\CloneSoilmodel;
 use Prooph\ServiceBus\CommandBus;
 
@@ -17,10 +20,14 @@ class CloneModflowModelProcessManager
     /** @var  ModflowModelList */
     private $modelList;
 
-    public function __construct(CommandBus $commandBus, ModflowModelList $modelList)
+    /** @var  BoundaryManager */
+    private $boundaryManager;
+
+    public function __construct(CommandBus $commandBus, ModflowModelList $modelList, BoundaryManager $boundaryManager)
     {
         $this->commandBus = $commandBus;
         $this->modelList = $modelList;
+        $this->boundaryManager = $boundaryManager;
     }
 
     public function onModflowModelWasCloned(ModflowModelWasCloned $event): void
@@ -30,6 +37,12 @@ class CloneModflowModelProcessManager
             $model = $this->modelList->get($event->baseModelId());
             $oldSoilModelId = $model->soilmodelId();
             $this->commandBus->dispatch(CloneSoilmodel::byUserWithModelId($event->soilmodelId(), $event->userId(), $oldSoilModelId));
+        }
+
+        $boundaryIds = $this->boundaryManager->getBoundaryIds($event->baseModelId());
+
+        foreach ($boundaryIds as $boundaryId) {
+            $this->commandBus->dispatch(CloneBoundary::withIds($boundaryId, BoundaryId::generate(), $event->modelId()));
         }
     }
 }

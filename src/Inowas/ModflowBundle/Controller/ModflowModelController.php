@@ -16,18 +16,18 @@ use Inowas\Common\Modflow\ModelDescription;
 use Inowas\Common\Modflow\TimeUnit;
 use Inowas\Common\Soilmodel\SoilmodelId;
 use Inowas\ModflowBundle\Exception\NotFoundException;
-use Inowas\ModflowModel\Model\Command\CalculateModflowModel;
-use Inowas\ModflowModel\Model\Command\ChangeBoundingBox;
-use Inowas\ModflowModel\Model\Command\ChangeDescription;
-use Inowas\ModflowModel\Model\Command\ChangeGridSize;
-use Inowas\ModflowModel\Model\Command\ChangeName;
-use Inowas\ModflowModel\Model\Command\ChangeSoilmodelId;
-use Inowas\ModflowModel\Model\Command\CreateModflowModel;
-use Inowas\ModflowModel\Model\Command\DeleteModflowModel;
-use Inowas\ModflowModel\Model\Command\UpdateAreaGeometry;
-use Inowas\ModflowModel\Model\Command\UpdateActiveCells;
-use Inowas\ModflowModel\Model\Command\UpdateLengthUnit;
-use Inowas\ModflowModel\Model\Command\UpdateTimeUnit;
+use Inowas\ModflowModel\Model\Command\ModflowModel\CalculateModflowModel;
+use Inowas\ModflowModel\Model\Command\ModflowModel\ChangeBoundingBox;
+use Inowas\ModflowModel\Model\Command\ModflowModel\ChangeDescription;
+use Inowas\ModflowModel\Model\Command\ModflowModel\ChangeGridSize;
+use Inowas\ModflowModel\Model\Command\ModflowModel\ChangeName;
+use Inowas\ModflowModel\Model\Command\ModflowModel\ChangeSoilmodelId;
+use Inowas\ModflowModel\Model\Command\ModflowModel\CreateModflowModel;
+use Inowas\ModflowModel\Model\Command\ModflowModel\DeleteModflowModel;
+use Inowas\ModflowModel\Model\Command\ModflowModel\UpdateAreaGeometry;
+use Inowas\ModflowModel\Model\Command\ModflowModel\UpdateAreaActiveCells;
+use Inowas\ModflowModel\Model\Command\ModflowModel\UpdateLengthUnit;
+use Inowas\ModflowModel\Model\Command\ModflowModel\UpdateTimeUnit;
 use Nelmio\ApiDocBundle\Annotation\ApiDoc;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\RedirectResponse;
@@ -246,7 +246,7 @@ class ModflowModelController extends InowasRestController
 
         if ($this->containsKey('active_cells', $content)) {
             $activeCells = ActiveCells::from2DArray($content['active_cells']);
-            $this->get('prooph_service_bus.modflow_command_bus')->dispatch(UpdateActiveCells::ofModelArea($userId, $modelId, $activeCells));
+            $this->get('prooph_service_bus.modflow_command_bus')->dispatch(UpdateAreaActiveCells::ofModelArea($userId, $modelId, $activeCells));
         }
 
         return new RedirectResponse(

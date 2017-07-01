@@ -131,6 +131,37 @@ class Geometry implements \JsonSerializable
         return $this->geometry;
     }
 
+    public function isPoint(): bool
+    {
+        return ($this->value() instanceof Point);
+    }
+
+    public function isPolygon(): bool
+    {
+        return ($this->value() instanceof Polygon);
+    }
+
+    public function getPoint(): ?Point
+    {
+        if ($this->isPoint()) {
+            return $this->value();
+        }
+
+        return null;
+    }
+
+    public function getPointFromPolygon(): ?Point
+    {
+        if (! $this->isPolygon()) {
+            return null;
+        }
+
+        /** @var Polygon $polygon */
+        $polygon = $this->value();
+
+        return $polygon->getRing(0)->getPoint(0);
+    }
+
     public function jsonSerialize()
     {
         return [

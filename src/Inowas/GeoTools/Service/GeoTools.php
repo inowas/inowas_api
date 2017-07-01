@@ -106,7 +106,7 @@ class GeoTools
 
     public function distanceInMeters(Point $pointA, Point $pointB): Distance
     {
-        $distance = \geoPHP::load(sprintf('LINESTRING(%f %f, %f %f)', $pointA->getX(), $pointA->getY(), $pointB->getX(), $pointB->getY(), 'wkt'))->greatCircleLength();
+        $distance = \geoPHP::load(sprintf('LINESTRING(%f %f, %f %f)', $pointA->getX(), $pointA->getY(), $pointB->getX(), $pointB->getY()), 'wkt')->greatCircleLength();
         return Distance::fromMeters($distance);
     }
 
@@ -230,7 +230,7 @@ class GeoTools
         $distances = [];
         foreach ($observationPoints as $observationPoint) {
 
-            $point = $observationPoint->geometry()->value();
+            $point = $observationPoint->geometry();
             if (! $point instanceof Point){
                 // @todo do something
                 return null;
@@ -248,8 +248,8 @@ class GeoTools
         $substringsWithObservationPoints = array();
         foreach ($observationPoints as $key => $observationPoint) {
             if ($key === 0){continue;}
-            $startPoint = $observationPoints[$key-1]->geometry()->value();
-            $endPoint = $observationPoints[$key]->geometry()->value();
+            $startPoint = $observationPoints[$key-1]->geometry();
+            $endPoint = $observationPoints[$key]->geometry();
             $substringsWithObservationPoints[] = LineStringWithObservationPoints::create(
                 $this->getSubstringOfLinestring($lineString, $startPoint, $endPoint),
                 $observationPoints[$key-1],

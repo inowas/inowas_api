@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace Inowas\ScenarioAnalysis\Infrastructure\ProcessManager;
 
-use Inowas\ModflowModel\Model\Command\ChangeDescription;
-use Inowas\ModflowModel\Model\Command\ChangeName;
-use Inowas\ModflowModel\Model\Command\CloneModflowModel;
+use Inowas\ModflowModel\Model\Command\ModflowModel\ChangeDescription;
+use Inowas\ModflowModel\Model\Command\ModflowModel\ChangeName;
+use Inowas\ModflowModel\Model\Command\ModflowModel\CloneModflowModel;
 use Inowas\ScenarioAnalysis\Model\Event\ScenarioWasCreated;
 use Prooph\ServiceBus\CommandBus;
 

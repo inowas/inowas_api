@@ -34,16 +34,16 @@ use Inowas\Common\Soilmodel\SpecificStorage;
 use Inowas\Common\Soilmodel\SpecificYield;
 use Inowas\Common\Soilmodel\TopElevation;
 use Inowas\Common\Soilmodel\VerticalHydraulicConductivity;
-use Inowas\ModflowModel\Model\Command\AddBoundary;
-use Inowas\ModflowModel\Model\Command\ChangeBoundingBox;
-use Inowas\ModflowModel\Model\Command\ChangeFlowPackage;
-use Inowas\ModflowModel\Model\Command\ChangeGridSize;
-use Inowas\ModflowModel\Model\Command\CloneModflowModel;
-use Inowas\ModflowModel\Model\Command\CreateModflowModel;
-use Inowas\ModflowModel\Model\Command\UpdateBoundaryGeometry;
-use Inowas\ModflowModel\Model\Command\UpdateModflowPackageParameter;
-use Inowas\ModflowModel\Model\Command\UpdateStressPeriods;
-use Inowas\ModflowModel\Model\Event\NameWasChanged;
+use Inowas\ModflowModel\Model\Command\Boundary\AddBoundary;
+use Inowas\ModflowModel\Model\Command\ModflowModel\ChangeBoundingBox;
+use Inowas\ModflowModel\Model\Command\ModflowModel\ChangeFlowPackage;
+use Inowas\ModflowModel\Model\Command\ModflowModel\ChangeGridSize;
+use Inowas\ModflowModel\Model\Command\ModflowModel\CloneModflowModel;
+use Inowas\ModflowModel\Model\Command\ModflowModel\CreateModflowModel;
+use Inowas\ModflowModel\Model\Command\Boundary\UpdateBoundaryGeometry;
+use Inowas\ModflowModel\Model\Command\ModflowModel\UpdateModflowPackageParameter;
+use Inowas\ModflowModel\Model\Command\ModflowModel\UpdateStressPeriods;
+use Inowas\ModflowModel\Model\Event\ModflowModel\NameWasChanged;
 use Inowas\ModflowModel\Model\ModflowModelAggregate;
 use Inowas\Common\Grid\GridSize;
 use Inowas\Common\Id\ModflowId;
@@ -376,7 +376,7 @@ class ModflowModelEventSourcingTest extends EventSourcingBaseTest
             BoundaryName::fromString('Test Well 1'),
             Geometry::fromPoint(new Point(-63.671125, -31.325009, 4326)),
             AffectedLayers::createWithLayerNumber(LayerNumber::fromInteger(0)),
-            BoundaryMetadata::fromArray(['well_type' => WellType::fromString(WellType::TYPE_INDUSTRIAL_WELL)])
+            BoundaryMetadata::create()->addWellType(WellType::fromString(WellType::TYPE_INDUSTRIAL_WELL))
         );
 
         $wellBoundary = $wellBoundary->addPumpingRate(WellDateTimeValue::fromParams(new \DateTimeImmutable('2015-01-01'), -5000));
@@ -388,7 +388,7 @@ class ModflowModelEventSourcingTest extends EventSourcingBaseTest
             BoundaryName::fromString('Test Well 2'),
             Geometry::fromPoint(new Point(-63.659952, -31.330144, 4326)),
             AffectedLayers::createWithLayerNumber(LayerNumber::fromInteger(0)),
-            BoundaryMetadata::fromArray(['well_type' => WellType::fromString(WellType::TYPE_INDUSTRIAL_WELL)])
+            BoundaryMetadata::create()->addWellType(WellType::fromString(WellType::TYPE_INDUSTRIAL_WELL))
         );
 
         $wellBoundary = $wellBoundary->addPumpingRate(WellDateTimeValue::fromParams(new \DateTimeImmutable('2015-01-01'), -2000));
@@ -425,7 +425,7 @@ class ModflowModelEventSourcingTest extends EventSourcingBaseTest
             BoundaryName::fromString('Test Well 1'),
             Geometry::fromPoint(new Point(-63.671125, -31.325009, 4326)),
             AffectedLayers::createWithLayerNumber(LayerNumber::fromInteger(0)),
-            BoundaryMetadata::fromArray(['well_type' => WellType::fromString(WellType::TYPE_INDUSTRIAL_WELL)])
+            BoundaryMetadata::create()->addWellType(WellType::fromString(WellType::TYPE_INDUSTRIAL_WELL))
         );
 
         $wellBoundary = $wellBoundary->addPumpingRate(WellDateTimeValue::fromParams(new \DateTimeImmutable('2015-01-01'), -5000));
@@ -437,7 +437,7 @@ class ModflowModelEventSourcingTest extends EventSourcingBaseTest
             BoundaryName::fromString('Test Well 2'),
             Geometry::fromPoint(new Point(-63.671126, -31.325010, 4326)),
             AffectedLayers::createWithLayerNumber(LayerNumber::fromInteger(0)),
-            BoundaryMetadata::fromArray(['well_type' => WellType::fromString(WellType::TYPE_INDUSTRIAL_WELL)])
+            BoundaryMetadata::create()->addWellType(WellType::fromString(WellType::TYPE_INDUSTRIAL_WELL))
         );
 
         $wellBoundary = $wellBoundary->addPumpingRate(WellDateTimeValue::fromParams(new \DateTimeImmutable('2015-01-01'), -2000));
@@ -754,7 +754,6 @@ class ModflowModelEventSourcingTest extends EventSourcingBaseTest
 
     /**
      * @test
-     * @group failing
      */
     public function create_scenarioanalysis_from_basemodel_with_all_boundary_types(): void
     {
@@ -786,7 +785,6 @@ class ModflowModelEventSourcingTest extends EventSourcingBaseTest
 
     /**
      * @test
-     * @group failing
      */
     public function add_well_to_scenario_from_basemodel_with_all_other_boundary_types(): void
     {
@@ -851,7 +849,7 @@ class ModflowModelEventSourcingTest extends EventSourcingBaseTest
         $observationPoints = $well->observationPoints();
         /** @var ObservationPoint $observationPoint */
         $observationPoint = array_values($observationPoints)[0];
-        $this->assertEquals($newGeometry, $observationPoint->geometry());
+        $this->assertEquals($newGeometry, Geometry::fromPoint($observationPoint->geometry()));
     }
 
     /**

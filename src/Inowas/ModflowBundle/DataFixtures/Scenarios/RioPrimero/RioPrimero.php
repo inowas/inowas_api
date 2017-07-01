@@ -4,6 +4,7 @@ namespace Inowas\ModflowBundle\DataFixtures\Scenarios\RioPrimero;
 
 use Inowas\Common\Boundaries\BoundaryMetadata;
 use Inowas\Common\Boundaries\BoundaryName;
+use Inowas\Common\Boundaries\BoundaryType;
 use Inowas\Common\Boundaries\GeneralHeadBoundary;
 use Inowas\Common\Boundaries\GeneralHeadDateTimeValue;
 use Inowas\Common\Boundaries\ObservationPoint;
@@ -54,15 +55,15 @@ use Inowas\Common\Soilmodel\SpecificYield;
 use Inowas\Common\Soilmodel\Storage;
 use Inowas\Common\Soilmodel\TopElevation;
 use Inowas\Common\Soilmodel\VerticalHydraulicConductivity;
-use Inowas\ModflowModel\Model\Command\AddBoundary;
-use Inowas\ModflowModel\Model\Command\CalculateModflowModel;
-use Inowas\ModflowModel\Model\Command\ChangeBoundingBox;
-use Inowas\ModflowModel\Model\Command\ChangeFlowPackage;
-use Inowas\ModflowModel\Model\Command\ChangeSoilmodelId;
-use Inowas\ModflowModel\Model\Command\CreateModflowModel;
+use Inowas\ModflowModel\Model\Command\Boundary\AddBoundary;
+use Inowas\ModflowModel\Model\Command\ModflowModel\CalculateModflowModel;
+use Inowas\ModflowModel\Model\Command\ModflowModel\ChangeBoundingBox;
+use Inowas\ModflowModel\Model\Command\ModflowModel\ChangeFlowPackage;
+use Inowas\ModflowModel\Model\Command\ModflowModel\ChangeSoilmodelId;
+use Inowas\ModflowModel\Model\Command\ModflowModel\CreateModflowModel;
 use Inowas\ModflowBundle\DataFixtures\Scenarios\LoadScenarioBase;
-use Inowas\ModflowModel\Model\Command\UpdateModflowPackageParameter;
-use Inowas\ModflowModel\Model\Command\UpdateStressPeriods;
+use Inowas\ModflowModel\Model\Command\ModflowModel\UpdateModflowPackageParameter;
+use Inowas\ModflowModel\Model\Command\ModflowModel\UpdateStressPeriods;
 use Inowas\ScenarioAnalysis\Model\Command\CreateScenario;
 use Inowas\ScenarioAnalysis\Model\Command\CreateScenarioAnalysis;
 use Inowas\ScenarioAnalysis\Model\ScenarioAnalysisDescription;
@@ -222,14 +223,15 @@ class RioPrimero extends LoadScenarioBase
                 array($boundingBox->xMin(), $boundingBox->yMax())
             ), $boundingBox->srid())),
             AffectedLayers::createWithLayerNumber(LayerNumber::fromInteger(0)),
-            BoundaryMetadata::fromArray([])
+            BoundaryMetadata::create()
         );
 
         $observationPointId = ObservationPointId::generate();
-        $observationPoint = ObservationPoint::fromIdNameAndGeometry(
+        $observationPoint = ObservationPoint::fromIdTypeNameAndGeometry(
             $observationPointId,
+            BoundaryType::fromString(BoundaryType::GENERAL_HEAD),
             ObservationPointName::fromString('OP 1'),
-            Geometry::fromPoint(new Point($boundingBox->xMax(), $boundingBox->yMin(), 4326))
+            new Point($boundingBox->xMax(), $boundingBox->yMin(), 4326)
         );
 
         $ghb->addObservationPoint($observationPoint);
@@ -255,14 +257,15 @@ class RioPrimero extends LoadScenarioBase
                 array($boundingBox->xMax(), $boundingBox->yMax())
             ), $boundingBox->srid())),
             AffectedLayers::createWithLayerNumber(LayerNumber::fromInteger(0)),
-            BoundaryMetadata::fromArray([])
+            BoundaryMetadata::create()
         );
 
         $observationPointId = ObservationPointId::generate();
-        $observationPoint = ObservationPoint::fromIdNameAndGeometry(
+        $observationPoint = ObservationPoint::fromIdTypeNameAndGeometry(
             $observationPointId,
+            BoundaryType::fromString(BoundaryType::GENERAL_HEAD),
             ObservationPointName::fromString('OP 1'),
-            Geometry::fromPoint(new Point($boundingBox->xMax(), $boundingBox->yMin(), 4326))
+            new Point($boundingBox->xMax(), $boundingBox->yMin(), 4326)
         );
 
         $ghb->addObservationPoint($observationPoint);
@@ -368,14 +371,15 @@ class RioPrimero extends LoadScenarioBase
                 array(-63.569641113281,-31.331205380684)
             ), 4326)),
             AffectedLayers::createWithLayerNumber(LayerNumber::fromInteger(0)),
-            BoundaryMetadata::fromArray([])
+            BoundaryMetadata::create()
         );
 
         $observationPointId = ObservationPointId::generate();
-        $observationPoint = ObservationPoint::fromIdNameAndGeometry(
+        $observationPoint = ObservationPoint::fromIdTypeNameAndGeometry(
             $observationPointId,
+            BoundaryType::fromString(BoundaryType::RIVER),
             ObservationPointName::fromString('OP 1'),
-            Geometry::fromPoint(new Point(-63.673968315125,-31.366206539217, 4326))
+            new Point(-63.673968315125,-31.366206539217, 4326)
         );
 
         $riv->addObservationPoint($observationPoint);
@@ -418,7 +422,7 @@ class RioPrimero extends LoadScenarioBase
                 BoundaryName::fromString($data['name']),
                 Geometry::fromPoint($data['point']),
                 AffectedLayers::createWithLayerNumber(LayerNumber::fromInteger($data['layer'])),
-                BoundaryMetadata::fromArray(['well_type' => $data['type']])
+                BoundaryMetadata::create()->addWellType(WellType::fromString($data['type']))
             );
 
             echo sprintf("Add well with name %s.\r\n", $data['name']);
@@ -503,7 +507,7 @@ class RioPrimero extends LoadScenarioBase
                 BoundaryName::fromString($data['name']),
                 Geometry::fromPoint($data['point']),
                 AffectedLayers::createWithLayerNumber(LayerNumber::fromInteger($data['layer'])),
-                BoundaryMetadata::fromArray(['well_type' => $data['type']])
+                BoundaryMetadata::create()->addWellType(WellType::fromString($data['type']))
             );
 
             echo sprintf("Add well with name %s.\r\n", $data['name']);
@@ -553,7 +557,7 @@ class RioPrimero extends LoadScenarioBase
                 BoundaryName::fromString($data['name']),
                 Geometry::fromPoint($data['point']),
                 AffectedLayers::createWithLayerNumber(LayerNumber::fromInteger($data['layer'])),
-                BoundaryMetadata::fromArray(['well_type' => $data['type']])
+                BoundaryMetadata::create()->addWellType(WellType::fromString($data['type']))
             );
 
             echo sprintf("Add well with name %s.\r\n", $data['name']);

@@ -8,8 +8,8 @@ use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Schema\Schema;
 use Inowas\Common\Projection\AbstractDoctrineConnectionProjector;
 use Inowas\ModflowModel\Infrastructure\Projection\Table;
-use Inowas\ModflowModel\Model\Event\CalculationWasFinished;
-use Inowas\ModflowModel\Model\Event\CalculationWasStarted;
+use Inowas\ModflowModel\Model\Event\ModflowModel\CalculationWasFinished;
+use Inowas\ModflowModel\Model\Event\ModflowModel\CalculationWasStarted;
 
 class CalculationResultsProjector extends AbstractDoctrineConnectionProjector
 {

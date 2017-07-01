@@ -4,15 +4,8 @@ declare(strict_types=1);
 
 namespace Inowas\ModflowModel\Model;
 
-use Inowas\Common\Boundaries\BoundaryMetadata;
-use Inowas\Common\Boundaries\BoundaryName;
-use Inowas\Common\Boundaries\ObservationPoint;
-use Inowas\Common\Geometry\Geometry;
 use Inowas\Common\Geometry\Polygon;
 use Inowas\Common\Grid\ActiveCells;
-use Inowas\Common\Grid\AffectedLayers;
-use Inowas\Common\Id\BoundaryId;
-use Inowas\Common\Boundaries\ModflowBoundary;
 use Inowas\Common\Grid\BoundingBox;
 use Inowas\Common\Grid\GridSize;
 use Inowas\Common\Id\CalculationId;
@@ -27,32 +20,30 @@ use Inowas\Common\Modflow\StressPeriods;
 use Inowas\Common\Modflow\TimeUnit;
 use Inowas\Common\Soilmodel\SoilmodelId;
 use Inowas\ModflowModel\Model\AMQP\CalculationResponse;
-use Inowas\ModflowModel\Model\Event\AreaActiveCellsWereUpdated;
-use Inowas\ModflowModel\Model\Event\AreaGeometryWasUpdated;
-use Inowas\ModflowModel\Model\Event\BoundaryActiveCellsWereUpdated;
-use Inowas\ModflowModel\Model\Event\BoundaryAffectedLayersWereUpdated;
-use Inowas\ModflowModel\Model\Event\BoundaryGeometryWasUpdated;
-use Inowas\ModflowModel\Model\Event\BoundaryMetadataWasUpdated;
-use Inowas\ModflowModel\Model\Event\BoundaryNameWasUpdated;
-use Inowas\ModflowModel\Model\Event\BoundaryObservationPointWasAdded;
-use Inowas\ModflowModel\Model\Event\BoundaryWasAdded;
-use Inowas\ModflowModel\Model\Event\BoundaryWasRemoved;
-use Inowas\ModflowModel\Model\Event\BoundingBoxWasChanged;
-use Inowas\ModflowModel\Model\Event\CalculationIdWasChanged;
-use Inowas\ModflowModel\Model\Event\CalculationWasFinished;
-use Inowas\ModflowModel\Model\Event\CalculationWasStarted;
-use Inowas\ModflowModel\Model\Event\DescriptionWasChanged;
-use Inowas\ModflowModel\Model\Event\FlowPackageWasChanged;
-use Inowas\ModflowModel\Model\Event\GridSizeWasChanged;
-use Inowas\ModflowModel\Model\Event\LengthUnitWasUpdated;
-use Inowas\ModflowModel\Model\Event\ModflowModelWasCloned;
-use Inowas\ModflowModel\Model\Event\ModflowModelWasDeleted;
-use Inowas\ModflowModel\Model\Event\ModflowPackageParameterWasUpdated;
-use Inowas\ModflowModel\Model\Event\NameWasChanged;
-use Inowas\ModflowModel\Model\Event\SoilModelWasChanged;
-use Inowas\ModflowModel\Model\Event\ModflowModelWasCreated;
-use Inowas\ModflowModel\Model\Event\StressPeriodsWereUpdated;
-use Inowas\ModflowModel\Model\Event\TimeUnitWasUpdated;
+use Inowas\ModflowModel\Model\Event\ModflowModel\AreaActiveCellsWereUpdated;
+use Inowas\ModflowModel\Model\Event\ModflowModel\AreaGeometryWasUpdated;
+use Inowas\ModflowModel\Model\Event\Boundary\BoundaryActiveCellsWereUpdated;
+use Inowas\ModflowModel\Model\Event\Boundary\BoundaryAffectedLayersWereUpdated;
+use Inowas\ModflowModel\Model\Event\Boundary\BoundaryGeometryWasUpdated;
+use Inowas\ModflowModel\Model\Event\Boundary\BoundaryMetadataWasUpdated;
+use Inowas\ModflowModel\Model\Event\Boundary\BoundaryNameWasUpdated;
+use Inowas\ModflowModel\Model\Event\Boundary\BoundaryObservationPointWasAdded;
+use Inowas\ModflowModel\Model\Event\ModflowModel\BoundingBoxWasChanged;
+use Inowas\ModflowModel\Model\Event\ModflowModel\CalculationIdWasChanged;
+use Inowas\ModflowModel\Model\Event\ModflowModel\CalculationWasFinished;
+use Inowas\ModflowModel\Model\Event\ModflowModel\CalculationWasStarted;
+use Inowas\ModflowModel\Model\Event\ModflowModel\DescriptionWasChanged;
+use Inowas\ModflowModel\Model\Event\ModflowModel\FlowPackageWasChanged;
+use Inowas\ModflowModel\Model\Event\ModflowModel\GridSizeWasChanged;
+use Inowas\ModflowModel\Model\Event\ModflowModel\LengthUnitWasUpdated;
+use Inowas\ModflowModel\Model\Event\ModflowModel\ModflowModelWasCloned;
+use Inowas\ModflowModel\Model\Event\ModflowModel\ModflowModelWasDeleted;
+use Inowas\ModflowModel\Model\Event\ModflowModel\ModflowPackageParameterWasUpdated;
+use Inowas\ModflowModel\Model\Event\ModflowModel\NameWasChanged;
+use Inowas\ModflowModel\Model\Event\ModflowModel\SoilModelWasChanged;
+use Inowas\ModflowModel\Model\Event\ModflowModel\ModflowModelWasCreated;
+use Inowas\ModflowModel\Model\Event\ModflowModel\StressPeriodsWereUpdated;
+use Inowas\ModflowModel\Model\Event\ModflowModel\TimeUnitWasUpdated;
 use Prooph\EventSourcing\AggregateRoot;
 
 class ModflowModelAggregate extends AggregateRoot
@@ -65,9 +56,6 @@ class ModflowModelAggregate extends AggregateRoot
 
     /** @var SoilmodelId */
     protected $soilmodelId;
-
-    /** @var array  */
-    protected $boundaries;
 
     /** @var  CalculationId */
     protected $calculationId;
@@ -95,7 +83,6 @@ class ModflowModelAggregate extends AggregateRoot
         $self->modelId = $modelId;
         $self->userId = $userId;
         $self->soilmodelId = $soilmodelId;
-        $self->boundaries = [];
 
         $self->recordThat(ModflowModelWasCreated::withParameters(
             $modelId,
@@ -127,7 +114,6 @@ class ModflowModelAggregate extends AggregateRoot
         $self->modelId = $newModelId;
         $self->userId = $newUserId;
         $self->soilmodelId = $soilmodelId;
-        $self->boundaries = $model->boundaries();
 
         $cloneSoilmodel = $soilmodelId !== $model->soilmodelId();
 
@@ -136,7 +122,6 @@ class ModflowModelAggregate extends AggregateRoot
             $self->modelId,
             $self->userId,
             $self->soilmodelId,
-            $self->boundaries,
             $cloneSoilmodel
         ));
 
@@ -230,30 +215,6 @@ class ModflowModelAggregate extends AggregateRoot
         ));
     }
 
-    public function addBoundary(UserId $userId, ModflowBoundary $boundary): void
-    {
-        if (! in_array($boundary->boundaryId()->toString(), $this->boundaries, true)){
-            $this->boundaries[] = $boundary->boundaryId()->toString();
-            $this->recordThat(BoundaryWasAdded::to(
-                $this->modelId,
-                $userId,
-                $boundary
-            ));
-        }
-    }
-
-    public function addObservationPointToBoundary(UserId $userId, BoundaryId $boundaryId, ObservationPoint $observationPoint): void
-    {
-        if (in_array($boundaryId->toString(), $this->boundaries, true)) {
-            $this->recordThat(BoundaryObservationPointWasAdded::byUserWithModflowAndBoundaryId(
-                $userId,
-                $this->modelId,
-                $boundaryId,
-                $observationPoint
-            ));
-        }
-    }
-
     public function updateAreaGeometry(UserId $userId, Polygon $polygon): void
     {
         $this->recordThat(AreaGeometryWasUpdated::of(
@@ -270,66 +231,6 @@ class ModflowModelAggregate extends AggregateRoot
             $this->modelId,
             $activeCells
         ));
-    }
-
-    public function updateBoundaryActiveCells(UserId $userId, BoundaryId $boundaryId, ActiveCells $activeCells): void
-    {
-        if (in_array($boundaryId->toString(), $this->boundaries, true)) {
-            $this->recordThat(BoundaryActiveCellsWereUpdated::of(
-                $this->modelId,
-                $userId,
-                $boundaryId,
-                $activeCells
-            ));
-        }
-    }
-
-    public function updateBoundaryAffectedLayers(UserId $userId, BoundaryId $boundaryId, AffectedLayers $affectedLayers): void
-    {
-        if (in_array($boundaryId->toString(), $this->boundaries, true)) {
-            $this->recordThat(BoundaryAffectedLayersWereUpdated::of(
-                $this->modelId,
-                $userId,
-                $boundaryId,
-                $affectedLayers
-            ));
-        }
-    }
-
-    public function updateBoundaryGeometry(UserId $userId, BoundaryId $boundaryId, Geometry $geometry): void
-    {
-        if (in_array($boundaryId->toString(), $this->boundaries, true)) {
-            $this->recordThat(BoundaryGeometryWasUpdated::of(
-                $this->modelId,
-                $userId,
-                $boundaryId,
-                $geometry
-            ));
-        }
-    }
-
-    public function updateBoundaryMetaData(UserId $userId, BoundaryId $boundaryId, BoundaryMetadata $metadata): void
-    {
-        if (in_array($boundaryId->toString(), $this->boundaries, true)) {
-            $this->recordThat(BoundaryMetadataWasUpdated::of(
-                $this->modelId,
-                $userId,
-                $boundaryId,
-                $metadata
-            ));
-        }
-    }
-
-    public function updateBoundaryName(UserId $userId, BoundaryId $boundaryId, BoundaryName $name): void
-    {
-        if (in_array($boundaryId->toString(), $this->boundaries, true)) {
-            $this->recordThat(BoundaryNameWasUpdated::of(
-                $this->modelId,
-                $userId,
-                $boundaryId,
-                $name
-            ));
-        }
     }
 
     public function updateCalculationId(CalculationId $calculationId): void
@@ -376,18 +277,6 @@ class ModflowModelAggregate extends AggregateRoot
         ));
     }
 
-    public function removeBoundary(UserId $userId, BoundaryId $boundaryId): void
-    {
-        if (in_array($boundaryId->toString(), $this->boundaries, true)) {
-            $this->boundaries = array_diff($this->boundaries, [$boundaryId->toString()]);
-            $this->recordThat(BoundaryWasRemoved::withBoundaryId(
-                $userId,
-                $this->modelId,
-                $boundaryId
-            ));
-        }
-    }
-
     public function modflowModelId(): ModflowId
     {
         return $this->modelId;
@@ -401,11 +290,6 @@ class ModflowModelAggregate extends AggregateRoot
     public function soilmodelId(): SoilmodelId
     {
         return $this->soilmodelId;
-    }
-
-    public function boundaries(): array
-    {
-        return $this->boundaries;
     }
 
     public function calculationId(): CalculationId
@@ -436,16 +320,6 @@ class ModflowModelAggregate extends AggregateRoot
 
     protected function whenBoundaryObservationPointWasAdded(BoundaryObservationPointWasAdded $event): void
     {}
-
-    protected function whenBoundaryWasAdded(BoundaryWasAdded $event): void
-    {
-        $this->boundaries[] = $event->boundary()->boundaryId()->toString();
-    }
-
-    protected function whenBoundaryWasRemoved(BoundaryWasRemoved $event): void
-    {
-        $this->boundaries = array_diff($this->boundaries, [$event->boundaryId()->toString()]);
-    }
 
     protected function whenBoundingBoxWasChanged(BoundingBoxWasChanged $event): void
     {}
@@ -478,7 +352,6 @@ class ModflowModelAggregate extends AggregateRoot
         $this->modelId = $event->modelId();
         $this->userId = $event->userId();
         $this->soilmodelId = $event->soilmodelId();
-        $this->boundaries = $event->boundaryIds();
         $this->calculationId = CalculationId::fromString('');
     }
 
@@ -487,7 +360,6 @@ class ModflowModelAggregate extends AggregateRoot
         $this->modelId = $event->modelId();
         $this->userId = $event->userId();
         $this->soilmodelId = $event->soilmodelId();
-        $this->boundaries = [];
         $this->calculationId = CalculationId::fromString('');
     }
 

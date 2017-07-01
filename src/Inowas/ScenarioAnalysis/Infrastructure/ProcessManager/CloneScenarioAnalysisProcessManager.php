@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Inowas\ScenarioAnalysis\Infrastructure\ProcessManager;
 
 use Inowas\Common\Id\ModflowId;
-use Inowas\ModflowModel\Model\Command\CloneModflowModel;
+use Inowas\ModflowModel\Model\Command\ModflowModel\CloneModflowModel;
 use Inowas\ScenarioAnalysis\Model\Event\ScenarioAnalysisWasCloned;
 use Inowas\ScenarioAnalysis\Model\ScenarioAnalysisAggregate;
 use Inowas\ScenarioAnalysis\Model\ScenarioAnalysisList;

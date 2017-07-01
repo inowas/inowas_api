@@ -7,6 +7,7 @@ namespace Tests\Inowas\GeoTools\Model;
 use Inowas\Common\Boundaries\Area;
 use Inowas\Common\Boundaries\BoundaryMetadata;
 use Inowas\Common\Boundaries\BoundaryName;
+use Inowas\Common\Boundaries\BoundaryType;
 use Inowas\Common\Boundaries\ConstantHeadBoundary;
 use Inowas\Common\Boundaries\ConstantHeadDateTimeValue;
 use Inowas\Common\Boundaries\ObservationPoint;
@@ -164,16 +165,17 @@ class GeoToolsTest extends WebTestCase
                     array(105.87790127463,20.947208016218)
                 ), 4326)),
             AffectedLayers::fromArray([0]),
-            BoundaryMetadata::fromArray([])
+            BoundaryMetadata::create()
         );
 
         $opId1 = ObservationPointId::generate();
         $this->river = $this->river->addObservationPoint(
-            ObservationPoint::fromIdNameAndGeometry(
+            ObservationPoint::fromIdTypeNameAndGeometry(
                 $opId1,
+                BoundaryType::fromString(BoundaryType::RIVER),
                 ObservationPointName::fromString('RP1'),
-                Geometry::fromPoint(new Point(105.78304910628,21.093961475741))
-                )
+                new Point(105.78304910628,21.093961475741)
+            )
         );
 
         $this->river = $this->river->addRiverStageToObservationPoint($opId1, RiverDateTimeValue::fromParams(
@@ -190,10 +192,11 @@ class GeoToolsTest extends WebTestCase
 
         $opId2 = ObservationPointId::generate();
         $this->river = $this->river->addObservationPoint(
-            ObservationPoint::fromIdNameAndGeometry(
+            ObservationPoint::fromIdTypeNameAndGeometry(
                 $opId2,
+                BoundaryType::fromString(BoundaryType::RIVER),
                 ObservationPointName::fromString('RP28'),
-                Geometry::fromPoint(new Point(105.88492972479,21.001319007654))
+                new Point(105.88492972479,21.001319007654)
             )
         );
 
@@ -211,10 +214,11 @@ class GeoToolsTest extends WebTestCase
 
         $opId3 = ObservationPointId::generate();
         $this->river = $this->river->addObservationPoint(
-            ObservationPoint::fromIdNameAndGeometry(
+            ObservationPoint::fromIdTypeNameAndGeometry(
                 $opId3,
+                BoundaryType::fromString(BoundaryType::RIVER),
                 ObservationPointName::fromString('RP39'),
-                Geometry::fromPoint(new Point(105.87790127463,20.947208016218))
+                new Point(105.87790127463,20.947208016218)
             )
         );
 
@@ -235,7 +239,7 @@ class GeoToolsTest extends WebTestCase
             BoundaryName::fromString('Well 1'),
             Geometry::fromPoint(new Point(105.78304910628,21.093961475741, 4326)),
             AffectedLayers::createWithLayerNumber(LayerNumber::fromInteger(2)),
-            BoundaryMetadata::fromArray(['well_type' => WellType::fromString(WellType::TYPE_PUBLIC_WELL)])
+            BoundaryMetadata::create()->addWellType(WellType::fromString(WellType::TYPE_PUBLIC_WELL))
         );
     }
 
@@ -300,7 +304,7 @@ class GeoToolsTest extends WebTestCase
                     BoundaryName::fromString(''),
                     Geometry::fromPoint($pointsAffectedLayer[0]),
                     $pointsAffectedLayer[1],
-                    BoundaryMetadata::fromArray(['well_type' => WellType::fromString(WellType::TYPE_PUBLIC_WELL)])
+                    BoundaryMetadata::create()->addWellType(WellType::fromString(WellType::TYPE_PUBLIC_WELL))
                 ),
                 $boundingBox,
                 $gridSize
@@ -351,7 +355,7 @@ class GeoToolsTest extends WebTestCase
             BoundaryName::fromString('ChdBoundary'),
             Geometry::fromLineString(new LineString($chdPoints, 4326)),
             AffectedLayers::fromArray([1]),
-            BoundaryMetadata::fromArray([])
+            BoundaryMetadata::create()
         );
 
         $observationPointData = array(
@@ -363,10 +367,11 @@ class GeoToolsTest extends WebTestCase
 
         foreach ($observationPointData as $opd){
             $observationPointId = ObservationPointId::generate();
-            $observationPoint = ObservationPoint::fromIdNameAndGeometry(
+            $observationPoint = ObservationPoint::fromIdTypeNameAndGeometry(
                 $observationPointId,
+                BoundaryType::fromString(BoundaryType::CONSTANT_HEAD),
                 ObservationPointName::fromString($opd[0]),
-                Geometry::fromPoint($this->geoTools->projectPoint(new Point($opd[1], $opd[2], $opd[3]), Srid::fromInt(4326)))
+                $this->geoTools->projectPoint(new Point($opd[1], $opd[2], $opd[3]), Srid::fromInt(4326))
             );
 
             $chdBoundary = $chdBoundary->addObservationPoint($observationPoint);
@@ -396,7 +401,7 @@ class GeoToolsTest extends WebTestCase
     {
         $this->assertTrue(\geoPHP::geosInstalled());
         $areaPolygon = \geoPHP::load($this->area->geometry()->toJson(), 'json');
-        $this->assertEquals("GEOSGeometry", get_class($areaPolygon->geos()));
+        $this->assertEquals('GEOSGeometry', get_class($areaPolygon->geos()));
     }
 
     public function test_geos_point_on_surface(): void
@@ -779,10 +784,10 @@ class GeoToolsTest extends WebTestCase
             ), 4326);
 
         $points = array(
-            ObservationPoint::fromIdNameAndGeometry(ObservationPointId::generate(), ObservationPointName::fromString('OP2'), Geometry::fromPoint(new Point(105.82, 21.08, 4326))),
-            ObservationPoint::fromIdNameAndGeometry(ObservationPointId::generate(), ObservationPointName::fromString('OP1'), Geometry::fromPoint(new Point(105.78, 21.09, 4326))),
-            ObservationPoint::fromIdNameAndGeometry(ObservationPointId::generate(), ObservationPointName::fromString('OP3'), Geometry::fromPoint(new Point(105.90, 20.99, 4326))),
-            ObservationPoint::fromIdNameAndGeometry(ObservationPointId::generate(), ObservationPointName::fromString('OP4'), Geometry::fromPoint(new Point(105.88, 20.95, 4326)))
+            ObservationPoint::fromIdTypeNameAndGeometry(ObservationPointId::generate(), BoundaryType::fromString(BoundaryType::CONSTANT_HEAD), ObservationPointName::fromString('OP1'), new Point(105.78, 21.09, 4326)),
+            ObservationPoint::fromIdTypeNameAndGeometry(ObservationPointId::generate(), BoundaryType::fromString(BoundaryType::CONSTANT_HEAD), ObservationPointName::fromString('OP2'), new Point(105.82, 21.08, 4326)),
+            ObservationPoint::fromIdTypeNameAndGeometry(ObservationPointId::generate(), BoundaryType::fromString(BoundaryType::CONSTANT_HEAD), ObservationPointName::fromString('OP3'), new Point(105.90, 20.99, 4326)),
+            ObservationPoint::fromIdTypeNameAndGeometry(ObservationPointId::generate(), BoundaryType::fromString(BoundaryType::CONSTANT_HEAD), ObservationPointName::fromString('OP4'), new Point(105.88, 20.95, 4326))
         );
 
         $linestringArray = $this->geoTools->cutLinestringBetweenObservationPoints($linestring, $points);
