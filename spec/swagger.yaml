@@ -580,6 +580,31 @@ paths:
       security:
         - api_key: []
 
+  /modflowmodels/{id}/boundarytypes:
+    get:
+      tags:
+        - "modflowmodel"
+      summary: "Returns details of the available boundaries of the modflowModel"
+      description: "Returns details of the available boundaries of the modflowModel"
+      operationId: "getModflowModelBoundaryTypes"
+      produces:
+        - "application/json"
+      parameters:
+        - name: "id"
+          in: "path"
+          description: "ID of ModflowModel"
+          required: true
+          type: "string"
+      responses:
+        '200':
+          description: "successful operation"
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/BoundaryTypeDescription'
+      security:
+        - api_key: []
+
   # ModflowModel Soilmodel
   /modflowmodels/{id}/soilmodel:
     get:
@@ -2590,7 +2615,6 @@ definitions:
         $ref: '#/definitions/GridSize'
       bounding_box:
         $ref: '#/definitions/BoundingBox'
-
   ModflowModelListItem:
     title: "ModflowModelListItem"
     type: "object"
@@ -2621,6 +2645,52 @@ definitions:
         $ref: '#/definitions/BoundingBox'
       calculation_id:
         $ref: '#/definitions/CalculationId'
+  BoundaryTypeDescription:
+    title: "BoundaryTypeDescription"
+    type: "object"
+    properties:
+      name:
+        type: "string"
+        example: "Well boundary"
+      slug:
+        type: "string"
+        example: "wel"
+      observation_point_cardinality:
+        description: "Could be 1 or n"
+        type: "string"
+        example: "1"
+      metadata_types:
+        type: "object"
+        properties:
+          wel_type:
+            type: "array"
+            items:
+              type: "object"
+              properties:
+                name:
+                  type: "string"
+                  example: "public well"
+                slug:
+                  type: "string"
+                  example: "puw"
+                radius:
+                  type: "integer"
+                  example: 50
+                color:
+                  type: "string"
+                  example: "#555555"
+                symbol:
+                  type: "string"
+                  example: "dot"
+      geometry_type:
+        type: "string"
+        example: "Point"
+      values:
+        type: "array"
+        items:
+          type: "string"
+        example: [ "date_time", "pumping_rate" ]
+
   ModflowModelBoundaryListItem:
     title: "ModflowModelBoundaryListItem"
     type: "object"
