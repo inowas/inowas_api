@@ -2,27 +2,6 @@ services:
     inowas.modflowmodel.blackhole_projector:
         class: Inowas\ModflowModel\Infrastructure\Projection\Blackhole\BlackholeProjector
 
-    inowas.modflowmodel.boundary_active_cells_projector:
-        class: Inowas\ModflowModel\Infrastructure\Projection\BoundaryList\BoundaryActiveCellsProjector
-        arguments:
-          - '@doctrine.dbal.default_connection'
-
-    inowas.modflowmodel.boundary_finder:
-        class: Inowas\ModflowModel\Infrastructure\Projection\BoundaryList\BoundaryFinder
-        arguments:
-          - '@doctrine.dbal.default_connection'
-        public: false
-
-    inowas.modflowmodel.boundary_list_projector:
-        class: Inowas\ModflowModel\Infrastructure\Projection\BoundaryList\BoundaryListProjector
-        arguments:
-          - '@doctrine.dbal.default_connection'
-
-    inowas.modflowmodel.boundary_observation_points_projector:
-        class: Inowas\ModflowModel\Infrastructure\Projection\BoundaryList\BoundaryObservationPointsProjector
-        arguments:
-          - '@doctrine.dbal.default_connection'
-
     inowas.modflowmodel.calculation_results_finder:
         class: Inowas\ModflowModel\Infrastructure\Projection\Calculation\CalculationResultsFinder
         arguments:

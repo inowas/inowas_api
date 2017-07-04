@@ -6,6 +6,11 @@ imports:
 
     - { resource: geoTools/services.yml }
 
+    - { resource: modflowBoundary/commandHandler.yml }
+    - { resource: modflowBoundary/processManager.yml }
+    - { resource: modflowBoundary/projections.yml }
+    - { resource: modflowBoundary/services.yml }
+
     - { resource: modflowModel/commandHandler.yml }
     - { resource: modflowModel/processManager.yml }
     - { resource: modflowModel/projections.yml }

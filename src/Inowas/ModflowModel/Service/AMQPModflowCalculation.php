@@ -3,11 +3,10 @@
 namespace Inowas\ModflowModel\Service;
 
 use Inowas\ModflowModel\Model\AMQP\CalculationRequest;
-use Inowas\ModflowModel\Model\ModflowCalculation;
 use PhpAmqpLib\Connection\AMQPStreamConnection;
 use PhpAmqpLib\Message\AMQPMessage;
 
-class AMQPModflowCalculation implements ModflowCalculation
+class AMQPModflowCalculation
 {
     private $channel;
     private $connection;

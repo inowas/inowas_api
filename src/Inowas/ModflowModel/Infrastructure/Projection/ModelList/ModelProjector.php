@@ -12,19 +12,19 @@ use Inowas\Common\Modflow\LengthUnit;
 use Inowas\Common\Modflow\StressPeriods;
 use Inowas\Common\Modflow\TimeUnit;
 use Inowas\Common\Projection\AbstractDoctrineConnectionProjector;
-use Inowas\ModflowModel\Model\Event\ModflowModel\AreaGeometryWasUpdated;
-use Inowas\ModflowModel\Model\Event\ModflowModel\BoundingBoxWasChanged;
-use Inowas\ModflowModel\Model\Event\ModflowModel\CalculationIdWasChanged;
-use Inowas\ModflowModel\Model\Event\ModflowModel\DescriptionWasChanged;
-use Inowas\ModflowModel\Model\Event\ModflowModel\GridSizeWasChanged;
-use Inowas\ModflowModel\Model\Event\ModflowModel\LengthUnitWasUpdated;
-use Inowas\ModflowModel\Model\Event\ModflowModel\ModflowModelWasCloned;
-use Inowas\ModflowModel\Model\Event\ModflowModel\NameWasChanged;
-use Inowas\ModflowModel\Model\Event\ModflowModel\ModflowModelWasCreated;
+use Inowas\ModflowModel\Model\Event\AreaGeometryWasUpdated;
+use Inowas\ModflowModel\Model\Event\BoundingBoxWasChanged;
+use Inowas\ModflowModel\Model\Event\CalculationIdWasChanged;
+use Inowas\ModflowModel\Model\Event\DescriptionWasChanged;
+use Inowas\ModflowModel\Model\Event\GridSizeWasChanged;
+use Inowas\ModflowModel\Model\Event\LengthUnitWasUpdated;
+use Inowas\ModflowModel\Model\Event\ModflowModelWasCloned;
+use Inowas\ModflowModel\Model\Event\NameWasChanged;
+use Inowas\ModflowModel\Model\Event\ModflowModelWasCreated;
 use Inowas\ModflowModel\Infrastructure\Projection\Table;
-use Inowas\ModflowModel\Model\Event\ModflowModel\SoilModelWasChanged;
-use Inowas\ModflowModel\Model\Event\ModflowModel\StressPeriodsWereUpdated;
-use Inowas\ModflowModel\Model\Event\ModflowModel\TimeUnitWasUpdated;
+use Inowas\ModflowModel\Model\Event\SoilModelWasChanged;
+use Inowas\ModflowModel\Model\Event\StressPeriodsWereUpdated;
+use Inowas\ModflowModel\Model\Event\TimeUnitWasUpdated;
 
 class ModelProjector extends AbstractDoctrineConnectionProjector
 {

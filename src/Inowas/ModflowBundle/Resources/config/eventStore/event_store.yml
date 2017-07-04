@@ -4,8 +4,8 @@ prooph_event_store:
             adapter: 'prooph_event_store.doctrine_adapter.model_store'
             repositories:
                 modflow_boundary_list:
-                    repository_class: 'Inowas\ModflowModel\Infrastructure\Repository\EventStoreModflowBoundaryList'
-                    aggregate_type: 'Inowas\ModflowModel\Model\ModflowBoundaryAggregate'
+                    repository_class: 'Inowas\ModflowBoundary\Infrastructure\Repository\EventStoreModflowBoundaryList'
+                    aggregate_type: 'Inowas\ModflowBoundary\Model\ModflowBoundaryAggregate'
                     aggregate_translator: 'prooph_event_sourcing.aggregate_translator'
                 modflow_model_list:
                     repository_class: 'Inowas\ModflowModel\Infrastructure\Repository\EventStoreModflowModelList'

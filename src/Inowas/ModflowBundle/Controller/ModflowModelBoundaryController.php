@@ -19,13 +19,13 @@ use Inowas\Common\Id\ModflowId;
 use Inowas\Common\Id\ObservationPointId;
 use Inowas\ModflowBundle\Exception\InvalidArgumentException;
 use Inowas\ModflowBundle\Exception\NotFoundException;
-use Inowas\ModflowModel\Model\Command\Boundary\AddBoundary;
-use Inowas\ModflowModel\Model\Command\Boundary\AddBoundaryObservationPoint;
-use Inowas\ModflowModel\Model\Command\Boundary\UpdateBoundaryActiveCells;
-use Inowas\ModflowModel\Model\Command\Boundary\UpdateBoundaryAffectedLayers;
-use Inowas\ModflowModel\Model\Command\Boundary\UpdateBoundaryGeometry;
-use Inowas\ModflowModel\Model\Command\Boundary\UpdateBoundaryMetadata;
-use Inowas\ModflowModel\Model\Command\Boundary\UpdateBoundaryName;
+use Inowas\ModflowBoundary\Model\Command\AddBoundary;
+use Inowas\ModflowBoundary\Model\Command\AddBoundaryObservationPoint;
+use Inowas\ModflowBoundary\Model\Command\UpdateBoundaryActiveCells;
+use Inowas\ModflowBoundary\Model\Command\UpdateBoundaryAffectedLayers;
+use Inowas\ModflowBoundary\Model\Command\UpdateBoundaryGeometry;
+use Inowas\ModflowBoundary\Model\Command\UpdateBoundaryMetadata;
+use Inowas\ModflowBoundary\Model\Command\UpdateBoundaryName;
 use Nelmio\ApiDocBundle\Annotation\ApiDoc;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\RedirectResponse;
@@ -57,7 +57,7 @@ class ModflowModelBoundaryController extends InowasRestController
         $this->assertUuidIsValid($id);
         $modelId = ModflowId::fromString($id);
 
-        $boundaries = $this->get('inowas.modflowmodel.boundary_manager')->findBoundariesByModelId($modelId);
+        $boundaries = $this->get('inowas.modflowboundary.boundary_manager')->findBoundariesByModelId($modelId);
         if (null === $boundaries) {
             throw NotFoundException::withMessage(sprintf(
                 'ModflowModel with id: \'%s\' not found.', $modelId->toString()
@@ -160,7 +160,7 @@ class ModflowModelBoundaryController extends InowasRestController
         $this->assertUuidIsValid($bid);
         $boundaryId = BoundaryId::fromString($bid);
 
-        $boundaryDetails = $this->get('inowas.modflowmodel.boundary_manager')->getBoundaryDetails($modelId, $boundaryId);
+        $boundaryDetails = $this->get('inowas.modflowboundary.boundary_manager')->getBoundaryDetails($modelId, $boundaryId);
 
         if (null === $boundaryDetails){
             throw NotFoundException::withMessage(sprintf(
@@ -321,7 +321,7 @@ class ModflowModelBoundaryController extends InowasRestController
         $this->assertUuidIsValid($oid);
         $observationPointId = ObservationPointId::fromString($oid);
 
-        $observationPointDetails = $this->get('inowas.modflowmodel.boundary_manager')->getBoundaryObservationPointDetails($modelId, $boundaryId, $observationPointId);
+        $observationPointDetails = $this->get('inowas.modflowboundary.boundary_manager')->getBoundaryObservationPointDetails($modelId, $boundaryId, $observationPointId);
 
         if (null === $observationPointDetails){
             throw NotFoundException::withMessage(sprintf(
@@ -364,7 +364,7 @@ class ModflowModelBoundaryController extends InowasRestController
         $this->assertUuidIsValid($oid);
         $observationPointId = ObservationPointId::fromString($oid);
 
-        $name = $this->get('inowas.modflowmodel.boundary_manager')->getBoundaryObservationPointName($modelId, $boundaryId, $observationPointId);
+        $name = $this->get('inowas.modflowboundary.boundary_manager')->getBoundaryObservationPointName($modelId, $boundaryId, $observationPointId);
 
         if (! $name instanceof ObservationPointName){
             throw NotFoundException::withMessage(sprintf(
@@ -407,7 +407,7 @@ class ModflowModelBoundaryController extends InowasRestController
         $this->assertUuidIsValid($oid);
         $observationPointId = ObservationPointId::fromString($oid);
 
-        $geometry = $this->get('inowas.modflowmodel.boundary_manager')->getBoundaryObservationPointGeometry($modelId, $boundaryId, $observationPointId);
+        $geometry = $this->get('inowas.modflowboundary.boundary_manager')->getBoundaryObservationPointGeometry($modelId, $boundaryId, $observationPointId);
 
         if (! $geometry instanceof Geometry){
             throw NotFoundException::withMessage(sprintf(
@@ -450,7 +450,7 @@ class ModflowModelBoundaryController extends InowasRestController
         $this->assertUuidIsValid($oid);
         $observationPointId = ObservationPointId::fromString($oid);
 
-        $values = $this->get('inowas.modflowmodel.boundary_manager')->getBoundaryObservationPointValues($modelId, $boundaryId, $observationPointId);
+        $values = $this->get('inowas.modflowboundary.boundary_manager')->getBoundaryObservationPointValues($modelId, $boundaryId, $observationPointId);
 
         if (null === $values){
             throw NotFoundException::withMessage(sprintf(

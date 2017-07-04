@@ -1,0 +1,68 @@
+services:
+    # ModflowBoundaryAggregate
+    inowas.modflowboundary.add_boundary_handler:
+        class: Inowas\ModflowBoundary\Model\Handler\AddBoundaryHandler
+        arguments:
+          - '@modflow_model_list'
+          - '@modflow_boundary_list'
+
+    inowas.modflowboundary.add_boundary_observation_point_handler:
+        class: Inowas\ModflowBoundary\Model\Handler\AddBoundaryObservationPointHandler
+        arguments:
+          - '@modflow_model_list'
+          - '@modflow_boundary_list'
+
+    inowas.modflowboundary.clone_boundary_handler:
+        class: Inowas\ModflowBoundary\Model\Handler\CloneBoundaryHandler
+        arguments:
+          - '@modflow_boundary_list'
+
+    inowas.modflowboundary.remove_boundary_handler:
+        class: Inowas\ModflowBoundary\Model\Handler\RemoveBoundaryHandler
+        arguments:
+          - '@modflow_model_list'
+          - '@modflow_boundary_list'
+
+    inowas.modflowboundary.remove_boundary_observation_point_handler:
+        class: Inowas\ModflowBoundary\Model\Handler\RemoveBoundaryObservationPointHandler
+        arguments:
+          - '@modflow_model_list'
+          - '@modflow_boundary_list'
+
+    inowas.modflowboundary.update_boundary_active_cells_handler:
+        class: Inowas\ModflowBoundary\Model\Handler\UpdateBoundaryActiveCellsHandler
+        arguments:
+          - '@modflow_model_list'
+          - '@modflow_boundary_list'
+          - '@inowas.modflowboundary.boundary_manager'
+
+    inowas.modflowboundary.update_boundary_affected_layers_handler:
+        class: Inowas\ModflowBoundary\Model\Handler\UpdateBoundaryActiveCellsHandler
+        arguments:
+          - '@modflow_model_list'
+          - '@modflow_boundary_list'
+          - '@inowas.modflowboundary.boundary_manager'
+
+    inowas.modflowboundary.update_boundary_geometry_handler:
+        class: Inowas\ModflowBoundary\Model\Handler\UpdateBoundaryGeometryHandler
+        arguments:
+          - '@modflow_model_list'
+          - '@modflow_boundary_list'
+
+    inowas.modflowboundary.update_boundary_metadata_handler:
+        class: Inowas\ModflowBoundary\Model\Handler\UpdateBoundaryMetadataHandler
+        arguments:
+          - '@modflow_model_list'
+          - '@modflow_boundary_list'
+
+    inowas.modflowboundary.update_boundary_name_handler:
+        class: Inowas\ModflowBoundary\Model\Handler\UpdateBoundaryNameHandler
+        arguments:
+          - '@modflow_model_list'
+          - '@modflow_boundary_list'
+
+    inowas.modflowboundary.update_boundary_observation_point_handler:
+        class: Inowas\ModflowBoundary\Model\Handler\UpdateBoundaryObservationPointHandler
+        arguments:
+          - '@modflow_model_list'
+          - '@modflow_boundary_list'

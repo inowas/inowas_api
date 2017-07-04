@@ -1,0 +1,21 @@
+services:
+    inowas.modflowboundary.boundary_active_cells_projector:
+        class: Inowas\ModflowBoundary\Infrastructure\Projection\BoundaryList\BoundaryActiveCellsProjector
+        arguments:
+          - '@doctrine.dbal.default_connection'
+
+    inowas.modflowboundary.boundary_finder:
+        class: Inowas\ModflowBoundary\Infrastructure\Projection\BoundaryList\BoundaryFinder
+        arguments:
+          - '@doctrine.dbal.default_connection'
+        public: false
+
+    inowas.modflowboundary.boundary_list_projector:
+        class: Inowas\ModflowBoundary\Infrastructure\Projection\BoundaryList\BoundaryListProjector
+        arguments:
+          - '@doctrine.dbal.default_connection'
+
+    inowas.modflowboundary.boundary_observation_points_projector:
+        class: Inowas\ModflowBoundary\Infrastructure\Projection\BoundaryList\BoundaryObservationPointsProjector
+        arguments:
+          - '@doctrine.dbal.default_connection'

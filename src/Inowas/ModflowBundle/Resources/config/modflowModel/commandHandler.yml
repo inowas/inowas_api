@@ -1,179 +1,110 @@
 services:
-    # ModflowBoundaryAggregate
-    inowas.modflowmodel.add_boundary_handler:
-        class: Inowas\ModflowModel\Model\Handler\Boundary\AddBoundaryHandler
-        arguments:
-          - '@modflow_model_list'
-          - '@modflow_boundary_list'
-
-    inowas.modflowmodel.add_boundary_observation_point_handler:
-        class: Inowas\ModflowModel\Model\Handler\Boundary\AddBoundaryObservationPointHandler
-        arguments:
-          - '@modflow_model_list'
-          - '@modflow_boundary_list'
-
-    inowas.modflowmodel.clone_boundary_handler:
-        class: Inowas\ModflowModel\Model\Handler\Boundary\CloneBoundaryHandler
-        arguments:
-          - '@modflow_boundary_list'
-
-    inowas.modflowmodel.remove_boundary_handler:
-        class: Inowas\ModflowModel\Model\Handler\Boundary\RemoveBoundaryHandler
-        arguments:
-          - '@modflow_model_list'
-          - '@modflow_boundary_list'
-
-    inowas.modflowmodel.remove_boundary_observation_point_handler:
-        class: Inowas\ModflowModel\Model\Handler\Boundary\RemoveBoundaryObservationPointHandler
-        arguments:
-          - '@modflow_model_list'
-          - '@modflow_boundary_list'
-
-    inowas.modflowmodel.update_boundary_active_cells_handler:
-        class: Inowas\ModflowModel\Model\Handler\Boundary\UpdateBoundaryActiveCellsHandler
-        arguments:
-          - '@modflow_model_list'
-          - '@modflow_boundary_list'
-          - '@inowas.modflowmodel.boundary_manager'
-
-    inowas.modflowmodel.update_boundary_affected_layers_handler:
-        class: Inowas\ModflowModel\Model\Handler\Boundary\UpdateBoundaryActiveCellsHandler
-        arguments:
-          - '@modflow_model_list'
-          - '@modflow_boundary_list'
-          - '@inowas.modflowmodel.boundary_manager'
-
-    inowas.modflowmodel.update_boundary_geometry_handler:
-        class: Inowas\ModflowModel\Model\Handler\Boundary\UpdateBoundaryGeometryHandler
-        arguments:
-          - '@modflow_model_list'
-          - '@modflow_boundary_list'
-
-    inowas.modflowmodel.update_boundary_metadata_handler:
-        class: Inowas\ModflowModel\Model\Handler\Boundary\UpdateBoundaryMetadataHandler
-        arguments:
-          - '@modflow_model_list'
-          - '@modflow_boundary_list'
-
-    inowas.modflowmodel.update_boundary_name_handler:
-        class: Inowas\ModflowModel\Model\Handler\Boundary\UpdateBoundaryNameHandler
-        arguments:
-          - '@modflow_model_list'
-          - '@modflow_boundary_list'
-
-    inowas.modflowmodel.update_boundary_observation_point_handler:
-        class: Inowas\ModflowModel\Model\Handler\Boundary\UpdateBoundaryObservationPointHandler
-        arguments:
-          - '@modflow_model_list'
-          - '@modflow_boundary_list'
-
-
     # ModflowModelAggregate
     inowas.modflowmodel.calculate_modflow_model_handler:
-        class: Inowas\ModflowModel\Model\Handler\ModflowModel\CalculateModflowModelHandler
+        class: Inowas\ModflowModel\Model\Handler\CalculateModflowModelHandler
         arguments:
           - '@modflow_model_list'
           - '@inowas.modflowmodel.modflow_packages_manager'
           - '@inowas.modflowmodel.amqp_modflow_calculation'
 
     inowas.modflowmodel.calculate_stress_periods_handler:
-        class: Inowas\ModflowModel\Model\Handler\ModflowModel\CalculateStressperiodsHandler
+        class: Inowas\ModflowModel\Model\Handler\CalculateStressperiodsHandler
         arguments:
           - '@modflow_model_list'
           - '@inowas.modflowmodel.manager'
 
     inowas.modflowmodel.change_bounding_box_handler:
-        class: Inowas\ModflowModel\Model\Handler\ModflowModel\ChangeBoundingBoxHandler
+        class: Inowas\ModflowModel\Model\Handler\ChangeBoundingBoxHandler
         arguments:
           - '@modflow_model_list'
           - '@inowas.geotools.geotools_service'
           - '@inowas.modflowmodel.model_finder'
 
     inowas.modflowmodel.change_description_handler:
-        class: Inowas\ModflowModel\Model\Handler\ModflowModel\ChangeDescriptionHandler
+        class: Inowas\ModflowModel\Model\Handler\ChangeDescriptionHandler
         arguments:
           - '@modflow_model_list'
           - '@inowas.modflowmodel.model_finder'
 
     inowas.modflowmodel.change_flow_package_handler:
-        class: Inowas\ModflowModel\Model\Handler\ModflowModel\ChangeFlowPackageHandler
+        class: Inowas\ModflowModel\Model\Handler\ChangeFlowPackageHandler
         arguments:
           - '@modflow_model_list'
 
     inowas.modflowmodel.change_grid_size_handler:
-        class: Inowas\ModflowModel\Model\Handler\ModflowModel\ChangeGridSizeHandler
+        class: Inowas\ModflowModel\Model\Handler\ChangeGridSizeHandler
         arguments:
           - '@modflow_model_list'
           - '@inowas.modflowmodel.model_finder'
 
     inowas.modflowmodel.change_name_handler:
-        class: Inowas\ModflowModel\Model\Handler\ModflowModel\ChangeNameHandler
+        class: Inowas\ModflowModel\Model\Handler\ChangeNameHandler
         arguments:
           - '@modflow_model_list'
           - '@inowas.modflowmodel.model_finder'
 
     inowas.modflowmodel.change_soilmodel_id_handler:
-        class: Inowas\ModflowModel\Model\Handler\ModflowModel\ChangeSoilmodelIdHandler
+        class: Inowas\ModflowModel\Model\Handler\ChangeSoilmodelIdHandler
         arguments:
           - '@modflow_model_list'
           - '@inowas.modflowmodel.model_finder'
 
     inowas.modflowmodel.clone_modflow_model_handler:
-        class: Inowas\ModflowModel\Model\Handler\ModflowModel\CloneModflowModelHandler
+        class: Inowas\ModflowModel\Model\Handler\CloneModflowModelHandler
         arguments:
           - '@modflow_model_list'
 
     inowas.modflowmodel.create_modflow_model_handler:
-        class: Inowas\ModflowModel\Model\Handler\ModflowModel\CreateModflowModelHandler
+        class: Inowas\ModflowModel\Model\Handler\CreateModflowModelHandler
         arguments:
           - '@modflow_model_list'
           - '@inowas.geotools.geotools_service'
 
     inowas.modflowmodel.delete_modflow_model_handler:
-        class: Inowas\ModflowModel\Model\Handler\ModflowModel\DeleteModflowModelHandler
+        class: Inowas\ModflowModel\Model\Handler\DeleteModflowModelHandler
         arguments:
           - '@modflow_model_list'
 
     inowas.modflowmodel.update_area_active_cells_handler:
-        class: Inowas\ModflowModel\Model\Handler\ModflowModel\UpdateAreaActiveCellsHandler
+        class: Inowas\ModflowModel\Model\Handler\UpdateAreaActiveCellsHandler
         arguments:
           - '@modflow_model_list'
-          - '@inowas.modflowmodel.boundary_manager'
+          - '@inowas.modflowboundary.boundary_manager'
 
     inowas.modflowmodel.update_area_geometry_handler:
-        class: Inowas\ModflowModel\Model\Handler\ModflowModel\UpdateAreaGeometryHandler
+        class: Inowas\ModflowModel\Model\Handler\UpdateAreaGeometryHandler
         arguments:
           - '@modflow_model_list'
           - '@inowas.modflowmodel.model_finder'
 
     inowas.modflowmodel.update_calculation_id_handler:
-        class: Inowas\ModflowModel\Model\Handler\ModflowModel\UpdateCalculationIdHandler
+        class: Inowas\ModflowModel\Model\Handler\UpdateCalculationIdHandler
         arguments:
           - '@modflow_model_list'
 
     inowas.modflowmodel.update_calculation_results_handler:
-        class: Inowas\ModflowModel\Model\Handler\ModflowModel\UpdateCalculationResultsHandler
+        class: Inowas\ModflowModel\Model\Handler\UpdateCalculationResultsHandler
         arguments:
           - '@modflow_model_list'
 
     inowas.modflowmodel.update_length_unit_handler:
-        class: Inowas\ModflowModel\Model\Handler\ModflowModel\UpdateLengthUnitHandler
+        class: Inowas\ModflowModel\Model\Handler\UpdateLengthUnitHandler
         arguments:
           - '@modflow_model_list'
           - '@inowas.modflowmodel.model_finder'
 
     inowas.modflowmodel.update_modflow_package_parameter_handler:
-        class: Inowas\ModflowModel\Model\Handler\ModflowModel\UpdateModflowPackageParameterHandler
+        class: Inowas\ModflowModel\Model\Handler\UpdateModflowPackageParameterHandler
         arguments:
           - '@modflow_model_list'
 
     inowas.modflowmodel.update_stress_periods_handler:
-        class: Inowas\ModflowModel\Model\Handler\ModflowModel\UpdateStressPeriodsHandler
+        class: Inowas\ModflowModel\Model\Handler\UpdateStressPeriodsHandler
         arguments:
           - '@modflow_model_list'
 
     inowas.modflowmodel.update_time_unit_handler:
-        class: Inowas\ModflowModel\Model\Handler\ModflowModel\UpdateTimeUnitHandler
+        class: Inowas\ModflowModel\Model\Handler\UpdateTimeUnitHandler
         arguments:
           - '@modflow_model_list'
           - '@inowas.modflowmodel.model_finder'

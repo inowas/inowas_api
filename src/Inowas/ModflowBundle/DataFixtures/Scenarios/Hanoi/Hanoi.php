@@ -24,11 +24,11 @@ use Inowas\Common\Id\ObservationPointId;
 use Inowas\Common\Modflow\LengthUnit;
 use Inowas\Common\Modflow\ModelDescription;
 use Inowas\Common\Modflow\ParameterName;
-use Inowas\ModflowModel\Model\Command\ModflowModel\CalculateModflowModel;
-use Inowas\ModflowModel\Model\Command\ModflowModel\CalculateStressPeriods;
-use Inowas\ModflowModel\Model\Command\ModflowModel\ChangeBoundingBox;
-use Inowas\ModflowModel\Model\Command\ModflowModel\ChangeFlowPackage;
-use Inowas\ModflowModel\Model\Command\ModflowModel\UpdateModflowPackageParameter;
+use Inowas\ModflowModel\Model\Command\CalculateModflowModel;
+use Inowas\ModflowModel\Model\Command\CalculateStressPeriods;
+use Inowas\ModflowModel\Model\Command\ChangeBoundingBox;
+use Inowas\ModflowModel\Model\Command\ChangeFlowPackage;
+use Inowas\ModflowModel\Model\Command\UpdateModflowPackageParameter;
 use Inowas\ModflowModel\Model\Packages\OcStressPeriod;
 use Inowas\ModflowModel\Model\Packages\OcStressPeriodData;
 use Inowas\Common\Modflow\PackageName;
@@ -41,12 +41,12 @@ use Inowas\Common\Soilmodel\SpecificStorage;
 use Inowas\Common\Soilmodel\SpecificYield;
 use Inowas\Common\Soilmodel\TopElevation;
 use Inowas\Common\Soilmodel\VerticalHydraulicConductivity;
-use Inowas\ModflowModel\Model\Command\Boundary\AddBoundary;
-use Inowas\ModflowModel\Model\Command\ModflowModel\CreateModflowModel;
+use Inowas\ModflowBoundary\Model\Command\AddBoundary;
+use Inowas\ModflowModel\Model\Command\CreateModflowModel;
 use Inowas\Common\Grid\BoundingBox;
 use Inowas\Common\Grid\GridSize;
 use Inowas\Common\Id\ModflowId;
-use Inowas\ModflowModel\Model\Command\Boundary\UpdateBoundaryGeometry;
+use Inowas\ModflowBoundary\Model\Command\UpdateBoundaryGeometry;
 use Inowas\Common\Modflow\ModelName;
 use Inowas\Common\Id\UserId;
 use Inowas\Common\Boundaries\WellBoundary;
@@ -583,7 +583,7 @@ class Hanoi extends LoadScenarioBase
             ModelDescription::fromString('Simulation of MAR type river bank filtration'))
         );
 
-        $boundariesFinder = $this->container->get('inowas.modflowmodel.boundary_manager');
+        $boundariesFinder = $this->container->get('inowas.modflowboundary.boundary_manager');
         $rbfRelocatedWellNamesAndGeometry = array(
             'H07_6' => $geoTools->projectPoint(new Point(588637, 2326840, 32648), Srid::fromInt(4326)),
             'H10_6' => $geoTools->projectPoint(new Point(589150, 2326214, 32648), Srid::fromInt(4326)),
@@ -674,7 +674,7 @@ class Hanoi extends LoadScenarioBase
             ModelDescription::fromString('Combination of MAR types river bank filtration and injection wells'))
         );
 
-        $boundariesFinder = $this->container->get('inowas.modflowmodel.boundary_manager');
+        $boundariesFinder = $this->container->get('inowas.modflowboundary.boundary_manager');
         $rbfRelocatedWellNamesAndGeometry = array(
             'H07_6' => $geoTools->projectPoint(new Point(588637, 2326840, 32648), Srid::fromInt(4326)),
             'H10_6' => $geoTools->projectPoint(new Point(589150, 2326214, 32648), Srid::fromInt(4326)),

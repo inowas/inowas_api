@@ -3,11 +3,11 @@
 namespace Inowas\ModflowModel\Infrastructure\ProcessManager;
 
 use Inowas\Common\Id\BoundaryId;
-use Inowas\ModflowModel\Model\Command\Boundary\CloneBoundary;
-use Inowas\ModflowModel\Model\Event\ModflowModel\ModflowModelWasCloned;
+use Inowas\ModflowBoundary\Model\Command\CloneBoundary;
+use Inowas\ModflowModel\Model\Event\ModflowModelWasCloned;
 use Inowas\ModflowModel\Model\ModflowModelAggregate;
 use Inowas\ModflowModel\Model\ModflowModelList;
-use Inowas\ModflowModel\Service\BoundaryManager;
+use Inowas\ModflowBoundary\Service\BoundaryManager;
 use Inowas\Soilmodel\Model\Command\CloneSoilmodel;
 use Prooph\ServiceBus\CommandBus;
 
@@ -20,7 +20,7 @@ class CloneModflowModelProcessManager
     /** @var  ModflowModelList */
     private $modelList;
 
-    /** @var  BoundaryManager */
+    /** @var  \Inowas\ModflowBoundary\Service\BoundaryManager */
     private $boundaryManager;
 
     public function __construct(CommandBus $commandBus, ModflowModelList $modelList, BoundaryManager $boundaryManager)
