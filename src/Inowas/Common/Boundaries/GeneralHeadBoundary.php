@@ -12,6 +12,7 @@ use Inowas\Common\Id\ObservationPointId;
 
 class GeneralHeadBoundary extends AbstractBoundary
 {
+    const CARDINALITY = 'n';
     const TYPE = 'ghb';
 
     /** @noinspection MoreThanThreeArgumentsInspection
@@ -40,39 +41,12 @@ class GeneralHeadBoundary extends AbstractBoundary
 
     public function addGeneralHeadValueToObservationPoint(ObservationPointId $observationPointId, GeneralHeadDateTimeValue $ghbDateTimeValue): ModflowBoundary
     {
-        if (! $this->hasOp($observationPointId)){
+        if (! $this->hasObservationPoint($observationPointId)){
             throw ObservationPointNotFoundInBoundaryException::withIds($this->boundaryId, $observationPointId);
         }
 
         $this->addDateTimeValue($ghbDateTimeValue, $observationPointId);
         return $this->self();
-    }
-
-    public function findValueByDateTime(\DateTimeImmutable $dateTime): ?GeneralHeadDateTimeValue
-    {
-        /** @var ObservationPoint $op */
-        #$op = $this->getOp(ObservationPointId::fromString($this->boundaryId->toString()));
-        $op = array_values($this->observationPoints)[0];
-        $value = $op->findValueByDateTime($dateTime);
-
-        if ($value instanceof GeneralHeadDateTimeValue){
-            return $value;
-        }
-
-        return null;
-    }
-
-    public function findValueByDateTimeAndObservationPointId(\DateTimeImmutable $dateTime, ObservationPointId $observationPointId): ?GeneralHeadDateTimeValue
-    {
-        /** @var ObservationPoint $op */
-        $op = $this->getOp($observationPointId);
-        $value = $op->findValueByDateTime($dateTime);
-
-        if ($value instanceof GeneralHeadDateTimeValue){
-            return $value;
-        }
-
-        return null;
     }
 
     protected function self(): ModflowBoundary

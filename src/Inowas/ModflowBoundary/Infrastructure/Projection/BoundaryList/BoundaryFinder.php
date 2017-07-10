@@ -22,13 +22,12 @@ use Inowas\Common\Boundaries\WellBoundary;
 use Inowas\Common\Boundaries\WellDateTimeValue;
 use Inowas\Common\DateTime\DateTime;
 use Inowas\Common\Geometry\Geometry;
-use Inowas\Common\Grid\ActiveCells;
 use Inowas\Common\Grid\AffectedLayers;
 use Inowas\Common\Id\BoundaryId;
 use Inowas\Common\Id\ModflowId;
 use Inowas\Common\Id\ObservationPointId;
 use Inowas\ModflowModel\Model\Exception\SqlQueryExceptionException;
-use Inowas\ModflowModel\Infrastructure\Projection\Table;
+use Inowas\ModflowBoundary\Infrastructure\Projection\Table;
 
 class BoundaryFinder
 {
@@ -254,7 +253,7 @@ class BoundaryFinder
                 ['boundary_id' => $boundaryId->toString()]
             );
 
-            foreach (json_decode($result['values']) as $arrayValues){
+            foreach (json_decode($result['values'], true) as $arrayValues){
                 $well->addPumpingRate(WellDateTimeValue::fromArrayValues($arrayValues));
             }
 
@@ -314,7 +313,6 @@ class BoundaryFinder
         $result['geometry'] = json_decode($result['geometry'], true);
         $result['metadata'] = json_decode($result['metadata'], true);
         $result['observation_points'] = $observationPoints;
-        $result['active_cells'] = $this->findBoundaryActiveCells($modelId, $boundaryId);
 
         return $result;
     }
@@ -350,7 +348,7 @@ class BoundaryFinder
     public function getBoundaryObservationPointDetails(ModflowId $modelId, BoundaryId $boundaryId, ObservationPointId $observationPointId): ?array
     {
         $result = $this->connection->fetchAssoc(
-            sprintf('SELECT observation_point_id as id, observation_point_name as name, observation_point_geometry as geometry, values_description, values FROM %s WHERE boundary_id = :boundary_id AND observation_point_id = observation_point_id', Table::BOUNDARY_OBSERVATION_POINT_VALUES),
+            sprintf('SELECT observation_point_id as id, observation_point_name as name, observation_point_geometry as geometry, values FROM %s WHERE boundary_id = :boundary_id AND observation_point_id = observation_point_id', Table::BOUNDARY_OBSERVATION_POINT_VALUES),
             ['boundary_id' => $boundaryId->toString(), 'observation_point_id' => $observationPointId->toString()]
         );
 
@@ -359,7 +357,6 @@ class BoundaryFinder
         }
 
         $result['geometry'] = json_decode($result['geometry']);
-        $result['values_description'] = json_decode($result['values_description']);
         $result['values'] = json_decode($result['values']);
         return $result;
     }
@@ -395,7 +392,7 @@ class BoundaryFinder
     public function getBoundaryObservationPointValues(ModflowId $modelId, BoundaryId $boundaryId, ObservationPointId $observationPointId): ?array
     {
         $result = $this->connection->fetchAssoc(
-            sprintf('SELECT values_description, values FROM %s WHERE boundary_id = :boundary_id AND observation_point_id = observation_point_id', Table::BOUNDARY_OBSERVATION_POINT_VALUES),
+            sprintf('SELECT values FROM %s WHERE boundary_id = :boundary_id AND observation_point_id = observation_point_id', Table::BOUNDARY_OBSERVATION_POINT_VALUES),
             ['boundary_id' => $boundaryId->toString(), 'observation_point_id' => $observationPointId->toString()]
         );
 
@@ -404,7 +401,6 @@ class BoundaryFinder
         }
 
         return array(
-            'values_description' => json_decode($result['values_description']),
             'values' => json_decode($result['values'])
         );
     }
@@ -470,54 +466,10 @@ class BoundaryFinder
         return $spDates;
     }
 
-    public function findAreaActiveCells(ModflowId $modelId): ?ActiveCells
-    {
-        $result = $this->connection->fetchAssoc(
-            sprintf('SELECT active_cells FROM %s WHERE boundary_id =:boundary_id AND model_id = :model_id', Table::BOUNDARY_ACTIVE_CELLS),
-            ['model_id' => $modelId->toString(), 'boundary_id' => $modelId->toString()]
-        );
-
-        if (null === $result['active_cells']){
-            return null;
-        }
-
-        return ActiveCells::fromArray(json_decode($result['active_cells'], true));
-    }
-
-    public function updateAreaActiveCells(ModflowId $modelId, ActiveCells $activeCells): void
-    {
-        $boundaryId = BoundaryId::fromString($modelId->toString());
-        $this->updateBoundaryActiveCells($modelId, $boundaryId, $activeCells);
-    }
-
-    public function findBoundaryActiveCells(ModflowId $modelId, BoundaryId $boundaryId): ?ActiveCells
-    {
-        $result = $this->connection->fetchAssoc(
-            sprintf('SELECT active_cells FROM %s WHERE boundary_id =:boundary_id AND model_id = :model_id', Table::BOUNDARY_ACTIVE_CELLS),
-            ['model_id' => $modelId->toString(), 'boundary_id' => $boundaryId->toString()]
-        );
-
-        if (null === $result['active_cells']){
-            return null;
-        }
-
-        return ActiveCells::fromArray(json_decode($result['active_cells'], true));
-    }
-
-    public function updateBoundaryActiveCells(ModflowId $modelId, BoundaryId $boundaryId, ActiveCells $activeCells): void
-    {
-        $this->connection->update(Table::BOUNDARY_ACTIVE_CELLS, array(
-            'active_cells' => json_encode($activeCells->toArray())
-        ), array(
-            'model_id' => $modelId->toString(),
-            'boundary_id' => $boundaryId->toString(),
-        ));
-    }
-
     public function getAffectedLayersByModelAndBoundary(ModflowId $modelId, BoundaryId $boundaryId): AffectedLayers
     {
         $result = $this->connection->fetchAssoc(
-            sprintf('SELECT affected_layers FROM %s WHERE model_id = :model_id AND boundary_id = :boundary_id', Table::BOUNDARY_LIST),
+            sprintf('SELECT * FROM %s WHERE model_id = :model_id AND boundary_id = :boundary_id', Table::BOUNDARY_LIST),
             ['model_id' => $modelId->toString(), 'boundary_id' => $boundaryId->toString()]
         );
 

@@ -1,4 +1,14 @@
 services:
+    inowas.modflowmodel.active_cells_projector:
+        class: Inowas\ModflowModel\Infrastructure\Projection\ActiveCells\ActiveCellsProjector
+        arguments:
+          - '@doctrine.dbal.default_connection'
+
+    inowas.modflowmodel.active_cells_finder:
+        class: Inowas\ModflowModel\Infrastructure\Projection\ActiveCells\ActiveCellsFinder
+        arguments:
+          - '@doctrine.dbal.default_connection'
+
     inowas.modflowmodel.blackhole_projector:
         class: Inowas\ModflowModel\Infrastructure\Projection\Blackhole\BlackholeProjector
 

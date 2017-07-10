@@ -31,7 +31,7 @@ class BoundaryObservationPointWasAdded extends AggregateChanged
             $boundaryId->toString(), [
                 'user_id' => $userId->toString(),
                 'boundary_id' => $boundaryId->toString(),
-                'observationpoint' => serialize($observationPoint)
+                'observationpoint' => $observationPoint->toArray()
             ]
         );
 
@@ -62,7 +62,7 @@ class BoundaryObservationPointWasAdded extends AggregateChanged
     public function observationPoint(): ObservationPoint
     {
         if ($this->observationPoint === null){
-            $this->observationPoint = unserialize($this->payload['observationpoint'], [ObservationPoint::class]);
+            $this->observationPoint = ObservationPoint::fromArray($this->payload['observationpoint']);
         }
 
         return $this->observationPoint;

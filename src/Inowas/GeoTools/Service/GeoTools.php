@@ -6,9 +6,11 @@ namespace Inowas\GeoTools\Service;
 
 use Doctrine\DBAL\Connection;
 use Inowas\Common\Boundaries\Area;
+use Inowas\Common\Boundaries\DateTimeValuesCollection;
 use Inowas\Common\Boundaries\GridCellDateTimeValues;
 use Inowas\Common\Boundaries\ModflowBoundary;
 use Inowas\Common\Boundaries\ObservationPoint;
+use Inowas\Common\Boundaries\ObservationPointCollection;
 use Inowas\Common\Geometry\Geometry;
 use Inowas\Common\Geometry\LineString;
 use Inowas\Common\Geometry\LineStringWithObservationPoints;
@@ -215,11 +217,13 @@ class GeoTools
 
     /**
      * @param LineString $lineString
-     * @param ObservationPoint[] $observationPoints
+     * @param ObservationPointCollection $observationPointsCollection
      * @return array
      */
-    public function cutLinestringBetweenObservationPoints(LineString $lineString, array $observationPoints): array
+    public function cutLinestringBetweenObservationPoints(LineString $lineString, ObservationPointCollection $observationPointsCollection): array
     {
+        $observationPoints = $observationPointsCollection->toArrayValues();
+
         foreach ($observationPoints as $observationPoint){
             if (! $observationPoint instanceof ObservationPoint){
                 // @todo do something
@@ -228,14 +232,9 @@ class GeoTools
         }
 
         $distances = [];
+        /** @var ObservationPoint $observationPoint */
         foreach ($observationPoints as $observationPoint) {
-
             $point = $observationPoint->geometry();
-            if (! $point instanceof Point){
-                // @todo do something
-                return null;
-            }
-
             $closestPoint = $this->getClosestPointOnLineString($lineString, $point);
             $distance = $this->getDistanceOfPointFromLineStringStartPoint($lineString, $closestPoint);
             $distances[] = $distance->inMeters();
@@ -260,12 +259,11 @@ class GeoTools
         return $substringsWithObservationPoints;
     }
 
-    public function interpolateGridCellDateTimeValuesFromLinestringAndObservationPoints(LineString $lineString, array $observationPoints, ActiveCells $activeCells, BoundingBox $boundingBox, GridSize $gridSize): array
+    public function interpolateGridCellDateTimeValuesFromLinestringAndObservationPoints(LineString $lineString, ObservationPointCollection $observationPoints, ActiveCells $activeCells, BoundingBox $boundingBox, GridSize $gridSize): array
     {
         // @todo Cut Linestring with boundingBox
         // Cut Linestring into sectors between ObservationPoints
         /** @var LineStringWithObservationPoints[] $sectors */
-        $observationPoints = array_values($observationPoints);
         $sectors = $this->cutLinestringBetweenObservationPoints($lineString, $observationPoints);
 
         $gridCellDateTimeValues = array();
@@ -276,7 +274,7 @@ class GeoTools
             $column = $activeCell[2];
             $activeCellCenter = $this->getPointFromGridCell($boundingBox, $gridSize, $row, $column);
             $closestPoint = $this->getClosestPointOnLineString($lineString, $activeCellCenter);
-            $dateTimeValues = [];
+            $dateTimeValues = DateTimeValuesCollection::create();
 
             foreach ($sectors as $key => $sector){
                 if ($this->pointIsOnLineString($sector->linestring(), $closestPoint)) {
@@ -299,12 +297,13 @@ class GeoTools
                         $endArrayValues = $endValue->toArrayValues();
 
                         $interpolatedDateTimeArrayValue = [$dateTime->format(DATE_ATOM)];
-                        for ($i=1; $i<count($startArrayValues); $i++){
+                        $nrOfStartArrayValues = count($startArrayValues);
+                        for ($i=1; $i<$nrOfStartArrayValues; $i++){
                             $interpolatedValue = $startArrayValues[$i] + (($endArrayValues[$i]-$startArrayValues[$i])*$factor);
                             $interpolatedDateTimeArrayValue[] = $interpolatedValue;
                         }
 
-                        $dateTimeValues[] = $dateTimeClassName::fromArrayValues($interpolatedDateTimeArrayValue);
+                        $dateTimeValues->add($dateTimeClassName::fromArrayValues($interpolatedDateTimeArrayValue));
                     }
 
                     break;

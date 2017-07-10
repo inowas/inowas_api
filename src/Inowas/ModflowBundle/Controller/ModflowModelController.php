@@ -164,7 +164,7 @@ class ModflowModelController extends InowasRestController
             ));
         }
 
-        $activeCells = $this->get('inowas.modflowboundary.boundary_manager')->getAreaActiveCells($modelId);
+        $activeCells = $this->get('inowas.modflowmodel.manager')->getAreaActiveCells($modelId);
         $details['active_cells'] = $activeCells->to2DArray();
 
         return new JsonResponse($details);

@@ -12,7 +12,7 @@ use Inowas\Common\Id\ObservationPointId;
 
 class RiverBoundary extends AbstractBoundary
 {
-
+    const CARDINALITY = 'n';
     const TYPE = 'riv';
 
     /** @noinspection MoreThanThreeArgumentsInspection
@@ -34,33 +34,14 @@ class RiverBoundary extends AbstractBoundary
         return new self($boundaryId, $name, $geometry, $affectedLayers, $metadata);
     }
 
-    public function type(): BoundaryType
-    {
-        return BoundaryType::fromString($this::TYPE);
-    }
-
     public function addRiverStageToObservationPoint(ObservationPointId $observationPointId, RiverDateTimeValue $riverStage): ModflowBoundary
     {
-        if (! $this->hasOp($observationPointId)){
+        if (! $this->hasObservationPoint($observationPointId)){
             throw ObservationPointNotFoundInBoundaryException::withIds($this->boundaryId, $observationPointId);
         }
 
         $this->addDateTimeValue($riverStage, $observationPointId);
         return $this->self();
-    }
-
-    public function findValueByDateTime(\DateTimeImmutable $dateTime): ?RiverDateTimeValue
-    {
-        /** @var ObservationPoint $op */
-        #$op = $this->getOp(ObservationPointId::fromString($this->boundaryId->toString()));
-        $op = array_values($this->observationPoints)[0];
-        $value = $op->findValueByDateTime($dateTime);
-
-        if ($value instanceof RiverDateTimeValue){
-            return $value;
-        }
-
-        return null;
     }
 
     protected function self(): ModflowBoundary

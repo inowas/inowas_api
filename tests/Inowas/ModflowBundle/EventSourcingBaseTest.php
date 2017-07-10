@@ -439,7 +439,6 @@ abstract class EventSourcingBaseTest extends WebTestCase
         );
 
         $wellBoundary = $wellBoundary->addPumpingRate(WellDateTimeValue::fromParams(new \DateTimeImmutable('2015-01-01'), -5000));
-
         return $wellBoundary;
     }
     

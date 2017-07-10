@@ -81,16 +81,16 @@ prooph_service_bus:
                     # ModflowBoundaries
                     'Inowas\ModflowBoundary\Model\Event\BoundaryActiveCellsWereUpdated':
                         - '@inowas.modflowmodel.blackhole_projector'
-                        - '@inowas.modflowboundary.boundary_active_cells_projector'
+                        - '@inowas.modflowmodel.active_cells_projector'
 
                     'Inowas\ModflowBoundary\Model\Event\BoundaryAffectedLayersWereUpdated':
                         - '@inowas.modflowmodel.blackhole_projector'
-                        - '@inowas.modflowboundary.boundary_active_cells_projector'
+                        - '@inowas.modflowmodel.active_cells_projector'
                         - '@inowas.modflowboundary.boundary_list_projector'
 
                     'Inowas\ModflowBoundary\Model\Event\BoundaryGeometryWasUpdated':
                         - '@inowas.modflowmodel.blackhole_projector'
-                        - '@inowas.modflowboundary.boundary_active_cells_projector'
+                        - '@inowas.modflowmodel.active_cells_projector'
                         - '@inowas.modflowboundary.boundary_list_projector'
 
                     'Inowas\ModflowBoundary\Model\Event\BoundaryMetadataWasUpdated':
@@ -117,35 +117,35 @@ prooph_service_bus:
                     'Inowas\ModflowBoundary\Model\Event\BoundaryWasAdded':
                         - '@inowas.modflowmodel.blackhole_projector'
                         - '@inowas.modflowboundary.boundary_list_projector'
-                        - '@inowas.modflowboundary.boundary_active_cells_projector'
+                        - '@inowas.modflowmodel.active_cells_projector'
                         - '@inowas.modflowboundary.boundary_observation_points_projector'
 
                     'Inowas\ModflowBoundary\Model\Event\BoundaryWasCloned':
                         - '@inowas.modflowmodel.blackhole_projector'
-                        - '@inowas.modflowboundary.boundary_active_cells_projector'
+                        - '@inowas.modflowmodel.active_cells_projector'
                         - '@inowas.modflowboundary.boundary_list_projector'
                         - '@inowas.modflowboundary.boundary_observation_points_projector'
 
                     'Inowas\ModflowBoundary\Model\Event\BoundaryWasRemoved':
                         - '@inowas.modflowmodel.blackhole_projector'
-                        - '@inowas.modflowboundary.boundary_active_cells_projector'
+                        - '@inowas.modflowmodel.active_cells_projector'
                         - '@inowas.modflowboundary.boundary_list_projector'
                         - '@inowas.modflowboundary.boundary_observation_points_projector'
 
                     # ModflowModel
                     'Inowas\ModflowModel\Model\Event\AreaActiveCellsWereUpdated':
                         - '@inowas.modflowmodel.blackhole_projector'
-                        - '@inowas.modflowboundary.boundary_active_cells_projector'
+                        - '@inowas.modflowmodel.active_cells_projector'
                         - '@inowas.modflowmodel.model_projector'
 
                     'Inowas\ModflowModel\Model\Event\AreaGeometryWasUpdated':
                         - '@inowas.modflowmodel.blackhole_projector'
-                        - '@inowas.modflowboundary.boundary_active_cells_projector'
+                        - '@inowas.modflowmodel.active_cells_projector'
                         - '@inowas.modflowmodel.model_projector'
 
                     'Inowas\ModflowModel\Model\Event\BoundingBoxWasChanged':
                         - '@inowas.modflowmodel.blackhole_projector'
-                        - '@inowas.modflowboundary.boundary_active_cells_projector'
+                        - '@inowas.modflowmodel.active_cells_projector'
                         - '@inowas.modflowmodel.model_projector'
 
                     'Inowas\ModflowModel\Model\Event\CalculationIdWasChanged':
@@ -171,7 +171,7 @@ prooph_service_bus:
 
                     'Inowas\ModflowModel\Model\Event\GridSizeWasChanged':
                         - '@inowas.modflowmodel.blackhole_projector'
-                        - '@inowas.modflowboundary.boundary_active_cells_projector'
+                        - '@inowas.modflowmodel.active_cells_projector'
                         - '@inowas.modflowmodel.model_projector'
 
                     'Inowas\ModflowModel\Model\Event\LengthUnitWasUpdated':
@@ -180,7 +180,7 @@ prooph_service_bus:
 
                     'Inowas\ModflowModel\Model\Event\ModflowModelWasCloned':
                         - '@inowas.modflowmodel.blackhole_projector'
-                        - '@inowas.modflowboundary.boundary_active_cells_projector'
+                        - '@inowas.modflowmodel.active_cells_projector'
                         - '@inowas.modflowboundary.boundary_observation_points_projector'
                         - '@inowas.modflowmodel.clone_modflow_model_process_manager'
                         - '@inowas.modflowmodel.model_projector'
@@ -189,13 +189,13 @@ prooph_service_bus:
                     'Inowas\ModflowModel\Model\Event\ModflowModelWasCreated':
                         - '@inowas.modflowmodel.blackhole_projector'
                         - '@inowas.modflowmodel.model_projector'
-                        - '@inowas.modflowboundary.boundary_active_cells_projector'
+                        - '@inowas.modflowmodel.active_cells_projector'
                         - '@inowas.modflowmodel.modflow_packages_process_manager'
                         - '@inowas.modflowmodel.create_modflow_model_process_manager'
 
                     'Inowas\ModflowModel\Model\Event\ModflowModelWasDeleted':
                         - '@inowas.modflowmodel.blackhole_projector'
-                        - '@inowas.modflowboundary.boundary_active_cells_projector'
+                        - '@inowas.modflowmodel.active_cells_projector'
                         - '@inowas.modflowmodel.model_projector'
 
                     'Inowas\ModflowModel\Model\Event\ModflowPackageParameterWasUpdated':

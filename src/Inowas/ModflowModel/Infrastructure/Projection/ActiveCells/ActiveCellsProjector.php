@@ -2,14 +2,14 @@
 
 declare(strict_types=1);
 
-namespace Inowas\ModflowBoundary\Infrastructure\Projection\BoundaryList;
+namespace Inowas\ModflowModel\Infrastructure\Projection\ActiveCells;
 
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Schema\Schema;
 use Inowas\Common\Id\BoundaryId;
 use Inowas\Common\Id\ModflowId;
 use Inowas\Common\Projection\AbstractDoctrineConnectionProjector;
-use Inowas\ModflowModel\Model\Event\AreaActiveCellsWereUpdated;
+use Inowas\ModflowModel\Model\Event\ActiveCellsWereUpdated;
 use Inowas\ModflowModel\Model\Event\AreaGeometryWasUpdated;
 use Inowas\ModflowBoundary\Model\Event\BoundaryActiveCellsWereUpdated;
 use Inowas\ModflowBoundary\Model\Event\BoundaryAffectedLayersWereUpdated;
@@ -23,7 +23,7 @@ use Inowas\ModflowModel\Model\Event\ModflowModelWasCloned;
 use Inowas\ModflowModel\Infrastructure\Projection\Table;
 use Inowas\ModflowModel\Model\Event\ModflowModelWasCreated;
 
-class BoundaryActiveCellsProjector extends AbstractDoctrineConnectionProjector
+class ActiveCellsProjector extends AbstractDoctrineConnectionProjector
 {
 
     public function __construct(Connection $connection) {
@@ -31,7 +31,7 @@ class BoundaryActiveCellsProjector extends AbstractDoctrineConnectionProjector
         parent::__construct($connection);
 
         $schema = new Schema();
-        $table = $schema->createTable(Table::BOUNDARY_ACTIVE_CELLS);
+        $table = $schema->createTable(Table::ACTIVE_CELLS);
         $table->addColumn('boundary_id', 'string', ['length' => 36]);
         $table->addColumn('model_id', 'string', ['length' => 36]);
         $table->addColumn('active_cells', 'text', ['notnull' => false, 'default' => null]);
@@ -42,7 +42,7 @@ class BoundaryActiveCellsProjector extends AbstractDoctrineConnectionProjector
     # BoundaryAggregate Events
     public function onBoundaryActiveCellsWereUpdated(BoundaryActiveCellsWereUpdated $event): void
     {
-        $this->connection->update(Table::BOUNDARY_ACTIVE_CELLS, array(
+        $this->connection->update(Table::ACTIVE_CELLS, array(
             'active_cells' => json_encode($event->activeCells()->toArray())
         ), array (
             'boundary_id' => $event->boundaryId()->toString()
@@ -51,7 +51,7 @@ class BoundaryActiveCellsProjector extends AbstractDoctrineConnectionProjector
 
     public function onBoundaryAffectedLayersWereUpdated(BoundaryAffectedLayersWereUpdated $event): void
     {
-        $this->connection->update(Table::BOUNDARY_ACTIVE_CELLS, array(
+        $this->connection->update(Table::ACTIVE_CELLS, array(
             'active_cells' => null
         ), array(
             'boundary_id' => $event->boundaryId()->toString(),
@@ -60,7 +60,7 @@ class BoundaryActiveCellsProjector extends AbstractDoctrineConnectionProjector
 
     public function onBoundaryGeometryWasUpdated(BoundaryGeometryWasUpdated $event): void
     {
-        $this->connection->update(Table::BOUNDARY_ACTIVE_CELLS, array(
+        $this->connection->update(Table::ACTIVE_CELLS, array(
             'active_cells' => null
         ), array(
             'boundary_id' => $event->boundaryId()->toString(),
@@ -69,7 +69,7 @@ class BoundaryActiveCellsProjector extends AbstractDoctrineConnectionProjector
 
     public function onBoundaryWasAdded(BoundaryWasAdded $event): void
     {
-        $this->connection->insert(Table::BOUNDARY_ACTIVE_CELLS, array(
+        $this->connection->insert(Table::ACTIVE_CELLS, array(
             'boundary_id' => $event->boundaryId()->toString(),
             'model_id' => $event->modelId()->toString(),
             'active_cells' => null
@@ -78,24 +78,33 @@ class BoundaryActiveCellsProjector extends AbstractDoctrineConnectionProjector
 
     public function onBoundaryWasCloned(BoundaryWasCloned $event): void
     {
-        $this->connection->insert(Table::BOUNDARY_ACTIVE_CELLS, array(
+        $result = $this->connection->fetchAssoc(
+            sprintf('SELECT active_cells FROM %s WHERE boundary_id = :boundary_id', Table::ACTIVE_CELLS),
+            ['boundary_id' => $event->boundaryId()->toString()]
+        );
+
+        if ($result === false){
+            return;
+        }
+
+        $this->connection->insert(Table::ACTIVE_CELLS, array(
             'boundary_id' => $event->boundaryId()->toString(),
             'model_id' => $event->modelId()->toString(),
-            'active_cells' => null
+            'active_cells' => $result['active_cells']
         ));
     }
 
     public function onBoundaryWasRemoved(BoundaryWasRemoved $event): void
     {
-        $this->connection->delete(Table::BOUNDARY_ACTIVE_CELLS, array(
+        $this->connection->delete(Table::ACTIVE_CELLS, array(
             'boundary_id' => $event->boundaryId()->toString()
         ));
     }
 
     # ModflowModelAggregate Events
-    public function onAreaActiveCellsWereUpdated(AreaActiveCellsWereUpdated $event): void
+    public function onAreaActiveCellsWereUpdated(ActiveCellsWereUpdated $event): void
     {
-        $this->connection->update(Table::BOUNDARY_ACTIVE_CELLS, array(
+        $this->connection->update(Table::ACTIVE_CELLS, array(
             'active_cells' => json_encode($event->activeCells()->toArray())
         ), array (
             'boundary_id' => $event->modflowId()->toString()
@@ -104,7 +113,7 @@ class BoundaryActiveCellsProjector extends AbstractDoctrineConnectionProjector
 
     public function onAreaGeometryWasUpdated(AreaGeometryWasUpdated $event): void
     {
-        $this->connection->update(Table::BOUNDARY_ACTIVE_CELLS, array(
+        $this->connection->update(Table::ACTIVE_CELLS, array(
             'active_cells' => null
         ), array(
             'boundary_id' => $event->modelId()->toString(),
@@ -128,7 +137,7 @@ class BoundaryActiveCellsProjector extends AbstractDoctrineConnectionProjector
 
     public function onModflowModelWasCreated(ModflowModelWasCreated $event): void
     {
-        $this->connection->insert(Table::BOUNDARY_ACTIVE_CELLS, array(
+        $this->connection->insert(Table::ACTIVE_CELLS, array(
             'model_id' => $event->modelId()->toString(),
             'boundary_id' => $event->modelId()->toString(),
             'active_cells' => null
@@ -138,14 +147,14 @@ class BoundaryActiveCellsProjector extends AbstractDoctrineConnectionProjector
     # Helpers
     private function updateActiveCellsWithBoundingBoxOrGridsize(ModflowId $modelId): void
     {
-        $rows = $this->connection->fetchAll(sprintf('SELECT * FROM %s WHERE model_id = :model_id', Table::BOUNDARY_ACTIVE_CELLS),
+        $rows = $this->connection->fetchAll(sprintf('SELECT * FROM %s WHERE model_id = :model_id', Table::ACTIVE_CELLS),
             array('model_id' => $modelId->toString())
         );
 
         foreach ($rows as $row){
             $boundaryId = BoundaryId::fromString($row['boundary_id']);
 
-            $this->connection->update(Table::BOUNDARY_ACTIVE_CELLS, array(
+            $this->connection->update(Table::ACTIVE_CELLS, array(
                 'active_cells' => null
             ), array(
                 'model_id' => $modelId->toString(),
@@ -153,7 +162,7 @@ class BoundaryActiveCellsProjector extends AbstractDoctrineConnectionProjector
             ));
         }
 
-        $this->connection->update(Table::BOUNDARY_ACTIVE_CELLS, array(
+        $this->connection->update(Table::ACTIVE_CELLS, array(
             'active_cells' => null
         ), array(
             'model_id' => $modelId->toString(),
@@ -165,7 +174,7 @@ class BoundaryActiveCellsProjector extends AbstractDoctrineConnectionProjector
     private function cloneArea(ModflowId $baseModelId, ModflowId $modelId): void
     {
         $result = $this->connection->fetchAssoc(
-            sprintf('SELECT * FROM %s WHERE boundary_id = :boundary_id', Table::BOUNDARY_ACTIVE_CELLS),
+            sprintf('SELECT active_cells FROM %s WHERE boundary_id = :boundary_id', Table::ACTIVE_CELLS),
             ['boundary_id' => $baseModelId->toString()]
         );
 
@@ -173,10 +182,10 @@ class BoundaryActiveCellsProjector extends AbstractDoctrineConnectionProjector
             return;
         }
 
-        $this->connection->insert(Table::BOUNDARY_ACTIVE_CELLS, array(
+        $this->connection->insert(Table::ACTIVE_CELLS, array(
             'boundary_id' => $modelId->toString(),
             'model_id' => $modelId->toString(),
-            'active_cells' => null,
+            'active_cells' => $result['active_cells'],
         ));
     }
 }

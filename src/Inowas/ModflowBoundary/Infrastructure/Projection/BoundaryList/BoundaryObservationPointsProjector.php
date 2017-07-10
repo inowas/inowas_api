@@ -12,7 +12,7 @@ use Inowas\ModflowBoundary\Model\Event\BoundaryObservationPointWasAdded;
 use Inowas\ModflowBoundary\Model\Event\BoundaryObservationPointWasUpdated;
 use Inowas\ModflowBoundary\Model\Event\BoundaryWasCloned;
 use Inowas\ModflowBoundary\Model\Event\BoundaryWasRemoved;
-use Inowas\ModflowModel\Infrastructure\Projection\Table;
+use Inowas\ModflowBoundary\Infrastructure\Projection\Table;
 
 class BoundaryObservationPointsProjector extends AbstractDoctrineConnectionProjector
 {
@@ -28,7 +28,6 @@ class BoundaryObservationPointsProjector extends AbstractDoctrineConnectionProje
         $table->addColumn('observation_point_id', 'string', ['length' => 36]);
         $table->addColumn('observation_point_name', 'string', ['length' => 255]);
         $table->addColumn('observation_point_geometry', 'text', ['notnull' => false]);
-        $table->addColumn('values_description', 'text', ['notnull' => false]);
         $table->addColumn('values', 'text', ['notnull' => false, 'default' => '[]']);
         $table->addIndex(array('boundary_id'));
         $this->addSchema($schema);
@@ -45,8 +44,7 @@ class BoundaryObservationPointsProjector extends AbstractDoctrineConnectionProje
             'observation_point_id' => $observationPoint->id()->toString(),
             'observation_point_name' => $observationPoint->name()->toString(),
             'observation_point_geometry' => json_encode(Geometry::fromPoint($observationPointGeometry)),
-            'values_description' => json_encode($observationPoint->dateTimeValuesDescription()),
-            'values' => json_encode($observationPoint->dateTimeValues())
+            'values' => json_encode($observationPoint->dateTimeValues()->toArrayValues())
         ));
     }
 
@@ -59,8 +57,7 @@ class BoundaryObservationPointsProjector extends AbstractDoctrineConnectionProje
             array(
                 'observation_point_name' => $observationPoint->name()->toString(),
                 'observation_point_geometry' => json_encode(Geometry::fromPoint($observationPointGeometry)),
-                'values_description' => json_encode($observationPoint->dateTimeValuesDescription()),
-                'values' => json_encode($observationPoint->dateTimeValues())
+                'values' => json_encode($observationPoint->dateTimeValues()->toArrayValues())
             ), array(
                 'boundary_id' => $event->boundaryId()->toString(),
                 'observation_point_id' => $observationPoint->id()->toString()
@@ -88,7 +85,6 @@ class BoundaryObservationPointsProjector extends AbstractDoctrineConnectionProje
                 'observation_point_id' => $row['observation_point_id'],
                 'observation_point_name' => $row['observation_point_name'],
                 'observation_point_geometry' => $row['observation_point_geometry'],
-                'values_description' => $row['values_description'],
                 'values' => $row['values']
             ));
         }

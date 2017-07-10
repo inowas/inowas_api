@@ -14,7 +14,7 @@ use Inowas\ModflowBoundary\Model\Event\BoundaryNameWasUpdated;
 use Inowas\ModflowBoundary\Model\Event\BoundaryWasCloned;
 use Inowas\ModflowBoundary\Model\Event\BoundaryWasAdded;
 use Inowas\ModflowBoundary\Model\Event\BoundaryWasRemoved;
-use Inowas\ModflowModel\Infrastructure\Projection\Table;
+use Inowas\ModflowBoundary\Infrastructure\Projection\Table;
 
 class BoundaryListProjector extends AbstractDoctrineConnectionProjector
 {

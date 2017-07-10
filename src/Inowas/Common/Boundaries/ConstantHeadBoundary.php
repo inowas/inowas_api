@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Inowas\Common\Boundaries;
 
-use Inowas\Common\Exception\ObservationPointNotFoundInBoundaryException;
 use Inowas\Common\Geometry\Geometry;
 use Inowas\Common\Grid\AffectedLayers;
 use Inowas\Common\Id\BoundaryId;
@@ -12,6 +11,7 @@ use Inowas\Common\Id\ObservationPointId;
 
 class ConstantHeadBoundary extends AbstractBoundary
 {
+    const CARDINALITY = 'n';
     const TYPE = 'chd';
 
     /** @noinspection MoreThanThreeArgumentsInspection
@@ -33,33 +33,10 @@ class ConstantHeadBoundary extends AbstractBoundary
         return new self($boundaryId, $name, $geometry, $affectedLayers, $metadata);
     }
 
-    public function type(): BoundaryType
-    {
-        return BoundaryType::fromString($this::TYPE);
-    }
-
     public function addConstantHeadToObservationPoint(ObservationPointId $observationPointId, ConstantHeadDateTimeValue $chdTimeValue): ModflowBoundary
     {
-        if (! $this->hasOp($observationPointId)){
-            throw ObservationPointNotFoundInBoundaryException::withIds($this->boundaryId, $observationPointId);
-        }
-
         $this->addDateTimeValue($chdTimeValue, $observationPointId);
         return $this->self();
-    }
-
-    public function findValueByDateTime(\DateTimeImmutable $dateTime): ?ConstantHeadDateTimeValue
-    {
-        /** @var ObservationPoint $op */
-        #$op = $this->getOp(ObservationPointId::fromString($this->boundaryId->toString()));
-        $op = array_values($this->observationPoints)[0];
-        $value = $op->findValueByDateTime($dateTime);
-
-        if ($value instanceof ConstantHeadDateTimeValue){
-            return $value;
-        }
-
-        return null;
     }
 
     protected function self(): ModflowBoundary

@@ -66,7 +66,7 @@ final class AddBoundaryHandler
         );
 
         /** @var ObservationPoint $observationPoint */
-        foreach ($b->observationPoints() as $observationPoint) {
+        foreach ($b->observationPoints()->toArray() as $observationPoint) {
             $boundary->addObservationPoint($command->userId(), $observationPoint);
         }
 

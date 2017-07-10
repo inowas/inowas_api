@@ -2,6 +2,4 @@ services:
     inowas.modflowboundary.boundary_manager:
         class: Inowas\ModflowBoundary\Service\BoundaryManager
         arguments:
-            - '@inowas.modflowmodel.model_finder'
-            - '@inowas.modflowboundary.boundary_finder'
-            - '@inowas.geotools.geotools_service'
+          - '@inowas.modflowboundary.boundary_finder'

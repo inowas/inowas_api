@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Inowas\ModflowBoundary\Model\Command;
+namespace Inowas\ModflowModel\Model\Command;
 
 use Inowas\Common\Grid\ActiveCells;
 use Inowas\Common\Id\BoundaryId;
@@ -12,22 +12,38 @@ use Prooph\Common\Messaging\Command;
 use Prooph\Common\Messaging\PayloadConstructable;
 use Prooph\Common\Messaging\PayloadTrait;
 
-class UpdateBoundaryActiveCells extends Command implements PayloadConstructable
+class UpdateActiveCells extends Command implements PayloadConstructable
 {
 
     use PayloadTrait;
 
-    public static function withIds(
+    public static function ofBoundaryWithIds(
         UserId $userId,
         ModflowId $modelId,
         BoundaryId $boundaryId,
         ActiveCells $activeCells
-    ): UpdateBoundaryActiveCells
+    ): UpdateActiveCells
     {
         $payload = [
             'user_id' => $userId->toString(),
             'model_id' => $modelId->toString(),
             'boundary_id' => $boundaryId->toString(),
+            'active_cells' => $activeCells->toArray()
+        ];
+
+        return new self($payload);
+    }
+
+    public static function ofModelAreaWithIds(
+        UserId $userId,
+        ModflowId $modelId,
+        ActiveCells $activeCells
+    ): UpdateActiveCells
+    {
+        $payload = [
+            'user_id' => $userId->toString(),
+            'model_id' => $modelId->toString(),
+            'boundary_id' => $modelId->toString(),
             'active_cells' => $activeCells->toArray()
         ];
 
@@ -52,5 +68,10 @@ class UpdateBoundaryActiveCells extends Command implements PayloadConstructable
     public function activeCells(): ActiveCells
     {
         return ActiveCells::fromArray($this->payload['active_cells']);
+    }
+
+    public function isModelArea(): bool
+    {
+        return $this->payload['model_id'] === $this->payload['boundary_id'];
     }
 }

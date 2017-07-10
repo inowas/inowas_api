@@ -4,15 +4,17 @@ declare(strict_types=1);
 
 namespace Inowas\ModflowBoundary\Model\Command;
 
+use Inowas\Common\Boundaries\DateTimeValuesCollection;
 use Inowas\Common\Boundaries\ObservationPoint;
 use Inowas\Common\Id\BoundaryId;
 use Inowas\Common\Id\ModflowId;
+use Inowas\Common\Id\ObservationPointId;
 use Inowas\Common\Id\UserId;
 use Prooph\Common\Messaging\Command;
 use Prooph\Common\Messaging\PayloadConstructable;
 use Prooph\Common\Messaging\PayloadTrait;
 
-class AddBoundaryObservationPoint extends Command implements PayloadConstructable
+class UpdateBoundaryObservationPoint extends Command implements PayloadConstructable
 {
 
     use PayloadTrait;
@@ -22,20 +24,22 @@ class AddBoundaryObservationPoint extends Command implements PayloadConstructabl
      * @param ModflowId $modelId
      * @param BoundaryId $boundaryId
      * @param ObservationPoint $observationPoint
-     * @return AddBoundaryObservationPoint
+     * @return UpdateBoundaryObservationPoint
      */
     public static function byUserModelIdBoundaryId(
         UserId $userId,
         ModflowId $modelId,
         BoundaryId $boundaryId,
-        ObservationPoint $observationPoint
-    ): AddBoundaryObservationPoint
+        ObservationPointId $observationPointId,
+        DateTimeValuesCollection $dateTimeValues
+    ): UpdateBoundaryObservationPoint
     {
         $payload = [
             'user_id' => $userId->toString(),
             'model_id' => $modelId->toString(),
             'boundary_id' => $boundaryId->toString(),
-            'observation_point' => $observationPoint->toArray()
+            'observation_point_id' => $observationPointId->toString(),
+            'date_time_values' => $dateTimeValues->toArray()
         ];
 
         return new self($payload);
@@ -56,8 +60,13 @@ class AddBoundaryObservationPoint extends Command implements PayloadConstructabl
         return BoundaryId::fromString($this->payload['boundary_id']);
     }
 
-    public function observationPoint(): ObservationPoint
+    public function observationPointId(): ObservationPointId
     {
-        return ObservationPoint::fromArray($this->payload['observation_point']);
+        return ObservationPointId::fromString($this->payload['observation_point_id']);
+    }
+
+    public function dateTimeValues(): DateTimeValuesCollection
+    {
+        return DateTimeValuesCollection::fr($this->payload['observation_point_id']);
     }
 }

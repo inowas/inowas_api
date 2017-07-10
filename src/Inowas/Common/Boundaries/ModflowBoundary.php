@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Inowas\Common\Boundaries;
 
 use Inowas\Common\Geometry\Geometry;
-use Inowas\Common\Grid\ActiveCells;
 use Inowas\Common\Grid\AffectedLayers;
 use Inowas\Common\Id\BoundaryId;
 use Inowas\Common\Id\ObservationPointId;
@@ -35,23 +34,23 @@ interface ModflowBoundary
 
     public function boundaryId(): BoundaryId;
 
-    public function name(): ?BoundaryName;
+    public function name(): BoundaryName;
 
-    public function geometry(): ?Geometry;
+    public function geometry(): Geometry;
 
-    public function observationPoints(): array;
+    public function observationPoints(): ObservationPointCollection;
 
-    public function updateObservationPoint(ObservationPoint $op): void;
+    public function addObservationPoint(ObservationPoint $op): ModflowBoundary;
 
-    public function getObservationPoint(ObservationPointId $id): ?ObservationPoint;
+    public function getObservationPoint(ObservationPointId $id): ObservationPoint;
+
+    public function updateObservationPoint(ObservationPoint $op): ModflowBoundary;
 
     public function type(): BoundaryType;
 
-    public function setActiveCells(ActiveCells $activeCells);
+    public function cardinality(): Cardinality;
 
     public function affectedLayers(): AffectedLayers;
-
-    public function activeCells(): ?ActiveCells;
 
     public function metadata(): BoundaryMetadata;
 }

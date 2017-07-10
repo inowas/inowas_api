@@ -136,11 +136,6 @@ class Geometry implements \JsonSerializable
         return ($this->value() instanceof Point);
     }
 
-    public function isPolygon(): bool
-    {
-        return ($this->value() instanceof Polygon);
-    }
-
     public function getPoint(): ?Point
     {
         if ($this->isPoint()) {
@@ -150,16 +145,44 @@ class Geometry implements \JsonSerializable
         return null;
     }
 
-    public function getPointFromPolygon(): ?Point
+    public function isLinestring(): bool
     {
-        if (! $this->isPolygon()) {
-            return null;
+        return ($this->value() instanceof LineString);
+    }
+
+    public function getLineString(): ?LineString
+    {
+        if ($this->isLinestring()){
+            return $this->value();
         }
 
-        /** @var Polygon $polygon */
-        $polygon = $this->value();
+        return null;
+    }
 
-        return $polygon->getRing(0)->getPoint(0);
+    public function isPolygon(): bool
+    {
+        return ($this->value() instanceof Polygon);
+    }
+
+    public function getPointFromGeometry(): ?Point
+    {
+        if ($this->isPoint()) {
+            return $this->value();
+        }
+
+        if ($this->isLinestring()) {
+            /** @var LineString $linestring */
+            $linestring = $this->value();
+            return $linestring->getPoint(0);
+        }
+
+        if ($this->isPolygon()) {
+            /** @var Polygon $polygon */
+            $polygon = $this->value();
+            return $polygon->getRing(0)->getPoint(0);
+        }
+
+        return null;
     }
 
     public function jsonSerialize()

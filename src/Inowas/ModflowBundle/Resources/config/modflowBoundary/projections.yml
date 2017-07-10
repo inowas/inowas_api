@@ -1,9 +1,4 @@
 services:
-    inowas.modflowboundary.boundary_active_cells_projector:
-        class: Inowas\ModflowBoundary\Infrastructure\Projection\BoundaryList\BoundaryActiveCellsProjector
-        arguments:
-          - '@doctrine.dbal.default_connection'
-
     inowas.modflowboundary.boundary_finder:
         class: Inowas\ModflowBoundary\Infrastructure\Projection\BoundaryList\BoundaryFinder
         arguments:

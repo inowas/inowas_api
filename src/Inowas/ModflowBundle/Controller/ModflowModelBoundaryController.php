@@ -21,7 +21,7 @@ use Inowas\ModflowBundle\Exception\InvalidArgumentException;
 use Inowas\ModflowBundle\Exception\NotFoundException;
 use Inowas\ModflowBoundary\Model\Command\AddBoundary;
 use Inowas\ModflowBoundary\Model\Command\AddBoundaryObservationPoint;
-use Inowas\ModflowBoundary\Model\Command\UpdateBoundaryActiveCells;
+use Inowas\ModflowModel\Model\Command\UpdateActiveCells;
 use Inowas\ModflowBoundary\Model\Command\UpdateBoundaryAffectedLayers;
 use Inowas\ModflowBoundary\Model\Command\UpdateBoundaryGeometry;
 use Inowas\ModflowBoundary\Model\Command\UpdateBoundaryMetadata;
@@ -216,7 +216,7 @@ class ModflowModelBoundaryController extends InowasRestController
 
         if ($this->containsKey('active_cells', $content)) {
             $activeCells = ActiveCells::fromCells($content['active_cells']);
-            $commandBus->dispatch(UpdateBoundaryActiveCells::withIds($userId, $modelId, $boundaryId, $activeCells));
+            $commandBus->dispatch(UpdateActiveCells::withIds($userId, $modelId, $boundaryId, $activeCells));
         }
 
         if ($this->containsKey('affected_layers', $content)) {

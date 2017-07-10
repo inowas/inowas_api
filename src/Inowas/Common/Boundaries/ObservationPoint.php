@@ -22,8 +22,8 @@ class ObservationPoint implements \JsonSerializable
     /** @var  BoundaryType */
     protected $type;
 
-    /** @var  array */
-    protected $dateTimeValues = [];
+    /** @var  DateTimeValuesCollection */
+    protected $dateTimeValues;
 
     /** @noinspection MoreThanThreeArgumentsInspection
      * @param ObservationPointId $id
@@ -34,7 +34,23 @@ class ObservationPoint implements \JsonSerializable
      */
     public static function fromIdTypeNameAndGeometry(ObservationPointId $id, BoundaryType $type, ObservationPointName $name, Point $geometry): ObservationPoint
     {
-        return new self($id, $type, $name, $geometry);
+        $self = new self($id, $type, $name, $geometry);
+        $self->dateTimeValues = DateTimeValuesCollection::create();
+        return $self;
+    }
+
+    public static function fromArray(array $arr): ObservationPoint
+    {
+        $type = BoundaryType::fromString($arr['type']);
+        $self = new self(
+            ObservationPointId::fromString($arr['id']),
+            $type,
+            ObservationPointName::fromString($arr['name']),
+            new Point($arr['geometry'][0], $arr['geometry'][1])
+        );
+
+        $self->dateTimeValues = DateTimeValuesCollection::fromTypeAndArray($type, $arr['date_time_values']);
+        return $self;
     }
 
     private function __construct(ObservationPointId $id, BoundaryType $type, ObservationPointName $name, Point $geometry)
@@ -47,7 +63,7 @@ class ObservationPoint implements \JsonSerializable
 
     public function addDateTimeValue(DateTimeValue $dateTimeValue): ObservationPoint
     {
-        $this->dateTimeValues[] = $dateTimeValue;
+        $this->dateTimeValues->add($dateTimeValue);
         $self = new self($this->id, $this->type, $this->name, $this->geometry);
         $self->dateTimeValues = $this->dateTimeValues;
         return $self;
@@ -73,20 +89,9 @@ class ObservationPoint implements \JsonSerializable
         return $this->name;
     }
 
-    public function dateTimeValues(): array
+    public function dateTimeValues(): DateTimeValuesCollection
     {
         return $this->dateTimeValues;
-    }
-
-    public function dateTimeValuesDescription(): array
-    {
-        if (count($this->dateTimeValues()) > 0) {
-            /** @var DateTimeValue $dateTimeValue */
-            $dateTimeValue = $this->dateTimeValues[0];
-            return $dateTimeValue->valuesDescription();
-        }
-
-        return [];
     }
 
     public function toArray(): array
@@ -95,50 +100,23 @@ class ObservationPoint implements \JsonSerializable
             'id' => $this->id->toString(),
             'name' => $this->name()->toString(),
             'geometry' => $this->geometry->toArray(),
-            'date_time_values' => $this->dateTimeValues
+            'type' => $this->type->toString(),
+            'date_time_values' => $this->dateTimeValues->toArray()
         );
     }
 
     public function jsonSerialize(): array
     {
-        $valuesDescription = [];
-        if (count($this->dateTimeValues()) > 0) {
-            /** @var DateTimeValue $dateTimeValue */
-            $dateTimeValue = $this->dateTimeValues[0];
-            $valuesDescription = $dateTimeValue->valuesDescription();
-        }
-
         return array(
             'id' => $this->id->toString(),
             'name' => $this->name()->toString(),
             'geometry' => $this->geometry->toArray(),
-            'values_description' => $valuesDescription,
             'values' => $this->dateTimeValues
         );
     }
 
     public function findValueByDateTime(\DateTimeImmutable $dateTime): ?DateTimeValue
     {
-
-        $values = $this->dateTimeValues();
-        usort($values, function ($v1, $v2) {
-
-            /** @var $v1 DateTimeValue */
-            $dtV1 = $v1->dateTime();
-
-            /** @var $v2 DateTimeValue */
-            $dtV2 = $v2->dateTime();
-
-            return ($dtV1 < $dtV2) ? +1 : -1;
-        });
-
-        /** @var DateTimeValue $value */
-        foreach ($values as $value) {
-            if ($dateTime >= $value->dateTime()){
-                return $value;
-            }
-        }
-
-        return null;
+        return $this->dateTimeValues()->findValueByDateTime($dateTime);
     }
 }

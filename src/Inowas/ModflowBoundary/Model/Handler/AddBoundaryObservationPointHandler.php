@@ -4,16 +4,13 @@ declare(strict_types=1);
 
 namespace Inowas\ModflowBoundary\Model\Handler;
 
-use Inowas\Common\Boundaries\ObservationPoint;
 use Inowas\ModflowBoundary\Model\Command\AddBoundaryObservationPoint;
 use Inowas\ModflowBoundary\Model\Exception\ModflowBoundaryNotFoundException;
 use Inowas\ModflowModel\Model\Exception\ModflowModelNotFoundException;
 use Inowas\ModflowModel\Model\Exception\WriteAccessFailedException;
-use Inowas\ModflowBoundary\Model\ModflowBoundaryAggregate;
 use Inowas\ModflowBoundary\Model\ModflowBoundaryList;
 use Inowas\ModflowModel\Model\ModflowModelList;
 use Inowas\ModflowModel\Model\ModflowModelAggregate;
-use Inowas\ModflowBoundary\Service\BoundaryManager;
 
 final class AddBoundaryObservationPointHandler
 {
@@ -23,10 +20,6 @@ final class AddBoundaryObservationPointHandler
 
     /** @var  \Inowas\ModflowBoundary\Model\ModflowBoundaryList */
     private $boundaryList;
-
-    /** @var  BoundaryManager */
-    private $boundaryManager;
-
 
     /**
      * AddBoundaryObservationPointHandler constructor.
@@ -59,15 +52,6 @@ final class AddBoundaryObservationPointHandler
             throw ModflowBoundaryNotFoundException::withId($command->boundaryId());
         }
 
-        $boundaryType = $this->boundaryManager->getBoundaryTypeByBoundaryId($command->boundaryId());
-
-        $observationPoint = ObservationPoint::fromIdTypeNameAndGeometry(
-            $command->observationPointId(),
-            $boundaryType,
-            $command->observationPointName(),
-            $command->geometry()
-        );
-
-        $boundary->addObservationPoint($command->userId(), $observationPoint);
+        $boundary->addObservationPoint($command->userId(), $command->observationPoint());
     }
 }

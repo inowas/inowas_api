@@ -5,34 +5,21 @@ namespace Inowas\ModflowBoundary\Service;
 use Inowas\Common\Boundaries\BoundaryName;
 use Inowas\Common\Boundaries\BoundaryType;
 use Inowas\Common\Boundaries\ObservationPointName;
-use Inowas\Common\Boundaries\RechargeBoundary;
 use Inowas\Common\Geometry\Geometry;
-use Inowas\Common\Grid\ActiveCells;
 use Inowas\Common\Grid\AffectedLayers;
 use Inowas\Common\Id\BoundaryId;
 use Inowas\Common\Id\ModflowId;
 use Inowas\Common\Id\ObservationPointId;
-use Inowas\GeoTools\Service\GeoTools;
 use Inowas\ModflowBoundary\Infrastructure\Projection\BoundaryList\BoundaryFinder;
-use Inowas\ModflowModel\Infrastructure\Projection\ModelList\ModelFinder;
 
 class BoundaryManager
 {
-
-    /** @var  ModelFinder */
-    private $modelFinder;
-
     /** @var BoundaryFinder */
     private $boundaryFinder;
 
-    /** @var  GeoTools */
-    private $geoTools;
-
-    public function __construct(ModelFinder $modelFinder, BoundaryFinder $boundaryFinder, GeoTools $geoTools)
+    public function __construct(BoundaryFinder $boundaryFinder)
     {
-        $this->modelFinder = $modelFinder;
         $this->boundaryFinder = $boundaryFinder;
-        $this->geoTools = $geoTools;
     }
 
     public function getTotalNumberOfModelBoundaries(ModflowId $modelId): int
@@ -45,58 +32,29 @@ class BoundaryManager
         return $this->boundaryFinder->getNumberOfModelBoundariesByType($modelId, $type);
     }
 
-    public function getAreaActiveCells(ModflowId $modelId): ActiveCells
-    {
-        $activeCells = $this->boundaryFinder->findAreaActiveCells($modelId);
-        if ($activeCells instanceof ActiveCells) {
-            return $activeCells;
-        }
-
-        $activeCells = $this->calculateAreaActiveCells($modelId);
-        $this->boundaryFinder->updateAreaActiveCells($modelId, $activeCells);
-        return $activeCells;
-    }
-
-    public function getBoundaryActiveCells(ModflowId $modelId, BoundaryId $boundaryId): ActiveCells
-    {
-        $activeCells = $this->boundaryFinder->findBoundaryActiveCells($modelId, $boundaryId);
-        if ($activeCells instanceof ActiveCells) {
-            return $activeCells;
-        }
-
-        $activeCells = $this->calculateBoundaryActiveCells($modelId, $boundaryId);
-        $this->boundaryFinder->updateAreaActiveCells($modelId, $activeCells);
-        return $activeCells;
-    }
-
     public function findConstantHeadBoundaries(ModflowId $modelId): array
     {
-        $boundaries = $this->boundaryFinder->findConstantHeadBoundaries($modelId);
-        return $this->hydrateBoundaryActiveCells($modelId, $boundaries);
+        return $this->boundaryFinder->findConstantHeadBoundaries($modelId);
     }
 
     public function findGeneralHeadBoundaries(ModflowId $modelId): array
     {
-        $boundaries = $this->boundaryFinder->findGeneralHeadBoundaries($modelId);
-        return $this->hydrateBoundaryActiveCells($modelId, $boundaries);
+        return $this->boundaryFinder->findGeneralHeadBoundaries($modelId);
     }
 
     public function findRechargeBoundaries(ModflowId $modelId): array
     {
-        $boundaries = $this->boundaryFinder->findRechargeBoundaries($modelId);
-        return $this->hydrateBoundaryActiveCells($modelId, $boundaries);
+        return $this->boundaryFinder->findRechargeBoundaries($modelId);
     }
 
     public function findRiverBoundaries(ModflowId $modelId): array
     {
-        $boundaries = $this->boundaryFinder->findRiverBoundaries($modelId);
-        return $this->hydrateBoundaryActiveCells($modelId, $boundaries);
+        return $this->boundaryFinder->findRiverBoundaries($modelId);
     }
 
     public function findWellBoundaries(ModflowId $modelId): array
     {
-        $boundaries = $this->boundaryFinder->findWellBoundaries($modelId);
-        return $this->hydrateBoundaryActiveCells($modelId, $boundaries);
+        return $this->boundaryFinder->findWellBoundaries($modelId);
     }
 
     public function findBoundariesByModelId(ModflowId $modelId): array
@@ -167,36 +125,5 @@ class BoundaryManager
     public function getBoundaryIds(ModflowId $modflowId): array
     {
         return $this->boundaryFinder->getBoundaryIds($modflowId);
-    }
-
-    private function calculateAreaActiveCells(ModflowId $modelId): ActiveCells
-    {
-        $affectedLayers = AffectedLayers::fromArray([0]);
-        $boundingBox = $this->modelFinder->getBoundingBoxByModflowModelId($modelId);
-        $polygon = $this->modelFinder->getAreaPolygonByModflowModelId($modelId);
-        $geometry = Geometry::fromPolygon($polygon);
-        $gridSize = $this->modelFinder->getGridSizeByModflowModelId($modelId);
-        return $this->geoTools->calculateActiveCellsFromGeometryAndAffectedLayers($geometry, $affectedLayers, $boundingBox, $gridSize);
-    }
-
-    private function calculateBoundaryActiveCells(ModflowId $modelId, BoundaryId $boundaryId): ActiveCells
-    {
-        $affectedLayers = $this->boundaryFinder->getAffectedLayersByModelAndBoundary($modelId, $boundaryId);
-        $boundingBox = $this->modelFinder->getBoundingBoxByModflowModelId($modelId);
-        $geometry = $this->boundaryFinder->getBoundaryGeometry($modelId, $boundaryId);
-        $gridSize = $this->modelFinder->getGridSizeByModflowModelId($modelId);
-
-        return $this->geoTools->calculateActiveCellsFromGeometryAndAffectedLayers($geometry, $affectedLayers, $boundingBox, $gridSize);
-    }
-
-    private function hydrateBoundaryActiveCells(ModflowId $modelId, array $boundaries): array
-    {
-        /** @var RechargeBoundary $boundary */
-        foreach ($boundaries as $key => $boundary){
-            $activeCells = $this->getBoundaryActiveCells($modelId, $boundary->boundaryId());
-            $boundaries[$key] = $boundary->setActiveCells($activeCells);
-        }
-
-        return $boundaries;
     }
 }

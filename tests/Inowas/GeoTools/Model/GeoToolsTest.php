@@ -11,6 +11,7 @@ use Inowas\Common\Boundaries\BoundaryType;
 use Inowas\Common\Boundaries\ConstantHeadBoundary;
 use Inowas\Common\Boundaries\ConstantHeadDateTimeValue;
 use Inowas\Common\Boundaries\ObservationPoint;
+use Inowas\Common\Boundaries\ObservationPointCollection;
 use Inowas\Common\Boundaries\ObservationPointName;
 use Inowas\Common\Boundaries\RiverBoundary;
 use Inowas\Common\Boundaries\RiverDateTimeValue;
@@ -387,7 +388,7 @@ class GeoToolsTest extends WebTestCase
 
         $activeCells = $this->geoTools->calculateActiveCellsFromBoundary($chdBoundary, $boundingBox, $gridSize);
         $result = $this->geoTools->interpolateGridCellDateTimeValuesFromLinestringAndObservationPoints(
-            $chdBoundary->geometry()->value(),
+            $chdBoundary->geometry()->getLineString(),
             $chdBoundary->observationPoints(),
             $activeCells,
             $boundingBox,
@@ -733,7 +734,7 @@ class GeoToolsTest extends WebTestCase
     public function test_special_edge_case_get_closest_point_on_line_string_should_be_on_line(): void
     {
         $point = new Point(105.835932094, 20.976882237507, 4326);
-        $linestring = $this->river->geometry()->value();
+        $linestring = $this->river->geometry()->getLineString();
         $interpolatedPoint = $this->geoTools->getClosestPointOnLineString($linestring, $point);
         $this->assertTrue($this->geoTools->pointIsOnLineString($linestring, $interpolatedPoint));
     }
@@ -783,14 +784,45 @@ class GeoToolsTest extends WebTestCase
                 array(105.87790127463,20.947208016218)
             ), 4326);
 
-        $points = array(
-            ObservationPoint::fromIdTypeNameAndGeometry(ObservationPointId::generate(), BoundaryType::fromString(BoundaryType::CONSTANT_HEAD), ObservationPointName::fromString('OP1'), new Point(105.78, 21.09, 4326)),
-            ObservationPoint::fromIdTypeNameAndGeometry(ObservationPointId::generate(), BoundaryType::fromString(BoundaryType::CONSTANT_HEAD), ObservationPointName::fromString('OP2'), new Point(105.82, 21.08, 4326)),
-            ObservationPoint::fromIdTypeNameAndGeometry(ObservationPointId::generate(), BoundaryType::fromString(BoundaryType::CONSTANT_HEAD), ObservationPointName::fromString('OP3'), new Point(105.90, 20.99, 4326)),
-            ObservationPoint::fromIdTypeNameAndGeometry(ObservationPointId::generate(), BoundaryType::fromString(BoundaryType::CONSTANT_HEAD), ObservationPointName::fromString('OP4'), new Point(105.88, 20.95, 4326))
+
+        $observationPoints = ObservationPointCollection::create();
+        $observationPoints->add(
+            ObservationPoint::fromIdTypeNameAndGeometry(
+                ObservationPointId::generate(),
+                BoundaryType::fromString(BoundaryType::CONSTANT_HEAD),
+                ObservationPointName::fromString('OP1'),
+                new Point(105.78, 21.09, 4326)
+            )
         );
 
-        $linestringArray = $this->geoTools->cutLinestringBetweenObservationPoints($linestring, $points);
+        $observationPoints->add(
+            ObservationPoint::fromIdTypeNameAndGeometry(
+                ObservationPointId::generate(),
+                BoundaryType::fromString(BoundaryType::CONSTANT_HEAD),
+                ObservationPointName::fromString('OP2'),
+                new Point(105.82, 21.08, 4326)
+            )
+        );
+
+        $observationPoints->add(
+            ObservationPoint::fromIdTypeNameAndGeometry(
+                ObservationPointId::generate(),
+                BoundaryType::fromString(BoundaryType::CONSTANT_HEAD),
+                ObservationPointName::fromString('OP3'),
+                new Point(105.90, 20.99, 4326)
+            )
+        );
+
+        $observationPoints->add(
+            ObservationPoint::fromIdTypeNameAndGeometry(
+                ObservationPointId::generate(),
+                BoundaryType::fromString(BoundaryType::CONSTANT_HEAD),
+                ObservationPointName::fromString('OP4'),
+                new Point(105.88, 20.95, 4326)
+            )
+        );
+
+        $linestringArray = $this->geoTools->cutLinestringBetweenObservationPoints($linestring, $observationPoints);
         $this->assertCount(3, $linestringArray);
     }
 
@@ -849,7 +881,7 @@ class GeoToolsTest extends WebTestCase
          */
 
         $result = $this->geoTools->interpolateGridCellDateTimeValuesFromLinestringAndObservationPoints(
-            $this->river->geometry()->value(),
+            $this->river->geometry()->getLineString(),
             $observationPoints,
             $activeCells,
             $this->boundingBox,

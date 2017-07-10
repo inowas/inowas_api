@@ -11,6 +11,7 @@ use Inowas\Common\Id\ObservationPointId;
 
 class RechargeBoundary extends AbstractBoundary
 {
+    const CARDINALITY = '1';
     const TYPE = 'rch';
 
     /** @var  ObservationPoint */
@@ -35,37 +36,30 @@ class RechargeBoundary extends AbstractBoundary
         return new self($boundaryId, $name, $geometry, $affectedLayers, $metadata);
     }
 
-    public function type(): BoundaryType
-    {
-        return BoundaryType::fromString($this::TYPE);
-    }
-
     public function addRecharge(RechargeDateTimeValue $rechargeRate): ModflowBoundary
     {
         // In case of rechargeBoundary, the observationPointId is the boundaryId
         $observationPointId = ObservationPointId::fromString($this->boundaryId->toString());
-        if (! $this->hasOp($observationPointId)) {
-            $this->addOrUpdateOp($this->createObservationPoint());
+
+        if (! $this->hasObservationPoint($observationPointId)) {
+            $this->addObservationPoint(
+                ObservationPoint::fromIdTypeNameAndGeometry(
+                    ObservationPointId::fromString($this->boundaryId->toString()),
+                    $this->type(),
+                    ObservationPointName::fromString($this->name->toString()),
+                    $this->geometry->getPointFromGeometry()
+                )
+            );
         }
 
         $this->addDateTimeValue($rechargeRate, $observationPointId);
         return $this->self();
     }
 
-    private function createObservationPoint(): ObservationPoint
-    {
-        return ObservationPoint::fromIdTypeNameAndGeometry(
-            ObservationPointId::fromString($this->boundaryId->toString()),
-            $this->type(),
-            ObservationPointName::fromString($this->name->toString()),
-            $this->geometry->getPointFromPolygon()
-        );
-    }
-
     public function findValueByDateTime(\DateTimeImmutable $dateTime): RechargeDateTimeValue
     {
         /** @var ObservationPoint $op */
-        $op = $this->getOp(ObservationPointId::fromString($this->boundaryId->toString()));
+        $op = $this->getObservationPoint(ObservationPointId::fromString($this->boundaryId->toString()));
         $value = $op->findValueByDateTime($dateTime);
 
         if ($value instanceof RechargeDateTimeValue){

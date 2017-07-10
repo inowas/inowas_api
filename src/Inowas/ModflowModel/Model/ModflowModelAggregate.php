@@ -8,6 +8,7 @@ use Inowas\Common\Geometry\Polygon;
 use Inowas\Common\Grid\ActiveCells;
 use Inowas\Common\Grid\BoundingBox;
 use Inowas\Common\Grid\GridSize;
+use Inowas\Common\Id\BoundaryId;
 use Inowas\Common\Id\CalculationId;
 use Inowas\Common\Id\ModflowId;
 use Inowas\Common\Id\UserId;
@@ -20,14 +21,8 @@ use Inowas\Common\Modflow\StressPeriods;
 use Inowas\Common\Modflow\TimeUnit;
 use Inowas\Common\Soilmodel\SoilmodelId;
 use Inowas\ModflowModel\Model\AMQP\CalculationResponse;
-use Inowas\ModflowModel\Model\Event\AreaActiveCellsWereUpdated;
+use Inowas\ModflowModel\Model\Event\ActiveCellsWereUpdated;
 use Inowas\ModflowModel\Model\Event\AreaGeometryWasUpdated;
-use Inowas\ModflowBoundary\Model\Event\BoundaryActiveCellsWereUpdated;
-use Inowas\ModflowBoundary\Model\Event\BoundaryAffectedLayersWereUpdated;
-use Inowas\ModflowBoundary\Model\Event\BoundaryGeometryWasUpdated;
-use Inowas\ModflowBoundary\Model\Event\BoundaryMetadataWasUpdated;
-use Inowas\ModflowBoundary\Model\Event\BoundaryNameWasUpdated;
-use Inowas\ModflowBoundary\Model\Event\BoundaryObservationPointWasAdded;
 use Inowas\ModflowModel\Model\Event\BoundingBoxWasChanged;
 use Inowas\ModflowModel\Model\Event\CalculationIdWasChanged;
 use Inowas\ModflowModel\Model\Event\CalculationWasFinished;
@@ -226,9 +221,19 @@ class ModflowModelAggregate extends AggregateRoot
 
     public function updateAreaActiveCells(UserId $userId, ActiveCells $activeCells): void
     {
-        $this->recordThat(AreaActiveCellsWereUpdated::byUserAndModel(
+        $this->recordThat(ActiveCellsWereUpdated::fromAreaWithIds(
             $userId,
             $this->modelId,
+            $activeCells
+        ));
+    }
+
+    public function updateBoundaryActiveCells(UserId $userId, BoundaryId $boundaryId, ActiveCells $activeCells): void
+    {
+        $this->recordThat(ActiveCellsWereUpdated::fromBoundaryWithIds(
+            $userId,
+            $this->modelId,
+            $boundaryId,
             $activeCells
         ));
     }
@@ -297,28 +302,10 @@ class ModflowModelAggregate extends AggregateRoot
         return $this->calculationId;
     }
 
-    protected function whenAreaActiveCellsWereUpdated(AreaActiveCellsWereUpdated $event): void
+    protected function whenActiveCellsWereUpdated(ActiveCellsWereUpdated $event): void
     {}
 
     protected function whenAreaGeometryWasUpdated(AreaGeometryWasUpdated $event): void
-    {}
-
-    protected function whenBoundaryActiveCellsWereUpdated(BoundaryActiveCellsWereUpdated $event): void
-    {}
-
-    protected function whenBoundaryAffectedLayersWereUpdated(BoundaryAffectedLayersWereUpdated $event): void
-    {}
-
-    protected function whenBoundaryGeometryWasUpdated(BoundaryGeometryWasUpdated $event): void
-    {}
-
-    protected function whenBoundaryMetadataWasUpdated(BoundaryMetadataWasUpdated $event): void
-    {}
-
-    protected function whenBoundaryNameWasUpdated(BoundaryNameWasUpdated $event): void
-    {}
-
-    protected function whenBoundaryObservationPointWasAdded(BoundaryObservationPointWasAdded $event): void
     {}
 
     protected function whenBoundingBoxWasChanged(BoundingBoxWasChanged $event): void
