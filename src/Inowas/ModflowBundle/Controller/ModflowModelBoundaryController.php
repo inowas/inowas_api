@@ -8,7 +8,6 @@ use FOS\RestBundle\Controller\Annotations as Rest;
 use Inowas\Common\Boundaries\BoundaryFactory;
 use Inowas\Common\Boundaries\Metadata;
 use Inowas\Common\Boundaries\BoundaryType;
-use Inowas\Common\Boundaries\ObservationPointName;
 use Inowas\Common\Geometry\Geometry;
 use Inowas\Common\Geometry\Point;
 use Inowas\Common\Grid\ActiveCells;
@@ -267,7 +266,7 @@ class ModflowModelBoundaryController extends InowasRestController
 
         $content = $this->getContentAsArray($request);
         $this->assertContainsKey('name', $content);
-        $name = ObservationPointName::fromString($content['name']);
+        $name = Name::fromString($content['name']);
 
         $this->assertContainsKey('geometry', $content);
         $this->assertGeometryIsValid($content['geometry']);
@@ -366,7 +365,7 @@ class ModflowModelBoundaryController extends InowasRestController
 
         $name = $this->get('inowas.modflowboundary.boundary_manager')->getBoundaryObservationPointName($modelId, $boundaryId, $observationPointId);
 
-        if (! $name instanceof ObservationPointName){
+        if (! $name instanceof Name){
             throw NotFoundException::withMessage(sprintf(
                 'ModflowModel with id: \'%s\' and BoundaryId: \'%s\' and ObservationPointId: %s not found.',
                 $modelId->toString(),

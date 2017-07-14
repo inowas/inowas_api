@@ -6,6 +6,7 @@ namespace Inowas\Common\Boundaries;
 
 use Inowas\Common\Geometry\Point;
 use Inowas\Common\Id\ObservationPointId;
+use Inowas\Common\Modflow\Name;
 
 class ObservationPoint implements \JsonSerializable
 {
@@ -16,7 +17,7 @@ class ObservationPoint implements \JsonSerializable
     /** @var  Point */
     protected $geometry;
 
-    /** @var  ObservationPointName */
+    /** @var  Name */
     protected $name;
 
     /** @var  BoundaryType */
@@ -28,11 +29,11 @@ class ObservationPoint implements \JsonSerializable
     /** @noinspection MoreThanThreeArgumentsInspection
      * @param ObservationPointId $id
      * @param BoundaryType $type
-     * @param ObservationPointName $name
+     * @param Name $name
      * @param Point $geometry
      * @return ObservationPoint
      */
-    public static function fromIdTypeNameAndGeometry(ObservationPointId $id, BoundaryType $type, ObservationPointName $name, Point $geometry): ObservationPoint
+    public static function fromIdTypeNameAndGeometry(ObservationPointId $id, BoundaryType $type, Name $name, Point $geometry): ObservationPoint
     {
         $self = new self($id, $type, $name, $geometry);
         $self->dateTimeValues = DateTimeValuesCollection::create();
@@ -45,7 +46,7 @@ class ObservationPoint implements \JsonSerializable
         $self = new self(
             ObservationPointId::fromString($arr['id']),
             $type,
-            ObservationPointName::fromString($arr['name']),
+            Name::fromString($arr['name']),
             new Point($arr['geometry'][0], $arr['geometry'][1])
         );
 
@@ -53,7 +54,7 @@ class ObservationPoint implements \JsonSerializable
         return $self;
     }
 
-    private function __construct(ObservationPointId $id, BoundaryType $type, ObservationPointName $name, Point $geometry)
+    private function __construct(ObservationPointId $id, BoundaryType $type, Name $name, Point $geometry)
     {
         $this->id = $id;
         $this->name = $name;
@@ -84,7 +85,7 @@ class ObservationPoint implements \JsonSerializable
         return $this->geometry;
     }
 
-    public function name(): ObservationPointName
+    public function name(): Name
     {
         return $this->name;
     }

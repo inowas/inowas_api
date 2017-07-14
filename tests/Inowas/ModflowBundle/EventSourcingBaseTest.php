@@ -14,7 +14,6 @@ use Inowas\Common\Boundaries\GeneralHeadBoundary;
 use Inowas\Common\Boundaries\GeneralHeadDateTimeValue;
 use Inowas\Common\Boundaries\ModflowBoundary;
 use Inowas\Common\Boundaries\ObservationPoint;
-use Inowas\Common\Boundaries\ObservationPointName;
 use Inowas\Common\Boundaries\RechargeBoundary;
 use Inowas\Common\Boundaries\RechargeDateTimeValue;
 use Inowas\Common\Boundaries\RiverBoundary;
@@ -239,7 +238,7 @@ abstract class EventSourcingBaseTest extends WebTestCase
         $chdBoundary = $chdBoundary->addObservationPoint(ObservationPoint::fromIdTypeNameAndGeometry(
             $observationPointId,
             BoundaryType::fromString(BoundaryType::CONSTANT_HEAD),
-            ObservationPointName::fromString('OP1'),
+            Name::fromString('OP1'),
             new Point(-63.687336, -31.313615, 4326)
         ));
 
@@ -273,7 +272,7 @@ abstract class EventSourcingBaseTest extends WebTestCase
         $ghbBoundary = $ghbBoundary->addObservationPoint(ObservationPoint::fromIdTypeNameAndGeometry(
             $observationPointId,
             BoundaryType::fromString(BoundaryType::GENERAL_HEAD),
-            ObservationPointName::fromString('OP1'),
+            Name::fromString('OP1'),
             new Point(-63.687336, -31.313615, 4326)
         ));
 
@@ -414,7 +413,7 @@ abstract class EventSourcingBaseTest extends WebTestCase
         $riverBoundary = $riverBoundary->addObservationPoint(ObservationPoint::fromIdTypeNameAndGeometry(
             $observationPointId,
             BoundaryType::fromString(BoundaryType::RIVER),
-            ObservationPointName::fromString('OP1'),
+            Name::fromString('OP1'),
             new Point(-63.67280960083,-31.364704139298, 4326)
         ));
 

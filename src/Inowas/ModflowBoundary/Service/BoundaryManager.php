@@ -3,7 +3,6 @@
 namespace Inowas\ModflowBoundary\Service;
 
 use Inowas\Common\Boundaries\BoundaryType;
-use Inowas\Common\Boundaries\ObservationPointName;
 use Inowas\Common\Geometry\Geometry;
 use Inowas\Common\Grid\AffectedLayers;
 use Inowas\Common\Id\BoundaryId;
@@ -82,7 +81,7 @@ class BoundaryManager
         return $this->boundaryFinder->getBoundaryObservationPointDetails($modelId, $boundaryId, $observationPointId);
     }
 
-    public function getBoundaryObservationPointName(ModflowId $modelId, BoundaryId $boundaryId, ObservationPointId $observationPointId): ?ObservationPointName
+    public function getBoundaryObservationPointName(ModflowId $modelId, BoundaryId $boundaryId, ObservationPointId $observationPointId): ?Name
     {
         return $this->boundaryFinder->getBoundaryObservationPointName($modelId, $boundaryId, $observationPointId);
     }

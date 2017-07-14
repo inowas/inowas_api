@@ -7,7 +7,6 @@ use Inowas\Common\Boundaries\BoundaryType;
 use Inowas\Common\Boundaries\ConstantHeadBoundary;
 use Inowas\Common\Boundaries\ConstantHeadDateTimeValue;
 use Inowas\Common\Boundaries\ObservationPoint;
-use Inowas\Common\Boundaries\ObservationPointName;
 use Inowas\Common\Boundaries\RiverDateTimeValue;
 use Inowas\Common\Boundaries\WellDateTimeValue;
 use Inowas\Common\DateTime\DateTime;
@@ -471,7 +470,7 @@ class Hanoi extends LoadScenarioBase
             $observationPoint = ObservationPoint::fromIdTypeNameAndGeometry(
                 ObservationPointId::generate(),
                 BoundaryType::fromString(BoundaryType::RIVER),
-                ObservationPointName::fromString($op['name']),
+                Name::fromString($op['name']),
                 $geoTools->projectPoint(new Point($op['x'], $op['y'], $op['srid']), Srid::fromInt(4326))
             );
 
@@ -517,7 +516,7 @@ class Hanoi extends LoadScenarioBase
             $observationPoint = ObservationPoint::fromIdTypeNameAndGeometry(
                 $observationPointId,
                 BoundaryType::fromString(BoundaryType::CONSTANT_HEAD),
-                ObservationPointName::fromString($op['name']),
+                Name::fromString($op['name']),
                 $geoTools->projectPoint(new Point($op['x'], $op['y'], $op['srid']), Srid::fromInt(4326))
             );
 

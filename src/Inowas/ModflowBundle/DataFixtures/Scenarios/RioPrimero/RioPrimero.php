@@ -7,7 +7,6 @@ use Inowas\Common\Boundaries\BoundaryType;
 use Inowas\Common\Boundaries\GeneralHeadBoundary;
 use Inowas\Common\Boundaries\GeneralHeadDateTimeValue;
 use Inowas\Common\Boundaries\ObservationPoint;
-use Inowas\Common\Boundaries\ObservationPointName;
 use Inowas\Common\Boundaries\RiverBoundary;
 use Inowas\Common\Boundaries\RiverDateTimeValue;
 use Inowas\Common\Boundaries\WellBoundary;
@@ -229,7 +228,7 @@ class RioPrimero extends LoadScenarioBase
         $observationPoint = ObservationPoint::fromIdTypeNameAndGeometry(
             $observationPointId,
             BoundaryType::fromString(BoundaryType::GENERAL_HEAD),
-            ObservationPointName::fromString('OP 1'),
+            Name::fromString('OP 1'),
             new Point($boundingBox->xMax(), $boundingBox->yMin(), 4326)
         );
 
@@ -263,7 +262,7 @@ class RioPrimero extends LoadScenarioBase
         $observationPoint = ObservationPoint::fromIdTypeNameAndGeometry(
             $observationPointId,
             BoundaryType::fromString(BoundaryType::GENERAL_HEAD),
-            ObservationPointName::fromString('OP 1'),
+            Name::fromString('OP 1'),
             new Point($boundingBox->xMax(), $boundingBox->yMin(), 4326)
         );
 
@@ -377,7 +376,7 @@ class RioPrimero extends LoadScenarioBase
         $observationPoint = ObservationPoint::fromIdTypeNameAndGeometry(
             $observationPointId,
             BoundaryType::fromString(BoundaryType::RIVER),
-            ObservationPointName::fromString('OP 1'),
+            Name::fromString('OP 1'),
             new Point(-63.673968315125,-31.366206539217, 4326)
         );
 

@@ -11,7 +11,6 @@ use Inowas\Common\Boundaries\ConstantHeadBoundary;
 use Inowas\Common\Boundaries\ConstantHeadDateTimeValue;
 use Inowas\Common\Boundaries\ObservationPoint;
 use Inowas\Common\Boundaries\ObservationPointCollection;
-use Inowas\Common\Boundaries\ObservationPointName;
 use Inowas\Common\Boundaries\RiverBoundary;
 use Inowas\Common\Boundaries\RiverDateTimeValue;
 use Inowas\Common\Boundaries\WellBoundary;
@@ -174,7 +173,7 @@ class GeoToolsTest extends WebTestCase
             ObservationPoint::fromIdTypeNameAndGeometry(
                 $opId1,
                 BoundaryType::fromString(BoundaryType::RIVER),
-                ObservationPointName::fromString('RP1'),
+                Name::fromString('RP1'),
                 new Point(105.78304910628,21.093961475741)
             )
         );
@@ -196,7 +195,7 @@ class GeoToolsTest extends WebTestCase
             ObservationPoint::fromIdTypeNameAndGeometry(
                 $opId2,
                 BoundaryType::fromString(BoundaryType::RIVER),
-                ObservationPointName::fromString('RP28'),
+                Name::fromString('RP28'),
                 new Point(105.88492972479,21.001319007654)
             )
         );
@@ -218,7 +217,7 @@ class GeoToolsTest extends WebTestCase
             ObservationPoint::fromIdTypeNameAndGeometry(
                 $opId3,
                 BoundaryType::fromString(BoundaryType::RIVER),
-                ObservationPointName::fromString('RP39'),
+                Name::fromString('RP39'),
                 new Point(105.87790127463,20.947208016218)
             )
         );
@@ -371,7 +370,7 @@ class GeoToolsTest extends WebTestCase
             $observationPoint = ObservationPoint::fromIdTypeNameAndGeometry(
                 $observationPointId,
                 BoundaryType::fromString(BoundaryType::CONSTANT_HEAD),
-                ObservationPointName::fromString($opd[0]),
+                Name::fromString($opd[0]),
                 $this->geoTools->projectPoint(new Point($opd[1], $opd[2], $opd[3]), Srid::fromInt(4326))
             );
 
@@ -790,7 +789,7 @@ class GeoToolsTest extends WebTestCase
             ObservationPoint::fromIdTypeNameAndGeometry(
                 ObservationPointId::generate(),
                 BoundaryType::fromString(BoundaryType::CONSTANT_HEAD),
-                ObservationPointName::fromString('OP1'),
+                Name::fromString('OP1'),
                 new Point(105.78, 21.09, 4326)
             )
         );
@@ -799,7 +798,7 @@ class GeoToolsTest extends WebTestCase
             ObservationPoint::fromIdTypeNameAndGeometry(
                 ObservationPointId::generate(),
                 BoundaryType::fromString(BoundaryType::CONSTANT_HEAD),
-                ObservationPointName::fromString('OP2'),
+                Name::fromString('OP2'),
                 new Point(105.82, 21.08, 4326)
             )
         );
@@ -808,7 +807,7 @@ class GeoToolsTest extends WebTestCase
             ObservationPoint::fromIdTypeNameAndGeometry(
                 ObservationPointId::generate(),
                 BoundaryType::fromString(BoundaryType::CONSTANT_HEAD),
-                ObservationPointName::fromString('OP3'),
+                Name::fromString('OP3'),
                 new Point(105.90, 20.99, 4326)
             )
         );
@@ -817,7 +816,7 @@ class GeoToolsTest extends WebTestCase
             ObservationPoint::fromIdTypeNameAndGeometry(
                 ObservationPointId::generate(),
                 BoundaryType::fromString(BoundaryType::CONSTANT_HEAD),
-                ObservationPointName::fromString('OP4'),
+                Name::fromString('OP4'),
                 new Point(105.88, 20.95, 4326)
             )
         );

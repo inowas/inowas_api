@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Inowas\Common\Boundaries;
 
 use Inowas\Common\Id\ObservationPointId;
+use Inowas\Common\Modflow\Name;
 
 class WellBoundary extends ModflowBoundary
 {
@@ -21,7 +22,7 @@ class WellBoundary extends ModflowBoundary
                 ObservationPoint::fromIdTypeNameAndGeometry(
                     ObservationPointId::fromString($this->boundaryId->toString()),
                     $this->type(),
-                    ObservationPointName::fromString($this->name->toString()),
+                    Name::fromString($this->name->toString()),
                     $this->geometry->getPointFromGeometry()
                 )
             );

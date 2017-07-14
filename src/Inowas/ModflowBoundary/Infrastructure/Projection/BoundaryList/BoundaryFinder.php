@@ -12,7 +12,6 @@ use Inowas\Common\Boundaries\ConstantHeadDateTimeValue;
 use Inowas\Common\Boundaries\GeneralHeadBoundary;
 use Inowas\Common\Boundaries\GeneralHeadDateTimeValue;
 use Inowas\Common\Boundaries\ObservationPoint;
-use Inowas\Common\Boundaries\ObservationPointName;
 use Inowas\Common\Boundaries\RechargeBoundary;
 use Inowas\Common\Boundaries\RechargeDateTimeValue;
 use Inowas\Common\Boundaries\RiverBoundary;
@@ -96,7 +95,7 @@ class BoundaryFinder
                 $op = ObservationPoint::fromIdTypeNameAndGeometry(
                     ObservationPointId::fromString($result['id']),
                     BoundaryType::fromString($result['boundary_type']),
-                    ObservationPointName::fromString($result['name']),
+                    Name::fromString($result['name']),
                     Geometry::fromArray(json_decode($result['geometry'], true))->getPoint()
                 );
 
@@ -140,7 +139,7 @@ class BoundaryFinder
                 $op = ObservationPoint::fromIdTypeNameAndGeometry(
                     ObservationPointId::fromString($result['id']),
                     BoundaryType::fromString($result['boundary_type']),
-                    ObservationPointName::fromString($result['name']),
+                    Name::fromString($result['name']),
                     Geometry::fromArray(json_decode($result['geometry'], true))->getPoint()
                 );
 
@@ -215,7 +214,7 @@ class BoundaryFinder
                 $op = ObservationPoint::fromIdTypeNameAndGeometry(
                     ObservationPointId::fromString($result['id']),
                     BoundaryType::fromString($result['boundary_type']),
-                    ObservationPointName::fromString($result['name']),
+                    Name::fromString($result['name']),
                     Geometry::fromArray(json_decode($result['geometry'], true))->getPoint()
                 );
 
@@ -362,7 +361,7 @@ class BoundaryFinder
         return $result;
     }
 
-    public function getBoundaryObservationPointName(ModflowId $modelId, BoundaryId $boundaryId, ObservationPointId $observationPointId): ?ObservationPointName
+    public function getBoundaryObservationPointName(ModflowId $modelId, BoundaryId $boundaryId, ObservationPointId $observationPointId): ?Name
     {
         $result = $this->connection->fetchAssoc(
             sprintf('SELECT observation_point_name as name FROM %s WHERE boundary_id = :boundary_id AND observation_point_id = observation_point_id', Table::BOUNDARY_OBSERVATION_POINT_VALUES),
@@ -373,7 +372,7 @@ class BoundaryFinder
             return null;
         }
 
-        return ObservationPointName::fromString($result['name']);
+        return Name::fromString($result['name']);
     }
 
     public function getBoundaryObservationPointGeometry(ModflowId $modelId, BoundaryId $boundaryId, ObservationPointId $observationPointId): ?Geometry
