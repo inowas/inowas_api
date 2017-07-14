@@ -5,13 +5,13 @@ declare(strict_types=1);
 namespace Inowas\ModflowBoundary\Model\Event;
 
 use Inowas\Common\Boundaries\Metadata;
-use Inowas\Common\Boundaries\BoundaryName;
 use Inowas\Common\Boundaries\BoundaryType;
 use Inowas\Common\Geometry\Geometry;
 use Inowas\Common\Grid\AffectedLayers;
 use Inowas\Common\Id\BoundaryId;
 use Inowas\Common\Id\ModflowId;
 use Inowas\Common\Id\UserId;
+use Inowas\Common\Modflow\Name;
 use Prooph\EventSourcing\AggregateChanged;
 
 /** @noinspection LongInheritanceChainInspection */
@@ -27,7 +27,7 @@ class BoundaryWasAdded extends AggregateChanged
     /** @var BoundaryType */
     private $boundaryType;
 
-    /** @var BoundaryName */
+    /** @var Name */
     private $boundaryName;
 
     /** @var Geometry */
@@ -47,7 +47,7 @@ class BoundaryWasAdded extends AggregateChanged
      * @param ModflowId $modelId
      * @param UserId $userId
      * @param BoundaryType $boundaryType
-     * @param BoundaryName $boundaryName
+     * @param Name $boundaryName
      * @param Geometry $geometry
      * @param AffectedLayers $affectedLayers
      * @param Metadata $boundaryMetadata
@@ -58,7 +58,7 @@ class BoundaryWasAdded extends AggregateChanged
         ModflowId $modelId,
         UserId $userId,
         BoundaryType $boundaryType,
-        BoundaryName $boundaryName,
+        Name $boundaryName,
         Geometry $geometry,
         AffectedLayers $affectedLayers,
         Metadata $boundaryMetadata
@@ -125,10 +125,10 @@ class BoundaryWasAdded extends AggregateChanged
         return $this->boundaryType;
     }
 
-    public function name(): BoundaryName
+    public function name(): Name
     {
         if (null === $this->boundaryName) {
-            $this->boundaryName = BoundaryName::fromString($this->payload['name']);
+            $this->boundaryName = Name::fromString($this->payload['name']);
         }
 
         return $this->boundaryName;

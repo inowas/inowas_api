@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Tests\Inowas\Common\Boundaries;
 
 use Inowas\Common\Boundaries\Metadata;
-use Inowas\Common\Boundaries\BoundaryName;
 use Inowas\Common\Boundaries\WellBoundary;
 use Inowas\Common\Boundaries\WellDateTimeValue;
 use Inowas\Common\Boundaries\WellType;
@@ -14,6 +13,7 @@ use Inowas\Common\Geometry\Point;
 use Inowas\Common\Grid\AffectedLayers;
 use Inowas\Common\Grid\LayerNumber;
 use Inowas\Common\Id\BoundaryId;
+use Inowas\Common\Modflow\Name;
 
 class WellBoundaryTest extends \PHPUnit_Framework_TestCase
 {
@@ -28,7 +28,7 @@ class WellBoundaryTest extends \PHPUnit_Framework_TestCase
         /** @var WellBoundary $wb */
         $wb = WellBoundary::createWithParams(
             $boundaryId,
-            BoundaryName::fromString('WellName'),
+            Name::fromString('WellName'),
             Geometry::fromPoint(new Point(10, 12)),
             AffectedLayers::createWithLayerNumber(LayerNumber::fromInteger(0)),
             Metadata::create()->addWellType(WellType::fromString(WellType::TYPE_PUBLIC_WELL))

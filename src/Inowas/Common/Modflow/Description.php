@@ -4,12 +4,12 @@ declare(strict_types=1);
 
 namespace Inowas\Common\Modflow;
 
-class ModelDescription
+class Description
 {
     /** @var string */
     private $description;
 
-    public static function fromString(string $description): ModelDescription
+    public static function fromString(string $description): Description
     {
         return new self($description);
     }
@@ -24,7 +24,7 @@ class ModelDescription
         return $this->description;
     }
 
-    public function sameAs(ModelDescription $description): bool
+    public function sameAs(Description $description): bool
     {
         return $this->toString() === $description->toString();
     }

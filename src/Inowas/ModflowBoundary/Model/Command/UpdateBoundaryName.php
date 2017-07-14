@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace Inowas\ModflowBoundary\Model\Command;
 
-use Inowas\Common\Boundaries\BoundaryName;
 use Inowas\Common\Id\BoundaryId;
 use Inowas\Common\Id\ModflowId;
 use Inowas\Common\Id\UserId;
+use Inowas\Common\Modflow\Name;
 use Prooph\Common\Messaging\Command;
 use Prooph\Common\Messaging\PayloadConstructable;
 use Prooph\Common\Messaging\PayloadTrait;
@@ -21,7 +21,7 @@ class UpdateBoundaryName extends Command implements PayloadConstructable
         UserId $userId,
         ModflowId $modelId,
         BoundaryId $boundaryId,
-        BoundaryName $boundaryName
+        Name $boundaryName
     ): UpdateBoundaryName
     {
         $payload = [
@@ -49,8 +49,8 @@ class UpdateBoundaryName extends Command implements PayloadConstructable
         return BoundaryId::fromString($this->payload['boundary_id']);
     }
 
-    public function boundaryName(): BoundaryName
+    public function boundaryName(): Name
     {
-        return BoundaryName::fromString($this->payload['boundary_name']);
+        return Name::fromString($this->payload['boundary_name']);
     }
 }

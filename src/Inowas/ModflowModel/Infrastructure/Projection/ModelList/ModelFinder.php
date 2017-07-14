@@ -6,7 +6,6 @@ namespace Inowas\ModflowModel\Infrastructure\Projection\ModelList;
 
 use Doctrine\DBAL\Connection;
 use Inowas\Common\Boundaries\Area;
-use Inowas\Common\Boundaries\BoundaryName;
 use Inowas\Common\Geometry\Geometry;
 use Inowas\Common\Geometry\Polygon;
 use Inowas\Common\Grid\BoundingBox;
@@ -16,8 +15,8 @@ use Inowas\Common\Id\CalculationId;
 use Inowas\Common\Id\ModflowId;
 use Inowas\Common\Id\UserId;
 use Inowas\Common\Modflow\LengthUnit;
-use Inowas\Common\Modflow\ModelName;
-use Inowas\Common\Modflow\ModelDescription;
+use Inowas\Common\Modflow\Name;
+use Inowas\Common\Modflow\Description;
 use Inowas\Common\Modflow\StressPeriods;
 use Inowas\Common\Modflow\TimeUnit;
 use Inowas\Common\Soilmodel\SoilmodelId;
@@ -102,7 +101,7 @@ class ModelFinder
 
     public function getAreaByModflowModelId(ModflowId $modelId): ?Area
     {
-        return Area::create(BoundaryId::generate(), BoundaryName::fromString(''), $this->getAreaPolygonByModflowModelId($modelId));
+        return Area::create(BoundaryId::generate(), Name::fromString(''), $this->getAreaPolygonByModflowModelId($modelId));
     }
 
     public function getBoundingBoxByModflowModelId(ModflowId $modelId): ?BoundingBox
@@ -163,7 +162,7 @@ class ModelFinder
         return LengthUnit::fromInt($result['length_unit']);
     }
 
-    public function getModelNameByModelId(ModflowId $modelId): ?ModelName
+    public function getModelNameByModelId(ModflowId $modelId): ?Name
     {
         $this->connection->setFetchMode(\PDO::FETCH_ASSOC);
         $result = $this->connection->fetchAssoc(
@@ -175,10 +174,10 @@ class ModelFinder
             return null;
         }
 
-        return ModelName::fromString($result['name']);
+        return Name::fromString($result['name']);
     }
 
-    public function getModelDescriptionByModelId(ModflowId $modelId): ?ModelDescription
+    public function getModelDescriptionByModelId(ModflowId $modelId): ?Description
     {
         $this->connection->setFetchMode(\PDO::FETCH_ASSOC);
         $result = $this->connection->fetchAssoc(
@@ -190,7 +189,7 @@ class ModelFinder
             return null;
         }
 
-        return ModelDescription::fromString($result['description']);
+        return Description::fromString($result['description']);
     }
 
     public function getModelDetailsByModelId(ModflowId $modelId): ?array

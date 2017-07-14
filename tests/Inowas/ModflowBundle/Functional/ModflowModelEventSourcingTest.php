@@ -15,12 +15,11 @@ use Inowas\Common\Grid\BoundingBox;
 use Inowas\Common\Geometry\Geometry;
 use Inowas\Common\Grid\LayerNumber;
 use Inowas\Common\Id\BoundaryId;
-use Inowas\Common\Boundaries\BoundaryName;
 use Inowas\Common\Modflow\Laytyp;
 use Inowas\Common\Modflow\Laywet;
 use Inowas\Common\Modflow\LengthUnit;
-use Inowas\Common\Modflow\ModelDescription;
-use Inowas\Common\Modflow\ModelName;
+use Inowas\Common\Modflow\Description;
+use Inowas\Common\Modflow\Name;
 use Inowas\Common\Modflow\PackageName;
 use Inowas\Common\Modflow\ParameterName;
 use Inowas\Common\Modflow\StressPeriod;
@@ -91,7 +90,7 @@ class ModflowModelEventSourcingTest extends EventSourcingBaseTest
         $event = NameWasChanged::byUserWithName(
             $ownerId,
             $modflowModelId,
-            ModelName::fromString('newName')
+            Name::fromString('newName')
         );
 
         $this->eventBus->dispatch($event);
@@ -101,8 +100,8 @@ class ModflowModelEventSourcingTest extends EventSourcingBaseTest
     {
         $modelId = ModflowId::generate();
         $ownerId = UserId::generate();
-        $modelName = ModelName::fromString('TestModel444');
-        $modelDescription = ModelDescription::fromString('TestModelDescription444');
+        $modelName = Name::fromString('TestModel444');
+        $modelDescription = Description::fromString('TestModelDescription444');
 
         $polygon = $this->createPolygon();
         $gridSize = GridSize::fromXY(75, 40);
@@ -373,7 +372,7 @@ class ModflowModelEventSourcingTest extends EventSourcingBaseTest
         $boundaryId = BoundaryId::generate();
         $wellBoundary = WellBoundary::createWithParams(
             $boundaryId,
-            BoundaryName::fromString('Test Well 1'),
+            Name::fromString('Test Well 1'),
             Geometry::fromPoint(new Point(-63.671125, -31.325009, 4326)),
             AffectedLayers::createWithLayerNumber(LayerNumber::fromInteger(0)),
             Metadata::create()->addWellType(WellType::fromString(WellType::TYPE_INDUSTRIAL_WELL))
@@ -385,7 +384,7 @@ class ModflowModelEventSourcingTest extends EventSourcingBaseTest
         $boundaryId = BoundaryId::generate();
         $wellBoundary = WellBoundary::createWithParams(
             $boundaryId,
-            BoundaryName::fromString('Test Well 2'),
+            Name::fromString('Test Well 2'),
             Geometry::fromPoint(new Point(-63.659952, -31.330144, 4326)),
             AffectedLayers::createWithLayerNumber(LayerNumber::fromInteger(0)),
             Metadata::create()->addWellType(WellType::fromString(WellType::TYPE_INDUSTRIAL_WELL))
@@ -422,7 +421,7 @@ class ModflowModelEventSourcingTest extends EventSourcingBaseTest
         $boundaryId = BoundaryId::generate();
         $wellBoundary = WellBoundary::createWithParams(
             $boundaryId,
-            BoundaryName::fromString('Test Well 1'),
+            Name::fromString('Test Well 1'),
             Geometry::fromPoint(new Point(-63.671125, -31.325009, 4326)),
             AffectedLayers::createWithLayerNumber(LayerNumber::fromInteger(0)),
             Metadata::create()->addWellType(WellType::fromString(WellType::TYPE_INDUSTRIAL_WELL))
@@ -434,7 +433,7 @@ class ModflowModelEventSourcingTest extends EventSourcingBaseTest
         $boundaryId = BoundaryId::generate();
         $wellBoundary = WellBoundary::createWithParams(
             $boundaryId,
-            BoundaryName::fromString('Test Well 2'),
+            Name::fromString('Test Well 2'),
             Geometry::fromPoint(new Point(-63.671126, -31.325010, 4326)),
             AffectedLayers::createWithLayerNumber(LayerNumber::fromInteger(0)),
             Metadata::create()->addWellType(WellType::fromString(WellType::TYPE_INDUSTRIAL_WELL))
@@ -803,7 +802,7 @@ class ModflowModelEventSourcingTest extends EventSourcingBaseTest
         $this->createScenarioAnalysis($scenarioAnalysisId, $ownerId, $modelId, ScenarioAnalysisName::fromString('TestName'), ScenarioAnalysisDescription::fromString('TestDescription'));
 
         $scenarioId = ModflowId::generate();
-        $this->createScenario($scenarioAnalysisId, $ownerId, $modelId, $scenarioId, ModelName::fromString('TestScenarioName'), ModelDescription::fromString('TestScenarioDescription'));
+        $this->createScenario($scenarioAnalysisId, $ownerId, $modelId, $scenarioId, Name::fromString('TestScenarioName'), Description::fromString('TestScenarioDescription'));
         $this->commandBus->dispatch(AddBoundary::to($scenarioId, $ownerId, $this->createWellBoundary()));
         $scenarioBoundaries = $this->container->get('inowas.modflowboundary.boundary_manager')->findBoundariesByModelId($scenarioId);
         $this->assertCount(5, $scenarioBoundaries);
@@ -828,7 +827,7 @@ class ModflowModelEventSourcingTest extends EventSourcingBaseTest
         $this->createScenarioAnalysis($scenarioAnalysisId, $ownerId, $modelId, ScenarioAnalysisName::fromString('TestName'), ScenarioAnalysisDescription::fromString('TestDescription'));
 
         $scenarioId = ModflowId::generate();
-        $this->createScenario($scenarioAnalysisId, $ownerId, $modelId, $scenarioId, ModelName::fromString('TestScenarioName'), ModelDescription::fromString('TestScenarioDescription'));
+        $this->createScenario($scenarioAnalysisId, $ownerId, $modelId, $scenarioId, Name::fromString('TestScenarioName'), Description::fromString('TestScenarioDescription'));
 
         $newGeometry = Geometry::fromPoint(new Point(-63.6, -31.32, 4326));
         $this->commandBus->dispatch(UpdateBoundaryGeometry::byUser($ownerId, $scenarioId, $well->boundaryId(), $newGeometry));

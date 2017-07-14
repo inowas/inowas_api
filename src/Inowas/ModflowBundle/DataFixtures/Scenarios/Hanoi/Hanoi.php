@@ -19,10 +19,9 @@ use Inowas\Common\Grid\AffectedLayers;
 use Inowas\Common\Grid\LayerNumber;
 use Inowas\Common\Geometry\Geometry;
 use Inowas\Common\Id\BoundaryId;
-use Inowas\Common\Boundaries\BoundaryName;
 use Inowas\Common\Id\ObservationPointId;
 use Inowas\Common\Modflow\LengthUnit;
-use Inowas\Common\Modflow\ModelDescription;
+use Inowas\Common\Modflow\Description;
 use Inowas\Common\Modflow\ParameterName;
 use Inowas\ModflowModel\Model\Command\CalculateModflowModel;
 use Inowas\ModflowModel\Model\Command\CalculateStressPeriods;
@@ -47,7 +46,7 @@ use Inowas\Common\Grid\BoundingBox;
 use Inowas\Common\Grid\GridSize;
 use Inowas\Common\Id\ModflowId;
 use Inowas\ModflowBoundary\Model\Command\UpdateBoundaryGeometry;
-use Inowas\Common\Modflow\ModelName;
+use Inowas\Common\Modflow\Name;
 use Inowas\Common\Id\UserId;
 use Inowas\Common\Boundaries\WellBoundary;
 use Inowas\Common\Boundaries\WellType;
@@ -397,8 +396,8 @@ class Hanoi extends LoadScenarioBase
         $commandBus->dispatch(CreateModflowModel::newWithAllParams(
             $ownerId,
             $modelId,
-            ModelName::fromString('Base Scenario Hanoi 2005-2007'),
-            ModelDescription::fromString('Calibrated groundwater base model, 2005-2007.'),
+            Name::fromString('Base Scenario Hanoi 2005-2007'),
+            Description::fromString('Calibrated groundwater base model, 2005-2007.'),
             $polygon,
             $gridSize,
             $timeUnit,
@@ -420,8 +419,9 @@ class Hanoi extends LoadScenarioBase
 
         foreach ($wells as $key => $well) {
 
-            $boundaryName = BoundaryName::fromString($well['Name']);
+            $boundaryName = Name::fromString($well['Name']);
 
+            /** @var WellBoundary $wellBoundary */
             $wellBoundary = WellBoundary::createWithParams(
                 BoundaryId::generate(),
                 $boundaryName,
@@ -457,7 +457,7 @@ class Hanoi extends LoadScenarioBase
         /** @var RiverBoundary $river */
         $river = RiverBoundary::createWithParams(
             BoundaryId::generate(),
-            BoundaryName::fromString('Red River'),
+            Name::fromString('Red River'),
             Geometry::fromLineString(new LineString($riverPoints, 4326)),
             AffectedLayers::fromArray([0]),
             Metadata::create()
@@ -496,7 +496,7 @@ class Hanoi extends LoadScenarioBase
             $chdPoints[$key] = $geoTools->projectPoint(new Point($point['x'], $point['y'], $point['srid']), Srid::fromInt(4326));
         }
 
-        $boundaryName = BoundaryName::fromString('ChdBoundary');
+        $boundaryName = Name::fromString('ChdBoundary');
 
         /** @var ConstantHeadBoundary $chdBoundary */
         $chdBoundary = ConstantHeadBoundary::createWithParams(
@@ -579,8 +579,8 @@ class Hanoi extends LoadScenarioBase
             $ownerId,
             $modelId,
             $scenarioId,
-            ModelName::fromString('Scenario 1'),
-            ModelDescription::fromString('Simulation of MAR type river bank filtration'))
+            Name::fromString('Scenario 1'),
+            Description::fromString('Simulation of MAR type river bank filtration'))
         );
 
         $boundariesFinder = $this->container->get('inowas.modflowboundary.boundary_manager');
@@ -599,7 +599,7 @@ class Hanoi extends LoadScenarioBase
 
         foreach ($rbfRelocatedWellNamesAndGeometry as $name => $geometry) {
             /** @var BoundaryId[] $boundaryIds */
-            $boundaryIds = $boundariesFinder->getBoundaryIdsByName($scenarioId, BoundaryName::fromString($name));
+            $boundaryIds = $boundariesFinder->getBoundaryIdsByName($scenarioId, Name::fromString($name));
             if (count($boundaryIds) === 0){continue;}
             echo sprintf("Move Well %s.\r\n", $name);
             $boundaryId = $boundaryIds[0];
@@ -620,8 +620,8 @@ class Hanoi extends LoadScenarioBase
             $ownerId,
             $modelId,
             $scenarioId,
-            ModelName::fromString('Scenario 2'),
-            ModelDescription::fromString('Simulation of MAR type injection wells'))
+            Name::fromString('Scenario 2'),
+            Description::fromString('Simulation of MAR type injection wells'))
         );
 
         # THIS WELLS ARE THE YELLOW DOTS IN THE RIGHT IMAGE
@@ -643,7 +643,7 @@ class Hanoi extends LoadScenarioBase
             $wellData = array_combine($header, $row);
             $wellBoundary = WellBoundary::createWithParams(
                 BoundaryId::generate(),
-                BoundaryName::fromString($wellData['name']),
+                Name::fromString($wellData['name']),
                 Geometry::fromPoint($geoTools->projectPoint(new Point($wellData['x'], $wellData['y'], $wellData['srid']), Srid::fromInt(4326))),
                 AffectedLayers::createWithLayerNumber(LayerNumber::fromInteger(1)),
                 Metadata::create()->addWellType(WellType::fromString(WellType::TYPE_SCENARIO_NEW_WELL))
@@ -670,8 +670,8 @@ class Hanoi extends LoadScenarioBase
             $ownerId,
             $modelId,
             $scenarioId,
-            ModelName::fromString('Scenario 3'),
-            ModelDescription::fromString('Combination of MAR types river bank filtration and injection wells'))
+            Name::fromString('Scenario 3'),
+            Description::fromString('Combination of MAR types river bank filtration and injection wells'))
         );
 
         $boundariesFinder = $this->container->get('inowas.modflowboundary.boundary_manager');
@@ -689,7 +689,7 @@ class Hanoi extends LoadScenarioBase
         );
         foreach ($rbfRelocatedWellNamesAndGeometry as $name => $geometry) {
             /** @var BoundaryId[] $boundaryIds */
-            $boundaryIds = $boundariesFinder->getBoundaryIdsByName($scenarioId, BoundaryName::fromString($name));
+            $boundaryIds = $boundariesFinder->getBoundaryIdsByName($scenarioId, Name::fromString($name));
             if (count($boundaryIds)===0){continue;}
             echo sprintf("Move Well %s.\r\n", $name);
             $boundaryId = $boundaryIds[0];
@@ -702,7 +702,7 @@ class Hanoi extends LoadScenarioBase
             $wellData = array_combine($header, $row);
             $wellBoundary = WellBoundary::createWithParams(
                 BoundaryId::generate(),
-                BoundaryName::fromString($wellData['name']),
+                Name::fromString($wellData['name']),
                 Geometry::fromPoint($geoTools->projectPoint(new Point($wellData['x'], $wellData['y'], $wellData['srid']), Srid::fromInt(4326))),
                 AffectedLayers::createWithLayerNumber(LayerNumber::fromInteger(1)),
                 Metadata::create()->addWellType(WellType::fromString(WellType::TYPE_SCENARIO_NEW_WELL))

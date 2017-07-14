@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace Inowas\ModflowBoundary\Model\Event;
 
-use Inowas\Common\Boundaries\BoundaryName;
 use Inowas\Common\Id\BoundaryId;
 use Inowas\Common\Id\UserId;
+use Inowas\Common\Modflow\Name;
 use Prooph\EventSourcing\AggregateChanged;
 
 /** @noinspection LongInheritanceChainInspection */
@@ -19,10 +19,10 @@ class BoundaryNameWasUpdated extends AggregateChanged
     /** @var BoundaryId */
     private $boundaryId;
 
-    /** @var BoundaryName */
+    /** @var Name */
     private $boundaryName;
 
-    public static function of(BoundaryId $boundaryId, UserId $userId, BoundaryName $boundaryName): BoundaryNameWasUpdated
+    public static function of(BoundaryId $boundaryId, UserId $userId, Name $boundaryName): BoundaryNameWasUpdated
     {
         $event = self::occur(
             $boundaryId->toString(), [
@@ -55,10 +55,10 @@ class BoundaryNameWasUpdated extends AggregateChanged
         return $this->userId;
     }
 
-    public function boundaryName(): BoundaryName
+    public function boundaryName(): Name
     {
         if ($this->boundaryName === null){
-            $this->boundaryName = BoundaryName::fromString($this->payload['boundary_name']);
+            $this->boundaryName = Name::fromString($this->payload['boundary_name']);
         }
 
         return $this->boundaryName;

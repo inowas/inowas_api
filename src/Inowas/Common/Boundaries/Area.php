@@ -7,6 +7,7 @@ namespace Inowas\Common\Boundaries;
 use Inowas\Common\Geometry\Polygon;
 use Inowas\Common\Grid\ActiveCells;
 use Inowas\Common\Id\BoundaryId;
+use Inowas\Common\Modflow\Name;
 
 class Area
 {
@@ -15,7 +16,7 @@ class Area
     /** @var  BoundaryId */
     protected $boundaryId;
 
-    /** @var  BoundaryName */
+    /** @var  Name */
     protected $name;
 
     /** @var  Polygon */
@@ -24,12 +25,12 @@ class Area
     /** @var  ActiveCells */
     protected $activeCells;
 
-    public static function create(BoundaryId $boundaryId, BoundaryName $name, Polygon $polygon): Area
+    public static function create(BoundaryId $boundaryId, Name $name, Polygon $polygon): Area
     {
         return new self($boundaryId, $name, $polygon);
     }
 
-    protected function __construct(BoundaryId $boundaryId, BoundaryName $name, Polygon $polygon, ?ActiveCells $activeCells = null)
+    protected function __construct(BoundaryId $boundaryId, Name $name, Polygon $polygon, ?ActiveCells $activeCells = null)
     {
         $this->boundaryId = $boundaryId;
         $this->name = $name;
@@ -37,7 +38,7 @@ class Area
         $this->activeCells = $activeCells;
     }
 
-    public function setName(BoundaryName $name): Area
+    public function setName(Name $name): Area
     {
         return new self($this->boundaryId, $name, $this->polygon, $this->activeCells);
     }
@@ -72,7 +73,7 @@ class Area
         return $this->polygon;
     }
 
-    public function name(): BoundaryName
+    public function name(): Name
     {
         return $this->name;
     }

@@ -6,8 +6,8 @@ namespace Inowas\ScenarioAnalysis\Model\Command;
 
 use Inowas\Common\Id\ModflowId;
 use Inowas\Common\Id\UserId;
-use Inowas\Common\Modflow\ModelName;
-use Inowas\Common\Modflow\ModelDescription;
+use Inowas\Common\Modflow\Name;
+use Inowas\Common\Modflow\Description;
 use Inowas\ScenarioAnalysis\Model\ScenarioAnalysisId;
 use Prooph\Common\Messaging\Command;
 use Prooph\Common\Messaging\PayloadConstructable;
@@ -23,8 +23,8 @@ class CreateScenario extends Command implements PayloadConstructable
      * @param UserId $userId
      * @param ModflowId $baseModelId
      * @param ModflowId $scenarioId
-     * @param ModelName $name
-     * @param ModelDescription $description
+     * @param Name $name
+     * @param Description $description
      * @return CreateScenario
      */
     public static function byUserWithBaseModelAndScenarioIdAndName(
@@ -32,8 +32,8 @@ class CreateScenario extends Command implements PayloadConstructable
         UserId $userId,
         ModflowId $baseModelId,
         ModflowId $scenarioId,
-        ModelName $name,
-        ModelDescription $description
+        Name $name,
+        Description $description
     ): CreateScenario
     {
         return new self([
@@ -91,22 +91,22 @@ class CreateScenario extends Command implements PayloadConstructable
         return ModflowId::fromString($this->payload['scenario_id']);
     }
 
-    public function name(): ModelName
+    public function name(): Name
     {
         if (array_key_exists('name', $this->payload)) {
-            return ModelName::fromString($this->payload['name']);
+            return Name::fromString($this->payload['name']);
         }
 
-        return ModelName::fromString($this->payload['']);
+        return Name::fromString($this->payload['']);
     }
 
-    public function description(): ModelDescription
+    public function description(): Description
     {
         if (array_key_exists('description', $this->payload)) {
-            return ModelDescription::fromString($this->payload['description']);
+            return Description::fromString($this->payload['description']);
         }
 
-        return ModelDescription::fromString($this->payload['description']);
+        return Description::fromString($this->payload['description']);
     }
 
     public function hasPrefix(): bool

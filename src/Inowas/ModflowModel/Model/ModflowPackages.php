@@ -16,7 +16,7 @@ use Inowas\Common\Modflow\TimeUnit;
 use Inowas\Common\Modflow\Version;
 use Inowas\ModflowModel\Model\Exception\InvalidPackageNameException;
 use Inowas\ModflowModel\Model\Exception\InvalidPackageParameterUpdateMethodException;
-use Inowas\Common\Modflow\ModelName;
+use Inowas\Common\Modflow\Name;
 use Inowas\ModflowModel\Model\Packages\BasPackage;
 use Inowas\ModflowModel\Model\Packages\ChdPackage;
 use Inowas\ModflowModel\Model\Packages\DisPackage;
@@ -100,7 +100,7 @@ class ModflowPackages implements \JsonSerializable
 
     private function __construct(){}
 
-    public function updateModelName(ModelName $name): void
+    public function updateModelName(Name $name): void
     {
         // The executableName is configured in the MfPackage
         /** @var MfPackage $mfPackage */

@@ -6,8 +6,8 @@ namespace Inowas\ScenarioAnalysis\Model\Command;
 
 use Inowas\Common\Id\ModflowId;
 use Inowas\Common\Id\UserId;
-use Inowas\Common\Modflow\ModelName;
-use Inowas\Common\Modflow\ModelDescription;
+use Inowas\Common\Modflow\Name;
+use Inowas\Common\Modflow\Description;
 use Inowas\ScenarioAnalysis\Model\ScenarioAnalysisId;
 use Prooph\Common\Messaging\Command;
 use Prooph\Common\Messaging\PayloadConstructable;

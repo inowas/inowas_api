@@ -9,8 +9,8 @@ use Inowas\Common\Grid\GridSize;
 use Inowas\Common\Id\ModflowId;
 use Inowas\Common\Id\UserId;
 use Inowas\Common\Modflow\LengthUnit;
-use Inowas\Common\Modflow\ModelDescription;
-use Inowas\Common\Modflow\ModelName;
+use Inowas\Common\Modflow\Description;
+use Inowas\Common\Modflow\Name;
 use Inowas\Common\Modflow\TimeUnit;
 use Inowas\Common\Soilmodel\SoilmodelId;
 use Prooph\Common\Messaging\Command;
@@ -25,8 +25,8 @@ class CreateModflowModel extends Command implements PayloadConstructable
     /** @noinspection MoreThanThreeArgumentsInspection
      * @param UserId $userId
      * @param ModflowId $modelId
-     * @param ModelName $name
-     * @param ModelDescription $description
+     * @param Name $name
+     * @param Description $description
      * @param Polygon $polygon
      * @param GridSize $gridSize
      * @param TimeUnit $timeUnit
@@ -37,8 +37,8 @@ class CreateModflowModel extends Command implements PayloadConstructable
     public static function newWithAllParams(
         UserId $userId,
         ModflowId $modelId,
-        ModelName $name,
-        ModelDescription $description,
+        Name $name,
+        Description $description,
         Polygon $polygon,
         GridSize $gridSize,
         TimeUnit $timeUnit,
@@ -72,14 +72,14 @@ class CreateModflowModel extends Command implements PayloadConstructable
         return ModflowId::fromString($this->payload['modflowmodel_id']);
     }
 
-    public function name(): ModelName
+    public function name(): Name
     {
-        return ModelName::fromString($this->payload['name']);
+        return Name::fromString($this->payload['name']);
     }
 
-    public function description(): ModelDescription
+    public function description(): Description
     {
-        return ModelDescription::fromString($this->payload['description']);
+        return Description::fromString($this->payload['description']);
     }
 
     public function polygon(): Polygon

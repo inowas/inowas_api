@@ -6,7 +6,7 @@ namespace Inowas\ModflowModel\Model\Command;
 
 use Inowas\Common\Id\ModflowId;
 use Inowas\Common\Id\UserId;
-use Inowas\Common\Modflow\ModelName;
+use Inowas\Common\Modflow\Name;
 use Prooph\Common\Messaging\Command;
 use Prooph\Common\Messaging\PayloadConstructable;
 use Prooph\Common\Messaging\PayloadTrait;
@@ -16,7 +16,7 @@ class ChangeName extends Command implements PayloadConstructable
 
     use PayloadTrait;
 
-    public static function forModflowModel(UserId $userId, ModflowId $modelId, ModelName $modelName): ChangeName
+    public static function forModflowModel(UserId $userId, ModflowId $modelId, Name $modelName): ChangeName
     {
         return new self(
             [
@@ -37,8 +37,8 @@ class ChangeName extends Command implements PayloadConstructable
         return ModflowId::fromString($this->payload['modflow_model_id']);
     }
 
-    public function name(): ModelName
+    public function name(): Name
     {
-        return ModelName::fromString($this->payload['name']);
+        return Name::fromString($this->payload['name']);
     }
 }

@@ -7,7 +7,6 @@ namespace Tests\Inowas\ModflowBundle;
 use Doctrine\DBAL\Connection;
 use Inowas\Common\Boundaries\BoundaryFactory;
 use Inowas\Common\Boundaries\Metadata;
-use Inowas\Common\Boundaries\BoundaryName;
 use Inowas\Common\Boundaries\BoundaryType;
 use Inowas\Common\Boundaries\ConstantHeadBoundary;
 use Inowas\Common\Boundaries\ConstantHeadDateTimeValue;
@@ -39,8 +38,8 @@ use Inowas\Common\Id\ObservationPointId;
 use Inowas\Common\Id\UserId;
 use Inowas\Common\Modflow\Laytyp;
 use Inowas\Common\Modflow\LengthUnit;
-use Inowas\Common\Modflow\ModelName;
-use Inowas\Common\Modflow\ModelDescription;
+use Inowas\Common\Modflow\Name;
+use Inowas\Common\Modflow\Description;
 use Inowas\Common\Modflow\StressPeriod;
 use Inowas\Common\Modflow\StressPeriods;
 use Inowas\Common\Modflow\TimeUnit;
@@ -173,8 +172,8 @@ abstract class EventSourcingBaseTest extends WebTestCase
         $this->commandBus->dispatch(CreateModflowModel::newWithAllParams(
             $ownerId,
             $modelId,
-            ModelName::fromString('Rio Primero Base Model'),
-            ModelDescription::fromString('Base Model for the scenario analysis 2020 Rio Primero.'),
+            Name::fromString('Rio Primero Base Model'),
+            Description::fromString('Base Model for the scenario analysis 2020 Rio Primero.'),
             $polygon,
             $gridSize,
             TimeUnit::fromInt(TimeUnit::DAYS),
@@ -227,7 +226,7 @@ abstract class EventSourcingBaseTest extends WebTestCase
         /** @var ConstantHeadBoundary $chdBoundary */
         $chdBoundary = ConstantHeadBoundary::createWithParams(
             $boundaryId,
-            BoundaryName::fromString('TestChd'),
+            Name::fromString('TestChd'),
             Geometry::fromLineString(new LineString(array(
                 array(-63.687336, -31.313615),
                 array(-63.569260, -31.313615)
@@ -261,7 +260,7 @@ abstract class EventSourcingBaseTest extends WebTestCase
         /** @var GeneralHeadBoundary $ghbBoundary */
         $ghbBoundary = GeneralHeadBoundary::createWithParams(
             $boundaryId,
-            BoundaryName::fromString('TestGhb'),
+            Name::fromString('TestGhb'),
             Geometry::fromLineString(new LineString(array(
                 array(-63.687336, -31.313615),
                 array(-63.569260, -31.313615)
@@ -293,7 +292,7 @@ abstract class EventSourcingBaseTest extends WebTestCase
         $rchBoundary = BoundaryFactory::create(
             BoundaryType::fromString(BoundaryType::RECHARGE),
             BoundaryId::generate(),
-            BoundaryName::fromString('TestRch'),
+            Name::fromString('TestRch'),
             Geometry::fromPolygon(new Polygon(
                 array(
                     array(
@@ -323,7 +322,7 @@ abstract class EventSourcingBaseTest extends WebTestCase
         $boundaryId = BoundaryId::generate();
         $riverBoundary = RiverBoundary::createWithParams(
             $boundaryId,
-            BoundaryName::fromString('TestRiver'),
+            Name::fromString('TestRiver'),
             Geometry::fromLineString(new LineString(array(
                 array(-63.676586151123,-31.367415770489),
                 array(-63.673968315125,-31.366206539217),
@@ -435,12 +434,13 @@ abstract class EventSourcingBaseTest extends WebTestCase
         $boundaryId = BoundaryId::generate();
         $wellBoundary = WellBoundary::createWithParams(
             $boundaryId,
-            BoundaryName::fromString('Test Well 1'),
+            Name::fromString('Test Well 1'),
             Geometry::fromPoint(new Point(-63.60, -31.32, 4326)),
             AffectedLayers::createWithLayerNumber(LayerNumber::fromInteger(0)),
             Metadata::create()->addWellType(WellType::fromString(WellType::TYPE_INDUSTRIAL_WELL))
         );
 
+        /** @var WellBoundary $wellBoundary */
         $wellBoundary = $wellBoundary->addPumpingRate(WellDateTimeValue::fromParams(new \DateTimeImmutable('2015-01-01'), -5000));
         return $wellBoundary;
     }
@@ -456,15 +456,15 @@ abstract class EventSourcingBaseTest extends WebTestCase
         ));
     }
 
-    protected function createScenario(ScenarioAnalysisId $id, UserId $owner, ModflowId $modelId, ModflowId $scenarioId, ModelName $name, ModelDescription $description): void
+    protected function createScenario(ScenarioAnalysisId $id, UserId $owner, ModflowId $modelId, ModflowId $scenarioId, Name $name, Description $description): void
     {
         $this->commandBus->dispatch(CreateScenario::byUserWithBaseModelAndScenarioIdAndName($id, $owner, $modelId, $scenarioId, $name, $description));
     }
 
     protected function createModelWithName(UserId $userId, ModflowId $modelId): void
     {
-        $modelName = ModelName::fromString('TestModel444');
-        $modelDescription = ModelDescription::fromString('TestModelDescription444');
+        $modelName = Name::fromString('TestModel444');
+        $modelDescription = Description::fromString('TestModelDescription444');
 
         $polygon = $this->createPolygon();
         $gridSize = GridSize::fromXY(75, 40);

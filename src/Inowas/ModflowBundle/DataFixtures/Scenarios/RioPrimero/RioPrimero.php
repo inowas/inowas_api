@@ -3,7 +3,6 @@
 namespace Inowas\ModflowBundle\DataFixtures\Scenarios\RioPrimero;
 
 use Inowas\Common\Boundaries\Metadata;
-use Inowas\Common\Boundaries\BoundaryName;
 use Inowas\Common\Boundaries\BoundaryType;
 use Inowas\Common\Boundaries\GeneralHeadBoundary;
 use Inowas\Common\Boundaries\GeneralHeadDateTimeValue;
@@ -30,8 +29,8 @@ use Inowas\Common\Id\ObservationPointId;
 use Inowas\Common\Id\UserId;
 use Inowas\Common\Modflow\Laytyp;
 use Inowas\Common\Modflow\LengthUnit;
-use Inowas\Common\Modflow\ModelDescription;
-use Inowas\Common\Modflow\ModelName;
+use Inowas\Common\Modflow\Description;
+use Inowas\Common\Modflow\Name;
 use Inowas\ModflowModel\Model\Packages\OcStressPeriod;
 use Inowas\ModflowModel\Model\Packages\OcStressPeriodData;
 use Inowas\Common\Modflow\PackageName;
@@ -113,8 +112,8 @@ class RioPrimero extends LoadScenarioBase
         $commandBus->dispatch(CreateModflowModel::newWithAllParams(
             $ownerId,
             $baseModelId,
-            ModelName::fromString('BaseModel Rio Primero 2015'),
-            ModelDescription::fromString('BaseModel Rio Primero 2015'),
+            Name::fromString('BaseModel Rio Primero 2015'),
+            Description::fromString('BaseModel Rio Primero 2015'),
             $polygon,
             $gridSize,
             TimeUnit::fromInt(TimeUnit::DAYS),
@@ -217,7 +216,7 @@ class RioPrimero extends LoadScenarioBase
          */
         $ghb = GeneralHeadBoundary::createWithParams(
             BoundaryId::generate(),
-            BoundaryName::fromString('General Head Boundary 1'),
+            Name::fromString('General Head Boundary 1'),
             Geometry::fromLineString(new LineString(array(
                 array($boundingBox->xMin(), $boundingBox->yMin()),
                 array($boundingBox->xMin(), $boundingBox->yMax())
@@ -251,7 +250,7 @@ class RioPrimero extends LoadScenarioBase
          */
         $ghb = GeneralHeadBoundary::createWithParams(
             BoundaryId::generate(),
-            BoundaryName::fromString('General Head Boundary 2'),
+            Name::fromString('General Head Boundary 2'),
             Geometry::fromLineString(new LineString(array(
                 array($boundingBox->xMax(), $boundingBox->yMin()),
                 array($boundingBox->xMax(), $boundingBox->yMax())
@@ -286,7 +285,7 @@ class RioPrimero extends LoadScenarioBase
          */
         $riv = RiverBoundary::createWithParams(
             BoundaryId::generate(),
-            BoundaryName::fromString('Rio Primero River'),
+            Name::fromString('Rio Primero River'),
             Geometry::fromLineString(new LineString(array(
                 array(-63.676586151123,-31.367415770489),
                 array(-63.673968315125,-31.366206539217),
@@ -419,7 +418,7 @@ class RioPrimero extends LoadScenarioBase
             $data = array_combine($header, $data);
             $wellBoundary = WellBoundary::createWithParams(
                 BoundaryId::generate(),
-                BoundaryName::fromString($data['name']),
+                Name::fromString($data['name']),
                 Geometry::fromPoint($data['point']),
                 AffectedLayers::createWithLayerNumber(LayerNumber::fromInteger($data['layer'])),
                 Metadata::create()->addWellType(WellType::fromString($data['type']))
@@ -476,8 +475,8 @@ class RioPrimero extends LoadScenarioBase
             $ownerId,
             $baseModelId,
             $scenarioId,
-            ModelName::fromString('Scenario 0: Rio Primero 2020'),
-            ModelDescription::fromString('Future Prediction for the year 2020'))
+            Name::fromString('Scenario 0: Rio Primero 2020'),
+            Description::fromString('Future Prediction for the year 2020'))
         );
 
         $wells = array(
@@ -504,7 +503,7 @@ class RioPrimero extends LoadScenarioBase
             $data = array_combine($header, $data);
             $wellBoundary = WellBoundary::createWithParams(
                 BoundaryId::generate(),
-                BoundaryName::fromString($data['name']),
+                Name::fromString($data['name']),
                 Geometry::fromPoint($data['point']),
                 AffectedLayers::createWithLayerNumber(LayerNumber::fromInteger($data['layer'])),
                 Metadata::create()->addWellType(WellType::fromString($data['type']))
@@ -526,8 +525,8 @@ class RioPrimero extends LoadScenarioBase
             $ownerId,
             $baseModelId,
             $scenarioId,
-            ModelName::fromString('Scenario 1: River bank filtration'),
-            ModelDescription::fromString('Move the wells next to the river'))
+            Name::fromString('Scenario 1: River bank filtration'),
+            Description::fromString('Move the wells next to the river'))
         );
 
         $wells = array(
@@ -554,7 +553,7 @@ class RioPrimero extends LoadScenarioBase
             $data = array_combine($header, $data);
             $wellBoundary = WellBoundary::createWithParams(
                 BoundaryId::generate(),
-                BoundaryName::fromString($data['name']),
+                Name::fromString($data['name']),
                 Geometry::fromPoint($data['point']),
                 AffectedLayers::createWithLayerNumber(LayerNumber::fromInteger($data['layer'])),
                 Metadata::create()->addWellType(WellType::fromString($data['type']))

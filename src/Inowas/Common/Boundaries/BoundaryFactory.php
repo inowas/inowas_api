@@ -6,6 +6,7 @@ namespace Inowas\Common\Boundaries;
 use Inowas\Common\Geometry\Geometry;
 use Inowas\Common\Grid\AffectedLayers;
 use Inowas\Common\Id\BoundaryId;
+use Inowas\Common\Modflow\Name;
 use Inowas\ModflowBundle\Exception\InvalidArgumentException;
 
 class BoundaryFactory
@@ -13,7 +14,7 @@ class BoundaryFactory
     /** @noinspection MoreThanThreeArgumentsInspection
      * @param BoundaryType $type
      * @param BoundaryId $boundaryId
-     * @param BoundaryName $name
+     * @param Name $name
      * @param Geometry $geometry
      * @param AffectedLayers $affectedLayers
      * @param Metadata $metadata
@@ -23,7 +24,7 @@ class BoundaryFactory
     public static function create(
         BoundaryType $type,
         BoundaryId $boundaryId,
-        BoundaryName $name,
+        Name $name,
         Geometry $geometry,
         AffectedLayers $affectedLayers,
         Metadata $metadata

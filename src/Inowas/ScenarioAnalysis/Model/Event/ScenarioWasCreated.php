@@ -6,8 +6,8 @@ namespace Inowas\ScenarioAnalysis\Model\Event;
 
 use Inowas\Common\Id\ModflowId;
 use Inowas\Common\Id\UserId;
-use Inowas\Common\Modflow\ModelDescription;
-use Inowas\Common\Modflow\ModelName;
+use Inowas\Common\Modflow\Description;
+use Inowas\Common\Modflow\Name;
 use Inowas\ScenarioAnalysis\Model\ScenarioAnalysisId;
 use Prooph\EventSourcing\AggregateChanged;
 
@@ -27,10 +27,10 @@ class ScenarioWasCreated extends AggregateChanged
     /** @var  UserId */
     protected $userId;
 
-    /** @var  ModelName */
+    /** @var  Name */
     protected $name;
 
-    /** @var  ModelDescription */
+    /** @var  Description */
     protected $description;
 
     /** @noinspection MoreThanThreeArgumentsInspection
@@ -38,11 +38,11 @@ class ScenarioWasCreated extends AggregateChanged
      * @param UserId $userId
      * @param ModflowId $scenarioId
      * @param ModflowId $baseModelId
-     * @param ModelName $name
-     * @param ModelDescription $description
+     * @param Name $name
+     * @param Description $description
      * @return ScenarioWasCreated
      */
-    public static function from(ScenarioAnalysisId $id, UserId $userId, ModflowId $scenarioId, ModflowId $baseModelId, ModelName $name, ModelDescription $description): ScenarioWasCreated
+    public static function from(ScenarioAnalysisId $id, UserId $userId, ModflowId $scenarioId, ModflowId $baseModelId, Name $name, Description $description): ScenarioWasCreated
     {
         $event = self::occur($id->toString(), [
             'scenario_id' => $scenarioId->toString(),
@@ -97,19 +97,19 @@ class ScenarioWasCreated extends AggregateChanged
         return $this->userId;
     }
 
-    public function name(): ModelName
+    public function name(): Name
     {
         if ($this->name === null){
-            $this->name = ModelName::fromString($this->payload['name']);
+            $this->name = Name::fromString($this->payload['name']);
         }
 
         return $this->name;
     }
 
-    public function description(): ModelDescription
+    public function description(): Description
     {
         if ($this->description === null){
-            $this->description = ModelDescription::fromString($this->payload['description']);
+            $this->description = Description::fromString($this->payload['description']);
         }
 
         return $this->description;

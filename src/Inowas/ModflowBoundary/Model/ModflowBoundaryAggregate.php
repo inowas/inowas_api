@@ -5,17 +5,15 @@ declare(strict_types=1);
 namespace Inowas\ModflowBoundary\Model;
 
 use Inowas\Common\Boundaries\Metadata;
-use Inowas\Common\Boundaries\BoundaryName;
 use Inowas\Common\Boundaries\BoundaryType;
 use Inowas\Common\Boundaries\ObservationPoint;
 use Inowas\Common\Geometry\Geometry;
-use Inowas\Common\Grid\ActiveCells;
 use Inowas\Common\Grid\AffectedLayers;
 use Inowas\Common\Id\BoundaryId;
 use Inowas\Common\Id\ModflowId;
 use Inowas\Common\Id\ObservationPointId;
 use Inowas\Common\Id\UserId;
-use Inowas\ModflowBoundary\Model\Event\BoundaryActiveCellsWereUpdated;
+use Inowas\Common\Modflow\Name;
 use Inowas\ModflowBoundary\Model\Event\BoundaryAffectedLayersWereUpdated;
 use Inowas\ModflowBoundary\Model\Event\BoundaryGeometryWasUpdated;
 use Inowas\ModflowBoundary\Model\Event\BoundaryMetadataWasUpdated;
@@ -38,7 +36,7 @@ class ModflowBoundaryAggregate extends AggregateRoot
      * @param ModflowId $modelId
      * @param UserId $userId
      * @param BoundaryType $boundaryType
-     * @param BoundaryName $boundaryName
+     * @param Name $boundaryName
      * @param Geometry $geometry
      * @param AffectedLayers $affectedLayers
      * @param Metadata $metadata
@@ -49,7 +47,7 @@ class ModflowBoundaryAggregate extends AggregateRoot
         ModflowId $modelId,
         UserId $userId,
         BoundaryType $boundaryType,
-        BoundaryName $boundaryName,
+        Name $boundaryName,
         Geometry $geometry,
         AffectedLayers $affectedLayers,
         Metadata $metadata
@@ -105,16 +103,6 @@ class ModflowBoundaryAggregate extends AggregateRoot
         ));
     }
 
-
-    public function updateActiveCells(UserId $userId, ActiveCells $activeCells): void
-    {
-        $this->recordThat(BoundaryActiveCellsWereUpdated::of(
-            $this->boundaryId,
-            $userId,
-            $activeCells
-        ));
-    }
-
     public function updateBoundaryAffectedLayers(UserId $userId, AffectedLayers $affectedLayers): void
     {
         $this->recordThat(BoundaryAffectedLayersWereUpdated::of(
@@ -133,7 +121,7 @@ class ModflowBoundaryAggregate extends AggregateRoot
         ));
     }
 
-    public function updateBoundaryName(UserId $userId, BoundaryName $name): void
+    public function updateBoundaryName(UserId $userId, Name $name): void
     {
         $this->recordThat(BoundaryNameWasUpdated::of(
             $this->boundaryId,
@@ -191,9 +179,6 @@ class ModflowBoundaryAggregate extends AggregateRoot
     {
         return $this->boundaryId;
     }
-
-    protected function whenBoundaryActiveCellsWereUpdated(BoundaryActiveCellsWereUpdated $event): void
-    {}
 
     protected function whenBoundaryAffectedLayersWereUpdated(BoundaryAffectedLayersWereUpdated $event): void
     {}

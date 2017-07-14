@@ -7,7 +7,6 @@ namespace Inowas\ModflowBundle\Controller;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use Inowas\Common\Boundaries\BoundaryFactory;
 use Inowas\Common\Boundaries\Metadata;
-use Inowas\Common\Boundaries\BoundaryName;
 use Inowas\Common\Boundaries\BoundaryType;
 use Inowas\Common\Boundaries\ObservationPointName;
 use Inowas\Common\Geometry\Geometry;
@@ -17,6 +16,7 @@ use Inowas\Common\Grid\AffectedLayers;
 use Inowas\Common\Id\BoundaryId;
 use Inowas\Common\Id\ModflowId;
 use Inowas\Common\Id\ObservationPointId;
+use Inowas\Common\Modflow\Name;
 use Inowas\ModflowBundle\Exception\InvalidArgumentException;
 use Inowas\ModflowBundle\Exception\NotFoundException;
 use Inowas\ModflowBoundary\Model\Command\AddBoundary;
@@ -104,7 +104,7 @@ class ModflowModelBoundaryController extends InowasRestController
 
         $content = $this->getContentAsArray($request);
         $this->assertContainsKey('name', $content);
-        $name = BoundaryName::fromString($content['name']);
+        $name = Name::fromString($content['name']);
 
         $this->assertContainsKey('type', $content);
         $type = BoundaryType::fromString($content['type']);
@@ -204,7 +204,7 @@ class ModflowModelBoundaryController extends InowasRestController
         $content = $this->getContentAsArray($request);
 
         if ($this->containsKey('name', $content)) {
-            $name = BoundaryName::fromString($content['name']);
+            $name = Name::fromString($content['name']);
             $commandBus->dispatch(UpdateBoundaryName::byUserModelAndBoundary($userId, $modelId, $boundaryId, $name));
         }
 

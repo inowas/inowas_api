@@ -11,8 +11,8 @@ use Inowas\Common\Grid\BoundingBox;
 use Inowas\Common\Grid\GridSize;
 use Inowas\Common\Id\ModflowId;
 use Inowas\Common\Modflow\LengthUnit;
-use Inowas\Common\Modflow\ModelName;
-use Inowas\Common\Modflow\ModelDescription;
+use Inowas\Common\Modflow\Name;
+use Inowas\Common\Modflow\Description;
 use Inowas\Common\Modflow\TimeUnit;
 use Inowas\Common\Soilmodel\SoilmodelId;
 use Inowas\ModflowBundle\Exception\NotFoundException;
@@ -108,10 +108,10 @@ class ModflowModelController extends InowasRestController
         $modelId = ModflowId::generate();
 
         $this->assertContainsKey('name', $content);
-        $name = ModelName::fromString($content['name']);
+        $name = Name::fromString($content['name']);
 
         $this->assertContainsKey('description', $content);
-        $description = ModelDescription::fromString($content['description']);
+        $description = Description::fromString($content['description']);
 
         $this->assertContainsKey('area_geometry', $content);
         $polygon = new Polygon($content['area_geometry']['coordinates'], 4326);
@@ -197,12 +197,12 @@ class ModflowModelController extends InowasRestController
         $content = $this->getContentAsArray($request);
 
         if ($this->containsKey('name', $content)) {
-            $name = ModelName::fromString($content['name']);
+            $name = Name::fromString($content['name']);
             $this->get('prooph_service_bus.modflow_command_bus')->dispatch(ChangeName::forModflowModel($userId, $modelId, $name));
         }
 
         if ($this->containsKey('description', $content)) {
-            $description = ModelDescription::fromString($content['description']);
+            $description = Description::fromString($content['description']);
             $this->get('prooph_service_bus.modflow_command_bus')->dispatch(ChangeDescription::forModflowModel($userId, $modelId, $description));
         }
 

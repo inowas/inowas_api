@@ -8,8 +8,8 @@ use FOS\UserBundle\Doctrine\UserManager;
 use Inowas\AppBundle\Model\User;
 use Inowas\Common\Id\ModflowId;
 use Inowas\Common\Id\UserId;
-use Inowas\Common\Modflow\ModelDescription;
-use Inowas\Common\Modflow\ModelName;
+use Inowas\Common\Modflow\Description;
+use Inowas\Common\Modflow\Name;
 use Inowas\ModflowBoundary\Model\Command\AddBoundary;
 use Inowas\ModflowModel\Model\Command\ChangeDescription;
 use Inowas\ModflowModel\Model\Command\ChangeName;
@@ -170,8 +170,8 @@ class ScenarioAnalysisControllerTest extends EventSourcingBaseTest
         $this->createModelWithSoilmodel($userId, $modelId);
         $this->addSteadyStressperiod($userId, $modelId);
 
-        $this->commandBus->dispatch(ChangeName::forModflowModel($userId, $modelId, ModelName::fromString('TestModel')));
-        $this->commandBus->dispatch(ChangeDescription::forModflowModel($userId, $modelId, ModelDescription::fromString('TestModelDescription')));
+        $this->commandBus->dispatch(ChangeName::forModflowModel($userId, $modelId, Name::fromString('TestModel')));
+        $this->commandBus->dispatch(ChangeDescription::forModflowModel($userId, $modelId, Description::fromString('TestModelDescription')));
         $this->addSteadyStressperiod($userId, $modelId);
 
         $scenarioAnalysisId = ScenarioAnalysisId::generate();
@@ -189,8 +189,8 @@ class ScenarioAnalysisControllerTest extends EventSourcingBaseTest
             $userId,
             $modelId,
             $scenarioId,
-            ModelName::fromString('TestScenarioName'),
-            ModelDescription::fromString('TestScenarioDescription')
+            Name::fromString('TestScenarioName'),
+            Description::fromString('TestScenarioDescription')
         ));
 
 
@@ -263,8 +263,8 @@ class ScenarioAnalysisControllerTest extends EventSourcingBaseTest
             $userId,
             $modelId,
             $scenarioId,
-            ModelName::fromString('Scenario1Name'),
-            ModelDescription::fromString('Scenario1Description')
+            Name::fromString('Scenario1Name'),
+            Description::fromString('Scenario1Description')
         ));
 
         $client = static::createClient();

@@ -13,8 +13,8 @@ use Inowas\Common\Id\CalculationId;
 use Inowas\Common\Id\ModflowId;
 use Inowas\Common\Id\UserId;
 use Inowas\Common\Modflow\LengthUnit;
-use Inowas\Common\Modflow\ModelName;
-use Inowas\Common\Modflow\ModelDescription;
+use Inowas\Common\Modflow\Name;
+use Inowas\Common\Modflow\Description;
 use Inowas\Common\Modflow\PackageName;
 use Inowas\Common\Modflow\ParameterName;
 use Inowas\Common\Modflow\StressPeriods;
@@ -147,7 +147,7 @@ class ModflowModelAggregate extends AggregateRoot
         ));
     }
 
-    public function changeName(UserId $userId, ModelName $name): void
+    public function changeName(UserId $userId, Name $name): void
     {
         $this->recordThat(NameWasChanged::byUserWithName(
             $userId,
@@ -156,7 +156,7 @@ class ModflowModelAggregate extends AggregateRoot
         ));
     }
 
-    public function changeDescription(UserId $userId, ModelDescription $description): void
+    public function changeDescription(UserId $userId, Description $description): void
     {
         $this->recordThat(DescriptionWasChanged::withDescription(
             $userId,

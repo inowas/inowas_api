@@ -6,7 +6,6 @@ namespace Tests\Inowas\GeoTools\Model;
 
 use Inowas\Common\Boundaries\Area;
 use Inowas\Common\Boundaries\Metadata;
-use Inowas\Common\Boundaries\BoundaryName;
 use Inowas\Common\Boundaries\BoundaryType;
 use Inowas\Common\Boundaries\ConstantHeadBoundary;
 use Inowas\Common\Boundaries\ConstantHeadDateTimeValue;
@@ -30,6 +29,7 @@ use Inowas\Common\Grid\GridSize;
 use Inowas\Common\Grid\LayerNumber;
 use Inowas\Common\Id\BoundaryId;
 use Inowas\Common\Id\ObservationPointId;
+use Inowas\Common\Modflow\Name;
 use Inowas\GeoTools\Service\GeoTools;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
@@ -61,7 +61,7 @@ class GeoToolsTest extends WebTestCase
 
         $this->area = Area::create(
             BoundaryId::generate(),
-            BoundaryName::fromString('Hanoi Area'),
+            Name::fromString('Hanoi Area'),
             new Polygon(array(array(
                 array(105.790767733626808, 21.094425932026443),
                 array(105.796959843400032, 21.093521487879368),
@@ -122,7 +122,7 @@ class GeoToolsTest extends WebTestCase
         $this->gridSize = GridSize::fromXY(20, 30);
         $this->river = RiverBoundary::createWithParams(
             BoundaryId::generate(),
-            BoundaryName::fromString('Red River'),
+            Name::fromString('Red River'),
             Geometry::fromLineString(new LineString(
                 array(
                     array(105.78304910628,21.093961475741),
@@ -237,7 +237,7 @@ class GeoToolsTest extends WebTestCase
 
         $this->well = WellBoundary::createWithParams(
             BoundaryId::generate(),
-            BoundaryName::fromString('Well 1'),
+            Name::fromString('Well 1'),
             Geometry::fromPoint(new Point(105.78304910628,21.093961475741, 4326)),
             AffectedLayers::createWithLayerNumber(LayerNumber::fromInteger(2)),
             Metadata::create()->addWellType(WellType::fromString(WellType::TYPE_PUBLIC_WELL))
@@ -302,7 +302,7 @@ class GeoToolsTest extends WebTestCase
             $activeCells = $this->geoTools->calculateActiveCellsFromBoundary(
                 WellBoundary::createWithParams(
                     BoundaryId::generate(),
-                    BoundaryName::fromString(''),
+                    Name::fromString(''),
                     Geometry::fromPoint($pointsAffectedLayer[0]),
                     $pointsAffectedLayer[1],
                     Metadata::create()->addWellType(WellType::fromString(WellType::TYPE_PUBLIC_WELL))
@@ -353,7 +353,7 @@ class GeoToolsTest extends WebTestCase
         /** @var ConstantHeadBoundary $chdBoundary */
         $chdBoundary = ConstantHeadBoundary::createWithParams(
             BoundaryId::generate(),
-            BoundaryName::fromString('ChdBoundary'),
+            Name::fromString('ChdBoundary'),
             Geometry::fromLineString(new LineString($chdPoints, 4326)),
             AffectedLayers::fromArray([1]),
             Metadata::create()

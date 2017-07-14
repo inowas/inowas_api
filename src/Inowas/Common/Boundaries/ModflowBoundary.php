@@ -8,6 +8,7 @@ use Inowas\Common\Geometry\Geometry;
 use Inowas\Common\Grid\AffectedLayers;
 use Inowas\Common\Id\BoundaryId;
 use Inowas\Common\Id\ObservationPointId;
+use Inowas\Common\Modflow\Name;
 
 class ModflowBoundary
 {
@@ -17,7 +18,7 @@ class ModflowBoundary
     /** @var  BoundaryId */
     protected $boundaryId;
 
-    /** @var  BoundaryName */
+    /** @var  Name */
     protected $name;
 
     /** @var  Geometry */
@@ -41,7 +42,7 @@ class ModflowBoundary
 
     /** @noinspection MoreThanThreeArgumentsInspection
      * @param BoundaryId $boundaryId
-     * @param BoundaryName $name
+     * @param Name $name
      * @param Geometry $geometry
      * @param AffectedLayers $affectedLayers
      * @param Metadata $metadata
@@ -49,7 +50,7 @@ class ModflowBoundary
      */
     public static function createWithParams(
         BoundaryId $boundaryId,
-        BoundaryName $name,
+        Name $name,
         Geometry $geometry,
         AffectedLayers $affectedLayers,
         Metadata $metadata
@@ -58,7 +59,7 @@ class ModflowBoundary
         return new static($boundaryId, $name, $geometry, $affectedLayers, $metadata);
     }
 
-    protected function __construct(BoundaryId $boundaryId, BoundaryName $name, Geometry $geometry, AffectedLayers $affectedLayers, Metadata $metadata)
+    protected function __construct(BoundaryId $boundaryId, Name $name, Geometry $geometry, AffectedLayers $affectedLayers, Metadata $metadata)
     {
         $this->boundaryId = $boundaryId;
         $this->name = $name;
@@ -68,7 +69,7 @@ class ModflowBoundary
         $this->observationPoints = ObservationPointCollection::create();
     }
 
-    public function updateName(BoundaryName $boundaryName): ModflowBoundary
+    public function updateName(Name $boundaryName): ModflowBoundary
     {
         $this->name = $boundaryName;
         return $this->self();
@@ -124,7 +125,7 @@ class ModflowBoundary
         return $this->geometry;
     }
 
-    public function name(): BoundaryName
+    public function name(): Name
     {
         return $this->name;
     }
