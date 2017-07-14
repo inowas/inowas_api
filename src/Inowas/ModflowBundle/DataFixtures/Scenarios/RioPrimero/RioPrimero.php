@@ -2,7 +2,7 @@
 
 namespace Inowas\ModflowBundle\DataFixtures\Scenarios\RioPrimero;
 
-use Inowas\Common\Boundaries\BoundaryMetadata;
+use Inowas\Common\Boundaries\Metadata;
 use Inowas\Common\Boundaries\BoundaryName;
 use Inowas\Common\Boundaries\BoundaryType;
 use Inowas\Common\Boundaries\GeneralHeadBoundary;
@@ -223,7 +223,7 @@ class RioPrimero extends LoadScenarioBase
                 array($boundingBox->xMin(), $boundingBox->yMax())
             ), $boundingBox->srid())),
             AffectedLayers::createWithLayerNumber(LayerNumber::fromInteger(0)),
-            BoundaryMetadata::create()
+            Metadata::create()
         );
 
         $observationPointId = ObservationPointId::generate();
@@ -257,7 +257,7 @@ class RioPrimero extends LoadScenarioBase
                 array($boundingBox->xMax(), $boundingBox->yMax())
             ), $boundingBox->srid())),
             AffectedLayers::createWithLayerNumber(LayerNumber::fromInteger(0)),
-            BoundaryMetadata::create()
+            Metadata::create()
         );
 
         $observationPointId = ObservationPointId::generate();
@@ -371,7 +371,7 @@ class RioPrimero extends LoadScenarioBase
                 array(-63.569641113281,-31.331205380684)
             ), 4326)),
             AffectedLayers::createWithLayerNumber(LayerNumber::fromInteger(0)),
-            BoundaryMetadata::create()
+            Metadata::create()
         );
 
         $observationPointId = ObservationPointId::generate();
@@ -422,7 +422,7 @@ class RioPrimero extends LoadScenarioBase
                 BoundaryName::fromString($data['name']),
                 Geometry::fromPoint($data['point']),
                 AffectedLayers::createWithLayerNumber(LayerNumber::fromInteger($data['layer'])),
-                BoundaryMetadata::create()->addWellType(WellType::fromString($data['type']))
+                Metadata::create()->addWellType(WellType::fromString($data['type']))
             );
 
             echo sprintf("Add well with name %s.\r\n", $data['name']);
@@ -507,7 +507,7 @@ class RioPrimero extends LoadScenarioBase
                 BoundaryName::fromString($data['name']),
                 Geometry::fromPoint($data['point']),
                 AffectedLayers::createWithLayerNumber(LayerNumber::fromInteger($data['layer'])),
-                BoundaryMetadata::create()->addWellType(WellType::fromString($data['type']))
+                Metadata::create()->addWellType(WellType::fromString($data['type']))
             );
 
             echo sprintf("Add well with name %s.\r\n", $data['name']);
@@ -557,7 +557,7 @@ class RioPrimero extends LoadScenarioBase
                 BoundaryName::fromString($data['name']),
                 Geometry::fromPoint($data['point']),
                 AffectedLayers::createWithLayerNumber(LayerNumber::fromInteger($data['layer'])),
-                BoundaryMetadata::create()->addWellType(WellType::fromString($data['type']))
+                Metadata::create()->addWellType(WellType::fromString($data['type']))
             );
 
             echo sprintf("Add well with name %s.\r\n", $data['name']);

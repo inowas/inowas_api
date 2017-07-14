@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Tests\Inowas\GeoTools\Model;
 
 use Inowas\Common\Boundaries\Area;
-use Inowas\Common\Boundaries\BoundaryMetadata;
+use Inowas\Common\Boundaries\Metadata;
 use Inowas\Common\Boundaries\BoundaryName;
 use Inowas\Common\Boundaries\BoundaryType;
 use Inowas\Common\Boundaries\ConstantHeadBoundary;
@@ -166,7 +166,7 @@ class GeoToolsTest extends WebTestCase
                     array(105.87790127463,20.947208016218)
                 ), 4326)),
             AffectedLayers::fromArray([0]),
-            BoundaryMetadata::create()
+            Metadata::create()
         );
 
         $opId1 = ObservationPointId::generate();
@@ -240,7 +240,7 @@ class GeoToolsTest extends WebTestCase
             BoundaryName::fromString('Well 1'),
             Geometry::fromPoint(new Point(105.78304910628,21.093961475741, 4326)),
             AffectedLayers::createWithLayerNumber(LayerNumber::fromInteger(2)),
-            BoundaryMetadata::create()->addWellType(WellType::fromString(WellType::TYPE_PUBLIC_WELL))
+            Metadata::create()->addWellType(WellType::fromString(WellType::TYPE_PUBLIC_WELL))
         );
     }
 
@@ -305,7 +305,7 @@ class GeoToolsTest extends WebTestCase
                     BoundaryName::fromString(''),
                     Geometry::fromPoint($pointsAffectedLayer[0]),
                     $pointsAffectedLayer[1],
-                    BoundaryMetadata::create()->addWellType(WellType::fromString(WellType::TYPE_PUBLIC_WELL))
+                    Metadata::create()->addWellType(WellType::fromString(WellType::TYPE_PUBLIC_WELL))
                 ),
                 $boundingBox,
                 $gridSize
@@ -356,7 +356,7 @@ class GeoToolsTest extends WebTestCase
             BoundaryName::fromString('ChdBoundary'),
             Geometry::fromLineString(new LineString($chdPoints, 4326)),
             AffectedLayers::fromArray([1]),
-            BoundaryMetadata::create()
+            Metadata::create()
         );
 
         $observationPointData = array(

@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Inowas\ModflowBoundary\Model;
 
-use Inowas\Common\Boundaries\BoundaryMetadata;
+use Inowas\Common\Boundaries\Metadata;
 use Inowas\Common\Boundaries\BoundaryName;
 use Inowas\Common\Boundaries\BoundaryType;
 use Inowas\Common\Boundaries\ObservationPoint;
@@ -41,7 +41,7 @@ class ModflowBoundaryAggregate extends AggregateRoot
      * @param BoundaryName $boundaryName
      * @param Geometry $geometry
      * @param AffectedLayers $affectedLayers
-     * @param BoundaryMetadata $metadata
+     * @param Metadata $metadata
      * @return ModflowBoundaryAggregate
      */
     public static function create(
@@ -52,7 +52,7 @@ class ModflowBoundaryAggregate extends AggregateRoot
         BoundaryName $boundaryName,
         Geometry $geometry,
         AffectedLayers $affectedLayers,
-        BoundaryMetadata $metadata
+        Metadata $metadata
     ): ModflowBoundaryAggregate
     {
         $self = new self();
@@ -142,7 +142,7 @@ class ModflowBoundaryAggregate extends AggregateRoot
         ));
     }
 
-    public function updateMetaData(UserId $userId, BoundaryMetadata $metadata): void
+    public function updateMetaData(UserId $userId, Metadata $metadata): void
     {
         $this->recordThat(BoundaryMetadataWasUpdated::of(
             $this->boundaryId,

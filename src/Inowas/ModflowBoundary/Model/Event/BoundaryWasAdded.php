@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Inowas\ModflowBoundary\Model\Event;
 
-use Inowas\Common\Boundaries\BoundaryMetadata;
+use Inowas\Common\Boundaries\Metadata;
 use Inowas\Common\Boundaries\BoundaryName;
 use Inowas\Common\Boundaries\BoundaryType;
 use Inowas\Common\Geometry\Geometry;
@@ -36,7 +36,7 @@ class BoundaryWasAdded extends AggregateChanged
     /** @var AffectedLayers */
     private $affectedLayers;
 
-    /** @var BoundaryMetadata */
+    /** @var Metadata */
     private $boundaryMetadata;
 
     /** @var UserId */
@@ -50,7 +50,7 @@ class BoundaryWasAdded extends AggregateChanged
      * @param BoundaryName $boundaryName
      * @param Geometry $geometry
      * @param AffectedLayers $affectedLayers
-     * @param BoundaryMetadata $boundaryMetadata
+     * @param Metadata $boundaryMetadata
      * @return BoundaryWasAdded
      */
     public static function toModelWithParameters(
@@ -61,7 +61,7 @@ class BoundaryWasAdded extends AggregateChanged
         BoundaryName $boundaryName,
         Geometry $geometry,
         AffectedLayers $affectedLayers,
-        BoundaryMetadata $boundaryMetadata
+        Metadata $boundaryMetadata
     ): BoundaryWasAdded
     {
         $event = self::occur(
@@ -152,10 +152,10 @@ class BoundaryWasAdded extends AggregateChanged
         return $this->affectedLayers;
     }
 
-    public function metadata(): BoundaryMetadata
+    public function metadata(): Metadata
     {
         if (null === $this->boundaryMetadata) {
-            $this->boundaryMetadata = BoundaryMetadata::fromArray($this->payload['boundary_metadata']);
+            $this->boundaryMetadata = Metadata::fromArray($this->payload['boundary_metadata']);
         }
 
         return $this->boundaryMetadata;

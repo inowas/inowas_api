@@ -4,19 +4,19 @@ declare(strict_types=1);
 
 namespace Inowas\Common\Boundaries;
 
-class BoundaryMetadata
+class Metadata
 {
     /**
      * @var array
      */
     private $metadata;
 
-    public static function create(): BoundaryMetadata
+    public static function create(): Metadata
     {
         return new self();
     }
 
-    public static function fromArray(array $arr): BoundaryMetadata
+    public static function fromArray(array $arr): Metadata
     {
         $self = new self();
         $self->metadata = $arr;
@@ -28,7 +28,7 @@ class BoundaryMetadata
         $this->metadata = [];
     }
 
-    public function addWellType(WellType $wellType): BoundaryMetadata
+    public function addWellType(WellType $wellType): Metadata
     {
         $this->metadata['well_Type'] = $wellType->toString();
         return $this;

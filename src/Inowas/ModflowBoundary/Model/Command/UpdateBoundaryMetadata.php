@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Inowas\ModflowBoundary\Model\Command;
 
-use Inowas\Common\Boundaries\BoundaryMetadata;
+use Inowas\Common\Boundaries\Metadata;
 use Inowas\Common\Id\BoundaryId;
 use Inowas\Common\Id\ModflowId;
 use Inowas\Common\Id\UserId;
@@ -21,14 +21,14 @@ class UpdateBoundaryMetadata extends Command implements PayloadConstructable
      * @param UserId $userId
      * @param ModflowId $modelId
      * @param BoundaryId $boundaryId
-     * @param BoundaryMetadata $metadata
+     * @param Metadata $metadata
      * @return UpdateBoundaryMetadata
      */
     public static function byUserModelAndBoundary(
         UserId $userId,
         ModflowId $modelId,
         BoundaryId $boundaryId,
-        BoundaryMetadata $metadata
+        Metadata $metadata
     ): UpdateBoundaryMetadata
     {
         $payload = [
@@ -56,8 +56,8 @@ class UpdateBoundaryMetadata extends Command implements PayloadConstructable
         return BoundaryId::fromString($this->payload['boundary_id']);
     }
 
-    public function metadata(): BoundaryMetadata
+    public function metadata(): Metadata
     {
-        return BoundaryMetadata::fromArray($this->payload['metadata']);
+        return Metadata::fromArray($this->payload['metadata']);
     }
 }

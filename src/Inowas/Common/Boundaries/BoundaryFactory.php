@@ -16,17 +16,17 @@ class BoundaryFactory
      * @param BoundaryName $name
      * @param Geometry $geometry
      * @param AffectedLayers $affectedLayers
-     * @param BoundaryMetadata $metadata
+     * @param Metadata $metadata
      * @return ModflowBoundary
-     * @throws \Inowas\ModflowBundle\Exception\InvalidArgumentException
+     * @throws InvalidArgumentException
      */
     public static function create(
         BoundaryType $type,
         BoundaryId $boundaryId,
         BoundaryName $name,
         Geometry $geometry,
-        AffectedLayers$affectedLayers,
-        BoundaryMetadata $metadata
+        AffectedLayers $affectedLayers,
+        Metadata $metadata
     ): ModflowBoundary
     {
 

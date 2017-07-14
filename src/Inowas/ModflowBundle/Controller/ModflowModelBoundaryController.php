@@ -6,7 +6,7 @@ namespace Inowas\ModflowBundle\Controller;
 
 use FOS\RestBundle\Controller\Annotations as Rest;
 use Inowas\Common\Boundaries\BoundaryFactory;
-use Inowas\Common\Boundaries\BoundaryMetadata;
+use Inowas\Common\Boundaries\Metadata;
 use Inowas\Common\Boundaries\BoundaryName;
 use Inowas\Common\Boundaries\BoundaryType;
 use Inowas\Common\Boundaries\ObservationPointName;
@@ -118,9 +118,9 @@ class ModflowModelBoundaryController extends InowasRestController
             $affectedLayers = AffectedLayers::fromArray($content['affected_layers']);
         }
 
-        $metadata = BoundaryMetadata::create();
+        $metadata = Metadata::create();
         if ($this->containsKey('metadata', $content) && is_array($content['metadata'])){
-            $metadata = BoundaryMetadata::fromArray($content['metadata']);
+            $metadata = Metadata::fromArray($content['metadata']);
         }
 
         $boundaryId = BoundaryId::generate();
@@ -225,7 +225,7 @@ class ModflowModelBoundaryController extends InowasRestController
         }
 
         if ($this->containsKey('metadata', $content)) {
-            $metadata = BoundaryMetadata::fromArray($content['metadata']);
+            $metadata = Metadata::fromArray($content['metadata']);
             $commandBus->dispatch(UpdateBoundaryMetadata::byUserModelAndBoundary($userId, $modelId, $boundaryId, $metadata));
         }
 

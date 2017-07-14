@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Inowas\ModflowBoundary\Infrastructure\Projection\BoundaryList;
 
 use Doctrine\DBAL\Connection;
-use Inowas\Common\Boundaries\BoundaryMetadata;
+use Inowas\Common\Boundaries\Metadata;
 use Inowas\Common\Boundaries\BoundaryName;
 use Inowas\Common\Boundaries\BoundaryType;
 use Inowas\Common\Boundaries\ConstantHeadBoundary;
@@ -84,7 +84,7 @@ class BoundaryFinder
                 BoundaryName::fromString($row['name']),
                 Geometry::fromArray(json_decode($row['geometry'], true)),
                 AffectedLayers::fromArray(json_decode($row['affected_layers'], true)),
-                BoundaryMetadata::fromArray(json_decode($row['metadata'], true))
+                Metadata::fromArray(json_decode($row['metadata'], true))
             );
 
             $results = $this->connection->fetchAll(
@@ -127,7 +127,7 @@ class BoundaryFinder
                 BoundaryName::fromString($row['name']),
                 Geometry::fromArray(json_decode($row['geometry'], true)),
                 AffectedLayers::fromArray(json_decode($row['affected_layers'], true)),
-                BoundaryMetadata::fromArray(json_decode($row['metadata'], true))
+                Metadata::fromArray(json_decode($row['metadata'], true))
             );
 
             $results = $this->connection->fetchAll(
@@ -170,7 +170,7 @@ class BoundaryFinder
                 BoundaryName::fromString($row['name']),
                 Geometry::fromArray(json_decode($row['geometry'], true)),
                 AffectedLayers::fromArray(json_decode($row['affected_layers'], true)),
-                BoundaryMetadata::fromArray(json_decode($row['metadata'], true))
+                Metadata::fromArray(json_decode($row['metadata'], true))
             );
 
             $result = $this->connection->fetchAssoc(
@@ -202,7 +202,7 @@ class BoundaryFinder
                 BoundaryName::fromString($row['name']),
                 Geometry::fromArray(json_decode($row['geometry'], true)),
                 AffectedLayers::fromArray(json_decode($row['affected_layers'], true)),
-                BoundaryMetadata::fromArray(json_decode($row['metadata'], true))
+                Metadata::fromArray(json_decode($row['metadata'], true))
             );
 
             $results = $this->connection->fetchAll(
@@ -245,7 +245,7 @@ class BoundaryFinder
                 BoundaryName::fromString($row['name']),
                 Geometry::fromArray(json_decode($row['geometry'], true)),
                 AffectedLayers::fromArray(json_decode($row['affected_layers'], true)),
-                BoundaryMetadata::fromArray(json_decode($row['metadata'], true))
+                Metadata::fromArray(json_decode($row['metadata'], true))
             );
 
             $result = $this->connection->fetchAssoc(

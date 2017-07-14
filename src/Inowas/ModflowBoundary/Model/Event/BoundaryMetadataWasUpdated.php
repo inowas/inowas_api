@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Inowas\ModflowBoundary\Model\Event;
 
-use Inowas\Common\Boundaries\BoundaryMetadata;
+use Inowas\Common\Boundaries\Metadata;
 use Inowas\Common\Id\BoundaryId;
 use Inowas\Common\Id\UserId;
 use Prooph\EventSourcing\AggregateChanged;
@@ -19,16 +19,16 @@ class BoundaryMetadataWasUpdated extends AggregateChanged
     /** @var BoundaryId */
     private $boundaryId;
 
-    /** @var BoundaryMetadata */
+    /** @var Metadata */
     private $boundaryMetadata;
 
     /** @noinspection MoreThanThreeArgumentsInspection
      * @param UserId $userId
      * @param BoundaryId $boundaryId
-     * @param BoundaryMetadata $metadata
+     * @param Metadata $metadata
      * @return BoundaryMetadataWasUpdated
      */
-    public static function of(BoundaryId $boundaryId, UserId $userId, BoundaryMetadata $metadata): BoundaryMetadataWasUpdated
+    public static function of(BoundaryId $boundaryId, UserId $userId, Metadata $metadata): BoundaryMetadataWasUpdated
     {
         $event = self::occur(
             $boundaryId->toString(), [
@@ -62,10 +62,10 @@ class BoundaryMetadataWasUpdated extends AggregateChanged
         return $this->userId;
     }
 
-    public function metadata(): BoundaryMetadata
+    public function metadata(): Metadata
     {
         if ($this->boundaryMetadata === null){
-            $this->boundaryMetadata = BoundaryMetadata::fromArray($this->payload['metadata']);
+            $this->boundaryMetadata = Metadata::fromArray($this->payload['metadata']);
         }
 
         return $this->boundaryMetadata;

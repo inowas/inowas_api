@@ -2,7 +2,7 @@
 
 namespace Inowas\ModflowBundle\DataFixtures\Scenarios\Hanoi;
 
-use Inowas\Common\Boundaries\BoundaryMetadata;
+use Inowas\Common\Boundaries\Metadata;
 use Inowas\Common\Boundaries\BoundaryType;
 use Inowas\Common\Boundaries\ConstantHeadBoundary;
 use Inowas\Common\Boundaries\ConstantHeadDateTimeValue;
@@ -427,7 +427,7 @@ class Hanoi extends LoadScenarioBase
                 $boundaryName,
                 Geometry::fromPoint($geoTools->projectPoint(new Point($well['x'], $well['y'], $well['srid']), Srid::fromInt(4326))),
                 AffectedLayers::createWithLayerNumber(LayerNumber::fromInteger((int)$well['layer']-1)),
-                BoundaryMetadata::create()->addWellType(WellType::fromString($well['type']))
+                Metadata::create()->addWellType(WellType::fromString($well['type']))
             );
 
             $value = null;
@@ -460,7 +460,7 @@ class Hanoi extends LoadScenarioBase
             BoundaryName::fromString('Red River'),
             Geometry::fromLineString(new LineString($riverPoints, 4326)),
             AffectedLayers::fromArray([0]),
-            BoundaryMetadata::create()
+            Metadata::create()
         );
 
         $observationPoints = $this->loadRowsFromCsv(__DIR__ . '/data/river_stages_basecase.csv');
@@ -504,7 +504,7 @@ class Hanoi extends LoadScenarioBase
             $boundaryName,
             Geometry::fromLineString(new LineString($chdPoints, 4326)),
             AffectedLayers::fromArray(array(2, 3)),
-            BoundaryMetadata::create()
+            Metadata::create()
         );
 
         $observationPoints = $this->loadRowsFromCsv(__DIR__ . '/data/chd_stages_basecase.csv');
@@ -646,7 +646,7 @@ class Hanoi extends LoadScenarioBase
                 BoundaryName::fromString($wellData['name']),
                 Geometry::fromPoint($geoTools->projectPoint(new Point($wellData['x'], $wellData['y'], $wellData['srid']), Srid::fromInt(4326))),
                 AffectedLayers::createWithLayerNumber(LayerNumber::fromInteger(1)),
-                BoundaryMetadata::create()->addWellType(WellType::fromString(WellType::TYPE_SCENARIO_NEW_WELL))
+                Metadata::create()->addWellType(WellType::fromString(WellType::TYPE_SCENARIO_NEW_WELL))
             );
 
             $wellBoundary = $wellBoundary->addPumpingRate(WellDateTimeValue::fromParams(
@@ -705,7 +705,7 @@ class Hanoi extends LoadScenarioBase
                 BoundaryName::fromString($wellData['name']),
                 Geometry::fromPoint($geoTools->projectPoint(new Point($wellData['x'], $wellData['y'], $wellData['srid']), Srid::fromInt(4326))),
                 AffectedLayers::createWithLayerNumber(LayerNumber::fromInteger(1)),
-                BoundaryMetadata::create()->addWellType(WellType::fromString(WellType::TYPE_SCENARIO_NEW_WELL))
+                Metadata::create()->addWellType(WellType::fromString(WellType::TYPE_SCENARIO_NEW_WELL))
             );
 
             $wellBoundary = $wellBoundary->addPumpingRate(WellDateTimeValue::fromParams(
