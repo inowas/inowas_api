@@ -4,14 +4,15 @@ declare(strict_types=1);
 
 namespace Inowas\ModflowModel\Model\Event;
 
-use Inowas\Common\Grid\ActiveCells;
+use Inowas\Common\Boundaries\BoundaryFactory;
+use Inowas\Common\Boundaries\ModflowBoundary;
 use Inowas\Common\Id\BoundaryId;
 use Inowas\Common\Id\ModflowId;
 use Inowas\Common\Id\UserId;
 use Prooph\EventSourcing\AggregateChanged;
 
 /** @noinspection LongInheritanceChainInspection */
-class ActiveCellsWereUpdated extends AggregateChanged
+class BoundaryWasUpdated extends AggregateChanged
 {
 
     /** @var ModflowId */
@@ -23,69 +24,50 @@ class ActiveCellsWereUpdated extends AggregateChanged
     /** @var  UserId */
     private $userId;
 
-    /** @var  ActiveCells */
-    private $activeCells;
+    /** @var ModflowBoundary */
+    private $boundary;
 
-    public static function fromAreaWithIds(
-        UserId $userId,
-        ModflowId $modflowId,
-        ActiveCells $activeCells
-    ): ActiveCellsWereUpdated
-    {
-        $event = self::occur(
-            $modflowId->toString(), [
-                'user_id' => $userId->toString(),
-                'boundary_id' => $modflowId->toString(),
-                'active_cells' => $activeCells->toArray()
-            ]
-        );
-
-        $event->activeCells = $activeCells;
-        $event->boundaryId = null;
-        $event->modflowId = $modflowId;
-        $event->userId = $userId;
-
-        return $event;
-    }
-
-    public static function fromBoundaryWithIds(
+    /** @noinspection MoreThanThreeArgumentsInspection
+     * @param UserId $userId
+     * @param ModflowId $modflowId
+     * @param BoundaryId $boundaryId
+     * @param ModflowBoundary $boundary
+     * @return BoundaryWasUpdated
+     */
+    public static function byUserToModel(
         UserId $userId,
         ModflowId $modflowId,
         BoundaryId $boundaryId,
-        ActiveCells $activeCells
-    ): ActiveCellsWereUpdated
+        ModflowBoundary $boundary
+    ): BoundaryWasUpdated
     {
         $event = self::occur(
             $modflowId->toString(), [
                 'user_id' => $userId->toString(),
                 'boundary_id' => $boundaryId->toString(),
-                'active_cells' => $activeCells->toArray()
+                'boundary' => BoundaryFactory::serialize($boundary)
             ]
         );
 
-        $event->activeCells = $activeCells;
         $event->boundaryId = $boundaryId;
         $event->modflowId = $modflowId;
         $event->userId = $userId;
+        $event->boundary = $boundary;
 
         return $event;
     }
 
-    public function activeCells(): ActiveCells
+    public function boundary(): ModflowBoundary
     {
-        if ($this->activeCells === null){
-            $this->activeCells = ActiveCells::fromArray($this->payload['active_cells']);
+        if ($this->boundary === null){
+            $this->boundary = BoundaryFactory::createFromSerialized($this->payload['boundary']);
         }
 
-        return $this->activeCells;
+        return $this->boundary;
     }
 
-    public function boundaryId(): ?BoundaryId
+    public function boundaryId(): BoundaryId
     {
-        if (null === $this->payload['boundary_id']) {
-            return null;
-        }
-
         if ($this->boundaryId === null){
             $this->boundaryId = BoundaryId::fromString($this->payload['boundary_id']);
         }

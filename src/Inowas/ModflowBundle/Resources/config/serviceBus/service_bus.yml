@@ -7,10 +7,8 @@ prooph_service_bus:
                 type: '@prooph_service_bus.command_bus_router'
                 routes:
                     # ModflowBoundaryAggregate Commands and CommandHandlers
-                    'Inowas\ModflowBoundary\Model\Command\AddBoundary': '@inowas.modflowboundary.add_boundary_handler'
                     'Inowas\ModflowBoundary\Model\Command\AddBoundaryObservationPoint': '@inowas.modflowboundary.add_boundary_observation_point_handler'
                     'Inowas\ModflowBoundary\Model\Command\CloneBoundary': '@inowas.modflowboundary.clone_boundary_handler'
-                    'Inowas\ModflowBoundary\Model\Command\RemoveBoundary': '@inowas.modflowboundary.remove_boundary_handler'
                     'Inowas\ModflowBoundary\Model\Command\UpdateBoundaryActiveCells': '@inowas.modflowboundary.update_boundary_active_cells_handler'
                     'Inowas\ModflowBoundary\Model\Command\UpdateBoundaryAffectedLayers': '@inowas.modflowboundary.update_boundary_affected_layers_handler'
                     'Inowas\ModflowBoundary\Model\Command\UpdateBoundaryGeometry': '@inowas.modflowboundary.update_boundary_geometry_handler'
@@ -19,6 +17,7 @@ prooph_service_bus:
                     'Inowas\ModflowBoundary\Model\Command\UpdateBoundaryObservationPoint': '@inowas.modflowboundary.update_boundary_observation_point_handler'
 
                     # ModflowmodelAggregate Commands and CommandHandlers
+                    'Inowas\ModflowModel\Model\Command\AddBoundary': '@inowas.modflowmodel.add_boundary_handler'
                     'Inowas\ModflowModel\Model\Command\CalculateModflowModel': '@inowas.modflowmodel.calculate_modflow_model_handler'
                     'Inowas\ModflowModel\Model\Command\CalculateStressPeriods': '@inowas.modflowmodel.calculate_stress_periods_handler'
                     'Inowas\ModflowModel\Model\Command\ChangeBoundingBox': '@inowas.modflowmodel.change_bounding_box_handler'
@@ -30,12 +29,10 @@ prooph_service_bus:
                     'Inowas\ModflowModel\Model\Command\CloneModflowModel': '@inowas.modflowmodel.clone_modflow_model_handler'
                     'Inowas\ModflowModel\Model\Command\CreateModflowModel': '@inowas.modflowmodel.create_modflow_model_handler'
                     'Inowas\ModflowModel\Model\Command\DeleteModflowModel': '@inowas.modflowmodel.delete_modflow_model_handler'
+                    'Inowas\ModflowModel\Model\Command\RemoveBoundary': '@inowas.modflowmodel.remove_boundary_handler'
                     'Inowas\ModflowModel\Model\Command\UpdateActiveCells': '@inowas.modflowmodel.update_active_cells_handler'
                     'Inowas\ModflowModel\Model\Command\UpdateAreaGeometry': '@inowas.modflowmodel.update_area_geometry_handler'
-                    'Inowas\ModflowModel\Model\Command\UpdateBoundaryAffectedLayers': '@inowas.modflowmodel.update_boundary_affected_layers_handler'
-                    'Inowas\ModflowModel\Model\Command\UpdateBoundaryGeometry': '@inowas.modflowmodel.update_boundary_geometry_handler'
-                    'Inowas\ModflowModel\Model\Command\UpdateBoundaryMetadata': '@inowas.modflowmodel.update_boundary_metadata_handler'
-                    'Inowas\ModflowModel\Model\Command\UpdateBoundaryName': '@inowas.modflowmodel.update_boundary_name_handler'
+                    'Inowas\ModflowModel\Model\Command\UpdateBoundary': '@inowas.modflowmodel.update_boundary_handler'
                     'Inowas\ModflowModel\Model\Command\UpdateCalculationResults': '@inowas.modflowmodel.update_calculation_results_handler'
                     'Inowas\ModflowModel\Model\Command\UpdateCalculationId': '@inowas.modflowmodel.update_calculation_id_handler'
                     'Inowas\ModflowModel\Model\Command\UpdateLengthUnit': '@inowas.modflowmodel.update_length_unit_handler'
@@ -133,7 +130,7 @@ prooph_service_bus:
                         - '@inowas.modflowboundary.boundary_observation_points_projector'
 
                     # ModflowModel
-                    'Inowas\ModflowModel\Model\Event\AreaActiveCellsWereUpdated':
+                    'Inowas\ModflowModel\Model\Event\ActiveCellsWereUpdated':
                         - '@inowas.modflowmodel.blackhole_projector'
                         - '@inowas.modflowmodel.active_cells_projector'
                         - '@inowas.modflowmodel.model_projector'
@@ -142,6 +139,21 @@ prooph_service_bus:
                         - '@inowas.modflowmodel.blackhole_projector'
                         - '@inowas.modflowmodel.active_cells_projector'
                         - '@inowas.modflowmodel.model_projector'
+
+                    'Inowas\ModflowModel\Model\Event\BoundaryWasAdded':
+                        - '@inowas.modflowmodel.active_cells_projector'
+                        - '@inowas.modflowmodel.blackhole_projector'
+                        - '@inowas.modflowmodel.boundary_list_projector'
+
+                    'Inowas\ModflowModel\Model\Event\BoundaryWasRemoved':
+                        - '@inowas.modflowmodel.active_cells_projector'
+                        - '@inowas.modflowmodel.blackhole_projector'
+                        - '@inowas.modflowmodel.boundary_list_projector'
+
+                    'Inowas\ModflowModel\Model\Event\BoundaryWasUpdated':
+                        - '@inowas.modflowmodel.active_cells_projector'
+                        - '@inowas.modflowmodel.blackhole_projector'
+                        - '@inowas.modflowmodel.boundary_list_projector'
 
                     'Inowas\ModflowModel\Model\Event\BoundingBoxWasChanged':
                         - '@inowas.modflowmodel.blackhole_projector'
@@ -181,8 +193,7 @@ prooph_service_bus:
                     'Inowas\ModflowModel\Model\Event\ModflowModelWasCloned':
                         - '@inowas.modflowmodel.blackhole_projector'
                         - '@inowas.modflowmodel.active_cells_projector'
-                        - '@inowas.modflowboundary.boundary_observation_points_projector'
-                        - '@inowas.modflowmodel.clone_modflow_model_process_manager'
+                        - '@inowas.modflowmodel.boundary_list_projector'
                         - '@inowas.modflowmodel.model_projector'
                         - '@inowas.modflowmodel.modflow_packages_process_manager'
 
@@ -191,11 +202,11 @@ prooph_service_bus:
                         - '@inowas.modflowmodel.model_projector'
                         - '@inowas.modflowmodel.active_cells_projector'
                         - '@inowas.modflowmodel.modflow_packages_process_manager'
-                        - '@inowas.modflowmodel.create_modflow_model_process_manager'
 
                     'Inowas\ModflowModel\Model\Event\ModflowModelWasDeleted':
                         - '@inowas.modflowmodel.blackhole_projector'
                         - '@inowas.modflowmodel.active_cells_projector'
+                        - '@inowas.modflowmodel.boundary_list_projector'
                         - '@inowas.modflowmodel.model_projector'
 
                     'Inowas\ModflowModel\Model\Event\ModflowPackageParameterWasUpdated':

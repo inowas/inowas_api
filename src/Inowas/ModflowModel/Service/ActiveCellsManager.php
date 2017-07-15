@@ -10,7 +10,6 @@ use Inowas\Common\Grid\AffectedLayers;
 use Inowas\Common\Id\BoundaryId;
 use Inowas\Common\Id\ModflowId;
 use Inowas\GeoTools\Service\GeoTools;
-use Inowas\ModflowBoundary\Service\BoundaryManager;
 use Inowas\ModflowModel\Infrastructure\Projection\ActiveCells\ActiveCellsFinder;
 use Inowas\ModflowModel\Infrastructure\Projection\ModelList\ModelFinder;
 

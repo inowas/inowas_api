@@ -34,9 +34,9 @@ class GeoTools
         $this->connection = $connection;
     }
 
-    public function calculateActiveCellsFromArea(Area $area, BoundingBox $boundingBox, GridSize $gridSize): ActiveCells
+    public function calculateActiveCellsFromAreaPolygon(Polygon $areaPolygon, BoundingBox $boundingBox, GridSize $gridSize): ActiveCells
     {
-        $geometry = Geometry::fromPolygon($area->geometry());
+        $geometry = Geometry::fromPolygon($areaPolygon);
         $affectedLayers = AffectedLayers::createWithLayerNumber(LayerNumber::fromInteger(0));
 
         return $this->calculateActiveCellsFromGeometryAndAffectedLayers($geometry, $affectedLayers, $boundingBox, $gridSize);

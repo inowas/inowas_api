@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Inowas\Common\Boundaries;
 
+use Inowas\Common\DateTime\DateTime;
 use Inowas\Common\Id\ObservationPointId;
 use Inowas\Common\Modflow\Name;
 
@@ -14,13 +15,9 @@ class WellBoundary extends ModflowBoundary
 
     public function addPumpingRate(WellDateTimeValue $pumpingRate): WellBoundary
     {
-        // In case of well, the observationPointId is the boundaryId
-        $observationPointId = ObservationPointId::fromString($this->boundaryId->toString());
-
-        if (! $this->hasObservationPoint($observationPointId)) {
+        if (! $this->hasObservationPoint(ObservationPointId::fromInt(0))) {
             $this->addObservationPoint(
-                ObservationPoint::fromIdTypeNameAndGeometry(
-                    ObservationPointId::fromString($this->boundaryId->toString()),
+                ObservationPoint::fromTypeNameAndGeometry(
                     $this->type(),
                     Name::fromString($this->name->toString()),
                     $this->geometry->getPointFromGeometry()
@@ -28,14 +25,14 @@ class WellBoundary extends ModflowBoundary
             );
         }
 
-        $this->addDateTimeValue($pumpingRate, $observationPointId);
+        $this->addDateTimeValue($pumpingRate, ObservationPointId::fromInt(0));
         return $this->self();
     }
 
-    public function findValueByDateTime(\DateTimeImmutable $dateTime): WellDateTimeValue
+    public function findValueByDateTime(DateTime $dateTime): WellDateTimeValue
     {
         /** @var ObservationPoint $op */
-        $op = $this->getObservationPoint(ObservationPointId::fromString($this->boundaryId->toString()));
+        $op = $this->getObservationPoint(ObservationPointId::fromInt(0));
         $value = $op->findValueByDateTime($dateTime);
 
         if ($value instanceof WellDateTimeValue){

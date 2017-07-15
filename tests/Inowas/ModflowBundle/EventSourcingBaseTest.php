@@ -31,7 +31,6 @@ use Inowas\Common\Grid\AffectedLayers;
 use Inowas\Common\Grid\BoundingBox;
 use Inowas\Common\Grid\GridSize;
 use Inowas\Common\Grid\LayerNumber;
-use Inowas\Common\Id\BoundaryId;
 use Inowas\Common\Id\ModflowId;
 use Inowas\Common\Id\ObservationPointId;
 use Inowas\Common\Id\UserId;
@@ -220,11 +219,8 @@ abstract class EventSourcingBaseTest extends WebTestCase
 
     protected function createConstantHeadBoundaryWithObservationPoint(): ConstantHeadBoundary
     {
-        $boundaryId = BoundaryId::generate();
-
         /** @var ConstantHeadBoundary $chdBoundary */
         $chdBoundary = ConstantHeadBoundary::createWithParams(
-            $boundaryId,
             Name::fromString('TestChd'),
             Geometry::fromLineString(new LineString(array(
                 array(-63.687336, -31.313615),
@@ -234,16 +230,15 @@ abstract class EventSourcingBaseTest extends WebTestCase
             Metadata::create()
         );
 
-        $observationPointId = ObservationPointId::generate();
-        $chdBoundary = $chdBoundary->addObservationPoint(ObservationPoint::fromIdTypeNameAndGeometry(
-            $observationPointId,
+        $observationPointId = ObservationPointId::fromInt(0);
+        $chdBoundary = $chdBoundary->addObservationPoint(ObservationPoint::fromTypeNameAndGeometry(
             BoundaryType::fromString(BoundaryType::CONSTANT_HEAD),
             Name::fromString('OP1'),
             new Point(-63.687336, -31.313615, 4326)
         ));
 
         $chdBoundary = $chdBoundary->addConstantHeadToObservationPoint($observationPointId, ConstantHeadDateTimeValue::fromParams(
-            new \DateTimeImmutable('1.1.2015'),
+            DateTime::fromDateTimeImmutable(new \DateTimeImmutable('1.1.2015')),
             450,
             450
         ));
@@ -253,12 +248,8 @@ abstract class EventSourcingBaseTest extends WebTestCase
 
     protected function createGeneralHeadBoundaryWithObservationPoint(): GeneralHeadBoundary
     {
-
-        $boundaryId = BoundaryId::generate();
-
         /** @var GeneralHeadBoundary $ghbBoundary */
         $ghbBoundary = GeneralHeadBoundary::createWithParams(
-            $boundaryId,
             Name::fromString('TestGhb'),
             Geometry::fromLineString(new LineString(array(
                 array(-63.687336, -31.313615),
@@ -268,16 +259,15 @@ abstract class EventSourcingBaseTest extends WebTestCase
             Metadata::create()
         );
 
-        $observationPointId = ObservationPointId::generate();
-        $ghbBoundary = $ghbBoundary->addObservationPoint(ObservationPoint::fromIdTypeNameAndGeometry(
-            $observationPointId,
+        $observationPointId = ObservationPointId::fromInt(0);
+        $ghbBoundary = $ghbBoundary->addObservationPoint(ObservationPoint::fromTypeNameAndGeometry(
             BoundaryType::fromString(BoundaryType::GENERAL_HEAD),
             Name::fromString('OP1'),
             new Point(-63.687336, -31.313615, 4326)
         ));
 
         $ghbBoundary = $ghbBoundary->addGeneralHeadValueToObservationPoint($observationPointId, GeneralHeadDateTimeValue::fromParams(
-            new \DateTimeImmutable('1.1.2015'),
+            DateTime::fromDateTimeImmutable(new \DateTimeImmutable('1.1.2015')),
             450,
             100
         ));
@@ -290,7 +280,6 @@ abstract class EventSourcingBaseTest extends WebTestCase
 
         $rchBoundary = BoundaryFactory::create(
             BoundaryType::fromString(BoundaryType::RECHARGE),
-            BoundaryId::generate(),
             Name::fromString('TestRch'),
             Geometry::fromPolygon(new Polygon(
                 array(
@@ -309,7 +298,7 @@ abstract class EventSourcingBaseTest extends WebTestCase
 
         /** @var RechargeBoundary $rchBoundary */
         $rchBoundary = $rchBoundary->addRecharge(RechargeDateTimeValue::fromParams(
-            new \DateTimeImmutable('1.1.2015'),
+            DateTime::fromDateTimeImmutable(new \DateTimeImmutable('1.1.2015')),
             3.29e-4
         ));
 
@@ -318,9 +307,7 @@ abstract class EventSourcingBaseTest extends WebTestCase
 
     protected function createRiverBoundaryWithObservationPoint(): RiverBoundary
     {
-        $boundaryId = BoundaryId::generate();
         $riverBoundary = RiverBoundary::createWithParams(
-            $boundaryId,
             Name::fromString('TestRiver'),
             Geometry::fromLineString(new LineString(array(
                 array(-63.676586151123,-31.367415770489),
@@ -409,9 +396,8 @@ abstract class EventSourcingBaseTest extends WebTestCase
             Metadata::create()
         );
 
-        $observationPointId = ObservationPointId::generate();
-        $riverBoundary = $riverBoundary->addObservationPoint(ObservationPoint::fromIdTypeNameAndGeometry(
-            $observationPointId,
+        $observationPointId = ObservationPointId::fromInt(0);
+        $riverBoundary = $riverBoundary->addObservationPoint(ObservationPoint::fromTypeNameAndGeometry(
             BoundaryType::fromString(BoundaryType::RIVER),
             Name::fromString('OP1'),
             new Point(-63.67280960083,-31.364704139298, 4326)
@@ -419,7 +405,7 @@ abstract class EventSourcingBaseTest extends WebTestCase
 
         /** @var RiverBoundary $riverBoundary */
         $riverBoundary = $riverBoundary->addRiverStageToObservationPoint($observationPointId, RiverDateTimeValue::fromParams(
-            new \DateTimeImmutable('1.1.2015'),
+            DateTime::fromDateTimeImmutable(new \DateTimeImmutable('1.1.2015')),
             446,
             444,
             200
@@ -430,9 +416,7 @@ abstract class EventSourcingBaseTest extends WebTestCase
 
     protected function createWellBoundary(): ModflowBoundary
     {
-        $boundaryId = BoundaryId::generate();
         $wellBoundary = WellBoundary::createWithParams(
-            $boundaryId,
             Name::fromString('Test Well 1'),
             Geometry::fromPoint(new Point(-63.60, -31.32, 4326)),
             AffectedLayers::createWithLayerNumber(LayerNumber::fromInteger(0)),
@@ -440,7 +424,7 @@ abstract class EventSourcingBaseTest extends WebTestCase
         );
 
         /** @var WellBoundary $wellBoundary */
-        $wellBoundary = $wellBoundary->addPumpingRate(WellDateTimeValue::fromParams(new \DateTimeImmutable('2015-01-01'), -5000));
+        $wellBoundary = $wellBoundary->addPumpingRate(WellDateTimeValue::fromParams(DateTime::fromDateTimeImmutable(new \DateTimeImmutable('2015-01-01')), -5000));
         return $wellBoundary;
     }
     

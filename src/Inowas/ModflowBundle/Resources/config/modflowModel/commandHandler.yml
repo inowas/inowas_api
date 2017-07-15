@@ -1,5 +1,10 @@
 services:
     # ModflowModelAggregate
+    inowas.modflowmodel.add_boundary_handler:
+        class: Inowas\ModflowModel\Model\Handler\AddBoundaryHandler
+        arguments:
+          - '@modflow_model_list'
+
     inowas.modflowmodel.calculate_modflow_model_handler:
         class: Inowas\ModflowModel\Model\Handler\CalculateModflowModelHandler
         arguments:
@@ -65,17 +70,27 @@ services:
         arguments:
           - '@modflow_model_list'
 
-    inowas.modflowmodel.update_area_active_cells_handler:
-        class: Inowas\ModflowModel\Model\Handler\UpdateAreaActiveCellsHandler
+    inowas.modflowmodel.remove_boundary_handler:
+        class: Inowas\ModflowModel\Model\Handler\RemoveBoundaryHandler
         arguments:
           - '@modflow_model_list'
-          - '@inowas.modflowboundary.boundary_manager'
+
+    inowas.modflowmodel.update_active_cells_handler:
+        class: Inowas\ModflowModel\Model\Handler\UpdateActiveCellsHandler
+        arguments:
+          - '@modflow_model_list'
+          - '@inowas.modflowmodel.manager'
 
     inowas.modflowmodel.update_area_geometry_handler:
         class: Inowas\ModflowModel\Model\Handler\UpdateAreaGeometryHandler
         arguments:
           - '@modflow_model_list'
           - '@inowas.modflowmodel.model_finder'
+
+    inowas.modflowmodel.update_boundary_handler:
+        class: Inowas\ModflowModel\Model\Handler\UpdateBoundaryHandler
+        arguments:
+          - '@modflow_model_list'
 
     inowas.modflowmodel.update_calculation_id_handler:
         class: Inowas\ModflowModel\Model\Handler\UpdateCalculationIdHandler

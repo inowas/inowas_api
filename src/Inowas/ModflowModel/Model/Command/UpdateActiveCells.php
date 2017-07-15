@@ -43,7 +43,7 @@ class UpdateActiveCells extends Command implements PayloadConstructable
         $payload = [
             'user_id' => $userId->toString(),
             'model_id' => $modelId->toString(),
-            'boundary_id' => $modelId->toString(),
+            'boundary_id' => null,
             'active_cells' => $activeCells->toArray()
         ];
 
@@ -60,8 +60,12 @@ class UpdateActiveCells extends Command implements PayloadConstructable
         return ModflowId::fromString($this->payload['model_id']);
     }
 
-    public function boundaryId(): BoundaryId
+    public function boundaryId(): ?BoundaryId
     {
+        if (null === $this->payload['boundary_id']) {
+            return null;
+        }
+
         return BoundaryId::fromString($this->payload['boundary_id']);
     }
 
@@ -72,6 +76,6 @@ class UpdateActiveCells extends Command implements PayloadConstructable
 
     public function isModelArea(): bool
     {
-        return $this->payload['model_id'] === $this->payload['boundary_id'];
+        return null === $this->payload['boundary_id'];
     }
 }

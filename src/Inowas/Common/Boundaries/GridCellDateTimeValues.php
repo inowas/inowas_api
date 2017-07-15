@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Inowas\Common\Boundaries;
 
+use Inowas\Common\DateTime\DateTime;
+
 class GridCellDateTimeValues
 {
     /** @var int  */
@@ -51,7 +53,7 @@ class GridCellDateTimeValues
         return $this->dateTimeValues;
     }
 
-    public function findValueByDateTime(\DateTimeImmutable $dateTime): ?DateTimeValue
+    public function findValueByDateTime(DateTime $dateTime): ?DateTimeValue
     {
         return $this->dateTimeValues->findValueByDateTime($dateTime);
     }

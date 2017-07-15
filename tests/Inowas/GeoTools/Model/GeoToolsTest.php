@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Tests\Inowas\GeoTools\Model;
 
-use Inowas\Common\Boundaries\Area;
 use Inowas\Common\Boundaries\Metadata;
 use Inowas\Common\Boundaries\BoundaryType;
 use Inowas\Common\Boundaries\ConstantHeadBoundary;
@@ -15,6 +14,7 @@ use Inowas\Common\Boundaries\RiverBoundary;
 use Inowas\Common\Boundaries\RiverDateTimeValue;
 use Inowas\Common\Boundaries\WellBoundary;
 use Inowas\Common\Boundaries\WellType;
+use Inowas\Common\DateTime\DateTime;
 use Inowas\Common\Geometry\Geometry;
 use Inowas\Common\Geometry\LineString;
 use Inowas\Common\Geometry\Point;
@@ -26,7 +26,6 @@ use Inowas\Common\Grid\BoundingBox;
 use Inowas\Common\Grid\Distance;
 use Inowas\Common\Grid\GridSize;
 use Inowas\Common\Grid\LayerNumber;
-use Inowas\Common\Id\BoundaryId;
 use Inowas\Common\Id\ObservationPointId;
 use Inowas\Common\Modflow\Name;
 use Inowas\GeoTools\Service\GeoTools;
@@ -35,8 +34,8 @@ use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 class GeoToolsTest extends WebTestCase
 {
 
-    /** @var  Area */
-    protected $area;
+    /** @var  Polygon */
+    protected $areaPolygon;
 
     /** @var  RiverBoundary */
     protected $river;
@@ -58,10 +57,8 @@ class GeoToolsTest extends WebTestCase
         self::bootKernel();
         $this->geoTools = static::$kernel->getContainer()->get('inowas.geotools.geotools_service');
 
-        $this->area = Area::create(
-            BoundaryId::generate(),
-            Name::fromString('Hanoi Area'),
-            new Polygon(array(array(
+        $this->areaPolygon = new Polygon(array(
+            array(
                 array(105.790767733626808, 21.094425932026443),
                 array(105.796959843400032, 21.093521487879368),
                 array(105.802017060333782, 21.092234483652170),
@@ -106,8 +103,8 @@ class GeoToolsTest extends WebTestCase
                 array(105.777062025914603, 21.090749775344797),
                 array(105.783049106327312, 21.093961473086512),
                 array(105.790767733626808, 21.094425932026443)
-            )), 4326)
-        );
+            )
+        ), 4326);
 
         $this->boundingBox = BoundingBox::fromEPSG4326Coordinates(
             105.75218379342,
@@ -120,7 +117,6 @@ class GeoToolsTest extends WebTestCase
 
         $this->gridSize = GridSize::fromXY(20, 30);
         $this->river = RiverBoundary::createWithParams(
-            BoundaryId::generate(),
             Name::fromString('Red River'),
             Geometry::fromLineString(new LineString(
                 array(
@@ -168,32 +164,36 @@ class GeoToolsTest extends WebTestCase
             Metadata::create()
         );
 
-        $opId1 = ObservationPointId::generate();
+        $opId1 = ObservationPointId::fromInt(0);
         $this->river = $this->river->addObservationPoint(
-            ObservationPoint::fromIdTypeNameAndGeometry(
-                $opId1,
+            ObservationPoint::fromTypeNameAndGeometry(
                 BoundaryType::fromString(BoundaryType::RIVER),
                 Name::fromString('RP1'),
                 new Point(105.78304910628,21.093961475741)
             )
         );
 
-        $this->river = $this->river->addRiverStageToObservationPoint($opId1, RiverDateTimeValue::fromParams(
-            new \DateTimeImmutable('2015-01-01'), 15, 10, 1500)
+        $this->river = $this->river->addRiverStageToObservationPoint(
+            $opId1,
+            RiverDateTimeValue::fromParams(
+                DateTime::fromDateTimeImmutable(new \DateTimeImmutable('2015-01-01')),
+                15,
+                10,
+                1500
+            )
         );
 
         $this->river = $this->river->addRiverStageToObservationPoint($opId1, RiverDateTimeValue::fromParams(
-            new \DateTimeImmutable('2015-02-01'), 15, 10, 1510)
+            DateTime::fromDateTimeImmutable(new \DateTimeImmutable('2015-02-01')), 15, 10, 1510)
         );
 
         $this->river = $this->river->addRiverStageToObservationPoint($opId1, RiverDateTimeValue::fromParams(
-            new \DateTimeImmutable('2015-03-01'), 15, 10, 1520)
+            DateTime::fromDateTimeImmutable(new \DateTimeImmutable('2015-03-01')), 15, 10, 1520)
         );
 
-        $opId2 = ObservationPointId::generate();
+        $opId2 = ObservationPointId::fromInt(1);
         $this->river = $this->river->addObservationPoint(
-            ObservationPoint::fromIdTypeNameAndGeometry(
-                $opId2,
+            ObservationPoint::fromTypeNameAndGeometry(
                 BoundaryType::fromString(BoundaryType::RIVER),
                 Name::fromString('RP28'),
                 new Point(105.88492972479,21.001319007654)
@@ -201,21 +201,20 @@ class GeoToolsTest extends WebTestCase
         );
 
         $this->river = $this->river->addRiverStageToObservationPoint($opId2, RiverDateTimeValue::fromParams(
-            new \DateTimeImmutable('2015-01-01'), 10, 5, 1000)
+            DateTime::fromDateTimeImmutable(new \DateTimeImmutable('2015-01-01')), 10, 5, 1000)
         );
 
         $this->river = $this->river->addRiverStageToObservationPoint($opId2, RiverDateTimeValue::fromParams(
-            new \DateTimeImmutable('2015-02-01'), 10, 5, 1010)
+            DateTime::fromDateTimeImmutable(new \DateTimeImmutable('2015-02-01')), 10, 5, 1010)
         );
 
         $this->river = $this->river->addRiverStageToObservationPoint($opId2, RiverDateTimeValue::fromParams(
-            new \DateTimeImmutable('2015-03-01'), 10, 5, 1020)
+            DateTime::fromDateTimeImmutable(new \DateTimeImmutable('2015-03-01')), 10, 5, 1020)
         );
 
-        $opId3 = ObservationPointId::generate();
+        $opId3 = ObservationPointId::fromInt(2);
         $this->river = $this->river->addObservationPoint(
-            ObservationPoint::fromIdTypeNameAndGeometry(
-                $opId3,
+            ObservationPoint::fromTypeNameAndGeometry(
                 BoundaryType::fromString(BoundaryType::RIVER),
                 Name::fromString('RP39'),
                 new Point(105.87790127463,20.947208016218)
@@ -223,19 +222,18 @@ class GeoToolsTest extends WebTestCase
         );
 
         $this->river = $this->river->addRiverStageToObservationPoint($opId3, RiverDateTimeValue::fromParams(
-            new \DateTimeImmutable('2015-01-01'), 5, 0, 500)
+            DateTime::fromDateTimeImmutable(new \DateTimeImmutable('2015-01-01')), 5, 0, 500)
         );
 
         $this->river = $this->river->addRiverStageToObservationPoint($opId3, RiverDateTimeValue::fromParams(
-            new \DateTimeImmutable('2015-02-01'), 5, 0, 510)
+            DateTime::fromDateTimeImmutable(new \DateTimeImmutable('2015-02-01')), 5, 0, 510)
         );
 
         $this->river = $this->river->addRiverStageToObservationPoint($opId3, RiverDateTimeValue::fromParams(
-            new \DateTimeImmutable('2015-03-01'), 5, 0, 520)
+            DateTime::fromDateTimeImmutable(new \DateTimeImmutable('2015-03-01')), 5, 0, 520)
         );
 
         $this->well = WellBoundary::createWithParams(
-            BoundaryId::generate(),
             Name::fromString('Well 1'),
             Geometry::fromPoint(new Point(105.78304910628,21.093961475741, 4326)),
             AffectedLayers::createWithLayerNumber(LayerNumber::fromInteger(2)),
@@ -246,7 +244,7 @@ class GeoToolsTest extends WebTestCase
     public function testCreateWKTFromAreaGeometry(): void
     {
         /** @var \Polygon $area */
-        $areaPolygon = \geoPHP::load($this->area->geometry()->toJson(), 'json');
+        $areaPolygon = \geoPHP::load($this->areaPolygon->toJson(), 'json');
         $this->assertInstanceOf(\Polygon::class, $areaPolygon);
     }
 
@@ -259,7 +257,7 @@ class GeoToolsTest extends WebTestCase
 
     public function test_calculate_active_cells_area(): void
     {
-        $result = $this->geoTools->calculateActiveCellsFromArea($this->area, $this->boundingBox, $this->gridSize);
+        $result = $this->geoTools->calculateActiveCellsFromAreaPolygon($this->areaPolygon, $this->boundingBox, $this->gridSize);
         $this->assertInstanceOf(ActiveCells::class, $result);
         $this->assertCount(330, $result->cells());
     }
@@ -300,7 +298,6 @@ class GeoToolsTest extends WebTestCase
 
             $activeCells = $this->geoTools->calculateActiveCellsFromBoundary(
                 WellBoundary::createWithParams(
-                    BoundaryId::generate(),
                     Name::fromString(''),
                     Geometry::fromPoint($pointsAffectedLayer[0]),
                     $pointsAffectedLayer[1],
@@ -351,7 +348,6 @@ class GeoToolsTest extends WebTestCase
 
         /** @var ConstantHeadBoundary $chdBoundary */
         $chdBoundary = ConstantHeadBoundary::createWithParams(
-            BoundaryId::generate(),
             Name::fromString('ChdBoundary'),
             Geometry::fromLineString(new LineString($chdPoints, 4326)),
             AffectedLayers::fromArray([1]),
@@ -365,10 +361,10 @@ class GeoToolsTest extends WebTestCase
             array('OP4', 100.99, 20.05, 4326, 4, 40, 400)
         );
 
-        foreach ($observationPointData as $opd){
-            $observationPointId = ObservationPointId::generate();
-            $observationPoint = ObservationPoint::fromIdTypeNameAndGeometry(
-                $observationPointId,
+        foreach ($observationPointData as $key => $opd){
+
+            $observationPointId = ObservationPointId::fromInt($key);
+            $observationPoint = ObservationPoint::fromTypeNameAndGeometry(
                 BoundaryType::fromString(BoundaryType::CONSTANT_HEAD),
                 Name::fromString($opd[0]),
                 $this->geoTools->projectPoint(new Point($opd[1], $opd[2], $opd[3]), Srid::fromInt(4326))
@@ -378,7 +374,7 @@ class GeoToolsTest extends WebTestCase
             $chdBoundary = $chdBoundary->addConstantHeadToObservationPoint(
                 $observationPointId,
                 ConstantHeadDateTimeValue::fromParams(
-                    new \DateTimeImmutable('2005-01-01'),
+                    DateTime::fromDateTimeImmutable(new \DateTimeImmutable('2005-01-01')),
                     $opd[4],
                     $opd[4]
                 )
@@ -400,7 +396,7 @@ class GeoToolsTest extends WebTestCase
     public function test_integration_if_geos_is_available(): void
     {
         $this->assertTrue(\geoPHP::geosInstalled());
-        $areaPolygon = \geoPHP::load($this->area->geometry()->toJson(), 'json');
+        $areaPolygon = \geoPHP::load($this->areaPolygon->toJson(), 'json');
         $this->assertEquals('GEOSGeometry', get_class($areaPolygon->geos()));
     }
 
@@ -408,7 +404,7 @@ class GeoToolsTest extends WebTestCase
     {
         $x = 105.833738284468225;
         $y = 21.073871989488410;
-        $area = \geoPHP::load($this->area->geometry()->toJson(), 'json')->geos();
+        $area = \geoPHP::load($this->areaPolygon->toJson(), 'json')->geos();
         $point = \geoPHP::load(sprintf('POINT(%f %f)', $x, $y), 'wkt')->geos();
         $this->assertTrue($area->covers($point));
         $this->assertTrue($point->within($area));
@@ -424,7 +420,7 @@ class GeoToolsTest extends WebTestCase
 
     public function test_get_bounding_box_from_polygon(): void
     {
-        $bb = $this->geoTools->getBoundingBoxFromPolygon($this->area->geometry());
+        $bb = $this->geoTools->getBoundingBoxFromPolygon($this->areaPolygon);
         $this->assertInstanceOf(BoundingBox::class, $bb);
     }
 
@@ -786,8 +782,7 @@ class GeoToolsTest extends WebTestCase
 
         $observationPoints = ObservationPointCollection::create();
         $observationPoints->add(
-            ObservationPoint::fromIdTypeNameAndGeometry(
-                ObservationPointId::generate(),
+            ObservationPoint::fromTypeNameAndGeometry(
                 BoundaryType::fromString(BoundaryType::CONSTANT_HEAD),
                 Name::fromString('OP1'),
                 new Point(105.78, 21.09, 4326)
@@ -795,8 +790,7 @@ class GeoToolsTest extends WebTestCase
         );
 
         $observationPoints->add(
-            ObservationPoint::fromIdTypeNameAndGeometry(
-                ObservationPointId::generate(),
+            ObservationPoint::fromTypeNameAndGeometry(
                 BoundaryType::fromString(BoundaryType::CONSTANT_HEAD),
                 Name::fromString('OP2'),
                 new Point(105.82, 21.08, 4326)
@@ -804,8 +798,7 @@ class GeoToolsTest extends WebTestCase
         );
 
         $observationPoints->add(
-            ObservationPoint::fromIdTypeNameAndGeometry(
-                ObservationPointId::generate(),
+            ObservationPoint::fromTypeNameAndGeometry(
                 BoundaryType::fromString(BoundaryType::CONSTANT_HEAD),
                 Name::fromString('OP3'),
                 new Point(105.90, 20.99, 4326)
@@ -813,8 +806,7 @@ class GeoToolsTest extends WebTestCase
         );
 
         $observationPoints->add(
-            ObservationPoint::fromIdTypeNameAndGeometry(
-                ObservationPointId::generate(),
+            ObservationPoint::fromTypeNameAndGeometry(
                 BoundaryType::fromString(BoundaryType::CONSTANT_HEAD),
                 Name::fromString('OP4'),
                 new Point(105.88, 20.95, 4326)

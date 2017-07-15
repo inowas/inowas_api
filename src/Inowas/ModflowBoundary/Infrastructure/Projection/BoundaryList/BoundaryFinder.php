@@ -92,7 +92,7 @@ class BoundaryFinder
             );
 
             foreach ($results as $result){
-                $op = ObservationPoint::fromIdTypeNameAndGeometry(
+                $op = ObservationPoint::fromTypeNameAndGeometry(
                     ObservationPointId::fromString($result['id']),
                     BoundaryType::fromString($result['boundary_type']),
                     Name::fromString($result['name']),
@@ -136,7 +136,7 @@ class BoundaryFinder
             );
 
             foreach ($results as $result){
-                $op = ObservationPoint::fromIdTypeNameAndGeometry(
+                $op = ObservationPoint::fromTypeNameAndGeometry(
                     ObservationPointId::fromString($result['id']),
                     BoundaryType::fromString($result['boundary_type']),
                     Name::fromString($result['name']),
@@ -211,7 +211,7 @@ class BoundaryFinder
             );
 
             foreach ($results as $result){
-                $op = ObservationPoint::fromIdTypeNameAndGeometry(
+                $op = ObservationPoint::fromTypeNameAndGeometry(
                     ObservationPointId::fromString($result['id']),
                     BoundaryType::fromString($result['boundary_type']),
                     Name::fromString($result['name']),

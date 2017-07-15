@@ -298,28 +298,28 @@ class StressPeriodDataGenerator
         return $gridCellDateTimeValues;
     }
 
-    protected function calculateDateTimeFromTotim(DateTime $start, TotalTime $totalTime, TimeUnit $timeUnit): \DateTimeImmutable
+    protected function calculateDateTimeFromTotim(DateTime $start, TotalTime $totalTime, TimeUnit $timeUnit): DateTime
     {
         $dateTime = clone $start->toDateTime();
 
         if ($timeUnit->toInt() === $timeUnit::SECONDS){
             $dateTime->modify(sprintf('+%s seconds', $totalTime->toInteger()));
-            return \DateTimeImmutable::createFromMutable($dateTime);
+            return DateTime::fromDateTime($dateTime);
         }
 
         if ($timeUnit->toInt() === $timeUnit::MINUTES){
             $dateTime->modify(sprintf('+%s minutes', $totalTime->toInteger()));
-            return \DateTimeImmutable::createFromMutable($dateTime);
+            return DateTime::fromDateTime($dateTime);
         }
 
         if ($timeUnit->toInt() === $timeUnit::HOURS){
             $dateTime->modify(sprintf('+%s hours', $totalTime->toInteger()));
-            return \DateTimeImmutable::createFromMutable($dateTime);
+            return DateTime::fromDateTime($dateTime);
         }
 
         if ($timeUnit->toInt() === $timeUnit::DAYS){
             $dateTime->modify(sprintf('+%s days', $totalTime->toInteger()));
-            return \DateTimeImmutable::createFromMutable($dateTime);
+            return DateTime::fromDateTime($dateTime);
         }
 
         throw InvalidTimeUnitException::withTimeUnitAndAvailableTimeUnits($timeUnit, $timeUnit->availableTimeUnits);

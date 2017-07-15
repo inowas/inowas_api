@@ -27,6 +27,9 @@ class ModflowModelWasCloned extends AggregateChanged
     /** @var bool */
     private $cloneSoilmodel;
 
+    /** @var  array */
+    private $boundaries;
+
     /** @noinspection MoreThanThreeArgumentsInspection
      * @param ModflowId $baseModelId
      * @param ModflowId $modflowId
@@ -40,14 +43,16 @@ class ModflowModelWasCloned extends AggregateChanged
         ModflowId $modflowId,
         UserId $userId,
         SoilmodelId $soilmodelId,
-        bool $cloneSoilmodel
+        bool $cloneSoilmodel,
+        array $boundaries
     ): ModflowModelWasCloned
     {
         $event = self::occur($modflowId->toString(),[
             'basemodel_id' => $baseModelId->toString(),
             'user_id' => $userId->toString(),
             'soilmodel_id' => $soilmodelId->toString(),
-            'clone_soilmodel' => $cloneSoilmodel
+            'clone_soilmodel' => $cloneSoilmodel,
+            'boundaries' => $boundaries
         ]);
 
         $event->baseModelId = $baseModelId;
@@ -55,6 +60,7 @@ class ModflowModelWasCloned extends AggregateChanged
         $event->userId = $userId;
         $event->soilmodelId = $soilmodelId;
         $event->cloneSoilmodel = $cloneSoilmodel;
+        $event->boundaries = $boundaries;
 
         return $event;
     }
@@ -102,5 +108,14 @@ class ModflowModelWasCloned extends AggregateChanged
         }
 
         return $this->userId;
+    }
+
+    public function boundaries(): array
+    {
+        if ($this->boundaries === null){
+            $this->boundaries = $this->payload['boundaries'];
+        }
+
+        return $this->boundaries;
     }
 }

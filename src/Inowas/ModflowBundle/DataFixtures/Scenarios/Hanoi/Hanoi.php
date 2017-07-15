@@ -422,7 +422,6 @@ class Hanoi extends LoadScenarioBase
 
             /** @var WellBoundary $wellBoundary */
             $wellBoundary = WellBoundary::createWithParams(
-                BoundaryId::generate(),
                 $boundaryName,
                 Geometry::fromPoint($geoTools->projectPoint(new Point($well['x'], $well['y'], $well['srid']), Srid::fromInt(4326))),
                 AffectedLayers::createWithLayerNumber(LayerNumber::fromInteger((int)$well['layer']-1)),
@@ -434,7 +433,7 @@ class Hanoi extends LoadScenarioBase
                 if (is_numeric($well[$date])){
                     if ($well[$date] !== $value){
                         $wellBoundary = $wellBoundary->addPumpingRate(WellDateTimeValue::fromParams(
-                            new \DateTimeImmutable(explode(':', $date)[1]), (float)$well[$date]
+                            DateTime::fromDateTimeImmutable(new \DateTimeImmutable(explode(':', $date)[1])), (float)$well[$date]
                         ));
                     }
                     $value = $well[$date];
@@ -455,7 +454,6 @@ class Hanoi extends LoadScenarioBase
 
         /** @var RiverBoundary $river */
         $river = RiverBoundary::createWithParams(
-            BoundaryId::generate(),
             Name::fromString('Red River'),
             Geometry::fromLineString(new LineString($riverPoints, 4326)),
             AffectedLayers::fromArray([0]),
@@ -467,8 +465,7 @@ class Hanoi extends LoadScenarioBase
         $dates = $this->getDates($header);
 
         foreach ($observationPoints as $op){
-            $observationPoint = ObservationPoint::fromIdTypeNameAndGeometry(
-                ObservationPointId::generate(),
+            $observationPoint = ObservationPoint::fromTypeNameAndGeometry(
                 BoundaryType::fromString(BoundaryType::RIVER),
                 Name::fromString($op['name']),
                 $geoTools->projectPoint(new Point($op['x'], $op['y'], $op['srid']), Srid::fromInt(4326))
@@ -478,7 +475,7 @@ class Hanoi extends LoadScenarioBase
                 if (is_numeric($op[$date])) {
                     $observationPoint = $observationPoint->addDateTimeValue(
                         RiverDateTimeValue::fromParams(
-                            new \DateTimeImmutable(explode(':', $date)[1]), $op[$date], 0, 1500)
+                        DateTime::fromDateTimeImmutable(new \DateTimeImmutable(explode(':', $date)[1])), $op[$date], 0, 1500)
                     );
                 }
             }
@@ -499,7 +496,6 @@ class Hanoi extends LoadScenarioBase
 
         /** @var ConstantHeadBoundary $chdBoundary */
         $chdBoundary = ConstantHeadBoundary::createWithParams(
-            BoundaryId::generate(),
             $boundaryName,
             Geometry::fromLineString(new LineString($chdPoints, 4326)),
             AffectedLayers::fromArray(array(2, 3)),
@@ -510,11 +506,10 @@ class Hanoi extends LoadScenarioBase
         $header = $this->loadHeaderFromCsv(__DIR__ . '/data/chd_stages_basecase.csv');
         $dates = $this->getDates($header);
 
-        foreach ($observationPoints as $op){
+        foreach ($observationPoints as $key => $op){
 
-            $observationPointId = ObservationPointId::generate();
-            $observationPoint = ObservationPoint::fromIdTypeNameAndGeometry(
-                $observationPointId,
+            $observationPointId = ObservationPointId::fromInt($key);
+            $observationPoint = ObservationPoint::fromTypeNameAndGeometry(
                 BoundaryType::fromString(BoundaryType::CONSTANT_HEAD),
                 Name::fromString($op['name']),
                 $geoTools->projectPoint(new Point($op['x'], $op['y'], $op['srid']), Srid::fromInt(4326))
@@ -526,7 +521,7 @@ class Hanoi extends LoadScenarioBase
             /** @var string $date */
             foreach ($dates as $date) {
                 $chdBoundary = $chdBoundary->addConstantHeadToObservationPoint($observationPointId, ConstantHeadDateTimeValue::fromParams(
-                    new \DateTimeImmutable(explode(':', $date)[1]),
+                    DateTime::fromDateTimeImmutable(new \DateTimeImmutable(explode(':', $date)[1])),
                     $op[$date],
                     $op[$date]
                 ));
@@ -582,7 +577,7 @@ class Hanoi extends LoadScenarioBase
             Description::fromString('Simulation of MAR type river bank filtration'))
         );
 
-        $boundariesFinder = $this->container->get('inowas.modflowboundary.boundary_manager');
+        $boundariesFinder = $this->container->get('inowas.modflowmodel.boundary_manager');
         $rbfRelocatedWellNamesAndGeometry = array(
             'H07_6' => $geoTools->projectPoint(new Point(588637, 2326840, 32648), Srid::fromInt(4326)),
             'H10_6' => $geoTools->projectPoint(new Point(589150, 2326214, 32648), Srid::fromInt(4326)),
@@ -641,16 +636,13 @@ class Hanoi extends LoadScenarioBase
         foreach ($infiltrationWells as $row) {
             $wellData = array_combine($header, $row);
             $wellBoundary = WellBoundary::createWithParams(
-                BoundaryId::generate(),
                 Name::fromString($wellData['name']),
                 Geometry::fromPoint($geoTools->projectPoint(new Point($wellData['x'], $wellData['y'], $wellData['srid']), Srid::fromInt(4326))),
                 AffectedLayers::createWithLayerNumber(LayerNumber::fromInteger(1)),
                 Metadata::create()->addWellType(WellType::fromString(WellType::TYPE_SCENARIO_NEW_WELL))
             );
 
-            $wellBoundary = $wellBoundary->addPumpingRate(WellDateTimeValue::fromParams(
-                    $start->toDateTimeImmutable(),
-                    $wellData['pumpingrate']));
+            $wellBoundary = $wellBoundary->addPumpingRate(WellDateTimeValue::fromParams($start, $wellData['pumpingrate']));
 
             echo sprintf("Add Well %s.\r\n", $wellData['name']);
             $commandBus->dispatch(AddBoundary::to($scenarioId, $ownerId, $wellBoundary));
@@ -673,7 +665,7 @@ class Hanoi extends LoadScenarioBase
             Description::fromString('Combination of MAR types river bank filtration and injection wells'))
         );
 
-        $boundariesFinder = $this->container->get('inowas.modflowboundary.boundary_manager');
+        $boundariesFinder = $this->container->get('inowas.modflowmodel.boundary_manager');
         $rbfRelocatedWellNamesAndGeometry = array(
             'H07_6' => $geoTools->projectPoint(new Point(588637, 2326840, 32648), Srid::fromInt(4326)),
             'H10_6' => $geoTools->projectPoint(new Point(589150, 2326214, 32648), Srid::fromInt(4326)),
@@ -700,16 +692,13 @@ class Hanoi extends LoadScenarioBase
         foreach ($infiltrationWells as $row) {
             $wellData = array_combine($header, $row);
             $wellBoundary = WellBoundary::createWithParams(
-                BoundaryId::generate(),
                 Name::fromString($wellData['name']),
                 Geometry::fromPoint($geoTools->projectPoint(new Point($wellData['x'], $wellData['y'], $wellData['srid']), Srid::fromInt(4326))),
                 AffectedLayers::createWithLayerNumber(LayerNumber::fromInteger(1)),
                 Metadata::create()->addWellType(WellType::fromString(WellType::TYPE_SCENARIO_NEW_WELL))
             );
 
-            $wellBoundary = $wellBoundary->addPumpingRate(WellDateTimeValue::fromParams(
-                $start->toDateTimeImmutable(),
-                $wellData['pumpingrate']));
+            $wellBoundary = $wellBoundary->addPumpingRate(WellDateTimeValue::fromParams($start, $wellData['pumpingrate']));
             $commandBus->dispatch(AddBoundary::to($scenarioId, $ownerId, $wellBoundary));
         }
 

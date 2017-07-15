@@ -26,7 +26,7 @@ class ActiveCellsFinder
     {
         $result = $this->connection->fetchAssoc(
             sprintf('SELECT active_cells FROM %s WHERE boundary_id =:boundary_id AND model_id = :model_id', Table::ACTIVE_CELLS),
-            ['model_id' => $modelId->toString(), 'boundary_id' => $modelId->toString()]
+            ['model_id' => $modelId->toString(), 'boundary_id' => null]
         );
 
         if (null === $result['active_cells']){
@@ -38,8 +38,12 @@ class ActiveCellsFinder
 
     public function updateAreaActiveCells(ModflowId $modelId, ActiveCells $activeCells): void
     {
-        $boundaryId = BoundaryId::fromString($modelId->toString());
-        $this->updateBoundaryActiveCells($modelId, $boundaryId, $activeCells);
+        $this->connection->update(Table::ACTIVE_CELLS, array(
+            'active_cells' => json_encode($activeCells->toArray())
+        ), array(
+            'model_id' => $modelId->toString(),
+            'boundary_id' => null,
+        ));
     }
 
     public function findBoundaryActiveCells(ModflowId $modelId, BoundaryId $boundaryId): ?ActiveCells

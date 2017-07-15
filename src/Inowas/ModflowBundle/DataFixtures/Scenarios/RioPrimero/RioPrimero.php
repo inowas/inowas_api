@@ -225,7 +225,7 @@ class RioPrimero extends LoadScenarioBase
         );
 
         $observationPointId = ObservationPointId::generate();
-        $observationPoint = ObservationPoint::fromIdTypeNameAndGeometry(
+        $observationPoint = ObservationPoint::fromTypeNameAndGeometry(
             $observationPointId,
             BoundaryType::fromString(BoundaryType::GENERAL_HEAD),
             Name::fromString('OP 1'),
@@ -259,7 +259,7 @@ class RioPrimero extends LoadScenarioBase
         );
 
         $observationPointId = ObservationPointId::generate();
-        $observationPoint = ObservationPoint::fromIdTypeNameAndGeometry(
+        $observationPoint = ObservationPoint::fromTypeNameAndGeometry(
             $observationPointId,
             BoundaryType::fromString(BoundaryType::GENERAL_HEAD),
             Name::fromString('OP 1'),
@@ -373,7 +373,7 @@ class RioPrimero extends LoadScenarioBase
         );
 
         $observationPointId = ObservationPointId::generate();
-        $observationPoint = ObservationPoint::fromIdTypeNameAndGeometry(
+        $observationPoint = ObservationPoint::fromTypeNameAndGeometry(
             $observationPointId,
             BoundaryType::fromString(BoundaryType::RIVER),
             Name::fromString('OP 1'),

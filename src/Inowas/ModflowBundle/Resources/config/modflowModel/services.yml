@@ -3,7 +3,7 @@ services:
         class: Inowas\ModflowModel\Service\ActiveCellsManager
         arguments:
             - '@inowas.modflowmodel.active_cells_finder'
-            - '@inowas.modflowboundary.boundary_manager'
+            - '@inowas.modflowmodel.boundary_manager'
             - '@inowas.geotools.geotools_service'
             - '@inowas.modflowmodel.model_finder'
 
@@ -25,11 +25,16 @@ services:
             - '@inowas.amqp.stream.connection'
             - '%rabbit_mq_read_data_queue%'
 
+    inowas.modflowmodel.boundary_manager:
+        class: Inowas\ModflowModel\Service\BoundaryManager
+        arguments:
+            - '@inowas.modflowmodel.boundary_finder'
+
     inowas.modflowmodel.manager:
         class: Inowas\ModflowModel\Service\ModflowModelManager
         arguments:
             - '@inowas.modflowmodel.active_cells_finder'
-            - '@inowas.modflowboundary.boundary_manager'
+            - '@inowas.modflowmodel.boundary_manager'
             - '@inowas.geotools.geotools_service'
             - '@inowas.modflowmodel.model_finder'
             - '@inowas.modflowmodel.stressperiod_data_generator'

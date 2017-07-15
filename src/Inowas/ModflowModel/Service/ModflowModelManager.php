@@ -18,7 +18,6 @@ use Inowas\Common\Modflow\StressPeriods;
 use Inowas\Common\Modflow\TimeUnit;
 use Inowas\Common\Soilmodel\SoilmodelId;
 use Inowas\GeoTools\Service\GeoTools;
-use Inowas\ModflowBoundary\Service\BoundaryManager;
 use Inowas\ModflowModel\Infrastructure\Projection\ActiveCells\ActiveCellsFinder;
 use Inowas\ModflowModel\Infrastructure\Projection\ModelList\ModelFinder;
 use Inowas\ModflowModel\Model\Packages\ChdStressPeriodData;

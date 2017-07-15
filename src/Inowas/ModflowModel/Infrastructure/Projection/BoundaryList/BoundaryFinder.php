@@ -1,0 +1,223 @@
+<?php
+
+declare(strict_types=1);
+
+namespace Inowas\ModflowModel\Infrastructure\Projection\BoundaryList;
+
+use Doctrine\DBAL\Connection;
+use Inowas\Common\Boundaries\BoundaryFactory;
+use Inowas\Common\Boundaries\BoundaryType;
+use Inowas\Common\Boundaries\ModflowBoundary;
+use Inowas\Common\Boundaries\ObservationPoint;
+use Inowas\Common\DateTime\DateTime;
+use Inowas\Common\Geometry\Geometry;
+use Inowas\Common\Grid\AffectedLayers;
+use Inowas\Common\Id\BoundaryId;
+use Inowas\Common\Id\ModflowId;
+use Inowas\Common\Modflow\Name;
+use Inowas\ModflowModel\Infrastructure\Projection\Table;
+use Inowas\ModflowModel\Model\Exception\SqlQueryExceptionException;
+
+class BoundaryFinder
+{
+    /** @var Connection $connection */
+    protected $connection;
+
+    public function __construct(Connection $connection)
+    {
+        $this->connection = $connection;
+        $this->connection->setFetchMode(\PDO::FETCH_OBJ);
+    }
+
+    public function getTotalNumberOfModelBoundaries(ModflowId $modelId): int
+    {
+        $result = $this->connection->fetchAssoc(
+            sprintf('SELECT count(*) FROM %s WHERE model_id = :model_id', Table::BOUNDARIES_LIST),
+            ['model_id' => $modelId->toString()]
+        );
+
+        if ($result === false) {
+            throw SqlQueryExceptionException::withClassName(__CLASS__, __FUNCTION__);
+        }
+
+        return (int)$result['count'];
+    }
+
+    public function getNumberOfModelBoundariesByType(ModflowId $modelId, BoundaryType $type): int
+    {
+        $result = $this->connection->fetchAssoc(
+            sprintf('SELECT count(*) FROM %s WHERE model_id = :model_id AND type = :type', Table::BOUNDARIES_LIST),
+            ['model_id' => $modelId->toString(), 'type' => $type->toString()]
+        );
+
+        if ($result === false) {
+            throw SqlQueryExceptionException::withClassName(__CLASS__, __FUNCTION__);
+        }
+
+        return (int)$result['count'];
+    }
+
+    public function findConstantHeadBoundaries(ModflowId $modelId): array
+    {
+        return $this->getBoundariesByModelIdAndType($modelId, BoundaryType::fromString(BoundaryType::CONSTANT_HEAD));
+    }
+
+    public function findGeneralHeadBoundaries(ModflowId $modelId): array
+    {
+        return $this->getBoundariesByModelIdAndType($modelId, BoundaryType::fromString(BoundaryType::GENERAL_HEAD));
+    }
+
+    public function findRechargeBoundaries(ModflowId $modelId): array
+    {
+        return $this->getBoundariesByModelIdAndType($modelId, BoundaryType::fromString(BoundaryType::RECHARGE));
+    }
+
+    public function findRiverBoundaries(ModflowId $modelId): array
+    {
+        return $this->getBoundariesByModelIdAndType($modelId, BoundaryType::fromString(BoundaryType::RIVER));
+    }
+
+    public function findWellBoundaries(ModflowId $modelId): array
+    {
+        return $this->getBoundariesByModelIdAndType($modelId, BoundaryType::fromString(BoundaryType::WELL));
+    }
+
+    public function findBoundariesByModelId(ModflowId $modelId): ?array
+    {
+        $this->connection->setFetchMode(\PDO::FETCH_ASSOC);
+
+        $result = $this->connection->fetchAll(
+            sprintf('SELECT boundary_id as id, name, type, geometry, metadata, affected_layers FROM %s WHERE model_id = :model_id', Table::BOUNDARIES_LIST),
+            ['model_id' => $modelId->toString()]
+        );
+
+        if (false === $result) {
+            return null;
+        }
+
+        return $result;
+    }
+
+    public function getBoundaryDetails(ModflowId $modelId, BoundaryId $boundaryId): ?array
+    {
+        $row = $this->connection->fetchAssoc(
+            sprintf('SELECT boundary_id AS id, boundary FROM %s WHERE model_id = :model_id AND boundary_id = :boundary_id', Table::BOUNDARIES_LIST),
+            ['model_id' => $modelId->toString(), 'boundary_id' => $boundaryId->toString()]
+        );
+
+        if ($row === false){
+            return null;
+        }
+
+        $boundary = BoundaryFactory::createFromSerialized($row['boundary']);
+
+        $result = [];
+        $result['affected_layers'] = $boundary->affectedLayers()->toArray();
+        $result['geometry'] = $boundary->geometry()->toArray();
+        $result['metadata'] = $boundary->metadata()->toArray();
+
+        $result['observation_points'] = [];
+
+        /** @var ObservationPoint $observationPoint */
+        $result['observation_points'][] = $observationPoint->toArray();
+
+        return $result;
+    }
+
+    public function getBoundaryName(ModflowId $modelId, BoundaryId $boundaryId): ?Name
+    {
+        $result = $this->connection->fetchAssoc(
+            sprintf('SELECT name FROM %s WHERE model_id = :model_id AND boundary_id = :boundary_id', Table::BOUNDARIES_LIST),
+            ['model_id' => $modelId->toString(), 'boundary_id' => $boundaryId->toString()]
+        );
+
+        if ($result === false){
+            return null;
+        }
+
+        return Name::fromString($result['name']);
+    }
+
+    public function getBoundaryGeometry(ModflowId $modelId, BoundaryId $boundaryId): ?Geometry
+    {
+        $result = $this->connection->fetchAssoc(
+            sprintf('SELECT geometry FROM %s WHERE boundary_id =:boundary_id AND model_id = :model_id', Table::BOUNDARIES_LIST),
+            ['model_id' => $modelId->toString(), 'boundary_id' => $boundaryId->toString()]
+        );
+
+        if ($result === false){
+            return null;
+        }
+
+        return Geometry::fromArray(json_decode($result['geometry'], true));
+    }
+
+    public function getBoundaryType(ModflowId $modelId, BoundaryId $boundaryId): ?BoundaryType
+    {
+        $result = $this->connection->fetchAssoc(
+            sprintf('SELECT type FROM %s WHERE model_id = :model_id AND boundary_id = :boundary_id', Table::BOUNDARIES_LIST),
+            ['model_id' => $modelId->toString(), 'boundary_id' => $boundaryId->toString()]
+        );
+
+        if ($result === false){
+            return null;
+        }
+
+        return BoundaryType::fromString($result['type']);
+    }
+
+    public function findStressPeriodDatesById(ModflowId $modelId): array
+    {
+        $this->connection->setFetchMode(\PDO::FETCH_ASSOC);
+        $rows = $this->connection->fetchAll(
+            sprintf('SELECT boundary FROM %s WHERE model_id = :model_id', Table::BOUNDARIES_LIST),
+            ['model_id' => $modelId->toString()]
+        );
+
+        if ($rows === false) {
+            throw SqlQueryExceptionException::withClassName(__CLASS__, __FUNCTION__);
+        }
+
+        $spDates = [];
+        foreach ($rows as $row) {
+            /** @var ModflowBoundary $boundary */
+            $boundary = BoundaryFactory::createFromSerialized($row['boundary']);
+            $dateTimes = $boundary->getDateTimes();
+
+            /** @var DateTime $dateTime */
+            foreach ($dateTimes as $dateTime) {
+                if (! in_array($dateTime->toAtom(), $spDates, true)) {
+                    $spDates[] = $dateTime;
+                }
+            }
+        }
+
+        sort($spDates);
+        return $spDates;
+    }
+
+    public function getAffectedLayersByModelAndBoundary(ModflowId $modelId, BoundaryId $boundaryId): AffectedLayers
+    {
+        $result = $this->connection->fetchAssoc(
+            sprintf('SELECT * FROM %s WHERE model_id = :model_id AND boundary_id = :boundary_id', Table::BOUNDARIES_LIST),
+            ['model_id' => $modelId->toString(), 'boundary_id' => $boundaryId->toString()]
+        );
+
+        return AffectedLayers::fromArray(json_decode($result['affected_layers'], true));
+    }
+
+    private function getBoundariesByModelIdAndType(ModflowId $modelId, BoundaryType $type): array
+    {
+        $rows = $this->connection->fetchAll(
+            sprintf('SELECT boundary FROM %s WHERE model_id = :model_id AND type = :type', Table::BOUNDARIES_LIST),
+            ['model_id' => $modelId->toString(), 'type' => $type->toString()]
+        );
+
+        $result = [];
+        foreach ($rows as $row) {
+            $result[] = BoundaryFactory::createFromSerialized($row['boundary']);
+        }
+
+        return $result;
+    }
+}

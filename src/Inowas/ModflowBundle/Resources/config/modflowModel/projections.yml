@@ -9,6 +9,16 @@ services:
         arguments:
           - '@doctrine.dbal.default_connection'
 
+    inowas.modflowmodel.boundary_finder:
+        class: Inowas\ModflowModel\Infrastructure\Projection\BoundaryList\BoundaryFinder
+        arguments:
+          - '@doctrine.dbal.default_connection'
+
+    inowas.modflowmodel.boundary_list_projector:
+        class: Inowas\ModflowModel\Infrastructure\Projection\BoundaryList\BoundaryListProjector
+        arguments:
+          - '@doctrine.dbal.default_connection'
+
     inowas.modflowmodel.blackhole_projector:
         class: Inowas\ModflowModel\Infrastructure\Projection\Blackhole\BlackholeProjector
 

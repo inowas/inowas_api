@@ -31,8 +31,7 @@ class ModflowProjectionsResetCommand extends ContainerAwareCommand
     {
         $projections = [];
         $projections[] = $this->getContainer()->get('inowas.modflowmodel.active_cells_projector');
-        $projections[] = $this->getContainer()->get('inowas.modflowboundary.boundary_list_projector');
-        $projections[] = $this->getContainer()->get('inowas.modflowboundary.boundary_observation_points_projector');
+        $projections[] = $this->getContainer()->get('inowas.modflowmodel.boundary_list_projector');
         $projections[] = $this->getContainer()->get('inowas.modflowmodel.calculation_results_projector');
         $projections[] = $this->getContainer()->get('inowas.modflowmodel.model_projector');
         $projections[] = $this->getContainer()->get('inowas.tool.tools_projector');

@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Inowas\Common\Boundaries;
 
-use Inowas\Common\Exception\KeyHasUseException;
 use Inowas\Common\Exception\KeyInvalidException;
 use Inowas\Common\Id\ObservationPointId;
 
@@ -34,19 +33,12 @@ class ObservationPointCollection
 
     public function add(ObservationPoint $observationPoint): void
     {
-        $key = $observationPoint->id()->toString();
-
-        if (isset($this->items[$key])) {
-            throw new KeyHasUseException("Key $key already in use.");
-        }
-
-        $this->items[$key] = $observationPoint;
+        $this->items[] = $observationPoint;
     }
 
     public function delete(ObservationPointId $id): void
     {
-        $key = $id->toString();
-
+        $key = $id->toInt();
         if (isset($this->items[$key])) {
             unset($this->items[$key]);
             return;
@@ -57,7 +49,7 @@ class ObservationPointCollection
 
     public function get(ObservationPointId $id): ObservationPoint
     {
-        $key = $id->toString();
+        $key = $id->toInt();
         if (isset($this->items[$key])) {
             return $this->items[$key];
         }
@@ -67,13 +59,18 @@ class ObservationPointCollection
 
     public function has(ObservationPointId $id): bool
     {
-        $key = $id->toString();
-        return isset($this->items[$key]);
+        return isset($this->items[$id->toInt()]);
     }
 
     public function toArray(): array
     {
-        return $this->items;
+        $result = [];
+        /** @var ObservationPoint $item */
+        foreach ($this->items as $item) {
+            $result[] = $item->toArray();
+        }
+
+        return $result;
     }
 
     public function toArrayValues(): array
@@ -84,5 +81,17 @@ class ObservationPointCollection
     public function count(): int
     {
         return count($this->items);
+    }
+
+    public function getDateTimes(): array
+    {
+        $dateTimes = [];
+
+        /** @var ObservationPoint $item */
+        foreach ($this->items as $item) {
+            $dateTimes = array_merge($dateTimes, $item->getDateTimes());
+        }
+
+        return array_unique($dateTimes);
     }
 }

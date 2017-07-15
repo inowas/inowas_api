@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Inowas\Common\Boundaries;
 
+use Inowas\Common\DateTime\DateTime;
+
 class RiverDateTimeValue extends DateTimeValue
 {
     const TYPE = 'riv';
@@ -17,27 +19,23 @@ class RiverDateTimeValue extends DateTimeValue
     /** @var float */
     private $cond;
 
-    /** @var  \DateTimeImmutable */
-    private $dateTime;
-    /** @noinspection PhpDocSignatureInspection */
 
-    /** @noinspection MoreThanThreeArgumentsInspection */
-    public static function fromParams(\DateTimeImmutable $dateTime, float $stage, float $botm, float $cond): RiverDateTimeValue
+    public static function fromParams(DateTime $dateTime, float $stage, float $botm, float $cond): RiverDateTimeValue
     {
         return new self($dateTime, $stage, $botm, $cond);
     }
 
     public static function fromArray(array $arr): RiverDateTimeValue
     {
-        return new self(new \DateTimeImmutable($arr['date_time']), $arr['stage'], $arr['rbot'], $arr['cond']);
+        return new self(DateTime::fromAtom($arr['date_time']), $arr['stage'], $arr['rbot'], $arr['cond']);
     }
 
     public static function fromArrayValues(array $arr): RiverDateTimeValue
     {
-        return new self(new \DateTimeImmutable($arr[0]), $arr[1], $arr[2], $arr[3]);
+        return new self(DateTime::fromAtom($arr[0]), $arr[1], $arr[2], $arr[3]);
     }
 
-    private function __construct(\DateTimeImmutable $dateTime, float $stage, float $botm, float $cond)
+    private function __construct(DateTime $dateTime, float $stage, float $botm, float $cond)
     {
         $this->stage = $stage;
         $this->rbot = $botm;
@@ -48,14 +46,14 @@ class RiverDateTimeValue extends DateTimeValue
     public function toArray(): array
     {
         return array(
-            'date_time' => $this->dateTime->format(DATE_ATOM),
+            'date_time' => $this->dateTime->toAtom(),
             'stage' => $this->stage,
             'rbot' => $this->rbot,
             'cond' => $this->cond
         );
     }
 
-    public function dateTime(): \DateTimeImmutable
+    public function dateTime(): DateTime
     {
         return $this->dateTime;
     }

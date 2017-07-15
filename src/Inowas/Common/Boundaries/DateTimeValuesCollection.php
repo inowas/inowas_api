@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Inowas\Common\Boundaries;
 
+use Inowas\Common\DateTime\DateTime;
 use Inowas\Common\Exception\KeyHasUseException;
 use Inowas\Common\Exception\KeyInvalidException;
 
@@ -93,7 +94,7 @@ class DateTimeValuesCollection
         return count($this->items);
     }
 
-    public function findValueByDateTime(\DateTimeImmutable $dateTime): ?DateTimeValue
+    public function findValueByDateTime(DateTime $dateTime): ?DateTimeValue
     {
         $values = $this->items;
         usort($values, function ($v1, $v2) {
@@ -115,5 +116,17 @@ class DateTimeValuesCollection
         }
 
         return null;
+    }
+
+    public function getDateTimes(): array
+    {
+        $result = [];
+
+        /** @var DateTimeValue $item */
+        foreach ($this->items as $item) {
+            $result[] = $item->dateTime();
+        }
+
+        return $result;
     }
 }

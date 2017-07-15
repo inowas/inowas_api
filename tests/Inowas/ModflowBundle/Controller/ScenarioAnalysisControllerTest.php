@@ -10,7 +10,7 @@ use Inowas\Common\Id\ModflowId;
 use Inowas\Common\Id\UserId;
 use Inowas\Common\Modflow\Description;
 use Inowas\Common\Modflow\Name;
-use Inowas\ModflowBoundary\Model\Command\AddBoundary;
+use Inowas\ModflowModel\Model\Command\AddBoundary;
 use Inowas\ModflowModel\Model\Command\ChangeDescription;
 use Inowas\ModflowModel\Model\Command\ChangeName;
 use Inowas\ScenarioAnalysis\Model\Command\CreateScenario;
@@ -243,9 +243,9 @@ class ScenarioAnalysisControllerTest extends EventSourcingBaseTest
 
         $modelId = ModflowId::generate();
         $this->createModelWithSoilmodel($userId, $modelId);
-        $this->commandBus->dispatch(AddBoundary::to($modelId, $userId, $this->createRechargeBoundary()));
-        $this->commandBus->dispatch(AddBoundary::to($modelId, $userId, $this->createRiverBoundaryWithObservationPoint()));
-        $this->commandBus->dispatch(AddBoundary::to($modelId, $userId, $this->createWellBoundary()));
+        $this->commandBus->dispatch(AddBoundary::forModflowModel($userId, $modelId, $this->createRechargeBoundary()));
+        $this->commandBus->dispatch(AddBoundary::forModflowModel($userId, $modelId, $this->createRiverBoundaryWithObservationPoint()));
+        $this->commandBus->dispatch(AddBoundary::forModflowModel($userId, $modelId, $this->createWellBoundary()));
         $this->addSteadyStressperiod($userId, $modelId);
 
         $scenarioAnalysisId = ScenarioAnalysisId::generate();

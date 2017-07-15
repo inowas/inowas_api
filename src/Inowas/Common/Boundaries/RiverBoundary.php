@@ -15,7 +15,7 @@ class RiverBoundary extends ModflowBoundary
     public function addRiverStageToObservationPoint(ObservationPointId $observationPointId, RiverDateTimeValue $riverStage): ModflowBoundary
     {
         if (! $this->hasObservationPoint($observationPointId)){
-            throw ObservationPointNotFoundInBoundaryException::withIds($this->boundaryId, $observationPointId);
+            throw ObservationPointNotFoundInBoundaryException::withIds($observationPointId);
         }
 
         $this->addDateTimeValue($riverStage, $observationPointId);

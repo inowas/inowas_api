@@ -15,7 +15,7 @@ class GeneralHeadBoundary extends ModflowBoundary
     public function addGeneralHeadValueToObservationPoint(ObservationPointId $observationPointId, GeneralHeadDateTimeValue $ghbDateTimeValue): ModflowBoundary
     {
         if (! $this->hasObservationPoint($observationPointId)){
-            throw ObservationPointNotFoundInBoundaryException::withIds($this->boundaryId, $observationPointId);
+            throw ObservationPointNotFoundInBoundaryException::withIds($observationPointId);
         }
 
         $this->addDateTimeValue($ghbDateTimeValue, $observationPointId);

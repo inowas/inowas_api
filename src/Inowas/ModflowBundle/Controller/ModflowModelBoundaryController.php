@@ -76,65 +76,6 @@ class ModflowModelBoundaryController extends InowasRestController
     }
 
     /**
-     * Create a new Boundary with name, type, geometry.
-     *
-     * @ApiDoc(
-     *   resource = true,
-     *   description = "Create a new Boundary with name, type, geometry.",
-     *   statusCodes = {
-     *     200 = "Returned when successful"
-     *   }
-     * )
-     *
-     * @param string $id
-     * @param Request $request
-     * @Rest\Post("/modflowmodels/{id}/boundaries")
-     * @return Response
-     * @throws \Inowas\ModflowBundle\Exception\InvalidArgumentException
-     * @throws \Prooph\ServiceBus\Exception\CommandDispatchException
-     * @throws \InvalidArgumentException
-     */
-    public function postModflowModelBoundariesAction(string $id, Request $request): Response
-    {
-        $userId = $this->getUserId();
-
-        $this->assertUuidIsValid($id);
-        $modelId = ModflowId::fromString($id);
-
-        $content = $this->getContentAsArray($request);
-        $this->assertContainsKey('name', $content);
-        $name = Name::fromString($content['name']);
-
-        $this->assertContainsKey('type', $content);
-        $type = BoundaryType::fromString($content['type']);
-
-        $this->assertContainsKey('geometry', $content);
-        $this->assertGeometryIsValid($content['geometry']);
-        $geometry = Geometry::fromArray($content['geometry']);
-
-        $affectedLayers = AffectedLayers::fromArray([0]);
-        if ($this->containsKey('affected_layers', $content) && is_array($content['affected_layers'])) {
-            $affectedLayers = AffectedLayers::fromArray($content['affected_layers']);
-        }
-
-        $metadata = Metadata::create();
-        if ($this->containsKey('metadata', $content) && is_array($content['metadata'])){
-            $metadata = Metadata::fromArray($content['metadata']);
-        }
-
-        $boundaryId = BoundaryId::generate();
-        $boundary = BoundaryFactory::create($type, $boundaryId, $name, $geometry, $affectedLayers, $metadata);
-
-        $commandBus = $this->get('prooph_service_bus.modflow_command_bus');
-        $commandBus->dispatch(AddBoundary::to($modelId, $userId, $boundary));
-
-        return new RedirectResponse(
-            $this->generateUrl('get_modflow_model_boundary', array('id' => $modelId->toString(), 'bid' => $boundaryId->toString())),
-            302
-        );
-    }
-
-    /**
      * Get boundary details details by modflow model id and boundary id.
      *
      * @ApiDoc(

@@ -16,7 +16,7 @@ class ModflowBoundary
     CONST TYPE = '';
 
     /** @var  BoundaryId */
-    protected $boundaryId;
+    protected $id;
 
     /** @var  Name */
     protected $name;
@@ -35,13 +35,13 @@ class ModflowBoundary
 
     protected function self(): ModflowBoundary
     {
-        $self = new static($this->boundaryId, $this->name, $this->geometry, $this->affectedLayers, $this->metadata);
+        $self = new static($this->name, $this->geometry, $this->affectedLayers, $this->metadata);
         $self->observationPoints = $this->observationPoints;
+        $self->id = $this->id;
         return $self;
     }
 
     /** @noinspection MoreThanThreeArgumentsInspection
-     * @param BoundaryId $boundaryId
      * @param Name $name
      * @param Geometry $geometry
      * @param AffectedLayers $affectedLayers
@@ -49,19 +49,32 @@ class ModflowBoundary
      * @return ModflowBoundary
      */
     public static function createWithParams(
-        BoundaryId $boundaryId,
         Name $name,
         Geometry $geometry,
         AffectedLayers $affectedLayers,
         Metadata $metadata
     ): ModflowBoundary
     {
-        return new static($boundaryId, $name, $geometry, $affectedLayers, $metadata);
+        return new static($name, $geometry, $affectedLayers, $metadata);
     }
 
-    protected function __construct(BoundaryId $boundaryId, Name $name, Geometry $geometry, AffectedLayers $affectedLayers, Metadata $metadata)
+    public static function fromArray(array $arr): ModflowBoundary
     {
-        $this->boundaryId = $boundaryId;
+        $static = new static(
+            Name::fromString($arr['name']),
+            Geometry::fromArray($arr['geometry']),
+            AffectedLayers::fromArray($arr['affected_layers']),
+            Metadata::fromArray($arr['metadata'])
+        );
+
+        $static->id = BoundaryId::fromString($arr['id']);
+        $static->observationPoints = ObservationPointCollection::fromArray($arr['observation_points']);
+        return $static;
+    }
+
+    protected function __construct(Name $name, Geometry $geometry, AffectedLayers $affectedLayers, Metadata $metadata)
+    {
+        $this->id = BoundaryId::fromString($name->slugified());
         $this->name = $name;
         $this->geometry = $geometry;
         $this->affectedLayers = $affectedLayers;
@@ -115,14 +128,14 @@ class ModflowBoundary
         return $this->affectedLayers;
     }
 
-    public function boundaryId(): BoundaryId
-    {
-        return $this->boundaryId;
-    }
-
     public function geometry(): Geometry
     {
         return $this->geometry;
+    }
+
+    public function boundaryId(): BoundaryId
+    {
+        return $this->id;
     }
 
     public function name(): Name
@@ -144,11 +157,16 @@ class ModflowBoundary
         return $this->observationPoints;
     }
 
-    public function dateTimeValues(ObservationPointId $observationPointId): DateTimeValuesCollection
+    public function dateTimeValues(ObservationPointId $id): DateTimeValuesCollection
     {
         /** @var ObservationPoint $observationPoint */
-        $observationPoint = $this->observationPoints[$observationPointId->toString()];
+        $observationPoint = $this->observationPoints->get($id);
         return $observationPoint->dateTimeValues();
+    }
+
+    public function getDateTimes(): array
+    {
+        return $this->observationPoints()->getDateTimes();
     }
 
     public function type(): BoundaryType
@@ -161,14 +179,27 @@ class ModflowBoundary
         return Cardinality::fromString($this::CARDINALITY);
     }
 
-    protected function hasObservationPoint(ObservationPointId $observationPointId): bool
+    public function toArray(): array
     {
-        return $this->observationPoints->has($observationPointId);
+        return array(
+            'id' => $this->boundaryId()->toString(),
+            'type' => $this->type()->toString(),
+            'name' => $this->name()->toString(),
+            'geometry' => $this->geometry()->toArray(),
+            'affected_layers' => $this->affectedLayers()->toArray(),
+            'metadata' => $this->metadata()->toArray(),
+            'observation_points' => $this->observationPoints()->toArray()
+        );
     }
 
-    protected function addDateTimeValue(DateTimeValue $dateTimeValue, ObservationPointId $observationPointId)
+    protected function hasObservationPoint(ObservationPointId $id): bool
     {
-        $observationPoint = $this->observationPoints()->get($observationPointId);
+        return $this->observationPoints->has($id);
+    }
+
+    protected function addDateTimeValue(DateTimeValue $dateTimeValue, ObservationPointId $id)
+    {
+        $observationPoint = $this->observationPoints()->get($id);
         $observationPoint->addDateTimeValue($dateTimeValue);
         return $this;
     }

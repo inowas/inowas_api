@@ -5,7 +5,6 @@ namespace Inowas\Common\Boundaries;
 
 use Inowas\Common\Geometry\Geometry;
 use Inowas\Common\Grid\AffectedLayers;
-use Inowas\Common\Id\BoundaryId;
 use Inowas\Common\Modflow\Name;
 use Inowas\ModflowBundle\Exception\InvalidArgumentException;
 
@@ -13,7 +12,6 @@ class BoundaryFactory
 {
     /** @noinspection MoreThanThreeArgumentsInspection
      * @param BoundaryType $type
-     * @param BoundaryId $boundaryId
      * @param Name $name
      * @param Geometry $geometry
      * @param AffectedLayers $affectedLayers
@@ -23,18 +21,15 @@ class BoundaryFactory
      */
     public static function create(
         BoundaryType $type,
-        BoundaryId $boundaryId,
         Name $name,
         Geometry $geometry,
         AffectedLayers $affectedLayers,
         Metadata $metadata
     ): ModflowBoundary
     {
-
         switch ($type->toString()) {
             case BoundaryType::CONSTANT_HEAD:
                 return ConstantHeadBoundary::createWithParams(
-                    $boundaryId,
                     $name,
                     $geometry,
                     $affectedLayers,
@@ -44,7 +39,6 @@ class BoundaryFactory
 
             case BoundaryType::GENERAL_HEAD:
                 return GeneralHeadBoundary::createWithParams(
-                    $boundaryId,
                     $name,
                     $geometry,
                     $affectedLayers,
@@ -54,7 +48,6 @@ class BoundaryFactory
 
             case BoundaryType::RECHARGE:
                 return RechargeBoundary::createWithParams(
-                    $boundaryId,
                     $name,
                     $geometry,
                     $affectedLayers,
@@ -64,7 +57,6 @@ class BoundaryFactory
 
             case BoundaryType::RIVER:
                 return RiverBoundary::createWithParams(
-                    $boundaryId,
                     $name,
                     $geometry,
                     $affectedLayers,
@@ -74,12 +66,59 @@ class BoundaryFactory
 
             case BoundaryType::WELL:
                 return WellBoundary::createWithParams(
-                    $boundaryId,
                     $name,
                     $geometry,
                     $affectedLayers,
                     $metadata
                 );
+                break;
+        }
+
+        throw InvalidArgumentException::withMessage(
+            sprintf('BoundaryType %s not known', $type->toString())
+        );
+    }
+
+    public static function createFromSerialized(string $string): ModflowBoundary
+    {
+        return unserialize(base64_decode($string), [
+            ModflowBoundary::class,
+            ConstantHeadBoundary::class,
+            GeneralHeadBoundary::class,
+            RechargeBoundary::class,
+            RiverBoundary::class,
+            WellBoundary::class
+        ]);
+    }
+
+    public static function serialize(ModflowBoundary $boundary): string
+    {
+        return base64_encode(serialize($boundary));
+    }
+
+    public static function createFromArray(array $arr): ModflowBoundary
+    {
+        $type = BoundaryType::fromString($arr['type']);
+
+        switch ($type->toString()) {
+            case BoundaryType::CONSTANT_HEAD:
+                return ConstantHeadBoundary::fromArray($arr);
+                break;
+
+            case BoundaryType::GENERAL_HEAD:
+                return GeneralHeadBoundary::fromArray($arr);
+                break;
+
+            case BoundaryType::RECHARGE:
+                return RechargeBoundary::fromArray($arr);
+                break;
+
+            case BoundaryType::RIVER:
+                return RiverBoundary::fromArray($arr);
+                break;
+
+            case BoundaryType::WELL:
+                return WellBoundary::fromArray($arr);
                 break;
         }
 

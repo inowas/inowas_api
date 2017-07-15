@@ -4,35 +4,28 @@ declare(strict_types=1);
 
 namespace Inowas\Common\Id;
 
-use Ramsey\Uuid\Uuid;
-
-class ObservationPointId implements IdInterface
+class ObservationPointId
 {
-    /** @var  Uuid */
-    private $uuid;
+    /** @var int */
+    private $id;
 
-    public static function generate()
+    public static function fromInt(int $id): ObservationPointId
     {
-        return new self(Uuid::uuid4());
+        return new self($id);
     }
 
-    public static function fromString(string $id)
+    private function __construct(int $id)
     {
-        return new self(Uuid::fromString($id));
+        $this->id = $id;
     }
 
-    private function __construct(Uuid $uuid)
+    public function toInt(): int
     {
-        $this->uuid = $uuid;
+        return $this->id;
     }
 
-    public function toString(): string
+    public function sameValueAs(ObservationPointId $other): bool
     {
-        return $this->uuid->toString();
-    }
-
-    public function sameValueAs(IdInterface $other): bool
-    {
-        return $this->toString() === $other->toString();
+        return $this->toInt() === $other->toInt();
     }
 }

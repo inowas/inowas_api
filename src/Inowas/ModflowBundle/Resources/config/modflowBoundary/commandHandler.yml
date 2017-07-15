@@ -34,14 +34,14 @@ services:
         arguments:
           - '@modflow_model_list'
           - '@modflow_boundary_list'
-          - '@inowas.modflowboundary.boundary_manager'
+          - '@inowas.modflowmodel.boundary_manager'
 
     inowas.modflowboundary.update_boundary_affected_layers_handler:
         class: Inowas\ModflowBoundary\Model\Handler\UpdateBoundaryActiveCellsHandler
         arguments:
           - '@modflow_model_list'
           - '@modflow_boundary_list'
-          - '@inowas.modflowboundary.boundary_manager'
+          - '@inowas.modflowmodel.boundary_manager'
 
     inowas.modflowboundary.update_boundary_geometry_handler:
         class: Inowas\ModflowBoundary\Model\Handler\UpdateBoundaryGeometryHandler
