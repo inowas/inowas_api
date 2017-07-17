@@ -2,6 +2,7 @@
 
 namespace Inowas\ModflowModel\Infrastructure\ProcessManager;
 
+use Inowas\Common\Projection\AbstractDoctrineConnectionProjector;
 use Inowas\ModflowModel\Model\Command\UpdateCalculationId;
 use Inowas\ModflowModel\Model\Event\FlowPackageWasChanged;
 use Inowas\ModflowModel\Model\Event\LengthUnitWasUpdated;
@@ -12,6 +13,7 @@ use Inowas\ModflowModel\Model\Event\SoilModelWasChanged;
 use Inowas\ModflowModel\Model\Event\StressPeriodsWereUpdated;
 use Inowas\ModflowModel\Model\Event\TimeUnitWasUpdated;
 use Inowas\ModflowModel\Service\ModflowPackagesManager;
+use Prooph\Common\Messaging\DomainEvent;
 use Prooph\ServiceBus\CommandBus;
 
 class ModflowPackagesProcessManager
@@ -82,5 +84,22 @@ class ModflowPackagesProcessManager
         $packages->updatePackageParameter($event->packageName()->toString(), $event->parameterName()->toString(), $event->parameterData());
         $calculationId = $this->packagesManager->savePackages($packages);
         $this->commandBus->dispatch(UpdateCalculationId::withId($event->modelId(), $calculationId));
+    }
+    public function onEvent(DomainEvent $e): void
+    {
+        $handler = $this->determineEventMethodFor($e);
+        if (! method_exists($this, $handler)) {
+            throw new \RuntimeException(sprintf(
+                'Missing event method %s for projector %s',
+                $handler,
+                get_class($this)
+            ));
+        }
+        $this->{$handler}($e);
+    }
+
+    protected function determineEventMethodFor(DomainEvent $e)
+    {
+        return 'on' . implode(array_slice(explode('\\', get_class($e)), -1));
     }
 }

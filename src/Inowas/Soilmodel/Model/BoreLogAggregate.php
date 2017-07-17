@@ -15,6 +15,7 @@ use Inowas\Soilmodel\Model\Event\BoreLogLocationWasChanged;
 use Inowas\Soilmodel\Model\Event\BoreLogNameWasChanged;
 use Inowas\Soilmodel\Model\Event\BoreLogWasCreated;
 use Inowas\Soilmodel\Model\Event\BoreLogWasDeleted;
+use Prooph\EventSourcing\AggregateChanged;
 use Prooph\EventSourcing\AggregateRoot;
 
 class BoreLogAggregate extends AggregateRoot
@@ -148,5 +149,23 @@ class BoreLogAggregate extends AggregateRoot
     protected function aggregateId(): string
     {
         return $this->boreLogId->toString();
+    }
+
+    protected function apply(AggregateChanged $e): void
+    {
+        $handler = $this->determineEventHandlerMethodFor($e);
+        if (! method_exists($this, $handler)) {
+            throw new \RuntimeException(sprintf(
+                'Missing event handler method %s for aggregate root %s',
+                $handler,
+                get_class($this)
+            ));
+        }
+        $this->{$handler}($e);
+    }
+
+    protected function determineEventHandlerMethodFor(AggregateChanged $e)
+    {
+        return 'when' . implode(array_slice(explode('\\', get_class($e)), -1));
     }
 }

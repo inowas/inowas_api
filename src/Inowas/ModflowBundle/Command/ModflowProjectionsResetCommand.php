@@ -6,7 +6,7 @@ namespace Inowas\ModflowBundle\Command;
 
 use Inowas\Common\Id\UserId;
 use Inowas\Common\Projection\ProjectionInterface;
-use Prooph\EventStore\Stream\StreamName;
+use Prooph\EventStore\StreamName;
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -46,15 +46,20 @@ class ModflowProjectionsResetCommand extends ContainerAwareCommand
         }
 
         $eventBus = $this->getContainer()->get('prooph_service_bus.modflow_event_bus');
-        $eventIterator = $this->getContainer()
-            ->get('prooph_event_store.modflow_model_store')
-            ->replay([new StreamName('event_stream')]);
-        $eventIterator->rewind();
+        $eventStore = $this->getContainer()->get('prooph_event_store');
 
-        while ($eventIterator->valid()) {
-            $value = $eventIterator->current();
-            $eventBus->dispatch($value);
-            $eventIterator->next();
+        $config = $this->getContainer()->getParameter('prooph_event_store_repositories');
+
+        foreach ($config as $repo) {
+
+            $eventIterator = $eventStore->load(new StreamName($repo['stream_name']));
+            $eventIterator->rewind();
+
+            while ($eventIterator->valid()) {
+                $value = $eventIterator->current();
+                $eventBus->dispatch($value);
+                $eventIterator->next();
+            }
         }
     }
 }

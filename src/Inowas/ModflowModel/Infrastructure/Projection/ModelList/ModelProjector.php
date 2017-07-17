@@ -111,7 +111,6 @@ class ModelProjector extends AbstractDoctrineConnectionProjector
 
     public function onModflowModelWasCreated(ModflowModelWasCreated $event): void
     {
-
         $defaultTimeUnit = TimeUnit::fromInt(TimeUnit::DAYS);
         $defaultLengthUnit = LengthUnit::fromInt(LengthUnit::METERS);
 

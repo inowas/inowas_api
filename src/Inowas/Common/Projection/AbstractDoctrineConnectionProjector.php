@@ -7,6 +7,8 @@ namespace Inowas\Common\Projection;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Exception\TableNotFoundException;
 use Doctrine\DBAL\Schema\Schema;
+use Prooph\Common\Messaging\DomainEvent;
+use Prooph\Common\Messaging\DomainMessage;
 
 abstract class AbstractDoctrineConnectionProjector implements ProjectionInterface
 {
@@ -77,5 +79,23 @@ abstract class AbstractDoctrineConnectionProjector implements ProjectionInterfac
     protected function addSchema(Schema $schema): void
     {
         $this->schemas[] = $schema;
+    }
+
+    public function onEvent(DomainEvent $e): void
+    {
+        $handler = $this->determineEventMethodFor($e);
+        if (! method_exists($this, $handler)) {
+            throw new \RuntimeException(sprintf(
+                'Missing event method %s for projector %s',
+                $handler,
+                get_class($this)
+            ));
+        }
+        $this->{$handler}($e);
+    }
+
+    protected function determineEventMethodFor(DomainEvent $e)
+    {
+        return 'on' . implode(array_slice(explode('\\', get_class($e)), -1));
     }
 }

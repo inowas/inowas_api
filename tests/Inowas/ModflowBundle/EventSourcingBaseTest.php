@@ -118,7 +118,7 @@ abstract class EventSourcingBaseTest extends WebTestCase
         $this->connection = static::$kernel->getContainer()->get('doctrine.dbal.default_connection');
         $this->commandBus = static::$kernel->getContainer()->get('prooph_service_bus.modflow_command_bus');
         $this->eventBus = static::$kernel->getContainer()->get('prooph_service_bus.modflow_event_bus');
-        $this->eventStore = static::$kernel->getContainer()->get('prooph_event_store.modflow_model_store');
+        $this->eventStore = static::$kernel->getContainer()->get('prooph_event_store');
     }
 
     /* HELPERS */
