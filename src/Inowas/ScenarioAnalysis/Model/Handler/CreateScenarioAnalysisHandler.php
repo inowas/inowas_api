@@ -29,6 +29,6 @@ final class CreateScenarioAnalysisHandler
             $command->description()
         );
 
-        $this->scenarioAnalysisList->add($scenarioAnalysis);
+        $this->scenarioAnalysisList->save($scenarioAnalysis);
     }
 }

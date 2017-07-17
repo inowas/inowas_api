@@ -48,6 +48,7 @@ final class UpdateActiveCellsHandler
 
             if (! $currentActiveCells->sameAs($command->activeCells())){
                 $modflowModel->updateAreaActiveCells($command->userId(), $command->activeCells());
+                $this->modelList->save($modflowModel);
             }
 
             return;
@@ -56,6 +57,7 @@ final class UpdateActiveCellsHandler
         $currentActiveCells = $this->modelManager->getBoundaryActiveCells($command->modelId(), $command->boundaryId());
         if (! $currentActiveCells->sameAs($command->activeCells())) {
             $modflowModel->updateBoundaryActiveCells($command->userId(), $command->boundaryId(), $command->activeCells());
+            $this->modelList->save($modflowModel);
         }
     }
 }

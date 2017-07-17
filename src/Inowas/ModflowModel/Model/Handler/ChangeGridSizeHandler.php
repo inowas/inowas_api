@@ -47,6 +47,7 @@ final class ChangeGridSizeHandler
 
         if (! $gridSize->sameAs($command->gridSize())){
             $modflowModel->changeGridSize($command->userId(), $command->gridSize());
+            $this->modelList->save($modflowModel);
         }
     }
 }

@@ -12,7 +12,7 @@ use Prooph\EventSourcing\Aggregate\AggregateRepository;
 class EventStoreScenarioAnalysisList extends AggregateRepository implements ScenarioAnalysisList
 {
 
-    public function add(ScenarioAnalysisAggregate $scenarioAnalysis)
+    public function save(ScenarioAnalysisAggregate $scenarioAnalysis)
     {
         $this->saveAggregateRoot($scenarioAnalysis);
     }

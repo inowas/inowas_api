@@ -45,6 +45,7 @@ final class ChangeSoilmodelIdHandler
         $currentSoilmodelId = $this->modelFinder->getSoilmodelIdByModelId($command->modflowModelId());
         if (! $currentSoilmodelId->sameValueAs($command->soilModelId())) {
             $modflowModel->changeSoilmodelId($command->userId(), $command->soilModelId());
+            $this->modelList->save($modflowModel);
         }
     }
 }

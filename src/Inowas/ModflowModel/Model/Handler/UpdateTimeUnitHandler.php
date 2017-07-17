@@ -47,6 +47,7 @@ final class UpdateTimeUnitHandler
 
         if (! $currentTimeUnit->sameAs($command->timeUnit())) {
             $modflowModel->updateTimeUnit($command->userId(), $command->timeUnit());
+            $this->modelList->save($modflowModel);
         }
     }
 }

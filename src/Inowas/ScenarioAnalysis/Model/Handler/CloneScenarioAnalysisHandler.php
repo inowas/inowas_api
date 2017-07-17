@@ -48,6 +48,6 @@ final class CloneScenarioAnalysisHandler
             $scenarioAnalysis
         );
 
-        $this->scenarioAnalysisList->add($scenarioAnalysis);
+        $this->scenarioAnalysisList->save($scenarioAnalysis);
     }
 }

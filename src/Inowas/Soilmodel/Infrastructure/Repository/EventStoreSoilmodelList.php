@@ -12,7 +12,7 @@ use Prooph\EventSourcing\Aggregate\AggregateRepository;
 class EventStoreSoilmodelList extends AggregateRepository implements SoilmodelList
 {
 
-    public function add(SoilmodelAggregate $soilmodelAggregate)
+    public function save(SoilmodelAggregate $soilmodelAggregate)
     {
         $this->saveAggregateRoot($soilmodelAggregate);
     }

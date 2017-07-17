@@ -38,5 +38,6 @@ final class ChangeFlowPackageHandler
         }
 
         $modflowModel->changeFlowPackage($command->userId(), $command->packageName());
+        $this->modelList->save($modflowModel);
     }
 }

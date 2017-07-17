@@ -45,5 +45,7 @@ final class CalculateStressperiodsHandler
         }
 
         $modflowModel->updateStressPeriods($command->userId(), $stressperiods);
+
+        $this->modelList->save($modflowModel);
     }
 }

@@ -46,6 +46,7 @@ final class ChangeNameHandler
         $modelName = $this->modelFinder->getModelNameByModelId($command->modflowModelId());
         if (! $modelName->sameAs($command->name())) {
             $modflowModel->changeName($command->userId(), $command->name());
+            $this->modelList->save($modflowModel);
         }
     }
 }

@@ -48,6 +48,7 @@ final class UpdateAreaGeometryHandler
 
         if (! $polygon->sameAs($command->geometry())){
             $modflowModel->updateAreaGeometry($command->userId(), $command->geometry());
+            $this->modelList->save($modflowModel);
         }
     }
 }

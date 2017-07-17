@@ -38,5 +38,7 @@ final class AddBoundaryHandler
         }
 
         $modflowModel->addBoundary($command->userId(), $command->boundary());
+
+        $this->modelList->save($modflowModel);
     }
 }

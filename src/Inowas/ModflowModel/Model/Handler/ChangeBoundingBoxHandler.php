@@ -56,6 +56,7 @@ final class ChangeBoundingBoxHandler
         if (! $command->boundingBox()->sameAs($currentBoundingBox)){
             $boundingBox = $this->geoTools->projectBoundingBox($command->boundingBox(), Srid::fromInt(4326));
             $modflowModel->changeBoundingBox($command->userId(), $boundingBox);
+            $this->modelList->save($modflowModel);
         }
     }
 }

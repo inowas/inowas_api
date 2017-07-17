@@ -29,5 +29,6 @@ final class UpdateCalculationIdHandler
         }
 
         $modflowModel->updateCalculationId($command->calculationId());
+        $this->modelList->save($modflowModel);
     }
 }

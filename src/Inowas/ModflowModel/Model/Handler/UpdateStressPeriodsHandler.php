@@ -38,5 +38,6 @@ final class UpdateStressPeriodsHandler
         }
 
         $modflowModel->updateStressPeriods($command->userId(), $command->stressPeriods());
+        $this->modelList->save($modflowModel);
     }
 }

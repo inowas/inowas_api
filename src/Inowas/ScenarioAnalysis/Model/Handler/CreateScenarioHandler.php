@@ -53,5 +53,7 @@ final class CreateScenarioHandler
             $scenarioName,
             $descriptionName
         );
+
+        $this->scenarioAnalysisList->save($scenarioAnalysis);
     }
 }

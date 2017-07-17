@@ -47,6 +47,7 @@ final class UpdateLengthUnitHandler
 
         if (! $currentLengthunit->sameAs($command->lengthUnit())) {
             $modflowModel->updateLengthUnit($command->userId(), $command->lengthUnit());
+            $this->modelList->save($modflowModel);
         }
     }
 }

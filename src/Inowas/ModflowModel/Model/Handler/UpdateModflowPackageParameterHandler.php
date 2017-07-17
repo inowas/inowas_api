@@ -39,5 +39,6 @@ final class UpdateModflowPackageParameterHandler
 
 
         $modflowModel->updateModflowPackageParameter($command->userId(), $command->packageName(), $command->parameterName(), $command->data());
+        $this->modelList->save($modflowModel);
     }
 }

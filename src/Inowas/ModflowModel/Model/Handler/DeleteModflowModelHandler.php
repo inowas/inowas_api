@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Inowas\ModflowModel\Model\Handler;
 
 use Inowas\ModflowBundle\Exception\AccessDeniedException;
-use Inowas\ModflowBoundary\Model\Command\DeleteModflowModel;
+use Inowas\ModflowModel\Model\Command\DeleteModflowModel;
 use Inowas\ModflowModel\Model\Exception\ModflowModelNotFoundException;
 use Inowas\ModflowModel\Model\ModflowModelList;
 use Inowas\ModflowModel\Model\ModflowModelAggregate;
@@ -38,6 +38,6 @@ final class DeleteModflowModelHandler
         }
 
         $modflowModel->delete($command->userId());
-
+        $this->modelList->save($modflowModel);
     }
 }

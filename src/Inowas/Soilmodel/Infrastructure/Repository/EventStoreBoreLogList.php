@@ -12,7 +12,7 @@ use Prooph\EventSourcing\Aggregate\AggregateRepository;
 class EventStoreBoreLogList extends AggregateRepository implements BoreLogList
 {
 
-    public function add(BoreLogAggregate $boreLogAggregate)
+    public function save(BoreLogAggregate $boreLogAggregate)
     {
         $this->saveAggregateRoot($boreLogAggregate);
     }

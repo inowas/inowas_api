@@ -9,6 +9,7 @@ use Inowas\Common\Soilmodel\BoreLogId;
 use Inowas\Common\Soilmodel\BoreLogLocation;
 use Inowas\Common\Soilmodel\BoreLogName;
 use Inowas\Common\Soilmodel\Horizon;
+use Inowas\Common\Soilmodel\HorizonId;
 use Inowas\Soilmodel\Model\Event\BoreLogHorizonWasAdded;
 use Inowas\Soilmodel\Model\Event\BoreLogHorizonWasRemoved;
 use Inowas\Soilmodel\Model\Event\BoreLogLocationWasChanged;
@@ -75,11 +76,11 @@ class BoreLogAggregate extends AggregateRoot
         $this->recordThat(BoreLogHorizonWasAdded::byUserWithHorizon($userId, $this->boreLogId, $horizon));
     }
 
-    public function removeHorizon(UserId $userId, Horizon $horizon): void
+    public function removeHorizon(UserId $userId, HorizonId $horizonId): void
     {
-        if (array_key_exists($horizon->id()->toString(), $this->horizons)){
-            unset($this->horizons[$horizon->id()->toString()]);
-            $this->recordThat(BoreLogHorizonWasRemoved::byUserWithHorizonId($userId, $this->boreLogId, $horizon->id()));
+        if (array_key_exists($horizonId->toString(), $this->horizons)){
+            unset($this->horizons[$horizonId->toString()]);
+            $this->recordThat(BoreLogHorizonWasRemoved::byUserWithHorizonId($userId, $this->boreLogId, $horizonId));
         }
     }
 

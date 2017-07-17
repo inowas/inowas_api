@@ -42,6 +42,6 @@ final class CloneModflowModelHandler
             $modflowModel
         );
 
-        $this->modelList->add($newModel);
+        $this->modelList->save($newModel);
     }
 }

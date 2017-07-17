@@ -31,5 +31,6 @@ final class UpdateCalculationResultsHandler
         }
 
         $modflowModel->calculationWasFinished($response);
+        $this->modelList->save($modflowModel);
     }
 }

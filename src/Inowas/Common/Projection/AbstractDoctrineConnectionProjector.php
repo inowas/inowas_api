@@ -8,7 +8,6 @@ use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Exception\TableNotFoundException;
 use Doctrine\DBAL\Schema\Schema;
 use Prooph\Common\Messaging\DomainEvent;
-use Prooph\Common\Messaging\DomainMessage;
 
 abstract class AbstractDoctrineConnectionProjector implements ProjectionInterface
 {

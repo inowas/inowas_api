@@ -43,6 +43,6 @@ final class CreateModflowModelHandler
         $modflowModel->updateTimeUnit($command->userId(), $command->timeUnit());
         $modflowModel->updateLengthUnit($command->userId(), $command->lengthUnit());
 
-        $this->modelList->add($modflowModel);
+        $this->modelList->save($modflowModel);
     }
 }

@@ -15,7 +15,7 @@ class EventStoreModflowModelList extends AggregateRepository implements ModflowM
      * @param ModflowModelAggregate $model
      * @return void
      */
-    public function add(ModflowModelAggregate $model): void
+    public function save(ModflowModelAggregate $model): void
     {
         $this->saveAggregateRoot($model);
     }

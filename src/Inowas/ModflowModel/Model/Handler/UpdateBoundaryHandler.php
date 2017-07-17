@@ -38,5 +38,6 @@ final class UpdateBoundaryHandler
         }
 
         $modflowModel->updateBoundary($command->userId(), $command->boundaryId(), $command->boundary());
+        $this->modelList->save($modflowModel);
     }
 }

@@ -38,5 +38,6 @@ final class RemoveBoundaryHandler
         }
 
         $modflowModel->removeBoundary($command->userId(), $command->boundaryId());
+        $this->modelList->save($modflowModel);
     }
 }

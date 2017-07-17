@@ -44,9 +44,10 @@ final class ChangeDescriptionHandler
         }
 
         $modelDescription = $this->modelFinder->getModelDescriptionByModelId($command->modflowModelId());
+
         if (! $modelDescription->sameAs($command->description())){
             $modflowModel->changeDescription($command->userId(), $command->description());
+            $this->modelList->save($modflowModel);
         }
-
     }
 }
