@@ -17,15 +17,16 @@ use Inowas\Common\Geometry\Srid;
 use Inowas\Common\Grid\AffectedLayers;
 use Inowas\Common\Grid\LayerNumber;
 use Inowas\Common\Geometry\Geometry;
-use Inowas\Common\Id\BoundaryId;
 use Inowas\Common\Id\ObservationPointId;
 use Inowas\Common\Modflow\LengthUnit;
 use Inowas\Common\Modflow\Description;
 use Inowas\Common\Modflow\ParameterName;
+use Inowas\ModflowModel\Model\Command\AddBoundary;
 use Inowas\ModflowModel\Model\Command\CalculateModflowModel;
 use Inowas\ModflowModel\Model\Command\CalculateStressPeriods;
 use Inowas\ModflowModel\Model\Command\ChangeBoundingBox;
 use Inowas\ModflowModel\Model\Command\ChangeFlowPackage;
+use Inowas\ModflowModel\Model\Command\UpdateBoundary;
 use Inowas\ModflowModel\Model\Command\UpdateModflowPackageParameter;
 use Inowas\ModflowModel\Model\Packages\OcStressPeriod;
 use Inowas\ModflowModel\Model\Packages\OcStressPeriodData;
@@ -39,12 +40,10 @@ use Inowas\Common\Soilmodel\SpecificStorage;
 use Inowas\Common\Soilmodel\SpecificYield;
 use Inowas\Common\Soilmodel\TopElevation;
 use Inowas\Common\Soilmodel\VerticalHydraulicConductivity;
-use Inowas\ModflowBoundary\Model\Command\AddBoundary;
 use Inowas\ModflowModel\Model\Command\CreateModflowModel;
 use Inowas\Common\Grid\BoundingBox;
 use Inowas\Common\Grid\GridSize;
 use Inowas\Common\Id\ModflowId;
-use Inowas\ModflowBoundary\Model\Command\UpdateBoundaryGeometry;
 use Inowas\Common\Modflow\Name;
 use Inowas\Common\Id\UserId;
 use Inowas\Common\Boundaries\WellBoundary;
@@ -441,7 +440,7 @@ class Hanoi extends LoadScenarioBase
             }
 
             echo sprintf('Add Well %s to BaseModel'."\r\n", $boundaryName->toString());
-            $commandBus->dispatch(AddBoundary::to($modelId, $ownerId, $wellBoundary));
+            $commandBus->dispatch(AddBoundary::forModflowModel($ownerId, $modelId, $wellBoundary));
         }
 
         /*
@@ -464,8 +463,9 @@ class Hanoi extends LoadScenarioBase
         $header = $this->loadHeaderFromCsv(__DIR__ . '/data/river_stages_basecase.csv');
         $dates = $this->getDates($header);
 
-        foreach ($observationPoints as $op){
-            $observationPoint = ObservationPoint::fromTypeNameAndGeometry(
+        foreach ($observationPoints as $key => $op){
+            $observationPoint = ObservationPoint::fromIdTypeNameAndGeometry(
+                ObservationPointId::fromString('OP'.$key),
                 BoundaryType::fromString(BoundaryType::RIVER),
                 Name::fromString($op['name']),
                 $geoTools->projectPoint(new Point($op['x'], $op['y'], $op['srid']), Srid::fromInt(4326))
@@ -482,7 +482,7 @@ class Hanoi extends LoadScenarioBase
             echo sprintf("Add River-Boundary ObservationPoint %s.\r\n", $observationPoint->name()->toString());
             $river = $river->addObservationPoint($observationPoint);
         }
-        $commandBus->dispatch(AddBoundary::to($modelId, $ownerId, $river));
+        $commandBus->dispatch(AddBoundary::forModflowModel($ownerId, $modelId, $river));
 
         /*
          * Add ConstantHead for the baseScenario
@@ -508,8 +508,9 @@ class Hanoi extends LoadScenarioBase
 
         foreach ($observationPoints as $key => $op){
 
-            $observationPointId = ObservationPointId::fromInt($key);
-            $observationPoint = ObservationPoint::fromTypeNameAndGeometry(
+            $observationPointId = ObservationPointId::fromString($key);
+            $observationPoint = ObservationPoint::fromIdTypeNameAndGeometry(
+                ObservationPointId::fromString('OP'.$key),
                 BoundaryType::fromString(BoundaryType::CONSTANT_HEAD),
                 Name::fromString($op['name']),
                 $geoTools->projectPoint(new Point($op['x'], $op['y'], $op['srid']), Srid::fromInt(4326))
@@ -529,7 +530,7 @@ class Hanoi extends LoadScenarioBase
         }
 
         echo sprintf("Add Chd-Boundary %s.\r\n", $boundaryName->toString());
-        $commandBus->dispatch(AddBoundary::to($modelId, $ownerId, $chdBoundary));
+        $commandBus->dispatch(AddBoundary::forModflowModel($ownerId, $modelId, $chdBoundary));
 
         echo sprintf("Autodetect Stressperiods.\r\n");
         $start = DateTime::fromDateTime(new \DateTime('2005-01-01'));
@@ -591,14 +592,16 @@ class Hanoi extends LoadScenarioBase
             'H9_1'  => $geoTools->projectPoint(new Point(584649, 2331729, 32648), Srid::fromInt(4326))
         );
 
-        foreach ($rbfRelocatedWellNamesAndGeometry as $name => $geometry) {
-            /** @var BoundaryId[] $boundaryIds */
-            $boundaryIds = $boundariesFinder->getBoundaryIdsByName($scenarioId, Name::fromString($name));
-            if (count($boundaryIds) === 0){continue;}
-            echo sprintf("Move Well %s.\r\n", $name);
-            $boundaryId = $boundaryIds[0];
-            $geometry = Geometry::fromPoint($geometry);
-            $commandBus->dispatch(UpdateBoundaryGeometry::byUser($ownerId, $scenarioId, $boundaryId, $geometry));
+        $boundaries = $boundariesFinder->findWellBoundaries($scenarioId);
+        /** @var WellBoundary $boundary */
+        foreach ($boundaries as $boundary) {
+            $key = $boundary->name()->toString();
+            if (array_key_exists($key, $rbfRelocatedWellNamesAndGeometry)) {
+                $geometry = Geometry::fromPoint($rbfRelocatedWellNamesAndGeometry[$key]);
+                $boundary = $boundary->updateGeometry($geometry);
+                echo sprintf("Move Well %s.\r\n", $boundary->name()->toString());
+                $commandBus->dispatch(UpdateBoundary::forModflowModel($ownerId, $scenarioId, $boundary->boundaryId(), $boundary));
+            }
         }
 
         echo sprintf("CalculateModflowModel.\r\n");
@@ -645,7 +648,7 @@ class Hanoi extends LoadScenarioBase
             $wellBoundary = $wellBoundary->addPumpingRate(WellDateTimeValue::fromParams($start, $wellData['pumpingrate']));
 
             echo sprintf("Add Well %s.\r\n", $wellData['name']);
-            $commandBus->dispatch(AddBoundary::to($scenarioId, $ownerId, $wellBoundary));
+            $commandBus->dispatch(AddBoundary::forModflowModel($ownerId, $scenarioId, $wellBoundary));
         }
 
         echo sprintf("CalculateModflowModel.\r\n");
@@ -678,14 +681,16 @@ class Hanoi extends LoadScenarioBase
             'H8_8'  => $geoTools->projectPoint(new Point(593443, 2321233, 32648), Srid::fromInt(4326)),
             'H9_1'  => $geoTools->projectPoint(new Point(584649, 2331729, 32648), Srid::fromInt(4326))
         );
-        foreach ($rbfRelocatedWellNamesAndGeometry as $name => $geometry) {
-            /** @var BoundaryId[] $boundaryIds */
-            $boundaryIds = $boundariesFinder->getBoundaryIdsByName($scenarioId, Name::fromString($name));
-            if (count($boundaryIds)===0){continue;}
-            echo sprintf("Move Well %s.\r\n", $name);
-            $boundaryId = $boundaryIds[0];
-            $geometry = Geometry::fromPoint($geometry);
-            $commandBus->dispatch(UpdateBoundaryGeometry::byUser($ownerId, $scenarioId, $boundaryId, $geometry));
+        $boundaries = $boundariesFinder->findWellBoundaries($scenarioId);
+        /** @var WellBoundary $boundary */
+        foreach ($boundaries as $boundary) {
+            $key = $boundary->name()->toString();
+            if (array_key_exists($key, $rbfRelocatedWellNamesAndGeometry)) {
+                $geometry = Geometry::fromPoint($rbfRelocatedWellNamesAndGeometry[$key]);
+                $boundary = $boundary->updateGeometry($geometry);
+                echo sprintf("Move Well %s.\r\n", $boundary->name()->toString());
+                $commandBus->dispatch(UpdateBoundary::forModflowModel($ownerId, $scenarioId, $boundary->boundaryId(), $boundary));
+            }
         }
 
         $header = array('name', 'x', 'y', 'srid', 'pumpingrate');
@@ -699,7 +704,7 @@ class Hanoi extends LoadScenarioBase
             );
 
             $wellBoundary = $wellBoundary->addPumpingRate(WellDateTimeValue::fromParams($start, $wellData['pumpingrate']));
-            $commandBus->dispatch(AddBoundary::to($scenarioId, $ownerId, $wellBoundary));
+            $commandBus->dispatch(AddBoundary::forModflowModel($ownerId, $scenarioId, $wellBoundary));
         }
 
         echo sprintf("CalculateModflowModel.\r\n");

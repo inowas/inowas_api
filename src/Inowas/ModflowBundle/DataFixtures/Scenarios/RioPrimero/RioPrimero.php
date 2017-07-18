@@ -22,7 +22,6 @@ use Inowas\Common\Grid\AffectedLayers;
 use Inowas\Common\Grid\BoundingBox;
 use Inowas\Common\Grid\GridSize;
 use Inowas\Common\Grid\LayerNumber;
-use Inowas\Common\Id\BoundaryId;
 use Inowas\Common\Id\ModflowId;
 use Inowas\Common\Id\ObservationPointId;
 use Inowas\Common\Id\UserId;
@@ -30,6 +29,7 @@ use Inowas\Common\Modflow\Laytyp;
 use Inowas\Common\Modflow\LengthUnit;
 use Inowas\Common\Modflow\Description;
 use Inowas\Common\Modflow\Name;
+use Inowas\ModflowModel\Model\Command\AddBoundary;
 use Inowas\ModflowModel\Model\Packages\OcStressPeriod;
 use Inowas\ModflowModel\Model\Packages\OcStressPeriodData;
 use Inowas\Common\Modflow\PackageName;
@@ -53,7 +53,6 @@ use Inowas\Common\Soilmodel\SpecificYield;
 use Inowas\Common\Soilmodel\Storage;
 use Inowas\Common\Soilmodel\TopElevation;
 use Inowas\Common\Soilmodel\VerticalHydraulicConductivity;
-use Inowas\ModflowBoundary\Model\Command\AddBoundary;
 use Inowas\ModflowModel\Model\Command\CalculateModflowModel;
 use Inowas\ModflowModel\Model\Command\ChangeBoundingBox;
 use Inowas\ModflowModel\Model\Command\ChangeFlowPackage;
@@ -214,7 +213,6 @@ class RioPrimero extends LoadScenarioBase
          * GHB1
          */
         $ghb = GeneralHeadBoundary::createWithParams(
-            BoundaryId::generate(),
             Name::fromString('General Head Boundary 1'),
             Geometry::fromLineString(new LineString(array(
                 array($boundingBox->xMin(), $boundingBox->yMin()),
@@ -224,31 +222,30 @@ class RioPrimero extends LoadScenarioBase
             Metadata::create()
         );
 
-        $observationPointId = ObservationPointId::generate();
-        $observationPoint = ObservationPoint::fromTypeNameAndGeometry(
-            $observationPointId,
+        $observationPoint = ObservationPoint::fromIdTypeNameAndGeometry(
+            ObservationPointId::fromString('OP1'),
             BoundaryType::fromString(BoundaryType::GENERAL_HEAD),
             Name::fromString('OP 1'),
             new Point($boundingBox->xMax(), $boundingBox->yMin(), 4326)
         );
 
+        /** @var GeneralHeadBoundary $ghb */
         $ghb->addObservationPoint($observationPoint);
         $ghb->addGeneralHeadValueToObservationPoint(
-            $observationPointId,
+            ObservationPointId::fromString('OP1'),
             GeneralHeadDateTimeValue::fromParams(
-                new \DateTimeImmutable('2015-01-01'),
+                DateTime::fromDateTimeImmutable(new \DateTimeImmutable('2015-01-01')),
                 450,
                 100
             )
         );
 
-        $commandBus->dispatch(AddBoundary::to($baseModelId, $ownerId, $ghb));
+        $commandBus->dispatch(AddBoundary::forModflowModel($ownerId, $baseModelId, $ghb));
 
         /*
          * GHB2
          */
         $ghb = GeneralHeadBoundary::createWithParams(
-            BoundaryId::generate(),
             Name::fromString('General Head Boundary 2'),
             Geometry::fromLineString(new LineString(array(
                 array($boundingBox->xMax(), $boundingBox->yMin()),
@@ -258,9 +255,8 @@ class RioPrimero extends LoadScenarioBase
             Metadata::create()
         );
 
-        $observationPointId = ObservationPointId::generate();
-        $observationPoint = ObservationPoint::fromTypeNameAndGeometry(
-            $observationPointId,
+        $observationPoint = ObservationPoint::fromIdTypeNameAndGeometry(
+            ObservationPointId::fromString('OP1'),
             BoundaryType::fromString(BoundaryType::GENERAL_HEAD),
             Name::fromString('OP 1'),
             new Point($boundingBox->xMax(), $boundingBox->yMin(), 4326)
@@ -268,22 +264,21 @@ class RioPrimero extends LoadScenarioBase
 
         $ghb->addObservationPoint($observationPoint);
         $ghb->addGeneralHeadValueToObservationPoint(
-            $observationPointId,
+            ObservationPointId::fromString(0),
             GeneralHeadDateTimeValue::fromParams(
-                new \DateTimeImmutable('2015-01-01'),
+                DateTime::fromDateTimeImmutable(new \DateTimeImmutable('2015-01-01')),
                 440,
                 100
             )
         );
 
-        $commandBus->dispatch(AddBoundary::to($baseModelId, $ownerId, $ghb));
+        $commandBus->dispatch(AddBoundary::forModflowModel($ownerId, $baseModelId, $ghb));
 
         /*
          * Add RiverBoundary
          * RIV
          */
         $riv = RiverBoundary::createWithParams(
-            BoundaryId::generate(),
             Name::fromString('Rio Primero River'),
             Geometry::fromLineString(new LineString(array(
                 array(-63.676586151123,-31.367415770489),
@@ -372,26 +367,27 @@ class RioPrimero extends LoadScenarioBase
             Metadata::create()
         );
 
-        $observationPointId = ObservationPointId::generate();
-        $observationPoint = ObservationPoint::fromTypeNameAndGeometry(
+        $observationPointId = ObservationPointId::fromString('OP1');
+        $observationPoint = ObservationPoint::fromIdTypeNameAndGeometry(
             $observationPointId,
             BoundaryType::fromString(BoundaryType::RIVER),
             Name::fromString('OP 1'),
             new Point(-63.673968315125,-31.366206539217, 4326)
         );
 
+        /** @var RiverBoundary $riv */
         $riv->addObservationPoint($observationPoint);
         $riv->addRiverStageToObservationPoint(
             $observationPointId,
             RiverDateTimeValue::fromParams(
-                new \DateTimeImmutable('2015-01-01'),
+                DateTime::fromDateTimeImmutable(new \DateTimeImmutable('2015-01-01')),
                 446,
                 444,
                 200
             )
         );
 
-        $commandBus->dispatch(AddBoundary::to($baseModelId, $ownerId, $riv));
+        $commandBus->dispatch(AddBoundary::forModflowModel($ownerId, $baseModelId, $riv));
 
         /*
          * Add Wells for the BaseScenario
@@ -415,8 +411,9 @@ class RioPrimero extends LoadScenarioBase
             }
 
             $data = array_combine($header, $data);
+
+            /** @var WellBoundary $wellBoundary */
             $wellBoundary = WellBoundary::createWithParams(
-                BoundaryId::generate(),
                 Name::fromString($data['name']),
                 Geometry::fromPoint($data['point']),
                 AffectedLayers::createWithLayerNumber(LayerNumber::fromInteger($data['layer'])),
@@ -425,7 +422,7 @@ class RioPrimero extends LoadScenarioBase
 
             echo sprintf("Add well with name %s.\r\n", $data['name']);
             $wellBoundary = $wellBoundary->addPumpingRate(WellDateTimeValue::fromParams($data['date'], $data['pumpingRate']));
-            $commandBus->dispatch(AddBoundary::to($baseModelId, $ownerId, $wellBoundary));
+            $commandBus->dispatch(AddBoundary::forModflowModel($ownerId, $baseModelId, $wellBoundary));
         }
 
         /* Create calculation and calculate */
@@ -501,7 +498,6 @@ class RioPrimero extends LoadScenarioBase
 
             $data = array_combine($header, $data);
             $wellBoundary = WellBoundary::createWithParams(
-                BoundaryId::generate(),
                 Name::fromString($data['name']),
                 Geometry::fromPoint($data['point']),
                 AffectedLayers::createWithLayerNumber(LayerNumber::fromInteger($data['layer'])),
@@ -510,7 +506,7 @@ class RioPrimero extends LoadScenarioBase
 
             echo sprintf("Add well with name %s.\r\n", $data['name']);
             $wellBoundary = $wellBoundary->addPumpingRate(WellDateTimeValue::fromParams($data['date'], $data['pumpingRate']));
-            $commandBus->dispatch(AddBoundary::to($scenarioId, $ownerId, $wellBoundary));
+            $commandBus->dispatch(AddBoundary::forModflowModel($ownerId, $scenarioId, $wellBoundary));
         }
 
         $commandBus->dispatch(CalculateModflowModel::forModflowModel($ownerId, $baseModelId));
@@ -551,7 +547,6 @@ class RioPrimero extends LoadScenarioBase
 
             $data = array_combine($header, $data);
             $wellBoundary = WellBoundary::createWithParams(
-                BoundaryId::generate(),
                 Name::fromString($data['name']),
                 Geometry::fromPoint($data['point']),
                 AffectedLayers::createWithLayerNumber(LayerNumber::fromInteger($data['layer'])),
@@ -560,7 +555,7 @@ class RioPrimero extends LoadScenarioBase
 
             echo sprintf("Add well with name %s.\r\n", $data['name']);
             $wellBoundary = $wellBoundary->addPumpingRate(WellDateTimeValue::fromParams($data['date'], $data['pumpingRate']));
-            $commandBus->dispatch(AddBoundary::to($scenarioId, $ownerId, $wellBoundary));
+            $commandBus->dispatch(AddBoundary::forModflowModel($ownerId, $scenarioId, $wellBoundary));
         }
 
         $commandBus->dispatch(CalculateModflowModel::forModflowModel($ownerId, $scenarioId));

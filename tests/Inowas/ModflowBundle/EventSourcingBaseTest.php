@@ -230,12 +230,15 @@ abstract class EventSourcingBaseTest extends WebTestCase
             Metadata::create()
         );
 
-        $observationPointId = ObservationPointId::fromInt(0);
-        $chdBoundary = $chdBoundary->addObservationPoint(ObservationPoint::fromTypeNameAndGeometry(
-            BoundaryType::fromString(BoundaryType::CONSTANT_HEAD),
-            Name::fromString('OP1'),
-            new Point(-63.687336, -31.313615, 4326)
-        ));
+        $observationPointId = ObservationPointId::fromString('OP1');
+        $chdBoundary = $chdBoundary->addObservationPoint(
+            ObservationPoint::fromIdTypeNameAndGeometry(
+                $observationPointId,
+                BoundaryType::fromString(BoundaryType::CONSTANT_HEAD),
+                Name::fromString('OP1'),
+                new Point(-63.687336, -31.313615, 4326)
+            )
+        );
 
         $chdBoundary = $chdBoundary->addConstantHeadToObservationPoint($observationPointId, ConstantHeadDateTimeValue::fromParams(
             DateTime::fromDateTimeImmutable(new \DateTimeImmutable('1.1.2015')),
@@ -259,12 +262,15 @@ abstract class EventSourcingBaseTest extends WebTestCase
             Metadata::create()
         );
 
-        $observationPointId = ObservationPointId::fromInt(0);
-        $ghbBoundary = $ghbBoundary->addObservationPoint(ObservationPoint::fromTypeNameAndGeometry(
-            BoundaryType::fromString(BoundaryType::GENERAL_HEAD),
-            Name::fromString('OP1'),
-            new Point(-63.687336, -31.313615, 4326)
-        ));
+        $observationPointId = ObservationPointId::fromString('OP1');
+        $ghbBoundary = $ghbBoundary->addObservationPoint(
+            ObservationPoint::fromIdTypeNameAndGeometry(
+                $observationPointId,
+                BoundaryType::fromString(BoundaryType::GENERAL_HEAD),
+                Name::fromString('OP1'),
+                new Point(-63.687336, -31.313615, 4326)
+            )
+        );
 
         $ghbBoundary = $ghbBoundary->addGeneralHeadValueToObservationPoint($observationPointId, GeneralHeadDateTimeValue::fromParams(
             DateTime::fromDateTimeImmutable(new \DateTimeImmutable('1.1.2015')),
@@ -396,12 +402,15 @@ abstract class EventSourcingBaseTest extends WebTestCase
             Metadata::create()
         );
 
-        $observationPointId = ObservationPointId::fromInt(0);
-        $riverBoundary = $riverBoundary->addObservationPoint(ObservationPoint::fromTypeNameAndGeometry(
-            BoundaryType::fromString(BoundaryType::RIVER),
-            Name::fromString('OP1'),
-            new Point(-63.67280960083,-31.364704139298, 4326)
-        ));
+        $observationPointId = ObservationPointId::fromString('OP1');
+        $riverBoundary = $riverBoundary->addObservationPoint(
+            ObservationPoint::fromIdTypeNameAndGeometry(
+                $observationPointId,
+                BoundaryType::fromString(BoundaryType::RIVER),
+                Name::fromString('OP1'),
+                new Point(-63.67280960083,-31.364704139298, 4326)
+            )
+        );
 
         /** @var RiverBoundary $riverBoundary */
         $riverBoundary = $riverBoundary->addRiverStageToObservationPoint($observationPointId, RiverDateTimeValue::fromParams(

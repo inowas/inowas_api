@@ -6,26 +6,26 @@ namespace Inowas\Common\Id;
 
 class ObservationPointId
 {
-    /** @var int */
+    /** @var string */
     private $id;
 
-    public static function fromInt(int $id): ObservationPointId
+    public static function fromString(string $id): ObservationPointId
     {
         return new self($id);
     }
 
-    private function __construct(int $id)
+    private function __construct(string $id)
     {
         $this->id = $id;
     }
 
-    public function toInt(): int
+    public function toString(): string
     {
         return $this->id;
     }
 
     public function sameValueAs(ObservationPointId $other): bool
     {
-        return $this->toInt() === $other->toInt();
+        return $this->toString() === $other->toString();
     }
 }

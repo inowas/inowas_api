@@ -164,9 +164,10 @@ class GeoToolsTest extends WebTestCase
             Metadata::create()
         );
 
-        $opId1 = ObservationPointId::fromInt(0);
+        $opId1 = ObservationPointId::fromString('OP1');
         $this->river = $this->river->addObservationPoint(
-            ObservationPoint::fromTypeNameAndGeometry(
+            ObservationPoint::fromIdTypeNameAndGeometry(
+                $opId1,
                 BoundaryType::fromString(BoundaryType::RIVER),
                 Name::fromString('RP1'),
                 new Point(105.78304910628,21.093961475741)
@@ -191,9 +192,10 @@ class GeoToolsTest extends WebTestCase
             DateTime::fromDateTimeImmutable(new \DateTimeImmutable('2015-03-01')), 15, 10, 1520)
         );
 
-        $opId2 = ObservationPointId::fromInt(1);
+        $opId2 = ObservationPointId::fromString('OP2');
         $this->river = $this->river->addObservationPoint(
-            ObservationPoint::fromTypeNameAndGeometry(
+            ObservationPoint::fromIdTypeNameAndGeometry(
+                $opId2,
                 BoundaryType::fromString(BoundaryType::RIVER),
                 Name::fromString('RP28'),
                 new Point(105.88492972479,21.001319007654)
@@ -212,9 +214,10 @@ class GeoToolsTest extends WebTestCase
             DateTime::fromDateTimeImmutable(new \DateTimeImmutable('2015-03-01')), 10, 5, 1020)
         );
 
-        $opId3 = ObservationPointId::fromInt(2);
+        $opId3 = ObservationPointId::fromString('OP3');
         $this->river = $this->river->addObservationPoint(
-            ObservationPoint::fromTypeNameAndGeometry(
+            ObservationPoint::fromIdTypeNameAndGeometry(
+                $opId3,
                 BoundaryType::fromString(BoundaryType::RIVER),
                 Name::fromString('RP39'),
                 new Point(105.87790127463,20.947208016218)
@@ -363,8 +366,9 @@ class GeoToolsTest extends WebTestCase
 
         foreach ($observationPointData as $key => $opd){
 
-            $observationPointId = ObservationPointId::fromInt($key);
-            $observationPoint = ObservationPoint::fromTypeNameAndGeometry(
+            $observationPointId = ObservationPointId::fromString('OP'.$key);
+            $observationPoint = ObservationPoint::fromIdTypeNameAndGeometry(
+                $observationPointId,
                 BoundaryType::fromString(BoundaryType::CONSTANT_HEAD),
                 Name::fromString($opd[0]),
                 $this->geoTools->projectPoint(new Point($opd[1], $opd[2], $opd[3]), Srid::fromInt(4326))
@@ -782,7 +786,8 @@ class GeoToolsTest extends WebTestCase
 
         $observationPoints = ObservationPointCollection::create();
         $observationPoints->add(
-            ObservationPoint::fromTypeNameAndGeometry(
+            ObservationPoint::fromIdTypeNameAndGeometry(
+                ObservationPointId::fromString('OP1'),
                 BoundaryType::fromString(BoundaryType::CONSTANT_HEAD),
                 Name::fromString('OP1'),
                 new Point(105.78, 21.09, 4326)
@@ -790,7 +795,8 @@ class GeoToolsTest extends WebTestCase
         );
 
         $observationPoints->add(
-            ObservationPoint::fromTypeNameAndGeometry(
+            ObservationPoint::fromIdTypeNameAndGeometry(
+                ObservationPointId::fromString('OP2'),
                 BoundaryType::fromString(BoundaryType::CONSTANT_HEAD),
                 Name::fromString('OP2'),
                 new Point(105.82, 21.08, 4326)
@@ -798,7 +804,8 @@ class GeoToolsTest extends WebTestCase
         );
 
         $observationPoints->add(
-            ObservationPoint::fromTypeNameAndGeometry(
+            ObservationPoint::fromIdTypeNameAndGeometry(
+                ObservationPointId::fromString('OP3'),
                 BoundaryType::fromString(BoundaryType::CONSTANT_HEAD),
                 Name::fromString('OP3'),
                 new Point(105.90, 20.99, 4326)
@@ -806,7 +813,8 @@ class GeoToolsTest extends WebTestCase
         );
 
         $observationPoints->add(
-            ObservationPoint::fromTypeNameAndGeometry(
+            ObservationPoint::fromIdTypeNameAndGeometry(
+                ObservationPointId::fromString('OP4'),
                 BoundaryType::fromString(BoundaryType::CONSTANT_HEAD),
                 Name::fromString('OP4'),
                 new Point(105.88, 20.95, 4326)

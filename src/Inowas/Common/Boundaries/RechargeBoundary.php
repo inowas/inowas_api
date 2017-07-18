@@ -18,10 +18,11 @@ class RechargeBoundary extends ModflowBoundary
 
     public function addRecharge(RechargeDateTimeValue $rechargeRate): ModflowBoundary
     {
-        $observationPointId = ObservationPointId::fromInt(0);
+        $observationPointId = ObservationPointId::fromString('OP');
         if (! $this->hasObservationPoint($observationPointId)) {
             $this->addObservationPoint(
-                ObservationPoint::fromTypeNameAndGeometry(
+                ObservationPoint::fromIdTypeNameAndGeometry(
+                    $observationPointId,
                     $this->type(),
                     Name::fromString($this->name->toString()),
                     $this->geometry->getPointFromGeometry()
@@ -36,7 +37,8 @@ class RechargeBoundary extends ModflowBoundary
     public function findValueByDateTime(DateTime $dateTime): RechargeDateTimeValue
     {
         /** @var ObservationPoint $op */
-        $op = $this->getObservationPoint(ObservationPointId::fromInt(0));
+        $observationPointId = ObservationPointId::fromString('OP');
+        $op = $this->getObservationPoint($observationPointId);
         $value = $op->findValueByDateTime($dateTime);
 
         if ($value instanceof RechargeDateTimeValue){

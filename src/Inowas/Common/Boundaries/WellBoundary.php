@@ -15,9 +15,11 @@ class WellBoundary extends ModflowBoundary
 
     public function addPumpingRate(WellDateTimeValue $pumpingRate): WellBoundary
     {
-        if (! $this->hasObservationPoint(ObservationPointId::fromInt(0))) {
+        $observationPointId = ObservationPointId::fromString('OP');
+        if (! $this->hasObservationPoint($observationPointId)) {
             $this->addObservationPoint(
-                ObservationPoint::fromTypeNameAndGeometry(
+                ObservationPoint::fromIdTypeNameAndGeometry(
+                    $observationPointId,
                     $this->type(),
                     Name::fromString($this->name->toString()),
                     $this->geometry->getPointFromGeometry()
@@ -25,14 +27,14 @@ class WellBoundary extends ModflowBoundary
             );
         }
 
-        $this->addDateTimeValue($pumpingRate, ObservationPointId::fromInt(0));
+        $this->addDateTimeValue($pumpingRate, $observationPointId);
         return $this->self();
     }
 
     public function findValueByDateTime(DateTime $dateTime): WellDateTimeValue
     {
         /** @var ObservationPoint $op */
-        $op = $this->getObservationPoint(ObservationPointId::fromInt(0));
+        $op = $this->getObservationPoint(ObservationPointId::fromString('OP'));
         $value = $op->findValueByDateTime($dateTime);
 
         if ($value instanceof WellDateTimeValue){

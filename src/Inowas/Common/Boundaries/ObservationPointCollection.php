@@ -33,12 +33,13 @@ class ObservationPointCollection
 
     public function add(ObservationPoint $observationPoint): void
     {
-        $this->items[] = $observationPoint;
+        $key = $observationPoint->id()->toString();
+        $this->items[$key] = $observationPoint;
     }
 
     public function delete(ObservationPointId $id): void
     {
-        $key = $id->toInt();
+        $key = $id->toString();
         if (isset($this->items[$key])) {
             unset($this->items[$key]);
             return;
@@ -49,7 +50,7 @@ class ObservationPointCollection
 
     public function get(ObservationPointId $id): ObservationPoint
     {
-        $key = $id->toInt();
+        $key = $id->toString();
         if (isset($this->items[$key])) {
             return $this->items[$key];
         }
@@ -59,7 +60,7 @@ class ObservationPointCollection
 
     public function has(ObservationPointId $id): bool
     {
-        return isset($this->items[$id->toInt()]);
+        return isset($this->items[$id->toString()]);
     }
 
     public function toArray(): array
