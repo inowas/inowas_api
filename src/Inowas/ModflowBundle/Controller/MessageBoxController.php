@@ -46,11 +46,11 @@ class MessageBoxController extends InowasRestController
 
         $this->assertContainsKey('uuid', $content);
         $this->assertContainsKey('message_name', $content);
-        $this->assertContainsKey('metadata', $content);
-        $this->assertContainsKey('created_at', $content);
         $this->assertContainsKey('payload', $content);
 
-        $content['created_at'] = $this->getDatetime($content['created_at']);
+        if (isset($content['created_at'])) {
+            $content['created_at'] = $this->getDatetime($content['created_at']);
+        }
         $message = $messageFactory->createMessageFromArray($content['message_name'], $content);
 
         switch ($message->messageType()) {
