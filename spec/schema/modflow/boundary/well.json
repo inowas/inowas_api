@@ -31,7 +31,8 @@
                 "type": "object",
                 "properties": {
                     "date_time": {
-                        "type": "string"
+                        "type": "string",
+                        "format": "date-time"
                     },
                     "values": {
                         "type": "array",
