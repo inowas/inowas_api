@@ -37,6 +37,8 @@
         "jms/di-extra-bundle": "^1.8",
         "jms/security-extra-bundle": "dev-master",
         "jms/serializer-bundle": "^1.1",
+        "league/json-guard": "^1.0",
+        "league/json-reference": "^1.0",
         "mattketmo/uuid-2x-bridge": "^1.0",
         "nelmio/api-doc-bundle": "^2.11",
         "nelmio/cors-bundle": "^1.4",
@@ -48,6 +50,7 @@
         "prooph/pdo-event-store": "^1.4",
         "prooph/pdo-snapshot-store": "^1.2",
         "prooph/service-bus": "^6.0",
+        "psr/container": "^1.0",
         "rabbl/heatmap": "^1.1",
         "ramsey/uuid-doctrine": "^1.2",
         "sensio/distribution-bundle": "^5.0",
@@ -57,8 +60,7 @@
         "symfony/process": "^3.0",
         "symfony/serializer": "^3.1",
         "symfony/swiftmailer-bundle": "^2.3",
-        "symfony/symfony": "3.1.*",
-        "psr/container": "^1.0"
+        "symfony/symfony": "3.1.*"
     },
     "require-dev": {
         "phpmd/phpmd" : "@stable",
