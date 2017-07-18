@@ -29,7 +29,7 @@ class WellBoundarySchemaTest extends BaseTestCase
         $dereferencer = Dereferencer::draft4();
         $schema = $dereferencer->dereference('file://spec/schema/modflow/boundary/wellType.json');
 
-        $data = json_encode(['wellType' => $type]);
+        $data = json_encode(['well_type' => $type]);
 
         $validator = new Validator(json_decode($data), $schema);
 

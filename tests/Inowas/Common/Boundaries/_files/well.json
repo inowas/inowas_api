@@ -9,15 +9,15 @@
         ]
     },
     "type": "wel",
-    "affectedLayers": [
+    "affected_layers": [
         3
     ],
     "metadata": {
-        "wellType": "puw"
+        "well_type": "puw"
     },
-    "dateTimeValues": [
+    "date_time_values": [
         {
-            "dateTime": "2005-08-15T15:52:01+00:00",
+            "date_time": "2005-08-15T15:52:01+00:00",
             "values": [
                 2
             ]

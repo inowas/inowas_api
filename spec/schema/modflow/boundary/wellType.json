@@ -5,7 +5,7 @@
     "description": "well types",
     "type": "object",
     "properties": {
-        "wellType": {
+        "well_type": {
             "enum": [
                 "puw"
             ]
@@ -13,6 +13,6 @@
     },
     "additionalProperties": false,
     "required": [
-        "wellType"
+        "well_type"
     ]
 }

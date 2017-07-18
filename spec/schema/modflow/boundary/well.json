@@ -19,18 +19,18 @@
             "type": "String",
             "pattern": "^wel$"
         },
-        "affectedLayers": {
+        "affected_layers": {
             "$ref": "modflow/boundary/affectedLayers.json"
         },
         "metadata": {
             "$ref": "modflow/boundary/wellType.json"
         },
-        "dateTimeValues": {
+        "date_time_values": {
             "type": "array",
             "items": {
                 "type": "object",
                 "properties": {
-                    "dateTime": {
+                    "date_time": {
                         "type": "string"
                     },
                     "values": {
@@ -49,6 +49,9 @@
     "required": [
         "id",
         "name",
-        "geometry"
+        "geometry",
+        "affected_layers",
+        "metadata",
+        "date_time_values"
     ]
 }
