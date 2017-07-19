@@ -34,7 +34,7 @@ class ModflowCalculationListenerCommand extends ContainerAwareCommand
             try {
                 $response = CalculationResponse::fromJson($msg->body);
                 $commandBus = $this->getContainer()->get('prooph_service_bus.modflow_command_bus');
-                $commandBus->dispatch(\Inowas\ModflowModel\Model\Command\UpdateCalculationResults::withResponse($response));
+                $commandBus->dispatch(UpdateCalculationResults::withResponse($response));
             } catch (\Exception $exception) {
                 echo sprintf($exception->getMessage());
             }

@@ -19,16 +19,21 @@
             "$ref": "geojson/polygon.json"
         },
         "bounding_box": {
-            "$ref": "boundingBox.json"
+            "$ref": "modflow/boundingBox.json"
         },
         "grid_size": {
-            "$ref": "gridSize.json"
+            "$ref": "modflow/gridSize.json"
         },
         "length_unit": {
-            "$ref": "lengthUnit.json"
+            "description": "0: undefined, 1: feet, 2: meters, 3: centimeters",
+            "enum": [0, 1, 2, 3]
         },
         "time_unit": {
-            "$ref": "timeUnit.json"
+            "description": "0: undefined, 1: seconds, 2: minutes, 3: hours, 4: days, 5: years",
+            "enum": [0, 1, 2, 3, 4, 5]
+        },
+        "active_cells": {
+            "$ref": "modflow/activeCells.json"
         }
     },
     "required": [
@@ -36,6 +41,7 @@
         "name",
         "description",
         "geometry",
+        "bounding_box",
         "grid_size",
         "length_unit",
         "time_unit"

@@ -1,0 +1,55 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#",
+    "type": "object",
+    "id": "https://inowas.com/schema/",
+    "properties": {
+        "active_cells": {
+            "description": "An array of cell-values [y, x] for each layer",
+            "type": "array",
+            "items": {
+                "description": "Layer-value",
+                "type": "array",
+                "items": {
+                    "description": "Cell-value",
+                    "type": "integer",
+                    "minItems": 2,
+                    "maxItems": 2
+                }
+            },
+            "minItems": 1,
+            "example": [
+                [
+                    [
+                        12,
+                        13
+                    ],
+                    [
+                        12,
+                        14
+                    ],
+                    [
+                        12,
+                        15
+                    ]
+                ],
+                [
+                    [
+                        12,
+                        13
+                    ],
+                    [
+                        12,
+                        14
+                    ],
+                    [
+                        12,
+                        15
+                    ]
+                ]
+            ]
+        }
+    },
+    "required": [
+        "active_cells"
+    ]
+}
