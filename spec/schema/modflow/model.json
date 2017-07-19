@@ -36,6 +36,7 @@
             "$ref": "modflow/activeCells.json"
         }
     },
+    "additionalProperties": false,
     "required": [
         "id",
         "name",
