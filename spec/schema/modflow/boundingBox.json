@@ -1,0 +1,35 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#",
+    "type": "object",
+    "id": "https://inowas.com/schema/",
+    "properties": {
+        "x_min": {
+            "type": "float"
+        },
+        "x_max": {
+            "type": "float"
+        },
+        "y_min": {
+            "type": "float"
+        },
+        "y_max": {
+            "type": "float"
+        },
+        "srid": {
+            "type": "integer"
+        },
+        "d_x": {
+            "type": "float"
+        },
+        "d_y": {
+            "type": "float"
+        }
+    },
+    "required": [
+        "x_min",
+        "x_max",
+        "y_min",
+        "y_max",
+        "srid"
+    ]
+}

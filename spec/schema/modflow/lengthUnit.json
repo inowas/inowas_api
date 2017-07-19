@@ -1,0 +1,14 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#",
+    "type": "object",
+    "id": "https://inowas.com/schema/",
+    "description": "0: undefined, 1: feet, 2: meters, 3: centimeters",
+    "properties": {
+        "length_unit": {
+            "enum": [0, 1, 2, 3]
+        }
+    },
+    "required": [
+        "length_unit"
+    ]
+}

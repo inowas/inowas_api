@@ -1,0 +1,14 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#",
+    "type": "object",
+    "id": "https://inowas.com/schema/",
+    "description": "0: undefined, 1: seconds, 2: minutes, 3: hours, 4: days, 5: years",
+    "properties": {
+        "time_unit": {
+            "enum": [0, 1, 2, 3, 4, 5]
+        }
+    },
+    "required": [
+        "time_unit"
+    ]
+}
