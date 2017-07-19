@@ -60,7 +60,7 @@ class ObservationPointCollection
 
     public function has(ObservationPointId $id): bool
     {
-        return isset($this->items[$id->toString()]);
+        return array_key_exists($id->toString(), $this->items);
     }
 
     public function toArray(): array

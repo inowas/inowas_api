@@ -33,6 +33,15 @@ class CalculationResultsProjector extends AbstractDoctrineConnectionProjector
 
     public function onCalculationWasStarted(CalculationWasStarted $event): void
     {
+        $result = $this->connection->fetchAssoc(
+            sprintf('SELECT count(*) from %s WHERE calculation_id = :calculation_id', Table::CALCULATIONS),
+            ['calculation_id' => $event->calculationId()->toString()]
+        );
+
+        if ($result['count'] > 0){
+            return;
+        }
+
         $this->connection->insert(Table::CALCULATIONS, array(
             'calculation_id' => $event->calculationId()->toString(),
             'state' => 2

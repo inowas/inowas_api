@@ -10,6 +10,6 @@ class ObservationPointNotFoundInBoundaryException extends \InvalidArgumentExcept
 {
     public static function withIds(ObservationPointId $observationPointId): ObservationPointNotFoundInBoundaryException
     {
-        return new self(sprintf('The ObservationPoint with Key %s cannot be found in Boundary.', $observationPointId));
+        return new self(sprintf('The ObservationPoint with Key %s cannot be found in Boundary.', $observationPointId->toString()));
     }
 }

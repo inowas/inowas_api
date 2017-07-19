@@ -255,8 +255,9 @@ class RioPrimero extends LoadScenarioBase
             Metadata::create()
         );
 
+        $observationPointId = ObservationPointId::fromString('OP1');
         $observationPoint = ObservationPoint::fromIdTypeNameAndGeometry(
-            ObservationPointId::fromString('OP1'),
+            $observationPointId,
             BoundaryType::fromString(BoundaryType::GENERAL_HEAD),
             Name::fromString('OP 1'),
             new Point($boundingBox->xMax(), $boundingBox->yMin(), 4326)
@@ -264,7 +265,7 @@ class RioPrimero extends LoadScenarioBase
 
         $ghb->addObservationPoint($observationPoint);
         $ghb->addGeneralHeadValueToObservationPoint(
-            ObservationPointId::fromString(0),
+            $observationPointId,
             GeneralHeadDateTimeValue::fromParams(
                 DateTime::fromDateTimeImmutable(new \DateTimeImmutable('2015-01-01')),
                 440,
@@ -421,7 +422,9 @@ class RioPrimero extends LoadScenarioBase
             );
 
             echo sprintf("Add well with name %s.\r\n", $data['name']);
-            $wellBoundary = $wellBoundary->addPumpingRate(WellDateTimeValue::fromParams($data['date'], $data['pumpingRate']));
+            $wellBoundary = $wellBoundary->addPumpingRate(
+                WellDateTimeValue::fromParams(DateTime::fromDateTimeImmutable($data['date']), $data['pumpingRate'])
+            );
             $commandBus->dispatch(AddBoundary::forModflowModel($ownerId, $baseModelId, $wellBoundary));
         }
 
@@ -505,7 +508,7 @@ class RioPrimero extends LoadScenarioBase
             );
 
             echo sprintf("Add well with name %s.\r\n", $data['name']);
-            $wellBoundary = $wellBoundary->addPumpingRate(WellDateTimeValue::fromParams($data['date'], $data['pumpingRate']));
+            $wellBoundary = $wellBoundary->addPumpingRate(WellDateTimeValue::fromParams(DateTime::fromDateTimeImmutable($data['date']), $data['pumpingRate']));
             $commandBus->dispatch(AddBoundary::forModflowModel($ownerId, $scenarioId, $wellBoundary));
         }
 
@@ -554,7 +557,7 @@ class RioPrimero extends LoadScenarioBase
             );
 
             echo sprintf("Add well with name %s.\r\n", $data['name']);
-            $wellBoundary = $wellBoundary->addPumpingRate(WellDateTimeValue::fromParams($data['date'], $data['pumpingRate']));
+            $wellBoundary = $wellBoundary->addPumpingRate(WellDateTimeValue::fromParams(DateTime::fromDateTimeImmutable($data['date']), $data['pumpingRate']));
             $commandBus->dispatch(AddBoundary::forModflowModel($ownerId, $scenarioId, $wellBoundary));
         }
 

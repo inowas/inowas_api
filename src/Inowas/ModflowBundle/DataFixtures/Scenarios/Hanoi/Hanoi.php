@@ -508,9 +508,9 @@ class Hanoi extends LoadScenarioBase
 
         foreach ($observationPoints as $key => $op){
 
-            $observationPointId = ObservationPointId::fromString($key);
+            $observationPointId = ObservationPointId::fromString('OP'.$key);
             $observationPoint = ObservationPoint::fromIdTypeNameAndGeometry(
-                ObservationPointId::fromString('OP'.$key),
+                $observationPointId,
                 BoundaryType::fromString(BoundaryType::CONSTANT_HEAD),
                 Name::fromString($op['name']),
                 $geoTools->projectPoint(new Point($op['x'], $op['y'], $op['srid']), Srid::fromInt(4326))
@@ -521,11 +521,14 @@ class Hanoi extends LoadScenarioBase
 
             /** @var string $date */
             foreach ($dates as $date) {
-                $chdBoundary = $chdBoundary->addConstantHeadToObservationPoint($observationPointId, ConstantHeadDateTimeValue::fromParams(
-                    DateTime::fromDateTimeImmutable(new \DateTimeImmutable(explode(':', $date)[1])),
-                    $op[$date],
-                    $op[$date]
-                ));
+                $chdBoundary = $chdBoundary->addConstantHeadToObservationPoint(
+                    $observationPointId,
+                    ConstantHeadDateTimeValue::fromParams(
+                        DateTime::fromDateTimeImmutable(new \DateTimeImmutable(explode(':', $date)[1])),
+                        $op[$date],
+                        $op[$date]
+                    )
+                );
             }
         }
 
