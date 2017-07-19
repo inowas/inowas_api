@@ -13,11 +13,11 @@
             "maxLength": 255
         },
         "geometry": {
-            "$ref": "geojson/point.json"
+            "$ref": "geojson/polygon.json"
         },
         "type": {
             "type": "String",
-            "pattern": "^wel$"
+            "pattern": "^rch$"
         },
         "affected_layers": {
             "$ref": "modflow/affectedLayers.json"
@@ -25,11 +25,9 @@
         "active_cells": {
             "$ref": "modflow/activeCells.json"
         },
-        "metadata": {
-            "$ref": "modflow/boundary/wellType.json"
-        },
+        "metadata": {},
         "date_time_values": {
-            "$ref": "modflow/boundary/wellDateTimeValues.json"
+            "$ref": "modflow/boundary/rechargeDateTimeValues.json"
         }
     },
     "additionalProperties": false,

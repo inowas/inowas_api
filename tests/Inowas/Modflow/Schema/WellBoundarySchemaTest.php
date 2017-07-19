@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Tests\Inowas\Common\Boundaries;
+namespace Tests\Inowas\Modflow\Schema;
 
 use League\JsonGuard\Validator;
 use League\JsonReference\Dereferencer;
@@ -38,10 +38,10 @@ class WellBoundarySchemaTest extends BaseTestCase
 
     public function providerWell()
     {
-        $path = 'tests/Inowas/Common/Boundaries/_files/';
+        $path = __DIR__.'/_files/';
 
         return [
-            [file_get_contents($path . 'well.json'), true],
+            [file_get_contents($path . 'wellBoundary.json'), true],
 //            [file_get_contents($path . 'well_invalid.json'), false],
         ];
     }

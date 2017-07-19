@@ -6,6 +6,7 @@ namespace Inowas\ModflowBundle\Controller;
 
 use FOS\RestBundle\Controller\Annotations as Rest;
 use Inowas\ModflowBundle\Exception\InvalidArgumentException;
+use Inowas\ModflowModel\Model\Command\CreateModflowModel;
 use Nelmio\ApiDocBundle\Annotation\ApiDoc;
 use Prooph\Common\Messaging\Message;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -14,6 +15,11 @@ use Symfony\Component\HttpFoundation\Request;
 /** @noinspection LongInheritanceChainInspection */
 class MessageBoxController extends InowasRestController
 {
+
+    private $whiteList = [
+      'createModflowModel' => CreateModflowModel::class
+    ];
+
     /**
      * messageBox
      *
@@ -48,9 +54,16 @@ class MessageBoxController extends InowasRestController
         $this->assertContainsKey('message_name', $content);
         $this->assertContainsKey('payload', $content);
 
+        if (!array_key_exists($content['message_name'], $this->whiteList)) {
+            throw InvalidArgumentException::withMessage(sprintf(
+                'Submitted messageName \'%s\' not known. Available names are: %s.', $content['message_name'], implode(', ', array_keys($content))
+            ));
+        }
+
         if (isset($content['created_at'])) {
             $content['created_at'] = $this->getDatetime($content['created_at']);
         }
+
         $message = $messageFactory->createMessageFromArray($content['message_name'], $content);
 
         switch ($message->messageType()) {

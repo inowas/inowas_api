@@ -17,10 +17,11 @@ use Prooph\Common\Messaging\Command;
 use Prooph\Common\Messaging\PayloadConstructable;
 use Prooph\Common\Messaging\PayloadTrait;
 
-class CreateModflowModel extends Command implements PayloadConstructable
+class CreateModflowModel extends Command
 {
 
-    use PayloadTrait;
+    /** @var array */
+    private $payload;
 
     /** @noinspection MoreThanThreeArgumentsInspection
      * @param UserId $userId
@@ -61,6 +62,21 @@ class CreateModflowModel extends Command implements PayloadConstructable
         );
     }
 
+    final public function __construct(array $payload = null)
+    {
+        $this->setPayload($payload);
+        $this->init();
+    }
+
+    public function payload(): array
+    {
+        return $this->payload;
+    }
+
+    protected function setPayload(array $payload): void
+    {
+        $this->payload = $payload;
+    }
 
     public function userId(): UserId
     {
