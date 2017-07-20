@@ -53,7 +53,7 @@ class ModflowCalculationControllerTest extends EventSourcingBaseTest
         $userId = UserId::fromString($this->user->getId()->toString());
         $apiKey = $this->user->getApiKey();
         $modflowId = ModflowId::generate();
-        $this->createModelWithSoilmodel($userId, $modflowId);
+        $this->createModelWithOneLayer($userId, $modflowId);
 
         $client = static::createClient();
         $client->request(
@@ -113,7 +113,7 @@ class ModflowCalculationControllerTest extends EventSourcingBaseTest
         $username = $this->user->getName();
 
         $modelId = ModflowId::generate();
-        $this->createModelWithSoilmodel($userId, $modelId);
+        $this->createModelWithOneLayer($userId, $modelId);
 
         $client = static::createClient();
         $client->request(
@@ -148,7 +148,7 @@ class ModflowCalculationControllerTest extends EventSourcingBaseTest
         $username = $this->user->getName();
 
         $modelId = ModflowId::generate();
-        $this->createModelWithSoilmodel($userId, $modelId);
+        $this->createModelWithOneLayer($userId, $modelId);
 
         $client = static::createClient();
         $client->request(

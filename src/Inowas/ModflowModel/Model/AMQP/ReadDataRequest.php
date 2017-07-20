@@ -33,7 +33,7 @@ class ReadDataRequest implements \JsonSerializable
             self::REQUEST_TYPE_LAYER_DATA => (object)array(
                 'type' => $dataType->toString(),
                 'totim' => $totim->toInteger(),
-                'layer' => $layer->toInteger()
+                'layer' => $layer->toInt()
             )
         );
 
@@ -51,9 +51,9 @@ class ReadDataRequest implements \JsonSerializable
         $arr['request'] = (object)array(
             self::REQUEST_TYPE_TIME_SERIES => (object)array(
                 'type' => $dataType->toString(),
-                'layer' => $layer->toInteger(),
-                'row' => $ny->toInteger(),
-                'column' => $nx->toInteger()
+                'layer' => $layer->toInt(),
+                'row' => $ny->toInt(),
+                'column' => $nx->toInt()
             )
         );
 

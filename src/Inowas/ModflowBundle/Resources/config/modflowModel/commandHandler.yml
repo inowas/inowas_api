@@ -5,6 +5,12 @@ services:
         arguments:
           - '@modflow_model_list'
 
+    inowas.modflowmodel.add_layer_handler:
+        class: Inowas\ModflowModel\Model\Handler\AddLayerHandler
+        arguments:
+          - '@modflow_model_list'
+          - '@inowas.modflowmodel.layers_persister'
+
     inowas.modflowmodel.calculate_modflow_model_handler:
         class: Inowas\ModflowModel\Model\Handler\CalculateModflowModelHandler
         arguments:
@@ -48,12 +54,6 @@ services:
           - '@modflow_model_list'
           - '@inowas.modflowmodel.model_finder'
 
-    inowas.modflowmodel.change_soilmodel_id_handler:
-        class: Inowas\ModflowModel\Model\Handler\ChangeSoilmodelIdHandler
-        arguments:
-          - '@modflow_model_list'
-          - '@inowas.modflowmodel.model_finder'
-
     inowas.modflowmodel.clone_modflow_model_handler:
         class: Inowas\ModflowModel\Model\Handler\CloneModflowModelHandler
         arguments:
@@ -75,6 +75,11 @@ services:
         arguments:
           - '@modflow_model_list'
 
+    inowas.modflowmodel.remove_layer_handler:
+        class: Inowas\ModflowModel\Model\Handler\RemoveLayerHandler
+        arguments:
+          - '@modflow_model_list'
+
     inowas.modflowmodel.update_active_cells_handler:
         class: Inowas\ModflowModel\Model\Handler\UpdateActiveCellsHandler
         arguments:
@@ -91,6 +96,12 @@ services:
         class: Inowas\ModflowModel\Model\Handler\UpdateBoundaryHandler
         arguments:
           - '@modflow_model_list'
+
+    inowas.modflowmodel.update_layer_handler:
+        class: Inowas\ModflowModel\Model\Handler\UpdateLayerHandler
+        arguments:
+          - '@modflow_model_list'
+          - '@inowas.modflowmodel.layers_persister'
 
     inowas.modflowmodel.update_calculation_id_handler:
         class: Inowas\ModflowModel\Model\Handler\UpdateCalculationIdHandler
@@ -110,6 +121,11 @@ services:
 
     inowas.modflowmodel.update_modflow_package_parameter_handler:
         class: Inowas\ModflowModel\Model\Handler\UpdateModflowPackageParameterHandler
+        arguments:
+          - '@modflow_model_list'
+
+    inowas.modflowmodel.update_soilmodel_metadata_handler:
+        class: Inowas\ModflowModel\Model\Handler\UpdateSoilmodelMetadataHandler
         arguments:
           - '@modflow_model_list'
 

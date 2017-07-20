@@ -75,7 +75,7 @@ class ToolControllerTest extends EventSourcingBaseTest
         $username = $this->user->getName();
 
         $modelId = ModflowId::generate();
-        $this->createModelWithSoilmodel($userId, $modelId);
+        $this->createModelWithOneLayer($userId, $modelId);
 
         $scenarioAnalysisId = ScenarioAnalysisId::generate();
         $this->commandBus->dispatch(CreateScenarioAnalysis::byUserWithBaseModelNameAndDescription(
@@ -129,7 +129,7 @@ class ToolControllerTest extends EventSourcingBaseTest
         $username = $this->user->getName();
 
         $modelId = ModflowId::generate();
-        $this->createModelWithSoilmodel($userId, $modelId);
+        $this->createModelWithOneLayer($userId, $modelId);
 
         $scenarioAnalysisId = ScenarioAnalysisId::generate();
         $this->commandBus->dispatch(CreateScenarioAnalysis::byUserWithBaseModelNameAndDescription(
@@ -180,7 +180,7 @@ class ToolControllerTest extends EventSourcingBaseTest
     {
         $userId = UserId::fromString($this->user->getId()->toString());
         $modelId = ModflowId::generate();
-        $this->createModelWithSoilmodel($userId, $modelId);
+        $this->createModelWithOneLayer($userId, $modelId);
 
         $scenarioAnalysisId = ScenarioAnalysisId::generate();
         $this->commandBus->dispatch(CreateScenarioAnalysis::byUserWithBaseModelNameAndDescription(

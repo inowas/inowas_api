@@ -6,7 +6,6 @@ namespace Inowas\ModflowModel\Model\Event;
 
 use Inowas\Common\Id\ModflowId;
 use Inowas\Common\Id\UserId;
-use Inowas\Common\Soilmodel\SoilmodelId;
 use Prooph\EventSourcing\AggregateChanged;
 
 /** @noinspection LongInheritanceChainInspection */
@@ -21,45 +20,35 @@ class ModflowModelWasCloned extends AggregateChanged
     /** @var UserId */
     private $userId;
 
-    /** @var SoilmodelId */
-    private $soilmodelId;
-
-    /** @var bool */
-    private $cloneSoilmodel;
-
     /** @var  array */
     private $boundaries;
 
-    /** @noinspection MoreThanThreeArgumentsInspection
+    /**
      * @param ModflowId $baseModelId
      * @param ModflowId $modflowId
      * @param UserId $userId
-     * @param SoilmodelId $soilmodelId
-     * @param bool $cloneSoilmodel
+     * @param array $boundaries
      * @return ModflowModelWasCloned
+     * @internal param $ MoreThanThreeArgumentsInspection
      */
     public static function fromModelAndUserWithParameters(
         ModflowId $baseModelId,
         ModflowId $modflowId,
         UserId $userId,
-        SoilmodelId $soilmodelId,
-        bool $cloneSoilmodel,
         array $boundaries
     ): ModflowModelWasCloned
     {
+
+        /** @var ModflowModelWasCloned $event */
         $event = self::occur($modflowId->toString(),[
             'basemodel_id' => $baseModelId->toString(),
             'user_id' => $userId->toString(),
-            'soilmodel_id' => $soilmodelId->toString(),
-            'clone_soilmodel' => $cloneSoilmodel,
             'boundaries' => $boundaries
         ]);
 
         $event->baseModelId = $baseModelId;
         $event->modelId = $modflowId;
         $event->userId = $userId;
-        $event->soilmodelId = $soilmodelId;
-        $event->cloneSoilmodel = $cloneSoilmodel;
         $event->boundaries = $boundaries;
 
         return $event;
@@ -74,15 +63,6 @@ class ModflowModelWasCloned extends AggregateChanged
         return $this->baseModelId;
     }
 
-    public function cloneSoilmodel(): bool
-    {
-        if ($this->cloneSoilmodel === null){
-            $this->cloneSoilmodel = $this->payload['clone_soilmodel'];
-        }
-
-        return $this->cloneSoilmodel;
-    }
-
     public function modelId(): ModflowId
     {
         if ($this->modelId === null){
@@ -90,15 +70,6 @@ class ModflowModelWasCloned extends AggregateChanged
         }
 
         return $this->modelId;
-    }
-
-    public function soilmodelId(): SoilmodelId
-    {
-        if ($this->soilmodelId === null){
-            $this->soilmodelId = SoilmodelId::fromString($this->payload['soilmodel_id']);
-        }
-
-        return $this->soilmodelId;
     }
 
     public function userId(): UserId

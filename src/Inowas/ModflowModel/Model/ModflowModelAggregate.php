@@ -9,6 +9,7 @@ use Inowas\Common\Geometry\Polygon;
 use Inowas\Common\Grid\ActiveCells;
 use Inowas\Common\Grid\BoundingBox;
 use Inowas\Common\Grid\GridSize;
+use Inowas\Common\Grid\LayerNumber;
 use Inowas\Common\Id\BoundaryId;
 use Inowas\Common\Id\CalculationId;
 use Inowas\Common\Id\ModflowId;
@@ -20,6 +21,8 @@ use Inowas\Common\Modflow\PackageName;
 use Inowas\Common\Modflow\ParameterName;
 use Inowas\Common\Modflow\StressPeriods;
 use Inowas\Common\Modflow\TimeUnit;
+use Inowas\Common\Soilmodel\LayerId;
+use Inowas\Common\Soilmodel\Soilmodel;
 use Inowas\Common\Soilmodel\SoilmodelId;
 use Inowas\ModflowModel\Model\AMQP\CalculationResponse;
 use Inowas\ModflowModel\Model\Event\ActiveCellsWereUpdated;
@@ -34,12 +37,15 @@ use Inowas\ModflowModel\Model\Event\CalculationWasStarted;
 use Inowas\ModflowModel\Model\Event\DescriptionWasChanged;
 use Inowas\ModflowModel\Model\Event\FlowPackageWasChanged;
 use Inowas\ModflowModel\Model\Event\GridSizeWasChanged;
+use Inowas\ModflowModel\Model\Event\LayerWasAdded;
+use Inowas\ModflowModel\Model\Event\LayerWasRemoved;
+use Inowas\ModflowModel\Model\Event\LayerWasUpdated;
 use Inowas\ModflowModel\Model\Event\LengthUnitWasUpdated;
 use Inowas\ModflowModel\Model\Event\ModflowModelWasCloned;
 use Inowas\ModflowModel\Model\Event\ModflowModelWasDeleted;
 use Inowas\ModflowModel\Model\Event\ModflowPackageParameterWasUpdated;
 use Inowas\ModflowModel\Model\Event\NameWasChanged;
-use Inowas\ModflowModel\Model\Event\SoilModelWasChanged;
+use Inowas\ModflowModel\Model\Event\SoilmodelMetadataWasUpdated;
 use Inowas\ModflowModel\Model\Event\ModflowModelWasCreated;
 use Inowas\ModflowModel\Model\Event\StressPeriodsWereUpdated;
 use Inowas\ModflowModel\Model\Event\TimeUnitWasUpdated;
@@ -69,7 +75,6 @@ class ModflowModelAggregate extends AggregateRoot
      * @param Polygon $polygon
      * @param GridSize $gridSize
      * @param BoundingBox $boundingBox
-     * @param SoilmodelId $soilmodelId
      * @return ModflowModelAggregate
      * @internal param Area $area
      */
@@ -78,14 +83,12 @@ class ModflowModelAggregate extends AggregateRoot
         UserId $userId,
         Polygon $polygon,
         GridSize $gridSize,
-        BoundingBox $boundingBox,
-        SoilmodelId $soilmodelId
+        BoundingBox $boundingBox
     ): ModflowModelAggregate
     {
         $self = new self();
         $self->modelId = $modelId;
         $self->userId = $userId;
-        $self->soilmodelId = $soilmodelId;
         $self->boundaries = [];
 
         $self->recordThat(ModflowModelWasCreated::withParameters(
@@ -93,8 +96,7 @@ class ModflowModelAggregate extends AggregateRoot
             $userId,
             $polygon,
             $gridSize,
-            $boundingBox,
-            $soilmodelId
+            $boundingBox
         ));
 
         return $self;
@@ -103,31 +105,24 @@ class ModflowModelAggregate extends AggregateRoot
     /** @noinspection MoreThanThreeArgumentsInspection
      * @param ModflowId $newModelId
      * @param UserId $newUserId
-     * @param SoilmodelId $soilmodelId
      * @param ModflowModelAggregate $model
      * @return ModflowModelAggregate
      */
     public static function clone(
         ModflowId $newModelId,
         UserId $newUserId,
-        SoilmodelId $soilmodelId,
         ModflowModelAggregate $model
     ): ModflowModelAggregate
     {
         $self = new self();
         $self->modelId = $newModelId;
         $self->userId = $newUserId;
-        $self->soilmodelId = $soilmodelId;
         $self->boundaries = $model->boundaries;
-
-        $cloneSoilmodel = $soilmodelId !== $model->soilmodelId();
 
         $self->recordThat(ModflowModelWasCloned::fromModelAndUserWithParameters(
             $model->modflowModelId(),
             $self->modelId,
             $self->userId,
-            $self->soilmodelId,
-            $cloneSoilmodel,
             $model->boundaries
         ));
 
@@ -232,16 +227,6 @@ class ModflowModelAggregate extends AggregateRoot
         ));
     }
 
-    public function changeSoilmodelId(UserId $userId, SoilmodelId $soilModelId): void
-    {
-        $this->soilmodelId = $soilModelId;
-        $this->recordThat(SoilModelWasChanged::withSoilmodelId(
-            $userId,
-            $this->modelId,
-            $this->soilmodelId
-        ));
-    }
-
     public function delete(UserId $userId): void
     {
         $this->recordThat(ModflowModelWasDeleted::byUserWitModelId(
@@ -330,6 +315,27 @@ class ModflowModelAggregate extends AggregateRoot
         ));
     }
 
+    /* Soilmodel-Related stuff */
+    public function addLayer(UserId $userId, LayerId $id, LayerNumber $number, string $hash): void
+    {
+        $this->recordThat(LayerWasAdded::byUserToModel($userId, $this->modelId, $id, $number, $hash));
+    }
+
+    public function updateLayer(UserId $userId, LayerId $layerId, LayerId $newLayerId, LayerNumber $layerNumber, string $hash): void
+    {
+        $this->recordThat(LayerWasUpdated::byUserToModel($userId, $this->modelId, $layerId, $newLayerId, $layerNumber, $hash));
+    }
+
+    public function removeLayer(UserId $userId, LayerId $layerId): void
+    {
+        $this->recordThat(LayerWasRemoved::byUserToModel($userId, $this->modelId, $layerId));
+    }
+
+    public function updateSoilmodelMetadata(UserId $userId, Soilmodel $soilmodel): void
+    {
+        $this->recordThat(SoilmodelMetadataWasUpdated::byUserToModel($userId, $this->modelId, $soilmodel));
+    }
+
     public function modflowModelId(): ModflowId
     {
         return $this->modelId;
@@ -392,6 +398,12 @@ class ModflowModelAggregate extends AggregateRoot
     protected function whenGridSizeWasChanged(GridSizeWasChanged $event): void
     {}
 
+    protected function whenLayerWasAdded(LayerWasAdded $event): void {}
+
+    protected function whenLayerWasRemoved(LayerWasRemoved $event): void {}
+
+    protected function whenLayerWasUpdated(LayerWasUpdated $event): void {}
+
     protected function whenLengthUnitWasUpdated(LengthUnitWasUpdated $event): void
     {}
 
@@ -399,7 +411,6 @@ class ModflowModelAggregate extends AggregateRoot
     {
         $this->modelId = $event->modelId();
         $this->userId = $event->userId();
-        $this->soilmodelId = $event->soilmodelId();
         $this->calculationId = CalculationId::fromString('');
         $this->boundaries = $event->boundaries();
     }
@@ -408,7 +419,6 @@ class ModflowModelAggregate extends AggregateRoot
     {
         $this->modelId = $event->modelId();
         $this->userId = $event->userId();
-        $this->soilmodelId = $event->soilmodelId();
         $this->calculationId = CalculationId::fromString('');
         $this->boundaries = [];
     }
@@ -422,10 +432,8 @@ class ModflowModelAggregate extends AggregateRoot
     protected function whenNameWasChanged(NameWasChanged $event): void
     {}
 
-    protected function whenSoilModelWasChanged(SoilModelWasChanged $event): void
-    {
-        $this->soilmodelId = $event->soilModelId();
-    }
+    protected function whenSoilmodelMetadataWasUpdated(SoilmodelMetadataWasUpdated $event): void
+    {}
 
     protected function whenStressPeriodsWereUpdated(StressPeriodsWereUpdated $event): void
     {}

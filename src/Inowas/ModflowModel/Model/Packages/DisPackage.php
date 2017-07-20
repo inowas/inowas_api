@@ -13,7 +13,6 @@ use Inowas\Common\Grid\Delc;
 use Inowas\Common\Grid\Delr;
 use Inowas\Common\Grid\GridSize;
 use Inowas\Common\Grid\Laycbd;
-use Inowas\Common\Grid\LayerNumber;
 use Inowas\Common\Grid\Proj4str;
 use Inowas\Common\Grid\Rotation;
 use Inowas\Common\Grid\Nrow;
@@ -105,7 +104,7 @@ class DisPackage implements PackageInterface
     public static function fromDefaults(): DisPackage
     {
         // DEFAULT
-        $nlay = LayerNumber::fromInteger(1);
+        $nlay = Nlay::fromInt(1);
         $ncol = Ncol::fromInt(1);
         $nrow = Nrow::fromInt(1);
         $nper = Nper::fromInteger(1);
@@ -156,7 +155,7 @@ class DisPackage implements PackageInterface
 
 
     /** @noinspection MoreThanThreeArgumentsInspection
-     * @param LayerNumber $nlay
+     * @param Nlay $nlay
      * @param Nrow $nrow
      * @param Ncol $ncol
      * @param Nper $nper
@@ -181,7 +180,7 @@ class DisPackage implements PackageInterface
      * @return DisPackage
      */
     public static function fromParams(
-        LayerNumber $nlay,
+        Nlay $nlay,
         Nrow $nrow,
         Ncol $ncol,
         Nper $nper,
@@ -233,7 +232,7 @@ class DisPackage implements PackageInterface
 
     public static function fromArray(array $arr): DisPackage
     {
-        $nlay = LayerNumber::fromInteger($arr['nlay']);
+        $nlay = Nlay::fromInt($arr['nlay']);
         $nrow = Nrow::fromInt($arr['nrow']);
         $ncol = Ncol::fromInt($arr['ncol']);
         $nper = Nper::fromInteger($arr['nper']);
@@ -496,10 +495,10 @@ class DisPackage implements PackageInterface
     public function toArray(): array
     {
         return array(
-            'nlay' => $this->nlay->toInteger(),
-            'nrow' => $this->nrow->toInteger(),
-            'ncol' => $this->ncol->toInteger(),
-            'nper' => $this->nper->toInteger(),
+            'nlay' => $this->nlay->toInt(),
+            'nrow' => $this->nrow->toInt(),
+            'ncol' => $this->ncol->toInt(),
+            'nper' => $this->nper->toInt(),
             'delr' => $this->delr->toValue(),
             'delc' => $this->delc->toValue(),
             'laycbd' => $this->laycbd->toValue(),

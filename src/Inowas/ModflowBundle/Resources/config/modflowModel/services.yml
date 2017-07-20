@@ -30,6 +30,12 @@ services:
         arguments:
             - '@inowas.modflowmodel.boundary_finder'
 
+    inowas.modflowmodel.layers_persister:
+        class: Inowas\ModflowModel\Service\LayersPersister
+        arguments:
+            - '%data_folder%'
+        public: false
+
     inowas.modflowmodel.manager:
         class: Inowas\ModflowModel\Service\ModflowModelManager
         arguments:
@@ -45,7 +51,7 @@ services:
             - '@inowas.modflowmodel.modflow_packages_persister'
             - '@modflow_model_list'
             - '@inowas.modflowmodel.manager'
-            - '@inowas.soilmodel.manager'
+            - '@inowas.modflowmodel.soilmodel_finder'
 
     inowas.modflowmodel.modflow_packages_persister:
         class: Inowas\ModflowModel\Service\ModflowPackagesPersister

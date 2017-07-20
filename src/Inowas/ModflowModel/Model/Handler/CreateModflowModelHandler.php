@@ -34,8 +34,7 @@ final class CreateModflowModelHandler
             $command->userId(),
             $command->polygon(),
             $command->gridSize(),
-            $boundingBox,
-            $command->soilmodelId()
+            $boundingBox
         );
 
         $modflowModel->changeName($command->userId(), $command->name());

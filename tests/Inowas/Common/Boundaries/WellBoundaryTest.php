@@ -28,7 +28,7 @@ class WellBoundaryTest extends \PHPUnit_Framework_TestCase
         $wb = WellBoundary::createWithParams(
             Name::fromString('WellName'),
             Geometry::fromPoint(new Point(10, 12)),
-            AffectedLayers::createWithLayerNumber(LayerNumber::fromInteger(0)),
+            AffectedLayers::createWithLayerNumber(LayerNumber::fromInt(0)),
             Metadata::create()->addWellType(WellType::fromString(WellType::TYPE_PUBLIC_WELL))
         );
 

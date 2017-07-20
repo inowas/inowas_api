@@ -22,7 +22,6 @@ use Inowas\ModflowModel\Model\Event\ModflowModelWasCloned;
 use Inowas\ModflowModel\Model\Event\NameWasChanged;
 use Inowas\ModflowModel\Model\Event\ModflowModelWasCreated;
 use Inowas\ModflowModel\Infrastructure\Projection\Table;
-use Inowas\ModflowModel\Model\Event\SoilModelWasChanged;
 use Inowas\ModflowModel\Model\Event\StressPeriodsWereUpdated;
 use Inowas\ModflowModel\Model\Event\TimeUnitWasUpdated;
 
@@ -41,7 +40,6 @@ class ModelProjector extends AbstractDoctrineConnectionProjector
         $table->addColumn('model_id', 'string', ['length' => 36]);
         $table->addColumn('user_id', 'string', ['length' => 36]);
         $table->addColumn('user_name', 'string', ['length' => 255, 'default' => '']);
-        $table->addColumn('soilmodel_id', 'string', ['length' => 36]);
         $table->addColumn('name', 'string', ['length' => 255, 'default' => '']);
         $table->addColumn('description', 'string', ['length' => 255, 'default' => '']);
         $table->addColumn('area', 'text', ['notnull' => false]);
@@ -118,7 +116,6 @@ class ModelProjector extends AbstractDoctrineConnectionProjector
             'model_id' => $event->modelId()->toString(),
             'user_id' => $event->userId()->toString(),
             'user_name' => $this->getUserNameByUserId($event->userId()->toString()),
-            'soilmodel_id' => $event->soilmodelId()->toString(),
             'area' => $event->polygon()->toJson(),
             'grid_size' => json_encode($event->gridSize()),
             'bounding_box' => json_encode($event->boundingBox()),
@@ -143,7 +140,6 @@ class ModelProjector extends AbstractDoctrineConnectionProjector
                 'model_id' => $event->modelId()->toString(),
                 'user_id' => $event->userId()->toString(),
                 'user_name' => $this->getUserNameByUserId($event->userId()->toString()),
-                'soilmodel_id' => $event->soilmodelId()->toString(),
                 'name' => $row['name'],
                 'description' => $row['description'],
                 'area' => $row['area'],
@@ -171,14 +167,6 @@ class ModelProjector extends AbstractDoctrineConnectionProjector
         $this->connection->update(Table::MODFLOWMODELS_LIST,
             array('time_unit' => $event->timeUnit()->toInt()),
             array('model_id' => $event->modelId()->toString())
-        );
-    }
-
-    public function onSoilModelWasChanged(SoilModelWasChanged $event): void
-    {
-        $this->connection->update(Table::MODFLOWMODELS_LIST,
-            array('soilmodel_id' => $event->soilModelId()->toString()),
-            array('model_id' => $event->modflowModelId()->toString())
         );
     }
 

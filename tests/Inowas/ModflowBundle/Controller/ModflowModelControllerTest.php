@@ -90,7 +90,7 @@ class ModflowModelControllerTest extends EventSourcingBaseTest
         $username = $this->user->getName();
 
         $modelId = ModflowId::generate();
-        $this->createModelWithSoilmodel($userId, $modelId);
+        $this->createModelWithOneLayer($userId, $modelId);
 
         $client = static::createClient();
         $client->request(
@@ -125,7 +125,7 @@ class ModflowModelControllerTest extends EventSourcingBaseTest
         $username = $this->user->getName();
 
         $modelId = ModflowId::generate();
-        $this->createModelWithSoilmodel($userId, $modelId);
+        $this->createModelWithOneLayer($userId, $modelId);
 
         $client = static::createClient();
         $client->request(

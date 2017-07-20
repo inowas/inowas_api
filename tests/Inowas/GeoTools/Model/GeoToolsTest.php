@@ -239,7 +239,7 @@ class GeoToolsTest extends WebTestCase
         $this->well = WellBoundary::createWithParams(
             Name::fromString('Well 1'),
             Geometry::fromPoint(new Point(105.78304910628,21.093961475741, 4326)),
-            AffectedLayers::createWithLayerNumber(LayerNumber::fromInteger(2)),
+            AffectedLayers::createWithLayerNumber(LayerNumber::fromInt(2)),
             Metadata::create()->addWellType(WellType::fromString(WellType::TYPE_PUBLIC_WELL))
         );
     }
@@ -280,12 +280,12 @@ class GeoToolsTest extends WebTestCase
         $gridSize = GridSize::fromXY(10, 15);
 
         $pointsAffectedLayers = array(
-            [new Point(100, 20, 4326), AffectedLayers::createWithLayerNumber(LayerNumber::fromInteger(0))],
-            [new Point(101, 20, 4326), AffectedLayers::createWithLayerNumber(LayerNumber::fromInteger(0))],
-            [new Point(101, 21.5, 4326), AffectedLayers::createWithLayerNumber(LayerNumber::fromInteger(0))],
-            [new Point(101, 21.45, 4326), AffectedLayers::createWithLayerNumber(LayerNumber::fromInteger(0))],
-            [new Point(100, 21.5, 4326), AffectedLayers::createWithLayerNumber(LayerNumber::fromInteger(0))],
-            [new Point(100, 20, 4326), AffectedLayers::createWithLayerNumber(LayerNumber::fromInteger(1))]
+            [new Point(100, 20, 4326), AffectedLayers::createWithLayerNumber(LayerNumber::fromInt(0))],
+            [new Point(101, 20, 4326), AffectedLayers::createWithLayerNumber(LayerNumber::fromInt(0))],
+            [new Point(101, 21.5, 4326), AffectedLayers::createWithLayerNumber(LayerNumber::fromInt(0))],
+            [new Point(101, 21.45, 4326), AffectedLayers::createWithLayerNumber(LayerNumber::fromInt(0))],
+            [new Point(100, 21.5, 4326), AffectedLayers::createWithLayerNumber(LayerNumber::fromInt(0))],
+            [new Point(100, 20, 4326), AffectedLayers::createWithLayerNumber(LayerNumber::fromInt(1))]
         );
 
         $expected = array(

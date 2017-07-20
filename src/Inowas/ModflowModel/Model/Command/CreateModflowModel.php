@@ -12,10 +12,7 @@ use Inowas\Common\Modflow\LengthUnit;
 use Inowas\Common\Modflow\Description;
 use Inowas\Common\Modflow\Name;
 use Inowas\Common\Modflow\TimeUnit;
-use Inowas\Common\Soilmodel\SoilmodelId;
 use Prooph\Common\Messaging\Command;
-use Prooph\Common\Messaging\PayloadConstructable;
-use Prooph\Common\Messaging\PayloadTrait;
 
 class CreateModflowModel extends Command
 {
@@ -32,7 +29,6 @@ class CreateModflowModel extends Command
      * @param GridSize $gridSize
      * @param TimeUnit $timeUnit
      * @param LengthUnit $lengthUnit
-     * @param SoilmodelId $soilmodelId
      * @return CreateModflowModel
      */
     public static function newWithAllParams(
@@ -43,8 +39,7 @@ class CreateModflowModel extends Command
         Polygon $polygon,
         GridSize $gridSize,
         TimeUnit $timeUnit,
-        LengthUnit $lengthUnit,
-        SoilmodelId $soilmodelId
+        LengthUnit $lengthUnit
     ): CreateModflowModel
     {
         return new self(
@@ -56,8 +51,7 @@ class CreateModflowModel extends Command
                 'polygon' => $polygon->toJson(),
                 'grid_size' => $gridSize->toArray(),
                 'time_unit' => $timeUnit->toValue(),
-                'length_unit' => $lengthUnit->toValue(),
-                'soilmodel_id' => $soilmodelId->toString()
+                'length_unit' => $lengthUnit->toValue()
             ]
         );
     }
@@ -116,10 +110,5 @@ class CreateModflowModel extends Command
     public function lengthUnit(): LengthUnit
     {
         return LengthUnit::fromInt(LengthUnit::METERS);
-    }
-
-    public function soilmodelId(): SoilmodelId
-    {
-        return SoilmodelId::fromString($this->payload['soilmodel_id']);
     }
 }

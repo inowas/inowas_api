@@ -15,4 +15,6 @@ final class Table
     const MODFLOWMODELS_LIST = 'mf_projection_modflowmodels';
     const MODFLOWMODEL_HASH = 'mf_projection_modflowmodel_hash';
     const PACKAGES_HASH = 'mf_projection_packages_hash';
+    const SOILMODELS_LIST = 'mf_projection_soilmodels';
+    const SOILMODEL_LAYERS_LIST = 'mf_projection_soilmodel_layers';
 }

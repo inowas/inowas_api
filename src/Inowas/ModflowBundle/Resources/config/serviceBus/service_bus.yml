@@ -9,6 +9,7 @@ parameters:
                     routes:
                         # ModflowmodelAggregate Commands and CommandHandlers
                         'Inowas\ModflowModel\Model\Command\AddBoundary': 'inowas.modflowmodel.add_boundary_handler'
+                        'Inowas\ModflowModel\Model\Command\AddLayer': 'inowas.modflowmodel.add_layer_handler'
                         'Inowas\ModflowModel\Model\Command\CalculateModflowModel': 'inowas.modflowmodel.calculate_modflow_model_handler'
                         'Inowas\ModflowModel\Model\Command\CalculateStressPeriods': 'inowas.modflowmodel.calculate_stress_periods_handler'
                         'Inowas\ModflowModel\Model\Command\ChangeBoundingBox': 'inowas.modflowmodel.change_bounding_box_handler'
@@ -16,18 +17,20 @@ parameters:
                         'Inowas\ModflowModel\Model\Command\ChangeFlowPackage': 'inowas.modflowmodel.change_flow_package_handler'
                         'Inowas\ModflowModel\Model\Command\ChangeGridSize': 'inowas.modflowmodel.change_grid_size_handler'
                         'Inowas\ModflowModel\Model\Command\ChangeName': 'inowas.modflowmodel.change_name_handler'
-                        'Inowas\ModflowModel\Model\Command\ChangeSoilmodelId': 'inowas.modflowmodel.change_soilmodel_id_handler'
                         'Inowas\ModflowModel\Model\Command\CloneModflowModel': 'inowas.modflowmodel.clone_modflow_model_handler'
                         'Inowas\ModflowModel\Model\Command\CreateModflowModel': 'inowas.modflowmodel.create_modflow_model_handler'
                         'Inowas\ModflowModel\Model\Command\DeleteModflowModel': 'inowas.modflowmodel.delete_modflow_model_handler'
                         'Inowas\ModflowModel\Model\Command\RemoveBoundary': 'inowas.modflowmodel.remove_boundary_handler'
+                        'Inowas\ModflowModel\Model\Command\RemoveLayer': 'inowas.modflowmodel.remove_layer_handler'
                         'Inowas\ModflowModel\Model\Command\UpdateActiveCells': 'inowas.modflowmodel.update_active_cells_handler'
                         'Inowas\ModflowModel\Model\Command\UpdateAreaGeometry': 'inowas.modflowmodel.update_area_geometry_handler'
                         'Inowas\ModflowModel\Model\Command\UpdateBoundary': 'inowas.modflowmodel.update_boundary_handler'
+                        'Inowas\ModflowModel\Model\Command\UpdateLayer': 'inowas.modflowmodel.update_layer_handler'
                         'Inowas\ModflowModel\Model\Command\UpdateCalculationResults': 'inowas.modflowmodel.update_calculation_results_handler'
                         'Inowas\ModflowModel\Model\Command\UpdateCalculationId': 'inowas.modflowmodel.update_calculation_id_handler'
                         'Inowas\ModflowModel\Model\Command\UpdateLengthUnit': 'inowas.modflowmodel.update_length_unit_handler'
                         'Inowas\ModflowModel\Model\Command\UpdateModflowPackageParameter': 'inowas.modflowmodel.update_modflow_package_parameter_handler'
+                        'Inowas\ModflowModel\Model\Command\UpdateSoilmodelMetadata': 'inowas.modflowmodel.update_soilmodel_metadata_handler'
                         'Inowas\ModflowModel\Model\Command\UpdateStressPeriods': 'inowas.modflowmodel.update_stress_periods_handler'
                         'Inowas\ModflowModel\Model\Command\UpdateTimeUnit': 'inowas.modflowmodel.update_time_unit_handler'
 
@@ -123,6 +126,18 @@ parameters:
                             - 'inowas.modflowmodel.active_cells_projector'
                             - 'inowas.modflowmodel.model_projector'
 
+                        'Inowas\ModflowModel\Model\Event\LayerWasAdded':
+                            - 'inowas.modflowmodel.blackhole_projector'
+                            - 'inowas.modflowmodel.soilmodel_projector'
+
+                        'Inowas\ModflowModel\Model\Event\LayerWasRemoved':
+                            - 'inowas.modflowmodel.blackhole_projector'
+                            - 'inowas.modflowmodel.soilmodel_projector'
+
+                        'Inowas\ModflowModel\Model\Event\LayerWasUpdated':
+                            - 'inowas.modflowmodel.blackhole_projector'
+                            - 'inowas.modflowmodel.soilmodel_projector'
+
                         'Inowas\ModflowModel\Model\Event\LengthUnitWasUpdated':
                             - 'inowas.modflowmodel.blackhole_projector'
                             - 'inowas.modflowmodel.model_projector'
@@ -132,11 +147,13 @@ parameters:
                             - 'inowas.modflowmodel.active_cells_projector'
                             - 'inowas.modflowmodel.boundary_list_projector'
                             - 'inowas.modflowmodel.model_projector'
+                            - 'inowas.modflowmodel.soilmodel_projector'
                             - 'inowas.modflowmodel.modflow_packages_process_manager'
 
                         'Inowas\ModflowModel\Model\Event\ModflowModelWasCreated':
                             - 'inowas.modflowmodel.blackhole_projector'
                             - 'inowas.modflowmodel.model_projector'
+                            - 'inowas.modflowmodel.soilmodel_projector'
                             - 'inowas.modflowmodel.active_cells_projector'
                             - 'inowas.modflowmodel.modflow_packages_process_manager'
 
@@ -154,9 +171,9 @@ parameters:
                             - 'inowas.modflowmodel.blackhole_projector'
                             - 'inowas.modflowmodel.model_projector'
 
-                        'Inowas\ModflowModel\Model\Event\SoilModelWasChanged':
+                        'Inowas\ModflowModel\Model\Event\SoilmodelMetadataWasUpdated':
                             - 'inowas.modflowmodel.blackhole_projector'
-                            - 'inowas.modflowmodel.model_projector'
+                            - 'inowas.modflowmodel.soilmodel_projector'
 
                         'Inowas\ModflowModel\Model\Event\StressPeriodsWereUpdated':
                             - 'inowas.modflowmodel.blackhole_projector'

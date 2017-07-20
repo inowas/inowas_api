@@ -25,14 +25,8 @@ use Inowas\Common\Modflow\StressPeriod;
 use Inowas\Common\Modflow\StressPeriods;
 use Inowas\Common\Modflow\TimeUnit;
 use Inowas\Common\Modflow\Version;
-use Inowas\Common\Soilmodel\BottomElevation;
-use Inowas\Common\Soilmodel\HydraulicAnisotropy;
-use Inowas\Common\Soilmodel\HydraulicConductivityX;
-use Inowas\Common\Soilmodel\SpecificStorage;
-use Inowas\Common\Soilmodel\SpecificYield;
-use Inowas\Common\Soilmodel\TopElevation;
-use Inowas\Common\Soilmodel\VerticalHydraulicConductivity;
 use Inowas\ModflowModel\Model\Command\AddBoundary;
+use Inowas\ModflowModel\Model\Command\AddLayer;
 use Inowas\ModflowModel\Model\Command\ChangeBoundingBox;
 use Inowas\ModflowModel\Model\Command\ChangeFlowPackage;
 use Inowas\ModflowModel\Model\Command\ChangeGridSize;
@@ -52,21 +46,6 @@ use Inowas\Common\Boundaries\WellType;
 use Inowas\ScenarioAnalysis\Model\ScenarioAnalysisDescription;
 use Inowas\ScenarioAnalysis\Model\ScenarioAnalysisId;
 use Inowas\ScenarioAnalysis\Model\ScenarioAnalysisName;
-use Inowas\Soilmodel\Model\Command\AddGeologicalLayerToSoilmodel;
-use Inowas\Soilmodel\Model\Command\ChangeSoilmodelDescription;
-use Inowas\Soilmodel\Model\Command\ChangeSoilmodelName;
-use Inowas\Soilmodel\Model\Command\CloneSoilmodel;
-use Inowas\Soilmodel\Model\Command\CreateSoilmodel;
-use Inowas\Soilmodel\Model\Command\UpdateGeologicalLayerProperty;
-use Inowas\Common\Soilmodel\GeologicalLayer;
-use Inowas\Common\Soilmodel\GeologicalLayerDescription;
-use Inowas\Common\Soilmodel\GeologicalLayerId;
-use Inowas\Common\Soilmodel\GeologicalLayerName;
-use Inowas\Common\Soilmodel\GeologicalLayerNumber;
-use Inowas\Soilmodel\Model\SoilmodelAggregate;
-use Inowas\Common\Soilmodel\SoilmodelDescription;
-use Inowas\Common\Soilmodel\SoilmodelId;
-use Inowas\Common\Soilmodel\SoilmodelName;
 use Tests\Inowas\ModflowBundle\EventSourcingBaseTest;
 
 class ModflowModelEventSourcingTest extends EventSourcingBaseTest
@@ -75,7 +54,7 @@ class ModflowModelEventSourcingTest extends EventSourcingBaseTest
     {
         $modelId = ModflowId::generate();
         $ownerId = UserId::generate();
-        $this->createModelWithSoilmodel($ownerId, $modelId);
+        $this->createModelWithOneLayer($ownerId, $modelId);
 
         /** @var ModflowModelAggregate $model */
         $model = $this->container->get('modflow_model_list')->get($modelId);
@@ -113,8 +92,7 @@ class ModflowModelEventSourcingTest extends EventSourcingBaseTest
                 $polygon,
                 $gridSize,
                 TimeUnit::fromInt(1),
-                LengthUnit::fromInt(2),
-                SoilmodelId::generate()
+                LengthUnit::fromInt(2)
             )
         );
 
@@ -134,7 +112,7 @@ class ModflowModelEventSourcingTest extends EventSourcingBaseTest
         $modelId = ModflowId::generate();
         $ownerId = UserId::generate();
 
-        $this->createModelWithSoilmodel($ownerId, $modelId);
+        $this->createModelWithOneLayer($ownerId, $modelId);
         $box = $this->container->get('inowas.geotools.geotools_service')->projectBoundingBox(BoundingBox::fromCoordinates(-63.687336, -63.569260, -31.367449, -31.313615, 4326), Srid::fromInt(4326));
         $boundingBox = BoundingBox::fromEPSG4326Coordinates($box->xMin(), $box->xMax(), $box->yMin(), $box->yMax(), $box->dX(), $box->dY());
         $this->commandBus->dispatch(ChangeBoundingBox::forModflowModel($ownerId, $modelId, $boundingBox));
@@ -194,91 +172,15 @@ class ModflowModelEventSourcingTest extends EventSourcingBaseTest
         $this->assertEquals([[0, 8, 53]], $activeCells->cells());
     }
 
-    public function test_create_soilmodel(): void
+    public function test_add_layer_to_model(): void
     {
         $ownerId = UserId::generate();
-        $soilModelId = SoilmodelId::generate();
-        $this->commandBus->dispatch(CreateSoilmodel::byUserWithModelId($ownerId, $soilModelId));
-        $this->commandBus->dispatch(ChangeSoilmodelName::forSoilmodel($ownerId, $soilModelId, SoilmodelName::fromString('testSoilmodel')));
-        $this->commandBus->dispatch(ChangeSoilmodelDescription::forSoilmodel($ownerId, $soilModelId, SoilmodelDescription::fromString('testSoilmodelDescription')));
+        $modelId = ModflowId::generate();
+        $this->createModelWithName($ownerId, $modelId);
+        $layer = $this->createLayer();
+        $this->commandBus->dispatch(AddLayer::forModflowModel($ownerId, $modelId, $layer));
 
-        /** @var SoilmodelAggregate $soilmodel */
-        $soilmodel = $this->container->get('soil_model_list')->getAggregateRoot($soilModelId->toString());
-        $this->assertInstanceOf(SoilmodelAggregate::class, $soilmodel);
-        $this->assertEquals(SoilmodelName::fromString('testSoilmodel'), $soilmodel->name());
-        $this->assertEquals(SoilmodelDescription::fromString('testSoilmodelDescription'), $soilmodel->description());
-    }
-
-    public function test_add_layer_to_soilmodel(): void
-    {
-        $ownerId = UserId::generate();
-        $soilModelId = SoilmodelId::generate();
-        $this->createSoilmodel($ownerId, $soilModelId);
-
-        $geologicalLayerId = GeologicalLayerId::generate();
-        $layer = GeologicalLayer::fromParams(
-            $geologicalLayerId,
-            Laytyp::fromInt(Laytyp::TYPE_CONVERTIBLE),
-            GeologicalLayerNumber::fromInteger(0),
-            GeologicalLayerName::fromString('TestLayer'),
-            GeologicalLayerDescription::fromString('TestLayer Description')
-        );
-
-        $this->commandBus->dispatch(AddGeologicalLayerToSoilmodel::forSoilmodel($ownerId, $soilModelId, $layer));
-
-        /** @var SoilmodelAggregate $soilmodel */
-        $soilmodel = $this->container->get('soil_model_list')->getAggregateRoot($soilModelId->toString());
-        $this->assertCount(1, $soilmodel->layers());
-        $this->assertEquals($layer, $soilmodel->getGeologicalLayer($geologicalLayerId));
-    }
-
-    public function test_update_layer_values_in_soilmodel_aggregate(): void
-    {
-        $ownerId = UserId::generate();
-        $soilModelId = SoilmodelId::generate();
-        $this->createSoilmodel($ownerId, $soilModelId);
-
-        $geologicalLayerId = GeologicalLayerId::generate();
-        $layer = GeologicalLayer::fromParams(
-            $geologicalLayerId,
-            Laytyp::fromInt(Laytyp::TYPE_CONVERTIBLE),
-            GeologicalLayerNumber::fromInteger(0),
-            GeologicalLayerName::fromString('TestLayer'),
-            GeologicalLayerDescription::fromString('TestLayer Description')
-        );
-        $this->commandBus->dispatch(AddGeologicalLayerToSoilmodel::forSoilmodel($ownerId, $soilModelId, $layer));
-
-        $properties = array(
-            array('value' => TopElevation::fromLayerValue(100.01), 'getter' => 'hTop'),
-            array('value' => TopElevation::fromLayerValue([[1,2,3], [1,2,3]]), 'getter' => 'hTop'),
-            array('value' => BottomElevation::fromLayerValue(100.01), 'getter' => 'hBottom'),
-            array('value' => BottomElevation::fromLayerValue([[1,2,3], [1,2,3]]), 'getter' => 'hBottom'),
-            array('value' => HydraulicConductivityX::fromLayerValue(100.01), 'getter' => 'hydraulicConductivityX'),
-            array('value' => HydraulicConductivityX::fromLayerValue([[1,2,3], [1,2,3]]), 'getter' => 'hydraulicConductivityX'),
-            array('value' => HydraulicAnisotropy::fromLayerValue(100.01), 'getter' => 'hydraulicAnisotropy'),
-            array('value' => HydraulicAnisotropy::fromLayerValue([[1,2,3], [1,2,3]]), 'getter' => 'hydraulicAnisotropy'),
-            array('value' => VerticalHydraulicConductivity::fromLayerValue(100.01), 'getter' => 'verticalHydraulicConductivity'),
-            array('value' => VerticalHydraulicConductivity::fromLayerValue([[1,2,3], [1,2,3]]), 'getter' => 'verticalHydraulicConductivity'),
-            array('value' => SpecificStorage::fromLayerValue(100.01), 'getter' => 'specificStorage'),
-            array('value' => SpecificStorage::fromLayerValue([[1,2,3], [1,2,3]]), 'getter' => 'specificStorage'),
-            array('value' => SpecificYield::fromLayerValue(100.01), 'getter' => 'specificYield'),
-            array('value' => SpecificYield::fromLayerValue([[1,2,3], [1,2,3]]), 'getter' => 'specificYield'),
-        );
-
-        foreach ($properties as $property) {
-
-            $value = $property['value'];
-            $getter = $property['getter'];
-
-            $this->commandBus->dispatch(UpdateGeologicalLayerProperty::forSoilmodel($ownerId, $soilModelId, $geologicalLayerId, $value));
-
-            /** @var SoilmodelAggregate $soilmodel */
-            $soilmodel = $this->container->get('soil_model_list')->getAggregateRoot($soilModelId->toString());
-
-            /** @var \Inowas\Common\Soilmodel\GeologicalLayer $layer */
-            $layer = $soilmodel->getGeologicalLayer($geologicalLayerId);
-            $this->assertEquals($property['value'], $layer->values()->{$getter}());
-        }
+        $this->assertEquals($layer, $this->container->get('inowas.modflowmodel.soilmodel_finder')->findLayer($modelId, $layer->id()));
     }
 
     public function test_add_riv_boundary_to_model_and_calculate_active_cells(): void
@@ -341,7 +243,7 @@ class ModflowModelEventSourcingTest extends EventSourcingBaseTest
     {
         $ownerId = UserId::generate();
         $modelId = ModflowId::generate();
-        $this->createModelWithSoilmodel($ownerId, $modelId);
+        $this->createModelWithOneLayer($ownerId, $modelId);
         $this->createSteadyCalculation($ownerId, $modelId);
         $jsonRequest = $this->recalculateAndCreateJsonCalculationRequest($modelId);
 
@@ -366,12 +268,12 @@ class ModflowModelEventSourcingTest extends EventSourcingBaseTest
     {
         $ownerId = UserId::generate();
         $modelId = ModflowId::generate();
-        $this->createModelWithSoilmodel($ownerId, $modelId);
+        $this->createModelWithOneLayer($ownerId, $modelId);
 
         $wellBoundary = WellBoundary::createWithParams(
             Name::fromString('Test Well 1'),
             Geometry::fromPoint(new Point(-63.671125, -31.325009, 4326)),
-            AffectedLayers::createWithLayerNumber(LayerNumber::fromInteger(0)),
+            AffectedLayers::createWithLayerNumber(LayerNumber::fromInt(0)),
             Metadata::create()->addWellType(WellType::fromString(WellType::TYPE_INDUSTRIAL_WELL))
         );
 
@@ -382,7 +284,7 @@ class ModflowModelEventSourcingTest extends EventSourcingBaseTest
         $wellBoundary = WellBoundary::createWithParams(
             Name::fromString('Test Well 2'),
             Geometry::fromPoint(new Point(-63.659952, -31.330144, 4326)),
-            AffectedLayers::createWithLayerNumber(LayerNumber::fromInteger(0)),
+            AffectedLayers::createWithLayerNumber(LayerNumber::fromInt(0)),
             Metadata::create()->addWellType(WellType::fromString(WellType::TYPE_INDUSTRIAL_WELL))
         );
 
@@ -412,12 +314,12 @@ class ModflowModelEventSourcingTest extends EventSourcingBaseTest
     {
         $ownerId = UserId::generate();
         $modelId = ModflowId::generate();
-        $this->createModelWithSoilmodel($ownerId, $modelId);
+        $this->createModelWithOneLayer($ownerId, $modelId);
 
         $wellBoundary = WellBoundary::createWithParams(
             Name::fromString('Test Well 1'),
             Geometry::fromPoint(new Point(-63.671125, -31.325009, 4326)),
-            AffectedLayers::createWithLayerNumber(LayerNumber::fromInteger(0)),
+            AffectedLayers::createWithLayerNumber(LayerNumber::fromInt(0)),
             Metadata::create()->addWellType(WellType::fromString(WellType::TYPE_INDUSTRIAL_WELL))
         );
 
@@ -428,7 +330,7 @@ class ModflowModelEventSourcingTest extends EventSourcingBaseTest
         $wellBoundary = WellBoundary::createWithParams(
             Name::fromString('Test Well 2'),
             Geometry::fromPoint(new Point(-63.671126, -31.325010, 4326)),
-            AffectedLayers::createWithLayerNumber(LayerNumber::fromInteger(0)),
+            AffectedLayers::createWithLayerNumber(LayerNumber::fromInt(0)),
             Metadata::create()->addWellType(WellType::fromString(WellType::TYPE_INDUSTRIAL_WELL))
         );
 
@@ -471,7 +373,7 @@ class ModflowModelEventSourcingTest extends EventSourcingBaseTest
     {
         $ownerId = UserId::generate();
         $modelId = ModflowId::generate();
-        $this->createModelWithSoilmodel($ownerId, $modelId);
+        $this->createModelWithOneLayer($ownerId, $modelId);
 
         $chdBoundary = $this->createConstantHeadBoundaryWithObservationPoint();
         $this->commandBus->dispatch(AddBoundary::forModflowModel($ownerId, $modelId, $chdBoundary));
@@ -500,7 +402,7 @@ class ModflowModelEventSourcingTest extends EventSourcingBaseTest
     {
         $ownerId = UserId::generate();
         $modelId = ModflowId::generate();
-        $this->createModelWithSoilmodel($ownerId, $modelId);
+        $this->createModelWithOneLayer($ownerId, $modelId);
 
         $ghbBoundary = $this->createGeneralHeadBoundaryWithObservationPoint();
         $this->commandBus->dispatch(AddBoundary::forModflowModel($ownerId, $modelId, $ghbBoundary));
@@ -530,7 +432,7 @@ class ModflowModelEventSourcingTest extends EventSourcingBaseTest
     {
         $ownerId = UserId::generate();
         $modelId = ModflowId::generate();
-        $this->createModelWithSoilmodel($ownerId, $modelId);
+        $this->createModelWithOneLayer($ownerId, $modelId);
 
         $rchBoundary = $this->createRechargeBoundary();
         $this->commandBus->dispatch(AddBoundary::forModflowModel($ownerId, $modelId, $rchBoundary));
@@ -557,7 +459,7 @@ class ModflowModelEventSourcingTest extends EventSourcingBaseTest
     {
         $ownerId = UserId::generate();
         $modelId = ModflowId::generate();
-        $this->createModelWithSoilmodel($ownerId, $modelId);
+        $this->createModelWithOneLayer($ownerId, $modelId);
 
         $riverBoundary = $this->createRiverBoundaryWithObservationPoint();
         $this->commandBus->dispatch(AddBoundary::forModflowModel($ownerId, $modelId, $riverBoundary));
@@ -586,7 +488,7 @@ class ModflowModelEventSourcingTest extends EventSourcingBaseTest
     {
         $ownerId = UserId::generate();
         $modelId = ModflowId::generate();
-        $this->createModelWithSoilmodel($ownerId, $modelId);
+        $this->createModelWithOneLayer($ownerId, $modelId);
         $this->container->get('inowas.modflowmodel.modflow_packages_manager')->recalculate($modelId);
         $this->commandBus->dispatch(UpdateModflowPackageParameter::byUserModelIdAndPackageData($ownerId, $modelId, PackageName::fromString('lpf'), ParameterName::fromString('layTyp'), Laytyp::fromArray(array(0))));
 
@@ -609,7 +511,7 @@ class ModflowModelEventSourcingTest extends EventSourcingBaseTest
     {
         $ownerId = UserId::generate();
         $modelId = ModflowId::generate();
-        $this->createModelWithSoilmodel($ownerId, $modelId);
+        $this->createModelWithOneLayer($ownerId, $modelId);
         $this->container->get('inowas.modflowmodel.modflow_packages_manager')->recalculate($modelId);
 
         $this->commandBus->dispatch(UpdateModflowPackageParameter::byUserModelIdAndPackageData($ownerId, $modelId, PackageName::fromString('lpf'), ParameterName::fromString('layWet'), Laywet::fromArray(array(1))));
@@ -632,7 +534,7 @@ class ModflowModelEventSourcingTest extends EventSourcingBaseTest
     {
         $ownerId = UserId::generate();
         $modelId = ModflowId::generate();
-        $this->createModelWithSoilmodel($ownerId, $modelId);
+        $this->createModelWithOneLayer($ownerId, $modelId);
         $this->container->get('inowas.modflowmodel.modflow_packages_manager')->recalculate($modelId);
 
         $this->commandBus->dispatch(ChangeFlowPackage::forModflowModel($ownerId, $modelId, PackageName::fromString('upw')));
@@ -653,7 +555,7 @@ class ModflowModelEventSourcingTest extends EventSourcingBaseTest
     {
         $ownerId = UserId::generate();
         $modelId = ModflowId::generate();
-        $this->createModelWithSoilmodel($ownerId, $modelId);
+        $this->createModelWithOneLayer($ownerId, $modelId);
         $this->container->get('inowas.modflowmodel.modflow_packages_manager')->recalculate($modelId);
 
         $this->commandBus->dispatch(UpdateModflowPackageParameter::byUserModelIdAndPackageData(
@@ -681,9 +583,8 @@ class ModflowModelEventSourcingTest extends EventSourcingBaseTest
     {
         $modelId = ModflowId::generate();
         $ownerId = UserId::generate();
-        $this->createModelWithSoilmodel($ownerId, $modelId);
+        $this->createModelWithOneLayer($ownerId, $modelId);
         $this->assertCount(1, $this->container->get('inowas.modflowmodel.model_finder')->findAll());
-        $this->assertEquals(1, $this->container->get('inowas.soilmodel.soil_model_finder')->count());
 
         $this->commandBus->dispatch(AddBoundary::forModflowModel($ownerId, $modelId, $this->createConstantHeadBoundaryWithObservationPoint()));
         $this->commandBus->dispatch(AddBoundary::forModflowModel($ownerId, $modelId, $this->createGeneralHeadBoundaryWithObservationPoint()));
@@ -694,7 +595,6 @@ class ModflowModelEventSourcingTest extends EventSourcingBaseTest
         $newModelId = ModflowId::generate();
         $this->commandBus->dispatch(CloneModflowModel::byId($modelId, $ownerId, $newModelId));
         $this->assertCount(2, $this->container->get('inowas.modflowmodel.model_finder')->findAll());
-        #$this->assertEquals(2, $this->container->get('inowas.soilmodel.soil_model_finder')->count());
         $this->assertEquals(5, $this->container->get('inowas.modflowmodel.boundary_manager')->getTotalNumberOfModelBoundaries($modelId));
     }
 
@@ -705,9 +605,8 @@ class ModflowModelEventSourcingTest extends EventSourcingBaseTest
     {
         $modelId = ModflowId::generate();
         $ownerId = UserId::generate();
-        $this->createModelWithSoilmodel($ownerId, $modelId);
+        $this->createModelWithOneLayer($ownerId, $modelId);
         $this->assertCount(1, $this->container->get('inowas.modflowmodel.model_finder')->findAll());
-        $this->assertEquals(1, $this->container->get('inowas.soilmodel.soil_model_finder')->count());
 
         $this->commandBus->dispatch(AddBoundary::forModflowModel($ownerId, $modelId, $this->createConstantHeadBoundaryWithObservationPoint()));
         $this->commandBus->dispatch(AddBoundary::forModflowModel($ownerId, $modelId, $this->createGeneralHeadBoundaryWithObservationPoint()));
@@ -718,7 +617,6 @@ class ModflowModelEventSourcingTest extends EventSourcingBaseTest
         $newModelId = ModflowId::generate();
         $this->commandBus->dispatch(CloneModflowModel::byIdWithoutSoilmodel($modelId, $ownerId, $newModelId));
         $this->assertCount(2, $this->container->get('inowas.modflowmodel.model_finder')->findAll());
-        $this->assertEquals(1, $this->container->get('inowas.soilmodel.soil_model_finder')->count());
         $this->assertEquals(5, $this->container->get('inowas.modflowmodel.boundary_manager')->getTotalNumberOfModelBoundaries($modelId));
     }
 
@@ -729,7 +627,7 @@ class ModflowModelEventSourcingTest extends EventSourcingBaseTest
     {
         $ownerId = UserId::generate();
         $modelId = ModflowId::generate();
-        $this->createModelWithSoilmodel($ownerId, $modelId);
+        $this->createModelWithOneLayer($ownerId, $modelId);
 
         $scenarioAnalysisId = ScenarioAnalysisId::generate();
         $this->createScenarioAnalysis($scenarioAnalysisId, $ownerId, $modelId, ScenarioAnalysisName::fromString('TestName'), ScenarioAnalysisDescription::fromString('TestDescription'));
@@ -853,7 +751,7 @@ class ModflowModelEventSourcingTest extends EventSourcingBaseTest
     {
         $ownerId = UserId::generate();
         $modelId = ModflowId::generate();
-        $this->createModelWithSoilmodel($ownerId, $modelId);
+        $this->createModelWithOneLayer($ownerId, $modelId);
 
         $wellBoundary = $this->createWellBoundary();
         $this->commandBus->dispatch(AddBoundary::forModflowModel($ownerId, $modelId, $wellBoundary));
@@ -869,26 +767,6 @@ class ModflowModelEventSourcingTest extends EventSourcingBaseTest
         $activeCells = $this->container->get('inowas.modflowmodel.manager')->getBoundaryActiveCells($modelId, $updatedWell->boundaryId());
         $this->assertCount(1, $activeCells->cells());
         $this->assertEquals([[0,12,17]], $activeCells->cells());
-    }
-
-    /**
-     * @test
-     */
-    public function it_can_clone_a_soil_model(): void
-    {
-        $ownerId = UserId::generate();
-        $modelId = ModflowId::generate();
-        $this->createModelWithSoilmodel($ownerId, $modelId);
-
-        $soilmodelId = $this->container->get('inowas.modflowmodel.model_finder')->getSoilmodelIdByModelId($modelId);
-        $this->container->get('inowas.soilmodel.layer_values_finder')->getNlay($soilmodelId);
-        $this->assertEquals(1, $this->container->get('inowas.soilmodel.layer_values_finder')->getNlay($soilmodelId)->toInteger());
-
-        $newSoilModelId = SoilmodelId::generate();
-        $this->commandBus->dispatch(CloneSoilmodel::byUserWithModelId($newSoilModelId, $ownerId, $soilmodelId));
-
-        $this->container->get('inowas.soilmodel.layer_values_finder')->getNlay($newSoilModelId);
-        $this->assertEquals(1, $this->container->get('inowas.soilmodel.layer_values_finder')->getNlay($soilmodelId)->toInteger());
     }
 
     private function packageIsInSelectedPackages(array $request, $packageName): bool

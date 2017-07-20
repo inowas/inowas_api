@@ -5,12 +5,10 @@ declare(strict_types=1);
 namespace Inowas\ModflowModel\Infrastructure\Projection\ModelList;
 
 use Doctrine\DBAL\Connection;
-use Inowas\Common\Boundaries\Area;
 use Inowas\Common\Geometry\Geometry;
 use Inowas\Common\Geometry\Polygon;
 use Inowas\Common\Grid\BoundingBox;
 use Inowas\Common\Grid\GridSize;
-use Inowas\Common\Id\BoundaryId;
 use Inowas\Common\Id\CalculationId;
 use Inowas\Common\Id\ModflowId;
 use Inowas\Common\Id\UserId;
@@ -19,7 +17,6 @@ use Inowas\Common\Modflow\Name;
 use Inowas\Common\Modflow\Description;
 use Inowas\Common\Modflow\StressPeriods;
 use Inowas\Common\Modflow\TimeUnit;
-use Inowas\Common\Soilmodel\SoilmodelId;
 use Inowas\ModflowModel\Infrastructure\Projection\Table;
 
 class ModelFinder
@@ -43,7 +40,7 @@ class ModelFinder
     {
         $this->connection->setFetchMode(\PDO::FETCH_ASSOC);
         $rows = $this->connection->fetchAll(
-            sprintf('SELECT model_id AS id, user_id, soilmodel_id, user_name, name, description, area as geometry, grid_size, bounding_box, created_at, public FROM %s WHERE user_id = :user_id', Table::MODFLOWMODELS_LIST),
+            sprintf('SELECT model_id AS id, user_id, user_name, name, description, area as geometry, grid_size, bounding_box, created_at, public FROM %s WHERE user_id = :user_id', Table::MODFLOWMODELS_LIST),
             ['user_id' => $userId->toString()]
         );
 
@@ -60,7 +57,7 @@ class ModelFinder
     {
         $this->connection->setFetchMode(\PDO::FETCH_ASSOC);
         $rows = $this->connection->fetchAll(
-            sprintf('SELECT model_id AS id, user_id, soilmodel_id, user_name, name, description, area as geometry, grid_size, bounding_box, created_at, public FROM %s WHERE public = :public', Table::MODFLOWMODELS_LIST),
+            sprintf('SELECT model_id AS id, user_id, user_name, name, description, area as geometry, grid_size, bounding_box, created_at, public FROM %s WHERE public = :public', Table::MODFLOWMODELS_LIST),
             ['public' => true]
         );
 
@@ -97,11 +94,6 @@ class ModelFinder
         }
 
         return $geometry->value();
-    }
-
-    public function getAreaByModflowModelId(ModflowId $modelId): ?Area
-    {
-        return Area::create(BoundaryId::generate(), Name::fromString(''), $this->getAreaPolygonByModflowModelId($modelId));
     }
 
     public function getBoundingBoxByModflowModelId(ModflowId $modelId): ?BoundingBox
@@ -196,7 +188,7 @@ class ModelFinder
     {
         $this->connection->setFetchMode(\PDO::FETCH_ASSOC);
         $result = $this->connection->fetchAssoc(
-            sprintf('SELECT model_id AS id, user_id, soilmodel_id, user_name, name, description, area as geometry, length_unit, time_unit, grid_size, bounding_box, calculation_id, created_at, public FROM %s WHERE model_id = :model_id', Table::MODFLOWMODELS_LIST),
+            sprintf('SELECT model_id AS id, user_id, user_name, name, description, area as geometry, length_unit, time_unit, grid_size, bounding_box, calculation_id, created_at, public FROM %s WHERE model_id = :model_id', Table::MODFLOWMODELS_LIST),
             ['model_id' => $modelId->toString()]
         );
 
@@ -209,21 +201,6 @@ class ModelFinder
         $result['bounding_box'] = json_decode($result['bounding_box'], true);
 
         return $result;
-    }
-
-    public function getSoilmodelIdByModelId(ModflowId $modelId): ?SoilmodelId
-    {
-        $this->connection->setFetchMode(\PDO::FETCH_ASSOC);
-        $result = $this->connection->fetchAssoc(
-            sprintf('SELECT soilmodel_id FROM %s WHERE model_id = :model_id', Table::MODFLOWMODELS_LIST),
-            ['model_id' => $modelId->toString()]
-        );
-
-        if ($result === false){
-            return null;
-        }
-
-        return SoilmodelId::fromString($result['soilmodel_id']);
     }
 
     public function getStressPeriodsByModelId(ModflowId $modelId): ?StressPeriods

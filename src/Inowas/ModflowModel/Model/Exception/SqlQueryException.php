@@ -2,7 +2,7 @@
 
 namespace Inowas\ModflowModel\Model\Exception;
 
-final class SqlQueryExceptionException extends \InvalidArgumentException
+final class SqlQueryException extends \InvalidArgumentException
 {
     public static function withClassName(string $className, string $functionName)
     {

@@ -16,7 +16,7 @@ use Inowas\Common\Id\BoundaryId;
 use Inowas\Common\Id\ModflowId;
 use Inowas\Common\Modflow\Name;
 use Inowas\ModflowModel\Infrastructure\Projection\Table;
-use Inowas\ModflowModel\Model\Exception\SqlQueryExceptionException;
+use Inowas\ModflowModel\Model\Exception\SqlQueryException;
 
 class BoundaryFinder
 {
@@ -37,7 +37,7 @@ class BoundaryFinder
         );
 
         if ($result === false) {
-            throw SqlQueryExceptionException::withClassName(__CLASS__, __FUNCTION__);
+            throw SqlQueryException::withClassName(__CLASS__, __FUNCTION__);
         }
 
         return (int)$result['count'];
@@ -51,7 +51,7 @@ class BoundaryFinder
         );
 
         if ($result === false) {
-            throw SqlQueryExceptionException::withClassName(__CLASS__, __FUNCTION__);
+            throw SqlQueryException::withClassName(__CLASS__, __FUNCTION__);
         }
 
         return (int)$result['count'];
@@ -175,7 +175,7 @@ class BoundaryFinder
         );
 
         if ($rows === false) {
-            throw SqlQueryExceptionException::withClassName(__CLASS__, __FUNCTION__);
+            throw SqlQueryException::withClassName(__CLASS__, __FUNCTION__);
         }
 
         $spDates = [];

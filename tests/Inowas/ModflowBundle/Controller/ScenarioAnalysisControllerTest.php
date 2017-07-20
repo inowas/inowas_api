@@ -64,7 +64,7 @@ class ScenarioAnalysisControllerTest extends EventSourcingBaseTest
         $username = $this->user->getName();
 
         $modelId = ModflowId::generate();
-        $this->createModelWithSoilmodel($userId, $modelId);
+        $this->createModelWithOneLayer($userId, $modelId);
         $this->addSteadyStressperiod($userId, $modelId);
 
         $scenarioAnalysisId = ScenarioAnalysisId::generate();
@@ -117,7 +117,7 @@ class ScenarioAnalysisControllerTest extends EventSourcingBaseTest
         $username = $this->user->getName();
 
         $modelId = ModflowId::generate();
-        $this->createModelWithSoilmodel($userId, $modelId);
+        $this->createModelWithOneLayer($userId, $modelId);
         $this->addSteadyStressperiod($userId, $modelId);
 
         $scenarioAnalysisId = ScenarioAnalysisId::generate();
@@ -167,7 +167,7 @@ class ScenarioAnalysisControllerTest extends EventSourcingBaseTest
         $apiKey = $this->user->getApiKey();
 
         $modelId = ModflowId::generate();
-        $this->createModelWithSoilmodel($userId, $modelId);
+        $this->createModelWithOneLayer($userId, $modelId);
         $this->addSteadyStressperiod($userId, $modelId);
 
         $this->commandBus->dispatch(ChangeName::forModflowModel($userId, $modelId, Name::fromString('TestModel')));
@@ -242,7 +242,7 @@ class ScenarioAnalysisControllerTest extends EventSourcingBaseTest
         $apiKey = $this->user->getApiKey();
 
         $modelId = ModflowId::generate();
-        $this->createModelWithSoilmodel($userId, $modelId);
+        $this->createModelWithOneLayer($userId, $modelId);
         $this->commandBus->dispatch(AddBoundary::forModflowModel($userId, $modelId, $this->createRechargeBoundary()));
         $this->commandBus->dispatch(AddBoundary::forModflowModel($userId, $modelId, $this->createRiverBoundaryWithObservationPoint()));
         $this->commandBus->dispatch(AddBoundary::forModflowModel($userId, $modelId, $this->createWellBoundary()));

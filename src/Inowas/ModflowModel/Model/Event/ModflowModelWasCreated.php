@@ -9,7 +9,6 @@ use Inowas\Common\Grid\BoundingBox;
 use Inowas\Common\Grid\GridSize;
 use Inowas\Common\Id\ModflowId;
 use Inowas\Common\Id\UserId;
-use Inowas\Common\Soilmodel\SoilmodelId;
 use Prooph\EventSourcing\AggregateChanged;
 
 /** @noinspection LongInheritanceChainInspection */
@@ -21,9 +20,6 @@ class ModflowModelWasCreated extends AggregateChanged
 
     /** @var UserId */
     private $userId;
-
-    /** @var SoilmodelId */
-    private $soilmodelId;
 
     /** @var  Polygon */
     private $polygon;
@@ -40,7 +36,6 @@ class ModflowModelWasCreated extends AggregateChanged
      * @param Polygon $polygon
      * @param GridSize $gridSize
      * @param BoundingBox $boundingBox
-     * @param SoilmodelId $soilmodelId
      * @return ModflowModelWasCreated
      */
     public static function withParameters(
@@ -48,13 +43,13 @@ class ModflowModelWasCreated extends AggregateChanged
         UserId $userId,
         Polygon $polygon,
         GridSize $gridSize,
-        BoundingBox $boundingBox,
-        SoilmodelId $soilmodelId
+        BoundingBox $boundingBox
     ): ModflowModelWasCreated
     {
+
+        /** @var ModflowModelWasCreated $event */
         $event = self::occur($modflowId->toString(),[
             'user_id' => $userId->toString(),
-            'soilmodel_id' => $soilmodelId->toString(),
             'polygon' => $polygon->toJson(),
             'grid_size' => json_encode($gridSize),
             'bounding_box' => json_encode($boundingBox)
@@ -62,7 +57,6 @@ class ModflowModelWasCreated extends AggregateChanged
 
         $event->modelId = $modflowId;
         $event->userId = $userId;
-        $event->soilmodelId = $soilmodelId;
         $event->polygon = $polygon;
         $event->gridSize = $gridSize;
 
@@ -76,15 +70,6 @@ class ModflowModelWasCreated extends AggregateChanged
         }
 
         return $this->modelId;
-    }
-
-    public function soilmodelId(): SoilmodelId
-    {
-        if ($this->soilmodelId === null){
-            $this->soilmodelId = SoilmodelId::fromString($this->payload['soilmodel_id']);
-        }
-
-        return $this->soilmodelId;
     }
 
     public function userId(): UserId

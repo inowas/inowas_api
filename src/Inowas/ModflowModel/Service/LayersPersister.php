@@ -2,14 +2,13 @@
 
 namespace Inowas\ModflowModel\Service;
 
-use Inowas\Common\Id\CalculationId;
-use Inowas\ModflowModel\Model\ModflowPackages;
+use Inowas\Common\Soilmodel\Layer;
 use Symfony\Component\Filesystem\Exception\FileNotFoundException;
 use Symfony\Component\Filesystem\Exception\IOException;
 use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\Finder\Finder;
 
-class ModflowPackagesPersister
+class LayersPersister
 {
 
     /** @var  string */
@@ -28,13 +27,13 @@ class ModflowPackagesPersister
         }
     }
 
-    public function load(CalculationId $calculationId): ModflowPackages
+    public function load(string $hash): Layer
     {
         $finder = new Finder();
-        $finder->files()->in($this->dataFolder)->name($calculationId->toString().'.pck');
+        $finder->files()->in($this->dataFolder)->name($hash);
 
         if ($finder->count() === 0){
-            throw new FileNotFoundException(sprintf('File with name %s in directory %s not found.', $calculationId->toString(), $this->dataFolder));
+            throw new FileNotFoundException(sprintf('File with name %s in directory %s not found.', $hash, $this->dataFolder));
         }
 
         $content = '';
@@ -42,15 +41,15 @@ class ModflowPackagesPersister
             $content = $file->getContents();
         }
 
-        return unserialize($content, [ModflowPackages::class]);
+        return Layer::fromArray(json_decode($content, true));
     }
 
-    public function save(ModflowPackages $packages): CalculationId
+    public function save(Layer $layer): string
     {
-        $hash = $packages->hash();
+        $hash = $layer->hash();
         $fs = new FileSystem();
-        $fs->dumpFile(sprintf('%s/%s/%s.pck', $this->dataFolder, 'packages', $hash), serialize($packages));
-
-        return CalculationId::fromString($hash);
+        $fs->dumpFile(sprintf('%s/%s/%s', $this->dataFolder, 'layers', $hash), json_encode($layer->toArray()));
+        
+        return $hash;
     }
 }

@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Inowas\ModflowModel\Model\Handler;
 
-use Inowas\Common\Soilmodel\SoilmodelId;
 use Inowas\ModflowModel\Model\Command\CloneModflowModel;
 use Inowas\ModflowModel\Model\Exception\ModflowModelNotFoundException;
 use Inowas\ModflowModel\Model\ModflowModelList;
@@ -29,16 +28,10 @@ final class CloneModflowModelHandler
             throw ModflowModelNotFoundException::withModelId($command->baseModelId());
         }
 
-        $soilmodelId = $modflowModel->soilmodelId();
-        if ($command->cloneSoilmodel()){
-            $soilmodelId = SoilmodelId::generate();
-        }
-
         /** @var ModflowModelAggregate $modflowModel */
         $newModel = ModflowModelAggregate::clone(
             $command->newModelId(),
             $command->userId(),
-            $soilmodelId,
             $modflowModel
         );
 

@@ -43,3 +43,14 @@ services:
         arguments:
           - '@doctrine.dbal.default_connection'
           - '@doctrine.orm.default_entity_manager'
+
+    inowas.modflowmodel.soilmodel_finder:
+        class: Inowas\ModflowModel\Infrastructure\Projection\Soilmodel\SoilmodelFinder
+        arguments:
+          - '@doctrine.dbal.default_connection'
+          - '@inowas.modflowmodel.layers_persister'
+
+    inowas.modflowmodel.soilmodel_projector:
+        class: Inowas\ModflowModel\Infrastructure\Projection\Soilmodel\SoilmodelProjector
+        arguments:
+          - '@doctrine.dbal.default_connection'

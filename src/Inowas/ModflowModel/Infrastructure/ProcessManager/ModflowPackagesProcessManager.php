@@ -2,7 +2,6 @@
 
 namespace Inowas\ModflowModel\Infrastructure\ProcessManager;
 
-use Inowas\Common\Projection\AbstractDoctrineConnectionProjector;
 use Inowas\ModflowModel\Model\Command\UpdateCalculationId;
 use Inowas\ModflowModel\Model\Event\FlowPackageWasChanged;
 use Inowas\ModflowModel\Model\Event\LengthUnitWasUpdated;
@@ -56,12 +55,6 @@ class ModflowPackagesProcessManager
     {
         $calculationId = $this->packagesManager->createFromDefaultsAndSave();
         $this->commandBus->dispatch(UpdateCalculationId::withId($event->modelId(), $calculationId));
-    }
-
-    public function onSoilModelWasChanged(SoilModelWasChanged $event): void
-    {
-        $calculationId = $this->packagesManager->recalculateSoilmodel($event->modflowModelId(), $event->soilModelId());
-        $this->commandBus->dispatch(UpdateCalculationId::withId($event->modflowModelId(), $calculationId));
     }
 
     public function onStressPeriodsWereUpdated(StressPeriodsWereUpdated $event): void

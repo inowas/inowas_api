@@ -8,7 +8,6 @@ use FOS\UserBundle\Doctrine\UserManager;
 use Inowas\AppBundle\Model\User;
 use Inowas\Common\Id\ModflowId;
 use Inowas\Common\Id\UserId;
-use Ramsey\Uuid\Uuid;
 use Tests\Inowas\ModflowBundle\EventSourcingBaseTest;
 
 class MessageBoxControllerTest extends EventSourcingBaseTest
@@ -52,10 +51,9 @@ class MessageBoxControllerTest extends EventSourcingBaseTest
     {
         $userId = UserId::fromString($this->user->getId()->toString());
         $apiKey = $this->user->getApiKey();
-        $username = $this->user->getName();
 
         $modelId = ModflowId::generate();
-        $this->createModelWithSoilmodel($userId, $modelId);
+        $this->createModelWithOneLayer($userId, $modelId);
 
         $client = static::createClient();
         $client->request(

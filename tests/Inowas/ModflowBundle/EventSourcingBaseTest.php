@@ -34,21 +34,26 @@ use Inowas\Common\Grid\LayerNumber;
 use Inowas\Common\Id\ModflowId;
 use Inowas\Common\Id\ObservationPointId;
 use Inowas\Common\Id\UserId;
+use Inowas\Common\Modflow\Botm;
+use Inowas\Common\Modflow\Hani;
+use Inowas\Common\Modflow\Hk;
+use Inowas\Common\Modflow\Layavg;
 use Inowas\Common\Modflow\Laytyp;
+use Inowas\Common\Modflow\Laywet;
 use Inowas\Common\Modflow\LengthUnit;
 use Inowas\Common\Modflow\Name;
 use Inowas\Common\Modflow\Description;
+use Inowas\Common\Modflow\Ss;
 use Inowas\Common\Modflow\StressPeriod;
 use Inowas\Common\Modflow\StressPeriods;
+use Inowas\Common\Modflow\Sy;
 use Inowas\Common\Modflow\TimeUnit;
-use Inowas\Common\Soilmodel\BottomElevation;
-use Inowas\Common\Soilmodel\HydraulicAnisotropy;
-use Inowas\Common\Soilmodel\HydraulicConductivityX;
-use Inowas\Common\Soilmodel\SpecificStorage;
-use Inowas\Common\Soilmodel\SpecificYield;
-use Inowas\Common\Soilmodel\TopElevation;
-use Inowas\Common\Soilmodel\VerticalHydraulicConductivity;
+use Inowas\Common\Modflow\Top;
+use Inowas\Common\Modflow\Vka;
+use Inowas\Common\Soilmodel\Layer;
+use Inowas\Common\Soilmodel\LayerId;
 use Inowas\ModflowModel\Model\AMQP\CalculationRequest;
+use Inowas\ModflowModel\Model\Command\AddLayer;
 use Inowas\ModflowModel\Model\Command\ChangeBoundingBox;
 use Inowas\ModflowModel\Model\Command\CreateModflowModel;
 use Inowas\ModflowBundle\Command\ModflowEventStoreTruncateCommand;
@@ -59,19 +64,6 @@ use Inowas\ScenarioAnalysis\Model\Command\CreateScenarioAnalysis;
 use Inowas\ScenarioAnalysis\Model\ScenarioAnalysisDescription;
 use Inowas\ScenarioAnalysis\Model\ScenarioAnalysisId;
 use Inowas\ScenarioAnalysis\Model\ScenarioAnalysisName;
-use Inowas\Soilmodel\Model\Command\AddGeologicalLayerToSoilmodel;
-use Inowas\Soilmodel\Model\Command\ChangeSoilmodelDescription;
-use Inowas\Soilmodel\Model\Command\ChangeSoilmodelName;
-use Inowas\Soilmodel\Model\Command\CreateSoilmodel;
-use Inowas\Soilmodel\Model\Command\UpdateGeologicalLayerProperty;
-use Inowas\Common\Soilmodel\GeologicalLayer;
-use Inowas\Common\Soilmodel\GeologicalLayerDescription;
-use Inowas\Common\Soilmodel\GeologicalLayerId;
-use Inowas\Common\Soilmodel\GeologicalLayerName;
-use Inowas\Common\Soilmodel\GeologicalLayerNumber;
-use Inowas\Common\Soilmodel\SoilmodelDescription;
-use Inowas\Common\Soilmodel\SoilmodelId;
-use Inowas\Common\Soilmodel\SoilmodelName;
 use Prooph\EventStore\EventStore;
 use Prooph\ServiceBus\CommandBus;
 use Prooph\ServiceBus\EventBus;
@@ -122,67 +114,15 @@ abstract class EventSourcingBaseTest extends WebTestCase
     }
 
     /* HELPERS */
-    protected function createSoilmodel(UserId $ownerId, SoilmodelId $soilmodelId): void
+    protected function addSteadyStressperiod(UserId $user, ModflowId $modelId): void
     {
-        $this->commandBus->dispatch(CreateSoilmodel::byUserWithModelId($ownerId, $soilmodelId));
-        $this->commandBus->dispatch(ChangeSoilmodelName::forSoilmodel($ownerId, $soilmodelId, SoilmodelName::fromString('testSoilmodel')));
-        $this->commandBus->dispatch(ChangeSoilmodelDescription::forSoilmodel($ownerId, $soilmodelId, SoilmodelDescription::fromString('testSoilmodelDescription')));
-    }
+        $start = DateTime::fromDateTime(new \DateTime('2015-01-01'));
+        $end = DateTime::fromDateTime(new \DateTime('2015-12-31'));
+        $timeUnit = TimeUnit::fromInt(TimeUnit::DAYS);
+        $stressperiods = StressPeriods::create($start, $end, $timeUnit);
+        $stressperiods->addStressPeriod(StressPeriod::create(0, 1,1,1,true));
 
-    protected function createModelWithSoilmodel(UserId $ownerId, ModflowId $modelId): void
-    {
-        /** @var SoilmodelId $soilModelId */
-        $soilModelId = SoilmodelId::generate();
-        $this->commandBus->dispatch(CreateSoilmodel::byUserWithModelId($ownerId, $soilModelId));
-        $this->commandBus->dispatch(ChangeSoilmodelName::forSoilmodel($ownerId, $soilModelId, SoilmodelName::fromString('SoilModel Río Primero')));
-        $this->commandBus->dispatch(ChangeSoilmodelDescription::forSoilmodel($ownerId, $soilModelId, SoilmodelDescription::fromString('SoilModel for Río Primero Area')));
-
-        /** @var GeologicalLayerId $layerId */
-        $layerId = GeologicalLayerId::generate();
-        $this->commandBus->dispatch(AddGeologicalLayerToSoilmodel::forSoilmodel(
-            $ownerId,
-            $soilModelId,
-            GeologicalLayer::fromParams(
-                $layerId,
-                Laytyp::fromValue(Laytyp::TYPE_CONVERTIBLE),
-                GeologicalLayerNumber::fromInteger(0),
-                GeologicalLayerName::fromString('Surface Layer'),
-                GeologicalLayerDescription::fromString('the one and only')
-            )
-        ));
-        $this->commandBus->dispatch(UpdateGeologicalLayerProperty::forSoilmodel($ownerId, $soilModelId, $layerId, TopElevation::fromLayerValue(430)));
-        $this->commandBus->dispatch(UpdateGeologicalLayerProperty::forSoilmodel($ownerId, $soilModelId, $layerId, BottomElevation::fromLayerValue(360)));
-        $this->commandBus->dispatch(UpdateGeologicalLayerProperty::forSoilmodel($ownerId, $soilModelId, $layerId, HydraulicConductivityX::fromLayerValue(10)));
-        $this->commandBus->dispatch(UpdateGeologicalLayerProperty::forSoilmodel($ownerId, $soilModelId, $layerId, HydraulicAnisotropy::fromLayerValue(1)));
-        $this->commandBus->dispatch(UpdateGeologicalLayerProperty::forSoilmodel($ownerId, $soilModelId, $layerId, VerticalHydraulicConductivity::fromLayerValue(1)));
-        $this->commandBus->dispatch(UpdateGeologicalLayerProperty::forSoilmodel($ownerId, $soilModelId, $layerId, SpecificStorage::fromLayerValue(1e-5)));
-        $this->commandBus->dispatch(UpdateGeologicalLayerProperty::forSoilmodel($ownerId, $soilModelId, $layerId, SpecificYield::fromLayerValue(0.15)));
-
-        $polygon = new Polygon(array(array(
-            array(-63.687336, -31.313615),
-            array(-63.687336, -31.367449),
-            array(-63.569260, -31.367449),
-            array(-63.569260, -31.313615),
-            array(-63.687336, -31.313615)
-        )), 4326);
-
-        $gridSize = GridSize::fromXY(75, 40);
-        $this->commandBus->dispatch(CreateModflowModel::newWithAllParams(
-            $ownerId,
-            $modelId,
-            Name::fromString('Rio Primero Base Model'),
-            Description::fromString('Base Model for the scenario analysis 2020 Rio Primero.'),
-            $polygon,
-            $gridSize,
-            TimeUnit::fromInt(TimeUnit::DAYS),
-            LengthUnit::fromInt(LengthUnit::METERS),
-            $soilModelId
-        ));
-
-        $box = $this->container->get('inowas.geotools.geotools_service')->projectBoundingBox(BoundingBox::fromCoordinates(-63.687336, -63.569260, -31.367449, -31.313615, 4326), Srid::fromInt(4326));
-        $boundingBox = BoundingBox::fromEPSG4326Coordinates($box->xMin(), $box->xMax(), $box->yMin(), $box->yMax(), $box->dX(), $box->dY());
-        $this->commandBus->dispatch(ChangeBoundingBox::forModflowModel($ownerId, $modelId, $boundingBox));
-        $this->addSteadyStressperiod($ownerId, $modelId);
+        $this->commandBus->dispatch(UpdateStressPeriods::of($user, $modelId, $stressperiods));
     }
 
     protected function createSteadyCalculation(UserId $ownerId, ModflowId $modelId): void
@@ -206,17 +146,6 @@ abstract class EventSourcingBaseTest extends WebTestCase
         return json_encode($request);
     }
 
-    protected function createPolygon(): Polygon
-    {
-        return new Polygon([[
-            [-63.65, -31.31],
-            [-63.65, -31.36],
-            [-63.58, -31.36],
-            [-63.58, -31.31],
-            [-63.65, -31.31]
-        ]], 4326);
-    }
-
     protected function createConstantHeadBoundaryWithObservationPoint(): ConstantHeadBoundary
     {
         /** @var ConstantHeadBoundary $chdBoundary */
@@ -226,7 +155,7 @@ abstract class EventSourcingBaseTest extends WebTestCase
                 array(-63.687336, -31.313615),
                 array(-63.569260, -31.313615)
             ), 4326)),
-            AffectedLayers::createWithLayerNumber(LayerNumber::fromInteger(0)),
+            AffectedLayers::createWithLayerNumber(LayerNumber::fromInt(0)),
             Metadata::create()
         );
 
@@ -258,7 +187,7 @@ abstract class EventSourcingBaseTest extends WebTestCase
                 array(-63.687336, -31.313615),
                 array(-63.569260, -31.313615)
             ), 4326)),
-            AffectedLayers::createWithLayerNumber(LayerNumber::fromInteger(0)),
+            AffectedLayers::createWithLayerNumber(LayerNumber::fromInt(0)),
             Metadata::create()
         );
 
@@ -428,7 +357,7 @@ abstract class EventSourcingBaseTest extends WebTestCase
         $wellBoundary = WellBoundary::createWithParams(
             Name::fromString('Test Well 1'),
             Geometry::fromPoint(new Point(-63.60, -31.32, 4326)),
-            AffectedLayers::createWithLayerNumber(LayerNumber::fromInteger(0)),
+            AffectedLayers::createWithLayerNumber(LayerNumber::fromInt(0)),
             Metadata::create()->addWellType(WellType::fromString(WellType::TYPE_INDUSTRIAL_WELL))
         );
 
@@ -436,7 +365,7 @@ abstract class EventSourcingBaseTest extends WebTestCase
         $wellBoundary = $wellBoundary->addPumpingRate(WellDateTimeValue::fromParams(DateTime::fromDateTimeImmutable(new \DateTimeImmutable('2015-01-01')), -5000));
         return $wellBoundary;
     }
-    
+
     protected function createScenarioAnalysis(ScenarioAnalysisId $id, UserId $ownerId, ModflowId $modelId, ScenarioAnalysisName $name, ScenarioAnalysisDescription $description): void
     {
         $this->commandBus->dispatch(CreateScenarioAnalysis::byUserWithBaseModelNameAndDescription(
@@ -451,6 +380,38 @@ abstract class EventSourcingBaseTest extends WebTestCase
     protected function createScenario(ScenarioAnalysisId $id, UserId $owner, ModflowId $modelId, ModflowId $scenarioId, Name $name, Description $description): void
     {
         $this->commandBus->dispatch(CreateScenario::byUserWithBaseModelAndScenarioIdAndName($id, $owner, $modelId, $scenarioId, $name, $description));
+    }
+
+    protected function createModelWithOneLayer(UserId $ownerId, ModflowId $modelId): void
+    {
+        $this->createModel($ownerId, $modelId);
+        $this->commandBus->dispatch(AddLayer::forModflowModel($ownerId, $modelId, $this->createLayer()));
+        $this->addSteadyStressperiod($ownerId, $modelId);
+    }
+
+    protected function createModel(UserId $ownerId, ModflowId $modelId): void
+    {
+        $polygon = new Polygon(array(array(
+            array(-63.687336, -31.313615),
+            array(-63.687336, -31.367449),
+            array(-63.569260, -31.367449),
+            array(-63.569260, -31.313615),
+            array(-63.687336, -31.313615)
+        )), 4326);
+        $this->commandBus->dispatch(CreateModflowModel::newWithAllParams(
+            $ownerId,
+            $modelId,
+            Name::fromString('Rio Primero Base Model'),
+            Description::fromString('Base Model for the scenario analysis 2020 Rio Primero.'),
+            $polygon,
+            GridSize::fromXY(75, 40),
+            TimeUnit::fromInt(TimeUnit::DAYS),
+            LengthUnit::fromInt(LengthUnit::METERS)
+        ));
+
+        $box = $this->container->get('inowas.geotools.geotools_service')->projectBoundingBox(BoundingBox::fromCoordinates(-63.687336, -63.569260, -31.367449, -31.313615, 4326), Srid::fromInt(4326));
+        $boundingBox = BoundingBox::fromEPSG4326Coordinates($box->xMin(), $box->xMax(), $box->yMin(), $box->yMax(), $box->dX(), $box->dY());
+        $this->commandBus->dispatch(ChangeBoundingBox::forModflowModel($ownerId, $modelId, $boundingBox));
     }
 
     protected function createModelWithName(UserId $userId, ModflowId $modelId): void
@@ -469,20 +430,39 @@ abstract class EventSourcingBaseTest extends WebTestCase
                 $polygon,
                 $gridSize,
                 TimeUnit::fromInt(1),
-                LengthUnit::fromInt(2),
-                SoilmodelId::generate()
+                LengthUnit::fromInt(2)
             )
         );
     }
 
-    protected function addSteadyStressperiod(UserId $user, ModflowId $modelId): void
+    protected function createPolygon(): Polygon
     {
-        $start = DateTime::fromDateTime(new \DateTime('2015-01-01'));
-        $end = DateTime::fromDateTime(new \DateTime('2015-12-31'));
-        $timeUnit = TimeUnit::fromInt(TimeUnit::DAYS);
-        $stressperiods = StressPeriods::create($start, $end, $timeUnit);
-        $stressperiods->addStressPeriod(StressPeriod::create(0, 1,1,1,true));
+        return new Polygon([[
+            [-63.65, -31.31],
+            [-63.65, -31.36],
+            [-63.58, -31.36],
+            [-63.58, -31.31],
+            [-63.65, -31.31]
+        ]], 4326);
+    }
 
-        $this->commandBus->dispatch(UpdateStressPeriods::of($user, $modelId, $stressperiods));
+    protected function createLayer(): Layer
+    {
+        return Layer::fromParams(
+            LayerId::fromString('tl1'),
+            Name::fromString('Surface Layer'),
+            Description::fromString('the one and only'),
+            LayerNumber::fromInt(0),
+            Top::fromValue(430),
+            Botm::fromValue(360),
+            Hk::fromValue(10),
+            Hani::fromValue(1),
+            Vka::fromValue(1),
+            Layavg::fromInt(Layavg::TYPE_HARMONIC_MEAN),
+            Laytyp::fromInt(Laytyp::TYPE_CONVERTIBLE),
+            Laywet::fromFloat(1),
+            Ss::fromFloat(1e-5),
+            Sy::fromFloat(0.15)
+        );
     }
 }

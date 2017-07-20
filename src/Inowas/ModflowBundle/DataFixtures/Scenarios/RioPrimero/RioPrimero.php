@@ -218,7 +218,7 @@ class RioPrimero extends LoadScenarioBase
                 array($boundingBox->xMin(), $boundingBox->yMin()),
                 array($boundingBox->xMin(), $boundingBox->yMax())
             ), $boundingBox->srid())),
-            AffectedLayers::createWithLayerNumber(LayerNumber::fromInteger(0)),
+            AffectedLayers::createWithLayerNumber(LayerNumber::fromInt(0)),
             Metadata::create()
         );
 
@@ -251,7 +251,7 @@ class RioPrimero extends LoadScenarioBase
                 array($boundingBox->xMax(), $boundingBox->yMin()),
                 array($boundingBox->xMax(), $boundingBox->yMax())
             ), $boundingBox->srid())),
-            AffectedLayers::createWithLayerNumber(LayerNumber::fromInteger(0)),
+            AffectedLayers::createWithLayerNumber(LayerNumber::fromInt(0)),
             Metadata::create()
         );
 
@@ -364,7 +364,7 @@ class RioPrimero extends LoadScenarioBase
                 array(-63.572559356689,-31.332231777991),
                 array(-63.569641113281,-31.331205380684)
             ), 4326)),
-            AffectedLayers::createWithLayerNumber(LayerNumber::fromInteger(0)),
+            AffectedLayers::createWithLayerNumber(LayerNumber::fromInt(0)),
             Metadata::create()
         );
 
@@ -417,7 +417,7 @@ class RioPrimero extends LoadScenarioBase
             $wellBoundary = WellBoundary::createWithParams(
                 Name::fromString($data['name']),
                 Geometry::fromPoint($data['point']),
-                AffectedLayers::createWithLayerNumber(LayerNumber::fromInteger($data['layer'])),
+                AffectedLayers::createWithLayerNumber(LayerNumber::fromInt($data['layer'])),
                 Metadata::create()->addWellType(WellType::fromString($data['type']))
             );
 
@@ -503,7 +503,7 @@ class RioPrimero extends LoadScenarioBase
             $wellBoundary = WellBoundary::createWithParams(
                 Name::fromString($data['name']),
                 Geometry::fromPoint($data['point']),
-                AffectedLayers::createWithLayerNumber(LayerNumber::fromInteger($data['layer'])),
+                AffectedLayers::createWithLayerNumber(LayerNumber::fromInt($data['layer'])),
                 Metadata::create()->addWellType(WellType::fromString($data['type']))
             );
 
@@ -552,7 +552,7 @@ class RioPrimero extends LoadScenarioBase
             $wellBoundary = WellBoundary::createWithParams(
                 Name::fromString($data['name']),
                 Geometry::fromPoint($data['point']),
-                AffectedLayers::createWithLayerNumber(LayerNumber::fromInteger($data['layer'])),
+                AffectedLayers::createWithLayerNumber(LayerNumber::fromInt($data['layer'])),
                 Metadata::create()->addWellType(WellType::fromString($data['type']))
             );
 

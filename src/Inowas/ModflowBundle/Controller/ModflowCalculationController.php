@@ -127,7 +127,7 @@ class ModflowCalculationController extends InowasRestController
     {
         /** @var ResultType $type */
         $type = ResultType::fromString($type);
-        $layerNumber = LayerNumber::fromInteger((int)$layer);
+        $layerNumber = LayerNumber::fromInt((int)$layer);
         $totim = TotalTime::fromInt((int)$totim);
 
         $headData = $this->get('inowas.modflowmodel.calculation_results_finder')->findHeadData(
@@ -171,7 +171,7 @@ class ModflowCalculationController extends InowasRestController
         $calculationId2 = CalculationId::fromString($id2);
 
         $type = ResultType::fromString($type);
-        $layerNumber = LayerNumber::fromInteger((int)$layer);
+        $layerNumber = LayerNumber::fromInt((int)$layer);
         $totim = TotalTime::fromInt((int)$totim);
 
         $headData = $this->get('inowas.modflowmodel.calculation_results_finder')->findHeadDifference(
@@ -214,7 +214,7 @@ class ModflowCalculationController extends InowasRestController
         $calculationId = CalculationId::fromString($id);
 
         $type = ResultType::fromString($type);
-        $layerNumber = LayerNumber::fromInteger((int)$layer);
+        $layerNumber = LayerNumber::fromInt((int)$layer);
         $nCol = Ncol::fromInt((int)$x);
         $nRow = Nrow::fromInt((int)$y);
 
