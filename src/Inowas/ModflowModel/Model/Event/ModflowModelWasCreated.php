@@ -51,8 +51,8 @@ class ModflowModelWasCreated extends AggregateChanged
         $event = self::occur($modflowId->toString(),[
             'user_id' => $userId->toString(),
             'polygon' => $polygon->toJson(),
-            'grid_size' => json_encode($gridSize),
-            'bounding_box' => json_encode($boundingBox)
+            'grid_size' => $gridSize->toArray(),
+            'bounding_box' => $boundingBox->toArrayWithDistance()
         ]);
 
         $event->modelId = $modflowId;
@@ -84,7 +84,7 @@ class ModflowModelWasCreated extends AggregateChanged
     public function boundingBox(): BoundingBox
     {
         if ($this->boundingBox === null){
-            $this->boundingBox = BoundingBox::fromArray(json_decode($this->payload['bounding_box'], true));
+            $this->boundingBox = BoundingBox::fromArrayWithDistance($this->payload['bounding_box']);
         }
 
         return $this->boundingBox;
@@ -93,7 +93,7 @@ class ModflowModelWasCreated extends AggregateChanged
     public function gridSize(): GridSize
     {
         if ($this->gridSize === null){
-            $this->gridSize = GridSize::fromArray(json_decode($this->payload['grid_size'], true));
+            $this->gridSize = GridSize::fromArray($this->payload['grid_size']);
         }
 
         return $this->gridSize;
