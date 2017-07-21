@@ -25,11 +25,23 @@ use Inowas\Common\Grid\LayerNumber;
 use Inowas\Common\Id\ModflowId;
 use Inowas\Common\Id\ObservationPointId;
 use Inowas\Common\Id\UserId;
+use Inowas\Common\Modflow\Botm;
+use Inowas\Common\Modflow\Hani;
+use Inowas\Common\Modflow\Hk;
+use Inowas\Common\Modflow\Layavg;
 use Inowas\Common\Modflow\Laytyp;
+use Inowas\Common\Modflow\Laywet;
 use Inowas\Common\Modflow\LengthUnit;
 use Inowas\Common\Modflow\Description;
 use Inowas\Common\Modflow\Name;
+use Inowas\Common\Modflow\Ss;
+use Inowas\Common\Modflow\Sy;
+use Inowas\Common\Modflow\Top;
+use Inowas\Common\Modflow\Vka;
+use Inowas\Common\Soilmodel\Layer;
+use Inowas\Common\Soilmodel\LayerId;
 use Inowas\ModflowModel\Model\Command\AddBoundary;
+use Inowas\ModflowModel\Model\Command\AddLayer;
 use Inowas\ModflowModel\Model\Packages\OcStressPeriod;
 use Inowas\ModflowModel\Model\Packages\OcStressPeriodData;
 use Inowas\Common\Modflow\PackageName;
@@ -37,26 +49,9 @@ use Inowas\Common\Modflow\ParameterName;
 use Inowas\Common\Modflow\StressPeriod;
 use Inowas\Common\Modflow\StressPeriods;
 use Inowas\Common\Modflow\TimeUnit;
-use Inowas\Common\Soilmodel\BoreLogId;
-use Inowas\Common\Soilmodel\BoreLogLocation;
-use Inowas\Common\Soilmodel\BoreLogName;
-use Inowas\Common\Soilmodel\BottomElevation;
-use Inowas\Common\Soilmodel\Conductivity;
-use Inowas\Common\Soilmodel\HBottom;
-use Inowas\Common\Soilmodel\Horizon;
-use Inowas\Common\Soilmodel\HorizonId;
-use Inowas\Common\Soilmodel\HTop;
-use Inowas\Common\Soilmodel\HydraulicAnisotropy;
-use Inowas\Common\Soilmodel\HydraulicConductivityX;
-use Inowas\Common\Soilmodel\SpecificStorage;
-use Inowas\Common\Soilmodel\SpecificYield;
-use Inowas\Common\Soilmodel\Storage;
-use Inowas\Common\Soilmodel\TopElevation;
-use Inowas\Common\Soilmodel\VerticalHydraulicConductivity;
 use Inowas\ModflowModel\Model\Command\CalculateModflowModel;
 use Inowas\ModflowModel\Model\Command\ChangeBoundingBox;
 use Inowas\ModflowModel\Model\Command\ChangeFlowPackage;
-use Inowas\ModflowModel\Model\Command\ChangeSoilmodelId;
 use Inowas\ModflowModel\Model\Command\CreateModflowModel;
 use Inowas\ModflowBundle\DataFixtures\Scenarios\LoadScenarioBase;
 use Inowas\ModflowModel\Model\Command\UpdateModflowPackageParameter;
@@ -66,23 +61,6 @@ use Inowas\ScenarioAnalysis\Model\Command\CreateScenarioAnalysis;
 use Inowas\ScenarioAnalysis\Model\ScenarioAnalysisDescription;
 use Inowas\ScenarioAnalysis\Model\ScenarioAnalysisId;
 use Inowas\ScenarioAnalysis\Model\ScenarioAnalysisName;
-use Inowas\Soilmodel\Model\Command\AddBoreLogToSoilmodel;
-use Inowas\Soilmodel\Model\Command\AddGeologicalLayerToSoilmodel;
-use Inowas\Soilmodel\Model\Command\AddHorizonToBoreLog;
-use Inowas\Soilmodel\Model\Command\ChangeSoilmodelDescription;
-use Inowas\Soilmodel\Model\Command\ChangeSoilmodelName;
-use Inowas\Soilmodel\Model\Command\CreateBoreLog;
-use Inowas\Soilmodel\Model\Command\CreateSoilmodel;
-use Inowas\Common\Soilmodel\GeologicalLayer;
-use Inowas\Common\Soilmodel\GeologicalLayerDescription;
-use Inowas\Common\Soilmodel\GeologicalLayerId;
-use Inowas\Common\Soilmodel\GeologicalLayerName;
-use Inowas\Common\Soilmodel\GeologicalLayerNumber;
-use Inowas\Common\Soilmodel\SoilmodelDescription;
-use Inowas\Common\Soilmodel\SoilmodelId;
-use Inowas\Common\Soilmodel\SoilmodelName;
-use Inowas\Soilmodel\Model\Command\InterpolateSoilmodel;
-use Inowas\Soilmodel\Model\Command\UpdateGeologicalLayerProperty;
 
 class RioPrimero extends LoadScenarioBase
 {
@@ -95,8 +73,8 @@ class RioPrimero extends LoadScenarioBase
 
         $commandBus = $this->container->get('prooph_service_bus.modflow_command_bus');
         $ownerId = UserId::fromString($this->ownerId);
-        $baseModelId = ModflowId::generate();
 
+        $baseModelId = ModflowId::generate();
         $polygon = new Polygon([[
                         [-63.687336, -31.313615],
                         [-63.687336, -31.367449],
@@ -105,8 +83,6 @@ class RioPrimero extends LoadScenarioBase
                         [-63.687336, -31.313615]
                     ]], 4326);
         $gridSize = GridSize::fromXY(75, 40);
-
-        $soilModelId = SoilmodelId::generate();
         $commandBus->dispatch(CreateModflowModel::newWithAllParams(
             $ownerId,
             $baseModelId,
@@ -115,49 +91,41 @@ class RioPrimero extends LoadScenarioBase
             $polygon,
             $gridSize,
             TimeUnit::fromInt(TimeUnit::DAYS),
-            LengthUnit::fromInt(LengthUnit::METERS),
-            $soilModelId
+            LengthUnit::fromInt(LengthUnit::METERS)
         ));
 
         $box = $geoTools->projectBoundingBox(BoundingBox::fromCoordinates(-63.687336, -63.569260, -31.367449, -31.313615, 4326), Srid::fromInt(4326));
         $boundingBox = BoundingBox::fromEPSG4326Coordinates($box->xMin(), $box->xMax(), $box->yMin(), $box->yMax(), $box->dX(), $box->dY());
         $commandBus->dispatch(ChangeBoundingBox::forModflowModel($ownerId, $baseModelId, $boundingBox));
 
-        $soilModelId = SoilmodelId::generate();
-        $commandBus->dispatch(ChangeSoilmodelId::forModflowModel($ownerId, $baseModelId, $soilModelId));
-        $commandBus->dispatch(CreateSoilmodel::byUserWithModelId($ownerId, $soilModelId));
-        $commandBus->dispatch(ChangeSoilmodelName::forSoilmodel($ownerId, $soilModelId, SoilmodelName::fromString('SoilModel Río Primero')));
-        $commandBus->dispatch(ChangeSoilmodelDescription::forSoilmodel($ownerId, $soilModelId, SoilmodelDescription::fromString('SoilModel for Río Primero Area')));
-
         $layers = [['Surface Layer', 'the one and only']];
         foreach ($layers as $key => $layer) {
-            $layerId = GeologicalLayerId::generate();
-            $type = Laytyp::fromValue(Laytyp::TYPE_CONVERTIBLE);
-            $layerNumber = GeologicalLayerNumber::fromInteger($key);
+            $name = Name::fromString($layer[0]);
+            $description = Description::fromString($layer[1]);
+            $layerId = LayerId::fromString($name->slugified());
+            $number = LayerNumber::fromInt($key);
 
-            $commandBus->dispatch(
-                AddGeologicalLayerToSoilmodel::forSoilmodel(
-                    $ownerId,
-                    $soilModelId,
-                    GeologicalLayer::fromParams(
-                        $layerId,
-                        $type,
-                        $layerNumber,
-                        GeologicalLayerName::fromString($layer[0]),
-                        GeologicalLayerDescription::fromString($layer[1])
-                    )
-                )
+            $layer = Layer::fromParams(
+                $layerId,
+                $name,
+                $description,
+                $number,
+                Top::fromValue(430),
+                Botm::fromValue(360),
+                Hk::fromValue(10),
+                Hani::fromValue(1),
+                Vka::fromValue(1),
+                Layavg::fromInt(Layavg::TYPE_HARMONIC_MEAN),
+                Laytyp::fromValue(Laytyp::TYPE_CONVERTIBLE),
+                Laywet::fromFloat(Laywet::WETTING_INACTIVE),
+                Ss::fromFloat(1e-5),
+                Sy::fromFloat(0.2)
             );
 
-            $commandBus->dispatch(UpdateGeologicalLayerProperty::forSoilmodel($ownerId, $soilModelId, $layerId, TopElevation::fromLayerValue(430)));
-            $commandBus->dispatch(UpdateGeologicalLayerProperty::forSoilmodel($ownerId, $soilModelId, $layerId, BottomElevation::fromLayerValue(360)));
-            $commandBus->dispatch(UpdateGeologicalLayerProperty::forSoilmodel($ownerId, $soilModelId, $layerId, HydraulicConductivityX::fromLayerValue(10)));
-            $commandBus->dispatch(UpdateGeologicalLayerProperty::forSoilmodel($ownerId, $soilModelId, $layerId, HydraulicAnisotropy::fromLayerValue(1)));
-            $commandBus->dispatch(UpdateGeologicalLayerProperty::forSoilmodel($ownerId, $soilModelId, $layerId, VerticalHydraulicConductivity::fromLayerValue(1)));
-            $commandBus->dispatch(UpdateGeologicalLayerProperty::forSoilmodel($ownerId, $soilModelId, $layerId, SpecificStorage::fromLayerValue(1e-5)));
-            $commandBus->dispatch(UpdateGeologicalLayerProperty::forSoilmodel($ownerId, $soilModelId, $layerId, SpecificYield::fromLayerValue(0.2)));
+            $commandBus->dispatch(AddLayer::forModflowModel($ownerId, $baseModelId, $layer));
         }
 
+        /*
         $boreHoles = array(
             array('point', 'name', 'top', 'bot'),
             array(new Point(-63.64698, -31.32741, 4326), 'GP1', 465, 392),
@@ -207,6 +175,7 @@ class RioPrimero extends LoadScenarioBase
 
         echo sprintf("Interpolate soilmodel with %s Memory usage\r\n", memory_get_usage());
         $commandBus->dispatch(InterpolateSoilmodel::forSoilmodel($ownerId, $soilModelId, $boundingBox, $gridSize));
+        */
 
         /*
          * Add GeneralHeadBoundaries
@@ -451,6 +420,8 @@ class RioPrimero extends LoadScenarioBase
         $ocStressPeriodData = OcStressPeriodData::create()->addStressPeriod(OcStressPeriod::fromParams(0,0, ['save head', 'save drawdown']));
 
         $commandBus->dispatch(UpdateModflowPackageParameter::byUserModelIdAndPackageData($ownerId, $baseModelId, PackageName::fromString('oc'), ParameterName::fromString('ocStressPeriodData'), $ocStressPeriodData));
+
+        echo sprintf("Calculate ModflowModel with id %s.\r\n", $baseModelId->toString());
         $commandBus->dispatch(CalculateModflowModel::forModflowModel($ownerId, $baseModelId));
 
         /*
@@ -512,7 +483,8 @@ class RioPrimero extends LoadScenarioBase
             $commandBus->dispatch(AddBoundary::forModflowModel($ownerId, $scenarioId, $wellBoundary));
         }
 
-        $commandBus->dispatch(CalculateModflowModel::forModflowModel($ownerId, $baseModelId));
+        echo sprintf("Calculate Scenario 0 with id %s.\r\n", $scenarioId->toString());
+        $commandBus->dispatch(CalculateModflowModel::forModflowModel($ownerId, $scenarioId));
 
         /*
          * Begin add Scenario 1
@@ -561,6 +533,7 @@ class RioPrimero extends LoadScenarioBase
             $commandBus->dispatch(AddBoundary::forModflowModel($ownerId, $scenarioId, $wellBoundary));
         }
 
+        echo sprintf("Calculate Scenario 1 with id %s.\r\n", $scenarioId->toString());
         $commandBus->dispatch(CalculateModflowModel::forModflowModel($ownerId, $scenarioId));
     }
 }
