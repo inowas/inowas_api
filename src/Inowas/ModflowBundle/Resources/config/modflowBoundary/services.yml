@@ -1,5 +1,0 @@
-services:
-    inowas.modflowboundary.boundary_manager:
-        class: Inowas\ModflowBoundary\Service\BoundaryManager
-        arguments:
-          - '@inowas.modflowboundary.boundary_finder'
