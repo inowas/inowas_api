@@ -307,7 +307,7 @@ class SoilmodelFinder
         if (! $this->soilmodel instanceof Soilmodel) {
 
             $result = $this->connection->fetchAssoc(
-                sprintf('SELECT soilmodel from %s WHERE model_id = :model_id', Table::SOILMODELS_LIST),
+                sprintf('SELECT soilmodel from %s WHERE model_id = :model_id', Table::SOILMODELS),
                 ['model_id' => $modelId->toString()]
             );
 

@@ -16,7 +16,6 @@ use Inowas\Common\Id\ModflowId;
 use Inowas\Common\Modflow\LengthUnit;
 use Inowas\Common\Modflow\StressPeriods;
 use Inowas\Common\Modflow\TimeUnit;
-use Inowas\Common\Soilmodel\SoilmodelId;
 use Inowas\GeoTools\Service\GeoTools;
 use Inowas\ModflowModel\Infrastructure\Projection\ActiveCells\ActiveCellsFinder;
 use Inowas\ModflowModel\Infrastructure\Projection\ModelList\ModelFinder;
@@ -64,11 +63,6 @@ class ModflowModelManager
         return $this->boundaryManager->findBoundariesByModelId($modelId);
     }
 
-    public function getSoilmodelIdByModelId(ModflowId $modflowId): ?SoilmodelId
-    {
-        return $this->modelFinder->getSoilmodelIdByModelId($modflowId);
-    }
-
     public function getTimeUnitByModelId(ModflowId $modflowId): TimeUnit
     {
         return $this->modelFinder->getTimeUnitByModelId($modflowId);
@@ -112,7 +106,7 @@ class ModflowModelManager
         }
 
         $activeCells = $this->calculateBoundaryActiveCells($modelId, $boundaryId);
-        $this->activeCellsFinder->updateAreaActiveCells($modelId, $activeCells);
+        $this->activeCellsFinder->updateBoundaryActiveCells($modelId, $boundaryId, $activeCells);
         return $activeCells;
     }
 

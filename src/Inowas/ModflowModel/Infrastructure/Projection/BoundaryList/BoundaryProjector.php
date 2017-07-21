@@ -7,15 +7,18 @@ namespace Inowas\ModflowModel\Infrastructure\Projection\BoundaryList;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Schema\Schema;
 use Inowas\Common\Boundaries\BoundaryFactory;
+use Inowas\Common\Id\ModflowId;
 use Inowas\Common\Projection\AbstractDoctrineConnectionProjector;
 use Inowas\ModflowModel\Infrastructure\Projection\Table;
 use Inowas\ModflowModel\Model\Event\BoundaryWasAdded;
 use Inowas\ModflowModel\Model\Event\BoundaryWasRemoved;
 use Inowas\ModflowModel\Model\Event\BoundaryWasUpdated;
+use Inowas\ModflowModel\Model\Event\BoundingBoxWasChanged;
+use Inowas\ModflowModel\Model\Event\GridSizeWasChanged;
 use Inowas\ModflowModel\Model\Event\ModflowModelWasCloned;
 use Inowas\ModflowModel\Model\Event\ModflowModelWasDeleted;
 
-class BoundaryListProjector extends AbstractDoctrineConnectionProjector
+class BoundaryProjector extends AbstractDoctrineConnectionProjector
 {
 
     public function __construct(Connection $connection) {
@@ -23,12 +26,13 @@ class BoundaryListProjector extends AbstractDoctrineConnectionProjector
         parent::__construct($connection);
 
         $schema = new Schema();
-        $table = $schema->createTable(Table::BOUNDARIES_LIST);
+        $table = $schema->createTable(Table::BOUNDARIES);
         $table->addColumn('model_id', 'string', ['length' => 36, 'notnull' => false]);
         $table->addColumn('boundary_id', 'string', ['length' => 36, 'notnull' => false]);
         $table->addColumn('type', 'string', ['length' => 3]);
         $table->addColumn('name', 'string', ['length' => 255]);
         $table->addColumn('geometry', 'text', ['notnull' => false]);
+        $table->addColumn('active_cells', 'text', ['notnull' => false]);
         $table->addColumn('metadata', 'text', ['notnull' => false]);
         $table->addColumn('affected_layers', 'text', ['notnull' => false]);
         $table->addColumn('boundary', 'text', ['notnull' => false]);
@@ -40,12 +44,13 @@ class BoundaryListProjector extends AbstractDoctrineConnectionProjector
     {
         $boundary = $event->boundary();
 
-        $this->connection->insert(Table::BOUNDARIES_LIST, array(
+        $this->connection->insert(Table::BOUNDARIES, array(
             'boundary_id' => $event->boundaryId()->toString(),
             'model_id' => $event->modelId()->toString(),
             'type' => $boundary->type()->toString(),
             'name' => $boundary->name()->toString(),
             'geometry' => json_encode($boundary->geometry()->toArray()),
+            'active_cells' => null,
             'metadata' => json_encode($boundary->metadata()),
             'affected_layers' => json_encode($boundary->affectedLayers()->toArray()),
             'boundary' => BoundaryFactory::serialize($boundary)
@@ -56,10 +61,11 @@ class BoundaryListProjector extends AbstractDoctrineConnectionProjector
     {
         $boundary = $event->boundary();
 
-        $this->connection->update(Table::BOUNDARIES_LIST, array(
+        $this->connection->update(Table::BOUNDARIES, array(
             'type' => $boundary->type()->toString(),
             'name' => $boundary->name()->toString(),
             'geometry' => json_encode($boundary->geometry()->toArray()),
+            'active_cells' => null,
             'metadata' => json_encode($boundary->metadata()),
             'affected_layers' => json_encode($boundary->affectedLayers()->toArray()),
             'boundary' => BoundaryFactory::serialize($boundary)
@@ -71,7 +77,7 @@ class BoundaryListProjector extends AbstractDoctrineConnectionProjector
 
     public function onBoundaryWasRemoved(BoundaryWasRemoved $event): void
     {
-        $this->connection->delete(Table::BOUNDARIES_LIST, array(
+        $this->connection->delete(Table::BOUNDARIES, array(
             'boundary_id' => $event->boundaryId()->toString(),
             'model_id' => $event->modelId()->toString()
         ));
@@ -80,7 +86,7 @@ class BoundaryListProjector extends AbstractDoctrineConnectionProjector
     public function onModflowmodelWasCloned(ModflowModelWasCloned $event): void
     {
         $rows = $this->connection->fetchAll(
-            sprintf('SELECT * FROM %s WHERE model_id = :model_id', Table::BOUNDARIES_LIST),
+            sprintf('SELECT * FROM %s WHERE model_id = :model_id', Table::BOUNDARIES),
             ['model_id' => $event->baseModelId()->toString()]
         );
 
@@ -89,12 +95,13 @@ class BoundaryListProjector extends AbstractDoctrineConnectionProjector
         }
 
         foreach ($rows as $row) {
-            $this->connection->insert(Table::BOUNDARIES_LIST, array(
+            $this->connection->insert(Table::BOUNDARIES, array(
                 'boundary_id' => $row['boundary_id'],
                 'model_id' => $event->modelId()->toString(),
                 'type' => $row['type'],
                 'name' => $row['name'],
                 'geometry' => $row['geometry'],
+                'active_cells' => $row['active_cells'],
                 'metadata' => $row['metadata'],
                 'affected_layers' => $row['affected_layers'],
                 'boundary' => $row['boundary']
@@ -105,7 +112,26 @@ class BoundaryListProjector extends AbstractDoctrineConnectionProjector
     public function onModflowModelWasDeleted(ModflowModelWasDeleted $event): void
     {
         $this->connection->delete(
-            Table::BOUNDARIES_LIST, array('model_id' => $event->modelId()->toString())
+            Table::BOUNDARIES, array('model_id' => $event->modelId()->toString())
         );
+    }
+
+    public function onBoundingBoxWasChanged(BoundingBoxWasChanged $event): void
+    {
+        $this->updateActiveCellsWithBoundingBoxOrGridsize($event->modelId());
+    }
+
+    public function onGridSizeWasChanged(GridSizeWasChanged $event): void
+    {
+        $this->updateActiveCellsWithBoundingBoxOrGridsize($event->modelId());
+    }
+
+    private function updateActiveCellsWithBoundingBoxOrGridsize(ModflowId $modelId): void
+    {
+        $this->connection->update(Table::BOUNDARIES, array(
+            'active_cells' => null
+        ), array(
+            'model_id' => $modelId->toString()
+        ));
     }
 }

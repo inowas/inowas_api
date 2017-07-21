@@ -32,7 +32,7 @@ class BoundaryFinder
     public function getTotalNumberOfModelBoundaries(ModflowId $modelId): int
     {
         $result = $this->connection->fetchAssoc(
-            sprintf('SELECT count(*) FROM %s WHERE model_id = :model_id', Table::BOUNDARIES_LIST),
+            sprintf('SELECT count(*) FROM %s WHERE model_id = :model_id', Table::BOUNDARIES),
             ['model_id' => $modelId->toString()]
         );
 
@@ -46,7 +46,7 @@ class BoundaryFinder
     public function getNumberOfModelBoundariesByType(ModflowId $modelId, BoundaryType $type): int
     {
         $result = $this->connection->fetchAssoc(
-            sprintf('SELECT count(*) FROM %s WHERE model_id = :model_id AND type = :type', Table::BOUNDARIES_LIST),
+            sprintf('SELECT count(*) FROM %s WHERE model_id = :model_id AND type = :type', Table::BOUNDARIES),
             ['model_id' => $modelId->toString(), 'type' => $type->toString()]
         );
 
@@ -87,7 +87,7 @@ class BoundaryFinder
         $this->connection->setFetchMode(\PDO::FETCH_ASSOC);
 
         $result = $this->connection->fetchAll(
-            sprintf('SELECT boundary_id as id, name, type, geometry, metadata, affected_layers FROM %s WHERE model_id = :model_id', Table::BOUNDARIES_LIST),
+            sprintf('SELECT boundary_id as id, name, type, geometry, metadata, affected_layers FROM %s WHERE model_id = :model_id', Table::BOUNDARIES),
             ['model_id' => $modelId->toString()]
         );
 
@@ -101,7 +101,7 @@ class BoundaryFinder
     public function getBoundaryDetails(ModflowId $modelId, BoundaryId $boundaryId): ?array
     {
         $row = $this->connection->fetchAssoc(
-            sprintf('SELECT boundary_id AS id, boundary FROM %s WHERE model_id = :model_id AND boundary_id = :boundary_id', Table::BOUNDARIES_LIST),
+            sprintf('SELECT boundary_id AS id, boundary FROM %s WHERE model_id = :model_id AND boundary_id = :boundary_id', Table::BOUNDARIES),
             ['model_id' => $modelId->toString(), 'boundary_id' => $boundaryId->toString()]
         );
 
@@ -127,7 +127,7 @@ class BoundaryFinder
     public function getBoundaryName(ModflowId $modelId, BoundaryId $boundaryId): ?Name
     {
         $result = $this->connection->fetchAssoc(
-            sprintf('SELECT name FROM %s WHERE model_id = :model_id AND boundary_id = :boundary_id', Table::BOUNDARIES_LIST),
+            sprintf('SELECT name FROM %s WHERE model_id = :model_id AND boundary_id = :boundary_id', Table::BOUNDARIES),
             ['model_id' => $modelId->toString(), 'boundary_id' => $boundaryId->toString()]
         );
 
@@ -141,7 +141,7 @@ class BoundaryFinder
     public function getBoundaryGeometry(ModflowId $modelId, BoundaryId $boundaryId): ?Geometry
     {
         $result = $this->connection->fetchAssoc(
-            sprintf('SELECT geometry FROM %s WHERE boundary_id =:boundary_id AND model_id = :model_id', Table::BOUNDARIES_LIST),
+            sprintf('SELECT geometry FROM %s WHERE boundary_id =:boundary_id AND model_id = :model_id', Table::BOUNDARIES),
             ['model_id' => $modelId->toString(), 'boundary_id' => $boundaryId->toString()]
         );
 
@@ -155,7 +155,7 @@ class BoundaryFinder
     public function getBoundaryType(ModflowId $modelId, BoundaryId $boundaryId): ?BoundaryType
     {
         $result = $this->connection->fetchAssoc(
-            sprintf('SELECT type FROM %s WHERE model_id = :model_id AND boundary_id = :boundary_id', Table::BOUNDARIES_LIST),
+            sprintf('SELECT type FROM %s WHERE model_id = :model_id AND boundary_id = :boundary_id', Table::BOUNDARIES),
             ['model_id' => $modelId->toString(), 'boundary_id' => $boundaryId->toString()]
         );
 
@@ -170,7 +170,7 @@ class BoundaryFinder
     {
         $this->connection->setFetchMode(\PDO::FETCH_ASSOC);
         $rows = $this->connection->fetchAll(
-            sprintf('SELECT boundary FROM %s WHERE model_id = :model_id', Table::BOUNDARIES_LIST),
+            sprintf('SELECT boundary FROM %s WHERE model_id = :model_id', Table::BOUNDARIES),
             ['model_id' => $modelId->toString()]
         );
 
@@ -199,7 +199,7 @@ class BoundaryFinder
     public function getAffectedLayersByModelAndBoundary(ModflowId $modelId, BoundaryId $boundaryId): AffectedLayers
     {
         $result = $this->connection->fetchAssoc(
-            sprintf('SELECT * FROM %s WHERE model_id = :model_id AND boundary_id = :boundary_id', Table::BOUNDARIES_LIST),
+            sprintf('SELECT * FROM %s WHERE model_id = :model_id AND boundary_id = :boundary_id', Table::BOUNDARIES),
             ['model_id' => $modelId->toString(), 'boundary_id' => $boundaryId->toString()]
         );
 
@@ -209,7 +209,7 @@ class BoundaryFinder
     private function getBoundariesByModelIdAndType(ModflowId $modelId, BoundaryType $type): array
     {
         $rows = $this->connection->fetchAll(
-            sprintf('SELECT boundary FROM %s WHERE model_id = :model_id AND type = :type', Table::BOUNDARIES_LIST),
+            sprintf('SELECT boundary FROM %s WHERE model_id = :model_id AND type = :type', Table::BOUNDARIES),
             ['model_id' => $modelId->toString(), 'type' => $type->toString()]
         );
 

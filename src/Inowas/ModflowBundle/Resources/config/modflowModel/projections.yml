@@ -1,9 +1,4 @@
 services:
-    inowas.modflowmodel.active_cells_projector:
-        class: Inowas\ModflowModel\Infrastructure\Projection\ActiveCells\ActiveCellsProjector
-        arguments:
-          - '@doctrine.dbal.default_connection'
-
     inowas.modflowmodel.active_cells_finder:
         class: Inowas\ModflowModel\Infrastructure\Projection\ActiveCells\ActiveCellsFinder
         arguments:
@@ -14,8 +9,8 @@ services:
         arguments:
           - '@doctrine.dbal.default_connection'
 
-    inowas.modflowmodel.boundary_list_projector:
-        class: Inowas\ModflowModel\Infrastructure\Projection\BoundaryList\BoundaryListProjector
+    inowas.modflowmodel.boundary_projector:
+        class: Inowas\ModflowModel\Infrastructure\Projection\BoundaryList\BoundaryProjector
         arguments:
           - '@doctrine.dbal.default_connection'
 

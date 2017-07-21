@@ -25,8 +25,8 @@ class ActiveCellsFinder
     public function findAreaActiveCells(ModflowId $modelId): ?ActiveCells
     {
         $result = $this->connection->fetchAssoc(
-            sprintf('SELECT active_cells FROM %s WHERE boundary_id =:boundary_id AND model_id = :model_id', Table::ACTIVE_CELLS),
-            ['model_id' => $modelId->toString(), 'boundary_id' => null]
+            sprintf('SELECT active_cells FROM %s WHERE model_id = :model_id', Table::MODFLOWMODELS),
+            ['model_id' => $modelId->toString()]
         );
 
         if (null === $result['active_cells']){
@@ -38,18 +38,17 @@ class ActiveCellsFinder
 
     public function updateAreaActiveCells(ModflowId $modelId, ActiveCells $activeCells): void
     {
-        $this->connection->update(Table::ACTIVE_CELLS, array(
+        $this->connection->update(Table::MODFLOWMODELS, array(
             'active_cells' => json_encode($activeCells->toArray())
         ), array(
-            'model_id' => $modelId->toString(),
-            'boundary_id' => null,
+            'model_id' => $modelId->toString()
         ));
     }
 
     public function findBoundaryActiveCells(ModflowId $modelId, BoundaryId $boundaryId): ?ActiveCells
     {
         $result = $this->connection->fetchAssoc(
-            sprintf('SELECT active_cells FROM %s WHERE boundary_id =:boundary_id AND model_id = :model_id', Table::ACTIVE_CELLS),
+            sprintf('SELECT active_cells FROM %s WHERE boundary_id =:boundary_id AND model_id = :model_id', Table::BOUNDARIES),
             ['model_id' => $modelId->toString(), 'boundary_id' => $boundaryId->toString()]
         );
 
@@ -62,7 +61,7 @@ class ActiveCellsFinder
 
     public function updateBoundaryActiveCells(ModflowId $modelId, BoundaryId $boundaryId, ActiveCells $activeCells): void
     {
-        $this->connection->update(Table::ACTIVE_CELLS, array(
+        $this->connection->update(Table::BOUNDARIES, array(
             'active_cells' => json_encode($activeCells->toArray())
         ), array(
             'model_id' => $modelId->toString(),

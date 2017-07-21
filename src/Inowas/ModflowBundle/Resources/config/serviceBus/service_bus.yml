@@ -72,32 +72,29 @@ parameters:
                         # ModflowModel
                         'Inowas\ModflowModel\Model\Event\ActiveCellsWereUpdated':
                             - 'inowas.modflowmodel.blackhole_projector'
-                            - 'inowas.modflowmodel.active_cells_projector'
+                            - 'inowas.modflowmodel.boundary_projector'
                             - 'inowas.modflowmodel.model_projector'
 
                         'Inowas\ModflowModel\Model\Event\AreaGeometryWasUpdated':
                             - 'inowas.modflowmodel.blackhole_projector'
-                            - 'inowas.modflowmodel.active_cells_projector'
+                            - 'inowas.modflowmodel.boundary_projector'
                             - 'inowas.modflowmodel.model_projector'
 
                         'Inowas\ModflowModel\Model\Event\BoundaryWasAdded':
-                            - 'inowas.modflowmodel.active_cells_projector'
                             - 'inowas.modflowmodel.blackhole_projector'
-                            - 'inowas.modflowmodel.boundary_list_projector'
+                            - 'inowas.modflowmodel.boundary_projector'
 
                         'Inowas\ModflowModel\Model\Event\BoundaryWasRemoved':
-                            - 'inowas.modflowmodel.active_cells_projector'
                             - 'inowas.modflowmodel.blackhole_projector'
-                            - 'inowas.modflowmodel.boundary_list_projector'
+                            - 'inowas.modflowmodel.boundary_projector'
 
                         'Inowas\ModflowModel\Model\Event\BoundaryWasUpdated':
-                            - 'inowas.modflowmodel.active_cells_projector'
                             - 'inowas.modflowmodel.blackhole_projector'
-                            - 'inowas.modflowmodel.boundary_list_projector'
+                            - 'inowas.modflowmodel.boundary_projector'
 
                         'Inowas\ModflowModel\Model\Event\BoundingBoxWasChanged':
                             - 'inowas.modflowmodel.blackhole_projector'
-                            - 'inowas.modflowmodel.active_cells_projector'
+                            - 'inowas.modflowmodel.boundary_projector'
                             - 'inowas.modflowmodel.model_projector'
 
                         'Inowas\ModflowModel\Model\Event\CalculationIdWasChanged':
@@ -123,7 +120,7 @@ parameters:
 
                         'Inowas\ModflowModel\Model\Event\GridSizeWasChanged':
                             - 'inowas.modflowmodel.blackhole_projector'
-                            - 'inowas.modflowmodel.active_cells_projector'
+                            - 'inowas.modflowmodel.boundary_projector'
                             - 'inowas.modflowmodel.model_projector'
 
                         'Inowas\ModflowModel\Model\Event\LayerWasAdded':
@@ -144,8 +141,7 @@ parameters:
 
                         'Inowas\ModflowModel\Model\Event\ModflowModelWasCloned':
                             - 'inowas.modflowmodel.blackhole_projector'
-                            - 'inowas.modflowmodel.active_cells_projector'
-                            - 'inowas.modflowmodel.boundary_list_projector'
+                            - 'inowas.modflowmodel.boundary_projector'
                             - 'inowas.modflowmodel.model_projector'
                             - 'inowas.modflowmodel.soilmodel_projector'
                             - 'inowas.modflowmodel.modflow_packages_process_manager'
@@ -154,13 +150,11 @@ parameters:
                             - 'inowas.modflowmodel.blackhole_projector'
                             - 'inowas.modflowmodel.model_projector'
                             - 'inowas.modflowmodel.soilmodel_projector'
-                            - 'inowas.modflowmodel.active_cells_projector'
                             - 'inowas.modflowmodel.modflow_packages_process_manager'
 
                         'Inowas\ModflowModel\Model\Event\ModflowModelWasDeleted':
                             - 'inowas.modflowmodel.blackhole_projector'
-                            - 'inowas.modflowmodel.active_cells_projector'
-                            - 'inowas.modflowmodel.boundary_list_projector'
+                            - 'inowas.modflowmodel.boundary_projector'
                             - 'inowas.modflowmodel.model_projector'
 
                         'Inowas\ModflowModel\Model\Event\ModflowPackageParameterWasUpdated':

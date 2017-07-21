@@ -23,7 +23,7 @@ class SoilmodelProjector extends AbstractDoctrineConnectionProjector
         parent::__construct($connection);
 
         $schema = new Schema();
-        $table = $schema->createTable(Table::SOILMODELS_LIST);
+        $table = $schema->createTable(Table::SOILMODELS);
         $table->addColumn('model_id', 'string', ['length' => 36]);
         $table->addColumn('soilmodel', 'text', ['notnull' => false]);
         $this->addSchema($schema);
@@ -39,7 +39,7 @@ class SoilmodelProjector extends AbstractDoctrineConnectionProjector
 
     public function onModflowModelWasCreated(ModflowModelWasCreated $event): void
     {
-        $this->connection->insert(Table::SOILMODELS_LIST, array(
+        $this->connection->insert(Table::SOILMODELS, array(
             'model_id' => $event->modelId()->toString(),
             'soilmodel' => json_encode(Soilmodel::fromDefaults()->toArray())
         ));
@@ -50,7 +50,7 @@ class SoilmodelProjector extends AbstractDoctrineConnectionProjector
 
         /* Clone Metadata */
         $row = $this->connection->fetchAssoc(
-            sprintf('SELECT soilmodel FROM %s WHERE model_id = :model_id', Table::SOILMODELS_LIST),
+            sprintf('SELECT soilmodel FROM %s WHERE model_id = :model_id', Table::SOILMODELS),
             [ 'model_id' => $event->baseModelId()->toString() ]
         );
 
@@ -58,7 +58,7 @@ class SoilmodelProjector extends AbstractDoctrineConnectionProjector
             throw SqlQueryException::withClassName(__CLASS__, __FUNCTION__);
         }
 
-        $this->connection->insert(Table::SOILMODELS_LIST, array(
+        $this->connection->insert(Table::SOILMODELS, array(
             'model_id' => $event->modelId()->toString(),
             'soilmodel' => $row['soilmodel']
         ));
@@ -115,7 +115,7 @@ class SoilmodelProjector extends AbstractDoctrineConnectionProjector
 
     public function onSoilmodelMetadataWasUpdated(SoilmodelMetadataWasUpdated $event): void
     {
-        $this->connection->update(Table::SOILMODELS_LIST, array(
+        $this->connection->update(Table::SOILMODELS, array(
             'soilmodel' => json_encode($event->soilmodel()->toArray()),
         ), array(
             'model_id' => $event->modelId()->toString()

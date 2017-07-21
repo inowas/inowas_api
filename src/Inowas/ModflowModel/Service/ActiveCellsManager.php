@@ -63,7 +63,7 @@ class ActiveCellsManager
         }
 
         $activeCells = $this->calculateBoundaryActiveCells($modelId, $boundaryId);
-        $this->activeCellsFinder->updateAreaActiveCells($modelId, $activeCells);
+        $this->activeCellsFinder->updateBoundaryActiveCells($modelId, $boundaryId, $activeCells);
         return $activeCells;
     }
 
