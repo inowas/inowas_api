@@ -146,7 +146,6 @@ class Hanoi extends LoadScenarioBase
             $layerName = Name::fromString($layer[0]);
             $layerDescription = Description::fromString($layer[1]);
             $layerId = LayerId::fromString($layerName->slugified());
-
             $layTyp = Laytyp::fromValue(Laytyp::TYPE_CONVERTIBLE);
             $layerNumber = LayerNumber::fromInt($key);
 
@@ -200,7 +199,7 @@ class Hanoi extends LoadScenarioBase
                 $vka,
                 Layavg::fromInt(Layavg::TYPE_HARMONIC_MEAN),
                 $layTyp,
-                Laywet::fromFloat(Laywet::WETTING_ACTIVE),
+                Laywet::fromFloat(Laywet::WETTING_INACTIVE),
                 $ss,
                 $sy
             );
@@ -355,7 +354,7 @@ class Hanoi extends LoadScenarioBase
         $commandBus->dispatch(UpdateModflowPackageParameter::byUserModelIdAndPackageData($ownerId, $modelId, PackageName::fromString('oc'), ParameterName::fromString('ocStressPeriodData'), $ocStressPeriodData));
 
         echo sprintf("CalculateModflowModel.\r\n");
-        $commandBus->dispatch(CalculateModflowModel::forModflowModel($ownerId, $modelId));
+        $commandBus->dispatch(CalculateModflowModel::forModflowModelWitUserId($ownerId, $modelId));
 
         /* ------- */
         /*
@@ -412,7 +411,7 @@ class Hanoi extends LoadScenarioBase
         }
 
         echo sprintf("CalculateModflowModel.\r\n");
-        $commandBus->dispatch(CalculateModflowModel::forModflowModel($ownerId, $scenarioId));
+        $commandBus->dispatch(CalculateModflowModel::forModflowModelWitUserId($ownerId, $scenarioId));
 
         /*
          * Begin add Scenario 2
@@ -459,7 +458,7 @@ class Hanoi extends LoadScenarioBase
         }
 
         echo sprintf("CalculateModflowModel.\r\n");
-        $commandBus->dispatch(CalculateModflowModel::forModflowModel($ownerId, $scenarioId));
+        $commandBus->dispatch(CalculateModflowModel::forModflowModelWitUserId($ownerId, $scenarioId));
 
         /*
          * Begin add Scenario 3
@@ -515,6 +514,6 @@ class Hanoi extends LoadScenarioBase
         }
 
         echo sprintf("CalculateModflowModel.\r\n");
-        $commandBus->dispatch(CalculateModflowModel::forModflowModel($ownerId, $scenarioId));
+        $commandBus->dispatch(CalculateModflowModel::forModflowModelWitUserId($ownerId, $scenarioId));
     }
 }

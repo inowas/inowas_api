@@ -45,13 +45,13 @@ final class CalculateModflowModelHandler
     public function __invoke(CalculateModflowModel $command)
     {
         /** @var ModflowModelAggregate $modflowModel */
-        $modflowModel = $this->modelList->get($command->modflowModelId());
+        $modflowModel = $this->modelList->get($command->modelId());
 
         if (!$modflowModel){
-            throw ModflowModelNotFoundException::withModelId($command->modflowModelId());
+            throw ModflowModelNotFoundException::withModelId($command->modelId());
         }
 
-        if (! $modflowModel->userId()->sameValueAs($command->userId())){
+        if (! $command->fromTerminal() && ! $modflowModel->userId()->sameValueAs($command->userId())){
             throw WriteAccessFailedException::withUserAndOwner($command->userId(), $modflowModel->userId());
         }
 
@@ -59,7 +59,7 @@ final class CalculateModflowModelHandler
         $modflowModel->updateCalculationId($calculationId);
         $packages = $this->packagesManager->getPackages($calculationId);
 
-        $request = CalculationRequest::fromParams($command->modflowModelId(), $calculationId, $packages);
+        $request = CalculationRequest::fromParams($command->modelId(), $calculationId, $packages);
         $this->calculator->calculate($request);
         $modflowModel->calculationWasStarted($calculationId);
 

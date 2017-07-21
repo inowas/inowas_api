@@ -149,6 +149,7 @@ class StressPeriodDataGenerator
      */
     public function fromRiverBoundaries(ModflowId $modelId, array $rivBoundaries, StressPeriods $stressPeriods, GridSize $gridSize, BoundingBox $boundingBox): RivStressPeriodData
     {
+
         $startTime = $stressPeriods->start();
         $timeUnit = $stressPeriods->timeUnit();
 

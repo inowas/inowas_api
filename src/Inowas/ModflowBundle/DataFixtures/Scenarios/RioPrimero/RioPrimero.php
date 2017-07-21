@@ -422,7 +422,7 @@ class RioPrimero extends LoadScenarioBase
         $commandBus->dispatch(UpdateModflowPackageParameter::byUserModelIdAndPackageData($ownerId, $baseModelId, PackageName::fromString('oc'), ParameterName::fromString('ocStressPeriodData'), $ocStressPeriodData));
 
         echo sprintf("Calculate ModflowModel with id %s.\r\n", $baseModelId->toString());
-        $commandBus->dispatch(CalculateModflowModel::forModflowModel($ownerId, $baseModelId));
+        $commandBus->dispatch(CalculateModflowModel::forModflowModelWitUserId($ownerId, $baseModelId));
 
         /*
          * Create ScenarioAnalysis from BaseModel
@@ -484,7 +484,7 @@ class RioPrimero extends LoadScenarioBase
         }
 
         echo sprintf("Calculate Scenario 0 with id %s.\r\n", $scenarioId->toString());
-        $commandBus->dispatch(CalculateModflowModel::forModflowModel($ownerId, $scenarioId));
+        $commandBus->dispatch(CalculateModflowModel::forModflowModelWitUserId($ownerId, $scenarioId));
 
         /*
          * Begin add Scenario 1
@@ -534,6 +534,6 @@ class RioPrimero extends LoadScenarioBase
         }
 
         echo sprintf("Calculate Scenario 1 with id %s.\r\n", $scenarioId->toString());
-        $commandBus->dispatch(CalculateModflowModel::forModflowModel($ownerId, $scenarioId));
+        $commandBus->dispatch(CalculateModflowModel::forModflowModelWitUserId($ownerId, $scenarioId));
     }
 }

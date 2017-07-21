@@ -25,6 +25,11 @@ services:
             - '@inowas.amqp.stream.connection'
             - '%rabbit_mq_read_data_queue%'
 
+    inowas.modflowmodel.boundaries_persister:
+        class: Inowas\ModflowModel\Service\BoundariesPersister
+        arguments:
+            - '%data_folder%'
+
     inowas.modflowmodel.boundary_manager:
         class: Inowas\ModflowModel\Service\BoundaryManager
         arguments:
@@ -34,7 +39,6 @@ services:
         class: Inowas\ModflowModel\Service\LayersPersister
         arguments:
             - '%data_folder%'
-        public: false
 
     inowas.modflowmodel.manager:
         class: Inowas\ModflowModel\Service\ModflowModelManager
@@ -57,7 +61,6 @@ services:
         class: Inowas\ModflowModel\Service\ModflowPackagesPersister
         arguments:
             - '%data_folder%'
-        public: false
 
     inowas.modflowmodel.stressperiod_data_generator:
         class: Inowas\ModflowModel\Service\StressPeriodDataGenerator

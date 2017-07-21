@@ -53,4 +53,12 @@ class ModflowPackagesPersister
 
         return CalculationId::fromString($hash);
     }
+
+    public function clear(): void
+    {
+        $fs = new FileSystem();
+        if (file_exists(sprintf('%s/%s', $this->dataFolder, 'packages'))) {
+            $fs->remove(sprintf('%s/%s', $this->dataFolder, 'packages'));
+        }
+    }
 }

@@ -15,17 +15,28 @@ class CalculateModflowModel extends Command implements PayloadConstructable
 
     use PayloadTrait;
 
-    public static function forModflowModel(UserId $userId, ModflowId $modelId): CalculateModflowModel
+    public static function forModflowModelWitUserId(UserId $userId, ModflowId $modelId): CalculateModflowModel
     {
         return new self(
             [
                 'user_id' => $userId->toString(),
-                'modflow_model_id' => $modelId->toString()
+                'modflow_model_id' => $modelId->toString(),
+                'from_terminal' => false
             ]
         );
     }
 
-    public function modflowModelId(): ModflowId
+    public static function forModflowModelFromTerminal(ModflowId $modelId): CalculateModflowModel
+    {
+        return new self(
+            [
+                'modflow_model_id' => $modelId->toString(),
+                'from_terminal' => true
+            ]
+        );
+    }
+
+    public function modelId(): ModflowId
     {
         return ModflowId::fromString($this->payload['modflow_model_id']);
     }
@@ -33,5 +44,10 @@ class CalculateModflowModel extends Command implements PayloadConstructable
     public function userId(): UserId
     {
         return UserId::fromString($this->payload['user_id']);
+    }
+
+    public function fromTerminal(): bool
+    {
+        return $this->payload['from_terminal'];
     }
 }

@@ -52,4 +52,12 @@ class LayersPersister
         
         return $hash;
     }
+
+    public function clear(): void
+    {
+        $fs = new FileSystem();
+        if (file_exists(sprintf('%s/%s', $this->dataFolder, 'layers'))) {
+            $fs->remove(sprintf('%s/%s', $this->dataFolder, 'layers'));
+        }
+    }
 }
