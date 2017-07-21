@@ -25,11 +25,6 @@ services:
             - '@inowas.amqp.stream.connection'
             - '%rabbit_mq_read_data_queue%'
 
-    inowas.modflowmodel.boundaries_persister:
-        class: Inowas\ModflowModel\Service\BoundariesPersister
-        arguments:
-            - '%data_folder%'
-
     inowas.modflowmodel.boundary_manager:
         class: Inowas\ModflowModel\Service\BoundaryManager
         arguments:

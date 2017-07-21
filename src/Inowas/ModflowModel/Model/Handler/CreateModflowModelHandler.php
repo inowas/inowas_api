@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Inowas\ModflowModel\Model\Handler;
 
+use Inowas\Common\Geometry\Srid;
 use Inowas\GeoTools\Service\GeoTools;
 use Inowas\ModflowModel\Model\Command\CreateModflowModel;
 use Inowas\ModflowModel\Model\ModflowModelList;
@@ -27,7 +28,7 @@ final class CreateModflowModelHandler
 
     public function __invoke(CreateModflowModel $command)
     {
-        $boundingBox = $this->geoTools->getBoundingBoxFromPolygon($command->polygon());
+        $boundingBox = $this->geoTools->projectBoundingBox($command->boundingBox(), Srid::fromInt(Srid::DEFAULT));
 
         $modflowModel = ModflowModelAggregate::create(
             $command->modelId(),

@@ -82,6 +82,7 @@ class ModflowModelEventSourcingTest extends EventSourcingBaseTest
         $modelDescription = Description::fromString('TestModelDescription444');
 
         $polygon = $this->createPolygon();
+        $boundingBox = $this->container->get('inowas.geotools.geotools_service')->getBoundingBox(Geometry::fromPolygon($polygon));
         $gridSize = GridSize::fromXY(75, 40);
         $this->commandBus->dispatch(
             CreateModflowModel::newWithAllParams(
@@ -91,6 +92,7 @@ class ModflowModelEventSourcingTest extends EventSourcingBaseTest
                 $modelDescription,
                 $polygon,
                 $gridSize,
+                $boundingBox,
                 TimeUnit::fromInt(1),
                 LengthUnit::fromInt(2)
             )

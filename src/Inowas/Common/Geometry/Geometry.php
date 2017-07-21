@@ -164,6 +164,15 @@ class Geometry implements \JsonSerializable
         return ($this->value() instanceof Polygon);
     }
 
+    public function getPolygon(): ?Polygon
+    {
+        if ($this->isPolygon()){
+            return $this->value();
+        }
+
+        return null;
+    }
+
     public function getPointFromGeometry(): ?Point
     {
         if ($this->isPoint()) {

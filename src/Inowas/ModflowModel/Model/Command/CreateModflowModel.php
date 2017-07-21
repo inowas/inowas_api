@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace Inowas\ModflowModel\Model\Command;
 
+use Inowas\Common\Geometry\Geometry;
 use Inowas\Common\Geometry\Polygon;
+use Inowas\Common\Grid\BoundingBox;
 use Inowas\Common\Grid\GridSize;
 use Inowas\Common\Id\ModflowId;
 use Inowas\Common\Id\UserId;
@@ -13,12 +15,13 @@ use Inowas\Common\Modflow\Description;
 use Inowas\Common\Modflow\Name;
 use Inowas\Common\Modflow\TimeUnit;
 use Prooph\Common\Messaging\Command;
+use Prooph\Common\Messaging\PayloadConstructable;
+use Prooph\Common\Messaging\PayloadTrait;
 
-class CreateModflowModel extends Command
+class CreateModflowModel extends Command implements PayloadConstructable
 {
 
-    /** @var array */
-    private $payload;
+    use PayloadTrait;
 
     /** @noinspection MoreThanThreeArgumentsInspection
      * @param UserId $userId
@@ -27,6 +30,7 @@ class CreateModflowModel extends Command
      * @param Description $description
      * @param Polygon $polygon
      * @param GridSize $gridSize
+     * @param BoundingBox $boundingBox
      * @param TimeUnit $timeUnit
      * @param LengthUnit $lengthUnit
      * @return CreateModflowModel
@@ -38,38 +42,24 @@ class CreateModflowModel extends Command
         Description $description,
         Polygon $polygon,
         GridSize $gridSize,
+        BoundingBox $boundingBox,
         TimeUnit $timeUnit,
         LengthUnit $lengthUnit
     ): CreateModflowModel
     {
         return new self(
             [
+                'id' => $modelId->toString(),
                 'user_id' => $userId->toString(),
-                'modflowmodel_id' => $modelId->toString(),
                 'name' => $name->toString(),
                 'description' => $description->toString(),
-                'polygon' => $polygon->toJson(),
+                'geometry' => Geometry::fromPolygon($polygon)->toArray(),
                 'grid_size' => $gridSize->toArray(),
-                'time_unit' => $timeUnit->toValue(),
-                'length_unit' => $lengthUnit->toValue()
+                'bounding_box' => $boundingBox->toArray(),
+                'time_unit' => $timeUnit->toInt(),
+                'length_unit' => $lengthUnit->toInt()
             ]
         );
-    }
-
-    final public function __construct(array $payload = null)
-    {
-        $this->setPayload($payload);
-        $this->init();
-    }
-
-    public function payload(): array
-    {
-        return $this->payload;
-    }
-
-    protected function setPayload(array $payload): void
-    {
-        $this->payload = $payload;
     }
 
     public function userId(): UserId
@@ -79,7 +69,7 @@ class CreateModflowModel extends Command
 
     public function modelId(): ModflowId
     {
-        return ModflowId::fromString($this->payload['modflowmodel_id']);
+        return ModflowId::fromString($this->payload['id']);
     }
 
     public function name(): Name
@@ -94,7 +84,12 @@ class CreateModflowModel extends Command
 
     public function polygon(): Polygon
     {
-        return Polygon::fromJson($this->payload['polygon']);
+        return Geometry::fromArray($this->payload['geometry'])->getPolygon();
+    }
+
+    public function boundingBox(): BoundingBox
+    {
+        return BoundingBox::fromArray($this->payload['bounding_box']);
     }
 
     public function gridSize(): GridSize

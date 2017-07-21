@@ -82,6 +82,7 @@ class RioPrimero extends LoadScenarioBase
                         [-63.569260, -31.313615],
                         [-63.687336, -31.313615]
                     ]], 4326);
+        $boundingBox = $this->container->get('inowas.geotools.geotools_service')->getBoundingBox(Geometry::fromPolygon($polygon));
         $gridSize = GridSize::fromXY(75, 40);
         $commandBus->dispatch(CreateModflowModel::newWithAllParams(
             $ownerId,
@@ -90,6 +91,7 @@ class RioPrimero extends LoadScenarioBase
             Description::fromString('BaseModel Rio Primero 2015'),
             $polygon,
             $gridSize,
+            $boundingBox,
             TimeUnit::fromInt(TimeUnit::DAYS),
             LengthUnit::fromInt(LengthUnit::METERS)
         ));

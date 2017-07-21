@@ -22,7 +22,7 @@ class ChangeBoundingBox extends Command implements PayloadConstructable
             [
                 'user_id' => $userId->toString(),
                 'modflow_model_id' => $modelId->toString(),
-                'bounding_box' => $boundingBox->toArray()
+                'bounding_box' => $boundingBox->toArrayWithDistance()
             ]
         );
     }
@@ -34,7 +34,7 @@ class ChangeBoundingBox extends Command implements PayloadConstructable
 
     public function boundingBox(): BoundingBox
     {
-        return BoundingBox::fromArray($this->payload['bounding_box']);
+        return BoundingBox::fromArrayWithDistance($this->payload['bounding_box']);
     }
 
     public function userId(): UserId

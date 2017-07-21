@@ -398,6 +398,8 @@ abstract class EventSourcingBaseTest extends WebTestCase
             array(-63.569260, -31.313615),
             array(-63.687336, -31.313615)
         )), 4326);
+
+        $boundingBox = $this->container->get('inowas.geotools.geotools_service')->getBoundingBox(Geometry::fromPolygon($polygon));
         $this->commandBus->dispatch(CreateModflowModel::newWithAllParams(
             $ownerId,
             $modelId,
@@ -405,6 +407,7 @@ abstract class EventSourcingBaseTest extends WebTestCase
             Description::fromString('Base Model for the scenario analysis 2020 Rio Primero.'),
             $polygon,
             GridSize::fromXY(75, 40),
+            $boundingBox,
             TimeUnit::fromInt(TimeUnit::DAYS),
             LengthUnit::fromInt(LengthUnit::METERS)
         ));
@@ -420,6 +423,7 @@ abstract class EventSourcingBaseTest extends WebTestCase
         $modelDescription = Description::fromString('TestModelDescription444');
 
         $polygon = $this->createPolygon();
+        $boundingBox = $this->container->get('inowas.geotools.geotools_service')->getBoundingBox(Geometry::fromPolygon($polygon));
         $gridSize = GridSize::fromXY(75, 40);
         $this->commandBus->dispatch(
             CreateModflowModel::newWithAllParams(
@@ -429,6 +433,7 @@ abstract class EventSourcingBaseTest extends WebTestCase
                 $modelDescription,
                 $polygon,
                 $gridSize,
+                $boundingBox,
                 TimeUnit::fromInt(1),
                 LengthUnit::fromInt(2)
             )

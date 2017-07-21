@@ -121,6 +121,7 @@ class Hanoi extends LoadScenarioBase
             array(105.783049106327312, 21.093961473086512),
             array(105.790767733626808, 21.094425932026443)
         )), 4326);
+        $boundingBox = $this->container->get('inowas.geotools.geotools_service')->getBoundingBox(Geometry::fromPolygon($polygon));
         $gridSize = GridSize::fromXY(165, 175);
         $timeUnit = TimeUnit::fromInt(TimeUnit::DAYS);
         $lengthUnit = LengthUnit::fromInt(LengthUnit::METERS);
@@ -132,6 +133,7 @@ class Hanoi extends LoadScenarioBase
             Description::fromString('Calibrated groundwater base model, 2005-2007.'),
             $polygon,
             $gridSize,
+            $boundingBox,
             $timeUnit,
             $lengthUnit
         ));

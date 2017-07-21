@@ -6,8 +6,6 @@ namespace Tests\Inowas\ModflowBundle\Controller;
 
 use FOS\UserBundle\Doctrine\UserManager;
 use Inowas\AppBundle\Model\User;
-use Inowas\Common\Id\ModflowId;
-use Inowas\Common\Id\UserId;
 use Tests\Inowas\ModflowBundle\EventSourcingBaseTest;
 
 class MessageBoxControllerTest extends EventSourcingBaseTest
@@ -17,6 +15,8 @@ class MessageBoxControllerTest extends EventSourcingBaseTest
 
     /** @var User */
     protected $user;
+
+    private $fileLocation = __DIR__.'/../../Modflow/Schema/_files/';
 
     public function setUp(): void
     {
@@ -49,12 +49,7 @@ class MessageBoxControllerTest extends EventSourcingBaseTest
      */
     public function it_returns_422_with_empty_request(): void
     {
-        $userId = UserId::fromString($this->user->getId()->toString());
         $apiKey = $this->user->getApiKey();
-
-        $modelId = ModflowId::generate();
-        $this->createModelWithOneLayer($userId, $modelId);
-
         $client = static::createClient();
         $client->request(
             'POST',
@@ -66,5 +61,26 @@ class MessageBoxControllerTest extends EventSourcingBaseTest
 
         $response = $client->getResponse();
         $this->assertEquals(422, $response->getStatusCode());
+    }
+
+    /**
+     * @test
+     */
+    public function it_can_receive_a_create_model_command(): void
+    {
+        $apiKey = $this->user->getApiKey();
+
+        $client = static::createClient();
+        $client->request(
+            'POST',
+            '/v2/messagebox',
+            array(),
+            array(),
+            array('HTTP_X-AUTH-TOKEN' => $apiKey),
+            file_get_contents($this->fileLocation.'createModflowModel.json')
+        );
+
+        $response = $client->getResponse();
+        $this->assertEquals(202, $response->getStatusCode());
     }
 }

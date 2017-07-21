@@ -107,7 +107,7 @@ class ModelFinder
             return null;
         }
 
-        return BoundingBox::fromArray(json_decode($result['bounding_box'], true));
+        return BoundingBox::fromArrayWithDistance(json_decode($result['bounding_box'], true));
     }
 
     public function getCalculationIdByModelId(ModflowId $modelId): ?CalculationId

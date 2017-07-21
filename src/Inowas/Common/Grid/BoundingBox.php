@@ -48,6 +48,11 @@ class BoundingBox implements \JsonSerializable
 
     public static function fromArray(array $bb): BoundingBox
     {
+        return new self($bb['x_min'], $bb['x_max'], $bb['y_min'], $bb['y_max'], $bb['srid'], 0, 0 );
+    }
+
+    public static function fromArrayWithDistance(array $bb): BoundingBox
+    {
         return new self($bb['x_min'], $bb['x_max'], $bb['y_min'], $bb['y_max'], $bb['srid'], $bb['d_x'], $bb['d_y']);
     }
 
@@ -117,6 +122,17 @@ class BoundingBox implements \JsonSerializable
             'x_max' => $this->xMax,
             'y_min' => $this->yMin,
             'y_max' => $this->yMax,
+            'srid' => $this->srid
+        );
+    }
+
+    public function toArrayWithDistance()
+    {
+        return array(
+            'x_min' => $this->xMin,
+            'x_max' => $this->xMax,
+            'y_min' => $this->yMin,
+            'y_max' => $this->yMax,
             'srid' => $this->srid,
             'd_x' => $this->dX,
             'd_y' => $this->dY,
@@ -126,9 +142,9 @@ class BoundingBox implements \JsonSerializable
     /**
      * @return array
      */
-    public function jsonSerialize()
+    public function jsonSerialize(): array
     {
-        return $this->toArray();
+        return $this->toArrayWithDistance();
     }
 
     public function toGeoJson(){
@@ -152,7 +168,10 @@ class BoundingBox implements \JsonSerializable
             ($this->xMin() === $boundingBox->xMin()) &&
             ($this->xMax() === $boundingBox->xMax()) &&
             ($this->yMin() === $boundingBox->yMin()) &&
-            ($this->yMax() === $boundingBox->yMax())
+            ($this->yMax() === $boundingBox->yMax()) &&
+            ($this->srid() === $boundingBox->srid()) &&
+            ($this->dX() === $boundingBox->dX()) &&
+            ($this->dY() === $boundingBox->dY())
         );
     }
 }
