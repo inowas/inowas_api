@@ -353,9 +353,49 @@ class RioPrimero extends LoadScenarioBase
             $observationPointId,
             RiverDateTimeValue::fromParams(
                 DateTime::fromDateTimeImmutable(new \DateTimeImmutable('2015-01-01')),
-                446,
-                444,
+                445,
+                443,
                 200
+            )
+        );
+
+        $observationPointId = ObservationPointId::fromString('OP2');
+        $observationPoint = ObservationPoint::fromIdTypeNameAndGeometry(
+            $observationPointId,
+            BoundaryType::fromString(BoundaryType::RIVER),
+            Name::fromString('OP 1'),
+            new Point(-63.618345261784,-31.352824562004, 4326)
+        );
+
+        /** @var RiverBoundary $riv */
+        $riv->addObservationPoint($observationPoint);
+        $riv->addRiverStageToObservationPoint(
+            $observationPointId,
+            RiverDateTimeValue::fromParams(
+                DateTime::fromDateTimeImmutable(new \DateTimeImmutable('2015-01-01')),
+                444,
+                442,
+                250
+            )
+        );
+
+        $observationPointId = ObservationPointId::fromString('OP3');
+        $observationPoint = ObservationPoint::fromIdTypeNameAndGeometry(
+            $observationPointId,
+            BoundaryType::fromString(BoundaryType::RIVER),
+            Name::fromString('OP 1'),
+            new Point(-63.569641113281,-31.331205380684, 4326)
+        );
+
+        /** @var RiverBoundary $riv */
+        $riv->addObservationPoint($observationPoint);
+        $riv->addRiverStageToObservationPoint(
+            $observationPointId,
+            RiverDateTimeValue::fromParams(
+                DateTime::fromDateTimeImmutable(new \DateTimeImmutable('2015-01-01')),
+                444,
+                442,
+                250
             )
         );
 

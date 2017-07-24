@@ -8,6 +8,9 @@ use FOS\UserBundle\Doctrine\UserManager;
 use Inowas\AppBundle\Model\User;
 use Inowas\Common\Id\ModflowId;
 use Inowas\Common\Id\UserId;
+use Inowas\Common\SchemaValidator\UrlReplaceLoader;
+use League\JsonGuard\Validator;
+use League\JsonReference\Dereferencer;
 use Ramsey\Uuid\Uuid;
 use Tests\Inowas\ModflowBundle\EventSourcingBaseTest;
 
@@ -148,5 +151,41 @@ class ModflowModelControllerTest extends EventSourcingBaseTest
         $this->assertEquals($userId->toString(), $modelDetails['user_id']);
         $this->assertTrue(array_key_exists('user_name', $modelDetails));
         $this->assertEquals($username, $modelDetails['user_name']);
+    }
+
+    /**
+     * @test
+     */
+    public function it_returns_the_model_details(): void
+    {
+        $userId = UserId::fromString($this->user->getId()->toString());
+        $apiKey = $this->user->getApiKey();
+
+        $modelId = ModflowId::generate();
+        $this->createModelWithOneLayer($userId, $modelId);
+
+        $client = static::createClient();
+        $client->request(
+            'GET',
+            sprintf('/v2/modflowmodels/%s', $modelId->toString()),
+            array(),
+            array(),
+            array('HTTP_X-AUTH-TOKEN' => $apiKey)
+        );
+
+        $response = $client->getResponse();
+        $this->assertEquals(200, $response->getStatusCode());
+
+        $content = json_decode($response->getContent(), true);
+        unset($content['active_cells']);
+
+        $schema = file_get_contents('spec/schema/modflow/modflowModel.json');
+        $dereferencer = Dereferencer::draft4();
+        $dereferencer->getLoaderManager()->registerLoader('https', new UrlReplaceLoader());
+        $dereferencedSchema = $dereferencer->dereference(json_decode($schema));
+
+        $content = json_decode(json_encode($content));
+        $validator = new Validator($content, $dereferencedSchema);
+        $this->assertTrue($validator->passes(), var_export($validator->errors(), true));
     }
 }

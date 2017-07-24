@@ -14,6 +14,7 @@ use Inowas\Common\Grid\GridSize;
 use Inowas\Common\Id\BoundaryId;
 use Inowas\Common\Id\ModflowId;
 use Inowas\Common\Modflow\LengthUnit;
+use Inowas\Common\Modflow\ModflowModel;
 use Inowas\Common\Modflow\StressPeriods;
 use Inowas\Common\Modflow\TimeUnit;
 use Inowas\GeoTools\Service\GeoTools;
@@ -56,6 +57,21 @@ class ModflowModelManager
         $this->geoTools = $geoTools;
         $this->modelFinder = $modelFinder;
         $this->stressPeriodDataGenerator = $stressPeriodDataGenerator;
+    }
+
+    public function findModel(ModflowId $modelId): ?ModflowModel
+    {
+        return ModflowModel::fromParams(
+            $modelId,
+            $this->modelFinder->getModelNameByModelId($modelId),
+            $this->modelFinder->getModelDescriptionByModelId($modelId),
+            $this->modelFinder->getAreaPolygonByModflowModelId($modelId),
+            $this->getBoundingBox($modelId),
+            $this->getGridSize($modelId),
+            $this->getTimeUnitByModelId($modelId),
+            $this->getLengthUnitByModelId($modelId),
+            $this->getAreaActiveCells($modelId)
+        );
     }
 
     public function findBoundaries(ModflowId $modelId): array

@@ -102,11 +102,11 @@ class CreateModflowModel extends AbstractJsonSchemaCommand
 
     public function timeUnit(): TimeUnit
     {
-        return TimeUnit::fromInt(TimeUnit::DAYS);
+        return TimeUnit::fromInt($this->payload['time_unit']);
     }
 
     public function lengthUnit(): LengthUnit
     {
-        return LengthUnit::fromInt(LengthUnit::METERS);
+        return LengthUnit::fromInt($this->payload['length_unit']);
     }
 }

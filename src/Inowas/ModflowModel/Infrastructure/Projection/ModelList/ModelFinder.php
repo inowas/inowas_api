@@ -243,4 +243,15 @@ class ModelFinder
 
         return $result['count'] > 0;
     }
+
+    public function userHasReadAccessToModel(UserId $userId, ModflowId $modelId): bool
+    {
+        $this->connection->setFetchMode(\PDO::FETCH_ASSOC);
+        $result = $this->connection->fetchAssoc(
+            sprintf('SELECT count(*) FROM %s WHERE model_id = :model_id AND PUBLIC OR model_id = :model_id AND user_id = :user_id', Table::MODFLOWMODELS),
+            ['model_id' => $modelId->toString(), 'user_id' => $userId->toString()]
+        );
+
+        return $result['count'] > 0;
+    }
 }

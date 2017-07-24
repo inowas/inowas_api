@@ -6,6 +6,7 @@ namespace Inowas\ModflowBundle\Controller;
 
 use FOS\RestBundle\Controller\Annotations as Rest;
 use Inowas\Common\Id\ModflowId;
+use Inowas\ModflowBundle\Exception\AccessDeniedException;
 use Inowas\ModflowBundle\Exception\NotFoundException;
 use Nelmio\ApiDocBundle\Annotation\ApiDoc;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -73,24 +74,29 @@ class ModflowModelController extends InowasRestController
      * @param string $id
      * @Rest\Get("/modflowmodels/{id}")
      * @return JsonResponse
-     * @throws \Inowas\ModflowBundle\Exception\NotFoundException
+     * @throws \Inowas\ModflowBundle\Exception\AccessDeniedException
+     * @throws \Symfony\Component\DependencyInjection\Exception\ServiceNotFoundException
+     * @throws \Symfony\Component\DependencyInjection\Exception\ServiceCircularReferenceException
+     * @throws NotFoundException
      */
     public function getModflowModelAction(string $id): JsonResponse
     {
         $this->assertUuidIsValid($id);
         $modelId = ModflowId::fromString($id);
-        $details = $this->get('inowas.modflowmodel.model_finder')->getModelDetailsByModelId($modelId);
+        $userId = $this->getUserId();
 
-        if (null === $details) {
-            throw NotFoundException::withMessage(sprintf(
-                'ModflowModel with id: \'%s\' not found.', $modelId->toString()
-            ));
+        if (! $this->get('inowas.modflowmodel.model_finder')->userHasReadAccessToModel($userId, $modelId)) {
+            throw AccessDeniedException::withMessage(
+                sprintf(
+                    'Model not found or user with Id %s does not have access to model with id %s',
+                    $userId->toString(),
+                    $modelId->toString()
+                )
+            );
         }
 
-        $activeCells = $this->get('inowas.modflowmodel.manager')->getAreaActiveCells($modelId);
-        $details['active_cells'] = $activeCells->to2DArray();
-
-        return new JsonResponse($details);
+        $model = $this->container->get('inowas.modflowmodel.manager')->findModel($modelId);
+        return new JsonResponse($model);
     }
 
     /**
