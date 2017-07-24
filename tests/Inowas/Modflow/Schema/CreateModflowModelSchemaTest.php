@@ -16,7 +16,11 @@ class CreateModflowModelSchemaTest extends BaseTestCase
         $path = __DIR__.'/_files/';
 
         return [
-            [file_get_contents($path . 'createModflowModel.json'), true]
+            [
+                file_get_contents($path . 'createModflowModel.json'),
+                file_get_contents('spec/schema/modflow/command/createModflowModel.json'),
+                true
+            ]
         ];
     }
 
@@ -24,21 +28,16 @@ class CreateModflowModelSchemaTest extends BaseTestCase
      * @dataProvider providerModel
      * @test
      * @param string $json
+     * @param string $schema
      * @param bool $expected
      */
-    public function it_validates_create_model_command(string $json, bool $expected)
+    public function it_validates_create_model_command(string $json, string $schema, bool $expected)
     {
-        $jsonSchema = str_replace(
-            'https://inowas.com/',
-            'file://spec/',
-            file_get_contents('spec/schema/modflow/command/createModflowModel.json')
-        );
-
         $dereferencer = Dereferencer::draft4();
         $dereferencer->getLoaderManager()->registerLoader('https', new UrlReplaceLoader());
-        $schema = $dereferencer->dereference(json_decode($jsonSchema));
+        $dereferencedSchema = $dereferencer->dereference(json_decode($schema));
 
-        $validator = new Validator(json_decode($json), $schema);
+        $validator = new Validator(json_decode($json), $dereferencedSchema);
         $this->assertSame($expected, $validator->passes(), var_export($validator->errors(), true));
     }
 }

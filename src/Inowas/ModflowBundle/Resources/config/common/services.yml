@@ -7,3 +7,11 @@ services:
         class: Inowas\ModflowBundle\DependencyInjection\Container
         arguments:
           - '@service_container'
+
+#    inowas.schema.validator:
+#        class: Inowas\Common\SchemaValidator\SchemaValidatorWrapper
+#        arguments:
+#            - '@inowas.schema.dereferencer'
+
+#    inowas.schema.dereferencer:
+#        factory: 'Inowas\Common\SchemaValidator\DereferencerFactory:create'

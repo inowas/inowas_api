@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Inowas\ModflowModel\Model\Command;
 
+use Inowas\Common\Command\AbstractJsonSchemaCommand;
 use Inowas\Common\Geometry\Geometry;
 use Inowas\Common\Geometry\Polygon;
 use Inowas\Common\Grid\BoundingBox;
@@ -14,15 +15,9 @@ use Inowas\Common\Modflow\LengthUnit;
 use Inowas\Common\Modflow\Description;
 use Inowas\Common\Modflow\Name;
 use Inowas\Common\Modflow\TimeUnit;
-use Prooph\Common\Messaging\Command;
-use Prooph\Common\Messaging\PayloadConstructable;
-use Prooph\Common\Messaging\PayloadTrait;
 
-class CreateModflowModel extends Command implements PayloadConstructable
+class CreateModflowModel extends AbstractJsonSchemaCommand
 {
-
-    use PayloadTrait;
-
     /** @noinspection MoreThanThreeArgumentsInspection
      * @param UserId $userId
      * @param ModflowId $modelId
@@ -47,10 +42,9 @@ class CreateModflowModel extends Command implements PayloadConstructable
         LengthUnit $lengthUnit
     ): CreateModflowModel
     {
-        return new self(
+        $self = new static(
             [
                 'id' => $modelId->toString(),
-                'user_id' => $userId->toString(),
                 'name' => $name->toString(),
                 'description' => $description->toString(),
                 'geometry' => Geometry::fromPolygon($polygon)->toArray(),
@@ -60,11 +54,20 @@ class CreateModflowModel extends Command implements PayloadConstructable
                 'length_unit' => $lengthUnit->toInt()
             ]
         );
+
+        /** @var CreateModflowModel $self */
+        $self = $self->withAddedMetadata('user_id', $userId->toString());
+        return $self;
+    }
+
+    public function schema(): string
+    {
+        return 'file://spec/schema/modflow/modflowModel.json';
     }
 
     public function userId(): UserId
     {
-        return UserId::fromString($this->payload['user_id']);
+        return UserId::fromString($this->metadata['user_id']);
     }
 
     public function modelId(): ModflowId

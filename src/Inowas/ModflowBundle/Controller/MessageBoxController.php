@@ -66,13 +66,9 @@ class MessageBoxController extends InowasRestController
 
         $commandClass = $this->whiteList[$content['message_name']];
         $content['message_name'] = $commandClass;
-        $content['payload']['user_id'] = $this->getUserId()->toString();
 
-        /*
-         *  Todo Ask:
-         *  To make it work, I have to set $content['message_name'] to my CommandName and my messageName
-        */
         $message = $messageFactory->createMessageFromArray($commandClass, $content);
+        $message = $message->withAddedMetadata('user_id', $this->getUserId()->toString());
 
         switch ($message->messageType()) {
             case Message::TYPE_COMMAND:
