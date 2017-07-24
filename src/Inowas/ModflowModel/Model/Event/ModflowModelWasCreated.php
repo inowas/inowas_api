@@ -52,7 +52,7 @@ class ModflowModelWasCreated extends AggregateChanged
             'user_id' => $userId->toString(),
             'polygon' => $polygon->toJson(),
             'grid_size' => $gridSize->toArray(),
-            'bounding_box' => $boundingBox->toArrayWithDistance()
+            'bounding_box' => $boundingBox->toArray()
         ]);
 
         $event->modelId = $modflowId;
@@ -84,7 +84,7 @@ class ModflowModelWasCreated extends AggregateChanged
     public function boundingBox(): BoundingBox
     {
         if ($this->boundingBox === null){
-            $this->boundingBox = BoundingBox::fromArrayWithDistance($this->payload['bounding_box']);
+            $this->boundingBox = BoundingBox::fromArray($this->payload['bounding_box']);
         }
 
         return $this->boundingBox;

@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Inowas\ModflowModel\Model\Packages;
 
 use Inowas\Common\DateTime\DateTime;
+use Inowas\Common\Grid\Distance;
 use Inowas\Common\Grid\Nlay;
 use Inowas\Common\Modflow\Botm;
 use Inowas\Common\Grid\BoundingBox;
@@ -435,13 +436,13 @@ class DisPackage implements PackageInterface
         return $package;
     }
 
-    public function updateGridParameters(GridSize $gridSize, BoundingBox $boundingBox): DisPackage
+    public function updateGridParameters(GridSize $gridSize, BoundingBox $boundingBox, Distance $dx, Distance $dy): DisPackage
     {
         $package = self::fromArray($this->toArray());
         $package->nrow = Nrow::fromInt($gridSize->nY());
         $package->ncol = Ncol::fromInt($gridSize->nX());
-        $package->delr = Delr::fromValue($boundingBox->dY()/$gridSize->nY());
-        $package->delc = Delc::fromValue($boundingBox->dX()/$gridSize->nX());
+        $package->delr = Delr::fromValue($dy->toFloat()/$gridSize->nY());
+        $package->delc = Delc::fromValue($dx->toFloat()/$gridSize->nX());
         $package->xul = Xul::fromValue($boundingBox->xMin());
         $package->yul = Yul::fromValue($boundingBox->yMax());
         return $package;

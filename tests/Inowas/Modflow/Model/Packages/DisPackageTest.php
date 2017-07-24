@@ -3,6 +3,7 @@
 namespace Tests\Inowas\Modflow\Model\Packages;
 
 use Inowas\Common\DateTime\DateTime;
+use Inowas\Common\Grid\Distance;
 use Inowas\Common\Grid\Nlay;
 use Inowas\Common\Grid\BoundingBox;
 use Inowas\Common\Grid\Ncol;
@@ -95,9 +96,9 @@ class DisPackageTest extends \PHPUnit_Framework_TestCase
 
         /** @var DisPackage $disPackage */
         $disPackage = DisPackage::fromDefaults();
-        $boundingBox = BoundingBox::fromCoordinates(1,2,3,4,4265, 700, 1200);
+        $boundingBox = BoundingBox::fromCoordinates(1,2,3,4);
         $gridSize = GridSize::fromXY(7, 12);
-        $disPackage = $disPackage->updateGridParameters($gridSize, $boundingBox);
+        $disPackage = $disPackage->updateGridParameters($gridSize, $boundingBox, Distance::fromMeters(700), Distance::fromMeters(1200));
 
         $expectedNRow = Nrow::fromInt(12);
         $expectedNCol = Ncol::fromInt(7);

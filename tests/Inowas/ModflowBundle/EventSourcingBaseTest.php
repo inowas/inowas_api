@@ -26,7 +26,6 @@ use Inowas\Common\Geometry\Geometry;
 use Inowas\Common\Geometry\LineString;
 use Inowas\Common\Geometry\Point;
 use Inowas\Common\Geometry\Polygon;
-use Inowas\Common\Geometry\Srid;
 use Inowas\Common\Grid\AffectedLayers;
 use Inowas\Common\Grid\BoundingBox;
 use Inowas\Common\Grid\GridSize;
@@ -412,8 +411,7 @@ abstract class EventSourcingBaseTest extends WebTestCase
             LengthUnit::fromInt(LengthUnit::METERS)
         ));
 
-        $box = $this->container->get('inowas.geotools.geotools_service')->projectBoundingBox(BoundingBox::fromCoordinates(-63.687336, -63.569260, -31.367449, -31.313615, 4326), Srid::fromInt(4326));
-        $boundingBox = BoundingBox::fromEPSG4326Coordinates($box->xMin(), $box->xMax(), $box->yMin(), $box->yMax(), $box->dX(), $box->dY());
+        $boundingBox = BoundingBox::fromCoordinates(-63.687336, -63.569260, -31.367449, -31.313615);
         $this->commandBus->dispatch(ChangeBoundingBox::forModflowModel($ownerId, $modelId, $boundingBox));
     }
 

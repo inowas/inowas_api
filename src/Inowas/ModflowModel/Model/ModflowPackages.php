@@ -7,6 +7,7 @@ namespace Inowas\ModflowModel\Model;
 use Inowas\Common\DateTime\DateTime;
 use Inowas\Common\FileSystem\Modelworkspace;
 use Inowas\Common\Grid\BoundingBox;
+use Inowas\Common\Grid\Distance;
 use Inowas\Common\Grid\GridSize;
 use Inowas\Common\Modflow\ExecutableName;
 use Inowas\Common\Modflow\LengthUnit;
@@ -163,12 +164,12 @@ class ModflowPackages implements \JsonSerializable
         $this->updatePackage($disPackage);
     }
 
-    public function updateGridParameters(GridSize $gridSize, BoundingBox $boundingBox): void
+    public function updateGridParameters(GridSize $gridSize, BoundingBox $boundingBox, Distance $dx, Distance $dy): void
     {
         // The gridparameters are configured in the DisPackage
         /** @var DisPackage $disPackage */
         $disPackage = $this->getPackage('dis');
-        $disPackage = $disPackage->updateGridParameters($gridSize, $boundingBox);
+        $disPackage = $disPackage->updateGridParameters($gridSize, $boundingBox, $dx, $dy);
         $this->updatePackage($disPackage);
     }
 

@@ -12,6 +12,7 @@ use Inowas\Common\Id\ModflowId;
 use Inowas\Common\Modflow\Ibound;
 use Inowas\Common\Modflow\StressPeriods;
 use Inowas\Common\Modflow\Strt;
+use Inowas\GeoTools\Service\GeoTools;
 use Inowas\ModflowModel\Infrastructure\Projection\Soilmodel\SoilmodelFinder;
 use Inowas\ModflowModel\Model\ModflowModelAggregate;
 use Inowas\ModflowModel\Model\ModflowModelList;
@@ -31,12 +32,22 @@ class ModflowPackagesManager
     /** @var  SoilmodelFinder */
     private $soilmodelFinder;
 
-    public function __construct(ModflowPackagesPersister $packagePersister, ModflowModelList $modelList, ModflowModelManager $modelManager, SoilmodelFinder $soilmodelFinder)
+    /** @var  GeoTools */
+    private $geoTools;
+
+    public function __construct(
+        ModflowPackagesPersister $packagePersister,
+        ModflowModelList $modelList,
+        ModflowModelManager $modelManager,
+        SoilmodelFinder $soilmodelFinder,
+        GeoTools $geoTools
+    )
     {
         $this->modflowPackagePersister = $packagePersister;
         $this->modflowModelList = $modelList;
         $this->modflowModelManager = $modelManager;
         $this->soilmodelFinder = $soilmodelFinder;
+        $this->geoTools = $geoTools;
     }
 
     public function createFromDefaultsAndSave(): CalculationId
@@ -233,7 +244,9 @@ class ModflowPackagesManager
          */
         $gridSize = $this->modflowModelManager->getGridSize($modelId);
         $boundingBox = $this->modflowModelManager->getBoundingBox($modelId);
-        $packages->updateGridParameters($gridSize, $boundingBox);
+        $dx = $this->geoTools->distanceInMeters($boundingBox->bottomLeft(), $boundingBox->bottomRight());
+        $dy = $this->geoTools->distanceInMeters($boundingBox->bottomLeft(), $boundingBox->topLeft());
+        $packages->updateGridParameters($gridSize, $boundingBox, $dx, $dy);
 
         /*
          * Add PackageDetails for DisPackage

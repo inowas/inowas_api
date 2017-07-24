@@ -4,8 +4,6 @@ declare(strict_types=1);
 
 namespace Inowas\ModflowModel\Model\Handler;
 
-use Inowas\Common\Geometry\Srid;
-use Inowas\GeoTools\Service\GeoTools;
 use Inowas\ModflowModel\Model\Command\CreateModflowModel;
 use Inowas\ModflowModel\Model\ModflowModelList;
 use Inowas\ModflowModel\Model\ModflowModelAggregate;
@@ -13,29 +11,22 @@ use Inowas\ModflowModel\Model\ModflowModelAggregate;
 final class CreateModflowModelHandler
 {
 
-    /** @var  GeoTools */
-    private $geoTools;
-
     /** @var  ModflowModelList */
     private $modelList;
 
-
-    public function __construct(ModflowModelList $modelList, GeoTools $geoTools)
+    public function __construct(ModflowModelList $modelList)
     {
-        $this->geoTools = $geoTools;
         $this->modelList = $modelList;
     }
 
     public function __invoke(CreateModflowModel $command)
     {
-        $boundingBox = $this->geoTools->projectBoundingBox($command->boundingBox(), Srid::fromInt(Srid::DEFAULT));
-
         $modflowModel = ModflowModelAggregate::create(
             $command->modelId(),
             $command->userId(),
             $command->polygon(),
             $command->gridSize(),
-            $boundingBox
+            $command->boundingBox()
         );
 
         $modflowModel->changeName($command->userId(), $command->name());

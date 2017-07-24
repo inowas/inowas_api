@@ -28,8 +28,6 @@ services:
         class: Inowas\ModflowModel\Model\Handler\ChangeBoundingBoxHandler
         arguments:
           - '@modflow_model_list'
-          - '@inowas.geotools.geotools_service'
-          - '@inowas.modflowmodel.model_finder'
 
     inowas.modflowmodel.change_description_handler:
         class: Inowas\ModflowModel\Model\Handler\ChangeDescriptionHandler
@@ -63,7 +61,6 @@ services:
         class: Inowas\ModflowModel\Model\Handler\CreateModflowModelHandler
         arguments:
           - '@modflow_model_list'
-          - '@inowas.geotools.geotools_service'
 
     inowas.modflowmodel.delete_modflow_model_handler:
         class: Inowas\ModflowModel\Model\Handler\DeleteModflowModelHandler

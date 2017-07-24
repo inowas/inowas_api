@@ -17,7 +17,6 @@ use Inowas\Common\Geometry\Geometry;
 use Inowas\Common\Geometry\LineString;
 use Inowas\Common\Geometry\Point;
 use Inowas\Common\Geometry\Polygon;
-use Inowas\Common\Geometry\Srid;
 use Inowas\Common\Grid\AffectedLayers;
 use Inowas\Common\Grid\BoundingBox;
 use Inowas\Common\Grid\GridSize;
@@ -68,7 +67,7 @@ class RioPrimero extends LoadScenarioBase
     public function load(): void
     {
         $this->loadUsers($this->container->get('fos_user.user_manager'));
-        $geoTools = $this->container->get('inowas.geotools.geotools_service');
+        #updateGridParameters()$geoTools = $this->container->get('inowas.geotools.geotools_service');
         $this->createEventStreamTableIfNotExists('event_stream');
 
         $commandBus = $this->container->get('prooph_service_bus.modflow_command_bus');
@@ -96,8 +95,7 @@ class RioPrimero extends LoadScenarioBase
             LengthUnit::fromInt(LengthUnit::METERS)
         ));
 
-        $box = $geoTools->projectBoundingBox(BoundingBox::fromCoordinates(-63.687336, -63.569260, -31.367449, -31.313615, 4326), Srid::fromInt(4326));
-        $boundingBox = BoundingBox::fromEPSG4326Coordinates($box->xMin(), $box->xMax(), $box->yMin(), $box->yMax(), $box->dX(), $box->dY());
+        $boundingBox = BoundingBox::fromCoordinates(-63.687336, -63.569260, -31.367449, -31.313615);
         $commandBus->dispatch(ChangeBoundingBox::forModflowModel($ownerId, $baseModelId, $boundingBox));
 
         $layers = [['Surface Layer', 'the one and only']];
@@ -185,10 +183,12 @@ class RioPrimero extends LoadScenarioBase
          */
         $ghb = GeneralHeadBoundary::createWithParams(
             Name::fromString('General Head Boundary 1'),
-            Geometry::fromLineString(new LineString(array(
-                array($boundingBox->xMin(), $boundingBox->yMin()),
-                array($boundingBox->xMin(), $boundingBox->yMax())
-            ), $boundingBox->srid())),
+            Geometry::fromLineString(
+                new LineString(array(
+                    array($boundingBox->xMin(), $boundingBox->yMin()),
+                    array($boundingBox->xMin(), $boundingBox->yMax())
+                ))
+            ),
             AffectedLayers::createWithLayerNumber(LayerNumber::fromInt(0)),
             Metadata::create()
         );
@@ -197,7 +197,7 @@ class RioPrimero extends LoadScenarioBase
             ObservationPointId::fromString('OP1'),
             BoundaryType::fromString(BoundaryType::GENERAL_HEAD),
             Name::fromString('OP 1'),
-            new Point($boundingBox->xMax(), $boundingBox->yMin(), 4326)
+            new Point($boundingBox->xMax(), $boundingBox->yMin())
         );
 
         /** @var GeneralHeadBoundary $ghb */
@@ -221,7 +221,7 @@ class RioPrimero extends LoadScenarioBase
             Geometry::fromLineString(new LineString(array(
                 array($boundingBox->xMax(), $boundingBox->yMin()),
                 array($boundingBox->xMax(), $boundingBox->yMax())
-            ), $boundingBox->srid())),
+            ))),
             AffectedLayers::createWithLayerNumber(LayerNumber::fromInt(0)),
             Metadata::create()
         );

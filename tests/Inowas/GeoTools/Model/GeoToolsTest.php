@@ -106,13 +106,11 @@ class GeoToolsTest extends WebTestCase
             )
         ), 4326);
 
-        $this->boundingBox = BoundingBox::fromEPSG4326Coordinates(
+        $this->boundingBox = BoundingBox::fromCoordinates(
             105.75218379342,
             105.91170436595,
             20.942793923555,
-            21.100124603334,
-            0,
-            0
+            21.100124603334
         );
 
         $this->gridSize = GridSize::fromXY(20, 30);
@@ -276,7 +274,7 @@ class GeoToolsTest extends WebTestCase
     public function test_calculate_active_cells_for_point(): void
     {
 
-        $boundingBox = $this->geoTools->projectBoundingBox(BoundingBox::fromCoordinates(100, 101, 20, 21.5, 4326), Srid::fromInt(4326));
+        $boundingBox = $this->geoTools->projectBoundingBox(BoundingBox::fromCoordinates(100, 101, 20, 21.5), Srid::fromInt(4326), Srid::fromInt(4326));
         $gridSize = GridSize::fromXY(10, 15);
 
         $pointsAffectedLayers = array(
@@ -316,7 +314,7 @@ class GeoToolsTest extends WebTestCase
 
     public function test_calculate_center_from_grid_cell(): void
     {
-        $boundingBox = $this->geoTools->projectBoundingBox(BoundingBox::fromCoordinates(100, 101, 20, 22, 4326), Srid::fromInt(4326));
+        $boundingBox = BoundingBox::fromCoordinates(100, 101, 20, 22);
         $gridSize = GridSize::fromXY(10, 20);
 
         $inputs = [
@@ -325,8 +323,8 @@ class GeoToolsTest extends WebTestCase
         ];
 
         $expected = [
-            new Point(100.05, 21.95, 4326),
-            new Point(100.95, 20.05, 4326),
+            new Point(100.05, 21.95),
+            new Point(100.95, 20.05),
         ];
 
         foreach ($inputs as $key => $input){
@@ -337,7 +335,7 @@ class GeoToolsTest extends WebTestCase
 
     public function test_chd_boundary(): void
     {
-        $boundingBox = $this->geoTools->projectBoundingBox(BoundingBox::fromCoordinates(100, 101, 20, 21.5, 4326), Srid::fromInt(4326));
+        $boundingBox = $this->geoTools->projectBoundingBox(BoundingBox::fromCoordinates(100, 101, 20, 21.5), Srid::fromInt(4326), Srid::fromInt(4326));
         $gridSize = GridSize::fromXY(10, 15);
         $chdPoints = array(
             new Point(100.01, 20.01, 4326),
@@ -408,8 +406,13 @@ class GeoToolsTest extends WebTestCase
     {
         $x = 105.833738284468225;
         $y = 21.073871989488410;
+
+        /** @var \Geometry $area */
         $area = \geoPHP::load($this->areaPolygon->toJson(), 'json')->geos();
+
+        /** @var \Geometry $point */
         $point = \geoPHP::load(sprintf('POINT(%f %f)', $x, $y), 'wkt')->geos();
+
         $this->assertTrue($area->covers($point));
         $this->assertTrue($point->within($area));
         $this->assertFalse($point->covers($area));
@@ -434,7 +437,7 @@ class GeoToolsTest extends WebTestCase
         $pointB = new Point(105.826206685192972, 21.080549811906632);
         $distance = $this->geoTools->distanceInMeters($pointA, $pointB);
         $this->assertInstanceOf(Distance::class, $distance);
-        $this->assertEquals(3992, round($distance->inMeters()));
+        $this->assertEquals(3992, round($distance->toFloat()));
     }
 
     public function test_get_distance_of_two_points_on_a_linestring(): void
@@ -524,7 +527,7 @@ class GeoToolsTest extends WebTestCase
                 ), 4326);
         $point1 = new Point(-63.676586151123,-31.367415770489, 4326);
         $point2 = new Point(-63.569641113281,-31.331205380684, 4326);
-        $this->assertEquals(16001, round($this->geoTools->getDistanceOfTwoPointsOnALineString($lineString, $point1, $point2)->inMeters()));
+        $this->assertEquals(16001, round($this->geoTools->getDistanceOfTwoPointsOnALineString($lineString, $point1, $point2)->toFloat()));
 
         $lineString = new LineString(array(
             array(-63.676586151123,-31.367415770489),
@@ -615,10 +618,10 @@ class GeoToolsTest extends WebTestCase
         $point4 = new Point(-63.60504150507,-31.342928859011);
         $point5 = new Point(-63.569641113281,-31.331205380684);
 
-        $l1 = $this->geoTools->getDistanceOfTwoPointsOnALineString($lineString, $point1, $point2)->inMeters();
-        $l2 = $this->geoTools->getDistanceOfTwoPointsOnALineString($lineString, $point2, $point3)->inMeters();
-        $l3 = $this->geoTools->getDistanceOfTwoPointsOnALineString($lineString, $point3, $point4)->inMeters();
-        $l4 = $this->geoTools->getDistanceOfTwoPointsOnALineString($lineString, $point4, $point5)->inMeters();
+        $l1 = $this->geoTools->getDistanceOfTwoPointsOnALineString($lineString, $point1, $point2)->toFloat();
+        $l2 = $this->geoTools->getDistanceOfTwoPointsOnALineString($lineString, $point2, $point3)->toFloat();
+        $l3 = $this->geoTools->getDistanceOfTwoPointsOnALineString($lineString, $point3, $point4)->toFloat();
+        $l4 = $this->geoTools->getDistanceOfTwoPointsOnALineString($lineString, $point4, $point5)->toFloat();
 
         $this->assertEquals(16001, round($l1+$l2+$l3+$l4));
     }
@@ -709,7 +712,7 @@ class GeoToolsTest extends WebTestCase
             array(-63.569641113281,-31.331205380684)
         ), 4326);
         $point2 = new Point(-63.569641113281,-31.331205380684, 4326);
-        $this->assertEquals(16001, round($this->geoTools->getDistanceOfPointFromLineStringStartPoint($lineString, $point2)->inMeters()));
+        $this->assertEquals(16001, round($this->geoTools->getDistanceOfPointFromLineStringStartPoint($lineString, $point2)->toFloat()));
     }
 
     public function test_get_closest_point_to_line_string(): void

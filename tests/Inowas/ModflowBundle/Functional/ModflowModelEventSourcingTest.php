@@ -8,7 +8,6 @@ use Inowas\Common\Boundaries\Metadata;
 use Inowas\Common\Boundaries\ObservationPoint;
 use Inowas\Common\DateTime\DateTime;
 use Inowas\Common\Geometry\Point;
-use Inowas\Common\Geometry\Srid;
 use Inowas\Common\Grid\ActiveCells;
 use Inowas\Common\Grid\AffectedLayers;
 use Inowas\Common\Grid\BoundingBox;
@@ -115,8 +114,7 @@ class ModflowModelEventSourcingTest extends EventSourcingBaseTest
         $ownerId = UserId::generate();
 
         $this->createModelWithOneLayer($ownerId, $modelId);
-        $box = $this->container->get('inowas.geotools.geotools_service')->projectBoundingBox(BoundingBox::fromCoordinates(-63.687336, -63.569260, -31.367449, -31.313615, 4326), Srid::fromInt(4326));
-        $boundingBox = BoundingBox::fromEPSG4326Coordinates($box->xMin(), $box->xMax(), $box->yMin(), $box->yMax(), $box->dX(), $box->dY());
+        $boundingBox = BoundingBox::fromCoordinates(-63.687336, -63.569260, -31.367449, -31.313615);
         $this->commandBus->dispatch(ChangeBoundingBox::forModflowModel($ownerId, $modelId, $boundingBox));
 
         $gridSize = GridSize::fromXY(80, 30);
@@ -133,8 +131,7 @@ class ModflowModelEventSourcingTest extends EventSourcingBaseTest
         $modelId = ModflowId::generate();
         $this->createModelWithName($ownerId, $modelId);
 
-        $box = $this->container->get('inowas.geotools.geotools_service')->projectBoundingBox(BoundingBox::fromCoordinates(-63.687336, -63.569260, -31.367449, -31.313615, 4326), Srid::fromInt(4326));
-        $boundingBox = BoundingBox::fromEPSG4326Coordinates($box->xMin(), $box->xMax(), $box->yMin(), $box->yMax(), $box->dX(), $box->dY());
+        $boundingBox = BoundingBox::fromCoordinates(-63.687336, -63.569260, -31.367449, -31.313615);
         $this->commandBus->dispatch(ChangeBoundingBox::forModflowModel($ownerId, $modelId, $boundingBox));
 
         $activeCells = $this->container->get('inowas.modflowmodel.manager')->getAreaActiveCells($modelId);
@@ -147,8 +144,7 @@ class ModflowModelEventSourcingTest extends EventSourcingBaseTest
         $modelId = ModflowId::generate();
         $this->createModelWithName($ownerId, $modelId);
 
-        $box = $this->container->get('inowas.geotools.geotools_service')->projectBoundingBox(BoundingBox::fromCoordinates(-63.687336, -63.569260, -31.367449, -31.313615, 4326), Srid::fromInt(4326));
-        $boundingBox = BoundingBox::fromEPSG4326Coordinates($box->xMin(), $box->xMax(), $box->yMin(), $box->yMax(), $box->dX(), $box->dY());
+        $boundingBox = BoundingBox::fromCoordinates(-63.687336, -63.569260, -31.367449, -31.313615);
         $this->commandBus->dispatch(ChangeBoundingBox::forModflowModel($ownerId, $modelId, $boundingBox));
         $this->commandBus->dispatch(AddBoundary::forModflowModel($ownerId, $modelId, $this->createConstantHeadBoundaryWithObservationPoint()));
         $this->commandBus->dispatch(AddBoundary::forModflowModel($ownerId, $modelId, $this->createGeneralHeadBoundaryWithObservationPoint()));
@@ -641,7 +637,13 @@ class ModflowModelEventSourcingTest extends EventSourcingBaseTest
         $this->assertEquals('TestDescription', $scenarioAnalysis['description']);
         $this->assertEquals(json_decode('{"type":"Polygon","coordinates":[[[-63.687336,-31.313615],[-63.687336,-31.367449],[-63.56926,-31.367449],[-63.56926,-31.313615],[-63.687336,-31.313615]]]}', true), $scenarioAnalysis['geometry']);
         $this->assertEquals(json_decode('{"n_x":75,"n_y":40}', true), $scenarioAnalysis['grid_size']);
-        $this->assertEquals(json_decode('{"x_min":-63.687336,"x_max":-63.56926,"y_min":-31.367449,"y_max":-31.313615,"srid":4326,"d_x":11223.096698287049,"d_y":5992.773467366025}', true), $scenarioAnalysis['bounding_box']);
+
+        $expectedBb = array(
+            ['lat' => -31.367449, 'lng' => -63.687336],
+            ['lat' => -31.313615, 'lng' => -63.56926],
+        );
+
+        $this->assertEquals($expectedBb, $scenarioAnalysis['bounding_box']);
     }
 
     /**
@@ -672,7 +674,13 @@ class ModflowModelEventSourcingTest extends EventSourcingBaseTest
         $this->assertEquals('TestDescription', $scenarioAnalysis['description']);
         $this->assertEquals(json_decode('{"type":"Polygon","coordinates":[[[-63.65,-31.31],[-63.65,-31.36],[-63.58,-31.36],[-63.58,-31.31],[-63.65,-31.31]]]}', true), $scenarioAnalysis['geometry']);
         $this->assertEquals(json_decode('{"n_x":75,"n_y":40}', true), $scenarioAnalysis['grid_size']);
-        $this->assertEquals(json_decode('{"x_min":-63.65,"x_max":-63.58,"y_min":-31.36,"y_max":-31.31,"srid":4326,"d_x":6654.011417877915,"d_y":5565.974539664423}', true), $scenarioAnalysis['bounding_box']);
+
+        $expectedBb = array(
+            ['lat' => -31.36, 'lng' => -63.65],
+            ['lat' => -31.31, 'lng' => -63.58],
+        );
+
+        $this->assertEquals($expectedBb, $scenarioAnalysis['bounding_box']);
     }
 
     /**

@@ -208,8 +208,8 @@ class Hanoi extends LoadScenarioBase
             $commandBus->dispatch(AddLayer::forModflowModel($ownerId, $modelId, $layer));
         }
 
-        $box = $geoTools->projectBoundingBox(BoundingBox::fromCoordinates(578205, 594692, 2316000, 2333500, 32648), Srid::fromInt(4326));
-        $boundingBox = BoundingBox::fromEPSG4326Coordinates($box->xMin(), $box->xMax(), $box->yMin(), $box->yMax(), $box->dX(), $box->dY());
+        $box = $geoTools->projectBoundingBox(BoundingBox::fromCoordinates(578205, 594692, 2316000, 2333500), Srid::fromInt(32648), Srid::fromInt(4326));
+        $boundingBox = BoundingBox::fromCoordinates($box->xMin(), $box->xMax(), $box->yMin(), $box->yMax());
         $commandBus->dispatch(ChangeBoundingBox::forModflowModel($ownerId, $modelId, $boundingBox));
 
         /*

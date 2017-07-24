@@ -69,6 +69,7 @@ class GeoTools
         }
 
         $point = $geometry->value();
+
         if ($point instanceof Point){
             $gridCell = $this->getGridCellFromPoint($boundingBox, $gridSize, $point);
             $activeCells = [];
@@ -98,22 +99,20 @@ class GeoTools
 
     public function getBoundingBox(Geometry $geometry): BoundingBox
     {
-        return $this->getBoundingBoxFromJson($geometry->toJson(), $geometry->srid());
+        return $this->getBoundingBoxFromJson($geometry->toJson());
     }
 
     public function getBoundingBoxFromPolygon(Polygon $polygon): BoundingBox
     {
-        return $this->getBoundingBoxFromJson($polygon->toJson(), Srid::fromInt($polygon->getSrid()));
+        return $this->getBoundingBoxFromJson($polygon->toJson());
     }
 
-    private function getBoundingBoxFromJson(string $json, Srid $srid): BoundingBox
+    private function getBoundingBoxFromJson(string $json): BoundingBox
     {
         $geometry = \geoPHP::load($json, 'json');
-        $geometry->setSRID($srid->toInteger());
         $bb = $geometry->getBBox();
 
-        $bb = BoundingBox::fromCoordinates($bb['minx'], $bb['maxx'], $bb['miny'], $bb['maxy'], $srid->toInteger(), 0,0);
-        return $this->updateBoundingBoxDistance($bb);
+        return BoundingBox::fromCoordinates($bb['minx'], $bb['maxx'], $bb['miny'], $bb['maxy']);
     }
 
     public function distanceInMeters(Point $pointA, Point $pointB): Distance
@@ -122,23 +121,18 @@ class GeoTools
         return Distance::fromMeters($distance);
     }
 
-    public function projectBoundingBox(BoundingBox $boundingBox, Srid $target): BoundingBox
+    public function projectBoundingBox(BoundingBox $boundingBox, Srid $source, Srid $target): BoundingBox
     {
-        $topLeft = new Point($boundingBox->xMin(), $boundingBox->yMax(), $boundingBox->srid());
+
+        /** @var Point $topLeft */
+        $topLeft = $boundingBox->topLeft()->setSrid($source->toInteger());
         $topLeft = $this->projectPoint($topLeft, $target);
 
-        $bottomRight = new Point($boundingBox->xMax(), $boundingBox->yMin(), $boundingBox->srid());
+        /** @var Point $bottomRight */
+        $bottomRight = $boundingBox->bottomRight()->setSrid($source->toInteger());
         $bottomRight = $this->projectPoint($bottomRight, $target);
 
-        $bb = BoundingBox::fromCoordinates(
-            $topLeft->getX(),
-            $bottomRight->getX(),
-            $topLeft->getY(),
-            $bottomRight->getY(),
-            $target->toInteger())
-        ;
-
-        return $this->updateBoundingBoxDistance($bb);
+        return BoundingBox::fromPoints($topLeft, $bottomRight);
     }
 
     public function projectPoint(Point $point, Srid $target): Point
@@ -247,7 +241,7 @@ class GeoTools
             $point = $observationPoint->geometry();
             $closestPoint = $this->getClosestPointOnLineString($lineString, $point);
             $distance = $this->getDistanceOfPointFromLineStringStartPoint($lineString, $closestPoint);
-            $distances[] = $distance->inMeters();
+            $distances[] = $distance->toFloat();
         }
 
         /* Sort by distance  */
@@ -399,28 +393,25 @@ class GeoTools
         return $lineString;
     }
 
+    /*
     protected function updateBoundingBoxDistance(BoundingBox $bb): BoundingBox
     {
         $dx = \geoPHP::load(sprintf('LINESTRING(%f %f, %f %f)', $bb->xMin(), $bb->yMin(), $bb->xMax(), $bb->yMin()), 'wkt')->greatCircleLength();
         $dy = \geoPHP::load(sprintf('LINESTRING(%f %f, %f %f)', $bb->xMin(), $bb->yMin(), $bb->xMin(), $bb->yMax()), 'wkt')->greatCircleLength();
         return BoundingBox::fromCoordinates($bb->xMin(), $bb->xMax(), $bb->yMin(), $bb->yMax(), $bb->srid(), $dx, $dy);
     }
+    */
 
     protected function getGridCellFromPoint(BoundingBox $bb, GridSize $gz, Point $point)
     {
-
-        // Todo !! Implement with tests
-        // Transform Point to the same Coordinate System as BoundingBox
-        $point = $this->projectPoint($point, Srid::fromInt($bb->srid()));
-
         $dx = ($bb->xMax() - $bb->xMin()) / $gz->nX();
         $dy = ($bb->yMax() - $bb->yMin()) / $gz->nY();
 
-        $x = ceil(($point->getX() - $bb->xMin()) / $dx);
-        $y = $gz->nY() - floor(($point->getY()-$bb->yMin()) / $dy);
+        $x = (int)ceil(($point->getX() - $bb->xMin()) / $dx);
+        $y = (int)($gz->nY() - floor(($point->getY()-$bb->yMin()) / $dy));
 
-        if ($y != 0){$y = $y-1;}
-        if ($x != 0){$x = $x-1;}
+        if ($y !== 0){--$y;}
+        if ($x !== 0){--$x;}
 
         return array(
             'row' => $y,
@@ -437,14 +428,13 @@ class GeoTools
      */
     public function getPointFromGridCell(BoundingBox $bb, GridSize $gz, int $row, int $column): Point
     {
-        $srid = $bb->srid();
         $dx = ($bb->xMax() - $bb->xMin()) / $gz->nX();
         $dy = ($bb->yMax() - $bb->yMin()) / $gz->nY();
 
         $x =  $bb->xMin() + ($column+0.5)*$dx;
         $y =  $bb->yMax() - ($row+0.5)*$dy;
 
-        return new Point($x, $y, $srid);
+        return new Point($x, $y);
     }
 
     protected function executeQuery(string $query): array

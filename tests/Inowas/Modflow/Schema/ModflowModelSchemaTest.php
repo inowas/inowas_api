@@ -37,7 +37,8 @@ class ModflowModelSchemaTest extends BaseTestCase
         $dereferencer->getLoaderManager()->registerLoader('https', new UrlReplaceLoader());
         $dereferencedSchema = $dereferencer->dereference(json_decode($schema));
 
-        $validator = new Validator(json_decode($json), $dereferencedSchema);
+        $payload = json_decode($json, true);
+        $validator = new Validator(json_decode(json_encode($payload), false), $dereferencedSchema);
         $this->assertSame($expected, $validator->passes(), var_export($validator->errors(), true));
     }
 }

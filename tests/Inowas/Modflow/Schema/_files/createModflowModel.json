@@ -10,13 +10,10 @@
             "type": "Polygon",
             "coordinates": [[[-5e6, -1e6], [-4e6, 1e6], [-3e6, -1e6], [-5e6, -1e6]]]
         },
-        "bounding_box": {
-            "x_min": 12.3,
-            "x_max": 12.3,
-            "y_min": 12.3,
-            "y_max": 12.3,
-            "srid": 4326
-        },
+        "bounding_box": [
+            {"lng": 12.1, "lat": 1.0},
+            {"lng": 12.8, "lat": 1.5}
+        ],
         "grid_size": {
             "n_x": 50,
             "n_y": 60

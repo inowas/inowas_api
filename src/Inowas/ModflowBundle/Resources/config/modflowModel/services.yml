@@ -51,6 +51,7 @@ services:
             - '@modflow_model_list'
             - '@inowas.modflowmodel.manager'
             - '@inowas.modflowmodel.soilmodel_finder'
+            - '@inowas.geotools.geotools_service'
 
     inowas.modflowmodel.modflow_packages_persister:
         class: Inowas\ModflowModel\Service\ModflowPackagesPersister

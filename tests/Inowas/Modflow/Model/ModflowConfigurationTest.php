@@ -3,6 +3,7 @@
 namespace Tests\Inowas\Modflow\Model\Packages;
 
 use Inowas\Common\Grid\BoundingBox;
+use Inowas\Common\Grid\Distance;
 use Inowas\Common\Grid\GridSize;
 use Inowas\Common\Modflow\PackageName;
 use Inowas\Common\Modflow\TimeUnit;
@@ -57,9 +58,12 @@ class ModflowConfigurationTest extends \PHPUnit_Framework_TestCase
     public function test_gridsize_has_same_size_as_ibound(): void
     {
         $gridsize = GridSize::fromXY(40,50);
-        $boundingBox = BoundingBox::fromEPSG4326Coordinates(10,20,30,40,100,200);
+        $boundingBox = BoundingBox::fromCoordinates(10,20,30,40);
         $packages = ModflowPackages::createFromDefaults();
-        $packages->updateGridParameters($gridsize, $boundingBox);
+        $dx = Distance::fromMeters(1000);
+        $dy = Distance::fromMeters(10000);
+
+        $packages->updateGridParameters($gridsize, $boundingBox, $dx, $dy);
 
     }
 
