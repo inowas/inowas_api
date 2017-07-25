@@ -19,6 +19,7 @@ use Inowas\ModflowModel\Model\Event\DescriptionWasChanged;
 use Inowas\ModflowModel\Model\Event\GridSizeWasChanged;
 use Inowas\ModflowModel\Model\Event\LengthUnitWasUpdated;
 use Inowas\ModflowModel\Model\Event\ModflowModelWasCloned;
+use Inowas\ModflowModel\Model\Event\ModflowModelWasDeleted;
 use Inowas\ModflowModel\Model\Event\NameWasChanged;
 use Inowas\ModflowModel\Model\Event\ModflowModelWasCreated;
 use Inowas\ModflowModel\Infrastructure\Projection\Table;
@@ -158,6 +159,14 @@ class ModelProjector extends AbstractDoctrineConnectionProjector
                 'public' => true
             ));
         }
+    }
+
+    public function onModflowModelWasDeleted(ModflowModelWasDeleted $event): void
+    {
+        $this->connection->delete(Table::MODFLOWMODELS, array(
+            'model_id' => $event->modelId()->toString(),
+            'user_id' => $event->userId()->toString()
+        ));
     }
 
     public function onNameWasChanged(NameWasChanged $event): void

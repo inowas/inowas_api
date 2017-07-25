@@ -100,6 +100,45 @@ class ModflowModelController extends InowasRestController
     }
 
     /**
+     * Get details of modflow model by id.
+     *
+     * @ApiDoc(
+     *   resource = true,
+     *   description = "Get details of modflow model by id.",
+     *   statusCodes = {
+     *     200 = "Returned when successful"
+     *   }
+     * )
+     *
+     * @param string $id
+     * @Rest\Get("/modflowmodels/{id}/stressperiods")
+     * @return JsonResponse
+     * @throws \Inowas\ModflowBundle\Exception\AccessDeniedException
+     * @throws \Symfony\Component\DependencyInjection\Exception\ServiceNotFoundException
+     * @throws \Symfony\Component\DependencyInjection\Exception\ServiceCircularReferenceException
+     * @throws NotFoundException
+     */
+    public function getModflowModelStressPeriodsAction(string $id): JsonResponse
+    {
+        $this->assertUuidIsValid($id);
+        $modelId = ModflowId::fromString($id);
+        $userId = $this->getUserId();
+
+        if (! $this->get('inowas.modflowmodel.model_finder')->userHasReadAccessToModel($userId, $modelId)) {
+            throw AccessDeniedException::withMessage(
+                sprintf(
+                    'Model not found or user with Id %s does not have access to model with id %s',
+                    $userId->toString(),
+                    $modelId->toString()
+                )
+            );
+        }
+
+        $stressPeriods = $this->container->get('inowas.modflowmodel.manager')->getStressPeriodsByModelId($modelId);
+        return new JsonResponse($stressPeriods);
+    }
+
+    /**
      * Get details of last calculation of modflow model by id.
      *
      * @ApiDoc(

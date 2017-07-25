@@ -9,6 +9,7 @@ use Inowas\ModflowBundle\Exception\InvalidArgumentException;
 use Inowas\ModflowModel\Model\Command\CreateModflowModel;
 use Inowas\ModflowModel\Model\Command\DeleteModflowModel;
 use Inowas\ModflowModel\Model\Command\UpdateModflowModel;
+use Inowas\ModflowModel\Model\Command\UpdateStressPeriods;
 use Nelmio\ApiDocBundle\Annotation\ApiDoc;
 use Prooph\Common\Messaging\Message;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -22,6 +23,7 @@ class MessageBoxController extends InowasRestController
         'createModflowModel' => CreateModflowModel::class,
         'deleteModflowModel' => DeleteModflowModel::class,
         'updateModflowModel' => UpdateModflowModel::class,
+        'updateStressPeriods' => UpdateStressPeriods::class,
     ];
 
     /**

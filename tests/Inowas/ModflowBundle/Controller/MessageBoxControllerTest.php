@@ -8,6 +8,7 @@ use FOS\UserBundle\Doctrine\UserManager;
 use Inowas\AppBundle\Model\User;
 use Inowas\Common\Grid\ActiveCells;
 use Inowas\Common\Id\ModflowId;
+use Inowas\Common\Id\UserId;
 use Inowas\Common\Modflow\ModflowModel;
 use Tests\Inowas\ModflowBundle\EventSourcingBaseTest;
 
@@ -102,31 +103,22 @@ class MessageBoxControllerTest extends EventSourcingBaseTest
         $this->assertEquals($payload['length_unit'], $model->lengthUnit()->toInt());
         $this->assertInstanceOf(ActiveCells::class, $model->activeCells());
     }
+
     /**
      * @test
      */
-    public function it_can_receive_create_update_delete_model_command(): void
+    public function it_can_receive_update_model_command(): void
     {
 
-        $command = json_decode(file_get_contents($this->fileLocation . 'createModflowModel.json'), true);
-
-        $apiKey = $this->user->getApiKey();
-        $client = static::createClient();
-        $client->request(
-            'POST',
-            '/v2/messagebox',
-            array(),
-            array(),
-            array('HTTP_X-AUTH-TOKEN' => $apiKey),
-            json_encode($command)
-        );
-
-        $response = $client->getResponse();
-        $this->assertEquals(202, $response->getStatusCode());
+        $userId = UserId::fromString($this->user->getId()->toString());
+        $modelId = ModflowId::fromString('f3f6788a-61a6-410e-a14d-af7ecca6babb');
+        $this->createModel($userId, $modelId);
 
         $command = json_decode(file_get_contents($this->fileLocation . 'updateModflowModel.json'), true);
         $payload = $command['payload'];
 
+        $apiKey = $this->user->getApiKey();
+        $client = static::createClient();
         $client->request(
             'POST',
             '/v2/messagebox',
@@ -152,8 +144,21 @@ class MessageBoxControllerTest extends EventSourcingBaseTest
         $this->assertEquals($payload['time_unit'], $model->timeUnit()->toInt());
         $this->assertEquals($payload['length_unit'], $model->lengthUnit()->toInt());
         $this->assertInstanceOf(ActiveCells::class, $model->activeCells());
+    }
+
+    /**
+     * @test
+     */
+    public function it_can_receive_delete_model_command(): void
+    {
+        $userId = UserId::fromString($this->user->getId()->toString());
+        $modelId = ModflowId::fromString('f3f6788a-61a6-410e-a14d-af7ecca6babb');
+        $this->createModel($userId, $modelId);
 
         $command = json_decode(file_get_contents($this->fileLocation . 'deleteModflowModel.json'), true);
+
+        $apiKey = $this->user->getApiKey();
+        $client = static::createClient();
         $client->request(
             'POST',
             '/v2/messagebox',
@@ -163,6 +168,33 @@ class MessageBoxControllerTest extends EventSourcingBaseTest
             json_encode($command)
         );
 
-        #$this->assertNull($this->container->get('inowas.modflowmodel.manager')->findModel($modelId));
+        $this->assertNull($this->container->get('inowas.modflowmodel.manager')->findModel($modelId));
+    }
+
+    /**
+     * @test
+     */
+    public function it_can_receive_update_stress_periods_command(): void
+    {
+        $userId = UserId::fromString($this->user->getId()->toString());
+        $modelId = ModflowId::fromString('f3f6788a-61a6-410e-a14d-af7ecca6babb');
+        $this->createModel($userId, $modelId);
+
+        $command = json_decode(file_get_contents($this->fileLocation . 'updateStressPeriods.json'), true);
+
+        $apiKey = $this->user->getApiKey();
+        $client = static::createClient();
+        $client->request(
+            'POST',
+            '/v2/messagebox',
+            array(),
+            array(),
+            array('HTTP_X-AUTH-TOKEN' => $apiKey),
+            json_encode($command)
+        );
+
+        $response = $client->getResponse();
+        $this->assertEquals(202, $response->getStatusCode());
+
     }
 }

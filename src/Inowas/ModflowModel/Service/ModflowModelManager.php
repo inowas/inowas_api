@@ -61,6 +61,10 @@ class ModflowModelManager
 
     public function findModel(ModflowId $modelId): ?ModflowModel
     {
+        if (!$this->modelFinder->modelExists($modelId)) {
+            return null;
+        }
+
         return ModflowModel::fromParams(
             $modelId,
             $this->modelFinder->getModelNameByModelId($modelId),

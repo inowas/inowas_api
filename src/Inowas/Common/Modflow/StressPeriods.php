@@ -96,7 +96,7 @@ final class StressPeriods implements \JsonSerializable
         return $self;
     }
 
-    public static function createFromArray(array $arr): StressPeriods
+    public static function fromArray(array $arr): StressPeriods
     {
         $self = new self(
             DateTime::fromAtom($arr['start_date_time']),
@@ -104,8 +104,8 @@ final class StressPeriods implements \JsonSerializable
             TimeUnit::fromInt($arr['time_unit'])
         );
 
+        /** @var array $stressPeriods */
         $stressPeriods = $arr['stress_periods'];
-
         foreach ($stressPeriods as $stressPeriod) {
 
             if (! StressPeriod::isValidArray($stressPeriod)) {
@@ -121,7 +121,7 @@ final class StressPeriods implements \JsonSerializable
 
     public static function createFromJson(string $json): StressPeriods
     {
-        return self::createFromArray(json_decode($json, true));
+        return self::fromArray(json_decode($json, true));
     }
 
     private function __construct(DateTime $start, DateTime $end, TimeUnit $timeUnit) {
@@ -210,11 +210,17 @@ final class StressPeriods implements \JsonSerializable
 
     public function toArray(): array
     {
+        $stressPeriods = [];
+        /** @var StressPeriod $stressperiod */
+        foreach ($this->stressperiods as $stressperiod) {
+            $stressPeriods[] = $stressperiod->toArray();
+        }
+
         return array(
             'start_date_time' => $this->start->toAtom(),
             'end_date_time' => $this->end->toAtom(),
             'time_unit' => $this->timeUnit->toInt(),
-            'stress_periods' => $this->stressperiods
+            'stress_periods' => $stressPeriods
         );
     }
 

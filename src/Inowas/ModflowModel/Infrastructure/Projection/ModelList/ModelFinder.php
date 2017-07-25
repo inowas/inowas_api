@@ -254,4 +254,14 @@ class ModelFinder
 
         return $result['count'] > 0;
     }
+
+    public function modelExists(ModflowId $modelId): bool
+    {
+        $result = $this->connection->fetchAssoc(
+            sprintf('SELECT count(*) FROM %s WHERE model_id = :model_id', Table::MODFLOWMODELS),
+            ['model_id' => $modelId->toString()]
+        );
+
+        return $result['count'] > 0;
+    }
 }

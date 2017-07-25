@@ -186,4 +186,38 @@ class ModflowModelControllerTest extends EventSourcingBaseTest
         $validator = new Validator($content, $dereferencedSchema);
         $this->assertTrue($validator->passes(), var_export($validator->errors(), true));
     }
+
+    /**
+     * @test
+     */
+    public function it_returns_the_model_stressperiods(): void
+    {
+        $userId = UserId::fromString($this->user->getId()->toString());
+        $apiKey = $this->user->getApiKey();
+
+        $modelId = ModflowId::generate();
+        $this->createModelWithOneLayer($userId, $modelId);
+
+        $client = static::createClient();
+        $client->request(
+            'GET',
+            sprintf('/v2/modflowmodels/%s/stressperiods', $modelId->toString()),
+            array(),
+            array(),
+            array('HTTP_X-AUTH-TOKEN' => $apiKey)
+        );
+
+        $response = $client->getResponse();
+        $this->assertEquals(200, $response->getStatusCode());
+
+        $content = json_decode($response->getContent(), true);
+        $schema = file_get_contents('spec/schema/modflow/stressPeriods.json');
+        $dereferencer = Dereferencer::draft4();
+        $dereferencer->getLoaderManager()->registerLoader('https', new UrlReplaceLoader());
+        $dereferencedSchema = $dereferencer->dereference(json_decode($schema));
+
+        $content = json_decode(json_encode($content));
+        $validator = new Validator($content, $dereferencedSchema);
+        $this->assertTrue($validator->passes(), var_export($validator->errors(), true));
+    }
 }
