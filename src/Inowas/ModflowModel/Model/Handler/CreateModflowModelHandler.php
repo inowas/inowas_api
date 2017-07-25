@@ -24,7 +24,7 @@ final class CreateModflowModelHandler
         $modflowModel = ModflowModelAggregate::create(
             $command->modelId(),
             $command->userId(),
-            $command->polygon(),
+            $command->geometry(),
             $command->gridSize(),
             $command->boundingBox()
         );

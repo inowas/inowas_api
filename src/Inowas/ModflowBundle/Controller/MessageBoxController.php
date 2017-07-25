@@ -7,6 +7,8 @@ namespace Inowas\ModflowBundle\Controller;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use Inowas\ModflowBundle\Exception\InvalidArgumentException;
 use Inowas\ModflowModel\Model\Command\CreateModflowModel;
+use Inowas\ModflowModel\Model\Command\DeleteModflowModel;
+use Inowas\ModflowModel\Model\Command\UpdateModflowModel;
 use Nelmio\ApiDocBundle\Annotation\ApiDoc;
 use Prooph\Common\Messaging\Message;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -17,7 +19,9 @@ class MessageBoxController extends InowasRestController
 {
 
     private $whiteList = [
-      'createModflowModel' => CreateModflowModel::class
+        'createModflowModel' => CreateModflowModel::class,
+        'deleteModflowModel' => DeleteModflowModel::class,
+        'updateModflowModel' => UpdateModflowModel::class,
     ];
 
     /**

@@ -7,8 +7,11 @@ namespace Inowas\ModflowModel\Model\Command;
 use Inowas\Common\Command\AbstractJsonSchemaCommand;
 use Inowas\Common\Geometry\Geometry;
 use Inowas\Common\Geometry\Polygon;
+use Inowas\Common\Grid\ActiveCells;
+use Inowas\Common\Grid\AffectedLayers;
 use Inowas\Common\Grid\BoundingBox;
 use Inowas\Common\Grid\GridSize;
+use Inowas\Common\Grid\LayerNumber;
 use Inowas\Common\Id\ModflowId;
 use Inowas\Common\Id\UserId;
 use Inowas\Common\Modflow\LengthUnit;
@@ -16,7 +19,7 @@ use Inowas\Common\Modflow\Description;
 use Inowas\Common\Modflow\Name;
 use Inowas\Common\Modflow\TimeUnit;
 
-class CreateModflowModel extends AbstractJsonSchemaCommand
+class UpdateModflowModel extends AbstractJsonSchemaCommand
 {
     /** @noinspection MoreThanThreeArgumentsInspection
      * @param UserId $userId
@@ -28,7 +31,8 @@ class CreateModflowModel extends AbstractJsonSchemaCommand
      * @param BoundingBox $boundingBox
      * @param TimeUnit $timeUnit
      * @param LengthUnit $lengthUnit
-     * @return CreateModflowModel
+     * @param ActiveCells $activeCells
+     * @return UpdateModflowModel
      */
     public static function newWithAllParams(
         UserId $userId,
@@ -39,8 +43,9 @@ class CreateModflowModel extends AbstractJsonSchemaCommand
         GridSize $gridSize,
         BoundingBox $boundingBox,
         TimeUnit $timeUnit,
-        LengthUnit $lengthUnit
-    ): CreateModflowModel
+        LengthUnit $lengthUnit,
+        ActiveCells $activeCells
+    ): UpdateModflowModel
     {
         $self = new static(
             [
@@ -51,11 +56,12 @@ class CreateModflowModel extends AbstractJsonSchemaCommand
                 'grid_size' => $gridSize->toArray(),
                 'bounding_box' => $boundingBox->toArray(),
                 'time_unit' => $timeUnit->toInt(),
-                'length_unit' => $lengthUnit->toInt()
+                'length_unit' => $lengthUnit->toInt(),
+                'active_cells' => $activeCells->cells2D()
             ]
         );
 
-        /** @var CreateModflowModel $self */
+        /** @var UpdateModflowModel $self */
         $self = $self->withAddedMetadata('user_id', $userId->toString());
         return $self;
     }
@@ -108,5 +114,18 @@ class CreateModflowModel extends AbstractJsonSchemaCommand
     public function lengthUnit(): LengthUnit
     {
         return LengthUnit::fromInt($this->payload['length_unit']);
+    }
+
+    public function activeCells(): ?ActiveCells
+    {
+        if (! array_key_exists('active_cells', $this->payload)) {
+            return null;
+        }
+
+        return ActiveCells::from2DCells(
+            $this->payload['active_cells'],
+            $this->gridSize(),
+            AffectedLayers::createWithLayerNumber(LayerNumber::fromInt(0))
+        );
     }
 }

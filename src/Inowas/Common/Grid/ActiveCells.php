@@ -72,6 +72,19 @@ class ActiveCells
         return new self($layerData, $layers);
     }
 
+    public static function from2DCells(array $arr, GridSize $gridSize, AffectedLayers $affectedLayers): ActiveCells
+    {
+        $layers = $affectedLayers->toArray();
+
+        $data = [];
+        foreach ($arr as $item){
+            $data[$item[0]] = array();
+            $data[$item[0]][$item[1]] = true;
+        }
+
+        return new self($data, $layers, $gridSize);
+    }
+
     private function __construct(array $layerData, array $layers, ?GridSize $gridSize = null)
     {
         $data = array();
