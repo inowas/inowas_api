@@ -13,11 +13,9 @@ class CreateModflowModelSchemaTest extends BaseTestCase
 {
     public function providerModel()
     {
-        $path = __DIR__.'/_files/';
-
         return [
             [
-                file_get_contents($path . 'createModflowModel.json'),
+                file_get_contents('spec/example/modflow/command/createModflowModel.json'),
                 file_get_contents('spec/schema/modflow/command/createModflowModel.json'),
                 true
             ]

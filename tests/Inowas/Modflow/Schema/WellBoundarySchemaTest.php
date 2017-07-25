@@ -28,17 +28,14 @@ class WellBoundarySchemaTest extends BaseTestCase
     {
         $dereferencer = Dereferencer::draft4();
         $schema = $dereferencer->dereference('file://spec/schema/modflow/boundary/wellType.json');
-
         $data = json_encode(['well_type' => $type]);
-
         $validator = new Validator(json_decode($data), $schema);
-
         $this->assertSame($expected, $validator->passes(), var_export($validator->errors(), true));
     }
 
     public function providerWell()
     {
-        $path = __DIR__.'/_files/';
+        $path = 'spec/example/modflow/boundary/';
 
         return [
             [file_get_contents($path . 'wellBoundary.json'), true],

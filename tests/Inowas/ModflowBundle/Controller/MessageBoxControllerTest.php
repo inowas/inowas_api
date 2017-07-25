@@ -19,7 +19,7 @@ class MessageBoxControllerTest extends EventSourcingBaseTest
     /** @var User */
     protected $user;
 
-    private $fileLocation = __DIR__.'/../../Modflow/Schema/_files/';
+    private $fileLocation = 'spec/example/modflow/command/';
 
     public function setUp(): void
     {
