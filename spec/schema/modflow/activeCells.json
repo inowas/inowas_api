@@ -3,18 +3,14 @@
     "id": "https://inowas.com/schema/",
     "type": "array",
     "items": {
-        "description": "Layer-value",
+         "description": "Cell-values",
         "type": "array",
         "items": {
-            "description": "Cell-values",
-            "type": "array",
-            "items": {
-                "description": "Cell-value",
-                "type": "integer"
-            },
+            "description": "Cell-value",
+            "type": "integer"
+        },
         "minItems": 2,
         "maxItems": 2
-        }
     },
     "minItems": 1
 }

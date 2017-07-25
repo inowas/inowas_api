@@ -177,8 +177,6 @@ class ModflowModelControllerTest extends EventSourcingBaseTest
         $this->assertEquals(200, $response->getStatusCode());
 
         $content = json_decode($response->getContent(), true);
-        unset($content['active_cells']);
-
         $schema = file_get_contents('spec/schema/modflow/modflowModel.json');
         $dereferencer = Dereferencer::draft4();
         $dereferencer->getLoaderManager()->registerLoader('https', new UrlReplaceLoader());

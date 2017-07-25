@@ -51,7 +51,6 @@ class ActiveCells
         return new self($arr, [0], $gridSize);
     }
 
-
     public static function fromArray(array $arr): ActiveCells
     {
         $layerData = (array)$arr['data'];
@@ -114,6 +113,21 @@ class ActiveCells
                     if ($isActive === 1 || $isActive === true) {
                         $cells[] = [(int)$layer, (int)$rowNumber, (int)$colNumber];
                     }
+                }
+            }
+        }
+
+        return $cells;
+    }
+
+    public function cells2D(): array
+    {
+        $cells = [];
+
+        foreach ($this->layerData as $rowNumber => $row) {
+            foreach ($row as $colNumber => $isActive) {
+                if ($isActive === 1 || $isActive === true) {
+                    $cells[] = [(int)$rowNumber, (int)$colNumber];
                 }
             }
         }
