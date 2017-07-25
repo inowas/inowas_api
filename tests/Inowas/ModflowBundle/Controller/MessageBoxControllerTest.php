@@ -105,7 +105,7 @@ class MessageBoxControllerTest extends EventSourcingBaseTest
     /**
      * @test
      */
-    public function it_receives_an_update_model_command(): void
+    public function it_can_receive_create_update_delete_model_command(): void
     {
 
         $command = json_decode(file_get_contents($this->fileLocation . 'createModflowModel.json'), true);
@@ -152,6 +152,17 @@ class MessageBoxControllerTest extends EventSourcingBaseTest
         $this->assertEquals($payload['time_unit'], $model->timeUnit()->toInt());
         $this->assertEquals($payload['length_unit'], $model->lengthUnit()->toInt());
         $this->assertInstanceOf(ActiveCells::class, $model->activeCells());
-    }
 
+        $command = json_decode(file_get_contents($this->fileLocation . 'deleteModflowModel.json'), true);
+        $client->request(
+            'POST',
+            '/v2/messagebox',
+            array(),
+            array(),
+            array('HTTP_X-AUTH-TOKEN' => $apiKey),
+            json_encode($command)
+        );
+
+        #$this->assertNull($this->container->get('inowas.modflowmodel.manager')->findModel($modelId));
+    }
 }
