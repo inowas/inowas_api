@@ -639,8 +639,8 @@ class ModflowModelEventSourcingTest extends EventSourcingBaseTest
         $this->assertEquals(json_decode('{"n_x":75,"n_y":40}', true), $scenarioAnalysis['grid_size']);
 
         $expectedBb = array(
-            ['lat' => -31.367449, 'lng' => -63.687336],
-            ['lat' => -31.313615, 'lng' => -63.56926],
+            [-63.687336, -31.367449],
+            [-63.56926, -31.313615]
         );
 
         $this->assertEquals($expectedBb, $scenarioAnalysis['bounding_box']);
@@ -676,8 +676,8 @@ class ModflowModelEventSourcingTest extends EventSourcingBaseTest
         $this->assertEquals(json_decode('{"n_x":75,"n_y":40}', true), $scenarioAnalysis['grid_size']);
 
         $expectedBb = array(
-            ['lat' => -31.36, 'lng' => -63.65],
-            ['lat' => -31.31, 'lng' => -63.58],
+            [-63.65, -31.36],
+            [-63.58, -31.31]
         );
 
         $this->assertEquals($expectedBb, $scenarioAnalysis['bounding_box']);

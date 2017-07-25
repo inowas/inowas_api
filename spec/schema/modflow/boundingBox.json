@@ -3,20 +3,13 @@
     "id": "https://inowas.com/schema/",
     "type": "array",
     "items": {
-        "type": "object",
-        "properties": {
-            "lng": {
-                "type": "float"
-            },
-            "lat": {
-                "type": "float"
-            }
+        "type": "array",
+        "items": {
+            "type": "float"
         },
-        "required": [
-            "lng",
-            "lat"
-        ]
+        "minItems": 2,
+        "maxItems": 2
     },
-    "minItems": 2,
-    "maxItems": 2
+        "minItems": 2,
+        "maxItems": 2
 }

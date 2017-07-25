@@ -28,8 +28,8 @@ class BoundingBox implements \JsonSerializable
 
     public static function fromArray(array $bb): BoundingBox
     {
-        $p1 = new Point($bb[0]['lng'], $bb[0]['lat']);
-        $p2 = new Point($bb[1]['lng'], $bb[1]['lat']);
+        $p1 = new Point($bb[0][0], $bb[0][1]);
+        $p2 = new Point($bb[1][0], $bb[1][1]);
 
         return new self($p1, $p2);
     }
@@ -79,8 +79,8 @@ class BoundingBox implements \JsonSerializable
     public function toArray()
     {
         return array(
-            ['lat' => $this->point1->getLatitude(), 'lng' => $this->point1->getLongitude()],
-            ['lat' => $this->point2->getLatitude(), 'lng' => $this->point2->getLongitude()]
+            [$this->point1->getLongitude(), $this->point1->getLatitude()],
+            [$this->point2->getLongitude(), $this->point2->getLatitude()]
         );
     }
 
