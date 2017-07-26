@@ -9,7 +9,7 @@
         },
         "message_name": {
             "type": "string",
-            "pattern": "^createModflowModel$"
+            "pattern": "^updateModflowModel$"
         },
         "metadata": {
             "type": "object"

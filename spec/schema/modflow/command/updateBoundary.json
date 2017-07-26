@@ -9,13 +9,22 @@
         },
         "message_name": {
             "type": "string",
-            "pattern": "^createModflowModel$"
+            "pattern": "^updateBoundary$"
         },
         "metadata": {
             "type": "object"
         },
         "payload": {
-            "$ref": "modflow/modflowModel.json"
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "string",
+                    "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$"
+                },
+                "boundary": {
+                    "$ref": "modflow/boundary/boundary.json"
+                }
+            }
         }
     },
     "additionalProperties": false,

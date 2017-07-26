@@ -93,6 +93,31 @@ class BoundarySchemaTest extends BaseTestCase
                 file_get_contents('spec/schema/modflow/boundary/wellBoundary.json'),
                 true
             ],
+            [
+                file_get_contents('spec/example/modflow/boundary/constantHeadBoundary.json'),
+                file_get_contents('spec/schema/modflow/boundary/boundary.json'),
+                true
+            ],
+            [
+                file_get_contents('spec/example/modflow/boundary/generalHeadBoundary.json'),
+                file_get_contents('spec/schema/modflow/boundary/boundary.json'),
+                true
+            ],
+            [
+                file_get_contents('spec/example/modflow/boundary/rechargeBoundary.json'),
+                file_get_contents('spec/schema/modflow/boundary/boundary.json'),
+                true
+            ],
+            [
+                file_get_contents('spec/example/modflow/boundary/riverBoundary.json'),
+                file_get_contents('spec/schema/modflow/boundary/boundary.json'),
+                true
+            ],
+            [
+                file_get_contents('spec/example/modflow/boundary/wellBoundary.json'),
+                file_get_contents('spec/schema/modflow/boundary/boundary.json'),
+                true
+            ],
 
         ];
     }

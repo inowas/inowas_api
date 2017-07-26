@@ -302,7 +302,7 @@ class SoilmodelFinder
         return $this->layersPersister->load($result['hash']);
     }
 
-    private function getSoilmodel(ModflowId $modelId): Soilmodel
+    public function getSoilmodel(ModflowId $modelId): Soilmodel
     {
         if (! $this->soilmodel instanceof Soilmodel) {
 

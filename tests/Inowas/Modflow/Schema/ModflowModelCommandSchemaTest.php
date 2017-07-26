@@ -9,11 +9,21 @@ use League\JsonGuard\Validator;
 use League\JsonReference\Dereferencer;
 use PHPUnit_Framework_TestCase as BaseTestCase;
 
-class CreateModflowModelSchemaTest extends BaseTestCase
+class ModflowModelCommandSchemaTest extends BaseTestCase
 {
     public function providerModel()
     {
         return [
+            [
+                file_get_contents('spec/example/modflow/command/addBoundary.json'),
+                file_get_contents('spec/schema/modflow/command/addBoundary.json'),
+                true
+            ],
+            [
+                file_get_contents('spec/example/modflow/command/updateBoundary.json'),
+                file_get_contents('spec/schema/modflow/command/updateBoundary.json'),
+                true
+            ],
             [
                 file_get_contents('spec/example/modflow/command/createModflowModel.json'),
                 file_get_contents('spec/schema/modflow/command/createModflowModel.json'),

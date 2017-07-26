@@ -8,6 +8,7 @@ use FOS\RestBundle\Controller\Annotations as Rest;
 use Inowas\Common\Id\ModflowId;
 use Inowas\ModflowBundle\Exception\AccessDeniedException;
 use Inowas\ModflowBundle\Exception\NotFoundException;
+use Inowas\ModflowModel\Model\Command\CalculateModflowModel;
 use Nelmio\ApiDocBundle\Annotation\ApiDoc;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\RedirectResponse;
@@ -161,10 +162,6 @@ class ModflowModelController extends InowasRestController
         $modelId = ModflowId::fromString($id);
         $calculationId = $this->get('inowas.modflowmodel.model_finder')->getCalculationIdByModelId($modelId);
 
-        return new RedirectResponse(
-            $this->generateUrl('get_calculation_details', array('id' => $calculationId->toString())),
-            302
-        );
     }
 
     /* Soilmodel */
@@ -181,22 +178,62 @@ class ModflowModelController extends InowasRestController
      *
      * @param string $id
      * @Rest\Get("/modflowmodels/{id}/soilmodel")
-     * @return RedirectResponse
+     * @return JsonResponse
+     * @throws \Inowas\ModflowBundle\Exception\AccessDeniedException
      * @throws \Symfony\Component\DependencyInjection\Exception\ServiceNotFoundException
      * @throws \Symfony\Component\DependencyInjection\Exception\ServiceCircularReferenceException
      * @throws \Prooph\ServiceBus\Exception\CommandDispatchException
      * @throws \InvalidArgumentException
      */
-    public function getSoilModelAction(string $id): RedirectResponse
+    public function getSoilModelAction(string $id): JsonResponse
     {
         $this->assertUuidIsValid($id);
         $modelId = ModflowId::fromString($id);
 
-        $soilmodelId = $this->container->get('inowas.modflowmodel.model_finder')->getSoilmodelIdByModelId($modelId);
+        $userId = $this->getUserId();
 
-        return new RedirectResponse(
-            $this->generateUrl('get_soilmodel', array('id' => $soilmodelId->toString())),
-            302
-        );
+        if (! $this->get('inowas.modflowmodel.model_finder')->userHasReadAccessToModel($userId, $modelId)) {
+            throw AccessDeniedException::withMessage(
+                sprintf(
+                    'Model not found or user with Id %s does not have access to model with id %s',
+                    $userId->toString(),
+                    $modelId->toString()
+                )
+            );
+        }
+
+        $soilmodel = $this->container->get('inowas.modflowmodel.soilmodel_finder')->getSoilmodel($modelId);
+        return new JsonResponse($soilmodel);
     }
+
+    /**
+     * Calculate the model.
+     *
+     * @ApiDoc(
+     *   resource = true,
+     *   description = "Calculate the model.",
+     *   statusCodes = {
+     *     200 = "Returned when successful"
+     *   }
+     * )
+     *
+     * @param string $id
+     * @Rest\Post("/modflowmodels/{id}/calculate")
+     * @return JsonResponse
+     * @throws \Symfony\Component\DependencyInjection\Exception\ServiceNotFoundException
+     * @throws \Symfony\Component\DependencyInjection\Exception\ServiceCircularReferenceException
+     * @throws \Prooph\ServiceBus\Exception\CommandDispatchException
+     */
+    public function postModflowModelCalculateAction(string $id): JsonResponse
+    {
+        $this->assertUuidIsValid($id);
+        $modelId = ModflowId::fromString($id);
+
+        $this->container->get('prooph_service_bus.modflow_command_bus')->dispatch(
+            CalculateModflowModel::forModflowModelFromTerminal($modelId)
+        );
+
+        return new JsonResponse('CalculationCommand sent');
+    }
+
 }
