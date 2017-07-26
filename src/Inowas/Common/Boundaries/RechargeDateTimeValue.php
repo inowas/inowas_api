@@ -53,7 +53,7 @@ class RechargeDateTimeValue extends DateTimeValue
     {
         return array(
             'date_time' => $this->dateTime->toAtom(),
-            'recharge_rate' => $this->rechargeRate
+            'values' => [$this->rechargeRate]
         );
     }
 

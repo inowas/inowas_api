@@ -24,7 +24,11 @@ class GeneralHeadDateTimeValue extends DateTimeValue
 
     public static function fromArray(array $arr): GeneralHeadDateTimeValue
     {
-        return new self(DateTime::fromAtom($arr['date_time']), $arr['stage'], $arr['cond']);
+        return new self(
+            DateTime::fromAtom($arr['date_time']),
+            $arr['values'][0],
+            $arr['values'][1]
+        );
     }
 
     public static function fromArrayValues(array $arr): GeneralHeadDateTimeValue
@@ -43,8 +47,10 @@ class GeneralHeadDateTimeValue extends DateTimeValue
     {
         return array(
             'date_time' => $this->dateTime->toAtom(),
-            'stage' => $this->stage,
-            'cond' => $this->cond
+            'values' => [
+                $this->stage,
+                $this->cond
+            ]
         );
     }
 

@@ -24,7 +24,11 @@ class ConstantHeadDateTimeValue extends DateTimeValue
 
     public static function fromArray(array $arr): ConstantHeadDateTimeValue
     {
-        return new self(DateTime::fromAtom($arr['date_time']), $arr['shead'], $arr['ehead']);
+        return new self(
+            DateTime::fromAtom($arr['date_time']),
+            $arr['values'][0],
+            $arr['values'][1]
+        );
     }
 
     public static function fromArrayValues(array $arr): ConstantHeadDateTimeValue
@@ -43,8 +47,10 @@ class ConstantHeadDateTimeValue extends DateTimeValue
     {
         return array(
             'date_time' => $this->dateTime->toAtom(),
-            'shead' => $this->shead,
-            'ehead' => $this->ehead
+            'values' => [
+                $this->shead,
+                $this->ehead
+            ]
         );
     }
 

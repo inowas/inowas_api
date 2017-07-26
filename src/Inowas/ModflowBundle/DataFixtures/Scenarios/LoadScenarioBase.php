@@ -4,11 +4,9 @@ declare(strict_types=1);
 
 namespace Inowas\ModflowBundle\DataFixtures\Scenarios;
 
-use Doctrine\DBAL\Schema\Schema;
 use FOS\UserBundle\Model\UserManager;
 use Inowas\Common\Fixtures\DataFixtureInterface;
 use Inowas\Common\Id\UserId;
-use Prooph\EventStore\Adapter\Doctrine\Schema\EventStoreSchema;
 use Symfony\Component\DependencyInjection\ContainerAwareInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
@@ -45,7 +43,8 @@ abstract class LoadScenarioBase implements ContainerAwareInterface, DataFixtureI
             array('jana.glass', 'Jana Glass', 'jana.ringleb@tu-dresden.de', '#inowas#'),
             array('jana.sallwey', 'Jana Sallwey', 'jana.sallwey@tu-dresden.de', '#inowas#'),
             array('catalin.stefan', 'Catalin Stefan', 'catalin.stefan@tu-dresden.de', '#inowas#'),
-            array('martin.wudenka', 'Martin Wudenka', 'martin.wudenka@tu-dresden.de', '#inowas#')
+            array('martin.wudenka', 'Martin Wudenka', 'martin.wudenka@tu-dresden.de', '#inowas#'),
+            array('nawapi', 'nawapi', 'nawapi@inowas.com', 'na-ql-ww-pi'),
         );
 
         foreach ($userList as $item){
@@ -69,26 +68,6 @@ abstract class LoadScenarioBase implements ContainerAwareInterface, DataFixtureI
         $owner->addRole('ROLE_ADMIN');
         $userManager->updateUser($owner);
         $this->ownerId = $owner->getId()->toString();
-    }
-
-    protected function createEventStreamTableIfNotExists($tableName): void
-    {
-        $connection = $this->container->get('doctrine.dbal.default_connection');
-
-        if (in_array($tableName, $connection->getSchemaManager()->listTableNames())){
-            return;
-        }
-
-        $schema = new Schema();
-        if (class_exists('Prooph\EventStore\Adapter\Doctrine\Schema\EventStoreSchema')) {
-            EventStoreSchema::createSingleStream($schema, $tableName, true);
-        }
-
-        $queries = $schema->toSql($connection->getDatabasePlatform());
-
-        foreach ($queries as $query){
-            $connection->exec($query);
-        }
     }
 
     protected function loadHeadsFromFile($filename, $invert = false){
@@ -117,19 +96,6 @@ abstract class LoadScenarioBase implements ContainerAwareInterface, DataFixtureI
         }
 
         return $heads;
-    }
-
-    protected function loadBudgetFromFile($filename){
-
-        if (!file_exists($filename) || !is_readable($filename)) {
-            echo "File not found.\r\n";
-            return FALSE;
-        }
-
-        $json = file_get_contents($filename, true);
-        $budget = json_decode($json, true);
-
-        return $budget;
     }
 
     protected function loadRowsFromCsv($filename): array {

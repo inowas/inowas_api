@@ -6,14 +6,12 @@ namespace Inowas\Common\Boundaries;
 
 use Inowas\Common\DateTime\DateTime;
 
-abstract class DateTimeValue implements \JsonSerializable
+abstract class DateTimeValue
 {
     /** @var DateTime */
     protected $dateTime;
 
     abstract public static function fromArray(array $arr);
-
-    abstract public static function fromArrayValues(array $arr);
 
     abstract public function toArray(): array;
 
@@ -23,18 +21,8 @@ abstract class DateTimeValue implements \JsonSerializable
 
     abstract public function type(): string;
 
-    public function jsonSerialize(): array
-    {
-        return $this->toArrayValues();
-    }
-
     public function toArrayValues(): array
     {
-        return array_values($this->toArray());
-    }
-
-    public function valuesDescription(): array
-    {
-        return array_keys($this->toArray());
+        return array_values($this->values());
     }
 }

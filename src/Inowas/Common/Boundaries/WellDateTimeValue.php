@@ -22,7 +22,7 @@ class WellDateTimeValue extends DateTimeValue
 
     public static function fromArray(array $arr): WellDateTimeValue
     {
-        return new self(DateTime::fromAtom($arr['date_time']), $arr['pumping_rate']);
+        return new self(DateTime::fromAtom($arr['date_time']), $arr['values'][0]);
     }
 
     public static function fromArrayValues(array $arr): WellDateTimeValue
@@ -30,7 +30,7 @@ class WellDateTimeValue extends DateTimeValue
         return new self(DateTime::fromAtom($arr[0]), $arr[1]);
     }
 
-    private function __construct(DateTime $dateTime, float $pumpingRate){
+    private function __construct(DateTime $dateTime, float $pumpingRate) {
         $this->dateTime = $dateTime;
         $this->pumpingRate = $pumpingRate;
     }
@@ -54,7 +54,7 @@ class WellDateTimeValue extends DateTimeValue
     {
         return array(
             'date_time' => $this->dateTime->toAtom(),
-            'pumping_rate' => $this->pumpingRate
+            'values' => [$this->pumpingRate]
         );
     }
 

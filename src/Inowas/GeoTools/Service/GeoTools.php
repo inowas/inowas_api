@@ -297,12 +297,13 @@ class GeoTools
                             continue;
                         }
 
-                        $startArrayValues = $startValue->toArrayValues();
-                        $endArrayValues = $endValue->toArrayValues();
+                        $startArrayValues = array_values($startValue->values());
+                        $endArrayValues = array_values($endValue->values());
 
                         $interpolatedDateTimeArrayValue = [$dateTime->toAtom()];
                         $nrOfStartArrayValues = count($startArrayValues);
-                        for ($i=1; $i<$nrOfStartArrayValues; $i++){
+
+                        for ($i=0; $i<$nrOfStartArrayValues; $i++){
                             $interpolatedValue = $startArrayValues[$i] + (($endArrayValues[$i]-$startArrayValues[$i])*$factor);
                             $interpolatedDateTimeArrayValue[] = $interpolatedValue;
                         }

@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Inowas\Common\Boundaries;
 
 use Inowas\Common\DateTime\DateTime;
+use Inowas\Common\Geometry\Geometry;
 use Inowas\Common\Geometry\Point;
 use Inowas\Common\Id\ObservationPointId;
 use Inowas\Common\Modflow\Name;
@@ -46,7 +47,7 @@ class ObservationPoint implements \JsonSerializable
             ObservationPointId::fromString($arr['id']),
             BoundaryType::fromString($arr['type']),
             Name::fromString($arr['name']),
-            new Point($arr['geometry'][0], $arr['geometry'][1])
+            Geometry::fromArray($arr['geometry'])->getPoint()
         );
 
         $self->dateTimeValuesCollection = DateTimeValuesCollection::fromTypeAndArray(BoundaryType::fromString($arr['type']), $arr['date_time_values']);
@@ -99,7 +100,7 @@ class ObservationPoint implements \JsonSerializable
         return array(
             'id' => $this->id->toString(),
             'name' => $this->name()->toString(),
-            'geometry' => $this->geometry->toArray(),
+            'geometry' => Geometry::fromPoint($this->geometry)->toArray(),
             'type' => $this->type->toString(),
             'date_time_values' => $this->dateTimeValuesCollection->toArray()
         );

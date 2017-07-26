@@ -27,7 +27,12 @@ class RiverDateTimeValue extends DateTimeValue
 
     public static function fromArray(array $arr): RiverDateTimeValue
     {
-        return new self(DateTime::fromAtom($arr['date_time']), $arr['stage'], $arr['rbot'], $arr['cond']);
+        return new self(
+            DateTime::fromAtom($arr['date_time']),
+            $arr['values'][0],
+            $arr['values'][1],
+            $arr['values'][2]
+        );
     }
 
     public static function fromArrayValues(array $arr): RiverDateTimeValue
@@ -37,19 +42,21 @@ class RiverDateTimeValue extends DateTimeValue
 
     private function __construct(DateTime $dateTime, float $stage, float $botm, float $cond)
     {
+        $this->dateTime = $dateTime;
         $this->stage = $stage;
         $this->rbot = $botm;
         $this->cond = $cond;
-        $this->dateTime = $dateTime;
     }
 
     public function toArray(): array
     {
         return array(
             'date_time' => $this->dateTime->toAtom(),
-            'stage' => $this->stage,
-            'rbot' => $this->rbot,
-            'cond' => $this->cond
+            'values' => [
+                $this->stage,
+                $this->rbot,
+                $this->cond
+            ]
         );
     }
 
