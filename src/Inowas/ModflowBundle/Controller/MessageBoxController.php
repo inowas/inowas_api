@@ -56,7 +56,6 @@ class MessageBoxController extends InowasRestController
         $messageFactory = $this->get('prooph_message_factory');
         $content = $this->getContentAsArray($request);
 
-        $this->assertContainsKey('uuid', $content);
         $this->assertContainsKey('message_name', $content);
         $this->assertContainsKey('payload', $content);
 
