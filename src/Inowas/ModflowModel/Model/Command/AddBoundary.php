@@ -23,7 +23,7 @@ class AddBoundary extends Command implements PayloadConstructable
             [
                 'user_id' => $userId->toString(),
                 'model_id' => $modelId->toString(),
-                'boundary' => BoundaryFactory::serialize($boundary)
+                'boundary' => $boundary->toArray()
             ]
         );
     }
@@ -40,6 +40,6 @@ class AddBoundary extends Command implements PayloadConstructable
 
     public function boundary(): ModflowBoundary
     {
-        return BoundaryFactory::createFromSerialized($this->payload['boundary']);
+        return BoundaryFactory::createFromArray($this->payload['boundary']);
     }
 }

@@ -69,7 +69,7 @@ class CalculationResultsFinder
     public function getTotalTimesFromCalculationById(CalculationId $calculationId): ?TotalTimes
     {
         $result = $this->connection->fetchAssoc(
-            sprintf('SELECT stressperiods from %s WHERE calculation_id = :calculation_id', Table::MODFLOWMODELS_LIST),
+            sprintf('SELECT stressperiods from %s WHERE calculation_id = :calculation_id', Table::MODFLOWMODELS),
             ['calculation_id' => $calculationId->toString()]
         );
 

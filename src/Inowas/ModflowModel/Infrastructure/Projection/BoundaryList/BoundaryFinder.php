@@ -6,6 +6,8 @@ namespace Inowas\ModflowModel\Infrastructure\Projection\BoundaryList;
 
 use Doctrine\DBAL\Connection;
 use Inowas\Common\Boundaries\BoundaryFactory;
+use Inowas\Common\Boundaries\BoundaryList;
+use Inowas\Common\Boundaries\BoundaryListItem;
 use Inowas\Common\Boundaries\BoundaryType;
 use Inowas\Common\Boundaries\ModflowBoundary;
 use Inowas\Common\Boundaries\ObservationPoint;
@@ -109,7 +111,7 @@ class BoundaryFinder
             return null;
         }
 
-        $boundary = BoundaryFactory::createFromSerialized($row['boundary']);
+        $boundary = BoundaryFactory::createFromArray(json_decode($row['boundary'], true));
 
         $result = [];
         $result['affected_layers'] = $boundary->affectedLayers()->toArray();
@@ -181,7 +183,7 @@ class BoundaryFinder
         $spDates = [];
         foreach ($rows as $row) {
             /** @var ModflowBoundary $boundary */
-            $boundary = BoundaryFactory::createFromSerialized($row['boundary']);
+            $boundary = BoundaryFactory::createFromArray(json_decode($row['boundary'], true));
             $dateTimes = $boundary->getDateTimes();
 
             /** @var DateTime $dateTime */
@@ -215,11 +217,37 @@ class BoundaryFinder
 
         $result = [];
         foreach ($rows as $row) {
-            $result[] = BoundaryFactory::createFromSerialized($row['boundary']);
+            $result[] = BoundaryFactory::createFromArray(json_decode($row['boundary'], true));
         }
 
         return $result;
     }
 
+    public function getBoundaryList(ModflowId $modelId): BoundaryList
+    {
+        $boundaryList = BoundaryList::create();
 
+        $this->connection->setFetchMode(\PDO::FETCH_ASSOC);
+        $rows = $this->connection->fetchAll(
+            sprintf('SELECT boundary_id, name, geometry, type FROM %s WHERE model_id = :model_id', Table::BOUNDARIES),
+            ['model_id' => $modelId->toString()]
+        );
+
+        if ($rows === false){
+            return $boundaryList;
+        }
+
+        foreach ($rows as $row) {
+            $boundaryList = $boundaryList->addItem(
+                BoundaryListItem::fromParams(
+                    BoundaryId::fromString($row['boundary_id']),
+                    Name::fromString($row['name']),
+                    Geometry::fromJson($row['geometry']),
+                    BoundaryType::fromString($row['type'])
+                )
+            );
+        }
+
+        return $boundaryList;
+    }
 }

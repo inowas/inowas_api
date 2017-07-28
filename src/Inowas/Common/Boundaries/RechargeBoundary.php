@@ -84,7 +84,7 @@ class RechargeBoundary extends ModflowBoundary
             'name' => $this->name()->toString(),
             'geometry' => $this->geometry()->toArray(),
             'affected_layers' => $this->affectedLayers()->toArray(),
-            'metadata' => (object)$this->metadata()->toArray(),
+            'metadata' => $this->metadata()->toArray(),
             'date_time_values' => $this->getObservationPoint(ObservationPointId::fromString('OP'))->dateTimeValues()->toArray()
         );
     }

@@ -45,7 +45,7 @@ class BoundaryWasUpdated extends AggregateChanged
             $modflowId->toString(), [
                 'user_id' => $userId->toString(),
                 'boundary_id' => $boundaryId->toString(),
-                'boundary' => BoundaryFactory::serialize($boundary)
+                'boundary' => $boundary->toArray()
             ]
         );
 
@@ -60,7 +60,7 @@ class BoundaryWasUpdated extends AggregateChanged
     public function boundary(): ModflowBoundary
     {
         if ($this->boundary === null){
-            $this->boundary = BoundaryFactory::createFromSerialized($this->payload['boundary']);
+            $this->boundary = BoundaryFactory::createFromArray($this->payload['boundary']);
         }
 
         return $this->boundary;

@@ -10,6 +10,7 @@ use Doctrine\ORM\EntityManager;
 use Inowas\AppBundle\Model\User;
 use Inowas\Common\Id\UserId;
 use Inowas\Common\Projection\AbstractDoctrineConnectionProjector;
+use Inowas\ModflowModel\Model\Event\ModflowModelWasCreated;
 use Inowas\ScenarioAnalysis\Model\Event\ScenarioAnalysisDescriptionWasChanged;
 use Inowas\ScenarioAnalysis\Model\Event\ScenarioAnalysisNameWasChanged;
 use Inowas\ScenarioAnalysis\Model\Event\ScenarioAnalysisWasCloned;
@@ -43,6 +44,20 @@ class ToolProjector extends AbstractDoctrineConnectionProjector
         $table->addColumn('public', 'boolean');
         $table->setPrimaryKey(['id']);
         $this->addSchema($schema);
+    }
+
+    public function onModflowModelWasCreated(ModflowModelWasCreated $event): void
+    {
+        $this->connection->insert(Table::TOOL_LIST, array(
+            'id' => $event->modelId()->toString(),
+            'application' => '',
+            'project' => '',
+            'tool' => 'T03',
+            'user_id' => $event->userId()->toString(),
+            'user_name' => $this->getUserNameByUserId($event->userId()),
+            'created_at' => date_format($event->createdAt(), DATE_ATOM),
+            'public' => true
+        ));
     }
 
     public function onScenarioAnalysisWasCreated(ScenarioAnalysisWasCreated $event): void

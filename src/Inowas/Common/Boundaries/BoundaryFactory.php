@@ -79,23 +79,6 @@ class BoundaryFactory
         );
     }
 
-    public static function createFromSerialized(string $string): ModflowBoundary
-    {
-        return unserialize(base64_decode($string), [
-            ModflowBoundary::class,
-            ConstantHeadBoundary::class,
-            GeneralHeadBoundary::class,
-            RechargeBoundary::class,
-            RiverBoundary::class,
-            WellBoundary::class
-        ]);
-    }
-
-    public static function serialize(ModflowBoundary $boundary): string
-    {
-        return base64_encode(serialize($boundary));
-    }
-
     public static function createFromArray(array $arr): ModflowBoundary
     {
         $type = BoundaryType::fromString($arr['type']);

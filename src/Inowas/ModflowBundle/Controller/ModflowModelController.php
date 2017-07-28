@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Inowas\ModflowBundle\Controller;
 
 use FOS\RestBundle\Controller\Annotations as Rest;
+use Inowas\Common\Id\BoundaryId;
 use Inowas\Common\Id\ModflowId;
 use Inowas\ModflowBundle\Exception\AccessDeniedException;
 use Inowas\ModflowBundle\Exception\NotFoundException;
@@ -98,6 +99,73 @@ class ModflowModelController extends InowasRestController
 
         $model = $this->container->get('inowas.modflowmodel.manager')->findModel($modelId);
         return new JsonResponse($model);
+    }
+
+    /**
+     * Get list of boundaries from modflowmodel by id.
+     *
+     * @ApiDoc(
+     *   resource = true,
+     *   description = "Returns a list of all boundaries with ids, types, names, geometry.",
+     *   statusCodes = {
+     *     200 = "Returned when successful"
+     *   }
+     * )
+     *
+     * @param string $id
+     * @Rest\Get("/modflowmodels/{id}/boundaries")
+     * @return JsonResponse
+     * @throws \Inowas\ModflowBundle\Exception\NotFoundException
+     */
+    public function getModflowModelBoundaryListAction(string $id): JsonResponse
+    {
+        $this->assertUserIsLoggedInCorrectly();
+        $this->assertUuidIsValid($id);
+        $modelId = ModflowId::fromString($id);
+
+        $boundaryList = $this->get('inowas.modflowmodel.boundary_manager')->getBoundaryList($modelId);
+
+        if (null === $boundaryList) {
+            throw NotFoundException::withMessage(sprintf(
+                'ModflowModel with id: \'%s\' not found.', $modelId->toString()
+            ));
+        }
+
+        return new JsonResponse($boundaryList->toArray());
+    }
+
+    /**
+     * Get boundary by modelId and boundaryId.
+     *
+     * @ApiDoc(
+     *   resource = true,
+     *   description = "Returns the boundary.",
+     *   statusCodes = {
+     *     200 = "Returned when successful"
+     *   }
+     * )
+     *
+     * @param string $id
+     * @param string $bid
+     * @Rest\Get("/modflowmodels/{id}/boundaries/{bid}")
+     * @return JsonResponse
+     * @throws \Inowas\ModflowBundle\Exception\NotFoundException
+     */
+    public function getModflowModelBoundaryAction(string $id, string $bid): JsonResponse
+    {
+        $this->assertUuidIsValid($id);
+        $modelId = ModflowId::fromString($id);
+        $boundaryId = BoundaryId::fromString($bid);
+
+        $boundaryDetails = $this->get('inowas.modflowmodel.boundary_manager')->getBoundaryDetails($modelId, $boundaryId);
+
+        if (null === $boundaryDetails){
+            throw NotFoundException::withMessage(sprintf(
+                'ModflowModel with id: \'%s\' and BoundaryId \'%s\' not found.', $modelId->toString(), $boundaryId->toString()
+            ));
+        }
+
+        return new JsonResponse($boundaryDetails);
     }
 
     /**

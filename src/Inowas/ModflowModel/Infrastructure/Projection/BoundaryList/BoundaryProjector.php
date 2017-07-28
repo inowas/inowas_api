@@ -6,7 +6,6 @@ namespace Inowas\ModflowModel\Infrastructure\Projection\BoundaryList;
 
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Schema\Schema;
-use Inowas\Common\Boundaries\BoundaryFactory;
 use Inowas\Common\Id\ModflowId;
 use Inowas\Common\Projection\AbstractDoctrineConnectionProjector;
 use Inowas\ModflowModel\Infrastructure\Projection\Table;
@@ -53,7 +52,7 @@ class BoundaryProjector extends AbstractDoctrineConnectionProjector
             'active_cells' => null,
             'metadata' => json_encode($boundary->metadata()),
             'affected_layers' => json_encode($boundary->affectedLayers()->toArray()),
-            'boundary' => BoundaryFactory::serialize($boundary)
+            'boundary' => json_encode($boundary->toArray())
         ));
     }
 
@@ -68,7 +67,7 @@ class BoundaryProjector extends AbstractDoctrineConnectionProjector
             'active_cells' => null,
             'metadata' => json_encode($boundary->metadata()),
             'affected_layers' => json_encode($boundary->affectedLayers()->toArray()),
-            'boundary' => BoundaryFactory::serialize($boundary)
+            'boundary' => json_encode($boundary->toArray())
         ), array(
             'boundary_id' => $event->boundaryId()->toString(),
             'model_id' => $event->modelId()->toString(),

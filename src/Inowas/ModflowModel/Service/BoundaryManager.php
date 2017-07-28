@@ -2,6 +2,7 @@
 
 namespace Inowas\ModflowModel\Service;
 
+use Inowas\Common\Boundaries\BoundaryList;
 use Inowas\Common\Boundaries\BoundaryType;
 use Inowas\Common\Geometry\Geometry;
 use Inowas\Common\Grid\AffectedLayers;
@@ -89,5 +90,10 @@ class BoundaryManager
     public function getAffectedLayersByModelAndBoundary(ModflowId $modelId, BoundaryId $boundaryId): AffectedLayers
     {
         return $this->boundaryFinder->getAffectedLayersByModelAndBoundary($modelId, $boundaryId);
+    }
+
+    public function getBoundaryList(ModflowId $modelId): BoundaryList
+    {
+        return $this->boundaryFinder->getBoundaryList($modelId);
     }
 }

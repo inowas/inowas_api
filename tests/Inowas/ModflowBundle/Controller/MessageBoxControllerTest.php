@@ -168,7 +168,7 @@ class MessageBoxControllerTest extends EventSourcingBaseTest
             json_encode($command)
         );
 
-        $this->assertNull($this->container->get('inowas.modflowmodel.manager')->findModel($modelId));
+        $this->assertFalse($this->container->get('inowas.modflowmodel.model_finder')->modelExists($modelId));
     }
 
     /**

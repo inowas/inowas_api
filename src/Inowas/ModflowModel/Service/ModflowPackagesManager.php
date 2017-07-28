@@ -232,6 +232,7 @@ class ModflowPackagesManager
     private function calculateAllPackages(ModflowId $modelId, ModflowPackages $packages): ModflowPackages
     {
         $stressPeriods = $this->modflowModelManager->getStressPeriodsByModelId($modelId);
+
         $packages->updateStartDateTime($stressPeriods->start());
         $packages->updateTimeUnit($stressPeriods->timeUnit());
 
