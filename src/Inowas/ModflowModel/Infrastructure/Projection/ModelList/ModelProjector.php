@@ -90,7 +90,7 @@ class ModelProjector extends AbstractDoctrineConnectionProjector
     {
         $this->connection->update(Table::MODFLOWMODELS,
             array('description' => $event->description()->toString()),
-            array('model_id' => $event->modflowModelId()->toString())
+            array('model_id' => $event->modelId()->toString())
         );
     }
 
@@ -173,7 +173,7 @@ class ModelProjector extends AbstractDoctrineConnectionProjector
     {
         $this->connection->update(Table::MODFLOWMODELS,
             array('name' => $event->name()->toString()),
-            array('model_id' => $event->modflowId()->toString())
+            array('model_id' => $event->modelId()->toString())
         );
     }
 

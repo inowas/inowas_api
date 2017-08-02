@@ -68,7 +68,7 @@ class RioPrimero extends LoadScenarioBase
     {
         $this->loadUsers($this->container->get('fos_user.user_manager'));
         #updateGridParameters()$geoTools = $this->container->get('inowas.geotools.geotools_service');
-        $this->createEventStreamTableIfNotExists('event_stream');
+        #$this->createEventStreamTableIfNotExists('event_stream');
 
         $commandBus = $this->container->get('prooph_service_bus.modflow_command_bus');
         $ownerId = UserId::fromString($this->ownerId);

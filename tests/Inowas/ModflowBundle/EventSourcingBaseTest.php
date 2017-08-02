@@ -57,6 +57,7 @@ use Inowas\ModflowModel\Model\Command\ChangeBoundingBox;
 use Inowas\ModflowModel\Model\Command\CreateModflowModel;
 use Inowas\ModflowBundle\Command\ModflowEventStoreTruncateCommand;
 use Inowas\ModflowBundle\Command\ModflowProjectionsResetCommand;
+use Inowas\ModflowModel\Model\Command\DeleteModflowModel;
 use Inowas\ModflowModel\Model\Command\UpdateStressPeriods;
 use Inowas\ScenarioAnalysis\Model\Command\CreateScenario;
 use Inowas\ScenarioAnalysis\Model\Command\CreateScenarioAnalysis;
@@ -413,6 +414,11 @@ abstract class EventSourcingBaseTest extends WebTestCase
 
         $boundingBox = BoundingBox::fromCoordinates(-63.687336, -63.569260, -31.367449, -31.313615);
         $this->commandBus->dispatch(ChangeBoundingBox::forModflowModel($ownerId, $modelId, $boundingBox));
+    }
+
+    protected function deleteModel(UserId $userId, ModflowId $modelId): void
+    {
+        $this->commandBus->dispatch(DeleteModflowModel::byIdAndUser($modelId, $userId));
     }
 
     protected function createModelWithName(UserId $userId, ModflowId $modelId): void

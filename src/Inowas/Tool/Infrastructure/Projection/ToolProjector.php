@@ -10,7 +10,10 @@ use Doctrine\ORM\EntityManager;
 use Inowas\AppBundle\Model\User;
 use Inowas\Common\Id\UserId;
 use Inowas\Common\Projection\AbstractDoctrineConnectionProjector;
+use Inowas\ModflowModel\Model\Event\DescriptionWasChanged;
 use Inowas\ModflowModel\Model\Event\ModflowModelWasCreated;
+use Inowas\ModflowModel\Model\Event\ModflowModelWasDeleted;
+use Inowas\ModflowModel\Model\Event\NameWasChanged;
 use Inowas\ScenarioAnalysis\Model\Event\ScenarioAnalysisDescriptionWasChanged;
 use Inowas\ScenarioAnalysis\Model\Event\ScenarioAnalysisNameWasChanged;
 use Inowas\ScenarioAnalysis\Model\Event\ScenarioAnalysisWasCloned;
@@ -57,6 +60,31 @@ class ToolProjector extends AbstractDoctrineConnectionProjector
             'user_name' => $this->getUserNameByUserId($event->userId()),
             'created_at' => date_format($event->createdAt(), DATE_ATOM),
             'public' => true
+        ));
+    }
+
+    public function onNameWasChanged(NameWasChanged $event): void
+    {
+        $this->connection->update(Table::TOOL_LIST, array(
+            'name' => $event->name()->toString()
+        ), array(
+            'id' => $event->modelId()->toString()
+        ));
+    }
+
+    public function onDescriptionWasChanged(DescriptionWasChanged $event): void
+    {
+        $this->connection->update(Table::TOOL_LIST, array(
+            'description' => $event->description()->toString()
+        ), array(
+            'id' => $event->modelId()->toString()
+        ));
+    }
+
+    public function onModflowModelWasDeleted(ModflowModelWasDeleted $event): void
+    {
+        $this->connection->delete(Table::TOOL_LIST, array(
+            'id' => $event->modelId()->toString()
         ));
     }
 

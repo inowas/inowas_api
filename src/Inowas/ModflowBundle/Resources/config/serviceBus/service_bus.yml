@@ -113,6 +113,7 @@ parameters:
                         'Inowas\ModflowModel\Model\Event\DescriptionWasChanged':
                             - 'inowas.modflowmodel.blackhole_projector'
                             - 'inowas.modflowmodel.model_projector'
+                            - 'inowas.tool.tools_projector'
 
                         'Inowas\ModflowModel\Model\Event\FlowPackageWasChanged':
                             - 'inowas.modflowmodel.blackhole_projector'
@@ -151,11 +152,13 @@ parameters:
                             - 'inowas.modflowmodel.model_projector'
                             - 'inowas.modflowmodel.soilmodel_projector'
                             - 'inowas.modflowmodel.modflow_packages_process_manager'
+                            - 'inowas.tool.tools_projector'
 
                         'Inowas\ModflowModel\Model\Event\ModflowModelWasDeleted':
                             - 'inowas.modflowmodel.blackhole_projector'
                             - 'inowas.modflowmodel.boundary_projector'
                             - 'inowas.modflowmodel.model_projector'
+                            - 'inowas.tool.tools_projector'
 
                         'Inowas\ModflowModel\Model\Event\ModflowPackageParameterWasUpdated':
                             - 'inowas.modflowmodel.blackhole_projector'
@@ -164,6 +167,7 @@ parameters:
                         'Inowas\ModflowModel\Model\Event\NameWasChanged':
                             - 'inowas.modflowmodel.blackhole_projector'
                             - 'inowas.modflowmodel.model_projector'
+                            - 'inowas.tool.tools_projector'
 
                         'Inowas\ModflowModel\Model\Event\SoilmodelMetadataWasUpdated':
                             - 'inowas.modflowmodel.blackhole_projector'

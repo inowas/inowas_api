@@ -38,7 +38,7 @@ class NameWasChanged extends AggregateChanged
         return $event;
     }
 
-    public function modflowId(): IdInterface
+    public function modelId(): IdInterface
     {
         if ($this->modflowId === null){
             $this->modflowId = ModflowId::fromString($this->aggregateId());

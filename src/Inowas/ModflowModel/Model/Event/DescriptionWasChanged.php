@@ -37,7 +37,7 @@ class DescriptionWasChanged extends AggregateChanged
         return $event;
     }
 
-    public function modflowModelId(): ModflowId
+    public function modelId(): ModflowId
     {
         if ($this->modflowModelId === null){
             $this->modflowModelId = ModflowId::fromString($this->aggregateId());
