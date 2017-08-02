@@ -50,7 +50,7 @@ class BoundaryProjector extends AbstractDoctrineConnectionProjector
             'name' => $boundary->name()->toString(),
             'geometry' => json_encode($boundary->geometry()->toArray()),
             'active_cells' => null,
-            'metadata' => json_encode($boundary->metadata()),
+            'metadata' => json_encode($boundary->metadata()->toArray()),
             'affected_layers' => json_encode($boundary->affectedLayers()->toArray()),
             'boundary' => json_encode($boundary->toArray())
         ));
@@ -65,7 +65,7 @@ class BoundaryProjector extends AbstractDoctrineConnectionProjector
             'name' => $boundary->name()->toString(),
             'geometry' => json_encode($boundary->geometry()->toArray()),
             'active_cells' => null,
-            'metadata' => json_encode($boundary->metadata()),
+            'metadata' => json_encode($boundary->metadata()->toArray()),
             'affected_layers' => json_encode($boundary->affectedLayers()->toArray()),
             'boundary' => json_encode($boundary->toArray())
         ), array(

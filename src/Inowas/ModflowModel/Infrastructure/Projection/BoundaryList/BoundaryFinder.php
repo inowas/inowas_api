@@ -9,6 +9,7 @@ use Inowas\Common\Boundaries\BoundaryFactory;
 use Inowas\Common\Boundaries\BoundaryList;
 use Inowas\Common\Boundaries\BoundaryListItem;
 use Inowas\Common\Boundaries\BoundaryType;
+use Inowas\Common\Boundaries\Metadata;
 use Inowas\Common\Boundaries\ModflowBoundary;
 use Inowas\Common\Boundaries\ObservationPoint;
 use Inowas\Common\DateTime\DateTime;
@@ -229,7 +230,7 @@ class BoundaryFinder
 
         $this->connection->setFetchMode(\PDO::FETCH_ASSOC);
         $rows = $this->connection->fetchAll(
-            sprintf('SELECT boundary_id, name, geometry, type FROM %s WHERE model_id = :model_id', Table::BOUNDARIES),
+            sprintf('SELECT boundary_id, name, geometry, type, metadata, affected_layers FROM %s WHERE model_id = :model_id', Table::BOUNDARIES),
             ['model_id' => $modelId->toString()]
         );
 
@@ -243,7 +244,9 @@ class BoundaryFinder
                     BoundaryId::fromString($row['boundary_id']),
                     Name::fromString($row['name']),
                     Geometry::fromJson($row['geometry']),
-                    BoundaryType::fromString($row['type'])
+                    BoundaryType::fromString($row['type']),
+                    Metadata::fromArray(json_decode($row['metadata'], true)),
+                    AffectedLayers::fromArray(json_decode($row['affected_layers'], true))
                 )
             );
         }

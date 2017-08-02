@@ -19,12 +19,17 @@
             "type": "String",
             "minLength": 3,
             "maxLength": 3
+        },
+        "affected_layers": {
+            "$ref": "modflow/affectedLayers.json"
         }
     },
     "required": [
         "id",
         "name",
         "geometry",
-        "type"
+        "type",
+        "metadata",
+        "affected_layers"
     ]
 }
