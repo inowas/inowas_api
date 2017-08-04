@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Inowas\ModflowModel\Model\Event;
 
+use Inowas\Common\Boundaries\BoundaryType;
 use Inowas\Common\Id\BoundaryId;
 use Inowas\Common\Id\ModflowId;
 use Inowas\Common\Id\UserId;
@@ -51,7 +52,7 @@ class BoundaryWasRemoved extends AggregateChanged
     public function boundaryId(): BoundaryId
     {
         if ($this->boundaryId === null){
-            $this->boundaryId = ModflowId::fromString($this->payload['boundary_id']);
+            $this->boundaryId = BoundaryId::fromString($this->payload['boundary_id']);
         }
 
         return $this->boundaryId;

@@ -150,6 +150,7 @@ class ModflowModelAggregate extends AggregateRoot
                 $this->modelId,
                 $boundaryId
             ));
+
             unset($this->boundaries[$boundaryId->toString()]);
         }
     }

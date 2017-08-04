@@ -37,6 +37,7 @@ final class RemoveBoundaryHandler
             throw WriteAccessFailedException::withUserAndOwner($command->userId(), $modflowModel->userId());
         }
 
+
         $modflowModel->removeBoundary($command->userId(), $command->boundaryId());
         $this->modelList->save($modflowModel);
     }

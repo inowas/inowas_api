@@ -8,6 +8,7 @@ use FOS\RestBundle\Controller\Annotations as Rest;
 use Inowas\ModflowBundle\Exception\InvalidArgumentException;
 use Inowas\ModflowModel\Model\Command\CreateModflowModel;
 use Inowas\ModflowModel\Model\Command\DeleteModflowModel;
+use Inowas\ModflowModel\Model\Command\RemoveBoundary;
 use Inowas\ModflowModel\Model\Command\UpdateModflowModel;
 use Inowas\ModflowModel\Model\Command\UpdateStressPeriods;
 use Nelmio\ApiDocBundle\Annotation\ApiDoc;
@@ -24,6 +25,7 @@ class MessageBoxController extends InowasRestController
         'deleteModflowModel' => DeleteModflowModel::class,
         'updateModflowModel' => UpdateModflowModel::class,
         'updateStressPeriods' => UpdateStressPeriods::class,
+        'removeBoundary' => RemoveBoundary::class
     ];
 
     /**

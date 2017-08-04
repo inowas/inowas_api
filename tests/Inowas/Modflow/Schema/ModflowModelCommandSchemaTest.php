@@ -25,6 +25,11 @@ class ModflowModelCommandSchemaTest extends BaseTestCase
                 true
             ],
             [
+                file_get_contents('spec/example/modflow/command/removeBoundary.json'),
+                file_get_contents('spec/schema/modflow/command/removeBoundary.json'),
+                true
+            ],
+            [
                 file_get_contents('spec/example/modflow/command/createModflowModel.json'),
                 file_get_contents('spec/schema/modflow/command/createModflowModel.json'),
                 true
