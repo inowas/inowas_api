@@ -30,7 +30,7 @@ class Metadata
 
     public function addWellType(WellType $wellType): Metadata
     {
-        $this->metadata['well_Type'] = $wellType->toString();
+        $this->metadata['well_type'] = $wellType->toString();
         return $this;
     }
 
