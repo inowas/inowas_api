@@ -4,6 +4,7 @@ namespace Inowas\ModflowModel\Service;
 
 use Inowas\Common\Boundaries\BoundaryList;
 use Inowas\Common\Boundaries\BoundaryType;
+use Inowas\Common\Boundaries\ModflowBoundary;
 use Inowas\Common\Geometry\Geometry;
 use Inowas\Common\Grid\AffectedLayers;
 use Inowas\Common\Id\BoundaryId;
@@ -62,9 +63,9 @@ class BoundaryManager
         return $this->boundaryFinder->findBoundariesByModelId($modelId);
     }
 
-    public function getBoundaryDetails(ModflowId $modelId, BoundaryId $boundaryId): ?array
+    public function getBoundary(ModflowId $modelId, BoundaryId $boundaryId): ?ModflowBoundary
     {
-        return $this->boundaryFinder->getBoundaryDetails($modelId, $boundaryId);
+        return $this->boundaryFinder->getBoundary($modelId, $boundaryId);
     }
 
     public function getBoundaryName(ModflowId $modelId, BoundaryId $boundaryId): ?Name

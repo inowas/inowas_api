@@ -11,7 +11,6 @@ use Inowas\Common\Boundaries\BoundaryListItem;
 use Inowas\Common\Boundaries\BoundaryType;
 use Inowas\Common\Boundaries\Metadata;
 use Inowas\Common\Boundaries\ModflowBoundary;
-use Inowas\Common\Boundaries\ObservationPoint;
 use Inowas\Common\DateTime\DateTime;
 use Inowas\Common\Geometry\Geometry;
 use Inowas\Common\Grid\AffectedLayers;
@@ -101,7 +100,7 @@ class BoundaryFinder
         return $result;
     }
 
-    public function getBoundaryDetails(ModflowId $modelId, BoundaryId $boundaryId): ?array
+    public function getBoundary(ModflowId $modelId, BoundaryId $boundaryId): ?ModflowBoundary
     {
         $row = $this->connection->fetchAssoc(
             sprintf('SELECT boundary_id AS id, boundary FROM %s WHERE model_id = :model_id AND boundary_id = :boundary_id', Table::BOUNDARIES),
@@ -112,19 +111,7 @@ class BoundaryFinder
             return null;
         }
 
-        $boundary = BoundaryFactory::createFromArray(json_decode($row['boundary'], true));
-
-        $result = [];
-        $result['affected_layers'] = $boundary->affectedLayers()->toArray();
-        $result['geometry'] = $boundary->geometry()->toArray();
-        $result['metadata'] = $boundary->metadata()->toArray();
-
-        $result['observation_points'] = [];
-
-        /** @var ObservationPoint $observationPoint */
-        $result['observation_points'][] = $observationPoint->toArray();
-
-        return $result;
+        return BoundaryFactory::createFromArray(json_decode($row['boundary'], true));
     }
 
     public function getBoundaryName(ModflowId $modelId, BoundaryId $boundaryId): ?Name

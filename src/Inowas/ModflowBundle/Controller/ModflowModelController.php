@@ -157,15 +157,15 @@ class ModflowModelController extends InowasRestController
         $modelId = ModflowId::fromString($id);
         $boundaryId = BoundaryId::fromString($bid);
 
-        $boundaryDetails = $this->get('inowas.modflowmodel.boundary_manager')->getBoundaryDetails($modelId, $boundaryId);
+        $boundary = $this->get('inowas.modflowmodel.boundary_manager')->getBoundary($modelId, $boundaryId);
 
-        if (null === $boundaryDetails){
+        if (null === $boundary){
             throw NotFoundException::withMessage(sprintf(
                 'ModflowModel with id: \'%s\' and BoundaryId \'%s\' not found.', $modelId->toString(), $boundaryId->toString()
             ));
         }
 
-        return new JsonResponse($boundaryDetails);
+        return new JsonResponse($boundary->toArray());
     }
 
     /**
@@ -229,7 +229,7 @@ class ModflowModelController extends InowasRestController
         $this->assertUuidIsValid($id);
         $modelId = ModflowId::fromString($id);
         $calculationId = $this->get('inowas.modflowmodel.model_finder')->getCalculationIdByModelId($modelId);
-
+        return new RedirectResponse($calculationId);
     }
 
     /* Soilmodel */
