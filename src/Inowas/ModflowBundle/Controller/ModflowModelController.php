@@ -76,6 +76,7 @@ class ModflowModelController extends InowasRestController
      * @param string $id
      * @Rest\Get("/modflowmodels/{id}")
      * @return JsonResponse
+     * @throws \InvalidArgumentException
      * @throws \Inowas\ModflowBundle\Exception\AccessDeniedException
      * @throws \Symfony\Component\DependencyInjection\Exception\ServiceNotFoundException
      * @throws \Symfony\Component\DependencyInjection\Exception\ServiceCircularReferenceException
@@ -98,7 +99,12 @@ class ModflowModelController extends InowasRestController
         }
 
         $model = $this->container->get('inowas.modflowmodel.manager')->findModel($modelId);
-        return new JsonResponse($model);
+        $permissions = $this->get('inowas.user_permissions')->getModelPermissions($userId, $modelId);
+
+        $arr = $model->toArray();
+        $arr['permissions'] = $permissions->toString();
+
+        return (new JsonResponse())->setData($arr);
     }
 
     /**

@@ -2,11 +2,15 @@
 
 namespace Inowas\ModflowBundle\DataFixtures\Scenarios\RioPrimero;
 
+use Inowas\Common\Boundaries\ConstantHeadBoundary;
+use Inowas\Common\Boundaries\ConstantHeadDateTimeValue;
 use Inowas\Common\Boundaries\Metadata;
 use Inowas\Common\Boundaries\BoundaryType;
 use Inowas\Common\Boundaries\GeneralHeadBoundary;
 use Inowas\Common\Boundaries\GeneralHeadDateTimeValue;
 use Inowas\Common\Boundaries\ObservationPoint;
+use Inowas\Common\Boundaries\RechargeBoundary;
+use Inowas\Common\Boundaries\RechargeDateTimeValue;
 use Inowas\Common\Boundaries\RiverBoundary;
 use Inowas\Common\Boundaries\RiverDateTimeValue;
 use Inowas\Common\Boundaries\WellBoundary;
@@ -178,11 +182,10 @@ class RioPrimero extends LoadScenarioBase
         */
 
         /*
-         * Add GeneralHeadBoundaries
-         * GHB1
+         * Add ConstantHeadBoundary on the east bound of the model (CHD1)
          */
-        $ghb = GeneralHeadBoundary::createWithParams(
-            Name::fromString('General Head Boundary 1'),
+        $chd = ConstantHeadBoundary::createWithParams(
+            Name::fromString('chd-east'),
             Geometry::fromLineString(
                 new LineString(array(
                     array($boundingBox->xMin(), $boundingBox->yMin()),
@@ -195,29 +198,30 @@ class RioPrimero extends LoadScenarioBase
 
         $observationPoint = ObservationPoint::fromIdTypeNameAndGeometry(
             ObservationPointId::fromString('OP1'),
-            BoundaryType::fromString(BoundaryType::GENERAL_HEAD),
+            BoundaryType::fromString(BoundaryType::CONSTANT_HEAD),
             Name::fromString('OP 1'),
             new Point($boundingBox->xMax(), $boundingBox->yMin())
         );
 
-        /** @var GeneralHeadBoundary $ghb */
-        $ghb->addObservationPoint($observationPoint);
-        $ghb->addGeneralHeadValueToObservationPoint(
+        /** @var ConstantHeadBoundary $chd */
+        $chd->addObservationPoint($observationPoint);
+        $chd->addConstantHeadToObservationPoint(
             ObservationPointId::fromString('OP1'),
-            GeneralHeadDateTimeValue::fromParams(
+            ConstantHeadDateTimeValue::fromParams(
                 DateTime::fromDateTimeImmutable(new \DateTimeImmutable('2015-01-01')),
                 450,
                 100
             )
         );
 
-        $commandBus->dispatch(AddBoundary::forModflowModel($ownerId, $baseModelId, $ghb));
+        $commandBus->dispatch(AddBoundary::forModflowModel($ownerId, $baseModelId, $chd));
 
         /*
-         * GHB2
+         * Add GeneralHeadBoundary on the west bound of the model (GHB1)
          */
+        /** @var GeneralHeadBoundary $ghb */
         $ghb = GeneralHeadBoundary::createWithParams(
-            Name::fromString('General Head Boundary 2'),
+            Name::fromString('General Head Boundary (Western Border)'),
             Geometry::fromLineString(new LineString(array(
                 array($boundingBox->xMax(), $boundingBox->yMin()),
                 array($boundingBox->xMax(), $boundingBox->yMax())
@@ -400,6 +404,58 @@ class RioPrimero extends LoadScenarioBase
         );
 
         $commandBus->dispatch(AddBoundary::forModflowModel($ownerId, $baseModelId, $riv));
+
+        /*
+         * Add RechargeBoundary
+         */
+        /** @var RechargeBoundary $rch */
+        $rch = RechargeBoundary::createWithParams(
+            Name::fromString('Recharge Boundary 1'),
+            Geometry::fromPolygon(new Polygon([[
+                [-63.687336, -31.313615],
+                [-63.687336, -31.367449],
+                [-63.628298, -31.367449],
+                [-63.628298, -31.313615],
+                [-63.687336, -31.313615]
+            ]], 4326)),
+            AffectedLayers::fromArray([0]),
+            Metadata::create()
+        );
+
+        $rch->addRecharge(
+            RechargeDateTimeValue::fromParams(
+                DateTime::fromDateTimeImmutable(new \DateTimeImmutable('2015-01-01')),
+                0.002
+            )
+        );
+
+        $commandBus->dispatch(AddBoundary::forModflowModel($ownerId, $baseModelId, $rch));
+
+        /*
+         * Add RechargeBoundary
+         */
+        /** @var RechargeBoundary $rch */
+        $rch = RechargeBoundary::createWithParams(
+            Name::fromString('Recharge Boundary 2'),
+            Geometry::fromPolygon(new Polygon([[
+                [-63.628298, -31.313615],
+                [-63.628298, -31.367449],
+                [-63.569260, -31.367449],
+                [-63.569260, -31.313615],
+                [-63.628298, -31.313615]
+            ]], 4326)),
+            AffectedLayers::fromArray([0]),
+            Metadata::create()
+        );
+
+        $rch->addRecharge(
+            RechargeDateTimeValue::fromParams(
+                DateTime::fromDateTimeImmutable(new \DateTimeImmutable('2015-01-01')),
+                0.003
+            )
+        );
+
+        $commandBus->dispatch(AddBoundary::forModflowModel($ownerId, $baseModelId, $rch));
 
         /*
          * Add Wells for the BaseScenario
