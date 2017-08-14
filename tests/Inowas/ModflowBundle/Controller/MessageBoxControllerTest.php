@@ -257,4 +257,34 @@ class MessageBoxControllerTest extends EventSourcingBaseTest
         $response = $client->getResponse();
         $this->assertEquals(202, $response->getStatusCode());
     }
+
+    /**
+     * @test
+     */
+    public function it_can_receive_model_calculate_command(): void
+    {
+        $userId = UserId::fromString($this->user->getId()->toString());
+        $modelId = ModflowId::fromString('f3f6788a-61a6-410e-a14d-af7ecca6babb');
+        $this->createModelWithOneLayer($userId, $modelId);
+
+        $well = $this->createWellBoundary();
+        $this->commandBus->dispatch(AddBoundary::forModflowModel($userId, $modelId, $well));
+
+        $command = json_decode(file_get_contents($this->fileLocation . 'calculateModflowModel.json'), true);
+        $command['payload']['id'] = $modelId->toString();
+
+        $apiKey = $this->user->getApiKey();
+        $client = static::createClient();
+        $client->request(
+            'POST',
+            '/v2/messagebox',
+            array(),
+            array(),
+            array('HTTP_X-AUTH-TOKEN' => $apiKey),
+            json_encode($command)
+        );
+
+        $response = $client->getResponse();
+        $this->assertEquals(202, $response->getStatusCode());
+    }
 }

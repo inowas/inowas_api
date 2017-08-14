@@ -4,50 +4,62 @@ declare(strict_types=1);
 
 namespace Inowas\ModflowModel\Model\Command;
 
+use Inowas\Common\Command\AbstractJsonSchemaCommand;
 use Inowas\Common\Id\ModflowId;
 use Inowas\Common\Id\UserId;
-use Prooph\Common\Messaging\Command;
-use Prooph\Common\Messaging\PayloadConstructable;
-use Prooph\Common\Messaging\PayloadTrait;
 
-class CalculateModflowModel extends Command implements PayloadConstructable
+class CalculateModflowModel extends AbstractJsonSchemaCommand
 {
-
-    use PayloadTrait;
 
     public static function forModflowModelWitUserId(UserId $userId, ModflowId $modelId): CalculateModflowModel
     {
-        return new self(
+        $self = new static(
             [
-                'user_id' => $userId->toString(),
-                'modflow_model_id' => $modelId->toString(),
+                'id' => $modelId->toString(),
                 'from_terminal' => false
             ]
         );
+
+        /** @var CalculateModflowModel $self */
+        $self = $self->withAddedMetadata('user_id', $userId->toString());
+        return $self;
     }
 
     public static function forModflowModelFromTerminal(ModflowId $modelId): CalculateModflowModel
     {
         return new self(
             [
-                'modflow_model_id' => $modelId->toString(),
+                'id' => $modelId->toString(),
                 'from_terminal' => true
             ]
         );
     }
 
-    public function modelId(): ModflowId
+    public function schema(): string
     {
-        return ModflowId::fromString($this->payload['modflow_model_id']);
+        return 'file://spec/schema/modflow/command/calculateModflowModelPayload.json';
     }
 
-    public function userId(): UserId
+    public function modelId(): ModflowId
     {
-        return UserId::fromString($this->payload['user_id']);
+        return ModflowId::fromString($this->payload['id']);
+    }
+
+    public function userId(): ?UserId
+    {
+        if (!array_key_exists('user_id', $this->metadata)) {
+            return null;
+        }
+
+        return UserId::fromString($this->metadata['user_id']);
     }
 
     public function fromTerminal(): bool
     {
+        if (!array_key_exists('from_terminal', $this->payload)) {
+            return false;
+        }
+
         return $this->payload['from_terminal'];
     }
 }

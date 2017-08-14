@@ -7,6 +7,7 @@ namespace Inowas\ModflowBundle\Controller;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use Inowas\ModflowBundle\Exception\InvalidArgumentException;
 use Inowas\ModflowModel\Model\Command\AddBoundary;
+use Inowas\ModflowModel\Model\Command\CalculateModflowModel;
 use Inowas\ModflowModel\Model\Command\CreateModflowModel;
 use Inowas\ModflowModel\Model\Command\DeleteModflowModel;
 use Inowas\ModflowModel\Model\Command\RemoveBoundary;
@@ -26,6 +27,7 @@ class MessageBoxController extends InowasRestController
         'addBoundary' => AddBoundary::class,
         'updateBoundary' => UpdateBoundary::class,
         'removeBoundary' => RemoveBoundary::class,
+        'calculateModflowModel' => CalculateModflowModel::class,
         'createModflowModel' => CreateModflowModel::class,
         'deleteModflowModel' => DeleteModflowModel::class,
         'updateModflowModel' => UpdateModflowModel::class,

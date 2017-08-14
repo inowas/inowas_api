@@ -37,7 +37,6 @@ use Inowas\ModflowModel\Model\Command\UpdateBoundary;
 use Inowas\ModflowModel\Model\Command\UpdateModflowPackageParameter;
 use Inowas\ModflowModel\Model\Command\UpdateStressPeriods;
 use Inowas\ModflowModel\Model\Event\NameWasChanged;
-use Inowas\ModflowModel\Model\Exception\BoundaryNotFoundInModelException;
 use Inowas\ModflowModel\Model\ModflowModelAggregate;
 use Inowas\Common\Grid\GridSize;
 use Inowas\Common\Id\ModflowId;
