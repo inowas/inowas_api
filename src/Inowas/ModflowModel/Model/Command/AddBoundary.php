@@ -6,26 +6,30 @@ namespace Inowas\ModflowModel\Model\Command;
 
 use Inowas\Common\Boundaries\BoundaryFactory;
 use Inowas\Common\Boundaries\ModflowBoundary;
+use Inowas\Common\Command\AbstractJsonSchemaCommand;
 use Inowas\Common\Id\ModflowId;
 use Inowas\Common\Id\UserId;
-use Prooph\Common\Messaging\Command;
-use Prooph\Common\Messaging\PayloadConstructable;
-use Prooph\Common\Messaging\PayloadTrait;
 
-class AddBoundary extends Command implements PayloadConstructable
+class AddBoundary extends AbstractJsonSchemaCommand
 {
-
-    use PayloadTrait;
 
     public static function forModflowModel(UserId $userId, ModflowId $modelId, ModflowBoundary $boundary): AddBoundary
     {
-        return new self(
+        $self = new static(
             [
-                'user_id' => $userId->toString(),
-                'model_id' => $modelId->toString(),
+                'id' => $modelId->toString(),
                 'boundary' => $boundary->toArray()
             ]
         );
+
+        /** @var AddBoundary $self */
+        $self = $self->withAddedMetadata('user_id', $userId->toString());
+        return $self;
+    }
+
+    public function schema(): string
+    {
+        return 'file://spec/schema/modflow/command/addBoundary.json';
     }
 
     public function modflowModelId(): ModflowId
@@ -35,7 +39,7 @@ class AddBoundary extends Command implements PayloadConstructable
 
     public function userId(): UserId
     {
-        return UserId::fromString($this->payload['user_id']);
+        return UserId::fromString($this->metadata['user_id']);
     }
 
     public function boundary(): ModflowBoundary

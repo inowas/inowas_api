@@ -20,24 +20,27 @@ class UpdateBoundary extends Command implements PayloadConstructable
 
     public static function forModflowModel(UserId $userId, ModflowId $modelId, BoundaryId $boundaryId, ModflowBoundary $boundary): UpdateBoundary
     {
-        return new self(
+        $self = new static(
             [
-                'user_id' => $userId->toString(),
-                'model_id' => $modelId->toString(),
+                'id' => $modelId->toString(),
                 'boundary_id' => $boundaryId->toString(),
                 'boundary' => $boundary->toArray()
             ]
         );
+
+        /** @var UpdateBoundary $self */
+        $self = $self->withAddedMetadata('user_id', $userId->toString());
+        return $self;
+    }
+
+    public function schema(): string
+    {
+        return 'file://spec/schema/modflow/command/updateBoundary.json';
     }
 
     public function modflowModelId(): ModflowId
     {
-        return ModflowId::fromString($this->payload['model_id']);
-    }
-
-    public function userId(): UserId
-    {
-        return UserId::fromString($this->payload['user_id']);
+        return ModflowId::fromString($this->payload['id']);
     }
 
     public function boundaryId(): BoundaryId
@@ -48,5 +51,10 @@ class UpdateBoundary extends Command implements PayloadConstructable
     public function boundary(): ModflowBoundary
     {
         return BoundaryFactory::createFromArray($this->payload['boundary']);
+    }
+
+    public function userId(): UserId
+    {
+        return UserId::fromString($this->metadata['user_id']);
     }
 }
