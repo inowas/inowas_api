@@ -7,6 +7,7 @@ namespace Inowas\ModflowBundle\Controller;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use Inowas\ModflowBundle\Exception\InvalidArgumentException;
 use Inowas\ModflowModel\Model\Command\AddBoundary;
+use Inowas\ModflowModel\Model\Command\AddLayer;
 use Inowas\ModflowModel\Model\Command\CalculateModflowModel;
 use Inowas\ModflowModel\Model\Command\CreateModflowModel;
 use Inowas\ModflowModel\Model\Command\DeleteModflowModel;
@@ -25,11 +26,12 @@ class MessageBoxController extends InowasRestController
 
     private $whiteList = [
         'addBoundary' => AddBoundary::class,
-        'updateBoundary' => UpdateBoundary::class,
-        'removeBoundary' => RemoveBoundary::class,
+        'addLayer' => AddLayer::class,
         'calculateModflowModel' => CalculateModflowModel::class,
         'createModflowModel' => CreateModflowModel::class,
         'deleteModflowModel' => DeleteModflowModel::class,
+        'removeBoundary' => RemoveBoundary::class,
+        'updateBoundary' => UpdateBoundary::class,
         'updateModflowModel' => UpdateModflowModel::class,
         'updateStressPeriods' => UpdateStressPeriods::class,
     ];
