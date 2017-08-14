@@ -18,13 +18,21 @@ class RemoveLayer extends Command implements PayloadConstructable
 
     public static function forModflowModel(UserId $userId, ModflowId $modelId, LayerId $layerId): RemoveLayer
     {
-        return new self(
+        $self = new static(
             [
-                'user_id' => $userId->toString(),
                 'model_id' => $modelId->toString(),
                 'layer_id' => $layerId->toString()
             ]
         );
+
+        /** @var RemoveLayer $self */
+        $self = $self->withAddedMetadata('user_id', $userId->toString());
+        return $self;
+    }
+
+    public function schema(): string
+    {
+        return 'file://spec/schema/modflow/command/removeLayerPayload.json';
     }
 
     public function modelId(): ModflowId
@@ -34,7 +42,7 @@ class RemoveLayer extends Command implements PayloadConstructable
 
     public function userId(): UserId
     {
-        return UserId::fromString($this->payload['user_id']);
+        return UserId::fromString($this->metadata['user_id']);
     }
 
     public function layerId(): LayerId

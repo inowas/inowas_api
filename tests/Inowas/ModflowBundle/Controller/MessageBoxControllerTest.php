@@ -10,6 +10,7 @@ use Inowas\Common\Grid\ActiveCells;
 use Inowas\Common\Id\ModflowId;
 use Inowas\Common\Id\UserId;
 use Inowas\Common\Modflow\ModflowModel;
+use Inowas\Common\Soilmodel\LayerId;
 use Inowas\ModflowModel\Model\Command\AddBoundary;
 use Tests\Inowas\ModflowBundle\EventSourcingBaseTest;
 
@@ -229,6 +230,38 @@ class MessageBoxControllerTest extends EventSourcingBaseTest
     /**
      * @test
      */
+    public function it_can_receive_remove_boundary_command(): void
+    {
+        $userId = UserId::fromString($this->user->getId()->toString());
+        $modelId = ModflowId::fromString('f3f6788a-61a6-410e-a14d-af7ecca6babb');
+        $this->createModel($userId, $modelId);
+
+        $well = $this->createWellBoundary();
+        $this->commandBus->dispatch(AddBoundary::forModflowModel($userId, $modelId, $well));
+
+        $command = json_decode(file_get_contents($this->fileLocation . 'removeBoundary.json'), true);
+
+        $command['payload']['id'] = $modelId->toString();
+        $command['payload']['boundary_id'] = $well->boundaryId()->toString();
+
+        $apiKey = $this->user->getApiKey();
+        $client = static::createClient();
+        $client->request(
+            'POST',
+            '/v2/messagebox',
+            array(),
+            array(),
+            array('HTTP_X-AUTH-TOKEN' => $apiKey),
+            json_encode($command)
+        );
+
+        $response = $client->getResponse();
+        $this->assertEquals(202, $response->getStatusCode());
+    }
+
+    /**
+     * @test
+     */
     public function it_can_receive_add_layer_command(): void
     {
         $userId = UserId::fromString($this->user->getId()->toString());
@@ -273,19 +306,74 @@ class MessageBoxControllerTest extends EventSourcingBaseTest
     /**
      * @test
      */
-    public function it_can_receive_remove_boundary_command(): void
+    public function it_can_receive_update_layer_command(): void
     {
         $userId = UserId::fromString($this->user->getId()->toString());
         $modelId = ModflowId::fromString('f3f6788a-61a6-410e-a14d-af7ecca6babb');
         $this->createModel($userId, $modelId);
 
-        $well = $this->createWellBoundary();
-        $this->commandBus->dispatch(AddBoundary::forModflowModel($userId, $modelId, $well));
+        $addCommand = json_decode(file_get_contents($this->fileLocation . 'addSimpleLayer.json'), true);
+        $addCommand['payload']['id'] = $modelId->toString();
+        $updateCommand['payload']['layer_id'] = 'l0';
 
-        $command = json_decode(file_get_contents($this->fileLocation . 'removeBoundary.json'), true);
+        $apiKey = $this->user->getApiKey();
+        $client = static::createClient();
+        $client->request(
+            'POST',
+            '/v2/messagebox',
+            array(),
+            array(),
+            array('HTTP_X-AUTH-TOKEN' => $apiKey),
+            json_encode($addCommand)
+        );
 
+        $updateCommand = json_decode(file_get_contents($this->fileLocation . 'updateLayer.json'), true);
+        $updateCommand['payload']['id'] = $modelId->toString();
+        $updateCommand['payload']['layer_id'] = 'l0';
+
+        $apiKey = $this->user->getApiKey();
+        $client = static::createClient();
+        $client->request(
+            'POST',
+            '/v2/messagebox',
+            array(),
+            array(),
+            array('HTTP_X-AUTH-TOKEN' => $apiKey),
+            json_encode($updateCommand)
+        );
+
+        $response = $client->getResponse();
+        $this->assertEquals(202, $response->getStatusCode());
+    }
+
+    /**
+     * @test
+     */
+    public function it_can_receive_delete_layer_command(): void
+    {
+        $userId = UserId::fromString($this->user->getId()->toString());
+        $modelId = ModflowId::fromString('f3f6788a-61a6-410e-a14d-af7ecca6babb');
+        $this->createModel($userId, $modelId);
+
+        $command = json_decode(file_get_contents($this->fileLocation . 'addSimpleLayer.json'), true);
         $command['payload']['id'] = $modelId->toString();
-        $command['payload']['boundary_id'] = $well->boundaryId()->toString();
+
+        $apiKey = $this->user->getApiKey();
+        $client = static::createClient();
+        $client->request(
+            'POST',
+            '/v2/messagebox',
+            array(),
+            array(),
+            array('HTTP_X-AUTH-TOKEN' => $apiKey),
+            json_encode($command)
+        );
+
+        $response = $client->getResponse();
+        $this->assertEquals(202, $response->getStatusCode());
+
+        $command = json_decode(file_get_contents($this->fileLocation . 'addComplexLayer.json'), true);
+        $command['payload']['id'] = $modelId->toString();
 
         $apiKey = $this->user->getApiKey();
         $client = static::createClient();
