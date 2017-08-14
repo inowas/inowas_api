@@ -30,7 +30,6 @@
             "$ref": "modflow/boundary/rechargeDateTimeValues.json"
         }
     },
-    "additionalProperties": false,
     "required": [
         "id",
         "name",

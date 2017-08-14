@@ -15,7 +15,7 @@ class ModflowModelCommandSchemaTest extends BaseTestCase
     {
         return [
             [
-                file_get_contents('spec/example/modflow/command/addBoundary.json'),
+                file_get_contents('spec/example/modflow/command/addChdBoundary.json'),
                 file_get_contents('spec/schema/modflow/command/addBoundary.json'),
                 true
             ],

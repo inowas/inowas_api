@@ -19,7 +19,6 @@
             "$ref": "modflow/boundary/riverDateTimeValues.json"
         }
     },
-    "additionalProperties": false,
     "required": [
         "id",
         "name",

@@ -34,8 +34,8 @@
             "minItems": 1
         }
     },
-    "additionalProperties": false,
     "required": [
+        "type",
         "id",
         "name",
         "geometry",

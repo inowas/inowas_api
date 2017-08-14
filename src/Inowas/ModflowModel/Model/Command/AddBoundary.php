@@ -29,12 +29,12 @@ class AddBoundary extends AbstractJsonSchemaCommand
 
     public function schema(): string
     {
-        return 'file://spec/schema/modflow/command/addBoundary.json';
+        return 'file://spec/schema/modflow/command/addBoundaryPayload.json';
     }
 
     public function modflowModelId(): ModflowId
     {
-        return ModflowId::fromString($this->payload['model_id']);
+        return ModflowId::fromString($this->payload['id']);
     }
 
     public function userId(): UserId

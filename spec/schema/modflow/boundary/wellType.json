@@ -6,9 +6,8 @@
     "type": "object",
     "properties": {
         "well_type": {
-            "enum": [
-                "puw"
-            ]
+            "type": "string",
+            "maxLength": 4
         }
     },
     "additionalProperties": false,

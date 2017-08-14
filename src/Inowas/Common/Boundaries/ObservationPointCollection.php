@@ -16,12 +16,12 @@ class ObservationPointCollection
         return new self();
     }
 
-    public static function fromArray(array $arr): ObservationPointCollection
+    public static function fromArray(array $arr, BoundaryType $type): ObservationPointCollection
     {
         $self = new self();
 
         foreach ($arr as $item) {
-            $observationPoint = ObservationPoint::fromArray($item);
+            $observationPoint = ObservationPoint::fromArray($item, $type);
             $self->add($observationPoint);
         }
 

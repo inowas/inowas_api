@@ -41,16 +41,16 @@ class ObservationPoint implements \JsonSerializable
         return $self;
     }
 
-    public static function fromArray(array $arr): ObservationPoint
+    public static function fromArray(array $arr, BoundaryType $type): ObservationPoint
     {
         $self = new self(
             ObservationPointId::fromString($arr['id']),
-            BoundaryType::fromString($arr['type']),
+            $type,
             Name::fromString($arr['name']),
             Geometry::fromArray($arr['geometry'])->getPoint()
         );
 
-        $self->dateTimeValuesCollection = DateTimeValuesCollection::fromTypeAndArray(BoundaryType::fromString($arr['type']), $arr['date_time_values']);
+        $self->dateTimeValuesCollection = DateTimeValuesCollection::fromTypeAndArray($type, $arr['date_time_values']);
         return $self;
     }
 

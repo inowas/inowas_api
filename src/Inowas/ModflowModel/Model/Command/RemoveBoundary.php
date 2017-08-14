@@ -30,7 +30,7 @@ class RemoveBoundary extends AbstractJsonSchemaCommand
 
     public function schema(): string
     {
-        return 'file://spec/schema/modflow/boundary/removeBoundary.json';
+        return 'file://spec/schema/modflow/command/removeBoundaryPayload.json';
     }
 
     public function modflowModelId(): ModflowId

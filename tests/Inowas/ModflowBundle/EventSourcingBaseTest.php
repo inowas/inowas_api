@@ -159,12 +159,12 @@ abstract class EventSourcingBaseTest extends WebTestCase
             Metadata::create()
         );
 
-        $observationPointId = ObservationPointId::fromString('OP1');
+        $observationPointId = ObservationPointId::fromString('op1');
         $chdBoundary = $chdBoundary->addObservationPoint(
             ObservationPoint::fromIdTypeNameAndGeometry(
                 $observationPointId,
                 BoundaryType::fromString(BoundaryType::CONSTANT_HEAD),
-                Name::fromString('OP1'),
+                Name::fromString('op1'),
                 new Point(-63.687336, -31.313615, 4326)
             )
         );
@@ -191,12 +191,12 @@ abstract class EventSourcingBaseTest extends WebTestCase
             Metadata::create()
         );
 
-        $observationPointId = ObservationPointId::fromString('OP1');
+        $observationPointId = ObservationPointId::fromString('op1');
         $ghbBoundary = $ghbBoundary->addObservationPoint(
             ObservationPoint::fromIdTypeNameAndGeometry(
                 $observationPointId,
                 BoundaryType::fromString(BoundaryType::GENERAL_HEAD),
-                Name::fromString('OP1'),
+                Name::fromString('op1'),
                 new Point(-63.687336, -31.313615, 4326)
             )
         );
@@ -331,12 +331,12 @@ abstract class EventSourcingBaseTest extends WebTestCase
             Metadata::create()
         );
 
-        $observationPointId = ObservationPointId::fromString('OP1');
+        $observationPointId = ObservationPointId::fromString('op1');
         $riverBoundary = $riverBoundary->addObservationPoint(
             ObservationPoint::fromIdTypeNameAndGeometry(
                 $observationPointId,
                 BoundaryType::fromString(BoundaryType::RIVER),
-                Name::fromString('OP1'),
+                Name::fromString('op1'),
                 new Point(-63.67280960083,-31.364704139298, 4326)
             )
         );

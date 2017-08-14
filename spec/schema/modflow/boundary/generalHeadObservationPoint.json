@@ -19,7 +19,6 @@
             "$ref": "modflow/boundary/generalHeadDateTimeValues.json"
         }
     },
-    "additionalProperties": false,
     "required": [
         "id",
         "name",

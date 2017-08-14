@@ -68,7 +68,7 @@ class ModflowBoundary
         );
 
         $static->id = BoundaryId::fromString($arr['id']);
-        $static->observationPoints = ObservationPointCollection::fromArray($arr['observation_points']);
+        $static->observationPoints = ObservationPointCollection::fromArray($arr['observation_points'], BoundaryType::fromString(static::TYPE));
         return $static;
     }
 

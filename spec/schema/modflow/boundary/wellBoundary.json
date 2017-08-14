@@ -35,6 +35,7 @@
     "additionalProperties": false,
     "required": [
         "id",
+        "type",
         "name",
         "geometry",
         "affected_layers",
