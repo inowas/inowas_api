@@ -199,7 +199,6 @@ class MessageBoxControllerTest extends EventSourcingBaseTest
 
     }
 
-
     /**
      * @test
      */

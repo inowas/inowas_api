@@ -13,6 +13,7 @@ use Inowas\Common\Grid\AffectedLayers;
 use Inowas\Common\Grid\BoundingBox;
 use Inowas\Common\Geometry\Geometry;
 use Inowas\Common\Grid\LayerNumber;
+use Inowas\Common\Id\BoundaryId;
 use Inowas\Common\Modflow\Laytyp;
 use Inowas\Common\Modflow\Laywet;
 use Inowas\Common\Modflow\LengthUnit;
@@ -31,10 +32,12 @@ use Inowas\ModflowModel\Model\Command\ChangeFlowPackage;
 use Inowas\ModflowModel\Model\Command\ChangeGridSize;
 use Inowas\ModflowModel\Model\Command\CloneModflowModel;
 use Inowas\ModflowModel\Model\Command\CreateModflowModel;
+use Inowas\ModflowModel\Model\Command\RemoveBoundary;
 use Inowas\ModflowModel\Model\Command\UpdateBoundary;
 use Inowas\ModflowModel\Model\Command\UpdateModflowPackageParameter;
 use Inowas\ModflowModel\Model\Command\UpdateStressPeriods;
 use Inowas\ModflowModel\Model\Event\NameWasChanged;
+use Inowas\ModflowModel\Model\Exception\BoundaryNotFoundInModelException;
 use Inowas\ModflowModel\Model\ModflowModelAggregate;
 use Inowas\Common\Grid\GridSize;
 use Inowas\Common\Id\ModflowId;
@@ -45,6 +48,7 @@ use Inowas\Common\Boundaries\WellType;
 use Inowas\ScenarioAnalysis\Model\ScenarioAnalysisDescription;
 use Inowas\ScenarioAnalysis\Model\ScenarioAnalysisId;
 use Inowas\ScenarioAnalysis\Model\ScenarioAnalysisName;
+use Prooph\ServiceBus\Exception\CommandDispatchException;
 use Tests\Inowas\ModflowBundle\EventSourcingBaseTest;
 
 class ModflowModelEventSourcingTest extends EventSourcingBaseTest
@@ -156,6 +160,17 @@ class ModflowModelEventSourcingTest extends EventSourcingBaseTest
         $this->assertCount(234, $activeCells->cells());
     }
 
+    public function test_add_layer_to_model(): void
+    {
+        $ownerId = UserId::generate();
+        $modelId = ModflowId::generate();
+        $this->createModelWithName($ownerId, $modelId);
+        $layer = $this->createLayer();
+        $this->commandBus->dispatch(AddLayer::forModflowModel($ownerId, $modelId, $layer));
+
+        $this->assertEquals($layer, $this->container->get('inowas.modflowmodel.soilmodel_finder')->findLayer($modelId, $layer->id()));
+    }
+
     public function test_add_wel_boundary_to_model_and_calculate_active_cells(): void
     {
         $ownerId = UserId::generate();
@@ -168,17 +183,6 @@ class ModflowModelEventSourcingTest extends EventSourcingBaseTest
         $activeCells = $this->container->get('inowas.modflowmodel.manager')->getBoundaryActiveCells($modelId, $wellBoundary->boundaryId());
         $this->assertCount(1, $activeCells->cells());
         $this->assertEquals([[0, 8, 53]], $activeCells->cells());
-    }
-
-    public function test_add_layer_to_model(): void
-    {
-        $ownerId = UserId::generate();
-        $modelId = ModflowId::generate();
-        $this->createModelWithName($ownerId, $modelId);
-        $layer = $this->createLayer();
-        $this->commandBus->dispatch(AddLayer::forModflowModel($ownerId, $modelId, $layer));
-
-        $this->assertEquals($layer, $this->container->get('inowas.modflowmodel.soilmodel_finder')->findLayer($modelId, $layer->id()));
     }
 
     public function test_add_riv_boundary_to_model_and_calculate_active_cells(): void
@@ -232,6 +236,32 @@ class ModflowModelEventSourcingTest extends EventSourcingBaseTest
         $this->commandBus->dispatch(AddBoundary::forModflowModel($ownerId, $modelId, $rchBoundary));
         $activeCells = $this->container->get('inowas.modflowmodel.manager')->getBoundaryActiveCells($modelId, $rchBoundary->boundaryId());
         $this->assertCount(1430, $activeCells->cells());
+    }
+
+    public function test_it_throws_an_exception_if_boundary_to_update_does_not_exist(): void
+    {
+        $ownerId = UserId::generate();
+        $modelId = ModflowId::generate();
+        $this->createModelWithName($ownerId, $modelId);
+
+        $wellBoundary = $this->createWellBoundary();
+        $this->commandBus->dispatch(AddBoundary::forModflowModel($ownerId, $modelId, $wellBoundary));
+
+        $this->expectException(CommandDispatchException::class);
+        $this->commandBus->dispatch(UpdateBoundary::forModflowModel($ownerId, $modelId, BoundaryId::fromString('invalid'), $wellBoundary));
+    }
+
+    public function test_it_throws_an_exception_if_boundary_to_remove_does_not_exist(): void
+    {
+        $ownerId = UserId::generate();
+        $modelId = ModflowId::generate();
+        $this->createModelWithName($ownerId, $modelId);
+
+        $wellBoundary = $this->createWellBoundary();
+        $this->commandBus->dispatch(AddBoundary::forModflowModel($ownerId, $modelId, $wellBoundary));
+
+        $this->expectException(CommandDispatchException::class);
+        $this->commandBus->dispatch(RemoveBoundary::forModflowModel($ownerId, $modelId, BoundaryId::fromString('invalid')));
     }
 
     /**

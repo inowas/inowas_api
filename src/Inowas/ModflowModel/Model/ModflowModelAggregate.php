@@ -49,6 +49,7 @@ use Inowas\ModflowModel\Model\Event\SoilmodelMetadataWasUpdated;
 use Inowas\ModflowModel\Model\Event\ModflowModelWasCreated;
 use Inowas\ModflowModel\Model\Event\StressPeriodsWereUpdated;
 use Inowas\ModflowModel\Model\Event\TimeUnitWasUpdated;
+use Inowas\ModflowModel\Model\Exception\BoundaryNotFoundInModelException;
 use Prooph\EventSourcing\AggregateChanged;
 use Prooph\EventSourcing\AggregateRoot;
 
@@ -152,7 +153,10 @@ class ModflowModelAggregate extends AggregateRoot
             ));
 
             unset($this->boundaries[$boundaryId->toString()]);
+            return;
         }
+
+        throw BoundaryNotFoundInModelException::withIds($this->modelId, $boundaryId);
     }
 
     public function updateBoundary(UserId $userId, BoundaryId $boundaryId, ModflowBoundary $boundary): void
@@ -164,7 +168,11 @@ class ModflowModelAggregate extends AggregateRoot
                 $boundaryId,
                 $boundary
             ));
+
+            return;
         }
+
+        throw BoundaryNotFoundInModelException::withIds($this->modelId, $boundaryId);
     }
 
     public function calculationWasStarted(CalculationId $calculationId): void
