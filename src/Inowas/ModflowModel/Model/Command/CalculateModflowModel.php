@@ -15,8 +15,7 @@ class CalculateModflowModel extends AbstractJsonSchemaCommand
     {
         $self = new static(
             [
-                'id' => $modelId->toString(),
-                'from_terminal' => false
+                'id' => $modelId->toString()
             ]
         );
 

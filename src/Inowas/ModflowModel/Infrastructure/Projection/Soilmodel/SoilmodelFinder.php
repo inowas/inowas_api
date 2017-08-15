@@ -321,6 +321,11 @@ class SoilmodelFinder
         return $this->soilmodel;
     }
 
+    public function getLayers(ModflowId $modflowId): array
+    {
+        return $this->getLayersSortedByLayerNumber($modflowId);
+    }
+
     private function getLayersSortedByLayerNumber(ModflowId $modelId): array
     {
         if (null === $this->layers) {

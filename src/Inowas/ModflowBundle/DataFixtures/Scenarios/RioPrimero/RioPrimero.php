@@ -197,7 +197,7 @@ class RioPrimero extends LoadScenarioBase
         );
 
         $observationPoint = ObservationPoint::fromIdTypeNameAndGeometry(
-            ObservationPointId::fromString('OP1'),
+            ObservationPointId::fromString('op1'),
             BoundaryType::fromString(BoundaryType::CONSTANT_HEAD),
             Name::fromString('OP 1'),
             new Point($boundingBox->xMax(), $boundingBox->yMin())
@@ -206,7 +206,7 @@ class RioPrimero extends LoadScenarioBase
         /** @var ConstantHeadBoundary $chd */
         $chd->addObservationPoint($observationPoint);
         $chd->addConstantHeadToObservationPoint(
-            ObservationPointId::fromString('OP1'),
+            ObservationPointId::fromString('op1'),
             ConstantHeadDateTimeValue::fromParams(
                 DateTime::fromDateTimeImmutable(new \DateTimeImmutable('2015-01-01')),
                 450,
@@ -230,7 +230,7 @@ class RioPrimero extends LoadScenarioBase
             Metadata::create()
         );
 
-        $observationPointId = ObservationPointId::fromString('OP1');
+        $observationPointId = ObservationPointId::fromString('op1');
         $observationPoint = ObservationPoint::fromIdTypeNameAndGeometry(
             $observationPointId,
             BoundaryType::fromString(BoundaryType::GENERAL_HEAD),

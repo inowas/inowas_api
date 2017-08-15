@@ -11,7 +11,7 @@ class ObservationPointId
 
     public static function fromString(string $id): ObservationPointId
     {
-        return new self($id);
+        return new self(strtolower($id));
     }
 
     private function __construct(string $id)

@@ -9,6 +9,7 @@ use Inowas\Common\Id\BoundaryId;
 use Inowas\Common\Id\CalculationId;
 use Inowas\Common\Id\ModflowId;
 use Inowas\Common\Modflow\Results;
+use Inowas\Common\Soilmodel\Layer;
 use Inowas\ModflowBundle\Exception\AccessDeniedException;
 use Inowas\ModflowBundle\Exception\NotFoundException;
 use Inowas\ModflowModel\Model\Command\CalculateModflowModel;
@@ -315,6 +316,23 @@ class ModflowModelController extends InowasRestController
         }
 
         $soilmodel = $this->container->get('inowas.modflowmodel.soilmodel_finder')->getSoilmodel($modelId);
+        $layers = $this->container->get('inowas.modflowmodel.soilmodel_finder')->getLayers($modelId);
+
+        /**
+         * @var int $key
+         * @var Layer $layer
+         */
+        foreach ($layers as $key => $layer) {
+            if (! $layer instanceof Layer) {
+                continue;
+            }
+
+            $layers[$key] = $layer->toArray();
+        }
+
+        $soilmodel = $soilmodel->toArray();
+        $soilmodel['layers'] = $layers;
+
         return new JsonResponse($soilmodel);
     }
 

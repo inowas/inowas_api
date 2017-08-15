@@ -117,7 +117,7 @@ class Layer
         Name $name,
         Description $description,
         LayerNumber $number,
-        Top $top,
+        ?Top $top,
         Botm $botm,
         Hk $hk,
         Hani $hani,
@@ -162,7 +162,7 @@ class Layer
         $self->name = Name::fromString($arr['name']);
         $self->description = Description::fromString($arr['description']);
         $self->number = LayerNumber::fromInt($arr['number']);
-        $self->top = Top::fromValue($arr['top']);
+        $self->top = null !== $arr['top'] ? Top::fromValue($arr['top']) : null;
         $self->botm = Botm::fromValue($arr['botm']);
         $self->hk = Hk::fromValue($arr['hk']);
         $self->hani = Hani::fromValue($arr['hani']);
@@ -184,7 +184,7 @@ class Layer
             'name' => $this->name->toString(),
             'description' => $this->description->toString(),
             'number' => $this->number->toInt(),
-            'top' => $this->top->toValue(),
+            'top' => null === $this->top ? null : $this->top->toValue(),
             'botm' => $this->botm->toValue(),
             'hk' => $this->hk->toValue(),
             'hani' => $this->hani->toValue(),
