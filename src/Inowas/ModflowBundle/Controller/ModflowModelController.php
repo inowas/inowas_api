@@ -9,7 +9,7 @@ use Inowas\Common\Id\BoundaryId;
 use Inowas\Common\Id\CalculationId;
 use Inowas\Common\Id\ModflowId;
 use Inowas\Common\Modflow\Results;
-use Inowas\Common\Soilmodel\Layer;
+use Inowas\Common\Soilmodel\LayerId;
 use Inowas\ModflowBundle\Exception\AccessDeniedException;
 use Inowas\ModflowBundle\Exception\NotFoundException;
 use Inowas\ModflowModel\Model\Command\CalculateModflowModel;
@@ -279,7 +279,7 @@ class ModflowModelController extends InowasRestController
 
     /* Soilmodel */
     /**
-     * Get soilmodel details of modflowModel by id.
+     * Get soilmodel of modflowModel by id.
      *
      * @ApiDoc(
      *   resource = true,
@@ -315,25 +315,49 @@ class ModflowModelController extends InowasRestController
             );
         }
 
-        $soilmodel = $this->container->get('inowas.modflowmodel.soilmodel_finder')->getSoilmodel($modelId);
-        $layers = $this->container->get('inowas.modflowmodel.soilmodel_finder')->getLayers($modelId);
+        $soilmodelQuery = $this->container->get('inowas.modflowmodel.soilmodel_finder')->getSoilmodelQuery($modelId);
+        return new JsonResponse($soilmodelQuery->toGeneralArray());
+    }
 
-        /**
-         * @var int $key
-         * @var Layer $layer
-         */
-        foreach ($layers as $key => $layer) {
-            if (! $layer instanceof Layer) {
-                continue;
-            }
+    /**
+     * Get layer details of soilmodel by modelId.
+     *
+     * @ApiDoc(
+     *   resource = true,
+     *   description = "Get layer details of soilmodel by modelId.",
+     *   statusCodes = {
+     *     200 = "Returned when successful"
+     *   }
+     * )
+     *
+     * @param string $id
+     * @param string $lid
+     * @return JsonResponse
+     * @throws \Symfony\Component\DependencyInjection\Exception\ServiceNotFoundException
+     * @throws \Symfony\Component\DependencyInjection\Exception\ServiceCircularReferenceException
+     * @throws AccessDeniedException
+     * @Rest\Get("/modflowmodels/{id}/soilmodel/{lid}")
+     */
+    public function getLayerAction(string $id, string $lid): JsonResponse
+    {
+        $this->assertUuidIsValid($id);
+        $modelId = ModflowId::fromString($id);
+        $layerId = LayerId::fromString($lid);
 
-            $layers[$key] = $layer->toArray();
+        $userId = $this->getUserId();
+
+        if (! $this->get('inowas.modflowmodel.model_finder')->userHasReadAccessToModel($userId, $modelId)) {
+            throw AccessDeniedException::withMessage(
+                sprintf(
+                    'Model not found or user with Id %s does not have access to model with id %s',
+                    $userId->toString(),
+                    $modelId->toString()
+                )
+            );
         }
 
-        $soilmodel = $soilmodel->toArray();
-        $soilmodel['layers'] = $layers;
-
-        return new JsonResponse($soilmodel);
+        $layer = $this->container->get('inowas.modflowmodel.soilmodel_finder')->findLayer($modelId, $layerId);
+        return new JsonResponse($layer->toArray());
     }
 
     /**

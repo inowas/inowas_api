@@ -31,8 +31,10 @@ use Inowas\Common\Modflow\Vkcb;
 use Inowas\Common\Modflow\Wetdry;
 use Inowas\Common\Modflow\Wetfct;
 use Inowas\Common\Soilmodel\Layer;
+use Inowas\Common\Soilmodel\LayerCollection;
 use Inowas\Common\Soilmodel\LayerId;
 use Inowas\Common\Soilmodel\Soilmodel;
+use Inowas\Common\Soilmodel\SoilmodelQuery;
 use Inowas\ModflowModel\Infrastructure\Projection\Table;
 use Inowas\ModflowModel\Model\Exception\SqlQueryException;
 use Inowas\ModflowModel\Service\LayersPersister;
@@ -300,6 +302,23 @@ class SoilmodelFinder
         }
 
         return $this->layersPersister->load($result['hash']);
+    }
+
+    public function getSoilmodelQuery(ModflowId $modelId): ?SoilmodelQuery
+    {
+
+        $soilmodel = $this->getSoilmodel($modelId);
+        if (! $soilmodel instanceof Soilmodel) {
+            return null;
+        }
+
+        $layers = $this->getLayersSortedByLayerNumber($modelId);
+        $layerCollection = LayerCollection::create();
+        foreach ($layers as $layer) {
+            $layerCollection->addLayer($layer);
+        }
+
+        return SoilmodelQuery::create($soilmodel, $layerCollection);
     }
 
     public function getSoilmodel(ModflowId $modelId): Soilmodel

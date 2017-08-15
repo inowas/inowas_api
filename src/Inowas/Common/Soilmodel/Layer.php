@@ -197,6 +197,16 @@ class Layer
         );
     }
 
+    public function toMetadataArray(): array
+    {
+        return array(
+            'id' => $this->id->toString(),
+            'name' => $this->name->toString(),
+            'description' => $this->description->toString(),
+            'number' => $this->number->toInt()
+        );
+    }
+
     public function id(): LayerId
     {
         return $this->id;
