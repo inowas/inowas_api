@@ -31,7 +31,7 @@ final class Results
     public function toArray(): array
     {
         return array(
-            'calculation_id' => $this->id,
+            'calculation_id' => $this->id->toString(),
             'layer_values' => $this->layerValues,
             'times' => $this->times
         );
