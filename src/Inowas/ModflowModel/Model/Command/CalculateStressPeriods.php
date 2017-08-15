@@ -4,18 +4,14 @@ declare(strict_types=1);
 
 namespace Inowas\ModflowModel\Model\Command;
 
+use Inowas\Common\Command\AbstractJsonSchemaCommand;
 use Inowas\Common\DateTime\DateTime;
 use Inowas\Common\Id\ModflowId;
 use Inowas\Common\Id\UserId;
 use Inowas\Common\Modflow\TimeUnit;
-use Prooph\Common\Messaging\Command;
-use Prooph\Common\Messaging\PayloadConstructable;
-use Prooph\Common\Messaging\PayloadTrait;
 
-class CalculateStressPeriods extends Command implements PayloadConstructable
+class CalculateStressPeriods extends AbstractJsonSchemaCommand
 {
-
-    use PayloadTrait;
 
     /** @noinspection MoreThanThreeArgumentsInspection
      * @param UserId $userId
@@ -27,26 +23,35 @@ class CalculateStressPeriods extends Command implements PayloadConstructable
      */
     public static function forModflowModel(UserId $userId, ModflowId $modelId, DateTime $start, DateTime $end, TimeUnit $timeUnit): CalculateStressPeriods
     {
-        return new self(
+        $self = new static(
             [
-                'user_id' => $userId->toString(),
-                'modflow_model_id' => $modelId->toString(),
+                'id' => $modelId->toString(),
                 'start' => $start->toAtom(),
                 'end' => $end->toAtom(),
                 'time_unit' => $timeUnit->toInt(),
                 'initial_steady' => true
             ]
         );
+        
+        /** @var CalculateStressPeriods $self */
+        $self = $self->withAddedMetadata('user_id', $userId->toString());
+        return $self;
     }
+
+    public function schema(): string
+    {
+        return 'file://spec/schema/modflow/command/calculateStressperiodsPayload.json';
+    }
+
 
     public function modflowId(): ModflowId
     {
-        return ModflowId::fromString($this->payload['modflow_model_id']);
+        return ModflowId::fromString($this->payload['id']);
     }
 
     public function userId(): UserId
     {
-        return UserId::fromString($this->payload['user_id']);
+        return UserId::fromString($this->metadata['user_id']);
     }
 
     public function start(): DateTime
@@ -66,6 +71,10 @@ class CalculateStressPeriods extends Command implements PayloadConstructable
 
     public function withInitialSteadyStressPeriod(): bool
     {
+        if (! array_key_exists('initial_steady', $this->payload)) {
+            return false;
+        }
+
         return $this->payload['initial_steady'];
     }
 }
