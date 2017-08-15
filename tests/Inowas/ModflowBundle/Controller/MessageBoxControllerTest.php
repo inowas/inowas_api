@@ -10,7 +10,6 @@ use Inowas\Common\Grid\ActiveCells;
 use Inowas\Common\Id\ModflowId;
 use Inowas\Common\Id\UserId;
 use Inowas\Common\Modflow\ModflowModel;
-use Inowas\Common\Soilmodel\LayerId;
 use Inowas\ModflowModel\Model\Command\AddBoundary;
 use Tests\Inowas\ModflowBundle\EventSourcingBaseTest;
 
@@ -392,6 +391,7 @@ class MessageBoxControllerTest extends EventSourcingBaseTest
 
     /**
      * @test
+     * @group messaging-integration-tests
      */
     public function it_can_receive_model_calculate_command(): void
     {

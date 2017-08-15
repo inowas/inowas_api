@@ -14,6 +14,7 @@ use Inowas\Common\Calculation\ResultType;
 use Inowas\Common\DateTime\TotalTime;
 use Inowas\Common\Id\ModflowId;
 use Inowas\Common\Modflow\LayerValues;
+use Inowas\Common\Modflow\Results;
 use Inowas\Common\Modflow\StressPeriods;
 use Inowas\Common\Modflow\TotalTimes;
 use Inowas\Common\Id\CalculationId;
@@ -50,6 +51,21 @@ class CalculationResultsFinder
         $result['layer_values'] = $this->findLayerValues($calculationId);
 
         return $result;
+    }
+
+    public function getCalculationResults(CalculationId $calculationId): ?Results
+    {
+        $layerValues = $this->findLayerValues($calculationId);
+        if (!$layerValues instanceof LayerValues) {
+            return null;
+        }
+
+        $totalTimes = $this->getTotalTimesFromCalculationById($calculationId);
+        if (!$totalTimes instanceof TotalTimes) {
+            return null;
+        }
+
+        return Results::create($calculationId, $layerValues, $totalTimes);
     }
 
     public function getTimesByModelId(ModflowId $modelId, ResultType $type): array

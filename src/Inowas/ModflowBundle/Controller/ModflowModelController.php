@@ -6,7 +6,9 @@ namespace Inowas\ModflowBundle\Controller;
 
 use FOS\RestBundle\Controller\Annotations as Rest;
 use Inowas\Common\Id\BoundaryId;
+use Inowas\Common\Id\CalculationId;
 use Inowas\Common\Id\ModflowId;
+use Inowas\Common\Modflow\Results;
 use Inowas\ModflowBundle\Exception\AccessDeniedException;
 use Inowas\ModflowBundle\Exception\NotFoundException;
 use Inowas\ModflowModel\Model\Command\CalculateModflowModel;
@@ -236,6 +238,42 @@ class ModflowModelController extends InowasRestController
         $modelId = ModflowId::fromString($id);
         $calculationId = $this->get('inowas.modflowmodel.model_finder')->getCalculationIdByModelId($modelId);
         return new RedirectResponse($calculationId);
+    }
+
+    /**
+     * Get calculation results by model id.
+     *
+     * @ApiDoc(
+     *   resource = true,
+     *   description = "Get calculation results by model id.",
+     *   statusCodes = {
+     *     200 = "Returned when successful"
+     *   }
+     * )
+     *
+     * @param string $id
+     * @Rest\Get("/modflowmodels/{id}/results")
+     * @return JsonResponse
+     * @throws \InvalidArgumentException
+     * @throws NotFoundException
+     */
+    public function getModflowModelResultsAction(string $id): JsonResponse
+    {
+        $this->assertUuidIsValid($id);
+        $modelId = ModflowId::fromString($id);
+        $calculationId = $this->get('inowas.modflowmodel.model_finder')->getCalculationIdByModelId($modelId);
+
+        if (!$calculationId instanceof CalculationId) {
+            return new JsonResponse([]);
+        }
+
+        $results = $this->get('inowas.modflowmodel.calculation_results_finder')->getCalculationResults($calculationId);
+
+        if (!$results instanceof Results) {
+            return new JsonResponse([]);
+        }
+
+        return new JsonResponse($results->toArray());
     }
 
     /* Soilmodel */
