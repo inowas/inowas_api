@@ -19,9 +19,10 @@ class CalculateStressPeriods extends AbstractJsonSchemaCommand
      * @param DateTime $start
      * @param DateTime $end
      * @param TimeUnit $timeUnit
+     * @param bool $initialSteady
      * @return CalculateStressPeriods
      */
-    public static function forModflowModel(UserId $userId, ModflowId $modelId, DateTime $start, DateTime $end, TimeUnit $timeUnit): CalculateStressPeriods
+    public static function forModflowModel(UserId $userId, ModflowId $modelId, DateTime $start, DateTime $end, TimeUnit $timeUnit, bool $initialSteady = false): CalculateStressPeriods
     {
         $self = new static(
             [
@@ -29,7 +30,7 @@ class CalculateStressPeriods extends AbstractJsonSchemaCommand
                 'start' => $start->toAtom(),
                 'end' => $end->toAtom(),
                 'time_unit' => $timeUnit->toInt(),
-                'initial_steady' => true
+                'initial_steady' => $initialSteady
             ]
         );
         
@@ -69,7 +70,7 @@ class CalculateStressPeriods extends AbstractJsonSchemaCommand
         return TimeUnit::fromInt($this->payload['time_unit']);
     }
 
-    public function withInitialSteadyStressPeriod(): bool
+    public function initialStressPeriodSteady(): bool
     {
         if (! array_key_exists('initial_steady', $this->payload)) {
             return false;

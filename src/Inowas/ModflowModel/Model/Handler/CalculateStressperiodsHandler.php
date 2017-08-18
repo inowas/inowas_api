@@ -39,9 +39,9 @@ final class CalculateStressperiodsHandler
         $stressperiods = $this->modelManager->calculateStressPeriods($command->modflowId(), $command->start(), $command->end(), $command->timeUnit());
 
 
-        if ($command->withInitialSteadyStressPeriod()) {
+        if ($command->initialStressPeriodSteady()) {
             // FixMe !! Implement This
-            $stressperiods->addInitialSteadyStressPeriod();
+            $stressperiods->setFirstStressPeriodSteady($command->initialStressPeriodSteady());
         }
 
         $modflowModel->updateStressPeriods($command->userId(), $stressperiods);

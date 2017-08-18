@@ -42,6 +42,7 @@ use Inowas\Common\Soilmodel\Layer;
 use Inowas\Common\Soilmodel\LayerId;
 use Inowas\ModflowModel\Model\Command\AddBoundary;
 use Inowas\ModflowModel\Model\Command\AddLayer;
+use Inowas\ModflowModel\Model\Command\CalculateStressPeriods;
 use Inowas\ModflowModel\Model\Packages\OcStressPeriod;
 use Inowas\ModflowModel\Model\Packages\OcStressPeriodData;
 use Inowas\Common\Modflow\PackageName;
@@ -183,14 +184,24 @@ class SanFelipe extends LoadScenarioBase
         $result = $this->container->get('inowas.soilmodel.interpolation_service')->interpolate($interpolation);
         $top = Top::from2DArray($result->result());
 
+        $bottom = [];
+        $differenceToTop = 30;
+        foreach ($result->result() as $rowNr => $row) {
+            foreach ($row as $colNr => $value) {
+                $bottom[$rowNr][$colNr] = $value-$differenceToTop;
+            }
+        }
+
+        $bottom = Botm::from2DArray($bottom);
+
         $layer = Layer::fromParams(
             $layerId,
             $name,
             $description,
             LayerNumber::fromInt(0),
             $top,
-            Botm::fromValue(590),
-            Hk::fromValue(0.864),
+            $bottom,
+            Hk::fromValue(285),
             Hani::fromValue(1),
             Vka::fromValue(10),
             Layavg::fromInt(Layavg::TYPE_HARMONIC_MEAN),
@@ -206,14 +217,24 @@ class SanFelipe extends LoadScenarioBase
         $description = Description::fromString('Top Layer');
         $layerId = LayerId::fromString($name->slugified());
 
+        $top = Top::from2DArray($bottom->toValue());
+        $bottom = [];
+        $differenceToTop = 60;
+        foreach ($result->result() as $rowNr => $row) {
+            foreach ($row as $colNr => $value) {
+                $bottom[$rowNr][$colNr] = $value-$differenceToTop;
+            }
+        }
+        $bottom = Botm::from2DArray($bottom);
+
         $layer = Layer::fromParams(
             $layerId,
             $name,
             $description,
             LayerNumber::fromInt(1),
-            Top::fromValue(590),
-            Botm::fromValue(550),
-            Hk::fromValue(10),
+            $top,
+            $bottom,
+            Hk::fromValue(0.864),
             Hani::fromValue(1),
             Vka::fromValue(1),
             Layavg::fromInt(Layavg::TYPE_HARMONIC_MEAN),
@@ -234,7 +255,7 @@ class SanFelipe extends LoadScenarioBase
                 [ -70.761468152216395, -32.742437320686882 ],
                 [ -70.739900752075556, -32.713424032402173 ]
             ])),
-            AffectedLayers::fromArray([1]),
+            AffectedLayers::fromArray([0, 1]),
             Metadata::create()
         );
 
@@ -265,7 +286,7 @@ class SanFelipe extends LoadScenarioBase
                 [ -70.546497000284148, -32.84965766474577 ],
                 [ -70.547861570461322, -32.809630272881954 ]
             ])),
-            AffectedLayers::fromArray([0,1]),
+            AffectedLayers::fromArray([0, 1]),
             Metadata::create()
         );
 
@@ -330,8 +351,8 @@ class SanFelipe extends LoadScenarioBase
             RiverDateTimeValue::fromParams(
                 DateTime::fromDateTimeImmutable(new \DateTimeImmutable('2010-01-01')),
                 1000,
-                998,
-                200
+                995,
+                2000
             )
         );
 
@@ -350,12 +371,169 @@ class SanFelipe extends LoadScenarioBase
             RiverDateTimeValue::fromParams(
                 DateTime::fromDateTimeImmutable(new \DateTimeImmutable('2010-01-01')),
                 650,
-                648,
-                200
+                645,
+                2000
             )
         );
 
-        #$commandBus->dispatch(AddBoundary::forModflowModel($ownerId, $baseModelId, $riv));
+        $commandBus->dispatch(AddBoundary::forModflowModel($ownerId, $baseModelId, $riv));
+
+        $irrigationWellsPoints = [
+            ['x', 'y', 'z'],
+            [-70.7416534, -32.7251980, 622.0],
+            [-70.7289505, -32.7289527, 636.0],
+            [-70.7121276, -32.7324185, 656.0],
+            [-70.6929016, -32.7329961, 679.0],
+            [-70.6709289, -32.7353065, 698.0],
+            [-70.6585693, -32.7405046, 712.0],
+            [-70.6431198, -32.7431036, 729.0],
+            [-70.6235504, -32.7459913, 754.0],
+            [-70.6050109, -32.7491676, 787.0],
+            [-70.5844116, -32.7532100, 835.0],
+            [-70.5693054, -32.7581184, 874.0],
+            [-70.5655288, -32.7682231, 875.0],
+            [-70.5809783, -32.7693778, 832.0],
+            [-70.6043243, -32.7662022, 789.0],
+            [-70.6249237, -32.7610055, 761.0],
+            [-70.6455230, -32.7532100, 738.0],
+            [-70.6716156, -32.7514775, 703.0],
+            [-70.6908416, -32.7454137, 675.0],
+            [-70.7152175, -32.7410822, 653.0],
+            [-70.6966781, -32.7555198, 681.0],
+            [-70.6757354, -32.7607168, 706.0],
+            [-70.6668090, -32.7624491, 719.0],
+            [-70.6551361, -32.7659135, 730.0],
+            [-70.6352233, -32.7693778, 755.0],
+            [-70.6153106, -32.7748627, 778.0],
+            [-70.6005477, -32.7780379, 800.0],
+            [-70.5850982, -32.7815018, 822.0],
+            [-70.5655288, -32.7855427, 848.0],
+            [-70.5596923, -32.7965101, 871.0],
+            [-70.5541992, -32.8080532, 877.0],
+            [-70.5682754, -32.8063218, 857.0],
+            [-70.5730819, -32.7916038, 834.0],
+            [-70.5813217, -32.8011275, 842.0],
+            [-70.5844116, -32.7892948, 822.0],
+            [-70.5981445, -32.7965101, 816.0],
+            [-70.6026077, -32.7866972, 806.0],
+            [-70.6156539, -32.7921810, 793.0],
+            [-70.6187438, -32.7826563, 786.0],
+            [-70.6321334, -32.7878517, 770.0],
+            [-70.6444931, -32.7763060, 750.0],
+            [-70.6616592, -32.7774606, 727.0],
+            [-70.6874084, -32.7653361, 697.0],
+            [-70.7001113, -32.7662022, 686.0],
+            [-70.7169342, -32.7742853, 671.0],
+            [-70.6963348, -32.7780379, 694.0],
+            [-70.6784820, -32.7846768, 718.0],
+            [-70.6942749, -32.7878517, 701.0],
+            [-70.7093811, -32.7858313, 685.0],
+            [-70.7066345, -32.7944899, 695.0],
+            [-70.6987380, -32.7933354, 700.0],
+            [-70.6874084, -32.7930468, 710.0],
+            [-70.6723022, -32.7904493, 728.0],
+            [-70.6582260, -32.7967987, 748.0],
+            [-70.6475830, -32.8017047, 761.0],
+            [-70.6496429, -32.8054561, 761.0],
+            [-70.6602859, -32.8060332, 748.0],
+            [-70.6685256, -32.7999732, 737.0],
+            [-70.6757354, -32.7965101, 729.0],
+            [-70.6891250, -32.7999732, 715.0],
+            [-70.6994247, -32.8022818, 702.0],
+            [-70.7032012, -32.8068989, 702.0],
+            [-70.7042312, -32.8135357, 702.0],
+            [-70.7025146, -32.8198833, 708.0],
+            [-70.6977081, -32.8129586, 710.0],
+            [-70.6743621, -32.8086303, 734.0],
+            [-70.6523895, -32.8118044, 760.0],
+            [-70.6304168, -32.8129586, 785.0],
+            [-70.6273269, -32.8204604, 792.0],
+            [-70.6249237, -32.8354621, 798.0],
+            [-70.6197738, -32.8438274, 801.0],
+            [-70.6159973, -32.8527687, 799.0],
+            [-70.6005477, -32.8602671, 819.0],
+            [-70.5960845, -32.8715136, 842.0],
+            [-70.6029510, -32.8778571, 837.0],
+            [-70.6132507, -32.8873716, 819.0],
+            [-70.6269836, -32.8787221, 801.0],
+            [-70.6276702, -32.8689184, 796.0],
+            [-70.6365966, -32.8542107, 776.0],
+            [-70.6369400, -32.8467117, 779.0],
+            [-70.6386566, -32.8331543, 781.0],
+            [-70.6410598, -32.8213259, 774.0],
+            [-70.6523895, -32.8193063, 763.0],
+            [-70.6609725, -32.8193063, 752.0],
+            [-70.6571960, -32.8308465, 757.0],
+            [-70.6537628, -32.8444042, 762.0],
+            [-70.6489562, -32.8588251, 768.0],
+            [-70.6396865, -32.8674766, 782.0],
+            [-70.6585693, -32.8599787, 760.0],
+            [-70.6650924, -32.8495960, 751.0],
+            [-70.6678390, -32.8288270, 748.0],
+            [-70.6695556, -32.8155554, 741.0],
+            [-70.6815719, -32.8224800, 730.0],
+            [-70.6922149, -32.8250766, 721.0],
+            [-70.6963348, -32.8345967, 721.0],
+            [-70.6953048, -32.8444042, 725.0],
+            [-70.6929016, -32.8565180, 732.0],
+            [-70.6874084, -32.8637277, 740.0],
+            [-70.6733322, -32.8643045, 749.0],
+            [-70.6757354, -32.8507497, 743.0],
+            [-70.6784820, -32.8308465, 734.0],
+        ];
+        $irrigationWellsData = [
+            [ 'date', 'pumpingRate' ],
+            [ '2010-01-01', -41907000 ],
+            [ '2010-02-01', -36082000 ],
+            [ '2010-03-01', -29613000 ],
+            [ '2010-04-01',  -9517000 ],
+            [ '2010-05-01',         0 ],
+            [ '2010-06-01',         0 ],
+            [ '2010-07-01',         0 ],
+            [ '2010-08-01',         0 ],
+            [ '2010-09-01',  -3330000 ],
+            [ '2010-10-01', -16766000 ],
+            [ '2010-11-01', -31874000 ],
+            [ '2010-12-01', -43068000 ],
+        ];
+
+        $pointsHeader = null;
+        foreach ($irrigationWellsPoints as $key => $point){
+            if (null === $pointsHeader){
+                $pointsHeader = $point;
+                continue;
+            }
+
+            $point = array_combine($pointsHeader, $point);
+
+            /** @var WellBoundary $wellBoundary */
+            $wellBoundary = WellBoundary::createWithParams(
+                Name::fromString(sprintf('Irrigation-Well %s', $key+1)),
+                Geometry::fromPoint(new Point($point['x'], $point['y'], 4326)),
+                AffectedLayers::createWithLayerNumber(LayerNumber::fromInt(0)),
+                Metadata::create()->addWellType(WellType::fromString(WellType::TYPE_INDUSTRIAL_WELL))
+            );
+
+            $dataHeader = null;
+            foreach ($irrigationWellsData as $data){
+                if (null === $dataHeader){
+                    $dataHeader = $data;
+                    continue;
+                }
+
+                $data = array_combine($dataHeader, $data);
+
+                $pumpingRate = $data['pumpingRate'] / count($irrigationWellsPoints) / 2;
+                $data = array_combine($dataHeader, $data);
+                $wellBoundary = $wellBoundary->addPumpingRate(
+                    WellDateTimeValue::fromParams(DateTime::fromDateTimeImmutable(new \DateTimeImmutable($data['date'])), $pumpingRate)
+                );
+            }
+
+            echo sprintf("Add well with name %s.\r\n", sprintf('Irrigation-Well %s', $key+1));
+            $commandBus->dispatch(AddBoundary::forModflowModel($ownerId, $baseModelId, $wellBoundary));
+        }
+
 
         /*
          * Add Wells for the BaseScenario
@@ -369,14 +547,14 @@ class SanFelipe extends LoadScenarioBase
             array('Public Well 5', new Point(-70.7435, -32.7404, 4326), WellType::TYPE_PUBLIC_WELL, 1, new \DateTimeImmutable('2010-01-01'), -5000)
         );
 
-        $header = null;
+        $pointsHeader = null;
         foreach ($wells as $data){
-            if (null === $header){
-                $header = $data;
+            if (null === $pointsHeader){
+                $pointsHeader = $data;
                 continue;
             }
 
-            $data = array_combine($header, $data);
+            $data = array_combine($pointsHeader, $data);
 
             /** @var WellBoundary $wellBoundary */
             $wellBoundary = WellBoundary::createWithParams(
@@ -394,13 +572,15 @@ class SanFelipe extends LoadScenarioBase
         }
 
         /* Create calculation and calculate */
-        $start = DateTime::fromDateTime(new \DateTime('2010-01-01'));
+        $start = DateTime::fromDateTime(new \DateTime('2009-01-01'));
         $end = DateTime::fromDateTime(new \DateTime('2012-12-31'));
-        $stressperiods = StressPeriods::create($start, $end, TimeUnit::fromInt(TimeUnit::DAYS));
-        $stressperiods->addStressPeriod(StressPeriod::create(0, 365,1,1,true));
-        $stressperiods->addStressPeriod(StressPeriod::create(366, 365,1,1,true));
 
-        $commandBus->dispatch(UpdateStressPeriods::of($ownerId, $baseModelId, $stressperiods));
+        //$stressperiods = StressPeriods::create($start, $end, TimeUnit::fromInt(TimeUnit::DAYS));
+        //$stressperiods->addStressPeriod(StressPeriod::create(0, 365,1,1,true));
+        //$stressperiods->addStressPeriod(StressPeriod::create(366, 365,1,1,));
+        //$commandBus->dispatch(UpdateStressPeriods::of($ownerId, $baseModelId, $stressperiods));
+
+        $commandBus->dispatch(CalculateStressPeriods::forModflowModel($ownerId, $baseModelId, $start, $end, TimeUnit::fromString(TimeUnit::DAYS), true));
         $ocStressPeriodData = OcStressPeriodData::create()->addStressPeriod(OcStressPeriod::fromParams(0,0, ['save head', 'save drawdown']));
         $commandBus->dispatch(UpdateModflowPackageParameter::byUserModelIdAndPackageData($ownerId, $baseModelId, PackageName::fromString('oc'), ParameterName::fromString('ocStressPeriodData'), $ocStressPeriodData));
 
@@ -445,14 +625,14 @@ class SanFelipe extends LoadScenarioBase
             array('Irrigation Well 5', new Point(-70.6693, -32.7480, 4326), WellType::TYPE_INDUSTRIAL_WELL, 1, new \DateTimeImmutable('2010-01-01'), -10000)
         );
 
-        $header = null;
+        $pointsHeader = null;
         foreach ($wells as $data){
-            if (null === $header){
-                $header = $data;
+            if (null === $pointsHeader){
+                $pointsHeader = $data;
                 continue;
             }
 
-            $data = array_combine($header, $data);
+            $data = array_combine($pointsHeader, $data);
 
             /** @var WellBoundary $wellBoundary */
             $wellBoundary = WellBoundary::createWithParams(

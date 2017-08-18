@@ -135,9 +135,15 @@ final class StressPeriods implements \JsonSerializable
         $this->stressperiods[] = $stressPeriod;
     }
 
-    public function addInitialSteadyStressPeriod(): void
+    public function setFirstStressPeriodSteady(bool $steady): void
     {
-        // TODO !!!
+        if (count($this->stressperiods)>0){
+            /** @var StressPeriod $firstStressPeriod */
+            $firstStressPeriod = $this->stressperiods[0];
+            $this->stressperiods[0] = StressPeriod::create(
+                $firstStressPeriod->totimStart(), $firstStressPeriod->perlen(), $firstStressPeriod->nstp(), $firstStressPeriod->tsmult(), $steady
+            );
+        }
     }
 
     public function perlen(): Perlen
