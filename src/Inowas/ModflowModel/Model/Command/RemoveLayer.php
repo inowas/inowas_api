@@ -20,7 +20,7 @@ class RemoveLayer extends Command implements PayloadConstructable
     {
         $self = new static(
             [
-                'model_id' => $modelId->toString(),
+                'id' => $modelId->toString(),
                 'layer_id' => $layerId->toString()
             ]
         );
@@ -37,7 +37,7 @@ class RemoveLayer extends Command implements PayloadConstructable
 
     public function modelId(): ModflowId
     {
-        return ModflowId::fromString($this->payload['model_id']);
+        return ModflowId::fromString($this->payload['id']);
     }
 
     public function userId(): UserId
