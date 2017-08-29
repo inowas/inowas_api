@@ -203,7 +203,8 @@ class Layer
             'id' => $this->id->toString(),
             'name' => $this->name->toString(),
             'description' => $this->description->toString(),
-            'number' => $this->number->toInt()
+            'number' => $this->number->toInt(),
+            'laytyp' => $this->laytyp->toInt()
         );
     }
 
