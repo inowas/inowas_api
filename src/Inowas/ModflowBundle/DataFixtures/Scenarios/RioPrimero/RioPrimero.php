@@ -210,7 +210,7 @@ class RioPrimero extends LoadScenarioBase
             ConstantHeadDateTimeValue::fromParams(
                 DateTime::fromDateTimeImmutable(new \DateTimeImmutable('2015-01-01')),
                 450,
-                100
+                450
             )
         );
 

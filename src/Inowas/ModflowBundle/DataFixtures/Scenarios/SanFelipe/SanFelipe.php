@@ -43,6 +43,7 @@ use Inowas\Common\Soilmodel\LayerId;
 use Inowas\ModflowModel\Model\Command\AddBoundary;
 use Inowas\ModflowModel\Model\Command\AddLayer;
 use Inowas\ModflowModel\Model\Command\CalculateStressPeriods;
+use Inowas\ModflowModel\Model\Command\ChangeFlowPackage;
 use Inowas\ModflowModel\Model\Packages\OcStressPeriod;
 use Inowas\ModflowModel\Model\Packages\OcStressPeriodData;
 use Inowas\Common\Modflow\PackageName;
@@ -181,18 +182,22 @@ class SanFelipe extends LoadScenarioBase
             $interpolation->addPointValue($pointValue);
         }
 
-        $result = $this->container->get('inowas.soilmodel.interpolation_service')->interpolate($interpolation);
-        $top = Top::from2DArray($result->result());
+        #$result = $this->container->get('inowas.soilmodel.interpolation_service')->interpolate($interpolation);
+        #$top = Top::from2DArray($result->result());
 
-        $bottom = [];
-        $differenceToTop = 30;
-        foreach ($result->result() as $rowNr => $row) {
-            foreach ($row as $colNr => $value) {
-                $bottom[$rowNr][$colNr] = $value-$differenceToTop;
-            }
-        }
+        #$bottom = [];
+        #$differenceToTop = 60;
+        #foreach ($result->result() as $rowNr => $row) {
+        #    foreach ($row as $colNr => $value) {
+        #        $bottom[$rowNr][$colNr] = $value-$differenceToTop;
+        #    }
+        #}
 
-        $bottom = Botm::from2DArray($bottom);
+        #$bottom = Botm::from2DArray($bottom);
+
+
+        $top = Top::fromValue(700);
+        $bottom = Botm::fromValue(650);
 
         $layer = Layer::fromParams(
             $layerId,
@@ -217,15 +222,18 @@ class SanFelipe extends LoadScenarioBase
         $description = Description::fromString('Top Layer');
         $layerId = LayerId::fromString($name->slugified());
 
-        $top = Top::from2DArray($bottom->toValue());
-        $bottom = [];
-        $differenceToTop = 60;
-        foreach ($result->result() as $rowNr => $row) {
-            foreach ($row as $colNr => $value) {
-                $bottom[$rowNr][$colNr] = $value-$differenceToTop;
-            }
-        }
-        $bottom = Botm::from2DArray($bottom);
+        #$top = Top::from2DArray($bottom->toValue());
+        #$bottom = [];
+        #$differenceToTop = 120;
+        #foreach ($result->result() as $rowNr => $row) {
+        #    foreach ($row as $colNr => $value) {
+        #        $bottom[$rowNr][$colNr] = $value-$differenceToTop;
+        #    }
+        #}
+        #$bottom = Botm::from2DArray($bottom);
+
+        $top = Top::fromValue(650);
+        $bottom = Botm::fromValue(600);
 
         $layer = Layer::fromParams(
             $layerId,
@@ -255,7 +263,7 @@ class SanFelipe extends LoadScenarioBase
                 [ -70.761468152216395, -32.742437320686882 ],
                 [ -70.739900752075556, -32.713424032402173 ]
             ])),
-            AffectedLayers::fromArray([0, 1]),
+            AffectedLayers::fromArray([1]),
             Metadata::create()
         );
 
@@ -271,9 +279,9 @@ class SanFelipe extends LoadScenarioBase
         $chd->addConstantHeadToObservationPoint(
             $observationPointId,
             ConstantHeadDateTimeValue::fromParams(
-                DateTime::fromDateTimeImmutable(new \DateTimeImmutable('2010-01-01')),
-                580,
-                580
+                DateTime::fromDateTimeImmutable(new \DateTimeImmutable('2009-01-01')),
+                670,
+                670
             )
         );
 
@@ -286,7 +294,7 @@ class SanFelipe extends LoadScenarioBase
                 [ -70.546497000284148, -32.84965766474577 ],
                 [ -70.547861570461322, -32.809630272881954 ]
             ])),
-            AffectedLayers::fromArray([0, 1]),
+            AffectedLayers::fromArray([1]),
             Metadata::create()
         );
 
@@ -302,9 +310,9 @@ class SanFelipe extends LoadScenarioBase
         $chd->addConstantHeadToObservationPoint(
             $observationPointId,
             ConstantHeadDateTimeValue::fromParams(
-                DateTime::fromDateTimeImmutable(new \DateTimeImmutable('2010-01-01')),
-                800,
-                800
+                DateTime::fromDateTimeImmutable(new \DateTimeImmutable('2009-01-01')),
+                680,
+                680
             )
         );
 
@@ -349,10 +357,10 @@ class SanFelipe extends LoadScenarioBase
         $riv->addRiverStageToObservationPoint(
             $observationPointId,
             RiverDateTimeValue::fromParams(
-                DateTime::fromDateTimeImmutable(new \DateTimeImmutable('2010-01-01')),
-                1000,
-                995,
-                2000
+                DateTime::fromDateTimeImmutable(new \DateTimeImmutable('2009-01-01')),
+                700,
+                668,
+                200
             )
         );
 
@@ -369,14 +377,14 @@ class SanFelipe extends LoadScenarioBase
         $riv->addRiverStageToObservationPoint(
             $observationPointId,
             RiverDateTimeValue::fromParams(
-                DateTime::fromDateTimeImmutable(new \DateTimeImmutable('2010-01-01')),
-                650,
-                645,
-                2000
+                DateTime::fromDateTimeImmutable(new \DateTimeImmutable('2009-01-01')),
+                700,
+                668,
+                200
             )
         );
 
-        $commandBus->dispatch(AddBoundary::forModflowModel($ownerId, $baseModelId, $riv));
+        #$commandBus->dispatch(AddBoundary::forModflowModel($ownerId, $baseModelId, $riv));
 
         $irrigationWellsPoints = [
             ['x', 'y', 'z'],
@@ -508,7 +516,7 @@ class SanFelipe extends LoadScenarioBase
 
             /** @var WellBoundary $wellBoundary */
             $wellBoundary = WellBoundary::createWithParams(
-                Name::fromString(sprintf('Irrigation-Well %s', $key+1)),
+                Name::fromString(sprintf('wel %s', $key+1)),
                 Geometry::fromPoint(new Point($point['x'], $point['y'], 4326)),
                 AffectedLayers::createWithLayerNumber(LayerNumber::fromInt(0)),
                 Metadata::create()->addWellType(WellType::fromString(WellType::TYPE_INDUSTRIAL_WELL))
@@ -573,16 +581,11 @@ class SanFelipe extends LoadScenarioBase
 
         /* Create calculation and calculate */
         $start = DateTime::fromDateTime(new \DateTime('2009-01-01'));
-        $end = DateTime::fromDateTime(new \DateTime('2012-12-31'));
-
-        //$stressperiods = StressPeriods::create($start, $end, TimeUnit::fromInt(TimeUnit::DAYS));
-        //$stressperiods->addStressPeriod(StressPeriod::create(0, 365,1,1,true));
-        //$stressperiods->addStressPeriod(StressPeriod::create(366, 365,1,1,));
-        //$commandBus->dispatch(UpdateStressPeriods::of($ownerId, $baseModelId, $stressperiods));
-
+        $end = DateTime::fromDateTime(new \DateTime('2010-12-31'));
         $commandBus->dispatch(CalculateStressPeriods::forModflowModel($ownerId, $baseModelId, $start, $end, TimeUnit::fromString(TimeUnit::DAYS), true));
         $ocStressPeriodData = OcStressPeriodData::create()->addStressPeriod(OcStressPeriod::fromParams(0,0, ['save head', 'save drawdown']));
         $commandBus->dispatch(UpdateModflowPackageParameter::byUserModelIdAndPackageData($ownerId, $baseModelId, PackageName::fromString('oc'), ParameterName::fromString('ocStressPeriodData'), $ocStressPeriodData));
+        #$commandBus->dispatch(ChangeFlowPackage::forModflowModel($ownerId, $baseModelId, PackageName::fromString('upw')));
 
         echo sprintf("Calculate ModflowModel with id %s.\r\n", $baseModelId->toString());
         $commandBus->dispatch(CalculateModflowModel::forModflowModelWitUserId($ownerId, $baseModelId));

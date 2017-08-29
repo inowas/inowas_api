@@ -44,6 +44,7 @@ final class CalculateStressperiodsHandler
             $stressperiods->setFirstStressPeriodSteady($command->initialStressPeriodSteady());
         }
 
+        #$stressperiods->setNstpEqualPerlenForTransient();
         $modflowModel->updateStressPeriods($command->userId(), $stressperiods);
 
         $this->modelList->save($modflowModel);

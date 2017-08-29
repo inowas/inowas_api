@@ -35,7 +35,7 @@ class ModflowBoundary
 
     protected function self(): ModflowBoundary
     {
-        $self = new static($this->name, $this->geometry, $this->affectedLayers, $this->metadata);
+        $self = new static($this->id, $this->name, $this->geometry, $this->affectedLayers, $this->metadata);
         $self->observationPoints = $this->observationPoints;
         $self->id = $this->id;
         return $self;
@@ -55,12 +55,13 @@ class ModflowBoundary
         Metadata $metadata
     ): ModflowBoundary
     {
-        return new static($name, $geometry, $affectedLayers, $metadata);
+        return new static(BoundaryId::fromString($name->slugified()), $name, $geometry, $affectedLayers, $metadata);
     }
 
     public static function fromArray(array $arr): ModflowBoundary
     {
         $static = new static(
+            BoundaryId::fromString($arr['id']),
             Name::fromString($arr['name']),
             Geometry::fromArray($arr['geometry']),
             AffectedLayers::fromArray($arr['affected_layers']),
@@ -72,7 +73,7 @@ class ModflowBoundary
         return $static;
     }
 
-    protected function __construct(Name $name, Geometry $geometry, AffectedLayers $affectedLayers, Metadata $metadata)
+    protected function __construct(BoundaryId $id, Name $name, Geometry $geometry, AffectedLayers $affectedLayers, Metadata $metadata)
     {
         $this->id = BoundaryId::fromString($name->slugified());
         $this->name = $name;

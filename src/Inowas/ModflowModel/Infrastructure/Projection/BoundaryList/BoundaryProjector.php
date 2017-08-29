@@ -44,7 +44,7 @@ class BoundaryProjector extends AbstractDoctrineConnectionProjector
         $boundary = $event->boundary();
 
         $this->connection->insert(Table::BOUNDARIES, array(
-            'boundary_id' => $event->boundaryId()->toString(),
+            'boundary_id' => $boundary->boundaryId()->toString(),
             'model_id' => $event->modelId()->toString(),
             'type' => $boundary->type()->toString(),
             'name' => $boundary->name()->toString(),

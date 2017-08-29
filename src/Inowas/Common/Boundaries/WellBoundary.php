@@ -19,13 +19,12 @@ class WellBoundary extends ModflowBoundary
     public static function fromArray(array $arr): ModflowBoundary
     {
         $self = new self(
+            BoundaryId::fromString($arr['id']),
             Name::fromString($arr['name']),
             Geometry::fromArray($arr['geometry']),
             AffectedLayers::fromArray($arr['affected_layers']),
             Metadata::fromArray((array)$arr['metadata'])
         );
-
-        $self->id = BoundaryId::fromString($arr['id']);
 
         /** @var array $dateTimeValues */
         $dateTimeValues = $arr['date_time_values'];

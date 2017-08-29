@@ -146,6 +146,19 @@ final class StressPeriods implements \JsonSerializable
         }
     }
 
+    public function setNstpEqualPerlenForTransient(): void
+    {
+
+        /** @var StressPeriod $stressperiod */
+        foreach ($this->stressperiods as $key => $stressperiod){
+            if (!$stressperiod->steady()) {
+                $this->stressperiods[$key] = StressPeriod::create(
+                    $stressperiod->totimStart(), $stressperiod->perlen(), $stressperiod->perlen(), $stressperiod->tsmult(), $stressperiod->steady()
+                );
+            }
+        }
+    }
+
     public function perlen(): Perlen
     {
         $arr = [];

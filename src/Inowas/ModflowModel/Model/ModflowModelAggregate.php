@@ -132,15 +132,13 @@ class ModflowModelAggregate extends AggregateRoot
 
     public function addBoundary(UserId $userId, ModflowBoundary $boundary): void
     {
-        $boundaryId = BoundaryId::fromString($boundary->name()->slugified());
-
         $this->recordThat(BoundaryWasAdded::byUserToModel(
             $userId,
             $this->modelId,
-            $boundaryId,
             $boundary
         ));
-        $this->boundaries[] = $boundaryId->toString();
+
+        $this->boundaries[] = $boundary->boundaryId()->toString();
     }
 
     public function removeBoundary(UserId $userId, BoundaryId $boundaryId): void
@@ -373,7 +371,7 @@ class ModflowModelAggregate extends AggregateRoot
 
     protected function whenBoundaryWasAdded(BoundaryWasAdded $event): void
     {
-        $this->boundaries[] = $event->boundaryId()->toString();
+        $this->boundaries[] = $event->boundary()->boundaryId()->toString();
     }
 
     protected function whenBoundaryWasUpdated(BoundaryWasUpdated $event): void

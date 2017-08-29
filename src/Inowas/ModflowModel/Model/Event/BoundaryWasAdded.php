@@ -6,7 +6,6 @@ namespace Inowas\ModflowModel\Model\Event;
 
 use Inowas\Common\Boundaries\BoundaryFactory;
 use Inowas\Common\Boundaries\ModflowBoundary;
-use Inowas\Common\Id\BoundaryId;
 use Inowas\Common\Id\ModflowId;
 use Inowas\Common\Id\UserId;
 use Prooph\EventSourcing\AggregateChanged;
@@ -18,9 +17,6 @@ class BoundaryWasAdded extends AggregateChanged
     /** @var ModflowId */
     private $modflowId;
 
-    /** @var BoundaryId */
-    private $boundaryId;
-
     /** @var  UserId */
     private $userId;
 
@@ -30,26 +26,24 @@ class BoundaryWasAdded extends AggregateChanged
     /** @noinspection MoreThanThreeArgumentsInspection
      * @param UserId $userId
      * @param ModflowId $modflowId
-     * @param BoundaryId $boundaryId
      * @param ModflowBoundary $boundary
      * @return BoundaryWasAdded
      */
     public static function byUserToModel(
         UserId $userId,
         ModflowId $modflowId,
-        BoundaryId $boundaryId,
         ModflowBoundary $boundary
     ): BoundaryWasAdded
     {
+
+        /** @var BoundaryWasAdded $event */
         $event = self::occur(
             $modflowId->toString(), [
                 'user_id' => $userId->toString(),
-                'boundary_id' => $boundaryId->toString(),
                 'boundary' => $boundary->toArray()
             ]
         );
 
-        $event->boundaryId = $boundaryId;
         $event->modflowId = $modflowId;
         $event->userId = $userId;
         $event->boundary = $boundary;
@@ -64,15 +58,6 @@ class BoundaryWasAdded extends AggregateChanged
         }
 
         return $this->boundary;
-    }
-
-    public function boundaryId(): BoundaryId
-    {
-        if ($this->boundaryId === null){
-            $this->boundaryId = BoundaryId::fromString($this->payload['boundary_id']);
-        }
-
-        return $this->boundaryId;
     }
 
     public function modelId(): ModflowId
