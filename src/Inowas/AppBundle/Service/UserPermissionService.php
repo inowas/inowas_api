@@ -7,27 +7,26 @@ namespace Inowas\AppBundle\Service;
 use Inowas\AppBundle\Model\UserPermission;
 use Inowas\Common\Id\ModflowId;
 use Inowas\Common\Id\UserId;
-use Inowas\Tool\Infrastructure\Projection\ToolFinder;
-use Inowas\Tool\Model\ToolId;
+use Inowas\ModflowModel\Infrastructure\Projection\ModelList\ModelFinder;
 
 class UserPermissionService
 {
 
-    /** @var  ToolFinder */
-    private $toolFinder;
+    /** @var  ModelFinder */
+    private $modelFinder;
 
-    public function __construct(ToolFinder $toolFinder)
+    public function __construct(ModelFinder $modelFinder)
     {
-        $this->toolFinder = $toolFinder;
+        $this->modelFinder = $modelFinder;
     }
 
     public function getModelPermissions(UserId $userId, ModflowId $modelId): UserPermission
     {
-        if ($this->toolFinder->isToolOwner(ToolId::fromString($modelId->toString()), $userId)){
+        if ($this->modelFinder->userHasWriteAccessToModel($userId, $modelId)){
             return UserPermission::readWriteExecute();
         }
 
-        if ($this->toolFinder->isPublic(ToolId::fromString($modelId->toString()))) {
+        if ($this->modelFinder->userHasReadAccessToModel($userId, $modelId)) {
             return UserPermission::readOnly();
         }
 

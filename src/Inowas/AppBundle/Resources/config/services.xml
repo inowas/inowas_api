@@ -11,7 +11,7 @@
         </service>
 
         <service id="inowas.user_permissions" class="Inowas\AppBundle\Service\UserPermissionService">
-            <argument type="service" id="inowas.tool.tools_finder"/>
+            <argument type="service" id="inowas.modflowmodel.model_finder"/>
         </service>
     </services>
 </container>
