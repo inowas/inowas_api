@@ -75,7 +75,7 @@ class ModflowBoundary
 
     protected function __construct(BoundaryId $id, Name $name, Geometry $geometry, AffectedLayers $affectedLayers, Metadata $metadata)
     {
-        $this->id = BoundaryId::fromString($name->slugified());
+        $this->id = $id;
         $this->name = $name;
         $this->geometry = $geometry;
         $this->affectedLayers = $affectedLayers;
@@ -183,7 +183,7 @@ class ModflowBoundary
     public function toArray(): array
     {
         return array(
-            'id' => $this->boundaryId()->toString(),
+            'id' => $this->id->toString(),
             'type' => $this->type()->toString(),
             'name' => $this->name()->toString(),
             'geometry' => $this->geometry()->toArray(),
