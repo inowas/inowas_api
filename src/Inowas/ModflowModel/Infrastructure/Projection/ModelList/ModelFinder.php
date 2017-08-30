@@ -58,7 +58,7 @@ class ModelFinder
         $this->connection->setFetchMode(\PDO::FETCH_ASSOC);
         $rows = $this->connection->fetchAll(
             sprintf('SELECT model_id AS id, user_id, user_name, name, description, area as geometry, grid_size, bounding_box, created_at, public FROM %s WHERE public = :public', Table::MODFLOWMODELS),
-            ['public' => true]
+            ['public' => 1]
         );
 
         foreach ($rows as $key => $row){
@@ -248,7 +248,7 @@ class ModelFinder
     {
         $this->connection->setFetchMode(\PDO::FETCH_ASSOC);
         $result = $this->connection->fetchAssoc(
-            sprintf('SELECT count(*) FROM %s WHERE model_id = :model_id AND PUBLIC OR model_id = :model_id AND user_id = :user_id', Table::MODFLOWMODELS),
+            sprintf('SELECT count(*) FROM %s WHERE model_id = :model_id AND user_id = :user_id OR model_id = :model_id AND public = 1', Table::MODFLOWMODELS),
             ['model_id' => $modelId->toString(), 'user_id' => $userId->toString()]
         );
 

@@ -22,6 +22,7 @@ parameters:
                         'Inowas\ModflowModel\Model\Command\DeleteModflowModel': 'inowas.modflowmodel.delete_modflow_model_handler'
                         'Inowas\ModflowModel\Model\Command\RemoveBoundary': 'inowas.modflowmodel.remove_boundary_handler'
                         'Inowas\ModflowModel\Model\Command\RemoveLayer': 'inowas.modflowmodel.remove_layer_handler'
+                        'Inowas\ModflowModel\Model\Command\RequestModflowModelCalculation': 'inowas.modflowmodel.request_modflow_model_calculation_handler'
                         'Inowas\ModflowModel\Model\Command\UpdateActiveCells': 'inowas.modflowmodel.update_active_cells_handler'
                         'Inowas\ModflowModel\Model\Command\UpdateAreaGeometry': 'inowas.modflowmodel.update_area_geometry_handler'
                         'Inowas\ModflowModel\Model\Command\UpdateBoundary': 'inowas.modflowmodel.update_boundary_handler'
@@ -83,14 +84,17 @@ parameters:
                         'Inowas\ModflowModel\Model\Event\BoundaryWasAdded':
                             - 'inowas.modflowmodel.blackhole_projector'
                             - 'inowas.modflowmodel.boundary_projector'
+                            - 'inowas.modflowmodel.model_projector'
 
                         'Inowas\ModflowModel\Model\Event\BoundaryWasRemoved':
                             - 'inowas.modflowmodel.blackhole_projector'
                             - 'inowas.modflowmodel.boundary_projector'
+                            - 'inowas.modflowmodel.model_projector'
 
                         'Inowas\ModflowModel\Model\Event\BoundaryWasUpdated':
                             - 'inowas.modflowmodel.blackhole_projector'
                             - 'inowas.modflowmodel.boundary_projector'
+                            - 'inowas.modflowmodel.model_projector'
 
                         'Inowas\ModflowModel\Model\Event\BoundingBoxWasChanged':
                             - 'inowas.modflowmodel.blackhole_projector'
@@ -105,6 +109,10 @@ parameters:
                         'Inowas\ModflowModel\Model\Event\CalculationWasFinished':
                             - 'inowas.modflowmodel.blackhole_projector'
                             - 'inowas.modflowmodel.calculation_results_projector'
+
+                        'Inowas\ModflowModel\Model\Event\CalculationWasRequested':
+                            - 'inowas.modflowmodel.blackhole_projector'
+                            - 'inowas.modflowmodel.model_projector'
 
                         'Inowas\ModflowModel\Model\Event\CalculationWasStarted':
                             - 'inowas.modflowmodel.blackhole_projector'

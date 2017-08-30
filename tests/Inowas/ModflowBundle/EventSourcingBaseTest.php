@@ -51,7 +51,7 @@ use Inowas\Common\Modflow\Top;
 use Inowas\Common\Modflow\Vka;
 use Inowas\Common\Soilmodel\Layer;
 use Inowas\Common\Soilmodel\LayerId;
-use Inowas\ModflowModel\Model\AMQP\CalculationRequest;
+use Inowas\ModflowModel\Model\AMQP\FlopyCalculationRequest;
 use Inowas\ModflowModel\Model\Command\AddLayer;
 use Inowas\ModflowModel\Model\Command\ChangeBoundingBox;
 use Inowas\ModflowModel\Model\Command\CreateModflowModel;
@@ -142,7 +142,7 @@ abstract class EventSourcingBaseTest extends WebTestCase
         $packagesManager = $this->container->get('inowas.modflowmodel.modflow_packages_manager');
         $calculationId = $packagesManager->recalculate($modelId);
         $packages = $packagesManager->getPackages($calculationId);
-        $request = CalculationRequest::fromParams($modelId, $calculationId, $packages);
+        $request = FlopyCalculationRequest::fromParams($modelId, $calculationId, $packages);
         return json_encode($request);
     }
 

@@ -8,7 +8,7 @@ use Inowas\ModflowModel\Model\AMQP\ReadDataRequest;
 use PhpAmqpLib\Connection\AMQPStreamConnection;
 use PhpAmqpLib\Message\AMQPMessage;
 
-class AMQPReadData
+class AMQPFlopyReadData
 {
     
     private $channel;

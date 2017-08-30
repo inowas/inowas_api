@@ -22,17 +22,17 @@ use Inowas\Common\Id\CalculationId;
 use Inowas\ModflowModel\Infrastructure\Projection\Table;
 use Inowas\ModflowModel\Model\AMQP\ReadDataRequest;
 use Inowas\ModflowModel\Model\AMQP\ReadDataResponse;
-use Inowas\ModflowModel\Service\AMQPReadData;
+use Inowas\ModflowModel\Service\AMQPFlopyReadData;
 
 class CalculationResultsFinder
 {
     /** @var Connection $connection */
     protected $connection;
 
-    /** @var  AMQPReadData */
+    /** @var  AMQPFlopyReadData */
     protected $reader;
 
-    public function __construct(Connection $connection, AMQPReadData $reader) {
+    public function __construct(Connection $connection, AMQPFlopyReadData $reader) {
         $this->connection = $connection;
         $this->connection->setFetchMode(\PDO::FETCH_ASSOC);
         $this->reader = $reader;
