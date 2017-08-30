@@ -32,8 +32,8 @@ final class Results
     {
         return array(
             'calculation_id' => $this->id->toString(),
-            'layer_values' => $this->layerValues,
-            'times' => $this->times
+            'layer_values' => $this->layerValues->toArray(),
+            'times' => $this->times->toArray()
         );
     }
 }
