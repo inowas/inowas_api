@@ -13,6 +13,7 @@ use Inowas\ModflowModel\Model\Command\CreateModflowModel;
 use Inowas\ModflowModel\Model\Command\DeleteModflowModel;
 use Inowas\ModflowModel\Model\Command\RemoveBoundary;
 use Inowas\ModflowModel\Model\Command\RemoveLayer;
+use Inowas\ModflowModel\Model\Command\RequestModflowModelCalculation;
 use Inowas\ModflowModel\Model\Command\UpdateBoundary;
 use Inowas\ModflowModel\Model\Command\UpdateLayer;
 use Inowas\ModflowModel\Model\Command\UpdateModflowModel;
@@ -34,6 +35,7 @@ class MessageBoxController extends InowasRestController
         'deleteModflowModel' => DeleteModflowModel::class,
         'removeBoundary' => RemoveBoundary::class,
         'removeLayer' => RemoveLayer::class,
+        'requestModflowModelCalculation' => RequestModflowModelCalculation::class,
         'updateBoundary' => UpdateBoundary::class,
         'updateLayer' => UpdateLayer::class,
         'updateModflowModel' => UpdateModflowModel::class,

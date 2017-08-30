@@ -28,7 +28,7 @@ final class UpdateCalculationIdHandler
             throw ModflowModelNotFoundException::withModelId($command->modelId());
         }
 
-        $modflowModel->updateCalculationId($command->calculationId());
+        $modflowModel->preprocessingWasFinished($command->calculationId());
         $this->modelList->save($modflowModel);
     }
 }

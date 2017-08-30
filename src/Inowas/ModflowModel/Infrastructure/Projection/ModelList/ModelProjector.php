@@ -13,8 +13,12 @@ use Inowas\Common\Modflow\StressPeriods;
 use Inowas\Common\Modflow\TimeUnit;
 use Inowas\Common\Projection\AbstractDoctrineConnectionProjector;
 use Inowas\ModflowModel\Model\Event\AreaGeometryWasUpdated;
+use Inowas\ModflowModel\Model\Event\BoundaryWasAdded;
+use Inowas\ModflowModel\Model\Event\BoundaryWasRemoved;
+use Inowas\ModflowModel\Model\Event\BoundaryWasUpdated;
 use Inowas\ModflowModel\Model\Event\BoundingBoxWasChanged;
 use Inowas\ModflowModel\Model\Event\CalculationIdWasChanged;
+use Inowas\ModflowModel\Model\Event\CalculationWasRequested;
 use Inowas\ModflowModel\Model\Event\DescriptionWasChanged;
 use Inowas\ModflowModel\Model\Event\GridSizeWasChanged;
 use Inowas\ModflowModel\Model\Event\LengthUnitWasUpdated;
@@ -51,8 +55,10 @@ class ModelProjector extends AbstractDoctrineConnectionProjector
         $table->addColumn('length_unit', 'integer');
         $table->addColumn('stressperiods', 'text', ['notnull' => false]);
         $table->addColumn('calculation_id', 'string', ['length' => 36, 'notnull' => false]);
+        $table->addColumn('dirty', 'smallint', ['default' => 0]);
+        $table->addColumn('preprocessing', 'smallint', ['default' => 0]);
         $table->addColumn('created_at', 'string', ['length' => 255, 'notnull' => false]);
-        $table->addColumn('public', 'boolean');
+        $table->addColumn('public', 'smallint', ['default' => 1]);
         $table->setPrimaryKey(['model_id']);
         $this->addSchema($schema);
     }
@@ -62,6 +68,34 @@ class ModelProjector extends AbstractDoctrineConnectionProjector
         $this->connection->update(Table::MODFLOWMODELS, array(
             'area' => $event->geometry()->toJson(),
             'active_cells' => null,
+            'dirty' => 1,
+        ),
+            array('model_id' => $event->modelId()->toString())
+        );
+    }
+
+    public function onBoundaryWasAdded(BoundaryWasAdded $event): void
+    {
+        $this->connection->update(Table::MODFLOWMODELS, array(
+            'dirty' => 1,
+        ),
+            array('model_id' => $event->modelId()->toString())
+        );
+    }
+
+    public function onBoundaryWasRemoved(BoundaryWasRemoved $event): void
+    {
+        $this->connection->update(Table::MODFLOWMODELS, array(
+            'dirty' => 1,
+        ),
+            array('model_id' => $event->modelId()->toString())
+        );
+    }
+
+    public function onBoundaryWasUpdated(BoundaryWasUpdated $event): void
+    {
+        $this->connection->update(Table::MODFLOWMODELS, array(
+            'dirty' => 1,
         ),
             array('model_id' => $event->modelId()->toString())
         );
@@ -72,6 +106,7 @@ class ModelProjector extends AbstractDoctrineConnectionProjector
         $this->connection->update(Table::MODFLOWMODELS, array(
             'bounding_box' => json_encode($event->boundingBox()),
             'active_cells' => null,
+            'dirty' => 1,
         ),
             array('model_id' => $event->modelId()->toString())
         );
@@ -80,7 +115,19 @@ class ModelProjector extends AbstractDoctrineConnectionProjector
     public function onCalculationIdWasChanged(CalculationIdWasChanged $event): void
     {
         $this->connection->update(Table::MODFLOWMODELS, array(
-            'calculation_id' => $event->calculationId()->toString()
+            'calculation_id' => $event->calculationId()->toString(),
+            'dirty' => 0,
+            'preprocessing' => 0
+        ),
+            array('model_id' => $event->modelId()->toString())
+        );
+    }
+
+    public function onCalculationWasRequested(CalculationWasRequested $event): void
+    {
+        $this->connection->update(Table::MODFLOWMODELS, array(
+            'model_id' => $event->modelId()->toString(),
+            'preprocessing' => 1
         ),
             array('model_id' => $event->modelId()->toString())
         );
@@ -98,7 +145,8 @@ class ModelProjector extends AbstractDoctrineConnectionProjector
     {
         $this->connection->update(Table::MODFLOWMODELS, array(
             'grid_size' => json_encode($event->gridSize()),
-            'active_cells' => null
+            'active_cells' => null,
+            'dirty' => 1,
         ),
             array('model_id' => $event->modelId()->toString())
         );
@@ -107,7 +155,10 @@ class ModelProjector extends AbstractDoctrineConnectionProjector
     public function onLengthUnitWasUpdated(LengthUnitWasUpdated $event): void
     {
         $this->connection->update(Table::MODFLOWMODELS,
-            array('length_unit' => $event->lengthUnit()->toInt()),
+            array(
+                'length_unit' => $event->lengthUnit()->toInt(),
+                'dirty' => 1,
+            ),
             array('model_id' => $event->modelId()->toString())
         );
     }
@@ -129,7 +180,7 @@ class ModelProjector extends AbstractDoctrineConnectionProjector
             'length_unit' => $defaultLengthUnit->toInt(),
             'stressperiods' => StressPeriods::createDefault()->toJson(),
             'created_at' => date_format($event->createdAt(), DATE_ATOM),
-            'public' => true
+            'public' => 1
         ));
     }
 
@@ -155,8 +206,10 @@ class ModelProjector extends AbstractDoctrineConnectionProjector
                 'time_unit' => $row['time_unit'],
                 'length_unit' => $row['length_unit'],
                 'stressperiods' => $row['stressperiods'],
+                'calculation_id' => $row['calculation_id'],
+                'dirty' => $row['dirty'],
                 'created_at' => date_format($event->createdAt(), DATE_ATOM),
-                'public' => true
+                'public' => 1
             ));
         }
     }
@@ -180,7 +233,10 @@ class ModelProjector extends AbstractDoctrineConnectionProjector
     public function onTimeUnitWasUpdated(TimeUnitWasUpdated $event): void
     {
         $this->connection->update(Table::MODFLOWMODELS,
-            array('time_unit' => $event->timeUnit()->toInt()),
+            array(
+                'time_unit' => $event->timeUnit()->toInt(),
+                'dirty' => 1,
+            ),
             array('model_id' => $event->modelId()->toString())
         );
     }
@@ -188,7 +244,10 @@ class ModelProjector extends AbstractDoctrineConnectionProjector
     public function onStressPeriodsWereUpdated(StressPeriodsWereUpdated $event): void
     {
         $this->connection->update(Table::MODFLOWMODELS,
-            array('stressperiods' => $event->stressPeriods()->toJson()),
+            array(
+                'stressperiods' => $event->stressPeriods()->toJson(),
+                'dirty' => 1,
+            ),
             array('model_id' => $event->modelId()->toString())
         );
     }

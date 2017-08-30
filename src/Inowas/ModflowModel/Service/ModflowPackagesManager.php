@@ -261,13 +261,11 @@ class ModflowPackagesManager
          * Add PackageDetails for DisPackage
          * StressPeriods
          */
-
         $packages->updatePackageParameter('dis', 'perlen', $stressPeriods->perlen());
         $packages->updatePackageParameter('dis', 'nstp', $stressPeriods->nstp());
         $packages->updatePackageParameter('dis', 'tsmult', $stressPeriods->tsmult());
         $packages->updatePackageParameter('dis', 'steady', $stressPeriods->steady());
         $packages->updatePackageParameter('dis', 'nper', $stressPeriods->nper());
-
 
         /*
          * Add PackageDetails for BasPackage

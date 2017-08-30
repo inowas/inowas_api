@@ -19,7 +19,6 @@ use Inowas\Common\Boundaries\RiverDateTimeValue;
 use Inowas\Common\Boundaries\WellBoundary;
 use Inowas\Common\DateTime\DateTime;
 use Inowas\Common\DateTime\TotalTime;
-use Inowas\Common\Geometry\LineString;
 use Inowas\Common\Grid\ActiveCells;
 use Inowas\Common\Grid\BoundingBox;
 use Inowas\Common\Grid\GridSize;
@@ -29,7 +28,9 @@ use Inowas\Common\Modflow\StressPeriod;
 use Inowas\Common\Modflow\StressPeriods;
 use Inowas\Common\Modflow\TimeUnit;
 use Inowas\GeoTools\Service\GeoTools;
+use Inowas\ModflowModel\Model\Exception\InvalidBoundaryGeometryException;
 use Inowas\ModflowModel\Model\Exception\InvalidTimeUnitException;
+use Inowas\ModflowModel\Model\Exception\ZeroObservationPointException;
 use Inowas\ModflowModel\Model\Packages\ChdStressPeriodData;
 use Inowas\ModflowModel\Model\Packages\ChdStressPeriodGridCellValue;
 use Inowas\ModflowModel\Model\Packages\GhbStressPeriodData;
@@ -165,6 +166,7 @@ class StressPeriodDataGenerator
 
             /** @var GridCellDateTimeValues[] $gridCellDateTimeValues */
             $gridCellDateTimeValues = $this->calculateGridCellDateTimeValues($rivBoundary, $gridSize, $boundingBox, $activeCells);
+
             foreach ($gridCellDateTimeValues as $gridCellDateTimeValue) {
 
                 /** @var StressPeriod $stressperiod */
@@ -270,7 +272,7 @@ class StressPeriodDataGenerator
         $observationPoints = $boundary->observationPoints();
 
         if ($observationPoints->count() === 0) {
-            throw new \Exception();
+            throw ZeroObservationPointException::withBoundaryIdAndType($boundary->boundaryId(), $boundary->type());
         }
 
         if ($observationPoints->count() === 1) {
@@ -290,9 +292,10 @@ class StressPeriodDataGenerator
         if ($observationPoints->count() > 1) {
 
             $geometry = $boundary->geometry();
-            if (! $geometry->value() instanceof LineString){
-                throw new \Exception();
+            if (! $geometry->isLinestring()){
+                throw InvalidBoundaryGeometryException::withBoundaryIdAndGeometry($boundary->boundaryId(), $boundary->type(), 'LineString');
             }
+
             $gridCellDateTimeValues = $this->geoTools->interpolateGridCellDateTimeValuesFromLinestringAndObservationPoints($geometry->getLineString(), $observationPoints, $activeCells, $boundingBox, $gridSize);
         }
 

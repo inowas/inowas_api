@@ -9,7 +9,7 @@ use Inowas\Common\Id\ModflowId;
 use Inowas\Common\Status\StatusCode;
 use Inowas\ModflowModel\Model\Exception\ResponseNotValidException;
 
-class CalculationResponse
+class FlopyCalculationResponse
 {
 
     /** @var  StatusCode */
@@ -36,7 +36,7 @@ class CalculationResponse
     /** @var  int */
     protected $numberOfLayers = 1;
 
-    public static function fromJson(string $json): CalculationResponse
+    public static function fromJson(string $json): FlopyCalculationResponse
     {
         $arr = json_decode($json, true);
         if (! is_array($arr)){
@@ -45,7 +45,7 @@ class CalculationResponse
         return self::fromArray($arr);
     }
 
-    public static function fromArray(array $arr): CalculationResponse
+    public static function fromArray(array $arr): FlopyCalculationResponse
     {
         $self = new self();
         $self->statusCode = StatusCode::fromInt((int)$arr['status_code']);

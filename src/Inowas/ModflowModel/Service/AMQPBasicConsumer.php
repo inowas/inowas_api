@@ -6,7 +6,7 @@ namespace Inowas\ModflowModel\Service;
 
 use PhpAmqpLib\Connection\AMQPStreamConnection;
 
-class AMQPModflowCalculationListener
+class AMQPBasicConsumer
 {
 
     private $connection;

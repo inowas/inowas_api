@@ -16,7 +16,7 @@ services:
         arguments:
           - '@modflow_model_list'
           - '@inowas.modflowmodel.modflow_packages_manager'
-          - '@inowas.modflowmodel.amqp_modflow_calculation'
+          - '@inowas.modflowmodel.amqp_flopy_calculation'
 
     inowas.modflowmodel.calculate_stress_periods_handler:
         class: Inowas\ModflowModel\Model\Handler\CalculateStressperiodsHandler
@@ -76,6 +76,12 @@ services:
         class: Inowas\ModflowModel\Model\Handler\RemoveLayerHandler
         arguments:
           - '@modflow_model_list'
+
+    inowas.modflowmodel.request_modflow_model_calculation_handler:
+        class: Inowas\ModflowModel\Model\Handler\RequestModflowModelCalculationHandler
+        arguments:
+          - '@modflow_model_list'
+          - '@inowas.modflowmodel.amqp_modflow_calculation_request'
 
     inowas.modflowmodel.update_active_cells_handler:
         class: Inowas\ModflowModel\Model\Handler\UpdateActiveCellsHandler

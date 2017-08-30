@@ -4,12 +4,13 @@ declare(strict_types=1);
 
 namespace Inowas\ModflowModel\Model\Handler;
 
-use Inowas\ModflowModel\Model\AMQP\CalculationRequest;
+use Inowas\ModflowModel\Model\AMQP\FlopyCalculationRequest;
 use Inowas\ModflowModel\Model\Command\CalculateModflowModel;
 use Inowas\ModflowModel\Model\Exception\ModflowModelNotFoundException;
 use Inowas\ModflowModel\Model\Exception\WriteAccessFailedException;
 use Inowas\ModflowModel\Model\ModflowModelList;
 use Inowas\ModflowModel\Model\ModflowModelAggregate;
+use Inowas\ModflowModel\Service\AMQPFlopyCalculation;
 use Inowas\ModflowModel\Service\AMQPModflowCalculation;
 use Inowas\ModflowModel\Service\ModflowPackagesManager;
 
@@ -29,12 +30,12 @@ final class CalculateModflowModelHandler
      * ChangeModflowModelBoundingBoxHandler constructor.
      * @param ModflowModelList $modelList
      * @param ModflowPackagesManager $packagesManager
-     * @param AMQPModflowCalculation $calculator
+     * @param AMQPFlopyCalculation $calculator
      */
     public function __construct(
         ModflowModelList $modelList,
         ModflowPackagesManager $packagesManager,
-        AMQPModflowCalculation $calculator
+        AMQPFlopyCalculation $calculator
     )
     {
         $this->calculator = $calculator;
@@ -56,10 +57,10 @@ final class CalculateModflowModelHandler
         }
 
         $calculationId = $this->packagesManager->recalculate($modflowModel->modflowModelId());
-        $modflowModel->updateCalculationId($calculationId);
-        $packages = $this->packagesManager->getPackages($calculationId);
 
-        $request = CalculationRequest::fromParams($command->modelId(), $calculationId, $packages);
+        $modflowModel->preprocessingWasFinished($calculationId);
+        $packages = $this->packagesManager->getPackages($calculationId);
+        $request = FlopyCalculationRequest::fromParams($command->modelId(), $calculationId, $packages);
         $this->calculator->calculate($request);
         $modflowModel->calculationWasStarted($calculationId);
 

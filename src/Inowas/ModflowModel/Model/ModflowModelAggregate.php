@@ -24,7 +24,7 @@ use Inowas\Common\Modflow\TimeUnit;
 use Inowas\Common\Soilmodel\LayerId;
 use Inowas\Common\Soilmodel\Soilmodel;
 use Inowas\Common\Soilmodel\SoilmodelId;
-use Inowas\ModflowModel\Model\AMQP\CalculationResponse;
+use Inowas\ModflowModel\Model\AMQP\FlopyCalculationResponse;
 use Inowas\ModflowModel\Model\Event\ActiveCellsWereUpdated;
 use Inowas\ModflowModel\Model\Event\AreaGeometryWasUpdated;
 use Inowas\ModflowModel\Model\Event\BoundaryWasAdded;
@@ -32,6 +32,7 @@ use Inowas\ModflowModel\Model\Event\BoundaryWasRemoved;
 use Inowas\ModflowModel\Model\Event\BoundaryWasUpdated;
 use Inowas\ModflowModel\Model\Event\BoundingBoxWasChanged;
 use Inowas\ModflowModel\Model\Event\CalculationIdWasChanged;
+use Inowas\ModflowModel\Model\Event\CalculationWasRequested;
 use Inowas\ModflowModel\Model\Event\CalculationWasFinished;
 use Inowas\ModflowModel\Model\Event\CalculationWasStarted;
 use Inowas\ModflowModel\Model\Event\DescriptionWasChanged;
@@ -173,6 +174,14 @@ class ModflowModelAggregate extends AggregateRoot
         throw BoundaryNotFoundInModelException::withIds($this->modelId, $boundaryId);
     }
 
+    public function calculationRequestWasSent(UserId $userId): void
+    {
+        $this->recordThat(CalculationWasRequested::withId(
+            $userId,
+            $this->modelId
+        ));
+    }
+
     public function calculationWasStarted(CalculationId $calculationId): void
     {
         $this->recordThat(CalculationWasStarted::withId(
@@ -181,7 +190,7 @@ class ModflowModelAggregate extends AggregateRoot
         ));
     }
 
-    public function calculationWasFinished(CalculationResponse $response): void
+    public function calculationWasFinished(FlopyCalculationResponse $response): void
     {
         $this->recordThat(CalculationWasFinished::withResponse(
             $this->modelId,
@@ -288,7 +297,7 @@ class ModflowModelAggregate extends AggregateRoot
         ));
     }
 
-    public function updateCalculationId(CalculationId $calculationId): void
+    public function preprocessingWasFinished(CalculationId $calculationId): void
     {
         if ($this->calculationId->toString() !== $calculationId->toString()){
             $this->calculationId = $calculationId;
@@ -389,6 +398,9 @@ class ModflowModelAggregate extends AggregateRoot
     {
         $this->calculationId = $event->calculationId();
     }
+
+    protected function whenCalculationWasRequested(CalculationWasRequested $event): void
+    {}
 
     protected function whenCalculationWasFinished(CalculationWasFinished $event): void
     {}
