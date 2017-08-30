@@ -10,6 +10,7 @@ use Inowas\Common\Id\ModflowId;
 use Inowas\Common\Id\UserId;
 use Inowas\Common\SchemaValidator\UrlReplaceLoader;
 use Inowas\ModflowModel\Model\Command\AddBoundary;
+use Inowas\ModflowModel\Model\Command\CalculateModflowModel;
 use League\JsonGuard\Validator;
 use League\JsonReference\Dereferencer;
 use Ramsey\Uuid\Uuid;
@@ -252,6 +253,48 @@ class ModflowModelControllerTest extends EventSourcingBaseTest
 
         $content = json_decode($response->getContent(), true);
         $schema = file_get_contents('spec/schema/modflow/stressPeriods.json');
+        $dereferencer = Dereferencer::draft4();
+        $dereferencer->getLoaderManager()->registerLoader('https', new UrlReplaceLoader());
+        $dereferencedSchema = $dereferencer->dereference(json_decode($schema));
+
+        $content = json_decode(json_encode($content));
+        $validator = new Validator($content, $dereferencedSchema);
+        $this->assertTrue($validator->passes(), var_export($validator->errors(), true));
+    }
+
+    /**
+     * @test
+     */
+    public function it_returns_the_calculation_state(): void
+    {
+        $userId = UserId::fromString($this->user->getId()->toString());
+        $apiKey = $this->user->getApiKey();
+
+        $modelId = ModflowId::generate();
+        $this->createModelWithOneLayer($userId, $modelId);
+        $this->commandBus->dispatch(CalculateModflowModel::forModflowModelWitUserId($userId, $modelId));
+
+        $client = static::createClient();
+        $client->request(
+            'GET',
+            sprintf('/v2/modflowmodels/%s/calculation', $modelId->toString()),
+            array(),
+            array(),
+            array('HTTP_X-AUTH-TOKEN' => $apiKey)
+        );
+
+        $response = $client->getResponse();
+        $this->assertEquals(200, $response->getStatusCode());
+
+        $json = $response->getContent();
+        $this->assertJson($json);
+        $arr = json_decode($json, true);
+        $this->assertArrayHasKey('calculation_id', $arr);
+        $this->assertArrayHasKey('state', $arr);
+        $this->assertArrayHasKey('message', $arr);
+
+        $content = json_decode($response->getContent(), true);
+        $schema = file_get_contents('spec/schema/modflow/calculationState.json');
         $dereferencer = Dereferencer::draft4();
         $dereferencer->getLoaderManager()->registerLoader('https', new UrlReplaceLoader());
         $dereferencedSchema = $dereferencer->dereference(json_decode($schema));

@@ -37,6 +37,20 @@ class CalculationResultsFinder
         $this->reader = $reader;
     }
 
+    public function getCalculationState(CalculationId $calculationId): ?array
+    {
+        $result = $this->connection->fetchAssoc(
+            sprintf('SELECT calculation_id, state, message FROM %s WHERE calculation_id = :calculation_id', Table::CALCULATIONS),
+            array('calculation_id' => $calculationId->toString())
+        );
+
+        if ($result === false) {
+            return null;
+        }
+
+        return $result;
+    }
+
     public function getCalculationDetailsById(CalculationId $calculationId): ?array
     {
         $result = $this->connection->fetchAssoc(

@@ -12,10 +12,8 @@ use Inowas\Common\Modflow\Results;
 use Inowas\Common\Soilmodel\LayerId;
 use Inowas\ModflowBundle\Exception\AccessDeniedException;
 use Inowas\ModflowBundle\Exception\NotFoundException;
-use Inowas\ModflowModel\Model\Command\CalculateModflowModel;
 use Nelmio\ApiDocBundle\Annotation\ApiDoc;
 use Symfony\Component\HttpFoundation\JsonResponse;
-use Symfony\Component\HttpFoundation\RedirectResponse;
 
 /** @noinspection LongInheritanceChainInspection */
 class ModflowModelController extends InowasRestController
@@ -217,31 +215,6 @@ class ModflowModelController extends InowasRestController
     }
 
     /**
-     * Get details of last calculation of modflow model by id.
-     *
-     * @ApiDoc(
-     *   resource = true,
-     *   description = "Get details of last calculation of modflow model by id.",
-     *   statusCodes = {
-     *     200 = "Returned when successful"
-     *   }
-     * )
-     *
-     * @param string $id
-     * @Rest\Get("/modflowmodels/{id}/calculation")
-     * @return RedirectResponse
-     * @throws \InvalidArgumentException
-     * @throws NotFoundException
-     */
-    public function getModflowModelCalculationAction(string $id): RedirectResponse
-    {
-        $this->assertUuidIsValid($id);
-        $modelId = ModflowId::fromString($id);
-        $calculationId = $this->get('inowas.modflowmodel.model_finder')->getCalculationIdByModelId($modelId);
-        return new RedirectResponse($calculationId);
-    }
-
-    /**
      * Get calculation results by model id.
      *
      * @ApiDoc(
@@ -361,33 +334,50 @@ class ModflowModelController extends InowasRestController
     }
 
     /**
-     * Calculate the model.
+     * Returns the calculation state of the model.
      *
      * @ApiDoc(
      *   resource = true,
-     *   description = "Calculate the model.",
+     *   description = "Returns the calculation state of the model",
      *   statusCodes = {
      *     200 = "Returned when successful"
      *   }
      * )
      *
      * @param string $id
-     * @Rest\Post("/modflowmodels/{id}/calculate")
+     * @Rest\Get("/modflowmodels/{id}/calculation")
      * @return JsonResponse
-     * @throws \Symfony\Component\DependencyInjection\Exception\ServiceNotFoundException
-     * @throws \Symfony\Component\DependencyInjection\Exception\ServiceCircularReferenceException
-     * @throws \Prooph\ServiceBus\Exception\CommandDispatchException
+     * @throws \Inowas\ModflowBundle\Exception\AccessDeniedException
      */
-    public function postModflowModelCalculateAction(string $id): JsonResponse
+    public function getModflowModelCalculationAction(string $id): JsonResponse
     {
         $this->assertUuidIsValid($id);
         $modelId = ModflowId::fromString($id);
 
-        $this->container->get('prooph_service_bus.modflow_command_bus')->dispatch(
-            CalculateModflowModel::forModflowModelFromTerminal($modelId)
-        );
+        $userId = $this->getUserId();
 
-        return new JsonResponse('CalculationCommand sent');
+        if (! $this->get('inowas.modflowmodel.model_finder')->userHasReadAccessToModel($userId, $modelId)) {
+            throw AccessDeniedException::withMessage(
+                sprintf(
+                    'Model not found or user with Id %s does not have access to model with id %s',
+                    $userId->toString(),
+                    $modelId->toString()
+                )
+            );
+        }
+
+        $calculationId = $this->get('inowas.modflowmodel.model_finder')->getCalculationIdByModelId($modelId);
+
+        if (!$calculationId instanceof CalculationId) {
+            return new JsonResponse([]);
+        }
+
+        $state = $this->get('inowas.modflowmodel.calculation_results_finder')->getCalculationState($calculationId);
+
+        if (null === $state) {
+            return new JsonResponse([]);
+        }
+
+        return new JsonResponse($state);
     }
-
 }

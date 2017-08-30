@@ -22,7 +22,7 @@ class CalculationResultsProjector extends AbstractDoctrineConnectionProjector
         $table = $schema->createTable(Table::CALCULATIONS);
         $table->addColumn('calculation_id', 'string', ['length' => 36]);
         $table->addColumn('state', 'integer', ['default' => 0]);
-        $table->addColumn('message', 'text', ['notnull' => false]);
+        $table->addColumn('message', 'text', ['default' => '']);
         $table->addColumn('heads', 'text', ['default' => '[]']);
         $table->addColumn('budgets', 'text', ['default' => '[]']);
         $table->addColumn('drawdowns', 'text', ['default' => '[]']);

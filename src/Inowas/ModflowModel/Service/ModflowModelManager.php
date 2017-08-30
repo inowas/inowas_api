@@ -98,7 +98,13 @@ class ModflowModelManager
         return $this->modelFinder->getStressPeriodsByModelId($modflowId);
     }
 
-    /** @noinspection MoreThanThreeArgumentsInspection */
+    /** @noinspection MoreThanThreeArgumentsInspection
+     * @param ModflowId $modflowId
+     * @param DateTime $start
+     * @param DateTime $end
+     * @param TimeUnit $timeUnit
+     * @return StressPeriods
+     */
     public function calculateStressPeriods(ModflowId $modflowId, DateTime $start, DateTime $end, TimeUnit $timeUnit): StressPeriods
     {
         /** @var DateTime[] $bcDates */
