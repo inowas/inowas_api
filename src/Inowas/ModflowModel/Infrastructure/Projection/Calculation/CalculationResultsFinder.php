@@ -13,6 +13,7 @@ use Inowas\Common\Grid\Nrow;
 use Inowas\Common\Calculation\ResultType;
 use Inowas\Common\DateTime\TotalTime;
 use Inowas\Common\Id\ModflowId;
+use Inowas\Common\Modflow\Extension;
 use Inowas\Common\Modflow\LayerValues;
 use Inowas\Common\Modflow\Results;
 use Inowas\Common\Modflow\StressPeriods;
@@ -173,6 +174,29 @@ class CalculationResultsFinder
         return LayerValues::fromArray($result);
     }
 
+    /**
+     * @param CalculationId $calculationId
+     * @return array
+     */
+    public function getFileList(CalculationId $calculationId): array
+    {
+        $request = ReadDataRequest::forFileList($calculationId);
+        $response = ReadDataResponse::fromJson($this->reader->read($request));
+        return $response->data();
+    }
+
+    /**
+     * @param CalculationId $calculationId
+     * @param Extension $extension
+     * @return string
+     */
+    public function getFile(CalculationId $calculationId, Extension $extension): string
+    {
+        $request = ReadDataRequest::forFile($calculationId, $extension);
+        $response = ReadDataResponse::fromJson($this->reader->read($request));
+        return $response->data()[0];
+    }
+
     /** @noinspection MoreThanThreeArgumentsInspection
      * @param CalculationId $calculationId
      * @param ResultType $type
@@ -200,6 +224,7 @@ class CalculationResultsFinder
      * @param LayerNumber $layerNumber
      * @param TotalTime $totalTime
      * @return HeadData
+     * @throws \RuntimeException
      */
     public function findHeadDifference(CalculationId $calculationId, CalculationId $calculationId2, ResultType $type, LayerNumber $layerNumber, TotalTime $totalTime): HeadData
     {

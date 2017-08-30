@@ -13,6 +13,7 @@ use Inowas\Common\Grid\LayerNumber;
 use Inowas\Common\Grid\Ncol;
 use Inowas\Common\Grid\Nrow;
 use Inowas\Common\Id\CalculationId;
+use Inowas\Common\Modflow\Extension;
 use Inowas\Common\Modflow\LayerValues;
 use Inowas\Common\Modflow\TotalTimes;
 use Inowas\ModflowBundle\Exception\NotFoundException;
@@ -102,6 +103,49 @@ class ModflowCalculationController extends InowasRestController
         }
 
         return new JsonResponse($layerValues);
+    }
+
+    /**
+     * Get file of modflow calculation
+     *
+     * @ApiDoc(
+     *   resource = true,
+     *   description = "Returns the file of modflow calculation.",
+     *   statusCodes = {
+     *     200 = "Returned when successful"
+     *   }
+     * )
+     *
+     * @Rest\Get("/calculations/{id}/file/{extension}")
+     * @param string $id
+     * @param string $extension
+     * @return JsonResponse
+     */
+    public function getCalculationFileAction(string $id, string $extension): JsonResponse
+    {
+        $file = $this->get('inowas.modflowmodel.calculation_results_finder')->getFile(CalculationId::fromString($id), Extension::fromString($extension));
+        return new JsonResponse($file);
+    }
+
+    /**
+     * Get fileList of modflow calculation
+     *
+     * @ApiDoc(
+     *   resource = true,
+     *   description = "Returns the fileList of modflow calculation.",
+     *   statusCodes = {
+     *     200 = "Returned when successful"
+     *   }
+     * )
+     *
+     * @Rest\Get("/calculations/{id}/filelist")
+     * @param string $id
+     * @return JsonResponse
+     */
+    public function getCalculationFileListAction(string $id): JsonResponse
+    {
+        $list = $this->get('inowas.modflowmodel.calculation_results_finder')->getFileList(CalculationId::fromString($id));
+        return new JsonResponse($list);
     }
 
     /** @noinspection MoreThanThreeArgumentsInspection

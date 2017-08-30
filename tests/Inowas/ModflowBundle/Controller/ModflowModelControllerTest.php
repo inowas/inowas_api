@@ -264,6 +264,7 @@ class ModflowModelControllerTest extends EventSourcingBaseTest
 
     /**
      * @test
+     * @group messaging-integration-tests
      */
     public function it_returns_the_calculation_state(): void
     {
