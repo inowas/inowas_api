@@ -69,7 +69,7 @@ class ModflowModelControllerTest extends EventSourcingBaseTest
     /**
      * @test
      */
-    public function it_returns_403_unauthorized_when_api_key_not_known(): void
+    public function it_returns_401_unauthorized_when_api_key_not_known(): void
     {
         $client = static::createClient();
         $client->request(
@@ -81,7 +81,7 @@ class ModflowModelControllerTest extends EventSourcingBaseTest
         );
 
         $response = $client->getResponse();
-        $this->assertEquals(403, $response->getStatusCode());
+        $this->assertEquals(401, $response->getStatusCode());
         $this->assertEquals('Username could not be found.', json_decode($response->getContent())->message);
     }
 
