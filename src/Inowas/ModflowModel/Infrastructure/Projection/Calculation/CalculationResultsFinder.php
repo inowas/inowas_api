@@ -162,12 +162,12 @@ class CalculationResultsFinder
         $result = [];
 
         for ($l = 0; $l<$numberOfLayers; $l++) {
-            if (count($drawdowns)>0){
-                $result[$l][] =  ResultType::DRAWDOWN_TYPE;
-            }
-
             if (count($heads)>0){
                 $result[$l][] =  ResultType::HEAD_TYPE;
+            }
+
+            if (count($drawdowns)>0){
+                $result[$l][] =  ResultType::DRAWDOWN_TYPE;
             }
         }
 
