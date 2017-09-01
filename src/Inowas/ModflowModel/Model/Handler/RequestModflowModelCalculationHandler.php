@@ -52,7 +52,6 @@ final class RequestModflowModelCalculationHandler
         $this->asyncModflowCalculator->calculate($request);
 
         $modflowModel->calculationRequestWasSent($command->userId());
-
         $this->modelList->save($modflowModel);
     }
 }
