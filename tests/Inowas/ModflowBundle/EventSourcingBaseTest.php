@@ -377,9 +377,9 @@ abstract class EventSourcingBaseTest extends WebTestCase
         ));
     }
 
-    protected function createScenario(ScenarioAnalysisId $id, UserId $owner, ModflowId $modelId, ModflowId $scenarioId, Name $name, Description $description): void
+    protected function createScenario(ScenarioAnalysisId $id, UserId $owner, ModflowId $modelId, ModflowId $scenarioId): void
     {
-        $this->commandBus->dispatch(CreateScenario::byUserWithBaseModelAndScenarioIdAndName($id, $owner, $modelId, $scenarioId, $name, $description));
+        $this->commandBus->dispatch(CreateScenario::byUserWithIds($id, $owner, $modelId, $scenarioId));
     }
 
     protected function createModelWithOneLayer(UserId $ownerId, ModflowId $modelId): void

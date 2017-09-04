@@ -184,15 +184,15 @@ class ScenarioAnalysisControllerTest extends EventSourcingBaseTest
         ));
 
         $scenarioId = ModflowId::generate();
-        $this->commandBus->dispatch(CreateScenario::byUserWithBaseModelAndScenarioIdAndName(
+        $this->commandBus->dispatch(CreateScenario::byUserWithIds(
             $scenarioAnalysisId,
             $userId,
             $modelId,
-            $scenarioId,
-            Name::fromString('TestScenarioName'),
-            Description::fromString('TestScenarioDescription')
+            $scenarioId
         ));
 
+        $this->commandBus->dispatch(ChangeName::forModflowModel($userId, $scenarioId, Name::fromString('TestScenarioName')));
+        $this->commandBus->dispatch(ChangeDescription::forModflowModel($userId, $scenarioId, Description::fromString('TestScenarioDescription')));
 
         $client = static::createClient();
         $client->request(
@@ -258,14 +258,15 @@ class ScenarioAnalysisControllerTest extends EventSourcingBaseTest
         ));
 
         $scenarioId = ModflowId::generate();
-        $this->commandBus->dispatch(CreateScenario::byUserWithBaseModelAndScenarioIdAndName(
+        $this->commandBus->dispatch(CreateScenario::byUserWithIds(
             $scenarioAnalysisId,
             $userId,
             $modelId,
-            $scenarioId,
-            Name::fromString('Scenario1Name'),
-            Description::fromString('Scenario1Description')
+            $scenarioId
         ));
+
+        $this->commandBus->dispatch(ChangeName::forModflowModel($userId, $modelId, Name::fromString('Scenario1Name')));
+        $this->commandBus->dispatch(ChangeDescription::forModflowModel($userId, $modelId, Description::fromString('Scenario1Description')));
 
         $client = static::createClient();
         $client->request(

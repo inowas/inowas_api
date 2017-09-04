@@ -19,6 +19,11 @@ use Inowas\ModflowModel\Model\Command\UpdateBoundary;
 use Inowas\ModflowModel\Model\Command\UpdateLayer;
 use Inowas\ModflowModel\Model\Command\UpdateModflowModel;
 use Inowas\ModflowModel\Model\Command\UpdateStressPeriods;
+use Inowas\ScenarioAnalysis\Model\Command\CloneScenarioAnalysis;
+use Inowas\ScenarioAnalysis\Model\Command\CreateScenario;
+use Inowas\ScenarioAnalysis\Model\Command\CreateScenarioAnalysis;
+use Inowas\ScenarioAnalysis\Model\Command\DeleteScenario;
+use Inowas\ScenarioAnalysis\Model\Command\DeleteScenarioAnalysis;
 use Nelmio\ApiDocBundle\Annotation\ApiDoc;
 use Prooph\Common\Messaging\Message;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -33,8 +38,13 @@ class MessageBoxController extends InowasRestController
         'addLayer' => AddLayer::class,
         'calculateModflowModel' => CalculateModflowModel::class,
         'cloneModflowModel' => CloneModflowModel::class,
+        'cloneScenarioAnalysis' => CloneScenarioAnalysis::class,
         'createModflowModel' => CreateModflowModel::class,
+        'createScenarioAnalysis' => CreateScenarioAnalysis::class,
+        'createScenario' => CreateScenario::class,
         'deleteModflowModel' => DeleteModflowModel::class,
+        'deleteScenario' => DeleteScenario::class,
+        'deleteScenarioAnalysis' => DeleteScenarioAnalysis::class,
         'removeBoundary' => RemoveBoundary::class,
         'removeLayer' => RemoveLayer::class,
         'requestModflowModelCalculation' => RequestModflowModelCalculation::class,

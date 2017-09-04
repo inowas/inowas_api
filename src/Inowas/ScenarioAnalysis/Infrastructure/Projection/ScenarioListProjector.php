@@ -127,7 +127,7 @@ class ScenarioListProjector extends AbstractDoctrineConnectionProjector
     public function onScenarioWasCreated(ScenarioWasCreated $event): void
     {
         $result = $this->connection->fetchAssoc(
-            sprintf('SELECT calculation_id from %s WHERE scenario_id = :scenario_id', Table::SCENARIO_LIST),
+            sprintf('SELECT calculation_id, name, description from %s WHERE scenario_id = :scenario_id', Table::SCENARIO_LIST),
             array('scenario_id' => $event->baseModelId()->toString())
         );
 
@@ -141,8 +141,8 @@ class ScenarioListProjector extends AbstractDoctrineConnectionProjector
             'base_model_id' => $event->baseModelId()->toString(),
             'scenario_analysis_id' => $event->scenarioAnalysisId()->toString(),
             'user_id' => $event->userId()->toString(),
-            'name' => $event->name()->toString(),
-            'description' => $event->description()->toString(),
+            'name' => $result['name'],
+            'description' => $result['description'],
             'calculation_id' => $calculationId,
             'is_base_model' => 0,
             'is_scenario' => 1,

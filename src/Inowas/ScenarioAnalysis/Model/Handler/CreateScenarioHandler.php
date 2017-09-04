@@ -4,8 +4,6 @@ declare(strict_types=1);
 
 namespace Inowas\ScenarioAnalysis\Model\Handler;
 
-use Inowas\Common\Modflow\Description;
-use Inowas\Common\Modflow\Name;
 use Inowas\ScenarioAnalysis\Infrastructure\Projection\ScenarioAnalysisFinder;
 use Inowas\ScenarioAnalysis\Model\Command\CreateScenario;
 use Inowas\ScenarioAnalysis\Model\Exception\ScenarioAnalysisNotFoundException;
@@ -35,23 +33,10 @@ final class CreateScenarioHandler
             throw ScenarioAnalysisNotFoundException::withId($command->scenarioAnalysisId());
         }
 
-        if (! $command->hasPrefix()) {
-            $scenarioName = $command->name();
-            $descriptionName = $command->description();
-        } else {
-            $scenarioName = $this->finder->getScenarioNameById($command->baseModelId());
-            $scenarioName = Name::fromString(sprintf('%s %s', $command->prefix(), $scenarioName->toString()));
-
-            $descriptionName = $this->finder->getScenarioDescriptionById($command->baseModelId());
-            $descriptionName = Description::fromString(sprintf('%s %s', $command->prefix(), $descriptionName->toString()));
-        }
-
         $scenarioAnalysis->createScenario(
             $command->userId(),
             $command->scenarioId(),
-            $command->baseModelId(),
-            $scenarioName,
-            $descriptionName
+            $command->baseModelId()
         );
 
         $this->scenarioAnalysisList->save($scenarioAnalysis);

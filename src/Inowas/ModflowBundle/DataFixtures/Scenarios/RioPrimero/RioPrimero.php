@@ -46,6 +46,8 @@ use Inowas\Common\Soilmodel\Layer;
 use Inowas\Common\Soilmodel\LayerId;
 use Inowas\ModflowModel\Model\Command\AddBoundary;
 use Inowas\ModflowModel\Model\Command\AddLayer;
+use Inowas\ModflowModel\Model\Command\ChangeDescription;
+use Inowas\ModflowModel\Model\Command\ChangeName;
 use Inowas\ModflowModel\Model\Packages\OcStressPeriod;
 use Inowas\ModflowModel\Model\Packages\OcStressPeriodData;
 use Inowas\Common\Modflow\PackageName;
@@ -523,14 +525,15 @@ class RioPrimero extends LoadScenarioBase
          * Begin add Scenario 0
          */
         $scenarioId = ModflowId::generate();
-        $commandBus->dispatch(CreateScenario::byUserWithBaseModelAndScenarioIdAndName(
+        $commandBus->dispatch(CreateScenario::byUserWithIds(
             $scenarioAnalysisId,
             $ownerId,
             $baseModelId,
-            $scenarioId,
-            Name::fromString('Scenario 0: Rio Primero 2020'),
-            Description::fromString('Future Prediction for the year 2020'))
-        );
+            $scenarioId
+        ));
+
+        $commandBus->dispatch(ChangeName::forModflowModel($ownerId, $scenarioId, Name::fromString('Scenario 0: Rio Primero 2020')));
+        $commandBus->dispatch(ChangeDescription::forModflowModel($ownerId, $scenarioId, Description::fromString('Future Prediction for the year 2020')));
 
         $wells = array(
             array('name', 'point', 'type', 'layer', 'date', 'pumpingRate'),

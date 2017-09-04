@@ -37,7 +37,9 @@ use Inowas\ModflowModel\Model\Command\AddLayer;
 use Inowas\ModflowModel\Model\Command\CalculateModflowModel;
 use Inowas\ModflowModel\Model\Command\CalculateStressPeriods;
 use Inowas\ModflowModel\Model\Command\ChangeBoundingBox;
+use Inowas\ModflowModel\Model\Command\ChangeDescription;
 use Inowas\ModflowModel\Model\Command\ChangeFlowPackage;
+use Inowas\ModflowModel\Model\Command\ChangeName;
 use Inowas\ModflowModel\Model\Command\UpdateBoundary;
 use Inowas\ModflowModel\Model\Command\UpdateModflowPackageParameter;
 use Inowas\ModflowModel\Model\Packages\OcStressPeriod;
@@ -377,14 +379,15 @@ class Hanoi extends LoadScenarioBase
         */
         echo sprintf("CreateScenario 1.\r\n");
         $scenarioId = ModflowId::generate();
-        $commandBus->dispatch(CreateScenario::byUserWithBaseModelAndScenarioIdAndName(
+        $commandBus->dispatch(CreateScenario::byUserWithIds(
             $scenarioAnalysisId,
             $ownerId,
             $modelId,
-            $scenarioId,
-            Name::fromString('Scenario 1'),
-            Description::fromString('Simulation of MAR type river bank filtration'))
-        );
+            $scenarioId
+        ));
+
+        $commandBus->dispatch(ChangeName::forModflowModel($ownerId, $modelId, Name::fromString('Scenario 1')));
+        $commandBus->dispatch(ChangeDescription::forModflowModel($ownerId, $modelId, Description::fromString('Simulation of MAR type river bank filtration')));
 
         $boundariesFinder = $this->container->get('inowas.modflowmodel.boundary_manager');
         $rbfRelocatedWellNamesAndGeometry = array(
@@ -420,14 +423,15 @@ class Hanoi extends LoadScenarioBase
          */
         echo sprintf("CreateScenario 2.\r\n");
         $scenarioId = ModflowId::generate();
-        $commandBus->dispatch(CreateScenario::byUserWithBaseModelAndScenarioIdAndName(
+        $commandBus->dispatch(CreateScenario::byUserWithIds(
             $scenarioAnalysisId,
             $ownerId,
             $modelId,
-            $scenarioId,
-            Name::fromString('Scenario 2'),
-            Description::fromString('Simulation of MAR type injection wells'))
-        );
+            $scenarioId
+        ));
+
+        $commandBus->dispatch(ChangeName::forModflowModel($ownerId, $modelId, Name::fromString('Scenario 2')));
+        $commandBus->dispatch(ChangeDescription::forModflowModel($ownerId, $modelId, Description::fromString('Simulation of MAR type injection wells')));
 
         # THIS WELLS ARE THE YELLOW DOTS IN THE RIGHT IMAGE
         $header = array('name', 'x', 'y', 'srid', 'pumpingrate');
@@ -467,14 +471,15 @@ class Hanoi extends LoadScenarioBase
          */
         echo sprintf("CreateScenario 3.\r\n");
         $scenarioId = ModflowId::generate();
-        $commandBus->dispatch(CreateScenario::byUserWithBaseModelAndScenarioIdAndName(
+        $commandBus->dispatch(CreateScenario::byUserWithIds(
             $scenarioAnalysisId,
             $ownerId,
             $modelId,
-            $scenarioId,
-            Name::fromString('Scenario 3'),
-            Description::fromString('Combination of MAR types river bank filtration and injection wells'))
-        );
+            $scenarioId
+        ));
+
+        $commandBus->dispatch(ChangeName::forModflowModel($ownerId, $modelId, Name::fromString('Scenario 3')));
+        $commandBus->dispatch(ChangeDescription::forModflowModel($ownerId, $modelId, Description::fromString('Combination of MAR types river bank filtration and injection wells')));
 
         $boundariesFinder = $this->container->get('inowas.modflowmodel.boundary_manager');
         $rbfRelocatedWellNamesAndGeometry = array(

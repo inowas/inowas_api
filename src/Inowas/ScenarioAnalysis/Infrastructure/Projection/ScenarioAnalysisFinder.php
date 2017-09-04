@@ -21,6 +21,16 @@ class ScenarioAnalysisFinder
         $this->connection->setFetchMode(\PDO::FETCH_ASSOC);
     }
 
+    public function scenarioAnalysisExists(ScenarioAnalysisId $id): bool
+    {
+        $results = $this->connection->fetchAll(
+            sprintf('SELECT scenario_analysis_id FROM %s WHERE scenario_analysis_id = :scenario_analysis_id', Table::SCENARIO_ANALYSIS_LIST),
+            ['scenario_analysis_id' => $id->toString()]
+        );
+
+        return !($results === false);
+    }
+
     public function findScenarioAnalysesByUserId(UserId $userId): array
     {
         $results = $this->connection->fetchAll(

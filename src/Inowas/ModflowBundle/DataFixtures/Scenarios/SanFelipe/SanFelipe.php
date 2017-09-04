@@ -34,7 +34,6 @@ use Inowas\Common\Modflow\LengthUnit;
 use Inowas\Common\Modflow\Description;
 use Inowas\Common\Modflow\Name;
 use Inowas\Common\Modflow\Ss;
-use Inowas\Common\Modflow\StressPeriod;
 use Inowas\Common\Modflow\Sy;
 use Inowas\Common\Modflow\Top;
 use Inowas\Common\Modflow\Vka;
@@ -43,18 +42,17 @@ use Inowas\Common\Soilmodel\LayerId;
 use Inowas\ModflowModel\Model\Command\AddBoundary;
 use Inowas\ModflowModel\Model\Command\AddLayer;
 use Inowas\ModflowModel\Model\Command\CalculateStressPeriods;
-use Inowas\ModflowModel\Model\Command\ChangeFlowPackage;
+use Inowas\ModflowModel\Model\Command\ChangeDescription;
+use Inowas\ModflowModel\Model\Command\ChangeName;
 use Inowas\ModflowModel\Model\Packages\OcStressPeriod;
 use Inowas\ModflowModel\Model\Packages\OcStressPeriodData;
 use Inowas\Common\Modflow\PackageName;
 use Inowas\Common\Modflow\ParameterName;
-use Inowas\Common\Modflow\StressPeriods;
 use Inowas\Common\Modflow\TimeUnit;
 use Inowas\ModflowModel\Model\Command\CalculateModflowModel;
 use Inowas\ModflowModel\Model\Command\CreateModflowModel;
 use Inowas\ModflowBundle\DataFixtures\Scenarios\LoadScenarioBase;
 use Inowas\ModflowModel\Model\Command\UpdateModflowPackageParameter;
-use Inowas\ModflowModel\Model\Command\UpdateStressPeriods;
 use Inowas\ScenarioAnalysis\Model\Command\CreateScenario;
 use Inowas\ScenarioAnalysis\Model\Command\CreateScenarioAnalysis;
 use Inowas\ScenarioAnalysis\Model\ScenarioAnalysisDescription;
@@ -606,15 +604,15 @@ class SanFelipe extends LoadScenarioBase
          * Begin add Scenario 0
          */
         $scenarioId = ModflowId::generate();
-        $commandBus->dispatch(CreateScenario::byUserWithBaseModelAndScenarioIdAndName(
+        $commandBus->dispatch(CreateScenario::byUserWithIds(
             $scenarioAnalysisId,
             $ownerId,
             $baseModelId,
-            $scenarioId,
-            Name::fromString('Scenario 0: San Felipe'),
-            Description::fromString('Future Prediction for the year 2020'))
-        );
+            $scenarioId
+        ));
 
+        $commandBus->dispatch(ChangeName::forModflowModel($ownerId, $scenarioId, Name::fromString('Scenario 0: San Felipe')));
+        $commandBus->dispatch(ChangeDescription::forModflowModel($ownerId, $scenarioId, Description::fromString('Future Prediction for the year 2020')));
 
         /*
          * Add more Wells

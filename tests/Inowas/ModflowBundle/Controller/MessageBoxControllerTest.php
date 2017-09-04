@@ -11,6 +11,9 @@ use Inowas\Common\Id\ModflowId;
 use Inowas\Common\Id\UserId;
 use Inowas\Common\Modflow\ModflowModel;
 use Inowas\ModflowModel\Model\Command\AddBoundary;
+use Inowas\ScenarioAnalysis\Model\ScenarioAnalysisDescription;
+use Inowas\ScenarioAnalysis\Model\ScenarioAnalysisId;
+use Inowas\ScenarioAnalysis\Model\ScenarioAnalysisName;
 use Tests\Inowas\ModflowBundle\EventSourcingBaseTest;
 
 class MessageBoxControllerTest extends EventSourcingBaseTest
@@ -196,6 +199,55 @@ class MessageBoxControllerTest extends EventSourcingBaseTest
         );
 
         $this->assertTrue($this->container->get('inowas.modflowmodel.model_finder')->modelExists($newModelId));
+    }
+
+    /**
+     * @test
+     */
+    public function it_can_receive_create_scenario_analysis_command(): void
+    {
+        $scenarioAnalysisId = ScenarioAnalysisId::fromString('2778bb9b-8048-40f4-b582-cfd3b15f2917');
+        $command = json_decode(file_get_contents($this->fileLocation . 'createScenarioAnalysis.json'), true);
+
+        $apiKey = $this->user->getApiKey();
+        $client = static::createClient();
+        $client->request(
+            'POST',
+            '/v2/messagebox',
+            array(),
+            array(),
+            array('HTTP_X-AUTH-TOKEN' => $apiKey),
+            json_encode($command)
+        );
+
+        $this->assertTrue($this->container->get('inowas.scenarioanalysis.scenarioanalysis_finder')->scenarioAnalysisExists($scenarioAnalysisId));
+    }
+
+    /**
+     * @test
+     */
+    public function it_can_receive_delete_scenario_analysis_command(): void
+    {
+        $scenarioAnalysisId = ScenarioAnalysisId::fromString('2778bb9b-8048-40f4-b582-cfd3b15f2917');
+        $userId = UserId::fromString($this->user->getId()->toString());
+        $modelId = ModflowId::fromString('0562e97a-da43-4f79-8986-438fae0d2fc1');
+        $this->createModel($userId, $modelId);
+        $this->createScenarioAnalysis($scenarioAnalysisId, $userId, $modelId, ScenarioAnalysisName::fromString('NAME'), ScenarioAnalysisDescription::fromString('DESC'));
+
+        $command = json_decode(file_get_contents($this->fileLocation . 'deleteScenarioAnalysis.json'), true);
+
+        $apiKey = $this->user->getApiKey();
+        $client = static::createClient();
+        $client->request(
+            'POST',
+            '/v2/messagebox',
+            array(),
+            array(),
+            array('HTTP_X-AUTH-TOKEN' => $apiKey),
+            json_encode($command)
+        );
+
+        $this->assertTrue($this->container->get('inowas.scenarioanalysis.scenarioanalysis_finder')->scenarioAnalysisExists($scenarioAnalysisId));
     }
 
     /**

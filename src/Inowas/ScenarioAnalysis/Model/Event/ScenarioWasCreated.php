@@ -38,24 +38,20 @@ class ScenarioWasCreated extends AggregateChanged
      * @param UserId $userId
      * @param ModflowId $scenarioId
      * @param ModflowId $baseModelId
-     * @param Name $name
-     * @param Description $description
      * @return ScenarioWasCreated
      */
-    public static function from(ScenarioAnalysisId $id, UserId $userId, ModflowId $scenarioId, ModflowId $baseModelId, Name $name, Description $description): ScenarioWasCreated
+    public static function from(ScenarioAnalysisId $id, UserId $userId, ModflowId $scenarioId, ModflowId $baseModelId): ScenarioWasCreated
     {
+
+        /** @var ScenarioWasCreated $event */
         $event = self::occur($id->toString(), [
             'scenario_id' => $scenarioId->toString(),
             'basemodel_id' => $baseModelId->toString(),
-            'user_id' => $userId->toString(),
-            'name' => $name->toString(),
-            'description' => $description->toString()
+            'user_id' => $userId->toString()
         ]);
 
         $event->scenarioId = $scenarioId;
         $event->userId = $userId;
-        $event->name = $name;
-        $event->description = $description;
         $event->baseModelId = $baseModelId;
 
 

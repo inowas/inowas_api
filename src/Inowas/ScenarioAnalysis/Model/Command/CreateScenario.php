@@ -4,81 +4,53 @@ declare(strict_types=1);
 
 namespace Inowas\ScenarioAnalysis\Model\Command;
 
+use Inowas\Common\Command\AbstractJsonSchemaCommand;
 use Inowas\Common\Id\ModflowId;
 use Inowas\Common\Id\UserId;
-use Inowas\Common\Modflow\Name;
-use Inowas\Common\Modflow\Description;
 use Inowas\ScenarioAnalysis\Model\ScenarioAnalysisId;
-use Prooph\Common\Messaging\Command;
-use Prooph\Common\Messaging\PayloadConstructable;
-use Prooph\Common\Messaging\PayloadTrait;
 
-class CreateScenario extends Command implements PayloadConstructable
+class CreateScenario extends AbstractJsonSchemaCommand
 {
-
-    use PayloadTrait;
-
     /** @noinspection MoreThanThreeArgumentsInspection
      * @param ScenarioAnalysisId $scenarioAnalysisId
      * @param UserId $userId
      * @param ModflowId $baseModelId
      * @param ModflowId $scenarioId
-     * @param Name $name
-     * @param Description $description
      * @return CreateScenario
      */
-    public static function byUserWithBaseModelAndScenarioIdAndName(
+    public static function byUserWithIds(
         ScenarioAnalysisId $scenarioAnalysisId,
         UserId $userId,
         ModflowId $baseModelId,
-        ModflowId $scenarioId,
-        Name $name,
-        Description $description
+        ModflowId $scenarioId
     ): CreateScenario
     {
-        return new self([
-            'scenarioanalysis_id' => $scenarioAnalysisId->toString(),
-            'user_id' => $userId->toString(),
-            'basemodel_id' => $baseModelId->toString(),
-            'scenario_id' => $scenarioId->toString(),
-            'name' => $name->toString(),
-            'description' => $description->toString()
-        ]);
+        $self = new static(
+            [
+                'id' => $scenarioAnalysisId->toString(),
+                'basemodel_id' => $baseModelId->toString(),
+                'scenario_id' => $scenarioId->toString()
+            ]
+        );
+
+        /** @var CreateScenario $self */
+        $self = $self->withAddedMetadata('user_id', $userId->toString());
+        return $self;
     }
 
-    /** @noinspection MoreThanThreeArgumentsInspection
-     * @param ScenarioAnalysisId $scenarioAnalysisId
-     * @param UserId $userId
-     * @param ModflowId $baseModelId
-     * @param ModflowId $scenarioId
-     * @param string $prefix
-     * @return CreateScenario
-     */
-    public static function byUserWithBaseModelAndScenarioIdAndPrefix(
-        ScenarioAnalysisId $scenarioAnalysisId,
-        UserId $userId,
-        ModflowId $baseModelId,
-        ModflowId $scenarioId,
-        string $prefix
-    ): CreateScenario
+    public function schema(): string
     {
-        return new self([
-            'scenarioanalysis_id' => $scenarioAnalysisId->toString(),
-            'user_id' => $userId->toString(),
-            'basemodel_id' => $baseModelId->toString(),
-            'scenario_id' => $scenarioId->toString(),
-            'prefix' => $prefix
-        ]);
+        return 'file://spec/schema/modflow/command/createScenarioPayload.json';
     }
 
     public function scenarioAnalysisId(): ScenarioAnalysisId
     {
-        return ScenarioAnalysisId::fromString($this->payload['scenarioanalysis_id']);
+        return ScenarioAnalysisId::fromString($this->payload['id']);
     }
 
     public function userId(): UserId
     {
-        return UserId::fromString($this->payload['user_id']);
+        return UserId::fromString($this->metadata['user_id']);
     }
 
     public function baseModelId(): ModflowId
@@ -90,33 +62,4 @@ class CreateScenario extends Command implements PayloadConstructable
     {
         return ModflowId::fromString($this->payload['scenario_id']);
     }
-
-    public function name(): Name
-    {
-        if (array_key_exists('name', $this->payload)) {
-            return Name::fromString($this->payload['name']);
-        }
-
-        return Name::fromString($this->payload['']);
-    }
-
-    public function description(): Description
-    {
-        if (array_key_exists('description', $this->payload)) {
-            return Description::fromString($this->payload['description']);
-        }
-
-        return Description::fromString($this->payload['description']);
-    }
-
-    public function hasPrefix(): bool
-    {
-        return array_key_exists('prefix', $this->payload);
-    }
-
-    public function prefix(): string
-    {
-        return $this->payload['prefix'];
-    }
-
 }

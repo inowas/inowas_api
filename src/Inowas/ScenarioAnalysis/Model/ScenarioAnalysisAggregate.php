@@ -6,8 +6,6 @@ namespace Inowas\ScenarioAnalysis\Model;
 
 use Inowas\Common\Id\ModflowId;
 use Inowas\Common\Id\UserId;
-use Inowas\Common\Modflow\Description;
-use Inowas\Common\Modflow\Name;
 use Inowas\ScenarioAnalysis\Model\Event\ScenarioAnalysisDescriptionWasChanged;
 use Inowas\ScenarioAnalysis\Model\Event\ScenarioAnalysisNameWasChanged;
 use Inowas\ScenarioAnalysis\Model\Event\ScenarioAnalysisWasCloned;
@@ -105,17 +103,15 @@ class ScenarioAnalysisAggregate extends AggregateRoot
      * @param UserId $userId
      * @param ModflowId $scenarioId
      * @param ModflowId $baseModelId
-     * @param Name $name
-     * @param Description $description
      */
-    public function createScenario(UserId $userId, ModflowId $scenarioId, ModflowId $baseModelId, Name $name, Description $description): void
+    public function createScenario(UserId $userId, ModflowId $scenarioId, ModflowId $baseModelId): void
     {
         if (in_array($scenarioId->toString(), $this->scenarios, true)){
             return;
         }
 
         $this->scenarios[] = $scenarioId->toString();
-        $this->recordThat(ScenarioWasCreated::from($this->id, $userId, $scenarioId, $baseModelId, $name, $description));
+        $this->recordThat(ScenarioWasCreated::from($this->id, $userId, $scenarioId, $baseModelId));
     }
 
     public function deleteScenario(UserId $userId, ModflowId $scenarioId): void
