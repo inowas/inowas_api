@@ -15,6 +15,7 @@ use Inowas\ModflowModel\Model\Event\ModflowModelWasCloned;
 use Inowas\ModflowModel\Model\Event\ModflowModelWasCreated;
 use Inowas\ModflowModel\Model\Event\ModflowModelWasDeleted;
 use Inowas\ModflowModel\Model\Event\NameWasChanged;
+use Inowas\ModflowModel\Service\ModflowModelManager;
 use Inowas\ScenarioAnalysis\Model\Event\ScenarioAnalysisDescriptionWasChanged;
 use Inowas\ScenarioAnalysis\Model\Event\ScenarioAnalysisNameWasChanged;
 use Inowas\ScenarioAnalysis\Model\Event\ScenarioAnalysisWasCloned;
@@ -27,10 +28,14 @@ class ToolProjector extends AbstractDoctrineConnectionProjector
     /** @var  EntityManager */
     private $entityManager;
 
-    public function __construct(Connection $connection, EntityManager $entityManager)
+    /** @var  ModflowModelManager */
+    private $modelManager;
+
+    public function __construct(Connection $connection, EntityManager $entityManager, ModflowModelManager $manager)
     {
 
         $this->entityManager = $entityManager;
+        $this->modelManager = $manager;
 
         parent::__construct($connection);
 
@@ -84,13 +89,15 @@ class ToolProjector extends AbstractDoctrineConnectionProjector
 
     public function onModflowModelWasCloned(ModflowModelWasCloned $event): void
     {
-
         if (! $event->isTool()) {
             return;
         }
 
+        $model = $this->modelManager->findModel($event->modelId());
         $this->connection->insert(Table::TOOL_LIST, array(
             'id' => $event->modelId()->toString(),
+            'name' => $model->name()->toString(),
+            'description' => $model->description()->toString(),
             'application' => '',
             'project' => '',
             'tool' => 'T03',
