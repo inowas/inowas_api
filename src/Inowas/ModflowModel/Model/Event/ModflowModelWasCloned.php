@@ -23,11 +23,15 @@ class ModflowModelWasCloned extends AggregateChanged
     /** @var  array */
     private $boundaries;
 
+    /** @var  bool */
+    private $isTool;
+
     /**
      * @param ModflowId $baseModelId
      * @param ModflowId $modflowId
      * @param UserId $userId
      * @param array $boundaries
+     * @param bool $isTool
      * @return ModflowModelWasCloned
      * @internal param $ MoreThanThreeArgumentsInspection
      */
@@ -35,7 +39,8 @@ class ModflowModelWasCloned extends AggregateChanged
         ModflowId $baseModelId,
         ModflowId $modflowId,
         UserId $userId,
-        array $boundaries
+        array $boundaries,
+        bool $isTool
     ): ModflowModelWasCloned
     {
 
@@ -43,13 +48,15 @@ class ModflowModelWasCloned extends AggregateChanged
         $event = self::occur($modflowId->toString(),[
             'basemodel_id' => $baseModelId->toString(),
             'user_id' => $userId->toString(),
-            'boundaries' => $boundaries
+            'boundaries' => $boundaries,
+            'is_tool' => $isTool
         ]);
 
         $event->baseModelId = $baseModelId;
         $event->modelId = $modflowId;
         $event->userId = $userId;
         $event->boundaries = $boundaries;
+        $event->isTool = $isTool;
 
         return $event;
     }
@@ -88,5 +95,14 @@ class ModflowModelWasCloned extends AggregateChanged
         }
 
         return $this->boundaries;
+    }
+
+    public function isTool(): bool
+    {
+        if ($this->isTool === null) {
+            $this->isTool = $this->payload['is_tool'];
+        }
+
+        return $this->isTool;
     }
 }

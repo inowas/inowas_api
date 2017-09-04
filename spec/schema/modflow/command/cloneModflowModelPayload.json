@@ -10,10 +10,14 @@
         "new_id": {
             "type": "string",
             "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$"
+        },
+        "is_tool": {
+            "type": "boolean"
         }
     },
     "required": [
         "id",
-        "new_id"
+        "new_id",
+        "is_tool"
     ]
 }

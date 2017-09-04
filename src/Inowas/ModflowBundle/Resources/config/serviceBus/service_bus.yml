@@ -154,6 +154,7 @@ parameters:
                             - 'inowas.modflowmodel.model_projector'
                             - 'inowas.modflowmodel.soilmodel_projector'
                             - 'inowas.modflowmodel.modflow_packages_process_manager'
+                            - 'inowas.tool.tools_projector'
 
                         'Inowas\ModflowModel\Model\Event\ModflowModelWasCreated':
                             - 'inowas.modflowmodel.blackhole_projector'

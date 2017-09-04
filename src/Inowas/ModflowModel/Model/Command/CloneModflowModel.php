@@ -15,13 +15,15 @@ class CloneModflowModel extends AbstractJsonSchemaCommand
      * @param ModflowId $baseModelId
      * @param UserId $userId
      * @param ModflowId $newModelId
+     * @param bool $isTool
      * @return CloneModflowModel
      */
-    public static function byId(ModflowId $baseModelId, UserId $userId, ModflowId $newModelId): CloneModflowModel
+    public static function byId(ModflowId $baseModelId, UserId $userId, ModflowId $newModelId, bool $isTool = false): CloneModflowModel
     {
         $self = new static([
             'id' => $baseModelId->toString(),
-            'new_id' => $newModelId->toString()
+            'new_id' => $newModelId->toString(),
+            'is_tool' => $isTool
         ]);
 
         /** @var CloneModflowModel $self */
@@ -47,5 +49,14 @@ class CloneModflowModel extends AbstractJsonSchemaCommand
     public function newModelId(): ModflowId
     {
         return ModflowId::fromString($this->payload['new_id']);
+    }
+
+    public function isTool(): bool
+    {
+        if (!array_key_exists('is_tool', $this->payload()) ) {
+            return false;
+        }
+
+        return $this->payload['is_tool'];
     }
 }

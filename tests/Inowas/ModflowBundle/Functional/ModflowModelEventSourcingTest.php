@@ -47,6 +47,7 @@ use Inowas\Common\Boundaries\WellType;
 use Inowas\ScenarioAnalysis\Model\ScenarioAnalysisDescription;
 use Inowas\ScenarioAnalysis\Model\ScenarioAnalysisId;
 use Inowas\ScenarioAnalysis\Model\ScenarioAnalysisName;
+use Inowas\Tool\Model\ToolId;
 use Prooph\ServiceBus\Exception\CommandDispatchException;
 use Tests\Inowas\ModflowBundle\EventSourcingBaseTest;
 
@@ -606,28 +607,6 @@ class ModflowModelEventSourcingTest extends EventSourcingBaseTest
     /**
      * @test
      */
-    public function it_clones_a_modflow_model_with_soilmodel_and_all_boundaries(): void
-    {
-        $modelId = ModflowId::generate();
-        $ownerId = UserId::generate();
-        $this->createModelWithOneLayer($ownerId, $modelId);
-        $this->assertCount(1, $this->container->get('inowas.modflowmodel.model_finder')->findAll());
-
-        $this->commandBus->dispatch(AddBoundary::forModflowModel($ownerId, $modelId, $this->createConstantHeadBoundaryWithObservationPoint()));
-        $this->commandBus->dispatch(AddBoundary::forModflowModel($ownerId, $modelId, $this->createGeneralHeadBoundaryWithObservationPoint()));
-        $this->commandBus->dispatch(AddBoundary::forModflowModel($ownerId, $modelId, $this->createRechargeBoundary()));
-        $this->commandBus->dispatch(AddBoundary::forModflowModel($ownerId, $modelId, $this->createRiverBoundaryWithObservationPoint()));
-        $this->commandBus->dispatch(AddBoundary::forModflowModel($ownerId, $modelId, $this->createWellBoundary()));
-
-        $newModelId = ModflowId::generate();
-        $this->commandBus->dispatch(CloneModflowModel::byId($modelId, $ownerId, $newModelId));
-        $this->assertCount(2, $this->container->get('inowas.modflowmodel.model_finder')->findAll());
-        $this->assertEquals(5, $this->container->get('inowas.modflowmodel.boundary_manager')->getTotalNumberOfModelBoundaries($modelId));
-    }
-
-    /**
-     * @test
-     */
     public function it_clones_a_modflow_model_and_all_boundaries(): void
     {
         $modelId = ModflowId::generate();
@@ -645,6 +624,32 @@ class ModflowModelEventSourcingTest extends EventSourcingBaseTest
         $this->commandBus->dispatch(CloneModflowModel::byId($modelId, $ownerId, $newModelId));
         $this->assertCount(2, $this->container->get('inowas.modflowmodel.model_finder')->findAll());
         $this->assertEquals(5, $this->container->get('inowas.modflowmodel.boundary_manager')->getTotalNumberOfModelBoundaries($modelId));
+
+        $this->assertNull($this->container->get('inowas.tool.tools_finder')->findById(ToolId::fromString($newModelId->toString())));
+    }
+
+    /**
+     * @test
+     */
+    public function it_clones_a_modflow_model_and_tool_and_all_boundaries(): void
+    {
+        $modelId = ModflowId::generate();
+        $ownerId = UserId::generate();
+        $this->createModelWithOneLayer($ownerId, $modelId);
+        $this->assertCount(1, $this->container->get('inowas.modflowmodel.model_finder')->findAll());
+
+        $this->commandBus->dispatch(AddBoundary::forModflowModel($ownerId, $modelId, $this->createConstantHeadBoundaryWithObservationPoint()));
+        $this->commandBus->dispatch(AddBoundary::forModflowModel($ownerId, $modelId, $this->createGeneralHeadBoundaryWithObservationPoint()));
+        $this->commandBus->dispatch(AddBoundary::forModflowModel($ownerId, $modelId, $this->createRechargeBoundary()));
+        $this->commandBus->dispatch(AddBoundary::forModflowModel($ownerId, $modelId, $this->createRiverBoundaryWithObservationPoint()));
+        $this->commandBus->dispatch(AddBoundary::forModflowModel($ownerId, $modelId, $this->createWellBoundary()));
+
+        $newModelId = ModflowId::generate();
+        $this->commandBus->dispatch(CloneModflowModel::byId($modelId, $ownerId, $newModelId, true));
+        $this->assertCount(2, $this->container->get('inowas.modflowmodel.model_finder')->findAll());
+        $this->assertEquals(5, $this->container->get('inowas.modflowmodel.boundary_manager')->getTotalNumberOfModelBoundaries($modelId));
+
+        $this->assertNotNull($this->container->get('inowas.tool.tools_finder')->findById(ToolId::fromString($newModelId->toString())));
     }
 
     /**

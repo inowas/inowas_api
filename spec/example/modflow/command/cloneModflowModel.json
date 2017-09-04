@@ -4,6 +4,7 @@
     "metadata": {},
     "payload": {
         "id": "f3f6788a-61a6-410e-a14d-af7ecca6babb",
-        "new_id": "aa333bf2-b2f4-487c-a781-986c0e64d6bc"
+        "new_id": "aa333bf2-b2f4-487c-a781-986c0e64d6bc",
+        "is_tool": true
     }
 }

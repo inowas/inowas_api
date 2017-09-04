@@ -32,7 +32,8 @@ final class CloneModflowModelHandler
         $newModel = ModflowModelAggregate::clone(
             $command->newModelId(),
             $command->userId(),
-            $modflowModel
+            $modflowModel,
+            $command->isTool()
         );
 
         $this->modelList->save($newModel);

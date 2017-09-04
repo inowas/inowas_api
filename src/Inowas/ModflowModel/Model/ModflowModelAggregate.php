@@ -108,12 +108,14 @@ class ModflowModelAggregate extends AggregateRoot
      * @param ModflowId $newModelId
      * @param UserId $newUserId
      * @param ModflowModelAggregate $model
+     * @param bool $isTool
      * @return ModflowModelAggregate
      */
     public static function clone(
         ModflowId $newModelId,
         UserId $newUserId,
-        ModflowModelAggregate $model
+        ModflowModelAggregate $model,
+        bool $isTool
     ): ModflowModelAggregate
     {
         $self = new self();
@@ -125,7 +127,8 @@ class ModflowModelAggregate extends AggregateRoot
             $model->modflowModelId(),
             $self->modelId,
             $self->userId,
-            $model->boundaries
+            $model->boundaries,
+            $isTool
         ));
 
         return $self;
