@@ -6,6 +6,7 @@ namespace Inowas\ModflowModel\Infrastructure\Projection\Calculation;
 
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Schema\Schema;
+use Inowas\Common\Calculation\CalculationState;
 use Inowas\Common\Projection\AbstractDoctrineConnectionProjector;
 use Inowas\ModflowModel\Infrastructure\Projection\Table;
 use Inowas\ModflowModel\Model\Event\CalculationWasFinished;
@@ -20,7 +21,7 @@ class CalculationResultsProjector extends AbstractDoctrineConnectionProjector
 
         $schema = new Schema();
         $table = $schema->createTable(Table::CALCULATIONS);
-        $table->addColumn('calculation_id', 'string', ['length' => 36]);
+        $table->addColumn('calculation_id', 'string', ['length' => 36, 'default' => '']);
         $table->addColumn('state', 'integer', ['default' => 0]);
         $table->addColumn('message', 'text', ['default' => '']);
         $table->addColumn('heads', 'text', ['default' => '[]']);
@@ -44,7 +45,7 @@ class CalculationResultsProjector extends AbstractDoctrineConnectionProjector
 
         $this->connection->insert(Table::CALCULATIONS, array(
             'calculation_id' => $event->calculationId()->toString(),
-            'state' => 2
+            'state' => CalculationState::started()->toInt()
         ));
     }
 
@@ -54,7 +55,7 @@ class CalculationResultsProjector extends AbstractDoctrineConnectionProjector
 
         $this->connection->update(Table::CALCULATIONS,
             array(
-                'state' => 3,
+                'state' => CalculationState::finished()->toInt(),
                 'message' => $response->message(),
                 'heads' => json_encode($response->heads()),
                 'budgets' => json_encode($response->budgets()),

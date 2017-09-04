@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace Inowas\ModflowBundle\Controller;
 
 use FOS\RestBundle\Controller\Annotations as Rest;
+use Inowas\Common\Calculation\CalculationState;
+use Inowas\Common\Calculation\CalculationStateQuery;
 use Inowas\Common\Id\BoundaryId;
 use Inowas\Common\Id\CalculationId;
 use Inowas\Common\Id\ModflowId;
@@ -369,15 +371,14 @@ class ModflowModelController extends InowasRestController
         $calculationId = $this->get('inowas.modflowmodel.model_finder')->getCalculationIdByModelId($modelId);
 
         if (!$calculationId instanceof CalculationId) {
-            return new JsonResponse([]);
+            $query = CalculationStateQuery::createWithEmptyCalculationId(
+                CalculationState::new()
+            );
+
+            return new JsonResponse($query);
         }
 
-        $state = $this->get('inowas.modflowmodel.calculation_results_finder')->getCalculationState($calculationId);
-
-        if (null === $state) {
-            return new JsonResponse([]);
-        }
-
-        return new JsonResponse($state);
+        $query = $this->get('inowas.modflowmodel.calculation_results_finder')->getCalculationStateQuery($calculationId);
+        return new JsonResponse($query);
     }
 }

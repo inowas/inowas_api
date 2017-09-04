@@ -5,6 +5,9 @@ declare(strict_types=1);
 namespace Inowas\ModflowModel\Infrastructure\Projection\Calculation;
 
 use Doctrine\DBAL\Connection;
+use Inowas\Common\Calculation\CalculationMessage;
+use Inowas\Common\Calculation\CalculationState;
+use Inowas\Common\Calculation\CalculationStateQuery;
 use Inowas\Common\Calculation\HeadData;
 use Inowas\Common\Calculation\TimeSeriesData;
 use Inowas\Common\Grid\Ncol;
@@ -38,7 +41,7 @@ class CalculationResultsFinder
         $this->reader = $reader;
     }
 
-    public function getCalculationState(CalculationId $calculationId): ?array
+    public function getCalculationStateQuery(CalculationId $calculationId): ?CalculationStateQuery
     {
         $result = $this->connection->fetchAssoc(
             sprintf('SELECT calculation_id, state, message FROM %s WHERE calculation_id = :calculation_id', Table::CALCULATIONS),
@@ -49,7 +52,11 @@ class CalculationResultsFinder
             return null;
         }
 
-        return $result;
+        return CalculationStateQuery::createWithCalculationId(
+            $calculationId,
+            CalculationState::fromInt((int)$result['state']),
+            CalculationMessage::fromString($result['message'])
+        );
     }
 
     public function getCalculationDetailsById(CalculationId $calculationId): ?array
