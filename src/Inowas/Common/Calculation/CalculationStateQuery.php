@@ -6,7 +6,7 @@ namespace Inowas\Common\Calculation;
 
 use Inowas\Common\Id\CalculationId;
 
-final class CalculationStateQuery
+final class CalculationStateQuery implements \JsonSerializable
 {
     /** @var CalculationId */
     private $id;
@@ -40,5 +40,10 @@ final class CalculationStateQuery
             'state' => $this->state->toInt(),
             'message' => $this->message->toInt()
         );
+    }
+
+    public function jsonSerialize()
+    {
+        return $this->toArray();
     }
 }
