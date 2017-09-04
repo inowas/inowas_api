@@ -10,6 +10,7 @@ use Inowas\Common\Id\UserId;
 use Symfony\Component\DependencyInjection\ContainerAwareInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
+
 abstract class LoadScenarioBase implements ContainerAwareInterface, DataFixtureInterface
 {
 
@@ -45,31 +46,31 @@ abstract class LoadScenarioBase implements ContainerAwareInterface, DataFixtureI
             array('catalin.stefan', 'Catalin Stefan', 'catalin.stefan@tu-dresden.de', '#inowas#'),
             array('martin.wudenka', 'Martin Wudenka', 'martin.wudenka@tu-dresden.de', '#inowas#'),
             array('nawapi', 'nawapi', 'nawapi@inowas.com', 'na-ql-ww-pi'),
-            array('inowas1', 'inowas1@gast', 'cheekohk'),
-            array('malena', 'malena@gast', 'wohchoad'),
-            array('jorge', 'jorge@gast', 'geuwaexu'),
-            array('ahmad', 'ahmad@gast', 'eipobung'),
-            array('jonas', 'jonas@gast', 'eyipuamo'),
-            array('guzman', 'guzman@gast', 'xookahbi'),
-            array('cristiano', 'cristiano@gast', 'ohfohfum'),
-            array('anna', 'anna@gast', 'ahmohnah'),
-            array('byambasuren', 'byambasuren@gast', 'aejohque'),
-            array('jeanne', 'jeanne@gast', 'xiegooge'),
-            array('nguyen', 'nguyen@gast', 'uvupauho'),
-            array('meng', 'meng@gast', 'thauzeej'),
-            array('xueyan', 'xueyan@gast', 'rohpooqu'),
-            array('badia', 'badia@gast', 'caegouno'),
-            array('rodrigo', 'rodrigo@gast', 'ahdeogei'),
-            array('guillermo', 'guillermo@gast', 'yeuvoolo'),
-            array('angel', 'angel@gast', 'aezepees'),
-            array('sospeter', 'sospeter@gast', 'uuchahth'),
-            array('bhesh', 'bhesh@gast', 'teigotab'),
-            array('vahid', 'vahid@gast', 'ophiebah'),
-            array('andre', 'andre@gast', 'ohsohshi'),
-            array('adeyinka', 'adeyinka@gast', 'aimeipae'),
-            array('muna', 'muna@gast', 'iegheith'),
-            array('bewuket', 'bewuket@gast', 'hohreith'),
-            array('mutaz', 'mutaz@gast', 'chohexai')
+            array('inowas1', 'inowas1', 'inowas1@gast', 'cheekohk'),
+            array('malena', 'malena', 'malena@gast', 'wohchoad'),
+            array('jorge', 'jorge', 'jorge@gast', 'geuwaexu'),
+            array('ahmad', 'ahmad', 'ahmad@gast', 'eipobung'),
+            array('jonas', 'jonas', 'jonas@gast', 'eyipuamo'),
+            array('guzman', 'guzman', 'guzman@gast', 'xookahbi'),
+            array('cristiano', 'cristiano', 'cristiano@gast', 'ohfohfum'),
+            array('anna', 'anna', 'anna@gast', 'ahmohnah'),
+            array('byambasuren', 'byambasuren', 'byambasuren@gast', 'aejohque'),
+            array('jeanne', 'jeanne', 'jeanne@gast', 'xiegooge'),
+            array('nguyen', 'nguyen', 'nguyen@gast', 'uvupauho'),
+            array('meng', 'meng', 'meng@gast', 'thauzeej'),
+            array('xueyan', 'xueyan', 'xueyan@gast', 'rohpooqu'),
+            array('badia', 'badia', 'badia@gast', 'caegouno'),
+            array('rodrigo', 'rodrigo', 'rodrigo@gast', 'ahdeogei'),
+            array('guillermo', 'guillermo', 'guillermo@gast', 'yeuvoolo'),
+            array('angel', 'angel', 'angel@gast', 'aezepees'),
+            array('sospeter', 'sospeter', 'sospeter@gast', 'uuchahth'),
+            array('bhesh', 'bhesh', 'bhesh@gast', 'teigotab'),
+            array('vahid', 'vahid', 'vahid@gast', 'ophiebah'),
+            array('andre', 'andre', 'andre@gast', 'ohsohshi'),
+            array('adeyinka', 'adeyinka', 'adeyinka@gast', 'aimeipae'),
+            array('muna', 'muna', 'muna@gast', 'iegheith'),
+            array('bewuket', 'bewuket', 'bewuket@gast', 'hohreith'),
+            array('mutaz', 'mutaz', 'mutaz@gast', 'chohexai')
         );
 
         foreach ($userList as $item){
