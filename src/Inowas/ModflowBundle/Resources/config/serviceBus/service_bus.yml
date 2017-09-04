@@ -121,6 +121,7 @@ parameters:
                         'Inowas\ModflowModel\Model\Event\DescriptionWasChanged':
                             - 'inowas.modflowmodel.blackhole_projector'
                             - 'inowas.modflowmodel.model_projector'
+                            - 'inowas.scenarioanalysis.scenario_list_projector'
                             - 'inowas.tool.tools_projector'
 
                         'Inowas\ModflowModel\Model\Event\FlowPackageWasChanged':
@@ -176,6 +177,7 @@ parameters:
                         'Inowas\ModflowModel\Model\Event\NameWasChanged':
                             - 'inowas.modflowmodel.blackhole_projector'
                             - 'inowas.modflowmodel.model_projector'
+                            - 'inowas.scenarioanalysis.scenario_list_projector'
                             - 'inowas.tool.tools_projector'
 
                         'Inowas\ModflowModel\Model\Event\SoilmodelMetadataWasUpdated':

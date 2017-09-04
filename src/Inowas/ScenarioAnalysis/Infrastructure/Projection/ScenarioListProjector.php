@@ -6,10 +6,11 @@ namespace Inowas\ScenarioAnalysis\Infrastructure\Projection;
 
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Schema\Schema;
-use Inowas\Common\Id\ModflowId;
 use Inowas\Common\Projection\AbstractDoctrineConnectionProjector;
 use Inowas\ModflowModel\Infrastructure\Projection\ModelList\ModelFinder;
 use Inowas\ModflowModel\Model\Event\CalculationIdWasChanged;
+use Inowas\ModflowModel\Model\Event\DescriptionWasChanged;
+use Inowas\ModflowModel\Model\Event\NameWasChanged;
 use Inowas\ScenarioAnalysis\Model\Event\ScenarioAnalysisWasCloned;
 use Inowas\ScenarioAnalysis\Model\Event\ScenarioAnalysisWasCreated;
 use Inowas\ScenarioAnalysis\Model\Event\ScenarioAnalysisWasDeleted;
@@ -30,6 +31,7 @@ class ScenarioListProjector extends AbstractDoctrineConnectionProjector
 
         $schema = new Schema();
         $table = $schema->createTable(Table::SCENARIO_LIST);
+        $table->addColumn('id', 'integer')->setAutoincrement(true);
         $table->addColumn('scenario_id', 'string', ['length' => 36]);
         $table->addColumn('base_model_id', 'string', ['length' => 36]);
         $table->addColumn('scenario_analysis_id', 'string', ['length' => 36]);
@@ -40,9 +42,27 @@ class ScenarioListProjector extends AbstractDoctrineConnectionProjector
         $table->addColumn('is_base_model', 'boolean', ['default' => false]);
         $table->addColumn('is_scenario', 'boolean', ['default' => false]);
         $table->addColumn('created_at', 'string', ['length' => 255, 'notnull' => false]);
-        $table->setPrimaryKey(['scenario_id']);
+        $table->setPrimaryKey(['id']);
         $table->addIndex(array('scenario_analysis_id', 'base_model_id'));
         $this->addSchema($schema);
+    }
+
+    public function onNameWasChanged(NameWasChanged $event): void
+    {
+        $this->connection->update(Table::SCENARIO_LIST, array(
+            'name' => $event->name()->toString()
+        ), array(
+            'scenario_id' => $event->modelId()->toString()
+        ));
+    }
+
+    public function onDescriptionWasChanged(DescriptionWasChanged $event): void
+    {
+        $this->connection->update(Table::SCENARIO_LIST, array(
+            'description' => $event->description()->toString()
+        ), array(
+            'scenario_id' => $event->modelId()->toString()
+        ));
     }
 
     public function onScenarioAnalysisWasCreated(ScenarioAnalysisWasCreated $event): void
@@ -52,7 +72,7 @@ class ScenarioListProjector extends AbstractDoctrineConnectionProjector
         $calculationId = $this->modelFinder->getCalculationIdByModelId($event->baseModelId());
 
         $this->connection->insert(Table::SCENARIO_LIST, array(
-            'scenario_id' => ModflowId::generate()->toString(),
+            'scenario_id' => $event->baseModelId()->toString(),
             'base_model_id' => $event->baseModelId()->toString(),
             'scenario_analysis_id' => $event->scenarioAnalysisId()->toString(),
             'user_id' => $event->userId()->toString(),
@@ -67,7 +87,6 @@ class ScenarioListProjector extends AbstractDoctrineConnectionProjector
 
     public function onScenarioAnalysisWasCloned(ScenarioAnalysisWasCloned $event): void
     {
-
         $rows = $this->connection->fetchAll(
             sprintf('SELECT * FROM %s WHERE scenario_analysis_id=:scenario_analysis_id AND is_base_model = TRUE', Table::SCENARIO_LIST),
             ['scenario_analysis_id' => $event->fromScenarioAnalysisId()->toString()]
@@ -79,7 +98,7 @@ class ScenarioListProjector extends AbstractDoctrineConnectionProjector
 
         foreach ($rows as $row){
             $this->connection->insert(Table::SCENARIO_LIST, array(
-                'scenario_id' => ModflowId::generate()->toString(),
+                'scenario_id' => $event->baseModelId()->toString(),
                 'base_model_id' => $event->baseModelId()->toString(),
                 'scenario_analysis_id' => $event->scenarioAnalysisId()->toString(),
                 'user_id' => $event->userId()->toString(),
@@ -103,7 +122,7 @@ class ScenarioListProjector extends AbstractDoctrineConnectionProjector
 
         foreach ($rows as $key => $row){
             $this->connection->insert(Table::SCENARIO_LIST, array(
-                'scenario_id' => ModflowId::generate()->toString(),
+                'scenario_id' => $event->scenarios()[$key],
                 'base_model_id' => $event->baseModelId()->toString(),
                 'scenario_analysis_id' => $event->scenarioAnalysisId()->toString(),
                 'user_id' => $event->userId()->toString(),
@@ -129,7 +148,10 @@ class ScenarioListProjector extends AbstractDoctrineConnectionProjector
     {
         $result = $this->connection->fetchAssoc(
             sprintf('SELECT calculation_id, name, description from %s WHERE scenario_id = :scenario_id', Table::SCENARIO_LIST),
-            array('scenario_id' => $event->baseModelId()->toString())
+            array(
+                'scenarioanalysis_id' => $event->scenarioAnalysisId()->toString(),
+                'scenario_id' => $event->baseModelId()->toString()
+            )
         );
 
         $calculationId = '';
