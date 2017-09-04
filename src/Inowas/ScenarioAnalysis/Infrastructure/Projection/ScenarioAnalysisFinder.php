@@ -9,12 +9,16 @@ use Inowas\Common\Id\ModflowId;
 use Inowas\Common\Id\UserId;
 use Inowas\Common\Modflow\Description;
 use Inowas\Common\Modflow\Name;
+use Inowas\ModflowModel\Service\ModflowModelManager;
 use Inowas\ScenarioAnalysis\Model\ScenarioAnalysisId;
 
 class ScenarioAnalysisFinder
 {
     /** @var Connection $connection */
     protected $connection;
+
+    /** @var  ModflowModelManager */
+    protected $modflowModelManager;
 
     public function __construct(Connection $connection) {
         $this->connection = $connection;
@@ -73,14 +77,22 @@ class ScenarioAnalysisFinder
         $result['grid_size'] = json_decode($result['grid_size'], true);
         $result['bounding_box'] = json_decode($result['bounding_box'], true);
 
-        $baseModel = $this->connection->fetchAssoc(
-            sprintf('SELECT scenario_id as id, name, description, calculation_id FROM %s WHERE scenario_analysis_id = :scenario_analysis_id AND is_base_model = true', Table::SCENARIO_LIST),
+        $result = $this->connection->fetchAssoc(
+            sprintf('SELECT scenario_id as id FROM %s WHERE scenario_analysis_id = :scenario_analysis_id AND is_base_model = true', Table::SCENARIO_LIST),
             ['scenario_analysis_id' => $scenarioAnalysisId->toString()]
         );
 
-        if ($baseModel === false) {
+        if ($result === false) {
             return null;
         }
+
+        $this->modflowModelManager->findModel(ModflowId::fromString($result['id']));
+
+
+        $baseModelDetails = $this->connection->fetchAssoc(
+            sprintf('SELECT scenario_id as id, name, description, calculation_id as id FROM %s WHERE scenario_analysis_id = :scenario_analysis_id AND is_base_model = true', Table::SCENARIO_LIST),
+            ['scenario_analysis_id' => $scenarioAnalysisId->toString()]
+        );
 
         $result['base_model'] = $baseModel;
 

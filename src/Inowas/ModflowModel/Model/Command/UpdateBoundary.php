@@ -31,7 +31,7 @@ class UpdateBoundary extends AbstractJsonSchemaCommand
 
     public function schema(): string
     {
-        return 'file://spec/schema/modflow/command/updateBoundary.json';
+        return 'file://spec/schema/modflow/command/updateBoundaryPayload.json';
     }
 
     public function modflowModelId(): ModflowId

@@ -6,6 +6,7 @@ namespace Inowas\ScenarioAnalysis\Infrastructure\Projection;
 
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Schema\Schema;
+use Inowas\Common\Id\ModflowId;
 use Inowas\Common\Projection\AbstractDoctrineConnectionProjector;
 use Inowas\ModflowModel\Infrastructure\Projection\ModelList\ModelFinder;
 use Inowas\ModflowModel\Model\Event\CalculationIdWasChanged;
@@ -51,7 +52,7 @@ class ScenarioListProjector extends AbstractDoctrineConnectionProjector
         $calculationId = $this->modelFinder->getCalculationIdByModelId($event->baseModelId());
 
         $this->connection->insert(Table::SCENARIO_LIST, array(
-            'scenario_id' => $event->baseModelId()->toString(),
+            'scenario_id' => ModflowId::generate()->toString(),
             'base_model_id' => $event->baseModelId()->toString(),
             'scenario_analysis_id' => $event->scenarioAnalysisId()->toString(),
             'user_id' => $event->userId()->toString(),
@@ -78,7 +79,7 @@ class ScenarioListProjector extends AbstractDoctrineConnectionProjector
 
         foreach ($rows as $row){
             $this->connection->insert(Table::SCENARIO_LIST, array(
-                'scenario_id' => $event->baseModelId()->toString(),
+                'scenario_id' => ModflowId::generate()->toString(),
                 'base_model_id' => $event->baseModelId()->toString(),
                 'scenario_analysis_id' => $event->scenarioAnalysisId()->toString(),
                 'user_id' => $event->userId()->toString(),
@@ -102,7 +103,7 @@ class ScenarioListProjector extends AbstractDoctrineConnectionProjector
 
         foreach ($rows as $key => $row){
             $this->connection->insert(Table::SCENARIO_LIST, array(
-                'scenario_id' => $event->scenarios()[$key],
+                'scenario_id' => ModflowId::generate()->toString(),
                 'base_model_id' => $event->baseModelId()->toString(),
                 'scenario_analysis_id' => $event->scenarioAnalysisId()->toString(),
                 'user_id' => $event->userId()->toString(),

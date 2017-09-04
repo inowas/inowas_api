@@ -54,6 +54,8 @@ use Inowas\Common\Soilmodel\LayerId;
 use Inowas\ModflowModel\Model\AMQP\FlopyCalculationRequest;
 use Inowas\ModflowModel\Model\Command\AddLayer;
 use Inowas\ModflowModel\Model\Command\ChangeBoundingBox;
+use Inowas\ModflowModel\Model\Command\ChangeDescription;
+use Inowas\ModflowModel\Model\Command\ChangeName;
 use Inowas\ModflowModel\Model\Command\CreateModflowModel;
 use Inowas\ModflowBundle\Command\ModflowEventStoreTruncateCommand;
 use Inowas\ModflowBundle\Command\ModflowProjectionsResetCommand;
@@ -377,9 +379,11 @@ abstract class EventSourcingBaseTest extends WebTestCase
         ));
     }
 
-    protected function createScenario(ScenarioAnalysisId $id, UserId $owner, ModflowId $modelId, ModflowId $scenarioId): void
+    protected function createScenario(ScenarioAnalysisId $id, UserId $owner, ModflowId $modelId, ModflowId $scenarioId, Name $name, Description $description): void
     {
         $this->commandBus->dispatch(CreateScenario::byUserWithIds($id, $owner, $modelId, $scenarioId));
+        $this->commandBus->dispatch(ChangeName::forModflowModel($owner, $scenarioId, $name));
+        $this->commandBus->dispatch(ChangeDescription::forModflowModel($owner, $scenarioId, $description));
     }
 
     protected function createModelWithOneLayer(UserId $ownerId, ModflowId $modelId): void
