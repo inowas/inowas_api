@@ -4,16 +4,12 @@ declare(strict_types=1);
 
 namespace Inowas\ModflowModel\Model\Command;
 
+use Inowas\Common\Command\AbstractJsonSchemaCommand;
 use Inowas\Common\Id\ModflowId;
 use Inowas\Common\Id\UserId;
-use Prooph\Common\Messaging\Command;
-use Prooph\Common\Messaging\PayloadConstructable;
-use Prooph\Common\Messaging\PayloadTrait;
 
-class CloneModflowModel extends Command implements PayloadConstructable
+class CloneModflowModel extends AbstractJsonSchemaCommand
 {
-
-    use PayloadTrait;
 
     /** @noinspection MoreThanThreeArgumentsInspection
      * @param ModflowId $baseModelId
@@ -23,47 +19,33 @@ class CloneModflowModel extends Command implements PayloadConstructable
      */
     public static function byId(ModflowId $baseModelId, UserId $userId, ModflowId $newModelId): CloneModflowModel
     {
-        return new self([
-            'basemodel_id' => $baseModelId->toString(),
-            'user_id' => $userId->toString(),
-            'new_model_id' => $newModelId->toString(),
-            'clone_soilmodel' => true
+        $self = new static([
+            'id' => $baseModelId->toString(),
+            'new_id' => $newModelId->toString()
         ]);
+
+        /** @var CloneModflowModel $self */
+        $self = $self->withAddedMetadata('user_id', $userId->toString());
+        return $self;
     }
 
-    /** @noinspection MoreThanThreeArgumentsInspection
-     * @param ModflowId $baseModelId
-     * @param UserId $userId
-     * @param ModflowId $newModelId
-     * @return CloneModflowModel
-     */
-    public static function byIdWithoutSoilmodel(ModflowId $baseModelId, UserId $userId, ModflowId $newModelId): CloneModflowModel
+    public function schema(): string
     {
-        return new self([
-            'basemodel_id' => $baseModelId->toString(),
-            'user_id' => $userId->toString(),
-            'new_model_id' => $newModelId->toString(),
-            'clone_soilmodel' => false
-        ]);
+        return 'file://spec/schema/modflow/command/cloneModflowModelPayload.json';
     }
 
     public function userId(): UserId
     {
-        return UserId::fromString($this->payload['user_id']);
+        return UserId::fromString($this->metadata['user_id']);
     }
 
-    public function baseModelId(): ModflowId
+    public function modelId(): ModflowId
     {
-        return ModflowId::fromString($this->payload['basemodel_id']);
+        return ModflowId::fromString($this->payload['id']);
     }
 
     public function newModelId(): ModflowId
     {
-        return ModflowId::fromString($this->payload['new_model_id']);
-    }
-
-    public function cloneSoilmodel(): bool
-    {
-        return $this->payload['clone_soilmodel'];
+        return ModflowId::fromString($this->payload['new_id']);
     }
 }

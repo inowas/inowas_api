@@ -23,7 +23,7 @@ final class CreateScenarioProcessManager
     public function onScenarioWasCreated(ScenarioWasCreated $event): void
     {
 
-        $this->commandBus->dispatch(CloneModflowModel::byIdWithoutSoilmodel(
+        $this->commandBus->dispatch(CloneModflowModel::byId(
             $event->baseModelId(),
             $event->userId(),
             $event->scenarioId()
@@ -46,7 +46,7 @@ final class CreateScenarioProcessManager
         $this->{$handler}($e);
     }
 
-    protected function determineEventMethodFor(DomainEvent $e)
+    private function determineEventMethodFor(DomainEvent $e): string
     {
         return 'on' . implode(array_slice(explode('\\', get_class($e)), -1));
     }

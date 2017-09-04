@@ -10,7 +10,6 @@ use Inowas\ScenarioAnalysis\Model\Event\ScenarioAnalysisWasCloned;
 use Inowas\ScenarioAnalysis\Model\ScenarioAnalysisAggregate;
 use Inowas\ScenarioAnalysis\Model\ScenarioAnalysisList;
 use Prooph\Common\Messaging\DomainEvent;
-use Prooph\Common\Messaging\DomainMessage;
 use Prooph\ServiceBus\CommandBus;
 
 final class CloneScenarioAnalysisProcessManager
@@ -43,7 +42,7 @@ final class CloneScenarioAnalysisProcessManager
         foreach ($originalScenarioAnalysis->scenarios() as $key => $scenario){
             $scenarioId = ModflowId::fromString($scenario);
             $newScenarioId = ModflowId::fromString($newScenarioIds[$key]);
-            $this->commandBus->dispatch(CloneModflowModel::byIdWithoutSoilmodel($scenarioId, $userId, $newScenarioId));
+            $this->commandBus->dispatch(CloneModflowModel::byId($scenarioId, $userId, $newScenarioId));
         }
     }
 

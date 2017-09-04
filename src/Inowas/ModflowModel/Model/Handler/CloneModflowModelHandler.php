@@ -22,10 +22,10 @@ final class CloneModflowModelHandler
     public function __invoke(CloneModflowModel $command)
     {
         /** @var ModflowModelAggregate $modflowModel */
-        $modflowModel = $this->modelList->get($command->baseModelId());
+        $modflowModel = $this->modelList->get($command->modelId());
 
         if (!$modflowModel){
-            throw ModflowModelNotFoundException::withModelId($command->baseModelId());
+            throw ModflowModelNotFoundException::withModelId($command->modelId());
         }
 
         /** @var ModflowModelAggregate $modflowModel */

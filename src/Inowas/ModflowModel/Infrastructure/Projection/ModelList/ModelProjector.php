@@ -184,7 +184,6 @@ class ModelProjector extends AbstractDoctrineConnectionProjector
 
     public function onModflowModelWasCloned(ModflowModelWasCloned $event): void
     {
-
         $rows = $this->connection->fetchAll(
             sprintf('SELECT * FROM %s WHERE model_id = :model_id', Table::MODFLOWMODELS),
             ['model_id' => $event->baseModelId()->toString()]

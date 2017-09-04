@@ -175,6 +175,32 @@ class MessageBoxControllerTest extends EventSourcingBaseTest
     /**
      * @test
      */
+    public function it_can_receive_clone_model_command(): void
+    {
+        $userId = UserId::fromString($this->user->getId()->toString());
+        $modelId = ModflowId::fromString('f3f6788a-61a6-410e-a14d-af7ecca6babb');
+        $newModelId = ModflowId::fromString('aa333bf2-b2f4-487c-a781-986c0e64d6bc');
+
+        $this->createModel($userId, $modelId);
+        $command = json_decode(file_get_contents($this->fileLocation . 'cloneModflowModel.json'), true);
+
+        $apiKey = $this->user->getApiKey();
+        $client = static::createClient();
+        $client->request(
+            'POST',
+            '/v2/messagebox',
+            array(),
+            array(),
+            array('HTTP_X-AUTH-TOKEN' => $apiKey),
+            json_encode($command)
+        );
+
+        $this->assertTrue($this->container->get('inowas.modflowmodel.model_finder')->modelExists($newModelId));
+    }
+
+    /**
+     * @test
+     */
     public function it_can_receive_update_stress_periods_command(): void
     {
         $userId = UserId::fromString($this->user->getId()->toString());

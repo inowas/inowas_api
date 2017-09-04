@@ -628,7 +628,7 @@ class ModflowModelEventSourcingTest extends EventSourcingBaseTest
     /**
      * @test
      */
-    public function it_clones_a_modflow_model_without_soilmodel_and_all_boundaries(): void
+    public function it_clones_a_modflow_model_and_all_boundaries(): void
     {
         $modelId = ModflowId::generate();
         $ownerId = UserId::generate();
@@ -642,7 +642,7 @@ class ModflowModelEventSourcingTest extends EventSourcingBaseTest
         $this->commandBus->dispatch(AddBoundary::forModflowModel($ownerId, $modelId, $this->createWellBoundary()));
 
         $newModelId = ModflowId::generate();
-        $this->commandBus->dispatch(CloneModflowModel::byIdWithoutSoilmodel($modelId, $ownerId, $newModelId));
+        $this->commandBus->dispatch(CloneModflowModel::byId($modelId, $ownerId, $newModelId));
         $this->assertCount(2, $this->container->get('inowas.modflowmodel.model_finder')->findAll());
         $this->assertEquals(5, $this->container->get('inowas.modflowmodel.boundary_manager')->getTotalNumberOfModelBoundaries($modelId));
     }
