@@ -61,7 +61,6 @@ class CalculationState
         $this->state = $state;
     }
 
-
     public function toInt(): int
     {
         return $this->state;

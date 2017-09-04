@@ -40,6 +40,11 @@ class CalculationResultsProjector extends AbstractDoctrineConnectionProjector
         );
 
         if ($result['count'] > 0){
+            $this->connection->update(Table::CALCULATIONS,
+                array('state' => CalculationState::started()->toInt()),
+                array('calculation_id' => $event->calculationId()->toString())
+            );
+
             return;
         }
 
