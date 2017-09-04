@@ -6,17 +6,13 @@ namespace Inowas\ModflowModel\Model\Command;
 
 use Inowas\Common\Boundaries\BoundaryFactory;
 use Inowas\Common\Boundaries\ModflowBoundary;
+use Inowas\Common\Command\AbstractJsonSchemaCommand;
 use Inowas\Common\Id\BoundaryId;
 use Inowas\Common\Id\ModflowId;
 use Inowas\Common\Id\UserId;
-use Prooph\Common\Messaging\Command;
-use Prooph\Common\Messaging\PayloadConstructable;
-use Prooph\Common\Messaging\PayloadTrait;
 
-class UpdateBoundary extends Command implements PayloadConstructable
+class UpdateBoundary extends AbstractJsonSchemaCommand
 {
-
-    use PayloadTrait;
 
     public static function forModflowModel(UserId $userId, ModflowId $modelId, BoundaryId $boundaryId, ModflowBoundary $boundary): UpdateBoundary
     {

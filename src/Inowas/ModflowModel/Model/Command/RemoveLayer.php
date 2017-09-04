@@ -4,17 +4,13 @@ declare(strict_types=1);
 
 namespace Inowas\ModflowModel\Model\Command;
 
+use Inowas\Common\Command\AbstractJsonSchemaCommand;
 use Inowas\Common\Id\ModflowId;
 use Inowas\Common\Id\UserId;
 use Inowas\Common\Soilmodel\LayerId;
-use Prooph\Common\Messaging\Command;
-use Prooph\Common\Messaging\PayloadConstructable;
-use Prooph\Common\Messaging\PayloadTrait;
 
-class RemoveLayer extends Command implements PayloadConstructable
+class RemoveLayer extends AbstractJsonSchemaCommand
 {
-
-    use PayloadTrait;
 
     public static function forModflowModel(UserId $userId, ModflowId $modelId, LayerId $layerId): RemoveLayer
     {
