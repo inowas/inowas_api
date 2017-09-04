@@ -9,6 +9,7 @@ use Inowas\ModflowModel\Model\Command\DeleteModflowModel;
 use Inowas\ScenarioAnalysis\Model\Event\ScenarioAnalysisWasDeleted;
 use Inowas\ScenarioAnalysis\Model\ScenarioAnalysisAggregate;
 use Inowas\ScenarioAnalysis\Model\ScenarioAnalysisList;
+use Prooph\Common\Messaging\DomainEvent;
 use Prooph\ServiceBus\CommandBus;
 
 final class DeleteScenarioAnalysisProcessManager
@@ -27,7 +28,6 @@ final class DeleteScenarioAnalysisProcessManager
 
     public function onScenarioAnalysisWasDeleted(ScenarioAnalysisWasDeleted $event): void
     {
-
         /** @var ScenarioAnalysisAggregate $scenarioAnalysis */
         $scenarioAnalysis = $this->list->get($event->scenarioAnalysisId());
 
@@ -39,5 +39,23 @@ final class DeleteScenarioAnalysisProcessManager
         foreach ($scenarioIds as $scenarioId){
             $this->commandBus->dispatch(DeleteModflowModel::byIdAndUser(ModflowId::fromString($scenarioId), $event->userId()));
         }
+    }
+
+    public function onEvent(DomainEvent $e): void
+    {
+        $handler = $this->determineEventMethodFor($e);
+        if (! method_exists($this, $handler)) {
+            throw new \RuntimeException(sprintf(
+                'Missing event method %s for projector %s',
+                $handler,
+                get_class($this)
+            ));
+        }
+        $this->{$handler}($e);
+    }
+
+    private function determineEventMethodFor(DomainEvent $e): string
+    {
+        return 'on' . implode(array_slice(explode('\\', get_class($e)), -1));
     }
 }
