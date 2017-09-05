@@ -12,7 +12,7 @@ use Inowas\ScenarioAnalysis\Model\ScenarioAnalysisList;
 use Prooph\Common\Messaging\DomainEvent;
 use Prooph\ServiceBus\CommandBus;
 
-final class CloneScenarioAnalysisProcessManager
+final class ScenarioAnalysisWasClonedProcessManager
 {
     /** @var ScenarioAnalysisList $scenarioAnalysisList */
     private $list;

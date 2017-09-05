@@ -4,12 +4,12 @@ declare(strict_types=1);
 
 namespace Inowas\ScenarioAnalysis\Infrastructure\ProcessManager;
 
-use Inowas\ModflowModel\Model\Command\CloneModflowModel;
-use Inowas\ScenarioAnalysis\Model\Event\ScenarioWasCreated;
+use Inowas\ModflowModel\Model\Command\DeleteModflowModel;
+use Inowas\ScenarioAnalysis\Model\Event\ScenarioWasDeleted;
 use Prooph\Common\Messaging\DomainEvent;
 use Prooph\ServiceBus\CommandBus;
 
-final class CreateScenarioProcessManager
+final class ScenarioWasDeletedProcessManager
 {
     /** @var  CommandBus */
     private $commandBus;
@@ -18,13 +18,9 @@ final class CreateScenarioProcessManager
         $this->commandBus = $commandBus;
     }
 
-    public function onScenarioWasCreated(ScenarioWasCreated $event): void
+    public function onScenarioWasDeleted(ScenarioWasDeleted $event): void
     {
-        $this->commandBus->dispatch(CloneModflowModel::byId(
-            $event->baseModelId(),
-            $event->userId(),
-            $event->scenarioId()
-        ));
+        $this->commandBus->dispatch(DeleteModflowModel::byIdAndUser($event->scenarioId(), $event->userId()));
     }
 
     public function onEvent(DomainEvent $e): void

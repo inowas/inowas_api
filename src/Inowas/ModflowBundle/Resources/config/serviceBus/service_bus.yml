@@ -117,6 +117,7 @@ parameters:
                         'Inowas\ModflowModel\Model\Event\CalculationWasStarted':
                             - 'inowas.modflowmodel.blackhole_projector'
                             - 'inowas.modflowmodel.calculation_results_projector'
+                            - 'inowas.modflowmodel.calculation_was_started_listener'
 
                         'Inowas\ModflowModel\Model\Event\DescriptionWasChanged':
                             - 'inowas.modflowmodel.blackhole_projector'
@@ -202,7 +203,7 @@ parameters:
                             - 'inowas.scenarioanalysis.scenarioanalysis_list_projector'
 
                         'Inowas\ScenarioAnalysis\Model\Event\ScenarioAnalysisWasCloned':
-                            - 'inowas.scenarioanalysis.clone_scenario_analysis_process_manager'
+                            - 'inowas.scenarioanalysis.scenarioanalysis_was_cloned_process_manager'
                             - 'inowas.scenarioanalysis.scenario_list_projector'
                             - 'inowas.scenarioanalysis.scenarioanalysis_list_projector'
                             - 'inowas.tool.tools_projector'
@@ -213,16 +214,18 @@ parameters:
                             - 'inowas.scenarioanalysis.scenario_list_projector'
 
                         'Inowas\ScenarioAnalysis\Model\Event\ScenarioAnalysisWasDeleted':
-                            - 'inowas.scenarioanalysis.delete_scenario_analysis_process_manager'
                             - 'inowas.tool.tools_projector'
+                            - 'inowas.scenarioanalysis.scenarioanalysis_was_deleted_process_manager'
                             - 'inowas.scenarioanalysis.scenarioanalysis_list_projector'
                             - 'inowas.scenarioanalysis.scenario_list_projector'
 
                         'Inowas\ScenarioAnalysis\Model\Event\ScenarioWasCreated':
                             - 'inowas.scenarioanalysis.scenario_list_projector'
+                            - 'inowas.scenarioanalysis.scenario_was_created_process_manager'
 
                         'Inowas\ScenarioAnalysis\Model\Event\ScenarioWasDeleted':
                             - 'inowas.scenarioanalysis.scenario_list_projector'
+                            - 'inowas.scenarioanalysis.scenario_was_deleted_process_manager'
 
                         # Soilmodel
                         'Inowas\Soilmodel\Model\Event\SoilmodelWasCloned':
