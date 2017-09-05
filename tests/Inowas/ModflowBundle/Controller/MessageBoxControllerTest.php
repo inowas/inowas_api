@@ -253,6 +253,35 @@ class MessageBoxControllerTest extends EventSourcingBaseTest
     /**
      * @test
      */
+    public function it_can_receive_clone_scenario_analysis_command(): void
+    {
+        $scenarioAnalysisId = ScenarioAnalysisId::fromString('2778bb9b-8048-40f4-b582-cfd3b15f2917');
+        $newScenarioAnalysisId = ScenarioAnalysisId::fromString('4bf26324-9007-4777-a1c4-7d2242ddf4e4');
+
+        $userId = UserId::fromString($this->user->getId()->toString());
+        $modelId = ModflowId::fromString('0562e97a-da43-4f79-8986-438fae0d2fc1');
+        $this->createModel($userId, $modelId);
+        $this->createScenarioAnalysis($scenarioAnalysisId, $userId, $modelId, ScenarioAnalysisName::fromString('NAME'), ScenarioAnalysisDescription::fromString('DESC'));
+
+        $command = json_decode(file_get_contents($this->fileLocation . 'cloneScenarioAnalysis.json'), true);
+
+        $apiKey = $this->user->getApiKey();
+        $client = static::createClient();
+        $client->request(
+            'POST',
+            '/v2/messagebox',
+            array(),
+            array(),
+            array('HTTP_X-AUTH-TOKEN' => $apiKey),
+            json_encode($command)
+        );
+
+        $this->assertTrue($this->container->get('inowas.scenarioanalysis.scenarioanalysis_finder')->scenarioAnalysisExists($newScenarioAnalysisId));
+    }
+
+    /**
+     * @test
+     */
     public function it_can_receive_update_stress_periods_command(): void
     {
         $userId = UserId::fromString($this->user->getId()->toString());
