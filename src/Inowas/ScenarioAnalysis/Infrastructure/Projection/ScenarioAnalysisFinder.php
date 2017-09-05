@@ -31,6 +31,16 @@ class ScenarioAnalysisFinder
         return !($results === false);
     }
 
+    public function scenarioAnalysisContainsScenario(ScenarioAnalysisId $id, ModflowId $scenarioId): bool
+    {
+        $results = $this->connection->fetchAssoc(
+            sprintf('SELECT count(*) FROM %s WHERE scenario_analysis_id = :scenario_analysis_id AND scenario_id = :scenario_id', Table::SCENARIO_LIST),
+            ['scenario_analysis_id' => $id->toString(), 'scenario_id' => $scenarioId->toString()]
+        );
+
+        return $results['count'] > 0;
+    }
+
     public function findScenarioAnalysesByUserId(UserId $userId): array
     {
         $results = $this->connection->fetchAll(

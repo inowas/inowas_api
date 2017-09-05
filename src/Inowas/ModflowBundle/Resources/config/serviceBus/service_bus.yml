@@ -219,15 +219,9 @@ parameters:
                             - 'inowas.scenarioanalysis.scenario_list_projector'
 
                         'Inowas\ScenarioAnalysis\Model\Event\ScenarioWasCreated':
-                            - 'inowas.scenarioanalysis.create_scenario_process_manager'
                             - 'inowas.scenarioanalysis.scenario_list_projector'
 
                         'Inowas\ScenarioAnalysis\Model\Event\ScenarioWasDeleted':
-                            - 'inowas.scenarioanalysis.scenarioanalysis_list_projector'
-                            - 'inowas.scenarioanalysis.scenario_list_projector'
-
-                        'Inowas\ScenarioAnalysis\Model\Event\ScenarioWasRemoved':
-                            - 'inowas.scenarioanalysis.scenarioanalysis_list_projector'
                             - 'inowas.scenarioanalysis.scenario_list_projector'
 
                         # Soilmodel

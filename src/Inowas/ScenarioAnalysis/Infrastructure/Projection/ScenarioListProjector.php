@@ -175,6 +175,7 @@ class ScenarioListProjector extends AbstractDoctrineConnectionProjector
 
     public function onScenarioWasDeleted(ScenarioWasDeleted $event): void
     {
+
         $this->connection->delete(Table::SCENARIO_LIST,
             [
                 'scenario_id' => $event->scenarioId()->toString(),
