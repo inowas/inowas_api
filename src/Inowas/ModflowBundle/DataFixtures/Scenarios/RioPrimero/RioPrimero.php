@@ -449,11 +449,11 @@ class RioPrimero extends LoadScenarioBase
          */
         $wells = array(
             array('name', 'point', 'type', 'layer', 'date', 'pumpingRate'),
-            array('Irrigation Well 1', new Point(-63.671125, -31.325009, 4326), WellType::TYPE_INDUSTRIAL_WELL, 0, new \DateTimeImmutable('2015-01-01'), -5000),
-            array('Irrigation Well 2', new Point(-63.659952, -31.330144, 4326), WellType::TYPE_INDUSTRIAL_WELL, 0, new \DateTimeImmutable('2015-01-01'), -5000),
-            array('Irrigation Well 3', new Point(-63.674691, -31.342506, 4326), WellType::TYPE_INDUSTRIAL_WELL, 0, new \DateTimeImmutable('2015-01-01'), -5000),
-            array('Irrigation Well 4', new Point(-63.637379, -31.359613, 4326), WellType::TYPE_INDUSTRIAL_WELL, 0, new \DateTimeImmutable('2015-01-01'), -5000),
-            array('Irrigation Well 5', new Point(-63.582069, -31.324063, 4326), WellType::TYPE_INDUSTRIAL_WELL, 0, new \DateTimeImmutable('2015-01-01'), -5000),
+            array('Irrigation Well 1', new Point(-63.671125, -31.325009, 4326), WellType::TYPE_IRRIGATION_WELL, 0, new \DateTimeImmutable('2015-01-01'), -5000),
+            array('Irrigation Well 2', new Point(-63.659952, -31.330144, 4326), WellType::TYPE_IRRIGATION_WELL, 0, new \DateTimeImmutable('2015-01-01'), -5000),
+            array('Irrigation Well 3', new Point(-63.674691, -31.342506, 4326), WellType::TYPE_IRRIGATION_WELL, 0, new \DateTimeImmutable('2015-01-01'), -5000),
+            array('Irrigation Well 4', new Point(-63.637379, -31.359613, 4326), WellType::TYPE_IRRIGATION_WELL, 0, new \DateTimeImmutable('2015-01-01'), -5000),
+            array('Irrigation Well 5', new Point(-63.582069, -31.324063, 4326), WellType::TYPE_IRRIGATION_WELL, 0, new \DateTimeImmutable('2015-01-01'), -5000),
             array('Public Well 1', new Point(-63.625402, -31.329897, 4326), WellType::TYPE_PUBLIC_WELL, 0, new \DateTimeImmutable('2015-01-01'), -5000),
             array('Public Well 2', new Point(-63.623027, -31.331184, 4326), WellType::TYPE_PUBLIC_WELL, 0, new \DateTimeImmutable('2015-01-01'), -5000),
         );
