@@ -10,6 +10,8 @@ class WellType
     const TYPE_PUBLIC_WELL = 'puw';
     const TYPE_OBSERVATION_WELL = 'ow';
     const TYPE_INDUSTRIAL_WELL = 'iw';
+    const TYPE_INFILTRATION_WELL = 'inw';
+    const TYPE_IRRIGATION_WELL = 'irw';
     const TYPE_SCENARIO_MOVED_WELL = 'smw';
     const TYPE_SCENARIO_NEW_INDUSTRIAL_WELL = 'sniw';
     const TYPE_SCENARIO_NEW_INFILTRATION_WELL = 'snifw';
