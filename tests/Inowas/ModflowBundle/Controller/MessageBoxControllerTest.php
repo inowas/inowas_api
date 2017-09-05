@@ -6,6 +6,9 @@ namespace Tests\Inowas\ModflowBundle\Controller;
 
 use FOS\UserBundle\Doctrine\UserManager;
 use Inowas\AppBundle\Model\User;
+use Inowas\Common\Boundaries\WellBoundary;
+use Inowas\Common\Boundaries\WellDateTimeValue;
+use Inowas\Common\DateTime\DateTime;
 use Inowas\Common\Grid\ActiveCells;
 use Inowas\Common\Id\ModflowId;
 use Inowas\Common\Id\UserId;
@@ -555,6 +558,43 @@ class MessageBoxControllerTest extends EventSourcingBaseTest
 
         $response = $client->getResponse();
         $this->assertEquals(202, $response->getStatusCode());
+    }
+
+    /**
+     * @test
+     */
+    public function it_can_receive_calculate_stressperiods_command(): void
+    {
+        $userId = UserId::fromString($this->user->getId()->toString());
+        $modelId = ModflowId::fromString('f3f6788a-61a6-410e-a14d-af7ecca6babb');
+        $this->createModelWithOneLayer($userId, $modelId);
+
+        /** @var WellBoundary $well */
+        $well = $this->createWellBoundary();
+        $well = $well->addPumpingRate(WellDateTimeValue::fromParams(DateTime::fromDateTimeImmutable(new \DateTimeImmutable('2015-02-01')), -1000));
+        $well = $well->addPumpingRate(WellDateTimeValue::fromParams(DateTime::fromDateTimeImmutable(new \DateTimeImmutable('2015-03-01')), -2000));
+        $well = $well->addPumpingRate(WellDateTimeValue::fromParams(DateTime::fromDateTimeImmutable(new \DateTimeImmutable('2015-04-01')), -3000));
+        $this->commandBus->dispatch(AddBoundary::forModflowModel($userId, $modelId, $well));
+
+        $command = json_decode(file_get_contents($this->fileLocation . 'calculateStressPeriods.json'), true);
+        $command['payload']['id'] = $modelId->toString();
+
+        $apiKey = $this->user->getApiKey();
+        $client = static::createClient();
+        $client->request(
+            'POST',
+            '/v2/messagebox',
+            array(),
+            array(),
+            array('HTTP_X-AUTH-TOKEN' => $apiKey),
+            json_encode($command)
+        );
+
+        $response = $client->getResponse();
+        $this->assertEquals(202, $response->getStatusCode());
+
+        $sp = $this->container->get('inowas.modflowmodel.manager')->getStressPeriodsByModelId($modelId);
+        $this->assertCount(4, $sp->stressperiods());
     }
 
     /**

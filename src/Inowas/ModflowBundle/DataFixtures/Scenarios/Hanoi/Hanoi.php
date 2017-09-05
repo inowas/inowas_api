@@ -345,7 +345,7 @@ class Hanoi extends LoadScenarioBase
         echo sprintf("Autodetect Stressperiods.\r\n");
         $start = DateTime::fromDateTime(new \DateTime('2005-01-01'));
         $end = DateTime::fromDateTime(new \DateTime('2007-12-31'));
-        $commandBus->dispatch(CalculateStressPeriods::forModflowModel($ownerId, $modelId, $start, $end, $timeUnit));
+        $commandBus->dispatch(CalculateStressPeriods::forModflowModel($ownerId, $modelId, $start, $end));
 
         echo sprintf("Change FlowPackage.\r\n");
         $commandBus->dispatch(ChangeFlowPackage::forModflowModel($ownerId, $modelId, PackageName::fromString('upw')));

@@ -9,6 +9,7 @@ use Inowas\ModflowBundle\Exception\InvalidArgumentException;
 use Inowas\ModflowModel\Model\Command\AddBoundary;
 use Inowas\ModflowModel\Model\Command\AddLayer;
 use Inowas\ModflowModel\Model\Command\CalculateModflowModel;
+use Inowas\ModflowModel\Model\Command\CalculateStressPeriods;
 use Inowas\ModflowModel\Model\Command\CloneModflowModel;
 use Inowas\ModflowModel\Model\Command\CreateModflowModel;
 use Inowas\ModflowModel\Model\Command\DeleteModflowModel;
@@ -37,6 +38,7 @@ class MessageBoxController extends InowasRestController
         'addBoundary' => AddBoundary::class,
         'addLayer' => AddLayer::class,
         'calculateModflowModel' => CalculateModflowModel::class,
+        'calculateStressPeriods' => CalculateStressPeriods::class,
         'cloneModflowModel' => CloneModflowModel::class,
         'cloneScenarioAnalysis' => CloneScenarioAnalysis::class,
         'createModflowModel' => CreateModflowModel::class,

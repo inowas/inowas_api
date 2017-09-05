@@ -580,7 +580,7 @@ class SanFelipe extends LoadScenarioBase
         /* Create calculation and calculate */
         $start = DateTime::fromDateTime(new \DateTime('2009-01-01'));
         $end = DateTime::fromDateTime(new \DateTime('2010-12-31'));
-        $commandBus->dispatch(CalculateStressPeriods::forModflowModel($ownerId, $baseModelId, $start, $end, TimeUnit::fromString(TimeUnit::DAYS), true));
+        $commandBus->dispatch(CalculateStressPeriods::forModflowModel($ownerId, $baseModelId, $start, $end, true));
         $ocStressPeriodData = OcStressPeriodData::create()->addStressPeriod(OcStressPeriod::fromParams(0,0, ['save head', 'save drawdown']));
         $commandBus->dispatch(UpdateModflowPackageParameter::byUserModelIdAndPackageData($ownerId, $baseModelId, PackageName::fromString('oc'), ParameterName::fromString('ocStressPeriodData'), $ocStressPeriodData));
         #$commandBus->dispatch(ChangeFlowPackage::forModflowModel($ownerId, $baseModelId, PackageName::fromString('upw')));

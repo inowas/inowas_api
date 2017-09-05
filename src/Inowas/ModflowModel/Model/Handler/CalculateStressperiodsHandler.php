@@ -36,8 +36,8 @@ final class CalculateStressperiodsHandler
             throw ModflowModelNotFoundException::withModelId($command->modflowId());
         }
 
-        $stressperiods = $this->modelManager->calculateStressPeriods($command->modflowId(), $command->start(), $command->end(), $command->timeUnit());
-
+        $timeUnit = $this->modelManager->getTimeUnitByModelId($command->modflowId());
+        $stressperiods = $this->modelManager->calculateStressPeriods($command->modflowId(), $command->start(), $command->end(), $timeUnit);
 
         if ($command->initialStressPeriodSteady()) {
             // FixMe !! Implement This

@@ -8,7 +8,6 @@ use Inowas\Common\Command\AbstractJsonSchemaCommand;
 use Inowas\Common\DateTime\DateTime;
 use Inowas\Common\Id\ModflowId;
 use Inowas\Common\Id\UserId;
-use Inowas\Common\Modflow\TimeUnit;
 
 class CalculateStressPeriods extends AbstractJsonSchemaCommand
 {
@@ -18,18 +17,16 @@ class CalculateStressPeriods extends AbstractJsonSchemaCommand
      * @param ModflowId $modelId
      * @param DateTime $start
      * @param DateTime $end
-     * @param TimeUnit $timeUnit
      * @param bool $initialSteady
      * @return CalculateStressPeriods
      */
-    public static function forModflowModel(UserId $userId, ModflowId $modelId, DateTime $start, DateTime $end, TimeUnit $timeUnit, bool $initialSteady = false): CalculateStressPeriods
+    public static function forModflowModel(UserId $userId, ModflowId $modelId, DateTime $start, DateTime $end, bool $initialSteady = false): CalculateStressPeriods
     {
         $self = new static(
             [
                 'id' => $modelId->toString(),
                 'start' => $start->toAtom(),
                 'end' => $end->toAtom(),
-                'time_unit' => $timeUnit->toInt(),
                 'initial_steady' => $initialSteady
             ]
         );
@@ -43,7 +40,6 @@ class CalculateStressPeriods extends AbstractJsonSchemaCommand
     {
         return 'file://spec/schema/modflow/command/calculateStressperiodsPayload.json';
     }
-
 
     public function modflowId(): ModflowId
     {
@@ -63,11 +59,6 @@ class CalculateStressPeriods extends AbstractJsonSchemaCommand
     public function end(): DateTime
     {
         return DateTime::fromAtom($this->payload['end']);
-    }
-
-    public function timeUnit(): TimeUnit
-    {
-        return TimeUnit::fromInt($this->payload['time_unit']);
     }
 
     public function initialStressPeriodSteady(): bool

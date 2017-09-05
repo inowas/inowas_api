@@ -12,7 +12,6 @@ use Inowas\Common\Boundaries\ConstantHeadBoundary;
 use Inowas\Common\Boundaries\ConstantHeadDateTimeValue;
 use Inowas\Common\Boundaries\GeneralHeadBoundary;
 use Inowas\Common\Boundaries\GeneralHeadDateTimeValue;
-use Inowas\Common\Boundaries\ModflowBoundary;
 use Inowas\Common\Boundaries\ObservationPoint;
 use Inowas\Common\Boundaries\RechargeBoundary;
 use Inowas\Common\Boundaries\RechargeDateTimeValue;
@@ -354,7 +353,7 @@ abstract class EventSourcingBaseTest extends WebTestCase
         return $riverBoundary;
     }
 
-    protected function createWellBoundary(): ModflowBoundary
+    protected function createWellBoundary(): WellBoundary
     {
         $wellBoundary = WellBoundary::createWithParams(
             Name::fromString('Test Well 1'),
