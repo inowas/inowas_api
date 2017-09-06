@@ -52,6 +52,8 @@ class ToolProjector extends AbstractDoctrineConnectionProjector
         $table->addColumn('user_name', 'string', ['length' => 255]);
         $table->addColumn('public', 'boolean');
         $table->setPrimaryKey(['id']);
+        $table->addIndex(['tool']);
+        $table->addIndex(['user_id']);
         $this->addSchema($schema);
     }
 

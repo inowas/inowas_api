@@ -60,6 +60,7 @@ class ModelProjector extends AbstractDoctrineConnectionProjector
         $table->addColumn('created_at', 'string', ['length' => 255, 'notnull' => false]);
         $table->addColumn('public', 'smallint', ['default' => 1]);
         $table->setPrimaryKey(['model_id']);
+        $table->addIndex(['calculation_id']);
         $this->addSchema($schema);
     }
 

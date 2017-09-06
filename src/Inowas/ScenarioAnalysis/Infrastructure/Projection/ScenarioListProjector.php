@@ -43,7 +43,9 @@ class ScenarioListProjector extends AbstractDoctrineConnectionProjector
         $table->addColumn('is_scenario', 'boolean', ['default' => false]);
         $table->addColumn('created_at', 'string', ['length' => 255, 'notnull' => false]);
         $table->setPrimaryKey(['id']);
-        $table->addIndex(array('scenario_analysis_id', 'base_model_id'));
+        $table->addIndex(array('scenario_analysis_id'));
+        $table->addIndex(array('base_model_id'));
+        $table->addIndex(array('scenario_id'));
         $this->addSchema($schema);
     }
 

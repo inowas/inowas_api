@@ -26,14 +26,18 @@ class SoilmodelProjector extends AbstractDoctrineConnectionProjector
         $table = $schema->createTable(Table::SOILMODELS);
         $table->addColumn('model_id', 'string', ['length' => 36]);
         $table->addColumn('soilmodel', 'text', ['notnull' => false]);
+        $table->setPrimaryKey(['model_id']);
         $this->addSchema($schema);
 
         $schema = new Schema();
         $table = $schema->createTable(Table::SOILMODEL_LAYERS_LIST);
+        $table->addColumn('id', 'integer', array("unsigned" => true, "autoincrement" => true));
         $table->addColumn('model_id', 'string', ['length' => 36]);
         $table->addColumn('layer_id', 'string', ['length' => 36]);
         $table->addColumn('layer_number', 'integer');
         $table->addColumn('hash', 'text', ['notnull' => false]);
+        $table->setPrimaryKey(['id']);
+        $table->addIndex(['model_id', 'layer_id']);
         $this->addSchema($schema);
     }
 

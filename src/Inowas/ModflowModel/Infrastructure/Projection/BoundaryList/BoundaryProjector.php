@@ -35,7 +35,8 @@ class BoundaryProjector extends AbstractDoctrineConnectionProjector
         $table->addColumn('metadata', 'text', ['notnull' => false]);
         $table->addColumn('affected_layers', 'text', ['notnull' => false]);
         $table->addColumn('boundary', 'text', ['notnull' => false]);
-        $table->addIndex(array('boundary_id', 'model_id'));
+        $table->setPrimaryKey(['model_id', 'boundary_id']);
+        $table->addIndex(['boundary_id']);
         $this->addSchema($schema);
     }
 
