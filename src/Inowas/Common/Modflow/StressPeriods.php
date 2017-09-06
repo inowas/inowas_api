@@ -274,7 +274,7 @@ final class StressPeriods implements \JsonSerializable
         /** @var \DateTime $dateTime */
         $dateTime = clone $dateTime->toDateTime();
 
-        $dateTime->modify('+1 day');
+        #$dateTime->modify('+1 day');
         $diff = $start->diff($dateTime);
 
         if ($timeUnit->toInt() === $timeUnit::SECONDS){
