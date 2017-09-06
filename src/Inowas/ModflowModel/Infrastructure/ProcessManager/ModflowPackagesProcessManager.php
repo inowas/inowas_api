@@ -8,7 +8,6 @@ use Inowas\ModflowModel\Model\Event\LengthUnitWasUpdated;
 use Inowas\ModflowModel\Model\Event\ModflowModelWasCloned;
 use Inowas\ModflowModel\Model\Event\ModflowModelWasCreated;
 use Inowas\ModflowModel\Model\Event\ModflowPackageParameterWasUpdated;
-use Inowas\ModflowModel\Model\Event\SoilModelWasChanged;
 use Inowas\ModflowModel\Model\Event\StressPeriodsWereUpdated;
 use Inowas\ModflowModel\Model\Event\TimeUnitWasUpdated;
 use Inowas\ModflowModel\Service\ModflowPackagesManager;
@@ -91,7 +90,7 @@ class ModflowPackagesProcessManager
         $this->{$handler}($e);
     }
 
-    protected function determineEventMethodFor(DomainEvent $e)
+    protected function determineEventMethodFor(DomainEvent $e): string
     {
         return 'on' . implode(array_slice(explode('\\', get_class($e)), -1));
     }

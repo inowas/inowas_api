@@ -365,7 +365,6 @@ class ModflowModelController extends InowasRestController
         }
 
         $calculationId = $this->get('inowas.modflowmodel.model_finder')->getCalculationIdByModelId($modelId);
-
         if (!$calculationId instanceof CalculationId) {
             $query = CalculationStateQuery::createWithEmptyCalculationId(
                 CalculationState::new()
@@ -375,6 +374,14 @@ class ModflowModelController extends InowasRestController
         }
 
         $query = $this->get('inowas.modflowmodel.calculation_results_finder')->getCalculationStateQuery($calculationId);
+        if ($query instanceof CalculationStateQuery) {
+            return new JsonResponse($query);
+        }
+
+        $query = CalculationStateQuery::createWithEmptyCalculationId(
+            CalculationState::new()
+        );
+
         return new JsonResponse($query);
     }
 }
