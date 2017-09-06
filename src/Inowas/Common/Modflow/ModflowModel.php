@@ -143,7 +143,8 @@ final class ModflowModel implements \JsonSerializable
             'grid_size' => $this->gridSize->toArray(),
             'time_unit' => $this->timeUnit->toInt(),
             'length_unit' => $this->lengthUnit->toInt(),
-            'active_cells' => $this->activeCells->cells2D()
+            'active_cells' => $this->activeCells->cells2D(),
+            'permissions' => $this->userPermission->toString(),
         );
     }
 
