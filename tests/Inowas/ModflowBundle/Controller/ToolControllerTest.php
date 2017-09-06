@@ -119,7 +119,6 @@ class ToolControllerTest extends EventSourcingBaseTest
     {
         $userId = UserId::fromString($this->user->getId()->toString());
         $apiKey = $this->user->getApiKey();
-        $username = $this->user->getName();
 
         $modelId = ModflowId::generate();
         $this->createModelWithOneLayer($userId, $modelId);
@@ -176,10 +175,10 @@ class ToolControllerTest extends EventSourcingBaseTest
         $body = json_decode($response->getContent(), true);
         $this->assertTrue(is_array($body));
         $this->assertCount(2, $body);
-        $saDetails = $body[1];
+        $saDetails = $body[0];
 
         $this->assertTrue(array_key_exists('id', $saDetails));
-        $this->assertEquals($scenarioAnalysisId->toString(), $saDetails['id']);
+        $this->assertTrue($scenarioAnalysisId->toString() ===  $saDetails['id'] || $modelId->toString()===  $saDetails['id']);
         $this->assertTrue(array_key_exists('name', $saDetails));
         $this->assertEquals('TestName', $saDetails['name']);
         $this->assertTrue(array_key_exists('description', $saDetails));
@@ -279,6 +278,5 @@ class ToolControllerTest extends EventSourcingBaseTest
 
         $response = $client->getResponse();
         $this->assertEquals(302, $response->getStatusCode());
-
     }
 }
