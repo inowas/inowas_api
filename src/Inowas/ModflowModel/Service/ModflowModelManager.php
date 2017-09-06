@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Inowas\ModflowModel\Service;
 
+use Inowas\AppBundle\Model\UserPermission;
 use Inowas\Common\Boundaries\BoundaryType;
 use Inowas\Common\DateTime\DateTime;
 use Inowas\Common\Geometry\Geometry;
@@ -13,8 +14,11 @@ use Inowas\Common\Grid\BoundingBox;
 use Inowas\Common\Grid\GridSize;
 use Inowas\Common\Id\BoundaryId;
 use Inowas\Common\Id\ModflowId;
+use Inowas\Common\Id\UserId;
+use Inowas\Common\Modflow\Description;
 use Inowas\Common\Modflow\LengthUnit;
 use Inowas\Common\Modflow\ModflowModel;
+use Inowas\Common\Modflow\Name;
 use Inowas\Common\Modflow\StressPeriods;
 use Inowas\Common\Modflow\TimeUnit;
 use Inowas\GeoTools\Service\GeoTools;
@@ -59,22 +63,29 @@ class ModflowModelManager
         $this->stressPeriodDataGenerator = $stressPeriodDataGenerator;
     }
 
-    public function findModel(ModflowId $modelId): ?ModflowModel
+    public function findModel(ModflowId $modelId, UserId $userId): ?ModflowModel
     {
-        if (!$this->modelFinder->modelExists($modelId)) {
-            return null;
+        $model = $this->modelFinder->findById($modelId);
+
+        if ($model === null) {
+            return $model;
         }
 
         return ModflowModel::fromParams(
             $modelId,
-            $this->modelFinder->getModelNameByModelId($modelId),
-            $this->modelFinder->getModelDescriptionByModelId($modelId),
-            $this->modelFinder->getAreaPolygonByModflowModelId($modelId),
-            $this->getBoundingBox($modelId),
-            $this->getGridSize($modelId),
-            $this->getTimeUnitByModelId($modelId),
-            $this->getLengthUnitByModelId($modelId),
-            $this->getAreaActiveCells($modelId)
+            Name::fromString($model['name']),
+            Description::fromString($model['description']),
+            Geometry::fromJson($model['area'])->value(),
+            BoundingBox::fromArray(json_decode($model['bounding_box'], true)),
+            GridSize::fromArray((array)json_decode($model['grid_size'])),
+            TimeUnit::fromInt($model['time_unit']),
+            LengthUnit::fromInt($model['length_unit']),
+            !empty($model['active_cells']) ?
+                ActiveCells::fromArray(json_decode($model['active_cells'], true))
+                : $this->getAreaActiveCells($modelId),
+            $userId->toString() === $model['user_id']
+                ? UserPermission::readWriteExecute()
+                : ($model['public'] ? UserPermission::readOnly() : UserPermission::noPermission())
         );
     }
 

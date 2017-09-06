@@ -36,6 +36,16 @@ class ModelFinder
         );
     }
 
+    public function findById(ModflowId $modelId): ?array
+    {
+        $result = $this->connection->fetchAssoc(
+            sprintf('SELECT * FROM %s WHERE model_id = :model_id', Table::MODFLOWMODELS),
+            ['model_id' => $modelId->toString()]
+        );
+
+        return $result === false ? null : $result;
+    }
+
     public function findModelsByBaseUserId(UserId $userId): array
     {
         $this->connection->setFetchMode(\PDO::FETCH_ASSOC);

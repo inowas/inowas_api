@@ -101,13 +101,9 @@ class ModflowModelController extends InowasRestController
             );
         }
 
-        $model = $this->container->get('inowas.modflowmodel.manager')->findModel($modelId);
-        $permissions = $this->get('inowas.user_permissions')->getModelPermissions($userId, $modelId);
+        $model = $this->container->get('inowas.modflowmodel.manager')->findModel($modelId, $userId);
 
-        $arr = $model->toArray();
-        $arr['permissions'] = $permissions->toString();
-
-        return (new JsonResponse())->setData($arr);
+        return (new JsonResponse())->setData($model->toArray());
     }
 
     /**

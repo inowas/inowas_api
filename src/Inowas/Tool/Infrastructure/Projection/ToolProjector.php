@@ -93,7 +93,7 @@ class ToolProjector extends AbstractDoctrineConnectionProjector
             return;
         }
 
-        $model = $this->modelManager->findModel($event->modelId());
+        $model = $this->modelManager->findModel($event->modelId(), $event->userId());
         $this->connection->insert(Table::TOOL_LIST, array(
             'id' => $event->modelId()->toString(),
             'name' => $model->name()->toString(),

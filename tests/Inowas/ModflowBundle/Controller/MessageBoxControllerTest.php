@@ -80,6 +80,7 @@ class MessageBoxControllerTest extends EventSourcingBaseTest
      */
     public function it_receives_a_create_model_command_and_creates_model(): void
     {
+        $userId = UserId::fromString($this->user->getId()->toString());
         $command = json_decode(file_get_contents($this->fileLocation.'createModflowModel.json'), true);
         $payload = $command['payload'];
 
@@ -99,7 +100,7 @@ class MessageBoxControllerTest extends EventSourcingBaseTest
         $response = $client->getResponse();
         $this->assertEquals(202, $response->getStatusCode());
 
-        $model = $this->container->get('inowas.modflowmodel.manager')->findModel($modelId);
+        $model = $this->container->get('inowas.modflowmodel.manager')->findModel($modelId, $userId);
         $this->assertInstanceOf(ModflowModel::class, $model);
         $this->assertEquals($payload['id'], $model->id()->toString());
         $this->assertEquals($payload['name'], $model->name()->toString());
@@ -140,7 +141,7 @@ class MessageBoxControllerTest extends EventSourcingBaseTest
         $this->assertEquals(202, $response->getStatusCode());
 
         $modelId = ModflowId::fromString($command['payload']['id']);
-        $model = $this->container->get('inowas.modflowmodel.manager')->findModel($modelId);
+        $model = $this->container->get('inowas.modflowmodel.manager')->findModel($modelId, $userId);
 
         $this->assertInstanceOf(ModflowModel::class, $model);
         $this->assertEquals($payload['id'], $model->id()->toString());

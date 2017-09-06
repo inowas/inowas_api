@@ -2,6 +2,7 @@
 
 namespace Inowas\Common\Modflow;
 
+use Inowas\AppBundle\Model\UserPermission;
 use Inowas\Common\Geometry\Polygon;
 use Inowas\Common\Grid\ActiveCells;
 use Inowas\Common\Grid\BoundingBox;
@@ -38,6 +39,9 @@ final class ModflowModel implements \JsonSerializable
     /** @var ActiveCells */
     private $activeCells;
 
+    /** @var UserPermission */
+    private $userPermission;
+
     /** @noinspection MoreThanThreeArgumentsInspection
      * @param ModflowId $id
      * @param Name $name
@@ -48,6 +52,7 @@ final class ModflowModel implements \JsonSerializable
      * @param TimeUnit $timeUnit
      * @param LengthUnit $lengthUnit
      * @param ActiveCells $activeCells
+     * @param UserPermission $userPermission
      * @return ModflowModel
      */
     public static function fromParams(
@@ -59,7 +64,8 @@ final class ModflowModel implements \JsonSerializable
         GridSize $gridSize,
         TimeUnit $timeUnit,
         LengthUnit $lengthUnit,
-        ActiveCells $activeCells
+        ActiveCells $activeCells,
+        UserPermission $userPermission
     ): ModflowModel
     {
         $self = new self();
@@ -72,6 +78,7 @@ final class ModflowModel implements \JsonSerializable
         $self->timeUnit = $timeUnit;
         $self->lengthUnit = $lengthUnit;
         $self->activeCells = $activeCells;
+        $self->userPermission = $userPermission;
         return $self;
     }
 

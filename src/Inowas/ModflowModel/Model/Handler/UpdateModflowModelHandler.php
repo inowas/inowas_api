@@ -35,7 +35,7 @@ final class UpdateModflowModelHandler
             throw WriteAccessFailedException::withUserAndOwner($command->userId(), $modflowModel->userId());
         }
 
-        $currentModel = $this->modelManager->findModel($command->modelId());
+        $currentModel = $this->modelManager->findModel($command->modelId(), $command->userId());
 
         if (! $currentModel->name()->sameAs($command->name())) {
             $modflowModel->changeName($command->userId(), $command->name());
