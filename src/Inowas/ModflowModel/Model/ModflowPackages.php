@@ -320,11 +320,10 @@ class ModflowPackages implements \JsonSerializable
 
     public function unSelectPackage(PackageName $name): void
     {
-        if (!in_array($name->toString(), $this->selectedPackages, false)) {
-            return;
+        if(($key = array_search($name->toString(), $this->selectedPackages, false)) !== false) {
+            unset($this->selectedPackages[$key]);
+            $this->selectedPackages = array_values($this->selectedPackages);
         }
-
-        unset($this->packages[$name->toString()]);
     }
 
     private function addPackage(PackageInterface $package): void

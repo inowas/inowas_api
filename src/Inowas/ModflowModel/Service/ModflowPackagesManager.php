@@ -182,56 +182,8 @@ class ModflowPackagesManager
         $packages->updatePackageParameter('dis', 'steady', $stressPeriods->steady());
         $packages->updatePackageParameter('dis', 'nper', $stressPeriods->nper());
 
-        /*
-         * Add PackageDetails for WelPackage
-         */
-        if ($this->modflowModelManager->countModelBoundaries($modelId, WellBoundary::TYPE) > 0) {
-            $welStressPeriodData = $this->modflowModelManager->generateWelStressPeriodData($modelId, $stressPeriods);
-            $packages->updatePackageParameter('wel', 'StressPeriodData', $welStressPeriodData);
-        } else {
-            $packages->unSelectPackage(PackageName::fromString('wel'));
-        }
 
-        /*
-         * Add PackageDetails for RchPackage
-         */
-        if ($this->modflowModelManager->countModelBoundaries($modelId, RechargeBoundary::TYPE) > 0) {
-            $rchStressPeriodData = $this->modflowModelManager->generateRchStressPeriodData($modelId, $stressPeriods);
-            $packages->updatePackageParameter('rch', 'StressPeriodData', $rchStressPeriodData);
-        } else {
-            $packages->unSelectPackage(PackageName::fromString('rch'));
-        }
-
-        /*
-         * Add PackageDetails for RivPackage
-         */
-        if ($this->modflowModelManager->countModelBoundaries($modelId, RiverBoundary::TYPE) > 0) {
-            $rivStressPeriodData = $this->modflowModelManager->generateRivStressPeriodData($modelId, $stressPeriods);
-            $packages->updatePackageParameter('riv', 'StressPeriodData', $rivStressPeriodData);
-        } else {
-            $packages->unSelectPackage(PackageName::fromString('riv'));
-        }
-
-        /*
-         * Add PackageDetails for GhbPackage
-         */
-        if ($this->modflowModelManager->countModelBoundaries($modelId, GeneralHeadBoundary::TYPE) > 0) {
-            $ghbStressPeriodData = $this->modflowModelManager->generateGhbStressPeriodData($modelId, $stressPeriods);
-            $packages->updatePackageParameter('ghb', 'StressPeriodData', $ghbStressPeriodData);
-        } else {
-            $packages->unSelectPackage(PackageName::fromString('ghb'));
-        }
-
-        /*
-         * Add PackageDetails for ChdPackage
-         */
-        if ($this->modflowModelManager->countModelBoundaries($modelId, ConstantHeadBoundary::TYPE) > 0) {
-            $chdStressPeriodData = $this->modflowModelManager->generateChdStressPeriodData($modelId, $stressPeriods);
-            $packages->updatePackageParameter('chd', 'StressPeriodData', $chdStressPeriodData);
-        } else {
-            $packages->unSelectPackage(PackageName::fromString('chd'));
-        }
-
+        $packages = $this->calculateBoundaries($modelId, $stressPeriods, $packages);
         return $this->savePackages($packages);
     }
 
@@ -337,12 +289,20 @@ class ModflowPackagesManager
             $packages->updatePackageParameter('upw', 'vkcb', $this->soilmodelFinder->getVkcb($modelId));
         }
 
+        $packages = $this->calculateBoundaries($modelId, $stressPeriods, $packages);
+        return $packages;
+    }
+
+    private function calculateBoundaries(ModflowId $modelId, StressPeriods $stressPeriods, ModflowPackages $packages): ModflowPackages
+    {
         /*
-         * Add PackageDetails for WelPackage
-         */
+        * Add PackageDetails for WelPackage
+        */
         if ($this->modflowModelManager->countModelBoundaries($modelId, WellBoundary::TYPE) > 0) {
             $welStressPeriodData = $this->modflowModelManager->generateWelStressPeriodData($modelId, $stressPeriods);
             $packages->updatePackageParameter('wel', 'StressPeriodData', $welStressPeriodData);
+        } else {
+            $packages->unSelectPackage(PackageName::fromString('wel'));
         }
 
         /*
@@ -351,6 +311,8 @@ class ModflowPackagesManager
         if ($this->modflowModelManager->countModelBoundaries($modelId, RechargeBoundary::TYPE) > 0) {
             $rchStressPeriodData = $this->modflowModelManager->generateRchStressPeriodData($modelId, $stressPeriods);
             $packages->updatePackageParameter('rch', 'StressPeriodData', $rchStressPeriodData);
+        } else {
+            $packages->unSelectPackage(PackageName::fromString('rch'));
         }
 
         /*
@@ -359,6 +321,8 @@ class ModflowPackagesManager
         if ($this->modflowModelManager->countModelBoundaries($modelId, RiverBoundary::TYPE) > 0) {
             $rivStressPeriodData = $this->modflowModelManager->generateRivStressPeriodData($modelId, $stressPeriods);
             $packages->updatePackageParameter('riv', 'StressPeriodData', $rivStressPeriodData);
+        } else {
+            $packages->unSelectPackage(PackageName::fromString('riv'));
         }
 
         /*
@@ -367,6 +331,8 @@ class ModflowPackagesManager
         if ($this->modflowModelManager->countModelBoundaries($modelId, GeneralHeadBoundary::TYPE) > 0) {
             $ghbStressPeriodData = $this->modflowModelManager->generateGhbStressPeriodData($modelId, $stressPeriods);
             $packages->updatePackageParameter('ghb', 'StressPeriodData', $ghbStressPeriodData);
+        } else {
+            $packages->unSelectPackage(PackageName::fromString('ghb'));
         }
 
         /*
@@ -375,6 +341,8 @@ class ModflowPackagesManager
         if ($this->modflowModelManager->countModelBoundaries($modelId, ConstantHeadBoundary::TYPE) > 0) {
             $chdStressPeriodData = $this->modflowModelManager->generateChdStressPeriodData($modelId, $stressPeriods);
             $packages->updatePackageParameter('chd', 'StressPeriodData', $chdStressPeriodData);
+        } else {
+            $packages->unSelectPackage(PackageName::fromString('chd'));
         }
 
         return $packages;
