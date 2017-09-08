@@ -304,7 +304,9 @@ class ModflowPackages implements \JsonSerializable
         foreach ($this->selectedPackages as $selectedPackage) {
             /** @var PackageInterface $package */
             $package = $this->packages[$selectedPackage];
-            $packages[$package->type()] = $package->toArray();
+            if ($package->isValid()) {
+                $packages[$package->type()] = $package->toArray();
+            }
         }
 
         $packageData['packages'] = $packages;

@@ -234,6 +234,11 @@ class MfPackage implements PackageInterface
         return $package;
     }
 
+    public function isValid(): bool
+    {
+        return true;
+    }
+
     /**
      * @return array
      */

@@ -18,6 +18,11 @@ abstract class AbstractStressPeriodData implements \JsonSerializable
         return $this->data;
     }
 
+    public function hasData(): bool
+    {
+        return count($this->data) > 0;
+    }
+
     public function jsonSerialize(): array
     {
         $this->removeSuccessiveStressperiodData();
@@ -43,4 +48,5 @@ abstract class AbstractStressPeriodData implements \JsonSerializable
 
         $this->data = $data;
     }
+
 }

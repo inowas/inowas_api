@@ -87,6 +87,11 @@ class ChdPackage implements PackageInterface
         return $this->type;
     }
 
+    public function isValid(): bool
+    {
+        return $this->stressPeriodData->hasData();
+    }
+
     public function toArray(): array
     {
         return array(

@@ -294,6 +294,11 @@ class PcgPackage implements PackageInterface
         return $package;
     }
 
+    public function isValid(): bool
+    {
+        return true;
+    }
+
     public function toArray(): array
     {
         return array(

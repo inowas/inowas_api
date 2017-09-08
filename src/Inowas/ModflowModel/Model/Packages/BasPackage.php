@@ -66,7 +66,6 @@ class BasPackage implements PackageInterface
         return $self;
     }
 
-
     /** @noinspection MoreThanThreeArgumentsInspection
      * @param Ibound $ibound
      * @param Strt $strt
@@ -216,6 +215,11 @@ class BasPackage implements PackageInterface
         $package = self::fromArray($this->toArray());
         $package->unitnumber = $unitnumber;
         return $package;
+    }
+
+    public function isValid(): bool
+    {
+        return true;
     }
 
     public function toArray(): array
