@@ -48,5 +48,4 @@ abstract class AbstractStressPeriodData implements \JsonSerializable
 
         $this->data = $data;
     }
-
 }

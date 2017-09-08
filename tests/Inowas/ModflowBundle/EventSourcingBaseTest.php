@@ -211,12 +211,12 @@ abstract class EventSourcingBaseTest extends WebTestCase
         return $ghbBoundary;
     }
 
-    protected function createRechargeBoundary(): RechargeBoundary
+    protected function createRechargeBoundaryCenter(): RechargeBoundary
     {
 
         $rchBoundary = BoundaryFactory::create(
             BoundaryType::fromString(BoundaryType::RECHARGE),
-            Name::fromString('TestRch'),
+            Name::fromString('TestRchUpper'),
             Geometry::fromPolygon(new Polygon(
                 array(
                     array(
@@ -236,6 +236,36 @@ abstract class EventSourcingBaseTest extends WebTestCase
         $rchBoundary = $rchBoundary->addRecharge(RechargeDateTimeValue::fromParams(
             DateTime::fromDateTimeImmutable(new \DateTimeImmutable('1.1.2015')),
             3.29e-4
+        ));
+
+        return $rchBoundary;
+    }
+
+    protected function createRechargeBoundaryLower(): RechargeBoundary
+    {
+
+        $rchBoundary = BoundaryFactory::create(
+            BoundaryType::fromString(BoundaryType::RECHARGE),
+            Name::fromString('TestRchLower'),
+            Geometry::fromPolygon(new Polygon(
+                array(
+                    array(
+                        array(-63.64, -31.34),
+                        array(-63.64, -31.36),
+                        array(-63.59, -31.36),
+                        array(-63.59, -31.34),
+                        array(-63.64, -31.34)
+                    )
+                ), 4326
+            )),
+            AffectedLayers::fromArray([0]),
+            Metadata::create()
+        );
+
+        /** @var RechargeBoundary $rchBoundary */
+        $rchBoundary = $rchBoundary->addRecharge(RechargeDateTimeValue::fromParams(
+            DateTime::fromDateTimeImmutable(new \DateTimeImmutable('1.1.2015')),
+            5.29e-4
         ));
 
         return $rchBoundary;

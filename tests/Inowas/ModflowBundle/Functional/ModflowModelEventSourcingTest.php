@@ -152,7 +152,7 @@ class ModflowModelEventSourcingTest extends EventSourcingBaseTest
         $this->commandBus->dispatch(ChangeBoundingBox::forModflowModel($ownerId, $modelId, $boundingBox));
         $this->commandBus->dispatch(AddBoundary::forModflowModel($ownerId, $modelId, $this->createConstantHeadBoundaryWithObservationPoint()));
         $this->commandBus->dispatch(AddBoundary::forModflowModel($ownerId, $modelId, $this->createGeneralHeadBoundaryWithObservationPoint()));
-        $this->commandBus->dispatch(AddBoundary::forModflowModel($ownerId, $modelId, $this->createRechargeBoundary()));
+        $this->commandBus->dispatch(AddBoundary::forModflowModel($ownerId, $modelId, $this->createRechargeBoundaryCenter()));
         $this->commandBus->dispatch(AddBoundary::forModflowModel($ownerId, $modelId, $this->createRiverBoundaryWithObservationPoint()));
         $this->commandBus->dispatch(AddBoundary::forModflowModel($ownerId, $modelId, $this->createWellBoundary()));
         $this->commandBus->dispatch(ChangeGridSize::forModflowModel($ownerId, $modelId, GridSize::fromXY(20,20)));
@@ -231,7 +231,7 @@ class ModflowModelEventSourcingTest extends EventSourcingBaseTest
         $modelId = ModflowId::generate();
         $this->createModelWithName($ownerId, $modelId);
 
-        $rchBoundary = $this->createRechargeBoundary();
+        $rchBoundary = $this->createRechargeBoundaryCenter();
 
         $this->commandBus->dispatch(AddBoundary::forModflowModel($ownerId, $modelId, $rchBoundary));
         $activeCells = $this->container->get('inowas.modflowmodel.manager')->getBoundaryActiveCells($modelId, $rchBoundary->boundaryId());
@@ -462,7 +462,7 @@ class ModflowModelEventSourcingTest extends EventSourcingBaseTest
         $modelId = ModflowId::generate();
         $this->createModelWithOneLayer($ownerId, $modelId);
 
-        $rchBoundary = $this->createRechargeBoundary();
+        $rchBoundary = $this->createRechargeBoundaryCenter();
         $this->commandBus->dispatch(AddBoundary::forModflowModel($ownerId, $modelId, $rchBoundary));
         $config = $this->recalculateAndCreateJsonCalculationRequest($modelId);
 
@@ -478,6 +478,36 @@ class ModflowModelEventSourcingTest extends EventSourcingBaseTest
         $this->assertCount(40, $stressperiodDataFirstStressPeriod);
         $this->assertCount(75, $stressperiodDataFirstStressPeriod[0]);
         $this->assertEquals(0.000329, $stressperiodDataFirstStressPeriod[27][30]);
+    }
+
+    /**
+     * @test
+     */
+    public function it_creates_a_steady_calculation_from_model_with_two_overlapping_rch_boundaries(): void
+    {
+        $ownerId = UserId::generate();
+        $modelId = ModflowId::generate();
+        $this->createModelWithOneLayer($ownerId, $modelId);
+
+        $rchBoundary = $this->createRechargeBoundaryCenter();
+        $this->commandBus->dispatch(AddBoundary::forModflowModel($ownerId, $modelId, $rchBoundary));
+
+        $rchBoundary = $this->createRechargeBoundaryLower();
+        $this->commandBus->dispatch(AddBoundary::forModflowModel($ownerId, $modelId, $rchBoundary));
+        $config = $this->recalculateAndCreateJsonCalculationRequest($modelId);
+
+        $this->assertJson($config);
+        $arr = json_decode($config, true);
+        $this->assertTrue($this->packageIsInSelectedPackages($arr, 'rch'));
+        $rch = $this->getPackageData($arr, 'rch');
+
+        $this->assertArrayHasKey('stress_period_data', $rch);
+        $stressperiodData = $rch['stress_period_data'];
+        $this->assertCount(1, $stressperiodData);
+        $stressperiodDataFirstStressPeriod = array_values($stressperiodData)[0];
+        $this->assertCount(40, $stressperiodDataFirstStressPeriod);
+        $this->assertCount(75, $stressperiodDataFirstStressPeriod[0]);
+        $this->assertEquals(0.000529, $stressperiodDataFirstStressPeriod[27][30]);
     }
 
     /**
@@ -616,7 +646,7 @@ class ModflowModelEventSourcingTest extends EventSourcingBaseTest
 
         $this->commandBus->dispatch(AddBoundary::forModflowModel($ownerId, $modelId, $this->createConstantHeadBoundaryWithObservationPoint()));
         $this->commandBus->dispatch(AddBoundary::forModflowModel($ownerId, $modelId, $this->createGeneralHeadBoundaryWithObservationPoint()));
-        $this->commandBus->dispatch(AddBoundary::forModflowModel($ownerId, $modelId, $this->createRechargeBoundary()));
+        $this->commandBus->dispatch(AddBoundary::forModflowModel($ownerId, $modelId, $this->createRechargeBoundaryCenter()));
         $this->commandBus->dispatch(AddBoundary::forModflowModel($ownerId, $modelId, $this->createRiverBoundaryWithObservationPoint()));
         $this->commandBus->dispatch(AddBoundary::forModflowModel($ownerId, $modelId, $this->createWellBoundary()));
 
@@ -640,7 +670,7 @@ class ModflowModelEventSourcingTest extends EventSourcingBaseTest
 
         $this->commandBus->dispatch(AddBoundary::forModflowModel($ownerId, $modelId, $this->createConstantHeadBoundaryWithObservationPoint()));
         $this->commandBus->dispatch(AddBoundary::forModflowModel($ownerId, $modelId, $this->createGeneralHeadBoundaryWithObservationPoint()));
-        $this->commandBus->dispatch(AddBoundary::forModflowModel($ownerId, $modelId, $this->createRechargeBoundary()));
+        $this->commandBus->dispatch(AddBoundary::forModflowModel($ownerId, $modelId, $this->createRechargeBoundaryCenter()));
         $this->commandBus->dispatch(AddBoundary::forModflowModel($ownerId, $modelId, $this->createRiverBoundaryWithObservationPoint()));
         $this->commandBus->dispatch(AddBoundary::forModflowModel($ownerId, $modelId, $this->createWellBoundary()));
 
@@ -691,7 +721,7 @@ class ModflowModelEventSourcingTest extends EventSourcingBaseTest
 
         $this->commandBus->dispatch(AddBoundary::forModflowModel($ownerId, $modelId, $this->createConstantHeadBoundaryWithObservationPoint()));
         $this->commandBus->dispatch(AddBoundary::forModflowModel($ownerId, $modelId, $this->createGeneralHeadBoundaryWithObservationPoint()));
-        $this->commandBus->dispatch(AddBoundary::forModflowModel($ownerId, $modelId, $this->createRechargeBoundary()));
+        $this->commandBus->dispatch(AddBoundary::forModflowModel($ownerId, $modelId, $this->createRechargeBoundaryCenter()));
         $this->commandBus->dispatch(AddBoundary::forModflowModel($ownerId, $modelId, $this->createRiverBoundaryWithObservationPoint()));
         $this->commandBus->dispatch(AddBoundary::forModflowModel($ownerId, $modelId, $this->createWellBoundary()));
 
@@ -728,7 +758,7 @@ class ModflowModelEventSourcingTest extends EventSourcingBaseTest
 
         $this->commandBus->dispatch(AddBoundary::forModflowModel($ownerId, $modelId, $this->createConstantHeadBoundaryWithObservationPoint()));
         $this->commandBus->dispatch(AddBoundary::forModflowModel($ownerId, $modelId, $this->createGeneralHeadBoundaryWithObservationPoint()));
-        $this->commandBus->dispatch(AddBoundary::forModflowModel($ownerId, $modelId, $this->createRechargeBoundary()));
+        $this->commandBus->dispatch(AddBoundary::forModflowModel($ownerId, $modelId, $this->createRechargeBoundaryCenter()));
         $this->commandBus->dispatch(AddBoundary::forModflowModel($ownerId, $modelId, $this->createRiverBoundaryWithObservationPoint()));
         $modelBoundaries = $this->container->get('inowas.modflowmodel.boundary_manager')->findBoundariesByModelId($modelId);
         $this->assertCount(4, $modelBoundaries);
@@ -755,7 +785,7 @@ class ModflowModelEventSourcingTest extends EventSourcingBaseTest
         $this->commandBus->dispatch(AddBoundary::forModflowModel($ownerId, $modelId, $well = $this->createWellBoundary()));
         $this->commandBus->dispatch(AddBoundary::forModflowModel($ownerId, $modelId, $this->createConstantHeadBoundaryWithObservationPoint()));
         $this->commandBus->dispatch(AddBoundary::forModflowModel($ownerId, $modelId, $this->createGeneralHeadBoundaryWithObservationPoint()));
-        $this->commandBus->dispatch(AddBoundary::forModflowModel($ownerId, $modelId, $this->createRechargeBoundary()));
+        $this->commandBus->dispatch(AddBoundary::forModflowModel($ownerId, $modelId, $this->createRechargeBoundaryCenter()));
         $this->commandBus->dispatch(AddBoundary::forModflowModel($ownerId, $modelId, $this->createRiverBoundaryWithObservationPoint()));
 
         $scenarioAnalysisId = ScenarioAnalysisId::generate();

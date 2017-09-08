@@ -243,7 +243,7 @@ class ScenarioAnalysisControllerTest extends EventSourcingBaseTest
 
         $modelId = ModflowId::generate();
         $this->createModelWithOneLayer($userId, $modelId);
-        $this->commandBus->dispatch(AddBoundary::forModflowModel($userId, $modelId, $this->createRechargeBoundary()));
+        $this->commandBus->dispatch(AddBoundary::forModflowModel($userId, $modelId, $this->createRechargeBoundaryCenter()));
         $this->commandBus->dispatch(AddBoundary::forModflowModel($userId, $modelId, $this->createRiverBoundaryWithObservationPoint()));
         $this->commandBus->dispatch(AddBoundary::forModflowModel($userId, $modelId, $this->createWellBoundary()));
         $this->addSteadyStressperiod($userId, $modelId);

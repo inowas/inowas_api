@@ -39,7 +39,7 @@ class RchPackage implements PackageInterface
     {
         $ipakcb = Ipakcb::fromInteger(0);
         $nrchop = Nrchop::highestActiveCell();
-        $stressPeriodData = RchStressPeriodData::create()->addStressPeriodValue(RchStressPeriodValue::fromParams(0, Rech::fromFloat(1e-3)));
+        $stressPeriodData = RchStressPeriodData::create()->addStressPeriodValue(RchStressPeriodValue::fromParams(0, Rech::fromFloat(0)));
         $irch = Irch::fromInteger(0);
         $extension = Extension::fromString('rch');
         $unitnumber = Unitnumber::fromInteger(19);

@@ -80,8 +80,8 @@ class RioPrimeroBaseModel extends LoadScenarioBase
         $commandBus->dispatch(CreateModflowModel::newWithAllParams(
             $ownerId,
             $baseModelId,
-            Name::fromString('BaseModel Rio Primero for summer school 2017'),
-            Description::fromString('BaseModel Rio Primero for summer school 2017'),
+            Name::fromString('Rio Primero Basemodel'),
+            Description::fromString('Rio Primero Basemodel'),
             $polygon,
             $gridSize,
             $boundingBox,
@@ -305,7 +305,7 @@ class RioPrimeroBaseModel extends LoadScenarioBase
          */
         /** @var RechargeBoundary $rch */
         $rch = RechargeBoundary::createWithParams(
-            Name::fromString('Recharge Boundary 1'),
+            Name::fromString('Recharge'),
             Geometry::fromPolygon(new Polygon([[
                 [-63.687336, -31.313615],
                 [-63.687336, -31.367449],

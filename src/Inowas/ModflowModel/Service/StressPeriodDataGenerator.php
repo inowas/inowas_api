@@ -216,7 +216,7 @@ class StressPeriodDataGenerator
                     }
                 }
 
-                $rchSpd->addStressPeriodValue(RchStressPeriodValue::fromParams($sp, Rech::fromValue($rech)));
+                $rchSpd->addStressPeriodValue(RchStressPeriodValue::fromParams($sp, Rech::from2DArray($rech)));
             }
         }
 
