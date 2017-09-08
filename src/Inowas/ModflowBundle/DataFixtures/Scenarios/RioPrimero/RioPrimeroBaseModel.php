@@ -80,8 +80,8 @@ class RioPrimeroBaseModel extends LoadScenarioBase
         $commandBus->dispatch(CreateModflowModel::newWithAllParams(
             $ownerId,
             $baseModelId,
-            Name::fromString('BaseModel Rio Primero 2015'),
-            Description::fromString('BaseModel Rio Primero 2015'),
+            Name::fromString('BaseModel Rio Primero for summer school 2017'),
+            Description::fromString('BaseModel Rio Primero for summer school 2017'),
             $polygon,
             $gridSize,
             $boundingBox,
