@@ -74,8 +74,8 @@ class PcgPackage implements PackageInterface
         $mxiter = Mxiter::fromInteger(50);
         $iter1 = Iter1::fromInteger(30);
         $npcond = Npcond::fromInteger(1);
-        $hclose = Hclose::fromFloat(1e-5);
-        $rclose = Rclose::fromFloat(1e-5);
+        $hclose = Hclose::fromFloat(1e-2);
+        $rclose = Rclose::fromFloat(1e-2);
         $relax = Relax::fromFloat(1.0);
         $nbpol = Nbpol::fromInteger(0);
         $iprpcg = Iprpcg::fromInteger(0);
