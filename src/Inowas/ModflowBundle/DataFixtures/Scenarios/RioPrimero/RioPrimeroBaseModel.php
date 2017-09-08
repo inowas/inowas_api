@@ -178,8 +178,8 @@ class RioPrimeroBaseModel extends LoadScenarioBase
             ObservationPointId::fromString('op1'),
             ConstantHeadDateTimeValue::fromParams(
                 DateTime::fromDateTimeImmutable(new \DateTimeImmutable('2015-01-01')),
-                440,
-                440
+                445,
+                445
             )
         );
 
