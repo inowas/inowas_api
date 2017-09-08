@@ -7,6 +7,7 @@ use Inowas\Common\Grid\Distance;
 use Inowas\Common\Grid\GridSize;
 use Inowas\Common\Modflow\PackageName;
 use Inowas\Common\Modflow\TimeUnit;
+use Inowas\Common\Modflow\Unitnumber;
 use Inowas\ModflowModel\Model\ModflowPackages;
 
 class ModflowConfigurationTest extends \PHPUnit_Framework_TestCase
@@ -64,7 +65,6 @@ class ModflowConfigurationTest extends \PHPUnit_Framework_TestCase
         $dy = Distance::fromMeters(10000);
 
         $packages->updateGridParameters($gridsize, $boundingBox, $dx, $dy);
-
     }
 
     public function test_change_flow_package(): void
@@ -72,5 +72,14 @@ class ModflowConfigurationTest extends \PHPUnit_Framework_TestCase
         $packages = ModflowPackages::createFromDefaults();
         $packages->changeFlowPackage(PackageName::fromString('upw'));
         json_encode($packages);
+    }
+
+    public function test_remove_package(): void
+    {
+        $packages = ModflowPackages::createFromDefaults();
+        $packages->updatePackageParameter('wel', 'unitnumber', Unitnumber::fromValue(10));
+        $this->assertTrue($packages->isSelected(PackageName::fromString('wel')));
+        $packages->unSelectPackage(PackageName::fromString('wel'));
+        $this->assertFalse($packages->isSelected(PackageName::fromString('wel')));
     }
 }

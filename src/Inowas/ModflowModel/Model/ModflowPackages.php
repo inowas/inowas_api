@@ -318,6 +318,15 @@ class ModflowPackages implements \JsonSerializable
         return $this->packageIsSelected($name->toString());
     }
 
+    public function unSelectPackage(PackageName $name): void
+    {
+        if (!in_array($name->toString(), $this->selectedPackages, false)) {
+            return;
+        }
+
+        unset($this->packages[$name->toString()]);
+    }
+
     private function addPackage(PackageInterface $package): void
     {
         $this->packages[$package->type()] = $package;
