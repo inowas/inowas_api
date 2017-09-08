@@ -31,6 +31,7 @@ class ModflowCalculationCommand extends ContainerAwareCommand
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $commandBus = $this->getContainer()->get('prooph_service_bus.modflow_command_bus');
+        $output->writeln(sprintf('Calculating Model with id: %s', $input->getArgument('modelId')));
         $commandBus->dispatch(CalculateModflowModel::forModflowModelFromTerminal(ModflowId::fromString($input->getArgument('modelId'))));
     }
 }

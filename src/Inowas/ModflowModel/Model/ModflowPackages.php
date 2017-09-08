@@ -364,7 +364,7 @@ class ModflowPackages implements \JsonSerializable
 
     private function packageIsSelected(string $packageName): bool
     {
-        return array_key_exists($packageName, $this->packages);
+        return in_array($packageName, $this->selectedPackages, false);
     }
 
     private function packageIsAvailable(string $packageName): bool
