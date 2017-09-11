@@ -216,7 +216,7 @@ class StressPeriodDataGenerator
                     }
                 }
 
-                $rchSpd->addStressPeriodValue(RchStressPeriodValue::fromParams($sp, Rech::from2DArray($rech)));
+                $rchSpd->addStressPeriodValue(RchStressPeriodValue::fromParams($sp, Rech::fromValue($rech)));
             }
         }
 
@@ -302,7 +302,7 @@ class StressPeriodDataGenerator
             return $gridCellDateTimeValues;
         }
 
-
+        return $gridCellDateTimeValues;
     }
 
     protected function calculateDateTimeFromTotim(DateTime $start, TotalTime $totalTime, TimeUnit $timeUnit): DateTime
