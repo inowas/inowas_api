@@ -65,7 +65,7 @@ class GeoTools
         $boundingBoxPolygon = \geoPHP::load($boundingBox->toGeoJson(), 'json')->geos();
 
         if (! $boundingBoxPolygon->intersects($boundaryGeometry)) {
-            return ActiveCells::fromCells(array());
+            return ActiveCells::fromArrayGridSizeAndLayer(array(), $gridSize, $affectedLayers);
         }
 
         $point = $geometry->value();
