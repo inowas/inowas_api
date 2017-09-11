@@ -71,4 +71,19 @@ class CalculationResultsProjector extends AbstractDoctrineConnectionProjector
             )
         );
     }
+
+    public function resetNotFinishedCalculations(): void
+    {
+        $rows = $this->connection->fetchAll(
+            sprintf('SELECT * from %s WHERE state = :state', Table::CALCULATIONS),
+            ['state' => CalculationState::started()->toInt()]
+        );
+
+        foreach ($rows as $row) {
+            $this->connection->update(Table::CALCULATIONS,
+                ['state' => CalculationState::new()->toInt()],
+                ['calculation_id' => $row['calculation_id']]
+            );
+        }
+    }
 }
