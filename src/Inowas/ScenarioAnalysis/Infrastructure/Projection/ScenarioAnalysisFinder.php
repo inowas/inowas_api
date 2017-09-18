@@ -41,6 +41,27 @@ class ScenarioAnalysisFinder
         return $results['count'] > 0;
     }
 
+
+    public function isBasemodel(ModflowId $modelId): bool
+    {
+        $results = $this->connection->fetchAssoc(
+            sprintf('SELECT count(*) FROM %s WHERE scenario_id = :model_id AND is_base_model', Table::SCENARIO_LIST),
+            ['model_id' => $modelId->toString()]
+        );
+
+        return $results['count'] > 0;
+    }
+
+    public function isScenario(ModflowId $modelId): bool
+    {
+        $results = $this->connection->fetchAssoc(
+            sprintf('SELECT count(*) FROM %s WHERE scenario_id = :model_id AND is_scenario', Table::SCENARIO_LIST),
+            ['model_id' => $modelId->toString()]
+        );
+
+        return $results['count'] > 0;
+    }
+
     public function findScenarioAnalysesByUserId(UserId $userId): array
     {
         $results = $this->connection->fetchAll(

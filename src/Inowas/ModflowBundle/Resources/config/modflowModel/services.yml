@@ -54,6 +54,7 @@ services:
             - '@inowas.modflowmodel.boundary_manager'
             - '@inowas.geotools.geotools_service'
             - '@inowas.modflowmodel.model_finder'
+            - '@inowas.scenarioanalysis.scenarioanalysis_finder'
             - '@inowas.modflowmodel.stressperiod_data_generator'
 
     inowas.modflowmodel.modflow_packages_manager:

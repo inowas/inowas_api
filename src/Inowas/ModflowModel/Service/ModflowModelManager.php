@@ -29,6 +29,7 @@ use Inowas\ModflowModel\Model\Packages\GhbStressPeriodData;
 use Inowas\ModflowModel\Model\Packages\RchStressPeriodData;
 use Inowas\ModflowModel\Model\Packages\RivStressPeriodData;
 use Inowas\ModflowModel\Model\Packages\WelStressPeriodData;
+use Inowas\ScenarioAnalysis\Infrastructure\Projection\ScenarioAnalysisFinder;
 
 class ModflowModelManager
 {
@@ -45,6 +46,9 @@ class ModflowModelManager
     /** @var  ModelFinder */
     protected $modelFinder;
 
+    /** @var  ScenarioAnalysisFinder */
+    protected $scenarioAnalysisFinder;
+
     /** @var  StressPeriodDataGenerator */
     protected $stressPeriodDataGenerator;
 
@@ -54,12 +58,14 @@ class ModflowModelManager
         BoundaryManager $boundaryManager,
         GeoTools $geoTools,
         ModelFinder $modelFinder,
+        ScenarioAnalysisFinder $scenarioAnalysisFinder,
         StressPeriodDataGenerator $stressPeriodDataGenerator
     ){
         $this->activeCellsFinder = $activeCellsFinder;
         $this->boundaryManager = $boundaryManager;
         $this->geoTools = $geoTools;
         $this->modelFinder = $modelFinder;
+        $this->scenarioAnalysisFinder = $scenarioAnalysisFinder;
         $this->stressPeriodDataGenerator = $stressPeriodDataGenerator;
     }
 
@@ -67,8 +73,20 @@ class ModflowModelManager
     {
         $model = $this->modelFinder->findById($modelId);
 
-        if ($model === null) {
-            return $model;
+        if (null === $model) {
+            return null;
+        }
+
+        $permission = UserPermission::noPermission();
+        if ($model['public']) {
+            $permission = UserPermission::readOnly();
+        }
+
+        if ($userId->toString() === $model['user_id']) {
+            $permission = UserPermission::readWriteScenario();
+            if ($this->scenarioAnalysisFinder->isBasemodel($modelId)) {
+                $permission = UserPermission::readWriteBaseModel();
+            }
         }
 
         return ModflowModel::fromParams(
@@ -83,9 +101,7 @@ class ModflowModelManager
             !empty($model['active_cells']) ?
                 ActiveCells::fromArray(json_decode($model['active_cells'], true))
                 : $this->getAreaActiveCells($modelId),
-            $userId->toString() === $model['user_id']
-                ? UserPermission::readWriteExecute()
-                : ($model['public'] ? UserPermission::readOnly() : UserPermission::noPermission())
+            $permission
         );
     }
 

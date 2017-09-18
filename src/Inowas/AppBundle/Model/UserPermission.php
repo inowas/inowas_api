@@ -27,6 +27,17 @@ class UserPermission
         return new self('rwx');
     }
 
+
+    public static function readWriteBaseModel(): UserPermission
+    {
+        return new self('rwx');
+    }
+
+    public static function readWriteScenario(): UserPermission
+    {
+        return new self('rws');
+    }
+
     private function __construct(string $permission)
     {
         $this->permission = $permission;

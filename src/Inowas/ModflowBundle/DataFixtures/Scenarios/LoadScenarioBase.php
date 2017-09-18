@@ -36,7 +36,7 @@ abstract class LoadScenarioBase implements ContainerAwareInterface, DataFixtureI
     protected function loadUsers(UserManager $userManager): void
     {
 
-        $userListHeads = array('username', 'name', 'email', 'password');
+        $userListHeads = array('username', 'name', 'email', 'password', 'roles');
         $userList = array(
             array('guest', 'guest', 'guest@inowas.com', 'guest'),
             array('inowas', 'inowas', 'inowas@inowas.com', '#inowas#', ['ROLE_NM_MF']),
@@ -78,7 +78,6 @@ abstract class LoadScenarioBase implements ContainerAwareInterface, DataFixtureI
             $item = array_combine($userListHeads, $item);
             $user = $userManager->findUserByUsername($item['username']);
             if (!$user) {
-
                 // Add new User
                 $user = $userManager->createUser();
                 $user->setUsername($item['username']);
@@ -86,6 +85,12 @@ abstract class LoadScenarioBase implements ContainerAwareInterface, DataFixtureI
                 $user->setEmail($item['email']);
                 $user->setPlainPassword($item['password']);
                 $user->setEnabled(true);
+
+                /** @var string $role */
+                foreach ($item['roles'] as $role) {
+                    $user->addRole($role);
+                }
+
                 $userManager->updateUser($user);
             }
             $this->userIdList[] = UserId::fromString($user->getId()->toString());
