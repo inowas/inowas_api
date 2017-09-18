@@ -77,6 +77,7 @@ abstract class LoadScenarioBase implements ContainerAwareInterface, DataFixtureI
         foreach ($userList as $item){
             $item = array_combine($userListHeads, $item);
             $user = $userManager->findUserByUsername($item['username']);
+
             if (!$user) {
                 // Add new User
                 $user = $userManager->createUser();
@@ -93,6 +94,15 @@ abstract class LoadScenarioBase implements ContainerAwareInterface, DataFixtureI
 
                 $userManager->updateUser($user);
             }
+
+            /** @var string $role */
+            foreach ($item['roles'] as $role) {
+                if (!$user->hasRole($role)) {
+                    $user->addRole($role);
+                    $userManager->updateUser($user);
+                }
+            }
+
             $this->userIdList[] = UserId::fromString($user->getId()->toString());
         }
 
