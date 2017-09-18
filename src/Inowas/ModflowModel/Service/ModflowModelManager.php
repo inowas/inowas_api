@@ -84,7 +84,7 @@ class ModflowModelManager
 
         if ($userId->toString() === $model['user_id']) {
             $permission = UserPermission::readWriteScenario();
-            if ($this->scenarioAnalysisFinder->isBasemodel($modelId)) {
+            if (! $this->scenarioAnalysisFinder->isScenario($modelId)) {
                 $permission = UserPermission::readWriteBaseModel();
             }
         }
