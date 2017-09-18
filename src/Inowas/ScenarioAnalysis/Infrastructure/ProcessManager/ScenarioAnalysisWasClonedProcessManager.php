@@ -35,9 +35,9 @@ final class ScenarioAnalysisWasClonedProcessManager
         // -> CLONE BASEMODEL WITH NEW BASEMODEL-ID AND USER
         $newModelId = $event->baseModelId();
         $userId = $event->userId();
-        $this->commandBus->dispatch(CloneModflowModel::byId($basemodelId, $userId, $newModelId));
+        $this->commandBus->dispatch(CloneModflowModel::byId($basemodelId, $userId, $newModelId, true));
 
-        // -> CLONE SCENARIOS WITH NEW IDS AND USER WITHOUT SOILMODEL
+        // -> CLONE SCENARIOS
         $newScenarioIds = $event->scenarios();
         foreach ($originalScenarioAnalysis->scenarios() as $key => $scenario){
             $scenarioId = ModflowId::fromString($scenario);
