@@ -38,7 +38,7 @@ abstract class LoadScenarioBase implements ContainerAwareInterface, DataFixtureI
 
         $userListHeads = array('username', 'name', 'email', 'password', 'roles');
         $userList = array(
-            array('guest', 'guest', 'guest@inowas.com', 'guest'),
+            array('guest', 'guest', 'guest@inowas.com', 'guest', []),
             array('inowas', 'inowas', 'inowas@inowas.com', '#inowas#', ['ROLE_NM_MF']),
             array('ralf.junghanns', 'Ralf Junghanns', 'ralf.junghanns@tu-dresden.de', '#inowas#', ['ROLE_NM_MF']),
             array('jana.glass', 'Jana Glass', 'jana.ringleb@tu-dresden.de', '#inowas#', ['ROLE_NM_MF']),
