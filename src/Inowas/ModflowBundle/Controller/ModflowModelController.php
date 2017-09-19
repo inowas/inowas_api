@@ -10,8 +10,10 @@ use Inowas\Common\Calculation\CalculationStateQuery;
 use Inowas\Common\Id\BoundaryId;
 use Inowas\Common\Id\CalculationId;
 use Inowas\Common\Id\ModflowId;
+use Inowas\Common\Modflow\ModflowModel;
 use Inowas\Common\Modflow\Results;
 use Inowas\Common\Soilmodel\LayerId;
+use Inowas\Common\Soilmodel\SoilmodelQuery;
 use Inowas\ModflowBundle\Exception\AccessDeniedException;
 use Inowas\ModflowBundle\Exception\NotFoundException;
 use Nelmio\ApiDocBundle\Annotation\ApiDoc;
@@ -102,6 +104,12 @@ class ModflowModelController extends InowasRestController
         }
 
         $model = $this->container->get('inowas.modflowmodel.manager')->findModel($modelId, $userId);
+
+        if (! $model instanceof ModflowModel) {
+            throw NotFoundException::withMessage(sprintf(
+                'ModflowModel with id: \'%s\' not found.', $modelId->toString()
+            ));
+        }
 
         return (new JsonResponse())->setData($model->toArray());
     }
@@ -263,6 +271,7 @@ class ModflowModelController extends InowasRestController
      * @param string $id
      * @Rest\Get("/modflowmodels/{id}/soilmodel")
      * @return JsonResponse
+     * @throws \Inowas\ModflowBundle\Exception\NotFoundException
      * @throws \Inowas\ModflowBundle\Exception\AccessDeniedException
      * @throws \Symfony\Component\DependencyInjection\Exception\ServiceNotFoundException
      * @throws \Symfony\Component\DependencyInjection\Exception\ServiceCircularReferenceException
@@ -287,6 +296,13 @@ class ModflowModelController extends InowasRestController
         }
 
         $soilmodelQuery = $this->container->get('inowas.modflowmodel.soilmodel_finder')->getSoilmodelQuery($modelId);
+
+        if (!$soilmodelQuery instanceof SoilmodelQuery) {
+            throw NotFoundException::withMessage(sprintf(
+                'Soilmodel from Model with id: \'%s\' not found.', $modelId->toString()
+            ));
+        }
+
         return new JsonResponse($soilmodelQuery->toGeneralArray());
     }
 
@@ -327,8 +343,7 @@ class ModflowModelController extends InowasRestController
             );
         }
 
-        $layer = $this->container->get('inowas.modflowmodel.soilmodel_finder')->findLayer($modelId, $layerId);
-        return new JsonResponse($layer->toArray());
+        return new JsonResponse($this->container->get('inowas.modflowmodel.soilmodel_finder')->findLayer($modelId, $layerId));
     }
 
     /**
@@ -375,6 +390,11 @@ class ModflowModelController extends InowasRestController
 
         $query = $this->get('inowas.modflowmodel.calculation_results_finder')->getCalculationStateQuery($calculationId);
         if ($query instanceof CalculationStateQuery) {
+
+            if ($query->calculationWasFinished()) {
+                $query->updateFiles($this->get('inowas.modflowmodel.calculation_results_finder')->getFileList(CalculationId::fromString($id)));
+            }
+
             return new JsonResponse($query);
         }
 

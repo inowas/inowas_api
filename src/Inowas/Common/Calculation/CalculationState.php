@@ -65,4 +65,9 @@ class CalculationState
     {
         return $this->state;
     }
+
+    public function isFinished(): bool
+    {
+        return $this->state === self::FINISHED;
+    }
 }
