@@ -35,15 +35,15 @@ class ModflowProjectionsResetCommand extends ContainerAwareCommand
         $projections[] = $this->getContainer()->get('inowas.modflowmodel.model_projector');
         $projections[] = $this->getContainer()->get('inowas.modflowmodel.soilmodel_projector');
         $projections[] = $this->getContainer()->get('inowas.tool.tools_projector');
-        $projections[] = $this->getContainer()->get('inowas.scenarioanalysis.scenarioanalysis_list_projector');
         $projections[] = $this->getContainer()->get('inowas.scenarioanalysis.scenario_list_projector');
+        $projections[] = $this->getContainer()->get('inowas.scenarioanalysis.scenarioanalysis_list_projector');
 
         /** @var ProjectionInterface $projection */
         foreach ($projections as $projection) {
             $projection->reset();
         }
 
-        $eventBus = $this->getContainer()->get('prooph_service_bus.modflow_event_bus');
+        $eventBus = $this->getContainer()->get('prooph_service_bus.modflow_replay_event_bus');
         $eventStore = $this->getContainer()->get('prooph_event_store');
 
         $config = $this->getContainer()->getParameter('prooph_event_store_repositories');

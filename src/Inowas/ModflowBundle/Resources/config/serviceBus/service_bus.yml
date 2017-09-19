@@ -42,6 +42,7 @@ parameters:
                         'Inowas\ScenarioAnalysis\Model\Command\CreateScenarioAnalysis': 'inowas.scenarioanalysis.create_scenarioanalysis_handler'
                         'Inowas\ScenarioAnalysis\Model\Command\DeleteScenarioAnalysis': 'inowas.scenarioanalysis.delete_scenarioanalysis_handler'
                         'Inowas\ScenarioAnalysis\Model\Command\DeleteScenario': 'inowas.scenarioanalysis.delete_scenario_handler'
+                        'Inowas\ScenarioAnalysis\Model\Command\UpdateScenarioAnalysis': 'inowas.scenarioanalysis.update_scenarioanalysis_handler'
 
                         # SoilmodelAggregate Commands and CommandHandlers
                         'Inowas\Soilmodel\Model\Command\AddBoreLogToSoilmodel': 'inowas.soilmodel.add_borelog_to_soilmodel.handler'
@@ -232,6 +233,159 @@ parameters:
                             - 'inowas.scenarioanalysis.scenario_list_projector'
                             - 'inowas.scenarioanalysis.scenario_was_deleted_process_manager'
 
+                        'Inowas\ScenarioAnalysis\Model\Event\ScenarioAnalysisVisibilityWasChanged':
+                            - 'inowas.tool.tools_projector'
+                            - 'inowas.scenarioanalysis.scenarioanalysis_list_projector'
+
+                        # Soilmodel
+                        'Inowas\Soilmodel\Model\Event\SoilmodelWasCloned':
+                            - 'inowas.soilmodel.soilmodel_list_projector'
+                            - 'inowas.soilmodel.layer_values_projector'
+
+                        'Inowas\Soilmodel\Model\Event\SoilmodelWasCreated':
+                            - 'inowas.soilmodel.soilmodel_list_projector'
+
+                        'Inowas\Soilmodel\Model\Event\SoilmodelGeologicalLayerWasAdded':
+                            - 'inowas.soilmodel.layer_values_projector'
+
+                        'Inowas\Soilmodel\Model\Event\LayerValuesWereUpdated':
+                            - 'inowas.soilmodel.layer_values_projector'
+
+                        'Inowas\Soilmodel\Model\Event\LayerPropertyWasUpdated':
+                            - 'inowas.soilmodel.layer_values_projector'
+
+            modflow_replay_event_bus:
+                enable_handler_location: true
+                plugins:
+                    - 'prooph_service_bus.on_event_invoke_strategy'
+                router:
+                    routes:
+                        # ModflowModel
+                        'Inowas\ModflowModel\Model\Event\ActiveCellsWereUpdated':
+                            - 'inowas.modflowmodel.boundary_projector'
+                            - 'inowas.modflowmodel.model_projector'
+
+                        'Inowas\ModflowModel\Model\Event\AreaGeometryWasUpdated':
+                            - 'inowas.modflowmodel.model_projector'
+
+                        'Inowas\ModflowModel\Model\Event\BoundaryWasAdded':
+                            - 'inowas.modflowmodel.boundary_projector'
+                            - 'inowas.modflowmodel.model_projector'
+
+                        'Inowas\ModflowModel\Model\Event\BoundaryWasRemoved':
+                            - 'inowas.modflowmodel.boundary_projector'
+                            - 'inowas.modflowmodel.model_projector'
+
+                        'Inowas\ModflowModel\Model\Event\BoundaryWasUpdated':
+                            - 'inowas.modflowmodel.boundary_projector'
+                            - 'inowas.modflowmodel.model_projector'
+
+                        'Inowas\ModflowModel\Model\Event\BoundingBoxWasChanged':
+                            - 'inowas.modflowmodel.boundary_projector'
+                            - 'inowas.modflowmodel.model_projector'
+
+                        'Inowas\ModflowModel\Model\Event\CalculationIdWasChanged':
+                            - 'inowas.modflowmodel.model_projector'
+                            - 'inowas.scenarioanalysis.scenario_list_projector'
+
+                        'Inowas\ModflowModel\Model\Event\CalculationWasFinished':
+                            - 'inowas.modflowmodel.calculation_results_projector'
+
+                        'Inowas\ModflowModel\Model\Event\CalculationWasRequested':
+                            - 'inowas.modflowmodel.model_projector'
+
+                        'Inowas\ModflowModel\Model\Event\CalculationWasStarted':
+                            - 'inowas.modflowmodel.calculation_results_projector'
+
+                        'Inowas\ModflowModel\Model\Event\DescriptionWasChanged':
+                            - 'inowas.modflowmodel.model_projector'
+                            - 'inowas.scenarioanalysis.scenario_list_projector'
+                            - 'inowas.tool.tools_projector'
+
+                        'Inowas\ModflowModel\Model\Event\GridSizeWasChanged':
+                            - 'inowas.modflowmodel.boundary_projector'
+                            - 'inowas.modflowmodel.model_projector'
+
+                        'Inowas\ModflowModel\Model\Event\LayerWasAdded':
+                            - 'inowas.modflowmodel.soilmodel_projector'
+
+                        'Inowas\ModflowModel\Model\Event\LayerWasRemoved':
+                            - 'inowas.modflowmodel.soilmodel_projector'
+
+                        'Inowas\ModflowModel\Model\Event\LayerWasUpdated':
+                            - 'inowas.modflowmodel.soilmodel_projector'
+
+                        'Inowas\ModflowModel\Model\Event\LengthUnitWasUpdated':
+                            - 'inowas.modflowmodel.model_projector'
+
+                        'Inowas\ModflowModel\Model\Event\ModflowModelWasCloned':
+                            - 'inowas.modflowmodel.boundary_projector'
+                            - 'inowas.modflowmodel.model_projector'
+                            - 'inowas.modflowmodel.soilmodel_projector'
+                            - 'inowas.tool.tools_projector'
+
+                        'Inowas\ModflowModel\Model\Event\ModflowModelWasCreated':
+                            - 'inowas.modflowmodel.model_projector'
+                            - 'inowas.modflowmodel.soilmodel_projector'
+                            - 'inowas.tool.tools_projector'
+
+                        'Inowas\ModflowModel\Model\Event\ModflowModelWasDeleted':
+                            - 'inowas.modflowmodel.boundary_projector'
+                            - 'inowas.modflowmodel.model_projector'
+                            - 'inowas.tool.tools_projector'
+
+                        'Inowas\ModflowModel\Model\Event\NameWasChanged':
+                            - 'inowas.modflowmodel.model_projector'
+                            - 'inowas.scenarioanalysis.scenario_list_projector'
+                            - 'inowas.tool.tools_projector'
+
+                        'Inowas\ModflowModel\Model\Event\SoilmodelMetadataWasUpdated':
+                            - 'inowas.modflowmodel.soilmodel_projector'
+
+                        'Inowas\ModflowModel\Model\Event\StressPeriodsWereUpdated':
+                            - 'inowas.modflowmodel.model_projector'
+
+                        'Inowas\ModflowModel\Model\Event\TimeUnitWasUpdated':
+                            - 'inowas.modflowmodel.model_projector'
+
+                        'Inowas\ModflowModel\Model\Event\VisibilityWasChanged':
+                            - 'inowas.modflowmodel.model_projector'
+                            - 'inowas.tool.tools_projector'
+
+                        # ScenarioAnalysis
+                        'Inowas\ScenarioAnalysis\Model\Event\ScenarioAnalysisDescriptionWasChanged':
+                            - 'inowas.tool.tools_projector'
+                            - 'inowas.scenarioanalysis.scenarioanalysis_list_projector'
+
+                        'Inowas\ScenarioAnalysis\Model\Event\ScenarioAnalysisNameWasChanged':
+                            - 'inowas.tool.tools_projector'
+                            - 'inowas.scenarioanalysis.scenarioanalysis_list_projector'
+
+                        'Inowas\ScenarioAnalysis\Model\Event\ScenarioAnalysisWasCloned':
+                            - 'inowas.scenarioanalysis.scenario_list_projector'
+                            - 'inowas.scenarioanalysis.scenarioanalysis_list_projector'
+                            - 'inowas.tool.tools_projector'
+
+                        'Inowas\ScenarioAnalysis\Model\Event\ScenarioAnalysisWasCreated':
+                            - 'inowas.tool.tools_projector'
+                            - 'inowas.scenarioanalysis.scenarioanalysis_list_projector'
+                            - 'inowas.scenarioanalysis.scenario_list_projector'
+
+                        'Inowas\ScenarioAnalysis\Model\Event\ScenarioAnalysisWasDeleted':
+                            - 'inowas.tool.tools_projector'
+                            - 'inowas.scenarioanalysis.scenarioanalysis_list_projector'
+                            - 'inowas.scenarioanalysis.scenario_list_projector'
+
+                        'Inowas\ScenarioAnalysis\Model\Event\ScenarioWasCreated':
+                            - 'inowas.scenarioanalysis.scenario_list_projector'
+
+                        'Inowas\ScenarioAnalysis\Model\Event\ScenarioWasDeleted':
+                            - 'inowas.scenarioanalysis.scenario_list_projector'
+
+                        'Inowas\ScenarioAnalysis\Model\Event\ScenarioAnalysisVisibilityWasChanged':
+                            - 'inowas.tool.tools_projector'
+                            - 'inowas.scenarioanalysis.scenarioanalysis_list_projector'
+
                         # Soilmodel
                         'Inowas\Soilmodel\Model\Event\SoilmodelWasCloned':
                             - 'inowas.soilmodel.soilmodel_list_projector'
@@ -260,6 +414,13 @@ services:
     prooph_service_bus.modflow_event_bus:
         class: Prooph\ServiceBus\EventBus
         factory: [Inowas\ModflowBundle\Infrastructure\Container\EventBusFactory, create]
+        arguments:
+            - '@service_container.wrapper'
+            - '%prooph_service_bus%'
+
+    prooph_service_bus.modflow_replay_event_bus:
+        class: Prooph\ServiceBus\EventBus
+        factory: [Inowas\ModflowBundle\Infrastructure\Container\ReplayEventBusFactory, create]
         arguments:
             - '@service_container.wrapper'
             - '%prooph_service_bus%'
