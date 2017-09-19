@@ -6,8 +6,10 @@ namespace Inowas\ScenarioAnalysis\Model;
 
 use Inowas\Common\Id\ModflowId;
 use Inowas\Common\Id\UserId;
+use Inowas\Common\Status\Visibility;
 use Inowas\ScenarioAnalysis\Model\Event\ScenarioAnalysisDescriptionWasChanged;
 use Inowas\ScenarioAnalysis\Model\Event\ScenarioAnalysisNameWasChanged;
+use Inowas\ScenarioAnalysis\Model\Event\ScenarioAnalysisVisibilityWasChanged;
 use Inowas\ScenarioAnalysis\Model\Event\ScenarioAnalysisWasCloned;
 use Inowas\ScenarioAnalysis\Model\Event\ScenarioAnalysisWasCreated;
 use Inowas\ScenarioAnalysis\Model\Event\ScenarioAnalysisWasDeleted;
@@ -136,6 +138,11 @@ class ScenarioAnalysisAggregate extends AggregateRoot
         $this->recordThat(ScenarioAnalysisDescriptionWasChanged::of($this->id, $userId, $description));
     }
 
+    public function changeVisibility(UserId $userId, Visibility $visibility): void
+    {
+        $this->recordThat(ScenarioAnalysisVisibilityWasChanged::of($this->id, $userId, $visibility));
+    }
+
     public function scenarioAnalysisId(): ScenarioAnalysisId
     {
         return $this->id;
@@ -213,6 +220,9 @@ class ScenarioAnalysisAggregate extends AggregateRoot
     {
         $this->description = $event->description();
     }
+
+    protected function whenScenarioAnalysisVisibilityWasChanged(ScenarioAnalysisVisibilityWasChanged $event): void
+    {}
 
     protected function aggregateId(): string
     {

@@ -13,6 +13,7 @@ use Inowas\Common\Grid\ActiveCells;
 use Inowas\Common\Id\ModflowId;
 use Inowas\Common\Id\UserId;
 use Inowas\Common\Modflow\ModflowModel;
+use Inowas\Common\Status\Visibility;
 use Inowas\ModflowModel\Model\Command\AddBoundary;
 use Inowas\ScenarioAnalysis\Model\Command\CreateScenario;
 use Inowas\ScenarioAnalysis\Model\ScenarioAnalysisDescription;
@@ -237,7 +238,14 @@ class MessageBoxControllerTest extends EventSourcingBaseTest
         $userId = UserId::fromString($this->user->getId()->toString());
         $modelId = ModflowId::fromString('0562e97a-da43-4f79-8986-438fae0d2fc1');
         $this->createModel($userId, $modelId);
-        $this->createScenarioAnalysis($scenarioAnalysisId, $userId, $modelId, ScenarioAnalysisName::fromString('NAME'), ScenarioAnalysisDescription::fromString('DESC'));
+        $this->createScenarioAnalysis(
+            $scenarioAnalysisId,
+            $userId,
+            $modelId,
+            ScenarioAnalysisName::fromString('NAME'),
+            ScenarioAnalysisDescription::fromString('DESC'),
+            Visibility::public()
+        );
 
         $command = json_decode(file_get_contents($this->fileLocation . 'deleteScenarioAnalysis.json'), true);
 
@@ -266,7 +274,14 @@ class MessageBoxControllerTest extends EventSourcingBaseTest
         $userId = UserId::fromString($this->user->getId()->toString());
         $modelId = ModflowId::fromString('0562e97a-da43-4f79-8986-438fae0d2fc1');
         $this->createModel($userId, $modelId);
-        $this->createScenarioAnalysis($scenarioAnalysisId, $userId, $modelId, ScenarioAnalysisName::fromString('NAME'), ScenarioAnalysisDescription::fromString('DESC'));
+        $this->createScenarioAnalysis(
+            $scenarioAnalysisId,
+            $userId,
+            $modelId,
+            ScenarioAnalysisName::fromString('NAME'),
+            ScenarioAnalysisDescription::fromString('DESC'),
+            Visibility::public()
+        );
 
         $command = json_decode(file_get_contents($this->fileLocation . 'cloneScenarioAnalysis.json'), true);
 
@@ -295,7 +310,14 @@ class MessageBoxControllerTest extends EventSourcingBaseTest
         $scenarioId = ModflowId::fromString('bf5603c0-50af-4fe9-bab3-f933c36e29ef');
 
         $this->createModel($userId, $modelId);
-        $this->createScenarioAnalysis($scenarioAnalysisId, $userId, $modelId, ScenarioAnalysisName::fromString('NAME'), ScenarioAnalysisDescription::fromString('DESC'));
+        $this->createScenarioAnalysis(
+            $scenarioAnalysisId,
+            $userId,
+            $modelId,
+            ScenarioAnalysisName::fromString('NAME'),
+            ScenarioAnalysisDescription::fromString('DESC'),
+            Visibility::public()
+        );
 
         $command = json_decode(file_get_contents($this->fileLocation . 'createScenario.json'), true);
 
@@ -324,9 +346,16 @@ class MessageBoxControllerTest extends EventSourcingBaseTest
         $scenarioId = ModflowId::fromString('bf5603c0-50af-4fe9-bab3-f933c36e29ef');
 
         $this->createModel($userId, $modelId);
-        $this->createScenarioAnalysis($scenarioAnalysisId, $userId, $modelId, ScenarioAnalysisName::fromString('NAME'), ScenarioAnalysisDescription::fromString('DESC'));
-        $this->commandBus->dispatch(CreateScenario::byUserWithIds($scenarioAnalysisId, $userId, $modelId, $scenarioId));
+        $this->createScenarioAnalysis(
+            $scenarioAnalysisId,
+            $userId,
+            $modelId,
+            ScenarioAnalysisName::fromString('NAME'),
+            ScenarioAnalysisDescription::fromString('DESC'),
+            Visibility::public()
+        );
 
+        $this->commandBus->dispatch(CreateScenario::byUserWithIds($scenarioAnalysisId, $userId, $modelId, $scenarioId));
 
         $command = json_decode(file_get_contents($this->fileLocation . 'deleteScenario.json'), true);
 

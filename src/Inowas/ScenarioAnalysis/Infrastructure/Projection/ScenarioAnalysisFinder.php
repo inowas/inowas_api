@@ -9,7 +9,10 @@ use Inowas\Common\Id\ModflowId;
 use Inowas\Common\Id\UserId;
 use Inowas\Common\Modflow\Description;
 use Inowas\Common\Modflow\Name;
+use Inowas\Common\Status\Visibility;
+use Inowas\ScenarioAnalysis\Model\ScenarioAnalysisDescription;
 use Inowas\ScenarioAnalysis\Model\ScenarioAnalysisId;
+use Inowas\ScenarioAnalysis\Model\ScenarioAnalysisName;
 
 class ScenarioAnalysisFinder
 {
@@ -41,6 +44,47 @@ class ScenarioAnalysisFinder
         return $results['count'] > 0;
     }
 
+    public function getScenarioAnalysisName(ScenarioAnalysisId $id): ?ScenarioAnalysisName
+    {
+        $result = $this->connection->fetchAssoc(
+            sprintf('SELECT name FROM %s WHERE scenario_analysis_id = :scenario_analysis_id', Table::SCENARIO_ANALYSIS_LIST),
+            ['scenario_analysis_id' => $id->toString()]
+        );
+
+        if ($result === false) {
+            return null;
+        }
+
+        return ScenarioAnalysisName::fromString($result['name']);
+    }
+
+    public function getScenarioAnalysisDescription(ScenarioAnalysisId $id): ?ScenarioAnalysisDescription
+    {
+        $result = $this->connection->fetchAssoc(
+            sprintf('SELECT description FROM %s WHERE scenario_analysis_id = :scenario_analysis_id', Table::SCENARIO_ANALYSIS_LIST),
+            ['scenario_analysis_id' => $id->toString()]
+        );
+
+        if ($result === false) {
+            return null;
+        }
+
+        return ScenarioAnalysisDescription::fromString($result['description']);
+    }
+
+    public function getScenarioAnalysisVisibility(ScenarioAnalysisId $id): ?Visibility
+    {
+        $result = $this->connection->fetchAssoc(
+            sprintf('SELECT public FROM %s WHERE scenario_analysis_id = :scenario_analysis_id', Table::SCENARIO_ANALYSIS_LIST),
+            ['scenario_analysis_id' => $id->toString()]
+        );
+
+        if ($result === false) {
+            return null;
+        }
+
+        return $result['public'] === 1 ? Visibility::public() : Visibility::private();
+    }
 
     public function isBasemodel(ModflowId $modelId): bool
     {
@@ -79,7 +123,7 @@ class ScenarioAnalysisFinder
     public function findPublicScenarioAnalyses(): array
     {
         $results = $this->connection->fetchAll(
-            sprintf('SELECT scenario_analysis_id as id, user_id, user_name, base_model_id, name, description, created_at, public FROM %s WHERE public = true', Table::SCENARIO_ANALYSIS_LIST)
+            sprintf('SELECT scenario_analysis_id as id, user_id, user_name, base_model_id, name, description, created_at, public FROM %s WHERE public = 1', Table::SCENARIO_ANALYSIS_LIST)
         );
 
         if ($results === false) {
@@ -87,6 +131,20 @@ class ScenarioAnalysisFinder
         }
 
         return $results;
+    }
+
+    public function isPublic(ScenarioAnalysisId $scenarioAnalysisId): bool
+    {
+        $result = $this->connection->fetchAssoc(
+            sprintf('SELECT count(*) FROM %s WHERE scenario_analysis_id = :scenario_analysis_id AND public = 1', Table::SCENARIO_ANALYSIS_LIST),
+            ['scenario_analysis_id' => $scenarioAnalysisId->toString()]
+        );
+
+        if ($result === false) {
+            return false;
+        }
+
+        return $result['count'] === 1;
     }
 
     public function findScenarioAnalysisDetailsById(ScenarioAnalysisId $scenarioAnalysisId): ?array

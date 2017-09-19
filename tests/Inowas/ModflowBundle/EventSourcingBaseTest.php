@@ -398,7 +398,7 @@ abstract class EventSourcingBaseTest extends WebTestCase
         return $wellBoundary;
     }
 
-    protected function createScenarioAnalysis(ScenarioAnalysisId $id, UserId $ownerId, ModflowId $modelId, ScenarioAnalysisName $name, ScenarioAnalysisDescription $description): void
+    protected function createScenarioAnalysis(ScenarioAnalysisId $id, UserId $ownerId, ModflowId $modelId, ScenarioAnalysisName $name, ScenarioAnalysisDescription $description, Visibility $visibility): void
     {
         $this->commandBus->dispatch(CreateScenarioAnalysis::byUserWithBaseModelNameAndDescription(
             $id,
@@ -406,7 +406,7 @@ abstract class EventSourcingBaseTest extends WebTestCase
             $modelId,
             $name,
             $description,
-            Visibility::public()
+            $visibility
         ));
     }
 

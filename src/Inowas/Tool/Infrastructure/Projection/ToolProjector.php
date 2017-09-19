@@ -19,6 +19,7 @@ use Inowas\ModflowModel\Model\Event\VisibilityWasChanged;
 use Inowas\ModflowModel\Service\ModflowModelManager;
 use Inowas\ScenarioAnalysis\Model\Event\ScenarioAnalysisDescriptionWasChanged;
 use Inowas\ScenarioAnalysis\Model\Event\ScenarioAnalysisNameWasChanged;
+use Inowas\ScenarioAnalysis\Model\Event\ScenarioAnalysisVisibilityWasChanged;
 use Inowas\ScenarioAnalysis\Model\Event\ScenarioAnalysisWasCloned;
 use Inowas\ScenarioAnalysis\Model\Event\ScenarioAnalysisWasCreated;
 use Inowas\ScenarioAnalysis\Model\Event\ScenarioAnalysisWasDeleted;
@@ -177,6 +178,16 @@ class ToolProjector extends AbstractDoctrineConnectionProjector
                 'public' => $event->visibility()->isPublic() ? 1 : 0
             ),
             array('id' => $event->modelId()->toString())
+        );
+    }
+
+    public function onScenarioAnalysisVisibilityWasChanged(ScenarioAnalysisVisibilityWasChanged $event): void
+    {
+        $this->connection->update(Table::TOOL_LIST,
+            array(
+                'public' => $event->visibility()->isPublic() ? 1 : 0
+            ),
+            array('id' => $event->scenarioAnalysisId()->toString())
         );
     }
 

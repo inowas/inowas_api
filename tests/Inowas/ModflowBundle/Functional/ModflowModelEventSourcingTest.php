@@ -116,6 +116,23 @@ class ModflowModelEventSourcingTest extends EventSourcingBaseTest
         $this->assertEquals($gridSize, $modelFinder->getGridSizeByModflowModelId($modelId));
     }
 
+    public function test_setup_model_and_change_model_bounding_box_and_grid_size(): void
+    {
+        $modelId = ModflowId::generate();
+        $ownerId = UserId::generate();
+
+        $this->createModelWithOneLayer($ownerId, $modelId);
+        $boundingBox = BoundingBox::fromCoordinates(-63.687336, -63.569260, -31.367449, -31.313615);
+        $this->commandBus->dispatch(ChangeBoundingBox::forModflowModel($ownerId, $modelId, $boundingBox));
+
+        $gridSize = GridSize::fromXY(80, 30);
+        $this->commandBus->dispatch(ChangeGridSize::forModflowModel($ownerId, $modelId, $gridSize));
+
+        $modelFinder = $this->container->get('inowas.modflowmodel.model_finder');
+        $this->assertEquals($boundingBox, $modelFinder->getBoundingBoxByModflowModelId($modelId));
+        $this->assertEquals($gridSize, $modelFinder->getGridSizeByModflowModelId($modelId));
+    }
+
     public function test_setup_private_model_and_change_to_public(): void
     {
         $modelId = ModflowId::generate();
@@ -164,23 +181,6 @@ class ModflowModelEventSourcingTest extends EventSourcingBaseTest
         $model = $this->container->get('inowas.modflowmodel.manager')->findModel($modelId, $ownerId);
         $this->assertTrue($model->visibility()->isPublic());
         $this->assertTrue($this->container->get('inowas.tool.tools_finder')->isPublic(ToolId::fromString($modelId->toString())));
-    }
-
-    public function test_setup_model_and_change_model_bounding_box_and_grid_size(): void
-    {
-        $modelId = ModflowId::generate();
-        $ownerId = UserId::generate();
-
-        $this->createModelWithOneLayer($ownerId, $modelId);
-        $boundingBox = BoundingBox::fromCoordinates(-63.687336, -63.569260, -31.367449, -31.313615);
-        $this->commandBus->dispatch(ChangeBoundingBox::forModflowModel($ownerId, $modelId, $boundingBox));
-
-        $gridSize = GridSize::fromXY(80, 30);
-        $this->commandBus->dispatch(ChangeGridSize::forModflowModel($ownerId, $modelId, $gridSize));
-
-        $modelFinder = $this->container->get('inowas.modflowmodel.model_finder');
-        $this->assertEquals($boundingBox, $modelFinder->getBoundingBoxByModflowModelId($modelId));
-        $this->assertEquals($gridSize, $modelFinder->getGridSizeByModflowModelId($modelId));
     }
 
     public function test_update_area_geometry_and_calculate_active_cells(): void
@@ -739,14 +739,21 @@ class ModflowModelEventSourcingTest extends EventSourcingBaseTest
     /**
      * @test
      */
-    public function it_creates_a_scenarioanalysis_from_a_basemodel(): void
+    public function it_creates_a_public_scenarioanalysis_from_a_basemodel(): void
     {
         $ownerId = UserId::generate();
         $modelId = ModflowId::generate();
         $this->createModelWithOneLayer($ownerId, $modelId);
 
         $scenarioAnalysisId = ScenarioAnalysisId::generate();
-        $this->createScenarioAnalysis($scenarioAnalysisId, $ownerId, $modelId, ScenarioAnalysisName::fromString('TestName'), ScenarioAnalysisDescription::fromString('TestDescription'));
+        $this->createScenarioAnalysis(
+            $scenarioAnalysisId,
+            $ownerId,
+            $modelId,
+            ScenarioAnalysisName::fromString('TestName'),
+            ScenarioAnalysisDescription::fromString('TestDescription'),
+            Visibility::public()
+        );
 
         $scenarioAnalysis = $this->container->get('inowas.scenarioanalysis.scenarioanalysis_finder')->findScenarioAnalysisDetailsById($scenarioAnalysisId);
         $this->assertEquals($scenarioAnalysisId->toString(), $scenarioAnalysis['id']);
@@ -762,6 +769,43 @@ class ModflowModelEventSourcingTest extends EventSourcingBaseTest
         );
 
         $this->assertEquals($expectedBb, $scenarioAnalysis['bounding_box']);
+        $this->assertTrue($this->container->get('inowas.scenarioanalysis.scenarioanalysis_finder')->isPublic($scenarioAnalysisId));
+    }
+
+    /**
+     * @test
+     */
+    public function it_creates_a_private_scenarioanalysis_from_a_basemodel(): void
+    {
+        $ownerId = UserId::generate();
+        $modelId = ModflowId::generate();
+        $this->createModelWithOneLayer($ownerId, $modelId);
+
+        $scenarioAnalysisId = ScenarioAnalysisId::generate();
+        $this->createScenarioAnalysis(
+            $scenarioAnalysisId,
+            $ownerId,
+            $modelId,
+            ScenarioAnalysisName::fromString('TestName'),
+            ScenarioAnalysisDescription::fromString('TestDescription'),
+            Visibility::private()
+        );
+
+        $scenarioAnalysis = $this->container->get('inowas.scenarioanalysis.scenarioanalysis_finder')->findScenarioAnalysisDetailsById($scenarioAnalysisId);
+        $this->assertEquals($scenarioAnalysisId->toString(), $scenarioAnalysis['id']);
+        $this->assertEquals($ownerId->toString(), $scenarioAnalysis['user_id']);
+        $this->assertEquals('TestName', $scenarioAnalysis['name']);
+        $this->assertEquals('TestDescription', $scenarioAnalysis['description']);
+        $this->assertEquals(json_decode('{"type":"Polygon","coordinates":[[[-63.687336,-31.313615],[-63.687336,-31.367449],[-63.56926,-31.367449],[-63.56926,-31.313615],[-63.687336,-31.313615]]]}', true), $scenarioAnalysis['geometry']);
+        $this->assertEquals(json_decode('{"n_x":75,"n_y":40}', true), $scenarioAnalysis['grid_size']);
+
+        $expectedBb = array(
+            [-63.687336, -31.367449],
+            [-63.56926, -31.313615]
+        );
+
+        $this->assertEquals($expectedBb, $scenarioAnalysis['bounding_box']);
+        $this->assertFalse($this->container->get('inowas.scenarioanalysis.scenarioanalysis_finder')->isPublic($scenarioAnalysisId));
     }
 
     /**
@@ -783,7 +827,14 @@ class ModflowModelEventSourcingTest extends EventSourcingBaseTest
         $this->assertCount(5, $baseModelBoundaries);
 
         $scenarioAnalysisId = ScenarioAnalysisId::generate();
-        $this->createScenarioAnalysis($scenarioAnalysisId, $ownerId, $modelId, ScenarioAnalysisName::fromString('TestName'), ScenarioAnalysisDescription::fromString('TestDescription'));
+        $this->createScenarioAnalysis(
+            $scenarioAnalysisId,
+            $ownerId,
+            $modelId,
+            ScenarioAnalysisName::fromString('TestName'),
+            ScenarioAnalysisDescription::fromString('TestDescription'),
+            Visibility::public()
+        );
 
         $scenarioAnalysis = $this->container->get('inowas.scenarioanalysis.scenarioanalysis_finder')->findScenarioAnalysisDetailsById($scenarioAnalysisId);
         $this->assertEquals($scenarioAnalysisId->toString(), $scenarioAnalysis['id']);
@@ -818,7 +869,14 @@ class ModflowModelEventSourcingTest extends EventSourcingBaseTest
         $this->assertCount(4, $modelBoundaries);
 
         $scenarioAnalysisId = ScenarioAnalysisId::generate();
-        $this->createScenarioAnalysis($scenarioAnalysisId, $ownerId, $modelId, ScenarioAnalysisName::fromString('TestName'), ScenarioAnalysisDescription::fromString('TestDescription'));
+        $this->createScenarioAnalysis(
+            $scenarioAnalysisId,
+            $ownerId,
+            $modelId,
+            ScenarioAnalysisName::fromString('TestName'),
+            ScenarioAnalysisDescription::fromString('TestDescription'),
+            Visibility::public()
+        );
 
         $scenarioId = ModflowId::generate();
         $this->createScenario($scenarioAnalysisId, $ownerId, $modelId, $scenarioId, Name::fromString('TestScenarioName'), Description::fromString('TestScenarioDescription'));
@@ -843,7 +901,14 @@ class ModflowModelEventSourcingTest extends EventSourcingBaseTest
         $this->commandBus->dispatch(AddBoundary::forModflowModel($ownerId, $modelId, $this->createRiverBoundaryWithObservationPoint()));
 
         $scenarioAnalysisId = ScenarioAnalysisId::generate();
-        $this->createScenarioAnalysis($scenarioAnalysisId, $ownerId, $modelId, ScenarioAnalysisName::fromString('TestName'), ScenarioAnalysisDescription::fromString('TestDescription'));
+        $this->createScenarioAnalysis(
+            $scenarioAnalysisId,
+            $ownerId,
+            $modelId,
+            ScenarioAnalysisName::fromString('TestName'),
+            ScenarioAnalysisDescription::fromString('TestDescription'),
+            Visibility::public()
+        );
 
         $scenarioId = ModflowId::generate();
         $this->createScenario($scenarioAnalysisId, $ownerId, $modelId, $scenarioId, Name::fromString('TestScenarioName'), Description::fromString('TestScenarioDescription'));

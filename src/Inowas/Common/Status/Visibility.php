@@ -44,8 +44,12 @@ class Visibility
         return $this->isPublic;
     }
 
-    public function sameAs(Visibility $visibility): bool
+    public function sameAs($name): bool
     {
-        return $this->isPublic() === $visibility->isPublic();
+        if (! $name instanceof self) {
+            return false;
+        }
+
+        return $name->toBool() === $this->toBool();
     }
 }
