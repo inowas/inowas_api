@@ -46,6 +46,7 @@ abstract class LoadScenarioBase implements ContainerAwareInterface, DataFixtureI
             array('catalin.stefan', 'Catalin Stefan', 'catalin.stefan@tu-dresden.de', '#inowas#', ['ROLE_NM_MF']),
             array('martin.wudenka', 'Martin Wudenka', 'martin.wudenka@tu-dresden.de', '#inowas#', ['ROLE_NM_MF']),
             array('sandro.keil', 'Sandro Keil', 'sandro.keil@tu-dresden.de', '#inowas#', ['ROLE_NM_MF']),
+            array('maike.groeschke', 'Maike Gröschke', 'maike.groeschke@bgr.de', 'mg_inowas_221', ['ROLE_NM_MF']),
             array('nawapi', 'nawapi', 'nawapi@inowas.com', 'na-ql-ww-pi', ['ROLE_NM_MF']),
             array('inowas1', 'inowas1', 'inowas1@gast', 'cheekohk', ['ROLE_NM_MF']),
             array('malena', 'malena', 'malena@gast', 'wohchoad', ['ROLE_NM_MF']),
