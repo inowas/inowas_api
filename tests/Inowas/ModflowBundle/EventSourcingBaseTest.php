@@ -50,6 +50,7 @@ use Inowas\Common\Modflow\Top;
 use Inowas\Common\Modflow\Vka;
 use Inowas\Common\Soilmodel\Layer;
 use Inowas\Common\Soilmodel\LayerId;
+use Inowas\Common\Status\Visibility;
 use Inowas\ModflowModel\Model\AMQP\FlopyCalculationRequest;
 use Inowas\ModflowModel\Model\Command\AddLayer;
 use Inowas\ModflowModel\Model\Command\ChangeBoundingBox;
@@ -393,7 +394,7 @@ abstract class EventSourcingBaseTest extends WebTestCase
         );
 
         /** @var WellBoundary $wellBoundary */
-        $wellBoundary = $wellBoundary->addPumpingRate(WellDateTimeValue::fromParams(DateTime::fromDateTimeImmutable(new \DateTimeImmutable('2015-01-01')), -5000));
+        $wellBoundary = $wellBoundary->addPumpingRate(WellDateTimeValue::fromParams(DateTime::fromDateTimeImmutable(new \DateTimeImmutable('2015-01-01T00:00:00+00:00')), -5000));
         return $wellBoundary;
     }
 
@@ -404,7 +405,8 @@ abstract class EventSourcingBaseTest extends WebTestCase
             $ownerId,
             $modelId,
             $name,
-            $description
+            $description,
+            Visibility::public()
         ));
     }
 
@@ -442,7 +444,8 @@ abstract class EventSourcingBaseTest extends WebTestCase
             GridSize::fromXY(75, 40),
             $boundingBox,
             TimeUnit::fromInt(TimeUnit::DAYS),
-            LengthUnit::fromInt(LengthUnit::METERS)
+            LengthUnit::fromInt(LengthUnit::METERS),
+            Visibility::public()
         ));
 
         $boundingBox = BoundingBox::fromCoordinates(-63.687336, -63.569260, -31.367449, -31.313615);
@@ -472,7 +475,8 @@ abstract class EventSourcingBaseTest extends WebTestCase
                 $gridSize,
                 $boundingBox,
                 TimeUnit::fromInt(1),
-                LengthUnit::fromInt(2)
+                LengthUnit::fromInt(2),
+                Visibility::public()
             )
         );
     }

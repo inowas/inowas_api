@@ -21,6 +21,7 @@ use Inowas\Common\Modflow\ModflowModel;
 use Inowas\Common\Modflow\Name;
 use Inowas\Common\Modflow\StressPeriods;
 use Inowas\Common\Modflow\TimeUnit;
+use Inowas\Common\Status\Visibility;
 use Inowas\GeoTools\Service\GeoTools;
 use Inowas\ModflowModel\Infrastructure\Projection\ActiveCells\ActiveCellsFinder;
 use Inowas\ModflowModel\Infrastructure\Projection\ModelList\ModelFinder;
@@ -77,9 +78,12 @@ class ModflowModelManager
             return null;
         }
 
+        $visibility = Visibility::private();
+
         $permission = UserPermission::noPermission();
         if ($model['public']) {
             $permission = UserPermission::readOnly();
+            $visibility = Visibility::public();
         }
 
         if ($userId->toString() === $model['user_id']) {
@@ -101,7 +105,8 @@ class ModflowModelManager
             !empty($model['active_cells']) ?
                 ActiveCells::fromArray(json_decode($model['active_cells'], true))
                 : $this->getAreaActiveCells($modelId),
-            $permission
+            $permission,
+            $visibility
         );
     }
 

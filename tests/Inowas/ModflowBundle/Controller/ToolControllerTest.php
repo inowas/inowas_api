@@ -8,6 +8,7 @@ use FOS\UserBundle\Doctrine\UserManager;
 use Inowas\AppBundle\Model\User;
 use Inowas\Common\Id\ModflowId;
 use Inowas\Common\Id\UserId;
+use Inowas\Common\Status\Visibility;
 use Inowas\ScenarioAnalysis\Model\Command\CreateScenarioAnalysis;
 use Inowas\ScenarioAnalysis\Model\ScenarioAnalysisDescription;
 use Inowas\ScenarioAnalysis\Model\ScenarioAnalysisId;
@@ -158,7 +159,8 @@ class ToolControllerTest extends EventSourcingBaseTest
             $userId,
             $modelId,
             ScenarioAnalysisName::fromString('TestName'),
-            ScenarioAnalysisDescription::fromString('TestDescription')
+            ScenarioAnalysisDescription::fromString('TestDescription'),
+            Visibility::public()
         ));
 
         $client = static::createClient();
@@ -213,7 +215,8 @@ class ToolControllerTest extends EventSourcingBaseTest
             $userId,
             $modelId,
             ScenarioAnalysisName::fromString('TestName'),
-            ScenarioAnalysisDescription::fromString('TestDescription')
+            ScenarioAnalysisDescription::fromString('TestDescription'),
+            Visibility::public()
         ));
 
         $client = static::createClient();
@@ -264,7 +267,8 @@ class ToolControllerTest extends EventSourcingBaseTest
             $userId,
             $modelId,
             ScenarioAnalysisName::fromString('TestName'),
-            ScenarioAnalysisDescription::fromString('TestDescription')
+            ScenarioAnalysisDescription::fromString('TestDescription'),
+            Visibility::public()
         ));
 
         $client = static::createClient();

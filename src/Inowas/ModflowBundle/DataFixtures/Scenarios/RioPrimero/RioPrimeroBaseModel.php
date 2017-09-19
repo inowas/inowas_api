@@ -40,6 +40,7 @@ use Inowas\Common\Modflow\Top;
 use Inowas\Common\Modflow\Vka;
 use Inowas\Common\Soilmodel\Layer;
 use Inowas\Common\Soilmodel\LayerId;
+use Inowas\Common\Status\Visibility;
 use Inowas\ModflowModel\Model\Command\AddBoundary;
 use Inowas\ModflowModel\Model\Command\AddLayer;
 use Inowas\ModflowModel\Model\Packages\OcStressPeriod;
@@ -86,7 +87,8 @@ class RioPrimeroBaseModel extends LoadScenarioBase
             $gridSize,
             $boundingBox,
             TimeUnit::fromInt(TimeUnit::DAYS),
-            LengthUnit::fromInt(LengthUnit::METERS)
+            LengthUnit::fromInt(LengthUnit::METERS),
+            Visibility::public()
         ));
 
 

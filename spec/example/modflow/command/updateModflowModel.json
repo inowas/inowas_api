@@ -25,6 +25,7 @@
             "n_y": 66
         },
         "time_unit": 2,
-        "length_unit": 2
+        "length_unit": 2,
+        "public": false
     }
 }

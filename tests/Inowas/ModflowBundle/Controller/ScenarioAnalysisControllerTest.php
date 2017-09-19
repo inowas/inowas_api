@@ -10,6 +10,7 @@ use Inowas\Common\Id\ModflowId;
 use Inowas\Common\Id\UserId;
 use Inowas\Common\Modflow\Description;
 use Inowas\Common\Modflow\Name;
+use Inowas\Common\Status\Visibility;
 use Inowas\ModflowModel\Model\Command\AddBoundary;
 use Inowas\ModflowModel\Model\Command\ChangeDescription;
 use Inowas\ModflowModel\Model\Command\ChangeName;
@@ -73,7 +74,8 @@ class ScenarioAnalysisControllerTest extends EventSourcingBaseTest
             $userId,
             $modelId,
             ScenarioAnalysisName::fromString('TestName'),
-            ScenarioAnalysisDescription::fromString('TestDescription')
+            ScenarioAnalysisDescription::fromString('TestDescription'),
+            Visibility::public()
         ));
 
         $client = static::createClient();
@@ -126,7 +128,8 @@ class ScenarioAnalysisControllerTest extends EventSourcingBaseTest
             $userId,
             $modelId,
             ScenarioAnalysisName::fromString('TestName'),
-            ScenarioAnalysisDescription::fromString('TestDescription')
+            ScenarioAnalysisDescription::fromString('TestDescription'),
+            Visibility::public()
         ));
 
         $client = static::createClient();
@@ -180,7 +183,8 @@ class ScenarioAnalysisControllerTest extends EventSourcingBaseTest
             $userId,
             $modelId,
             ScenarioAnalysisName::fromString('TestName'),
-            ScenarioAnalysisDescription::fromString('TestDescription')
+            ScenarioAnalysisDescription::fromString('TestDescription'),
+            Visibility::public()
         ));
 
         $scenarioId = ModflowId::generate();
@@ -254,7 +258,8 @@ class ScenarioAnalysisControllerTest extends EventSourcingBaseTest
             $userId,
             $modelId,
             ScenarioAnalysisName::fromString('TestName'),
-            ScenarioAnalysisDescription::fromString('TestDescription')
+            ScenarioAnalysisDescription::fromString('TestDescription'),
+            Visibility::public()
         ));
 
         $scenarioId = ModflowId::generate();

@@ -3,28 +3,26 @@
     "type": "object",
     "id": "https://inowas.com/schema/",
     "properties": {
-        "id": {
+        "uuid": {
             "type": "string",
             "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$"
         },
-        "basemodel_id": {
+        "message_name": {
             "type": "string",
-            "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$"
+            "pattern": "^updateScenarioAnalysis$"
         },
-        "name": {
-            "type": "string"
+        "metadata": {
+            "type": "object"
         },
-        "description": {
-            "type": "string"
-        },
-        "public": {
-            "type": "boolean"
+        "payload": {
+            "$ref": "modflow/command/updateScenarioAnalysisPayload.json"
         }
     },
+    "additionalProperties": false,
     "required": [
-        "id",
-        "basemodel_id",
-        "name",
-        "public"
+        "uuid",
+        "message_name",
+        "metadata",
+        "payload"
     ]
 }

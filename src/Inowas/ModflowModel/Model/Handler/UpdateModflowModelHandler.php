@@ -5,7 +5,9 @@ declare(strict_types=1);
 namespace Inowas\ModflowModel\Model\Handler;
 
 use Inowas\Common\Grid\ActiveCells;
+use Inowas\Common\Modflow\ModflowModel;
 use Inowas\ModflowModel\Model\Command\UpdateModflowModel;
+use Inowas\ModflowModel\Model\Exception\ModflowModelNotFoundException;
 use Inowas\ModflowModel\Model\Exception\WriteAccessFailedException;
 use Inowas\ModflowModel\Model\ModflowModelList;
 use Inowas\ModflowModel\Model\ModflowModelAggregate;
@@ -37,6 +39,10 @@ final class UpdateModflowModelHandler
 
         $currentModel = $this->modelManager->findModel($command->modelId(), $command->userId());
 
+        if (! $currentModel instanceof ModflowModel) {
+            throw ModflowModelNotFoundException::withModelId($command->modelId());
+        }
+
         if (! $currentModel->name()->sameAs($command->name())) {
             $modflowModel->changeName($command->userId(), $command->name());
         }
@@ -45,8 +51,11 @@ final class UpdateModflowModelHandler
             $modflowModel->changeDescription($command->userId(), $command->description());
         }
 
-        $discretizationHasChanged = false;
+        if  (! $currentModel->visibility()->sameAs($command->visibility())) {
+            $modflowModel->changeVisibility($command->userId(), $command->visibility());
+        }
 
+        $discretizationHasChanged = false;
         if (! $currentModel->geometry()->sameAs($command->geometry())) {
             $modflowModel->updateAreaGeometry($command->userId(), $command->geometry());
             $discretizationHasChanged = true;

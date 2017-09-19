@@ -18,6 +18,7 @@ use Inowas\Common\Modflow\Laytyp;
 use Inowas\Common\Modflow\Laywet;
 use Inowas\Common\Modflow\LengthUnit;
 use Inowas\Common\Modflow\Description;
+use Inowas\Common\Modflow\ModflowModel;
 use Inowas\Common\Modflow\Name;
 use Inowas\Common\Modflow\PackageName;
 use Inowas\Common\Modflow\ParameterName;
@@ -25,6 +26,7 @@ use Inowas\Common\Modflow\StressPeriod;
 use Inowas\Common\Modflow\StressPeriods;
 use Inowas\Common\Modflow\TimeUnit;
 use Inowas\Common\Modflow\Version;
+use Inowas\Common\Status\Visibility;
 use Inowas\ModflowModel\Model\Command\AddBoundary;
 use Inowas\ModflowModel\Model\Command\AddLayer;
 use Inowas\ModflowModel\Model\Command\ChangeBoundingBox;
@@ -34,6 +36,7 @@ use Inowas\ModflowModel\Model\Command\CloneModflowModel;
 use Inowas\ModflowModel\Model\Command\CreateModflowModel;
 use Inowas\ModflowModel\Model\Command\RemoveBoundary;
 use Inowas\ModflowModel\Model\Command\UpdateBoundary;
+use Inowas\ModflowModel\Model\Command\UpdateModflowModel;
 use Inowas\ModflowModel\Model\Command\UpdateModflowPackageParameter;
 use Inowas\ModflowModel\Model\Command\UpdateStressPeriods;
 use Inowas\ModflowModel\Model\Event\NameWasChanged;
@@ -97,7 +100,8 @@ class ModflowModelEventSourcingTest extends EventSourcingBaseTest
                 $gridSize,
                 $boundingBox,
                 TimeUnit::fromInt(1),
-                LengthUnit::fromInt(2)
+                LengthUnit::fromInt(2),
+                Visibility::public()
             )
         );
 
@@ -110,6 +114,56 @@ class ModflowModelEventSourcingTest extends EventSourcingBaseTest
         $this->assertEquals($modelName, $modelFinder->getModelNameByModelId($modelId));
         $this->assertEquals($modelDescription, $modelFinder->getModelDescriptionByModelId($modelId));
         $this->assertEquals($gridSize, $modelFinder->getGridSizeByModflowModelId($modelId));
+    }
+
+    public function test_setup_private_model_and_change_to_public(): void
+    {
+        $modelId = ModflowId::generate();
+        $ownerId = UserId::generate();
+        $modelName = Name::fromString('TestModel444');
+        $modelDescription = Description::fromString('TestModelDescription444');
+
+        $polygon = $this->createPolygon();
+        $boundingBox = $this->container->get('inowas.geotools.geotools_service')->getBoundingBox(Geometry::fromPolygon($polygon));
+        $gridSize = GridSize::fromXY(75, 40);
+        $this->commandBus->dispatch(
+            CreateModflowModel::newWithAllParams(
+                $ownerId,
+                $modelId,
+                $modelName,
+                $modelDescription,
+                $polygon,
+                $gridSize,
+                $boundingBox,
+                TimeUnit::fromInt(1),
+                LengthUnit::fromInt(2),
+                Visibility::private()
+            )
+        );
+
+        /** @var ModflowModel $model */
+        $model = $this->container->get('inowas.modflowmodel.manager')->findModel($modelId, $ownerId);
+        $this->assertFalse($model->visibility()->isPublic());
+        $this->assertFalse($this->container->get('inowas.tool.tools_finder')->isPublic(ToolId::fromString($modelId->toString())));
+
+        $this->commandBus->dispatch(UpdateModflowModel::newWithAllParams(
+            $ownerId,
+            $modelId,
+            $modelName,
+            $modelDescription,
+            $polygon,
+            $gridSize,
+            $boundingBox,
+            TimeUnit::fromInt(1),
+            LengthUnit::fromInt(2),
+            null,
+            Visibility::public()
+        ));
+
+        /** @var ModflowModel $model */
+        $model = $this->container->get('inowas.modflowmodel.manager')->findModel($modelId, $ownerId);
+        $this->assertTrue($model->visibility()->isPublic());
+        $this->assertTrue($this->container->get('inowas.tool.tools_finder')->isPublic(ToolId::fromString($modelId->toString())));
     }
 
     public function test_setup_model_and_change_model_bounding_box_and_grid_size(): void

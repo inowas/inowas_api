@@ -15,6 +15,7 @@ use Inowas\Common\Modflow\LengthUnit;
 use Inowas\Common\Modflow\Description;
 use Inowas\Common\Modflow\Name;
 use Inowas\Common\Modflow\TimeUnit;
+use Inowas\Common\Status\Visibility;
 
 class CreateModflowModel extends AbstractJsonSchemaCommand
 {
@@ -28,6 +29,7 @@ class CreateModflowModel extends AbstractJsonSchemaCommand
      * @param BoundingBox $boundingBox
      * @param TimeUnit $timeUnit
      * @param LengthUnit $lengthUnit
+     * @param Visibility $visibility
      * @return CreateModflowModel
      */
     public static function newWithAllParams(
@@ -39,7 +41,8 @@ class CreateModflowModel extends AbstractJsonSchemaCommand
         GridSize $gridSize,
         BoundingBox $boundingBox,
         TimeUnit $timeUnit,
-        LengthUnit $lengthUnit
+        LengthUnit $lengthUnit,
+        Visibility $visibility
     ): CreateModflowModel
     {
         $self = new static(
@@ -51,7 +54,8 @@ class CreateModflowModel extends AbstractJsonSchemaCommand
                 'grid_size' => $gridSize->toArray(),
                 'bounding_box' => $boundingBox->toArray(),
                 'time_unit' => $timeUnit->toInt(),
-                'length_unit' => $lengthUnit->toInt()
+                'length_unit' => $lengthUnit->toInt(),
+                'public' => $visibility->isPublic()
             ]
         );
 
@@ -108,5 +112,10 @@ class CreateModflowModel extends AbstractJsonSchemaCommand
     public function lengthUnit(): LengthUnit
     {
         return LengthUnit::fromInt($this->payload['length_unit']);
+    }
+
+    public function visibility(): Visibility
+    {
+        return Visibility::fromBool($this->payload['public']);
     }
 }

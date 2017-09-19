@@ -193,6 +193,11 @@ parameters:
                             - 'inowas.modflowmodel.blackhole_projector'
                             - 'inowas.modflowmodel.model_projector'
 
+                        'Inowas\ModflowModel\Model\Event\VisibilityWasChanged':
+                            - 'inowas.modflowmodel.blackhole_projector'
+                            - 'inowas.modflowmodel.model_projector'
+                            - 'inowas.tool.tools_projector'
+
                         # ScenarioAnalysis
                         'Inowas\ScenarioAnalysis\Model\Event\ScenarioAnalysisDescriptionWasChanged':
                             - 'inowas.tool.tools_projector'

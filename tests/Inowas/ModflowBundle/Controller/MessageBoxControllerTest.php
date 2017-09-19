@@ -572,9 +572,9 @@ class MessageBoxControllerTest extends EventSourcingBaseTest
 
         /** @var WellBoundary $well */
         $well = $this->createWellBoundary();
-        $well = $well->addPumpingRate(WellDateTimeValue::fromParams(DateTime::fromDateTimeImmutable(new \DateTimeImmutable('2015-02-01')), -1000));
-        $well = $well->addPumpingRate(WellDateTimeValue::fromParams(DateTime::fromDateTimeImmutable(new \DateTimeImmutable('2015-03-01')), -2000));
-        $well = $well->addPumpingRate(WellDateTimeValue::fromParams(DateTime::fromDateTimeImmutable(new \DateTimeImmutable('2015-04-01')), -3000));
+        $well = $well->addPumpingRate(WellDateTimeValue::fromParams(DateTime::fromDateTimeImmutable(new \DateTimeImmutable('2015-02-01T00:00:00+00:00', null)), -1000));
+        $well = $well->addPumpingRate(WellDateTimeValue::fromParams(DateTime::fromDateTimeImmutable(new \DateTimeImmutable('2015-03-01T00:00:00+00:00', null)), -2000));
+        $well = $well->addPumpingRate(WellDateTimeValue::fromParams(DateTime::fromDateTimeImmutable(new \DateTimeImmutable('2015-04-01T00:00:00+00:00', null)), -3000));
         $this->commandBus->dispatch(AddBoundary::forModflowModel($userId, $modelId, $well));
 
         $command = json_decode(file_get_contents($this->fileLocation . 'calculateStressPeriods.json'), true);

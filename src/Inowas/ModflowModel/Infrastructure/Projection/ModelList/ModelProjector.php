@@ -29,6 +29,7 @@ use Inowas\ModflowModel\Model\Event\ModflowModelWasCreated;
 use Inowas\ModflowModel\Infrastructure\Projection\Table;
 use Inowas\ModflowModel\Model\Event\StressPeriodsWereUpdated;
 use Inowas\ModflowModel\Model\Event\TimeUnitWasUpdated;
+use Inowas\ModflowModel\Model\Event\VisibilityWasChanged;
 
 class ModelProjector extends AbstractDoctrineConnectionProjector
 {
@@ -245,6 +246,16 @@ class ModelProjector extends AbstractDoctrineConnectionProjector
             array(
                 'stressperiods' => $event->stressPeriods()->toJson(),
                 'dirty' => 1,
+            ),
+            array('model_id' => $event->modelId()->toString())
+        );
+    }
+
+    public function onVisibilityWasChanged(VisibilityWasChanged $event): void
+    {
+        $this->connection->update(Table::MODFLOWMODELS,
+            array(
+                'public' => $event->visibility()->isPublic() ? 1 : 0
             ),
             array('model_id' => $event->modelId()->toString())
         );

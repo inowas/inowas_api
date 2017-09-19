@@ -44,6 +44,7 @@ use Inowas\Common\Modflow\Top;
 use Inowas\Common\Modflow\Vka;
 use Inowas\Common\Soilmodel\Layer;
 use Inowas\Common\Soilmodel\LayerId;
+use Inowas\Common\Status\Visibility;
 use Inowas\ModflowModel\Model\Command\AddBoundary;
 use Inowas\ModflowModel\Model\Command\AddLayer;
 use Inowas\ModflowModel\Model\Command\ChangeDescription;
@@ -100,7 +101,8 @@ class RioPrimero extends LoadScenarioBase
             $gridSize,
             $boundingBox,
             TimeUnit::fromInt(TimeUnit::DAYS),
-            LengthUnit::fromInt(LengthUnit::METERS)
+            LengthUnit::fromInt(LengthUnit::METERS),
+            Visibility::public()
         ));
 
         $boundingBox = BoundingBox::fromCoordinates(-63.687336, -63.569260, -31.367449, -31.313615);
@@ -518,7 +520,8 @@ class RioPrimero extends LoadScenarioBase
             $ownerId,
             $baseModelId,
             ScenarioAnalysisName::fromString('ScenarioAnalysis: Rio Primero 2020'),
-            ScenarioAnalysisDescription::fromString('ScenarioAnalysis: Rio Primero 2020')
+            ScenarioAnalysisDescription::fromString('ScenarioAnalysis: Rio Primero 2020'),
+            Visibility::public()
         ));
 
         /*

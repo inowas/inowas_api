@@ -33,6 +33,7 @@ final class CreateModflowModelHandler
         $modflowModel->changeDescription($command->userId(), $command->description());
         $modflowModel->updateTimeUnit($command->userId(), $command->timeUnit());
         $modflowModel->updateLengthUnit($command->userId(), $command->lengthUnit());
+        $modflowModel->changeVisibility($command->userId(), $command->visibility());
 
         $this->modelList->save($modflowModel);
     }

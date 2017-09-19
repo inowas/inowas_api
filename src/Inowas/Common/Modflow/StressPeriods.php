@@ -60,16 +60,15 @@ final class StressPeriods implements \JsonSerializable
         /** @var DateTime $date */
         foreach ($allDates as $date){
             if (! $date instanceof DateTime) {
-                // @Todo Throw Exception
+                continue;
             }
 
-            if ($date->greaterOrEqualThen($start) && $date->smallerOrEqualThen($end) && (!in_array($date, $uniqueDates))) {
+            if ($date->greaterOrEqualThen($start) && $date->smallerOrEqualThen($end) && (!in_array($date, $uniqueDates, false))) {
                 $uniqueDates[] = $date;
             }
         }
 
         sort($uniqueDates);
-
 
         $self = new self($start, $end, $timeUnit);
         $totalTimes = [];
@@ -263,7 +262,7 @@ final class StressPeriods implements \JsonSerializable
         return $this->toArray();
     }
 
-    private function calculateTotim(DateTime $dateTime): TotalTime
+    private function calculateTotim(DateTime $dt): TotalTime
     {
         /** @var \DateTime $start */
         $start = clone $this->start->toDateTime();
@@ -272,9 +271,8 @@ final class StressPeriods implements \JsonSerializable
         $timeUnit = $this->timeUnit;
 
         /** @var \DateTime $dateTime */
-        $dateTime = clone $dateTime->toDateTime();
+        $dateTime = clone $dt->toDateTime();
 
-        #$dateTime->modify('+1 day');
         $diff = $start->diff($dateTime);
 
         if ($timeUnit->toInt() === $timeUnit::SECONDS){

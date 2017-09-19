@@ -12,6 +12,7 @@ use Inowas\Common\Modflow\Name;
 use Inowas\Common\Modflow\PackageName;
 use Inowas\Common\Modflow\ParameterName;
 use Inowas\Common\Modflow\TimeUnit;
+use Inowas\Common\Status\Visibility;
 use Inowas\ModflowModel\Model\Command\ChangeFlowPackage;
 use Inowas\ModflowModel\Model\Command\CreateModflowModel;
 use Inowas\ModflowBundle\DataFixtures\Scenarios\LoadScenarioBase;
@@ -48,7 +49,8 @@ class RioPrimeroArea extends LoadScenarioBase
             $gridSize,
             $boundingBox,
             TimeUnit::fromInt(TimeUnit::DAYS),
-            LengthUnit::fromInt(LengthUnit::METERS)
+            LengthUnit::fromInt(LengthUnit::METERS),
+            Visibility::public()
         ));
 
         $commandBus->dispatch(ChangeFlowPackage::forModflowModel($ownerId, $baseModelId, PackageName::fromString('upw')));

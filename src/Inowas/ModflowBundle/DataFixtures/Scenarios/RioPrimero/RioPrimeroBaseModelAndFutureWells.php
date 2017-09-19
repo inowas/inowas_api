@@ -40,6 +40,7 @@ use Inowas\Common\Modflow\Top;
 use Inowas\Common\Modflow\Vka;
 use Inowas\Common\Soilmodel\Layer;
 use Inowas\Common\Soilmodel\LayerId;
+use Inowas\Common\Status\Visibility;
 use Inowas\ModflowModel\Model\Command\AddBoundary;
 use Inowas\ModflowModel\Model\Command\AddLayer;
 use Inowas\ModflowModel\Model\Command\ChangeDescription;
@@ -93,7 +94,8 @@ class RioPrimeroBaseModelAndFutureWells extends LoadScenarioBase
             $gridSize,
             $boundingBox,
             TimeUnit::fromInt(TimeUnit::DAYS),
-            LengthUnit::fromInt(LengthUnit::METERS)
+            LengthUnit::fromInt(LengthUnit::METERS),
+            Visibility::public()
         ));
 
 
@@ -394,7 +396,8 @@ class RioPrimeroBaseModelAndFutureWells extends LoadScenarioBase
             $ownerId,
             $baseModelId,
             ScenarioAnalysisName::fromString('Rio Primero, Scenario Analysis'),
-            ScenarioAnalysisDescription::fromString('Rio Primero, Scenario Analysis')
+            ScenarioAnalysisDescription::fromString('Rio Primero, Scenario Analysis'),
+            Visibility::public()
         ));
 
         /*

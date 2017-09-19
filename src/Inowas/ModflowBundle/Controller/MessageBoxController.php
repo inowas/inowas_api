@@ -25,6 +25,7 @@ use Inowas\ScenarioAnalysis\Model\Command\CreateScenario;
 use Inowas\ScenarioAnalysis\Model\Command\CreateScenarioAnalysis;
 use Inowas\ScenarioAnalysis\Model\Command\DeleteScenario;
 use Inowas\ScenarioAnalysis\Model\Command\DeleteScenarioAnalysis;
+use Inowas\ScenarioAnalysis\Model\Command\UpdateScenarioAnalysis;
 use Nelmio\ApiDocBundle\Annotation\ApiDoc;
 use Prooph\Common\Messaging\Message;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -53,6 +54,7 @@ class MessageBoxController extends InowasRestController
         'updateBoundary' => UpdateBoundary::class,
         'updateLayer' => UpdateLayer::class,
         'updateModflowModel' => UpdateModflowModel::class,
+        'updateScenarioAnalysis' => UpdateScenarioAnalysis::class,
         'updateStressPeriods' => UpdateStressPeriods::class,
     ];
 

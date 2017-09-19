@@ -32,6 +32,9 @@
             "description": "0: undefined, 1: seconds, 2: minutes, 3: hours, 4: days, 5: years",
             "enum": [0, 1, 2, 3, 4, 5]
         },
+        "public": {
+            "type": "boolean"
+        },
         "permissions": {
             "type": "string",
             "minLength": 3,
@@ -50,6 +53,7 @@
         "bounding_box",
         "grid_size",
         "length_unit",
-        "time_unit"
+        "time_unit",
+        "public"
     ]
 }

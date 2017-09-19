@@ -18,6 +18,7 @@ use Inowas\Common\Modflow\LengthUnit;
 use Inowas\Common\Modflow\Description;
 use Inowas\Common\Modflow\Name;
 use Inowas\Common\Modflow\TimeUnit;
+use Inowas\Common\Status\Visibility;
 
 class UpdateModflowModel extends AbstractJsonSchemaCommand
 {
@@ -32,6 +33,7 @@ class UpdateModflowModel extends AbstractJsonSchemaCommand
      * @param TimeUnit $timeUnit
      * @param LengthUnit $lengthUnit
      * @param ActiveCells $activeCells
+     * @param Visibility $visibility
      * @return UpdateModflowModel
      */
     public static function newWithAllParams(
@@ -44,7 +46,8 @@ class UpdateModflowModel extends AbstractJsonSchemaCommand
         BoundingBox $boundingBox,
         TimeUnit $timeUnit,
         LengthUnit $lengthUnit,
-        ActiveCells $activeCells
+        ?ActiveCells $activeCells,
+        Visibility $visibility
     ): UpdateModflowModel
     {
         $self = new static(
@@ -57,9 +60,13 @@ class UpdateModflowModel extends AbstractJsonSchemaCommand
                 'bounding_box' => $boundingBox->toArray(),
                 'time_unit' => $timeUnit->toInt(),
                 'length_unit' => $lengthUnit->toInt(),
-                'active_cells' => $activeCells->cells2D()
+                'public' => $visibility->isPublic()
             ]
         );
+
+        if ($activeCells) {
+            $self->payload['active_cells'] = $activeCells->cells2D();
+        }
 
         /** @var UpdateModflowModel $self */
         $self = $self->withAddedMetadata('user_id', $userId->toString());
@@ -127,5 +134,10 @@ class UpdateModflowModel extends AbstractJsonSchemaCommand
             $this->gridSize(),
             AffectedLayers::createWithLayerNumber(LayerNumber::fromInt(0))
         );
+    }
+
+    public function visibility(): Visibility
+    {
+        return Visibility::fromBool($this->payload['public']);
     }
 }

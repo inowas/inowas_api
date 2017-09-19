@@ -32,6 +32,7 @@ use Inowas\Common\Modflow\Top;
 use Inowas\Common\Modflow\Vka;
 use Inowas\Common\Soilmodel\Layer;
 use Inowas\Common\Soilmodel\LayerId;
+use Inowas\Common\Status\Visibility;
 use Inowas\ModflowModel\Model\Command\AddBoundary;
 use Inowas\ModflowModel\Model\Command\AddLayer;
 use Inowas\ModflowModel\Model\Command\CalculateModflowModel;
@@ -137,7 +138,8 @@ class Hanoi extends LoadScenarioBase
             $gridSize,
             $boundingBox,
             $timeUnit,
-            $lengthUnit
+            $lengthUnit,
+            Visibility::public()
         ));
 
         $layers = [
@@ -371,7 +373,8 @@ class Hanoi extends LoadScenarioBase
             $ownerId,
             $modelId,
             ScenarioAnalysisName::fromString('ScenarioAnalysis: Hanoi 2005-2007'),
-            ScenarioAnalysisDescription::fromString('ScenarioAnalysis: Hanoi 2005-2007')
+            ScenarioAnalysisDescription::fromString('ScenarioAnalysis: Hanoi 2005-2007'),
+            Visibility::public()
         ));
 
         /*

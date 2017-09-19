@@ -24,6 +24,7 @@ use Inowas\Common\Modflow\TimeUnit;
 use Inowas\Common\Soilmodel\LayerId;
 use Inowas\Common\Soilmodel\Soilmodel;
 use Inowas\Common\Soilmodel\SoilmodelId;
+use Inowas\Common\Status\Visibility;
 use Inowas\ModflowModel\Model\AMQP\FlopyCalculationResponse;
 use Inowas\ModflowModel\Model\Event\ActiveCellsWereUpdated;
 use Inowas\ModflowModel\Model\Event\AreaGeometryWasUpdated;
@@ -50,6 +51,7 @@ use Inowas\ModflowModel\Model\Event\SoilmodelMetadataWasUpdated;
 use Inowas\ModflowModel\Model\Event\ModflowModelWasCreated;
 use Inowas\ModflowModel\Model\Event\StressPeriodsWereUpdated;
 use Inowas\ModflowModel\Model\Event\TimeUnitWasUpdated;
+use Inowas\ModflowModel\Model\Event\VisibilityWasChanged;
 use Inowas\ModflowModel\Model\Exception\BoundaryNotFoundInModelException;
 use Prooph\EventSourcing\AggregateChanged;
 use Prooph\EventSourcing\AggregateRoot;
@@ -216,6 +218,15 @@ class ModflowModelAggregate extends AggregateRoot
             $userId,
             $this->modelId,
             $boundingBox
+        ));
+    }
+
+    public function changeVisibility(UserId $userId, Visibility $visibility): void
+    {
+        $this->recordThat(VisibilityWasChanged::withVisibility(
+            $userId,
+            $this->modelId,
+            $visibility
         ));
     }
 
@@ -461,6 +472,9 @@ class ModflowModelAggregate extends AggregateRoot
     {}
 
     protected function whenTimeUnitWasUpdated(TimeUnitWasUpdated $event): void
+    {}
+
+    protected function whenVisibilityWasChanged(VisibilityWasChanged $event): void
     {}
 
     protected function aggregateId(): string

@@ -8,6 +8,7 @@ use Inowas\Common\Grid\ActiveCells;
 use Inowas\Common\Grid\BoundingBox;
 use Inowas\Common\Grid\GridSize;
 use Inowas\Common\Id\ModflowId;
+use Inowas\Common\Status\Visibility;
 
 final class ModflowModel implements \JsonSerializable
 {
@@ -42,6 +43,9 @@ final class ModflowModel implements \JsonSerializable
     /** @var UserPermission */
     private $userPermission;
 
+    /** @var Visibility */
+    private $visibility;
+
     /** @noinspection MoreThanThreeArgumentsInspection
      * @param ModflowId $id
      * @param Name $name
@@ -53,6 +57,7 @@ final class ModflowModel implements \JsonSerializable
      * @param LengthUnit $lengthUnit
      * @param ActiveCells $activeCells
      * @param UserPermission $userPermission
+     * @param Visibility $visibility
      * @return ModflowModel
      */
     public static function fromParams(
@@ -65,7 +70,8 @@ final class ModflowModel implements \JsonSerializable
         TimeUnit $timeUnit,
         LengthUnit $lengthUnit,
         ActiveCells $activeCells,
-        UserPermission $userPermission
+        UserPermission $userPermission,
+        Visibility $visibility
     ): ModflowModel
     {
         $self = new self();
@@ -79,6 +85,7 @@ final class ModflowModel implements \JsonSerializable
         $self->lengthUnit = $lengthUnit;
         $self->activeCells = $activeCells;
         $self->userPermission = $userPermission;
+        $self->visibility = $visibility;
         return $self;
     }
 
@@ -124,6 +131,11 @@ final class ModflowModel implements \JsonSerializable
         return $this->lengthUnit;
     }
 
+    public function visibility(): Visibility
+    {
+        return $this->visibility;
+    }
+
     public function activeCells(): ActiveCells
     {
         return $this->activeCells;
@@ -145,6 +157,7 @@ final class ModflowModel implements \JsonSerializable
             'length_unit' => $this->lengthUnit->toInt(),
             'active_cells' => $this->activeCells->cells2D(),
             'permissions' => $this->userPermission->toString(),
+            'public' => $this->visibility->isPublic()
         );
     }
 

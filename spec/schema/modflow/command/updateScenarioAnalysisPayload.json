@@ -7,10 +7,6 @@
             "type": "string",
             "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$"
         },
-        "basemodel_id": {
-            "type": "string",
-            "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$"
-        },
         "name": {
             "type": "string"
         },
@@ -23,7 +19,6 @@
     },
     "required": [
         "id",
-        "basemodel_id",
         "name",
         "public"
     ]

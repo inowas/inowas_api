@@ -15,6 +15,7 @@ use Inowas\ModflowModel\Model\Event\ModflowModelWasCloned;
 use Inowas\ModflowModel\Model\Event\ModflowModelWasCreated;
 use Inowas\ModflowModel\Model\Event\ModflowModelWasDeleted;
 use Inowas\ModflowModel\Model\Event\NameWasChanged;
+use Inowas\ModflowModel\Model\Event\VisibilityWasChanged;
 use Inowas\ModflowModel\Service\ModflowModelManager;
 use Inowas\ScenarioAnalysis\Model\Event\ScenarioAnalysisDescriptionWasChanged;
 use Inowas\ScenarioAnalysis\Model\Event\ScenarioAnalysisNameWasChanged;
@@ -50,7 +51,7 @@ class ToolProjector extends AbstractDoctrineConnectionProjector
         $table->addColumn('created_at', 'string', ['length' => 255, 'notnull' => false]);
         $table->addColumn('user_id', 'string', ['length' => 36]);
         $table->addColumn('user_name', 'string', ['length' => 255]);
-        $table->addColumn('public', 'boolean');
+        $table->addColumn('public', 'smallint', ['default' => 1]);
         $table->setPrimaryKey(['id']);
         $table->addIndex(['tool']);
         $table->addIndex(['user_id']);
@@ -66,8 +67,7 @@ class ToolProjector extends AbstractDoctrineConnectionProjector
             'tool' => 'T03',
             'user_id' => $event->userId()->toString(),
             'user_name' => $this->getUserNameByUserId($event->userId()),
-            'created_at' => date_format($event->createdAt(), DATE_ATOM),
-            'public' => true
+            'created_at' => date_format($event->createdAt(), DATE_ATOM)
         ));
     }
 
@@ -105,8 +105,7 @@ class ToolProjector extends AbstractDoctrineConnectionProjector
             'tool' => 'T03',
             'user_id' => $event->userId()->toString(),
             'user_name' => $this->getUserNameByUserId($event->userId()),
-            'created_at' => date_format($event->createdAt(), DATE_ATOM),
-            'public' => true
+            'created_at' => date_format($event->createdAt(), DATE_ATOM)
         ));
     }
 
@@ -128,8 +127,7 @@ class ToolProjector extends AbstractDoctrineConnectionProjector
             'tool' => 'T07',
             'user_id' => $event->userId()->toString(),
             'user_name' => $this->getUserNameByUserId($event->userId()),
-            'created_at' => date_format($event->createdAt(), DATE_ATOM),
-            'public' => true
+            'created_at' => date_format($event->createdAt(), DATE_ATOM)
         ));
     }
 
@@ -144,8 +142,7 @@ class ToolProjector extends AbstractDoctrineConnectionProjector
             'tool' => 'T07',
             'user_id' => $event->userId()->toString(),
             'user_name' => $this->getUserNameByUserId($event->userId()),
-            'created_at' => date_format($event->createdAt(), DATE_ATOM),
-            'public' => true
+            'created_at' => date_format($event->createdAt(), DATE_ATOM)
         ));
     }
 
@@ -170,6 +167,16 @@ class ToolProjector extends AbstractDoctrineConnectionProjector
         $this->connection->update(Table::TOOL_LIST,
             array('description' => $event->description()->toString()),
             array('id' => $event->scenarioAnalysisId()->toString())
+        );
+    }
+
+    public function onVisibilityWasChanged(VisibilityWasChanged $event): void
+    {
+        $this->connection->update(Table::TOOL_LIST,
+            array(
+                'public' => $event->visibility()->isPublic() ? 1 : 0
+            ),
+            array('id' => $event->modelId()->toString())
         );
     }
 
