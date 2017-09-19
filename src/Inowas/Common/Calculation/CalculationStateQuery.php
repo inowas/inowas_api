@@ -42,7 +42,7 @@ final class CalculationStateQuery implements \JsonSerializable
             'calculation_id' => $this->id->toString(),
             'state' => $this->state->toInt(),
             'message' => $this->message->toInt(),
-            'files' => []
+            'files' => $this->files
         );
     }
 
