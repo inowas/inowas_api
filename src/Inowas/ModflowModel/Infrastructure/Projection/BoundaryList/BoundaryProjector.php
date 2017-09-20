@@ -44,6 +44,15 @@ class BoundaryProjector extends AbstractDoctrineConnectionProjector
     {
         $boundary = $event->boundary();
 
+        $result = $this->connection->fetchAssoc(
+            sprintf('SELECT count(*) FROM %s WHERE model_id = :model_id AND boundary_id = :boundary_id', Table::BOUNDARIES),
+            ['model_id' => $event->modelId()->toString(), 'boundary_id' => $boundary->boundaryId()->toString()]
+        );
+
+        if ($result && $result['count'] > 0) {
+            return;
+        }
+
         $this->connection->insert(Table::BOUNDARIES, array(
             'boundary_id' => $boundary->boundaryId()->toString(),
             'model_id' => $event->modelId()->toString(),
