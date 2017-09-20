@@ -508,6 +508,36 @@ class LpfPackage implements PackageInterface
         );
     }
 
+    public function getEditables(): array
+    {
+        return array(
+            'hdry' => $this->hdry->toValue(),
+            'wetfct' => $this->wetfct->toValue(),
+            'iwetit' => $this->iwetit->toValue(),
+            'ihdwet' => $this->ihdwet->toValue(),
+            'vkcb' => $this->vkcb->toValue(),
+            'wetdry' => $this->wetdry->toValue(),
+            'storagecoefficient' => $this->storagecoefficient->toValue(),
+            'constantcv' => $this->constantcv->toValue(),
+            'nocvcorrection' => $this->nocvcorrection->toValue(),
+            'novfc' => $this->novfc->toValue()
+        );
+    }
+
+    public function mergeEditables(array $arr): void
+    {
+        $this->hdry = Hdry::fromValue($arr['hdry']);
+        $this->wetfct = Wetfct::fromValue($arr['wetfct']);
+        $this->iwetit = Iwetit::fromValue($arr['iwetit']);
+        $this->ihdwet = Ihdwet::fromValue($arr['ihdwet']);
+        $this->vkcb = Vkcb::fromValue($arr['vkcb']);
+        $this->wetdry = Wetdry::fromValue($arr['wetdry']);
+        $this->storagecoefficient = Storagecoefficient::fromValue($arr['storagecoefficient']);
+        $this->constantcv = Constantcv::fromValue($arr['constantcv']);
+        $this->nocvcorrection = Nocvcorrection::fromValue($arr['nocvcorrection']);
+        $this->novfc = Novfc::fromValue($arr['novfc']);
+    }
+
     /**
      * @return array
      */

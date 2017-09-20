@@ -239,6 +239,14 @@ class MfPackage implements PackageInterface
         return true;
     }
 
+    public function getEditables(): array
+    {
+        return $this->toArray();
+    }
+
+    public function mergeEditables(array $arr): void
+    {}
+
     /**
      * @return array
      */

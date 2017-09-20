@@ -143,6 +143,14 @@ class WelPackage implements PackageInterface
         );
     }
 
+    public function getEditables(): array
+    {
+        return $this->toArray();
+    }
+
+    public function mergeEditables(array $arr): void
+    {}
+
     /**
      * @return array
      */

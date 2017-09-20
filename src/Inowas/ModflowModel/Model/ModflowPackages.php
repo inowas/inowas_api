@@ -229,10 +229,6 @@ class ModflowPackages implements \JsonSerializable
             throw InvalidPackageNameException::withName($packageName, $this->availablePackages);
         }
 
-        if (! $this->packageIsSelected($packageName)){
-            $this->addPackageByName($packageName);
-        }
-
         return $this->getPackageByName($packageName);
     }
 
@@ -357,6 +353,11 @@ class ModflowPackages implements \JsonSerializable
     {
         if (! $this->packageIsAvailable($packageName)){
             throw InvalidPackageNameException::withName($packageName, $this->availablePackages);
+        }
+
+        if (! array_key_exists($packageName, $this->packages)) {
+            $class = $this->availablePackages[$packageName];
+            return $class::fromDefaults();
         }
 
         return $this->packages[$packageName];

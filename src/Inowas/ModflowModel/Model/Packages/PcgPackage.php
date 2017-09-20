@@ -319,6 +319,40 @@ class PcgPackage implements PackageInterface
         );
     }
 
+    public function getEditables(): array
+    {
+        return array(
+            'mxiter' => $this->mxiter->toInteger(),
+            'iter1' => $this->iter1->toInteger(),
+            'npcond' => $this->npcond->toInteger(),
+            'hclose' => $this->hclose->toFloat(),
+            'rclose' => $this->rclose->toFloat(),
+            'relax' => $this->relax->toFloat(),
+            'nbpol' => $this->nbpol->toInteger(),
+            'iprpcg' => $this->iprpcg->toInteger(),
+            'mutpcg' => $this->mutpcg->toInteger(),
+            'damp' => $this->damp->toFloat(),
+            'dampt' => $this->dampt->toFloat(),
+            'ihcofadd' => $this->ihcofadd->toInteger()
+        );
+    }
+
+    public function mergeEditables(array $arr): void
+    {
+        $this->mxiter = Mxiter::fromInteger($arr['mxiter']);
+        $this->iter1 = Iter1::fromInteger($arr['iter1']);
+        $this->npcond = Npcond::fromInteger($arr['npcond']);
+        $this->hclose = Hclose::fromFloat($arr['hclose']);
+        $this->rclose = Rclose::fromFloat($arr['rclose']);
+        $this->relax = Relax::fromFloat($arr['relax']);
+        $this->nbpol = Nbpol::fromInteger($arr['nbpol']);
+        $this->iprpcg = Iprpcg::fromInteger($arr['iprpcg']);
+        $this->mutpcg = Mutpcg::fromInteger($arr['mutpcg']);
+        $this->damp = Damp::fromFloat($arr['damp']);
+        $this->dampt = Dampt::fromFloat($arr['dampt']);
+        $this->ihcofadd = Ihcofadd::fromInteger($arr['ihcofadd']);
+    }
+
     /**
      * @return array
      */

@@ -11,6 +11,7 @@ use Inowas\Common\Id\BoundaryId;
 use Inowas\Common\Id\CalculationId;
 use Inowas\Common\Id\ModflowId;
 use Inowas\Common\Modflow\ModflowModel;
+use Inowas\Common\Modflow\PackageName;
 use Inowas\Common\Modflow\Results;
 use Inowas\Common\Soilmodel\LayerId;
 use Inowas\Common\Soilmodel\SoilmodelQuery;
@@ -179,6 +180,47 @@ class ModflowModelController extends InowasRestController
         }
 
         return new JsonResponse($boundary->toArray());
+    }
+
+    /**
+     * Get package details of modflowModel by id.
+     *
+     * @ApiDoc(
+     *   resource = true,
+     *   description = "Get package details of modflowModel by id.",
+     *   statusCodes = {
+     *     200 = "Returned when successful"
+     *   }
+     * )
+     *
+     * @param string $id
+     * @param string $package
+     * @return JsonResponse
+     * @throws \Symfony\Component\DependencyInjection\Exception\ServiceNotFoundException
+     * @throws \Symfony\Component\DependencyInjection\Exception\ServiceCircularReferenceException
+     * @throws AccessDeniedException
+     * @Rest\Get("/modflowmodels/{id}/packages/{package}")
+     */
+    public function getModflowModelPackagesAction(string $id, string $package): JsonResponse
+    {
+        $this->assertUuidIsValid($id);
+        $modelId = ModflowId::fromString($id);
+        $userId = $this->getUserId();
+
+        if (! $this->get('inowas.modflowmodel.model_finder')->userHasReadAccessToModel($userId, $modelId)) {
+            throw AccessDeniedException::withMessage(
+                sprintf(
+                    'Model not found or user with Id %s does not have access to model with id %s',
+                    $userId->toString(),
+                    $modelId->toString()
+                )
+            );
+        }
+
+        $packages = $this->container->get('inowas.modflowmodel.modflow_packages_manager')->getPackagesByModelId($modelId);
+        $packageName = PackageName::fromString($package);
+
+        return new JsonResponse($packages->getPackage($packageName->toString())->getEditables());
     }
 
     /**

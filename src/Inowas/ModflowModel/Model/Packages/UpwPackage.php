@@ -358,6 +358,22 @@ class UpwPackage implements PackageInterface
         );
     }
 
+    public function getEditables(): array
+    {
+        return array(
+            'hdry' => $this->hdry->toValue(),
+            'iphdry' => $this->iphdry->toValue(),
+            'vkcb' => $this->vkcb->toValue()
+        );
+    }
+
+    public function mergeEditables(array $arr): void
+    {
+        $this->hdry = Hdry::fromValue($arr['hdry']);
+        $this->iphdry = Iphdry::fromValue($arr['iphdry']);
+        $this->vkcb = Vkcb::fromValue($arr['vkcb']);
+    }
+
     /**
      * @return array
      */
