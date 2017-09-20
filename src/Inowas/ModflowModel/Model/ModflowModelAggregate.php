@@ -138,6 +138,10 @@ class ModflowModelAggregate extends AggregateRoot
 
     public function addBoundary(UserId $userId, ModflowBoundary $boundary): void
     {
+        if (in_array($boundary->boundaryId()->toString(), $this->boundaries, true)) {
+            throw BoundaryNotFoundInModelException::withIds($this->modelId, $boundary->boundaryId());
+        }
+
         $this->recordThat(BoundaryWasAdded::byUserToModel(
             $userId,
             $this->modelId,
