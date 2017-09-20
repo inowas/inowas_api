@@ -9,6 +9,7 @@ use Doctrine\DBAL\Schema\Schema;
 use Doctrine\ORM\EntityManager;
 use Inowas\AppBundle\Model\User;
 use Inowas\Common\Id\UserId;
+use Inowas\Common\Modflow\ModflowModel;
 use Inowas\Common\Projection\AbstractDoctrineConnectionProjector;
 use Inowas\ModflowModel\Model\Event\DescriptionWasChanged;
 use Inowas\ModflowModel\Model\Event\ModflowModelWasCloned;
@@ -97,6 +98,11 @@ class ToolProjector extends AbstractDoctrineConnectionProjector
         }
 
         $model = $this->modelManager->findModel($event->modelId(), $event->userId());
+
+        if (! $model instanceof ModflowModel) {
+            return;
+        }
+
         $this->connection->insert(Table::TOOL_LIST, array(
             'id' => $event->modelId()->toString(),
             'name' => $model->name()->toString(),
