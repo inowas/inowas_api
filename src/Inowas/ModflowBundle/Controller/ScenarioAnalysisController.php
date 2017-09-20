@@ -90,12 +90,15 @@ class ScenarioAnalysisController extends InowasRestController
             throw NotFoundException::withMessage(sprintf('ScenarioAnalysis with id %s was not found.', $scenarioAnalysisId->toString()));
         }
 
+        $userId = $this->getUserId();
+        $permissions = $this->get('inowas.user_permissions')->getModelPermissions($userId, ModflowId::fromString($scenarioAnalysis['base_model']['id']))->toString();
 
         if (!empty($scenarioAnalysis['base_model'])) {
-            $userId = $this->getUserId();
-            $scenarioAnalysis['base_model']['permissions'] = $this->get('inowas.user_permissions')
-                ->getModelPermissions($userId, ModflowId::fromString($scenarioAnalysis['base_model']['id']))->toString();
+            $scenarioAnalysis['base_model']['permissions'] = $permissions;
         }
+
+        $scenarioAnalysis['permissions'] = $permissions;
+
         return new JsonResponse($scenarioAnalysis);
     }
 
