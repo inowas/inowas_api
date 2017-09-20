@@ -58,6 +58,7 @@ class ModelFinder
             $rows[$key]['geometry'] = json_decode($row['geometry'], true);
             $rows[$key]['grid_size'] = json_decode($row['grid_size'], true);
             $rows[$key]['bounding_box'] = json_decode($row['bounding_box'], true);
+            $rows[$key]['public'] = (bool) $rows[$key]['public'];
         }
 
         return $rows;
@@ -75,6 +76,7 @@ class ModelFinder
             $rows[$key]['geometry'] = json_decode($row['geometry'], true);
             $rows[$key]['grid_size'] = json_decode($row['grid_size'], true);
             $rows[$key]['bounding_box'] = json_decode($row['bounding_box'], true);
+            $rows[$key]['public'] = (bool) $rows[$key]['public'];
         }
 
         return $rows;

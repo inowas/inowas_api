@@ -322,6 +322,9 @@ class ModflowPackages implements \JsonSerializable
         }
     }
 
+    public function mergePackageData(PackageName $name, array $data): void
+    {}
+
     private function addPackage(PackageInterface $package): void
     {
         $this->packages[$package->type()] = $package;
