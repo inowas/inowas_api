@@ -160,6 +160,10 @@ class ScenarioListProjector extends AbstractDoctrineConnectionProjector
             )
         );
 
+        if (false === $result) {
+            return;
+        }
+
         $calculationId = '';
         if (array_key_exists('calculation_id', $result)){
             $calculationId = $result['calculation_id'];
