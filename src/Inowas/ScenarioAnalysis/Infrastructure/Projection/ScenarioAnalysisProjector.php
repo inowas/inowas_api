@@ -59,6 +59,10 @@ class ScenarioAnalysisProjector extends AbstractDoctrineConnectionProjector
         $boundingBox = $this->modelFinder->getBoundingBoxByModflowModelId($event->baseModelId());
         $gridSize = $this->modelFinder->getGridSizeByModflowModelId($event->baseModelId());
 
+        if (null === $areaGeometry || null === $boundingBox || null === $gridSize) {
+            return;
+        }
+
         $this->connection->insert(Table::SCENARIO_ANALYSIS_LIST, [
             'scenario_analysis_id' => $event->scenarioAnalysisId()->toString(),
             'user_id' => $event->userId()->toString(),
