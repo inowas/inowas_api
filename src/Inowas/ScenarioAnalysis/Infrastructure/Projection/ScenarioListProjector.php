@@ -73,6 +73,10 @@ class ScenarioListProjector extends AbstractDoctrineConnectionProjector
         $baseModelDescription = $this->modelFinder->getModelDescriptionByModelId($event->baseModelId());
         $calculationId = $this->modelFinder->getCalculationIdByModelId($event->baseModelId());
 
+        if (null === $baseModelName || null === $baseModelDescription || null === $calculationId) {
+            return;
+        }
+
         $this->connection->insert(Table::SCENARIO_LIST, array(
             'scenario_id' => $event->baseModelId()->toString(),
             'base_model_id' => $event->baseModelId()->toString(),
