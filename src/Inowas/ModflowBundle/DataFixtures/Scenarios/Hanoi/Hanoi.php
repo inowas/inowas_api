@@ -70,11 +70,14 @@ class Hanoi extends LoadScenarioBase
 {
     public function load(): void
     {
-        $this->loadUsers($this->container->get('fos_user.user_manager'));
+        $userManager = $this->container->get('fos_user.user_manager');
+        $this->loadUsers($userManager);
         $geoTools = $this->container->get('inowas.geotools.geotools_service');
-        #$this->createEventStreamTableIfNotExists('event_stream');
 
         $commandBus = $this->container->get('prooph_service_bus.modflow_command_bus');
+
+        $owner = $userManager->findUserByUsername('ralf.junghanns');
+        $this->ownerId = $owner->getId()->toString();
 
         $ownerId = UserId::fromString($this->ownerId);
         $modelId = ModflowId::generate();
@@ -413,6 +416,7 @@ class Hanoi extends LoadScenarioBase
             if (array_key_exists($key, $rbfRelocatedWellNamesAndGeometry)) {
                 $geometry = Geometry::fromPoint($rbfRelocatedWellNamesAndGeometry[$key]);
                 $boundary = $boundary->updateGeometry($geometry);
+                $boundary->updateMetadata(Metadata::create()->addWellType(WellType::fromString(WellType::TYPE_RIVER_BANK_FILTRATION_WELL)));
                 echo sprintf("Move Well %s.\r\n", $boundary->name()->toString());
                 $commandBus->dispatch(UpdateBoundary::forModflowModel($ownerId, $scenarioId, $boundary->boundaryId(), $boundary));
             }
@@ -504,6 +508,7 @@ class Hanoi extends LoadScenarioBase
             if (array_key_exists($key, $rbfRelocatedWellNamesAndGeometry)) {
                 $geometry = Geometry::fromPoint($rbfRelocatedWellNamesAndGeometry[$key]);
                 $boundary = $boundary->updateGeometry($geometry);
+                $boundary->updateMetadata(Metadata::create()->addWellType(WellType::fromString(WellType::TYPE_RIVER_BANK_FILTRATION_WELL)));
                 echo sprintf("Move Well %s.\r\n", $boundary->name()->toString());
                 $commandBus->dispatch(UpdateBoundary::forModflowModel($ownerId, $scenarioId, $boundary->boundaryId(), $boundary));
             }
