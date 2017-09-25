@@ -389,8 +389,8 @@ class Hanoi extends LoadScenarioBase
             $scenarioId
         ));
 
-        $commandBus->dispatch(ChangeName::forModflowModel($ownerId, $modelId, Name::fromString('Scenario 1')));
-        $commandBus->dispatch(ChangeDescription::forModflowModel($ownerId, $modelId, Description::fromString('Simulation of MAR type river bank filtration')));
+        $commandBus->dispatch(ChangeName::forModflowModel($ownerId, $scenarioId, Name::fromString('Scenario 1')));
+        $commandBus->dispatch(ChangeDescription::forModflowModel($ownerId, $scenarioId, Description::fromString('Simulation of MAR type river bank filtration')));
 
         $boundariesFinder = $this->container->get('inowas.modflowmodel.boundary_manager');
         $rbfRelocatedWellNamesAndGeometry = array(
@@ -433,8 +433,8 @@ class Hanoi extends LoadScenarioBase
             $scenarioId
         ));
 
-        $commandBus->dispatch(ChangeName::forModflowModel($ownerId, $modelId, Name::fromString('Scenario 2')));
-        $commandBus->dispatch(ChangeDescription::forModflowModel($ownerId, $modelId, Description::fromString('Simulation of MAR type injection wells')));
+        $commandBus->dispatch(ChangeName::forModflowModel($ownerId, $scenarioId, Name::fromString('Scenario 2')));
+        $commandBus->dispatch(ChangeDescription::forModflowModel($ownerId, $scenarioId, Description::fromString('Simulation of MAR type injection wells')));
 
         # THIS WELLS ARE THE YELLOW DOTS IN THE RIGHT IMAGE
         $header = array('name', 'x', 'y', 'srid', 'pumpingrate');
@@ -481,8 +481,8 @@ class Hanoi extends LoadScenarioBase
             $scenarioId
         ));
 
-        $commandBus->dispatch(ChangeName::forModflowModel($ownerId, $modelId, Name::fromString('Scenario 3')));
-        $commandBus->dispatch(ChangeDescription::forModflowModel($ownerId, $modelId, Description::fromString('Combination of MAR types river bank filtration and injection wells')));
+        $commandBus->dispatch(ChangeName::forModflowModel($ownerId, $scenarioId, Name::fromString('Scenario 3')));
+        $commandBus->dispatch(ChangeDescription::forModflowModel($ownerId, $scenarioId, Description::fromString('Combination of MAR types river bank filtration and injection wells')));
 
         $boundariesFinder = $this->container->get('inowas.modflowmodel.boundary_manager');
         $rbfRelocatedWellNamesAndGeometry = array(
