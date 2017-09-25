@@ -225,10 +225,6 @@ class ModflowPackages implements \JsonSerializable
 
     public function getPackage(string $packageName): PackageInterface
     {
-        if (! array_key_exists($packageName, $this->availablePackages)){
-            throw InvalidPackageNameException::withName($packageName, $this->availablePackages);
-        }
-
         return $this->getPackageByName($packageName);
     }
 
@@ -323,7 +319,11 @@ class ModflowPackages implements \JsonSerializable
     }
 
     public function mergePackageData(PackageName $name, array $data): void
-    {}
+    {
+        $package = $this->getPackage($name->toString());
+        $package->mergeEditables($data);
+        $this->updatePackage($package);
+    }
 
     private function addPackage(PackageInterface $package): void
     {
@@ -360,7 +360,7 @@ class ModflowPackages implements \JsonSerializable
 
         if (! array_key_exists($packageName, $this->packages)) {
             $class = $this->availablePackages[$packageName];
-            return $class::fromDefaults();
+            $this->addPackage($class::fromDefaults());
         }
 
         return $this->packages[$packageName];
