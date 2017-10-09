@@ -186,6 +186,76 @@ class ModflowModelController extends InowasRestController
     }
 
     /**
+     * Get packages modflowModel by id.
+     *
+     * @ApiDoc(
+     *   resource = true,
+     *   description = "Get packages modflowModel by id.",
+     *   statusCodes = {
+     *     200 = "Returned when successful"
+     *   }
+     * )
+     *
+     * @param string $id
+     * @return JsonResponse
+     * @throws \Symfony\Component\DependencyInjection\Exception\ServiceNotFoundException
+     * @throws \Symfony\Component\DependencyInjection\Exception\ServiceCircularReferenceException
+     * @throws AccessDeniedException
+     * @Rest\Get("/modflowmodels/{id}/packages")
+     */
+    public function getModflowModelPackagesAction(string $id): JsonResponse
+    {
+        $this->assertUuidIsValid($id);
+        $modelId = ModflowId::fromString($id);
+        $userId = $this->getUserId();
+
+        if (! $this->get('inowas.modflowmodel.model_finder')->userHasReadAccessToModel($userId, $modelId)) {
+            throw AccessDeniedException::withMessage(
+                sprintf(
+                    'Model not found or user with Id %s does not have access to model with id %s',
+                    $userId->toString(),
+                    $modelId->toString()
+                )
+            );
+        }
+
+        //$packages = $this->container->get('inowas.modflowmodel.modflow_packages_manager')->getPackagesByModelId($modelId);
+
+        $response = [];
+
+        $response['general'] = [
+            'available' => [
+                'mf' => 'Description',
+                'bas' => 'Description',
+                'dis' => 'Description',
+                'oc' => 'Description'
+            ],
+            'selected' => ['mf', 'bas', 'dis', 'oc'],
+        ];
+
+        $response['boundary'] = [];
+
+        $response['flow'] = [
+            'available' => [
+                'lpf' => 'Description',
+                'upw' => 'Description',
+            ],
+            'selected' => 'lpf'
+        ];
+
+        $response['solver'] = [
+            'available' => [
+                'pcg' => 'Description',
+                'nwt' => 'Description'
+            ],
+
+            'selected' => 'pcg'
+        ];
+
+        return new JsonResponse($response);
+    }
+
+    /**
      * Get package details of modflowModel by id.
      *
      * @ApiDoc(
@@ -204,7 +274,7 @@ class ModflowModelController extends InowasRestController
      * @throws AccessDeniedException
      * @Rest\Get("/modflowmodels/{id}/packages/{package}")
      */
-    public function getModflowModelPackagesAction(string $id, string $package): JsonResponse
+    public function getModflowModelPackageAction(string $id, string $package): JsonResponse
     {
         $this->assertUuidIsValid($id);
         $modelId = ModflowId::fromString($id);
