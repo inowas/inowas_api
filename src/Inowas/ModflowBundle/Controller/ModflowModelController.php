@@ -219,40 +219,8 @@ class ModflowModelController extends InowasRestController
             );
         }
 
-        //$packages = $this->container->get('inowas.modflowmodel.modflow_packages_manager')->getPackagesByModelId($modelId);
-
-        $response = [];
-
-        $response['general'] = [
-            'available' => [
-                'mf' => 'Description',
-                'bas' => 'Description',
-                'dis' => 'Description',
-                'oc' => 'Description'
-            ],
-            'selected' => ['mf', 'bas', 'dis', 'oc'],
-        ];
-
-        $response['boundary'] = [];
-
-        $response['flow'] = [
-            'available' => [
-                'lpf' => 'Description',
-                'upw' => 'Description',
-            ],
-            'selected' => 'lpf'
-        ];
-
-        $response['solver'] = [
-            'available' => [
-                'pcg' => 'Description',
-                'nwt' => 'Description'
-            ],
-
-            'selected' => 'pcg'
-        ];
-
-        return new JsonResponse($response);
+        $packages = $this->container->get('inowas.modflowmodel.modflow_packages_manager')->getPackagesByModelId($modelId);
+        return new JsonResponse($packages->metaData());
     }
 
     /**

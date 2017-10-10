@@ -304,4 +304,38 @@ class ModflowModelControllerTest extends EventSourcingBaseTest
         $validator = new Validator($content, $dereferencedSchema);
         $this->assertTrue($validator->passes(), var_export($validator->errors(), true));
     }
+
+    /**
+     * @test
+     */
+    public function it_returns_the_packages_metadata(): void
+    {
+        $userId = UserId::fromString($this->user->getId()->toString());
+        $apiKey = $this->user->getApiKey();
+
+        $modelId = ModflowId::generate();
+        $this->createModelWithOneLayer($userId, $modelId);
+        $this->commandBus->dispatch(CalculateModflowModel::forModflowModelWitUserId($userId, $modelId));
+
+        $client = static::createClient();
+        $client->request(
+            'GET',
+            sprintf('/v2/modflowmodels/%s/packages', $modelId->toString()),
+            array(),
+            array(),
+            array('HTTP_X-AUTH-TOKEN' => $apiKey)
+        );
+
+        $response = $client->getResponse();
+        $this->assertEquals(200, $response->getStatusCode());
+
+        $json = $response->getContent();
+        $this->assertJson($json);
+        $arr = json_decode($json, true);
+
+        $this->assertArrayHasKey('general', $arr);
+        $this->assertArrayHasKey('boundary', $arr);
+        $this->assertArrayHasKey('flow', $arr);
+        $this->assertArrayHasKey('solver', $arr);
+    }
 }
