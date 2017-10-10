@@ -337,4 +337,35 @@ class ModflowModelControllerTest extends EventSourcingBaseTest
         $this->assertArrayHasKey('flow', $arr);
         $this->assertArrayHasKey('solver', $arr);
     }
+
+    /**
+     * @test
+     */
+    public function it_returns_the_package_data(): void
+    {
+        $userId = UserId::fromString($this->user->getId()->toString());
+        $apiKey = $this->user->getApiKey();
+
+        $modelId = ModflowId::generate();
+        $this->createModelWithOneLayer($userId, $modelId);
+
+        $client = static::createClient();
+        $client->request(
+            'GET',
+            sprintf('/v2/modflowmodels/%s/packages/pcg', $modelId->toString()),
+            array(),
+            array(),
+            array('HTTP_X-AUTH-TOKEN' => $apiKey)
+        );
+
+        $response = $client->getResponse();
+        $this->assertEquals(200, $response->getStatusCode());
+
+        $json = $response->getContent();
+        $this->assertJson($json);
+        $arr = json_decode($json, true);
+
+        $this->assertArrayHasKey('package', $arr);
+        $this->assertEquals('pcg', $arr['package']);
+    }
 }
