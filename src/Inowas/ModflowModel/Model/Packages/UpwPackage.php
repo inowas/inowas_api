@@ -359,6 +359,7 @@ class UpwPackage extends AbstractPackage
     public function getEditables(): array
     {
         return array(
+            'package' => static::type(),
             'hdry' => $this->hdry->toValue(),
             'iphdry' => $this->iphdry->toValue(),
             'vkcb' => $this->vkcb->toValue()

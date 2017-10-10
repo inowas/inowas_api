@@ -317,6 +317,7 @@ class PcgPackage extends AbstractPackage
     public function getEditables(): array
     {
         return array(
+            'package' => static::type(),
             'mxiter' => $this->mxiter->toInteger(),
             'iter1' => $this->iter1->toInteger(),
             'npcond' => $this->npcond->toInteger(),

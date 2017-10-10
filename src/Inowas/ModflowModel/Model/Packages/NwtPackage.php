@@ -627,6 +627,7 @@ class NwtPackage extends AbstractPackage
     public function getEditables(): array
     {
         return array(
+            'package' => static::type(),
             'headtol' => $this->headtol->toFloat(),
             'fluxtol' => $this->fluxtol->toFloat(),
             'maxiterout' => $this->maxiterout->toInteger(),
