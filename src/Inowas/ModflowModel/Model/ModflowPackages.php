@@ -102,7 +102,7 @@ class ModflowPackages implements \JsonSerializable
         $selectedPackages = $arr['selected_packages'];
         $self->setSelectedPackages($selectedPackages);
 
-        foreach ($selectedPackages as $package){
+        foreach ($self->selectedPackages() as $package){
             if (array_key_exists($package, $self->availablePackages)){
                 $class = $self->availablePackages[$package];
                 $self->setPackage($class::fromArray($arr['packages'][$package]));
@@ -339,6 +339,12 @@ class ModflowPackages implements \JsonSerializable
 
         $packages = [];
         foreach ($this->selectedPackages() as $selectedPackage) {
+
+            if (! array_key_exists($selectedPackage, $this->packages)) {
+                $class = $this->availablePackages[$selectedPackage];
+                $this->setPackage($class::fromDefaults());
+            }
+
             /** @var PackageInterface $package */
             $package = $this->packages[$selectedPackage];
             if ($package->isValid()) {
