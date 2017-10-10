@@ -506,7 +506,6 @@ class LpfPackage extends AbstractPackage
     public function getEditables(): array
     {
         return array(
-            'package' => static::type(),
             'hdry' => $this->hdry->toValue(),
             'wetfct' => $this->wetfct->toValue(),
             'iwetit' => $this->iwetit->toValue(),

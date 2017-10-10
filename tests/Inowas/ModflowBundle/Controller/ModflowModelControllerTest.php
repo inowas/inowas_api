@@ -365,7 +365,17 @@ class ModflowModelControllerTest extends EventSourcingBaseTest
         $this->assertJson($json);
         $arr = json_decode($json, true);
 
-        $this->assertArrayHasKey('package', $arr);
-        $this->assertEquals('pcg', $arr['package']);
+        $this->assertArrayHasKey('mxiter', $arr);
+        $this->assertArrayHasKey('iter1', $arr);
+        $this->assertArrayHasKey('npcond', $arr);
+        $this->assertArrayHasKey('hclose', $arr);
+        $this->assertArrayHasKey('rclose', $arr);
+        $this->assertArrayHasKey('relax', $arr);
+        $this->assertArrayHasKey('nbpol', $arr);
+        $this->assertArrayHasKey('iprpcg', $arr);
+        $this->assertArrayHasKey('mutpcg', $arr);
+        $this->assertArrayHasKey('damp', $arr);
+        $this->assertArrayHasKey('dampt', $arr);
+        $this->assertArrayHasKey('ihcofadd', $arr);
     }
 }
