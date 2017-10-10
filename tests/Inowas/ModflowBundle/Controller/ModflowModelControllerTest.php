@@ -315,7 +315,6 @@ class ModflowModelControllerTest extends EventSourcingBaseTest
 
         $modelId = ModflowId::generate();
         $this->createModelWithOneLayer($userId, $modelId);
-        $this->commandBus->dispatch(CalculateModflowModel::forModflowModelWitUserId($userId, $modelId));
 
         $client = static::createClient();
         $client->request(
