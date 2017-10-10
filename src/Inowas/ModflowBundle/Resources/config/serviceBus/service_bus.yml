@@ -31,6 +31,7 @@ parameters:
                         'Inowas\ModflowModel\Model\Command\UpdateCalculationId': 'inowas.modflowmodel.update_calculation_id_handler'
                         'Inowas\ModflowModel\Model\Command\UpdateLengthUnit': 'inowas.modflowmodel.update_length_unit_handler'
                         'Inowas\ModflowModel\Model\Command\UpdateModflowModel': 'inowas.modflowmodel.update_modflow_model_handler'
+                        'Inowas\ModflowModel\Model\Command\UpdateModflowPackage': 'inowas.modflowmodel.update_modflow_package_handler'
                         'Inowas\ModflowModel\Model\Command\UpdateModflowPackageParameter': 'inowas.modflowmodel.update_modflow_package_parameter_handler'
                         'Inowas\ModflowModel\Model\Command\UpdateSoilmodelMetadata': 'inowas.modflowmodel.update_soilmodel_metadata_handler'
                         'Inowas\ModflowModel\Model\Command\UpdateStressPeriods': 'inowas.modflowmodel.update_stress_periods_handler'
@@ -173,6 +174,10 @@ parameters:
                             - 'inowas.tool.tools_projector'
 
                         'Inowas\ModflowModel\Model\Event\ModflowPackageParameterWasUpdated':
+                            - 'inowas.modflowmodel.blackhole_projector'
+                            - 'inowas.modflowmodel.modflow_packages_process_manager'
+
+                        'Inowas\ModflowModel\Model\Event\ModflowPackageWasUpdated':
                             - 'inowas.modflowmodel.blackhole_projector'
                             - 'inowas.modflowmodel.modflow_packages_process_manager'
 

@@ -657,4 +657,50 @@ class MessageBoxControllerTest extends EventSourcingBaseTest
         $response = $client->getResponse();
         $this->assertEquals(202, $response->getStatusCode());
     }
+
+    /**
+     * @test
+     */
+    public function it_can_receive_update_modflow_model_package_command(): void
+    {
+        $userId = UserId::fromString($this->user->getId()->toString());
+        $modelId = ModflowId::fromString('f3f6788a-61a6-410e-a14d-af7ecca6babb');
+        $this->createModelWithOneLayer($userId, $modelId);
+
+        $packages = $this->container->get('inowas.modflowmodel.modflow_packages_manager')->getPackagesByModelId($modelId);
+        $flowPackage = $packages->getPackage($packages->flowPackageName());
+
+        $editables = $flowPackage->getEditables();
+        $this->assertArrayHasKey('wetfct', $editables);
+        $this->assertEquals(0.1, $editables['wetfct']);
+
+        $newValue = 0.2;
+        $editables['wetfct'] = $newValue;
+
+        $command = json_decode(file_get_contents($this->fileLocation . 'updateModflowPackage.json'), true);
+        $command['payload']['id'] = $modelId->toString();
+        $command['payload']['package_name'] = $flowPackage::type();
+        $command['payload']['data'] = $editables;
+
+        $apiKey = $this->user->getApiKey();
+        $client = static::createClient();
+        $client->request(
+            'POST',
+            '/v2/messagebox',
+            array(),
+            array(),
+            array('HTTP_X-AUTH-TOKEN' => $apiKey),
+            json_encode($command)
+        );
+
+        $packages = $this->container->get('inowas.modflowmodel.modflow_packages_manager')->getPackagesByModelId($modelId);
+        $flowPackage = $packages->getPackage($packages->flowPackageName());
+
+        $editables = $flowPackage->getEditables();
+        $this->assertArrayHasKey('wetfct', $editables);
+        $this->assertEquals(0.2, $editables['wetfct']);
+
+        $response = $client->getResponse();
+        $this->assertEquals(202, $response->getStatusCode());
+    }
 }

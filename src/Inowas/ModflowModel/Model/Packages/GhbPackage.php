@@ -141,7 +141,7 @@ class GhbPackage extends AbstractPackage
 
     public function getEditables(): array
     {
-        return array_merge(['package' => static::type()], $this->toArray());
+        return $this->toArray();
     }
 
     public function mergeEditables(array $arr): void
