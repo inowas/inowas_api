@@ -9,8 +9,10 @@ use Inowas\Common\Modflow\Ipakcb;
 use Inowas\Common\Modflow\Options;
 use Inowas\Common\Modflow\Unitnumber;
 
-class GhbPackage implements PackageInterface
+class GhbPackage extends AbstractPackage
 {
+    const TYPE = 'ghb';
+    const DESCRIPTION = 'General-Head Boundary Package';
 
     /** @var string  */
     protected $type = 'ghb';
@@ -30,7 +32,6 @@ class GhbPackage implements PackageInterface
     /** @var  Unitnumber */
     protected $unitnumber;
 
-
     public static function fromDefaults(): GhbPackage
     {
         $ipakcb = Ipakcb::fromInteger(0);
@@ -41,7 +42,6 @@ class GhbPackage implements PackageInterface
 
         return new self($ipakcb, $stressPeriodData, $options, $extension, $unitnumber);
     }
-
 
     /** @noinspection MoreThanThreeArgumentsInspection
      * @param Ipakcb $ipakcb
@@ -123,11 +123,6 @@ class GhbPackage implements PackageInterface
         return $package;
     }
 
-    public function type(): string
-    {
-        return $this->type;
-    }
-
     public function isValid(): bool
     {
         return $this->stressPeriodData->hasData();
@@ -146,7 +141,7 @@ class GhbPackage implements PackageInterface
 
     public function getEditables(): array
     {
-        return $this->toArray();
+        return array_merge(['package' => static::type()], $this->toArray());
     }
 
     public function mergeEditables(array $arr): void

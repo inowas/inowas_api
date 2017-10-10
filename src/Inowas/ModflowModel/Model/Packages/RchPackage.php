@@ -11,11 +11,10 @@ use Inowas\Common\Modflow\Nrchop;
 use Inowas\Common\Modflow\Rech;
 use Inowas\Common\Modflow\Unitnumber;
 
-class RchPackage implements PackageInterface
+class RchPackage extends AbstractPackage
 {
-
-    /** @var string  */
-    protected $type = 'rch';
+    const TYPE = 'rch';
+    const DESCRIPTION = 'Recharge Package';
 
     /** @var  Ipakcb */
     protected $ipakcb;
@@ -139,11 +138,6 @@ class RchPackage implements PackageInterface
         return $package;
     }
 
-    public function type(): string
-    {
-        return $this->type;
-    }
-
     public function isValid(): bool
     {
         return $this->stressPeriodData->hasData();
@@ -163,7 +157,7 @@ class RchPackage implements PackageInterface
 
     public function getEditables(): array
     {
-        return $this->toArray();
+        return array_merge(['package' => static::type()], $this->toArray());
     }
 
     public function mergeEditables(array $arr): void

@@ -30,11 +30,10 @@ use Inowas\Common\Modflow\Unitnumber;
 use Inowas\Common\Modflow\Xul;
 use Inowas\Common\Modflow\Yul;
 
-class DisPackage implements PackageInterface
+class DisPackage extends AbstractPackage
 {
-
-    /** @var string  */
-    protected $type = 'dis';
+    const TYPE = 'dis';
+    const DESCRIPTION = 'Discretization Package';
 
     /** @var  Nlay */
     protected $nlay;
@@ -153,7 +152,6 @@ class DisPackage implements PackageInterface
         $self->startDateTime = $startDateTime;
         return $self;
     }
-
 
     /** @noinspection MoreThanThreeArgumentsInspection
      * @param Nlay $nlay
@@ -448,11 +446,6 @@ class DisPackage implements PackageInterface
         return $package;
     }
 
-    public function type(): string
-    {
-        return $this->type;
-    }
-
     public function nRow(): Nrow
     {
         return $this->nrow;
@@ -528,7 +521,7 @@ class DisPackage implements PackageInterface
 
     public function getEditables(): array
     {
-        return $this->toArray();
+        return array_merge(['package' => static::type()], $this->toArray());
     }
 
     public function mergeEditables(array $arr): void

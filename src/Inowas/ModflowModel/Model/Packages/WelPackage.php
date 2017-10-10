@@ -9,11 +9,10 @@ use Inowas\Common\Modflow\Ipakcb;
 use Inowas\Common\Modflow\Options;
 use Inowas\Common\Modflow\Unitnumber;
 
-class WelPackage implements PackageInterface
+class WelPackage extends AbstractPackage
 {
-
-    /** @var string  */
-    protected $type = 'wel';
+    const TYPE = 'wel';
+    const DESCRIPTION = 'Well Package';
 
     /** @var  Ipakcb */
     protected $ipakcb;
@@ -122,11 +121,6 @@ class WelPackage implements PackageInterface
         return $package;
     }
 
-    public function type(): string
-    {
-        return $this->type;
-    }
-
     public function isValid(): bool
     {
         return $this->stressPeriodData->hasData();
@@ -145,7 +139,7 @@ class WelPackage implements PackageInterface
 
     public function getEditables(): array
     {
-        return $this->toArray();
+        return array_merge(['package' => static::type()], $this->toArray());
     }
 
     public function mergeEditables(array $arr): void

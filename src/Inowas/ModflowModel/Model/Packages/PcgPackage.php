@@ -19,10 +19,10 @@ use Inowas\Common\Modflow\Rclose;
 use Inowas\Common\Modflow\Relax;
 use Inowas\Common\Modflow\Unitnumber;
 
-class PcgPackage implements PackageInterface
+class PcgPackage extends AbstractPackage
 {
-    /** @var string  */
-    protected $type = 'pcg';
+    const TYPE = 'pcg';
+    const DESCRIPTION = 'Preconditioned Conjugate-Gradient Package';
 
     /** @var Mxiter  */
     protected $mxiter;
@@ -191,11 +191,6 @@ class PcgPackage implements PackageInterface
         );
     }
 
-    public function type(): string
-    {
-        return $this->type;
-    }
-
     public function updateMxiter(Mxiter $mxiter): PcgPackage
     {
         $package = self::fromArray($this->toArray());
@@ -322,6 +317,7 @@ class PcgPackage implements PackageInterface
     public function getEditables(): array
     {
         return array(
+            'package' => static::type(),
             'mxiter' => $this->mxiter->toInteger(),
             'iter1' => $this->iter1->toInteger(),
             'npcond' => $this->npcond->toInteger(),

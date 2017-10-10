@@ -9,11 +9,10 @@ use Inowas\Common\Modflow\Ipakcb;
 use Inowas\Common\Modflow\Options;
 use Inowas\Common\Modflow\Unitnumber;
 
-class RivPackage implements PackageInterface
+class RivPackage extends AbstractPackage
 {
-
-    /** @var string  */
-    protected $type = 'riv';
+    const TYPE = 'riv';
+    const DESCRIPTION = 'River Package';
 
     /** @var  Ipakcb */
     protected $ipakcb;
@@ -121,11 +120,6 @@ class RivPackage implements PackageInterface
         return $package;
     }
 
-    public function type(): string
-    {
-        return $this->type;
-    }
-
     public function isValid(): bool
     {
         return $this->stressPeriodData->hasData();
@@ -144,7 +138,7 @@ class RivPackage implements PackageInterface
 
     public function getEditables(): array
     {
-        return $this->toArray();
+        return array_merge(['package' => static::type()], $this->toArray());
     }
 
     public function mergeEditables(array $arr): void
