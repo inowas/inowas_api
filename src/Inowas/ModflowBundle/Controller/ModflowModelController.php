@@ -116,6 +116,47 @@ class ModflowModelController extends InowasRestController
     }
 
     /**
+     * Get activeCells of modflow model by id.
+     *
+     * @ApiDoc(
+     *   resource = true,
+     *   description = "Get details of modflow model by id.",
+     *   statusCodes = {
+     *     200 = "Returned when successful"
+     *   }
+     * )
+     *
+     * @param string $id
+     * @Rest\Get("/modflowmodels/{id}/activecells")
+     * @return JsonResponse
+     * @throws \InvalidArgumentException
+     * @throws \Inowas\ModflowBundle\Exception\AccessDeniedException
+     * @throws \Symfony\Component\DependencyInjection\Exception\ServiceNotFoundException
+     * @throws \Symfony\Component\DependencyInjection\Exception\ServiceCircularReferenceException
+     * @throws NotFoundException
+     */
+    public function getModflowModelActiveCellsAction(string $id): JsonResponse
+    {
+        $this->assertUuidIsValid($id);
+        $modelId = ModflowId::fromString($id);
+        $userId = $this->getUserId();
+
+        if (! $this->get('inowas.modflowmodel.model_finder')->userHasReadAccessToModel($userId, $modelId)) {
+            throw AccessDeniedException::withMessage(
+                sprintf(
+                    'Model not found or user with Id %s does not have access to model with id %s',
+                    $userId->toString(),
+                    $modelId->toString()
+                )
+            );
+        }
+
+        $activeCells = $this->container->get('inowas.modflowmodel.manager')->getAreaActiveCells($modelId);
+
+        return (new JsonResponse())->setData($activeCells->cells2D());
+    }
+
+    /**
      * Get list of boundaries from modflowmodel by id.
      *
      * @ApiDoc(
