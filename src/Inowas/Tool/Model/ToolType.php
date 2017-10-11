@@ -37,7 +37,7 @@ final class ToolType
 
     public function sameAs($value): bool
     {
-        if (! $value instanceof ToolType){
+        if (! $value instanceof self){
             return false;
         }
 
