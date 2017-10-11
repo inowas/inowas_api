@@ -8,11 +8,17 @@ use FOS\UserBundle\Doctrine\UserManager;
 use Inowas\AppBundle\Model\User;
 use Inowas\Common\Id\ModflowId;
 use Inowas\Common\Id\UserId;
+use Inowas\Common\Modflow\Description;
+use Inowas\Common\Modflow\Name;
 use Inowas\Common\Status\Visibility;
 use Inowas\ScenarioAnalysis\Model\Command\CreateScenarioAnalysis;
 use Inowas\ScenarioAnalysis\Model\ScenarioAnalysisDescription;
 use Inowas\ScenarioAnalysis\Model\ScenarioAnalysisId;
 use Inowas\ScenarioAnalysis\Model\ScenarioAnalysisName;
+use Inowas\Tool\Model\Command\CreateToolInstance;
+use Inowas\Tool\Model\ToolData;
+use Inowas\Tool\Model\ToolId;
+use Inowas\Tool\Model\ToolType;
 use Tests\Inowas\ModflowBundle\EventSourcingBaseTest;
 
 class ToolControllerTest extends EventSourcingBaseTest
@@ -64,6 +70,52 @@ class ToolControllerTest extends EventSourcingBaseTest
         }
 
         $this->anotherUser = $anotherUser;
+    }
+
+
+    /**
+     * @test
+     */
+    public function it_adds_a_simple_tool_to_tools_section(): void
+    {
+        $userId = UserId::fromString($this->user->getId()->toString());
+        $apiKey = $this->user->getApiKey();
+        $toolId = ToolId::generate();
+        $toolType = ToolType::fromString('T02');
+        $name = Name::fromString('ToolName');
+        $description = Description::fromString('ToolDescription');
+        $data = ToolData::fromArray([1,3,5, 'test' => '1, 3, 5']);
+
+        $this->commandBus->dispatch(CreateToolInstance::newWithAllParams($userId, $toolId, $toolType, $name, $description, $data));
+
+        $client = static::createClient();
+        $client->request(
+            'GET',
+            '/v2/tools/'.$toolType->toString(),
+            array(),
+            array(),
+            array('HTTP_X-AUTH-TOKEN' => $apiKey)
+        );
+
+        $response = $client->getResponse();
+        $this->assertEquals(200, $response->getStatusCode());
+        $body = json_decode($response->getContent(), true);
+        $this->assertTrue(is_array($body));
+        $this->assertCount(1, $body);
+
+        $client->request(
+            'GET',
+            '/v2/tools/'.$toolType->toString().'/public',
+            array(),
+            array(),
+            array('HTTP_X-AUTH-TOKEN' => $apiKey)
+        );
+
+        $response = $client->getResponse();
+        $this->assertEquals(200, $response->getStatusCode());
+        $body = json_decode($response->getContent(), true);
+        $this->assertTrue(is_array($body));
+        $this->assertCount(1, $body);
     }
 
     /**
