@@ -29,17 +29,17 @@ class UpdateToolInstance extends AbstractJsonSchemaCommand
     public static function newWithAllParams(
         UserId $userId,
         ToolId $id,
-        Name $name,
-        Description $description,
-        ToolData $data
+        ?Name $name = null,
+        ?Description $description = null,
+        ?ToolData $data = null
     ): UpdateToolInstance
     {
         $self = new static(
             [
                 'id' => $id->toString(),
-                'name' => $name->toString(),
-                'description' => $description->toString(),
-                'data' => $data->toArray()
+                'name' => ($name instanceof Name) ? $name->toString() : null,
+                'description' => ($description instanceof Description) ? $description->toString() : null,
+                'data' => ($data instanceof ToolData) ? $data->toArray() : null
             ]
         );
 
@@ -58,18 +58,30 @@ class UpdateToolInstance extends AbstractJsonSchemaCommand
         return ToolId::fromString($this->payload['id']);
     }
 
-    public function name(): Name
+    public function name(): ?Name
     {
+        if (null === $this->payload['name']) {
+            return null;
+        }
+
         return Name::fromString($this->payload['name']);
     }
 
-    public function description(): Description
+    public function description(): ?Description
     {
+        if (null === $this->payload['description']) {
+            return null;
+        }
+
         return Description::fromString($this->payload['description']);
     }
 
-    public function data(): ToolData
+    public function data(): ?ToolData
     {
+        if (null === $this->payload['data']) {
+            return null;
+        }
+
         return ToolData::fromArray($this->payload['data']);
     }
 }

@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Inowas\Tool\Model\Handler;
 
 use Inowas\ModflowBundle\Exception\AccessDeniedException;
+use Inowas\ModflowBundle\Exception\NotFoundException;
 use Inowas\Tool\Model\Command\DeleteToolInstance;
 use Inowas\Tool\Model\ToolInstanceAggregate;
 use Inowas\Tool\Model\ToolInstanceList;
@@ -25,6 +26,12 @@ final class DeleteToolInstanceHandler
         /** @var ToolInstanceAggregate $toolInstance */
         $toolInstance = $this->toolInstanceList->get($command->id());
 
+        if (! $toolInstance) {
+            throw NotFoundException::withMessage(
+                sprintf('ToolInstance with id=%s not found', $command->id()->toString())
+            );
+        }
+
         if (! $toolInstance->userId()->sameValueAs($command->userId())) {
             throw AccessDeniedException::withMessage(
                 sprintf('User with id=%s does not have sufficient access to tool with id=%s',
@@ -33,7 +40,6 @@ final class DeleteToolInstanceHandler
         }
 
         $toolInstance->delete($command->userId());
-
         $this->toolInstanceList->save($toolInstance);
     }
 }

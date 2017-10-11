@@ -4,14 +4,17 @@ declare(strict_types=1);
 
 namespace Inowas\Tool\Model\Handler;
 
+use Inowas\Common\Modflow\Description;
+use Inowas\Common\Modflow\Name;
 use Inowas\ModflowBundle\Exception\AccessDeniedException;
+use Inowas\ModflowBundle\Exception\NotFoundException;
 use Inowas\Tool\Model\Command\UpdateToolInstance;
+use Inowas\Tool\Model\ToolData;
 use Inowas\Tool\Model\ToolInstanceAggregate;
 use Inowas\Tool\Model\ToolInstanceList;
 
 final class UpdateToolInstanceHandler
 {
-
     /** @var  ToolInstanceList */
     private $toolInstanceList;
 
@@ -25,6 +28,12 @@ final class UpdateToolInstanceHandler
         /** @var ToolInstanceAggregate $toolInstance */
         $toolInstance = $this->toolInstanceList->get($command->id());
 
+        if (! $toolInstance) {
+            throw NotFoundException::withMessage(
+                sprintf('ToolInstance with id=%s not found', $command->id()->toString())
+            );
+        }
+
         if (! $toolInstance->userId()->sameValueAs($command->userId())) {
             throw AccessDeniedException::withMessage(
                 sprintf('User with id=%s does not have sufficient access to tool with id=%s',
@@ -32,9 +41,17 @@ final class UpdateToolInstanceHandler
             );
         }
 
-        $toolInstance->updateName($command->userId(), $command->name());
-        $toolInstance->updateDescription($command->userId(), $command->description());
-        $toolInstance->updateData($command->userId(), $command->data());
+        if ($command->name() instanceof Name) {
+            $toolInstance->updateName($command->userId(), $command->name());
+        }
+
+        if ($command->description() instanceof Description) {
+            $toolInstance->updateDescription($command->userId(), $command->description());
+        }
+
+        if ($command->data() instanceof ToolData) {
+            $toolInstance->updateData($command->userId(), $command->data());
+        }
 
         $this->toolInstanceList->save($toolInstance);
     }
