@@ -1,5 +1,9 @@
 services:
     # ToolInstances CommandHandlers
+    inowas.soilmodel.clone_tool_instance.handler:
+        class: Inowas\Tool\Model\Handler\CloneToolInstanceHandler
+        arguments: ['@tool_instance_list']
+
     inowas.soilmodel.create_tool_instance.handler:
         class: Inowas\Tool\Model\Handler\CreateToolInstanceHandler
         arguments: ['@tool_instance_list']

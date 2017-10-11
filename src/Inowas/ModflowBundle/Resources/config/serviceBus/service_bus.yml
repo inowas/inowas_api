@@ -67,6 +67,7 @@ parameters:
                         'Inowas\Soilmodel\Model\Command\UpdateGeologicalLayerProperty': 'inowas.soilmodel.update_geological_layer_property.handler'
 
                         # ToolInstanceAggregate Commands and CommandHandlers
+                        'Inowas\Tool\Model\Command\CloneToolInstance': 'inowas.soilmodel.clone_tool_instance.handler'
                         'Inowas\Tool\Model\Command\CreateToolInstance': 'inowas.soilmodel.create_tool_instance.handler'
                         'Inowas\Tool\Model\Command\DeleteToolInstance': 'inowas.soilmodel.delete_tool_instance.handler'
                         'Inowas\Tool\Model\Command\UpdateToolInstance': 'inowas.soilmodel.update_tool_instance.handler'
@@ -272,6 +273,9 @@ parameters:
                             - 'inowas.tool.tools_projector'
 
                         'Inowas\Tool\Model\Event\ToolInstanceNameWasUpdated':
+                            - 'inowas.tool.tools_projector'
+
+                        'Inowas\Tool\Model\Event\ToolInstanceWasCloned':
                             - 'inowas.tool.tools_projector'
 
                         'Inowas\Tool\Model\Event\ToolInstanceWasCreated':

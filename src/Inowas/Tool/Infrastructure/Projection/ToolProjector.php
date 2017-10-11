@@ -27,6 +27,7 @@ use Inowas\ScenarioAnalysis\Model\Event\ScenarioAnalysisWasDeleted;
 use Inowas\Tool\Model\Event\ToolInstanceDataWasUpdated;
 use Inowas\Tool\Model\Event\ToolInstanceDescriptionWasUpdated;
 use Inowas\Tool\Model\Event\ToolInstanceNameWasUpdated;
+use Inowas\Tool\Model\Event\ToolInstanceWasCloned;
 use Inowas\Tool\Model\Event\ToolInstanceWasCreated;
 use Inowas\Tool\Model\Event\ToolInstanceWasDeleted;
 
@@ -88,6 +89,33 @@ class ToolProjector extends AbstractDoctrineConnectionProjector
             ['name' => $event->name()->toString()],
             ['id' => $event->id()->toString()]
         );
+    }
+
+    public function onToolInstanceWasCloned(ToolInstanceWasCloned $event): void
+    {
+
+        $result = $this->connection->fetchAssoc(
+            sprintf('SELECT * FROM %s WHERE id = :id', Table::TOOL_LIST),
+            ['id' => $event->baseId()->toString()]
+        );
+
+        if (false === $result) {
+            return;
+        }
+
+        $this->connection->insert(Table::TOOL_LIST, array(
+            'id' => $event->id()->toString(),
+            'name' => $result['name'],
+            'description' => $result['description'],
+            'application' => '',
+            'project' => '',
+            'tool' => $result['tool'],
+            'user_id' => $event->userId()->toString(),
+            'user_name' => $this->getUserNameByUserId($event->userId()),
+            'created_at' => date_format($event->createdAt(), DATE_ATOM),
+            'public' => $result['public'],
+            'data' => $result['data']
+        ));
     }
 
     public function onToolInstanceWasCreated(ToolInstanceWasCreated $event): void

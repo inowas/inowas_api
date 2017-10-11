@@ -10,6 +10,7 @@ use Inowas\Common\Modflow\Name;
 use Inowas\Tool\Model\Event\ToolInstanceDataWasUpdated;
 use Inowas\Tool\Model\Event\ToolInstanceDescriptionWasUpdated;
 use Inowas\Tool\Model\Event\ToolInstanceNameWasUpdated;
+use Inowas\Tool\Model\Event\ToolInstanceWasCloned;
 use Inowas\Tool\Model\Event\ToolInstanceWasCreated;
 use Inowas\Tool\Model\Event\ToolInstanceWasDeleted;
 use Prooph\EventSourcing\AggregateChanged;
@@ -76,6 +77,23 @@ class ToolInstanceAggregate extends AggregateRoot
         return $self;
     }
 
+    public function clone(UserId $userId, ToolId $newId): ToolInstanceAggregate
+    {
+        $self = new self();
+        $self->id = $newId;
+        $self->userId = $userId;
+        $self->type = $this->type;
+
+        $self->recordThat(ToolInstanceWasCloned::withParameters(
+            $newId,
+            $this->id,
+            $userId,
+            $this->type
+        ));
+
+        return $self;
+    }
+
     public function updateName(UserId $userId, Name $name): void
     {
         $this->recordThat(ToolInstanceNameWasUpdated::withParameters(
@@ -111,8 +129,14 @@ class ToolInstanceAggregate extends AggregateRoot
         ));
     }
 
-
     protected function whenToolInstanceWasCreated(ToolInstanceWasCreated $event): void
+    {
+        $this->id = $event->id();
+        $this->userId = $event->userId();
+        $this->type = $event->type();
+    }
+
+    protected function whenToolInstanceWasCloned(ToolInstanceWasCloned $event): void
     {
         $this->id = $event->id();
         $this->userId = $event->userId();

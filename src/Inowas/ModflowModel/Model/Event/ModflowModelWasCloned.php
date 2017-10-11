@@ -26,14 +26,13 @@ class ModflowModelWasCloned extends AggregateChanged
     /** @var  bool */
     private $isTool;
 
-    /**
+    /** @noinspection MoreThanThreeArgumentsInspection
      * @param ModflowId $baseModelId
      * @param ModflowId $modflowId
      * @param UserId $userId
      * @param array $boundaries
      * @param bool $isTool
      * @return ModflowModelWasCloned
-     * @internal param $ MoreThanThreeArgumentsInspection
      */
     public static function fromModelAndUserWithParameters(
         ModflowId $baseModelId,
