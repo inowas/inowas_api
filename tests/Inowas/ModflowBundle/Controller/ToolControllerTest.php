@@ -72,7 +72,6 @@ class ToolControllerTest extends EventSourcingBaseTest
         $this->anotherUser = $anotherUser;
     }
 
-
     /**
      * @test
      */
@@ -116,6 +115,21 @@ class ToolControllerTest extends EventSourcingBaseTest
         $body = json_decode($response->getContent(), true);
         $this->assertTrue(is_array($body));
         $this->assertCount(1, $body);
+
+        $client->request(
+            'GET',
+            sprintf('/v2/tools/%s/%s', $toolType->toString(), $toolId->toString()),
+            array(),
+            array(),
+            array('HTTP_X-AUTH-TOKEN' => $apiKey)
+        );
+
+        $response = $client->getResponse();
+        $this->assertEquals(200, $response->getStatusCode());
+        $arr = json_decode($response->getContent(), true);
+        $this->assertTrue(is_array($arr));
+        $this->assertArrayHasKey('id', $arr);
+        $this->assertArrayHasKey('data', $arr);
     }
 
     /**
@@ -301,37 +315,5 @@ class ToolControllerTest extends EventSourcingBaseTest
         $this->assertEquals($username, $saDetails['user_name']);
         $this->assertTrue(array_key_exists('created_at', $saDetails));
         $this->assertTrue(array_key_exists('public', $saDetails));
-    }
-
-    /**
-     * @test
-     */
-    public function it_clones_a_project_with_new_user(): void
-    {
-        $userId = UserId::fromString($this->user->getId()->toString());
-        $modelId = ModflowId::generate();
-        $this->createModelWithOneLayer($userId, $modelId);
-
-        $scenarioAnalysisId = ScenarioAnalysisId::generate();
-        $this->commandBus->dispatch(CreateScenarioAnalysis::byUserWithBaseModelNameAndDescription(
-            $scenarioAnalysisId,
-            $userId,
-            $modelId,
-            ScenarioAnalysisName::fromString('TestName'),
-            ScenarioAnalysisDescription::fromString('TestDescription'),
-            Visibility::public()
-        ));
-
-        $client = static::createClient();
-        $client->request(
-            'POST',
-            sprintf('/v2/tools/%s/clone', $scenarioAnalysisId->toString()),
-            array(),
-            array(),
-            array('HTTP_X-AUTH-TOKEN' => $this->anotherUser->getApiKey())
-        );
-
-        $response = $client->getResponse();
-        $this->assertEquals(302, $response->getStatusCode());
     }
 }
