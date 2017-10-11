@@ -105,7 +105,7 @@ class ToolControllerTest extends EventSourcingBaseTest
 
         $client->request(
             'GET',
-            '/v2/tools/'.$toolType->toString().'/public',
+            '/v2/tools/'.$toolType->toString().'?public=true',
             array(),
             array(),
             array('HTTP_X-AUTH-TOKEN' => $apiKey)
@@ -145,7 +145,6 @@ class ToolControllerTest extends EventSourcingBaseTest
         $this->assertTrue(is_array($body));
         $this->assertCount(1, $body);
         $saDetails = $body[0];
-
 
         $this->assertTrue(array_key_exists('id', $saDetails));
         $this->assertEquals($modelId->toString(), $saDetails['id']);
@@ -274,7 +273,7 @@ class ToolControllerTest extends EventSourcingBaseTest
         $client = static::createClient();
         $client->request(
             'GET',
-            '/v2/tools/T07/public',
+            '/v2/tools/T07?public=true',
             array(),
             array(),
             array('HTTP_X-AUTH-TOKEN' => $apiKey)

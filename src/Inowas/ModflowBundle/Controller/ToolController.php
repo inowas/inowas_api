@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Inowas\ModflowBundle\Controller;
 
 use FOS\RestBundle\Controller\Annotations as Rest;
+use FOS\RestBundle\Request\ParamFetcher;
 use Inowas\ModflowBundle\Exception\AccessDeniedException;
 use Inowas\ModflowBundle\Exception\InvalidArgumentException;
 use Inowas\ModflowBundle\Exception\NotFoundException;
@@ -54,47 +55,25 @@ class ToolController extends InowasRestController
      * )
      *
      * @Rest\Get("/tools/{type}")
+     * @Rest\QueryParam(name="public", default=false, description="List all public toolInstances.")
      * @param string $type
+     * @param ParamFetcher $paramFetcher
      * @return JsonResponse
      * @throws \Inowas\ModflowBundle\Exception\InvalidArgumentException
      */
-    public function getMyToolsByTypeAction(string $type): JsonResponse
+    public function getToolsByTypeAction(string $type, ParamFetcher $paramFetcher): JsonResponse
     {
         $userId = $this->getUserId();
+        $toolType = ToolType::fromString($type);
+        $showPrivateTools = !$paramFetcher->get('public');
 
         if (! ToolType::isValid($type)) {
             throw InvalidArgumentException::withMessage(sprintf('The ToolType %s is not valid. Available types are: %s', $type, implode(', ', ToolType::$availableTypes)));
         }
 
-        $toolType = ToolType::fromString($type);
-        $result = $this->get('inowas.tool.tools_finder')->findByUserIdAndType($userId, $toolType);
-
-        return new JsonResponse($result);
-    }
-
-    /**
-     * Get list of all public scenarioAnalysis-projects.
-     *
-     * @ApiDoc(
-     *   resource = true,
-     *   description = "Get list of all public scenarioAnalysis-projects.",
-     *   statusCodes = {
-     *     200 = "Returned when successful"
-     *   }
-     * )
-     *
-     * @Rest\Get("/tools/{type}/public")
-     * @param string $type
-     * @return JsonResponse
-     * @throws \Inowas\ModflowBundle\Exception\InvalidArgumentException
-     */
-    public function getPublicToolsAction(string $type): JsonResponse
-    {
-        $this->getUserId();
-        $toolType = ToolType::fromString($type);
-
-        if (! ToolType::isValid($type)) {
-            throw InvalidArgumentException::withMessage(sprintf('The ToolType %s is not valid. Available types are: %s', $type, implode(', ', ToolType::$availableTypes)));
+        if ($showPrivateTools) {
+            $result = $this->get('inowas.tool.tools_finder')->findByUserIdAndType($userId, $toolType);
+            return new JsonResponse($result);
         }
 
         $result = $this->get('inowas.tool.tools_finder')->findPublicByType($toolType);
