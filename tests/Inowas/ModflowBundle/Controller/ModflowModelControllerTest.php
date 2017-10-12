@@ -14,6 +14,7 @@ use Inowas\ModflowModel\Model\Command\CalculateModflowModel;
 use League\JsonGuard\Validator;
 use League\JsonReference\Dereferencer;
 use Ramsey\Uuid\Uuid;
+use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Tests\Inowas\ModflowBundle\EventSourcingBaseTest;
 
 class ModflowModelControllerTest extends EventSourcingBaseTest
@@ -377,5 +378,39 @@ class ModflowModelControllerTest extends EventSourcingBaseTest
         $this->assertArrayHasKey('damp', $arr);
         $this->assertArrayHasKey('dampt', $arr);
         $this->assertArrayHasKey('ihcofadd', $arr);
+    }
+
+    /**
+     * @test
+     */
+    public function it_uploads_a_raster_file(): void
+    {
+        $userId = UserId::fromString($this->user->getId()->toString());
+        $apiKey = $this->user->getApiKey();
+
+        $modelId = ModflowId::generate();
+        $this->createModelWithOneLayer($userId, $modelId);
+
+        $file = new UploadedFile(
+            __DIR__.'/testfiles/inowas_logo.png',
+            'inowas_logo.png'
+        );
+
+        $client = static::createClient();
+        $client->request(
+            'POST',
+            sprintf('/v2/modflowmodels/%s/upload', $modelId->toString()),
+            array(
+                'type' => 'raster',
+                'layer' => 'tl1',
+                'property' => 'top'
+            ),
+            array('file' => $file),
+            array('HTTP_X-AUTH-TOKEN' => $apiKey)
+        );
+
+        $response = $client->getResponse();
+        $this->assertEquals(200, $response->getStatusCode());
+        $json = $response->getContent();
     }
 }

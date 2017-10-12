@@ -20,6 +20,7 @@ parameters:
                         'Inowas\ModflowModel\Model\Command\CloneModflowModel': 'inowas.modflowmodel.clone_modflow_model_handler'
                         'Inowas\ModflowModel\Model\Command\CreateModflowModel': 'inowas.modflowmodel.create_modflow_model_handler'
                         'Inowas\ModflowModel\Model\Command\DeleteModflowModel': 'inowas.modflowmodel.delete_modflow_model_handler'
+                        'Inowas\ModflowModel\Model\Command\LoadLayerDataFromRasterfile': 'inowas.modflowmodel.load_layer_data_from_rasterfile_handler'
                         'Inowas\ModflowModel\Model\Command\RemoveBoundary': 'inowas.modflowmodel.remove_boundary_handler'
                         'Inowas\ModflowModel\Model\Command\RemoveLayer': 'inowas.modflowmodel.remove_layer_handler'
                         'Inowas\ModflowModel\Model\Command\RequestModflowModelCalculation': 'inowas.modflowmodel.request_modflow_model_calculation_handler'
