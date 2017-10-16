@@ -275,6 +275,9 @@ parameters:
                         'Inowas\Tool\Model\Event\ToolInstanceNameWasUpdated':
                             - 'inowas.tool.tools_projector'
 
+                        'Inowas\Tool\Model\Event\ToolInstanceVisibilityWasChanged':
+                            - 'inowas.tool.tools_projector'
+
                         'Inowas\Tool\Model\Event\ToolInstanceWasCloned':
                             - 'inowas.tool.tools_projector'
 

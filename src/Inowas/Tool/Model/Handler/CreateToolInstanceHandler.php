@@ -30,6 +30,7 @@ final class CreateToolInstanceHandler
         $toolInstance->updateName($command->userId(), $command->name());
         $toolInstance->updateDescription($command->userId(), $command->description());
         $toolInstance->updateData($command->userId(), $command->data());
+        $toolInstance->changeVisibility($command->userId(), $command->visibility());
 
         $this->toolInstanceList->save($toolInstance);
     }

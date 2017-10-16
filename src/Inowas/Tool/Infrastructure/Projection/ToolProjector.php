@@ -27,6 +27,7 @@ use Inowas\ScenarioAnalysis\Model\Event\ScenarioAnalysisWasDeleted;
 use Inowas\Tool\Model\Event\ToolInstanceDataWasUpdated;
 use Inowas\Tool\Model\Event\ToolInstanceDescriptionWasUpdated;
 use Inowas\Tool\Model\Event\ToolInstanceNameWasUpdated;
+use Inowas\Tool\Model\Event\ToolInstanceVisibilityWasChanged;
 use Inowas\Tool\Model\Event\ToolInstanceWasCloned;
 use Inowas\Tool\Model\Event\ToolInstanceWasCreated;
 use Inowas\Tool\Model\Event\ToolInstanceWasDeleted;
@@ -87,6 +88,14 @@ class ToolProjector extends AbstractDoctrineConnectionProjector
     {
         $this->connection->update(Table::TOOL_LIST,
             ['name' => $event->name()->toString()],
+            ['id' => $event->id()->toString()]
+        );
+    }
+
+    public function onToolInstanceVisibilityWasChanged(ToolInstanceVisibilityWasChanged $event): void
+    {
+        $this->connection->update(Table::TOOL_LIST,
+            ['public' => $event->visibility()->isPublic() ? 1 : 0],
             ['id' => $event->id()->toString()]
         );
     }

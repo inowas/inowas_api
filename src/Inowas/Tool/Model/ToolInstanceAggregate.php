@@ -7,9 +7,11 @@ namespace Inowas\Tool\Model;
 use Inowas\Common\Id\UserId;
 use Inowas\Common\Modflow\Description;
 use Inowas\Common\Modflow\Name;
+use Inowas\Common\Status\Visibility;
 use Inowas\Tool\Model\Event\ToolInstanceDataWasUpdated;
 use Inowas\Tool\Model\Event\ToolInstanceDescriptionWasUpdated;
 use Inowas\Tool\Model\Event\ToolInstanceNameWasUpdated;
+use Inowas\Tool\Model\Event\ToolInstanceVisibilityWasChanged;
 use Inowas\Tool\Model\Event\ToolInstanceWasCloned;
 use Inowas\Tool\Model\Event\ToolInstanceWasCreated;
 use Inowas\Tool\Model\Event\ToolInstanceWasDeleted;
@@ -121,6 +123,15 @@ class ToolInstanceAggregate extends AggregateRoot
         ));
     }
 
+    public function changeVisibility(UserId $userId, Visibility $visibility): void
+    {
+        $this->recordThat(ToolInstanceVisibilityWasChanged::withVisibility(
+            $userId,
+            $this->id,
+            $visibility
+        ));
+    }
+
     public function delete(UserId $userId): void
     {
         $this->recordThat(ToolInstanceWasDeleted::withParameters(
@@ -153,6 +164,9 @@ class ToolInstanceAggregate extends AggregateRoot
     {}
 
     protected function whenToolInstanceWasDeleted(ToolInstanceWasDeleted $event): void
+    {}
+
+    protected function whenToolInstanceVisibilityWasChanged(ToolInstanceVisibilityWasChanged $event): void
     {}
 
     protected function aggregateId(): string

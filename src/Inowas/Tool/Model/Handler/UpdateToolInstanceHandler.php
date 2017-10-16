@@ -53,6 +53,10 @@ final class UpdateToolInstanceHandler
             $toolInstance->updateData($command->userId(), $command->data());
         }
 
+        if  ($command->visibility()) {
+            $toolInstance->changeVisibility($command->userId(), $command->visibility());
+        }
+
         $this->toolInstanceList->save($toolInstance);
     }
 }

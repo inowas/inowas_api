@@ -15,11 +15,15 @@
         "description": {
             "type": "string"
         },
-        "data": {}
+        "data": {},
+        "public": {
+            "type": "boolean"
+        }
     },
     "required": [
         "id",
         "name",
-        "description"
+        "description",
+        "public"
     ]
 }

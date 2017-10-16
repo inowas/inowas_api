@@ -87,6 +87,7 @@ class ToolFinder
         }
 
         $result['data'] = json_decode($result['data'], true);
+        $result['public'] = (bool)$result['public'];
         return $result;
     }
 
