@@ -27,7 +27,9 @@ use Inowas\ScenarioAnalysis\Model\Command\CreateScenarioAnalysis;
 use Inowas\ScenarioAnalysis\Model\Command\DeleteScenario;
 use Inowas\ScenarioAnalysis\Model\Command\DeleteScenarioAnalysis;
 use Inowas\ScenarioAnalysis\Model\Command\UpdateScenarioAnalysis;
+use Inowas\Tool\Model\Command\CloneToolInstance;
 use Inowas\Tool\Model\Command\CreateToolInstance;
+use Inowas\Tool\Model\Command\DeleteToolInstance;
 use Inowas\Tool\Model\Command\UpdateToolInstance;
 use Nelmio\ApiDocBundle\Annotation\ApiDoc;
 use Prooph\Common\Messaging\Message;
@@ -49,6 +51,8 @@ class MessageBoxController extends InowasRestController
         'createScenarioAnalysis' => CreateScenarioAnalysis::class,
         'createScenario' => CreateScenario::class,
         'createToolInstance' => CreateToolInstance::class,
+        'deleteToolInstance' => DeleteToolInstance::class,
+        'cloneToolInstance' => CloneToolInstance::class,
         'deleteModflowModel' => DeleteModflowModel::class,
         'deleteScenario' => DeleteScenario::class,
         'deleteScenarioAnalysis' => DeleteScenarioAnalysis::class,
