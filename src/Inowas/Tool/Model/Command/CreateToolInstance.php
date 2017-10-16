@@ -8,6 +8,7 @@ use Inowas\Common\Command\AbstractJsonSchemaCommand;
 use Inowas\Common\Id\UserId;
 use Inowas\Common\Modflow\Description;
 use Inowas\Common\Modflow\Name;
+use Inowas\Common\Status\Visibility;
 use Inowas\Tool\Model\ToolData;
 use Inowas\Tool\Model\ToolId;
 use Inowas\Tool\Model\ToolType;
@@ -25,6 +26,7 @@ class CreateToolInstance extends AbstractJsonSchemaCommand
      * @param ToolType $toolType
      * @param Name $name
      * @param Description $description
+     * @param Visibility $visibility
      * @param ToolData $data
      * @return CreateToolInstance
      */
@@ -34,7 +36,8 @@ class CreateToolInstance extends AbstractJsonSchemaCommand
         ToolType $toolType,
         Name $name,
         Description $description,
-        ToolData $data
+        ToolData $data,
+        Visibility $visibility
     ): CreateToolInstance
     {
         $self = new static(
@@ -43,7 +46,8 @@ class CreateToolInstance extends AbstractJsonSchemaCommand
                 'name' => $name->toString(),
                 'description' => $description->toString(),
                 'type' => $toolType->toString(),
-                'data' => $data->toArray()
+                'data' => $data->toArray(),
+                'public' => $visibility->isPublic()
             ]
         );
 
@@ -80,5 +84,10 @@ class CreateToolInstance extends AbstractJsonSchemaCommand
     public function data(): ToolData
     {
         return ToolData::fromArray($this->payload['data']);
+    }
+
+    public function visibility(): Visibility
+    {
+        return Visibility::fromBool($this->payload['public']);
     }
 }

@@ -7,6 +7,7 @@ namespace Tests\Inowas\ModflowBundle\Functional;
 use Inowas\Common\Modflow\Description;
 use Inowas\Common\Modflow\Name;
 use Inowas\Common\Id\UserId;
+use Inowas\Common\Status\Visibility;
 use Inowas\Tool\Model\Command\CloneToolInstance;
 use Inowas\Tool\Model\Command\CreateToolInstance;
 use Inowas\Tool\Model\Command\DeleteToolInstance;
@@ -98,12 +99,14 @@ class ToolInstanceEventSourcingTest extends EventSourcingBaseTest
         $name = Name::fromString('ToolName');
         $description = Description::fromString('ToolDescription');
         $data = ToolData::fromArray([1,3,5, 'test' => '1, 3, 5']);
-        $this->commandBus->dispatch(CreateToolInstance::newWithAllParams($ownerId, $toolId, $toolType, $name, $description, $data));
+        $visibility = Visibility::fromBool(false);
+        $this->commandBus->dispatch(CreateToolInstance::newWithAllParams($ownerId, $toolId, $toolType, $name, $description, $data, $visibility));
 
         $name = Name::fromString('UpdatedToolName');
         $description = Description::fromString('UpdatedToolDescription');
         $data = ToolData::fromArray([1,3,5, 'updatedTest' => '1, 3, 5']);
-        $this->commandBus->dispatch(UpdateToolInstance::newWithAllParams($ownerId, $toolId, $name, $description, $data));
+        $visibility = Visibility::fromBool(true);
+        $this->commandBus->dispatch(UpdateToolInstance::newWithAllParams($ownerId, $toolId, $name, $description, $data, $visibility));
 
         $tool = $this->container->get('inowas.tool.tools_finder')->findById($toolId);
         $this->assertNotNull($tool);
