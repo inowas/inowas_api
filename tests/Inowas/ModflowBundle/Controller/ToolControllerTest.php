@@ -84,8 +84,9 @@ class ToolControllerTest extends EventSourcingBaseTest
         $name = Name::fromString('ToolName');
         $description = Description::fromString('ToolDescription');
         $data = ToolData::fromArray([1,3,5, 'test' => '1, 3, 5']);
+        $visibility = Visibility::fromBool(true);
 
-        $this->commandBus->dispatch(CreateToolInstance::newWithAllParams($userId, $toolId, $toolType, $name, $description, $data));
+        $this->commandBus->dispatch(CreateToolInstance::newWithAllParams($userId, $toolId, $toolType, $name, $description, $data, $visibility));
 
         $client = static::createClient();
         $client->request(
@@ -130,6 +131,7 @@ class ToolControllerTest extends EventSourcingBaseTest
         $this->assertTrue(is_array($arr));
         $this->assertArrayHasKey('id', $arr);
         $this->assertArrayHasKey('data', $arr);
+        $this->assertArrayHasKey('public', $arr);
     }
 
     /**

@@ -4,6 +4,7 @@ namespace Inowas\ModflowModel\Infrastructure\ProcessManager;
 
 use Inowas\Common\Modflow\Description;
 use Inowas\Common\Modflow\Name;
+use Inowas\Common\Status\Visibility;
 use Inowas\ModflowModel\Model\Event\DescriptionWasChanged;
 use Inowas\ModflowModel\Model\Event\ModflowModelWasCloned;
 use Inowas\ModflowModel\Model\Event\ModflowModelWasCreated;
@@ -35,7 +36,8 @@ class ModflowModelProcessManager
             ToolType::fromString(ToolType::MODEL_SETUP),
             Name::fromString(''),
             Description::fromString(''),
-            ToolData::create()
+            ToolData::create(),
+            Visibility::fromBool(false)
         ));
     }
 
