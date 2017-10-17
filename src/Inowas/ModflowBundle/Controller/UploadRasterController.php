@@ -9,6 +9,8 @@ use FOS\RestBundle\Request\ParamFetcher;
 use Inowas\ModflowModel\Model\AMQP\GeoProcessingRequest;
 use Inowas\ModflowModel\Model\AMQP\GeoProcessingResponse;
 use Nelmio\ApiDocBundle\Annotation\ApiDoc;
+use Symfony\Component\Filesystem\Filesystem;
+use Symfony\Component\HttpFoundation\File\File;
 use Symfony\Component\HttpFoundation\JsonResponse;
 
 class UploadRasterController extends InowasRestController
@@ -26,19 +28,29 @@ class UploadRasterController extends InowasRestController
      *
      * @param ParamFetcher $paramFetcher
      * @return JsonResponse
+     * @throws \Symfony\Component\HttpFoundation\File\Exception\FileNotFoundException
+     * @throws \Symfony\Component\Filesystem\Exception\IOException
+     * @throws \Symfony\Component\Filesystem\Exception\FileNotFoundException
      * @Rest\Post("/rasterfile")
      * @Rest\FileParam(name="file", default=false, nullable=true)
      */
     public function uploadRasterfileAction(ParamFetcher $paramFetcher): JsonResponse
     {
+        /** @var File $uploadedFile */
         $uploadedFile = $paramFetcher->get('file');
-        $file = $this->get('inowas.modflowmodel.raster_files_persister')->save($uploadedFile);
+
+        $fs = new Filesystem();
+        $copyOfFilePath = sys_get_temp_dir().'/'.uniqid('uploaded_file', true);
+        $fs->copy($uploadedFile->getRealPath(), $copyOfFilePath);
+        $copyOfFile = new File($copyOfFilePath);
+
+        $rasterFile = $this->get('inowas.modflowmodel.raster_files_persister')->save($copyOfFile);
 
         /** @var GeoProcessingResponse $response */
         $response = $this->get('inowas.modflowmodel.amqp_geo_processing')->sendRequest(
             GeoProcessingRequest::withMethodAndParameters(
                 GeoProcessingRequest::METHOD_EXTRACT_RASTER_DATA,
-                ['file' => $file->getFilename()]
+                ['file' => $rasterFile->getFilename()]
             )
         );
 
