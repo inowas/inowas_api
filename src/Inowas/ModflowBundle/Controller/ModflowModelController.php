@@ -490,7 +490,6 @@ class ModflowModelController extends InowasRestController
     {
         $this->assertUuidIsValid($id);
         $modelId = ModflowId::fromString($id);
-
         $userId = $this->getUserId();
 
         if (! $this->get('inowas.modflowmodel.model_finder')->userHasReadAccessToModel($userId, $modelId)) {
