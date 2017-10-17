@@ -32,3 +32,8 @@ rest_scenario_analysis_api:
     type: rest
     resource: '@InowasModflowBundle/Controller/ScenarioAnalysisController.php'
     prefix:    /v2
+
+rest_upload_raster_api:
+    type: rest
+    resource: '@InowasModflowBundle/Controller/UploadRasterController.php'
+    prefix:    /v2

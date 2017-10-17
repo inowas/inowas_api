@@ -5,10 +5,8 @@ declare(strict_types=1);
 namespace Inowas\ModflowBundle\Controller;
 
 use FOS\RestBundle\Controller\Annotations as Rest;
-use FOS\RestBundle\Request\ParamFetcher;
 use Inowas\Common\Calculation\CalculationState;
 use Inowas\Common\Calculation\CalculationStateQuery;
-use Inowas\Common\FileSystem\UploadedFileType;
 use Inowas\Common\Id\BoundaryId;
 use Inowas\Common\Id\CalculationId;
 use Inowas\Common\Id\ModflowId;
@@ -16,14 +14,10 @@ use Inowas\Common\Modflow\ModflowModel;
 use Inowas\Common\Modflow\PackageName;
 use Inowas\Common\Modflow\Results;
 use Inowas\Common\Soilmodel\LayerId;
-use Inowas\Common\Soilmodel\LayerProperty;
 use Inowas\Common\Soilmodel\SoilmodelQuery;
 use Inowas\ModflowBundle\Exception\AccessDeniedException;
-use Inowas\ModflowBundle\Exception\InvalidArgumentException;
 use Inowas\ModflowBundle\Exception\NotFoundException;
-use Inowas\ModflowModel\Model\Command\LoadLayerDataFromRasterfile;
 use Nelmio\ApiDocBundle\Annotation\ApiDoc;
-use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpFoundation\JsonResponse;
 
 /** @noinspection LongInheritanceChainInspection */
@@ -532,56 +526,5 @@ class ModflowModelController extends InowasRestController
         );
 
         return new JsonResponse($query);
-    }
-
-    /**
-     * Upload file.
-     *
-     * @ApiDoc(
-     *   resource = true,
-     *   description = "Upload file for specific modflowmodel",
-     *   statusCodes = {
-     *     200 = "Returned when successful"
-     *   }
-     * )
-     *
-     * @param string $id
-     * @param ParamFetcher $paramFetcher
-     * @return JsonResponse
-     * @throws \Inowas\ModflowBundle\Exception\InvalidArgumentException
-     * @throws \Symfony\Component\HttpFoundation\File\Exception\FileNotFoundException
-     * @throws \Symfony\Component\HttpFoundation\File\Exception\FileException
-     * @throws \Prooph\ServiceBus\Exception\CommandDispatchException
-     * @throws \Inowas\ModflowBundle\Exception\AccessDeniedException
-     * @Rest\Post("/modflowmodels/{id}/upload")
-     * @Rest\FileParam(name="file", default=false, nullable=true)
-     * @Rest\RequestParam(name="type", default=false, description="Specify the uploaded-file-type")
-     * @Rest\RequestParam(name="layer", default=false, description="Specify the the layer with layerId")
-     * @Rest\RequestParam(name="property", default=false, description="Specify the layerProperty")
-     */
-    public function uploadModflowModelFileAction(string $id, ParamFetcher $paramFetcher): JsonResponse
-    {
-        $this->assertUuidIsValid($id);
-        $modelId = ModflowId::fromString($id);
-        $userId = $this->getUserId();
-
-
-        $fileType = UploadedFileType::fromString($paramFetcher->get('type'));
-
-        if ($fileType->toString() === 'raster') {
-            $layerId = LayerId::fromString($paramFetcher->get('layer'));
-            $layerProperty = LayerProperty::fromString($paramFetcher->get('property'));
-            $file = new UploadedFile($paramFetcher->get('file'), 'file');
-
-            $this->get('prooph_service_bus.modflow_command_bus')->dispatch(LoadLayerDataFromRasterfile::fromParams(
-                $userId, $modelId, $layerId, $layerProperty, $file
-            ));
-
-            return new JsonResponse('', 202);
-        }
-
-        throw InvalidArgumentException::withMessage(
-            sprintf('The given filetype %s is not supported', $fileType->toString())
-        );
     }
 }

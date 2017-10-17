@@ -14,6 +14,7 @@ use Inowas\ModflowModel\Model\Command\CalculateModflowModel;
 use League\JsonGuard\Validator;
 use League\JsonReference\Dereferencer;
 use Ramsey\Uuid\Uuid;
+use Symfony\Component\HttpFoundation\File\File;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Tests\Inowas\ModflowBundle\EventSourcingBaseTest;
 
@@ -382,6 +383,7 @@ class ModflowModelControllerTest extends EventSourcingBaseTest
 
     /**
      * @test
+     * @group messaging
      */
     public function it_uploads_a_raster_file(): void
     {
@@ -396,21 +398,20 @@ class ModflowModelControllerTest extends EventSourcingBaseTest
             'inowas_logo.png'
         );
 
+        $md5 = md5_file($file->getRealPath());
+
         $client = static::createClient();
         $client->request(
             'POST',
-            sprintf('/v2/modflowmodels/%s/upload', $modelId->toString()),
-            array(
-                'type' => 'raster',
-                'layer' => 'tl1',
-                'property' => 'top'
-            ),
+            '/v2/rasterfile',
+            array(),
             array('file' => $file),
             array('HTTP_X-AUTH-TOKEN' => $apiKey)
         );
 
         $response = $client->getResponse();
-        $this->assertEquals(200, $response->getStatusCode());
-        $json = $response->getContent();
+        $this->assertEquals(202, $response->getStatusCode());
+        $this->assertInstanceOf(File::class, $this->container->get('inowas.modflowmodel.raster_files_persister')->load($md5));
+        $this->container->get('inowas.modflowmodel.raster_files_persister')->clear();
     }
 }

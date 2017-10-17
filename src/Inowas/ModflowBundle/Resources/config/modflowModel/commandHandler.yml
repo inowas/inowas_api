@@ -67,11 +67,6 @@ services:
         arguments:
           - '@modflow_model_list'
 
-    inowas.modflowmodel.load_layer_data_from_rasterfile_handler:
-        class: Inowas\ModflowModel\Model\Handler\LoadLayerDataFromRasterfileHandler
-        arguments:
-          - '@modflow_model_list'
-
     inowas.modflowmodel.remove_boundary_handler:
         class: Inowas\ModflowModel\Model\Handler\RemoveBoundaryHandler
         arguments:
