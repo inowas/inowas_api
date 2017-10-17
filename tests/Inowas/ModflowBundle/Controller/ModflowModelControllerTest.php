@@ -383,7 +383,7 @@ class ModflowModelControllerTest extends EventSourcingBaseTest
 
     /**
      * @test
-     * @group messaging
+     * @group messaging-integration-tests
      */
     public function it_uploads_a_raster_file(): void
     {
