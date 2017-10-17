@@ -26,7 +26,7 @@ class RasterFilesPersister
         }
     }
 
-    public function load(string $hash): File
+    public function load(string $hash): ?File
     {
         $finder = new Finder();
         $finder->files()->in($this->rasterDataFolder)->name($hash);
