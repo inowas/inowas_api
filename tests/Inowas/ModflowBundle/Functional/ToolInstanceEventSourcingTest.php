@@ -30,8 +30,9 @@ class ToolInstanceEventSourcingTest extends EventSourcingBaseTest
         $name = Name::fromString('ToolName');
         $description = Description::fromString('ToolDescription');
         $data = ToolData::fromArray([1,3,5, 'test' => '1, 3, 5']);
+        $visibility = Visibility::fromBool(true);
 
-        $this->commandBus->dispatch(CreateToolInstance::newWithAllParams($ownerId, $toolId, $toolType, $name, $description, $data));
+        $this->commandBus->dispatch(CreateToolInstance::newWithAllParams($ownerId, $toolId, $toolType, $name, $description, $data, $visibility));
 
         $tool = $this->container->get('inowas.tool.tools_finder')->findById($toolId);
         $this->assertNotNull($tool);
@@ -76,7 +77,8 @@ class ToolInstanceEventSourcingTest extends EventSourcingBaseTest
         $name = Name::fromString('ToolName');
         $description = Description::fromString('ToolDescription');
         $data = ToolData::fromArray([1,3,5, 'test' => '1, 3, 5']);
-        $this->commandBus->dispatch(CreateToolInstance::newWithAllParams($ownerId, $toolId, $toolType, $name, $description, $data));
+        $visibility = Visibility::fromBool(true);
+        $this->commandBus->dispatch(CreateToolInstance::newWithAllParams($ownerId, $toolId, $toolType, $name, $description, $data, $visibility));
 
         $tool = $this->container->get('inowas.tool.tools_finder')->findById($toolId);
         $this->assertNotNull($tool);
@@ -151,7 +153,8 @@ class ToolInstanceEventSourcingTest extends EventSourcingBaseTest
         $name = Name::fromString('ToolName');
         $description = Description::fromString('ToolDescription');
         $data = ToolData::fromArray([1,3,5, 'test' => '1, 3, 5']);
-        $this->commandBus->dispatch(CreateToolInstance::newWithAllParams($ownerId, $toolId, $toolType, $name, $description, $data));
+        $visibility = Visibility::fromBool(true);
+        $this->commandBus->dispatch(CreateToolInstance::newWithAllParams($ownerId, $toolId, $toolType, $name, $description, $data, $visibility));
 
         $tool = $this->container->get('inowas.tool.tools_finder')->findById($toolId);
         $this->assertNotNull($tool);
