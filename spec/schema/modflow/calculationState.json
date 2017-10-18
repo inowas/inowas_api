@@ -13,7 +13,6 @@
             "type": "string"
         }
     },
-    "additionalProperties": false,
     "required": [
         "calculation_id",
         "state",

@@ -29,30 +29,21 @@ class RasterfileController extends InowasRestController
      * )
      *
      * @param ParamFetcher $paramFetcher
-     * @return Response
+     * @return JsonResponse
      * @throws \InvalidArgumentException
      * @Rest\Post("/rasterfile")
      * @Rest\FileParam(name="file", default=false, nullable=true)
      */
-    public function uploadRasterfileAction(ParamFetcher $paramFetcher): Response
+    public function uploadRasterfileAction(ParamFetcher $paramFetcher): JsonResponse
     {
         /** @var File $uploadedFile */
         $uploadedFile = $paramFetcher->get('file');
         $rasterFile = $this->get('inowas.modflowmodel.raster_files_persister')->save($uploadedFile);
 
-        /** @var GeoProcessingResponse $response */
-        $response = $this->get('inowas.modflowmodel.amqp_geo_processing')->sendRequest(
-            GeoProcessingRequest::withMethodAndParameters(
-                GeoProcessingRequest::METHOD_EXTRACT_RASTER_DATA,
-                ['file' => $rasterFile->getFilename()]
-            )
-        );
-
-        if (! $response->isValid()) {
-            return new JsonResponse($response->body(), $response->statusCode()->toInt());
-        }
-
-        return new RedirectResponse( $this->generateUrl('get_rasterfile_data', ['hash' => $rasterFile->getFilename()]), 302);
+        return new JsonResponse( [
+            'hash' => $rasterFile->getFilename(),
+            'url' => $this->generateUrl('get_rasterfile_data', ['hash' => $rasterFile->getFilename()])
+        ]);
     }
 
     /**
@@ -67,11 +58,15 @@ class RasterfileController extends InowasRestController
      * )
      *
      * @param string $hash
+     * @param ParamFetcher $paramFetcher
      * @return Response
      * @throws \Inowas\ModflowBundle\Exception\NotFoundException
+     * @Rest\QueryParam(name="width", default=false, description="Width (optional)")
+     * @Rest\QueryParam(name="height", default=false, description="Height (optional)")
+     * @Rest\QueryParam(name="method", default="nearest", description="Interpolation Method (optional)")
      * @Rest\Get("/rasterfile/{hash}")
      */
-    public function getRasterfileDataAction(string $hash): Response
+    public function getRasterfileDataAction(string $hash, ParamFetcher $paramFetcher): Response
     {
         $rasterFile = $this->get('inowas.modflowmodel.raster_files_persister')->load($hash);
 
@@ -82,8 +77,12 @@ class RasterfileController extends InowasRestController
         /** @var GeoProcessingResponse $response */
         $response = $this->get('inowas.modflowmodel.amqp_geo_processing')->sendRequest(
             GeoProcessingRequest::withMethodAndParameters(
-                GeoProcessingRequest::METHOD_EXTRACT_RASTER_DATA,
-                ['file' => $rasterFile->getFilename()]
+                GeoProcessingRequest::METHOD_EXTRACT_RASTER_DATA, [
+                    'file' => $rasterFile->getFilename(),
+                    'width' => $paramFetcher->get('width'),
+                    'height' => $paramFetcher->get('height'),
+                    'method' => $paramFetcher->get('method'),
+                ]
             )
         );
 

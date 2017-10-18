@@ -12,7 +12,7 @@ use Symfony\Component\HttpFoundation\File\File;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Tests\Inowas\ModflowBundle\EventSourcingBaseTest;
 
-class RasterControllerTest extends EventSourcingBaseTest
+class RasterfileControllerTest extends EventSourcingBaseTest
 {
     /** @var UserManager */
     protected $userManager;
@@ -73,7 +73,7 @@ class RasterControllerTest extends EventSourcingBaseTest
         );
 
         $response = $client->getResponse();
-        $this->assertEquals(302, $response->getStatusCode());
+        $this->assertEquals(200, $response->getStatusCode());
         $this->assertInstanceOf(File::class, $this->container->get('inowas.modflowmodel.raster_files_persister')->load($md5));
         $this->container->get('inowas.modflowmodel.raster_files_persister')->clear();
     }
@@ -108,13 +108,21 @@ class RasterControllerTest extends EventSourcingBaseTest
         $this->assertInstanceOf(File::class, $this->container->get('inowas.modflowmodel.raster_files_persister')->load($md5));
 
         $response = $client->getResponse();
-        $this->assertEquals(302, $response->getStatusCode());
-        $this->assertTrue($response->isRedirect());
-
-        $client->followRedirect();
-        $response = $client->getResponse();
         $this->assertEquals(200, $response->getStatusCode());
+        $body = json_decode($response->getContent(), true);
+        $this->assertEquals($md5, $body['hash']);
+        $this->assertEquals(sprintf('/v2/rasterfile/%s', $md5), $body['url']);
 
+        $client = static::createClient();
+        $client->request(
+            'GET',
+            $body['url'],
+            array(),
+            array(),
+            array('HTTP_X-AUTH-TOKEN' => $apiKey)
+        );
+
+        $response = $client->getResponse();
         $content = $response->getContent();
         $this->assertJson($content);
         $arr = json_decode($content, true);
@@ -141,6 +149,31 @@ class RasterControllerTest extends EventSourcingBaseTest
         $this->assertCount(3, $data);
         $this->assertCount(775, $data[0]);
         $this->assertCount(500, $data[0][0]);
+
+        $client = static::createClient();
+        $client->request(
+            'GET',
+            $body['url'],
+            [
+                'width' => 100,
+                'height' => 200,
+                'method' => 'nearest'
+            ],
+            array(),
+            array('HTTP_X-AUTH-TOKEN' => $apiKey)
+        );
+
+        $response = $client->getResponse();
+        $content = $response->getContent();
+
+        $this->assertJson($content);
+        $arr = json_decode($content, true);
+
+        $this->assertArrayHasKey('data', $arr);
+        $data = $arr['data'];
+        $this->assertCount(3, $data);
+        $this->assertCount(200, $data[0]);
+        $this->assertCount(100, $data[0][0]);
 
         $this->container->get('inowas.modflowmodel.raster_files_persister')->clear();
     }
