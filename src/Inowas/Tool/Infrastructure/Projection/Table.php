@@ -10,4 +10,5 @@ namespace Inowas\Tool\Infrastructure\Projection;
 final class Table
 {
     const TOOL_LIST = 'mf_projection_tools';
+    const TOOL_LIST_READ_MODEL = 'mf_readmodel_tools';
 }

@@ -1,0 +1,18 @@
+services:
+    inowas.tool.projection_manager:
+        class: Prooph\EventStore\Pdo\Projection\PostgresProjectionManager
+        arguments:
+          - '@prooph_event_store_postgres'
+          - "@=service('doctrine.dbal.default_connection').getWrappedConnection()"
+
+    inowas.tool.tool_read_model:
+        class: Inowas\Tool\Infrastructure\ReadModel\ToolReadModel
+        arguments:
+          - '@doctrine.orm.entity_manager'
+          - '@doctrine.dbal.default_connection'
+
+    inowas.projections.tool:
+        class: Inowas\Tool\Infrastructure\ReadModel\ToolProjectionRunner
+        arguments:
+          - '@inowas.tool.tool_read_model'
+          - '@inowas.tool.projection_manager'

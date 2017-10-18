@@ -21,4 +21,5 @@ imports:
 
     - { resource: tool/commandHandler.yml }
     - { resource: tool/projections.yml }
+    - { resource: tool/readModel.yml }
     - { resource: tool/services.yml }
