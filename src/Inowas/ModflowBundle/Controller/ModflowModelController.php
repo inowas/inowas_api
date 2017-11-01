@@ -13,6 +13,7 @@ use Inowas\Common\Id\ModflowId;
 use Inowas\Common\Modflow\ModflowModel;
 use Inowas\Common\Modflow\PackageName;
 use Inowas\Common\Modflow\Results;
+use Inowas\Common\Soilmodel\Layer;
 use Inowas\Common\Soilmodel\LayerId;
 use Inowas\Common\Soilmodel\SoilmodelQuery;
 use Inowas\ModflowBundle\Exception\AccessDeniedException;
@@ -444,6 +445,7 @@ class ModflowModelController extends InowasRestController
      * @param string $id
      * @param string $lid
      * @return JsonResponse
+     * @throws \Inowas\ModflowBundle\Exception\NotFoundException
      * @throws \Symfony\Component\DependencyInjection\Exception\ServiceNotFoundException
      * @throws \Symfony\Component\DependencyInjection\Exception\ServiceCircularReferenceException
      * @throws AccessDeniedException
@@ -467,7 +469,15 @@ class ModflowModelController extends InowasRestController
             );
         }
 
-        return new JsonResponse($this->container->get('inowas.modflowmodel.soilmodel_finder')->findLayer($modelId, $layerId));
+        $layer = $this->container->get('inowas.modflowmodel.soilmodel_finder')->findLayer($modelId, $layerId);
+
+        if (!$layer instanceof Layer) {
+            throw NotFoundException::withMessage(sprintf(
+                'Layer with Id %s from Model with id: %s not found.', $layerId->toString(), $modelId->toString()
+            ));
+        }
+
+        return new JsonResponse($layer->toArray());
     }
 
     /**
