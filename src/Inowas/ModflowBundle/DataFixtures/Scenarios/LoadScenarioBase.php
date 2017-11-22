@@ -72,7 +72,8 @@ abstract class LoadScenarioBase implements ContainerAwareInterface, DataFixtureI
             array('adeyinka', 'adeyinka', 'adeyinka@gast', 'aimeipae', ['ROLE_NM_MF']),
             array('muna', 'muna', 'muna@gast', 'iegheith', ['ROLE_NM_MF']),
             array('bewuket', 'bewuket', 'bewuket@gast', 'hohreith', ['ROLE_NM_MF']),
-            array('mutaz', 'mutaz', 'mutaz@gast', 'chohexai', ['ROLE_NM_MF'])
+            array('mutaz', 'mutaz', 'mutaz@gast', 'chohexai', ['ROLE_NM_MF']),
+            array('michael.rustler', 'Michael Rustler', 'michael.rustler@kompetenz-wasser.de', 'kw#inowas', []),
         );
 
         foreach ($userList as $item){
