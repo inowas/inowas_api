@@ -3,7 +3,7 @@
     "id": "https://inowas.com/schema/",
     "type": "array",
     "items": {
-         "description": "Cell-values",
+        "description": "Cell-values",
         "type": "array",
         "items": {
             "description": "Cell-value",
@@ -11,6 +11,5 @@
         },
         "minItems": 2,
         "maxItems": 2
-    },
-    "minItems": 1
+    }
 }

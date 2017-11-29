@@ -14,6 +14,7 @@ use Inowas\Common\DateTime\DateTime;
 use Inowas\Common\Geometry\Geometry;
 use Inowas\Common\Geometry\LineString;
 use Inowas\Common\Geometry\Point;
+use Inowas\Common\Grid\AffectedCells;
 use Inowas\Common\Grid\AffectedLayers;
 use Inowas\Common\Grid\LayerNumber;
 use Inowas\Common\Id\ObservationPointId;
@@ -37,6 +38,7 @@ class ConstantHeadBoundaryTest extends \PHPUnit_Framework_TestCase
                 [-63.569260, -31.313615],
                 [-63.687336, -31.313615]
             ], 4326)),
+            AffectedCells::create(),
             AffectedLayers::createWithLayerNumber(LayerNumber::fromInt(0)),
             Metadata::create()
         );

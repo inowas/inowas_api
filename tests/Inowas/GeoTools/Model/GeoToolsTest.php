@@ -21,6 +21,7 @@ use Inowas\Common\Geometry\Point;
 use Inowas\Common\Geometry\Polygon;
 use Inowas\Common\Geometry\Srid;
 use Inowas\Common\Grid\ActiveCells;
+use Inowas\Common\Grid\AffectedCells;
 use Inowas\Common\Grid\AffectedLayers;
 use Inowas\Common\Grid\BoundingBox;
 use Inowas\Common\Grid\Distance;
@@ -158,6 +159,7 @@ class GeoToolsTest extends WebTestCase
                     array(105.88686516674,20.950138231278),
                     array(105.87790127463,20.947208016218)
                 ), 4326)),
+            AffectedCells::create(),
             AffectedLayers::fromArray([0]),
             Metadata::create()
         );
@@ -237,6 +239,7 @@ class GeoToolsTest extends WebTestCase
         $this->well = WellBoundary::createWithParams(
             Name::fromString('Well 1'),
             Geometry::fromPoint(new Point(105.78304910628,21.093961475741, 4326)),
+            AffectedCells::create(),
             AffectedLayers::createWithLayerNumber(LayerNumber::fromInt(2)),
             Metadata::create()->addWellType(WellType::fromString(WellType::TYPE_PUBLIC_WELL))
         );
@@ -301,6 +304,7 @@ class GeoToolsTest extends WebTestCase
                 WellBoundary::createWithParams(
                     Name::fromString(''),
                     Geometry::fromPoint($pointsAffectedLayer[0]),
+                    AffectedCells::create(),
                     $pointsAffectedLayer[1],
                     Metadata::create()->addWellType(WellType::fromString(WellType::TYPE_PUBLIC_WELL))
                 ),
@@ -351,6 +355,7 @@ class GeoToolsTest extends WebTestCase
         $chdBoundary = ConstantHeadBoundary::createWithParams(
             Name::fromString('ChdBoundary'),
             Geometry::fromLineString(new LineString($chdPoints, 4326)),
+            AffectedCells::create(),
             AffectedLayers::fromArray([1]),
             Metadata::create()
         );

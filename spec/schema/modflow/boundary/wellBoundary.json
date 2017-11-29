@@ -32,7 +32,6 @@
             "$ref": "modflow/boundary/wellDateTimeValues.json"
         }
     },
-    "additionalProperties": false,
     "required": [
         "id",
         "type",

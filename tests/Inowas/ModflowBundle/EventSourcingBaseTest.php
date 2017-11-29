@@ -25,6 +25,7 @@ use Inowas\Common\Geometry\Geometry;
 use Inowas\Common\Geometry\LineString;
 use Inowas\Common\Geometry\Point;
 use Inowas\Common\Geometry\Polygon;
+use Inowas\Common\Grid\AffectedCells;
 use Inowas\Common\Grid\AffectedLayers;
 use Inowas\Common\Grid\BoundingBox;
 use Inowas\Common\Grid\GridSize;
@@ -157,6 +158,7 @@ abstract class EventSourcingBaseTest extends WebTestCase
                 array(-63.687336, -31.313615),
                 array(-63.569260, -31.313615)
             ), 4326)),
+            AffectedCells::create(),
             AffectedLayers::createWithLayerNumber(LayerNumber::fromInt(0)),
             Metadata::create()
         );
@@ -189,6 +191,7 @@ abstract class EventSourcingBaseTest extends WebTestCase
                 array(-63.687336, -31.313615),
                 array(-63.569260, -31.313615)
             ), 4326)),
+            AffectedCells::create(),
             AffectedLayers::createWithLayerNumber(LayerNumber::fromInt(0)),
             Metadata::create()
         );
@@ -229,6 +232,7 @@ abstract class EventSourcingBaseTest extends WebTestCase
                     )
                 ), 4326
             )),
+            AffectedCells::create(),
             AffectedLayers::fromArray([0]),
             Metadata::create()
         );
@@ -259,6 +263,7 @@ abstract class EventSourcingBaseTest extends WebTestCase
                     )
                 ), 4326
             )),
+            AffectedCells::create(),
             AffectedLayers::fromArray([0]),
             Metadata::create()
         );
@@ -359,6 +364,7 @@ abstract class EventSourcingBaseTest extends WebTestCase
                 array(-63.572559356689,-31.332231777991),
                 array(-63.569641113281,-31.331205380684)
             ), 4326)),
+            AffectedCells::create(),
             AffectedLayers::fromArray([0]),
             Metadata::create()
         );
@@ -389,6 +395,7 @@ abstract class EventSourcingBaseTest extends WebTestCase
         $wellBoundary = WellBoundary::createWithParams(
             Name::fromString('Test Well 1'),
             Geometry::fromPoint(new Point(-63.60, -31.32, 4326)),
+            AffectedCells::create(),
             AffectedLayers::createWithLayerNumber(LayerNumber::fromInt(0)),
             Metadata::create()->addWellType(WellType::fromString(WellType::TYPE_INDUSTRIAL_WELL))
         );

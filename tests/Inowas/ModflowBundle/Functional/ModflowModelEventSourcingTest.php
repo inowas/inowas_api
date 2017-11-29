@@ -9,6 +9,7 @@ use Inowas\Common\Boundaries\ObservationPoint;
 use Inowas\Common\DateTime\DateTime;
 use Inowas\Common\Geometry\Point;
 use Inowas\Common\Grid\ActiveCells;
+use Inowas\Common\Grid\AffectedCells;
 use Inowas\Common\Grid\AffectedLayers;
 use Inowas\Common\Grid\BoundingBox;
 use Inowas\Common\Geometry\Geometry;
@@ -355,6 +356,7 @@ class ModflowModelEventSourcingTest extends EventSourcingBaseTest
         $wellBoundary = WellBoundary::createWithParams(
             Name::fromString('Test Well 1'),
             Geometry::fromPoint(new Point(-63.671125, -31.325009, 4326)),
+            AffectedCells::create(),
             AffectedLayers::createWithLayerNumber(LayerNumber::fromInt(0)),
             Metadata::create()->addWellType(WellType::fromString(WellType::TYPE_INDUSTRIAL_WELL))
         );
@@ -366,6 +368,7 @@ class ModflowModelEventSourcingTest extends EventSourcingBaseTest
         $wellBoundary = WellBoundary::createWithParams(
             Name::fromString('Test Well 2'),
             Geometry::fromPoint(new Point(-63.659952, -31.330144, 4326)),
+            AffectedCells::create(),
             AffectedLayers::createWithLayerNumber(LayerNumber::fromInt(0)),
             Metadata::create()->addWellType(WellType::fromString(WellType::TYPE_INDUSTRIAL_WELL))
         );
@@ -401,6 +404,7 @@ class ModflowModelEventSourcingTest extends EventSourcingBaseTest
         $wellBoundary = WellBoundary::createWithParams(
             Name::fromString('Test Well 1'),
             Geometry::fromPoint(new Point(-63.671125, -31.325009, 4326)),
+            AffectedCells::create(),
             AffectedLayers::createWithLayerNumber(LayerNumber::fromInt(0)),
             Metadata::create()->addWellType(WellType::fromString(WellType::TYPE_INDUSTRIAL_WELL))
         );
@@ -412,6 +416,7 @@ class ModflowModelEventSourcingTest extends EventSourcingBaseTest
         $wellBoundary = WellBoundary::createWithParams(
             Name::fromString('Test Well 2'),
             Geometry::fromPoint(new Point(-63.671126, -31.325010, 4326)),
+            AffectedCells::create(),
             AffectedLayers::createWithLayerNumber(LayerNumber::fromInt(0)),
             Metadata::create()->addWellType(WellType::fromString(WellType::TYPE_INDUSTRIAL_WELL))
         );
@@ -429,7 +434,6 @@ class ModflowModelEventSourcingTest extends EventSourcingBaseTest
         $this->commandBus->dispatch(UpdateStressPeriods::of($ownerId, $modelId, $stressperiods));
 
         $config = $this->recalculateAndCreateJsonCalculationRequest($modelId);
-
         $this->assertJson($config);
         $arr = json_decode($config, true);
         $this->assertTrue($this->packageIsInSelectedPackages($arr, 'wel'));

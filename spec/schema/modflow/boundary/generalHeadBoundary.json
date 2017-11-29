@@ -34,7 +34,6 @@
             "minItems": 1
         }
     },
-    "additionalProperties": false,
     "required": [
         "id",
         "name",

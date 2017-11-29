@@ -12,6 +12,7 @@ use Inowas\Common\Boundaries\WellType;
 use Inowas\Common\DateTime\DateTime;
 use Inowas\Common\Geometry\Geometry;
 use Inowas\Common\Geometry\Point;
+use Inowas\Common\Grid\AffectedCells;
 use Inowas\Common\Grid\AffectedLayers;
 use Inowas\Common\Grid\LayerNumber;
 use Inowas\Common\Modflow\Name;
@@ -28,6 +29,7 @@ class WellBoundaryTest extends \PHPUnit_Framework_TestCase
         $wb = WellBoundary::createWithParams(
             Name::fromString('WellName'),
             Geometry::fromPoint(new Point(10, 12)),
+            AffectedCells::create(),
             AffectedLayers::createWithLayerNumber(LayerNumber::fromInt(0)),
             Metadata::create()->addWellType(WellType::fromString(WellType::TYPE_PUBLIC_WELL))
         );
