@@ -221,10 +221,12 @@ class ModflowModelController extends InowasRestController
             ));
         }
 
-        $bArray = $boundary->toArray();
-        $bArray['active_cells'] = $this->get('inowas.modflowmodel.active_cells_manager')->getBoundaryActiveCells($modelId, $boundaryId)->cells2D();
+        if ($boundary->affectedCells()->isEmpty()) {
+            $affectedCells = $this->get('inowas.modflowmodel.active_cells_manager')->getBoundaryActiveCells($modelId, $boundaryId)->affectedCells();
+            $boundary = $boundary->updateAffectedCells($affectedCells);
+        }
 
-        return new JsonResponse($bArray);
+        return new JsonResponse($boundary->toArray());
     }
 
     /**

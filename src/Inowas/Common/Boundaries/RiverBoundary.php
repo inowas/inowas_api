@@ -9,8 +9,8 @@ use Inowas\Common\Id\ObservationPointId;
 
 class RiverBoundary extends ModflowBoundary
 {
-    const CARDINALITY = 'n';
-    const TYPE = 'riv';
+    public const CARDINALITY = 'n';
+    public const TYPE = 'riv';
 
     public function addRiverStageToObservationPoint(ObservationPointId $observationPointId, RiverDateTimeValue $riverStage): ModflowBoundary
     {
