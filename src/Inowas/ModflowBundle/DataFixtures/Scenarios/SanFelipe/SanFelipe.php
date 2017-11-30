@@ -17,6 +17,7 @@ use Inowas\Common\Geometry\Geometry;
 use Inowas\Common\Geometry\LineString;
 use Inowas\Common\Geometry\Point;
 use Inowas\Common\Geometry\Polygon;
+use Inowas\Common\Grid\AffectedCells;
 use Inowas\Common\Grid\AffectedLayers;
 use Inowas\Common\Grid\GridSize;
 use Inowas\Common\Grid\LayerNumber;
@@ -263,6 +264,7 @@ class SanFelipe extends LoadScenarioBase
                 [ -70.761468152216395, -32.742437320686882 ],
                 [ -70.739900752075556, -32.713424032402173 ]
             ])),
+            AffectedCells::create(),
             AffectedLayers::fromArray([1]),
             Metadata::create()
         );
@@ -294,6 +296,7 @@ class SanFelipe extends LoadScenarioBase
                 [ -70.546497000284148, -32.84965766474577 ],
                 [ -70.547861570461322, -32.809630272881954 ]
             ])),
+            AffectedCells::create(),
             AffectedLayers::fromArray([1]),
             Metadata::create()
         );
@@ -340,6 +343,7 @@ class SanFelipe extends LoadScenarioBase
                 [ -70.748059226317537, -32.745513941065823 ],
                 [ -70.75856283028223, -32.738511538422692 ]
             ], 4326)),
+            AffectedCells::create(),
             AffectedLayers::createWithLayerNumber(LayerNumber::fromInt(0)),
             Metadata::create()
         );
@@ -518,6 +522,7 @@ class SanFelipe extends LoadScenarioBase
             $wellBoundary = WellBoundary::createWithParams(
                 Name::fromString(sprintf('wel %s', $key+1)),
                 Geometry::fromPoint(new Point($point['x'], $point['y'], 4326)),
+                AffectedCells::create(),
                 AffectedLayers::createWithLayerNumber(LayerNumber::fromInt(0)),
                 Metadata::create()->addWellType(WellType::fromString(WellType::TYPE_INDUSTRIAL_WELL))
             );
@@ -568,6 +573,7 @@ class SanFelipe extends LoadScenarioBase
             $wellBoundary = WellBoundary::createWithParams(
                 Name::fromString($data['name']),
                 Geometry::fromPoint($data['point']),
+                AffectedCells::create(),
                 AffectedLayers::createWithLayerNumber(LayerNumber::fromInt($data['layer'])),
                 Metadata::create()->addWellType(WellType::fromString($data['type']))
             );
@@ -642,6 +648,7 @@ class SanFelipe extends LoadScenarioBase
             $wellBoundary = WellBoundary::createWithParams(
                 Name::fromString($data['name']),
                 Geometry::fromPoint($data['point']),
+                AffectedCells::create(),
                 AffectedLayers::createWithLayerNumber(LayerNumber::fromInt($data['layer'])),
                 Metadata::create()->addWellType(WellType::fromString($data['type']))
             );

@@ -137,7 +137,7 @@ abstract class LoadScenarioBase implements ContainerAwareInterface, DataFixtureI
     {
         $data = array();
         if (($handle = fopen($filename, 'rb')) !== FALSE) {
-            $data = fgetcsv($handle, 1000, ";");
+            $data = fgetcsv($handle, 1000, ';');
             fclose($handle);
         }
 

@@ -19,6 +19,7 @@ use Inowas\Common\Geometry\Geometry;
 use Inowas\Common\Geometry\LineString;
 use Inowas\Common\Geometry\Point;
 use Inowas\Common\Geometry\Polygon;
+use Inowas\Common\Grid\AffectedCells;
 use Inowas\Common\Grid\AffectedLayers;
 use Inowas\Common\Grid\GridSize;
 use Inowas\Common\Grid\LayerNumber;
@@ -135,6 +136,7 @@ class RioPrimeroBaseModelAndFutureWells extends LoadScenarioBase
                     array($boundingBox->xMin(), $boundingBox->yMax())
                 ))
             ),
+            AffectedCells::create(),
             AffectedLayers::createWithLayerNumber(LayerNumber::fromInt(0)),
             Metadata::create()
         );
@@ -170,6 +172,7 @@ class RioPrimeroBaseModelAndFutureWells extends LoadScenarioBase
                     array($boundingBox->xMax(), $boundingBox->yMax())
                 ))
             ),
+            AffectedCells::create(),
             AffectedLayers::createWithLayerNumber(LayerNumber::fromInt(0)),
             Metadata::create()
         );
@@ -283,6 +286,7 @@ class RioPrimeroBaseModelAndFutureWells extends LoadScenarioBase
                 array(-63.572559356689, -31.332231777991),
                 array(-63.569641113281, -31.331205380684)
             ), 4326)),
+            AffectedCells::create(),
             AffectedLayers::createWithLayerNumber(LayerNumber::fromInt(0)),
             Metadata::create()
         );
@@ -322,6 +326,7 @@ class RioPrimeroBaseModelAndFutureWells extends LoadScenarioBase
                 [-63.569260, -31.313615],
                 [-63.687336, -31.313615]
             ]], 4326)),
+            AffectedCells::create(),
             AffectedLayers::fromArray([0]),
             Metadata::create()
         );
@@ -362,6 +367,7 @@ class RioPrimeroBaseModelAndFutureWells extends LoadScenarioBase
             $wellBoundary = WellBoundary::createWithParams(
                 Name::fromString($data['name']),
                 Geometry::fromPoint($data['point']),
+                AffectedCells::create(),
                 AffectedLayers::createWithLayerNumber(LayerNumber::fromInt($data['layer'])),
                 Metadata::create()->addWellType(WellType::fromString($data['type']))
             );
@@ -438,6 +444,7 @@ class RioPrimeroBaseModelAndFutureWells extends LoadScenarioBase
             $wellBoundary = WellBoundary::createWithParams(
                 Name::fromString($data['name']),
                 Geometry::fromPoint($data['point']),
+                AffectedCells::create(),
                 AffectedLayers::createWithLayerNumber(LayerNumber::fromInt($data['layer'])),
                 Metadata::create()->addWellType(WellType::fromString($data['type']))
             );
