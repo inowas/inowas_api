@@ -48,6 +48,47 @@ class AffectedCells
         return $this->cells();
     }
 
+    public function activeCells(GridSize $gridSize, AffectedLayers $layers): ActiveCells
+    {
+        $layerData = [];
+        for ($y = 0; $y < $gridSize->nY(); $y++) {
+            $layerData[$y] = [];
+            for ($x = 0; $x < $gridSize->nY(); $x++) {
+                $layerData[$y][$x] = false;
+            }
+        }
+
+        foreach ($this->cells as $cell) {
+            $layerData[$cell[1]][$cell[0]] = true;
+            if (\count($cell) === 3) {
+                $layerData[$cell[1]][$cell[0]] = $cell[3];
+            }
+        }
+        return ActiveCells::fromArrayGridSizeAndLayer($layerData, $gridSize, $layers);
+    }
+
+    public function rowColumnList(): RowColumnList
+    {
+        $data = [];
+        foreach ($this->cells as $cell) {
+            $data[] = [$cell[1], $cell[0]];
+        }
+
+        return RowColumnList::fromArray($data);
+    }
+
+    public function layerRowColumns(AffectedLayers $affectedLayers): LayerRowColumnList
+    {
+        $data = [];
+        foreach ($affectedLayers->toArray() as $layer) {
+            foreach ($this->cells as $cell) {
+                $data[] = [$layer, $cell[1], $cell[0]];
+            }
+        }
+
+        return LayerRowColumnList::fromArray($data);
+    }
+
     public function isEmpty(): bool
     {
         return \count($this->cells()) === 0;

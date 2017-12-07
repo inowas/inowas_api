@@ -9,6 +9,7 @@ use Inowas\Common\Boundaries\BoundaryType;
 use Inowas\Common\DateTime\DateTime;
 use Inowas\Common\Geometry\Geometry;
 use Inowas\Common\Grid\ActiveCells;
+use Inowas\Common\Grid\AffectedCells;
 use Inowas\Common\Grid\AffectedLayers;
 use Inowas\Common\Grid\BoundingBox;
 use Inowas\Common\Grid\GridSize;
@@ -70,6 +71,12 @@ class ModflowModelManager
         $this->stressPeriodDataGenerator = $stressPeriodDataGenerator;
     }
 
+    /**
+     * @param ModflowId $modelId
+     * @param UserId $userId
+     * @return ModflowModel|null
+     * @throws \Exception
+     */
     public function findModel(ModflowId $modelId, UserId $userId): ?ModflowModel
     {
         $model = $this->modelFinder->findById($modelId);
@@ -156,16 +163,10 @@ class ModflowModelManager
         return $activeCells;
     }
 
-    public function getBoundaryActiveCells(ModflowId $modelId, BoundaryId $boundaryId): ActiveCells
+    public function getBoundaryAffectedCells(ModflowId $modelId, BoundaryId $boundaryId): AffectedCells
     {
-        $activeCells = $this->activeCellsFinder->findBoundaryActiveCells($modelId, $boundaryId);
-        if ($activeCells instanceof ActiveCells) {
-            return $activeCells;
-        }
-
-        $activeCells = $this->calculateBoundaryActiveCells($modelId, $boundaryId);
-        $this->activeCellsFinder->updateBoundaryActiveCells($modelId, $boundaryId, $activeCells);
-        return $activeCells;
+        $boundary = $this->boundaryManager->getBoundary($modelId, $boundaryId);
+        return $boundary->affectedCells();
     }
 
     public function getBoundingBox(ModflowId $modflowId): BoundingBox
@@ -183,6 +184,12 @@ class ModflowModelManager
         return $this->boundaryManager->getNumberOfModelBoundariesByType($modflowId, BoundaryType::fromString($type));
     }
 
+    /**
+     * @param ModflowId $modflowId
+     * @param StressPeriods $stressPeriods
+     * @return ChdStressPeriodData
+     * @throws \Exception
+     */
     public function generateChdStressPeriodData(ModflowId $modflowId, StressPeriods $stressPeriods): ChdStressPeriodData
     {
         $gridSize = $this->getGridSize($modflowId);
@@ -197,6 +204,12 @@ class ModflowModelManager
         );
     }
 
+    /**
+     * @param ModflowId $modflowId
+     * @param StressPeriods $stressPeriods
+     * @return GhbStressPeriodData
+     * @throws \Exception
+     */
     public function generateGhbStressPeriodData(ModflowId $modflowId, StressPeriods $stressPeriods): GhbStressPeriodData
     {
         $gridSize = $this->getGridSize($modflowId);
@@ -214,13 +227,22 @@ class ModflowModelManager
 
     public function generateRchStressPeriodData(ModflowId $modflowId, StressPeriods $stressPeriods): RchStressPeriodData
     {
+        $gridSize = $this->getGridSize($modflowId);
+
         return $this->stressPeriodDataGenerator->fromRechargeBoundaries(
             $modflowId,
             $this->boundaryManager->findRechargeBoundaries($modflowId),
-            $stressPeriods
+            $stressPeriods,
+            $gridSize
         );
     }
 
+    /**
+     * @param ModflowId $modflowId
+     * @param StressPeriods $stressPeriods
+     * @return RivStressPeriodData
+     * @throws \Exception
+     */
     public function generateRivStressPeriodData(ModflowId $modflowId, StressPeriods $stressPeriods): RivStressPeriodData
     {
         $gridSize = $this->getGridSize($modflowId);

@@ -23,6 +23,7 @@ use Inowas\Common\Grid\BoundingBox;
 use Inowas\Common\Grid\Distance;
 use Inowas\Common\Grid\GridSize;
 use Inowas\Common\Grid\LayerNumber;
+use Inowas\Common\Grid\LayerRowColumnList;
 
 class GeoTools
 {
@@ -263,7 +264,7 @@ class GeoTools
         return $substringsWithObservationPoints;
     }
 
-    public function interpolateGridCellDateTimeValuesFromLinestringAndObservationPoints(LineString $lineString, ObservationPointCollection $observationPoints, ActiveCells $activeCells, BoundingBox $boundingBox, GridSize $gridSize): array
+    public function interpolateGridCellDateTimeValuesFromLinestringAndObservationPoints(LineString $lineString, ObservationPointCollection $observationPoints, LayerRowColumnList $layerRowColumnList, BoundingBox $boundingBox, GridSize $gridSize): array
     {
         // @todo Cut Linestring with boundingBox
         // Cut Linestring into sectors between ObservationPoints
@@ -271,7 +272,7 @@ class GeoTools
         $sectors = $this->cutLinestringBetweenObservationPoints($lineString, $observationPoints);
 
         $gridCellDateTimeValues = array();
-        foreach ($activeCells->cells() as $activeCell) {
+        foreach ($layerRowColumnList->cells() as $activeCell) {
 
             $layer = $activeCell[0];
             $row = $activeCell[1];

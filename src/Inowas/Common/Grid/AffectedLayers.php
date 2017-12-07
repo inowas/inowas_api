@@ -17,19 +17,24 @@ class AffectedLayers
         return $self;
     }
 
+    /**
+     * @param array $layerNumbers
+     * @return AffectedLayers
+     * @throws \Exception
+     */
     public static function createWithLayerNumbers(array $layerNumbers): AffectedLayers
     {
 
-        if (count($layerNumbers) === 0){
+        if (\count($layerNumbers) === 0){
             // @todo specify
-            throw new \Exception();
+            throw new \RuntimeException();
         }
 
         $layers = [];
         foreach ($layerNumbers as $layerNumber) {
             if (! $layerNumber instanceof LayerNumber){
                 // @todo specify
-                throw new \Exception();
+                throw new \RuntimeException();
             }
 
             $layers[] = $layerNumber->toInt();
@@ -49,7 +54,7 @@ class AffectedLayers
 
     private function __construct(){}
 
-    public function addLayerNumber(LayerNumber $layerNumber)
+    public function addLayerNumber(LayerNumber $layerNumber):AffectedLayers
     {
         $self = new self();
         $self->layers = $this->layers[$layerNumber->toInt()];

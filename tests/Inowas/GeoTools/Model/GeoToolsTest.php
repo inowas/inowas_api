@@ -164,6 +164,10 @@ class GeoToolsTest extends WebTestCase
             Metadata::create()
         );
 
+        $this->river = $this->river->updateAffectedCells(
+            $this->geoTools->calculateActiveCellsFromBoundary($this->river, $this->boundingBox,$this->gridSize)->affectedCells()
+        );
+
         $opId1 = ObservationPointId::fromString('OP1');
         $this->river = $this->river->addObservationPoint(
             ObservationPoint::fromIdTypeNameAndGeometry(
@@ -360,6 +364,9 @@ class GeoToolsTest extends WebTestCase
             Metadata::create()
         );
 
+        $affectedCells = $this->geoTools->calculateActiveCellsFromBoundary($chdBoundary, $boundingBox, $gridSize)->affectedCells();
+        $chdBoundary = $chdBoundary->updateAffectedCells($affectedCells);
+
         $observationPointData = array(
             array('OP1', 100.01, 20.05, 4326, 1, 10, 100),
             array('OP2', 100.01, 21.45, 4326, 2, 20, 200),
@@ -368,7 +375,6 @@ class GeoToolsTest extends WebTestCase
         );
 
         foreach ($observationPointData as $key => $opd){
-
             $observationPointId = ObservationPointId::fromString('OP'.$key);
             $observationPoint = ObservationPoint::fromIdTypeNameAndGeometry(
                 $observationPointId,
@@ -388,11 +394,10 @@ class GeoToolsTest extends WebTestCase
             );
         }
 
-        $activeCells = $this->geoTools->calculateActiveCellsFromBoundary($chdBoundary, $boundingBox, $gridSize);
         $result = $this->geoTools->interpolateGridCellDateTimeValuesFromLinestringAndObservationPoints(
             $chdBoundary->geometry()->getLineString(),
             $chdBoundary->observationPoints(),
-            $activeCells,
+            $chdBoundary->affectedCells()->layerRowColumns($chdBoundary->affectedLayers()),
             $boundingBox,
             $gridSize
         );
@@ -851,7 +856,8 @@ class GeoToolsTest extends WebTestCase
     public function test_calculate_grid_cell_date_time_values_of_river_boundary(): void
     {
         $observationPoints = $this->river->observationPoints();
-        $activeCells = $this->geoTools->calculateActiveCellsFromBoundary($this->river, $this->boundingBox, $this->gridSize);
+        $layRowColumnList = $this->river->affectedCells()->layerRowColumns($this->river->affectedLayers());
+
         /*
          * Expected active cells
          *
@@ -890,12 +896,12 @@ class GeoToolsTest extends WebTestCase
         $result = $this->geoTools->interpolateGridCellDateTimeValuesFromLinestringAndObservationPoints(
             $this->river->geometry()->getLineString(),
             $observationPoints,
-            $activeCells,
+            $layRowColumnList,
             $this->boundingBox,
             $this->gridSize
         );
 
-        $this->assertCount(count($activeCells->cells()), $result);
+        $this->assertCount(\count($layRowColumnList->cells()), $result);
     }
 
     public function test_point_is_on_linestring(): void

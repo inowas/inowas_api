@@ -117,6 +117,7 @@ class MessageBoxControllerTest extends EventSourcingBaseTest
 
     /**
      * @test
+     * @throws \Exception
      */
     public function it_can_receive_update_model_command(): void
     {

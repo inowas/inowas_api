@@ -6,14 +6,11 @@ namespace Inowas\ModflowModel\Infrastructure\Projection\BoundaryList;
 
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Schema\Schema;
-use Inowas\Common\Id\ModflowId;
 use Inowas\Common\Projection\AbstractDoctrineConnectionProjector;
 use Inowas\ModflowModel\Infrastructure\Projection\Table;
 use Inowas\ModflowModel\Model\Event\BoundaryWasAdded;
 use Inowas\ModflowModel\Model\Event\BoundaryWasRemoved;
 use Inowas\ModflowModel\Model\Event\BoundaryWasUpdated;
-use Inowas\ModflowModel\Model\Event\BoundingBoxWasChanged;
-use Inowas\ModflowModel\Model\Event\GridSizeWasChanged;
 use Inowas\ModflowModel\Model\Event\ModflowModelWasCloned;
 use Inowas\ModflowModel\Model\Event\ModflowModelWasDeleted;
 
@@ -59,7 +56,7 @@ class BoundaryProjector extends AbstractDoctrineConnectionProjector
             'type' => $boundary->type()->toString(),
             'name' => $boundary->name()->toString(),
             'geometry' => json_encode($boundary->geometry()->toArray()),
-            'active_cells' => null,
+            'active_cells' => json_encode($boundary->affectedCells()->toArray()),
             'metadata' => json_encode($boundary->metadata()->toArray()),
             'affected_layers' => json_encode($boundary->affectedLayers()->toArray()),
             'boundary' => json_encode($boundary->toArray())
@@ -74,7 +71,7 @@ class BoundaryProjector extends AbstractDoctrineConnectionProjector
             'type' => $boundary->type()->toString(),
             'name' => $boundary->name()->toString(),
             'geometry' => json_encode($boundary->geometry()->toArray()),
-            'active_cells' => null,
+            'active_cells' => json_encode($boundary->affectedCells()->toArray()),
             'metadata' => json_encode($boundary->metadata()->toArray()),
             'affected_layers' => json_encode($boundary->affectedLayers()->toArray()),
             'boundary' => json_encode($boundary->toArray())
@@ -84,6 +81,10 @@ class BoundaryProjector extends AbstractDoctrineConnectionProjector
         ));
     }
 
+    /**
+     * @param BoundaryWasRemoved $event
+     * @throws \Doctrine\DBAL\Exception\InvalidArgumentException
+     */
     public function onBoundaryWasRemoved(BoundaryWasRemoved $event): void
     {
         $this->connection->delete(Table::BOUNDARIES, array(
@@ -118,29 +119,14 @@ class BoundaryProjector extends AbstractDoctrineConnectionProjector
         }
     }
 
+    /**
+     * @param ModflowModelWasDeleted $event
+     * @throws \Doctrine\DBAL\Exception\InvalidArgumentException
+     */
     public function onModflowModelWasDeleted(ModflowModelWasDeleted $event): void
     {
         $this->connection->delete(
             Table::BOUNDARIES, array('model_id' => $event->modelId()->toString())
         );
-    }
-
-    public function onBoundingBoxWasChanged(BoundingBoxWasChanged $event): void
-    {
-        $this->updateActiveCellsWithBoundingBoxOrGridsize($event->modelId());
-    }
-
-    public function onGridSizeWasChanged(GridSizeWasChanged $event): void
-    {
-        $this->updateActiveCellsWithBoundingBoxOrGridsize($event->modelId());
-    }
-
-    private function updateActiveCellsWithBoundingBoxOrGridsize(ModflowId $modelId): void
-    {
-        $this->connection->update(Table::BOUNDARIES, array(
-            'active_cells' => null
-        ), array(
-            'model_id' => $modelId->toString()
-        ));
     }
 }

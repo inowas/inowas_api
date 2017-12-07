@@ -68,8 +68,21 @@ class GridSize implements \JsonSerializable
         return $this->toArray();
     }
 
+    public function get2DArray($cellValue): array
+    {
+        $arr = [];
+        for ($y = 0; $y < $this->nY; $y++){
+            $arr[$y] = [];
+            for ($x = 0; $x < $this->nX; $x++){
+                $arr[$y][$x] = $cellValue;
+            }
+        }
+
+        return $arr;
+    }
+
     public function sameAs(GridSize $gridSize): bool
     {
-        return (($this->nx() === $gridSize->nX()) && ($this->nY() === $gridSize->nY()));
+        return (($this->nX() === $gridSize->nX()) && ($this->nY() === $gridSize->nY()));
     }
 }

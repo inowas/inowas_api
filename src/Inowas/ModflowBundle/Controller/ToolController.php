@@ -29,6 +29,7 @@ class ToolController extends InowasRestController
      *
      * @Rest\Get("/tools")
      * @return JsonResponse
+     * @throws \Inowas\ModflowBundle\Exception\UserNotAuthenticatedException
      */
     public function getMyToolsAction(): JsonResponse
     {
@@ -54,6 +55,7 @@ class ToolController extends InowasRestController
      * @param ParamFetcher $paramFetcher
      * @return JsonResponse
      * @throws \Inowas\ModflowBundle\Exception\InvalidArgumentException
+     * @throws \Inowas\ModflowBundle\Exception\UserNotAuthenticatedException
      */
     public function getToolsByTypeAction(string $type, ParamFetcher $paramFetcher): JsonResponse
     {
@@ -90,6 +92,7 @@ class ToolController extends InowasRestController
      * @param string $id
      * @return JsonResponse
      * @throws \Inowas\ModflowBundle\Exception\InvalidArgumentException
+     * @throws \Inowas\ModflowBundle\Exception\UserNotAuthenticatedException
      */
     public function getToolDetailsAction(string $type, string $id): JsonResponse
     {
