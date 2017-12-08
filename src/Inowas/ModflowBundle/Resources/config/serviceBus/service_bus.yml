@@ -106,7 +106,6 @@ parameters:
 
                         'Inowas\ModflowModel\Model\Event\BoundingBoxWasChanged':
                             - 'inowas.modflowmodel.blackhole_projector'
-                            - 'inowas.modflowmodel.boundary_projector'
                             - 'inowas.modflowmodel.model_projector'
 
                         'Inowas\ModflowModel\Model\Event\CalculationIdWasChanged':
@@ -139,7 +138,6 @@ parameters:
 
                         'Inowas\ModflowModel\Model\Event\GridSizeWasChanged':
                             - 'inowas.modflowmodel.blackhole_projector'
-                            - 'inowas.modflowmodel.boundary_projector'
                             - 'inowas.modflowmodel.model_projector'
 
                         'Inowas\ModflowModel\Model\Event\LayerWasAdded':

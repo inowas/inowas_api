@@ -5,14 +5,22 @@ namespace Inowas\Tool\Model;
 final class ToolType
 {
 
-    const GW_MOUNDING = 'T02';
-    const MODEL_SETUP = 'T03';
-    const SCENARIOANALYSIS = 'T07';
+    public const GW_MOUNDING = 'T02';
+    public const MODEL_SETUP = 'T03';
+    public const SCENARIOANALYSIS = 'T07';
+    public const TRANSPORT_1D = 'T08';
+    public const SALTWATER_INTRUSION = 'T09';
+    public const TRAVEL_TIME = 'T13';
+    public const RIVER_DRAWDOWN = 'T14';
 
     public static $availableTypes = array(
         'T02',
         'T03',
-        'T07'
+        'T07',
+        'T08',
+        'T09',
+        'T13',
+        'T14'
     );
 
     /** @var  string */
@@ -20,7 +28,7 @@ final class ToolType
 
     public static function isValid($type): bool
     {
-        return in_array($type, self::$availableTypes, true);
+        return \in_array($type, self::$availableTypes, true);
     }
 
     public static function fromString(string $type): ToolType

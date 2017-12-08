@@ -18,7 +18,6 @@
             "$ref": "modflow/command/removeBoundaryPayload.json"
         }
     },
-    "additionalProperties": false,
     "required": [
         "uuid",
         "message_name",

@@ -65,7 +65,7 @@ class Rech
 
     public function to2DArray(): array
     {
-        if (is_array($this->value) && is_array($this->value[0])) {
+        if (\is_array($this->value) && \is_array($this->value[0])) {
             return $this->value;
         }
 

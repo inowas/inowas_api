@@ -11,6 +11,7 @@ use Inowas\Common\Boundaries\RechargeDateTimeValue;
 use Inowas\Common\DateTime\DateTime;
 use Inowas\Common\Geometry\Geometry;
 use Inowas\Common\Geometry\Polygon;
+use Inowas\Common\Grid\AffectedCells;
 use Inowas\Common\Grid\AffectedLayers;
 use Inowas\Common\Grid\LayerNumber;
 use Inowas\Common\Modflow\Name;
@@ -26,7 +27,6 @@ class RechargeBoundaryTest extends \PHPUnit_Framework_TestCase
         /** @var RechargeBoundary $rch */
         $rch = RechargeBoundary::createWithParams(
             Name::fromString('RechargeName'),
-
             Geometry::fromPolygon(new Polygon([[
                 [-63.687336, -31.313615],
                 [-63.687336, -31.367449],
@@ -34,6 +34,7 @@ class RechargeBoundaryTest extends \PHPUnit_Framework_TestCase
                 [-63.569260, -31.313615],
                 [-63.687336, -31.313615]
             ]], 4326)),
+            AffectedCells::create(),
             AffectedLayers::createWithLayerNumber(LayerNumber::fromInt(0)),
             Metadata::create()
         );

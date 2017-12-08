@@ -168,6 +168,11 @@ class ActiveCells
         return AffectedLayers::fromArray($this->layers);
     }
 
+    public function affectedCells(): AffectedCells
+    {
+        return AffectedCells::fromCells($this->cells2D());
+    }
+
     public function to2DArray(): array
     {
         $cells = [];
@@ -199,7 +204,7 @@ class ActiveCells
 
     public function count(): int
     {
-        return count($this->cells());
+        return \count($this->cells());
     }
 
     public function sameAs(ActiveCells $activeCells): bool

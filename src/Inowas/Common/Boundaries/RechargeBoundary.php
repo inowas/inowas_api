@@ -6,6 +6,7 @@ namespace Inowas\Common\Boundaries;
 
 use Inowas\Common\DateTime\DateTime;
 use Inowas\Common\Geometry\Geometry;
+use Inowas\Common\Grid\AffectedCells;
 use Inowas\Common\Grid\AffectedLayers;
 use Inowas\Common\Id\BoundaryId;
 use Inowas\Common\Id\ObservationPointId;
@@ -13,18 +14,24 @@ use Inowas\Common\Modflow\Name;
 
 class RechargeBoundary extends ModflowBoundary
 {
-    const CARDINALITY = '1';
-    const TYPE = 'rch';
+    public const CARDINALITY = '1';
+    public const TYPE = 'rch';
 
     /** @var  ObservationPoint */
     protected $observationPoint;
 
     public static function fromArray(array $arr): ModflowBoundary
     {
+        $affectedCells = AffectedCells::create();
+        if (array_key_exists('active_cells', $arr)) {
+            $affectedCells = AffectedCells::fromArray($arr['active_cells']);
+        }
+
         $self = new self(
             BoundaryId::fromString($arr['id']),
             Name::fromString($arr['name']),
             Geometry::fromArray($arr['geometry']),
+            $affectedCells,
             AffectedLayers::fromArray($arr['affected_layers']),
             Metadata::fromArray((array)$arr['metadata'])
         );
@@ -82,6 +89,7 @@ class RechargeBoundary extends ModflowBoundary
             'type' => $this->type()->toString(),
             'name' => $this->name()->toString(),
             'geometry' => $this->geometry()->toArray(),
+            'active_cells' => $this->affectedCells()->toArray(),
             'affected_layers' => $this->affectedLayers()->toArray(),
             'metadata' => $this->metadata()->toArray(),
             'date_time_values' => $this->getObservationPoint(ObservationPointId::fromString('OP'))->dateTimeValues()->toArray()

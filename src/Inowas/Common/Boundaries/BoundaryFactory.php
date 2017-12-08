@@ -4,6 +4,7 @@ namespace Inowas\Common\Boundaries;
 
 
 use Inowas\Common\Geometry\Geometry;
+use Inowas\Common\Grid\AffectedCells;
 use Inowas\Common\Grid\AffectedLayers;
 use Inowas\Common\Modflow\Name;
 use Inowas\ModflowBundle\Exception\InvalidArgumentException;
@@ -14,15 +15,17 @@ class BoundaryFactory
      * @param BoundaryType $type
      * @param Name $name
      * @param Geometry $geometry
+     * @param AffectedCells $affectedCells
      * @param AffectedLayers $affectedLayers
      * @param Metadata $metadata
      * @return ModflowBoundary
-     * @throws InvalidArgumentException
+     * @throws \Inowas\ModflowBundle\Exception\InvalidArgumentException
      */
     public static function create(
         BoundaryType $type,
         Name $name,
         Geometry $geometry,
+        AffectedCells $affectedCells,
         AffectedLayers $affectedLayers,
         Metadata $metadata
     ): ModflowBoundary
@@ -32,6 +35,7 @@ class BoundaryFactory
                 return ConstantHeadBoundary::createWithParams(
                     $name,
                     $geometry,
+                    $affectedCells,
                     $affectedLayers,
                     $metadata
                 );
@@ -41,6 +45,7 @@ class BoundaryFactory
                 return GeneralHeadBoundary::createWithParams(
                     $name,
                     $geometry,
+                    $affectedCells,
                     $affectedLayers,
                     $metadata
                 );
@@ -50,6 +55,7 @@ class BoundaryFactory
                 return RechargeBoundary::createWithParams(
                     $name,
                     $geometry,
+                    $affectedCells,
                     $affectedLayers,
                     $metadata
                 );
@@ -59,6 +65,7 @@ class BoundaryFactory
                 return RiverBoundary::createWithParams(
                     $name,
                     $geometry,
+                    $affectedCells,
                     $affectedLayers,
                     $metadata
                 );
@@ -68,6 +75,7 @@ class BoundaryFactory
                 return WellBoundary::createWithParams(
                     $name,
                     $geometry,
+                    $affectedCells,
                     $affectedLayers,
                     $metadata
                 );

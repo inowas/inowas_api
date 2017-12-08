@@ -8,8 +8,8 @@ use Inowas\Common\Id\ObservationPointId;
 
 class ConstantHeadBoundary extends ModflowBoundary
 {
-    const CARDINALITY = 'n';
-    const TYPE = 'chd';
+    public const CARDINALITY = 'n';
+    public const TYPE = 'chd';
 
     public function addConstantHeadToObservationPoint(ObservationPointId $observationPointId, ConstantHeadDateTimeValue $chdTimeValue): ModflowBoundary
     {

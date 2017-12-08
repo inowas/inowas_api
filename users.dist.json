@@ -1,0 +1,6 @@
+{
+    "heads": ["username", "name", "email", "password", "roles"],
+    "users": [
+        ["guest", "guest", "guest@inowas.com", "guest", []]
+    ]
+}

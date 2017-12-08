@@ -21,6 +21,7 @@ use Inowas\Common\Geometry\Point;
 use Inowas\Common\Geometry\Polygon;
 use Inowas\Common\Geometry\Srid;
 use Inowas\Common\Grid\ActiveCells;
+use Inowas\Common\Grid\AffectedCells;
 use Inowas\Common\Grid\AffectedLayers;
 use Inowas\Common\Grid\BoundingBox;
 use Inowas\Common\Grid\Distance;
@@ -158,8 +159,13 @@ class GeoToolsTest extends WebTestCase
                     array(105.88686516674,20.950138231278),
                     array(105.87790127463,20.947208016218)
                 ), 4326)),
+            AffectedCells::create(),
             AffectedLayers::fromArray([0]),
             Metadata::create()
+        );
+
+        $this->river = $this->river->updateAffectedCells(
+            $this->geoTools->calculateActiveCellsFromBoundary($this->river, $this->boundingBox,$this->gridSize)->affectedCells()
         );
 
         $opId1 = ObservationPointId::fromString('OP1');
@@ -237,6 +243,7 @@ class GeoToolsTest extends WebTestCase
         $this->well = WellBoundary::createWithParams(
             Name::fromString('Well 1'),
             Geometry::fromPoint(new Point(105.78304910628,21.093961475741, 4326)),
+            AffectedCells::create(),
             AffectedLayers::createWithLayerNumber(LayerNumber::fromInt(2)),
             Metadata::create()->addWellType(WellType::fromString(WellType::TYPE_PUBLIC_WELL))
         );
@@ -301,6 +308,7 @@ class GeoToolsTest extends WebTestCase
                 WellBoundary::createWithParams(
                     Name::fromString(''),
                     Geometry::fromPoint($pointsAffectedLayer[0]),
+                    AffectedCells::create(),
                     $pointsAffectedLayer[1],
                     Metadata::create()->addWellType(WellType::fromString(WellType::TYPE_PUBLIC_WELL))
                 ),
@@ -351,9 +359,13 @@ class GeoToolsTest extends WebTestCase
         $chdBoundary = ConstantHeadBoundary::createWithParams(
             Name::fromString('ChdBoundary'),
             Geometry::fromLineString(new LineString($chdPoints, 4326)),
+            AffectedCells::create(),
             AffectedLayers::fromArray([1]),
             Metadata::create()
         );
+
+        $affectedCells = $this->geoTools->calculateActiveCellsFromBoundary($chdBoundary, $boundingBox, $gridSize)->affectedCells();
+        $chdBoundary = $chdBoundary->updateAffectedCells($affectedCells);
 
         $observationPointData = array(
             array('OP1', 100.01, 20.05, 4326, 1, 10, 100),
@@ -363,7 +375,6 @@ class GeoToolsTest extends WebTestCase
         );
 
         foreach ($observationPointData as $key => $opd){
-
             $observationPointId = ObservationPointId::fromString('OP'.$key);
             $observationPoint = ObservationPoint::fromIdTypeNameAndGeometry(
                 $observationPointId,
@@ -383,11 +394,10 @@ class GeoToolsTest extends WebTestCase
             );
         }
 
-        $activeCells = $this->geoTools->calculateActiveCellsFromBoundary($chdBoundary, $boundingBox, $gridSize);
         $result = $this->geoTools->interpolateGridCellDateTimeValuesFromLinestringAndObservationPoints(
             $chdBoundary->geometry()->getLineString(),
             $chdBoundary->observationPoints(),
-            $activeCells,
+            $chdBoundary->affectedCells()->layerRowColumns($chdBoundary->affectedLayers()),
             $boundingBox,
             $gridSize
         );
@@ -846,7 +856,8 @@ class GeoToolsTest extends WebTestCase
     public function test_calculate_grid_cell_date_time_values_of_river_boundary(): void
     {
         $observationPoints = $this->river->observationPoints();
-        $activeCells = $this->geoTools->calculateActiveCellsFromBoundary($this->river, $this->boundingBox, $this->gridSize);
+        $layRowColumnList = $this->river->affectedCells()->layerRowColumns($this->river->affectedLayers());
+
         /*
          * Expected active cells
          *
@@ -885,12 +896,12 @@ class GeoToolsTest extends WebTestCase
         $result = $this->geoTools->interpolateGridCellDateTimeValuesFromLinestringAndObservationPoints(
             $this->river->geometry()->getLineString(),
             $observationPoints,
-            $activeCells,
+            $layRowColumnList,
             $this->boundingBox,
             $this->gridSize
         );
 
-        $this->assertCount(count($activeCells->cells()), $result);
+        $this->assertCount(\count($layRowColumnList->cells()), $result);
     }
 
     public function test_point_is_on_linestring(): void

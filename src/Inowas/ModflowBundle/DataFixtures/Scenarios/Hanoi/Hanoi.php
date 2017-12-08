@@ -14,6 +14,7 @@ use Inowas\Common\Geometry\LineString;
 use Inowas\Common\Geometry\Point;
 use Inowas\Common\Geometry\Polygon;
 use Inowas\Common\Geometry\Srid;
+use Inowas\Common\Grid\AffectedCells;
 use Inowas\Common\Grid\AffectedLayers;
 use Inowas\Common\Grid\LayerNumber;
 use Inowas\Common\Geometry\Geometry;
@@ -235,6 +236,7 @@ class Hanoi extends LoadScenarioBase
             $wellBoundary = WellBoundary::createWithParams(
                 $boundaryName,
                 Geometry::fromPoint($geoTools->projectPoint(new Point($well['x'], $well['y'], $well['srid']), Srid::fromInt(4326))),
+                AffectedCells::create(),
                 AffectedLayers::createWithLayerNumber(LayerNumber::fromInt((int)$well['layer']-1)),
                 Metadata::create()->addWellType(WellType::fromString($well['type']))
             );
@@ -267,6 +269,7 @@ class Hanoi extends LoadScenarioBase
         $river = RiverBoundary::createWithParams(
             Name::fromString('Red River'),
             Geometry::fromLineString(new LineString($riverPoints, 4326)),
+            AffectedCells::create(),
             AffectedLayers::fromArray([0]),
             Metadata::create()
         );
@@ -310,6 +313,7 @@ class Hanoi extends LoadScenarioBase
         $chdBoundary = ConstantHeadBoundary::createWithParams(
             $boundaryName,
             Geometry::fromLineString(new LineString($chdPoints, 4326)),
+            AffectedCells::create(),
             AffectedLayers::fromArray(array(2, 3)),
             Metadata::create()
         );
@@ -460,6 +464,7 @@ class Hanoi extends LoadScenarioBase
             $wellBoundary = WellBoundary::createWithParams(
                 Name::fromString($wellData['name']),
                 Geometry::fromPoint($geoTools->projectPoint(new Point($wellData['x'], $wellData['y'], $wellData['srid']), Srid::fromInt(4326))),
+                AffectedCells::create(),
                 AffectedLayers::createWithLayerNumber(LayerNumber::fromInt(1)),
                 Metadata::create()->addWellType(WellType::fromString(WellType::TYPE_SCENARIO_NEW_WELL))
             );
@@ -520,6 +525,7 @@ class Hanoi extends LoadScenarioBase
             $wellBoundary = WellBoundary::createWithParams(
                 Name::fromString($wellData['name']),
                 Geometry::fromPoint($geoTools->projectPoint(new Point($wellData['x'], $wellData['y'], $wellData['srid']), Srid::fromInt(4326))),
+                AffectedCells::create(),
                 AffectedLayers::createWithLayerNumber(LayerNumber::fromInt(1)),
                 Metadata::create()->addWellType(WellType::fromString(WellType::TYPE_SCENARIO_NEW_WELL))
             );

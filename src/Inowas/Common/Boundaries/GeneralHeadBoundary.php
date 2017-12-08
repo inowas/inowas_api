@@ -9,8 +9,8 @@ use Inowas\Common\Id\ObservationPointId;
 
 class GeneralHeadBoundary extends ModflowBoundary
 {
-    const CARDINALITY = 'n';
-    const TYPE = 'ghb';
+    public const CARDINALITY = 'n';
+    public const TYPE = 'ghb';
 
     public function addGeneralHeadValueToObservationPoint(ObservationPointId $observationPointId, GeneralHeadDateTimeValue $ghbDateTimeValue): ModflowBoundary
     {

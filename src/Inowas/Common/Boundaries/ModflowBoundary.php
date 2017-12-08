@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Inowas\Common\Boundaries;
 
 use Inowas\Common\Geometry\Geometry;
+use Inowas\Common\Grid\AffectedCells;
 use Inowas\Common\Grid\AffectedLayers;
 use Inowas\Common\Id\BoundaryId;
 use Inowas\Common\Id\ObservationPointId;
@@ -12,8 +13,8 @@ use Inowas\Common\Modflow\Name;
 
 class ModflowBoundary
 {
-    CONST CARDINALITY = '';
-    CONST TYPE = '';
+    public CONST CARDINALITY = '';
+    public CONST TYPE = '';
 
     /** @var  BoundaryId */
     protected $id;
@@ -23,6 +24,9 @@ class ModflowBoundary
 
     /** @var  Geometry */
     protected $geometry;
+
+    /** @var  AffectedCells */
+    protected $affectedCells;
 
     /** @var  AffectedLayers */
     protected $affectedLayers;
@@ -35,15 +39,16 @@ class ModflowBoundary
 
     protected function self(): ModflowBoundary
     {
-        $self = new static($this->id, $this->name, $this->geometry, $this->affectedLayers, $this->metadata);
-        $self->observationPoints = $this->observationPoints;
+        $self = new static($this->id, $this->name, $this->geometry, $this->affectedCells, $this->affectedLayers, $this->metadata);
         $self->id = $this->id;
+        $self->observationPoints = $this->observationPoints;
         return $self;
     }
 
     /** @noinspection MoreThanThreeArgumentsInspection
      * @param Name $name
      * @param Geometry $geometry
+     * @param AffectedCells $affectedCells
      * @param AffectedLayers $affectedLayers
      * @param Metadata $metadata
      * @return ModflowBoundary
@@ -51,19 +56,26 @@ class ModflowBoundary
     public static function createWithParams(
         Name $name,
         Geometry $geometry,
+        AffectedCells $affectedCells,
         AffectedLayers $affectedLayers,
         Metadata $metadata
     ): ModflowBoundary
     {
-        return new static(BoundaryId::fromString($name->slugified()), $name, $geometry, $affectedLayers, $metadata);
+        return new static(BoundaryId::fromString($name->slugified()), $name, $geometry, $affectedCells, $affectedLayers, $metadata);
     }
 
     public static function fromArray(array $arr): ModflowBoundary
     {
+        $affectedCells = AffectedCells::create();
+        if (array_key_exists('active_cells', $arr)) {
+            $affectedCells = AffectedCells::fromArray($arr['active_cells']);
+        }
+
         $static = new static(
             BoundaryId::fromString($arr['id']),
             Name::fromString($arr['name']),
             Geometry::fromArray($arr['geometry']),
+            $affectedCells,
             AffectedLayers::fromArray($arr['affected_layers']),
             Metadata::fromArray($arr['metadata'])
         );
@@ -73,11 +85,12 @@ class ModflowBoundary
         return $static;
     }
 
-    protected function __construct(BoundaryId $id, Name $name, Geometry $geometry, AffectedLayers $affectedLayers, Metadata $metadata)
+    protected function __construct(BoundaryId $id, Name $name, Geometry $geometry, AffectedCells $affectedCells, AffectedLayers $affectedLayers, Metadata $metadata)
     {
         $this->id = $id;
         $this->name = $name;
         $this->geometry = $geometry;
+        $this->affectedCells = $affectedCells;
         $this->affectedLayers = $affectedLayers;
         $this->metadata = $metadata;
         $this->observationPoints = ObservationPointCollection::create();
@@ -92,6 +105,12 @@ class ModflowBoundary
     public function updateGeometry(Geometry $geometry): ModflowBoundary
     {
         $this->geometry = $geometry;
+        return $this->self();
+    }
+
+    public function updateAffectedCells(AffectedCells $affectedCells): ModflowBoundary
+    {
+        $this->affectedCells = $affectedCells;
         return $this->self();
     }
 
@@ -122,6 +141,11 @@ class ModflowBoundary
     {
         $this->observationPoints()->add($point);
         return $this->self();
+    }
+
+    public function affectedCells(): AffectedCells
+    {
+        return $this->affectedCells;
     }
 
     public function affectedLayers(): AffectedLayers
@@ -187,9 +211,10 @@ class ModflowBoundary
             'type' => $this->type()->toString(),
             'name' => $this->name()->toString(),
             'geometry' => $this->geometry()->toArray(),
+            'active_cells' => $this->affectedCells()->toArray(),
             'affected_layers' => $this->affectedLayers()->toArray(),
             'metadata' => $this->metadata()->toArray(),
-            'observation_points' => $this->observationPoints()->toArray()
+            'observation_points' => $this->observationPoints()->toArray(),
         );
     }
 
