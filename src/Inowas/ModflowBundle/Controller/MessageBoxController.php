@@ -89,8 +89,10 @@ class MessageBoxController extends InowasRestController
      *
      * @param Request $request
      * @return JsonResponse
+     * @throws \LogicException
      * @throws \Prooph\ServiceBus\Exception\CommandDispatchException
      * @throws \Inowas\ModflowBundle\Exception\InvalidArgumentException
+     * @throws \Inowas\ModflowBundle\Exception\UserNotAuthenticatedException
      */
     public function messageBoxAction(Request $request): JsonResponse
     {
