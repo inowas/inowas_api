@@ -5,10 +5,12 @@ parameters:
     database_name: db_name
     database_user: db_user
     database_password: db_password
-    mailer_transport: smtp
+    mailer_auth_mode: login
+    mailer_encryption: ssl
     mailer_host: 127.0.0.1
-    mailer_user: null
     mailer_password: null
+    mailer_transport: smtp
+    mailer_user: null
     secret: 7bdbeb4493b2796ff94252f0736b18de433f8a67
     port: 80
     python_prefix: python3

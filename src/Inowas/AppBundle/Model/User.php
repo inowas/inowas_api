@@ -31,6 +31,11 @@ class User extends BaseUser
         return $this->apiKey;
     }
 
+    public function renewApiKey(): void
+    {
+        $this->apiKey = Uuid::uuid4()->toString();
+    }
+
     /**
      * @return Uuid
      */
