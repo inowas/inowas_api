@@ -417,6 +417,7 @@ class Hanoi extends LoadScenarioBase
             if (array_key_exists($key, $rbfRelocatedWellNamesAndGeometry)) {
                 $geometry = Geometry::fromPoint($rbfRelocatedWellNamesAndGeometry[$key]);
                 $boundary = $boundary->updateGeometry($geometry);
+                $boundary->updateAffectedCells(AffectedCells::create());
                 $boundary->updateMetadata(Metadata::create()->addWellType(WellType::fromString(WellType::TYPE_RIVER_BANK_FILTRATION_WELL)));
                 echo sprintf("Move Well %s.\r\n", $boundary->name()->toString());
                 $commandBus->dispatch(UpdateBoundary::forModflowModel($ownerId, $scenarioId, $boundary->boundaryId(), $boundary));
@@ -510,6 +511,7 @@ class Hanoi extends LoadScenarioBase
             if (array_key_exists($key, $rbfRelocatedWellNamesAndGeometry)) {
                 $geometry = Geometry::fromPoint($rbfRelocatedWellNamesAndGeometry[$key]);
                 $boundary = $boundary->updateGeometry($geometry);
+                $boundary->updateAffectedCells(AffectedCells::create());
                 $boundary->updateMetadata(Metadata::create()->addWellType(WellType::fromString(WellType::TYPE_RIVER_BANK_FILTRATION_WELL)));
                 echo sprintf("Move Well %s.\r\n", $boundary->name()->toString());
                 $commandBus->dispatch(UpdateBoundary::forModflowModel($ownerId, $scenarioId, $boundary->boundaryId(), $boundary));

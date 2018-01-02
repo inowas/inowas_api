@@ -101,6 +101,8 @@ services:
         class: Inowas\ModflowModel\Model\Handler\UpdateBoundaryHandler
         arguments:
           - '@modflow_model_list'
+          - '@inowas.modflowmodel.manager'
+          - '@inowas.geotools.geotools_service'
 
     inowas.modflowmodel.update_layer_handler:
         class: Inowas\ModflowModel\Model\Handler\UpdateLayerHandler
