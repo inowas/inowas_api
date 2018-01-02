@@ -27,9 +27,14 @@ class InowasRestController extends FOSRestController
         return json_decode($content, true);
     }
 
+    /**
+     * @throws \LogicException
+     * @throws UserNotAuthenticatedException
+     */
     protected function assertUserIsLoggedInCorrectly(): void
     {
         $user = $this->getUser();
+
         if (! $user instanceof User){
             throw UserNotAuthenticatedException::withMessage(sprintf(
                 'Something went wrong with the authentication. User is not authenticated. Please check your credentials.'
@@ -65,6 +70,11 @@ class InowasRestController extends FOSRestController
         }
     }
 
+    /**
+     * @return UserId
+     * @throws \LogicException
+     * @throws UserNotAuthenticatedException
+     */
     protected function getUserId(): UserId
     {
         $user = $this->getUser();

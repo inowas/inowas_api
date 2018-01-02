@@ -35,8 +35,8 @@ class ToolFinder
     public function findPublicByType(ToolType $toolType): array
     {
         $results = $this->connection->fetchAll(
-            sprintf('SELECT id, name, description, project, application, tool, created_at, user_id, user_name, created_at, public FROM %s WHERE public = 1 AND tool = :tool', Table::TOOL_LIST),
-            ['tool' => $toolType->toString()]
+            sprintf('SELECT id, name, description, project, application, tool, created_at, user_id, user_name, created_at, public FROM %s WHERE public = 1 AND tool LIKE :tool', Table::TOOL_LIST),
+            ['tool' => $toolType->toString().'%']
         );
 
         if ($results === false) {
@@ -79,7 +79,7 @@ class ToolFinder
     {
         $result = $this->connection->fetchAssoc(
             sprintf('SELECT id, name, description, project, application, tool, created_at, user_id, user_name, created_at, public, data FROM %s WHERE id = :id', Table::TOOL_LIST),
-            ['id' => $id->toString(), 'user_id' => $userId->toString(), 'tool' => $toolType->toString()]
+            ['id' => $id->toString(), 'user_id' => $userId->toString()]
         );
 
         if ($result === false) {
@@ -94,8 +94,8 @@ class ToolFinder
     public function findByUserIdAndType(UserId $userId, ToolType $toolType): array
     {
         $results = $this->connection->fetchAll(
-            sprintf('SELECT id, name, description, project, application, tool, created_at, user_id, user_name, created_at, public FROM %s WHERE user_id = :user_id AND tool = :tool', Table::TOOL_LIST),
-            ['user_id' => $userId->toString(), 'tool' => $toolType->toString()]
+            sprintf('SELECT id, name, description, project, application, tool, created_at, user_id, user_name, created_at, public FROM %s WHERE user_id = :user_id AND tool LIKE :tool', Table::TOOL_LIST),
+            ['user_id' => $userId->toString(), 'tool' => $toolType->toString().'%']
         );
 
         if ($results === false) {

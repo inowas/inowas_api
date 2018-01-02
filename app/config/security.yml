@@ -14,8 +14,14 @@ security:
             id: fos_user.user_provider.username_email
 
     firewalls:
-        credentials:
+        user_credentials:
             pattern: ^/v2/users/credentials
+            security: false
+        user_signup:
+            pattern: ^/v2/users/signup
+            security: false
+        user_enable:
+            pattern: ^/v2/users/enable
             security: false
         apidoc:
             pattern: ^/api/doc

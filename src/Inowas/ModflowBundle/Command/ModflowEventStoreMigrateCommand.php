@@ -11,6 +11,7 @@ use Inowas\ModflowBundle\DataFixtures\Scenarios\RioPrimero\RioPrimeroArea;
 use Inowas\ModflowBundle\DataFixtures\Scenarios\RioPrimero\RioPrimeroBaseModel;
 use Inowas\ModflowBundle\DataFixtures\Scenarios\RioPrimero\RioPrimeroBaseModelAndFutureWells;
 use Inowas\ModflowBundle\DataFixtures\Scenarios\SanFelipe\SanFelipe;
+use Inowas\ModflowBundle\DataFixtures\Scenarios\Tools\Tools;
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -39,45 +40,52 @@ class ModflowEventStoreMigrateCommand extends ContainerAwareCommand
 
         if (null === $modelname){
             $output->writeln('Possible Arguments are:');
-            $output->writeln('1 or Hanoi for the hanoi-modflow-model');
-            $output->writeln('2 or Rio Primero scenario analysis');
-            $output->writeln('3 or Rio Primero base model for summer school');
-            $output->writeln('4 or Rio Primero area only');
-            $output->writeln('5 or Rio Primero Scenario Analysis');
-            $output->writeln('6 or San Felipe for the hanoi-modflow-model');
+            $output->writeln('1 for default tools');
+            $output->writeln('2 or Hanoi for the hanoi-modflow-model');
+            $output->writeln('3 or Rio Primero scenario analysis');
+            $output->writeln('4 or Rio Primero base model for summer school');
+            $output->writeln('5 or Rio Primero area only');
+            $output->writeln('6 or Rio Primero Scenario Analysis');
+            $output->writeln('7 or San Felipe for the hanoi-modflow-model');
         }
 
-        if ($modelname === 'Hanoi Basemodel with Scenarios' || (int)$modelname === 1) {
+        if ((int)$modelname === 1) {
+            $tools = new Tools();
+            $tools->setContainer($this->getContainer());
+            $tools->load();
+        }
+
+        if ($modelname === 'Hanoi Basemodel with Scenarios' || (int)$modelname === 2) {
             $hanoi = new Hanoi();
             $hanoi->setContainer($this->getContainer());
             $hanoi->load();
         }
 
-        if ($modelname === 'Rio Primero' || (int)$modelname === 2) {
+        if ($modelname === 'Rio Primero' || (int)$modelname === 3) {
             $rioPrimero = new RioPrimero();
             $rioPrimero->setContainer($this->getContainer());
             $rioPrimero->load();
         }
 
-        if ($modelname === 'Rio Primero base model for summer school' || (int)$modelname === 3) {
+        if ($modelname === 'Rio Primero base model for summer school' || (int)$modelname === 4) {
             $rioPrimero = new RioPrimeroBaseModel();
             $rioPrimero->setContainer($this->getContainer());
             $rioPrimero->load();
         }
 
-        if ($modelname === 'Rio Primero Area' || (int)$modelname === 4) {
+        if ($modelname === 'Rio Primero Area' || (int)$modelname === 5) {
             $rioPrimero = new RioPrimeroArea();
             $rioPrimero->setContainer($this->getContainer());
             $rioPrimero->load();
         }
 
-        if ($modelname === 'Rio Primero Scenario Analysis' || (int)$modelname === 5) {
+        if ($modelname === 'Rio Primero Scenario Analysis' || (int)$modelname === 6) {
             $rioPrimero = new RioPrimeroBaseModelAndFutureWells();
             $rioPrimero->setContainer($this->getContainer());
             $rioPrimero->load();
         }
 
-        if ($modelname === 'San Felipe' || (int)$modelname === 6) {
+        if ($modelname === 'San Felipe' || (int)$modelname === 7) {
             $rioPrimero = new SanFelipe();
             $rioPrimero->setContainer($this->getContainer());
             $rioPrimero->load();

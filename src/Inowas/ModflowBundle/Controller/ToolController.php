@@ -54,6 +54,7 @@ class ToolController extends InowasRestController
      * @param string $type
      * @param ParamFetcher $paramFetcher
      * @return JsonResponse
+     * @throws \LogicException
      * @throws \Inowas\ModflowBundle\Exception\InvalidArgumentException
      * @throws \Inowas\ModflowBundle\Exception\UserNotAuthenticatedException
      */

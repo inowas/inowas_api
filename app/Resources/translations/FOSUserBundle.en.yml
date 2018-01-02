@@ -21,7 +21,7 @@ security:
 profile:
     show:
         username: Username
-        email: Email
+        email: email
     edit:
         submit: Update
     flash:
@@ -80,7 +80,7 @@ layout:
 form:
     group_name: 'Group name'
     username: Username
-    email: Email
+    email: email
     current_password: 'Current password'
     password: Password
     password_confirmation: 'Repeat password'

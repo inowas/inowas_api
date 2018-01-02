@@ -27,6 +27,10 @@ class InowasRestController extends FOSRestController
         return json_decode($content, true);
     }
 
+    /**
+     * @throws \LogicException
+     * @throws UserNotAuthenticatedException
+     */
     protected function assertUserIsLoggedInCorrectly(): void
     {
         $user = $this->getUser();
@@ -71,6 +75,11 @@ class InowasRestController extends FOSRestController
         }
     }
 
+    /**
+     * @return UserId
+     * @throws \LogicException
+     * @throws UserNotAuthenticatedException
+     */
     protected function getUserId(): UserId
     {
         $user = $this->getUser();
