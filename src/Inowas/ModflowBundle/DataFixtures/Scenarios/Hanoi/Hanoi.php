@@ -77,9 +77,6 @@ class Hanoi extends LoadScenarioBase
 
         $commandBus = $this->container->get('prooph_service_bus.modflow_command_bus');
 
-        $owner = $userManager->findUserByUsername('ralf.junghanns');
-        $this->ownerId = $owner->getId()->toString();
-
         $ownerId = UserId::fromString($this->ownerId);
         $modelId = ModflowId::generate();
         $polygon = new Polygon(array(array(
