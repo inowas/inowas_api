@@ -65,7 +65,9 @@ class Tools extends LoadScenarioBase
                             {"id":"Sy","max":0.5,"min":0,"value":0.085},
                             {"id":"K","max":10,"min":0.1,"value":1.83},
                             {"id":"t","max":100,"min":0,"value":1.5}
-                        ]}',
+                        ],
+                        "tool":"'.$toolType->toString().'"
+                        }',
                         true
                     )
                 ),
@@ -86,7 +88,9 @@ class Tools extends LoadScenarioBase
                             {"id":"h","max":10,"min":0,"value":1},
                             {"id":"df","max":1.03,"min":0.9,"value":1},
                             {"id":"ds","max":1.03,"min":0.9,"value":1.025}
-                        ]}',
+                        ],
+                        "tool":"'.$toolType->toString().'"
+                        }',
                         true
                     )
                 ),
@@ -128,7 +132,9 @@ class Tools extends LoadScenarioBase
                               "min": 0.9,
                               "value": 1.025
                             }
-                        ]}',
+                        ],
+                        "tool":"'.$toolType->toString().'"
+                        }',
                         true
                     )
                 ),
@@ -153,6 +159,7 @@ class Tools extends LoadScenarioBase
                                 {"id":"rhof","max":1.03,"min":0.9,"value":1},
                                 {"id":"rhos","max":1.03,"min":0.9,"value":1.025}
                             ],
+                            "tool":"'.$toolType->toString().'",
                             "settings":{"AqType":"unconfined"}
                         }',
                         true
@@ -209,6 +216,7 @@ class Tools extends LoadScenarioBase
                                   "value": 1.025
                                 }
                             ],
+                          "tool":"'.$toolType->toString().'",
                           "settings": {
                             "AqType": "unconfined"
                           }
@@ -278,7 +286,8 @@ class Tools extends LoadScenarioBase
                                   "min": 1.02,
                                   "value": 1.025
                                 }
-                            ]
+                            ],
+                            "tool":"'.$toolType->toString().'"
                         }',
                         true
                     )
