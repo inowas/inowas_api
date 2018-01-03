@@ -13,3 +13,5 @@ bin/console inowas:postgis:install --env=prod
 bin/console doctrine:schema:create --env=prod
 bin/console inowas:es:schema:create --env=prod
 bin/console inowas:projections:reset --env=prod
+bin/console inowas:users:load --env=prod
+bin/console inowas:es:migrate 1 --env=prod
