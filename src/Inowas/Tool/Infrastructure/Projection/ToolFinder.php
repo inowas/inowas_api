@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Inowas\Tool\Infrastructure\Projection;
 
 use Doctrine\DBAL\Connection;
+use Inowas\AppBundle\Model\UserPermission;
 use Inowas\Common\Id\UserId;
 use Inowas\Tool\Model\ToolType;
 use Inowas\Tool\Model\ToolId;
@@ -72,10 +73,11 @@ class ToolFinder
         }
 
         $result['data'] = json_decode($result['data'], true);
+        $result['public'] = (bool)$result['public'];
         return $result;
     }
 
-    public function findByUserIdTypeAndId(UserId $userId, ToolType $toolType, ToolId $id): ?array
+    public function findByUserIdTypeAndId(UserId $userId, ToolId $id): ?array
     {
         $result = $this->connection->fetchAssoc(
             sprintf('SELECT id, name, description, project, application, tool, created_at, user_id, user_name, created_at, public, data FROM %s WHERE id = :id', Table::TOOL_LIST),
@@ -88,6 +90,8 @@ class ToolFinder
 
         $result['data'] = json_decode($result['data'], true);
         $result['public'] = (bool)$result['public'];
+        $result['permissions'] = UserPermission::readWriteExecute()->toString();
+
         return $result;
     }
 

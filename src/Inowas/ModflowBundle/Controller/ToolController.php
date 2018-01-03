@@ -6,6 +6,7 @@ namespace Inowas\ModflowBundle\Controller;
 
 use FOS\RestBundle\Controller\Annotations as Rest;
 use FOS\RestBundle\Request\ParamFetcher;
+use Inowas\AppBundle\Model\UserPermission;
 use Inowas\ModflowBundle\Exception\InvalidArgumentException;
 use Inowas\Tool\Model\ToolId;
 use Inowas\Tool\Model\ToolType;
@@ -29,6 +30,7 @@ class ToolController extends InowasRestController
      *
      * @Rest\Get("/tools")
      * @return JsonResponse
+     * @throws \LogicException
      * @throws \Inowas\ModflowBundle\Exception\UserNotAuthenticatedException
      */
     public function getMyToolsAction(): JsonResponse
@@ -92,22 +94,32 @@ class ToolController extends InowasRestController
      * @param string $type
      * @param string $id
      * @return JsonResponse
+     * @throws \LogicException
      * @throws \Inowas\ModflowBundle\Exception\InvalidArgumentException
      * @throws \Inowas\ModflowBundle\Exception\UserNotAuthenticatedException
      */
     public function getToolDetailsAction(string $type, string $id): JsonResponse
     {
         $userId = $this->getUserId();
-        $toolType = ToolType::fromString($type);
         $toolId = ToolId::fromString($id);
 
         if (! ToolType::isValid($type)) {
             throw InvalidArgumentException::withMessage(sprintf('The ToolType %s is not valid. Available types are: %s', $type, implode(', ', ToolType::$availableTypes)));
         }
 
-        $result = $this->get('inowas.tool.tools_finder')->findByUserIdTypeAndId($userId, $toolType, $toolId);
+        $permissions = UserPermission::noPermission();
+
+        if ($this->get('inowas.tool.tools_finder')->isPublic($toolId)) {
+            $permissions = UserPermission::readOnly();
+        }
+
+        if ($this->get('inowas.tool.tools_finder')->isToolOwner($toolId, $userId)) {
+            $permissions = UserPermission::readWriteExecute();
+        }
+
+        $result = $this->get('inowas.tool.tools_finder')->findById($toolId);
+        $result['permissions'] = $permissions->toString();
 
         return new JsonResponse($result);
     }
-
 }
