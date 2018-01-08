@@ -151,16 +151,39 @@ class Tools extends LoadScenarioBase
                 ToolData::fromArray(
                     json_decode(
                         '{
-                            "parameters":[
-                                {"id":"k","max":100,"min":1,"value":50},
-                                {"id":"b","max":100,"min":10,"value":20},
-                                {"id":"q","max":10,"min":0.1,"value":1},
-                                {"id":"xw","max":5000,"min":1000,"value":2000},
-                                {"id":"rhof","max":1.03,"min":0.9,"value":1},
-                                {"id":"rhos","max":1.03,"min":0.9,"value":1.025}
+                            "parameters": [
+                                {
+                                  "id": "q",
+                                  "max": 3000,
+                                  "min": 1,
+                                  "value": 2000
+                                },
+                                {
+                                  "id": "k",
+                                  "max": 100,
+                                  "min": 1,
+                                  "value": 50
+                                },
+                                {
+                                  "id": "d",
+                                  "max": 50,
+                                  "min": 1,
+                                  "value": 30
+                                },
+                                {
+                                  "id": "df",
+                                  "max": 1.03,
+                                  "min": 0.9,
+                                  "value": 1
+                                },
+                                {
+                                  "id": "ds",
+                                  "max": 1.03,
+                                  "min": 0.9,
+                                  "value": 1.025
+                                }
                             ],
                             "tool":"'.$toolType->toString().'",
-                            "settings":{"AqType":"unconfined"}
                         }',
                         true
                     )
@@ -178,44 +201,50 @@ class Tools extends LoadScenarioBase
                 ToolData::fromArray(
                     json_decode(
                         '{
-                            "parameters": [
-                                {
-                                  "id": "k",
-                                  "max": 100,
-                                  "min": 1,
-                                  "value": 50
-                                },
-                                {
-                                  "id": "b",
-                                  "max": 100,
-                                  "min": 10,
-                                  "value": 20
-                                },
-                                {
-                                  "id": "q",
-                                  "max": 10,
-                                  "min": 0.1,
-                                  "value": 1
-                                },
-                                {
-                                  "id": "xw",
-                                  "max": 5000,
-                                  "min": 1000,
-                                  "value": 2000
-                                },
-                                {
-                                  "id": "rhof",
-                                  "max": 1.03,
-                                  "min": 0.9,
-                                  "value": 1
-                                },
-                                {
-                                  "id": "rhos",
-                                  "max": 1.03,
-                                  "min": 0.9,
-                                  "value": 1.025
-                                }
-                            ],
+                        "parameters": [
+                            {
+                              "id": "k",
+                              "max": 100,
+                              "min": 1,
+                              "value": 50
+                            },
+                            {
+                              "id": "b",
+                              "max": 100,
+                              "min": 10,
+                              "value": 20
+                            },
+                            {
+                              "id": "q",
+                              "max": 10,
+                              "min": 0.1,
+                              "value": 1
+                            },
+                            {
+                              "id": "Q",
+                              "max": 10000,
+                              "min": 0,
+                              "value": 5000
+                            },
+                            {
+                              "id": "xw",
+                              "max": 5000,
+                              "min": 1000,
+                              "value": 2000
+                            },
+                            {
+                              "id": "rhof",
+                              "max": 1.03,
+                              "min": 0.9,
+                              "value": 1
+                            },
+                            {
+                              "id": "rhos",
+                              "max": 1.03,
+                              "min": 0.9,
+                              "value": 1.025
+                            }
+                          ],
                           "tool":"'.$toolType->toString().'",
                           "settings": {
                             "AqType": "unconfined"
