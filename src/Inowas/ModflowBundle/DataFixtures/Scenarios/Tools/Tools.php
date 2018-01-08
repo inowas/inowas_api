@@ -271,37 +271,43 @@ class Tools extends LoadScenarioBase
                                   "id": "k",
                                   "max": 100,
                                   "min": 1,
-                                  "value": 50
+                                  "value": 20
                                 },
                                 {
-                                  "id": "z",
+                                  "id": "z0",
                                   "max": 100,
                                   "min": 0,
-                                  "value": 15
+                                  "value": 25
                                 },
                                 {
                                   "id": "l",
-                                  "max": 100,
+                                  "max": 10000,
                                   "min": 0,
-                                  "value": 50
+                                  "value": 2000
                                 },
                                 {
                                   "id": "w",
-                                  "max": 200,
+                                  "max": 0.001,
                                   "min": 0,
-                                  "value": 50
+                                  "value": 0.0001
                                 },
                                 {
                                   "id": "dz",
-                                  "max": 0.5,
+                                  "max": 2,
                                   "min": 0,
-                                  "value": 0.1
+                                  "value": 1
                                 },
                                 {
                                   "id": "hi",
-                                  "max": 100,
+                                  "max": 10,
                                   "min": 0,
-                                  "value": 5
+                                  "value": 2
+                                },
+                                {
+                                  "id": "i",
+                                  "max": 0.01,
+                                  "min": 0,
+                                  "value": 0.001
                                 },
                                 {
                                   "id": "df",
@@ -315,7 +321,10 @@ class Tools extends LoadScenarioBase
                                   "min": 1.02,
                                   "value": 1.025
                                 }
-                            ],
+                              ],
+                            "settings": {
+                                "method": "constFlux"
+                            },
                             "tool":"'.$toolType->toString().'"
                         }',
                         true
