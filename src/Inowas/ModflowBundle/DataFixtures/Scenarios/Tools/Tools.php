@@ -288,7 +288,7 @@ class Tools extends LoadScenarioBase
                                   "value": 1.025
                                 }
                             ],
-                            "tool":"'.$toolType->toString().'",
+                            "tool":"'.$toolType->toString().'"
                         }',
                         true
                     )
