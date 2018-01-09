@@ -20,6 +20,12 @@ class Tools extends LoadScenarioBase
     /** @var User */
     private $owner;
 
+    /**
+     *
+     * @throws \Symfony\Component\DependencyInjection\Exception\ServiceNotFoundException
+     * @throws \Symfony\Component\DependencyInjection\Exception\ServiceCircularReferenceException
+     * @throws \Prooph\ServiceBus\Exception\CommandDispatchException
+     */
     public function load(): void
     {
         $userManager = $this->container->get('fos_user.user_manager');
@@ -31,6 +37,8 @@ class Tools extends LoadScenarioBase
         $this->owner = $userManager->findUserByUsername('inowas');
 
         $command = $this->getCreateToolInstanceCommand(ToolType::fromString('T02'));
+        $commandBus->dispatch($command);
+        $command = $this->getCreateToolInstanceCommand(ToolType::fromString('T08'));
         $commandBus->dispatch($command);
         $command = $this->getCreateToolInstanceCommand(ToolType::fromString('T09A'));
         $commandBus->dispatch($command);
@@ -66,6 +74,103 @@ class Tools extends LoadScenarioBase
                             {"id":"K","max":10,"min":0.1,"value":1.83},
                             {"id":"t","max":100,"min":0,"value":1.5}
                         ],
+                        "tool":"'.$toolType->toString().'"
+                        }',
+                        true
+                    )
+                ),
+                Visibility::public ()
+            );
+        }
+        if ($toolType->toString() === 'T08') {
+            return CreateToolInstance::newWithAllParams(
+                UserId::fromString($this->owner->getId()),
+                ToolId::generate(),
+                $toolType,
+                Name::fromString('Default'),
+                Description::fromString(''),
+                ToolData::fromArray(
+                    json_decode(
+                        '{
+                        "settings": {
+                            "retardation": true,
+                            "case": "fixedTime",
+                            "infiltration": "continuous"
+                        },
+                        "parameters": [
+                            {
+                              "id": "C0",
+                              "max": 1000,
+                              "min": 0,
+                              "value": 725
+                            },
+                            {
+                              "id": "x",
+                              "max": 100,
+                              "min": 0,
+                              "value": 15
+                            },
+                            {
+                              "id": "t",
+                              "max": 500,
+                              "min": 0,
+                              "value": 365
+                            },
+                            {
+                              "id": "K",
+                              "max": 100,
+                              "min": 0.01,
+                              "value": 2.592
+                            },
+                            {
+                              "id": "I",
+                              "max": 0.01,
+                              "min": 0,
+                              "value": 0.002
+                            },
+                            {
+                              "id": "ne",
+                              "max": 0.5,
+                              "min": 0,
+                              "value": 0.23
+                            },
+                            {
+                              "id": "rhoS",
+                              "max": 3,
+                              "min": 0,
+                              "value": 2.65
+                            },
+                            {
+                              "id": "alphaL",
+                              "max": 10,
+                              "min": 0.1,
+                              "value": 0.923
+                            },
+                            {
+                              "id": "Kd",
+                              "max": 0.1,
+                              "min": 0,
+                              "value": 0.01
+                            },
+                            {
+                              "id": "tau",
+                              "max": 500,
+                              "min": 0,
+                              "value": 100
+                            },
+                            {
+                              "id": "Corg",
+                              "max": 0.1,
+                              "min": 0,
+                              "value": 0.001
+                            },
+                            {
+                              "id": "Kow",
+                              "max": 10,
+                              "min": 0,
+                              "value": 2.25
+                            }
+                          ],
                         "tool":"'.$toolType->toString().'"
                         }',
                         true
