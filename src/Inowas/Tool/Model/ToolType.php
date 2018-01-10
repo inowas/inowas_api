@@ -24,13 +24,20 @@ final class ToolType
         'T09C',
         'T09D',
         'T09E',
+        'T12',
         'T13',
         'T13A',
         'T13B',
         'T13C',
         'T13D',
         'T13E',
-        'T14'
+        'T14',
+        'T14A',
+        'T14B',
+        'T14C',
+        'T14D',
+        'T14E',
+        'T18'
     );
 
     /** @var  string */
