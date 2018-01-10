@@ -50,6 +50,20 @@ class Tools extends LoadScenarioBase
         $commandBus->dispatch($command);
         $command = $this->getCreateToolInstanceCommand(ToolType::fromString('T09E'));
         $commandBus->dispatch($command);
+        $command = $this->getCreateToolInstanceCommand(ToolType::fromString('T13A'));
+        $commandBus->dispatch($command);
+        $command = $this->getCreateToolInstanceCommand(ToolType::fromString('T13B'));
+        $commandBus->dispatch($command);
+        #$command = $this->getCreateToolInstanceCommand(ToolType::fromString('T13C'));
+        #$commandBus->dispatch($command);
+        $command = $this->getCreateToolInstanceCommand(ToolType::fromString('T14A'));
+        $commandBus->dispatch($command);
+        $command = $this->getCreateToolInstanceCommand(ToolType::fromString('T14B'));
+        $commandBus->dispatch($command);
+        $command = $this->getCreateToolInstanceCommand(ToolType::fromString('T14C'));
+        $commandBus->dispatch($command);
+        $command = $this->getCreateToolInstanceCommand(ToolType::fromString('T14D'));
+        $commandBus->dispatch($command);
     }
 
     private function getCreateToolInstanceCommand(ToolType $toolType): CreateToolInstance
@@ -74,7 +88,7 @@ class Tools extends LoadScenarioBase
                             {"id":"K","max":10,"min":0.1,"value":1.83},
                             {"id":"t","max":100,"min":0,"value":1.5}
                         ],
-                        "tool":"'.$toolType->toString().'"
+                        "tool":"' . $toolType->toString() . '"
                         }',
                         true
                     )
@@ -171,7 +185,7 @@ class Tools extends LoadScenarioBase
                               "value": 2.25
                             }
                           ],
-                        "tool":"'.$toolType->toString().'"
+                        "tool":"' . $toolType->toString() . '"
                         }',
                         true
                     )
@@ -184,7 +198,7 @@ class Tools extends LoadScenarioBase
                 UserId::fromString($this->owner->getId()),
                 ToolId::generate(),
                 $toolType,
-                Name::fromString($toolType->toString().' default'),
+                Name::fromString($toolType->toString() . ' default'),
                 Description::fromString(''),
                 ToolData::fromArray(
                     json_decode(
@@ -194,7 +208,7 @@ class Tools extends LoadScenarioBase
                             {"id":"df","max":1.03,"min":0.9,"value":1},
                             {"id":"ds","max":1.03,"min":0.9,"value":1.025}
                         ],
-                        "tool":"'.$toolType->toString().'"
+                        "tool":"' . $toolType->toString() . '"
                         }',
                         true
                     )
@@ -207,7 +221,7 @@ class Tools extends LoadScenarioBase
                 UserId::fromString($this->owner->getId()),
                 ToolId::generate(),
                 $toolType,
-                Name::fromString($toolType->toString().' default'),
+                Name::fromString($toolType->toString() . ' default'),
                 Description::fromString(''),
                 ToolData::fromArray(
                     json_decode(
@@ -238,7 +252,7 @@ class Tools extends LoadScenarioBase
                               "value": 1.025
                             }
                         ],
-                        "tool":"'.$toolType->toString().'"
+                        "tool":"' . $toolType->toString() . '"
                         }',
                         true
                     )
@@ -251,7 +265,7 @@ class Tools extends LoadScenarioBase
                 UserId::fromString($this->owner->getId()),
                 ToolId::generate(),
                 $toolType,
-                Name::fromString($toolType->toString().' default'),
+                Name::fromString($toolType->toString() . ' default'),
                 Description::fromString(''),
                 ToolData::fromArray(
                     json_decode(
@@ -288,7 +302,7 @@ class Tools extends LoadScenarioBase
                                   "value": 1.025
                                 }
                             ],
-                            "tool":"'.$toolType->toString().'"
+                            "tool":"' . $toolType->toString() . '"
                         }',
                         true
                     )
@@ -301,7 +315,7 @@ class Tools extends LoadScenarioBase
                 UserId::fromString($this->owner->getId()),
                 ToolId::generate(),
                 $toolType,
-                Name::fromString($toolType->toString().' default'),
+                Name::fromString($toolType->toString() . ' default'),
                 Description::fromString(''),
                 ToolData::fromArray(
                     json_decode(
@@ -350,7 +364,7 @@ class Tools extends LoadScenarioBase
                               "value": 1.025
                             }
                           ],
-                          "tool":"'.$toolType->toString().'",
+                          "tool":"' . $toolType->toString() . '",
                           "settings": {
                             "AqType": "unconfined"
                           }
@@ -366,7 +380,7 @@ class Tools extends LoadScenarioBase
                 UserId::fromString($this->owner->getId()),
                 ToolId::generate(),
                 $toolType,
-                Name::fromString($toolType->toString().' default'),
+                Name::fromString($toolType->toString() . ' default'),
                 Description::fromString(''),
                 ToolData::fromArray(
                     json_decode(
@@ -430,12 +444,464 @@ class Tools extends LoadScenarioBase
                             "settings": {
                                 "method": "constFlux"
                             },
-                            "tool":"'.$toolType->toString().'"
+                            "tool":"' . $toolType->toString() . '"
                         }',
                         true
                     )
                 ),
                 Visibility::public ()
+            );
+        }
+        if ($toolType->toString() === 'T13A') {
+            return CreateToolInstance::newWithAllParams(
+                UserId::fromString($this->owner->getId()),
+                ToolId::generate(),
+                $toolType,
+                Name::fromString($toolType->toString() . ' default'),
+                Description::fromString(''),
+                ToolData::fromArray(
+                    json_decode(
+                        '{
+                            "parameters": [
+                                {
+                                  "id": "W",
+                                  "max": 0.01,
+                                  "min": 0.001,
+                                  "value": 0.009
+                                },
+                                {
+                                  "id": "K",
+                                  "max": 1000,
+                                  "min": 0.1,
+                                  "value": 10.1
+                                },
+                                {
+                                  "id": "ne",
+                                  "max": 0.5,
+                                  "min": 0,
+                                  "value": 0.35
+                                },
+                                {
+                                  "id": "L",
+                                  "max": 1000,
+                                  "min": 0,
+                                  "value": 500
+                                },
+                                {
+                                  "id": "hL",
+                                  "max": 10,
+                                  "min": 0,
+                                  "value": 2
+                                },
+                                {
+                                  "id": "xi",
+                                  "max": 1000,
+                                  "min": 0,
+                                  "value": 50
+                                },
+                                {
+                                  "id": "xe",
+                                  "max": 1000,
+                                  "min": 1,
+                                  "value": 500
+                                }
+                            ],
+                            "tool":"' . $toolType->toString() . '"
+                        }',
+                        true
+                    )
+                ),
+                Visibility::public()
+            );
+        }
+        if ($toolType->toString() === 'T13B') {
+            return CreateToolInstance::newWithAllParams(
+                UserId::fromString($this->owner->getId()),
+                ToolId::generate(),
+                $toolType,
+                Name::fromString($toolType->toString() . ' default'),
+                Description::fromString(''),
+                ToolData::fromArray(
+                    json_decode(
+                        '{
+                           "parameters": [
+                                {
+                                  "id": "W",
+                                  "max": 0.01,
+                                  "min": 0.001,
+                                  "value": 0.00112
+                                },
+                                {
+                                  "id": "K",
+                                  "max": 1000,
+                                  "min": 0.1,
+                                  "value": 30.2
+                                },
+                                {
+                                  "id": "L",
+                                  "max": 1000,
+                                  "min": 0,
+                                  "value": 1000
+                                },
+                                {
+                                  "id": "hL",
+                                  "max": 10,
+                                  "min": 0,
+                                  "value": 2
+                                },
+                                {
+                                  "id": "h0",
+                                  "max": 10,
+                                  "min": 0,
+                                  "value": 5
+                                },
+                                {
+                                  "id": "ne",
+                                  "max": 0.5,
+                                  "min": 0,
+                                  "value": 0.35
+                                },
+                                {
+                                  "id": "xi",
+                                  "max": 1000,
+                                  "min": 0,
+                                  "value": 50
+                                },
+                                {
+                                  "id": "xe",
+                                  "max": 1000,
+                                  "min": 1,
+                                  "value": 200
+                                }
+                            ],
+                            "tool":"' . $toolType->toString() . '"
+                        }',
+                        true
+                    )
+                ),
+                Visibility::public()
+            );
+        }
+        if ($toolType->toString() === 'T13C') {
+            return CreateToolInstance::newWithAllParams(
+                UserId::fromString($this->owner->getId()),
+                ToolId::generate(),
+                $toolType,
+                Name::fromString($toolType->toString() . ' default'),
+                Description::fromString(''),
+                ToolData::fromArray(
+                    json_decode(
+                        '{
+                           "parameters": [
+                                {
+                                  "id": "W",
+                                  "max": 0.01,
+                                  "min": 0.001,
+                                  "value": 0.009
+                                },
+                                {
+                                  "id": "K",
+                                  "max": 1000,
+                                  "min": 0.1,
+                                  "value": 10.1
+                                },
+                                {
+                                  "id": "ne",
+                                  "max": 0.5,
+                                  "min": 0,
+                                  "value": 0.35
+                                },
+                                {
+                                  "id": "L",
+                                  "max": 1000,
+                                  "min": 0,
+                                  "value": 500
+                                },
+                                {
+                                  "id": "hL",
+                                  "max": 10,
+                                  "min": 0,
+                                  "value": 1
+                                },
+                                {
+                                  "id": "h0",
+                                  "max": 10,
+                                  "min": 0,
+                                  "value": 10
+                                },
+                                {
+                                  "id": "xi",
+                                  "max": 1000,
+                                  "min": 0,
+                                  "value": 50
+                                },
+                                {
+                                  "id": "xe",
+                                  "max": 1000,
+                                  "min": 1,
+                                  "value": 500
+                                }
+                              ],
+                            "tool":"' . $toolType->toString() . '"
+                        }',
+                        true
+                    )
+                ),
+                Visibility::public()
+            );
+        }
+        if ($toolType->toString() === 'T14A') {
+            return CreateToolInstance::newWithAllParams(
+                UserId::fromString($this->owner->getId()),
+                ToolId::generate(),
+                $toolType,
+                Name::fromString($toolType->toString() . ' default'),
+                Description::fromString(''),
+                ToolData::fromArray(
+                    json_decode(
+                        '{
+                            "parameters": [
+                                {
+                                  "id": "Qw",
+                                  "max": 1000,
+                                  "min": 1,
+                                  "value": 150
+                                },
+                                {
+                                  "id": "t",
+                                  "max": 500,
+                                  "min": 1,
+                                  "value": 5
+                                },
+                                {
+                                  "id": "S",
+                                  "max": 0.5,
+                                  "min": 0.1,
+                                  "value": 0.2
+                                },
+                                {
+                                  "id": "T",
+                                  "max": 3000,
+                                  "min": 1000,
+                                  "value": 1500
+                                },
+                                {
+                                  "id": "d",
+                                  "max": 1000,
+                                  "min": 200,
+                                  "value": 500
+                                }
+                              ],
+                            "tool":"' . $toolType->toString() . '"
+                        }',
+                        true
+                    )
+                ),
+                Visibility::public()
+            );
+        }
+        if ($toolType->toString() === 'T14B') {
+            return CreateToolInstance::newWithAllParams(
+                UserId::fromString($this->owner->getId()),
+                ToolId::generate(),
+                $toolType,
+                Name::fromString($toolType->toString() . ' default'),
+                Description::fromString(''),
+                ToolData::fromArray(
+                    json_decode(
+                        '{
+                        "parameters": [
+                                {
+                                  "id": "Qw",
+                                  "max": 1000,
+                                  "min": 1,
+                                  "value": 150
+                                },
+                                {
+                                  "id": "t",
+                                  "max": 500,
+                                  "min": 100,
+                                  "value": 365
+                                },
+                                {
+                                  "id": "S",
+                                  "max": 0.5,
+                                  "min": 0.1,
+                                  "value": 0.2
+                                },
+                                {
+                                  "id": "T",
+                                  "max": 3000,
+                                  "min": 1000,
+                                  "value": 1500
+                                },
+                                {
+                                  "id": "d",
+                                  "max": 1000,
+                                  "min": 200,
+                                  "value": 500
+                                },
+                                {
+                                  "id": "K",
+                                  "max": 10,
+                                  "min": 1,
+                                  "value": 1
+                                },
+                                {
+                                  "id": "Kdash",
+                                  "max": 1,
+                                  "min": 0.1,
+                                  "value": 0.1
+                                },
+                                {
+                                  "id": "bdash",
+                                  "max": 1000,
+                                  "min": 100,
+                                  "value": 100
+                                }
+                              ],
+                            "tool":"' . $toolType->toString() . '"
+                        }',
+                        true
+                    )
+                ),
+                Visibility::public()
+            );
+        }
+        if ($toolType->toString() === 'T14C') {
+            return CreateToolInstance::newWithAllParams(
+                UserId::fromString($this->owner->getId()),
+                ToolId::generate(),
+                $toolType,
+                Name::fromString($toolType->toString() . ' default'),
+                Description::fromString(''),
+                ToolData::fromArray(
+                    json_decode(
+                        '{
+                              "parameters": [
+                                {
+                                  "id": "Qw",
+                                  "max": 1000,
+                                  "min": 1,
+                                  "value": 150
+                                },
+                                {
+                                  "id": "t",
+                                  "max": 500,
+                                  "min": 100,
+                                  "value": 365
+                                },
+                                {
+                                  "id": "S",
+                                  "max": 0.5,
+                                  "min": 0.1,
+                                  "value": 0.2
+                                },
+                                {
+                                  "id": "T",
+                                  "max": 3000,
+                                  "min": 1000,
+                                  "value": 1500
+                                },
+                                {
+                                  "id": "d",
+                                  "max": 1000,
+                                  "min": 200,
+                                  "value": 500
+                                },
+                                {
+                                  "id": "W",
+                                  "max": 10,
+                                  "min": 1,
+                                  "value": 2.5
+                                },
+                                {
+                                  "id": "Kdash",
+                                  "max": 1,
+                                  "min": 0.1,
+                                  "value": 0.1
+                                },
+                                {
+                                  "id": "bdash",
+                                  "max": 10,
+                                  "min": 1,
+                                  "value": 1
+                                }
+                              ],                        
+                            "tool":"' . $toolType->toString() . '"
+                        }',
+                        true
+                    )
+                ),
+                Visibility::public()
+            );
+        }
+        if ($toolType->toString() === 'T14D') {
+            return CreateToolInstance::newWithAllParams(
+                UserId::fromString($this->owner->getId()),
+                ToolId::generate(),
+                $toolType,
+                Name::fromString($toolType->toString() . ' default'),
+                Description::fromString(''),
+                ToolData::fromArray(
+                    json_decode(
+                        '{
+                        "parameters": [
+                                {
+                                  "id": "Qw",
+                                  "max": 1000,
+                                  "min": 1,
+                                  "value": 150
+                                },
+                                {
+                                  "id": "t",
+                                  "max": 500,
+                                  "min": 100,
+                                  "value": 365
+                                },
+                                {
+                                  "id": "S",
+                                  "max": 0.5,
+                                  "min": 0.1,
+                                  "value": 0.2
+                                },
+                                {
+                                  "id": "T",
+                                  "max": 3000,
+                                  "min": 1000,
+                                  "value": 1500
+                                },
+                                {
+                                  "id": "d",
+                                  "max": 1000,
+                                  "min": 200,
+                                  "value": 500
+                                },
+                                {
+                                  "id": "W",
+                                  "max": 10,
+                                  "min": 1,
+                                  "value": 2.5
+                                },
+                                {
+                                  "id": "Kdash",
+                                  "max": 1,
+                                  "min": 0.1,
+                                  "value": 0.1
+                                },
+                                {
+                                  "id": "bdash",
+                                  "max": 10,
+                                  "min": 1,
+                                  "value": 1
+                                }
+                              ],               
+                            "tool":"' . $toolType->toString() . '"
+                        }',
+                        true
+                    )
+                ),
+                Visibility::public()
             );
         }
 
