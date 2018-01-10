@@ -94,8 +94,8 @@ class Tools extends LoadScenarioBase
                         '{
                         "settings": {
                             "retardation": true,
-                            "case": "fixedTime",
-                            "infiltration": "continuous"
+                            "case": 1,
+                            "infiltration": 2
                         },
                         "parameters": [
                             {
