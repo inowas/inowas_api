@@ -11,6 +11,7 @@ parameters:
     mailer_password: null
     mailer_transport: smtp
     mailer_user: null
+    mailer_port: 587
     secret: 7bdbeb4493b2796ff94252f0736b18de433f8a67
     port: 80
     python_prefix: python3
