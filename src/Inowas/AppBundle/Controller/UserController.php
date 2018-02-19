@@ -182,7 +182,7 @@ class UserController extends InowasRestController
             'redirectTo' => base64_encode($redirectTo)
         ]);
 
-        $url = sprintf('%s://%s/%s', $scheme, $host, $path);
+        $url = sprintf('%s://%s%s', $scheme, $host, $path);
 
         $data = [];
         $data['api_key'] = $user->getApiKey();
