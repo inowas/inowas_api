@@ -4,12 +4,19 @@ parameters:
     database_name: travis_ci_db
     database_user: travis_ci_user
     database_password: travis
+
     mailer_auth_mode: login
     mailer_encryption: ssl
     mailer_host: 127.0.0.1
     mailer_password: null
     mailer_transport: smtp
     mailer_user: null
+    mailer_port: 587
+
+    router.request_context.host: 'api-host-url'
+    router.request_context.scheme: 'https'
+    router.request_context.base_url: ''
+
     secret: travis_service_super_secret
     port: 80
     python_prefix: 'python3'

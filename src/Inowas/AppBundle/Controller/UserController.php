@@ -130,7 +130,6 @@ class UserController extends InowasRestController
      * @Post("/users/signup")
      *
      * @param ParamFetcher $paramFetcher
-     * @param Request $request
      * @return JsonResponse
      * @RequestParam(name="name", nullable=false, strict=true, description="Name of the user")
      * @RequestParam(name="username", nullable=false, strict=true, description="Username")
@@ -140,7 +139,7 @@ class UserController extends InowasRestController
      *
      * @throws \Inowas\ModflowBundle\Exception\InvalidArgumentException
      */
-    public function signupUserAction(ParamFetcher $paramFetcher, Request $request): JsonResponse
+    public function signupUserAction(ParamFetcher $paramFetcher): JsonResponse
     {
         $name = $paramFetcher->get('name');
         $email = $paramFetcher->get('email');
@@ -175,13 +174,15 @@ class UserController extends InowasRestController
 
         $redirectTo = $paramFetcher->get('redirectTo');
 
-        $url = $this->generateUrl('enable_user', [
+        $scheme = $this->getParameter('router.request_context.scheme');
+        $host = $this->getParameter('router.request_context.host');
+        $path =  $this->generateUrl('enable_user', [
             'username' => base64_encode($user->getUsername()),
             'key' => base64_encode($user->getApiKey()),
             'redirectTo' => base64_encode($redirectTo)
-        ],
-            UrlGeneratorInterface::ABSOLUTE_URL
-        );
+        ]);
+
+        $url = sprintf('%s://%s%s', $scheme, $host, $path);
 
         $data = [];
         $data['api_key'] = $user->getApiKey();
