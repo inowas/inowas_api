@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Inowas\Common\DateTime;
 
+use DateTimeZone;
+
 class DateTime
 {
 
@@ -21,9 +23,13 @@ class DateTime
         return new self($dateTimeImmutable);
     }
 
-    public static function fromAtom(string $dateTimeAtom): DateTime
+    public static function fromAtom(string $dateTimeAtom, DateTimeZone $dateTimeZone = null): DateTime
     {
-        return new self(\DateTimeImmutable::createFromFormat(DATE_ATOM, $dateTimeAtom));
+        if (null === $dateTimeZone) {
+            $dateTimeZone = new \DateTimeZone('UTC');
+        }
+
+        return new self(\DateTimeImmutable::createFromFormat(DATE_ATOM, $dateTimeAtom, $dateTimeZone));
     }
 
     public function toAtom(): string

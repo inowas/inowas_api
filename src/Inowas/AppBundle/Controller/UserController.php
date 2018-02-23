@@ -16,7 +16,6 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Exception\HttpException;
-use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
 /** @noinspection LongInheritanceChainInspection */
 class UserController extends InowasRestController
@@ -216,7 +215,7 @@ class UserController extends InowasRestController
      *   }
      * )
      *
-     * @Get("/users/profile")
+     * @Get("/users")
      *
      * @return JsonResponse
      * @throws \Inowas\ModflowBundle\Exception\UserNotAuthenticatedException
@@ -249,12 +248,12 @@ class UserController extends InowasRestController
      *   resource = true,
      *   description = "Returns the api-key of the user.",
      *   statusCodes = {
-     *     200 = "Returned when successful",
+     *     303 = "Redirect when successful",
      *     404 = "Returned when the model is not found"
      *   }
      * )
      *
-     * @Put("/users/profile")
+     * @Put("/users")
      *
      * @param Request $request
      * @return RedirectResponse
@@ -287,6 +286,11 @@ class UserController extends InowasRestController
         $key = 'email';
         if ($this->containsKey($key, $content)) {
             $user->setEmail($this->getValueByKey($key, $content));
+        }
+
+        $key = 'password';
+        if ($this->containsKey($key, $content)) {
+            $user->setPlainPassword($this->getValueByKey($key, $content));
         }
 
         $this->get('fos_user.user_manager')->updateUser($user);
