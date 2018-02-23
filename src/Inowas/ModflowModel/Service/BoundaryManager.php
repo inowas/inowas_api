@@ -33,6 +33,11 @@ class BoundaryManager
         return $this->boundaryFinder->getNumberOfModelBoundariesByType($modelId, $type);
     }
 
+    public function findBoundaries(ModflowId $modelId): array
+    {
+        return $this->boundaryFinder->findBoundaries($modelId);
+    }
+
     public function findConstantHeadBoundaries(ModflowId $modelId): array
     {
         return $this->boundaryFinder->findConstantHeadBoundaries($modelId);
