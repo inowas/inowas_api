@@ -905,55 +905,55 @@ class Tools extends LoadScenarioBase
                     json_decode(
                         '{
                         "parameters": [
-                                {
-                                  "id": "Qw",
-                                  "max": 1000,
-                                  "min": 1,
-                                  "value": 150
-                                },
-                                {
-                                  "id": "t",
-                                  "max": 500,
-                                  "min": 100,
-                                  "value": 365
-                                },
-                                {
-                                  "id": "S",
-                                  "max": 0.5,
-                                  "min": 0.1,
-                                  "value": 0.2
-                                },
-                                {
-                                  "id": "T",
-                                  "max": 3000,
-                                  "min": 1000,
-                                  "value": 1500
-                                },
-                                {
-                                  "id": "d",
-                                  "max": 1000,
-                                  "min": 200,
-                                  "value": 500
-                                },
-                                {
-                                  "id": "W",
-                                  "max": 10,
-                                  "min": 1,
-                                  "value": 2.5
-                                },
-                                {
-                                  "id": "Kdash",
-                                  "max": 1,
-                                  "min": 0.1,
-                                  "value": 0.1
-                                },
-                                {
-                                  "id": "bdash",
-                                  "max": 10,
-                                  "min": 1,
-                                  "value": 1
-                                }
-                              ],               
+                            {
+                              "id": "Qw",
+                              "max": 1000,
+                              "min": 1,
+                              "value": 150
+                            },
+                            {
+                              "id": "t",
+                              "max": 500,
+                              "min": 100,
+                              "value": 365
+                            },
+                            {
+                              "id": "S",
+                              "max": 0.5,
+                              "min": 0.1,
+                              "value": 0.2
+                            },
+                            {
+                              "id": "T",
+                              "max": 3000,
+                              "min": 1000,
+                              "value": 1500
+                            },
+                            {
+                              "id": "d",
+                              "max": 1000,
+                              "min": 200,
+                              "value": 500
+                            },
+                            {
+                              "id": "W",
+                              "max": 1000,
+                              "min": 100,
+                              "value": 400
+                            },
+                            {
+                              "id": "Kdash",
+                              "max": 1,
+                              "min": 0.1,
+                              "value": 0.1
+                            },
+                            {
+                              "id": "bdash",
+                              "max": 10000,
+                              "min": 100,
+                              "value": 100
+                            }
+                          ],             
                             "tool":"' . $toolType->toString() . '"
                         }',
                         true
