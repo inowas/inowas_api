@@ -10,6 +10,7 @@ use Inowas\ModflowBundle\DataFixtures\Scenarios\RioPrimero\RioPrimero;
 use Inowas\ModflowBundle\DataFixtures\Scenarios\RioPrimero\RioPrimeroArea;
 use Inowas\ModflowBundle\DataFixtures\Scenarios\RioPrimero\RioPrimeroBaseModel;
 use Inowas\ModflowBundle\DataFixtures\Scenarios\RioPrimero\RioPrimeroBaseModelAndFutureWells;
+use Inowas\ModflowBundle\DataFixtures\Scenarios\RioPrimero\RioPrimeroSanDiego;
 use Inowas\ModflowBundle\DataFixtures\Scenarios\SanFelipe\SanFelipe;
 use Inowas\ModflowBundle\DataFixtures\Scenarios\Tools\Tools;
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
@@ -23,9 +24,11 @@ class ModflowEventStoreMigrateCommand extends ContainerAwareCommand
     /** @var  UserId */
     protected $ownerId;
 
+    /**
+     * @throws \Symfony\Component\Console\Exception\InvalidArgumentException
+     */
     protected function configure(): void
     {
-        // Name and description for app/console command
         $this
             ->setName('inowas:es:migrate')
             ->setDescription('Migrates the Hanoi-Model to the Database')
@@ -33,20 +36,30 @@ class ModflowEventStoreMigrateCommand extends ContainerAwareCommand
         ;
     }
 
+    /**
+     * @param InputInterface $input
+     * @param OutputInterface $output
+     * @return int|null|void
+     * @throws \LogicException
+     * @throws \Symfony\Component\DependencyInjection\Exception\ServiceNotFoundException
+     * @throws \Symfony\Component\DependencyInjection\Exception\ServiceCircularReferenceException
+     * @throws \Prooph\ServiceBus\Exception\CommandDispatchException
+     * @throws \Symfony\Component\Console\Exception\InvalidArgumentException
+     */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-
         $modelname =  $input->getArgument('model');
 
         if (null === $modelname){
             $output->writeln('Possible Arguments are:');
             $output->writeln('1 for default tools');
-            $output->writeln('2 or Hanoi for the hanoi-modflow-model');
-            $output->writeln('3 or Rio Primero scenario analysis');
-            $output->writeln('4 or Rio Primero base model for summer school');
-            $output->writeln('5 or Rio Primero area only');
-            $output->writeln('6 or Rio Primero Scenario Analysis');
-            $output->writeln('7 or San Felipe for the hanoi-modflow-model');
+            $output->writeln('2 for Hanoi Modflow Model with Scenario Analysis');
+            $output->writeln('3 for Rio Primero scenario analysis');
+            $output->writeln('4 for Rio Primero base model for summer school');
+            $output->writeln('5 for Rio Primero area only');
+            $output->writeln('6 for Rio Primero Scenario Analysis');
+            $output->writeln('7 for San Felipe Basemodel');
+            $output->writeln('8 for Rio Primero Basemodel for WorkShop in San Diego');
         }
 
         if ((int)$modelname === 1) {
@@ -87,6 +100,12 @@ class ModflowEventStoreMigrateCommand extends ContainerAwareCommand
 
         if ($modelname === 'San Felipe' || (int)$modelname === 7) {
             $rioPrimero = new SanFelipe();
+            $rioPrimero->setContainer($this->getContainer());
+            $rioPrimero->load();
+        }
+
+        if ((int)$modelname === 8) {
+            $rioPrimero = new RioPrimeroSanDiego();
             $rioPrimero->setContainer($this->getContainer());
             $rioPrimero->load();
         }
