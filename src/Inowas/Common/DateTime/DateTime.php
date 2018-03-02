@@ -32,6 +32,12 @@ class DateTime
         return new self(\DateTimeImmutable::createFromFormat(DATE_ATOM, $dateTimeAtom, $dateTimeZone));
     }
 
+    public static function fromString(string $dateTimeString): DateTime
+    {
+        $dateTimeImmutable = new \DateTimeImmutable($dateTimeString, new DateTimeZone('UTC'));
+        return new self($dateTimeImmutable);
+    }
+
     public function toAtom(): string
     {
         return date_format($this->dateTime, DATE_ATOM);
