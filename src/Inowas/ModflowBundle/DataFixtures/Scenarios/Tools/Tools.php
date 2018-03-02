@@ -635,7 +635,7 @@ class Tools extends LoadScenarioBase
                                   "id": "xi",
                                   "max": 1000,
                                   "min": 0,
-                                  "value": 50
+                                  "value": 330
                                 },
                                 {
                                   "id": "xe",
@@ -729,7 +729,7 @@ class Tools extends LoadScenarioBase
                               "id": "t",
                               "max": 500,
                               "min": 1,
-                              "value": 5
+                              "value": 365
                             },
                             {
                               "id": "S",
@@ -801,9 +801,9 @@ class Tools extends LoadScenarioBase
                                 },
                                 {
                                   "id": "K",
-                                  "max": 10,
+                                  "max": 1000,
                                   "min": 1,
-                                  "value": 1
+                                  "value": 60
                                 },
                                 {
                                   "id": "Kdash",
@@ -813,9 +813,9 @@ class Tools extends LoadScenarioBase
                                 },
                                 {
                                   "id": "bdash",
-                                  "max": 1000,
-                                  "min": 100,
-                                  "value": 100
+                                  "max": 100,
+                                  "min": 1,
+                                  "value": 1
                                 }
                               ],
                             "tool":"' . $toolType->toString() . '"
