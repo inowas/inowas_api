@@ -25,6 +25,10 @@ final class ScenarioAnalysisWasClonedProcessManager
         $this->list = $list;
     }
 
+    /**
+     * @param ScenarioAnalysisWasCloned $event
+     * @throws \Prooph\ServiceBus\Exception\CommandDispatchException
+     */
     private function onScenarioAnalysisWasCloned(ScenarioAnalysisWasCloned $event): void
     {
         // GET ORIGINAL SCENARIOANALYSIS
@@ -46,6 +50,11 @@ final class ScenarioAnalysisWasClonedProcessManager
         }
     }
 
+    /**
+     * @param DomainEvent $e
+     * @throws \RuntimeException
+     * @throws \Prooph\ServiceBus\Exception\CommandDispatchException
+     */
     public function onEvent(DomainEvent $e): void
     {
         if ($e instanceof ScenarioAnalysisWasCloned) {
@@ -56,7 +65,7 @@ final class ScenarioAnalysisWasClonedProcessManager
         throw new \RuntimeException(sprintf(
             'Missing event method %s for projector %s',
             __CLASS__,
-            get_class($this)
+            \get_class($this)
         ));
     }
 }
