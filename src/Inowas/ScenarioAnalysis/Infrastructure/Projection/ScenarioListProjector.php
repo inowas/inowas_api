@@ -118,7 +118,7 @@ class ScenarioListProjector extends AbstractDoctrineConnectionProjector
         }
 
         $rows = $this->connection->fetchAll(
-            sprintf('SELECT * FROM %s WHERE scenario_analysis_id=:scenario_analysis_id AND is_scenario = TRUE', Table::SCENARIO_LIST),
+            sprintf('SELECT * FROM %s WHERE scenario_analysis_id=:scenario_analysis_id AND is_scenario = TRUE ORDER BY created_at', Table::SCENARIO_LIST),
             ['scenario_analysis_id' => $event->fromScenarioAnalysisId()->toString()]
         );
 
@@ -142,6 +142,10 @@ class ScenarioListProjector extends AbstractDoctrineConnectionProjector
         }
     }
 
+    /**
+     * @param ScenarioAnalysisWasDeleted $event
+     * @throws \Doctrine\DBAL\Exception\InvalidArgumentException
+     */
     public function onScenarioAnalysisWasDeleted(ScenarioAnalysisWasDeleted $event): void
     {
         $this->connection->delete(
@@ -183,6 +187,10 @@ class ScenarioListProjector extends AbstractDoctrineConnectionProjector
         ));
     }
 
+    /**
+     * @param ScenarioWasDeleted $event
+     * @throws \Doctrine\DBAL\Exception\InvalidArgumentException
+     */
     public function onScenarioWasDeleted(ScenarioWasDeleted $event): void
     {
 

@@ -96,6 +96,9 @@ class ScenarioAnalysisAggregate extends AggregateRoot
         return $self;
     }
 
+    /**
+     * @param UserId $userId
+     */
     public function delete(UserId $userId): void
     {
         $this->recordThat(ScenarioAnalysisWasDeleted::byUser($this->id, $userId));
@@ -108,7 +111,7 @@ class ScenarioAnalysisAggregate extends AggregateRoot
      */
     public function createScenario(UserId $userId, ModflowId $scenarioId, ModflowId $baseModelId): void
     {
-        if (in_array($scenarioId->toString(), $this->scenarios, true)){
+        if (\in_array($scenarioId->toString(), $this->scenarios, true)) {
             return;
         }
 
@@ -118,7 +121,7 @@ class ScenarioAnalysisAggregate extends AggregateRoot
 
     public function deleteScenario(UserId $userId, ModflowId $scenarioId): void
     {
-        if (! in_array($scenarioId->toString(), $this->scenarios, true)){
+        if (!\in_array($scenarioId->toString(), $this->scenarios, true)) {
             return;
         }
 
@@ -199,7 +202,8 @@ class ScenarioAnalysisAggregate extends AggregateRoot
     }
 
     protected function whenScenarioAnalysisWasDeleted(ScenarioAnalysisWasDeleted $event): void
-    {}
+    {
+    }
 
     protected function whenScenarioWasCreated(ScenarioWasCreated $event): void
     {
@@ -222,28 +226,33 @@ class ScenarioAnalysisAggregate extends AggregateRoot
     }
 
     protected function whenScenarioAnalysisVisibilityWasChanged(ScenarioAnalysisVisibilityWasChanged $event): void
-    {}
+    {
+    }
 
     protected function aggregateId(): string
     {
         return $this->id->toString();
     }
 
+    /**
+     * @param AggregateChanged $e
+     * @throws \RuntimeException
+     */
     protected function apply(AggregateChanged $e): void
     {
         $handler = $this->determineEventHandlerMethodFor($e);
-        if (! method_exists($this, $handler)) {
+        if (!method_exists($this, $handler)) {
             throw new \RuntimeException(sprintf(
                 'Missing event handler method %s for aggregate root %s',
                 $handler,
-                get_class($this)
+                \get_class($this)
             ));
         }
         $this->{$handler}($e);
     }
 
-    protected function determineEventHandlerMethodFor(AggregateChanged $e)
+    protected function determineEventHandlerMethodFor(AggregateChanged $e): string
     {
-        return 'when' . implode(array_slice(explode('\\', get_class($e)), -1));
+        return 'when' . implode(\array_slice(explode('\\', \get_class($e)), -1));
     }
 }
