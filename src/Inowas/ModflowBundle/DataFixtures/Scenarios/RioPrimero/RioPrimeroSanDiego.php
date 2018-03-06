@@ -45,6 +45,8 @@ use Inowas\Common\Soilmodel\LayerId;
 use Inowas\Common\Status\Visibility;
 use Inowas\ModflowModel\Model\Command\AddBoundary;
 use Inowas\ModflowModel\Model\Command\AddLayer;
+use Inowas\ModflowModel\Model\Command\ChangeDescription;
+use Inowas\ModflowModel\Model\Command\ChangeName;
 use Inowas\ModflowModel\Model\Packages\OcStressPeriod;
 use Inowas\ModflowModel\Model\Packages\OcStressPeriodData;
 use Inowas\Common\Modflow\PackageName;
@@ -58,6 +60,11 @@ use Inowas\ModflowModel\Model\Command\CreateModflowModel;
 use Inowas\ModflowBundle\DataFixtures\Scenarios\LoadScenarioBase;
 use Inowas\ModflowModel\Model\Command\UpdateModflowPackageParameter;
 use Inowas\ModflowModel\Model\Command\UpdateStressPeriods;
+use Inowas\ScenarioAnalysis\Model\Command\CreateScenario;
+use Inowas\ScenarioAnalysis\Model\Command\CreateScenarioAnalysis;
+use Inowas\ScenarioAnalysis\Model\ScenarioAnalysisDescription;
+use Inowas\ScenarioAnalysis\Model\ScenarioAnalysisId;
+use Inowas\ScenarioAnalysis\Model\ScenarioAnalysisName;
 use Inowas\Soilmodel\Model\LayerInterpolationConfiguration;
 
 class RioPrimeroSanDiego extends LoadScenarioBase
@@ -96,8 +103,8 @@ class RioPrimeroSanDiego extends LoadScenarioBase
         $commandBus->dispatch(CreateModflowModel::newWithAllParams(
             $ownerId,
             $baseModelId,
-            Name::fromString('BaseModel Rio Primero 2010'),
-            Description::fromString('BaseModel Rio Primero 2010'),
+            Name::fromString('BaseModel Rio Primero 2015'),
+            Description::fromString('BaseModel Rio Primero 2015'),
             $polygon,
             $gridSize,
             $boundingBox,
@@ -197,7 +204,7 @@ class RioPrimeroSanDiego extends LoadScenarioBase
         $ghbEast->addGeneralHeadValueToObservationPoint(
             ObservationPointId::fromString('op1'),
             GeneralHeadDateTimeValue::fromParams(
-                DateTime::fromString('2010-01-01'),
+                DateTime::fromString('2015-01-01'),
                 442,
                 200
             )
@@ -235,7 +242,7 @@ class RioPrimeroSanDiego extends LoadScenarioBase
         $ghbWest->addGeneralHeadValueToObservationPoint(
             $observationPointId,
             GeneralHeadDateTimeValue::fromParams(
-                DateTime::fromString('2010-01-01'),
+                DateTime::fromString('2015-01-01'),
                 440,
                 200
             )
@@ -254,7 +261,7 @@ class RioPrimeroSanDiego extends LoadScenarioBase
         $ghbWest->addGeneralHeadValueToObservationPoint(
             $observationPointId,
             GeneralHeadDateTimeValue::fromParams(
-                DateTime::fromString('2010-01-01'),
+                DateTime::fromString('2015-01-01'),
                 445,
                 200
             )
@@ -273,7 +280,7 @@ class RioPrimeroSanDiego extends LoadScenarioBase
         $ghbWest->addGeneralHeadValueToObservationPoint(
             $observationPointId,
             GeneralHeadDateTimeValue::fromParams(
-                DateTime::fromString('2010-01-01'),
+                DateTime::fromString('2015-01-01'),
                 445,
                 200
             )
@@ -292,7 +299,7 @@ class RioPrimeroSanDiego extends LoadScenarioBase
         $ghbWest->addGeneralHeadValueToObservationPoint(
             $observationPointId,
             GeneralHeadDateTimeValue::fromParams(
-                DateTime::fromString('2010-01-01'),
+                DateTime::fromString('2015-01-01'),
                 440,
                 200
             )
@@ -417,9 +424,7 @@ class RioPrimeroSanDiego extends LoadScenarioBase
         $riv->addRiverStageToObservationPoint(
             $observationPointId,
             RiverDateTimeValue::fromParams(
-                DateTime::fromDateTimeImmutable(
-                    new \DateTimeImmutable('2010-01-01', new \DateTimeZone('UTC'))
-                ),
+                DateTime::fromString('2015-01-01'),
                 445,
                 443,
                 200
@@ -439,9 +444,7 @@ class RioPrimeroSanDiego extends LoadScenarioBase
         $riv->addRiverStageToObservationPoint(
             $observationPointId,
             RiverDateTimeValue::fromParams(
-                DateTime::fromDateTimeImmutable(
-                    new \DateTimeImmutable('2010-01-01', new \DateTimeZone('UTC'))
-                ),
+                DateTime::fromString('2015-01-01'),
                 444,
                 442,
                 250
@@ -461,9 +464,7 @@ class RioPrimeroSanDiego extends LoadScenarioBase
         $riv->addRiverStageToObservationPoint(
             $observationPointId,
             RiverDateTimeValue::fromParams(
-                DateTime::fromDateTimeImmutable(
-                    new \DateTimeImmutable('2010-01-01', new \DateTimeZone('UTC'))
-                ),
+                DateTime::fromString('2015-01-01'),
                 443,
                 441,
                 250
@@ -494,7 +495,7 @@ class RioPrimeroSanDiego extends LoadScenarioBase
 
         $rch->addRecharge(
             RechargeDateTimeValue::fromParams(
-                DateTime::fromDateTimeImmutable(new \DateTimeImmutable('2010-01-01')),
+                DateTime::fromString('2015-01-01'),
                 0.0002
             )
         );
@@ -506,13 +507,13 @@ class RioPrimeroSanDiego extends LoadScenarioBase
          */
         $wells = [
             ['name', 'point', 'type', 'layer', 'date', 'pumpingRate'],
-            ['Irrigation Well 1', new Point(-63.660372, -31.344513), WellType::TYPE_IRRIGATION_WELL, 0, '2010-01-01', -5000],
-            ['Irrigation Well 2', new Point(-63.659952, -31.330144), WellType::TYPE_IRRIGATION_WELL, 0, '2010-01-01', -5000],
-            ['Irrigation Well 3', new Point(-63.674691, -31.342506), WellType::TYPE_IRRIGATION_WELL, 0, '2010-01-01', -5000],
-            ['Irrigation Well 4', new Point(-63.637379, -31.359613), WellType::TYPE_IRRIGATION_WELL, 0, '2010-01-01', -5000],
-            ['Irrigation Well 5', new Point(-63.582069, -31.324063), WellType::TYPE_IRRIGATION_WELL, 0, '2010-01-01', -5000],
-            ['Public Well 1', new Point(-63.625402, -31.329897), WellType::TYPE_PUBLIC_WELL, 0, '2010-01-01', -5000],
-            ['Public Well 2', new Point(-63.623027, -31.331184), WellType::TYPE_PUBLIC_WELL, 0, '2010-01-01', -5000],
+            ['Irrigation Well 1', new Point(-63.660372, -31.344513), WellType::TYPE_IRRIGATION_WELL, 0, '2015-01-01', -5000],
+            ['Irrigation Well 2', new Point(-63.659952, -31.330144), WellType::TYPE_IRRIGATION_WELL, 0, '2015-01-01', -5000],
+            ['Irrigation Well 3', new Point(-63.674691, -31.342506), WellType::TYPE_IRRIGATION_WELL, 0, '2015-01-01', -5000],
+            ['Irrigation Well 4', new Point(-63.637379, -31.359613), WellType::TYPE_IRRIGATION_WELL, 0, '2015-01-01', -5000],
+            ['Irrigation Well 5', new Point(-63.582069, -31.324063), WellType::TYPE_IRRIGATION_WELL, 0, '2015-01-01', -5000],
+            ['Public Well 1', new Point(-63.625402, -31.329897), WellType::TYPE_PUBLIC_WELL, 0, '2015-01-01', -5000],
+            ['Public Well 2', new Point(-63.623027, -31.331184), WellType::TYPE_PUBLIC_WELL, 0, '2015-01-01', -5000],
         ];
 
         $header = null;
@@ -541,8 +542,8 @@ class RioPrimeroSanDiego extends LoadScenarioBase
         }
 
         /* Create calculation and calculate */
-        $start = DateTime::fromString('2010-01-01');
-        $end = DateTime::fromString('2014-12-31');
+        $start = DateTime::fromString('2015-01-01');
+        $end = DateTime::fromString('2025-12-31');
         $stressperiods = StressPeriods::create($start, $end, TimeUnit::fromInt(TimeUnit::DAYS));
         $stressperiods->addStressPeriod(StressPeriod::create(0, 365, 1, 1, true));
 
@@ -557,7 +558,7 @@ class RioPrimeroSanDiego extends LoadScenarioBase
 
         /*
          * Create ScenarioAnalysis from BaseModel
-
+         */
         $scenarioAnalysisId = ScenarioAnalysisId::generate();
         $commandBus->dispatch(CreateScenarioAnalysis::byUserWithBaseModelNameAndDescription(
             $scenarioAnalysisId,
@@ -581,16 +582,16 @@ class RioPrimeroSanDiego extends LoadScenarioBase
 
         $wells = array(
             array('name', 'point', 'type', 'layer', 'date', 'pumpingRate'),
-            array('Irrigation Well 6', new Point(-63.65101, -31.33516, 4326), WellType::TYPE_INDUSTRIAL_WELL, 0, new \DateTimeImmutable('2015-01-01'), -5000),
-            array('Irrigation Well 7', new Point(-63.64792, -31.33546, 4326), WellType::TYPE_INDUSTRIAL_WELL, 0, new \DateTimeImmutable('2015-01-01'), -5000),
-            array('Irrigation Well 8', new Point(-63.66714, -31.34513, 4326), WellType::TYPE_INDUSTRIAL_WELL, 0, new \DateTimeImmutable('2015-01-01'), -5000),
-            array('Irrigation Well 9', new Point(-63.6644, -31.34513, 4326), WellType::TYPE_INDUSTRIAL_WELL, 0, new \DateTimeImmutable('2015-01-01'), -5000),
-            array('Irrigation Well 10', new Point(-63.60363, -31.32578, 4326), WellType::TYPE_INDUSTRIAL_WELL, 0, new \DateTimeImmutable('2015-01-01'), -5000),
-            array('Irrigation Well 11', new Point(-63.59367, -31.35803, 4326), WellType::TYPE_INDUSTRIAL_WELL, 0, new \DateTimeImmutable('2015-01-01'), -5000),
-            array('Irrigation Well 12', new Point(-63.60123, -31.32578, 4326), WellType::TYPE_INDUSTRIAL_WELL, 0, new \DateTimeImmutable('2015-01-01'), -5000),
-            array('Irrigation Well 13', new Point(-63.58852, -31.35803, 4326), WellType::TYPE_INDUSTRIAL_WELL, 0, new \DateTimeImmutable('2015-01-01'), -5000),
-            array('Public Well 3', new Point(-63.62383, -31.34, 4326), WellType::TYPE_PUBLIC_WELL, 0, new \DateTimeImmutable('2015-01-01'), -5000),
-            array('Public Well 4', new Point(-63.6216, -31.34162, 4326), WellType::TYPE_PUBLIC_WELL, 0, new \DateTimeImmutable('2015-01-01'), -5000),
+            array('Irrigation Well 6', new Point(-63.65101, -31.33516, 4326), WellType::TYPE_INDUSTRIAL_WELL, 0, '2015-01-01', -5000),
+            array('Irrigation Well 7', new Point(-63.64792, -31.33546, 4326), WellType::TYPE_INDUSTRIAL_WELL, 0, '2015-01-01', -5000),
+            array('Irrigation Well 8', new Point(-63.66714, -31.34513, 4326), WellType::TYPE_INDUSTRIAL_WELL, 0, '2015-01-01', -5000),
+            array('Irrigation Well 9', new Point(-63.6644, -31.34513, 4326), WellType::TYPE_INDUSTRIAL_WELL, 0, '2015-01-01', -5000),
+            array('Irrigation Well 10', new Point(-63.60363, -31.32578, 4326), WellType::TYPE_INDUSTRIAL_WELL, 0, '2015-01-01', -5000),
+            array('Irrigation Well 11', new Point(-63.59367, -31.35803, 4326), WellType::TYPE_INDUSTRIAL_WELL, 0, '2015-01-01', -5000),
+            array('Irrigation Well 12', new Point(-63.60123, -31.32578, 4326), WellType::TYPE_INDUSTRIAL_WELL, 0, '2015-01-01', -5000),
+            array('Irrigation Well 13', new Point(-63.58852, -31.35803, 4326), WellType::TYPE_INDUSTRIAL_WELL, 0, '2015-01-01', -5000),
+            array('Public Well 3', new Point(-63.62383, -31.34, 4326), WellType::TYPE_PUBLIC_WELL, 0, '2015-01-01', -5000),
+            array('Public Well 4', new Point(-63.6216, -31.34162, 4326), WellType::TYPE_PUBLIC_WELL, 0, '2015-01-01', -5000),
         );
 
         $header = null;
@@ -610,13 +611,11 @@ class RioPrimeroSanDiego extends LoadScenarioBase
             );
 
             echo sprintf("Add well with name %s.\r\n", $data['name']);
-            $wellBoundary = $wellBoundary->addPumpingRate(WellDateTimeValue::fromParams(DateTime::fromDateTimeImmutable($data['date']), $data['pumpingRate']));
+            $wellBoundary = $wellBoundary->addPumpingRate(WellDateTimeValue::fromParams(DateTime::fromString($data['date']), $data['pumpingRate']));
             $commandBus->dispatch(AddBoundary::forModflowModel($ownerId, $scenarioId, $wellBoundary));
         }
 
         echo sprintf("Calculate Scenario 0 with id %s.\r\n", $scenarioId->toString());
         $commandBus->dispatch(CalculateModflowModel::forModflowModelWitUserId($ownerId, $scenarioId));
-
-        */
     }
 }

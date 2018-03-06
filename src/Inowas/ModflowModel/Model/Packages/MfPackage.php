@@ -16,8 +16,8 @@ use Inowas\Common\Modflow\Version;
 
 class MfPackage extends AbstractPackage
 {
-    const TYPE = 'mf';
-    const DESCRIPTION = 'Modflow-General Package';
+    public const TYPE = 'mf';
+    public const DESCRIPTION = 'Modflow-General Package';
 
     /** @var  Name */
     protected $modelname;
