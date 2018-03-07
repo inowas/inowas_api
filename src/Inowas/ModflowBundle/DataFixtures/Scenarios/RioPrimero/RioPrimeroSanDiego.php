@@ -55,7 +55,6 @@ use Inowas\Common\Modflow\StressPeriod;
 use Inowas\Common\Modflow\StressPeriods;
 use Inowas\Common\Modflow\TimeUnit;
 use Inowas\ModflowModel\Model\Command\CalculateModflowModel;
-use Inowas\ModflowModel\Model\Command\ChangeFlowPackage;
 use Inowas\ModflowModel\Model\Command\CreateModflowModel;
 use Inowas\ModflowBundle\DataFixtures\Scenarios\LoadScenarioBase;
 use Inowas\ModflowModel\Model\Command\UpdateModflowPackageParameter;
@@ -425,8 +424,8 @@ class RioPrimeroSanDiego extends LoadScenarioBase
             $observationPointId,
             RiverDateTimeValue::fromParams(
                 DateTime::fromString('2015-01-01'),
-                445,
-                443,
+                449,
+                448,
                 200
             )
         );
@@ -445,9 +444,9 @@ class RioPrimeroSanDiego extends LoadScenarioBase
             $observationPointId,
             RiverDateTimeValue::fromParams(
                 DateTime::fromString('2015-01-01'),
-                444,
-                442,
-                250
+                448,
+                447,
+                200
             )
         );
 
@@ -465,9 +464,9 @@ class RioPrimeroSanDiego extends LoadScenarioBase
             $observationPointId,
             RiverDateTimeValue::fromParams(
                 DateTime::fromString('2015-01-01'),
-                443,
-                441,
-                250
+                447,
+                446,
+                200
             )
         );
 
@@ -548,7 +547,7 @@ class RioPrimeroSanDiego extends LoadScenarioBase
         $stressperiods->addStressPeriod(StressPeriod::create(0, 365, 1, 1, true));
 
         $commandBus->dispatch(UpdateStressPeriods::of($ownerId, $baseModelId, $stressperiods));
-        $commandBus->dispatch(ChangeFlowPackage::forModflowModel($ownerId, $baseModelId, PackageName::fromString('upw')));
+        #$commandBus->dispatch(ChangeFlowPackage::forModflowModel($ownerId, $baseModelId, PackageName::fromString('upw')));
         $ocStressPeriodData = OcStressPeriodData::create()->addStressPeriod(OcStressPeriod::fromParams(0, 0, ['save head', 'save drawdown']));
 
         $commandBus->dispatch(UpdateModflowPackageParameter::byUserModelIdAndPackageData($ownerId, $baseModelId, PackageName::fromString('oc'), ParameterName::fromString('ocStressPeriodData'), $ocStressPeriodData));

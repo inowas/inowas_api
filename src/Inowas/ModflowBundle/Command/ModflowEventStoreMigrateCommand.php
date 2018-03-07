@@ -10,6 +10,7 @@ use Inowas\ModflowBundle\DataFixtures\Scenarios\RioPrimero\RioPrimero;
 use Inowas\ModflowBundle\DataFixtures\Scenarios\RioPrimero\RioPrimeroArea;
 use Inowas\ModflowBundle\DataFixtures\Scenarios\RioPrimero\RioPrimeroBaseModel;
 use Inowas\ModflowBundle\DataFixtures\Scenarios\RioPrimero\RioPrimeroBaseModelAndFutureWells;
+use Inowas\ModflowBundle\DataFixtures\Scenarios\RioPrimero\RioPrimeroBaseModelSanDiego;
 use Inowas\ModflowBundle\DataFixtures\Scenarios\RioPrimero\RioPrimeroSanDiego;
 use Inowas\ModflowBundle\DataFixtures\Scenarios\SanFelipe\SanFelipe;
 use Inowas\ModflowBundle\DataFixtures\Scenarios\Tools\Tools;
@@ -60,6 +61,7 @@ class ModflowEventStoreMigrateCommand extends ContainerAwareCommand
             $output->writeln('6 for Rio Primero Scenario Analysis');
             $output->writeln('7 for San Felipe Basemodel');
             $output->writeln('8 for Rio Primero Basemodel for WorkShop in San Diego');
+            $output->writeln('9 for Rio Primero Scenario Analysis');
         }
 
         if ((int)$modelname === 1) {
@@ -105,6 +107,12 @@ class ModflowEventStoreMigrateCommand extends ContainerAwareCommand
         }
 
         if ((int)$modelname === 8) {
+            $rioPrimero = new RioPrimeroBaseModelSanDiego();
+            $rioPrimero->setContainer($this->getContainer());
+            $rioPrimero->load();
+        }
+
+        if ((int)$modelname === 9) {
             $rioPrimero = new RioPrimeroSanDiego();
             $rioPrimero->setContainer($this->getContainer());
             $rioPrimero->load();
