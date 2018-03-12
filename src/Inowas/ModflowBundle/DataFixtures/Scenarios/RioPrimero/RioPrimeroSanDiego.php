@@ -46,18 +46,15 @@ use Inowas\Common\Status\Visibility;
 use Inowas\ModflowModel\Model\Command\AddBoundary;
 use Inowas\ModflowModel\Model\Command\AddLayer;
 use Inowas\ModflowModel\Model\Command\ChangeDescription;
+use Inowas\ModflowModel\Model\Command\ChangeFlowPackage;
 use Inowas\ModflowModel\Model\Command\ChangeName;
-use Inowas\ModflowModel\Model\Packages\OcStressPeriod;
-use Inowas\ModflowModel\Model\Packages\OcStressPeriodData;
 use Inowas\Common\Modflow\PackageName;
-use Inowas\Common\Modflow\ParameterName;
 use Inowas\Common\Modflow\StressPeriod;
 use Inowas\Common\Modflow\StressPeriods;
 use Inowas\Common\Modflow\TimeUnit;
 use Inowas\ModflowModel\Model\Command\CalculateModflowModel;
 use Inowas\ModflowModel\Model\Command\CreateModflowModel;
 use Inowas\ModflowBundle\DataFixtures\Scenarios\LoadScenarioBase;
-use Inowas\ModflowModel\Model\Command\UpdateModflowPackageParameter;
 use Inowas\ModflowModel\Model\Command\UpdateStressPeriods;
 use Inowas\ScenarioAnalysis\Model\Command\CreateScenario;
 use Inowas\ScenarioAnalysis\Model\Command\CreateScenarioAnalysis;
@@ -68,9 +65,7 @@ use Inowas\Soilmodel\Model\LayerInterpolationConfiguration;
 
 class RioPrimeroSanDiego extends LoadScenarioBase
 {
-
     /**
-     *
      * @throws \Prooph\ServiceBus\Exception\CommandDispatchException
      * @throws \Symfony\Component\DependencyInjection\Exception\ServiceNotFoundException
      * @throws \Symfony\Component\DependencyInjection\Exception\ServiceCircularReferenceException
@@ -547,10 +542,7 @@ class RioPrimeroSanDiego extends LoadScenarioBase
         $stressperiods->addStressPeriod(StressPeriod::create(0, 365, 1, 1, true));
 
         $commandBus->dispatch(UpdateStressPeriods::of($ownerId, $baseModelId, $stressperiods));
-        #$commandBus->dispatch(ChangeFlowPackage::forModflowModel($ownerId, $baseModelId, PackageName::fromString('upw')));
-        $ocStressPeriodData = OcStressPeriodData::create()->addStressPeriod(OcStressPeriod::fromParams(0, 0, ['save head', 'save drawdown']));
-
-        $commandBus->dispatch(UpdateModflowPackageParameter::byUserModelIdAndPackageData($ownerId, $baseModelId, PackageName::fromString('oc'), ParameterName::fromString('ocStressPeriodData'), $ocStressPeriodData));
+        $commandBus->dispatch(ChangeFlowPackage::forModflowModel($ownerId, $baseModelId, PackageName::fromString('upw')));
 
         echo sprintf("Calculate ModflowModel with id %s.\r\n", $baseModelId->toString());
         $commandBus->dispatch(CalculateModflowModel::forModflowModelWitUserId($ownerId, $baseModelId));

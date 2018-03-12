@@ -57,11 +57,11 @@ use Inowas\Common\Modflow\ParameterName;
 use Inowas\Common\Modflow\StressPeriod;
 use Inowas\Common\Modflow\StressPeriods;
 use Inowas\Common\Modflow\TimeUnit;
+use Inowas\ModflowBundle\DataFixtures\Scenarios\LoadScenarioBase;
 use Inowas\ModflowModel\Model\Command\CalculateModflowModel;
 use Inowas\ModflowModel\Model\Command\ChangeBoundingBox;
 use Inowas\ModflowModel\Model\Command\ChangeFlowPackage;
 use Inowas\ModflowModel\Model\Command\CreateModflowModel;
-use Inowas\ModflowBundle\DataFixtures\Scenarios\LoadScenarioBase;
 use Inowas\ModflowModel\Model\Command\UpdateModflowPackageParameter;
 use Inowas\ModflowModel\Model\Command\UpdateStressPeriods;
 use Inowas\ScenarioAnalysis\Model\Command\CreateScenario;
@@ -73,12 +73,14 @@ use Inowas\Soilmodel\Model\LayerInterpolationConfiguration;
 
 class RioPrimero extends LoadScenarioBase
 {
-
+    /**
+     * @throws \Prooph\ServiceBus\Exception\CommandDispatchException
+     * @throws \Symfony\Component\DependencyInjection\Exception\ServiceNotFoundException
+     * @throws \Symfony\Component\DependencyInjection\Exception\ServiceCircularReferenceException
+     */
     public function load(): void
     {
         $this->loadUsers($this->container->get('fos_user.user_manager'));
-        #updateGridParameters()$geoTools = $this->container->get('inowas.geotools.geotools_service');
-        #$this->createEventStreamTableIfNotExists('event_stream');
 
         $commandBus = $this->container->get('prooph_service_bus.modflow_command_bus');
         $ownerId = UserId::fromString($this->ownerId);
@@ -103,14 +105,13 @@ class RioPrimero extends LoadScenarioBase
             $boundingBox,
             TimeUnit::fromInt(TimeUnit::DAYS),
             LengthUnit::fromInt(LengthUnit::METERS),
-            Visibility::public()
+            Visibility::public ()
         ));
 
         $boundingBox = BoundingBox::fromCoordinates(-63.687336, -63.569260, -31.367449, -31.313615);
         $commandBus->dispatch(ChangeBoundingBox::forModflowModel($ownerId, $baseModelId, $boundingBox));
 
         /* Setup layer */
-
         $boreHoles = array(
             array(new Point(-63.64698, -31.32741, 4326), 'GP1', 465, 395),
             array(new Point(-63.64630, -31.34237, 4326), 'GP2', 460, 390),
@@ -528,7 +529,7 @@ class RioPrimero extends LoadScenarioBase
             $baseModelId,
             ScenarioAnalysisName::fromString('ScenarioAnalysis: Rio Primero 2020'),
             ScenarioAnalysisDescription::fromString('ScenarioAnalysis: Rio Primero 2020'),
-            Visibility::public()
+            Visibility::public ()
         ));
 
         /*

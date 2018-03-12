@@ -1,6 +1,7 @@
 <?php
 
 namespace Inowas\ModflowBundle\DataFixtures\Scenarios\RioPrimero;
+
 use Inowas\Common\Geometry\Geometry;
 use Inowas\Common\Geometry\Polygon;
 use Inowas\Common\Grid\GridSize;
@@ -10,19 +11,19 @@ use Inowas\Common\Modflow\LengthUnit;
 use Inowas\Common\Modflow\Description;
 use Inowas\Common\Modflow\Name;
 use Inowas\Common\Modflow\PackageName;
-use Inowas\Common\Modflow\ParameterName;
 use Inowas\Common\Modflow\TimeUnit;
 use Inowas\Common\Status\Visibility;
 use Inowas\ModflowModel\Model\Command\ChangeFlowPackage;
 use Inowas\ModflowModel\Model\Command\CreateModflowModel;
 use Inowas\ModflowBundle\DataFixtures\Scenarios\LoadScenarioBase;
-use Inowas\ModflowModel\Model\Command\UpdateModflowPackageParameter;
-use Inowas\ModflowModel\Model\Packages\OcStressPeriod;
-use Inowas\ModflowModel\Model\Packages\OcStressPeriodData;
 
 class RioPrimeroArea extends LoadScenarioBase
 {
-
+    /**
+     * @throws \Prooph\ServiceBus\Exception\CommandDispatchException
+     * @throws \Symfony\Component\DependencyInjection\Exception\ServiceNotFoundException
+     * @throws \Symfony\Component\DependencyInjection\Exception\ServiceCircularReferenceException
+     */
     public function load(): void
     {
         $this->loadUsers($this->container->get('fos_user.user_manager'));
@@ -54,7 +55,5 @@ class RioPrimeroArea extends LoadScenarioBase
         ));
 
         $commandBus->dispatch(ChangeFlowPackage::forModflowModel($ownerId, $baseModelId, PackageName::fromString('upw')));
-        $ocStressPeriodData = OcStressPeriodData::create()->addStressPeriod(OcStressPeriod::fromParams(0, 0, ['save head', 'save drawdown']));
-        $commandBus->dispatch(UpdateModflowPackageParameter::byUserModelIdAndPackageData($ownerId, $baseModelId, PackageName::fromString('oc'), ParameterName::fromString('ocStressPeriodData'), $ocStressPeriodData));
     }
 }
