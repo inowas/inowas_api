@@ -19,6 +19,10 @@ final class CloneModflowModelHandler
         $this->modelList = $modelList;
     }
 
+    /**
+     * @param CloneModflowModel $command
+     * @throws \Inowas\ModflowModel\Model\Exception\ModflowModelNotFoundException
+     */
     public function __invoke(CloneModflowModel $command)
     {
         /** @var ModflowModelAggregate $modflowModel */

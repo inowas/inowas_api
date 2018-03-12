@@ -133,6 +133,7 @@ class ModflowModelController extends InowasRestController
      * @param string $id
      * @Rest\Get("/modflowmodels/{id}/activecells")
      * @return JsonResponse
+     * @throws \LogicException
      * @throws \InvalidArgumentException
      * @throws \Inowas\ModflowBundle\Exception\AccessDeniedException
      * @throws \Symfony\Component\DependencyInjection\Exception\ServiceNotFoundException

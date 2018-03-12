@@ -44,8 +44,6 @@ use Inowas\ModflowModel\Model\Command\ChangeFlowPackage;
 use Inowas\ModflowModel\Model\Command\ChangeName;
 use Inowas\ModflowModel\Model\Command\UpdateBoundary;
 use Inowas\ModflowModel\Model\Command\UpdateModflowPackageParameter;
-use Inowas\ModflowModel\Model\Packages\OcStressPeriod;
-use Inowas\ModflowModel\Model\Packages\OcStressPeriodData;
 use Inowas\Common\Modflow\PackageName;
 use Inowas\Common\Modflow\TimeUnit;
 use Inowas\Common\Modflow\Laytyp;
@@ -69,6 +67,10 @@ ini_set('memory_limit', '2048M');
 
 class Hanoi extends LoadScenarioBase
 {
+    /**
+     * @throws \Prooph\ServiceBus\Exception\CommandDispatchException
+     * @throws \Doctrine\DBAL\DBALException
+     */
     public function load(): void
     {
         $userManager = $this->container->get('fos_user.user_manager');
@@ -359,9 +361,9 @@ class Hanoi extends LoadScenarioBase
         echo sprintf("UpdateModflowPackageParameter upw, laytyp.\r\n");
         $commandBus->dispatch(UpdateModflowPackageParameter::byUserModelIdAndPackageData($ownerId, $modelId, PackageName::fromString('upw'), ParameterName::fromString('layTyp'), Laytyp::fromInt(1)));
 
-        echo sprintf("UpdateModflowPackageParameter oc, ocStressPeriodData.\r\n");
-        $ocStressPeriodData = OcStressPeriodData::create()->addStressPeriod(OcStressPeriod::fromParams(0,0, ['save head', 'save drawdown']));
-        $commandBus->dispatch(UpdateModflowPackageParameter::byUserModelIdAndPackageData($ownerId, $modelId, PackageName::fromString('oc'), ParameterName::fromString('ocStressPeriodData'), $ocStressPeriodData));
+        #echo sprintf("UpdateModflowPackageParameter oc, ocStressPeriodData.\r\n");
+        #$ocStressPeriodData = OcStressPeriodData::create()->addStressPeriod(OcStressPeriod::fromParams(0,0, ['save head', 'save drawdown']));
+        #$commandBus->dispatch(UpdateModflowPackageParameter::byUserModelIdAndPackageData($ownerId, $modelId, PackageName::fromString('oc'), ParameterName::fromString('ocStressPeriodData'), $ocStressPeriodData));
 
         echo sprintf("CalculateModflowModel.\r\n");
         $commandBus->dispatch(CalculateModflowModel::forModflowModelWitUserId($ownerId, $modelId));

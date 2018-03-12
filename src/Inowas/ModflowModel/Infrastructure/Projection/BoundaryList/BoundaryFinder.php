@@ -59,6 +59,21 @@ class BoundaryFinder
         return (int)$result['count'];
     }
 
+    public function findBoundaries(ModflowId $modelId): array
+    {
+        $rows = $this->connection->fetchAll(
+            sprintf('SELECT boundary FROM %s WHERE model_id = :model_id', Table::BOUNDARIES),
+            ['model_id' => $modelId->toString()]
+        );
+
+        $result = [];
+        foreach ($rows as $row) {
+            $result[] = BoundaryFactory::createFromArray(json_decode($row['boundary'], true));
+        }
+
+        return $result;
+    }
+
     public function findConstantHeadBoundaries(ModflowId $modelId): array
     {
         return $this->getBoundariesByModelIdAndType($modelId, BoundaryType::fromString(BoundaryType::CONSTANT_HEAD));

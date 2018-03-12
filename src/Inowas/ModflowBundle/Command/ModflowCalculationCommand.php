@@ -18,9 +18,12 @@ class ModflowCalculationCommand extends ContainerAwareCommand
     /** @var  UserId */
     protected $ownerId;
 
+    /**
+     *
+     * @throws \Symfony\Component\Console\Exception\InvalidArgumentException
+     */
     protected function configure(): void
     {
-        // Name and description for app/console command
         $this
             ->setName('inowas:calculation:calculate')
             ->setDescription('Calculates a model by modelId')
@@ -28,6 +31,16 @@ class ModflowCalculationCommand extends ContainerAwareCommand
         ;
     }
 
+    /**
+     * @param InputInterface $input
+     * @param OutputInterface $output
+     * @return int|null|void
+     * @throws \Prooph\ServiceBus\Exception\CommandDispatchException
+     * @throws \Symfony\Component\Console\Exception\InvalidArgumentException
+     * @throws \Symfony\Component\DependencyInjection\Exception\ServiceNotFoundException
+     * @throws \Symfony\Component\DependencyInjection\Exception\ServiceCircularReferenceException
+     * @throws \LogicException
+     */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $commandBus = $this->getContainer()->get('prooph_service_bus.modflow_command_bus');

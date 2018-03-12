@@ -10,10 +10,8 @@ use Inowas\Common\Id\UserId;
 use Symfony\Component\DependencyInjection\ContainerAwareInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
-
 abstract class LoadScenarioBase implements ContainerAwareInterface, DataFixtureInterface
 {
-
     /**
      * @var ContainerInterface
      */
@@ -28,7 +26,7 @@ abstract class LoadScenarioBase implements ContainerAwareInterface, DataFixtureI
     /**
      * {@inheritDoc}
      */
-    public function setContainer(ContainerInterface $container = null)
+    public function setContainer(ContainerInterface $container = null): void
     {
         $this->container = $container;
     }
@@ -42,9 +40,12 @@ abstract class LoadScenarioBase implements ContainerAwareInterface, DataFixtureI
             array('inowas', 'inowas', 'inowas@inowas.com', '#inowas#', ['ROLE_NM_MF'])
         );
 
-        foreach ($userList as $item){
+        foreach ($userList as $item) {
             $item = array_combine($userListHeads, $item);
             $user = $userManager->findUserByUsername($item['username']);
+
+            /** @var array $roles */
+            $roles = $item['roles'];
 
             if (!$user) {
                 // Add new User
@@ -55,16 +56,14 @@ abstract class LoadScenarioBase implements ContainerAwareInterface, DataFixtureI
                 $user->setPlainPassword($item['password']);
                 $user->setEnabled(true);
 
-                /** @var string $role */
-                foreach ($item['roles'] as $role) {
+                foreach ($roles as $role) {
                     $user->addRole($role);
                 }
 
                 $userManager->updateUser($user);
             }
 
-            /** @var string $role */
-            foreach ($item['roles'] as $role) {
+            foreach ($roles as $role) {
                 if (!$user->hasRole($role)) {
                     $user->addRole($role);
                     $userManager->updateUser($user);
@@ -80,7 +79,8 @@ abstract class LoadScenarioBase implements ContainerAwareInterface, DataFixtureI
         $this->ownerId = $owner->getId()->toString();
     }
 
-    protected function loadRowsFromCsv($filename): array {
+    protected function loadRowsFromCsv($filename): array
+    {
         $header = null;
         $rows = array();
         if (($handle = fopen($filename, 'rb')) !== FALSE) {
@@ -110,10 +110,11 @@ abstract class LoadScenarioBase implements ContainerAwareInterface, DataFixtureI
         return $data;
     }
 
-    protected function getDates(array $header): array{
+    protected function getDates(array $header): array
+    {
         $dates = array();
-        foreach ($header as $data){
-            if (explode(':', $data)[0] === 'date'){
+        foreach ($header as $data) {
+            if (explode(':', $data)[0] === 'date') {
                 $dates[] = $data;
             }
         }

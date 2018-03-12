@@ -56,6 +56,7 @@ class GeoTools
      * @param BoundingBox $boundingBox
      * @param GridSize $gridSize
      * @return ActiveCells
+     * @throws \exception
      */
     public function calculateActiveCellsFromGeometryAndAffectedLayers(Geometry $geometry, AffectedLayers $affectedLayers, BoundingBox $boundingBox, GridSize $gridSize): ActiveCells
     {
@@ -108,6 +109,11 @@ class GeoTools
         return $this->getBoundingBoxFromJson($polygon->toJson());
     }
 
+    /**
+     * @param string $json
+     * @return BoundingBox
+     * @throws \exception
+     */
     private function getBoundingBoxFromJson(string $json): BoundingBox
     {
         $geometry = \geoPHP::load($json, 'json');
@@ -116,6 +122,12 @@ class GeoTools
         return BoundingBox::fromCoordinates($bb['minx'], $bb['maxx'], $bb['miny'], $bb['maxy']);
     }
 
+    /**
+     * @param Point $pointA
+     * @param Point $pointB
+     * @return Distance
+     * @throws \exception
+     */
     public function distanceInMeters(Point $pointA, Point $pointB): Distance
     {
         $distance = \geoPHP::load(sprintf('LINESTRING(%f %f, %f %f)', $pointA->getX(), $pointA->getY(), $pointB->getX(), $pointB->getY()), 'wkt')->greatCircleLength();
@@ -136,6 +148,12 @@ class GeoTools
         return BoundingBox::fromPoints($topLeft, $bottomRight);
     }
 
+    /**
+     * @param Point $point
+     * @param Srid $target
+     * @return Point
+     * @throws \Doctrine\DBAL\DBALException
+     */
     public function projectPoint(Point $point, Srid $target): Point
     {
         if ($point->getSrid() === $target->toInteger()){
@@ -157,6 +175,13 @@ class GeoTools
         return new Point($result->coordinates[0], $result->coordinates[1], $target->toInteger());
     }
 
+    /**
+     * @param LineString $lineString
+     * @param Point $p1
+     * @param Point $p2
+     * @return Distance
+     * @throws \exception
+     */
     public function getDistanceOfTwoPointsOnALineString(LineString $lineString, Point $p1, Point $p2): Distance
     {
         $lineString = \geoPHP::load($lineString->toJson(),'json');
@@ -167,6 +192,12 @@ class GeoTools
         return Distance::fromMeters($distanceInMeters);
     }
 
+    /**
+     * @param LineString $lineString
+     * @param Point $p2
+     * @return Distance
+     * @throws \exception
+     */
     public function getDistanceOfPointFromLineStringStartPoint(LineString $lineString, Point $p2): Distance
     {
         $lineString = \geoPHP::load($lineString->toJson(), 'json');
@@ -177,6 +208,13 @@ class GeoTools
         return Distance::fromMeters($distanceInMeters);
     }
 
+    /**
+     * @param LineString $lineString
+     * @param Point $point
+     * @return float
+     * @throws \Doctrine\DBAL\DBALException
+     * @throws \exception
+     */
     public function getRelativeDistanceOfPointOnLineString(LineString $lineString, Point $point): float
     {
         $lineString = \geoPHP::load($lineString->toJson(),'json');
@@ -195,6 +233,12 @@ class GeoTools
         return (float)$result['st_linelocatepoint'];
     }
 
+    /**
+     * @param LineString $lineString
+     * @param Point $point
+     * @return Point
+     * @throws \exception
+     */
     public function getClosestPointOnLineString(LineString $lineString, Point $point): Point
     {
         if ($lineString->getSrid() != $point->getSrid()){
@@ -270,7 +314,6 @@ class GeoTools
         // Cut Linestring into sectors between ObservationPoints
         /** @var LineStringWithObservationPoints[] $sectors */
         $sectors = $this->cutLinestringBetweenObservationPoints($lineString, $observationPoints);
-
         $gridCellDateTimeValues = array();
         foreach ($layerRowColumnList->cells() as $activeCell) {
 
@@ -289,8 +332,9 @@ class GeoTools
                     /** @var DateTime $dateTime */
                     foreach ($dateTimes as $dateTime){
                         $startValue = $sector->start()->findValueByDateTime($dateTime);
-                        $endValue = $sector->end()->findValueByDateTime($dateTime);
+                        $endOP = $sector->end();
 
+                        $endValue = $endOP->findValueByDateTime($dateTime);
                         $dateTimeClassName = get_class($startValue);
 
                         if (! $dateTimeClassName === get_class($endValue)){

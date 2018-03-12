@@ -137,6 +137,11 @@ class ModelFinder
         return CalculationId::fromString($result['calculation_id']);
     }
 
+    /**
+     * @param ModflowId $modelId
+     * @return GridSize|null
+     * @throws \Exception
+     */
     public function getGridSizeByModflowModelId(ModflowId $modelId): ?GridSize
     {
         $result = $this->connection->fetchAssoc(
@@ -228,6 +233,20 @@ class ModelFinder
         }
 
         return StressPeriods::createFromJson($result['stressperiods']);
+    }
+
+    public function getUserId(ModflowId $modflowId): ?UserId
+    {
+        $result = $this->connection->fetchAssoc(
+            sprintf('SELECT user_id FROM %s WHERE model_id = :model_id', Table::MODFLOWMODELS),
+            ['model_id' => $modflowId->toString()]
+        );
+
+        if ($result === false) {
+            return null;
+        }
+
+        return UserId::fromString($result['user_id']);
     }
 
     public function getTimeUnitByModelId(ModflowId $modelId): ?TimeUnit

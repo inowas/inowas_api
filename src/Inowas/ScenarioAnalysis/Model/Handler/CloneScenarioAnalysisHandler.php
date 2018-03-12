@@ -20,6 +20,10 @@ final class CloneScenarioAnalysisHandler
         $this->scenarioAnalysisList = $scenarioAnalysisList;
     }
 
+    /**
+     * @param CloneScenarioAnalysis $command
+     * @throws \Inowas\ScenarioAnalysis\Model\Exception\ScenarioAnalysisNotFoundException
+     */
     public function __invoke(CloneScenarioAnalysis $command)
     {
         /** @var ScenarioAnalysisAggregate $scenarioAnalysis */
@@ -33,7 +37,7 @@ final class CloneScenarioAnalysisHandler
         $userId = $command->userId();
 
         $clonedScenarios = array();
-        $numberOfScenarios = count($scenarioAnalysis->scenarios());
+        $numberOfScenarios = \count($scenarioAnalysis->scenarios());
 
         for ($i = 0; $i < $numberOfScenarios; $i++) {
             $clonedScenarios[] = ModflowId::generate()->toString();

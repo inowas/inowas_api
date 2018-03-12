@@ -54,16 +54,18 @@ class Tools extends LoadScenarioBase
         $commandBus->dispatch($command);
         $command = $this->getCreateToolInstanceCommand(ToolType::fromString('T13B'));
         $commandBus->dispatch($command);
-        #$command = $this->getCreateToolInstanceCommand(ToolType::fromString('T13C'));
-        #$commandBus->dispatch($command);
+        $command = $this->getCreateToolInstanceCommand(ToolType::fromString('T13C'));
+        $commandBus->dispatch($command);
+        $command = $this->getCreateToolInstanceCommand(ToolType::fromString('T13E'));
+        $commandBus->dispatch($command);
         $command = $this->getCreateToolInstanceCommand(ToolType::fromString('T14A'));
         $commandBus->dispatch($command);
         $command = $this->getCreateToolInstanceCommand(ToolType::fromString('T14B'));
         $commandBus->dispatch($command);
         $command = $this->getCreateToolInstanceCommand(ToolType::fromString('T14C'));
         $commandBus->dispatch($command);
-        $command = $this->getCreateToolInstanceCommand(ToolType::fromString('T14D'));
-        $commandBus->dispatch($command);
+        #$command = $this->getCreateToolInstanceCommand(ToolType::fromString('T14D'));
+        #$commandBus->dispatch($command);
     }
 
     private function getCreateToolInstanceCommand(ToolType $toolType): CreateToolInstance
@@ -633,13 +635,69 @@ class Tools extends LoadScenarioBase
                                   "id": "xi",
                                   "max": 1000,
                                   "min": 0,
-                                  "value": 50
+                                  "value": 330
                                 },
                                 {
                                   "id": "xe",
                                   "max": 1000,
                                   "min": 1,
                                   "value": 500
+                                }
+                              ],
+                            "tool":"' . $toolType->toString() . '"
+                        }',
+                        true
+                    )
+                ),
+                Visibility::public()
+            );
+        }
+        if ($toolType->toString() === 'T13E') {
+            return CreateToolInstance::newWithAllParams(
+                UserId::fromString($this->owner->getId()),
+                ToolId::generate(),
+                $toolType,
+                Name::fromString($toolType->toString() . ' default'),
+                Description::fromString(''),
+                ToolData::fromArray(
+                    json_decode(
+                        '{
+                             "parameters": [
+                                {
+                                  "id": "Qw",
+                                  "max": 10000,
+                                  "min": 0,
+                                  "value": 1300
+                                },
+                                {
+                                  "id": "ne",
+                                  "max": 0.5,
+                                  "min": 0,
+                                  "value": 0.35
+                                },
+                                {
+                                  "id": "hL",
+                                  "max": 20,
+                                  "min": 0,
+                                  "value": 6
+                                },
+                                {
+                                  "id": "h0",
+                                  "max": 20,
+                                  "min": 0,
+                                  "value": 10
+                                },
+                                {
+                                  "id": "xi",
+                                  "max": 1000,
+                                  "min": 0,
+                                  "value": 303
+                                },
+                                {
+                                  "id": "x",
+                                  "max": 1000,
+                                  "min": 0,
+                                  "value": 0.1
                                 }
                               ],
                             "tool":"' . $toolType->toString() . '"
@@ -660,38 +718,38 @@ class Tools extends LoadScenarioBase
                 ToolData::fromArray(
                     json_decode(
                         '{
-                            "parameters": [
-                                {
-                                  "id": "Qw",
-                                  "max": 1000,
-                                  "min": 1,
-                                  "value": 150
-                                },
-                                {
-                                  "id": "t",
-                                  "max": 500,
-                                  "min": 1,
-                                  "value": 5
-                                },
-                                {
-                                  "id": "S",
-                                  "max": 0.5,
-                                  "min": 0.1,
-                                  "value": 0.2
-                                },
-                                {
-                                  "id": "T",
-                                  "max": 3000,
-                                  "min": 1000,
-                                  "value": 1500
-                                },
-                                {
-                                  "id": "d",
-                                  "max": 1000,
-                                  "min": 200,
-                                  "value": 500
-                                }
-                              ],
+                          "parameters": [
+                            {
+                              "id": "Qw",
+                              "max": 1000,
+                              "min": 1,
+                              "value": 150
+                            },
+                            {
+                              "id": "t",
+                              "max": 500,
+                              "min": 1,
+                              "value": 365
+                            },
+                            {
+                              "id": "S",
+                              "max": 0.5,
+                              "min": 0.1,
+                              "value": 0.2
+                            },
+                            {
+                              "id": "T",
+                              "max": 3000,
+                              "min": 1000,
+                              "value": 1500
+                            },
+                            {
+                              "id": "d",
+                              "max": 1000,
+                              "min": 200,
+                              "value": 500
+                            }
+                          ],
                             "tool":"' . $toolType->toString() . '"
                         }',
                         true
@@ -743,9 +801,9 @@ class Tools extends LoadScenarioBase
                                 },
                                 {
                                   "id": "K",
-                                  "max": 10,
+                                  "max": 1000,
                                   "min": 1,
-                                  "value": 1
+                                  "value": 60
                                 },
                                 {
                                   "id": "Kdash",
@@ -755,9 +813,9 @@ class Tools extends LoadScenarioBase
                                 },
                                 {
                                   "id": "bdash",
-                                  "max": 1000,
-                                  "min": 100,
-                                  "value": 100
+                                  "max": 100,
+                                  "min": 1,
+                                  "value": 1
                                 }
                               ],
                             "tool":"' . $toolType->toString() . '"
@@ -847,55 +905,55 @@ class Tools extends LoadScenarioBase
                     json_decode(
                         '{
                         "parameters": [
-                                {
-                                  "id": "Qw",
-                                  "max": 1000,
-                                  "min": 1,
-                                  "value": 150
-                                },
-                                {
-                                  "id": "t",
-                                  "max": 500,
-                                  "min": 100,
-                                  "value": 365
-                                },
-                                {
-                                  "id": "S",
-                                  "max": 0.5,
-                                  "min": 0.1,
-                                  "value": 0.2
-                                },
-                                {
-                                  "id": "T",
-                                  "max": 3000,
-                                  "min": 1000,
-                                  "value": 1500
-                                },
-                                {
-                                  "id": "d",
-                                  "max": 1000,
-                                  "min": 200,
-                                  "value": 500
-                                },
-                                {
-                                  "id": "W",
-                                  "max": 10,
-                                  "min": 1,
-                                  "value": 2.5
-                                },
-                                {
-                                  "id": "Kdash",
-                                  "max": 1,
-                                  "min": 0.1,
-                                  "value": 0.1
-                                },
-                                {
-                                  "id": "bdash",
-                                  "max": 10,
-                                  "min": 1,
-                                  "value": 1
-                                }
-                              ],               
+                            {
+                              "id": "Qw",
+                              "max": 1000,
+                              "min": 1,
+                              "value": 150
+                            },
+                            {
+                              "id": "t",
+                              "max": 500,
+                              "min": 100,
+                              "value": 365
+                            },
+                            {
+                              "id": "S",
+                              "max": 0.5,
+                              "min": 0.1,
+                              "value": 0.2
+                            },
+                            {
+                              "id": "T",
+                              "max": 3000,
+                              "min": 1000,
+                              "value": 1500
+                            },
+                            {
+                              "id": "d",
+                              "max": 1000,
+                              "min": 200,
+                              "value": 500
+                            },
+                            {
+                              "id": "W",
+                              "max": 1000,
+                              "min": 100,
+                              "value": 400
+                            },
+                            {
+                              "id": "Kdash",
+                              "max": 1,
+                              "min": 0.1,
+                              "value": 0.1
+                            },
+                            {
+                              "id": "bdash",
+                              "max": 10000,
+                              "min": 100,
+                              "value": 100
+                            }
+                          ],             
                             "tool":"' . $toolType->toString() . '"
                         }',
                         true
@@ -904,7 +962,6 @@ class Tools extends LoadScenarioBase
                 Visibility::public()
             );
         }
-
         return null;
     }
 }

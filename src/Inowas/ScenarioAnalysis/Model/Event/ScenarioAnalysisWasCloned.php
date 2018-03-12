@@ -49,6 +49,7 @@ class ScenarioAnalysisWasCloned extends AggregateChanged
      */
     public static function byUserWithId(ScenarioAnalysisId $fromId, ScenarioAnalysisId $id, UserId $userId, ModflowId $baseModelId, ScenarioAnalysisName $name, ScenarioAnalysisDescription $description, array $scenarios): ScenarioAnalysisWasCloned
     {
+        /** @var ScenarioAnalysisWasCloned $event */
         $event = self::occur($id->toString(),[
             'from_id' => $fromId->toString(),
             'user_id' => $userId->toString(),

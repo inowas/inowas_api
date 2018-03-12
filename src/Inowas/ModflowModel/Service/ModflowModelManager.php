@@ -117,6 +117,11 @@ class ModflowModelManager
         );
     }
 
+    public function getUserId(ModflowId $modflowId): ?UserId
+    {
+        return $this->modelFinder->getUserId($modflowId);
+    }
+
     public function findBoundaries(ModflowId $modelId): array
     {
         return $this->boundaryManager->findBoundariesByModelId($modelId);
