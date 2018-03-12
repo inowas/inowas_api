@@ -46,15 +46,10 @@ use Inowas\ModflowModel\Model\Command\AddLayer;
 use Inowas\ModflowModel\Model\Command\CalculateStressPeriods;
 use Inowas\ModflowModel\Model\Command\ChangeDescription;
 use Inowas\ModflowModel\Model\Command\ChangeName;
-use Inowas\ModflowModel\Model\Packages\OcStressPeriod;
-use Inowas\ModflowModel\Model\Packages\OcStressPeriodData;
-use Inowas\Common\Modflow\PackageName;
-use Inowas\Common\Modflow\ParameterName;
 use Inowas\Common\Modflow\TimeUnit;
 use Inowas\ModflowModel\Model\Command\CalculateModflowModel;
 use Inowas\ModflowModel\Model\Command\CreateModflowModel;
 use Inowas\ModflowBundle\DataFixtures\Scenarios\LoadScenarioBase;
-use Inowas\ModflowModel\Model\Command\UpdateModflowPackageParameter;
 use Inowas\ScenarioAnalysis\Model\Command\CreateScenario;
 use Inowas\ScenarioAnalysis\Model\Command\CreateScenarioAnalysis;
 use Inowas\ScenarioAnalysis\Model\ScenarioAnalysisDescription;
@@ -64,7 +59,11 @@ use Inowas\Soilmodel\Model\LayerInterpolationConfiguration;
 
 class SanFelipe extends LoadScenarioBase
 {
-
+    /**
+     * @throws \Symfony\Component\DependencyInjection\Exception\ServiceNotFoundException
+     * @throws \Symfony\Component\DependencyInjection\Exception\ServiceCircularReferenceException
+     * @throws \Prooph\ServiceBus\Exception\CommandDispatchException
+     */
     public function load(): void
     {
         $this->loadUsers($this->container->get('fos_user.user_manager'));
@@ -536,7 +535,7 @@ class SanFelipe extends LoadScenarioBase
 
                 $data = array_combine($dataHeader, $data);
 
-                $pumpingRate = $data['pumpingRate'] / count($irrigationWellsPoints) / 2;
+                $pumpingRate = $data['pumpingRate'] / \count($irrigationWellsPoints) / 2;
                 $data = array_combine($dataHeader, $data);
                 $wellBoundary = $wellBoundary->addPumpingRate(
                     WellDateTimeValue::fromParams(DateTime::fromDateTimeImmutable(new \DateTimeImmutable($data['date'])), $pumpingRate)
@@ -589,9 +588,6 @@ class SanFelipe extends LoadScenarioBase
         $start = DateTime::fromDateTime(new \DateTime('2009-01-01'));
         $end = DateTime::fromDateTime(new \DateTime('2010-12-31'));
         $commandBus->dispatch(CalculateStressPeriods::forModflowModel($ownerId, $baseModelId, $start, $end, true));
-        $ocStressPeriodData = OcStressPeriodData::create()->addStressPeriod(OcStressPeriod::fromParams(0,0, ['save head', 'save drawdown']));
-        $commandBus->dispatch(UpdateModflowPackageParameter::byUserModelIdAndPackageData($ownerId, $baseModelId, PackageName::fromString('oc'), ParameterName::fromString('ocStressPeriodData'), $ocStressPeriodData));
-        #$commandBus->dispatch(ChangeFlowPackage::forModflowModel($ownerId, $baseModelId, PackageName::fromString('upw')));
 
         echo sprintf("Calculate ModflowModel with id %s.\r\n", $baseModelId->toString());
         $commandBus->dispatch(CalculateModflowModel::forModflowModelWitUserId($ownerId, $baseModelId));

@@ -77,12 +77,22 @@ class ModflowPackagesManager
         return $this->modflowPackagePersister->load($calculationId);
     }
 
+    /**
+     * @param ModflowId $modelId
+     * @return CalculationId
+     * @throws \Exception
+     */
     public function recalculateBoundaries(ModflowId $modelId): CalculationId
     {
         $stressPeriods = $this->modflowModelManager->getStressPeriodsByModelId($modelId);
         return $this->recalculateStressperiods($modelId, $stressPeriods);
     }
 
+    /**
+     * @param ModflowId $modelId
+     * @return CalculationId
+     * @throws \exception
+     */
     public function recalculate(ModflowId $modelId): CalculationId
     {
         /** @var ModflowModelAggregate $model */
@@ -95,7 +105,6 @@ class ModflowPackagesManager
 
     public function recalculateSoilmodel(ModflowId $modelId): CalculationId
     {
-
         $packages = $this->getPackagesByModelId($modelId);
 
         /*
@@ -170,6 +179,12 @@ class ModflowPackagesManager
         return $this->savePackages($packages);
     }
 
+    /**
+     * @param ModflowId $modelId
+     * @param StressPeriods $stressPeriods
+     * @return CalculationId
+     * @throws \Exception
+     */
     public function recalculateStressperiods(ModflowId $modelId, StressPeriods $stressPeriods): CalculationId
     {
         $packages = $this->getPackagesByModelId($modelId);
@@ -182,7 +197,6 @@ class ModflowPackagesManager
         $packages->updatePackageParameter('dis', 'steady', $stressPeriods->steady());
         $packages->updatePackageParameter('dis', 'nper', $stressPeriods->nper());
 
-
         $packages = $this->calculateBoundaries($modelId, $stressPeriods, $packages);
         return $this->savePackages($packages);
     }
@@ -192,6 +206,12 @@ class ModflowPackagesManager
         return $this->modflowPackagePersister->save($packages);
     }
 
+    /**
+     * @param ModflowId $modelId
+     * @param ModflowPackages $packages
+     * @return ModflowPackages
+     * @throws \exception
+     */
     private function calculateAllPackages(ModflowId $modelId, ModflowPackages $packages): ModflowPackages
     {
         $stressPeriods = $this->modflowModelManager->getStressPeriodsByModelId($modelId);
@@ -293,6 +313,13 @@ class ModflowPackagesManager
         return $packages;
     }
 
+    /**
+     * @param ModflowId $modelId
+     * @param StressPeriods $stressPeriods
+     * @param ModflowPackages $packages
+     * @return ModflowPackages
+     * @throws \Exception
+     */
     private function calculateBoundaries(ModflowId $modelId, StressPeriods $stressPeriods, ModflowPackages $packages): ModflowPackages
     {
         /*

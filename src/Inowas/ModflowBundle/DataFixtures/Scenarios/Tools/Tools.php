@@ -64,8 +64,8 @@ class Tools extends LoadScenarioBase
         $commandBus->dispatch($command);
         $command = $this->getCreateToolInstanceCommand(ToolType::fromString('T14C'));
         $commandBus->dispatch($command);
-        $command = $this->getCreateToolInstanceCommand(ToolType::fromString('T14D'));
-        $commandBus->dispatch($command);
+        #$command = $this->getCreateToolInstanceCommand(ToolType::fromString('T14D'));
+        #$commandBus->dispatch($command);
     }
 
     private function getCreateToolInstanceCommand(ToolType $toolType): CreateToolInstance
