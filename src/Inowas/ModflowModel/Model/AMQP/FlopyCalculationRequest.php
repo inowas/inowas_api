@@ -35,9 +35,9 @@ class FlopyCalculationRequest implements \JsonSerializable
 
     public function jsonSerialize(): array
     {
-        $data = $this->packages->toArray();
-        $data['write_input'] = true;
-        $data['run_model'] = true;
+        $mf = $this->packages->toArray();
+        $mf['write_input'] = true;
+        $mf['run_model'] = true;
 
         return array(
             'author' => $this->author,
@@ -46,7 +46,9 @@ class FlopyCalculationRequest implements \JsonSerializable
             'model_id' => $this->modelId,
             'type' => $this->type,
             'version' => $this->packages->version(),
-            'data' => $data
+            'data' => [
+                'mf' => $mf
+            ]
         );
     }
 }
