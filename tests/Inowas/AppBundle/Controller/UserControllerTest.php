@@ -8,7 +8,6 @@ use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
 class UserControllerTest extends WebTestCase
 {
-
     /** @var  User */
     protected $user;
 
@@ -39,8 +38,8 @@ class UserControllerTest extends WebTestCase
         }
     }
 
-    public function testRetrieveAPIKeyWithCorrectCredentials(){
-
+    public function testRetrieveAPIKeyWithCorrectCredentials(): void
+    {
         $client = static::createClient();
         $client->request(
             'POST',
@@ -58,7 +57,8 @@ class UserControllerTest extends WebTestCase
         $this->assertEquals($this->user->getApiKey(), $response->api_key);
     }
 
-    public function testRetrieveAPIKeyWithInCorrectCredentialsReturns401(){
+    public function testRetrieveAPIKeyWithInCorrectCredentialsReturns401(): void
+    {
 
         $client = static::createClient();
         $client->request(
@@ -71,5 +71,58 @@ class UserControllerTest extends WebTestCase
         );
 
         $this->assertEquals(401, $client->getResponse()->getStatusCode());
+    }
+
+    /**
+     * @test
+     */
+    public function it_gets_user_data(): void
+    {
+        $client = static::createClient();
+        $client->request(
+            'GET',
+            '/v2/users.json',
+            [],
+            [],
+            ['HTTP_X-AUTH-TOKEN' => $this->user->getApiKey()]
+        );
+
+        $this->assertEquals(200, $client->getResponse()->getStatusCode());
+        $response = $client->getResponse()->getContent();
+        $this->assertJson($response);
+
+        $arr = json_decode($response, true);
+        $this->assertInternalType('array', $arr);
+    }
+
+    /**
+     * @test
+     */
+    public function it_puts_user_data(): void
+    {
+        $client = static::createClient();
+        $client->request(
+            'PUT',
+            '/v2/users.json',
+            [],
+            [],
+            ['HTTP_X-AUTH-TOKEN' => $this->user->getApiKey()],
+            json_encode([
+                'firstName' => 'FN',
+                'lastName' => 'LN',
+                'email' => 'email@email.com',
+                'institution' => 'inst'
+            ])
+        );
+
+        $this->assertEquals(303, $client->getResponse()->getStatusCode());
+        $client->followRedirect();
+        $this->assertEquals(200, $client->getResponse()->getStatusCode());
+        $response = $client->getResponse()->getContent();
+        $this->assertJson($response);
+
+        $arr = json_decode($response, true);
+        $this->assertInternalType('array', $arr);
+        $this->assertArrayHasKey('profile', $arr);
     }
 }

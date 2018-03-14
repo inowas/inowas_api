@@ -9,6 +9,7 @@ use FOS\RestBundle\Controller\Annotations\QueryParam;
 use FOS\RestBundle\Controller\Annotations\RequestParam;
 use FOS\RestBundle\Request\ParamFetcher;
 use Inowas\AppBundle\Model\User;
+use Inowas\AppBundle\Model\UserProfile;
 use Inowas\ModflowBundle\Exception\InvalidArgumentException;
 use Inowas\ModflowBundle\Exception\UserNotAuthenticatedException;
 use Nelmio\ApiDocBundle\Annotation\ApiDoc;
@@ -237,6 +238,7 @@ class UserController extends InowasRestController
         $response['email'] = $user->getEmail();
         $response['roles'] = $user->getRoles();
         $response['enabled'] = $user->isEnabled();
+        $response['profile'] = $user->getProfile()->toArray();
 
         return new JsonResponse($response);
     }
@@ -288,10 +290,8 @@ class UserController extends InowasRestController
             $user->setEmail($this->getValueByKey($key, $content));
         }
 
-        $key = 'password';
-        if ($this->containsKey($key, $content)) {
-            $user->setPlainPassword($this->getValueByKey($key, $content));
-        }
+        $profile = UserProfile::fromArray($content);
+        $user->setProfile($profile);
 
         $this->get('fos_user.user_manager')->updateUser($user);
 
