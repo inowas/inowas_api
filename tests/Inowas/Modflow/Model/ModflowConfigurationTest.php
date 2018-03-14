@@ -43,7 +43,7 @@ class ModflowConfigurationTest extends \PHPUnit_Framework_TestCase
         $json = json_encode($packages);
         $this->assertJson($json);
         $arr = json_decode($json, true);
-        $this->assertEquals(1, $arr['packages']['dis']['itmuni']);
+        $this->assertEquals(1, $arr['dis']['itmuni']);
     }
 
     public function test_update_time_unit_with_update_param_function(): void
@@ -53,7 +53,7 @@ class ModflowConfigurationTest extends \PHPUnit_Framework_TestCase
         $json = json_encode($packages);
         $this->assertJson($json);
         $arr = json_decode($json, true);
-        $this->assertEquals(2, $arr['packages']['dis']['itmuni']);
+        $this->assertEquals(2, $arr['dis']['itmuni']);
     }
 
     public function test_gridsize_has_same_size_as_ibound(): void

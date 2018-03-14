@@ -21,14 +21,13 @@ class ModflowPackagesTest extends \PHPUnit_Framework_TestCase
 
         /** @var array $packageData */
         $packageData = $packages->packageData();
-        $this->assertTrue(is_array($packageData));
-        $this->assertArrayHasKey('selected_packages', $packageData);
+        $this->assertInternalType('array', $packageData);
         $this->assertArrayHasKey('packages', $packageData);
 
         /** @var  array $selectedPackages */
-        $selectedPackages = $packageData['selected_packages'];
+        $selectedPackages = $packageData['packages'];
         foreach ($selectedPackages as $packageName) {
-            $this->assertArrayHasKey($packageName, $packageData['packages']);
+            $this->assertArrayHasKey($packageName, $packageData);
         }
     }
 
