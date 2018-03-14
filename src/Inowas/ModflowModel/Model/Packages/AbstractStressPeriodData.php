@@ -20,7 +20,7 @@ abstract class AbstractStressPeriodData implements \JsonSerializable
 
     public function hasData(): bool
     {
-        return count($this->data) > 0;
+        return \count($this->data) > 0;
     }
 
     public function jsonSerialize(): array

@@ -82,7 +82,7 @@ class ModflowPackages implements \JsonSerializable
     /** @var array */
     private $packages = [];
 
-    private $flopyVersion = '3.2.6';
+    private $flopyVersion = '3.2.9';
 
     public static function createFromDefaults(): ModflowPackages
     {
@@ -99,13 +99,13 @@ class ModflowPackages implements \JsonSerializable
         $self = new self();
 
         /** @var array $selectedPackages */
-        $selectedPackages = $arr['selected_packages'];
+        $selectedPackages = $arr['packages'];
         $self->setSelectedPackages($selectedPackages);
 
         foreach ($self->selectedPackages() as $package){
             if (array_key_exists($package, $self->availablePackages)){
                 $class = $self->availablePackages[$package];
-                $self->setPackage($class::fromArray($arr['packages'][$package]));
+                $self->setPackage($class::fromArray($arr[$package]));
             }
         }
 
@@ -606,6 +606,8 @@ class ModflowPackages implements \JsonSerializable
     private function recursiveKeySort(&$by_ref_array): void
     {
         ksort($by_ref_array, SORT_NUMERIC );
+
+        /** @var array $by_ref_array */
         foreach ($by_ref_array as $key => $value) {
             if (\is_array($value)) {
                 $this->recursiveKeySort($by_ref_array[$key]);

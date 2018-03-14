@@ -41,8 +41,8 @@ use Inowas\Common\Modflow\Unitnumber;
 
 class NwtPackage extends AbstractPackage
 {
-    const TYPE = 'nwt';
-    const DESCRIPTION = 'Newton Solver Package';
+    public const TYPE = 'nwt';
+    public const DESCRIPTION = 'Newton Solver Package';
 
     /** @var Headtol */
     protected $headtol;
