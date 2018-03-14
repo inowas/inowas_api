@@ -80,6 +80,9 @@ class ModflowModelEventSourcingTest extends EventSourcingBaseTest
         $this->eventBus->dispatch($event);
     }
 
+    /**
+     * @throws \Exception
+     */
     public function test_setup_model_with_area_and_grid_size(): void
     {
         $modelId = ModflowId::generate();
@@ -116,6 +119,9 @@ class ModflowModelEventSourcingTest extends EventSourcingBaseTest
         $this->assertEquals($gridSize, $modelFinder->getGridSizeByModflowModelId($modelId));
     }
 
+    /**
+     * @throws \Exception
+     */
     public function test_setup_model_and_change_model_bounding_box_and_grid_size(): void
     {
         $modelId = ModflowId::generate();
@@ -601,6 +607,7 @@ class ModflowModelEventSourcingTest extends EventSourcingBaseTest
 
     /**
      * @test
+     * @throws \exception
      */
     public function it_updates_calculation_packages_lpf_laytyp(): void
     {
@@ -619,11 +626,12 @@ class ModflowModelEventSourcingTest extends EventSourcingBaseTest
         $this->assertArrayHasKey('packages', $packages);
         $this->assertArrayHasKey('lpf', $packages['packages']);
         $this->assertArrayHasKey('laytyp', $packages['packages']['lpf']);
-        $this->assertEquals([0], $packages['packages']['lpf']['laytyp']);
+        $this->assertEquals([0], $packages['lpf']['laytyp']);
     }
 
     /**
      * @test
+     * @throws \exception
      */
     public function it_updates_calculation_packages_lpf_laywet(): void
     {
@@ -639,14 +647,14 @@ class ModflowModelEventSourcingTest extends EventSourcingBaseTest
         $this->assertTrue($packages->isSelected(PackageName::fromString('lpf')));
 
         $packages = json_decode(json_encode($packages), true);
-        $this->assertArrayHasKey('packages', $packages);
-        $this->assertArrayHasKey('lpf', $packages['packages']);
-        $this->assertArrayHasKey('laywet', $packages['packages']['lpf']);
-        $this->assertEquals([1], $packages['packages']['lpf']['laywet']);
+        $this->assertArrayHasKey('lpf', $packages);
+        $this->assertArrayHasKey('laywet', $packages['lpf']);
+        $this->assertEquals([1], $packages['lpf']['laywet']);
     }
 
     /**
      * @test
+     * @throws \exception
      */
     public function it_can_change_flow_package_to_upw(): void
     {
@@ -662,12 +670,12 @@ class ModflowModelEventSourcingTest extends EventSourcingBaseTest
         $this->assertTrue($packages->isSelected(PackageName::fromString('upw')));
 
         $packages = json_decode(json_encode($packages), true);
-        $this->assertArrayHasKey('packages', $packages);
-        $this->assertArrayHasKey('upw', $packages['packages']);
+        $this->assertArrayHasKey('upw', $packages);
     }
 
     /**
      * @test
+     * @throws \exception
      */
     public function it_can_change_calculation_package_mf_version(): void
     {
@@ -689,9 +697,8 @@ class ModflowModelEventSourcingTest extends EventSourcingBaseTest
         $this->assertTrue($packages->isSelected(PackageName::fromString('mf')));
 
         $packages = json_decode(json_encode($packages), true);
-        $this->assertArrayHasKey('packages', $packages);
         $this->assertArrayHasKey('mf', $packages['packages']);
-        $this->assertEquals('mfnwt', $packages['packages']['mf']['version']);
+        $this->assertEquals('mfnwt', $packages['mf']['version']);
     }
 
     /**
