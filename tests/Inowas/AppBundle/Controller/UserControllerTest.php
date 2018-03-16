@@ -108,8 +108,7 @@ class UserControllerTest extends WebTestCase
             [],
             ['HTTP_X-AUTH-TOKEN' => $this->user->getApiKey()],
             json_encode([
-                'firstName' => 'FN',
-                'lastName' => 'LN',
+                'name' => 'name',
                 'email' => 'email@email.com',
                 'institution' => 'inst'
             ])
