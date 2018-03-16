@@ -5,10 +5,7 @@ namespace Inowas\AppBundle\Model;
 class UserProfile
 {
     /** @var string */
-    private $firstName = '';
-
-    /** @var string */
-    private $lastName = '';
+    private $name = '';
 
     /** @var string */
     private $institution = '';
@@ -29,14 +26,9 @@ class UserProfile
     private function __construct()
     {}
 
-    public function firstName(): string
+    public function name(): string
     {
-        return $this->firstName;
-    }
-
-    public function lastName(): string
-    {
-        return $this->lastName;
+        return $this->name;
     }
 
     public function institution(): string
