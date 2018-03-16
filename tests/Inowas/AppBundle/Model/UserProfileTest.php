@@ -12,22 +12,19 @@ class UserProfileTest extends \PHPUnit_Framework_TestCase
      */
     public function it_creates_user_profile_from_array(): void
     {
-        $firstName = 'fn';
-        $lastName = 'ln';
+        $name = 'the_name';
         $institution = 'inst';
         $email = 'email';
 
         $arr = [
-            'firstName' => $firstName,
-            'lastName' => $lastName,
+            'name' => $name,
             'institution' => $institution,
             'email' => $email
         ];
 
         $userProfile = UserProfile::fromArray($arr);
         $this->assertInstanceOf(UserProfile::class, $userProfile);
-        $this->assertEquals($firstName, $userProfile->firstName());
-        $this->assertEquals($lastName, $userProfile->lastName());
+        $this->assertEquals($name, $userProfile->name());
         $this->assertEquals($institution, $userProfile->institution());
         $this->assertEquals($email, $userProfile->email());
     }
