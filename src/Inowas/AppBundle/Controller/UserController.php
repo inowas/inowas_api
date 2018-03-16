@@ -9,6 +9,7 @@ use FOS\RestBundle\Controller\Annotations\QueryParam;
 use FOS\RestBundle\Controller\Annotations\RequestParam;
 use FOS\RestBundle\Request\ParamFetcher;
 use Inowas\AppBundle\Model\User;
+use Inowas\AppBundle\Model\UserProfile;
 use Inowas\ModflowBundle\Exception\InvalidArgumentException;
 use Inowas\ModflowBundle\Exception\UserNotAuthenticatedException;
 use Nelmio\ApiDocBundle\Annotation\ApiDoc;
@@ -53,7 +54,7 @@ class UserController extends InowasRestController
         $encoder = $this->get('security.encoder_factory')->getEncoder($user);
         $passwordIsValid = $encoder->isPasswordValid($user->getPassword(), $password, $user->getSalt());
 
-        if (! $passwordIsValid){
+        if (!$passwordIsValid) {
             throw new HttpException(401, 'Credentials are not valid.');
         }
 
@@ -99,7 +100,7 @@ class UserController extends InowasRestController
             return $this->redirect($redirectTo);
         }
 
-        if (! $user instanceof User){
+        if (!$user instanceof User) {
             throw InvalidArgumentException::withMessage(sprintf('Username unknown.'));
         }
 
@@ -148,7 +149,7 @@ class UserController extends InowasRestController
         /** @var User $user */
         $user = $this->get('fos_user.user_manager')->findUserByUsername($username);
 
-        if ($user instanceof User){
+        if ($user instanceof User) {
             throw InvalidArgumentException::withMessage(sprintf(
                 'The username already exits.'
             ));
@@ -157,7 +158,7 @@ class UserController extends InowasRestController
         /** @var User $user */
         $user = $this->get('fos_user.user_manager')->findUserByEmail($email);
 
-        if ($user instanceof User){
+        if ($user instanceof User) {
             throw InvalidArgumentException::withMessage(sprintf(
                 'The email already exits.'
             ));
@@ -175,7 +176,7 @@ class UserController extends InowasRestController
 
         $scheme = $this->getParameter('router.request_context.scheme');
         $host = $this->getParameter('router.request_context.host');
-        $path =  $this->generateUrl('enable_user', [
+        $path = $this->generateUrl('enable_user', [
             'username' => base64_encode($user->getUsername()),
             'key' => base64_encode($user->getApiKey()),
             'redirectTo' => base64_encode($redirectTo)
@@ -195,8 +196,7 @@ class UserController extends InowasRestController
                     array('name' => $name, 'url' => $url)
                 ),
                 'text/html'
-            )
-        ;
+            );
 
         $this->get('swiftmailer.mailer')->send($message);
 
@@ -225,7 +225,7 @@ class UserController extends InowasRestController
     {
         /** @var User $user */
         $user = $this->getUser();
-        if (! $user instanceof User){
+        if (!$user instanceof User) {
             throw UserNotAuthenticatedException::withMessage(sprintf(
                 'Something went wrong with the authentication. User is not authenticated. Please check your credentials.'
             ));
@@ -237,12 +237,21 @@ class UserController extends InowasRestController
         $response['email'] = $user->getEmail();
         $response['roles'] = $user->getRoles();
         $response['enabled'] = $user->isEnabled();
+        $response['profile'] = $user->getProfile()->toArray();
+
+        if ($response['profile']['name'] === '') {
+            $response['profile']['name'] = $user->getName();
+        }
+
+        if ($response['profile']['email'] === '') {
+            $response['profile']['email'] = $user->getEmail();
+        }
 
         return new JsonResponse($response);
     }
 
     /**
-     * Returns the userProfile for the user.
+     * Updates the userProfile for the user.
      *
      * @ApiDoc(
      *   resource = true,
@@ -257,6 +266,7 @@ class UserController extends InowasRestController
      *
      * @param Request $request
      * @return RedirectResponse
+     * @throws \Inowas\ModflowBundle\Exception\InvalidArgumentException
      * @throws \InvalidArgumentException
      * @throws \LogicException
      * @throws UserNotAuthenticatedException
@@ -265,7 +275,7 @@ class UserController extends InowasRestController
     {
         /** @var User $user */
         $user = $this->getUser();
-        if (! $user instanceof User){
+        if (!$user instanceof User) {
             throw UserNotAuthenticatedException::withMessage(sprintf(
                 'Something went wrong with the authentication. User is not authenticated. Please check your credentials.'
             ));
@@ -288,13 +298,63 @@ class UserController extends InowasRestController
             $user->setEmail($this->getValueByKey($key, $content));
         }
 
-        $key = 'password';
-        if ($this->containsKey($key, $content)) {
-            $user->setPlainPassword($this->getValueByKey($key, $content));
-        }
+        $profile = UserProfile::fromArray($content);
+        $user->setProfile($profile);
 
         $this->get('fos_user.user_manager')->updateUser($user);
 
         return new RedirectResponse($this->generateUrl('get_user_profile'), 303);
+    }
+
+    /**
+     * Updates the the user-password.
+     *
+     * @ApiDoc(
+     *   resource = true,
+     *   description = "Updates the the user-password.",
+     *   statusCodes = {
+     *     303 = "Redirect when successful",
+     *     404 = "Returned when the model is not found"
+     *   }
+     * )
+     *
+     * @Post("/users/changePassword")
+     *
+     * @param Request $request
+     * @return JsonResponse
+     * @throws \RuntimeException
+     * @throws \Inowas\ModflowBundle\Exception\InvalidArgumentException
+     * @throws \InvalidArgumentException
+     * @throws \LogicException
+     * @throws UserNotAuthenticatedException
+     */
+    public function changePasswordAction(Request $request): JsonResponse
+    {
+        /** @var User $user */
+        $user = $this->getUser();
+        if (!$user instanceof User) {
+            throw UserNotAuthenticatedException::withMessage(sprintf(
+                'Something went wrong with the authentication. User is not authenticated. Please check your credentials.'
+            ));
+        }
+
+        $content = $this->getContentAsArray($request);
+
+        $oldPassword = $this->getValueByKey('oldPassword', $content);
+        $newPassword = $this->getValueByKey('newPassword', $content);
+
+        $factory = $this->get('security.encoder_factory');
+        $encoder = $factory->getEncoder($user);
+
+        if (!$encoder->isPasswordValid($user->getPassword(), $oldPassword, $user->getSalt())) {
+            throw InvalidArgumentException::withMessage(sprintf(
+                'The given password is wrong.'
+            ));
+        }
+
+        $user->setPlainPassword($newPassword);
+        $this->get('fos_user.user_manager')->updateUser($user);
+
+        return new JsonResponse([], 200);
     }
 }

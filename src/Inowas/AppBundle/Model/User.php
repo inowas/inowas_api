@@ -13,6 +13,9 @@ class User extends BaseUser
     /** @var  string */
     protected $name;
 
+    /** @var array */
+    protected $profile;
+
     /** @var  string */
     protected $apiKey;
 
@@ -56,5 +59,22 @@ class User extends BaseUser
             $this->name = '';
         }
         return $this->name;
+    }
+
+    public function getProfile(): UserProfile
+    {
+        if (null === $this->profile) {
+            return UserProfile::create();
+        }
+
+        return UserProfile::fromArray($this->profile);
+    }
+
+    /**
+     * @param UserProfile $profile
+     */
+    public function setProfile(UserProfile $profile): void
+    {
+        $this->profile = $profile->toArray();
     }
 }

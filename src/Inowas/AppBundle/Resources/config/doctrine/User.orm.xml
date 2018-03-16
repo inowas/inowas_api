@@ -17,6 +17,7 @@
 
         <id name="id" type="uuid" column="id"/>
         <field name="name" column="name" type="string" length="255" nullable="true"/>
+        <field name="profile" column="profile" type="json_array" nullable="true"/>
         <field name="apiKey" column="api_key" type="uuid" />
 
     </entity>

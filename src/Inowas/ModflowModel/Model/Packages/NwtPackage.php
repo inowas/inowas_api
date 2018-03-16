@@ -41,8 +41,8 @@ use Inowas\Common\Modflow\Unitnumber;
 
 class NwtPackage extends AbstractPackage
 {
-    const TYPE = 'nwt';
-    const DESCRIPTION = 'Newton Solver Package';
+    public const TYPE = 'nwt';
+    public const DESCRIPTION = 'Newton Solver Package';
 
     /** @var Headtol */
     protected $headtol;
@@ -593,9 +593,9 @@ class NwtPackage extends AbstractPackage
             'thickfact' => $this->thickfact->toFloat(),
             'linmeth' => $this->linmeth->toInteger(),
             'iprnwt' => $this->iprnwt->toInteger(),
-            'ibotavg' => $this->ibotavg->toInteger(),
+            'ibotav' => $this->ibotavg->toInteger(),
             'options' => $this->options->toString(),
-            'continue' => $this->continue->toBool(),
+            'Continue' => $this->continue->toBool(),
             'dbdtheta' => $this->dbdtheta->toFloat(),
             'dbdkappa' => $this->dbdkappa->toFloat(),
             'dbdgamma' => $this->dbdgamma->toFloat(),
@@ -633,9 +633,9 @@ class NwtPackage extends AbstractPackage
             'thickfact' => $this->thickfact->toFloat(),
             'linmeth' => $this->linmeth->toInteger(),
             'iprnwt' => $this->iprnwt->toInteger(),
-            'ibotavg' => $this->ibotavg->toInteger(),
+            'ibotav' => $this->ibotavg->toInteger(),
             'options' => $this->options->toString(),
-            'continue' => $this->continue->toBool(),
+            'Continue' => $this->continue->toBool(),
             'dbdtheta' => $this->dbdtheta->toFloat(),
             'dbdkappa' => $this->dbdkappa->toFloat(),
             'dbdgamma' => $this->dbdgamma->toFloat(),
@@ -670,9 +670,9 @@ class NwtPackage extends AbstractPackage
         $this->thickfact = Thickfact::fromFloat($arr['thickfact']);
         $this->linmeth = Linmeth::fromInteger($arr['linmeth']);
         $this->iprnwt = Iprnwt::fromInteger($arr['iprnwt']);
-        $this->ibotavg = Ibotavg::fromInteger($arr['ibotavg']);
+        $this->ibotavg = Ibotavg::fromInteger($arr['ibotav']);
         $this->options = NwtOptions::fromString($arr['options']);
-        $this->continue = NwtContinue::fromBool($arr['continue']);
+        $this->continue = NwtContinue::fromBool($arr['Continue']);
         $this->dbdtheta = Dbdtheta::fromFloat($arr['dbdtheta']);
         $this->dbdkappa = Dbdkappa::fromFloat($arr['dbdkappa']);
         $this->dbdgamma = Dbdgamma::fromFloat($arr['dbdgamma']);

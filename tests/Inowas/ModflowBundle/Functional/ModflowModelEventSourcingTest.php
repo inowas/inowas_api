@@ -80,6 +80,9 @@ class ModflowModelEventSourcingTest extends EventSourcingBaseTest
         $this->eventBus->dispatch($event);
     }
 
+    /**
+     * @throws \Exception
+     */
     public function test_setup_model_with_area_and_grid_size(): void
     {
         $modelId = ModflowId::generate();
@@ -116,6 +119,9 @@ class ModflowModelEventSourcingTest extends EventSourcingBaseTest
         $this->assertEquals($gridSize, $modelFinder->getGridSizeByModflowModelId($modelId));
     }
 
+    /**
+     * @throws \Exception
+     */
     public function test_setup_model_and_change_model_bounding_box_and_grid_size(): void
     {
         $modelId = ModflowId::generate();
@@ -496,7 +502,7 @@ class ModflowModelEventSourcingTest extends EventSourcingBaseTest
         $this->commandBus->dispatch(AddBoundary::forModflowModel($ownerId, $modelId, $ghbBoundary));
 
         $affectedCells = $this->container->get('inowas.modflowmodel.manager')->getBoundaryAffectedCells($modelId, $ghbBoundary->boundaryId());
-        $numberOfaffectedCells = count($affectedCells->cells());
+        $numberOfAffectedCells = \count($affectedCells->cells());
 
         $config = $this->recalculateAndCreateJsonCalculationRequest($modelId);
 
@@ -510,7 +516,7 @@ class ModflowModelEventSourcingTest extends EventSourcingBaseTest
         $this->assertCount(1, $stressperiodData);
 
         $dataForFirstStressPeriod = array_values($stressperiodData)[0];
-        $this->assertCount($numberOfaffectedCells, $dataForFirstStressPeriod);
+        $this->assertCount($numberOfAffectedCells, $dataForFirstStressPeriod);
     }
 
     /**
@@ -589,18 +595,19 @@ class ModflowModelEventSourcingTest extends EventSourcingBaseTest
         $riv = $this->getPackageData($arr, 'riv');
 
         $affectedCells = $this->container->get('inowas.modflowmodel.manager')->getBoundaryAffectedCells($modelId, $riverBoundary->boundaryId());
-        $numberOfaffectedCells = count($affectedCells->cells());
+        $numberOfAffectedCells = \count($affectedCells->cells());
 
         $this->assertArrayHasKey('stress_period_data', $riv);
         $stressperiodData = $riv['stress_period_data'];
         $this->assertCount(1, $stressperiodData);
 
         $dataForFirstStressPeriod = array_values($stressperiodData)[0];
-        $this->assertCount($numberOfaffectedCells, $dataForFirstStressPeriod);
+        $this->assertCount($numberOfAffectedCells, $dataForFirstStressPeriod);
     }
 
     /**
      * @test
+     * @throws \exception
      */
     public function it_updates_calculation_packages_lpf_laytyp(): void
     {
@@ -616,14 +623,14 @@ class ModflowModelEventSourcingTest extends EventSourcingBaseTest
         $this->assertTrue($packages->isSelected(PackageName::fromString('lpf')));
 
         $packages = json_decode(json_encode($packages), true);
-        $this->assertArrayHasKey('packages', $packages);
-        $this->assertArrayHasKey('lpf', $packages['packages']);
-        $this->assertArrayHasKey('laytyp', $packages['packages']['lpf']);
-        $this->assertEquals([0], $packages['packages']['lpf']['laytyp']);
+        $this->assertArrayHasKey('lpf', $packages);
+        $this->assertArrayHasKey('laytyp', $packages['lpf']);
+        $this->assertEquals([0], $packages['lpf']['laytyp']);
     }
 
     /**
      * @test
+     * @throws \exception
      */
     public function it_updates_calculation_packages_lpf_laywet(): void
     {
@@ -639,14 +646,14 @@ class ModflowModelEventSourcingTest extends EventSourcingBaseTest
         $this->assertTrue($packages->isSelected(PackageName::fromString('lpf')));
 
         $packages = json_decode(json_encode($packages), true);
-        $this->assertArrayHasKey('packages', $packages);
-        $this->assertArrayHasKey('lpf', $packages['packages']);
-        $this->assertArrayHasKey('laywet', $packages['packages']['lpf']);
-        $this->assertEquals([1], $packages['packages']['lpf']['laywet']);
+        $this->assertArrayHasKey('lpf', $packages);
+        $this->assertArrayHasKey('laywet', $packages['lpf']);
+        $this->assertEquals([1], $packages['lpf']['laywet']);
     }
 
     /**
      * @test
+     * @throws \exception
      */
     public function it_can_change_flow_package_to_upw(): void
     {
@@ -662,12 +669,12 @@ class ModflowModelEventSourcingTest extends EventSourcingBaseTest
         $this->assertTrue($packages->isSelected(PackageName::fromString('upw')));
 
         $packages = json_decode(json_encode($packages), true);
-        $this->assertArrayHasKey('packages', $packages);
-        $this->assertArrayHasKey('upw', $packages['packages']);
+        $this->assertArrayHasKey('upw', $packages);
     }
 
     /**
      * @test
+     * @throws \exception
      */
     public function it_can_change_calculation_package_mf_version(): void
     {
@@ -689,9 +696,8 @@ class ModflowModelEventSourcingTest extends EventSourcingBaseTest
         $this->assertTrue($packages->isSelected(PackageName::fromString('mf')));
 
         $packages = json_decode(json_encode($packages), true);
-        $this->assertArrayHasKey('packages', $packages);
-        $this->assertArrayHasKey('mf', $packages['packages']);
-        $this->assertEquals('mfnwt', $packages['packages']['mf']['version']);
+        $this->assertArrayHasKey('mf', $packages);
+        $this->assertEquals('mfnwt', $packages['mf']['version']);
     }
 
     /**
@@ -941,11 +947,11 @@ class ModflowModelEventSourcingTest extends EventSourcingBaseTest
 
     private function packageIsInSelectedPackages(array $request, $packageName): bool
     {
-        return in_array($packageName, $request['data']['selected_packages'], true);
+        return \array_key_exists($packageName, $request['data']['mf']);
     }
 
     private function getPackageData(array $request, $packageName): array
     {
-        return $request['data']['packages'][$packageName];
+        return $request['data']['mf'][$packageName];
     }
 }
