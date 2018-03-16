@@ -13,6 +13,9 @@ class UserProfile
     /** @var string */
     private $institution = '';
 
+    /** @var string */
+    private $email = '';
+
     public static function create(): UserProfile
     {
         return new self();
@@ -39,6 +42,11 @@ class UserProfile
     public function institution(): string
     {
         return $this->institution;
+    }
+
+    public function email(): string
+    {
+        return $this->email;
     }
 
     public function toArray(): array
