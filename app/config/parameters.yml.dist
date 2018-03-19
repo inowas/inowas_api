@@ -2,9 +2,9 @@
 parameters:
     database_host: postgis
     database_port: null
-    database_name: db_name
-    database_user: db_user
-    database_password: db_password
+    database_name: inowas
+    database_user: inowas
+    database_password: inowas
 
     mailer_auth_mode: login
     mailer_encryption: ssl
