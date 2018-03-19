@@ -28,9 +28,9 @@ parameters:
 
     rabbit_mq_host: 'rabbitmq'
     rabbit_mq_port: 5672
-    rabbit_mq_user: 'user'
-    rabbit_mq_password: 'password'
-    rabbit_mq_vhost: 'vhost'
+    rabbit_mq_user: 'inowas'
+    rabbit_mq_password: 'inowas'
+    rabbit_mq_vhost: 'inowas'
 
     rabbit_mq_calculation_request_queue: 'calculation_request_queue'
     rabbit_mq_calculation_queue: 'flopy_calculation_queue'
