@@ -1,3 +1,6 @@
 [submodule "py/pyModelling"]
 	path = py/pyModelling
 	url = https://github.com/inowas/pyModelling.git
+[submodule "py/pyprocessing"]
+	path = py/pyprocessing
+	url = https://github.com/inowas/pyprocessing.git
