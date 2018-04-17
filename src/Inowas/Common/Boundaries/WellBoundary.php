@@ -17,6 +17,11 @@ class WellBoundary extends ModflowBoundary
     public const CARDINALITY = '1';
     public const TYPE = 'wel';
 
+    /**
+     * @param array $arr
+     * @return ModflowBoundary
+     * @throws \Exception
+     */
     public static function fromArray(array $arr): ModflowBoundary
     {
         $affectedCells = AffectedCells::create();

@@ -23,15 +23,21 @@ class DateTime
         return new self($dateTimeImmutable);
     }
 
-    public static function fromAtom(string $dateTimeAtom, DateTimeZone $dateTimeZone = null): DateTime
+    /**
+     * @param string $dateTimeAtom
+     * @return DateTime
+     * @throws \Exception
+     */
+    public static function fromAtom(string $dateTimeAtom): DateTime
     {
-        if (null === $dateTimeZone) {
-            $dateTimeZone = new \DateTimeZone('UTC');
-        }
-
-        return new self(\DateTimeImmutable::createFromFormat(DATE_ATOM, $dateTimeAtom, $dateTimeZone));
+        return new self(new \DateTimeImmutable($dateTimeAtom));
     }
 
+    /**
+     * @param string $dateTimeString
+     * @return DateTime
+     * @throws \Exception
+     */
     public static function fromString(string $dateTimeString): DateTime
     {
         $dateTimeImmutable = new \DateTimeImmutable($dateTimeString, new DateTimeZone('UTC'));
