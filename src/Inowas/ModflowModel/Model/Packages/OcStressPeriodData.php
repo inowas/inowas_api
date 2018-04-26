@@ -36,9 +36,16 @@ class OcStressPeriodData implements \JsonSerializable
         return $this;
     }
 
-    public function toArray(): array
+    public function toArray(): ?array
     {
-        return $this->data;
+        # Since flopy 3.2.9 the default behaviour has changed
+        # https://github.com/modflowpy/flopy/releases/tag/3.2.9
+        # Now if stressPeriodData is null, then binary head output is saved for the last time step of each stress period.
+        if (\is_array($this->data) && \count($this->data) > 0) {
+            return $this->data;
+        }
+
+        return null;
     }
 
     public function jsonSerialize()

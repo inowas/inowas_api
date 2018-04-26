@@ -53,7 +53,7 @@ class OcPackage extends AbstractPackage
         $chedfm = Chedfm::fromValue(null);
         $cddnfm = Cddnfm::fromValue(null);
         $cboufm = Cboufm::fromValue(null);
-        $stressPeriodData = OcStressPeriodData::create()->addStressPeriod(OcStressPeriod::fromParams(0,0, ['save head']));
+        $stressPeriodData = OcStressPeriodData::create();
         $extension = Extension::fromArray(['oc', 'hds', 'ddn', 'cbc']);
         $unitnumber = Unitnumber::fromArray([14, 51, 52, 53]);
 
