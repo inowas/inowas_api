@@ -2,9 +2,9 @@
 parameters:
     database_host: postgis
     database_port: null
-    database_name: db_name
-    database_user: db_user
-    database_password: db_password
+    database_name: inowas
+    database_user: inowas
+    database_password: inowas
 
     mailer_auth_mode: login
     mailer_encryption: ssl
@@ -28,9 +28,9 @@ parameters:
 
     rabbit_mq_host: 'rabbitmq'
     rabbit_mq_port: 5672
-    rabbit_mq_user: 'user'
-    rabbit_mq_password: 'password'
-    rabbit_mq_vhost: 'vhost'
+    rabbit_mq_user: 'inowas'
+    rabbit_mq_password: 'inowas'
+    rabbit_mq_vhost: 'inowas'
 
     rabbit_mq_calculation_request_queue: 'calculation_request_queue'
     rabbit_mq_calculation_queue: 'flopy_calculation_queue'

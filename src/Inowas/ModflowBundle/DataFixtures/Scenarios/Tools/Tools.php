@@ -2,6 +2,7 @@
 
 namespace Inowas\ModflowBundle\DataFixtures\Scenarios\Tools;
 
+use FOS\UserBundle\Model\UserManager;
 use Inowas\AppBundle\Model\User;
 use Inowas\Common\Id\UserId;
 use Inowas\Common\Modflow\Description;
@@ -28,6 +29,7 @@ class Tools extends LoadScenarioBase
      */
     public function load(): void
     {
+        /** @var UserManager $userManager */
         $userManager = $this->container->get('fos_user.user_manager');
         $this->loadUsers($userManager);
 
@@ -64,8 +66,8 @@ class Tools extends LoadScenarioBase
         $commandBus->dispatch($command);
         $command = $this->getCreateToolInstanceCommand(ToolType::fromString('T14C'));
         $commandBus->dispatch($command);
-        #$command = $this->getCreateToolInstanceCommand(ToolType::fromString('T14D'));
-        #$commandBus->dispatch($command);
+        $command = $this->getCreateToolInstanceCommand(ToolType::fromString('T14D'));
+        $commandBus->dispatch($command);
     }
 
     private function getCreateToolInstanceCommand(ToolType $toolType): CreateToolInstance
@@ -118,13 +120,13 @@ class Tools extends LoadScenarioBase
                               "id": "C0",
                               "max": 1000,
                               "min": 0,
-                              "value": 725
+                              "value": 100
                             },
                             {
                               "id": "x",
                               "max": 100,
                               "min": 0,
-                              "value": 15
+                              "value": 10
                             },
                             {
                               "id": "t",
@@ -166,7 +168,7 @@ class Tools extends LoadScenarioBase
                               "id": "Kd",
                               "max": 0.1,
                               "min": 0,
-                              "value": 0.01
+                              "value": 0
                             },
                             {
                               "id": "tau",
@@ -907,51 +909,63 @@ class Tools extends LoadScenarioBase
                         "parameters": [
                             {
                               "id": "Qw",
-                              "max": 1000,
                               "min": 1,
+                              "max": 10000,
                               "value": 150
                             },
                             {
                               "id": "t",
+                              "min": 10,
                               "max": 500,
-                              "min": 100,
-                              "value": 365
+                              "value": 400
                             },
                             {
                               "id": "S",
-                              "max": 0.5,
                               "min": 0.1,
+                              "max": 0.5,
                               "value": 0.2
                             },
                             {
                               "id": "T",
-                              "max": 3000,
                               "min": 1000,
+                              "max": 3000,
                               "value": 1500
                             },
                             {
                               "id": "d",
-                              "max": 1000,
                               "min": 200,
+                              "max": 1000,
                               "value": 500
                             },
                             {
                               "id": "W",
-                              "max": 1000,
-                              "min": 100,
-                              "value": 400
+                              "min": 1,
+                              "max": 10,
+                              "value": 2.5
                             },
                             {
                               "id": "Kdash",
-                              "max": 1,
                               "min": 0.1,
+                              "max": 1,
+                              "value": 0.5
+                            },
+                            {
+                              "id": "Bdashdash",
+                              "min": 0.1,
+                              "max": 20,
+                              "value": 7
+                            },
+                            {
+                              "id": "Sigma",
+                              "min": 0.1,
+                              "max": 0.5,
                               "value": 0.1
                             },
                             {
                               "id": "bdash",
-                              "max": 10000,
-                              "min": 100,
-                              "value": 100
+                              "min": 1,
+                              "max": 20,
+                              "value": 10
                             }
                           ],             
                             "tool":"' . $toolType->toString() . '"
