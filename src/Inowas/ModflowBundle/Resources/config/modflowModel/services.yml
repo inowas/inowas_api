@@ -51,7 +51,7 @@ services:
     inowas.modflowmodel.layers_persister:
         class: Inowas\ModflowModel\Service\LayersPersister
         arguments:
-            - '%data_folder%/%kernel.environment%'
+            - '%data_folder%'
 
     inowas.modflowmodel.manager:
         class: Inowas\ModflowModel\Service\ModflowModelManager
@@ -75,12 +75,12 @@ services:
     inowas.modflowmodel.modflow_packages_persister:
         class: Inowas\ModflowModel\Service\ModflowPackagesPersister
         arguments:
-            - '%data_folder%/%kernel.environment%'
+            - '%data_folder%'
 
     inowas.modflowmodel.raster_files_persister:
         class: Inowas\ModflowModel\Service\RasterFilesPersister
         arguments:
-            - '%data_folder%/%kernel.environment%'
+            - '%data_folder%'
 
     inowas.modflowmodel.stressperiod_data_generator:
         class: Inowas\ModflowModel\Service\StressPeriodDataGenerator
