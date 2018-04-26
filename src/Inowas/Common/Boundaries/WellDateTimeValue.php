@@ -9,7 +9,7 @@ use Inowas\Common\DateTime\DateTime;
 class WellDateTimeValue extends DateTimeValue
 {
 
-    const TYPE = 'wel';
+    public const TYPE = 'wel';
 
     /** @var float */
     private $pumpingRate;
@@ -20,11 +20,21 @@ class WellDateTimeValue extends DateTimeValue
         return new self($dateTime, $pumpingRate);
     }
 
+    /**
+     * @param array $arr
+     * @return WellDateTimeValue
+     * @throws \Exception
+     */
     public static function fromArray(array $arr): WellDateTimeValue
     {
         return new self(DateTime::fromAtom($arr['date_time']), $arr['values'][0]);
     }
 
+    /**
+     * @param array $arr
+     * @return WellDateTimeValue
+     * @throws \Exception
+     */
     public static function fromArrayValues(array $arr): WellDateTimeValue
     {
         return new self(DateTime::fromAtom($arr[0]), $arr[1]);

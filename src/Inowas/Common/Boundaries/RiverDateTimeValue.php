@@ -8,7 +8,7 @@ use Inowas\Common\DateTime\DateTime;
 
 class RiverDateTimeValue extends DateTimeValue
 {
-    const TYPE = 'riv';
+    public const TYPE = 'riv';
 
     /** @var float */
     private $stage;
@@ -25,6 +25,11 @@ class RiverDateTimeValue extends DateTimeValue
         return new self($dateTime, $stage, $botm, $cond);
     }
 
+    /**
+     * @param array $arr
+     * @return RiverDateTimeValue
+     * @throws \Exception
+     */
     public static function fromArray(array $arr): RiverDateTimeValue
     {
         return new self(
@@ -35,6 +40,11 @@ class RiverDateTimeValue extends DateTimeValue
         );
     }
 
+    /**
+     * @param array $arr
+     * @return RiverDateTimeValue
+     * @throws \Exception
+     */
     public static function fromArrayValues(array $arr): RiverDateTimeValue
     {
         return new self(DateTime::fromAtom($arr[0]), $arr[1], $arr[2], $arr[3]);

@@ -234,6 +234,9 @@ class ModflowModelEventSourcingTest extends EventSourcingBaseTest
         $this->assertEquals($layer, $this->container->get('inowas.modflowmodel.soilmodel_finder')->findLayer($modelId, $layer->id()));
     }
 
+    /**
+     * @throws \Exception
+     */
     public function test_add_wel_boundary_to_model_and_calculate_affected_cells(): void
     {
         $ownerId = UserId::generate();
@@ -243,9 +246,16 @@ class ModflowModelEventSourcingTest extends EventSourcingBaseTest
         $wellBoundary = $this->createWellBoundary();
         $this->commandBus->dispatch(AddBoundary::forModflowModel($ownerId, $modelId, $wellBoundary));
 
+        /** @var AffectedCells $affectedCells */
         $affectedCells = $this->container->get('inowas.modflowmodel.manager')->getBoundaryAffectedCells($modelId, $wellBoundary->boundaryId());
         $this->assertCount(1, $affectedCells->cells());
         $this->assertEquals([[53, 8]], $affectedCells->cells());
+
+        /** @var WellBoundary $wellBoundary */
+        $wellBoundary = $this->container->get('inowas.modflowmodel.boundary_manager')->getBoundary($modelId, $wellBoundary->boundaryId());
+        $this->assertCount(1, $wellBoundary->toArray()['date_time_values']);
+        $this->assertEquals('2015-01-01T00:00:00+00:00', $wellBoundary->toArray()['date_time_values'][0]['date_time']);
+        $this->assertEquals(-5000, $wellBoundary->toArray()['date_time_values'][0]['values'][0]);
     }
 
     public function test_add_riv_boundary_to_model_and_calculate_affected_cells(): void

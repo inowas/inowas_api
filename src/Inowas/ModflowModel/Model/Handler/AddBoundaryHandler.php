@@ -37,6 +37,10 @@ final class AddBoundaryHandler
         $this->modelManager = $manager;
     }
 
+    /**
+     * @param AddBoundary $command
+     * @throws \exception
+     */
     public function __invoke(AddBoundary $command)
     {
         /** @var ModflowModelAggregate $modflowModel */

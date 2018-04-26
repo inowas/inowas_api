@@ -23,6 +23,9 @@ class WellBoundaryTest extends \PHPUnit_Framework_TestCase
     /** @var  WellBoundary */
     protected $wellBoundary;
 
+    /**
+     * @throws \Exception
+     */
     public function setUp(): void
     {
         /** @var WellBoundary $wb */
@@ -57,6 +60,9 @@ class WellBoundaryTest extends \PHPUnit_Framework_TestCase
         $this->wellBoundary = $wb;
     }
 
+    /**
+     * @throws \Exception
+     */
     public function test_find_value_by_date_time(): void
     {
         $dateTime = DateTime::fromDateTimeImmutable(new \DateTimeImmutable('2014-01-15'));
@@ -96,5 +102,16 @@ class WellBoundaryTest extends \PHPUnit_Framework_TestCase
         $wb = BoundaryFactory::createFromArray($arr);
         $this->assertInstanceOf(WellBoundary::class, $wb);
         $this->assertEquals($this->wellBoundary, $wb);
+    }
+
+    /**
+     * @throws \Exception
+     */
+    public function test_from_json_array(): void
+    {
+        $expectedWellJson = '{"id":"ca9c62aa-587e-476a-a207-aea7f75da9c2","name":"Well 1","geometry":{"type":"Point","coordinates":[-63.643112,-31.336484]},"type":"wel","affected_layers":[0],"metadata":{"well_type":"puw"},"date_time_values":[{"date_time":"2010-01-01T00:00:00.000Z","values":[0]}],"active_cells":[[28,16]]}';
+        $wellArray = json_decode($expectedWellJson, true);
+        $wellBoundary = WellBoundary::fromArray($wellArray);
+        $this->assertEquals($wellArray['id'], $wellBoundary->boundaryId()->toString());
     }
 }
