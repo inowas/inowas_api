@@ -119,8 +119,8 @@ abstract class EventSourcingBaseTest extends WebTestCase
     /* HELPERS */
     protected function addSteadyStressperiod(UserId $user, ModflowId $modelId): void
     {
-        $start = DateTime::fromDateTime(new \DateTime('2015-01-01'));
-        $end = DateTime::fromDateTime(new \DateTime('2015-12-31'));
+        $start = DateTime::fromDateTime(new \DateTime('2015-01-01T00:00:00Z'));
+        $end = DateTime::fromDateTime(new \DateTime('2015-12-31T00:00:00Z'));
         $timeUnit = TimeUnit::fromInt(TimeUnit::DAYS);
         $stressperiods = StressPeriods::create($start, $end, $timeUnit);
         $stressperiods->addStressPeriod(StressPeriod::create(0, 1, 1, 1, true));
@@ -131,8 +131,8 @@ abstract class EventSourcingBaseTest extends WebTestCase
     protected function createSteadyCalculation(UserId $ownerId, ModflowId $modelId): void
     {
         $stressPeriods = StressPeriods::create(
-            DateTime::fromDateTime(new \DateTime('2015-01-01')),
-            DateTime::fromDateTime(new \DateTime('2015-01-31')),
+            DateTime::fromDateTime(new \DateTime('2015-01-01T00:00:00Z')),
+            DateTime::fromDateTime(new \DateTime('2015-01-31T00:00:00Z')),
             TimeUnit::fromInt(TimeUnit::DAYS)
         );
 
@@ -140,6 +140,11 @@ abstract class EventSourcingBaseTest extends WebTestCase
         $this->commandBus->dispatch(UpdateStressPeriods::of($ownerId, $modelId, $stressPeriods));
     }
 
+    /**
+     * @param ModflowId $modelId
+     * @return string
+     * @throws \exception
+     */
     protected function recalculateAndCreateJsonCalculationRequest(ModflowId $modelId): string
     {
         $packagesManager = $this->container->get('inowas.modflowmodel.modflow_packages_manager');
@@ -178,7 +183,7 @@ abstract class EventSourcingBaseTest extends WebTestCase
         );
 
         $chdBoundary = $chdBoundary->addConstantHeadToObservationPoint($observationPointId, ConstantHeadDateTimeValue::fromParams(
-            DateTime::fromDateTimeImmutable(new \DateTimeImmutable('1.1.2015')),
+            DateTime::fromDateTimeImmutable(new \DateTimeImmutable('2015-01-01T00:00:00Z')),
             450,
             450
         ));
@@ -215,7 +220,7 @@ abstract class EventSourcingBaseTest extends WebTestCase
         );
 
         $ghbBoundary = $ghbBoundary->addGeneralHeadValueToObservationPoint($observationPointId, GeneralHeadDateTimeValue::fromParams(
-            DateTime::fromDateTimeImmutable(new \DateTimeImmutable('1.1.2015')),
+            DateTime::fromDateTimeImmutable(new \DateTimeImmutable('2015-01-01T00:00:00Z')),
             450,
             100
         ));
@@ -223,6 +228,10 @@ abstract class EventSourcingBaseTest extends WebTestCase
         return $ghbBoundary;
     }
 
+    /**
+     * @return RechargeBoundary
+     * @throws \Exception
+     */
     protected function createRechargeBoundaryCenter(): RechargeBoundary
     {
 
@@ -247,13 +256,17 @@ abstract class EventSourcingBaseTest extends WebTestCase
 
         /** @var RechargeBoundary $rchBoundary */
         $rchBoundary = $rchBoundary->addRecharge(RechargeDateTimeValue::fromParams(
-            DateTime::fromDateTimeImmutable(new \DateTimeImmutable('1.1.2015')),
+            DateTime::fromDateTimeImmutable(new \DateTimeImmutable('2015-01-01T00:00:00Z')),
             3.29e-4
         ));
 
         return $rchBoundary;
     }
 
+    /**
+     * @return RechargeBoundary
+     * @throws \Exception
+     */
     protected function createRechargeBoundaryLower(): RechargeBoundary
     {
 
@@ -278,7 +291,7 @@ abstract class EventSourcingBaseTest extends WebTestCase
 
         /** @var RechargeBoundary $rchBoundary */
         $rchBoundary = $rchBoundary->addRecharge(RechargeDateTimeValue::fromParams(
-            DateTime::fromDateTimeImmutable(new \DateTimeImmutable('1.1.2015')),
+            DateTime::fromDateTimeImmutable(new \DateTimeImmutable('2015-01-01T00:00:00Z')),
             5.29e-4
         ));
 
