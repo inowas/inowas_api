@@ -17,6 +17,10 @@ class ModflowEventStoreTruncateCommand extends ContainerAwareCommand
     /** @var  UserId */
     protected $ownerId;
 
+    /**
+     *
+     * @throws \Symfony\Component\Console\Exception\InvalidArgumentException
+     */
     protected function configure(): void
     {
         // Name and description for app/console command
@@ -25,10 +29,20 @@ class ModflowEventStoreTruncateCommand extends ContainerAwareCommand
             ->setDescription('Truncates the event-stream Database and cleans the local modflow-data folder');
     }
 
+    /**
+     * @param InputInterface $input
+     * @param OutputInterface $output
+     * @return int|null|void
+     * @throws \Symfony\Component\DependencyInjection\Exception\InvalidArgumentException
+     * @throws \Symfony\Component\DependencyInjection\Exception\ServiceNotFoundException
+     * @throws \Symfony\Component\DependencyInjection\Exception\ServiceCircularReferenceException
+     * @throws \LogicException
+     */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $config = $this->getContainer()->getParameter('prooph_event_store_repositories');
 
+        /** @var array $config */
         foreach ($config as $repo) {
 
             try {
@@ -41,9 +55,17 @@ class ModflowEventStoreTruncateCommand extends ContainerAwareCommand
             );
         }
 
-        $this->cleanDataFolder();
+        if ($this->getContainer()->get('kernel')->getEnvironment() === 'prod')
+        {
+            $this->cleanDataFolder();
+        }
     }
 
+    /**
+     * @throws \Symfony\Component\DependencyInjection\Exception\ServiceNotFoundException
+     * @throws \Symfony\Component\DependencyInjection\Exception\ServiceCircularReferenceException
+     * @throws \LogicException
+     */
     private function cleanDataFolder(): void
     {
         $this->getContainer()->get('inowas.modflowmodel.modflow_packages_persister')->clear();

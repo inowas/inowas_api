@@ -46,6 +46,8 @@ class ModflowEventStoreMigrateCommand extends ContainerAwareCommand
      * @throws \Symfony\Component\DependencyInjection\Exception\ServiceCircularReferenceException
      * @throws \Prooph\ServiceBus\Exception\CommandDispatchException
      * @throws \Symfony\Component\Console\Exception\InvalidArgumentException
+     * @throws \Doctrine\DBAL\DBALException
+     * @throws \Exception
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
