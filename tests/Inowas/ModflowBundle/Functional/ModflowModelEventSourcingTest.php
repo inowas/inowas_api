@@ -205,6 +205,9 @@ class ModflowModelEventSourcingTest extends EventSourcingBaseTest
         $this->assertCount(1610, $activeCells->cells());
     }
 
+    /**
+     * @throws \Exception
+     */
     public function test_update_grid_size_updates_affected_cells_of_area_and_boundaries(): void
     {
         $ownerId = UserId::generate();
@@ -258,6 +261,9 @@ class ModflowModelEventSourcingTest extends EventSourcingBaseTest
         $this->assertEquals(-5000, $wellBoundary->toArray()['date_time_values'][0]['values'][0]);
     }
 
+    /**
+     * @throws \Exception
+     */
     public function test_add_riv_boundary_to_model_and_calculate_affected_cells(): void
     {
         $ownerId = UserId::generate();
@@ -272,6 +278,9 @@ class ModflowModelEventSourcingTest extends EventSourcingBaseTest
         $this->assertCount(131, $affectedCells->cells());
     }
 
+    /**
+     * @throws \Exception
+     */
     public function test_add_chd_boundary_to_model_and_calculate_affected_cells(): void
     {
         $ownerId = UserId::generate();
@@ -285,6 +294,9 @@ class ModflowModelEventSourcingTest extends EventSourcingBaseTest
         $this->assertCount(75, $affectedCells->cells());
     }
 
+    /**
+     * @throws \Exception
+     */
     public function test_add_ghb_boundary_to_model_and_calculate_affected_cells(): void
     {
         $ownerId = UserId::generate();
@@ -298,6 +310,9 @@ class ModflowModelEventSourcingTest extends EventSourcingBaseTest
         $this->assertCount(75, $affectedCells->cells());
     }
 
+    /**
+     * @throws \Exception
+     */
     public function test_add_rch_boundary_to_model_and_calculate_affected_cells(): void
     {
         $ownerId = UserId::generate();
@@ -311,6 +326,9 @@ class ModflowModelEventSourcingTest extends EventSourcingBaseTest
         $this->assertCount(1430, $affectedCells->cells());
     }
 
+    /**
+     * @throws \Exception
+     */
     public function test_it_throws_an_exception_if_boundary_to_update_does_not_exist(): void
     {
         $ownerId = UserId::generate();
@@ -324,6 +342,9 @@ class ModflowModelEventSourcingTest extends EventSourcingBaseTest
         $this->commandBus->dispatch(UpdateBoundary::forModflowModel($ownerId, $modelId, BoundaryId::fromString('invalid'), $wellBoundary));
     }
 
+    /**
+     * @throws \Exception
+     */
     public function test_it_throws_an_exception_if_boundary_to_remove_does_not_exist(): void
     {
         $ownerId = UserId::generate();
@@ -339,6 +360,7 @@ class ModflowModelEventSourcingTest extends EventSourcingBaseTest
 
     /**
      * @test
+     * @throws \exception
      */
     public function it_creates_a_steady_calculation_checks_that_dis_package_is_available(): void
     {
@@ -364,6 +386,7 @@ class ModflowModelEventSourcingTest extends EventSourcingBaseTest
 
     /**
      * @test
+     * @throws \Exception
      */
     public function it_creates_a_steady_calculation_from_model_with_two_well_boundaries(): void
     {
@@ -412,6 +435,7 @@ class ModflowModelEventSourcingTest extends EventSourcingBaseTest
 
     /**
      * @test
+     * @throws \Exception
      */
     public function create_calculation_from_model_with_two_stress_periods_and_two_well_boundaries_on_the_same_grid_cell_should_sum_up_pumping_rates(): void
     {
@@ -472,6 +496,7 @@ class ModflowModelEventSourcingTest extends EventSourcingBaseTest
 
     /**
      * @test
+     * @throws \Exception
      */
     public function create_steady_calculation_from_model_with_chd_boundary_with_one_observationpoint(): void
     {
@@ -501,6 +526,7 @@ class ModflowModelEventSourcingTest extends EventSourcingBaseTest
 
     /**
      * @test
+     * @throws \Exception
      */
     public function it_creates_a_steady_calculation_from_model_with_ghb_boundary_with_one_observationpoint(): void
     {
@@ -531,6 +557,7 @@ class ModflowModelEventSourcingTest extends EventSourcingBaseTest
 
     /**
      * @test
+     * @throws \Exception
      */
     public function it_creates_a_steady_calculation_from_model_with_rch_boundary(): void
     {
@@ -558,6 +585,8 @@ class ModflowModelEventSourcingTest extends EventSourcingBaseTest
 
     /**
      * @test
+     * @throws \Exception
+     * @throws \Exception
      */
     public function it_creates_a_steady_calculation_from_model_with_two_overlapping_rch_boundaries(): void
     {
@@ -588,6 +617,7 @@ class ModflowModelEventSourcingTest extends EventSourcingBaseTest
 
     /**
      * @test
+     * @throws \Exception
      */
     public function it_creates_a_steady_calculation_from_model_with_riv_boundary_with_one_observationpoint(): void
     {
@@ -712,6 +742,7 @@ class ModflowModelEventSourcingTest extends EventSourcingBaseTest
 
     /**
      * @test
+     * @throws \Exception
      */
     public function it_clones_a_modflow_model_and_all_boundaries(): void
     {
@@ -736,6 +767,7 @@ class ModflowModelEventSourcingTest extends EventSourcingBaseTest
 
     /**
      * @test
+     * @throws \Exception
      */
     public function it_clones_a_modflow_model_and_tool_and_all_boundaries(): void
     {
@@ -832,6 +864,7 @@ class ModflowModelEventSourcingTest extends EventSourcingBaseTest
 
     /**
      * @test
+     * @throws \Exception
      */
     public function create_scenarioanalysis_from_basemodel_with_all_boundary_types(): void
     {
@@ -876,6 +909,7 @@ class ModflowModelEventSourcingTest extends EventSourcingBaseTest
 
     /**
      * @test
+     * @throws \Exception
      */
     public function add_well_to_scenario_from_basemodel_with_all_other_boundary_types(): void
     {
@@ -909,6 +943,7 @@ class ModflowModelEventSourcingTest extends EventSourcingBaseTest
 
     /**
      * @test
+     * @throws \Exception
      */
     public function it_can_move_well_of_scenario_from_basemodel_with_all_boundary_types(): void
     {

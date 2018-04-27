@@ -21,10 +21,14 @@ class OcStressPeriodData implements \JsonSerializable
         return new self();
     }
 
-    public static function fromArray(array $data): OcStressPeriodData
+    public static function fromArray(?array $data): OcStressPeriodData
     {
         $self = new self();
-        $self->data = $data;
+
+        if (null !== $data) {
+            $self->data = $data;
+        }
+
         return $self;
     }
 
