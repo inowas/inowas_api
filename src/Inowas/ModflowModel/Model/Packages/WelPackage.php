@@ -11,8 +11,8 @@ use Inowas\Common\Modflow\Unitnumber;
 
 class WelPackage extends AbstractPackage
 {
-    const TYPE = 'wel';
-    const DESCRIPTION = 'Well Package';
+    public const TYPE = 'wel';
+    public const DESCRIPTION = 'Well Package';
 
     /** @var  Ipakcb */
     protected $ipakcb;

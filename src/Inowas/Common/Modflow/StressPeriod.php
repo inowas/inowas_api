@@ -21,7 +21,17 @@ final class StressPeriod implements \JsonSerializable
     /** @var bool  */
     private $steady;
 
-    public static function create(int $totimStart, int $perlen, int $nstp, float $tsmult, bool $steady){
+    /**
+     * @noinspection MoreThanThreeArgumentsInspection
+     * @param int $totimStart
+     * @param int $perlen
+     * @param int $nstp
+     * @param float $tsmult
+     * @param bool $steady
+     * @return StressPeriod
+     */
+    public static function create(int $totimStart, int $perlen, int $nstp, float $tsmult, bool $steady): StressPeriod
+    {
         return new self($totimStart, $perlen, $nstp, $tsmult, $steady);
     }
 

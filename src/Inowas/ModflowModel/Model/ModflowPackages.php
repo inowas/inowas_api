@@ -22,6 +22,7 @@ use Inowas\ModflowModel\Model\Packages\BasPackage;
 use Inowas\ModflowModel\Model\Packages\ChdPackage;
 use Inowas\ModflowModel\Model\Packages\DisPackage;
 use Inowas\ModflowModel\Model\Packages\GhbPackage;
+use Inowas\ModflowModel\Model\Packages\HobPackage;
 use Inowas\ModflowModel\Model\Packages\LpfPackage;
 use Inowas\ModflowModel\Model\Packages\MfPackage;
 use Inowas\ModflowModel\Model\Packages\NwtPackage;
@@ -44,7 +45,8 @@ class ModflowPackages implements \JsonSerializable
             'mf' => MfPackage::class,
             'bas' => BasPackage::class,
             'dis' => DisPackage::class,
-            'oc' => OcPackage::class
+            'oc' => OcPackage::class,
+            'hob' => HobPackage::class
         ],
         'selected' => ['mf', 'bas', 'dis', 'oc']
     ];
@@ -184,6 +186,7 @@ class ModflowPackages implements \JsonSerializable
     /**
      * @param TimeUnit $timeUnit
      * @throws \Inowas\ModflowModel\Model\Exception\InvalidPackageNameException
+     * @throws \Exception
      */
     public function updateTimeUnit(TimeUnit $timeUnit): void
     {
@@ -197,6 +200,7 @@ class ModflowPackages implements \JsonSerializable
     /**
      * @param LengthUnit $lengthUnit
      * @throws \Inowas\ModflowModel\Model\Exception\InvalidPackageNameException
+     * @throws \Exception
      */
     public function updateLengthUnit(LengthUnit $lengthUnit): void
     {
@@ -213,6 +217,7 @@ class ModflowPackages implements \JsonSerializable
      * @param Distance $dx
      * @param Distance $dy
      * @throws \Inowas\ModflowModel\Model\Exception\InvalidPackageNameException
+     * @throws \Exception
      */
     public function updateGridParameters(GridSize $gridSize, BoundingBox $boundingBox, Distance $dx, Distance $dy): void
     {
@@ -226,6 +231,7 @@ class ModflowPackages implements \JsonSerializable
     /**
      * @param DateTime $start
      * @throws \Inowas\ModflowModel\Model\Exception\InvalidPackageNameException
+     * @throws \Exception
      */
     public function updateStartDateTime(DateTime $start): void
     {

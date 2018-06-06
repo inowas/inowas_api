@@ -24,7 +24,7 @@ class LayerNumber
         return $this->number;
     }
 
-    public function sameAs(LayerNumber $other)
+    public function sameAs(LayerNumber $other): bool
     {
         return ($other->toInt() === $this->toInt());
     }

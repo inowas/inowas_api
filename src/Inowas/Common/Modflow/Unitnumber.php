@@ -38,4 +38,9 @@ class Unitnumber
     {
         return $this->number;
     }
+
+    public function sameAs($obj): bool
+    {
+        return $obj instanceof self && $obj->toValue() === $this->number;
+    }
 }

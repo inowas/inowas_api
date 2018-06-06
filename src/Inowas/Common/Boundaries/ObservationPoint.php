@@ -41,6 +41,12 @@ class ObservationPoint implements \JsonSerializable
         return $self;
     }
 
+    /**
+     * @param array $arr
+     * @param BoundaryType $type
+     * @return ObservationPoint
+     * @throws \Inowas\Common\Exception\KeyHasUseException
+     */
     public static function fromArray(array $arr, BoundaryType $type): ObservationPoint
     {
         $self = new self(
@@ -54,6 +60,13 @@ class ObservationPoint implements \JsonSerializable
         return $self;
     }
 
+    /**
+     * ObservationPoint constructor.
+     * @param ObservationPointId $id
+     * @param BoundaryType $type
+     * @param Name $name
+     * @param Point $geometry
+     */
     private function __construct(ObservationPointId $id, BoundaryType $type, Name $name, Point $geometry)
     {
         $this->id = $id;
@@ -62,6 +75,11 @@ class ObservationPoint implements \JsonSerializable
         $this->type = $type;
     }
 
+    /**
+     * @param DateTimeValue $dateTimeValue
+     * @return ObservationPoint
+     * @throws \Inowas\Common\Exception\KeyHasUseException
+     */
     public function addDateTimeValue(DateTimeValue $dateTimeValue): ObservationPoint
     {
         $this->dateTimeValuesCollection->add($dateTimeValue);
@@ -70,31 +88,49 @@ class ObservationPoint implements \JsonSerializable
         return $self;
     }
 
+    /**
+     * @return BoundaryType
+     */
     public function type(): BoundaryType
     {
         return $this->type;
     }
 
+    /**
+     * @return Point
+     */
     public function geometry(): Point
     {
         return $this->geometry;
     }
 
+    /**
+     * @return Name
+     */
     public function name(): Name
     {
         return $this->name;
     }
 
+    /**
+     * @return array
+     */
     public function getDateTimes(): array
     {
         return $this->dateTimeValues()->getDateTimes();
     }
 
+    /**
+     * @return DateTimeValuesCollection
+     */
     public function dateTimeValues(): DateTimeValuesCollection
     {
         return $this->dateTimeValuesCollection;
     }
 
+    /**
+     * @return array
+     */
     public function toArray(): array
     {
         return array(
@@ -106,6 +142,9 @@ class ObservationPoint implements \JsonSerializable
         );
     }
 
+    /**
+     * @return array
+     */
     public function jsonSerialize(): array
     {
         return array(
@@ -116,11 +155,18 @@ class ObservationPoint implements \JsonSerializable
         );
     }
 
+    /**
+     * @param DateTime $dateTime
+     * @return DateTimeValue|null
+     */
     public function findValueByDateTime(DateTime $dateTime): ?DateTimeValue
     {
         return $this->dateTimeValues()->findValueByDateTime($dateTime);
     }
 
+    /**
+     * @return ObservationPointId
+     */
     public function id(): ObservationPointId
     {
         return $this->id;

@@ -13,7 +13,13 @@ use Inowas\Common\Modflow\Name;
 
 class ModflowBoundary
 {
+    /**
+     *
+     */
     public CONST CARDINALITY = '';
+    /**
+     *
+     */
     public CONST TYPE = '';
 
     /** @var  BoundaryId */
@@ -37,6 +43,9 @@ class ModflowBoundary
     /** @var ObservationPointCollection  */
     protected $observationPoints;
 
+    /**
+     * @return ModflowBoundary
+     */
     protected function self(): ModflowBoundary
     {
         $self = new static($this->id, $this->name, $this->geometry, $this->affectedCells, $this->affectedLayers, $this->metadata);
@@ -64,6 +73,11 @@ class ModflowBoundary
         return new static(BoundaryId::fromString($name->slugified()), $name, $geometry, $affectedCells, $affectedLayers, $metadata);
     }
 
+    /**
+     * @param array $arr
+     * @return ModflowBoundary
+     * @throws \Inowas\Common\Exception\InvalidTypeException
+     */
     public static function fromArray(array $arr): ModflowBoundary
     {
         $affectedCells = AffectedCells::create();
@@ -85,6 +99,15 @@ class ModflowBoundary
         return $static;
     }
 
+    /**
+     * ModflowBoundary constructor.
+     * @param BoundaryId $id
+     * @param Name $name
+     * @param Geometry $geometry
+     * @param AffectedCells $affectedCells
+     * @param AffectedLayers $affectedLayers
+     * @param Metadata $metadata
+     */
     protected function __construct(BoundaryId $id, Name $name, Geometry $geometry, AffectedCells $affectedCells, AffectedLayers $affectedLayers, Metadata $metadata)
     {
         $this->id = $id;
@@ -96,78 +119,129 @@ class ModflowBoundary
         $this->observationPoints = ObservationPointCollection::create();
     }
 
+    /**
+     * @param Name $boundaryName
+     * @return ModflowBoundary
+     */
     public function updateName(Name $boundaryName): ModflowBoundary
     {
         $this->name = $boundaryName;
         return $this->self();
     }
 
+    /**
+     * @param Geometry $geometry
+     * @return ModflowBoundary
+     */
     public function updateGeometry(Geometry $geometry): ModflowBoundary
     {
         $this->geometry = $geometry;
         return $this->self();
     }
 
+    /**
+     * @param AffectedCells $affectedCells
+     * @return ModflowBoundary
+     */
     public function updateAffectedCells(AffectedCells $affectedCells): ModflowBoundary
     {
         $this->affectedCells = $affectedCells;
         return $this->self();
     }
 
+    /**
+     * @param AffectedLayers $affectedLayers
+     * @return ModflowBoundary
+     */
     public function updateAffectedLayers(AffectedLayers $affectedLayers): ModflowBoundary
     {
         $this->affectedLayers = $affectedLayers;
         return $this->self();
     }
 
+    /**
+     * @param Metadata $metadata
+     * @return ModflowBoundary
+     */
     public function updateMetadata(Metadata $metadata): ModflowBoundary
     {
         $this->metadata = $metadata;
         return $this->self();
     }
 
+    /**
+     * @param ObservationPoint $point
+     * @return ModflowBoundary
+     */
     public function addObservationPoint(ObservationPoint $point): ModflowBoundary
     {
         $this->observationPoints()->add($point);
         return $this->self();
     }
 
+    /**
+     * @param ObservationPointId $id
+     * @return ObservationPoint
+     * @throws \Inowas\Common\Exception\KeyInvalidException
+     */
     public function getObservationPoint(ObservationPointId $id): ObservationPoint
     {
         return $this->observationPoints->get($id);
     }
 
+    /**
+     * @param ObservationPoint $point
+     * @return ModflowBoundary
+     */
     public function updateObservationPoint(ObservationPoint $point): ModflowBoundary
     {
         $this->observationPoints()->add($point);
         return $this->self();
     }
 
+    /**
+     * @return AffectedCells
+     */
     public function affectedCells(): AffectedCells
     {
         return $this->affectedCells;
     }
 
+    /**
+     * @return AffectedLayers
+     */
     public function affectedLayers(): AffectedLayers
     {
         return $this->affectedLayers;
     }
 
+    /**
+     * @return Geometry
+     */
     public function geometry(): Geometry
     {
         return $this->geometry;
     }
 
+    /**
+     * @return BoundaryId
+     */
     public function boundaryId(): BoundaryId
     {
         return $this->id;
     }
 
+    /**
+     * @return Name
+     */
     public function name(): Name
     {
         return $this->name;
     }
 
+    /**
+     * @return Metadata
+     */
     public function metadata(): Metadata
     {
         if (null === $this->metadata){
@@ -177,11 +251,19 @@ class ModflowBoundary
         return $this->metadata;
     }
 
+    /**
+     * @return ObservationPointCollection
+     */
     public function observationPoints(): ObservationPointCollection
     {
         return $this->observationPoints;
     }
 
+    /**
+     * @param ObservationPointId $id
+     * @return DateTimeValuesCollection
+     * @throws \Inowas\Common\Exception\KeyInvalidException
+     */
     public function dateTimeValues(ObservationPointId $id): DateTimeValuesCollection
     {
         /** @var ObservationPoint $observationPoint */
@@ -189,21 +271,35 @@ class ModflowBoundary
         return $observationPoint->dateTimeValues();
     }
 
+    /**
+     * @return array
+     */
     public function getDateTimes(): array
     {
         return $this->observationPoints()->getDateTimes();
     }
 
+    /**
+     * @return BoundaryType
+     * @throws \Inowas\Common\Exception\InvalidTypeException
+     */
     public function type(): BoundaryType
     {
         return BoundaryType::fromString($this::TYPE);
     }
 
+    /**
+     * @return Cardinality
+     */
     public function cardinality(): Cardinality
     {
         return Cardinality::fromString($this::CARDINALITY);
     }
 
+    /**
+     * @return array
+     * @throws \Inowas\Common\Exception\InvalidTypeException
+     */
     public function toArray(): array
     {
         return array(
@@ -218,12 +314,23 @@ class ModflowBoundary
         );
     }
 
+    /**
+     * @param ObservationPointId $id
+     * @return bool
+     */
     protected function hasObservationPoint(ObservationPointId $id): bool
     {
         return $this->observationPoints->has($id);
     }
 
-    protected function addDateTimeValue(DateTimeValue $dateTimeValue, ObservationPointId $id)
+    /**
+     * @param DateTimeValue $dateTimeValue
+     * @param ObservationPointId $id
+     * @return $this
+     * @throws \Inowas\Common\Exception\KeyInvalidException
+     * @throws \Inowas\Common\Exception\KeyHasUseException
+     */
+    protected function addDateTimeValue(DateTimeValue $dateTimeValue, ObservationPointId $id): self
     {
         $observationPoint = $this->observationPoints()->get($id);
         $observationPoint->addDateTimeValue($dateTimeValue);

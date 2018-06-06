@@ -6,8 +6,8 @@ namespace Inowas\ModflowModel\Model\Packages;
 
 abstract class AbstractPackage implements PackageInterface
 {
-    const TYPE = 'abs';
-    const DESCRIPTION = 'Abstract Package';
+    public const TYPE = 'abs';
+    public const DESCRIPTION = 'Abstract Package';
 
     public static function type(): string
     {

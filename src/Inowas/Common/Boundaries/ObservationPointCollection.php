@@ -9,13 +9,25 @@ use Inowas\Common\Id\ObservationPointId;
 
 class ObservationPointCollection
 {
+    /**
+     * @var array
+     */
     private $items = [];
 
+    /**
+     * @return ObservationPointCollection
+     */
     public static function create(): ObservationPointCollection
     {
         return new self();
     }
 
+    /**
+     * @param array $arr
+     * @param BoundaryType $type
+     * @return ObservationPointCollection
+     * @throws \Inowas\Common\Exception\KeyHasUseException
+     */
     public static function fromArray(array $arr, BoundaryType $type): ObservationPointCollection
     {
         $self = new self();
@@ -28,15 +40,25 @@ class ObservationPointCollection
         return $self;
     }
 
+    /**
+     * ObservationPointCollection constructor.
+     */
     private function __construct()
     {}
 
+    /**
+     * @param ObservationPoint $observationPoint
+     */
     public function add(ObservationPoint $observationPoint): void
     {
         $key = $observationPoint->id()->toString();
         $this->items[$key] = $observationPoint;
     }
 
+    /**
+     * @param ObservationPointId $id
+     * @throws \Inowas\Common\Exception\KeyInvalidException
+     */
     public function delete(ObservationPointId $id): void
     {
         $key = $id->toString();
@@ -48,6 +70,11 @@ class ObservationPointCollection
         throw new KeyInvalidException("Invalid key $key.");
     }
 
+    /**
+     * @param ObservationPointId $id
+     * @return ObservationPoint
+     * @throws \Inowas\Common\Exception\KeyInvalidException
+     */
     public function get(ObservationPointId $id): ObservationPoint
     {
         $key = $id->toString();
@@ -58,11 +85,18 @@ class ObservationPointCollection
         throw new KeyInvalidException("Invalid key $key.");
     }
 
+    /**
+     * @param ObservationPointId $id
+     * @return bool
+     */
     public function has(ObservationPointId $id): bool
     {
         return array_key_exists($id->toString(), $this->items);
     }
 
+    /**
+     * @return array
+     */
     public function toArray(): array
     {
         $result = [];
@@ -74,16 +108,37 @@ class ObservationPointCollection
         return $result;
     }
 
+    /**
+     * @return array
+     */
     public function toArrayValues(): array
     {
         return array_values($this->items);
     }
 
-    public function count(): int
+    /**
+     * @return ObservationPoint|null
+     */
+    public function first(): ?ObservationPoint
     {
-        return count($this->items);
+        if ($this->count() === 0) {
+            return null;
+        }
+
+        return $this->toArrayValues()[0];
     }
 
+    /**
+     * @return int
+     */
+    public function count(): int
+    {
+        return \count($this->items);
+    }
+
+    /**
+     * @return array
+     */
     public function getDateTimes(): array
     {
         $dateTimes = [];

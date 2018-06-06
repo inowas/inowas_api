@@ -25,12 +25,21 @@ class BoundaryFinder
     /** @var Connection $connection */
     protected $connection;
 
+    /**
+     * BoundaryFinder constructor.
+     * @param Connection $connection
+     */
     public function __construct(Connection $connection)
     {
         $this->connection = $connection;
         $this->connection->setFetchMode(\PDO::FETCH_OBJ);
     }
 
+    /**
+     * @param ModflowId $modelId
+     * @return int
+     * @throws \Inowas\ModflowModel\Model\Exception\SqlQueryException
+     */
     public function getTotalNumberOfModelBoundaries(ModflowId $modelId): int
     {
         $result = $this->connection->fetchAssoc(
@@ -45,6 +54,12 @@ class BoundaryFinder
         return (int)$result['count'];
     }
 
+    /**
+     * @param ModflowId $modelId
+     * @param BoundaryType $type
+     * @return int
+     * @throws \Inowas\ModflowModel\Model\Exception\SqlQueryException
+     */
     public function getNumberOfModelBoundariesByType(ModflowId $modelId, BoundaryType $type): int
     {
         $result = $this->connection->fetchAssoc(
@@ -59,6 +74,11 @@ class BoundaryFinder
         return (int)$result['count'];
     }
 
+    /**
+     * @param ModflowId $modelId
+     * @return array
+     * @throws \Exception
+     */
     public function findBoundaries(ModflowId $modelId): array
     {
         $rows = $this->connection->fetchAll(
@@ -74,31 +94,77 @@ class BoundaryFinder
         return $result;
     }
 
+    /**
+     * @param ModflowId $modelId
+     * @return array
+     * @throws \Inowas\Common\Exception\InvalidTypeException
+     * @throws \Exception
+     */
     public function findConstantHeadBoundaries(ModflowId $modelId): array
     {
         return $this->getBoundariesByModelIdAndType($modelId, BoundaryType::fromString(BoundaryType::CONSTANT_HEAD));
     }
 
+    /**
+     * @param ModflowId $modelId
+     * @return array
+     * @throws \Inowas\Common\Exception\InvalidTypeException
+     * @throws \Exception
+     */
     public function findGeneralHeadBoundaries(ModflowId $modelId): array
     {
         return $this->getBoundariesByModelIdAndType($modelId, BoundaryType::fromString(BoundaryType::GENERAL_HEAD));
     }
 
+    /**
+     * @param ModflowId $modelId
+     * @return array
+     * @throws \Inowas\Common\Exception\InvalidTypeException
+     * @throws \Exception
+     */
     public function findRechargeBoundaries(ModflowId $modelId): array
     {
         return $this->getBoundariesByModelIdAndType($modelId, BoundaryType::fromString(BoundaryType::RECHARGE));
     }
 
+    /**
+     * @param ModflowId $modelId
+     * @return array
+     * @throws \Inowas\Common\Exception\InvalidTypeException
+     * @throws \Exception
+     */
     public function findRiverBoundaries(ModflowId $modelId): array
     {
         return $this->getBoundariesByModelIdAndType($modelId, BoundaryType::fromString(BoundaryType::RIVER));
     }
 
+    /**
+     * @param ModflowId $modelId
+     * @return array
+     * @throws \Inowas\Common\Exception\InvalidTypeException
+     * @throws \Exception
+     */
     public function findWellBoundaries(ModflowId $modelId): array
     {
         return $this->getBoundariesByModelIdAndType($modelId, BoundaryType::fromString(BoundaryType::WELL));
     }
 
+    /**
+     * @param ModflowId $modelId
+     * @return array
+     * @throws \Inowas\Common\Exception\InvalidTypeException
+     * @throws \Exception
+     */
+    public function findHeadObservationWells(ModflowId $modelId): array
+    {
+        return $this->getBoundariesByModelIdAndType($modelId, BoundaryType::fromString(BoundaryType::HEADOBSERVATION));
+    }
+
+
+    /**
+     * @param ModflowId $modelId
+     * @return array|null
+     */
     public function findBoundariesByModelId(ModflowId $modelId): ?array
     {
         $this->connection->setFetchMode(\PDO::FETCH_ASSOC);
@@ -115,6 +181,12 @@ class BoundaryFinder
         return $result;
     }
 
+    /**
+     * @param ModflowId $modelId
+     * @param BoundaryId $boundaryId
+     * @return ModflowBoundary|null
+     * @throws \Exception
+     */
     public function getBoundary(ModflowId $modelId, BoundaryId $boundaryId): ?ModflowBoundary
     {
         $row = $this->connection->fetchAssoc(
@@ -129,6 +201,11 @@ class BoundaryFinder
         return BoundaryFactory::createFromArray(json_decode($row['boundary'], true));
     }
 
+    /**
+     * @param ModflowId $modelId
+     * @param BoundaryId $boundaryId
+     * @return Name|null
+     */
     public function getBoundaryName(ModflowId $modelId, BoundaryId $boundaryId): ?Name
     {
         $result = $this->connection->fetchAssoc(
@@ -143,6 +220,11 @@ class BoundaryFinder
         return Name::fromString($result['name']);
     }
 
+    /**
+     * @param ModflowId $modelId
+     * @param BoundaryId $boundaryId
+     * @return Geometry|null
+     */
     public function getBoundaryGeometry(ModflowId $modelId, BoundaryId $boundaryId): ?Geometry
     {
         $result = $this->connection->fetchAssoc(
@@ -157,6 +239,12 @@ class BoundaryFinder
         return Geometry::fromArray(json_decode($result['geometry'], true));
     }
 
+    /**
+     * @param ModflowId $modelId
+     * @param BoundaryId $boundaryId
+     * @return BoundaryType|null
+     * @throws \Inowas\Common\Exception\InvalidTypeException
+     */
     public function getBoundaryType(ModflowId $modelId, BoundaryId $boundaryId): ?BoundaryType
     {
         $result = $this->connection->fetchAssoc(
@@ -171,6 +259,11 @@ class BoundaryFinder
         return BoundaryType::fromString($result['type']);
     }
 
+    /**
+     * @param ModflowId $modelId
+     * @return array
+     * @throws \Exception
+     */
     public function findStressPeriodDatesById(ModflowId $modelId): array
     {
         $this->connection->setFetchMode(\PDO::FETCH_ASSOC);
@@ -191,7 +284,7 @@ class BoundaryFinder
 
             /** @var DateTime $dateTime */
             foreach ($dateTimes as $dateTime) {
-                if (! in_array($dateTime->toAtom(), $spDates, true)) {
+                if (! \in_array($dateTime->toAtom(), $spDates, true)) {
                     $spDates[] = $dateTime;
                 }
             }
@@ -201,6 +294,11 @@ class BoundaryFinder
         return $spDates;
     }
 
+    /**
+     * @param ModflowId $modelId
+     * @param BoundaryId $boundaryId
+     * @return AffectedLayers
+     */
     public function getAffectedLayersByModelAndBoundary(ModflowId $modelId, BoundaryId $boundaryId): AffectedLayers
     {
         $result = $this->connection->fetchAssoc(
@@ -211,6 +309,12 @@ class BoundaryFinder
         return AffectedLayers::fromArray(json_decode($result['affected_layers'], true));
     }
 
+    /**
+     * @param ModflowId $modelId
+     * @param BoundaryType $type
+     * @return array
+     * @throws \Exception
+     */
     private function getBoundariesByModelIdAndType(ModflowId $modelId, BoundaryType $type): array
     {
         $rows = $this->connection->fetchAll(
@@ -226,6 +330,11 @@ class BoundaryFinder
         return $result;
     }
 
+    /**
+     * @param ModflowId $modelId
+     * @return BoundaryList
+     * @throws \Inowas\Common\Exception\InvalidTypeException
+     */
     public function getBoundaryList(ModflowId $modelId): BoundaryList
     {
         $boundaryList = BoundaryList::create();

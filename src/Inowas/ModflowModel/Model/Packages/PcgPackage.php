@@ -21,8 +21,8 @@ use Inowas\Common\Modflow\Unitnumber;
 
 class PcgPackage extends AbstractPackage
 {
-    const TYPE = 'pcg';
-    const DESCRIPTION = 'Preconditioned Conjugate-Gradient Package';
+    public const TYPE = 'pcg';
+    public const DESCRIPTION = 'Preconditioned Conjugate-Gradient Package';
 
     /** @var Mxiter  */
     protected $mxiter;

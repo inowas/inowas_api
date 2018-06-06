@@ -9,8 +9,8 @@ use Inowas\Common\Modflow\Unitnumber;
 
 class ChdPackage extends AbstractPackage
 {
-    const TYPE = 'chd';
-    const DESCRIPTION = 'Constant-Head Boundary / Time-Variant Specified-Head';
+    public const TYPE = 'chd';
+    public const DESCRIPTION = 'Constant-Head Boundary / Time-Variant Specified-Head';
 
     /** @var  ChdStressPeriodData */
     protected $stressPeriodData;

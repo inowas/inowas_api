@@ -33,6 +33,12 @@ final class CalculateModflowModelHandler
         $this->modelList = $modelList;
     }
 
+    /**
+     * @param CalculateModflowModel $command
+     * @throws \Inowas\ModflowModel\Model\Exception\WriteAccessFailedException
+     * @throws ModflowModelNotFoundException
+     * @throws \exception
+     */
     public function __invoke(CalculateModflowModel $command)
     {
         /** @var ModflowModelAggregate $modflowModel */

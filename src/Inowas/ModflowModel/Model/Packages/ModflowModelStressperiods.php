@@ -24,12 +24,12 @@ class ModflowModelStressperiods
 
     public function countUniqueTotims(): int
     {
-        return count($this->uniqueTotalTimes());
+        return \count($this->uniqueTotalTimes());
     }
 
     public function count(): int
     {
-        return count($this->stressPeriods);
+        return \count($this->stressPeriods);
     }
 
     public function perlen(): array
@@ -43,7 +43,7 @@ class ModflowModelStressperiods
             return ($a < $b) ? -1 : 1;
         });
 
-        $count = count($totims);
+        $count = \count($totims);
         for ($i = 1; $i < $count; $i++){
             $perlen[] = ($totims[$i] - $totims[$i-1]);
         }

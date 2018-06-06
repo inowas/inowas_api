@@ -16,8 +16,8 @@ use Inowas\Common\Modflow\Unitnumber;
 class BasPackage extends AbstractPackage
 {
 
-    const TYPE = 'bas';
-    const DESCRIPTION = 'Basic Package';
+    public const TYPE = 'bas';
+    public const DESCRIPTION = 'Basic Package';
 
     /** @var  Ibound */
     protected $ibound;

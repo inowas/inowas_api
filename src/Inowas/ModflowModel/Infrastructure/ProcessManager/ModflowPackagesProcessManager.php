@@ -23,12 +23,22 @@ class ModflowPackagesProcessManager
     /** @var  ModflowPackagesManager */
     private $packagesManager;
 
+    /**
+     * ModflowPackagesProcessManager constructor.
+     * @param CommandBus $commandBus
+     * @param ModflowPackagesManager $packagesManager
+     */
     public function __construct(CommandBus $commandBus, ModflowPackagesManager $packagesManager)
     {
         $this->commandBus = $commandBus;
         $this->packagesManager = $packagesManager;
     }
 
+    /**
+     * @param FlowPackageWasChanged $event
+     * @throws \Prooph\ServiceBus\Exception\CommandDispatchException
+     * @throws \Inowas\ModflowModel\Model\Exception\InvalidPackageNameException
+     */
     public function onFlowPackageWasChanged(FlowPackageWasChanged $event): void
     {
         $packages = $this->packagesManager->getPackagesByModelId($event->modelId());
@@ -37,6 +47,10 @@ class ModflowPackagesProcessManager
         $this->commandBus->dispatch(UpdateCalculationId::withId($event->modelId(), $calculationId));
     }
 
+    /**
+     * @param LengthUnitWasUpdated $event
+     * @throws \Exception
+     */
     public function onLengthUnitWasUpdated(LengthUnitWasUpdated $event): void
     {
         $packages = $this->packagesManager->getPackagesByModelId($event->modelId());
@@ -45,24 +59,40 @@ class ModflowPackagesProcessManager
         $this->commandBus->dispatch(UpdateCalculationId::withId($event->modelId(), $calculationId));
     }
 
+    /**
+     * @param ModflowModelWasCloned $event
+     * @throws \Prooph\ServiceBus\Exception\CommandDispatchException
+     */
     public function onModflowModelWasCloned(ModflowModelWasCloned $event): void
     {
         $calculationId = $this->packagesManager->getCalculationId($event->baseModelId());
         $this->commandBus->dispatch(UpdateCalculationId::withId($event->modelId(), $calculationId));
     }
 
+    /**
+     * @param ModflowModelWasCreated $event
+     * @throws \Prooph\ServiceBus\Exception\CommandDispatchException
+     */
     public function onModflowModelWasCreated(ModflowModelWasCreated $event): void
     {
         $calculationId = $this->packagesManager->createFromDefaultsAndSave();
         $this->commandBus->dispatch(UpdateCalculationId::withId($event->modelId(), $calculationId));
     }
 
+    /**
+     * @param StressPeriodsWereUpdated $event
+     * @throws \Exception
+     */
     public function onStressPeriodsWereUpdated(StressPeriodsWereUpdated $event): void
     {
         $calculationId = $this->packagesManager->recalculateStressperiods($event->modelId(), $event->stressPeriods());
         $this->commandBus->dispatch(UpdateCalculationId::withId($event->modelId(), $calculationId));
     }
 
+    /**
+     * @param TimeUnitWasUpdated $event
+     * @throws \Exception
+     */
     public function onTimeUnitWasUpdated(TimeUnitWasUpdated $event): void
     {
         $packages = $this->packagesManager->getPackagesByModelId($event->modelId());
@@ -71,6 +101,12 @@ class ModflowPackagesProcessManager
         $this->commandBus->dispatch(UpdateCalculationId::withId($event->modelId(), $calculationId));
     }
 
+    /**
+     * @param ModflowPackageParameterWasUpdated $event
+     * @throws \Inowas\ModflowModel\Model\Exception\InvalidPackageParameterUpdateMethodException
+     * @throws \Inowas\ModflowModel\Model\Exception\InvalidPackageNameException
+     * @throws \Prooph\ServiceBus\Exception\CommandDispatchException
+     */
     public function onModflowPackageParameterWasUpdated(ModflowPackageParameterWasUpdated $event): void
     {
         $packages = $this->packagesManager->getPackagesByModelId($event->modelId());
@@ -79,6 +115,11 @@ class ModflowPackagesProcessManager
         $this->commandBus->dispatch(UpdateCalculationId::withId($event->modelId(), $calculationId));
     }
 
+    /**
+     * @param ModflowPackageWasUpdated $event
+     * @throws \Inowas\ModflowModel\Model\Exception\InvalidPackageNameException
+     * @throws \Prooph\ServiceBus\Exception\CommandDispatchException
+     */
     public function onModflowPackageWasUpdated(ModflowPackageWasUpdated $event): void
     {
         $packages = $this->packagesManager->getPackagesByModelId($event->modelId());
@@ -87,6 +128,10 @@ class ModflowPackagesProcessManager
         $this->commandBus->dispatch(UpdateCalculationId::withId($event->modelId(), $calculationId));
     }
 
+    /**
+     * @param DomainEvent $e
+     * @throws \RuntimeException
+     */
     public function onEvent(DomainEvent $e): void
     {
         $handler = $this->determineEventMethodFor($e);
@@ -94,14 +139,18 @@ class ModflowPackagesProcessManager
             throw new \RuntimeException(sprintf(
                 'Missing event method %s for projector %s',
                 $handler,
-                get_class($this)
+                \get_class($this)
             ));
         }
         $this->{$handler}($e);
     }
 
+    /**
+     * @param DomainEvent $e
+     * @return string
+     */
     protected function determineEventMethodFor(DomainEvent $e): string
     {
-        return 'on' . implode(array_slice(explode('\\', get_class($e)), -1));
+        return 'on' . implode(\array_slice(explode('\\', \get_class($e)), -1));
     }
 }

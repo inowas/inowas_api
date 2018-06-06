@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Tests\Inowas\ModflowBundle\Functional;
 
+use Inowas\Common\Boundaries\HeadObservationWell;
+use Inowas\Common\Boundaries\HeadObservationWellDateTimeValue;
 use Inowas\Common\Boundaries\Metadata;
 use Inowas\Common\Boundaries\ObservationPoint;
 use Inowas\Common\DateTime\DateTime;
@@ -56,6 +58,9 @@ use Tests\Inowas\ModflowBundle\EventSourcingBaseTest;
 
 class ModflowModelEventSourcingTest extends EventSourcingBaseTest
 {
+    /**
+     *
+     */
     public function test_create_modflow_model(): void
     {
         $modelId = ModflowId::generate();
@@ -67,6 +72,9 @@ class ModflowModelEventSourcingTest extends EventSourcingBaseTest
         $this->assertInstanceOf(ModflowModelAggregate::class, $model);
     }
 
+    /**
+     *
+     */
     public function test_modflow_event_bus(): void
     {
         $ownerId = UserId::generate();
@@ -192,6 +200,9 @@ class ModflowModelEventSourcingTest extends EventSourcingBaseTest
         $this->assertTrue($this->container->get('inowas.tool.tools_finder')->isPublic(ToolId::fromString($modelId->toString())));
     }
 
+    /**
+     * @throws \exception
+     */
     public function test_update_area_geometry_and_calculate_affected_cells(): void
     {
         $ownerId = UserId::generate();
@@ -226,6 +237,9 @@ class ModflowModelEventSourcingTest extends EventSourcingBaseTest
         $this->assertCount(234, $activeCells->cells());
     }
 
+    /**
+     *
+     */
     public function test_add_layer_to_model(): void
     {
         $ownerId = UserId::generate();
@@ -431,6 +445,97 @@ class ModflowModelEventSourcingTest extends EventSourcingBaseTest
         $this->assertCount(2, $dataForFirstStressPeriod);
         $this->assertContains([0, 12, 17, -2000], $dataForFirstStressPeriod);
         $this->assertContains([0,  8, 10, -5000], $dataForFirstStressPeriod);
+    }
+
+    /**
+     * @test
+     * @throws \Exception
+     */
+    public function it_creates_a_steady_calculation_from_model_with_wells_and_head_observations(): void
+    {
+        $ownerId = UserId::generate();
+        $modelId = ModflowId::generate();
+        $this->createModelWithOneLayer($ownerId, $modelId);
+
+        $wellBoundary = WellBoundary::createWithParams(
+            Name::fromString('Test Well 1'),
+            Geometry::fromPoint(new Point(-63.671125, -31.325009, 4326)),
+            AffectedCells::create(),
+            AffectedLayers::createWithLayerNumber(LayerNumber::fromInt(0)),
+            Metadata::create()->addWellType(WellType::fromString(WellType::TYPE_INDUSTRIAL_WELL))
+        );
+
+        /** @var WellBoundary $wellBoundary */
+        $wellBoundary = $wellBoundary->addPumpingRate(WellDateTimeValue::fromParams(DateTime::fromDateTimeImmutable(new \DateTimeImmutable('2015-01-01')), -5000));
+        $this->commandBus->dispatch(AddBoundary::forModflowModel($ownerId, $modelId, $wellBoundary));
+
+        $wellBoundary = WellBoundary::createWithParams(
+            Name::fromString('Test Well 2'),
+            Geometry::fromPoint(new Point(-63.659952, -31.330144, 4326)),
+            AffectedCells::create(),
+            AffectedLayers::createWithLayerNumber(LayerNumber::fromInt(0)),
+            Metadata::create()->addWellType(WellType::fromString(WellType::TYPE_INDUSTRIAL_WELL))
+        );
+
+        $wellBoundary = $wellBoundary->addPumpingRate(WellDateTimeValue::fromParams(DateTime::fromDateTimeImmutable(new \DateTimeImmutable('2015-01-01')), -2000));
+        $this->commandBus->dispatch(AddBoundary::forModflowModel($ownerId, $modelId, $wellBoundary));
+
+        /** @var HeadObservationWell $headObservation */
+        $headObservation = HeadObservationWell::createWithParams(
+            Name::fromString('Hob Well 1'),
+            Geometry::fromPoint(new Point(-63.66, -31.34, 4326)),
+            AffectedCells::create(),
+            AffectedLayers::createWithLayerNumber(LayerNumber::fromInt(0)),
+            Metadata::create()
+        );
+
+        $headObservation->addHeadObservation(
+            HeadObservationWellDateTimeValue::fromParams(DateTime::fromDateTimeImmutable(new \DateTimeImmutable('2015-01-01')),  100)
+        );
+
+        $this->commandBus->dispatch(AddBoundary::forModflowModel($ownerId, $modelId, $headObservation));
+
+        /** @var HeadObservationWell $headObservation */
+        $headObservation = HeadObservationWell::createWithParams(
+            Name::fromString('Hob Well 2'),
+            Geometry::fromPoint(new Point(-63.60, -31.35, 4326)),
+            AffectedCells::create(),
+            AffectedLayers::createWithLayerNumber(LayerNumber::fromInt(0)),
+            Metadata::create()
+        );
+
+        $headObservation->addHeadObservation(
+            HeadObservationWellDateTimeValue::fromParams(DateTime::fromDateTimeImmutable(new \DateTimeImmutable('2015-01-01')),  120)
+        );
+
+        $this->commandBus->dispatch(AddBoundary::forModflowModel($ownerId, $modelId, $headObservation));
+        $config = $this->recalculateAndCreateJsonCalculationRequest($modelId);
+
+        $this->assertJson($config);
+        $arr = json_decode($config, true);
+        $this->assertTrue($this->packageIsInSelectedPackages($arr, 'hob'));
+
+        $hob = $this->getPackageData($arr, 'hob');
+        $this->assertEquals(1051, $hob['iuhobsv']);
+        $this->assertEquals(0, $hob['hobdry']);
+        $this->assertEquals(1, $hob['tomulth']);
+        $this->assertEquals('hob', $hob['extension']);
+        $this->assertEquals(null, $hob['unitnumber']);
+
+        $obsData = $hob['obs_data'];
+        $this->assertCount(2, $obsData);
+
+        $obs1 = $obsData[0];
+        $this->assertEquals(1, $obs1['tomulth']);
+        $this->assertEquals('Hob Well 1', $obs1['obsname']);
+        $this->assertEquals(0, $obs1['layer']);
+        $this->assertEquals(19, $obs1['row']);
+        $this->assertEquals(17, $obs1['column']);
+        $this->assertEquals(null, $obs1['irefsp']);
+        $this->assertEquals(0, $obs1['roff']);
+        $this->assertEquals(0, $obs1['coff']);
+        $this->assertEquals(1, $obs1['itt']);
+        $this->assertEquals([[0, 100]], $obs1['time_series_data']);
     }
 
     /**
@@ -990,11 +1095,21 @@ class ModflowModelEventSourcingTest extends EventSourcingBaseTest
         $this->assertEquals($newGeometry, Geometry::fromPoint($observationPoint->geometry()));
     }
 
+    /**
+     * @param array $request
+     * @param $packageName
+     * @return bool
+     */
     private function packageIsInSelectedPackages(array $request, $packageName): bool
     {
         return \array_key_exists($packageName, $request['data']['mf']);
     }
 
+    /**
+     * @param array $request
+     * @param $packageName
+     * @return array
+     */
     private function getPackageData(array $request, $packageName): array
     {
         return $request['data']['mf'][$packageName];

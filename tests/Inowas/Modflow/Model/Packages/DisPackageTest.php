@@ -32,8 +32,11 @@ use Inowas\ModflowModel\Model\Packages\DisPackage;
 
 class DisPackageTest extends \PHPUnit_Framework_TestCase
 {
-    public function test_create_from_params(){
-
+    /**
+     *
+     */
+    public function test_create_from_params(): void
+    {
         // DEFAULTS
         $nLay = Nlay::fromInt(1);
         $nCol = Ncol::fromInt(1);
@@ -69,15 +72,22 @@ class DisPackageTest extends \PHPUnit_Framework_TestCase
         $this->assertJson($json);
     }
 
-    public function test_create_from_defaults(){
+    /**
+     *
+     */
+    public function test_create_from_defaults(): void
+    {
         $disPackage = DisPackage::fromDefaults();
         $this->assertInstanceOf(DisPackage::class, $disPackage);
         $json = json_encode($disPackage);
         $this->assertJson($json);
     }
 
-    public function test_update_time_length_units(){
-
+    /**
+     * @throws \Exception
+     */
+    public function test_update_time_length_units(): void
+    {
         /** @var DisPackage $disPackage */
         $disPackage = DisPackage::fromDefaults();
         $this->assertEquals(TimeUnit::fromValue(TimeUnit::DAYS), $disPackage->itmuni());
@@ -92,8 +102,11 @@ class DisPackageTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals($newLengthUnit, $disPackage->lenuni());
     }
 
-    public function test_update_grid_parameters_units(){
-
+    /**
+     * @throws \Exception
+     */
+    public function test_update_grid_parameters_units(): void
+    {
         /** @var DisPackage $disPackage */
         $disPackage = DisPackage::fromDefaults();
         $boundingBox = BoundingBox::fromCoordinates(1,2,3,4);

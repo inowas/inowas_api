@@ -11,7 +11,8 @@ use Inowas\ModflowBundle\Exception\InvalidArgumentException;
 
 class BoundaryFactory
 {
-    /** @noinspection MoreThanThreeArgumentsInspection
+    /**
+     * @noinspection MoreThanThreeArgumentsInspection
      * @param BoundaryType $type
      * @param Name $name
      * @param Geometry $geometry
@@ -87,6 +88,11 @@ class BoundaryFactory
         );
     }
 
+    /**
+     * @param array $arr
+     * @return ModflowBoundary
+     * @throws \Exception
+     */
     public static function createFromArray(array $arr): ModflowBoundary
     {
         $type = BoundaryType::fromString($arr['type']);
@@ -110,6 +116,10 @@ class BoundaryFactory
 
             case BoundaryType::WELL:
                 return WellBoundary::fromArray($arr);
+                break;
+
+            case BoundaryType::HEADOBSERVATION:
+                return HeadObservationWell::fromArray($arr);
                 break;
         }
 

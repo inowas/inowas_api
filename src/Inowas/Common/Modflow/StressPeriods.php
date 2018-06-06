@@ -45,6 +45,7 @@ final class StressPeriods implements \JsonSerializable
     }
 
     /**
+     * @noinspection MoreThanThreeArgumentsInspection
      * @param DateTime[] $allDates
      * @param DateTime $start
      * @param DateTime $end
@@ -63,7 +64,7 @@ final class StressPeriods implements \JsonSerializable
                 continue;
             }
 
-            if ($date->greaterOrEqualThen($start) && $date->smallerOrEqualThen($end) && (!in_array($date, $uniqueDates, false))) {
+            if ($date->greaterOrEqualThen($start) && $date->smallerOrEqualThen($end) && (!\in_array($date, $uniqueDates, false))) {
                 $uniqueDates[] = $date;
             }
         }
@@ -76,7 +77,7 @@ final class StressPeriods implements \JsonSerializable
             $totalTimes[] = $self->calculateTotim($date);
         }
 
-        $numberOfTotalTimes = count($totalTimes);
+        $numberOfTotalTimes = \count($totalTimes);
         for ($i=1; $i < $numberOfTotalTimes; $i++){
             $perlen = $totalTimes[$i]->toInteger()-$totalTimes[$i-1]->toInteger();
             $nstp = 1;
@@ -95,6 +96,11 @@ final class StressPeriods implements \JsonSerializable
         return $self;
     }
 
+    /**
+     * @param array $arr
+     * @return StressPeriods
+     * @throws \Exception
+     */
     public static function fromArray(array $arr): StressPeriods
     {
         $self = new self(
@@ -118,25 +124,42 @@ final class StressPeriods implements \JsonSerializable
         return $self;
     }
 
+    /**
+     * @param string $json
+     * @return StressPeriods
+     * @throws \Exception
+     */
     public static function createFromJson(string $json): StressPeriods
     {
         return self::fromArray(json_decode($json, true));
     }
 
+    /**
+     * StressPeriods constructor.
+     * @param DateTime $start
+     * @param DateTime $end
+     * @param TimeUnit $timeUnit
+     */
     private function __construct(DateTime $start, DateTime $end, TimeUnit $timeUnit) {
         $this->start = $start;
         $this->end = $end;
         $this->timeUnit = $timeUnit;
     }
 
+    /**
+     * @param StressPeriod $stressPeriod
+     */
     public function addStressPeriod(StressPeriod $stressPeriod): void
     {
         $this->stressperiods[] = $stressPeriod;
     }
 
+    /**
+     * @param bool $steady
+     */
     public function setFirstStressPeriodSteady(bool $steady): void
     {
-        if (count($this->stressperiods)>0){
+        if (\count($this->stressperiods)>0){
             /** @var StressPeriod $firstStressPeriod */
             $firstStressPeriod = $this->stressperiods[0];
             $this->stressperiods[0] = StressPeriod::create(
@@ -145,9 +168,11 @@ final class StressPeriods implements \JsonSerializable
         }
     }
 
+    /**
+     *
+     */
     public function setNstpEqualPerlenForTransient(): void
     {
-
         /** @var StressPeriod $stressperiod */
         foreach ($this->stressperiods as $key => $stressperiod){
             if (!$stressperiod->steady()) {
@@ -158,6 +183,9 @@ final class StressPeriods implements \JsonSerializable
         }
     }
 
+    /**
+     * @return Perlen
+     */
     public function perlen(): Perlen
     {
         $arr = [];
@@ -169,6 +197,9 @@ final class StressPeriods implements \JsonSerializable
         return Perlen::fromArray($arr);
     }
 
+    /**
+     * @return Nstp
+     */
     public function nstp(): Nstp
     {
         $arr = [];
@@ -180,6 +211,9 @@ final class StressPeriods implements \JsonSerializable
         return Nstp::fromArray($arr);
     }
 
+    /**
+     * @return Tsmult
+     */
     public function tsmult(): Tsmult
     {
         $arr = [];
@@ -191,6 +225,9 @@ final class StressPeriods implements \JsonSerializable
         return Tsmult::fromArray($arr);
     }
 
+    /**
+     * @return Steady
+     */
     public function steady(): Steady
     {
         $arr = [];
@@ -202,11 +239,18 @@ final class StressPeriods implements \JsonSerializable
         return Steady::fromArray($arr);
     }
 
+    /**
+     * @return Nper
+     */
     public function nper(): Nper
     {
-        return Nper::fromInteger(count($this->stressperiods));
+        return Nper::fromInteger(\count($this->stressperiods));
     }
 
+    /**
+     * @param TotalTime $totim
+     * @return int
+     */
     public function spNumberFromTotim(TotalTime $totim): int
     {
         // @TODO SORTING?
@@ -221,11 +265,17 @@ final class StressPeriods implements \JsonSerializable
         return $spNumber;
     }
 
+    /**
+     * @return array
+     */
     public function stressperiods(): array
     {
         return $this->stressperiods;
     }
 
+    /**
+     * @return array
+     */
     public function toArray(): array
     {
         $stressPeriods = [];
@@ -242,26 +292,43 @@ final class StressPeriods implements \JsonSerializable
         );
     }
 
+    /**
+     * @return TimeUnit
+     */
     public function timeUnit(): TimeUnit
     {
         return $this->timeUnit;
     }
 
+    /**
+     * @return DateTime
+     */
     public function start(): DateTime
     {
         return $this->start;
     }
 
+    /**
+     * @return DateTime
+     */
     public function end(): DateTime
     {
         return $this->end;
     }
 
+    /**
+     * @return array
+     */
     public function jsonSerialize(): array
     {
         return $this->toArray();
     }
 
+    /**
+     * @param DateTime $dt
+     * @return TotalTime
+     * @throws \Inowas\ModflowModel\Model\Exception\InvalidTimeUnitException
+     */
     private function calculateTotim(DateTime $dt): TotalTime
     {
         /** @var \DateTime $start */
@@ -294,6 +361,9 @@ final class StressPeriods implements \JsonSerializable
         throw InvalidTimeUnitException::withTimeUnitAndAvailableTimeUnits($timeUnit, $timeUnit->availableTimeUnits);
     }
 
+    /**
+     * @return string
+     */
     public function toJson(): string
     {
         return json_encode($this);

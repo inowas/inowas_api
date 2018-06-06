@@ -11,8 +11,8 @@ use Inowas\Common\Modflow\Unitnumber;
 
 class GhbPackage extends AbstractPackage
 {
-    const TYPE = 'ghb';
-    const DESCRIPTION = 'General-Head Boundary Package';
+    public const TYPE = 'ghb';
+    public const DESCRIPTION = 'General-Head Boundary Package';
 
     /** @var string  */
     protected $type = 'ghb';

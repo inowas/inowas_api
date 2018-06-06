@@ -30,10 +30,14 @@ use Inowas\Common\Modflow\Unitnumber;
 use Inowas\Common\Modflow\Xul;
 use Inowas\Common\Modflow\Yul;
 
+/**
+ * Class DisPackage
+ * @package Inowas\ModflowModel\Model\Packages
+ */
 class DisPackage extends AbstractPackage
 {
-    const TYPE = 'dis';
-    const DESCRIPTION = 'Discretization Package';
+    public const TYPE = 'dis';
+    public const DESCRIPTION = 'Discretization Package';
 
     /** @var  Nlay */
     protected $nlay;
@@ -101,6 +105,9 @@ class DisPackage extends AbstractPackage
     /** @var  DateTime */
     protected $startDateTime;
 
+    /**
+     * @return DisPackage
+     */
     public static function fromDefaults(): DisPackage
     {
         // DEFAULT
@@ -229,6 +236,11 @@ class DisPackage extends AbstractPackage
         return $self;
     }
 
+    /**
+     * @param array $arr
+     * @return DisPackage
+     * @throws \Exception
+     */
     public static function fromArray(array $arr): DisPackage
     {
         $nlay = Nlay::fromInt($arr['nlay']);
@@ -280,6 +292,11 @@ class DisPackage extends AbstractPackage
         return $self;
     }
 
+    /**
+     * @param Nlay $nlay
+     * @return DisPackage
+     * @throws \Exception
+     */
     public function updateNlay(Nlay $nlay): DisPackage
     {
         $package = self::fromArray($this->toArray());
@@ -287,6 +304,11 @@ class DisPackage extends AbstractPackage
         return $package;
     }
 
+    /**
+     * @param Nrow $nrow
+     * @return DisPackage
+     * @throws \Exception
+     */
     public function updateNrow(Nrow $nrow): DisPackage
     {
         $package = self::fromArray($this->toArray());
@@ -294,6 +316,11 @@ class DisPackage extends AbstractPackage
         return $package;
     }
 
+    /**
+     * @param Ncol $ncol
+     * @return DisPackage
+     * @throws \Exception
+     */
     public function updateNcol(Ncol $ncol): DisPackage
     {
         $package = self::fromArray($this->toArray());
@@ -301,6 +328,11 @@ class DisPackage extends AbstractPackage
         return $package;
     }
 
+    /**
+     * @param Nper $nper
+     * @return DisPackage
+     * @throws \Exception
+     */
     public function updateNper(NPer $nper): DisPackage
     {
         $package = self::fromArray($this->toArray());
@@ -308,6 +340,11 @@ class DisPackage extends AbstractPackage
         return $package;
     }
 
+    /**
+     * @param Delr $delr
+     * @return DisPackage
+     * @throws \Exception
+     */
     public function updateDelr(Delr $delr): DisPackage
     {
         $package = self::fromArray($this->toArray());
@@ -315,6 +352,11 @@ class DisPackage extends AbstractPackage
         return $package;
     }
 
+    /**
+     * @param Delc $delc
+     * @return DisPackage
+     * @throws \Exception
+     */
     public function updateDelc(Delc $delc): DisPackage
     {
         $package = self::fromArray($this->toArray());
@@ -322,6 +364,11 @@ class DisPackage extends AbstractPackage
         return $package;
     }
 
+    /**
+     * @param Laycbd $laycbd
+     * @return DisPackage
+     * @throws \Exception
+     */
     public function updateLaycbd(Laycbd $laycbd): DisPackage
     {
         $package = self::fromArray($this->toArray());
@@ -329,6 +376,11 @@ class DisPackage extends AbstractPackage
         return $package;
     }
 
+    /**
+     * @param Top $top
+     * @return DisPackage
+     * @throws \Exception
+     */
     public function updateTop(Top $top): DisPackage
     {
         $package = self::fromArray($this->toArray());
@@ -336,6 +388,11 @@ class DisPackage extends AbstractPackage
         return $package;
     }
 
+    /**
+     * @param Botm $botm
+     * @return DisPackage
+     * @throws \Exception
+     */
     public function updateBotm(Botm $botm): DisPackage
     {
         $package = self::fromArray($this->toArray());
@@ -343,6 +400,11 @@ class DisPackage extends AbstractPackage
         return $package;
     }
 
+    /**
+     * @param Perlen $perlen
+     * @return DisPackage
+     * @throws \Exception
+     */
     public function updatePerlen(Perlen $perlen): DisPackage
     {
         $package = self::fromArray($this->toArray());
@@ -350,6 +412,11 @@ class DisPackage extends AbstractPackage
         return $package;
     }
 
+    /**
+     * @param Nstp $nstp
+     * @return DisPackage
+     * @throws \Exception
+     */
     public function updateNstp(Nstp $nstp): DisPackage
     {
         $package = self::fromArray($this->toArray());
@@ -357,6 +424,11 @@ class DisPackage extends AbstractPackage
         return $package;
     }
 
+    /**
+     * @param Tsmult $tsmult
+     * @return DisPackage
+     * @throws \Exception
+     */
     public function updateTsmult(Tsmult $tsmult): DisPackage
     {
         $package = self::fromArray($this->toArray());
@@ -364,6 +436,11 @@ class DisPackage extends AbstractPackage
         return $package;
     }
 
+    /**
+     * @param Steady $steady
+     * @return DisPackage
+     * @throws \Exception
+     */
     public function updateSteady(Steady $steady): DisPackage
     {
         $package = self::fromArray($this->toArray());
@@ -371,6 +448,11 @@ class DisPackage extends AbstractPackage
         return $package;
     }
 
+    /**
+     * @param TimeUnit $timeUnit
+     * @return DisPackage
+     * @throws \Exception
+     */
     public function updateTimeUnit(TimeUnit $timeUnit): DisPackage
     {
         $package = self::fromArray($this->toArray());
@@ -378,6 +460,11 @@ class DisPackage extends AbstractPackage
         return $package;
     }
 
+    /**
+     * @param LengthUnit $lengthUnit
+     * @return DisPackage
+     * @throws \Exception
+     */
     public function updateLengthUnit(LengthUnit $lengthUnit): DisPackage
     {
         $package = self::fromArray($this->toArray());
@@ -385,6 +472,11 @@ class DisPackage extends AbstractPackage
         return $package;
     }
 
+    /**
+     * @param Extension $extension
+     * @return DisPackage
+     * @throws \Exception
+     */
     public function updateExtension(Extension $extension): DisPackage
     {
         $package = self::fromArray($this->toArray());
@@ -392,6 +484,11 @@ class DisPackage extends AbstractPackage
         return $package;
     }
 
+    /**
+     * @param Unitnumber $unitnumber
+     * @return DisPackage
+     * @throws \Exception
+     */
     public function updateUnitnumber(Unitnumber $unitnumber): DisPackage
     {
         $package = self::fromArray($this->toArray());
@@ -399,6 +496,11 @@ class DisPackage extends AbstractPackage
         return $package;
     }
 
+    /**
+     * @param Xul $xul
+     * @return DisPackage
+     * @throws \Exception
+     */
     public function updateXul(Xul $xul): DisPackage
     {
         $package = self::fromArray($this->toArray());
@@ -406,6 +508,11 @@ class DisPackage extends AbstractPackage
         return $package;
     }
 
+    /**
+     * @param Yul $yul
+     * @return DisPackage
+     * @throws \Exception
+     */
     public function updateYul(Yul $yul): DisPackage
     {
         $package = self::fromArray($this->toArray());
@@ -413,6 +520,11 @@ class DisPackage extends AbstractPackage
         return $package;
     }
 
+    /**
+     * @param Rotation $rotation
+     * @return DisPackage
+     * @throws \Exception
+     */
     public function updateRotation(Rotation $rotation): DisPackage
     {
         $package = self::fromArray($this->toArray());
@@ -420,6 +532,11 @@ class DisPackage extends AbstractPackage
         return $package;
     }
 
+    /**
+     * @param Proj4str $proj4str
+     * @return DisPackage
+     * @throws \Exception
+     */
     public function updateProj4str(Proj4str $proj4str): DisPackage
     {
         $package = self::fromArray($this->toArray());
@@ -427,6 +544,11 @@ class DisPackage extends AbstractPackage
         return $package;
     }
 
+    /**
+     * @param DateTime $datetime
+     * @return DisPackage
+     * @throws \Exception
+     */
     public function updateStartDateTime(DateTime $datetime): DisPackage
     {
         $package = self::fromArray($this->toArray());
@@ -434,6 +556,15 @@ class DisPackage extends AbstractPackage
         return $package;
     }
 
+    /**
+     * @noinspection MoreThanThreeArgumentsInspection
+     * @param GridSize $gridSize
+     * @param BoundingBox $boundingBox
+     * @param Distance $dx
+     * @param Distance $dy
+     * @return DisPackage
+     * @throws \Exception
+     */
     public function updateGridParameters(GridSize $gridSize, BoundingBox $boundingBox, Distance $dx, Distance $dy): DisPackage
     {
         $package = self::fromArray($this->toArray());
@@ -446,51 +577,81 @@ class DisPackage extends AbstractPackage
         return $package;
     }
 
+    /**
+     * @return Nrow
+     */
     public function nRow(): Nrow
     {
         return $this->nrow;
     }
 
+    /**
+     * @return Ncol
+     */
     public function nCol(): Ncol
     {
         return $this->ncol;
     }
 
+    /**
+     * @return Delr
+     */
     public function delR(): Delr
     {
         return $this->delr;
     }
 
+    /**
+     * @return Delc
+     */
     public function delCol(): Delc
     {
         return $this->delc;
     }
 
+    /**
+     * @return Xul
+     */
     public function xul(): Xul
     {
         return $this->xul;
     }
 
+    /**
+     * @return Yul
+     */
     public function yul(): Yul
     {
         return $this->yul;
     }
 
+    /**
+     * @return TimeUnit
+     */
     public function itmuni(): TimeUnit
     {
         return $this->itmuni;
     }
 
+    /**
+     * @return LengthUnit
+     */
     public function lenuni(): LengthUnit
     {
         return $this->lenuni;
     }
 
+    /**
+     * @return bool
+     */
     public function isValid(): bool
     {
         return true;
     }
 
+    /**
+     * @return array
+     */
     public function toArray(): array
     {
         return array(
@@ -519,11 +680,17 @@ class DisPackage extends AbstractPackage
         );
     }
 
+    /**
+     * @return array
+     */
     public function getEditables(): array
     {
         return $this->toArray();
     }
 
+    /**
+     * @param array $arr
+     */
     public function mergeEditables(array $arr): void
     {}
 

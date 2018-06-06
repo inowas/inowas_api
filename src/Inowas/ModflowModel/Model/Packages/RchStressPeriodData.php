@@ -46,7 +46,7 @@ class RchStressPeriodData extends AbstractStressPeriodData
             foreach ($row as $colNr => $value) {
 
                 $cdata = $currentData;
-                if (is_array($currentData)) {
+                if (\is_array($currentData)) {
                     $cdata = $currentData[$rowNr][$colNr];
                 }
 

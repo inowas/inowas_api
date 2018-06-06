@@ -43,8 +43,8 @@ class Layvka
         return $this->layvka;
     }
 
-    public function isArray()
+    public function isArray(): bool
     {
-        return is_array($this->layvka);
+        return \is_array($this->layvka);
     }
 }

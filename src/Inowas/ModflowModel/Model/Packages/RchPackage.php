@@ -13,8 +13,8 @@ use Inowas\Common\Modflow\Unitnumber;
 
 class RchPackage extends AbstractPackage
 {
-    const TYPE = 'rch';
-    const DESCRIPTION = 'Recharge Package';
+    public const TYPE = 'rch';
+    public const DESCRIPTION = 'Recharge Package';
 
     /** @var  Ipakcb */
     protected $ipakcb;

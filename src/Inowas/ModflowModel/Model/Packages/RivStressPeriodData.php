@@ -64,7 +64,7 @@ class RivStressPeriodData extends AbstractStressPeriodData
         $cond = $gridCellValue->cond();
         $rbot = $gridCellValue->rbot();
 
-        if (! is_array($this->data)){
+        if (! \is_array($this->data)){
             $this->data = array();
         }
 
