@@ -10,6 +10,8 @@ use Inowas\Common\Boundaries\DateTimeValuesCollection;
 use Inowas\Common\Boundaries\GeneralHeadBoundary;
 use Inowas\Common\Boundaries\GeneralHeadDateTimeValue;
 use Inowas\Common\Boundaries\GridCellDateTimeValues;
+use Inowas\Common\Boundaries\HeadObservationWell;
+use Inowas\Common\Boundaries\HeadObservationWellDateTimeValue;
 use Inowas\Common\Boundaries\ModflowBoundary;
 use Inowas\Common\Boundaries\ObservationPoint;
 use Inowas\Common\Boundaries\ObservationPointCollection;
@@ -21,10 +23,16 @@ use Inowas\Common\DateTime\DateTime;
 use Inowas\Common\DateTime\TotalTime;
 use Inowas\Common\Grid\BoundingBox;
 use Inowas\Common\Grid\GridSize;
-use Inowas\Common\Id\ModflowId;
+use Inowas\Common\Grid\Ncol;
+use Inowas\Common\Grid\Nlay;
+use Inowas\Common\Grid\Nrow;
+use Inowas\Common\Modflow\HeadObservation;
+use Inowas\Common\Modflow\HeadObservationCollection;
+use Inowas\Common\Modflow\Obsname;
 use Inowas\Common\Modflow\Rech;
 use Inowas\Common\Modflow\StressPeriod;
 use Inowas\Common\Modflow\StressPeriods;
+use Inowas\Common\Modflow\TimeSeriesData;
 use Inowas\Common\Modflow\TimeUnit;
 use Inowas\GeoTools\Service\GeoTools;
 use Inowas\ModflowModel\Model\Exception\InvalidBoundaryGeometryException;
@@ -50,13 +58,18 @@ class StressPeriodDataGenerator
     /** @var  ActiveCellsManager */
     protected $activeCellsManager;
 
+    /**
+     * StressPeriodDataGenerator constructor.
+     * @param GeoTools $geoTools
+     * @param ActiveCellsManager $activeCellsManager
+     */
     public function __construct(GeoTools $geoTools, ActiveCellsManager $activeCellsManager) {
         $this->activeCellsManager = $activeCellsManager;
         $this->geoTools = $geoTools;
     }
 
-    /** @noinspection MoreThanThreeArgumentsInspection
-     * @param ModflowId $modelId
+    /**
+     * @noinspection MoreThanThreeArgumentsInspection
      * @param array $chdBoundaries
      * @param StressPeriods $stressPeriods
      * @param GridSize $gridSize
@@ -64,7 +77,7 @@ class StressPeriodDataGenerator
      * @return ChdStressPeriodData
      * @throws \Exception
      */
-    public function fromConstantHeadBoundaries(ModflowId $modelId, array $chdBoundaries, StressPeriods $stressPeriods, GridSize $gridSize, BoundingBox $boundingBox): ChdStressPeriodData
+    public function fromConstantHeadBoundaries(array $chdBoundaries, StressPeriods $stressPeriods, GridSize $gridSize, BoundingBox $boundingBox): ChdStressPeriodData
     {
         $startTime = $stressPeriods->start();
         $timeUnit = $stressPeriods->timeUnit();
@@ -95,8 +108,8 @@ class StressPeriodDataGenerator
         return $chdSpd;
     }
 
-    /** @noinspection MoreThanThreeArgumentsInspection
-     * @param ModflowId $modelId
+    /**
+     * @noinspection MoreThanThreeArgumentsInspection
      * @param array $ghbBoundaries
      * @param StressPeriods $stressPeriods
      * @param GridSize $gridSize
@@ -104,7 +117,7 @@ class StressPeriodDataGenerator
      * @return GhbStressPeriodData
      * @throws \Exception
      */
-    public function fromGeneralHeadBoundaries(ModflowId $modelId, array $ghbBoundaries, StressPeriods $stressPeriods, GridSize $gridSize, BoundingBox $boundingBox): GhbStressPeriodData
+    public function fromGeneralHeadBoundaries(array $ghbBoundaries, StressPeriods $stressPeriods, GridSize $gridSize, BoundingBox $boundingBox): GhbStressPeriodData
     {
         $startTime = $stressPeriods->start();
         $timeUnit = $stressPeriods->timeUnit();
@@ -135,8 +148,8 @@ class StressPeriodDataGenerator
         return $ghbSpd;
     }
 
-    /** @noinspection MoreThanThreeArgumentsInspection
-     * @param ModflowId $modelId
+    /**
+     * @noinspection MoreThanThreeArgumentsInspection
      * @param array $rivBoundaries
      * @param StressPeriods $stressPeriods
      * @param GridSize $gridSize
@@ -144,9 +157,8 @@ class StressPeriodDataGenerator
      * @return RivStressPeriodData
      * @throws \Exception
      */
-    public function fromRiverBoundaries(ModflowId $modelId, array $rivBoundaries, StressPeriods $stressPeriods, GridSize $gridSize, BoundingBox $boundingBox): RivStressPeriodData
+    public function fromRiverBoundaries(array $rivBoundaries, StressPeriods $stressPeriods, GridSize $gridSize, BoundingBox $boundingBox): RivStressPeriodData
     {
-
         $startTime = $stressPeriods->start();
         $timeUnit = $stressPeriods->timeUnit();
 
@@ -178,7 +190,14 @@ class StressPeriodDataGenerator
         return $rivSpd;
     }
 
-    public function fromRechargeBoundaries(ModflowId $modelId, array $rchBoundaries, StressPeriods $stressPeriods, GridSize $gridSize): RchStressPeriodData
+    /**
+     * @param array $rchBoundaries
+     * @param StressPeriods $stressPeriods
+     * @param GridSize $gridSize
+     * @return RchStressPeriodData
+     * @throws \Inowas\ModflowModel\Model\Exception\InvalidTimeUnitException
+     */
+    public function fromRechargeBoundaries(array $rchBoundaries, StressPeriods $stressPeriods, GridSize $gridSize): RchStressPeriodData
     {
         $startTime = $stressPeriods->start();
         $timeUnit = $stressPeriods->timeUnit();
@@ -211,7 +230,13 @@ class StressPeriodDataGenerator
         return $rchSpd;
     }
 
-    public function fromWellBoundaries(ModflowId $modelId, array $wellBoundaries, StressPeriods $stressPeriods): WelStressPeriodData
+    /**
+     * @param array $wellBoundaries
+     * @param StressPeriods $stressPeriods
+     * @return WelStressPeriodData
+     * @throws \Inowas\ModflowModel\Model\Exception\InvalidTimeUnitException
+     */
+    public function fromWellBoundaries(array $wellBoundaries, StressPeriods $stressPeriods): WelStressPeriodData
     {
         $startTime = $stressPeriods->start();
         $timeUnit = $stressPeriods->timeUnit();
@@ -241,6 +266,58 @@ class StressPeriodDataGenerator
         }
 
         return $wspd;
+    }
+
+    /**
+     * @param array $wells
+     * @param StressPeriods $stressPeriods
+     * @return HeadObservationCollection
+     * @throws \Inowas\ModflowModel\Model\Exception\InvalidTimeUnitException
+     */
+    public function fromHeadObservationWells(array $wells, StressPeriods $stressPeriods): ?HeadObservationCollection
+    {
+        $hobCollection = HeadObservationCollection::create();
+
+        /** @var HeadObservationWell[] $headObservationWell */
+        foreach ($wells as $headObservationWell){
+            if (! $headObservationWell instanceof HeadObservationWell){
+                continue;
+            }
+
+            /** @var ObservationPoint $observationPoint */
+            $observationPoint = $headObservationWell->observationPoints()->first();
+
+            if (null === $observationPoint) {
+                continue;
+            }
+
+            /** @var DateTimeValuesCollection $dateTimeValues */
+            $dateTimeValuesCollection = $observationPoint->dateTimeValues();
+
+
+            $timeSeriesData = [];
+            /** @var HeadObservationWellDateTimeValue $dtv */
+            foreach ($dateTimeValuesCollection->getItems() as $dtv) {
+                $totim = $dtv->getTotalTime($stressPeriods->start(), $stressPeriods->timeUnit());
+                $head = $dtv->head();
+                $timeSeriesData[] = [$totim, $head];
+            }
+
+            /** @var array $cells */
+            $cells = $headObservationWell->affectedCells()->layerRowColumns($headObservationWell->affectedLayers())->cells();
+
+            [$layer, $row, $col] = $cells[0];
+
+            $hobCollection->add(HeadObservation::fromNameLayerRowColumnAndTimeSeriesData(
+                Obsname::fromString($headObservationWell->name()->toString()),
+                Nlay::fromInt($layer),
+                Nrow::fromInt($row),
+                Ncol::fromInt($col),
+                TimeSeriesData::fromArray($timeSeriesData)
+            ));
+        }
+
+        return $hobCollection;
     }
 
     /** @noinspection MoreThanThreeArgumentsInspection
@@ -297,6 +374,13 @@ class StressPeriodDataGenerator
         return $gridCellDateTimeValues;
     }
 
+    /**
+     * @param DateTime $start
+     * @param TotalTime $totalTime
+     * @param TimeUnit $timeUnit
+     * @return DateTime
+     * @throws \Inowas\ModflowModel\Model\Exception\InvalidTimeUnitException
+     */
     protected function calculateDateTimeFromTotim(DateTime $start, TotalTime $totalTime, TimeUnit $timeUnit): DateTime
     {
         $dateTime = clone $start->toDateTime();

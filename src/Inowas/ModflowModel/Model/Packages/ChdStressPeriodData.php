@@ -28,7 +28,7 @@ class ChdStressPeriodData extends AbstractStressPeriodData
         $shead = $gridCellValue->shead();
         $ehead = $gridCellValue->ehead();
 
-        if (! is_array($this->data)){
+        if (! \is_array($this->data)){
             $this->data = array();
         }
 

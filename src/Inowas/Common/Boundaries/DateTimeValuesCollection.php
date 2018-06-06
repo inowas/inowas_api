@@ -10,13 +10,24 @@ use Inowas\Common\Exception\KeyInvalidException;
 
 class DateTimeValuesCollection
 {
+    /**
+     * @var array
+     */
     private $items = [];
 
+    /**
+     * @return DateTimeValuesCollection
+     */
     public static function create(): DateTimeValuesCollection
     {
         return new self();
     }
 
+    /**
+     * @param BoundaryType $type
+     * @param array $arr
+     * @return DateTimeValuesCollection
+     */
     public static function fromTypeAndArray(BoundaryType $type, array $arr): DateTimeValuesCollection
     {
         $self = new self();
@@ -29,9 +40,17 @@ class DateTimeValuesCollection
         return $self;
     }
 
+    /**
+     * DateTimeValuesCollection constructor.
+     */
     private function __construct()
     {}
 
+    /**
+     * @param DateTimeValue $dateTimeValue
+     * @param null $key
+     * @throws \Inowas\Common\Exception\KeyHasUseException
+     */
     public function add(DateTimeValue $dateTimeValue, $key = null): void
     {
         if (null === $key) {
@@ -46,6 +65,10 @@ class DateTimeValuesCollection
         $this->items[$key] = $dateTimeValue;
     }
 
+    /**
+     * @param $key
+     * @throws \Inowas\Common\Exception\KeyInvalidException
+     */
     public function delete($key): void
     {
         if (isset($this->items[$key])) {
@@ -56,6 +79,11 @@ class DateTimeValuesCollection
         throw new KeyInvalidException("Invalid key $key.");
     }
 
+    /**
+     * @param $key
+     * @return DateTimeValue
+     * @throws \Inowas\Common\Exception\KeyInvalidException
+     */
     public function get($key): DateTimeValue
     {
         if (isset($this->items[$key])) {
@@ -65,6 +93,9 @@ class DateTimeValuesCollection
         throw new KeyInvalidException("Invalid key $key.");
     }
 
+    /**
+     * @return array
+     */
     public function toArray(): array
     {
         $result = [];
@@ -77,6 +108,9 @@ class DateTimeValuesCollection
         return $result;
     }
 
+    /**
+     * @return array
+     */
     public function toArrayValues(): array
     {
         $result = [];
@@ -89,11 +123,18 @@ class DateTimeValuesCollection
         return $result;
     }
 
+    /**
+     * @return int
+     */
     public function count(): int
     {
-        return count($this->items);
+        return \count($this->items);
     }
 
+    /**
+     * @param DateTime $dateTime
+     * @return DateTimeValue|null
+     */
     public function findValueByDateTime(DateTime $dateTime): ?DateTimeValue
     {
         $values = $this->items;
@@ -118,6 +159,9 @@ class DateTimeValuesCollection
         return null;
     }
 
+    /**
+     * @return array
+     */
     public function getDateTimes(): array
     {
         $result = [];
@@ -129,4 +173,14 @@ class DateTimeValuesCollection
 
         return $result;
     }
+
+    /**
+     * @return array
+     */
+    public function getItems(): array
+    {
+        return $this->items;
+    }
+
+
 }

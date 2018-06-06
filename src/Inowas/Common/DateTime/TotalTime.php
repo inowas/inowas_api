@@ -19,7 +19,7 @@ class TotalTime implements \JsonSerializable
         return $this->totalTime;
     }
 
-    function jsonSerialize()
+    public function jsonSerialize()
     {
         return $this->toInteger();
     }

@@ -23,8 +23,8 @@ use Inowas\Common\Modflow\Vkcb;
 
 class UpwPackage extends AbstractPackage
 {
-    const TYPE = 'upw';
-    const DESCRIPTION = 'Upstream Weighting Package';
+    public const TYPE = 'upw';
+    public const DESCRIPTION = 'Upstream Weighting Package';
 
     /** @var string  */
     protected $type = 'upw';

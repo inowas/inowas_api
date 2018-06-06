@@ -28,14 +28,13 @@ namespace Inowas\ModflowModel\Model\Packages;
 
 class OcStressPeriod implements \JsonSerializable
 {
-
-    CONST PRINT_HEAD = 'print head';
-    CONST PRINT_DRAWDOWN = 'print drawdown';
-    CONST PRINT_BUDGET = 'print budget';
-    CONST SAVE_HEAD = 'save head';
-    CONST SAVE_DRAWDOWN = 'save drawdown';
-    CONST SAVE_BUDGET = 'save budget';
-    CONST SAVE_IBOUND = 'save ibound';
+    public CONST PRINT_HEAD = 'print head';
+    public CONST PRINT_DRAWDOWN = 'print drawdown';
+    public CONST PRINT_BUDGET = 'print budget';
+    public CONST SAVE_HEAD = 'save head';
+    public CONST SAVE_DRAWDOWN = 'save drawdown';
+    public CONST SAVE_BUDGET = 'save budget';
+    public CONST SAVE_IBOUND = 'save ibound';
 
     /** @var  int */
     protected $stressPeriod;
@@ -52,7 +51,7 @@ class OcStressPeriod implements \JsonSerializable
         $self->stressPeriod = $stressPeriod;
         $self->timeStep = $timeStep;
 
-        if (is_array($types)){
+        if (\is_array($types)){
             $self->types = $types;
             return $self;
         }

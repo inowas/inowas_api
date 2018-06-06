@@ -28,7 +28,7 @@ class GhbStressPeriodData extends AbstractStressPeriodData
         $stage = $gridCellValue->stage();
         $cond = $gridCellValue->cond();
 
-        if (! is_array($this->data)){
+        if (! \is_array($this->data)){
             $this->data = array();
         }
 

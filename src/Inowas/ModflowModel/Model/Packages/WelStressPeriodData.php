@@ -27,7 +27,7 @@ class WelStressPeriodData extends AbstractStressPeriodData
         $column = $gridCellValue->col();
         $value = $gridCellValue->value();
 
-        if (! is_array($this->data)){
+        if (! \is_array($this->data)){
             $this->data = array();
         }
 
@@ -36,6 +36,7 @@ class WelStressPeriodData extends AbstractStressPeriodData
         }
 
         // This checks if there are yet cells with value and aggregates them
+        /** @noinspection ForeachSourceInspection */
         foreach ($this->data[$stressPeriod] as &$data) {
             if ($data[0] === $layer && $data[1] === $row && $data[2] === $column){
                 $data[3] += $value;

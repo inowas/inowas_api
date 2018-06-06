@@ -31,8 +31,8 @@ use Inowas\Common\Modflow\Wetfct;
 
 class LpfPackage extends AbstractPackage
 {
-    const TYPE = 'lpf';
-    const DESCRIPTION = 'Layer-Property Flow Package';
+    public const TYPE = 'lpf';
+    public const DESCRIPTION = 'Layer-Property Flow Package';
 
     /** @var  Laytyp */
     protected $laytyp;

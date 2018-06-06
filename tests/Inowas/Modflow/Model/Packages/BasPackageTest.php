@@ -14,8 +14,8 @@ use Inowas\ModflowModel\Model\Packages\BasPackage;
 
 class BasPackageTest extends \PHPUnit_Framework_TestCase
 {
-    public function test_create(){
-
+    public function test_create(): void
+    {
         // DEFAULTS
         $iBound = Ibound::fromValue(1);
         $strt = Strt::fromValue(1.0);

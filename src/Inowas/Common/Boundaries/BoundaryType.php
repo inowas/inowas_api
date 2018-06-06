@@ -8,34 +8,46 @@ use Inowas\Common\Exception\InvalidTypeException;
 
 final class BoundaryType
 {
-    const CONSTANT_HEAD = 'chd';
-    const GENERAL_HEAD = 'ghb';
-    const RECHARGE = 'rch';
-    const RIVER = 'riv';
-    const WELL = 'wel';
+    public const CONSTANT_HEAD = 'chd';
+    public const GENERAL_HEAD = 'ghb';
+    public const RECHARGE = 'rch';
+    public const RIVER = 'riv';
+    public const WELL = 'wel';
+    public const HEADOBSERVATION = 'hob';
 
-    private $available = [
+    public static $available = [
         self::CONSTANT_HEAD,
         self::GENERAL_HEAD,
         self::RECHARGE,
         self::RIVER,
-        self::WELL
+        self::WELL,
+        self::HEADOBSERVATION
     ];
 
     /** @var  string */
     private $type;
 
+    /**
+     * @param string $type
+     * @return BoundaryType
+     * @throws \Inowas\Common\Exception\InvalidTypeException
+     */
     public static function fromString(string $type): BoundaryType
     {
+        if (! \in_array($type, self::$available, true)){
+            throw InvalidTypeException::withMessage(sprintf('BoundaryType %s is a not known. Available types are: %s', $type, implode(', ', self::$available)));
+        }
+
         return new self($type);
     }
 
+    /**
+     * BoundaryType constructor.
+     * @param string $type
+     * @throws \Inowas\Common\Exception\InvalidTypeException
+     */
     private function __construct(string $type)
     {
-        if (! in_array($type, $this->available, true)){
-            throw InvalidTypeException::withMessage(sprintf('BoundaryType %s is a not known. Available types are: %s', $type, implode(', ', $this->available)));
-        }
-
         $this->type = $type;
     }
 
@@ -46,7 +58,7 @@ final class BoundaryType
 
     public function sameAs($type): bool
     {
-        if ($type instanceof BoundaryType){
+        if ($type instanceof self){
             return $this->toString() === $type->toString();
         }
 

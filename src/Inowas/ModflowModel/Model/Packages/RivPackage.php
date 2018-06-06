@@ -11,8 +11,8 @@ use Inowas\Common\Modflow\Unitnumber;
 
 class RivPackage extends AbstractPackage
 {
-    const TYPE = 'riv';
-    const DESCRIPTION = 'River Package';
+    public const TYPE = 'riv';
+    public const DESCRIPTION = 'River Package';
 
     /** @var  Ipakcb */
     protected $ipakcb;

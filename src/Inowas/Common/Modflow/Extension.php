@@ -42,4 +42,9 @@ class Extension
     {
         return $this->extension;
     }
+
+    public function sameAs($obj): bool
+    {
+        return $obj instanceof self && $obj->toValue() === $this->extension;
+    }
 }

@@ -15,8 +15,8 @@ use Inowas\Common\Modflow\Unitnumber;
 
 class OcPackage extends AbstractPackage
 {
-    const TYPE = 'oc';
-    const DESCRIPTION = 'Output-Control Package';
+    public const TYPE = 'oc';
+    public const DESCRIPTION = 'Output-Control Package';
 
     /** @var  Ihedfm */
     protected $ihedfm;

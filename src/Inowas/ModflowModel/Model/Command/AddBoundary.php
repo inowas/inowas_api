@@ -13,13 +13,23 @@ use Inowas\Common\Id\UserId;
 class AddBoundary extends AbstractJsonSchemaCommand
 {
 
+    /**
+     * @param UserId $userId
+     * @param ModflowId $modelId
+     * @param ModflowBoundary $boundary
+     * @return AddBoundary
+     * @throws \League\JsonGuard\Exception\MaximumDepthExceededException
+     * @throws \League\JsonGuard\Exception\InvalidSchemaException
+     * @throws \InvalidArgumentException
+     * @throws \Inowas\Common\Exception\JsonSchemaValidationFailedException
+     */
     public static function forModflowModel(UserId $userId, ModflowId $modelId, ModflowBoundary $boundary): AddBoundary
     {
         $self = new static(
-            [
+            array(
                 'id' => $modelId->toString(),
                 'boundary' => $boundary->toArray()
-            ]
+            )
         );
 
         /** @var AddBoundary $self */
@@ -42,6 +52,10 @@ class AddBoundary extends AbstractJsonSchemaCommand
         return UserId::fromString($this->metadata['user_id']);
     }
 
+    /**
+     * @return ModflowBoundary
+     * @throws \Exception
+     */
     public function boundary(): ModflowBoundary
     {
         return BoundaryFactory::createFromArray($this->payload['boundary']);

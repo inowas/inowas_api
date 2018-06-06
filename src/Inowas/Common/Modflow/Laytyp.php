@@ -18,9 +18,9 @@ namespace Inowas\Common\Modflow;
 class Laytyp
 {
 
-    const TYPE_CONFINED = 0;
-    const TYPE_CONVERTIBLE = 1;
-    const TYPE_CONVERTIBLE_UNLESS_THICKSTRT_OPTION_IS_IN_EFFECT = -1;
+    public const TYPE_CONFINED = 0;
+    public const TYPE_CONVERTIBLE = 1;
+    public const TYPE_CONVERTIBLE_UNLESS_THICKSTRT_OPTION_IS_IN_EFFECT = -1;
 
     /** @var  */
     private $type;
@@ -66,6 +66,6 @@ class Laytyp
 
     public function isArray(): bool
     {
-        return is_array($this->type);
+        return \is_array($this->type);
     }
 }

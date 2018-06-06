@@ -24,7 +24,8 @@ class GhbStressPeriodGridCellValue
     /** @var  float */
     protected $cond;
 
-    /** @noinspection MoreThanThreeArgumentsInspection
+    /**
+     * @noinspection MoreThanThreeArgumentsInspection
      * @param int $sp
      * @param int $lay
      * @param int $row

@@ -4,6 +4,7 @@ namespace Inowas\ModflowModel\Service;
 
 use Inowas\Common\Boundaries\ConstantHeadBoundary;
 use Inowas\Common\Boundaries\GeneralHeadBoundary;
+use Inowas\Common\Boundaries\HeadObservationWell;
 use Inowas\Common\Boundaries\RechargeBoundary;
 use Inowas\Common\Boundaries\RiverBoundary;
 use Inowas\Common\Boundaries\WellBoundary;
@@ -36,6 +37,14 @@ class ModflowPackagesManager
     /** @var  GeoTools */
     private $geoTools;
 
+    /**
+     * ModflowPackagesManager constructor.
+     * @param ModflowPackagesPersister $packagePersister
+     * @param ModflowModelList $modelList
+     * @param ModflowModelManager $modelManager
+     * @param SoilmodelFinder $soilmodelFinder
+     * @param GeoTools $geoTools
+     */
     public function __construct(
         ModflowPackagesPersister $packagePersister,
         ModflowModelList $modelList,
@@ -51,12 +60,19 @@ class ModflowPackagesManager
         $this->geoTools = $geoTools;
     }
 
+    /**
+     * @return CalculationId
+     */
     public function createFromDefaultsAndSave(): CalculationId
     {
         $packages = ModflowPackages::createFromDefaults();
         return $this->savePackages($packages);
     }
 
+    /**
+     * @param ModflowId $modelId
+     * @return CalculationId
+     */
     public function getCalculationId(ModflowId $modelId): CalculationId
     {
         /** @var ModflowModelAggregate $model */
@@ -64,11 +80,19 @@ class ModflowPackagesManager
         return $model->calculationId();
     }
 
+    /**
+     * @param CalculationId $calculationId
+     * @return ModflowPackages
+     */
     public function getPackages(CalculationId $calculationId): ModflowPackages
     {
         return $this->modflowPackagePersister->load($calculationId);
     }
 
+    /**
+     * @param ModflowId $modelId
+     * @return ModflowPackages
+     */
     public function getPackagesByModelId(ModflowId $modelId): ModflowPackages
     {
         /** @var ModflowModelAggregate $model */
@@ -103,6 +127,13 @@ class ModflowPackagesManager
         return $this->savePackages($packages);
     }
 
+    /**
+     * @param ModflowId $modelId
+     * @return CalculationId
+     * @throws \Inowas\ModflowModel\Model\Exception\InvalidPackageParameterUpdateMethodException
+     * @throws \Inowas\ModflowModel\Model\Exception\InvalidPackageNameException
+     * @throws \exception
+     */
     public function recalculateSoilmodel(ModflowId $modelId): CalculationId
     {
         $packages = $this->getPackagesByModelId($modelId);
@@ -197,10 +228,14 @@ class ModflowPackagesManager
         $packages->updatePackageParameter('dis', 'steady', $stressPeriods->steady());
         $packages->updatePackageParameter('dis', 'nper', $stressPeriods->nper());
 
-        $packages = $this->calculateBoundaries($modelId, $stressPeriods, $packages);
+        $packages = $this->calculateBoundariesAndObservations($modelId, $stressPeriods, $packages);
         return $this->savePackages($packages);
     }
 
+    /**
+     * @param ModflowPackages $packages
+     * @return CalculationId
+     */
     public function savePackages(ModflowPackages $packages): CalculationId
     {
         return $this->modflowPackagePersister->save($packages);
@@ -309,22 +344,28 @@ class ModflowPackagesManager
             $packages->updatePackageParameter('upw', 'vkcb', $this->soilmodelFinder->getVkcb($modelId));
         }
 
-        $packages = $this->calculateBoundaries($modelId, $stressPeriods, $packages);
+        $packages = $this->calculateBoundariesAndObservations($modelId, $stressPeriods, $packages);
+
         return $packages;
     }
 
     /**
-     * @param ModflowId $modelId
-     * @param StressPeriods $stressPeriods
-     * @param ModflowPackages $packages
+     * @param $modelId
+     * @param $stressPeriods
+     * @param $packages
      * @return ModflowPackages
+     * @throws \Inowas\ModflowModel\Model\Exception\InvalidPackageParameterUpdateMethodException
+     * @throws \Inowas\ModflowModel\Model\Exception\InvalidPackageNameException
+     * @throws \Inowas\ModflowModel\Model\Exception\SqlQueryException
+     * @throws \Inowas\Common\Exception\InvalidTypeException
      * @throws \Exception
      */
-    private function calculateBoundaries(ModflowId $modelId, StressPeriods $stressPeriods, ModflowPackages $packages): ModflowPackages
+    private function calculateBoundariesAndObservations(ModflowId $modelId, StressPeriods $stressPeriods, ModflowPackages $packages): ModflowPackages
     {
         /*
-        * Add PackageDetails for WelPackage
-        */
+         * BOUNDARIES
+         * Add PackageDetails for WelPackage
+         */
         if ($this->modflowModelManager->countModelBoundaries($modelId, WellBoundary::TYPE) > 0) {
             $welStressPeriodData = $this->modflowModelManager->generateWelStressPeriodData($modelId, $stressPeriods);
             $packages->updatePackageParameter('wel', 'StressPeriodData', $welStressPeriodData);
@@ -372,6 +413,19 @@ class ModflowPackagesManager
             $packages->unSelectBoundaryPackage(PackageName::fromString('chd'));
         }
 
+        /*
+         * HEAD OBSERVATION
+         * Add PackageDetails for HobPackage
+         */
+        if ($this->modflowModelManager->countModelBoundaries($modelId, HeadObservationWell::TYPE) > 0) {
+
+            $hobStressPeriodData = $this->modflowModelManager->generateHobData($modelId, $stressPeriods);
+            $packages->updatePackageParameter('hob', 'ObsData', $hobStressPeriodData);
+        } else {
+            $packages->unSelectBoundaryPackage(PackageName::fromString('hob'));
+        }
+
         return $packages;
+
     }
 }

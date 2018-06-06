@@ -30,6 +30,14 @@ abstract class AbstractJsonSchemaCommand extends Command
      */
     abstract public function schema(): string;
 
+    /**
+     * AbstractJsonSchemaCommand constructor.
+     * @param array|null $payload
+     * @throws \League\JsonGuard\Exception\MaximumDepthExceededException
+     * @throws \League\JsonGuard\Exception\InvalidSchemaException
+     * @throws \InvalidArgumentException
+     * @throws \Inowas\Common\Exception\JsonSchemaValidationFailedException
+     */
     final public function __construct(array $payload = null)
     {
         $this->setPayload($payload);
@@ -72,6 +80,9 @@ abstract class AbstractJsonSchemaCommand extends Command
         }
     }
 
+    /**
+     * @return object
+     */
     protected function dereferencedSchema()
     {
         if (null === $this->dereferencedSchema) {
