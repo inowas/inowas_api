@@ -24,6 +24,7 @@ final class ToolType
         'T09C',
         'T09D',
         'T09E',
+        'T09F',
         'T12',
         'T13',
         'T13A',
