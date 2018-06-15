@@ -42,6 +42,9 @@
         },
         "active_cells": {
             "$ref": "modflow/activeCells.json"
+        },
+        "stressperiods": {
+            "$ref": "modflow/stressPeriods.json"
         }
     },
     "additionalProperties": false,

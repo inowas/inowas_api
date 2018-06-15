@@ -41,6 +41,12 @@ class ToolProjector extends AbstractDoctrineConnectionProjector
     /** @var  ModflowModelManager */
     private $modelManager;
 
+    /**
+     * ToolProjector constructor.
+     * @param Connection $connection
+     * @param EntityManager $entityManager
+     * @param ModflowModelManager $manager
+     */
     public function __construct(Connection $connection, EntityManager $entityManager, ModflowModelManager $manager)
     {
 
@@ -68,6 +74,9 @@ class ToolProjector extends AbstractDoctrineConnectionProjector
         $this->addSchema($schema);
     }
 
+    /**
+     * @param ToolInstanceDataWasUpdated $event
+     */
     public function onToolInstanceDataWasUpdated(ToolInstanceDataWasUpdated $event): void
     {
         $this->connection->update(Table::TOOL_LIST,
@@ -76,6 +85,9 @@ class ToolProjector extends AbstractDoctrineConnectionProjector
         );
     }
 
+    /**
+     * @param ToolInstanceDescriptionWasUpdated $event
+     */
     public function onToolInstanceDescriptionWasUpdated(ToolInstanceDescriptionWasUpdated $event): void
     {
         $this->connection->update(Table::TOOL_LIST,
@@ -84,6 +96,9 @@ class ToolProjector extends AbstractDoctrineConnectionProjector
         );
     }
 
+    /**
+     * @param ToolInstanceNameWasUpdated $event
+     */
     public function onToolInstanceNameWasUpdated(ToolInstanceNameWasUpdated $event): void
     {
         $this->connection->update(Table::TOOL_LIST,
@@ -92,6 +107,9 @@ class ToolProjector extends AbstractDoctrineConnectionProjector
         );
     }
 
+    /**
+     * @param ToolInstanceVisibilityWasChanged $event
+     */
     public function onToolInstanceVisibilityWasChanged(ToolInstanceVisibilityWasChanged $event): void
     {
         $this->connection->update(Table::TOOL_LIST,
@@ -100,6 +118,9 @@ class ToolProjector extends AbstractDoctrineConnectionProjector
         );
     }
 
+    /**
+     * @param ToolInstanceWasCloned $event
+     */
     public function onToolInstanceWasCloned(ToolInstanceWasCloned $event): void
     {
 
@@ -127,6 +148,9 @@ class ToolProjector extends AbstractDoctrineConnectionProjector
         ));
     }
 
+    /**
+     * @param ToolInstanceWasCreated $event
+     */
     public function onToolInstanceWasCreated(ToolInstanceWasCreated $event): void
     {
         $this->connection->insert(Table::TOOL_LIST, array(
@@ -140,6 +164,10 @@ class ToolProjector extends AbstractDoctrineConnectionProjector
         ));
     }
 
+    /**
+     * @param ToolInstanceWasDeleted $event
+     * @throws \Doctrine\DBAL\Exception\InvalidArgumentException
+     */
     public function onToolInstanceWasDeleted(ToolInstanceWasDeleted $event): void
     {
         $this->connection->delete(Table::TOOL_LIST,
@@ -147,6 +175,9 @@ class ToolProjector extends AbstractDoctrineConnectionProjector
         );
     }
 
+    /**
+     * @param ModflowModelWasCreated $event
+     */
     public function onModflowModelWasCreated(ModflowModelWasCreated $event): void
     {
         $this->connection->insert(Table::TOOL_LIST, array(
@@ -160,6 +191,9 @@ class ToolProjector extends AbstractDoctrineConnectionProjector
         ));
     }
 
+    /**
+     * @param NameWasChanged $event
+     */
     public function onNameWasChanged(NameWasChanged $event): void
     {
         $this->connection->update(Table::TOOL_LIST, array(
@@ -169,6 +203,9 @@ class ToolProjector extends AbstractDoctrineConnectionProjector
         ));
     }
 
+    /**
+     * @param DescriptionWasChanged $event
+     */
     public function onDescriptionWasChanged(DescriptionWasChanged $event): void
     {
         $this->connection->update(Table::TOOL_LIST, array(
@@ -178,6 +215,10 @@ class ToolProjector extends AbstractDoctrineConnectionProjector
         ));
     }
 
+    /**
+     * @param ModflowModelWasCloned $event
+     * @throws \Exception
+     */
     public function onModflowModelWasCloned(ModflowModelWasCloned $event): void
     {
         if (! $event->isTool()) {
@@ -203,6 +244,10 @@ class ToolProjector extends AbstractDoctrineConnectionProjector
         ));
     }
 
+    /**
+     * @param ModflowModelWasDeleted $event
+     * @throws \Doctrine\DBAL\Exception\InvalidArgumentException
+     */
     public function onModflowModelWasDeleted(ModflowModelWasDeleted $event): void
     {
         $this->connection->delete(Table::TOOL_LIST, array(
@@ -210,6 +255,9 @@ class ToolProjector extends AbstractDoctrineConnectionProjector
         ));
     }
 
+    /**
+     * @param ScenarioAnalysisWasCreated $event
+     */
     public function onScenarioAnalysisWasCreated(ScenarioAnalysisWasCreated $event): void
     {
         $this->connection->insert(Table::TOOL_LIST, array(
@@ -225,6 +273,9 @@ class ToolProjector extends AbstractDoctrineConnectionProjector
         ));
     }
 
+    /**
+     * @param ScenarioAnalysisWasCloned $event
+     */
     public function onScenarioAnalysisWasCloned(ScenarioAnalysisWasCloned $event): void
     {
         $this->connection->insert(Table::TOOL_LIST, array(
@@ -240,6 +291,10 @@ class ToolProjector extends AbstractDoctrineConnectionProjector
         ));
     }
 
+    /**
+     * @param ScenarioAnalysisWasDeleted $event
+     * @throws \Doctrine\DBAL\Exception\InvalidArgumentException
+     */
     public function onScenarioAnalysisWasDeleted(ScenarioAnalysisWasDeleted $event): void
     {
         $this->connection->delete(
@@ -248,6 +303,9 @@ class ToolProjector extends AbstractDoctrineConnectionProjector
         );
     }
 
+    /**
+     * @param ScenarioAnalysisNameWasChanged $event
+     */
     public function onScenarioAnalysisNameWasChanged(ScenarioAnalysisNameWasChanged $event): void
     {
         $this->connection->update(Table::TOOL_LIST,
@@ -256,6 +314,9 @@ class ToolProjector extends AbstractDoctrineConnectionProjector
         );
     }
 
+    /**
+     * @param ScenarioAnalysisDescriptionWasChanged $event
+     */
     public function onScenarioAnalysisDescriptionWasChanged(ScenarioAnalysisDescriptionWasChanged $event):void
     {
         $this->connection->update(Table::TOOL_LIST,
@@ -264,6 +325,9 @@ class ToolProjector extends AbstractDoctrineConnectionProjector
         );
     }
 
+    /**
+     * @param VisibilityWasChanged $event
+     */
     public function onVisibilityWasChanged(VisibilityWasChanged $event): void
     {
         $this->connection->update(Table::TOOL_LIST,
@@ -274,6 +338,9 @@ class ToolProjector extends AbstractDoctrineConnectionProjector
         );
     }
 
+    /**
+     * @param ScenarioAnalysisVisibilityWasChanged $event
+     */
     public function onScenarioAnalysisVisibilityWasChanged(ScenarioAnalysisVisibilityWasChanged $event): void
     {
         $this->connection->update(Table::TOOL_LIST,
@@ -284,6 +351,10 @@ class ToolProjector extends AbstractDoctrineConnectionProjector
         );
     }
 
+    /**
+     * @param UserId $id
+     * @return string
+     */
     private function getUserNameByUserId(UserId $id): string
     {
         $username = '';

@@ -66,6 +66,7 @@ class ModflowModelExchangeDTO implements \JsonSerializable
             ],
             'gridSize' => $this->modflowModel->gridSize()->toArray(),
             'activeCells' => $this->modflowModel->activeCells()->cells2D(),
+            'stressperiods' => $this->modflowModel->stressPeriods()->toArray(),
             'layers' => $this->layers->toArray(),
             'boundaries' => $this->boundaries->toArray(),
             'packages' => $this->packages ? $this->packages->toArray() : null

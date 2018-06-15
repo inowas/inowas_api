@@ -122,6 +122,7 @@ class ModflowModelManager
             !empty($model['active_cells']) ?
                 ActiveCells::fromArray(json_decode($model['active_cells'], true))
                 : $this->getAreaActiveCells($modelId),
+            StressPeriods::createFromJson($model['stressperiods']),
             $permission,
             $visibility
         );
@@ -166,6 +167,7 @@ class ModflowModelManager
     /**
      * @param ModflowId $modflowId
      * @return StressPeriods
+     * @throws \Exception
      */
     public function getStressPeriodsByModelId(ModflowId $modflowId): StressPeriods
     {
