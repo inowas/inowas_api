@@ -13,6 +13,10 @@ use Inowas\Tool\Model\ToolData;
 use Inowas\Tool\Model\ToolInstanceAggregate;
 use Inowas\Tool\Model\ToolInstanceList;
 
+/**
+ * Class UpdateToolInstanceHandler
+ * @package Inowas\Tool\Model\Handler
+ */
 final class UpdateToolInstanceHandler
 {
     /** @var  ToolInstanceList */
@@ -23,6 +27,11 @@ final class UpdateToolInstanceHandler
         $this->toolInstanceList = $toolInstanceList;
     }
 
+    /**
+     * @param UpdateToolInstance $command
+     * @throws \Inowas\ModflowBundle\Exception\NotFoundException
+     * @throws AccessDeniedException
+     */
     public function __invoke(UpdateToolInstance $command)
     {
         /** @var ToolInstanceAggregate $toolInstance */
