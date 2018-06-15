@@ -12,7 +12,6 @@ use Inowas\Common\Status\Visibility;
 
 final class ModflowModel implements \JsonSerializable
 {
-
     /** @var  ModflowId */
     private $id;
 
@@ -40,6 +39,9 @@ final class ModflowModel implements \JsonSerializable
     /** @var ActiveCells */
     private $activeCells;
 
+    /** @var StressPeriods */
+    private $stressPeriods;
+
     /** @var UserPermission */
     private $userPermission;
 
@@ -56,6 +58,7 @@ final class ModflowModel implements \JsonSerializable
      * @param TimeUnit $timeUnit
      * @param LengthUnit $lengthUnit
      * @param ActiveCells $activeCells
+     * @param StressPeriods $stressPeriods
      * @param UserPermission $userPermission
      * @param Visibility $visibility
      * @return ModflowModel
@@ -70,6 +73,7 @@ final class ModflowModel implements \JsonSerializable
         TimeUnit $timeUnit,
         LengthUnit $lengthUnit,
         ActiveCells $activeCells,
+        StressPeriods $stressPeriods,
         UserPermission $userPermission,
         Visibility $visibility
     ): ModflowModel
@@ -84,6 +88,7 @@ final class ModflowModel implements \JsonSerializable
         $self->timeUnit = $timeUnit;
         $self->lengthUnit = $lengthUnit;
         $self->activeCells = $activeCells;
+        $self->stressPeriods = $stressPeriods;
         $self->userPermission = $userPermission;
         $self->visibility = $visibility;
         return $self;
@@ -141,6 +146,11 @@ final class ModflowModel implements \JsonSerializable
         return $this->activeCells;
     }
 
+    public function stressPeriods(): StressPeriods
+    {
+        return $this->stressPeriods;
+    }
+
     public function toArray(): array
     {
         return array(
@@ -156,6 +166,7 @@ final class ModflowModel implements \JsonSerializable
             'time_unit' => $this->timeUnit->toInt(),
             'length_unit' => $this->lengthUnit->toInt(),
             'active_cells' => $this->activeCells->cells2D(),
+            'stressperiods' => $this->stressPeriods->toArray(),
             'permissions' => $this->userPermission->toString(),
             'public' => $this->visibility->isPublic()
         );

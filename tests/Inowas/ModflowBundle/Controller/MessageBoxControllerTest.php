@@ -9,7 +9,6 @@ use Inowas\AppBundle\Model\User;
 use Inowas\Common\Boundaries\WellBoundary;
 use Inowas\Common\Boundaries\WellDateTimeValue;
 use Inowas\Common\DateTime\DateTime;
-use Inowas\Common\Grid\ActiveCells;
 use Inowas\Common\Id\ModflowId;
 use Inowas\Common\Id\UserId;
 use Inowas\Common\Modflow\ModflowModel;
@@ -79,6 +78,7 @@ class MessageBoxControllerTest extends EventSourcingBaseTest
 
     /**
      * @test
+     * @throws \Exception
      */
     public function it_receives_a_create_model_command_and_creates_model(): void
     {
@@ -112,7 +112,6 @@ class MessageBoxControllerTest extends EventSourcingBaseTest
         $this->assertEquals($payload['grid_size'], $model->gridSize()->toArray());
         $this->assertEquals($payload['time_unit'], $model->timeUnit()->toInt());
         $this->assertEquals($payload['length_unit'], $model->lengthUnit()->toInt());
-        $this->assertInstanceOf(ActiveCells::class, $model->activeCells());
     }
 
     /**
@@ -155,7 +154,6 @@ class MessageBoxControllerTest extends EventSourcingBaseTest
         $this->assertEquals($payload['grid_size'], $model->gridSize()->toArray());
         $this->assertEquals($payload['time_unit'], $model->timeUnit()->toInt());
         $this->assertEquals($payload['length_unit'], $model->lengthUnit()->toInt());
-        $this->assertInstanceOf(ActiveCells::class, $model->activeCells());
     }
 
     /**
@@ -431,6 +429,7 @@ class MessageBoxControllerTest extends EventSourcingBaseTest
 
     /**
      * @test
+     * @throws \Exception
      */
     public function it_can_receive_remove_boundary_command(): void
     {
@@ -594,6 +593,10 @@ class MessageBoxControllerTest extends EventSourcingBaseTest
 
     /**
      * @test
+     * @throws \Exception
+     * @throws \Exception
+     * @throws \Exception
+     * @throws \Exception
      */
     public function it_can_receive_calculate_stressperiods_command(): void
     {
@@ -632,6 +635,7 @@ class MessageBoxControllerTest extends EventSourcingBaseTest
     /**
      * @test
      * @group messaging-integration-tests
+     * @throws \Exception
      */
     public function it_can_receive_model_calculate_command(): void
     {

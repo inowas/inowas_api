@@ -13,6 +13,7 @@ use Inowas\Common\Id\ModflowId;
 use Inowas\Common\Modflow\ModflowModel;
 use Inowas\Common\Modflow\PackageName;
 use Inowas\Common\Modflow\Results;
+use Inowas\Common\Modflow\StressPeriods;
 use Inowas\Common\Soilmodel\Layer;
 use Inowas\Common\Soilmodel\LayerId;
 use Inowas\Common\Soilmodel\SoilmodelQuery;
@@ -38,6 +39,7 @@ class ModflowModelController extends InowasRestController
      *
      * @Rest\Get("/modflowmodels")
      * @return JsonResponse
+     * @throws \LogicException
      * @throws \Inowas\ModflowBundle\Exception\UserNotAuthenticatedException
      */
     public function getModflowModelsAction(): JsonResponse
@@ -60,6 +62,7 @@ class ModflowModelController extends InowasRestController
      *
      * @Rest\Get("/modflowmodels/public")
      * @return JsonResponse
+     * @throws \LogicException
      * @throws \Inowas\ModflowBundle\Exception\UserNotAuthenticatedException
      */
     public function getPublicModflowModelsAction(): JsonResponse
@@ -85,12 +88,14 @@ class ModflowModelController extends InowasRestController
      * @param string $id
      * @Rest\Get("/modflowmodels/{id}")
      * @return JsonResponse
+     * @throws \LogicException
      * @throws \InvalidArgumentException
      * @throws \Inowas\ModflowBundle\Exception\AccessDeniedException
      * @throws \Symfony\Component\DependencyInjection\Exception\ServiceNotFoundException
      * @throws \Symfony\Component\DependencyInjection\Exception\ServiceCircularReferenceException
      * @throws NotFoundException
      * @throws \Inowas\ModflowBundle\Exception\UserNotAuthenticatedException
+     * @throws \Exception
      */
     public function getModflowModelAction(string $id): JsonResponse
     {
@@ -140,6 +145,7 @@ class ModflowModelController extends InowasRestController
      * @throws \Symfony\Component\DependencyInjection\Exception\ServiceCircularReferenceException
      * @throws NotFoundException
      * @throws \Inowas\ModflowBundle\Exception\UserNotAuthenticatedException
+     * @throws \exception
      */
     public function getModflowModelActiveCellsAction(string $id): JsonResponse
     {
@@ -176,6 +182,8 @@ class ModflowModelController extends InowasRestController
      * @param string $id
      * @Rest\Get("/modflowmodels/{id}/boundaries")
      * @return JsonResponse
+     * @throws \LogicException
+     * @throws \Inowas\Common\Exception\InvalidTypeException
      * @throws \Inowas\ModflowBundle\Exception\NotFoundException
      * @throws \Inowas\ModflowBundle\Exception\UserNotAuthenticatedException
      */
@@ -211,7 +219,9 @@ class ModflowModelController extends InowasRestController
      * @param string $bid
      * @Rest\Get("/modflowmodels/{id}/boundaries/{bid}")
      * @return JsonResponse
+     * @throws \Inowas\Common\Exception\InvalidTypeException
      * @throws \Inowas\ModflowBundle\Exception\NotFoundException
+     * @throws \Exception
      */
     public function getModflowModelBoundaryAction(string $id, string $bid): JsonResponse
     {
@@ -248,6 +258,7 @@ class ModflowModelController extends InowasRestController
      *
      * @param string $id
      * @return JsonResponse
+     * @throws \LogicException
      * @throws \Symfony\Component\DependencyInjection\Exception\ServiceNotFoundException
      * @throws \Symfony\Component\DependencyInjection\Exception\ServiceCircularReferenceException
      * @throws AccessDeniedException
@@ -288,6 +299,8 @@ class ModflowModelController extends InowasRestController
      * @param string $id
      * @param string $package
      * @return JsonResponse
+     * @throws \LogicException
+     * @throws \Inowas\ModflowModel\Model\Exception\InvalidPackageNameException
      * @throws \Symfony\Component\DependencyInjection\Exception\ServiceNotFoundException
      * @throws \Symfony\Component\DependencyInjection\Exception\ServiceCircularReferenceException
      * @throws AccessDeniedException
@@ -330,11 +343,13 @@ class ModflowModelController extends InowasRestController
      * @param string $id
      * @Rest\Get("/modflowmodels/{id}/stressperiods")
      * @return JsonResponse
+     * @throws \LogicException
      * @throws \Inowas\ModflowBundle\Exception\AccessDeniedException
      * @throws \Symfony\Component\DependencyInjection\Exception\ServiceNotFoundException
      * @throws \Symfony\Component\DependencyInjection\Exception\ServiceCircularReferenceException
      * @throws NotFoundException
      * @throws \Inowas\ModflowBundle\Exception\UserNotAuthenticatedException
+     * @throws \Exception
      */
     public function getModflowModelStressPeriodsAction(string $id): JsonResponse
     {
@@ -352,6 +367,7 @@ class ModflowModelController extends InowasRestController
             );
         }
 
+        /** @var StressPeriods $stressPeriods */
         $stressPeriods = $this->container->get('inowas.modflowmodel.manager')->getStressPeriodsByModelId($modelId);
         return new JsonResponse($stressPeriods);
     }
@@ -407,6 +423,7 @@ class ModflowModelController extends InowasRestController
      * @param string $id
      * @Rest\Get("/modflowmodels/{id}/soilmodel")
      * @return JsonResponse
+     * @throws \LogicException
      * @throws \Inowas\ModflowBundle\Exception\NotFoundException
      * @throws \Inowas\ModflowBundle\Exception\AccessDeniedException
      * @throws \Symfony\Component\DependencyInjection\Exception\ServiceNotFoundException
@@ -457,6 +474,7 @@ class ModflowModelController extends InowasRestController
      * @param string $id
      * @param string $lid
      * @return JsonResponse
+     * @throws \LogicException
      * @throws \Inowas\ModflowBundle\Exception\NotFoundException
      * @throws \Symfony\Component\DependencyInjection\Exception\ServiceNotFoundException
      * @throws \Symfony\Component\DependencyInjection\Exception\ServiceCircularReferenceException
@@ -507,6 +525,7 @@ class ModflowModelController extends InowasRestController
      * @param string $id
      * @Rest\Get("/modflowmodels/{id}/calculation")
      * @return JsonResponse
+     * @throws \LogicException
      * @throws \Inowas\ModflowBundle\Exception\AccessDeniedException
      * @throws \Inowas\ModflowBundle\Exception\UserNotAuthenticatedException
      */

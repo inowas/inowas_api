@@ -22,12 +22,21 @@ final class UpdateModflowModelHandler
     /** @var  ModflowModelManager */
     private $modelManager;
 
+    /**
+     * UpdateModflowModelHandler constructor.
+     * @param ModflowModelList $modelList
+     * @param ModflowModelManager $modelManager
+     */
     public function __construct(ModflowModelList $modelList, ModflowModelManager $modelManager)
     {
         $this->modelList = $modelList;
         $this->modelManager = $modelManager;
     }
 
+    /**
+     * @param UpdateModflowModel $command
+     * @throws \Exception
+     */
     public function __invoke(UpdateModflowModel $command)
     {
         /** @var ModflowModelAggregate $modflowModel */

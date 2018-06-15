@@ -220,6 +220,11 @@ class ModelFinder
         return $result;
     }
 
+    /**
+     * @param ModflowId $modelId
+     * @return StressPeriods|null
+     * @throws \Exception
+     */
     public function getStressPeriodsByModelId(ModflowId $modelId): ?StressPeriods
     {
         $this->connection->setFetchMode(\PDO::FETCH_ASSOC);
