@@ -166,7 +166,7 @@ final class ModflowModel implements \JsonSerializable
             'time_unit' => $this->timeUnit->toInt(),
             'length_unit' => $this->lengthUnit->toInt(),
             'active_cells' => $this->activeCells->cells2D(),
-            'stressperiods' => $this->stressPeriods->toArray(),
+            'stress_periods' => $this->stressPeriods->toArray(),
             'permissions' => $this->userPermission->toString(),
             'public' => $this->visibility->isPublic()
         );
