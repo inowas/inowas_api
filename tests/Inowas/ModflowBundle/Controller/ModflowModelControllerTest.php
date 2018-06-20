@@ -14,8 +14,6 @@ use Inowas\ModflowModel\Model\Command\CalculateModflowModel;
 use League\JsonGuard\Validator;
 use League\JsonReference\Dereferencer;
 use Ramsey\Uuid\Uuid;
-use Symfony\Component\HttpFoundation\File\File;
-use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Tests\Inowas\ModflowBundle\EventSourcingBaseTest;
 
 class ModflowModelControllerTest extends EventSourcingBaseTest
@@ -193,6 +191,8 @@ class ModflowModelControllerTest extends EventSourcingBaseTest
 
     /**
      * @test
+     * @throws \Exception
+     * @throws \Exception
      */
     public function it_returns_the_boundary_list(): void
     {

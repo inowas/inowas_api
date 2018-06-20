@@ -60,9 +60,29 @@ use Inowas\Soilmodel\Model\LayerInterpolationConfiguration;
 class SanFelipe extends LoadScenarioBase
 {
     /**
+     * @throws \Inowas\Common\Exception\InvalidTypeException
+     * @throws \League\JsonGuard\Exception\MaximumDepthExceededException
+     * @throws \League\JsonGuard\Exception\InvalidSchemaException
+     * @throws \InvalidArgumentException
+     * @throws \Inowas\Common\Exception\JsonSchemaValidationFailedException
      * @throws \Symfony\Component\DependencyInjection\Exception\ServiceNotFoundException
      * @throws \Symfony\Component\DependencyInjection\Exception\ServiceCircularReferenceException
      * @throws \Prooph\ServiceBus\Exception\CommandDispatchException
+     * @throws \Exception
+     * @throws \Exception
+     * @throws \Exception
+     * @throws \Exception
+     * @throws \Exception
+     * @throws \Exception
+     * @throws \Exception
+     * @throws \Exception
+     * @throws \Exception
+     * @throws \Exception
+     * @throws \Exception
+     * @throws \Exception
+     * @throws \Exception
+     * @throws \Exception
+     * @throws \Exception
      */
     public function load(): void
     {
@@ -279,11 +299,7 @@ class SanFelipe extends LoadScenarioBase
         $chd->addObservationPoint($observationPoint);
         $chd->addConstantHeadToObservationPoint(
             $observationPointId,
-            ConstantHeadDateTimeValue::fromParams(
-                DateTime::fromDateTimeImmutable(new \DateTimeImmutable('2009-01-01')),
-                670,
-                670
-            )
+            ConstantHeadDateTimeValue::fromParams(DateTime::fromString('2009-01-01'), 670, 670)
         );
 
         $commandBus->dispatch(AddBoundary::forModflowModel($ownerId, $baseModelId, $chd));
@@ -311,11 +327,7 @@ class SanFelipe extends LoadScenarioBase
         $chd->addObservationPoint($observationPoint);
         $chd->addConstantHeadToObservationPoint(
             $observationPointId,
-            ConstantHeadDateTimeValue::fromParams(
-                DateTime::fromDateTimeImmutable(new \DateTimeImmutable('2009-01-01')),
-                680,
-                680
-            )
+            ConstantHeadDateTimeValue::fromParams(DateTime::fromString('2009-01-01'), 680, 680)
         );
 
         $commandBus->dispatch(AddBoundary::forModflowModel($ownerId, $baseModelId, $chd));
@@ -360,10 +372,7 @@ class SanFelipe extends LoadScenarioBase
         $riv->addRiverStageToObservationPoint(
             $observationPointId,
             RiverDateTimeValue::fromParams(
-                DateTime::fromDateTimeImmutable(new \DateTimeImmutable('2009-01-01')),
-                700,
-                668,
-                200
+                DateTime::fromString('2009-01-01'), 700, 668, 200
             )
         );
 
@@ -379,12 +388,7 @@ class SanFelipe extends LoadScenarioBase
         $riv->addObservationPoint($observationPoint);
         $riv->addRiverStageToObservationPoint(
             $observationPointId,
-            RiverDateTimeValue::fromParams(
-                DateTime::fromDateTimeImmutable(new \DateTimeImmutable('2009-01-01')),
-                700,
-                668,
-                200
-            )
+            RiverDateTimeValue::fromParams(DateTime::fromString('2009-01-01'), 700, 668, 200)
         );
 
         #$commandBus->dispatch(AddBoundary::forModflowModel($ownerId, $baseModelId, $riv));
@@ -538,7 +542,7 @@ class SanFelipe extends LoadScenarioBase
                 $pumpingRate = $data['pumpingRate'] / \count($irrigationWellsPoints) / 2;
                 $data = array_combine($dataHeader, $data);
                 $wellBoundary = $wellBoundary->addPumpingRate(
-                    WellDateTimeValue::fromParams(DateTime::fromDateTimeImmutable(new \DateTimeImmutable($data['date'])), $pumpingRate)
+                    WellDateTimeValue::fromParams(DateTime::fromString($data['date']), $pumpingRate)
                 );
             }
 
@@ -552,11 +556,11 @@ class SanFelipe extends LoadScenarioBase
          */
         $wells = array(
             array('name', 'point', 'type', 'layer', 'date', 'pumpingRate'),
-            array('Public Well 1', new Point(-70.7260, -32.7351, 4326), WellType::TYPE_PUBLIC_WELL, 1, new \DateTimeImmutable('2010-01-01'), -5000),
-            array('Public Well 2', new Point(-70.7258, -32.7352, 4326), WellType::TYPE_PUBLIC_WELL, 1, new \DateTimeImmutable('2010-01-01'), -5000),
-            array('Public Well 3', new Point(-70.7256, -32.7353, 4326), WellType::TYPE_PUBLIC_WELL, 1, new \DateTimeImmutable('2010-01-01'), -5000),
-            array('Public Well 4', new Point(-70.7129, -32.7470, 4326), WellType::TYPE_PUBLIC_WELL, 1, new \DateTimeImmutable('2010-01-01'), -5000),
-            array('Public Well 5', new Point(-70.7435, -32.7404, 4326), WellType::TYPE_PUBLIC_WELL, 1, new \DateTimeImmutable('2010-01-01'), -5000)
+            array('Public Well 1', new Point(-70.7260, -32.7351, 4326), WellType::TYPE_PUBLIC_WELL, 1, '2010-01-01', -5000),
+            array('Public Well 2', new Point(-70.7258, -32.7352, 4326), WellType::TYPE_PUBLIC_WELL, 1, '2010-01-01', -5000),
+            array('Public Well 3', new Point(-70.7256, -32.7353, 4326), WellType::TYPE_PUBLIC_WELL, 1, '2010-01-01', -5000),
+            array('Public Well 4', new Point(-70.7129, -32.7470, 4326), WellType::TYPE_PUBLIC_WELL, 1, '2010-01-01', -5000),
+            array('Public Well 5', new Point(-70.7435, -32.7404, 4326), WellType::TYPE_PUBLIC_WELL, 1, '2010-01-01', -5000)
         );
 
         $pointsHeader = null;
@@ -579,14 +583,14 @@ class SanFelipe extends LoadScenarioBase
 
             echo sprintf("Add well with name %s.\r\n", $data['name']);
             $wellBoundary = $wellBoundary->addPumpingRate(
-                WellDateTimeValue::fromParams(DateTime::fromDateTimeImmutable($data['date']), $data['pumpingRate'])
+                WellDateTimeValue::fromParams(DateTime::fromString($data['date']), $data['pumpingRate'])
             );
             $commandBus->dispatch(AddBoundary::forModflowModel($ownerId, $baseModelId, $wellBoundary));
         }
 
         /* Create calculation and calculate */
-        $start = DateTime::fromDateTime(new \DateTime('2009-01-01'));
-        $end = DateTime::fromDateTime(new \DateTime('2010-12-31'));
+        $start = DateTime::fromString('2009-01-01');
+        $end = DateTime::fromString('2010-12-31');
         $commandBus->dispatch(CalculateStressPeriods::forModflowModel($ownerId, $baseModelId, $start, $end, true));
 
         echo sprintf("Calculate ModflowModel with id %s.\r\n", $baseModelId->toString());
@@ -624,11 +628,11 @@ class SanFelipe extends LoadScenarioBase
         */
         $wells = array(
             array('name', 'point', 'type', 'layer', 'date', 'pumpingRate'),
-            array('Irrigation Well 1', new Point(-70.6899, -32.8144, 4326), WellType::TYPE_INDUSTRIAL_WELL, 1, new \DateTimeImmutable('2010-01-01'), -10000),
-            array('Irrigation Well 2', new Point(-70.6609, -32.8268, 4326), WellType::TYPE_INDUSTRIAL_WELL, 1, new \DateTimeImmutable('2010-01-01'), -10000),
-            array('Irrigation Well 3', new Point(-70.7325, -32.7695, 4326), WellType::TYPE_INDUSTRIAL_WELL, 1, new \DateTimeImmutable('2010-01-01'), -10000),
-            array('Irrigation Well 4', new Point(-70.6924, -32.8392, 4326), WellType::TYPE_INDUSTRIAL_WELL, 1, new \DateTimeImmutable('2010-01-01'), -10000),
-            array('Irrigation Well 5', new Point(-70.6693, -32.7480, 4326), WellType::TYPE_INDUSTRIAL_WELL, 1, new \DateTimeImmutable('2010-01-01'), -10000)
+            array('Irrigation Well 1', new Point(-70.6899, -32.8144, 4326), WellType::TYPE_INDUSTRIAL_WELL, 1, '2010-01-01', -10000),
+            array('Irrigation Well 2', new Point(-70.6609, -32.8268, 4326), WellType::TYPE_INDUSTRIAL_WELL, 1, '2010-01-01', -10000),
+            array('Irrigation Well 3', new Point(-70.7325, -32.7695, 4326), WellType::TYPE_INDUSTRIAL_WELL, 1, '2010-01-01', -10000),
+            array('Irrigation Well 4', new Point(-70.6924, -32.8392, 4326), WellType::TYPE_INDUSTRIAL_WELL, 1, '2010-01-01', -10000),
+            array('Irrigation Well 5', new Point(-70.6693, -32.7480, 4326), WellType::TYPE_INDUSTRIAL_WELL, 1, '2010-01-01', -10000)
         );
 
         $pointsHeader = null;
@@ -651,7 +655,7 @@ class SanFelipe extends LoadScenarioBase
 
             echo sprintf("Add well with name %s.\r\n", $data['name']);
             $wellBoundary = $wellBoundary->addPumpingRate(
-                WellDateTimeValue::fromParams(DateTime::fromDateTimeImmutable($data['date']), $data['pumpingRate'])
+                WellDateTimeValue::fromParams(DateTime::fromString($data['date']), $data['pumpingRate'])
             );
             $commandBus->dispatch(AddBoundary::forModflowModel($ownerId, $scenarioId, $wellBoundary));
         }

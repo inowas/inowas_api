@@ -43,7 +43,7 @@
         "active_cells": {
             "$ref": "modflow/activeCells.json"
         },
-        "stressperiods": {
+        "stress_periods": {
             "$ref": "modflow/stressPeriods.json"
         }
     },

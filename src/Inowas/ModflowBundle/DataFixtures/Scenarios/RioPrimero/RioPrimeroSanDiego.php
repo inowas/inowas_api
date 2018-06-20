@@ -66,9 +66,15 @@ use Inowas\Soilmodel\Model\LayerInterpolationConfiguration;
 class RioPrimeroSanDiego extends LoadScenarioBase
 {
     /**
+     * @throws \Inowas\Common\Exception\InvalidTypeException
+     * @throws \League\JsonGuard\Exception\MaximumDepthExceededException
+     * @throws \League\JsonGuard\Exception\InvalidSchemaException
+     * @throws \InvalidArgumentException
+     * @throws \Inowas\Common\Exception\JsonSchemaValidationFailedException
      * @throws \Prooph\ServiceBus\Exception\CommandDispatchException
      * @throws \Symfony\Component\DependencyInjection\Exception\ServiceNotFoundException
      * @throws \Symfony\Component\DependencyInjection\Exception\ServiceCircularReferenceException
+     * @throws \Exception
      */
     public function load(): void
     {
