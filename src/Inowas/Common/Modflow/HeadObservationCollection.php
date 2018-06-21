@@ -38,13 +38,15 @@ class HeadObservationCollection implements \JsonSerializable
         $this->data[] = $headObservation;
     }
 
-    public function toArray(): ?array
+    public function toArray(): array
     {
-        if (\count($this->data) === 0) {
-            return null;
+        $arr = [];
+        /** @var HeadObservation $item */
+        foreach ($this->data as $item) {
+            $arr[] = $item->toArray();
         }
 
-        return $this->data;
+        return $arr;
     }
 
     public function jsonSerialize(): ?array
