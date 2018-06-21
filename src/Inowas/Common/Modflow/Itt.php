@@ -20,12 +20,12 @@ class Itt
         return new self($value);
     }
 
-    private function __construct(float $value)
+    private function __construct(int $value)
     {
         $this->value = $value;
     }
 
-    public function toFloat(): float
+    public function toInt(): int
     {
         return $this->value;
     }

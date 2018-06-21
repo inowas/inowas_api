@@ -106,7 +106,7 @@ class HeadObservation implements \JsonSerializable
             'irefsp' => null,
             'roff' => $this->roff->toFloat(),
             'coff' => $this->coff->toFloat(),
-            'itt' => $this->itt->toFloat(),
+            'itt' => $this->itt->toInt(),
             'time_series_data' => $this->timeSeriesData->toArray()
         ];
     }
