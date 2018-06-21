@@ -68,8 +68,17 @@ ini_set('memory_limit', '2048M');
 class Hanoi extends LoadScenarioBase
 {
     /**
+     * @throws \Symfony\Component\DependencyInjection\Exception\ServiceNotFoundException
+     * @throws \Symfony\Component\DependencyInjection\Exception\ServiceCircularReferenceException
+     * @throws \Inowas\Common\Exception\InvalidTypeException
+     * @throws \League\JsonGuard\Exception\MaximumDepthExceededException
+     * @throws \League\JsonGuard\Exception\InvalidSchemaException
+     * @throws \InvalidArgumentException
+     * @throws \Inowas\Common\Exception\JsonSchemaValidationFailedException
+     * @throws \Inowas\Common\Exception\KeyHasUseException
      * @throws \Prooph\ServiceBus\Exception\CommandDispatchException
      * @throws \Doctrine\DBAL\DBALException
+     * @throws \Exception
      */
     public function load(): void
     {
@@ -245,7 +254,7 @@ class Hanoi extends LoadScenarioBase
                 if (is_numeric($well[$date])){
                     if ($well[$date] !== $value){
                         $wellBoundary = $wellBoundary->addPumpingRate(WellDateTimeValue::fromParams(
-                            DateTime::fromDateTimeImmutable(new \DateTimeImmutable(explode(':', $date)[1])), (float)$well[$date]
+                            DateTime::fromString(explode(':', $date)[1]), (float)$well[$date]
                         ));
                     }
                     $value = $well[$date];
@@ -289,7 +298,7 @@ class Hanoi extends LoadScenarioBase
                 if (is_numeric($op[$date])) {
                     $observationPoint = $observationPoint->addDateTimeValue(
                         RiverDateTimeValue::fromParams(
-                        DateTime::fromDateTimeImmutable(new \DateTimeImmutable(explode(':', $date)[1])), $op[$date], 0, 1500)
+                        DateTime::fromString(explode(':', $date)[1]), $op[$date], 0, 1500)
                     );
                 }
             }
@@ -339,7 +348,7 @@ class Hanoi extends LoadScenarioBase
                 $chdBoundary = $chdBoundary->addConstantHeadToObservationPoint(
                     $observationPointId,
                     ConstantHeadDateTimeValue::fromParams(
-                        DateTime::fromDateTimeImmutable(new \DateTimeImmutable(explode(':', $date)[1])),
+                        DateTime::fromString(explode(':', $date)[1]),
                         $op[$date],
                         $op[$date]
                     )
@@ -351,8 +360,8 @@ class Hanoi extends LoadScenarioBase
         $commandBus->dispatch(AddBoundary::forModflowModel($ownerId, $modelId, $chdBoundary));
 
         echo sprintf("Autodetect Stressperiods.\r\n");
-        $start = DateTime::fromDateTime(new \DateTime('2005-01-01'));
-        $end = DateTime::fromDateTime(new \DateTime('2007-12-31'));
+        $start = DateTime::fromString('2005-01-01');
+        $end = DateTime::fromString('2007-12-31');
         $commandBus->dispatch(CalculateStressPeriods::forModflowModel($ownerId, $modelId, $start, $end));
 
         echo sprintf("Change FlowPackage.\r\n");

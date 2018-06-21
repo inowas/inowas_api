@@ -57,9 +57,15 @@ use Inowas\ModflowModel\Model\Command\UpdateStressPeriods;
 class RioPrimeroBaseModel extends LoadScenarioBase
 {
     /**
+     * @throws \Inowas\Common\Exception\InvalidTypeException
+     * @throws \League\JsonGuard\Exception\MaximumDepthExceededException
+     * @throws \League\JsonGuard\Exception\InvalidSchemaException
+     * @throws \InvalidArgumentException
+     * @throws \Inowas\Common\Exception\JsonSchemaValidationFailedException
      * @throws \Symfony\Component\DependencyInjection\Exception\ServiceNotFoundException
      * @throws \Symfony\Component\DependencyInjection\Exception\ServiceCircularReferenceException
      * @throws \Prooph\ServiceBus\Exception\CommandDispatchException
+     * @throws \Exception
      */
     public function load(): void
     {
@@ -146,9 +152,7 @@ class RioPrimeroBaseModel extends LoadScenarioBase
         $chd->addConstantHeadToObservationPoint(
             ObservationPointId::fromString('op1'),
             ConstantHeadDateTimeValue::fromParams(
-                DateTime::fromDateTimeImmutable(new \DateTimeImmutable('2015-01-01')),
-                450,
-                450
+                DateTime::fromString('2015-01-01'), 450, 450
             )
         );
 
@@ -182,9 +186,7 @@ class RioPrimeroBaseModel extends LoadScenarioBase
         $chd->addConstantHeadToObservationPoint(
             ObservationPointId::fromString('op1'),
             ConstantHeadDateTimeValue::fromParams(
-                DateTime::fromDateTimeImmutable(new \DateTimeImmutable('2015-01-01')),
-                445,
-                445
+                DateTime::fromString('2015-01-01'), 445, 445
             )
         );
 
@@ -297,7 +299,7 @@ class RioPrimeroBaseModel extends LoadScenarioBase
         $riv->addRiverStageToObservationPoint(
             $observationPointId,
             RiverDateTimeValue::fromParams(
-                DateTime::fromDateTimeImmutable(new \DateTimeImmutable('2015-01-01')),
+                DateTime::fromString('2015-01-01'),
                 450,
                 448,
                 100
@@ -326,7 +328,7 @@ class RioPrimeroBaseModel extends LoadScenarioBase
 
         $rch->addRecharge(
             RechargeDateTimeValue::fromParams(
-                DateTime::fromDateTimeImmutable(new \DateTimeImmutable('2015-01-01')),
+                DateTime::fromString('2015-01-01'),
                 0.00032
             )
         );
@@ -338,13 +340,13 @@ class RioPrimeroBaseModel extends LoadScenarioBase
          */
         $wells = array(
             array('name', 'point', 'type', 'layer', 'date', 'pumpingRate'),
-            array('Irrigation Well 1', new Point(-63.671125, -31.325009, 4326), WellType::TYPE_IRRIGATION_WELL, 0, new \DateTimeImmutable('2015-01-01'), -5000),
-            array('Irrigation Well 2', new Point(-63.659952, -31.330144, 4326), WellType::TYPE_IRRIGATION_WELL, 0, new \DateTimeImmutable('2015-01-01'), -5000),
-            array('Irrigation Well 3', new Point(-63.674691, -31.342506, 4326), WellType::TYPE_IRRIGATION_WELL, 0, new \DateTimeImmutable('2015-01-01'), -5000),
-            array('Irrigation Well 4', new Point(-63.637379, -31.359613, 4326), WellType::TYPE_IRRIGATION_WELL, 0, new \DateTimeImmutable('2015-01-01'), -5000),
-            array('Irrigation Well 5', new Point(-63.582069, -31.324063, 4326), WellType::TYPE_IRRIGATION_WELL, 0, new \DateTimeImmutable('2015-01-01'), -5000),
-            array('Public Well 1', new Point(-63.625402, -31.329897, 4326), WellType::TYPE_PUBLIC_WELL, 0, new \DateTimeImmutable('2015-01-01'), -5000),
-            array('Public Well 2', new Point(-63.623027, -31.331184, 4326), WellType::TYPE_PUBLIC_WELL, 0, new \DateTimeImmutable('2015-01-01'), -5000),
+            array('Irrigation Well 1', new Point(-63.671125, -31.325009, 4326), WellType::TYPE_IRRIGATION_WELL, 0, '2015-01-01', -5000),
+            array('Irrigation Well 2', new Point(-63.659952, -31.330144, 4326), WellType::TYPE_IRRIGATION_WELL, 0, '2015-01-01', -5000),
+            array('Irrigation Well 3', new Point(-63.674691, -31.342506, 4326), WellType::TYPE_IRRIGATION_WELL, 0, '2015-01-01', -5000),
+            array('Irrigation Well 4', new Point(-63.637379, -31.359613, 4326), WellType::TYPE_IRRIGATION_WELL, 0, '2015-01-01', -5000),
+            array('Irrigation Well 5', new Point(-63.582069, -31.324063, 4326), WellType::TYPE_IRRIGATION_WELL, 0, '2015-01-01', -5000),
+            array('Public Well 1', new Point(-63.625402, -31.329897, 4326), WellType::TYPE_PUBLIC_WELL, 0, '2015-01-01', -5000),
+            array('Public Well 2', new Point(-63.623027, -31.331184, 4326), WellType::TYPE_PUBLIC_WELL, 0, '2015-01-01', -5000),
         );
 
         $header = null;
@@ -367,14 +369,14 @@ class RioPrimeroBaseModel extends LoadScenarioBase
 
             echo sprintf("Add well with name %s.\r\n", $data['name']);
             $wellBoundary = $wellBoundary->addPumpingRate(
-                WellDateTimeValue::fromParams(DateTime::fromDateTimeImmutable($data['date']), $data['pumpingRate'])
+                WellDateTimeValue::fromParams(DateTime::fromString($data['date']), $data['pumpingRate'])
             );
             $commandBus->dispatch(AddBoundary::forModflowModel($ownerId, $baseModelId, $wellBoundary));
         }
 
         /* Create calculation and calculate */
-        $start = DateTime::fromDateTime(new \DateTime('2015-01-01'));
-        $end = DateTime::fromDateTime(new \DateTime('2035-12-31'));
+        $start = DateTime::fromString('2015-01-01');
+        $end = DateTime::fromString('2035-12-31');
         $stressperiods = StressPeriods::create($start, $end, TimeUnit::fromInt(TimeUnit::DAYS));
         $stressperiods->addStressPeriod(StressPeriod::create(0, 7300, 1, 1, true));
         $commandBus->dispatch(UpdateStressPeriods::of($ownerId, $baseModelId, $stressperiods));
