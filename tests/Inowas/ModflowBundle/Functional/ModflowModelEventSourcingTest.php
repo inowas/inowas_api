@@ -21,7 +21,6 @@ use Inowas\Common\Modflow\Laywet;
 use Inowas\Common\Modflow\LengthUnit;
 use Inowas\Common\Modflow\Description;
 use Inowas\Common\Modflow\ModflowModel;
-use Inowas\Common\Modflow\Mt3dms;
 use Inowas\Common\Modflow\Name;
 use Inowas\Common\Modflow\PackageName;
 use Inowas\Common\Modflow\ParameterName;
@@ -192,7 +191,6 @@ class ModflowModelEventSourcingTest extends EventSourcingBaseTest
             TimeUnit::fromInt(1),
             LengthUnit::fromInt(2),
             null,
-            Mt3dms::fromArray(['test']),
             Visibility::public()
         ));
 
