@@ -19,7 +19,9 @@
         }
     },
     "require": {
-        "php": ">=7.1.0",
+        "php": ">=7.1",
+        "ext-json" : "*",
+        "ext-PDO" : "*",
         "beberlei/assert": "^2.7",
         "creof/doctrine2-spatial": "^1.1",
         "doctrine/doctrine-bundle": "^1.6",
@@ -47,7 +49,6 @@
         "prooph/service-bus": "^6.0",
         "psr/container": "^1.0",
         "ramsey/uuid-doctrine": "^1.2",
-        "roave/security-advisories": "dev-master",
         "sensio/distribution-bundle": "^5.0",
         "sensio/framework-extra-bundle": "^3.0.2",
         "sensiolabs/ansi-to-html": "^1.1",
@@ -55,18 +56,19 @@
         "symfony/process": "^3.0",
         "symfony/serializer": "^3.1",
         "symfony/swiftmailer-bundle": "^2.3",
-        "symfony/symfony": "3.1.*"
+        "symfony/symfony": "3.1.10"
     },
     "require-dev": {
         "phpmd/phpmd" : "@stable",
         "satooshi/php-coveralls": "^1.0",
         "sensio/generator-bundle": "^3.1",
-        "symfony/phpunit-bridge": "^2.8",
+        "symfony/phpunit-bridge": "^2.8.28",
         "phpstan/phpstan": "^0.6.4",
-        "phpunit/phpunit": "^5.7"
+        "roave/security-advisories": "dev-master",
+        "phpunit/phpunit": "^5.7.22"
     },
     "scripts": {
-        "test": "phpunit",
+        "test": "./bin/phpunit",
         "test-docker": [
             "./bin/console doctrine:database:drop --env=test --force --if-exists",
             "./bin/console doctrine:database:create --env=test",
@@ -74,7 +76,6 @@
             "./bin/console doctrine:schema:create --env=test",
             "./bin/console inowas:es:schema:create --env=test",
             "./bin/console inowas:projections:reset --env=test",
-            "phpunit",
             "phpunit --group messaging-integration-tests"
         ],
         "test-messaging": "phpunit --group messaging-integration-tests",
@@ -111,5 +112,7 @@
         "incenteev-parameters": {
             "file": "app/config/parameters.yml"
         }
-    }
+    },
+    "minimum-stability": "dev",
+    "prefer-stable": true
 }

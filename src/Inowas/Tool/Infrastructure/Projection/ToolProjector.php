@@ -227,7 +227,7 @@ class ToolProjector extends AbstractDoctrineConnectionProjector
 
         $model = $this->modelManager->findModel($event->modelId(), $event->userId());
 
-        if (! $model instanceof ModflowModel) {
+        if (!$model instanceof ModflowModel) {
             return;
         }
 

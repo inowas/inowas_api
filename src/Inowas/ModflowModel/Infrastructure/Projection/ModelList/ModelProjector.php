@@ -24,6 +24,7 @@ use Inowas\ModflowModel\Model\Event\GridSizeWasChanged;
 use Inowas\ModflowModel\Model\Event\LengthUnitWasUpdated;
 use Inowas\ModflowModel\Model\Event\ModflowModelWasCloned;
 use Inowas\ModflowModel\Model\Event\ModflowModelWasDeleted;
+use Inowas\ModflowModel\Model\Event\Mt3dmsWasUpdated;
 use Inowas\ModflowModel\Model\Event\NameWasChanged;
 use Inowas\ModflowModel\Model\Event\ModflowModelWasCreated;
 use Inowas\ModflowModel\Infrastructure\Projection\Table;
@@ -59,6 +60,7 @@ class ModelProjector extends AbstractDoctrineConnectionProjector
         $table->addColumn('dirty', 'smallint', ['default' => 0]);
         $table->addColumn('preprocessing', 'smallint', ['default' => 0]);
         $table->addColumn('created_at', 'string', ['length' => 255, 'notnull' => false]);
+        $table->addColumn('mt3dms', 'text', ['notnull' => false]);
         $table->addColumn('public', 'smallint', ['default' => 1]);
         $table->setPrimaryKey(['model_id']);
         $table->addIndex(['calculation_id']);
@@ -67,99 +69,90 @@ class ModelProjector extends AbstractDoctrineConnectionProjector
 
     public function onAreaGeometryWasUpdated(AreaGeometryWasUpdated $event): void
     {
-        $this->connection->update(Table::MODFLOWMODELS, array(
-            'area' => $event->geometry()->toJson(),
-            'active_cells' => null,
-            'dirty' => 1,
-        ),
-            array('model_id' => $event->modelId()->toString())
+        $this->connection->update(Table::MODFLOWMODELS,
+            ['area' => $event->geometry()->toJson(), 'active_cells' => null, 'dirty' => 1],
+            ['model_id' => $event->modelId()->toString()]
         );
     }
 
     public function onBoundaryWasAdded(BoundaryWasAdded $event): void
     {
-        $this->connection->update(Table::MODFLOWMODELS, array(
-            'dirty' => 1,
-        ),
-            array('model_id' => $event->modelId()->toString())
+        $this->connection->update(Table::MODFLOWMODELS,
+            ['dirty' => 1],
+            ['model_id' => $event->modelId()->toString()]
         );
     }
 
     public function onBoundaryWasRemoved(BoundaryWasRemoved $event): void
     {
-        $this->connection->update(Table::MODFLOWMODELS, array(
-            'dirty' => 1,
-        ),
-            array('model_id' => $event->modelId()->toString())
+        $this->connection->update(Table::MODFLOWMODELS,
+            ['dirty' => 1],
+            ['model_id' => $event->modelId()->toString()]
         );
     }
 
     public function onBoundaryWasUpdated(BoundaryWasUpdated $event): void
     {
-        $this->connection->update(Table::MODFLOWMODELS, array(
-            'dirty' => 1,
-        ),
-            array('model_id' => $event->modelId()->toString())
+        $this->connection->update(Table::MODFLOWMODELS,
+            ['dirty' => 1],
+            ['model_id' => $event->modelId()->toString()]
         );
     }
 
     public function onBoundingBoxWasChanged(BoundingBoxWasChanged $event): void
     {
-        $this->connection->update(Table::MODFLOWMODELS, array(
+        $this->connection->update(Table::MODFLOWMODELS, [
             'bounding_box' => json_encode($event->boundingBox()),
             'active_cells' => null,
             'dirty' => 1,
-        ),
-            array('model_id' => $event->modelId()->toString())
+        ],
+            ['model_id' => $event->modelId()->toString()]
         );
     }
 
     public function onCalculationIdWasChanged(CalculationIdWasChanged $event): void
     {
-        $this->connection->update(Table::MODFLOWMODELS, array(
+        $this->connection->update(Table::MODFLOWMODELS, [
             'calculation_id' => $event->calculationId()->toString(),
             'dirty' => 0,
             'preprocessing' => 0
-        ),
-            array('model_id' => $event->modelId()->toString())
+        ],
+            ['model_id' => $event->modelId()->toString()]
         );
     }
 
     public function onCalculationWasRequested(CalculationWasRequested $event): void
     {
         $this->connection->update(Table::MODFLOWMODELS,
-            array('preprocessing' => 1),
-            array('model_id' => $event->modelId()->toString())
+            ['preprocessing' => 1],
+            ['model_id' => $event->modelId()->toString()]
         );
     }
 
     public function onDescriptionWasChanged(DescriptionWasChanged $event): void
     {
         $this->connection->update(Table::MODFLOWMODELS,
-            array('description' => $event->description()->toString()),
-            array('model_id' => $event->modelId()->toString())
+            ['description' => $event->description()->toString()],
+            ['model_id' => $event->modelId()->toString()]
         );
     }
 
     public function onGridSizeWasChanged(GridSizeWasChanged $event): void
     {
-        $this->connection->update(Table::MODFLOWMODELS, array(
+        $this->connection->update(Table::MODFLOWMODELS, [
             'grid_size' => json_encode($event->gridSize()),
             'active_cells' => null,
             'dirty' => 1,
-        ),
-            array('model_id' => $event->modelId()->toString())
+        ],
+            ['model_id' => $event->modelId()->toString()]
         );
     }
 
     public function onLengthUnitWasUpdated(LengthUnitWasUpdated $event): void
     {
         $this->connection->update(Table::MODFLOWMODELS,
-            array(
-                'length_unit' => $event->lengthUnit()->toInt(),
-                'dirty' => 1,
-            ),
-            array('model_id' => $event->modelId()->toString())
+            ['length_unit' => $event->lengthUnit()->toInt(), 'dirty' => 1],
+            ['model_id' => $event->modelId()->toString()]
         );
     }
 
@@ -176,6 +169,7 @@ class ModelProjector extends AbstractDoctrineConnectionProjector
             'grid_size' => json_encode($event->gridSize()),
             'bounding_box' => json_encode($event->boundingBox()),
             'active_cells' => null,
+            'mt3dms' => null,
             'time_unit' => $defaultTimeUnit->toInt(),
             'length_unit' => $defaultLengthUnit->toInt(),
             'stressperiods' => StressPeriods::createDefault()->toJson(),
@@ -191,7 +185,7 @@ class ModelProjector extends AbstractDoctrineConnectionProjector
             ['model_id' => $event->baseModelId()->toString()]
         );
 
-        foreach ($rows as $row){
+        foreach ($rows as $row) {
             $this->connection->insert(Table::MODFLOWMODELS, array(
                 'model_id' => $event->modelId()->toString(),
                 'user_id' => $event->userId()->toString(),
@@ -202,6 +196,7 @@ class ModelProjector extends AbstractDoctrineConnectionProjector
                 'grid_size' => $row['grid_size'],
                 'bounding_box' => $row['bounding_box'],
                 'active_cells' => $row['active_cells'],
+                'mt3dms' => $row['mt3dms'],
                 'time_unit' => $row['time_unit'],
                 'length_unit' => $row['length_unit'],
                 'stressperiods' => $row['stressperiods'],
@@ -213,51 +208,58 @@ class ModelProjector extends AbstractDoctrineConnectionProjector
         }
     }
 
+    /**
+     * @param ModflowModelWasDeleted $event
+     * @throws \Doctrine\DBAL\Exception\InvalidArgumentException
+     */
     public function onModflowModelWasDeleted(ModflowModelWasDeleted $event): void
     {
-        $this->connection->delete(Table::MODFLOWMODELS, array(
+        $this->connection->delete(Table::MODFLOWMODELS, [
             'model_id' => $event->modelId()->toString(),
             'user_id' => $event->userId()->toString()
-        ));
+        ]);
+    }
+
+    public function onMt3dmsWasUpdated(Mt3dmsWasUpdated $event): void
+    {
+        $this->connection->update(Table::MODFLOWMODELS,
+            ['mt3dms' => $event->mt3dms()->toJson()],
+            ['model_id' => $event->modelId()->toString()]
+        );
     }
 
     public function onNameWasChanged(NameWasChanged $event): void
     {
         $this->connection->update(Table::MODFLOWMODELS,
-            array('name' => $event->name()->toString()),
-            array('model_id' => $event->modelId()->toString())
+            ['name' => $event->name()->toString()],
+            ['model_id' => $event->modelId()->toString()]
         );
     }
 
     public function onTimeUnitWasUpdated(TimeUnitWasUpdated $event): void
     {
         $this->connection->update(Table::MODFLOWMODELS,
-            array(
-                'time_unit' => $event->timeUnit()->toInt(),
-                'dirty' => 1,
-            ),
-            array('model_id' => $event->modelId()->toString())
+            ['time_unit' => $event->timeUnit()->toInt(), 'dirty' => 1],
+            ['model_id' => $event->modelId()->toString()]
         );
     }
 
     public function onStressPeriodsWereUpdated(StressPeriodsWereUpdated $event): void
     {
         $this->connection->update(Table::MODFLOWMODELS,
-            array(
+            [
                 'stressperiods' => $event->stressPeriods()->toJson(),
                 'dirty' => 1,
-            ),
-            array('model_id' => $event->modelId()->toString())
+            ],
+            ['model_id' => $event->modelId()->toString()]
         );
     }
 
     public function onVisibilityWasChanged(VisibilityWasChanged $event): void
     {
         $this->connection->update(Table::MODFLOWMODELS,
-            array(
-                'public' => $event->visibility()->isPublic() ? 1 : 0
-            ),
-            array('model_id' => $event->modelId()->toString())
+            ['public' => $event->visibility()->isPublic() ? 1 : 0],
+            ['model_id' => $event->modelId()->toString()]
         );
     }
 
@@ -265,7 +267,7 @@ class ModelProjector extends AbstractDoctrineConnectionProjector
     {
         $username = '';
         $user = $this->entityManager->getRepository('InowasAppBundle:User')->findOneBy(array('id' => $id));
-        if ($user instanceof User){
+        if ($user instanceof User) {
             $username = $user->getName();
         }
 

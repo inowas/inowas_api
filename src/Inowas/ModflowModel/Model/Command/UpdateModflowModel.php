@@ -16,6 +16,7 @@ use Inowas\Common\Id\ModflowId;
 use Inowas\Common\Id\UserId;
 use Inowas\Common\Modflow\LengthUnit;
 use Inowas\Common\Modflow\Description;
+use Inowas\Common\Modflow\Mt3dms;
 use Inowas\Common\Modflow\Name;
 use Inowas\Common\Modflow\TimeUnit;
 use Inowas\Common\Status\Visibility;
@@ -33,6 +34,7 @@ class UpdateModflowModel extends AbstractJsonSchemaCommand
      * @param TimeUnit $timeUnit
      * @param LengthUnit $lengthUnit
      * @param ActiveCells $activeCells
+     * @param Mt3dms|null $mt3dms
      * @param Visibility $visibility
      * @return UpdateModflowModel
      */
@@ -108,6 +110,10 @@ class UpdateModflowModel extends AbstractJsonSchemaCommand
         return BoundingBox::fromArray($this->payload['bounding_box']);
     }
 
+    /**
+     * @return GridSize
+     * @throws \Exception
+     */
     public function gridSize(): GridSize
     {
         return GridSize::fromArray($this->payload['grid_size']);
@@ -123,9 +129,13 @@ class UpdateModflowModel extends AbstractJsonSchemaCommand
         return LengthUnit::fromInt($this->payload['length_unit']);
     }
 
+    /**
+     * @return ActiveCells|null
+     * @throws \Exception
+     */
     public function activeCells(): ?ActiveCells
     {
-        if (! array_key_exists('active_cells', $this->payload)) {
+        if (!array_key_exists('active_cells', $this->payload)) {
             return null;
         }
 
