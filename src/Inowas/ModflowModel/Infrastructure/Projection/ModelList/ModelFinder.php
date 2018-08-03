@@ -13,6 +13,7 @@ use Inowas\Common\Id\CalculationId;
 use Inowas\Common\Id\ModflowId;
 use Inowas\Common\Id\UserId;
 use Inowas\Common\Modflow\LengthUnit;
+use Inowas\Common\Modflow\Mt3dms;
 use Inowas\Common\Modflow\Name;
 use Inowas\Common\Modflow\Description;
 use Inowas\Common\Modflow\StressPeriods;
@@ -184,6 +185,21 @@ class ModelFinder
         }
 
         return Name::fromString($result['name']);
+    }
+
+    public function getMt3dmsByModelId(ModflowId $modelId): ?Mt3dms
+    {
+        $this->connection->setFetchMode(\PDO::FETCH_ASSOC);
+        $result = $this->connection->fetchAssoc(
+            sprintf('SELECT mt3dms FROM %s WHERE model_id = :model_id', Table::MODFLOWMODELS),
+            ['model_id' => $modelId->toString()]
+        );
+
+        if ($result === false ||  $result['mt3dms'] === null){
+            return null;
+        }
+
+        return Mt3dms::fromJson($result['mt3dms']);
     }
 
     public function getModelDescriptionByModelId(ModflowId $modelId): ?Description

@@ -16,6 +16,7 @@ use Inowas\Common\Id\ModflowId;
 use Inowas\Common\Id\UserId;
 use Inowas\Common\Modflow\LengthUnit;
 use Inowas\Common\Modflow\Description;
+use Inowas\Common\Modflow\Mt3dms;
 use Inowas\Common\Modflow\Name;
 use Inowas\Common\Modflow\TimeUnit;
 use Inowas\Common\Status\Visibility;
@@ -33,6 +34,7 @@ class UpdateModflowModel extends AbstractJsonSchemaCommand
      * @param TimeUnit $timeUnit
      * @param LengthUnit $lengthUnit
      * @param ActiveCells $activeCells
+     * @param Mt3dms|null $mt3dms
      * @param Visibility $visibility
      * @return UpdateModflowModel
      */
@@ -47,6 +49,7 @@ class UpdateModflowModel extends AbstractJsonSchemaCommand
         TimeUnit $timeUnit,
         LengthUnit $lengthUnit,
         ?ActiveCells $activeCells,
+        ?Mt3dms $mt3dms,
         Visibility $visibility
     ): UpdateModflowModel
     {
@@ -66,6 +69,10 @@ class UpdateModflowModel extends AbstractJsonSchemaCommand
 
         if ($activeCells) {
             $self->payload['active_cells'] = $activeCells->cells2D();
+        }
+
+        if ($mt3dms) {
+            $self->payload['mt3dms'] = $mt3dms->toArray();
         }
 
         /** @var UpdateModflowModel $self */
@@ -108,6 +115,10 @@ class UpdateModflowModel extends AbstractJsonSchemaCommand
         return BoundingBox::fromArray($this->payload['bounding_box']);
     }
 
+    /**
+     * @return GridSize
+     * @throws \Exception
+     */
     public function gridSize(): GridSize
     {
         return GridSize::fromArray($this->payload['grid_size']);
@@ -123,9 +134,13 @@ class UpdateModflowModel extends AbstractJsonSchemaCommand
         return LengthUnit::fromInt($this->payload['length_unit']);
     }
 
+    /**
+     * @return ActiveCells|null
+     * @throws \Exception
+     */
     public function activeCells(): ?ActiveCells
     {
-        if (! array_key_exists('active_cells', $this->payload)) {
+        if (!array_key_exists('active_cells', $this->payload)) {
             return null;
         }
 
@@ -134,6 +149,15 @@ class UpdateModflowModel extends AbstractJsonSchemaCommand
             $this->gridSize(),
             AffectedLayers::createWithLayerNumber(LayerNumber::fromInt(0))
         );
+    }
+
+    public function mt3dms(): ?Mt3dms
+    {
+        if (!array_key_exists('mt3dms', $this->payload)) {
+            return Mt3dms::fromArray([]);
+        }
+
+        return Mt3dms::fromArray($this->payload['mt3dms']);
     }
 
     public function visibility(): Visibility
