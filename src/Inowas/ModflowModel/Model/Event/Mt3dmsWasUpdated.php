@@ -61,7 +61,7 @@ class Mt3dmsWasUpdated extends AggregateChanged
     public function mt3dms(): Mt3dms
     {
         if ($this->mt3dms === null) {
-            $this->mt3dms = Mt3dms::fromArray($this->payload['data']);
+            $this->mt3dms = Mt3dms::fromArray($this->payload['mt3dms']);
         }
 
         return $this->mt3dms;

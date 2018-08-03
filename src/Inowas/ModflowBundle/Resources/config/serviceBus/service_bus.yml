@@ -33,6 +33,7 @@ parameters:
                         'Inowas\ModflowModel\Model\Command\UpdateModflowModel': 'inowas.modflowmodel.update_modflow_model_handler'
                         'Inowas\ModflowModel\Model\Command\UpdateModflowPackage': 'inowas.modflowmodel.update_modflow_package_handler'
                         'Inowas\ModflowModel\Model\Command\UpdateModflowPackageParameter': 'inowas.modflowmodel.update_modflow_package_parameter_handler'
+                        'Inowas\ModflowModel\Model\Command\UpdateMt3dms': 'inowas.modflowmodel.update_mt3dms_handler'
                         'Inowas\ModflowModel\Model\Command\UpdateSoilmodelMetadata': 'inowas.modflowmodel.update_soilmodel_metadata_handler'
                         'Inowas\ModflowModel\Model\Command\UpdateStressPeriods': 'inowas.modflowmodel.update_stress_periods_handler'
                         'Inowas\ModflowModel\Model\Command\UpdateTimeUnit': 'inowas.modflowmodel.update_time_unit_handler'
@@ -185,6 +186,10 @@ parameters:
                             - 'inowas.modflowmodel.blackhole_projector'
                             - 'inowas.modflowmodel.modflow_packages_process_manager'
 
+                        'Inowas\ModflowModel\Model\Event\Mt3dmsWasUpdated':
+                            - 'inowas.modflowmodel.blackhole_projector'
+                            - 'inowas.modflowmodel.model_projector'
+
                         'Inowas\ModflowModel\Model\Event\NameWasChanged':
                             - 'inowas.modflowmodel.blackhole_projector'
                             - 'inowas.modflowmodel.model_projector'
@@ -312,7 +317,7 @@ parameters:
                             - 'inowas.modflowmodel.model_projector'
 
                         'Inowas\ModflowModel\Model\Event\BoundingBoxWasChanged':
-                            - 'inowas.modflowmodel.boundary_projector'
+                            - 'inowas.modflowmodel.blackhole_projector'
                             - 'inowas.modflowmodel.model_projector'
 
                         'Inowas\ModflowModel\Model\Event\CalculationIdWasChanged':

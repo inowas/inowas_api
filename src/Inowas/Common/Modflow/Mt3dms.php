@@ -39,7 +39,7 @@ class Mt3dms
     public static function fromDB($data): Mt3dms
     {
         if (null === $data) {
-            return new self([]);
+            return new self($data);
         }
 
         return self::fromJson($data);

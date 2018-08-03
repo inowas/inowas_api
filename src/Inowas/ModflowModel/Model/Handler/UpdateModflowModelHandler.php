@@ -95,10 +95,6 @@ final class UpdateModflowModelHandler
             $modflowModel->updateAreaActiveCells($command->userId(), $command->activeCells());
         }
 
-        if (!$currentModel->mt3dms()->sameAs($command->mt3dms())) {
-            $modflowModel->updateMt3dms($command->userId(), $command->mt3dms());
-        }
-
         $this->modelList->save($modflowModel);
     }
 }

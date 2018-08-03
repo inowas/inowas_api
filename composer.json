@@ -19,7 +19,7 @@
         }
     },
     "require": {
-        "php": ">=7.1.0",
+        "php": ">=7.1",
         "ext-json" : "*",
         "ext-PDO" : "*",
         "beberlei/assert": "^2.7",
@@ -56,16 +56,16 @@
         "symfony/process": "^3.0",
         "symfony/serializer": "^3.1",
         "symfony/swiftmailer-bundle": "^2.3",
-        "symfony/symfony": "3.1.*"
+        "symfony/symfony": "3.1.10"
     },
     "require-dev": {
         "phpmd/phpmd" : "@stable",
         "satooshi/php-coveralls": "^1.0",
         "sensio/generator-bundle": "^3.1",
-        "symfony/phpunit-bridge": "^2.8",
-        "phpstan/phpstan": "^0.9",
-        "phpunit/phpunit": "^7.2",
-        "roave/security-advisories": "dev-master"
+        "symfony/phpunit-bridge": "^2.8.28",
+        "phpstan/phpstan": "^0.6.4",
+        "roave/security-advisories": "dev-master",
+        "phpunit/phpunit": "^5.7.22"
     },
     "scripts": {
         "test": "./bin/phpunit",
@@ -112,5 +112,7 @@
         "incenteev-parameters": {
             "file": "app/config/parameters.yml"
         }
-    }
+    },
+    "minimum-stability": "dev",
+    "prefer-stable": true
 }

@@ -109,7 +109,7 @@ class ModflowModelControllerTest extends EventSourcingBaseTest
         $response = $client->getResponse();
         $this->assertEquals(200, $response->getStatusCode());
         $body = json_decode($response->getContent(), true);
-        $this->assertTrue(is_array($body));
+        $this->assertInternalType('array', $body);
         $this->assertCount(1, $body);
         $modelDetails = $body[0];
         $this->assertTrue(array_key_exists('id', $modelDetails));
@@ -144,7 +144,7 @@ class ModflowModelControllerTest extends EventSourcingBaseTest
         $response = $client->getResponse();
         $this->assertEquals(200, $response->getStatusCode());
         $body = json_decode($response->getContent(), true);
-        $this->assertTrue(is_array($body));
+        $this->assertInternalType('array', $body);
         $this->assertCount(1, $body);
         $modelDetails = $body[0];
         $this->assertTrue(array_key_exists('id', $modelDetails));

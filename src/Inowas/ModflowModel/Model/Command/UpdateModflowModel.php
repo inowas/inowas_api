@@ -49,7 +49,6 @@ class UpdateModflowModel extends AbstractJsonSchemaCommand
         TimeUnit $timeUnit,
         LengthUnit $lengthUnit,
         ?ActiveCells $activeCells,
-        ?Mt3dms $mt3dms,
         Visibility $visibility
     ): UpdateModflowModel
     {
@@ -69,10 +68,6 @@ class UpdateModflowModel extends AbstractJsonSchemaCommand
 
         if ($activeCells) {
             $self->payload['active_cells'] = $activeCells->cells2D();
-        }
-
-        if ($mt3dms) {
-            $self->payload['mt3dms'] = $mt3dms->toArray();
         }
 
         /** @var UpdateModflowModel $self */
@@ -149,15 +144,6 @@ class UpdateModflowModel extends AbstractJsonSchemaCommand
             $this->gridSize(),
             AffectedLayers::createWithLayerNumber(LayerNumber::fromInt(0))
         );
-    }
-
-    public function mt3dms(): ?Mt3dms
-    {
-        if (!array_key_exists('mt3dms', $this->payload)) {
-            return Mt3dms::fromArray([]);
-        }
-
-        return Mt3dms::fromArray($this->payload['mt3dms']);
     }
 
     public function visibility(): Visibility

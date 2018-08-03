@@ -26,7 +26,7 @@ class UpdateMt3dms extends AbstractJsonSchemaCommand
     {
         $self = new static([
             'id' => $modelId->toString(),
-            'data' => $mt3dms->toArray()
+            'mt3dms' => $mt3dms->toArray()
         ]);
 
         /** @var UpdateMt3dms $self */
@@ -36,7 +36,7 @@ class UpdateMt3dms extends AbstractJsonSchemaCommand
 
     public function schema(): string
     {
-        return 'file://spec/schema/modflow/command/updateUpdateMt3dmsPayload.json';
+        return 'file://spec/schema/modflow/command/updateMt3dmsPayload.json';
     }
 
     public function userId(): UserId
@@ -51,6 +51,6 @@ class UpdateMt3dms extends AbstractJsonSchemaCommand
 
     public function data(): Mt3dms
     {
-        return Mt3dms::fromArray($this->payload['data']);
+        return Mt3dms::fromArray($this->payload['mt3dms']);
     }
 }

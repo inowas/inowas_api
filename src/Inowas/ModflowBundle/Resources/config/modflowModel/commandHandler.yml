@@ -142,6 +142,11 @@ services:
         arguments:
           - '@modflow_model_list'
 
+    inowas.modflowmodel.update_mt3dms_handler:
+      class: Inowas\ModflowModel\Model\Handler\UpdateMt3dmsHandler
+      arguments:
+      - '@modflow_model_list'
+
     inowas.modflowmodel.update_soilmodel_metadata_handler:
         class: Inowas\ModflowModel\Model\Handler\UpdateSoilmodelMetadataHandler
         arguments:
