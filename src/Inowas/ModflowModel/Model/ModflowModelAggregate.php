@@ -15,6 +15,7 @@ use Inowas\Common\Id\CalculationId;
 use Inowas\Common\Id\ModflowId;
 use Inowas\Common\Id\UserId;
 use Inowas\Common\Modflow\LengthUnit;
+use Inowas\Common\Modflow\Mt3dms;
 use Inowas\Common\Modflow\Name;
 use Inowas\Common\Modflow\Description;
 use Inowas\Common\Modflow\PackageName;
@@ -47,6 +48,7 @@ use Inowas\ModflowModel\Model\Event\ModflowModelWasCloned;
 use Inowas\ModflowModel\Model\Event\ModflowModelWasDeleted;
 use Inowas\ModflowModel\Model\Event\ModflowPackageParameterWasUpdated;
 use Inowas\ModflowModel\Model\Event\ModflowPackageWasUpdated;
+use Inowas\ModflowModel\Model\Event\Mt3dmsWasUpdated;
 use Inowas\ModflowModel\Model\Event\NameWasChanged;
 use Inowas\ModflowModel\Model\Event\SoilmodelMetadataWasUpdated;
 use Inowas\ModflowModel\Model\Event\ModflowModelWasCreated;
@@ -341,7 +343,7 @@ class ModflowModelAggregate extends AggregateRoot
         ));
     }
 
-    /** @noinspection MoreThanThreeArgumentsInspection
+    /**
      * @param UserId $userId
      * @param PackageName $packageName
      * @param $data
@@ -353,6 +355,19 @@ class ModflowModelAggregate extends AggregateRoot
             $this->modelId,
             $packageName,
             $data
+        ));
+    }
+
+    /**
+     * @param UserId $userId
+     * @param $mt3dms
+     */
+    public function updateMt3dms(UserId $userId, Mt3dms $mt3dms): void
+    {
+        $this->recordThat(Mt3dmsWasUpdated::withProps(
+            $userId,
+            $this->modelId,
+            $mt3dms
         ));
     }
 
@@ -483,6 +498,9 @@ class ModflowModelAggregate extends AggregateRoot
     {}
 
     protected function whenModflowPackageWasUpdated(ModflowPackageWasUpdated $event): void
+    {}
+
+    protected function whenMt3dmsWasUpdated(Mt3dmsWasUpdated $event): void
     {}
 
     protected function whenNameWasChanged(NameWasChanged $event): void

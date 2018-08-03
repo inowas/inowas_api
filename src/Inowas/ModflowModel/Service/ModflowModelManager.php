@@ -20,6 +20,7 @@ use Inowas\Common\Modflow\Description;
 use Inowas\Common\Modflow\HeadObservationCollection;
 use Inowas\Common\Modflow\LengthUnit;
 use Inowas\Common\Modflow\ModflowModel;
+use Inowas\Common\Modflow\Mt3dms;
 use Inowas\Common\Modflow\Name;
 use Inowas\Common\Modflow\StressPeriods;
 use Inowas\Common\Modflow\TimeUnit;
@@ -110,7 +111,11 @@ class ModflowModelManager
             }
         }
 
-        return ModflowModel::fromParams(
+        $activeCells = !empty($model['active_cells']) ?
+            ActiveCells::fromArray(json_decode($model['active_cells'], true))
+            : $this->getAreaActiveCells($modelId);
+
+        $model = ModflowModel::fromParams(
             $modelId,
             Name::fromString($model['name']),
             Description::fromString($model['description']),
@@ -119,13 +124,14 @@ class ModflowModelManager
             GridSize::fromArray((array)json_decode($model['grid_size'])),
             TimeUnit::fromInt($model['time_unit']),
             LengthUnit::fromInt($model['length_unit']),
-            !empty($model['active_cells']) ?
-                ActiveCells::fromArray(json_decode($model['active_cells'], true))
-                : $this->getAreaActiveCells($modelId),
+            $activeCells,
+            Mt3dms::fromDB($model['mt3dms']),
             StressPeriods::createFromJson($model['stressperiods']),
             $permission,
             $visibility
         );
+
+        return $model;
     }
 
     /**

@@ -42,6 +42,9 @@ final class ModflowModel implements \JsonSerializable
     /** @var StressPeriods */
     private $stressPeriods;
 
+    /** @var Mt3dms */
+    private $mt3dms;
+
     /** @var UserPermission */
     private $userPermission;
 
@@ -59,6 +62,7 @@ final class ModflowModel implements \JsonSerializable
      * @param LengthUnit $lengthUnit
      * @param ActiveCells $activeCells
      * @param StressPeriods $stressPeriods
+     * @param Mt3dms $mt3dms
      * @param UserPermission $userPermission
      * @param Visibility $visibility
      * @return ModflowModel
@@ -73,6 +77,7 @@ final class ModflowModel implements \JsonSerializable
         TimeUnit $timeUnit,
         LengthUnit $lengthUnit,
         ActiveCells $activeCells,
+        Mt3dms $mt3dms,
         StressPeriods $stressPeriods,
         UserPermission $userPermission,
         Visibility $visibility
@@ -89,6 +94,7 @@ final class ModflowModel implements \JsonSerializable
         $self->lengthUnit = $lengthUnit;
         $self->activeCells = $activeCells;
         $self->stressPeriods = $stressPeriods;
+        $self->mt3dms = $mt3dms;
         $self->userPermission = $userPermission;
         $self->visibility = $visibility;
         return $self;
@@ -151,6 +157,11 @@ final class ModflowModel implements \JsonSerializable
         return $this->stressPeriods;
     }
 
+    public function mt3dms(): Mt3dms
+    {
+        return $this->mt3dms;
+    }
+
     public function toArray(): array
     {
         return array(
@@ -167,6 +178,7 @@ final class ModflowModel implements \JsonSerializable
             'length_unit' => $this->lengthUnit->toInt(),
             'active_cells' => $this->activeCells->cells2D(),
             'stress_periods' => $this->stressPeriods->toArray(),
+            'mt3dms' => $this->mt3dms->toArray(),
             'permissions' => $this->userPermission->toString(),
             'public' => $this->visibility->isPublic()
         );
