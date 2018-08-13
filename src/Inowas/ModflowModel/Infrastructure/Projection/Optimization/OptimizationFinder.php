@@ -31,14 +31,19 @@ class OptimizationFinder
     public function getOptimization(ModflowId $modelId): ?Optimization
     {
         $result = $this->connection->fetchAssoc(
-            sprintf('SELECT optimization FROM %s WHERE model_id = :model_id', Table::OPTIMIZATIONS),
+            sprintf('SELECT * FROM %s WHERE model_id = :model_id', Table::OPTIMIZATIONS),
             ['model_id' => $modelId->toString()]
         );
 
-        if ($result === false || \array_key_exists('optimization', $result) === false) {
+        if ($result === false) {
             return null;
         }
 
-        return Optimization::fromDB($result['optimization']);
+        return Optimization::fromArray([
+            'input' => \json_decode($result['input'], true),
+            'state' => (int)$result['state'],
+            'progress' => \json_decode($result['progress'], true),
+            'results' => \json_decode($result['results'], true)
+        ]);
     }
 }

@@ -157,8 +157,13 @@ services:
     arguments:
     - '@modflow_model_list'
 
-  inowas.modflowmodel.update_optimization_handler:
-    class: Inowas\ModflowModel\Model\Handler\UpdateOptimizationHandler
+  inowas.modflowmodel.update_optimization_input_handler:
+    class: Inowas\ModflowModel\Model\Handler\UpdateOptimizationInputHandler
+    arguments:
+    - '@modflow_model_list'
+
+  inowas.modflowmodel.update_optimization_progress_handler:
+    class: Inowas\ModflowModel\Model\Handler\UpdateOptimizationProgressHandler
     arguments:
     - '@modflow_model_list'
 

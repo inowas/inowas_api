@@ -36,7 +36,8 @@ parameters:
             'Inowas\ModflowModel\Model\Command\UpdateModflowPackage': 'inowas.modflowmodel.update_modflow_package_handler'
             'Inowas\ModflowModel\Model\Command\UpdateModflowPackageParameter': 'inowas.modflowmodel.update_modflow_package_parameter_handler'
             'Inowas\ModflowModel\Model\Command\UpdateMt3dms': 'inowas.modflowmodel.update_mt3dms_handler'
-            'Inowas\ModflowModel\Model\Command\UpdateOptimization': 'inowas.modflowmodel.update_optimization_handler'
+            'Inowas\ModflowModel\Model\Command\UpdateOptimizationInput': 'inowas.modflowmodel.update_optimization_input_handler'
+            'Inowas\ModflowModel\Model\Command\UpdateOptimizationProgress': 'inowas.modflowmodel.update_optimization_progress_handler'
             'Inowas\ModflowModel\Model\Command\UpdateSoilmodelMetadata': 'inowas.modflowmodel.update_soilmodel_metadata_handler'
             'Inowas\ModflowModel\Model\Command\UpdateStressPeriods': 'inowas.modflowmodel.update_stress_periods_handler'
             'Inowas\ModflowModel\Model\Command\UpdateTimeUnit': 'inowas.modflowmodel.update_time_unit_handler'
@@ -198,6 +199,22 @@ parameters:
             - 'inowas.modflowmodel.model_projector'
             - 'inowas.scenarioanalysis.scenario_list_projector'
             - 'inowas.tool.tools_projector'
+
+            'Inowas\ModflowModel\Model\Event\OptimizationCalculationWasCanceled':
+            - 'inowas.modflowmodel.blackhole_projector'
+            - 'inowas.modflowmodel.optimization_projector'
+
+            'Inowas\ModflowModel\Model\Event\OptimizationCalculationWasStarted':
+            - 'inowas.modflowmodel.blackhole_projector'
+            - 'inowas.modflowmodel.optimization_projector'
+
+            'Inowas\ModflowModel\Model\Event\OptimizationProgressWasUpdated':
+            - 'inowas.modflowmodel.blackhole_projector'
+            - 'inowas.modflowmodel.optimization_projector'
+
+            'Inowas\ModflowModel\Model\Event\OptimizationInputWasUpdated':
+            - 'inowas.modflowmodel.blackhole_projector'
+            - 'inowas.modflowmodel.optimization_projector'
 
             'Inowas\ModflowModel\Model\Event\SoilmodelMetadataWasUpdated':
             - 'inowas.modflowmodel.blackhole_projector'
@@ -377,6 +394,22 @@ parameters:
             - 'inowas.modflowmodel.model_projector'
             - 'inowas.scenarioanalysis.scenario_list_projector'
             - 'inowas.tool.tools_projector'
+
+            'Inowas\ModflowModel\Model\Event\OptimizationCalculationWasCanceled':
+            - 'inowas.modflowmodel.blackhole_projector'
+            - 'inowas.modflowmodel.optimization_projector'
+
+            'Inowas\ModflowModel\Model\Event\OptimizationCalculationWasStarted':
+            - 'inowas.modflowmodel.blackhole_projector'
+            - 'inowas.modflowmodel.optimization_projector'
+
+            'Inowas\ModflowModel\Model\Event\OptimizationProgressWasUpdated':
+            - 'inowas.modflowmodel.blackhole_projector'
+            - 'inowas.modflowmodel.optimization_projector'
+
+            'Inowas\ModflowModel\Model\Event\OptimizationInputWasUpdated':
+            - 'inowas.modflowmodel.blackhole_projector'
+            - 'inowas.modflowmodel.optimization_projector'
 
             'Inowas\ModflowModel\Model\Event\SoilmodelMetadataWasUpdated':
             - 'inowas.modflowmodel.soilmodel_projector'

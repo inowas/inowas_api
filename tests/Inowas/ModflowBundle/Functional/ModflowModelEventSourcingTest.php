@@ -22,6 +22,8 @@ use Inowas\Common\Modflow\LengthUnit;
 use Inowas\Common\Modflow\Description;
 use Inowas\Common\Modflow\ModflowModel;
 use Inowas\Common\Modflow\Name;
+use Inowas\Common\Modflow\Optimization;
+use Inowas\Common\Modflow\OptimizationInput;
 use Inowas\Common\Modflow\PackageName;
 use Inowas\Common\Modflow\ParameterName;
 use Inowas\Common\Modflow\StressPeriod;
@@ -40,6 +42,7 @@ use Inowas\ModflowModel\Model\Command\RemoveBoundary;
 use Inowas\ModflowModel\Model\Command\UpdateBoundary;
 use Inowas\ModflowModel\Model\Command\UpdateModflowModel;
 use Inowas\ModflowModel\Model\Command\UpdateModflowPackageParameter;
+use Inowas\ModflowModel\Model\Command\UpdateOptimizationInput;
 use Inowas\ModflowModel\Model\Command\UpdateStressPeriods;
 use Inowas\ModflowModel\Model\Event\NameWasChanged;
 use Inowas\ModflowModel\Model\ModflowModelAggregate;
@@ -232,7 +235,7 @@ class ModflowModelEventSourcingTest extends EventSourcingBaseTest
         $this->commandBus->dispatch(AddBoundary::forModflowModel($ownerId, $modelId, $this->createRechargeBoundaryCenter()));
         $this->commandBus->dispatch(AddBoundary::forModflowModel($ownerId, $modelId, $this->createRiverBoundaryWithObservationPoint()));
         $this->commandBus->dispatch(AddBoundary::forModflowModel($ownerId, $modelId, $this->createWellBoundary()));
-        $this->commandBus->dispatch(ChangeGridSize::forModflowModel($ownerId, $modelId, GridSize::fromXY(20,20)));
+        $this->commandBus->dispatch(ChangeGridSize::forModflowModel($ownerId, $modelId, GridSize::fromXY(20, 20)));
         $activeCells = $this->container->get('inowas.modflowmodel.manager')->getAreaActiveCells($modelId);
         $this->assertCount(234, $activeCells->cells());
     }
@@ -444,7 +447,7 @@ class ModflowModelEventSourcingTest extends EventSourcingBaseTest
         $dataForFirstStressPeriod = array_values($stressperiodData)[0];
         $this->assertCount(2, $dataForFirstStressPeriod);
         $this->assertContains([0, 12, 17, -2000], $dataForFirstStressPeriod);
-        $this->assertContains([0,  8, 10, -5000], $dataForFirstStressPeriod);
+        $this->assertContains([0, 8, 10, -5000], $dataForFirstStressPeriod);
     }
 
     /**
@@ -490,7 +493,7 @@ class ModflowModelEventSourcingTest extends EventSourcingBaseTest
         );
 
         $headObservation->addHeadObservation(
-            HeadObservationWellDateTimeValue::fromParams(DateTime::fromDateTimeImmutable(new \DateTimeImmutable('2015-01-01')),  100)
+            HeadObservationWellDateTimeValue::fromParams(DateTime::fromDateTimeImmutable(new \DateTimeImmutable('2015-01-01')), 100)
         );
 
         $this->commandBus->dispatch(AddBoundary::forModflowModel($ownerId, $modelId, $headObservation));
@@ -505,7 +508,7 @@ class ModflowModelEventSourcingTest extends EventSourcingBaseTest
         );
 
         $headObservation->addHeadObservation(
-            HeadObservationWellDateTimeValue::fromParams(DateTime::fromDateTimeImmutable(new \DateTimeImmutable('2015-01-01')),  120)
+            HeadObservationWellDateTimeValue::fromParams(DateTime::fromDateTimeImmutable(new \DateTimeImmutable('2015-01-01')), 120)
         );
 
         $this->commandBus->dispatch(AddBoundary::forModflowModel($ownerId, $modelId, $headObservation));
@@ -576,8 +579,8 @@ class ModflowModelEventSourcingTest extends EventSourcingBaseTest
         $end = DateTime::fromDateTime(new \DateTime('2015-01-31'));
         $timeUnit = TimeUnit::fromInt(TimeUnit::DAYS);
         $stressperiods = StressPeriods::create($start, $end, $timeUnit);
-        $stressperiods->addStressPeriod(StressPeriod::create(0, 1,1,1,true));
-        $stressperiods->addStressPeriod(StressPeriod::create(1, 100,1,1,false));
+        $stressperiods->addStressPeriod(StressPeriod::create(0, 1, 1, 1, true));
+        $stressperiods->addStressPeriod(StressPeriod::create(1, 100, 1, 1, false));
         $this->commandBus->dispatch(UpdateStressPeriods::of($ownerId, $modelId, $stressperiods));
 
         $config = $this->recalculateAndCreateJsonCalculationRequest($modelId);
@@ -592,11 +595,11 @@ class ModflowModelEventSourcingTest extends EventSourcingBaseTest
 
         $dataForFirstStressPeriod = array_values($stressperiodData)[0];
         $this->assertCount(1, $dataForFirstStressPeriod);
-        $this->assertContains([0,  8, 10, -7000], $dataForFirstStressPeriod);
+        $this->assertContains([0, 8, 10, -7000], $dataForFirstStressPeriod);
 
         $dataForSecondStressPeriod = array_values($stressperiodData)[1];
         $this->assertCount(1, $dataForSecondStressPeriod);
-        $this->assertContains([0,  8, 10, -7000], $dataForSecondStressPeriod);
+        $this->assertContains([0, 8, 10, -7000], $dataForSecondStressPeriod);
     }
 
     /**
@@ -893,6 +896,29 @@ class ModflowModelEventSourcingTest extends EventSourcingBaseTest
         $this->assertEquals(5, $this->container->get('inowas.modflowmodel.boundary_manager')->getTotalNumberOfModelBoundaries($modelId));
 
         $this->assertNotNull($this->container->get('inowas.tool.tools_finder')->findById(ToolId::fromString($newModelId->toString())));
+    }
+
+    /**
+     * @test
+     * @throws \Exception
+     */
+    public function it_creates_an_optimization(): void
+    {
+        $ownerId = UserId::generate();
+        $modelId = ModflowId::generate();
+        $this->createModelWithOneLayer($ownerId, $modelId);
+
+        $optimizationInput = OptimizationInput::fromArray([
+            '123' => 456,
+            '789' => 111
+        ]);
+
+        $this->commandBus->dispatch(UpdateOptimizationInput::forModflowModel($ownerId, $modelId, $optimizationInput));
+        $optimizationFinder = $this->container->get('inowas.modflowmodel.optimization_finder');
+        $optimization = $optimizationFinder->getOptimization($modelId);
+        $this->assertInstanceOf(Optimization::class, $optimization);
+        $this->assertEquals($optimizationInput, $optimization->input());
+
     }
 
     /**

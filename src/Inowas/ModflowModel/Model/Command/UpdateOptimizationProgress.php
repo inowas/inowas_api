@@ -7,26 +7,26 @@ namespace Inowas\ModflowModel\Model\Command;
 use Inowas\Common\Command\AbstractJsonSchemaCommand;
 use Inowas\Common\Id\ModflowId;
 use Inowas\Common\Id\UserId;
-use Inowas\Common\Modflow\Optimization;
+use Inowas\Common\Modflow\OptimizationProgress;
 
-class UpdateOptimization extends AbstractJsonSchemaCommand
+class UpdateOptimizationProgress extends AbstractJsonSchemaCommand
 {
     /**
      * @param UserId $userId
      * @param ModflowId $modelId
-     * @param Optimization $optimization
+     * @param OptimizationProgress $progress
      * @return self
      * @throws \League\JsonGuard\Exception\MaximumDepthExceededException
      * @throws \League\JsonGuard\Exception\InvalidSchemaException
      * @throws \InvalidArgumentException
      * @throws \Inowas\Common\Exception\JsonSchemaValidationFailedException
      */
-    public static function forModflowModel(UserId $userId, ModflowId $modelId, Optimization $optimization): self
+    public static function forModflowModel(UserId $userId, ModflowId $modelId, OptimizationProgress $progress): self
     {
         $self = new static(
             array(
                 'id' => $modelId->toString(),
-                'optimization' => $optimization->toArray()
+                'progress' => $progress->toArray()
             )
         );
 
@@ -37,7 +37,7 @@ class UpdateOptimization extends AbstractJsonSchemaCommand
 
     public function schema(): string
     {
-        return 'file://spec/schema/modflow/command/optimizationPayload.json';
+        return 'file://spec/schema/modflow/command/optimizationInputPayload.json';
     }
 
     public function modflowModelId(): ModflowId
@@ -51,11 +51,11 @@ class UpdateOptimization extends AbstractJsonSchemaCommand
     }
 
     /**
-     * @return Optimization
+     * @return OptimizationProgress
      * @throws \Exception
      */
-    public function optimization(): Optimization
+    public function progress(): OptimizationProgress
     {
-        return Optimization::fromArray($this->payload['optimization']);
+        return OptimizationProgress::fromArray($this->payload['progress']);
     }
 }

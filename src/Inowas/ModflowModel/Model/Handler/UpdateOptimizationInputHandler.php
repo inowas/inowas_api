@@ -4,13 +4,13 @@ declare(strict_types=1);
 
 namespace Inowas\ModflowModel\Model\Handler;
 
-use Inowas\ModflowModel\Model\Command\UpdateOptimization;
+use Inowas\ModflowModel\Model\Command\UpdateOptimizationInput;
 use Inowas\ModflowModel\Model\Exception\ModflowModelNotFoundException;
 use Inowas\ModflowModel\Model\Exception\WriteAccessFailedException;
 use Inowas\ModflowModel\Model\ModflowModelList;
 use Inowas\ModflowModel\Model\ModflowModelAggregate;
 
-final class UpdateOptimizationHandler
+final class UpdateOptimizationInputHandler
 {
 
     /** @var  ModflowModelList */
@@ -25,11 +25,12 @@ final class UpdateOptimizationHandler
     }
 
     /**
-     * @param UpdateOptimization $command
+     * @param UpdateOptimizationInput $command
      * @throws \Exception
      */
-    public function __invoke(UpdateOptimization $command)
+    public function __invoke(UpdateOptimizationInput $command)
     {
+
         /** @var ModflowModelAggregate $modflowModel */
         $modflowModel = $this->modelList->get($command->modflowModelId());
 
@@ -41,7 +42,7 @@ final class UpdateOptimizationHandler
             throw WriteAccessFailedException::withUserAndOwner($command->userId(), $modflowModel->userId());
         }
 
-        $modflowModel->updateOptimization($command->userId(), $command->optimization());
+        $modflowModel->updateOptimizationInput($command->userId(), $command->input());
         $this->modelList->save($modflowModel);
     }
 }

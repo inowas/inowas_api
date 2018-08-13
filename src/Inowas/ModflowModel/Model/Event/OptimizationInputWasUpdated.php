@@ -6,12 +6,12 @@ namespace Inowas\ModflowModel\Model\Event;
 
 use Inowas\Common\Id\ModflowId;
 use Inowas\Common\Id\UserId;
-use Inowas\Common\Modflow\Optimization;
+use Inowas\Common\Modflow\OptimizationInput;
 use Prooph\EventSourcing\AggregateChanged;
 
 /** @noinspection LongInheritanceChainInspection */
 
-class OptimizationWasUpdated extends AggregateChanged
+class OptimizationInputWasUpdated extends AggregateChanged
 {
 
     /** @var ModflowId */
@@ -20,28 +20,28 @@ class OptimizationWasUpdated extends AggregateChanged
     /** @var  UserId */
     private $userId;
 
-    /** @var Optimization */
-    private $optimization;
+    /** @var OptimizationInput */
+    private $input;
 
     /** @noinspection MoreThanThreeArgumentsInspection
      * @param UserId $userId
      * @param ModflowId $modflowId
-     * @param Optimization $optimization
+     * @param OptimizationInput $input
      * @return self
      */
-    public static function byUserToModel(UserId $userId, ModflowId $modflowId, Optimization $optimization): self
+    public static function byUserToModel(UserId $userId, ModflowId $modflowId, OptimizationInput $input): self
     {
         /** @var self $event */
         $event = self::occur(
             $modflowId->toString(), [
                 'user_id' => $userId->toString(),
-                'optimization' => $optimization->toArray()
+                'input' => $input->toArray()
             ]
         );
 
         $event->modflowId = $modflowId;
         $event->userId = $userId;
-        $event->optimization = $optimization;
+        $event->input = $input;
 
         return $event;
     }
@@ -55,13 +55,13 @@ class OptimizationWasUpdated extends AggregateChanged
         return $this->modflowId;
     }
 
-    public function optimization(): Optimization
+    public function input(): OptimizationInput
     {
-        if ($this->optimization === null) {
-            $this->optimization = Optimization::fromArray($this->payload['optimization']);
+        if ($this->input === null) {
+            $this->input = OptimizationInput::fromArray($this->payload['input']);
         }
 
-        return $this->optimization;
+        return $this->input;
     }
 
     public function userId(): UserId

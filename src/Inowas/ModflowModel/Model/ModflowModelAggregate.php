@@ -18,7 +18,8 @@ use Inowas\Common\Modflow\LengthUnit;
 use Inowas\Common\Modflow\Mt3dms;
 use Inowas\Common\Modflow\Name;
 use Inowas\Common\Modflow\Description;
-use Inowas\Common\Modflow\Optimization;
+use Inowas\Common\Modflow\OptimizationInput;
+use Inowas\Common\Modflow\OptimizationProgress;
 use Inowas\Common\Modflow\PackageName;
 use Inowas\Common\Modflow\ParameterName;
 use Inowas\Common\Modflow\StressPeriods;
@@ -53,7 +54,8 @@ use Inowas\ModflowModel\Model\Event\Mt3dmsWasUpdated;
 use Inowas\ModflowModel\Model\Event\NameWasChanged;
 use Inowas\ModflowModel\Model\Event\OptimizationCalculationWasCanceled;
 use Inowas\ModflowModel\Model\Event\OptimizationCalculationWasStarted;
-use Inowas\ModflowModel\Model\Event\OptimizationWasUpdated;
+use Inowas\ModflowModel\Model\Event\OptimizationProgressWasUpdated;
+use Inowas\ModflowModel\Model\Event\OptimizationInputWasUpdated;
 use Inowas\ModflowModel\Model\Event\SoilmodelMetadataWasUpdated;
 use Inowas\ModflowModel\Model\Event\ModflowModelWasCreated;
 use Inowas\ModflowModel\Model\Event\StressPeriodsWereUpdated;
@@ -379,9 +381,14 @@ class ModflowModelAggregate extends AggregateRoot
         $this->recordThat(OptimizationCalculationWasCanceled::byUserToModel($userId, $this->modelId, $optimizationId));
     }
 
-    public function updateOptimization(UserId $userId, Optimization $optimization): void
+    public function updateOptimizationInput(UserId $userId, OptimizationInput $input): void
     {
-        $this->recordThat(OptimizationWasUpdated::byUserToModel($userId, $this->modelId, $optimization));
+        $this->recordThat(OptimizationInputWasUpdated::byUserToModel($userId, $this->modelId, $input));
+    }
+
+    public function updateOptimizationProgress(UserId $userId, OptimizationProgress $progress): void
+    {
+        $this->recordThat(OptimizationProgressWasUpdated::byUserToModel($userId, $this->modelId, $progress));
     }
 
     /* Soilmodel-Related stuff */
@@ -489,7 +496,11 @@ class ModflowModelAggregate extends AggregateRoot
     {
     }
 
-    protected function whenOptimizationWasUpdated(OptimizationWasUpdated $event): void
+    protected function whenOptimizationProgressWasUpdated(OptimizationProgressWasUpdated $event): void
+    {
+    }
+
+    protected function whenOptimizationInputWasUpdated(OptimizationInputWasUpdated $event): void
     {
     }
 

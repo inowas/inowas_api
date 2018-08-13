@@ -2,89 +2,84 @@
 
 namespace Inowas\Common\Modflow;
 
-use Inowas\ModflowModel\Model\Exception\InvalidJsonException;
-
 class Optimization
 {
-    /** @var array */
-    private $data;
+    /** @var OptimizationInput */
+    private $input;
+
+    /** @var OptimizationState */
+    private $state;
+
+    /** @var OptimizationProgress */
+    private $progress;
+
+    /** @var OptimizationResults */
+    private $results;
+
+    public static function createEmpty(): self
+    {
+        $self = new self();
+        $self->input = OptimizationInput::fromArray([]);
+        $self->state = OptimizationState::fromInt(0);
+        $self->progress = OptimizationProgress::fromArray([]);
+        $self->results = OptimizationProgress::fromArray([]);
+        return $self;
+    }
 
     /**
-     * @param string $json
+     * @param array $arr
      * @return self
      */
-    public static function fromJson(string $json): self
+    public static function fromArray(array $arr): self
     {
-        $decoded = json_decode($json, true);
-        if (false === $decoded) {
-            throw InvalidJsonException::withoutContent();
-        }
-
-        return new self($decoded);
+        $self = new self();
+        $self->input = OptimizationInput::fromArray($arr['input']);
+        $self->state = OptimizationState::fromInt($arr['state']);
+        $self->progress = OptimizationProgress::fromArray($arr['progress']);
+        $self->results = OptimizationProgress::fromArray($arr['results']);
+        return $self;
     }
 
     /**
-     * @param array $data
-     * @return self
+     * @return OptimizationInput
      */
-    public static function fromArray(array $data): self
+    public function input(): OptimizationInput
     {
-        return new self($data);
+        return $this->input;
     }
 
     /**
-     * @param string|null $data
-     * @return self
+     * @return OptimizationState
      */
-    public static function fromDB($data): self
+    public function state(): OptimizationState
     {
-        if (null === $data) {
-            return new self($data);
-        }
-
-        return self::fromJson($data);
+        return $this->state;
     }
 
     /**
-     * Optimization constructor.
-     * @param $data
+     * @return OptimizationProgress
      */
-    private function __construct($data)
+    public function progress(): OptimizationProgress
     {
-        $this->data = $data;
+        return $this->progress;
     }
 
     /**
-     * @return array
+     * @return OptimizationResults
      */
-    public function data(): array
+    public function results(): OptimizationResults
     {
-        return $this->data;
+        return $this->results;
     }
 
-    /**
-     * @return array|null
-     */
-    public function toArray(): ?array
-    {
-        return $this->data;
-    }
 
-    /**
-     * @return string
-     */
-    public function toJson(): string
+    public function toArray(): array
     {
-        return json_encode($this->data);
-    }
-
-    public function sameAs($mt3dms): bool
-    {
-        if (!$mt3dms instanceof self) {
-            return false;
-        }
-
-        /** @noinspection TypeUnsafeComparisonInspection */
-        return $mt3dms->data() == $this->data();
+        return [
+            'input' => $this->input->toArray(),
+            'state' => $this->state->state(),
+            'progress' => $this->progress->toArray(),
+            'result' => $this->results->toArray()
+        ];
     }
 }
