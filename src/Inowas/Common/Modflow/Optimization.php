@@ -22,7 +22,7 @@ class Optimization
         $self->input = OptimizationInput::fromArray([]);
         $self->state = OptimizationState::fromInt(0);
         $self->progress = OptimizationProgress::fromArray([]);
-        $self->results = OptimizationProgress::fromArray([]);
+        $self->results = OptimizationResults::fromArray([]);
         return $self;
     }
 
@@ -36,7 +36,7 @@ class Optimization
         $self->input = OptimizationInput::fromArray($arr['input']);
         $self->state = OptimizationState::fromInt($arr['state']);
         $self->progress = OptimizationProgress::fromArray($arr['progress']);
-        $self->results = OptimizationProgress::fromArray($arr['results']);
+        $self->results = OptimizationResults::fromArray($arr['results']);
         return $self;
     }
 
@@ -79,7 +79,7 @@ class Optimization
             'input' => $this->input->toArray(),
             'state' => $this->state->toInt(),
             'progress' => $this->progress->toArray(),
-            'result' => $this->results->toArray()
+            'results' => $this->results->toArray()
         ];
     }
 }
