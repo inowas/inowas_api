@@ -26,7 +26,7 @@ class BoundaryFinder
     protected $connection;
 
     /**
-     * BoundaryFinder constructor.
+     * OptimizationFinder constructor.
      * @param Connection $connection
      */
     public function __construct(Connection $connection)

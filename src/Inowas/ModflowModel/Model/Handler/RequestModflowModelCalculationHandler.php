@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Inowas\ModflowModel\Model\Handler;
 
-use Inowas\ModflowModel\Model\AMQP\ModflowCalculationRequest;
+use Inowas\Common\Calculation\ModflowCalculationRequest;
 use Inowas\ModflowModel\Model\Command\RequestModflowModelCalculation;
 use Inowas\ModflowModel\Model\Exception\ModflowModelNotFoundException;
 use Inowas\ModflowModel\Model\Exception\WriteAccessFailedException;

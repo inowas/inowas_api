@@ -23,6 +23,9 @@ abstract class AbstractDoctrineConnectionProjector implements ProjectionInterfac
         $this->connection->setFetchMode(\PDO::FETCH_ASSOC);
     }
 
+    /**
+     * @throws \Doctrine\DBAL\DBALException
+     */
     public function createTables(): void
     {
         /** @var Schema $schema */
@@ -31,6 +34,9 @@ abstract class AbstractDoctrineConnectionProjector implements ProjectionInterfac
         }
     }
 
+    /**
+     * @throws \Doctrine\DBAL\DBALException
+     */
     public function dropTables(): void
     {
         /** @var Schema $schema */
@@ -39,6 +45,9 @@ abstract class AbstractDoctrineConnectionProjector implements ProjectionInterfac
         }
     }
 
+    /**
+     * @throws \Doctrine\DBAL\DBALException
+     */
     public function truncateTables(): void
     {
         /** @var Schema $schema */
@@ -48,17 +57,28 @@ abstract class AbstractDoctrineConnectionProjector implements ProjectionInterfac
         }
     }
 
+    /**
+     * @throws \Doctrine\DBAL\DBALException
+     */
     public function reset(): void
     {
         $this->truncateTables();
     }
 
+    /**
+     * @param Schema $schema
+     * @throws \Doctrine\DBAL\DBALException
+     */
     private function createTable(Schema $schema): void
     {
         $queryArray = $schema->toSql($this->connection->getDatabasePlatform());
         $this->executeQueryArray($queryArray);
     }
 
+    /**
+     * @param Schema $schema
+     * @throws \Doctrine\DBAL\DBALException
+     */
     private function dropTable(Schema $schema): void
     {
         try {
@@ -68,6 +88,10 @@ abstract class AbstractDoctrineConnectionProjector implements ProjectionInterfac
         }
     }
 
+    /**
+     * @param array $queries
+     * @throws \Doctrine\DBAL\DBALException
+     */
     private function executeQueryArray(array $queries): void
     {
         foreach ($queries as $query) {
@@ -87,14 +111,14 @@ abstract class AbstractDoctrineConnectionProjector implements ProjectionInterfac
             throw new \RuntimeException(sprintf(
                 'Missing event method %s for projector %s',
                 $handler,
-                get_class($this)
+                \get_class($this)
             ));
         }
         $this->{$handler}($e);
     }
 
-    protected function determineEventMethodFor(DomainEvent $e)
+    protected function determineEventMethodFor(DomainEvent $e): string
     {
-        return 'on' . implode(array_slice(explode('\\', get_class($e)), -1));
+        return 'on' . implode(\array_slice(explode('\\', \get_class($e)), -1));
     }
 }

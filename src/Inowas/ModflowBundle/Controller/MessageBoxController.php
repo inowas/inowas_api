@@ -9,7 +9,9 @@ use Inowas\ModflowBundle\Exception\InvalidArgumentException;
 use Inowas\ModflowModel\Model\Command\AddBoundary;
 use Inowas\ModflowModel\Model\Command\AddLayer;
 use Inowas\ModflowModel\Model\Command\CalculateModflowModel;
+use Inowas\ModflowModel\Model\Command\CalculateOptimization;
 use Inowas\ModflowModel\Model\Command\CalculateStressPeriods;
+use Inowas\ModflowModel\Model\Command\CancelOptimizationCalculation;
 use Inowas\ModflowModel\Model\Command\CloneModflowModel;
 use Inowas\ModflowModel\Model\Command\CreateModflowModel;
 use Inowas\ModflowModel\Model\Command\DeleteModflowModel;
@@ -21,6 +23,8 @@ use Inowas\ModflowModel\Model\Command\UpdateLayer;
 use Inowas\ModflowModel\Model\Command\UpdateModflowModel;
 use Inowas\ModflowModel\Model\Command\UpdateModflowPackage;
 use Inowas\ModflowModel\Model\Command\UpdateMt3dms;
+use Inowas\ModflowModel\Model\Command\UpdateOptimizationInput;
+use Inowas\ModflowModel\Model\Command\UpdateOptimizationProgress;
 use Inowas\ModflowModel\Model\Command\UpdateStressPeriods;
 use Inowas\ScenarioAnalysis\Model\Command\CloneScenarioAnalysis;
 use Inowas\ScenarioAnalysis\Model\Command\CreateScenario;
@@ -45,7 +49,9 @@ class MessageBoxController extends InowasRestController
         'addBoundary' => AddBoundary::class,
         'addLayer' => AddLayer::class,
         'calculateModflowModel' => CalculateModflowModel::class,
+        'calculateOptimization' => CalculateOptimization::class,
         'calculateStressPeriods' => CalculateStressPeriods::class,
+        'cancelOptimizationCalculation' => CancelOptimizationCalculation::class,
         'cloneModflowModel' => CloneModflowModel::class,
         'cloneScenarioAnalysis' => CloneScenarioAnalysis::class,
         'createModflowModel' => CreateModflowModel::class,
@@ -65,6 +71,8 @@ class MessageBoxController extends InowasRestController
         'updateModflowModel' => UpdateModflowModel::class,
         'updateModflowPackage' => UpdateModflowPackage::class,
         'updateMt3dms' => UpdateMt3dms::class,
+        'updateOptimizationInput' => UpdateOptimizationInput::class,
+        'updateOptimizationProgress' => UpdateOptimizationProgress::class,
         'updateScenarioAnalysis' => UpdateScenarioAnalysis::class,
         'updateStressPeriods' => UpdateStressPeriods::class,
         'updateToolInstance' => UpdateToolInstance::class,

@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Inowas\ModflowBundle\Command;
 
+use Inowas\Common\Calculation\ModflowCalculationRequest;
 use Inowas\Common\Id\UserId;
-use Inowas\ModflowModel\Model\AMQP\ModflowCalculationRequest;
 use Inowas\ModflowModel\Model\Command\CalculateModflowModel;
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 use Symfony\Component\Console\Input\InputInterface;

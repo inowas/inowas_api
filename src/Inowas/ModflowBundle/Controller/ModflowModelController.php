@@ -11,6 +11,7 @@ use Inowas\Common\Id\BoundaryId;
 use Inowas\Common\Id\CalculationId;
 use Inowas\Common\Id\ModflowId;
 use Inowas\Common\Modflow\ModflowModel;
+use Inowas\Common\Modflow\Optimization;
 use Inowas\Common\Modflow\PackageName;
 use Inowas\Common\Modflow\Results;
 use Inowas\Common\Modflow\StressPeriods;
@@ -19,10 +20,12 @@ use Inowas\Common\Soilmodel\LayerId;
 use Inowas\Common\Soilmodel\SoilmodelQuery;
 use Inowas\ModflowBundle\Exception\AccessDeniedException;
 use Inowas\ModflowBundle\Exception\NotFoundException;
+use Inowas\ModflowModel\Infrastructure\Projection\Optimization\OptimizationFinder;
 use Nelmio\ApiDocBundle\Annotation\ApiDoc;
 use Symfony\Component\HttpFoundation\JsonResponse;
 
 /** @noinspection LongInheritanceChainInspection */
+
 class ModflowModelController extends InowasRestController
 {
     # MODEL-LISTING
@@ -103,7 +106,7 @@ class ModflowModelController extends InowasRestController
         $modelId = ModflowId::fromString($id);
         $userId = $this->getUserId();
 
-        if (! $this->get('inowas.modflowmodel.model_finder')->userHasReadAccessToModel($userId, $modelId)) {
+        if (!$this->get('inowas.modflowmodel.model_finder')->userHasReadAccessToModel($userId, $modelId)) {
             throw AccessDeniedException::withMessage(
                 sprintf(
                     'Model not found or user with Id %s does not have access to model with id %s',
@@ -115,7 +118,7 @@ class ModflowModelController extends InowasRestController
 
         $model = $this->container->get('inowas.modflowmodel.manager')->findModel($modelId, $userId);
 
-        if (! $model instanceof ModflowModel) {
+        if (!$model instanceof ModflowModel) {
             throw NotFoundException::withMessage(sprintf(
                 'ModflowModel with id: \'%s\' not found.', $modelId->toString()
             ));
@@ -153,7 +156,7 @@ class ModflowModelController extends InowasRestController
         $modelId = ModflowId::fromString($id);
         $userId = $this->getUserId();
 
-        if (! $this->get('inowas.modflowmodel.model_finder')->userHasReadAccessToModel($userId, $modelId)) {
+        if (!$this->get('inowas.modflowmodel.model_finder')->userHasReadAccessToModel($userId, $modelId)) {
             throw AccessDeniedException::withMessage(
                 sprintf(
                     'Model not found or user with Id %s does not have access to model with id %s',
@@ -231,7 +234,7 @@ class ModflowModelController extends InowasRestController
 
         $boundary = $this->get('inowas.modflowmodel.boundary_manager')->getBoundary($modelId, $boundaryId);
 
-        if (null === $boundary){
+        if (null === $boundary) {
             throw NotFoundException::withMessage(sprintf(
                 'ModflowModel with id: \'%s\' and BoundaryId \'%s\' not found.', $modelId->toString(), $boundaryId->toString()
             ));
@@ -271,7 +274,7 @@ class ModflowModelController extends InowasRestController
         $modelId = ModflowId::fromString($id);
         $userId = $this->getUserId();
 
-        if (! $this->get('inowas.modflowmodel.model_finder')->userHasReadAccessToModel($userId, $modelId)) {
+        if (!$this->get('inowas.modflowmodel.model_finder')->userHasReadAccessToModel($userId, $modelId)) {
             throw AccessDeniedException::withMessage(
                 sprintf(
                     'Model not found or user with Id %s does not have access to model with id %s',
@@ -313,7 +316,7 @@ class ModflowModelController extends InowasRestController
         $modelId = ModflowId::fromString($id);
         $userId = $this->getUserId();
 
-        if (! $this->get('inowas.modflowmodel.model_finder')->userHasReadAccessToModel($userId, $modelId)) {
+        if (!$this->get('inowas.modflowmodel.model_finder')->userHasReadAccessToModel($userId, $modelId)) {
             throw AccessDeniedException::withMessage(
                 sprintf(
                     'Model not found or user with Id %s does not have access to model with id %s',
@@ -357,7 +360,7 @@ class ModflowModelController extends InowasRestController
         $modelId = ModflowId::fromString($id);
         $userId = $this->getUserId();
 
-        if (! $this->get('inowas.modflowmodel.model_finder')->userHasReadAccessToModel($userId, $modelId)) {
+        if (!$this->get('inowas.modflowmodel.model_finder')->userHasReadAccessToModel($userId, $modelId)) {
             throw AccessDeniedException::withMessage(
                 sprintf(
                     'Model not found or user with Id %s does not have access to model with id %s',
@@ -388,6 +391,7 @@ class ModflowModelController extends InowasRestController
      * @return JsonResponse
      * @throws \InvalidArgumentException
      * @throws NotFoundException
+     * @throws \Exception
      */
     public function getModflowModelResultsAction(string $id): JsonResponse
     {
@@ -439,7 +443,7 @@ class ModflowModelController extends InowasRestController
 
         $userId = $this->getUserId();
 
-        if (! $this->get('inowas.modflowmodel.model_finder')->userHasReadAccessToModel($userId, $modelId)) {
+        if (!$this->get('inowas.modflowmodel.model_finder')->userHasReadAccessToModel($userId, $modelId)) {
             throw AccessDeniedException::withMessage(
                 sprintf(
                     'Model not found or user with Id %s does not have access to model with id %s',
@@ -490,7 +494,7 @@ class ModflowModelController extends InowasRestController
 
         $userId = $this->getUserId();
 
-        if (! $this->get('inowas.modflowmodel.model_finder')->userHasReadAccessToModel($userId, $modelId)) {
+        if (!$this->get('inowas.modflowmodel.model_finder')->userHasReadAccessToModel($userId, $modelId)) {
             throw AccessDeniedException::withMessage(
                 sprintf(
                     'Model not found or user with Id %s does not have access to model with id %s',
@@ -535,7 +539,7 @@ class ModflowModelController extends InowasRestController
         $modelId = ModflowId::fromString($id);
         $userId = $this->getUserId();
 
-        if (! $this->get('inowas.modflowmodel.model_finder')->userHasReadAccessToModel($userId, $modelId)) {
+        if (!$this->get('inowas.modflowmodel.model_finder')->userHasReadAccessToModel($userId, $modelId)) {
             throw AccessDeniedException::withMessage(
                 sprintf(
                     'Model not found or user with Id %s does not have access to model with id %s',
@@ -569,5 +573,52 @@ class ModflowModelController extends InowasRestController
         );
 
         return new JsonResponse($query);
+    }
+
+    /**
+     * Returns a model optimization.
+     *
+     * @ApiDoc(
+     *   resource = true,
+     *   description = "Returns a model optimization",
+     *   statusCodes = {
+     *     200 = "Returned when successful"
+     *   }
+     * )
+     *
+     * @param string $id
+     * @Rest\Get("/modflowmodels/{id}/optimization")
+     * @return JsonResponse
+     * @throws \LogicException
+     * @throws \Inowas\ModflowBundle\Exception\AccessDeniedException
+     * @throws \Inowas\ModflowBundle\Exception\UserNotAuthenticatedException
+     */
+    public function getModflowModelOptimizationAction(string $id): JsonResponse
+    {
+        $this->assertUuidIsValid($id);
+        $modelId = ModflowId::fromString($id);
+        $userId = $this->getUserId();
+
+        if (!$this->get('inowas.modflowmodel.model_finder')->userHasReadAccessToModel($userId, $modelId)) {
+            throw AccessDeniedException::withMessage(
+                sprintf(
+                    'Model not found or user with Id %s does not have access to model with id %s',
+                    $userId->toString(),
+                    $modelId->toString()
+                )
+            );
+        }
+
+        /** @var OptimizationFinder $optimizationFinder */
+        $optimizationFinder = $this->get('inowas.modflowmodel.optimization_finder');
+
+        /** @var Optimization $optimization */
+        $optimization = $optimizationFinder->getOptimization($modelId);
+
+        if (!$optimization instanceof Optimization) {
+            $optimization = Optimization::createEmpty()->toArray();
+        }
+
+        return new JsonResponse($optimization->toArray());
     }
 }
