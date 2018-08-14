@@ -18,6 +18,8 @@ use Inowas\Common\Modflow\LengthUnit;
 use Inowas\Common\Modflow\Mt3dms;
 use Inowas\Common\Modflow\Name;
 use Inowas\Common\Modflow\Description;
+use Inowas\Common\Modflow\OptimizationInput;
+use Inowas\Common\Modflow\OptimizationProgress;
 use Inowas\Common\Modflow\PackageName;
 use Inowas\Common\Modflow\ParameterName;
 use Inowas\Common\Modflow\StressPeriods;
@@ -50,6 +52,10 @@ use Inowas\ModflowModel\Model\Event\ModflowPackageParameterWasUpdated;
 use Inowas\ModflowModel\Model\Event\ModflowPackageWasUpdated;
 use Inowas\ModflowModel\Model\Event\Mt3dmsWasUpdated;
 use Inowas\ModflowModel\Model\Event\NameWasChanged;
+use Inowas\ModflowModel\Model\Event\OptimizationCalculationWasCanceled;
+use Inowas\ModflowModel\Model\Event\OptimizationCalculationWasStarted;
+use Inowas\ModflowModel\Model\Event\OptimizationProgressWasUpdated;
+use Inowas\ModflowModel\Model\Event\OptimizationInputWasUpdated;
 use Inowas\ModflowModel\Model\Event\SoilmodelMetadataWasUpdated;
 use Inowas\ModflowModel\Model\Event\ModflowModelWasCreated;
 use Inowas\ModflowModel\Model\Event\StressPeriodsWereUpdated;
@@ -141,28 +147,18 @@ class ModflowModelAggregate extends AggregateRoot
 
     public function addBoundary(UserId $userId, ModflowBoundary $boundary): void
     {
-        if (in_array($boundary->boundaryId()->toString(), $this->boundaries, true)) {
+        if (\in_array($boundary->boundaryId()->toString(), $this->boundaries, true)) {
             throw BoundaryNotFoundInModelException::withIds($this->modelId, $boundary->boundaryId());
         }
 
-        $this->recordThat(BoundaryWasAdded::byUserToModel(
-            $userId,
-            $this->modelId,
-            $boundary
-        ));
-
+        $this->recordThat(BoundaryWasAdded::byUserToModel($userId, $this->modelId, $boundary));
         $this->boundaries[] = $boundary->boundaryId()->toString();
     }
 
     public function removeBoundary(UserId $userId, BoundaryId $boundaryId): void
     {
-        if (in_array($boundaryId->toString(), $this->boundaries, true)){
-            $this->recordThat(BoundaryWasRemoved::byUserFromModel(
-                $userId,
-                $this->modelId,
-                $boundaryId
-            ));
-
+        if (\in_array($boundaryId->toString(), $this->boundaries, true)) {
+            $this->recordThat(BoundaryWasRemoved::byUserFromModel($userId, $this->modelId, $boundaryId));
             unset($this->boundaries[$boundaryId->toString()]);
             return;
         }
@@ -172,14 +168,8 @@ class ModflowModelAggregate extends AggregateRoot
 
     public function updateBoundary(UserId $userId, BoundaryId $boundaryId, ModflowBoundary $boundary): void
     {
-        if (in_array($boundaryId->toString(), $this->boundaries, true)){
-            $this->recordThat(BoundaryWasUpdated::byUserToModel(
-                $userId,
-                $this->modelId,
-                $boundaryId,
-                $boundary
-            ));
-
+        if (\in_array($boundaryId->toString(), $this->boundaries, true)) {
+            $this->recordThat(BoundaryWasUpdated::byUserToModel($userId, $this->modelId, $boundaryId, $boundary));
             return;
         }
 
@@ -320,7 +310,7 @@ class ModflowModelAggregate extends AggregateRoot
 
     public function preprocessingWasFinished(CalculationId $calculationId): void
     {
-        if ($this->calculationId->toString() !== $calculationId->toString()){
+        if ($this->calculationId->toString() !== $calculationId->toString()) {
             $this->calculationId = $calculationId;
             $this->recordThat(CalculationIdWasChanged::withId($this->modelId, $calculationId));
         }
@@ -380,6 +370,27 @@ class ModflowModelAggregate extends AggregateRoot
         ));
     }
 
+    /* Optimization related stuff */
+    public function calculateOptimization(UserId $userId, ModflowId $optimizationId): void
+    {
+        $this->recordThat(OptimizationCalculationWasStarted::byUserToModel($userId, $this->modelId, $optimizationId));
+    }
+
+    public function cancelOptimizationCalculation(UserId $userId, ModflowId $optimizationId): void
+    {
+        $this->recordThat(OptimizationCalculationWasCanceled::byUserToModel($userId, $this->modelId, $optimizationId));
+    }
+
+    public function updateOptimizationInput(UserId $userId, OptimizationInput $input): void
+    {
+        $this->recordThat(OptimizationInputWasUpdated::byUserToModel($userId, $this->modelId, $input));
+    }
+
+    public function updateOptimizationProgress(UserId $userId, OptimizationProgress $progress): void
+    {
+        $this->recordThat(OptimizationProgressWasUpdated::byUserToModel($userId, $this->modelId, $progress));
+    }
+
     /* Soilmodel-Related stuff */
     public function addLayer(UserId $userId, LayerId $id, LayerNumber $number, string $hash): void
     {
@@ -422,10 +433,12 @@ class ModflowModelAggregate extends AggregateRoot
     }
 
     protected function whenActiveCellsWereUpdated(ActiveCellsWereUpdated $event): void
-    {}
+    {
+    }
 
     protected function whenAreaGeometryWasUpdated(AreaGeometryWasUpdated $event): void
-    {}
+    {
+    }
 
     protected function whenBoundaryWasAdded(BoundaryWasAdded $event): void
     {
@@ -433,7 +446,8 @@ class ModflowModelAggregate extends AggregateRoot
     }
 
     protected function whenBoundaryWasUpdated(BoundaryWasUpdated $event): void
-    {}
+    {
+    }
 
     protected function whenBoundaryWasRemoved(BoundaryWasRemoved $event): void
     {
@@ -441,7 +455,8 @@ class ModflowModelAggregate extends AggregateRoot
     }
 
     protected function whenBoundingBoxWasChanged(BoundingBoxWasChanged $event): void
-    {}
+    {
+    }
 
     protected function whenCalculationIdWasChanged(CalculationIdWasChanged $event): void
     {
@@ -449,31 +464,63 @@ class ModflowModelAggregate extends AggregateRoot
     }
 
     protected function whenCalculationWasRequested(CalculationWasRequested $event): void
-    {}
+    {
+    }
 
     protected function whenCalculationWasFinished(CalculationWasFinished $event): void
-    {}
+    {
+    }
 
     protected function whenCalculationWasStarted(CalculationWasStarted $event): void
-    {}
+    {
+    }
 
     protected function whenDescriptionWasChanged(DescriptionWasChanged $event): void
-    {}
+    {
+    }
 
     protected function whenFlowPackageWasChanged(FlowPackageWasChanged $event): void
-    {}
+    {
+    }
 
     protected function whenGridSizeWasChanged(GridSizeWasChanged $event): void
-    {}
+    {
+    }
 
-    protected function whenLayerWasAdded(LayerWasAdded $event): void {}
+    /* Optimization */
+    protected function whenOptimizationCalculationWasCanceled(OptimizationCalculationWasCanceled $event): void
+    {
+    }
 
-    protected function whenLayerWasRemoved(LayerWasRemoved $event): void {}
+    protected function whenOptimizationCalculationWasStarted(OptimizationCalculationWasStarted $event): void
+    {
+    }
 
-    protected function whenLayerWasUpdated(LayerWasUpdated $event): void {}
+    protected function whenOptimizationProgressWasUpdated(OptimizationProgressWasUpdated $event): void
+    {
+    }
+
+    protected function whenOptimizationInputWasUpdated(OptimizationInputWasUpdated $event): void
+    {
+    }
+
+    /* Soilmodel */
+
+    protected function whenLayerWasAdded(LayerWasAdded $event): void
+    {
+    }
+
+    protected function whenLayerWasRemoved(LayerWasRemoved $event): void
+    {
+    }
+
+    protected function whenLayerWasUpdated(LayerWasUpdated $event): void
+    {
+    }
 
     protected function whenLengthUnitWasUpdated(LengthUnitWasUpdated $event): void
-    {}
+    {
+    }
 
     protected function whenModflowModelWasCloned(ModflowModelWasCloned $event): void
     {
@@ -492,31 +539,40 @@ class ModflowModelAggregate extends AggregateRoot
     }
 
     protected function whenModflowModelWasDeleted(ModflowModelWasDeleted $event): void
-    {}
+    {
+    }
 
     protected function whenModflowPackageParameterWasUpdated(ModflowPackageParameterWasUpdated $event): void
-    {}
+    {
+    }
 
     protected function whenModflowPackageWasUpdated(ModflowPackageWasUpdated $event): void
-    {}
+    {
+    }
 
     protected function whenMt3dmsWasUpdated(Mt3dmsWasUpdated $event): void
-    {}
+    {
+    }
 
     protected function whenNameWasChanged(NameWasChanged $event): void
-    {}
+    {
+    }
 
     protected function whenSoilmodelMetadataWasUpdated(SoilmodelMetadataWasUpdated $event): void
-    {}
+    {
+    }
 
     protected function whenStressPeriodsWereUpdated(StressPeriodsWereUpdated $event): void
-    {}
+    {
+    }
 
     protected function whenTimeUnitWasUpdated(TimeUnitWasUpdated $event): void
-    {}
+    {
+    }
 
     protected function whenVisibilityWasChanged(VisibilityWasChanged $event): void
-    {}
+    {
+    }
 
     protected function aggregateId(): string
     {
@@ -526,18 +582,18 @@ class ModflowModelAggregate extends AggregateRoot
     protected function apply(AggregateChanged $e): void
     {
         $handler = $this->determineEventHandlerMethodFor($e);
-        if (! method_exists($this, $handler)) {
+        if (!method_exists($this, $handler)) {
             throw new \RuntimeException(sprintf(
                 'Missing event handler method %s for aggregate root %s',
                 $handler,
-                get_class($this)
+                \get_class($this)
             ));
         }
         $this->{$handler}($e);
     }
 
-    protected function determineEventHandlerMethodFor(AggregateChanged $e)
+    protected function determineEventHandlerMethodFor(AggregateChanged $e): string
     {
-        return 'when' . implode(array_slice(explode('\\', get_class($e)), -1));
+        return 'when' . implode(\array_slice(explode('\\', \get_class($e)), -1));
     }
 }

@@ -2,7 +2,7 @@
 
 namespace Inowas\ModflowModel\Service;
 
-use Inowas\ModflowModel\Model\AMQP\ModflowCalculationRequest;
+use Inowas\Common\Calculation\ModflowCalculationRequest;
 use PhpAmqpLib\Connection\AMQPStreamConnection;
 use PhpAmqpLib\Message\AMQPMessage;
 

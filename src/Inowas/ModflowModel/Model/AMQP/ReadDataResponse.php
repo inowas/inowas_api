@@ -8,14 +8,14 @@ use Inowas\Common\Status\StatusCode;
 
 class ReadDataResponse
 {
-    const REQUEST_TYPE_LAYER_DATA = 'layerdata';
-    const REQUEST_TYPE_TIME_SERIES = 'timeseries';
+    public const REQUEST_TYPE_LAYER_DATA = 'layerdata';
+    public const REQUEST_TYPE_TIME_SERIES = 'timeseries';
 
-    const DATA_TYPE_HEAD = 'head';
-    const DATA_TYPE_DRAWDOWN = 'drawdown';
-    const DATA_TYPE_budget = 'budget';
+    public const DATA_TYPE_HEAD = 'head';
+    public const DATA_TYPE_DRAWDOWN = 'drawdown';
+    public const DATA_TYPE_budget = 'budget';
 
-    const VERSION = '3.2.6';
+    public const VERSION = '3.2.6';
 
     protected $data = [];
 
@@ -28,11 +28,11 @@ class ReadDataResponse
         $self = new self();
         $self->statusCode = StatusCode::fromInt((int)$obj->status_code);
 
-        if ($self->statusCode->ok()){
-            if (property_exists($obj->request,'timeseries')) {
+        if ($self->statusCode->ok()) {
+            if (property_exists($obj->request, 'timeseries')) {
                 $timeSeries = [];
                 $data = $obj->response;
-                foreach ($data as $dataSet){
+                foreach ($data as $dataSet) {
                     $key = (int)$dataSet[0];
                     $value = (float)$dataSet[1];
                     $timeSeries[$key] = $value;

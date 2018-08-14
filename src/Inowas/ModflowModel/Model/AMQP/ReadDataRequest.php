@@ -12,20 +12,29 @@ use Inowas\Common\Modflow\Extension;
 
 class ReadDataRequest implements \JsonSerializable
 {
-    const REQUEST_TYPE_LAYER_DATA = 'layerdata';
-    const REQUEST_TYPE_TIME_SERIES = 'timeseries';
-    const REQUEST_TYPE_FILE_LIST = 'filelist';
-    const REQUEST_TYPE_FILE = 'file';
+    public const REQUEST_TYPE_LAYER_DATA = 'layerdata';
+    public const REQUEST_TYPE_TIME_SERIES = 'timeseries';
+    public const REQUEST_TYPE_FILE_LIST = 'filelist';
+    public const REQUEST_TYPE_FILE = 'file';
 
-    const DATA_TYPE_HEAD = 'head';
-    const DATA_TYPE_DRAWDOWN = 'drawdown';
-    const DATA_TYPE_budget = 'budget';
+    public const DATA_TYPE_HEAD = 'head';
+    public const DATA_TYPE_DRAWDOWN = 'drawdown';
+    public const DATA_TYPE_budget = 'budget';
 
-    const VERSION = '3.2.6';
+    public const VERSION = '3.2.6';
 
-    /** @var \stdClass  */
+    /** @var \stdClass */
     private $data;
 
+
+    /**
+     * @noinspection MoreThanThreeArgumentsInspection
+     * @param CalculationId $calculationId
+     * @param ResultType $dataType
+     * @param TotalTime $totim
+     * @param LayerNumber $layer
+     * @return ReadDataRequest
+     */
     public static function forLayerData(CalculationId $calculationId, ResultType $dataType, TotalTime $totim, LayerNumber $layer): ReadDataRequest
     {
         $arr = array();
@@ -45,6 +54,15 @@ class ReadDataRequest implements \JsonSerializable
         return $self;
     }
 
+    /**
+     * @noinspection MoreThanThreeArgumentsInspection
+     * @param CalculationId $calculationId
+     * @param ResultType $dataType
+     * @param LayerNumber $layer
+     * @param Nrow $ny
+     * @param Ncol $nx
+     * @return ReadDataRequest
+     */
     public static function forTimeSeries(CalculationId $calculationId, ResultType $dataType, LayerNumber $layer, Nrow $ny, Ncol $nx): ReadDataRequest
     {
         $arr = array();

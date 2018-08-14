@@ -4,16 +4,16 @@ namespace Inowas\Common\Modflow;
 
 use Inowas\ModflowModel\Model\Exception\InvalidJsonException;
 
-class Mt3dms
+class OptimizationResults
 {
     /** @var array */
     private $data;
 
     /**
      * @param string $json
-     * @return Mt3dms
+     * @return self
      */
-    public static function fromJson(string $json): Mt3dms
+    public static function fromJson(string $json): self
     {
         $decoded = json_decode($json, true);
         if (false === $decoded) {
@@ -25,18 +25,18 @@ class Mt3dms
 
     /**
      * @param array $data
-     * @return Mt3dms
+     * @return self
      */
-    public static function fromArray(array $data): Mt3dms
+    public static function fromArray(array $data): self
     {
         return new self($data);
     }
 
     /**
      * @param string|null $data
-     * @return Mt3dms
+     * @return self
      */
-    public static function fromDB($data): Mt3dms
+    public static function fromDB($data): self
     {
         if (null === $data) {
             return new self($data);
@@ -46,7 +46,7 @@ class Mt3dms
     }
 
     /**
-     * Mt3dms constructor.
+     * Optimization constructor.
      * @param $data
      */
     private function __construct($data)
@@ -78,13 +78,13 @@ class Mt3dms
         return json_encode($this->data);
     }
 
-    public function sameAs($mt3dms): bool
+    public function sameAs($data): bool
     {
-        if (!$mt3dms instanceof self) {
+        if (!$data instanceof self) {
             return false;
         }
 
         /** @noinspection TypeUnsafeComparisonInspection */
-        return $mt3dms->data() == $this->data();
+        return $data->data() == $this->data();
     }
 }

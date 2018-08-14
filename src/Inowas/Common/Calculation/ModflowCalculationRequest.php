@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Inowas\ModflowModel\Model\AMQP;
+namespace Inowas\Common\Calculation;
 
 use Inowas\Common\Id\ModflowId;
 use Inowas\Common\Id\UserId;
