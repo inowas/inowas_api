@@ -35,7 +35,7 @@ class OptimizationState
     /**
      * @return int
      */
-    public function state(): int
+    public function toInt(): int
     {
         return $this->state;
     }

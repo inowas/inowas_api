@@ -9,7 +9,7 @@ use Inowas\ModflowModel\Service\AMQPModflowCalculation;
 use Inowas\ModflowModel\Service\ModflowPackagesManager;
 use Prooph\Common\Messaging\DomainEvent;
 
-class CalculationWasStartedListener
+class ModflowCalculationListener
 {
     /** @var  AMQPModflowCalculation */
     private $calculator;
@@ -20,8 +20,10 @@ class CalculationWasStartedListener
     /**
      * CalculationWasStartedListener constructor.
      * @param AMQPFlopyCalculation $calculator
+     * @param ModflowPackagesManager $packagesManager
      */
-    public function __construct(AMQPFlopyCalculation $calculator, ModflowPackagesManager $packagesManager){
+    public function __construct(AMQPFlopyCalculation $calculator, ModflowPackagesManager $packagesManager)
+    {
         $this->calculator = $calculator;
         $this->packagesManager = $packagesManager;
     }
@@ -36,18 +38,18 @@ class CalculationWasStartedListener
     public function onEvent(DomainEvent $e): void
     {
         $handler = $this->determineEventMethodFor($e);
-        if (! method_exists($this, $handler)) {
+        if (!method_exists($this, $handler)) {
             throw new \RuntimeException(sprintf(
                 'Missing event method %s for projector %s',
                 $handler,
-                get_class($this)
+                \get_class($this)
             ));
         }
         $this->{$handler}($e);
     }
 
-    protected function determineEventMethodFor(DomainEvent $e)
+    protected function determineEventMethodFor(DomainEvent $e): string
     {
-        return 'on' . implode(array_slice(explode('\\', get_class($e)), -1));
+        return 'on' . implode(\array_slice(explode('\\', \get_class($e)), -1));
     }
 }

@@ -7,26 +7,25 @@ namespace Inowas\ModflowModel\Model\Command;
 use Inowas\Common\Command\AbstractJsonSchemaCommand;
 use Inowas\Common\Id\ModflowId;
 use Inowas\Common\Id\UserId;
-use Inowas\Common\Modflow\Optimization;
 
 class CalculateOptimization extends AbstractJsonSchemaCommand
 {
     /**
      * @param UserId $userId
      * @param ModflowId $modelId
-     * @param Optimization $optimization
+     * @param ModflowId $optimizationId
      * @return self
-     * @throws \League\JsonGuard\Exception\MaximumDepthExceededException
-     * @throws \League\JsonGuard\Exception\InvalidSchemaException
-     * @throws \InvalidArgumentException
-     * @throws \Inowas\Common\Exception\JsonSchemaValidationFailedException
      */
-    public static function forModflowModel(UserId $userId, ModflowId $modelId, Optimization $optimization): self
+    public static function forModflowModel(UserId $userId, ModflowId $modelId, ModflowId $optimizationId = null): self
     {
+        if (null === $optimizationId) {
+            $optimizationId = $modelId;
+        }
+
         $self = new static(
             array(
                 'id' => $modelId->toString(),
-                'optimization_id' => $optimization->toArray()
+                'optimization_id' => $optimizationId->toString()
             )
         );
 

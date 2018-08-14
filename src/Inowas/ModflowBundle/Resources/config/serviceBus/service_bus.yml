@@ -129,7 +129,7 @@ parameters:
             'Inowas\ModflowModel\Model\Event\CalculationWasStarted':
             - 'inowas.modflowmodel.blackhole_projector'
             - 'inowas.modflowmodel.calculation_results_projector'
-            - 'inowas.modflowmodel.calculation_was_started_listener'
+            - 'inowas.modflowmodel.modflow_calculation_listener'
 
             'Inowas\ModflowModel\Model\Event\DescriptionWasChanged':
             - 'inowas.modflowmodel.blackhole_projector'

@@ -24,6 +24,7 @@ use Inowas\Common\Modflow\ModflowModel;
 use Inowas\Common\Modflow\Name;
 use Inowas\Common\Modflow\Optimization;
 use Inowas\Common\Modflow\OptimizationInput;
+use Inowas\Common\Modflow\OptimizationState;
 use Inowas\Common\Modflow\PackageName;
 use Inowas\Common\Modflow\ParameterName;
 use Inowas\Common\Modflow\StressPeriod;
@@ -33,6 +34,8 @@ use Inowas\Common\Modflow\Version;
 use Inowas\Common\Status\Visibility;
 use Inowas\ModflowModel\Model\Command\AddBoundary;
 use Inowas\ModflowModel\Model\Command\AddLayer;
+use Inowas\ModflowModel\Model\Command\CalculateOptimization;
+use Inowas\ModflowModel\Model\Command\CancelOptimizationCalculation;
 use Inowas\ModflowModel\Model\Command\ChangeBoundingBox;
 use Inowas\ModflowModel\Model\Command\ChangeFlowPackage;
 use Inowas\ModflowModel\Model\Command\ChangeGridSize;
@@ -902,16 +905,13 @@ class ModflowModelEventSourcingTest extends EventSourcingBaseTest
      * @test
      * @throws \Exception
      */
-    public function it_creates_an_optimization(): void
+    public function it_creates_an_optimization_and_writes_to_projection(): void
     {
         $ownerId = UserId::generate();
         $modelId = ModflowId::generate();
         $this->createModelWithOneLayer($ownerId, $modelId);
 
-        $optimizationInput = OptimizationInput::fromArray([
-            '123' => 456,
-            '789' => 111
-        ]);
+        $optimizationInput = OptimizationInput::fromArray(['123' => 456, '789' => 111]);
 
         $this->commandBus->dispatch(UpdateOptimizationInput::forModflowModel($ownerId, $modelId, $optimizationInput));
         $optimizationFinder = $this->container->get('inowas.modflowmodel.optimization_finder');
@@ -919,6 +919,19 @@ class ModflowModelEventSourcingTest extends EventSourcingBaseTest
         $this->assertInstanceOf(Optimization::class, $optimization);
         $this->assertEquals($optimizationInput, $optimization->input());
 
+        $changedOptimizationInput = OptimizationInput::fromArray(['456' => 456, '789' => 111]);
+        $this->commandBus->dispatch(UpdateOptimizationInput::forModflowModel($ownerId, $modelId, $changedOptimizationInput));
+        $optimization = $optimizationFinder->getOptimization($modelId);
+        $this->assertInstanceOf(Optimization::class, $optimization);
+        $this->assertEquals($changedOptimizationInput, $optimization->input());
+
+        $this->commandBus->dispatch(CalculateOptimization::forModflowModel($ownerId, $modelId, $modelId));
+        $optimization = $optimizationFinder->getOptimization($modelId);
+        $this->assertEquals(OptimizationState::STARTED_BY_USER, $optimization->state()->toInt());
+
+        $this->commandBus->dispatch(CancelOptimizationCalculation::forModflowModel($ownerId, $modelId));
+        $optimization = $optimizationFinder->getOptimization($modelId);
+        $this->assertEquals(OptimizationState::CANCELED_BY_USER, $optimization->state()->toInt());
     }
 
     /**

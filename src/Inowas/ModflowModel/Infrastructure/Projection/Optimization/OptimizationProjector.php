@@ -14,7 +14,6 @@ use Inowas\ModflowModel\Model\Event\OptimizationCalculationWasStarted;
 use Inowas\ModflowModel\Model\Event\OptimizationProgressWasUpdated;
 use Inowas\ModflowModel\Model\Event\OptimizationInputWasUpdated;
 
-
 class OptimizationProjector extends AbstractDoctrineConnectionProjector
 {
     public function __construct(Connection $connection)
@@ -55,17 +54,19 @@ class OptimizationProjector extends AbstractDoctrineConnectionProjector
             ['model_id' => $event->modelId()->toString()]
         );
 
-        if ($result && $result['count'] > 0) {
+        if ($result['count'] === 0) {
+            $this->connection->insert(Table::OPTIMIZATIONS, [
+                'model_id' => $event->modelId()->toString(),
+                'input' => $event->input()->toJson()
+            ]);
+        }
+
+        if ($result['count'] === 1) {
             $this->connection->update(Table::OPTIMIZATIONS,
                 ['input' => $event->input()->toJson()],
                 ['model_id' => $event->modelId()->toString()]
             );
         }
-
-        $this->connection->insert(Table::OPTIMIZATIONS, array(
-            'model_id' => $event->modelId()->toString(),
-            'input' => $event->input()->toJson()
-        ));
     }
 
     public function onOptimizationCalculationWasStarted(OptimizationCalculationWasStarted $event): void

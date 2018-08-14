@@ -77,7 +77,7 @@ class Optimization
     {
         return [
             'input' => $this->input->toArray(),
-            'state' => $this->state->state(),
+            'state' => $this->state->toInt(),
             'progress' => $this->progress->toArray(),
             'result' => $this->results->toArray()
         ];
