@@ -5,6 +5,7 @@ namespace Tests\Inowas\Modflow\Model\Packages;
 use Inowas\Common\Grid\BoundingBox;
 use Inowas\Common\Grid\Distance;
 use Inowas\Common\Grid\GridSize;
+use Inowas\Common\Modflow\Mt3dms;
 use Inowas\Common\Modflow\PackageName;
 use Inowas\Common\Modflow\TimeUnit;
 use Inowas\Common\Modflow\Unitnumber;
@@ -31,11 +32,13 @@ class ModflowConfigurationTest extends \PHPUnit_Framework_TestCase
         $packages = ModflowPackages::createFromDefaults();
         $json = json_encode($packages);
         $this->assertJson($json);
-
         $packages = ModflowPackages::fromArray(json_decode($json, true));
         $this->assertInstanceOf(ModflowPackages::class, $packages);
     }
 
+    /**
+     * @throws \Exception
+     */
     public function test_update_default_time_unit(): void
     {
         $packages = ModflowPackages::createFromDefaults();
@@ -43,7 +46,7 @@ class ModflowConfigurationTest extends \PHPUnit_Framework_TestCase
         $json = json_encode($packages);
         $this->assertJson($json);
         $arr = json_decode($json, true);
-        $this->assertEquals(1, $arr['dis']['itmuni']);
+        $this->assertEquals(1, $arr['mf']['dis']['itmuni']);
     }
 
     public function test_update_time_unit_with_update_param_function(): void
@@ -53,13 +56,16 @@ class ModflowConfigurationTest extends \PHPUnit_Framework_TestCase
         $json = json_encode($packages);
         $this->assertJson($json);
         $arr = json_decode($json, true);
-        $this->assertEquals(2, $arr['dis']['itmuni']);
+        $this->assertEquals(2, $arr['mf']['dis']['itmuni']);
     }
 
+    /**
+     * @throws \Exception
+     */
     public function test_gridsize_has_same_size_as_ibound(): void
     {
-        $gridsize = GridSize::fromXY(40,50);
-        $boundingBox = BoundingBox::fromCoordinates(10,20,30,40);
+        $gridsize = GridSize::fromXY(40, 50);
+        $boundingBox = BoundingBox::fromCoordinates(10, 20, 30, 40);
         $packages = ModflowPackages::createFromDefaults();
         $dx = Distance::fromMeters(1000);
         $dy = Distance::fromMeters(10000);
@@ -81,5 +87,14 @@ class ModflowConfigurationTest extends \PHPUnit_Framework_TestCase
         $this->assertTrue($packages->isSelected(PackageName::fromString('wel')));
         $packages->unSelectBoundaryPackage(PackageName::fromString('wel'));
         $this->assertFalse($packages->isSelected(PackageName::fromString('wel')));
+    }
+
+    public function test_add_mt3dms(): void
+    {
+        $packages = ModflowPackages::createFromDefaults();
+        $mt3dms = Mt3dms::fromArray(['enabled' => true, 'xyz' => 'abc']);
+        $packages->setMt3dms($mt3dms);
+        $this->assertTrue($packages->isSelected(PackageName::fromString('lmt')));
+        $this->assertEquals($mt3dms->toArray(), $packages->packageData()['mt']);
     }
 }

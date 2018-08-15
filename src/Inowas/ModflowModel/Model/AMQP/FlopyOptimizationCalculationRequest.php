@@ -40,10 +40,8 @@ class FlopyOptimizationCalculationRequest implements \JsonSerializable
             'model_id' => $this->modelId->toString(),
             'type' => $this->type,
             'version' => $this->packages->version(),
-            'data' => [
-                'mf' => $this->packages->toArray(),
-                'optimization' => $this->optimizationInput->toArray()
-            ]
+            'data' => $this->packages->toArray(),
+            'optimization' => $this->optimizationInput->toArray()
         );
     }
 }

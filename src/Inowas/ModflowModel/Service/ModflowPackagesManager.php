@@ -11,6 +11,7 @@ use Inowas\Common\Boundaries\WellBoundary;
 use Inowas\Common\Id\CalculationId;
 use Inowas\Common\Id\ModflowId;
 use Inowas\Common\Modflow\Ibound;
+use Inowas\Common\Modflow\Mt3dms;
 use Inowas\Common\Modflow\PackageName;
 use Inowas\Common\Modflow\StressPeriods;
 use Inowas\Common\Modflow\Strt;
@@ -345,7 +346,21 @@ class ModflowPackagesManager
         }
 
         $packages = $this->calculateBoundariesAndObservations($modelId, $stressPeriods, $packages);
+        $packages = $this->setMt3Dms($modelId, $packages);
 
+        return $packages;
+    }
+
+    private function setMt3Dms(ModflowId $modelId, ModflowPackages $packages): ModflowPackages
+    {
+        $mt3dms = $this->modflowModelManager->getMt3dmsByModelId($modelId);
+
+        if ($mt3dms instanceof Mt3dms && $mt3dms->enabled()) {
+            $packages->setMt3dms($mt3dms);
+            return $packages;
+        }
+
+        $packages->unsetMt3dms();
         return $packages;
     }
 

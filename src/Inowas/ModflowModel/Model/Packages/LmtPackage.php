@@ -16,10 +16,10 @@ use Inowas\Common\Modflow\Unitnumber;
  * Class LmfPackage
  * @package Inowas\ModflowModel\Model\Packages
  */
-class LmfPackage extends AbstractPackage
+class LmtPackage extends AbstractPackage
 {
     /** @var string */
-    public const TYPE = 'lmf';
+    public const TYPE = 'lmt';
 
     /** @var string */
     public const DESCRIPTION = 'MODFLOW Link-MT3DMS Package';
@@ -49,9 +49,9 @@ class LmfPackage extends AbstractPackage
     private $filenames;
 
     /**
-     * @return LmfPackage
+     * @return self
      */
-    public static function fromDefaults(): LmfPackage
+    public static function fromDefaults(): self
     {
         return new self(
             FileName::fromString('mt3d_link.ftl'),
@@ -77,7 +77,7 @@ class LmfPackage extends AbstractPackage
      * @param Unitnumber $unitnumber
      * @param Filenames $filenames
      *
-     * @return LmfPackage
+     * @return self
      */
     public static function fromParams(
         Filename $outputFileName,
@@ -88,7 +88,7 @@ class LmfPackage extends AbstractPackage
         PackageFlows $packageFlows,
         Unitnumber $unitnumber,
         Filenames $filenames
-    ): LmfPackage
+    ): self
     {
         return new self(
             $outputFileName,
@@ -104,9 +104,9 @@ class LmfPackage extends AbstractPackage
 
     /**
      * @param array $arr
-     * @return LmfPackage
+     * @return LmtPackage
      */
-    public static function fromArray(array $arr): LmfPackage
+    public static function fromArray(array $arr): LmtPackage
     {
         return new self(
             FileName::fromString($arr['output_file_name']),
@@ -218,9 +218,9 @@ class LmfPackage extends AbstractPackage
 
     /**
      * @param FileName $outputFileName
-     * @return LmfPackage
+     * @return LmtPackage
      */
-    public function updateOutputFileName(FileName $outputFileName): LmfPackage
+    public function updateOutputFileName(FileName $outputFileName): LmtPackage
     {
         $package = self::fromArray($this->toArray());
         $package->outputFileName = $outputFileName;
@@ -229,9 +229,9 @@ class LmfPackage extends AbstractPackage
 
     /**
      * @param Unitnumber $outputFileUnit
-     * @return LmfPackage
+     * @return LmtPackage
      */
-    public function updateOutputFileUnit(Unitnumber $outputFileUnit): LmfPackage
+    public function updateOutputFileUnit(Unitnumber $outputFileUnit): LmtPackage
     {
         $package = self::fromArray($this->toArray());
         $package->outputFileUnit = $outputFileUnit;
@@ -240,9 +240,9 @@ class LmfPackage extends AbstractPackage
 
     /**
      * @param FileHeader $outputFileHeader
-     * @return LmfPackage
+     * @return LmtPackage
      */
-    public function updateOutputFileHeader(FileHeader $outputFileHeader): LmfPackage
+    public function updateOutputFileHeader(FileHeader $outputFileHeader): LmtPackage
     {
         $package = self::fromArray($this->toArray());
         $package->outputFileHeader = $outputFileHeader;
@@ -251,9 +251,9 @@ class LmfPackage extends AbstractPackage
 
     /**
      * @param FileFormat $outputFileFormat
-     * @return LmfPackage
+     * @return LmtPackage
      */
-    public function updateOutputFileFormat(FileFormat $outputFileFormat): LmfPackage
+    public function updateOutputFileFormat(FileFormat $outputFileFormat): LmtPackage
     {
         $package = self::fromArray($this->toArray());
         $package->outputFileFormat = $outputFileFormat;
@@ -262,9 +262,9 @@ class LmfPackage extends AbstractPackage
 
     /**
      * @param Extension $extension
-     * @return LmfPackage
+     * @return LmtPackage
      */
-    public function updateExtension(Extension $extension): LmfPackage
+    public function updateExtension(Extension $extension): LmtPackage
     {
         $package = self::fromArray($this->toArray());
         $package->extension = $extension;
@@ -273,9 +273,9 @@ class LmfPackage extends AbstractPackage
 
     /**
      * @param PackageFlows $packageFlows
-     * @return LmfPackage
+     * @return LmtPackage
      */
-    public function updatePackageFlows(PackageFlows $packageFlows): LmfPackage
+    public function updatePackageFlows(PackageFlows $packageFlows): LmtPackage
     {
         $package = self::fromArray($this->toArray());
         $package->packageFlows = $packageFlows;
@@ -284,9 +284,9 @@ class LmfPackage extends AbstractPackage
 
     /**
      * @param Unitnumber $unitnumber
-     * @return LmfPackage
+     * @return LmtPackage
      */
-    public function updateUnitnumber(Unitnumber $unitnumber): LmfPackage
+    public function updateUnitnumber(Unitnumber $unitnumber): LmtPackage
     {
         $package = self::fromArray($this->toArray());
         $package->unitnumber = $unitnumber;
@@ -295,9 +295,9 @@ class LmfPackage extends AbstractPackage
 
     /**
      * @param Filenames $filenames
-     * @return LmfPackage
+     * @return LmtPackage
      */
-    public function updateFilenames(Filenames $filenames): LmfPackage
+    public function updateFilenames(Filenames $filenames): LmtPackage
     {
         $package = self::fromArray($this->toArray());
         $package->filenames = $filenames;

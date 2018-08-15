@@ -773,10 +773,10 @@ class ModflowModelEventSourcingTest extends EventSourcingBaseTest
 
         $this->assertTrue($packages->isSelected(PackageName::fromString('lpf')));
 
-        $packages = json_decode(json_encode($packages), true);
-        $this->assertArrayHasKey('lpf', $packages);
-        $this->assertArrayHasKey('laytyp', $packages['lpf']);
-        $this->assertEquals([0], $packages['lpf']['laytyp']);
+        $mfPackages = json_decode(json_encode($packages), true)['mf'];
+        $this->assertArrayHasKey('lpf', $mfPackages);
+        $this->assertArrayHasKey('laytyp', $mfPackages['lpf']);
+        $this->assertEquals([0], $mfPackages['lpf']['laytyp']);
     }
 
     /**
@@ -796,10 +796,10 @@ class ModflowModelEventSourcingTest extends EventSourcingBaseTest
         $packages = $this->container->get('inowas.modflowmodel.modflow_packages_manager')->getPackages($calculationId);
         $this->assertTrue($packages->isSelected(PackageName::fromString('lpf')));
 
-        $packages = json_decode(json_encode($packages), true);
-        $this->assertArrayHasKey('lpf', $packages);
-        $this->assertArrayHasKey('laywet', $packages['lpf']);
-        $this->assertEquals([1], $packages['lpf']['laywet']);
+        $mfPackages = json_decode(json_encode($packages), true)['mf'];
+        $this->assertArrayHasKey('lpf', $mfPackages);
+        $this->assertArrayHasKey('laywet', $mfPackages['lpf']);
+        $this->assertEquals([1], $mfPackages['lpf']['laywet']);
     }
 
     /**
@@ -819,8 +819,8 @@ class ModflowModelEventSourcingTest extends EventSourcingBaseTest
         $packages = $this->container->get('inowas.modflowmodel.modflow_packages_manager')->getPackages($calculationId);
         $this->assertTrue($packages->isSelected(PackageName::fromString('upw')));
 
-        $packages = json_decode(json_encode($packages), true);
-        $this->assertArrayHasKey('upw', $packages);
+        $mfPackages = json_decode(json_encode($packages), true)['mf'];
+        $this->assertArrayHasKey('upw', $mfPackages);
     }
 
     /**
@@ -846,9 +846,9 @@ class ModflowModelEventSourcingTest extends EventSourcingBaseTest
         $packages = $this->container->get('inowas.modflowmodel.modflow_packages_manager')->getPackages($calculationId);
         $this->assertTrue($packages->isSelected(PackageName::fromString('mf')));
 
-        $packages = json_decode(json_encode($packages), true);
-        $this->assertArrayHasKey('mf', $packages);
-        $this->assertEquals('mfnwt', $packages['mf']['version']);
+        $mfPackages = json_decode(json_encode($packages), true)['mf'];
+        $this->assertArrayHasKey('mf', $mfPackages);
+        $this->assertEquals('mfnwt', $mfPackages['mf']['version']);
     }
 
     /**
@@ -927,11 +927,11 @@ class ModflowModelEventSourcingTest extends EventSourcingBaseTest
 
         $this->commandBus->dispatch(CalculateOptimization::forModflowModel($ownerId, $modelId, $modelId));
         $optimization = $optimizationFinder->getOptimization($modelId);
-        $this->assertEquals(OptimizationState::STARTED_BY_USER, $optimization->state()->toInt());
+        $this->assertEquals(OptimizationState::STARTED, $optimization->state()->toInt());
 
         $this->commandBus->dispatch(CancelOptimizationCalculation::forModflowModel($ownerId, $modelId));
         $optimization = $optimizationFinder->getOptimization($modelId);
-        $this->assertEquals(OptimizationState::CANCELED_BY_USER, $optimization->state()->toInt());
+        $this->assertEquals(OptimizationState::CANCELLED, $optimization->state()->toInt());
     }
 
     /**

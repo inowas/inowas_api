@@ -375,4 +375,13 @@ class ModflowModelManager
         $gridSize = $this->modelFinder->getGridSizeByModflowModelId($modelId);
         return $this->geoTools->calculateActiveCellsFromGeometryAndAffectedLayers($geometry, $affectedLayers, $boundingBox, $gridSize);
     }
+
+    /**
+     * @param ModflowId $modelId
+     * @return Mt3dms|null
+     */
+    public function getMt3dmsByModelId(ModflowId $modelId): ?Mt3dms
+    {
+        return $this->modelFinder->getMt3dmsByModelId($modelId);
+    }
 }

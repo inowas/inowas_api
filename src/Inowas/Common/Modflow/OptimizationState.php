@@ -5,11 +5,12 @@ namespace Inowas\Common\Modflow;
 
 class OptimizationState
 {
-    public const STARTED_BY_USER = 1;
+    public const NEW = 0;
+    public const STARTED = 1;
     public const CALCULATING = 2;
-    public const FINISHED = 2;
-    public const CANCELED_BY_USER = 11;
-    public const STOPPED = 12;
+    public const FINISHED = 3;
+    public const CANCELLING = 11;
+    public const CANCELLED = 12;
 
     /** @var int */
     private $state;
@@ -24,7 +25,7 @@ class OptimizationState
     }
 
     /**
-     * Optimization constructor.
+     * Optimization constructor. 
      * @param $state
      */
     private function __construct($state)

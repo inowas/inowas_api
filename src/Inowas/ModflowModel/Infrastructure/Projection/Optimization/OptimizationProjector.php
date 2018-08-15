@@ -78,7 +78,7 @@ class OptimizationProjector extends AbstractDoctrineConnectionProjector
 
         if ($result && $result['count'] > 0) {
             $this->connection->update(Table::OPTIMIZATIONS,
-                ['state' => OptimizationState::STARTED_BY_USER],
+                ['state' => OptimizationState::STARTED],
                 ['model_id' => $event->modelId()->toString()]
             );
         }
@@ -93,7 +93,7 @@ class OptimizationProjector extends AbstractDoctrineConnectionProjector
 
         if ($result && $result['count'] > 0) {
             $this->connection->update(Table::OPTIMIZATIONS,
-                ['state' => OptimizationState::CANCELED_BY_USER],
+                ['state' => OptimizationState::CANCELLED],
                 ['model_id' => $event->modelId()->toString()]
             );
         }

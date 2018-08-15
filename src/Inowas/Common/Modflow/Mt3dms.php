@@ -62,6 +62,15 @@ class Mt3dms
         return $this->data;
     }
 
+    public function enabled(): bool
+    {
+        if (\array_key_exists('enabled', $this->data)) {
+            return $this->data['enabled'];
+        }
+
+        return false;
+    }
+
     /**
      * @return array|null
      */
