@@ -21,8 +21,9 @@ class DescriptionWasChanged extends AggregateChanged
     /** @var  UserId */
     private $userId;
 
-    public static function withDescription(UserId $userId, ModflowId $modflowModelId, Description $description): DescriptionWasChanged
+    public static function withDescription(UserId $userId, ModflowId $modflowModelId, Description $description): self
     {
+        /** @var self $event */
         $event = self::occur(
             $modflowModelId->toString(), [
                 'user_id' => $userId->toString(),

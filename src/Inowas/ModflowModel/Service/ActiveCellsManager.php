@@ -13,7 +13,6 @@ use Inowas\GeoTools\Service\GeoTools;
 use Inowas\ModflowModel\Infrastructure\Projection\ActiveCells\ActiveCellsFinder;
 use Inowas\ModflowModel\Infrastructure\Projection\ModelList\ModelFinder;
 
-
 class ActiveCellsManager
 {
 
@@ -43,6 +42,11 @@ class ActiveCellsManager
     }
 
 
+    /**
+     * @param ModflowId $modelId
+     * @return ActiveCells
+     * @throws \exception
+     */
     public function getAreaActiveCells(ModflowId $modelId): ActiveCells
     {
         $activeCells = $this->activeCellsFinder->findAreaActiveCells($modelId);
@@ -55,6 +59,12 @@ class ActiveCellsManager
         return $activeCells;
     }
 
+    /**
+     * @param ModflowId $modelId
+     * @param BoundaryId $boundaryId
+     * @return ActiveCells
+     * @throws \exception
+     */
     public function getBoundaryActiveCells(ModflowId $modelId, BoundaryId $boundaryId): ActiveCells
     {
         $activeCells = $this->activeCellsFinder->findBoundaryActiveCells($modelId, $boundaryId);
@@ -67,6 +77,11 @@ class ActiveCellsManager
         return $activeCells;
     }
 
+    /**
+     * @param ModflowId $modelId
+     * @return ActiveCells
+     * @throws \exception
+     */
     private function calculateAreaActiveCells(ModflowId $modelId): ActiveCells
     {
         $affectedLayers = AffectedLayers::fromArray([0]);
@@ -77,6 +92,12 @@ class ActiveCellsManager
         return $this->geoTools->calculateActiveCellsFromGeometryAndAffectedLayers($geometry, $affectedLayers, $boundingBox, $gridSize);
     }
 
+    /**
+     * @param ModflowId $modelId
+     * @param BoundaryId $boundaryId
+     * @return ActiveCells
+     * @throws \exception
+     */
     private function calculateBoundaryActiveCells(ModflowId $modelId, BoundaryId $boundaryId): ActiveCells
     {
         $affectedLayers = $this->boundaryManager->getAffectedLayersByModelAndBoundary($modelId, $boundaryId);

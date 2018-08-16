@@ -36,7 +36,7 @@ use Inowas\ModflowModel\Model\Event\BoundaryWasRemoved;
 use Inowas\ModflowModel\Model\Event\BoundaryWasUpdated;
 use Inowas\ModflowModel\Model\Event\BoundingBoxWasChanged;
 use Inowas\ModflowModel\Model\Event\CalculationIdWasChanged;
-use Inowas\ModflowModel\Model\Event\CalculationWasRequested;
+use Inowas\ModflowModel\Model\Event\CalculationProcessWasStarted;
 use Inowas\ModflowModel\Model\Event\CalculationWasFinished;
 use Inowas\ModflowModel\Model\Event\CalculationWasStarted;
 use Inowas\ModflowModel\Model\Event\DescriptionWasChanged;
@@ -56,6 +56,7 @@ use Inowas\ModflowModel\Model\Event\OptimizationCalculationWasCanceled;
 use Inowas\ModflowModel\Model\Event\OptimizationCalculationWasStarted;
 use Inowas\ModflowModel\Model\Event\OptimizationProgressWasUpdated;
 use Inowas\ModflowModel\Model\Event\OptimizationInputWasUpdated;
+use Inowas\ModflowModel\Model\Event\PreProcessingWasFinished;
 use Inowas\ModflowModel\Model\Event\SoilmodelMetadataWasUpdated;
 use Inowas\ModflowModel\Model\Event\ModflowModelWasCreated;
 use Inowas\ModflowModel\Model\Event\StressPeriodsWereUpdated;
@@ -176,14 +177,6 @@ class ModflowModelAggregate extends AggregateRoot
         throw BoundaryNotFoundInModelException::withIds($this->modelId, $boundaryId);
     }
 
-    public function calculationRequestWasSent(UserId $userId): void
-    {
-        $this->recordThat(CalculationWasRequested::withId(
-            $userId,
-            $this->modelId
-        ));
-    }
-
     public function calculationWasStarted(CalculationId $calculationId): void
     {
         $this->recordThat(CalculationWasStarted::withId(
@@ -262,6 +255,14 @@ class ModflowModelAggregate extends AggregateRoot
         ));
     }
 
+    public function startCalculationProcess(UserId $userId): void
+    {
+        $this->recordThat(CalculationProcessWasStarted::withId(
+            $userId,
+            $this->modelId
+        ));
+    }
+
     public function updateLengthUnit(UserId $userId, LengthUnit $lengthUnit): void
     {
         $this->recordThat(LengthUnitWasUpdated::withUnit(
@@ -314,6 +315,8 @@ class ModflowModelAggregate extends AggregateRoot
             $this->calculationId = $calculationId;
             $this->recordThat(CalculationIdWasChanged::withId($this->modelId, $calculationId));
         }
+
+        $this->recordThat(PreProcessingWasFinished::withId($this->modelId, $calculationId));
     }
 
     /** @noinspection MoreThanThreeArgumentsInspection
@@ -463,7 +466,7 @@ class ModflowModelAggregate extends AggregateRoot
         $this->calculationId = $event->calculationId();
     }
 
-    protected function whenCalculationWasRequested(CalculationWasRequested $event): void
+    protected function whenCalculationProcessWasStarted(CalculationProcessWasStarted $event): void
     {
     }
 
@@ -555,6 +558,10 @@ class ModflowModelAggregate extends AggregateRoot
     }
 
     protected function whenNameWasChanged(NameWasChanged $event): void
+    {
+    }
+
+    protected function whenPreProcessingWasFinished(PreProcessingWasFinished $event): void
     {
     }
 

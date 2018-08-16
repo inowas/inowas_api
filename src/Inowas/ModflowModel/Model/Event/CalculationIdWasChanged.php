@@ -9,6 +9,7 @@ use Inowas\Common\Id\ModflowId;
 use Prooph\EventSourcing\AggregateChanged;
 
 /** @noinspection LongInheritanceChainInspection */
+
 class CalculationIdWasChanged extends AggregateChanged
 {
     /** @var  ModflowId */
@@ -17,11 +18,9 @@ class CalculationIdWasChanged extends AggregateChanged
     /** @var  CalculationId */
     protected $calculationId;
 
-    public static function withId(
-        ModflowId $modelId,
-        CalculationId $calculationId
-    ): CalculationIdWasChanged
+    public static function withId(ModflowId $modelId, CalculationId $calculationId): self
     {
+        /** @var self $event */
         $event = self::occur($modelId->toString(),
             ['calculation_id' => $calculationId->toString()]
         );
@@ -34,7 +33,7 @@ class CalculationIdWasChanged extends AggregateChanged
 
     public function modelId(): ModflowId
     {
-        if ($this->modelId === null){
+        if ($this->modelId === null) {
             $this->modelId = ModflowId::fromString($this->aggregateId());
         }
 
@@ -43,7 +42,7 @@ class CalculationIdWasChanged extends AggregateChanged
 
     public function calculationId(): CalculationId
     {
-        if ($this->calculationId === null){
+        if ($this->calculationId === null) {
             $this->calculationId = CalculationId::fromString($this->payload['calculation_id']);
         }
 

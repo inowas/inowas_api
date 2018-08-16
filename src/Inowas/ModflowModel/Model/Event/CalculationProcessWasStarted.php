@@ -4,12 +4,14 @@ declare(strict_types=1);
 
 namespace Inowas\ModflowModel\Model\Event;
 
+use Inowas\Common\Calculation\CalculationState;
 use Inowas\Common\Id\ModflowId;
 use Inowas\Common\Id\UserId;
 use Prooph\EventSourcing\AggregateChanged;
 
 /** @noinspection LongInheritanceChainInspection */
-class CalculationWasRequested extends AggregateChanged
+
+class CalculationProcessWasStarted extends AggregateChanged
 {
     /** @var  ModflowId */
     private $modelId;
@@ -17,19 +19,11 @@ class CalculationWasRequested extends AggregateChanged
     /** @var  UserId */
     private $userId;
 
-    /**
-     * @param UserId $userId
-     * @param ModflowId $modflowId
-     * @return CalculationWasRequested
-     */
-    public static function withId(
-        UserId $userId,
-        ModflowId $modflowId
-    ): CalculationWasRequested
+    public static function withId(UserId $userId, ModflowId $modflowId): self
     {
-        $event = self::occur($modflowId->toString(),
-            [
-                'model_id' => $modflowId->toString(),
+        /** @var self $event */
+        $event = self::occur(
+            $modflowId->toString(), [
                 'user_id' => $userId->toString()
             ]
         );
@@ -39,11 +33,16 @@ class CalculationWasRequested extends AggregateChanged
 
     public function modelId(): ModflowId
     {
-        if ($this->modelId === null){
+        if ($this->modelId === null) {
             $this->modelId = ModflowId::fromString($this->aggregateId());
         }
 
         return $this->modelId;
+    }
+
+    public function state(): CalculationState
+    {
+        return CalculationState::calculationProcessStarted();
     }
 
     public function userId(): UserId

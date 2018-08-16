@@ -29,8 +29,8 @@ parameters:
             'Inowas\ModflowModel\Model\Command\UpdateAreaGeometry': 'inowas.modflowmodel.update_area_geometry_handler'
             'Inowas\ModflowModel\Model\Command\UpdateBoundary': 'inowas.modflowmodel.update_boundary_handler'
             'Inowas\ModflowModel\Model\Command\UpdateLayer': 'inowas.modflowmodel.update_layer_handler'
-            'Inowas\ModflowModel\Model\Command\UpdateCalculationResults': 'inowas.modflowmodel.update_calculation_results_handler'
             'Inowas\ModflowModel\Model\Command\UpdateCalculationId': 'inowas.modflowmodel.update_calculation_id_handler'
+            'Inowas\ModflowModel\Model\Command\UpdateCalculationState': 'inowas.modflowmodel.update_calculation_state_handler'
             'Inowas\ModflowModel\Model\Command\UpdateLengthUnit': 'inowas.modflowmodel.update_length_unit_handler'
             'Inowas\ModflowModel\Model\Command\UpdateModflowModel': 'inowas.modflowmodel.update_modflow_model_handler'
             'Inowas\ModflowModel\Model\Command\UpdateModflowPackage': 'inowas.modflowmodel.update_modflow_package_handler'
@@ -113,6 +113,10 @@ parameters:
             - 'inowas.modflowmodel.blackhole_projector'
             - 'inowas.modflowmodel.model_projector'
 
+            'Inowas\ModflowModel\Model\Event\CalculationProcessWasStarted':
+            - 'inowas.modflowmodel.blackhole_projector'
+            - 'inowas.modflowmodel.calculation_process_queue'
+
             'Inowas\ModflowModel\Model\Event\CalculationIdWasChanged':
             - 'inowas.modflowmodel.blackhole_projector'
             - 'inowas.modflowmodel.model_projector'
@@ -120,16 +124,13 @@ parameters:
 
             'Inowas\ModflowModel\Model\Event\CalculationWasFinished':
             - 'inowas.modflowmodel.blackhole_projector'
+            - 'inowas.modflowmodel.calculation_process_queue'
             - 'inowas.modflowmodel.calculation_results_projector'
-
-            'Inowas\ModflowModel\Model\Event\CalculationWasRequested':
-            - 'inowas.modflowmodel.blackhole_projector'
-            - 'inowas.modflowmodel.model_projector'
 
             'Inowas\ModflowModel\Model\Event\CalculationWasStarted':
             - 'inowas.modflowmodel.blackhole_projector'
+            - 'inowas.modflowmodel.calculation_process_queue'
             - 'inowas.modflowmodel.calculation_results_projector'
-            - 'inowas.modflowmodel.modflow_calculation_listener'
 
             'Inowas\ModflowModel\Model\Event\DescriptionWasChanged':
             - 'inowas.modflowmodel.blackhole_projector'
@@ -215,6 +216,10 @@ parameters:
             'Inowas\ModflowModel\Model\Event\OptimizationInputWasUpdated':
             - 'inowas.modflowmodel.blackhole_projector'
             - 'inowas.modflowmodel.optimization_projector'
+
+            'Inowas\ModflowModel\Model\Event\PreProcessingWasFinished':
+            - 'inowas.modflowmodel.blackhole_projector'
+            - 'inowas.modflowmodel.calculation_process_queue'
 
             'Inowas\ModflowModel\Model\Event\SoilmodelMetadataWasUpdated':
             - 'inowas.modflowmodel.blackhole_projector'

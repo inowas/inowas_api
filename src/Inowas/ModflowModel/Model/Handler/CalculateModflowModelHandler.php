@@ -9,27 +9,18 @@ use Inowas\ModflowModel\Model\Exception\ModflowModelNotFoundException;
 use Inowas\ModflowModel\Model\Exception\WriteAccessFailedException;
 use Inowas\ModflowModel\Model\ModflowModelList;
 use Inowas\ModflowModel\Model\ModflowModelAggregate;
-use Inowas\ModflowModel\Service\ModflowPackagesManager;
 
 final class CalculateModflowModelHandler
 {
     /** @var  ModflowModelList */
     private $modelList;
 
-    /** @var  ModflowPackagesManager */
-    private $packagesManager;
-
     /**
      * ChangeModflowModelBoundingBoxHandler constructor.
      * @param ModflowModelList $modelList
-     * @param ModflowPackagesManager $packagesManager
      */
-    public function __construct(
-        ModflowModelList $modelList,
-        ModflowPackagesManager $packagesManager
-    )
+    public function __construct(ModflowModelList $modelList)
     {
-        $this->packagesManager = $packagesManager;
         $this->modelList = $modelList;
     }
 
@@ -44,17 +35,21 @@ final class CalculateModflowModelHandler
         /** @var ModflowModelAggregate $modflowModel */
         $modflowModel = $this->modelList->get($command->modelId());
 
-        if (!$modflowModel){
+        if (!$modflowModel) {
             throw ModflowModelNotFoundException::withModelId($command->modelId());
         }
 
-        if (! $command->fromTerminal() && ! $modflowModel->userId()->sameValueAs($command->userId())){
+        if (!$command->fromTerminal() && !$modflowModel->userId()->sameValueAs($command->userId())) {
             throw WriteAccessFailedException::withUserAndOwner($command->userId(), $modflowModel->userId());
         }
 
-        $calculationId = $this->packagesManager->recalculate($modflowModel->modflowModelId());
-        $modflowModel->preprocessingWasFinished($calculationId);
-        $modflowModel->calculationWasStarted($calculationId);
+        if ($command->fromTerminal()) {
+            $modflowModel->startCalculationProcess($modflowModel->userId());
+        } else {
+            $modflowModel->startCalculationProcess($command->userId());
+        }
+
+
         $this->modelList->save($modflowModel);
     }
 }

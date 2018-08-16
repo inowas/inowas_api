@@ -17,6 +17,16 @@ services:
   inowas.modflowmodel.blackhole_projector:
     class: Inowas\ModflowModel\Infrastructure\Projection\Blackhole\BlackholeProjector
 
+  inowas.modflowmodel.calculation_process_finder:
+    class: Inowas\ModflowModel\Infrastructure\Projection\Calculation\CalculationProcessFinder
+    arguments:
+    - '@doctrine.dbal.default_connection'
+
+  inowas.modflowmodel.calculation_process_queue:
+    class: Inowas\ModflowModel\Infrastructure\Projection\Calculation\CalculationProcessQueue
+    arguments:
+    - '@doctrine.dbal.default_connection'
+
   inowas.modflowmodel.calculation_results_finder:
     class: Inowas\ModflowModel\Infrastructure\Projection\Calculation\CalculationResultsFinder
     arguments:

@@ -7,29 +7,17 @@ services:
             - '@inowas.geotools.geotools_service'
             - '@inowas.modflowmodel.model_finder'
 
-    inowas.modflowmodel.amqp_flopy_calculation:
-        class: Inowas\ModflowModel\Service\AMQPFlopyCalculation
+    inowas.modflowmodel.amqp_modflow_calculation:
+        class: Inowas\ModflowModel\Service\AMQPModflowCalculation
         arguments:
             - '@inowas.amqp.stream.connection'
             - '%rabbit_mq_calculation_queue%'
 
-    inowas.modflowmodel.amqp_flopy_calculation_listener:
+    inowas.modflowmodel.amqp_modflow_calculation_results_listener:
         class: Inowas\ModflowModel\Service\AMQPBasicConsumer
         arguments:
             - '@inowas.amqp.stream.connection'
             - '%rabbit_mq_calculation_finished_queue%'
-
-    inowas.modflowmodel.amqp_modflow_calculation_request:
-        class: Inowas\ModflowModel\Service\AMQPModflowCalculation
-        arguments:
-            - '@inowas.amqp.stream.connection'
-            - '%rabbit_mq_calculation_request_queue%'
-
-    inowas.modflowmodel.amqp_modflow_calculation_request_listener:
-        class: Inowas\ModflowModel\Service\AMQPBasicConsumer
-        arguments:
-            - '@inowas.amqp.stream.connection'
-            - '%rabbit_mq_calculation_request_queue%'
 
     inowas.modflowmodel.amqp_read_data:
         class: Inowas\ModflowModel\Service\AMQPFlopyReadData

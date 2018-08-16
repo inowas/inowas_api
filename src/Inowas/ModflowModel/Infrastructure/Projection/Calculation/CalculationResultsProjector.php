@@ -41,7 +41,7 @@ class CalculationResultsProjector extends AbstractDoctrineConnectionProjector
 
         if ($result['count'] > 0){
             $this->connection->update(Table::CALCULATIONS,
-                array('state' => CalculationState::started()->toInt()),
+                array('state' => CalculationState::calculating()->toInt()),
                 array('calculation_id' => $event->calculationId()->toString())
             );
 
@@ -50,7 +50,7 @@ class CalculationResultsProjector extends AbstractDoctrineConnectionProjector
 
         $this->connection->insert(Table::CALCULATIONS, array(
             'calculation_id' => $event->calculationId()->toString(),
-            'state' => CalculationState::started()->toInt()
+            'state' => CalculationState::calculating()->toInt()
         ));
     }
 
@@ -76,7 +76,7 @@ class CalculationResultsProjector extends AbstractDoctrineConnectionProjector
     {
         $rows = $this->connection->fetchAll(
             sprintf('SELECT * from %s WHERE state = :state', Table::CALCULATIONS),
-            ['state' => CalculationState::started()->toInt()]
+            ['state' => CalculationState::calculating()->toInt()]
         );
 
         foreach ($rows as $row) {

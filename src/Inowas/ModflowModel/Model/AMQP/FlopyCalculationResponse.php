@@ -39,7 +39,7 @@ class FlopyCalculationResponse
     public static function fromJson(string $json): FlopyCalculationResponse
     {
         $arr = json_decode($json, true);
-        if (! is_array($arr)){
+        if (! \is_array($arr)){
             throw ResponseNotValidException::withResponse($json);
         }
         return self::fromArray($arr);
@@ -78,18 +78,18 @@ class FlopyCalculationResponse
 
     public function toArray(): array
     {
-        return array(
+        return [
             'status_code' => $this->statusCode->toInt(),
             'model_id' => $this->modelId->toString(),
             'calculation_id' => $this->calculationId->toString(),
             'message' => $this->message,
-            'data' => array(
+            'data' => [
                 'budgets' => $this->budgets,
                 'drawdowns' => $this->drawdowns,
                 'heads' => $this->heads,
                 'number_of_layers' => $this->numberOfLayers
-            )
-        );
+            ]
+        ];
     }
 
     public function statusCode(): StatusCode

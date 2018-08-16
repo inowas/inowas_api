@@ -6,22 +6,13 @@ namespace Inowas\Common\Calculation;
 
 class CalculationState
 {
-
-    /**
-     * @var int
-     *
-     * 0: new (calculate available)
-     * 1: preprocessing (working)
-     * 2: queued (working)
-     * 3: started (working)
-     * 4: finished (calculate available)
-     */
-
-    const NEW = 0;
-    const PREPROCESSING = 1;
-    const QUEUED = 2;
-    const STARTED = 3;
-    const FINISHED = 4;
+    public const NEW = 0;
+    public const CALCULATION_PROCESS_STARTED = 1;
+    public const PREPROCESSING = 2;
+    public const PREPROCESSING_FINISHED = 3;
+    public const QUEUED = 3;
+    public const CALCULATING = 4;
+    public const FINISHED = 5;
 
     /** @var  int */
     private $state;
@@ -31,9 +22,19 @@ class CalculationState
         return new self(self::NEW);
     }
 
+    public static function calculationProcessStarted(): CalculationState
+    {
+        return new self(self::CALCULATION_PROCESS_STARTED);
+    }
+
     public static function preprocessing(): CalculationState
     {
         return new self(self::PREPROCESSING);
+    }
+
+    public static function preprocessingFinished(): CalculationState
+    {
+        return new self(self::PREPROCESSING_FINISHED);
     }
 
     public static function queued(): CalculationState
@@ -41,9 +42,9 @@ class CalculationState
         return new self(self::QUEUED);
     }
 
-    public static function started(): CalculationState
+    public static function calculating(): CalculationState
     {
-        return new self(self::STARTED);
+        return new self(self::CALCULATING);
     }
 
     public static function finished(): CalculationState

@@ -18,7 +18,6 @@ use Inowas\ModflowModel\Model\Event\BoundaryWasRemoved;
 use Inowas\ModflowModel\Model\Event\BoundaryWasUpdated;
 use Inowas\ModflowModel\Model\Event\BoundingBoxWasChanged;
 use Inowas\ModflowModel\Model\Event\CalculationIdWasChanged;
-use Inowas\ModflowModel\Model\Event\CalculationWasRequested;
 use Inowas\ModflowModel\Model\Event\DescriptionWasChanged;
 use Inowas\ModflowModel\Model\Event\GridSizeWasChanged;
 use Inowas\ModflowModel\Model\Event\LengthUnitWasUpdated;
@@ -117,14 +116,6 @@ class ModelProjector extends AbstractDoctrineConnectionProjector
             'dirty' => 0,
             'preprocessing' => 0
         ],
-            ['model_id' => $event->modelId()->toString()]
-        );
-    }
-
-    public function onCalculationWasRequested(CalculationWasRequested $event): void
-    {
-        $this->connection->update(Table::MODFLOWMODELS,
-            ['preprocessing' => 1],
             ['model_id' => $event->modelId()->toString()]
         );
     }
