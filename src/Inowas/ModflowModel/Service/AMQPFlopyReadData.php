@@ -4,13 +4,13 @@ declare(strict_types=1);
 
 namespace Inowas\ModflowModel\Service;
 
-use Inowas\ModflowModel\Model\AMQP\ReadDataRequest;
+use Inowas\ModflowModel\Model\AMQP\ModflowReadDataRequest;
 use PhpAmqpLib\Connection\AMQPStreamConnection;
 use PhpAmqpLib\Message\AMQPMessage;
 
 class AMQPFlopyReadData
 {
-    
+
     private $channel;
     private $callback_queue;
     private $response;
@@ -49,7 +49,7 @@ class AMQPFlopyReadData
         return $this->response;
     }
 
-    public function read(ReadDataRequest $request): string
+    public function read(ModflowReadDataRequest $request): string
     {
         return $this->call(json_encode($request));
     }

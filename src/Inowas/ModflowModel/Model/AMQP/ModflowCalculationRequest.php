@@ -8,15 +8,15 @@ use Inowas\Common\Id\CalculationId;
 use Inowas\Common\Id\ModflowId;
 use Inowas\ModflowModel\Model\ModflowPackages;
 
-class FlopyCalculationRequest implements \JsonSerializable
+class ModflowCalculationRequest implements \JsonSerializable
 {
     private $author = '';
     private $project = '';
 
-    /** @var  CalculationId */
+    /** @var CalculationId */
     private $calculationId;
 
-    /** @var  ModflowId */
+    /** @var ModflowId */
     private $modelId;
 
     private $type = 'flopy_calculation';
@@ -24,7 +24,11 @@ class FlopyCalculationRequest implements \JsonSerializable
     /** @var  ModflowPackages */
     private $packages;
 
-    public static function fromParams(ModflowId $modelId, CalculationId $calculationId, ModflowPackages $packages): FlopyCalculationRequest
+    public static function fromParams(
+        ModflowId $modelId,
+        CalculationId $calculationId,
+        ModflowPackages $packages
+    ): ModflowCalculationRequest
     {
         $self = new self();
         $self->calculationId = $calculationId->toString();

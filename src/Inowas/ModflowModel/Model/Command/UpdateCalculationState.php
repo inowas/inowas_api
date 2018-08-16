@@ -7,7 +7,7 @@ namespace Inowas\ModflowModel\Model\Command;
 use Inowas\Common\Calculation\CalculationState;
 use Inowas\Common\Id\CalculationId;
 use Inowas\Common\Id\ModflowId;
-use Inowas\ModflowModel\Model\AMQP\FlopyCalculationResponse;
+use Inowas\ModflowModel\Model\AMQP\ModflowCalculationResponse;
 use Prooph\Common\Messaging\Command;
 use Prooph\Common\Messaging\PayloadConstructable;
 use Prooph\Common\Messaging\PayloadTrait;
@@ -70,7 +70,7 @@ class UpdateCalculationState extends Command implements PayloadConstructable
         return new self($payload);
     }
 
-    public static function calculationFinished(ModflowId $modelId, CalculationId $calculationId, FlopyCalculationResponse $response): self
+    public static function calculationFinished(ModflowId $modelId, CalculationId $calculationId, ModflowCalculationResponse $response): self
     {
         $payload = [
             'model_id' => $modelId->toString(),
@@ -105,8 +105,8 @@ class UpdateCalculationState extends Command implements PayloadConstructable
         return CalculationState::fromInt($this->payload['state']);
     }
 
-    public function response(): FlopyCalculationResponse
+    public function response(): ModflowCalculationResponse
     {
-        return FlopyCalculationResponse::fromArray($this->payload['response']);
+        return ModflowCalculationResponse::fromArray($this->payload['response']);
     }
 }

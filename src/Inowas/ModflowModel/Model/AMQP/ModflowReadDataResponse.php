@@ -6,7 +6,7 @@ namespace Inowas\ModflowModel\Model\AMQP;
 
 use Inowas\Common\Status\StatusCode;
 
-class ReadDataResponse
+class ModflowReadDataResponse
 {
     public const REQUEST_TYPE_LAYER_DATA = 'layerdata';
     public const REQUEST_TYPE_TIME_SERIES = 'timeseries';
@@ -22,7 +22,7 @@ class ReadDataResponse
     /** @var  StatusCode */
     protected $statusCode;
 
-    public static function fromJson(string $json): ReadDataResponse
+    public static function fromJson(string $json): ModflowReadDataResponse
     {
         $obj = json_decode($json);
         $self = new self();

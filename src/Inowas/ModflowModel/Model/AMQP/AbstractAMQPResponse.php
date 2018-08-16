@@ -6,7 +6,7 @@ namespace Inowas\ModflowModel\Model\AMQP;
 
 use Inowas\Common\Status\StatusCode;
 
-abstract class AMQPResponse
+abstract class AbstractAMQPResponse
 {
     private $body;
 

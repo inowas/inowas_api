@@ -12,7 +12,6 @@ use Inowas\ModflowModel\Model\AMQP\GeoProcessingResponse;
 use Nelmio\ApiDocBundle\Annotation\ApiDoc;
 use Symfony\Component\HttpFoundation\File\File;
 use Symfony\Component\HttpFoundation\JsonResponse;
-use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Response;
 
 class RasterfileController extends InowasRestController

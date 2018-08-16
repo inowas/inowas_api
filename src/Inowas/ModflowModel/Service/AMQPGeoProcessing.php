@@ -28,7 +28,8 @@ class AMQPGeoProcessing
             array($this, 'on_response'));
     }
 
-    public function on_response($rep) {
+    public function on_response($rep): void
+    {
         if($rep->get('correlation_id') == $this->corr_id) {
             $this->response = $rep->body;
         }
@@ -37,7 +38,7 @@ class AMQPGeoProcessing
     private function call($messageBody): string
     {
         $this->response = null;
-        $this->corr_id = uniqid();
+        $this->corr_id = uniqid('', true);
 
         $msg = new AMQPMessage(
             (string) $messageBody,

@@ -2,7 +2,7 @@
 
 namespace Inowas\ModflowModel\Model\AMQP;
 
-abstract class AMQPRequest implements \JsonSerializable
+abstract class AbstractAMQPRequest implements \JsonSerializable
 {
     /** @var  array */
     private $body;

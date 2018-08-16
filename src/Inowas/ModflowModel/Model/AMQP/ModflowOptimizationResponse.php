@@ -9,72 +9,55 @@ use Inowas\Common\Id\ModflowId;
 use Inowas\Common\Status\StatusCode;
 use Inowas\ModflowModel\Model\Exception\ResponseNotValidException;
 
-class FlopyCalculationResponse
+class ModflowOptimizationResponse
 {
-
     /** @var  StatusCode */
     protected $statusCode;
+
+    /** @var ModflowId */
+    protected $modelId;
 
     /** @var CalculationId */
     protected $calculationId;
 
     /** @var ModflowId */
-    protected $modelId;
+    protected $optimizationId;
 
     /** @var string */
     protected $message;
 
     /** @var  array */
-    protected $budgets = [];
+    protected $solutions = [];
 
     /** @var  array */
-    protected $drawdowns = [];
+    protected $progress = [];
 
-    /** @var  array */
-    protected $heads = [];
 
-    /** @var  int */
-    protected $numberOfLayers = 1;
-
-    public static function fromJson(string $json): FlopyCalculationResponse
+    public static function fromJson(string $json): self
     {
         $arr = json_decode($json, true);
-        if (! \is_array($arr)){
+        if (!\is_array($arr)) {
             throw ResponseNotValidException::withResponse($json);
         }
         return self::fromArray($arr);
     }
 
-    public static function fromArray(array $arr): FlopyCalculationResponse
+    public static function fromArray(array $arr): self
     {
         $self = new self();
         $self->statusCode = StatusCode::fromInt((int)$arr['status_code']);
         $self->modelId = ModflowId::fromString($arr['model_id']);
         $self->calculationId = CalculationId::fromString($arr['calculation_id']);
-        $self->message = $arr['message'];
-
-        if (array_key_exists('data', $arr)) {
-            $data = $arr['data'];
-
-            if (array_key_exists('budgets', $data)) {
-                $self->budgets = $data['budgets'];
-            }
-
-            if (array_key_exists('drawdowns', $data)) {
-                $self->drawdowns = $data['drawdowns'];
-            }
-
-            if (array_key_exists('heads', $data)) {
-                $self->heads = $data['heads'];
-            }
-
-            if (array_key_exists('number_of_layers', $data)) {
-                $self->numberOfLayers = $data['number_of_layers'];
-            }
-        }
+        $self->optimizationId = ModflowId::fromString($arr['optimization_id']);
+        $self->message = $arr['message'] ?? '';
+        $self->solutions = $arr['solutions'] ?? [];
+        $self->progress = $arr['progress'] ?? [];
 
         return $self;
     }
+
+    private function __construct()
+    {}
 
     public function toArray(): array
     {
@@ -82,13 +65,10 @@ class FlopyCalculationResponse
             'status_code' => $this->statusCode->toInt(),
             'model_id' => $this->modelId->toString(),
             'calculation_id' => $this->calculationId->toString(),
+            'optimization_id' => $this->optimizationId->toString(),
             'message' => $this->message,
-            'data' => [
-                'budgets' => $this->budgets,
-                'drawdowns' => $this->drawdowns,
-                'heads' => $this->heads,
-                'number_of_layers' => $this->numberOfLayers
-            ]
+            'solutions' => $this->solutions,
+            'progress' => $this->progress
         ];
     }
 
@@ -112,23 +92,38 @@ class FlopyCalculationResponse
         return $this->message;
     }
 
-    public function budgets(): array
+    public function getStatusCode(): StatusCode
     {
-        return $this->budgets;
+        return $this->statusCode;
     }
 
-    public function drawdowns(): array
+    public function getModelId(): ModflowId
     {
-        return $this->drawdowns;
+        return $this->modelId;
     }
 
-    public function heads(): array
+    public function getCalculationId(): CalculationId
     {
-        return $this->heads;
+        return $this->calculationId;
     }
 
-    public function numberOfLayers(): int
+    public function getOptimizationId(): ModflowId
     {
-        return $this->numberOfLayers;
+        return $this->optimizationId;
+    }
+
+    public function getMessage(): string
+    {
+        return $this->message;
+    }
+
+    public function getSolutions(): array
+    {
+        return $this->solutions;
+    }
+
+    public function getProgress(): array
+    {
+        return $this->progress;
     }
 }

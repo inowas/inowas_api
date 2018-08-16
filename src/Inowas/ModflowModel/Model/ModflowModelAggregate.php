@@ -28,7 +28,7 @@ use Inowas\Common\Soilmodel\LayerId;
 use Inowas\Common\Soilmodel\Soilmodel;
 use Inowas\Common\Soilmodel\SoilmodelId;
 use Inowas\Common\Status\Visibility;
-use Inowas\ModflowModel\Model\AMQP\FlopyCalculationResponse;
+use Inowas\ModflowModel\Model\AMQP\ModflowCalculationResponse;
 use Inowas\ModflowModel\Model\Event\ActiveCellsWereUpdated;
 use Inowas\ModflowModel\Model\Event\AreaGeometryWasUpdated;
 use Inowas\ModflowModel\Model\Event\BoundaryWasAdded;
@@ -185,7 +185,7 @@ class ModflowModelAggregate extends AggregateRoot
         ));
     }
 
-    public function calculationWasFinished(FlopyCalculationResponse $response): void
+    public function calculationWasFinished(ModflowCalculationResponse $response): void
     {
         $this->recordThat(CalculationWasFinished::withResponse(
             $this->modelId,

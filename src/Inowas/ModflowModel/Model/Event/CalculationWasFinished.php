@@ -6,7 +6,7 @@ namespace Inowas\ModflowModel\Model\Event;
 
 use Inowas\Common\Id\CalculationId;
 use Inowas\Common\Id\ModflowId;
-use Inowas\ModflowModel\Model\AMQP\FlopyCalculationResponse;
+use Inowas\ModflowModel\Model\AMQP\ModflowCalculationResponse;
 use Prooph\EventSourcing\AggregateChanged;
 
 /** @noinspection LongInheritanceChainInspection */
@@ -16,10 +16,10 @@ class CalculationWasFinished extends AggregateChanged
     /** @var  ModflowId */
     private $modelId;
 
-    /** @var  FlopyCalculationResponse */
+    /** @var  ModflowCalculationResponse */
     protected $response;
 
-    public static function withResponse(ModflowId $modelId, FlopyCalculationResponse $response): self
+    public static function withResponse(ModflowId $modelId, ModflowCalculationResponse $response): self
     {
         /** @var self $event */
         $event = self::occur($modelId->toString(),
@@ -45,10 +45,10 @@ class CalculationWasFinished extends AggregateChanged
         return $this->response()->calculationId();
     }
 
-    public function response(): FlopyCalculationResponse
+    public function response(): ModflowCalculationResponse
     {
         if ($this->response === null) {
-            $this->response = FlopyCalculationResponse::fromArray($this->payload['response']);
+            $this->response = ModflowCalculationResponse::fromArray($this->payload['response']);
         }
 
         return $this->response;

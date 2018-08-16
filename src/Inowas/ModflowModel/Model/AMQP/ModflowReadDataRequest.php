@@ -10,7 +10,7 @@ use Inowas\Common\Grid\Nrow;
 use Inowas\Common\Id\CalculationId;
 use Inowas\Common\Modflow\Extension;
 
-class ReadDataRequest implements \JsonSerializable
+class ModflowReadDataRequest implements \JsonSerializable
 {
     public const REQUEST_TYPE_LAYER_DATA = 'layerdata';
     public const REQUEST_TYPE_TIME_SERIES = 'timeseries';
@@ -33,9 +33,9 @@ class ReadDataRequest implements \JsonSerializable
      * @param ResultType $dataType
      * @param TotalTime $totim
      * @param LayerNumber $layer
-     * @return ReadDataRequest
+     * @return ModflowReadDataRequest
      */
-    public static function forLayerData(CalculationId $calculationId, ResultType $dataType, TotalTime $totim, LayerNumber $layer): ReadDataRequest
+    public static function forLayerData(CalculationId $calculationId, ResultType $dataType, TotalTime $totim, LayerNumber $layer): ModflowReadDataRequest
     {
         $arr = array();
         $arr['calculation_id'] = $calculationId->toString();
@@ -61,9 +61,9 @@ class ReadDataRequest implements \JsonSerializable
      * @param LayerNumber $layer
      * @param Nrow $ny
      * @param Ncol $nx
-     * @return ReadDataRequest
+     * @return ModflowReadDataRequest
      */
-    public static function forTimeSeries(CalculationId $calculationId, ResultType $dataType, LayerNumber $layer, Nrow $ny, Ncol $nx): ReadDataRequest
+    public static function forTimeSeries(CalculationId $calculationId, ResultType $dataType, LayerNumber $layer, Nrow $ny, Ncol $nx): ModflowReadDataRequest
     {
         $arr = array();
         $arr['calculation_id'] = $calculationId->toString();
@@ -83,7 +83,7 @@ class ReadDataRequest implements \JsonSerializable
         return $self;
     }
 
-    public static function forFile(CalculationId $calculationId, Extension $extension): ReadDataRequest
+    public static function forFile(CalculationId $calculationId, Extension $extension): ModflowReadDataRequest
     {
         $arr = array();
         $arr['calculation_id'] = $calculationId->toString();
@@ -96,7 +96,7 @@ class ReadDataRequest implements \JsonSerializable
         return $self;
     }
 
-    public static function forFileList(CalculationId $calculationId): ReadDataRequest
+    public static function forFileList(CalculationId $calculationId): ModflowReadDataRequest
     {
         $arr = array();
         $arr['calculation_id'] = $calculationId->toString();

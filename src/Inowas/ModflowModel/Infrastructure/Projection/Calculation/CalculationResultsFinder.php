@@ -23,8 +23,8 @@ use Inowas\Common\Modflow\StressPeriods;
 use Inowas\Common\Modflow\TotalTimes;
 use Inowas\Common\Id\CalculationId;
 use Inowas\ModflowModel\Infrastructure\Projection\Table;
-use Inowas\ModflowModel\Model\AMQP\ReadDataRequest;
-use Inowas\ModflowModel\Model\AMQP\ReadDataResponse;
+use Inowas\ModflowModel\Model\AMQP\ModflowReadDataRequest;
+use Inowas\ModflowModel\Model\AMQP\ModflowReadDataResponse;
 use Inowas\ModflowModel\Service\AMQPFlopyReadData;
 
 class CalculationResultsFinder
@@ -207,8 +207,8 @@ class CalculationResultsFinder
      */
     public function getFileList(CalculationId $calculationId): array
     {
-        $request = ReadDataRequest::forFileList($calculationId);
-        $response = ReadDataResponse::fromJson($this->reader->read($request));
+        $request = ModflowReadDataRequest::forFileList($calculationId);
+        $response = ModflowReadDataResponse::fromJson($this->reader->read($request));
         return $response->data();
     }
 
@@ -219,8 +219,8 @@ class CalculationResultsFinder
      */
     public function getFile(CalculationId $calculationId, Extension $extension): string
     {
-        $request = ReadDataRequest::forFile($calculationId, $extension);
-        $response = ReadDataResponse::fromJson($this->reader->read($request));
+        $request = ModflowReadDataRequest::forFile($calculationId, $extension);
+        $response = ModflowReadDataResponse::fromJson($this->reader->read($request));
         return $response->data()[0];
     }
 
@@ -233,14 +233,14 @@ class CalculationResultsFinder
      */
     public function findHeadData(CalculationId $calculationId, ResultType $type, LayerNumber $layerNumber, TotalTime $totalTime): HeadData
     {
-        $request = ReadDataRequest::forLayerData(
+        $request = ModflowReadDataRequest::forLayerData(
             $calculationId,
             $type,
             $totalTime,
             $layerNumber
         );
 
-        $response = ReadDataResponse::fromJson($this->reader->read($request));
+        $response = ModflowReadDataResponse::fromJson($this->reader->read($request));
         return HeadData::from2dArray($response->data());
     }
 
@@ -255,24 +255,24 @@ class CalculationResultsFinder
      */
     public function findHeadDifference(CalculationId $calculationId, CalculationId $calculationId2, ResultType $type, LayerNumber $layerNumber, TotalTime $totalTime): HeadData
     {
-        $request = ReadDataRequest::forLayerData(
+        $request = ModflowReadDataRequest::forLayerData(
             $calculationId,
             $type,
             $totalTime,
             $layerNumber
         );
 
-        $response = ReadDataResponse::fromJson($this->reader->read($request));
+        $response = ModflowReadDataResponse::fromJson($this->reader->read($request));
         $result1 = HeadData::from2dArray($response->data());
 
-        $request = ReadDataRequest::forLayerData(
+        $request = ModflowReadDataRequest::forLayerData(
             $calculationId2,
             $type,
             $totalTime,
             $layerNumber
         );
 
-        $response = ReadDataResponse::fromJson($this->reader->read($request));
+        $response = ModflowReadDataResponse::fromJson($this->reader->read($request));
         $result2 = HeadData::from2dArray($response->data());
 
         return $this->calculateDifferenceResults($result1, $result2);
@@ -288,7 +288,7 @@ class CalculationResultsFinder
      */
     public function findTimeSeries(CalculationId $calculationId, ResultType $type, LayerNumber $layerNumber, Nrow $ny, Ncol $nx): TimeSeriesData
     {
-        $request = ReadDataRequest::forTimeSeries(
+        $request = ModflowReadDataRequest::forTimeSeries(
             $calculationId,
             $type,
             $layerNumber,
@@ -296,7 +296,7 @@ class CalculationResultsFinder
             $nx
         );
 
-        $response = ReadDataResponse::fromJson($this->reader->read($request));
+        $response = ModflowReadDataResponse::fromJson($this->reader->read($request));
         return TimeSeriesData::fromArray($response->data());
     }
 

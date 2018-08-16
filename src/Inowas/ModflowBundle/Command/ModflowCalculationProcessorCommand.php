@@ -7,7 +7,7 @@ namespace Inowas\ModflowBundle\Command;
 use Inowas\Common\Calculation\CalculationState;
 use Inowas\Common\Id\ModflowId;
 use Inowas\ModflowModel\Infrastructure\Projection\Calculation\CalculationProcessFinder;
-use Inowas\ModflowModel\Model\AMQP\FlopyCalculationRequest;
+use Inowas\ModflowModel\Model\AMQP\ModflowCalculationRequest;
 use Inowas\ModflowModel\Model\Command\UpdateCalculationId;
 use Inowas\ModflowModel\Model\Command\UpdateCalculationState;
 use Inowas\ModflowModel\Service\AMQPModflowCalculation;
@@ -79,7 +79,7 @@ class ModflowCalculationProcessorCommand extends ContainerAwareCommand
             // Calculation
             $output->writeln('Send to calculation to calculation service.');
             $packages = $this->packagesManager->getPackages($calculationId);
-            $request = FlopyCalculationRequest::fromParams($modelId, $calculationId, $packages);
+            $request = ModflowCalculationRequest::fromParams($modelId, $calculationId, $packages);
             $this->calculator->calculate($request);
             $this->commandBus->dispatch(UpdateCalculationState::queued($modelId, $calculationId));
             unset($row);

@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Tests\Inowas\ModflowBundle\Functional;
 
 use Inowas\Common\Id\CalculationId;
-use Inowas\ModflowModel\Model\AMQP\FlopyCalculationResponse;
+use Inowas\ModflowModel\Model\AMQP\ModflowCalculationResponse;
 use Inowas\ModflowModel\Model\Command\CalculateModflowModel;
 use Inowas\ModflowModel\Model\Command\UpdateCalculationState;
 use Inowas\Common\Id\ModflowId;
@@ -54,7 +54,7 @@ class ModflowModelCalculationEventSourcingTest extends EventSourcingBaseTest
         ], $row[0]);
 
         $calculationId = CalculationId::fromString('test123');
-        $response = FlopyCalculationResponse::fromArray([
+        $response = ModflowCalculationResponse::fromArray([
             'status_code' => '200',
             'model_id' => $modelId->toString(),
             'calculation_id' => $calculationId->toString(),
