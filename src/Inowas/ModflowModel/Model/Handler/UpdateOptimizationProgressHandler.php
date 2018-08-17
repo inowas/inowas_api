@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace Inowas\ModflowModel\Model\Handler;
 
+use Inowas\ModflowModel\Model\AMQP\ModflowOptimizationResponse;
 use Inowas\ModflowModel\Model\Command\UpdateOptimizationProgress;
 use Inowas\ModflowModel\Model\Exception\ModflowModelNotFoundException;
-use Inowas\ModflowModel\Model\Exception\WriteAccessFailedException;
 use Inowas\ModflowModel\Model\ModflowModelList;
 use Inowas\ModflowModel\Model\ModflowModelAggregate;
 
@@ -30,18 +30,17 @@ final class UpdateOptimizationProgressHandler
      */
     public function __invoke(UpdateOptimizationProgress $command)
     {
-        /** @var ModflowModelAggregate $modflowModel */
-        $modflowModel = $this->modelList->get($command->modflowModelId());
+        /** @var ModflowOptimizationResponse $response */
+        $response = $command->response();
 
-        if (!$modflowModel) {
-            throw ModflowModelNotFoundException::withModelId($command->modflowModelId());
+        /** @var ModflowModelAggregate $model */
+        $model = $this->modelList->get($response->modelId());
+
+        if (!$model) {
+            throw ModflowModelNotFoundException::withModelId($response->modelId());
         }
 
-        if (!$modflowModel->userId()->sameValueAs($command->userId())) {
-            throw WriteAccessFailedException::withUserAndOwner($command->userId(), $modflowModel->userId());
-        }
-
-        $modflowModel->updateOptimizationProgress($command->userId(), $command->progress());
-        $this->modelList->save($modflowModel);
+        $model->updateOptimizationProgress($response->optimizationId(), $response->progress(), $response->solutions());
+        $this->modelList->save($model);
     }
 }

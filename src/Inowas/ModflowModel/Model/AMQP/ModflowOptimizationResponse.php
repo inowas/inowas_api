@@ -6,6 +6,8 @@ namespace Inowas\ModflowModel\Model\AMQP;
 
 use Inowas\Common\Id\CalculationId;
 use Inowas\Common\Id\ModflowId;
+use Inowas\Common\Modflow\OptimizationProgress;
+use Inowas\Common\Modflow\OptimizationSolutions;
 use Inowas\Common\Status\StatusCode;
 use Inowas\ModflowModel\Model\Exception\ResponseNotValidException;
 
@@ -26,11 +28,11 @@ class ModflowOptimizationResponse
     /** @var string */
     protected $message;
 
-    /** @var  array */
-    protected $solutions = [];
+    /** @var  OptimizationSolutions */
+    protected $solutions;
 
-    /** @var  array */
-    protected $progress = [];
+    /** @var  OptimizationProgress */
+    protected $progress;
 
 
     public static function fromJson(string $json): self
@@ -50,8 +52,8 @@ class ModflowOptimizationResponse
         $self->calculationId = CalculationId::fromString($arr['calculation_id']);
         $self->optimizationId = ModflowId::fromString($arr['optimization_id']);
         $self->message = $arr['message'] ?? '';
-        $self->solutions = $arr['solutions'] ?? [];
-        $self->progress = $arr['progress'] ?? [];
+        $self->solutions = OptimizationSolutions::fromArray($arr['solutions']);
+        $self->progress = OptimizationProgress::fromArray($arr['progress'] ?? []);
 
         return $self;
     }
@@ -67,8 +69,8 @@ class ModflowOptimizationResponse
             'calculation_id' => $this->calculationId->toString(),
             'optimization_id' => $this->optimizationId->toString(),
             'message' => $this->message,
-            'solutions' => $this->solutions,
-            'progress' => $this->progress
+            'solutions' => $this->solutions->toArray(),
+            'progress' => $this->progress->toArray()
         ];
     }
 
@@ -92,37 +94,17 @@ class ModflowOptimizationResponse
         return $this->message;
     }
 
-    public function getStatusCode(): StatusCode
-    {
-        return $this->statusCode;
-    }
-
-    public function getModelId(): ModflowId
-    {
-        return $this->modelId;
-    }
-
-    public function getCalculationId(): CalculationId
-    {
-        return $this->calculationId;
-    }
-
-    public function getOptimizationId(): ModflowId
+    public function optimizationId(): ModflowId
     {
         return $this->optimizationId;
     }
 
-    public function getMessage(): string
-    {
-        return $this->message;
-    }
-
-    public function getSolutions(): array
+    public function solutions(): OptimizationSolutions
     {
         return $this->solutions;
     }
 
-    public function getProgress(): array
+    public function progress(): OptimizationProgress
     {
         return $this->progress;
     }

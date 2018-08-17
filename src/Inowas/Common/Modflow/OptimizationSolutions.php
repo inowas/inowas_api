@@ -4,7 +4,7 @@ namespace Inowas\Common\Modflow;
 
 use Inowas\ModflowModel\Model\Exception\InvalidJsonException;
 
-class OptimizationResults
+class OptimizationSolutions
 {
     /** @var array */
     private $data;

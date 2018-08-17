@@ -10,7 +10,7 @@ use Inowas\ModflowModel\Infrastructure\Projection\Calculation\CalculationProcess
 use Inowas\ModflowModel\Model\AMQP\ModflowCalculationRequest;
 use Inowas\ModflowModel\Model\Command\UpdateCalculationId;
 use Inowas\ModflowModel\Model\Command\UpdateCalculationState;
-use Inowas\ModflowModel\Service\AMQPModflowCalculation;
+use Inowas\ModflowModel\Service\AMQPBasicProducer;
 use Inowas\ModflowModel\Service\ModflowPackagesManager;
 use Prooph\ServiceBus\CommandBus;
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
@@ -23,8 +23,8 @@ class ModflowCalculationProcessorCommand extends ContainerAwareCommand
     /** @var  CalculationProcessFinder */
     private $calculationProcessFinder;
 
-    /** @var  AMQPModflowCalculation */
-    private $calculator;
+    /** @var  AMQPBasicProducer */
+    private $producer;
 
     /** @var ModflowPackagesManager */
     private $packagesManager;
@@ -49,9 +49,9 @@ class ModflowCalculationProcessorCommand extends ContainerAwareCommand
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $this->calculationProcessFinder = $this->getContainer()->get('inowas.modflowmodel.calculation_process_finder');
-        $this->calculator = $this->getContainer()->get('inowas.modflowmodel.amqp_modflow_calculation');
         $this->commandBus = $this->getContainer()->get('prooph_service_bus.modflow_command_bus');
         $this->packagesManager = $this->getContainer()->get('inowas.modflowmodel.modflow_packages_manager');
+        $this->producer = $this->getContainer()->get('inowas.modflowmodel.amqp_modflow_calculation');
 
         while (true) {
             // Get next row in queue
@@ -80,7 +80,7 @@ class ModflowCalculationProcessorCommand extends ContainerAwareCommand
             $output->writeln('Send to calculation to calculation service.');
             $packages = $this->packagesManager->getPackages($calculationId);
             $request = ModflowCalculationRequest::fromParams($modelId, $calculationId, $packages);
-            $this->calculator->calculate($request);
+            $this->producer->publish($request);
             $this->commandBus->dispatch(UpdateCalculationState::queued($modelId, $calculationId));
             unset($row);
         }

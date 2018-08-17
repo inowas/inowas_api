@@ -7,8 +7,10 @@ class OptimizationState
 {
     public const NEW = 0;
     public const STARTED = 1;
-    public const CALCULATING = 2;
-    public const FINISHED = 3;
+    public const PREPROCESSING = 2;
+    public const CALCULATING = 3;
+    public const FINISHED = 4;
+
     public const CANCELLING = 11;
     public const CANCELLED = 12;
 
@@ -24,8 +26,38 @@ class OptimizationState
         return new self($state);
     }
 
+    public static function started(): self
+    {
+        return new self(self::STARTED);
+    }
+
+    public static function preprocessing(): self
+    {
+        return new self(self::PREPROCESSING);
+    }
+
+    public static function calculating(): self
+    {
+        return new self(self::CALCULATING);
+    }
+
+    public static function finished(): self
+    {
+        return new self(self::FINISHED);
+    }
+
+    public static function cancelling(): self
+    {
+        return new self(self::CANCELLING);
+    }
+
+    public static function cancelled(): self
+    {
+        return new self(self::CANCELLED);
+    }
+
     /**
-     * Optimization constructor. 
+     * Optimization constructor.
      * @param $state
      */
     private function __construct($state)

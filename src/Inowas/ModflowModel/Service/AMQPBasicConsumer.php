@@ -18,7 +18,7 @@ class AMQPBasicConsumer
         $this->routingKey = $routingKey;
     }
 
-    public function listen(callable $callback)
+    public function listen(callable $callback): void
     {
         $channel = $this->connection->channel();
         $channel->queue_declare($this->routingKey, false, true, false, false);
@@ -27,10 +27,15 @@ class AMQPBasicConsumer
         $channel->basic_qos(null, 1, null);
         $channel->basic_consume($this->routingKey, '', false, false, false, false, $callback);
 
-        while(count($channel->callbacks)) {
+        while(\count($channel->callbacks)) {
             $channel->wait();
         }
-        
+
         $channel->close();
+    }
+
+    public function getRoutingKey(): string
+    {
+        return $this->routingKey;
     }
 }

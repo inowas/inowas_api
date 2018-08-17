@@ -13,16 +13,16 @@ class Optimization
     /** @var OptimizationProgress */
     private $progress;
 
-    /** @var OptimizationResults */
-    private $results;
+    /** @var OptimizationSolutions */
+    private $solutions;
 
     public static function createEmpty(): self
     {
         $self = new self();
         $self->input = OptimizationInput::fromArray([]);
-        $self->state = OptimizationState::fromInt(0);
         $self->progress = OptimizationProgress::fromArray([]);
-        $self->results = OptimizationResults::fromArray([]);
+        $self->solutions = OptimizationSolutions::fromArray([]);
+        $self->state = OptimizationState::fromInt(0);
         return $self;
     }
 
@@ -34,9 +34,9 @@ class Optimization
     {
         $self = new self();
         $self->input = OptimizationInput::fromArray($arr['input']);
-        $self->state = OptimizationState::fromInt($arr['state']);
         $self->progress = OptimizationProgress::fromArray($arr['progress']);
-        $self->results = OptimizationResults::fromArray($arr['results']);
+        $self->solutions = OptimizationSolutions::fromArray($arr['solutions']);
+        $self->state = OptimizationState::fromInt($arr['state']);
         return $self;
     }
 
@@ -49,14 +49,6 @@ class Optimization
     }
 
     /**
-     * @return OptimizationState
-     */
-    public function state(): OptimizationState
-    {
-        return $this->state;
-    }
-
-    /**
      * @return OptimizationProgress
      */
     public function progress(): OptimizationProgress
@@ -65,21 +57,28 @@ class Optimization
     }
 
     /**
-     * @return OptimizationResults
+     * @return OptimizationSolutions
      */
-    public function results(): OptimizationResults
+    public function solutions(): OptimizationSolutions
     {
-        return $this->results;
+        return $this->solutions;
     }
 
+    /**
+     * @return OptimizationState
+     */
+    public function state(): OptimizationState
+    {
+        return $this->state;
+    }
 
     public function toArray(): array
     {
         return [
             'input' => $this->input->toArray(),
-            'state' => $this->state->toInt(),
             'progress' => $this->progress->toArray(),
-            'results' => $this->results->toArray()
+            'solutions' => $this->solutions->toArray(),
+            'state' => $this->state->toInt(),
         ];
     }
 }

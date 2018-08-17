@@ -8,7 +8,7 @@ services:
             - '@inowas.modflowmodel.model_finder'
 
     inowas.modflowmodel.amqp_modflow_calculation:
-        class: Inowas\ModflowModel\Service\AMQPModflowCalculation
+        class: Inowas\ModflowModel\Service\AMQPBasicProducer
         arguments:
             - '@inowas.amqp.stream.connection'
             - '%rabbit_mq_calculation_queue%'
@@ -19,14 +19,26 @@ services:
             - '@inowas.amqp.stream.connection'
             - '%rabbit_mq_calculation_finished_queue%'
 
+    inowas.modflowmodel.amqp_modflow_optimization:
+        class: Inowas\ModflowModel\Service\AMQPBasicProducer
+        arguments:
+            - '@inowas.amqp.stream.connection'
+            - '%rabbit_mq_modflow_optimization_queue%'
+
+    inowas.modflowmodel.amqp_modflow_optimization_progress_listener:
+        class: Inowas\ModflowModel\Service\AMQPBasicConsumer
+        arguments:
+            - '@inowas.amqp.stream.connection'
+            - '%rabbit_mq_modflow_optimization_progress_queue%'
+
     inowas.modflowmodel.amqp_read_data:
-        class: Inowas\ModflowModel\Service\AMQPFlopyReadData
+        class: Inowas\ModflowModel\Service\AMQPRemoteProcedureCall
         arguments:
             - '@inowas.amqp.stream.connection'
             - '%rabbit_mq_read_data_queue%'
 
     inowas.modflowmodel.amqp_geo_processing:
-        class: Inowas\ModflowModel\Service\AMQPGeoProcessing
+        class: Inowas\ModflowModel\Service\AMQPRemoteProcedureCall
         arguments:
             - '@inowas.amqp.stream.connection'
             - '%rabbit_mq_geo_processing_queue%'

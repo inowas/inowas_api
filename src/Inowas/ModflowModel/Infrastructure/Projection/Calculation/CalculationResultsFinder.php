@@ -25,21 +25,21 @@ use Inowas\Common\Id\CalculationId;
 use Inowas\ModflowModel\Infrastructure\Projection\Table;
 use Inowas\ModflowModel\Model\AMQP\ModflowReadDataRequest;
 use Inowas\ModflowModel\Model\AMQP\ModflowReadDataResponse;
-use Inowas\ModflowModel\Service\AMQPFlopyReadData;
+use Inowas\ModflowModel\Service\AMQPRemoteProcedureCall;
 
 class CalculationResultsFinder
 {
     /** @var Connection $connection */
     protected $connection;
 
-    /** @var  AMQPFlopyReadData */
-    protected $reader;
+    /** @var  AMQPRemoteProcedureCall */
+    protected $rpcClient;
 
-    public function __construct(Connection $connection, AMQPFlopyReadData $reader)
+    public function __construct(Connection $connection, AMQPRemoteProcedureCall $rpcClient)
     {
         $this->connection = $connection;
         $this->connection->setFetchMode(\PDO::FETCH_ASSOC);
-        $this->reader = $reader;
+        $this->rpcClient = $rpcClient;
     }
 
     public function getCalculationStateQuery(CalculationId $calculationId): ?CalculationStateQuery
@@ -188,6 +188,7 @@ class CalculationResultsFinder
 
         $result = [];
 
+        /** @noinspection ForeachInvariantsInspection */
         for ($l = 0; $l < $numberOfLayers; $l++) {
             if (\count($heads) > 0) {
                 $result[$l][] = ResultType::HEAD_TYPE;
@@ -208,7 +209,7 @@ class CalculationResultsFinder
     public function getFileList(CalculationId $calculationId): array
     {
         $request = ModflowReadDataRequest::forFileList($calculationId);
-        $response = ModflowReadDataResponse::fromJson($this->reader->read($request));
+        $response = ModflowReadDataResponse::fromJson($this->rpcClient->send($request));
         return $response->data();
     }
 
@@ -220,7 +221,7 @@ class CalculationResultsFinder
     public function getFile(CalculationId $calculationId, Extension $extension): string
     {
         $request = ModflowReadDataRequest::forFile($calculationId, $extension);
-        $response = ModflowReadDataResponse::fromJson($this->reader->read($request));
+        $response = ModflowReadDataResponse::fromJson($this->rpcClient->send($request));
         return $response->data()[0];
     }
 
@@ -240,7 +241,7 @@ class CalculationResultsFinder
             $layerNumber
         );
 
-        $response = ModflowReadDataResponse::fromJson($this->reader->read($request));
+        $response = ModflowReadDataResponse::fromJson($this->rpcClient->send($request));
         return HeadData::from2dArray($response->data());
     }
 
@@ -262,7 +263,7 @@ class CalculationResultsFinder
             $layerNumber
         );
 
-        $response = ModflowReadDataResponse::fromJson($this->reader->read($request));
+        $response = ModflowReadDataResponse::fromJson($this->rpcClient->send($request));
         $result1 = HeadData::from2dArray($response->data());
 
         $request = ModflowReadDataRequest::forLayerData(
@@ -272,7 +273,7 @@ class CalculationResultsFinder
             $layerNumber
         );
 
-        $response = ModflowReadDataResponse::fromJson($this->reader->read($request));
+        $response = ModflowReadDataResponse::fromJson($this->rpcClient->send($request));
         $result2 = HeadData::from2dArray($response->data());
 
         return $this->calculateDifferenceResults($result1, $result2);
@@ -296,7 +297,7 @@ class CalculationResultsFinder
             $nx
         );
 
-        $response = ModflowReadDataResponse::fromJson($this->reader->read($request));
+        $response = ModflowReadDataResponse::fromJson($this->rpcClient->send($request));
         return TimeSeriesData::fromArray($response->data());
     }
 

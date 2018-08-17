@@ -2,11 +2,10 @@
 
 namespace Inowas\ModflowModel\Service;
 
-use Inowas\ModflowModel\Model\AMQP\ModflowCalculationRequest;
 use PhpAmqpLib\Connection\AMQPStreamConnection;
 use PhpAmqpLib\Message\AMQPMessage;
 
-class AMQPModflowCalculation
+class AMQPBasicProducer
 {
     private $channel;
     private $connection;
@@ -18,7 +17,7 @@ class AMQPModflowCalculation
         $this->routingKey = $routingKey;
     }
 
-    public function calculate(ModflowCalculationRequest $request): void
+    public function publish(\JsonSerializable $request): void
     {
         $this->channel = $this->connection->channel();
         $this->channel->queue_declare($this->routingKey, false, true, false, false);

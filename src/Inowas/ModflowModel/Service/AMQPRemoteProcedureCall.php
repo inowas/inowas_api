@@ -4,13 +4,11 @@ declare(strict_types=1);
 
 namespace Inowas\ModflowModel\Service;
 
-use Inowas\ModflowModel\Model\AMQP\ModflowReadDataRequest;
 use PhpAmqpLib\Connection\AMQPStreamConnection;
 use PhpAmqpLib\Message\AMQPMessage;
 
-class AMQPFlopyReadData
+class AMQPRemoteProcedureCall
 {
-
     private $channel;
     private $callback_queue;
     private $response;
@@ -21,13 +19,16 @@ class AMQPFlopyReadData
     {
         $this->routingKey = $routingKey;
         $this->channel = $connection->channel();
-        list($this->callback_queue, ,) = $this->channel->queue_declare('', false, false, true, false);
+        [$this->callback_queue, ,] = $this->channel->queue_declare('', false, false, true, false);
         $this->channel->basic_consume(
             $this->callback_queue, '', false, false, false, false,
             array($this, 'on_response'));
     }
 
-    public function on_response($rep) {
+    public function on_response($rep): void
+    {
+        /** @noinspection TypeUnsafeComparisonInspection */
+        /** @noinspection PhpUndefinedMethodInspection */
         if($rep->get('correlation_id') == $this->corr_id) {
             $this->response = $rep->body;
         }
@@ -35,7 +36,7 @@ class AMQPFlopyReadData
 
     private function call($messageBody) {
         $this->response = null;
-        $this->corr_id = uniqid();
+        $this->corr_id = uniqid('', true);
 
         $msg = new AMQPMessage(
             (string) $messageBody,
@@ -49,8 +50,9 @@ class AMQPFlopyReadData
         return $this->response;
     }
 
-    public function read(ModflowReadDataRequest $request): string
+    public function send(\JsonSerializable $request): string
     {
+        /** @noinspection PhpStrictTypeCheckingInspection */
         return $this->call(json_encode($request));
     }
 }

@@ -120,6 +120,7 @@ parameters:
             'Inowas\ModflowModel\Model\Event\CalculationIdWasChanged':
             - 'inowas.modflowmodel.blackhole_projector'
             - 'inowas.modflowmodel.model_projector'
+            - 'inowas.modflowmodel.optimization_process_queue'
             - 'inowas.scenarioanalysis.scenario_list_projector'
 
             'Inowas\ModflowModel\Model\Event\CalculationWasFinished':
@@ -203,14 +204,17 @@ parameters:
 
             'Inowas\ModflowModel\Model\Event\OptimizationCalculationWasCanceled':
             - 'inowas.modflowmodel.blackhole_projector'
+            - 'inowas.modflowmodel.optimization_process_queue'
             - 'inowas.modflowmodel.optimization_projector'
 
             'Inowas\ModflowModel\Model\Event\OptimizationCalculationWasStarted':
             - 'inowas.modflowmodel.blackhole_projector'
+            - 'inowas.modflowmodel.optimization_process_queue'
             - 'inowas.modflowmodel.optimization_projector'
 
             'Inowas\ModflowModel\Model\Event\OptimizationProgressWasUpdated':
             - 'inowas.modflowmodel.blackhole_projector'
+            - 'inowas.modflowmodel.optimization_process_queue'
             - 'inowas.modflowmodel.optimization_projector'
 
             'Inowas\ModflowModel\Model\Event\OptimizationInputWasUpdated':

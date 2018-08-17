@@ -30,6 +30,12 @@ class ModflowGetTotimsCommand extends ContainerAwareCommand
         ;
     }
 
+    /**
+     * @param InputInterface $input
+     * @param OutputInterface $output
+     * @return int|null|void
+     * @throws \Exception
+     */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         if (Uuid::isValid($input->getArgument('id'))){

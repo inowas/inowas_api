@@ -20,6 +20,7 @@ use Inowas\Common\Modflow\Name;
 use Inowas\Common\Modflow\Description;
 use Inowas\Common\Modflow\OptimizationInput;
 use Inowas\Common\Modflow\OptimizationProgress;
+use Inowas\Common\Modflow\OptimizationSolutions;
 use Inowas\Common\Modflow\PackageName;
 use Inowas\Common\Modflow\ParameterName;
 use Inowas\Common\Modflow\StressPeriods;
@@ -389,9 +390,9 @@ class ModflowModelAggregate extends AggregateRoot
         $this->recordThat(OptimizationInputWasUpdated::byUserToModel($userId, $this->modelId, $input));
     }
 
-    public function updateOptimizationProgress(UserId $userId, OptimizationProgress $progress): void
+    public function updateOptimizationProgress(ModflowId $optimizationId, OptimizationProgress $progress, OptimizationSolutions $solutions): void
     {
-        $this->recordThat(OptimizationProgressWasUpdated::byUserToModel($userId, $this->modelId, $progress));
+        $this->recordThat(OptimizationProgressWasUpdated::byModel($this->modelId, $optimizationId, $progress, $solutions));
     }
 
     /* Soilmodel-Related stuff */

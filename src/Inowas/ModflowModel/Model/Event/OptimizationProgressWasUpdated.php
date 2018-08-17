@@ -5,8 +5,9 @@ declare(strict_types=1);
 namespace Inowas\ModflowModel\Model\Event;
 
 use Inowas\Common\Id\ModflowId;
-use Inowas\Common\Id\UserId;
 use Inowas\Common\Modflow\OptimizationProgress;
+use Inowas\Common\Modflow\OptimizationSolutions;
+use Inowas\Common\Modflow\OptimizationState;
 use Prooph\EventSourcing\AggregateChanged;
 
 /** @noinspection LongInheritanceChainInspection */
@@ -16,31 +17,42 @@ class OptimizationProgressWasUpdated extends AggregateChanged
     /** @var ModflowId */
     private $modflowId;
 
-    /** @var  UserId */
-    private $userId;
+    /** @var  ModflowId */
+    private $optimizationId;
 
     /** @var OptimizationProgress */
     private $progress;
 
+    /** @var OptimizationSolutions */
+    private $solutions;
+
     /** @noinspection MoreThanThreeArgumentsInspection
-     * @param UserId $userId
      * @param ModflowId $modflowId
+     * @param ModflowId $optimizationId
      * @param OptimizationProgress $progress
+     * @param OptimizationSolutions $solutions
      * @return self
      */
-    public static function byUserToModel(UserId $userId, ModflowId $modflowId, OptimizationProgress $progress): self
+    public static function byModel(
+        ModflowId $modflowId,
+        ModflowId $optimizationId,
+        OptimizationProgress $progress,
+        OptimizationSolutions $solutions
+    ): self
     {
         /** @var self $event */
         $event = self::occur(
             $modflowId->toString(), [
-                'user_id' => $userId->toString(),
-                'progress' => $progress->toArray()
+                'optimization_id' => $optimizationId->toString(),
+                'progress' => $progress->toArray(),
+                'solutions' => $solutions->toArray()
             ]
         );
 
         $event->modflowId = $modflowId;
-        $event->userId = $userId;
+        $event->optimizationId = $optimizationId;
         $event->progress = $progress;
+        $event->solutions = $solutions;
 
         return $event;
     }
@@ -54,6 +66,15 @@ class OptimizationProgressWasUpdated extends AggregateChanged
         return $this->modflowId;
     }
 
+    public function optimizationId(): ModflowId
+    {
+        if ($this->optimizationId === null) {
+            $this->optimizationId = ModflowId::fromString($this->payload['optimization_id']);
+        }
+
+        return $this->optimizationId;
+    }
+
     public function progress(): OptimizationProgress
     {
         if ($this->progress === null) {
@@ -63,12 +84,21 @@ class OptimizationProgressWasUpdated extends AggregateChanged
         return $this->progress;
     }
 
-    public function userId(): UserId
+    public function solutions(): OptimizationSolutions
     {
-        if ($this->userId === null) {
-            $this->userId = UserId::fromString($this->payload['user_id']);
+        if ($this->solutions === null) {
+            $this->solutions = OptimizationSolutions::fromArray($this->payload['solutions']);
         }
 
-        return $this->userId;
+        return $this->solutions;
+    }
+
+    public function state(): OptimizationState
+    {
+        if ($this->progress->finished()) {
+            return OptimizationState::fromInt(OptimizationState::FINISHED);
+        }
+
+        return OptimizationState::fromInt(OptimizationState::CALCULATING);
     }
 }

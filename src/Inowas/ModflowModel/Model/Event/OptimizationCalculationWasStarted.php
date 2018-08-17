@@ -6,6 +6,7 @@ namespace Inowas\ModflowModel\Model\Event;
 
 use Inowas\Common\Id\ModflowId;
 use Inowas\Common\Id\UserId;
+use Inowas\Common\Modflow\OptimizationState;
 use Prooph\EventSourcing\AggregateChanged;
 
 /** @noinspection LongInheritanceChainInspection */
@@ -70,5 +71,10 @@ class OptimizationCalculationWasStarted extends AggregateChanged
         }
 
         return $this->userId;
+    }
+
+    public function state(): OptimizationState
+    {
+        return OptimizationState::started();
     }
 }

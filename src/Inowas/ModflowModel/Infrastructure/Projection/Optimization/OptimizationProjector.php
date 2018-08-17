@@ -25,8 +25,8 @@ class OptimizationProjector extends AbstractDoctrineConnectionProjector
         $table->addColumn('model_id', 'string', ['length' => 36, 'notnull' => false]);
         $table->addColumn('input', 'text', ['default' => '[]']);
         $table->addColumn('progress', 'text', ['default' => '[]']);
+        $table->addColumn('solutions', 'text', ['default' => '[]']);
         $table->addColumn('state', 'integer', ['default' => 0]);
-        $table->addColumn('results', 'text', ['default' => '[]']);
         $table->setPrimaryKey(['model_id']);
         $table->addIndex(['model_id']);
         $this->addSchema($schema);
@@ -41,7 +41,11 @@ class OptimizationProjector extends AbstractDoctrineConnectionProjector
 
         if ($result && $result['count'] > 0) {
             $this->connection->update(Table::OPTIMIZATIONS,
-                ['progress' => $event->progress()->toJson()],
+                [
+                    'progress' => $event->progress()->toJson(),
+                    'solutions' => $event->solutions()->toJson(),
+                    'state' => $event->state()->toInt()
+                ],
                 ['model_id' => $event->modelId()->toString()]
             );
         }

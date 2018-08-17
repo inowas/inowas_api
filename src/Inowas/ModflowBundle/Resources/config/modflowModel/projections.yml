@@ -43,16 +43,26 @@ services:
     arguments:
     - '@doctrine.dbal.default_connection'
 
+  inowas.modflowmodel.optimization_finder:
+    class: Inowas\ModflowModel\Infrastructure\Projection\Optimization\OptimizationFinder
+    arguments:
+    - '@doctrine.dbal.default_connection'
+
+  inowas.modflowmodel.optimization_process_finder:
+    class: Inowas\ModflowModel\Infrastructure\Projection\Optimization\OptimizationProcessFinder
+    arguments:
+    - '@doctrine.dbal.default_connection'
+
+  inowas.modflowmodel.optimization_process_queue:
+    class: Inowas\ModflowModel\Infrastructure\Projection\Optimization\OptimizationProcessQueue
+    arguments:
+    - '@doctrine.dbal.default_connection'
+
   inowas.modflowmodel.optimization_projector:
     class: Inowas\ModflowModel\Infrastructure\Projection\Optimization\OptimizationProjector
     arguments:
     - '@doctrine.dbal.default_connection'
     - '@doctrine.orm.default_entity_manager'
-
-  inowas.modflowmodel.optimization_finder:
-    class: Inowas\ModflowModel\Infrastructure\Projection\Optimization\OptimizationFinder
-    arguments:
-    - '@doctrine.dbal.default_connection'
 
   inowas.modflowmodel.model_projector:
     class: Inowas\ModflowModel\Infrastructure\Projection\ModelList\ModelProjector

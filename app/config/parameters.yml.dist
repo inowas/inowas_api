@@ -32,9 +32,10 @@ parameters:
     rabbit_mq_password: 'inowas'
     rabbit_mq_vhost: 'inowas'
 
-    rabbit_mq_calculation_request_queue: 'calculation_request_queue'
-    rabbit_mq_calculation_queue: 'flopy_calculation_queue'
-    rabbit_mq_calculation_finished_queue: 'flopy_calculation_finished_queue'
-    rabbit_mq_geo_processing_queue: rpc_geo_processing_queue
-    rabbit_mq_interpolation_queue: 'rpc_interpolation_queue'
-    rabbit_mq_read_data_queue: 'rpc_flopy_read_data_queue'
+    rabbit_mq_calculation_queue:                    'flopy_calculation_queue'
+    rabbit_mq_calculation_finished_queue:           'flopy_calculation_finished_queue'
+    rabbit_mq_modflow_optimization_queue:           'modflow_optimization_queue'
+    rabbit_mq_modflow_optimization_progress_queue:  'modflow_optimization_progress_queue'
+    rabbit_mq_geo_processing_queue:                 'rpc_geo_processing_queue'
+    rabbit_mq_interpolation_queue:                  'rpc_interpolation_queue'
+    rabbit_mq_read_data_queue:                      'rpc_flopy_read_data_queue'
