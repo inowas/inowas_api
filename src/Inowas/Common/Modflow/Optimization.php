@@ -75,8 +75,8 @@ class Optimization
     public function toArray(): array
     {
         return [
-            'input' => $this->input->toArray(),
-            'progress' => $this->progress->toArray(),
+            'input' => $this->input->toArray() !== [] ? $this->input->toArray() : null,
+            'progress' => $this->progress->toArray() !== [] ? $this->progress->toArray() : null,
             'solutions' => $this->solutions->toArray(),
             'state' => $this->state->toInt(),
         ];
