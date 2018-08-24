@@ -22,12 +22,13 @@ class OptimizationProjector extends AbstractDoctrineConnectionProjector
 
         $schema = new Schema();
         $table = $schema->createTable(Table::OPTIMIZATIONS);
+        $table->addColumn('optimization_id', 'string', ['length' => 36, 'notnull' => false]);
         $table->addColumn('model_id', 'string', ['length' => 36, 'notnull' => false]);
         $table->addColumn('input', 'text', ['default' => '[]']);
         $table->addColumn('progress', 'text', ['default' => '[]']);
         $table->addColumn('solutions', 'text', ['default' => '[]']);
         $table->addColumn('state', 'integer', ['default' => 0]);
-        $table->setPrimaryKey(['model_id']);
+        $table->setPrimaryKey(['optimization_id']);
         $table->addIndex(['model_id']);
         $this->addSchema($schema);
     }
@@ -35,8 +36,8 @@ class OptimizationProjector extends AbstractDoctrineConnectionProjector
     public function onOptimizationProgressWasUpdated(OptimizationProgressWasUpdated $event): void
     {
         $result = $this->connection->fetchAssoc(
-            sprintf('SELECT count(*) FROM %s WHERE model_id = :model_id', Table::OPTIMIZATIONS),
-            ['model_id' => $event->modelId()->toString()]
+            sprintf('SELECT count(*) FROM %s WHERE optimization_id = :optimization_id', Table::OPTIMIZATIONS),
+            ['optimization_id' => $event->optimizationId()->toString()]
         );
 
         if ($result && $result['count'] > 0) {
@@ -46,7 +47,7 @@ class OptimizationProjector extends AbstractDoctrineConnectionProjector
                     'solutions' => $event->solutions()->toJson(),
                     'state' => $event->state()->toInt()
                 ],
-                ['model_id' => $event->modelId()->toString()]
+                ['optimization_id' => $event->optimizationId()->toString()]
             );
         }
     }
@@ -55,11 +56,12 @@ class OptimizationProjector extends AbstractDoctrineConnectionProjector
     {
         $result = $this->connection->fetchAssoc(
             sprintf('SELECT count(*) FROM %s WHERE model_id = :model_id', Table::OPTIMIZATIONS),
-            ['model_id' => $event->modelId()->toString()]
+            ['optimization_id' => $event->optimizationId()->toString()]
         );
 
         if ($result['count'] === 0) {
             $this->connection->insert(Table::OPTIMIZATIONS, [
+                'optimization_id' => $event->optimizationId()->toString(),
                 'model_id' => $event->modelId()->toString(),
                 'input' => $event->input()->toJson()
             ]);
@@ -68,7 +70,7 @@ class OptimizationProjector extends AbstractDoctrineConnectionProjector
         if ($result['count'] === 1) {
             $this->connection->update(Table::OPTIMIZATIONS,
                 ['input' => $event->input()->toJson()],
-                ['model_id' => $event->modelId()->toString()]
+                ['optimization_id' => $event->optimizationId()->toString()]
             );
         }
     }
@@ -76,14 +78,14 @@ class OptimizationProjector extends AbstractDoctrineConnectionProjector
     public function onOptimizationCalculationWasStarted(OptimizationCalculationWasStarted $event): void
     {
         $result = $this->connection->fetchAssoc(
-            sprintf('SELECT count(*) FROM %s WHERE model_id = :model_id', Table::OPTIMIZATIONS),
-            ['model_id' => $event->modelId()->toString()]
+            sprintf('SELECT count(*) FROM %s WHERE optimization_id = :optimization_id', Table::OPTIMIZATIONS),
+            ['optimization_id' => $event->optimizationId()->toString()]
         );
 
         if ($result && $result['count'] > 0) {
             $this->connection->update(Table::OPTIMIZATIONS,
                 ['state' => OptimizationState::STARTED],
-                ['model_id' => $event->modelId()->toString()]
+                ['optimization_id' => $event->optimizationId()->toString()]
             );
         }
     }
@@ -92,13 +94,13 @@ class OptimizationProjector extends AbstractDoctrineConnectionProjector
     {
         $result = $this->connection->fetchAssoc(
             sprintf('SELECT count(*) FROM %s WHERE model_id = :model_id', Table::OPTIMIZATIONS),
-            ['model_id' => $event->modelId()->toString()]
+            ['optimization_id' => $event->optimizationId()->toString()]
         );
 
         if ($result && $result['count'] > 0) {
             $this->connection->update(Table::OPTIMIZATIONS,
                 ['state' => OptimizationState::CANCELLED],
-                ['model_id' => $event->modelId()->toString()]
+                ['optimization_id' => $event->optimizationId()->toString()]
             );
         }
     }

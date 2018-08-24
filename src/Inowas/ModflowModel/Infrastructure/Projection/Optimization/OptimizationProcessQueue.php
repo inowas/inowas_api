@@ -58,7 +58,7 @@ class OptimizationProcessQueue extends AbstractDoctrineConnectionProjector
     {
         $this->connection->update(Table::OPTIMIZATION_PROCESSES, [
             'calculation_id' => $event->calculationId()->toString(),
-            'state' => OptimizationState::calculating(),
+            'state' => OptimizationState::calculating()->toInt(),
         ], [
             'model_id' => $event->modelId()->toString()
         ]);

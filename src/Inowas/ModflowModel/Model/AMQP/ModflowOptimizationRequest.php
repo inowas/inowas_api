@@ -12,7 +12,7 @@ class ModflowOptimizationRequest implements \JsonSerializable
 {
     private $author = '';
     private $project = '';
-    private $type = 'optimization';
+    private $type = 'optimization_start';
 
     /** @var  OptimizationInput */
     private $optimizationInput;
@@ -33,6 +33,16 @@ class ModflowOptimizationRequest implements \JsonSerializable
         $self->modelId = $modelId;
         $self->packages = $packages;
         $self->optimizationInput = $optimizationInput;
+        return $self;
+    }
+
+    public static function fromJson(string $json): self
+    {
+        $arr = \json_decode($json, true);
+        $self = new self();
+        $self->modelId = ModflowId::fromString($arr['model_id']);
+        $self->packages = ModflowPackages::fromArray($arr['data']);
+        $self->optimizationInput = OptimizationInput::fromArray($arr['optimization']);
         return $self;
     }
 

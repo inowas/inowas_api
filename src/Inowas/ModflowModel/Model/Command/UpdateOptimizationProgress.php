@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Inowas\ModflowModel\Model\Command;
 
+use Inowas\Common\Id\ModflowId;
 use Inowas\ModflowModel\Model\AMQP\ModflowOptimizationResponse;
 use Prooph\Common\Messaging\Command;
 use Prooph\Common\Messaging\PayloadConstructable;
@@ -31,5 +32,10 @@ class UpdateOptimizationProgress extends Command implements PayloadConstructable
     public function response(): ModflowOptimizationResponse
     {
         return ModflowOptimizationResponse::fromArray($this->payload['response']);
+    }
+
+    public function optimizationId(): ModflowId
+    {
+        return ModflowOptimizationResponse::fromArray($this->payload['response'])->optimizationId();
     }
 }

@@ -19,7 +19,6 @@ class CalculationProcessQueue extends AbstractDoctrineConnectionProjector
 
     public function __construct(Connection $connection)
     {
-
         parent::__construct($connection);
 
         $schema = new Schema();

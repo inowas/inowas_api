@@ -17,21 +17,15 @@ class ModflowOptimizationResponse
     protected $statusCode;
 
     /** @var ModflowId */
-    protected $modelId;
-
-    /** @var CalculationId */
-    protected $calculationId;
-
-    /** @var ModflowId */
     protected $optimizationId;
 
     /** @var string */
     protected $message;
 
-    /** @var  OptimizationSolutions */
+    /** @var  array */
     protected $solutions;
 
-    /** @var  OptimizationProgress */
+    /** @var  array */
     protected $progress;
 
 
@@ -48,12 +42,10 @@ class ModflowOptimizationResponse
     {
         $self = new self();
         $self->statusCode = StatusCode::fromInt((int)$arr['status_code']);
-        $self->modelId = ModflowId::fromString($arr['model_id']);
-        $self->calculationId = CalculationId::fromString($arr['calculation_id']);
         $self->optimizationId = ModflowId::fromString($arr['optimization_id']);
         $self->message = $arr['message'] ?? '';
-        $self->solutions = OptimizationSolutions::fromArray($arr['solutions']);
-        $self->progress = OptimizationProgress::fromArray($arr['progress'] ?? []);
+        $self->solutions = $arr['solutions'] ?? [];
+        $self->progress = $arr['progress'] ?? [];
 
         return $self;
     }
@@ -65,28 +57,16 @@ class ModflowOptimizationResponse
     {
         return [
             'status_code' => $this->statusCode->toInt(),
-            'model_id' => $this->modelId->toString(),
-            'calculation_id' => $this->calculationId->toString(),
             'optimization_id' => $this->optimizationId->toString(),
             'message' => $this->message,
-            'solutions' => $this->solutions->toArray(),
-            'progress' => $this->progress->toArray()
+            'solutions' => $this->solutions,
+            'progress' => $this->progress
         ];
     }
 
     public function statusCode(): StatusCode
     {
         return $this->statusCode;
-    }
-
-    public function modelId(): ModflowId
-    {
-        return $this->modelId;
-    }
-
-    public function calculationId(): CalculationId
-    {
-        return $this->calculationId;
     }
 
     public function message(): string
@@ -101,11 +81,11 @@ class ModflowOptimizationResponse
 
     public function solutions(): OptimizationSolutions
     {
-        return $this->solutions;
+        return OptimizationSolutions::fromArray($this->solutions);
     }
 
     public function progress(): OptimizationProgress
     {
-        return $this->progress;
+        return OptimizationProgress::fromArray($this->progress);
     }
 }

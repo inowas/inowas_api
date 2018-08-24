@@ -46,4 +46,22 @@ class OptimizationFinder
             'results' => \json_decode($result['results'], true)
         ]);
     }
+
+    /**
+     * @param ModflowId $optimizationId
+     * @return Optimization|null
+     */
+    public function getModelId(ModflowId $optimizationId): ?ModflowId
+    {
+        $result = $this->connection->fetchAssoc(
+            sprintf('SELECT model_id FROM %s WHERE optimization_id = :optimization_id', Table::OPTIMIZATIONS),
+            ['optimization_id' => $optimizationId->toString()]
+        );
+
+        if ($result === false) {
+            return null;
+        }
+
+        return ModflowId::fromString($result['model_id']);
+    }
 }
