@@ -43,7 +43,7 @@ class OptimizationFinder
             'input' => \json_decode($result['input'], true),
             'state' => (int)$result['state'],
             'progress' => \json_decode($result['progress'], true),
-            'results' => \json_decode($result['results'], true)
+            'solutions' => \json_decode($result['solutions'], true)
         ]);
     }
 

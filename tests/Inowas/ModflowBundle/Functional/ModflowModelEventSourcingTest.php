@@ -920,17 +920,17 @@ class ModflowModelEventSourcingTest extends EventSourcingBaseTest
         $this->assertInstanceOf(Optimization::class, $optimization);
         $this->assertEquals($optimizationInput, $optimization->input());
 
-        $changedOptimizationInput = OptimizationInput::fromArray(['456' => 456, '789' => 111]);
+        $changedOptimizationInput = OptimizationInput::fromArray(['id' => $optimizationId->toString(), '456' => 456, '789' => 111]);
         $this->commandBus->dispatch(UpdateOptimizationInput::forModflowModel($ownerId, $modelId, $changedOptimizationInput));
         $optimization = $optimizationFinder->getOptimization($modelId);
         $this->assertInstanceOf(Optimization::class, $optimization);
         $this->assertEquals($changedOptimizationInput, $optimization->input());
 
-        $this->commandBus->dispatch(CalculateOptimization::forModflowModel($ownerId, $modelId, $modelId));
+        $this->commandBus->dispatch(CalculateOptimization::forModflowModel($ownerId, $modelId, $optimizationId));
         $optimization = $optimizationFinder->getOptimization($modelId);
         $this->assertEquals(OptimizationState::STARTED, $optimization->state()->toInt());
 
-        $this->commandBus->dispatch(CancelOptimizationCalculation::forModflowModel($ownerId, $modelId));
+        $this->commandBus->dispatch(CancelOptimizationCalculation::forModflowModel($ownerId, $modelId, $optimizationId));
         $optimization = $optimizationFinder->getOptimization($modelId);
         $this->assertEquals(OptimizationState::CANCELLED, $optimization->state()->toInt());
     }

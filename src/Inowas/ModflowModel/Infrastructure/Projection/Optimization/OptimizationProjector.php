@@ -55,7 +55,7 @@ class OptimizationProjector extends AbstractDoctrineConnectionProjector
     public function onOptimizationInputWasUpdated(OptimizationInputWasUpdated $event): void
     {
         $result = $this->connection->fetchAssoc(
-            sprintf('SELECT count(*) FROM %s WHERE model_id = :model_id', Table::OPTIMIZATIONS),
+            sprintf('SELECT count(*) FROM %s WHERE optimization_id = :optimization_id', Table::OPTIMIZATIONS),
             ['optimization_id' => $event->optimizationId()->toString()]
         );
 
@@ -93,7 +93,7 @@ class OptimizationProjector extends AbstractDoctrineConnectionProjector
     public function onOptimizationCalculationWasCanceled(OptimizationCalculationWasCanceled $event): void
     {
         $result = $this->connection->fetchAssoc(
-            sprintf('SELECT count(*) FROM %s WHERE model_id = :model_id', Table::OPTIMIZATIONS),
+            sprintf('SELECT count(*) FROM %s WHERE optimization_id = :optimization_id', Table::OPTIMIZATIONS),
             ['optimization_id' => $event->optimizationId()->toString()]
         );
 
