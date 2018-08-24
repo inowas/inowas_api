@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Inowas\ModflowBundle\Command;
 
-use Inowas\Common\DataStructures\JsonArray;
+use Inowas\Common\DataStructures\JsonObject;
 use Inowas\ModflowModel\Service\AMQPBasicProducer;
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 use Symfony\Component\Console\Input\InputArgument;
@@ -36,7 +36,7 @@ class ModflowOptimizationCommand extends ContainerAwareCommand
         $json = file_get_contents($rootDir.'/../'.$input->getArgument('filename'));
 
         $this->producer = $this->getContainer()->get('inowas.modflowmodel.amqp_modflow_optimization');
-        $this->producer->publish(JsonArray::fromJson($json));
+        $this->producer->publish(JsonObject::fromJson($json));
 
         $callback = function ($msg) {
             echo ' [+] Submitting result metadata from calculation', "\n";

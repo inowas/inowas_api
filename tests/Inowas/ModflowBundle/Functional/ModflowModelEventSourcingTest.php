@@ -911,7 +911,8 @@ class ModflowModelEventSourcingTest extends EventSourcingBaseTest
         $modelId = ModflowId::generate();
         $this->createModelWithOneLayer($ownerId, $modelId);
 
-        $optimizationInput = OptimizationInput::fromArray(['123' => 456, '789' => 111]);
+        $optimizationId = ModflowId::generate();
+        $optimizationInput = OptimizationInput::fromArray(['id' => $optimizationId->toString(), '123' => 456, '789' => 111]);
 
         $this->commandBus->dispatch(UpdateOptimizationInput::forModflowModel($ownerId, $modelId, $optimizationInput));
         $optimizationFinder = $this->container->get('inowas.modflowmodel.optimization_finder');
