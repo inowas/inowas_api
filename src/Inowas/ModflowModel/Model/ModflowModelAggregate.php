@@ -21,6 +21,7 @@ use Inowas\Common\Modflow\Description;
 use Inowas\Common\Modflow\OptimizationInput;
 use Inowas\Common\Modflow\OptimizationProgress;
 use Inowas\Common\Modflow\OptimizationSolutions;
+use Inowas\Common\Modflow\OptimizationState;
 use Inowas\Common\Modflow\PackageName;
 use Inowas\Common\Modflow\ParameterName;
 use Inowas\Common\Modflow\StressPeriods;
@@ -53,9 +54,10 @@ use Inowas\ModflowModel\Model\Event\ModflowPackageParameterWasUpdated;
 use Inowas\ModflowModel\Model\Event\ModflowPackageWasUpdated;
 use Inowas\ModflowModel\Model\Event\Mt3dmsWasUpdated;
 use Inowas\ModflowModel\Model\Event\NameWasChanged;
+use Inowas\ModflowModel\Model\Event\OptimizationCalculationStateWasUpdated;
 use Inowas\ModflowModel\Model\Event\OptimizationCalculationWasCanceled;
 use Inowas\ModflowModel\Model\Event\OptimizationCalculationWasStarted;
-use Inowas\ModflowModel\Model\Event\OptimizationProgressWasUpdated;
+use Inowas\ModflowModel\Model\Event\OptimizationCalculationProgressWasUpdated;
 use Inowas\ModflowModel\Model\Event\OptimizationInputWasUpdated;
 use Inowas\ModflowModel\Model\Event\PreProcessingWasFinished;
 use Inowas\ModflowModel\Model\Event\SoilmodelMetadataWasUpdated;
@@ -390,9 +392,14 @@ class ModflowModelAggregate extends AggregateRoot
         $this->recordThat(OptimizationInputWasUpdated::byUserToModel($userId, $this->modelId, $input));
     }
 
-    public function updateOptimizationProgress(ModflowId $optimizationId, OptimizationProgress $progress, OptimizationSolutions $solutions): void
+    public function updateOptimizationCalculationProgress(ModflowId $optimizationId, OptimizationProgress $progress, OptimizationSolutions $solutions): void
     {
-        $this->recordThat(OptimizationProgressWasUpdated::byModel($this->modelId, $optimizationId, $progress, $solutions));
+        $this->recordThat(OptimizationCalculationProgressWasUpdated::byModel($this->modelId, $optimizationId, $progress, $solutions));
+    }
+
+    public function updateOptimizationCalculationState(ModflowId $optimizationId, OptimizationState $state): void
+    {
+        $this->recordThat(OptimizationCalculationStateWasUpdated::byModel($this->modelId, $optimizationId, $state));
     }
 
     /* Soilmodel-Related stuff */
@@ -500,7 +507,11 @@ class ModflowModelAggregate extends AggregateRoot
     {
     }
 
-    protected function whenOptimizationProgressWasUpdated(OptimizationProgressWasUpdated $event): void
+    protected function whenOptimizationCalculationProgressWasUpdated(OptimizationCalculationProgressWasUpdated $event): void
+    {
+    }
+
+    protected function whenOptimizationCalculationStateWasUpdated(OptimizationCalculationStateWasUpdated $event): void
     {
     }
 

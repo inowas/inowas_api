@@ -7,6 +7,7 @@ namespace Inowas\ModflowModel\Infrastructure\Projection\Optimization;
 use Doctrine\DBAL\Connection;
 use Inowas\Common\Id\ModflowId;
 use Inowas\Common\Modflow\Optimization;
+use Inowas\Common\Modflow\OptimizationState;
 use Inowas\ModflowModel\Infrastructure\Projection\Table;
 
 class OptimizationFinder
@@ -63,5 +64,33 @@ class OptimizationFinder
         }
 
         return ModflowId::fromString($result['model_id']);
+    }
+
+    public function getNextOptimizationToCalculate(): ?array
+    {
+        $result = $this->connection->fetchAssoc(
+            sprintf('SELECT * FROM %s WHERE state = :state ORDER BY updated_at DESC LIMIT 1', Table::OPTIMIZATIONS),
+            ['state' => OptimizationState::STARTED]
+        );
+
+        if (\is_array($result)) {
+            return $result;
+        }
+
+        return null;
+    }
+
+    public function getNextOptimizationToCancel(): ?array
+    {
+        $result = $this->connection->fetchAssoc(
+            sprintf('SELECT * FROM %s WHERE state = :state ORDER BY updated_at DESC LIMIT 1', Table::OPTIMIZATIONS),
+            ['state' => OptimizationState::CANCELLING]
+        );
+
+        if (\is_array($result)) {
+            return $result;
+        }
+
+        return null;
     }
 }

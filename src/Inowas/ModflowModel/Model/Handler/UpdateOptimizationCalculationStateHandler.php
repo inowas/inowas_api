@@ -7,12 +7,12 @@ namespace Inowas\ModflowModel\Model\Handler;
 use Inowas\Common\Id\ModflowId;
 use Inowas\ModflowModel\Infrastructure\Projection\Optimization\OptimizationFinder;
 use Inowas\ModflowModel\Model\AMQP\ModflowOptimizationResponse;
-use Inowas\ModflowModel\Model\Command\UpdateOptimizationProgress;
+use Inowas\ModflowModel\Model\Command\UpdateOptimizationCalculationState;
 use Inowas\ModflowModel\Model\Exception\ModflowModelNotFoundException;
 use Inowas\ModflowModel\Model\ModflowModelList;
 use Inowas\ModflowModel\Model\ModflowModelAggregate;
 
-final class UpdateOptimizationProgressHandler
+final class UpdateOptimizationCalculationStateHandler
 {
 
     /** @var  ModflowModelList */
@@ -32,16 +32,17 @@ final class UpdateOptimizationProgressHandler
     }
 
     /**
-     * @param UpdateOptimizationProgress $command
+     * @param UpdateOptimizationCalculationState $command
      * @throws \Exception
      */
-    public function __invoke(UpdateOptimizationProgress $command)
+    public function __invoke(UpdateOptimizationCalculationState $command)
     {
-        /** @var ModflowOptimizationResponse $response */
-        $response = $command->response();
 
-        /** @var ModflowId $modelId */
-        $modelId = $this->optimizationFinder->getModelId($command->optimizationId());
+        $modelId = $command->modelId();
+
+        if (!$modelId instanceof ModflowId) {
+            $modelId = $this->optimizationFinder->getModelId($command->optimizationId());
+        }
 
         /** @var ModflowModelAggregate $model */
         $model = $this->modelList->get($modelId);
@@ -50,7 +51,13 @@ final class UpdateOptimizationProgressHandler
             throw ModflowModelNotFoundException::withModelId($modelId);
         }
 
-        $model->updateOptimizationProgress($response->optimizationId(), $response->progress(), $response->solutions());
+        $model->updateOptimizationCalculationState($command->optimizationId(), $command->state());
+
+        if ($command->response() instanceof ModflowOptimizationResponse) {
+            $response = $command->response();
+            $model->updateOptimizationCalculationProgress($response->optimizationId(), $response->progress(), $response->solutions());
+        }
+
         $this->modelList->save($model);
     }
 }

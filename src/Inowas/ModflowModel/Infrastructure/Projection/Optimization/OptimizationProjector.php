@@ -9,9 +9,10 @@ use Doctrine\DBAL\Schema\Schema;
 use Inowas\Common\Modflow\OptimizationState;
 use Inowas\Common\Projection\AbstractDoctrineConnectionProjector;
 use Inowas\ModflowModel\Infrastructure\Projection\Table;
+use Inowas\ModflowModel\Model\Event\OptimizationCalculationStateWasUpdated;
 use Inowas\ModflowModel\Model\Event\OptimizationCalculationWasCanceled;
 use Inowas\ModflowModel\Model\Event\OptimizationCalculationWasStarted;
-use Inowas\ModflowModel\Model\Event\OptimizationProgressWasUpdated;
+use Inowas\ModflowModel\Model\Event\OptimizationCalculationProgressWasUpdated;
 use Inowas\ModflowModel\Model\Event\OptimizationInputWasUpdated;
 
 class OptimizationProjector extends AbstractDoctrineConnectionProjector
@@ -28,80 +29,75 @@ class OptimizationProjector extends AbstractDoctrineConnectionProjector
         $table->addColumn('progress', 'text', ['default' => '[]']);
         $table->addColumn('solutions', 'text', ['default' => '[]']);
         $table->addColumn('state', 'integer', ['default' => 0]);
-        $table->setPrimaryKey(['optimization_id']);
+        $table->addColumn('created_at', 'integer', ['default' => 0]);
+        $table->addColumn('updated_at', 'integer', ['default' => 0]);
+        $table->setPrimaryKey(['optimization_id', 'model_id']);
         $table->addIndex(['model_id']);
         $this->addSchema($schema);
-    }
-
-    public function onOptimizationProgressWasUpdated(OptimizationProgressWasUpdated $event): void
-    {
-        $result = $this->connection->fetchAssoc(
-            sprintf('SELECT count(*) FROM %s WHERE optimization_id = :optimization_id', Table::OPTIMIZATIONS),
-            ['optimization_id' => $event->optimizationId()->toString()]
-        );
-
-        if ($result && $result['count'] > 0) {
-            $this->connection->update(Table::OPTIMIZATIONS,
-                [
-                    'progress' => $event->progress()->toJson(),
-                    'solutions' => $event->solutions()->toJson(),
-                    'state' => $event->state()->toInt()
-                ],
-                ['optimization_id' => $event->optimizationId()->toString()]
-            );
-        }
     }
 
     public function onOptimizationInputWasUpdated(OptimizationInputWasUpdated $event): void
     {
         $result = $this->connection->fetchAssoc(
             sprintf('SELECT count(*) FROM %s WHERE optimization_id = :optimization_id', Table::OPTIMIZATIONS),
-            ['optimization_id' => $event->optimizationId()->toString()]
+            ['model_id' => $event->modelId()->toString(), 'optimization_id' => $event->optimizationId()->toString()]
         );
 
         if ($result['count'] === 0) {
             $this->connection->insert(Table::OPTIMIZATIONS, [
                 'optimization_id' => $event->optimizationId()->toString(),
                 'model_id' => $event->modelId()->toString(),
-                'input' => $event->input()->toJson()
+                'input' => $event->input()->toJson(),
+                'created_at' => $event->createdAt()->getTimestamp(),
+                'updated_at' => $event->createdAt()->getTimestamp()
             ]);
         }
 
         if ($result['count'] === 1) {
             $this->connection->update(Table::OPTIMIZATIONS,
-                ['input' => $event->input()->toJson()],
-                ['optimization_id' => $event->optimizationId()->toString()]
+                [
+                    'input' => $event->input()->toJson(),
+                    'updated_at' => $event->createdAt()->getTimestamp()
+                ],
+                ['model_id' => $event->modelId()->toString(), 'optimization_id' => $event->optimizationId()->toString()]
             );
         }
     }
 
     public function onOptimizationCalculationWasStarted(OptimizationCalculationWasStarted $event): void
     {
-        $result = $this->connection->fetchAssoc(
-            sprintf('SELECT count(*) FROM %s WHERE optimization_id = :optimization_id', Table::OPTIMIZATIONS),
-            ['optimization_id' => $event->optimizationId()->toString()]
+        $this->connection->update(Table::OPTIMIZATIONS,
+            ['state' => OptimizationState::STARTED, 'updated_at' => $event->createdAt()->getTimestamp()],
+            ['model_id' => $event->modelId()->toString(), 'optimization_id' => $event->optimizationId()->toString()]
         );
+    }
 
-        if ($result && $result['count'] > 0) {
-            $this->connection->update(Table::OPTIMIZATIONS,
-                ['state' => OptimizationState::STARTED],
-                ['optimization_id' => $event->optimizationId()->toString()]
-            );
-        }
+    public function onOptimizationCalculationStateWasUpdated(OptimizationCalculationStateWasUpdated $event): void
+    {
+        $this->connection->update(Table::OPTIMIZATIONS,
+            ['state' => $event->state()->toInt(), 'updated_at' => $event->createdAt()->getTimestamp()],
+            ['model_id' => $event->modelId()->toString(), 'optimization_id' => $event->optimizationId()->toString()]
+        );
+    }
+
+    public function onOptimizationCalculationProgressWasUpdated(OptimizationCalculationProgressWasUpdated $event): void
+    {
+        $this->connection->update(Table::OPTIMIZATIONS,
+            [
+                'progress' => $event->progress()->toJson(),
+                'solutions' => $event->solutions()->toJson(),
+                'state' => $event->state()->toInt(),
+                'updated_at' => $event->createdAt()->getTimestamp()
+            ],
+            ['model_id' => $event->modelId()->toString(), 'optimization_id' => $event->optimizationId()->toString()]
+        );
     }
 
     public function onOptimizationCalculationWasCanceled(OptimizationCalculationWasCanceled $event): void
     {
-        $result = $this->connection->fetchAssoc(
-            sprintf('SELECT count(*) FROM %s WHERE optimization_id = :optimization_id', Table::OPTIMIZATIONS),
-            ['optimization_id' => $event->optimizationId()->toString()]
+        $this->connection->update(Table::OPTIMIZATIONS,
+            ['state' => OptimizationState::CANCELLING, 'updated_at' => $event->createdAt()->getTimestamp()],
+            ['model_id' => $event->modelId()->toString(), 'optimization_id' => $event->optimizationId()->toString()]
         );
-
-        if ($result && $result['count'] > 0) {
-            $this->connection->update(Table::OPTIMIZATIONS,
-                ['state' => OptimizationState::CANCELLED],
-                ['optimization_id' => $event->optimizationId()->toString()]
-            );
-        }
     }
 }

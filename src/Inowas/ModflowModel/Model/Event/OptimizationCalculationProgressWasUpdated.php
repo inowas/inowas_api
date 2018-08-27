@@ -10,8 +10,7 @@ use Inowas\Common\Modflow\OptimizationSolutions;
 use Inowas\Common\Modflow\OptimizationState;
 use Prooph\EventSourcing\AggregateChanged;
 
-/** @noinspection LongInheritanceChainInspection */
-class OptimizationProgressWasUpdated extends AggregateChanged
+class OptimizationCalculationProgressWasUpdated extends AggregateChanged
 {
 
     /** @var ModflowId */

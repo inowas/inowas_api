@@ -6,7 +6,7 @@ namespace Inowas\ModflowBundle\Command;
 
 use Inowas\Common\Id\UserId;
 use Inowas\ModflowModel\Model\AMQP\ModflowOptimizationResponse;
-use Inowas\ModflowModel\Model\Command\UpdateOptimizationProgress;
+use Inowas\ModflowModel\Model\Command\UpdateOptimizationCalculationState;
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -33,7 +33,7 @@ class ModflowOptimizationProgressListenerCommand extends ContainerAwareCommand
 
             try {
                 $commandBus = $this->getContainer()->get('prooph_service_bus.modflow_command_bus');
-                $commandBus->dispatch(UpdateOptimizationProgress::withProgressUpdate(
+                $commandBus->dispatch(UpdateOptimizationCalculationState::calculatingWithProgressUpdate(
                     ModflowOptimizationResponse::fromJson($msg->body)
                 ));
             } catch (\Exception $exception) {

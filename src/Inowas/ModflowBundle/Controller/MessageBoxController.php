@@ -23,7 +23,6 @@ use Inowas\ModflowModel\Model\Command\UpdateModflowModel;
 use Inowas\ModflowModel\Model\Command\UpdateModflowPackage;
 use Inowas\ModflowModel\Model\Command\UpdateMt3dms;
 use Inowas\ModflowModel\Model\Command\UpdateOptimizationInput;
-use Inowas\ModflowModel\Model\Command\UpdateOptimizationProgress;
 use Inowas\ModflowModel\Model\Command\UpdateStressPeriods;
 use Inowas\ScenarioAnalysis\Model\Command\CloneScenarioAnalysis;
 use Inowas\ScenarioAnalysis\Model\Command\CreateScenario;
@@ -70,7 +69,6 @@ class MessageBoxController extends InowasRestController
         'updateModflowPackage' => UpdateModflowPackage::class,
         'updateMt3dms' => UpdateMt3dms::class,
         'updateOptimizationInput' => UpdateOptimizationInput::class,
-        'updateOptimizationProgress' => UpdateOptimizationProgress::class,
         'updateScenarioAnalysis' => UpdateScenarioAnalysis::class,
         'updateStressPeriods' => UpdateStressPeriods::class,
         'updateToolInstance' => UpdateToolInstance::class,

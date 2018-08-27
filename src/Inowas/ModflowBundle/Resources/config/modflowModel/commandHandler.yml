@@ -154,8 +154,8 @@ services:
     arguments:
     - '@modflow_model_list'
 
-  inowas.modflowmodel.update_optimization_progress_handler:
-    class: Inowas\ModflowModel\Model\Handler\UpdateOptimizationProgressHandler
+  inowas.modflowmodel.update_optimization_calculation_state_handler:
+    class: Inowas\ModflowModel\Model\Handler\UpdateOptimizationCalculationStateHandler
     arguments:
     - '@modflow_model_list'
     - '@inowas.modflowmodel.optimization_finder'

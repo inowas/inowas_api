@@ -8,7 +8,7 @@ use Inowas\Common\Id\ModflowId;
 use Inowas\Common\Modflow\OptimizationInput;
 use Inowas\ModflowModel\Model\ModflowPackages;
 
-class ModflowOptimizationRequest implements \JsonSerializable
+class ModflowOptimizationStartRequest implements \JsonSerializable
 {
     private $author = '';
     private $project = '';
@@ -23,7 +23,7 @@ class ModflowOptimizationRequest implements \JsonSerializable
     /** @var  ModflowPackages */
     private $packages;
 
-    public static function fromParams(
+    public static function startOptimization(
         ModflowId $modelId,
         ModflowPackages $packages,
         OptimizationInput $optimizationInput
