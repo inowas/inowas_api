@@ -562,7 +562,7 @@ class ModflowModelController extends InowasRestController
         if ($query instanceof CalculationStateQuery) {
 
             if ($query->calculationWasFinished()) {
-                $query->updateFiles($this->get('inowas.modflowmodel.modflow_calculation_finder')->getFileList($calculationId));
+                $query->updateFiles($this->get('inowas.modflowmodel.modflow_model_results_loader')->getFileList($calculationId));
             }
 
             return new JsonResponse($query);

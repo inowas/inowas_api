@@ -50,7 +50,7 @@ class ModflowGetHeadsCommand extends ContainerAwareCommand
         }
 
         $head = $this->getContainer()
-            ->get('inowas.modflowmodel.modflow_calculation_finder')
+            ->get('inowas.modflowmodel.modflow_model_results_loader')
             ->findHeadData(
                 $calculationId,
                 ResultType::fromString(ResultType::HEAD_TYPE),

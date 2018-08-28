@@ -48,6 +48,11 @@ services:
         arguments:
             - '@inowas.modflowmodel.boundary_finder'
 
+    inowas.modflowmodel.modflow_model_results_loader:
+        class: Inowas\ModflowModel\Service\ModflowModelResultsLoader
+        arguments:
+            - '@inowas.modflowmodel.amqp_read_data'
+
     inowas.modflowmodel.layers_persister:
         class: Inowas\ModflowModel\Service\LayersPersister
         arguments:

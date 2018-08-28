@@ -125,7 +125,7 @@ class ModflowCalculationController extends InowasRestController
      */
     public function getCalculationFileAction(string $id, string $extension): JsonResponse
     {
-        $file = $this->get('inowas.modflowmodel.modflow_calculation_finder')->getFile(CalculationId::fromString($id), Extension::fromString($extension));
+        $file = $this->get('inowas.modflowmodel.modflow_model_results_loader')->getFile(CalculationId::fromString($id), Extension::fromString($extension));
         return new JsonResponse($file);
     }
 
@@ -146,7 +146,7 @@ class ModflowCalculationController extends InowasRestController
      */
     public function getCalculationFileListAction(string $id): JsonResponse
     {
-        $list = $this->get('inowas.modflowmodel.modflow_calculation_finder')->getFileList(CalculationId::fromString($id));
+        $list = $this->get('inowas.modflowmodel.modflow_model_results_loader')->getFileList(CalculationId::fromString($id));
         return new JsonResponse($list);
     }
 
@@ -171,7 +171,7 @@ class ModflowCalculationController extends InowasRestController
      */
     public function getCalculationHeadResultsByTypeLayerAndTotimAction(string $id, string $resultType, string $layer, string $totim): JsonResponse
     {
-        $headData = $this->get('inowas.modflowmodel.modflow_calculation_finder')->findHeadData(
+        $headData = $this->get('inowas.modflowmodel.modflow_model_results_loader')->findHeadData(
             CalculationId::fromString($id),
             ResultType::fromString($resultType),
             LayerNumber::fromInt((int)$layer),
@@ -208,7 +208,7 @@ class ModflowCalculationController extends InowasRestController
      */
     public function getCalculationHeadResultsDifferenceByTypeLayerAndTotimAction(string $id, string $id2, string $type, string $layer, string $totim): JsonResponse
     {
-        $headData = $this->get('inowas.modflowmodel.modflow_calculation_finder')->findHeadDifference(
+        $headData = $this->get('inowas.modflowmodel.modflow_model_results_loader')->findHeadDifference(
             CalculationId::fromString($id),
             CalculationId::fromString($id2),
             ResultType::fromString($type),
