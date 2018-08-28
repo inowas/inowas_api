@@ -74,7 +74,7 @@ class RasterfileController extends InowasRestController
         }
 
         /** @var GeoProcessingResponse $response */
-        $response = $this->get('inowas.modflowmodel.amqp_geo_processing')->sendRequest(
+        $response = $this->get('inowas.modflowmodel.amqp_geo_processing')->send(
             GeoProcessingRequest::withMethodAndParameters(
                 GeoProcessingRequest::METHOD_EXTRACT_RASTER_DATA, [
                     'file' => $rasterFile->getFilename(),
