@@ -51,6 +51,9 @@ final class ModflowModel implements \JsonSerializable
     /** @var Visibility */
     private $visibility;
 
+    /** @var bool */
+    private $dirty;
+
     /** @noinspection MoreThanThreeArgumentsInspection
      * @param ModflowId $id
      * @param Name $name
@@ -61,10 +64,11 @@ final class ModflowModel implements \JsonSerializable
      * @param TimeUnit $timeUnit
      * @param LengthUnit $lengthUnit
      * @param ActiveCells $activeCells
-     * @param StressPeriods $stressPeriods
      * @param Mt3dms $mt3dms
+     * @param StressPeriods $stressPeriods
      * @param UserPermission $userPermission
      * @param Visibility $visibility
+     * @param bool $dirty
      * @return ModflowModel
      */
     public static function fromParams(
@@ -80,7 +84,8 @@ final class ModflowModel implements \JsonSerializable
         Mt3dms $mt3dms,
         StressPeriods $stressPeriods,
         UserPermission $userPermission,
-        Visibility $visibility
+        Visibility $visibility,
+        bool $dirty
     ): ModflowModel
     {
         $self = new self();
@@ -97,6 +102,7 @@ final class ModflowModel implements \JsonSerializable
         $self->mt3dms = $mt3dms;
         $self->userPermission = $userPermission;
         $self->visibility = $visibility;
+        $self->dirty = $dirty;
         return $self;
     }
 
@@ -162,6 +168,11 @@ final class ModflowModel implements \JsonSerializable
         return $this->mt3dms;
     }
 
+    public function dirty(): bool
+    {
+        return $this->dirty;
+    }
+
     public function toArray(): array
     {
         return array(
@@ -180,7 +191,8 @@ final class ModflowModel implements \JsonSerializable
             'stress_periods' => $this->stressPeriods->toArray(),
             'mt3dms' => $this->mt3dms->toArray(),
             'permissions' => $this->userPermission->toString(),
-            'public' => $this->visibility->isPublic()
+            'public' => $this->visibility->isPublic(),
+            'dirty' => $this->dirty()
         );
     }
 

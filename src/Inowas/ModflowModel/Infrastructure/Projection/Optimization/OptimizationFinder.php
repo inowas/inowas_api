@@ -50,7 +50,7 @@ class OptimizationFinder
 
     /**
      * @param ModflowId $optimizationId
-     * @return Optimization|null
+     * @return ModflowId|null
      */
     public function getModelId(ModflowId $optimizationId): ?ModflowId
     {
@@ -69,7 +69,7 @@ class OptimizationFinder
     public function getNextOptimizationToCalculate(): ?array
     {
         $result = $this->connection->fetchAssoc(
-            sprintf('SELECT * FROM %s WHERE state = :state ORDER BY updated_at DESC LIMIT 1', Table::OPTIMIZATIONS),
+            sprintf('SELECT * FROM %s WHERE state = :state ORDER BY updated_at ASC LIMIT 1', Table::OPTIMIZATIONS),
             ['state' => OptimizationState::STARTED]
         );
 
@@ -83,7 +83,7 @@ class OptimizationFinder
     public function getNextOptimizationToCancel(): ?array
     {
         $result = $this->connection->fetchAssoc(
-            sprintf('SELECT * FROM %s WHERE state = :state ORDER BY updated_at DESC LIMIT 1', Table::OPTIMIZATIONS),
+            sprintf('SELECT * FROM %s WHERE state = :state ORDER BY updated_at ASC LIMIT 1', Table::OPTIMIZATIONS),
             ['state' => OptimizationState::CANCELLING]
         );
 

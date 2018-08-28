@@ -9,7 +9,6 @@ use Inowas\ModflowModel\Infrastructure\Projection\Optimization\OptimizationFinde
 use Inowas\ModflowModel\Model\AMQP\ModflowOptimizationStartRequest;
 use Inowas\ModflowModel\Model\AMQP\ModflowOptimizationStopRequest;
 use Inowas\ModflowModel\Model\Command\CalculateModflowModel;
-use Inowas\ModflowModel\Model\Command\UpdateCalculationId;
 use Inowas\ModflowModel\Model\Command\UpdateOptimizationCalculationState;
 use Inowas\ModflowModel\Service\AMQPBasicProducer;
 use Inowas\ModflowModel\Service\ModflowPackagesManager;
@@ -100,7 +99,6 @@ class ModflowOptimizationProcessorCommand extends ContainerAwareCommand
         $this->commandBus->dispatch(UpdateOptimizationCalculationState::preprocessingFinished($optimizationId, $newCalculationId));
 
         if ($currentCalculationId->toString() !== $newCalculationId->toString()) {
-            $this->commandBus->dispatch(UpdateCalculationId::withId($modelId, $newCalculationId));
             $this->commandBus->dispatch(CalculateModflowModel::forModflowModelFromTerminal($modelId));
         }
 

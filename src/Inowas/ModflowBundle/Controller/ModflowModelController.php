@@ -403,7 +403,7 @@ class ModflowModelController extends InowasRestController
             return new JsonResponse([]);
         }
 
-        $results = $this->get('inowas.modflowmodel.calculation_results_finder')->getCalculationResults($calculationId);
+        $results = $this->get('inowas.modflowmodel.modflow_calculation_finder')->getCalculationResults($calculationId);
 
         if (!$results instanceof Results) {
             return new JsonResponse([]);
@@ -558,11 +558,11 @@ class ModflowModelController extends InowasRestController
             return new JsonResponse($query);
         }
 
-        $query = $this->get('inowas.modflowmodel.calculation_results_finder')->getCalculationStateQuery($calculationId);
+        $query = $this->get('inowas.modflowmodel.modflow_calculation_finder')->getCalculationStateQuery($calculationId);
         if ($query instanceof CalculationStateQuery) {
 
             if ($query->calculationWasFinished()) {
-                $query->updateFiles($this->get('inowas.modflowmodel.calculation_results_finder')->getFileList($calculationId));
+                $query->updateFiles($this->get('inowas.modflowmodel.modflow_calculation_finder')->getFileList($calculationId));
             }
 
             return new JsonResponse($query);

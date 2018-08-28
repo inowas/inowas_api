@@ -31,14 +31,14 @@ class ModflowOptimizationProgressListenerCommand extends ContainerAwareCommand
             echo ' [+] Submitting result metadata from calculation', "\n";
             echo '  Receiving:' . $msg->body . "\n";
 
-            try {
+            #try {
                 $commandBus = $this->getContainer()->get('prooph_service_bus.modflow_command_bus');
                 $commandBus->dispatch(UpdateOptimizationCalculationState::calculatingWithProgressUpdate(
                     ModflowOptimizationResponse::fromJson($msg->body)
                 ));
-            } catch (\Exception $exception) {
-                echo sprintf($exception->getMessage());
-            }
+            #} catch (\Exception $exception) {
+            #    echo sprintf($exception->getMessage());
+            #}
 
             echo ' [x] Done', "\n";
             /** @noinspection PhpUndefinedMethodInspection */

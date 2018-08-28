@@ -27,7 +27,7 @@ use Inowas\ModflowModel\Model\AMQP\ModflowReadDataRequest;
 use Inowas\ModflowModel\Model\AMQP\ModflowReadDataResponse;
 use Inowas\ModflowModel\Service\AMQPRemoteProcedureCall;
 
-class CalculationResultsFinder
+class ModflowCalculationFinder
 {
     /** @var Connection $connection */
     protected $connection;
@@ -40,6 +40,34 @@ class CalculationResultsFinder
         $this->connection = $connection;
         $this->connection->setFetchMode(\PDO::FETCH_ASSOC);
         $this->rpcClient = $rpcClient;
+    }
+
+    public function getNextModflowModelIdToCalculate(): ?ModflowId
+    {
+        $result = $this->connection->fetchAssoc(
+            sprintf('SELECT model_id FROM %s WHERE state = :state ORDER BY updated_at ASC LIMIT 1', Table::MODELS_CALCULATIONS),
+            ['state' => CalculationState::CALCULATION_PROCESS_STARTED]
+        );
+
+        if ($result === false) {
+            return null;
+        }
+
+        return ModflowId::fromString($result['model_id']);
+    }
+
+    public function getModelsCalculationsDetailsByModelId(ModflowId $modelId): ?array
+    {
+        $result = $this->connection->fetchAssoc(
+            sprintf('SELECT * FROM %s WHERE model_id = :model_id', Table::MODELS_CALCULATIONS),
+            ['model_id' => $modelId->toString()]
+        );
+
+        if ($result === false) {
+            return null;
+        }
+
+        return $result;
     }
 
     public function getCalculationStateQuery(CalculationId $calculationId): ?CalculationStateQuery

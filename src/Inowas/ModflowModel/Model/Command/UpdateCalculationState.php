@@ -105,8 +105,12 @@ class UpdateCalculationState extends Command implements PayloadConstructable
         return CalculationState::fromInt($this->payload['state']);
     }
 
-    public function response(): ModflowCalculationResponse
+    public function response(): ?ModflowCalculationResponse
     {
+        if (!array_key_exists('response', $this->payload)) {
+            return null;
+        }
+
         return ModflowCalculationResponse::fromArray($this->payload['response']);
     }
 }

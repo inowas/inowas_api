@@ -25,8 +25,12 @@ class CalculationId
         return $this->checksum;
     }
 
-    public function sameValueAs(CalculationId $other): bool
+    public function sameValueAs($other): bool
     {
+        if (!($other instanceof $this)) {
+            return false;
+        }
+
         return $this->toString() === $other->toString();
     }
 }

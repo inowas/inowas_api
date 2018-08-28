@@ -8,6 +8,8 @@ use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Schema\Schema;
 use Doctrine\ORM\EntityManager;
 use Inowas\AppBundle\Model\User;
+use Inowas\Common\Calculation\CalculationState;
+use Inowas\Common\Id\ModflowId;
 use Inowas\Common\Modflow\LengthUnit;
 use Inowas\Common\Modflow\StressPeriods;
 use Inowas\Common\Modflow\TimeUnit;
@@ -17,7 +19,7 @@ use Inowas\ModflowModel\Model\Event\BoundaryWasAdded;
 use Inowas\ModflowModel\Model\Event\BoundaryWasRemoved;
 use Inowas\ModflowModel\Model\Event\BoundaryWasUpdated;
 use Inowas\ModflowModel\Model\Event\BoundingBoxWasChanged;
-use Inowas\ModflowModel\Model\Event\CalculationIdWasChanged;
+use Inowas\ModflowModel\Model\Event\CalculationStateWasUpdated;
 use Inowas\ModflowModel\Model\Event\DescriptionWasChanged;
 use Inowas\ModflowModel\Model\Event\GridSizeWasChanged;
 use Inowas\ModflowModel\Model\Event\LengthUnitWasUpdated;
@@ -56,7 +58,7 @@ class ModelProjector extends AbstractDoctrineConnectionProjector
         $table->addColumn('length_unit', 'integer');
         $table->addColumn('stressperiods', 'text', ['notnull' => false]);
         $table->addColumn('calculation_id', 'string', ['length' => 36, 'notnull' => false]);
-        $table->addColumn('dirty', 'smallint', ['default' => 0]);
+        $table->addColumn('dirty', 'smallint', ['default' => 1]);
         $table->addColumn('preprocessing', 'smallint', ['default' => 0]);
         $table->addColumn('created_at', 'string', ['length' => 255, 'notnull' => false]);
         $table->addColumn('mt3dms', 'text', ['notnull' => false]);
@@ -109,12 +111,31 @@ class ModelProjector extends AbstractDoctrineConnectionProjector
         );
     }
 
-    public function onCalculationIdWasChanged(CalculationIdWasChanged $event): void
+    public function onCalculationStateWasUpdated(CalculationStateWasUpdated $event): void
     {
+
+        if (!$event->modelId() instanceof ModflowId) {
+            return;
+        }
+
+        $calculationId = null;
+        $dirty = 1;
+        $preprocessing = 0;
+
+        if ($event->state()->toInt() === CalculationState::PREPROCESSING) {
+            $preprocessing = 1;
+        }
+
+        if ($event->state()->toInt() === CalculationState::PREPROCESSING_FINISHED) {
+            $calculationId = $event->calculationId()->toString();
+            $dirty = 0;
+            $preprocessing = 0;
+        }
+
         $this->connection->update(Table::MODFLOWMODELS, [
-            'calculation_id' => $event->calculationId()->toString(),
-            'dirty' => 0,
-            'preprocessing' => 0
+            'calculation_id' => $calculationId,
+            'dirty' => $dirty,
+            'preprocessing' => $preprocessing
         ],
             ['model_id' => $event->modelId()->toString()]
         );

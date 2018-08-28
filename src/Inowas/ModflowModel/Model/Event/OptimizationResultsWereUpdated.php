@@ -10,7 +10,7 @@ use Inowas\Common\Modflow\OptimizationSolutions;
 use Inowas\Common\Modflow\OptimizationState;
 use Prooph\EventSourcing\AggregateChanged;
 
-class OptimizationCalculationProgressWasUpdated extends AggregateChanged
+class OptimizationResultsWereUpdated extends AggregateChanged
 {
 
     /** @var ModflowId */

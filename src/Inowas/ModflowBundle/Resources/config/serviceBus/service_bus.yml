@@ -12,8 +12,8 @@ parameters:
             'Inowas\ModflowModel\Model\Command\AddLayer': 'inowas.modflowmodel.add_layer_handler'
             'Inowas\ModflowModel\Model\Command\CalculateModflowModel': 'inowas.modflowmodel.calculate_modflow_model_handler'
             'Inowas\ModflowModel\Model\Command\CalculateOptimization': 'inowas.modflowmodel.calculate_optimization_handler'
-            'Inowas\ModflowModel\Model\Command\CalculateStressPeriods': 'inowas.modflowmodel.calculate_stress_periods_handler'
-            'Inowas\ModflowModel\Model\Command\CancelOptimizationCalculation': 'inowas.modflowmodel.cancel_optimization_calculation_handler'
+            'Inowas\ModflowModel\Model\Command\CalculateStressPeriods': 'inowas.modflowmodel.calculate_stressperiods_handler'
+            'Inowas\ModflowModel\Model\Command\CancelOptimization': 'inowas.modflowmodel.cancel_optimization_handler'
             'Inowas\ModflowModel\Model\Command\ChangeBoundingBox': 'inowas.modflowmodel.change_bounding_box_handler'
             'Inowas\ModflowModel\Model\Command\ChangeDescription': 'inowas.modflowmodel.change_description_handler'
             'Inowas\ModflowModel\Model\Command\ChangeFlowPackage': 'inowas.modflowmodel.change_flow_package_handler'
@@ -24,13 +24,12 @@ parameters:
             'Inowas\ModflowModel\Model\Command\DeleteModflowModel': 'inowas.modflowmodel.delete_modflow_model_handler'
             'Inowas\ModflowModel\Model\Command\RemoveBoundary': 'inowas.modflowmodel.remove_boundary_handler'
             'Inowas\ModflowModel\Model\Command\RemoveLayer': 'inowas.modflowmodel.remove_layer_handler'
-            'Inowas\ModflowModel\Model\Command\RequestModflowModelCalculation': 'inowas.modflowmodel.request_modflow_model_calculation_handler'
             'Inowas\ModflowModel\Model\Command\UpdateActiveCells': 'inowas.modflowmodel.update_active_cells_handler'
             'Inowas\ModflowModel\Model\Command\UpdateAreaGeometry': 'inowas.modflowmodel.update_area_geometry_handler'
             'Inowas\ModflowModel\Model\Command\UpdateBoundary': 'inowas.modflowmodel.update_boundary_handler'
-            'Inowas\ModflowModel\Model\Command\UpdateLayer': 'inowas.modflowmodel.update_layer_handler'
             'Inowas\ModflowModel\Model\Command\UpdateCalculationId': 'inowas.modflowmodel.update_calculation_id_handler'
             'Inowas\ModflowModel\Model\Command\UpdateCalculationState': 'inowas.modflowmodel.update_calculation_state_handler'
+            'Inowas\ModflowModel\Model\Command\UpdateLayer': 'inowas.modflowmodel.update_layer_handler'
             'Inowas\ModflowModel\Model\Command\UpdateLengthUnit': 'inowas.modflowmodel.update_length_unit_handler'
             'Inowas\ModflowModel\Model\Command\UpdateModflowModel': 'inowas.modflowmodel.update_modflow_model_handler'
             'Inowas\ModflowModel\Model\Command\UpdateModflowPackage': 'inowas.modflowmodel.update_modflow_package_handler'
@@ -86,84 +85,54 @@ parameters:
           routes:
             # ModflowModel
             'Inowas\ModflowModel\Model\Event\ActiveCellsWereUpdated':
-            - 'inowas.modflowmodel.blackhole_projector'
             - 'inowas.modflowmodel.boundary_projector'
             - 'inowas.modflowmodel.model_projector'
 
             'Inowas\ModflowModel\Model\Event\AreaGeometryWasUpdated':
-            - 'inowas.modflowmodel.blackhole_projector'
             - 'inowas.modflowmodel.model_projector'
 
             'Inowas\ModflowModel\Model\Event\BoundaryWasAdded':
-            - 'inowas.modflowmodel.blackhole_projector'
             - 'inowas.modflowmodel.boundary_projector'
             - 'inowas.modflowmodel.model_projector'
 
             'Inowas\ModflowModel\Model\Event\BoundaryWasRemoved':
-            - 'inowas.modflowmodel.blackhole_projector'
             - 'inowas.modflowmodel.boundary_projector'
             - 'inowas.modflowmodel.model_projector'
 
             'Inowas\ModflowModel\Model\Event\BoundaryWasUpdated':
-            - 'inowas.modflowmodel.blackhole_projector'
             - 'inowas.modflowmodel.boundary_projector'
             - 'inowas.modflowmodel.model_projector'
 
             'Inowas\ModflowModel\Model\Event\BoundingBoxWasChanged':
-            - 'inowas.modflowmodel.blackhole_projector'
             - 'inowas.modflowmodel.model_projector'
 
-            'Inowas\ModflowModel\Model\Event\CalculationProcessWasStarted':
-            - 'inowas.modflowmodel.blackhole_projector'
-            - 'inowas.modflowmodel.calculation_process_queue'
-
-            'Inowas\ModflowModel\Model\Event\CalculationIdWasChanged':
-            - 'inowas.modflowmodel.blackhole_projector'
+            'Inowas\ModflowModel\Model\Event\CalculationStateWasUpdated':
             - 'inowas.modflowmodel.model_projector'
-            - 'inowas.scenarioanalysis.scenario_list_projector'
-
-            'Inowas\ModflowModel\Model\Event\CalculationWasFinished':
-            - 'inowas.modflowmodel.blackhole_projector'
-            - 'inowas.modflowmodel.calculation_process_queue'
-            - 'inowas.modflowmodel.calculation_results_projector'
-
-            'Inowas\ModflowModel\Model\Event\CalculationWasStarted':
-            - 'inowas.modflowmodel.blackhole_projector'
-            - 'inowas.modflowmodel.calculation_process_queue'
-            - 'inowas.modflowmodel.calculation_results_projector'
+            - 'inowas.modflowmodel.modflow_calculation_projector'
 
             'Inowas\ModflowModel\Model\Event\DescriptionWasChanged':
-            - 'inowas.modflowmodel.blackhole_projector'
             - 'inowas.modflowmodel.model_projector'
-            - 'inowas.scenarioanalysis.scenario_list_projector'
             - 'inowas.tool.tools_projector'
 
             'Inowas\ModflowModel\Model\Event\FlowPackageWasChanged':
-            - 'inowas.modflowmodel.blackhole_projector'
             - 'inowas.modflowmodel.modflow_packages_process_manager'
 
             'Inowas\ModflowModel\Model\Event\GridSizeWasChanged':
-            - 'inowas.modflowmodel.blackhole_projector'
             - 'inowas.modflowmodel.model_projector'
 
             'Inowas\ModflowModel\Model\Event\LayerWasAdded':
-            - 'inowas.modflowmodel.blackhole_projector'
             - 'inowas.modflowmodel.soilmodel_projector'
 
             'Inowas\ModflowModel\Model\Event\LayerWasRemoved':
-            - 'inowas.modflowmodel.blackhole_projector'
             - 'inowas.modflowmodel.soilmodel_projector'
 
             'Inowas\ModflowModel\Model\Event\LayerWasUpdated':
-            - 'inowas.modflowmodel.blackhole_projector'
             - 'inowas.modflowmodel.soilmodel_projector'
 
             'Inowas\ModflowModel\Model\Event\LengthUnitWasUpdated':
-            - 'inowas.modflowmodel.blackhole_projector'
             - 'inowas.modflowmodel.model_projector'
 
             'Inowas\ModflowModel\Model\Event\ModflowModelWasCloned':
-            - 'inowas.modflowmodel.blackhole_projector'
             - 'inowas.modflowmodel.boundary_projector'
             - 'inowas.modflowmodel.model_projector'
             - 'inowas.modflowmodel.soilmodel_projector'
@@ -171,74 +140,48 @@ parameters:
             - 'inowas.tool.tools_projector'
 
             'Inowas\ModflowModel\Model\Event\ModflowModelWasCreated':
-            - 'inowas.modflowmodel.blackhole_projector'
             - 'inowas.modflowmodel.model_projector'
             - 'inowas.modflowmodel.soilmodel_projector'
             - 'inowas.modflowmodel.modflow_packages_process_manager'
             - 'inowas.tool.tools_projector'
 
             'Inowas\ModflowModel\Model\Event\ModflowModelWasDeleted':
-            - 'inowas.modflowmodel.blackhole_projector'
             - 'inowas.modflowmodel.boundary_projector'
             - 'inowas.modflowmodel.model_projector'
             - 'inowas.tool.tools_projector'
 
             'Inowas\ModflowModel\Model\Event\ModflowPackageParameterWasUpdated':
-            - 'inowas.modflowmodel.blackhole_projector'
             - 'inowas.modflowmodel.modflow_packages_process_manager'
 
             'Inowas\ModflowModel\Model\Event\ModflowPackageWasUpdated':
-            - 'inowas.modflowmodel.blackhole_projector'
             - 'inowas.modflowmodel.modflow_packages_process_manager'
 
             'Inowas\ModflowModel\Model\Event\Mt3dmsWasUpdated':
-            - 'inowas.modflowmodel.blackhole_projector'
             - 'inowas.modflowmodel.model_projector'
 
             'Inowas\ModflowModel\Model\Event\NameWasChanged':
-            - 'inowas.modflowmodel.blackhole_projector'
             - 'inowas.modflowmodel.model_projector'
-            - 'inowas.scenarioanalysis.scenario_list_projector'
             - 'inowas.tool.tools_projector'
 
-            'Inowas\ModflowModel\Model\Event\OptimizationCalculationProgressWasUpdated':
-            - 'inowas.modflowmodel.blackhole_projector'
-            - 'inowas.modflowmodel.optimization_projector'
-
-            'Inowas\ModflowModel\Model\Event\OptimizationCalculationStateWasUpdated':
-            - 'inowas.modflowmodel.blackhole_projector'
-            - 'inowas.modflowmodel.optimization_projector'
-
-            'Inowas\ModflowModel\Model\Event\OptimizationCalculationWasCanceled':
-            - 'inowas.modflowmodel.blackhole_projector'
-            - 'inowas.modflowmodel.optimization_projector'
-
-            'Inowas\ModflowModel\Model\Event\OptimizationCalculationWasStarted':
-            - 'inowas.modflowmodel.blackhole_projector'
-            - 'inowas.modflowmodel.optimization_projector'
-
             'Inowas\ModflowModel\Model\Event\OptimizationInputWasUpdated':
-            - 'inowas.modflowmodel.blackhole_projector'
             - 'inowas.modflowmodel.optimization_projector'
 
-            'Inowas\ModflowModel\Model\Event\PreProcessingWasFinished':
-            - 'inowas.modflowmodel.blackhole_projector'
-            - 'inowas.modflowmodel.calculation_process_queue'
+            'Inowas\ModflowModel\Model\Event\OptimizationResultsWereUpdated':
+            - 'inowas.modflowmodel.optimization_projector'
+
+            'Inowas\ModflowModel\Model\Event\OptimizationStateWasUpdated':
+            - 'inowas.modflowmodel.optimization_projector'
 
             'Inowas\ModflowModel\Model\Event\SoilmodelMetadataWasUpdated':
-            - 'inowas.modflowmodel.blackhole_projector'
             - 'inowas.modflowmodel.soilmodel_projector'
 
             'Inowas\ModflowModel\Model\Event\StressPeriodsWereUpdated':
-            - 'inowas.modflowmodel.blackhole_projector'
             - 'inowas.modflowmodel.model_projector'
 
             'Inowas\ModflowModel\Model\Event\TimeUnitWasUpdated':
-            - 'inowas.modflowmodel.blackhole_projector'
             - 'inowas.modflowmodel.model_projector'
 
             'Inowas\ModflowModel\Model\Event\VisibilityWasChanged':
-            - 'inowas.modflowmodel.blackhole_projector'
             - 'inowas.modflowmodel.model_projector'
             - 'inowas.tool.tools_projector'
 
@@ -346,29 +289,20 @@ parameters:
             - 'inowas.modflowmodel.model_projector'
 
             'Inowas\ModflowModel\Model\Event\BoundingBoxWasChanged':
-            - 'inowas.modflowmodel.blackhole_projector'
             - 'inowas.modflowmodel.model_projector'
 
-            'Inowas\ModflowModel\Model\Event\CalculationIdWasChanged':
+            'Inowas\ModflowModel\Model\Event\CalculationStateWasUpdated':
             - 'inowas.modflowmodel.model_projector'
-            - 'inowas.scenarioanalysis.scenario_list_projector'
-
-            'Inowas\ModflowModel\Model\Event\CalculationWasFinished':
-            - 'inowas.modflowmodel.calculation_results_projector'
-
-            'Inowas\ModflowModel\Model\Event\CalculationWasRequested':
-            - 'inowas.modflowmodel.model_projector'
-
-            'Inowas\ModflowModel\Model\Event\CalculationWasStarted':
-            - 'inowas.modflowmodel.calculation_results_projector'
+            - 'inowas.modflowmodel.modflow_calculation_projector'
 
             'Inowas\ModflowModel\Model\Event\DescriptionWasChanged':
             - 'inowas.modflowmodel.model_projector'
-            - 'inowas.scenarioanalysis.scenario_list_projector'
             - 'inowas.tool.tools_projector'
 
+            'Inowas\ModflowModel\Model\Event\FlowPackageWasChanged':
+            - 'inowas.modflowmodel.modflow_packages_process_manager'
+
             'Inowas\ModflowModel\Model\Event\GridSizeWasChanged':
-            - 'inowas.modflowmodel.boundary_projector'
             - 'inowas.modflowmodel.model_projector'
 
             'Inowas\ModflowModel\Model\Event\LayerWasAdded':
@@ -399,25 +333,26 @@ parameters:
             - 'inowas.modflowmodel.model_projector'
             - 'inowas.tool.tools_projector'
 
+            'Inowas\ModflowModel\Model\Event\ModflowPackageParameterWasUpdated':
+            - 'inowas.modflowmodel.modflow_packages_process_manager'
+
+            'Inowas\ModflowModel\Model\Event\ModflowPackageWasUpdated':
+            - 'inowas.modflowmodel.modflow_packages_process_manager'
+
+            'Inowas\ModflowModel\Model\Event\Mt3dmsWasUpdated':
+            - 'inowas.modflowmodel.model_projector'
+
             'Inowas\ModflowModel\Model\Event\NameWasChanged':
             - 'inowas.modflowmodel.model_projector'
-            - 'inowas.scenarioanalysis.scenario_list_projector'
             - 'inowas.tool.tools_projector'
 
-            'Inowas\ModflowModel\Model\Event\OptimizationCalculationWasCanceled':
-            - 'inowas.modflowmodel.blackhole_projector'
-            - 'inowas.modflowmodel.optimization_projector'
-
-            'Inowas\ModflowModel\Model\Event\OptimizationCalculationWasStarted':
-            - 'inowas.modflowmodel.blackhole_projector'
-            - 'inowas.modflowmodel.optimization_projector'
-
-            'Inowas\ModflowModel\Model\Event\OptimizationProgressWasUpdated':
-            - 'inowas.modflowmodel.blackhole_projector'
-            - 'inowas.modflowmodel.optimization_projector'
-
             'Inowas\ModflowModel\Model\Event\OptimizationInputWasUpdated':
-            - 'inowas.modflowmodel.blackhole_projector'
+            - 'inowas.modflowmodel.optimization_projector'
+
+            'Inowas\ModflowModel\Model\Event\OptimizationResultsWereUpdated':
+            - 'inowas.modflowmodel.optimization_projector'
+
+            'Inowas\ModflowModel\Model\Event\OptimizationStateWasUpdated':
             - 'inowas.modflowmodel.optimization_projector'
 
             'Inowas\ModflowModel\Model\Event\SoilmodelMetadataWasUpdated':

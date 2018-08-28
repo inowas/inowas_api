@@ -4,11 +4,9 @@ declare(strict_types=1);
 
 namespace Inowas\ModflowBundle\Command;
 
-use Inowas\Common\Calculation\CalculationState;
 use Inowas\Common\Id\ModflowId;
-use Inowas\ModflowModel\Infrastructure\Projection\Calculation\CalculationProcessFinder;
+use Inowas\ModflowModel\Infrastructure\Projection\Calculation\ModflowCalculationFinder;
 use Inowas\ModflowModel\Model\AMQP\ModflowCalculationRequest;
-use Inowas\ModflowModel\Model\Command\UpdateCalculationId;
 use Inowas\ModflowModel\Model\Command\UpdateCalculationState;
 use Inowas\ModflowModel\Service\AMQPBasicProducer;
 use Inowas\ModflowModel\Service\ModflowPackagesManager;
@@ -20,8 +18,8 @@ use Symfony\Component\Console\Output\OutputInterface;
 class ModflowCalculationProcessorCommand extends ContainerAwareCommand
 {
 
-    /** @var  CalculationProcessFinder */
-    private $calculationProcessFinder;
+    /** @var  ModflowCalculationFinder */
+    private $calculationFinder;
 
     /** @var  AMQPBasicProducer */
     private $producer;
@@ -48,22 +46,22 @@ class ModflowCalculationProcessorCommand extends ContainerAwareCommand
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $this->calculationProcessFinder = $this->getContainer()->get('inowas.modflowmodel.calculation_process_finder');
+        $this->calculationFinder = $this->getContainer()->get('inowas.modflowmodel.modflow_calculation_finder');
         $this->commandBus = $this->getContainer()->get('prooph_service_bus.modflow_command_bus');
         $this->packagesManager = $this->getContainer()->get('inowas.modflowmodel.modflow_packages_manager');
         $this->producer = $this->getContainer()->get('inowas.modflowmodel.amqp_modflow_calculation');
 
         while (true) {
             // Get next row in queue
-            $row = $this->calculationProcessFinder->getNextRowWithState(CalculationState::calculationProcessStarted());
+            $modelId = $this->calculationFinder->getNextModflowModelIdToCalculate();
 
-            if (\count($row) === 0) {
+            if (! $modelId instanceof ModflowId) {
                 sleep(1);
                 continue;
             }
 
-            $modelId = ModflowId::fromString($row[0]['model_id']);
-            $output->writeln('Got a new Task: '.$modelId->toString());
+            $output->writeln('Got a new Task:');
+            $output->writeln('Calculating Modflow Model with Model-Id: '.$modelId->toString());
 
             // Preprocessing
             $output->writeln('Start Preprocessing...');
@@ -74,7 +72,6 @@ class ModflowCalculationProcessorCommand extends ContainerAwareCommand
             // Preprocessing finished
             $output->writeln('Preprocessing finished, the new calculationId is: '.$calculationId->toString());
             $this->commandBus->dispatch(UpdateCalculationState::preprocessingFinished($modelId, $calculationId));
-            $this->commandBus->dispatch(UpdateCalculationId::withId($modelId, $calculationId));
 
             // Calculation
             $output->writeln('Send to calculation to calculation service.');
@@ -82,7 +79,6 @@ class ModflowCalculationProcessorCommand extends ContainerAwareCommand
             $request = ModflowCalculationRequest::fromParams($modelId, $calculationId, $packages);
             $this->producer->publish($request);
             $this->commandBus->dispatch(UpdateCalculationState::queued($modelId, $calculationId));
-            unset($row);
         }
     }
 }

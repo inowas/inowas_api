@@ -8,7 +8,7 @@ use Inowas\Common\Command\AbstractJsonSchemaCommand;
 use Inowas\Common\Id\ModflowId;
 use Inowas\Common\Id\UserId;
 
-class CancelOptimizationCalculation extends AbstractJsonSchemaCommand
+class CancelOptimization extends AbstractJsonSchemaCommand
 {
     /**
      * @param UserId $userId

@@ -35,7 +35,7 @@ use Inowas\Common\Status\Visibility;
 use Inowas\ModflowModel\Model\Command\AddBoundary;
 use Inowas\ModflowModel\Model\Command\AddLayer;
 use Inowas\ModflowModel\Model\Command\CalculateOptimization;
-use Inowas\ModflowModel\Model\Command\CancelOptimizationCalculation;
+use Inowas\ModflowModel\Model\Command\CancelOptimization;
 use Inowas\ModflowModel\Model\Command\ChangeBoundingBox;
 use Inowas\ModflowModel\Model\Command\ChangeFlowPackage;
 use Inowas\ModflowModel\Model\Command\ChangeGridSize;
@@ -930,13 +930,14 @@ class ModflowModelEventSourcingTest extends EventSourcingBaseTest
         $optimization = $optimizationFinder->getOptimization($modelId);
         $this->assertEquals(OptimizationState::STARTED, $optimization->state()->toInt());
 
-        $this->commandBus->dispatch(CancelOptimizationCalculation::forModflowModel($ownerId, $modelId, $optimizationId));
+        $this->commandBus->dispatch(CancelOptimization::forModflowModel($ownerId, $modelId, $optimizationId));
         $optimization = $optimizationFinder->getOptimization($modelId);
-        $this->assertEquals(OptimizationState::CANCELLED, $optimization->state()->toInt());
+        $this->assertEquals(OptimizationState::CANCELLING, $optimization->state()->toInt());
     }
 
     /**
      * @test
+     * @throws \Exception
      */
     public function it_creates_a_public_scenarioanalysis_from_a_basemodel(): void
     {
@@ -973,6 +974,7 @@ class ModflowModelEventSourcingTest extends EventSourcingBaseTest
 
     /**
      * @test
+     * @throws \Exception
      */
     public function it_creates_a_private_scenarioanalysis_from_a_basemodel(): void
     {

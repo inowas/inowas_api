@@ -8,7 +8,6 @@ use Inowas\Common\Id\CalculationId;
 use Inowas\Common\Id\ModflowId;
 use Inowas\Common\Id\UserId;
 use Inowas\Common\Modflow\LayerValues;
-use Inowas\Common\Modflow\TotalTimes;
 use Ramsey\Uuid\Uuid;
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 use Symfony\Component\Console\Input\InputArgument;
@@ -44,7 +43,7 @@ class ModflowGetLayerValuesCommand extends ContainerAwareCommand
             $output->writeln('No calculationId found, please calculate first.');
         }
 
-        $layerValues = $this->getContainer()->get('inowas.modflowmodel.calculation_results_finder')->findLayerValues($calculationId);
+        $layerValues = $this->getContainer()->get('inowas.modflowmodel.modflow_calculation_finder')->findLayerValues($calculationId);
 
 
         if (! $layerValues instanceof LayerValues) {

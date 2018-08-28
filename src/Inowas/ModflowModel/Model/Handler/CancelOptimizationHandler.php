@@ -4,13 +4,14 @@ declare(strict_types=1);
 
 namespace Inowas\ModflowModel\Model\Handler;
 
-use Inowas\ModflowModel\Model\Command\CancelOptimizationCalculation;
+use Inowas\Common\Modflow\OptimizationState;
+use Inowas\ModflowModel\Model\Command\CancelOptimization;
 use Inowas\ModflowModel\Model\Exception\ModflowModelNotFoundException;
 use Inowas\ModflowModel\Model\Exception\WriteAccessFailedException;
 use Inowas\ModflowModel\Model\ModflowModelList;
 use Inowas\ModflowModel\Model\ModflowModelAggregate;
 
-final class CancelOptimizationCalculationHandler
+final class CancelOptimizationHandler
 {
 
     /** @var  ModflowModelList */
@@ -25,10 +26,10 @@ final class CancelOptimizationCalculationHandler
     }
 
     /**
-     * @param CancelOptimizationCalculation $command
+     * @param CancelOptimization $command
      * @throws \Exception
      */
-    public function __invoke(CancelOptimizationCalculation $command)
+    public function __invoke(CancelOptimization $command)
     {
         /** @var ModflowModelAggregate $modflowModel */
         $modflowModel = $this->modelList->get($command->modflowModelId());
@@ -41,7 +42,7 @@ final class CancelOptimizationCalculationHandler
             throw WriteAccessFailedException::withUserAndOwner($command->userId(), $modflowModel->userId());
         }
 
-        $modflowModel->cancelOptimizationCalculation($command->userId(), $command->optimizationId());
+        $modflowModel->updateOptimizationCalculationStateByUser($command->userId(), $command->optimizationId(), OptimizationState::cancelling());
         $this->modelList->save($modflowModel);
     }
 }

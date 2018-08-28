@@ -11,7 +11,7 @@ use Inowas\ModflowModel\Model\Command\AddLayer;
 use Inowas\ModflowModel\Model\Command\CalculateModflowModel;
 use Inowas\ModflowModel\Model\Command\CalculateOptimization;
 use Inowas\ModflowModel\Model\Command\CalculateStressPeriods;
-use Inowas\ModflowModel\Model\Command\CancelOptimizationCalculation;
+use Inowas\ModflowModel\Model\Command\CancelOptimization;
 use Inowas\ModflowModel\Model\Command\CloneModflowModel;
 use Inowas\ModflowModel\Model\Command\CreateModflowModel;
 use Inowas\ModflowModel\Model\Command\DeleteModflowModel;
@@ -49,7 +49,7 @@ class MessageBoxController extends InowasRestController
         'calculateModflowModel' => CalculateModflowModel::class,
         'calculateOptimization' => CalculateOptimization::class,
         'calculateStressPeriods' => CalculateStressPeriods::class,
-        'cancelOptimizationCalculation' => CancelOptimizationCalculation::class,
+        'cancelOptimizationCalculation' => CancelOptimization::class,
         'cloneModflowModel' => CloneModflowModel::class,
         'cloneScenarioAnalysis' => CloneScenarioAnalysis::class,
         'createModflowModel' => CreateModflowModel::class,

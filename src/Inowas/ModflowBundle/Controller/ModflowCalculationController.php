@@ -39,13 +39,14 @@ class ModflowCalculationController extends InowasRestController
      * @Rest\Get("/calculations/{id}")
      * @return JsonResponse
      * @throws NotFoundException
+     * @throws \Exception
      */
     public function getCalculationDetailsAction(string $id): JsonResponse
     {
         $calculationId = CalculationId::fromString($id);
-        $calculationDetails = $this->get('inowas.modflowmodel.calculation_results_finder')->getCalculationDetailsById($calculationId);
+        $calculationDetails = $this->get('inowas.modflowmodel.modflow_calculation_finder')->getCalculationDetailsById($calculationId);
 
-        if (! is_array($calculationDetails)) {
+        if (! \is_array($calculationDetails)) {
             throw NotFoundException::withMessage(sprintf('Calculation with id: \'%s\' not found.', $id));
         }
 
@@ -67,10 +68,11 @@ class ModflowCalculationController extends InowasRestController
      * @Rest\Get("/calculations/{id}/results/times")
      * @return JsonResponse
      * @throws NotFoundException
+     * @throws \Exception
      */
     public function getCalculationResultsTimesAction(string $id): JsonResponse
     {
-        $totalTimes = $this->get('inowas.modflowmodel.calculation_results_finder')->getTotalTimesFromCalculationById(CalculationId::fromString($id));
+        $totalTimes = $this->get('inowas.modflowmodel.modflow_calculation_finder')->getTotalTimesFromCalculationById(CalculationId::fromString($id));
         if (! $totalTimes instanceof TotalTimes) {
             throw NotFoundException::withMessage(sprintf('Calculation with id: \'%s\' not found.', $id));
         }
@@ -96,7 +98,7 @@ class ModflowCalculationController extends InowasRestController
      */
     public function getCalculationResultsLayerValuesAction(string $id): JsonResponse
     {
-        $layerValues = $this->get('inowas.modflowmodel.calculation_results_finder')->findLayerValues(CalculationId::fromString($id));
+        $layerValues = $this->get('inowas.modflowmodel.modflow_calculation_finder')->findLayerValues(CalculationId::fromString($id));
 
         if (! $layerValues instanceof LayerValues) {
             throw NotFoundException::withMessage(sprintf('Calculation with id: \'%s\' not found.', $id));
@@ -123,7 +125,7 @@ class ModflowCalculationController extends InowasRestController
      */
     public function getCalculationFileAction(string $id, string $extension): JsonResponse
     {
-        $file = $this->get('inowas.modflowmodel.calculation_results_finder')->getFile(CalculationId::fromString($id), Extension::fromString($extension));
+        $file = $this->get('inowas.modflowmodel.modflow_calculation_finder')->getFile(CalculationId::fromString($id), Extension::fromString($extension));
         return new JsonResponse($file);
     }
 
@@ -144,7 +146,7 @@ class ModflowCalculationController extends InowasRestController
      */
     public function getCalculationFileListAction(string $id): JsonResponse
     {
-        $list = $this->get('inowas.modflowmodel.calculation_results_finder')->getFileList(CalculationId::fromString($id));
+        $list = $this->get('inowas.modflowmodel.modflow_calculation_finder')->getFileList(CalculationId::fromString($id));
         return new JsonResponse($list);
     }
 
@@ -160,25 +162,20 @@ class ModflowCalculationController extends InowasRestController
      * )
      *
      * @param string $id
-     * @param string $type
+     * @param string $resultType
      * @param string $layer
      * @param string $totim
      * @Rest\Get("/calculations/{id}/results/types/{type}/layers/{layer}/totims/{totim}")
      * @return JsonResponse
      * @throws \Inowas\ModflowBundle\Exception\NotFoundException
      */
-    public function getCalculationHeadResultsByTypeLayerAndTotimAction(string $id, string $type, string $layer, string $totim): JsonResponse
+    public function getCalculationHeadResultsByTypeLayerAndTotimAction(string $id, string $resultType, string $layer, string $totim): JsonResponse
     {
-        /** @var ResultType $type */
-        $type = ResultType::fromString($type);
-        $layerNumber = LayerNumber::fromInt((int)$layer);
-        $totim = TotalTime::fromInt((int)$totim);
-
-        $headData = $this->get('inowas.modflowmodel.calculation_results_finder')->findHeadData(
+        $headData = $this->get('inowas.modflowmodel.modflow_calculation_finder')->findHeadData(
             CalculationId::fromString($id),
-            $type,
-            $layerNumber,
-            $totim
+            ResultType::fromString($resultType),
+            LayerNumber::fromInt((int)$layer),
+            TotalTime::fromInt((int)$totim)
         );
 
         if (! $headData instanceof HeadData) {
@@ -188,6 +185,7 @@ class ModflowCalculationController extends InowasRestController
         return new JsonResponse($headData);
     }
 
+    /** @noinspection MoreThanThreeArgumentsInspection */
     /**
      * Get calculation headValues difference by calculationIds.
      *
@@ -210,20 +208,12 @@ class ModflowCalculationController extends InowasRestController
      */
     public function getCalculationHeadResultsDifferenceByTypeLayerAndTotimAction(string $id, string $id2, string $type, string $layer, string $totim): JsonResponse
     {
-
-        $calculationId = CalculationId::fromString($id);
-        $calculationId2 = CalculationId::fromString($id2);
-
-        $type = ResultType::fromString($type);
-        $layerNumber = LayerNumber::fromInt((int)$layer);
-        $totim = TotalTime::fromInt((int)$totim);
-
-        $headData = $this->get('inowas.modflowmodel.calculation_results_finder')->findHeadDifference(
-            $calculationId,
-            $calculationId2,
-            $type,
-            $layerNumber,
-            $totim
+        $headData = $this->get('inowas.modflowmodel.modflow_calculation_finder')->findHeadDifference(
+            CalculationId::fromString($id),
+            CalculationId::fromString($id2),
+            ResultType::fromString($type),
+            LayerNumber::fromInt((int)$layer),
+            TotalTime::fromInt((int)$totim)
         );
 
         if (! $headData instanceof HeadData) {
@@ -233,6 +223,7 @@ class ModflowCalculationController extends InowasRestController
         return new JsonResponse($headData);
     }
 
+    /** @noinspection MoreThanThreeArgumentsInspection */
     /**
      * Get calculation timeseries by calculationId.
      *
@@ -255,19 +246,12 @@ class ModflowCalculationController extends InowasRestController
      */
     public function getCalculationTimeseriesByTypeLayerXAndYAction(string $id, string $type, string $layer, string $x, string $y): JsonResponse
     {
-        $calculationId = CalculationId::fromString($id);
-
-        $type = ResultType::fromString($type);
-        $layerNumber = LayerNumber::fromInt((int)$layer);
-        $nCol = Ncol::fromInt((int)$x);
-        $nRow = Nrow::fromInt((int)$y);
-
-        $timeSeriesData = $this->get('inowas.modflowmodel.calculation_results_finder')->findTimeSeries(
-            $calculationId,
-            $type,
-            $layerNumber,
-            $nRow,
-            $nCol
+        $timeSeriesData = $this->get('inowas.modflowmodel.modflow_calculation_finder')->findTimeSeries(
+            CalculationId::fromString($id),
+            ResultType::fromString($type),
+            LayerNumber::fromInt((int)$layer),
+            Nrow::fromInt((int)$y),
+            Ncol::fromInt((int)$x)
         );
 
         if (! $timeSeriesData instanceof TimeSeriesData) {

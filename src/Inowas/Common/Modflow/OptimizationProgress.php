@@ -90,6 +90,9 @@ class OptimizationProgress
 
     public function finished(): bool
     {
+        if (!\array_key_exists('final', $this->progress)) {
+            return false;
+        }
         return (bool)$this->progress['final'];
     }
 }

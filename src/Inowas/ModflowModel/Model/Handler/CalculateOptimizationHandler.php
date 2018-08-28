@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Inowas\ModflowModel\Model\Handler;
 
+use Inowas\Common\Modflow\OptimizationState;
 use Inowas\ModflowModel\Model\Command\CalculateOptimization;
 use Inowas\ModflowModel\Model\Exception\ModflowModelNotFoundException;
 use Inowas\ModflowModel\Model\Exception\WriteAccessFailedException;
@@ -41,7 +42,7 @@ final class CalculateOptimizationHandler
             throw WriteAccessFailedException::withUserAndOwner($command->userId(), $modflowModel->userId());
         }
 
-        $modflowModel->calculateOptimization($command->userId(), $command->optimizationId());
+        $modflowModel->updateOptimizationCalculationStateByUser($command->userId(), $command->optimizationId(), OptimizationState::started());
         $this->modelList->save($modflowModel);
     }
 }

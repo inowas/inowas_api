@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Inowas\ModflowModel\Model\Handler;
 
+use Inowas\Common\Calculation\CalculationState;
 use Inowas\ModflowModel\Model\Command\CalculateModflowModel;
 use Inowas\ModflowModel\Model\Exception\ModflowModelNotFoundException;
 use Inowas\ModflowModel\Model\Exception\WriteAccessFailedException;
@@ -43,13 +44,12 @@ final class CalculateModflowModelHandler
             throw WriteAccessFailedException::withUserAndOwner($command->userId(), $modflowModel->userId());
         }
 
-        if ($command->fromTerminal()) {
-            $modflowModel->startCalculationProcess($modflowModel->userId());
-        } else {
-            $modflowModel->startCalculationProcess($command->userId());
+        $userId = $command->userId();
+        if($command->fromTerminal()) {
+            $userId = $modflowModel->userId();
         }
 
-
+        $modflowModel->updateCalculationState($userId, null, CalculationState::calculationProcessStarted(), null);
         $this->modelList->save($modflowModel);
     }
 }

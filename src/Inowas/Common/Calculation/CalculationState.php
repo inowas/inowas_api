@@ -10,9 +10,9 @@ class CalculationState
     public const CALCULATION_PROCESS_STARTED = 1;
     public const PREPROCESSING = 2;
     public const PREPROCESSING_FINISHED = 3;
-    public const QUEUED = 3;
-    public const CALCULATING = 4;
-    public const FINISHED = 5;
+    public const QUEUED = 4;
+    public const CALCULATING = 5;
+    public const CALCULATION_FINISHED = 6;
 
     /** @var  int */
     private $state;
@@ -49,7 +49,7 @@ class CalculationState
 
     public static function finished(): self
     {
-        return new self(self::FINISHED);
+        return new self(self::CALCULATION_FINISHED);
     }
 
     public static function fromInt(int $state): self
@@ -69,6 +69,6 @@ class CalculationState
 
     public function isFinished(): bool
     {
-        return $this->state === self::FINISHED;
+        return $this->state === self::CALCULATION_FINISHED;
     }
 }

@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Inowas\ModflowModel\Model\Handler;
 
-use Inowas\Common\Calculation\CalculationState;
 use Inowas\ModflowModel\Model\Command\UpdateCalculationState;
 use Inowas\ModflowModel\Model\Exception\ModflowModelNotFoundException;
 use Inowas\ModflowModel\Model\ModflowModelList;
@@ -29,21 +28,7 @@ final class UpdateCalculationStateHandler
             throw ModflowModelNotFoundException::withModelId($command->modelId());
         }
 
-        switch ($command->state()->toInt()) {
-            case CalculationState::CALCULATION_PROCESS_STARTED:
-                $modflowModel->startCalculationProcess($modflowModel->userId());
-                break;
-            case CalculationState::PREPROCESSING_FINISHED:
-                $modflowModel->preprocessingWasFinished($command->calculationId());
-                break;
-            case CalculationState::CALCULATING:
-                $modflowModel->calculationWasStarted($command->calculationId());
-                break;
-            case CalculationState::FINISHED:
-                $modflowModel->calculationWasFinished($command->response());
-                break;
-        }
-
+        $modflowModel->updateCalculationState(null, $command->calculationId(), $command->state(), $command->response());
         $this->modelList->save($modflowModel);
     }
 }

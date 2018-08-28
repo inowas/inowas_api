@@ -6,13 +6,10 @@ namespace Inowas\ModflowModel\Infrastructure\Projection\Optimization;
 
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Schema\Schema;
-use Inowas\Common\Modflow\OptimizationState;
 use Inowas\Common\Projection\AbstractDoctrineConnectionProjector;
 use Inowas\ModflowModel\Infrastructure\Projection\Table;
-use Inowas\ModflowModel\Model\Event\OptimizationCalculationStateWasUpdated;
-use Inowas\ModflowModel\Model\Event\OptimizationCalculationWasCanceled;
-use Inowas\ModflowModel\Model\Event\OptimizationCalculationWasStarted;
-use Inowas\ModflowModel\Model\Event\OptimizationCalculationProgressWasUpdated;
+use Inowas\ModflowModel\Model\Event\OptimizationStateWasUpdated;
+use Inowas\ModflowModel\Model\Event\OptimizationResultsWereUpdated;
 use Inowas\ModflowModel\Model\Event\OptimizationInputWasUpdated;
 
 class OptimizationProjector extends AbstractDoctrineConnectionProjector
@@ -64,15 +61,7 @@ class OptimizationProjector extends AbstractDoctrineConnectionProjector
         }
     }
 
-    public function onOptimizationCalculationWasStarted(OptimizationCalculationWasStarted $event): void
-    {
-        $this->connection->update(Table::OPTIMIZATIONS,
-            ['state' => OptimizationState::STARTED, 'updated_at' => $event->createdAt()->getTimestamp()],
-            ['model_id' => $event->modelId()->toString(), 'optimization_id' => $event->optimizationId()->toString()]
-        );
-    }
-
-    public function onOptimizationCalculationStateWasUpdated(OptimizationCalculationStateWasUpdated $event): void
+    public function onOptimizationStateWasUpdated(OptimizationStateWasUpdated $event): void
     {
         $this->connection->update(Table::OPTIMIZATIONS,
             ['state' => $event->state()->toInt(), 'updated_at' => $event->createdAt()->getTimestamp()],
@@ -80,7 +69,7 @@ class OptimizationProjector extends AbstractDoctrineConnectionProjector
         );
     }
 
-    public function onOptimizationCalculationProgressWasUpdated(OptimizationCalculationProgressWasUpdated $event): void
+    public function onOptimizationResultsWereUpdated(OptimizationResultsWereUpdated $event): void
     {
         $this->connection->update(Table::OPTIMIZATIONS,
             [
@@ -89,14 +78,6 @@ class OptimizationProjector extends AbstractDoctrineConnectionProjector
                 'state' => $event->state()->toInt(),
                 'updated_at' => $event->createdAt()->getTimestamp()
             ],
-            ['model_id' => $event->modelId()->toString(), 'optimization_id' => $event->optimizationId()->toString()]
-        );
-    }
-
-    public function onOptimizationCalculationWasCanceled(OptimizationCalculationWasCanceled $event): void
-    {
-        $this->connection->update(Table::OPTIMIZATIONS,
-            ['state' => OptimizationState::CANCELLING, 'updated_at' => $event->createdAt()->getTimestamp()],
             ['model_id' => $event->modelId()->toString(), 'optimization_id' => $event->optimizationId()->toString()]
         );
     }
