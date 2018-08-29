@@ -3,16 +3,15 @@ services:
         class: Inowas\ScenarioAnalysis\Infrastructure\Projection\ScenarioAnalysisFinder
         arguments:
             - '@doctrine.dbal.default_connection'
+            - '@inowas.modflowmodel.model_finder'
 
     inowas.scenarioanalysis.scenarioanalysis_list_projector:
         class: Inowas\ScenarioAnalysis\Infrastructure\Projection\ScenarioAnalysisProjector
         arguments:
             - '@doctrine.dbal.default_connection'
-            - '@inowas.modflowmodel.model_finder'
             - '@doctrine.orm.default_entity_manager'
 
     inowas.scenarioanalysis.scenario_list_projector:
         class: Inowas\ScenarioAnalysis\Infrastructure\Projection\ScenarioListProjector
         arguments:
             - '@doctrine.dbal.default_connection'
-            - '@inowas.modflowmodel.model_finder'

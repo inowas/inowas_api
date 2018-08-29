@@ -11,20 +11,16 @@ use Inowas\Common\Id\UserId;
 class CalculateModflowModel extends AbstractJsonSchemaCommand
 {
 
-    public static function forModflowModelWitUserId(UserId $userId, ModflowId $modelId): CalculateModflowModel
+    public static function forModflowModelWitUserId(UserId $userId, ModflowId $modelId): self
     {
-        $self = new static(
-            [
-                'id' => $modelId->toString()
-            ]
-        );
+        $self = new static(['id' => $modelId->toString()]);
 
-        /** @var CalculateModflowModel $self */
+        /** @var self $self */
         $self = $self->withAddedMetadata('user_id', $userId->toString());
         return $self;
     }
 
-    public static function forModflowModelFromTerminal(ModflowId $modelId): CalculateModflowModel
+    public static function forModflowModelFromTerminal(ModflowId $modelId): self
     {
         return new self(
             [

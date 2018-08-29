@@ -2,6 +2,8 @@
 
 namespace Inowas\Common\Modflow;
 
+use Inowas\Common\Id\ModflowId;
+
 class OptimizationInput
 {
     /** @var array */
@@ -41,6 +43,12 @@ class OptimizationInput
     {
         return $this->data;
     }
+
+    public function optimizationId(): ModflowId
+    {
+        return ModflowId::fromString($this->data['id']);
+    }
+
 
     public function toArray(): array
     {

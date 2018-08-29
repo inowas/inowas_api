@@ -35,7 +35,7 @@ use Inowas\Common\Status\Visibility;
 use Inowas\ModflowModel\Model\Command\AddBoundary;
 use Inowas\ModflowModel\Model\Command\AddLayer;
 use Inowas\ModflowModel\Model\Command\CalculateOptimization;
-use Inowas\ModflowModel\Model\Command\CancelOptimizationCalculation;
+use Inowas\ModflowModel\Model\Command\CancelOptimization;
 use Inowas\ModflowModel\Model\Command\ChangeBoundingBox;
 use Inowas\ModflowModel\Model\Command\ChangeFlowPackage;
 use Inowas\ModflowModel\Model\Command\ChangeGridSize;
@@ -773,10 +773,10 @@ class ModflowModelEventSourcingTest extends EventSourcingBaseTest
 
         $this->assertTrue($packages->isSelected(PackageName::fromString('lpf')));
 
-        $packages = json_decode(json_encode($packages), true);
-        $this->assertArrayHasKey('lpf', $packages);
-        $this->assertArrayHasKey('laytyp', $packages['lpf']);
-        $this->assertEquals([0], $packages['lpf']['laytyp']);
+        $mfPackages = json_decode(json_encode($packages), true)['mf'];
+        $this->assertArrayHasKey('lpf', $mfPackages);
+        $this->assertArrayHasKey('laytyp', $mfPackages['lpf']);
+        $this->assertEquals([0], $mfPackages['lpf']['laytyp']);
     }
 
     /**
@@ -796,10 +796,10 @@ class ModflowModelEventSourcingTest extends EventSourcingBaseTest
         $packages = $this->container->get('inowas.modflowmodel.modflow_packages_manager')->getPackages($calculationId);
         $this->assertTrue($packages->isSelected(PackageName::fromString('lpf')));
 
-        $packages = json_decode(json_encode($packages), true);
-        $this->assertArrayHasKey('lpf', $packages);
-        $this->assertArrayHasKey('laywet', $packages['lpf']);
-        $this->assertEquals([1], $packages['lpf']['laywet']);
+        $mfPackages = json_decode(json_encode($packages), true)['mf'];
+        $this->assertArrayHasKey('lpf', $mfPackages);
+        $this->assertArrayHasKey('laywet', $mfPackages['lpf']);
+        $this->assertEquals([1], $mfPackages['lpf']['laywet']);
     }
 
     /**
@@ -819,8 +819,8 @@ class ModflowModelEventSourcingTest extends EventSourcingBaseTest
         $packages = $this->container->get('inowas.modflowmodel.modflow_packages_manager')->getPackages($calculationId);
         $this->assertTrue($packages->isSelected(PackageName::fromString('upw')));
 
-        $packages = json_decode(json_encode($packages), true);
-        $this->assertArrayHasKey('upw', $packages);
+        $mfPackages = json_decode(json_encode($packages), true)['mf'];
+        $this->assertArrayHasKey('upw', $mfPackages);
     }
 
     /**
@@ -846,9 +846,9 @@ class ModflowModelEventSourcingTest extends EventSourcingBaseTest
         $packages = $this->container->get('inowas.modflowmodel.modflow_packages_manager')->getPackages($calculationId);
         $this->assertTrue($packages->isSelected(PackageName::fromString('mf')));
 
-        $packages = json_decode(json_encode($packages), true);
-        $this->assertArrayHasKey('mf', $packages);
-        $this->assertEquals('mfnwt', $packages['mf']['version']);
+        $mfPackages = json_decode(json_encode($packages), true)['mf'];
+        $this->assertArrayHasKey('mf', $mfPackages);
+        $this->assertEquals('mfnwt', $mfPackages['mf']['version']);
     }
 
     /**
@@ -911,7 +911,8 @@ class ModflowModelEventSourcingTest extends EventSourcingBaseTest
         $modelId = ModflowId::generate();
         $this->createModelWithOneLayer($ownerId, $modelId);
 
-        $optimizationInput = OptimizationInput::fromArray(['123' => 456, '789' => 111]);
+        $optimizationId = ModflowId::generate();
+        $optimizationInput = OptimizationInput::fromArray(['id' => $optimizationId->toString(), '123' => 456, '789' => 111]);
 
         $this->commandBus->dispatch(UpdateOptimizationInput::forModflowModel($ownerId, $modelId, $optimizationInput));
         $optimizationFinder = $this->container->get('inowas.modflowmodel.optimization_finder');
@@ -919,23 +920,24 @@ class ModflowModelEventSourcingTest extends EventSourcingBaseTest
         $this->assertInstanceOf(Optimization::class, $optimization);
         $this->assertEquals($optimizationInput, $optimization->input());
 
-        $changedOptimizationInput = OptimizationInput::fromArray(['456' => 456, '789' => 111]);
+        $changedOptimizationInput = OptimizationInput::fromArray(['id' => $optimizationId->toString(), '456' => 456, '789' => 111]);
         $this->commandBus->dispatch(UpdateOptimizationInput::forModflowModel($ownerId, $modelId, $changedOptimizationInput));
         $optimization = $optimizationFinder->getOptimization($modelId);
         $this->assertInstanceOf(Optimization::class, $optimization);
         $this->assertEquals($changedOptimizationInput, $optimization->input());
 
-        $this->commandBus->dispatch(CalculateOptimization::forModflowModel($ownerId, $modelId, $modelId));
+        $this->commandBus->dispatch(CalculateOptimization::forModflowModel($ownerId, $modelId, $optimizationId));
         $optimization = $optimizationFinder->getOptimization($modelId);
-        $this->assertEquals(OptimizationState::STARTED_BY_USER, $optimization->state()->toInt());
+        $this->assertEquals(OptimizationState::STARTED, $optimization->state()->toInt());
 
-        $this->commandBus->dispatch(CancelOptimizationCalculation::forModflowModel($ownerId, $modelId));
+        $this->commandBus->dispatch(CancelOptimization::forModflowModel($ownerId, $modelId, $optimizationId));
         $optimization = $optimizationFinder->getOptimization($modelId);
-        $this->assertEquals(OptimizationState::CANCELED_BY_USER, $optimization->state()->toInt());
+        $this->assertEquals(OptimizationState::CANCELLING, $optimization->state()->toInt());
     }
 
     /**
      * @test
+     * @throws \Exception
      */
     public function it_creates_a_public_scenarioanalysis_from_a_basemodel(): void
     {
@@ -972,6 +974,7 @@ class ModflowModelEventSourcingTest extends EventSourcingBaseTest
 
     /**
      * @test
+     * @throws \Exception
      */
     public function it_creates_a_private_scenarioanalysis_from_a_basemodel(): void
     {

@@ -26,6 +26,6 @@ class ModflowCalculationResetCommand extends ContainerAwareCommand
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $this->getContainer()->get('inowas.modflowmodel.calculation_results_projector')->resetNotFinishedCalculations();
+        $this->getContainer()->get('inowas.modflowmodel.modflow_calculation_projector')->resetNotFinishedCalculations();
     }
 }

@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Inowas\ModflowModel\Model;
 
 use Inowas\Common\Boundaries\ModflowBoundary;
+use Inowas\Common\Calculation\CalculationState;
 use Inowas\Common\Geometry\Polygon;
 use Inowas\Common\Grid\ActiveCells;
 use Inowas\Common\Grid\BoundingBox;
@@ -20,6 +21,8 @@ use Inowas\Common\Modflow\Name;
 use Inowas\Common\Modflow\Description;
 use Inowas\Common\Modflow\OptimizationInput;
 use Inowas\Common\Modflow\OptimizationProgress;
+use Inowas\Common\Modflow\OptimizationSolutions;
+use Inowas\Common\Modflow\OptimizationState;
 use Inowas\Common\Modflow\PackageName;
 use Inowas\Common\Modflow\ParameterName;
 use Inowas\Common\Modflow\StressPeriods;
@@ -28,17 +31,14 @@ use Inowas\Common\Soilmodel\LayerId;
 use Inowas\Common\Soilmodel\Soilmodel;
 use Inowas\Common\Soilmodel\SoilmodelId;
 use Inowas\Common\Status\Visibility;
-use Inowas\ModflowModel\Model\AMQP\FlopyCalculationResponse;
+use Inowas\ModflowModel\Model\AMQP\ModflowCalculationResponse;
 use Inowas\ModflowModel\Model\Event\ActiveCellsWereUpdated;
 use Inowas\ModflowModel\Model\Event\AreaGeometryWasUpdated;
 use Inowas\ModflowModel\Model\Event\BoundaryWasAdded;
 use Inowas\ModflowModel\Model\Event\BoundaryWasRemoved;
 use Inowas\ModflowModel\Model\Event\BoundaryWasUpdated;
 use Inowas\ModflowModel\Model\Event\BoundingBoxWasChanged;
-use Inowas\ModflowModel\Model\Event\CalculationIdWasChanged;
-use Inowas\ModflowModel\Model\Event\CalculationWasRequested;
-use Inowas\ModflowModel\Model\Event\CalculationWasFinished;
-use Inowas\ModflowModel\Model\Event\CalculationWasStarted;
+use Inowas\ModflowModel\Model\Event\CalculationStateWasUpdated;
 use Inowas\ModflowModel\Model\Event\DescriptionWasChanged;
 use Inowas\ModflowModel\Model\Event\FlowPackageWasChanged;
 use Inowas\ModflowModel\Model\Event\GridSizeWasChanged;
@@ -52,9 +52,8 @@ use Inowas\ModflowModel\Model\Event\ModflowPackageParameterWasUpdated;
 use Inowas\ModflowModel\Model\Event\ModflowPackageWasUpdated;
 use Inowas\ModflowModel\Model\Event\Mt3dmsWasUpdated;
 use Inowas\ModflowModel\Model\Event\NameWasChanged;
-use Inowas\ModflowModel\Model\Event\OptimizationCalculationWasCanceled;
-use Inowas\ModflowModel\Model\Event\OptimizationCalculationWasStarted;
-use Inowas\ModflowModel\Model\Event\OptimizationProgressWasUpdated;
+use Inowas\ModflowModel\Model\Event\OptimizationStateWasUpdated;
+use Inowas\ModflowModel\Model\Event\OptimizationResultsWereUpdated;
 use Inowas\ModflowModel\Model\Event\OptimizationInputWasUpdated;
 use Inowas\ModflowModel\Model\Event\SoilmodelMetadataWasUpdated;
 use Inowas\ModflowModel\Model\Event\ModflowModelWasCreated;
@@ -103,6 +102,7 @@ class ModflowModelAggregate extends AggregateRoot
         $self->modelId = $modelId;
         $self->userId = $userId;
         $self->boundaries = [];
+        $self->isDirty = true;
 
         $self->recordThat(ModflowModelWasCreated::withParameters(
             $modelId,
@@ -174,30 +174,6 @@ class ModflowModelAggregate extends AggregateRoot
         }
 
         throw BoundaryNotFoundInModelException::withIds($this->modelId, $boundaryId);
-    }
-
-    public function calculationRequestWasSent(UserId $userId): void
-    {
-        $this->recordThat(CalculationWasRequested::withId(
-            $userId,
-            $this->modelId
-        ));
-    }
-
-    public function calculationWasStarted(CalculationId $calculationId): void
-    {
-        $this->recordThat(CalculationWasStarted::withId(
-            $this->modelId,
-            $calculationId
-        ));
-    }
-
-    public function calculationWasFinished(FlopyCalculationResponse $response): void
-    {
-        $this->recordThat(CalculationWasFinished::withResponse(
-            $this->modelId,
-            $response
-        ));
     }
 
     public function changeDescription(UserId $userId, Description $description): void
@@ -308,12 +284,22 @@ class ModflowModelAggregate extends AggregateRoot
         ));
     }
 
-    public function preprocessingWasFinished(CalculationId $calculationId): void
+    /** @noinspection MoreThanThreeArgumentsInspection */
+    public function updateCalculationState(?UserId $userId, ?CalculationId $calculationId, CalculationState $state, ?ModflowCalculationResponse $response): void
     {
-        if ($this->calculationId->toString() !== $calculationId->toString()) {
+        if ($calculationId instanceof CalculationId && !$calculationId->sameValueAs($this->calculationId)) {
             $this->calculationId = $calculationId;
-            $this->recordThat(CalculationIdWasChanged::withId($this->modelId, $calculationId));
         }
+
+        $this->recordThat(
+            CalculationStateWasUpdated::withParams(
+                $userId,
+                $this->modelId,
+                $calculationId,
+                $state,
+                $response
+            )
+        );
     }
 
     /** @noinspection MoreThanThreeArgumentsInspection
@@ -371,32 +357,34 @@ class ModflowModelAggregate extends AggregateRoot
     }
 
     /* Optimization related stuff */
-    public function calculateOptimization(UserId $userId, ModflowId $optimizationId): void
-    {
-        $this->recordThat(OptimizationCalculationWasStarted::byUserToModel($userId, $this->modelId, $optimizationId));
-    }
-
-    public function cancelOptimizationCalculation(UserId $userId, ModflowId $optimizationId): void
-    {
-        $this->recordThat(OptimizationCalculationWasCanceled::byUserToModel($userId, $this->modelId, $optimizationId));
-    }
-
     public function updateOptimizationInput(UserId $userId, OptimizationInput $input): void
     {
         $this->recordThat(OptimizationInputWasUpdated::byUserToModel($userId, $this->modelId, $input));
     }
 
-    public function updateOptimizationProgress(UserId $userId, OptimizationProgress $progress): void
+    public function updateOptimizationCalculationProgress(ModflowId $optimizationId, OptimizationProgress $progress, OptimizationSolutions $solutions): void
     {
-        $this->recordThat(OptimizationProgressWasUpdated::byUserToModel($userId, $this->modelId, $progress));
+        $this->recordThat(OptimizationResultsWereUpdated::byModel($this->modelId, $optimizationId, $progress, $solutions));
+    }
+
+    public function updateOptimizationCalculationState(ModflowId $optimizationId, OptimizationState $state): void
+    {
+        $this->recordThat(OptimizationStateWasUpdated::withModelIdAndState($this->modelId, $optimizationId, $state));
+    }
+
+    public function updateOptimizationCalculationStateByUser(UserId $userId, ModflowId $optimizationId, OptimizationState $state): void
+    {
+        $this->recordThat(OptimizationStateWasUpdated::withUserIdModelIdAndState($userId, $this->modelId, $optimizationId, $state));
     }
 
     /* Soilmodel-Related stuff */
+    /** @noinspection MoreThanThreeArgumentsInspection */
     public function addLayer(UserId $userId, LayerId $id, LayerNumber $number, string $hash): void
     {
         $this->recordThat(LayerWasAdded::byUserToModel($userId, $this->modelId, $id, $number, $hash));
     }
 
+    /** @noinspection MoreThanThreeArgumentsInspection */
     public function updateLayer(UserId $userId, LayerId $layerId, LayerId $newLayerId, LayerNumber $layerNumber, string $hash): void
     {
         $this->recordThat(LayerWasUpdated::byUserToModel($userId, $this->modelId, $layerId, $newLayerId, $layerNumber, $hash));
@@ -458,21 +446,11 @@ class ModflowModelAggregate extends AggregateRoot
     {
     }
 
-    protected function whenCalculationIdWasChanged(CalculationIdWasChanged $event): void
+    protected function whenCalculationStateWasUpdated(CalculationStateWasUpdated $event): void
     {
-        $this->calculationId = $event->calculationId();
-    }
-
-    protected function whenCalculationWasRequested(CalculationWasRequested $event): void
-    {
-    }
-
-    protected function whenCalculationWasFinished(CalculationWasFinished $event): void
-    {
-    }
-
-    protected function whenCalculationWasStarted(CalculationWasStarted $event): void
-    {
+        if ($event->calculationId() instanceof CalculationId) {
+            $this->calculationId = $event->calculationId();
+        }
     }
 
     protected function whenDescriptionWasChanged(DescriptionWasChanged $event): void
@@ -488,15 +466,11 @@ class ModflowModelAggregate extends AggregateRoot
     }
 
     /* Optimization */
-    protected function whenOptimizationCalculationWasCanceled(OptimizationCalculationWasCanceled $event): void
+    protected function whenOptimizationResultsWereUpdated(OptimizationResultsWereUpdated $event): void
     {
     }
 
-    protected function whenOptimizationCalculationWasStarted(OptimizationCalculationWasStarted $event): void
-    {
-    }
-
-    protected function whenOptimizationProgressWasUpdated(OptimizationProgressWasUpdated $event): void
+    protected function whenOptimizationStateWasUpdated(OptimizationStateWasUpdated $event): void
     {
     }
 
@@ -520,6 +494,13 @@ class ModflowModelAggregate extends AggregateRoot
 
     protected function whenLengthUnitWasUpdated(LengthUnitWasUpdated $event): void
     {
+    }
+
+    protected function whenModflowModelCalculationStateWasUpdated(CalculationStateWasUpdated $event): void
+    {
+        if ($event->calculationId() instanceof CalculationId) {
+            $this->calculationId = $event->calculationId();
+        }
     }
 
     protected function whenModflowModelWasCloned(ModflowModelWasCloned $event): void

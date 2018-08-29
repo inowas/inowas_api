@@ -61,4 +61,9 @@ final class CalculationStateQuery implements \JsonSerializable
     {
         return $this->toArray();
     }
+
+    public function calculationId(): ?CalculationId
+    {
+        return $this->id;
+    }
 }

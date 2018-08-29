@@ -56,7 +56,7 @@ class Geometry implements \JsonSerializable
         $coordinates = $arr['coordinates'];
 
         $srid = null;
-        if (array_key_exists('srid', $arr)){
+        if (array_key_exists('srid', $arr)) {
             $srid = $arr['srid'];
         }
 
@@ -85,19 +85,19 @@ class Geometry implements \JsonSerializable
 
     public static function isValid(array $arr): bool
     {
-        if (! array_key_exists('type', $arr)) {
+        if (!array_key_exists('type', $arr)) {
             return false;
         }
 
-        if (! in_array(strtolower($arr['type']), self::$availableTypes, true)) {
+        if (!\in_array(strtolower($arr['type']), self::$availableTypes, true)) {
             return false;
         }
 
-        if (! array_key_exists('coordinates', $arr)) {
+        if (!array_key_exists('coordinates', $arr)) {
             return false;
         }
 
-        if (! is_array($arr['coordinates'])) {
+        if (!\is_array($arr['coordinates'])) {
             return false;
         }
 
@@ -106,21 +106,30 @@ class Geometry implements \JsonSerializable
 
     public function toArray(): array
     {
+
+        if ($this->geometry->getSrid()) {
+            return [
+                'type' => $this->geometry->getType(),
+                'coordinates' => $this->geometry->toArray(),
+                'srid' => $this->geometry->getSrid()
+            ];
+        }
+
         return [
             'type' => $this->geometry->getType(),
-            'coordinates' => $this->geometry->toArray(),
-            'srid' => $this->geometry->getSrid()
+            'coordinates' => $this->geometry->toArray()
         ];
+
     }
 
-    public function toJson():string
+    public function toJson(): string
     {
         return $this->geometry->toJson();
     }
 
     public function srid(): Srid
     {
-        if (null === $this->geometry->getSrid()){
+        if (null === $this->geometry->getSrid()) {
             Srid::fromInt(4326);
         }
         return Srid::fromInt($this->geometry->getSrid());
@@ -152,7 +161,7 @@ class Geometry implements \JsonSerializable
 
     public function getLineString(): ?LineString
     {
-        if ($this->isLinestring()){
+        if ($this->isLinestring()) {
             return $this->value();
         }
 
@@ -166,7 +175,7 @@ class Geometry implements \JsonSerializable
 
     public function getPolygon(): ?Polygon
     {
-        if ($this->isPolygon()){
+        if ($this->isPolygon()) {
             return $this->value();
         }
 

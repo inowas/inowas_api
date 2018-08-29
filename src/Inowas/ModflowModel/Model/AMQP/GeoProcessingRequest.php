@@ -4,7 +4,7 @@ namespace Inowas\ModflowModel\Model\AMQP;
 
 use Inowas\ModflowModel\Model\Exception\GeoProcessingMethodNotFoundException;
 
-class GeoProcessingRequest extends AMQPRequest
+class GeoProcessingRequest extends AbstractAMQPRequest
 {
 
     public const METHOD_EXTRACT_RASTER_DATA = 'extractRasterData';

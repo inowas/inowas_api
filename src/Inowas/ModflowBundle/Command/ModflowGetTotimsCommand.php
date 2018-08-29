@@ -30,6 +30,12 @@ class ModflowGetTotimsCommand extends ContainerAwareCommand
         ;
     }
 
+    /**
+     * @param InputInterface $input
+     * @param OutputInterface $output
+     * @return int|null|void
+     * @throws \Exception
+     */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         if (Uuid::isValid($input->getArgument('id'))){
@@ -43,7 +49,7 @@ class ModflowGetTotimsCommand extends ContainerAwareCommand
             $output->writeln('No calculationId found, please calculate first.');
         }
 
-        $totalTimes = $this->getContainer()->get('inowas.modflowmodel.calculation_results_finder')->getTotalTimesFromCalculationById($calculationId);
+        $totalTimes = $this->getContainer()->get('inowas.modflowmodel.modflow_calculation_finder')->getTotalTimesFromCalculationById($calculationId);
 
         if (! $totalTimes instanceof TotalTimes) {
             $output->writeln(sprintf('No totalTimes found for calculation with id %s.', $calculationId->toString()));

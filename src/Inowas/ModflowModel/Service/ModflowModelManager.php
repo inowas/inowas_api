@@ -115,6 +115,8 @@ class ModflowModelManager
             ActiveCells::fromArray(json_decode($model['active_cells'], true))
             : $this->getAreaActiveCells($modelId);
 
+        $isDirty = (bool)$model['dirty'];
+
         $model = ModflowModel::fromParams(
             $modelId,
             Name::fromString($model['name']),
@@ -128,7 +130,8 @@ class ModflowModelManager
             Mt3dms::fromDB($model['mt3dms']),
             StressPeriods::createFromJson($model['stressperiods']),
             $permission,
-            $visibility
+            $visibility,
+            $isDirty
         );
 
         return $model;
@@ -374,5 +377,14 @@ class ModflowModelManager
         $geometry = Geometry::fromPolygon($polygon);
         $gridSize = $this->modelFinder->getGridSizeByModflowModelId($modelId);
         return $this->geoTools->calculateActiveCellsFromGeometryAndAffectedLayers($geometry, $affectedLayers, $boundingBox, $gridSize);
+    }
+
+    /**
+     * @param ModflowId $modelId
+     * @return Mt3dms|null
+     */
+    public function getMt3dmsByModelId(ModflowId $modelId): ?Mt3dms
+    {
+        return $this->modelFinder->getMt3dmsByModelId($modelId);
     }
 }

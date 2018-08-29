@@ -7,7 +7,7 @@ use Inowas\ModflowModel\Model\Exception\InvalidJsonException;
 class OptimizationProgress
 {
     /** @var array */
-    private $data;
+    private $progress;
 
     /**
      * @param string $json
@@ -24,34 +24,34 @@ class OptimizationProgress
     }
 
     /**
-     * @param array $data
+     * @param array $progress
      * @return self
      */
-    public static function fromArray(array $data): self
+    public static function fromArray(array $progress): self
     {
-        return new self($data);
+        return new self($progress);
     }
 
     /**
-     * @param string|null $data
+     * @param string|null $progress
      * @return self
      */
-    public static function fromDB($data): self
+    public static function fromDB($progress): self
     {
-        if (null === $data) {
-            return new self($data);
+        if (null === $progress) {
+            return new self($progress);
         }
 
-        return self::fromJson($data);
+        return self::fromJson($progress);
     }
 
     /**
      * Optimization constructor.
-     * @param $data
+     * @param $progress
      */
-    private function __construct($data)
+    private function __construct($progress)
     {
-        $this->data = $data;
+        $this->progress = $progress;
     }
 
     /**
@@ -59,7 +59,7 @@ class OptimizationProgress
      */
     public function data(): array
     {
-        return $this->data;
+        return $this->progress;
     }
 
     /**
@@ -67,7 +67,7 @@ class OptimizationProgress
      */
     public function toArray(): ?array
     {
-        return $this->data;
+        return $this->progress;
     }
 
     /**
@@ -75,16 +75,24 @@ class OptimizationProgress
      */
     public function toJson(): string
     {
-        return json_encode($this->data);
+        return json_encode($this->progress);
     }
 
-    public function sameAs($data): bool
+    public function sameAs($progress): bool
     {
-        if (!$data instanceof self) {
+        if (!$progress instanceof self) {
             return false;
         }
 
         /** @noinspection TypeUnsafeComparisonInspection */
-        return $data->data() == $this->data();
+        return $progress->data() == $this->data();
+    }
+
+    public function finished(): bool
+    {
+        if (!\array_key_exists('final', $this->progress)) {
+            return false;
+        }
+        return (bool)$this->progress['final'];
     }
 }

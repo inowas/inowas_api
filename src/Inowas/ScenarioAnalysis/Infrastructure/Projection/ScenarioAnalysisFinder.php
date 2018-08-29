@@ -10,6 +10,7 @@ use Inowas\Common\Id\UserId;
 use Inowas\Common\Modflow\Description;
 use Inowas\Common\Modflow\Name;
 use Inowas\Common\Status\Visibility;
+use Inowas\ModflowModel\Infrastructure\Projection\ModelList\ModelFinder;
 use Inowas\ScenarioAnalysis\Model\ScenarioAnalysisDescription;
 use Inowas\ScenarioAnalysis\Model\ScenarioAnalysisId;
 use Inowas\ScenarioAnalysis\Model\ScenarioAnalysisName;
@@ -19,9 +20,14 @@ class ScenarioAnalysisFinder
     /** @var Connection $connection */
     protected $connection;
 
-    public function __construct(Connection $connection) {
+    /** @var ModelFinder */
+    protected $modelFinder;
+
+    public function __construct(Connection $connection, ModelFinder $modelFinder)
+    {
         $this->connection = $connection;
         $this->connection->setFetchMode(\PDO::FETCH_ASSOC);
+        $this->modelFinder = $modelFinder;
     }
 
     public function scenarioAnalysisExists(ScenarioAnalysisId $id): bool
@@ -147,10 +153,15 @@ class ScenarioAnalysisFinder
         return $result['count'] === 1;
     }
 
+    /**
+     * @param ScenarioAnalysisId $scenarioAnalysisId
+     * @return array|null
+     * @throws \Exception
+     */
     public function findScenarioAnalysisDetailsById(ScenarioAnalysisId $scenarioAnalysisId): ?array
     {
         $result = $this->connection->fetchAssoc(
-            sprintf('SELECT scenario_analysis_id as id, user_id, name, description, geometry, grid_size, bounding_box, created_at, public FROM %s WHERE scenario_analysis_id = :scenario_analysis_id', Table::SCENARIO_ANALYSIS_LIST),
+            sprintf('SELECT scenario_analysis_id as id, user_id, name, description, base_model_id, created_at, public FROM %s WHERE scenario_analysis_id = :scenario_analysis_id', Table::SCENARIO_ANALYSIS_LIST),
             ['scenario_analysis_id' => $scenarioAnalysisId->toString()]
         );
 
@@ -158,29 +169,39 @@ class ScenarioAnalysisFinder
             return null;
         }
 
-        $result['geometry'] = json_decode($result['geometry'], true);
-        $result['grid_size'] = json_decode($result['grid_size'], true);
-        $result['bounding_box'] = json_decode($result['bounding_box'], true);
-        $result['public'] = (bool) $result['public'];
+        $result['public'] = (bool)$result['public'];
 
-        $baseModel = $this->connection->fetchAssoc(
-            sprintf('SELECT scenario_id as id, name, description, calculation_id FROM %s WHERE scenario_analysis_id = :scenario_analysis_id AND is_base_model = true', Table::SCENARIO_LIST),
-            ['scenario_analysis_id' => $scenarioAnalysisId->toString()]
-        );
+        $baseModelId = ModflowId::fromString($result['base_model_id']);
+        $result['geometry'] = $this->modelFinder->getAreaGeometryByModflowModelId($baseModelId)->toArray();
+        $result['grid_size'] = $this->modelFinder->getGridSizeByModflowModelId($baseModelId)->toArray();
+        $result['bounding_box'] = $this->modelFinder->getBoundingBoxByModflowModelId($baseModelId)->toArray();
 
-        if ($baseModel === false) {
-            return null;
-        }
 
-        $result['base_model'] = $baseModel;
+        $result['base_model'] = [
+            'id' => $baseModelId->toString(),
+            'name' => $this->modelFinder->getModelNameByModelId($baseModelId)->toString(),
+            'description' => $this->modelFinder->getModelDescriptionByModelId($baseModelId)->toString(),
+            'calculation_id' => $this->modelFinder->getCalculationIdByModelId($baseModelId)->toString()
+        ];
 
         $scenarios = $this->connection->fetchAll(
-            sprintf('SELECT scenario_id as id, name, description, calculation_id FROM %s WHERE scenario_analysis_id = :scenario_analysis_id AND is_scenario = true ORDER BY created_at', Table::SCENARIO_LIST),
+            sprintf('SELECT scenario_id as id FROM %s WHERE scenario_analysis_id = :scenario_analysis_id AND is_scenario = true ORDER BY created_at', Table::SCENARIO_LIST),
             ['scenario_analysis_id' => $scenarioAnalysisId->toString()]
         );
 
         if ($scenarios === false) {
-            $scenarios = array();
+            $result['scenarios'] = [];
+            return $result;
+        }
+
+        foreach ($scenarios as $key => $scenario) {
+            $scenarioId = ModflowId::fromString($scenario['id']);
+            $scenarios[$key] = [
+                'id' => $scenarioId->toString(),
+                'name' => $this->modelFinder->getModelNameByModelId($scenarioId)->toString(),
+                'description' => $this->modelFinder->getModelDescriptionByModelId($scenarioId)->toString(),
+                'calculation_id' => $this->modelFinder->getCalculationIdByModelId($scenarioId)->toString()
+            ];
         }
 
         $result['scenarios'] = $scenarios;
@@ -190,36 +211,11 @@ class ScenarioAnalysisFinder
 
     public function getScenarioNameById(ModflowId $modflowId): ?Name
     {
-        $result = $this->connection->fetchAssoc(
-            sprintf('SELECT name FROM %s WHERE scenario_id = :scenario_id', Table::SCENARIO_LIST),
-            ['scenario_id' => $modflowId->toString()]
-        );
-
-
-        if ($result === false) {
-            return null;
-        }
-
-        return Name::fromString($result['name']);
+        return $this->modelFinder->getModelNameByModelId($modflowId);
     }
 
     public function getScenarioDescriptionById(ModflowId $modflowId): ?Description
     {
-        $result = $this->connection->fetchAssoc(
-            sprintf('SELECT description FROM %s WHERE scenario_id = :scenario_id', Table::SCENARIO_LIST),
-            ['scenario_id' => $modflowId->toString()]
-        );
-
-
-        if ($result === false) {
-            return null;
-        }
-
-        return Description::fromString($result['description']);
-    }
-
-    public function findAll(): array
-    {
-        return $this->connection->fetchAll(sprintf('SELECT * FROM %s', Table::SCENARIO_ANALYSIS_LIST));
+        return $this->modelFinder->getModelDescriptionByModelId($modflowId);
     }
 }

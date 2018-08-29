@@ -17,17 +17,16 @@ class ModflowPackagesTest extends \PHPUnit_Framework_TestCase
     public function it_creates_default_packages(): void
     {
         $packages = ModflowPackages::createFromDefaults();
-        $this->assertInstanceOf(ModflowPackages::class, $packages);
 
         /** @var array $packageData */
         $packageData = $packages->packageData();
-        $this->assertInternalType('array', $packageData);
-        $this->assertArrayHasKey('packages', $packageData);
+        $this->assertArrayHasKey('mf', $packageData);
+        $this->assertArrayHasKey('packages', $packageData['mf']);
 
         /** @var  array $selectedPackages */
-        $selectedPackages = $packageData['packages'];
+        $selectedPackages = $packageData['mf']['packages'];
         foreach ($selectedPackages as $packageName) {
-            $this->assertArrayHasKey($packageName, $packageData);
+            $this->assertArrayHasKey($packageName, $packageData['mf']);
         }
     }
 

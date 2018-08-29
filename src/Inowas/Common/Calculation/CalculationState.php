@@ -6,52 +6,53 @@ namespace Inowas\Common\Calculation;
 
 class CalculationState
 {
-
-    /**
-     * @var int
-     *
-     * 0: new (calculate available)
-     * 1: preprocessing (working)
-     * 2: queued (working)
-     * 3: started (working)
-     * 4: finished (calculate available)
-     */
-
-    const NEW = 0;
-    const PREPROCESSING = 1;
-    const QUEUED = 2;
-    const STARTED = 3;
-    const FINISHED = 4;
+    public const NEW = 0;
+    public const CALCULATION_PROCESS_STARTED = 1;
+    public const PREPROCESSING = 2;
+    public const PREPROCESSING_FINISHED = 3;
+    public const QUEUED = 4;
+    public const CALCULATING = 5;
+    public const CALCULATION_FINISHED = 6;
 
     /** @var  int */
     private $state;
 
-    public static function new(): CalculationState
+    public static function new(): self
     {
         return new self(self::NEW);
     }
 
-    public static function preprocessing(): CalculationState
+    public static function calculationProcessStarted(): self
+    {
+        return new self(self::CALCULATION_PROCESS_STARTED);
+    }
+
+    public static function preprocessing(): self
     {
         return new self(self::PREPROCESSING);
     }
 
-    public static function queued(): CalculationState
+    public static function preprocessingFinished(): self
+    {
+        return new self(self::PREPROCESSING_FINISHED);
+    }
+
+    public static function queued(): self
     {
         return new self(self::QUEUED);
     }
 
-    public static function started(): CalculationState
+    public static function calculating(): self
     {
-        return new self(self::STARTED);
+        return new self(self::CALCULATING);
     }
 
-    public static function finished(): CalculationState
+    public static function finished(): self
     {
-        return new self(self::FINISHED);
+        return new self(self::CALCULATION_FINISHED);
     }
 
-    public static function fromInt(int $state): CalculationState
+    public static function fromInt(int $state): self
     {
         return new self($state);
     }
@@ -68,6 +69,6 @@ class CalculationState
 
     public function isFinished(): bool
     {
-        return $this->state === self::FINISHED;
+        return $this->state === self::CALCULATION_FINISHED;
     }
 }

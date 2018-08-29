@@ -55,6 +55,15 @@ class OptimizationInputWasUpdated extends AggregateChanged
         return $this->modflowId;
     }
 
+    public function optimizationId(): ModflowId
+    {
+        if ($this->input === null) {
+            $this->input = OptimizationInput::fromArray($this->payload['input']);
+        }
+
+        return $this->input->optimizationId();
+    }
+
     public function input(): OptimizationInput
     {
         if ($this->input === null) {
