@@ -9,7 +9,6 @@ use Doctrine\DBAL\Schema\Schema;
 use Doctrine\ORM\EntityManager;
 use Inowas\AppBundle\Model\User;
 use Inowas\Common\Calculation\CalculationState;
-use Inowas\Common\Id\ModflowId;
 use Inowas\Common\Modflow\LengthUnit;
 use Inowas\Common\Modflow\StressPeriods;
 use Inowas\Common\Modflow\TimeUnit;
@@ -113,32 +112,40 @@ class ModelProjector extends AbstractDoctrineConnectionProjector
 
     public function onCalculationStateWasUpdated(CalculationStateWasUpdated $event): void
     {
-
-        if (!$event->modelId() instanceof ModflowId) {
-            return;
-        }
+        $state = $event->state()->toInt();
 
         $calculationId = null;
         $dirty = 1;
         $preprocessing = 0;
+        $makeUpdate = false;
 
-        if ($event->state()->toInt() === CalculationState::PREPROCESSING) {
-            $preprocessing = 1;
+        if ($state < CalculationState::PREPROCESSING) {
+            $makeUpdate = true;
         }
 
-        if ($event->state()->toInt() === CalculationState::PREPROCESSING_FINISHED) {
+        if ($state === CalculationState::PREPROCESSING) {
+            $calculationId = null;
+            $dirty = 1;
+            $preprocessing = 1;
+            $makeUpdate = true;
+        }
+
+        if ($state === CalculationState::PREPROCESSING_FINISHED) {
             $calculationId = $event->calculationId()->toString();
             $dirty = 0;
             $preprocessing = 0;
+            $makeUpdate = true;
         }
 
-        $this->connection->update(Table::MODFLOWMODELS, [
-            'calculation_id' => $calculationId,
-            'dirty' => $dirty,
-            'preprocessing' => $preprocessing
-        ],
-            ['model_id' => $event->modelId()->toString()]
-        );
+        if ($makeUpdate) {
+            $this->connection->update(Table::MODFLOWMODELS, [
+                'calculation_id' => $calculationId,
+                'dirty' => $dirty,
+                'preprocessing' => $preprocessing
+            ],
+                ['model_id' => $event->modelId()->toString()]
+            );
+        }
     }
 
     public function onDescriptionWasChanged(DescriptionWasChanged $event): void

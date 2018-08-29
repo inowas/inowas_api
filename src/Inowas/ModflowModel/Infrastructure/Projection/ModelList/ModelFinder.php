@@ -135,6 +135,10 @@ class ModelFinder
             return null;
         }
 
+        if (null === $result['calculation_id']) {
+            return null;
+        }
+
         return CalculationId::fromString($result['calculation_id']);
     }
 

@@ -55,7 +55,7 @@ class ModflowCalculationProjector extends AbstractDoctrineConnectionProjector
         $state = $event->state()->toInt();
 
         switch ($state) {
-            case CalculationState::calculationProcessStarted()->toInt():
+            case CalculationState::CALCULATION_PROCESS_STARTED:
                 $this->createModelCalculation($event);
                 break;
             case CalculationState::PREPROCESSING:

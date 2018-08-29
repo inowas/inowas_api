@@ -549,22 +549,14 @@ class ModflowModelController extends InowasRestController
             );
         }
 
-        $calculationId = $this->get('inowas.modflowmodel.model_finder')->getCalculationIdByModelId($modelId);
-        if (!$calculationId instanceof CalculationId) {
-            $query = CalculationStateQuery::createWithEmptyCalculationId(
-                CalculationState::new()
-            );
+        $query = $this->get('inowas.modflowmodel.modflow_calculation_finder')->getCalculationStateQueryByModelId($modelId);
 
-            return new JsonResponse($query);
-        }
-
-        $query = $this->get('inowas.modflowmodel.modflow_calculation_finder')->getCalculationStateQuery($calculationId);
         if ($query instanceof CalculationStateQuery) {
-
             if ($query->calculationWasFinished()) {
-                $query->updateFiles($this->get('inowas.modflowmodel.modflow_model_results_loader')->getFileList($calculationId));
+                $query->updateFiles(
+                    $this->get('inowas.modflowmodel.modflow_model_results_loader')->getFileList($query->calculationId())
+                );
             }
-
             return new JsonResponse($query);
         }
 

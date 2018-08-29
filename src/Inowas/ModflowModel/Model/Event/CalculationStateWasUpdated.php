@@ -61,7 +61,6 @@ class CalculationStateWasUpdated extends AggregateChanged
 
     public function state(): CalculationState
     {
-
         return CalculationState::fromInt($this->payload['state']);
     }
 

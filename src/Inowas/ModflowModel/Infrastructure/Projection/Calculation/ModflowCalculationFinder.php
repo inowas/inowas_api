@@ -57,7 +57,34 @@ class ModflowCalculationFinder
         return $result;
     }
 
-    public function getCalculationStateQuery(CalculationId $calculationId): ?CalculationStateQuery
+    public function getCalculationStateQueryByModelId(ModflowId $modelId): ?CalculationStateQuery
+    {
+        $result = $this->connection->fetchAssoc(
+            sprintf('SELECT calculation_id, state FROM %s WHERE model_id = :model_id', Table::MODELS_CALCULATIONS),
+            ['model_id' => $modelId->toString()]
+        );
+
+        if ($result === false) {
+            return null;
+        }
+
+        $calculationState = CalculationState::fromInt($result['state']);
+
+        if (null === $result['calculation_id']) {
+            return CalculationStateQuery::createWithEmptyCalculationId($calculationState);
+        }
+
+        $calculationId = CalculationId::fromString($result['calculation_id']);
+        if ($calculationState->toInt() < CalculationState::CALCULATION_FINISHED) {
+            return CalculationStateQuery::createWithCalculationId(
+                $calculationId, $calculationState, CalculationMessage::fromString('')
+            );
+        }
+
+        return $this->getCalculationStateQuery($calculationId);
+    }
+
+    private function getCalculationStateQuery(CalculationId $calculationId): ?CalculationStateQuery
     {
         $result = $this->connection->fetchAssoc(
             sprintf('SELECT calculation_id, state, message FROM %s WHERE calculation_id = :calculation_id', Table::CALCULATIONS),
@@ -70,7 +97,7 @@ class ModflowCalculationFinder
 
         return CalculationStateQuery::createWithCalculationId(
             $calculationId,
-            CalculationState::fromInt((int)$result['state']),
+            CalculationState::fromInt($result['state']),
             CalculationMessage::fromString($result['message'])
         );
     }

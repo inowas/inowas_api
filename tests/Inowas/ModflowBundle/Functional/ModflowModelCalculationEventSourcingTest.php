@@ -6,6 +6,8 @@ namespace Tests\Inowas\ModflowBundle\Functional;
 
 use Inowas\Common\Calculation\CalculationState;
 use Inowas\Common\Id\CalculationId;
+use Inowas\ModflowModel\Infrastructure\Projection\Calculation\ModflowCalculationFinder;
+use Inowas\ModflowModel\Infrastructure\Projection\ModelList\ModelFinder;
 use Inowas\ModflowModel\Model\AMQP\ModflowCalculationResponse;
 use Inowas\ModflowModel\Model\Command\CalculateModflowModel;
 use Inowas\ModflowModel\Model\Command\UpdateCalculationState;
@@ -23,28 +25,36 @@ class ModflowModelCalculationEventSourcingTest extends EventSourcingBaseTest
         $modelId = ModflowId::generate();
         $ownerId = UserId::generate();
 
+        /** @var ModflowCalculationFinder $calculationFinder */
+        $calculationFinder = $this->container->get('inowas.modflowmodel.modflow_calculation_finder');
+
+        /** @var ModelFinder $modelFinder */
+        $modelFinder = $this->container->get('inowas.modflowmodel.model_finder');
+
         $this->createModelWithOneLayer($ownerId, $modelId);
 
         $this->commandBus->dispatch(CalculateModflowModel::forModflowModelWitUserId($ownerId, $modelId));
-        $response = $this->container->get('inowas.modflowmodel.modflow_calculation_finder')->getModelsCalculationsDetailsByModelId($modelId);
+        $response = $calculationFinder->getModelsCalculationsDetailsByModelId($modelId);
         $this->assertEquals($response['model_id'], $modelId->toString());
         $this->assertEquals($response['calculation_id'], null);
         $this->assertEquals($response['state'], CalculationState::CALCULATION_PROCESS_STARTED);
-
+        $this->assertEquals(null, $modelFinder->getCalculationIdByModelId($modelId));
 
         $calculationId = CalculationId::fromString('test123');
         $this->commandBus->dispatch(UpdateCalculationState::preprocessingFinished($modelId, $calculationId));
-        $response = $this->container->get('inowas.modflowmodel.modflow_calculation_finder')->getModelsCalculationsDetailsByModelId($modelId);
+        $response = $calculationFinder->getModelsCalculationsDetailsByModelId($modelId);
         $this->assertEquals($response['model_id'], $modelId->toString());
         $this->assertEquals($response['calculation_id'], $calculationId->toString());
         $this->assertEquals($response['state'], CalculationState::PREPROCESSING_FINISHED);
+        $this->assertEquals($calculationId, $modelFinder->getCalculationIdByModelId($modelId));
 
         $calculationId = CalculationId::fromString('test123');
         $this->commandBus->dispatch(UpdateCalculationState::queued($modelId, $calculationId));
-        $response = $this->container->get('inowas.modflowmodel.modflow_calculation_finder')->getModelsCalculationsDetailsByModelId($modelId);
+        $response = $calculationFinder->getModelsCalculationsDetailsByModelId($modelId);
         $this->assertEquals($response['model_id'], $modelId->toString());
         $this->assertEquals($response['calculation_id'], $calculationId->toString());
         $this->assertEquals($response['state'], CalculationState::QUEUED);
+        $this->assertEquals($calculationId, $modelFinder->getCalculationIdByModelId($modelId));
 
         $calculationId = CalculationId::fromString('test123');
         $response = ModflowCalculationResponse::fromArray([
@@ -54,7 +64,7 @@ class ModflowModelCalculationEventSourcingTest extends EventSourcingBaseTest
             'message' => 'message'
         ]);
         $this->commandBus->dispatch(UpdateCalculationState::calculationFinished($modelId, $calculationId, $response));
-        $response = $this->container->get('inowas.modflowmodel.modflow_calculation_finder')->getModelsCalculationsDetailsByModelId($modelId);
+        $response = $calculationFinder->getModelsCalculationsDetailsByModelId($modelId);
         $this->assertEquals($response['model_id'], $modelId->toString());
         $this->assertEquals($response['calculation_id'], $calculationId->toString());
         $this->assertEquals($response['state'], CalculationState::CALCULATION_FINISHED);
