@@ -18,6 +18,7 @@ class OptimizationState
 
     public const ERROR_RECALCULATING_MODEL = 40;
     public const ERROR_PUBLISHING = 41;
+    public const ERROR_OPTIMIZATION_CORE = 42;
 
     /** @var int */
     private $state;
@@ -79,6 +80,11 @@ class OptimizationState
     public static function errorPublishing(): self
     {
         return new self(self::ERROR_PUBLISHING);
+    }
+
+    public static function errorOptimizationCore(): self
+    {
+        return new self(self::ERROR_OPTIMIZATION_CORE);
     }
 
     /**

@@ -69,16 +69,21 @@ class UpdateOptimizationCalculationState extends Command implements PayloadConst
         return new self($payload);
     }
 
-    public static function calculatingWithProgressUpdate(ModflowOptimizationResponse $response): self
+    public static function calculatingWithProgressUpdate(ModflowId $modelId, ModflowOptimizationResponse $response): self
     {
         $payload = [
+            'model_id' => $modelId->toString(),
             'optimization_id' => $response->optimizationId()->toString(),
             'response' => $response->toArray(),
             'state' => OptimizationState::calculating()->toInt(),
         ];
 
         if ($response->progress()->finished()) {
-            $payload['state'] = OptimizationState::calculating()->toInt();
+            $payload['state'] = OptimizationState::finished()->toInt();
+        }
+
+        if ($response->errored()) {
+            $payload['state'] = OptimizationState::errorOptimizationCore()->toInt();
         }
 
         return new self($payload);

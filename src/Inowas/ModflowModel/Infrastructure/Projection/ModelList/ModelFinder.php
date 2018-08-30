@@ -25,7 +25,8 @@ class ModelFinder
     /** @var Connection $connection */
     protected $connection;
 
-    public function __construct(Connection $connection) {
+    public function __construct(Connection $connection)
+    {
         $this->connection = $connection;
         $this->connection->setFetchMode(\PDO::FETCH_OBJ);
     }
@@ -55,11 +56,11 @@ class ModelFinder
             ['user_id' => $userId->toString()]
         );
 
-        foreach ($rows as $key => $row){
+        foreach ($rows as $key => $row) {
             $rows[$key]['geometry'] = json_decode($row['geometry'], true);
             $rows[$key]['grid_size'] = json_decode($row['grid_size'], true);
             $rows[$key]['bounding_box'] = json_decode($row['bounding_box'], true);
-            $rows[$key]['public'] = (bool) $rows[$key]['public'];
+            $rows[$key]['public'] = (bool)$rows[$key]['public'];
         }
 
         return $rows;
@@ -73,11 +74,11 @@ class ModelFinder
             ['public' => 1]
         );
 
-        foreach ($rows as $key => $row){
+        foreach ($rows as $key => $row) {
             $rows[$key]['geometry'] = json_decode($row['geometry'], true);
             $rows[$key]['grid_size'] = json_decode($row['grid_size'], true);
             $rows[$key]['bounding_box'] = json_decode($row['bounding_box'], true);
-            $rows[$key]['public'] = (bool) $rows[$key]['public'];
+            $rows[$key]['public'] = (bool)$rows[$key]['public'];
         }
 
         return $rows;
@@ -85,13 +86,13 @@ class ModelFinder
 
     public function getAreaGeometryByModflowModelId(ModflowId $modelId): ?Geometry
     {
-        $result =  $this->connection->fetchAssoc(
+        $result = $this->connection->fetchAssoc(
             sprintf('SELECT area FROM %s WHERE model_id = :model_id', Table::MODFLOWMODELS),
             ['model_id' => $modelId->toString()]
         );
 
 
-        if ($result === false){
+        if ($result === false) {
             return null;
         }
 
@@ -102,7 +103,7 @@ class ModelFinder
     {
         $geometry = $this->getAreaGeometryByModflowModelId($modelId);
 
-        if (! $geometry instanceof Geometry){
+        if (!$geometry instanceof Geometry) {
             return null;
         }
 
@@ -111,12 +112,12 @@ class ModelFinder
 
     public function getBoundingBoxByModflowModelId(ModflowId $modelId): ?BoundingBox
     {
-        $result =  $this->connection->fetchAssoc(
+        $result = $this->connection->fetchAssoc(
             sprintf('SELECT bounding_box FROM %s WHERE model_id = :model_id', Table::MODFLOWMODELS),
             ['model_id' => $modelId->toString()]
         );
 
-        if ($result === false){
+        if ($result === false) {
             return null;
         }
 
@@ -131,7 +132,7 @@ class ModelFinder
             ['model_id' => $modelId->toString()]
         );
 
-        if ($result === false){
+        if ($result === false) {
             return null;
         }
 
@@ -154,7 +155,7 @@ class ModelFinder
             ['model_id' => $modelId->toString()]
         );
 
-        if ($result === false){
+        if ($result === false) {
             return null;
         }
 
@@ -169,7 +170,7 @@ class ModelFinder
             ['model_id' => $modelId->toString()]
         );
 
-        if ($result === false){
+        if ($result === false) {
             return null;
         }
 
@@ -184,7 +185,7 @@ class ModelFinder
             ['model_id' => $modelId->toString()]
         );
 
-        if ($result === false){
+        if ($result === false) {
             return null;
         }
 
@@ -199,7 +200,7 @@ class ModelFinder
             ['model_id' => $modelId->toString()]
         );
 
-        if ($result === false ||  $result['mt3dms'] === null){
+        if ($result === false || $result['mt3dms'] === null) {
             return null;
         }
 
@@ -214,7 +215,7 @@ class ModelFinder
             ['model_id' => $modelId->toString()]
         );
 
-        if ($result === false){
+        if ($result === false) {
             return null;
         }
 
@@ -229,7 +230,7 @@ class ModelFinder
             ['model_id' => $modelId->toString()]
         );
 
-        if ($result === false){
+        if ($result === false) {
             return null;
         }
 
@@ -253,7 +254,7 @@ class ModelFinder
             ['model_id' => $modelId->toString()]
         );
 
-        if ($result === false){
+        if ($result === false) {
             return null;
         }
 
@@ -282,7 +283,7 @@ class ModelFinder
             ['model_id' => $modelId->toString()]
         );
 
-        if ($result === false){
+        if ($result === false) {
             return null;
         }
 
@@ -319,5 +320,23 @@ class ModelFinder
         );
 
         return $result['count'] > 0;
+    }
+
+    public function isDirty(ModflowId $modflowId): bool
+    {
+        $result = $this->connection->fetchAssoc(
+            sprintf('SELECT dirty FROM %s WHERE model_id = :model_id', Table::MODFLOWMODELS),
+            ['model_id' => $modflowId->toString()]
+        );
+
+        if ($result === false) {
+            return false;
+        }
+
+        if ($result['dirty'] && $result['dirty'] === 1) {
+            return true;
+        }
+
+        return false;
     }
 }

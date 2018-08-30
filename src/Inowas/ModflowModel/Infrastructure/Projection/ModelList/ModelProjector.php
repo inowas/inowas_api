@@ -70,7 +70,11 @@ class ModelProjector extends AbstractDoctrineConnectionProjector
     public function onAreaGeometryWasUpdated(AreaGeometryWasUpdated $event): void
     {
         $this->connection->update(Table::MODFLOWMODELS,
-            ['area' => $event->geometry()->toJson(), 'active_cells' => null, 'dirty' => 1],
+            [
+                'area' => $event->geometry()->toJson(),
+                'active_cells' => null,
+                'dirty' => 1
+            ],
             ['model_id' => $event->modelId()->toString()]
         );
     }
@@ -242,7 +246,10 @@ class ModelProjector extends AbstractDoctrineConnectionProjector
     public function onMt3dmsWasUpdated(Mt3dmsWasUpdated $event): void
     {
         $this->connection->update(Table::MODFLOWMODELS,
-            ['mt3dms' => $event->mt3dms()->toJson()],
+            [
+                'mt3dms' => $event->mt3dms()->toJson(),
+                'dirty' => 1
+            ],
             ['model_id' => $event->modelId()->toString()]
         );
     }
@@ -258,7 +265,10 @@ class ModelProjector extends AbstractDoctrineConnectionProjector
     public function onTimeUnitWasUpdated(TimeUnitWasUpdated $event): void
     {
         $this->connection->update(Table::MODFLOWMODELS,
-            ['time_unit' => $event->timeUnit()->toInt(), 'dirty' => 1],
+            [
+                'time_unit' => $event->timeUnit()->toInt(),
+                'dirty' => 1
+            ],
             ['model_id' => $event->modelId()->toString()]
         );
     }

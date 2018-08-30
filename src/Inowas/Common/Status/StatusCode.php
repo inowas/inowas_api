@@ -27,10 +27,11 @@ class StatusCode
 
     public function ok(): bool
     {
-        if ($this->statusCode === 200){
-            return true;
-        }
+        return $this->statusCode === 200;
+    }
 
-        return false;
+    public function error(): bool
+    {
+        return $this->statusCode > 400;
     }
 }
