@@ -6,7 +6,7 @@ namespace Inowas\ModflowModel\Infrastructure\Projection\ModelList;
 
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Schema\Schema;
-use Doctrine\ORM\EntityManager;
+use FOS\UserBundle\Model\UserManager;
 use Inowas\AppBundle\Model\User;
 use Inowas\Common\Calculation\CalculationState;
 use Inowas\Common\Modflow\LengthUnit;
@@ -34,13 +34,13 @@ use Inowas\ModflowModel\Model\Event\VisibilityWasChanged;
 
 class ModelProjector extends AbstractDoctrineConnectionProjector
 {
-    /** @var  EntityManager $entityManager */
-    protected $entityManager;
+    /** @var  UserManager $userManager */
+    protected $userManager;
 
-    public function __construct(Connection $connection, EntityManager $entityManager)
+    public function __construct(Connection $connection, UserManager $userManager)
     {
         parent::__construct($connection);
-        $this->entityManager = $entityManager;
+        $this->userManager = $userManager;
 
         $schema = new Schema();
         $table = $schema->createTable(Table::MODFLOWMODELS);
@@ -295,7 +295,7 @@ class ModelProjector extends AbstractDoctrineConnectionProjector
     private function getUserNameByUserId(string $id): string
     {
         $username = '';
-        $user = $this->entityManager->getRepository('InowasAppBundle:User')->findOneBy(array('id' => $id));
+        $user = $this->userManager->findUserBy(['id' => $id]);
         if ($user instanceof User) {
             $username = $user->getName();
         }

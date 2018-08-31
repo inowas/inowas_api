@@ -16,6 +16,7 @@ use Inowas\Common\Grid\BoundingBox;
 use Inowas\Common\Geometry\Geometry;
 use Inowas\Common\Grid\LayerNumber;
 use Inowas\Common\Id\BoundaryId;
+use Inowas\Common\Id\CalculationId;
 use Inowas\Common\Modflow\Laytyp;
 use Inowas\Common\Modflow\Laywet;
 use Inowas\Common\Modflow\LengthUnit;
@@ -34,7 +35,6 @@ use Inowas\Common\Modflow\Version;
 use Inowas\Common\Status\Visibility;
 use Inowas\ModflowModel\Model\Command\AddBoundary;
 use Inowas\ModflowModel\Model\Command\AddLayer;
-use Inowas\ModflowModel\Model\Command\CalculateOptimization;
 use Inowas\ModflowModel\Model\Command\CancelOptimization;
 use Inowas\ModflowModel\Model\Command\ChangeBoundingBox;
 use Inowas\ModflowModel\Model\Command\ChangeFlowPackage;
@@ -45,6 +45,7 @@ use Inowas\ModflowModel\Model\Command\RemoveBoundary;
 use Inowas\ModflowModel\Model\Command\UpdateBoundary;
 use Inowas\ModflowModel\Model\Command\UpdateModflowModel;
 use Inowas\ModflowModel\Model\Command\UpdateModflowPackageParameter;
+use Inowas\ModflowModel\Model\Command\UpdateOptimizationCalculationState;
 use Inowas\ModflowModel\Model\Command\UpdateOptimizationInput;
 use Inowas\ModflowModel\Model\Command\UpdateStressPeriods;
 use Inowas\ModflowModel\Model\Event\NameWasChanged;
@@ -926,9 +927,17 @@ class ModflowModelEventSourcingTest extends EventSourcingBaseTest
         $this->assertInstanceOf(Optimization::class, $optimization);
         $this->assertEquals($changedOptimizationInput, $optimization->input());
 
-        $this->commandBus->dispatch(CalculateOptimization::forModflowModel($ownerId, $modelId, $optimizationId));
+        $this->commandBus->dispatch(UpdateOptimizationCalculationState::isPreprocessing($modelId, $optimizationId));
         $optimization = $optimizationFinder->getOptimization($modelId);
-        $this->assertEquals(OptimizationState::STARTED, $optimization->state()->toInt());
+        $this->assertEquals(OptimizationState::PREPROCESSING, $optimization->state()->toInt());
+
+        $this->commandBus->dispatch(UpdateOptimizationCalculationState::preprocessingFinished($modelId, $optimizationId, CalculationId::fromString('calcId')));
+        $optimization = $optimizationFinder->getOptimization($modelId);
+        $this->assertEquals(OptimizationState::PREPROCESSING_FINISHED, $optimization->state()->toInt());
+
+        $this->commandBus->dispatch(UpdateOptimizationCalculationState::calculating($modelId, $optimizationId));
+        $optimization = $optimizationFinder->getOptimization($modelId);
+        $this->assertEquals(OptimizationState::CALCULATING, $optimization->state()->toInt());
 
         $this->commandBus->dispatch(CancelOptimization::forModflowModel($ownerId, $modelId, $optimizationId));
         $optimization = $optimizationFinder->getOptimization($modelId);

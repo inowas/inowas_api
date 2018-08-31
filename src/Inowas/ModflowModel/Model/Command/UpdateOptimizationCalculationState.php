@@ -28,9 +28,10 @@ class UpdateOptimizationCalculationState extends Command implements PayloadConst
         return new self($payload);
     }
 
-    public static function isPreprocessing(ModflowId $optimizationId): self
+    public static function isPreprocessing(ModflowId $modelId, ModflowId $optimizationId): self
     {
         $payload = [
+            'model_id' => $modelId->toString(),
             'optimization_id' => $optimizationId->toString(),
             'state' => OptimizationState::preprocessing()->toInt(),
         ];
@@ -38,9 +39,10 @@ class UpdateOptimizationCalculationState extends Command implements PayloadConst
         return new self($payload);
     }
 
-    public static function preprocessingFinished(ModflowId $optimizationId, CalculationId $calculationId): self
+    public static function preprocessingFinished(ModflowId $modelId, ModflowId $optimizationId, CalculationId $calculationId): self
     {
         $payload = [
+            'model_id' => $modelId->toString(),
             'optimization_id' => $optimizationId->toString(),
             'calculation_id' => $calculationId->toString(),
             'state' => OptimizationState::preprocessingFinished()->toInt(),
@@ -49,9 +51,10 @@ class UpdateOptimizationCalculationState extends Command implements PayloadConst
         return new self($payload);
     }
 
-    public static function queued(ModflowId $optimizationId): self
+    public static function queued(ModflowId $modelId, ModflowId $optimizationId): self
     {
         $payload = [
+            'model_id' => $modelId->toString(),
             'optimization_id' => $optimizationId->toString(),
             'state' => OptimizationState::queued()->toInt(),
         ];
@@ -59,9 +62,10 @@ class UpdateOptimizationCalculationState extends Command implements PayloadConst
         return new self($payload);
     }
 
-    public static function calculating(ModflowId $optimizationId): self
+    public static function calculating(ModflowId $modelId, ModflowId $optimizationId): self
     {
         $payload = [
+            'model_id' => $modelId->toString(),
             'optimization_id' => $optimizationId->toString(),
             'state' => OptimizationState::calculating()->toInt(),
         ];
@@ -89,9 +93,10 @@ class UpdateOptimizationCalculationState extends Command implements PayloadConst
         return new self($payload);
     }
 
-    public static function cancelled(ModflowId $optimizationId): self
+    public static function cancelled(ModflowId $modelId, ModflowId $optimizationId): self
     {
         $payload = [
+            'model_id' => $modelId->toString(),
             'optimization_id' => $optimizationId->toString(),
             'state' => OptimizationState::cancelled()->toInt(),
         ];
@@ -99,9 +104,10 @@ class UpdateOptimizationCalculationState extends Command implements PayloadConst
         return new self($payload);
     }
 
-    public static function errorPublishing(ModflowId $optimizationId): self
+    public static function errorPublishing(ModflowId $modelId, ModflowId $optimizationId): self
     {
         $payload = [
+            'model_id' => $modelId->toString(),
             'optimization_id' => $optimizationId->toString(),
             'state' => OptimizationState::errorPublishing()->toInt(),
         ];
@@ -109,9 +115,10 @@ class UpdateOptimizationCalculationState extends Command implements PayloadConst
         return new self($payload);
     }
 
-    public static function errorRecalculatingModel(ModflowId $optimizationId): self
+    public static function errorRecalculatingModel(ModflowId $modelId, ModflowId $optimizationId): self
     {
         $payload = [
+            'model_id' => $modelId->toString(),
             'optimization_id' => $optimizationId->toString(),
             'state' => OptimizationState::errorRecalculatingModel()->toInt(),
         ];
@@ -119,12 +126,8 @@ class UpdateOptimizationCalculationState extends Command implements PayloadConst
         return new self($payload);
     }
 
-    public function modelId(): ?ModflowId
+    public function modelId(): ModflowId
     {
-        if (!array_key_exists('model_id', $this->payload)) {
-            return null;
-        }
-
         return ModflowId::fromString($this->payload['model_id']);
     }
 
@@ -137,12 +140,8 @@ class UpdateOptimizationCalculationState extends Command implements PayloadConst
         return CalculationId::fromString($this->payload['calculation_id']);
     }
 
-    public function optimizationId(): ?ModflowId
+    public function optimizationId(): ModflowId
     {
-        if (!array_key_exists('optimization_id', $this->payload)) {
-            return null;
-        }
-
         return ModflowId::fromString($this->payload['optimization_id']);
     }
 

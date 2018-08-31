@@ -1,41 +1,37 @@
-# This file is auto-generated during the composer install
 parameters:
-    database_host: postgis
-    database_port: null
-    database_name: inowas
-    database_user: inowas
-    database_password: inowas
+  database_host:      '%database.host%'
+  database_port:      '%database.port%'
+  database_name:      '%database.name%'
+  database_user:      '%database.user%'
+  database_password:  '%database.password%'
 
-    mailer_auth_mode: login
-    mailer_encryption: ssl
-    mailer_host: 127.0.0.1
-    mailer_password: null
-    mailer_transport: smtp
-    mailer_user: null
-    mailer_port: 587
+  mailer_auth_mode:   '%mailer.auth_mode%'
+  mailer_encryption:  '%mailer.encryption%'
+  mailer_host:        '%mailer.host%'
+  mailer_port:        '%mailer.port%'
+  mailer_transport:   '%mailer.transport%'
+  mailer_user:        '%mailer.user%'
+  mailer_password:    '%mailer.password%'
 
-    router.request_context.host: 'api-host-url'
-    router.request_context.scheme: 'https'
-    router.request_context.base_url: ''
+  secret:             '%env.secret%%'
 
-    secret: 7bdbeb4493b2796ff94252f0736b18de433f8a67
-    port: 80
-    python_prefix: python3
-    api_base_url: 'http://localhost'
-    api_port: 80
-    data_folder: '%kernel.root_dir%/../var/data'
-    temp_folder: '%kernel.root_dir%/../var/tmp'
+  router.request_context.base_url:  '%base_url%'
+  router.request_context.host:      '%host%'
+  router.request_context.scheme:    '%scheme%'
 
-    rabbit_mq_host: 'rabbitmq'
-    rabbit_mq_port: 5672
-    rabbit_mq_user: 'inowas'
-    rabbit_mq_password: 'inowas'
-    rabbit_mq_vhost: 'inowas'
+  data_folder:        '%env.data_folder%'
+  temp_folder:        '%env.temp_folder%'
 
-    rabbit_mq_calculation_queue:                    'flopy_calculation_queue'
-    rabbit_mq_calculation_finished_queue:           'flopy_calculation_finished_queue'
-    rabbit_mq_modflow_optimization_queue:           'modflow_optimization_queue'
-    rabbit_mq_modflow_optimization_progress_queue:  'modflow_optimization_progress_queue'
-    rabbit_mq_geo_processing_queue:                 'rpc_geo_processing_queue'
-    rabbit_mq_interpolation_queue:                  'rpc_interpolation_queue'
-    rabbit_mq_read_data_queue:                      'rpc_flopy_read_data_queue'
+  rabbit_mq_host:     '%rabbitmq.host%'
+  rabbit_mq_port:     '%rabbitmq.port%'
+  rabbit_mq_user:     '%rabbitmq.user%'
+  rabbit_mq_password: '%rabbitmq.password%'
+  rabbit_mq_vhost:    '%rabbitmq.vhost%'
+
+  rabbit_mq_calculation_queue:            '%rabbitmq.calculation_queue%'
+  rabbit_mq_calculation_finished_queue:   '%rabbitmq.calculation_finished_queue%'
+  rabbit_mq_optimization_queue:           '%rabbitmq.optimization_queue%'
+  rabbit_mq_optimization_progress_queue:  '%rabbitmq.optimization_progress_queue%'
+  rabbit_mq_read_data_queue:              '%rabbitmq.read_data_queue%'
+  rabbit_mq_geo_processing_queue:         '%rabbitmq.geo_processing_queue%'
+  rabbit_mq_interpolation_queue:          '%rabbitmq.interpolation_queue%'
