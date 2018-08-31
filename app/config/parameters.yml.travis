@@ -13,15 +13,12 @@ parameters:
     mailer_user: null
     mailer_port: 587
 
+    secret: travis_service_super_secret
+
+    router.request_context.base_url: ''
     router.request_context.host: 'api-host-url'
     router.request_context.scheme: 'https'
-    router.request_context.base_url: ''
 
-    secret: travis_service_super_secret
-    port: 80
-    python_prefix: 'python3'
-    api_base_url: 'http://localhost'
-    api_port: 80
     data_folder: "%kernel.root_dir%/../var/data"
     temp_folder: "%kernel.root_dir%/../var/tmp"
 
@@ -31,8 +28,10 @@ parameters:
     rabbit_mq_password: 'password'
     rabbit_mq_vhost: 'vhost'
 
-    rabbit_mq_calculation_queue: 'flopy_calculation_queue'
-    rabbit_mq_calculation_finished_queue: 'flopy_calculation_finished_queue'
-    rabbit_mq_geo_processing_queue: rpc_geo_processing_queue
-    rabbit_mq_interpolation_queue: 'rpc_interpolation_queue'
-    rabbit_mq_read_data_queue: 'rpc_flopy_read_data_queue'
+    rabbit_mq_calculation_queue:            'flopy_calculation_queue'
+    rabbit_mq_calculation_finished_queue:   'flopy_calculation_finished_queue'
+    rabbit_mq_optimization_queue:           'optimization_request_queue'
+    rabbit_mq_optimization_progress_queue:  'optimization_response_queue'
+    rabbit_mq_geo_processing_queue:         'rpc_geo_processing_queue'
+    rabbit_mq_interpolation_queue:          'rpc_interpolation_queue'
+    rabbit_mq_read_data_queue:              'rpc_flopy_read_data_queue'

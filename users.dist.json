@@ -1,6 +1,8 @@
 {
     "heads": ["username", "name", "email", "password", "roles"],
     "users": [
+        ["admin", "admin", "admin@inowas.com", "inowas", ["ROLE_NM_MF", "ROLE_ADMIN"]],
+        ["inowas", "inowas", "inowas@inowas.com", "inowas", ["ROLE_NM_MF"]],
         ["guest", "guest", "guest@inowas.com", "guest", []]
     ]
 }

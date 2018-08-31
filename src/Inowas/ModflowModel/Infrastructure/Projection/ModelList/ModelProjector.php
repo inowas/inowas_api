@@ -6,7 +6,7 @@ namespace Inowas\ModflowModel\Infrastructure\Projection\ModelList;
 
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Schema\Schema;
-use Doctrine\ORM\EntityManager;
+use FOS\UserBundle\Model\UserManager;
 use Inowas\AppBundle\Model\User;
 use Inowas\Common\Calculation\CalculationState;
 use Inowas\Common\Modflow\LengthUnit;
@@ -34,13 +34,13 @@ use Inowas\ModflowModel\Model\Event\VisibilityWasChanged;
 
 class ModelProjector extends AbstractDoctrineConnectionProjector
 {
-    /** @var  EntityManager $entityManager */
-    protected $entityManager;
+    /** @var  UserManager $userManager */
+    protected $userManager;
 
-    public function __construct(Connection $connection, EntityManager $entityManager)
+    public function __construct(Connection $connection, UserManager $userManager)
     {
         parent::__construct($connection);
-        $this->entityManager = $entityManager;
+        $this->userManager = $userManager;
 
         $schema = new Schema();
         $table = $schema->createTable(Table::MODFLOWMODELS);
@@ -70,7 +70,11 @@ class ModelProjector extends AbstractDoctrineConnectionProjector
     public function onAreaGeometryWasUpdated(AreaGeometryWasUpdated $event): void
     {
         $this->connection->update(Table::MODFLOWMODELS,
-            ['area' => $event->geometry()->toJson(), 'active_cells' => null, 'dirty' => 1],
+            [
+                'area' => $event->geometry()->toJson(),
+                'active_cells' => null,
+                'dirty' => 1
+            ],
             ['model_id' => $event->modelId()->toString()]
         );
     }
@@ -242,7 +246,10 @@ class ModelProjector extends AbstractDoctrineConnectionProjector
     public function onMt3dmsWasUpdated(Mt3dmsWasUpdated $event): void
     {
         $this->connection->update(Table::MODFLOWMODELS,
-            ['mt3dms' => $event->mt3dms()->toJson()],
+            [
+                'mt3dms' => $event->mt3dms()->toJson(),
+                'dirty' => 1
+            ],
             ['model_id' => $event->modelId()->toString()]
         );
     }
@@ -258,7 +265,10 @@ class ModelProjector extends AbstractDoctrineConnectionProjector
     public function onTimeUnitWasUpdated(TimeUnitWasUpdated $event): void
     {
         $this->connection->update(Table::MODFLOWMODELS,
-            ['time_unit' => $event->timeUnit()->toInt(), 'dirty' => 1],
+            [
+                'time_unit' => $event->timeUnit()->toInt(),
+                'dirty' => 1
+            ],
             ['model_id' => $event->modelId()->toString()]
         );
     }
@@ -285,7 +295,7 @@ class ModelProjector extends AbstractDoctrineConnectionProjector
     private function getUserNameByUserId(string $id): string
     {
         $username = '';
-        $user = $this->entityManager->getRepository('InowasAppBundle:User')->findOneBy(array('id' => $id));
+        $user = $this->userManager->findUserBy(['id' => $id]);
         if ($user instanceof User) {
             $username = $user->getName();
         }

@@ -32,10 +32,16 @@ class ModflowOptimizationProgressListenerCommand extends ContainerAwareCommand
             echo '  Receiving:' . $msg->body . "\n";
 
             #try {
-                $commandBus = $this->getContainer()->get('prooph_service_bus.modflow_command_bus');
-                $commandBus->dispatch(UpdateOptimizationCalculationState::calculatingWithProgressUpdate(
-                    ModflowOptimizationResponse::fromJson($msg->body)
-                ));
+            $response = ModflowOptimizationResponse::fromJson($msg->body);
+
+            $optimizationFinder = $this->getContainer()->get('inowas.modflowmodel.optimization_finder');
+            $modelId = $optimizationFinder->getModelId($response->optimizationId());
+
+            $commandBus = $this->getContainer()->get('prooph_service_bus.modflow_command_bus');
+            $commandBus->dispatch(UpdateOptimizationCalculationState::calculatingWithProgressUpdate(
+                $modelId,
+                ModflowOptimizationResponse::fromJson($msg->body)
+            ));
             #} catch (\Exception $exception) {
             #    echo sprintf($exception->getMessage());
             #}

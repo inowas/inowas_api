@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Inowas\ModflowModel\Model\AMQP;
 
-use Inowas\Common\Id\CalculationId;
 use Inowas\Common\Id\ModflowId;
 use Inowas\Common\Modflow\OptimizationProgress;
 use Inowas\Common\Modflow\OptimizationSolutions;
@@ -87,5 +86,10 @@ class ModflowOptimizationResponse
     public function progress(): OptimizationProgress
     {
         return OptimizationProgress::fromArray($this->progress);
+    }
+
+    public function errored(): bool
+    {
+        return $this->statusCode->error();
     }
 }
