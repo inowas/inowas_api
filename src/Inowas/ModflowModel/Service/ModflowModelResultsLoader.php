@@ -155,5 +155,4 @@ class ModflowModelResultsLoader
 
         return HeadData::from2dArray($result);
     }
-
 }
