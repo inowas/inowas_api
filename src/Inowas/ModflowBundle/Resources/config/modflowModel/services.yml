@@ -7,38 +7,38 @@ services:
             - '@inowas.geotools.geotools_service'
             - '@inowas.modflowmodel.model_finder'
 
-    inowas.modflowmodel.amqp_flopy_calculation:
-        class: Inowas\ModflowModel\Service\AMQPFlopyCalculation
+    inowas.modflowmodel.amqp_modflow_calculation:
+        class: Inowas\ModflowModel\Service\AMQPBasicProducer
         arguments:
             - '@inowas.amqp.stream.connection'
             - '%rabbit_mq_calculation_queue%'
 
-    inowas.modflowmodel.amqp_flopy_calculation_listener:
+    inowas.modflowmodel.amqp_modflow_calculation_results_listener:
         class: Inowas\ModflowModel\Service\AMQPBasicConsumer
         arguments:
             - '@inowas.amqp.stream.connection'
             - '%rabbit_mq_calculation_finished_queue%'
 
-    inowas.modflowmodel.amqp_modflow_calculation_request:
-        class: Inowas\ModflowModel\Service\AMQPModflowCalculation
+    inowas.modflowmodel.amqp_modflow_optimization:
+        class: Inowas\ModflowModel\Service\AMQPBasicProducer
         arguments:
             - '@inowas.amqp.stream.connection'
-            - '%rabbit_mq_calculation_request_queue%'
+            - '%rabbit_mq_modflow_optimization_queue%'
 
-    inowas.modflowmodel.amqp_modflow_calculation_request_listener:
+    inowas.modflowmodel.amqp_modflow_optimization_progress_listener:
         class: Inowas\ModflowModel\Service\AMQPBasicConsumer
         arguments:
             - '@inowas.amqp.stream.connection'
-            - '%rabbit_mq_calculation_request_queue%'
+            - '%rabbit_mq_modflow_optimization_progress_queue%'
 
     inowas.modflowmodel.amqp_read_data:
-        class: Inowas\ModflowModel\Service\AMQPFlopyReadData
+        class: Inowas\ModflowModel\Service\AMQPRemoteProcedureCall
         arguments:
             - '@inowas.amqp.stream.connection'
             - '%rabbit_mq_read_data_queue%'
 
     inowas.modflowmodel.amqp_geo_processing:
-        class: Inowas\ModflowModel\Service\AMQPGeoProcessing
+        class: Inowas\ModflowModel\Service\AMQPRemoteProcedureCall
         arguments:
             - '@inowas.amqp.stream.connection'
             - '%rabbit_mq_geo_processing_queue%'
@@ -47,6 +47,11 @@ services:
         class: Inowas\ModflowModel\Service\BoundaryManager
         arguments:
             - '@inowas.modflowmodel.boundary_finder'
+
+    inowas.modflowmodel.modflow_model_results_loader:
+        class: Inowas\ModflowModel\Service\ModflowModelResultsLoader
+        arguments:
+            - '@inowas.modflowmodel.amqp_read_data'
 
     inowas.modflowmodel.layers_persister:
         class: Inowas\ModflowModel\Service\LayersPersister

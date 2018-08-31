@@ -4,5 +4,5 @@ declare(strict_types=1);
 
 namespace Inowas\ModflowModel\Model\AMQP;
 
-class GeoProcessingResponse extends AMQPResponse
+class GeoProcessingResponse extends AbstractAMQPResponse
 {}

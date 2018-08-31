@@ -34,7 +34,7 @@ final class ScenarioWasCreatedProcessManager
             throw new \RuntimeException(sprintf(
                 'Missing event method %s for projector %s',
                 $handler,
-                get_class($this)
+                \get_class($this)
             ));
         }
         $this->{$handler}($e);
@@ -42,6 +42,6 @@ final class ScenarioWasCreatedProcessManager
 
     private function determineEventMethodFor(DomainEvent $e): string
     {
-        return 'on' . implode(array_slice(explode('\\', get_class($e)), -1));
+        return 'on' . implode(\array_slice(explode('\\', \get_class($e)), -1));
     }
 }

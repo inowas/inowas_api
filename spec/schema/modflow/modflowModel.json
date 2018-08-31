@@ -48,7 +48,7 @@
             "$ref": "modflow/stressPeriods.json"
         }
     },
-    "additionalProperties": false,
+    "additionalProperties": true,
     "required": [
         "id",
         "name",

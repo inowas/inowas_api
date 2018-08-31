@@ -47,6 +47,9 @@ class SoilmodelFinder
     /** @var  LayersPersister */
     private $layersPersister;
 
+    /** @var ModflowId */
+    private $modelId;
+
     /** @var  array */
     private $layers;
 
@@ -347,6 +350,8 @@ class SoilmodelFinder
 
     private function getLayersSortedByLayerNumber(ModflowId $modelId): array
     {
+        $this->cleanUpIfNecessary($modelId);
+
         if (null === $this->layers) {
 
             $rows = $this->connection->fetchAll(
@@ -367,5 +372,11 @@ class SoilmodelFinder
         }
 
         return $this->layers;
+    }
+
+    private function cleanUpIfNecessary(ModflowId $modelId): void {
+        if ($this->layers && !$modelId->sameValueAs($this->modelId)) {
+            $this->layers = null;
+        }
     }
 }

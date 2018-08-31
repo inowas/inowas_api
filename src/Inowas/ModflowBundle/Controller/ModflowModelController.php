@@ -403,7 +403,7 @@ class ModflowModelController extends InowasRestController
             return new JsonResponse([]);
         }
 
-        $results = $this->get('inowas.modflowmodel.calculation_results_finder')->getCalculationResults($calculationId);
+        $results = $this->get('inowas.modflowmodel.modflow_calculation_finder')->getCalculationResults($calculationId);
 
         if (!$results instanceof Results) {
             return new JsonResponse([]);
@@ -549,22 +549,14 @@ class ModflowModelController extends InowasRestController
             );
         }
 
-        $calculationId = $this->get('inowas.modflowmodel.model_finder')->getCalculationIdByModelId($modelId);
-        if (!$calculationId instanceof CalculationId) {
-            $query = CalculationStateQuery::createWithEmptyCalculationId(
-                CalculationState::new()
-            );
+        $query = $this->get('inowas.modflowmodel.modflow_calculation_finder')->getCalculationStateQueryByModelId($modelId);
 
-            return new JsonResponse($query);
-        }
-
-        $query = $this->get('inowas.modflowmodel.calculation_results_finder')->getCalculationStateQuery($calculationId);
         if ($query instanceof CalculationStateQuery) {
-
             if ($query->calculationWasFinished()) {
-                $query->updateFiles($this->get('inowas.modflowmodel.calculation_results_finder')->getFileList($calculationId));
+                $query->updateFiles(
+                    $this->get('inowas.modflowmodel.modflow_model_results_loader')->getFileList($query->calculationId())
+                );
             }
-
             return new JsonResponse($query);
         }
 
@@ -616,9 +608,58 @@ class ModflowModelController extends InowasRestController
         $optimization = $optimizationFinder->getOptimization($modelId);
 
         if (!$optimization instanceof Optimization) {
-            $optimization = Optimization::createEmpty()->toArray();
+            $optimization = Optimization::createEmpty();
         }
 
         return new JsonResponse($optimization->toArray());
+    }
+
+    /**
+     * Returns a model optimization.
+     *
+     * @ApiDoc(
+     *   resource = true,
+     *   description = "Returns a model optimization",
+     *   statusCodes = {
+     *     200 = "Returned when successful"
+     *   }
+     * )
+     *
+     * @param string $id
+     * @param string $oid
+     * @return JsonResponse
+     * @throws AccessDeniedException
+     * @throws \Inowas\ModflowBundle\Exception\UserNotAuthenticatedException
+     * @Rest\Get("/modflowmodels/{id}/optimization/{oid}/solutions")
+     */
+    public function getModflowModelOptimizationSolutionsAction(string $id, string $oid): JsonResponse
+    {
+        $this->assertUuidIsValid($id);
+        $modelId = ModflowId::fromString($id);
+        $this->assertUuidIsValid($oid);
+        # $optimizationId = ModflowId::fromString($oid);
+        $userId = $this->getUserId();
+
+        if (!$this->get('inowas.modflowmodel.model_finder')->userHasReadAccessToModel($userId, $modelId)) {
+            throw AccessDeniedException::withMessage(
+                sprintf(
+                    'Model not found or user with Id %s does not have access to model with id %s',
+                    $userId->toString(),
+                    $modelId->toString()
+                )
+            );
+        }
+
+        /** @var OptimizationFinder $optimizationFinder */
+        $optimizationFinder = $this->get('inowas.modflowmodel.optimization_finder');
+
+        /** @var Optimization $optimization */
+        $optimization = $optimizationFinder->getOptimization($modelId);
+
+        if (!$optimization instanceof Optimization) {
+            return new JsonResponse([]);
+        }
+
+        return new JsonResponse($optimization->solutions()->toArray());
     }
 }

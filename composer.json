@@ -52,11 +52,11 @@
         "sensio/distribution-bundle": "^5.0",
         "sensio/framework-extra-bundle": "^3.0.2",
         "sensiolabs/ansi-to-html": "^1.1",
-        "symfony/monolog-bundle": "^2.8",
         "symfony/process": "^3.0",
         "symfony/serializer": "^3.1",
         "symfony/swiftmailer-bundle": "^2.3",
-        "symfony/symfony": "3.1.10"
+        "symfony/symfony": "3.1.10",
+        "symfony/monolog-bundle": "^3.0"
     },
     "require-dev": {
         "phpmd/phpmd" : "@stable",

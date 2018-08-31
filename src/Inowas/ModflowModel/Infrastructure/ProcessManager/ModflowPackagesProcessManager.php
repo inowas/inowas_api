@@ -2,7 +2,7 @@
 
 namespace Inowas\ModflowModel\Infrastructure\ProcessManager;
 
-use Inowas\ModflowModel\Model\Command\UpdateCalculationId;
+use Inowas\ModflowModel\Model\Command\UpdateCalculationState;
 use Inowas\ModflowModel\Model\Event\FlowPackageWasChanged;
 use Inowas\ModflowModel\Model\Event\LengthUnitWasUpdated;
 use Inowas\ModflowModel\Model\Event\ModflowModelWasCloned;
@@ -44,7 +44,7 @@ class ModflowPackagesProcessManager
         $packages = $this->packagesManager->getPackagesByModelId($event->modelId());
         $packages->changeFlowPackage($event->packageName());
         $calculationId = $this->packagesManager->savePackages($packages);
-        $this->commandBus->dispatch(UpdateCalculationId::withId($event->modelId(), $calculationId));
+        $this->commandBus->dispatch(UpdateCalculationState::preprocessingFinished($event->modelId(), $calculationId));
     }
 
     /**
@@ -56,7 +56,7 @@ class ModflowPackagesProcessManager
         $packages = $this->packagesManager->getPackagesByModelId($event->modelId());
         $packages->updateLengthUnit($event->lengthUnit());
         $calculationId = $this->packagesManager->savePackages($packages);
-        $this->commandBus->dispatch(UpdateCalculationId::withId($event->modelId(), $calculationId));
+        $this->commandBus->dispatch(UpdateCalculationState::preprocessingFinished($event->modelId(), $calculationId));
     }
 
     /**
@@ -66,7 +66,7 @@ class ModflowPackagesProcessManager
     public function onModflowModelWasCloned(ModflowModelWasCloned $event): void
     {
         $calculationId = $this->packagesManager->getCalculationId($event->baseModelId());
-        $this->commandBus->dispatch(UpdateCalculationId::withId($event->modelId(), $calculationId));
+        $this->commandBus->dispatch(UpdateCalculationState::preprocessingFinished($event->modelId(), $calculationId));
     }
 
     /**
@@ -76,7 +76,7 @@ class ModflowPackagesProcessManager
     public function onModflowModelWasCreated(ModflowModelWasCreated $event): void
     {
         $calculationId = $this->packagesManager->createFromDefaultsAndSave();
-        $this->commandBus->dispatch(UpdateCalculationId::withId($event->modelId(), $calculationId));
+        $this->commandBus->dispatch(UpdateCalculationState::preprocessingFinished($event->modelId(), $calculationId));
     }
 
     /**
@@ -86,7 +86,7 @@ class ModflowPackagesProcessManager
     public function onStressPeriodsWereUpdated(StressPeriodsWereUpdated $event): void
     {
         $calculationId = $this->packagesManager->recalculateStressperiods($event->modelId(), $event->stressPeriods());
-        $this->commandBus->dispatch(UpdateCalculationId::withId($event->modelId(), $calculationId));
+        $this->commandBus->dispatch(UpdateCalculationState::preprocessingFinished($event->modelId(), $calculationId));
     }
 
     /**
@@ -98,7 +98,7 @@ class ModflowPackagesProcessManager
         $packages = $this->packagesManager->getPackagesByModelId($event->modelId());
         $packages->updateTimeUnit($event->timeUnit());
         $calculationId = $this->packagesManager->savePackages($packages);
-        $this->commandBus->dispatch(UpdateCalculationId::withId($event->modelId(), $calculationId));
+        $this->commandBus->dispatch(UpdateCalculationState::preprocessingFinished($event->modelId(), $calculationId));
     }
 
     /**
@@ -112,7 +112,7 @@ class ModflowPackagesProcessManager
         $packages = $this->packagesManager->getPackagesByModelId($event->modelId());
         $packages->updatePackageParameter($event->packageName()->toString(), $event->parameterName()->toString(), $event->parameterData());
         $calculationId = $this->packagesManager->savePackages($packages);
-        $this->commandBus->dispatch(UpdateCalculationId::withId($event->modelId(), $calculationId));
+        $this->commandBus->dispatch(UpdateCalculationState::preprocessingFinished($event->modelId(), $calculationId));
     }
 
     /**
@@ -125,7 +125,7 @@ class ModflowPackagesProcessManager
         $packages = $this->packagesManager->getPackagesByModelId($event->modelId());
         $packages->mergePackageData($event->packageName(), $event->data());
         $calculationId = $this->packagesManager->savePackages($packages);
-        $this->commandBus->dispatch(UpdateCalculationId::withId($event->modelId(), $calculationId));
+        $this->commandBus->dispatch(UpdateCalculationState::preprocessingFinished($event->modelId(), $calculationId));
     }
 
     /**

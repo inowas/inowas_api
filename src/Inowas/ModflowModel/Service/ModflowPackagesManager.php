@@ -11,6 +11,7 @@ use Inowas\Common\Boundaries\WellBoundary;
 use Inowas\Common\Id\CalculationId;
 use Inowas\Common\Id\ModflowId;
 use Inowas\Common\Modflow\Ibound;
+use Inowas\Common\Modflow\Mt3dms;
 use Inowas\Common\Modflow\PackageName;
 use Inowas\Common\Modflow\StressPeriods;
 use Inowas\Common\Modflow\Strt;
@@ -119,94 +120,9 @@ class ModflowPackagesManager
      */
     public function recalculate(ModflowId $modelId): CalculationId
     {
-        /** @var ModflowModelAggregate $model */
-        $model = $this->modflowModelList->get($modelId);
-        $calculationId = $model->calculationId();
+        $calculationId = $this->getCalculationId($modelId);
         $packages = $this->modflowPackagePersister->load($calculationId);
         $packages = $this->calculateAllPackages($modelId, $packages);
-        return $this->savePackages($packages);
-    }
-
-    /**
-     * @param ModflowId $modelId
-     * @return CalculationId
-     * @throws \Inowas\ModflowModel\Model\Exception\InvalidPackageParameterUpdateMethodException
-     * @throws \Inowas\ModflowModel\Model\Exception\InvalidPackageNameException
-     * @throws \exception
-     */
-    public function recalculateSoilmodel(ModflowId $modelId): CalculationId
-    {
-        $packages = $this->getPackagesByModelId($modelId);
-
-        /*
-         * Add PackageDetails for DisPackage
-         * Layers and Elevations
-         */
-        $nLay = $this->soilmodelFinder->getNlay($modelId);
-        $top = $this->soilmodelFinder->getTop($modelId);
-        $packages->updatePackageParameter('dis', 'nlay', $nLay);
-        $packages->updatePackageParameter('dis', 'top', $top);
-        $packages->updatePackageParameter('dis', 'botm', $this->soilmodelFinder->getBotm($modelId));
-
-        /*
-         * Add PackageDetails for BasPackage
-         * Ibound, Strt
-         */
-        $activeCells = $this->modflowModelManager->getAreaActiveCells($modelId);
-        $iBound = Ibound::fromActiveCellsAndNumberOfLayers($activeCells, $nLay->toInt());
-
-        $packages->updatePackageParameter('bas', 'ibound', $iBound);
-        $strt = Strt::fromTopAndNumberOfLayers($top, $nLay->toInt());
-        $packages->updatePackageParameter('bas', 'strt', $strt);
-
-        /*
-         * Add PackageDetails for LpfPackage if set
-         */
-        if ($packages->flowPackageName() === 'lpf') {
-            $packages->updatePackageParameter('lpf', 'laytyp', $this->soilmodelFinder->getLaytyp($modelId));
-            $packages->updatePackageParameter('lpf', 'layavg', $this->soilmodelFinder->getLayavg($modelId));
-            $packages->updatePackageParameter('lpf', 'chani', $this->soilmodelFinder->getChani($modelId));
-            $packages->updatePackageParameter('lpf', 'layvka', $this->soilmodelFinder->getLayvka($modelId));
-            $packages->updatePackageParameter('lpf', 'laywet', $this->soilmodelFinder->getLaywet($modelId));
-            $packages->updatePackageParameter('lpf', 'ipakcb', $this->soilmodelFinder->getIpakcb($modelId));
-            $packages->updatePackageParameter('lpf', 'hdry', $this->soilmodelFinder->getHdry($modelId));
-            $packages->updatePackageParameter('lpf', 'wetfct', $this->soilmodelFinder->getWetfct($modelId));
-            $packages->updatePackageParameter('lpf', 'iwetit', $this->soilmodelFinder->getIwetit($modelId));
-            $packages->updatePackageParameter('lpf', 'ihdwet', $this->soilmodelFinder->getIhdwet($modelId));
-            $packages->updatePackageParameter('lpf', 'hk', $this->soilmodelFinder->getHk($modelId));
-            $packages->updatePackageParameter('lpf', 'hani', $this->soilmodelFinder->getHani($modelId));
-            $packages->updatePackageParameter('lpf', 'vka', $this->soilmodelFinder->getVka($modelId));
-            $packages->updatePackageParameter('lpf', 'ss', $this->soilmodelFinder->getSs($modelId));
-            $packages->updatePackageParameter('lpf', 'sy', $this->soilmodelFinder->getSy($modelId));
-            $packages->updatePackageParameter('lpf', 'vkcb', $this->soilmodelFinder->getVkcb($modelId));
-            $packages->updatePackageParameter('lpf', 'wetdry', $this->soilmodelFinder->getWetdry($modelId));
-            $packages->updatePackageParameter('lpf', 'storagecoefficient', $this->soilmodelFinder->getStoragecoefficient($modelId));
-            $packages->updatePackageParameter('lpf', 'constantcv', $this->soilmodelFinder->getConstantcv($modelId));
-            $packages->updatePackageParameter('lpf', 'thickstrt', $this->soilmodelFinder->getThickstrt($modelId));
-            $packages->updatePackageParameter('lpf', 'nocvcorrection', $this->soilmodelFinder->getNocvcorrection($modelId));
-            $packages->updatePackageParameter('lpf', 'novfc', $this->soilmodelFinder->getNovfc($modelId));
-        }
-
-        /*
-         * Add PackageDetails for LpfPackage if set
-         */
-        if ($packages->flowPackageName() === 'upw') {
-            $packages->updatePackageParameter('upw', 'laytyp', $this->soilmodelFinder->getLaytyp($modelId));
-            $packages->updatePackageParameter('upw', 'layavg', $this->soilmodelFinder->getLayavg($modelId));
-            $packages->updatePackageParameter('upw', 'chani', $this->soilmodelFinder->getChani($modelId));
-            $packages->updatePackageParameter('upw', 'layvka', $this->soilmodelFinder->getLayvka($modelId));
-            $packages->updatePackageParameter('upw', 'laywet', $this->soilmodelFinder->getLaywet($modelId));
-            $packages->updatePackageParameter('upw', 'ipakcb', $this->soilmodelFinder->getIpakcb($modelId));
-            $packages->updatePackageParameter('upw', 'hdry', $this->soilmodelFinder->getHdry($modelId));
-            $packages->updatePackageParameter('upw', 'iphdry', $this->soilmodelFinder->getIphdry($modelId));
-            $packages->updatePackageParameter('upw', 'hk', $this->soilmodelFinder->getHk($modelId));
-            $packages->updatePackageParameter('upw', 'hani', $this->soilmodelFinder->getHani($modelId));
-            $packages->updatePackageParameter('upw', 'vka', $this->soilmodelFinder->getVka($modelId));
-            $packages->updatePackageParameter('upw', 'ss', $this->soilmodelFinder->getSs($modelId));
-            $packages->updatePackageParameter('upw', 'sy', $this->soilmodelFinder->getSy($modelId));
-            $packages->updatePackageParameter('upw', 'vkcb', $this->soilmodelFinder->getVkcb($modelId));
-        }
-
         return $this->savePackages($packages);
     }
 
@@ -345,7 +261,21 @@ class ModflowPackagesManager
         }
 
         $packages = $this->calculateBoundariesAndObservations($modelId, $stressPeriods, $packages);
+        $packages = $this->setMt3Dms($modelId, $packages);
 
+        return $packages;
+    }
+
+    private function setMt3Dms(ModflowId $modelId, ModflowPackages $packages): ModflowPackages
+    {
+        $mt3dms = $this->modflowModelManager->getMt3dmsByModelId($modelId);
+
+        if ($mt3dms instanceof Mt3dms && $mt3dms->enabled()) {
+            $packages->setMt3dms($mt3dms);
+            return $packages;
+        }
+
+        $packages->unsetMt3dms();
         return $packages;
     }
 

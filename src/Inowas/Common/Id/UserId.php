@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Inowas\Common\Id;
 
 use Ramsey\Uuid\Uuid;
+use Ramsey\Uuid\UuidInterface;
 
 class UserId implements IdInterface
 {
@@ -21,7 +22,7 @@ class UserId implements IdInterface
         return new self(Uuid::fromString($id));
     }
 
-    private function __construct(Uuid $uuid)
+    private function __construct(UuidInterface $uuid)
     {
         $this->uuid = $uuid;
     }
@@ -31,8 +32,12 @@ class UserId implements IdInterface
         return $this->uuid->toString();
     }
 
-    public function sameValueAs(IdInterface $other): bool
+    public function sameValueAs($other): bool
     {
+        if (!$other instanceof IdInterface) {
+            return false;
+        }
+
         return $this->toString() === $other->toString();
     }
 }

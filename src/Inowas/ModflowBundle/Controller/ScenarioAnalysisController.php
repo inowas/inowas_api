@@ -34,6 +34,7 @@ class ScenarioAnalysisController extends InowasRestController
      *
      * @Rest\Get("/scenarioanalyses")
      * @return JsonResponse
+     * @throws \Inowas\ModflowBundle\Exception\UserNotAuthenticatedException
      */
     public function getMyScenarioAnalysesAction(): JsonResponse
     {
@@ -79,6 +80,8 @@ class ScenarioAnalysisController extends InowasRestController
      * @throws \Inowas\ModflowBundle\Exception\NotFoundException
      * @throws InvalidUuidException
      * @throws InvalidArgumentException
+     * @throws \Inowas\ModflowBundle\Exception\UserNotAuthenticatedException
+     * @throws \Exception
      */
     public function getScenariosAnalysisDetailsAction(string $id): JsonResponse
     {
@@ -120,6 +123,7 @@ class ScenarioAnalysisController extends InowasRestController
      * @throws \Prooph\ServiceBus\Exception\CommandDispatchException
      * @throws InvalidUuidException
      * @throws InvalidArgumentException
+     * @throws \Inowas\ModflowBundle\Exception\UserNotAuthenticatedException
      */
     public function postScenariosAnalysisCloneAction(string $id): RedirectResponse
     {
@@ -153,6 +157,7 @@ class ScenarioAnalysisController extends InowasRestController
      * @return RedirectResponse
      * @throws \InvalidArgumentException
      * @throws \Prooph\ServiceBus\Exception\CommandDispatchException
+     * @throws \Inowas\ModflowBundle\Exception\UserNotAuthenticatedException
      */
     public function postCloneScenarioAction(string $id, string $sid): RedirectResponse
     {
@@ -196,6 +201,7 @@ class ScenarioAnalysisController extends InowasRestController
      * @return RedirectResponse
      * @throws \InvalidArgumentException
      * @throws \Prooph\ServiceBus\Exception\CommandDispatchException
+     * @throws \Inowas\ModflowBundle\Exception\UserNotAuthenticatedException
      */
     public function deleteScenarioAction(string $id, string $sid): RedirectResponse
     {

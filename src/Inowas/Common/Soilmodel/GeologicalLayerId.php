@@ -6,6 +6,7 @@ namespace Inowas\Common\Soilmodel;
 
 use Inowas\Common\Id\IdInterface;
 use Ramsey\Uuid\Uuid;
+use Ramsey\Uuid\UuidInterface;
 
 class GeologicalLayerId implements IdInterface
 {
@@ -22,7 +23,7 @@ class GeologicalLayerId implements IdInterface
         return new self(Uuid::fromString($id));
     }
 
-    private function __construct(Uuid $uuid)
+    private function __construct(UuidInterface $uuid)
     {
         $this->uuid = $uuid;
     }
@@ -32,8 +33,12 @@ class GeologicalLayerId implements IdInterface
         return $this->uuid->toString();
     }
 
-    public function sameValueAs(IdInterface $other): bool
+    public function sameValueAs($other): bool
     {
+        if (!$other instanceof IdInterface) {
+            return false;
+        }
+
         return $this->toString() === $other->toString();
     }
 }

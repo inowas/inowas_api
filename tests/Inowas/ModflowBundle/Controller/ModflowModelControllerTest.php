@@ -185,6 +185,7 @@ class ModflowModelControllerTest extends EventSourcingBaseTest
         $dereferencedSchema = $dereferencer->dereference(json_decode($schema));
 
         $content = json_decode(json_encode($content));
+
         $validator = new Validator($content, $dereferencedSchema);
         $this->assertTrue($validator->passes(), var_export($validator->errors(), true));
     }

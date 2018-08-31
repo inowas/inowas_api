@@ -17,14 +17,13 @@ services:
   inowas.modflowmodel.blackhole_projector:
     class: Inowas\ModflowModel\Infrastructure\Projection\Blackhole\BlackholeProjector
 
-  inowas.modflowmodel.calculation_results_finder:
-    class: Inowas\ModflowModel\Infrastructure\Projection\Calculation\CalculationResultsFinder
+  inowas.modflowmodel.modflow_calculation_finder:
+    class: Inowas\ModflowModel\Infrastructure\Projection\Calculation\ModflowCalculationFinder
     arguments:
     - '@doctrine.dbal.default_connection'
-    - '@inowas.modflowmodel.amqp_read_data'
 
-  inowas.modflowmodel.calculation_results_projector:
-    class: Inowas\ModflowModel\Infrastructure\Projection\Calculation\CalculationResultsProjector
+  inowas.modflowmodel.modflow_calculation_projector:
+    class: Inowas\ModflowModel\Infrastructure\Projection\Calculation\ModflowCalculationProjector
     arguments:
     - '@doctrine.dbal.default_connection'
 
@@ -33,16 +32,16 @@ services:
     arguments:
     - '@doctrine.dbal.default_connection'
 
+  inowas.modflowmodel.optimization_finder:
+    class: Inowas\ModflowModel\Infrastructure\Projection\Optimization\OptimizationFinder
+    arguments:
+    - '@doctrine.dbal.default_connection'
+
   inowas.modflowmodel.optimization_projector:
     class: Inowas\ModflowModel\Infrastructure\Projection\Optimization\OptimizationProjector
     arguments:
     - '@doctrine.dbal.default_connection'
     - '@doctrine.orm.default_entity_manager'
-
-  inowas.modflowmodel.optimization_finder:
-    class: Inowas\ModflowModel\Infrastructure\Projection\Optimization\OptimizationFinder
-    arguments:
-    - '@doctrine.dbal.default_connection'
 
   inowas.modflowmodel.model_projector:
     class: Inowas\ModflowModel\Infrastructure\Projection\ModelList\ModelProjector
