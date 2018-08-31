@@ -1,94 +1,100 @@
 services:
-    inowas.modflowmodel.active_cells_manager:
-        class: Inowas\ModflowModel\Service\ActiveCellsManager
-        arguments:
-            - '@inowas.modflowmodel.active_cells_finder'
-            - '@inowas.modflowmodel.boundary_manager'
-            - '@inowas.geotools.geotools_service'
-            - '@inowas.modflowmodel.model_finder'
+  inowas.modflowmodel.active_cells_manager:
+    class: Inowas\ModflowModel\Service\ActiveCellsManager
+    arguments:
+    - '@inowas.modflowmodel.active_cells_finder'
+    - '@inowas.modflowmodel.boundary_manager'
+    - '@inowas.geotools.geotools_service'
+    - '@inowas.modflowmodel.model_finder'
 
-    inowas.modflowmodel.amqp_modflow_calculation:
-        class: Inowas\ModflowModel\Service\AMQPBasicProducer
-        arguments:
-            - '@inowas.amqp.stream.connection'
-            - '%rabbit_mq_calculation_queue%'
+  inowas.modflowmodel.amqp_modflow_calculation:
+    class: Inowas\ModflowModel\Service\AMQPBasicProducer
+    arguments:
+    - '@inowas.amqp.stream.connection'
+    - '%rabbit_mq_calculation_queue%'
 
-    inowas.modflowmodel.amqp_modflow_calculation_results_listener:
-        class: Inowas\ModflowModel\Service\AMQPBasicConsumer
-        arguments:
-            - '@inowas.amqp.stream.connection'
-            - '%rabbit_mq_calculation_finished_queue%'
+  inowas.modflowmodel.amqp_modflow_calculation_results_listener:
+    class: Inowas\ModflowModel\Service\AMQPBasicConsumer
+    arguments:
+    - '@inowas.amqp.stream.connection'
+    - '%rabbit_mq_calculation_finished_queue%'
 
-    inowas.modflowmodel.amqp_modflow_optimization:
-        class: Inowas\ModflowModel\Service\AMQPBasicProducer
-        arguments:
-            - '@inowas.amqp.stream.connection'
-            - '%rabbit_mq_modflow_optimization_queue%'
+  inowas.modflowmodel.amqp_modflow_optimization:
+    class: Inowas\ModflowModel\Service\AMQPBasicProducer
+    arguments:
+    - '@inowas.amqp.stream.connection'
+    - '%rabbit_mq_optimization_queue%'
 
-    inowas.modflowmodel.amqp_modflow_optimization_progress_listener:
-        class: Inowas\ModflowModel\Service\AMQPBasicConsumer
-        arguments:
-            - '@inowas.amqp.stream.connection'
-            - '%rabbit_mq_modflow_optimization_progress_queue%'
+  inowas.modflowmodel.amqp_modflow_optimization_progress_listener:
+    class: Inowas\ModflowModel\Service\AMQPBasicConsumer
+    arguments:
+    - '@inowas.amqp.stream.connection'
+    - '%rabbit_mq_optimization_progress_queue%'
 
-    inowas.modflowmodel.amqp_read_data:
-        class: Inowas\ModflowModel\Service\AMQPRemoteProcedureCall
-        arguments:
-            - '@inowas.amqp.stream.connection'
-            - '%rabbit_mq_read_data_queue%'
+  inowas.modflowmodel.amqp_read_data:
+    class: Inowas\ModflowModel\Service\AMQPRemoteProcedureCall
+    arguments:
+    - '@inowas.amqp.stream.connection'
+    - '%rabbit_mq_read_data_queue%'
 
-    inowas.modflowmodel.amqp_geo_processing:
-        class: Inowas\ModflowModel\Service\AMQPRemoteProcedureCall
-        arguments:
-            - '@inowas.amqp.stream.connection'
-            - '%rabbit_mq_geo_processing_queue%'
+  inowas.modflowmodel.amqp_geo_processing:
+    class: Inowas\ModflowModel\Service\AMQPRemoteProcedureCall
+    arguments:
+    - '@inowas.amqp.stream.connection'
+    - '%rabbit_mq_geo_processing_queue%'
 
-    inowas.modflowmodel.boundary_manager:
-        class: Inowas\ModflowModel\Service\BoundaryManager
-        arguments:
-            - '@inowas.modflowmodel.boundary_finder'
+  inowas.modflowmodel.boundary_manager:
+    class: Inowas\ModflowModel\Service\BoundaryManager
+    arguments:
+    - '@inowas.modflowmodel.boundary_finder'
 
-    inowas.modflowmodel.modflow_model_results_loader:
-        class: Inowas\ModflowModel\Service\ModflowModelResultsLoader
-        arguments:
-            - '@inowas.modflowmodel.amqp_read_data'
+  inowas.modflowmodel.modflow_model_results_loader:
+    class: Inowas\ModflowModel\Service\ModflowModelResultsLoader
+    arguments:
+    - '@inowas.modflowmodel.amqp_read_data'
 
-    inowas.modflowmodel.layers_persister:
-        class: Inowas\ModflowModel\Service\LayersPersister
-        arguments:
-            - '%data_folder%'
+  inowas.modflowmodel.layers_persister:
+    class: Inowas\ModflowModel\Service\LayersPersister
+    arguments:
+    - '%data_folder%'
 
-    inowas.modflowmodel.manager:
-        class: Inowas\ModflowModel\Service\ModflowModelManager
-        arguments:
-            - '@inowas.modflowmodel.active_cells_finder'
-            - '@inowas.modflowmodel.boundary_manager'
-            - '@inowas.geotools.geotools_service'
-            - '@inowas.modflowmodel.model_finder'
-            - '@inowas.scenarioanalysis.scenarioanalysis_finder'
-            - '@inowas.modflowmodel.stressperiod_data_generator'
+  inowas.modflowmodel.manager:
+    class: Inowas\ModflowModel\Service\ModflowModelManager
+    arguments:
+    - '@inowas.modflowmodel.active_cells_finder'
+    - '@inowas.modflowmodel.boundary_manager'
+    - '@inowas.geotools.geotools_service'
+    - '@inowas.modflowmodel.model_finder'
+    - '@inowas.scenarioanalysis.scenarioanalysis_finder'
+    - '@inowas.modflowmodel.stressperiod_data_generator'
 
-    inowas.modflowmodel.modflow_packages_manager:
-        class: Inowas\ModflowModel\Service\ModflowPackagesManager
-        arguments:
-            - '@inowas.modflowmodel.modflow_packages_persister'
-            - '@modflow_model_list'
-            - '@inowas.modflowmodel.manager'
-            - '@inowas.modflowmodel.soilmodel_finder'
-            - '@inowas.geotools.geotools_service'
+  inowas.modflowmodel.modflow_packages_manager:
+    class: Inowas\ModflowModel\Service\ModflowPackagesManager
+    arguments:
+    - '@inowas.modflowmodel.modflow_packages_persister'
+    - '@modflow_model_list'
+    - '@inowas.modflowmodel.manager'
+    - '@inowas.modflowmodel.soilmodel_finder'
+    - '@inowas.geotools.geotools_service'
 
-    inowas.modflowmodel.modflow_packages_persister:
-        class: Inowas\ModflowModel\Service\ModflowPackagesPersister
-        arguments:
-            - '%data_folder%'
+  inowas.modflowmodel.modflow_packages_persister:
+    class: Inowas\ModflowModel\Service\ModflowPackagesPersister
+    arguments:
+    - '%data_folder%'
 
-    inowas.modflowmodel.raster_files_persister:
-        class: Inowas\ModflowModel\Service\RasterFilesPersister
-        arguments:
-            - '%data_folder%'
+  inowas.modflowmodel.raster_files_persister:
+    class: Inowas\ModflowModel\Service\RasterFilesPersister
+    arguments:
+    - '%data_folder%'
 
-    inowas.modflowmodel.stressperiod_data_generator:
-        class: Inowas\ModflowModel\Service\StressPeriodDataGenerator
-        arguments:
-            - '@inowas.geotools.geotools_service'
-            - '@inowas.modflowmodel.active_cells_manager'
+  inowas.modflowmodel.stressperiod_data_generator:
+    class: Inowas\ModflowModel\Service\StressPeriodDataGenerator
+    arguments:
+    - '@inowas.geotools.geotools_service'
+    - '@inowas.modflowmodel.active_cells_manager'
+
+  inowas.user_repository:
+    class: Doctrine\ORM\EntityRepository
+    factory: ['@doctrine.orm.default_entity_manager', getRepository]
+    arguments:
+    - Inowas\AppBundle\Model\User

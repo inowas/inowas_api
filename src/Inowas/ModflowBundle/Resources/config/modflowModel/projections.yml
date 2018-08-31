@@ -41,13 +41,12 @@ services:
     class: Inowas\ModflowModel\Infrastructure\Projection\Optimization\OptimizationProjector
     arguments:
     - '@doctrine.dbal.default_connection'
-    - '@doctrine.orm.default_entity_manager'
 
   inowas.modflowmodel.model_projector:
     class: Inowas\ModflowModel\Infrastructure\Projection\ModelList\ModelProjector
     arguments:
     - '@doctrine.dbal.default_connection'
-    - '@doctrine.orm.default_entity_manager'
+    - '@fos_user.user_manager'
 
   inowas.modflowmodel.soilmodel_finder:
     class: Inowas\ModflowModel\Infrastructure\Projection\Soilmodel\SoilmodelFinder
