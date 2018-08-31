@@ -162,18 +162,18 @@ class ModflowCalculationController extends InowasRestController
      * )
      *
      * @param string $id
-     * @param string $resultType
+     * @param string $type
      * @param string $layer
      * @param string $totim
      * @Rest\Get("/calculations/{id}/results/types/{type}/layers/{layer}/totims/{totim}")
      * @return JsonResponse
      * @throws \Inowas\ModflowBundle\Exception\NotFoundException
      */
-    public function getCalculationHeadResultsByTypeLayerAndTotimAction(string $id, string $resultType, string $layer, string $totim): JsonResponse
+    public function getCalculationHeadResultsByTypeLayerAndTotimAction(string $id, string $type, string $layer, string $totim): JsonResponse
     {
         $headData = $this->get('inowas.modflowmodel.modflow_model_results_loader')->findHeadData(
             CalculationId::fromString($id),
-            ResultType::fromString($resultType),
+            ResultType::fromString($type),
             LayerNumber::fromInt((int)$layer),
             TotalTime::fromInt((int)$totim)
         );
