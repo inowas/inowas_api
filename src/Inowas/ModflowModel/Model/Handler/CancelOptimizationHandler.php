@@ -49,8 +49,6 @@ final class CancelOptimizationHandler
             throw WriteAccessFailedException::withUserAndOwner($command->userId(), $modflowModel->userId());
         }
 
-        $modflowModel->updateOptimizationCalculationStateByUser($command->userId(), $command->optimizationId(), OptimizationState::cancelling());
-
         try {
             $this->producer->publish(ModflowOptimizationStopRequest::stopOptimization(
                 $command->modflowModelId(),
