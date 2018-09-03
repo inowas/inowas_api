@@ -56,9 +56,11 @@ final class CancelOptimizationHandler
             ));
         } catch (\Exception $e) {
             $modflowModel->updateOptimizationCalculationStateByUser($command->userId(), $command->optimizationId(), OptimizationState::errorPublishing());
+            $this->modelList->save($modflowModel);
+            return;
         }
 
-        $modflowModel->updateOptimizationCalculationState($command->optimizationId(), OptimizationState::cancelled());
+        $modflowModel->updateOptimizationCalculationStateByUser($command->userId(), $command->optimizationId(), OptimizationState::cancelled());
         $this->modelList->save($modflowModel);
     }
 }
