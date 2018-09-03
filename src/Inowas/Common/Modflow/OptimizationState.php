@@ -16,9 +16,11 @@ class OptimizationState
     public const CANCELLING = 11;
     public const CANCELLED = 12;
 
-    public const ERROR_RECALCULATING_MODEL = 40;
-    public const ERROR_PUBLISHING = 41;
-    public const ERROR_OPTIMIZATION_CORE = 42;
+    public const ERROR_RECALCULATING_MODEL = 41;
+    public const ERROR_PUBLISHING = 42;
+    public const ERROR_CANCELLING = 43;
+
+    public const ERROR_OPTIMIZATION_CORE = 50;
 
     /** @var int */
     private $state;

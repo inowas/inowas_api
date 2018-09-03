@@ -37,6 +37,7 @@ services:
     class: Inowas\ModflowModel\Model\Handler\CancelOptimizationHandler
     arguments:
     - '@modflow_model_list'
+    - '@inowas.modflowmodel.amqp_modflow_optimization'
 
   inowas.modflowmodel.change_bounding_box_handler:
     class: Inowas\ModflowModel\Model\Handler\ChangeBoundingBoxHandler
