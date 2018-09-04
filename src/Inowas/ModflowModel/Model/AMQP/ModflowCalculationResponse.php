@@ -28,6 +28,9 @@ class ModflowCalculationResponse
     protected $budgets = [];
 
     /** @var  array */
+    protected $concentrations = [];
+
+    /** @var  array */
     protected $drawdowns = [];
 
     /** @var  array */
@@ -35,6 +38,7 @@ class ModflowCalculationResponse
 
     /** @var  int */
     protected $numberOfLayers = 1;
+
 
     public static function fromJson(string $json): ModflowCalculationResponse
     {
@@ -58,6 +62,10 @@ class ModflowCalculationResponse
 
             if (array_key_exists('budgets', $data)) {
                 $self->budgets = $data['budgets'];
+            }
+
+            if (array_key_exists('concentrations', $data)) {
+                $self->concentrations = $data['concentrations'];
             }
 
             if (array_key_exists('drawdowns', $data)) {
@@ -85,6 +93,7 @@ class ModflowCalculationResponse
             'message' => $this->message,
             'data' => [
                 'budgets' => $this->budgets,
+                'concentrations' => $this->concentrations,
                 'drawdowns' => $this->drawdowns,
                 'heads' => $this->heads,
                 'number_of_layers' => $this->numberOfLayers
@@ -115,6 +124,11 @@ class ModflowCalculationResponse
     public function budgets(): array
     {
         return $this->budgets;
+    }
+
+    public function concentrations(): array
+    {
+        return $this->concentrations;
     }
 
     public function drawdowns(): array

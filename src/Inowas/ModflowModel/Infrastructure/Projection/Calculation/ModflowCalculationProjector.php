@@ -36,9 +36,10 @@ class ModflowCalculationProjector extends AbstractDoctrineConnectionProjector
         $table->addColumn('calculation_id', 'string', ['length' => 36]);
         $table->addColumn('state', 'integer', ['default' => 0]);
         $table->addColumn('message', 'text', ['default' => '']);
-        $table->addColumn('heads', 'text', ['default' => '[]']);
         $table->addColumn('budgets', 'text', ['default' => '[]']);
+        $table->addColumn('concentrations', 'text', ['default' => '[]']);
         $table->addColumn('drawdowns', 'text', ['default' => '[]']);
+        $table->addColumn('heads', 'text', ['default' => '[]']);
         $table->addColumn('number_of_layers', 'integer', ['default' => 0]);
         $table->addColumn('created_at', 'integer', ['default' => 0]);
         $table->addColumn('updated_at', 'integer', ['default' => 0]);
@@ -200,9 +201,10 @@ class ModflowCalculationProjector extends AbstractDoctrineConnectionProjector
         $this->connection->update(Table::CALCULATIONS, [
             'state' => $event->state()->toInt(),
             'message' => $event->response()->message(),
-            'heads' => \json_encode($event->response()->heads()),
             'budgets' => \json_encode($event->response()->budgets()),
+            'concentrations' => \json_encode($event->response()->concentrations()),
             'drawdowns' => \json_encode($event->response()->drawdowns()),
+            'heads' => \json_encode($event->response()->heads()),
             'number_of_layers' => $event->response()->numberOfLayers(),
             'created_at' => $event->createdAt()->getTimestamp(),
             'updated_at' => $event->createdAt()->getTimestamp()
