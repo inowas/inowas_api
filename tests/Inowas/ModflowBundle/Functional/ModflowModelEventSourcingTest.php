@@ -941,7 +941,7 @@ class ModflowModelEventSourcingTest extends EventSourcingBaseTest
 
         $this->commandBus->dispatch(CancelOptimization::forModflowModel($ownerId, $modelId, $optimizationId));
         $optimization = $optimizationFinder->getOptimization($modelId);
-        $this->assertEquals(OptimizationState::CANCELLING, $optimization->state()->toInt());
+        $this->assertEquals(OptimizationState::CANCELLED, $optimization->state()->toInt());
     }
 
     /**
