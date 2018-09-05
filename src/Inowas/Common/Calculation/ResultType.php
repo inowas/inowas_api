@@ -6,9 +6,10 @@ namespace Inowas\Common\Calculation;
 
 class ResultType
 {
-    const HEAD_TYPE = 'head';
-    const DRAWDOWN_TYPE = 'drawdown';
-    const BUDGET_TYPE = 'budget';
+    public const BUDGET_TYPE = 'budget';
+    public const CONCENTRATION_TYPE = 'concentration';
+    public const DRAWDOWN_TYPE = 'drawdown';
+    public const HEAD_TYPE = 'head';
 
     /** @var  string */
     private $type;

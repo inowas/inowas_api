@@ -220,24 +220,30 @@ class ModflowCalculationFinder
     public function findLayerValues(CalculationId $calculationId): ?LayerValues
     {
         $result = $this->connection->fetchAssoc(
-            sprintf('SELECT number_of_layers, heads, drawdowns from %s WHERE calculation_id = :calculation_id', Table::CALCULATIONS),
+            sprintf('SELECT number_of_layers, concentrations, drawdowns, heads from %s WHERE calculation_id = :calculation_id', Table::CALCULATIONS),
             ['calculation_id' => $calculationId->toString()]
         );
 
         $numberOfLayers = $result['number_of_layers'];
-        $drawdowns = $result['drawdowns'];
-        $heads = $result['heads'];
+        $concentrations = json_decode($result['concentrations'], true);
+        $drawdowns = json_decode($result['drawdowns'], true);
+        $heads = json_decode($result['heads'], true);
 
         $result = [];
 
         /** @noinspection ForeachInvariantsInspection */
         for ($l = 0; $l < $numberOfLayers; $l++) {
+            $result[$l] = [];
             if (\count($heads) > 0) {
                 $result[$l][] = ResultType::HEAD_TYPE;
             }
 
             if (\count($drawdowns) > 0) {
                 $result[$l][] = ResultType::DRAWDOWN_TYPE;
+            }
+
+            if (\count($concentrations) > 0) {
+                $result[$l][] = ResultType::CONCENTRATION_TYPE;
             }
         }
 

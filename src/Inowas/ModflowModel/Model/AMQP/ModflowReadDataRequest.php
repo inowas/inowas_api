@@ -17,15 +17,15 @@ class ModflowReadDataRequest implements \JsonSerializable
     public const REQUEST_TYPE_FILE_LIST = 'filelist';
     public const REQUEST_TYPE_FILE = 'file';
 
-    public const DATA_TYPE_HEAD = 'head';
+    public const DATA_TYPE_CONCENTRATION = 'concentration';
+    public const DATA_TYPE_BUDGET = 'budget';
     public const DATA_TYPE_DRAWDOWN = 'drawdown';
-    public const DATA_TYPE_budget = 'budget';
+    public const DATA_TYPE_HEAD = 'head';
 
-    public const VERSION = '3.2.6';
+    public const VERSION = '3.2.9';
 
-    /** @var \stdClass */
+    /** @var array */
     private $data;
-
 
     /**
      * @noinspection MoreThanThreeArgumentsInspection
@@ -50,7 +50,7 @@ class ModflowReadDataRequest implements \JsonSerializable
         );
 
         $self = new self();
-        $self->data = (object)$arr;
+        $self->data = $arr;
         return $self;
     }
 
@@ -69,7 +69,7 @@ class ModflowReadDataRequest implements \JsonSerializable
         $arr['calculation_id'] = $calculationId->toString();
         $arr['type'] = 'flopy_read_data';
         $arr['version'] = self::VERSION;
-        $arr['request'] = (object)array(
+        $arr['request'] = array(
             self::REQUEST_TYPE_TIME_SERIES => (object)array(
                 'type' => $dataType->toString(),
                 'layer' => $layer->toInt(),
@@ -79,7 +79,7 @@ class ModflowReadDataRequest implements \JsonSerializable
         );
 
         $self = new self();
-        $self->data = (object)$arr;
+        $self->data = $arr;
         return $self;
     }
 
@@ -89,10 +89,10 @@ class ModflowReadDataRequest implements \JsonSerializable
         $arr['calculation_id'] = $calculationId->toString();
         $arr['type'] = 'flopy_read_data';
         $arr['version'] = self::VERSION;
-        $arr['request'] = (object)array(self::REQUEST_TYPE_FILE => $extension->toString());
+        $arr['request'] = array(self::REQUEST_TYPE_FILE => $extension->toString());
 
         $self = new self();
-        $self->data = (object)$arr;
+        $self->data = $arr;
         return $self;
     }
 
@@ -102,14 +102,14 @@ class ModflowReadDataRequest implements \JsonSerializable
         $arr['calculation_id'] = $calculationId->toString();
         $arr['type'] = 'flopy_read_data';
         $arr['version'] = self::VERSION;
-        $arr['request'] = (object)array(self::REQUEST_TYPE_FILE_LIST => true);
+        $arr['request'] = array(self::REQUEST_TYPE_FILE_LIST => true);
 
         $self = new self();
-        $self->data = (object)$arr;
+        $self->data = $arr;
         return $self;
     }
 
-    public function jsonSerialize(): \stdClass
+    public function jsonSerialize(): array
     {
         return $this->data;
     }

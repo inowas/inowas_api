@@ -8,15 +8,7 @@ use Inowas\Common\Status\StatusCode;
 
 class ModflowReadDataResponse
 {
-    public const REQUEST_TYPE_LAYER_DATA = 'layerdata';
-    public const REQUEST_TYPE_TIME_SERIES = 'timeseries';
-
-    public const DATA_TYPE_HEAD = 'head';
-    public const DATA_TYPE_DRAWDOWN = 'drawdown';
-    public const DATA_TYPE_budget = 'budget';
-
-    public const VERSION = '3.2.6';
-
+    public const VERSION = '3.2.9';
     protected $data = [];
 
     /** @var  StatusCode */
@@ -24,17 +16,15 @@ class ModflowReadDataResponse
 
     public static function fromJson(string $json): ModflowReadDataResponse
     {
-        $obj = json_decode($json);
+        $arr = json_decode($json, true);
         $self = new self();
-        $self->statusCode = StatusCode::fromInt((int)$obj->status_code);
+        $self->statusCode = StatusCode::fromInt($arr['status_code']);
 
         if ($self->statusCode->ok()) {
-            if (property_exists($obj->request, 'timeseries')) {
+            if (array_key_exists('timeseries', $arr['request'])) {
                 $timeSeries = [];
-                $data = $obj->response;
-                foreach ($data as $dataSet) {
-                    $key = (int)$dataSet[0];
-                    $value = (float)$dataSet[1];
+                $data = $arr['response'];
+                foreach ($data as [$key, $value]) {
                     $timeSeries[$key] = $value;
                 }
 
@@ -42,7 +32,7 @@ class ModflowReadDataResponse
                 return $self;
             }
 
-            $self->data = $obj->response;
+            $self->data = $arr['response'];
         }
 
         return $self;
