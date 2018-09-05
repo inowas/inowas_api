@@ -35,7 +35,6 @@ use Inowas\Common\Modflow\Version;
 use Inowas\Common\Status\Visibility;
 use Inowas\ModflowModel\Model\Command\AddBoundary;
 use Inowas\ModflowModel\Model\Command\AddLayer;
-use Inowas\ModflowModel\Model\Command\CancelOptimization;
 use Inowas\ModflowModel\Model\Command\ChangeBoundingBox;
 use Inowas\ModflowModel\Model\Command\ChangeFlowPackage;
 use Inowas\ModflowModel\Model\Command\ChangeGridSize;
@@ -939,7 +938,7 @@ class ModflowModelEventSourcingTest extends EventSourcingBaseTest
         $optimization = $optimizationFinder->getOptimization($modelId);
         $this->assertEquals(OptimizationState::CALCULATING, $optimization->state()->toInt());
 
-        $this->commandBus->dispatch(CancelOptimization::forModflowModel($ownerId, $modelId, $optimizationId));
+        $this->commandBus->dispatch(UpdateOptimizationCalculationState::cancelled($modelId, $optimizationId));
         $optimization = $optimizationFinder->getOptimization($modelId);
         $this->assertEquals(OptimizationState::CANCELLED, $optimization->state()->toInt());
     }
