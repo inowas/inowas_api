@@ -37,17 +37,17 @@ class ModflowReadDataRequest implements \JsonSerializable
      */
     public static function forLayerData(CalculationId $calculationId, ResultType $dataType, TotalTime $totim, LayerNumber $layer): ModflowReadDataRequest
     {
-        $arr = array();
+        $arr = [];
         $arr['calculation_id'] = $calculationId->toString();
         $arr['type'] = 'flopy_read_data';
         $arr['version'] = self::VERSION;
-        $arr['request'] = (object)array(
-            self::REQUEST_TYPE_LAYER_DATA => (object)array(
+        $arr['request'] = [
+            self::REQUEST_TYPE_LAYER_DATA => [
                 'type' => $dataType->toString(),
                 'totim' => $totim->toInteger(),
                 'layer' => $layer->toInt()
-            )
-        );
+            ]
+        ];
 
         $self = new self();
         $self->data = $arr;
