@@ -21,6 +21,17 @@ class OcStressPeriodData implements \JsonSerializable
         return new self();
     }
 
+    public static function saveForAllStressPeriods($nper, array $types): OcStressPeriodData
+    {
+        $self = new self();
+        for ($i = 0; $i < $nper; $i++) {
+            $self->addStressPeriod(OcStressPeriod::fromParams(
+                $i, 0, $types
+            ));
+        }
+        return $self;
+    }
+
     public static function fromArray(?array $data): OcStressPeriodData
     {
         $self = new self();
@@ -32,7 +43,9 @@ class OcStressPeriodData implements \JsonSerializable
         return $self;
     }
 
-    private function __construct(){}
+    private function __construct()
+    {
+    }
 
     public function addStressPeriod(OcStressPeriod $ocStressPeriod): OcStressPeriodData
     {

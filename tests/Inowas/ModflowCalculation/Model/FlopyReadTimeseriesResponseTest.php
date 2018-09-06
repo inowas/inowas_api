@@ -15,7 +15,7 @@ class FlopyReadTimeseriesResponseTest extends \PHPUnit_Framework_TestCase
            "status_code": 200,
            "id": "123-test-456",
            "type":"flopy_read_data",
-           "version":"3.2.6",
+           "version":"3.2.9",
            "request":{
               "timeseries": {
                  "type": "head",

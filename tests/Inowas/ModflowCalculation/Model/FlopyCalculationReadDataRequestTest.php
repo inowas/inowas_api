@@ -17,6 +17,6 @@ class FlopyCalculationReadDataRequestTest extends \PHPUnit_Framework_TestCase
     {
         $id = CalculationId::fromString('c561c4e5-7915-426a-ba2b-0c4badeae9c3');
         $obj = ModflowReadDataRequest::forLayerData($id, ResultType::fromString(ResultType::HEAD_TYPE), TotalTime::fromInt(1095), LayerNumber::fromInt(3));
-        $this->assertEquals('{"calculation_id":"c561c4e5-7915-426a-ba2b-0c4badeae9c3","type":"flopy_read_data","version":"3.2.6","request":{"layerdata":{"type":"head","totim":1095,"layer":3}}}', json_encode($obj));
+        $this->assertEquals('{"calculation_id":"c561c4e5-7915-426a-ba2b-0c4badeae9c3","type":"flopy_read_data","version":"3.2.9","request":{"layerdata":{"type":"head","totim":1095,"layer":3}}}', json_encode($obj));
     }
 }
