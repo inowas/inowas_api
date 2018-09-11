@@ -147,7 +147,7 @@ class UpdateOptimizationCalculationState extends Command implements PayloadConst
 
     public function response(): ?ModflowOptimizationResponse
     {
-        if (!array_key_exists('optimization_id', $this->payload)) {
+        if (!array_key_exists('response', $this->payload)) {
             return null;
         }
 
