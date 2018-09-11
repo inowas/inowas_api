@@ -32,6 +32,7 @@ use Inowas\Common\Soilmodel\Soilmodel;
 use Inowas\Common\Soilmodel\SoilmodelId;
 use Inowas\Common\Status\Visibility;
 use Inowas\ModflowModel\Model\AMQP\ModflowCalculationResponse;
+use Inowas\ModflowModel\Model\AMQP\ModflowOptimizationResponse;
 use Inowas\ModflowModel\Model\Event\ActiveCellsWereUpdated;
 use Inowas\ModflowModel\Model\Event\AreaGeometryWasUpdated;
 use Inowas\ModflowModel\Model\Event\BoundaryWasAdded;
@@ -367,8 +368,12 @@ class ModflowModelAggregate extends AggregateRoot
         $this->recordThat(OptimizationResultsWereUpdated::byModel($this->modelId, $optimizationId, $progress, $solutions));
     }
 
-    public function updateOptimizationCalculationState(ModflowId $optimizationId, OptimizationState $state): void
+    public function updateOptimizationCalculationState(ModflowId $optimizationId, OptimizationState $state, ?ModflowOptimizationResponse $response): void
     {
+        if ($response instanceof ModflowOptimizationResponse) {
+            $this->recordThat(OptimizationStateWasUpdated::withModelIdStateAndResponse($this->modelId, $optimizationId, $state, $response));
+        }
+
         $this->recordThat(OptimizationStateWasUpdated::withModelIdAndState($this->modelId, $optimizationId, $state));
     }
 

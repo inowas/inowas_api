@@ -7,6 +7,7 @@ namespace Inowas\ModflowModel\Model\Event;
 use Inowas\Common\Id\ModflowId;
 use Inowas\Common\Id\UserId;
 use Inowas\Common\Modflow\OptimizationState;
+use Inowas\ModflowModel\Model\AMQP\ModflowOptimizationResponse;
 use Prooph\EventSourcing\AggregateChanged;
 
 class OptimizationStateWasUpdated extends AggregateChanged
@@ -19,6 +20,9 @@ class OptimizationStateWasUpdated extends AggregateChanged
 
     /** @var  OptimizationState */
     private $state;
+
+    /** @var  ModflowOptimizationResponse */
+    private $response;
 
     /** @var  UserId */
     private $userId;
@@ -40,8 +44,34 @@ class OptimizationStateWasUpdated extends AggregateChanged
         );
 
         $event->modflowId = $modflowId;
-        $event->state = $state;
         $event->optimizationId = $optimizationId;
+        $event->state = $state;
+
+        return $event;
+    }
+
+    /** @noinspection MoreThanThreeArgumentsInspection
+     * @param ModflowId $modflowId
+     * @param ModflowId $optimizationId
+     * @param OptimizationState $state
+     * @param ModflowOptimizationResponse $response
+     * @return self
+     */
+    public static function withModelIdStateAndResponse(ModflowId $modflowId, ModflowId $optimizationId, OptimizationState $state, ModflowOptimizationResponse $response): self
+    {
+        /** @var self $event */
+        $event = self::occur(
+            $modflowId->toString(), [
+                'optimization_id' => $optimizationId->toString(),
+                'state' => $state->toInt(),
+                'response' => $response->toArray()
+            ]
+        );
+
+        $event->modflowId = $modflowId;
+        $event->optimizationId = $optimizationId;
+        $event->response = $response;
+        $event->state = $state;
 
         return $event;
     }
@@ -100,7 +130,7 @@ class OptimizationStateWasUpdated extends AggregateChanged
 
     public function userId(): ?UserId
     {
-        if (\array_key_exists('user_id', $this->payload)) {
+        if (!\array_key_exists('user_id', $this->payload)) {
             return null;
         }
 
@@ -109,5 +139,18 @@ class OptimizationStateWasUpdated extends AggregateChanged
         }
 
         return $this->userId;
+    }
+
+    public function response(): ?ModflowOptimizationResponse
+    {
+        if (!\array_key_exists('response', $this->payload)) {
+            return null;
+        }
+
+        if ($this->response === null) {
+            $this->response = ModflowOptimizationResponse::fromArray($this->payload['response']);
+        }
+
+        return $this->response;
     }
 }

@@ -28,7 +28,7 @@ class ModflowOptimizationProgressListenerCommand extends ContainerAwareCommand
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $callback = function ($msg) {
-            echo ' [+] Submitting result metadata from calculation', "\n";
+            echo ' [+] Submitting result metadata from optimization', "\n";
             echo '  Receiving:' . $msg->body . "\n";
 
             try {

@@ -8,6 +8,7 @@ use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Schema\Schema;
 use Inowas\Common\Projection\AbstractDoctrineConnectionProjector;
 use Inowas\ModflowModel\Infrastructure\Projection\Table;
+use Inowas\ModflowModel\Model\AMQP\ModflowOptimizationResponse;
 use Inowas\ModflowModel\Model\Event\OptimizationStateWasUpdated;
 use Inowas\ModflowModel\Model\Event\OptimizationResultsWereUpdated;
 use Inowas\ModflowModel\Model\Event\OptimizationInputWasUpdated;
@@ -67,6 +68,16 @@ class OptimizationProjector extends AbstractDoctrineConnectionProjector
             ['state' => $event->state()->toInt(), 'updated_at' => $event->createdAt()->getTimestamp()],
             ['model_id' => $event->modelId()->toString(), 'optimization_id' => $event->optimizationId()->toString()]
         );
+
+        if ($event->response() instanceof ModflowOptimizationResponse) {
+            $this->connection->update(Table::OPTIMIZATIONS,
+                [
+                    'solutions' => json_encode($event->response()->solutions()->toArray()),
+                    'progress' => json_encode($event->response()->progress()->toArray())
+                ],
+                ['model_id' => $event->modelId()->toString(), 'optimization_id' => $event->optimizationId()->toString()]
+            );
+        }
     }
 
     public function onOptimizationResultsWereUpdated(OptimizationResultsWereUpdated $event): void

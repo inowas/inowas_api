@@ -28,7 +28,7 @@ final class UpdateOptimizationCalculationStateHandler
             throw ModflowModelNotFoundException::withModelId($command->modelId());
         }
 
-        $modflowModel->updateOptimizationCalculationState($command->optimizationId(), $command->state());
+        $modflowModel->updateOptimizationCalculationState($command->optimizationId(), $command->state(), $command->response());
         $this->modelList->save($modflowModel);
     }
 }
