@@ -2,6 +2,8 @@
 
 namespace Inowas\ModflowBundle\DataFixtures\Scenarios\Hanoi;
 
+use Inowas\Common\Boundaries\HeadObservationWell;
+use Inowas\Common\Boundaries\HeadObservationWellDateTimeValue;
 use Inowas\Common\Boundaries\Metadata;
 use Inowas\Common\Boundaries\BoundaryType;
 use Inowas\Common\Boundaries\ConstantHeadBoundary;
@@ -28,6 +30,7 @@ use Inowas\Common\Modflow\LengthUnit;
 use Inowas\Common\Modflow\Description;
 use Inowas\Common\Modflow\ParameterName;
 use Inowas\Common\Modflow\Ss;
+use Inowas\Common\Modflow\StressPeriods;
 use Inowas\Common\Modflow\Sy;
 use Inowas\Common\Modflow\Top;
 use Inowas\Common\Modflow\Vka;
@@ -57,6 +60,7 @@ use Inowas\Common\Boundaries\WellBoundary;
 use Inowas\Common\Boundaries\WellType;
 use Inowas\Common\Boundaries\RiverBoundary;
 use Inowas\ModflowBundle\DataFixtures\Scenarios\LoadScenarioBase;
+use Inowas\ModflowModel\Model\Command\UpdateStressPeriods;
 use Inowas\ScenarioAnalysis\Model\Command\CreateScenario;
 use Inowas\ScenarioAnalysis\Model\Command\CreateScenarioAnalysis;
 use Inowas\ScenarioAnalysis\Model\ScenarioAnalysisDescription;
@@ -164,8 +168,7 @@ class Hanoi extends LoadScenarioBase
             $layerName = Name::fromString($layer[0]);
             $layerDescription = Description::fromString($layer[1]);
             $layerId = LayerId::fromString($layerName->slugified());
-            $layTyp = $key === 0 ? Laytyp::fromValue(Laytyp::TYPE_CONVERTIBLE) :
-                Laytyp::fromValue(Laytyp::TYPE_CONFINED);
+            $layTyp = $key === 0 ? Laytyp::fromValue(Laytyp::TYPE_CONVERTIBLE) : Laytyp::fromValue(Laytyp::TYPE_CONFINED);
             $layerNumber = LayerNumber::fromInt($key);
 
 
@@ -255,6 +258,44 @@ class Hanoi extends LoadScenarioBase
                 if (is_numeric($well[$date])) {
                     if ($well[$date] !== $value) {
                         $wellBoundary = $wellBoundary->addPumpingRate(WellDateTimeValue::fromParams(
+                            DateTime::fromString(explode(':', $date)[1]), (float)$well[$date]
+                        ));
+                    }
+                    $value = $well[$date];
+                }
+            }
+
+            echo sprintf('Add Well %s to BaseModel' . "\r\n", $boundaryName->toString());
+            $commandBus->dispatch(AddBoundary::forModflowModel($ownerId, $modelId, $wellBoundary));
+        }
+
+        /* Add Head-Observations for BaseScenario */
+        $fileName = __DIR__ . '/data/head_observation_wells_basecase.csv';
+        $wells = $this->loadRowsFromCsv($fileName);
+        $header = $this->loadHeaderFromCsv($fileName);
+        $dates = $this->getDates($header);
+
+        foreach ($wells as $key => $well) {
+            $boundaryName = Name::fromString($well['name']);
+            $point = $geoTools->getPointFromGridCell($boundingBox, $gridSize, (int)$well['row'] - 1, (int)$well['column'] - 1);
+
+            /** @var HeadObservationWell $wellBoundary */
+            $wellBoundary = HeadObservationWell::createWithParams(
+                $boundaryName,
+                Geometry::fromPoint($point),
+                AffectedCells::create(),
+                AffectedLayers::createWithLayerNumber(LayerNumber::fromInt((int)$well['layer'] - 1)),
+                Metadata::create()->addWellType(WellType::fromString('hob'))
+            );
+
+            $value = null;
+            foreach ($dates as $dateKey => $date) {
+                if ($dateKey === 0) {
+                    continue;
+                }
+                if (is_numeric($well[$date])) {
+                    if ($well[$date] !== $value) {
+                        $wellBoundary = $wellBoundary->addHeadObservation(HeadObservationWellDateTimeValue::fromParams(
                             DateTime::fromString(explode(':', $date)[1]), (float)$well[$date]
                         ));
                     }
@@ -364,6 +405,12 @@ class Hanoi extends LoadScenarioBase
         $start = DateTime::fromString('2005-01-01');
         $end = DateTime::fromString('2007-12-31');
         $commandBus->dispatch(CalculateStressPeriods::forModflowModel($ownerId, $modelId, $start, $end));
+
+        /* Set Stressperiods and first Stressperiod to steady = false */
+        /** @var StressPeriods $stressPeriods */
+        $stressPeriods = $this->container->get('inowas.modflowmodel.manager')->getStressPeriodsByModelId($modelId);
+        $stressPeriods->setFirstStressPeriodSteady(true);
+        $commandBus->dispatch(UpdateStressPeriods::of($ownerId, $modelId, $stressPeriods));
 
         echo sprintf("Change FlowPackage.\r\n");
         $commandBus->dispatch(ChangeFlowPackage::forModflowModel($ownerId, $modelId, PackageName::fromString('upw')));
