@@ -100,7 +100,7 @@ final class CalculateOptimizationHandler
             $modflowModel->updateOptimizationCalculationStateByUser($command->userId(), $command->optimizationId(), OptimizationState::errorPublishing());
         }
 
-        $modflowModel->updateOptimizationCalculationState($command->optimizationId(), OptimizationState::calculating());
+        $modflowModel->updateOptimizationCalculationStateByUser($command->userId(), $command->optimizationId(), OptimizationState::calculating());
         $this->modelList->save($modflowModel);
     }
 }
