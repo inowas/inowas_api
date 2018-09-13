@@ -368,7 +368,7 @@ class ModflowModelAggregate extends AggregateRoot
         $this->recordThat(OptimizationResultsWereUpdated::byModel($this->modelId, $optimizationId, $progress, $solutions));
     }
 
-    public function updateOptimizationCalculationState(ModflowId $optimizationId, OptimizationState $state, ?ModflowOptimizationResponse $response): void
+    public function updateOptimizationCalculationState(ModflowId $optimizationId, OptimizationState $state, ?ModflowOptimizationResponse $response = null): void
     {
         if ($response instanceof ModflowOptimizationResponse) {
             $this->recordThat(OptimizationStateWasUpdated::withModelIdStateAndResponse($this->modelId, $optimizationId, $state, $response));
