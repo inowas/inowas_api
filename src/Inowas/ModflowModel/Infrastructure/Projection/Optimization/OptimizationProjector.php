@@ -94,5 +94,16 @@ class OptimizationProjector extends AbstractDoctrineConnectionProjector
                 ['model_id' => $event->modelId()->toString(), 'optimization_id' => $event->optimizationId()->toString()]
             );
         }
+
+        if ($event->solutions()->count() === 0) {
+            $this->connection->update(Table::OPTIMIZATIONS,
+                [
+                    'progress' => $event->progress()->toJson(),
+                    'state' => $event->state()->toInt(),
+                    'updated_at' => $event->createdAt()->getTimestamp()
+                ],
+                ['model_id' => $event->modelId()->toString(), 'optimization_id' => $event->optimizationId()->toString()]
+            );
+        }
     }
 }
