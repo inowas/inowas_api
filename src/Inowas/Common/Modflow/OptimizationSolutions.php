@@ -87,4 +87,13 @@ class OptimizationSolutions
         /** @noinspection TypeUnsafeComparisonInspection */
         return $data->data() == $this->data();
     }
+
+    public function count(): int
+    {
+        if (!\is_array($this->data)) {
+            return 0;
+        }
+
+        return \count($this->data);
+    }
 }
