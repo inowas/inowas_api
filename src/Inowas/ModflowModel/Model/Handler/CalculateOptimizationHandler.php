@@ -8,8 +8,10 @@ use Inowas\Common\Id\CalculationId;
 use Inowas\Common\Modflow\OptimizationState;
 use Inowas\ModflowModel\Infrastructure\Projection\ModelList\ModelFinder;
 use Inowas\ModflowModel\Infrastructure\Projection\Optimization\OptimizationFinder;
+use Inowas\ModflowModel\Infrastructure\Projection\Optimization\OptimizationProjector;
 use Inowas\ModflowModel\Model\AMQP\ModflowOptimizationStartRequest;
 use Inowas\ModflowModel\Model\Command\CalculateOptimization;
+use Inowas\ModflowModel\Model\Event\OptimizationStateWasUpdated;
 use Inowas\ModflowModel\Model\Exception\ModflowModelDirtyException;
 use Inowas\ModflowModel\Model\Exception\ModflowModelNotFoundException;
 use Inowas\ModflowModel\Model\Exception\ModflowModelOptimizationFailedException;
@@ -36,19 +38,24 @@ final class CalculateOptimizationHandler
     /** @var  AMQPBasicProducer */
     private $producer;
 
+    /** @var  OptimizationProjector */
+    private $projector;
+
     /**
      * @param ModflowModelList $modelList
      * @param AMQPBasicProducer $producer
      * @param ModelFinder $modelFinder
      * @param OptimizationFinder $optimizationFinder
      * @param ModflowPackagesManager $packagesManager
+     * @param OptimizationProjector $projector
      */
     public function __construct(
         ModflowModelList $modelList,
         AMQPBasicProducer $producer,
         ModelFinder $modelFinder,
         OptimizationFinder $optimizationFinder,
-        ModflowPackagesManager $packagesManager
+        ModflowPackagesManager $packagesManager,
+        OptimizationProjector $projector
     )
     {
         $this->modelFinder = $modelFinder;
@@ -56,6 +63,7 @@ final class CalculateOptimizationHandler
         $this->producer = $producer;
         $this->optimizationFinder = $optimizationFinder;
         $this->packagesManager = $packagesManager;
+        $this->projector = $projector;
     }
 
     /**
@@ -88,7 +96,14 @@ final class CalculateOptimizationHandler
             );
         }
 
-        $modflowModel->updateOptimizationCalculationStateByUser($command->userId(), $command->optimizationId(), OptimizationState::started());
+        $this->projector->onOptimizationStateWasUpdated(
+            OptimizationStateWasUpdated::withUserIdModelIdAndState(
+                $command->userId(),
+                $command->modflowModelId(),
+                $command->optimizationId(),
+                OptimizationState::started()
+            )
+        );
 
         try {
             $this->producer->publish(ModflowOptimizationStartRequest::startOptimization(
@@ -97,10 +112,25 @@ final class CalculateOptimizationHandler
                 $this->optimizationFinder->getOptimization($command->modflowModelId())->input()
             ));
         } catch (\Exception $e) {
-            $modflowModel->updateOptimizationCalculationStateByUser($command->userId(), $command->optimizationId(), OptimizationState::errorPublishing());
+            $this->projector->onOptimizationStateWasUpdated(
+                OptimizationStateWasUpdated::withUserIdModelIdAndState(
+                    $command->userId(),
+                    $command->modflowModelId(),
+                    $command->optimizationId(),
+                    OptimizationState::errorPublishing()
+                )
+            );
+
+            return;
         }
 
-        $modflowModel->updateOptimizationCalculationStateByUser($command->userId(), $command->optimizationId(), OptimizationState::calculating());
-        $this->modelList->save($modflowModel);
+        $this->projector->onOptimizationStateWasUpdated(
+            OptimizationStateWasUpdated::withUserIdModelIdAndState(
+                $command->userId(),
+                $command->modflowModelId(),
+                $command->optimizationId(),
+                OptimizationState::calculating()
+            )
+        );
     }
 }

@@ -90,9 +90,24 @@ class OptimizationProgress
 
     public function finished(): bool
     {
-        if (!\array_key_exists('final', $this->progress)) {
-            return false;
+        $gaFinished = null;
+        if (\array_key_exists(OptimizationMethod::METHOD_GA, $this->progress) && \array_key_exists('final', $this->progress[OptimizationMethod::METHOD_GA])) {
+            $gaFinished = $this->progress[OptimizationMethod::METHOD_GA]['final'];
         }
-        return (bool)$this->progress['final'];
+
+        $simplexFinished = null;
+        if (\array_key_exists(OptimizationMethod::METHOD_SIMPLEX, $this->progress) && \array_key_exists('final', $this->progress[OptimizationMethod::METHOD_SIMPLEX])) {
+            $simplexFinished = $this->progress[OptimizationMethod::METHOD_SIMPLEX]['final'];
+        }
+
+        if ($gaFinished === true && $simplexFinished === null) {
+            return true;
+        }
+
+        if ($simplexFinished === true) {
+            return true;
+        }
+
+        return false;
     }
 }

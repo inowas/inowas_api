@@ -6,6 +6,7 @@ namespace Inowas\ModflowModel\Infrastructure\Projection\Optimization;
 
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Schema\Schema;
+use Inowas\Common\Modflow\OptimizationState;
 use Inowas\Common\Projection\AbstractDoctrineConnectionProjector;
 use Inowas\ModflowModel\Infrastructure\Projection\Table;
 use Inowas\ModflowModel\Model\AMQP\ModflowOptimizationResponse;
@@ -64,10 +65,13 @@ class OptimizationProjector extends AbstractDoctrineConnectionProjector
 
     public function onOptimizationStateWasUpdated(OptimizationStateWasUpdated $event): void
     {
-        $this->connection->update(Table::OPTIMIZATIONS,
-            ['state' => $event->state()->toInt(), 'updated_at' => $event->createdAt()->getTimestamp()],
-            ['model_id' => $event->modelId()->toString(), 'optimization_id' => $event->optimizationId()->toString()]
-        );
+        $this->connection->update(Table::OPTIMIZATIONS, [
+            'state' => $event->state()->toInt(),
+            'updated_at' => $event->createdAt()->getTimestamp()
+        ], [
+            'model_id' => $event->modelId()->toString(),
+            'optimization_id' => $event->optimizationId()->toString()
+        ]);
 
         if ($event->response() instanceof ModflowOptimizationResponse) {
             $this->connection->update(Table::OPTIMIZATIONS,
@@ -75,9 +79,23 @@ class OptimizationProjector extends AbstractDoctrineConnectionProjector
                     'solutions' => json_encode($event->response()->solutions()->toArray()),
                     'progress' => json_encode($event->response()->progress()->toArray())
                 ],
-                ['model_id' => $event->modelId()->toString(), 'optimization_id' => $event->optimizationId()->toString()]
+                [
+                    'model_id' => $event->modelId()->toString(),
+                    'optimization_id' => $event->optimizationId()->toString()
+                ]
             );
         }
+
+        if ($event->state()->toInt() === OptimizationState::STARTED) {
+            $this->connection->update(Table::OPTIMIZATIONS,
+                ['solutions' => json_encode([]), 'progress' => json_encode([])],
+                [
+                    'model_id' => $event->modelId()->toString(),
+                    'optimization_id' => $event->optimizationId()->toString()
+                ]
+            );
+        }
+
     }
 
     public function onOptimizationResultsWereUpdated(OptimizationResultsWereUpdated $event): void
@@ -88,6 +106,17 @@ class OptimizationProjector extends AbstractDoctrineConnectionProjector
                 [
                     'progress' => $event->progress()->toJson(),
                     'solutions' => $event->solutions()->toJson(),
+                    'state' => $event->state()->toInt(),
+                    'updated_at' => $event->createdAt()->getTimestamp()
+                ],
+                ['model_id' => $event->modelId()->toString(), 'optimization_id' => $event->optimizationId()->toString()]
+            );
+        }
+
+        if ($event->solutions()->count() === 0) {
+            $this->connection->update(Table::OPTIMIZATIONS,
+                [
+                    'progress' => $event->progress()->toJson(),
                     'state' => $event->state()->toInt(),
                     'updated_at' => $event->createdAt()->getTimestamp()
                 ],
