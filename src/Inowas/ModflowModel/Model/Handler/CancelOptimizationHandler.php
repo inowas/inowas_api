@@ -5,8 +5,10 @@ declare(strict_types=1);
 namespace Inowas\ModflowModel\Model\Handler;
 
 use Inowas\Common\Modflow\OptimizationState;
+use Inowas\ModflowModel\Infrastructure\Projection\Optimization\OptimizationProjector;
 use Inowas\ModflowModel\Model\AMQP\ModflowOptimizationStopRequest;
 use Inowas\ModflowModel\Model\Command\CancelOptimization;
+use Inowas\ModflowModel\Model\Event\OptimizationStateWasUpdated;
 use Inowas\ModflowModel\Model\Exception\ModflowModelNotFoundException;
 use Inowas\ModflowModel\Model\Exception\WriteAccessFailedException;
 use Inowas\ModflowModel\Model\ModflowModelList;
@@ -22,14 +24,19 @@ final class CancelOptimizationHandler
     /** @var AMQPBasicProducer $producer */
     private $producer;
 
+    /** @var OptimizationProjector $projector */
+    private $projector;
+
     /**
      * @param ModflowModelList $modelList
      * @param AMQPBasicProducer $producer
+     * @param OptimizationProjector $projector
      */
-    public function __construct(ModflowModelList $modelList, AMQPBasicProducer $producer)
+    public function __construct(ModflowModelList $modelList, AMQPBasicProducer $producer, OptimizationProjector $projector)
     {
         $this->modelList = $modelList;
         $this->producer = $producer;
+        $this->projector = $projector;
     }
 
     /**
@@ -55,12 +62,25 @@ final class CancelOptimizationHandler
                 $command->optimizationId()
             ));
         } catch (\Exception $e) {
-            $modflowModel->updateOptimizationCalculationStateByUser($command->userId(), $command->optimizationId(), OptimizationState::errorPublishing());
-            $this->modelList->save($modflowModel);
+            $this->projector->onOptimizationStateWasUpdated(
+                OptimizationStateWasUpdated::withUserIdModelIdAndState(
+                    $command->userId(),
+                    $command->modflowModelId(),
+                    $command->optimizationId(),
+                    OptimizationState::errorPublishing()
+                )
+            );
+
             return;
         }
 
-        $modflowModel->updateOptimizationCalculationStateByUser($command->userId(), $command->optimizationId(), OptimizationState::cancelled());
-        $this->modelList->save($modflowModel);
+        $this->projector->onOptimizationStateWasUpdated(
+            OptimizationStateWasUpdated::withUserIdModelIdAndState(
+                $command->userId(),
+                $command->modflowModelId(),
+                $command->optimizationId(),
+                OptimizationState::cancelled()
+            )
+        );
     }
 }

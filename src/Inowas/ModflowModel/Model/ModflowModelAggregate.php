@@ -19,10 +19,6 @@ use Inowas\Common\Modflow\LengthUnit;
 use Inowas\Common\Modflow\Mt3dms;
 use Inowas\Common\Modflow\Name;
 use Inowas\Common\Modflow\Description;
-use Inowas\Common\Modflow\OptimizationInput;
-use Inowas\Common\Modflow\OptimizationProgress;
-use Inowas\Common\Modflow\OptimizationSolutions;
-use Inowas\Common\Modflow\OptimizationState;
 use Inowas\Common\Modflow\PackageName;
 use Inowas\Common\Modflow\ParameterName;
 use Inowas\Common\Modflow\StressPeriods;
@@ -32,7 +28,6 @@ use Inowas\Common\Soilmodel\Soilmodel;
 use Inowas\Common\Soilmodel\SoilmodelId;
 use Inowas\Common\Status\Visibility;
 use Inowas\ModflowModel\Model\AMQP\ModflowCalculationResponse;
-use Inowas\ModflowModel\Model\AMQP\ModflowOptimizationResponse;
 use Inowas\ModflowModel\Model\Event\ActiveCellsWereUpdated;
 use Inowas\ModflowModel\Model\Event\AreaGeometryWasUpdated;
 use Inowas\ModflowModel\Model\Event\BoundaryWasAdded;
@@ -53,9 +48,6 @@ use Inowas\ModflowModel\Model\Event\ModflowPackageParameterWasUpdated;
 use Inowas\ModflowModel\Model\Event\ModflowPackageWasUpdated;
 use Inowas\ModflowModel\Model\Event\Mt3dmsWasUpdated;
 use Inowas\ModflowModel\Model\Event\NameWasChanged;
-use Inowas\ModflowModel\Model\Event\OptimizationStateWasUpdated;
-use Inowas\ModflowModel\Model\Event\OptimizationResultsWereUpdated;
-use Inowas\ModflowModel\Model\Event\OptimizationInputWasUpdated;
 use Inowas\ModflowModel\Model\Event\SoilmodelMetadataWasUpdated;
 use Inowas\ModflowModel\Model\Event\ModflowModelWasCreated;
 use Inowas\ModflowModel\Model\Event\StressPeriodsWereUpdated;
@@ -103,7 +95,6 @@ class ModflowModelAggregate extends AggregateRoot
         $self->modelId = $modelId;
         $self->userId = $userId;
         $self->boundaries = [];
-        $self->isDirty = true;
 
         $self->recordThat(ModflowModelWasCreated::withParameters(
             $modelId,
@@ -357,31 +348,6 @@ class ModflowModelAggregate extends AggregateRoot
         ));
     }
 
-    /* Optimization related stuff */
-    public function updateOptimizationInput(UserId $userId, OptimizationInput $input): void
-    {
-        $this->recordThat(OptimizationInputWasUpdated::byUserToModel($userId, $this->modelId, $input));
-    }
-
-    public function updateOptimizationCalculationProgress(ModflowId $optimizationId, OptimizationProgress $progress, OptimizationSolutions $solutions): void
-    {
-        $this->recordThat(OptimizationResultsWereUpdated::byModel($this->modelId, $optimizationId, $progress, $solutions));
-    }
-
-    public function updateOptimizationCalculationState(ModflowId $optimizationId, OptimizationState $state, ?ModflowOptimizationResponse $response = null): void
-    {
-        if ($response instanceof ModflowOptimizationResponse) {
-            $this->recordThat(OptimizationStateWasUpdated::withModelIdStateAndResponse($this->modelId, $optimizationId, $state, $response));
-        }
-
-        $this->recordThat(OptimizationStateWasUpdated::withModelIdAndState($this->modelId, $optimizationId, $state));
-    }
-
-    public function updateOptimizationCalculationStateByUser(UserId $userId, ModflowId $optimizationId, OptimizationState $state): void
-    {
-        $this->recordThat(OptimizationStateWasUpdated::withUserIdModelIdAndState($userId, $this->modelId, $optimizationId, $state));
-    }
-
     /* Soilmodel-Related stuff */
     /** @noinspection MoreThanThreeArgumentsInspection */
     public function addLayer(UserId $userId, LayerId $id, LayerNumber $number, string $hash): void
@@ -467,19 +433,6 @@ class ModflowModelAggregate extends AggregateRoot
     }
 
     protected function whenGridSizeWasChanged(GridSizeWasChanged $event): void
-    {
-    }
-
-    /* Optimization */
-    protected function whenOptimizationResultsWereUpdated(OptimizationResultsWereUpdated $event): void
-    {
-    }
-
-    protected function whenOptimizationStateWasUpdated(OptimizationStateWasUpdated $event): void
-    {
-    }
-
-    protected function whenOptimizationInputWasUpdated(OptimizationInputWasUpdated $event): void
     {
     }
 
