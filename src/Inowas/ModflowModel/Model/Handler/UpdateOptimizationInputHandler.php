@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace Inowas\ModflowModel\Model\Handler;
 
+use Inowas\ModflowModel\Infrastructure\Projection\Optimization\OptimizationProjector;
 use Inowas\ModflowModel\Model\Command\UpdateOptimizationInput;
+use Inowas\ModflowModel\Model\Event\OptimizationInputWasUpdated;
 use Inowas\ModflowModel\Model\Exception\ModflowModelNotFoundException;
 use Inowas\ModflowModel\Model\Exception\WriteAccessFailedException;
 use Inowas\ModflowModel\Model\ModflowModelList;
@@ -16,12 +18,17 @@ final class UpdateOptimizationInputHandler
     /** @var  ModflowModelList */
     private $modelList;
 
+    /** @var  OptimizationProjector */
+    private $projector;
+
     /**
      * @param ModflowModelList $modelList
+     * @param OptimizationProjector $projector
      */
-    public function __construct(ModflowModelList $modelList)
+    public function __construct(ModflowModelList $modelList, OptimizationProjector $projector)
     {
         $this->modelList = $modelList;
+        $this->projector = $projector;
     }
 
     /**
@@ -42,7 +49,10 @@ final class UpdateOptimizationInputHandler
             throw WriteAccessFailedException::withUserAndOwner($command->userId(), $modflowModel->userId());
         }
 
-        $modflowModel->updateOptimizationInput($command->userId(), $command->input());
-        $this->modelList->save($modflowModel);
+        $this->projector->onOptimizationInputWasUpdated(
+            OptimizationInputWasUpdated::byUserToModel(
+                $command->userId(), $command->modflowModelId(), $command->input()
+            )
+        );
     }
 }
