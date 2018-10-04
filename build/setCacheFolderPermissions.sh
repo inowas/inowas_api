@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+set -e
+
 rm -rf var/cache/*
 rm -rf var/logs/*
 

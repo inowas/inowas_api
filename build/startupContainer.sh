@@ -13,3 +13,6 @@ setfacl -dR -m u:"$HTTPDUSER":rwX -m u:`whoami`:rwX ${FOLDER}
 
 echo "You're running php version:"
 php -v
+
+echo "Start php-fpm"
+php-fpm -F -R
