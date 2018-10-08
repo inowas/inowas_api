@@ -5,7 +5,7 @@
     "items": {
         "type": "array",
         "items": {
-            "type": "float"
+            "type": "number"
         },
         "minItems": 2,
         "maxItems": 2
