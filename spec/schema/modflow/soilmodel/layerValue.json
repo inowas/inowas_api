@@ -3,7 +3,7 @@
     "id": "https://inowas.com/schema/",
     "oneOf" : [
         {
-            "type": "float",
+            "type": "number",
             "description": "One value for all in the layer"
         },
         {
@@ -14,7 +14,7 @@
                 "items": {
                     "type": "array",
                     "items": {
-                        "type": "float"
+                        "type": "number"
                     }
                 }
             }
