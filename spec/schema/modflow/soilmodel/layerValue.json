@@ -8,14 +8,12 @@
         },
         {
             "type": "array",
-            "description": "Set every cell in a 2D-Array",
+            "description": "Rows",
             "items": {
                 "type": "array",
+                "description": "Cols",
                 "items": {
-                    "type": "array",
-                    "items": {
-                        "type": "number"
-                    }
+                    "type": "number"
                 }
             }
         }

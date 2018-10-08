@@ -112,6 +112,9 @@ class Layer
     /** @var  Sy */
     private $sy;
 
+    /** @var array */
+    private $meta;
+
     public static function fromParams(
         LayerId $id,
         Name $name,
@@ -172,14 +175,18 @@ class Layer
         $self->laywet = Laywet::fromFloat($arr['laywet']);
         $self->ss = Ss::fromValue($arr['ss']);
         $self->sy = Sy::fromValue($arr['sy']);
+        $self->meta = $arr['_meta'] ?? null;
         return $self;
     }
 
-    private function __construct(){}
+    private function __construct()
+    {
+    }
 
     public function toArray(): array
     {
-        return array(
+        return [
+            '_meta' => $this->meta,
             'id' => $this->id->toString(),
             'name' => $this->name->toString(),
             'description' => $this->description->toString(),
@@ -194,18 +201,18 @@ class Layer
             'laywet' => $this->laywet->toFloat(),
             'ss' => $this->ss->toValue(),
             'sy' => $this->sy->toValue()
-        );
+        ];
     }
 
     public function toMetadataArray(): array
     {
-        return array(
+        return [
             'id' => $this->id->toString(),
             'name' => $this->name->toString(),
             'description' => $this->description->toString(),
             'number' => $this->number->toInt(),
             'laytyp' => $this->laytyp->toInt()
-        );
+        ];
     }
 
     public function id(): LayerId
@@ -350,9 +357,9 @@ class Layer
      */
     private function recursiveKeySort(&$by_ref_array): void
     {
-        ksort($by_ref_array, SORT_NUMERIC );
+        ksort($by_ref_array, SORT_NUMERIC);
         foreach ($by_ref_array as $key => $value) {
-            if (is_array($value)) {
+            if (\is_array($value)) {
                 $this->recursiveKeySort($by_ref_array[$key]);
             }
         }

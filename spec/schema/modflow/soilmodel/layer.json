@@ -3,7 +3,6 @@
     "id": "https://inowas.com/schema/",
     "type": "object",
     "properties": {
-        "_meta": {},
         "id": {
             "type": "string",
             "pattern": "^[a-z0-9_\\-]{1,255}$",
@@ -51,7 +50,6 @@
             "$ref": "modflow/soilmodel/layerValue.json"
         }
     },
-    "additionalProperties": false,
     "required": [
         "id",
         "name",
