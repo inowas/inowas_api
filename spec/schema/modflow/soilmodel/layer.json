@@ -3,6 +3,7 @@
     "id": "https://inowas.com/schema/",
     "type": "object",
     "properties": {
+        "_meta": {},
         "id": {
             "type": "string",
             "pattern": "^[a-z0-9_\\-]{1,255}$",
@@ -35,13 +36,13 @@
             "$ref": "modflow/soilmodel/layerValue.json"
         },
         "layavg": {
-            "type": "float"
+            "type": "number"
         },
         "laytyp": {
-            "type": "float"
+            "type": "number"
         },
         "laywet": {
-            "type": "float"
+            "type": "number"
         },
         "ss": {
             "$ref": "modflow/soilmodel/layerValue.json"

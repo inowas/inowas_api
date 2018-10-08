@@ -16,7 +16,7 @@
             "$ref": "geojson/polygon.json"
         },
         "type": {
-            "type": "String",
+            "type": "string",
             "pattern": "^rch$"
         },
         "affected_layers": {
