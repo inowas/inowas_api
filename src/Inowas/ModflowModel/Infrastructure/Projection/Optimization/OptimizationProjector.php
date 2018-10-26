@@ -69,7 +69,7 @@ class OptimizationProjector extends AbstractDoctrineConnectionProjector
         $this->updateState($event->optimizationId(), $event->state(), $event->createdAt());
 
         if ($event->response() instanceof ModflowOptimizationResponse) {
-            $this->updateResponse($event->optimizationId(), $event->response());
+            $this->updateResponse($event->modelId(), $event->optimizationId(), $event->response());
         }
     }
 
@@ -103,14 +103,14 @@ class OptimizationProjector extends AbstractDoctrineConnectionProjector
         );
     }
 
-    protected function updateResponse(ModflowId $optimizationId, ModflowOptimizationResponse $response): void
+    protected function updateResponse(ModflowId $modelId, ModflowId $optimizationId, ModflowOptimizationResponse $response): void
     {
         /** @var OptimizationMethodCollection $methods */
         $persistedMethods = $this->getMethods($optimizationId);
         $persistedMethods->updateMethods($response->methods());
         $this->connection->update(Table::OPTIMIZATIONS,
             ['methods' => json_encode($persistedMethods->toArray())],
-            ['optimization_id' => $optimizationId->toString()]
+            ['optimization_id' => $optimizationId->toString(), 'model_id' => $modelId->toString()]
         );
     }
 }

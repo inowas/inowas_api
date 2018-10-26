@@ -40,7 +40,7 @@ class OptimizationMethodCollection
         /** @var OptimizationMethod $method */
         foreach ($this->methods as $key => $value) {
             if ($value->name() === $method->name()) {
-                $this->methods[$key] = $value;
+                $this->methods[$key] = $method;
                 return;
             }
         }
