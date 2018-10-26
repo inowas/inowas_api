@@ -1065,7 +1065,7 @@ class ModflowModelEventSourcingTest extends EventSourcingBaseTest
                     }
                   ],
                   "progress": {
-                    "progess_log": [
+                    "progress_log": [
                       0.9547843933105469,
                       0.9547843933105469,
                       0.9572219848632812,
@@ -1099,7 +1099,7 @@ class ModflowModelEventSourcingTest extends EventSourcingBaseTest
 
         $this->assertEquals('GA', $method->name());
         $this->assertEquals([
-            'progess_log' => [0.9547843933105469, 0.9547843933105469, 0.9572219848632812, 1.0946731567382812, 1.26666259765625, 1.26666259765625, 1.3035430908203125, 1.4080619812011719, 1.412384033203125, 1.4176406860351562],
+            'progress_log' => [0.9547843933105469, 0.9547843933105469, 0.9572219848632812, 1.0946731567382812, 1.26666259765625, 1.26666259765625, 1.3035430908203125, 1.4080619812011719, 1.412384033203125, 1.4176406860351562],
             'simulation' => 10,
             'simulation_total' => 10,
             'iteration' => 10,
