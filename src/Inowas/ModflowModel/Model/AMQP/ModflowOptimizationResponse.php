@@ -65,7 +65,7 @@ class ModflowOptimizationResponse
             'status_code' => $this->statusCode->toInt(),
             'optimization_id' => $this->optimizationId->toString(),
             'message' => $this->message,
-            'methods' => $this->methods->toArray(),
+            'methods' => $this->methods()->toArray(),
         ];
     }
 

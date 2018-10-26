@@ -1109,6 +1109,10 @@ class ModflowModelEventSourcingTest extends EventSourcingBaseTest
         $this->commandBus->dispatch(UpdateOptimizationCalculationState::cancelled($modelId, $optimizationId));
         $optimization = $optimizationFinder->getOptimization($modelId);
         $this->assertEquals(OptimizationState::CANCELLED, $optimization->state()->toInt());
+
+        $response = ModflowOptimizationResponse::fromJson(sprintf('
+            {"status_code": "202", "message": "Received \"optimization_start\" request. Staring workers...", "optimization_id": "%s"}', $optimizationId->toString()));
+        $this->commandBus->dispatch(UpdateOptimizationCalculationState::calculatingWithProgressUpdate($modelId, $response));
     }
 
     /**
