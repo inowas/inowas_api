@@ -25,6 +25,7 @@ use Inowas\Common\Modflow\ModflowModel;
 use Inowas\Common\Modflow\Name;
 use Inowas\Common\Modflow\Optimization;
 use Inowas\Common\Modflow\OptimizationInput;
+use Inowas\Common\Modflow\OptimizationMethod;
 use Inowas\Common\Modflow\OptimizationState;
 use Inowas\Common\Modflow\PackageName;
 use Inowas\Common\Modflow\ParameterName;
@@ -939,143 +940,164 @@ class ModflowModelEventSourcingTest extends EventSourcingBaseTest
         $optimization = $optimizationFinder->getOptimization($modelId);
         $this->assertEquals(OptimizationState::CALCULATING, $optimization->state()->toInt());
 
-        $this->commandBus->dispatch(UpdateOptimizationCalculationState::calculatingWithProgressUpdate($modelId,
-            ModflowOptimizationResponse::fromJson(sprintf(
-                '{"optimization_id": "%s", "message": "", "status_code": 200, 
-                "solutions": [{"fitness": [-37.682159423828125], "variables": [-1840.069966638935, -1795.742561436709, 
-                -1964.9186956262422, -829.3974928390986, -1660.0108681288707, -1549.2325988304983, -631.3082955796821, 
-                -1938.0615617076314, -1905.6267269118298, -1998.8687160951977, -962.0652533729562, -1758.8053320732906, 
-                -826.0204161649331], "objects": [{"id": "d0e5ac92-de5d-46aa-811d-497ef2178fbc", "name": "New Optimization Object", 
-                "type": "wel", "position": {"lay": {"min": 1, "max": 1, "result": 1}, "row": {"min": 35, "max": 35, "result": 35},
-                "col": {"min": 30, "max": 30, "result": 30}}, "flux": {"0": {"min": -2000, "max": 0, "result": -1840.0510176859432}, 
-                "1": {"min": -2000, "max": 0, "result": -215.05437520846567}, "2": {"min": -2000, "max": 0, "result": -1943.1049875305832}, 
-                "3": {"min": -2000, "max": 0, "result": -1904.7920187328527}, "4": {"min": -2000, "max": 0, "result": -1660.0095289753706}, 
-                "5": {"min": -2000, "max": 0, "result": -1549.2307834348953}, "6": {"min": -2000, "max": 0, "result": -631.3064030891087}, 
-                "7": {"min": -2000, "max": 0, "result": -1940.713658548958}, "8": {"min": -2000, "max": 0, "result": -1475.0584439519534}, 
-                "9": {"min": -2000, "max": 0, "result": -1895.031452841381}, "10": {"min": -2000, "max": 0, "result": -962.0652533729562}, 
-                "11": {"min": -2000, "max": 0, "result": -1758.8858623797203}, "12": {"min": -2000, "max": 0, "result": -818.1245195487583}}, 
-                "concentration": {}, "substances": [], "numberOfStressPeriods": 13}]}, {"fitness": [-37.676902770996094], 
-                "variables": [-1840.0510176859432, -1802.8102390547638, -1966.5390369156066, -908.8423330980369, -1660.0108681288707, 
-                -1549.4945895361961, -631.3082955796821, -1939.9115615645965, -1882.174111978601, -1998.8814309226286, -962.0652533729562, 
-                -1758.8858623797203, -212.7425098781796], "objects": [{"id": "d0e5ac92-de5d-46aa-811d-497ef2178fbc", 
-                "name": "New Optimization Object", "type": "wel", "position": {"lay": {"min": 1, "max": 1, "result": 1}, 
-                "row": {"min": 35, "max": 35, "result": 35}, "col": {"min": 30, "max": 30, "result": 30}}, 
-                "flux": {"0": {"min": -2000, "max": 0, "result": -1840.0510176859432}, "1": {"min": -2000, "max": 0, "result": -215.05437520846567}, 
-                "2": {"min": -2000, "max": 0, "result": -1943.1049875305832}, "3": {"min": -2000, "max": 0, "result": -1904.7920187328527}, 
-                "4": {"min": -2000, "max": 0, "result": -1660.0095289753706}, "5": {"min": -2000, "max": 0, "result": -1549.2307834348953}, 
-                "6": {"min": -2000, "max": 0, "result": -631.3064030891087}, "7": {"min": -2000, "max": 0, "result": -1940.713658548958}, 
-                "8": {"min": -2000, "max": 0, "result": -1475.0584439519534}, "9": {"min": -2000, "max": 0, "result": -1895.031452841381}, 
-                "10": {"min": -2000, "max": 0, "result": -962.0652533729562}, "11": {"min": -2000, "max": 0, "result": -1758.8858623797203}, 
-                "12": {"min": -2000, "max": 0, "result": -818.1245195487583}}, "concentration": {}, "substances": [], "numberOfStressPeriods": 13}]}, 
-                {"fitness": [-37.676143646240234], "variables": [-1839.7355340002123, -1725.582462520213, -1967.610232825124, -800.7872481358793, -1555.4101518544496, 
-                -1538.8355756887288, -656.7406545515047, -1918.2373320810466, -1890.4256438908021, -1908.3712516227133, -962.0652533729562, -1758.9496980568833, 
-                -1949.5583860115005], "objects": [{"id": "d0e5ac92-de5d-46aa-811d-497ef2178fbc", "name": "New Optimization Object", "type": "wel", 
-                "position": {"lay": {"min": 1, "max": 1, "result": 1}, "row": {"min": 35, "max": 35, "result": 35}, "col": {"min": 30, "max": 30, "result": 30}}, 
-                "flux": {"0": {"min": -2000, "max": 0, "result": -1840.0510176859432}, "1": {"min": -2000, "max": 0, "result": -215.05437520846567}, 
-                "2": {"min": -2000, "max": 0, "result": -1943.1049875305832}, "3": {"min": -2000, "max": 0, "result": -1904.7920187328527},
-                "4": {"min": -2000, "max": 0, "result": -1660.0095289753706}, "5": {"min": -2000, "max": 0, "result": -1549.2307834348953}, 
-                "6": {"min": -2000, "max": 0, "result": -631.3064030891087}, "7": {"min": -2000, "max": 0, "result": -1940.713658548958},
-                "8": {"min": -2000, "max": 0, "result": -1475.0584439519534}, "9": {"min": -2000, "max": 0, "result": -1895.031452841381}, 
-                "10": {"min": -2000, "max": 0, "result": -962.0652533729562}, "11": {"min": -2000, "max": 0, "result": -1758.8858623797203}, 
-                "12": {"min": -2000, "max": 0, "result": -818.1245195487583}}, "concentration": {}, "substances": [], "numberOfStressPeriods": 13}]}, 
-                {"fitness": [-37.67258071899414], "variables": [-1840.0510176859432, -1802.8102390547638, -1966.5390369156066, -829.3974928390986, 
-                -1660.0108681288707, -1549.4945895361961, -631.3082955796821, -1939.9115615645965, -1882.174111978601, -1998.8814309226286, 
-                -962.0652533729562, -1758.8858623797203, -429.0872036993875], "objects": [{"id": "d0e5ac92-de5d-46aa-811d-497ef2178fbc", 
-                "name": "New Optimization Object", "type": "wel", "position": {"lay": {"min": 1, "max": 1, "result": 1}, 
-                "row": {"min": 35, "max": 35, "result": 35}, "col": {"min": 30, "max": 30, "result": 30}}, "flux": 
-                {"0": {"min": -2000, "max": 0, "result": -1840.0510176859432}, "1": {"min": -2000, "max": 0, "result": -215.05437520846567}, 
-                "2": {"min": -2000, "max": 0, "result": -1943.1049875305832}, "3": {"min": -2000, "max": 0, "result": -1904.7920187328527}, 
-                "4": {"min": -2000, "max": 0, "result": -1660.0095289753706}, "5": {"min": -2000, "max": 0, "result": -1549.2307834348953}, 
-                "6": {"min": -2000, "max": 0, "result": -631.3064030891087}, "7": {"min": -2000, "max": 0, "result": -1940.713658548958}, 
-                "8": {"min": -2000, "max": 0, "result": -1475.0584439519534}, "9": {"min": -2000, "max": 0, "result": -1895.031452841381}, 
-                "10": {"min": -2000, "max": 0, "result": -962.0652533729562}, "11": {"min": -2000, "max": 0, "result": -1758.8858623797203}, 
-                "12": {"min": -2000, "max": 0, "result": -818.1245195487583}}, "concentration": {}, "substances": [], "numberOfStressPeriods": 13}]}, 
-                {"fitness": [-37.671546936035156], "variables": [-1840.0694223154007, -1795.742561436709, -1966.5390369156066, 
-                -829.3974928390986, -1660.0108681288707, -1549.4945895361961, -631.3082955796821, -1938.0615617076314, -1882.174111978601, -1998.8814309226286, 
-                -962.0652533729562, -1758.8053320732906, -429.0872036993875], "objects": [{"id": "d0e5ac92-de5d-46aa-811d-497ef2178fbc", 
-                "name": "New Optimization Object", "type": "wel", "position": {"lay": {"min": 1, "max": 1, "result": 1}, "row": {"min": 35, "max": 35, 
-                "result": 35}, "col": {"min": 30, "max": 30, "result": 30}}, "flux": {"0": {"min": -2000, "max": 0, "result": -1840.0510176859432}, 
-                "1": {"min": -2000, "max": 0, "result": -215.05437520846567}, "2": {"min": -2000, "max": 0, "result": -1943.1049875305832}, 
-                "3": {"min": -2000, "max": 0, "result": -1904.7920187328527}, "4": {"min": -2000, "max": 0, "result": -1660.0095289753706}, 
-                "5": {"min": -2000, "max": 0, "result": -1549.2307834348953}, "6": {"min": -2000, "max": 0, "result": -631.3064030891087}, 
-                "7": {"min": -2000, "max": 0, "result": -1940.713658548958}, "8": {"min": -2000, "max": 0, "result": -1475.0584439519534}, 
-                "9": {"min": -2000, "max": 0, "result": -1895.031452841381}, "10": {"min": -2000, "max": 0, "result": -962.0652533729562}, 
-                "11": {"min": -2000, "max": 0, "result": -1758.8858623797203}, "12": {"min": -2000, "max": 0, "result": -818.1245195487583}},
-                "concentration": {}, "substances": [], "numberOfStressPeriods": 13}]}, {"fitness": [-37.671546936035156], 
-                "variables": [-1840.0694223154007, -1795.742561436709, -1966.5390369156066, -829.3974928390986, -1660.0108681288707, -1549.4945895361961, 
-                -631.3082955796821, -1938.0615617076314, -1882.174111978601, -1998.8814309226286, -962.0652533729562, -1758.8053320732906, -429.0872036993875], 
-                "objects": [{"id": "d0e5ac92-de5d-46aa-811d-497ef2178fbc", "name": "New Optimization Object", "type": "wel", "position": 
-                {"lay": {"min": 1, "max": 1, "result": 1}, "row": {"min": 35, "max": 35, "result": 35}, "col": {"min": 30, "max": 30, "result": 30}}, 
-                "flux": {"0": {"min": -2000, "max": 0, "result": -1840.0510176859432}, "1": {"min": -2000, "max": 0, "result": -215.05437520846567}, 
-                "2": {"min": -2000, "max": 0, "result": -1943.1049875305832}, "3": {"min": -2000, "max": 0, "result": -1904.7920187328527}, 
-                "4": {"min": -2000, "max": 0, "result": -1660.0095289753706}, "5": {"min": -2000, "max": 0, "result": -1549.2307834348953}, 
-                "6": {"min": -2000, "max": 0, "result": -631.3064030891087}, "7": {"min": -2000, "max": 0, "result": -1940.713658548958}, 
-                "8": {"min": -2000, "max": 0, "result": -1475.0584439519534}, "9": {"min": -2000, "max": 0, "result": -1895.031452841381}, 
-                "10": {"min": -2000, "max": 0, "result": -962.0652533729562}, "11": {"min": -2000, "max": 0, "result": -1758.8858623797203}, 
-                "12": {"min": -2000, "max": 0, "result": -818.1245195487583}}, "concentration": {}, "substances": [], "numberOfStressPeriods": 13}]}, 
-                {"fitness": [-37.67022705078125], "variables": [-1840.0694223154007, -1795.742561436709, -1966.5390369156066, -829.3974928390986, 
-                -1660.0108681288707, -1549.3935849911327, -631.3082955796821, -1938.0615617076314, -1882.174111978601, -1983.7416646255429, 
-                -962.2365015542184, -1758.8053320732906, -417.0161534512247], "objects": [{"id": "d0e5ac92-de5d-46aa-811d-497ef2178fbc", 
-                "name": "New Optimization Object", "type": "wel", "position": {"lay": {"min": 1, "max": 1, "result": 1}, "row": {"min": 35, "max": 35, "result": 35}, 
-                "col": {"min": 30, "max": 30, "result": 30}}, "flux": {"0": {"min": -2000, "max": 0, "result": -1840.0510176859432}, 
-                "1": {"min": -2000, "max": 0, "result": -215.05437520846567}, "2": {"min": -2000, "max": 0, "result": -1943.1049875305832}, 
-                "3": {"min": -2000, "max": 0, "result": -1904.7920187328527}, "4": {"min": -2000, "max": 0, "result": -1660.0095289753706}, 
-                "5": {"min": -2000, "max": 0, "result": -1549.2307834348953}, "6": {"min": -2000, "max": 0, "result": -631.3064030891087}, 
-                "7": {"min": -2000, "max": 0, "result": -1940.713658548958}, "8": {"min": -2000, "max": 0, "result": -1475.0584439519534}, 
-                "9": {"min": -2000, "max": 0, "result": -1895.031452841381}, "10": {"min": -2000, "max": 0, "result": -962.0652533729562}, 
-                "11": {"min": -2000, "max": 0, "result": -1758.8858623797203}, "12": {"min": -2000, "max": 0, "result": -818.1245195487583}}, 
-                "concentration": {}, "substances": [], "numberOfStressPeriods": 13}]}, {"fitness": [-37.637657165527344], 
-                "variables": [-1840.1008609820735, -1802.8102390547638, -1966.5390369156066, -830.2034503150394, -1659.3445055092104, 
-                -1549.4945895361961, -631.3082955796821, -1935.1451236222974, -1453.9226685191247, -1998.8814309226286, -962.0652533729562, 
-                -1758.8858623797203, -459.1823764408596], "objects": [{"id": "d0e5ac92-de5d-46aa-811d-497ef2178fbc", 
-                "name": "New Optimization Object", "type": "wel", "position": {"lay": {"min": 1, "max": 1, "result": 1}, "row": 
-                {"min": 35, "max": 35, "result": 35}, "col": {"min": 30, "max": 30, "result": 30}}, "flux": {"0": {"min": -2000, "max": 0, "result": -1840.0510176859432}, 
-                "1": {"min": -2000, "max": 0, "result": -215.05437520846567}, "2": {"min": -2000, "max": 0, "result": -1943.1049875305832}, 
-                "3": {"min": -2000, "max": 0, "result": -1904.7920187328527}, "4": {"min": -2000, "max": 0, "result": -1660.0095289753706}, 
-                "5": {"min": -2000, "max": 0, "result": -1549.2307834348953}, "6": {"min": -2000, "max": 0, "result": -631.3064030891087}, 
-                "7": {"min": -2000, "max": 0, "result": -1940.713658548958}, "8": {"min": -2000, "max": 0, "result": -1475.0584439519534}, 
-                "9": {"min": -2000, "max": 0, "result": -1895.031452841381}, "10": {"min": -2000, "max": 0, "result": -962.0652533729562}, 
-                "11": {"min": -2000, "max": 0, "result": -1758.8858623797203}, "12": {"min": -2000, "max": 0, "result": -818.1245195487583}}, 
-                "concentration": {}, "substances": [], "numberOfStressPeriods": 13}]}, {"fitness": [-37.56806182861328], 
-                "variables": [-1840.0510176859432, -215.05437520846567, -1943.1049875305832, -1904.7920187328527, -1660.629391829052, 
-                -1549.2307834348953, -631.3082955796821, -1918.3161541419408, -1444.8017465588841, -1986.5415457548843, -962.0652533729562, 
-                -1758.8858623797203, -818.187524803016], "objects": [{"id": "d0e5ac92-de5d-46aa-811d-497ef2178fbc", 
-                "name": "New Optimization Object", "type": "wel", "position": {"lay": {"min": 1, "max": 1, "result": 1}, 
-                "row": {"min": 35, "max": 35, "result": 35}, "col": {"min": 30, "max": 30, "result": 30}}, "flux": {"0": {"min": -2000, "max": 0, "result": -1840.0510176859432}, 
-                "1": {"min": -2000, "max": 0, "result": -215.05437520846567}, "2": {"min": -2000, "max": 0, "result": -1943.1049875305832}, 
-                "3": {"min": -2000, "max": 0, "result": -1904.7920187328527}, "4": {"min": -2000, "max": 0, "result": -1660.0095289753706}, 
-                "5": {"min": -2000, "max": 0, "result": -1549.2307834348953}, "6": {"min": -2000, "max": 0, "result": -631.3064030891087}, 
-                "7": {"min": -2000, "max": 0, "result": -1940.713658548958}, "8": {"min": -2000, "max": 0, "result": -1475.0584439519534}, 
-                "9": {"min": -2000, "max": 0, "result": -1895.031452841381}, "10": {"min": -2000, "max": 0, "result": -962.0652533729562}, 
-                "11": {"min": -2000, "max": 0, "result": -1758.8858623797203}, "12": {"min": -2000, "max": 0, "result": -818.1245195487583}}, 
-                "concentration": {}, "substances": [], "numberOfStressPeriods": 13}]}, {"fitness": [-37.56619644165039], 
-                "variables": [-1840.0510176859432, -215.05437520846567, -1943.1049875305832, -1904.7920187328527, -1660.0095289753706, -1549.2307834348953, 
-                -631.3064030891087, -1940.713658548958, -1475.0584439519534, -1895.031452841381, -962.0652533729562, -1758.8858623797203, -818.1245195487583], 
-                "objects": [{"id": "d0e5ac92-de5d-46aa-811d-497ef2178fbc", "name": "New Optimization Object", "type": "wel", 
-                "position": {"lay": {"min": 1, "max": 1, "result": 1}, "row": {"min": 35, "max": 35, "result": 35}, "col": {"min": 30, "max": 30, "result": 30}}, 
-                "flux": {"0": {"min": -2000, "max": 0, "result": -1840.0510176859432}, "1": {"min": -2000, "max": 0, "result": -215.05437520846567}, 
-                "2": {"min": -2000, "max": 0, "result": -1943.1049875305832}, "3": {"min": -2000, "max": 0, "result": -1904.7920187328527}, 
-                "4": {"min": -2000, "max": 0, "result": -1660.0095289753706}, "5": {"min": -2000, "max": 0, "result": -1549.2307834348953}, 
-                "6": {"min": -2000, "max": 0, "result": -631.3064030891087}, "7": {"min": -2000, "max": 0, "result": -1940.713658548958}, 
-                "8": {"min": -2000, "max": 0, "result": -1475.0584439519534}, "9": {"min": -2000, "max": 0, "result": -1895.031452841381}, 
-                "10": {"min": -2000, "max": 0, "result": -962.0652533729562}, "11": {"min": -2000, "max": 0, "result": -1758.8858623797203}, 
-                "12": {"min": -2000, "max": 0, "result": -818.1245195487583}}, "concentration": {}, "substances": [], "numberOfStressPeriods": 13}]}], 
-                "progress": {
-                    "GA": {
-                        "progess_log": [0.9547843933105469, 0.9547843933105469, 0.9572219848632812, 1.0946731567382812, 1.26666259765625, 1.26666259765625, 1.3035430908203125, 1.4080619812011719, 1.412384033203125, 1.4176406860351562], 
-                        "simulation": 10, 
-                        "simulation_total": 10, 
-                        "iteration": 10, 
-                        "iteration_total": 10, 
-                        "final": true
-                    },
-                    "Simplex" : {} 
-                }}', $optimizationId->toString()))));
+        $response = ModflowOptimizationResponse::fromJson(sprintf('
+            {
+              "optimization_id": "%s",
+              "message": "",
+              "status_code": 200,
+              "methods": [
+                {
+                  "name": "GA",
+                  "solutions": [
+                    {
+                      "fitness": [
+                        -37.682159423828125
+                      ],
+                      "variables": [
+                        -1840.069966638935,
+                        -1795.742561436709,
+                        -1964.9186956262422,
+                        -829.3974928390986,
+                        -1660.0108681288707,
+                        -1549.2325988304983,
+                        -631.3082955796821,
+                        -1938.0615617076314,
+                        -1905.6267269118298,
+                        -1998.8687160951977,
+                        -962.0652533729562,
+                        -1758.8053320732906,
+                        -826.0204161649331
+                      ],
+                      "objects": [
+                        {
+                          "id": "d0e5ac92-de5d-46aa-811d-497ef2178fbc",
+                          "name": "New Optimization Object",
+                          "type": "wel",
+                          "position": {
+                            "lay": {
+                              "min": 1,
+                              "max": 1,
+                              "result": 1
+                            },
+                            "row": {
+                              "min": 35,
+                              "max": 35,
+                              "result": 35
+                            },
+                            "col": {
+                              "min": 30,
+                              "max": 30,
+                              "result": 30
+                            }
+                          },
+                          "flux": {
+                            "0": {
+                              "min": -2000,
+                              "max": 0,
+                              "result": -1840.0510176859432
+                            },
+                            "1": {
+                              "min": -2000,
+                              "max": 0,
+                              "result": -215.05437520846567
+                            },
+                            "2": {
+                              "min": -2000,
+                              "max": 0,
+                              "result": -1943.1049875305832
+                            },
+                            "3": {
+                              "min": -2000,
+                              "max": 0,
+                              "result": -1904.7920187328527
+                            },
+                            "4": {
+                              "min": -2000,
+                              "max": 0,
+                              "result": -1660.0095289753706
+                            },
+                            "5": {
+                              "min": -2000,
+                              "max": 0,
+                              "result": -1549.2307834348953
+                            },
+                            "6": {
+                              "min": -2000,
+                              "max": 0,
+                              "result": -631.3064030891087
+                            },
+                            "7": {
+                              "min": -2000,
+                              "max": 0,
+                              "result": -1940.713658548958
+                            },
+                            "8": {
+                              "min": -2000,
+                              "max": 0,
+                              "result": -1475.0584439519534
+                            },
+                            "9": {
+                              "min": -2000,
+                              "max": 0,
+                              "result": -1895.031452841381
+                            },
+                            "10": {
+                              "min": -2000,
+                              "max": 0,
+                              "result": -962.0652533729562
+                            },
+                            "11": {
+                              "min": -2000,
+                              "max": 0,
+                              "result": -1758.8858623797203
+                            },
+                            "12": {
+                              "min": -2000,
+                              "max": 0,
+                              "result": -818.1245195487583
+                            }
+                          },
+                          "concentration": {},
+                          "substances": [],
+                          "numberOfStressPeriods": 13
+                        }
+                      ]
+                    }
+                  ],
+                  "progress": {
+                    "progess_log": [
+                      0.9547843933105469,
+                      0.9547843933105469,
+                      0.9572219848632812,
+                      1.0946731567382812,
+                      1.26666259765625,
+                      1.26666259765625,
+                      1.3035430908203125,
+                      1.4080619812011719,
+                      1.412384033203125,
+                      1.4176406860351562
+                    ],
+                    "simulation": 10,
+                    "simulation_total": 10,
+                    "iteration": 10,
+                    "iteration_total": 10,
+                    "final": true
+                  }
+                }
+              ]
+            }', $optimizationId->toString()));
+        $this->commandBus->dispatch(UpdateOptimizationCalculationState::calculatingWithProgressUpdate($modelId, $response));
         $optimization = $optimizationFinder->getOptimization($modelId);
         $this->assertEquals(OptimizationState::FINISHED, $optimization->state()->toInt());
-        $this->assertCount(10, $optimization->solutions()->toArray());
-        $this->assertCount(2, $optimization->progress()->toArray());
-        $this->assertTrue(\array_key_exists('GA', $optimization->progress()->toArray()));
+        $methods = $optimization->methods()->toArray();
+        $this->assertCount(1, $methods);
+
+        /** @var OptimizationMethod $method */
+        $method = OptimizationMethod::fromArray($methods[0]);
+        $this->assertCount(6, $method->progress()->toArray());
+        $this->assertCount(1, $method->solutions()->toArray());
+
+        $this->assertEquals('GA', $method->name());
         $this->assertEquals([
             'progess_log' => [0.9547843933105469, 0.9547843933105469, 0.9572219848632812, 1.0946731567382812, 1.26666259765625, 1.26666259765625, 1.3035430908203125, 1.4080619812011719, 1.412384033203125, 1.4176406860351562],
             'simulation' => 10,
@@ -1083,9 +1105,7 @@ class ModflowModelEventSourcingTest extends EventSourcingBaseTest
             'iteration' => 10,
             'iteration_total' => 10,
             'final' => true
-        ], $optimization->progress()->toArray()['GA']);
-        $this->assertTrue(\array_key_exists('Simplex', $optimization->progress()->toArray()));
-        $this->assertEquals([], $optimization->progress()->toArray()['Simplex']);
+        ], $method->progress()->toArray());
         $this->commandBus->dispatch(UpdateOptimizationCalculationState::cancelled($modelId, $optimizationId));
         $optimization = $optimizationFinder->getOptimization($modelId);
         $this->assertEquals(OptimizationState::CANCELLED, $optimization->state()->toInt());

@@ -10,18 +10,14 @@ class Optimization
     /** @var OptimizationState */
     private $state;
 
-    /** @var OptimizationProgress */
-    private $progress;
-
-    /** @var OptimizationSolutions */
-    private $solutions;
+    /** @var OptimizationMethodCollection */
+    private $methods;
 
     public static function createEmpty(): self
     {
         $self = new self();
         $self->input = OptimizationInput::fromArray([]);
-        $self->progress = OptimizationProgress::fromArray([]);
-        $self->solutions = OptimizationSolutions::fromArray([]);
+        $self->methods = OptimizationMethodCollection::fromArray([]);
         $self->state = OptimizationState::fromInt(0);
         return $self;
     }
@@ -34,8 +30,7 @@ class Optimization
     {
         $self = new self();
         $self->input = OptimizationInput::fromArray($arr['input']);
-        $self->progress = OptimizationProgress::fromArray($arr['progress']);
-        $self->solutions = OptimizationSolutions::fromArray($arr['solutions']);
+        $self->methods = OptimizationMethodCollection::fromArray($arr['methods']);
         $self->state = OptimizationState::fromInt($arr['state']);
         return $self;
     }
@@ -49,19 +44,11 @@ class Optimization
     }
 
     /**
-     * @return OptimizationProgress
+     * @return OptimizationMethodCollection
      */
-    public function progress(): OptimizationProgress
+    public function methods(): OptimizationMethodCollection
     {
-        return $this->progress;
-    }
-
-    /**
-     * @return OptimizationSolutions
-     */
-    public function solutions(): OptimizationSolutions
-    {
-        return $this->solutions;
+        return $this->methods;
     }
 
     /**
@@ -76,8 +63,7 @@ class Optimization
     {
         return [
             'input' => $this->input->toArray() !== [] ? $this->input->toArray() : null,
-            'progress' => $this->progress->toArray() !== [] ? $this->progress->toArray() : null,
-            'solutions' => $this->solutions->toArray(),
+            'methods' => $this->methods->toArray(),
             'state' => $this->state->toInt(),
         ];
     }
