@@ -605,61 +605,12 @@ class ModflowModelController extends InowasRestController
         $optimizationFinder = $this->get('inowas.modflowmodel.optimization_finder');
 
         /** @var Optimization $optimization */
-        $optimization = $optimizationFinder->getOptimization($modelId);
+        $optimization = $optimizationFinder->getOptimizationByModelId($modelId);
 
         if (!$optimization instanceof Optimization) {
             $optimization = Optimization::createEmpty();
         }
 
         return new JsonResponse($optimization->toArray());
-    }
-
-    /**
-     * Returns a model optimization.
-     *
-     * @ApiDoc(
-     *   resource = true,
-     *   description = "Returns a model optimization",
-     *   statusCodes = {
-     *     200 = "Returned when successful"
-     *   }
-     * )
-     *
-     * @param string $id
-     * @param string $oid
-     * @return JsonResponse
-     * @throws AccessDeniedException
-     * @throws \Inowas\ModflowBundle\Exception\UserNotAuthenticatedException
-     * @Rest\Get("/modflowmodels/{id}/optimization/{oid}/solutions")
-     */
-    public function getModflowModelOptimizationSolutionsAction(string $id, string $oid): JsonResponse
-    {
-        $this->assertUuidIsValid($id);
-        $modelId = ModflowId::fromString($id);
-        $this->assertUuidIsValid($oid);
-        # $optimizationId = ModflowId::fromString($oid);
-        $userId = $this->getUserId();
-
-        if (!$this->get('inowas.modflowmodel.model_finder')->userHasReadAccessToModel($userId, $modelId)) {
-            throw AccessDeniedException::withMessage(
-                sprintf(
-                    'Model not found or user with Id %s does not have access to model with id %s',
-                    $userId->toString(),
-                    $modelId->toString()
-                )
-            );
-        }
-
-        /** @var OptimizationFinder $optimizationFinder */
-        $optimizationFinder = $this->get('inowas.modflowmodel.optimization_finder');
-
-        /** @var Optimization $optimization */
-        $optimization = $optimizationFinder->getOptimization($modelId);
-
-        if (!$optimization instanceof Optimization) {
-            return new JsonResponse([]);
-        }
-
-        return new JsonResponse($optimization->solutions()->toArray());
     }
 }
