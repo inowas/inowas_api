@@ -1113,6 +1113,10 @@ class ModflowModelEventSourcingTest extends EventSourcingBaseTest
         $response = ModflowOptimizationResponse::fromJson(sprintf('
             {"status_code": "202", "message": "Received \"optimization_start\" request. Staring workers...", "optimization_id": "%s"}', $optimizationId->toString()));
         $this->commandBus->dispatch(UpdateOptimizationCalculationState::calculatingWithProgressUpdate($modelId, $response));
+
+        $response = ModflowOptimizationResponse::fromJson(sprintf('
+            {"status_code": "200", "message": "Warning. Could not stop workers. \'0ac65f86-6750-402e-9aa1-f4021ba73233\'\r\n", "optimization_id": "%s"}', $optimizationId->toString()));
+        $this->commandBus->dispatch(UpdateOptimizationCalculationState::calculatingWithProgressUpdate($modelId, $response));
     }
 
     /**

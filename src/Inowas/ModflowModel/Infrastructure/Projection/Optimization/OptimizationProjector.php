@@ -108,7 +108,6 @@ class OptimizationProjector extends AbstractDoctrineConnectionProjector
         /** @var OptimizationMethodCollection $methods */
         $persistedMethods = $this->getMethods($optimizationId);
         $persistedMethods->updateMethods($response->methods());
-
         $this->connection->update(Table::OPTIMIZATIONS,
             ['methods' => json_encode($persistedMethods->toArray())],
             ['optimization_id' => $optimizationId->toString()]
