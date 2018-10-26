@@ -94,7 +94,7 @@ class ModflowOptimizationResponse
 
     public function finished(): bool
     {
-        return $this->methods->finished();
+        return $this->methods()->finished();
     }
 
     public function errored(): bool

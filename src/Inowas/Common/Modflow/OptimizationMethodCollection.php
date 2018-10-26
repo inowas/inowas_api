@@ -67,6 +67,10 @@ class OptimizationMethodCollection
 
     public function finished(): bool
     {
+        if (\count($this->methods) === 0) {
+            return false;
+        }
+
         /** @var OptimizationMethod $method */
         foreach ($this->methods as $method) {
             if (!$method->finished()) {
