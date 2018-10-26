@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace Inowas\ModflowModel\Model\AMQP;
 
 use Inowas\Common\Id\ModflowId;
-use Inowas\Common\Modflow\OptimizationProgress;
-use Inowas\Common\Modflow\OptimizationSolutions;
+use Inowas\Common\Modflow\OptimizationMethod;
+use Inowas\Common\Modflow\OptimizationMethodCollection;
 use Inowas\Common\Status\StatusCode;
 use Inowas\ModflowModel\Model\Exception\ResponseNotValidException;
 
@@ -21,13 +21,15 @@ class ModflowOptimizationResponse
     /** @var string */
     protected $message;
 
-    /** @var  array */
-    protected $solutions;
+    /** @var  OptimizationMethodCollection */
+    protected $methods;
 
-    /** @var  array */
-    protected $progress;
+    protected $availableMethods = [OptimizationMethod::METHOD_GA, OptimizationMethod::METHOD_SIMPLEX];
 
-
+    /**
+     * @param string $json
+     * @return ModflowOptimizationResponse
+     */
     public static function fromJson(string $json): self
     {
         $arr = json_decode($json, true);
@@ -37,20 +39,23 @@ class ModflowOptimizationResponse
         return self::fromArray($arr);
     }
 
+    /**
+     * @param array $arr
+     * @return ModflowOptimizationResponse
+     */
     public static function fromArray(array $arr): self
     {
         $self = new self();
         $self->statusCode = StatusCode::fromInt((int)$arr['status_code']);
         $self->optimizationId = ModflowId::fromString($arr['optimization_id']);
         $self->message = $arr['message'] ?? '';
-        $self->solutions = $arr['solutions'] ?? [];
-        $self->progress = $arr['progress'] ?? [];
-
+        $self->methods = OptimizationMethodCollection::fromArray($arr['methods']);
         return $self;
     }
 
     private function __construct()
-    {}
+    {
+    }
 
     public function toArray(): array
     {
@@ -58,8 +63,7 @@ class ModflowOptimizationResponse
             'status_code' => $this->statusCode->toInt(),
             'optimization_id' => $this->optimizationId->toString(),
             'message' => $this->message,
-            'solutions' => $this->solutions,
-            'progress' => $this->progress
+            'methods' => $this->methods->toArray(),
         ];
     }
 
@@ -78,14 +82,14 @@ class ModflowOptimizationResponse
         return $this->optimizationId;
     }
 
-    public function solutions(): OptimizationSolutions
+    public function methods(): OptimizationMethodCollection
     {
-        return OptimizationSolutions::fromArray($this->solutions);
+        return $this->methods;
     }
 
-    public function progress(): OptimizationProgress
+    public function finished(): bool
     {
-        return OptimizationProgress::fromArray($this->progress);
+        return $this->methods->finished();
     }
 
     public function errored(): bool

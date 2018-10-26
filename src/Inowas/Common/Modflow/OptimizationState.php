@@ -34,6 +34,11 @@ class OptimizationState
         return new self($state);
     }
 
+    public static function new(): self
+    {
+        return new self(self::NEW);
+    }
+
     public static function started(): self
     {
         return new self(self::STARTED);

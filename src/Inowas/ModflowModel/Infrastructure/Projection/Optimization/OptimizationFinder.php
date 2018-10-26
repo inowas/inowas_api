@@ -43,8 +43,7 @@ class OptimizationFinder
         return Optimization::fromArray([
             'input' => \json_decode($result['input'], true),
             'state' => (int)$result['state'],
-            'progress' => \json_decode($result['progress'], true),
-            'solutions' => \json_decode($result['solutions'], true)
+            'methods' => \json_decode($result['methods'], true)
         ]);
     }
 

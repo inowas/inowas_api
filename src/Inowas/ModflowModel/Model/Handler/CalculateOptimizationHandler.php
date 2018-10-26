@@ -96,12 +96,13 @@ final class CalculateOptimizationHandler
             );
         }
 
+        $command->isInitial() ? $state = OptimizationState::new() : $state = OptimizationState::started();
         $this->projector->onOptimizationStateWasUpdated(
             OptimizationStateWasUpdated::withUserIdModelIdAndState(
                 $command->userId(),
                 $command->modflowModelId(),
                 $command->optimizationId(),
-                OptimizationState::started()
+                $state
             )
         );
 

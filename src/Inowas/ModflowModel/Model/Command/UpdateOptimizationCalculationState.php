@@ -82,7 +82,7 @@ class UpdateOptimizationCalculationState extends Command implements PayloadConst
             'state' => OptimizationState::calculating()->toInt(),
         ];
 
-        if ($response->progress()->finished()) {
+        if ($response->methods()->finished()) {
             $payload['state'] = OptimizationState::finished()->toInt();
         }
 
