@@ -49,7 +49,9 @@ class ModflowOptimizationResponse
         $self->statusCode = StatusCode::fromInt((int)$arr['status_code']);
         $self->optimizationId = ModflowId::fromString($arr['optimization_id']);
         $self->message = $arr['message'] ?? '';
-        $self->methods = OptimizationMethodCollection::fromArray($arr['methods']);
+        if ($self->statusCode->toInt() === 200) {
+            $self->methods = OptimizationMethodCollection::fromArray($arr['methods']);
+        }
         return $self;
     }
 
@@ -84,6 +86,9 @@ class ModflowOptimizationResponse
 
     public function methods(): OptimizationMethodCollection
     {
+        if ($this->methods === null) {
+            $this->methods = OptimizationMethodCollection::create();
+        }
         return $this->methods;
     }
 
