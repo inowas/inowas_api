@@ -96,12 +96,13 @@ final class CalculateOptimizationHandler
             );
         }
 
+        $command->isInitial() ? $state = OptimizationState::new() : $state = OptimizationState::started();
         $this->projector->onOptimizationStateWasUpdated(
             OptimizationStateWasUpdated::withUserIdModelIdAndState(
                 $command->userId(),
                 $command->modflowModelId(),
                 $command->optimizationId(),
-                OptimizationState::started()
+                $state
             )
         );
 
@@ -109,7 +110,7 @@ final class CalculateOptimizationHandler
             $this->producer->publish(ModflowOptimizationStartRequest::startOptimization(
                 $command->modflowModelId(),
                 $this->packagesManager->getPackages($calculationId),
-                $this->optimizationFinder->getOptimization($command->modflowModelId())->input()
+                $this->optimizationFinder->getOptimizationByModelId($command->modflowModelId())->input()
             ));
         } catch (\Exception $e) {
             $this->projector->onOptimizationStateWasUpdated(

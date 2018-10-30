@@ -26,10 +26,32 @@ class OptimizationFinder
     }
 
     /**
+     * @param ModflowId $optimizationId
+     * @return Optimization|null
+     */
+    public function getOptimizationById(ModflowId $optimizationId): ?Optimization
+    {
+        $result = $this->connection->fetchAssoc(
+            sprintf('SELECT * FROM %s WHERE optimization_id = :optimization_id', Table::OPTIMIZATIONS),
+            ['optimization_id' => $optimizationId->toString()]
+        );
+
+        if ($result === false) {
+            return null;
+        }
+
+        return Optimization::fromArray([
+            'input' => \json_decode($result['input'], true),
+            'state' => (int)$result['state'],
+            'methods' => \json_decode($result['methods'], true)
+        ]);
+    }
+
+    /**
      * @param ModflowId $modelId
      * @return Optimization|null
      */
-    public function getOptimization(ModflowId $modelId): ?Optimization
+    public function getOptimizationByModelId(ModflowId $modelId): ?Optimization
     {
         $result = $this->connection->fetchAssoc(
             sprintf('SELECT * FROM %s WHERE model_id = :model_id', Table::OPTIMIZATIONS),
@@ -43,8 +65,7 @@ class OptimizationFinder
         return Optimization::fromArray([
             'input' => \json_decode($result['input'], true),
             'state' => (int)$result['state'],
-            'progress' => \json_decode($result['progress'], true),
-            'solutions' => \json_decode($result['solutions'], true)
+            'methods' => \json_decode($result['methods'], true)
         ]);
     }
 
