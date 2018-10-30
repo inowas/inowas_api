@@ -73,8 +73,7 @@ class RasterfileController extends InowasRestController
             throw NotFoundException::withMessage(sprintf('Rasterfile with hash=%s not found', $hash));
         }
 
-        /** @var GeoProcessingResponse $response */
-        $response = $this->get('inowas.modflowmodel.amqp_geo_processing')->send(
+        $response = GeoProcessingResponse::fromJson($this->get('inowas.modflowmodel.amqp_geo_processing')->send(
             GeoProcessingRequest::withMethodAndParameters(
                 GeoProcessingRequest::METHOD_EXTRACT_RASTER_DATA, [
                     'file' => $rasterFile->getFilename(),
@@ -83,7 +82,7 @@ class RasterfileController extends InowasRestController
                     'method' => $paramFetcher->get('method'),
                 ]
             )
-        );
+        ));
 
         return new JsonResponse($response->body(), $response->statusCode()->toInt());
     }
