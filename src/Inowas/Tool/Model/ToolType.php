@@ -7,6 +7,7 @@ final class ToolType
 
     public const GW_MOUNDING = 'T02';
     public const MODEL_SETUP = 'T03';
+    public const MCDA = 'T05';
     public const SCENARIOANALYSIS = 'T07';
     public const TRANSPORT_1D = 'T08';
     public const SALTWATER_INTRUSION = 'T09';
@@ -16,6 +17,7 @@ final class ToolType
     public static $availableTypes = array(
         'T02',
         'T03',
+        'T05',
         'T07',
         'T08',
         'T09',
