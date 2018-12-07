@@ -7,16 +7,23 @@ namespace Inowas\ModflowModel\Model\Command;
 use Inowas\Common\Command\AbstractJsonSchemaCommand;
 use Inowas\Common\Geometry\Geometry;
 use Inowas\Common\Geometry\Polygon;
+use Inowas\Common\Grid\ActiveCells;
+use Inowas\Common\Grid\AffectedLayers;
 use Inowas\Common\Grid\BoundingBox;
 use Inowas\Common\Grid\GridSize;
+use Inowas\Common\Grid\LayerNumber;
 use Inowas\Common\Id\ModflowId;
 use Inowas\Common\Id\UserId;
 use Inowas\Common\Modflow\LengthUnit;
 use Inowas\Common\Modflow\Description;
 use Inowas\Common\Modflow\Name;
+use Inowas\Common\Modflow\StressPeriods;
 use Inowas\Common\Modflow\TimeUnit;
 use Inowas\Common\Status\Visibility;
 
+/**
+ * @method withAddedMetadata(string $string, string $toString)
+ */
 class CreateModflowModel extends AbstractJsonSchemaCommand
 {
     /** @noinspection MoreThanThreeArgumentsInspection
@@ -99,6 +106,10 @@ class CreateModflowModel extends AbstractJsonSchemaCommand
         return BoundingBox::fromArray($this->payload['bounding_box']);
     }
 
+    /**
+     * @return GridSize
+     * @throws \Exception
+     */
     public function gridSize(): GridSize
     {
         return GridSize::fromArray($this->payload['grid_size']);
@@ -117,5 +128,35 @@ class CreateModflowModel extends AbstractJsonSchemaCommand
     public function visibility(): Visibility
     {
         return Visibility::fromBool($this->payload['public']);
+    }
+
+    /**
+     * @return ActiveCells|null
+     * @throws \Exception
+     */
+    public function activeCells(): ?ActiveCells
+    {
+        if (!array_key_exists('active_cells', $this->payload)) {
+            return null;
+        }
+
+        return ActiveCells::from2DCells(
+            $this->payload['active_cells'],
+            $this->gridSize(),
+            AffectedLayers::createWithLayerNumber(LayerNumber::fromInt(0))
+        );
+    }
+
+    /**
+     * @return ActiveCells|null
+     * @throws \Exception
+     */
+    public function stressPeriods(): ?StressPeriods
+    {
+        if (!array_key_exists('stress_periods', $this->payload)) {
+            return null;
+        }
+
+        return StressPeriods::fromArray($this->payload['stress_periods']);
     }
 }

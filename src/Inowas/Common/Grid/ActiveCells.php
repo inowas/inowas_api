@@ -61,11 +61,11 @@ class ActiveCells
 
     public static function fromCells(array $arr): ActiveCells
     {
-        $layers = array();
-        $layerData = array();
+        $layers = [];
+        $layerData = [];
         foreach ($arr as $item){
-            $layers = array($item[0]);
-            $layerData[$item[1]] = array();
+            $layers = [$item[0]];
+            $layerData[$item[1]] = [];
             $layerData[$item[1]][$item[2]] = true;
         }
 
@@ -78,7 +78,7 @@ class ActiveCells
 
         $data = [];
         foreach ($arr as $item){
-            $data[$item[0]] = array();
+            $data[$item[0]] = [];
             $data[$item[0]][$item[1]] = true;
         }
 
