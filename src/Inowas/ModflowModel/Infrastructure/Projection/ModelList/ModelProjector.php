@@ -13,6 +13,7 @@ use Inowas\Common\Modflow\LengthUnit;
 use Inowas\Common\Modflow\StressPeriods;
 use Inowas\Common\Modflow\TimeUnit;
 use Inowas\Common\Projection\AbstractDoctrineConnectionProjector;
+use Inowas\ModflowModel\Model\Event\ActiveCellsWereUpdated;
 use Inowas\ModflowModel\Model\Event\AreaGeometryWasUpdated;
 use Inowas\ModflowModel\Model\Event\BoundaryWasAdded;
 use Inowas\ModflowModel\Model\Event\BoundaryWasRemoved;
@@ -301,5 +302,11 @@ class ModelProjector extends AbstractDoctrineConnectionProjector
         }
 
         return $username;
+    }
+
+    public function onActiveCellsWereUpdated(ActiveCellsWereUpdated $activeCellsWereUpdated): void
+    {
+        // TODO
+        // Remove from config
     }
 }
