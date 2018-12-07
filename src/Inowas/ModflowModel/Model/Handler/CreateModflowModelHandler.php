@@ -38,15 +38,6 @@ final class CreateModflowModelHandler
         $modflowModel->updateTimeUnit($command->userId(), $command->timeUnit());
         $modflowModel->updateLengthUnit($command->userId(), $command->lengthUnit());
         $modflowModel->changeVisibility($command->userId(), $command->visibility());
-
-        if ($command->activeCells()) {
-            $modflowModel->updateAreaActiveCells($command->userId(), $command->activeCells());
-        }
-
-        if ($command->stressPeriods()) {
-            $modflowModel->updateStressPeriods($command->userId(), $command->stressPeriods());
-        }
-
         $this->modelList->save($modflowModel);
     }
 }
