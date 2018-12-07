@@ -8,6 +8,7 @@ use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Schema\Schema;
 use Inowas\Common\Projection\AbstractDoctrineConnectionProjector;
 use Inowas\ModflowModel\Infrastructure\Projection\Table;
+use Inowas\ModflowModel\Model\Event\ActiveCellsWereUpdated;
 use Inowas\ModflowModel\Model\Event\BoundaryWasAdded;
 use Inowas\ModflowModel\Model\Event\BoundaryWasRemoved;
 use Inowas\ModflowModel\Model\Event\BoundaryWasUpdated;
@@ -128,5 +129,11 @@ class BoundaryProjector extends AbstractDoctrineConnectionProjector
         $this->connection->delete(
             Table::BOUNDARIES, array('model_id' => $event->modelId()->toString())
         );
+    }
+
+    public function onActiveCellsWereUpdated(ActiveCellsWereUpdated $activeCellsWereUpdated): void
+    {
+        // TODO
+        // Remove from config
     }
 }
