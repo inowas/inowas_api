@@ -11,7 +11,7 @@ class JsonSchemaValidationFailedException extends \InvalidArgumentException
 
     public static function withErrors(array $errors): JsonSchemaValidationFailedException
     {
-        $self = new self(implode(",\n", $errors));
+        $self = new self(\json_encode($errors));
         $self->errors = $errors;
         return $self;
     }
