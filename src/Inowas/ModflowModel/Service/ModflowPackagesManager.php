@@ -348,7 +348,6 @@ class ModflowPackagesManager
          * Add PackageDetails for HobPackage
          */
         if ($this->modflowModelManager->countModelBoundaries($modelId, HeadObservationWell::TYPE) > 0) {
-
             $hobStressPeriodData = $this->modflowModelManager->generateHobData($modelId, $stressPeriods);
             $packages->updatePackageParameter('hob', 'ObsData', $hobStressPeriodData);
         } else {

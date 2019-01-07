@@ -47,8 +47,7 @@ class ModflowPackages implements \JsonSerializable
             'mf' => MfPackage::class,
             'bas' => BasPackage::class,
             'dis' => DisPackage::class,
-            'oc' => OcPackage::class,
-            'hob' => HobPackage::class
+            'oc' => OcPackage::class
         ],
         'selected' => ['mf', 'bas', 'dis', 'oc']
     ];
@@ -60,7 +59,8 @@ class ModflowPackages implements \JsonSerializable
             'ghb' => GhbPackage::class,
             'rch' => RchPackage::class,
             'riv' => RivPackage::class,
-            'wel' => WelPackage::class
+            'wel' => WelPackage::class,
+            'hob' => HobPackage::class
         ],
         'selected' => []
     ];
