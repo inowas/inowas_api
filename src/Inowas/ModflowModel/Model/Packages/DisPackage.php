@@ -570,8 +570,8 @@ class DisPackage extends AbstractPackage
         $package = self::fromArray($this->toArray());
         $package->nrow = Nrow::fromInt($gridSize->nY());
         $package->ncol = Ncol::fromInt($gridSize->nX());
-        $package->delr = Delr::fromValue($dy->toFloat()/$gridSize->nY());
-        $package->delc = Delc::fromValue($dx->toFloat()/$gridSize->nX());
+        $package->delc = Delc::fromValue($dy->toFloat()/$gridSize->nY());
+        $package->delr = Delr::fromValue($dx->toFloat()/$gridSize->nX());
         $package->xul = Xul::fromValue($boundingBox->xMin());
         $package->yul = Yul::fromValue($boundingBox->yMax());
         return $package;
